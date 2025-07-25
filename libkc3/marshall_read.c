@@ -11,13 +11,13 @@
  * THIS SOFTWARE.
  */
 
-#include "tag.h"
-#include "types.h"
-#include "list.h"
 #include "assert.h"
+#include "buf.h"
+#include "list.h"
 #include "marshall.h"
 #include "marshall_read.h"
-#include "buf.h"
+#include "rwlock.h"
+#include "tag.h"
 
 #define DEF_MARSHALL_READ(name, type)                                  \
   s_marshall_read * marshall_read_ ## name (s_marshall_read *mr,       \
@@ -59,21 +59,32 @@ DEF_MARSHALL_READ(f64, f64)
 
 s_marshall_read * marshall_read_header (s_marshall_read *mr)
 {
-  s_marshall_header header = {0};
-  s_str str = {{0}, sizeof(s_marshall_header), {&header}};
+  s_marshall_header mh = {0};
+  s_str str = {0};
   s_marshall_read tmp;
   assert(mr);
   tmp = *mr;
-  if (! buf_read(&tmp.buf, sizeof(s_marshall_header), &str))
+  if (! buf_read(&tmp.buf, sizeof(s_marshall_header), &str)) {
+    err_puts("marshall_read_header: buf_read");
+    assert(! "marshall_read_header: buf_read");
     return NULL;
-  if (le64toh(header.le_magic) != MARSHALL_MAGIC) {
+  }
+  if (str.size != sizeof(s_marshall_header)) {
+    err_puts("marshall_read_header: buf_read !="
+             " sizeof(s_marshall_header)");
+    assert(!("marshall_read_header: buf_read !="
+             " sizeof(s_marshall_header)"));
+    return NULL;
+  }
+  mh = *(s_marshall_header *) str.ptr.p;
+  if (le64toh(mh.le_magic) != MARSHALL_MAGIC) {
     err_puts("marshall_read_header: invalid magic");
     assert(! "marshall_read_header: invalid magic");
     return NULL;
   }
-  tmp.heap_count = le64toh(header.le_heap_count);
-  tmp.heap_size = le64toh(header.le_heap_size);
-  tmp.buf_size = le64toh(header.le_buf_size);
+  tmp.heap_count = le64toh(mh.le_heap_count);
+  tmp.heap_size = le64toh(mh.le_heap_size);
+  tmp.buf_size = le64toh(mh.le_buf_size);
   *mr = tmp;
   return mr;
 }
@@ -122,14 +133,22 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
 {
   s_marshall_read tmp = {0};
   assert(mr);
-  if (! buf_init_str_copy(&tmp.buf, src))
+  if (! buf_init_str_copy(&tmp.buf, src)) {
+    err_puts("marshall_read_init_str: buf_init_str_copy");
+    assert(! "marshall_read_init_str: buf_init_str_copy");
     return NULL;
+  }
   if (! marshall_read_header(&tmp)) {
+    err_puts("marshall_read_init_str: marshall_read_header");
+    assert(! "marshall_read_init_str: marshall_read_header");
     buf_clean(&tmp.buf);
     return NULL;
   }
   tmp.heap = tmp.buf;
   tmp.heap.free = false;
+#ifdef HAVE_PTHREAD
+  rwlock_init(&tmp.heap.rwlock);
+#endif
   *mr = tmp;
   return mr;
 }

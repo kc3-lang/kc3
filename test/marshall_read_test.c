@@ -100,7 +100,7 @@ TEST_CASE(marshall_read_bool)
                      "KC3MARSH\0\0\0\0\0\0\0\0"
                      "\0\0\0\0\0\0\0\0"
                      "\x01\0\0\0\0\0\0\0"
-                     "\0",
+                     "\x01",
                      "true");
   MARSHALL_READ_TEST(bool, true,
                      "KC3MARSH\0\0\0\0\0\0\0\0"
