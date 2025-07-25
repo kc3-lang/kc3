@@ -1392,6 +1392,10 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     env_clean(env);
     return NULL;
   }
+  if (! time_init_now(&env->boot_time)) {
+    env_clean(env);
+    return NULL;
+  }
   return env;
 }
 

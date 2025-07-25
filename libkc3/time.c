@@ -146,22 +146,19 @@ s_time * time_init_str (s_time *time, const s_str *src)
   return time;
 }
 
-s_timespec * time_sub (const s_timespec *a, const s_timespec *b,
-                       s_timespec *dest)
+s_time * time_sub (const s_time *a, const s_time *b, s_time *dest)
 {
-  if ((a->tv_nsec - b->tv_nsec) < 0) {
-    dest->tv_sec = a->tv_sec - b->tv_sec - 1;
-    dest->tv_nsec = 1000000000 + a->tv_nsec - b->tv_nsec;
-  } else {
-    dest->tv_sec = a->tv_sec - b->tv_sec;
-    dest->tv_nsec = a->tv_nsec - b->tv_nsec;
+  s_time tmp = {0};
+  assert(a);
+  assert(b);
+  assert(dest);
+  tmp.tv_sec = a->tv_sec - b->tv_sec;
+  tmp.tv_nsec = a->tv_nsec - b->tv_nsec;
+  while (tmp.tv_nsec < 0) {
+    tmp.tv_sec -= 1;
+    tmp.tv_nsec += 1000 * 1000 * 1000;
   }
-  return dest;
-}
-
-f64 * time_to_f64 (const s_timespec *time, f64 *dest)
-{
-  *dest = (f64) time->tv_sec + (f64) time->tv_nsec * 0.000000001;
+  *dest = tmp;
   return dest;
 }
 

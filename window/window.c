@@ -29,8 +29,8 @@ bool window_animate (s_window *window)
     return false;
   }
   seq = window->sequence + window->sequence_pos;
-  time_sub(&clock_monotonic, &seq->t0, &delta);
-  time_to_f64(&delta, &t);
+  timespec_sub(&clock_monotonic, &seq->t0, &delta);
+  timespec_to_f64(&delta, &t);
   seq->dt = t - seq->t;
   seq->frame++;
   seq->t = t;

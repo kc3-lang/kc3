@@ -860,6 +860,7 @@ struct env {
   char            **argv;
   s_str            *argv0_dir;
   s_block          *block;
+  s_time            boot_time;
   const s_sym      *current_defmodule;
   s_buf            *err;
   s_error_handler  *error_handler;

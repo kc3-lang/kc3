@@ -45,6 +45,7 @@ s_env * env_fork_init (s_env *env, s_env *src)
   tmp.argc = src->argc;
   tmp.argv = src->argv;
   tmp.argv0_dir = src->argv0_dir;
+  tmp.boot_time = src->boot_time;
   //tmp.stacktrace = NULL;
   tmp.current_defmodule = &g_sym_KC3;
   tmp.err = src->err;

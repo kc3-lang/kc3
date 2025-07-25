@@ -90,6 +90,7 @@ HEADERS = \
 	"crypt.h" \
 	"data.h" \
 	"do_block.h" \
+	"endian.h" \
 	"env.h" \
 	"env_eval.h" \
 	"env_eval_equal.h" \
@@ -179,6 +180,7 @@ HEADERS = \
 	"tag_init.h" \
 	"tag_type.h" \
 	"time.h" \
+	"timespec.h" \
 	"to_lisp.h" \
 	"tuple.h" \
 	"types.h" \
@@ -385,6 +387,7 @@ SOURCES = \
 	"tag_sub.c" \
 	"tag_type.c" \
 	"time.c" \
+	"timespec.c" \
 	"to_lisp.c" \
 	"tuple.c" \
 	"u16.c" \
@@ -688,6 +691,7 @@ LO_SOURCES = \
 	"tag_sub.c" \
 	"tag_type.c" \
 	"time.c" \
+	"timespec.c" \
 	"to_lisp.c" \
 	"tuple.c" \
 	"u16.c" \

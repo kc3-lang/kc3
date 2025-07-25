@@ -37,13 +37,16 @@ s_time * time_init_str (s_time *time, const s_str *src);
 
 /* Observers */
 s_tag * time_access (s_time *time, s_list *key, s_tag *dest);
-f64 *   time_to_f64 (const s_timespec *time, f64 *dest);
 s_str * time_to_str (const s_time *time, s_str *dest);
-s_tag * time_to_tag (const s_timespec *time, s_tag *dest);
 
 /* Operators */
 s_time * time_allocate (s_time *time);
-s_timespec * time_sub (const s_timespec *a, const s_timespec *b,
-                       s_timespec *dest);
+s_time * time_sub (const s_time *a, const s_time *b,
+                   s_time *dest);
+
+s_timespec * timespec_sub (const s_timespec *a, const s_timespec *b,
+                           s_timespec *dest);
+f64 *        timespec_to_f64 (const s_timespec *time, f64 *dest);
+s_tag *      timespec_to_tag (const s_timespec *time, s_tag *dest);
 
 #endif /* LIBKC3_TIME_H */

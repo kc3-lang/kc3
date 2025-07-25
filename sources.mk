@@ -433,6 +433,7 @@ KC3_C_SOURCES = \
 	"libkc3/data.h" \
 	"libkc3/do_block.c" \
 	"libkc3/do_block.h" \
+	"libkc3/endian.h" \
 	"libkc3/env.c" \
 	"libkc3/env.h" \
 	"libkc3/env_eval.c" \
@@ -635,6 +636,8 @@ KC3_C_SOURCES = \
 	"libkc3/tag_type.h" \
 	"libkc3/time.c" \
 	"libkc3/time.h" \
+	"libkc3/timespec.c" \
+	"libkc3/timespec.h" \
 	"libkc3/to_lisp.c" \
 	"libkc3/to_lisp.h" \
 	"libkc3/tuple.c" \
@@ -2048,7 +2051,6 @@ KC3_DOC_SOURCES = \
 	"doc/3_Guides/3.5_Tutorial.fr.md" \
 	"doc/3_Guides/index.en.md" \
 	"doc/3_Guides/index.fr.md" \
-	"doc/4_Misc/4.1_ChatGPT.md" \
 	"doc/index.en.md" \
 	"doc/index.fr.md" \
 
