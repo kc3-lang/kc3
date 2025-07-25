@@ -17,19 +17,19 @@
 
 #define TAG_TEST_EQ(test, expected)                                    \
   do {                                                                 \
-    const s_tag *tag_expected;                                               \
-    const s_tag *tag_test;                                                   \
-    tag_expected = (expected);                                         \
-    tag_test = (test);                                                 \
-    if (compare_tag(tag_test, tag_expected) == 0) {                    \
+    const s_tag *TAG_TEST_EQ_expected;                                 \
+    const s_tag *TAG_TEST_EQ_test;                                     \
+    TAG_TEST_EQ_expected = (expected);                                 \
+    TAG_TEST_EQ_test = (test);                                         \
+    if (compare_tag(TAG_TEST_EQ_test, TAG_TEST_EQ_expected) == 0) {    \
       test_ok();                                                       \
     }                                                                  \
     else {                                                             \
       s_str str_expected;                                              \
       s_str str_test;                                                  \
       test_ko();                                                       \
-      inspect_tag(tag_expected, &str_expected);                        \
-      inspect_tag(tag_test, &str_test);                                \
+      inspect_tag(TAG_TEST_EQ_expected, &str_expected);                \
+      inspect_tag(TAG_TEST_EQ_test, &str_test);                        \
       printf("\n%sAssertion failed in %s:%d %s\n"                      \
              "%s == %s\n"                                              \
              "Expected %s got %s.%s\n",                                \

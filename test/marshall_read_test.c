@@ -27,51 +27,64 @@
   do {                                                                 \
     type tmp = {0};                                                    \
     s_str tmp_str = {{0}, sizeof(expected) - 1, {expected}};           \
-    s_marshall_read m = {0};                                           \
+    s_marshall_read mr = {0};                                          \
     s_str test_str = {0};                                              \
     test_context("marshall_read_" # type "(" # on_heap ", " # test     \
                  ") -> " # expected);                                  \
-    TEST_EQ(marshall_read_init_1(&m, (test), sizeof(test) - 1), &m);   \
-    TEST_EQ(marshall_read_## type (&m, (on_heap), &tmp), &m);          \
-    marshall_read_clean(&m);                                           \
+    TEST_EQ(marshall_read_init_1(&mr, (test), sizeof(test) - 1), &mr); \
+    TEST_EQ(marshall_read_## type (&mr, (on_heap), &tmp), &mr);        \
+    marshall_read_clean(&mr);                                          \
     inspect_ ## type(&tmp, &test_str);                                 \
     TEST_STR_EQ(test_str, tmp_str);                                    \
+    str_clean(&test_str);                                              \
+    str_clean(&tmp_str);                                               \
     test_context(NULL);                                                \
   } while (0)
 
-#define MARSHALL_READ_TEST_TAG(test, on_heap)                          \
+#define MARSHALL_READ_TEST_TAG(on_heap, test, expected)                \
   do {                                                                 \
-    s_marshall_read m = {0};                                           \
+    s_marshall_read mr = {0};                                          \
     s_tag tag = {0};                                                   \
-    tag_init_1(&tag, test);                                            \
-    TEST_EQ(marshall_read_init_str(&m, (test)), &m);                   \
-    TEST_EQ(marshall_read_tag(&m, (on_heap), &tag), &m);               \
-    marhall_read_clean(&m);                                            \
+    s_tag tag_expected = {0};                                          \
+    TEST_ASSERT(tag_init_1(&tag_expected, (expected)));                \
+    TEST_EQ(marshall_read_init_1(&mr, (test), sizeof(test) - 1), &mr); \
+    TEST_EQ(marshall_read_tag(&mr, (on_heap), &tag), &mr);             \
+    TAG_TEST_EQ(&tag, &tag_expected);                                  \
+    marshall_read_clean(&mr);                                          \
     tag_clean(&tag);                                                   \
+    tag_clean(&tag_expected);                                          \
   } while (0)
+
+#define MARSHALL_READ_TEST_TAG_BUF(test, expected)                     \
+  MARSHALL_READ_TEST_TAG(false, test, expected)
+
+#define MARSHALL_READ_TEST_TAG_HEAP(test, expected)                    \
+  MARSHALL_READ_TEST_TAG(true, test, expected)
 
 void marshal_test (void);
 
 TEST_CASE_PROTOTYPE(marshall_read_bool);
 TEST_CASE_PROTOTYPE(marshall_read_character);
+TEST_CASE_PROTOTYPE(marshall_read_init_buf);
+TEST_CASE_PROTOTYPE(marshall_read_init_file);
+TEST_CASE_PROTOTYPE(marshall_read_init_str);
+TEST_CASE_PROTOTYPE(marshall_read_plist);
 TEST_CASE_PROTOTYPE(marshall_read_s8);
 TEST_CASE_PROTOTYPE(marshall_read_s16);
 TEST_CASE_PROTOTYPE(marshall_read_s32);
 TEST_CASE_PROTOTYPE(marshall_read_s64);
 TEST_CASE_PROTOTYPE(marshall_read_sw);
-TEST_CASE_PROTOTYPE(marshall_read_init_buf);
-TEST_CASE_PROTOTYPE(marshall_read_init_file);
-TEST_CASE_PROTOTYPE(marshall_read_init_str);
+TEST_CASE_PROTOTYPE(marshall_read_tag);
 TEST_CASE_PROTOTYPE(marshall_read_u8);
 TEST_CASE_PROTOTYPE(marshall_read_u16);
 TEST_CASE_PROTOTYPE(marshall_read_u32);
 TEST_CASE_PROTOTYPE(marshall_read_u64);
 TEST_CASE_PROTOTYPE(marshall_read_uw);
-TEST_CASE_PROTOTYPE(marshall_read_plist);
 
 void marshall_read_test (void)
 {
   TEST_CASE_RUN(marshall_read_bool);
+  TEST_CASE_RUN(marshall_read_tag);
   /*
   TEST_CASE_RUN(marshall_read_character);
   TEST_CASE_RUN(marshall_read_s8);
@@ -138,6 +151,26 @@ TEST_CASE(marshall_read_plist)
   tag_clean(&expected);
 }
 TEST_CASE_END(marshall_read_plist)
+
+TEST_CASE(marshall_read_tag)
+{
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x01\0\0\0\0\0\0\0"
+                             "\x13\0",
+                             "0");
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x01\0\0\0\0\0\0\0"
+                             "\x13\x01",
+                             "1");
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x01\0\0\0\0\0\0\0"
+                             "\x13\xFF",
+                             "255");
+}
+TEST_CASE_END(marshall_read_tag)
 
 #if 0
 
@@ -210,23 +243,6 @@ TEST_CASE(marshall_read_sw)
                                  "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_sw)
-
-TEST_CASE(marshall_read_tag)
-{
-  MARSHALL_READ_TEST_TAG("0");
-  MARSHALL_READ_TEST_TAG("1");
-  MARSHALL_READ_TEST_TAG("2");
-  MARSHALL_READ_TEST_TAG("256");
-  MARSHALL_READ_TEST_TAG("-2147483648");
-  MARSHALL_READ_TEST_TAG("92233720368547");
-  MARSHALL_READ_TEST_TAG("100000000000000000000000000000");
-  MARSHALL_READ_TEST_TAG("[1, 2]");
-  MARSHALL_READ_TEST_TAG("defmodule Test do end");
-  MARSHALL_READ_TEST_TAG("%{a: 1, b: 2}");
-  MARSHALL_READ_TEST_TAG("List.reverse([])");
-  MARSHALL_READ_TEST_TAG("a = 1");
-}
-TEST_CASE_END(marshall_read_tag)
 
 TEST_CASE(marshall_read_u8)
 {

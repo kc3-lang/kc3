@@ -15,6 +15,7 @@
 #include "buf.h"
 #include "list.h"
 #include "marshall.h"
+#include "str.h"
 #include "marshall_read.h"
 #include "rwlock.h"
 #include "tag.h"
@@ -49,7 +50,6 @@ s_marshall_read * marshall_read_character (s_marshall_read *mr,
 void marshall_read_clean(s_marshall_read *mr)
 {
   assert(mr);
-  buf_clean(&mr->heap);
   buf_clean(&mr->buf);
 }
 
@@ -86,6 +86,7 @@ s_marshall_read * marshall_read_header (s_marshall_read *mr)
   tmp.heap_size = le64toh(mh.le_heap_size);
   tmp.buf_size = le64toh(mh.le_buf_size);
   *mr = tmp;
+  str_clean(&str);
   return mr;
 }
 
