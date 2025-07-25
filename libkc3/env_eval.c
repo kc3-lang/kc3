@@ -190,7 +190,6 @@ bool env_eval_call_arguments (s_env *env, s_list *args,
       longjmp(*up.jmp, 1);
     }
     if (! env_eval_tag(env, &a->tag, &(*tail)->tag)) {
-      list_delete_all(tmp);
       err_write_1("env_eval_call_arguments: invalid argument: ");
       err_inspect(&args->tag);
       err_write_1("\n");
