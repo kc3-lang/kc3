@@ -40,7 +40,7 @@ s_tag * struct_access (s_struct *s, s_list *key, s_tag *dest)
   assert(dest);
   first = &key->tag;
   next = list_next(key);
-  if (first->type != TAG_SYM) {
+  if (first->type != TAG_PSYM) {
     err_write_1("struct_access: key is not a Sym: (");
     err_inspect_struct(s);
     err_write_1(", ");
@@ -379,7 +379,7 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
     k = keys;
     v = values;
     while (k && v) {
-      if (k->tag.type != TAG_SYM) {
+      if (k->tag.type != TAG_PSYM) {
         err_write_1("struct_init_from_lists: key that is not a"
                     " symbol: ");
         err_puts(tag_type_to_string(k->tag.type));
@@ -559,7 +559,7 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
   assert(value);
   i = 0;
   while (i < s->pstruct_type->map.count) {
-    if (s->pstruct_type->map.key[i].type != TAG_SYM) {
+    if (s->pstruct_type->map.key[i].type != TAG_PSYM) {
       err_puts("struct_set: struct type map key is not a Sym");
       assert(! "struct_set: struct type map key is not a Sym");
       return NULL;

@@ -141,7 +141,7 @@ s_tag * s8_sqrt (const s8 x, s_tag *dest)
 {
   assert(dest);
   if (x < 0) {
-    dest->type = TAG_COMPLEX;
+    dest->type = TAG_PCOMPLEX;
     dest->data.pcomplex = complex_new();
     tag_init_u8(&dest->data.pcomplex->x, 0);
     dest->data.pcomplex->y.type = TAG_F128;

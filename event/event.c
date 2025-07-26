@@ -126,7 +126,7 @@ struct event * kc3_event_new (struct event_base **event_base, s64 fd,
   events_s16 = 0;
   e = *events;
   while (e) {
-    if (e->tag.type != TAG_SYM)
+    if (e->tag.type != TAG_PSYM)
       goto invalid_event_list;
     if (e->tag.data.psym == &g_sym_read)
       events_s16 |= EV_READ;

@@ -98,7 +98,7 @@ s_list *** ekc3_append_sym (s_list ***tail, const s_sym *sym)
   **tail = list_new(NULL);
   if (! **tail)
     return NULL;
-  (**tail)->tag.type = TAG_SYM;
+  (**tail)->tag.type = TAG_PSYM;
   (**tail)->tag.data.psym = sym;
   *tail = &(**tail)->next.data.plist;
   return tail;
@@ -436,7 +436,7 @@ sw ekc3_render (s_buf *buf, const p_ekc3 *ekc3)
   assert(ekc3);
   l = *ekc3;
   while (l) {
-    if (l->tag.type == TAG_SYM &&
+    if (l->tag.type == TAG_PSYM &&
         l->tag.data.psym == sym_1("silent")) {
       l = list_next(l);
       if (! l ||
@@ -585,7 +585,7 @@ sw ekc3_render_size (s_pretty *pretty, const p_ekc3 *ekc3)
   assert(ekc3);
   l = *ekc3;
   while (l) {
-    if (l->tag.type == TAG_SYM &&
+    if (l->tag.type == TAG_PSYM &&
         l->tag.data.psym == sym_1("silent")) {
       l = list_next(l);
       if (! l ||

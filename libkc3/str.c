@@ -498,7 +498,7 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_s64(str, tag->data.s64);
   case TAG_STR:
     return str_init_copy(str, &tag->data.str);
-  case TAG_SYM:
+  case TAG_PSYM:
     return str_init_copy(str, &tag->data.psym->str);
   case TAG_SW:
     return str_init_sw(str, tag->data.sw);

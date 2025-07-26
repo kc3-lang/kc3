@@ -637,9 +637,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   if (b->type == TAG_PVAR && b->data.pvar->bound)
     b = &b->data.pvar->tag;
   switch (a->type) {
-  case TAG_COMPLEX:
+  case TAG_PCOMPLEX:
     switch (b->type) {
-    case TAG_COMPLEX:
+    case TAG_PCOMPLEX:
       return compare_complex(a->data.pcomplex, b->data.pcomplex);
     default:
       break;
@@ -647,7 +647,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     break;
   case TAG_F32:
     switch (b->type) {
-    case TAG_COMPLEX:
+    case TAG_PCOMPLEX:
       return compare_f32(a->data.f32, complex_to_f32(b->data.pcomplex));
     case TAG_F32: return compare_f32(a->data.f32, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.f32, b->data.f64);
@@ -673,7 +673,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     break;
   case TAG_F64:
     switch (b->type) {
-    case TAG_COMPLEX:
+    case TAG_PCOMPLEX:
       return compare_f64(a->data.f64, complex_to_f64(b->data.pcomplex));
     case TAG_F32: return compare_f64(a->data.f64, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.f64, b->data.f64);
@@ -697,7 +697,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     break;
   case TAG_F128:
     switch (b->type) {
-    case TAG_COMPLEX:
+    case TAG_PCOMPLEX:
       return compare_f128(a->data.f128,
                           complex_to_f128(b->data.pcomplex));
     case TAG_F32: return compare_f128(a->data.f128, b->data.f32);
@@ -1203,21 +1203,23 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                            &b->data.call);
   case TAG_CHARACTER:  return compare_character(a->data.character,
                                                 b->data.character);
-  case TAG_COW:        return compare_cow(a->data.pcow, b->data.pcow);
   case TAG_FACT:       return compare_fact(&a->data.fact,
                                            &b->data.fact);
   case TAG_IDENT:      return compare_ident(&a->data.ident,
                                             &b->data.ident);
-  case TAG_PLIST:       return compare_list(a->data.plist,
+  case TAG_PLIST:      return compare_list(a->data.plist,
                                            b->data.plist);
   case TAG_MAP:        return compare_map(&a->data.map, &b->data.map);
   case TAG_PCALLABLE:  return compare_callable(a->data.pcallable,
                                                b->data.pcallable);
+  case TAG_PCOW:       return compare_cow(a->data.pcow, b->data.pcow);
   case TAG_PSTRUCT:    return compare_struct(a->data.pstruct,
                                              b->data.pstruct);
   case TAG_PSTRUCT_TYPE:
     return compare_struct_type(a->data.pstruct_type,
                                b->data.pstruct_type);
+  case TAG_PSYM:       return compare_str(&a->data.psym->str,
+                                          &b->data.psym->str);
   case TAG_PTAG:       return compare_ptag(a->data.ptag, b->data.ptag);
   case TAG_PTR:        return compare_ptr(a->data.ptr.p, b->data.ptr.p);
   case TAG_PTR_FREE:   return compare_ptr(a->data.ptr_free.p,
@@ -1226,19 +1228,17 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_QUOTE:      return compare_quote(&a->data.quote,
                                             &b->data.quote);
   case TAG_STR:        return compare_str(&a->data.str, &b->data.str);
-  case TAG_SYM:        return compare_str(&a->data.psym->str,
-                                          &b->data.psym->str);
   case TAG_TIME:       return compare_time(&a->data.time,
                                            &b->data.time);
   case TAG_TUPLE:      return compare_tuple(&a->data.tuple,
                                             &b->data.tuple);
   case TAG_UNQUOTE:    return compare_unquote(&a->data.unquote,
                                               &b->data.unquote);
-  case TAG_COMPLEX:
   case TAG_F32:
   case TAG_F64:
   case TAG_F128:
   case TAG_INTEGER:
+  case TAG_PCOMPLEX:
   case TAG_RATIO:
   case TAG_S8:
   case TAG_S16:

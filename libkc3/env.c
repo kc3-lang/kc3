@@ -1474,7 +1474,7 @@ s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
   }
   i = 0;
   while (i < map->count) {
-    if (map->key[i].type != TAG_SYM) {
+    if (map->key[i].type != TAG_PSYM) {
       tag_clean(&tmp);
       err_write_1("env_let: binding key is not a symbol: ");
       err_inspect_tag(map->key + i);
@@ -2052,7 +2052,7 @@ s_list ** env_search_modules (s_env *env, s_list **dest)
   assert(env);
   assert(dest);
   assert(env->search_modules);
-  assert(env->search_modules->tag.type == TAG_SYM);
+  assert(env->search_modules->tag.type == TAG_PSYM);
   return plist_init_copy(dest, &env->search_modules);
 }
 
@@ -2080,7 +2080,7 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
     return false;
   }
   while (search_module) {
-    if (search_module->tag.type != TAG_SYM ||
+    if (search_module->tag.type != TAG_PSYM ||
         ! search_module->tag.data.psym) {
       err_write_1("env_sym_search_modules: ");
       err_inspect_sym(sym);

@@ -79,12 +79,13 @@ sw      marshall_to_file (s_marshall *m, const char *path);
 PROTO_MARSHALL(pcallable,    p_callable   );
 PROTO_MARSHALL(pcomplex,     p_complex    );
 PROTO_MARSHALL(pcow,         p_cow        );
-PROTO_MARSHALL(plist,        const p_list *     );
+PROTO_MARSHALL(plist,        const p_list );
 PROTO_MARSHALL(pstruct,      p_struct     );
 PROTO_MARSHALL(pstruct_type, p_struct_type);
 PROTO_MARSHALL(ptag,         p_tag        );
 PROTO_MARSHALL(ptr,          u_ptr_w      );
 PROTO_MARSHALL(ptr_free,     u_ptr_w      );
 PROTO_MARSHALL(psym,         p_sym        );
+PROTO_MARSHALL(pvar,         p_var        );
 
 #endif /* LIBKC3_MARSHALL_H */

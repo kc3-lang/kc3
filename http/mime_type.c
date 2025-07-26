@@ -22,7 +22,7 @@ const s_sym ** http_mime_type (const s_str *ext, const s_sym **dest)
   s_tag tag_mime_type_sym;
   s_tag tag_mime_type_value;
   if ((tag_ext.data.psym = sym_find(ext)))
-    tag_ext.type = TAG_SYM;
+    tag_ext.type = TAG_PSYM;
   tag_init_psym(&tag_mime_type_sym, sym_1("mime_type"));
   tag_init_pvar(&tag_mime_type_value, &g_sym_Sym);
   default_mime_type = sym_1("application/octet-stream");

@@ -43,11 +43,6 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_CHARACTER:
     *b = tag->data.character ? true : false;
     return b;
-  case TAG_COMPLEX:
-    *b = ! complex_is_zero(tag->data.pcomplex);
-    return b;
-  case TAG_COW:
-    return bool_init_cast(b, type, cow_read_only(tag->data.pcow));
   case TAG_F32:
     *b = tag->data.f32 != 0.0;
     return b;
@@ -60,6 +55,11 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_INTEGER:
     *b = ! integer_is_zero(&tag->data.integer);
     return b;
+  case TAG_PCOMPLEX:
+    *b = ! complex_is_zero(tag->data.pcomplex);
+    return b;
+  case TAG_PCOW:
+    return bool_init_cast(b, type, cow_read_only(tag->data.pcow));
   case TAG_RATIO:
     *b = ! ratio_is_zero(&tag->data.ratio);
     return b;
@@ -88,7 +88,7 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_PVAR:
   case TAG_QUOTE:
   case TAG_STR:
-  case TAG_SYM:
+  case TAG_PSYM:
   case TAG_TIME:
   case TAG_TUPLE:
   case TAG_UNQUOTE:

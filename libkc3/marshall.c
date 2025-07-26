@@ -165,17 +165,17 @@ s_marshall * marshall_list (s_marshall *m, bool heap,
 }
 
 s_marshall * marshall_plist (s_marshall *m, bool heap,
-                             const p_list *plist)
+                             const p_list plist)
 {
   assert(m);
   assert(plist);
   bool present = false;
-  if (! m || ! plist)
+  if (! m)
     return NULL;
-  if (! marshall_heap_pointer(m, heap, *plist, &present))
+  if (! marshall_heap_pointer(m, heap, plist, &present))
     return NULL;
-  if (! present && *plist)
-    return marshall_list(m, true, *plist);
+  if (! present && plist)
+    return marshall_list(m, true, plist);
   return m;
 }
 
@@ -221,29 +221,62 @@ DEF_MARSHALL(sw)
 
 s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
 {
+  u8 type;
   assert(m);
   assert(tag);
-  marshall_u8(m, heap, tag->type);
+  type = tag->type;
+  marshall_u8(m, heap, type);
   switch (tag->type) {
-  case TAG_BOOL: return marshall_bool(m, heap, tag->data.bool_);
+  case TAG_VOID: return m;
+  case TAG_ARRAY: return marshall_array(m, heap, &tag->data.array);
+  case TAG_BOOL:  return marshall_bool(m, heap, tag->data.bool_);
+  case TAG_CALL:  return marshall_call(m, heap, &tag->data.call);
   case TAG_CHARACTER:
     return marshall_character(m, heap, tag->data.character);
-  case TAG_S8:   return marshall_s8(m, heap, tag->data.s8);
-  case TAG_U8:   return marshall_u8(m, heap, tag->data.u8);
-  case TAG_S16:  return marshall_s16(m, heap, tag->data.s16);
-  case TAG_U16:  return marshall_u16(m, heap, tag->data.u16);
-  case TAG_S32:  return marshall_s32(m, heap, tag->data.s32);
-  case TAG_U32:  return marshall_u32(m, heap, tag->data.u32);
-  case TAG_S64:  return marshall_s64(m, heap, tag->data.s64);
-  case TAG_U64:  return marshall_u64(m, heap, tag->data.u64);
-  case TAG_STR:  return marshall_str(m, heap, &tag->data.str);
-  case TAG_SW:   return marshall_sw(m, heap, tag->data.sw);
-  case TAG_UW:   return marshall_uw(m, heap, tag->data.uw);
-  case TAG_PLIST: return marshall_plist(m, heap, &tag->data.plist);
-  default:       break;
+  case TAG_DO_BLOCK:
+    return marshall_do_block(m, heap, &tag->data.do_block);
+  case TAG_F32:   return marshall_f32(m, heap, tag->data.f32);
+  case TAG_F64:   return marshall_f64(m, heap, tag->data.f64);
+  case TAG_F128:  return marshall_f128(m, heap, tag->data.f128);
+  case TAG_FACT:  return marshall_fact(m, heap, &tag->data.fact);
+  case TAG_INTEGER:
+    return marshall_integer(m, heap, &tag->data.integer);
+  case TAG_MAP:   return marshall_map(m, heap, &tag->data.map);
+  case TAG_PCALLABLE:
+    return marshall_pcallable(m, heap, tag->data.pcallable);
+  case TAG_PCOMPLEX:
+    return marshall_pcomplex(m, heap, tag->data.pcomplex);
+  case TAG_PCOW:  return marshall_pcow(m, heap, tag->data.pcow);
+  case TAG_PLIST: return marshall_plist(m, heap, tag->data.plist);
+  case TAG_PSTRUCT:
+    return marshall_pstruct(m, heap, tag->data.pstruct);
+  case TAG_PSTRUCT_TYPE:
+    return marshall_pstruct_type(m, heap, tag->data.pstruct_type);
+  case TAG_PSYM:  return marshall_psym(m, heap, tag->data.psym);
+  case TAG_PTAG:
+    return marshall_ptag(m, heap, tag->data.ptag);
+  case TAG_PTR:   return marshall_ptr(m, heap, tag->data.ptr);
+  case TAG_PTR_FREE:
+    return marshall_ptr_free(m, heap, tag->data.ptr_free);
+  case TAG_PVAR:  return marshall_pvar(m, heap, tag->data.pvar);
+  case TAG_QUOTE: return marshall_quote(m, heap, &tag->data.quote);
+  case TAG_RATIO: return marshall_ratio(m, heap, &tag->data.ratio);
+  case TAG_S8:    return marshall_s8(m, heap, tag->data.s8);
+  case TAG_S16:   return marshall_s16(m, heap, tag->data.s16);
+  case TAG_S32:   return marshall_s32(m, heap, tag->data.s32);
+  case TAG_S64:   return marshall_s64(m, heap, tag->data.s64);
+  case TAG_STR:   return marshall_str(m, heap, &tag->data.str);
+  case TAG_SW:    return marshall_sw(m, heap, tag->data.sw);
+  case TAG_U8:    return marshall_u8(m, heap, tag->data.u8);
+  case TAG_U16:   return marshall_u16(m, heap, tag->data.u16);
+  case TAG_U32:   return marshall_u32(m, heap, tag->data.u32);
+  case TAG_U64:   return marshall_u64(m, heap, tag->data.u64);
+  case TAG_UW:    return marshall_uw(m, heap, tag->data.uw);
   }
-  err_puts("marshall_tag: not implemented");
-  assert(! "marshall_tag: not implemented");
+  err_write_1("marshall_tag: unknown tag type : ");
+  err_inspect_u8_decimal(&type);
+  err_write_1("\n");
+  assert(! "marshall_tag: unknown tag type");
   return NULL;
 }
 

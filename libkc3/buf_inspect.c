@@ -589,7 +589,7 @@ sw buf_inspect_call_access (s_buf *buf, const s_call *call)
     goto invalid_key;
   key = key->tag.data.plist;
   while (key) {
-    if (key->tag.type != TAG_SYM)
+    if (key->tag.type != TAG_PSYM)
       goto invalid_key;
     if ((r = buf_write_1(buf, ".")) < 0)
       return r;
@@ -2734,7 +2734,7 @@ sw buf_inspect_list_tag (s_buf *buf, const s_tag *tag)
   assert(tag);
   if (tag->type == TAG_TUPLE &&
       tag->data.tuple.count == 2 &&
-      tag->data.tuple.tag[0].type == TAG_SYM) {
+      tag->data.tuple.tag[0].type == TAG_PSYM) {
     sym = tag->data.tuple.tag[0].data.psym;
     if (sym_has_reserved_characters(sym)) {
       if ((r = buf_inspect_str(buf, &sym->str)) < 0)
@@ -2763,7 +2763,7 @@ sw buf_inspect_list_tag_size (s_pretty *pretty, const s_tag *tag)
   assert(tag);
   if (tag->type == TAG_TUPLE &&
       tag->data.tuple.count == 2 &&
-      tag->data.tuple.tag[0].type == TAG_SYM) {
+      tag->data.tuple.tag[0].type == TAG_PSYM) {
     sym = tag->data.tuple.tag[0].data.psym;
     if (sym_has_reserved_characters(sym)) {
       if ((r = buf_inspect_str_size(pretty, &sym->str)) < 0)
@@ -2799,7 +2799,7 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
   pretty_indent_from_column(&buf->pretty, 0);
   while (i < map->count) {
     k = map->key + i;
-    if (k->type == TAG_SYM) {
+    if (k->type == TAG_PSYM) {
       if (sym_has_reserved_characters(k->data.psym)) {
         if ((r = buf_inspect_str(buf, &k->data.psym->str)) < 0)
           return r;
@@ -2852,7 +2852,7 @@ sw buf_inspect_map_size (s_pretty *pretty, const s_map *map)
   pretty_indent_from_column(pretty, 0);
   while (i < map->count) {
     k = map->key + i;
-    if (k->type == TAG_SYM) {
+    if (k->type == TAG_PSYM) {
       if (sym_has_reserved_characters(k->data.psym)) {
         if ((r = buf_inspect_str_size(pretty, &k->data.psym->str)) < 0)
           return r;
@@ -3705,13 +3705,13 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
         compare_tag(s->tag + i, s->pstruct_type->map.value + i);
       if (display) {
         k = s->pstruct_type->map.key + i;
-        if (k->type != TAG_SYM) {
+        if (k->type != TAG_PSYM) {
           err_write_1("buf_inspect_struct: key type is not a symbol: ");
           err_inspect_tag(k);
           err_write_1(" (");
           err_write_1(tag_type_to_string(k->type));
           err_puts(")");
-          assert(k->type == TAG_SYM);
+          assert(k->type == TAG_PSYM);
           r = -1;
           goto clean;
         }
@@ -3833,14 +3833,14 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
         compare_tag(s->tag + i, s->pstruct_type->map.value + i);
       if (display) {
         k = s->pstruct_type->map.key + i;
-        if (k->type != TAG_SYM) {
+        if (k->type != TAG_PSYM) {
           err_write_1("buf_inspect_struct_size: "
                       "key type is not a symbol: ");
           err_inspect_tag(k);
           err_write_1(" (");
           err_write_1(tag_type_to_string(k->type));
           err_puts(")");
-          assert(k->type == TAG_SYM);
+          assert(k->type == TAG_PSYM);
           r = -1;
           goto clean;
         }
@@ -4094,22 +4094,24 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_CALL:    return buf_inspect_call(buf, &tag->data.call);
   case TAG_CHARACTER:
     return buf_inspect_character(buf, &tag->data.character);
-  case TAG_COMPLEX: return buf_inspect_complex(buf, tag->data.pcomplex);
-  case TAG_COW:     return buf_inspect_cow(buf, tag->data.pcow);
   case TAG_F32:     return buf_inspect_f32(buf, &tag->data.f32);
   case TAG_F64:     return buf_inspect_f64(buf, &tag->data.f64);
   case TAG_F128:    return buf_inspect_f128(buf, &tag->data.f128);
   case TAG_FACT:    return buf_inspect_fact(buf, &tag->data.fact);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
-  case TAG_PLIST:
-    return buf_inspect_list(buf, (const s_list **) &tag->data.plist);
   case TAG_MAP:     return buf_inspect_map(buf, &tag->data.map);
   case TAG_PCALLABLE:
     return buf_inspect_callable(buf, tag->data.pcallable);
+  case TAG_PCOMPLEX:
+    return buf_inspect_complex(buf, tag->data.pcomplex);
+  case TAG_PCOW:    return buf_inspect_cow(buf, tag->data.pcow);
+  case TAG_PLIST:
+    return buf_inspect_list(buf, (const s_list **) &tag->data.plist);
   case TAG_PSTRUCT: return buf_inspect_struct(buf, tag->data.pstruct);
   case TAG_PSTRUCT_TYPE:
     return buf_inspect_struct_type(buf, tag->data.pstruct_type);
+  case TAG_PSYM:    return buf_inspect_sym(buf, tag->data.psym);
   case TAG_PTAG:    return buf_inspect_ptag(buf, &tag->data.ptag);
   case TAG_PTR:     return buf_inspect_ptr(buf, &tag->data.ptr);
   case TAG_PTR_FREE:
@@ -4123,7 +4125,6 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_S64:     return buf_inspect_s64(buf, &tag->data.s64);
   case TAG_SW:      return buf_inspect_sw(buf, &tag->data.sw);
   case TAG_STR:     return buf_inspect_str(buf, &tag->data.str);
-  case TAG_SYM:     return buf_inspect_sym(buf, tag->data.psym);
   case TAG_TIME:    return buf_inspect_time(buf, &tag->data.time);
   case TAG_TUPLE:   return buf_inspect_tuple(buf, &tag->data.tuple);
   case TAG_U8:      return buf_inspect_u8(buf, &tag->data.u8);
@@ -4153,9 +4154,9 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_call_size(pretty, &tag->data.call);
   case TAG_CHARACTER:
     return buf_inspect_character_size(pretty, &tag->data.character);
-  case TAG_COMPLEX:
+  case TAG_PCOMPLEX:
     return buf_inspect_complex_size(pretty, tag->data.pcomplex);
-  case TAG_COW:
+  case TAG_PCOW:
     return buf_inspect_cow_size(pretty, tag->data.pcow);
   case TAG_F32:
     return buf_inspect_f32_size(pretty, &tag->data.f32);
@@ -4180,6 +4181,8 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_struct_size(pretty, tag->data.pstruct);
   case TAG_PSTRUCT_TYPE:
     return buf_inspect_struct_type_size(pretty, tag->data.pstruct_type);
+  case TAG_PSYM:
+    return buf_inspect_sym_size(pretty, tag->data.psym);
   case TAG_PTAG:
     return buf_inspect_ptag_size(pretty, &tag->data.ptag);
   case TAG_PTR:
@@ -4204,8 +4207,6 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_sw_size(pretty, &tag->data.sw);
   case TAG_STR:
     return buf_inspect_str_size(pretty, &tag->data.str);
-  case TAG_SYM:
-    return buf_inspect_sym_size(pretty, tag->data.psym);
   case TAG_TIME:
     return buf_inspect_time_size(pretty, &tag->data.time);
   case TAG_TUPLE:

@@ -447,7 +447,7 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
   assert(req);
   assert(buf);
   switch (req->method.type) {
-  case TAG_SYM:
+  case TAG_PSYM:
     method = &req->method.data.psym->str;
     break;
   case TAG_STR:
@@ -502,7 +502,7 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
         return r;
       result += r;
       break;
-    case TAG_SYM:
+    case TAG_PSYM:
       if ((r = buf_write_str(buf, &key->data.psym->str)) <= 0)
         return r;
       result += r;
@@ -607,7 +607,7 @@ s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
   }
   if (allowed_methods_tag.type != TAG_PLIST ||
       ! allowed_methods_tag.data.plist ||
-      allowed_methods_tag.data.plist->tag.type != TAG_SYM) {
+      allowed_methods_tag.data.plist->tag.type != TAG_PSYM) {
     err_puts("http_request_method_from_str: invalid"
              " HTTP.Request.allowed_methods");
     assert(!("http_request_method_from_str: invalid"
@@ -623,7 +623,7 @@ s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
     *dest = tmp;
     return dest;
   }
-  tmp.type = TAG_SYM;
+  tmp.type = TAG_PSYM;
   if (! plist_has(&allowed_methods, &tmp, &b)) {
     err_puts("http_request_method_from_str: plist_has");
     goto clean;

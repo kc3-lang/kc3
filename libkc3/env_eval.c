@@ -665,7 +665,7 @@ bool env_eval_complex (s_env *env, s_complex *c, s_tag *dest)
     free(tmp);
     return false;
   }
-  dest->type = TAG_COMPLEX;
+  dest->type = TAG_PCOMPLEX;
   dest->data.pcomplex = tmp;
   return true;
 }
@@ -700,7 +700,7 @@ bool env_eval_pcow_tag (s_env *env, p_cow *cow, s_tag *dest)
   assert(dest);
   if (! env_eval_pcow(env, cow, &tmp.data.pcow))
     return false;
-  tmp.type = TAG_COW;
+  tmp.type = TAG_PCOW;
   *dest = tmp;
   return true;
 }
@@ -833,7 +833,7 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
   i = 0;
   while (i < tmp->pstruct_type->map.count) {
     key = tmp->pstruct_type->map.key + i;
-    if (key->type != TAG_SYM) {
+    if (key->type != TAG_PSYM) {
       err_puts("env_eval_struct: struct type key is not a Sym");
       assert(! "env_eval_struct: struct type key is not a Sym");
       goto ko;
@@ -908,18 +908,18 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_do_block(env, &tag->data.do_block, dest);
   case TAG_CALL:
     return env_eval_call(env, &tag->data.call, dest);
-  case TAG_COMPLEX:
-    return env_eval_complex(env, tag->data.pcomplex, dest);
-  case TAG_COW:
-    return env_eval_pcow_tag(env, &tag->data.pcow, dest);
   case TAG_IDENT:
     return env_eval_ident(env, &tag->data.ident, dest);
-  case TAG_PLIST:
-    return env_eval_list(env, tag->data.plist, dest);
   case TAG_MAP:
     return env_eval_map(env, &tag->data.map, dest);
   case TAG_PCALLABLE:
     return env_eval_callable(env, tag->data.pcallable, dest);
+  case TAG_PCOMPLEX:
+    return env_eval_complex(env, tag->data.pcomplex, dest);
+  case TAG_PCOW:
+    return env_eval_pcow_tag(env, &tag->data.pcow, dest);
+  case TAG_PLIST:
+    return env_eval_list(env, tag->data.plist, dest);
   case TAG_PSTRUCT:
     return env_eval_struct_tag(env, tag->data.pstruct, dest);
   case TAG_PVAR:
@@ -938,6 +938,7 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_FACT:
   case TAG_INTEGER:
   case TAG_PSTRUCT_TYPE:
+  case TAG_PSYM:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
@@ -948,7 +949,6 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_S64:
   case TAG_STR:
   case TAG_SW:
-  case TAG_SYM:
   case TAG_U8:
   case TAG_U16:
   case TAG_U32:

@@ -27,7 +27,7 @@ s_tag * pcow_assign (p_cow *cow, s_tag *value, s_tag *dest)
   if (! cow_freeze(*cow)) {
     return NULL;
   }
-  dest->type = TAG_COW;
+  dest->type = TAG_PCOW;
   dest->data.pcow = *cow;
   return dest;
 }

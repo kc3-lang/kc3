@@ -29,7 +29,7 @@ s_tag * time_access (s_time *time, s_list *key, s_tag *dest)
   if (! key)
     return NULL;
   k = &key->tag;
-  if (k->type != TAG_SYM)
+  if (k->type != TAG_PSYM)
     return NULL;
   if (k->data.psym == &g_sym_tv_sec)
     return tag_init_uw(dest, time->tv_sec);

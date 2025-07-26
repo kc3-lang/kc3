@@ -93,7 +93,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     cfn_arg_types = cfn->arg_types;
     a = args;
     while (cfn_arg_types) {
-      assert(cfn_arg_types->tag.type == TAG_SYM);
+      assert(cfn_arg_types->tag.type == TAG_PSYM);
       if (cfn_arg_types->tag.data.psym == &g_sym_Result) {
         assert(cfn->cif.rtype == &ffi_type_pointer);
         cfn_tag_init(&tmp2, cfn->result_type);
@@ -379,7 +379,7 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
     a = cfn->arg_types;
     while (a) {
       assert(i < cfn->arity);
-      if (a->tag.type != TAG_SYM) {
+      if (a->tag.type != TAG_PSYM) {
         err_write_1("cfn_prep_cif: invalid type: ");
         err_puts(tag_type_to_string(a->tag.type));
         assert(! "cfn_prep_cif: invalid type");

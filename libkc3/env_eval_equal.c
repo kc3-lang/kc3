@@ -280,11 +280,11 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   a = tag_resolve_cow(a);
   b = tag_resolve_cow(b);
   switch (a->type) {
-  case TAG_COMPLEX:
   case TAG_F32:
   case TAG_F64:
   case TAG_F128:
   case TAG_INTEGER:
+  case TAG_PCOMPLEX:
   case TAG_RATIO:
   case TAG_S8:
   case TAG_S16:
@@ -297,11 +297,11 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   case TAG_U64:
   case TAG_UW:
     switch (b->type) {
-    case TAG_COMPLEX:
     case TAG_F32:
     case TAG_F64:
     case TAG_F128:
     case TAG_INTEGER:
+    case TAG_PCOMPLEX:
     case TAG_RATIO:
     case TAG_S8:
     case TAG_S16:
@@ -339,14 +339,14 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   case TAG_VOID:
     tag_init_void(dest);
     return true;
-  case TAG_PLIST:
-    tag_init_plist(dest, NULL);
-    return env_eval_equal_list(env, macro, a->data.plist, b->data.plist,
-                               &dest->data.plist);
   case TAG_MAP:
     dest->type = TAG_MAP;
     return env_eval_equal_map(env, macro, &a->data.map, &b->data.map,
                               &dest->data.map);
+  case TAG_PLIST:
+    tag_init_plist(dest, NULL);
+    return env_eval_equal_list(env, macro, a->data.plist, b->data.plist,
+                               &dest->data.plist);
   /*
   case TAG_PSTRUCT:
     dest->type = TAG_PSTRUCT;
@@ -371,13 +371,13 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   case TAG_PCALLABLE:
   case TAG_PSTRUCT:
   case TAG_PSTRUCT_TYPE:
+  case TAG_PSYM:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
   case TAG_PVAR:
   case TAG_QUOTE:
   case TAG_STR:
-  case TAG_SYM:
     if (compare_tag(a, b)) {
       err_puts("env_eval_equal_tag: value mismatch");
       err_stacktrace();
@@ -385,12 +385,12 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     }
     tag_init_copy(dest, a);
     return true;
-  case TAG_COMPLEX:
-  case TAG_COW:
   case TAG_F32:
   case TAG_F64:
   case TAG_F128:
   case TAG_INTEGER:
+  case TAG_PCOMPLEX:
+  case TAG_PCOW:
   case TAG_RATIO:
   case TAG_S8:
   case TAG_S16:

@@ -72,10 +72,10 @@ p_sym * psym_init_cast (p_sym *sym, const s_sym * const *type,
   assert(type);
   assert(tag);
   switch (tag->type) {
+  case TAG_PSYM:
+    return psym_init_copy(sym, &tag->data.psym);
   case TAG_STR:
     return psym_init_str(sym, &tag->data.str);
-  case TAG_SYM:
-    return psym_init_copy(sym, &tag->data.psym);
   default:
     break;
   }

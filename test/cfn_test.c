@@ -82,7 +82,7 @@ TEST_CASE(cfn_init_copy)
   a_arg_types = a.arg_types;
   b_arg_types = b.arg_types;
   while (a_arg_types && b_arg_types) {
-    TEST_EQ(a_arg_types->tag.type, TAG_SYM);
+    TEST_EQ(a_arg_types->tag.type, TAG_PSYM);
     TEST_EQ(a_arg_types->tag.type, b_arg_types->tag.type);
     TEST_EQ(a_arg_types->tag.data.psym, b_arg_types->tag.data.psym);
     a_arg_types = list_next(a_arg_types);
@@ -112,7 +112,7 @@ TEST_CASE(cfn_init_clean)
   TEST_EQ(a.arity, 1);
   TEST_EQ(a.result_type, sym_1("bool"));
   TEST_EQ(a.arg_result, false);
-  TEST_EQ(a.arg_types->tag.type, TAG_SYM);
+  TEST_EQ(a.arg_types->tag.type, TAG_PSYM);
   TEST_EQ(a.arg_types->tag.data.psym, sym_1("bool"));
   TEST_EQ(a.arg_types->next.type, TAG_PLIST);
   TEST_EQ(a.arg_types->next.data.plist, NULL);

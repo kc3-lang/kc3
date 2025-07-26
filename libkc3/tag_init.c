@@ -236,7 +236,7 @@ s_tag * tag_init_pcomplex (s_tag *tag, p_complex c)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_COMPLEX;
+  tmp.type = TAG_PCOMPLEX;
   tmp.data.pcomplex = c;
   *tag = tmp;
   return tag;
@@ -338,7 +338,7 @@ s_tag * tag_init_psym (s_tag *tag, const s_sym *sym)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_SYM;
+  tmp.type = TAG_PSYM;
   tmp.data.psym = sym;
   *tag = tmp;
   return tag;
@@ -348,7 +348,7 @@ s_tag * tag_init_psym_anon (s_tag *tag, const s_str *src)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_SYM;
+  tmp.type = TAG_PSYM;
   if (! psym_init_anon(&tmp.data.psym, src))
     return NULL;
   *tag = tmp;
@@ -952,7 +952,7 @@ s_tag * tag_new_pcomplex (p_complex c)
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
-  tag->type = TAG_COMPLEX;
+  tag->type = TAG_PCOMPLEX;
   tag->data.pcomplex = c;
   return tag;
 }
@@ -1075,7 +1075,7 @@ s_tag * tag_new_psym (const s_sym *sym)
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
-  tag->type = TAG_SYM;
+  tag->type = TAG_PSYM;
   tag->data.psym = sym;
   return tag;
 }
@@ -1086,7 +1086,7 @@ s_tag * tag_new_psym_anon (const s_str *src)
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
-  tag->type = TAG_SYM;
+  tag->type = TAG_PSYM;
   if (! psym_init_anon(&tag->data.psym, src)) {
     free(tag);
     return NULL;
@@ -1745,7 +1745,7 @@ s_tag * tag_pcomplex (s_tag *tag, p_complex c)
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  tmp.type = TAG_COMPLEX;
+  tmp.type = TAG_PCOMPLEX;
   tmp.data.pcomplex = c;
   *tag = tmp;
   return tag;
@@ -1854,7 +1854,7 @@ s_tag * tag_psym (s_tag *tag, const s_sym *sym)
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  tmp.type = TAG_SYM;
+  tmp.type = TAG_PSYM;
   tmp.data.psym = sym;
   *tag = tmp;
   return tag;
@@ -1865,7 +1865,7 @@ s_tag * tag_psym_anon (s_tag *tag, const s_str *src)
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  tmp.type = TAG_SYM;
+  tmp.type = TAG_PSYM;
   if (! psym_init_anon(&tmp.data.psym, src))
     return NULL;
   *tag = tmp;

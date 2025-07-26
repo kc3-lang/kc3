@@ -74,7 +74,7 @@ sw json_buf_inspect_map (s_buf *buf, const s_map *map)
         return r;
       result += r;
       break;
-    case TAG_SYM:
+    case TAG_PSYM:
       if ((r = buf_inspect_str(buf, &map->key[i].data.psym->str)) < 0)
         return r;
       result += r;
@@ -133,7 +133,7 @@ sw json_buf_inspect_map_size (s_pretty *pretty, const s_map *map)
         return r;
       result += r;
       break;
-    case TAG_SYM:
+    case TAG_PSYM:
       if ((r = buf_inspect_str_size(pretty,
                                     &map->key[i].data.psym->str)) < 0)
         return r;

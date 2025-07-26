@@ -148,7 +148,7 @@ bool list_is_plist (const s_list *list)
   while (l) {
     if (l->tag.type != TAG_TUPLE ||
         l->tag.data.tuple.count != 2 ||
-        l->tag.data.tuple.tag[0].type != TAG_SYM)
+        l->tag.data.tuple.tag[0].type != TAG_PSYM)
       return false;
     l = list_next(l);
   }

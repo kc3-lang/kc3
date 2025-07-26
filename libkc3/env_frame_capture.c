@@ -198,10 +198,10 @@ s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
     return env_frame_capture_call(env, frame, &tag->data.call);
   case TAG_FACT:
     return env_frame_capture_fact(env, frame, &tag->data.fact);
-  case TAG_PLIST:
-    return env_frame_capture_list(env, frame, tag->data.plist);
   case TAG_MAP:
     return env_frame_capture_map(env, frame, &tag->data.map);
+  case TAG_PLIST:
+    return env_frame_capture_list(env, frame, tag->data.plist);
   case TAG_PTAG:
     return env_frame_capture_tag(env, frame, tag->data.ptag);
   case TAG_PVAR:
@@ -220,13 +220,14 @@ s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
     return env_frame_capture_struct(env, frame, tag->data.pstruct);
   case TAG_BOOL:
   case TAG_CHARACTER:
-  case TAG_COMPLEX:
-  case TAG_COW:
   case TAG_F32:
   case TAG_F64:
   case TAG_F128:
   case TAG_INTEGER:
+  case TAG_PCOMPLEX:
+  case TAG_PCOW:
   case TAG_PSTRUCT_TYPE:
+  case TAG_PSYM:
   case TAG_PTR:
   case TAG_PTR_FREE:
   case TAG_RATIO:
@@ -236,7 +237,6 @@ s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
   case TAG_S64:
   case TAG_STR:
   case TAG_SW:
-  case TAG_SYM:
   case TAG_TIME:
   case TAG_U8:
   case TAG_U16:

@@ -258,16 +258,16 @@ bool matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py)
   map = &tag->data.map;
   assert(map->count == 3);
   /*
-  assert(      map->key[0].type == TAG_SYM);
+  assert(      map->key[0].type == TAG_PSYM);
   assert(      map->key[0].data.psym == sym_1("spacing"));
   assert(    map->value[0].type == TAG_F32);
   spacing = &map->value[0].data.f32;
   */
-  assert(  map->key[1].type == TAG_SYM);
+  assert(  map->key[1].type == TAG_PSYM);
   assert(  map->key[1].data.psym == sym_1("text"));
   assert(map->value[1].type == TAG_PTR);
   text = map->value[1].data.ptr.p;
-  assert(  map->key[2].type == TAG_SYM);
+  assert(  map->key[2].type == TAG_PSYM);
   assert(  map->key[2].data.psym == sym_1("y"));
   assert(map->value[2].type == TAG_F32);
   y =   &map->value[2].data.f32;
@@ -308,7 +308,7 @@ void matrix_text_clean (s_tag *tag)
   if (! (tag->type == TAG_MAP &&
          (map = &tag->data.map) &&
          map->count == 3 &&
-         map->key[1].type == TAG_SYM &&
+         map->key[1].type == TAG_PSYM &&
          map->key[1].data.psym == sym_1("text") &&
          map->value[1].type == TAG_PTR &&
          (text = map->value[1].data.ptr.p))) {

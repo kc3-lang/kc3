@@ -245,7 +245,7 @@ s_tag * sym_find_to_tag (const s_str *src, s_tag *dest)
   s_tag tmp = {0};
   tmp.data.psym = sym_find(src);
   if (tmp.data.psym)
-    tmp.type = TAG_SYM;
+    tmp.type = TAG_PSYM;
   *dest = tmp;
   return dest;
 }
@@ -901,11 +901,11 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     return true;
   }
   if (sym == &g_sym_Complex) {
-    *dest = TAG_COMPLEX;
+    *dest = TAG_PCOMPLEX;
     return true;
   }
   if (sym == &g_sym_Cow) {
-    *dest = TAG_COW;
+    *dest = TAG_PCOW;
     return true;
   }
   if (sym == &g_sym_F32) {
@@ -989,7 +989,7 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     return true;
   }
   if (sym == &g_sym_Sym) {
-    *dest = TAG_SYM;
+    *dest = TAG_PSYM;
     return true;
   }
   if (sym == &g_sym_Tag) {

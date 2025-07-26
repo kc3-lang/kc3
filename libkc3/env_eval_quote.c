@@ -155,7 +155,7 @@ bool env_eval_quote_complex (s_env *env, s_complex *c,
   assert(env);
   assert(c);
   assert(dest);
-  tmp.type = TAG_COMPLEX;
+  tmp.type = TAG_PCOMPLEX;
   tmp.data.pcomplex = complex_new();
   if (! tmp.data.pcomplex)
     return false;
@@ -176,7 +176,7 @@ bool env_eval_quote_cow (s_env *env, s_cow *cow,
   assert(env);
   assert(cow);
   assert(dest);
-  tmp.type = TAG_COW;
+  tmp.type = TAG_PCOW;
   tmp.data.pcow = cow_new(cow->type);
   if (! tmp.data.pcow)
     return false;
@@ -311,9 +311,9 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_quote_do_block(env, &tag->data.do_block, dest);
   case TAG_CALL:
     return env_eval_quote_call(env, &tag->data.call, dest);
-  case TAG_COMPLEX:
+  case TAG_PCOMPLEX:
     return env_eval_quote_complex(env, tag->data.pcomplex, dest);
-  case TAG_COW:
+  case TAG_PCOW:
     return env_eval_quote_cow(env, tag->data.pcow, dest);
   case TAG_PLIST:
     return env_eval_quote_list(env, tag->data.plist, dest);
@@ -340,6 +340,7 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_INTEGER:
   case TAG_PCALLABLE:
   case TAG_PSTRUCT_TYPE:
+  case TAG_PSYM:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
@@ -351,7 +352,6 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_S64:
   case TAG_STR:
   case TAG_SW:
-  case TAG_SYM:
   case TAG_U8:
   case TAG_U16:
   case TAG_U32:

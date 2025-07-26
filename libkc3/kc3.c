@@ -171,7 +171,7 @@ s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest)
   } jump;
   env = env_global();
   switch (name->type) {
-  case TAG_SYM:
+  case TAG_PSYM:
     name_sym = name->data.psym;
   case TAG_VOID:
     break;
@@ -300,7 +300,7 @@ s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
     return NULL;
   if (tag.type != TAG_PLIST)
     return NULL;
-  tmp.type = TAG_SYM;
+  tmp.type = TAG_PSYM;
   tmp.data.psym = env_defstruct(env_global(), tag.data.plist);
   *dest = tmp;
   tag_clean(&tag);
@@ -939,7 +939,7 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
   size_t tmp_data_size;
   l = *list;
   if (! l ||
-      l->tag.type != TAG_SYM) {
+      l->tag.type != TAG_PSYM) {
     err_puts("kc3_sysctl: argument is not a Sym list");
     assert(! "kc3_sysctl: argument is not a Sym list");
   }

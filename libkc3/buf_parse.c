@@ -2872,7 +2872,7 @@ sw buf_parse_list_tag (s_buf *buf, s_tag *dest)
       tag_clean(&value);
       return -2;
     }
-    key.type = TAG_SYM;
+    key.type = TAG_PSYM;
     key.data.psym = str_to_sym(&str);
     str_clean(&str);
     tmp.data.tuple.tag[0] = key;
@@ -3012,7 +3012,7 @@ sw buf_parse_map_key_str (s_buf *buf, s_tag *dest)
       goto restore;
     if (r > 0) {
       result += r;
-      dest->type = TAG_SYM;
+      dest->type = TAG_PSYM;
       dest->data.psym = str_to_sym(&str);
       str_clean(&str);
       goto ok;
@@ -3056,7 +3056,7 @@ sw buf_parse_map_key_sym (s_buf *buf, s_tag *dest)
     if ((r = buf_read_1(buf, ":")) <= 0)
       goto restore;
     result += r;
-    dest->type = TAG_SYM;
+    dest->type = TAG_PSYM;
     dest->data.psym = str_to_sym(&str);
     str_clean(&str);
   }
@@ -4199,7 +4199,7 @@ sw buf_parse_tag_complex (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_pcomplex(buf, &dest->data.pcomplex)) > 0)
-    dest->type = TAG_COMPLEX;
+    dest->type = TAG_PCOMPLEX;
   return r;
 }
 
@@ -4209,7 +4209,7 @@ sw buf_parse_tag_cow (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_pcow(buf, &dest->data.pcow)) > 0)
-    dest->type = TAG_COW;
+    dest->type = TAG_PCOW;
   return r;
 }
 
@@ -4269,7 +4269,7 @@ sw buf_parse_tag_ident_sym (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_ident_sym(buf, &dest->data.psym)) > 0)
-    dest->type = TAG_SYM;
+    dest->type = TAG_PSYM;
   return r;
 }
 
@@ -4319,7 +4319,7 @@ sw buf_parse_tag_module_name (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_module_name(buf, &dest->data.psym)) > 0)
-    dest->type = TAG_SYM;
+    dest->type = TAG_PSYM;
   return r;
 }
 
@@ -4743,7 +4743,7 @@ sw buf_parse_tag_sym (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_sym(buf, &dest->data.psym)) > 0)
-    dest->type = TAG_SYM;
+    dest->type = TAG_PSYM;
   return r;
 }
 
