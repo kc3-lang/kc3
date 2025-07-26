@@ -168,7 +168,6 @@ s_marshall * marshall_plist (s_marshall *m, bool heap,
                              const p_list plist)
 {
   assert(m);
-  assert(plist);
   bool present = false;
   if (! m)
     return NULL;
@@ -382,7 +381,6 @@ DEF_MARSHALL(uw)
     (void) heap;                                                       \
     (void) src;                                                        \
     err_puts("marshall_" # name ": not implemented");                  \
-    assert(! "marshall_" # name ": not implemented");                  \
     return NULL;                                                       \
   }
 
