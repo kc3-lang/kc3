@@ -136,7 +136,7 @@ uw ops_hash_tag (const s_tag *op_tag)
   assert(op_tag->data.pstruct->data);
   op = op_tag->data.pstruct->data;
   hash_init(&hash);
-  hash_update_sym(&hash, &op->sym);
+  hash_update_sym(&hash, op->sym);
   hash_update_u8(&hash, op->arity);
   h = hash_to_uw(&hash);
   hash_clean(&hash);

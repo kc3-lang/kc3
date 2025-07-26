@@ -239,6 +239,7 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   case TAG_F64:   return marshall_f64(m, heap, tag->data.f64);
   case TAG_F128:  return marshall_f128(m, heap, tag->data.f128);
   case TAG_FACT:  return marshall_fact(m, heap, &tag->data.fact);
+  case TAG_IDENT: return marshall_ident(m, heap, &tag->data.ident);
   case TAG_INTEGER:
     return marshall_integer(m, heap, &tag->data.integer);
   case TAG_MAP:   return marshall_map(m, heap, &tag->data.map);
@@ -267,10 +268,14 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   case TAG_S64:   return marshall_s64(m, heap, tag->data.s64);
   case TAG_STR:   return marshall_str(m, heap, &tag->data.str);
   case TAG_SW:    return marshall_sw(m, heap, tag->data.sw);
+  case TAG_TIME:  return marshall_time(m, heap, &tag->data.time);
+  case TAG_TUPLE: return marshall_tuple(m, heap, &tag->data.tuple);
   case TAG_U8:    return marshall_u8(m, heap, tag->data.u8);
   case TAG_U16:   return marshall_u16(m, heap, tag->data.u16);
   case TAG_U32:   return marshall_u32(m, heap, tag->data.u32);
   case TAG_U64:   return marshall_u64(m, heap, tag->data.u64);
+  case TAG_UNQUOTE:
+    return marshall_unquote(m, heap, &tag->data.unquote);
   case TAG_UW:    return marshall_uw(m, heap, tag->data.uw);
   }
   err_write_1("marshall_tag: unknown tag type : ");
@@ -367,3 +372,45 @@ DEF_MARSHALL(u16)
 DEF_MARSHALL(u32)
 DEF_MARSHALL(u64)
 DEF_MARSHALL(uw)
+
+// more complex types :
+
+#define DEF_MARSHALL_STUB(name, type)                                  \
+  PROTO_MARSHALL(name, type)                                           \
+  {                                                                    \
+    (void) m;                                                          \
+    (void) heap;                                                       \
+    (void) src;                                                        \
+    err_puts("marshall_" # name ": not implemented");                  \
+    assert(! "marshall_" # name ": not implemented");                  \
+    return NULL;                                                       \
+  }
+
+DEF_MARSHALL_STUB(array, const s_array *)
+DEF_MARSHALL_STUB(call, const s_call *)
+DEF_MARSHALL_STUB(do_block, const s_do_block *)
+DEF_MARSHALL_STUB(f32, f32)
+DEF_MARSHALL_STUB(f64, f64)
+DEF_MARSHALL_STUB(f128, f128)
+DEF_MARSHALL_STUB(fact, const s_fact *)
+DEF_MARSHALL_STUB(ident, const s_ident *)
+DEF_MARSHALL_STUB(integer, const s_integer *)
+DEF_MARSHALL_STUB(map, const s_map *)
+DEF_MARSHALL_STUB(pcallable, p_callable)
+DEF_MARSHALL_STUB(pcomplex, p_complex)
+DEF_MARSHALL_STUB(pcow, p_cow)
+DEF_MARSHALL_STUB(pstruct, p_struct)
+DEF_MARSHALL_STUB(pstruct_type, p_struct_type)
+DEF_MARSHALL_STUB(ptag, p_tag)
+DEF_MARSHALL_STUB(ptr, u_ptr_w)
+DEF_MARSHALL_STUB(ptr_free, u_ptr_w)
+DEF_MARSHALL_STUB(psym, p_sym)
+DEF_MARSHALL_STUB(pvar, p_var)
+DEF_MARSHALL_STUB(quote, const s_quote *)
+DEF_MARSHALL_STUB(ratio, const s_ratio *)
+DEF_MARSHALL_STUB(struct, const s_struct *)
+DEF_MARSHALL_STUB(struct_type, const s_struct_type *)
+DEF_MARSHALL_STUB(sym, const s_sym *)
+DEF_MARSHALL_STUB(time, const s_time *)
+DEF_MARSHALL_STUB(unquote, const s_unquote *)
+DEF_MARSHALL_STUB(var, const s_var *)

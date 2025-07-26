@@ -262,7 +262,7 @@ TEST_CASE(marshall_plist)
   TEST_ASSERT(marshall_init(&m));
   list_test = list_new_1("[0, 1]");
   TEST_ASSERT(list_test);
-  TEST_ASSERT(marshall_plist(&m, false, &list_test));
+  TEST_ASSERT(marshall_plist(&m, false, list_test));
   marshall_to_str(&m, &str);
   TEST_STR_EQ(str, expected);
   str_clean(&str);
@@ -290,8 +290,8 @@ TEST_CASE(marshall_plist_twice)
   TEST_ASSERT(marshall_init(&m));
   list_test = list_new_1("[0, 1]");
   TEST_ASSERT(list_test);
-  TEST_ASSERT(marshall_plist(&m, false, &list_test));
-  TEST_ASSERT(marshall_plist(&m, false, &list_test));
+  TEST_ASSERT(marshall_plist(&m, false, list_test));
+  TEST_ASSERT(marshall_plist(&m, false, list_test));
   marshall_to_str(&m, &str);
   TEST_STR_EQ(str, expected);
   str_clean(&str);

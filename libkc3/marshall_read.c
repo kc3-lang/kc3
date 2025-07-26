@@ -311,45 +311,42 @@ DEF_MARSHALL_READ(uw, uw)
 
 // more complex types :
 
-#undef DEF_MARSHALL_READ
-#define DEF_MARSHALL_READ(name, type) PROTO_MARSHALL_READ(name, type) \
-    {                                                                 \
-        (void) mr;                                                    \
-        (void) heap;                                                  \
-        (void) dest;                                                  \
-        err_puts("marshall_read_" # name ": not implemented");        \
-        assert(! "marshall_read_" # name ": not implemented");        \
-        return NULL;                                                  \
-    }
+#define DEF_MARSHALL_READ_STUB(name, type)                             \
+  PROTO_MARSHALL_READ(name, type)                                      \
+  {                                                                    \
+    (void) mr;                                                         \
+    (void) heap;                                                       \
+    (void) dest;                                                       \
+    err_puts("marshall_read_" # name ": not implemented");             \
+    assert(! "marshall_read_" # name ": not implemented");             \
+    return NULL;                                                       \
+  }
 
-
-DEF_MARSHALL_READ(array, s_array)
-DEF_MARSHALL_READ(call, s_call)
-DEF_MARSHALL_READ(callable, s_callable)
-DEF_MARSHALL_READ(cow, s_cow)
-DEF_MARSHALL_READ(complex, s_complex)
-DEF_MARSHALL_READ(do_block, s_do_block)
-DEF_MARSHALL_READ(fact, s_fact)
-DEF_MARSHALL_READ(ident, s_ident)
-DEF_MARSHALL_READ(integer, s_integer)
-DEF_MARSHALL_READ(map, s_map)
-DEF_MARSHALL_READ(quote, s_quote)
-DEF_MARSHALL_READ(ratio, s_ratio)
-DEF_MARSHALL_READ(struct, s_struct)
-DEF_MARSHALL_READ(struct_type, s_struct_type)
-DEF_MARSHALL_READ(sym, s_sym)
-DEF_MARSHALL_READ(tuple, s_tuple)
-DEF_MARSHALL_READ(time, s_time)
-DEF_MARSHALL_READ(unquote, s_unquote)
-DEF_MARSHALL_READ(var, s_var)
-DEF_MARSHALL_READ(pcallable, p_callable)
-DEF_MARSHALL_READ(pcomplex, p_complex)
-DEF_MARSHALL_READ(pcow, p_cow)
-// DEF_MARSHALL_READ(plist, p_list)
-DEF_MARSHALL_READ(pstruct, p_struct)
-DEF_MARSHALL_READ(pstruct_type, p_struct_type)
-DEF_MARSHALL_READ(ptag, p_tag)
-DEF_MARSHALL_READ(ptr, u_ptr_w)
-DEF_MARSHALL_READ(ptr_free, u_ptr_w)
-DEF_MARSHALL_READ(psym, p_sym)
-DEF_MARSHALL_READ(pvar, p_var)
+DEF_MARSHALL_READ_STUB(array, s_array)
+DEF_MARSHALL_READ_STUB(call, s_call)
+DEF_MARSHALL_READ_STUB(callable, s_callable)
+DEF_MARSHALL_READ_STUB(cow, s_cow)
+DEF_MARSHALL_READ_STUB(complex, s_complex)
+DEF_MARSHALL_READ_STUB(do_block, s_do_block)
+DEF_MARSHALL_READ_STUB(fact, s_fact)
+DEF_MARSHALL_READ_STUB(ident, s_ident)
+DEF_MARSHALL_READ_STUB(integer, s_integer)
+DEF_MARSHALL_READ_STUB(map, s_map)
+DEF_MARSHALL_READ_STUB(quote, s_quote)
+DEF_MARSHALL_READ_STUB(ratio, s_ratio)
+DEF_MARSHALL_READ_STUB(struct, s_struct)
+DEF_MARSHALL_READ_STUB(struct_type, s_struct_type)
+DEF_MARSHALL_READ_STUB(tuple, s_tuple)
+DEF_MARSHALL_READ_STUB(time, s_time)
+DEF_MARSHALL_READ_STUB(unquote, s_unquote)
+DEF_MARSHALL_READ_STUB(var, s_var)
+DEF_MARSHALL_READ_STUB(pcallable, p_callable)
+DEF_MARSHALL_READ_STUB(pcomplex, p_complex)
+DEF_MARSHALL_READ_STUB(pcow, p_cow)
+DEF_MARSHALL_READ_STUB(pstruct, p_struct)
+DEF_MARSHALL_READ_STUB(pstruct_type, p_struct_type)
+DEF_MARSHALL_READ_STUB(psym, p_sym)
+DEF_MARSHALL_READ_STUB(ptag, p_tag)
+DEF_MARSHALL_READ_STUB(ptr, u_ptr_w)
+DEF_MARSHALL_READ_STUB(ptr_free, u_ptr_w)
+DEF_MARSHALL_READ_STUB(pvar, p_var)

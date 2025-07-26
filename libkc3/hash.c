@@ -483,14 +483,13 @@ bool hash_update_struct_type (t_hash *hash, const s_struct_type *st)
   return hash_update_uw(hash, st->size);
 }
 
-bool hash_update_sym (t_hash *hash, const s_sym * const *sym)
+bool hash_update_sym (t_hash *hash, const s_sym *sym)
 {
   char type[] = "sym";
   assert(hash);
   assert(sym);
-  assert(*sym);
   return hash_update(hash, type, sizeof(type)) &&
-    hash_update_str(hash, &(*sym)->str);
+    hash_update_str(hash, &sym->str);
 }
 
 bool hash_update_tag (t_hash *hash, const s_tag *tag)

@@ -117,7 +117,7 @@ const s_sym ** map_get_var_type (const s_map *map, const s_tag *key,
   uw i = 0;
   while (i < map->count) {
     if (compare_tag(key, map->key + i) == 0)
-      return tag_var_type(map->value + i, dest);
+      return tag_type_var(map->value + i, dest);
     i++;
   }
   err_write_1("map_get_type: ");
