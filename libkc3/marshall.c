@@ -372,8 +372,6 @@ DEF_MARSHALL(u32)
 DEF_MARSHALL(u64)
 DEF_MARSHALL(uw)
 
-// more complex types :
-
 #define DEF_MARSHALL_STUB(name, type)                                  \
   PROTO_MARSHALL(name, type)                                           \
   {                                                                    \
