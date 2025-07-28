@@ -262,19 +262,20 @@ TEST_CASE(marshall_read_tag)
                              "\x00\x00\x00\x00\x00\x00\x00\x00",
                              "(F128) 0.0");
 
-MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
-                           "\x00\x00\x00\x00\x00\x00\x00\x00"
-                           "\x05\x00\x00\x00\x00\x00\x00\x00"
-                           "\x08\x00\x00\x00\x00\x00\x00\x00\x00"
-                           "\x00\x00\x00\x00\x00\x00\xF0\x3F",
-                           "(F128) 1.0");
-
-MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x05\x00\x00\x00\x00\x00\x00\x00"
                              "\x08\x00\x00\x00\x00\x00\x00\x00\x00"
-                             "\x00\x00\x00\x00\x00\x00\xF0\x41",
+                             "\x01\x00\x00\x00\x00\x00\x00\x00",
+                             "(F128) 1.0");
+
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
+                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x08\x00\x00\x00\x00\x00\x00\x00\x00"
+                             "\x00\x00\x00\x00\x00\x00\x1F\x40",
                              "(F128) 4294967296.0");
+
 }
 TEST_CASE_END(marshall_read_tag)
 
