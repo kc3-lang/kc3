@@ -80,7 +80,6 @@ PROTO_BUF_PEEK(u16);
 PROTO_BUF_PEEK(u32);
 PROTO_BUF_PEEK(u64);
 PROTO_BUF_PEEK(uw);
-sw        buf_read_integer (s_buf *buf, s_integer *dst);
 sw        buf_read_character_utf8 (s_buf *buf, character *p);
 s_str *   buf_read (s_buf *buf, uw size, s_str *dest);
 sw        buf_read_1 (s_buf *buf, const char *p);
@@ -88,6 +87,7 @@ PROTO_BUF_READ(bool);
 PROTO_BUF_READ(f32);
 PROTO_BUF_READ(f64);
 PROTO_BUF_READ(f128);
+sw        buf_read_integer (s_buf *buf, s_integer *dest);
 PROTO_BUF_READ(s8);
 PROTO_BUF_READ(s16);
 PROTO_BUF_READ(s32);
@@ -119,7 +119,6 @@ sw        buf_read_until_str_into_file (s_buf *buf, const s_str *end,
 s_str *   buf_read_until_str_into_str (s_buf *buf, const s_str *end,
                                        s_str *dest);
 PROTO_BUF_READ(uw);
-sw        buf_read_integer (s_buf *buf, s_integer *dst);
 sw        buf_refill (s_buf *buf, sw size);
 sw        buf_refill_compact (s_buf *buf);
 s_buf *   buf_restore (s_buf *buf, const s_buf *save);

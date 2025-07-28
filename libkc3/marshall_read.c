@@ -29,7 +29,7 @@
     assert(mr);                                                        \
     assert(dest);                                                      \
     buf = heap ? &mr->heap : &mr->buf;                                 \
-    if (buf_read_ ## type (buf, dest) <= 0) {                          \
+    if (buf_read_ ## name (buf, dest) <= 0) {                          \
       err_puts("marshall_read_" # name ": buf_read_" # type);          \
       assert(! "marshall_read_" # name ": buf_read_" # type);          \
       return NULL;                                                     \
@@ -46,16 +46,14 @@ s_marshall_read * marshall_read_array (s_marshall_read *mr,
   s_array tmp = {0};
   assert(mr);
   assert(dest);
-  assert(dest)
-  if (! marshall_read_uw(mr, heap, &tmp.count)                        ||
-      ! marshall_read_uw(mr, heap, &tmp.dimension)                    ||
-      ! marshall_read_dimensions(mr, heap, tmp.dimensions)            ||
-      ! marshall_read_array_data(mr, heap, &tmp)                      ||
-      ! marshall_read_uw(mr, heap, tmp.free_data)                     ||
-      ! marshall_read_uw(mr, heap, &tmp.size)                         ||
-      ! marshall_read_tag(mr, heap, tmp.tags)                         ||
-      ! marshall_read_sym(mr, heap, (s_sym *)tmp.array_type)          ||
-      ! marshall_read_sym(mr, heap, (s_sym *)tmp.element_type)        ||
+  if (! marshall_read_uw(mr, heap, &tmp.count)              ||
+      ! marshall_read_uw(mr, heap, &tmp.dimension)          ||
+      //! marshall_read_dimensions(mr, heap, &tmp.dimensions) ||
+      //! marshall_read_uw(mr, heap, &tmp.free_data)          ||
+      ! marshall_read_uw(mr, heap, &tmp.size)               ||
+      ! marshall_read_tag(mr, heap, tmp.tags)               ||
+      ! marshall_read_psym(mr, heap, &tmp.array_type)       ||
+      ! marshall_read_psym(mr, heap, &tmp.element_type)     ||
       ! marshall_read_sw(mr, heap, &tmp.ref_count))
     return NULL;
   *dest = tmp;
@@ -204,6 +202,8 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
   *mr = tmp;
   return mr;
 }
+
+DEF_MARSHALL_READ(integer, s_integer)
 
 s_marshall_read * marshall_read_plist (s_marshall_read *mr, bool heap,
                                        p_list *dest)
@@ -393,7 +393,6 @@ DEF_MARSHALL_READ_STUB(complex, s_complex)
 DEF_MARSHALL_READ_STUB(do_block, s_do_block)
 DEF_MARSHALL_READ_STUB(fact, s_fact)
 DEF_MARSHALL_READ_STUB(ident, s_ident)
-DEF_MARSHALL_READ_STUB(integer, s_integer)
 DEF_MARSHALL_READ_STUB(map, s_map)
 DEF_MARSHALL_READ_STUB(quote, s_quote)
 DEF_MARSHALL_READ_STUB(ratio, s_ratio)

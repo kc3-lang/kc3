@@ -22,6 +22,7 @@
 #include "config.h"
 #include "error.h"
 #include "file.h"
+#include "integer.h"
 #include "list.h"
 #include "pretty.h"
 #include "ratio.h"
@@ -819,6 +820,8 @@ sw buf_read_1 (s_buf *buf, const char *p)
   return buf_read_str(buf, &str);
 }
 
+DEF_BUF_READ(bool)
+
 sw buf_read_character_utf8 (s_buf *buf, character *p)
 {
   sw r;
@@ -846,12 +849,53 @@ sw buf_read_character_utf8 (s_buf *buf, character *p)
 DEF_BUF_READ(f32)
 DEF_BUF_READ(f64)
 DEF_BUF_READ(f128)
+
+sw buf_read_integer (s_buf *buf, s_integer *dest)
+{
+  sw r;
+  sw result = 0;
+  uw size;
+  s_integer tmp;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_read_uw(buf, &size)) <= 0)
+    return r;
+  result += r;
+  integer_init(&tmp);
+  if (size == 0) {
+    mp_set_u32(&dest->mp_int, 0);
+    return result;
+  }
+  if (buf->rpos + size > buf->wpos) {
+    if ((r = buf_refill(buf, size)) < 0) {
+      integer_clean(&tmp);
+      return r;
+    }
+    if (buf->rpos + size > buf->wpos) {
+      err_puts("buf_read_integer: short read");
+      assert(! "buf_read_integer: short read");
+      integer_clean(&tmp);
+      return -1;
+    }
+  }
+  if (mp_from_sbin(&dest->mp_int, buf->ptr.pu8 + buf->rpos,
+                   size) != MP_OKAY) {
+    err_puts("buf_read_integer: mp_from_sbin");
+    assert(! "buf_read_integer: mp_from_sbin");
+    integer_clean(&tmp);
+    return -1;
+  }
+  buf->rpos += size;
+  result += size;
+  *dest = tmp;
+  return result;
+}
+
 DEF_BUF_READ(s8)
 DEF_BUF_READ(s16)
 DEF_BUF_READ(s32)
 DEF_BUF_READ(s64)
 DEF_BUF_READ(sw)
-DEF_BUF_READ(bool)
 
 sw buf_read_str (s_buf *buf, const s_str *src)
 {
@@ -946,7 +990,6 @@ DEF_BUF_READ(u8)
 DEF_BUF_READ(u16)
 DEF_BUF_READ(u32)
 DEF_BUF_READ(u64)
-
 
 s_str * buf_read_until_1_into_str (s_buf *buf, const char *end,
                                    s_str *dest)
