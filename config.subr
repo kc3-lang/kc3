@@ -488,9 +488,15 @@ config_objc_lib_have() {
 }
 
 config_subdirs() {
-    for SUBDIR; do
-        ( cd "$SUBDIR" && ./configure; )
-    done
+    if [ $MULTI ]; then
+        for SUBDIR; do
+            ( cd $SUBDIR && ./configure)&
+        done
+    else
+        for SUBDIR; do
+            ( cd "$SUBDIR" && ./configure; )
+        done
+    fi
 }
 
 config_win32() {
