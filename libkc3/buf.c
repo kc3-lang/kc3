@@ -863,7 +863,7 @@ sw buf_read_integer (s_buf *buf, s_integer *dest)
   result += r;
   integer_init(&tmp);
   if (size == 0) {
-    mp_set_u32(&dest->mp_int, 0);
+    mp_set_u32(&tmp.mp_int, 0);
     return result;
   }
   if (buf->rpos + size > buf->wpos) {
@@ -878,7 +878,7 @@ sw buf_read_integer (s_buf *buf, s_integer *dest)
       return -1;
     }
   }
-  if (mp_from_sbin(&dest->mp_int, buf->ptr.pu8 + buf->rpos,
+  if (mp_from_sbin(&tmp.mp_int, buf->ptr.pu8 + buf->rpos,
                    size) != MP_OKAY) {
     err_puts("buf_read_integer: mp_from_sbin");
     assert(! "buf_read_integer: mp_from_sbin");
