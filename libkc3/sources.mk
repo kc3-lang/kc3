@@ -431,6 +431,8 @@ LO_SOURCES = \
 	"../libtommath/bn_mp_exch.c" \
 	"../libtommath/bn_mp_expt_u32.c" \
 	"../libtommath/bn_mp_exptmod.c" \
+	"../libtommath/bn_mp_from_sbin.c" \
+	"../libtommath/bn_mp_from_ubin.c" \
 	"../libtommath/bn_mp_gcd.c" \
 	"../libtommath/bn_mp_get_double.c" \
 	"../libtommath/bn_mp_get_i32.c" \
