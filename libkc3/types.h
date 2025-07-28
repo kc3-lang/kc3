@@ -13,6 +13,7 @@
 #ifndef LIBKC3_TYPES_H
 #define LIBKC3_TYPES_H
 
+
 #include <ffi.h>
 #include <limits.h>
 #include <setjmp.h>
@@ -22,6 +23,8 @@
 #include <pthread.h>
 #include "config.h"
 #include "sha1.h"
+
+#define MP_28BIT
 #include "../libtommath/tommath.h"
 
 #ifdef __cplusplus
