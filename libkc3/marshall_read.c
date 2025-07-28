@@ -29,8 +29,11 @@
     assert(mr);                                                        \
     assert(dest);                                                      \
     buf = heap ? &mr->heap : &mr->buf;                                 \
-    if (buf_read_ ## type (buf, dest) <= 0)                            \
+    if (buf_read_ ## type (buf, dest) <= 0) {                          \
+      err_puts("marshall_read_" # name ": buf_read_" # type);          \
+      assert(! "marshall_read_" # name ": buf_read_" # type);          \
       return NULL;                                                     \
+    }                                                                  \
     return mr;                                                         \
   }
 
