@@ -51,12 +51,6 @@ echo "ARCH = $ARCH" >> ${CONFIG_MK}
 update_config_mk
 env_reset
 
-if [ "$1" = "-j" ]; then
-    export MULTI=1
-else
-    export MULTI=0
-fi
-
 config_subdirs \
     libtommath \
     ucd2c \

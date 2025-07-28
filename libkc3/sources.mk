@@ -467,6 +467,7 @@ LO_SOURCES = \
 	"../libtommath/bn_mp_reduce_is_2k_l.c" \
 	"../libtommath/bn_mp_reduce_setup.c" \
 	"../libtommath/bn_mp_rshd.c" \
+	"../libtommath/bn_mp_sbin_size.c" \
 	"../libtommath/bn_mp_set.c" \
 	"../libtommath/bn_mp_set_double.c" \
 	"../libtommath/bn_mp_set_i32.c" \
@@ -479,6 +480,9 @@ LO_SOURCES = \
 	"../libtommath/bn_mp_sqrt.c" \
 	"../libtommath/bn_mp_sub.c" \
 	"../libtommath/bn_mp_sub_d.c" \
+	"../libtommath/bn_mp_to_sbin.c" \
+	"../libtommath/bn_mp_to_ubin.c" \
+	"../libtommath/bn_mp_ubin_size.c" \
 	"../libtommath/bn_mp_xor.c" \
 	"../libtommath/bn_mp_zero.c" \
 	"../libtommath/bn_s_mp_add.c" \

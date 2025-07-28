@@ -1710,6 +1710,49 @@ sw buf_xfer (s_buf *dest, s_buf *src, uw size)
   return r;
 }
 
+sw buf_write_integer (s_buf *buf, const s_integer *src)
+{
+  sw r;
+  sw result = 0;
+  size_t size;
+  size_t written;
+  assert(buf);
+  assert(src);
+  size = mp_sbin_size(&src->mp_int);
+  if ((r = buf_write_uw(buf, size)) <= 0)
+    return r;
+  result += r;
+  if (size == 0)
+    return result;
+  if (buf->wpos + size > buf->size &&
+      buf_flush(buf) < (sw)size) {
+    return -1;
+  }
+  if (buf->wpos + size > buf->size) {
+    err_puts("buf_write_integer: buffer overflow");
+    assert(! "buf_write_integer: buffer overflow");
+    return -1;
+  }
+  if (mp_to_sbin(&src->mp_int, (unsigned char *)(buf->ptr.pu8 + buf->wpos),
+                 size, &written) != MP_OKAY) {
+    err_puts("buf_write_integer: mp_to_sbin failed");
+    assert(! "buf_write_integer: mp_to_sbin failed");
+    return -1;
+  }
+  if (written != size) {
+    err_write_1("buf_write_integer: size mismatch - expected ");
+    err_inspect_uw(&size);
+    err_write_1(" bytes, but mp_to_sbin wrote ");
+    err_inspect_uw(&written);
+    err_write_1(" bytes\n");
+    assert(! "buf_write_integer: size mismatch between mp_sbin_size and mp_to_sbin");
+    return -1;
+  }
+  buf->wpos += size;
+  result += size;
+  return result;
+}
+
 sw buf_xfer_reverse (s_buf *src, s_buf *dest)
 {
   sw r;

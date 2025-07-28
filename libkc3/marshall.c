@@ -153,6 +153,23 @@ s_marshall * marshall_init (s_marshall *m)
   return m;
 }
 
+s_marshall * marshall_integer (s_marshall *m, bool heap,
+                               const s_integer *i)
+{
+  s_buf *buf;
+  sw r;
+  assert(m);
+  assert(i);
+  buf = heap ? &m->heap : &m->buf;
+  if ((r = buf_write_integer(buf, i)) <= 0)
+    return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
+  return m;
+}
+
 s_marshall * marshall_list (s_marshall *m, bool heap,
                             const s_list *list)
 {
@@ -390,7 +407,6 @@ DEF_MARSHALL_STUB(f64, f64)
 DEF_MARSHALL_STUB(f128, f128)
 DEF_MARSHALL_STUB(fact, const s_fact *)
 DEF_MARSHALL_STUB(ident, const s_ident *)
-DEF_MARSHALL_STUB(integer, const s_integer *)
 DEF_MARSHALL_STUB(map, const s_map *)
 DEF_MARSHALL_STUB(pcallable, p_callable)
 DEF_MARSHALL_STUB(pcomplex, p_complex)
