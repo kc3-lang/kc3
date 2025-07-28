@@ -220,6 +220,41 @@ TEST_CASE(marshall_read_tag)
                              "\x09\0\0\0\0\0\0\0"
                              "\x14\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF",
                              "18446744073709551615");
+  // f32
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x05\0\0\0\0\0\0\0"
+                             "\x06\0\0\0\0",
+                             "(F32) 0.0");
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x05\0\0\0\0\0\0\0"
+                             "\x06\x00\x00\x80\x3F",
+                             "(F32) 1.0");
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x05\0\0\0\0\0\0\0"
+                             "\x06\xFF\xFF\xFF\xFF",
+                             "(F32) 4294967295.0");
+  // f64
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x05\0\0\0\0\0\0\0"
+                             "\x07\x00\x00\x00\x00\x00\x00\x00\x00",
+                             "(F64) 0.0");
+
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x05\0\0\0\0\0\0\0"
+                             "\x07\x00\x00\x00\x00\x00\x00\xF0\x3F",
+                             "(F64) 1.0");
+
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x05\0\0\0\0\0\0\0"
+                             "\x07\x00\x00\x00\x00\x00\x00\xF0\x41",
+                             "(F64) 4294967296.0");
+
 }
 TEST_CASE_END(marshall_read_tag)
 
