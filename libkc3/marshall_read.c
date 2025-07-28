@@ -39,6 +39,29 @@
 
 DEF_MARSHALL_READ(bool, bool)
 
+s_marshall_read * marshall_read_array (s_marshall_read *mr,
+                                       bool heap,
+                                       s_array *dest)
+{
+  s_buf *buf = {0};
+  s_array tmp = {0};
+  assert(mr);
+  assert(dest);
+  assert(dest)
+  if (! marshall_read_uw(mr, heap, &tmp.count)                        ||
+      ! marshall_read_uw(mr, heap, &tmp.dimension)                    ||
+      ! marshall_read_dimensions(mr, heap, &tmp.dimensions)           ||
+      ! marshall_read_uw(mr, heap, &tmp.free_data)                    ||
+      ! marshall_read_uw(mr, heap, &tmp.size)                         ||
+      ! marshall_read_tag(mr, heap, tmp.tags)                         ||
+      ! marshall_read_sym(mr, heap, &tmp.array_type)                  ||
+      ! marshall_read_sym(mr, heap, &tmp.element_type)                ||
+      ! marshall_read_sw(mr, heap, &tmp.ref_count))
+    return NULL;
+  *dest = tmp;
+  return mr;
+}
+
 s_marshall_read * marshall_read_character (s_marshall_read *mr,
                                            bool heap,
                                            character *dest)
