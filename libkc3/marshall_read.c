@@ -95,7 +95,7 @@ s_marshall_read * marshall_read_dimensions (s_marshall_read *mr,
   s_array_dimension tmp = {0};
   assert(mr);
   assert(dest);
-  if (! marshall_read_uw(mr, heap, &tmp.count) |
+  if (! marshall_read_uw(mr, heap, &tmp.count) ||
       ! marshall_read_uw(mr, heap, &tmp.item_size))
     return NULL;
   *dest = tmp;
