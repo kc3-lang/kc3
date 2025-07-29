@@ -106,25 +106,29 @@ void marshall_read_test (void)
 TEST_CASE(marshall_read_bool)
 {
   MARSHALL_READ_TEST(bool, false,
-                     "KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+                     "KC3MARSH"
+                     "\x00\x00\x00\x00\x00\x00\x00\x00"
                      "\x00\x00\x00\x00\x00\x00\x00\x00"
                      "\x01\x00\x00\x00\x00\x00\x00\x00"
                      "\x00",
                      "false");
   MARSHALL_READ_TEST(bool, false,
-                     "KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+                     "KC3MARSH"
+                     "\x00\x00\x00\x00\x00\x00\x00\x00"
                      "\x00\x00\x00\x00\x00\x00\x00\x00"
                      "\x01\x00\x00\x00\x00\x00\x00\x00"
                      "\x01",
                      "true");
   MARSHALL_READ_TEST(bool, true,
-                     "KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+                     "KC3MARSH"
+                     "\x00\x00\x00\x00\x00\x00\x00\x00"
                      "\x01\x00\x00\x00\x00\x00\x00\x00"
                      "\x00\x00\x00\x00\x00\x00\x00\x00"
                      "\x00",
                      "false");
   MARSHALL_READ_TEST(bool, true,
-                     "KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+                     "KC3MARSH"
+                     "\x00\x00\x00\x00\x00\x00\x00\x00"
                      "\x01\x00\x00\x00\x00\x00\x00\x00"
                      "\x00\x00\x00\x00\x00\x00\x00\x00"
                      "\x01",
@@ -137,7 +141,8 @@ TEST_CASE(marshall_read_plist)
   s_marshall_read mr = {0};
   s_tag expected = {0};
   s_tag test_tag = {0};
-  const char test_str[] = "KC3MARSH\x02\x00\x00\x00\x00\x00\x00\x00"
+  const char test_str[] = "KC3MARSH"
+                          "\x02\x00\x00\x00\x00\x00\x00\x00"
                           "\x11\x00\x00\x00\x00\x00\x00\x00"
                           "\x00\x00\x00\x00\x00\x00\x00\x00"
                           "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -157,125 +162,148 @@ TEST_CASE_END(marshall_read_plist)
 TEST_CASE(marshall_read_tag)
 {
   // u8
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x02\x00\x00\x00\x00\x00\x00\x00"
                              "\x11\x00",
                              "0");
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x02\x00\x00\x00\x00\x00\x00\x00"
                              "\x11\x01",
                              "1");
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x02\x00\x00\x00\x00\x00\x00\x00"
                              "\x11\xFF",
                              "255");
   // u16
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x03\x00\x00\x00\x00\x00\x00\x00"
                              "\x12\x00\x00",
                              "(U16) 0");
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x03\x00\x00\x00\x00\x00\x00\x00"
                              "\x12\x01\x00",
                              "(U16) 1");
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x03\x00\x00\x00\x00\x00\x00\x00"
                              "\x12\xFF\xFF",
                              "(U16) 65535");
   // u32
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x05\x00\x00\x00\x00\x00\x00\x00"
                              "\x13\x00\x00\x00\x00",
                              "(U32) 0");
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x05\x00\x00\x00\x00\x00\x00\x00"
                              "\x13\x01\x00\x00\x00",
                              "(U32) 1");
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x05\x00\x00\x00\x00\x00\x00\x00"
                              "\x13\xFF\xFF\xFF\xFF",
                              "(U32) 4294967295");
   // u64 and uw
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x09\x00\x00\x00\x00\x00\x00\x00"
                              "\x14\x00\x00\x00\x00\x00\x00\x00\x00",
                              "(U64) 0");
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x09\x00\x00\x00\x00\x00\x00\x00"
                              "\x14\x01\x00\x00\x00\x00\x00\x00\x00",
                              "(U64) 1");
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x09\x00\x00\x00\x00\x00\x00\x00"
                              "\x14\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF",
                              "18446744073709551615");
   // f32
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x05\x00\x00\x00\x00\x00\x00\x00"
                              "\x06\x00\x00\x00\x00",
                              "(F32) 0.0");
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x05\x00\x00\x00\x00\x00\x00\x00"
                              "\x06\x00\x00\x80\x3F",
                              "(F32) 1.0");
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x05\x00\x00\x00\x00\x00\x00\x00"
                              "\x06\xFF\xFF\xFF\xFF",
                              "(F32) 4294967295.0");
   // f64
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x05\x00\x00\x00\x00\x00\x00\x00"
                              "\x07\x00\x00\x00\x00\x00\x00\x00\x00",
                              "(F64) 0.0");
 
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x05\x00\x00\x00\x00\x00\x00\x00"
                              "\x07\x00\x00\x00\x00\x00\x00\xF0\x3F",
                              "(F64) 1.0");
 
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x05\x00\x00\x00\x00\x00\x00\x00"
                              "\x07\x00\x00\x00\x00\x00\x00\xF0\x41",
                              "(F64) 4294967296.0");
   // f128
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x11\x00\x00\x00\x00\x00\x00\x00"
                              "\x08\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00",
                              "(F128) 0.0");
 
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x11\x00\x00\x00\x00\x00\x00\x00"
                              "\x08\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x01\x00\x00\x00\x00\x00\x00\x00",
                              "(F128) 1.0");
 
-  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
-                           "\x00\x00\x00\x00\x00\x00\x00\x00"
-                           "\x05\x00\x00\x00\x00\x00\x00\x00"
-                           "\x08\x00\x00\x00\x00\x00\x00\x00\x00"
-                           "\x18\x2D\x44\x54\xFB\x21\x09\x40",
-                           "(F128) 3.14159265358979323846264338327950"
-                           "28841971");
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
+                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x08\x00\x00\x00\x00\x00\x00\x00\x00"
+                             "\x18\x2D\x44\x54\xFB\x21\x09\x40",
+                             "(F128) 3.14159265358979323846264338327950"
+                             "28841971");
 }
 TEST_CASE_END(marshall_read_tag)
 
