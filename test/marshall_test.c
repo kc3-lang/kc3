@@ -610,6 +610,21 @@ TEST_CASE(marshall_tag)
                         "\x00\x00\x00\x11\x02\x16.\x00"
                         "\x00\x00\x00\x00\x00\x00\x16 "
                         "\x00\x00\x00\x00\x00\x00\x00");
+  // Do block
+  MARSHALL_TEST_TAG_BUF("{ 1 ; 2 ; 3 }",
+                        "KC3MARSH\0");
+  MARSHALL_TEST_TAG_BUF("do\n"
+                        "  1\n"
+                        "  2\n"
+                        "  3\n"
+                        "end",
+                        "KC3MARSH\0");
+  // Tuple
+  MARSHALL_TEST_TAG_BUF("{1, 2, [3, 4]}",
+                        "KC3MARSH\0");
+  // Psym
+  MARSHALL_TEST_TAG_BUF("Module",
+                        "KC3MARSH\0");
   // Map
   MARSHALL_TEST_TAG_BUF("%{a: 1, b: 2}",
                         "KC3MARSH\0");
