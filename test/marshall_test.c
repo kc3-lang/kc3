@@ -542,6 +542,7 @@ TEST_CASE_END(marshall_sw)
 
 TEST_CASE(marshall_tag)
 {
+  // U8
   MARSHALL_TEST_TAG_BUF("0",
                         "KC3MARSH"
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -560,25 +561,21 @@ TEST_CASE(marshall_tag)
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
                         "\x02\x00\x00\x00\x00\x00\x00\x00"
                         "\x11\x02");
+  // U16
   MARSHALL_TEST_TAG_BUF("256",
                         "KC3MARSH"
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
                         "\x03\x00\x00\x00\x00\x00\x00\x00"
                         "\x12\x00\x01");
-  MARSHALL_TEST_TAG_BUF("(Integer) 1024",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x0C\x00\x00\x00\x00\x00\x00\x00"
-                        "\n\x03\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x04\x00");
+  // S32
   MARSHALL_TEST_TAG_BUF("-2147483648",
                         "KC3MARSH"
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
                         "\x05\x00\x00\x00\x00\x00\x00\x00"
                         "\x0E\x00\x00\x00\x80");
+  // U64
   MARSHALL_TEST_TAG_BUF("92233720368547",
                         "KC3MARSH"
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -586,6 +583,14 @@ TEST_CASE(marshall_tag)
                         "\t\x00\x00\x00\x00\x00\x00\x00"
                         "\x14\xA3\x8D#\xD6\xE2S\x00"
                         "\x00");
+  // Integer
+  MARSHALL_TEST_TAG_BUF("(Integer) 1024",
+                        "KC3MARSH"
+                        "\x00\x00\x00\x00\x00\x00\x00\x00"
+                        "\x00\x00\x00\x00\x00\x00\x00\x00"
+                        "\x0C\x00\x00\x00\x00\x00\x00\x00"
+                        "\n\x03\x00\x00\x00\x00\x00\x00"
+                        "\x00\x00\x04\x00");
   MARSHALL_TEST_TAG_BUF("10000000000000000000000000000000000",
                         "KC3MARSH"
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -595,6 +600,7 @@ TEST_CASE(marshall_tag)
                         "\x00\x00\x01\xED\t\xBE\xAD\x87"
                         "\xC0\x37\x8D\x8E\x64\x00\x00\x00"
                         "\x00");
+  // List
   MARSHALL_TEST_TAG_BUF("[1, 2]",
                         "KC3MARSH"
                         "\x02\x00\x00\x00\x00\x00\x00\x00"
@@ -604,9 +610,11 @@ TEST_CASE(marshall_tag)
                         "\x00\x00\x00\x11\x02\x16.\x00"
                         "\x00\x00\x00\x00\x00\x00\x16 "
                         "\x00\x00\x00\x00\x00\x00\x00");
-  MARSHALL_TEST_TAG_BUF("defmodule Test do end",
-                        "KC3MARSH\0");
+  // Map
   MARSHALL_TEST_TAG_BUF("%{a: 1, b: 2}",
+                        "KC3MARSH\0");
+  // Call
+  MARSHALL_TEST_TAG_BUF("defmodule Test do end",
                         "KC3MARSH\0");
   MARSHALL_TEST_TAG_BUF("List.reverse([])",
                         "KC3MARSH\0");
