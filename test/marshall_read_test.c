@@ -161,6 +161,25 @@ TEST_CASE_END(marshall_read_plist)
 
 TEST_CASE(marshall_read_tag)
 {
+  // characters
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
+                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x05\x41\x00\x00\x00\x00\x00\x00\x00",
+                             "'A'");
+
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
+                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x05\x7A\x00\x00\x00\x00\x00\x00\x00",
+                             "'z'");
+
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+                             "\x00\x00\x00\x00\x00\x00\x00\x00"
+                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x05\x30\x00\x00\x00\x00\x00\x00\x00",
+                             "'0'");
+
   // f32
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -368,65 +387,6 @@ TEST_CASE(marshall_read_character)
   MARSHALL_READ_TEST(character, 'Z', "Z");
 }
 TEST_CASE_END(marshall_read_character)
-
-TEST_CASE(marshall_read_s8)
-{
-  MARSHALL_READ_TEST(s8, 0, "\x00");
-  MARSHALL_READ_TEST(s8, 0xAB, "\xAB");
-  MARSHALL_READ_TEST(s8, 0, "\x00");
-  MARSHALL_READ_TEST(s8, 0xAB, "\xAB");
-}
-TEST_CASE_END(marshall_read_s8)
-
-TEST_CASE(marshall_read_s16)
-{
-  MARSHALL_READ_TEST(s16, 0, "\x00\x00");
-  MARSHALL_READ_TEST(s16, -1, "\xFF\xFF");
-  MARSHALL_READ_TEST(s16, 0, "\x00\x00");
-  MARSHALL_READ_TEST(s16, -1, "\xFF\xFF");
-}
-TEST_CASE_END(marshall_read_s16)
-
-TEST_CASE(marshall_read_s32)
-{
-  MARSHALL_READ_TEST(s32, 0, "\x00\x00\x00\x00");
-  MARSHALL_READ_TEST(s32, ~0, "\xFF\xFF\xFF\xFF");
-  MARSHALL_READ_TEST(s32, 0xDEADBEEF, "\xEF\xBE\xAD\xDE");
-  MARSHALL_READ_TEST(s32, 0xDEADCAFE, "\xFE\xCA\xAD\xDE");
-  MARSHALL_READ_TEST(s32, 0xFEEDBABE, "\xBE\xBA\xED\xFE");
-  MARSHALL_READ_TEST(s32, 0, "\x00\x00\x00\x00");
-  MARSHALL_READ_TEST(s32, ~0, "\xFF\xFF\xFF\xFF");
-  MARSHALL_READ_TEST(s32, 0xDEADBEEF, "\xEF\xBE\xAD\xDE");
-  MARSHALL_READ_TEST(s32, 0xDEADCAFE, "\xFE\xCA\xAD\xDE");
-  MARSHALL_READ_TEST(s32, 0xFEEDBABE, "\xBE\xBA\xED\xFE");
-}
-TEST_CASE_END(marshall_read_s32)
-
-TEST_CASE(marshall_read_s64)
-{
-  MARSHALL_READ_TEST(s64, 0,
-                                 "\x00\x00\x00\x00\x00\x00\x00\x00");
-  MARSHALL_READ_TEST(s64, ~0,
-                                 "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  MARSHALL_READ_TEST(s64, 0,
-                                 "\x00\x00\x00\x00\x00\x00\x00\x00");
-  MARSHALL_READ_TEST(s64, ~0,
-                                 "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-}
-TEST_CASE_END(marshall_read_s64)
-
-TEST_CASE(marshall_read_sw)
-{
-  MARSHALL_READ_TEST(s64, 0,
-                                 "\x00\x00\x00\x00\x00\x00\x00\x00");
-  MARSHALL_READ_TEST(s64, ~0,
-                                 "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  MARSHALL_READ_TEST(s64, 0,
-                                 "\x00\x00\x00\x00\x00\x00\x00\x00");
-  MARSHALL_READ_TEST(s64, ~0,
-                                 "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-}
-TEST_CASE_END(marshall_read_sw)
 
 
 #endif
