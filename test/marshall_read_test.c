@@ -374,19 +374,3 @@ TEST_CASE(marshall_read_tag)
                              "18446744073709551615");
 }
 TEST_CASE_END(marshall_read_tag)
-
-#if 0
-
-TEST_CASE(marshall_read_character)
-{
-  MARSHALL_READ_TEST(character, 'A', "A");
-  MARSHALL_READ_TEST(character, '\x00', "\x00");
-  MARSHALL_READ_TEST(character, 'Z', "Z");
-  MARSHALL_READ_TEST(character, 'A', "A");
-  MARSHALL_READ_TEST(character, '\x00', "\x00");
-  MARSHALL_READ_TEST(character, 'Z', "Z");
-}
-TEST_CASE_END(marshall_read_character)
-
-
-#endif
