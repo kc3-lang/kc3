@@ -203,21 +203,20 @@ TEST_CASE(marshall_read_tag)
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x09\x00\x00\x00\x00\x00\x00\x00"
                              "\x07\x00\x00\x00\x00\x00\x00\x00\x00",
                              "(F64) 0.0");
 
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x09\x00\x00\x00\x00\x00\x00\x00"
                              "\x07\x00\x00\x00\x00\x00\x00\xF0\x3F",
                              "(F64) 1.0");
-
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x09\x00\x00\x00\x00\x00\x00\x00"
                              "\x07\x00\x00\x00\x00\x00\x00\xF0\x41",
                              "(F64) 4294967296.0");
   // f128
