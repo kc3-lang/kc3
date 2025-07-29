@@ -579,8 +579,15 @@ TEST_CASE(marshall_tag)
                         "\t\x00\x00\x00\x00\x00\x00\x00"
                         "\x14\xA3\x8D#\xD6\xE2S\x00"
                         "\x00");
-  // MARSHALL_TEST_TAG_BUF("10000000000000000000000000000000000",
-  //                       "KC3MARSH\0");
+  MARSHALL_TEST_TAG_BUF("10000000000000000000000000000000000",
+                        "KC3MARSH"
+                        "\x00\x00\x00\x00\x00\x00\x00\x00"
+                        "\x00\x00\x00\x00\x00\x00\x00\x00"
+                        "\x19\x00\x00\x00\x00\x00\x00\x00"
+                        "\n\x10\x00\x00\x00\x00\x00\x00"
+                        "\x00\x00\x01\xED\t\xBE\xAD\x87"
+                        "\xC0\x37\x8D\x8E\x64\x00\x00\x00"
+                        "\x00");
   MARSHALL_TEST_TAG_BUF("[1, 2]",
                         "KC3MARSH"
                         "\x02\x00\x00\x00\x00\x00\x00\x00"
