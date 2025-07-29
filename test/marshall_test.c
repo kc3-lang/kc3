@@ -604,16 +604,14 @@ TEST_CASE(marshall_tag)
                         "\x00\x00\x00\x11\x02\x16.\x00"
                         "\x00\x00\x00\x00\x00\x00\x16 "
                         "\x00\x00\x00\x00\x00\x00\x00");
-  // MARSHALL_TEST_TAG_BUF("defmodule Test do end",
-  //                       "KC3MARSH\0");
-  // MARSHALL_TEST_TAG_BUF("%{a: 1, b: 2}",
-  //                       "KC3MARSH\0");
-  // MARSHALL_TEST_TAG_BUF("List.reverse([])",
-  //                       "KC3MARSH\0");
-  // MARSHALL_TEST_TAG_BUF("a = 1",
-  //                       "KC3MARSH\0");
-  // MARSHALL_TEST_TAG_BUF("",
-  //                       0);
+  MARSHALL_TEST_TAG_BUF("defmodule Test do end",
+                        "KC3MARSH\0");
+  MARSHALL_TEST_TAG_BUF("%{a: 1, b: 2}",
+                        "KC3MARSH\0");
+  MARSHALL_TEST_TAG_BUF("List.reverse([])",
+                        "KC3MARSH\0");
+  MARSHALL_TEST_TAG_BUF("a = 1",
+                        "KC3MARSH\0");
 }
 TEST_CASE_END(marshall_tag)
 
