@@ -1380,6 +1380,36 @@ sw buf_refill_compact (s_buf *buf)
   return r;
 }
 
+s64 buf_seek (s_buf *buf, s64 position, s8 from)
+{
+  if (buf->seek)
+    return buf->seek(buf, position, from);
+  switch (from) {
+  case SEEK_CUR:
+    return buf_seek_set(buf, buf->rpos + position);
+  case SEEK_END:
+    return buf_seek_set(buf, buf->size + position);
+  case SEEK_SET:
+    return buf_seek_set(buf, position);
+  }
+  err_puts("buf_seek: invalid 'from' argument");
+  assert(! "buf_seek: invalid 'from' argument");
+  return -1;
+}
+
+s64 buf_seek_set (s_buf *buf, s64 position)
+{
+  if (position < 0 ||
+      (uw) position > buf->wpos ||
+      (uw) position > buf->size) {
+    err_puts("buf_seek_set: invalid position");
+    assert(! "buf_seek_set: invalid position");
+    return -1;
+  }
+  buf->rpos = position;
+  return position;
+}
+
 s_str * buf_slice_to_str (s_buf *buf, uw start, uw end,
                           s_str *dest)
 {

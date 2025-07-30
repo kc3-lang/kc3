@@ -21,9 +21,10 @@ typedef struct buf_file {
   FILE *fp;
 } s_buf_file;
 
-sw buf_file_open_r_refill (s_buf *buf);
-sw buf_file_open_w_flush (s_buf *buf);
-sw buf_file_open_w_seek (s_buf *buf, sw offset, u8 whence);
+sw  buf_file_open_r_refill (s_buf *buf);
+s64 buf_file_open_r_seek (s_buf *buf, s64 offset, s8 from);
+sw  buf_file_open_w_flush (s_buf *buf);
+s64 buf_file_open_w_seek (s_buf *buf, s64 offset, s8 from);
 
 void buf_file_close (s_buf *buf)
 {
@@ -100,6 +101,26 @@ sw buf_file_open_r_refill (s_buf *buf)
   return r;
 }
 
+s64 buf_file_open_r_seek (s_buf *buf, s64 offset, s8 from)
+{
+  s_buf_file *buf_file;
+  sw r;
+  s64 result;
+  assert(buf);
+  assert(! buf->save);
+  assert(buf->user_ptr);
+  buf_file = buf->user_ptr;
+  if ((result = fseek(buf_file->fp, offset, from)) < 0) {
+    err_puts("buf_file_open_r_seek: fseek");
+    return -1;
+  }
+  buf->rpos = 0;
+  buf->wpos = 0;
+  if ((r = buf_refill(buf, buf->size)) < 0)
+    return r;
+  return result;
+}
+
 s_buf * buf_file_open_w (s_buf *buf, FILE *fp)
 {
   s_buf_file *buf_file;
@@ -148,7 +169,7 @@ sw buf_file_open_w_flush (s_buf *buf)
   return size;
 }
 
-sw buf_file_open_w_seek (s_buf *buf, sw offset, u8 whence)
+s64 buf_file_open_w_seek (s_buf *buf, s64 offset, s8 from)
 {
   s_buf_file *buf_file;
   sw r;
@@ -158,9 +179,9 @@ sw buf_file_open_w_seek (s_buf *buf, sw offset, u8 whence)
   buf_file = buf->user_ptr;
   if ((r = buf_flush(buf)) < 0)
     return r;
-  if (fseek(buf_file->fp, offset, whence)) {
+  if ((r = fseek(buf_file->fp, offset, from)) < 0) {
     err_puts("buf_file_open_w_seek: fseek");
     return -1;
   }
-  return 0;
+  return r;
 }

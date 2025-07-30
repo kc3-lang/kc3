@@ -27,9 +27,9 @@
 #include "buf_fd.h"
 #include "buf_save.h"
 
-sw buf_fd_open_r_refill (s_buf *buf);
-sw buf_fd_open_w_flush (s_buf *buf);
-sw buf_fd_open_w_seek (s_buf *buf, sw offset, u8 whence);
+sw  buf_fd_open_r_refill (s_buf *buf);
+sw  buf_fd_open_w_flush (s_buf *buf);
+s64 buf_fd_open_w_seek (s_buf *buf, s64 offset, s8 from);
 
 void buf_fd_close (s_buf *buf)
 {
@@ -108,6 +108,26 @@ sw buf_fd_open_r_refill (s_buf *buf)
   return r;
 }
 
+sw buf_fd_open_r_seek (s_buf *buf, sw offset, u8 from)
+{
+  s_buf_fd *buf_fd;
+  sw r;
+  s64 result;
+  assert(buf);
+  assert(! buf->save);
+  assert(buf->user_ptr);
+  buf_fd = buf->user_ptr;
+  if ((result = lseek(buf_fd->fd, offset, from)) < 0) {
+    err_puts("buf_fd_open_r_seek: lseek");
+    return -1;
+  }
+  buf->rpos = 0;
+  buf->wpos = 0;
+  if ((r = buf_refill(buf, buf->size)) < 0)
+    return r;
+  return result;
+}
+
 s_buf * buf_fd_open_w (s_buf *buf, s64 fd)
 {
   s_buf_fd *buf_fd;
@@ -168,19 +188,19 @@ sw buf_fd_open_w_flush (s_buf *buf)
   return size;
 }
 
-sw buf_fd_open_w_seek (s_buf *buf, sw offset, u8 whence)
+s64 buf_fd_open_w_seek (s_buf *buf, s64 offset, s8 from)
 {
   s_buf_fd *buf_fd;
-  sw r;
+  s64 r;
   assert(buf);
   assert(! buf->save);
   assert(buf->user_ptr);
   buf_fd = buf->user_ptr;
   if ((r = buf_flush(buf)) < 0)
     return r;
-  if (lseek(buf_fd->fd, offset, whence)) {
-    err_puts("buf_fd_open_w_seek: fseek");
+  if ((r = lseek(buf_fd->fd, offset, from)) < 0) {
+    err_puts("buf_fd_open_w_seek: lseek");
     return -1;
   }
-  return 0;
+  return r;
 }

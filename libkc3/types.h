@@ -453,7 +453,7 @@ struct buf {
   uw                rpos;
   s_rwlock          rwlock;
   s_buf_save       *save;
-  sw              (*seek) (s_buf *buf, sw offset, u8 whence);
+  s64             (*seek) (s_buf *buf, s64 offset, s8 from);
   uw                size;
   void *            user_ptr;
   uw                wpos;

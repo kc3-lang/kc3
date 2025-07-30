@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-
+#include "alloc.h"
 #include "assert.h"
 #include "buf.h"
 #include "list.h"
@@ -195,7 +195,7 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
     return NULL;
   }
   tmp.buf.rpos = sizeof(s_marshall_header) + tmp.heap_size;
-  if (tmp.buf.rpos + tmp.heap_size != tmp.buf.wpos) {
+  if (tmp.buf.rpos + tmp.buf_size != tmp.buf.wpos) {
     err_puts("marshall_read_init_str: invalid buffer size");
     assert(! "marshall_read_init_str: invalid buffer size");
     buf_clean(&tmp.buf);
@@ -203,7 +203,8 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
   }
   tmp.heap = tmp.buf;
   tmp.heap.free = false;
-  tmp.heap.size = tmp.heap_size;
+  tmp.heap.rpos = sizeof(s_marshall_header);
+  tmp.heap.wpos = tmp.heap.rpos + tmp.heap_size;
 #ifdef HAVE_PTHREAD
   rwlock_init(&tmp.heap.rwlock);
 #endif
@@ -232,7 +233,9 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr, bool heap,
   if (! buf_seek(&mr->heap, heap_pos, SEEK_SET))
     return NULL;
   tmp = alloc(sizeof(s_list));
-  if (! marshall_read_list(mr, true, &tmp))
+  if (! tmp)
+    return NULL;
+  if (! marshall_read_list(mr, true, tmp))
     return NULL;
   // put tmp into hash table
   *dest = tmp;

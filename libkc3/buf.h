@@ -122,7 +122,8 @@ PROTO_BUF_READ(uw);
 sw        buf_refill (s_buf *buf, sw size);
 sw        buf_refill_compact (s_buf *buf);
 s_buf *   buf_restore (s_buf *buf, const s_buf *save);
-sw        buf_seek (s_buf *buf, sw offset, u8 whence);
+s64       buf_seek (s_buf *buf, s64 position, s8 from);
+s64       buf_seek_set (s_buf *buf, s64 position);
 s_str *   buf_slice_to_str (s_buf *buf, uw start, uw end,
                             s_str *dest);
 sw        buf_str_to_hex (s_buf *buf, const s_str *src);
