@@ -136,7 +136,15 @@ s_marshall_read * marshall_read_header (s_marshall_read *mr)
   tmp.heap_count = le64toh(mh.le_heap_count);
   tmp.heap_size = le64toh(mh.le_heap_size);
   tmp.buf_size = le64toh(mh.le_buf_size);
-  if (! ht_init(&tmp.ht, &g_sym_Tuple, tmp.heap_count)) {
+  if (tmp.heap_size && ! tmp.heap_count) {
+    err_puts("marshall_read_header: invalid heap count");
+    assert(! "marshall_read_header: invalid heap count");
+    return NULL;
+  }
+  if (tmp.heap_count &&
+      ! ht_init(&tmp.ht, &g_sym_Tuple, tmp.heap_count)) {
+    err_puts("marshall_read_header: ht_init");
+    assert(! "marshall_read_header: ht_init");
     return NULL;
   }
   *mr = tmp;
@@ -195,7 +203,7 @@ s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
 s_marshall_read * marshall_read_init (s_marshall_read *mr)
 {
   s_marshall_read tmp = {0};
-  assert(mr)
+  assert(mr);
   if (! buf_init_alloc(&tmp.heap, BUF_SIZE))
     return NULL;
   if (! buf_init_alloc(&tmp.buf, BUF_SIZE)) {

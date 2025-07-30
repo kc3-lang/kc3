@@ -164,20 +164,20 @@ TEST_CASE(marshall_read_tag)
   // characters
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x41\x00\x00\x00\x00\x00\x00\x00",
+                             "\x02\x00\x00\x00\x00\x00\x00\x00"
+                             "\x05\x41",
                              "'A'");
 
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x7A\x00\x00\x00\x00\x00\x00\x00",
+                             "\x02\x00\x00\x00\x00\x00\x00\x00"
+                             "\x05\x7A",
                              "'z'");
 
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x30\x00\x00\x00\x00\x00\x00\x00",
+                             "\x02\x00\x00\x00\x00\x00\x00\x00"
+                             "\x05\x30",
                              "'0'");
 
   // f32
@@ -239,7 +239,7 @@ TEST_CASE(marshall_read_tag)
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x11\x00\x00\x00\x00\x00\x00\x00"
                              "\x08\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x18\x2D\x44\x54\xFB\x21\x09\x40",
                              "(F128) 3.14159265358979323846264338327950"
@@ -247,25 +247,26 @@ TEST_CASE(marshall_read_tag)
   // s8:
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x02\x00\x00\x00\x00\x00\x00\x00"
                              "\x10\xD6",
                              "(S8) -42");
 
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x02\x00\x00\x00\x00\x00\x00\x00"
                              "\x10\x2A",
                              "(S8) 42");
 
   // s16:
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x03\x00\x00\x00\x00\x00\x00\x00"
                              "\x0F\x2E\xFB",
                              "(S16) -1234");
+
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x03\x00\x00\x00\x00\x00\x00\x00"
                              "\x0F\xD2\x04",
                              "(S16) 1234");
 
@@ -285,13 +286,13 @@ TEST_CASE(marshall_read_tag)
   // s64
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                             "\x05\x00\x00\x00\x00\x00\x00\x00"
+                             "\x09\x00\x00\x00\x00\x00\x00\x00"
                              "\x0D\x15\xCD\x5B\x07\x00\x00\x00\x00",
                              "(S64) 123456789");
 
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
                             "\x00\x00\x00\x00\x00\x00\x00\x00"
-                            "\x05\x00\x00\x00\x00\x00\x00\x00"
+                            "\x09\x00\x00\x00\x00\x00\x00\x00"
                             "\x0D\xEB\x32\xA4\xF8\xFF\xFF\xFF\xFF",
                             "(S64) -123456789");
 
