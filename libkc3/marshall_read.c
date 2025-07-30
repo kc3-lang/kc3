@@ -195,12 +195,14 @@ s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
 s_marshall_read * marshall_read_init (s_marshall_read *mr)
 {
   s_marshall_read tmp = {0};
-  if (mr == NULL)
-    return NULL;
+  assert(mr)
   if (! buf_init_alloc(&tmp.heap, BUF_SIZE))
     return NULL;
-  if (! buf_init_alloc(&tmp.buf, BUF_SIZE))
+  if (! buf_init_alloc(&tmp.buf, BUF_SIZE)) {
+    buf_clean(&tmp.heap);
     return NULL;
+  }
+  *mr = tmp;
   return mr;
 }
 
