@@ -13,6 +13,7 @@
 #include "alloc.h"
 #include "assert.h"
 #include "buf.h"
+#include "ht.h"
 #include "list.h"
 #include "marshall.h"
 #include "str.h"
@@ -82,7 +83,7 @@ s_marshall_read * marshall_read_character (s_marshall_read *mr,
   return buf_read_character_utf8(buf, dest) < 0 ? NULL : mr;
 }
 
-void marshall_read_clean(s_marshall_read *mr)
+void marshall_read_clean (s_marshall_read *mr)
 {
   assert(mr);
   buf_clean(&mr->buf);
@@ -141,21 +142,52 @@ s_marshall_read * marshall_read_header (s_marshall_read *mr)
 
 s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
                                               bool heap,
-                                              u64 *heap_offset,
+                                              u64 *offset,
                                               void **present)
 {
-  u64 offset = 0;
   assert(mr);
-  assert(heap_offset);
+  assert(offset);
   assert(present);
-  if (! heap_offset || ! marshall_read_u64(mr, heap, &offset))
+  s_tag key = {0};
+  s_tag tag = {0};
+  if (! marshall_read_u64(mr, heap, offset))
     return NULL;
-  *heap_offset = offset;
-  *present = NULL;
+  if (! *offset) {
+    *present = NULL;
+    return mr;
+  }
+  if (! tag_init_tuple(&key, 2))
+    return NULL;
+  tag_init_u64(key.data.tuple.tag, *offset);
+  if (! ht_get(&mr->ht, &key, &tag)) {
+    *present = NULL;
+    return mr;
+  }
+  if (tag.type != TAG_TUPLE ||
+      tag.data.tuple.tag[1].type != TAG_UW) {
+    err_puts("marshall_read_heap_pointer: invalid tag in ht");
+    assert(! "marshall_read_heap_pointer: invalid tag in ht");
+  }
+  *present = (void *)tag.data.tuple.tag[1].data.uw;
   return mr;
 }
 
-s_marshall_read * marshall_read_init(s_marshall_read *mr)
+s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
+                                        u64 offset, void *p)
+{
+  s_tag tag = {0};
+  if (! tag_init_tuple(&tag, 2))
+    return NULL;
+  tag_init_u64(tag.data.tuple.tag, offset);
+  tag_init_uw(tag.data.tuple.tag, (uw) p);
+  if (! ht_add(&mr->ht, &tag)) {
+    tag_clean(&tag);
+    return NULL;
+  }
+  return mr;
+}
+
+s_marshall_read * marshall_read_init (s_marshall_read *mr)
 {
   if (mr == NULL)
     return NULL;
@@ -214,7 +246,8 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
 
 DEF_MARSHALL_READ(integer, s_integer)
 
-s_marshall_read * marshall_read_plist (s_marshall_read *mr, bool heap,
+s_marshall_read * marshall_read_plist (s_marshall_read *mr,
+                                       bool heap,
                                        p_list *dest)
 {
   u64 heap_pos = 0;
@@ -222,14 +255,12 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr, bool heap,
   p_list tmp = NULL;
   assert(mr);
   assert(dest);
-  // marshall_read_heap_pointer will check the hash table for heap_pos.
   if (! marshall_read_heap_pointer(mr, heap, &heap_pos, &present))
     return NULL;
   if (present || ! heap_pos) {
     *dest = present;
     return mr;
   }
-  // read list on heap
   if (! buf_seek(&mr->heap, heap_pos, SEEK_SET))
     return NULL;
   tmp = alloc(sizeof(s_list));
@@ -237,7 +268,6 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr, bool heap,
     return NULL;
   if (! marshall_read_list(mr, true, tmp))
     return NULL;
-  // put tmp into hash table
   *dest = tmp;
   return mr;
 }

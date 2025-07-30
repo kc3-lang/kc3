@@ -587,6 +587,7 @@ struct marshall_read {
   s_buf heap;
   uw    heap_count;
   uw    heap_size;
+  s_ht  ht;
 };
 
 struct sym {
