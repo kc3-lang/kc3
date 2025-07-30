@@ -194,8 +194,16 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
     buf_clean(&tmp.buf);
     return NULL;
   }
+  tmp.buf.rpos = sizeof(s_marshall_header) + tmp.heap_size;
+  if (tmp.buf.rpos + tmp.heap_size != tmp.buf.wpos) {
+    err_puts("marshall_read_init_str: invalid buffer size");
+    assert(! "marshall_read_init_str: invalid buffer size");
+    buf_clean(&tmp.buf);
+    return NULL;
+  }
   tmp.heap = tmp.buf;
   tmp.heap.free = false;
+  tmp.heap.size = tmp.heap_size;
 #ifdef HAVE_PTHREAD
   rwlock_init(&tmp.heap.rwlock);
 #endif
