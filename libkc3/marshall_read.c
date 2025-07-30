@@ -229,7 +229,7 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr, bool heap,
     return mr;
   }
   // read list on heap
-  if (! buf_seek(mr->heap, heap_pos, SEEK_SET))
+  if (! buf_seek(&mr->heap, heap_pos, SEEK_SET))
     return NULL;
   tmp = alloc(sizeof(s_list));
   if (! marshall_read_list(mr, true, &tmp))
