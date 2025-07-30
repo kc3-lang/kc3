@@ -19,6 +19,7 @@
 #include "str.h"
 #include "marshall_read.h"
 #include "rwlock.h"
+#include "sym.h"
 #include "tag.h"
 
 #define DEF_MARSHALL_READ(name, type)                                  \
@@ -135,6 +136,9 @@ s_marshall_read * marshall_read_header (s_marshall_read *mr)
   tmp.heap_count = le64toh(mh.le_heap_count);
   tmp.heap_size = le64toh(mh.le_heap_size);
   tmp.buf_size = le64toh(mh.le_buf_size);
+  if (! ht_init(&tmp.ht, &g_sym_Tuple, tmp.heap_count)) {
+    return NULL;
+  }
   *mr = tmp;
   str_clean(&str);
   return mr;
@@ -187,13 +191,15 @@ s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
   return mr;
 }
 
+// TODO add error msg
 s_marshall_read * marshall_read_init (s_marshall_read *mr)
 {
+  s_marshall_read tmp = {0};
   if (mr == NULL)
     return NULL;
-  if (! buf_init_alloc(&mr->heap, BUF_SIZE))
+  if (! buf_init_alloc(&tmp.heap, BUF_SIZE))
     return NULL;
-  if (! buf_init_alloc(&mr->buf, BUF_SIZE))
+  if (! buf_init_alloc(&tmp.buf, BUF_SIZE))
     return NULL;
   return mr;
 }
@@ -261,7 +267,7 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
     *dest = present;
     return mr;
   }
-  if (buf_seek(&mr->heap, offset, SEEK_SET) != offset) {
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
     err_write_1(__func__);
     err_puts(": buf_seek");
     return NULL;
@@ -271,7 +277,8 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
     return NULL;
   if (! marshall_read_list(mr, true, tmp))
     return NULL;
-  marshall_read_ht_add(mr, offset, tmp);
+  if (! marshall_read_ht_add(mr, offset, tmp))
+    return NULL;
   *dest = tmp;
   return mr;
 }
