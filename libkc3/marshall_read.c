@@ -250,24 +250,28 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
                                        bool heap,
                                        p_list *dest)
 {
-  u64 heap_pos = 0;
+  u64 offset = 0;
   void *present = NULL;
   p_list tmp = NULL;
   assert(mr);
   assert(dest);
-  if (! marshall_read_heap_pointer(mr, heap, &heap_pos, &present))
+  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
     return NULL;
-  if (present || ! heap_pos) {
+  if (present || ! offset) {
     *dest = present;
     return mr;
   }
-  if (! buf_seek(&mr->heap, heap_pos, SEEK_SET))
+  if (buf_seek(&mr->heap, offset, SEEK_SET) != offset) {
+    err_write_1(__func__);
+    err_puts(": buf_seek");
     return NULL;
+  }
   tmp = alloc(sizeof(s_list));
   if (! tmp)
     return NULL;
   if (! marshall_read_list(mr, true, tmp))
     return NULL;
+  marshall_read_ht_add(mr, offset, tmp);
   *dest = tmp;
   return mr;
 }
