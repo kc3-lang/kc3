@@ -208,20 +208,26 @@ DEF_MARSHALL_READ(integer, s_integer)
 s_marshall_read * marshall_read_plist (s_marshall_read *mr, bool heap,
                                        p_list *dest)
 {
-  s_list tmp = {0};
   u64 heap_pos = 0;
   void *present = NULL;
+  p_list tmp = NULL;
   assert(mr);
   assert(dest);
+  // marshall_read_heap_pointer will check the hash table for heap_pos.
   if (! marshall_read_heap_pointer(mr, heap, &heap_pos, &present))
     return NULL;
-  if (present) {
+  if (present || ! heap_pos) {
     *dest = present;
     return mr;
   }
+  // read list on heap
+  if (! buf_seek(mr->heap, heap_pos, SEEK_SET))
+    return NULL;
+  tmp = alloc(sizeof(s_list));
   if (! marshall_read_list(mr, true, &tmp))
     return NULL;
-  *dest = list_new_copy_all(&tmp);
+  // put tmp into hash table
+  *dest = tmp;
   return mr;
 }
 
