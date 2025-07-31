@@ -43,15 +43,17 @@ PROTO_MARSHALL(f32, f32);
 PROTO_MARSHALL(f64, f64);
 PROTO_MARSHALL(f128, f128);
 PROTO_MARSHALL(fact, const s_fact *);
-s_marshall * marshall_heap_pointer (s_marshall *m, bool heap, void *p,
-                                    bool *present);
+s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
+                                    const void *p, bool *present);
 PROTO_MARSHALL(list, const s_list *);
 PROTO_MARSHALL(ident, const s_ident *);
 PROTO_MARSHALL(integer, const s_integer *);
+PROTO_MARSHALL(frame, const s_frame *);
 PROTO_MARSHALL(map, const s_map *);
 PROTO_MARSHALL(pcallable, p_callable);
 PROTO_MARSHALL(pcomplex, p_complex);
 PROTO_MARSHALL(pcow, p_cow);
+PROTO_MARSHALL(pframe, p_frame);
 PROTO_MARSHALL(plist, const p_list);
 PROTO_MARSHALL(pstruct, p_struct);
 PROTO_MARSHALL(pstruct_type, p_struct_type);
