@@ -166,8 +166,8 @@ TEST_CASE(marshall_plist)
                                "\x16\x00\x00\x00\x00\x00\x00\x00"
                                "\x08\x00\x00\x00\x00\x00\x00\x00"
                                "\x11\x00\x16#\x00\x00\x00\x00"
-                               "\x00\x00\x00\x00\x00\x00 \x00"
                                "\x00\x00\x00\x11\x01\x16.\x00"
+                               "\x00\x00\x00\x00\x00\x00 \x00"
                                "\x00\x00\x00\x00\x00\x00");
 
   TEST_ASSERT(marshall_init(&m));
