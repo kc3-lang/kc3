@@ -119,40 +119,40 @@ TEST_CASE(marshall_bool)
 {
   // MARSHALL_TEST_BOOL(bool
   MARSHALL_TEST(bool, false,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x01\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x01\x00\x00\x00\x00\x00\x00\x00"
+                "\x00");
   MARSHALL_TEST(bool, true,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x01\x00\x00\x00\x00\x00\x00\x00"
-                         "\x01");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x01\x00\x00\x00\x00\x00\x00\x00"
+                "\x01");
 }
 TEST_CASE_END(marshall_bool)
 
 TEST_CASE(marshall_character)
 {
   MARSHALL_TEST(character, 'A',
-                              "KC3MARSH"
-                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                              "\x01\x00\x00\x00\x00\x00\x00\x00"
-                              "A");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x01\x00\x00\x00\x00\x00\x00\x00"
+                "A");
   MARSHALL_TEST(character, '\0',
-                              "KC3MARSH"
-                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                              "\x01\x00\x00\x00\x00\x00\x00\x00"
-                              "\x00");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x01\x00\x00\x00\x00\x00\x00\x00"
+                "\x00");
   MARSHALL_TEST(character, 'Z',
-                              "KC3MARSH"
-                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                              "\x00\x00\x00\x00\x00\x00\x00\x00"
-                              "\x01\x00\x00\x00\x00\x00\x00\x00"
-                              "Z");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x01\x00\x00\x00\x00\x00\x00\x00"
+                "Z");
 }
 TEST_CASE_END(marshall_character)
 
@@ -166,8 +166,8 @@ TEST_CASE(marshall_plist)
                                "\x16\x00\x00\x00\x00\x00\x00\x00"
                                "\x08\x00\x00\x00\x00\x00\x00\x00"
                                "\x11\x00\x16#\x00\x00\x00\x00"
-                               "\x00\x00\x00\x11\x01\x16.\x00"
                                "\x00\x00\x00\x00\x00\x00 \x00"
+                               "\x00\x00\x00\x11\x01\x16.\x00"
                                "\x00\x00\x00\x00\x00\x00");
 
   TEST_ASSERT(marshall_init(&m));
@@ -216,134 +216,134 @@ TEST_CASE_END(marshall_plist_twice)
 TEST_CASE(marshall_s8)
 {
   MARSHALL_TEST(s8, 0,
-                       "KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x01\x00\x00\x00\x00\x00\x00\x00"
+                "\x00");
   MARSHALL_TEST(s8, 0xAB,
-                       "KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x00\x00\x00\x00\x00\x00\x00"
-                       "\xAB");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x01\x00\x00\x00\x00\x00\x00\x00"
+                "\xAB");
 }
 TEST_CASE_END(marshall_s8)
 
 TEST_CASE(marshall_s16)
 {
   MARSHALL_TEST(s16, 0,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x02\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x02\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00");
   MARSHALL_TEST(s16, -1,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x02\x00\x00\x00\x00\x00\x00\x00"
-                        "\xFF\xFF");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x02\x00\x00\x00\x00\x00\x00\x00"
+                "\xFF\xFF");
 }
 TEST_CASE_END(marshall_s16)
 
 TEST_CASE(marshall_s32)
 {
   MARSHALL_TEST(s32, 0,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x04\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x04\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00");
   MARSHALL_TEST(s32, ~0,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x04\x00\x00\x00\x00\x00\x00\x00"
-                        "\xFF\xFF\xFF\xFF");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x04\x00\x00\x00\x00\x00\x00\x00"
+                "\xFF\xFF\xFF\xFF");
   MARSHALL_TEST(s32, 0xDEADBEEF,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x04\x00\x00\x00\x00\x00\x00\x00"
-                        "\xEF\xBE\xAD\xDE");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x04\x00\x00\x00\x00\x00\x00\x00"
+                "\xEF\xBE\xAD\xDE");
   MARSHALL_TEST(s32, 0xDEADCAFE,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x04\x00\x00\x00\x00\x00\x00\x00"
-                        "\xFE\xCA\xAD\xDE");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x04\x00\x00\x00\x00\x00\x00\x00"
+                "\xFE\xCA\xAD\xDE");
   MARSHALL_TEST(s32, 0xFEEDBABE,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x04\x00\x00\x00\x00\x00\x00\x00"
-                        "\xBE\xBA\xED\xFE");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x04\x00\x00\x00\x00\x00\x00\x00"
+                "\xBE\xBA\xED\xFE");
 }
 TEST_CASE_END(marshall_s32)
 
 TEST_CASE(marshall_s64)
 {
   MARSHALL_TEST(s64, 0,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x08\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x08\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00");
   MARSHALL_TEST(s64, ~0,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x08\x00\x00\x00\x00\x00\x00\x00"
-                        "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x08\x00\x00\x00\x00\x00\x00\x00"
+                "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_s64)
 
 TEST_CASE(marshall_str)
 {
   MARSHALL_TEST_STR("",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x04\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x04\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00");
   MARSHALL_TEST_STR("hello",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\t\x00\x00\x00\x00\x00\x00\x00"
-                        "\x05\x00\x00\x00hell"
-                        "o");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\t\x00\x00\x00\x00\x00\x00\x00"
+                    "\x05\x00\x00\x00hell"
+                    "o");
   MARSHALL_TEST_STR("hello\xFF\x00world",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x10\x00\x00\x00\x00\x00\x00\x00"
-                        "\x0C\x00\x00\x00hell"
-                        "o\xFF\x00world");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x10\x00\x00\x00\x00\x00\x00\x00"
+                    "\x0C\x00\x00\x00hell"
+                    "o\xFF\x00world");
   MARSHALL_TEST_STR("héllo wörld",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x11\x00\x00\x00\x00\x00\x00\x00"
-                        "\r\x00\x00\x00héllo wörld");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x11\x00\x00\x00\x00\x00\x00\x00"
+                    "\r\x00\x00\x00héllo wörld");
 }
 TEST_CASE_END(marshall_str)
 
 TEST_CASE(marshall_sw)
 {
   MARSHALL_TEST(sw, 0,
-                       "KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x08\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x08\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00");
   MARSHALL_TEST(sw, ~0,
-                       "KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x08\x00\x00\x00\x00\x00\x00\x00"
-                       "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x08\x00\x00\x00\x00\x00\x00\x00"
+                "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_sw)
 
@@ -351,114 +351,114 @@ TEST_CASE(marshall_tag)
 {
   // U8
   MARSHALL_TEST_TAG("0",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x02\x00\x00\x00\x00\x00\x00\x00"
-                        "\x11\x00");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x02\x00\x00\x00\x00\x00\x00\x00"
+                    "\x11\x00");
   MARSHALL_TEST_TAG("1",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x02\x00\x00\x00\x00\x00\x00\x00"
-                        "\x11\x01");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x02\x00\x00\x00\x00\x00\x00\x00"
+                    "\x11\x01");
   MARSHALL_TEST_TAG("2",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x02\x00\x00\x00\x00\x00\x00\x00"
-                        "\x11\x02");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x02\x00\x00\x00\x00\x00\x00\x00"
+                    "\x11\x02");
   // U16
   MARSHALL_TEST_TAG("256",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x03\x00\x00\x00\x00\x00\x00\x00"
-                        "\x12\x00\x01");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x03\x00\x00\x00\x00\x00\x00\x00"
+                    "\x12\x00\x01");
   // S32
   MARSHALL_TEST_TAG("-2147483648",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x05\x00\x00\x00\x00\x00\x00\x00"
-                        "\x0E\x00\x00\x00\x80");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x05\x00\x00\x00\x00\x00\x00\x00"
+                    "\x0E\x00\x00\x00\x80");
   // U64
   MARSHALL_TEST_TAG("92233720368547",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\t\x00\x00\x00\x00\x00\x00\x00"
-                        "\x14\xA3\x8D#\xD6\xE2S\x00"
-                        "\x00");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\t\x00\x00\x00\x00\x00\x00\x00"
+                    "\x14\xA3\x8D#\xD6\xE2S\x00"
+                    "\x00");
   // Integer
   MARSHALL_TEST_TAG("(Integer) 1024",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x0C\x00\x00\x00\x00\x00\x00\x00"
-                        "\n\x03\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x04\x00");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x0C\x00\x00\x00\x00\x00\x00\x00"
+                    "\n\x03\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x04\x00");
   MARSHALL_TEST_TAG("10000000000000000000000000000000000",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x19\x00\x00\x00\x00\x00\x00\x00"
-                        "\n\x10\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x01\xED\t\xBE\xAD\x87"
-                        "\xC0\x37\x8D\x8E\x64\x00\x00\x00"
-                        "\x00");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x19\x00\x00\x00\x00\x00\x00\x00"
+                    "\n\x10\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x01\xED\t\xBE\xAD\x87"
+                    "\xC0\x37\x8D\x8E\x64\x00\x00\x00"
+                    "\x00");
   // List
   MARSHALL_TEST_TAG("[1, 2]",
-                        "KC3MARSH"
-                        "\x02\x00\x00\x00\x00\x00\x00\x00"
-                        "\x16\x00\x00\x00\x00\x00\x00\x00"
-                        "\t\x00\x00\x00\x00\x00\x00\x00"
-                        "\x11\x01\x16#\x00\x00\x00\x00"
-                        "\x00\x00\x00\x11\x02\x16.\x00"
-                        "\x00\x00\x00\x00\x00\x00\x16 "
-                        "\x00\x00\x00\x00\x00\x00\x00");
+                    "KC3MARSH"
+                    "\x02\x00\x00\x00\x00\x00\x00\x00"
+                    "\x16\x00\x00\x00\x00\x00\x00\x00"
+                    "\t\x00\x00\x00\x00\x00\x00\x00"
+                    "\x11\x01\x16#\x00\x00\x00\x00"
+                    "\x00\x00\x00\x11\x02\x16.\x00"
+                    "\x00\x00\x00\x00\x00\x00\x16 "
+                    "\x00\x00\x00\x00\x00\x00\x00");
   // Do block
   MARSHALL_TEST_TAG("do\n"
-                        "  1\n"
-                        "  2\n"
-                        "  3\n"
-                        "end",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x10\x00\x00\x00\x00\x00\x00\x00"
-                        "\x02\x03\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x11\x01\x11\x02\x11\x03");
+                    "  1\n"
+                    "  2\n"
+                    "  3\n"
+                    "end",
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x10\x00\x00\x00\x00\x00\x00\x00"
+                    "\x02\x03\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x11\x01\x11\x02\x11\x03");
   // Tuple
   MARSHALL_TEST_TAG("{1, 2, [3, 4]}",
-                        "KC3MARSH"
-                        "\x02\x00\x00\x00\x00\x00\x00\x00"
-                        "\x16\x00\x00\x00\x00\x00\x00\x00"
-                        "\x16\x00\x00\x00\x00\x00\x00\x00"
-                        "\x11\x03\x16#\x00\x00\x00\x00"
-                        "\x00\x00\x00\x11\x04\x16.\x00"
-                        "\x00\x00\x00\x00\x00\x00%\x03"
-                        "\x00\x00\x00\x00\x00\x00\x00\x11"
-                        "\x01\x11\x02\x16 \x00\x00\x00"
-                        "\x00\x00\x00\x00");
+                    "KC3MARSH"
+                    "\x02\x00\x00\x00\x00\x00\x00\x00"
+                    "\x16\x00\x00\x00\x00\x00\x00\x00"
+                    "\x16\x00\x00\x00\x00\x00\x00\x00"
+                    "\x11\x03\x16#\x00\x00\x00\x00"
+                    "\x00\x00\x00\x11\x04\x16.\x00"
+                    "\x00\x00\x00\x00\x00\x00%\x03"
+                    "\x00\x00\x00\x00\x00\x00\x00\x11"
+                    "\x01\x11\x02\x16 \x00\x00\x00"
+                    "\x00\x00\x00\x00");
   // Psym
   MARSHALL_TEST_TAG("Module",
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\v\x00\x00\x00\x00\x00\x00\x00"
-                        "\x1D\x06\x00\x00\x00Mod"
-                        "ule");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\v\x00\x00\x00\x00\x00\x00\x00"
+                    "\x1D\x06\x00\x00\x00Mod"
+                    "ule");
   // Map
   MARSHALL_TEST_TAG("%{a: 1, b: 2}",
-                        "KC3MARSH\0");
+                    "KC3MARSH\0");
   // Call
   MARSHALL_TEST_TAG("defmodule Test do end",
-                        "KC3MARSH\0");
+                    "KC3MARSH\0");
   MARSHALL_TEST_TAG("List.reverse([])",
-                        "KC3MARSH\0");
+                    "KC3MARSH\0");
   MARSHALL_TEST_TAG("a = 1",
-                        "KC3MARSH\0");
+                    "KC3MARSH\0");
 }
 TEST_CASE_END(marshall_tag)
 
@@ -518,28 +518,28 @@ TEST_CASE_END(marshall_to_str)
 TEST_CASE(marshall_u8)
 {
   MARSHALL_TEST(u8, 0x00,
-                       "KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x01\x00\x00\x00\x00\x00\x00\x00"
+                "\x00");
   MARSHALL_TEST(u8, 0xFF,
-                       "KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x00\x00\x00\x00\x00\x00\x00"
-                       "\xFF");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x01\x00\x00\x00\x00\x00\x00\x00"
+                "\xFF");
 }
 TEST_CASE_END(marshall_u8)
 
 TEST_CASE(marshall_u16)
 {
   MARSHALL_TEST(u16, 0xFFFF,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x02\x00\x00\x00\x00\x00\x00\x00"
-                        "\xFF\xFF");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x02\x00\x00\x00\x00\x00\x00\x00"
+                "\xFF\xFF");
 }
 
 TEST_CASE_END(marshall_u16)
@@ -547,39 +547,39 @@ TEST_CASE_END(marshall_u16)
 TEST_CASE(marshall_u32)
 {
   MARSHALL_TEST(u32, 0xFFFFFFFF,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x04\x00\x00\x00\x00\x00\x00\x00"
-                        "\xFF\xFF\xFF\xFF");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x04\x00\x00\x00\x00\x00\x00\x00"
+                "\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_u32)
 
 TEST_CASE(marshall_u64)
 {
   MARSHALL_TEST(u64, 0xFFFFFFFFFFFFFFFF,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x08\x00\x00\x00\x00\x00\x00\x00"
-                        "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x08\x00\x00\x00\x00\x00\x00\x00"
+                "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_u64)
 
 TEST_CASE(marshall_uw)
 {
   MARSHALL_TEST(uw, 0,
-                       "KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x08\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x08\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00");
   MARSHALL_TEST(uw, ~0,
-                       "KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x08\x00\x00\x00\x00\x00\x00\x00"
-                       "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+                "KC3MARSH"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                "\x08\x00\x00\x00\x00\x00\x00\x00"
+                "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_uw)
 
