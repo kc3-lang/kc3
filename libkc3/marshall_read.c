@@ -13,6 +13,8 @@
 #include "alloc.h"
 #include "assert.h"
 #include "buf.h"
+#include "compare.h"
+#include "hash.h"
 #include "ht.h"
 #include "list.h"
 #include "marshall.h"
@@ -38,6 +40,9 @@
     }                                                                  \
     return mr;                                                         \
   }
+
+static s8 marshall_read_ht_compare (const s_tag *a, const s_tag *b);
+static uw marshall_read_ht_hash (const s_tag *tag);
 
 DEF_MARSHALL_READ(bool, bool)
 
@@ -147,6 +152,8 @@ s_marshall_read * marshall_read_header (s_marshall_read *mr)
     assert(! "marshall_read_header: ht_init");
     return NULL;
   }
+  tmp.ht.compare = marshall_read_ht_compare;
+  tmp.ht.hash = marshall_read_ht_hash;
   *mr = tmp;
   str_clean(&str);
   return mr;
@@ -197,6 +204,33 @@ s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
     return NULL;
   }
   return mr;
+}
+
+s8 marshall_read_ht_compare (const s_tag *a, const s_tag *b)
+{
+  assert(a);
+  assert(b);
+  assert(a->type == TAG_TUPLE);
+  assert(b->type == TAG_TUPLE);
+  if (a->type < b->type)
+    return -1;
+  if (a->type > b->type)
+    return 1;
+  if (a->type != TAG_TUPLE)
+    return COMPARE_ERROR;
+  return compare_tag(a->data.tuple.tag, b->data.tuple.tag);
+}
+
+uw  marshall_read_ht_hash (const s_tag *tag)
+{
+  t_hash h;
+  assert(tag);
+  assert(tag->type == TAG_TUPLE);
+  if (tag->type != TAG_TUPLE)
+    abort();
+  hash_init(&h);
+  hash_update_tag(&h, tag->data.tuple.tag);
+  return hash_to_uw(&h);
 }
 
 // TODO add error msg

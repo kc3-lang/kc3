@@ -348,5 +348,14 @@ TEST_CASE(marshall_read_tag)
                          "\x09\x00\x00\x00\x00\x00\x00\x00"
                          "\x15\x40\xE2\x01\x00\x00\x00\x00\x00",
                          "(Uw) 123456");
+  #if 0
+  // list
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x09\x00\x00\x00\x00\x00\x00\x00"
+                         "\x16\x40\xE2\x01\x00\x00\x00\x00\x00",
+                         "[ 123456 ]");
+  #endif
 }
 TEST_CASE_END(marshall_read_tag)
