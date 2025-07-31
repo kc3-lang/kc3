@@ -21,6 +21,7 @@
 #include "endian.h"
 #include "file.h"
 #include "ht.h"
+#include "io.h"
 #include "sym.h"
 #include "list.h"
 #include "str.h"
@@ -56,7 +57,64 @@
 
 DEF_MARSHALL(bool)
 
-s_marshall * marshall_heap_pointer (s_marshall *m, bool heap, void *p,
+s_marshall * marshall_cfn (s_marshall *m, bool heap, const s_cfn *cfn)
+{
+  assert(m);
+  assert(cfn);
+  if (! m || ! cfn)
+    return NULL;
+  if (! marshall_bool(m, heap, cfn->macro) ||
+      ! marshall_bool(m, heap, cfn->special_operator) ||
+      ! marshall_sym(m, heap, cfn->result_type) ||
+      ! marshall_sym(m, heap, cfn->name) ||
+      ! marshall_plist(m, heap, cfn->arg_types))
+    return NULL;
+  return m;
+}
+
+s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)
+{
+  s_fn_clause *clause;
+  assert(m);
+  assert(fn);
+  assert(! fn->frame->next);
+  if (! m || ! fn)
+    return NULL;
+  if (! marshall_bool(m, heap, fn->macro) ||
+      ! marshall_bool(m, heap, fn->special_operator) ||
+      ! marshall_ident(m, heap, &fn->ident) ||
+      ! marshall_sym(m, heap, fn->module))
+    return NULL;
+  clause = fn->clauses;
+  while (clause) {
+    if (! marshall_list(m, heap, clause->pattern) ||
+        ! marshall_do_block(m, heap, &clause->algo))
+        return NULL;
+    clause = clause->next_clause;
+  }
+  return m;
+}
+
+s_marshall * marshall_frame (s_marshall *m, bool heap, const s_frame *frame)
+{
+  s_binding *bindings;
+  assert(m);
+  assert(! frame);
+  if (! m || ! frame)
+    return NULL;
+  bindings = frame->bindings;
+  while (bindings) {
+    if (! marshall_sym(m, heap, bindings->name) ||
+        ! marshall_tag(m, heap, &bindings->value))
+      return NULL;
+    bindings = bindings->next;
+  }
+  if (! marshall_pframe(m, heap, frame->next))
+    return NULL;
+  return m;
+}
+
+s_marshall * marshall_heap_pointer (s_marshall *m, bool heap, const void *p,
                                     bool *present)
 {
   s_buf *buf;
@@ -181,6 +239,20 @@ s_marshall * marshall_list (s_marshall *m, bool heap,
   return m;
 }
 
+s_marshall * marshall_pframe (s_marshall *m, bool heap,
+                             const p_frame frame)
+{
+  assert(m);
+  bool present = false;
+  if (! m)
+    return NULL;
+  if (! marshall_heap_pointer(m, heap, frame, &present))
+    return NULL;
+  if (! present && frame)
+    return marshall_frame(m, true, frame);
+  return m;
+}
+
 s_marshall * marshall_plist (s_marshall *m, bool heap,
                              const p_list plist)
 {
@@ -269,7 +341,7 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
     return marshall_pstruct(m, heap, tag->data.pstruct);
   case TAG_PSTRUCT_TYPE:
     return marshall_pstruct_type(m, heap, tag->data.pstruct_type);
-  case TAG_PSYM:  return marshall_psym(m, heap, tag->data.psym);
+  case TAG_PSYM:  return marshall_sym(m, heap, tag->data.psym);
   case TAG_PTAG:
     return marshall_ptag(m, heap, tag->data.ptag);
   case TAG_PTR:   return marshall_ptr(m, heap, tag->data.ptr);
@@ -387,7 +459,7 @@ s_marshall * marshall_tuple (s_marshall *m, bool heap,
   return m;
 }
 
-s_marshall *marshall_map(s_marshall *m, bool heap, const s_map *map)
+s_marshall *marshall_map (s_marshall *m, bool heap, const s_map *map)
 {
   uw i = 0;
   assert(m);
@@ -406,27 +478,56 @@ s_marshall *marshall_map(s_marshall *m, bool heap, const s_map *map)
   return m;
 }
 
-s_marshall * marshall_psym(s_marshall *m, bool heap,
-                           p_sym sym)
+s_marshall * marshall_sym (s_marshall *m, bool heap,
+                           const s_sym *sym)
 {
   assert(m);
-  assert(sym);
-  if (! m || ! sym ||
+  if (! m)
+    return NULL;
+  if (! marshall_bool(m, heap, sym ? true : false))
+    return NULL;
+  if (sym &&
       ! marshall_str(m, heap, &sym->str))
     return NULL;
   return m;
 }
-s_marshall *marshall_pcallable(s_marshall *m, bool heap,
-                               p_callable callable)
+
+s_marshall * marshall_callable (s_marshall *m, bool heap,
+                                const s_callable *callable)
 {
   assert(m);
   assert(callable);
-  if (! m || ! callable ||
-    marshall_u32(m, heap, callable->type) ||
-    // marshall_callable_data is not implemented yet (and it's scary)
-    // neither is marshall_mutex
-    marshall_sw(m, heap, callable->ref_count))
+  if (! m || ! callable)
     return NULL;
+  if (! marshall_u8(m, heap, callable->type)) {
+    err_puts("marshall_callable: marshall_u8");
+    return NULL;
+  }
+  switch (callable->type) {
+    case CALLABLE_CFN:
+      return marshall_cfn(m, heap, &callable->data.cfn);
+    case CALLABLE_FN:
+      return marshall_fn(m, heap, &callable->data.fn);
+    default:
+      err_write_1("marshall_callable: unknown callable type: ");
+      err_inspect_u32_decimal(&callable->type);
+      err_write_1("\n");
+      assert(! "marshall_callable: unknown callable type");
+  }
+  return m;
+}
+
+s_marshall * marshall_pcallable (s_marshall *m, bool heap,
+                                 const p_callable callable)
+{
+  assert(m);
+  bool present = false;
+  if (! m)
+    return NULL;
+  if (! marshall_heap_pointer(m, heap, callable, &present))
+    return NULL;
+  if (! present && callable)
+    return marshall_callable(m, true, callable);
   return m;
 }
 
@@ -436,21 +537,29 @@ s_marshall * marshall_ident (s_marshall *m, bool heap,
   assert(m);
   assert(ident);
   if (! m || ! ident ||
-      ! marshall_psym(m, heap, ident->module) ||
-      ! marshall_psym(m, heap, ident->sym))
+      ! marshall_sym(m, heap, ident->module) ||
+      ! marshall_sym(m, heap, ident->sym))
     return NULL;
   return m;
 }
 
 s_marshall * marshall_call (s_marshall *m, bool heap,
-                             const s_call *ident)
+                            const s_call *call)
 {
+  s_list *list;
   assert(m);
-  assert(ident);
-  if (! m || ! ident ||
-      ! marshall_ident(m, heap, &ident->ident) ||
-      ! marshall_list(m, heap, ident->arguments) ||
-      ! marshall_pcallable(m, heap, ident->pcallable))
+  assert(call);
+  if (! m || ! call ||
+      ! marshall_ident(m, heap, &call->ident))
+    return NULL;
+  list = call->arguments;
+  marshall_uw(m, heap, list_length(list));
+  while (list) {
+    if (! marshall_tag(m, heap, &list->tag))
+      return NULL;
+    list = list_next(list);
+  }
+  if (! marshall_pcallable(m, heap, call->pcallable))
     return NULL;
   return m;
 }
@@ -504,7 +613,7 @@ DEF_MARSHALL_STUB(quote, const s_quote *)
 DEF_MARSHALL_STUB(ratio, const s_ratio *)
 DEF_MARSHALL_STUB(struct, const s_struct *)
 DEF_MARSHALL_STUB(struct_type, const s_struct_type *)
-DEF_MARSHALL_STUB(sym, const s_sym *)
+DEF_MARSHALL_STUB(psym, p_sym)
 DEF_MARSHALL_STUB(time, const s_time *)
 DEF_MARSHALL_STUB(unquote, const s_unquote *)
 DEF_MARSHALL_STUB(var, const s_var *)
