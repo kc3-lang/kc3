@@ -554,7 +554,8 @@ s_marshall * marshall_call (s_marshall *m, bool heap,
       ! marshall_ident(m, heap, &call->ident))
     return NULL;
   list = call->arguments;
-  marshall_uw(m, heap, list_length(list));
+  if (! marshall_uw(m, heap, list_length(list)))
+    return NULL;
   while (list) {
     if (! marshall_tag(m, heap, &list->tag))
       return NULL;
