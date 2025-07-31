@@ -417,6 +417,29 @@ TEST_CASE(marshall_tag)
                     "\x00\x00\x00\x11\x02\x16.\x00"
                     "\x00\x00\x00\x00\x00\x00\x16 "
                     "\x00\x00\x00\x00\x00\x00\x00");
+
+  // Float
+  MARSHALL_TEST_TAG("(F32) 3.141592643",
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x05\x00\x00\x00\x00\x00\x00\x00"
+                    "\x06\xDB\x0FI@");
+  MARSHALL_TEST_TAG("(F64) 3.141592643",
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\t\x00\x00\x00\x00\x00\x00\x00"
+                    "\x07JP\xD8R\xFB!"
+                    "\t@");
+  MARSHALL_TEST_TAG("(F128) 3.141592643",
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x11\x00\x00\x00\x00\x00\x00\x00"
+                    "\x08\xACN\x82\xC2\x96\xDA\x0F"
+                    "\xC9\x00@\x00\x00\x00\x00\x00"
+                    "\x00");
   // Do block
   MARSHALL_TEST_TAG("do\n"
                     "  1\n"

@@ -324,6 +324,10 @@ sw marshall_to_buf (s_marshall *m, s_buf *out)
   return result;
 }
 
+DEF_MARSHALL(f32)
+DEF_MARSHALL(f64)
+DEF_MARSHALL(f128)
+
 sw marshall_to_file (s_marshall *m, const char *path)
 {
   FILE *fp;
@@ -469,9 +473,6 @@ DEF_MARSHALL(uw)
   }
 
 DEF_MARSHALL_STUB(array, const s_array *)
-DEF_MARSHALL_STUB(f32, f32)
-DEF_MARSHALL_STUB(f64, f64)
-DEF_MARSHALL_STUB(f128, f128)
 DEF_MARSHALL_STUB(fact, const s_fact *)
 DEF_MARSHALL_STUB(map, const s_map *)
 DEF_MARSHALL_STUB(pcomplex, p_complex)

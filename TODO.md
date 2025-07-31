@@ -14,31 +14,30 @@
 | Character       |   ✅   |   ✅   |
 | Str             |   ✅   |   ✅   |
 | Pointer         |   ✅   |   ✅   |
-| Tuple           |   🚧   |   ❌   |
-| Float           |   🚧   |   ❌   |
+| Tag             |   ✅   |   ✅   | Everything else |
+| Tuple           |   ✅   |   ❌   |
+| Float           |   ✅   |   ❌   |
 | Array           |   🚧   |   ❌   |
 | Ident           |   ✅   |   ❌   |
 | Call            |   ✅   |   ❌   | pcallable       |
-| PCallable       |   🚧   |   ❌   | u_callable_data |
 | Do Block        |   ✅   |   ❌   | call            |
 | Map             |   ❌   |   ❌   | Tag             |
 | Fact            |   ❌   |   ❌   |
 | Complex         |   ❌   |   ❌   |
 | Cow             |   ❌   |   ❌   |
-| PTag            |   ✅   |   ✅   | Tag             |
 | Ptr free        |   ❌   |   ❌   |
+| PCallable       |   🚧   |   ❌   | u_callable_data |
 | PVar            |   ❌   |   ❌   |
 | Quote           |   ❌   |   ❌   |
 | Ratio           |   ❌   |   ❌   |
-| Struct          |   ❌   |   ❌   |
 | PStruct Type    |   ❌   |   ❌   |
-| Sym             |   ✅   |   ❌   |
+| PStruct         |   ❌   |   ❌   |
 | Fact            |   ❌   |   ❌   |
 | Sym             |   ✅   |   ❌   |
 | Time            |   ❌   |   ❌   | Tag             |
 | Unquote         |   ❌   |   ❌   | Tag             |
 | Var             |   ❌   |   ❌   | Tag             |
-| Tag             |   ✅   |   ✅   | Everything else |
+| PTag            |   ❌   |   ❌   | Tag             |
 ... (others)
 
 ✅ : Done
