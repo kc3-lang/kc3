@@ -1,5 +1,10 @@
 # KC3 Authors
 
+## 2025 internship
+ - Thomas de Grivel (lead)
+ - 'man-google'
+ - 'lyzer_px'
+
 ## KC3 v0.1.13, v0.1.14
  - Thomas de Grivel (lead)
  - Baptiste Le Glaunec
