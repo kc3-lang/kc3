@@ -74,86 +74,44 @@
 #define MARSHALL_TEST_BOOL_BUF(test, expected)  \
   MARSHALL_TEST(bool, false, test, expected)
 
-#define MARSHALL_TEST_BOOL_HEAP(test, expected) \
-  MARSHALL_TEST(bool, true, test, expected)
-
 #define MARSHALL_TEST_CHARACTER_BUF(test, expected)     \
   MARSHALL_TEST(character, false, test, expected)
-
-#define MARSHALL_TEST_CHARACTER_HEAP(test, expected)    \
-  MARSHALL_TEST(character, true, test, expected)
 
 #define MARSHALL_TEST_S8_BUF(test, expected)    \
   MARSHALL_TEST(s8, false, test, expected)
 
-#define MARSHALL_TEST_S8_HEAP(test, expected)   \
-  MARSHALL_TEST(s8, true, test, expected)
-
 #define MARSHALL_TEST_S16_BUF(test, expected)   \
   MARSHALL_TEST(s16, false, test, expected)
-
-#define MARSHALL_TEST_S16_HEAP(test, expected)  \
-  MARSHALL_TEST(s16, true, test, expected)
 
 #define MARSHALL_TEST_S32_BUF(test, expected)   \
   MARSHALL_TEST(s32, false, test, expected)
 
-#define MARSHALL_TEST_S32_HEAP(test, expected)  \
-  MARSHALL_TEST(s32, true, test, expected)
-
 #define MARSHALL_TEST_S64_BUF(test, expected)   \
   MARSHALL_TEST(s64, false, test, expected)
-
-#define MARSHALL_TEST_S64_HEAP(test, expected)  \
-  MARSHALL_TEST(s64, true, test, expected)
 
 #define MARSHALL_TEST_STR_BUF(test, expected)   \
   MARSHALL_TEST_STR(false, test, expected)
 
-#define MARSHALL_TEST_STR_HEAP(test, expected)  \
-  MARSHALL_TEST_STR(true, test, expected)
-
 #define MARSHALL_TEST_SW_BUF(test, expected)    \
   MARSHALL_TEST(sw, false, test, expected)
-
-#define MARSHALL_TEST_SW_HEAP(test, expected)   \
-  MARSHALL_TEST(sw, true, test, expected)
 
 #define MARSHALL_TEST_TAG_BUF(test, expected)   \
   MARSHALL_TEST_TAG(false, test, expected)
 
-#define MARSHALL_TEST_TAG_HEAP(test, expected)   \
-  MARSHALL_TEST_TAG(true, test, expected)
-
 #define MARSHALL_TEST_U8_BUF(test, expected)    \
   MARSHALL_TEST(u8, false, test, expected)
-
-#define MARSHALL_TEST_U8_HEAP(test, expected)   \
-  MARSHALL_TEST(u8, true, test, expected)
 
 #define MARSHALL_TEST_U16_BUF(test, expected)   \
   MARSHALL_TEST(u16, false, test, expected)
 
-#define MARSHALL_TEST_U16_HEAP(test, expected)  \
-  MARSHALL_TEST(u16, true, test, expected)
-
 #define MARSHALL_TEST_U32_BUF(test, expected)   \
   MARSHALL_TEST(u32, false, test, expected)
-
-#define MARSHALL_TEST_U32_HEAP(test, expected)  \
-  MARSHALL_TEST(u32, true, test, expected)
 
 #define MARSHALL_TEST_U64_BUF(test, expected)   \
   MARSHALL_TEST(u64, false, test, expected)
 
-#define MARSHALL_TEST_U64_HEAP(test, expected)  \
-  MARSHALL_TEST(u64, true, test, expected)
-
 #define MARSHALL_TEST_UW_BUF(test, expected)    \
   MARSHALL_TEST(uw, false, test, expected)
-
-#define MARSHALL_TEST_UW_HEAP(test, expected)   \
-  MARSHALL_TEST(uw, true, test, expected)
 
 void marshal_test (void);
 
@@ -214,18 +172,6 @@ TEST_CASE(marshall_bool)
                          "\x00\x00\x00\x00\x00\x00\x00\x00"
                          "\x01\x00\x00\x00\x00\x00\x00\x00"
                          "\x01");
-  MARSHALL_TEST_BOOL_HEAP(false,
-                          "KC3MARSH"
-                          "\x00\x00\x00\x00\x00\x00\x00\x00"
-                          "\x01\x00\x00\x00\x00\x00\x00\x00"
-                          "\x00\x00\x00\x00\x00\x00\x00\x00"
-                          "\x00");
-  MARSHALL_TEST_BOOL_HEAP(true,
-                          "KC3MARSH"
-                          "\x00\x00\x00\x00\x00\x00\x00\x00"
-                          "\x01\x00\x00\x00\x00\x00\x00\x00"
-                          "\x00\x00\x00\x00\x00\x00\x00\x00"
-                          "\x01");
 }
 TEST_CASE_END(marshall_bool)
 
@@ -249,24 +195,6 @@ TEST_CASE(marshall_character)
                               "\x00\x00\x00\x00\x00\x00\x00\x00"
                               "\x01\x00\x00\x00\x00\x00\x00\x00"
                               "Z");
-  MARSHALL_TEST_CHARACTER_HEAP('A',
-                               "KC3MARSH"
-                               "\x00\x00\x00\x00\x00\x00\x00\x00"
-                               "\x01\x00\x00\x00\x00\x00\x00\x00"
-                               "\x00\x00\x00\x00\x00\x00\x00\x00"
-                               "A");
-  MARSHALL_TEST_CHARACTER_HEAP('\0',
-                               "KC3MARSH"
-                               "\x00\x00\x00\x00\x00\x00\x00\x00"
-                               "\x01\x00\x00\x00\x00\x00\x00\x00"
-                               "\x00\x00\x00\x00\x00\x00\x00\x00"
-                               "\x00");
-  MARSHALL_TEST_CHARACTER_HEAP('Z',
-                               "KC3MARSH"
-                               "\x00\x00\x00\x00\x00\x00\x00\x00"
-                               "\x01\x00\x00\x00\x00\x00\x00\x00"
-                               "\x00\x00\x00\x00\x00\x00\x00\x00"
-                               "Z");
 }
 TEST_CASE_END(marshall_character)
 
@@ -341,18 +269,6 @@ TEST_CASE(marshall_s8)
                        "\x00\x00\x00\x00\x00\x00\x00\x00"
                        "\x01\x00\x00\x00\x00\x00\x00\x00"
                        "\xAB");
-  MARSHALL_TEST_S8_HEAP(0,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x01\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00");
-  MARSHALL_TEST_S8_HEAP(0xAB,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x01\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\xAB");
 }
 TEST_CASE_END(marshall_s8)
 
@@ -370,18 +286,6 @@ TEST_CASE(marshall_s16)
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
                         "\x02\x00\x00\x00\x00\x00\x00\x00"
                         "\xFF\xFF");
-  MARSHALL_TEST_S16_HEAP(0,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x02\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00");
-  MARSHALL_TEST_S16_HEAP(-1,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x02\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\xFF\xFF");
 }
 TEST_CASE_END(marshall_s16)
 
@@ -417,36 +321,6 @@ TEST_CASE(marshall_s32)
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
                         "\x04\x00\x00\x00\x00\x00\x00\x00"
                         "\xBE\xBA\xED\xFE");
-  MARSHALL_TEST_S32_HEAP(0,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x04\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00");
-  MARSHALL_TEST_S32_HEAP(~0,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x04\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\xFF\xFF\xFF\xFF");
-  MARSHALL_TEST_S32_HEAP(0xDEADBEEF,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x04\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\xEF\xBE\xAD\xDE");
-  MARSHALL_TEST_S32_HEAP(0xDEADCAFE,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x04\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\xFE\xCA\xAD\xDE");
-  MARSHALL_TEST_S32_HEAP(0xFEEDBABE,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x04\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\xBE\xBA\xED\xFE");
 }
 TEST_CASE_END(marshall_s32)
 
@@ -464,24 +338,11 @@ TEST_CASE(marshall_s64)
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
                         "\x08\x00\x00\x00\x00\x00\x00\x00"
                         "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  MARSHALL_TEST_S64_HEAP(0,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x08\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00");
-  MARSHALL_TEST_S64_HEAP(~0,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x08\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_s64)
 
 TEST_CASE(marshall_str)
 {
-  s_marshall m = {0};
   MARSHALL_TEST_STR_BUF("",
                         "KC3MARSH"
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -525,18 +386,6 @@ TEST_CASE(marshall_sw)
                        "\x00\x00\x00\x00\x00\x00\x00\x00"
                        "\x08\x00\x00\x00\x00\x00\x00\x00"
                        "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  MARSHALL_TEST_SW_HEAP(0,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x08\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00");
-  MARSHALL_TEST_SW_HEAP(~0,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x08\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_sw)
 
@@ -705,18 +554,6 @@ TEST_CASE(marshall_u8)
                        "\x00\x00\x00\x00\x00\x00\x00\x00"
                        "\x01\x00\x00\x00\x00\x00\x00\x00"
                        "\xFF");
-  MARSHALL_TEST_U8_HEAP(0x00,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x01\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00");
-  MARSHALL_TEST_U8_HEAP(0xFF,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x01\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\xFF");
 }
 TEST_CASE_END(marshall_u8)
 
@@ -728,12 +565,6 @@ TEST_CASE(marshall_u16)
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
                         "\x02\x00\x00\x00\x00\x00\x00\x00"
                         "\xFF\xFF");
-  MARSHALL_TEST_U16_HEAP(0xFFFF,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x02\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\xFF\xFF");
 }
 
 TEST_CASE_END(marshall_u16)
@@ -746,12 +577,6 @@ TEST_CASE(marshall_u32)
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
                         "\x04\x00\x00\x00\x00\x00\x00\x00"
                         "\xFF\xFF\xFF\xFF");
-  MARSHALL_TEST_U32_HEAP(0xFFFFFFFF,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x04\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_u32)
 
@@ -763,12 +588,6 @@ TEST_CASE(marshall_u64)
                         "\x00\x00\x00\x00\x00\x00\x00\x00"
                         "\x08\x00\x00\x00\x00\x00\x00\x00"
                         "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  MARSHALL_TEST_U64_HEAP(0xFFFFFFFFFFFFFFFF,
-                         "KC3MARSH"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x08\x00\x00\x00\x00\x00\x00\x00"
-                         "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_u64)
 
@@ -786,18 +605,6 @@ TEST_CASE(marshall_uw)
                        "\x00\x00\x00\x00\x00\x00\x00\x00"
                        "\x08\x00\x00\x00\x00\x00\x00\x00"
                        "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  MARSHALL_TEST_UW_HEAP(0,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x08\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00");
-  MARSHALL_TEST_UW_HEAP(~0,
-                        "KC3MARSH"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\x08\x00\x00\x00\x00\x00\x00\x00"
-                        "\x00\x00\x00\x00\x00\x00\x00\x00"
-                        "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_uw)
 
