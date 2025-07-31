@@ -164,11 +164,11 @@
     s_pretty pretty = {0};                                             \
     s_str str;                                                         \
     test_context("buf_inspect_str(" # test ") -> " # expected);        \
-    str_init_1(&str, NULL, (test));                                    \
+    str_init(&str, NULL, sizeof(test) - 1, (test));                    \
     buf_init(&buf, false, sizeof(b), b);                               \
-    TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                     \
-    TEST_EQ(buf_inspect_str_size(&pretty, &str), strlen(expected));     \
-    TEST_EQ(buf_inspect_str(&buf, &str), strlen(expected));            \
+    TEST_MEMCMP(buf.ptr.p, (expected), buf.wpos);                      \
+    TEST_EQ(buf_inspect_str_size(&pretty, &str), sizeof(expected) - 1);\
+    TEST_EQ(buf_inspect_str(&buf, &str), sizeof(expected) - 1);        \
     test_context(NULL);                                                \
   } while (0)
 
@@ -256,7 +256,7 @@ TEST_CASE_END(buf_inspect_bool)
 
 TEST_CASE(buf_inspect_character)
 {
-  BUF_INSPECT_TEST_CHARACTER(0, "'\\0'");
+  BUF_INSPECT_TEST_CHARACTER(0, "'\\x00'");
   BUF_INSPECT_TEST_CHARACTER(1, "'\\x01'");
   BUF_INSPECT_TEST_CHARACTER(2, "'\\x02'");
   BUF_INSPECT_TEST_CHARACTER('0',    "'0'");
@@ -355,19 +355,20 @@ TEST_CASE(buf_inspect_str)
   BUF_INSPECT_TEST_STR("\t", "\"\\t\"");
   BUF_INSPECT_TEST_STR("\v", "\"\\v\"");
   BUF_INSPECT_TEST_STR("\"", "\"\\\"\"");
-  {
-    char b[1024];
-    s_buf buf;
-    s_pretty pretty = {0};
-    s_str str;
-    test_context("buf_inspect_str(\"\\0\") -> \"\\0\"");
-    str_init(&str, NULL, 1, "\0");
-    buf_init(&buf, false, sizeof(b), b);
-    TEST_EQ(buf_inspect_str_size(&pretty, &str), strlen("\"\\0\""));
-    TEST_EQ(buf_inspect_str(&buf, &str), strlen("\"\\0\""));
-    TEST_STRNCMP(buf.ptr.p, "\"\\0\"", buf.wpos);
-    test_context(NULL);
-  }
+  BUF_INSPECT_TEST_STR("\x00", "\"\\x00\"");
+  // {
+  //   char b[1024];
+  //   s_buf buf;
+  //   s_pretty pretty = {0};
+  //   s_str str;
+  //   test_context("buf_inspect_str(\"\\x00\") -> \"\\0\"");
+  //   str_init(&str, NULL, 1, "\0");
+  //   buf_init(&buf, false, sizeof(b), b);
+  //   TEST_EQ(buf_inspect_str_size(&pretty, &str), strlen("\"\\0\""));
+  //   TEST_EQ(buf_inspect_str(&buf, &str), strlen("\"\\0\""));
+  //   TEST_STRNCMP(buf.ptr.p, "\"\\0\"", buf.wpos);
+  //   test_context(NULL);
+  // }
   BUF_INSPECT_TEST_STR("\x01", "\"\\x01\"");
   BUF_INSPECT_TEST_STR("\x02", "\"\\x02\"");
   BUF_INSPECT_TEST_STR("\x03", "\"\\x03\"");
@@ -406,7 +407,7 @@ TEST_CASE_END(buf_inspect_str)
 
 TEST_CASE(buf_inspect_str_character)
 {
-  BUF_INSPECT_TEST_STR_CHARACTER(0, "\\0");
+  BUF_INSPECT_TEST_STR_CHARACTER(0, "\\x00");
   BUF_INSPECT_TEST_STR_CHARACTER(1, "\\x01");
   BUF_INSPECT_TEST_STR_CHARACTER(2, "\\x02");
   BUF_INSPECT_TEST_STR_CHARACTER(10, "\\n");

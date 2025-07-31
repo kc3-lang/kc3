@@ -3296,7 +3296,7 @@ sw buf_inspect_str_character (s_buf *buf, const character *c)
   result += r;
   switch (*c) {
   case '\0':
-    if ((r = buf_write_character_utf8(buf, '0')) <= 0)
+    if ((r = buf_write_1(buf, "x00")) <= 0)
       goto restore;
     break;
   case '\n':
@@ -3376,7 +3376,7 @@ sw buf_inspect_str_character_size (s_pretty *pretty, const character *c)
   result += r;
   switch (*c) {
   case '\0':
-    if ((r = buf_write_character_utf8_size(pretty, '0')) <= 0)
+    if ((r = buf_write_1_size(pretty, "x00")) <= 0)
       goto restore;
     break;
   case '\n':

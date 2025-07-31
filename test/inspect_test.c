@@ -444,35 +444,35 @@ TEST_CASE(inspect_str)
   INSPECT_TEST_STR_1("𐅀", "\"𐅀\"");
   INSPECT_TEST_STR_1("ÉoàΠ꒴𐅀 \n\r\t\v\\\"",
                      "\"ÉoàΠ꒴𐅀 \\n\\r\\t\\v\\\\\\\"\"");
-  INSPECT_TEST_STR(str_init(&str, NULL,  1, zero), "\"\\0\"");
-  INSPECT_TEST_STR(str_init(&str, NULL,  2, zero), "\"\\0\\0\"");
-  INSPECT_TEST_STR(str_init(&str, NULL,  3, zero), "\"\\0\\0\\0\"");
-  INSPECT_TEST_STR(str_init(&str, NULL,  4, zero), "\"\\0\\0\\0\\0\"");
+  INSPECT_TEST_STR(str_init(&str, NULL,  1, zero), "\"\\x00\"");
+  INSPECT_TEST_STR(str_init(&str, NULL,  2, zero), "\"\\x00\\x00\"");
+  INSPECT_TEST_STR(str_init(&str, NULL,  3, zero), "\"\\x00\\x00\\x00\"");
+  INSPECT_TEST_STR(str_init(&str, NULL,  4, zero), "\"\\x00\\x00\\x00\\x00\"");
   INSPECT_TEST_STR(str_init(&str, NULL,  5, zero),
-                   "\"\\0\\0\\0\\0\\0\"");
+                   "\"\\x00\\x00\\x00\\x00\\x00\"");
   INSPECT_TEST_STR(str_init(&str, NULL,  6, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\"");
+                   "\"\\x00\\x00\\x00\\x00\\x00\\x00\"");
   INSPECT_TEST_STR(str_init(&str, NULL,  7, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\"");
+                   "\"\\x00\\x00\\x00\\x00\\x00\\x00\\x00\"");
   INSPECT_TEST_STR(str_init(&str, NULL,  8, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\"");
+                   "\"\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\"");
   INSPECT_TEST_STR(str_init(&str, NULL,  9, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
+                   "\"\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\"");
   INSPECT_TEST_STR(str_init(&str, NULL, 10, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
+                   "\"\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\"");
   INSPECT_TEST_STR(str_init(&str, NULL, 11, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
+                   "\"\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\"");
   INSPECT_TEST_STR(str_init(&str, NULL, 12, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
+                   "\"\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\"");
   INSPECT_TEST_STR(str_init(&str, NULL, 13, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
+                   "\"\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\"");
   INSPECT_TEST_STR(str_init(&str, NULL, 14, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
+                   "\"\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\"");
   INSPECT_TEST_STR(str_init(&str, NULL, 15, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
+                   "\"\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\"");
   INSPECT_TEST_STR(str_init(&str, NULL, 16, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0"
-                   "\\0\"");
+                   "\"\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00"
+                   "\\x00\"");
   INSPECT_TEST_STR(str_init(&str, NULL, 1, "\xFF"), "\"\\xFF\"");
 }
 TEST_CASE_END(inspect_str)
