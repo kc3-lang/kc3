@@ -474,7 +474,15 @@ TEST_CASE(marshall_tag)
                     "ule");
   // Map
   MARSHALL_TEST_TAG("%{a: 1, b: 2}",
-                    "KC3MARSH\0");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x19\x00\x00\x00\x00\x00\x00\x00"
+                    "\x17\x02\x00\x00\x00\x00\x00\x00"
+                    "\x00\x1D\x01\x00\x00\x00\x61\x11"
+                    "\x01\x1D\x01\x00\x00\x00\x62\x11"
+                    "\x02");
+
   // Call
   MARSHALL_TEST_TAG("defmodule Test do end",
                     "KC3MARSH\0");

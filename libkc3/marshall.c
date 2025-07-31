@@ -373,15 +373,33 @@ s_str * marshall_to_str (s_marshall *m, s_str *dest)
 s_marshall * marshall_tuple (s_marshall *m, bool heap,
                              const s_tuple *tuple)
 {
-  uw i;
+  uw i = 0;
   assert(m);
   assert(tuple);
   if (! m || ! tuple || ! tuple->count
       || ! marshall_uw(m, heap, tuple->count))
     return NULL;
-  i = 0;
   while (i < tuple->count) {
     if (! marshall_tag(m, heap, tuple->tag + i))
+      return NULL;
+    i++;
+  }
+  return m;
+}
+
+s_marshall *marshall_map(s_marshall *m, bool heap, const s_map *map)
+{
+  uw i = 0;
+  assert(m);
+  assert(map);
+  assert(map->count);
+  assert(map->key);
+  assert(map->value);
+  if (! marshall_uw(m, heap, map->count))
+    return NULL;
+  while (i < map->count) {
+    if (! marshall_tag(m, heap, map->key + i) ||
+        ! marshall_tag(m, heap, map->value + i))
       return NULL;
     i++;
   }
@@ -474,7 +492,6 @@ DEF_MARSHALL(uw)
 
 DEF_MARSHALL_STUB(array, const s_array *)
 DEF_MARSHALL_STUB(fact, const s_fact *)
-DEF_MARSHALL_STUB(map, const s_map *)
 DEF_MARSHALL_STUB(pcomplex, p_complex)
 DEF_MARSHALL_STUB(pcow, p_cow)
 DEF_MARSHALL_STUB(pstruct, p_struct)
