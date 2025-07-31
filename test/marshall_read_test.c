@@ -248,6 +248,17 @@ TEST_CASE(marshall_read_tag)
                          "\x09\x00\x00\x00\x00\x00\x00\x00"
                          "\x0D\xEB\x32\xA4\xF8\xFF\xFF\xFF\xFF",
                          "(S64) -123456789");
+  // sw
+  MARSHALL_READ_TEST_TAG("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x09\x00\x00\x00\x00\x00\x00\x00"
+                         "\x0C\x15\xCD\x5B\x07\x00\x00\x00\x00",
+                         "(Sw) 123456789");
+  MARSHALL_READ_TEST_TAG("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x09\x00\x00\x00\x00\x00\x00\x00"
+                         "\x0C\xEB\x32\xA4\xF8\xFF\xFF\xFF\xFF",
+                         "(Sw) -123456789");
   // u8
   MARSHALL_READ_TEST_TAG("KC3MARSH"
                          "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -305,7 +316,7 @@ TEST_CASE(marshall_read_tag)
                          "\x05\x00\x00\x00\x00\x00\x00\x00"
                          "\x13\xFF\xFF\xFF\xFF",
                          "(U32) 4294967295");
-  // u64 and uw
+  // u64
   MARSHALL_READ_TEST_TAG("KC3MARSH"
                          "\x00\x00\x00\x00\x00\x00\x00\x00"
                          "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -324,5 +335,18 @@ TEST_CASE(marshall_read_tag)
                          "\x09\x00\x00\x00\x00\x00\x00\x00"
                          "\x14\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF",
                          "18446744073709551615");
+  // uw
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x09\x00\x00\x00\x00\x00\x00\x00"
+                         "\x15\x00\x00\x00\x00\x00\x00\x00\x00",
+                         "(Uw) 0");
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x09\x00\x00\x00\x00\x00\x00\x00"
+                         "\x15\x40\xE2\x01\x00\x00\x00\x00\x00",
+                         "(Uw) 123456");
 }
 TEST_CASE_END(marshall_read_tag)
