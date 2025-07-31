@@ -129,7 +129,7 @@
       test_ko();                                                       \
       fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
               "%s == %s\n"                                             \
-              "Expected %s got %.16lg.%s\n",                              \
+              "Expected %s got %.16lg.%s\n",                           \
               TEST_COLOR_KO,                                           \
               __FILE__, __LINE__, __func__,                            \
               # test, # expected, # expected, TEST_DOUBLE_EQ_tmp,      \
@@ -147,6 +147,28 @@
       i++;                                                             \
     }                                                                  \
   }
+
+#define TEST_MEMCMP(test, result, bytes)                               \
+  do {                                                                 \
+    const char *TEST_MEMCMP_tmp = (test);                              \
+    if (memcmp(TEST_MEMCMP_tmp, (result), (bytes)) == 0) {             \
+      g_test_assert_count++;                                           \
+      g_test_assert_ok++;                                              \
+    }                                                                  \
+    else {                                                             \
+      test_ko();                                                       \
+      fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
+              "memcmp(%s, %s, %ld) == 0\n",                            \
+              TEST_COLOR_KO,                                           \
+              __FILE__, __LINE__, __func__,                            \
+              # test, # result, (long) (bytes));                       \
+      fprintf(stderr, "Expected %s got \"",                            \
+              # result);                                               \
+      fwrite(TEST_MEMCMP_tmp, (bytes), 1, stderr);                     \
+      fprintf(stderr, "\".%s\n", TEST_COLOR_RESET);                    \
+      return 1;                                                        \
+    }                                                                  \
+  } while (0)
 
 #define TEST_STR_COMPARE(a, b, expected)                               \
   do {                                                                 \
@@ -177,31 +199,31 @@
     if (TEST_STR_EQ_test_str.size !=                                   \
         TEST_STR_EQ_expected_str.size)                                 \
       TEST_STR_EQ_ko = true;                                           \
-    else {							                                               \
+    else {							                                   \
       while (i < TEST_STR_EQ_test_str.size) {                          \
         if (TEST_STR_EQ_test_str.ptr.pchar[i] !=                       \
             TEST_STR_EQ_expected_str.ptr.pchar[i]) {                   \
-          TEST_STR_EQ_ko = true;						                           \
+          TEST_STR_EQ_ko = true;						               \
           break;                                                       \
         }                                                              \
-	      i++;							                                             \
-      }								                                                 \
-    }								                                                   \
-    if (TEST_STR_EQ_ko) {							                                 \
-      test_ko();						                                           \
-      fprintf(stderr, "\n%sTEST_STR_EQ failed in %s:%d %s\n"	         \
-	      "Expected ",					                                         \
-	      TEST_COLOR_KO,					                                       \
-	      __FILE__, __LINE__, __func__);			                           \
-      fflush(stderr);						                                       \
-      err_inspect_str(&TEST_STR_EQ_expected_str);				               \
-      fprintf(stderr, "\n"					                                   \
-	      "got      ");					                                         \
-      err_inspect_str(&TEST_STR_EQ_test_str);				                   \
-      fprintf(stderr, "%s\n",					                                 \
-	      TEST_COLOR_RESET);				                                     \
-      return 1;							                                           \
-    }								                                                   \
+	      i++;							                               \
+      }								                                   \
+    }								                                   \
+    if (TEST_STR_EQ_ko) {							                   \
+      test_ko();						                               \
+      fprintf(stderr, "\n%sTEST_STR_EQ failed in %s:%d %s\n"	       \
+	      "Expected ",					                               \
+	      TEST_COLOR_KO,					                           \
+	      __FILE__, __LINE__, __func__);			                   \
+      fflush(stderr);						                           \
+      err_inspect_str(&TEST_STR_EQ_expected_str);				       \
+      fprintf(stderr, "\n"					                           \
+	      "got      ");					                               \
+      err_inspect_str(&TEST_STR_EQ_test_str);				           \
+      fprintf(stderr, "%s\n",					                       \
+	      TEST_COLOR_RESET);				                           \
+      return 1;							                               \
+    }								                                   \
   } while (0)
 
 #define TEST_STRNCMP(test, result, bytes)                              \
