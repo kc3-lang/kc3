@@ -36,6 +36,7 @@
 
 #define MARSHALL_TEST_STR(on_heap, test, expected)                    \
   do {                                                                \
+    s_marshall m = {0};                                               \
     s_str str_expected = STR_1(expected);                             \
     s_str str_test = {0};                                             \
     s_str str_result = {0};                                           \
