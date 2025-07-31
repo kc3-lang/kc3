@@ -77,6 +77,7 @@ s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)
   s_fn_clause *clause;
   assert(m);
   assert(fn);
+  assert(fn->frame);
   assert(! fn->frame->next);
   if (! m || ! fn)
     return NULL;
@@ -99,7 +100,7 @@ s_marshall * marshall_frame (s_marshall *m, bool heap, const s_frame *frame)
 {
   s_binding *bindings;
   assert(m);
-  assert(! frame);
+  assert(frame);
   if (! m || ! frame)
     return NULL;
   bindings = frame->bindings;
