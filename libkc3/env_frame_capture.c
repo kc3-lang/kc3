@@ -102,7 +102,7 @@ s_frame * env_frame_capture_fn (s_env *env, s_frame *frame,
       return NULL;
     if (! env_frame_capture_do_block(env, frame, &clause->algo))
       return NULL;
-    clause = clause->next_clause;
+    clause = clause->next;
   }
   return frame;
 }

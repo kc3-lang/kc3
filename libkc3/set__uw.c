@@ -10,21 +10,21 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from set.c.in NAME=_NAME$ TYPE=_TYPE$ */
+/* Gen from set.c.in NAME=uw TYPE=uw */
 #include "alloc.h"
 #include "assert.h"
 #include "compare.h"
-#include "_NAME$.h"
-#include "set___NAME$.h"
-#include "set_item___NAME$.h"
+#include "uw.h"
+#include "set__uw.h"
+#include "set_item__uw.h"
 
-s_set_item___NAME$ *
-set_add___NAME$ (s_set___NAME$ *set, _TYPE$ *data)
+s_set_item__uw *
+set_add__uw (s_set__uw *set, uw *data)
 {
   uw hash;
   assert(set);
   assert(data);
-  if (! _NAME$_hash_uw(_Generic (*data,
+  if (! uw_hash_uw(_Generic (*data,
                                  f32:  *data,
                                  f64:  *data,
                                  f128: *data,
@@ -39,43 +39,43 @@ set_add___NAME$ (s_set___NAME$ *set, _TYPE$ *data)
                                  u64:  *data,
                                  uw:   *data,
                                  default: data), &hash)) {
-    err_puts("set_add___NAME$: _NAME$_hash_uw");
-    assert(! "set_add___NAME$: _NAME$_hash_uw");
+    err_puts("set_add__uw: uw_hash_uw");
+    assert(! "set_add__uw: uw_hash_uw");
     return NULL;
   }
-  return set_add_h___NAME$(set, data, hash);
+  return set_add_h__uw(set, data, hash);
 }
 
-s_set_item___NAME$ *
-set_add_collision___NAME$
-(s_set___NAME$ *set,
- _TYPE$ *data,
+s_set_item__uw *
+set_add_collision__uw
+(s_set__uw *set,
+ uw *data,
  uw hash,
- s_set_item___NAME$ *item)
+ s_set_item__uw *item)
 {
-  s_set_item___NAME$ *new_item;
-  new_item = set_item_new___NAME$(data, hash, item->next);
+  s_set_item__uw *new_item;
+  new_item = set_item_new__uw(data, hash, item->next);
   item->next = new_item;
   set->count++;
   set->collisions++;
   return new_item;
 }
 
-s_set_item___NAME$ *
-set_add_h___NAME$ (s_set___NAME$ *set, _TYPE$ *data, uw hash)
+s_set_item__uw *
+set_add_h__uw (s_set__uw *set, uw *data, uw hash)
 {
   uw h;
-  s_set_item___NAME$ *i;
+  s_set_item__uw *i;
   assert(set);
   assert(data);
-  if ((i = set_get_h___NAME$(set, data, hash)))
+  if ((i = set_get_h__uw(set, data, hash)))
     return i;
   h = hash % set->max;
   if ((i = set->items[h]))
-    return set_add_collision___NAME$(set, data, hash, i);
-  if (! (i = set_item_new___NAME$(data, hash, NULL))) {
-    err_puts("set_add_h___NAME$: set_item_new___NAME$");
-    assert(! "set_add_h___NAME$: set_item_new___NAME$");
+    return set_add_collision__uw(set, data, hash, i);
+  if (! (i = set_item_new__uw(data, hash, NULL))) {
+    err_puts("set_add_h__uw: set_item_new__uw");
+    assert(! "set_add_h__uw: set_item_new__uw");
     return NULL;
   }
   set->items[h] = i;
@@ -84,23 +84,23 @@ set_add_h___NAME$ (s_set___NAME$ *set, _TYPE$ *data, uw hash)
 }
                  
 void
-set_clean___NAME$ (s_set___NAME$ *set)
+set_clean__uw (s_set__uw *set)
 {
   uw i;
   assert(set);
   for (i = 0; i < set->max; i++) {
-    set_item_delete_all___NAME$(set->items[i]);
+    set_item_delete_all__uw(set->items[i]);
   }
   free(set->items);
 }
 
-s_set_item___NAME$ *
-set_get___NAME$ (const s_set___NAME$ *set, const _TYPE$ *data)
+s_set_item__uw *
+set_get__uw (const s_set__uw *set, const uw *data)
 {
   uw hash;
   assert(set);
   assert(data);
-  if (! _NAME$_hash_uw(_Generic (*data,
+  if (! uw_hash_uw(_Generic (*data,
                                  f32:  *data,
                                  f64:  *data,
                                  f128: *data,
@@ -116,22 +116,22 @@ set_get___NAME$ (const s_set___NAME$ *set, const _TYPE$ *data)
                                  uw:   *data,
                                  default: data), &hash))
     return NULL;
-  return set_get_h___NAME$(set, data, hash);
+  return set_get_h__uw(set, data, hash);
 }
 
-s_set_item___NAME$ *
-set_get_h___NAME$
-(const s_set___NAME$ *set,
- const _TYPE$ *data,
+s_set_item__uw *
+set_get_h__uw
+(const s_set__uw *set,
+ const uw *data,
  uw hash)
 {
-  s_set_item___NAME$ *i;
+  s_set_item__uw *i;
   assert(set);
   assert(data);
-  i = set_get_hash___NAME$(set, hash);
+  i = set_get_hash__uw(set, hash);
   while (i) {
     
-    if (compare__NAME$(_Generic (i->data,
+    if (compare_uw(_Generic (i->data,
                                  f32:  i->data,
                                  f64:  i->data,
                                  f128: i->data,
@@ -162,16 +162,16 @@ set_get_h___NAME$
                                  uw:   *data,
                                  default: data)) == 0)
       return i;
-    i = set_get_hash_next___NAME$(i);
+    i = set_get_hash_next__uw(i);
   }
   return NULL;
 }
 
-s_set_item___NAME$ *
-set_get_hash___NAME$ (const s_set___NAME$ *set, uw hash)
+s_set_item__uw *
+set_get_hash__uw (const s_set__uw *set, uw hash)
 {
   uw h;
-  s_set_item___NAME$ *i;
+  s_set_item__uw *i;
   assert(set);
   h = hash % set->max;
   i = set->items[h];
@@ -180,10 +180,10 @@ set_get_hash___NAME$ (const s_set___NAME$ *set, uw hash)
   return i;
 }
 
-s_set_item___NAME$ *
-set_get_hash_next___NAME$ (const s_set_item___NAME$ *item)
+s_set_item__uw *
+set_get_hash_next__uw (const s_set_item__uw *item)
 {
-  s_set_item___NAME$ *i;
+  s_set_item__uw *i;
   assert(item);
   i = item->next;
   while (i && i->hash != item->hash)
@@ -192,15 +192,15 @@ set_get_hash_next___NAME$ (const s_set_item___NAME$ *item)
 }
 
 bool *
-set_has___NAME$
-(const s_set___NAME$ *set,
- const _TYPE$ *data,
+set_has__uw
+(const s_set__uw *set,
+ const uw *data,
  bool *dest)
 {
   uw hash;
   assert(set);
   assert(dest);
-  if (! _NAME$_hash_uw(_Generic (*data,
+  if (! uw_hash_uw(_Generic (*data,
                                  f32:  *data,
                                  f64:  *data,
                                  f128: *data,
@@ -216,7 +216,7 @@ set_has___NAME$
                                  uw:   *data,
                                  default: data), &hash))
     return NULL;
-  if (! set_get_h___NAME$(set, data, hash)) {
+  if (! set_get_h__uw(set, data, hash)) {
     *dest = false;
     return dest;
   }
@@ -224,14 +224,14 @@ set_has___NAME$
   return dest;
 }
 
-s_set___NAME$ *
-set_init___NAME$ (s_set___NAME$ *set, uw max)
+s_set__uw *
+set_init__uw (s_set__uw *set, uw max)
 {
-  s_set___NAME$ tmp = {0};
+  s_set__uw tmp = {0};
   assert(set);
   assert(max > 0);
   tmp.max = max;
-  tmp.items = alloc(max * sizeof(s_set_item___NAME$ *));
+  tmp.items = alloc(max * sizeof(s_set_item__uw *));
   if (! tmp.items)
     return NULL;
   tmp.count = 0;
@@ -241,21 +241,21 @@ set_init___NAME$ (s_set___NAME$ *set, uw max)
 }
 
 bool
-set_remove___NAME$ (s_set___NAME$ *set, const _TYPE$ *data)
+set_remove__uw (s_set__uw *set, const uw *data)
 {
-  s_set_item___NAME$ *item;
-  if ((item = set_get___NAME$(set, data)))
-    return set_remove_item___NAME$(set, item);
+  s_set_item__uw *item;
+  if ((item = set_get__uw(set, data)))
+    return set_remove_item__uw(set, item);
   return false;
 }
 
 bool
-set_remove_item___NAME$ (s_set___NAME$ *set, s_set_item___NAME$ *item)
+set_remove_item__uw (s_set__uw *set, s_set_item__uw *item)
 {
   sw h;
-  s_set_item___NAME$ *i;
-  s_set_item___NAME$ **j;
-  s_set_item___NAME$ *k;
+  s_set_item__uw *i;
+  s_set_item__uw **j;
+  s_set_item__uw *k;
   assert(set);
   if (! item)
     return false;
@@ -267,7 +267,7 @@ set_remove_item___NAME$ (s_set___NAME$ *set, s_set_item___NAME$ *item)
     return false;
   i = *j;
   k = i->next;
-  set_item_delete___NAME$(i);
+  set_item_delete__uw(i);
   *j = k;
   set->count--;
   if (set->items[h])
@@ -275,23 +275,23 @@ set_remove_item___NAME$ (s_set___NAME$ *set, s_set_item___NAME$ *item)
   return true;
 }
 
-s_set___NAME$ *
-set_resize___NAME$ (s_set___NAME$ *set, uw max)
+s_set__uw *
+set_resize__uw (s_set__uw *set, uw max)
 {
   uw i;
-  s_set_item___NAME$ *item;
-  s_set___NAME$ n;
+  s_set_item__uw *item;
+  s_set__uw n;
   if (set->max == max)
     return set;
-  set_init___NAME$(&n, max);
+  set_init__uw(&n, max);
   for (i = 0; i < set->max; i++) {
     item = set->items[i];
     while (item) {
-      set_add_h___NAME$(&n, &item->data, item->hash);
+      set_add_h__uw(&n, &item->data, item->hash);
       item = item->next;
     }
   }
-  set_clean___NAME$(set);
+  set_clean__uw(set);
   set->max = n.max;
   set->items = n.items;
   set->count = n.count;

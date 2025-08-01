@@ -316,8 +316,8 @@ s8 compare_fn_clause (const s_fn_clause *a, const s_fn_clause *b)
       return r;
     if ((r = compare_do_block(&a->algo, &b->algo)))
       return r;
-    a = a->next_clause;
-    b = b->next_clause;
+    a = a->next;
+    b = b->next;
   }
   err_puts("compare_fn_clause");
   assert(! "compare_fn_clause");

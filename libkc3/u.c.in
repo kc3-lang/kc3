@@ -17,12 +17,24 @@
 #include <math.h>
 #include <stdlib.h>
 #include "f128.h"
+#include "hash.h"
 #include "integer.h"
 #include "ratio.h"
 #include "sym.h"
 #include "str.h"
 #include "tag.h"
 #include "u_bits$.h"
+
+uw * u_bits$_hash_uw (u_bits$ u, uw *dest)
+{
+  t_hash h;
+  hash_init(&h);
+  if (! hash_update_u_bits$(&h, u))
+    return NULL;
+  *dest = hash_to_uw(&h);
+  hash_clean(&h);
+  return dest;
+}
 
 u_bits$ * u_bits$_init_1 (u_bits$ *u, const char *p)
 {

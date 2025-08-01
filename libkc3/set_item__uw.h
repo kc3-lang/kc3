@@ -10,24 +10,25 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from u.h.in BITS=8 bits=8 */
-#ifndef LIBKC3_U8_H
-#define LIBKC3_U8_H
+/* Gen from set_item.h.in NAME=uw TYPE=uw */
+/**
+ * @file set_item__uw.h
+ * @brief Element of a set of uws.
+ *
+ * Data structure for set items containing uw.
+ */
+#ifndef LIBKC3_SET_ITEM__uw_H
+#define LIBKC3_SET_ITEM__uw_H
 
 #include "types.h"
 
-#define u8_clean(u) ((void) u)
+s_set_item__uw *
+set_item_new__uw (uw *data, uw hash, s_set_item__uw *next);
 
-u8 * u8_init_1 (u8 *u, const char *p);
-u8 * u8_init_cast
-(u8 *u, const s_sym * const *type, const s_tag *tag);
+void
+set_item_delete__uw (s_set_item__uw *x);
 
-u8 * u8_init_copy (u8 *u, const u8 *src);
-u8 * u8_init_str (u8 *u, const s_str *str);
+void
+set_item_delete_all__uw (s_set_item__uw *x);
 
-uw *      u8_hash_uw (u8 u, uw *dest);
-u8 * u8_random (u8 *u);
-u8 * u8_random_uniform (u8 *u, u8 max);
-s_tag *   u8_sqrt (const u8 x, s_tag *dest);
-
-#endif /* LIBKC3_U8_H */
+#endif /* LIBKC3_SET_ITEM__uw_H */

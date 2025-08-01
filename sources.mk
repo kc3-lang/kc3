@@ -576,18 +576,24 @@ KC3_C_SOURCES = \
 	"libkc3/set__fact.h" \
 	"libkc3/set__tag.c" \
 	"libkc3/set__tag.h" \
+	"libkc3/set__uw.c" \
+	"libkc3/set__uw.h" \
 	"libkc3/set_cursor.c.in" \
 	"libkc3/set_cursor.h.in" \
 	"libkc3/set_cursor__fact.c" \
 	"libkc3/set_cursor__fact.h" \
 	"libkc3/set_cursor__tag.c" \
 	"libkc3/set_cursor__tag.h" \
+	"libkc3/set_cursor__uw.c" \
+	"libkc3/set_cursor__uw.h" \
 	"libkc3/set_item.c.in" \
 	"libkc3/set_item.h.in" \
 	"libkc3/set_item__fact.c" \
 	"libkc3/set_item__fact.h" \
 	"libkc3/set_item__tag.c" \
 	"libkc3/set_item__tag.h" \
+	"libkc3/set_item__uw.c" \
+	"libkc3/set_item__uw.h" \
 	"libkc3/sh.c" \
 	"libkc3/sh.h" \
 	"libkc3/sha1.c" \

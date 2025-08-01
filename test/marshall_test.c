@@ -449,7 +449,8 @@ TEST_CASE(marshall_tag)
                     "\t\x00\x00\x00\x00\x00\x00\x00"
                     "\x07JP\xD8R\xFB!"
                     "\t@");
-  MARSHALL_TEST_TAG("(F128) 3.141592643",
+  MARSHALL_TEST_TAG("(F128) 3.141592653589793238462643383279502884197" \
+                    "1693993751",
                     "KC3MARSH"
                     "\x00\x00\x00\x00\x00\x00\x00\x00"
                     "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -499,7 +500,7 @@ TEST_CASE(marshall_tag)
                     "\x00\x1D\x01\x01\x00\x00\x00\x61"
                     "\x11\x01\x1D\x01\x01\x00\x00\x00"
                     "\x62\x11\x02");
-
+  // Cfn
   MARSHALL_TEST_TAG("cfn Tag \"tag_add\" (Tag, Tag, Result)",
                     "KC3MARSH"
                     "\x04\x00\x00\x00\x00\x00\x00\x00"
@@ -518,7 +519,6 @@ TEST_CASE(marshall_tag)
                     "\x16p\x00\x00\x00\x00\x00\x00"
                     "\x00\x18 \x00\x00\x00\x00\x00"
                     "\x00\x00");
-
   // Call
   MARSHALL_TEST_TAG("defmodule Test do end",
                     "KC3MARSH"

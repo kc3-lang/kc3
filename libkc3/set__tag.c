@@ -24,7 +24,21 @@ set_add__tag (s_set__tag *set, s_tag *data)
   uw hash;
   assert(set);
   assert(data);
-  if (! tag_hash_uw(data, &hash)) {
+  if (! tag_hash_uw(_Generic (*data,
+                                 f32:  *data,
+                                 f64:  *data,
+                                 f128: *data,
+                                 s8:   *data,
+                                 s16:  *data,
+                                 s32:  *data,
+                                 s64:  *data,
+                                 sw:   *data,
+                                 u8:   *data,
+                                 u16:  *data,
+                                 u32:  *data,
+                                 u64:  *data,
+                                 uw:   *data,
+                                 default: data), &hash)) {
     err_puts("set_add__tag: tag_hash_uw");
     assert(! "set_add__tag: tag_hash_uw");
     return NULL;
@@ -86,7 +100,21 @@ set_get__tag (const s_set__tag *set, const s_tag *data)
   uw hash;
   assert(set);
   assert(data);
-  if (! tag_hash_uw(data, &hash))
+  if (! tag_hash_uw(_Generic (*data,
+                                 f32:  *data,
+                                 f64:  *data,
+                                 f128: *data,
+                                 s8:   *data,
+                                 s16:  *data,
+                                 s32:  *data,
+                                 s64:  *data,
+                                 sw:   *data,
+                                 u8:   *data,
+                                 u16:  *data,
+                                 u32:  *data,
+                                 u64:  *data,
+                                 uw:   *data,
+                                 default: data), &hash))
     return NULL;
   return set_get_h__tag(set, data, hash);
 }
@@ -102,7 +130,37 @@ set_get_h__tag
   assert(data);
   i = set_get_hash__tag(set, hash);
   while (i) {
-    if (compare_tag(&i->data, data) == 0)
+    
+    if (compare_tag(_Generic (i->data,
+                                 f32:  i->data,
+                                 f64:  i->data,
+                                 f128: i->data,
+                                 s8:   i->data,
+                                 s16:  i->data,
+                                 s32:  i->data,
+                                 s64:  i->data,
+                                 sw:   i->data,
+                                 u8:   i->data,
+                                 u16:  i->data,
+                                 u32:  i->data,
+                                 u64:  i->data,
+                                 uw:   i->data,
+                                 default: &i->data),
+                       _Generic (*data,
+                                 f32:  *data,
+                                 f64:  *data,
+                                 f128: *data,
+                                 s8:   *data,
+                                 s16:  *data,
+                                 s32:  *data,
+                                 s64:  *data,
+                                 sw:   *data,
+                                 u8:   *data,
+                                 u16:  *data,
+                                 u32:  *data,
+                                 u64:  *data,
+                                 uw:   *data,
+                                 default: data)) == 0)
       return i;
     i = set_get_hash_next__tag(i);
   }
@@ -131,6 +189,39 @@ set_get_hash_next__tag (const s_set_item__tag *item)
   while (i && i->hash != item->hash)
     i = i->next;
   return i;
+}
+
+bool *
+set_has__tag
+(const s_set__tag *set,
+ const s_tag *data,
+ bool *dest)
+{
+  uw hash;
+  assert(set);
+  assert(dest);
+  if (! tag_hash_uw(_Generic (*data,
+                                 f32:  *data,
+                                 f64:  *data,
+                                 f128: *data,
+                                 s8:   *data,
+                                 s16:  *data,
+                                 s32:  *data,
+                                 s64:  *data,
+                                 sw:   *data,
+                                 u8:   *data,
+                                 u16:  *data,
+                                 u32:  *data,
+                                 u64:  *data,
+                                 uw:   *data,
+                                 default: data), &hash))
+    return NULL;
+  if (! set_get_h__tag(set, data, hash)) {
+    *dest = false;
+    return dest;
+  }
+  *dest = true;
+  return dest;
 }
 
 s_set__tag *

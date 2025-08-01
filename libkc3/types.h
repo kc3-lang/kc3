@@ -327,7 +327,7 @@ struct fn_clause {
   uw arity;
   s_list *pattern;
   s_do_block algo;
-  s_fn_clause *next_clause;
+  s_fn_clause *next;
 };
 
 struct frame {
@@ -780,8 +780,9 @@ struct sequence {
     uw usage;                                                          \
   }
 
-TYPEDEF_SET_ITEM(tag, s_tag);
 TYPEDEF_SET_ITEM(fact, s_fact);
+TYPEDEF_SET_ITEM(tag, s_tag);
+TYPEDEF_SET_ITEM(uw, uw);
 
 #define TYPEDEF_SET(name, type)                                        \
   typedef struct set__##name {                                         \
@@ -791,8 +792,9 @@ TYPEDEF_SET_ITEM(fact, s_fact);
     uw max;                                                            \
   } s_set__##name
 
-TYPEDEF_SET(tag, s_tag);
 TYPEDEF_SET(fact, s_fact);
+TYPEDEF_SET(tag, s_tag);
+TYPEDEF_SET(uw, uw);
 
 #define TYPEDEF_SET_CURSOR(name)                                       \
   typedef struct set_cursor__##name {                                  \
@@ -802,8 +804,9 @@ TYPEDEF_SET(fact, s_fact);
     uw count;                                                      \
   } s_set_cursor__##name
 
-TYPEDEF_SET_CURSOR(tag);
 TYPEDEF_SET_CURSOR(fact);
+TYPEDEF_SET_CURSOR(tag);
+TYPEDEF_SET_CURSOR(uw);
 
 #define TYPEDEF_SKIPLIST_NODE(name, type)                              \
   typedef struct skiplist_node__##name {                               \

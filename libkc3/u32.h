@@ -16,12 +16,16 @@
 
 #include "types.h"
 
+#define u32_clean(u) ((void) u)
+
 u32 * u32_init_1 (u32 *u, const char *p);
 u32 * u32_init_cast
 (u32 *u, const s_sym * const *type, const s_tag *tag);
 
 u32 * u32_init_copy (u32 *u, const u32 *src);
 u32 * u32_init_str (u32 *u, const s_str *str);
+
+uw *      u32_hash_uw (u32 u, uw *dest);
 u32 * u32_random (u32 *u);
 u32 * u32_random_uniform (u32 *u, u32 max);
 s_tag *   u32_sqrt (const u32 x, s_tag *dest);

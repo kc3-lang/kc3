@@ -39,14 +39,18 @@ set_get_hash__tag (const s_set__tag *set, uw hash);
 s_set_item__tag *
 set_get_hash_next__tag (const s_set_item__tag *item);
 
+bool *
+set_has__tag (const s_set__tag *set,
+                 const s_tag *data,
+                 bool *dest);
+
 /* Operators. */
 
 s_set_item__tag *
 set_add__tag (s_set__tag *set, s_tag *data);
 
 s_set_item__tag *
-set_add_collision__tag (s_set__tag *set, s_tag *data, uw hash,
-                        s_set_item__tag *item);
+set_add_collision__tag (s_set__tag *set, s_tag *data, uw hash, s_set_item__tag *item);
 
 s_set_item__tag *
 set_add_h__tag (s_set__tag *set, s_tag *data, uw hash);

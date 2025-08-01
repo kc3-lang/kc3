@@ -2160,7 +2160,7 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
   result += r;
   clause = fn->clauses;
   assert(clause);
-  if (clause->next_clause) {
+  if (clause->next) {
     if ((r = buf_write_1(buf, "{\n")) < 0)
       return r;
     result += r;
@@ -2174,7 +2174,7 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
       if ((r = buf_write_1(buf, "\n")) < 0)
         return r;
       result += r;
-      clause = clause->next_clause;
+      clause = clause->next;
     }
     if ((r = buf_write_1(buf, "}")) < 0)
       return r;
@@ -2316,7 +2316,7 @@ sw buf_inspect_fn_size (s_pretty *pretty, const s_fn *fn)
   result += r;
   clause = fn->clauses;
   assert(clause);
-  if (clause->next_clause) {
+  if (clause->next) {
     if ((r = buf_write_1_size(pretty, "{\n")) < 0)
       return r;
     result += r;
@@ -2330,7 +2330,7 @@ sw buf_inspect_fn_size (s_pretty *pretty, const s_fn *fn)
       if ((r = buf_write_1_size(pretty, "\n")) < 0)
         return r;
       result += r;
-      clause = clause->next_clause;
+      clause = clause->next;
     }
     if ((r = buf_write_1_size(pretty, "}")) < 0)
       return r;

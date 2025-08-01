@@ -16,12 +16,16 @@
 
 #include "types.h"
 
+#define u_bits$_clean(u) ((void) u)
+
 u_bits$ * u_bits$_init_1 (u_bits$ *u, const char *p);
 u_bits$ * u_bits$_init_cast
 (u_bits$ *u, const s_sym * const *type, const s_tag *tag);
 
 u_bits$ * u_bits$_init_copy (u_bits$ *u, const u_bits$ *src);
 u_bits$ * u_bits$_init_str (u_bits$ *u, const s_str *str);
+
+uw *      u_bits$_hash_uw (u_bits$ u, uw *dest);
 u_bits$ * u_bits$_random (u_bits$ *u);
 u_bits$ * u_bits$_random_uniform (u_bits$ *u, u_bits$ max);
 s_tag *   u_bits$_sqrt (const u_bits$ x, s_tag *dest);

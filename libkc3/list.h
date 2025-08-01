@@ -46,9 +46,11 @@ s_list * list_new_tag_copy (s_tag *tag, s_list *next);
 /* Observers */
 s_tag *   list_at (s_list *list, uw position, s_tag *dest);
 s_tag *   list_access (s_list *list, s_list *key, s_tag *dest);
+bool *    list_has_cycle (s_list *list, bool *dest);
 bool      list_is_alist (const s_list *list);
 bool      list_is_plist (const s_list *list);
 sw        list_length (const s_list *list);
+sw        list_length_until_cycle (s_list *list, bool *cycle);
 s_list  * list_next (const s_list *list);
 s_tuple * list_to_tuple_reverse (const s_list *list, s_tuple *dest);
 

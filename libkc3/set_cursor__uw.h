@@ -10,24 +10,16 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from u.h.in BITS=8 bits=8 */
-#ifndef LIBKC3_U8_H
-#define LIBKC3_U8_H
+/* Gen from set_cursor.h.in NAME=uw TYPE=uw */
+#ifndef LIBKC3_SET_CURSOR__uw_H
+#define LIBKC3_SET_CURSOR__uw_H
 
 #include "types.h"
 
-#define u8_clean(u) ((void) u)
+void
+set_cursor_init__uw (s_set__uw *set, s_set_cursor__uw *c);
 
-u8 * u8_init_1 (u8 *u, const char *p);
-u8 * u8_init_cast
-(u8 *u, const s_sym * const *type, const s_tag *tag);
+s_set_item__uw *
+set_cursor_next__uw (s_set_cursor__uw *c);
 
-u8 * u8_init_copy (u8 *u, const u8 *src);
-u8 * u8_init_str (u8 *u, const s_str *str);
-
-uw *      u8_hash_uw (u8 u, uw *dest);
-u8 * u8_random (u8 *u);
-u8 * u8_random_uniform (u8 *u, u8 max);
-s_tag *   u8_sqrt (const u8 x, s_tag *dest);
-
-#endif /* LIBKC3_U8_H */
+#endif /* LIBKC3_SET_CURSOR__uw_H */

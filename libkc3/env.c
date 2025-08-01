@@ -1088,7 +1088,7 @@ s_frame * env_frame_new_capture (s_env *env, s_fn *fn)
       }
       i++;
     }
-    clause = clause->next_clause;
+    clause = clause->next;
   }
   return frame;
 }

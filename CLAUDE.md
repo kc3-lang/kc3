@@ -24,3 +24,6 @@
 - Tests: `make test_debug` runs all tests, `KC3_TEST=name make test_libkc3_debug` for specific tests
 - On OpenBSD: Stack variables are zero-initialized
 - Buffer overflow protection added to marshall_read_header with size validation
+
+## Formatting Guidelines
+- 72 columns per line max

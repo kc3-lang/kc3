@@ -161,10 +161,13 @@ HEADERS = \
 	"sequence.h" \
 	"set__fact.h" \
 	"set__tag.h" \
+	"set__uw.h" \
 	"set_cursor__fact.h" \
 	"set_cursor__tag.h" \
+	"set_cursor__uw.h" \
 	"set_item__fact.h" \
 	"set_item__tag.h" \
+	"set_item__uw.h" \
 	"sh.h" \
 	"sha1.h" \
 	"sign.h" \
@@ -354,10 +357,13 @@ SOURCES = \
 	"sequence.c" \
 	"set__fact.c" \
 	"set__tag.c" \
+	"set__uw.c" \
 	"set_cursor__fact.c" \
 	"set_cursor__tag.c" \
+	"set_cursor__uw.c" \
 	"set_item__fact.c" \
 	"set_item__tag.c" \
+	"set_item__uw.c" \
 	"sh.c" \
 	"sha1.c" \
 	"sign.c" \
@@ -664,10 +670,13 @@ LO_SOURCES = \
 	"sequence.c" \
 	"set__fact.c" \
 	"set__tag.c" \
+	"set__uw.c" \
 	"set_cursor__fact.c" \
 	"set_cursor__tag.c" \
+	"set_cursor__uw.c" \
 	"set_item__fact.c" \
 	"set_item__tag.c" \
+	"set_item__uw.c" \
 	"sh.c" \
 	"sha1.c" \
 	"sign.c" \

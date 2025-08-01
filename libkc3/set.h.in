@@ -39,6 +39,11 @@ set_get_hash___NAME$ (const s_set___NAME$ *set, uw hash);
 s_set_item___NAME$ *
 set_get_hash_next___NAME$ (const s_set_item___NAME$ *item);
 
+bool *
+set_has___NAME$ (const s_set___NAME$ *set,
+                 const _TYPE$ *data,
+                 bool *dest);
+
 /* Operators. */
 
 s_set_item___NAME$ *

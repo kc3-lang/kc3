@@ -73,10 +73,13 @@ GENERATED_FILES = \
 	buf_parse_uw.c buf_parse_uw.h \
 	list_init.h \
 	set__fact.c set__fact.h \
+	set__uw.c set__uw.h \
 	set__tag.c set__tag.h \
 	set_cursor__fact.c set_cursor__fact.h \
+	set_cursor__uw.c set_cursor__uw.h \
 	set_cursor__tag.c set_cursor__tag.h \
 	set_item__fact.c set_item__fact.h \
+	set_item__uw.c set_item__uw.h \
 	set_item__tag.c set_item__tag.h \
 	skiplist__fact.c skiplist__fact.h \
 	skiplist_node__fact.c skiplist_node__fact.h \
@@ -643,6 +646,28 @@ skiplist_node__fact.h: skiplist_node.h.in gen.mk
 
 skiplist_node__fact.c: skiplist_node.c.in gen.mk
 	${SED_FACT_P} < skiplist_node.c.in > skiplist_node__fact.c
+
+SED_UW = sed \
+	-e 's/_NAME[$$]/uw/g' \
+	-e 's/_TYPE[$$]/uw/g'
+
+set_cursor__uw.h: set_cursor.h.in gen.mk
+	${SED_UW} < set_cursor.h.in > set_cursor__uw.h
+
+set_cursor__uw.c: set_cursor.c.in gen.mk
+	${SED_UW} < set_cursor.c.in > set_cursor__uw.c
+
+set_item__uw.h: set_item.h.in gen.mk
+	${SED_UW} < set_item.h.in > set_item__uw.h
+
+set_item__uw.c: set_item.c.in gen.mk
+	${SED_UW} < set_item.c.in > set_item__uw.c
+
+set__uw.h: set.h.in gen.mk
+	${SED_UW} < set.h.in > set__uw.h
+
+set__uw.c: set.c.in gen.mk
+	${SED_UW} < set.c.in > set__uw.c
 
 SED_TAG = sed \
 	-e 's/_NAME[$$]/tag/g' \

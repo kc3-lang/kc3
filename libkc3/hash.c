@@ -262,7 +262,7 @@ bool hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses)
   f = clauses;
   while (f) {
     count++;
-    f = f->next_clause;
+    f = f->next;
   }
   if (! hash_update_uw(hash, count))
     return false;
@@ -272,7 +272,7 @@ bool hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses)
                            &f->pattern) ||
         ! hash_update_do_block(hash, &f->algo))
       return false;
-    f = f->next_clause;
+    f = f->next;
   }
   return true;
 }

@@ -23,6 +23,7 @@
 #include "eval.h"
 #include "kc3_main.h"
 #include "list.h"
+#include "set__uw.h"
 #include "sym.h"
 #include "sw.h"
 #include "tag.h"
@@ -108,6 +109,16 @@ void list_f_clean (p_list *list)
     l = list_delete(l);
 }
 
+bool * list_has_cycle (s_list *list, bool *dest)
+{
+  bool cycle;
+  assert(dest);
+  if (list_length_until_cycle(list, &cycle) < 0)
+    return NULL;
+  *dest = cycle;
+  return dest;
+}
+
 s_list * list_init (s_list *list, s_list *next)
 {
   assert(list);
@@ -163,6 +174,46 @@ sw list_length (const s_list *list)
     list = list_next(list);
   }
   return length;
+}
+
+sw list_length_until_cycle (s_list *list, bool *cycle)
+{
+  bool found = false;
+  s_list *l;
+  uw      length = 0;
+  s_set__uw set = {0};
+  if (! list) {
+    *cycle = false;
+    return 0;
+  }
+  if (! list_next(list)) {
+    *cycle = false;
+    return 1;
+  }
+  if (! set_init__uw(&set, 128))
+    return -1;
+  l = list;
+  while (l) {
+    if (! set_has__uw(&set, (uw *) &l, &found)) {
+      set_clean__uw(&set);
+      return -1;
+    }
+    if (found) {
+      set_clean__uw(&set);
+      *cycle = true;
+      return length;
+    }
+    length++;
+    if (! set_add__uw(&set, (uw *) &l)) {
+      set_clean__uw(&set);
+      return -1;
+    }
+    l = list_next(l);
+  }
+  set_clean__uw(&set);
+  *cycle = false;
+  return length;
+  
 }
 
 s_list * list_next (const s_list *list)

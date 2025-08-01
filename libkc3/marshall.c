@@ -202,7 +202,7 @@ s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)
     if (! marshall_list(m, heap, clause->pattern) ||
         ! marshall_do_block(m, heap, &clause->algo))
         return NULL;
-    clause = clause->next_clause;
+    clause = clause->next;
   }
  if (fn->frame && ! marshall_frame(m, heap, fn->frame))
     return NULL;

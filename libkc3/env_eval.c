@@ -390,7 +390,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       assert(env->frame == &frame);
       env->frame = env_frame;
       frame_clean(&frame);
-      clause = clause->next_clause;
+      clause = clause->next;
     }
     if (! clause) {
       err_write_1("env_eval_call_fn_args: ");
@@ -400,7 +400,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       while (clause) {
         err_inspect_fn_pattern(clause->pattern);
         err_write_1("\n");
-        clause = clause->next_clause;
+        clause = clause->next;
       }
       err_puts("\nArguments :\n");
       err_inspect_fn_pattern(args);

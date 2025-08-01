@@ -27,12 +27,12 @@ void fn_clause_clean (s_fn_clause *fn_clause)
 
 s_fn_clause * fn_clause_delete (s_fn_clause *fn_clause)
 {
-  s_fn_clause *next_clause;
+  s_fn_clause *next;
   assert(fn_clause);
-  next_clause = fn_clause->next_clause;
+  next = fn_clause->next;
   fn_clause_clean(fn_clause);
   free(fn_clause);
-  return next_clause;
+  return next;
 }
 
 void fn_clause_delete_all (s_fn_clause *fn_clause)
@@ -42,22 +42,22 @@ void fn_clause_delete_all (s_fn_clause *fn_clause)
 }
 
 s_fn_clause * fn_clause_init (s_fn_clause *fn_clause,
-                              s_fn_clause *next_clause)
+                              s_fn_clause *next)
 {
   s_fn_clause tmp = {0};
   assert(fn_clause);
-  tmp.next_clause = next_clause;
+  tmp.next = next;
   *fn_clause = tmp;
   return fn_clause;
 }
 
-s_fn_clause * fn_clause_new (s_fn_clause *next_clause)
+s_fn_clause * fn_clause_new (s_fn_clause *next)
 {
   s_fn_clause *fn_clause;
   fn_clause = alloc(sizeof(s_fn_clause));
   if (! fn_clause)
     return NULL;
-  return fn_clause_init(fn_clause, next_clause);
+  return fn_clause_init(fn_clause, next);
 }
 
 s_fn_clause * fn_clause_new_copy (s_fn_clause *src)
@@ -70,8 +70,8 @@ s_fn_clause * fn_clause_new_copy (s_fn_clause *src)
     (*tail)->arity = src->arity;
     (*tail)->pattern = list_new_copy_all(src->pattern);
     do_block_init_copy(&(*tail)->algo, &src->algo);
-    tail = &(*tail)->next_clause;
-    src = src->next_clause;
+    tail = &(*tail)->next;
+    src = src->next;
   }
   return tmp;
 }

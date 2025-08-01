@@ -17,12 +17,24 @@
 #include <math.h>
 #include <stdlib.h>
 #include "f128.h"
+#include "hash.h"
 #include "integer.h"
 #include "ratio.h"
 #include "sym.h"
 #include "str.h"
 #include "tag.h"
 #include "u8.h"
+
+uw * u8_hash_uw (u8 u, uw *dest)
+{
+  t_hash h;
+  hash_init(&h);
+  if (! hash_update_u8(&h, u))
+    return NULL;
+  *dest = hash_to_uw(&h);
+  hash_clean(&h);
+  return dest;
+}
 
 u8 * u8_init_1 (u8 *u, const char *p)
 {
