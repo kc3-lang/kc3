@@ -18,14 +18,14 @@
 | Tuple           |   ✅   |   ❌   |
 | Float           |   ✅   |   ✅   |
 | Ident           |   ✅   |   ❌   |
-| Call            |   ✅   |   ❌   | pcallable       |
+| Call            |   ✅   |   ✅   | pcallable       |
 | Do Block        |   ✅   |   ❌   | call            |
 | Map             |   ✅   |   ❌   | Tag             |
 | Sym             |   ✅   |   ❌   |
-| Callable        |   ✅   |   🚧   | u_callable_data |
-| PCallable       |   ✅   |   🚧   | callable |
-| cfn             |   ✅   |   🚧   |
-| fn              |   ✅   |   🚧   |
+| Callable        |   ✅   |   ✅   | u_callable_data |
+| PCallable       |   ✅   |   ✅   | callable |
+| cfn             |   ✅   |   ✅   |
+| fn              |   ✅   |   ✅   |
 | Ratio           |   ✅   |   ❌   |
 | Quote           |   ✅   |   ❌   |
 | Var             |   ✅   |   ❌   | Tag             |
@@ -35,7 +35,7 @@
 | Time            |   ✅   |   ❌   | Tag             |
 | Ptr             |   ✅   |   ❌   |
 | Ptr free        |   ✅   |   ❌   |
-| Array           |   ❌   |   🚧   |
+| Array           |   ❌   |   ✅   |
 | Fact            |   ✅   |   ❌   |
 | Cow             |   ❌   |   ❌   |
 | PStruct         |   ❌   |   ❌   |
