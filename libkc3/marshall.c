@@ -409,6 +409,31 @@ s_marshall * marshall_plist (s_marshall *m, bool heap,
   return m;
 }
 
+s_marshall *marshall_ptag(s_marshall *m, bool heap, p_tag ptag)
+{
+  assert(m);
+  bool present = false;
+  if (! m ||
+      ! marshall_heap_pointer(m, heap, ptag, &present))
+    return NULL;
+  if (! present && ptag)
+    return marshall_tag(m, true, ptag);
+  return m;
+}
+
+s_marshall * marshall_fact (s_marshall *m, bool heap,
+                            const s_fact *fact)
+{
+  assert(m);
+  if (! m ||
+      ! marshall_ptag(m, heap, fact->subject) ||
+      ! marshall_ptag(m, heap, fact->predicate) ||
+      ! marshall_ptag(m, heap, fact->object) ||
+      ! marshall_uw(m, heap, fact->id))
+    return NULL;
+  return m;
+}
+
 s_marshall * marshall_ptr (s_marshall *m, bool heap, u_ptr_w ptr)
 {
   assert(m);
@@ -712,11 +737,9 @@ s_marshall *marshall_var(s_marshall *m, bool heap, const s_var *var)
   }
 
 DEF_MARSHALL_STUB(array, const s_array *)
-DEF_MARSHALL_STUB(fact, const s_fact *)
 DEF_MARSHALL_STUB(pcow, p_cow)
 DEF_MARSHALL_STUB(pstruct, p_struct)
 DEF_MARSHALL_STUB(pstruct_type, p_struct_type)
-DEF_MARSHALL_STUB(ptag, p_tag)
 DEF_MARSHALL_STUB(struct, const s_struct *)
 DEF_MARSHALL_STUB(struct_type, const s_struct_type *)
 DEF_MARSHALL_STUB(psym, p_sym)
