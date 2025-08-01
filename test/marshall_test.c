@@ -588,6 +588,7 @@ TEST_CASE(marshall_tag)
                     "\x00\x01\x03\x00\x00\x00Ta"
                     "g\x00! \x00\x00\x00\x00"
                     "\x00\x00\x00");
+  // Complex
   MARSHALL_TEST_TAG("1 +i 2",
                     "KC3MARSH"
                     "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -597,6 +598,30 @@ TEST_CASE(marshall_tag)
                     "i\x02\x00\x00\x00\x00\x00\x00"
                     "\x00\x11\x01\x11\x02 \x00\x00"
                     "\x00\x00\x00\x00\x00");
+  // Unquote
+  MARSHALL_TEST_TAG("unquote(123)",
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x03\x00\x00\x00\x00\x00\x00\x00"
+                    "&\x11{");
+  MARSHALL_TEST_TAG("%Time{}",
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x12\x00\x00\x00\x00\x00\x00\x00"
+                    "$\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00");
+  MARSHALL_TEST_TAG("%Time{tv_sec: 1000, tv_nsec: 2000}",
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x12\x00\x00\x00\x00\x00\x00\x00"
+                    "$\x00\xE8\x03\x00\x00\x00\x00"
+                    "\x00\x00\xD0\x07\x00\x00\x00\x00"
+                    "\x00\x00");
+  MARSHALL_TEST_TAG("%Time{tv_sec: 1 + 1, tv_nsec: 2 + 2}", "");
 }
 TEST_CASE_END(marshall_tag)
 

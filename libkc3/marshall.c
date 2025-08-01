@@ -550,6 +550,24 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   return NULL;
 }
 
+s_marshall *marshall_time(s_marshall *m, bool heap, const s_time *time)
+{
+  assert(m);
+  assert(time);
+  if (! m || ! time ||
+      ! marshall_bool(m, heap, time->tag ? true : false))
+    return NULL;
+  if (time->tag) {
+    if (! marshall_tag(m, heap, time->tag) ||
+        ! marshall_tag(m, heap, time->tag + 1))
+      return NULL;
+  }
+  else if (! marshall_uw(m, heap, time->tv_sec) ||
+           ! marshall_uw(m, heap, time->tv_nsec))
+    return NULL;
+  return m;
+}
+
 sw marshall_to_buf (s_marshall *m, s_buf *out)
 {
   s_marshall_header mh = {0};
@@ -636,6 +654,18 @@ DEF_MARSHALL(u8)
 DEF_MARSHALL(u16)
 DEF_MARSHALL(u32)
 DEF_MARSHALL(u64)
+
+s_marshall *marshall_unquote(s_marshall *m, bool heap,
+                             const s_unquote *unquote)
+{
+  assert(m);
+  assert(unquote);
+  assert(unquote->tag);
+  if (! unquote->tag || ! marshall_tag(m, heap, unquote->tag))
+    return NULL;
+  return m;
+}
+
 DEF_MARSHALL(uw)
 
 s_marshall *marshall_var(s_marshall *m, bool heap, const s_var *var)
@@ -671,5 +701,3 @@ DEF_MARSHALL_STUB(ptr_free, u_ptr_w)
 DEF_MARSHALL_STUB(struct, const s_struct *)
 DEF_MARSHALL_STUB(struct_type, const s_struct_type *)
 DEF_MARSHALL_STUB(psym, p_sym)
-DEF_MARSHALL_STUB(time, const s_time *)
-DEF_MARSHALL_STUB(unquote, const s_unquote *)

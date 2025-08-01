@@ -16,13 +16,14 @@
 | Pointer         |   ✅   |   ✅   |
 | Tag             |   ✅   |   ✅   | Everything else |
 | Tuple           |   ✅   |   ❌   |
-| Float           |   ✅   |   ❌   |
+| Float           |   ✅   |   ✅   |
 | Ident           |   ✅   |   ❌   |
 | Call            |   ✅   |   ❌   | pcallable       |
 | Do Block        |   ✅   |   ❌   | call            |
 | Map             |   ✅   |   ❌   | Tag             |
 | Sym             |   ✅   |   ❌   |
-| PCallable       |   ✅   |   ❌   | u_callable_data |
+| Callable        |   ✅   |   🚧   | u_callable_data |
+| PCallable       |   ✅   |   ❌   | callable |
 | cfn             |   ✅   |   ❌   |
 | fn              |   ✅   |   ❌   |
 | Ratio           |   ✅   |   ❌   |
@@ -30,15 +31,16 @@
 | Var             |   ✅   |   ❌   | Tag             |
 | PVar            |   ✅   |   ❌   |
 | Complex         |   ✅   |   ❌   |
+| Unquote         |   ✅   |   ❌   | Tag             |
+| Time            |   🚧   |   ❌   | Tag             |
+| Ptr             |   ❌   |   ❌   |
+| Ptr free        |   ❌   |   ❌   |
 | Array           |   ❌   |   ❌   |
-| Unquote         |   ❌   |   ❌   | Tag             |
 | Fact            |   ❌   |   ❌   |
 | Cow             |   ❌   |   ❌   |
-| Ptr free        |   ❌   |   ❌   |
 | PStruct Type    |   ❌   |   ❌   |
 | PStruct         |   ❌   |   ❌   |
 | Fact            |   ❌   |   ❌   |
-| Time            |   ❌   |   ❌   | Tag             |
 | PTag            |   ❌   |   ❌   | Tag             |
 ... (others)
 
