@@ -657,7 +657,7 @@ union tag_data {
   p_list        plist;
   p_struct      pstruct;
   p_struct_type pstruct_type;
-  const s_sym  *psym;
+  p_sym         psym;
   p_tag         ptag;
   u_ptr_w       ptr;
   u_ptr_w       ptr_free;
