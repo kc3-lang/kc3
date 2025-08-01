@@ -17,6 +17,7 @@
 
 /* Stack-allocation compatible functions */
 #define    fact_clean(fact) do {} while(0)
+void       fact_clean_all (s_fact *fact);
 s_fact *   fact_init (s_fact *fact, s_tag *subject,
                       s_tag *predicate, s_tag *object);
 s_fact *   fact_init_cast (s_fact *fact, const s_sym * const *type,

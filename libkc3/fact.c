@@ -13,10 +13,20 @@
 #include "assert.h"
 #include "buf.h"
 #include "buf_inspect.h"
+#include "buf_parse.h"
 #include "hash.h"
 #include "fact.h"
 #include "sym.h"
 #include "tag.h"
+#include <string.h>
+
+void fact_clean_all (s_fact *fact)
+{
+  assert(fact);
+  tag_delete(fact->subject);
+  tag_delete(fact->predicate);
+  tag_delete(fact->object);
+}
 
 uw * fact_hash_uw (const s_fact *fact, uw *dest)
 {
@@ -39,6 +49,30 @@ s_fact * fact_init (s_fact *fact, s_tag *subject,
   fact->id = 0;
   return fact;
 }
+
+s_fact * fact_init_1(s_fact *fact, const char *p)
+{
+  s_buf buf;
+  uw len;
+  sw r;
+  s_fact tmp = {0};
+  assert(fact);
+  assert(p);
+  len = strlen(p);
+  buf_init_const(&buf, len, p);
+  buf.wpos = len;
+  r = buf_parse_fact(&buf, &tmp);
+  if (r < 0 || (uw) r != len) {
+    err_puts("array_init_1: invalid array");
+    assert(! "array_init_1: invalid array");
+    if (r > 0)
+      fact_clean_all(&tmp);
+    return NULL;
+  }
+  fact_clean_all(&tmp);
+  return fact;
+}
+
 
 s_fact * fact_init_cast (s_fact *fact, const s_sym * const *type,
                          s_tag *tag)

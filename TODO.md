@@ -36,12 +36,11 @@
 | Ptr             |   ✅   |   ❌   |
 | Ptr free        |   ✅   |   ❌   |
 | Array           |   ❌   |   🚧   |
-| Fact            |   ❌   |   ❌   |
+| Fact            |   ✅   |   ❌   |
 | Cow             |   ❌   |   ❌   |
-| PStruct Type    |   ❌   |   ❌   |
 | PStruct         |   ❌   |   ❌   |
-| Fact            |   ❌   |   ❌   |
-| PTag            |   ❌   |   ❌   | Tag             |
+| PStruct Type    |   ❌   |   ❌   |
+| PTag            |   ✅   |   ❌   | Tag             |
 ... (others)
 
 ✅ : Done

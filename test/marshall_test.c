@@ -117,7 +117,6 @@ void marshall_test (void)
 
 TEST_CASE(marshall_bool)
 {
-  // MARSHALL_TEST_BOOL(bool
   MARSHALL_TEST(bool, false,
                 "KC3MARSH"
                 "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -212,6 +211,23 @@ TEST_CASE(marshall_plist_twice)
   marshall_clean(&m);
 }
 TEST_CASE_END(marshall_plist_twice)
+
+TEST_CASE(marshall_fact)
+{
+  s_marshall m = {0};
+  s_fact fact = {0};
+  s_str str = {0};
+  const s_str expected = STR_1("");
+
+  TEST_ASSERT(marshall_init(&m));
+  fact_init_1(&fact, "{1, 2, 3}");
+  TEST_ASSERT(marshall_fact(&m, false, &fact));
+  marshall_to_str(&m, &str);
+  TEST_STR_EQ(str, expected);
+  str_clean(&str);
+  marshall_clean(&m);
+}
+TEST_CASE_END(marshall_plist)
 
 TEST_CASE(marshall_s8)
 {
