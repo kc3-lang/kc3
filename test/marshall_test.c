@@ -605,6 +605,7 @@ TEST_CASE(marshall_tag)
                     "\x00\x00\x00\x00\x00\x00\x00\x00"
                     "\x03\x00\x00\x00\x00\x00\x00\x00"
                     "&\x11{");
+  // Time
   MARSHALL_TEST_TAG("%Time{}",
                     "KC3MARSH"
                     "\x00\x00\x00\x00\x00\x00\x00\x00"
