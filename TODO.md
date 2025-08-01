@@ -23,19 +23,19 @@
 | Map             |   ✅   |   ❌   | Tag             |
 | Sym             |   ✅   |   ❌   |
 | Callable        |   ✅   |   🚧   | u_callable_data |
-| PCallable       |   ✅   |   ❌   | callable |
-| cfn             |   ✅   |   ❌   |
-| fn              |   ✅   |   ❌   |
+| PCallable       |   ✅   |   🚧   | callable |
+| cfn             |   ✅   |   🚧   |
+| fn              |   ✅   |   🚧   |
 | Ratio           |   ✅   |   ❌   |
 | Quote           |   ✅   |   ❌   |
 | Var             |   ✅   |   ❌   | Tag             |
 | PVar            |   ✅   |   ❌   |
 | Complex         |   ✅   |   ❌   |
 | Unquote         |   ✅   |   ❌   | Tag             |
-| Time            |   🚧   |   ❌   | Tag             |
-| Ptr             |   ❌   |   ❌   |
-| Ptr free        |   ❌   |   ❌   |
-| Array           |   ❌   |   ❌   |
+| Time            |   ✅   |   ❌   | Tag             |
+| Ptr             |   ✅   |   ❌   |
+| Ptr free        |   ✅   |   ❌   |
+| Array           |   ❌   |   🚧   |
 | Fact            |   ❌   |   ❌   |
 | Cow             |   ❌   |   ❌   |
 | PStruct Type    |   ❌   |   ❌   |

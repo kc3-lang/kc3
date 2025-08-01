@@ -409,6 +409,27 @@ s_marshall * marshall_plist (s_marshall *m, bool heap,
   return m;
 }
 
+s_marshall * marshall_ptr (s_marshall *m, bool heap, u_ptr_w ptr)
+{
+  assert(m);
+  if (! ptr.p)
+    return marshall_uw(m, heap, 0);
+  err_puts("marshall_ptr: non-null pointer.");
+  assert(! "marshall_ptr: non-null pointer.");
+  return NULL;
+}
+
+s_marshall * marshall_ptr_free (s_marshall *m, bool heap,
+                                u_ptr_w ptr_free)
+{
+  assert(m);
+  if (! ptr_free.p)
+    return marshall_uw(m, heap, 0);
+  err_puts("marshall_ptr_free: non-null pointer.");
+  assert(! "marshall_ptr_free: non-null pointer.");
+  return NULL;
+}
+
 s_marshall *marshall_pvar(s_marshall *m, bool heap, p_var pvar)
 {
   assert(m);
@@ -696,8 +717,6 @@ DEF_MARSHALL_STUB(pcow, p_cow)
 DEF_MARSHALL_STUB(pstruct, p_struct)
 DEF_MARSHALL_STUB(pstruct_type, p_struct_type)
 DEF_MARSHALL_STUB(ptag, p_tag)
-DEF_MARSHALL_STUB(ptr, u_ptr_w)
-DEF_MARSHALL_STUB(ptr_free, u_ptr_w)
 DEF_MARSHALL_STUB(struct, const s_struct *)
 DEF_MARSHALL_STUB(struct_type, const s_struct_type *)
 DEF_MARSHALL_STUB(psym, p_sym)

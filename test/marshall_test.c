@@ -621,7 +621,35 @@ TEST_CASE(marshall_tag)
                     "$\x00\xE8\x03\x00\x00\x00\x00"
                     "\x00\x00\xD0\x07\x00\x00\x00\x00"
                     "\x00\x00");
-  MARSHALL_TEST_TAG("%Time{tv_sec: 1 + 1, tv_nsec: 2 + 2}", "");
+  MARSHALL_TEST_TAG("%Time{tv_sec: 1 + 1, tv_nsec: 2 + 2}",
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    ":\x00\x00\x00\x00\x00\x00\x00"
+                    "$\x01\x04\x00\x01\x01\x00\x00"
+                    "\x00+\x02\x00\x00\x00\x00\x00"
+                    "\x00\x00\x11\x01\x11\x01 \x00"
+                    "\x00\x00\x00\x00\x00\x00\x04\x00"
+                    "\x01\x01\x00\x00\x00+\x02\x00"
+                    "\x00\x00\x00\x00\x00\x00\x11\x02"
+                    "\x11\x02 \x00\x00\x00\x00\x00"
+                    "\x00\x00");
+  // Ptr
+  MARSHALL_TEST_TAG("(Ptr) 0",
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\t\x00\x00\x00\x00\x00\x00\x00"
+                    "\x1F\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00");
+  // PtrFree
+  MARSHALL_TEST_TAG("(PtrFree) 0",
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\t\x00\x00\x00\x00\x00\x00\x00"
+                    "\x1F\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00");
 }
 TEST_CASE_END(marshall_tag)
 
