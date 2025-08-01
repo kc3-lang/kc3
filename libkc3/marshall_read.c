@@ -69,12 +69,73 @@ s_marshall_read * marshall_read_array (s_marshall_read *mr,
 
 s_marshall_read * marshall_read_array_data (s_marshall_read *mr,
                                             bool heap,
-                                            s_array *src)
+                                            s_array *dest)
 {
-  for (u8 i = 0; i <= src->count; i++) {
-    if (marshall_read_uw(mr, heap, &((uw *)src->data)[i]))
+  for (u8 i = 0; i <= dest->count; i++) {
+    if (marshall_read_uw(mr, heap, &((uw *)dest->data)[i]))
       return NULL;
   }
+  return mr;
+}
+
+s_marshall_read * marshall_read_call (s_marshall_read *mr,
+                                            bool heap,
+                                            s_call *dest)
+{
+  s_call call = {0};
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_ident(mr, heap, &call.ident) ||
+      ! marshall_read_list(mr, heap, call.arguments) ||
+      ! marshall_read_pcallable(mr, heap, &call.pcallable)) {
+    err_puts("marshall_read_call: read_error");
+    assert(! "marshall_read_call: read_error");
+    return NULL;
+  }
+  *dest = call;
+  return mr;
+}
+
+s_marshall_read * marshall_read_callable_data (s_marshall_read *mr,
+                                      bool heap,
+                                      u_callable_data *dest)
+{
+  assert(mr);
+  assert(dest);
+  u_callable_data tmp = {0};
+  if (! marshall_read_cfn(mr, heap, &tmp.cfn) ||
+      ! marshall_read_fn(mr, heap, &tmp.fn)) {
+    err_puts("marshall_read_call: read_error");
+    assert(! "marshall_read_call: read_error");
+    return NULL;
+  }
+  *dest = tmp;
+  return mr;
+}
+
+s_marshall_read * marshall_read_cfn (s_marshall_read *mr,
+                                     bool heap,
+                                     s_cfn *dest)
+{
+  assert(mr);
+  assert(dest);
+  s_cfn tmp = {0};
+  if (! marshall_read_bool(mr, heap, &tmp.macro)                     ||
+      ! marshall_read_bool(mr, heap, &tmp.special_operator)          ||
+      ! marshall_read_sym(mr, heap, (s_sym *)tmp.name)               ||
+      ! marshall_read_uw(mr, heap, (uw *)&tmp.ptr)                   ||
+      ! marshall_read_u8(mr, heap, &tmp.arity)                       ||
+      ! marshall_read_sym(mr, heap, (s_sym *)tmp.result_type)        ||
+      ! marshall_read_bool(mr, heap, &tmp.arg_result)                ||
+      ! marshall_read_list(mr, heap, tmp.arg_types)                  ||
+      // ! marshall_read_cif(mr, heap, tmp.cif)                      ||
+      ! marshall_read_bool(mr, heap, &tmp.ready)                   /*||
+      ! marshall_read_mutex(mr, heap, &tmp.mutex)*/) {
+    err_puts("marshall_read_cfn: read_error");
+    assert(! "marshall_read_cfn: read_error");
+    return NULL;
+  }
+  *dest = tmp;
   return mr;
 }
 
@@ -104,6 +165,25 @@ s_marshall_read * marshall_read_dimensions (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_uw(mr, heap, &tmp.count) ||
       ! marshall_read_uw(mr, heap, &tmp.item_size))
+    return NULL;
+  *dest = tmp;
+  return mr;
+}
+
+s_marshall_read * marshall_read_fn(s_marshall_read *mr,
+                                   bool heap,
+                                   s_fn *dest)
+{
+  s_fn tmp = {0};
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_bool(mr, heap, &tmp.macro)                   ||
+      ! marshall_read_bool(mr, heap, &tmp.special_operator)        ||
+      ! marshall_read_ident(mr, heap, &tmp.ident)                  ||
+      // ! marshall_read_fn_clause(mr, heap, &tmp.clauses)         ||
+      ! marshall_read_sym(mr, heap, (s_sym *)tmp.module)        /* ||
+      ! marshall_read_frame(mr, heap, tmp.frame) */
+      )
     return NULL;
   *dest = tmp;
   return mr;
@@ -233,14 +313,32 @@ uw  marshall_read_ht_hash (const s_tag *tag)
   return hash_to_uw(&h);
 }
 
-// TODO add error msg
+s_marshall_read * marshall_read_ident(s_marshall_read *mr,
+                                      bool heap,
+                                      s_ident *dest)
+{
+  s_ident tmp_id = {0};
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_sym(mr, heap, (s_sym *)tmp_id.sym) ||
+      ! marshall_read_sym(mr, heap, (s_sym *)tmp_id.sym))
+    return NULL;
+  *dest = tmp_id;
+  return mr;
+}
+
 s_marshall_read * marshall_read_init (s_marshall_read *mr)
 {
   s_marshall_read tmp = {0};
   assert(mr);
-  if (! buf_init_alloc(&tmp.heap, BUF_SIZE))
+  if (! buf_init_alloc(&tmp.heap, BUF_SIZE)) {
+    err_puts("marshall_read_init: heap allocation error");
+    assert(! "marshall_read_init: heap allocation error");
     return NULL;
+  }
   if (! buf_init_alloc(&tmp.buf, BUF_SIZE)) {
+    err_puts("marshall_read_init: buffer allocation error");
+    assert(! "marshall_read_init: buffer allocation error");
     buf_clean(&tmp.heap);
     return NULL;
   }
@@ -261,11 +359,11 @@ s_marshall_read * marshall_read_init_1 (s_marshall_read *mr,
 }
 
 s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
-                                          const s_str *src)
+                                          const s_str *dest)
 {
   s_marshall_read tmp = {0};
   assert(mr);
-  if (! buf_init_str_copy(&tmp.buf, src)) {
+  if (! buf_init_str_copy(&tmp.buf, dest)) {
     err_puts("marshall_read_init_str: buf_init_str_copy");
     assert(! "marshall_read_init_str: buf_init_str_copy");
     return NULL;
@@ -340,6 +438,22 @@ s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
     return NULL;
   }
   *dest = tmp;
+  return mr;
+}
+
+s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
+                                           bool heap,
+                                           p_callable *dest)
+{
+  p_callable tmp_call = {0};
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_s8(mr, heap, &(*((s8 *)tmp_call->type))) ||
+      ! marshall_read_callable_data(mr, heap, &tmp_call->data) ||
+      /*! marshall_read_mutex(mr, heap, &tmp_call->mutex)      ||*/
+      ! marshall_read_sw(mr, heap, &tmp_call->ref_count))
+    return NULL;
+  *dest = tmp_call;
   return mr;
 }
 
@@ -488,13 +602,10 @@ DEF_MARSHALL_READ(uw, uw)
     return NULL;                                                       \
   }
 
-DEF_MARSHALL_READ_STUB(call, s_call)
-DEF_MARSHALL_READ_STUB(callable, s_callable)
 DEF_MARSHALL_READ_STUB(cow, s_cow)
 DEF_MARSHALL_READ_STUB(complex, s_complex)
 DEF_MARSHALL_READ_STUB(do_block, s_do_block)
 DEF_MARSHALL_READ_STUB(fact, s_fact)
-DEF_MARSHALL_READ_STUB(ident, s_ident)
 DEF_MARSHALL_READ_STUB(map, s_map)
 DEF_MARSHALL_READ_STUB(quote, s_quote)
 DEF_MARSHALL_READ_STUB(ratio, s_ratio)
@@ -504,7 +615,6 @@ DEF_MARSHALL_READ_STUB(tuple, s_tuple)
 DEF_MARSHALL_READ_STUB(time, s_time)
 DEF_MARSHALL_READ_STUB(unquote, s_unquote)
 DEF_MARSHALL_READ_STUB(var, s_var)
-DEF_MARSHALL_READ_STUB(pcallable, p_callable)
 DEF_MARSHALL_READ_STUB(pcomplex, p_complex)
 DEF_MARSHALL_READ_STUB(pcow, p_cow)
 DEF_MARSHALL_READ_STUB(pstruct, p_struct)
