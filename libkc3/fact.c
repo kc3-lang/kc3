@@ -107,14 +107,15 @@ s_fact * fact_init_copy (s_fact *fact, const s_fact *src)
   return fact;
 }
 
-void fact_r (s_fact_w *fact, s_fact *dest)
+s_fact * fact_init_fact_w (s_fact *fact, s_fact_w *fact_w)
 {
   s_fact tmp = {0};
-  tmp.subject = &fact->subject;
-  tmp.predicate = &fact->predicate;
-  tmp.object = &fact->object;
-  tmp.id = fact->id;
-  *dest = tmp;
+  tmp.subject = &fact_w->subject;
+  tmp.predicate = &fact_w->predicate;
+  tmp.object = &fact_w->object;
+  tmp.id = fact_w->id;
+  *fact = tmp;
+  return fact;
 }
 
 void fact_w_clean (s_fact_w *fact)
@@ -180,4 +181,3 @@ s_fact_w * fact_w_init_fact (s_fact_w *fact, s_fact *src)
   *fact = tmp;
   return fact;
 }
-

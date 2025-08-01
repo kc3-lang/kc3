@@ -1785,7 +1785,90 @@ sw buf_parse_f128 (s_buf *buf, f128 *dest) {
   return r;
 }
 
-sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
+sw buf_parse_fact (s_buf *buf, s_fact *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_fact tmp = {0};
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if (! (tmp.subject = tag_new()) ||
+      ! (tmp.predicate = tag_new()) ||
+      ! (tmp.object = tag_new())) {
+    r = -1;
+    goto clean;
+  }
+  if ((r = buf_read_1(buf, "{")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_static_tag(buf, tmp.subject)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, ",")) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_static_tag(buf, tmp.predicate)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, ",")) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_static_tag(buf, tmp.object)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "}")) <= 0)
+    goto restore;
+  result += r;
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  fact_clean_all(&tmp);
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_fact_w (s_buf *buf, s_fact_w *dest)
 {
   sw r;
   sw result = 0;

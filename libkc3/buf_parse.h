@@ -68,6 +68,7 @@ sw buf_parse_digit_oct (s_buf *buf, u8 *dest);
 sw buf_parse_digit_dec (s_buf *buf, u8 *dest);
 sw buf_parse_f32 (s_buf *buf, f32 *dest);
 sw buf_parse_f64 (s_buf *buf, f64 *dest);
+sw buf_parse_fact (s_buf *buf, s_fact *dest);
 sw buf_parse_fact_w (s_buf *buf, s_fact_w *dest);
 sw buf_parse_fn (s_buf *buf, s_fn *dest);
 sw buf_parse_fn_clause (s_buf *buf, s_fn_clause *dest);

@@ -345,9 +345,9 @@ s_facts * facts_init (s_facts *facts)
 
 sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
 {
-  s_fact_w fact;
-  s_fact_w fact_eval;
-  s_fact   fact_eval_r;
+  s_fact   eval_fact;
+  s_fact_w eval_fact_w;
+  s_fact_w fact_w;
   sw r;
   bool replace;
   sw result = 0;
@@ -381,7 +381,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
         break;
     }
     result += r;
-    if ((r = buf_parse_fact(buf, &fact)) <= 0) {
+    if ((r = buf_parse_fact_w(buf, &fact_w)) <= 0) {
       err_write_1("facts_load: invalid fact line ");
       err_inspect_sw_decimal(&buf->line);
       err_write_1(": ");
@@ -393,7 +393,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
     }
     result += r;
     if ((r = buf_read_1(buf, "\n")) <= 0) {
-      fact_w_clean(&fact);
+      fact_w_clean(&fact_w);
       err_write_1("facts_load: missing newline line ");
       err_inspect_sw_decimal(&buf->line);
       err_write_1(": ");
@@ -403,8 +403,8 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       goto ko;
     }
     result += r;
-    if (! fact_w_eval(&fact, &fact_eval)) {
-      fact_w_clean(&fact);
+    if (! fact_w_eval(&fact_w, &eval_fact_w)) {
+      fact_w_clean(&fact_w);
       err_write_1("facts_load: failed to eval fact line ");
       err_inspect_sw_decimal(&buf->line);
       err_write_1(": ");
@@ -413,11 +413,21 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       assert(! "facts_load: invalid fact");
       goto ko;
     }
-    fact_r(&fact_eval, &fact_eval_r);
+    if (! fact_init_fact_w(&eval_fact, &eval_fact_w)) {
+      fact_w_clean(&eval_fact_w);
+      fact_w_clean(&fact_w);
+      err_write_1("facts_load: failed to eval fact line ");
+      err_inspect_sw_decimal(&buf->line);
+      err_write_1(": ");
+      err_puts(path->ptr.pchar);
+      err_inspect_buf(buf);
+      assert(! "facts_load: invalid fact");
+      goto ko;
+    }
     if (replace) {
-      if (! facts_replace_fact(facts, &fact_eval_r)) {
-	fact_w_clean(&fact_eval);
-	fact_w_clean(&fact);
+      if (! facts_replace_fact(facts, &eval_fact)) {
+	fact_w_clean(&eval_fact_w);
+	fact_w_clean(&fact_w);
 	err_write_1("facts_load: failed to replace fact line ");
 	err_inspect_sw_decimal(&buf->line);
 	err_write_1(": ");
@@ -427,9 +437,9 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       }
     }
     else {
-      if (! facts_add_fact(facts, &fact_eval_r)) {
-	fact_w_clean(&fact_eval);
-	fact_w_clean(&fact);
+      if (! facts_add_fact(facts, &eval_fact)) {
+	fact_w_clean(&eval_fact_w);
+	fact_w_clean(&fact_w);
 	err_write_1("facts_load: failed to add fact line ");
 	err_inspect_sw_decimal(&buf->line);
 	err_write_1(": ");
@@ -438,8 +448,8 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
 	goto ko;
       }
     }
-    fact_w_clean(&fact);
-    fact_w_clean(&fact_eval);
+    fact_w_clean(&fact_w);
+    fact_w_clean(&eval_fact_w);
   }
   if (env_global()->trace) {
     err_write_1("facts_load: ");
@@ -601,10 +611,11 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
       break;
     result += r;
     if (r) {
-      if ((r = buf_parse_fact(buf, &fact_w)) <= 0)
+      if ((r = buf_parse_fact_w(buf, &fact_w)) <= 0)
         break;
       result += r;
-      fact_r(&fact_w, &fact);
+      if (! fact_init_fact_w(&fact, &fact_w))
+        return -1;
       if (! facts_add_fact(facts, &fact))
         return -1;
       goto ok;
@@ -612,10 +623,11 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
     if ((r = buf_read_1(buf, "remove ")) <= 0)
       break;
     result += r;
-    if ((r = buf_parse_fact(buf, &fact_w)) <= 0)
+    if ((r = buf_parse_fact_w(buf, &fact_w)) <= 0)
       break;
     result += r;
-    fact_r(&fact_w, &fact);
+    if (! fact_init_fact_w(&fact, &fact_w))
+      return -1;
     if (! facts_remove_fact(facts, &fact, &b))
       return -1;
   ok:

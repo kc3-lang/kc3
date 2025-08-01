@@ -15,14 +15,19 @@
 
 #include "types.h"
 
-/* Stack-allocation compatible functions */
+/* Stack-allocation compatible functions. Call fact_clean after use. */
 #define    fact_clean(fact) do {} while(0)
 void       fact_clean_all (s_fact *fact);
 s_fact *   fact_init (s_fact *fact, s_tag *subject,
                       s_tag *predicate, s_tag *object);
+s_fact *   fact_init_1 (s_fact *fact, const char *p);
 s_fact *   fact_init_cast (s_fact *fact, const s_sym * const *type,
                            s_tag *tag);
 s_fact *   fact_init_copy (s_fact *fact, const s_fact *src);
+s_fact *   fact_init_fact_w (s_fact *fact, s_fact_w *fact_w);
+
+/* Stack-allocation compatible functions. Call fact_w_clean
+   after use. */
 s_fact_w * fact_w_init (s_fact_w *fact);
 s_fact_w * fact_w_init_fact (s_fact_w *fact, s_fact *src);
 void       fact_w_clean (s_fact_w *fact);
@@ -31,7 +36,6 @@ void       fact_w_clean (s_fact_w *fact);
 uw *     fact_hash_uw (const s_fact *fact, uw *dest);
 
 /* Operators */
-void       fact_r (s_fact_w *fact, s_fact *dest);
 s_fact_w * fact_w_eval (s_fact_w *fact, s_fact_w *dest);
 
 #endif /* LIBKC3_FACT_H */

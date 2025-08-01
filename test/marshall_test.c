@@ -12,6 +12,7 @@
  */
 
 #include <endian.h>
+#include "../libkc3/fact.h"
 #include "../libkc3/file.h"
 #include "../libkc3/marshall.h"
 #include "../libkc3/str.h"
