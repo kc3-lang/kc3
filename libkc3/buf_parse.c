@@ -4790,10 +4790,9 @@ sw buf_parse_tag_void (s_buf *buf, s_tag *dest)
 sw buf_parse_time (s_buf *buf, s_time *dest)
 {
   sw r;
-  if ((r = buf_parse_time_as_sw(buf, dest)) > 0 ||
-      (r = buf_parse_time_as_tags(buf, dest)))
+  if ((r = buf_parse_time_as_sw(buf, dest)) > 0)
     return r;
-  return 0;
+  return buf_parse_time_as_tags(buf, dest);
 }
 
 sw buf_parse_time_as_sw (s_buf *buf, s_time *dest)
@@ -4858,6 +4857,7 @@ sw buf_parse_time_as_sw (s_buf *buf, s_time *dest)
         if ((r = buf_ignore_spaces(buf)) < 0)
           goto restore;
         result += r;
+        continue;
       }
     }
     if ((r = buf_read_1(buf, "tv_nsec:")) < 0)
@@ -4897,8 +4897,10 @@ sw buf_parse_time_as_sw (s_buf *buf, s_time *dest)
         if ((r = buf_ignore_spaces(buf)) < 0)
           goto restore;
         result += r;
+        continue;
       }
     }
+    break;
   }
   r = -1;
  restore:
