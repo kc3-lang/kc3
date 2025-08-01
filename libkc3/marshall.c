@@ -57,6 +57,53 @@
 
 DEF_MARSHALL(bool)
 
+s_marshall * marshall_call (s_marshall *m, bool heap,
+                            const s_call *call)
+{
+  s_list *list;
+  assert(m);
+  assert(call);
+  if (! m || ! call ||
+      ! marshall_ident(m, heap, &call->ident))
+    return NULL;
+  list = call->arguments;
+  if (! marshall_uw(m, heap, list_length(list)))
+    return NULL;
+  while (list) {
+    if (! marshall_tag(m, heap, &list->tag))
+      return NULL;
+    list = list_next(list);
+  }
+  if (! marshall_pcallable(m, heap, call->pcallable))
+    return NULL;
+  return m;
+}
+
+s_marshall * marshall_callable (s_marshall *m, bool heap,
+                                const s_callable *callable)
+{
+  assert(m);
+  assert(callable);
+  if (! m || ! callable)
+    return NULL;
+  if (! marshall_u8(m, heap, callable->type)) {
+    err_puts("marshall_callable: marshall_u8");
+    return NULL;
+  }
+  switch (callable->type) {
+    case CALLABLE_CFN:
+      return marshall_cfn(m, heap, &callable->data.cfn);
+    case CALLABLE_FN:
+      return marshall_fn(m, heap, &callable->data.fn);
+    default:
+      err_write_1("marshall_callable: unknown callable type: ");
+      err_inspect_u32_decimal(&callable->type);
+      err_write_1("\n");
+      assert(! "marshall_callable: unknown callable type");
+  }
+  return m;
+}
+
 s_marshall * marshall_cfn (s_marshall *m, bool heap, const s_cfn *cfn)
 {
   assert(m);
@@ -72,13 +119,77 @@ s_marshall * marshall_cfn (s_marshall *m, bool heap, const s_cfn *cfn)
   return m;
 }
 
+s_marshall * marshall_character (s_marshall *m, bool heap,
+                                 character src)
+{
+  sw r;
+  s_buf *buf;
+  assert(m);
+  buf = heap ? &m->heap : &m->buf;
+  if ((r = buf_write_character_utf8(buf, src)) <= 0)
+    return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
+  return m;
+}
+
+void marshall_clean (s_marshall *m)
+{
+  assert(m);
+  buf_clean(&m->buf);
+  buf_clean(&m->heap);
+  ht_clean(&m->ht);
+}
+
+s_marshall *marshall_complex(s_marshall *m, bool heap,
+                             const s_complex *c)
+{
+  assert(m);
+  assert(c);
+  if (! m || ! c ||
+      ! marshall_tag(m, heap, &c->x) ||
+      ! marshall_tag(m, heap, &c->y))
+    return NULL;
+  return m;
+}
+
+void marshall_delete (s_marshall *m)
+{
+  marshall_clean(m);
+  free(m);
+}
+
+s_marshall * marshall_do_block (s_marshall *m, bool heap,
+                             const s_do_block *do_block)
+{
+  uw i;
+  assert(m);
+  assert(do_block);
+  if (! m || ! do_block ||
+      ! marshall_uw(m, heap, do_block->count) ||
+      ! marshall_bool(m, heap, do_block->short_form))
+    return NULL;
+  i = 0;
+  while (i < do_block->count) {
+    if (! marshall_tag(m, heap, do_block->tag + i))
+      return NULL;
+    i++;
+  }
+  return m;
+}
+
+DEF_MARSHALL(f32)
+DEF_MARSHALL(f64)
+DEF_MARSHALL(f128)
+
 s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)
 {
   s_fn_clause *clause;
   assert(m);
   assert(fn);
-  assert(fn->frame);
-  assert(! fn->frame->next);
+  assert(! fn->frame || ! fn->frame->next);
   if (! m || ! fn)
     return NULL;
   if (! marshall_bool(m, heap, fn->macro) ||
@@ -93,10 +204,13 @@ s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)
         return NULL;
     clause = clause->next_clause;
   }
+ if (fn->frame && ! marshall_frame(m, heap, fn->frame))
+    return NULL;
   return m;
 }
 
-s_marshall * marshall_frame (s_marshall *m, bool heap, const s_frame *frame)
+s_marshall * marshall_frame (s_marshall *m, bool heap,
+                             const s_frame *frame)
 {
   s_binding *bindings;
   assert(m);
@@ -115,8 +229,8 @@ s_marshall * marshall_frame (s_marshall *m, bool heap, const s_frame *frame)
   return m;
 }
 
-s_marshall * marshall_heap_pointer (s_marshall *m, bool heap, const void *p,
-                                    bool *present)
+s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
+                                    const void *p, bool *present)
 {
   s_buf *buf;
   s_tag key = {0};
@@ -168,34 +282,16 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap, const void *p,
   return NULL;
 }
 
-s_marshall * marshall_character (s_marshall *m, bool heap,
-                                 character src)
+s_marshall * marshall_ident (s_marshall *m, bool heap,
+                             const s_ident *ident)
 {
-  sw r;
-  s_buf *buf;
   assert(m);
-  buf = heap ? &m->heap : &m->buf;
-  if ((r = buf_write_character_utf8(buf, src)) <= 0)
+  assert(ident);
+  if (! m || ! ident ||
+      ! marshall_sym(m, heap, ident->module) ||
+      ! marshall_sym(m, heap, ident->sym))
     return NULL;
-  if (heap)
-    m->heap_pos += r;
-  else
-    m->buf_pos += r;
   return m;
-}
-
-void marshall_clean (s_marshall *m)
-{
-  assert(m);
-  buf_clean(&m->buf);
-  buf_clean(&m->heap);
-  ht_clean(&m->ht);
-}
-
-void marshall_delete (s_marshall *m)
-{
-  marshall_clean(m);
-  free(m);
 }
 
 s_marshall * marshall_init (s_marshall *m)
@@ -240,8 +336,53 @@ s_marshall * marshall_list (s_marshall *m, bool heap,
   return m;
 }
 
+s_marshall *marshall_map (s_marshall *m, bool heap, const s_map *map)
+{
+  uw i = 0;
+  assert(m);
+  assert(map);
+  assert(map->count);
+  assert(map->key);
+  assert(map->value);
+  if (! marshall_uw(m, heap, map->count))
+    return NULL;
+  while (i < map->count) {
+    if (! marshall_tag(m, heap, map->key + i) ||
+        ! marshall_tag(m, heap, map->value + i))
+      return NULL;
+    i++;
+  }
+  return m;
+}
+
+s_marshall * marshall_new (void)
+{
+  s_marshall *m;
+  if (! (m = alloc(sizeof(s_marshall))))
+    return NULL;
+  if (marshall_init(m) == NULL) {
+    free(m);
+    return NULL;
+  }
+  return m;
+}
+
+s_marshall * marshall_pcallable (s_marshall *m, bool heap,
+                                 const p_callable callable)
+{
+  assert(m);
+  bool present = false;
+  if (! m)
+    return NULL;
+  if (! marshall_heap_pointer(m, heap, callable, &present))
+    return NULL;
+  if (! present && callable)
+    return marshall_callable(m, true, callable);
+  return m;
+}
+
 s_marshall * marshall_pframe (s_marshall *m, bool heap,
-                             const p_frame frame)
+                              const p_frame frame)
 {
   assert(m);
   bool present = false;
@@ -268,18 +409,39 @@ s_marshall * marshall_plist (s_marshall *m, bool heap,
   return m;
 }
 
-s_marshall * marshall_new (void)
+s_marshall *marshall_pvar(s_marshall *m, bool heap, p_var pvar)
 {
-  s_marshall *m;
-  if (! (m = alloc(sizeof(s_marshall))))
+  assert(m);
+  bool present = false;
+  if (! m ||
+      ! marshall_heap_pointer(m, heap, pvar, &present))
     return NULL;
-  if (marshall_init(m) == NULL) {
-    free(m);
-    return NULL;
-  }
+  if (! present && pvar)
+    return marshall_var(m, true, pvar);
   return m;
 }
 
+s_marshall * marshall_quote (s_marshall *m, bool heap,
+                             const s_quote *quote)
+{
+  assert(m);
+  assert(quote);
+  assert(quote->tag);
+  if (! quote->tag || ! marshall_tag(m, heap, quote->tag))
+    return NULL;
+  return m;
+}
+
+s_marshall * marshall_ratio (s_marshall *m, bool heap,
+                             const s_ratio *ratio)
+{
+  assert(m);
+  assert(ratio);
+  if (! marshall_integer(m, heap, &ratio->numerator) ||
+      ! marshall_integer(m, heap, &ratio->denominator))
+    return NULL;
+  return m;
+}
 DEF_MARSHALL(s8)
 DEF_MARSHALL(s16)
 DEF_MARSHALL(s32)
@@ -303,6 +465,20 @@ s_marshall * marshall_str (s_marshall *m, bool heap, const s_str *src)
     m->heap_pos += r;
   else
     m->buf_pos += r;
+  return m;
+}
+
+s_marshall * marshall_sym (s_marshall *m, bool heap,
+                           const s_sym *sym)
+{
+  assert(m);
+  if (! m)
+    return NULL;
+  if (! marshall_bool(m, heap, sym ? true : false))
+    return NULL;
+  if (sym &&
+      ! marshall_str(m, heap, &sym->str))
+    return NULL;
   return m;
 }
 
@@ -335,7 +511,7 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   case TAG_PCALLABLE:
     return marshall_pcallable(m, heap, tag->data.pcallable);
   case TAG_PCOMPLEX:
-    return marshall_pcomplex(m, heap, tag->data.pcomplex);
+    return marshall_complex(m, heap, tag->data.pcomplex);
   case TAG_PCOW:  return marshall_pcow(m, heap, tag->data.pcow);
   case TAG_PLIST: return marshall_plist(m, heap, tag->data.plist);
   case TAG_PSTRUCT:
@@ -397,10 +573,6 @@ sw marshall_to_buf (s_marshall *m, s_buf *out)
   return result;
 }
 
-DEF_MARSHALL(f32)
-DEF_MARSHALL(f64)
-DEF_MARSHALL(f128)
-
 sw marshall_to_file (s_marshall *m, const char *path)
 {
   FILE *fp;
@@ -460,136 +632,23 @@ s_marshall * marshall_tuple (s_marshall *m, bool heap,
   return m;
 }
 
-s_marshall *marshall_map (s_marshall *m, bool heap, const s_map *map)
-{
-  uw i = 0;
-  assert(m);
-  assert(map);
-  assert(map->count);
-  assert(map->key);
-  assert(map->value);
-  if (! marshall_uw(m, heap, map->count))
-    return NULL;
-  while (i < map->count) {
-    if (! marshall_tag(m, heap, map->key + i) ||
-        ! marshall_tag(m, heap, map->value + i))
-      return NULL;
-    i++;
-  }
-  return m;
-}
-
-s_marshall * marshall_sym (s_marshall *m, bool heap,
-                           const s_sym *sym)
-{
-  assert(m);
-  if (! m)
-    return NULL;
-  if (! marshall_bool(m, heap, sym ? true : false))
-    return NULL;
-  if (sym &&
-      ! marshall_str(m, heap, &sym->str))
-    return NULL;
-  return m;
-}
-
-s_marshall * marshall_callable (s_marshall *m, bool heap,
-                                const s_callable *callable)
-{
-  assert(m);
-  assert(callable);
-  if (! m || ! callable)
-    return NULL;
-  if (! marshall_u8(m, heap, callable->type)) {
-    err_puts("marshall_callable: marshall_u8");
-    return NULL;
-  }
-  switch (callable->type) {
-    case CALLABLE_CFN:
-      return marshall_cfn(m, heap, &callable->data.cfn);
-    case CALLABLE_FN:
-      return marshall_fn(m, heap, &callable->data.fn);
-    default:
-      err_write_1("marshall_callable: unknown callable type: ");
-      err_inspect_u32_decimal(&callable->type);
-      err_write_1("\n");
-      assert(! "marshall_callable: unknown callable type");
-  }
-  return m;
-}
-
-s_marshall * marshall_pcallable (s_marshall *m, bool heap,
-                                 const p_callable callable)
-{
-  assert(m);
-  bool present = false;
-  if (! m)
-    return NULL;
-  if (! marshall_heap_pointer(m, heap, callable, &present))
-    return NULL;
-  if (! present && callable)
-    return marshall_callable(m, true, callable);
-  return m;
-}
-
-s_marshall * marshall_ident (s_marshall *m, bool heap,
-                             const s_ident *ident)
-{
-  assert(m);
-  assert(ident);
-  if (! m || ! ident ||
-      ! marshall_sym(m, heap, ident->module) ||
-      ! marshall_sym(m, heap, ident->sym))
-    return NULL;
-  return m;
-}
-
-s_marshall * marshall_call (s_marshall *m, bool heap,
-                            const s_call *call)
-{
-  s_list *list;
-  assert(m);
-  assert(call);
-  if (! m || ! call ||
-      ! marshall_ident(m, heap, &call->ident))
-    return NULL;
-  list = call->arguments;
-  if (! marshall_uw(m, heap, list_length(list)))
-    return NULL;
-  while (list) {
-    if (! marshall_tag(m, heap, &list->tag))
-      return NULL;
-    list = list_next(list);
-  }
-  if (! marshall_pcallable(m, heap, call->pcallable))
-    return NULL;
-  return m;
-}
-
-s_marshall * marshall_do_block (s_marshall *m, bool heap,
-                             const s_do_block *do_block)
-{
-  uw i;
-  assert(m);
-  assert(do_block);
-  if (! m || ! do_block ||
-      ! marshall_uw(m, heap, do_block->count) ||
-      ! marshall_bool(m, heap, do_block->short_form))
-    return NULL;
-  i = 0;
-  while (i < do_block->count) {
-    if (! marshall_tag(m, heap, do_block->tag + i))
-      return NULL;
-    i++;
-  }
-  return m;
-}
-
 DEF_MARSHALL(u8)
 DEF_MARSHALL(u16)
 DEF_MARSHALL(u32)
 DEF_MARSHALL(u64)
 DEF_MARSHALL(uw)
+
+s_marshall *marshall_var(s_marshall *m, bool heap, const s_var *var)
+{
+  assert(m);
+  assert(var);
+  if (! m || ! var ||
+      ! marshall_bool(m, heap, var->bound) ||
+      ! marshall_sym(m, heap, var->type) || 
+      ! marshall_tag(m, heap, &var->tag))
+    return NULL;
+  return m;
+}
 
 #define DEF_MARSHALL_STUB(name, type)                                  \
   PROTO_MARSHALL(name, type)                                           \
@@ -603,19 +662,14 @@ DEF_MARSHALL(uw)
 
 DEF_MARSHALL_STUB(array, const s_array *)
 DEF_MARSHALL_STUB(fact, const s_fact *)
-DEF_MARSHALL_STUB(pcomplex, p_complex)
 DEF_MARSHALL_STUB(pcow, p_cow)
 DEF_MARSHALL_STUB(pstruct, p_struct)
 DEF_MARSHALL_STUB(pstruct_type, p_struct_type)
 DEF_MARSHALL_STUB(ptag, p_tag)
 DEF_MARSHALL_STUB(ptr, u_ptr_w)
 DEF_MARSHALL_STUB(ptr_free, u_ptr_w)
-DEF_MARSHALL_STUB(pvar, p_var)
-DEF_MARSHALL_STUB(quote, const s_quote *)
-DEF_MARSHALL_STUB(ratio, const s_ratio *)
 DEF_MARSHALL_STUB(struct, const s_struct *)
 DEF_MARSHALL_STUB(struct_type, const s_struct_type *)
 DEF_MARSHALL_STUB(psym, p_sym)
 DEF_MARSHALL_STUB(time, const s_time *)
 DEF_MARSHALL_STUB(unquote, const s_unquote *)
-DEF_MARSHALL_STUB(var, const s_var *)

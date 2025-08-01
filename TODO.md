@@ -25,20 +25,20 @@
 | PCallable       |   ✅   |   ❌   | u_callable_data |
 | cfn             |   ✅   |   ❌   |
 | fn              |   ✅   |   ❌   |
+| Ratio           |   ✅   |   ❌   |
+| Quote           |   ✅   |   ❌   |
+| Var             |   ✅   |   ❌   | Tag             |
+| PVar            |   ✅   |   ❌   |
+| Complex         |   ✅   |   ❌   |
 | Array           |   ❌   |   ❌   |
+| Unquote         |   ❌   |   ❌   | Tag             |
 | Fact            |   ❌   |   ❌   |
-| Complex         |   ❌   |   ❌   |
 | Cow             |   ❌   |   ❌   |
 | Ptr free        |   ❌   |   ❌   |
-| PVar            |   ❌   |   ❌   |
-| Quote           |   ❌   |   ❌   |
-| Ratio           |   ❌   |   ❌   |
 | PStruct Type    |   ❌   |   ❌   |
 | PStruct         |   ❌   |   ❌   |
 | Fact            |   ❌   |   ❌   |
 | Time            |   ❌   |   ❌   | Tag             |
-| Unquote         |   ❌   |   ❌   | Tag             |
-| Var             |   ❌   |   ❌   | Tag             |
 | PTag            |   ❌   |   ❌   | Tag             |
 ... (others)
 
