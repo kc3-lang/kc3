@@ -3,7 +3,7 @@
 ### Refactor
 
 - [x] serialise.c/h -> marshall.c/h
-- [ ] deserialize.c/h -> marshall_read.c/h
+- [x] deserialize.c/h -> marshall_read.c/h
 - [x] s_serialize -> s_marshall
 
 ### Marshall
