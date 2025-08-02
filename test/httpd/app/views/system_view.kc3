@@ -1,0 +1,19 @@
+defmodule SystemView do
+
+  def template_dashboard = fn () {
+    EKC3.load("app/templates/system/dashboard.html.ekc3")
+  }
+
+  def template_layout = fn () {
+    EKC3.load("app/templates/system/layout.html.ekc3")
+  }
+  
+  def render_dashboard = fn (uptime_str) {
+    EKC3.render(template_dashboard())
+  }
+  
+  def render_layout = fn (slug, title, page, url) {
+    EKC3.render(template_layout())
+  }
+
+end

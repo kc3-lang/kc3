@@ -1,0 +1,9 @@
+<div class="container">
+  <div class="mx-5">
+    <h1>System dashboard</h1>
+
+    <h2>Uptime</h2>
+
+    <p>KC3 environment running time : <b><%= uptime_str %></b></p>
+  </div>
+</div>

@@ -9,6 +9,8 @@ def_route("/", DocController.route)
 
 def_route("/sitemap.xml", SitemapController.route)
 
+def_route("/system", SystemController.route)
+
 def_route("/", PageController.route)
 
 HTTPd.Route.def_static_route("", "./static/", 0)

@@ -13,10 +13,8 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/_images/kc3.16.png">
   </head>
   <body class="<%= slug %>">
-    <%= raw nav %>
     <div class="page">
       <%= raw page %>
     </div>
-    <%= raw footer %>
   </body>
 </html>

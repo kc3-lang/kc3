@@ -85,21 +85,21 @@ s_str * time_diff_to_str (const s_time *time, s_str *dest)
   minutes = total_seconds / TIME_SECONDS_PER_MINUTE;
   seconds = total_seconds % TIME_SECONDS_PER_MINUTE;
   if (months)
-    snprintf(a, sizeof(a), "%lumo %lud %lu:%lu:%lu.%03lu",
+    snprintf(a, sizeof(a), "%lumo %02lud %02lu:%02lu:%02lu.%03lu",
              months, days,
              hours, minutes, seconds, milliseconds);
   else if (days)
-    snprintf(a, sizeof(a), "%lud %lu:%lu:%lu.%03lu",
+    snprintf(a, sizeof(a), "%02lud %02lu:%02lu:%02lu.%03lu",
              days,
              hours, minutes, seconds, milliseconds);
   else if (hours)
-    snprintf(a, sizeof(a), "%lu:%lu:%lu.%03lu",
+    snprintf(a, sizeof(a), "%02lu:%02lu:%02lu.%03lu",
              hours, minutes, seconds, milliseconds);
   else if (minutes)
-    snprintf(a, sizeof(a), "%lu:%lu.%03lu",
+    snprintf(a, sizeof(a), "%02lu:%02lu.%03lu",
              minutes, seconds, milliseconds);
   else
-    snprintf(a, sizeof(a), "%lu.%03lu",
+    snprintf(a, sizeof(a), "%02lu.%03lu",
              seconds, milliseconds);
   return str_init_copy_1(dest, a);
 }
