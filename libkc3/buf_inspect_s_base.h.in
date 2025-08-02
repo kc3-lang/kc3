@@ -16,7 +16,9 @@
 
 #include "types.h"
 
-sw buf_inspect_s_bits$__BASE$ (s_buf *buf, const s_bits$ *s);
-sw buf_inspect_s_bits$__BASE$_size (s_pretty *pretty, const s_bits$ *s);
+sw buf_inspect_s_bits$__BASE$ (s_buf *buf, const s_bits$ *x);
+sw buf_inspect_s_bits$__BASE$_pad (s_buf *buf, u8 size, character pad,
+                                   const s_bits$ *x);
+sw buf_inspect_s_bits$__BASE$_size (s_pretty *pretty, const s_bits$ *x);
 
 #endif /* LIBKC3_BUF_INSPECT_S_BITS$__BASE$_H */

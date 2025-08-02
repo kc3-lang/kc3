@@ -90,11 +90,11 @@ sw buf_inspect_u8_base (s_buf *buf,
   return r;
 }
 
-sw buf_inspect_u8_base_digits (const s_str *base,
+u8 buf_inspect_u8_base_digits (const s_str *base,
                                     const u8 *u)
 {
   uw radix;
-  sw size = 0;
+  u8 size = 0;
   u8 u_;
   u_ = *u;
   if (u_ == 0)

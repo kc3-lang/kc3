@@ -35,38 +35,46 @@ extern const s_sym *g_buf_inspect_type;
 
 #define BUF_INSPECT_S_BASE_PROTOTYPES(bits, base)                      \
   sw buf_inspect_s ## bits ## _ ## base (s_buf *buf,                   \
-                                         const s ## bits *s);          \
+                                         const s ## bits *x);          \
   sw buf_inspect_s ## bits ## _ ## base ## _size (s_pretty *pretty,    \
-                                                  const s ## bits *s)
+                                                  const s ## bits *x); \
+  sw buf_inspect_s ## bits ## _ ## base ## _pad (s_buf *buf, u8 max,   \
+                                                 character pad,        \
+                                                 const s ## bits *x)
 
 #define BUF_INSPECT_S_PROTOTYPES(bits)                                 \
-  sw buf_inspect_s ## bits (s_buf *buf, const s ## bits *s);           \
+  sw buf_inspect_s ## bits (s_buf *buf, const s ## bits *x);           \
   sw buf_inspect_s ## bits ## _size (s_pretty *pretty,                 \
-                                     const s ## bits *s);              \
+                                     const s ## bits *x);              \
   BUF_INSPECT_S_BASE_PROTOTYPES(bits, binary);                         \
+  BUF_INSPECT_S_BASE_PROTOTYPES(bits, decimal);                        \
   BUF_INSPECT_S_BASE_PROTOTYPES(bits, hexadecimal);                    \
   BUF_INSPECT_S_BASE_PROTOTYPES(bits, octal)
 
 #define BUF_INSPECT_U_BASE_PROTOTYPES(bits, base)                      \
   sw buf_inspect_u ## bits ## _ ## base (s_buf *buf,                   \
-                                         const u ## bits *s);          \
-  sw buf_inspect_u ## bits ## _ ## base ## _digits (const u##bits *s); \
+                                         const u ## bits *x);          \
+  u8 buf_inspect_u ## bits ## _ ## base ## _digits (const u##bits *x); \
+  sw buf_inspect_u ## bits ## _ ## base ## _pad (s_buf *buf,           \
+                                                 u8 max, character pad,\
+                                                 const u ## bits *x);  \
   sw buf_inspect_u ## bits ## _ ## base ## _size (s_pretty *pretty,    \
-                                                  const u ## bits *s)
+                                                  const u ## bits *x)
 
 #define BUF_INSPECT_U_PROTOTYPES(bits)                                 \
-  sw buf_inspect_u ## bits (s_buf *buf, const u ## bits *u);           \
-  sw buf_inspect_u ## bits ## _digits (const u ## bits *u);            \
+  sw buf_inspect_u ## bits (s_buf *buf, const u ## bits *x);           \
   sw buf_inspect_u ## bits ## _size (s_pretty *pretty,                 \
-                                     const u ## bits *u);              \
+                                     const u ## bits *x);              \
+  u8 buf_inspect_u ## bits ## _digits (const u ## bits *x);            \
   sw buf_inspect_u ## bits ## _base (s_buf *buf, const s_str *base,    \
-                                     const u ## bits *u);              \
-  sw buf_inspect_u ## bits ## _base_digits (const s_str *base,         \
-                                            const u ## bits *u);       \
+                                     const u ## bits *x);              \
+  u8 buf_inspect_u ## bits ## _base_digits (const s_str *base,         \
+                                            const u ## bits *x);       \
   sw buf_inspect_u ## bits ## _base_size (s_pretty *pretty,            \
                                           const s_str *base,           \
-                                          const u ## bits *u);         \
+                                          const u ## bits *x);         \
   BUF_INSPECT_U_BASE_PROTOTYPES(bits, binary);                         \
+  BUF_INSPECT_U_BASE_PROTOTYPES(bits, decimal);                         \
   BUF_INSPECT_U_BASE_PROTOTYPES(bits, hexadecimal);                    \
   BUF_INSPECT_U_BASE_PROTOTYPES(bits, octal)
 

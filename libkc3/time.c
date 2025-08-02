@@ -10,11 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include "alloc.h"
 #include "assert.h"
+#include "buf.h"
+#include "buf_inspect.h"
 #include "str.h"
 #include "sw.h"
 #include "sym.h"
@@ -59,6 +60,7 @@ void time_clean (s_time *time)
 s_str * time_diff_to_str (const s_time *time, s_str *dest)
 {
   char a[128] = {0};
+  s_buf buf = {0};
   uw days;
   uw hours;
   uw milliseconds;
@@ -68,6 +70,7 @@ s_str * time_diff_to_str (const s_time *time, s_str *dest)
   uw total_seconds;
   assert(time);
   assert(dest);
+  buf_init_const(&buf, sizeof(a) - 1, a);
   if (time->tv_sec < 0 || time->tv_nsec < 0 ||
       time->tv_nsec > 1000 * 1000 * 1000) {
     err_puts("time_diff_to_str: invalid time");
@@ -84,24 +87,26 @@ s_str * time_diff_to_str (const s_time *time, s_str *dest)
   total_seconds        %= TIME_SECONDS_PER_HOUR;
   minutes = total_seconds / TIME_SECONDS_PER_MINUTE;
   seconds = total_seconds % TIME_SECONDS_PER_MINUTE;
-  if (months)
-    snprintf(a, sizeof(a), "%lumo %02lud %02lu:%02lu:%02lu.%03lu",
-             months, days,
-             hours, minutes, seconds, milliseconds);
-  else if (days)
-    snprintf(a, sizeof(a), "%02lud %02lu:%02lu:%02lu.%03lu",
-             days,
-             hours, minutes, seconds, milliseconds);
-  else if (hours)
-    snprintf(a, sizeof(a), "%02lu:%02lu:%02lu.%03lu",
-             hours, minutes, seconds, milliseconds);
-  else if (minutes)
-    snprintf(a, sizeof(a), "%02lu:%02lu.%03lu",
-             minutes, seconds, milliseconds);
-  else
-    snprintf(a, sizeof(a), "%02lu.%03lu",
-             seconds, milliseconds);
-  return str_init_copy_1(dest, a);
+  if (months) {
+    buf_inspect_uw_decimal_pad(&buf, 2, '0', &months);
+    buf_write_1(&buf, "mo ");
+  }
+  if (days) {
+    buf_inspect_uw_decimal_pad(&buf, 2, '0', &days);
+    buf_write_1(&buf, "d ");
+  }
+  if (hours) {
+    buf_inspect_uw_decimal_pad(&buf, 2, '0', &hours);
+    buf_write_1(&buf, ":");
+  }
+  if (hours || minutes) {
+    buf_inspect_uw_decimal_pad(&buf, 2, '0', &minutes);
+    buf_write_1(&buf, ":");
+  }
+  buf_inspect_uw_decimal_pad(&buf, 2, '0', &seconds);
+  buf_write_1(&buf, ".");
+  buf_inspect_uw_decimal_pad(&buf, 3, '0', &milliseconds);
+  return buf_read_to_str(&buf, dest);
 }
 
 s_time * time_init (s_time *time)

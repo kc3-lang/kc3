@@ -11,6 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u_base.c.in BITS=W bits=w BASE=octal */
+#include "assert.h"
+#include "buf.h"
 #include "buf_inspect.h"
 #include "kc3_main.h"
 
@@ -19,6 +21,36 @@ sw buf_inspect_uw_octal (s_buf *buf, const uw *u)
   return buf_inspect_uw_base(buf,
                                   &g_kc3_base_octal,
                                   u);
+}
+
+u8 buf_inspect_uw_octal_digits (const uw *x)
+{
+  return buf_inspect_uw_base_digits(&g_kc3_base_octal, x);
+}
+
+sw buf_inspect_uw_octal_pad (s_buf *buf, u8 size, character pad,
+                                   const uw *x)
+{
+  u8 digits;
+  u8 i;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(size);
+  assert(x);
+  digits = buf_inspect_uw_octal_digits(x);
+  i = digits;
+  while (i < size) {
+    if ((r = buf_write_character_utf8(buf, pad)) <= 0)
+      return r;
+    result += r;
+    i++;
+  }
+  if ((r = buf_inspect_uw_octal(buf, x)) <= 0)
+    return r;
+  result += r;
+  assert(size == result);
+  return result;
 }
 
 sw buf_inspect_uw_octal_size (s_pretty *pretty, const uw *u)

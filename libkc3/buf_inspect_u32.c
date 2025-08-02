@@ -90,11 +90,11 @@ sw buf_inspect_u32_base (s_buf *buf,
   return r;
 }
 
-sw buf_inspect_u32_base_digits (const s_str *base,
+u8 buf_inspect_u32_base_digits (const s_str *base,
                                     const u32 *u)
 {
   uw radix;
-  sw size = 0;
+  u8 size = 0;
   u32 u_;
   u_ = *u;
   if (u_ == 0)

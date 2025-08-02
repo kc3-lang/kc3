@@ -16,7 +16,10 @@
 
 #include "types.h"
 
-sw buf_inspect_u32_hexadecimal (s_buf *buf, const u32 *u);
-sw buf_inspect_u32_hexadecimal_size (s_pretty *pretty, const u32 *u);
+sw buf_inspect_u32_hexadecimal (s_buf *buf, const u32 *x);
+u8 buf_inspect_u32_hexadecimal_digits (const u32 *x);
+sw buf_inspect_u32_hexadecimal_pad (s_buf *buf, u8 size, character pad,
+                                   const u32 *x);
+sw buf_inspect_u32_hexadecimal_size (s_pretty *pretty, const u32 *x);
 
 #endif /* LIBKC3_BUF_INSPECT_U32_hexadecimal_H */

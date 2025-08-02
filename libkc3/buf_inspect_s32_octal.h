@@ -16,7 +16,9 @@
 
 #include "types.h"
 
-sw buf_inspect_s32_octal (s_buf *buf, const s32 *s);
-sw buf_inspect_s32_octal_size (s_pretty *pretty, const s32 *s);
+sw buf_inspect_s32_octal (s_buf *buf, const s32 *x);
+sw buf_inspect_s32_octal_pad (s_buf *buf, u8 size, character pad,
+                                   const s32 *x);
+sw buf_inspect_s32_octal_size (s_pretty *pretty, const s32 *x);
 
 #endif /* LIBKC3_BUF_INSPECT_S32_octal_H */

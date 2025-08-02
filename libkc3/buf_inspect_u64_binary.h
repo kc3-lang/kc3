@@ -16,7 +16,10 @@
 
 #include "types.h"
 
-sw buf_inspect_u64_binary (s_buf *buf, const u64 *u);
-sw buf_inspect_u64_binary_size (s_pretty *pretty, const u64 *u);
+sw buf_inspect_u64_binary (s_buf *buf, const u64 *x);
+u8 buf_inspect_u64_binary_digits (const u64 *x);
+sw buf_inspect_u64_binary_pad (s_buf *buf, u8 size, character pad,
+                                   const u64 *x);
+sw buf_inspect_u64_binary_size (s_pretty *pretty, const u64 *x);
 
 #endif /* LIBKC3_BUF_INSPECT_U64_binary_H */
