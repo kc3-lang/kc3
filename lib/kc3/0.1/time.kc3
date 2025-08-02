@@ -22,4 +22,6 @@ defmodule Time do
 
   def to_str = cfn Str "time_to_str" (Time, Result)
 
+  def uptime = cfn Time "kc3_uptime" (Result)
+
 end

@@ -5,7 +5,7 @@ defmodule SystemController do
   def dashboard = fn (url) {
     slug = "system system-dashboard"
     title = "System dashboard"
-    uptime_str = Time.diff_to_str(uptime())
+    uptime_str = Time.diff_to_str(Time.uptime())
     page = SystemView.render_dashboard(uptime_str)
     body = SystemView.render_layout(slug, title, page, url)
     %HTTP.Response{body: body}
