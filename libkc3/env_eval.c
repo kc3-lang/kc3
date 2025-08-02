@@ -394,7 +394,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     }
     if (! clause) {
       err_write_1("env_eval_call_fn_args: ");
-      err_inspect_ident(&fn->ident);
+      err_inspect_ident(&fn->name);
       err_puts(": no clause matching, tried clauses :");
       clause = fn->clauses;
       while (clause) {
@@ -436,10 +436,10 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     return false;
   }
   tag_init_plist(&trace->tag, list_new_ident
-                 (&fn->ident, list_new_copy_all
+                 (&fn->name, list_new_copy_all
                   (args)));
   env->stacktrace = trace;
-  if (! block_init(&jump.block, fn->ident.sym)) {
+  if (! block_init(&jump.block, fn->name.sym)) {
     env->stacktrace = list_delete(env->stacktrace);
     list_delete_all(args);
     list_delete_all(tmp);
@@ -541,12 +541,17 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   tmp = *call;
   if (tmp.ident.module == NULL &&
       (value = env_frames_get(env, tmp.ident.sym))) {
+    if (value->type == TAG_PVAR && value->data.pvar->bound)
+      value = &value->data.pvar->tag;
     if (value->type == TAG_PCALLABLE) {
       if (! pcallable_init_copy(&tmp.pcallable, &value->data.pcallable))
         return false;
       *call = tmp;
       return true;
     }
+    err_puts("env_eval_call_resolve: not a Callable (Cfn or Fn)");
+    assert(! "env_eval_call_resolve: not a Callable (Cfn or Fn)");
+    return false;
   }
   arity = call_arity(&tmp);
   if (false) {

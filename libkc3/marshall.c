@@ -106,16 +106,34 @@ s_marshall * marshall_callable (s_marshall *m, bool heap,
 
 s_marshall * marshall_cfn (s_marshall *m, bool heap, const s_cfn *cfn)
 {
+  const s_list *arg_type;
   assert(m);
   assert(cfn);
   if (! m || ! cfn)
     return NULL;
-  if (! marshall_bool(m, heap, cfn->macro) ||
-      ! marshall_bool(m, heap, cfn->special_operator) ||
-      ! marshall_sym(m, heap, cfn->result_type) ||
-      ! marshall_sym(m, heap, cfn->name) ||
-      ! marshall_plist(m, heap, cfn->arg_types))
+  if (cfn->arity != list_length(cfn->arg_types)) {
+    err_puts("marshall_cfn: invalid arity");
+    assert(! "marshall_cfn: invalid arity");
     return NULL;
+  }
+  if (! marshall_ident(m, heap, &cfn->name) ||
+      ! marshall_bool(m, heap, cfn->macro) ||
+      ! marshall_bool(m, heap, cfn->special_operator) ||
+      ! marshall_psym(m, heap, cfn->result_type) ||
+      ! marshall_psym(m, heap, cfn->c_name) ||
+      ! marshall_u8(m, heap, cfn->arity))
+    return NULL;
+  arg_type = cfn->arg_types;
+  while (arg_type) {
+    if (arg_type->tag.type != TAG_PSYM) {
+      err_puts("marshall_cfn: invalid arg type");
+      assert(! "marshall_cfn: invalid arg type");
+      return NULL;
+    }
+    if (! marshall_psym(m, heap, arg_type->tag.data.psym))
+      return NULL;
+    arg_type = list_next(arg_type);
+  }
   return m;
 }
 
@@ -184,6 +202,19 @@ DEF_MARSHALL(f32)
 DEF_MARSHALL(f64)
 DEF_MARSHALL(f128)
 
+s_marshall * marshall_fact (s_marshall *m, bool heap,
+                            const s_fact *fact)
+{
+  assert(m);
+  if (! m ||
+      ! marshall_ptag(m, heap, fact->subject) ||
+      ! marshall_ptag(m, heap, fact->predicate) ||
+      ! marshall_ptag(m, heap, fact->object) ||
+      ! marshall_uw(m, heap, fact->id))
+    return NULL;
+  return m;
+}
+
 s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)
 {
   s_fn_clause *clause;
@@ -194,8 +225,8 @@ s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)
     return NULL;
   if (! marshall_bool(m, heap, fn->macro) ||
       ! marshall_bool(m, heap, fn->special_operator) ||
-      ! marshall_ident(m, heap, &fn->ident) ||
-      ! marshall_sym(m, heap, fn->module))
+      ! marshall_ident(m, heap, &fn->name) ||
+      ! marshall_psym(m, heap, fn->module))
     return NULL;
   clause = fn->clauses;
   while (clause) {
@@ -219,7 +250,7 @@ s_marshall * marshall_frame (s_marshall *m, bool heap,
     return NULL;
   bindings = frame->bindings;
   while (bindings) {
-    if (! marshall_sym(m, heap, bindings->name) ||
+    if (! marshall_psym(m, heap, bindings->name) ||
         ! marshall_tag(m, heap, &bindings->value))
       return NULL;
     bindings = bindings->next;
@@ -288,8 +319,8 @@ s_marshall * marshall_ident (s_marshall *m, bool heap,
   assert(m);
   assert(ident);
   if (! m || ! ident ||
-      ! marshall_sym(m, heap, ident->module) ||
-      ! marshall_sym(m, heap, ident->sym))
+      ! marshall_psym(m, heap, ident->module) ||
+      ! marshall_psym(m, heap, ident->sym))
     return NULL;
   return m;
 }
@@ -409,6 +440,20 @@ s_marshall * marshall_plist (s_marshall *m, bool heap,
   return m;
 }
 
+s_marshall * marshall_psym (s_marshall *m, bool heap,
+                            p_sym psym)
+{
+  assert(m);
+  bool present = false;
+  if (! m)
+    return NULL;
+  if (! marshall_heap_pointer(m, heap, psym, &present))
+    return NULL;
+  if (! present && psym)
+    return marshall_sym(m, true, psym);
+  return m;
+}
+
 s_marshall *marshall_ptag(s_marshall *m, bool heap, p_tag ptag)
 {
   assert(m);
@@ -418,19 +463,6 @@ s_marshall *marshall_ptag(s_marshall *m, bool heap, p_tag ptag)
     return NULL;
   if (! present && ptag)
     return marshall_tag(m, true, ptag);
-  return m;
-}
-
-s_marshall * marshall_fact (s_marshall *m, bool heap,
-                            const s_fact *fact)
-{
-  assert(m);
-  if (! m ||
-      ! marshall_ptag(m, heap, fact->subject) ||
-      ! marshall_ptag(m, heap, fact->predicate) ||
-      ! marshall_ptag(m, heap, fact->object) ||
-      ! marshall_uw(m, heap, fact->id))
-    return NULL;
   return m;
 }
 
@@ -742,4 +774,3 @@ DEF_MARSHALL_STUB(pstruct, p_struct)
 DEF_MARSHALL_STUB(pstruct_type, p_struct_type)
 DEF_MARSHALL_STUB(struct, const s_struct *)
 DEF_MARSHALL_STUB(struct_type, const s_struct_type *)
-DEF_MARSHALL_STUB(psym, p_sym)

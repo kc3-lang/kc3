@@ -41,6 +41,7 @@ s_tag * frame_binding_new_void (s_frame *frame, const s_sym *name)
 s_frame * frame_binding_new (s_frame *frame, const s_sym *name,
                              s_tag *value)
 {
+  s_ident ident = {0};
   s_tag *tag;
   if (! (tag = frame_binding_new_void(frame, name))) {
     err_puts("frame_binding_new_copy: frame_binding_new");
@@ -53,10 +54,10 @@ s_frame * frame_binding_new (s_frame *frame, const s_sym *name,
     frame = frame_binding_delete(frame, name);
     return NULL;
   }
-  if (tag->type == TAG_PCALLABLE &&
-      tag->data.pcallable &&
-      tag->data.pcallable->type == CALLABLE_FN)
-    fn_set_name_if_null(&tag->data.pcallable->data.fn, NULL, name);
+  ident.module = env_global()->current_defmodule;
+  ident.sym = name;
+  if (! tag_set_name_if_null(tag, &ident))
+    return NULL;
   return frame;
 }
 
@@ -228,6 +229,7 @@ s_frame * frame_new_copy (const s_frame *src)
 s_frame * frame_replace (s_frame *frame, const s_sym *sym,
                          s_tag *value)
 {
+  s_ident ident = {0};
   s_tag *result;
   assert(sym);
   result = binding_get_w(frame->bindings, sym);
@@ -242,11 +244,9 @@ s_frame * frame_replace (s_frame *frame, const s_sym *sym,
         assert(! "frame_replace: tag_init_copy");
         return NULL;
       }
-      if (result->type == TAG_PCALLABLE &&
-          result->data.pcallable &&
-          result->data.pcallable->type == CALLABLE_FN)
-        fn_set_name_if_null(&result->data.pcallable->data.fn, NULL,
-                            sym);
+      ident.module = env_global()->current_defmodule;
+      ident.sym = sym;
+      tag_set_name_if_null(result, &ident);
     }
     return frame;
   }

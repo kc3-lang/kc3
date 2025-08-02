@@ -137,9 +137,10 @@ s8 compare_cfn (const s_cfn *a, const s_cfn *b)
     return -1;
   if (!b)
     return 1;
-  if ((r = compare_sym(a->name, b->name)))
+  if ((r = compare_sym(a->c_name, b->c_name)) ||
+      (r = compare_list(a->arg_types, b->arg_types)))
     return r;
-  return compare_list(a->arg_types, b->arg_types);
+  return compare_sym(a->result_type, b->result_type);
 }
 
 COMPARE_DEF(character)

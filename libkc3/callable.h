@@ -22,6 +22,10 @@ s_callable * callable_new_copy (s_callable *callable);
 s_callable * callable_new_ref (s_callable *callable);
 
 /* Operators. */
-s_callable * callable_set_special(s_callable *callable, bool special);
+s_callable * callable_set_name (s_callable *callable,
+                                const s_ident *name);
+s_callable * callable_set_name_if_null (s_callable *callable,
+                                        const s_ident *name);
+s_callable * callable_set_special (s_callable *callable, bool special);
 
 #endif /* LIBKC3_CALLABLE_H */

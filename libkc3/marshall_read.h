@@ -65,7 +65,7 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
                                               u64 *heap_offset,
                                               void **present);
 s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
-                                        u64 offset, void *p);
+                                        u64 offset, const void *p);
 PROTO_MARSHALL_READ(list,         s_list           );
 PROTO_MARSHALL_READ(ident,        s_ident          );
 PROTO_MARSHALL_READ(integer,      s_integer        );
@@ -90,7 +90,7 @@ PROTO_MARSHALL_READ(s32,          s32              );
 PROTO_MARSHALL_READ(s64,          s64              );
 PROTO_MARSHALL_READ(struct,       s_struct         );
 PROTO_MARSHALL_READ(struct_type,  s_struct_type    );
-PROTO_MARSHALL_READ(sym,          s_sym            );
+PROTO_MARSHALL_READ(sym,          p_sym            );
 PROTO_MARSHALL_READ(str,          s_str            );
 PROTO_MARSHALL_READ(sw,           sw               );
 PROTO_MARSHALL_READ(tag,          s_tag            );

@@ -15,6 +15,7 @@
 #include "assert.h"
 #include "buf.h"
 #include "buf_parse.h"
+#include "callable.h"
 #include "data.h"
 #include "mutex.h"
 #include "sym.h"
@@ -196,6 +197,11 @@ s_var * var_set (s_var *var, s_tag *value)
   if (! tag_init_copy(&var->tag, value))
     goto ko;
   var->bound = true;
+  if (var->name.sym &&
+      var->tag.type == TAG_PCALLABLE) {
+    callable_set_name_if_null(var->tag.data.pcallable,
+                              &var->name);
+  }
   if (false) {
     err_write_1("var_set: ");
     err_inspect_var(var);
@@ -210,4 +216,17 @@ s_var * var_set (s_var *var, s_tag *value)
   mutex_unlock(&var->mutex);
 #endif
   return NULL;
+}
+
+s_var * var_set_name (s_var *var, const s_ident *name)
+{
+  var->name = *name;
+  return var;
+}
+
+s_var * var_set_name_if_null (s_var *var, const s_ident *name)
+{
+  if (! var->name.sym)
+    return var_set_name(var, name);
+  return var;
 }

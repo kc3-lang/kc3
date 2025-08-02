@@ -75,6 +75,7 @@ s_tag * tag_integer_cast_to_u8 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_reduce (s_tag *tag);
 bool    tag_is_number (s_tag *tag);
 s_tag * tag_list_1 (s_tag *tag, const char *p);
+s_tag * tag_set_name_if_null (s_tag *tag, const s_ident *name);
 bool    tag_to_const_pointer (s_tag *tag, const s_sym *type,
                               void **dest);
 bool    tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest);

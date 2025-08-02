@@ -38,7 +38,7 @@ s_fn * fn_new_copy (const s_fn *fn);
 s8 fn_arity (const s_fn *fn);
 
 /* Operators. */
-s_fn * fn_set_name_if_null (s_fn *fn, const s_sym *module,
-                            const s_sym *name);
+s_fn * fn_set_name (s_fn *fn, const s_ident *name);
+s_fn * fn_set_name_if_null (s_fn *fn, const s_ident *name);
 
 #endif /* LIBKC3_FN_H */

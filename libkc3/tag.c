@@ -1186,6 +1186,25 @@ s_tag * tag_semicolon (const s_tag *a, s_tag *b, s_tag *dest)
   return tag_init_copy(dest, b);
 }
 
+s_tag * tag_set_name_if_null (s_tag *tag, const s_ident *name)
+{
+  assert(tag);
+  assert(name);
+  switch (tag->type) {
+  case TAG_PCALLABLE:
+    if (! callable_set_name_if_null(tag->data.pcallable, name))
+      return NULL;
+    return tag;
+  case TAG_PVAR:
+    if (! var_set_name_if_null(tag->data.pvar, name))
+      return NULL;
+    return tag;
+  default:
+    break;
+  }
+  return tag;
+}
+
 uw * tag_size (const s_tag *tag, uw *dest)
 {
   const s_sym *type;

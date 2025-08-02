@@ -124,7 +124,7 @@ s_fn * fn_init_copy (s_fn *fn, const s_fn *src)
     fn_clean(&tmp);
     return NULL;
   }
-  tmp.ident = src->ident;
+  tmp.name = src->name;
   *fn = tmp;
   return fn;
 }
@@ -153,12 +153,15 @@ s_fn * fn_new_copy (const s_fn *src)
   return fn;
 }
 
-s_fn * fn_set_name_if_null (s_fn *fn, const s_sym *module,
-                            const s_sym *name)
+s_fn * fn_set_name (s_fn *fn, const s_ident *name)
 {
-  if (! fn->ident.sym) {
-    fn->ident.module = module;
-    fn->ident.sym = name;
-  }
+  fn->name = *name;
+  return fn;
+}
+
+s_fn * fn_set_name_if_null (s_fn *fn, const s_ident *name)
+{
+  if (! fn->name.sym)
+    return fn_set_name(fn, name);
   return fn;
 }

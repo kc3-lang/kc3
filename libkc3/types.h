@@ -548,7 +548,8 @@ struct call {
 struct cfn {
   bool macro;
   bool special_operator;
-  const s_sym *name;
+  p_sym c_name;
+  s_ident name;
   union {
     void (*f) (void);
     void *p;
@@ -565,7 +566,7 @@ struct cfn {
 struct fn {
   bool macro;
   bool special_operator;
-  s_ident ident;
+  s_ident name;
   s_fn_clause *clauses;
   const s_sym *module;
   s_frame *frame;
@@ -827,12 +828,13 @@ TYPEDEF_SKIPLIST_NODE(fact, s_fact *);
 TYPEDEF_SKIPLIST(fact, s_fact *);
 
 struct var {
-  bool         bound;
-  s_mutex      mutex;
-  bool         ready;
-  sw           ref_count;
-  s_tag        tag;
-  const s_sym *type;
+  bool    bound;
+  s_mutex mutex;
+  s_ident name;
+  bool    ready;
+  sw      ref_count;
+  s_tag   tag;
+  p_sym   type;
 };
 
 /* 8 */

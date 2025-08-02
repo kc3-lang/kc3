@@ -108,6 +108,54 @@ s_callable * callable_new_ref (s_callable *callable)
   return callable;
 }
 
+s_callable * callable_set_name (s_callable *callable,
+                                const s_ident *name)
+{
+  assert(callable);
+  assert(name);
+  switch (callable->type) {
+  case CALLABLE_VOID:
+    err_puts("callable_set_name: uninitialized callable");
+    assert(! "callable_set_name: uninitialized callable");
+    return NULL;
+  case CALLABLE_CFN:
+    if (! cfn_set_name(&callable->data.cfn, name))
+      return NULL;
+    return callable;
+  case CALLABLE_FN:
+    if (! fn_set_name(&callable->data.fn, name))
+      return NULL;
+    return callable;
+  }
+  err_puts("callable_set_name: unknown callable type");
+  assert(! "callable_set_name: unknown callable type");
+  return NULL;
+}
+
+s_callable * callable_set_name_if_null (s_callable *callable,
+                                        const s_ident *name)
+{
+  assert(callable);
+  assert(name);
+  switch (callable->type) {
+  case CALLABLE_VOID:
+    err_puts("callable_set_name_if_null: uninitialized callable");
+    assert(! "callable_set_name_if_null: uninitialized callable");
+    return NULL;
+  case CALLABLE_CFN:
+    if (! cfn_set_name_if_null(&callable->data.cfn, name))
+      return NULL;
+    return callable;
+  case CALLABLE_FN:
+    if (! fn_set_name_if_null(&callable->data.fn, name))
+      return NULL;
+    return callable;
+  }
+  err_puts("callable_set_name_if_null: unknown callable type");
+  assert(! "callable_set_name_if_null: unknown callable type");
+  return NULL;
+}
+
 s_callable * callable_set_special (s_callable *callable, bool special)
 {
   assert(callable);

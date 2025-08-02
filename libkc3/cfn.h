@@ -35,5 +35,7 @@ s8      cfn_arity (const s_cfn *cfn);
 bool    cfn_eval (s_cfn *cfn);
 s_cfn * cfn_link (s_cfn *cfn);
 s_cfn * cfn_prep_cif (s_cfn *cfn);
+s_cfn * cfn_set_name (s_cfn *cfn, const s_ident *name);
+s_cfn * cfn_set_name_if_null (s_cfn *cfn, const s_ident *name);
 
 #endif /* LIBKC3_CFN_H */

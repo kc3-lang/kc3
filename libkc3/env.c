@@ -249,11 +249,7 @@ bool env_call_get (s_env *env, s_call *call)
                             &tag_pvar.data.pvar->tag.data.pcallable))
     return false;
   tag_clean(&tag_pvar);
-  if (call->pcallable->type == CALLABLE_FN) {
-    fn_set_name_if_null(&call->pcallable->data.fn,
-                        call->ident.module,
-                        call->ident.sym);
-  }
+  callable_set_name_if_null(call->pcallable, &call->ident);
   if (! facts_find_fact_by_tags(env->facts, &tag_ident, &tag_is_a,
                                 &tag_special_operator, &found)) {
     err_puts("env_call_get: facts_find_fact_by_tags 4");

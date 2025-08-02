@@ -187,7 +187,7 @@ bool hash_update_cfn (t_hash *hash, const s_cfn *cfn)
   assert(hash);
   assert(cfn);
   return hash_update(hash, type, sizeof(type)) &&
-    hash_update_sym(hash, cfn->name) &&
+    hash_update_sym(hash, cfn->c_name) &&
     hash_update_list(hash, (const s_list * const *) &cfn->arg_types);
 }
 

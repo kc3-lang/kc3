@@ -208,7 +208,8 @@ sw buf_inspect_str_character_size (s_pretty *pretty,
                                    const character *c);
 sw buf_inspect_str_eval (s_buf *buf, const s_list *list);
 sw buf_inspect_str_eval_size (s_pretty *pretty, const s_list *list);
-sw buf_inspect_str (s_buf *buf, const s_str *str);
+sw buf_inspect_str_hex (s_buf *buf, const s_str *str);
+sw buf_inspect_str_hex_size (s_pretty *pretty, const s_str *str);
 sw buf_inspect_str_reserved (s_buf *buf, const s_str *str, bool quotes);
 sw buf_inspect_str_reserved_size (s_pretty *pretty, const s_str *str,
                                   bool quotes);

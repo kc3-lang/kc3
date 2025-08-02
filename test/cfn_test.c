@@ -74,7 +74,7 @@ TEST_CASE(cfn_init_copy)
            list_new_1("(:bool)"),
            sym_1("bool"));
   TEST_EQ(cfn_init_copy(&b, &a), &b);
-  TEST_EQ(a.name, b.name);
+  TEST_EQ(a.c_name, b.c_name);
   TEST_EQ(a.ptr.p, b.ptr.p);
   TEST_EQ(a.arity, b.arity);
   TEST_EQ(a.result_type, b.result_type);
@@ -106,7 +106,7 @@ TEST_CASE(cfn_init_clean)
   TEST_EQ(cfn_init(&a, sym_1("cfn_test_not"),
                    list_new_1("(:bool)"),
                    sym_1("bool")), &a);
-  TEST_EQ(a.name, sym_1("cfn_test_not"));
+  TEST_EQ(a.c_name, sym_1("cfn_test_not"));
   TEST_EQ(a.ptr.f, 0);
   TEST_EQ(a.ptr.p, 0);
   TEST_EQ(a.arity, 1);
@@ -136,7 +136,7 @@ TEST_CASE(cfn_link)
            sym_1("bool"));
   b = a;
   TEST_EQ(cfn_link(&a), &a);
-  TEST_EQ(a.name, b.name);
+  TEST_EQ(a.c_name, b.c_name);
   TEST_EQ(a.ptr.f, &cfn_test_not);
   TEST_EQ(a.arity, b.arity);
   TEST_EQ(a.result_type, b.result_type);
@@ -161,7 +161,7 @@ TEST_CASE(cfn_prep_cif)
            sym_1("bool"));
   b = a;
   TEST_EQ(cfn_prep_cif(&a), &a);
-  TEST_EQ(a.name, b.name);
+  TEST_EQ(a.c_name, b.c_name);
   TEST_EQ(a.ptr.f, b.ptr.f);
   TEST_EQ(a.ptr.p, b.ptr.p);
   TEST_EQ(a.arity, b.arity);

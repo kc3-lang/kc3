@@ -119,21 +119,30 @@ s_marshall_read * marshall_read_cfn (s_marshall_read *mr,
 {
   assert(mr);
   assert(dest);
+  u8 i;
+  p_list list;
+  p_list *tail;
   s_cfn tmp = {0};
-  if (! marshall_read_bool(mr, heap, &tmp.macro)                     ||
+  if (! marshall_read_ident(mr, heap, &tmp.name)                     ||
+      ! marshall_read_bool(mr, heap, &tmp.macro)                     ||
       ! marshall_read_bool(mr, heap, &tmp.special_operator)          ||
-      ! marshall_read_sym(mr, heap, (s_sym *)tmp.name)               ||
-      ! marshall_read_uw(mr, heap, (uw *)&tmp.ptr)                   ||
-      ! marshall_read_u8(mr, heap, &tmp.arity)                       ||
-      ! marshall_read_sym(mr, heap, (s_sym *)tmp.result_type)        ||
-      ! marshall_read_bool(mr, heap, &tmp.arg_result)                ||
-      ! marshall_read_list(mr, heap, tmp.arg_types)                  ||
-      // ! marshall_read_cif(mr, heap, tmp.cif)                      ||
-      ! marshall_read_bool(mr, heap, &tmp.ready)                   /*||
-      ! marshall_read_mutex(mr, heap, &tmp.mutex)*/) {
+      ! marshall_read_psym(mr, heap, &tmp.result_type)                ||
+      ! marshall_read_psym(mr, heap, &tmp.c_name)                     ||
+      ! marshall_read_u8(mr, heap, &tmp.arity)) {
     err_puts("marshall_read_cfn: read_error");
     assert(! "marshall_read_cfn: read_error");
     return NULL;
+  }
+  list = NULL;
+  tail = &list;
+  i = 0;
+  while (i < tmp.arity) {
+    *tail = list_new_psym(NULL, NULL);
+    if (! *tail ||
+        ! marshall_read_psym(mr, heap, &(*tail)->tag.data.psym))
+      return NULL;
+    tail = &(*tail)->next.data.plist;
+    i++;
   }
   *dest = tmp;
   return mr;
@@ -179,9 +188,9 @@ s_marshall_read * marshall_read_fn(s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_bool(mr, heap, &tmp.macro)                   ||
       ! marshall_read_bool(mr, heap, &tmp.special_operator)        ||
-      ! marshall_read_ident(mr, heap, &tmp.ident)                  ||
+      ! marshall_read_ident(mr, heap, &tmp.name)                   ||
       // ! marshall_read_fn_clause(mr, heap, &tmp.clauses)         ||
-      ! marshall_read_sym(mr, heap, (s_sym *)tmp.module)        /* ||
+      ! marshall_read_psym(mr, heap, &tmp.module)        /* ||
       ! marshall_read_frame(mr, heap, tmp.frame) */
       )
     return NULL;
@@ -272,7 +281,7 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
 }
 
 s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
-                                        u64 offset, void *p)
+                                        u64 offset, const void *p)
 {
   s_tag tag = {0};
   if (! tag_init_tuple(&tag, 2))
@@ -313,15 +322,14 @@ uw  marshall_read_ht_hash (const s_tag *tag)
   return hash_to_uw(&h);
 }
 
-s_marshall_read * marshall_read_ident(s_marshall_read *mr,
-                                      bool heap,
-                                      s_ident *dest)
+s_marshall_read * marshall_read_ident (s_marshall_read *mr, bool heap,
+                                       s_ident *dest)
 {
   s_ident tmp_id = {0};
   assert(mr);
   assert(dest);
-  if (! marshall_read_sym(mr, heap, (s_sym *)tmp_id.sym) ||
-      ! marshall_read_sym(mr, heap, (s_sym *)tmp_id.sym))
+  if (! marshall_read_psym(mr, heap, &tmp_id.module) ||
+      ! marshall_read_psym(mr, heap, &tmp_id.sym))
     return NULL;
   *dest = tmp_id;
   return mr;
@@ -409,17 +417,10 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
     *dest = present;
     return mr;
   }
-  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
-    err_write_1(__func__);
-    err_puts(": buf_seek");
-    return NULL;
-  }
-  tmp = alloc(sizeof(s_list));
-  if (! tmp)
-    return NULL;
-  if (! marshall_read_list(mr, true, tmp))
-    return NULL;
-  if (! marshall_read_ht_add(mr, offset, tmp))
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+      ! (tmp = alloc(sizeof(s_list))) ||
+      ! marshall_read_list(mr, true, tmp) ||
+      ! marshall_read_ht_add(mr, offset, tmp))
     return NULL;
   *dest = tmp;
   return mr;
@@ -457,6 +458,29 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
   return mr;
 }
 
+s_marshall_read * marshall_read_psym (s_marshall_read *mr,
+                                      bool heap,
+                                      p_sym *dest)
+{
+  u64 offset = 0;
+  void *present = NULL;
+  p_sym tmp = NULL;
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+    return NULL;
+  if (present || ! offset) {
+    *dest = present;
+    return mr;
+  }
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+      ! marshall_read_sym(mr, true, &tmp) ||
+      ! marshall_read_ht_add(mr, offset, tmp))
+    return NULL;
+  *dest = tmp;
+  return mr;
+}
+
 DEF_MARSHALL_READ(s8, s8)
 DEF_MARSHALL_READ(s16, s16)
 DEF_MARSHALL_READ(s32, s32)
@@ -464,14 +488,15 @@ DEF_MARSHALL_READ(s64, s64)
 
 
 s_marshall_read * marshall_read_sym (s_marshall_read *mr,
-                                     bool heap, s_sym *dest)
+                                     bool heap, p_sym *dest)
 {
-  s_sym tmp = {0};
+  s_str tmp = {0};
   assert(mr);
   assert(dest);
-  if (! marshall_read_str(mr, heap, &tmp.str))
+  if (! marshall_read_str(mr, heap, &tmp))
     return NULL;
-  *dest = tmp;
+  if (! (*dest = str_to_sym(&tmp)))
+    return NULL;
   return mr;
 }
 
@@ -619,7 +644,6 @@ DEF_MARSHALL_READ_STUB(pcomplex, p_complex)
 DEF_MARSHALL_READ_STUB(pcow, p_cow)
 DEF_MARSHALL_READ_STUB(pstruct, p_struct)
 DEF_MARSHALL_READ_STUB(pstruct_type, p_struct_type)
-DEF_MARSHALL_READ_STUB(psym, p_sym)
 DEF_MARSHALL_READ_STUB(ptag, p_tag)
 DEF_MARSHALL_READ_STUB(ptr, u_ptr_w)
 DEF_MARSHALL_READ_STUB(ptr_free, u_ptr_w)

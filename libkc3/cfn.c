@@ -52,7 +52,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   arity = cfn->arity - (cfn->arg_result ? 1 : 0);
   if (arity != num_args) {
     err_write_1("cfn_apply: ");
-    err_inspect_str(&cfn->name->str);
+    err_inspect_str(&cfn->c_name->str);
     err_write_1(": invalid number of arguments, expected ");
     err_inspect_u8(&arity);
     err_write_1(", have ");
@@ -124,7 +124,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
                                    cfn_arg_types->tag.data.psym,
                                    &p)) {
             err_write_1("cfn_apply: ");
-            err_inspect_str(&cfn->name->str);
+            err_inspect_str(&cfn->c_name->str);
             err_write_1(" ");
             err_inspect_list(args);
             err_puts(": tag_to_ffi_pointer 5");
@@ -143,7 +143,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     if (! (trace = list_new(env->stacktrace)))
       goto ko;
     tag_init_plist(&trace->tag, list_new_psym
-                   (cfn->name, list_new_copy_all
+                   (cfn->c_name, list_new_copy_all
                     (args)));
     env->stacktrace = trace;
     env_unwind_protect_push(env, &unwind_protect);
@@ -161,7 +161,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     if (cfn->arg_result) {
       if (result_pointer != arg_pointer_result) {
         err_write_1("cfn_apply: ");
-        err_inspect_str(&cfn->name->str);
+        err_inspect_str(&cfn->c_name->str);
         err_write_1(" ");
         err_inspect_list(args);
         err_write_1(": ");
@@ -249,13 +249,15 @@ bool cfn_eval (s_cfn *cfn)
   return false;
 }
 
-s_cfn * cfn_init (s_cfn *cfn, const s_sym *name, s_list *arg_types,
+s_cfn * cfn_init (s_cfn *cfn, const s_sym *c_name, s_list *arg_types,
                   const s_sym *result_type)
 {
   sw arity;
   s_cfn tmp = {0};
   assert(cfn);
-  tmp.name = name;
+  assert(c_name);
+  assert(result_type);
+  tmp.c_name = c_name;
   tmp.arg_types = arg_types;
   arity = list_length(tmp.arg_types);
   if (arity > 255) {
@@ -302,6 +304,7 @@ s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
   s_cfn tmp = {0};
   assert(src);
   assert(cfn);
+  tmp.c_name = src->c_name;
   tmp.name = src->name;
   tmp.arg_result = src->arg_result;
   if (src->arg_types &&
@@ -333,9 +336,9 @@ s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
 s_cfn * cfn_link (s_cfn *cfn)
 {
   assert(cfn);
-  if (! (cfn->ptr.p = dlsym(RTLD_DEFAULT, cfn->name->str.ptr.pchar))) {
+  if (! (cfn->ptr.p = dlsym(RTLD_DEFAULT, cfn->c_name->str.ptr.pchar))) {
     err_write_1("cfn_link: ");
-    err_write_1(cfn->name->str.ptr.pchar);
+    err_write_1(cfn->c_name->str.ptr.pchar);
     err_write_1(": ");
     err_puts(dlerror());
     assert(! "cfn_link: dlsym failed");
@@ -421,6 +424,19 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
   result = cfn;
  clean:
   return result;
+}
+
+s_cfn * cfn_set_name (s_cfn *cfn, const s_ident *name)
+{
+  cfn->name = *name;
+  return cfn;
+}
+
+s_cfn * cfn_set_name_if_null (s_cfn *cfn, const s_ident *name)
+{
+  if (! cfn->name.sym)
+    return cfn_set_name(cfn, name);
+  return cfn;
 }
 
 s_tag * cfn_tag_init (s_tag *tag, const s_sym *type)

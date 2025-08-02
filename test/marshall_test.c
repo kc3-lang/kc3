@@ -20,6 +20,42 @@
 #include "../libkc3/tag.h"
 #include "test.h"
 
+#define TEST_STR_HEX_EQ(test, expected)                                \
+  do {                                                                 \
+    bool  TEST_STR_HEX_EQ_ko = false;                                  \
+    s_str TEST_STR_HEX_EQ_test_str = (test);                           \
+    s_str TEST_STR_HEX_EQ_expected_str = (expected);                   \
+    sw i = 0;                                                          \
+    if (TEST_STR_HEX_EQ_test_str.size !=                               \
+        TEST_STR_HEX_EQ_expected_str.size)                             \
+      TEST_STR_HEX_EQ_ko = true;                                       \
+    else {                                                             \
+      while (i < TEST_STR_HEX_EQ_test_str.size) {                      \
+        if (TEST_STR_HEX_EQ_test_str.ptr.pchar[i] !=                   \
+            TEST_STR_HEX_EQ_expected_str.ptr.pchar[i]) {               \
+          TEST_STR_HEX_EQ_ko = true;                                   \
+          break;                                                       \
+        }                                                              \
+        i++;                                                           \
+      }                                                                \
+    }                                                                  \
+    if (TEST_STR_HEX_EQ_ko) {                                          \
+      test_ko();                                                       \
+      fprintf(stderr, "\n%sTEST_STR_HEX_EQ failed in %s:%d %s\n"       \
+              "Expected ",                                             \
+              TEST_COLOR_KO,                                           \
+              __FILE__, __LINE__, __func__);                           \
+      fflush(stderr);                                                  \
+      err_inspect_str_hex(&TEST_STR_HEX_EQ_expected_str);              \
+      fprintf(stderr, "\n"                                             \
+              "got      ");                                            \
+      err_inspect_str_hex(&TEST_STR_HEX_EQ_test_str);                  \
+      fprintf(stderr, "%s\n",                                          \
+              TEST_COLOR_RESET);                                       \
+      return 1;                                                        \
+    }                                                                  \
+  } while (0)
+
 #define MARSHALL_TEST(type, test, expected)                           \
   do {                                                                \
     s_marshall m = {0};                                               \
