@@ -24,6 +24,11 @@
 #define timegm _mkgmtime
 #endif
 
+#define TIME_SECONDS_PER_MINUTE (60)
+#define TIME_SECONDS_PER_HOUR   (60 * 60)
+#define TIME_SECONDS_PER_DAY    (60 * 60 * 24)
+#define TIME_SECONDS_PER_MONTH  (60 * 60 * 24 * 31)
+
 /* Stack-allocation compatible functions. Call time_clean if
    time_init argument allocate was true. */
 void     time_clean (s_time *time);
@@ -37,6 +42,7 @@ s_time * time_init_str (s_time *time, const s_str *src);
 
 /* Observers */
 s_tag * time_access (s_time *time, s_list *key, s_tag *dest);
+s_str * time_diff_to_str (const s_time *time, s_str *dest);
 s_str * time_to_str (const s_time *time, s_str *dest);
 
 /* Operators */

@@ -1174,6 +1174,15 @@ s32 kc3_tag_type (const s_tag *tag)
   return tag->type;
 }
 
+s_time * kc3_uptime (s_time *dest)
+{
+  s_env *env;
+  assert(dest);
+  env = env_global();
+  assert(env);
+  return env_uptime(env, dest);
+}
+
 s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
 {
   pthread_t t;

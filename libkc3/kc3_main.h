@@ -56,6 +56,7 @@ sw             kc3_puts (const s_tag *tag);
 s_list **      kc3_stacktrace (s_list **dest);
 s_str *        kc3_str (const s_tag *tag, s_str *dest);
 s32            kc3_tag_type (const s_tag *tag);
+s_time *       kc3_uptime (s_time *dest);
 
 /* Operators. */
 s_tag *      kc3_access (s_tag *tag, s_list **addr,

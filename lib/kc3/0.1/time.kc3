@@ -14,9 +14,11 @@ defmodule Time do
 
   defstruct [tv_sec: (Sw) 0, tv_nsec: (Sw) 0, tag: (Ptr) 0]
 
-  def now = cfn Time "time_init_now" (Result)
+  def diff_to_str = cfn Str "time_diff_to_str" (Time, Result)
 
   def from_str = cfn Time "time_init_str" (Result, Str)
+
+  def now = cfn Time "time_init_now" (Result)
 
   def to_str = cfn Str "time_to_str" (Time, Result)
 

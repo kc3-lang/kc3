@@ -2479,6 +2479,16 @@ void env_unwind_protect_push (s_env *env,
   env->unwind_protect = up;
 }
 
+s_time * env_uptime (s_env *env, s_time *dest)
+{
+  s_time now = {0};
+  assert(env);
+  assert(dest);
+  if (! time_init_now(&now))
+    return NULL;
+  return time_sub(&now, &env->boot_time, dest);
+}
+
 s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
                    s_tag *dest)
 {

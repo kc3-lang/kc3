@@ -147,6 +147,7 @@ void           env_unwind_protect_pop (s_env *env,
                                        s_unwind_protect *up);
 void           env_unwind_protect_push (s_env *env,
                                         s_unwind_protect *up);
+s_time *       env_uptime (s_env *env, s_time *dest);
 s_tag *        env_while (s_env *env, s_tag *cond, s_tag *body,
                           s_tag *dest);
 

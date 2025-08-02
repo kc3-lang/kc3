@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include "alloc.h"
@@ -53,6 +54,54 @@ void time_clean (s_time *time)
     tag_clean(time->tag + 1);
     free(time->tag);
   }
+}
+
+s_str * time_diff_to_str (const s_time *time, s_str *dest)
+{
+  char a[128] = {0};
+  uw days;
+  uw hours;
+  uw milliseconds;
+  uw minutes;
+  uw months;
+  uw seconds;
+  uw total_seconds;
+  assert(time);
+  assert(dest);
+  if (time->tv_sec < 0 || time->tv_nsec < 0 ||
+      time->tv_nsec > 1000 * 1000 * 1000) {
+    err_puts("time_diff_to_str: invalid time");
+    assert(! "time_diff_to_str: invalid time");
+    return NULL;
+  }
+  total_seconds = time->tv_sec;
+  milliseconds = time->tv_nsec / (1000 * 1000);
+  months = total_seconds / TIME_SECONDS_PER_MONTH;
+  total_seconds         %= TIME_SECONDS_PER_MONTH;
+  days = total_seconds / TIME_SECONDS_PER_DAY;
+  total_seconds       %= TIME_SECONDS_PER_DAY;
+  hours = total_seconds / TIME_SECONDS_PER_HOUR;
+  total_seconds        %= TIME_SECONDS_PER_HOUR;
+  minutes = total_seconds / TIME_SECONDS_PER_MINUTE;
+  seconds = total_seconds % TIME_SECONDS_PER_MINUTE;
+  if (months)
+    snprintf(a, sizeof(a), "%lumo %lud %lu:%lu:%lu.%03lu",
+             months, days,
+             hours, minutes, seconds, milliseconds);
+  else if (days)
+    snprintf(a, sizeof(a), "%lud %lu:%lu:%lu.%03lu",
+             days,
+             hours, minutes, seconds, milliseconds);
+  else if (hours)
+    snprintf(a, sizeof(a), "%lu:%lu:%lu.%03lu",
+             hours, minutes, seconds, milliseconds);
+  else if (minutes)
+    snprintf(a, sizeof(a), "%lu:%lu.%03lu",
+             minutes, seconds, milliseconds);
+  else
+    snprintf(a, sizeof(a), "%lu.%03lu",
+             seconds, milliseconds);
+  return str_init_copy_1(dest, a);
 }
 
 s_time * time_init (s_time *time)

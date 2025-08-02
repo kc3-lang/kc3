@@ -136,3 +136,5 @@ replace {KC3.return_from, :symbol_value,
 add {KC3, :symbol, KC3.unwind_protect}
 replace {KC3.unwind_protect, :symbol_value,
          cfn_macro Tag "kc3_unwind_protect" (Tag, Tag, Result)}
+add {KC3, :symbol, KC3.uptime}
+replace {KC3.uptime, :symbol_value, cfn Time "kc3_uptime" (Result)}
