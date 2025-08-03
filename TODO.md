@@ -21,7 +21,7 @@
 | Call            |   ✅   |   ✅   | pcallable       |
 | Do Block        |   ✅   |   ❌   | call            |
 | Map             |   ✅   |   ❌   | Tag             |
-| Sym             |   ✅   |   ❌   |
+| Sym             |   ✅   |   ✅   | str
 | Callable        |   ✅   |   ✅   | u_callable_data |
 | PCallable       |   ✅   |   ✅   | callable |
 | cfn             |   ✅   |   ✅   |
