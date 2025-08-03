@@ -123,9 +123,9 @@ s_marshall_read * marshall_read_cfn (s_marshall_read *mr,
   p_list list;
   p_list *tail;
   s_cfn tmp = {0};
-  if (! marshall_read_ident(mr, heap, &tmp.name)                     ||
-      ! marshall_read_bool(mr, heap, &tmp.macro)                     ||
-      ! marshall_read_bool(mr, heap, &tmp.special_operator)          ||
+  if (! marshall_read_ident(mr, heap, &tmp.name)                      ||
+      ! marshall_read_bool(mr, heap, &tmp.macro)                      ||
+      ! marshall_read_bool(mr, heap, &tmp.special_operator)           ||
       ! marshall_read_psym(mr, heap, &tmp.result_type)                ||
       ! marshall_read_psym(mr, heap, &tmp.c_name)                     ||
       ! marshall_read_u8(mr, heap, &tmp.arity)) {
@@ -163,6 +163,22 @@ void marshall_read_clean (s_marshall_read *mr)
 {
   assert(mr);
   buf_clean(&mr->buf);
+}
+
+s_marshall_read *marshall_read_cow(s_marshall_read *mr,
+                                   bool heap,
+                                   s_cow *dest)
+{
+  s_cow tmp = {0};
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_sym(mr, heap, &tmp.type)     ||
+      ! marshall_read_list(mr, heap, &tmp.list)    ||
+      // ! marshall_read_mutex(mr, heap, &tmp.mutex)  ||
+      ! marshall_read_sw(mr, heap, tmp.ref_count))
+    return NULL;
+  *dest = tmp;
+  return mr;
 }
 
 s_marshall_read * marshall_read_dimensions (s_marshall_read *mr,
@@ -627,7 +643,6 @@ DEF_MARSHALL_READ(uw, uw)
     return NULL;                                                       \
   }
 
-DEF_MARSHALL_READ_STUB(cow, s_cow)
 DEF_MARSHALL_READ_STUB(complex, s_complex)
 DEF_MARSHALL_READ_STUB(do_block, s_do_block)
 DEF_MARSHALL_READ_STUB(fact, s_fact)
