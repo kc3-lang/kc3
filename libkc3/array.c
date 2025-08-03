@@ -92,11 +92,11 @@ void * array_data (const s_array *a, const uw *address)
   while (i < a->dimension) {
     if (address[i] >= a->dimensions[i].count) {
       err_write_1("array_data: address overflow: ");
-      err_inspect_uw(&i);
+      err_inspect_uw(i);
       err_write_1(": [");
-      err_inspect_uw(&address[i]);
+      err_inspect_uw(address[i]);
       err_write_1(" >= ");
-      err_inspect_uw(&a->dimensions[i].count);
+      err_inspect_uw(a->dimensions[i].count);
       err_puts("]");
       return NULL;
     }
@@ -137,9 +137,9 @@ s_tag * array_data_tag (const s_array *a, const s_array *address,
   if (address->dimensions[0].count !=
       a->dimension) {
     err_write_1("array_data_tag: address dimension mismatch: ");
-    err_inspect_uw(&address->dimensions[0].count);
+    err_inspect_uw(address->dimensions[0].count);
     err_write_1(" != ");
-    err_inspect_uw(&a->dimension);
+    err_inspect_uw(a->dimension);
     err_write_1("\n");
     assert(! "array_data_tag: address dimension mismatch");
     return NULL;

@@ -16,20 +16,20 @@
 #include "buf_inspect.h"
 #include "kc3_main.h"
 
-sw buf_inspect_u64_decimal (s_buf *buf, const u64 *u)
+sw buf_inspect_u64_decimal (s_buf *buf, u64 u)
 {
-  return buf_inspect_u64_base(buf,
-                                  &g_kc3_base_decimal,
-                                  u);
+  return buf_inspect_u64_base
+    (buf, &g_kc3_base_decimal, u);
 }
 
-u8 buf_inspect_u64_decimal_digits (const u64 *x)
+u8 buf_inspect_u64_decimal_digits (u64 x)
 {
-  return buf_inspect_u64_base_digits(&g_kc3_base_decimal, x);
+  return buf_inspect_u64_base_digits
+    (&g_kc3_base_decimal, x);
 }
 
 sw buf_inspect_u64_decimal_pad (s_buf *buf, u8 size, character pad,
-                                   const u64 *x)
+                                   u64 x)
 {
   u8 digits;
   u8 i;
@@ -37,7 +37,6 @@ sw buf_inspect_u64_decimal_pad (s_buf *buf, u8 size, character pad,
   sw result = 0;
   assert(buf);
   assert(size);
-  assert(x);
   digits = buf_inspect_u64_decimal_digits(x);
   i = digits;
   while (i < size) {
@@ -53,8 +52,8 @@ sw buf_inspect_u64_decimal_pad (s_buf *buf, u8 size, character pad,
   return result;
 }
 
-sw buf_inspect_u64_decimal_size (s_pretty *pretty, const u64 *u)
+sw buf_inspect_u64_decimal_size (s_pretty *pretty, u64 x)
 {
   return buf_inspect_u64_base_size(pretty, &g_kc3_base_decimal,
-                                       u);
+                                       x);
 }

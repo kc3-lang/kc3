@@ -16,10 +16,10 @@
 
 #include "types.h"
 
-sw buf_inspect_u8_decimal (s_buf *buf, const u8 *x);
-u8 buf_inspect_u8_decimal_digits (const u8 *x);
+sw buf_inspect_u8_decimal (s_buf *buf, u8 x);
+u8 buf_inspect_u8_decimal_digits (u8 x);
 sw buf_inspect_u8_decimal_pad (s_buf *buf, u8 size, character pad,
-                                   const u8 *x);
-sw buf_inspect_u8_decimal_size (s_pretty *pretty, const u8 *x);
+                                   u8 x);
+sw buf_inspect_u8_decimal_size (s_pretty *pretty, u8 x);
 
 #endif /* LIBKC3_BUF_INSPECT_U8_decimal_H */

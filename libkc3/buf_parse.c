@@ -137,7 +137,7 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
   if ((r = buf_parse_array_data_rec(buf, &tmp, address, &tag,
                                     0)) <= 0) {
     err_write_1("buf_parse_array_data: buf_parse_array_data_rec: ");
-    err_inspect_sw_decimal(&r);
+    err_inspect_sw_decimal(r);
     err_write_1("\n");
     goto restore;
   }
@@ -223,7 +223,7 @@ sw buf_parse_array_data_rec (s_buf *buf, s_array *dest, uw *address,
   result += r;
   if (tmp.dimensions[dimension].count != address[dimension]) {
     err_write_1("buf_parse_array_dimensions_rec: dimension mismatch: ");
-    err_inspect_uw(&dimension);
+    err_inspect_uw(dimension);
     err_write_1("\n");
     assert(! "buf_parse_array_dimensions_rec: dimension mismatch");
     r = -1;
@@ -313,7 +313,7 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
                                           0)) < 0) {
     err_write_1("buf_parse_array_dimensions:"
                 " buf_parse_array_dimensions_rec: ");
-    err_inspect_sw_decimal(&r);
+    err_inspect_sw_decimal(r);
     err_write_1("\n");
     goto clean;
   }
@@ -400,7 +400,7 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
   }
   else if (tmp.dimensions[dimension].count != address[dimension]) {
     err_write_1("buf_parse_array_dimensions_rec: dimension mismatch: ");
-    err_inspect_uw(&dimension);
+    err_inspect_uw(dimension);
     err_write_1("\n");
     assert(! "buf_parse_array_dimensions_rec: dimension mismatch");
     r = -1;
@@ -549,7 +549,7 @@ sw buf_parse_do_block_inner (s_buf *buf, bool short_form,
       goto ok;
     if ((r = buf_read_1(buf, "\n")) < 0) {
       err_write_1("buf_parse_do_block_inner: line ");
-      err_inspect_sw_decimal(&buf->line);
+      err_inspect_sw_decimal(buf->line);
       err_puts(": missing separator: ");
       err_inspect_buf(buf);
       err_write_1("\n");
@@ -559,7 +559,7 @@ sw buf_parse_do_block_inner (s_buf *buf, bool short_form,
     if (! r) {
       if ((r = buf_read_1(buf, ";")) <= 0) {
         err_write_1("buf_parse_do_block_inner: line ");
-        err_inspect_sw_decimal(&buf->line);
+        err_inspect_sw_decimal(buf->line);
         err_puts(": missing separator: ");
         err_inspect_buf(buf);
         err_write_1("\n");
@@ -1496,7 +1496,7 @@ sw buf_parse_digit (s_buf *buf, const s_str *base, u8 *dest)
   if ((digit = str_character_position(base, c)) >= 0) {
     if (digit > 255) {
       err_write_1("buf_parse_digit: digit overflow: ");
-      err_inspect_sw_decimal(&digit);
+      err_inspect_sw_decimal(digit);
       err_write_1("\n");
       assert(! "buf_parse_digit: digit overflow");
       return -1;
@@ -3284,7 +3284,7 @@ sw buf_parse_paren_sym (s_buf *buf, const s_sym **dest)
       if ((r = buf_parse_uw(buf, &b)) <= 0)
         goto restore;
       result += r;
-      buf_inspect_uw(&tmp_buf, &b);
+      buf_inspect_uw(&tmp_buf, b);
       if ((r = buf_read_1(buf, "]")) <= 0)
         goto restore;
       result += r;

@@ -21,12 +21,12 @@
 #include "str.h"
 #include "sym.h"
 
-sw buf_inspect_u8 (s_buf *buf, const u8 *u)
+sw buf_inspect_u8 (s_buf *buf, u8 x)
 {
   sw r;
   sw result = 0;
   if (g_buf_inspect_type != &g_sym_U8 &&
-      cast_needed_u8(*u)) {
+      cast_needed_u8(x)) {
     if ((r = buf_inspect_paren_sym(buf, &g_sym_U8)) < 0)
       return r;
     result += r;
@@ -35,15 +35,13 @@ sw buf_inspect_u8 (s_buf *buf, const u8 *u)
     result += r;
   }
   if ((r = buf_inspect_u8_base(buf, &g_kc3_base_decimal,
-                                    u)) < 0)
+                                    x)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw buf_inspect_u8_base (s_buf *buf,
-                             const s_str *base,
-                             const u8 *u)
+sw buf_inspect_u8_base (s_buf *buf, const s_str *base, u8 x)
 {
   character *c;
   u8 digit;
@@ -54,21 +52,21 @@ sw buf_inspect_u8_base (s_buf *buf,
   s_buf_save save;
   sw size;
   character zero;
-  u8 u_;
-  u_ = *u;
-  if (u_ == 0) {
+  u8 u;
+  if (x == 0) {
     if (str_character(base, 0, &zero) < 0)
       return -1;
     return buf_write_character_utf8(buf, zero);
   }
+  u = x;
   size = buf_inspect_u8_base_digits(base, u);
   c = alloc(size * sizeof(character));
   buf_save_init(buf, &save);
   radix = base->size;
   i = 0;
-  while (u_ > 0) {
-    digit = u_ % radix;
-    u_ /= radix;
+  while (u > 0) {
+    digit = u % radix;
+    u /= radix;
     if (str_character(base, digit, c + i) < 0) {
       r = -1;
       goto restore;
@@ -91,24 +89,24 @@ sw buf_inspect_u8_base (s_buf *buf,
 }
 
 u8 buf_inspect_u8_base_digits (const s_str *base,
-                                    const u8 *u)
+                                    u8 x)
 {
   uw radix;
   u8 size = 0;
-  u8 u_;
-  u_ = *u;
-  if (u_ == 0)
+  u8 u;
+  u = x;
+  if (u == 0)
     return 1;
   radix = base->size;
-  while (u_ > 0) {
-    u_ /= radix;
+  while (u > 0) {
+    u /= radix;
     size++;
   }
   return size;
 }
 
 sw buf_inspect_u8_base_size (s_pretty *pretty, const s_str *base,
-                                  const u8 *u)
+                                  u8 x)
 {
   character *c;
   u8 digit;
@@ -118,9 +116,9 @@ sw buf_inspect_u8_base_size (s_pretty *pretty, const s_str *base,
   uw radix;
   sw size;
   character zero;
-  u8 u_;
-  u_ = *u;
-  if (u_ == 0) {
+  u8 u;
+  u = x;
+  if (u == 0) {
     if (str_character(base, 0, &zero) < 0)
       return -1;
     return buf_write_character_utf8_size(pretty, zero);
@@ -129,9 +127,9 @@ sw buf_inspect_u8_base_size (s_pretty *pretty, const s_str *base,
   c = alloc(size * sizeof(character));
   radix = base->size;
   i = 0;
-  while (u_ > 0) {
-    digit = u_ % radix;
-    u_ /= radix;
+  while (u > 0) {
+    digit = u % radix;
+    u /= radix;
     if (str_character(base, digit, c + i) < 0) {
       r = -1;
       goto restore;
@@ -151,19 +149,19 @@ sw buf_inspect_u8_base_size (s_pretty *pretty, const s_str *base,
   return r;
 }
 
-sw buf_inspect_u8_size (s_pretty *pretty, const u8 *u)
+sw buf_inspect_u8_size (s_pretty *pretty, u8 x)
 {
   sw r;
   sw result = 0;
   if (g_buf_inspect_type != &g_sym_U8 &&
-      cast_needed_u8(*u)) {
+      cast_needed_u8(x)) {
     if ((r = buf_inspect_paren_sym_size(pretty, &g_sym_U8)) < 0)
       return r;
     result += r;
     result += strlen(" ");
   }
   if ((r = buf_inspect_u8_base_size(pretty, &g_kc3_base_decimal,
-                                         u)) < 0)
+                                         x)) < 0)
     return r;
   result += r;
   return result;

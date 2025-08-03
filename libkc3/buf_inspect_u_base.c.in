@@ -16,20 +16,20 @@
 #include "buf_inspect.h"
 #include "kc3_main.h"
 
-sw buf_inspect_u_bits$__BASE$ (s_buf *buf, const u_bits$ *u)
+sw buf_inspect_u_bits$__BASE$ (s_buf *buf, u_bits$ u)
 {
-  return buf_inspect_u_bits$_base(buf,
-                                  &g_kc3_base__BASE$,
-                                  u);
+  return buf_inspect_u_bits$_base
+    (buf, &g_kc3_base__BASE$, u);
 }
 
-u8 buf_inspect_u_bits$__BASE$_digits (const u_bits$ *x)
+u8 buf_inspect_u_bits$__BASE$_digits (u_bits$ x)
 {
-  return buf_inspect_u_bits$_base_digits(&g_kc3_base__BASE$, x);
+  return buf_inspect_u_bits$_base_digits
+    (&g_kc3_base__BASE$, x);
 }
 
 sw buf_inspect_u_bits$__BASE$_pad (s_buf *buf, u8 size, character pad,
-                                   const u_bits$ *x)
+                                   u_bits$ x)
 {
   u8 digits;
   u8 i;
@@ -37,7 +37,6 @@ sw buf_inspect_u_bits$__BASE$_pad (s_buf *buf, u8 size, character pad,
   sw result = 0;
   assert(buf);
   assert(size);
-  assert(x);
   digits = buf_inspect_u_bits$__BASE$_digits(x);
   i = digits;
   while (i < size) {
@@ -53,8 +52,8 @@ sw buf_inspect_u_bits$__BASE$_pad (s_buf *buf, u8 size, character pad,
   return result;
 }
 
-sw buf_inspect_u_bits$__BASE$_size (s_pretty *pretty, const u_bits$ *u)
+sw buf_inspect_u_bits$__BASE$_size (s_pretty *pretty, u_bits$ x)
 {
   return buf_inspect_u_bits$_base_size(pretty, &g_kc3_base__BASE$,
-                                       u);
+                                       x);
 }

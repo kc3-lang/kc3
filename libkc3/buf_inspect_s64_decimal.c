@@ -15,33 +15,33 @@
 #include "buf.h"
 #include "buf_inspect_u64_decimal.h"
 
-sw buf_inspect_s64_decimal (s_buf *buf, const s64 *s)
+sw buf_inspect_s64_decimal (s_buf *buf, s64 x)
 {
   sw r;
   sw result = 0;
   u64 u;
-  u = *s;
-  if (*s < 0) {
+  u = x;
+  if (x < 0) {
     if ((r = buf_write_1(buf, "-")) < 0)
       return r;
     result += r;
-    u = -*s;
+    u = -x;
   }
-  if ((r = buf_inspect_u64_decimal(buf, &u)) < 0)
+  if ((r = buf_inspect_u64_decimal(buf, u)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw buf_inspect_s64_decimal_size (s_pretty *pretty, const s64 *s)
+sw buf_inspect_s64_decimal_size (s_pretty *pretty, s64 s)
 {
   sw result = 0;
   u64 u;
-  u = *s;
-  if (*s < 0) {
+  u = s;
+  if (s < 0) {
     result += strlen("-");
-    u = -*s;
+    u = -s;
   }
-  result += buf_inspect_u64_decimal_size(pretty, &u);
+  result += buf_inspect_u64_decimal_size(pretty, u);
   return result;
 }

@@ -1814,9 +1814,9 @@ sw buf_write_integer (s_buf *buf, const s_integer *src)
   }
   if (written != size) {
     err_write_1("buf_write_integer: size mismatch - expected ");
-    err_inspect_uw(&size);
+    err_inspect_uw(size);
     err_write_1(" bytes, but mp_to_sbin wrote ");
-    err_inspect_uw(&written);
+    err_inspect_uw(written);
     err_write_1(" bytes\n");
     assert(! "buf_write_integer: size mismatch between mp_sbin_size and mp_to_sbin");
     return -1;

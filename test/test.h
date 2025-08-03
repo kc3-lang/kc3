@@ -226,6 +226,44 @@
     }                                                                  \
   } while (0)
 
+#define TEST_STR_HEX_EQ(test, expected)                                \
+  do {                                                                 \
+    bool  TEST_STR_HEX_EQ_ko = false;                                  \
+    s_str TEST_STR_HEX_EQ_test_str = (test);                           \
+    s_str TEST_STR_HEX_EQ_expected_str = (expected);                   \
+    sw i = 0;                                                          \
+    if (TEST_STR_HEX_EQ_test_str.size !=                               \
+        TEST_STR_HEX_EQ_expected_str.size)                             \
+      TEST_STR_HEX_EQ_ko = true;                                       \
+    else {                                                             \
+      while (i < TEST_STR_HEX_EQ_test_str.size) {                      \
+        if (TEST_STR_HEX_EQ_test_str.ptr.pchar[i] !=                   \
+            TEST_STR_HEX_EQ_expected_str.ptr.pchar[i]) {               \
+          TEST_STR_HEX_EQ_ko = true;                                   \
+          break;                                                       \
+        }                                                              \
+        i++;                                                           \
+      }                                                                \
+    }                                                                  \
+    if (TEST_STR_HEX_EQ_ko) {                                          \
+      test_ko();                                                       \
+      err_write_1("\n" TEST_COLOR_KO "TEST_STR_HEX_EQ failed in ");    \
+      err_write_1(__FILE__);                                           \
+      err_write_1(":");                                                \
+      err_inspect_s32_decimal(__LINE__);                                \
+      err_write_1(" ");                                                \
+      err_write_1(__func__);                                           \
+      err_write_1("\n");                                               \
+      err_inspect_str_hex(&TEST_STR_HEX_EQ_expected_str);              \
+      fprintf(stderr, "\n"                                             \
+              "got      ");                                            \
+      err_inspect_str_hex(&TEST_STR_HEX_EQ_test_str);                  \
+      fprintf(stderr, "%s\n",                                          \
+              TEST_COLOR_RESET);                                       \
+      return 1;                                                        \
+    }                                                                  \
+  } while (0)
+
 #define TEST_STRNCMP(test, result, bytes)                              \
   do {                                                                 \
     const char *TEST_STRNCMP_tmp = (test);                             \

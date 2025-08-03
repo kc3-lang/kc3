@@ -16,20 +16,20 @@
 #include "buf_inspect.h"
 #include "kc3_main.h"
 
-sw buf_inspect_u32_binary (s_buf *buf, const u32 *u)
+sw buf_inspect_u32_binary (s_buf *buf, u32 u)
 {
-  return buf_inspect_u32_base(buf,
-                                  &g_kc3_base_binary,
-                                  u);
+  return buf_inspect_u32_base
+    (buf, &g_kc3_base_binary, u);
 }
 
-u8 buf_inspect_u32_binary_digits (const u32 *x)
+u8 buf_inspect_u32_binary_digits (u32 x)
 {
-  return buf_inspect_u32_base_digits(&g_kc3_base_binary, x);
+  return buf_inspect_u32_base_digits
+    (&g_kc3_base_binary, x);
 }
 
 sw buf_inspect_u32_binary_pad (s_buf *buf, u8 size, character pad,
-                                   const u32 *x)
+                                   u32 x)
 {
   u8 digits;
   u8 i;
@@ -37,7 +37,6 @@ sw buf_inspect_u32_binary_pad (s_buf *buf, u8 size, character pad,
   sw result = 0;
   assert(buf);
   assert(size);
-  assert(x);
   digits = buf_inspect_u32_binary_digits(x);
   i = digits;
   while (i < size) {
@@ -53,8 +52,8 @@ sw buf_inspect_u32_binary_pad (s_buf *buf, u8 size, character pad,
   return result;
 }
 
-sw buf_inspect_u32_binary_size (s_pretty *pretty, const u32 *u)
+sw buf_inspect_u32_binary_size (s_pretty *pretty, u32 x)
 {
   return buf_inspect_u32_base_size(pretty, &g_kc3_base_binary,
-                                       u);
+                                       x);
 }

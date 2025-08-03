@@ -17,12 +17,10 @@
 #include "types.h"
 #include "buf_inspect_u64_decimal.h"
 
-sw buf_inspect_u64 (s_buf *buf, const u64 *u);
-sw buf_inspect_u64_base (s_buf *buf,
-                             const s_str *base,
-                             const u64 *u);
+sw buf_inspect_u64 (s_buf *buf, u64 u);
+sw buf_inspect_u64_base (s_buf *buf, const s_str *base, u64 u);
 sw buf_inspect_u64_base_size (s_pretty *pretty, const s_str *base,
-                                  const u64 *u);
-sw buf_inspect_u64_size (s_pretty *pretty, const u64 *u);
+                                  u64 u);
+sw buf_inspect_u64_size (s_pretty *pretty, u64 u);
 
 #endif /* LIBKC3_BUF_INSPECT_U64_H */

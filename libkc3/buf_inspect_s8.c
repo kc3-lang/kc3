@@ -19,13 +19,13 @@
 #include "cast.h"
 #include "sym.h"
 
-sw buf_inspect_s8 (s_buf *buf, const s8 *s)
+sw buf_inspect_s8 (s_buf *buf, s8 x)
 {
   sw r;
   sw result = 0;
   u8 u;
   if (g_buf_inspect_type != &g_sym_S8 &&
-      cast_needed_s8(*s)) {
+      cast_needed_s8(x)) {
     if ((r = buf_inspect_paren_sym(buf, &g_sym_S8)) < 0)
       return r;
     result += r;
@@ -33,26 +33,26 @@ sw buf_inspect_s8 (s_buf *buf, const s8 *s)
       return r;
     result += r;
   }
-  u = *s;
-  if (*s < 0) {
+  u = x;
+  if (x < 0) {
     if ((r = buf_write_1(buf, "-")) < 0)
       return r;
     result += r;
-    u = -*s;
+    u = -x;
   }
-  if ((r = buf_inspect_u8_decimal(buf, &u)) < 0)
+  if ((r = buf_inspect_u8_decimal(buf, u)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw buf_inspect_s8_size (s_pretty *pretty, const s8 *s)
+sw buf_inspect_s8_size (s_pretty *pretty, s8 x)
 {
   sw r;
   sw result = 0;
   u8 u;
   if (g_buf_inspect_type != &g_sym_S8 &&
-      cast_needed_s8(*s)) {
+      cast_needed_s8(x)) {
     if ((r = buf_inspect_paren_sym_size(pretty, &g_sym_S8)) < 0)
       return r;
     result += r;
@@ -60,14 +60,14 @@ sw buf_inspect_s8_size (s_pretty *pretty, const s8 *s)
       return r;
     result += r;
   }
-  u = *s;
-  if (*s < 0) {
+  u = x;
+  if (x < 0) {
     if ((r = buf_write_1_size(pretty, "-")) < 0)
       return r;
     result += r;
-    u = -*s;
+    u = -x;
   }
-  if ((r = buf_inspect_u8_decimal_size(pretty, &u)) < 0)
+  if ((r = buf_inspect_u8_decimal_size(pretty, u)) < 0)
     return r;
   result += r;
   return result;

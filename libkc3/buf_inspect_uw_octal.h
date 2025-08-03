@@ -16,10 +16,10 @@
 
 #include "types.h"
 
-sw buf_inspect_uw_octal (s_buf *buf, const uw *x);
-u8 buf_inspect_uw_octal_digits (const uw *x);
+sw buf_inspect_uw_octal (s_buf *buf, uw x);
+u8 buf_inspect_uw_octal_digits (uw x);
 sw buf_inspect_uw_octal_pad (s_buf *buf, u8 size, character pad,
-                                   const uw *x);
-sw buf_inspect_uw_octal_size (s_pretty *pretty, const uw *x);
+                                   uw x);
+sw buf_inspect_uw_octal_size (s_pretty *pretty, uw x);
 
 #endif /* LIBKC3_BUF_INSPECT_UW_octal_H */

@@ -88,7 +88,7 @@ sw buf_fd_open_r_refill (s_buf *buf)
 #endif
   if (avail < 0) {
     err_write_1("buf_fd_open_r_refill: avail: ");
-    err_inspect_s32_decimal(&avail);
+    err_inspect_s32_decimal(avail);
     err_write_1("\n");
     return -1;
   }

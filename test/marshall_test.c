@@ -20,42 +20,6 @@
 #include "../libkc3/tag.h"
 #include "test.h"
 
-#define TEST_STR_HEX_EQ(test, expected)                                \
-  do {                                                                 \
-    bool  TEST_STR_HEX_EQ_ko = false;                                  \
-    s_str TEST_STR_HEX_EQ_test_str = (test);                           \
-    s_str TEST_STR_HEX_EQ_expected_str = (expected);                   \
-    sw i = 0;                                                          \
-    if (TEST_STR_HEX_EQ_test_str.size !=                               \
-        TEST_STR_HEX_EQ_expected_str.size)                             \
-      TEST_STR_HEX_EQ_ko = true;                                       \
-    else {                                                             \
-      while (i < TEST_STR_HEX_EQ_test_str.size) {                      \
-        if (TEST_STR_HEX_EQ_test_str.ptr.pchar[i] !=                   \
-            TEST_STR_HEX_EQ_expected_str.ptr.pchar[i]) {               \
-          TEST_STR_HEX_EQ_ko = true;                                   \
-          break;                                                       \
-        }                                                              \
-        i++;                                                           \
-      }                                                                \
-    }                                                                  \
-    if (TEST_STR_HEX_EQ_ko) {                                          \
-      test_ko();                                                       \
-      fprintf(stderr, "\n%sTEST_STR_HEX_EQ failed in %s:%d %s\n"       \
-              "Expected ",                                             \
-              TEST_COLOR_KO,                                           \
-              __FILE__, __LINE__, __func__);                           \
-      fflush(stderr);                                                  \
-      err_inspect_str_hex(&TEST_STR_HEX_EQ_expected_str);              \
-      fprintf(stderr, "\n"                                             \
-              "got      ");                                            \
-      err_inspect_str_hex(&TEST_STR_HEX_EQ_test_str);                  \
-      fprintf(stderr, "%s\n",                                          \
-              TEST_COLOR_RESET);                                       \
-      return 1;                                                        \
-    }                                                                  \
-  } while (0)
-
 #define MARSHALL_TEST(type, test, expected)                           \
   do {                                                                \
     s_marshall m = {0};                                               \
@@ -66,7 +30,7 @@
     TEST_ASSERT(marshall_init(&m));                                   \
     TEST_ASSERT(marshall_ ## type (&m, false, (type) (test)));        \
     TEST_ASSERT(marshall_to_str(&m, &test_str));                      \
-    TEST_STR_EQ(test_str, expected_str);                              \
+    TEST_STR_HEX_EQ(test_str, expected_str);                              \
     marshall_clean(&m);                                               \
     test_context(NULL);                                               \
   } while (0)
@@ -83,7 +47,7 @@
             &str_test);                                               \
     TEST_EQ(marshall_str(&m, false, &str_test), &m);                  \
     TEST_EQ(marshall_to_str(&m, &str_result), &str_result);           \
-    TEST_STR_EQ(str_result, str_expected);                            \
+    TEST_STR_HEX_EQ(str_result, str_expected);                            \
     str_clean(&str_result);                                           \
     str_clean(&str_test);                                             \
     marshall_clean(&m);                                               \
@@ -101,7 +65,7 @@
     TEST_EQ(marshall_init(&m), &m);                                   \
     TEST_EQ(marshall_tag(&m, false, &tag), &m);                       \
     TEST_ASSERT(marshall_to_str(&m, &test_str));                      \
-    TEST_STR_EQ(test_str, expected_str);                              \
+    TEST_STR_HEX_EQ(test_str, expected_str);                              \
     marshall_clean(&m);                                               \
     tag_clean(&tag);                                                  \
     test_context(NULL);                                               \
@@ -211,7 +175,7 @@ TEST_CASE(marshall_plist)
   TEST_ASSERT(list_test);
   TEST_ASSERT(marshall_plist(&m, false, list_test));
   marshall_to_str(&m, &str);
-  TEST_STR_EQ(str, expected);
+  TEST_STR_HEX_EQ(str, expected);
   str_clean(&str);
   list_delete_all(list_test);
   marshall_clean(&m);
@@ -242,7 +206,7 @@ TEST_CASE(marshall_plist_twice)
   TEST_ASSERT(marshall_plist(&m, false, list_test));
   TEST_ASSERT(marshall_plist(&m, false, list_test));
   marshall_to_str(&m, &str);
-  TEST_STR_EQ(str, expected);
+  TEST_STR_HEX_EQ(str, expected);
   str_clean(&str);
   list_delete_all(list_test);
   marshall_clean(&m);
@@ -260,7 +224,7 @@ TEST_CASE(marshall_fact)
   fact_init_1(&fact, "{1, 2, 3}");
   TEST_ASSERT(marshall_fact(&m, false, &fact));
   marshall_to_str(&m, &str);
-  TEST_STR_EQ(str, expected);
+  TEST_STR_HEX_EQ(str, expected);
   str_clean(&str);
   marshall_clean(&m);
 }
@@ -755,7 +719,7 @@ TEST_CASE(marshall_to_str)
                    "\x00\x00\x00\x00\x00\x00\x00\x00"
                    "\x04\x00\x00\x00\x00\x00\x00\x00"
                    "\x32\x79\x06\x00");
-  TEST_STR_EQ(str, expected);
+  TEST_STR_HEX_EQ(str, expected);
   str_clean(&str);
 }
 TEST_CASE_END(marshall_to_str)

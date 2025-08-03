@@ -16,20 +16,20 @@
 #include "buf_inspect.h"
 #include "kc3_main.h"
 
-sw buf_inspect_uw_octal (s_buf *buf, const uw *u)
+sw buf_inspect_uw_octal (s_buf *buf, uw u)
 {
-  return buf_inspect_uw_base(buf,
-                                  &g_kc3_base_octal,
-                                  u);
+  return buf_inspect_uw_base
+    (buf, &g_kc3_base_octal, u);
 }
 
-u8 buf_inspect_uw_octal_digits (const uw *x)
+u8 buf_inspect_uw_octal_digits (uw x)
 {
-  return buf_inspect_uw_base_digits(&g_kc3_base_octal, x);
+  return buf_inspect_uw_base_digits
+    (&g_kc3_base_octal, x);
 }
 
 sw buf_inspect_uw_octal_pad (s_buf *buf, u8 size, character pad,
-                                   const uw *x)
+                                   uw x)
 {
   u8 digits;
   u8 i;
@@ -37,7 +37,6 @@ sw buf_inspect_uw_octal_pad (s_buf *buf, u8 size, character pad,
   sw result = 0;
   assert(buf);
   assert(size);
-  assert(x);
   digits = buf_inspect_uw_octal_digits(x);
   i = digits;
   while (i < size) {
@@ -53,8 +52,8 @@ sw buf_inspect_uw_octal_pad (s_buf *buf, u8 size, character pad,
   return result;
 }
 
-sw buf_inspect_uw_octal_size (s_pretty *pretty, const uw *u)
+sw buf_inspect_uw_octal_size (s_pretty *pretty, uw x)
 {
   return buf_inspect_uw_base_size(pretty, &g_kc3_base_octal,
-                                       u);
+                                       x);
 }

@@ -35,17 +35,17 @@ extern const s_sym *g_buf_inspect_type;
 
 #define BUF_INSPECT_S_BASE_PROTOTYPES(bits, base)                      \
   sw buf_inspect_s ## bits ## _ ## base (s_buf *buf,                   \
-                                         const s ## bits *x);          \
+                                         s ## bits x);           \
   sw buf_inspect_s ## bits ## _ ## base ## _size (s_pretty *pretty,    \
-                                                  const s ## bits *x); \
+                                                  s ## bits x);  \
   sw buf_inspect_s ## bits ## _ ## base ## _pad (s_buf *buf, u8 max,   \
                                                  character pad,        \
-                                                 const s ## bits *x)
+                                                 s ## bits x)
 
 #define BUF_INSPECT_S_PROTOTYPES(bits)                                 \
-  sw buf_inspect_s ## bits (s_buf *buf, const s ## bits *x);           \
+  sw buf_inspect_s ## bits (s_buf *buf, s ## bits x);            \
   sw buf_inspect_s ## bits ## _size (s_pretty *pretty,                 \
-                                     const s ## bits *x);              \
+                                     s ## bits x);               \
   BUF_INSPECT_S_BASE_PROTOTYPES(bits, binary);                         \
   BUF_INSPECT_S_BASE_PROTOTYPES(bits, decimal);                        \
   BUF_INSPECT_S_BASE_PROTOTYPES(bits, hexadecimal);                    \
@@ -53,26 +53,26 @@ extern const s_sym *g_buf_inspect_type;
 
 #define BUF_INSPECT_U_BASE_PROTOTYPES(bits, base)                      \
   sw buf_inspect_u ## bits ## _ ## base (s_buf *buf,                   \
-                                         const u ## bits *x);          \
-  u8 buf_inspect_u ## bits ## _ ## base ## _digits (const u##bits *x); \
+                                         u ## bits x);           \
+  u8 buf_inspect_u ## bits ## _ ## base ## _digits (u##bits x);  \
   sw buf_inspect_u ## bits ## _ ## base ## _pad (s_buf *buf,           \
                                                  u8 max, character pad,\
-                                                 const u ## bits *x);  \
+                                                 u ## bits x);   \
   sw buf_inspect_u ## bits ## _ ## base ## _size (s_pretty *pretty,    \
-                                                  const u ## bits *x)
+                                                  u ## bits x)
 
 #define BUF_INSPECT_U_PROTOTYPES(bits)                                 \
-  sw buf_inspect_u ## bits (s_buf *buf, const u ## bits *x);           \
+  sw buf_inspect_u ## bits (s_buf *buf, u ## bits x);           \
   sw buf_inspect_u ## bits ## _size (s_pretty *pretty,                 \
-                                     const u ## bits *x);              \
-  u8 buf_inspect_u ## bits ## _digits (const u ## bits *x);            \
+                                     u ## bits x);              \
+  u8 buf_inspect_u ## bits ## _digits (u ## bits x);            \
   sw buf_inspect_u ## bits ## _base (s_buf *buf, const s_str *base,    \
-                                     const u ## bits *x);              \
+                                     u ## bits x);              \
   u8 buf_inspect_u ## bits ## _base_digits (const s_str *base,         \
-                                            const u ## bits *x);       \
+                                            u ## bits x);       \
   sw buf_inspect_u ## bits ## _base_size (s_pretty *pretty,            \
                                           const s_str *base,           \
-                                          const u ## bits *x);         \
+                                          u ## bits x);         \
   BUF_INSPECT_U_BASE_PROTOTYPES(bits, binary);                         \
   BUF_INSPECT_U_BASE_PROTOTYPES(bits, decimal);                         \
   BUF_INSPECT_U_BASE_PROTOTYPES(bits, hexadecimal);                    \
@@ -125,12 +125,12 @@ sw buf_inspect_cow (s_buf *buf, s_cow *cow);
 sw buf_inspect_cow_size (s_pretty *pretty, s_cow *cow);
 sw buf_inspect_error_handler (s_buf *buf,
                               const s_error_handler *error_handler);
-sw buf_inspect_f32 (s_buf *buf, const f32 *x);
-sw buf_inspect_f32_size (s_pretty *pretty, const f32 *x);
-sw buf_inspect_f64 (s_buf *buf, const f64 *x);
-sw buf_inspect_f64_size (s_pretty *pretty, const f64 *x);
-sw buf_inspect_f128 (s_buf *buf, const f128 *x);
-sw buf_inspect_f128_size (s_pretty *pretty, const f128 *x);
+sw buf_inspect_f32 (s_buf *buf, f32 x);
+sw buf_inspect_f32_size (s_pretty *pretty, f32 x);
+sw buf_inspect_f64 (s_buf *buf, f64 x);
+sw buf_inspect_f64_size (s_pretty *pretty, f64 x);
+sw buf_inspect_f128 (s_buf *buf, f128 x);
+sw buf_inspect_f128_size (s_pretty *pretty, f128 x);
 sw buf_inspect_fact (s_buf *buf, const s_fact *fact);
 sw buf_inspect_fact_size (s_pretty *pretty, const s_fact *fact);
 sw buf_inspect_facts_spec (s_buf *buf, p_facts_spec spec);

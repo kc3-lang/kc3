@@ -17,12 +17,10 @@
 #include "types.h"
 #include "buf_inspect_uw_decimal.h"
 
-sw buf_inspect_uw (s_buf *buf, const uw *u);
-sw buf_inspect_uw_base (s_buf *buf,
-                             const s_str *base,
-                             const uw *u);
+sw buf_inspect_uw (s_buf *buf, uw u);
+sw buf_inspect_uw_base (s_buf *buf, const s_str *base, uw u);
 sw buf_inspect_uw_base_size (s_pretty *pretty, const s_str *base,
-                                  const uw *u);
-sw buf_inspect_uw_size (s_pretty *pretty, const uw *u);
+                                  uw u);
+sw buf_inspect_uw_size (s_pretty *pretty, uw u);
 
 #endif /* LIBKC3_BUF_INSPECT_UW_H */

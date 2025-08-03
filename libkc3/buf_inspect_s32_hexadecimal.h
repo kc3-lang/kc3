@@ -16,9 +16,9 @@
 
 #include "types.h"
 
-sw buf_inspect_s32_hexadecimal (s_buf *buf, const s32 *x);
+sw buf_inspect_s32_hexadecimal (s_buf *buf, s32 x);
 sw buf_inspect_s32_hexadecimal_pad (s_buf *buf, u8 size, character pad,
-                                   const s32 *x);
-sw buf_inspect_s32_hexadecimal_size (s_pretty *pretty, const s32 *x);
+                                   s32 x);
+sw buf_inspect_s32_hexadecimal_size (s_pretty *pretty, s32 x);
 
 #endif /* LIBKC3_BUF_INSPECT_S32_hexadecimal_H */

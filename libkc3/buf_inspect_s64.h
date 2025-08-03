@@ -17,7 +17,7 @@
 #include "types.h"
 #include "buf_inspect_s64_decimal.h"
 
-sw buf_inspect_s64 (s_buf *buf, const s64 *s);
-sw buf_inspect_s64_size (s_pretty *pretty, const s64 *s);
+sw buf_inspect_s64 (s_buf *buf, s64 s);
+sw buf_inspect_s64_size (s_pretty *pretty, s64 s);
 
 #endif /* LIBKC3_BUF_INSPECT_S64_H */

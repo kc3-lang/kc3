@@ -16,9 +16,9 @@
 
 #include "types.h"
 
-sw buf_inspect_s32_decimal (s_buf *buf, const s32 *x);
+sw buf_inspect_s32_decimal (s_buf *buf, s32 x);
 sw buf_inspect_s32_decimal_pad (s_buf *buf, u8 size, character pad,
-                                   const s32 *x);
-sw buf_inspect_s32_decimal_size (s_pretty *pretty, const s32 *x);
+                                   s32 x);
+sw buf_inspect_s32_decimal_size (s_pretty *pretty, s32 x);
 
 #endif /* LIBKC3_BUF_INSPECT_S32_decimal_H */

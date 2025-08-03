@@ -733,8 +733,8 @@ sw buf_inspect_call_brackets_size (s_pretty *pretty, const s_call *call)
     if ((r = buf_write_1_size(pretty, "[")) < 0)
       return r;
     result += r;
-    if ((r = buf_inspect_uw_size(pretty, ((uw *) address->data)
-                                 + i)) < 0)
+    if ((r = buf_inspect_uw_size(pretty,
+                                 ((uw *) address->data)[i])) < 0)
       return r;
     result += r;
     if ((r = buf_write_1_size(pretty, "]")) < 0)
@@ -1615,18 +1615,15 @@ sw buf_inspect_cow_size (s_pretty *pretty, s_cow *cow)
   return result;
 }
 
-sw buf_inspect_f32 (s_buf *buf, const f32 *f)
+sw buf_inspect_f32 (s_buf *buf, f32 x)
 {
   s32 exp;
   u8 i;
   u8 j;
   sw r;
   sw result = 0;
-  f32 x;
   assert(buf);
-  assert(f);
   exp = 0;
-  x = *f;
   if ((r = buf_write_1(buf, "(F32) ")) < 0)
     return r;
   result += r;
@@ -1681,32 +1678,22 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
         return r;
       result += r;
     }
-    if ((r = buf_inspect_s32_decimal(buf, &exp)) <= 0)
+    if ((r = buf_inspect_s32_decimal(buf, exp)) <= 0)
       return r;
     result += r;
   }
-  /*
-  if (false) {
-    if ((r = buf_write_1(buf, "f")) <= 0)
-      return r;
-  }
-  result += r;
-  */
   return result;
 }
 
-sw buf_inspect_f32_size (s_pretty *pretty, const f32 *f)
+sw buf_inspect_f32_size (s_pretty *pretty, f32 x)
 {
   s32 exp;
   u8 i;
   u8 j;
   sw r;
   sw result = 0;
-  f32 x;
   assert(pretty);
-  assert(f);
   exp = 0;
-  x = *f;
   if ((r = buf_write_1_size(pretty, "(F32) ")) < 0)
     return r;
   result += r;
@@ -1757,32 +1744,22 @@ sw buf_inspect_f32_size (s_pretty *pretty, const f32 *f)
         return r;
       result += r;
     }
-    if ((r = buf_inspect_s32_decimal_size(pretty, &exp)) <= 0)
+    if ((r = buf_inspect_s32_decimal_size(pretty, exp)) <= 0)
       return r;
     result += r;
   }
-  /*
-  if (false) {
-    if ((r = buf_write_1_size(pretty, "f")) <= 0)
-      return r;
-  }
-  result += r;
-  */
   return result;
 }
 
-sw buf_inspect_f64 (s_buf *buf, const f64 *f)
+sw buf_inspect_f64 (s_buf *buf, f64 x)
 {
   s64 exp;
   u8 i;
   u8 j;
   sw r;
   sw result = 0;
-  f64 x;
   assert(buf);
-  assert(f);
   exp = 0.0;
-  x = *f;
   if ((r = buf_write_1(buf, "(F64) ")) < 0)
     return r;
   result += r;
@@ -1837,25 +1814,22 @@ sw buf_inspect_f64 (s_buf *buf, const f64 *f)
         return r;
       result += r;
     }
-    if ((r = buf_inspect_s64_decimal(buf, &exp)) <= 0)
+    if ((r = buf_inspect_s64_decimal(buf, exp)) <= 0)
       return r;
     result += r;
   }
   return result;
 }
 
-sw buf_inspect_f64_size (s_pretty *pretty, const f64 *f)
+sw buf_inspect_f64_size (s_pretty *pretty, f64 x)
 {
   s64 exp;
   u8 i;
   u8 j;
   sw r;
   sw result = 0;
-  f64 x;
   assert(pretty);
-  assert(f);
   exp = 0.0;
-  x = *f;
   if ((r = buf_write_1_size(pretty, "(F64) ")) < 0)
     return r;
   result += r;
@@ -1906,52 +1880,49 @@ sw buf_inspect_f64_size (s_pretty *pretty, const f64 *f)
         return r;
       result += r;
     }
-    if ((r = buf_inspect_s64_decimal_size(pretty, &exp)) <= 0)
+    if ((r = buf_inspect_s64_decimal_size(pretty, exp)) <= 0)
       return r;
     result += r;
   }
   return result;
 }
 
-sw buf_inspect_f128 (s_buf *buf, const f128 *x)
+sw buf_inspect_f128 (s_buf *buf, f128 x)
 {
   s64 exp;
   u8 i;
   u8 j;
   sw r;
   sw result = 0;
-  f128 y;
   assert(buf);
-  assert(x);
   exp = 0.0;
-  y = *x;
   if ((r = buf_write_1(buf, "(F128) ")) < 0)
     return r;
   result += r;
-  if (y == 0.0) {
+  if (x == 0.0) {
     if ((r = buf_write_1(buf, "0.0")) < 0)
       return r;
     result += r;
     return result;
   }
-  if (y < 0) {
+  if (x < 0) {
     if ((r = buf_write_1(buf, "-")) <= 0)
       return r;
     result += r;
-    y = -y;
+    x = -x;
   }
-  if (y >= 1.0)
-    while (y >= 10.0) {
-      y /= 10.0;
+  if (x >= 1.0)
+    while (x >= 10.0) {
+      x /= 10.0;
       exp++;
     }
   else
-    while (y < 1.0) {
-      y *= 10.0;
+    while (x < 1.0) {
+      x *= 10.0;
       exp--;
     }
-  i = (u8) y;
-  y -= i;
+  i = (u8) x;
+  x -= i;
   i += '0';
   if ((r = buf_write_character_utf8(buf, i)) <= 0)
     return r;
@@ -1961,15 +1932,15 @@ sw buf_inspect_f128 (s_buf *buf, const f128 *x)
   result += r;
   j = 33;
   do {
-    y *= 10;
-    i = (u8) y;
-    y -= i;
+    x *= 10;
+    i = (u8) x;
+    x -= i;
     i += '0';
     if ((r = buf_write_character_utf8(buf, i)) <= 0)
       return r;
     result += r;
     j--;
-  } while (y > pow(0.1, j) && j);
+  } while (x > pow(0.1, j) && j);
   if (exp) {
     if ((r = buf_write_1(buf, "e")) <= 0)
       return r;
@@ -1979,52 +1950,49 @@ sw buf_inspect_f128 (s_buf *buf, const f128 *x)
         return r;
       result += r;
     }
-    if ((r = buf_inspect_s64_decimal(buf, &exp)) <= 0)
+    if ((r = buf_inspect_s64_decimal(buf, exp)) <= 0)
       return r;
     result += r;
   }
   return result;
 }
 
-sw buf_inspect_f128_size (s_pretty *pretty, const f128 *x)
+sw buf_inspect_f128_size (s_pretty *pretty, f128 x)
 {
   s64 exp;
   u8 i;
   u8 j;
   sw r;
   sw result = 0;
-  f128 y;
   assert(pretty);
-  assert(x);
   exp = 0.0;
-  y = *x;
   if ((r = buf_write_1_size(pretty, "(F128) ")) < 0)
     return r;
   result += r;
-  if (y == 0.0) {
+  if (x == 0.0) {
     if ((r = buf_write_1_size(pretty, "0.0")) < 0)
       return r;
     result += r;
     return result;
   }
-  if (y < 0) {
+  if (x < 0) {
     if ((r = buf_write_1_size(pretty, "-")) <= 0)
       return r;
     result += r;
-    y = -y;
+    x = -x;
   }
-  if (y >= 1.0)
-    while (y >= 10.0) {
-      y /= 10.0;
+  if (x >= 1.0)
+    while (x >= 10.0) {
+      x /= 10.0;
       exp++;
     }
   else
-    while (y < 1.0) {
-      y *= 10.0;
+    while (x < 1.0) {
+      x *= 10.0;
       exp--;
     }
-  i = (u8) y;
-  y -= i;
+  i = (u8) x;
+  x -= i;
   i += '0';
   result += 1;
   if ((r = buf_write_1_size(pretty, ".")) <= 0)
@@ -2032,13 +2000,13 @@ sw buf_inspect_f128_size (s_pretty *pretty, const f128 *x)
   result += r;
   j = 33;
   do {
-    y *= 10;
-    i = (u8) y;
-    y -= i;
+    x *= 10;
+    i = (u8) x;
+    x -= i;
     i += '0';
     result += 1;
     j--;
-  } while (y > pow(0.1, j) && j);
+  } while (x > pow(0.1, j) && j);
   if (exp) {
     if ((r = buf_write_1_size(pretty, "e")) <= 0)
       return r;
@@ -2048,7 +2016,7 @@ sw buf_inspect_f128_size (s_pretty *pretty, const f128 *x)
         return r;
       result += r;
     }
-    if ((r = buf_inspect_s64_decimal_size(pretty, &exp)) <= 0)
+    if ((r = buf_inspect_s64_decimal_size(pretty, exp)) <= 0)
       return r;
     result += r;
   }
@@ -3004,7 +2972,7 @@ sw buf_inspect_pointer (s_buf *buf, const void *ptr)
   if ((r = buf_write_1(buf, "0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) &ptr)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal(buf, (uw) ptr)) < 0)
     return r;
   result += r;
   return result;
@@ -3050,7 +3018,7 @@ sw buf_inspect_ptag (s_buf *buf, const p_tag *ptag)
   if ((r = buf_write_1(buf, "@0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) ptag)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal(buf, (uw) ptag)) < 0)
     return r;
   result += r;
   return result;
@@ -3064,7 +3032,7 @@ sw buf_inspect_ptag_size (s_pretty *pretty, const p_tag *ptag)
   if ((r = buf_write_1_size(pretty, "@0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal_size(pretty, (uw *) ptag)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal_size(pretty, (uw) ptag)) < 0)
     return r;
   result += r;
   return result;
@@ -3078,7 +3046,7 @@ sw buf_inspect_ptr (s_buf *buf, const u_ptr_w *ptr)
   if ((r = buf_write_1(buf, "(Ptr) 0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal(buf, &ptr->uw)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal(buf, ptr->uw)) < 0)
     return r;
   result += r;
   return result;
@@ -3092,7 +3060,7 @@ sw buf_inspect_ptr_free (s_buf *buf, const u_ptr_w *ptr_free)
   if ((r = buf_write_1(buf, "(PtrFree) 0x")) < 0)
     return r;
   result += r;
-  r = buf_inspect_uw_hexadecimal(buf, (uw *) &ptr_free->p);
+  r = buf_inspect_uw_hexadecimal(buf, ptr_free->uw);
   if (r < 0)
     return r;
   result += r;
@@ -3107,7 +3075,7 @@ sw buf_inspect_ptr_free_size (s_pretty *pretty, const u_ptr_w *ptr)
   if ((r = buf_write_1_size(pretty, "(PtrFree) 0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal_size(pretty, (uw *) &ptr->p)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal_size(pretty, ptr->uw)) < 0)
     return r;
   result += r;
   return result;
@@ -3121,7 +3089,7 @@ sw buf_inspect_ptr_size (s_pretty *pretty, const u_ptr_w *ptr)
   if ((r = buf_write_1_size(pretty, "(Ptr) 0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal_size(pretty, &ptr->uw)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal_size(pretty, ptr->uw)) < 0)
     return r;
   result += r;
   return result;
@@ -3558,11 +3526,11 @@ sw buf_inspect_str_hex (s_buf *buf, const s_str *str)
       goto clean;
     result += r;
     if ((r = buf_inspect_u8_hexadecimal_pad(buf, 2, '0',
-                                            str->ptr.pu8 + i)) != 2)
+                                            str->ptr.pu8[i])) != 2)
       goto clean;
     result += r;
     i++;
-    if (i < str->size && ! i % 8) {
+    if (i < str->size && ! (i % 8)) {
       if ((r = buf_write_1(buf, "\"\n\"")) != 3)
         goto clean;
       result += r;
@@ -3596,7 +3564,7 @@ sw buf_inspect_str_hex_size (s_pretty *pretty, const s_str *str)
     r = 2; // buf_inspect_u8_hexadecimal_pad_size == size
     result += r;
     i++;
-    if (i < str->size && ! i % 8) {
+    if (i < str->size && ! (i % 8)) {
       if ((r = buf_write_1_size(pretty, "\"\n\"")) != 3)
         goto clean;
       result += r;
@@ -4049,7 +4017,7 @@ sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st)
   if ((r = buf_write_1(buf, ",\nsize: ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw(buf, &st->size)) < 0)
+  if ((r = buf_inspect_uw(buf, st->size)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "}")) < 0)
@@ -4105,7 +4073,7 @@ sw buf_inspect_struct_type_size (s_pretty *pretty,
   if ((r = buf_write_1_size(pretty, ",\nsize: ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_size(pretty, &st->size)) < 0)
+  if ((r = buf_inspect_uw_size(pretty, st->size)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1_size(pretty, "}")) < 0)
@@ -4191,9 +4159,9 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_CALL:    return buf_inspect_call(buf, &tag->data.call);
   case TAG_CHARACTER:
     return buf_inspect_character(buf, &tag->data.character);
-  case TAG_F32:     return buf_inspect_f32(buf, &tag->data.f32);
-  case TAG_F64:     return buf_inspect_f64(buf, &tag->data.f64);
-  case TAG_F128:    return buf_inspect_f128(buf, &tag->data.f128);
+  case TAG_F32:     return buf_inspect_f32(buf, tag->data.f32);
+  case TAG_F64:     return buf_inspect_f64(buf, tag->data.f64);
+  case TAG_F128:    return buf_inspect_f128(buf, tag->data.f128);
   case TAG_FACT:    return buf_inspect_fact(buf, &tag->data.fact);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
@@ -4216,20 +4184,20 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_PVAR:    return buf_inspect_var(buf, tag->data.pvar);
   case TAG_QUOTE:   return buf_inspect_quote(buf, &tag->data.quote);
   case TAG_RATIO:   return buf_inspect_ratio(buf, &tag->data.ratio);
-  case TAG_S8:      return buf_inspect_s8(buf, &tag->data.s8);
-  case TAG_S16:     return buf_inspect_s16(buf, &tag->data.s16);
-  case TAG_S32:     return buf_inspect_s32(buf, &tag->data.s32);
-  case TAG_S64:     return buf_inspect_s64(buf, &tag->data.s64);
-  case TAG_SW:      return buf_inspect_sw(buf, &tag->data.sw);
+  case TAG_S8:      return buf_inspect_s8(buf, tag->data.s8);
+  case TAG_S16:     return buf_inspect_s16(buf, tag->data.s16);
+  case TAG_S32:     return buf_inspect_s32(buf, tag->data.s32);
+  case TAG_S64:     return buf_inspect_s64(buf, tag->data.s64);
+  case TAG_SW:      return buf_inspect_sw(buf, tag->data.sw);
   case TAG_STR:     return buf_inspect_str(buf, &tag->data.str);
   case TAG_TIME:    return buf_inspect_time(buf, &tag->data.time);
   case TAG_TUPLE:   return buf_inspect_tuple(buf, &tag->data.tuple);
-  case TAG_U8:      return buf_inspect_u8(buf, &tag->data.u8);
-  case TAG_U16:     return buf_inspect_u16(buf, &tag->data.u16);
-  case TAG_U32:     return buf_inspect_u32(buf, &tag->data.u32);
-  case TAG_U64:     return buf_inspect_u64(buf, &tag->data.u64);
+  case TAG_U8:      return buf_inspect_u8(buf, tag->data.u8);
+  case TAG_U16:     return buf_inspect_u16(buf, tag->data.u16);
+  case TAG_U32:     return buf_inspect_u32(buf, tag->data.u32);
+  case TAG_U64:     return buf_inspect_u64(buf, tag->data.u64);
   case TAG_UNQUOTE: return buf_inspect_unquote(buf, &tag->data.unquote);
-  case TAG_UW:      return buf_inspect_uw(buf, &tag->data.uw);
+  case TAG_UW:      return buf_inspect_uw(buf, tag->data.uw);
   case TAG_VOID:    return buf_inspect_void(buf, NULL);
   }
   err_puts("buf_inspect_tag: unknown tag_type");
@@ -4256,11 +4224,11 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
   case TAG_PCOW:
     return buf_inspect_cow_size(pretty, tag->data.pcow);
   case TAG_F32:
-    return buf_inspect_f32_size(pretty, &tag->data.f32);
+    return buf_inspect_f32_size(pretty, tag->data.f32);
   case TAG_F64:
-    return buf_inspect_f64_size(pretty, &tag->data.f64);
+    return buf_inspect_f64_size(pretty, tag->data.f64);
   case TAG_F128:
-    return buf_inspect_f128_size(pretty, &tag->data.f128);
+    return buf_inspect_f128_size(pretty, tag->data.f128);
   case TAG_FACT:
     return buf_inspect_fact_size(pretty, &tag->data.fact);
   case TAG_IDENT:
@@ -4293,33 +4261,33 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
   case TAG_RATIO:
     return buf_inspect_ratio_size(pretty, &tag->data.ratio);
   case TAG_S8:
-    return buf_inspect_s8_size(pretty, &tag->data.s8);
+    return buf_inspect_s8_size(pretty, tag->data.s8);
   case TAG_S16:
-    return buf_inspect_s16_size(pretty, &tag->data.s16);
+    return buf_inspect_s16_size(pretty, tag->data.s16);
   case TAG_S32:
-    return buf_inspect_s32_size(pretty, &tag->data.s32);
+    return buf_inspect_s32_size(pretty, tag->data.s32);
   case TAG_S64:
-    return buf_inspect_s64_size(pretty, &tag->data.s64);
-  case TAG_SW:
-    return buf_inspect_sw_size(pretty, &tag->data.sw);
+    return buf_inspect_s64_size(pretty, tag->data.s64);
   case TAG_STR:
     return buf_inspect_str_size(pretty, &tag->data.str);
+  case TAG_SW:
+    return buf_inspect_sw_size(pretty, tag->data.sw);
   case TAG_TIME:
     return buf_inspect_time_size(pretty, &tag->data.time);
   case TAG_TUPLE:
     return buf_inspect_tuple_size(pretty, &tag->data.tuple);
   case TAG_U8:
-    return buf_inspect_u8_size(pretty, &tag->data.u8);
+    return buf_inspect_u8_size(pretty, tag->data.u8);
   case TAG_U16:
-    return buf_inspect_u16_size(pretty, &tag->data.u16);
+    return buf_inspect_u16_size(pretty, tag->data.u16);
   case TAG_U32:
-    return buf_inspect_u32_size(pretty, &tag->data.u32);
+    return buf_inspect_u32_size(pretty, tag->data.u32);
   case TAG_U64:
-    return buf_inspect_u64_size(pretty, &tag->data.u64);
+    return buf_inspect_u64_size(pretty, tag->data.u64);
   case TAG_UNQUOTE:
     return buf_inspect_unquote_size(pretty, &tag->data.unquote);
   case TAG_UW:
-    return buf_inspect_uw_size(pretty, &tag->data.uw);
+    return buf_inspect_uw_size(pretty, tag->data.uw);
   case TAG_VOID:
     return buf_inspect_void_size(pretty, NULL);
   }
@@ -4366,7 +4334,7 @@ sw buf_inspect_time (s_buf *buf, const s_time *time)
         return r;
     }
     else {
-      if ((r = buf_inspect_sw_decimal(buf, &time->tv_sec)) < 0)
+      if ((r = buf_inspect_sw_decimal(buf, time->tv_sec)) < 0)
         return r;
     }
     result += r;
@@ -4387,7 +4355,7 @@ sw buf_inspect_time (s_buf *buf, const s_time *time)
         return r;
     }
     else {
-      if ((r = buf_inspect_sw_decimal(buf, &time->tv_nsec)) < 0)
+      if ((r = buf_inspect_sw_decimal(buf, time->tv_nsec)) < 0)
         return r;
     }
     result += r;
@@ -4417,7 +4385,7 @@ sw buf_inspect_time_size (s_pretty *pretty, const s_time *time)
         return r;
     }
     else {
-      if ((r = buf_inspect_sw_decimal_size(pretty, &time->tv_sec)) < 0)
+      if ((r = buf_inspect_sw_decimal_size(pretty, time->tv_sec)) < 0)
         return r;
     }
     result += r;
@@ -4438,7 +4406,7 @@ sw buf_inspect_time_size (s_pretty *pretty, const s_time *time)
         return r;
     }
     else {
-      if ((r = buf_inspect_sw_decimal_size(pretty, &time->tv_nsec)) < 0)
+      if ((r = buf_inspect_sw_decimal_size(pretty, time->tv_nsec)) < 0)
         return r;
     }
     result += r;
@@ -4602,7 +4570,7 @@ sw buf_inspect_var_size (s_pretty *pretty, const s_var *var)
   if ((r = buf_write_1_size(pretty, "0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal_size(pretty, (uw *) &var)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal_size(pretty, (uw) var)) < 0)
     return r;
   result += r;
   */
