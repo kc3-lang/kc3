@@ -14,10 +14,7 @@
 - Let the user be the authoritative source on technical details
 
 ## General Debugging Approach
-- Be less confident in technical assertions
-- Ask more clarifying questions instead of flip-flopping between wrong answers
-- Use the human as the source of truth rather than making assumptions
-- Help think through problems without overconfident analysis
+Be direct and concise. Don't flip-flop or over-explain.
 
 ## KC3 Project Specifics
 - Marshall/unmarshall system: Fixed string handling and header reading issues
