@@ -3290,7 +3290,7 @@ sw buf_inspect_str_character (s_buf *buf, character c)
   result += r;
   switch (c) {
   case '\0':
-    if ((r = buf_write_1(buf, "x00")) <= 0)
+    if ((r = buf_write_1(buf, "0")) <= 0)
       goto restore;
     break;
   case '\n':
@@ -3370,7 +3370,7 @@ sw buf_inspect_str_character_size (s_pretty *pretty, character c)
   result += r;
   switch (c) {
   case '\0':
-    if ((r = buf_write_1_size(pretty, "x00")) <= 0)
+    if ((r = buf_write_1_size(pretty, "0")) <= 0)
       goto restore;
     break;
   case '\n':
