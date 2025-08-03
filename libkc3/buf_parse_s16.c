@@ -132,7 +132,7 @@ sw buf_parse_s16_base (s_buf *buf, const s_str *base,
   if (radix < 2 || (SW_MAX > S16_MAX && radix > S16_MAX)) {
     buf_save_clean(buf, &save);
     err_write_1("buf_parse_s16_base: invalid radix: ");
-    err_inspect_sw(&radix);
+    err_inspect_sw(radix);
     err_write_1("\n");
     assert(! "buf_parse_s16_base: invalid radix");
     return -1;
@@ -143,7 +143,7 @@ sw buf_parse_s16_base (s_buf *buf, const s_str *base,
       buf_save_clean(buf, &save);
       err_write_1("buf_parse_s16_base:"
                   " digit greater than or equal to radix: ");
-      err_inspect_u8(&digit);
+      err_inspect_u8(digit);
       err_write_1("\n");
       assert(! "buf_parse_s16_base: digit greater than or equal to"
              " radix");

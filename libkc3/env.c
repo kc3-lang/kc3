@@ -286,7 +286,7 @@ void env_clean (s_env *env)
     uw size;
     sym_list_size(&size);
     err_write_1("env_clean: g_sym_list: ");
-    err_inspect_uw_decimal(&size);
+    err_inspect_uw_decimal(size);
     err_write_1("\n");
   }
   //facts_save_file(env->facts, "debug.facts"); // debug
@@ -2307,7 +2307,7 @@ f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
     err_write_1("env_struct_type_get_clean: ");
     err_inspect_sym(module);
     err_write_1(": clean arity is ");
-    err_inspect_u8(&found->object->data.pcallable->data.cfn.arity);
+    err_inspect_u8(found->object->data.pcallable->data.cfn.arity);
     err_write_1(", it should be 1.\n");
     assert(! "env_struct_type_get_clean: invalid arity");
     facts_with_cursor_clean(&cursor);

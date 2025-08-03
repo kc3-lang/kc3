@@ -112,7 +112,7 @@ sw buf_parse_u32_base (s_buf *buf, const s_str *base,
   if (radix < 2 || (UW_MAX > U32_MAX && (uw) radix > U32_MAX)) {
     buf_save_clean(buf, &save);
     err_write_1("buf_parse_u32_base: invalid radix: ");
-    err_inspect_sw(&radix);
+    err_inspect_sw(radix);
     assert(! "buf_parse_u32_base: invalid radix");
     return -1;
   }
@@ -122,16 +122,16 @@ sw buf_parse_u32_base (s_buf *buf, const s_str *base,
       buf_save_clean(buf, &save);
       err_write_1("buf_parse_u32_base:"
                   " digit greater than or equal to radix: ");
-      err_inspect_u8(&digit);
+      err_inspect_u8(digit);
       assert(! "buf_parse_u32_base: digit greater than or equal to"
              " radix");
       return -1;
     }
     if (u > ceiling_u32(U32_MAX, radix)) {
       err_write_1("buf_parse_u32_base: ");
-      err_inspect_u32(&u);
+      err_inspect_u32(u);
       err_write_1(" * ");
-      err_inspect_sw(&radix);
+      err_inspect_sw(radix);
       err_write_1(": integer overflow");
       r = -1;
       goto restore;

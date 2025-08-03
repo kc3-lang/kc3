@@ -58,11 +58,11 @@ bool window_cairo_button_default (s_window_cairo *window, u8 button,
   assert(window);
   (void) window;
   err_write_1("window_cairo_button_default: ");
-  err_inspect_u8(&button);
+  err_inspect_u8(button);
   err_write_1(" (");
-  err_inspect_s64_decimal(&x);
+  err_inspect_s64_decimal(x);
   err_write_1(", ");
-  err_inspect_s64_decimal(&y);
+  err_inspect_s64_decimal(y);
   err_write_1("\n");
   return true;
 }
@@ -74,7 +74,7 @@ bool window_cairo_key_default (s_window_cairo *window, u32 keysym)
   (void) window;
   xkb_keysym_get_name(keysym, keysym_name, sizeof(keysym_name));
   err_write_1("window_cairo_key_default: ");
-  err_inspect_u32_decimal(&keysym);
+  err_inspect_u32_decimal(keysym);
   err_write_1(" ");
   err_puts(keysym_name);
   return true;
@@ -120,9 +120,9 @@ bool window_cairo_resize_default (s_window_cairo *window, u64 w, u64 h)
   (void) w;
   (void) h;
   err_write_1("window_cairo_resize_default: ");
-  err_inspect_u64(&w);
+  err_inspect_u64(w);
   err_write_1(" x ");
-  err_inspect_u64(&h);
+  err_inspect_u64(h);
   err_write_1("\n");
   return true;
 }

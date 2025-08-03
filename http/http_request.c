@@ -169,7 +169,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       err_inspect_str(content_type);
       err_write_1("\n");
       err_write_1("http_request_buf_parse: content_length_uw ");
-      err_inspect_uw_decimal(&content_length_uw);
+      err_inspect_uw_decimal(content_length_uw);
       err_write_1("\n");
     }
     if (str_starts_with_case_insensitive(content_type,

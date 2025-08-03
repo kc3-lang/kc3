@@ -92,5 +92,5 @@ int main (int argc, char **argv)
   test_summary();
   test_clean();
   kc3_clean(NULL);
-  return 0;
+  return g_test_ko != 0;
 }

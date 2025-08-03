@@ -59,11 +59,11 @@ bool window_sdl2_default_button_cb (s_window_sdl2 *window, u8 button,
   (void) x;
   (void) y;
   err_write_1("window_sdl2_default_button_cb: ");
-  err_inspect_u8(&button);
+  err_inspect_u8(button);
   err_write_1(" (");
-  err_inspect_s64(&x);
+  err_inspect_s64(x);
   err_write_1(", ");
-  err_inspect_s64(&y);
+  err_inspect_s64(y);
   err_puts(")");
   return true;
 }
@@ -77,7 +77,7 @@ bool window_sdl2_default_key_cb (s_window_sdl2 *window,
   (void) window;
   k = keysym->sym;
   err_write_1("window_sdl2_default_key_cb: ");
-  err_inspect_s32_decimal(&k);
+  err_inspect_s32_decimal(k);
   err_write_1("\n");
   return true;
 }
@@ -117,9 +117,9 @@ bool window_sdl2_default_resize_cb (s_window_sdl2 *window, u64 w, u64 h)
   (void) w;
   (void) h;
   err_write_1("window_sdl2_default_resize_cb: ");
-  err_inspect_u64_decimal(&w);
+  err_inspect_u64_decimal(w);
   err_write_1(" x ");
-  err_inspect_u64_decimal(&h);
+  err_inspect_u64_decimal(h);
   err_write_1("\n");
   return true;
 }

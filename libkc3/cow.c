@@ -92,9 +92,9 @@ s_cow * cow_init_1 (s_cow *cow, const char *utf8)
     err_write_1("invalid cow: \"");
     err_write_1(utf8);
     err_write_1("\", ");
-    err_inspect_uw(&len);
+    err_inspect_uw(len);
     err_write_1(" != ");
-    err_inspect_sw(&r);
+    err_inspect_sw(r);
     assert(! "invalid cow");
     return NULL;
   }

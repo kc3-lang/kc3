@@ -88,24 +88,24 @@ s_str * time_diff_to_str (const s_time *time, s_str *dest)
   minutes = total_seconds / TIME_SECONDS_PER_MINUTE;
   seconds = total_seconds % TIME_SECONDS_PER_MINUTE;
   if (months) {
-    buf_inspect_uw_decimal_pad(&buf, 2, '0', &months);
+    buf_inspect_uw_decimal_pad(&buf, 2, '0', months);
     buf_write_1(&buf, "mo ");
   }
   if (days) {
-    buf_inspect_uw_decimal_pad(&buf, 2, '0', &days);
+    buf_inspect_uw_decimal_pad(&buf, 2, '0', days);
     buf_write_1(&buf, "d ");
   }
   if (hours) {
-    buf_inspect_uw_decimal_pad(&buf, 2, '0', &hours);
+    buf_inspect_uw_decimal_pad(&buf, 2, '0', hours);
     buf_write_1(&buf, ":");
   }
   if (hours || minutes) {
-    buf_inspect_uw_decimal_pad(&buf, 2, '0', &minutes);
+    buf_inspect_uw_decimal_pad(&buf, 2, '0', minutes);
     buf_write_1(&buf, ":");
   }
-  buf_inspect_uw_decimal_pad(&buf, 2, '0', &seconds);
+  buf_inspect_uw_decimal_pad(&buf, 2, '0', seconds);
   buf_write_1(&buf, ".");
-  buf_inspect_uw_decimal_pad(&buf, 3, '0', &milliseconds);
+  buf_inspect_uw_decimal_pad(&buf, 3, '0', milliseconds);
   return buf_read_to_str(&buf, dest);
 }
 

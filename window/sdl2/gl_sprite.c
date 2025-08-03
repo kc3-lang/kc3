@@ -193,7 +193,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
 			    &png_components)) {
     if (! gl_format || ! png_components) {
       err_write_1("gl_sprite_init: unknown PNG color type ");
-      err_inspect_s32(&png_color_type);
+      err_inspect_s32(png_color_type);
       err_write_1(": ");
       err_puts(tmp.real_path.ptr.pchar);
     }

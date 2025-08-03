@@ -54,9 +54,9 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     err_write_1("cfn_apply: ");
     err_inspect_str(&cfn->c_name->str);
     err_write_1(": invalid number of arguments, expected ");
-    err_inspect_u8(&arity);
+    err_inspect_u8(arity);
     err_write_1(", have ");
-    err_inspect_sw_decimal(&num_args);
+    err_inspect_sw_decimal(num_args);
     err_write_1("\n");
     return NULL;
   }

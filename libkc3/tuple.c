@@ -71,9 +71,9 @@ s_tuple * tuple_init_1 (s_tuple *tuple, const char *p)
     err_write_1("tuple_init_1: invalid tuple: \"");
     err_write_1(p);
     err_write_1("\", ");
-    err_inspect_uw(&len);
+    err_inspect_uw(len);
     err_write_1(" != ");
-    err_inspect_sw(&r);
+    err_inspect_sw(r);
     err_write_1("\n");
     assert(! "tuple_init_1: invalid tuple");
     return NULL;

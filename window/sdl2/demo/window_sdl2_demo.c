@@ -90,11 +90,11 @@ bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
   assert(window);
   (void) window;
   err_write_1("window_sdl2_demo_button: ");
-  err_inspect_u8(&button);
+  err_inspect_u8(button);
   err_write_1(" (");
-  err_inspect_s64(&x);
+  err_inspect_s64(x);
   err_write_1(", ");
-  err_inspect_s64(&y);
+  err_inspect_s64(y);
   err_puts(")");
   if (window->seq && window->seq->button &&
       ! window->seq->button(window->seq, button, x, y))
@@ -149,7 +149,7 @@ bool window_sdl2_demo_key (s_window_sdl2 *window, SDL_Keysym *keysym)
   default:
     k = keysym->sym;
     err_write_1("window_sdl2_demo_key: ");
-    err_inspect_s32_decimal(&k);
+    err_inspect_s32_decimal(k);
     err_write_1("\n");
   }
   return true;
@@ -163,11 +163,11 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   assert(glGetError() == GL_NO_ERROR);
   point_per_pixel = (f32) window->w / window->gl_w;
   err_write_1("point_per_pixel: ");
-  err_inspect_f32(&point_per_pixel);
+  err_inspect_f32(point_per_pixel);
   err_write_1("\n");
   if (window->sequence_count != WINDOW_SDL2_DEMO_SEQUENCE_COUNT) {
     err_write_1("window_sdl2_demo_load: window->sequence_count = ");
-    err_inspect_u32_decimal(&window->sequence_count);
+    err_inspect_u32_decimal(window->sequence_count);
     err_write_1("\n");
     assert(window->sequence_count == WINDOW_SDL2_DEMO_SEQUENCE_COUNT);
     return false;

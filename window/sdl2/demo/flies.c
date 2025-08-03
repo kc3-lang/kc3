@@ -204,14 +204,14 @@ bool flies_render (s_sequence *seq)
   gl_ortho_color(&g_ortho, 1.0f, 1.0f, 1.0f, 1.0f);
   buf_init(&buf, false, sizeof(a), a);
   buf_write_1(&buf, "In ");
-  buf_inspect_uw_decimal(&buf, fly_in);
+  buf_inspect_uw_decimal(&buf, *fly_in);
   buf_write_u8(&buf, 0);
   gl_font_set_size(&g_font_flies, board_item_h);
   gl_text_update_1(&g_text_flies_in, a);
   gl_ortho_text_render(&g_ortho, &g_text_flies_in);
   buf_init(&buf, false, sizeof(a), a);
   buf_write_1(&buf, "Out ");
-  buf_inspect_uw_decimal(&buf, fly_out);
+  buf_inspect_uw_decimal(&buf, *fly_out);
   buf_write_u8(&buf, 0);
   gl_text_update_1(&g_text_flies_out, a);
   matrix = g_ortho.model_matrix; {

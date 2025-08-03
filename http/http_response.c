@@ -138,7 +138,7 @@ sw http_response_buf_write (const s_http_response *response,
     err_puts("http_response_buf_write: invalid response code");
     return -1;
   }
-  if ((r = buf_inspect_u16_decimal(buf, &tag_code.data.u16)) < 0)
+  if ((r = buf_inspect_u16_decimal(buf, tag_code.data.u16)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
@@ -218,7 +218,7 @@ sw http_response_buf_write (const s_http_response *response,
     if ((r = buf_write_1(buf, ": ")) < 0)
       return r;
     result += r;
-    r = buf_inspect_u32_decimal(buf, &response->body.data.str.size);
+    r = buf_inspect_u32_decimal(buf, response->body.data.str.size);
     if (r < 0)
       return r;
     result += r;
@@ -257,7 +257,7 @@ sw http_response_buf_write (const s_http_response *response,
         if ((r = read(fd, tmp.ptr.p, tmp.size)) < 0) {
           e = errno;
           err_write_1("http_response_buf_write: ");
-          err_inspect_s32(&fd);
+          err_inspect_s32(fd);
           err_write_1(": ");
           err_puts(strerror(e));
           return r;
@@ -305,7 +305,7 @@ sw http_response_buf_write (const s_http_response *response,
       if (lseek(fd, start, SEEK_SET) < 0) {
         e = errno;
         err_write_1("http_response_buf_write: lseek ");
-        err_inspect_s32(&fd);
+        err_inspect_s32(fd);
         err_write_1(": ");
         err_puts(strerror(e));
         return -1;
@@ -319,7 +319,7 @@ sw http_response_buf_write (const s_http_response *response,
           if ((r = read(fd, tmp.ptr.p, s)) < 0) {
             e = errno;
             err_write_1("http_response_buf_write: read ");
-            err_inspect_s32(&fd);
+            err_inspect_s32(fd);
             err_write_1(": ");
             err_puts(strerror(e));
             return r;

@@ -58,7 +58,7 @@ s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
     level = &cursor->levels[cursor->facts_count - 1];
 #ifdef DEBUG_FACTS
     err_write_1("[debug] cursor->level=");
-    err_inspect_uw(&cursor->level);
+    err_inspect_uw(cursor->level);
     err_write_1(" level->spec=");
     err_inspect_facts_spec(level->spec);
     err_write_1(" ");

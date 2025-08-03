@@ -383,7 +383,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
     result += r;
     if ((r = buf_parse_fact_w(buf, &fact_w)) <= 0) {
       err_write_1("facts_load: invalid fact line ");
-      err_inspect_sw_decimal(&buf->line);
+      err_inspect_sw_decimal(buf->line);
       err_write_1(": ");
       err_puts(path->ptr.pchar);
       err_inspect_buf(buf);
@@ -395,7 +395,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
     if ((r = buf_read_1(buf, "\n")) <= 0) {
       fact_w_clean(&fact_w);
       err_write_1("facts_load: missing newline line ");
-      err_inspect_sw_decimal(&buf->line);
+      err_inspect_sw_decimal(buf->line);
       err_write_1(": ");
       err_puts(path->ptr.pchar);
       err_inspect_buf(buf);
@@ -406,7 +406,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
     if (! fact_w_eval(&fact_w, &eval_fact_w)) {
       fact_w_clean(&fact_w);
       err_write_1("facts_load: failed to eval fact line ");
-      err_inspect_sw_decimal(&buf->line);
+      err_inspect_sw_decimal(buf->line);
       err_write_1(": ");
       err_puts(path->ptr.pchar);
       err_inspect_buf(buf);
@@ -417,7 +417,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       fact_w_clean(&eval_fact_w);
       fact_w_clean(&fact_w);
       err_write_1("facts_load: failed to eval fact line ");
-      err_inspect_sw_decimal(&buf->line);
+      err_inspect_sw_decimal(buf->line);
       err_write_1(": ");
       err_puts(path->ptr.pchar);
       err_inspect_buf(buf);
@@ -429,7 +429,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
 	fact_w_clean(&eval_fact_w);
 	fact_w_clean(&fact_w);
 	err_write_1("facts_load: failed to replace fact line ");
-	err_inspect_sw_decimal(&buf->line);
+	err_inspect_sw_decimal(buf->line);
 	err_write_1(": ");
 	err_puts(path->ptr.pchar);
 	assert(! "facts_load: failed to replace fact");
@@ -441,7 +441,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
 	fact_w_clean(&eval_fact_w);
 	fact_w_clean(&fact_w);
 	err_write_1("facts_load: failed to add fact line ");
-	err_inspect_sw_decimal(&buf->line);
+	err_inspect_sw_decimal(buf->line);
 	err_write_1(": ");
 	err_puts(path->ptr.pchar);
 	assert(! "facts_load: failed to add fact");

@@ -42,32 +42,7 @@ s_str * inspect_array (const s_array *array, s_str *dest)
   return buf_to_str(&tmp, dest);
 }
 
-s_str * inspect_do_block (const s_do_block *x, s_str *dest)
-{
-  s_buf buf;
-  s_pretty pretty = {0};
-  sw r;
-  sw size;
-  size = buf_inspect_do_block_size(&pretty, x);
-  if (size < 0) {
-    err_puts("inspect_do_block: buf_inspect_do_block_size error");
-    assert(! "inspect_do_block: buf_inspect_do_block_size error");
-    return NULL;
-  }
-  if (! buf_init_alloc(&buf, size))
-    return NULL;
-  if ((r = buf_inspect_do_block(&buf, x)) < 0)
-    goto error;
-  assert(r == size);
-  if (r != size)
-    goto error;
-  return buf_to_str(&buf, dest);
- error:
-  buf_clean(&buf);
-  return NULL;
-}
-
-s_str * inspect_bool (bool *b, s_str *dest)
+s_str * inspect_bool (bool b, s_str *dest)
 {
   s_buf buf;
   s_pretty pretty = {0};
@@ -113,6 +88,29 @@ s_str * inspect_call (const s_call *call, s_str *dest)
   return buf_to_str(&buf, dest);
 }
 
+s_str * inspect_character (character b, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw size;
+  size = buf_inspect_character_size(&pretty, b);
+  if (size < 0) {
+    err_write_1("inspect_character: error: ");
+    err_inspect_u8(b);
+    assert(! "inspect_character: error");
+    return NULL;
+  }
+  buf_init_alloc(&buf, size);
+  buf_inspect_character(&buf, b);
+  assert(buf.wpos == buf.size);
+  if (buf.wpos != buf.size) {
+    buf_clean(&buf);
+    err_write_1("inspect_character: buf_inspect_character");
+    return NULL;
+  }
+  return buf_to_str(&buf, dest);
+}
+
 s_str * inspect_cow (s_cow *cow, s_str *dest)
 {
   s_buf buf;
@@ -132,6 +130,31 @@ s_str * inspect_cow (s_cow *cow, s_str *dest)
     return NULL;
   }
   return buf_to_str(&buf, dest);
+}
+
+s_str * inspect_do_block (const s_do_block *x, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw r;
+  sw size;
+  size = buf_inspect_do_block_size(&pretty, x);
+  if (size < 0) {
+    err_puts("inspect_do_block: buf_inspect_do_block_size error");
+    assert(! "inspect_do_block: buf_inspect_do_block_size error");
+    return NULL;
+  }
+  if (! buf_init_alloc(&buf, size))
+    return NULL;
+  if ((r = buf_inspect_do_block(&buf, x)) < 0)
+    goto error;
+  assert(r == size);
+  if (r != size)
+    goto error;
+  return buf_to_str(&buf, dest);
+ error:
+  buf_clean(&buf);
+  return NULL;
 }
 
 s_str * inspect_fact (const s_fact *fact, s_str *dest)
@@ -207,9 +230,9 @@ s_str * inspect_ratio (const s_ratio *src, s_str *dest)
   r = buf_inspect_ratio(&buf, src);
   if (r != size) {
    err_write_1("inspect_ratio: ");
-   err_inspect_sw(&r);
+   err_inspect_sw(r);
    err_write_1(" != ");
-   err_inspect_sw(&size);
+   err_inspect_sw(size);
    err_write_1("\n");
    assert(! "inspect_ratio: buf_inspect_ratio != size");
    return NULL;
@@ -333,15 +356,15 @@ s_str * inspect_tag (const s_tag *tag, s_str *dest)
   }
   if (false) {
     err_write_1("inspect_tag: size = ");
-    err_inspect_sw_decimal(&size);
+    err_inspect_sw_decimal(size);
     err_write_1("\n");
   }
   buf_init_alloc(&buf, size);
   if ((r = buf_inspect_tag(&buf, tag)) != size) {
     err_write_1("inspect_tag: buf_inspect_tag: expected ");
-    err_inspect_sw_decimal(&size);
+    err_inspect_sw_decimal(size);
     err_write_1(" got ");
-    err_inspect_sw_decimal(&r);
+    err_inspect_sw_decimal(r);
     err_write_1(", buffer :");
     err_inspect_buf(&buf);
     err_write_1("\n");

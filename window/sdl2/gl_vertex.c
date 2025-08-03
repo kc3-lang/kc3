@@ -24,19 +24,19 @@ sw buf_inspect_gl_vertex (s_buf *buf, const s_gl_vertex *v)
   if ((r = buf_write_1(buf, "%GL.Vertex{pos_x: ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_f32(buf, &v->pos_x)) < 0)
+  if ((r = buf_inspect_f32(buf, v->pos_x)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, ", pos_y: ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_f32(buf, &v->pos_y)) < 0)
+  if ((r = buf_inspect_f32(buf, v->pos_y)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, ", pos_z: ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_f32(buf, &v->pos_z)) < 0)
+  if ((r = buf_inspect_f32(buf, v->pos_z)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "}")) < 0)

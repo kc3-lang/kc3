@@ -250,16 +250,16 @@
       err_write_1("\n" TEST_COLOR_KO "TEST_STR_HEX_EQ failed in ");    \
       err_write_1(__FILE__);                                           \
       err_write_1(":");                                                \
-      err_inspect_s32_decimal(__LINE__);                                \
+      err_inspect_s32_decimal(__LINE__);                               \
       err_write_1(" ");                                                \
       err_write_1(__func__);                                           \
-      err_write_1("\n");                                               \
+      err_write_1("\n"                                                 \
+                  "expected\n");                                       \
       err_inspect_str_hex(&TEST_STR_HEX_EQ_expected_str);              \
-      fprintf(stderr, "\n"                                             \
-              "got      ");                                            \
+      err_write_1("\n"                                                 \
+                  "got\n");                                            \
       err_inspect_str_hex(&TEST_STR_HEX_EQ_test_str);                  \
-      fprintf(stderr, "%s\n",                                          \
-              TEST_COLOR_RESET);                                       \
+      err_write_1(TEST_COLOR_RESET "\n");                              \
       return 1;                                                        \
     }                                                                  \
   } while (0)

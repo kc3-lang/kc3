@@ -35,11 +35,11 @@ bool window_cairo_demo_button (s_window_cairo *window, u8 button,
   assert(window);
   (void) window;
   io_write_1("kc3_window_cairo_demo_button: ");
-  io_inspect_u8(&button);
+  io_inspect_u8(button);
   io_write_1(" (");
-  io_inspect_s64_decimal(&x);
+  io_inspect_s64_decimal(x);
   io_write_1(", ");
-  io_inspect_s64_decimal(&y);
+  io_inspect_s64_decimal(y);
   io_puts(")");
   if (window->seq->button &&
       ! window->seq->button(window->seq, button, x, y))
@@ -74,7 +74,7 @@ bool window_cairo_demo_key (s_window_cairo *window, u32 keysym)
     if (true) {
       xkb_keysym_get_name(keysym, keysym_name, sizeof(keysym_name));
       io_write_1("kc3_window_cairo_demo_key: ");
-      io_inspect_u32_decimal(&keysym);
+      io_inspect_u32_decimal(keysym);
       io_write_1(" ");
       io_puts(keysym_name);
     }
@@ -87,7 +87,7 @@ bool window_cairo_demo_load (s_window_cairo *window)
   assert(window);
   if (window->sequence_count != WINDOW_CAIRO_DEMO_SEQUENCE_COUNT) {
     err_write_1("window_cairo_demo_load: window->sequence_count = ");
-    err_inspect_u32(&window->sequence_count);
+    err_inspect_u32(window->sequence_count);
     err_write_1("\n");
     assert(window->sequence_count == WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
     return false;

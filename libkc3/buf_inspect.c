@@ -497,18 +497,17 @@ sw buf_inspect_do_block_size (s_pretty *pretty,
   return result;
 }
 
-sw buf_inspect_bool (s_buf *buf, const bool *b)
+sw buf_inspect_bool (s_buf *buf, bool b)
 {
-  if (*b)
+  if (b)
     return buf_write_1(buf, "true");
   return buf_write_1(buf, "false");
 }
 
-sw buf_inspect_bool_size (s_pretty *pretty, const bool *b)
+sw buf_inspect_bool_size (s_pretty *pretty, bool b)
 {
   assert(pretty);
-  assert(b);
-  if (*b)
+  if (b)
     return buf_write_1_size(pretty, "true");
   return buf_write_1_size(pretty, "false");
 }
@@ -1502,7 +1501,7 @@ sw buf_inspect_cfn_size (s_pretty *pretty, const s_cfn *cfn)
   return result;
 }
 
-sw buf_inspect_character (s_buf *buf, const character *c)
+sw buf_inspect_character (s_buf *buf, character c)
 {
   sw r;
   sw result = 0;
@@ -1526,7 +1525,7 @@ sw buf_inspect_character (s_buf *buf, const character *c)
   return result;
 }
 
-sw buf_inspect_character_size (s_pretty *pretty, const character *c)
+sw buf_inspect_character_size (s_pretty *pretty, character c)
 {
   sw r;
   sw result = 0;
@@ -3273,7 +3272,7 @@ sw buf_inspect_str_byte_size (s_pretty *pretty, const u8 *byte)
   return 4;
 }
 
-sw buf_inspect_str_character (s_buf *buf, const character *c)
+sw buf_inspect_str_character (s_buf *buf, character c)
 {
   char b[4];
   s_buf char_buf;
@@ -3283,13 +3282,13 @@ sw buf_inspect_str_character (s_buf *buf, const character *c)
   sw result = 0;
   sw result1 = 0;
   s_buf_save save;
-  if (! str_character_is_reserved(*c))
-    return buf_write_character_utf8(buf, *c);
+  if (! str_character_is_reserved(c))
+    return buf_write_character_utf8(buf, c);
   buf_save_init(buf, &save);
   if ((r = buf_write_1(buf, "\\")) <= 0)
     goto restore;
   result += r;
-  switch (*c) {
+  switch (c) {
   case '\0':
     if ((r = buf_write_1(buf, "x00")) <= 0)
       goto restore;
@@ -3324,7 +3323,7 @@ sw buf_inspect_str_character (s_buf *buf, const character *c)
     break;
   default:
     buf_init(&char_buf, false, sizeof(b), b);
-    if ((r = buf_write_character_utf8(&char_buf, *c)) <= 0)
+    if ((r = buf_write_character_utf8(&char_buf, c)) <= 0)
       goto restore;
     i = r - 1;
     j = 0;
@@ -3356,7 +3355,7 @@ sw buf_inspect_str_character (s_buf *buf, const character *c)
   return r;
 }
 
-sw buf_inspect_str_character_size (s_pretty *pretty, const character *c)
+sw buf_inspect_str_character_size (s_pretty *pretty, character c)
 {
   char b[4];
   s_buf char_buf;
@@ -3364,12 +3363,12 @@ sw buf_inspect_str_character_size (s_pretty *pretty, const character *c)
   sw r;
   sw result = 0;
   sw result1 = 0;
-  if (! str_character_is_reserved(*c))
-    return buf_write_character_utf8_size(pretty, *c);
+  if (! str_character_is_reserved(c))
+    return buf_write_character_utf8_size(pretty, c);
   if ((r = buf_write_1_size(pretty, "\\")) <= 0)
     goto restore;
   result += r;
-  switch (*c) {
+  switch (c) {
   case '\0':
     if ((r = buf_write_1_size(pretty, "x00")) <= 0)
       goto restore;
@@ -3404,7 +3403,7 @@ sw buf_inspect_str_character_size (s_pretty *pretty, const character *c)
     break;
   default:
     buf_init(&char_buf, false, sizeof(b), b);
-    if ((r = buf_write_character_utf8(&char_buf, *c)) <= 0)
+    if ((r = buf_write_character_utf8(&char_buf, c)) <= 0)
       goto restore;
     i = r - 1;
     if ((r = buf_write_character_utf8_size(pretty, 'x')) != 1)
@@ -3531,7 +3530,7 @@ sw buf_inspect_str_hex (s_buf *buf, const s_str *str)
     result += r;
     i++;
     if (i < str->size && ! (i % 8)) {
-      if ((r = buf_write_1(buf, "\"\n\"")) != 3)
+      if ((r = buf_write_1(buf, "\"\n\"")) <= 0)
         goto clean;
       result += r;
     }
@@ -3565,7 +3564,7 @@ sw buf_inspect_str_hex_size (s_pretty *pretty, const s_str *str)
     result += r;
     i++;
     if (i < str->size && ! (i % 8)) {
-      if ((r = buf_write_1_size(pretty, "\"\n\"")) != 3)
+      if ((r = buf_write_1_size(pretty, "\"\n\"")) <= 0)
         goto clean;
       result += r;
     }
@@ -3597,7 +3596,7 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *str, bool quotes)
   s = *str;
   while (r) {
     if ((r = str_read_character_utf8(&s, &c)) > 0) {
-      if ((r = buf_inspect_str_character(buf, &c)) <= 0)
+      if ((r = buf_inspect_str_character(buf, c)) <= 0)
         goto restore;
       result += r;
     }
@@ -3645,7 +3644,7 @@ sw buf_inspect_str_reserved_size (s_pretty *pretty, const s_str *str,
   s = *str;
   while (r) {
     if ((r = str_read_character_utf8(&s, &c)) > 0) {
-      if ((r = buf_inspect_str_character_size(pretty, &c)) <= 0) {
+      if ((r = buf_inspect_str_character_size(pretty, c)) <= 0) {
         err_puts("buf_inspect_str_reserved_size:"
                  " buf_inspect_str_character_size");
         assert(!("buf_inspect_str_reserved_size:"
@@ -4155,10 +4154,10 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_ARRAY:   return buf_inspect_array(buf, &tag->data.array);
   case TAG_DO_BLOCK:
     return buf_inspect_do_block(buf, &tag->data.do_block);
-  case TAG_BOOL:    return buf_inspect_bool(buf, &tag->data.bool_);
+  case TAG_BOOL:    return buf_inspect_bool(buf, tag->data.bool_);
   case TAG_CALL:    return buf_inspect_call(buf, &tag->data.call);
   case TAG_CHARACTER:
-    return buf_inspect_character(buf, &tag->data.character);
+    return buf_inspect_character(buf, tag->data.character);
   case TAG_F32:     return buf_inspect_f32(buf, tag->data.f32);
   case TAG_F64:     return buf_inspect_f64(buf, tag->data.f64);
   case TAG_F128:    return buf_inspect_f128(buf, tag->data.f128);
@@ -4214,11 +4213,11 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
   case TAG_DO_BLOCK:
     return buf_inspect_do_block_size(pretty, &tag->data.do_block);
   case TAG_BOOL:
-    return buf_inspect_bool_size(pretty, &tag->data.bool_);
+    return buf_inspect_bool_size(pretty, tag->data.bool_);
   case TAG_CALL:
     return buf_inspect_call_size(pretty, &tag->data.call);
   case TAG_CHARACTER:
-    return buf_inspect_character_size(pretty, &tag->data.character);
+    return buf_inspect_character_size(pretty, tag->data.character);
   case TAG_PCOMPLEX:
     return buf_inspect_complex_size(pretty, tag->data.pcomplex);
   case TAG_PCOW:

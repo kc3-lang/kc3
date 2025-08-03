@@ -39,7 +39,7 @@ sw json_buf_inspect (s_buf *buf, const s_tag *tag)
   case TAG_UW:
     return json_buf_inspect_tag_number(buf, tag);
   case TAG_BOOL:
-    return buf_inspect_bool(buf, &tag->data.bool_);
+    return buf_inspect_bool(buf, tag->data.bool_);
   case TAG_VOID:
     return json_buf_inspect_void(buf);
   default:
@@ -196,7 +196,7 @@ sw json_buf_inspect_size (s_pretty *pretty, const s_tag *tag)
   case TAG_UW:
     return json_buf_inspect_tag_number_size(pretty, tag);
   case TAG_BOOL:
-    return buf_inspect_bool_size(pretty, &tag->data.bool_);
+    return buf_inspect_bool_size(pretty, tag->data.bool_);
   case TAG_VOID:
     return json_buf_inspect_void_size(pretty);
   default:

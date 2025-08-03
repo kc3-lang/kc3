@@ -80,13 +80,8 @@ extern const s_sym *g_buf_inspect_type;
 
 sw buf_inspect_array (s_buf *buf, const s_array *a);
 sw buf_inspect_array_size (s_pretty *pretty, const s_array *a);
-sw buf_inspect_do_block (s_buf *buf, const s_do_block *b);
-sw buf_inspect_do_block_inner (s_buf *buf, const s_do_block *b);
-sw buf_inspect_do_block_inner_size (s_pretty *pretty,
-                                    const s_do_block *b);
-sw buf_inspect_do_block_size (s_pretty *pretty, const s_do_block *b);
-sw buf_inspect_bool (s_buf *buf, const bool *b);
-sw buf_inspect_bool_size (s_pretty *pretty, const bool *b);
+sw buf_inspect_bool (s_buf *buf, bool b);
+sw buf_inspect_bool_size (s_pretty *pretty, bool b);
 sw buf_inspect_call (s_buf *buf, const s_call *call);
 sw buf_inspect_call_access (s_buf *buf, const s_call *call);
 sw buf_inspect_call_access_size (s_pretty *pretty, const s_call *call);
@@ -117,12 +112,17 @@ sw buf_inspect_cast (s_buf *buf, const s_call *call);
 sw buf_inspect_cast_size (s_pretty *pretty, const s_call *call);
 sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn);
 sw buf_inspect_cfn_size (s_pretty *pretty, const s_cfn *cfn);
-sw buf_inspect_character (s_buf *buf, const character *c);
-sw buf_inspect_character_size (s_pretty *pretty, const character *c);
+sw buf_inspect_character (s_buf *buf, character c);
+sw buf_inspect_character_size (s_pretty *pretty, character c);
 sw buf_inspect_complex (s_buf *buf, const s_complex *c);
 sw buf_inspect_complex_size (s_pretty *pretty, const s_complex *c);
 sw buf_inspect_cow (s_buf *buf, s_cow *cow);
 sw buf_inspect_cow_size (s_pretty *pretty, s_cow *cow);
+sw buf_inspect_do_block (s_buf *buf, const s_do_block *b);
+sw buf_inspect_do_block_inner (s_buf *buf, const s_do_block *b);
+sw buf_inspect_do_block_inner_size (s_pretty *pretty,
+                                    const s_do_block *b);
+sw buf_inspect_do_block_size (s_pretty *pretty, const s_do_block *b);
 sw buf_inspect_error_handler (s_buf *buf,
                               const s_error_handler *error_handler);
 sw buf_inspect_f32 (s_buf *buf, f32 x);
@@ -203,9 +203,9 @@ sw buf_inspect_stacktrace_size (s_pretty *pretty,
 sw buf_inspect_str (s_buf *buf, const s_str *str);
 sw buf_inspect_str_byte (s_buf *buf, const u8 *byte);
 sw buf_inspect_str_byte_size (s_pretty *pretty, const u8 *byte);
-sw buf_inspect_str_character (s_buf *buf, const character *c);
+sw buf_inspect_str_character (s_buf *buf, character c);
 sw buf_inspect_str_character_size (s_pretty *pretty,
-                                   const character *c);
+                                   character c);
 sw buf_inspect_str_eval (s_buf *buf, const s_list *list);
 sw buf_inspect_str_eval_size (s_pretty *pretty, const s_list *list);
 sw buf_inspect_str_hex (s_buf *buf, const s_str *str);

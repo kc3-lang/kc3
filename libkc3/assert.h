@@ -36,7 +36,7 @@ void abort (void);
       err_write_1("assertion failed: ");                               \
       err_write_1(__FILE__);                                           \
       err_write_1(":");                                                \
-      err_inspect_sw_decimal(&assert_line);                            \
+      err_inspect_sw_decimal(assert_line);                             \
       err_write_1(": ");                                               \
       err_write_1(__func__);                                           \
       err_write_1(": ");                                               \

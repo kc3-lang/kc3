@@ -80,7 +80,7 @@ p_socket socket_init_accept (p_socket s, p_socket listening)
   if (tmp < 0) {
     e = errno;
     err_write_1("socket_init_accept: ");
-    err_inspect_s64(listening);
+    err_inspect_s64(*listening);
     err_write_1(": accept: ");
     err_puts(strerror(e));
     assert(! "socket_init_accept: accept");
@@ -111,7 +111,7 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
     err_write_1(", ");
     err_write_1(service->ptr.pchar);
     err_write_1("): getaddrinfo: ");
-    err_inspect_s32_decimal(&e);
+    err_inspect_s32_decimal(e);
     err_write_1(" ");
     err_puts((char *) gai_strerror(e));
     assert(! "socket_init_listen: getaddrinfo");

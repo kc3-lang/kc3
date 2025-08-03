@@ -798,9 +798,9 @@ s_tag * kc3_parse_tag (s_tag *tag, const s_str *src)
   r = buf_parse_tag(&buf, tag);
   if (r < 0 || (uw) r != src->size) {
     err_write_1("kc3_parse_tag: invalid tag: ");
-    err_inspect_sw_decimal(&r);
+    err_inspect_sw_decimal(r);
     err_write_1(" != ");
-    err_inspect_u32_decimal(&src->size);
+    err_inspect_u32_decimal(src->size);
     err_write_1("\n");
     assert(! "kc3_parse_tag: invalid tag");
     return NULL;

@@ -49,7 +49,7 @@
     bool tmp;                                                          \
     test_context("inspect_bool(" # test ") -> " # expected);           \
     tmp = (test);                                                      \
-    TEST_EQ(inspect_bool(&tmp, &str), &str);                           \
+    TEST_EQ(inspect_bool(tmp, &str), &str);                           \
     TEST_EQ(str.size, strlen(expected));                               \
     TEST_STRNCMP(str.ptr.p, (expected), str.size);                     \
     str_clean(&str);						       \

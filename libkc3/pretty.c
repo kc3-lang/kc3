@@ -31,7 +31,7 @@ s_pretty * pretty_indent_from_column (s_pretty *pretty, sw indent)
 {
   if (false) {
     err_write_1("pretty->column = ");
-    err_inspect_sw_decimal(&pretty->column);
+    err_inspect_sw_decimal(pretty->column);
     err_write_1("\n");
   }
   if ((sw) pretty->column + indent < 0)
@@ -39,7 +39,7 @@ s_pretty * pretty_indent_from_column (s_pretty *pretty, sw indent)
   pretty->base_column = pretty->column + indent;
   if (false) {
     err_write_1("pretty->base_column = ");
-    err_inspect_uw_decimal(&pretty->base_column);
+    err_inspect_uw_decimal(pretty->base_column);
     err_write_1("\n");
   }
   return pretty;

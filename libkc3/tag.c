@@ -384,9 +384,9 @@ s_tag * tag_init_1 (s_tag *tag, const char *p)
     err_write_1("tag_init_1: invalid tag: \"");
     err_write_1(p);
     err_write_1("\", ");
-    err_inspect_uw(&len);
+    err_inspect_uw(len);
     err_write_1(" != ");
-    err_inspect_sw(&r);
+    err_inspect_sw(r);
     assert(! "tag_init_1: invalid tag");
     return NULL;
   }
@@ -690,9 +690,9 @@ s_tag * tag_init_from_str (s_tag *tag, s_str *str)
     err_write_1("tag_init_str: invalid tag: ");
     err_inspect_str(str);
     err_write_1(", ");
-    err_inspect_u32_decimal(&str->size);
+    err_inspect_u32_decimal(str->size);
     err_write_1(" != ");
-    err_inspect_sw(&r);
+    err_inspect_sw(r);
     assert(! "tag_init_str: invalid tag");
     return NULL;
   }

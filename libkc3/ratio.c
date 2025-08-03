@@ -131,9 +131,9 @@ s_ratio * ratio_init_1 (s_ratio *q, const char *p)
     err_write_1("ratio_init_1: invalid ratio: \"");
     err_write_1(p);
     err_write_1("\", ");
-    err_inspect_uw(&len);
+    err_inspect_uw(len);
     err_write_1(" != ");
-    err_inspect_sw(&r);
+    err_inspect_sw(r);
     assert(! "ratio_init_1: invalid ratio");
     return NULL;
   }

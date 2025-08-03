@@ -113,7 +113,7 @@ bool gl_text_render_to_texture (s_gl_text *text)
     }
     if (FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER)) {
       err_write_1("gl_font_render_to_texture: failed to load glyph: ");
-      err_inspect_character(&c);
+      err_inspect_character(c);
       err_write_1("\n");
       continue;
     }

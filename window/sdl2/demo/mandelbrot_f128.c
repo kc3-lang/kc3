@@ -213,9 +213,9 @@ static bool mandelbrot_f128_resize (s_sequence *seq)
   if (! array_allocate(pixels))
     return false;
   err_write_1("mandelbrot_f128_resize: ");
-  err_inspect_u64(&win->w);
+  err_inspect_u64(win->w);
   err_write_1(" x ");
-  err_inspect_u64(&win->h);
+  err_inspect_u64(win->h);
   err_write_1("\n");
   return true;
 }
@@ -317,15 +317,15 @@ static bool mandelbrot_f128_update (s_sequence *seq)
   assert(glGetError() == GL_NO_ERROR);
   buf_init(&buf, false, sizeof(a), a);
   buf_write_1(&buf, "x: ");
-  buf_inspect_f128(&buf, &next_x);
+  buf_inspect_f128(&buf, next_x);
   buf_write_1(&buf, "\ny: ");
-  buf_inspect_f128(&buf, &next_y);
+  buf_inspect_f128(&buf, next_y);
   buf_write_1(&buf, "\nz: ");
-  buf_inspect_f128(&buf, &next_z);
+  buf_inspect_f128(&buf, next_z);
   gl_text_update_buf(&g_mandelbrot_f128_text, &buf);
   err_write_1("mandelbrot_f128_update: ");
-  err_inspect_u64_decimal(&win->w);
+  err_inspect_u64_decimal(win->w);
   err_write_1(" x ");
-  err_inspect_u64_decimal(&win->h);
+  err_inspect_u64_decimal(win->h);
   return true;
 }

@@ -32,7 +32,7 @@ sw dmat4_buf_inspect (s_buf *buf, const s_dmat4 *matrix)
   while (i < 4) {
     j = 0;
     while (j < 4) {
-      if ((r = buf_inspect_f64(buf, m + j * 4 + i)) < 0)
+      if ((r = buf_inspect_f64(buf, m[j * 4 + i])) < 0)
         return r;
       result += r;
       if (i < 3 || j < 3) {

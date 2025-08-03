@@ -556,7 +556,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   arity = call_arity(&tmp);
   if (false) {
     err_write_1("env_eval_call_resolve: arity = ");
-    err_inspect_sw(&arity);
+    err_inspect_sw(arity);
     err_write_1(" sym = ");
     err_inspect_sym(tmp.ident.sym);
     err_write_1("\n");

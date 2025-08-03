@@ -112,7 +112,7 @@ sw buf_parse_uw_base (s_buf *buf, const s_str *base,
   if (radix < 2 || (UW_MAX > UW_MAX && (uw) radix > UW_MAX)) {
     buf_save_clean(buf, &save);
     err_write_1("buf_parse_uw_base: invalid radix: ");
-    err_inspect_sw(&radix);
+    err_inspect_sw(radix);
     assert(! "buf_parse_uw_base: invalid radix");
     return -1;
   }
@@ -122,16 +122,16 @@ sw buf_parse_uw_base (s_buf *buf, const s_str *base,
       buf_save_clean(buf, &save);
       err_write_1("buf_parse_uw_base:"
                   " digit greater than or equal to radix: ");
-      err_inspect_u8(&digit);
+      err_inspect_u8(digit);
       assert(! "buf_parse_uw_base: digit greater than or equal to"
              " radix");
       return -1;
     }
     if (u > ceiling_uw(UW_MAX, radix)) {
       err_write_1("buf_parse_uw_base: ");
-      err_inspect_uw(&u);
+      err_inspect_uw(u);
       err_write_1(" * ");
-      err_inspect_sw(&radix);
+      err_inspect_sw(radix);
       err_write_1(": integer overflow");
       r = -1;
       goto restore;

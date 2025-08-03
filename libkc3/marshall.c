@@ -97,7 +97,7 @@ s_marshall * marshall_callable (s_marshall *m, bool heap,
       return marshall_fn(m, heap, &callable->data.fn);
     default:
       err_write_1("marshall_callable: unknown callable type: ");
-      err_inspect_u32_decimal(&callable->type);
+      err_inspect_u32_decimal(callable->type);
       err_write_1("\n");
       assert(! "marshall_callable: unknown callable type");
   }
@@ -622,7 +622,7 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   case TAG_UW:    return marshall_uw(m, heap, tag->data.uw);
   }
   err_write_1("marshall_tag: unknown tag type : ");
-  err_inspect_u8_decimal(&type);
+  err_inspect_u8_decimal(type);
   err_write_1("\n");
   assert(! "marshall_tag: unknown tag type");
   return NULL;

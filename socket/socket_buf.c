@@ -100,7 +100,7 @@ s_socket_buf * socket_buf_init_accept (s_socket_buf *sb, p_socket listening)
   if (sockfd < 0) {
     e = errno;
     err_write_1("socket_buf_init_accept: ");
-    err_inspect_s64_decimal(listening);
+    err_inspect_s64_decimal(*listening);
     err_write_1(": accept: ");
     err_puts(strerror(e));
     assert(! "socket_buf_init_accept: accept");
@@ -143,7 +143,7 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
     err_write_1(", ");
     err_write_1(service->ptr.pchar);
     err_write_1("): getaddrinfo: ");
-    err_inspect_s32_decimal(&e);
+    err_inspect_s32_decimal(e);
     err_write_1(" ");
     err_puts((const char *) gai_strerror(e));
     assert(! "socket_buf_init_connect: getaddrinfo");
@@ -191,7 +191,7 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
         err_write_1(ipstr);
         err_write_1(" ");
         port = socket_addr_port(res_last->ai_addr);
-        err_inspect_s32_decimal(&port);
+        err_inspect_s32_decimal(port);
         err_write_1(": ");
       }
       else if (res_last->ai_family == AF_INET6) {
@@ -200,14 +200,14 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
         err_write_1(ipstr);
         err_write_1(" ");
         port = socket_addr_port(res_last->ai_addr);
-        err_inspect_s32_decimal(&port);
+        err_inspect_s32_decimal(port);
         err_write_1(": ");
       }
     }
     err_write_1(error_reason);
-    err_inspect_s64_decimal(&r);
+    err_inspect_s64_decimal(r);
     err_write_1(" ");
-    err_inspect_s32_decimal(&e);
+    err_inspect_s32_decimal(e);
     err_write_1(" ");
     err_puts(strerror(e));
     assert(! "socket_buf_init_connect");

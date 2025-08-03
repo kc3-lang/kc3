@@ -49,7 +49,7 @@
     s_pretty pretty = {0};                                             \
     sw r;                                                              \
     sw size;                                                           \
-    size = buf_inspect_ ## name ## _size(&pretty, &x);                 \
+    size = buf_inspect_ ## name ## _size(&pretty, x);                  \
     if (! size)                                                        \
       return str_init_empty(str);                                      \
     if (size < 0) {                                                    \
@@ -61,16 +61,16 @@
       err_puts("str_init_" # name ": buf_init_alloc");                 \
       return NULL;                                                     \
     }                                                                  \
-    if ((r = buf_inspect_ ## name(&buf, &x)) < 0) {                    \
+    if ((r = buf_inspect_ ## name(&buf, x)) < 0) {                     \
       err_puts("str_init_" # name ": buf_inspect_" # name " < 0");     \
       buf_clean(&buf);                                                 \
       return NULL;                                                     \
     }                                                                  \
     if (r != size) {                                                   \
       err_write_1("str_init_" # name ": buf_inspect_" # name ": ");    \
-      err_inspect_sw_decimal(&r);                                      \
+      err_inspect_sw_decimal(r);                                      \
       err_write_1(" != ");                                             \
-      err_inspect_sw_decimal(&size);                                   \
+      err_inspect_sw_decimal(size);                                   \
       err_write_1("\n");                                               \
       buf_clean(&buf);                                                 \
       return NULL;                                                     \
@@ -85,7 +85,7 @@
     s_buf buf;                                                         \
     s_pretty pretty = {0};                                             \
     sw size;                                                           \
-    size = buf_inspect_ ## type ## _decimal_size(&pretty, &x);         \
+    size = buf_inspect_ ## type ## _decimal_size(&pretty, x);          \
     if (! size)                                                        \
       return str_init_empty(str);                                      \
     if (size < 0) {                                                    \
@@ -97,7 +97,7 @@
       err_puts("str_init_" # type ": buf_init_alloc");                 \
       return NULL;                                                     \
     }                                                                  \
-    buf_inspect_ ## type ## _decimal(&buf, &x);                        \
+    buf_inspect_ ## type ## _decimal(&buf, x);                         \
     assert(buf.wpos == (uw) size);                                     \
     return buf_to_str(&buf, str);                                      \
   }
@@ -128,9 +128,9 @@
     }                                                                  \
     if (r != size) {                                                   \
       err_write_1("str_init_" # name ": buf_inspect_" # name ": ");    \
-      err_inspect_sw_decimal(&r);                                      \
+      err_inspect_sw_decimal(r);                                      \
       err_write_1(" != ");                                             \
-      err_inspect_sw_decimal(&size);                                   \
+      err_inspect_sw_decimal(size);                                   \
       err_write_1("\n");                                               \
       buf_clean(&buf);                                                 \
       return NULL;                                                     \
@@ -166,9 +166,9 @@
     }                                                                  \
     if (r != size) {                                                   \
       err_write_1("str_init_" # name ": buf_inspect_" # name ": ");    \
-      err_inspect_sw_decimal(&r);                                      \
+      err_inspect_sw_decimal(r);                                      \
       err_write_1(" != ");                                             \
-      err_inspect_sw_decimal(&size);                                   \
+      err_inspect_sw_decimal(size);                                   \
       err_write_1("\n");                                               \
       buf_clean(&buf);                                                 \
       return NULL;                                                     \
@@ -710,7 +710,7 @@ s_str * str_init_f32 (s_str *str, f32 x)
       if ((r = buf_write_1(&buf, "+")) <= 0)
         return NULL;
     }
-    if ((r = buf_inspect_s64_decimal(&buf, &exp)) <= 0)
+    if ((r = buf_inspect_s64_decimal(&buf, exp)) <= 0)
       return NULL;
   }
  ok:
@@ -771,7 +771,7 @@ s_str * str_init_f64 (s_str *str, f64 x)
       if ((r = buf_write_1(&buf, "+")) <= 0)
         return NULL;
     }
-    if ((r = buf_inspect_s64_decimal(&buf, &exp)) <= 0)
+    if ((r = buf_inspect_s64_decimal(&buf, exp)) <= 0)
       return NULL;
   }
  ok:
@@ -832,7 +832,7 @@ s_str * str_init_f128 (s_str *str, f128 x)
       if ((r = buf_write_1(&buf, "+")) <= 0)
         return NULL;
     }
-    if ((r = buf_inspect_s64_decimal(&buf, &exp)) <= 0)
+    if ((r = buf_inspect_s64_decimal(&buf, exp)) <= 0)
       return NULL;
   }
  ok:
@@ -902,7 +902,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
   random_bytes_len = (result_len + 1) * 3 / 4;
   if (false) {
     err_write_1("str_init_random_base64: random_bytes_len: ");
-    err_inspect_sw_decimal(&random_bytes_len);
+    err_inspect_sw_decimal(random_bytes_len);
     err_write_1("\n");
   }
   if (! (random_bytes = alloc(random_bytes_len)))
@@ -981,9 +981,9 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
   }
   if (buf.rpos > buf.wpos) {
     err_write_1("str_init_slice: invalid positions: ");
-    err_inspect_uw(&buf.rpos);
+    err_inspect_uw(buf.rpos);
     err_write_1(" > ");
-    err_inspect_uw(&buf.wpos);
+    err_inspect_uw(buf.wpos);
     err_write_1("\n");
     assert(! "str_init_slice: invalid positions");
     return NULL;
@@ -1604,9 +1604,9 @@ uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
   if (pos >= 0) {
     if ((uw) pos > max_pos) {
       err_write_1("str_sw_pos_to_uw: index too large: ");
-      err_inspect_sw(&pos);
+      err_inspect_sw(pos);
       err_write_1(" > ");
-      err_inspect_uw(&max_pos);
+      err_inspect_uw(max_pos);
       err_write_1("\n");
       assert(! "str_sw_pos_to_uw: index too large");
       return NULL;
@@ -1618,9 +1618,9 @@ uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
       *dest = max_pos + pos + 1;
     else {
       err_write_1("str_sw_pos_to_uw: index too low: ");
-      err_inspect_sw(&pos);
+      err_inspect_sw(pos);
       err_write_1(" < -");
-      err_inspect_uw_decimal(&max_pos);
+      err_inspect_uw_decimal(max_pos);
       err_write_1("\n");
       assert(! "str_sw_pos_to_uw: index too low");
       return NULL;

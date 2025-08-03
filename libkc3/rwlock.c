@@ -52,7 +52,7 @@ s_rwlock * rwlock_r (s_rwlock *rwlock)
     if (false) {
       i = (uw) rwlock;
       err_write_1("rwlock_r: ");
-      err_inspect_uw_hexadecimal(&i);
+      err_inspect_uw_hexadecimal(i);
       err_write_1("\n");
     }
     if ((e = pthread_rwlock_rdlock(&rwlock->rwlock))) {
