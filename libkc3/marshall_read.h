@@ -102,5 +102,7 @@ PROTO_MARSHALL_READ(u32,          u32              );
 PROTO_MARSHALL_READ(u64,          u64              );
 PROTO_MARSHALL_READ(unquote,      s_unquote        );
 PROTO_MARSHALL_READ(uw,           uw               );
+PROTO_MARSHALL_READ(var,          s_var            );
+
 
 #endif /* LIBKC3_MARSHALL_READ_H */
