@@ -475,6 +475,80 @@ bool env_defoperator (s_env *env, s_tag *tag_op)
   return true;
 }
 
+s_tag * env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest)
+{
+  s8 arity;
+  s_call *call;
+  s_tag callable_tag = {0};
+  s_tag ident_tag = {0};
+  p_list second;
+  s_tag tag_arity = {0};
+  s_tag tag_is_a = {0};
+  s_tag tag_module = {0};
+  s_tag tag_special_operator = {0};
+  s_tag tag_sym_arity = {0};
+  s_tag tag_symbol = {0};
+  s_tag tag_symbol_value = {0};
+  assert(env);
+  assert(tag);
+  assert(dest);
+  if (tag->type != TAG_CALL) {
+    err_puts("env_defspecial_operator: expected Call");
+    return NULL;
+  }
+  call = &tag->data.call;
+  if (call->ident.sym != &g_sym__equal ||
+      ! call->arguments ||
+      ! (second = list_next(call->arguments)) ||
+      list_next(second) ||
+      call->arguments->tag.type != TAG_IDENT) {
+    err_puts("env_defspecial_operator: expected Ident = Callable");
+    return NULL;
+  }
+  tag_init_copy(&ident_tag, &call->arguments->tag);
+  if (! ident_tag.data.ident.module)
+    ident_tag.data.ident.module = env->current_defmodule;
+  if (! env_eval_tag(env, &second->tag, &callable_tag))
+    return NULL;
+  if (callable_tag.type != TAG_PCALLABLE) {
+    err_puts("env_defspecial_operator: right operand must be a"
+             " Callable");
+    assert(!("env_defspecial_operator: right operand must be a"
+             " Callable"));
+    tag_clean(&callable_tag);
+    return NULL;
+  }
+  arity = callable_arity(callable_tag.data.pcallable);
+  if (arity < 0) {
+    err_puts("env_defspecial_operator: invalid arity");
+    tag_clean(&callable_tag);
+    return NULL;
+  }
+  tag_init_psym(&tag_module, ident_tag.data.ident.module);
+  tag_init_psym(&tag_is_a, &g_sym_is_a);
+  tag_init_psym(&tag_special_operator, &g_sym_special_operator);
+  tag_init_psym(&tag_sym_arity, &g_sym_arity);
+  tag_init_psym(&tag_symbol, &g_sym_symbol);
+  tag_init_psym(&tag_symbol_value, &g_sym_symbol_value);
+  tag_init_u8(&tag_arity, (u8) arity);
+  if (! facts_add_tags(env->facts, &tag_module, &tag_symbol,
+                       &ident_tag))
+    return NULL;
+  if (! facts_add_tags(env->facts, &ident_tag, &tag_is_a, 
+                       &tag_special_operator))
+    return NULL;
+  if (! facts_add_tags(env->facts, &ident_tag, &tag_sym_arity,
+                       &tag_arity))
+    return NULL;
+  callable_set_special(callable_tag.data.pcallable, true);
+  if (! facts_add_tags(env->facts, &ident_tag, &tag_symbol_value, 
+                       &callable_tag))
+    return NULL;
+  *dest = ident_tag;
+  tag_clean(&callable_tag);
+  return dest;
+}
+
 const s_sym * env_defstruct (s_env *env, s_list *spec)
 {
   s_tag tag_module_name;

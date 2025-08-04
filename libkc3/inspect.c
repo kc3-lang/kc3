@@ -265,6 +265,30 @@ s_str * inspect_str (const s_str *str, s_str *dest)
   return buf_to_str(&buf, dest);
 }
 
+s_str * inspect_str_hex (const s_str *str, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw r;
+  sw size;
+  size = buf_inspect_str_hex_size(&pretty, str);
+  if (size < 0) {
+    err_puts("inspect_str_hex: buf_inspect_str_hex_size");
+    assert(! "inspect_str_hex: buf_inspect_str_hex_size");
+    return NULL;
+  }
+  if (! buf_init_alloc(&buf, size))
+    return NULL;
+  r = buf_inspect_str_hex(&buf, str);
+  if (r != size) {
+    buf_clean(&buf);
+    err_puts("inspect_str_hex: buf_inspect_str_hex");
+    assert(! "inspect_str_hex: buf_inspect_str_hex");
+    return NULL;
+  }
+  return buf_to_str(&buf, dest);
+}
+
 s_str * inspect_str_eval (const s_list *list, s_str *dest)
 {
   s_buf buf;

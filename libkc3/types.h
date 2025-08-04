@@ -785,7 +785,7 @@ TYPEDEF_SET_ITEM(fact, s_fact);
 TYPEDEF_SET_ITEM(tag, s_tag);
 TYPEDEF_SET_ITEM(uw, uw);
 
-#define TYPEDEF_SET(name, type)                                        \
+#define TYPEDEF_SET(name)                                              \
   typedef struct set__##name {                                         \
     uw collisions;                                                     \
     uw count;                                                          \
@@ -793,9 +793,9 @@ TYPEDEF_SET_ITEM(uw, uw);
     uw max;                                                            \
   } s_set__##name
 
-TYPEDEF_SET(fact, s_fact);
-TYPEDEF_SET(tag, s_tag);
-TYPEDEF_SET(uw, uw);
+TYPEDEF_SET(fact);
+TYPEDEF_SET(tag);
+TYPEDEF_SET(uw);
 
 #define TYPEDEF_SET_CURSOR(name)                                       \
   typedef struct set_cursor__##name {                                  \

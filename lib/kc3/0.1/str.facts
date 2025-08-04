@@ -67,3 +67,5 @@ replace {Str.to_lower, :symbol_value,
          cfn Str "str_init_to_lower" (Result, Str)}
 add {Str, :symbol, Str.byte}
 replace {Str.byte, :symbol_value, cfn U8 "str_byte" (Str, Tag, Result)}
+add {Str, :symbol, Str.inpect_hex}
+replace {Str.inspect_hex, :symbol_value, cfn Str "inspect_str_hex" (Str, Result)}

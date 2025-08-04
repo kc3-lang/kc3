@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from set.c.in NAME=fact TYPE=s_fact */
+/* Gen from set.c.in NAME=fact TYPE=s_fact * */
 #include "alloc.h"
 #include "assert.h"
 #include "compare.h"
@@ -19,24 +19,12 @@
 #include "set_item__fact.h"
 
 s_set_item__fact *
-set_add__fact (s_set__fact *set, s_fact *data)
+set_add__fact (s_set__fact *set, s_fact * data)
 {
   uw hash;
   assert(set);
   assert(data);
-  if (! fact_hash_uw(_Generic (*data,
-                                 f32:  *data,
-                                 f64:  *data,
-                                 f128: *data,
-                                 s8:   *data,
-                                 s16:  *data,
-                                 s32:  *data,
-                                 s64:  *data,
-                                 u8:   *data,
-                                 u16:  *data,
-                                 u32:  *data,
-                                 u64:  *data,
-                                 default: data), &hash)) {
+  if (! fact_hash_uw(data, &hash)) {
     err_puts("set_add__fact: fact_hash_uw");
     assert(! "set_add__fact: fact_hash_uw");
     return NULL;
@@ -47,7 +35,7 @@ set_add__fact (s_set__fact *set, s_fact *data)
 s_set_item__fact *
 set_add_collision__fact
 (s_set__fact *set,
- s_fact *data,
+ s_fact * data,
  uw hash,
  s_set_item__fact *item)
 {
@@ -60,25 +48,25 @@ set_add_collision__fact
 }
 
 s_set_item__fact *
-set_add_h__fact (s_set__fact *set, s_fact *data, uw hash)
+set_add_h__fact (s_set__fact *set, s_fact * data, uw hash)
 {
   uw h;
-  s_set_item__fact *i;
+  s_set_item__fact *item;
   assert(set);
   assert(data);
-  if ((i = set_get_h__fact(set, data, hash)))
-    return i;
+  if ((item = set_get_h__fact(set, data, hash)))
+    return item;
   h = hash % set->max;
-  if ((i = set->items[h]))
-    return set_add_collision__fact(set, data, hash, i);
-  if (! (i = set_item_new__fact(data, hash, NULL))) {
+  if ((item = set->items[h]))
+    return set_add_collision__fact(set, data, hash, item);
+  if (! (item = set_item_new__fact(data, hash, NULL))) {
     err_puts("set_add_h__fact: set_item_new__fact");
     assert(! "set_add_h__fact: set_item_new__fact");
     return NULL;
   }
-  set->items[h] = i;
+  set->items[h] = item;
   set->count++;
-  return i;
+  return item;
 }
 
 void
@@ -93,24 +81,12 @@ set_clean__fact (s_set__fact *set)
 }
 
 s_set_item__fact *
-set_get__fact (const s_set__fact *set, const s_fact *data)
+set_get__fact (const s_set__fact *set, const s_fact * data)
 {
   uw hash;
   assert(set);
   assert(data);
-  if (! fact_hash_uw(_Generic (*data,
-                                 f32:  *data,
-                                 f64:  *data,
-                                 f128: *data,
-                                 s8:   *data,
-                                 s16:  *data,
-                                 s32:  *data,
-                                 s64:  *data,
-                                 u8:   *data,
-                                 u16:  *data,
-                                 u32:  *data,
-                                 u64:  *data,
-                                 default: data), &hash))
+  if (! fact_hash_uw(data, &hash))
     return NULL;
   return set_get_h__fact(set, data, hash);
 }
@@ -118,43 +94,32 @@ set_get__fact (const s_set__fact *set, const s_fact *data)
 s_set_item__fact *
 set_get_h__fact
 (const s_set__fact *set,
- const s_fact *data,
+ const s_fact * data,
  uw hash)
 {
-  s_set_item__fact *i;
+  s_set_item__fact *item;
   assert(set);
   assert(data);
-  i = set_get_hash__fact(set, hash);
-  while (i) {
-    
-    if (compare_fact(_Generic (i->data,
-                                 f32:  i->data,
-                                 f64:  i->data,
-                                 f128: i->data,
-                                 s8:   i->data,
-                                 s16:  i->data,
-                                 s32:  i->data,
-                                 s64:  i->data,
-                                 u8:   i->data,
-                                 u16:  i->data,
-                                 u32:  i->data,
-                                 u64:  i->data,
-                                 default: &i->data),
-                       _Generic (*data,
-                                 f32:  *data,
-                                 f64:  *data,
-                                 f128: *data,
-                                 s8:   *data,
-                                 s16:  *data,
-                                 s32:  *data,
-                                 s64:  *data,
-                                 u8:   *data,
-                                 u16:  *data,
-                                 u32:  *data,
-                                 u64:  *data,
-                                 default: data)) == 0)
-      return i;
-    i = set_get_hash_next__fact(i);
+  item = set_get_hash__fact(set, hash);
+  while (item) {
+    if (! compare_fact(_Generic(item->data,
+                                  f32:  item->data,
+                                  f64:  item->data,
+                                  f128: item->data,
+                                  s8:   item->data,
+                                  s16:  item->data,
+                                  s32:  item->data,
+                                  s64:  item->data,
+                                  sw:   item->data,
+                                  u8:   item->data,
+                                  u16:  item->data,
+                                  u32:  item->data,
+                                  u64:  item->data,
+                                  uw:   item->data,
+                                  default: &item->data),
+                         data))
+      return item;
+    item = set_get_hash_next__fact(item);
   }
   return NULL;
 }
@@ -163,22 +128,24 @@ s_set_item__fact *
 set_get_hash__fact (const s_set__fact *set, uw hash)
 {
   uw h;
-  s_set_item__fact *i;
+  s_set_item__fact *item;
   assert(set);
   h = hash % set->max;
-  i = set->items[h];
-  while (i && i->hash != hash)
-    i = i->next;
-  return i;
+  item = set->items[h];
+  while (item && item->hash != hash)
+    item = item->next;
+  return item;
 }
 
 s_set_item__fact *
 set_get_hash_next__fact (const s_set_item__fact *item)
 {
   s_set_item__fact *i;
+  uw hash;
   assert(item);
+  hash = item->hash;
   i = item->next;
-  while (i && i->hash != item->hash)
+  while (i && i->hash != hash)
     i = i->next;
   return i;
 }
@@ -186,25 +153,13 @@ set_get_hash_next__fact (const s_set_item__fact *item)
 bool *
 set_has__fact
 (const s_set__fact *set,
- const s_fact *data,
+ const s_fact * data,
  bool *dest)
 {
   uw hash;
   assert(set);
   assert(dest);
-  if (! fact_hash_uw(_Generic (*data,
-                                 f32:  *data,
-                                 f64:  *data,
-                                 f128: *data,
-                                 s8:   *data,
-                                 s16:  *data,
-                                 s32:  *data,
-                                 s64:  *data,
-                                 u8:   *data,
-                                 u16:  *data,
-                                 u32:  *data,
-                                 u64:  *data,
-                                 default: data), &hash))
+  if (! fact_hash_uw(data, &hash))
     return NULL;
   if (! set_get_h__fact(set, data, hash)) {
     *dest = false;
@@ -215,7 +170,9 @@ set_has__fact
 }
 
 s_set__fact *
-set_init__fact (s_set__fact *set, uw max)
+set_init__fact
+(s_set__fact *set,
+ uw max)
 {
   s_set__fact tmp = {0};
   assert(set);
@@ -231,7 +188,7 @@ set_init__fact (s_set__fact *set, uw max)
 }
 
 bool
-set_remove__fact (s_set__fact *set, const s_fact *data)
+set_remove__fact (s_set__fact *set, const s_fact * data)
 {
   s_set_item__fact *item;
   if ((item = set_get__fact(set, data)))
@@ -277,7 +234,22 @@ set_resize__fact (s_set__fact *set, uw max)
   for (i = 0; i < set->max; i++) {
     item = set->items[i];
     while (item) {
-      set_add_h__fact(&n, &item->data, item->hash);
+      set_add_h__fact(&n, _Generic(item->data,
+                                       f32:  item->data,
+                                       f64:  item->data,
+                                       f128: item->data,
+                                       s8:   item->data,
+                                       s16:  item->data,
+                                       s32:  item->data,
+                                       s64:  item->data,
+                                       sw:   item->data,
+                                       u8:   item->data,
+                                       u16:  item->data,
+                                       u32:  item->data,
+                                       u64:  item->data,
+                                       uw:   item->data,
+                                       default: &item->data),
+                        item->hash);
       item = item->next;
     }
   }

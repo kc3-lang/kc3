@@ -10,12 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from set_item.h.in NAME=tag TYPE=s_tag */
+/* Gen from set_item.h.in NAME=tag TYPE=s_tag * */
 /**
  * @file set_item__tag.h
  * @brief Element of a set of tags.
  *
- * Data structure for set items containing s_tag.
+ * Data structure for set items containing s_tag *.
  */
 #ifndef LIBKC3_SET_ITEM__tag_H
 #define LIBKC3_SET_ITEM__tag_H
@@ -23,7 +23,7 @@
 #include "types.h"
 
 s_set_item__tag *
-set_item_new__tag (s_tag *data, uw hash, s_set_item__tag *next);
+set_item_new__tag (s_tag * data, uw hash, s_set_item__tag *next);
 
 void
 set_item_delete__tag (s_set_item__tag *x);

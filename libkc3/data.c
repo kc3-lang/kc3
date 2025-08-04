@@ -674,9 +674,9 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_Quote)
     return quote_init_copy(data, src);
   if (type == &g_sym_S8)
-    return s8_init_copy(data, src);
+    return s8_init_copy(data, *(s8 *) src);
   if (type == &g_sym_S16)
-    return s16_init_copy(data, src);
+    return s16_init_copy(data, *(s16 *) src);
   if (type == &g_sym_S32)
     return s32_init_copy(data, src);
   if (type == &g_sym_S64)

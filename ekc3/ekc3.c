@@ -10,11 +10,217 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <string.h>
 #include <libkc3/kc3.h>
 #include <unistd.h>
 #include "ekc3.h"
 #include "html.h"
 
+s_tag * ekc3_parse_template (s_buf *input, s_tag *dest)
+{
+  s_buf buf = {0};
+  character c;
+  e_ekc3_state state;
+  s_tag tmp = {0};
+  s_buf token_buf = {0};
+  u8    token_position;
+  s_str token_str = {0};
+  if (! input || ! dest) {
+    err_puts("ekc3_parse_template_from_stream: invalid arguments");
+    return NULL;
+  }
+  if (! buf_init_alloc(&buf, BUF_SIZE)) {
+    err_puts("ekc3_parse_template_from_stream: buf_init_alloc result");
+    return NULL;
+  }
+  if (! buf_init_alloc(&token_buf, BUF_SIZE)) {
+    err_puts("ekc3_parse_template_from_stream: buf_init_alloc token");
+    buf_clean(&buf);
+    return NULL;
+  }
+  state = EKC3_STATE_RAW;
+  token_position = 0;
+  while (true) {
+    if (buf_read_character_utf8(input, &c) <= 0) {
+      switch (state) {
+      case EKC3_STATE_RAW:
+        if (! buf_write_character_utf8(&buf, '\n') ||
+            ! buf_write_1(&buf, "EKC3.verbose "))
+          goto error;
+        if (! buf_read_to_str(&token_buf, &token_str))
+          goto error;
+        if (! buf_inspect_str(&buf, &token_str)) {
+          str_clean(&token_str);
+          goto error;
+        }
+        str_clean(&token_str);
+        break;
+      case EKC3_STATE_VERBOSE:
+        if (! buf_write_1(&buf, "\nEKC3.verbose "))
+          goto error;
+        if (! buf_read_to_str(&token_buf, &token_str))
+          goto error;
+        if (! buf_write_str(&buf, &token_str)) {
+          str_clean(&token_str);
+          goto error;
+        }
+        str_clean(&token_str);
+        break;
+      case EKC3_STATE_SILENT:
+        if (! buf_read_to_str(&token_buf, &token_str))
+          goto error;
+        if (! buf_write_str(&buf, &token_str)) {
+          str_clean(&token_str);
+          goto error;
+        }
+        str_clean(&token_str);
+        break;
+      }
+      break;
+    }
+    switch (state) {
+    case EKC3_STATE_RAW:
+      switch (token_position) {
+      case 0:
+        if (c == '<') {
+          token_position = 1;
+        } else {
+          if (! buf_write_character_utf8(&token_buf, c)) {
+            goto error;
+          }
+        }
+        break;
+      case 1:
+        if (c == '%') {
+          token_position = 2;
+        } else {
+          token_position = 0;
+          if (! buf_write_character_utf8(&token_buf, '<') ||
+              ! buf_write_character_utf8(&token_buf, c)) {
+            goto error;
+          }
+        }
+        break;
+      case 2:
+        if (! buf_write_character_utf8(&buf, '\n') ||
+            ! buf_write_1(&buf, "EKC3.verbose "))
+          goto error;
+        if (! buf_read_to_str(&token_buf, &token_str))
+          goto error;
+        if (! buf_inspect_str(&buf, &token_str)) {
+          str_clean(&token_str);
+          goto error;
+        }
+        str_clean(&token_str);
+        buf_empty(&token_buf);
+        if (c == '=') {
+          state = EKC3_STATE_VERBOSE;
+          token_position = 0;
+        } else {
+          state = EKC3_STATE_SILENT;
+          token_position = 0;
+          if (! buf_write_character_utf8(&token_buf, c)) {
+            goto error;
+          }
+        }
+        break;
+      }
+      break;
+    case EKC3_STATE_SILENT:
+    case EKC3_STATE_VERBOSE:
+      switch (token_position) {
+      case 0:
+        if (c == '%')
+          token_position = 1;
+        else if (! buf_write_character_utf8(&token_buf, c))
+          goto error;
+        break;
+      case 1:
+        if (c == '>') {
+          if (! buf_read_to_str(&token_buf, &token_str))
+            goto error;
+          if (state == EKC3_STATE_VERBOSE &&
+              ! buf_write_1(&buf, "\nEKC3.verbose ")) {
+            str_clean(&token_str);
+            goto error;
+          }
+          if (! buf_write_str(&buf, &token_str)) {
+            str_clean(&token_str);
+            goto error;
+          }
+          str_clean(&token_str);
+          state = EKC3_STATE_RAW;
+          token_position = 0;
+          buf_empty(&token_buf);
+        }
+        else {
+          if (! buf_write_character_utf8(&token_buf, '%') ||
+              ! buf_write_character_utf8(&token_buf, c))
+            goto error;
+          token_position = 0;
+        }
+        break;
+      }
+      break;
+    }
+  }
+  if (buf_parse_tag(&buf, &tmp) <= 0) {
+    err_puts("ekc3_parse_template: buf_parse_tag");
+    err_inspect_buf(&buf);
+    assert(! "ekc3_parse_template: buf_parse_tag");
+    goto error;
+  }
+  buf_clean(&token_buf);
+  buf_clean(&buf);
+  *dest = tmp;
+  return dest;
+ error:
+  buf_clean(&token_buf);
+  buf_clean(&buf);
+  return NULL;
+}
+
+s_tag * ekc3_parse_template_1 (const char *input, s_tag *dest)
+{
+  s_buf input_buf;
+  uw len;
+  assert(input);
+  assert(dest);
+  if (! input || ! dest) {
+    err_puts("ekc3_parse_template_1: invalid arguments");
+    assert(! "ekc3_parse_template_1: invalid arguments");
+    return NULL;
+  }
+  len = strlen(input);
+  if (! buf_init_const(&input_buf, len, input)) {
+    err_puts("ekc3_parse_template_1: buf_init_const");
+    assert(! "ekc3_parse_template_1: buf_init_const");
+    return NULL;
+  }
+  input_buf.wpos = len;
+  return ekc3_parse_template(&input_buf, dest);
+}
+
+s_tag * ekc3_parse_template_str (const s_str *input, s_tag *dest)
+{
+  s_buf input_buf;
+  assert(input);
+  assert(dest);
+  if (! input || ! dest) {
+    err_puts("ekc3_parse_template_str: invalid arguments");
+    assert(! "ekc3_parse_template_str: invalid arguments");
+    return NULL;
+  }
+  if (! buf_init_const(&input_buf, input->size, input->ptr.pchar)) {
+    err_puts("ekc3_parse_template_str: buf_init_const");
+    assert(! "ekc3_parse_template_str: buf_init_const");
+    return NULL;
+  }
+  input_buf.wpos = input->size;
+  return ekc3_parse_template(&input_buf, dest);
+}
+
+/*
 s_list *** ekc3_append_and_empty_buf (s_list ***tail, s_buf *buf)
 {
   s_str str;
@@ -225,14 +431,6 @@ sw ekc3_buf_parse_kc3_do_block (s_buf *buf, s_do_block *dest)
       assert(! "ekc3_buf_parse_kc3_do_block: buf_ignore_spaces 1");
       goto clean;
     }
-    /*
-    if (! r) {
-      err_puts("ekc3_buf_parse_kc3_do_block: buf_ignore_spaces 2");
-      assert(! "ekc3_buf_parse_kc3_do_block: buf_ignore_spaces 2");
-      r = -1;
-      goto clean;
-    }
-    */
     r = buf_read_1(buf, "%>");
     if (r < 0)
       goto clean;
@@ -738,3 +936,4 @@ s_str * ekc3_render_to_str (const p_ekc3 *ekc3, s_str *dest)
   buf_to_str(&out, dest);
   return dest;
 }
+*/

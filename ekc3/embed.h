@@ -10,16 +10,18 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from set_cursor.h.in NAME=fact TYPE=s_fact * */
-#ifndef LIBKC3_SET_CURSOR__fact_H
-#define LIBKC3_SET_CURSOR__fact_H
+#ifndef EKC3_EMBED_H
+#define EKC3_EMBED_H
 
 #include "types.h"
 
-void
-set_cursor_init__fact (s_set__fact *set, s_set_cursor__fact *c);
+typedef enum {
+  EMBED_STATE_RAW = 0,
+  EMBED_STATE_VERBOSE,
+  EMBED_STATE_SILENT
+} e_embed_state;
 
-s_set_item__fact *
-set_cursor_next__fact (s_set_cursor__fact *c);
+s_tag * embed_parse_template (s_buf *input, s_tag *dest);
+s_tag * embed_parse_template_1 (const char *input, s_tag *dest);
 
-#endif /* LIBKC3_SET_CURSOR__fact_H */
+#endif /* EKC3_EMBED_H */

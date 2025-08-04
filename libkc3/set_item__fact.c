@@ -10,14 +10,14 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from set_item.c.in NAME=fact TYPE=s_fact */
+/* Gen from set_item.c.in NAME=fact TYPE=s_fact * */
 #include "alloc.h"
 #include "assert.h"
 #include "set_item__fact.h"
 #include "fact.h"
 
 s_set_item__fact *
-set_item_new__fact (s_fact *data, uw hash, s_set_item__fact *next)
+set_item_new__fact (s_fact * data, uw hash, s_set_item__fact *next)
 {
   s_set_item__fact *item;
   item = alloc(sizeof(s_set_item__fact));

@@ -15,11 +15,18 @@
 
 #include "types.h"
 
+/* Parser. */
+s_tag * ekc3_parse_template (s_buf *input, s_tag *dest);
+s_tag * ekc3_parse_template_1 (const char *input, s_tag *dest);
+
 /* Stack-allocation compatible functions, call ekc3_clean after use. */
+/*
 void     ekc3_clean (p_ekc3 *ekc3);
 p_ekc3 * ekc3_init (p_ekc3 *ekc3);
+*/
 
 /* Operators. */
+/*
 s_list *** ekc3_append_and_empty_buf (s_list ***tail, s_buf *buf);
 s_list *** ekc3_append_do_block (s_list ***tail, s_do_block *do_block);
 s_list *** ekc3_append_silent_do_block (s_list ***tail,
@@ -32,8 +39,10 @@ sw         ekc3_buf_parse_kc3_silent_do_block (s_buf *buf,
                                                s_do_block *dest);
 sw         ekc3_buf_peek_kc3_silent_do_block (s_buf *buf);
 bool       ekc3_eval_silent_do_block (const s_do_block *do_block);
+*/
 
 /* Observers. */
+/*
 s_str * ekc3_inspect_do_block (const s_do_block *do_block, s_str *dest);
 sw      ekc3_render (s_buf *buf, const p_ekc3 *ekc3);
 s_str * ekc3_render_buf_to_str (s_buf *in, s_str *dest);
@@ -46,5 +55,6 @@ sw      ekc3_render_size (s_pretty *pretty, const p_ekc3 *ekc3);
 s_str * ekc3_render_to_str (const p_ekc3 *ekc3, s_str *dest);
 sw      ekc3_render_tag (s_buf *buf, const s_tag *tag);
 sw      ekc3_render_tag_size (s_pretty *pretty, const s_tag *tag);
+*/
 
 #endif /* EKC3_H */

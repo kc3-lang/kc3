@@ -10,12 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from set_item.h.in NAME=fact TYPE=s_fact */
+/* Gen from set_item.h.in NAME=fact TYPE=s_fact * */
 /**
  * @file set_item__fact.h
  * @brief Element of a set of facts.
  *
- * Data structure for set items containing s_fact.
+ * Data structure for set items containing s_fact *.
  */
 #ifndef LIBKC3_SET_ITEM__fact_H
 #define LIBKC3_SET_ITEM__fact_H
@@ -23,7 +23,7 @@
 #include "types.h"
 
 s_set_item__fact *
-set_item_new__fact (s_fact *data, uw hash, s_set_item__fact *next);
+set_item_new__fact (s_fact * data, uw hash, s_set_item__fact *next);
 
 void
 set_item_delete__fact (s_set_item__fact *x);

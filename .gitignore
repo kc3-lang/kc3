@@ -29,6 +29,7 @@ config.mk
 current_test
 *.dll
 .DS_Store
+ekc3/embed
 *.exe
 fs/fuse/mount_kc3fs
 fs/fuse/mount_kc3fs_asan

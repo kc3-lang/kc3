@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from set.h.in NAME=tag TYPE=s_tag */
+/* Gen from set.h.in NAME=tag TYPE=s_tag * */
 #ifndef LIBKC3_SET__tag_H
 #define LIBKC3_SET__tag_H
 
@@ -28,10 +28,10 @@ set_init__tag (s_set__tag *set, uw max);
 /* Observers. */
 
 s_set_item__tag *
-set_get__tag (const s_set__tag *set, const s_tag *data);
+set_get__tag (const s_set__tag *set, const s_tag * data);
 
 s_set_item__tag *
-set_get_h__tag (const s_set__tag *set, const s_tag *data, uw hash);
+set_get_h__tag (const s_set__tag *set, const s_tag * data, uw hash);
 
 s_set_item__tag *
 set_get_hash__tag (const s_set__tag *set, uw hash);
@@ -41,22 +41,22 @@ set_get_hash_next__tag (const s_set_item__tag *item);
 
 bool *
 set_has__tag (const s_set__tag *set,
-                 const s_tag *data,
+                 const s_tag * data,
                  bool *dest);
 
 /* Operators. */
 
 s_set_item__tag *
-set_add__tag (s_set__tag *set, s_tag *data);
+set_add__tag (s_set__tag *set, s_tag * data);
 
 s_set_item__tag *
-set_add_collision__tag (s_set__tag *set, s_tag *data, uw hash, s_set_item__tag *item);
+set_add_collision__tag (s_set__tag *set, s_tag * data, uw hash, s_set_item__tag *item);
 
 s_set_item__tag *
-set_add_h__tag (s_set__tag *set, s_tag *data, uw hash);
+set_add_h__tag (s_set__tag *set, s_tag * data, uw hash);
 
 bool
-set_remove__tag (s_set__tag *set, const s_tag *data);
+set_remove__tag (s_set__tag *set, const s_tag * data);
 
 bool
 set_remove_item__tag (s_set__tag *set, s_set_item__tag *item);

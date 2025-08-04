@@ -677,8 +677,8 @@ s_marshall_read * marshall_read_str (s_marshall_read *mr,
 }
 
 s_marshall_read * marshall_read_struct(s_marshall_read *mr,
-                                     bool heap,
-                                     s_struct *dest)
+                                       bool heap,
+                                       s_struct *dest)
 {
     s_struct tmp = {0};
     assert(mr);
@@ -687,10 +687,10 @@ s_marshall_read * marshall_read_struct(s_marshall_read *mr,
         ! marshall_read_bool(mr, heap, &tmp.free_data)            ||
         ! marshall_read_tag(mr, heap, tmp.tag)                    ||
         ! marshall_read_pstruct_type(mr, heap, &tmp.pstruct_type) ||
-        ! mutex_init(&tmp.mutex)                                  ||
-        ! marshall_read_bool(mr, heap, &tmp.mutex_ready)          ||
-        ! marshall_read_sw(mr, heap, &tmp.ref_count))
+        ! marshall_read_sw(mr, heap, &tmp.ref_count)              ||
+        ! mutex_init(&tmp.mutex))
       return NULL;
+    tmp.mutex_ready = true;
     *dest = tmp;
     return mr;
 }
@@ -702,15 +702,15 @@ s_marshall_read * marshall_read_struct_type(s_marshall_read *mr,
     s_struct_type tmp = {0};
     assert(mr);
     assert(mr);
-    if (! marshall_read_uw(mr, heap, (uw *)&tmp.clean)     ||
+    if (//! marshall_read_uw(mr, heap, tmp.clean)     ||
         ! marshall_read_map(mr, heap, &tmp.map)            ||
         ! marshall_read_sym(mr, heap, &tmp.module)         ||
         ! marshall_read_bool(mr, heap, &tmp.must_clean)    ||
         ! marshall_read_uw(mr, heap, tmp.offset)           ||
         ! marshall_read_uw(mr, heap, &tmp.size)            ||
-        ! mutex_init(&tmp.mutex)                           ||
-        ! marshall_read_sw(mr, heap, &tmp.ref_count))
+        ! mutex_init(&tmp.mutex))
       return NULL;
+    tmp.ref_count = 1;
     *dest = tmp;
     return mr;
 }
@@ -821,24 +821,31 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     case TAG_PVAR:
       return marshall_read_pvar(mr, heap, &dest->data.pvar);
   }
-  err_puts("marshall_tag: not implemented");
-  assert(!"marshall_tag: not implemented");
+  err_puts("marshall_tag: unknown tag type");
+  assert(! "marshall_tag: unknown tag type");
   return NULL;
 }
 
-s_marshall_read * marshall_read_time(s_marshall_read *mr,
-                                     bool heap,
-                                     s_time *dest)
+s_marshall_read * marshall_read_time (s_marshall_read *mr,
+                                      bool heap,
+                                      s_time *dest)
 {
-    s_time tmp = {0};
-    assert(mr);
-    assert(mr);
-    if (! marshall_read_sw(mr, heap, &tmp.tv_sec)   ||
-        ! marshall_read_sw(mr, heap, &tmp.tv_nsec)  ||
-        ! marshall_read_tag(mr, heap, tmp.tag))
+  bool has_tags;
+  s_time tmp = {0};
+  assert(mr);
+  assert(mr);
+  if (! marshall_read_sw(mr, heap, &tmp.tv_sec)   ||
+      ! marshall_read_sw(mr, heap, &tmp.tv_nsec)  ||
+      ! marshall_read_bool(mr, heap, &has_tags))
+    return NULL;
+  if (has_tags) {
+    if (! (tmp.tag = alloc(2 * sizeof(s_tag))) ||
+        ! marshall_read_tag(mr, heap, tmp.tag) ||
+        ! marshall_read_tag(mr, heap, tmp.tag + 1))
       return NULL;
-    *dest = tmp;
-    return mr;
+  }
+  *dest = tmp;
+  return mr;
 }
 
 s_marshall_read * marshall_read_tuple(s_marshall_read *mr,

@@ -19,6 +19,22 @@
 #include "mutex.h"
 #include "tag.h"
 
+s8 callable_arity (const s_callable *callable)
+{
+  assert(callable);
+  switch (callable->type) {
+  case CALLABLE_CFN:
+    return callable->data.cfn.arity;
+  case CALLABLE_FN:
+    return fn_arity(&callable->data.fn);
+  case CALLABLE_VOID:
+    return -1;
+  }
+  err_puts("callable_arity: unknown callable type");
+  assert(! "callable_arity: unknown callable type");
+  return -1;
+}
+
 void callable_delete (s_callable *callable)
 {
   assert(callable);

@@ -17,7 +17,7 @@
 #include "_NAME$.h"
 
 s_set_item___NAME$ *
-set_item_new___NAME$ (_TYPE$ *data, uw hash, s_set_item___NAME$ *next)
+set_item_new___NAME$ (_TYPE$ data, uw hash, s_set_item___NAME$ *next)
 {
   s_set_item___NAME$ *item;
   item = alloc(sizeof(s_set_item___NAME$));

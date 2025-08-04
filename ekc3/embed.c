@@ -10,16 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from set_cursor.h.in NAME=fact TYPE=s_fact * */
-#ifndef LIBKC3_SET_CURSOR__fact_H
-#define LIBKC3_SET_CURSOR__fact_H
+#include <string.h>
+#include <libkc3/kc3.h>
+#include "embed.h"
 
-#include "types.h"
-
-void
-set_cursor_init__fact (s_set__fact *set, s_set_cursor__fact *c);
-
-s_set_item__fact *
-set_cursor_next__fact (s_set_cursor__fact *c);
-
-#endif /* LIBKC3_SET_CURSOR__fact_H */

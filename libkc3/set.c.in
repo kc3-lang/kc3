@@ -19,24 +19,12 @@
 #include "set_item___NAME$.h"
 
 s_set_item___NAME$ *
-set_add___NAME$ (s_set___NAME$ *set, _TYPE$ *data)
+set_add___NAME$ (s_set___NAME$ *set, _TYPE$ data)
 {
   uw hash;
   assert(set);
   assert(data);
-  if (! _NAME$_hash_uw(_Generic (*data,
-                                 f32:  *data,
-                                 f64:  *data,
-                                 f128: *data,
-                                 s8:   *data,
-                                 s16:  *data,
-                                 s32:  *data,
-                                 s64:  *data,
-                                 u8:   *data,
-                                 u16:  *data,
-                                 u32:  *data,
-                                 u64:  *data,
-                                 default: data), &hash)) {
+  if (! _NAME$_hash_uw(data, &hash)) {
     err_puts("set_add___NAME$: _NAME$_hash_uw");
     assert(! "set_add___NAME$: _NAME$_hash_uw");
     return NULL;
@@ -47,7 +35,7 @@ set_add___NAME$ (s_set___NAME$ *set, _TYPE$ *data)
 s_set_item___NAME$ *
 set_add_collision___NAME$
 (s_set___NAME$ *set,
- _TYPE$ *data,
+ _TYPE$ data,
  uw hash,
  s_set_item___NAME$ *item)
 {
@@ -60,25 +48,25 @@ set_add_collision___NAME$
 }
 
 s_set_item___NAME$ *
-set_add_h___NAME$ (s_set___NAME$ *set, _TYPE$ *data, uw hash)
+set_add_h___NAME$ (s_set___NAME$ *set, _TYPE$ data, uw hash)
 {
   uw h;
-  s_set_item___NAME$ *i;
+  s_set_item___NAME$ *item;
   assert(set);
   assert(data);
-  if ((i = set_get_h___NAME$(set, data, hash)))
-    return i;
+  if ((item = set_get_h___NAME$(set, data, hash)))
+    return item;
   h = hash % set->max;
-  if ((i = set->items[h]))
-    return set_add_collision___NAME$(set, data, hash, i);
-  if (! (i = set_item_new___NAME$(data, hash, NULL))) {
+  if ((item = set->items[h]))
+    return set_add_collision___NAME$(set, data, hash, item);
+  if (! (item = set_item_new___NAME$(data, hash, NULL))) {
     err_puts("set_add_h___NAME$: set_item_new___NAME$");
     assert(! "set_add_h___NAME$: set_item_new___NAME$");
     return NULL;
   }
-  set->items[h] = i;
+  set->items[h] = item;
   set->count++;
-  return i;
+  return item;
 }
 
 void
@@ -93,24 +81,12 @@ set_clean___NAME$ (s_set___NAME$ *set)
 }
 
 s_set_item___NAME$ *
-set_get___NAME$ (const s_set___NAME$ *set, const _TYPE$ *data)
+set_get___NAME$ (const s_set___NAME$ *set, const _TYPE$ data)
 {
   uw hash;
   assert(set);
   assert(data);
-  if (! _NAME$_hash_uw(_Generic (*data,
-                                 f32:  *data,
-                                 f64:  *data,
-                                 f128: *data,
-                                 s8:   *data,
-                                 s16:  *data,
-                                 s32:  *data,
-                                 s64:  *data,
-                                 u8:   *data,
-                                 u16:  *data,
-                                 u32:  *data,
-                                 u64:  *data,
-                                 default: data), &hash))
+  if (! _NAME$_hash_uw(data, &hash))
     return NULL;
   return set_get_h___NAME$(set, data, hash);
 }
@@ -118,43 +94,32 @@ set_get___NAME$ (const s_set___NAME$ *set, const _TYPE$ *data)
 s_set_item___NAME$ *
 set_get_h___NAME$
 (const s_set___NAME$ *set,
- const _TYPE$ *data,
+ const _TYPE$ data,
  uw hash)
 {
-  s_set_item___NAME$ *i;
+  s_set_item___NAME$ *item;
   assert(set);
   assert(data);
-  i = set_get_hash___NAME$(set, hash);
-  while (i) {
-    
-    if (compare__NAME$(_Generic (i->data,
-                                 f32:  i->data,
-                                 f64:  i->data,
-                                 f128: i->data,
-                                 s8:   i->data,
-                                 s16:  i->data,
-                                 s32:  i->data,
-                                 s64:  i->data,
-                                 u8:   i->data,
-                                 u16:  i->data,
-                                 u32:  i->data,
-                                 u64:  i->data,
-                                 default: &i->data),
-                       _Generic (*data,
-                                 f32:  *data,
-                                 f64:  *data,
-                                 f128: *data,
-                                 s8:   *data,
-                                 s16:  *data,
-                                 s32:  *data,
-                                 s64:  *data,
-                                 u8:   *data,
-                                 u16:  *data,
-                                 u32:  *data,
-                                 u64:  *data,
-                                 default: data)) == 0)
-      return i;
-    i = set_get_hash_next___NAME$(i);
+  item = set_get_hash___NAME$(set, hash);
+  while (item) {
+    if (! compare__NAME$(_Generic(item->data,
+                                  f32:  item->data,
+                                  f64:  item->data,
+                                  f128: item->data,
+                                  s8:   item->data,
+                                  s16:  item->data,
+                                  s32:  item->data,
+                                  s64:  item->data,
+                                  sw:   item->data,
+                                  u8:   item->data,
+                                  u16:  item->data,
+                                  u32:  item->data,
+                                  u64:  item->data,
+                                  uw:   item->data,
+                                  default: &item->data),
+                         data))
+      return item;
+    item = set_get_hash_next___NAME$(item);
   }
   return NULL;
 }
@@ -163,22 +128,24 @@ s_set_item___NAME$ *
 set_get_hash___NAME$ (const s_set___NAME$ *set, uw hash)
 {
   uw h;
-  s_set_item___NAME$ *i;
+  s_set_item___NAME$ *item;
   assert(set);
   h = hash % set->max;
-  i = set->items[h];
-  while (i && i->hash != hash)
-    i = i->next;
-  return i;
+  item = set->items[h];
+  while (item && item->hash != hash)
+    item = item->next;
+  return item;
 }
 
 s_set_item___NAME$ *
 set_get_hash_next___NAME$ (const s_set_item___NAME$ *item)
 {
   s_set_item___NAME$ *i;
+  uw hash;
   assert(item);
+  hash = item->hash;
   i = item->next;
-  while (i && i->hash != item->hash)
+  while (i && i->hash != hash)
     i = i->next;
   return i;
 }
@@ -186,25 +153,13 @@ set_get_hash_next___NAME$ (const s_set_item___NAME$ *item)
 bool *
 set_has___NAME$
 (const s_set___NAME$ *set,
- const _TYPE$ *data,
+ const _TYPE$ data,
  bool *dest)
 {
   uw hash;
   assert(set);
   assert(dest);
-  if (! _NAME$_hash_uw(_Generic (*data,
-                                 f32:  *data,
-                                 f64:  *data,
-                                 f128: *data,
-                                 s8:   *data,
-                                 s16:  *data,
-                                 s32:  *data,
-                                 s64:  *data,
-                                 u8:   *data,
-                                 u16:  *data,
-                                 u32:  *data,
-                                 u64:  *data,
-                                 default: data), &hash))
+  if (! _NAME$_hash_uw(data, &hash))
     return NULL;
   if (! set_get_h___NAME$(set, data, hash)) {
     *dest = false;
@@ -215,7 +170,9 @@ set_has___NAME$
 }
 
 s_set___NAME$ *
-set_init___NAME$ (s_set___NAME$ *set, uw max)
+set_init___NAME$
+(s_set___NAME$ *set,
+ uw max)
 {
   s_set___NAME$ tmp = {0};
   assert(set);
@@ -231,7 +188,7 @@ set_init___NAME$ (s_set___NAME$ *set, uw max)
 }
 
 bool
-set_remove___NAME$ (s_set___NAME$ *set, const _TYPE$ *data)
+set_remove___NAME$ (s_set___NAME$ *set, const _TYPE$ data)
 {
   s_set_item___NAME$ *item;
   if ((item = set_get___NAME$(set, data)))
@@ -277,7 +234,22 @@ set_resize___NAME$ (s_set___NAME$ *set, uw max)
   for (i = 0; i < set->max; i++) {
     item = set->items[i];
     while (item) {
-      set_add_h___NAME$(&n, &item->data, item->hash);
+      set_add_h___NAME$(&n, _Generic(item->data,
+                                       f32:  item->data,
+                                       f64:  item->data,
+                                       f128: item->data,
+                                       s8:   item->data,
+                                       s16:  item->data,
+                                       s32:  item->data,
+                                       s64:  item->data,
+                                       sw:   item->data,
+                                       u8:   item->data,
+                                       u16:  item->data,
+                                       u32:  item->data,
+                                       u64:  item->data,
+                                       uw:   item->data,
+                                       default: &item->data),
+                        item->hash);
       item = item->next;
     }
   }

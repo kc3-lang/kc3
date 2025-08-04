@@ -17,7 +17,7 @@
 #include "uw.h"
 
 s_set_item__uw *
-set_item_new__uw (uw *data, uw hash, s_set_item__uw *next)
+set_item_new__uw (uw data, uw hash, s_set_item__uw *next)
 {
   s_set_item__uw *item;
   item = alloc(sizeof(s_set_item__uw));

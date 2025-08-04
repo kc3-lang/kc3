@@ -23,7 +23,7 @@
 #include "types.h"
 
 s_set_item___NAME$ *
-set_item_new___NAME$ (_TYPE$ *data, uw hash, s_set_item___NAME$ *next);
+set_item_new___NAME$ (_TYPE$ data, uw hash, s_set_item___NAME$ *next);
 
 void
 set_item_delete___NAME$ (s_set_item___NAME$ *x);

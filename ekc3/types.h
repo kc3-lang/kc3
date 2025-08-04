@@ -15,6 +15,12 @@
 
 #include <libkc3/types.h>
 
+typedef enum {
+  EKC3_STATE_RAW = 0,
+  EKC3_STATE_VERBOSE,
+  EKC3_STATE_SILENT
+} e_ekc3_state;
+
 typedef s_list *p_ekc3;
 
 #endif /* EKC3_TYPES_H */

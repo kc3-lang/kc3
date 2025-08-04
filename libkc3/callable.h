@@ -21,6 +21,9 @@ s_callable * callable_new (void);
 s_callable * callable_new_copy (s_callable *callable);
 s_callable * callable_new_ref (s_callable *callable);
 
+/* Observers. */
+s8           callable_arity (const s_callable *callable);
+
 /* Operators. */
 s_callable * callable_set_name (s_callable *callable,
                                 const s_ident *name);

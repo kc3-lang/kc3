@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from set_cursor.h.in NAME=tag TYPE=s_tag */
+/* Gen from set_cursor.h.in NAME=tag TYPE=s_tag * */
 #ifndef LIBKC3_SET_CURSOR__tag_H
 #define LIBKC3_SET_CURSOR__tag_H
 

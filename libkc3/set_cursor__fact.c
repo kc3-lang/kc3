@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from set_cursor.c.in NAME=fact TYPE=s_fact */
+/* Gen from set_cursor.c.in NAME=fact TYPE=s_fact * */
 #include <assert.h>
 #include <stdlib.h>
 #include "types.h"

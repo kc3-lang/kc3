@@ -28,10 +28,10 @@ set_init__uw (s_set__uw *set, uw max);
 /* Observers. */
 
 s_set_item__uw *
-set_get__uw (const s_set__uw *set, const uw *data);
+set_get__uw (const s_set__uw *set, const uw data);
 
 s_set_item__uw *
-set_get_h__uw (const s_set__uw *set, const uw *data, uw hash);
+set_get_h__uw (const s_set__uw *set, const uw data, uw hash);
 
 s_set_item__uw *
 set_get_hash__uw (const s_set__uw *set, uw hash);
@@ -41,22 +41,22 @@ set_get_hash_next__uw (const s_set_item__uw *item);
 
 bool *
 set_has__uw (const s_set__uw *set,
-                 const uw *data,
+                 const uw data,
                  bool *dest);
 
 /* Operators. */
 
 s_set_item__uw *
-set_add__uw (s_set__uw *set, uw *data);
+set_add__uw (s_set__uw *set, uw data);
 
 s_set_item__uw *
-set_add_collision__uw (s_set__uw *set, uw *data, uw hash, s_set_item__uw *item);
+set_add_collision__uw (s_set__uw *set, uw data, uw hash, s_set_item__uw *item);
 
 s_set_item__uw *
-set_add_h__uw (s_set__uw *set, uw *data, uw hash);
+set_add_h__uw (s_set__uw *set, uw data, uw hash);
 
 bool
-set_remove__uw (s_set__uw *set, const uw *data);
+set_remove__uw (s_set__uw *set, const uw data);
 
 bool
 set_remove_item__uw (s_set__uw *set, s_set_item__uw *item);

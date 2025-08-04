@@ -67,6 +67,7 @@ s_tag *      kc3_def (const s_call *call, s_tag *dest);
 s_tag *      kc3_defmodule (p_sym const *name,
                             const s_do_block *do_block, s_tag *dest);
 s_tag *      kc3_defoperator (s_tag *op_tag, s_tag *dest);
+s_tag *      kc3_defspecial_operator (s_tag *tag, s_tag *dest);
 s_tag *      kc3_defstruct (s_list **spec, s_tag *dest);
 void **      kc3_dlopen (const s_str *path, void **dest);
 s_facts **   kc3_env_db (s_facts **dest);

@@ -194,7 +194,7 @@ sw list_length_until_cycle (s_list *list, bool *cycle)
     return -1;
   l = list;
   while (l) {
-    if (! set_has__uw(&set, (uw *) &l, &found)) {
+    if (! set_has__uw(&set, (uw) l, &found)) {
       set_clean__uw(&set);
       return -1;
     }
@@ -204,7 +204,7 @@ sw list_length_until_cycle (s_list *list, bool *cycle)
       return length;
     }
     length++;
-    if (! set_add__uw(&set, (uw *) &l)) {
+    if (! set_add__uw(&set, (uw) l)) {
       set_clean__uw(&set);
       return -1;
     }

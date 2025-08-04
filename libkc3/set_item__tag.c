@@ -10,14 +10,14 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from set_item.c.in NAME=tag TYPE=s_tag */
+/* Gen from set_item.c.in NAME=tag TYPE=s_tag * */
 #include "alloc.h"
 #include "assert.h"
 #include "set_item__tag.h"
 #include "tag.h"
 
 s_set_item__tag *
-set_item_new__tag (s_tag *data, uw hash, s_set_item__tag *next)
+set_item_new__tag (s_tag * data, uw hash, s_set_item__tag *next)
 {
   s_set_item__tag *item;
   item = alloc(sizeof(s_set_item__tag));

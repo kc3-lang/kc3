@@ -289,6 +289,15 @@ s_tag * kc3_defoperator (s_tag *tag_op, s_tag *dest)
   return dest;
 }
 
+s_tag * kc3_defspecial_operator (s_tag *tag, s_tag *dest)
+{
+  s_env *env;
+  assert(tag);
+  assert(dest);
+  env = env_global();
+  return env_defspecial_operator(env, tag, dest);
+}
+
 s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
 {
   s_tag tag;

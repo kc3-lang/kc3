@@ -23,7 +23,7 @@
 #include "types.h"
 
 s_set_item__uw *
-set_item_new__uw (uw *data, uw hash, s_set_item__uw *next);
+set_item_new__uw (uw data, uw hash, s_set_item__uw *next);
 
 void
 set_item_delete__uw (s_set_item__uw *x);
