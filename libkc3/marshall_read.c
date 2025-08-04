@@ -18,6 +18,7 @@
 #include "ht.h"
 #include "list.h"
 #include "marshall.h"
+#include "mutex.h"
 #include "str.h"
 #include "marshall_read.h"
 #include "rwlock.h"
@@ -187,9 +188,9 @@ s_marshall_read *marshall_read_cow(s_marshall_read *mr,
   assert(mr);
   assert(dest);
   if (! marshall_read_sym(mr, heap, &tmp.type)     ||
-      ! marshall_read_list(mr, heap, tmp.list)    ||
-      // ! marshall_read_mutex(mr, heap, &tmp.mutex)  ||
-      ! marshall_read_sw(mr, heap, &tmp.ref_count))
+      ! marshall_read_list(mr, heap, tmp.list)     ||
+      ! marshall_read_sw(mr, heap, &tmp.ref_count) ||
+      ! mutex_init(&tmp.mutex))
     return NULL;
   *dest = tmp;
   return mr;
@@ -518,7 +519,7 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_s8(mr, heap, &(*((s8 *)tmp_call->type))) ||
       ! marshall_read_callable_data(mr, heap, &tmp_call->data) ||
-      /*! marshall_read_mutex(mr, heap, &tmp_call->mutex)      ||*/
+      /*! mutex_init(&tmp_call->mutex)      ||*/
       ! marshall_read_sw(mr, heap, &tmp_call->ref_count))
     return NULL;
   *dest = tmp_call;
@@ -671,7 +672,7 @@ s_marshall_read * marshall_read_struct(s_marshall_read *mr,
         ! marshall_read_bool(mr, heap, &tmp.free_data)            ||
         ! marshall_read_tag(mr, heap, tmp.tag)                    ||
         ! marshall_read_pstruct_type(mr, heap, &tmp.pstruct_type) ||
-        ! marshall_read_mutex(mr, heap, &tmp.mutex)               ||
+        ! mutex_init(&tmp.mutex)               ||
         ! marshall_read_bool(mr, heap, &tmp.mutex_ready)          ||
         ! marshall_read_sw(mr, heap, &tmp.ref_count))
       return NULL;
@@ -692,7 +693,7 @@ s_marshall_read * marshall_read_struct_type(s_marshall_read *mr,
         ! marshall_read_bool(mr, heap, &tmp.must_clean)    ||
         ! marshall_read_uw(mr, heap, tmp.offset)           ||
         ! marshall_read_uw(mr, heap, &tmp.size)            ||
-        ! marshall_read_mutex(mr, heap, &tmp.mutex)        ||
+        ! mutex_init(&tmp.mutex)        ||
         ! marshall_read_sw(mr, heap, &tmp.ref_count))
       return NULL;
     *dest = tmp;
@@ -866,7 +867,7 @@ s_marshall_read * marshall_read_var(s_marshall_read *mr,
     assert(mr);
     assert(mr);
     if (! marshall_read_bool(mr, heap, &tmp.bound)   ||
-        ! marshall_read_mutex(mr, heap, &tmp.mutex)  ||
+        ! mutex_init(&tmp.mutex)  ||
         ! marshall_read_ident(mr, heap, &tmp.name)   ||
         ! marshall_read_bool(mr, heap, &tmp.ready)   ||
         ! marshall_read_sw(mr, heap, &tmp.ref_count) ||
@@ -890,5 +891,3 @@ s_marshall_read * marshall_read_var(s_marshall_read *mr,
     return NULL;                                                       \
   }
 
-DEF_MARSHALL_READ_STUB(ptr, u_ptr_w)
-DEF_MARSHALL_READ_STUB(ptr_free, u_ptr_w)

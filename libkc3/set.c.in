@@ -32,12 +32,10 @@ set_add___NAME$ (s_set___NAME$ *set, _TYPE$ *data)
                                  s16:  *data,
                                  s32:  *data,
                                  s64:  *data,
-                                 sw:   *data,
                                  u8:   *data,
                                  u16:  *data,
                                  u32:  *data,
                                  u64:  *data,
-                                 uw:   *data,
                                  default: data), &hash)) {
     err_puts("set_add___NAME$: _NAME$_hash_uw");
     assert(! "set_add___NAME$: _NAME$_hash_uw");
@@ -82,7 +80,7 @@ set_add_h___NAME$ (s_set___NAME$ *set, _TYPE$ *data, uw hash)
   set->count++;
   return i;
 }
-                 
+
 void
 set_clean___NAME$ (s_set___NAME$ *set)
 {
@@ -108,12 +106,10 @@ set_get___NAME$ (const s_set___NAME$ *set, const _TYPE$ *data)
                                  s16:  *data,
                                  s32:  *data,
                                  s64:  *data,
-                                 sw:   *data,
                                  u8:   *data,
                                  u16:  *data,
                                  u32:  *data,
                                  u64:  *data,
-                                 uw:   *data,
                                  default: data), &hash))
     return NULL;
   return set_get_h___NAME$(set, data, hash);
@@ -139,12 +135,10 @@ set_get_h___NAME$
                                  s16:  i->data,
                                  s32:  i->data,
                                  s64:  i->data,
-                                 sw:   i->data,
                                  u8:   i->data,
                                  u16:  i->data,
                                  u32:  i->data,
                                  u64:  i->data,
-                                 uw:   i->data,
                                  default: &i->data),
                        _Generic (*data,
                                  f32:  *data,
@@ -154,12 +148,10 @@ set_get_h___NAME$
                                  s16:  *data,
                                  s32:  *data,
                                  s64:  *data,
-                                 sw:   *data,
                                  u8:   *data,
                                  u16:  *data,
                                  u32:  *data,
                                  u64:  *data,
-                                 uw:   *data,
                                  default: data)) == 0)
       return i;
     i = set_get_hash_next___NAME$(i);
@@ -208,12 +200,10 @@ set_has___NAME$
                                  s16:  *data,
                                  s32:  *data,
                                  s64:  *data,
-                                 sw:   *data,
                                  u8:   *data,
                                  u16:  *data,
                                  u32:  *data,
                                  u64:  *data,
-                                 uw:   *data,
                                  default: data), &hash))
     return NULL;
   if (! set_get_h___NAME$(set, data, hash)) {
