@@ -1,12 +1,9 @@
 # TODO
 
-### Refactor
+## marshall_read (lyzer)
+ - Match marshall\_read_ functions from marshall_ functions
 
-- [x] serialise.c/h -> marshall.c/h
-- [x] deserialize.c/h -> marshall_read.c/h
-- [x] s_serialize -> s_marshall
-
-### Marshall
+## Marshall
 
 |       Type      | Write  |  Read  |      Needs      |
 | --------------- | ------ | ------ | --------------- |
