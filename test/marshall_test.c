@@ -30,7 +30,7 @@
     TEST_ASSERT(marshall_init(&m));                                   \
     TEST_ASSERT(marshall_ ## type (&m, false, (type) (test)));        \
     TEST_ASSERT(marshall_to_str(&m, &test_str));                      \
-    TEST_STR_HEX_EQ(test_str, expected_str);                              \
+    TEST_STR_HEX_EQ(test_str, expected_str);                          \
     marshall_clean(&m);                                               \
     test_context(NULL);                                               \
   } while (0)
@@ -47,7 +47,7 @@
             &str_test);                                               \
     TEST_EQ(marshall_str(&m, false, &str_test), &m);                  \
     TEST_EQ(marshall_to_str(&m, &str_result), &str_result);           \
-    TEST_STR_HEX_EQ(str_result, str_expected);                            \
+    TEST_STR_HEX_EQ(str_result, str_expected);                        \
     str_clean(&str_result);                                           \
     str_clean(&str_test);                                             \
     marshall_clean(&m);                                               \
@@ -65,7 +65,7 @@
     TEST_EQ(marshall_init(&m), &m);                                   \
     TEST_EQ(marshall_tag(&m, false, &tag), &m);                       \
     TEST_ASSERT(marshall_to_str(&m, &test_str));                      \
-    TEST_STR_HEX_EQ(test_str, expected_str);                              \
+    TEST_STR_HEX_EQ(test_str, expected_str);                          \
     marshall_clean(&m);                                               \
     tag_clean(&tag);                                                  \
     test_context(NULL);                                               \
