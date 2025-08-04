@@ -400,12 +400,12 @@ struct rwlock {
 };
 
 struct struct_ {
-  void *data;
-  bool free_data;
-  s_tag *tag;
   p_struct_type pstruct_type;
+  bool free_data;
+  void *data;
+  s_tag *tag;
   s_mutex mutex;
-  bool    mutex_ready;
+  bool mutex_ready;
   sw ref_count;
 };
 
