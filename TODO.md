@@ -34,8 +34,7 @@
 | Ptr free        |   ✅   |   ❓   |
 | Array           |   ❌   |   ❓   |
 | Fact            |   ✅   |   ❓   |
-| Cow             |   ❌   |   ❓   |
-| PStruct         |   ❌   |   ❓   |
+| PStruct         |   🚧   |   ❓   |
 | PStruct Type    |   ❌   |   ❓   |
 | PTag            |   ✅   |   ❓   | Tag             |
 ... (others)
