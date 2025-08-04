@@ -34,8 +34,8 @@
 | Ptr free        |   ✅   |   ❓   |
 | Array           |   ❌   |   ❓   |
 | Fact            |   ✅   |   ❓   |
-| PStruct         |   🚧   |   ❓   |
-| PStruct Type    |   ❌   |   ❓   |
+| PStruct         |   ❌   |   ❓   |
+| PStruct Type    |   ❓   |   ❓   |
 | PTag            |   ✅   |   ❓   | Tag             |
 ... (others)
 

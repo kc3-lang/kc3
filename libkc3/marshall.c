@@ -547,6 +547,46 @@ s_marshall * marshall_str (s_marshall *m, bool heap, const s_str *src)
   return m;
 }
 
+s_marshall * marshall_struct_type (s_marshall *m, bool heap,
+                                   const s_struct_type *s)
+{
+  uw i;
+  assert(m);
+  assert(s);
+  if (! m || ! s ||
+      ! marshall_map(m, heap, &s->map))
+    return NULL;
+  if (s->module) {
+    i = 0;
+    while (i < s->map.count) {
+      if (! marshall_sym(m, heap, &s->module[i]))
+        return NULL;
+      i++;
+    }
+  }
+  if (s->module) {
+    i = 0;
+    while (s->module) {
+      if (! marshall_sym(m, heap, &s->module[i]))
+        return NULL;
+      i++;
+    }
+  }
+  if (! marshall_bool(m, heap, s->must_clean))
+    return NULL;
+  if (s->offset) {
+    i = 0;
+    while (i < s->size) {
+      if (! marshall_uw(m, heap, s->offset[i]))
+        return NULL;
+      i++;
+    }
+  }
+  if (! marshall_uw(m, heap, s->size))
+    return NULL;
+  return m;
+}
+
 s_marshall * marshall_struct (s_marshall *m, bool heap,
                               const s_struct *s)
 {
@@ -573,7 +613,7 @@ s_marshall * marshall_struct (s_marshall *m, bool heap,
     while (i < s->pstruct_type->map.count) {
       offset = s->pstruct_type->offset[i];
       // TODO: Find type
-      if (! marshall_data(m, heap, NULL, s->pstruct_type,
+      if (! marshall_data(m, heap, &s->pstruct_type->module[i],
                           (u8 *) s->data + offset))
         return NULL;
       i++;
@@ -583,7 +623,7 @@ s_marshall * marshall_struct (s_marshall *m, bool heap,
 }
 
 s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
-                            p_struct_type pstruct_type, void *data)
+                            void *data)
 {
   assert(m);
   assert(type);
@@ -906,5 +946,4 @@ DEF_MARSHALL_STUB(cow, const s_cow *)
 DEF_MARSHALL_STUB(pcow, p_cow)
 DEF_MARSHALL_STUB(pstruct, p_struct)
 DEF_MARSHALL_STUB(pstruct_type, p_struct_type)
-DEF_MARSHALL_STUB(struct_type, const s_struct_type *)
 

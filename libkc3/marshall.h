@@ -40,7 +40,7 @@ PROTO_MARSHALL(character, character);
 PROTO_MARSHALL(cow, const s_cow *);
 PROTO_MARSHALL(complex, const s_complex *);
 s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
-                            p_struct_type pstruct_type, void *data);
+                            void *data);
 PROTO_MARSHALL(do_block, const s_do_block *);
 PROTO_MARSHALL(f32, f32);
 PROTO_MARSHALL(f64, f64);
