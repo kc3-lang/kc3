@@ -15,34 +15,36 @@
 | Str             |   ✅   |   ✅   |
 | Pointer         |   ✅   |   ✅   |
 | Tag             |   ✅   |   ✅   | Everything else |
-| Tuple           |   ✅   |   ❌   |
+| Tuple           |   ✅   |   ❓   |
 | Float           |   ✅   |   ✅   |
-| Ident           |   ✅   |   ❌   |
-| Call            |   ✅   |   ✅   | pcallable       |
-| Do Block        |   ✅   |   ❌   | call            |
-| Map             |   ✅   |   ❌   | Tag             |
+| Ident           |   ✅   |   ❓   |
+| Call            |   ✅   |   ❓   | pcallable       |
+| Do Block        |   ✅   |   ❓   | call            |
+| Map             |   ✅   |   ❓   | Tag             |
 | Sym             |   ✅   |   ✅   | str
-| Callable        |   ✅   |   ✅   | u_callable_data |
-| PCallable       |   ✅   |   ✅   | callable |
-| cfn             |   ✅   |   ✅   |
-| fn              |   ✅   |   ✅   |
-| Ratio           |   ✅   |   ❌   |
-| Quote           |   ✅   |   ❌   |
-| Var             |   ✅   |   ❌   | Tag             |
-| PVar            |   ✅   |   ❌   |
-| Complex         |   ✅   |   ❌   |
-| Unquote         |   ✅   |   ❌   | Tag             |
-| Time            |   ✅   |   ❌   | Tag             |
-| Ptr             |   ✅   |   ❌   |
-| Ptr free        |   ✅   |   ❌   |
-| Array           |   ❌   |   ✅   |
-| Fact            |   ✅   |   ❌   |
-| Cow             |   ❌   |   ❌   |
-| PStruct         |   ❌   |   ❌   |
-| PStruct Type    |   ❌   |   ❌   |
-| PTag            |   ✅   |   ❌   | Tag             |
+| Callable        |   ✅   |   ❓   | u_callable_data |
+| PCallable       |   ✅   |   ❓   | callable |
+| cfn             |   ✅   |   ❓   |
+| fn              |   ✅   |   ❓   |
+| Ratio           |   ✅   |   ❓   |
+| Quote           |   ✅   |   ❓   |
+| Var             |   ✅   |   ❓   | Tag             |
+| PVar            |   ✅   |   ❓   |
+| Complex         |   ✅   |   ❓   |
+| Unquote         |   ✅   |   ❓   | Tag             |
+| Time            |   ✅   |   ❓   | Tag             |
+| Ptr             |   ✅   |   ❓   |
+| Ptr free        |   ✅   |   ❓   |
+| Array           |   ❌   |   ❓   |
+| Fact            |   ✅   |   ❓   |
+| Cow             |   ❌   |   ❓   |
+| PStruct         |   ❌   |   ❓   |
+| PStruct Type    |   ❌   |   ❓   |
+| PTag            |   ✅   |   ❓   | Tag             |
 ... (others)
 
 ✅ : Done
 ❌ : Not implemented
 🚧 : Work in progress
+❓ : Has to be tested/verified by leader
+
