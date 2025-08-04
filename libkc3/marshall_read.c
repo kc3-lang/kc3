@@ -56,8 +56,8 @@ s_marshall_read * marshall_read_array (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_uw(mr, heap, &tmp.count)              ||
       ! marshall_read_uw(mr, heap, &tmp.dimension)          ||
-      ! marshall_read_dimensions(mr, heap, &tmp.dimensions) ||
-      ! marshall_read_uw(mr, heap, &tmp.free_data)          ||
+      ! marshall_read_dimensions(mr, heap, tmp.dimensions)  ||
+      ! marshall_read_uw(mr, heap, (uw *)tmp.free_data)     ||
       ! marshall_read_uw(mr, heap, &tmp.size)               ||
       ! marshall_read_tag(mr, heap, tmp.tags)               ||
       ! marshall_read_psym(mr, heap, &tmp.array_type)       ||
@@ -602,7 +602,7 @@ s_marshall_read * marshall_read_ptr(s_marshall_read *mr,
   assert(mr);
   assert(dest);
   u_ptr_w tmp = {0};
-  if (! marshall_read_uw(mr, heap, &tmp))
+  if (! marshall_read_uw(mr, heap, (uw *)&tmp))
     return NULL;
   *dest = tmp;
   return mr;
@@ -615,7 +615,7 @@ s_marshall_read * marshall_read_ptr_free(s_marshall_read *mr,
   assert(mr);
   assert(dest);
   u_ptr_w tmp = {0};
-  if (! marshall_read_uw(mr, heap, &tmp))
+  if (! marshall_read_uw(mr, heap, (uw *)&tmp))
     return NULL;
   *dest = tmp;
   return mr;

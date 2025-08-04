@@ -42,12 +42,10 @@
                                s16:  tmp,                              \
                                s32:  tmp,                              \
                                s64:  tmp,                              \
-                               sw:   tmp,                              \
                                u8:   tmp,                              \
                                u16:  tmp,                              \
                                u32:  tmp,                              \
                                u64:  tmp,                              \
-                               uw:   tmp,                              \
                                default: &tmp), &test_str);             \
     TEST_STR_EQ(test_str, tmp_str);                                    \
     str_clean(&test_str);                                              \

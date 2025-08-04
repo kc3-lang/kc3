@@ -128,7 +128,7 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
   const char *error_reason = "error: ";
   char ipstr[128] = {0};
   s32 port = -1;
-  s64 r;
+  s64 r = 0;
   s64 sockfd;
   s_socket_buf tmp;
   assert(sb);
