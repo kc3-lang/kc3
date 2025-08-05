@@ -14,6 +14,7 @@
 #include "alloc.h"
 #include "assert.h"
 #include "compare.h"
+#include "config.h"
 #include "fact.h"
 #include "set__fact.h"
 #include "set_item__fact.h"
@@ -110,12 +111,16 @@ set_get_h__fact
                                   s16:  item->data,
                                   s32:  item->data,
                                   s64:  item->data,
+#if GENERIC_SW
                                   sw:   item->data,
+#endif
                                   u8:   item->data,
                                   u16:  item->data,
                                   u32:  item->data,
                                   u64:  item->data,
+#if GENERIC_SW
                                   uw:   item->data,
+#endif
                                   default: &item->data),
                          data))
       return item;
@@ -242,12 +247,16 @@ set_resize__fact (s_set__fact *set, uw max)
                                        s16:  item->data,
                                        s32:  item->data,
                                        s64:  item->data,
+#if GENERIC_SW
                                        sw:   item->data,
+#endif
                                        u8:   item->data,
                                        u16:  item->data,
                                        u32:  item->data,
                                        u64:  item->data,
+#if GENERIC_SW
                                        uw:   item->data,
+#endif
                                        default: &item->data),
                         item->hash);
       item = item->next;

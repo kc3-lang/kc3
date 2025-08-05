@@ -14,6 +14,7 @@
 #include "alloc.h"
 #include "assert.h"
 #include "compare.h"
+#include "config.h"
 #include "uw.h"
 #include "set__uw.h"
 #include "set_item__uw.h"
@@ -110,12 +111,16 @@ set_get_h__uw
                                   s16:  item->data,
                                   s32:  item->data,
                                   s64:  item->data,
+#if GENERIC_SW
                                   sw:   item->data,
+#endif
                                   u8:   item->data,
                                   u16:  item->data,
                                   u32:  item->data,
                                   u64:  item->data,
+#if GENERIC_SW
                                   uw:   item->data,
+#endif
                                   default: &item->data),
                          data))
       return item;
@@ -242,12 +247,16 @@ set_resize__uw (s_set__uw *set, uw max)
                                        s16:  item->data,
                                        s32:  item->data,
                                        s64:  item->data,
+#if GENERIC_SW
                                        sw:   item->data,
+#endif
                                        u8:   item->data,
                                        u16:  item->data,
                                        u32:  item->data,
                                        u64:  item->data,
+#if GENERIC_SW
                                        uw:   item->data,
+#endif
                                        default: &item->data),
                         item->hash);
       item = item->next;

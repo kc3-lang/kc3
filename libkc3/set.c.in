@@ -14,6 +14,7 @@
 #include "alloc.h"
 #include "assert.h"
 #include "compare.h"
+#include "config.h"
 #include "_NAME$.h"
 #include "set___NAME$.h"
 #include "set_item___NAME$.h"
@@ -110,12 +111,16 @@ set_get_h___NAME$
                                   s16:  item->data,
                                   s32:  item->data,
                                   s64:  item->data,
+#if GENERIC_SW
                                   sw:   item->data,
+#endif
                                   u8:   item->data,
                                   u16:  item->data,
                                   u32:  item->data,
                                   u64:  item->data,
+#if GENERIC_SW
                                   uw:   item->data,
+#endif
                                   default: &item->data),
                          data))
       return item;
@@ -242,12 +247,16 @@ set_resize___NAME$ (s_set___NAME$ *set, uw max)
                                        s16:  item->data,
                                        s32:  item->data,
                                        s64:  item->data,
+#if GENERIC_SW
                                        sw:   item->data,
+#endif
                                        u8:   item->data,
                                        u16:  item->data,
                                        u32:  item->data,
                                        u64:  item->data,
+#if GENERIC_SW
                                        uw:   item->data,
+#endif
                                        default: &item->data),
                         item->hash);
       item = item->next;

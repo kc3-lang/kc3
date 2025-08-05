@@ -14,6 +14,7 @@
 #include "alloc.h"
 #include "assert.h"
 #include "compare.h"
+#include "config.h"
 #include "tag.h"
 #include "set__tag.h"
 #include "set_item__tag.h"
@@ -110,12 +111,16 @@ set_get_h__tag
                                   s16:  item->data,
                                   s32:  item->data,
                                   s64:  item->data,
+#if GENERIC_SW
                                   sw:   item->data,
+#endif
                                   u8:   item->data,
                                   u16:  item->data,
                                   u32:  item->data,
                                   u64:  item->data,
+#if GENERIC_SW
                                   uw:   item->data,
+#endif
                                   default: &item->data),
                          data))
       return item;
@@ -242,12 +247,16 @@ set_resize__tag (s_set__tag *set, uw max)
                                        s16:  item->data,
                                        s32:  item->data,
                                        s64:  item->data,
+#if GENERIC_SW
                                        sw:   item->data,
+#endif
                                        u8:   item->data,
                                        u16:  item->data,
                                        u32:  item->data,
                                        u64:  item->data,
+#if GENERIC_SW
                                        uw:   item->data,
+#endif
                                        default: &item->data),
                         item->hash);
       item = item->next;

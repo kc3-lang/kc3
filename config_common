@@ -4,6 +4,7 @@ CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
 CXXFLAGS="$CXXFLAGS -W -Wall -Werror -std=c++11 -pedantic -pipe -pthread"
 LDFLAGS="-export-dynamic $LDFLAGS -rdynamic"
 config_asan
+config_generic
 config_gnu
 config_i386
 config_win32
