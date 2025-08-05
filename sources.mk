@@ -714,7 +714,6 @@ KC3_C_SOURCES = \
 	"test/character_test.c" \
 	"test/compare_test.c" \
 	"test/compare_test.h" \
-	"test/embed_test.c" \
 	"test/env_test.c" \
 	"test/fact_test.c" \
 	"test/fact_test.h" \
@@ -1178,7 +1177,6 @@ KC3_IMG_SOURCES = \
 	"img/toast.png" \
 
 KC3_LIB_SOURCES = \
-	"lib/kc3/0.1/.#ekc3.kc3" \
 	"lib/kc3/0.1/alist.kc3" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/bin/primes.kc3" \
@@ -1541,6 +1539,12 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3_test" \
 
 KC3_TEST_EKC3_SOURCES = \
+	"test/ekc3/parse_empty.kc3" \
+	"test/ekc3/parse_mixed.kc3" \
+	"test/ekc3/parse_raw.kc3" \
+	"test/ekc3/parse_silent.kc3" \
+	"test/ekc3/parse_str.kc3" \
+	"test/ekc3/parse_verbose.kc3" \
 	"test/ekc3/title.html.ekc3" \
 	"test/ekc3/title.kc3" \
 	"test/ekc3/title.out.expected" \
