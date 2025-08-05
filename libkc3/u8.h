@@ -22,7 +22,7 @@ u8 * u8_init_1 (u8 *u, const char *p);
 u8 * u8_init_cast
 (u8 *u, const s_sym * const *type, const s_tag *tag);
 
-u8 * u8_init_copy (u8 *u, const u8 *src);
+u8 * u8_init_copy (u8 *u, u8 src);
 u8 * u8_init_str (u8 *u, const s_str *str);
 
 uw *      u8_hash_uw (u8 u, uw *dest);

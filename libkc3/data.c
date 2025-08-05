@@ -650,11 +650,11 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_Cow)
     return pcow_init_copy(data, src);
   if (type == &g_sym_F32)
-    return f32_init_copy(data, src);
+    return f32_init_copy(data, *(f32 *) src);
   if (type == &g_sym_F64)
-    return f64_init_copy(data, src);
+    return f64_init_copy(data, *(f64 *) src);
   if (type == &g_sym_F128)
-    return f128_init_copy(data, src);
+    return f128_init_copy(data, *(f128 *) src);
   if (type == &g_sym_Fact)
     return fact_init_copy(data, src);
   if (type == &g_sym_Ident)
@@ -678,9 +678,9 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_S16)
     return s16_init_copy(data, *(s16 *) src);
   if (type == &g_sym_S32)
-    return s32_init_copy(data, src);
+    return s32_init_copy(data, *(s32 *) src);
   if (type == &g_sym_S64)
-    return s64_init_copy(data, src);
+    return s64_init_copy(data, *(s64 *) src);
   if (type == &g_sym_Str)
     return str_init_copy(data, src);
   if (type == &g_sym_Struct)
@@ -688,7 +688,7 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_StructType)
     return pstruct_type_init_copy(data, src);
   if (type == &g_sym_Sw)
-    return sw_init_copy(data, src);
+    return sw_init_copy(data, *(sw *) src);
   if (type == &g_sym_Sym)
     return psym_init_copy(data, src);
   if (type == &g_sym_Tag)
@@ -698,15 +698,15 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_Tuple)
     return tuple_init_copy(data, src);
   if (type == &g_sym_U8)
-    return u8_init_copy(data, src);
+    return u8_init_copy(data, *(u8 *) src);
   if (type == &g_sym_U16)
-    return u16_init_copy(data, src);
+    return u16_init_copy(data, *(u16 *) src);
   if (type == &g_sym_U32)
-    return u32_init_copy(data, src);
+    return u32_init_copy(data, *(u32 *) src);
   if (type == &g_sym_U64)
-    return u64_init_copy(data, src);
+    return u64_init_copy(data, *(u64 *) src);
   if (type == &g_sym_Uw)
-    return uw_init_copy(data, src);
+    return uw_init_copy(data, *(uw *) src);
   if (type == &g_sym_Var)
     return tag_init_copy(data, src);
   if (type == &g_sym_Void)

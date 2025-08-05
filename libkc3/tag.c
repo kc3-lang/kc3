@@ -383,10 +383,11 @@ s_tag * tag_init_1 (s_tag *tag, const char *p)
   if (r < 0 || (uw) r != len) {
     err_write_1("tag_init_1: invalid tag: \"");
     err_write_1(p);
-    err_write_1("\", ");
-    err_inspect_uw(len);
-    err_write_1(" != ");
-    err_inspect_sw(r);
+    err_write_1("\", expected ");
+    err_inspect_uw_decimal(len);
+    err_write_1(", got ");
+    err_inspect_sw_decimal(r);
+    err_write_1("\n");
     assert(! "tag_init_1: invalid tag");
     return NULL;
   }

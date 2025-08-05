@@ -23,50 +23,50 @@
 #include "test.h"
 #include "tag_test.h"
 
-#define MARSHALL_READ_TEST(type, test, expected)                       \
-  do {                                                                 \
-    type tmp = {0};                                                    \
-    s_str tmp_str = {{0}, sizeof(expected) - 1, {expected}};           \
-    s_marshall_read mr = {0};                                          \
-    s_str test_str = {0};                                              \
-    test_context("marshall_read_" # type "(" # test ") -> "            \
-                 # expected);                                          \
-    TEST_EQ(marshall_read_init_1(&mr, (test), sizeof(test) - 1), &mr); \
-    TEST_EQ(marshall_read_## type (&mr, false, &tmp), &mr);            \
-    marshall_read_clean(&mr);                                          \
-    inspect_ ## type(_Generic (tmp,                                    \
-                               f32:  tmp,                              \
-                               f64:  tmp,                              \
-                               f128: tmp,                              \
-                               s8:   tmp,                              \
-                               s16:  tmp,                              \
-                               s32:  tmp,                              \
-                               s64:  tmp,                              \
-                               u8:   tmp,                              \
-                               u16:  tmp,                              \
-                               u32:  tmp,                              \
-                               u64:  tmp,                              \
-                               default: &tmp), &test_str);             \
-    TEST_STR_EQ(test_str, tmp_str);                                    \
-    str_clean(&test_str);                                              \
-    str_clean(&tmp_str);                                               \
-    test_context(NULL);                                                \
+#define MARSHALL_READ_TEST(type, test, expected)                        \
+  do {                                                                  \
+    type tmp = {0};                                                     \
+    s_str tmp_str = {{0}, sizeof(expected) - 1, {expected}};            \
+    s_marshall_read mr = {0};                                           \
+    s_str test_str = {0};                                               \
+    test_context("marshall_read_" # type "(" # test ") -> "             \
+                 # expected);                                           \
+    TEST_EQ(marshall_read_init_1(&mr, (test), sizeof(test) - 1), &mr);  \
+    TEST_EQ(marshall_read_## type (&mr, false, &tmp), &mr);             \
+    marshall_read_clean(&mr);                                           \
+    inspect_ ## type(_Generic (tmp,                                     \
+                               f32:  tmp,                               \
+                               f64:  tmp,                               \
+                               f128: tmp,                               \
+                               s8:   tmp,                               \
+                               s16:  tmp,                               \
+                               s32:  tmp,                               \
+                               s64:  tmp,                               \
+                               u8:   tmp,                               \
+                               u16:  tmp,                               \
+                               u32:  tmp,                               \
+                               u64:  tmp,                               \
+                               default: &tmp), &test_str);              \
+    TEST_STR_EQ(test_str, tmp_str);                                     \
+    str_clean(&test_str);                                               \
+    str_clean(&tmp_str);                                                \
+    test_context(NULL);                                                 \
   } while (0)
 
-#define MARSHALL_READ_TEST_TAG(test, expected)                         \
-  do {                                                                 \
-    s_marshall_read mr = {0};                                          \
-    s_tag tag = {0};                                                   \
-    s_tag tag_expected = {0};                                          \
-    test_context("marshall_read_tag(" # test ")");                     \
-    TEST_ASSERT(tag_init_1(&tag_expected, (expected)));                \
-    TEST_EQ(marshall_read_init_1(&mr, (test), sizeof(test) - 1), &mr); \
-    TEST_EQ(marshall_read_tag(&mr, false, &tag), &mr);                 \
-    TAG_TEST_EQ(&tag, &tag_expected);                                  \
-    marshall_read_clean(&mr);                                          \
-    tag_clean(&tag);                                                   \
-    tag_clean(&tag_expected);                                          \
-    test_context(NULL);                                                \
+#define MARSHALL_READ_TEST_TAG(test, expected)                          \
+  do {                                                                  \
+    s_marshall_read mr = {0};                                           \
+    s_tag tag = {0};                                                    \
+    s_tag tag_expected = {0};                                           \
+    test_context("marshall_read_tag(" # test ")");                      \
+    TEST_ASSERT(tag_init_1(&tag_expected, (expected)));                 \
+    TEST_EQ(marshall_read_init_1(&mr, (test), sizeof(test) - 1), &mr);  \
+    TEST_EQ(marshall_read_tag(&mr, false, &tag), &mr);                  \
+    TAG_TEST_EQ(&tag, &tag_expected);                                   \
+    marshall_read_clean(&mr);                                           \
+    tag_clean(&tag);                                                    \
+    tag_clean(&tag_expected);                                           \
+    test_context(NULL);                                                 \
   } while (0)
 
 void marshal_test (void);
@@ -114,18 +114,18 @@ TEST_CASE(marshall_read_bool)
 }
 TEST_CASE_END(marshall_read_bool)
 
-TEST_CASE(marshall_read_plist)
+  TEST_CASE(marshall_read_plist)
 {
   s_marshall_read mr = {0};
   s_tag expected = {0};
   s_tag test_tag = {0};
   const char test_str[] = "KC3MARSH"
-                          "\x02\x00\x00\x00\x00\x00\x00\x00"
-                          "\x11\x00\x00\x00\x00\x00\x00\x00"
-                          "\x00\x00\x00\x00\x00\x00\x00\x00"
-                          "\x00\x00\x00\x00\x00\x00\x00\x00"
-                          "\x11\x00\x18\x00\x00\x00\x00\x00"
-                          "\x00\x00\x00";
+    "\x02\x00\x00\x00\x00\x00\x00\x00"
+    "\x11\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x11\x00\x18\x00\x00\x00\x00\x00"
+    "\x00\x00\x00";
   TEST_EQ(marshall_read_init_1(&mr, test_str, sizeof(test_str) - 1),
           &mr);
   TEST_EQ(marshall_read_plist(&mr, false, &test_tag.data.plist), &mr);
@@ -137,7 +137,7 @@ TEST_CASE(marshall_read_plist)
 }
 TEST_CASE_END(marshall_read_plist)
 
-TEST_CASE(marshall_read_tag)
+  TEST_CASE(marshall_read_tag)
 {
   // characters
   MARSHALL_READ_TEST_TAG("KC3MARSH\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -364,9 +364,9 @@ TEST_CASE(marshall_read_tag)
   MARSHALL_READ_TEST_TAG("KC3MARSH"
                          "\x00\x00\x00\x00\x00\x00\x00\x00"
                          "\x00\x00\x00\x00\x00\x00\x00\x00"
-                         "\x12\x00\x00\x00\x00\x00\x00\x00"
-                         "\x23hello world",
-                         "hello world");
+                         "\x0c\x00\x00\x00\x00\x00\x00\x00"
+                         "\x0bhello world",
+                         "\"hello world\"");
   // list
   MARSHALL_READ_TEST_TAG("KC3MARSH"
                          "\x02\x00\x00\x00\x00\x00\x00\x00"
@@ -410,205 +410,205 @@ TEST_CASE(marshall_read_tag)
                          "\x64\x75\x6c\x65",
                          "Module");
   // Map
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x1B\x00\x00\x00\x00\x00\x00\x00"
-                       "\x17\x02\x00\x00\x00\x00\x00\x00"
-                       "\x00\x1D\x01\x01\x00\x00\x00\x61"
-                       "\x11\x01\x1D\x01\x01\x00\x00\x00"
-                       "\x62\x11\x02", "%{a: 1, b: 2}");
-// Cfn
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x07\x00\x00\x00\x00\x00\x00\x00"
-                       "\x6b\x00\x00\x00\x00\x00\x00\x00"
-                       "\x09\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x21\x00\x00\x00\x00\x00\x00"
-                       "\x00\x29\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x33\x00\x00\x00\x00"
-                       "\x00\x00\x00\x01\x03\x00\x00\x00"
-                       "\x54\x61\x67\x43\x00\x00\x00\x00"
-                       "\x00\x00\x00\x01\x07\x00\x00\x00"
-                       "\x74\x61\x67\x5f\x61\x64\x64\x03"
-                       "\x58\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x03\x00\x00\x00\x54\x61\x67"
-                       "\x68\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x03\x00\x00\x00\x54\x61\x67"
-                       "\x78\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x06\x00\x00\x00\x52\x65\x73"
-                       "\x75\x6c\x74\x18\x20\x00\x00\x00"
-                       "\x00\x00\x00\x00",
-                       "cfn Tag \"tag_add\" (Tag, Tag, Result)");
-// Call
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x0e\x00\x00\x00\x00\x00\x00\x00"
-                       "\x35\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x09\x00\x00\x00\x64\x65\x66"
-                       "\x6d\x6f\x64\x75\x6c\x65\x04\x20"
-                       "\x00\x00\x00\x00\x00\x00\x00\x20"
-                       "\x00\x00\x00\x00\x00\x00\x00\x02"
-                       "\x00\x00\x00\x00\x00\x00\x00\x1d"
-                       "\x01\x04\x00\x00\x00\x54\x65\x73"
-                       "\x74\x02\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x2e\x00\x00\x00\x00"
-                       "\x00\x00\x00",
-                       "defmodule Test do end");
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x15\x00\x00\x00\x00\x00\x00\x00"
-                       "\x2a\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x04\x00\x00\x00\x4c\x69\x73"
-                       "\x74\x01\x07\x00\x00\x00\x72\x65"
-                       "\x76\x65\x72\x73\x65\x04\x20\x00"
-                       "\x00\x00\x00\x00\x00\x00\x29\x00"
-                       "\x00\x00\x00\x00\x00\x00\x01\x00"
-                       "\x00\x00\x00\x00\x00\x00\x16\x35"
-                       "\x00\x00\x00\x00\x00\x00\x00\x35"
-                       "\x00\x00\x00\x00\x00\x00\x00",
-                       "List.reverse([])");
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x0c\x00\x00\x00\x00\x00\x00\x00"
-                       "\x34\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x01\x00\x00\x00\x3d\x01\x01"
-                       "\x00\x00\x00\x61\x04\x20\x00\x00"
-                       "\x00\x00\x00\x00\x00\x20\x00\x00"
-                       "\x00\x00\x00\x00\x00\x02\x00\x00"
-                       "\x00\x00\x00\x00\x00\x27\x26\x00"
-                       "\x00\x00\x00\x00\x00\x00\x26\x00"
-                       "\x00\x00\x00\x00\x00\x00\x11\x01"
-                       "\x2c\x00\x00\x00\x00\x00\x00\x00",
-                       "a = 1");
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x0b\x00\x00\x00\x00\x00\x00\x00"
-                       "\x84\x00\x00\x00\x00\x00\x00\x00"
-                       "\x09\x00\x00\x00\x00\x00\x00\x00"
-                       "\x02\x00\x00\x23\x00\x00\x00\x00"
-                       "\x00\x00\x00\x2b\x00\x00\x00\x00"
-                       "\x00\x00\x00\x33\x00\x00\x00\x00"
-                       "\x00\x00\x00\x27\x3c\x00\x00\x00"
-                       "\x00\x00\x00\x00\x44\x00\x00\x00"
-                       "\x00\x00\x00\x00\x01\x01\x00\x00"
-                       "\x00\x78\x16\x53\x00\x00\x00\x00"
-                       "\x00\x00\x00\x01\x00\x00\x00\x00"
-                       "\x00\x00\x00\x01\x04\x65\x00\x00"
-                       "\x00\x00\x00\x00\x00\x6d\x00\x00"
-                       "\x00\x00\x00\x00\x00\x01\x01\x00"
-                       "\x00\x00\x2a\x02\x00\x00\x00\x00"
-                       "\x00\x00\x00\x27\x84\x00\x00\x00"
-                       "\x00\x00\x00\x00\x8c\x00\x00\x00"
-                       "\x00\x00\x00\x00\x01\x01\x00\x00"
-                       "\x00\x78\x11\x02\x9c\x00\x00\x00"
-                       "\x00\x00\x00\x00\x18\x20\x00\x00"
-                       "\x00\x00\x00\x00\x00",
-                       "fn (x) { x * 2 }");
-// Ratio
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x15\x00\x00\x00\x00\x00\x00\x00"
-                       "\x0b\x02\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x02\x02\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x06",
-                       "2/6");
-// Quote
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x06\x00\x00\x00\x00\x00\x00\x00"
-                       "\x26\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x01\x00\x00\x00\x2b\x22\x04"
-                       "\x20\x00\x00\x00\x00\x00\x00\x00"
-                       "\x20\x00\x00\x00\x00\x00\x00\x00"
-                       "\x02\x00\x00\x00\x00\x00\x00\x00"
-                       "\x11\x01\x11\x01\x26\x00\x00\x00"
-                       "\x00\x00\x00\x00",
-                       "quote 1 + 1");
-// Var
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x09\x00\x00\x00\x00\x00\x00\x00"
-                       "\x09\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x01\x02\x00\x00\x00\x55\x38"
-                       "\x00\x21\x20\x00\x00\x00\x00\x00"
-                       "\x00\x00",
-                       "(U8) ?");
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x0a\x00\x00\x00\x00\x00\x00\x00"
-                       "\x09\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x01\x03\x00\x00\x00\x54\x61"
-                       "\x67\x00\x21\x20\x00\x00\x00\x00"
-                       "\x00\x00\x00",
-                       "(Tag) ?");
-// Complex
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x07\x00\x00\x00\x00\x00\x00\x00"
-                       "\x25\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x02\x00\x00\x00\x2b\x69\x04"
-                       "\x20\x00\x00\x00\x00\x00\x00\x00"
-                       "\x20\x00\x00\x00\x00\x00\x00\x00"
-                       "\x02\x00\x00\x00\x00\x00\x00\x00"
-                       "\x11\x01\x11\x02\x27\x00\x00\x00"
-                       "\x00\x00\x00\x00",
-                       "1 +i 2");
-// Unquote
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x03\x00\x00\x00\x00\x00\x00\x00"
-                       "\x26\x11\x7b",
-                       "unquote(123)");
-// Time
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x12\x00\x00\x00\x00\x00\x00\x00"
-                       "\x24\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00",
-                       "%Time{}");
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x12\x00\x00\x00\x00\x00\x00\x00"
-                       "\x24\x00\xe8\x03\x00\x00\x00\x00"
-                       "\x00\x00\xd0\x07\x00\x00\x00\x00"
-                       "\x00\x00",
-                       "%Time{tv_sec: 1000, tv_nsec: 2000}");
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x0c\x00\x00\x00\x00\x00\x00\x00"
-                       "\x4c\x00\x00\x00\x00\x00\x00\x00"
-                       "\x01\x01\x00\x00\x00\x2b\x01\x01"
-                       "\x00\x00\x00\x2b\x24\x01\x04\x20"
-                       "\x00\x00\x00\x00\x00\x00\x00\x20"
-                       "\x00\x00\x00\x00\x00\x00\x00\x02"
-                       "\x00\x00\x00\x00\x00\x00\x00\x11"
-                       "\x01\x11\x01\x26\x00\x00\x00\x00"
-                       "\x00\x00\x00\x04\x26\x00\x00\x00"
-                       "\x00\x00\x00\x00\x26\x00\x00\x00"
-                       "\x00\x00\x00\x00\x02\x00\x00\x00"
-                       "\x00\x00\x00\x00\x11\x02\x11\x02"
-                       "\x2c\x00\x00\x00\x00\x00\x00\x00",
-                      "%Time{tv_sec: 1 + 1, tv_nsec: 2 + 2}");
-// Ptr
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x09\x00\x00\x00\x00\x00\x00\x00"
-                       "\x1f\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00",
-                       "(Ptr) 0");
-// PtrFree
-MARSHALL_READ_TEST_TAG("KC3MARSH"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00\x00\x00\x00\x00\x00\x00\x00"
-                       "\x09\x00\x00\x00\x00\x00\x00\x00"
-                       "\x1f\x00\x00\x00\x00\x00\x00\x00"
-                       "\x00",
-                       "(PtrFree) 0");
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x1B\x00\x00\x00\x00\x00\x00\x00"
+                         "\x17\x02\x00\x00\x00\x00\x00\x00"
+                         "\x00\x1D\x01\x01\x00\x00\x00\x61"
+                         "\x11\x01\x1D\x01\x01\x00\x00\x00"
+                         "\x62\x11\x02", "%{a: 1, b: 2}");
+  // Cfn
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x07\x00\x00\x00\x00\x00\x00\x00"
+                         "\x6b\x00\x00\x00\x00\x00\x00\x00"
+                         "\x09\x00\x00\x00\x00\x00\x00\x00"
+                         "\x01\x21\x00\x00\x00\x00\x00\x00"
+                         "\x00\x29\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x33\x00\x00\x00\x00"
+                         "\x00\x00\x00\x01\x03\x00\x00\x00"
+                         "\x54\x61\x67\x43\x00\x00\x00\x00"
+                         "\x00\x00\x00\x01\x07\x00\x00\x00"
+                         "\x74\x61\x67\x5f\x61\x64\x64\x03"
+                         "\x58\x00\x00\x00\x00\x00\x00\x00"
+                         "\x01\x03\x00\x00\x00\x54\x61\x67"
+                         "\x68\x00\x00\x00\x00\x00\x00\x00"
+                         "\x01\x03\x00\x00\x00\x54\x61\x67"
+                         "\x78\x00\x00\x00\x00\x00\x00\x00"
+                         "\x01\x06\x00\x00\x00\x52\x65\x73"
+                         "\x75\x6c\x74\x18\x20\x00\x00\x00"
+                         "\x00\x00\x00\x00",
+                         "cfn Tag \"tag_add\" (Tag, Tag, Result)");
+  // Call
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x0e\x00\x00\x00\x00\x00\x00\x00"
+                         "\x35\x00\x00\x00\x00\x00\x00\x00"
+                         "\x01\x09\x00\x00\x00\x64\x65\x66"
+                         "\x6d\x6f\x64\x75\x6c\x65\x04\x20"
+                         "\x00\x00\x00\x00\x00\x00\x00\x20"
+                         "\x00\x00\x00\x00\x00\x00\x00\x02"
+                         "\x00\x00\x00\x00\x00\x00\x00\x1d"
+                         "\x01\x04\x00\x00\x00\x54\x65\x73"
+                         "\x74\x02\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x2e\x00\x00\x00\x00"
+                         "\x00\x00\x00",
+                         "defmodule Test do end");
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x15\x00\x00\x00\x00\x00\x00\x00"
+                         "\x2a\x00\x00\x00\x00\x00\x00\x00"
+                         "\x01\x04\x00\x00\x00\x4c\x69\x73"
+                         "\x74\x01\x07\x00\x00\x00\x72\x65"
+                         "\x76\x65\x72\x73\x65\x04\x20\x00"
+                         "\x00\x00\x00\x00\x00\x00\x29\x00"
+                         "\x00\x00\x00\x00\x00\x00\x01\x00"
+                         "\x00\x00\x00\x00\x00\x00\x16\x35"
+                         "\x00\x00\x00\x00\x00\x00\x00\x35"
+                         "\x00\x00\x00\x00\x00\x00\x00",
+                         "List.reverse([])");
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x0c\x00\x00\x00\x00\x00\x00\x00"
+                         "\x34\x00\x00\x00\x00\x00\x00\x00"
+                         "\x01\x01\x00\x00\x00\x3d\x01\x01"
+                         "\x00\x00\x00\x61\x04\x20\x00\x00"
+                         "\x00\x00\x00\x00\x00\x20\x00\x00"
+                         "\x00\x00\x00\x00\x00\x02\x00\x00"
+                         "\x00\x00\x00\x00\x00\x27\x26\x00"
+                         "\x00\x00\x00\x00\x00\x00\x26\x00"
+                         "\x00\x00\x00\x00\x00\x00\x11\x01"
+                         "\x2c\x00\x00\x00\x00\x00\x00\x00",
+                         "a = 1");
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x0b\x00\x00\x00\x00\x00\x00\x00"
+                         "\x84\x00\x00\x00\x00\x00\x00\x00"
+                         "\x09\x00\x00\x00\x00\x00\x00\x00"
+                         "\x02\x00\x00\x23\x00\x00\x00\x00"
+                         "\x00\x00\x00\x2b\x00\x00\x00\x00"
+                         "\x00\x00\x00\x33\x00\x00\x00\x00"
+                         "\x00\x00\x00\x27\x3c\x00\x00\x00"
+                         "\x00\x00\x00\x00\x44\x00\x00\x00"
+                         "\x00\x00\x00\x00\x01\x01\x00\x00"
+                         "\x00\x78\x16\x53\x00\x00\x00\x00"
+                         "\x00\x00\x00\x01\x00\x00\x00\x00"
+                         "\x00\x00\x00\x01\x04\x65\x00\x00"
+                         "\x00\x00\x00\x00\x00\x6d\x00\x00"
+                         "\x00\x00\x00\x00\x00\x01\x01\x00"
+                         "\x00\x00\x2a\x02\x00\x00\x00\x00"
+                         "\x00\x00\x00\x27\x84\x00\x00\x00"
+                         "\x00\x00\x00\x00\x8c\x00\x00\x00"
+                         "\x00\x00\x00\x00\x01\x01\x00\x00"
+                         "\x00\x78\x11\x02\x9c\x00\x00\x00"
+                         "\x00\x00\x00\x00\x18\x20\x00\x00"
+                         "\x00\x00\x00\x00\x00",
+                         "fn (x) { x * 2 }");
+  // Ratio
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x15\x00\x00\x00\x00\x00\x00\x00"
+                         "\x0b\x02\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x02\x02\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x06",
+                         "2/6");
+  // Quote
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x06\x00\x00\x00\x00\x00\x00\x00"
+                         "\x26\x00\x00\x00\x00\x00\x00\x00"
+                         "\x01\x01\x00\x00\x00\x2b\x22\x04"
+                         "\x20\x00\x00\x00\x00\x00\x00\x00"
+                         "\x20\x00\x00\x00\x00\x00\x00\x00"
+                         "\x02\x00\x00\x00\x00\x00\x00\x00"
+                         "\x11\x01\x11\x01\x26\x00\x00\x00"
+                         "\x00\x00\x00\x00",
+                         "quote 1 + 1");
+  // Var
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x09\x00\x00\x00\x00\x00\x00\x00"
+                         "\x09\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x01\x02\x00\x00\x00\x55\x38"
+                         "\x00\x21\x20\x00\x00\x00\x00\x00"
+                         "\x00\x00",
+                         "(U8) ?");
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x0a\x00\x00\x00\x00\x00\x00\x00"
+                         "\x09\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x01\x03\x00\x00\x00\x54\x61"
+                         "\x67\x00\x21\x20\x00\x00\x00\x00"
+                         "\x00\x00\x00",
+                         "(Tag) ?");
+  // Complex
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x07\x00\x00\x00\x00\x00\x00\x00"
+                         "\x25\x00\x00\x00\x00\x00\x00\x00"
+                         "\x01\x02\x00\x00\x00\x2b\x69\x04"
+                         "\x20\x00\x00\x00\x00\x00\x00\x00"
+                         "\x20\x00\x00\x00\x00\x00\x00\x00"
+                         "\x02\x00\x00\x00\x00\x00\x00\x00"
+                         "\x11\x01\x11\x02\x27\x00\x00\x00"
+                         "\x00\x00\x00\x00",
+                         "1 +i 2");
+  // Unquote
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x03\x00\x00\x00\x00\x00\x00\x00"
+                         "\x26\x11\x7b",
+                         "unquote(123)");
+  // Time
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x12\x00\x00\x00\x00\x00\x00\x00"
+                         "\x24\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00",
+                         "%Time{}");
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x12\x00\x00\x00\x00\x00\x00\x00"
+                         "\x24\x00\xe8\x03\x00\x00\x00\x00"
+                         "\x00\x00\xd0\x07\x00\x00\x00\x00"
+                         "\x00\x00",
+                         "%Time{tv_sec: 1000, tv_nsec: 2000}");
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x0c\x00\x00\x00\x00\x00\x00\x00"
+                         "\x4c\x00\x00\x00\x00\x00\x00\x00"
+                         "\x01\x01\x00\x00\x00\x2b\x01\x01"
+                         "\x00\x00\x00\x2b\x24\x01\x04\x20"
+                         "\x00\x00\x00\x00\x00\x00\x00\x20"
+                         "\x00\x00\x00\x00\x00\x00\x00\x02"
+                         "\x00\x00\x00\x00\x00\x00\x00\x11"
+                         "\x01\x11\x01\x26\x00\x00\x00\x00"
+                         "\x00\x00\x00\x04\x26\x00\x00\x00"
+                         "\x00\x00\x00\x00\x26\x00\x00\x00"
+                         "\x00\x00\x00\x00\x02\x00\x00\x00"
+                         "\x00\x00\x00\x00\x11\x02\x11\x02"
+                         "\x2c\x00\x00\x00\x00\x00\x00\x00",
+                         "%Time{tv_sec: 1 + 1, tv_nsec: 2 + 2}");
+  // Ptr
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x09\x00\x00\x00\x00\x00\x00\x00"
+                         "\x1f\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00",
+                         "(Ptr) 0");
+  // PtrFree
+  MARSHALL_READ_TEST_TAG("KC3MARSH"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00\x00\x00\x00\x00\x00\x00\x00"
+                         "\x09\x00\x00\x00\x00\x00\x00\x00"
+                         "\x1f\x00\x00\x00\x00\x00\x00\x00"
+                         "\x00",
+                         "(PtrFree) 0");
 
 }
 TEST_CASE_END(marshall_read_tag)

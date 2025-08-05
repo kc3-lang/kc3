@@ -115,11 +115,10 @@ u_bits$ * u_bits$_init_cast
   return NULL;
 }
 
-u_bits$ * u_bits$_init_copy (u_bits$ *u, const u_bits$ *src)
+u_bits$ * u_bits$_init_copy (u_bits$ *u, u_bits$ src)
 {
-  assert(src);
   assert(u);
-  *u = *src;
+  *u = src;
   return u;
 }
 

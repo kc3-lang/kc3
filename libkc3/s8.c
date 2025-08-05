@@ -108,11 +108,10 @@ s8 * s8_init_cast
   return NULL;
 }
 
-s8 * s8_init_copy (s8 *s, const s8 *src)
+s8 * s8_init_copy (s8 *s, s8 src)
 {
-  assert(src);
   assert(s);
-  *s = *src;
+  *s = src;
   return s;
 }
 

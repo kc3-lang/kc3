@@ -115,11 +115,10 @@ u8 * u8_init_cast
   return NULL;
 }
 
-u8 * u8_init_copy (u8 *u, const u8 *src)
+u8 * u8_init_copy (u8 *u, u8 src)
 {
-  assert(src);
   assert(u);
-  *u = *src;
+  *u = src;
   return u;
 }
 

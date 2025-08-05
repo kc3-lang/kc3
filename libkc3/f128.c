@@ -94,11 +94,10 @@ f128 * f128_init_cast (f128 *x, const s_sym * const *type,
   return NULL;
 }
 
-f128 * f128_init_copy (f128 *x, const f128 *src)
+f128 * f128_init_copy (f128 *x, f128 src)
 {
-  assert(src);
   assert(x);
-  *x = *src;
+  *x = src;
   return x;
 }
 

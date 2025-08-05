@@ -108,11 +108,10 @@ s32 * s32_init_cast
   return NULL;
 }
 
-s32 * s32_init_copy (s32 *s, const s32 *src)
+s32 * s32_init_copy (s32 *s, s32 src)
 {
-  assert(src);
   assert(s);
-  *s = *src;
+  *s = src;
   return s;
 }
 

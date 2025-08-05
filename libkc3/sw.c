@@ -108,11 +108,10 @@ sw * sw_init_cast
   return NULL;
 }
 
-sw * sw_init_copy (sw *s, const sw *src)
+sw * sw_init_copy (sw *s, sw src)
 {
-  assert(src);
   assert(s);
-  *s = *src;
+  *s = src;
   return s;
 }
 

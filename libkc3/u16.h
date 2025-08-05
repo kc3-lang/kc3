@@ -22,7 +22,7 @@ u16 * u16_init_1 (u16 *u, const char *p);
 u16 * u16_init_cast
 (u16 *u, const s_sym * const *type, const s_tag *tag);
 
-u16 * u16_init_copy (u16 *u, const u16 *src);
+u16 * u16_init_copy (u16 *u, u16 src);
 u16 * u16_init_str (u16 *u, const s_str *str);
 
 uw *      u16_hash_uw (u16 u, uw *dest);

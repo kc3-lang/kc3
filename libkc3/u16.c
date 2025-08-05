@@ -115,11 +115,10 @@ u16 * u16_init_cast
   return NULL;
 }
 
-u16 * u16_init_copy (u16 *u, const u16 *src)
+u16 * u16_init_copy (u16 *u, u16 src)
 {
-  assert(src);
   assert(u);
-  *u = *src;
+  *u = src;
   return u;
 }
 

@@ -108,11 +108,10 @@ s64 * s64_init_cast
   return NULL;
 }
 
-s64 * s64_init_copy (s64 *s, const s64 *src)
+s64 * s64_init_copy (s64 *s, s64 src)
 {
-  assert(src);
   assert(s);
-  *s = *src;
+  *s = src;
   return s;
 }
 

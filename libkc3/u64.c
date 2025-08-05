@@ -115,11 +115,10 @@ u64 * u64_init_cast
   return NULL;
 }
 
-u64 * u64_init_copy (u64 *u, const u64 *src)
+u64 * u64_init_copy (u64 *u, u64 src)
 {
-  assert(src);
   assert(u);
-  *u = *src;
+  *u = src;
   return u;
 }
 

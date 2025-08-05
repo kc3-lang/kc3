@@ -87,11 +87,10 @@ f64 * f64_init_cast (f64 *x, p_sym const *type, const s_tag *tag)
   return NULL;
 }
 
-f64 * f64_init_copy (f64 *x, const f64 *src)
+f64 * f64_init_copy (f64 *x, f64 src)
 {
-  assert(src);
   assert(x);
-  *x = *src;
+  *x = src;
   return x;
 }
 

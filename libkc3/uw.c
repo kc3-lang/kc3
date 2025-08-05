@@ -115,11 +115,10 @@ uw * uw_init_cast
   return NULL;
 }
 
-uw * uw_init_copy (uw *u, const uw *src)
+uw * uw_init_copy (uw *u, uw src)
 {
-  assert(src);
   assert(u);
-  *u = *src;
+  *u = src;
   return u;
 }
 

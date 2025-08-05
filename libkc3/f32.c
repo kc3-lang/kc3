@@ -96,11 +96,10 @@ f32 * f32_init_cast (f32 *x, const s_sym * const *type,
   return NULL;
 }
 
-f32 * f32_init_copy (f32 *x, const f32 *src)
+f32 * f32_init_copy (f32 *x, f32 src)
 {
-  assert(src);
   assert(x);
-  *x = *src;
+  *x = src;
   return x;
 }
 

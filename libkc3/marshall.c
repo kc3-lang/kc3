@@ -521,6 +521,7 @@ s_marshall * marshall_ratio (s_marshall *m, bool heap,
     return NULL;
   return m;
 }
+
 DEF_MARSHALL(s8)
 DEF_MARSHALL(s16)
 DEF_MARSHALL(s32)

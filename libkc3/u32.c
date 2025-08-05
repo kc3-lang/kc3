@@ -115,11 +115,10 @@ u32 * u32_init_cast
   return NULL;
 }
 
-u32 * u32_init_copy (u32 *u, const u32 *src)
+u32 * u32_init_copy (u32 *u, u32 src)
 {
-  assert(src);
   assert(u);
-  *u = *src;
+  *u = src;
   return u;
 }
 

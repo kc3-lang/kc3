@@ -108,11 +108,10 @@ s16 * s16_init_cast
   return NULL;
 }
 
-s16 * s16_init_copy (s16 *s, const s16 *src)
+s16 * s16_init_copy (s16 *s, s16 src)
 {
-  assert(src);
   assert(s);
-  *s = *src;
+  *s = src;
   return s;
 }
 
