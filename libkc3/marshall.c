@@ -417,6 +417,8 @@ s_marshall * marshall_new (void)
 MARSHALL_P(callable, p_callable)
 MARSHALL_P(frame, p_frame)
 MARSHALL_P(list, p_list)
+MARSHALL_P(struct, p_struct)
+MARSHALL_P(struct_type, p_struct_type)
 MARSHALL_P(sym, p_sym)
 MARSHALL_P(tag, p_tag)
 
