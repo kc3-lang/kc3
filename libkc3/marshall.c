@@ -31,30 +31,45 @@
 #include "types.h"
 #include "marshall.h"
 
-#define DEF_MARSHALL(type)                                             \
-  s_marshall * marshall_ ## type (s_marshall *m, bool heap, type src)  \
-  {                                                                    \
-    s_buf *buf;                                                        \
-    type le;                                                           \
-    sw r;                                                              \
-    assert(m);                                                         \
-    le = _Generic(src,                                                 \
-                  s16:     htole16(src),                               \
-                  u16:     htole16(src),                               \
-                  s32:     htole32(src),                               \
-                  u32:     htole32(src),                               \
-                  s64:     htole64(src),                               \
-                  u64:     htole64(src),                               \
-                  default: src);                                       \
-    buf = heap ? &m->heap : &m->buf;                                   \
-    if ((r = buf_write_ ## type(buf, le)) <= 0)                        \
-      return NULL;                                                     \
-    if (heap)                                                          \
-      m->heap_pos += r;                                                \
-    else                                                               \
-      m->buf_pos += r;                                                 \
-    return m;                                                          \
+#define DEF_MARSHALL(type)                                            \
+  s_marshall * marshall_ ## type (s_marshall *m, bool heap, type src) \
+  {                                                                   \
+    s_buf *buf;                                                       \
+    type le;                                                          \
+    sw r;                                                             \
+    assert(m);                                                        \
+    le = _Generic(src,                                                \
+                  s16:     htole16(src),                              \
+                  u16:     htole16(src),                              \
+                  s32:     htole32(src),                              \
+                  u32:     htole32(src),                              \
+                  s64:     htole64(src),                              \
+                  u64:     htole64(src),                              \
+                  default: src);                                      \
+    buf = heap ? &m->heap : &m->buf;                                  \
+    if ((r = buf_write_ ## type(buf, le)) <= 0)                       \
+      return NULL;                                                    \
+    if (heap)                                                         \
+      m->heap_pos += r;                                               \
+    else                                                              \
+      m->buf_pos += r;                                                \
+    return m;                                                         \
   }
+
+#define MARSHALL_P(name, type)                                        \
+    s_marshall * marshall_p ## name (s_marshall *m, bool heap,        \
+                                     type data)                       \
+    {                                                                 \
+      assert(m);                                                      \
+      bool present = false;                                           \
+      if (! m)                                                        \
+        return NULL;                                                  \
+      if (! marshall_heap_pointer(m, heap, data, &present))           \
+        return NULL;                                                  \
+      if (! present && data)                                          \
+        return marshall_ ## name(m, true, data);                      \
+      return m;                                                       \
+    }                                                                 \
 
 DEF_MARSHALL(bool)
 
@@ -399,73 +414,11 @@ s_marshall * marshall_new (void)
   return m;
 }
 
-s_marshall * marshall_pcallable (s_marshall *m, bool heap,
-                                 const p_callable callable)
-{
-  assert(m);
-  bool present = false;
-  if (! m)
-    return NULL;
-  if (! marshall_heap_pointer(m, heap, callable, &present))
-    return NULL;
-  if (! present && callable)
-    return marshall_callable(m, true, callable);
-  return m;
-}
-
-s_marshall * marshall_pframe (s_marshall *m, bool heap,
-                              const p_frame frame)
-{
-  assert(m);
-  bool present = false;
-  if (! m)
-    return NULL;
-  if (! marshall_heap_pointer(m, heap, frame, &present))
-    return NULL;
-  if (! present && frame)
-    return marshall_frame(m, true, frame);
-  return m;
-}
-
-s_marshall * marshall_plist (s_marshall *m, bool heap,
-                             const p_list plist)
-{
-  assert(m);
-  bool present = false;
-  if (! m)
-    return NULL;
-  if (! marshall_heap_pointer(m, heap, plist, &present))
-    return NULL;
-  if (! present && plist)
-    return marshall_list(m, true, plist);
-  return m;
-}
-
-s_marshall * marshall_psym (s_marshall *m, bool heap,
-                            p_sym psym)
-{
-  assert(m);
-  bool present = false;
-  if (! m)
-    return NULL;
-  if (! marshall_heap_pointer(m, heap, psym, &present))
-    return NULL;
-  if (! present && psym)
-    return marshall_sym(m, true, psym);
-  return m;
-}
-
-s_marshall *marshall_ptag(s_marshall *m, bool heap, p_tag ptag)
-{
-  assert(m);
-  bool present = false;
-  if (! m ||
-      ! marshall_heap_pointer(m, heap, ptag, &present))
-    return NULL;
-  if (! present && ptag)
-    return marshall_tag(m, true, ptag);
-  return m;
-}
+MARSHALL_P(callable, p_callable)
+MARSHALL_P(frame, p_frame)
+MARSHALL_P(list, p_list)
+MARSHALL_P(sym, p_sym)
+MARSHALL_P(tag, p_tag)
 
 s_marshall * marshall_ptr (s_marshall *m, bool heap, u_ptr_w ptr)
 {
@@ -488,17 +441,7 @@ s_marshall * marshall_ptr_free (s_marshall *m, bool heap,
   return NULL;
 }
 
-s_marshall *marshall_pvar(s_marshall *m, bool heap, p_var pvar)
-{
-  assert(m);
-  bool present = false;
-  if (! m ||
-      ! marshall_heap_pointer(m, heap, pvar, &present))
-    return NULL;
-  if (! present && pvar)
-    return marshall_var(m, true, pvar);
-  return m;
-}
+MARSHALL_P(var, p_var)
 
 s_marshall * marshall_quote (s_marshall *m, bool heap,
                              const s_quote *quote)
@@ -548,42 +491,26 @@ s_marshall * marshall_str (s_marshall *m, bool heap, const s_str *src)
   return m;
 }
 
+// TODO: convert f_clean to callable
 s_marshall * marshall_struct_type (s_marshall *m, bool heap,
-                                   const s_struct_type *s)
+                                   const s_struct_type *st)
 {
   uw i;
   assert(m);
-  assert(s);
-  if (! m || ! s ||
-      ! marshall_map(m, heap, &s->map))
+  assert(st);
+  assert(st->module);
+  assert(st->offset);
+  if (! m || ! st || ! st->module || ! st->offset ||
+      ! marshall_psym(m, heap, st->module) ||
+      ! marshall_map(m, heap, &st->map))
     return NULL;
-  if (s->module) {
-    i = 0;
-    while (i < s->map.count) {
-      if (! marshall_sym(m, heap, &s->module[i]))
-        return NULL;
-      i++;
-    }
+  i = 0;
+  while (i < st->map.count) {
+    if (! marshall_uw(m, heap, st->offset[i]))
+      return NULL;
+    i++;
   }
-  if (s->module) {
-    i = 0;
-    while (s->module) {
-      if (! marshall_sym(m, heap, &s->module[i]))
-        return NULL;
-      i++;
-    }
-  }
-  if (! marshall_bool(m, heap, s->must_clean))
-    return NULL;
-  if (s->offset) {
-    i = 0;
-    while (i < s->size) {
-      if (! marshall_uw(m, heap, s->offset[i]))
-        return NULL;
-      i++;
-    }
-  }
-  if (! marshall_uw(m, heap, s->size))
+  if (! marshall_uw(m, heap, st->size))
     return NULL;
   return m;
 }
@@ -613,7 +540,6 @@ s_marshall * marshall_struct (s_marshall *m, bool heap,
     i = 0;
     while (i < s->pstruct_type->map.count) {
       offset = s->pstruct_type->offset[i];
-      // TODO: Find type
       if (! marshall_data(m, heap, &s->pstruct_type->module[i],
                           (u8 *) s->data + offset))
         return NULL;

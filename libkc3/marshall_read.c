@@ -557,6 +557,7 @@ s_marshall_read * marshall_read_pstruct(s_marshall_read *mr,
     return marshall_read_struct(mr, heap, *dest);
 }
 
+// TODO: use sym_must_clean
 s_marshall_read * marshall_read_pstruct_type(s_marshall_read *mr,
                                      bool heap,
                                      p_struct_type *dest)

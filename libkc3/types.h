@@ -521,13 +521,14 @@ struct str {
   u_ptr   ptr;         /**< Pointer to memory. */
 };
 
+// TODO: convert f_clean to callable
 struct struct_type {
-  f_clean clean;
-  s_map map;
   const s_sym *module;
-  bool must_clean;
+  s_map map;
   uw *offset;
   uw size;
+  f_clean clean;
+  bool must_clean;
   s_mutex mutex;
   sw ref_count;
 };
