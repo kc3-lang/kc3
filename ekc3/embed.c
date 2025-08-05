@@ -28,11 +28,16 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
     err_puts("embed_parse_template: NULL argument");
     return NULL;
   }
+  tail = &template;
+  if (! (*tail = list_new_str_1(NULL, "do", NULL))) {
+    buf_clean(&token_buf);
+    return NULL;
+  }
+  tail = &(*tail)->next.data.plist;
   if (! buf_init_alloc(&token_buf, BUF_SIZE)) {
     err_puts("embed_parse_template: buf_init_alloc failed");
     return NULL;
   }
-  tail = &template;
   while (buf_read_character_utf8(input, &c) > 0) {
     switch (state) {
     case EMBED_STATE_RAW:
@@ -161,8 +166,14 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
       buf_clean(&token_buf);
       return NULL;
     }
+    tail = &(*tail)->next.data.plist;
   }
   buf_clean(&token_buf);
+  if (! (*tail = list_new_str_1(NULL, "\nend", NULL))) {
+    list_delete_all(template);
+    return NULL;
+  }
+  tail = &(*tail)->next.data.plist;
   if (! tag_init_str_concatenate_list(dest, template)) {
     list_delete_all(template);
     return NULL;
@@ -183,6 +194,31 @@ s_tag * embed_parse_template_1 (const char *input, s_tag *dest)
     return NULL;
   }
   return embed_parse_template(&input_buf, dest);
+}
+
+s_tag * embed_parse_template_file (const s_str *path, s_tag *dest)
+{
+  s_buf buf = {0};
+  FILE *fp = NULL;
+  s_tag tmp = {0};
+  if (! path || ! dest) {
+    err_puts("embed_parse_template_file: invalid argument");
+    assert(! "embed_parse_template_file: invalid argument");
+    return NULL;
+  }
+  if (! buf_init_alloc(&buf, BUF_SIZE))
+    return NULL;
+  if (! (fp = file_open(path->ptr.pchar, "r"))) {
+    buf_clean(&buf);
+    return NULL;
+  }
+  if (! embed_parse_template(&buf, &tmp)) {
+    buf_clean(&buf);
+    return NULL;
+  }
+  buf_clean(&buf);
+  *dest = tmp;
+  return dest;
 }
 
 s_tag * embed_parse_template_str (const s_str *input, s_tag *dest)
