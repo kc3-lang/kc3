@@ -156,6 +156,8 @@ KC3_MAKEFILES = \
 KC3_C_SOURCES = \
 	"ekc3/ekc3.c" \
 	"ekc3/ekc3.h" \
+	"ekc3/embed.c" \
+	"ekc3/embed.h" \
 	"ekc3/html.c" \
 	"ekc3/html.h" \
 	"ekc3/types.h" \
@@ -1175,6 +1177,7 @@ KC3_IMG_SOURCES = \
 	"img/toast.png" \
 
 KC3_LIB_SOURCES = \
+	"lib/kc3/0.1/.#ekc3.kc3" \
 	"lib/kc3/0.1/alist.kc3" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/bin/primes.kc3" \
@@ -1311,7 +1314,6 @@ KC3_TEST_SOURCES = \
 	"test/facts_test_log_add.expected.facts" \
 	"test/facts_test_log_remove.expected.facts" \
 	"test/facts_test_open_file.1.expected.facts" \
-	"test/facts_test_open_file.1.facts" \
 	"test/facts_test_open_file.1.in.facts" \
 	"test/facts_test_open_file.2.expected.facts" \
 	"test/facts_test_open_file.2.in.facts" \
@@ -1573,6 +1575,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/app/controllers/doc_controller.kc3" \
 	"test/httpd/app/controllers/page_controller.kc3" \
 	"test/httpd/app/controllers/sitemap_controller.kc3" \
+	"test/httpd/app/controllers/system_controller.kc3" \
 	"test/httpd/app/templates/doc/menu.html.ekc3" \
 	"test/httpd/app/templates/doc/show.html.ekc3" \
 	"test/httpd/app/templates/footer.html.ekc3" \
@@ -1583,10 +1586,13 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/app/templates/sitemap/sitemap.xml.ekc3" \
 	"test/httpd/app/templates/sitemap/sitemap_doc.xml.ekc3" \
 	"test/httpd/app/templates/sitemap/sitemap_page.xml.ekc3" \
+	"test/httpd/app/templates/system/dashboard.html.ekc3" \
+	"test/httpd/app/templates/system/layout.html.ekc3" \
 	"test/httpd/app/views/doc_view.kc3" \
 	"test/httpd/app/views/layout_view.kc3" \
 	"test/httpd/app/views/page_view.kc3" \
 	"test/httpd/app/views/sitemap_view.kc3" \
+	"test/httpd/app/views/system_view.kc3" \
 	"test/httpd/assets/css/app.scss" \
 	"test/httpd/assets/css/computer_modern.scss" \
 	"test/httpd/assets/css/courier_new.scss" \
@@ -1712,9 +1718,9 @@ KC3_TEST_MARKDOWN_SOURCES = \
 KC3_OTHER_SOURCES = \
 	"AUTHORS.md" \
 	"BUGS.md" \
+	"CHANGELOG.md" \
 	"CLAUDE.md" \
 	"CONTRIBUTING.md" \
-	"ChangeLog.md" \
 	"LICENSE.md" \
 	"Makefile" \
 	"README.md" \

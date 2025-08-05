@@ -530,7 +530,7 @@ s_tag * env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest)
   tag_init_psym(&tag_sym_arity, &g_sym_arity);
   tag_init_psym(&tag_symbol, &g_sym_symbol);
   tag_init_psym(&tag_symbol_value, &g_sym_symbol_value);
-  tag_init_u8(&tag_arity, (u8) arity);
+  tag_init_u8(&tag_arity, arity);
   if (! facts_add_tags(env->facts, &tag_module, &tag_symbol,
                        &ident_tag))
     return NULL;
