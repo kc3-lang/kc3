@@ -1,10 +1,10 @@
 # -*- sh -*-
 # Common config for all targets
+CPPFLAGS="$CPPFLAGS -I${SRC_TOP}"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
 CXXFLAGS="$CXXFLAGS -W -Wall -Werror -std=c++11 -pedantic -pipe -pthread"
 LDFLAGS="-export-dynamic $LDFLAGS -rdynamic"
 config_asan
-config_generic
 config_gnu
 config_i386
 config_win32
@@ -19,6 +19,7 @@ config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl
 config_define PREFIX "\"${PREFIX}\""
 config_have_crypt_newhash
+config_have_generic_sw_uw
 config_have_stat_mtim
 config_have_pthread
 update_config_h

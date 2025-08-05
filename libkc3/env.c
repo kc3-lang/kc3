@@ -367,7 +367,7 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
                              const s_tag *clean)
 {
   s_struct_type *st;
-  if (! env_struct_type_find(env, module, &st))
+  if (! env_pstruct_type_find(env, module, &st))
     return NULL;
   if (! st) {
     err_write_1("env_def_clean: module ");
@@ -2278,9 +2278,9 @@ bool * env_struct_type_exists (s_env *env, const s_sym *module,
   return dest;
 }
 
-s_struct_type ** env_struct_type_find (s_env *env,
+p_struct_type * env_pstruct_type_find (s_env *env,
                                        const s_sym *module,
-                                       s_struct_type **dest)
+                                       p_struct_type *dest)
 {
   s_facts_cursor cursor;
   s_fact *found;
@@ -2292,10 +2292,10 @@ s_struct_type ** env_struct_type_find (s_env *env,
   assert(module);
   /* too slow
   if (! env_module_maybe_reload(env, module)) {
-    err_write_1("env_struct_type_find: env_module_maybe_reload(");
+    err_write_1("env_pstruct_type_find: env_module_maybe_reload(");
     err_inspect_sym(module);
     err_puts(")");
-    assert(! "env_struct_type_find: env_module_maybe_reload");
+    assert(! "env_pstruct_type_find: env_module_maybe_reload");
     return NULL;
   }
   */
@@ -2304,16 +2304,16 @@ s_struct_type ** env_struct_type_find (s_env *env,
   tag_init_pvar(&tag_pvar, &g_sym_StructType);
   if (! facts_with_tags(env->facts, &cursor,
                         &tag_module, &tag_struct_type, &tag_pvar)) {
-    err_write_1("env_struct_type_find: facts_with_tags(");
+    err_write_1("env_pstruct_type_find: facts_with_tags(");
     err_inspect_sym(module);
     err_puts(", :struct_type, ?)");
-    assert(! "env_struct_type_find: facts_with");
+    assert(! "env_pstruct_type_find: facts_with");
     tag_clean(&tag_pvar);
     return NULL;
   }
   if (! facts_cursor_next(&cursor, &found)) {
-    err_puts("env_struct_type_find: facts_with_cursor_next");
-    assert(! "env_struct_type_find: facts_with_cursor_next");
+    err_puts("env_pstruct_type_find: facts_with_cursor_next");
+    assert(! "env_pstruct_type_find: facts_with_cursor_next");
     tag_clean(&tag_pvar);
     return NULL;
   }
@@ -2325,12 +2325,12 @@ s_struct_type ** env_struct_type_find (s_env *env,
   }
   if (found->object->type != TAG_PSTRUCT_TYPE) {
     tag_type(found->object, &type);
-    err_write_1("env_struct_type_find: module ");
+    err_write_1("env_pstruct_type_find: module ");
     err_inspect_sym(module);
     err_write_1(" :struct_type is actually a ");
     err_inspect_sym(type);
     err_write_1("\n");
-    assert(! "env_struct_type_find: invalid struct_type");
+    assert(! "env_pstruct_type_find: invalid struct_type");
     facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return NULL;

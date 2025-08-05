@@ -102,12 +102,6 @@ bool * struct_type_exists (const s_sym *module, bool *dest)
   return env_struct_type_exists(env_global(), module, dest);
 }
 
-s_struct_type ** struct_type_find (const s_sym *module,
-                                   s_struct_type **dest)
-{
-  return env_struct_type_find(env_global(), module, dest);
-}
-
 uw * struct_type_find_key_index (const s_struct_type *st,
                                  const s_sym *key, uw *dest)
 {

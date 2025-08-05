@@ -84,7 +84,7 @@ s_tag * struct_access_sym (s_struct *s, const s_sym *key, s_tag *dest)
     if (! sym_to_tag_type(type, &tmp.type))
       return NULL;
     if (type != &g_sym_Time) {
-      if (! struct_type_find(type, &st))
+      if (! pstruct_type_find(type, &st))
         return NULL;
       if (st) {
         tag_init_pstruct_with_type(&tmp, st);
@@ -269,7 +269,7 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
   s_struct tmp = {0};
   assert(s);
   if (module) {
-    if (! struct_type_find(module, &st)) {
+    if (! pstruct_type_find(module, &st)) {
       err_write_1("struct_init: struct_type_find(");
       err_inspect_sym(module);
       err_puts(")");
@@ -416,7 +416,7 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
   s_struct tmp = {0};
   assert(s);
   assert(module);
-  if (! struct_type_find(module, &st))
+  if (! pstruct_type_find(module, &st))
     return NULL;
   if (! st) {
     err_write_1("struct_init_with_data: struct_type not found: ");

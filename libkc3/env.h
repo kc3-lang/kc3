@@ -124,13 +124,13 @@ bool           env_module_load (s_env *env, const s_sym *module);
 bool           env_module_maybe_reload (s_env *env,
                                         const s_sym *module);
 s_tag *        env_or (s_env *env, s_tag *a, s_tag *b, s_tag *dest);
+s_struct_type **
+               env_pstruct_type_find (s_env *env, const s_sym *module,
+                                      p_struct_type *dest);
 s8             env_special_operator_arity (s_env *env,
                                            const s_ident *ident);
 bool *         env_struct_type_exists (s_env *env, const s_sym *module,
                                        bool *dest);
-s_struct_type **
-               env_struct_type_find (s_env *env, const s_sym *module,
-                                     s_struct_type **dest);
 f_clean        env_struct_type_get_clean (s_env *env,
                                           const s_sym *module);
 s_list **      env_struct_type_get_spec (s_env *env,

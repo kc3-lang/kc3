@@ -111,14 +111,14 @@ set_get_h__uw
                                   s16:  item->data,
                                   s32:  item->data,
                                   s64:  item->data,
-#if GENERIC_SW
+#if HAVE_GENERIC_SW_UW
                                   sw:   item->data,
 #endif
                                   u8:   item->data,
                                   u16:  item->data,
                                   u32:  item->data,
                                   u64:  item->data,
-#if GENERIC_SW
+#if HAVE_GENERIC_SW_UW
                                   uw:   item->data,
 #endif
                                   default: &item->data),
@@ -247,14 +247,14 @@ set_resize__uw (s_set__uw *set, uw max)
                                        s16:  item->data,
                                        s32:  item->data,
                                        s64:  item->data,
-#if GENERIC_SW
+#if HAVE_GENERIC_SW_UW
                                        sw:   item->data,
 #endif
                                        u8:   item->data,
                                        u16:  item->data,
                                        u32:  item->data,
                                        u64:  item->data,
-#if GENERIC_SW
+#if HAVE_GENERIC_SW_UW
                                        uw:   item->data,
 #endif
                                        default: &item->data),

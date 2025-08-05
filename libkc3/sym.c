@@ -18,6 +18,7 @@
 #include "compare.h"
 #include "ident.h"
 #include "list.h"
+#include "pstruct_type.h"
 #include "str.h"
 #include "struct_type.h"
 #include "sym.h"
@@ -650,7 +651,7 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = false;
     return must_clean;
   }
-  if (! struct_type_find(sym, &st))
+  if (! pstruct_type_find(sym, &st))
     return NULL;
   if (st) {
     *must_clean = st->must_clean;
@@ -1226,7 +1227,7 @@ uw * sym_type_size (const s_sym *type, uw *dest)
     *dest = 0;
     return dest;
   }
-  if (! struct_type_find(type, &st))
+  if (! pstruct_type_find(type, &st))
     return NULL;
   if (st) {
     *dest = st->size;

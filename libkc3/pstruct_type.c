@@ -22,6 +22,12 @@ void pstruct_type_clean (p_struct_type *st)
   struct_type_delete(*st);
 }
 
+p_struct_type * pstruct_type_find (const s_sym *module,
+                                   p_struct_type *dest)
+{
+  return env_pstruct_type_find(env_global(), module, dest);
+}
+
 p_struct_type * pstruct_type_init (p_struct_type *st,
                                    const s_sym *module,
                                    const s_list *spec)

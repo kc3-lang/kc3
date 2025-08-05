@@ -116,7 +116,6 @@ s_tag * ops_get (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
     return NULL;
   if (! op_struct.pstruct_type)
     return NULL;
-  op_struct.ref_count = 1;
   op.sym = sym;
   op.arity = arity;
   if (! ht_get(&ops->ht, &op_tag, dest))
