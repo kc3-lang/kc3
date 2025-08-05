@@ -2961,17 +2961,17 @@ sw buf_inspect_pcow_size (s_pretty *pretty, p_cow const *pcow)
   return buf_inspect_cow_size(pretty, *pcow);
 }
 
-sw buf_inspect_plist (s_buf *buf, p_list *x)
+sw buf_inspect_plist (s_buf *buf, const p_list *x)
 {
   return buf_inspect_list(buf, *x);
 }
 
-sw buf_inspect_plist_paren (s_buf *buf, p_list *x)
+sw buf_inspect_plist_paren (s_buf *buf, const p_list *x)
 {
   return buf_inspect_list_paren(buf, *x);
 }
 
-sw buf_inspect_plist_size (s_pretty *pretty, p_list *x)
+sw buf_inspect_plist_size (s_pretty *pretty, const p_list *x)
 {
   return buf_inspect_list_size(pretty, *x);
 }

@@ -1,2 +1,7 @@
 do
+EKC3.raw "A"
+EKC3.verbose  x 
+EKC3.raw "B"
+ y 
+EKC3.raw "C"
 end

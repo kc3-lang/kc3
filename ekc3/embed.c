@@ -212,7 +212,12 @@ s_tag * embed_parse_template_file (const s_str *path, s_tag *dest)
     buf_clean(&buf);
     return NULL;
   }
+  if (! buf_file_open_r(&buf, fp)) {
+    fclose(fp);
+    buf_clean(&buf);
+  }
   if (! embed_parse_template(&buf, &tmp)) {
+    buf_file_close(&buf);
     buf_clean(&buf);
     return NULL;
   }

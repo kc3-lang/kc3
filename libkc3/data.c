@@ -46,7 +46,7 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
   if (type == &g_sym_Integer)
     return buf_inspect_integer(buf, data);
   if (type == &g_sym_List)
-    return buf_inspect_list(buf, data);
+    return buf_inspect_plist(buf, data);
   if (type == &g_sym_Map)
     return buf_inspect_map(buf, data);
   if (type == &g_sym_Ptag)
@@ -140,7 +140,7 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
   if (type == &g_sym_Integer)
     return buf_inspect_integer_size(pretty, data);
   if (type == &g_sym_List)
-    return buf_inspect_list_size(pretty, data);
+    return buf_inspect_plist_size(pretty, data);
   if (type == &g_sym_Map)
     return buf_inspect_map_size(pretty, data);
   if (type == &g_sym_Ptag)
