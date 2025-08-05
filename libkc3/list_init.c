@@ -595,13 +595,25 @@ s_list * list_init_str_concatenate (s_list *list, const s_str *a,
 }
 
 s_list * list_init_str_concatenate_list (s_list *list,
-                                         const s_list * const *src,
+                                         const s_list *src,
                                          s_list *next)
 {
   s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_str_concatenate_list(&tmp.tag, src))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_str_concatenate_plist (s_list *list, p_list *src,
+                                          s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_str_concatenate_plist(&tmp.tag, src))
     return NULL;
   *list = tmp;
   return list;
@@ -625,6 +637,18 @@ s_list * list_init_str_empty (s_list *list, s_list *next)
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_str_empty(&tmp.tag))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_str_inspect_str (s_list *list, const s_str *src,
+                                    s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_str_inspect_str(&tmp.tag, src))
     return NULL;
   *list = tmp;
   return list;
@@ -1387,14 +1411,26 @@ s_list * list_new_str_concatenate (const s_str *a, const s_str *b,
   return list;
 }
 
-s_list * list_new_str_concatenate_list (const s_list * const *src,
-                                        s_list *next)
+s_list * list_new_str_concatenate_list (const s_list *src, s_list *next)
 {
   s_list *list;
   list = list_new(next);
   if (! list)
     return NULL;
   if (! tag_init_str_concatenate_list(&list->tag, src)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_str_concatenate_plist (p_list *src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_str_concatenate_plist(&list->tag, src)) {
     free(list);
     return NULL;
   }
@@ -1421,6 +1457,19 @@ s_list * list_new_str_empty (s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_str_empty(&list->tag)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_str_inspect_str (const s_str *src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_str_inspect_str(&list->tag, src)) {
     free(list);
     return NULL;
   }

@@ -92,11 +92,15 @@ s_list * list_init_str_cast (s_list *list, const s_sym * const *type,
 s_list * list_init_str_concatenate (s_list *list, const s_str *a,
                                     const s_str *b, s_list *next);
 s_list * list_init_str_concatenate_list (s_list *list,
-                                         const s_list * const *src,
+                                         const s_list *src,
                                          s_list *next);
+s_list * list_init_str_concatenate_plist (s_list *list, p_list *src,
+                                          s_list *next);
 s_list * list_init_str_copy (s_list *list, const s_str *src,
                              s_list *next);
 s_list * list_init_str_empty (s_list *list, s_list *next);
+s_list * list_init_str_inspect_str (s_list *list, const s_str *src,
+                                    s_list *next);
 s_list * list_init_sw (s_list *list, sw i, s_list *next);
 s_list * list_init_tuple (s_list *list, uw count, s_list *next);
 s_list * list_init_tuple_2 (s_list *list, s_tag *a, s_tag *b,
@@ -173,10 +177,12 @@ s_list * list_new_str_cast (const s_sym * const *type,
                             const s_tag *src, s_list *next);
 s_list * list_new_str_concatenate (const s_str *a, const s_str *b,
                                    s_list *next);
-s_list * list_new_str_concatenate_list (const s_list * const *src,
+s_list * list_new_str_concatenate_list (const s_list *src,
                                         s_list *next);
+s_list * list_new_str_concatenate_plist (p_list *src, s_list *next);
 s_list * list_new_str_copy (const s_str *src, s_list *next);
 s_list * list_new_str_empty (s_list *next);
+s_list * list_new_str_inspect_str (const s_str *src, s_list *next);
 s_list * list_new_sw (sw i, s_list *next);
 s_list * list_new_tuple (uw count, s_list *next);
 s_list * list_new_tuple_2 (s_tag *a, s_tag *b, s_list *next);

@@ -74,10 +74,11 @@ s_tag * tag_init_str_cast (s_tag *tag, const s_sym * const *type,
                            const s_tag *src);
 s_tag * tag_init_str_concatenate (s_tag *tag, const s_str *a,
                                   const s_str *b);
-s_tag * tag_init_str_concatenate_list (s_tag *tag,
-                                       const s_list * const *src);
+s_tag * tag_init_str_concatenate_list (s_tag *tag, const s_list *src);
+s_tag * tag_init_str_concatenate_plist (s_tag *tag, p_list *src);
 s_tag * tag_init_str_copy (s_tag *tag, const s_str *src);
 s_tag * tag_init_str_empty (s_tag *tag);
+s_tag * tag_init_str_inspect_str (s_tag *tag, const s_str *src);
 s_tag * tag_init_sw (s_tag *tag, sw i);
 s_tag * tag_init_tuple (s_tag *tag, uw count);
 s_tag * tag_init_tuple_2 (s_tag *tag, s_tag *a, s_tag *b);
@@ -147,9 +148,11 @@ s_tag * tag_new_str_1_alloc (const char *p);
 s_tag * tag_new_str_alloc_copy (uw size, const char *p);
 s_tag * tag_new_str_cast (const s_sym * const *type, const s_tag *src);
 s_tag * tag_new_str_concatenate (const s_str *a, const s_str *b);
-s_tag * tag_new_str_concatenate_list (const s_list * const *src);
+s_tag * tag_new_str_concatenate_list (const s_list *src);
+s_tag * tag_new_str_concatenate_plist (p_list *src);
 s_tag * tag_new_str_copy (const s_str *src);
 s_tag * tag_new_str_empty (void);
+s_tag * tag_new_str_inspect_str (const s_str *src);
 s_tag * tag_new_sw (sw i);
 s_tag * tag_new_tuple (uw count);
 s_tag * tag_new_tuple_2 (s_tag *a, s_tag *b);
@@ -221,10 +224,11 @@ s_tag * tag_str_cast (s_tag *tag, const s_sym * const *type,
                       const s_tag *src);
 s_tag * tag_str_concatenate (s_tag *tag, const s_str *a,
                              const s_str *b);
-s_tag * tag_str_concatenate_list (s_tag *tag,
-                                  const s_list * const *src);
+s_tag * tag_str_concatenate_list (s_tag *tag, const s_list *src);
+s_tag * tag_str_concatenate_plist (s_tag *tag, p_list *src);
 s_tag * tag_str_copy (s_tag *tag, const s_str *src);
 s_tag * tag_str_empty (s_tag *tag);
+s_tag * tag_str_inspect_str (s_tag *tag, const s_str *src);
 s_tag * tag_sw (s_tag *tag, sw i);
 s_tag * tag_tuple (s_tag *tag, uw count);
 s_tag * tag_tuple_2 (s_tag *tag, s_tag *a, s_tag *b);

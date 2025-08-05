@@ -1467,8 +1467,7 @@ sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_list_paren(buf, (const s_list * const *)
-                                  &cfn->arg_types)) < 0)
+  if ((r = buf_inspect_list_paren(buf, cfn->arg_types)) < 0)
     return r;
   result += r;
   return result;
@@ -1494,8 +1493,7 @@ sw buf_inspect_cfn_size (s_pretty *pretty, const s_cfn *cfn)
   if ((r = buf_write_1_size(pretty, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_list_size(pretty, (const s_list * const *)
-                                 &cfn->arg_types)) < 0)
+  if ((r = buf_inspect_list_size(pretty, cfn->arg_types)) < 0)
     return r;
   result += r;
   return result;
@@ -2572,7 +2570,7 @@ sw buf_inspect_integer_size (s_pretty *pretty, const s_integer *x)
   return size - 1;
 }
 
-sw buf_inspect_list (s_buf *buf, const s_list * const *x)
+sw buf_inspect_list (s_buf *buf, const s_list *x)
 {
   bool alist;
   const s_list *i;
@@ -2583,12 +2581,12 @@ sw buf_inspect_list (s_buf *buf, const s_list * const *x)
   if ((r = buf_write_1(buf, "[")) <= 0)
     return r;
   result += r;
-  alist = list_is_alist(*x);
+  alist = list_is_alist(x);
   if (alist) {
     pretty_save_init(&pretty_save, &buf->pretty);
     pretty_indent_from_column(&buf->pretty, 0);
   }
-  i = *x;
+  i = x;
   while (i) {
     if ((r = buf_inspect_list_tag(buf, &i->tag)) < 0)
       return r;
@@ -2626,7 +2624,7 @@ sw buf_inspect_list (s_buf *buf, const s_list * const *x)
   return result;
 }
 
-sw buf_inspect_list_paren (s_buf *buf, const s_list * const *x)
+sw buf_inspect_list_paren (s_buf *buf, const s_list *x)
 {
   const s_list *i;
   sw r;
@@ -2635,7 +2633,7 @@ sw buf_inspect_list_paren (s_buf *buf, const s_list * const *x)
   if ((r = buf_write_1(buf, "(")) <= 0)
     return r;
   result++;
-  i = *x;
+  i = x;
   while (i) {
     if ((r = buf_inspect_tag(buf, &i->tag)) < 0)
       return r;
@@ -2665,7 +2663,7 @@ sw buf_inspect_list_paren (s_buf *buf, const s_list * const *x)
   return result;
 }
 
-sw buf_inspect_list_size (s_pretty *pretty, const s_list * const *x)
+sw buf_inspect_list_size (s_pretty *pretty, const s_list *x)
 {
   bool alist;
   const s_list *i;
@@ -2676,12 +2674,12 @@ sw buf_inspect_list_size (s_pretty *pretty, const s_list * const *x)
   if ((r = buf_write_1_size(pretty, "[")) <= 0)
     return r;
   result += r;
-  alist = list_is_alist(*x);
+  alist = list_is_alist(x);
   if (alist) {
     pretty_save_init(&pretty_save, pretty);
     pretty_indent_from_column(pretty, 0);
   }
-  i = *x;
+  i = x;
   while (i) {
     if ((r = buf_inspect_list_tag_size(pretty, &i->tag)) < 0)
       return r;
@@ -2961,6 +2959,21 @@ sw buf_inspect_pcow (s_buf *buf, p_cow const *pcow)
 sw buf_inspect_pcow_size (s_pretty *pretty, p_cow const *pcow)
 {
   return buf_inspect_cow_size(pretty, *pcow);
+}
+
+sw buf_inspect_plist (s_buf *buf, p_list *x)
+{
+  return buf_inspect_list(buf, *x);
+}
+
+sw buf_inspect_plist_paren (s_buf *buf, p_list *x)
+{
+  return buf_inspect_list_paren(buf, *x);
+}
+
+sw buf_inspect_plist_size (s_pretty *pretty, p_list *x)
+{
+  return buf_inspect_list_size(pretty, *x);
 }
 
 sw buf_inspect_pointer (s_buf *buf, const void *ptr)
@@ -4170,8 +4183,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_PCOMPLEX:
     return buf_inspect_complex(buf, tag->data.pcomplex);
   case TAG_PCOW:    return buf_inspect_cow(buf, tag->data.pcow);
-  case TAG_PLIST:
-    return buf_inspect_list(buf, (const s_list **) &tag->data.plist);
+  case TAG_PLIST:   return buf_inspect_list(buf, tag->data.plist);
   case TAG_PSTRUCT: return buf_inspect_struct(buf, tag->data.pstruct);
   case TAG_PSTRUCT_TYPE:
     return buf_inspect_struct_type(buf, tag->data.pstruct_type);
@@ -4235,8 +4247,7 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
   case TAG_INTEGER:
     return buf_inspect_integer_size(pretty, &tag->data.integer);
   case TAG_PLIST:
-    return buf_inspect_list_size(pretty,
-                                 (const s_list **) &tag->data.plist);
+    return buf_inspect_list_size(pretty, tag->data.plist);
   case TAG_MAP:
     return buf_inspect_map_size(pretty, &tag->data.map);
   case TAG_PCALLABLE:

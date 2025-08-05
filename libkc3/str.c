@@ -32,6 +32,7 @@
 #include "call.h"
 #include "character.h"
 #include "ident.h"
+#include "inspect.h"
 #include "io.h"
 #include "kc3_main.h"
 #include "list.h"
@@ -474,8 +475,7 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
   case TAG_INTEGER:
     return str_init_integer(str, &tag->data.integer);
   case TAG_PLIST:
-    return str_init_list(str,
-                         (const s_list * const *) &tag->data.plist);
+    return str_init_list(str, tag->data.plist);
   case TAG_MAP:
     return str_init_map(str, &tag->data.map);
   case TAG_PCALLABLE:
@@ -566,13 +566,12 @@ s_str * str_init_concatenate (s_str *str, const s_str *a,
   return str;
 }
 
-s_str * str_init_concatenate_list (s_str *str,
-                                   const s_list * const *list)
+s_str * str_init_concatenate_list (s_str *str, const s_list *list)
 {
   const s_list *l;
   char *p;
   s_str tmp = {0};
-  l = *list;
+  l = list;
   while (l) {
     if (l->tag.type != TAG_STR) {
       err_write_1("str_init_concatenate_list: not a Str: ");
@@ -586,7 +585,7 @@ s_str * str_init_concatenate_list (s_str *str,
   if (! str_init_alloc(&tmp, tmp.size))
     return NULL;
   p = tmp.free.pchar;
-  l = *list;
+  l = list;
   while (l) {
     if (p + l->tag.data.str.size > tmp.free.pchar + tmp.size) {
       err_puts("str_init_concatenate_list: buffer overflow");
@@ -600,6 +599,11 @@ s_str * str_init_concatenate_list (s_str *str,
   }
   *str = tmp;
   return str;
+}
+
+s_str * str_init_concatenate_plist (s_str *str, p_list *plist)
+{
+  return str_init_concatenate_list(str, *plist);
 }
 
 s_str * str_init_copy (s_str *str, const s_str *src)
@@ -875,8 +879,15 @@ s_str * str_init_ftime (s_str *str, s_time *time, const s_str *format)
 }
 
 DEF_STR_INIT_STRUCT(ident)
+
+s_str * str_init_inspect_str (s_str *str, const s_str *src)
+{
+  return inspect_str(src, str);
+}
+
 DEF_STR_INIT_STRUCT(integer)
-DEF_STR_INIT_PTR(list, const s_list * const *)
+DEF_STR_INIT_PTR(list, const s_list *)
+DEF_STR_INIT_PTR(plist, p_list *)
 DEF_STR_INIT_STRUCT(map)
 DEF_STR_INIT_PTR(ptr, const u_ptr_w *)
 DEF_STR_INIT_PTR(ptr_free, const u_ptr_w *)

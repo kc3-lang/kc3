@@ -145,11 +145,9 @@
     test_context("buf_inspect_list(" # test ") -> " # expected);       \
     list_test = list_new_1(test);                                      \
     buf_init_alloc(&buf, 1024 * 1024);                                 \
-    TEST_EQ(buf_inspect_list_size(&pretty,                             \
-                                  (const s_list **) &list_test),       \
+    TEST_EQ(buf_inspect_list_size(&pretty, list_test),                 \
             strlen(expected));                                         \
-    TEST_EQ(buf_inspect_list(&buf, (const s_list **) &list_test),      \
-            strlen(expected));                                         \
+    TEST_EQ(buf_inspect_list(&buf, list_test), strlen(expected));      \
     TEST_EQ(buf.wpos, strlen(expected));                               \
     TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                     \
     list_delete_all(list_test);                                        \

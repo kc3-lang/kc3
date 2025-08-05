@@ -39,8 +39,7 @@ s_str * markdown_to_html_str (const s_str *markdown, s_str *dest)
   md_html(markdown->ptr.pchar, markdown->size,
           markdown_to_html_str_callback,
           &l, 0, 0);
-  if (! str_init_concatenate_list(&tmp,
-                                  (const s_list * const *) &list)) {
+  if (! str_init_concatenate_list(&tmp, list)) {
     list_delete_all(list);
     return NULL;
   }
@@ -198,8 +197,7 @@ s32 markdown_titles_leave_block (MD_BLOCKTYPE type, void *detail,
     tuple_list_tail = plist_tail(&tuple_list->data.plist);
     *tuple_list_tail = list_new(NULL);
     if (! tag_init_str_concatenate_list(&(*tuple_list_tail)->tag,
-                                        (const s_list * const *)
-                                        &str_list))
+                                        str_list))
       return -1;
     list_delete_all(str_list);
     if (tuple_list->type != TAG_PLIST) {

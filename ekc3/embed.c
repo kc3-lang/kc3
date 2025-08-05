@@ -16,13 +16,13 @@
 
 s_tag * embed_parse_template (s_buf *input, s_tag *dest)
 {
-  character c;
-  static s_ident verbose = {0};
+  character c = 0;
+  const char *p = NULL;
   e_embed_state state = EMBED_STATE_RAW;
-  s_str str;
-  p_list *tail;
+  s_str str = {0};
+  p_list *tail = NULL;
   p_list template = NULL;
-  s_buf token_buf;
+  s_buf token_buf = {0};
   uw token_position = 0;
   if (! input || ! dest) {
     err_puts("embed_parse_template: NULL argument");
@@ -31,9 +31,6 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
   if (! buf_init_alloc(&token_buf, BUF_SIZE)) {
     err_puts("embed_parse_template: buf_init_alloc failed");
     return NULL;
-  }
-  if (! verbose.sym) {
-    ident_init(&verbose, sym_1("EKC3"), sym_1("verbose"));
   }
   tail = &template;
   while (buf_read_character_utf8(input, &c) > 0) {
@@ -57,11 +54,19 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
         break;
       case 2:
         if (token_buf.wpos > 0) {
-          if (! buf_read_to_str(&token_buf, &str)) {
+          if (! (*tail = list_new_str_1(NULL, "\nEKC3.raw ", NULL))) {
+            list_delete_all(template);
             buf_clean(&token_buf);
             return NULL;
           }
-          if (! (*tail = list_new_str_copy(&str, NULL))) {
+          tail = &(*tail)->next.data.plist;
+          if (! buf_read_to_str(&token_buf, &str)) {
+            list_delete_all(template);
+            buf_clean(&token_buf);
+            return NULL;
+          }
+          if (! (*tail = list_new_str_inspect_str(&str, NULL))) {
+            list_delete_all(template);
             str_clean(&str);
             buf_clean(&token_buf);
             return NULL;
@@ -92,24 +97,27 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
       case 1:
         if (c == '>') {
           if (token_buf.wpos > 0) {
-            if (! buf_read_to_str(&token_buf, &str)) {
+            p = (state == EMBED_STATE_VERBOSE) ? "\nEKC3.verbose " :
+              "\n";
+            if (! (*tail = list_new_str_1(NULL, p, NULL))) {
+              list_delete_all(template);
               buf_clean(&token_buf);
               return NULL;
             }
-            if (! (*tail = list_new_str_copy(&str, NULL))) {
-              str_clean(&str);
+            tail = &(*tail)->next.data.plist;
+            if (! buf_read_to_str(&token_buf, &str)) {
+              list_delete_all(template);
+              buf_clean(&token_buf);
+              return NULL;
+            }
+            if (! (*tail = list_new_str(str.free.pchar, str.size,
+                                        str.ptr.pchar, NULL))) {
+              list_delete_all(template);
               buf_clean(&token_buf);
               return NULL;
             }
             tail = &(*tail)->next.data.plist;
             buf_empty(&token_buf);
-          }
-          if (state == EMBED_STATE_VERBOSE) {
-            if (! (*tail = list_new_ident(&verbose, NULL))) {
-              buf_clean(&token_buf);
-              return NULL;
-            }
-            tail = &(*tail)->next.data.plist;
           }
           state = EMBED_STATE_RAW;
           token_position = 0;
@@ -125,19 +133,42 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
     }
   }
   if (token_buf.wpos > 0) {
-    if (! buf_read_to_str(&token_buf, &str)) {
+    switch (state) {
+    case EMBED_STATE_RAW:
+      if (! (*tail = list_new_str_1(NULL, "\nEKC3.raw ", NULL))) {
+        list_delete_all(template);
+        buf_clean(&token_buf);
+        return NULL;
+      }
+      tail = &(*tail)->next.data.plist;
+      break;
+    case EMBED_STATE_SILENT:
+    case EMBED_STATE_VERBOSE:
+      err_puts("embed_parse_template: unterminated code section");
+      assert(! "embed_parse_template: unterminated code section");
+      list_delete_all(template);
       buf_clean(&token_buf);
       return NULL;
     }
-    template = list_new_str_copy(&str, template);
-    if (! template) {
+    if (! buf_read_to_str(&token_buf, &str)) {
+      list_delete_all(template);
+      buf_clean(&token_buf);
+      return NULL;
+    }
+    if (! (*tail = list_new_str_inspect_str(&str, NULL))) {
+      list_delete_all(template);
       str_clean(&str);
       buf_clean(&token_buf);
       return NULL;
     }
   }
   buf_clean(&token_buf);
-  return tag_init_plist(dest, template);
+  if (! tag_init_str_concatenate_list(dest, template)) {
+    list_delete_all(template);
+    return NULL;
+  }
+  list_delete_all(template);
+  return dest;
 }
 
 s_tag * embed_parse_template_1 (const char *input, s_tag *dest)
@@ -152,5 +183,21 @@ s_tag * embed_parse_template_1 (const char *input, s_tag *dest)
     return NULL;
   }
   return embed_parse_template(&input_buf, dest);
+}
+
+s_tag * embed_parse_template_str (const s_str *input, s_tag *dest)
+{
+  s_buf buf = {0};
+  if (! input || ! dest) {
+    err_puts("embed_parse_template_str: invalid argument");
+    assert(! "embed_parse_template_str: invalid argument");
+    return NULL;
+  }
+  if (! buf_init_str_const(&buf, input)) {
+    err_puts("embed_parse_template_str: buf_init_str");
+    assert(! "embed_parse_template_str: buf_init_str");
+    return NULL;
+  }
+  return embed_parse_template(&buf, dest);
 }
 

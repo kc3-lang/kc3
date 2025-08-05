@@ -200,9 +200,9 @@ s_str * inspect_list (const s_list *x, s_str *dest)
   s_pretty pretty = {0};
   sw r;
   sw size;
-  size = buf_inspect_list_size(&pretty, &x);
+  size = buf_inspect_list_size(&pretty, x);
   buf_init_alloc(&buf, size);
-  if ((r = buf_inspect_list(&buf, &x)) < 0)
+  if ((r = buf_inspect_list(&buf, x)) < 0)
     goto error;
   assert(r == size);
   if (r != size)

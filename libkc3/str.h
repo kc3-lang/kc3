@@ -50,7 +50,9 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
 s_str * str_init_concatenate (s_str *str, const s_str *a,
                               const s_str *b);
 s_str * str_init_concatenate_list (s_str *str,
-                                   const s_list * const *list);
+                                   const s_list *list);
+s_str * str_init_concatenate_plist (s_str *str,
+                                    p_list *list);
 PROTOTYPE_STR_INIT_STRUCT(cfn);
 s_str * str_init_character (s_str *str, const character src);
 s_str * str_init_copy (s_str *str, const s_str *src);
@@ -63,8 +65,10 @@ PROTOTYPE_STR_INIT_DIRECT(f128);
 PROTOTYPE_STR_INIT_STRUCT(callable);
 s_str * str_init_ftime (s_str *str, s_time *time, const s_str *format);
 PROTOTYPE_STR_INIT_STRUCT(ident);
+s_str * str_init_inspect_str (s_str *str, const s_str *src);
 PROTOTYPE_STR_INIT_STRUCT(integer);
-PROTOTYPE_STR_INIT(list, const s_list * const *);
+PROTOTYPE_STR_INIT(list, const s_list *);
+PROTOTYPE_STR_INIT(plist, p_list *);
 PROTOTYPE_STR_INIT_STRUCT(map);
 PROTOTYPE_STR_INIT(ptr, const u_ptr_w *);
 PROTOTYPE_STR_INIT(ptr_free, const u_ptr_w *);

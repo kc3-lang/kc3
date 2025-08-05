@@ -210,7 +210,7 @@ s_str * plist_join (p_list *plist, s_str *sep, s_str *dest)
     }
     i = list_next(i);
   }
-  if (! str_init_concatenate_list(dest, (const s_list * const *) &tmp))
+  if (! str_init_concatenate_list(dest, tmp))
     goto ko;
   list_delete_all(tmp);
   return dest;

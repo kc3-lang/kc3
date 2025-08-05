@@ -56,7 +56,7 @@ s_str * fd_read_until_eof (s32 fd, s_str *dest)
     (*l)->tag.type = TAG_STR;
     l = &(*l)->next.data.plist;
   }
-  if (! str_init_concatenate_list(&tmp, (const s_list * const *) &list))
+  if (! str_init_concatenate_list(&tmp, list))
     goto clean;
   list_delete_all(list);
   buf_clean(&buf);

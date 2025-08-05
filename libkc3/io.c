@@ -72,16 +72,6 @@ sw err_inspect_buf (const s_buf *buf)
   return err_write(buf->ptr.pchar + pos, buf->rpos - pos);
 }
 
-sw err_inspect_list (const s_list *x)
-{
-  sw r;
-  r = buf_inspect_list(env_global()->err, &x);
-  if (r < 0)
-    return r;
-  buf_flush(env_global()->err);
-  return r;
-}
-
 sw err_inspect_tag_type (e_tag_type type)
 {
   return err_write_1(tag_type_to_string(type));
@@ -238,7 +228,9 @@ DEF_ERR_IO_INSPECT(ident,               const s_ident *)
 DEF_ERR_IO_INSPECT(integer,             const s_integer *)
 DEF_ERR_IO_INSPECT(integer_decimal,     const s_integer *)
 DEF_ERR_IO_INSPECT(integer_hexadecimal, const s_integer *)
+DEF_ERR_IO_INSPECT(list,                const s_list *)
 DEF_ERR_IO_INSPECT(map,                 const s_map *)
+DEF_ERR_IO_INSPECT(plist,               p_list *)
 DEF_ERR_IO_INSPECT(pointer,             const void *)
 DEF_ERR_IO_INSPECT(psym,                p_sym const *)
 DEF_ERR_IO_INSPECT(ptr,                 const u_ptr_w *)

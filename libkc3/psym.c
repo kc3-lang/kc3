@@ -45,8 +45,7 @@ p_sym * psym_init_anon (p_sym *sym, const s_str *prefix)
     serial++;
     str_clean(serial_str);
     str_init_uw(serial_str, serial);
-    if (! str_init_concatenate_list(&str,
-                                    (const s_list * const *) &list)) {
+    if (! str_init_concatenate_list(&str, list)) {
       err_puts("sym_new_anon: str_init_concatenate_list");
       assert(! "sym_new_anon: str_init_concatenate_list");
       break;

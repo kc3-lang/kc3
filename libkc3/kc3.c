@@ -898,9 +898,7 @@ s_str * kc3_str (const s_tag *tag, s_str *dest)
   const s_sym *sym;
   switch (tag->type) {
   case TAG_PLIST:
-    return str_init_concatenate_list(dest,
-                                     (const s_list **)
-                                     &tag->data.plist);
+    return str_init_concatenate_list(dest, tag->data.plist);
   case TAG_STR:
     return str_init_copy(dest, &tag->data.str);
   default:
