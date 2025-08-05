@@ -326,7 +326,7 @@ int main (void)
                    default: u + 6));
 }" >> "$OUT_C"
     if $LIBTOOL --tag CC --mode link ${CC} ${CPPFLAGS} ${CFLAGS} \
-                "$OUT_C" -o "$OUT" && ./"$OUT"; then
+                "$OUT_C" -o "$OUT" >/dev/null 2>&1 && ./"$OUT"; then
         echo "#define HAVE_GENERIC_SW_UW 1" >> "${CONFIG_H}"
         eval "HAVE_GENERIC_SW_UW=Yes"
     else
