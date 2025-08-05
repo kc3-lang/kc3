@@ -50,6 +50,7 @@
 #include "map.h"
 #include "marshall.h"
 #include "pstruct.h"
+#include "pstruct_type.h"
 #include "s32.h"
 #include "str.h"
 #include "struct.h"
@@ -786,7 +787,7 @@ uw * kc3_offsetof (const s_sym * const *module,
 {
   uw i = 0;
   s_struct_type *st;
-  if (! struct_type_find(*module, &st) ||
+  if (! pstruct_type_find(*module, &st) ||
       ! st ||
       ! struct_type_find_key_index(st, *key, &i))
     return NULL;

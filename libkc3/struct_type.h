@@ -48,8 +48,6 @@ void *           struct_type_copy_data (const s_struct_type *st,
                                         const void *src);
 bool *           struct_type_exists (const s_sym *module,
                                      bool *dest);
-s_struct_type ** struct_type_find (const s_sym *module,
-                                   s_struct_type **dest);
 uw *             struct_type_find_key_index (const s_struct_type *st,
                                              const s_sym *key,
                                              uw *dest);

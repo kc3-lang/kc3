@@ -20,6 +20,7 @@
 #include "list.h"
 #include "op.h"
 #include "ops.h"
+#include "pstruct_type.h"
 #include "struct_type.h"
 #include "sym.h"
 #include "tag.h"
@@ -111,7 +112,7 @@ s_tag * ops_get (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
   op_tag.type = TAG_PSTRUCT;
   op_tag.data.pstruct = &op_struct;
   op_struct.data = &op;
-  if (! struct_type_find(&g_sym_KC3_Op, &op_struct.pstruct_type))
+  if (! pstruct_type_find(&g_sym_KC3_Op, &op_struct.pstruct_type))
     return NULL;
   if (! op_struct.pstruct_type)
     return NULL;

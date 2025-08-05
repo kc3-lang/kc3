@@ -22,6 +22,7 @@
 #include "file.h"
 #include "ht.h"
 #include "io.h"
+#include "pstruct_type.h"
 #include "struct_type.h"
 #include "sym.h"
 #include "list.h"
@@ -57,19 +58,19 @@
   }
 
 #define MARSHALL_P(name, type)                                        \
-    s_marshall * marshall_p ## name (s_marshall *m, bool heap,        \
-                                     type data)                       \
-    {                                                                 \
-      assert(m);                                                      \
-      bool present = false;                                           \
-      if (! m)                                                        \
-        return NULL;                                                  \
-      if (! marshall_heap_pointer(m, heap, data, &present))           \
-        return NULL;                                                  \
-      if (! present && data)                                          \
-        return marshall_ ## name(m, true, data);                      \
-      return m;                                                       \
-    }                                                                 \
+  s_marshall * marshall_p ## name (s_marshall *m, bool heap,          \
+                                   type data)                         \
+  {                                                                   \
+    assert(m);                                                        \
+    bool present = false;                                             \
+    if (! m)                                                          \
+      return NULL;                                                    \
+    if (! marshall_heap_pointer(m, heap, data, &present))             \
+      return NULL;                                                    \
+    if (! present && data)                                            \
+      return marshall_ ## name(m, true, data);                        \
+    return m;                                                         \
+  }
 
 DEF_MARSHALL(bool)
 
@@ -107,17 +108,20 @@ s_marshall * marshall_callable (s_marshall *m, bool heap,
     return NULL;
   }
   switch (callable->type) {
-    case CALLABLE_CFN:
-      return marshall_cfn(m, heap, &callable->data.cfn);
-    case CALLABLE_FN:
-      return marshall_fn(m, heap, &callable->data.fn);
-    default:
-      err_write_1("marshall_callable: unknown callable type: ");
-      err_inspect_u32_decimal(callable->type);
-      err_write_1("\n");
-      assert(! "marshall_callable: unknown callable type");
+  case CALLABLE_VOID:
+    err_puts("marshall_callable: CALLABLE_VOID");
+    assert(! "marshall_callable: CALLABLE_VOID");
+    return NULL;
+  case CALLABLE_CFN:
+    return marshall_cfn(m, heap, &callable->data.cfn);
+  case CALLABLE_FN:
+    return marshall_fn(m, heap, &callable->data.fn);
   }
-  return m;
+  err_write_1("marshall_callable: unknown callable type: ");
+  err_inspect_u32_decimal(callable->type);
+  err_write_1("\n");
+  assert(! "marshall_callable: unknown callable type");
+  return NULL;
 }
 
 s_marshall * marshall_cfn (s_marshall *m, bool heap, const s_cfn *cfn)
@@ -522,6 +526,7 @@ s_marshall * marshall_struct (s_marshall *m, bool heap,
 {
   uw i;
   uw offset;
+  p_sym type = NULL;
   assert(m);
   assert(s);
   if (! m || ! s ||
@@ -542,24 +547,28 @@ s_marshall * marshall_struct (s_marshall *m, bool heap,
     i = 0;
     while (i < s->pstruct_type->map.count) {
       offset = s->pstruct_type->offset[i];
-      if (! marshall_data(m, heap, &s->pstruct_type->module[i],
-                          (u8 *) s->data + offset))
+      if (! tag_type_var(s->pstruct_type->map.value + i, &type))
+        return NULL;
+      if (! marshall_data(m, heap, type, (u8 *) s->data + offset))
         return NULL;
       i++;
     }
-  } 
+  }
   return m;
 }
 
 s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
                             void *data)
 {
+  s_struct s = {0};
+  p_struct_type st = NULL;
   assert(m);
   assert(type);
   assert(data);
   if (! m || ! type || ! data)
     return NULL;
-  if (type == &g_sym_Array || sym_is_array_type(type))
+  if (type == &g_sym_Array ||
+      sym_is_array_type(type))
     return marshall_array(m, heap, data);
   if (type == &g_sym_Bool)
     return marshall_bool(m, heap, *(bool *)data);
@@ -574,7 +583,7 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
   if (type == &g_sym_Complex)
     return marshall_complex(m, heap, data);
   if (type == &g_sym_Cow)
-    return marshall_cow(m, heap, data);
+    return marshall_pcow(m, heap, data);
   if (type == &g_sym_F32)
     return marshall_f32(m, heap, *(f32 *) data);
   if (type == &g_sym_F64)
@@ -588,11 +597,11 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
   if (type == &g_sym_Integer)
     return marshall_integer(m, heap, data);
   if (type == &g_sym_List)
-    return marshall_list(m, heap, data);
+    return marshall_plist(m, heap, data);
   if (type == &g_sym_Map)
     return marshall_map(m, heap, data);
   if (type == &g_sym_Ptag)
-    return marshall_tag(m, heap, data);
+    return marshall_ptag(m, heap, data);
   if (type == &g_sym_Ptr)
     return marshall_ptr(m, heap, *(u_ptr_w *) data);
   if (type == &g_sym_PtrFree)
@@ -610,9 +619,9 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
   if (type == &g_sym_Str)
     return marshall_str(m, heap, data);
   if (type == &g_sym_Struct)
-    return marshall_struct(m, heap, data);
+    return marshall_pstruct(m, heap, data);
   if (type == &g_sym_StructType)
-    return marshall_struct_type(m, heap, data);
+    return marshall_pstruct_type(m, heap, data);
   if (type == &g_sym_Sw)
     return marshall_sw(m, heap, *(sw *) data);
   if (type == &g_sym_Sym)
@@ -634,11 +643,16 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
   if (type == &g_sym_Uw)
     return marshall_uw(m, heap,  *(uw *) data);
   if (type == &g_sym_Var)
-    return marshall_var(m, heap, data);
+    return marshall_pvar(m, heap, data);
   if (type == &g_sym_Void)
-    return marshall_void(m, heap);
-  // if (! struct_type_find(type, pstruct_type))
-  //   return NULL;
+    return m;
+  if (! pstruct_type_find(type, &st))
+    return NULL;
+  if (st) {
+    s.pstruct_type = st;
+    s.data = data;
+    marshall_struct(m, heap, &s);
+  }
   return m;
 }
 
@@ -686,7 +700,7 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
     return marshall_pcallable(m, heap, tag->data.pcallable);
   case TAG_PCOMPLEX:
     return marshall_complex(m, heap, tag->data.pcomplex);
-  case TAG_PCOW:  return marshall_pcow(m, heap, tag->data.pcow);
+  case TAG_PCOW:  return marshall_pcow(m, heap, tag->data.pcow); 
   case TAG_PLIST: return marshall_plist(m, heap, tag->data.plist);
   case TAG_PSTRUCT:
     return marshall_pstruct(m, heap, tag->data.pstruct);
@@ -872,7 +886,4 @@ s_marshall * marshall_void (s_marshall *m, bool heap)
 
 DEF_MARSHALL_STUB(array, const s_array *)
 DEF_MARSHALL_STUB(cow, const s_cow *)
-DEF_MARSHALL_STUB(pcow, p_cow)
-DEF_MARSHALL_STUB(pstruct, p_struct)
-DEF_MARSHALL_STUB(pstruct_type, p_struct_type)
 

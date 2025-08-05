@@ -95,7 +95,7 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
     return buf_inspect_var(buf, data);
   if (type == &g_sym_Void)
     return buf_inspect_void(buf, data);
-  if (! struct_type_find(type, &st))
+  if (! pstruct_type_find(type, &st))
     return -1;
   if (st) {
     s.pstruct_type = st;
@@ -190,7 +190,7 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
     return buf_inspect_var_size(pretty, data);
   if (type == &g_sym_Void)
     return buf_inspect_void_size(pretty, data);
-  if (! struct_type_find(type, &st))
+  if (! pstruct_type_find(type, &st))
     return -1;
   if (st) {
     s.pstruct_type = st;
@@ -337,7 +337,7 @@ bool data_clean (const s_sym *type, void *data)
   if (type == &g_sym_Void) {
     return true;
   }
-  if (! struct_type_find(type, &st))
+  if (! pstruct_type_find(type, &st))
     return false;
   if (st) {
     if (! pstruct_type_init_copy(&s.pstruct_type, &st))
@@ -428,7 +428,7 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
   if (type == &g_sym_Void)
     return 0;
   if (env_global()->loaded) {
-    if (! struct_type_find(type, &st))
+    if (! pstruct_type_find(type, &st))
       return COMPARE_ERROR;
     if (st) {
       sa.pstruct_type = st;
@@ -526,7 +526,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
     return hash_update_var(hash, data);
   if (type == &g_sym_Void)
     return hash_update_void(hash);
-  if (! struct_type_find(type, &st))
+  if (! pstruct_type_find(type, &st))
     return false;
   if (st) {
     s.pstruct_type = st;
@@ -620,7 +620,7 @@ void * data_init_cast (void *data, const s_sym * const *type,
     return pvar_init_cast(data, type, tag);
   if (t == &g_sym_Void)
     return data;
-  if (! struct_type_find(t, &st))
+  if (! pstruct_type_find(t, &st))
     return NULL;
   if (st)
     return pstruct_init_cast(&s, type, tag);
@@ -711,7 +711,7 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
     return tag_init_copy(data, src);
   if (type == &g_sym_Void)
     return data;
-  if (! struct_type_find(type, &st))
+  if (! pstruct_type_find(type, &st))
     return NULL;
   if (st)
     return struct_type_copy_data(st, data, src);

@@ -34,4 +34,8 @@ p_struct_type * pstruct_type_init_clean (p_struct_type *st,
                                          const s_struct_type *src,
                                          const s_cfn *clean);
 
+/* Operators. */
+p_struct_type * pstruct_type_find (const s_sym *module,
+                                   p_struct_type *dest);
+
 #endif /* LIBKC3_STRUCT_TYPE_H */

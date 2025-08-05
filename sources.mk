@@ -1177,6 +1177,7 @@ KC3_IMG_SOURCES = \
 	"img/toast.png" \
 
 KC3_LIB_SOURCES = \
+	"lib/kc3/0.1/.#array.kc3" \
 	"lib/kc3/0.1/alist.kc3" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/bin/primes.kc3" \
@@ -1540,10 +1541,18 @@ KC3_TEST_IKC3_SOURCES = \
 
 KC3_TEST_EKC3_SOURCES = \
 	"test/ekc3/parse_empty.kc3" \
+	"test/ekc3/parse_empty.out.expected" \
+	"test/ekc3/parse_empty.ret.expected" \
 	"test/ekc3/parse_mixed.kc3" \
+	"test/ekc3/parse_mixed.out.expected" \
+	"test/ekc3/parse_mixed.ret.expected" \
 	"test/ekc3/parse_raw.kc3" \
 	"test/ekc3/parse_silent.kc3" \
+	"test/ekc3/parse_silent.out.expected" \
+	"test/ekc3/parse_silent.ret.expected" \
 	"test/ekc3/parse_str.kc3" \
+	"test/ekc3/parse_str.out.expected" \
+	"test/ekc3/parse_str.ret.expected" \
 	"test/ekc3/parse_verbose.kc3" \
 	"test/ekc3/title.html.ekc3" \
 	"test/ekc3/title.kc3" \
