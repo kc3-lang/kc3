@@ -714,6 +714,7 @@ KC3_C_SOURCES = \
 	"test/character_test.c" \
 	"test/compare_test.c" \
 	"test/compare_test.h" \
+	"test/embed_test.c" \
 	"test/env_test.c" \
 	"test/fact_test.c" \
 	"test/fact_test.h" \
