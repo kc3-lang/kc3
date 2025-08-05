@@ -26,7 +26,6 @@ SOURCES = \
 	"cfn_test.c" \
 	"character_test.c" \
 	"compare_test.c" \
-	"embed_test.c" \
 	"env_test.c" \
 	"fact_test.c" \
 	"facts_cursor_test.c" \

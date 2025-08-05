@@ -1,0 +1,1 @@
+puts(EKC3.parse_template_str("A<%= x %>B<% y %>C"))

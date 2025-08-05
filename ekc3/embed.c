@@ -216,6 +216,7 @@ s_tag * embed_parse_template_file (const s_str *path, s_tag *dest)
     buf_clean(&buf);
     return NULL;
   }
+  buf_file_close(&buf);
   buf_clean(&buf);
   *dest = tmp;
   return dest;
