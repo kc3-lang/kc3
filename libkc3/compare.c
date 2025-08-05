@@ -430,6 +430,11 @@ s8 compare_map (const s_map *a, const s_map *b)
   return 0;
 }
 
+s8 compare_plist (const p_list *a, const p_list *b)
+{
+  return compare_list(*a, *b);
+}
+
 s8 compare_ptag (const p_tag a, const p_tag b)
 {
   if (a < b)

@@ -159,7 +159,7 @@ bool hash_update_call (t_hash *hash, const s_call *call)
   assert(call);
   return hash_update(hash, type, sizeof(type)) &&
     hash_update_ident(hash, &call->ident) &&
-    hash_update_list(hash, (const s_list * const *) &call->arguments);
+    hash_update_list(hash, call->arguments);
 }
 
 bool hash_update_callable (t_hash *hash, const s_callable *callable)
@@ -188,7 +188,7 @@ bool hash_update_cfn (t_hash *hash, const s_cfn *cfn)
   assert(cfn);
   return hash_update(hash, type, sizeof(type)) &&
     hash_update_sym(hash, cfn->c_name) &&
-    hash_update_list(hash, (const s_list * const *) &cfn->arg_types);
+    hash_update_list(hash, cfn->arg_types);
 }
 
 HASH_UPDATE_DEF(char)
@@ -268,8 +268,7 @@ bool hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses)
     return false;
   f = clauses;
   while (f) {
-    if (! hash_update_list(hash, (const s_list * const *)
-                           &f->pattern) ||
+    if (! hash_update_list(hash, f->pattern) ||
         ! hash_update_do_block(hash, &f->algo))
       return false;
     f = f->next;
@@ -313,15 +312,14 @@ bool hash_update_integer (t_hash *hash, const s_integer *i)
 }
 
 /* FIXME: circular lists */
-bool hash_update_list (t_hash *hash, const s_list * const *list)
+bool hash_update_list (t_hash *hash, const s_list *list)
 {
   uw count;
   const s_list *l;
   const s_list *last;
   const char type[] = "list";
   assert(hash);
-  assert(list);
-  l = *list;
+  l = list;
   count = list_length(l);
   if (! hash_update(hash, type, sizeof(type)) ||
       ! hash_update_uw(hash, count))
@@ -355,6 +353,11 @@ bool hash_update_map (t_hash *hash, const s_map *map)
     i++;
   }
   return true;
+}
+
+bool hash_update_plist (t_hash *hash, const p_list *plist)
+{
+  return hash_update_list(hash, *plist);
 }
 
 bool hash_update_psym (t_hash *hash, p_sym const *psym)
@@ -524,11 +527,8 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_PCOMPLEX:
     return hash_update_complex(hash, tag->data.pcomplex);
   case TAG_PCOW:    return hash_update_cow(hash, tag->data.pcow);
-  case TAG_PLIST:
-    return hash_update_list(hash, (const s_list * const *)
-                            &tag->data.plist);
-  case TAG_PSTRUCT:
-    return hash_update_struct(hash, tag->data.pstruct);
+  case TAG_PLIST:   return hash_update_list(hash, tag->data.plist);
+  case TAG_PSTRUCT: return hash_update_struct(hash, tag->data.pstruct);
   case TAG_PSTRUCT_TYPE:
     return hash_update_struct_type(hash, tag->data.pstruct_type);
   case TAG_PSYM:    return hash_update_psym(hash, &tag->data.psym);

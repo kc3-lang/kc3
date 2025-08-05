@@ -381,7 +381,7 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
   if (type == &g_sym_Integer)
     return compare_integer(a, b);
   if (type == &g_sym_List)
-    return compare_list(a, b);
+    return compare_plist(a, b);
   if (type == &g_sym_Ptag)
     return compare_ptag((const p_tag) a, (const p_tag) b);
   if (type == &g_sym_Ptr)
@@ -479,7 +479,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
   if (type == &g_sym_Integer)
     return hash_update_integer(hash, data);
   if (type == &g_sym_List)
-    return hash_update_list(hash, data);
+    return hash_update_plist(hash, data);
   if (type == &g_sym_Ptag)
     return hash_update_ptag(hash, data);
   if (type == &g_sym_Ptr)
