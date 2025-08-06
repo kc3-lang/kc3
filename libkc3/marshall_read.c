@@ -500,7 +500,7 @@ s_marshall_read * marshall_read_map (s_marshall_read *mr,
 }
 
 s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
-                                       s_list *dest)
+                                      s_list *dest)
 {
   s_list tmp = {0};
   assert(mr);
@@ -860,9 +860,12 @@ s_marshall_read * marshall_read_time (s_marshall_read *mr,
     return NULL;
   if (has_tags) {
     if (! (tmp.tag = alloc(2 * sizeof(s_tag))) ||
-        ! marshall_read_tag(mr, heap, tmp.tag) ||
-        ! marshall_read_tag(mr, heap, tmp.tag + 1))
+        ! marshall_read_tag(mr, heap, tmp.tag))
       return NULL;
+    if (! marshall_read_tag(mr, heap, tmp.tag + 1)) {
+      tag_clean(tmp.tag);
+      return NULL;
+    }
   }
   *dest = tmp;
   return mr;
@@ -913,9 +916,12 @@ s_marshall_read * marshall_read_var (s_marshall_read *mr,
         ! marshall_read_ident(mr, heap, &tmp.name)   ||
         ! marshall_read_bool(mr, heap, &tmp.ready)   ||
         ! marshall_read_sw(mr, heap, &tmp.ref_count) ||
-        ! marshall_read_tag(mr, heap, &tmp.tag)      ||
-        ! marshall_read_psym(mr, heap, &tmp.type))
+        ! marshall_read_tag(mr, heap, &tmp.tag))
       return NULL;
+    if (! marshall_read_psym(mr, heap, &tmp.type)) {
+      tag_clean(&tmp.tag);
+      return NULL;
+    }
     *dest = tmp;
     return mr;
 }
