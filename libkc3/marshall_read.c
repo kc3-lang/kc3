@@ -87,12 +87,16 @@ s_marshall_read * marshall_read_call (s_marshall_read *mr,
   assert(mr);
   assert(dest);
   if (! marshall_read_ident(mr, heap, &call.ident) ||
-      ! marshall_read_list(mr, heap, call.arguments) ||
-      ! marshall_read_pcallable(mr, heap, &call.pcallable)) {
+      ! marshall_read_list(mr, heap, call.arguments))
+    goto ko;
+  if (! marshall_read_pcallable(mr, heap, &call.pcallable)) {
+    list_clean(call.arguments);
+    goto ko;
+  }
+  ko:
     err_puts("marshall_read_call: read_error");
     assert(! "marshall_read_call: read_error");
     return NULL;
-  }
   *dest = call;
   return mr;
 }
@@ -166,16 +170,19 @@ void marshall_read_clean (s_marshall_read *mr)
   buf_clean(&mr->buf);
 }
 
-s_marshall_read * marshall_read_complex(s_marshall_read *mr,
-                                     bool heap,
-                                     s_complex *dest)
+s_marshall_read * marshall_read_complex (s_marshall_read *mr,
+                                         bool heap,
+                                         s_complex *dest)
 {
     s_complex tmp = {0};
     assert(mr);
     assert(mr);
-    if (! marshall_read_tag(mr, heap, &tmp.x) ||
-        ! marshall_read_tag(mr, heap, &tmp.y))
+    if (! marshall_read_tag(mr, heap, &tmp.x))
       return NULL;
+    if (! marshall_read_tag(mr, heap, &tmp.y)) {
+      tag_clean(&tmp.x);
+      return NULL;
+    }
     *dest = tmp;
     return mr;
 }
@@ -188,9 +195,11 @@ s_marshall_read *marshall_read_cow(s_marshall_read *mr,
   assert(mr);
   assert(dest);
   if (! marshall_read_sym(mr, heap, &tmp.type)     ||
-      ! marshall_read_list(mr, heap, tmp.list)     ||
-      ! marshall_read_sw(mr, heap, &tmp.ref_count) ||
-      ! mutex_init(&tmp.mutex))
+      ! marshall_read_list(mr, heap, tmp.list))
+        return NULL;
+  if(! marshall_read_sw(mr, heap, &tmp.ref_count) ||
+     ! mutex_init(&tmp.mutex))
+    list_clean(tmp.list);
     return NULL;
   *dest = tmp;
   return mr;
@@ -214,31 +223,41 @@ s_marshall_read * marshall_read_do_block(s_marshall_read *mr,
                                          bool heap,
                                          s_do_block *dest)
 {
-    s_do_block tmp = {0};
-    assert(mr);
-    assert(mr);
-    if (! marshall_read_uw(mr, heap, &tmp.count)     ||
-        ! marshall_read_tag(mr, heap, tmp.tag)       ||
-        ! marshall_read_bool(mr, heap, &tmp.short_form))
-      return NULL;
-    *dest = tmp;
-    return mr;
+  s_do_block tmp = {0};
+  assert(mr);
+  assert(mr);
+  if (! marshall_read_uw(mr, heap, &tmp.count)     ||
+      ! marshall_read_tag(mr, heap, tmp.tag))
+    return NULL;
+  if (! marshall_read_bool(mr, heap, &tmp.short_form)) {
+    tag_clean(&tmp.tag);
+    return NULL;
+  }
+  *dest = tmp;
+  return mr;
 }
 
 s_marshall_read * marshall_read_fact(s_marshall_read *mr,
                                      bool heap,
                                      s_fact *dest)
 {
-    s_fact tmp = {0};
-    assert(mr);
-    assert(mr);
-    if (! marshall_read_tag(mr, heap, tmp.subject)      ||
-        ! marshall_read_tag(mr, heap, tmp.predicate)    ||
-        ! marshall_read_tag(mr, heap, tmp.object)       ||
-        ! marshall_read_uw(mr, heap, &tmp.id))
-      return NULL;
-    *dest = tmp;
-    return mr;
+  s_fact tmp = {0};
+  assert(mr);
+  assert(mr);
+  if (! marshall_read_tag(mr, heap, tmp.subject))
+    return NULL;
+  if (! marshall_read_tag(mr, heap, tmp.predicate)) {
+    tag_clean(&tmp.subject);
+    return NULL;
+  }
+  if (! marshall_read_tag(mr, heap, tmp.object)       ||
+      ! marshall_read_uw(mr, heap, &tmp.id)) {
+    tag_clean(&tmp.subject);
+    tag_clean(&tmp.predicate);
+    return NULL;
+  }
+  *dest = tmp;
+  return mr;
 }
 
 s_marshall_read * marshall_read_fn(s_marshall_read *mr,
@@ -465,7 +484,7 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
 DEF_MARSHALL_READ(integer, s_integer)
 
 
-s_marshall_read * marshall_read_map(s_marshall_read *mr,
+s_marshall_read * marshall_read_map (s_marshall_read *mr,
                                      bool heap,
                                      s_map *dest)
 {
@@ -496,16 +515,16 @@ s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
   return mr;
 }
 
-s_marshall_read * marshall_read_pcomplex(s_marshall_read *mr,
-                                     bool heap,
-                                     p_complex *dest)
+s_marshall_read * marshall_read_pcomplex (s_marshall_read *mr,
+                                          bool heap,
+                                          p_complex *dest)
 {
     return marshall_read_complex(mr, heap, *dest);
 }
 
-s_marshall_read * marshall_read_pcow(s_marshall_read *mr,
-                                     bool heap,
-                                     p_cow *dest)
+s_marshall_read * marshall_read_pcow  (s_marshall_read *mr,
+                                       bool heap,
+                                       p_cow *dest)
 {
     return marshall_read_cow(mr, heap, *dest);
 }
@@ -550,17 +569,17 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
   return mr;
 }
 
-s_marshall_read * marshall_read_pstruct(s_marshall_read *mr,
-                                     bool heap,
-                                     p_struct *dest)
+s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,
+                                         bool heap,
+                                         p_struct *dest)
 {
     return marshall_read_struct(mr, heap, *dest);
 }
 
 // TODO: use sym_must_clean
-s_marshall_read * marshall_read_pstruct_type(s_marshall_read *mr,
-                                     bool heap,
-                                     p_struct_type *dest)
+s_marshall_read * marshall_read_pstruct_type (s_marshall_read *mr,
+                                              bool heap,
+                                              p_struct_type *dest)
 {
     return marshall_read_struct_type(mr, heap, *dest);
 }
@@ -588,28 +607,15 @@ s_marshall_read * marshall_read_psym (s_marshall_read *mr,
   return mr;
 }
 
-s_marshall_read * marshall_read_ptag(s_marshall_read *mr,
-                                     bool heap,
-                                     p_tag *dest)
+s_marshall_read * marshall_read_ptag  (s_marshall_read *mr,
+                                       bool heap,
+                                       p_tag *dest)
 {
     return marshall_read_tag(mr, heap, *dest);
 }
 
 
-s_marshall_read * marshall_read_ptr(s_marshall_read *mr,
-                                    bool heap,
-                                    u_ptr_w *dest)
-{
-  assert(mr);
-  assert(dest);
-  u_ptr_w tmp = {0};
-  if (! marshall_read_uw(mr, heap, (uw *)&tmp))
-    return NULL;
-  *dest = tmp;
-  return mr;
-}
-
-s_marshall_read * marshall_read_ptr_free(s_marshall_read *mr,
+s_marshall_read * marshall_read_ptr (s_marshall_read *mr,
                                      bool heap,
                                      u_ptr_w *dest)
 {
@@ -622,9 +628,22 @@ s_marshall_read * marshall_read_ptr_free(s_marshall_read *mr,
   return mr;
 }
 
-s_marshall_read * marshall_read_pvar(s_marshall_read *mr,
-                                     bool heap,
-                                     p_var *dest)
+s_marshall_read * marshall_read_ptr_free (s_marshall_read *mr,
+                                          bool heap,
+                                          u_ptr_w *dest)
+{
+  assert(mr);
+  assert(dest);
+  u_ptr_w tmp = {0};
+  if (! marshall_read_uw(mr, heap, (uw *)&tmp))
+    return NULL;
+  *dest = tmp;
+  return mr;
+}
+
+s_marshall_read * marshall_read_pvar (s_marshall_read *mr,
+                                      bool heap,
+                                      p_var *dest)
 {
   assert(mr);
   assert(dest);
@@ -635,9 +654,9 @@ s_marshall_read * marshall_read_pvar(s_marshall_read *mr,
   return mr;
 }
 
-s_marshall_read * marshall_read_quote(s_marshall_read *mr,
-                                     bool heap,
-                                     s_quote *dest)
+s_marshall_read * marshall_read_quote (s_marshall_read *mr,
+                                      bool heap,
+                                      s_quote *dest)
 {
     s_quote tmp = {0};
     assert(mr);
@@ -648,9 +667,9 @@ s_marshall_read * marshall_read_quote(s_marshall_read *mr,
     return mr;
 }
 
-s_marshall_read * marshall_read_ratio(s_marshall_read *mr,
-                                     bool heap,
-                                     s_ratio *dest)
+s_marshall_read * marshall_read_ratio (s_marshall_read *mr,
+                                      bool heap,
+                                      s_ratio *dest)
 {
     s_ratio tmp = {0};
     assert(mr);
@@ -677,9 +696,9 @@ s_marshall_read * marshall_read_str (s_marshall_read *mr,
   return buf_read_str(buf, dest) < 0 ? NULL : mr;
 }
 
-s_marshall_read * marshall_read_struct(s_marshall_read *mr,
-                                       bool heap,
-                                       s_struct *dest)
+s_marshall_read * marshall_read_struct  (s_marshall_read *mr,
+                                         bool heap,
+                                         s_struct *dest)
 {
     s_struct tmp = {0};
     assert(mr);
@@ -696,9 +715,9 @@ s_marshall_read * marshall_read_struct(s_marshall_read *mr,
     return mr;
 }
 
-s_marshall_read * marshall_read_struct_type(s_marshall_read *mr,
-                                     bool heap,
-                                     s_struct_type *dest)
+s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
+                                             bool heap,
+                                             s_struct_type *dest)
 {
     s_struct_type tmp = {0};
     assert(mr);
@@ -849,9 +868,9 @@ s_marshall_read * marshall_read_time (s_marshall_read *mr,
   return mr;
 }
 
-s_marshall_read * marshall_read_tuple(s_marshall_read *mr,
-                                     bool heap,
-                                     s_tuple *dest)
+s_marshall_read * marshall_read_tuple (s_marshall_read *mr,
+                                      bool heap,
+                                      s_tuple *dest)
 {
     s_tuple tmp = {0};
     assert(mr);
@@ -863,9 +882,9 @@ s_marshall_read * marshall_read_tuple(s_marshall_read *mr,
     return mr;
 }
 
-s_marshall_read * marshall_read_unquote(s_marshall_read *mr,
-                                     bool heap,
-                                     s_unquote *dest)
+s_marshall_read * marshall_read_unquote (s_marshall_read *mr,
+                                         bool heap,
+                                         s_unquote *dest)
 {
     s_unquote tmp = {0};
     assert(mr);
@@ -882,7 +901,7 @@ DEF_MARSHALL_READ(u32, u32)
 DEF_MARSHALL_READ(u64, u64)
 DEF_MARSHALL_READ(uw, uw)
 
-s_marshall_read * marshall_read_var(s_marshall_read *mr,
+s_marshall_read * marshall_read_var (s_marshall_read *mr,
                                      bool heap,
                                      s_var *dest)
 {
