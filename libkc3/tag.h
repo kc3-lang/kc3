@@ -112,4 +112,7 @@ s_tag * tag_shift_right (s_tag *a, s_tag *b, s_tag *dest);
 s_tag * tag_sqrt (s_tag *tag, s_tag *dest);
 s_tag * tag_sub (s_tag *a, s_tag *b, s_tag *dest);
 
+// ptag
+void ptag_clean(p_tag *ptag);
+
 #endif /* LIBKC3_TAG_H */
