@@ -32,154 +32,154 @@
 
 #if HAVE_PTHREAD
 
-#define DEF_BUF_PEEK(type)                                             \
-  sw buf_peek_ ## type (s_buf *buf, type *dest)                        \
-  {                                                                    \
-    sw r;                                                              \
-    const sw size = sizeof(type);                                      \
-    assert(buf);                                                       \
-    assert(dest);                                                      \
-    rwlock_w(&buf->rwlock);                                            \
-    if (buf->rpos > buf->wpos ||                                       \
-        buf->wpos > buf->size) {                                       \
-      err_puts("buf error");                                           \
-      assert(! "buf error");                                           \
-      r = -1;                                                          \
-      goto clean;                                                      \
-    }                                                                  \
-    if (buf->rpos + size > buf->wpos) {                                \
-      if ((r = buf_refill(buf, size)) < 0)                             \
-        goto clean;                                                    \
-      if (r < size) {                                                  \
-        r = -1;                                                        \
-        goto clean;                                                    \
-      }                                                                \
-    }                                                                  \
-    if (buf->rpos + size > buf->wpos) {                                \
-      assert(! "buf_peek_" # type ": buffer overflow");                \
-      r = -1;                                                          \
-      goto clean;                                                      \
-    }                                                                  \
-    *dest = *((type *) (buf->ptr.pchar + buf->rpos));                  \
-    r = size;                                                          \
-  clean:                                                               \
-    rwlock_unlock_w(&buf->rwlock);                                     \
-    return r;                                                          \
+#define DEF_BUF_PEEK(type)                                            \
+  sw buf_peek_ ## type (s_buf *buf, type *dest)                       \
+  {                                                                   \
+    sw r;                                                             \
+    const sw size = sizeof(type);                                     \
+    assert(buf);                                                      \
+    assert(dest);                                                     \
+    rwlock_w(&buf->rwlock);                                           \
+    if (buf->rpos > buf->wpos ||                                      \
+        buf->wpos > buf->size) {                                      \
+      err_puts("buf error");                                          \
+      assert(! "buf error");                                          \
+      r = -1;                                                         \
+      goto clean;                                                     \
+    }                                                                 \
+    if (buf->rpos + size > buf->wpos) {                               \
+      if ((r = buf_refill(buf, size)) < 0)                            \
+        goto clean;                                                   \
+      if (r < size) {                                                 \
+        r = -1;                                                       \
+        goto clean;                                                   \
+      }                                                               \
+    }                                                                 \
+    if (buf->rpos + size > buf->wpos) {                               \
+      assert(! "buf_peek_" # type ": buffer overflow");               \
+      r = -1;                                                         \
+      goto clean;                                                     \
+    }                                                                 \
+    *dest = *((type *) (buf->ptr.pchar + buf->rpos));                 \
+    r = size;                                                         \
+  clean:                                                              \
+    rwlock_unlock_w(&buf->rwlock);                                    \
+    return r;                                                         \
   }
 
-#define DEF_BUF_READ(type)                                             \
-  sw buf_read_ ## type (s_buf *buf, type *dest)                        \
-  {                                                                    \
-    sw r;                                                              \
-    assert(buf);                                                       \
-    assert(dest);                                                      \
-    rwlock_w(&buf->rwlock);                                            \
-    r = buf_peek_ ## type(buf, dest);                                  \
-    if (r > 0) {                                                       \
-      assert(r == sizeof(type));                                       \
-      buf->rpos += r;                                                  \
-    }                                                                  \
-    rwlock_unlock_w(&buf->rwlock);                                     \
-    return r;                                                          \
+#define DEF_BUF_READ(type)                                            \
+  sw buf_read_ ## type (s_buf *buf, type *dest)                       \
+  {                                                                   \
+    sw r;                                                             \
+    assert(buf);                                                      \
+    assert(dest);                                                     \
+    rwlock_w(&buf->rwlock);                                           \
+    r = buf_peek_ ## type(buf, dest);                                 \
+    if (r > 0) {                                                      \
+      assert(r == sizeof(type));                                      \
+      buf->rpos += r;                                                 \
+    }                                                                 \
+    rwlock_unlock_w(&buf->rwlock);                                    \
+    return r;                                                         \
   }
 
-#define DEF_BUF_WRITE(type)                                            \
-  sw buf_write_ ## type (s_buf *buf, type src)                         \
-  {                                                                    \
-    sw r;                                                              \
-    const sw size = sizeof(type);                                      \
-    assert(buf);                                                       \
-    rwlock_w(&buf->rwlock);                                            \
-    if (buf->wpos + size > buf->size &&                                \
-        buf_flush(buf) < size) {                                       \
-      r = -1;                                                          \
-      goto clean;                                                      \
-    }                                                                  \
-    if (buf->wpos + size > buf->size) {                                \
-      err_puts("buf_write_" # type ": buffer overflow");               \
-      assert(! "buf_write_" # type ": buffer overflow");               \
-      r = -1;                                                          \
-      goto clean;                                                      \
-    }                                                                  \
-    *((type *) (buf->ptr.pu8 + buf->wpos)) = src;                      \
-    buf->wpos += size;                                                 \
-    r = size;                                                          \
-  clean:                                                               \
-    rwlock_unlock_w(&buf->rwlock);                                     \
-    return r;                                                          \
+#define DEF_BUF_WRITE(type)                                           \
+  sw buf_write_ ## type (s_buf *buf, type src)                        \
+  {                                                                   \
+    sw r;                                                             \
+    const sw size = sizeof(type);                                     \
+    assert(buf);                                                      \
+    rwlock_w(&buf->rwlock);                                           \
+    if (buf->wpos + size > buf->size &&                               \
+        buf_flush(buf) < size) {                                      \
+      r = -1;                                                         \
+      goto clean;                                                     \
+    }                                                                 \
+    if (buf->wpos + size > buf->size) {                               \
+      err_puts("buf_write_" # type ": buffer overflow");              \
+      assert(! "buf_write_" # type ": buffer overflow");              \
+      r = -1;                                                         \
+      goto clean;                                                     \
+    }                                                                 \
+    *((type *) (buf->ptr.pu8 + buf->wpos)) = src;                     \
+    buf->wpos += size;                                                \
+    r = size;                                                         \
+  clean:                                                              \
+    rwlock_unlock_w(&buf->rwlock);                                    \
+    return r;                                                         \
   }
 
 #else /* HAVE_PTHREAD */
 
-#define DEF_BUF_PEEK(type)                                             \
-  sw buf_peek_ ## type (s_buf *buf, type *dest)                        \
-  {                                                                    \
-    sw r;                                                              \
-    const sw size = sizeof(type);                                      \
-    assert(buf);                                                       \
-    assert(dest);                                                      \
-    if (buf->rpos > buf->wpos ||                                       \
-        buf->wpos > buf->size) {                                       \
-      err_puts("buf error");                                           \
-      assert(! "buf error");                                           \
-      r = -1;                                                          \
-      goto clean;                                                      \
-    }                                                                  \
-    if (buf->rpos + size > buf->wpos) {                                \
-      if ((r = buf_refill(buf, size)) < 0)                             \
-        goto clean;                                                    \
-      if (r < size) {                                                  \
-        r = -1;                                                        \
-        goto clean;                                                    \
-      }                                                                \
-    }                                                                  \
-    if (buf->rpos + size > buf->wpos) {                                \
-      assert(! "buf_peek_" # type ": buffer overflow");                \
-      r = -1;                                                          \
-      goto clean;                                                      \
-    }                                                                  \
-    *dest = *((type *) (buf->ptr.pchar + buf->rpos));                  \
-    r = size;                                                          \
-  clean:                                                               \
-    return r;                                                          \
+#define DEF_BUF_PEEK(type)                                            \
+  sw buf_peek_ ## type (s_buf *buf, type *dest)                       \
+  {                                                                   \
+    sw r;                                                             \
+    const sw size = sizeof(type);                                     \
+    assert(buf);                                                      \
+    assert(dest);                                                     \
+    if (buf->rpos > buf->wpos ||                                      \
+        buf->wpos > buf->size) {                                      \
+      err_puts("buf error");                                          \
+      assert(! "buf error");                                          \
+      r = -1;                                                         \
+      goto clean;                                                     \
+    }                                                                 \
+    if (buf->rpos + size > buf->wpos) {                               \
+      if ((r = buf_refill(buf, size)) < 0)                            \
+        goto clean;                                                   \
+      if (r < size) {                                                 \
+        r = -1;                                                       \
+        goto clean;                                                   \
+      }                                                               \
+    }                                                                 \
+    if (buf->rpos + size > buf->wpos) {                               \
+      assert(! "buf_peek_" # type ": buffer overflow");               \
+      r = -1;                                                         \
+      goto clean;                                                     \
+    }                                                                 \
+    *dest = *((type *) (buf->ptr.pchar + buf->rpos));                 \
+    r = size;                                                         \
+  clean:                                                              \
+    return r;                                                         \
   }
 
-#define DEF_BUF_READ(type)                                             \
-  sw buf_read_ ## type (s_buf *buf, type *dest)                        \
-  {                                                                    \
-    sw r;                                                              \
-    assert(buf);                                                       \
-    assert(dest);                                                      \
-    r = buf_peek_ ## type(buf, dest);                                  \
-    if (r > 0) {                                                       \
-      assert(r == sizeof(type));                                       \
-      buf->rpos += r;                                                  \
-    }                                                                  \
-    return r;                                                          \
+#define DEF_BUF_READ(type)                                            \
+  sw buf_read_ ## type (s_buf *buf, type *dest)                       \
+  {                                                                   \
+    sw r;                                                             \
+    assert(buf);                                                      \
+    assert(dest);                                                     \
+    r = buf_peek_ ## type(buf, dest);                                 \
+    if (r > 0) {                                                      \
+      assert(r == sizeof(type));                                      \
+      buf->rpos += r;                                                 \
+    }                                                                 \
+    return r;                                                         \
   }
 
-#define DEF_BUF_WRITE(type)                                            \
-  sw buf_write_ ## type (s_buf *buf, type src)                         \
-  {                                                                    \
-    sw r;                                                              \
-    const sw size = sizeof(type);                                      \
-    assert(buf);                                                       \
-    if (buf->wpos + size > buf->size &&                                \
-        buf_flush(buf) < size) {                                       \
-      r = -1;                                                          \
-      goto clean;                                                      \
-    }                                                                  \
-    if (buf->wpos + size > buf->size) {                                \
-      err_puts("buf_write_" # type ": buffer overflow");               \
-      assert(! "buf_write_" # type ": buffer overflow");               \
-      r = -1;                                                          \
-      goto clean;                                                      \
-    }                                                                  \
-    *((type *) (buf->ptr.pu8 + buf->wpos)) = src;                      \
-    buf->wpos += size;                                                 \
-    r = size;                                                          \
-  clean:                                                               \
-    return r;                                                          \
+#define DEF_BUF_WRITE(type)                                           \
+  sw buf_write_ ## type (s_buf *buf, type src)                        \
+  {                                                                   \
+    sw r;                                                             \
+    const sw size = sizeof(type);                                     \
+    assert(buf);                                                      \
+    if (buf->wpos + size > buf->size &&                               \
+        buf_flush(buf) < size) {                                      \
+      r = -1;                                                         \
+      goto clean;                                                     \
+    }                                                                 \
+    if (buf->wpos + size > buf->size) {                               \
+      err_puts("buf_write_" # type ": buffer overflow");              \
+      assert(! "buf_write_" # type ": buffer overflow");              \
+      r = -1;                                                         \
+      goto clean;                                                     \
+    }                                                                 \
+    *((type *) (buf->ptr.pu8 + buf->wpos)) = src;                     \
+    buf->wpos += size;                                                \
+    r = size;                                                         \
+  clean:                                                              \
+    return r;                                                         \
   }
 
 #endif /* HAVE_PTHREAD */
@@ -398,7 +398,7 @@ sw buf_ignore_spaces_but_newline (s_buf *buf)
 s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
 {
   s_buf tmp = {0};
-  assert(buf);
+ assert(buf);
   tmp.free = p_free;
   tmp.line = 1;
   tmp.ptr.pchar = p;
