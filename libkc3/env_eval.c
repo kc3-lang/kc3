@@ -56,8 +56,8 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
   assert(array);
   assert(dest);
   array_init_copy(&tmp, array);
-  if (tmp.dimension) {
-    item_size = tmp.dimensions[tmp.dimension - 1].item_size;
+  if (tmp.dimension_count) {
+    item_size = tmp.dimensions[tmp.dimension_count - 1].item_size;
     if (! tmp.data && tmp.tags) {
       tmp.free_data = alloc(tmp.dimensions[0].count *
                             tmp.dimensions[0].item_size);

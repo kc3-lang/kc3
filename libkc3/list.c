@@ -332,7 +332,7 @@ s_array * list_to_array (s_list *list, const s_sym *array_type,
     return NULL;
   }
   if (len) {
-    tmp.dimension = 1;
+    tmp.dimension_count = 1;
     tmp.dimensions = alloc(sizeof(s_array_dimension));
     if (! tmp.dimensions)
       return NULL;

@@ -79,7 +79,7 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
     goto restore;
   result += r;
   if ((r = buf_peek_array_dimension_count(buf, &tmp)) <= 0 ||
-      (tmp.dimension &&
+      (tmp.dimension_count &&
        (r = buf_peek_array_dimensions(buf, &tmp)) <= 0) ||
       (r = buf_parse_array_data(buf, &tmp)) <= 0)
     goto restore;
@@ -105,7 +105,7 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
   s_array tmp;
   assert(buf);
   assert(dest);
-  if (! dest->dimension) {
+  if (! dest->dimension_count) {
     if ((r = buf_read_1(buf, "{")) <= 0)
       return r;
     result += r;
@@ -118,12 +118,12 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
     return result;
   }
   tmp = *dest;
-  address = alloc(tmp.dimension * sizeof(sw));
+  address = alloc(tmp.dimension_count * sizeof(sw));
   if (! address)
     return -1;
   tmp.count = 1;
   i = 0;
-  while (i < tmp.dimension) {
+  while (i < tmp.dimension_count) {
     tmp.count *= tmp.dimensions[i].count;
     i++;
   }
@@ -174,7 +174,7 @@ sw buf_parse_array_data_rec (s_buf *buf, s_array *dest, uw *address,
   if (address) {
     address[dimension] = 0;
     while (1) {
-      if (dimension == tmp.dimension - 1) {
+      if (dimension == tmp.dimension_count - 1) {
         if ((r = buf_parse_tag(buf, *tag)) < 0) {
           err_puts("buf_parse_array_data_rec: parse");
           goto clean;
@@ -258,24 +258,24 @@ sw buf_parse_array_dimension_count (s_buf *buf, s_array *dest)
     goto restore;
   if (r > 0) {
     result += r;
-    dest->dimension = 0;
+    dest->dimension_count = 0;
     r = result;
     goto clean;
   }
   tmp = *dest;
-  tmp.dimension = 1;
+  tmp.dimension_count = 1;
   while (1) {
     if ((r = buf_read_1(buf, "{")) < 0)
       goto restore;
     if (! r)
       break;
     result += r;
-    tmp.dimension++;
+    tmp.dimension_count++;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
   }
-  tmp.dimensions = alloc(tmp.dimension *
+  tmp.dimensions = alloc(tmp.dimension_count *
                          sizeof(s_array_dimension));
   if (! tmp.dimensions)
     return -1;
@@ -305,10 +305,10 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
     assert(! "buf_parse_array_dimensions: zero item size");
     return -1;
   }
-  address = alloc(tmp.dimension * sizeof(sw));
+  address = alloc(tmp.dimension_count * sizeof(sw));
   if (! address)
     return -1;
-  tmp.dimensions[tmp.dimension - 1].item_size = size;
+  tmp.dimensions[tmp.dimension_count - 1].item_size = size;
   if ((r = buf_parse_array_dimensions_rec(buf, &tmp, address,
                                           0)) < 0) {
     err_write_1("buf_parse_array_dimensions:"
@@ -348,7 +348,7 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
   result += r;
   address[dimension] = 0;
   while (1) {
-    if (dimension == dest->dimension - 1) {
+    if (dimension == dest->dimension_count - 1) {
       if ((r = buf_parse_tag(buf, &tag)) <= 0) {
         err_puts("buf_parse_array_dimensions_rec: buf_parse_tag");
         goto clean;
@@ -393,7 +393,7 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
   result += r;
   if (! tmp.dimensions[dimension].count) {
     tmp.dimensions[dimension].count = address[dimension];
-    if (dimension < tmp.dimension - 1)
+    if (dimension < tmp.dimension_count - 1)
       tmp.dimensions[dimension].item_size =
         tmp.dimensions[dimension + 1].count *
         tmp.dimensions[dimension + 1].item_size;

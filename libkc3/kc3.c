@@ -140,7 +140,7 @@ s_list ** kc3_args (s_list **dest)
   return env_args(env_global(), dest);
 }
 
-s_tag * kc3_array_dimension(s_array *a, s_tag *index, s_tag *dest)
+s_tag * kc3_array_dimension (s_array *a, s_tag *index, s_tag *dest)
 {
   uw index_uw;
   const s_sym *sym_Uw = &g_sym_Uw;
@@ -150,9 +150,9 @@ s_tag * kc3_array_dimension(s_array *a, s_tag *index, s_tag *dest)
   assert(dest);
   if (! uw_init_cast(&index_uw, &sym_Uw, index))
     return NULL;
-  if (index_uw > a->dimension) {
-    err_puts("kc3_array_dimension: out of bound dimension index");
-    assert(! "kc3_array_dimension: out of bound dimension index");
+  if (index_uw > a->dimension_count) {
+    err_puts("kc3_array_dimension: index out of bounds");
+    assert(! "kc3_array_dimension: index out of bounds");
     return NULL;
   }
   tag_init_uw(&tmp, a->dimensions[index_uw].count);

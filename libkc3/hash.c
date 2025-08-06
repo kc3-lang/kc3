@@ -97,9 +97,10 @@ bool hash_update_array (t_hash *hash, const s_array *a)
   assert(a);
   if (! hash_update(hash, type, sizeof(type)) ||
       ! hash_update_sym(hash, a->array_type) ||
-      ! hash_update(hash, &a->dimension, sizeof(a->dimension)))
+      ! hash_update(hash, &a->dimension_count,
+                    sizeof(a->dimension_count)))
     return false;
-  while (i < a->dimension) {
+  while (i < a->dimension_count) {
     if (! hash_update(hash, &a->dimensions[i].count,
                       sizeof(a->dimensions[i].count)))
       return false;

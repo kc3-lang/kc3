@@ -605,7 +605,7 @@ struct type {
 
 struct array {
   uw count;
-  uw dimension;
+  uw dimension_count;
   s_array_dimension *dimensions;
   void *data;
   void *free_data;

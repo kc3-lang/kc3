@@ -66,7 +66,7 @@ sw buf_inspect_array (s_buf *buf, const s_array *array)
   if ((r = buf_write_1(buf, " ")) < 0)
     goto clean;
   result += r;
-  if (! array->dimension) {
+  if (! array->dimension_count) {
     if ((r = buf_write_1(buf, "{}")) < 0)
       goto clean;
     result += r;
@@ -100,7 +100,7 @@ sw buf_inspect_array_data (s_buf *buf, const s_array *array)
     data = array->data;
   else 
     tag = array->tags;
-  address = alloc(array->dimension * sizeof(uw));
+  address = alloc(array->dimension_count * sizeof(uw));
   if (! address)
     return -1;
   r = buf_inspect_array_data_rec(buf, array, (const u8 **) &data,
@@ -123,7 +123,7 @@ sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
   pretty_indent_from_column(&buf->pretty, 0);
   address[dimension] = 0;
   while (1) {
-    if (dimension == array->dimension - 1) {
+    if (dimension == array->dimension_count - 1) {
       if (*data) {
         if ((r = data_buf_inspect(buf, array->element_type,
                                   *data)) <= 0)
@@ -147,7 +147,7 @@ sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
     address[dimension]++;
     if (address[dimension] == array->dimensions[dimension].count)
       break;
-    if (dimension == array->dimension - 1) {
+    if (dimension == array->dimension_count - 1) {
       if ((r = buf_write_1(buf, ", ")) <= 0)
         goto clean;
     }
@@ -178,7 +178,7 @@ sw buf_inspect_array_data_size (s_pretty *pretty, const s_array *array)
     data = array->data;
   else 
     tag = array->tags;
-  address = alloc(array->dimension * sizeof(uw));
+  address = alloc(array->dimension_count * sizeof(uw));
   if (! address)
     return -1;
   buf_inspect_type_save = g_buf_inspect_type;
@@ -208,7 +208,7 @@ sw buf_inspect_array_data_size_rec (s_pretty *pretty,
   pretty_indent_from_column(pretty, 0);
   address[dimension] = 0;
   while (1) {
-    if (dimension == array->dimension - 1) {
+    if (dimension == array->dimension_count - 1) {
       if (*data) {
         if ((r = data_buf_inspect_size(pretty, array->element_type,
                                        *data)) <= 0)
@@ -233,7 +233,7 @@ sw buf_inspect_array_data_size_rec (s_pretty *pretty,
     address[dimension]++;
     if (address[dimension] == array->dimensions[dimension].count)
       break;
-    if (dimension == array->dimension - 1) {
+    if (dimension == array->dimension_count - 1) {
       if ((r = buf_write_1_size(pretty, ", ")) < 0)
         goto clean;
     }
@@ -723,7 +723,7 @@ sw buf_inspect_call_brackets_size (s_pretty *pretty, const s_call *call)
   assert(! list_next(next));
   assert(next->tag.type == TAG_ARRAY);
   address = &next->tag.data.array;
-  assert(address->dimension == 1);
+  assert(address->dimension_count == 1);
   array = &call->arguments->tag;
   if ((r = buf_inspect_tag_size(pretty, array)) < 0)
     return r;

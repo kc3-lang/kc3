@@ -40,11 +40,11 @@ s8 compare_array (const s_array *a, const s_array *b)
   assert(b);
   if (a == b)
     return 0;
-  if (a->dimension < b->dimension)
+  if (a->dimension_count < b->dimension_count)
     return -1;
-  if (a->dimension > b->dimension)
+  if (a->dimension_count > b->dimension_count)
     return 1;
-  while (i < a->dimension) {
+  while (i < a->dimension_count) {
     if (a->dimensions[i].count < b->dimensions[i].count)
       return -1;
     if (a->dimensions[i].count > b->dimensions[i].count)

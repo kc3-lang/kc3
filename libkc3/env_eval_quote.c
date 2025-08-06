@@ -66,7 +66,7 @@ bool env_eval_quote_array (s_env *env, s_array *array,
   assert(env);
   assert(array);
   assert(dest);
-  if (! array->dimension || array->data || ! array->tags) {
+  if (! array->dimension_count || array->data || ! array->tags) {
     if (! tag_init_array_copy(dest, array))
       return false;
     return true;

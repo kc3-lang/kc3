@@ -586,7 +586,13 @@ TEST_CASE(marshall_tag)
                     "\x00\x00\x00\x00\x00");
   // Integer
   MARSHALL_TEST_TAG("123456789012345678901234567890",
-                    "KC3MARSH");
+                    "KC3MARSH"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x00\x00\x00\x00\x00\x00"
+                    "\x17\x00\x00\x00\x00\x00\x00\x00"
+                    "\x0a\x0e\x00\x00\x00\x00\x00\x00"
+                    "\x00\x00\x01\x8e\xe9\x0f\xf6\xc3"
+                    "\x73\xe0\xee\x4e\x3f\x0a\xd2");
   // Ratio
   MARSHALL_TEST_TAG("2/6",
                     "KC3MARSH"

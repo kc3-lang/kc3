@@ -89,7 +89,7 @@ void * array_data (const s_array *a, const uw *address)
   assert(a);
   assert(address);
   assert(a->data);
-  while (i < a->dimension) {
+  while (i < a->dimension_count) {
     if (address[i] >= a->dimensions[i].count) {
       err_write_1("array_data: address overflow: ");
       err_inspect_uw(i);
@@ -129,17 +129,17 @@ s_tag * array_data_tag (const s_array *a, const s_array *address,
   void *a_data;
   void *tmp_data;
   s_tag tmp = {0};
-  if (address->dimension != 1) {
-    err_puts("array_data_tag: address dimension != 1");
-    assert(! "array_data_tag: address dimension != 1");
+  if (address->dimension_count != 1) {
+    err_puts("array_data_tag: address dimension count != 1");
+    assert(! "array_data_tag: address dimension count != 1");
     return NULL;
   }
   if (address->dimensions[0].count !=
-      a->dimension) {
+      a->dimension_count) {
     err_write_1("array_data_tag: address dimension mismatch: ");
     err_inspect_uw(address->dimensions[0].count);
     err_write_1(" != ");
-    err_inspect_uw(a->dimension);
+    err_inspect_uw(a->dimension_count);
     err_write_1("\n");
     assert(! "array_data_tag: address dimension mismatch");
     return NULL;
@@ -165,8 +165,8 @@ s_array * array_free (s_array *a)
   return a;
 }
 
-s_array * array_init (s_array *a, const s_sym *array_type, uw dimension,
-                      const uw *dimensions)
+s_array * array_init (s_array *a, const s_sym *array_type,
+                      uw dimension_count, const uw *dimensions)
 {
   uw count = 1;
   uw i = 0;
@@ -177,19 +177,19 @@ s_array * array_init (s_array *a, const s_sym *array_type, uw dimension,
   assert(sym_is_array_type(array_type));
   tmp.array_type = array_type;
   tmp.element_type = sym_array_type(array_type);
-  if (dimension) {
+  if (dimension_count) {
 #ifdef DEBUG
-    while (i < dimension) {
+    while (i < dimension_count) {
       assert(dimensions[i]);
       i++;
     }
 #endif
-    tmp.dimension = dimension;
-    tmp.dimensions = alloc(dimension * sizeof(s_array_dimension));
+    tmp.dimension_count = dimension_count;
+    tmp.dimensions = alloc(dimension_count * sizeof(s_array_dimension));
     if (! tmp.dimensions)
       return NULL;
     i = 0;
-    while (i < dimension) {
+    while (i < dimension_count) {
       tmp.dimensions[i].count = dimensions[i];
       count *= dimensions[i];
       i++;
@@ -287,7 +287,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   assert(src);
   if (! array_init_copy_shallow(&tmp, src))
     return NULL;
-  if (tmp.dimension) {
+  if (tmp.dimension_count) {
     if (src->data) {
       tmp.data = tmp.free_data = alloc(tmp.size);
       if (! tmp.data) {
@@ -297,7 +297,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
       data_tmp = tmp.data;
       data_src = src->data;
       i = 0;
-      item_size = src->dimensions[src->dimension - 1].item_size;
+      item_size = src->dimensions[src->dimension_count - 1].item_size;
       while (i < src->count) {
         if (! data_init_copy(src->element_type, data_tmp, data_src))
           goto ko_data;
@@ -346,17 +346,18 @@ s_array * array_init_copy_shallow (s_array *array, const s_array *src)
   s_array tmp = {0};
   assert(array);
   assert(src);
-  tmp.array_type   = src->array_type;
-  tmp.count        = src->count;
-  tmp.dimension    = src->dimension;
-  tmp.element_type = src->element_type;
-  tmp.size         = src->size;
-  if (tmp.dimension) {
-    tmp.dimensions = alloc(tmp.dimension * sizeof(s_array_dimension));
+  tmp.array_type      = src->array_type;
+  tmp.count           = src->count;
+  tmp.dimension_count = src->dimension_count;
+  tmp.element_type    = src->element_type;
+  tmp.size            = src->size;
+  if (tmp.dimension_count) {
+    tmp.dimensions = alloc(tmp.dimension_count *
+                           sizeof(s_array_dimension));
     if (! tmp.dimensions)
       return NULL;
     memcpy(tmp.dimensions, src->dimensions,
-           src->dimension * sizeof(s_array_dimension));
+           src->dimension_count * sizeof(s_array_dimension));
   }
   *array = tmp;
   return array;
