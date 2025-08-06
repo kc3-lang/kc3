@@ -266,17 +266,19 @@ typedef SHA1_CTX       t_hash;
 typedef u64            t_skiplist_height;
 
 /* pointer types */
-typedef s_callable *   p_callable;
-typedef s_complex *    p_complex;
-typedef s_cow *        p_cow;
-typedef s_tag **       p_facts_spec;
-typedef const s_frame *  p_frame;
-typedef s_list *       p_list;
-typedef s_struct *     p_struct;
-typedef s_struct_type *p_struct_type;
-typedef const s_sym *  p_sym;
-typedef s_tag *        p_tag;
-typedef s_var *        p_var;
+typedef s_callable *      p_callable;
+typedef s_complex *       p_complex;
+typedef s_cow *           p_cow;
+typedef s_tag **          p_facts_spec;
+typedef const s_frame *   p_frame;
+typedef s_list *          p_list;
+typedef s_marshall *      p_marshall;
+typedef s_marshall_read * p_marshall_read;
+typedef s_struct *        p_struct;
+typedef s_struct_type *   p_struct_type;
+typedef const s_sym *     p_sym;
+typedef s_tag *           p_tag;
+typedef s_var *           p_var;
 
 /* function typedefs */
 typedef void (* f_clean) (void *x);

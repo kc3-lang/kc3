@@ -7,17 +7,13 @@ defmodule MarshallRead do
   def new = cfn Ptr "kc3_marshall_read_new" (Result)
 
   def str_to_tag = fn (str) {
-    ds = Marshall_Read.new()
-    Marshall_Read.from_str(ds, str)
-    tag = Marshall_Read.tag(ds)
-    Marshall_Read.delete(ds)
+    mr = MarshallRead.new()
+    Marshall_Read.from_str(mr, str)
+    tag = MarshallRead.tag(mr)
+    MarshallRead.delete(mr)
     tag
   }
 
   def tag = cfn Tag "kc3_marshall_read_tag" (Ptr, Result)
-
-#  def from_stdin = macro () {
-#    MarshallRead.tag(Env.in)
-#  }
 
 end

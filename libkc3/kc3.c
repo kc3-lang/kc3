@@ -49,6 +49,7 @@
 #include "list.h"
 #include "map.h"
 #include "marshall.h"
+#include "marshall_read.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "s32.h"
@@ -742,28 +743,62 @@ bool kc3_load (const s_str *path)
   return env_load(env_global(), path);
 }
 
-void kc3_marshall_delete (s_marshall **marshall)
+void kc3_marshall_delete (p_marshall *m)
 {
-  marshall_delete(*marshall);
+  marshall_delete(*m);
 }
 
-s_marshall ** kc3_marshall_new (s_marshall **marshall)
+p_marshall * kc3_marshall_new (p_marshall *m)
 {
-  assert(marshall);
-  *marshall = marshall_new();
-  return marshall;
+  assert(m);
+  *m = marshall_new();
+  return m;
 }
 
-bool kc3_marshall_tag (s_marshall **marshall, const s_tag *tag)
+void kc3_marshall_read_delete (p_marshall_read *mr)
 {
-  if (! marshall_tag(*marshall, false, tag))
+  marshall_read_delete(*mr);
+}
+
+p_marshall_read * kc3_marshall_read_new (p_marshall_read *mr)
+{
+  assert(mr);
+  *mr = marshall_read_new();
+  return mr;
+}
+
+bool kc3_marshall_read_tag (p_marshall_read *mr, s_tag *tag)
+{
+  if (! marshall_read_tag(*mr, false, tag))
     return false;
   return true;
 }
 
-s_str * kc3_marshall_to_str (s_marshall **marshall, s_str *dest)
+s_tag * kc3_marshall_read_tag_from_str (const s_str *input,
+                                        s_tag *dest)
 {
-  return marshall_to_str(*marshall, dest);
+  s_marshall_read mr = {0};
+  s_tag tmp = {0};
+  assert(input);
+  assert(dest);
+  if (! marshall_read_init_str(&mr, input))
+    return NULL;
+  if (! marshall_read_tag(&mr, false, &tmp))
+    return NULL;
+  marshall_read_clean(&mr);
+  return dest;
+}
+
+bool kc3_marshall_tag (p_marshall *m, const s_tag *tag)
+{
+  if (! marshall_tag(*m, false, tag))
+    return false;
+  return true;
+}
+
+s_str * kc3_marshall_to_str (p_marshall *m, s_str *dest)
+{
+  return marshall_to_str(*m, dest);
 }
 
 bool kc3_maybe_reload (const s_str *path)

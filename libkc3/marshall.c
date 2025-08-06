@@ -73,8 +73,8 @@
   }
 
 
-s_marshall * marshall_array(s_marshall *m, bool heap,
-                            const s_array *array)
+s_marshall * marshall_array (s_marshall *m, bool heap,
+                             const s_array *array)
 {
   uw i = 0;
   assert(m);
