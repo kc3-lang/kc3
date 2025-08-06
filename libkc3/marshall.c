@@ -78,7 +78,7 @@ s_marshall * marshall_array (s_marshall *m, bool heap,
 {
   uw i = 0;
   assert(m);
-  assert(call);
+  assert(array);
   if (! marshall_uw(m, heap, array->dimension_count))
     return NULL;
   i = 0;

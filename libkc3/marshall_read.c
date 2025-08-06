@@ -187,14 +187,14 @@ s_marshall_read * marshall_read_complex (s_marshall_read *mr,
     return mr;
 }
 
-s_marshall_read *marshall_read_cow(s_marshall_read *mr,
-                                   bool heap,
-                                   s_cow *dest)
+s_marshall_read *marshall_read_cow (s_marshall_read *mr,
+                                    bool heap,
+                                    s_cow *dest)
 {
   s_cow tmp = {0};
   assert(mr);
   assert(dest);
-  if (! marshall_read_sym(mr, heap, &tmp.type)     ||
+  if (! marshall_read_sym(mr, heap, &tmp.type) ||
       ! marshall_read_list(mr, heap, tmp.list))
         return NULL;
   if (! marshall_read_sw(mr, heap, &tmp.ref_count) ||
@@ -204,6 +204,13 @@ s_marshall_read *marshall_read_cow(s_marshall_read *mr,
   }
   *dest = tmp;
   return mr;
+}
+
+void marshall_read_delete (s_marshall_read *mr)
+{
+  assert(mr);
+  marshall_read_clean(mr);
+  free(mr);
 }
 
 s_marshall_read * marshall_read_dimensions (s_marshall_read *mr,
@@ -261,18 +268,18 @@ s_marshall_read * marshall_read_fact(s_marshall_read *mr,
   return mr;
 }
 
-s_marshall_read * marshall_read_fn(s_marshall_read *mr,
-                                   bool heap,
-                                   s_fn *dest)
+s_marshall_read * marshall_read_fn (s_marshall_read *mr,
+                                    bool heap,
+                                    s_fn *dest)
 {
   s_fn tmp = {0};
   assert(mr);
   assert(dest);
-  if (! marshall_read_bool(mr, heap, &tmp.macro)                   ||
-      ! marshall_read_bool(mr, heap, &tmp.special_operator)        ||
-      ! marshall_read_ident(mr, heap, &tmp.name)                   ||
-      // ! marshall_read_fn_clause(mr, heap, &tmp.clauses)         ||
-      ! marshall_read_psym(mr, heap, &tmp.module)        /* ||
+  if (! marshall_read_bool(mr, heap, &tmp.macro) ||
+      ! marshall_read_bool(mr, heap, &tmp.special_operator) ||
+      ! marshall_read_ident(mr, heap, &tmp.name) ||
+      // ! marshall_read_fn_clause(mr, heap, &tmp.clauses) ||
+      ! marshall_read_psym(mr, heap, &tmp.module) /* ||
       ! marshall_read_frame(mr, heap, tmp.frame) */
       )
     return NULL;
@@ -484,22 +491,6 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
 
 DEF_MARSHALL_READ(integer, s_integer)
 
-
-s_marshall_read * marshall_read_map (s_marshall_read *mr,
-                                     bool heap,
-                                     s_map *dest)
-{
-    s_map tmp = {0};
-    assert(mr);
-    assert(mr);
-    if (! marshall_read_uw(mr, heap, &tmp.count)  ||
-        ! marshall_read_tag(mr, heap, tmp.key)   ||
-        ! marshall_read_tag(mr, heap, tmp.value))
-      return NULL;
-    *dest = tmp;
-    return mr;
-}
-
 s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
                                       s_list *dest)
 {
@@ -516,18 +507,53 @@ s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
   return mr;
 }
 
+s_marshall_read * marshall_read_map (s_marshall_read *mr,
+                                     bool heap,
+                                     s_map *dest)
+{
+    s_map tmp = {0};
+    assert(mr);
+    assert(mr);
+    if (! marshall_read_uw(mr, heap, &tmp.count)  ||
+        ! marshall_read_tag(mr, heap, tmp.key)   ||
+        ! marshall_read_tag(mr, heap, tmp.value))
+      return NULL;
+    *dest = tmp;
+    return mr;
+}
+
+s_marshall_read * marshall_read_new (void)
+{
+  s_marshall_read *mr = NULL;
+  if (! (mr = alloc(sizeof(s_marshall_read))))
+    return NULL;
+  if (! marshall_read_init(mr)) {
+    free(mr);
+    return NULL;
+  }
+  return mr;
+}
+
 s_marshall_read * marshall_read_pcomplex (s_marshall_read *mr,
                                           bool heap,
                                           p_complex *dest)
 {
-    return marshall_read_complex(mr, heap, *dest);
+  (void) mr;
+  (void) heap;
+  (void) dest;
+  return NULL;
+  // return marshall_read_complex(mr, heap, *dest);
 }
 
 s_marshall_read * marshall_read_pcow  (s_marshall_read *mr,
                                        bool heap,
                                        p_cow *dest)
 {
-    return marshall_read_cow(mr, heap, *dest);
+  (void) mr;
+  (void) heap;
+  (void) dest;
+  return NULL;
+  // return marshall_read_cow(mr, heap, *dest);
 }
 
 s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
