@@ -905,6 +905,5 @@ s_marshall * marshall_void (s_marshall *m, bool heap)
     return NULL;                                                       \
   }
 
-DEF_MARSHALL_STUB(array, const s_array *)
 DEF_MARSHALL_STUB(cow, const s_cow *)
 
