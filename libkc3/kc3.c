@@ -767,6 +767,14 @@ p_marshall_read * kc3_marshall_read_new (p_marshall_read *mr)
   return mr;
 }
 
+p_marshall_read * kc3_marshall_read_new_str (p_marshall_read *mr,
+                                             const s_str *input)
+{
+  assert(mr);
+  *mr = marshall_read_new_str(input);
+  return mr;
+}
+
 bool kc3_marshall_read_tag (p_marshall_read *mr, s_tag *tag)
 {
   if (! marshall_read_tag(*mr, false, tag))
@@ -783,9 +791,12 @@ s_tag * kc3_marshall_read_tag_from_str (const s_str *input,
   assert(dest);
   if (! marshall_read_init_str(&mr, input))
     return NULL;
-  if (! marshall_read_tag(&mr, false, &tmp))
+  if (! marshall_read_tag(&mr, false, &tmp)) {
+    marshall_read_clean(&mr);
     return NULL;
+  }
   marshall_read_clean(&mr);
+  *dest = tmp;
   return dest;
 }
 
@@ -794,6 +805,24 @@ bool kc3_marshall_tag (p_marshall *m, const s_tag *tag)
   if (! marshall_tag(*m, false, tag))
     return false;
   return true;
+}
+
+s_str * kc3_marshall_tag_to_str (const s_tag *tag, s_str *dest)
+{
+  s_marshall m = {0};
+  s_str tmp = {0};
+  assert(tag);
+  assert(dest);
+  if (! marshall_init(&m))
+    return NULL;
+  if (! marshall_tag(&m, false, tag) ||
+      ! marshall_to_str(&m, &tmp)) {
+    marshall_clean(&m);
+    return NULL;
+  }
+  marshall_clean(&m);
+  *dest = tmp;
+  return dest;
 }
 
 s_str * kc3_marshall_to_str (p_marshall *m, s_str *dest)

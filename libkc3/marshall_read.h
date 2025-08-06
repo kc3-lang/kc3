@@ -39,7 +39,7 @@ void              marshall_read_delete (s_marshall_read *mr);
 s_marshall_read * marshall_read_new (void);
 s_marshall_read * marshall_read_new_buf (s_buf *buf);
 s_marshall_read * marshall_read_new_file (const char *path);
-s_marshall_read * marshall_read_new_str (s_str *src);
+s_marshall_read * marshall_read_new_str (const s_str *src);
 
 /* Operators. */
 PROTO_MARSHALL_READ(array,        s_array          );

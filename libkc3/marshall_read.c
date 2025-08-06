@@ -534,6 +534,18 @@ s_marshall_read * marshall_read_new (void)
   return mr;
 }
 
+s_marshall_read * marshall_read_new_str (const s_str *input)
+{
+  s_marshall_read *mr = NULL;
+  if (! (mr = alloc(sizeof(s_marshall_read))))
+    return NULL;
+  if (! marshall_read_init_str(mr, input)) {
+    free(mr);
+    return NULL;
+  }
+  return mr;
+}
+
 s_marshall_read * marshall_read_pcomplex (s_marshall_read *mr,
                                           bool heap,
                                           p_complex *dest)

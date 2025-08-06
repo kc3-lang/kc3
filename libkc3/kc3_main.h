@@ -121,13 +121,15 @@ bool         kc3_load (const s_str *path);
 void         kc3_marshall_delete (p_marshall *m);
 p_marshall * kc3_marshall_new (p_marshall *m);
 void         kc3_marshall_read_delete (p_marshall_read *mr);
-p_marshall_read *
-             kc3_marshall_read_new (p_marshall_read *mr);
+p_marshall_read * kc3_marshall_read_new (p_marshall_read *mr);
+p_marshall_read * kc3_marshall_read_new_str (p_marshall_read *mr,
+                                             const s_str *input);
 bool         kc3_marshall_read_tag (p_marshall_read *mr,
                                     s_tag *tag);
 s_tag *      kc3_marshall_read_tag_from_str (const s_str *input,
                                              s_tag *dest);
 bool         kc3_marshall_tag (p_marshall *m, const s_tag *tag);
+s_str *      kc3_marshall_tag_to_str (const s_tag *tag, s_str *dest);
 s_str *      kc3_marshall_to_str (p_marshall *m, s_str *dest);
 bool         kc3_maybe_reload (const s_str *path);
 s_tag *      kc3_or (s_tag *a, s_tag *b, s_tag *dest);

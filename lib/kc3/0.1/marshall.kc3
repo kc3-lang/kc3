@@ -6,14 +6,8 @@ defmodule Marshall do
 
   def tag = cfn Bool "kc3_marshall_tag" (Ptr, Tag)
 
-  def to_str = cfn Str "kc3_marshall_to_str" (Ptr, Result)
+  def tag_to_str = cfn Str "kc3_marshall_tag_to_str" (Tag, Result)
 
-  def tag_to_str = fn (tag) {
-    s = Marshall.new()
-    Marshall.tag(s, tag)
-    str = Marshall.to_str(s)
-    Marshall.delete(s)
-    str
-  }
+  def to_str = cfn Str "kc3_marshall_to_str" (Ptr, Result)
 
 end

@@ -1,0 +1,10 @@
+require Marshall
+true
+require MarshallRead
+true
+loopback = fn (tag) { str = Marshall.tag_to_str(tag); MarshallRead.tag_from_str(str) }
+fn (tag) { str = Marshall.tag_to_str(tag); MarshallRead.tag_from_str(str) }
+loopback(false)
+false
+loopback(true)
+true
