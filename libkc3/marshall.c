@@ -1,4 +1,4 @@
-/* kc3
+/*/home/lyzer/.local/bin/lvim kc3
  * Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
@@ -71,6 +71,26 @@
       return marshall_ ## name(m, true, data);                        \
     return m;                                                         \
   }
+
+
+s_marshall * marshall_array(s_marshall *m, bool heap,
+                            const s_array *array)
+{
+  uw i = 0;
+  assert(m);
+  assert(call);
+  if (! marshall_uw(m, heap, array->dimension))
+    return NULL;
+  i = 0;
+  while (i < array->dimension) {
+    if (! marshall_uw(m, heap, array->dimensions[i].count) ||
+        ! marshall_uw(m, heap, array->dimensions[i].item_size))
+      return NULL;
+    i++;
+  }
+  // TODO: to be completed
+  return m;
+}
 
 DEF_MARSHALL(bool)
 
