@@ -197,10 +197,11 @@ s_marshall_read *marshall_read_cow(s_marshall_read *mr,
   if (! marshall_read_sym(mr, heap, &tmp.type)     ||
       ! marshall_read_list(mr, heap, tmp.list))
         return NULL;
-  if(! marshall_read_sw(mr, heap, &tmp.ref_count) ||
-     ! mutex_init(&tmp.mutex))
+  if (! marshall_read_sw(mr, heap, &tmp.ref_count) ||
+     ! mutex_init(&tmp.mutex)) {
     list_clean(tmp.list);
     return NULL;
+  }
   *dest = tmp;
   return mr;
 }
@@ -230,7 +231,7 @@ s_marshall_read * marshall_read_do_block(s_marshall_read *mr,
       ! marshall_read_tag(mr, heap, tmp.tag))
     return NULL;
   if (! marshall_read_bool(mr, heap, &tmp.short_form)) {
-    tag_clean(&tmp.tag);
+    tag_clean(tmp.tag);
     return NULL;
   }
   *dest = tmp;
@@ -247,13 +248,13 @@ s_marshall_read * marshall_read_fact(s_marshall_read *mr,
   if (! marshall_read_tag(mr, heap, tmp.subject))
     return NULL;
   if (! marshall_read_tag(mr, heap, tmp.predicate)) {
-    tag_clean(&tmp.subject);
+    tag_clean(tmp.subject);
     return NULL;
   }
   if (! marshall_read_tag(mr, heap, tmp.object)       ||
       ! marshall_read_uw(mr, heap, &tmp.id)) {
-    tag_clean(&tmp.subject);
-    tag_clean(&tmp.predicate);
+    tag_clean(tmp.subject);
+    tag_clean(tmp.predicate);
     return NULL;
   }
   *dest = tmp;
