@@ -15,6 +15,7 @@
 
 #include "types.h"
 
+void    ptag_clean (p_tag *ptag);
 p_tag * ptag_init_cast (p_tag *dest, const s_sym * const *type,
                         const s_tag *tag);
 p_tag * ptag_init_copy (p_tag *dest, const p_tag *src);

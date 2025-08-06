@@ -13,7 +13,13 @@
 #include "assert.h"
 #include "ptag.h"
 #include "sym.h"
+#include "tag.h"
 #include "tag_type.h"
+
+void ptag_clean (p_tag *ptag)
+{
+  tag_delete(*ptag);
+}
 
 p_tag * ptag_init_cast (p_tag *ptag, const s_sym * const *type,
                         const s_tag *tag)
