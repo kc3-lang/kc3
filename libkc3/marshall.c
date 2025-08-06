@@ -79,7 +79,8 @@ s_marshall * marshall_array (s_marshall *m, bool heap,
   uw i = 0;
   assert(m);
   assert(array);
-  if (! marshall_uw(m, heap, array->dimension_count))
+  if (! marshall_psym(m, heap, array->array_type) ||
+      ! marshall_uw(m, heap, array->dimension_count))
     return NULL;
   i = 0;
   while (i < array->dimension_count) {
@@ -88,7 +89,16 @@ s_marshall * marshall_array (s_marshall *m, bool heap,
       return NULL;
     i++;
   }
-  // TODO: to be completed
+  if (! marshall_psym(m, heap, array->element_type) ||
+      ! marshall_data(m, heap, array->array_type, array->data) ||
+      ! marshall_uw(m, heap, array->size))
+    return NULL;
+  i = 0;
+  while (i < array->count) {
+    if (! marshall_tag(m, heap, &array->tags[i]))
+      return NULL;
+    i++;
+  }
   return m;
 }
 
