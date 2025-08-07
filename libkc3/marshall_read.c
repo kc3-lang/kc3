@@ -600,7 +600,7 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
     return mr;
   }
   if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
-      ! (tmp = list_new(NULL)))
+      ! (tmp = alloc(sizeof(s_list))))
     return NULL;
   if (! marshall_read_list(mr, true, tmp) ||
       ! marshall_read_ht_add(mr, offset, tmp)) {
