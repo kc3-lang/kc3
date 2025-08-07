@@ -729,10 +729,15 @@ s_marshall_read * marshall_read_str (s_marshall_read *mr,
                                      bool heap, s_str *dest)
 {
   s_buf *buf = {0};
+  u32 size = 0;
   assert(mr);
   assert(dest);
   buf = heap ? &mr->heap : &mr->buf;
-  return buf_read_str(buf, dest) < 0 ? NULL : mr;
+  if (! marshall_read_u32(mr, heap, &size))
+    return NULL;
+  if (! buf_read(buf, size, dest))
+    return NULL;
+  return mr;
 }
 
 s_marshall_read * marshall_read_struct  (s_marshall_read *mr,
