@@ -600,10 +600,13 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
     return mr;
   }
   if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
-      ! (tmp = alloc(sizeof(s_list))) ||
-      ! marshall_read_list(mr, true, tmp) ||
-      ! marshall_read_ht_add(mr, offset, tmp))
+      ! (tmp = list_new(NULL)))
     return NULL;
+  if (! marshall_read_list(mr, true, tmp) ||
+      ! marshall_read_ht_add(mr, offset, tmp)) {
+    list_delete_all(tmp);
+    return NULL;
+  }
   *dest = tmp;
   return mr;
 }
