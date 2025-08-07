@@ -52,8 +52,8 @@ loopback("héllo wörld")
 "héllo wörld"
 loopback([0, 1])
 [0, 1]
-loopback([1, 2])
-[1, 2]
+loopback([[2, 3], [4, 5]])
+[[2, 3], [4, 5]]
 loopback(%Time{})
 %Time{}
 loopback((Ptr) 0x0)
