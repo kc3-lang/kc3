@@ -8,3 +8,55 @@ loopback(false)
 false
 loopback(true)
 true
+loopback('A')
+'A'
+loopback('\0')
+'\0'
+loopback('Z')
+'Z'
+loopback(0)
+0
+loopback(1)
+1
+loopback(2)
+2
+loopback(255)
+255
+loopback(256)
+256
+loopback(-1234)
+-1234
+loopback(1234)
+1234
+loopback(-123456789)
+-123456789
+loopback(123456789)
+123456789
+loopback((F32) 0.0)
+(F32) 0.0
+loopback((F32) 1.0)
+(F32) 1.0
+loopback((F64) 0.0)
+(F64) 0.0
+loopback((F64) 1.0)
+(F64) 1.0
+loopback((F128) 0.0)
+(F128) 0.0
+loopback((F128) 1.0)
+(F128) 1.0
+loopback("")
+""
+loopback("hello")
+"hello"
+loopback("héllo wörld")
+"héllo wörld"
+loopback([0, 1])
+[0, 1]
+loopback([1, 2])
+[1, 2]
+loopback(%Time{})
+%Time{}
+loopback((Ptr) 0x0)
+(Ptr) 0x0
+loopback(1 +i 2)
+1 +i 2
