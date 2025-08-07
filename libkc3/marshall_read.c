@@ -818,10 +818,6 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
       return marshall_read_call(mr, heap, &dest->data.call);
     case TAG_CHARACTER:
       return marshall_read_character(mr, heap, &dest->data.character);
-    case TAG_PCOMPLEX:
-      return marshall_read_pcomplex(mr, heap, &dest->data.pcomplex);
-    case TAG_PCOW:
-      return marshall_read_pcow(mr, heap, &dest->data.pcow);
     case TAG_F32:
       return marshall_read_f32(mr, heap, &dest->data.f32);
     case TAG_F64:
@@ -834,12 +830,16 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
       return marshall_read_ident(mr, heap, &dest->data.ident);
     case TAG_INTEGER:
       return marshall_read_integer(mr, heap, &dest->data.integer);
-    case TAG_PLIST:
-      return marshall_read_plist(mr, heap, &dest->data.plist);
     case TAG_MAP:
       return marshall_read_map(mr, heap, &dest->data.map);
     case TAG_PCALLABLE:
       return marshall_read_pcallable(mr, heap, &dest->data.pcallable);
+    case TAG_PCOMPLEX:
+      return marshall_read_pcomplex(mr, heap, &dest->data.pcomplex);
+    case TAG_PCOW:
+      return marshall_read_pcow(mr, heap, &dest->data.pcow);
+    case TAG_PLIST:
+      return marshall_read_plist(mr, heap, &dest->data.plist);
     case TAG_PSTRUCT:
       return marshall_read_pstruct(mr, heap, &dest->data.pstruct);
     case TAG_PSTRUCT_TYPE:
