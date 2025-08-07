@@ -313,13 +313,12 @@ s_marshall * marshall_frame (s_marshall *m, bool heap,
 s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
                                     const void *p, bool *present)
 {
-  s_buf *buf;
   s_tag key = {0};
-  sw r;
   s_tag tag = {0};
   u64 offset;
   assert(m);
-  buf = heap ? &m->heap : &m->buf;
+  if (! p)
+    return marshall_u64(m, heap, 0);
   tag_init_tuple(&key, 2);
   key.data.tuple.tag[0].type = TAG_U64;
   key.data.tuple.tag[0].data.u64 = (u64) p;
@@ -332,7 +331,9 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
   tag.data.tuple.tag[0].data.u64 = (u64) p;
   tag.data.tuple.tag[0].type = TAG_U64;
   tag.data.tuple.tag[1].data.u64 =
-    (u64) m->heap_pos + sizeof(s_marshall_header);
+    sizeof(s_marshall_header) +
+    m->heap_pos +
+    (heap ? sizeof(u64) : 0);
   tag.data.tuple.tag[1].type = TAG_U64;
   if (! ht_add(&m->ht, &tag))
     goto ko;
@@ -347,16 +348,12 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
     goto ko;
   }
   offset = tag.data.tuple.tag[1].data.u64;
-  if ((r = buf_write_u64(buf, offset)) <= 0)
+  if (! marshall_u64(m, heap, offset))
     goto ko;
   tag_clean(&key);
   tag_clean(&tag);
-  if (heap) {
-    m->heap_pos += r;
+  if (heap)
     m->heap_count++;
-  }
-  else
-    m->buf_pos += r;
   return m;
  ko:
   tag_clean(&key);
