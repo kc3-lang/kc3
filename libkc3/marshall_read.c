@@ -835,7 +835,13 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     case TAG_PCALLABLE:
       return marshall_read_pcallable(mr, heap, &dest->data.pcallable);
     case TAG_PCOMPLEX:
-      return marshall_read_pcomplex(mr, heap, &dest->data.pcomplex);
+      if (! (dest->data.pcomplex = alloc(sizeof(s_complex))))
+        return NULL;
+      if (! marshall_read_complex(mr, heap, dest->data.pcomplex)) {
+        free(dest->data.pcomplex);
+        return NULL;
+      }
+      return mr;
     case TAG_PCOW:
       return marshall_read_pcow(mr, heap, &dest->data.pcow);
     case TAG_PLIST:

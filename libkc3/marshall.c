@@ -211,8 +211,8 @@ void marshall_clean (s_marshall *m)
   ht_clean(&m->ht);
 }
 
-s_marshall * marshall_complex(s_marshall *m, bool heap,
-                             const s_complex *c)
+s_marshall * marshall_complex (s_marshall *m, bool heap,
+                               const s_complex *c)
 {
   assert(m);
   assert(c);
