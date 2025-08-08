@@ -160,7 +160,8 @@ loopback(:hello_world)
 true
 loopback(%{})
 true
-loopback(%{a: 1, b: 2})
+loopback(%{a: 1,
+           b: 2})
 true
 loopback(%{key: "value", num: 42})
 true
