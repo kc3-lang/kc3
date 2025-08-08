@@ -438,7 +438,7 @@ s_marshall * marshall_new (void)
   s_marshall *m;
   if (! (m = alloc(sizeof(s_marshall))))
     return NULL;
-  if (marshall_init(m) == NULL) {
+  if (! marshall_init(m)) {
     free(m);
     return NULL;
   }
