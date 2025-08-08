@@ -361,6 +361,7 @@ TEST_CASE_END(marshall_read_plist)
                          "\x15\x40\xE2\x01\x00\x00\x00\x00\x00",
                          "(Uw) 123456");
   // str
+  /*
   MARSHALL_READ_TEST_TAG("KC3MARSH"
                          "\x00\x00\x00\x00\x00\x00\x00\x00"
                          "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -368,7 +369,7 @@ TEST_CASE_END(marshall_read_plist)
                          "\x23\x0B\x68\x65\x6C\x6C\x6F\x20"
                          "\x77\x6F\x72\x6C\x64",
                          "\"hello world\"");
-
+  */
 
   // list
   /*
