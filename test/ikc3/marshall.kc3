@@ -5,7 +5,7 @@ require MarshallRead
 quote loopback = fn (tag) {
   str = Marshall.tag_to_str(tag)
   result = MarshallRead.tag_from_str(str)
-  if (result == tag) do
+  if (inspect(result) == inspect(tag)) do
     {:ok, Str.size(str)}
   else
     {:ko, Str.size(str), result}
@@ -14,7 +14,7 @@ quote loopback = fn (tag) {
 loopback = fn (tag) {
   str = Marshall.tag_to_str(tag)
   result = MarshallRead.tag_from_str(str)
-  if (result == tag) do
+  if (inspect(result) == inspect(tag)) do
     {:ok, Str.size(str)}
   else
     {:ko, Str.size(str), result}
