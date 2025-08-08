@@ -3219,13 +3219,15 @@ sw buf_inspect_ratio_size (s_pretty *pretty, const s_ratio *ratio)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_inspect_integer_size(pretty, &ratio->numerator)) < 0)
+  if ((r = buf_inspect_integer_decimal_size(pretty,
+                                            &ratio->numerator)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1_size(pretty, "/")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_integer_size(pretty, &ratio->denominator)) < 0)
+  if ((r = buf_inspect_integer_decimal_size(pretty,
+                                            &ratio->denominator)) < 0)
     return r;
   result += r;
   return result;
