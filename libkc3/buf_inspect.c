@@ -1956,7 +1956,7 @@ sw buf_inspect_f128 (s_buf *buf, f128 x)
 
 sw buf_inspect_f128_size (s_pretty *pretty, f128 x)
 {
-  s64 exp;
+  f128 exp;
   u8 i;
   u8 j;
   sw r;
@@ -2467,17 +2467,37 @@ sw buf_inspect_ident_sym_size (s_pretty *pretty, const s_sym *sym)
 
 sw buf_inspect_integer (s_buf *buf, const s_integer *x)
 {
-  return buf_inspect_integer_decimal(buf, x);
+  static bool initialized = false;
+  sw r;
+  sw result = 0;
+  static s_integer s64_min;
+  static s_integer u64_max;
+  if (! initialized) {
+    integer_init_s64(&s64_min, S64_MIN);
+    integer_init_u64(&u64_max, U64_MAX);
+    initialized = true;
+  }
+  if (compare_integer(x, &s64_min) >= 0 &&
+      compare_integer(x, &u64_max) <= 0) {
+    if ((r = buf_write_1(buf, "(Integer) ")) <= 0)
+      return r;
+    result += r;
+  }
+  if ((r = buf_inspect_integer_decimal(buf, x)) <= 0)
+    return r;
+  result += r;
+  return result;
 }
 
 sw buf_inspect_integer_decimal (s_buf *buf, const s_integer *x)
 {
   s_buf buf_tmp;
   mp_digit digit;
-  sw result = 0;
   size_t maxlen;
   u8 p;
+  sw r;
   const mp_digit radix = 10;
+  sw result = 0;
   s32 size = 0;
   mp_int t;
   if (MP_IS_ZERO(&x->mp_int))
@@ -2490,8 +2510,9 @@ sw buf_inspect_integer_decimal (s_buf *buf, const s_integer *x)
   if (t.sign == MP_NEG) {
     t.sign = MP_ZPOS;
     maxlen--;
-    buf_write_character_utf8(buf, '-');
-    result++;
+    if ((r = buf_write_1(buf, "-")) <= 0)
+      return r;
+    result += r;
   }
   buf_init_alloc(&buf_tmp, maxlen);
   while (! MP_IS_ZERO(&t)) {
@@ -3146,13 +3167,13 @@ sw buf_inspect_ratio (s_buf *buf, const s_ratio *ratio)
   sw result = 0;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if ((r = buf_inspect_integer(buf, &ratio->numerator)) < 0)
+  if ((r = buf_inspect_integer_decimal(buf, &ratio->numerator)) < 0)
     goto restore;
   result += r;
   if ((r = buf_write_1(buf, "/")) < 0)
     goto restore;
   result += r;
-  if ((r = buf_inspect_integer(buf, &ratio->denominator)) < 0)
+  if ((r = buf_inspect_integer_decimal(buf, &ratio->denominator)) < 0)
     goto restore;
   result += r;
   r = result;

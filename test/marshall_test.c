@@ -440,7 +440,7 @@ TEST_CASE(marshall_tag)
                     "\x00\x00\x00\x00\x00\x00\x00\x00"
                     "\x00\x00\x00\x00\x00\x00\x00\x00"
                     "\x05\x00\x00\x00\x00\x00\x00\x00"
-                    "\x06\xdb\x0f\x49\x40");
+                    "\x06\xd9\x0f\x49\x40");
   MARSHALL_TEST_TAG("(F64) 3.141592653589793",
                     "KC3MARSH"
                     "\x00\x00\x00\x00\x00\x00\x00\x00"

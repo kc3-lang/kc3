@@ -2,61 +2,205 @@ require Marshall
 true
 require MarshallRead
 true
-loopback = fn (tag) { str = Marshall.tag_to_str(tag); MarshallRead.tag_from_str(str) }
-fn (tag) { str = Marshall.tag_to_str(tag); MarshallRead.tag_from_str(str) }
+loopback = fn (tag) { str = Marshall.tag_to_str(tag); result = MarshallRead.tag_from_str(str); result == tag }
+fn (tag) { str = Marshall.tag_to_str(tag); result = MarshallRead.tag_from_str(str); result == tag }
 loopback(false)
-false
+true
 loopback(true)
 true
 loopback('A')
-'A'
+true
 loopback('\0')
-'\0'
+true
 loopback('Z')
-'Z'
+true
 loopback(0)
-0
+true
 loopback(1)
-1
+true
 loopback(2)
-2
+true
 loopback(255)
-255
+true
 loopback(256)
-256
+true
 loopback(-1234)
--1234
+true
 loopback(1234)
-1234
+true
 loopback(-123456789)
--123456789
+true
 loopback(123456789)
-123456789
+true
 loopback((F32) 0.0)
-(F32) 0.0
+true
 loopback((F32) 1.0)
-(F32) 1.0
+true
 loopback((F64) 0.0)
-(F64) 0.0
+true
 loopback((F64) 1.0)
-(F64) 1.0
+true
 loopback((F128) 0.0)
-(F128) 0.0
+true
 loopback((F128) 1.0)
-(F128) 1.0
+true
 loopback("")
-""
+true
 loopback("hello")
-"hello"
+true
 loopback("héllo wörld")
-"héllo wörld"
+true
 loopback([0, 1])
-[0, 1]
+true
 loopback([[2, 3], [4, 5]])
-[[2, 3], [4, 5]]
+true
 loopback(%Time{})
-%Time{}
+true
 loopback((Ptr) 0x0)
-(Ptr) 0x0
+true
 loopback(1 +i 2)
-1 +i 2
+true
+loopback(false)
+true
+loopback(true)
+true
+loopback('0')
+true
+loopback('z')
+true
+loopback('\n')
+true
+loopback('\t')
+true
+loopback(255)
+true
+loopback(127)
+true
+loopback(128)
+true
+loopback(-1)
+true
+loopback(-32768)
+true
+loopback(32767)
+true
+loopback(65535)
+true
+loopback(-2147483648)
+true
+loopback(2147483647)
+true
+loopback(4294967295)
+true
+loopback(-9223372036854775808)
+true
+loopback(9223372036854775807)
+true
+loopback(18446744073709551615)
+true
+loopback((Integer) 1024)
+true
+loopback(10000000000000000000000000000000000)
+true
+loopback(123456789012345678901234567890)
+true
+loopback((F32) -1.0)
+true
+loopback((F32) 3.141592)
+true
+loopback((F32) 4.294966e+9)
+true
+loopback((F64) -1.0)
+true
+loopback((F64) 3.14159265358979)
+true
+loopback((F64) 4.294967296e+9)
+true
+loopback((F128) -1.0)
+true
+loopback((F128) 3.141592653589793237862287655914883)
+true
+loopback(2/6)
+true
+loopback(1/3)
+true
+loopback(22/7)
+true
+loopback(0 +i 1)
+true
+loopback(-1 +i -2)
+true
+loopback(3.14 +i 2.71)
+true
+loopback("hello\xFF\x00world")
+true
+loopback("\xFF\xFE\xFD")
+true
+loopback("test\ntab\there")
+true
+loopback([])
+true
+loopback([1, 2, 3, 4, 5])
+true
+loopback([true, false, 'A'])
+true
+loopback(["hello", "world"])
+true
+loopback([[[1]]])
+true
+loopback({1, 2, 3})
+true
+loopback({true, 'A', "test"})
+true
+loopback({1, 2, [3, 4]})
+true
+loopback({})
+true
+loopback(Module)
+true
+loopback(:test)
+true
+loopback(:hello_world)
+true
+loopback(%{})
+true
+loopback(%{a: 1, b: 2})
+true
+loopback(%{key: "value", num: 42})
+true
+loopback(%{nested: %{inner: true}})
+true
+loopback(%Time{tv_sec: 1000, tv_nsec: 2000})
+true
+loopback(%Time{tv_sec: 1 + 1, tv_nsec: 2 + 2})
+true
+loopback((PtrFree) 0x0)
+true
+loopback(quote 1 + 1)
+true
+loopback(quote hello)
+true
+loopback(unquote(123))
+true
+loopback((U8) ?)
+true
+loopback((Tag) ?)
+true
+loopback(fn (x) { x * 2 })
+true
+loopback(fn (a, b) { a + b })
+true
+loopback(List.reverse([]))
+true
+loopback(a = 1)
+true
+loopback(defmodule Test do end)
+true
+loopback(do 1; 2; 3 end)
+true
+loopback(cfn Tag "tag_add" (Tag, Tag, Result))
+true
+loopback(%KC3.Op{})
+true
+loopback(%KC3.Op{sym: :+, callable: cfn Tag "tag_add" (Tag, Tag, Result)})
+true
