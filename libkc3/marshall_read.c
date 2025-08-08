@@ -241,8 +241,11 @@ s_marshall_read * marshall_read_do_block (s_marshall_read *mr,
       ! do_block_init(&tmp, count))
     return NULL;
   tmp.count = count;
-  if (! marshall_read_ptag(mr, heap, tmp.tag))
-    return NULL;
+  while (i < count) {
+    if (! marshall_read_ptag(mr, heap, &tmp.tag[i]))
+      return NULL;
+    i++;
+  }
   if (! marshall_read_bool(mr, heap, &tmp.short_form)) {
     tag_clean(tmp.tag);
     return NULL;
@@ -519,15 +522,19 @@ s_marshall_read * marshall_read_map (s_marshall_read *mr,
 {
     s_map tmp = {0};
     uw count;
+    uw i = 0;
     assert(mr);
     assert(mr);
     if (! marshall_read_uw(mr, heap, &count)   ||
         ! map_init(&tmp, count))
       return NULL;
     tmp.count = count;
-    if (! marshall_read_ptag(mr, heap, &tmp.key) ||
-        ! marshall_read_ptag(mr, heap, &tmp.value))
+    while (i < tmp.count) {
+      if (! marshall_read_ptag(mr, heap, &tmp.key[i]) ||
+          ! marshall_read_ptag(mr, heap, &tmp.value[i]))
       return NULL;
+      i++;
+    }
     *dest = tmp;
     return mr;
 }
