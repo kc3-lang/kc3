@@ -792,8 +792,11 @@ s_marshall_read * marshall_read_sym (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_str(mr, heap, &tmp))
     return NULL;
-  if (! (*dest = str_to_sym(&tmp)))
+  if (! (*dest = str_to_sym(&tmp))) {
+    str_clean(&tmp);
     return NULL;
+  }
+  str_clean(&tmp);
   return mr;
 }
 
@@ -929,11 +932,23 @@ s_marshall_read * marshall_read_tuple (s_marshall_read *mr,
                                       s_tuple *dest)
 {
     s_tuple tmp = {0};
+    uw i = 0;
     assert(mr);
-    assert(mr);
-    if (! marshall_read_uw(mr, heap, &tmp.count) ||
-        ! marshall_read_tag(mr, heap, tmp.tag))
+    assert(dest);
+    if (! marshall_read_uw(mr, heap, &tmp.count))
       return NULL;
+    tmp.tag = alloc(sizeof(s_tag) * tmp.count);
+    if (! tmp.tag)
+      return NULL;
+    while (i < tmp.count) {
+      if (! marshall_read_tag(mr, heap, &tmp.tag[i])) {
+        err_puts("marshall_read_tuple: read_tag error");
+        assert(! "marshall_read_tuple: read_tag error");
+        free(tmp.tag);
+        return NULL;
+      }
+      i++;
+    }
     *dest = tmp;
     return mr;
 }

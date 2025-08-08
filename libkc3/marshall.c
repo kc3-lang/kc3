@@ -688,12 +688,9 @@ s_marshall * marshall_sym (s_marshall *m, bool heap,
                            const s_sym *sym)
 {
   assert(m);
-  if (! m)
+  if (! m || ! sym)
     return NULL;
-  if (! marshall_bool(m, heap, sym ? true : false))
-    return NULL;
-  if (sym &&
-      ! marshall_str(m, heap, &sym->str))
+  if (! marshall_str(m, heap, &sym->str))
     return NULL;
   return m;
 }

@@ -439,7 +439,7 @@ sw buf_parse_do_block (s_buf *buf, s_do_block *do_block)
     goto restore;
   }
   result += r;
-  if ((r = buf_ignore_spaces(buf)) <= 0) {
+  if ((r = buf_ignore_spaces(buf)) < 0) {
     err_puts("buf_parse_do_block: buf_ignore_spaces");
     assert(! "buf_parse_do_block: buf_ignore_spaces");
     goto restore;
