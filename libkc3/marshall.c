@@ -653,7 +653,7 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
   if (type == &g_sym_Sw)
     return marshall_sw(m, heap, *(sw *) data);
   if (type == &g_sym_Sym)
-    return marshall_sym(m, heap, data);
+    return marshall_psym(m, heap, data);
   if (type == &g_sym_Tag)
     return marshall_tag(m, heap, data);
   if (type == &g_sym_Time)
@@ -731,7 +731,7 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
     return marshall_pstruct(m, heap, tag->data.pstruct);
   case TAG_PSTRUCT_TYPE:
     return marshall_pstruct_type(m, heap, tag->data.pstruct_type);
-  case TAG_PSYM:  return marshall_sym(m, heap, tag->data.psym);
+  case TAG_PSYM:  return marshall_psym(m, heap, tag->data.psym);
   case TAG_PTAG:
     return marshall_ptag(m, heap, tag->data.ptag);
   case TAG_PTR:   return marshall_ptr(m, heap, tag->data.ptr);
