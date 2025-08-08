@@ -234,15 +234,16 @@ s_marshall_read * marshall_read_do_block (s_marshall_read *mr,
                                           s_do_block *dest)
 {
   s_do_block tmp = {0};
+  uw i = 0;
   uw count = 0;
   assert(mr);
   assert(mr);
   if (! marshall_read_uw(mr, heap, &count)  ||
       ! do_block_init(&tmp, count))
     return NULL;
-  tmp.count = count;
+  tmp.count = i;
   while (i < count) {
-    if (! marshall_read_ptag(mr, heap, &tmp.tag[i]))
+    if (! marshall_read_tag(mr, heap, &tmp.tag[i]))
       return NULL;
     i++;
   }
@@ -530,8 +531,8 @@ s_marshall_read * marshall_read_map (s_marshall_read *mr,
       return NULL;
     tmp.count = count;
     while (i < tmp.count) {
-      if (! marshall_read_ptag(mr, heap, &tmp.key[i]) ||
-          ! marshall_read_ptag(mr, heap, &tmp.value[i]))
+      if (! marshall_read_tag(mr, heap, &tmp.key[i]) ||
+          ! marshall_read_tag(mr, heap, &tmp.value[i]))
       return NULL;
       i++;
     }
