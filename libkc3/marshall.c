@@ -772,8 +772,8 @@ s_marshall *marshall_time(s_marshall *m, bool heap, const s_time *time)
         ! marshall_tag(m, heap, time->tag + 1))
       return NULL;
   }
-  else if (! marshall_uw(m, heap, time->tv_sec) ||
-           ! marshall_uw(m, heap, time->tv_nsec))
+  else if (! marshall_sw(m, heap, time->tv_sec) ||
+           ! marshall_sw(m, heap, time->tv_nsec))
     return NULL;
   return m;
 }
@@ -884,7 +884,7 @@ s_marshall * marshall_var (s_marshall *m, bool heap, const s_var *var)
   assert(var);
   if (! m || ! var ||
       ! marshall_ident(m, heap, &var->name) ||
-      ! marshall_sym(m, heap, var->type) || 
+      ! marshall_psym(m, heap, var->type) || 
       ! marshall_bool(m, heap, var->bound) ||
       (var->bound &&
        ! marshall_tag(m, heap, &var->tag)))

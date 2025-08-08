@@ -26,6 +26,7 @@
 #include "str.h"
 #include "sym.h"
 #include "tag.h"
+#include "time.h"
 #include "var.h"
 
 #define DEF_MARSHALL_READ(name, type)                                  \
@@ -38,8 +39,8 @@
     assert(dest);                                                      \
     buf = heap ? &mr->heap : &mr->buf;                                 \
     if (buf_read_ ## name (buf, dest) <= 0) {                          \
-      err_puts("marshall_read_" # name ": buf_read_" # type);          \
-      assert(! "marshall_read_" # name ": buf_read_" # type);          \
+      err_puts("marshall_read_" # name ": buf_read_" # name);          \
+      assert(! "marshall_read_" # name ": buf_read_" # name);          \
       return NULL;                                                     \
     }                                                                  \
     return mr;                                                         \
@@ -952,21 +953,24 @@ s_marshall_read * marshall_read_time (s_marshall_read *mr,
   s_time tmp = {0};
   assert(mr);
   assert(mr);
-  if (! marshall_read_sw(mr, heap, &tmp.tv_sec)   ||
-      ! marshall_read_sw(mr, heap, &tmp.tv_nsec)  ||
-      ! marshall_read_bool(mr, heap, &has_tags))
+  if (! marshall_read_bool(mr, heap, &has_tags))
     return NULL;
   if (has_tags) {
-    if (! (tmp.tag = alloc(2 * sizeof(s_tag))) ||
-        ! marshall_read_tag(mr, heap, tmp.tag))
+    if (! (tmp.tag = alloc(2 * sizeof(s_tag))))
       return NULL;
-    if (! marshall_read_tag(mr, heap, tmp.tag + 1)) {
-      tag_clean(tmp.tag);
-      return NULL;
-    }
+    if (! marshall_read_tag(mr, heap, tmp.tag))
+      goto ko;
+    if (! marshall_read_tag(mr, heap, tmp.tag + 1))
+      goto ko;
   }
+  else if (! marshall_read_sw(mr, heap, &tmp.tv_sec) ||
+           ! marshall_read_sw(mr, heap, &tmp.tv_nsec))
+    goto ko;
   *dest = tmp;
   return mr;
+ ko:
+  time_clean(&tmp);
+  return NULL;
 }
 
 s_marshall_read * marshall_read_tuple (s_marshall_read *mr,
