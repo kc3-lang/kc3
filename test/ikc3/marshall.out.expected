@@ -130,7 +130,7 @@ loopback(0 +i 1)
 true
 loopback(-1 +i -2)
 true
-loopback(3.14 +i 2.71)
+loopback((F32) 3.14 +i (F32) 2.71)
 true
 loopback("hello\xFF\x00world")
 true
