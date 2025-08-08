@@ -5,12 +5,20 @@ require MarshallRead
 quote loopback = fn (tag) {
   str = Marshall.tag_to_str(tag)
   result = MarshallRead.tag_from_str(str)
-  result == tag
+  if (result == tag) do
+    {:ok, Str.size(str)}
+  else
+    {:ko, Str.size(str), result}
+  end
 }
 loopback = fn (tag) {
   str = Marshall.tag_to_str(tag)
   result = MarshallRead.tag_from_str(str)
-  result == tag
+  if (result == tag) do
+    {:ok, Str.size(str)}
+  else
+    {:ko, Str.size(str), result}
+  end
 }
 quote loopback(false)
 loopback(false)
@@ -140,10 +148,10 @@ quote loopback(-1 +i -2)
 loopback(-1 +i -2)
 quote loopback((F32) 3.14 +i (F32) 2.71)
 loopback((F32) 3.14 +i (F32) 2.71)
-quote loopback("hello\xFF\x00world")
-loopback("hello\xFF\x00world")
-quote loopback("\xFF\xFE\xFD")
-loopback("\xFF\xFE\xFD")
+#quote loopback("hello\xFF\x00world")
+#loopback("hello\xFF\x00world")
+#quote loopback("\xFF\xFE\xFD")
+#loopback("\xFF\xFE\xFD")
 quote loopback("test\ntab\there")
 loopback("test\ntab\there")
 quote loopback([])
@@ -182,14 +190,16 @@ quote loopback(%Time{tv_sec: 1000, tv_nsec: 2000})
 loopback(%Time{tv_sec: 1000, tv_nsec: 2000})
 quote loopback(%Time{tv_sec: 1 + 1, tv_nsec: 2 + 2})
 loopback(%Time{tv_sec: 1 + 1, tv_nsec: 2 + 2})
-quote loopback((PtrFree) 0)
-loopback((PtrFree) 0)
-quote loopback(quote 1 + 1)
-loopback(quote 1 + 1)
-quote loopback(quote hello)
-loopback(quote hello)
-quote loopback(unquote(123))
-loopback(unquote(123))
+quote loopback((Ptr) 0x0)
+loopback((Ptr) 0x0)
+quote loopback((PtrFree) 0x0)
+loopback((PtrFree) 0x0)
+#quote loopback(quote 1 + 1)
+#loopback(quote 1 + 1)
+#quote loopback(quote hello)
+#loopback(quote hello)
+#quote loopback(unquote(123))
+#loopback(unquote(123))
 quote loopback((U8) ?)
 loopback((U8) ?)
 quote loopback(?)

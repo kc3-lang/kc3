@@ -682,7 +682,9 @@ s_marshall_read * marshall_read_ptr (s_marshall_read *mr,
   assert(mr);
   assert(dest);
   u_ptr_w tmp = {0};
-  if (! marshall_read_uw(mr, heap, (uw *)&tmp))
+  if (! marshall_read_uw(mr, heap, &tmp.uw))
+    return NULL;
+  if (tmp.uw)
     return NULL;
   *dest = tmp;
   return mr;
@@ -695,7 +697,9 @@ s_marshall_read * marshall_read_ptr_free (s_marshall_read *mr,
   assert(mr);
   assert(dest);
   u_ptr_w tmp = {0};
-  if (! marshall_read_uw(mr, heap, (uw *)&tmp))
+  if (! marshall_read_uw(mr, heap, &tmp.uw))
+    return NULL;
+  if (tmp.uw)
     return NULL;
   *dest = tmp;
   return mr;

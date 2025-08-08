@@ -4788,7 +4788,7 @@ sw buf_parse_tag_ptr_free (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_ptr_free(buf, &dest->data.ptr_free)) > 0)
-    dest->type = TAG_PTR;
+    dest->type = TAG_PTR_FREE;
   return r;
 }
 

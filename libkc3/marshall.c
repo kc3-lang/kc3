@@ -57,7 +57,7 @@
     return m;                                                         \
   }
 
-#define MARSHALL_P(name, type)                                        \
+#define DEF_MARSHALL_P(name, type)                                    \
   s_marshall * marshall_p ## name (s_marshall *m, bool heap,          \
                                    type data)                         \
   {                                                                   \
@@ -414,7 +414,7 @@ s_marshall * marshall_list (s_marshall *m, bool heap,
   return m;
 }
 
-s_marshall *marshall_map (s_marshall *m, bool heap, const s_map *map)
+s_marshall * marshall_map (s_marshall *m, bool heap, const s_map *map)
 {
   uw i = 0;
   assert(m);
@@ -445,14 +445,14 @@ s_marshall * marshall_new (void)
   return m;
 }
 
-MARSHALL_P(callable, p_callable)
-MARSHALL_P(cow, p_cow)
-MARSHALL_P(frame, p_frame)
-MARSHALL_P(list, p_list)
-MARSHALL_P(struct, p_struct)
-MARSHALL_P(struct_type, p_struct_type)
-MARSHALL_P(sym, p_sym)
-MARSHALL_P(tag, p_tag)
+DEF_MARSHALL_P(callable, p_callable)
+DEF_MARSHALL_P(cow, p_cow)
+DEF_MARSHALL_P(frame, p_frame)
+DEF_MARSHALL_P(list, p_list)
+DEF_MARSHALL_P(struct, p_struct)
+DEF_MARSHALL_P(struct_type, p_struct_type)
+DEF_MARSHALL_P(sym, p_sym)
+DEF_MARSHALL_P(tag, p_tag)
 
 s_marshall * marshall_ptr (s_marshall *m, bool heap, u_ptr_w ptr)
 {
@@ -475,7 +475,7 @@ s_marshall * marshall_ptr_free (s_marshall *m, bool heap,
   return NULL;
 }
 
-MARSHALL_P(var, p_var)
+DEF_MARSHALL_P(var, p_var)
 
 s_marshall * marshall_quote (s_marshall *m, bool heap,
                              const s_quote *quote)

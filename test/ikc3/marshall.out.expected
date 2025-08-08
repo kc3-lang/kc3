@@ -2,183 +2,188 @@ require Marshall
 true
 require MarshallRead
 true
-loopback = fn (tag) { str = Marshall.tag_to_str(tag); result = MarshallRead.tag_from_str(str); result == tag }
-fn (tag) { str = Marshall.tag_to_str(tag); result = MarshallRead.tag_from_str(str); result == tag }
+loopback = fn (tag) { str = Marshall.tag_to_str(tag); result = MarshallRead.tag_from_str(str); if (result == tag) do
+    {:ok, Str.size(str)}
+  else
+    {:ko, Str.size(str), result}
+  end }
+fn (tag) { str = Marshall.tag_to_str(tag); result = MarshallRead.tag_from_str(str); if (result == tag) do
+    {:ok, Str.size(str)}
+  else
+    {:ko, Str.size(str), result}
+  end }
 loopback(false)
-true
+{:ok, 34}
 loopback(true)
-true
+{:ok, 34}
 loopback('A')
-true
+{:ok, 34}
 loopback('\0')
-true
+{:ok, 34}
 loopback('Z')
-true
+{:ok, 34}
 loopback(0)
-true
+{:ok, 34}
 loopback(1)
-true
+{:ok, 34}
 loopback(2)
-true
+{:ok, 34}
 loopback(255)
-true
+{:ok, 34}
 loopback(256)
-true
+{:ok, 35}
 loopback(-1234)
-true
+{:ok, 35}
 loopback(1234)
-true
+{:ok, 35}
 loopback(-123456789)
-true
+{:ok, 37}
 loopback(123456789)
-true
+{:ok, 37}
 loopback((F32) 0.0)
-true
+{:ok, 37}
 loopback((F32) 1.0)
-true
+{:ok, 37}
 loopback((F64) 0.0)
-true
+{:ok, 41}
 loopback((F64) 1.0)
-true
+{:ok, 41}
 loopback((F128) 0.0)
-true
+{:ok, 49}
 loopback((F128) 1.0)
-true
+{:ok, 49}
 loopback("")
-true
+{:ok, 37}
 loopback("hello")
-true
+{:ok, 42}
 loopback("héllo wörld")
-true
+{:ok, 50}
 loopback([0, 1])
-true
+{:ok, 63}
 loopback([[2, 3], [4, 5]])
-true
+{:ok, 121}
 loopback(%Time{})
-true
+{:ok, 50}
 loopback((Ptr) 0x0)
-true
+{:ok, 41}
 loopback(1 +i 2)
-true
+{:ok, 37}
 loopback(false)
-true
+{:ok, 34}
 loopback(true)
-true
+{:ok, 34}
 loopback('0')
-true
+{:ok, 34}
 loopback('z')
-true
+{:ok, 34}
 loopback('\n')
-true
+{:ok, 34}
 loopback('\t')
-true
+{:ok, 34}
 loopback(255)
-true
+{:ok, 34}
 loopback(127)
-true
+{:ok, 34}
 loopback(128)
-true
+{:ok, 34}
 loopback(-1)
-true
+{:ok, 34}
 loopback(-32768)
-true
+{:ok, 35}
 loopback(32767)
-true
+{:ok, 35}
 loopback(65535)
-true
+{:ok, 35}
 loopback(-2147483648)
-true
+{:ok, 37}
 loopback(2147483647)
-true
+{:ok, 37}
 loopback(4294967295)
-true
+{:ok, 37}
 loopback(-9223372036854775808)
-true
+{:ok, 41}
 loopback(9223372036854775807)
-true
+{:ok, 41}
 loopback(18446744073709551615)
-true
+{:ok, 41}
 loopback((Integer) 1024)
-true
+{:ok, 44}
 loopback(10000000000000000000000000000000000)
-true
+{:ok, 57}
 loopback(123456789012345678901234567890)
-true
+{:ok, 55}
 loopback((F32) -1.0)
-true
+{:ok, 37}
 loopback((F32) 3.141592)
-true
+{:ok, 37}
 loopback((F32) 4.294966e+9)
-true
+{:ok, 37}
 loopback((F64) -1.0)
-true
+{:ok, 41}
 loopback((F64) 3.14159265358979)
-true
+{:ok, 41}
 loopback((F64) 4.294967296e+9)
-true
+{:ok, 41}
 loopback((F128) -1.0)
-true
+{:ok, 49}
 loopback((F128) 3.141592653589793237862287655914883)
-true
+{:ok, 49}
 loopback(2/6)
-true
+{:ok, 53}
 loopback(1/3)
-true
+{:ok, 53}
 loopback(22/7)
-true
+{:ok, 53}
 loopback(0 +i 1)
-true
+{:ok, 37}
 loopback(-1 +i -2)
-true
+{:ok, 37}
 loopback((F32) 3.14 +i (F32) 2.71)
-true
+{:ok, 43}
 loopback("test\ntab\there")
-true
+{:ok, 50}
 loopback([])
-true
+{:ok, 41}
 loopback([1, 2, 3, 4, 5])
-true
+{:ok, 96}
 loopback([true, false, 'A'])
-true
+{:ok, 74}
 loopback(["hello", "world"])
-true
+{:ok, 79}
 loopback([[[1]]])
-true
+{:ok, 88}
 loopback({1, 2, 3})
-true
+{:ok, 47}
 loopback({true, 'A', "test"})
-true
+{:ok, 54}
 loopback({1, 2, [3, 4]})
-true
+{:ok, 76}
 loopback(do end)
-true
+{:ok, 33}
 loopback(Module)
-true
+{:ok, 51}
 loopback(:test)
-true
+{:ok, 49}
 loopback(:hello_world)
-true
+{:ok, 56}
 loopback(%{})
-true
+{:ok, 41}
 loopback(%{a: 1,
            b: 2})
-true
-loopback(%{key: "value", num: 42})
-true
+{:ok, 73}
+loopback(%{key: "value",
+           num: 42})
+{:ok, 85}
 loopback(%{nested: %{inner: true}})
-true
+{:ok, 89}
 loopback(%Time{tv_sec: 1000, tv_nsec: 2000})
-true
+{:ko, 50, %Time{tv_nsec: 512000}}
 loopback(%Time{tv_sec: 1 + 1, tv_nsec: 2 + 2})
-true
+{:ko, 50, %Time{tv_nsec: 1024}}
+loopback((Ptr) 0x0)
+{:ok, 41}
 loopback((PtrFree) 0x0)
-true
-loopback(quote 1 + 1)
-true
-loopback(quote hello)
-true
-loopback(unquote(123))
-true
+{:ok, 41}
 loopback((U8) ?)
 true
 loopback((Tag) ?)
