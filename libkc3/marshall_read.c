@@ -20,12 +20,13 @@
 #include "list.h"
 #include "map.h"
 #include "marshall.h"
-#include "mutex.h"
-#include "str.h"
 #include "marshall_read.h"
+#include "mutex.h"
 #include "rwlock.h"
+#include "str.h"
 #include "sym.h"
 #include "tag.h"
+#include "var.h"
 
 #define DEF_MARSHALL_READ(name, type)                                  \
   s_marshall_read * marshall_read_ ## name (s_marshall_read *mr,       \
@@ -199,11 +200,11 @@ s_marshall_read *marshall_read_cow (s_marshall_read *mr,
   if (! marshall_read_sym(mr, heap, &tmp.type) ||
       ! marshall_read_list(mr, heap, tmp.list))
         return NULL;
-  if (! marshall_read_sw(mr, heap, &tmp.ref_count) ||
-     ! mutex_init(&tmp.mutex)) {
+  if (! mutex_init(&tmp.mutex)) {
     list_clean(tmp.list);
     return NULL;
   }
+  tmp.ref_count = 1;
   *dest = tmp;
   return mr;
 }
@@ -521,23 +522,25 @@ s_marshall_read * marshall_read_map (s_marshall_read *mr,
                                      bool heap,
                                      s_map *dest)
 {
-    s_map tmp = {0};
-    uw count;
-    uw i = 0;
-    assert(mr);
-    assert(mr);
-    if (! marshall_read_uw(mr, heap, &count)   ||
-        ! map_init(&tmp, count))
+  s_map tmp = {0};
+  uw count;
+  uw i = 0;
+  assert(mr);
+  assert(mr);
+  if (! marshall_read_uw(mr, heap, &count) ||
+      (count && ! map_init(&tmp, count)))
+    return NULL;
+  tmp.count = count;
+  while (i < tmp.count) {
+    if (! marshall_read_tag(mr, heap, tmp.key + i) ||
+        ! marshall_read_tag(mr, heap, tmp.value + i)) {
+      map_clean(&tmp);
       return NULL;
-    tmp.count = count;
-    while (i < tmp.count) {
-      if (! marshall_read_tag(mr, heap, &tmp.key[i]) ||
-          ! marshall_read_tag(mr, heap, &tmp.value[i]))
-      return NULL;
-      i++;
     }
-    *dest = tmp;
-    return mr;
+    i++;
+  }
+  *dest = tmp;
+  return mr;
 }
 
 s_marshall_read * marshall_read_new (void)
@@ -709,11 +712,28 @@ s_marshall_read * marshall_read_pvar (s_marshall_read *mr,
                                       bool heap,
                                       p_var *dest)
 {
+  u64 offset = 0;
+  void *present = NULL;
+  p_var tmp = NULL;
   assert(mr);
   assert(dest);
-  p_var tmp = {0};
-  if (! marshall_read_var(mr, heap, *dest))
+  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
     return NULL;
+  if (present || ! offset) {
+    *dest = present;
+    return mr;
+  }
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+      ! (tmp = alloc(sizeof(s_var))))
+    return NULL;
+  if (! marshall_read_var(mr, true, tmp)) {
+    free(tmp);
+    return NULL;
+  }
+  if (! marshall_read_ht_add(mr, offset, tmp)) {
+    var_delete(tmp);
+    return NULL;
+  }
   *dest = tmp;
   return mr;
 }
@@ -998,22 +1018,23 @@ s_marshall_read * marshall_read_var (s_marshall_read *mr,
                                      bool heap,
                                      s_var *dest)
 {
-    s_var tmp = {0};
-    assert(mr);
-    assert(mr);
-    if (! marshall_read_bool(mr, heap, &tmp.bound)   ||
-        ! mutex_init(&tmp.mutex)                     ||
-        ! marshall_read_ident(mr, heap, &tmp.name)   ||
-        ! marshall_read_bool(mr, heap, &tmp.ready)   ||
-        ! marshall_read_sw(mr, heap, &tmp.ref_count) ||
-        ! marshall_read_tag(mr, heap, &tmp.tag))
-      return NULL;
-    if (! marshall_read_psym(mr, heap, &tmp.type)) {
-      tag_clean(&tmp.tag);
-      return NULL;
-    }
-    *dest = tmp;
-    return mr;
+  s_var tmp = {0};
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_ident(mr, heap, &tmp.name) ||
+      ! marshall_read_psym(mr, heap, &tmp.type) ||
+      ! marshall_read_bool(mr, heap, &tmp.bound) ||
+      (tmp.bound &&
+       ! marshall_read_tag(mr, heap, &tmp.tag)))
+    return NULL;
+  tmp.ref_count = 1;
+  if (! mutex_init(&tmp.mutex)) {
+    var_clean(&tmp);
+    return NULL;
+  }
+  tmp.ready = true;
+  *dest = tmp;
+  return mr;
 }
 
 // more complex types :

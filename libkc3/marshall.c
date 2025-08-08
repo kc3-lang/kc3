@@ -419,9 +419,6 @@ s_marshall * marshall_map (s_marshall *m, bool heap, const s_map *map)
   uw i = 0;
   assert(m);
   assert(map);
-  assert(map->count);
-  assert(map->key);
-  assert(map->value);
   if (! marshall_uw(m, heap, map->count))
     return NULL;
   while (i < map->count) {
@@ -881,14 +878,16 @@ s_marshall *marshall_unquote(s_marshall *m, bool heap,
 
 DEF_MARSHALL(uw)
 
-s_marshall *marshall_var(s_marshall *m, bool heap, const s_var *var)
+s_marshall * marshall_var (s_marshall *m, bool heap, const s_var *var)
 {
   assert(m);
   assert(var);
   if (! m || ! var ||
-      ! marshall_bool(m, heap, var->bound) ||
+      ! marshall_ident(m, heap, &var->name) ||
       ! marshall_sym(m, heap, var->type) || 
-      ! marshall_tag(m, heap, &var->tag))
+      ! marshall_bool(m, heap, var->bound) ||
+      (var->bound &&
+       ! marshall_tag(m, heap, &var->tag)))
     return NULL;
   return m;
 }
