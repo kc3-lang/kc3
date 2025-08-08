@@ -17,6 +17,7 @@
 #include "hash.h"
 #include "ht.h"
 #include "list.h"
+#include "map.h"
 #include "marshall.h"
 #include "mutex.h"
 #include "str.h"
@@ -512,11 +513,15 @@ s_marshall_read * marshall_read_map (s_marshall_read *mr,
                                      s_map *dest)
 {
     s_map tmp = {0};
+    uw count;
     assert(mr);
     assert(mr);
-    if (! marshall_read_uw(mr, heap, &tmp.count)  ||
-        ! marshall_read_tag(mr, heap, tmp.key)   ||
-        ! marshall_read_tag(mr, heap, tmp.value))
+    if (! marshall_read_uw(mr, heap, &count)   ||
+        ! map_init(&tmp, count))
+      return NULL;
+    tmp.count = count;
+    if (! marshall_read_ptag(mr, heap, &tmp.key) ||
+        ! marshall_read_ptag(mr, heap, &tmp.value))
       return NULL;
     *dest = tmp;
     return mr;
