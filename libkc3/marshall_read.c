@@ -82,8 +82,8 @@ s_marshall_read * marshall_read_array_data (s_marshall_read *mr,
 }
 
 s_marshall_read * marshall_read_call (s_marshall_read *mr,
-                                            bool heap,
-                                            s_call *dest)
+                                      bool heap,
+                                      s_call *dest)
 {
   s_call call = {0};
   assert(mr);
@@ -104,8 +104,8 @@ s_marshall_read * marshall_read_call (s_marshall_read *mr,
 }
 
 s_marshall_read * marshall_read_callable_data (s_marshall_read *mr,
-                                      bool heap,
-                                      u_callable_data *dest)
+                                               bool heap,
+                                               u_callable_data *dest)
 {
   assert(mr);
   assert(dest);
@@ -229,9 +229,9 @@ s_marshall_read * marshall_read_dimensions (s_marshall_read *mr,
   return mr;
 }
 
-s_marshall_read * marshall_read_do_block(s_marshall_read *mr,
-                                         bool heap,
-                                         s_do_block *dest)
+s_marshall_read * marshall_read_do_block (s_marshall_read *mr,
+                                          bool heap,
+                                          s_do_block *dest)
 {
   s_do_block tmp = {0};
   uw count = 0;
@@ -251,9 +251,9 @@ s_marshall_read * marshall_read_do_block(s_marshall_read *mr,
   return mr;
 }
 
-s_marshall_read * marshall_read_fact(s_marshall_read *mr,
-                                     bool heap,
-                                     s_fact *dest)
+s_marshall_read * marshall_read_fact (s_marshall_read *mr,
+                                      bool heap,
+                                      s_fact *dest)
 {
   s_fact tmp = {0};
   assert(mr);
