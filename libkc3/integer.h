@@ -100,6 +100,7 @@ uw      integer_bytes (const s_integer *i);
 bool    integer_is_negative (const s_integer *i);
 bool    integer_is_positive (const s_integer *i);
 bool    integer_is_zero (const s_integer *i);
+bool    integer_needs_cast (const s_integer *x);
 s_tag * integer_reduce (const s_integer *i, s_tag *dest);
 f32     integer_to_f32 (const s_integer *i);
 f64     integer_to_f64 (const s_integer *i);

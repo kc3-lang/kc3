@@ -474,6 +474,20 @@ s_integer * integer_mul (const s_integer *a, const s_integer *b,
   return dest;
 }
 
+bool integer_needs_cast (const s_integer *x)
+{
+  static bool initialized = false;
+  static s_integer s64_min;
+  static s_integer u64_max;
+  if (! initialized) {
+    integer_init_s64(&s64_min, S64_MIN);
+    integer_init_u64(&u64_max, U64_MAX);
+    initialized = true;
+  }
+  return (compare_integer(x, &s64_min) >= 0 &&
+          compare_integer(x, &u64_max) <= 0);
+}
+
 s_integer * integer_neg (const s_integer *a, s_integer *dest)
 {
   sw r;

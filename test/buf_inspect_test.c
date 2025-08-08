@@ -129,10 +129,10 @@
     test_context("buf_inspect_integer(" # test ") -> " # expected);    \
     integer_init_1(&i, (test));                                        \
     buf_init(&buf_result, false, sizeof(b), b);                        \
-    TEST_EQ(buf_inspect_integer_size(&pretty, &i), strlen(test));      \
-    TEST_EQ(buf_inspect_integer(&buf_result, &i), strlen(test));       \
+    TEST_EQ(buf_inspect_integer_size(&pretty, &i), strlen(expected));  \
+    TEST_EQ(buf_inspect_integer(&buf_result, &i), strlen(expected));   \
     integer_clean(&i);                                                 \
-    TEST_EQ(buf_result.wpos, strlen(test));                            \
+    TEST_EQ(buf_result.wpos, strlen(expected));                        \
     TEST_STRNCMP(buf_result.ptr.pchar, (expected), buf_result.wpos);   \
     buf_clean(&buf_result);                                            \
   } while (0)
@@ -318,9 +318,9 @@ TEST_CASE_END(buf_inspect_f128)
 
 TEST_CASE(buf_inspect_integer)
 {
-  BUF_INSPECT_TEST_INTEGER("0", "0");
-  BUF_INSPECT_TEST_INTEGER("1234", "1234");
-  BUF_INSPECT_TEST_INTEGER("-1234", "-1234");
+  BUF_INSPECT_TEST_INTEGER("0", "(Integer) 0");
+  BUF_INSPECT_TEST_INTEGER("1234", "(Integer) 1234");
+  BUF_INSPECT_TEST_INTEGER("-1234", "(Integer) -1234");
   BUF_INSPECT_TEST_INTEGER("12345678901234567890123456789013",
 			   "12345678901234567890123456789013");
   BUF_INSPECT_TEST_INTEGER("-1234567890123456789012345678901",

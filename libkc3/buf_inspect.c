@@ -2467,18 +2467,9 @@ sw buf_inspect_ident_sym_size (s_pretty *pretty, const s_sym *sym)
 
 sw buf_inspect_integer (s_buf *buf, const s_integer *x)
 {
-  static bool initialized = false;
   sw r;
   sw result = 0;
-  static s_integer s64_min;
-  static s_integer u64_max;
-  if (! initialized) {
-    integer_init_s64(&s64_min, S64_MIN);
-    integer_init_u64(&u64_max, U64_MAX);
-    initialized = true;
-  }
-  if (compare_integer(x, &s64_min) >= 0 &&
-      compare_integer(x, &u64_max) <= 0) {
+  if (integer_needs_cast(x)) {
     if ((r = buf_write_1(buf, "(Integer) ")) <= 0)
       return r;
     result += r;
@@ -2501,7 +2492,7 @@ sw buf_inspect_integer_decimal (s_buf *buf, const s_integer *x)
   s32 size = 0;
   mp_int t;
   if (MP_IS_ZERO(&x->mp_int))
-    return buf_write_character_utf8(buf, '0');
+    return buf_write_1(buf, "0");
   if (mp_radix_size(&x->mp_int, radix, &size) != MP_OKAY)
     return -1;
   maxlen = size;
@@ -2521,8 +2512,9 @@ sw buf_inspect_integer_decimal (s_buf *buf, const s_integer *x)
     p = '0' + digit;
     if (p > '9')
       goto error;
-    buf_write_character_utf8(&buf_tmp, p);
-    result++;
+    if ((r = buf_write_character_utf8(&buf_tmp, p)) <= 0)
+      goto error;
+    result += r;
   }
   buf_xfer_reverse(&buf_tmp, buf);
   mp_clear(&t);
@@ -2532,6 +2524,41 @@ sw buf_inspect_integer_decimal (s_buf *buf, const s_integer *x)
   mp_clear(&t);
   buf_clean(&buf_tmp);
   return -1;
+}
+
+sw buf_inspect_integer_decimal_size (s_pretty *pretty,
+                                     const s_integer *x)
+{
+  mp_digit digit;
+  sw r;
+  const mp_digit radix = 10;
+  sw result = 0;
+  mp_int t;
+  if (MP_IS_ZERO(&x->mp_int))
+    return buf_write_1_size(pretty, "0");
+  if (mp_init_copy(&t, &x->mp_int) != MP_OKAY)
+    return -1;
+  if (t.sign == MP_NEG) {
+    t.sign = MP_ZPOS;
+    if ((r = buf_write_1_size(pretty, "-")) <= 0)
+      goto ko;
+    result += r;
+  }
+  while (! MP_IS_ZERO(&t)) {
+    if (mp_div_d(&t, radix, &t, &digit) != MP_OKAY ||
+        digit > 9) {
+      r = -1;
+      goto ko;
+    }
+    if ((r = buf_write_1_size(pretty, "9")) <= 0)
+      goto ko;
+    result += r;
+  }
+  mp_clear(&t);
+  return result;
+ ko:
+  mp_clear(&t);
+  return r;
 }
 
 sw buf_inspect_integer_hexadecimal (s_buf *buf, const s_integer *x)
@@ -2581,14 +2608,17 @@ sw buf_inspect_integer_hexadecimal (s_buf *buf, const s_integer *x)
 
 sw buf_inspect_integer_size (s_pretty *pretty, const s_integer *x)
 {
-  const mp_digit radix = 10;
-  s32 size = 0;
-  (void) pretty;
-  if (MP_IS_ZERO(&x->mp_int))
-    return 1;
-  if (mp_radix_size(&x->mp_int, radix, &size) != MP_OKAY)
-    return -1;
-  return size - 1;
+  sw r;
+  sw result = 0;
+  if (integer_needs_cast(x)) {
+    if ((r = buf_write_1_size(pretty, "(Integer) ")) <= 0)
+      return r;
+    result += r;
+  }
+  if ((r = buf_inspect_integer_decimal_size(pretty, x)) <= 0)
+    return r;
+  result += r;
+  return result;
 }
 
 sw buf_inspect_list (s_buf *buf, const s_list *x)
