@@ -14,6 +14,7 @@
 #include "assert.h"
 #include "buf.h"
 #include "compare.h"
+#include "do_block.h"
 #include "hash.h"
 #include "ht.h"
 #include "list.h"
@@ -233,10 +234,14 @@ s_marshall_read * marshall_read_do_block(s_marshall_read *mr,
                                          s_do_block *dest)
 {
   s_do_block tmp = {0};
+  uw count = 0;
   assert(mr);
   assert(mr);
-  if (! marshall_read_uw(mr, heap, &tmp.count)     ||
-      ! marshall_read_tag(mr, heap, tmp.tag))
+  if (! marshall_read_uw(mr, heap, &count)  ||
+      ! do_block_init(&tmp, count))
+    return NULL;
+  tmp.count = count;
+  if (! marshall_read_tag(mr, heap, tmp.tag))
     return NULL;
   if (! marshall_read_bool(mr, heap, &tmp.short_form)) {
     tag_clean(tmp.tag);
