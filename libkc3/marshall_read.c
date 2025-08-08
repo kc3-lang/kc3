@@ -241,7 +241,7 @@ s_marshall_read * marshall_read_do_block (s_marshall_read *mr,
       ! do_block_init(&tmp, count))
     return NULL;
   tmp.count = count;
-  if (! marshall_read_tag(mr, heap, tmp.tag))
+  if (! marshall_read_ptag(mr, heap, tmp.tag))
     return NULL;
   if (! marshall_read_bool(mr, heap, &tmp.short_form)) {
     tag_clean(tmp.tag);
