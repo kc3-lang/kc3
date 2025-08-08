@@ -337,6 +337,7 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
   tag.data.tuple.tag[1].type = TAG_U64;
   if (! ht_add(&m->ht, &tag))
     goto ko;
+  m->heap_count++;
  ok:
   if (tag.type != TAG_TUPLE ||
       tag.data.tuple.count != 2 ||
@@ -352,8 +353,6 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
     goto ko;
   tag_clean(&key);
   tag_clean(&tag);
-  if (heap)
-    m->heap_count++;
   return m;
  ko:
   tag_clean(&key);
