@@ -13,8 +13,11 @@
 #include "alloc.h"
 #include "assert.h"
 #include "buf.h"
+#include "callable.h"
 #include "compare.h"
 #include "do_block.h"
+#include "fn.h"
+#include "frame.h"
 #include "hash.h"
 #include "ht.h"
 #include "list.h"
@@ -105,19 +108,33 @@ s_marshall_read * marshall_read_call (s_marshall_read *mr,
   return mr;
 }
 
-s_marshall_read * marshall_read_callable_data (s_marshall_read *mr,
-                                               bool heap,
-                                               u_callable_data *dest)
+s_marshall_read * marshall_read_callable (s_marshall_read *mr,
+                                          bool heap,
+                                          s_callable *dest)
 {
   assert(mr);
   assert(dest);
-  u_callable_data tmp = {0};
-  if (! marshall_read_cfn(mr, heap, &tmp.cfn) ||
-      ! marshall_read_fn(mr, heap, &tmp.fn)) {
-    err_puts("marshall_read_call: read_error");
-    assert(! "marshall_read_call: read_error");
+  s_callable tmp = {0};
+  u8 type;
+  if (! marshall_read_u8(mr, heap, &type))
     return NULL;
+  tmp.type = type;
+  switch (tmp.type) {
+  case CALLABLE_VOID:
+    goto ok;
+  case CALLABLE_CFN:
+    if (! marshall_read_cfn(mr, heap, &tmp.data.cfn))
+      return NULL;
+    goto ok;
+  case CALLABLE_FN:
+    if (! marshall_read_fn(mr, heap, &tmp.data.fn))
+      return NULL;
+    goto ok;
   }
+  err_puts("marshall_read_callable: unknown callable type");
+  assert(! "marshall_read_callable: unknown callable type");
+  return NULL;
+ ok:
   *dest = tmp;
   return mr;
 }
@@ -257,6 +274,10 @@ s_marshall_read * marshall_read_do_block (s_marshall_read *mr,
   return mr;
 }
 
+DEF_MARSHALL_READ(f32, f32)
+DEF_MARSHALL_READ(f64, f64)
+DEF_MARSHALL_READ(f128, f128)
+
 s_marshall_read * marshall_read_fact (s_marshall_read *mr,
                                       bool heap,
                                       s_fact *dest)
@@ -280,28 +301,68 @@ s_marshall_read * marshall_read_fact (s_marshall_read *mr,
   return mr;
 }
 
-s_marshall_read * marshall_read_fn (s_marshall_read *mr,
-                                    bool heap,
+s_marshall_read * marshall_read_fn (s_marshall_read *mr, bool heap,
                                     s_fn *dest)
 {
+  s_fn_clause **clause;
+  uw clause_count;
+  bool has_frame;
+  uw i;
   s_fn tmp = {0};
   assert(mr);
   assert(dest);
   if (! marshall_read_bool(mr, heap, &tmp.macro) ||
       ! marshall_read_bool(mr, heap, &tmp.special_operator) ||
       ! marshall_read_ident(mr, heap, &tmp.name) ||
-      // ! marshall_read_fn_clause(mr, heap, &tmp.clauses) ||
-      ! marshall_read_psym(mr, heap, &tmp.module) /* ||
-      ! marshall_read_frame(mr, heap, tmp.frame) */
-      )
+      ! marshall_read_psym(mr, heap, &tmp.module) ||
+      ! marshall_read_uw(mr, heap, &clause_count))
     return NULL;
+  clause = &tmp.clauses;
+  i = 0;
+  while (i < clause_count) {
+    if (! (*clause = alloc(sizeof(s_fn_clause))) ||
+        ! marshall_read_plist(mr, heap, &(*clause)->pattern) ||
+        ! marshall_read_do_block(mr, heap, &(*clause)->algo)) {
+      fn_clean(&tmp);
+      return NULL;
+    }
+    clause = &(*clause)->next;
+    i++;
+  }
+  if (! marshall_read_bool(mr, heap, &has_frame) ||
+      (has_frame && ! marshall_read_frame(mr, heap, tmp.frame))) {
+    fn_clean(&tmp);
+    return NULL;
+  }
   *dest = tmp;
   return mr;
 }
 
-DEF_MARSHALL_READ(f128, f128)
-DEF_MARSHALL_READ(f32, f32)
-DEF_MARSHALL_READ(f64, f64)
+s_marshall_read * marshall_read_frame (s_marshall_read *mr, bool heap,
+                                       s_frame *dest)
+{
+  uw          binding_count;
+  s_binding **binding;
+  uw i;
+  s_frame tmp = {0};
+  if (! marshall_read_uw(mr, heap, &binding_count))
+    return NULL;
+  binding = &tmp.bindings;
+  i = 0;
+  while (i < binding_count) {
+    if (! (*binding = alloc(sizeof(s_binding))) ||
+        ! marshall_read_psym(mr, heap, &(*binding)->name) ||
+        ! marshall_read_tag(mr, heap, &(*binding)->value))
+      goto ko;
+    binding = &(*binding)->next;
+    i++;
+  }
+  *dest = tmp;
+  return mr;
+ ko:
+  frame_clean(&tmp);
+  return NULL;
+}
 
 s_marshall_read * marshall_read_header (s_marshall_read *mr)
 {
@@ -594,15 +655,26 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
                                            bool heap,
                                            p_callable *dest)
 {
-  p_callable tmp_call = {0};
+  u64 offset = 0;
+  void *present = NULL;
+  p_callable tmp = NULL;
   assert(mr);
   assert(dest);
-  if (! marshall_read_s8(mr, heap, &(*((s8 *)tmp_call->type))) ||
-      ! marshall_read_callable_data(mr, heap, &tmp_call->data) ||
-      ! mutex_init(&tmp_call->mutex)                           ||
-      ! marshall_read_sw(mr, heap, &tmp_call->ref_count))
+  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
     return NULL;
-  *dest = tmp_call;
+  if (present || ! offset) {
+    *dest = present;
+    return mr;
+  }
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+      ! (tmp = alloc(sizeof(s_callable))))
+    return NULL;
+  if (! marshall_read_callable(mr, true, tmp) ||
+      ! marshall_read_ht_add(mr, offset, tmp)) {
+    callable_delete(tmp);
+    return NULL;
+  }
+  *dest = tmp;
   return mr;
 }
 

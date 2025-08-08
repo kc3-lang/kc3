@@ -268,24 +268,30 @@ s_marshall * marshall_fact (s_marshall *m, bool heap,
 s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)
 {
   s_fn_clause *clause;
+  uw           clause_count = 0;
   assert(m);
   assert(fn);
-  assert(! fn->frame || ! fn->frame->next);
   if (! m || ! fn)
-    return NULL;
-  if (! marshall_bool(m, heap, fn->macro) ||
-      ! marshall_bool(m, heap, fn->special_operator) ||
-      ! marshall_ident(m, heap, &fn->name) ||
-      ! marshall_psym(m, heap, fn->module))
     return NULL;
   clause = fn->clauses;
   while (clause) {
-    if (! marshall_list(m, heap, clause->pattern) ||
-        ! marshall_do_block(m, heap, &clause->algo))
-        return NULL;
+    clause_count++;
     clause = clause->next;
   }
- if (fn->frame && ! marshall_frame(m, heap, fn->frame))
+  if (! marshall_bool(m, heap, fn->macro) ||
+      ! marshall_bool(m, heap, fn->special_operator) ||
+      ! marshall_ident(m, heap, &fn->name) ||
+      ! marshall_psym(m, heap, fn->module) ||
+      ! marshall_uw(m, heap, clause_count))
+    return NULL;
+  clause = fn->clauses;
+  while (clause) {
+    if (! marshall_plist(m, heap, clause->pattern) ||
+        ! marshall_do_block(m, heap, &clause->algo))
+      return NULL;
+    clause = clause->next;
+  }
+  if (! marshall_pframe(m, heap, fn->frame))
     return NULL;
   return m;
 }
@@ -293,17 +299,25 @@ s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)
 s_marshall * marshall_frame (s_marshall *m, bool heap,
                              const s_frame *frame)
 {
-  s_binding *bindings;
+  s_binding *binding;
+  uw         binding_count = 0;
   assert(m);
   assert(frame);
   if (! m || ! frame)
     return NULL;
-  bindings = frame->bindings;
-  while (bindings) {
-    if (! marshall_psym(m, heap, bindings->name) ||
-        ! marshall_tag(m, heap, &bindings->value))
+  binding = frame->bindings;
+  while (binding) {
+    binding_count++;
+    binding = binding->next;
+  }
+  if (! marshall_uw(m, heap, binding_count))
+    return NULL;
+  binding = frame->bindings;
+  while (binding) {
+    if (! marshall_psym(m, heap, binding->name) ||
+        ! marshall_tag(m, heap, &binding->value))
       return NULL;
-    bindings = bindings->next;
+    binding = binding->next;
   }
   if (! marshall_pframe(m, heap, frame->next))
     return NULL;
