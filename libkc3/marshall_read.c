@@ -27,8 +27,12 @@
 #include "marshall_read.h"
 #include "mutex.h"
 #include "pcallable.h"
+#include "pstruct.h"
+#include "pstruct_type.h"
 #include "rwlock.h"
 #include "str.h"
+#include "struct.h"
+#include "struct_type.h"
 #include "sym.h"
 #include "tag.h"
 #include "time.h"
@@ -257,6 +261,105 @@ s_marshall_read *marshall_read_cow (s_marshall_read *mr,
   }
   tmp.ref_count = 1;
   *dest = tmp;
+  return mr;
+}
+
+s_marshall_read * marshall_read_data (s_marshall_read *mr, bool heap,
+                                      p_sym type, void *data)
+{
+  s_struct s = {0};
+  p_struct_type st = NULL;
+  assert(mr);
+  assert(type);
+  assert(data);
+  if (! mr || ! type || ! data)
+    return NULL;
+  if (type == &g_sym_Array ||
+      sym_is_array_type(type))
+    return marshall_read_array(mr, heap, data);
+  if (type == &g_sym_Bool)
+    return marshall_read_bool(mr, heap, data);
+  if (type == &g_sym_Call)
+    return marshall_read_call(mr, heap, data);
+  if (type == &g_sym_Callable ||
+      type == &g_sym_Cfn ||
+      type == &g_sym_Fn)
+    return marshall_read_pcallable(mr, heap, data);
+  if (type == &g_sym_Character)
+    return marshall_read_character(mr, heap, data);
+  if (type == &g_sym_Complex)
+    return marshall_read_complex(mr, heap, data);
+  if (type == &g_sym_Cow)
+    return marshall_read_pcow(mr, heap, data);
+  if (type == &g_sym_F32)
+    return marshall_read_f32(mr, heap, data);
+  if (type == &g_sym_F64)
+    return marshall_read_f64(mr, heap, data);
+  if (type == &g_sym_F128)
+    return marshall_read_f128(mr, heap, data);
+  if (type == &g_sym_Fact)
+    return marshall_read_fact(mr, heap, data);
+  if (type == &g_sym_Ident)
+    return marshall_read_ident(mr, heap, data);
+  if (type == &g_sym_Integer)
+    return marshall_read_integer(mr, heap, data);
+  if (type == &g_sym_List)
+    return marshall_read_plist(mr, heap, data);
+  if (type == &g_sym_Map)
+    return marshall_read_map(mr, heap, data);
+  if (type == &g_sym_Ptag)
+    return marshall_read_ptag(mr, heap, data);
+  if (type == &g_sym_Ptr)
+    return marshall_read_ptr(mr, heap, data);
+  if (type == &g_sym_PtrFree)
+    return marshall_read_ptr_free(mr, heap, data);
+  if (type == &g_sym_Quote)
+    return marshall_read_quote(mr, heap, data);
+  if (type == &g_sym_S8)
+    return marshall_read_s8(mr, heap, data);
+  if (type == &g_sym_S16)
+    return marshall_read_s16(mr, heap, data);
+  if (type == &g_sym_S32)
+    return marshall_read_s32(mr, heap, data);
+  if (type == &g_sym_S64)
+    return marshall_read_s64(mr, heap, data);
+  if (type == &g_sym_Str)
+    return marshall_read_str(mr, heap, data);
+  if (type == &g_sym_Struct)
+    return marshall_read_pstruct(mr, heap, data);
+  if (type == &g_sym_StructType)
+    return marshall_read_pstruct_type(mr, heap, data);
+  if (type == &g_sym_Sw)
+    return marshall_read_sw(mr, heap, data);
+  if (type == &g_sym_Sym)
+    return marshall_read_psym(mr, heap, data);
+  if (type == &g_sym_Tag)
+    return marshall_read_tag(mr, heap, data);
+  if (type == &g_sym_Time)
+    return marshall_read_time(mr, heap, data);
+  if (type == &g_sym_Tuple)
+    return marshall_read_tuple(mr, heap, data);
+  if (type == &g_sym_U8)
+    return marshall_read_u8(mr, heap, data);
+  if (type == &g_sym_U16)
+    return marshall_read_u16(mr, heap, data);
+  if (type == &g_sym_U32)
+    return marshall_read_u32(mr, heap, data);
+  if (type == &g_sym_U64)
+    return marshall_read_u64(mr, heap, data);
+  if (type == &g_sym_Uw)
+    return marshall_read_uw(mr, heap, data);
+  if (type == &g_sym_Var)
+    return marshall_read_pvar(mr, heap, data);
+  if (type == &g_sym_Void)
+    return mr;
+  if (! pstruct_type_find(type, &st))
+    return NULL;
+  if (st) {
+    s.pstruct_type = st;
+    s.data = data;
+    marshall_read_struct(mr, heap, &s);
+  }
   return mr;
 }
 
@@ -943,23 +1046,59 @@ s_marshall_read * marshall_read_str (s_marshall_read *mr,
   return mr;
 }
 
-s_marshall_read * marshall_read_struct  (s_marshall_read *mr,
-                                         bool heap,
-                                         s_struct *dest)
+s_marshall_read * marshall_read_struct (s_marshall_read *mr,
+                                        bool heap,
+                                        s_struct *dest)
 {
-    s_struct tmp = {0};
-    assert(mr);
-    assert(mr);
-    if (! marshall_read_uw(mr, heap, (uw *)&tmp.data)             ||
-        ! marshall_read_bool(mr, heap, &tmp.free_data)            ||
-        ! marshall_read_tag(mr, heap, tmp.tag)                    ||
-        ! marshall_read_pstruct_type(mr, heap, &tmp.pstruct_type) ||
-        ! marshall_read_sw(mr, heap, &tmp.ref_count)              ||
-        ! mutex_init(&tmp.mutex))
+  bool has_tags;
+  bool has_data;
+  uw i;
+  uw offset;
+  s_struct tmp = {0};
+  p_sym type = NULL;
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_pstruct_type(mr, heap, &tmp.pstruct_type))
+    return NULL;
+  if (! marshall_read_bool(mr, heap, &has_tags))
+    return NULL;
+  if (has_tags) {
+    if (! (tmp.tag = alloc(tmp.pstruct_type->map.count *
+                           sizeof(s_tag))))
       return NULL;
-    tmp.mutex_ready = true;
-    *dest = tmp;
-    return mr;
+    i = 0;
+    while (i < tmp.pstruct_type->map.count) {
+      if (! marshall_read_tag(mr, heap, tmp.tag + i))
+        goto ko;
+      i++;
+    }
+  }
+  if (! marshall_read_bool(mr, heap, &has_data))
+    goto ko;
+  if (has_data) {
+    if (! (tmp.data = alloc(tmp.pstruct_type->size)))
+      goto ko;
+    tmp.free_data = true;
+    i = 0;
+    while (i < tmp.pstruct_type->map.count) {
+      offset = tmp.pstruct_type->offset[i];
+      if (! tag_type_var(tmp.pstruct_type->map.value + i, &type) ||
+          ! type)
+        goto ko;
+      if (! marshall_read_data(mr, heap, type, (u8 *) tmp.data + offset))
+        goto ko;
+      i++;
+    }
+  }
+  tmp.ref_count = 1;
+  if (! mutex_init(&tmp.mutex))
+    goto ko;
+  tmp.mutex_ready = true;
+  *dest = tmp;
+  return mr;
+ko:
+  struct_clean(&tmp);
+  return NULL;
 }
 
 s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,

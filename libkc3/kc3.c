@@ -771,7 +771,11 @@ p_marshall_read * kc3_marshall_read_new_str (p_marshall_read *mr,
                                              const s_str *input)
 {
   assert(mr);
-  *mr = marshall_read_new_str(input);
+  if (! (*mr = marshall_read_new_str(input))) {
+    err_puts("kc3_marshall_read_new_str: marshall_read_new_str");
+    assert(! "kc3_marshall_read_new_str: marshall_read_new_str");
+    return NULL;
+  }
   return mr;
 }
 
@@ -813,10 +817,20 @@ s_str * kc3_marshall_tag_to_str (const s_tag *tag, s_str *dest)
   s_str tmp = {0};
   assert(tag);
   assert(dest);
-  if (! marshall_init(&m))
+  if (! marshall_init(&m)) {
+    err_puts("kc3_marshall_tag_to_str: marshall_init");
+    assert(! "kc3_marshall_tag_to_str: marshall_init");
     return NULL;
-  if (! marshall_tag(&m, false, tag) ||
-      ! marshall_to_str(&m, &tmp)) {
+  }
+  if (! marshall_tag(&m, false, tag)) {
+    err_puts("kc3_marshall_tag_to_str: marshall_tag");
+    assert(! "kc3_marshall_tag_to_str: marshall_tag");
+    marshall_clean(&m);
+    return NULL;
+  }
+  if (! marshall_to_str(&m, &tmp)) {
+    err_puts("kc3_marshall_tag_to_str: marshall_to_str");
+    assert(! "kc3_marshall_tag_to_str: marshall_to_str");
     marshall_clean(&m);
     return NULL;
   }
