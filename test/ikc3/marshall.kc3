@@ -226,5 +226,5 @@ loopback(do
 end)
 quote loopback(cfn Tag "tag_add" (Tag, Tag, Result))
 loopback(cfn Tag "tag_add" (Tag, Tag, Result))
-quote loopback(%KC3.Op{sym: :+, callable: cfn Tag "tag_add" (Tag, Tag, Result)})
+quote loopback(%KC3.Op{sym: :-, callable: cfn Tag "tag_add" (Tag, Tag, Result)})
 loopback(%KC3.Op{sym: :-, callable: cfn Tag "tag_add" (Tag, Tag, Result)})
