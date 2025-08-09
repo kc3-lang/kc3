@@ -59,16 +59,26 @@
 
 #define DEF_MARSHALL_P(name, type)                                    \
   s_marshall * marshall_p ## name (s_marshall *m, bool heap,          \
-                                   type data)                         \
+                                   const type *data)                  \
   {                                                                   \
     assert(m);                                                        \
     bool present = false;                                             \
-    if (! m)                                                          \
+    if (! m || ! data) {                                              \
+      err_puts("marshall_p" # name ": invalid argument");             \
+      assert(! "marshall_p" # name ": invalid argument");             \
       return NULL;                                                    \
-    if (! marshall_heap_pointer(m, heap, data, &present))             \
+    }                                                                 \
+    if (! marshall_heap_pointer(m, heap, *data, &present)) {           \
+      err_puts("marshall_p" # name ": marshall_heap_pointer");        \
+      assert(! "marshall_p" # name ": marshall_heap_pointer");        \
       return NULL;                                                    \
-    if (! present && data)                                            \
-      return marshall_ ## name(m, true, data);                        \
+    }                                                                 \
+    if (! present && *data &&                                          \
+        ! marshall_ ## name(m, true, *data)) {                        \
+      err_puts("marshall_p" # name ": marshall_" # name);             \
+      assert(! "marshall_p" # name ": marshall_" # name);             \
+      return NULL;                                                    \
+    }                                                                 \
     return m;                                                         \
   }
 
@@ -79,7 +89,7 @@ s_marshall * marshall_array (s_marshall *m, bool heap,
   uw i = 0;
   assert(m);
   assert(array);
-  if (! marshall_psym(m, heap, array->array_type) ||
+  if (! marshall_psym(m, heap, &array->array_type) ||
       ! marshall_uw(m, heap, array->dimension_count))
     return NULL;
   i = 0;
@@ -89,7 +99,7 @@ s_marshall * marshall_array (s_marshall *m, bool heap,
       return NULL;
     i++;
   }
-  if (! marshall_psym(m, heap, array->element_type) ||
+  if (! marshall_psym(m, heap, &array->element_type) ||
       ! marshall_data(m, heap, array->array_type, array->data) ||
       ! marshall_uw(m, heap, array->size))
     return NULL;
@@ -121,7 +131,7 @@ s_marshall * marshall_call (s_marshall *m, bool heap,
       return NULL;
     list = list_next(list);
   }
-  if (! marshall_pcallable(m, heap, call->pcallable))
+  if (! marshall_pcallable(m, heap, &call->pcallable))
     return NULL;
   return m;
 }
@@ -169,8 +179,8 @@ s_marshall * marshall_cfn (s_marshall *m, bool heap, const s_cfn *cfn)
   if (! marshall_ident(m, heap, &cfn->name) ||
       ! marshall_bool(m, heap, cfn->macro) ||
       ! marshall_bool(m, heap, cfn->special_operator) ||
-      ! marshall_psym(m, heap, cfn->result_type) ||
-      ! marshall_psym(m, heap, cfn->c_name) ||
+      ! marshall_psym(m, heap, &cfn->result_type) ||
+      ! marshall_psym(m, heap, &cfn->c_name) ||
       ! marshall_u8(m, heap, cfn->arity))
     return NULL;
   arg_type = cfn->arg_types;
@@ -180,7 +190,7 @@ s_marshall * marshall_cfn (s_marshall *m, bool heap, const s_cfn *cfn)
       assert(! "marshall_cfn: invalid arg type");
       return NULL;
     }
-    if (! marshall_psym(m, heap, arg_type->tag.data.psym))
+    if (! marshall_psym(m, heap, &arg_type->tag.data.psym))
       return NULL;
     arg_type = list_next(arg_type);
   }
@@ -231,93 +241,325 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
   assert(m);
   assert(type);
   assert(data);
-  if (! m || ! type || ! data)
+  if (! m || ! type || ! data) {
+    err_puts("marshall_data: invalid argument");
+    assert(! "marshall_data: invalid argument");
     return NULL;
+  }
   if (type == &g_sym_Array ||
-      sym_is_array_type(type))
-    return marshall_array(m, heap, data);
-  if (type == &g_sym_Bool)
-    return marshall_bool(m, heap, *(bool *)data);
-  if (type == &g_sym_Call)
-    return marshall_call(m, heap, data);
+      sym_is_array_type(type)) {
+    if (! marshall_array(m, heap, data)) {
+      err_puts("marshall_data: marshall_array");
+      assert(! "marshall_data: marshall_array");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Bool) {
+    if (! marshall_bool(m, heap, *(bool *)data)) {
+      err_puts("marshall_data: marshall_bool");
+      assert(! "marshall_data: marshall_bool");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Call) {
+    if (! marshall_call(m, heap, data)) {
+      err_puts("marshall_data: marshall_call");
+      assert(! "marshall_data: marshall_call");
+      return NULL;
+    }
+    return m;
+  }
   if (type == &g_sym_Callable ||
       type == &g_sym_Cfn ||
-      type == &g_sym_Fn)
-    return marshall_pcallable(m, heap, data);
-  if (type == &g_sym_Character)
-    return marshall_character(m, heap, *(character *)data);
-  if (type == &g_sym_Complex)
-    return marshall_complex(m, heap, data);
-  if (type == &g_sym_Cow)
-    return marshall_pcow(m, heap, data);
-  if (type == &g_sym_F32)
-    return marshall_f32(m, heap, *(f32 *) data);
-  if (type == &g_sym_F64)
-    return marshall_f64(m, heap, *(f64 *) data);
-  if (type == &g_sym_F128)
-    return marshall_f128(m, heap, *(f128 *) data);
-  if (type == &g_sym_Fact)
-    return marshall_fact(m, heap, data);
-  if (type == &g_sym_Ident)
-    return marshall_ident(m, heap, data);
-  if (type == &g_sym_Integer)
-    return marshall_integer(m, heap, data);
-  if (type == &g_sym_List)
-    return marshall_plist(m, heap, data);
-  if (type == &g_sym_Map)
-    return marshall_map(m, heap, data);
-  if (type == &g_sym_Ptag)
-    return marshall_ptag(m, heap, data);
-  if (type == &g_sym_Ptr)
-    return marshall_ptr(m, heap, *(u_ptr_w *) data);
-  if (type == &g_sym_PtrFree)
-    return marshall_ptr_free(m, heap, *(u_ptr_w *) data);
-  if (type == &g_sym_Quote)
-    return marshall_quote(m, heap, data);
-  if (type == &g_sym_S8)
-    return marshall_s8(m, heap, *(s8 *) data);
-  if (type == &g_sym_S16)
-    return marshall_s16(m, heap, *(s16 *) data);
-  if (type == &g_sym_S32)
-    return marshall_s32(m, heap, *(s32 *) data);
-  if (type == &g_sym_S64)
-    return marshall_s64(m, heap, *(s64 *) data);
-  if (type == &g_sym_Str)
-    return marshall_str(m, heap, data);
-  if (type == &g_sym_Struct)
-    return marshall_pstruct(m, heap, data);
-  if (type == &g_sym_StructType)
-    return marshall_pstruct_type(m, heap, data);
-  if (type == &g_sym_Sw)
-    return marshall_sw(m, heap, *(sw *) data);
-  if (type == &g_sym_Sym)
-    return marshall_psym(m, heap, data);
-  if (type == &g_sym_Tag)
-    return marshall_tag(m, heap, data);
-  if (type == &g_sym_Time)
-    return marshall_time(m, heap, data);
-  if (type == &g_sym_Tuple)
-    return marshall_tuple(m, heap, data);
-  if (type == &g_sym_U8)
-    return marshall_u8(m, heap,  *(u8 *) data);
-  if (type == &g_sym_U16)
-    return marshall_u16(m, heap, *(u16 *) data);
-  if (type == &g_sym_U32)
-    return marshall_u32(m, heap, *(u32 *) data);
-  if (type == &g_sym_U64)
-    return marshall_u64(m, heap, *(u64 *) data);
-  if (type == &g_sym_Uw)
-    return marshall_uw(m, heap,  *(uw *) data);
-  if (type == &g_sym_Var)
-    return marshall_pvar(m, heap, data);
+      type == &g_sym_Fn) {
+    if (! marshall_pcallable(m, heap, data)) {
+      err_puts("marshall_data: marshall_pcallable");
+      assert(! "marshall_data: marshall_pcallable");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Character) {
+    if (! marshall_character(m, heap, *(character *)data)) {
+      err_puts("marshall_data: marshall_character");
+      assert(! "marshall_data: marshall_character");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Complex) {
+    if (! marshall_complex(m, heap, data)) {
+      err_puts("marshall_data: marshall_complex");
+      assert(! "marshall_data: marshall_complex");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Cow) {
+    if (! marshall_pcow(m, heap, data)) {
+      err_puts("marshall_data: marshall_pcow");
+      assert(! "marshall_data: marshall_pcow");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_F32) {
+    if (! marshall_f32(m, heap, *(f32 *) data)) {
+      err_puts("marshall_data: marshall_f32");
+      assert(! "marshall_data: marshall_f32");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_F64) {
+    if (! marshall_f64(m, heap, *(f64 *) data)) {
+      err_puts("marshall_data: marshall_f64");
+      assert(! "marshall_data: marshall_f64");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_F128) {
+    if (! marshall_f128(m, heap, *(f128 *) data)) {
+      err_puts("marshall_data: marshall_f128");
+      assert(! "marshall_data: marshall_f128");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Fact) {
+    if (! marshall_fact(m, heap, data)) {
+      err_puts("marshall_data: marshall_fact");
+      assert(! "marshall_data: marshall_fact");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Ident) {
+    if (! marshall_ident(m, heap, data)) {
+      err_puts("marshall_data: marshall_ident");
+      assert(! "marshall_data: marshall_ident");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Integer) {
+    if (! marshall_integer(m, heap, data)) {
+      err_puts("marshall_data: marshall_integer");
+      assert(! "marshall_data: marshall_integer");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_List) {
+    if (! marshall_plist(m, heap, data)) {
+      err_puts("marshall_data: marshall_plist");
+      assert(! "marshall_data: marshall_plist");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Map) {
+    if (! marshall_map(m, heap, data)) {
+      err_puts("marshall_data: marshall_map");
+      assert(! "marshall_data: marshall_map");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Ptag) {
+    if (! marshall_ptag(m, heap, data)) {
+      err_puts("marshall_data: marshall_ptag");
+      assert(! "marshall_data: marshall_ptag");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Ptr) {
+    if (! marshall_ptr(m, heap, *(u_ptr_w *) data)) {
+      err_puts("marshall_data: marshall_ptr");
+      assert(! "marshall_data: marshall_ptr");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_PtrFree) {
+    if (! marshall_ptr_free(m, heap, *(u_ptr_w *) data)) {
+      err_puts("marshall_data: marshall_ptr_free");
+      assert(! "marshall_data: marshall_ptr_free");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Quote) {
+    if (! marshall_quote(m, heap, data)) {
+      err_puts("marshall_data: marshall_quote");
+      assert(! "marshall_data: marshall_quote");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_S8) {
+    if (! marshall_s8(m, heap, *(s8 *) data)) {
+      err_puts("marshall_data: marshall_s8");
+      assert(! "marshall_data: marshall_s8");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_S16) {
+    if (! marshall_s16(m, heap, *(s16 *) data)) {
+      err_puts("marshall_data: marshall_s16");
+      assert(! "marshall_data: marshall_s16");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_S32) {
+    if (! marshall_s32(m, heap, *(s32 *) data)) {
+      err_puts("marshall_data: marshall_s32");
+      assert(! "marshall_data: marshall_s32");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_S64) {
+    if (! marshall_s64(m, heap, *(s64 *) data)) {
+      err_puts("marshall_data: marshall_s64");
+      assert(! "marshall_data: marshall_s64");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Str) {
+    if (! marshall_str(m, heap, data)) {
+      err_puts("marshall_data: marshall_str");
+      assert(! "marshall_data: marshall_str");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Struct) {
+    if (! marshall_pstruct(m, heap, data)) {
+      err_puts("marshall_data: marshall_pstruct");
+      assert(! "marshall_data: marshall_pstruct");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_StructType) {
+    if (! marshall_pstruct_type(m, heap, data)) {
+      err_puts("marshall_data: marshall_pstruct_type");
+      assert(! "marshall_data: marshall_pstruct_type");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Sw) {
+    if (! marshall_sw(m, heap, *(sw *) data)) {
+      err_puts("marshall_data: marshall_sw");
+      assert(! "marshall_data: marshall_sw");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Sym) {
+    if (! marshall_psym(m, heap, data)) {
+      err_puts("marshall_data: marshall_psym");
+      assert(! "marshall_data: marshall_psym");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Tag) {
+    if (! marshall_tag(m, heap, data)) {
+      err_puts("marshall_data: marshall_tag");
+      assert(! "marshall_data: marshall_tag");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Time) {
+    if (! marshall_time(m, heap, data)) {
+      err_puts("marshall_data: marshall_time");
+      assert(! "marshall_data: marshall_time");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Tuple) {
+    if (! marshall_tuple(m, heap, data)) {
+      err_puts("marshall_data: marshall_tuple");
+      assert(! "marshall_data: marshall_tuple");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_U8) {
+    if (! marshall_u8(m, heap,  *(u8 *) data)) {
+      err_puts("marshall_data: marshall_u8");
+      assert(! "marshall_data: marshall_u8");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_U16) {
+    if (! marshall_u16(m, heap, *(u16 *) data)) {
+      err_puts("marshall_data: marshall_u16");
+      assert(! "marshall_data: marshall_u16");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_U32) {
+    if (! marshall_u32(m, heap, *(u32 *) data)) {
+      err_puts("marshall_data: marshall_u32");
+      assert(! "marshall_data: marshall_u32");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_U64) {
+    if (! marshall_u64(m, heap, *(u64 *) data)) {
+      err_puts("marshall_data: marshall_u64");
+      assert(! "marshall_data: marshall_u64");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Uw) {
+    if (! marshall_uw(m, heap,  *(uw *) data)) {
+      err_puts("marshall_data: marshall_uw");
+      assert(! "marshall_data: marshall_uw");
+      return NULL;
+    }
+    return m;
+  }
+  if (type == &g_sym_Var) {
+    if (! marshall_pvar(m, heap, data)) {
+      err_puts("marshall_data: marshall_pvar");
+      assert(! "marshall_data: marshall_pvar");
+      return NULL;
+    }
+    return m;
+  }
   if (type == &g_sym_Void)
     return m;
-  if (! pstruct_type_find(type, &st))
+  if (! pstruct_type_find(type, &st)) {
+    err_puts("marshall_data: pstruct_type_find");
+    assert(! "marshall_data: pstruct_type_find");
     return NULL;
+  }
   if (st) {
     s.pstruct_type = st;
     s.data = data;
-    marshall_struct(m, heap, &s);
+    if (! marshall_struct(m, heap, &s)) {
+      err_puts("marshall_data: marshall_struct");
+      assert(! "marshall_data: marshall_struct");
+      return NULL;
+    }
   }
   return m;
 }
@@ -356,9 +598,9 @@ s_marshall * marshall_fact (s_marshall *m, bool heap,
 {
   assert(m);
   if (! m ||
-      ! marshall_ptag(m, heap, fact->subject) ||
-      ! marshall_ptag(m, heap, fact->predicate) ||
-      ! marshall_ptag(m, heap, fact->object) ||
+      ! marshall_ptag(m, heap, &fact->subject) ||
+      ! marshall_ptag(m, heap, &fact->predicate) ||
+      ! marshall_ptag(m, heap, &fact->object) ||
       ! marshall_uw(m, heap, fact->id))
     return NULL;
   return m;
@@ -380,17 +622,17 @@ s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)
   if (! marshall_bool(m, heap, fn->macro) ||
       ! marshall_bool(m, heap, fn->special_operator) ||
       ! marshall_ident(m, heap, &fn->name) ||
-      ! marshall_psym(m, heap, fn->module) ||
+      ! marshall_psym(m, heap, &fn->module) ||
       ! marshall_uw(m, heap, clause_count))
     return NULL;
   clause = fn->clauses;
   while (clause) {
-    if (! marshall_plist(m, heap, clause->pattern) ||
+    if (! marshall_plist(m, heap, &clause->pattern) ||
         ! marshall_do_block(m, heap, &clause->algo))
       return NULL;
     clause = clause->next;
   }
-  if (! marshall_pframe(m, heap, fn->frame))
+  if (! marshall_pframe(m, heap, &fn->frame))
     return NULL;
   return m;
 }
@@ -413,12 +655,12 @@ s_marshall * marshall_frame (s_marshall *m, bool heap,
     return NULL;
   binding = frame->bindings;
   while (binding) {
-    if (! marshall_psym(m, heap, binding->name) ||
+    if (! marshall_psym(m, heap, &binding->name) ||
         ! marshall_tag(m, heap, &binding->value))
       return NULL;
     binding = binding->next;
   }
-  if (! marshall_pframe(m, heap, frame->next))
+  if (! marshall_pframe(m, heap, &frame->next))
     return NULL;
   return m;
 }
@@ -479,8 +721,8 @@ s_marshall * marshall_ident (s_marshall *m, bool heap,
   assert(m);
   assert(ident);
   if (! m || ! ident ||
-      ! marshall_psym(m, heap, ident->module) ||
-      ! marshall_psym(m, heap, ident->sym))
+      ! marshall_psym(m, heap, &ident->module) ||
+      ! marshall_psym(m, heap, &ident->sym))
     return NULL;
   return m;
 }
@@ -556,6 +798,7 @@ s_marshall * marshall_new (void)
 }
 
 DEF_MARSHALL_P(callable, p_callable)
+DEF_MARSHALL_P(complex, p_complex)
 DEF_MARSHALL_P(cow, p_cow)
 DEF_MARSHALL_P(frame, p_frame)
 DEF_MARSHALL_P(list, p_list)
@@ -618,16 +861,24 @@ s_marshall * marshall_str (s_marshall *m, bool heap, const s_str *src)
 {
   sw r;
   s_buf *buf;
-  
-  assert(m);
-  assert(src);
-  if (! marshall_u32(m, heap, src->size))
+  if (! m || ! src) {
+    err_puts("marshall_str: invalid argument");
+    assert(! "marshall_str: invalid argument");
     return NULL;
+  }
+  if (! marshall_u32(m, heap, src->size)) {
+    err_puts("marshall_str: marshall_u32");
+    assert(! "marshall_str: marshall_u32");
+    return NULL;
+  }
   if (! src->size)
     return m;
   buf = heap ? &m->heap : &m->buf;
-  if ((r = buf_write(buf, src->ptr.pchar, src->size)) <= 0)
+  if ((r = buf_write(buf, src->ptr.pchar, src->size)) <= 0) {
+    err_puts("marshall_str: buf_write");
+    assert(! "marshall_str: buf_write");
     return NULL;
+  }
   if (heap)
     m->heap_pos += r;
   else
@@ -646,7 +897,7 @@ s_marshall * marshall_struct (s_marshall *m, bool heap,
     assert(! "marshall_struct: invalid argument");
     return NULL;
   }
-  if (! marshall_pstruct_type(m, heap, s->pstruct_type)) {
+  if (! marshall_pstruct_type(m, heap, &s->pstruct_type)) {
     err_puts("marshall_struct: marshall_pstruct_type");
     assert(! "marshall_struct: marshall_pstruct_type");
     return NULL;
@@ -703,7 +954,7 @@ s_marshall * marshall_struct_type (s_marshall *m, bool heap,
   assert(st->module);
   assert(st->offset);
   if (! m || ! st || ! st->module || ! st->offset ||
-      ! marshall_psym(m, heap, st->module) ||
+      ! marshall_psym(m, heap, &st->module) ||
       ! marshall_map(m, heap, &st->map))
     return NULL;
   i = 0;
@@ -720,11 +971,16 @@ s_marshall * marshall_struct_type (s_marshall *m, bool heap,
 s_marshall * marshall_sym (s_marshall *m, bool heap,
                            const s_sym *sym)
 {
-  assert(m);
-  if (! m || ! sym)
+  if (! m || ! sym) {
+    err_puts("marshall_sym: invalid argument");
+    assert(! "marshall_sym: invalid argument");
     return NULL;
-  if (! marshall_str(m, heap, &sym->str))
+  }
+  if (! marshall_str(m, heap, &sym->str)) {
+    err_puts("marshall_sym: marshall_str");
+    assert(! "marshall_sym: marshall_str");
     return NULL;
+  }
   return m;
 }
 
@@ -755,22 +1011,21 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
     return marshall_integer(m, heap, &tag->data.integer);
   case TAG_MAP:   return marshall_map(m, heap, &tag->data.map);
   case TAG_PCALLABLE:
-    return marshall_pcallable(m, heap, tag->data.pcallable);
+    return marshall_pcallable(m, heap, &tag->data.pcallable);
   case TAG_PCOMPLEX:
-    return marshall_complex(m, heap, tag->data.pcomplex);
-  case TAG_PCOW:  return marshall_pcow(m, heap, tag->data.pcow); 
-  case TAG_PLIST: return marshall_plist(m, heap, tag->data.plist);
+    return marshall_pcomplex(m, heap, &tag->data.pcomplex);
+  case TAG_PCOW:  return marshall_pcow(m, heap, &tag->data.pcow); 
+  case TAG_PLIST: return marshall_plist(m, heap, &tag->data.plist);
   case TAG_PSTRUCT:
-    return marshall_pstruct(m, heap, tag->data.pstruct);
+    return marshall_pstruct(m, heap, &tag->data.pstruct);
   case TAG_PSTRUCT_TYPE:
-    return marshall_pstruct_type(m, heap, tag->data.pstruct_type);
-  case TAG_PSYM:  return marshall_psym(m, heap, tag->data.psym);
-  case TAG_PTAG:
-    return marshall_ptag(m, heap, tag->data.ptag);
+    return marshall_pstruct_type(m, heap, &tag->data.pstruct_type);
+  case TAG_PSYM:  return marshall_psym(m, heap, &tag->data.psym);
+  case TAG_PTAG:  return marshall_ptag(m, heap, &tag->data.ptag);
   case TAG_PTR:   return marshall_ptr(m, heap, tag->data.ptr);
   case TAG_PTR_FREE:
     return marshall_ptr_free(m, heap, tag->data.ptr_free);
-  case TAG_PVAR:  return marshall_pvar(m, heap, tag->data.pvar);
+  case TAG_PVAR:  return marshall_pvar(m, heap, &tag->data.pvar);
   case TAG_QUOTE: return marshall_quote(m, heap, &tag->data.quote);
   case TAG_RATIO: return marshall_ratio(m, heap, &tag->data.ratio);
   case TAG_S8:    return marshall_s8(m, heap, tag->data.s8);
@@ -920,7 +1175,7 @@ s_marshall * marshall_var (s_marshall *m, bool heap, const s_var *var)
   assert(var);
   if (! m || ! var ||
       ! marshall_ident(m, heap, &var->name) ||
-      ! marshall_psym(m, heap, var->type) || 
+      ! marshall_psym(m, heap, &var->type) || 
       ! marshall_bool(m, heap, var->bound) ||
       (var->bound &&
        ! marshall_tag(m, heap, &var->tag)))
