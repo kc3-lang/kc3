@@ -209,8 +209,11 @@ EOF
   s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
-  if (! tag_init_#{name_suffix}(&tmp.tag#{comma_args}))
+  if (! tag_init_#{name_suffix}(&tmp.tag#{comma_args})) {
+    err_puts("list_init_#{name_suffix}: tag_init_#{name_suffix}");
+    assert(! "list_init_#{name_suffix}: tag_init_#{name_suffix}");
     return NULL;
+  }
   *list = tmp;
   return list;
 }
@@ -226,9 +229,14 @@ EOF
 {
   s_list *list;
   list = list_new(next);
-  if (! list)
+  if (! list) {
+    err_puts("list_new_#{name_suffix}: list_new");
+    assert(! "list_new_#{name_suffix}: list_new");
     return NULL;
+  }
   if (! tag_init_#{name_suffix}(&list->tag#{comma_args})) {
+    err_puts("list_new_#{name_suffix}: tag_init_#{name_suffix}");
+    assert(! "list_new_#{name_suffix}: tag_init_#{name_suffix}");
     free(list);
     return NULL;
   }
@@ -513,18 +521,20 @@ class String
     wrapped_lines = []
     lines.each do |line|
       rest = line
-      while rest.length > 72
-        space_pos = rest[0..71].rindex(/,\s/)
-        space_pos += 1 if space_pos
-        space_pos ||= rest[0..71].rindex(/[\*\s]/)
-        line1 = rest[0..(space_pos - 1)]
-        rest = rest[(space_pos + 1)..(rest.length - 1)]
-        wrapped_lines += [line1]
-        index = line1.rindex(/[\(\{\[]/)
-        if index
-          paren_pos = index + 1
+      unless line.include?("\"")
+        while rest.length > 72
+          space_pos = rest[0..71].rindex(/,\s/)
+          space_pos += 1 if space_pos
+          space_pos ||= rest[0..71].rindex(/[\*\s]/)
+          line1 = rest[0..(space_pos - 1)]
+          rest = rest[(space_pos + 1)..(rest.length - 1)]
+          wrapped_lines += [line1]
+          index = line1.rindex(/[\(\{\[]/)
+          if index
+            paren_pos = index + 1
+          end
+          rest = paren_pos ? (" " * paren_pos + rest) : rest
         end
-        rest = paren_pos ? (" " * paren_pos + rest) : rest
       end
       wrapped_lines += [rest]
     end

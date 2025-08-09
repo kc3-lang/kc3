@@ -127,19 +127,28 @@ s_marshall_read * marshall_read_callable (s_marshall_read *mr,
   assert(dest);
   s_callable tmp = {0};
   u8 type;
-  if (! marshall_read_u8(mr, heap, &type))
+  if (! marshall_read_u8(mr, heap, &type)) {
+    err_puts("marshall_read_callable: marshall_read_u8");
+    assert(! "marshall_read_callable: marshall_read_u8");    
     return NULL;
+  }
   tmp.type = type;
   switch (tmp.type) {
   case CALLABLE_VOID:
     goto ok;
   case CALLABLE_CFN:
-    if (! marshall_read_cfn(mr, heap, &tmp.data.cfn))
+    if (! marshall_read_cfn(mr, heap, &tmp.data.cfn)) {
+      err_puts("marshall_read_callable: marshall_read_cfn");
+      assert(! "marshall_read_callable: marshall_read_cfn");    
       return NULL;
+    }
     goto ok;
   case CALLABLE_FN:
-    if (! marshall_read_fn(mr, heap, &tmp.data.fn))
+    if (! marshall_read_fn(mr, heap, &tmp.data.fn)) {
+      err_puts("marshall_read_callable: marshall_read_fn");
+      assert(! "marshall_read_callable: marshall_read_fn");    
       return NULL;
+    }
     goto ok;
   }
   err_puts("marshall_read_callable: unknown callable type");
@@ -161,27 +170,32 @@ s_marshall_read * marshall_read_cfn (s_marshall_read *mr,
   assert(mr);
   assert(dest);
   u8 i;
-  p_list list;
   p_sym psym;
   p_list *tail;
   s_cfn tmp = {0};
-  if (! marshall_read_ident(mr, heap, &tmp.name)                      ||
-      ! marshall_read_bool(mr, heap, &tmp.macro)                      ||
-      ! marshall_read_bool(mr, heap, &tmp.special_operator)           ||
-      ! marshall_read_psym(mr, heap, &tmp.result_type)                ||
-      ! marshall_read_psym(mr, heap, &tmp.c_name)                     ||
+  if (! marshall_read_ident(mr, heap, &tmp.name) ||
+      ! marshall_read_bool(mr, heap, &tmp.macro) ||
+      ! marshall_read_bool(mr, heap, &tmp.special_operator) ||
+      ! marshall_read_psym(mr, heap, &tmp.result_type) ||
+      ! marshall_read_psym(mr, heap, &tmp.c_name) ||
       ! marshall_read_u8(mr, heap, &tmp.arity)) {
     err_puts("marshall_read_cfn: read_error");
     assert(! "marshall_read_cfn: read_error");
     return NULL;
   }
-  list = NULL;
-  tail = &list;
+  tail = &tmp.arg_types;
   i = 0;
   while (i < tmp.arity) {
-    if (! marshall_read_psym(mr, heap, &psym) ||
-        (*tail = list_new_psym(psym, NULL)))
+    if (! marshall_read_psym(mr, heap, &psym)) {
+      err_puts("marshall_read_cfn: marshall_read_psym");
+      assert(! "marshall_read_cfn: marshall_read_psym");
       return NULL;
+    }
+    if (! (*tail = list_new_psym(psym, NULL))) {
+      err_puts("marshall_read_cfn: list_new_psym");
+      assert(! "marshall_read_cfn: list_new_psym");
+      return NULL;
+    }
     tail = &(*tail)->next.data.plist;
     i++;
   }
@@ -657,25 +671,42 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
   p_callable tmp = NULL;
   assert(mr);
   assert(dest);
-  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+  if (! marshall_read_heap_pointer(mr, heap, &offset, &present)) {
+    err_puts("marshall_read_pcallable: marshall_read_heap_pointer");
+    assert(! "marshall_read_pcallable: marshall_read_heap_pointer");
     return NULL;
+  }
   if (! offset) {
     *dest = NULL;
     return mr;
   }
   if (present) {
-    if (! pcallable_init_copy(dest, (p_callable *) &present))
+    if (! pcallable_init_copy(dest, (p_callable *) &present)) {
+      err_puts("marshall_read_pcallable: pcallable_init_copy");
+      assert(! "marshall_read_pcallable: pcallable_init_copy");
       return NULL;
+    }
     return mr;
   }
-  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
-      ! (tmp = alloc(sizeof(s_callable))))
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
+    err_puts("marshall_read_pcallable: buf_seek");
+    assert(! "marshall_read_pcallable: buf_seek");
     return NULL;
+  }
+  if (! (tmp = alloc(sizeof(s_callable)))) {
+    err_puts("marshall_read_pcallable: alloc");
+    assert(! "marshall_read_pcallable: alloc");
+    return NULL;
+  }
   if (! marshall_read_callable(mr, true, tmp)) {
+    err_puts("marshall_read_pcallable: read_callable");
+    assert(! "marshall_read_pcallable: read_callable");
     free(tmp);
     return NULL;
   }
   if (! marshall_read_ht_add(mr, offset, tmp)) {
+    err_puts("marshall_read_pcallable: marshall_read_ht_add");
+    assert(! "marshall_read_pcallable: marshall_read_ht_add");    
     callable_delete(tmp);
     return NULL;
   }

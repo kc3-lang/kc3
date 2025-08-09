@@ -194,7 +194,7 @@ loopback((PtrFree) 0x0)
 {:ok, 41}
 loopback((U8) ?)
 {:ok, 86}
-loopback((Tag) ?)
+loopback(?)
 {:ok, 87}
 loopback(fn (x) { x * 2 })
 {:ok, 231}
@@ -213,6 +213,6 @@ loopback(do
 end)
 {:ok, 34}
 loopback(cfn Tag "tag_add" (Tag, Tag, Result))
-{:ok, 42}
-loopback(%KC3.Op{sym: :+, callable: cfn Tag "tag_add" (Tag, Tag, Result)})
+{:ok, 157}
+loopback(%KC3.Op{callable: cfn Tag "tag_add" (Tag, Tag, Result)})
 {:ok, 42}
