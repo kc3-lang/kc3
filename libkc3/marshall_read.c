@@ -13,6 +13,7 @@
 #include "alloc.h"
 #include "assert.h"
 #include "buf.h"
+#include "call.h"
 #include "callable.h"
 #include "compare.h"
 #include "do_block.h"
@@ -25,6 +26,7 @@
 #include "marshall.h"
 #include "marshall_read.h"
 #include "mutex.h"
+#include "pcallable.h"
 #include "rwlock.h"
 #include "str.h"
 #include "sym.h"
@@ -90,22 +92,31 @@ s_marshall_read * marshall_read_call (s_marshall_read *mr,
                                       bool heap,
                                       s_call *dest)
 {
-  s_call call = {0};
+  uw i;
+  uw len;
+  s_list **tail;
+  s_call tmp = {0};
   assert(mr);
   assert(dest);
-  if (! marshall_read_ident(mr, heap, &call.ident) ||
-      ! marshall_read_list(mr, heap, call.arguments))
+  if (! marshall_read_ident(mr, heap, &tmp.ident) ||
+      ! marshall_read_uw(mr, heap, &len))
     goto ko;
-  if (! marshall_read_pcallable(mr, heap, &call.pcallable)) {
-    list_clean(call.arguments);
-    goto ko;
+  tail = &tmp.arguments;
+  i = 0;
+  while (i < len) {
+    if (! (*tail = list_new(NULL)) ||
+        ! marshall_read_tag(mr, heap, &(*tail)->tag))
+      goto ko;
+    tail = &(*tail)->next.data.plist;
+    i++;
   }
-  ko:
-    err_puts("marshall_read_call: read_error");
-    assert(! "marshall_read_call: read_error");
-    return NULL;
-  *dest = call;
+  if (! marshall_read_pcallable(mr, heap, &tmp.pcallable))
+    goto ko;
+  *dest = tmp;
   return mr;
+ ko:
+  call_clean(&tmp);
+  return NULL;
 }
 
 s_marshall_read * marshall_read_callable (s_marshall_read *mr,
@@ -135,6 +146,10 @@ s_marshall_read * marshall_read_callable (s_marshall_read *mr,
   assert(! "marshall_read_callable: unknown callable type");
   return NULL;
  ok:
+  tmp.ref_count = 1;
+#if HAVE_PTHREAD
+  mutex_init(&tmp.mutex);
+#endif
   *dest = tmp;
   return mr;
 }
@@ -147,6 +162,7 @@ s_marshall_read * marshall_read_cfn (s_marshall_read *mr,
   assert(dest);
   u8 i;
   p_list list;
+  p_sym psym;
   p_list *tail;
   s_cfn tmp = {0};
   if (! marshall_read_ident(mr, heap, &tmp.name)                      ||
@@ -163,13 +179,16 @@ s_marshall_read * marshall_read_cfn (s_marshall_read *mr,
   tail = &list;
   i = 0;
   while (i < tmp.arity) {
-    *tail = list_new_psym(NULL, NULL);
-    if (! *tail ||
-        ! marshall_read_psym(mr, heap, &(*tail)->tag.data.psym))
+    if (! marshall_read_psym(mr, heap, &psym) ||
+        (*tail = list_new_psym(psym, NULL)))
       return NULL;
     tail = &(*tail)->next.data.plist;
     i++;
   }
+#if HAVE_PTHREAD
+  mutex_init(&tmp.mutex);
+  tmp.ready = true;
+#endif
   *dest = tmp;
   return mr;
 }
@@ -252,23 +271,25 @@ s_marshall_read * marshall_read_do_block (s_marshall_read *mr,
                                           bool heap,
                                           s_do_block *dest)
 {
+  uw count;
+  uw i;
+  bool short_form;
   s_do_block tmp = {0};
-  uw i = 0;
-  uw count = 0;
   assert(mr);
-  assert(mr);
+  assert(dest);
   if (! marshall_read_uw(mr, heap, &count)  ||
+      ! marshall_read_bool(mr, heap, &short_form) ||
       ! do_block_init(&tmp, count))
     return NULL;
-  tmp.count = i;
+  tmp.count = count;
+  tmp.short_form = short_form;
+  i = 0;
   while (i < count) {
-    if (! marshall_read_tag(mr, heap, &tmp.tag[i]))
+    if (! marshall_read_tag(mr, heap, tmp.tag + i)) {
+      do_block_clean(&tmp);
       return NULL;
+    }
     i++;
-  }
-  if (! marshall_read_bool(mr, heap, &tmp.short_form)) {
-    tag_clean(tmp.tag);
-    return NULL;
   }
   *dest = tmp;
   return mr;
@@ -306,7 +327,6 @@ s_marshall_read * marshall_read_fn (s_marshall_read *mr, bool heap,
 {
   s_fn_clause **clause;
   uw clause_count;
-  bool has_frame;
   uw i;
   s_fn tmp = {0};
   assert(mr);
@@ -329,8 +349,7 @@ s_marshall_read * marshall_read_fn (s_marshall_read *mr, bool heap,
     clause = &(*clause)->next;
     i++;
   }
-  if (! marshall_read_bool(mr, heap, &has_frame) ||
-      (has_frame && ! marshall_read_frame(mr, heap, tmp.frame))) {
+  if (! marshall_read_pframe(mr, heap, &tmp.frame)) {
     fn_clean(&tmp);
     return NULL;
   }
@@ -629,6 +648,41 @@ s_marshall_read * marshall_read_new_str (const s_str *input)
   return mr;
 }
 
+s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
+                                           bool heap,
+                                           p_callable *dest)
+{
+  u64 offset = 0;
+  void *present = NULL;
+  p_callable tmp = NULL;
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+    return NULL;
+  if (! offset) {
+    *dest = NULL;
+    return mr;
+  }
+  if (present) {
+    if (! pcallable_init_copy(dest, (p_callable *) &present))
+      return NULL;
+    return mr;
+  }
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+      ! (tmp = alloc(sizeof(s_callable))))
+    return NULL;
+  if (! marshall_read_callable(mr, true, tmp)) {
+    free(tmp);
+    return NULL;
+  }
+  if (! marshall_read_ht_add(mr, offset, tmp)) {
+    callable_delete(tmp);
+    return NULL;
+  }
+  *dest = tmp;
+  return mr;
+}
+
 s_marshall_read * marshall_read_pcomplex (s_marshall_read *mr,
                                           bool heap,
                                           p_complex *dest)
@@ -651,13 +705,13 @@ s_marshall_read * marshall_read_pcow  (s_marshall_read *mr,
   // return marshall_read_cow(mr, heap, *dest);
 }
 
-s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
-                                           bool heap,
-                                           p_callable *dest)
+s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
+                                       bool heap,
+                                       p_frame *dest)
 {
   u64 offset = 0;
   void *present = NULL;
-  p_callable tmp = NULL;
+  p_frame tmp = NULL;
   assert(mr);
   assert(dest);
   if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
@@ -667,11 +721,11 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
     return mr;
   }
   if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
-      ! (tmp = alloc(sizeof(s_callable))))
+      ! (tmp = alloc(sizeof(s_frame))))
     return NULL;
-  if (! marshall_read_callable(mr, true, tmp) ||
+  if (! marshall_read_frame(mr, true, tmp) ||
       ! marshall_read_ht_add(mr, offset, tmp)) {
-    callable_delete(tmp);
+    frame_delete(tmp);
     return NULL;
   }
   *dest = tmp;

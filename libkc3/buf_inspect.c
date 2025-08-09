@@ -1444,8 +1444,9 @@ sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
   assert(buf);
   assert(cfn);
   assert(cfn->c_name);
-  if (cfn->name.module) {
-    if ((r = buf_inspect_ident_sym(buf, cfn->name.module)) <= 0)
+  if (cfn->name.module &&
+      cfn->name.module != env_global()->current_defmodule) {
+    if ((r = buf_inspect_sym(buf, cfn->name.module)) <= 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, ".")) <= 0)
@@ -1478,6 +1479,15 @@ sw buf_inspect_cfn_size (s_pretty *pretty, const s_cfn *cfn)
   sw r;
   sw result = 0;
   assert(cfn);
+  if (cfn->name.module &&
+      cfn->name.module != env_global()->current_defmodule) {
+    if ((r = buf_inspect_sym_size(pretty, cfn->name.module)) <= 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1_size(pretty, ".")) <= 0)
+      return r;
+    result += r;
+  }
   if ((r = buf_write_1_size(pretty, "cfn ")) < 0)
     return r;
   result += r;

@@ -74,6 +74,7 @@ PROTO_MARSHALL_READ(map,          s_map            );
 PROTO_MARSHALL_READ(pcallable,    p_callable       );
 PROTO_MARSHALL_READ(pcomplex,     p_complex        );
 PROTO_MARSHALL_READ(pcow,         p_cow            );
+PROTO_MARSHALL_READ(pframe,       p_frame          );
 PROTO_MARSHALL_READ(plist,        p_list           );
 PROTO_MARSHALL_READ(pstruct,      p_struct         );
 PROTO_MARSHALL_READ(pstruct_type, p_struct_type    );

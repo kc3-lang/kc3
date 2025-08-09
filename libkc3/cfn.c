@@ -214,7 +214,8 @@ void cfn_clean (s_cfn *cfn)
   if (cfn->cif.nargs)
     free(cfn->cif.arg_types);
 #if HAVE_PTHREAD
-  mutex_clean(&cfn->mutex);
+  if (cfn->ready)
+    mutex_clean(&cfn->mutex);
 #endif
 }
 
