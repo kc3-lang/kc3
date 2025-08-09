@@ -944,7 +944,7 @@ s_marshall * marshall_struct (s_marshall *m, bool heap,
   return m;
 }
 
-// TODO: convert f_clean to callable
+// TODO: convert f_clean to p_callable
 s_marshall * marshall_struct_type (s_marshall *m, bool heap,
                                    const s_struct_type *st)
 {
