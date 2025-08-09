@@ -2,16 +2,24 @@ require Marshall
 true
 require MarshallRead
 true
-loopback = fn (tag) { str = Marshall.tag_to_str(tag); result = MarshallRead.tag_from_str(str); if (result == tag) do
+loopback = fn (tag) do
+  str = Marshall.tag_to_str(tag)
+  result = MarshallRead.tag_from_str(str)
+  if (inspect(result) == inspect(tag)) do
     {:ok, Str.size(str)}
   else
     {:ko, Str.size(str), result}
-  end }
-fn (tag) { str = Marshall.tag_to_str(tag); result = MarshallRead.tag_from_str(str); if (result == tag) do
+  end
+end
+fn (tag) do
+  str = Marshall.tag_to_str(tag)
+  result = MarshallRead.tag_from_str(str)
+  if (inspect(result) == inspect(tag)) do
     {:ok, Str.size(str)}
   else
     {:ko, Str.size(str), result}
-  end }
+  end
+end
 loopback(false)
 {:ok, 34}
 loopback(true)
@@ -177,30 +185,34 @@ loopback(%{key: "value",
 loopback(%{nested: %{inner: true}})
 {:ok, 89}
 loopback(%Time{tv_sec: 1000, tv_nsec: 2000})
-{:ko, 50, %Time{tv_nsec: 512000}}
+{:ok, 50}
 loopback(%Time{tv_sec: 1 + 1, tv_nsec: 2 + 2})
-{:ko, 50, %Time{tv_nsec: 1024}}
+{:ok, 50}
 loopback((Ptr) 0x0)
 {:ok, 41}
 loopback((PtrFree) 0x0)
 {:ok, 41}
 loopback((U8) ?)
-true
+{:ok, 86}
 loopback((Tag) ?)
-true
+{:ok, 87}
 loopback(fn (x) { x * 2 })
-true
+{:ok, 231}
 loopback(fn (a, b) { a + b })
-true
+{:ok, 282}
 loopback(List.reverse([]))
-true
+{:ok, 41}
 loopback(a = 1)
-true
+{:ok, 34}
 loopback(defmodule Test do end)
-true
-loopback(do 1; 2; 3 end)
-true
+{:ok, 49}
+loopback(do
+  1
+  2
+  3
+end)
+{:ok, 34}
 loopback(cfn Tag "tag_add" (Tag, Tag, Result))
-true
+{:ok, 42}
 loopback(%KC3.Op{sym: :+, callable: cfn Tag "tag_add" (Tag, Tag, Result)})
-true
+{:ok, 42}

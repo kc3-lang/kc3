@@ -2,7 +2,7 @@ quote require Marshall
 require Marshall
 quote require MarshallRead
 require MarshallRead
-quote loopback = fn (tag) {
+quote loopback = fn (tag) do
   str = Marshall.tag_to_str(tag)
   result = MarshallRead.tag_from_str(str)
   if (inspect(result) == inspect(tag)) do
@@ -10,8 +10,8 @@ quote loopback = fn (tag) {
   else
     {:ko, Str.size(str), result}
   end
-}
-loopback = fn (tag) {
+end
+loopback = fn (tag) do
   str = Marshall.tag_to_str(tag)
   result = MarshallRead.tag_from_str(str)
   if (inspect(result) == inspect(tag)) do
@@ -19,7 +19,7 @@ loopback = fn (tag) {
   else
     {:ko, Str.size(str), result}
   end
-}
+end
 quote loopback(false)
 loopback(false)
 quote loopback(true)
