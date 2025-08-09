@@ -258,6 +258,20 @@ s_complex * complex_new_cast (const s_sym * const *type,
   return c;
 }
 
+s_complex * complex_new_copy (s_complex *src)
+{
+  s_complex *c;
+  assert(src);
+  c = alloc(sizeof(s_complex));
+  if (! c)
+    return NULL;
+  if (! complex_init_copy(c, src)) {
+    free(c);
+    return NULL;
+  }
+  return c;
+}
+
 s_complex * complex_new_div (s_complex *a, s_complex *b)
 {
   s_complex *c;
@@ -284,6 +298,11 @@ s_complex * complex_new_mul (s_complex *a, s_complex *b)
   return c;
 }
 
+s_complex * complex_new_ref (s_complex *c)
+{
+  return c;
+}
+
 s_complex * complex_new_sub (s_complex *a, s_complex *b)
 {
   s_complex *c;
@@ -291,20 +310,6 @@ s_complex * complex_new_sub (s_complex *a, s_complex *b)
   if (! c)
     return NULL;
   if (! complex_sub(a, b, c)) {
-    free(c);
-    return NULL;
-  }
-  return c;
-}
-
-s_complex * complex_new_copy (s_complex *src)
-{
-  s_complex *c;
-  assert(src);
-  c = alloc(sizeof(s_complex));
-  if (! c)
-    return NULL;
-  if (! complex_init_copy(c, src)) {
     free(c);
     return NULL;
   }

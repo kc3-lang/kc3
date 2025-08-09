@@ -16,6 +16,7 @@
 #include "call.h"
 #include "callable.h"
 #include "compare.h"
+#include "complex.h"
 #include "do_block.h"
 #include "fn.h"
 #include "frame.h"
@@ -232,17 +233,17 @@ s_marshall_read * marshall_read_complex (s_marshall_read *mr,
                                          bool heap,
                                          s_complex *dest)
 {
-    s_complex tmp = {0};
-    assert(mr);
-    assert(mr);
-    if (! marshall_read_tag(mr, heap, &tmp.x))
-      return NULL;
-    if (! marshall_read_tag(mr, heap, &tmp.y)) {
-      tag_clean(&tmp.x);
-      return NULL;
-    }
-    *dest = tmp;
-    return mr;
+  s_complex tmp = {0};
+  assert(mr);
+  assert(mr);
+  if (! marshall_read_tag(mr, heap, &tmp.x))
+    return NULL;
+  if (! marshall_read_tag(mr, heap, &tmp.y)) {
+    tag_clean(&tmp.x);
+    return NULL;
+  }
+  *dest = tmp;
+  return mr;
 }
 
 s_marshall_read *marshall_read_cow (s_marshall_read *mr,
@@ -288,7 +289,7 @@ s_marshall_read * marshall_read_data (s_marshall_read *mr, bool heap,
   if (type == &g_sym_Character)
     return marshall_read_character(mr, heap, data);
   if (type == &g_sym_Complex)
-    return marshall_read_complex(mr, heap, data);
+    return marshall_read_pcomplex(mr, heap, data);
   if (type == &g_sym_Cow)
     return marshall_read_pcow(mr, heap, data);
   if (type == &g_sym_F32)
@@ -821,11 +822,31 @@ s_marshall_read * marshall_read_pcomplex (s_marshall_read *mr,
                                           bool heap,
                                           p_complex *dest)
 {
-  (void) mr;
-  (void) heap;
-  (void) dest;
-  return NULL;
-  // return marshall_read_complex(mr, heap, *dest);
+  u64 offset = 0;
+  void *present = NULL;
+  p_complex tmp = NULL;
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+    return NULL;
+  if (! offset) {
+    *dest = NULL;
+    return mr;
+  }
+  if (present) {
+    *dest = complex_new_ref(present);
+    return mr;
+  }
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+      ! (tmp = alloc(sizeof(s_complex))))
+    return NULL;
+  if (! marshall_read_complex(mr, true, tmp) ||
+      ! marshall_read_ht_add(mr, offset, tmp)) {
+    complex_delete(tmp);
+    return NULL;
+  }
+  *dest = tmp;
+  return mr;
 }
 
 s_marshall_read * marshall_read_pcow  (s_marshall_read *mr,
@@ -850,8 +871,12 @@ s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
     return NULL;
-  if (present || ! offset) {
-    *dest = present;
+  if (! offset) {
+    *dest = NULL;
+    return mr;
+  }
+  if (present) {
+    *dest = frame_new_ref(present);
     return mr;
   }
   if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
@@ -877,8 +902,12 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
     return NULL;
-  if (present || ! offset) {
-    *dest = present;
+  if (! offset) {
+    *dest = NULL;
+    return mr;
+  }
+  if (present) {
+    *dest = list_new_ref(present);
     return mr;
   }
   if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
@@ -1177,13 +1206,7 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     case TAG_PCALLABLE:
       return marshall_read_pcallable(mr, heap, &dest->data.pcallable);
     case TAG_PCOMPLEX:
-      if (! (dest->data.pcomplex = alloc(sizeof(s_complex))))
-        return NULL;
-      if (! marshall_read_complex(mr, heap, dest->data.pcomplex)) {
-        free(dest->data.pcomplex);
-        return NULL;
-      }
-      return mr;
+      return marshall_read_pcomplex(mr, heap, &dest->data.pcomplex);
     case TAG_PCOW:
       return marshall_read_pcow(mr, heap, &dest->data.pcow);
     case TAG_PLIST:

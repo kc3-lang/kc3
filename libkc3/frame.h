@@ -23,6 +23,7 @@ s_frame * frame_init_copy (s_frame *frame, s_frame *src);
 /* Constructors. */
 s_frame * frame_new (s_frame *next);
 s_frame * frame_new_copy (const s_frame *src);
+s_frame * frame_new_ref (s_frame *frame);
 
 /* Destructors. */
 s_frame * frame_delete (s_frame *frame);

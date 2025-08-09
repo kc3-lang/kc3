@@ -291,6 +291,11 @@ s_list * list_new_list (s_list *x, s_list *next)
   return dest;
 }
 
+s_list * list_new_ref (s_list *list)
+{
+  return list;
+}
+
 s_list * list_new_tag_copy (s_tag *x, s_list *next)
 {
   s_list *dest;

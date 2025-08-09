@@ -226,6 +226,11 @@ s_frame * frame_new_copy (const s_frame *src)
   return NULL;
 }
 
+s_frame * frame_new_ref (s_frame *frame)
+{
+  return frame;
+}
+
 s_frame * frame_replace (s_frame *frame, const s_sym *sym,
                          s_tag *value)
 {
