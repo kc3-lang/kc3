@@ -1,0 +1,7 @@
+require EKC3
+require Env
+title = "EKC3 test title"
+title_h1 = "<title>\"Title escaped &amp; in title'</title>"
+title_h2 = "<h2>Title H2 (raw)</h2>"
+template = EKC3.parse_file(__DIR__ + "parse_file.html.ekc3")
+puts(EKC3.render(template))

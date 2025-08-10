@@ -29,10 +29,10 @@ test_ok() {
 }
 
 if [ $# = 0 ]; then
-    if [ "x${EKC3_TEST_TARGETS}" = "x" ]; then
+    if [ "x${EKC3_TEST}" = "x" ]; then
         TARGETS="$(ls -1 *.kc3 | sed -e 's/[.]kc3$//')"
     else
-        TARGETS="${EKC3_TEST_TARGETS}"
+        TARGETS="${EKC3_TEST}"
     fi
 else
     TARGETS="$@"

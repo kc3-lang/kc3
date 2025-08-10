@@ -11,6 +11,7 @@
 ## THIS SOFTWARE.
 
 require Buf
+require HTML
 
 defmodule EKC3 do
 
@@ -29,12 +30,15 @@ defmodule EKC3 do
   end
 
   def render = macro (template) do
-    state = []
-    buf = Buf.init_alloc((Uw) (1024 * 1024))
-    unquote(template(quote buf))
-    str = Buf.read_to_str(buf)
-    Buf.clean(buf)
-    str
+    quote do
+      buf = Buf.init_alloc((Uw) (1024 * 1024))
+      state = []
+      template = ^ unquote(template)
+      template(buf)
+      str = Buf.read_to_str(buf)
+      Buf.clean(buf)
+      str
+    end
   end
 
   defspecial_operator verbose = macro (x) do
@@ -54,7 +58,7 @@ defmodule EKC3 do
   defspecial_operator verbose_raw = macro (x) do
     quote
       if state == [] do
-        EKC3.puts(result = unquote(x))
+        EKC3.puts(result = ^ unquote(x))
         result
       else
         parent_state = state
