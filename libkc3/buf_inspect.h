@@ -152,6 +152,8 @@ sw buf_inspect_ident_sym_reserved_size (s_pretty *pretty,
 sw buf_inspect_ident_sym_size (s_pretty *pretty, const s_sym *sym);
 sw buf_inspect_integer (s_buf *buf, const s_integer *x);
 sw buf_inspect_integer_decimal (s_buf *buf, const s_integer *x);
+sw buf_inspect_integer_decimal_size (s_pretty *pretty,
+                                     const s_integer *x);
 sw buf_inspect_integer_hexadecimal (s_buf *buf, const s_integer *x);
 sw buf_inspect_integer_size (s_pretty *pretty, const s_integer *x);
 sw buf_inspect_list_tag (s_buf *buf, const s_tag *tag);

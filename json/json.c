@@ -225,7 +225,7 @@ sw json_buf_inspect_tag_number (s_buf *buf, const s_tag *tag)
     assert(! "json_buf_inspect_tag_number: cannot cast to Integer: ");
     return -1;
   }
-  r = buf_inspect_integer(buf, &i);
+  r = buf_inspect_integer_decimal(buf, &i);
   integer_clean(&i);
   return r;
 }
@@ -245,7 +245,7 @@ sw json_buf_inspect_tag_number_size (s_pretty *pretty, const s_tag *tag)
     assert(! "json_buf_inspect_tag_number: cannot cast to Integer: ");
     return -1;
   }
-  r = buf_inspect_integer_size(pretty, &i);
+  r = buf_inspect_integer_decimal_size(pretty, &i);
   integer_clean(&i);
   return r;
 }
