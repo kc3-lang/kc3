@@ -1,2 +1,2 @@
 require EKC3
-puts(EKC3.parse_str("A<%= x %>B<% y %>C"))
+puts(EKC3.parse_str("A<%= x %>B<% y %>C<%= raw z %>D"))
