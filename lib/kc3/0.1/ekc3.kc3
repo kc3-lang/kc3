@@ -22,6 +22,10 @@ defmodule EKC3 do
 
   state = []
 
+  defspecial_operator raw = fn (str) do
+    str
+  end
+
   defspecial_operator raw_str = fn (str) do
     if state == [] do
       EKC3.puts(str)
@@ -33,12 +37,14 @@ defmodule EKC3 do
   defspecial_operator verbose = macro (x) do
     quote
       if state == [] do
-        EKC3.puts(unquote(x))
+        EKC3.puts(result = unquote(x))
+        result
       else
         parent_state = state
         state = [:verbose | parent_state]
-        (Str) unquote(x)
+        result = (Str) unquote(x)
         state = parent_state
+        result
       end
   end
 

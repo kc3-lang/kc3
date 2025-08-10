@@ -265,6 +265,7 @@ def maybe_reload_directory = fn (dir) {
 }
 
 require Bool
+require Call
 require Character
 require F32
 require F64
