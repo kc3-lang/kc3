@@ -275,4 +275,3 @@ s_tag * embed_parse_template_str (const s_str *input, s_tag *dest)
   }
   return embed_parse_template(&buf, dest);
 }
-
