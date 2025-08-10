@@ -10,14 +10,15 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require Pretty
 require Rwlock
 
 defmodule Buf do
 
-  defstruct [column: (Sw) 0,
-             flush: (Ptr) 0,
+  defstruct [flush: (Ptr) 0,
              free: false,
              line: (Sw) 0,
+             pretty: %Pretty{},
              ptr: (Ptr) 0,
              read_only: false,
              refill: (Ptr) 0,

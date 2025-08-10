@@ -1,10 +1,12 @@
 require Buf
 true
 %Buf{}
-%Buf{column: (Sw) 0,
-     flush: (Ptr) 0x0,
+%Buf{flush: (Ptr) 0x0,
      free: false,
      line: (Sw) 0,
+     pretty: %Pretty{base_column: (Uw) 0,
+                     column: (Sw) 0,
+                     disable: false},
      ptr: (Ptr) 0x0,
      read_only: false,
      refill: (Ptr) 0x0,

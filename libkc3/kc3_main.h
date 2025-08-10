@@ -32,31 +32,34 @@ s_env * kc3_init (s_env *env, int *argc, char ***argv);
 void    kc3_clean (s_env *env);
 
 /* Observers. */
-s_list **      kc3_args (s_list **dest);
-s_tag *        kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr);
-s_tag *        kc3_fact_object (s_fact *fact, s_tag *dest);
-s_tag *        kc3_fact_predicate (s_fact *fact, s_tag *dest);
-s_tag *        kc3_fact_subject (s_fact *fact, s_tag *dest);
-s_tag *        kc3_facts_first_with_tags (s_facts *facts,
-                                          s_tag *subject,
-                                          s_tag *predicate,
-                                          s_tag *object,
-                                          p_callable *callback,
-                                          s_tag *dest);
-uw *           kc3_facts_next_id (uw *dest);
-s_tag *        kc3_getenv (const s_str *name, s_tag *dest);
-sw             kc3_getpid (void);
-sw             kc3_getppid (void);
-void           kc3_license (void);
-s_tag *        kc3_list_length (const s_list **list, s_tag *dest);
-const s_sym ** kc3_module (const s_sym **dest);
-uw *           kc3_offsetof (const s_sym * const *module,
-                             const s_sym * const *field, uw *dest);
-sw             kc3_puts (const s_tag *tag);
-s_list **      kc3_stacktrace (s_list **dest);
-s_str *        kc3_str (const s_tag *tag, s_str *dest);
-s32            kc3_tag_type (const s_tag *tag);
-s_time *       kc3_uptime (s_time *dest);
+p_list * kc3_args (s_list **dest);
+s_buf ** kc3_err_buf (s_buf **dest);
+s_tag *  kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr);
+s_tag *  kc3_fact_object (s_fact *fact, s_tag *dest);
+s_tag *  kc3_fact_predicate (s_fact *fact, s_tag *dest);
+s_tag *  kc3_fact_subject (s_fact *fact, s_tag *dest);
+s_tag *  kc3_facts_first_with_tags (s_facts *facts,
+                                    s_tag *subject,
+                                    s_tag *predicate,
+                                    s_tag *object,
+                                    p_callable *callback,
+                                    s_tag *dest);
+uw *     kc3_facts_next_id (uw *dest);
+s_tag *  kc3_getenv (const s_str *name, s_tag *dest);
+sw       kc3_getpid (void);
+sw       kc3_getppid (void);
+s_buf ** kc3_in_buf (s_buf **dest);
+void     kc3_license (void);
+s_tag *  kc3_list_length (const s_list **list, s_tag *dest);
+p_sym *  kc3_module (const s_sym **dest);
+uw *     kc3_offsetof (const s_sym * const *module,
+                       const s_sym * const *field, uw *dest);
+s_buf ** kc3_out_buf (s_buf **dest);
+sw       kc3_puts (const s_tag *tag);
+p_list * kc3_stacktrace (s_list **dest);
+s_str *  kc3_str (const s_tag *tag, s_str *dest);
+s32      kc3_tag_type (const s_tag *tag);
+s_time * kc3_uptime (s_time *dest);
 
 /* Operators. */
 s_tag *      kc3_access (s_tag *tag, s_list **addr,

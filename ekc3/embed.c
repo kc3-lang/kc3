@@ -30,7 +30,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
     return NULL;
   }
   tail = &template;
-  if (! (*tail = list_new_str_1(NULL, "do", NULL))) {
+  if (! (*tail = list_new_str_1(NULL, "fn (buf) do", NULL))) {
     buf_clean(&token_buf);
     return NULL;
   }

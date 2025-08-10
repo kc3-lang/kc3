@@ -86,7 +86,7 @@ s_list * list_init_str_1_alloc (s_list *list, const char *p,
                                 s_list *next);
 s_list * list_init_str_alloc_copy (s_list *list, uw size,
                                    const char *p, s_list *next);
-s_list * list_init_str_cast (s_list *list, const s_sym * const *type,
+s_list * list_init_str_cast (s_list *list, p_sym *type,
                              const s_tag *src, s_list *next);
 s_list * list_init_str_concatenate (s_list *list, const s_str *a,
                                     const s_str *b, s_list *next);
@@ -172,8 +172,8 @@ s_list * list_new_str (char *p_free, uw size, const char *p,
 s_list * list_new_str_1 (char *p_free, const char *p, s_list *next);
 s_list * list_new_str_1_alloc (const char *p, s_list *next);
 s_list * list_new_str_alloc_copy (uw size, const char *p, s_list *next);
-s_list * list_new_str_cast (const s_sym * const *type,
-                            const s_tag *src, s_list *next);
+s_list * list_new_str_cast (p_sym *type, const s_tag *src,
+                            s_list *next);
 s_list * list_new_str_concatenate (const s_str *a, const s_str *b,
                                    s_list *next);
 s_list * list_new_str_concatenate_list (const s_list *src,

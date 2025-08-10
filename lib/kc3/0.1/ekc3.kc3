@@ -10,14 +10,36 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require Buf
+
 defmodule EKC3 do
 
   dlopen(__DIR__ + "ekc3.so")
 
-  defspecial_operator raw = fn (str) { str }
+  def state = []
 
-  defspecial_operator verbose = fn (x) do
-                                  (Str) x
+  def puts = macro (x) do
+    quote Buf.write_str(buf, (Str) unquote(x))
+  end
+
+  defspecial_operator raw = fn (str) do
+    if EKC3.state == [] do
+      EKC3.puts(str)
+    else
+      str
+    end
+  end
+
+  defspecial_operator verbose = macro (x) do
+    quote
+      if EKC3.state == [] do
+        EKC3.puts(unquote(x))
+      else
+        parent_state = EKC3.state
+        def EKC3.state = [:verbose | parent_state]
+        (Str) unquote(x)
+        def EKC3.state = parent_state
+      end
   end
 
   def parse_str =

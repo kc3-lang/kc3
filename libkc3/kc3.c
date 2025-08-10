@@ -344,6 +344,16 @@ s_facts ** kc3_env_db (s_facts **dest)
   return dest;
 }
 
+s_buf ** kc3_err_buf (s_buf **dest)
+{
+  s_env *env;
+  assert(dest);
+  env = env_global();
+  assert(env);
+  *dest = env->err;
+  return dest;
+}
+
 sw kc3_errno (void)
 {
   return errno;
@@ -597,6 +607,16 @@ s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
   return dest;
 }
 
+s_buf ** kc3_in_buf (s_buf **dest)
+{
+  s_env *env;
+  assert(dest);
+  env = env_global();
+  assert(env);
+  *dest = env->in;
+  return dest;
+}
+
 s_env * kc3_init (s_env *env, int *argc, char ***argv)
 {
   return env_init(env, argc, argv);
@@ -720,6 +740,16 @@ s_tag * kc3_let (s_tag *vars, s_tag *tag, s_tag *dest)
 void kc3_license (void)
 {
   io_write_1(g_kc3_license);
+}
+
+s_buf ** kc3_out_buf (s_buf **dest)
+{
+  s_env *env;
+  assert(dest);
+  env = env_global();
+  assert(env);
+  *dest = env->out;
+  return dest;
 }
 
 s_tag * kc3_plist_length (const s_list **plist, s_tag *dest)

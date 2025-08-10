@@ -708,7 +708,7 @@ s_list * list_init_str_alloc_copy (s_list *list, uw size,
   return list;
 }
 
-s_list * list_init_str_cast (s_list *list, const s_sym * const *type,
+s_list * list_init_str_cast (s_list *list, p_sym *type,
                              const s_tag *src, s_list *next)
 {
   s_list tmp = {0};
@@ -1805,8 +1805,7 @@ s_list * list_new_str_alloc_copy (uw size, const char *p, s_list *next)
   return list;
 }
 
-s_list * list_new_str_cast (const s_sym * const *type,
-                            const s_tag *src, s_list *next)
+s_list * list_new_str_cast (p_sym *type, const s_tag *src, s_list *next)
 {
   s_list *list;
   list = list_new(next);

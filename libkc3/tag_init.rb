@@ -405,7 +405,7 @@ class TagInitList
                    [Arg.new("uw", "size"),
                     Arg.new("const char *", "p")]),
        TagInit.new("str", "cast", "TAG_STR", :init_mode_init,
-                   [Arg.new("const s_sym * const *", "type"),
+                   [Arg.new("p_sym *", "type"),
                     Arg.new("const s_tag *", "src")]),
        TagInit.new("str", "concatenate", "TAG_STR", :init_mode_init,
                    [Arg.new("const s_str *", "a"),

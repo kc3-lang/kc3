@@ -570,22 +570,25 @@ s_str * str_init_concatenate_list (s_str *str, const s_list *list)
 {
   const s_list *l;
   char *p;
+  s_list *str_list = NULL;
+  const s_sym *sym_Str = &g_sym_Str;
+  s_list **tail;
   s_str tmp = {0};
   l = list;
+  tail = &str_list;
   while (l) {
-    if (l->tag.type != TAG_STR) {
-      err_write_1("str_init_concatenate_list: not a Str: ");
-      err_inspect_tag(&l->tag);
-      err_write_1("\n");
+    if (! (*tail = list_new_str_cast(&sym_Str, &l->tag, NULL))) {
+      list_delete_all(str_list);
       return NULL;
     }
-    tmp.size += l->tag.data.str.size;
+    tmp.size += (*tail)->tag.data.str.size;
+    tail = &(*tail)->next.data.plist;
     l = list_next(l);
   }
   if (! str_init_alloc(&tmp, tmp.size))
     return NULL;
   p = tmp.free.pchar;
-  l = list;
+  l = str_list;
   while (l) {
     if (p + l->tag.data.str.size > tmp.free.pchar + tmp.size) {
       err_puts("str_init_concatenate_list: buffer overflow");

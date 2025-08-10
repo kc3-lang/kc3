@@ -549,8 +549,7 @@ s_tag * tag_init_str_alloc_copy (s_tag *tag, uw size, const char *p)
   return tag;
 }
 
-s_tag * tag_init_str_cast (s_tag *tag, const s_sym * const *type,
-                           const s_tag *src)
+s_tag * tag_init_str_cast (s_tag *tag, p_sym *type, const s_tag *src)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -1355,7 +1354,7 @@ s_tag * tag_new_str_alloc_copy (uw size, const char *p)
   return tag;
 }
 
-s_tag * tag_new_str_cast (const s_sym * const *type, const s_tag *src)
+s_tag * tag_new_str_cast (p_sym *type, const s_tag *src)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
@@ -2133,8 +2132,7 @@ s_tag * tag_str_alloc_copy (s_tag *tag, uw size, const char *p)
   return tag;
 }
 
-s_tag * tag_str_cast (s_tag *tag, const s_sym * const *type,
-                      const s_tag *src)
+s_tag * tag_str_cast (s_tag *tag, p_sym *type, const s_tag *src)
 {
   s_tag tmp = {0};
   assert(tag);
