@@ -281,7 +281,6 @@ typedef s_tag *           p_tag;
 typedef s_var *           p_var;
 
 /* function typedefs */
-typedef void (* f_clean) (void *x);
 typedef bool (* f_sequence) (s_sequence *seq);
 typedef bool (* f_sequence_button) (s_sequence *seq, u8 button, s64 x,
                                     s64 y);
@@ -523,13 +522,12 @@ struct str {
   u_ptr   ptr;         /**< Pointer to memory. */
 };
 
-// TODO: convert f_clean to callable
 struct struct_type {
   const s_sym *module;
   s_map map;
   uw *offset;
   uw size;
-  f_clean clean;
+  p_callable clean;
   bool must_clean;
   s_mutex mutex;
   sw ref_count;

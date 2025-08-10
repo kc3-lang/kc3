@@ -323,7 +323,7 @@ s_tag * tag_init_pstruct_type (s_tag *tag, const s_sym *module,
 
 s_tag * tag_init_pstruct_type_clean (s_tag *tag,
                                      const s_struct_type *st,
-                                     const s_cfn *clean)
+                                     p_callable clean)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -1076,7 +1076,7 @@ s_tag * tag_new_pstruct_type (const s_sym *module, s_list *spec)
 }
 
 s_tag * tag_new_pstruct_type_clean (const s_struct_type *st,
-                                    const s_cfn *clean)
+                                    p_callable clean)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
@@ -1886,7 +1886,7 @@ s_tag * tag_pstruct_type (s_tag *tag, const s_sym *module, s_list *spec)
 }
 
 s_tag * tag_pstruct_type_clean (s_tag *tag, const s_struct_type *st,
-                                const s_cfn *clean)
+                                p_callable clean)
 {
   s_tag tmp = {0};
   assert(tag);

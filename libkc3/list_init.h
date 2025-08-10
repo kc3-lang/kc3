@@ -59,8 +59,7 @@ s_list * list_init_pstruct_type (s_list *list, const s_sym *module,
                                  s_list *spec, s_list *next);
 s_list * list_init_pstruct_type_clean (s_list *list,
                                        const s_struct_type *st,
-                                       const s_cfn *clean,
-                                       s_list *next);
+                                       p_callable clean, s_list *next);
 s_list * list_init_psym (s_list *list, const s_sym *sym, s_list *next);
 s_list * list_init_psym_anon (s_list *list, const s_str *src,
                               s_list *next);
@@ -151,7 +150,7 @@ s_list * list_new_pstruct_with_type (s_struct_type *st, s_list *next);
 s_list * list_new_pstruct_type (const s_sym *module, s_list *spec,
                                 s_list *next);
 s_list * list_new_pstruct_type_clean (const s_struct_type *st,
-                                      const s_cfn *clean, s_list *next);
+                                      p_callable clean, s_list *next);
 s_list * list_new_psym (const s_sym *sym, s_list *next);
 s_list * list_new_psym_anon (const s_str *src, s_list *next);
 s_list * list_new_ptr (void *p, s_list *next);

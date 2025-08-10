@@ -376,15 +376,14 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
     assert(! "env_def_clean: module struct type not found");
     return NULL;
   }
-  if (clean->type != TAG_PCALLABLE ||
-      clean->data.pcallable->type != CALLABLE_CFN) {
+  if (clean->type != TAG_PCALLABLE) {
     err_write_1("env_def_clean: module ");
     err_inspect_sym(module);
-    err_write_1(": clean method must be a Cfn");
-    assert(! "env_def_clean: module clean method must be a Cfn");
+    err_write_1(": clean method must be a Callable");
+    assert(! "env_def_clean: module clean method must be a Callable");
     return NULL;
   }
-  st->clean = (f_clean) clean->data.pcallable->data.cfn.ptr.f;
+  st->clean = callable_new_ref(clean->data.pcallable);
   return module;
 }
 
@@ -2341,14 +2340,14 @@ p_struct_type * env_pstruct_type_find (s_env *env,
   return dest;
 }
 
-f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
+p_callable env_struct_type_get_clean (s_env *env, const s_sym *module)
 {
   s_facts_with_cursor cursor;
   s_fact *found;
   s_tag clean;
   s_tag tag_module;
   s_tag tag_pvar;
-  f_clean tmp = {0};
+  p_callable tmp = NULL;
   const s_sym *type;
   tag_init_psym(&tag_module, module);
   tag_init_psym(&clean, &g_sym_clean);
@@ -2364,31 +2363,30 @@ f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
     tag_clean(&tag_pvar);
     return NULL;
   }
-  if (found->object->type != TAG_PCALLABLE ||
-      found->object->data.pcallable->type != CALLABLE_CFN) {
+  if (found->object->type != TAG_PCALLABLE) {
     tag_type(found->object, &type);
     err_write_1("env_struct_type_get_clean: ");
     err_inspect_sym(module);
     err_write_1(": clean is actually a ");
     err_inspect_sym(type);
-    err_write_1(", it should be a Cfn.\n");
-    assert(! "env_struct_type_get_clean: invalid object");
+    err_write_1(", it should be a Callable.\n");
+    assert(! "env_struct_type_get_clean: clean should be a Callable");
     facts_with_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return NULL;
   }
-  if (found->object->data.pcallable->data.cfn.arity != 1) {
+  if (callable_arity(found->object->data.pcallable) != 1) {
     err_write_1("env_struct_type_get_clean: ");
     err_inspect_sym(module);
     err_write_1(": clean arity is ");
-    err_inspect_u8(found->object->data.pcallable->data.cfn.arity);
+    err_inspect_u8(callable_arity(found->object->data.pcallable));
     err_write_1(", it should be 1.\n");
     assert(! "env_struct_type_get_clean: invalid arity");
     facts_with_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return NULL;
   }
-  tmp = (f_clean) found->object->data.pcallable->data.cfn.ptr.f;
+  tmp = callable_new_ref(found->object->data.pcallable);
   facts_with_cursor_clean(&cursor);
   tag_clean(&tag_pvar);
   return tmp;

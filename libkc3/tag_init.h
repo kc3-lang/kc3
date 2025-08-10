@@ -49,7 +49,7 @@ s_tag * tag_init_pstruct_type (s_tag *tag, const s_sym *module,
                                s_list *spec);
 s_tag * tag_init_pstruct_type_clean (s_tag *tag,
                                      const s_struct_type *st,
-                                     const s_cfn *clean);
+                                     p_callable clean);
 s_tag * tag_init_psym (s_tag *tag, const s_sym *sym);
 s_tag * tag_init_psym_anon (s_tag *tag, const s_str *src);
 s_tag * tag_init_ptr (s_tag *tag, void *p);
@@ -125,7 +125,7 @@ s_tag * tag_new_pstruct_with_data (const s_sym *module, void *data,
 s_tag * tag_new_pstruct_with_type (s_struct_type *st);
 s_tag * tag_new_pstruct_type (const s_sym *module, s_list *spec);
 s_tag * tag_new_pstruct_type_clean (const s_struct_type *st,
-                                    const s_cfn *clean);
+                                    p_callable clean);
 s_tag * tag_new_psym (const s_sym *sym);
 s_tag * tag_new_psym_anon (const s_str *src);
 s_tag * tag_new_ptr (void *p);
@@ -199,7 +199,7 @@ s_tag * tag_pstruct_with_type (s_tag *tag, s_struct_type *st);
 s_tag * tag_pstruct_type (s_tag *tag, const s_sym *module,
                           s_list *spec);
 s_tag * tag_pstruct_type_clean (s_tag *tag, const s_struct_type *st,
-                                const s_cfn *clean);
+                                p_callable clean);
 s_tag * tag_psym (s_tag *tag, const s_sym *sym);
 s_tag * tag_psym_anon (s_tag *tag, const s_str *src);
 s_tag * tag_ptr (s_tag *tag, void *p);

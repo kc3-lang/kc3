@@ -31,7 +31,7 @@ s_struct_type * struct_type_init (s_struct_type *st,
                                   const s_list *spec);
 s_struct_type * struct_type_init_clean (s_struct_type *st,
                                         const s_struct_type *src,
-                                        const s_cfn *clean);
+                                        p_callable clean);
 s_struct_type * struct_type_init_copy (s_struct_type *st,
                                        const s_struct_type *src);
 

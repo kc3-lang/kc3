@@ -12,6 +12,7 @@
  */
 #include "alloc.h"
 #include "assert.h"
+#include "callable.h"
 #include "struct_type.h"
 #include "pstruct_type.h"
 #include "sym.h"
@@ -75,7 +76,7 @@ p_struct_type * pstruct_type_init_copy (p_struct_type *st,
 
 p_struct_type * pstruct_type_init_clean (p_struct_type *st,
                                          const s_struct_type *src,
-                                         const s_cfn *clean)
+                                         p_callable clean)
 {
   p_struct_type tmp = NULL;
   assert(st);
@@ -87,7 +88,10 @@ p_struct_type * pstruct_type_init_clean (p_struct_type *st,
     free(tmp);
     return NULL;
   }
-  tmp->clean = (f_clean) clean->ptr.f;
+  if (! (tmp->clean = callable_new_ref(clean))) {
+    struct_type_delete(tmp);
+    return NULL;
+  }
   *st = tmp;
   return st;
 }

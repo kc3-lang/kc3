@@ -408,7 +408,7 @@ s_list * list_init_pstruct_type (s_list *list, const s_sym *module,
 
 s_list * list_init_pstruct_type_clean (s_list *list,
                                        const s_struct_type *st,
-                                       const s_cfn *clean, s_list *next)
+                                       p_callable clean, s_list *next)
 {
   s_list tmp = {0};
   assert(list);
@@ -1426,7 +1426,7 @@ s_list * list_new_pstruct_type (const s_sym *module, s_list *spec,
 }
 
 s_list * list_new_pstruct_type_clean (const s_struct_type *st,
-                                      const s_cfn *clean, s_list *next)
+                                      p_callable clean, s_list *next)
 {
   s_list *list;
   list = list_new(next);

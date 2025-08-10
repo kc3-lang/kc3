@@ -17,6 +17,7 @@
 #include "buf_parse.h"
 #include "data.h"
 #include "env.h"
+#include "env_eval.h"
 #include "kc3_main.h"
 #include "list.h"
 #include "map.h"
@@ -122,23 +123,34 @@ s_struct * struct_allocate (s_struct *s)
 
 void struct_clean (s_struct *s)
 {
+  s_list args = {0};
+  s_env *env = NULL;
   uw i;
+  s_tag result = {0};
   const s_sym *type;
   assert(s);
   assert(s->pstruct_type);
+  env = env_global();
+  assert(env);
 #if HAVE_PTHREAD
   if (s->mutex_ready)
     mutex_clean(&s->mutex);
 #endif
   if (s->data) {
-    if (s->pstruct_type->clean)
-      s->pstruct_type->clean(s->data);
+    if (s->pstruct_type->clean) {
+      list_init_ptr(&args, s->data, NULL);
+      if (! env_eval_call_callable_args(env, s->pstruct_type->clean,
+                                        &args, &result)) {
+        err_puts("struct_clean: env_eval_call_callable_args");
+        assert(! "struct_clean: env_eval_call_callable_args");
+        list_clean(&args);
+      }
+      tag_clean(&result);
+    }
     if (s->pstruct_type->must_clean) {
       i = 0;
       while (i < s->pstruct_type->map.count) {
-        if (s->pstruct_type->map.value[i].type == TAG_PVAR)
-          type = s->pstruct_type->map.value[i].data.pvar->type;
-        else if (! tag_type(s->pstruct_type->map.value + i, &type))
+        if (! tag_type_var(s->pstruct_type->map.value + i, &type))
           goto ko;
         data_clean(type, (s8 *) s->data + s->pstruct_type->offset[i]);
       ko:

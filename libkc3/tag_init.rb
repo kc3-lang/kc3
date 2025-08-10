@@ -360,7 +360,7 @@ class TagInitList
        TagInit.new("pstruct_type", "clean", "TAG_PSTRUCT_TYPE",
                    :init_mode_init,
                    [Arg.new("const s_struct_type *", "st"),
-                    Arg.new("const s_cfn *", "clean")]),
+                    Arg.new("p_callable", "clean")]),
        TagInit.new("psym", "TAG_PSYM", :init_mode_direct,
                    [Arg.new("const s_sym *", "sym")]),
        TagInit.new("psym", "anon", "TAG_PSYM", :init_mode_init,

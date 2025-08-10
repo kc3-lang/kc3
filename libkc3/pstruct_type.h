@@ -32,7 +32,7 @@ p_struct_type * pstruct_type_init_copy (p_struct_type *st,
                                         p_struct_type *src);
 p_struct_type * pstruct_type_init_clean (p_struct_type *st,
                                          const s_struct_type *src,
-                                         const s_cfn *clean);
+                                         p_callable clean);
 
 /* Operators. */
 p_struct_type * pstruct_type_find (const s_sym *module,
