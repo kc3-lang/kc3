@@ -963,7 +963,9 @@ s_marshall * marshall_struct_type (s_marshall *m, bool heap,
       return NULL;
     i++;
   }
-  if (! marshall_uw(m, heap, st->size))
+  if (! marshall_uw(m, heap, st->size) ||
+      ! marshall_pcallable(m, heap, &st->clean) ||
+      ! marshall_bool(m, heap, st->must_clean))
     return NULL;
   return m;
 }

@@ -1231,6 +1231,8 @@ s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
     i++;
   }
   if (! marshall_read_uw(mr, heap, &tmp.size) ||
+      ! marshall_read_pcallable(mr, heap, &tmp.clean) ||
+      ! marshall_read_bool(mr, heap, &tmp.must_clean) ||
       ! mutex_init(&tmp.mutex))
     return NULL;
   tmp.ref_count = 1;
