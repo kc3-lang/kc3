@@ -161,6 +161,11 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   f32 point_per_pixel;
   assert(window);
   assert(glGetError() == GL_NO_ERROR);
+  if (! module_load(sym_1("GL.Vertex")) ||
+      ! module_load(sym_1("GL.Triangle")) ||
+      ! module_load(sym_1("GL.Object")) ||
+      ! module_load(sym_1("GL.Sphere")))
+    return false;
   point_per_pixel = (f32) window->w / window->gl_w;
   err_write_1("point_per_pixel: ");
   err_inspect_f32(point_per_pixel);

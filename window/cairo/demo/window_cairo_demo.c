@@ -33,7 +33,6 @@ bool window_cairo_demo_button (s_window_cairo *window, u8 button,
                                s64 x, s64 y)
 {
   assert(window);
-  (void) window;
   io_write_1("kc3_window_cairo_demo_button: ");
   io_inspect_u8(button);
   io_write_1(" (");
@@ -51,7 +50,6 @@ bool window_cairo_demo_key (s_window_cairo *window, u32 keysym)
 {
   char keysym_name[64];
   assert(window);
-  (void) window;
   switch (keysym) {
   case XKB_KEY_Escape:
   case XKB_KEY_q:
