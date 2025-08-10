@@ -1,7 +1,7 @@
-do
-EKC3.raw "A"
-EKC3.verbose  x 
-EKC3.raw "B"
- y 
-EKC3.raw "C"
+fn (buf) do
+  EKC3.raw_str "A"
+  EKC3.verbose x
+  EKC3.raw_str "B"
+  y
+  EKC3.raw_str "C"
 end

@@ -17,8 +17,9 @@
 
 typedef enum {
   EMBED_STATE_RAW = 0,
+  EMBED_STATE_SILENT,
   EMBED_STATE_VERBOSE,
-  EMBED_STATE_SILENT
+  EMBED_STATE_VERBOSE_RAW
 } e_embed_state;
 
 s_tag * embed_parse_template (s_buf *input, s_tag *dest);

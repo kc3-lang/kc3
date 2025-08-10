@@ -20,12 +20,6 @@ defmodule EKC3 do
     quote Buf.write_str(buf, (Str) unquote(x))
   end
 
-  state = []
-
-  defspecial_operator raw = fn (str) do
-    str
-  end
-
   defspecial_operator raw_str = fn (str) do
     if state == [] do
       EKC3.puts(str)
@@ -34,14 +28,37 @@ defmodule EKC3 do
     end
   end
 
+  def render = macro (template) do
+    state = []
+    buf = Buf.init_alloc((Uw) (1024 * 1024))
+    unquote(template(quote buf))
+    str = Buf.read_to_str(buf)
+    Buf.clean(buf)
+    str
+  end
+
   defspecial_operator verbose = macro (x) do
+    quote
+      if state == [] do
+        EKC3.puts(result = HTML.escape(unquote(x)))
+        result
+      else
+        parent_state = state
+        state = [:verbose | parent_state]
+        result = HTML.escape((Str) unquote(x))
+        state = parent_state
+        result
+      end
+  end
+
+  defspecial_operator verbose_raw = macro (x) do
     quote
       if state == [] do
         EKC3.puts(result = unquote(x))
         result
       else
         parent_state = state
-        state = [:verbose | parent_state]
+        state = [:verbose_raw | parent_state]
         result = (Str) unquote(x)
         state = parent_state
         result

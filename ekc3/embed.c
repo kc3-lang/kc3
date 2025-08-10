@@ -16,15 +16,17 @@
 
 s_tag * embed_parse_template (s_buf *input, s_tag *dest)
 {
+  s_buf_save input_save = {0};
   character c = 0;
   const char *p = NULL;
+  sw r;
   e_embed_state state = EMBED_STATE_RAW;
   s_str str = {0};
   p_list *tail = NULL;
   p_list template = NULL;
   s_tag tmp = {0};
   s_buf token_buf = {0};
-  uw token_position = 0;
+  s8 token_position = 0;
   if (! input || ! dest) {
     err_puts("embed_parse_template: NULL argument");
     return NULL;
@@ -82,8 +84,23 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
           buf_empty(&token_buf);
         }
         if (c == '=') {
-          state = EMBED_STATE_VERBOSE;
           token_position = 0;
+          buf_save_init(input, &input_save);
+          if (buf_ignore_spaces(input) < 0 ||
+              (r = buf_read_1(input, "raw")) < 0 ||
+              (r && (r = buf_ignore_spaces(input)) < 0)) {
+            buf_save_clean(input, &input_save);
+            list_delete_all(template);
+            buf_clean(&token_buf);
+            return NULL;
+          }
+          if (r)
+            state = EMBED_STATE_VERBOSE_RAW;
+          else {
+            state = EMBED_STATE_VERBOSE;
+            buf_save_restore_rpos(input, &input_save);
+          }
+          buf_save_clean(input, &input_save);
         } else {
           state = EMBED_STATE_SILENT;
           token_position = 0;
@@ -94,6 +111,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
       break;
     case EMBED_STATE_SILENT:
     case EMBED_STATE_VERBOSE:
+    case EMBED_STATE_VERBOSE_RAW:
       switch (token_position) {
       case 0:
         if (c == '%')
@@ -104,8 +122,16 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
       case 1:
         if (c == '>') {
           if (token_buf.wpos > 0) {
-            p = (state == EMBED_STATE_VERBOSE) ? "\nEKC3.verbose " :
-              "\n";
+            switch (state) {
+            case EMBED_STATE_VERBOSE:
+              p = "\nEKC3.verbose ";
+              break;
+            case EMBED_STATE_VERBOSE_RAW:
+              p = "\nEKC3.verbose_raw ";
+              break;
+            default:
+              p = "\n";
+            }
             if (! (*tail = list_new_str_1(NULL, p, NULL))) {
               list_delete_all(template);
               buf_clean(&token_buf);
@@ -151,6 +177,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
       break;
     case EMBED_STATE_SILENT:
     case EMBED_STATE_VERBOSE:
+    case EMBED_STATE_VERBOSE_RAW:
       err_puts("embed_parse_template: unterminated code section");
       assert(! "embed_parse_template: unterminated code section");
       list_delete_all(template);

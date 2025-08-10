@@ -1,13 +1,13 @@
-do
-EKC3.raw "<!doctype html>\n<html>\n  <head>\n    <title>"
-EKC3.verbose  title 
-EKC3.raw "</title>\n  </head>\n  <body>\n    "
- title2 = title + " H1 (silent block)" 
-EKC3.raw "\n    <h1>"
-EKC3.verbose  title2 
-EKC3.raw "</h1>\n    <h1>"
-EKC3.verbose  title_h1 
-EKC3.raw "</h1>\n    "
-EKC3.verbose  raw title_h2 
-EKC3.raw "\n  </body>\n</html>\n"
+fn (buf) do
+  EKC3.raw_str "<!doctype html>\n<html>\n  <head>\n    <title>"
+  EKC3.verbose title
+  EKC3.raw_str "</title>\n  </head>\n  <body>\n    "
+  title2 = title + " H1 (silent block)"
+  EKC3.raw_str "\n    <h1>"
+  EKC3.verbose title2
+  EKC3.raw_str "</h1>\n    <h1>"
+  EKC3.verbose title_h1
+  EKC3.raw_str "</h1>\n    "
+  EKC3.verbose_raw title_h2
+  EKC3.raw_str "\n  </body>\n</html>\n"
 end
