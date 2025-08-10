@@ -22,6 +22,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
   s_str str = {0};
   p_list *tail = NULL;
   p_list template = NULL;
+  s_tag tmp = {0};
   s_buf token_buf = {0};
   uw token_position = 0;
   if (! input || ! dest) {
@@ -76,6 +77,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
             buf_clean(&token_buf);
             return NULL;
           }
+          str_clean(&str);
           tail = &(*tail)->next.data.plist;
           buf_empty(&token_buf);
         }
@@ -166,6 +168,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
       buf_clean(&token_buf);
       return NULL;
     }
+    str_clean(&str);
     tail = &(*tail)->next.data.plist;
   }
   buf_clean(&token_buf);
@@ -174,11 +177,14 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
     return NULL;
   }
   tail = &(*tail)->next.data.plist;
-  if (! tag_init_str_concatenate_list(dest, template)) {
+  if (! str_init_concatenate_list(&str, template)) {
     list_delete_all(template);
     return NULL;
   }
   list_delete_all(template);
+  tag_init_from_str(&tmp, &str);
+  str_clean(&str);
+  *dest = tmp;
   return dest;
 }
 

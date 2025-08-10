@@ -14,10 +14,16 @@ defmodule EKC3 do
 
   dlopen(__DIR__ + "ekc3.so")
 
-  def parse_template_str =
+  defspecial_operator raw = fn (str) { str }
+
+  defspecial_operator verbose = fn (x) do
+                                  (Str) x
+  end
+
+  def parse_str =
     cfn Tag "embed_parse_template_str" (Str, Result)
 
-  def parse_template_file =
+  def parse_file =
     cfn Tag "embed_parse_template_file" (Str, Result)
 
 #  def load = cfn Tag "ekc3_load" (Str, Result)
