@@ -46,6 +46,17 @@ bool call_get (s_call *call)
   return env_call_get(env_global(), call);
 }
 
+s_ident * call_ident (const s_call *call, s_ident *dest)
+{
+  if (! call || ! dest) {
+    err_puts("call_ident: invalid argument");
+    assert(! "call_ident: invalid argument");
+    return NULL;
+  }
+  *dest = call->ident;
+  return dest;
+}
+
 s_call * call_init (s_call *call)
 {
   assert(call);
@@ -160,4 +171,15 @@ s_call * call_init_op_unary (s_call *call)
   tmp.arguments = list_new(NULL);
   *call = tmp;
   return call;
+}
+
+p_sym * call_psym (const s_call *call, p_sym *dest)
+{
+  if (! call || ! call->ident.sym || ! dest) {
+    err_puts("call_psym: invalid argument");
+    assert(! "call_psym: invalid argument");
+    return NULL;
+  }
+  *dest = call->ident.sym;
+  return dest;
 }

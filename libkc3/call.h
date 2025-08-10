@@ -27,7 +27,9 @@ s_call * call_init_op (s_call *call);
 s_call * call_init_op_unary (s_call *call);
 
 /* Observers. */
-sw call_arity (const s_call *call);
+sw        call_arity (const s_call *call);
+s_ident * call_ident (const s_call *call, s_ident *dest);
+p_sym *   call_psym (const s_call *call, p_sym *dest);
 
 /* Modifiers */
 bool     call_get (s_call *call);

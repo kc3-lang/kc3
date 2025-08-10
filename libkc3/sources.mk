@@ -138,6 +138,7 @@ HEADERS = \
 	"mutex.h" \
 	"op.h" \
 	"ops.h" \
+	"pbuf.h" \
 	"pcallable.h" \
 	"pcomplex.h" \
 	"pcow.h" \
@@ -334,6 +335,7 @@ SOURCES = \
 	"mutex.c" \
 	"op.c" \
 	"ops.c" \
+	"pbuf.c" \
 	"pcallable.c" \
 	"pcomplex.c" \
 	"pcow.c" \
@@ -647,6 +649,7 @@ LO_SOURCES = \
 	"mutex.c" \
 	"op.c" \
 	"ops.c" \
+	"pbuf.c" \
 	"pcallable.c" \
 	"pcomplex.c" \
 	"pcow.c" \

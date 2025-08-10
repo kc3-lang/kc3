@@ -1,2 +1,2 @@
 require EKC3
-puts(EKC3.parse_template_str("Hello, world !"))
+puts(EKC3.parse_str("Hello, world !"))

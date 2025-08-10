@@ -60,7 +60,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
         break;
       case 2:
         if (token_buf.wpos > 0) {
-          if (! (*tail = list_new_str_1(NULL, "\nEKC3.raw ", NULL))) {
+          if (! (*tail = list_new_str_1(NULL, "\nEKC3.raw_str ", NULL))) {
             list_delete_all(template);
             buf_clean(&token_buf);
             return NULL;
@@ -142,7 +142,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
   if (token_buf.wpos > 0) {
     switch (state) {
     case EMBED_STATE_RAW:
-      if (! (*tail = list_new_str_1(NULL, "\nEKC3.raw ", NULL))) {
+      if (! (*tail = list_new_str_1(NULL, "\nEKC3.raw_str ", NULL))) {
         list_delete_all(template);
         buf_clean(&token_buf);
         return NULL;

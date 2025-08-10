@@ -528,6 +528,8 @@ KC3_C_SOURCES = \
 	"libkc3/op.h" \
 	"libkc3/ops.c" \
 	"libkc3/ops.h" \
+	"libkc3/pbuf.c" \
+	"libkc3/pbuf.h" \
 	"libkc3/pcallable.c" \
 	"libkc3/pcallable.h" \
 	"libkc3/pcomplex.c" \
@@ -1191,6 +1193,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/crypt.kc3" \
 	"lib/kc3/0.1/deserialize.kc3" \
 	"lib/kc3/0.1/ekc3.kc3" \
+	"lib/kc3/0.1/env.kc3" \
 	"lib/kc3/0.1/event.kc3" \
 	"lib/kc3/0.1/f128.facts" \
 	"lib/kc3/0.1/f32.facts" \
@@ -1262,6 +1265,8 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/math.kc3" \
 	"lib/kc3/0.1/metric.kc3" \
 	"lib/kc3/0.1/parse.kc3" \
+	"lib/kc3/0.1/pretty.kc3" \
+	"lib/kc3/0.1/pretty_save.kc3" \
 	"lib/kc3/0.1/prime.kc3" \
 	"lib/kc3/0.1/ptr.facts" \
 	"lib/kc3/0.1/ptr_free.facts" \
@@ -1478,6 +1483,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/map.kc3" \
 	"test/ikc3/map.out.expected" \
 	"test/ikc3/map.ret.expected" \
+	"test/ikc3/marshall.kc3" \
+	"test/ikc3/marshall.out.expected" \
+	"test/ikc3/marshall.ret.expected" \
 	"test/ikc3/op.err.expected" \
 	"test/ikc3/op.kc3" \
 	"test/ikc3/op.out.expected" \
@@ -1543,21 +1551,22 @@ KC3_TEST_EKC3_SOURCES = \
 	"test/ekc3/parse_empty.kc3" \
 	"test/ekc3/parse_empty.out.expected" \
 	"test/ekc3/parse_empty.ret.expected" \
+	"test/ekc3/parse_file.html.ekc3" \
+	"test/ekc3/parse_file.kc3" \
+	"test/ekc3/parse_file.out.expected" \
+	"test/ekc3/parse_file.ret.expected" \
 	"test/ekc3/parse_mixed.kc3" \
 	"test/ekc3/parse_mixed.out.expected" \
 	"test/ekc3/parse_mixed.ret.expected" \
 	"test/ekc3/parse_raw.kc3" \
+	"test/ekc3/parse_raw.out.expected" \
+	"test/ekc3/parse_raw.ret.expected" \
 	"test/ekc3/parse_silent.kc3" \
 	"test/ekc3/parse_silent.out.expected" \
 	"test/ekc3/parse_silent.ret.expected" \
-	"test/ekc3/parse_str.kc3" \
-	"test/ekc3/parse_str.out.expected" \
-	"test/ekc3/parse_str.ret.expected" \
 	"test/ekc3/parse_verbose.kc3" \
-	"test/ekc3/title.html.ekc3" \
-	"test/ekc3/title.kc3" \
-	"test/ekc3/title.out.expected" \
-	"test/ekc3/title.ret.expected" \
+	"test/ekc3/parse_verbose.out.expected" \
+	"test/ekc3/parse_verbose.ret.expected" \
 	"test/ekc3_test" \
 
 KC3_TEST_HTTP_SOURCES = \

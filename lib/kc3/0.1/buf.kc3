@@ -30,7 +30,7 @@ defmodule Buf do
              user_ptr: (Ptr) 0,
              wpos: (Uw) 0]
 
-  def init_alloc = cfn Buf "buf_init_alloc" (Result, Uw)
+  def init_alloc = cfn Ptr "pbuf_init_alloc" (Result, Uw)
 
   def inspect = cfn Sw "buf_inspect_tag" (Buf, Tag)
 

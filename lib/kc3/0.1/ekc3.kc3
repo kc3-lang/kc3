@@ -16,14 +16,14 @@ defmodule EKC3 do
 
   dlopen(__DIR__ + "ekc3.so")
 
-  def state = []
-
   def puts = macro (x) do
     quote Buf.write_str(buf, (Str) unquote(x))
   end
 
-  defspecial_operator raw = fn (str) do
-    if EKC3.state == [] do
+  state = []
+
+  defspecial_operator raw_str = fn (str) do
+    if state == [] do
       EKC3.puts(str)
     else
       str
@@ -32,13 +32,13 @@ defmodule EKC3 do
 
   defspecial_operator verbose = macro (x) do
     quote
-      if EKC3.state == [] do
+      if state == [] do
         EKC3.puts(unquote(x))
       else
-        parent_state = EKC3.state
-        def EKC3.state = [:verbose | parent_state]
+        parent_state = state
+        state = [:verbose | parent_state]
         (Str) unquote(x)
-        def EKC3.state = parent_state
+        state = parent_state
       end
   end
 

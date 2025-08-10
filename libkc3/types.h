@@ -266,6 +266,7 @@ typedef SHA1_CTX       t_hash;
 typedef u64            t_skiplist_height;
 
 /* pointer types */
+typedef s_buf *           p_buf;
 typedef s_callable *      p_callable;
 typedef s_complex *       p_complex;
 typedef s_cow *           p_cow;
