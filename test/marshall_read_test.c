@@ -632,7 +632,7 @@ TEST_CASE_END(marshall_read_plist)
                          "\x00\x00\x00\x00\x00\x00\x00\x00"
                          "\x00\x00\x00\x00\x00\x00\x00\x00"
                          "\x09\x00\x00\x00\x00\x00\x00\x00"
-                         "\x1f\x00\x00\x00\x00\x00\x00\x00"
+                         "\x20\x00\x00\x00\x00\x00\x00\x00"
                          "\x00",
                          "(PtrFree) 0");
 
