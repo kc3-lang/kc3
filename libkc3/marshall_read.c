@@ -101,7 +101,7 @@ s_marshall_read * marshall_read_array (s_marshall_read *mr,
     item_size = tmp.dimensions[tmp.dimension_count - 1].item_size;
     i = 0;
     while (i < tmp.count) {
-      if (! marshall_read_data(mr, heap, tmp.array_type, data))
+      if (! marshall_read_data(mr, heap, tmp.element_type, data))
         return NULL;
       data = (u8 *) data + item_size;
       i++;

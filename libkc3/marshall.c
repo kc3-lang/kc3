@@ -116,9 +116,9 @@ s_marshall * marshall_array (s_marshall *m, bool heap,
     item_size = array->dimensions[array->dimension_count - 1].item_size;
     i = 0;
     while (i < array->count) {
-      if (! marshall_data(m, heap, array->array_type, data))
+      if (! marshall_data(m, heap, array->element_type, data))
         return NULL;
-      data = (u8 *) data + item_size;
+      data += item_size;
       i++;
     }
   }
