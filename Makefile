@@ -366,7 +366,13 @@ gdb_test: lib_links_debug
 	${MAKE} -C libkc3 debug
 	${MAKE} -C test gdb_test
 
-gdb_test_ekc3: lib_links_debug
+gdb_test_asan: lib_links_asan
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C test gdb_test_asan
+
+gdb_test_ekc3: lib_links_debugOA
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug

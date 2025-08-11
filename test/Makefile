@@ -74,6 +74,9 @@ gcovr:
 gdb_test: debug
 	if [ -f libkc3_test_debug.core ]; then ${GDB} .libs/libkc3_test_debug libkc3_test_debug.core; else ${GDB} .libs/libkc3_test_debug; fi
 
+gdb_test_asan: asan
+	if [ -f libkc3_test_asan.core ]; then ${GDB} .libs/libkc3_test_asan libkc3_test_asan.core; else ${GDB} .libs/libkc3_test_asan; fi
+
 gdb_test_ekc3:
 	cd ekc3 && ${GDB} ../../kc3s/.libs/kc3s_debug
 
@@ -120,6 +123,7 @@ test: libkc3_test
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./http_test
 
 test_asan: libkc3_test_asan
+	time ./libkc3_test_asan --copy
 	time ./libkc3_test_asan
 	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./ikc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./kc3s_test
