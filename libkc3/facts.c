@@ -196,25 +196,30 @@ void facts_delete (s_facts *facts)
   free(facts);
 }
 
-sw facts_dump (s_facts *facts, s_buf *buf)
+sw facts_dump (s_facts *facts, s_buf *buf, bool binary)
 {
   s_facts_cursor cursor;
   s_fact *fact;
-  s_tag predicate;
+  s_marshall marshall = {0};
   s_tag object;
+  s_tag predicate;
   sw r;
   sw result = 0;
   s_tag subject;
   assert(facts);
   assert(buf);
+  if (binary) {
+    marshall_facts(marshall, false, facts);
+    return marshall_size(marshall);
+  }
   tag_init_pvar(&subject, &g_sym_Tag);
   tag_init_pvar(&predicate, &g_sym_Tag);
   tag_init_pvar(&object, &g_sym_Tag);
-  if ((r = buf_write_1(buf,
-                       "%{module: KC3.Facts.Dump,\n"
-                       "  version: 1}\n")) < 0)
-    return r;
-  result += r;
+    if ((r = buf_write_1(buf,
+                         "%{module: KC3.Facts.Dump,\n"
+                         "  version: 1}\n")) < 0)
+      return r;
+    result += r;
 #if HAVE_PTHREAD
   rwlock_r(&facts->rwlock);
 #endif
