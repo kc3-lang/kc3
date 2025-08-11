@@ -1068,7 +1068,6 @@ else
 	    GCOV=egcov
             HAVE_GCOV=true
         fi
-        HAVE_GCOV=false
     else
         HAVE_GCOV=true
     fi
