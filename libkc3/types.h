@@ -314,9 +314,9 @@ struct do_block {
 };
 
 struct fact {
-  s_tag *subject;
-  s_tag *predicate;
-  s_tag *object;
+  p_tag subject;
+  p_tag predicate;
+  p_tag object;
   uw id; /* serial id */
 };
 
