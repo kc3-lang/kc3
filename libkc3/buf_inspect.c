@@ -3245,6 +3245,7 @@ sw buf_inspect_ratio_size (s_pretty *pretty, const s_ratio *ratio)
 
 sw buf_inspect_stacktrace (s_buf *buf, const s_list *stacktrace)
 {
+  const s_list *arg;
   s_pretty_save pretty_save;
   sw r;
   sw result = 0;
@@ -3264,7 +3265,20 @@ sw buf_inspect_stacktrace (s_buf *buf, const s_list *stacktrace)
       if ((r = buf_inspect_tag(buf, &s->tag.data.plist->tag)) < 0)
         return r;
       result += r;
-      if ((r = buf_write_1(buf, "\n")) < 0)
+      if ((r = buf_write_1(buf, "(")) < 0)
+        return r;
+      result += r;
+      arg = list_next(s->tag.data.plist);
+      while (arg) {
+        if ((r = buf_inspect_tag(buf, &arg->tag)) < 0)
+          return r;
+        result += r;
+        if ((r = buf_write_1(buf, ", ")) < 0)
+          return r;
+        result += r;
+        arg = list_next(arg);
+      }
+      if ((r = buf_write_1(buf, ")\n")) < 0)
         return r;    
       result += r;
     }
