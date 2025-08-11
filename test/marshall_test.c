@@ -68,6 +68,7 @@
     TEST_STR_HEX_EQ(test_str, expected_str);                          \
     marshall_clean(&m);                                               \
     tag_clean(&tag);                                                  \
+    str_clean(&test_str);                                             \
     test_context(NULL);                                               \
   } while (0)
 
