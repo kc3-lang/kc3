@@ -3273,10 +3273,12 @@ sw buf_inspect_stacktrace (s_buf *buf, const s_list *stacktrace)
         if ((r = buf_inspect_tag(buf, &arg->tag)) < 0)
           return r;
         result += r;
-        if ((r = buf_write_1(buf, ", ")) < 0)
-          return r;
-        result += r;
         arg = list_next(arg);
+        if (arg) {
+          if ((r = buf_write_1(buf, ", ")) < 0)
+            return r;
+          result += r;
+        }
       }
       if ((r = buf_write_1(buf, ")\n")) < 0)
         return r;    
