@@ -87,6 +87,7 @@ sw      str_init_subst_size (const s_str *src, const s_str *search,
                              const s_str *replace);
 PROTOTYPE_STR_INIT_STRUCT(struct);
 PROTOTYPE_STR_INIT_DIRECT(sw);
+PROTOTYPE_STR_INIT(time, const s_time *);
 s_str * str_init_to_lower (s_str *str, const s_str *src);
 s_str * str_init_to_upper (s_str *str, const s_str *src);
 PROTOTYPE_STR_INIT_STRUCT(tuple);

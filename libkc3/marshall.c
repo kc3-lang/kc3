@@ -19,6 +19,9 @@
 #include "buf.h"
 #include "buf_file.h"
 #include "endian.h"
+#include "facts.h"
+#include "facts_cursor.h"
+#include "facts_with.h"
 #include "file.h"
 #include "ht.h"
 #include "io.h"
@@ -26,6 +29,7 @@
 #include "struct_type.h"
 #include "sym.h"
 #include "list.h"
+#include "rwlock.h"
 #include "str.h"
 #include "tag.h"
 #include "tag_init.h"
@@ -604,6 +608,48 @@ s_marshall * marshall_fact (s_marshall *m, bool heap,
       ! marshall_uw(m, heap, fact->id))
     return NULL;
   return m;
+}
+
+s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
+{
+  s_facts_cursor cursor;
+  s_fact *fact;
+  s_tag predicate;
+  s_tag object;
+  s_tag subject;
+  assert(m);
+  assert(facts);
+  tag_init_pvar(&subject, &g_sym_Tag);
+  tag_init_pvar(&predicate, &g_sym_Tag);
+  tag_init_pvar(&object, &g_sym_Tag);
+#if HAVE_PTHREAD
+  rwlock_r(&facts->rwlock);
+#endif
+  facts_with_0(facts, &cursor, subject.data.pvar, predicate.data.pvar,
+               object.data.pvar);
+  if (! marshall_uw(m, heap, facts->facts.count) ||
+      ! facts_cursor_next(&cursor, &fact))
+    goto ko;
+  while (fact) {
+    if (! marshall_fact(m, heap, fact) ||
+        ! facts_cursor_next(&cursor, &fact))
+      goto ko;
+  }
+  tag_clean(&subject);
+  tag_clean(&predicate);
+  tag_clean(&object);
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
+  return m;
+ ko:
+  tag_clean(&subject);
+  tag_clean(&predicate);
+  tag_clean(&object);
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
+  return NULL;
 }
 
 s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)

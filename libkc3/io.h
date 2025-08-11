@@ -95,6 +95,7 @@ PROTOTYPES_ERR_IO_INSPECT(sw_hexadecimal,      sw);
 PROTOTYPES_ERR_IO_INSPECT(sym,                 const s_sym *);
 PROTOTYPES_ERR_IO_INSPECT(tag,                 const s_tag *);
 PROTOTYPES_ERR_IO_INSPECT(tag_type,            e_tag_type);
+PROTOTYPES_ERR_IO_INSPECT(time,                const s_time *);
 PROTOTYPES_ERR_IO_INSPECT(tuple,               const s_tuple *);
 PROTOTYPES_ERR_IO_INSPECT(u8,                  u8);
 PROTOTYPES_ERR_IO_INSPECT(u8_decimal,          u8);

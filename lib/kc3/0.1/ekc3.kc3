@@ -77,6 +77,6 @@ defmodule EKC3 do
 
   def load = cfn Tag "embed_parse_template_file" (Str, Result)
 
-  def render_file = fn (path) { render(load(path)) }
+  def render_file = fn (path) { EKC3.render(EKC3.load(path)) }
 
 end

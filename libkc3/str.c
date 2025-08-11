@@ -502,6 +502,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_copy(str, &tag->data.psym->str);
   case TAG_SW:
     return str_init_sw(str, tag->data.sw);
+  case TAG_TIME:
+    return str_init_time(str, &tag->data.time);
   case TAG_TUPLE:
     return str_init_tuple(str, &tag->data.tuple);
   case TAG_U8:
@@ -1071,6 +1073,8 @@ sw str_init_subst_size (const s_str *src, const s_str *search,
   }
   return result;
 }
+
+DEF_STR_INIT_STRUCT(time)
 
 s_str * str_init_to_lower (s_str *str, const s_str *src)
 {
