@@ -98,6 +98,8 @@ s_marshall * marshall_array (s_marshall *m, bool heap,
       ! marshall_psym(m, heap, &array->element_type) ||
       ! marshall_uw(m, heap, array->dimension_count))
     return NULL;
+  if (! array->dimension_count)
+    return m;
   i = 0;
   while (i < array->dimension_count) {
     if (! marshall_uw(m, heap, array->dimensions[i].count) ||
