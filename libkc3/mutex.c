@@ -47,7 +47,8 @@ s_mutex * mutex_init (s_mutex *mutex)
 void mutex_lock (s_mutex *mutex)
 {
   if (pthread_mutex_lock(&mutex->mutex)) {
-    err_puts("mutex_lock: pthread_mutex_lock");
+    err_puts("mutex_lock: pthread_mutex_lock: stacktrace:");
+    err_stacktrace();
     assert(! "mutex_lock: pthread_mutex_lock");
     abort();
   }
