@@ -36,12 +36,20 @@
 | Ptr free        |  [X]   |  [X]   |
 | Array           |  [ ]   |  [.]   |
 | Fact            |  [X]   |  [?]   |
-| PStruct         |  [ ]   |  [?]   |
-| PStruct Type    |  [?]   |  [?]   |
+| PStruct         |  [X]   |  [X]   |
+| PStruct Type    |  [X]   |  [X]   |
 | PTag            |  [X]   |  [?]   | Tag             |
+| Facts           |  [ ]   |  [ ]   |
 ... (others)
 
 [X] : Done
 [ ] : Not implemented
 [.] : Work in progress
 [?] : Has to be tested/verified
+
+
+Array :
+
+```elixir
+my_array = (U8[]) {1, 2, 3, 4}
+```

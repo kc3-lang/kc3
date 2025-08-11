@@ -196,6 +196,7 @@ void facts_delete (s_facts *facts)
   free(facts);
 }
 
+// TODO: handle binary = true
 sw facts_dump (s_facts *facts, s_buf *buf, bool binary)
 {
   s_facts_cursor cursor;
@@ -209,7 +210,8 @@ sw facts_dump (s_facts *facts, s_buf *buf, bool binary)
   assert(facts);
   assert(buf);
   if (binary) {
-    marshall_facts(marshall, false, facts);
+    if (! marshall_facts(marshall, false, facts))
+      return NULL;
     return marshall_size(marshall);
   }
   tag_init_pvar(&subject, &g_sym_Tag);
