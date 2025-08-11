@@ -41,6 +41,7 @@
 #include "map.h"
 #include "op.h"
 #include "ops.h"
+#include "pcallable.h"
 #include "pvar.h"
 #include "ratio.h"
 #include "special_operator.h"
@@ -1025,7 +1026,6 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       if ((r = buf_parse_call_op_rec
            (buf, &tmp2, (next_op->precedence > op->precedence) ?
             op->precedence + 1 : op->precedence)) <= 0) {
-        tmp2.arguments->tag.type = TAG_VOID;
         call_clean(&tmp2);
         goto ok;
       }
@@ -1170,6 +1170,8 @@ sw buf_parse_pcallable (s_buf *buf, p_callable *dest)
     tmp->data.fn = fn;
     *dest = tmp;
   }
+  else
+    return 0;
   return r;
 }
 

@@ -32,6 +32,7 @@
     TEST_ASSERT(marshall_to_str(&m, &test_str));                      \
     TEST_STR_HEX_EQ(test_str, expected_str);                          \
     marshall_clean(&m);                                               \
+    str_clean(&test_str);                                             \
     test_context(NULL);                                               \
   } while (0)
 
