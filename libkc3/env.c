@@ -507,8 +507,10 @@ s_tag * env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest)
   tag_init_copy(&ident_tag, &call->arguments->tag);
   if (! ident_tag.data.ident.module)
     ident_tag.data.ident.module = env->current_defmodule;
-  if (! env_eval_tag(env, &second->tag, &callable_tag))
+  if (! env_eval_tag(env, &second->tag, &callable_tag)) {
+    tag_clean(&callable_tag);
     return NULL;
+  }
   if (callable_tag.type != TAG_PCALLABLE) {
     err_puts("env_defspecial_operator: right operand must be a"
              " Callable");
@@ -531,18 +533,26 @@ s_tag * env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest)
   tag_init_psym(&tag_symbol_value, &g_sym_symbol_value);
   tag_init_u8(&tag_arity, arity);
   if (! facts_add_tags(env->facts, &tag_module, &tag_symbol,
-                       &ident_tag))
+                       &ident_tag)) {
+    tag_clean(&callable_tag);
     return NULL;
+  }
   if (! facts_add_tags(env->facts, &ident_tag, &tag_is_a, 
-                       &tag_special_operator))
+                       &tag_special_operator)) {
+    tag_clean(&callable_tag);
     return NULL;
+  }
   if (! facts_add_tags(env->facts, &ident_tag, &tag_sym_arity,
-                       &tag_arity))
+                       &tag_arity)) {
+    tag_clean(&callable_tag);
     return NULL;
+  }
   callable_set_special(callable_tag.data.pcallable, true);
   if (! facts_add_tags(env->facts, &ident_tag, &tag_symbol_value, 
-                       &callable_tag))
+                       &callable_tag)) {
+    tag_clean(&callable_tag);
     return NULL;
+  }
   *dest = ident_tag;
   tag_clean(&callable_tag);
   return dest;

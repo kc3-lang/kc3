@@ -1144,7 +1144,7 @@ sw buf_parse_call_paren (s_buf *buf, s_call *dest)
   return r;
 }
 
-sw buf_parse_callable (s_buf *buf, p_callable *dest)
+sw buf_parse_pcallable (s_buf *buf, p_callable *dest)
 {
   s_cfn cfn = {0};
   s_fn fn = {0};
@@ -3427,8 +3427,11 @@ sw buf_parse_ptr_free (s_buf *buf, u_ptr_w *dest)
   if ((r = buf_parse_integer(buf, &i)) <= 0)
     goto restore;
   result += r;
-  if (! integer_is_zero(&i))
+  if (! integer_is_zero(&i)) {
+    integer_clean(&i);
     goto restore;
+  }
+  integer_clean(&i);
   dest->p = NULL;
   r = result;
   goto clean;
@@ -3679,7 +3682,7 @@ sw buf_parse_static_tag (s_buf *buf, s_tag *tag)
   buf_save_clean(buf, &save);
   return r;
 }
-      
+
 sw buf_parse_str (s_buf *buf, s_str *dest)
 {
   u8 b;
@@ -3992,7 +3995,7 @@ sw buf_parse_struct (s_buf *buf, s_struct *dest)
   if (! struct_init_from_lists(&tmp, module, keys, values)) {
     err_write_1("buf_parse_struct: struct_init_from_lists ");
     err_inspect_sym(module);
-    err_puts(".");    
+    err_puts(".");
     r = -2;
     goto clean;
   }
@@ -4265,12 +4268,12 @@ sw buf_parse_tag_call_op_unary (s_buf *buf, s_tag *dest)
   return r;
 }
 
-sw buf_parse_tag_callable (s_buf *buf, s_tag *dest)
+sw buf_parse_tag_pcallable (s_buf *buf, s_tag *dest)
 {
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_callable(buf, &dest->data.pcallable)) > 0)
+  if ((r = buf_parse_pcallable(buf, &dest->data.pcallable)) > 0)
     dest->type = TAG_PCALLABLE;
   return r;
 }
@@ -4661,7 +4664,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
   case 'c':
     if ((r = buf_parse_tag_special_operator(buf, dest)) ||
         (r = buf_parse_tag_cow(buf, dest)) ||
-        (r = buf_parse_tag_callable(buf, dest)) ||
+        (r = buf_parse_tag_pcallable(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
@@ -4697,7 +4700,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
   case 'f':
   case 'm':
     if ((r = buf_parse_tag_special_operator(buf, dest)) ||
-        (r = buf_parse_tag_callable(buf, dest)) ||
+        (r = buf_parse_tag_pcallable(buf, dest)) ||
         (r = buf_parse_tag_bool(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
@@ -4738,7 +4741,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
     goto restore;
   default:
     if ((r = buf_parse_tag_special_operator(buf, dest)) ||
-        (r = buf_parse_tag_callable(buf, dest)) ||
+        (r = buf_parse_tag_pcallable(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)) ||
         (r = buf_parse_tag_sym(buf, dest)))

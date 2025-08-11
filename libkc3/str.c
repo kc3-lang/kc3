@@ -587,21 +587,26 @@ s_str * str_init_concatenate_list (s_str *str, const s_list *list)
     tail = &(*tail)->next.data.plist;
     l = list_next(l);
   }
-  if (! str_init_alloc(&tmp, tmp.size))
+  if (! str_init_alloc(&tmp, tmp.size)) {
+    list_delete_all(str_list);
     return NULL;
+  }
   p = tmp.free.pchar;
   l = str_list;
+
   while (l) {
     if (p + l->tag.data.str.size > tmp.free.pchar + tmp.size) {
       err_puts("str_init_concatenate_list: buffer overflow");
       assert(! "str_init_concatenate_list: buffer overflow");
       str_clean(&tmp);
+      list_delete_all(str_list);
       return NULL;
     }
     memcpy(p, l->tag.data.str.ptr.p, l->tag.data.str.size);
     p += l->tag.data.str.size;
     l = list_next(l);
   }
+  list_delete_all(str_list);
   *str = tmp;
   return str;
 }
