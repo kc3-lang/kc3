@@ -13,6 +13,7 @@
 #include <string.h>
 #include "alloc.h"
 #include "assert.h"
+#include "callable.h"
 #include "data.h"
 #include "env.h"
 #include "list.h"
@@ -35,6 +36,8 @@ void struct_type_clean (s_struct_type *st)
     err_stacktrace();
     abort();
   }
+  if (st->clean)
+    callable_delete(st->clean);
   map_clean(&st->map);
   free(st->offset);
 #if HAVE_PTHREAD
