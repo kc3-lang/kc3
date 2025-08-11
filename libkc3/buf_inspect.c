@@ -94,8 +94,8 @@ sw buf_inspect_array_data (s_buf *buf, const s_array *array)
   sw r;
   assert(buf);
   assert(array);
-  // TODO: buf_inspect_array_data_rec_data
-  // TODO: buf_inspect_array_data_rec_tags
+  if (! array->dimension_count)
+    return buf_write_1_size(pretty, "{}");
   if (array->data)
     data = array->data;
   else 
@@ -174,6 +174,8 @@ sw buf_inspect_array_data_size (s_pretty *pretty, const s_array *array)
   s_tag *tag = NULL;
   sw r;
   assert(array);
+  if (! array->dimension_count)
+    return buf_write_1_size(pretty, "{}");
   if (array->data)
     data = array->data;
   else 
