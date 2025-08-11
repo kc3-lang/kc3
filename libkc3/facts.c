@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <errno.h>
-#include <string.h>
+#include <stdlib.h>
 #include "alloc.h"
 #include "assert.h"
 #include "buf.h"
@@ -21,7 +21,6 @@
 #include "compare.h"
 #include "config.h"
 #include "fact.h"
-#include "fact_list.h"
 #include "facts.h"
 #include "facts_cursor.h"
 #include "facts_transaction.h"
@@ -30,6 +29,8 @@
 #include "io.h"
 #include "list.h"
 #include "log.h"
+#include "marshall.h"
+#include "marshall_read.h"
 #include "rwlock.h"
 #include "set__fact.h"
 #include "set__tag.h"
@@ -40,8 +41,9 @@
 
 static int facts_compare_pfact_id_reverse (const void *a,
                                            const void *b);
-static sw facts_open_file_create (s_facts *facts, const s_str *path);
-static sw facts_open_log (s_facts *facts, s_buf *buf);
+static sw facts_open_file_create (s_facts *facts, const s_str *path,
+                                  bool binary);
+static sw facts_open_log (s_facts *facts, s_buf *buf, bool binary);
 
 s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
 {
@@ -210,9 +212,9 @@ sw facts_dump (s_facts *facts, s_buf *buf, bool binary)
   assert(facts);
   assert(buf);
   if (binary) {
-    if (! marshall_facts(marshall, false, facts))
-      return NULL;
-    return marshall_size(marshall);
+    if (! marshall_facts(&marshall, false, facts))
+      return -1;
+    return marshall_size(&marshall);
   }
   tag_init_pvar(&subject, &g_sym_Tag);
   tag_init_pvar(&predicate, &g_sym_Tag);
@@ -350,7 +352,8 @@ s_facts * facts_init (s_facts *facts)
   return facts;
 }
 
-sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
+sw facts_load (s_facts *facts, s_buf *buf, const s_str *path,
+               bool binary)
 {
   s_fact   eval_fact;
   s_fact_w eval_fact_w;
@@ -365,6 +368,8 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
     err_inspect_str(path);
     err_write_1("\n");
   }
+  if (binary)
+    return -1;
   if ((r = buf_read_1(buf,
                       "%{module: KC3.Facts.Dump,\n"
                       "  version: 1}\n")) <= 0) {
@@ -474,7 +479,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   return -1;
 }
 
-sw facts_load_file (s_facts *facts, const s_str *path)
+sw facts_load_file (s_facts *facts, const s_str *path, bool binary)
 {
   char b[BUF_SIZE];
   s_buf buf;
@@ -487,7 +492,7 @@ sw facts_load_file (s_facts *facts, const s_str *path)
   if (! fp)
     return -1;
   buf_file_open_r(&buf, fp);
-  result = facts_load(facts, &buf, path);
+  result = facts_load(facts, &buf, path, binary);
   buf_file_close(&buf);
   fclose(fp);
   return result;
@@ -606,7 +611,7 @@ sw facts_open_file_create (s_facts *facts, const s_str *path,
   return result;
 }
 
-sw facts_open_log (s_facts *facts, s_buf *buf)
+sw facts_open_log (s_facts *facts, s_buf *buf, bool binary)
 {
   bool b;
   s_fact_w fact_w;
@@ -615,6 +620,8 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
   sw result = 0;
   assert(facts);
   assert(buf);
+  if (binary)
+    return -1; // TODO: do somethin
   while (1) {
     if ((r = buf_read_1(buf, "add ")) < 0)
       break;
@@ -828,7 +835,7 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   return fact;
 }
 
-sw facts_save_file (s_facts *facts, const char *path)
+sw facts_save_file (s_facts *facts, const char *path, bool binary)
 {
   char b[BUF_SIZE];
   s_buf buf;
@@ -843,7 +850,7 @@ sw facts_save_file (s_facts *facts, const char *path)
   if (! fp)
     return -1;
   buf_file_open_w(&buf, fp);
-  if ((r = facts_dump(facts, &buf)) < 0)
+  if ((r = facts_dump(facts, &buf, binary)) < 0)
     goto ko;
   result += r;
   buf_flush(&buf);
@@ -851,7 +858,7 @@ sw facts_save_file (s_facts *facts, const char *path)
   buf.user_ptr = NULL;
   if (! (facts->log = log_new()))
     goto ko;
-  if (log_open(facts->log, fp) < 0)
+  if (! log_open(facts->log, fp, binary))
     goto ko;
   return result;
  ko:

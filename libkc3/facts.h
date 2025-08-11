@@ -53,7 +53,8 @@ s_facts * facts_remove_all (s_facts *facts);
 s_fact *  facts_replace_fact (s_facts *facts, s_fact *fact);
 s_fact *  facts_replace_tags (s_facts *facts, s_tag *subject,
                               s_tag *predicate, s_tag *object);
-sw        facts_save_file (s_facts *facts, const char *path);
+sw        facts_save_file (s_facts *facts, const char *path,
+                           bool binary);
 s_facts_transaction *
           facts_transaction_clean (s_facts_transaction *transaction);
 s_facts * facts_transaction_rollback

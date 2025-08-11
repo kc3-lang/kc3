@@ -43,9 +43,6 @@ s_marshall_read * marshall_read_new_str (const s_str *src);
 
 /* Operators. */
 PROTO_MARSHALL_READ(array,        s_array          );
-s_marshall_read * marshall_read_array_data (s_marshall_read *mr,
-                                            bool heap,
-                                            s_array *src);
 PROTO_MARSHALL_READ(bool,         bool             );
 PROTO_MARSHALL_READ(call,         s_call           );
 PROTO_MARSHALL_READ(callable,     s_callable       );
@@ -53,6 +50,8 @@ PROTO_MARSHALL_READ(cfn,          s_cfn            );
 PROTO_MARSHALL_READ(character,    character        );
 PROTO_MARSHALL_READ(cow,          s_cow            );
 PROTO_MARSHALL_READ(complex,      s_complex        );
+s_marshall_read * marshall_read_data (s_marshall_read *mr, bool heap,
+                                      p_sym type, void *data);
 PROTO_MARSHALL_READ(dimensions,   s_array_dimension);
 PROTO_MARSHALL_READ(do_block,     s_do_block       );
 PROTO_MARSHALL_READ(fn,           s_fn             );

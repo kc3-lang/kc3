@@ -89,11 +89,13 @@
 s_marshall * marshall_array (s_marshall *m, bool heap,
                              const s_array *array)
 {
+  u8 *data;
   uw i = 0;
   uw item_size;
   assert(m);
   assert(array);
   if (! marshall_psym(m, heap, &array->array_type) ||
+      ! marshall_psym(m, heap, &array->element_type) ||
       ! marshall_uw(m, heap, array->dimension_count))
     return NULL;
   i = 0;
@@ -103,7 +105,8 @@ s_marshall * marshall_array (s_marshall *m, bool heap,
       return NULL;
     i++;
   }
-  if (! marshall_psym(m, heap, &array->element_type) ||
+  if (! marshall_uw(m, heap, array->count) ||
+      ! marshall_uw(m, heap, array->size) ||
       ! marshall_bool(m, heap, array->data ? true : false))
     return NULL;
   if (array->data) {

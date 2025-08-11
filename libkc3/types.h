@@ -606,15 +606,15 @@ struct type {
 /* 4 */
 
 struct array {
-  uw count;
-  uw dimension_count;
-  s_array_dimension *dimensions;
-  void *data;
-  void *free_data;
-  uw size;
-  s_tag *tags;
   const s_sym *array_type;
   const s_sym *element_type;
+  uw dimension_count;
+  s_array_dimension *dimensions;
+  uw count;
+  s_tag *tags;
+  uw size;
+  void *data;
+  void *free_data;
   s_mutex *mutex;
   sw ref_count;
 };
