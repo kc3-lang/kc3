@@ -212,9 +212,14 @@ sw facts_dump (s_facts *facts, s_buf *buf, bool binary)
   assert(facts);
   assert(buf);
   if (binary) {
-    if (! marshall_facts(&marshall, false, facts))
+    marshall_init(&marshall);
+    if (! marshall_facts(&marshall, false, facts) ||
+        (r = marshall_to_buf(&marshall, buf))) {
+      marshall_clean(&marshall);
       return -1;
-    return marshall_size(&marshall);
+    }
+    marshall_clean(&marshall);
+    return r;
   }
   tag_init_pvar(&subject, &g_sym_Tag);
   tag_init_pvar(&predicate, &g_sym_Tag);
