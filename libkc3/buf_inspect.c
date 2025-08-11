@@ -95,7 +95,7 @@ sw buf_inspect_array_data (s_buf *buf, const s_array *array)
   assert(buf);
   assert(array);
   if (! array->dimension_count)
-    return buf_write_1_size(pretty, "{}");
+    return buf_write_1(buf, "{}");
   if (array->data)
     data = array->data;
   else 
