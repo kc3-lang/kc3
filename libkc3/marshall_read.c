@@ -424,13 +424,13 @@ s_marshall_read * marshall_read_fact (s_marshall_read *mr,
   s_fact tmp = {0};
   assert(mr);
   assert(mr);
-  if (! marshall_read_tag(mr, heap, tmp.subject))
+  if (! marshall_read_ptag(mr, heap, &tmp.subject))
     return NULL;
-  if (! marshall_read_tag(mr, heap, tmp.predicate)) {
+  if (! marshall_read_ptag(mr, heap, &tmp.predicate)) {
     tag_clean(tmp.subject);
     return NULL;
   }
-  if (! marshall_read_tag(mr, heap, tmp.object)       ||
+  if (! marshall_read_ptag(mr, heap, &tmp.object)       ||
       ! marshall_read_uw(mr, heap, &tmp.id)) {
     tag_clean(tmp.subject);
     tag_clean(tmp.predicate);
