@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <errno.h>
 #include "alloc.h"
 #include "assert.h"
 #include "mutex.h"
@@ -46,8 +47,15 @@ s_mutex * mutex_init (s_mutex *mutex)
 
 void mutex_lock (s_mutex *mutex)
 {
-  if (pthread_mutex_lock(&mutex->mutex)) {
-    err_puts("mutex_lock: pthread_mutex_lock: stacktrace:");
+  int e;
+  if ((e = pthread_mutex_lock(&mutex->mutex))) {
+    err_write_1("mutex_lock: pthread_mutex_lock: ");
+    switch (e) {
+    case EINVAL: err_puts("invalid mutex"); break;
+    case EAGAIN: err_puts("EAGAIN"); break;
+    case EDEADLK: err_puts("EDEADLK"); break;
+    default: err_inspect_s32_decimal(e);
+    }
     err_stacktrace();
     assert(! "mutex_lock: pthread_mutex_lock");
     abort();
