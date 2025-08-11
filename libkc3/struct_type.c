@@ -36,10 +36,10 @@ void struct_type_clean (s_struct_type *st)
     err_stacktrace();
     abort();
   }
-  if (st->clean)
-    callable_delete(st->clean);
   map_clean(&st->map);
   free(st->offset);
+  if (st->clean)
+    callable_delete(st->clean);
 #if HAVE_PTHREAD
   mutex_clean(&st->mutex);
 #endif
