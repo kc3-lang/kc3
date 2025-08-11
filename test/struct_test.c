@@ -12,6 +12,7 @@
  */
 #include "../libkc3/env.h"
 #include "../libkc3/kc3_main.h"
+#include "../libkc3/module.h"
 #include "../libkc3/struct.h"
 #include "../libkc3/sym.h"
 #include "../http/types.h"
@@ -59,6 +60,7 @@ void struct_test (void)
 
 TEST_CASE(struct_test_fact_w)
 {
+  TEST_ASSERT(module_load(&g_sym_FactW));
   STRUCT_TEST_OFFSETOF(s_fact_w, FactW, subject);
   STRUCT_TEST_OFFSETOF(s_fact_w, FactW, predicate);
   STRUCT_TEST_OFFSETOF(s_fact_w, FactW, object);

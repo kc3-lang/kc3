@@ -40,7 +40,6 @@ s_mutex * mutex_init (s_mutex *mutex)
     assert(! "mutex_init: pthread_mutex_init");
     abort();
   }
-  
   *mutex = tmp;
   return mutex;
 }
