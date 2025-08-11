@@ -504,6 +504,8 @@ sw facts_log_add (s_log *log, const s_fact *fact)
   sw result = 0;
   assert(log);
   assert(fact);
+  if (log->binary)
+    return -1;
   if ((r = buf_write_1(&log->buf, "add ")) < 0)
     return r;
   result += r;
@@ -520,6 +522,10 @@ sw facts_log_remove (s_log *log, const s_fact *fact)
 {
   sw r;
   sw result = 0;
+  assert(log);
+  assert(fact);
+  if (log->binary)
+    return -1;
   if ((r = buf_write_1(&log->buf, "remove ")) < 0)
     return r;
   result += r;

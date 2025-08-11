@@ -54,7 +54,7 @@ int main (int argc, char **argv)
           return 1;
         }
         str_init_1(&str, NULL, argv[1]);
-        if (! facts_open_file(env->facts, &str)) {
+        if (! facts_open_file(env->facts, &str, false)) {
           err_puts("kc3_httpd: -D: facts_open_file");
           assert(! "kc3_httpd: -D: facts_open_file");
           kc3_clean(NULL);

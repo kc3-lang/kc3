@@ -63,6 +63,7 @@ s_log * log_open (s_log *log, FILE *fp, bool binary)
   s_log tmp = {0};
   assert(log);
   assert(fp);
+  tmp = *log;
   if (! buf_file_open_w(&tmp.buf, fp))
     return NULL;
   tmp.binary = binary;
