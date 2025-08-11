@@ -246,7 +246,7 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   return r;
 }
 
-sw facts_dump_file (s_facts *facts, const char *path)
+sw facts_dump_file (s_facts *facts, const char *path, bool binary)
 {
   char b[BUF_SIZE];
   s_buf buf;
@@ -259,7 +259,7 @@ sw facts_dump_file (s_facts *facts, const char *path)
   if (! fp)
     return -1;
   buf_file_open_w(&buf, fp);
-  r = facts_dump(facts, &buf);
+  r = facts_dump(facts, &buf, binary);
   buf_file_close(&buf);
   fclose(fp);
   return r;
@@ -533,20 +533,21 @@ s_facts * facts_new (void)
   return facts;
 }
 
-sw facts_open_buf (s_facts *facts, s_buf *buf, const s_str *path)
+sw facts_open_buf (s_facts *facts, s_buf *buf, const s_str *path,
+                   bool binary)
 {
   sw r;
   sw result = 0;
-  if ((r = facts_load(facts, buf, path)) <= 0)
+  if ((r = facts_load(facts, buf, path, binary)) <= 0)
     return r;
   result += r;
-  if ((r = facts_open_log(facts, buf)) < 0)
+  if ((r = facts_open_log(facts, buf, binary)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw facts_open_file (s_facts *facts, const s_str *path)
+sw facts_open_file (s_facts *facts, const s_str *path, bool binary)
 {
   FILE *fp;
   char i[BUF_SIZE];
@@ -557,26 +558,27 @@ sw facts_open_file (s_facts *facts, const s_str *path)
   fp = fopen(path->ptr.pchar, "rb");
   if (! fp) {
     if (errno == ENOENT)
-      return facts_open_file_create(facts, path);
+      return facts_open_file_create(facts, path, binary);
     return -1;
   }
   buf_file_open_r(&in, fp);
-  if ((r = facts_open_buf(facts, &in, path)) < 0)
+  if ((r = facts_open_buf(facts, &in, path, binary)) < 0)
     return r;
   result += r;
   buf_file_close(&in);
-  if (facts_dump_file(facts, path->ptr.pchar) < 0)
+  if (facts_dump_file(facts, path->ptr.pchar, binary) < 0)
     return -1;
   fp = file_open(path->ptr.pchar, "ab");
   if (! fp)
     return -1;
   if (! (facts->log = log_new()))
     return -1;
-  log_open(facts->log, fp);
+  log_open(facts->log, fp, binary);
   return result;
 }
 
-sw facts_open_file_create (s_facts *facts, const s_str *path)
+sw facts_open_file_create (s_facts *facts, const s_str *path,
+                           bool binary)
 {
   FILE *fp;
   s_buf *out;
@@ -587,7 +589,7 @@ sw facts_open_file_create (s_facts *facts, const s_str *path)
     return -1;
   out = buf_new_alloc(BUF_SIZE);
   buf_file_open_w(out, fp);
-  if ((r = facts_dump(facts, out)) < 0)
+  if ((r = facts_dump(facts, out, binary)) < 0)
     return r;
   result += r;
   buf_flush(out);
