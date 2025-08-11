@@ -78,43 +78,45 @@ s_marshall_read * marshall_read_array (s_marshall_read *mr,
       ! marshall_read_psym(mr, heap, &tmp.element_type) ||
       ! marshall_read_uw(mr, heap, &tmp.dimension_count))
     return NULL;
-  if (tmp.dimension_count) {
-    tmp.dimensions = alloc(sizeof(s_array_dimension) *
-                           tmp.dimension_count);
+  if (! tmp.dimension_count) {
+    *dest = tmp;
+    return mr;
+  }
+  tmp.dimensions = alloc(sizeof(s_array_dimension) *
+                         tmp.dimension_count);
+  i = 0;
+  while (i < tmp.dimension_count) {
+    if (! marshall_read_uw(mr, heap, &tmp.dimensions[i].count) ||
+        ! marshall_read_uw(mr, heap, &tmp.dimensions[i].item_size))
+      return NULL;
+    i++;
+  }
+  if (! marshall_read_uw(mr, heap, &tmp.count) ||
+      ! marshall_read_uw(mr, heap, &tmp.size) ||
+      ! marshall_read_bool(mr, heap, &has_data))
+    return NULL;
+  if (has_data) {
+    array_allocate(&tmp);
+    data = tmp.data;
+    item_size = tmp.dimensions[tmp.dimension_count - 1].item_size;
     i = 0;
-    while (i < tmp.dimension_count) {
-      if (! marshall_read_uw(mr, heap, &tmp.dimensions[i].count) ||
-          ! marshall_read_uw(mr, heap, &tmp.dimensions[i].item_size))
+    while (i < tmp.count) {
+      if (! marshall_read_data(mr, heap, tmp.array_type, data))
         return NULL;
+      data = (u8 *) data + item_size;
       i++;
     }
-    if (! marshall_read_uw(mr, heap, &tmp.count) ||
-        ! marshall_read_uw(mr, heap, &tmp.size) ||
-        ! marshall_read_bool(mr, heap, &has_data))
+  }
+  else {
+    if (! marshall_read_bool(mr, heap, &has_tags))
       return NULL;
-    if (has_data) {
-      array_allocate(&tmp);
-      data = tmp.data;
-      item_size = tmp.dimensions[tmp.dimension_count - 1].item_size;
+    if (has_tags) {
+      tmp.tags = alloc(sizeof(s_tag) * tmp.count);
       i = 0;
       while (i < tmp.count) {
-        if (! marshall_read_data(mr, heap, tmp.array_type, data))
+        if (! marshall_read_tag(mr, heap, tmp.tags + i))
           return NULL;
-        data = (u8 *) data + item_size;
         i++;
-      }
-    }
-    else {
-      if (! marshall_read_bool(mr, heap, &has_tags))
-        return NULL;
-      if (has_tags) {
-        tmp.tags = alloc(sizeof(s_tag) * tmp.count);
-        i = 0;
-        while (i < tmp.count) {
-          if (! marshall_read_tag(mr, heap, tmp.tags + i))
-            return NULL;
-          i++;
-        }
       }
     }
   }
