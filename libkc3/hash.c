@@ -102,7 +102,9 @@ bool hash_update_array (t_hash *hash, const s_array *a)
     return false;
   while (i < a->dimension_count) {
     if (! hash_update(hash, &a->dimensions[i].count,
-                      sizeof(a->dimensions[i].count)))
+                      sizeof(a->dimensions[i].count)) ||
+        ! hash_update(hash, &a->dimensions[i].item_size,
+                      sizeof(a->dimensions[i].item_size)))
       return false;
     i++;
   }
