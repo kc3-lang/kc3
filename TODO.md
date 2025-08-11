@@ -34,7 +34,7 @@
 | Time            |  [X]   |  [X]   | Tag             |
 | Ptr             |  [X]   |  [X]   |
 | Ptr free        |  [X]   |  [X]   |
-| Array           |  [?]   |  [.]   |
+| Array           | Perle  | Perle  |
 | Fact            |  [X]   |  [?]   |
 | PStruct         |  [X]   |  [X]   |
 | PStruct Type    |  [X]   |  [X]   |
