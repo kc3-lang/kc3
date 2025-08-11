@@ -25,6 +25,6 @@ s_log * log_new (void);
 
 /* Operators. */
 void log_close (s_log *log);
-sw   log_open (s_log *log, FILE *fp, bool binary);
+s_log * log_open (s_log *log, FILE *fp, bool binary);
 
 #endif /* LIBKC3_LOG_H */
