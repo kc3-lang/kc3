@@ -30,6 +30,9 @@ s_marshall * marshall_init (s_marshall *m);
 void         marshall_delete (s_marshall *m);
 s_marshall * marshall_new (void);
 
+/* Observers. */
+sw marshall_size (const s_marshall *m);
+
 /* Operators. */
 PROTO_MARSHALL(array, const s_array *);
 PROTO_MARSHALL(bool, bool);

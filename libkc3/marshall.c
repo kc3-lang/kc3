@@ -922,6 +922,13 @@ DEF_MARSHALL(s16)
 DEF_MARSHALL(s32)
 DEF_MARSHALL(s64)
 
+sw marshall_size (const s_marshall *m)
+{
+  if (! m)
+    return -1;
+  return sizeof(s_marshall_header) + m->heap_pos + m->buf_pos;
+}
+
 s_marshall * marshall_str (s_marshall *m, bool heap, const s_str *src)
 {
   sw r;
