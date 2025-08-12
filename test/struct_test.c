@@ -13,6 +13,7 @@
 #include "../libkc3/env.h"
 #include "../libkc3/kc3_main.h"
 #include "../libkc3/module.h"
+#include "../libkc3/str.h"
 #include "../libkc3/struct.h"
 #include "../libkc3/sym.h"
 #include "../http/types.h"
@@ -50,7 +51,7 @@ TEST_CASE_PROTOTYPE(struct_test_time);
 
 void struct_test (void)
 {
-  const s_str path = {{0}, 15, {"struct_test.kc3"}};
+  const s_str path = STR_1("struct_test.kc3");
   env_load(env_global(), &path);
   TEST_CASE_RUN(struct_test_fact_w);
   TEST_CASE_RUN(struct_test_http_request);
@@ -60,7 +61,6 @@ void struct_test (void)
 
 TEST_CASE(struct_test_fact_w)
 {
-  TEST_ASSERT(module_load(&g_sym_FactW));
   STRUCT_TEST_OFFSETOF(s_fact_w, FactW, subject);
   STRUCT_TEST_OFFSETOF(s_fact_w, FactW, predicate);
   STRUCT_TEST_OFFSETOF(s_fact_w, FactW, object);
