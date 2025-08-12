@@ -27,9 +27,9 @@ defmodule LayoutView do
   }
 
   def render = fn (slug, title, page, url) {
-    nav = EKC3.render(template_nav())
-    footer = EKC3.render(template_footer())
-    EKC3.render(template())
+    nav = EKC3.render(LayoutView.template_nav())
+    footer = EKC3.render(LayoutView.template_footer())
+    EKC3.render(LayoutView.template())
   }
 
 end
