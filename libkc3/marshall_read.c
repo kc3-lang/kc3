@@ -633,6 +633,7 @@ s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
     tag_clean(&tag);
     return NULL;
   }
+  tag_clean(&tag);
   return mr;
 }
 
