@@ -248,7 +248,6 @@ s_marshall_read * marshall_read_cfn (s_marshall_read *mr,
   }
 #if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
-  tmp.ready = true;
 #endif
   *dest = tmp;
   return mr;
@@ -1245,7 +1244,6 @@ s_marshall_read * marshall_read_struct (s_marshall_read *mr,
   tmp.ref_count = 1;
   if (! mutex_init(&tmp.mutex))
     goto ko;
-  tmp.mutex_ready = true;
   *dest = tmp;
   return mr;
 ko:
@@ -1489,7 +1487,6 @@ s_marshall_read * marshall_read_var (s_marshall_read *mr,
     var_clean(&tmp);
     return NULL;
   }
-  tmp.ready = true;
   *dest = tmp;
   return mr;
 }

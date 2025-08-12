@@ -133,8 +133,7 @@ void struct_clean (s_struct *s)
   env = env_global();
   assert(env);
 #if HAVE_PTHREAD
-  if (s->mutex_ready)
-    mutex_clean(&s->mutex);
+  mutex_clean(&s->mutex);
 #endif
   if (s->data) {
     if (s->pstruct_type->clean) {
@@ -306,7 +305,6 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
   tmp.ref_count = 1;
 #if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
-  tmp.mutex_ready = true;
 #endif
   *s = tmp;
   return s;
@@ -361,7 +359,6 @@ s_struct * struct_init_copy (s_struct *s, s_struct *src)
   }
 #if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
-  tmp.mutex_ready = true;
 #endif
   *s = tmp;
   return s;
@@ -444,7 +441,6 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
   tmp.ref_count = 1;
 #if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
-  tmp.mutex_ready = true;
 #endif
   *s = tmp;
   return s;
@@ -459,7 +455,6 @@ s_struct * struct_init_with_type (s_struct *s, s_struct_type *st)
   tmp.ref_count = 1;
 #if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
-  tmp.mutex_ready = true;
 #endif
   *s = tmp;
   return s;

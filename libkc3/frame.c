@@ -180,6 +180,11 @@ s_frame * frame_init (s_frame *frame, s_frame *next)
 s_frame * frame_init_copy (s_frame *frame, s_frame *src)
 {
   s_frame tmp = {0};
+  if (! frame || ! src) {
+    err_puts("frame_init_copy: invalid argument");
+    assert(! "frame_init_copy: invalid argument");
+    return NULL;
+  }
   if (! frame_init(&tmp, NULL))
     return NULL;
   if (src->bindings &&

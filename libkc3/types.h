@@ -357,6 +357,7 @@ struct marshall_header {
 
 struct mutex {
   pthread_mutex_t mutex;
+  bool ready;
 };
 
 struct pretty {
@@ -407,7 +408,6 @@ struct struct_ {
   void *data;
   s_tag *tag;
   s_mutex mutex;
-  bool mutex_ready;
   sw ref_count;
 };
 
@@ -561,7 +561,7 @@ struct cfn {
   bool arg_result;
   s_list *arg_types;
   ffi_cif cif;
-  bool ready;
+  bool    cif_ready;
   s_mutex mutex;
 };
 
@@ -834,7 +834,6 @@ struct var {
   bool    bound;
   s_mutex mutex;
   s_ident name;
-  bool    ready;
   sw      ref_count;
   s_tag   tag;
   p_sym   type;

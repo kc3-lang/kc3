@@ -18,7 +18,8 @@
 void mutex_clean (s_mutex *mutex)
 {
   assert(mutex);
-  if (pthread_mutex_destroy(&mutex->mutex)) {
+  if (mutex->ready &&
+      pthread_mutex_destroy(&mutex->mutex)) {
     err_puts("mutex_clean: pthread_mutex_destroy");
     assert(! "mutex_clean: pthread_mutex_destroy");
     abort();
@@ -41,6 +42,7 @@ s_mutex * mutex_init (s_mutex *mutex)
     assert(! "mutex_init: pthread_mutex_init");
     abort();
   }
+  tmp.ready = true;
   *mutex = tmp;
   return mutex;
 }

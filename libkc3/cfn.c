@@ -214,8 +214,7 @@ void cfn_clean (s_cfn *cfn)
   if (cfn->cif.nargs)
     free(cfn->cif.arg_types);
 #if HAVE_PTHREAD
-  if (cfn->ready)
-    mutex_clean(&cfn->mutex);
+  mutex_clean(&cfn->mutex);
 #endif
 }
 
@@ -232,12 +231,12 @@ bool cfn_eval (s_cfn *cfn)
 #if HAVE_PTHREAD
   mutex_lock(&cfn->mutex);
 #endif
-  if (! cfn->ready) {
+  if (! cfn->cif_ready) {
     if (! cfn_prep_cif(cfn))
       goto ko;
     if (! cfn_link(cfn))
       goto ko;
-    cfn->ready = true;
+    cfn->cif_ready = true;
   }
 #if HAVE_PTHREAD
   mutex_unlock(&cfn->mutex);
@@ -370,7 +369,7 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
   ffi_type *result_ffi_type;
   ffi_status status;
   assert(cfn);
-  if (cfn->ready) {
+  if (cfn->cif_ready) {
     result = cfn;
     goto clean;
   }
@@ -421,7 +420,7 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
     assert(! "cfn_prep_cif: ffi_prep_cif: error");
     goto clean;
   }
-  cfn->ready = true;
+  cfn->cif_ready = true;
   result = cfn;
  clean:
   return result;

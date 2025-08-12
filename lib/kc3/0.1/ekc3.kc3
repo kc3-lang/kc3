@@ -44,7 +44,7 @@ defmodule EKC3 do
   defspecial_operator verbose = macro (x) do
     quote
       if state == [] do
-        EKC3.puts(result = HTML.escape(unquote(x)))
+        EKC3.puts(result = HTML.escape((Str) unquote(x)))
         result
       else
         parent_state = state

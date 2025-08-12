@@ -424,14 +424,23 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     }
   }
   else {
-    if (! frame_init_copy(&frame, fn->frame)) {
+    if (fn->frame) {
+      if (! frame_init_copy(&frame, fn->frame)) {
+        list_delete_all(args);
+        list_delete_all(tmp);
+        list_delete_all(env->search_modules);
+        env->search_modules = search_modules;
+        return false;
+      }
+      frame.next = env->frame;
+    }
+    else if (! frame_init(&frame, env_frame)) {
       list_delete_all(args);
-      list_delete_all(tmp);
+      env->silence_errors = silence_errors;
       list_delete_all(env->search_modules);
       env->search_modules = search_modules;
       return false;
     }
-    frame.next = env->frame;
     env->frame = &frame;
   }
   if (! (trace = list_new(env->stacktrace))) {
