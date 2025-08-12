@@ -268,6 +268,7 @@ void marshall_read_clean (s_marshall_read *mr)
 {
   assert(mr);
   buf_clean(&mr->buf);
+  ht_clean(&mr->ht);
 }
 
 s_marshall_read * marshall_read_complex (s_marshall_read *mr,
