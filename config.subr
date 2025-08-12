@@ -1057,6 +1057,7 @@ if [ "x$CXX" = "x" ]; then
 fi
 echo "CXX = $CXX" >> ${CONFIG_MK}
 
+HAVE_GCOV=false
 if [ "x$GCOV" = "xfalse" ]; then
     HAVE_GCOV=false
 else
