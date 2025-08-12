@@ -568,6 +568,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
       return true;
     }
     err_puts("env_eval_call_resolve: not a Callable (Cfn or Fn)");
+    err_stacktrace();
     assert(! "env_eval_call_resolve: not a Callable (Cfn or Fn)");
     return false;
   }
