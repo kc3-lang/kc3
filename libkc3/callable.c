@@ -40,7 +40,8 @@ void callable_delete (s_callable *callable)
 {
   assert(callable);
 #if HAVE_PTHREAD
-  mutex_lock(&callable->mutex);
+  if (callable->mutex.ready)
+    mutex_lock(&callable->mutex);
 #endif
   if (env_global()->pass_by_copy)
     assert(callable->ref_count == 1);
@@ -59,8 +60,10 @@ void callable_delete (s_callable *callable)
   case CALLABLE_VOID:                                break;
   }
 #if HAVE_PTHREAD
-  mutex_unlock(&callable->mutex);
-  mutex_clean(&callable->mutex);
+  if (callable->mutex.ready) {
+    mutex_unlock(&callable->mutex);
+    mutex_clean(&callable->mutex);
+  }
 #endif
   free(callable);
   return;
