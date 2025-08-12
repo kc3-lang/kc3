@@ -17,12 +17,24 @@ defmodule EKC3 do
 
   dlopen(__DIR__ + "ekc3.so")
 
+  def load = cfn Tag "embed_parse_template_file" (Str, Result)
+
+  def parse_str =
+    cfn Tag "embed_parse_template_str" (Str, Result)
+
+  def parse_file =
+    cfn Tag "embed_parse_template_file" (Str, Result)
+
   def puts = macro (x) do
-    quote Buf.write_str(buf, (Str) unquote(x))
+    quote do
+      {state_stack, state_result} = state
+      state = {state_stack, [(Str) unquote(x) | state_result]}
+    end
   end
 
   defspecial_operator raw_str = fn (str) do
-    if state == [] do
+    {state_stack, state_result} = state
+    if state_stack == [] do
       EKC3.puts(str)
     else
       str
@@ -31,52 +43,51 @@ defmodule EKC3 do
 
   def render = macro (template) do
     quote do
-      buf = Buf.new_alloc((Uw) (1024 * 1024))
-      state = []
+      ekc3_render_buf = Buf.new_alloc((Uw) (1024 * 1024))
+      state = {[], []}
       template = ^ unquote(template)
-      template(buf)
-      str = Buf.read_to_str(buf)
-      Buf.delete(buf)
+      template(ekc3_render_buf)
+      str = Buf.read_to_str(ekc3_render_buf)
+      Buf.delete(ekc3_render_buf)
       str
     end
   end
 
+  def render_file = fn (path) do
+    template = EKC3.load(path)
+    EKC3.render(template)
+  end
+
   defspecial_operator verbose = macro (x) do
-    quote
-      if state == [] do
+    quote do
+      {state_stack, state_result} = state
+      if state_stack == [] do
         EKC3.puts(result = HTML.escape((Str) unquote(x)))
         result
       else
-        parent_state = state
-        state = [:verbose | parent_state]
+        parent_state = ^ state
+        state = {[:verbose | state_stack], state_result}
         result = HTML.escape((Str) unquote(x))
         state = parent_state
         result
       end
+    end
   end
 
   defspecial_operator verbose_raw = macro (x) do
-    quote
-      if state == [] do
+    quote do
+      {state_stack, state_result} = state
+      if state_stack == [] do
         EKC3.puts(result = ^ unquote(x))
         result
       else
-        parent_state = state
-        state = [:verbose_raw | parent_state]
+        parent_state = ^ state
+        state = {[:verbose_raw | state_stack], state_result}
         result = (Str) unquote(x)
         state = parent_state
         result
       end
+    end
   end
-
-  def parse_str =
-    cfn Tag "embed_parse_template_str" (Str, Result)
-
-  def parse_file =
-    cfn Tag "embed_parse_template_file" (Str, Result)
-
-  def load = cfn Tag "embed_parse_template_file" (Str, Result)
-
-  def render_file = fn (path) { EKC3.render(EKC3.load(path)) }
 
 end
