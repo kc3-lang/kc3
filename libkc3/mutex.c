@@ -50,6 +50,12 @@ s_mutex * mutex_init (s_mutex *mutex)
 void mutex_lock (s_mutex *mutex)
 {
   int e;
+  if (! mutex || ! mutex->ready) {
+    err_puts("mutex_lock: invalid argument");
+    assert(! "mutex_lock: invalid argument");
+    err_stacktrace();
+    abort();
+  }
   if ((e = pthread_mutex_lock(&mutex->mutex))) {
     err_write_1("mutex_lock: pthread_mutex_lock: ");
     switch (e) {
