@@ -1,9 +1,6 @@
-fn (buf) do
-  EKC3.raw_str "A"
-  EKC3.verbose x
-  EKC3.raw_str "B"
-  y
-  EKC3.raw_str "C"
-  EKC3.verbose_raw z
-  EKC3.raw_str "D"
+fn () do
+  "A#{HTML.escape(x)}B#{do
+    y
+    ""
+  end}C#{z}D"
 end

@@ -15,6 +15,6 @@
 
 #include "types.h"
 
-s_str * html_escape (const s_str *str, s_str *dest);
+s_str * html_escape (s_tag *src, s_str *dest);
 
 #endif /* EKC3_HTML_H */

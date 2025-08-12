@@ -23,11 +23,11 @@ defmodule DocView do
   }
 
   def render_menu = fn (index) {
-    EKC3.render(template_menu())
+    EKC3.render(DocView.template_menu())
   }
 
   def render_show = fn (menu, html) {
-    EKC3.render(template_show())
+    EKC3.render(DocView.template_show())
   }
 
 end

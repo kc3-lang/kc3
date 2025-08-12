@@ -19,7 +19,7 @@ defmodule PageView do
   }
 
   def render_show = fn (html) {
-    EKC3.render(template_show())
+    EKC3.render(PageView.template_show())
   }
 
 end

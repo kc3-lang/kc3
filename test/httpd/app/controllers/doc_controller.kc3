@@ -12,9 +12,7 @@
 
 require EKC3
 require File
-require List
 require Markdown
-require Str
 
 defmodule DocController do
 

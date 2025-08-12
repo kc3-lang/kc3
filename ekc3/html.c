@@ -13,7 +13,7 @@
 #include <libkc3/kc3.h>
 #include "html.h"
 
-s_str * html_escape (const s_str *str, s_str *dest)
+s_str * html_escape (s_tag *src, s_str *dest)
 {
   s_buf buf;
   character c;
@@ -24,31 +24,42 @@ s_str * html_escape (const s_str *str, s_str *dest)
   s_tag *replace;
   s_tag *reserved;
   s_str s;
+  s_str str = {0};
+  p_sym sym_Str = &g_sym_Str;
   s_tag tag;
-  assert(str);
+  assert(src);
   assert(dest);
+  if (! str_init_cast(&str, &sym_Str, src)) {
+    err_puts("html_escape: cannot cast to Str");
+    err_stacktrace();
+    assert(! "html_escape: cannot cast to Str");
+    return NULL;
+  }
   ident_init(&escape_ident, sym_1("HTML"), sym_1("escapes"));
   if (! ident_get(&escape_ident, &escape_tag)) {
     err_puts("html_escape: ident_get");
     assert(! "html_escape: ident_get");
+    str_clean(&str);
     return NULL;
   }
   if (! tag_is_alist(&escape_tag)) {
-    tag_clean(&escape_tag);
     err_puts("html_escape: HTML.escapes is not an associative"
              " List");
     assert(!("html_escape: HTML.escapes is not an associative"
              " List"));
+    tag_clean(&escape_tag);
+    str_clean(&str);
     return NULL;
   }
   escape = escape_tag.data.plist;
-  if (! buf_init_alloc(&buf, str->size * 8)) {
+  if (! buf_init_alloc(&buf, str.size * 8)) {
     tag_clean(&escape_tag);
+    str_clean(&str);
     return NULL;
-    }
+  }
   tag.type = TAG_STR;
   tag.data.str = (s_str) {0};
-  s = *str;
+  s = str;
   while (str_read_character_utf8(&s, &c) > 0) {
     if (! str_init_character(&tag.data.str, c))
       goto ko;
@@ -95,6 +106,7 @@ s_str * html_escape (const s_str *str, s_str *dest)
     }
   }
   tag_clean(&escape_tag);
+  str_clean(&str);
   s = (s_str) {0};
   if (! buf_read_to_str(&buf, &s)) {
     buf_clean(&buf);
@@ -106,5 +118,6 @@ s_str * html_escape (const s_str *str, s_str *dest)
  ko:
   tag_clean(&escape_tag);
   buf_clean(&buf);
+  str_clean(&str);
   return NULL;
 }

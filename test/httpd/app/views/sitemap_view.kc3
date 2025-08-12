@@ -25,9 +25,11 @@ defmodule SitemapView do
   def render_page = fn (url) { EKC3.render(template_page) }
 
   def render = fn (prefix_url, doc_index, page_index) {
-    doc_index = List.join(List.map(doc_index, SitemapView.render_doc), "\n")
-    page_index = List.join(List.map(page_index, SitemapView.render_page), "\n")
-    EKC3.render(template)
+    doc_index = List.join(List.map(doc_index,
+      SitemapView.render_doc), "\n")
+    page_index = List.join(List.map(page_index,
+      SitemapView.render_page), "\n")
+    EKC3.render(SitemapView.template)
   }
 
 end

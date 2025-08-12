@@ -18,7 +18,8 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
 {
   s_buf_save input_save = {0};
   character c = 0;
-  const char *p = NULL;
+  sw level = 0;
+ const char *p = NULL;
   sw r;
   e_embed_state state = EMBED_STATE_RAW;
   s_str str = {0};
@@ -26,13 +27,13 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
   p_list template = NULL;
   s_tag tmp = {0};
   s_buf token_buf = {0};
-  s8 token_position = 0;
+  s8    token_position = 0;
   if (! input || ! dest) {
     err_puts("embed_parse_template: NULL argument");
     return NULL;
   }
   tail = &template;
-  if (! (*tail = list_new_str_1(NULL, "fn (buf) do", NULL))) {
+  if (! (*tail = list_new_str_1(NULL, "fn () do str([", NULL))) {
     buf_clean(&token_buf);
     return NULL;
   }
@@ -43,6 +44,10 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
   }
   while (buf_read_character_utf8(input, &c) > 0) {
     switch (state) {
+    case EMBED_STATE_VOID:
+      err_puts("embed_parse_template: EMBED_STATE_VOID 1");
+      assert(! "embed_parse_template: EMBED_STATE_VOID 1");
+      return NULL;
     case EMBED_STATE_RAW:
       switch (token_position) {
       case 0:
@@ -62,7 +67,12 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
         break;
       case 2:
         if (token_buf.wpos > 0) {
-          if (! (*tail = list_new_str_1(NULL, "\nEKC3.raw_str ", NULL))) {
+          p = ",\n  ";
+          if (! level) {
+            level++;
+            p++;
+          }
+          if (! (*tail = list_new_str_1(NULL, p, NULL))) {
             list_delete_all(template);
             buf_clean(&token_buf);
             return NULL;
@@ -123,14 +133,19 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
         if (c == '>') {
           if (token_buf.wpos > 0) {
             switch (state) {
-            case EMBED_STATE_VERBOSE:
-              p = "\nEKC3.verbose ";
-              break;
-            case EMBED_STATE_VERBOSE_RAW:
-              p = "\nEKC3.verbose_raw ";
-              break;
-            default:
-              p = "\n";
+            case EMBED_STATE_SILENT:      p = ",\n  do ";         break;
+            case EMBED_STATE_VERBOSE:     p = ",\n  HTML.escape(";
+                                                                  break;
+            case EMBED_STATE_VERBOSE_RAW: p = ",\n (Str) ";       break;
+            case EMBED_STATE_RAW:
+            case EMBED_STATE_VOID:
+              err_puts("embed_parse_template: invalid state");
+              assert(! "embed_parse_template: invalid state");
+              abort();
+            }
+            if (! level) {
+              level++;
+              p++;
             }
             if (! (*tail = list_new_str_1(NULL, p, NULL))) {
               list_delete_all(template);
@@ -151,7 +166,27 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
             }
             tail = &(*tail)->next.data.plist;
             buf_empty(&token_buf);
+            switch (state) {
+            case EMBED_STATE_SILENT:      p = "\n    \"\"\n  end";
+                                                            break;
+            case EMBED_STATE_VERBOSE:     p = ")";          break;
+            case EMBED_STATE_VERBOSE_RAW: p = NULL;         break;
+            case EMBED_STATE_RAW:
+            case EMBED_STATE_VOID:
+              err_puts("embed_parse_template: EMBED_STATE_VOID 2");
+              assert(! "embed_parse_template: EMBED_STATE_VOID 2");
+              return NULL;
+            }
+            if (p) {
+              if (! (*tail = list_new_str_1(NULL, p, NULL))) {
+                list_delete_all(template);
+                buf_clean(&token_buf);
+                return NULL;
+              }
+              tail = &(*tail)->next.data.plist;
+            }
           }
+          level++;
           state = EMBED_STATE_RAW;
           token_position = 0;
         }
@@ -168,7 +203,10 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
   if (token_buf.wpos > 0) {
     switch (state) {
     case EMBED_STATE_RAW:
-      if (! (*tail = list_new_str_1(NULL, "\nEKC3.raw_str ", NULL))) {
+      p = ",\n  ";
+      if (! level)
+        p++;
+      if (! (*tail = list_new_str_1(NULL, p, NULL))) {
         list_delete_all(template);
         buf_clean(&token_buf);
         return NULL;
@@ -182,6 +220,10 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
       assert(! "embed_parse_template: unterminated code section");
       list_delete_all(template);
       buf_clean(&token_buf);
+      return NULL;
+    case EMBED_STATE_VOID:
+      err_puts("embed_parse_template: EMBED_STATE_VOID 3");
+      assert(! "embed_parse_template: EMBED_STATE_VOID 3");
       return NULL;
     }
     if (! buf_read_to_str(&token_buf, &str)) {
@@ -199,7 +241,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
     tail = &(*tail)->next.data.plist;
   }
   buf_clean(&token_buf);
-  if (! (*tail = list_new_str_1(NULL, "\nend", NULL))) {
+  if (! (*tail = list_new_str_1(NULL, " ])\nend", NULL))) {
     list_delete_all(template);
     return NULL;
   }
@@ -209,8 +251,13 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
     return NULL;
   }
   list_delete_all(template);
-  tag_init_from_str(&tmp, &str);
-  str_clean(&str);
+  if (! tag_init_from_str(&tmp, &str)) {
+    tmp = (s_tag) {0};
+    tmp.type = TAG_STR;
+    tmp.data.str = str;
+  }
+  else
+    str_clean(&str);
   *dest = tmp;
   return dest;
 }

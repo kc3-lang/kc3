@@ -2827,7 +2827,8 @@ sw buf_parse_plist (s_buf *buf, p_list *plist)
       r = result;
       goto clean;
     }
-    err_puts("buf_parse_list: invalid list");
+    err_puts("buf_parse_list: invalid list:");
+    err_inspect_buf(buf);
     assert(! "buf_parse_list: invalid list");
     r = -1;
     goto restore;
@@ -5258,13 +5259,13 @@ sw buf_parse_unquote (s_buf *buf, s_unquote *dest)
   sw result = 0;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "unquote(")) <= 0)
+  if ((r = buf_read_1(buf, "unquote")) <= 0)
     goto clean;
   result += r;
   if ((r = buf_parse_comments(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
+  if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
   unquote.tag = tag_new();
@@ -5276,15 +5277,6 @@ sw buf_parse_unquote (s_buf *buf, s_unquote *dest)
     free(unquote.tag);
     goto restore;
   }
-  result += r;
-  if ((r = buf_parse_comments(buf)) < 0)
-    goto restore;
-  result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
-    goto restore;
-  result += r;
-  if ((r = buf_read_1(buf, ")")) <= 0)
-    goto clean;
   result += r;
   *dest = unquote;
   r = result;

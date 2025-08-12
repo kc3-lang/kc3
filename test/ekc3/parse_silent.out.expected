@@ -1,3 +1,6 @@
-fn (buf) do
-  "123"
+fn () do
+  "#{do
+    "123"
+    ""
+  end}"
 end
