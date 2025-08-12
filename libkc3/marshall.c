@@ -664,6 +664,7 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
 #endif
   return m;
  ko:
+  facts_cursor_clean(&cursor);
   tag_clean(&subject);
   tag_clean(&predicate);
   tag_clean(&object);
