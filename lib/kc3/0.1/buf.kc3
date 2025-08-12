@@ -32,7 +32,9 @@ defmodule Buf do
 
   def clean = cfn Void "buf_clean" (Buf)
 
-  def init_alloc = cfn Ptr "pbuf_init_alloc" (Result, Uw)
+  def delete = cfn Void "buf_delete" (Buf)
+
+  def new_alloc = cfn Ptr "pbuf_init_alloc" (Result, Uw)
 
   def inspect = cfn Sw "buf_inspect_tag" (Buf, Tag)
 

@@ -31,12 +31,12 @@ defmodule EKC3 do
 
   def render = macro (template) do
     quote do
-      buf = Buf.init_alloc((Uw) (1024 * 1024))
+      buf = Buf.new_alloc((Uw) (1024 * 1024))
       state = []
       template = ^ unquote(template)
       template(buf)
       str = Buf.read_to_str(buf)
-      Buf.clean(buf)
+      Buf.delete(buf)
       str
     end
   end
