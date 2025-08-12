@@ -812,6 +812,16 @@ lib_links_bsd_debug:
 	ln -sf ../../../smtp/.libs/libkc3_smtp_debug.so.0.0 lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug.so.0.0 lib/kc3/0.1/socket.so
 
+lib_links_clean:
+	rm lib/kc3/0.1/ekc3.so
+	rm lib/kc3/0.1/event.so
+	rm lib/kc3/0.1/gtk4.so
+	rm lib/kc3/0.1/http.so
+	rm lib/kc3/0.1/json.so
+	rm lib/kc3/0.1/markdown.so
+	rm lib/kc3/0.1/smtp.so
+	rm lib/kc3/0.1/socket.so
+
 lib_links_darwin:
 	ln -sf ../../../ekc3/.libs/libekc3.0.dylib lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/.libs/libkc3_event.0.dylib lib/kc3/0.1/event.so
