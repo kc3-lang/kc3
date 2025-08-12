@@ -223,7 +223,8 @@ s_struct_type * struct_type_init_copy (s_struct_type *st,
   assert(src);
   assert(src->module);
   assert(src->map.count);
-  tmp.clean = callable_new_ref(src->clean);
+  if (src->clean)
+    tmp.clean = callable_new_ref(src->clean);
   if (! map_init_copy(&tmp.map, &src->map))
     return NULL;
   tmp.module = src->module;
