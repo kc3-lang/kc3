@@ -891,7 +891,7 @@ struct env {
   s_list           *path;
   uw                quote_level;
   s_frame          *read_time_frame;
-  const char       *restore_path;
+  s_str             restore_path;
   s_list           *search_modules;
   s_list           *search_modules_default;
   bool              silence_errors;

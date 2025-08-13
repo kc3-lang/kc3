@@ -222,7 +222,7 @@ distclean:
 
 dump: build
 	kc3s/kc3s --dump lib/kc3/0.1/kc3.dump --quit
-	kc3s/kc3s --load lib/kc3/0.1/httpd.kc3 --dump lib/kc3/0.1/httpd.dump --quit
+	${MAKE} -C test/httpd dump
 
 ekc3:
 	${MAKE} -C libtommath build

@@ -181,7 +181,8 @@ s_env * env_args_init (s_env *env, int *argc, char ***argv)
       }
       if (*argc > 1 && (*argv)[0] && (*argv)[1] &&
           ! strcmp((*argv)[0], "--restore")) {
-        env->restore_path = (*argv)[1];
+        if (! str_init_1(&env->restore_path, NULL, (*argv)[1]))
+          return NULL;
         (*argc) -= 2;
         (*argv) += 2;
       }
@@ -612,6 +613,33 @@ sw env_dump_restore (s_env *env, const char *path)
       err_puts(": OK");
   }
   return result;
+}
+
+bool env_dump_restore_path (s_env *env)
+{
+  const s_str ext = STR_1(".dump");
+  s_str name = {0};
+  s_str path = {0};
+  s_str tmp = {0};
+  path = STR_1("kc3.dump");
+  if (file_access(&path, &g_sym_r)) {
+    env->restore_path = path;
+    return true;
+  }
+  if (env->argv && env->argv[0]) {
+    if (! str_init_1(&name, NULL, env->argv[0]) ||
+        ! str_init_concatenate(&path, &name, &ext))
+      return false;
+    if (file_search(&path, &g_sym_r, &tmp)) {
+      env->restore_path = tmp;
+      str_clean(&path);
+      return true;
+    }
+  }
+  path = STR_1("kc3.dump");
+  if (file_search(&path, &g_sym_r, &tmp))
+    env->restore_path = tmp;
+  return true;
 }
 
 void env_error_f (s_env *env, const char *fmt, ...)
@@ -1501,8 +1529,13 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   env->search_modules_default = list_new_psym(&g_sym_KC3, NULL);
   env->search_modules = env->search_modules_default;
   env->ops = ops_new();
-  if (env->restore_path) {
-    if (env_dump_restore(env, env->restore_path) <= 0) {
+  if (! env->restore_path.size &&
+      ! env_dump_restore_path(env)) {
+    env_clean(env);
+    return NULL;
+  }
+  if (env->restore_path.size) {
+    if (env_dump_restore(env, env->restore_path.ptr.pchar) <= 0) {
       env_clean(env);
       return NULL;
     }

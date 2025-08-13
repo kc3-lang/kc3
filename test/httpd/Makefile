@@ -27,8 +27,17 @@ cov: assets
 debug: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd_debug -C ${SRC_TOP}/test/httpd -d 127.0.0.1 15004
 
+dump: kc3.dump
+
 gdb: assets
 	if [ -f kc3_httpd_debug.core ]; then gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug kc3_httpd_debug.core; else gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug; fi
+
+ikc3: assets
+	../../ikc3/ikc3 127.0.0.1 15004
+
+kc3.dump: ../../lib/kc3/0.1/kc3.dump ../../lib/kc3/0.1/httpd.kc3
+	rm kc3.dump
+	../../kc3s/kc3s --load ../../lib/kc3/0.1/httpd.kc3 --dump kc3.dump --quit
 
 run: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd 127.0.0.1 15004
