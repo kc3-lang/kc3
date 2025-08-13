@@ -174,6 +174,12 @@ s_env * env_args_init (s_env *env, int *argc, char ***argv)
         (*argv)++;
       }
       if (*argc > 1 && (*argv)[0] && (*argv)[1] &&
+          ! strcmp((*argv)[0], "--dump")) {
+        env->dump_path = (*argv)[1];
+        (*argc) -= 2;
+        (*argv) += 2;
+      }
+      if (*argc > 1 && (*argv)[0] && (*argv)[1] &&
           ! strcmp((*argv)[0], "--restore")) {
         env->restore_path = (*argv)[1];
         (*argc) -= 2;
@@ -590,7 +596,22 @@ sw env_dump (const s_env *env, const char *path)
 
 sw env_dump_restore (s_env *env, const char *path)
 {
-  return marshall_read_env_from_file(env, path);
+  sw result = -1;
+  if (env->trace) {
+    err_write_1("env_dump_restore: ");
+    err_write_1(path);
+    err_puts(":");
+  }
+  result = marshall_read_env_from_file(env, path);
+  if (env->trace) {
+    err_write_1("env_dump_restore: ");
+    err_write_1(path);
+    if (result <= 0)
+      err_puts(": ERROR");
+    else
+      err_puts(": OK");
+  }
+  return result;
 }
 
 void env_error_f (s_env *env, const char *fmt, ...)
@@ -1496,6 +1517,11 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
       env_clean(env);
       return NULL;
     }
+  }
+  if (env->dump_path &&
+      env_dump(env, env->dump_path) <= 0) {
+    env_clean(env);
+    return NULL;
   }
   if (! time_init_now(&env->boot_time)) {
     env_clean(env);

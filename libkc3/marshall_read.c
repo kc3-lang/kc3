@@ -469,7 +469,14 @@ s_marshall_read * marshall_read_env (s_marshall_read *mr,
     assert(! "marshall_read_env: invalid argument");
     return NULL;
   }
-  // TODO
+  if (! env->facts &&
+      ! (env->facts = facts_new())) {
+    err_puts("marshall_read_env: facts_new");
+    assert(! "marshall_read_env: facts_new");
+    return NULL;
+  }
+  if (! marshall_read_facts(mr, heap, env->facts))
+    return NULL;
   return NULL;
 }
 
@@ -535,7 +542,7 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
   if (! facts_init(&tmp))
     return NULL;
   i = 0;
-  while (i < tmp.facts.count) {
+  while (i < count) {
     if (! marshall_read_fact(mr, heap, &fact))
       goto ko;
     if (! facts_add_fact(&tmp, &fact)) {
@@ -786,30 +793,54 @@ s_marshall_read * marshall_read_init_1 (s_marshall_read *mr,
 s_marshall_read * marshall_read_init_file (s_marshall_read *mr,
                                            const char *path)
 {
+  const char *error_msg = "unknown error";
   FILE *fp;
   s_marshall_read tmp = {0};
   assert(mr);
   assert(path);
   marshall_read_init(&tmp);
-  if (! (fp = file_open(path, "rb")))
+  if (! (fp = file_open(path, "rb"))) {
+    error_msg = "file_open buf";
     goto ko;
-  if (! buf_file_open_r(&tmp.buf, fp))
+  }
+  if (! buf_file_open_r(&tmp.buf, fp)) {
+    error_msg = "buf_file_open_r buf";
+    fclose(fp);
     goto ko;
+  }
   if (! marshall_read_header(&tmp)) {
-    buf_file_close(&tmp.buf);
-    goto ko;
+    error_msg = "marshall_read_header";
+    goto ko_close;
+  }
+  if (buf_seek(&tmp.buf, sizeof(s_marshall_header) +
+               tmp.heap_size, SEEK_SET) <= 0) {
+    error_msg = "buf_seek buf";
+    goto ko_close;
   }
   if (! (fp = file_open(path, "rb"))) {
-    buf_file_close(&tmp.buf);
-    goto ko;
+    error_msg = "file_open heap";
+    goto ko_close;
   }
   if (! buf_file_open_r(&tmp.heap, fp)) {
-    buf_file_close(&tmp.buf);
-    goto ko;
+    error_msg = "buf_file_open_r heap";
+    fclose(fp);
+    goto ko_close;
+  }
+  if (buf_seek(&tmp.heap, sizeof(s_marshall_header), SEEK_SET) <= 0) {
+    error_msg = "buf_seek heap";
+    buf_file_close(&tmp.heap);
+    goto ko_close;
   }
   *mr = tmp;
   return mr;
+ ko_close:
+  buf_file_close(&tmp.buf);
  ko:
+  err_write_1("marshall_read_init_file: ");
+  err_write_1(path);
+  err_write_1(": ");
+  err_puts(error_msg);
+  assert(! "marshall_read_init_file: error");
   marshall_read_clean(&tmp);
   return NULL;
 }

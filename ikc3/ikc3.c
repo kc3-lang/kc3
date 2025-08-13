@@ -158,6 +158,15 @@ int main (int argc, char **argv)
       argc--;
       argv++;
     }
+    else if (argc > 1 && argv[0] && argv[1] &&
+             ! strcmp(argv[0], "--dump")) {
+      if (! env_dump(env, argv[1])) {
+        r = 1;
+        goto clean;
+      }
+      argc -= 2;
+      argv += 2;
+    }
     else if (argc == 1 && ! strcmp("--quit", *argv)) {
       r = 0;
       goto clean;

@@ -62,6 +62,7 @@ PROTO_MARSHALL_READ(f128,         f128             );
 PROTO_MARSHALL_READ(f32,          f32              );
 PROTO_MARSHALL_READ(f64,          f64              );
 PROTO_MARSHALL_READ(fact,         s_fact           );
+PROTO_MARSHALL_READ(facts,        s_facts          );
 PROTO_MARSHALL_READ(fn,           s_fn             );
 PROTO_MARSHALL_READ(frame,        s_frame          );
 s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,

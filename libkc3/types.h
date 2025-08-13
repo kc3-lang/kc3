@@ -874,6 +874,7 @@ struct env {
   s_block          *block;
   s_time            boot_time;
   const s_sym      *current_defmodule;
+  const char       *dump_path;
   s_buf            *err;
   s_error_handler  *error_handler;
   s_facts          *facts;

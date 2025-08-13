@@ -69,6 +69,7 @@ s_buf * buf_file_open_r (s_buf *buf, FILE *fp)
   buf_file->fp = fp;
   buf->line = 0;
   buf->refill = buf_file_open_r_refill;
+  buf->seek = buf_file_open_r_seek;
   buf->user_ptr = buf_file;
   return buf;
 }
