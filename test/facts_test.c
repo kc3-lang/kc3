@@ -139,7 +139,7 @@ TEST_CASE(facts_dump_file)
     facts_add_fact(&facts, fact + i);
     i++;
   }
-  facts_dump_file(&facts, "facts_test_dump_file.facts", false);
+  facts_dump_file(&facts, "facts_test_dump_file.facts");
   test_file_compare("facts_test_dump_file.facts",
                     "facts_test_dump_file.expected.facts");
   if (g_test_last_ok)
@@ -265,7 +265,7 @@ TEST_CASE(facts_load)
   s_str path;
   facts_init(&facts);
   str_init_1(&path, NULL, "facts_test_load_file.facts");
-  TEST_EQ(facts_load_file(&facts, &path, false), 761);
+  TEST_EQ(facts_load_file(&facts, &path), 761);
   TEST_EQ(facts_count(&facts), 23);
   while (p[i]) {
     fact_test_init_1(&fact, p[i]);
@@ -467,7 +467,7 @@ TEST_CASE(facts_open_file)
   }
   facts_init(&facts);
   str_init_1(&path, NULL, "facts_test_open_file.1.facts");
-  TEST_EQ(facts_open_file(&facts, &path, false), 944);
+  TEST_EQ(facts_open_file(&facts, &path), 944);
   TEST_EQ(facts_count(&facts), 23);
   i = 0;
   while (p[i]) {
@@ -502,7 +502,7 @@ TEST_CASE(facts_open_file)
     exit(1);
   }
   str_init_1(&path, NULL, "facts_test_open_file.2.facts");
-  TEST_EQ(facts_open_file(&facts, &path, false), 1890);
+  TEST_EQ(facts_open_file(&facts, &path), 1890);
   TEST_EQ(facts_count(&facts), 46);
   i = 0;
   while (p[i]) {
@@ -534,7 +534,7 @@ TEST_CASE(facts_open_file)
     exit(1);
   }
   str_init_1(&path, NULL, "facts_test_open_file.3.facts");
-  TEST_EQ(facts_open_file(&facts, &path, false), 3878);
+  TEST_EQ(facts_open_file(&facts, &path), 3878);
   TEST_EQ(facts_count(&facts), 0);
   i = 0;
   while (p[i]) {
@@ -653,7 +653,7 @@ TEST_CASE(facts_save)
     facts_add_fact(&facts, fact + i);
     i++;
   }
-  facts_save_file(&facts, "facts_test_save.facts", false);
+  facts_save_file(&facts, "facts_test_save.facts");
   test_file_compare("facts_test_save.facts",
                     "facts_test_save.expected.facts");
   if (g_test_last_ok)
