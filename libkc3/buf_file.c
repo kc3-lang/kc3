@@ -105,13 +105,17 @@ sw buf_file_open_r_refill (s_buf *buf)
 s64 buf_file_open_r_seek (s_buf *buf, s64 offset, s8 from)
 {
   s_buf_file *buf_file;
-  s64 result;
+  sw result;
   assert(buf);
   assert(! buf->save);
   assert(buf->user_ptr);
   buf_file = buf->user_ptr;
-  if ((result = fseek(buf_file->fp, offset, from)) < 0) {
+  if (fseek(buf_file->fp, offset, from) < 0) {
     err_puts("buf_file_open_r_seek: fseek");
+    return -1;
+  }
+  if ((result = ftell(buf_file->fp)) < 0) {
+    err_puts("buf_file_open_r_seek: ftell");
     return -1;
   }
   buf->rpos = 0;
@@ -172,15 +176,20 @@ s64 buf_file_open_w_seek (s_buf *buf, s64 offset, s8 from)
 {
   s_buf_file *buf_file;
   sw r;
+  sw result;
   assert(buf);
   assert(! buf->save);
   assert(buf->user_ptr);
   buf_file = buf->user_ptr;
   if ((r = buf_flush(buf)) < 0)
     return r;
-  if ((r = fseek(buf_file->fp, offset, from)) < 0) {
+  if (fseek(buf_file->fp, offset, from) < 0) {
     err_puts("buf_file_open_w_seek: fseek");
     return -1;
   }
-  return r;
+  if ((result = ftell(buf_file->fp)) < 0) {
+    err_puts("buf_file_open_w_seek: ftell");
+    return -1;
+  }
+  return result;
 }
