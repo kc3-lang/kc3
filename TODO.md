@@ -40,7 +40,7 @@
 | PStruct Type    |  [X]   |  [X]   |
 | PTag            |  [X]   |  [?]   | Tag             |
 | Facts           |  [ ]   |  [ ]   |
-... (others)
+| Env             |  [ ]   |  [ ]   | Facts           |
 
 [X] : Done
 [ ] : Not implemented
@@ -48,22 +48,11 @@
 [?] : Has to be tested/verified
 
 
-Array :
+## Env init args --dump and --load-dump
 
-```elixir
-my_array = (U8[]) {1, 2, 3, 4}
-```
-
-## Facts operations with binary = true
-
- - [X] `facts_dump`
- - [X] `facts_dump_file`
- - [X] `facts_load_file`
- - [X] `facts_open_buf`
- - [X] `facts_open_file`
- - [X] `facts_open_file_create`
- - [X] `facts_save_file`
- - [ ] `facts_load`
- - [ ] `facts_log_add`
- - [ ] `facts_log_remove`
- - [ ] `facts_open_log`
+ - [ ] `s_marshall * marshall_facts (s_marshall *m, const s_facts *x);`
+ - [ ] `s_marshall_read * marshall_read_facts (s_marshall_read *mr, const s_env *env);`
+ - [ ] `s_marshall * marshall_env (s_marshall *m, const s_env *env);`
+ - [ ] `s_marshall_read * marshall_read_env (s_marshall_read *mr, const s_env *env);`
+ - [ ] `sw env_dump (const s_env *env, const char *path);`
+ - [ ] `sw env_dump_load (s_env *env, const char *path);`
