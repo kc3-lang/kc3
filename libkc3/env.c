@@ -1956,7 +1956,7 @@ bool env_module_load (s_env *env, const s_sym *module)
     if (! file_access(&path, &g_sym_r))
       goto rollback;
     tag_init_time_now(&tag_time);
-    if (facts_load_file(env->facts, &path, false) < 0) {
+    if (facts_load_file(env->facts, &path) < 0) {
       err_write_1("env_module_load: ");
       err_write_1(module->str.ptr.pchar);
       err_puts(": facts_load_file");

@@ -41,9 +41,8 @@
 
 static int facts_compare_pfact_id_reverse (const void *a,
                                            const void *b);
-static sw facts_open_file_create (s_facts *facts, const s_str *path,
-                                  bool binary);
-static sw facts_open_log (s_facts *facts, s_buf *buf, bool binary);
+static sw facts_open_file_create (s_facts *facts, const s_str *path);
+static sw facts_open_log (s_facts *facts, s_buf *buf);
 
 s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
 {
@@ -198,11 +197,10 @@ void facts_delete (s_facts *facts)
   free(facts);
 }
 
-sw facts_dump (s_facts *facts, s_buf *buf, bool binary)
+sw facts_dump (s_facts *facts, s_buf *buf)
 {
   s_facts_cursor cursor;
   s_fact *fact;
-  s_marshall marshall = {0};
   s_tag object;
   s_tag predicate;
   sw r;
@@ -210,16 +208,6 @@ sw facts_dump (s_facts *facts, s_buf *buf, bool binary)
   s_tag subject;
   assert(facts);
   assert(buf);
-  if (binary) {
-    marshall_init(&marshall);
-    if (! marshall_facts(&marshall, false, facts) ||
-        (r = marshall_to_buf(&marshall, buf))) {
-      marshall_clean(&marshall);
-      return -1;
-    }
-    marshall_clean(&marshall);
-    return r;
-  }
   tag_init_pvar(&subject, &g_sym_Tag);
   tag_init_pvar(&predicate, &g_sym_Tag);
   tag_init_pvar(&object, &g_sym_Tag);
@@ -259,7 +247,7 @@ sw facts_dump (s_facts *facts, s_buf *buf, bool binary)
   return r;
 }
 
-sw facts_dump_file (s_facts *facts, const char *path, bool binary)
+sw facts_dump_file (s_facts *facts, const char *path)
 {
   char b[BUF_SIZE];
   s_buf buf;
@@ -272,7 +260,7 @@ sw facts_dump_file (s_facts *facts, const char *path, bool binary)
   if (! fp)
     return -1;
   buf_file_open_w(&buf, fp);
-  r = facts_dump(facts, &buf, binary);
+  r = facts_dump(facts, &buf);
   buf_file_close(&buf);
   fclose(fp);
   return r;
@@ -356,8 +344,7 @@ s_facts * facts_init (s_facts *facts)
   return facts;
 }
 
-sw facts_load (s_facts *facts, s_buf *buf, const s_str *path,
-               bool binary)
+sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
 {
   s_fact   eval_fact;
   s_fact_w eval_fact_w;
@@ -367,8 +354,6 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path,
   sw result = 0;
   assert(facts);
   assert(buf);
-  if (binary)
-    return facts_load_binary(facts, buf, path);
   if (env_global()->trace) {
     err_write_1("facts_load: ");
     err_inspect_str(path);
@@ -483,7 +468,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path,
   return -1;
 }
 
-sw facts_load_binary (s_facts *facts, s_buf *buf, const s_str *path)
+sw facts_load_binary (s_facts *facts, const s_str *path)
 {
   u8 action;
   s_env *env;
@@ -492,17 +477,17 @@ sw facts_load_binary (s_facts *facts, s_buf *buf, const s_str *path)
   s_marshall_read mr = {0};
   sw result = -1;
   assert(facts);
-  assert(buf);
+  assert(path);
   env = env_global();
   assert(env);
   if (env->trace) {
-    err_write_1("facts_load: ");
+    err_write_1("facts_load_binary: ");
     err_inspect_str(path);
     err_write_1("\n");
   }
-  if (! marshall_read_init_buf(&mr, buf)) {
-    err_puts("facts_load_binary: marshall_read_init_buf");
-    assert(! "facts_load_binary: marshall_read_init_buf");
+  if (! marshall_read_init_file(&mr, path->ptr.pchar)) {
+    err_puts("facts_load_binary: marshall_read_init_file");
+    assert(! "facts_load_binary: marshall_read_init_file");
     goto ko;
   }
 #if HAVE_PTHREAD
@@ -518,8 +503,6 @@ sw facts_load_binary (s_facts *facts, s_buf *buf, const s_str *path)
       err_inspect_uw_decimal(i);
       err_write_1(": ");
       err_inspect_str(path);
-      err_write_1("\n");
-      err_inspect_buf(buf);
       err_write_1("\n");
       assert(! "facts_load_binary: invalid fact");
       goto ko_unlock;
@@ -561,7 +544,7 @@ sw facts_load_binary (s_facts *facts, s_buf *buf, const s_str *path)
   result = marshall_read_size(&mr);
   marshall_read_clean(&mr);
   if (env->trace) {
-    err_write_1("facts_load: ");
+    err_write_1("facts_load_binary: ");
     err_inspect_str(path);
     err_write_1(": OK\n");
   }
@@ -573,14 +556,14 @@ sw facts_load_binary (s_facts *facts, s_buf *buf, const s_str *path)
  ko:
   marshall_read_clean(&mr);
   if (env->trace) {
-    err_write_1("facts_load: ");
+    err_write_1("facts_load_binary: ");
     err_inspect_str(path);
     err_write_1(": ERROR\n");
   }
   return -1;
 }
 
-sw facts_load_file (s_facts *facts, const s_str *path, bool binary)
+sw facts_load_file (s_facts *facts, const s_str *path)
 {
   char b[BUF_SIZE];
   s_buf buf;
@@ -593,7 +576,7 @@ sw facts_load_file (s_facts *facts, const s_str *path, bool binary)
   if (! fp)
     return -1;
   buf_file_open_r(&buf, fp);
-  result = facts_load(facts, &buf, path, binary);
+  result = facts_load(facts, &buf, path);
   buf_file_close(&buf);
   fclose(fp);
   return result;
@@ -654,21 +637,20 @@ s_facts * facts_new (void)
   return facts;
 }
 
-sw facts_open_buf (s_facts *facts, s_buf *buf, const s_str *path,
-                   bool binary)
+sw facts_open_buf (s_facts *facts, s_buf *buf, const s_str *path)
 {
   sw r;
   sw result = 0;
-  if ((r = facts_load(facts, buf, path, binary)) <= 0)
+  if ((r = facts_load(facts, buf, path)) <= 0)
     return r;
   result += r;
-  if ((r = facts_open_log(facts, buf, binary)) < 0)
+  if ((r = facts_open_log(facts, buf)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw facts_open_file (s_facts *facts, const s_str *path, bool binary)
+sw facts_open_file (s_facts *facts, const s_str *path)
 {
   FILE *fp;
   char i[BUF_SIZE];
@@ -679,27 +661,26 @@ sw facts_open_file (s_facts *facts, const s_str *path, bool binary)
   fp = fopen(path->ptr.pchar, "rb");
   if (! fp) {
     if (errno == ENOENT)
-      return facts_open_file_create(facts, path, binary);
+      return facts_open_file_create(facts, path);
     return -1;
   }
   buf_file_open_r(&in, fp);
-  if ((r = facts_open_buf(facts, &in, path, binary)) < 0)
+  if ((r = facts_open_buf(facts, &in, path)) < 0)
     return r;
   result += r;
   buf_file_close(&in);
-  if (facts_dump_file(facts, path->ptr.pchar, binary) < 0)
+  if (facts_dump_file(facts, path->ptr.pchar) < 0)
     return -1;
   fp = file_open(path->ptr.pchar, "ab");
   if (! fp)
     return -1;
   if (! (facts->log = log_new()))
     return -1;
-  log_open(facts->log, fp, binary);
+  log_open(facts->log, fp, false);
   return result;
 }
 
-sw facts_open_file_create (s_facts *facts, const s_str *path,
-                           bool binary)
+sw facts_open_file_create (s_facts *facts, const s_str *path)
 {
   FILE *fp;
   s_buf *out;
@@ -710,13 +691,13 @@ sw facts_open_file_create (s_facts *facts, const s_str *path,
     return -1;
   out = buf_new_alloc(BUF_SIZE);
   buf_file_open_w(out, fp);
-  if ((r = facts_dump(facts, out, binary)) < 0)
+  if ((r = facts_dump(facts, out)) < 0)
     return r;
   result += r;
   buf_flush(out);
   if (! (facts->log = log_new()))
     return -1;
-  if (! log_open(facts->log, fp, binary)) {
+  if (! log_open(facts->log, fp, false)) {
     log_delete(facts->log);
     facts->log = NULL;
     return -1;
@@ -725,7 +706,7 @@ sw facts_open_file_create (s_facts *facts, const s_str *path,
 }
 
 // TODO: if (binary) {
-sw facts_open_log (s_facts *facts, s_buf *buf, bool binary)
+sw facts_open_log (s_facts *facts, s_buf *buf)
 {
   bool b;
   s_fact_w fact_w;
@@ -734,8 +715,6 @@ sw facts_open_log (s_facts *facts, s_buf *buf, bool binary)
   sw result = 0;
   assert(facts);
   assert(buf);
-  if (binary)
-    return -1;
   while (1) {
     if ((r = buf_read_1(buf, "add ")) < 0)
       break;
@@ -949,7 +928,7 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   return fact;
 }
 
-sw facts_save_file (s_facts *facts, const char *path, bool binary)
+sw facts_save_file (s_facts *facts, const char *path)
 {
   char b[BUF_SIZE];
   s_buf buf;
@@ -964,7 +943,7 @@ sw facts_save_file (s_facts *facts, const char *path, bool binary)
   if (! fp)
     return -1;
   buf_file_open_w(&buf, fp);
-  if ((r = facts_dump(facts, &buf, binary)) < 0)
+  if ((r = facts_dump(facts, &buf)) < 0)
     goto ko;
   result += r;
   buf_flush(&buf);
@@ -972,7 +951,7 @@ sw facts_save_file (s_facts *facts, const char *path, bool binary)
   buf.user_ptr = NULL;
   if (! (facts->log = log_new()))
     goto ko;
-  if (! log_open(facts->log, fp, binary))
+  if (! log_open(facts->log, fp, false))
     goto ko;
   return result;
  ko:

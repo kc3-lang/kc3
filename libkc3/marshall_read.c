@@ -20,6 +20,7 @@
 #include "compare.h"
 #include "complex.h"
 #include "do_block.h"
+#include "fact.h"
 #include "facts.h"
 #include "fn.h"
 #include "frame.h"
@@ -485,51 +486,34 @@ s_marshall_read * marshall_read_fact (s_marshall_read *mr,
 }
 
 s_marshall_read * marshall_read_facts (s_marshall_read *mr,
-                                       bool heap, s_facts *facts)
+                                       bool heap, s_facts *dest)
 {
-  s_fact *fact;
+  uw count;
+  s_fact fact = {0};
+  uw i;
   s_facts tmp = {0};
-  s_facts_cursor cursor;
-  s_tag predicate;
-  s_tag object;
-  s_tag subject;
-  uw i = 0;
-  bool error = false;
-  assert(mr);
-  assert(facts);
-  if (! tag_init_pvar(&predicate, g_sym_Tag)                  ||
-      ! tag_init_pvar(&object, g_sym_Tag)                     ||
-      ! tag_init_pvar(&subject, g_sym_Tag))
+  if (! mr || ! dest)
     return NULL;
-  #if HAVE_PTHREAD
-  rwlock_r(&facts->rwlock);
-  #endif
-  if (! facts_with_0(&tmp, &cursor, subject.data.pvar,
-                   predicate.data.pvar, object.data.pvar)     ||
-      ! marshall_read_uw(mr, heap, &tmp.facts.count)          ||
-      ! facts_cursor_next(&cursor, &fact)) {
-    error = true;
-    goto ko;
-  }
-  while (fact && i < tmp.facts.count) {
-    if (! marshall_read_fact(&mr, heap, fact)                 ||
-        ! facts_cursor_next(&cursor, &fact)) {
-      error = true;
+  if (! marshall_read_uw(mr, heap, &count))
+    return NULL;
+  if (! facts_init(&tmp))
+    return NULL;
+  i = 0;
+  while (i < tmp.facts.count) {
+    if (! marshall_read_fact(mr, heap, &fact))
+      goto ko;
+    if (! facts_add_fact(&tmp, &fact)) {
+      fact_clean_all(&fact);
       goto ko;
     }
+    fact_clean_all(&fact);
     i++;
   }
-  ko:
-    facts_cursor_clean(&cursor);
-    tag_clean(&predicate)
-    tag_clean(&object);
-    tag_clean(&subject);
-    if (!error)
-      *dest = tmp;
-    #if HAVE_PTHREAD
-    rwlock_unlock_r(&facts->rwlock);
-  #endif
-    return error ? NULL : mr;
+  *dest = tmp;
+  return mr;
+ ko:
+  facts_clean(&tmp);
+  return NULL;
 }
 
 s_marshall_read * marshall_read_fn (s_marshall_read *mr, bool heap,
