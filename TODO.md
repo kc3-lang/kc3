@@ -56,15 +56,14 @@ my_array = (U8[]) {1, 2, 3, 4}
 
 ## Facts operations with binary = true
 
- - [ ] `facts_dump`
- - [ ] `facts_dump_file`
+ - [X] `facts_dump`
+ - [X] `facts_dump_file`
+ - [X] `facts_load_file`
+ - [X] `facts_open_buf`
+ - [X] `facts_open_file`
+ - [X] `facts_open_file_create`
+ - [X] `facts_save_file`
  - [ ] `facts_load`
- - [ ] `facts_load_file`
  - [ ] `facts_log_add`
  - [ ] `facts_log_remove`
- - [ ] `facts_open_buf`
- - [ ] `facts_open_file`
- - [ ] `facts_open_file_create`
  - [ ] `facts_open_log`
- - [ ] `facts_save_file`
-

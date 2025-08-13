@@ -198,7 +198,6 @@ void facts_delete (s_facts *facts)
   free(facts);
 }
 
-// TODO: if (binary) {
 sw facts_dump (s_facts *facts, s_buf *buf, bool binary)
 {
   s_facts_cursor cursor;
@@ -260,7 +259,6 @@ sw facts_dump (s_facts *facts, s_buf *buf, bool binary)
   return r;
 }
 
-// TODO: if (binary) {
 sw facts_dump_file (s_facts *facts, const char *path, bool binary)
 {
   char b[BUF_SIZE];
@@ -486,7 +484,6 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path,
   return -1;
 }
 
-// TODO: if (binary) {
 sw facts_load_file (s_facts *facts, const s_str *path, bool binary)
 {
   char b[BUF_SIZE];
@@ -561,7 +558,6 @@ s_facts * facts_new (void)
   return facts;
 }
 
-// TODO: if (binary) {
 sw facts_open_buf (s_facts *facts, s_buf *buf, const s_str *path,
                    bool binary)
 {
@@ -576,7 +572,6 @@ sw facts_open_buf (s_facts *facts, s_buf *buf, const s_str *path,
   return result;
 }
 
-// TODO: if (binary) {
 sw facts_open_file (s_facts *facts, const s_str *path, bool binary)
 {
   FILE *fp;
@@ -607,7 +602,6 @@ sw facts_open_file (s_facts *facts, const s_str *path, bool binary)
   return result;
 }
 
-// TODO: if (binary) {
 sw facts_open_file_create (s_facts *facts, const s_str *path,
                            bool binary)
 {
@@ -626,7 +620,11 @@ sw facts_open_file_create (s_facts *facts, const s_str *path,
   buf_flush(out);
   if (! (facts->log = log_new()))
     return -1;
-  buf_file_open_w(&facts->log->buf, fp);
+  if (! log_open(facts->log, fp, binary)) {
+    log_delete(facts->log);
+    facts->log = NULL;
+    return -1;
+  }
   return result;
 }
 
@@ -855,7 +853,6 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   return fact;
 }
 
-// TODO: if (binary) {
 sw facts_save_file (s_facts *facts, const char *path, bool binary)
 {
   char b[BUF_SIZE];
