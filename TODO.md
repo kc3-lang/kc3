@@ -56,5 +56,5 @@
  - [ ] `s_marshall_read * marshall_read_env (s_marshall_read *mr, const s_env *env);`
  - [ ] `sw env_dump (const s_env *env, const char *path);`
  - [ ] `sw env_dump_load (s_env *env, const char *path);`
- - [ ] `env_init_args` → `--dump PATH`
- - [ ] `env_init_args` → `--restore PATH`
+ - [thodg] `env_init_args` → `--dump PATH`
+ - [thodg] `env_init_args` → `--restore PATH`
