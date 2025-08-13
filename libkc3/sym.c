@@ -754,6 +754,10 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     *dest = &ffi_type_longdouble;
     return true;
   }
+  if (sym == &g_sym_Fact) {
+    *dest = &ffi_type_pointer;
+    return true;
+  }
   if (sym == &g_sym_Ident) {
     *dest = &ffi_type_pointer;
     return true;

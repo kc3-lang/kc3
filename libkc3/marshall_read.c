@@ -18,6 +18,7 @@
 #include "buf_file.h"
 #include "call.h"
 #include "callable.h"
+#include "cfn.h"
 #include "compare.h"
 #include "complex.h"
 #include "do_block.h"
@@ -243,6 +244,8 @@ s_marshall_read * marshall_read_cfn (s_marshall_read *mr,
       assert(! "marshall_read_cfn: marshall_read_psym");
       return NULL;
     }
+    if (psym == &g_sym_Result)
+      tmp.arg_result = true;
     if (! (*tail = list_new_psym(psym, NULL))) {
       err_puts("marshall_read_cfn: list_new_psym");
       assert(! "marshall_read_cfn: list_new_psym");
@@ -251,6 +254,8 @@ s_marshall_read * marshall_read_cfn (s_marshall_read *mr,
     tail = &(*tail)->next.data.plist;
     i++;
   }
+  cfn_link(&tmp);
+  cfn_prep_cif(&tmp);
 #if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
 #endif
@@ -475,9 +480,12 @@ s_marshall_read * marshall_read_env (s_marshall_read *mr,
     assert(! "marshall_read_env: facts_new");
     return NULL;
   }
-  if (! marshall_read_facts(mr, heap, env->facts))
+  if (! marshall_read_facts(mr, heap, env->facts)) {
+    err_puts("marshall_read_env: marshall_read_facts");
+    assert(! "marshall_read_env: marshall_read_facts");
     return NULL;
-  return NULL;
+  }
+  return mr;
 }
 
 sw marshall_read_env_from_file (s_env *env, const char *path)
@@ -489,11 +497,21 @@ sw marshall_read_env_from_file (s_env *env, const char *path)
     assert(! "marshall_read_env_from_file: invalid argument");
     return -1;
   }
-  if (! marshall_read_init_file(&mr, path))
+  if (! marshall_read_init_file(&mr, path)) {
+    err_puts("marshall_read_env_from_file: marshall_read_init_file");
+    assert(! "marshall_read_env_from_file: marshall_read_init_file");
     return -1;
-  if ((result = marshall_read_size(&mr)) <= 0 ||
-      ! marshall_read_env(&mr, false, env))
+  }
+  if ((result = marshall_read_size(&mr)) <= 0) {
+    err_puts("marshall_read_env_from_file: marshall_read_size");
+    assert(! "marshall_read_env_from_file: marshall_read_size");
     goto clean;
+  }
+  if (! marshall_read_env(&mr, false, env)) {
+    err_puts("marshall_read_env_from_file: marshall_read_env");
+    assert(! "marshall_read_env_from_file: marshall_read_env");
+    goto clean;
+  }
   marshall_read_clean(&mr);
   return result;
  clean:
@@ -529,34 +547,27 @@ s_marshall_read * marshall_read_fact (s_marshall_read *mr,
 }
 
 s_marshall_read * marshall_read_facts (s_marshall_read *mr,
-                                       bool heap, s_facts *dest)
+                                       bool heap, s_facts *facts)
 {
   uw count;
   s_fact fact = {0};
   uw i;
-  s_facts tmp = {0};
-  if (! mr || ! dest)
+  if (! mr || ! facts)
     return NULL;
   if (! marshall_read_uw(mr, heap, &count))
-    return NULL;
-  if (! facts_init(&tmp))
     return NULL;
   i = 0;
   while (i < count) {
     if (! marshall_read_fact(mr, heap, &fact))
-      goto ko;
-    if (! facts_add_fact(&tmp, &fact)) {
+      return NULL;
+    if (! facts_add_fact(facts, &fact)) {
       fact_clean_all(&fact);
-      goto ko;
+      return NULL;
     }
     fact_clean_all(&fact);
     i++;
   }
-  *dest = tmp;
   return mr;
- ko:
-  facts_clean(&tmp);
-  return NULL;
 }
 
 s_marshall_read * marshall_read_fn (s_marshall_read *mr, bool heap,
