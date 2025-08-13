@@ -780,6 +780,10 @@ kubz_debug:
 	${MAKE} debug
 	window/sdl2/kubz/.libs/kubz_debug
 
+lib_dumps: build
+	ikc3/ikc3 --dump lib/kc3/0.1/ikc3.dump --quit
+	ikc3/ikc3 --load lib/kc3/0.1/httpd.kc3 --dump lib/kc3/0.1/httpd.dump --quit
+
 lib_links:
 	${MAKE} lib_links_${ARCH}
 
