@@ -460,6 +460,40 @@ s_marshall_read * marshall_read_do_block (s_marshall_read *mr,
   return mr;
 }
 
+s_marshall_read * marshall_read_env (s_marshall_read *mr,
+                                     bool heap, s_env *env)
+{
+  (void) heap;
+  if (! mr || ! env) {
+    err_puts("marshall_read_env: invalid argument");
+    assert(! "marshall_read_env: invalid argument");
+    return NULL;
+  }
+  // TODO
+  return NULL;
+}
+
+sw marshall_read_env_from_file (s_env *env, const char *path)
+{
+  s_marshall_read mr = {0};
+  sw result = -1;
+  if (! env || ! path) {
+    err_puts("marshall_read_env_from_file: invalid argument");
+    assert(! "marshall_read_env_from_file: invalid argument");
+    return -1;
+  }
+  if (! marshall_read_init_file(&mr, path))
+    return -1;
+  if ((result = marshall_read_size(&mr)) <= 0 ||
+      ! marshall_read_env(&mr, false, env))
+    goto clean;
+  marshall_read_clean(&mr);
+  return result;
+ clean:
+  marshall_read_clean(&mr);
+  return -1;
+}
+
 DEF_MARSHALL_READ(f32, f32)
 DEF_MARSHALL_READ(f64, f64)
 DEF_MARSHALL_READ(f128, f128)

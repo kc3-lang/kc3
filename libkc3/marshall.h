@@ -45,6 +45,7 @@ PROTO_MARSHALL(complex, const s_complex *);
 s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
                             void *data);
 PROTO_MARSHALL(do_block, const s_do_block *);
+PROTO_MARSHALL(env, const s_env *);
 PROTO_MARSHALL(f32, f32);
 PROTO_MARSHALL(f64, f64);
 PROTO_MARSHALL(f128, f128);
@@ -93,6 +94,7 @@ PROTO_MARSHALL(var, const s_var *);
 s_marshall * marshall_void (s_marshall *m, bool heap);
 
 /* Export. */
+sw      marshall_env_to_file (const s_env *env, const char *path);
 sw      marshall_to_buf (s_marshall *m, s_buf *buf);
 s_str * marshall_to_str (s_marshall *m, s_str *dest);
 sw      marshall_to_file (s_marshall *m, const char *path);

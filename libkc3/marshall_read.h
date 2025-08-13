@@ -57,11 +57,12 @@ s_marshall_read * marshall_read_data (s_marshall_read *mr, bool heap,
                                       p_sym type, void *data);
 PROTO_MARSHALL_READ(dimensions,   s_array_dimension);
 PROTO_MARSHALL_READ(do_block,     s_do_block       );
-PROTO_MARSHALL_READ(fn,           s_fn             );
+PROTO_MARSHALL_READ(env,          s_env            );
 PROTO_MARSHALL_READ(f128,         f128             );
 PROTO_MARSHALL_READ(f32,          f32              );
 PROTO_MARSHALL_READ(f64,          f64              );
 PROTO_MARSHALL_READ(fact,         s_fact           );
+PROTO_MARSHALL_READ(fn,           s_fn             );
 PROTO_MARSHALL_READ(frame,        s_frame          );
 s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
                                               bool heap,
@@ -106,5 +107,8 @@ PROTO_MARSHALL_READ(u64,          u64              );
 PROTO_MARSHALL_READ(unquote,      s_unquote        );
 PROTO_MARSHALL_READ(uw,           uw               );
 PROTO_MARSHALL_READ(var,          s_var            );
+
+/* Env. */
+sw marshall_read_env_from_file (s_env *env, const char *path);
 
 #endif /* LIBKC3_MARSHALL_READ_H */

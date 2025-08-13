@@ -596,7 +596,7 @@ void marshall_delete (s_marshall *m)
 }
 
 s_marshall * marshall_do_block (s_marshall *m, bool heap,
-                             const s_do_block *do_block)
+                                const s_do_block *do_block)
 {
   uw i;
   assert(m);
@@ -612,6 +612,34 @@ s_marshall * marshall_do_block (s_marshall *m, bool heap,
     i++;
   }
   return m;
+}
+
+s_marshall * marshall_env (s_marshall *m, bool heap, const s_env *env)
+{
+  if (! m || ! env) {
+    err_puts("marshall_env: invalid argument");
+    assert(! "marshall_env: invalid argument");
+    return NULL;
+  }
+  if (! marshall_facts(m, heap, env->facts))
+    return NULL;
+  return m;
+}
+
+sw marshall_env_to_file (const s_env *env, const char *path)
+{
+  s_marshall m = {0};
+  sw result = -1;
+  if (! marshall_init(&m))
+    return -1;
+  if (! marshall_env(&m, false, env) ||
+      (result = marshall_to_file(&m, path)) <= 0)
+    goto ko;
+  marshall_clean(&m);
+  return result;
+ ko:
+  marshall_clean(&m);
+  return -1;
 }
 
 DEF_MARSHALL(f32)

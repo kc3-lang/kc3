@@ -66,6 +66,8 @@
 #include "kc3_main.h"
 #include "list.h"
 #include "map.h"
+#include "marshall.h"
+#include "marshall_read.h"
 #include "module.h"
 #include "op.h"
 #include "ops.h"
@@ -583,20 +585,12 @@ const s_sym * env_defstruct (s_env *env, s_list *spec)
 
 sw env_dump (const s_env *env, const char *path)
 {
-  (void) env;
-  (void) path;
-  err_puts("env_dump: not supported");
-  assert(! "env_dump: not supported");
-  return -1;
+  return marshall_env_to_file(env, path);
 }
 
-sw env_dump_restore (const s_env *env, const char *path)
+sw env_dump_restore (s_env *env, const char *path)
 {
-  (void) env;
-  (void) path;
-  err_puts("env_dump_restore: not supported");
-  assert(! "env_dump_restore: not supported");
-  return -1;
+  return marshall_read_env_from_file(env, path);
 }
 
 void env_error_f (s_env *env, const char *fmt, ...)

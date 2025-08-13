@@ -33,7 +33,7 @@ s_env * env_new (int *argc, char ***argv);
 /* Observers. */
 s_list **       env_args (s_env *env, s_list **dest);
 sw              env_dump (const s_env *env, const char *path);
-sw              env_dump_restore (const s_env *env, const char *path);
+sw              env_dump_restore (s_env *env, const char *path);
 s_tag *         env_frames_get (s_env *env, const s_sym *name);
 s_ident *       env_ident_resolve_module (s_env *env,
                                           const s_ident *ident,
