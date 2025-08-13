@@ -657,7 +657,7 @@ TEST_CASE(marshall_tag)
                     "\x01\x11\x02\x00\x00\x00\x00\x00"
                     "\x00\x00\x00");
   // Unquote
-  MARSHALL_TEST_TAG("unquote(123)",
+  MARSHALL_TEST_TAG("unquote 123",
                     "KC3MARSH"
                     "\x00\x00\x00\x00\x00\x00\x00\x00"
                     "\x00\x00\x00\x00\x00\x00\x00\x00"

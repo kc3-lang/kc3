@@ -1375,11 +1375,11 @@ TEST_CASE_END(buf_parse_u)
 
 TEST_CASE(buf_parse_unquote)
 {
-  BUF_PARSE_TEST_UNQUOTE("unquote(1)");
-  BUF_PARSE_TEST_UNQUOTE("unquote(1 + 1)");
-  BUF_PARSE_TEST_UNQUOTE("unquote(ident)");
-  BUF_PARSE_TEST_UNQUOTE("unquote(:sym)");
-  BUF_PARSE_TEST_UNQUOTE("unquote(\"str\")");
+  BUF_PARSE_TEST_UNQUOTE("unquote 1");
+  BUF_PARSE_TEST_UNQUOTE("unquote 1 + 1");
+  BUF_PARSE_TEST_UNQUOTE("unquote ident");
+  BUF_PARSE_TEST_UNQUOTE("unquote :sym");
+  BUF_PARSE_TEST_UNQUOTE("unquote \"str\"");
 }
 TEST_CASE_END(buf_parse_unquote)
 
