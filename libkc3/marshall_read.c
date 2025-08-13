@@ -15,6 +15,7 @@
 #include "array.h"
 #include "assert.h"
 #include "buf.h"
+#include "buf_file.h"
 #include "call.h"
 #include "callable.h"
 #include "compare.h"
@@ -22,6 +23,7 @@
 #include "do_block.h"
 #include "fact.h"
 #include "facts.h"
+#include "file.h"
 #include "fn.h"
 #include "frame.h"
 #include "hash.h"
@@ -737,12 +739,45 @@ s_marshall_read * marshall_read_init_1 (s_marshall_read *mr,
                                         const char *p, uw size)
 {
   s_str str = {0};
-  assert(mr);
-  if (! p || ! size)
+  if (! mr || ! p || ! size) {
+    err_puts("marshall_read_init_1: invalid argument");
+    assert(! "marshall_read_init_1: invalid argument");
     return NULL;
+  }
   str.size = size;
   str.ptr.pchar = p;
   return marshall_read_init_str(mr, &str);
+}
+
+s_marshall_read * marshall_read_init_file (s_marshall_read *mr,
+                                           const char *path)
+{
+  FILE *fp;
+  s_marshall_read tmp = {0};
+  assert(mr);
+  assert(path);
+  marshall_read_init(&tmp);
+  if (! (fp = file_open(path, "rb")))
+    goto ko;
+  if (! buf_file_open_r(&tmp.buf, fp))
+    goto ko;
+  if (! marshall_read_header(&tmp)) {
+    buf_file_close(&tmp.buf);
+    goto ko;
+  }
+  if (! (fp = file_open(path, "rb"))) {
+    buf_file_close(&tmp.buf);
+    goto ko;
+  }
+  if (! buf_file_open_r(&tmp.heap, fp)) {
+    buf_file_close(&tmp.buf);
+    goto ko;
+  }
+  *mr = tmp;
+  return mr;
+ ko:
+  marshall_read_clean(&tmp);
+  return NULL;
 }
 
 s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
