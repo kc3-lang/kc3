@@ -34,7 +34,7 @@
 | Time            |  [X]   |  [X]   | Tag             |
 | Ptr             |  [X]   |  [X]   |
 | Ptr free        |  [X]   |  [X]   |
-| Array           | Perle  | Perle  |
+| Array           |  [X]   |  [X]   |
 | Fact            |  [X]   |  [?]   |
 | PStruct         |  [X]   |  [X]   |
 | PStruct Type    |  [X]   |  [X]   |
@@ -53,3 +53,18 @@ Array :
 ```elixir
 my_array = (U8[]) {1, 2, 3, 4}
 ```
+
+## Facts operations with binary = true
+
+ - [ ] `facts_dump`
+ - [ ] `facts_dump_file`
+ - [ ] `facts_load`
+ - [ ] `facts_load_file`
+ - [ ] `facts_log_add`
+ - [ ] `facts_log_remove`
+ - [ ] `facts_open_buf`
+ - [ ] `facts_open_file`
+ - [ ] `facts_open_file_create`
+ - [ ] `facts_open_log`
+ - [ ] `facts_save_file`
+
