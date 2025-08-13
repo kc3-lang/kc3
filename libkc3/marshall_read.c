@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+
 #include "alloc.h"
 #include "array.h"
 #include "assert.h"
@@ -19,6 +20,7 @@
 #include "compare.h"
 #include "complex.h"
 #include "do_block.h"
+#include "facts.h"
 #include "fn.h"
 #include "frame.h"
 #include "hash.h"
@@ -176,7 +178,7 @@ s_marshall_read * marshall_read_callable (s_marshall_read *mr,
   u8 type;
   if (! marshall_read_u8(mr, heap, &type)) {
     err_puts("marshall_read_callable: marshall_read_u8");
-    assert(! "marshall_read_callable: marshall_read_u8");    
+    assert(! "marshall_read_callable: marshall_read_u8");
     return NULL;
   }
   tmp.type = type;
@@ -186,14 +188,14 @@ s_marshall_read * marshall_read_callable (s_marshall_read *mr,
   case CALLABLE_CFN:
     if (! marshall_read_cfn(mr, heap, &tmp.data.cfn)) {
       err_puts("marshall_read_callable: marshall_read_cfn");
-      assert(! "marshall_read_callable: marshall_read_cfn");    
+      assert(! "marshall_read_callable: marshall_read_cfn");
       return NULL;
     }
     goto ok;
   case CALLABLE_FN:
     if (! marshall_read_fn(mr, heap, &tmp.data.fn)) {
       err_puts("marshall_read_callable: marshall_read_fn");
-      assert(! "marshall_read_callable: marshall_read_fn");    
+      assert(! "marshall_read_callable: marshall_read_fn");
       return NULL;
     }
     goto ok;
@@ -465,7 +467,7 @@ s_marshall_read * marshall_read_fact (s_marshall_read *mr,
 {
   s_fact tmp = {0};
   assert(mr);
-  assert(mr);
+  assert(dest);
   if (! marshall_read_ptag(mr, heap, &tmp.subject))
     return NULL;
   if (! marshall_read_ptag(mr, heap, &tmp.predicate)) {
@@ -480,6 +482,55 @@ s_marshall_read * marshall_read_fact (s_marshall_read *mr,
   }
   *dest = tmp;
   return mr;
+}
+
+s_marshall_read * marshall_read_facts (s_marshall_read *mr,
+                                       bool heap, s_facts *facts)
+{
+  s_fact *fact;
+  s_facts tmp = {0};
+  s_facts_cursor cursor;
+  s_tag predicate;
+  s_tag object;
+  s_tag subject;
+  uw i = 0;
+  bool error = false;
+  assert(mr);
+  assert(facts);
+  if (! tag_init_pvar(&predicate, g_sym_Tag)                  ||
+      ! tag_init_pvar(&object, g_sym_Tag)                     ||
+      ! tag_init_pvar(&subject, g_sym_Tag))
+    return NULL;
+  #if HAVE_PTHREAD
+  rwlock_r(&facts->rwlock);
+  #endif
+  if (! facts_with_0(&tmp, &cursor, subject.data.pvar,
+                   predicate.data.pvar, object.data.pvar)     ||
+      ! marshall_read_uw(mr, heap, &tmp.facts.count)          ||
+      ! facts_cursor_next(&cursor, &fact)) {
+    error = true;
+    goto ko;
+  }
+  while (fact && i < tmp.facts.count) {
+    if (! marshall_read_fact(&mr, heap, fact)                 ||
+        ! facts_cursor_next(&cursor, &fact)) {
+      error = true;
+      goto ko;
+    }
+    i++;
+  }
+  return mr;
+  ko:
+    facts_cursor_clean(&cursor);
+    tag_clean(&predicate)
+    tag_clean(&object);
+    tag_clean(&subject);
+    if (!error)
+      *dest = tmp;
+    #if HAVE_PTHREAD
+    rwlock_unlock_r(&facts->rwlock);
+  #endif
+    return error ? NULL : mr;
 }
 
 s_marshall_read * marshall_read_fn (s_marshall_read *mr, bool heap,
