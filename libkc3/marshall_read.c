@@ -519,7 +519,6 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
     }
     i++;
   }
-  return mr;
   ko:
     facts_cursor_clean(&cursor);
     tag_clean(&predicate)
