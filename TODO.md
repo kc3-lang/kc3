@@ -54,7 +54,7 @@
  - [lyzer] `s_marshall_read * marshall_read_facts (s_marshall_read *mr, const s_env *env);`
  - [ ] `s_marshall * marshall_env (s_marshall *m, const s_env *env);`
  - [lyzer] `s_marshall_read * marshall_read_env (s_marshall_read *mr, const s_env *env);`
- - [ ] `sw env_dump (const s_env *env, const char *path);`
- - [ ] `sw env_dump_load (s_env *env, const char *path);`
+ - [lpinf] `sw env_dump (const s_env *env, const char *path);`
+ - [lpinf] `sw env_dump_load (s_env *env, const char *path);`
  - [thodg] `env_init_args` → `--dump PATH`
  - [thodg] `env_init_args` → `--restore PATH`
