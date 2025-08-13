@@ -171,6 +171,12 @@ s_env * env_args_init (s_env *env, int *argc, char ***argv)
         (*argc)--;
         (*argv)++;
       }
+      if (*argc > 1 && (*argv)[0] && (*argv)[1] &&
+          ! strcmp((*argv)[0], "--restore")) {
+        env->restore_path = (*argv)[1];
+        (*argc) -= 2;
+        (*argv) += 2;
+      }
     }
     return env;
   }
@@ -573,6 +579,24 @@ const s_sym * env_defstruct (s_env *env, s_list *spec)
   }
   tag_clean(&tag_st);
   return env->current_defmodule;
+}
+
+sw env_dump (const s_env *env, const char *path)
+{
+  (void) env;
+  (void) path;
+  err_puts("env_dump: not supported");
+  assert(! "env_dump: not supported");
+  return -1;
+}
+
+sw env_dump_restore (const s_env *env, const char *path)
+{
+  (void) env;
+  (void) path;
+  err_puts("env_dump_restore: not supported");
+  assert(! "env_dump_restore: not supported");
+  return -1;
 }
 
 void env_error_f (s_env *env, const char *fmt, ...)
@@ -1462,14 +1486,22 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   env->search_modules_default = list_new_psym(&g_sym_KC3, NULL);
   env->search_modules = env->search_modules_default;
   env->ops = ops_new();
-  if (! env_module_load(env, &g_sym_KC3)) {
-    env_clean(env);
-    return NULL;
+  if (env->restore_path) {
+    if (env_dump_restore(env, env->restore_path) <= 0) {
+      env_clean(env);
+      return NULL;
+    }
   }
-  env->loaded = true;
-  if (! env_module_load(env, sym_1("Init"))) {
-    env_clean(env);
-    return NULL;
+  else {
+    if (! env_module_load(env, &g_sym_KC3)) {
+      env_clean(env);
+      return NULL;
+    }
+    env->loaded = true;
+    if (! env_module_load(env, sym_1("Init"))) {
+      env_clean(env);
+      return NULL;
+    }
   }
   if (! time_init_now(&env->boot_time)) {
     env_clean(env);

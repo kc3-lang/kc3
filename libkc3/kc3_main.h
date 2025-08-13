@@ -33,6 +33,7 @@ void    kc3_clean (s_env *env);
 
 /* Observers. */
 p_list * kc3_args (s_list **dest);
+sw       kc3_dump (const s_str *path);
 s_buf ** kc3_err_buf (s_buf **dest);
 s_tag *  kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr);
 s_tag *  kc3_fact_object (s_fact *fact, s_tag *dest);

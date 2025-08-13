@@ -338,6 +338,14 @@ void ** kc3_dlopen (const s_str *path, void **dest)
   return dest;
 }
 
+sw kc3_dump (const s_str *path)
+{
+  s_env *env;
+  assert(path);
+  env = env_global();
+  return env_dump(env, path->ptr.pchar);
+}
+
 s_facts ** kc3_env_db (s_facts **dest)
 {
   *dest = env_global()->facts;

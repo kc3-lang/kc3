@@ -264,6 +264,8 @@ def maybe_reload_directory = fn (dir) {
   end
 }
 
+def dump = cfn Sw "kc3_dump" (Str)
+
 require Bool
 require Call
 require Character
