@@ -1237,6 +1237,11 @@ DEF_MARSHALL_READ(s16, s16)
 DEF_MARSHALL_READ(s32, s32)
 DEF_MARSHALL_READ(s64, s64)
 
+sw marshall_read_size (const s_marshall_read *mr)
+{
+  return sizeof(s_marshall_header) + mr->heap_size + mr->buf_size;
+}
+
 s_marshall_read * marshall_read_str (s_marshall_read *mr,
                                      bool heap, s_str *dest)
 {

@@ -41,6 +41,9 @@ s_marshall_read * marshall_read_new_buf (s_buf *buf);
 s_marshall_read * marshall_read_new_file (const char *path);
 s_marshall_read * marshall_read_new_str (const s_str *src);
 
+/* Observers. */
+sw marshall_read_size (const s_marshall_read *mr);
+
 /* Operators. */
 PROTO_MARSHALL_READ(array,        s_array          );
 PROTO_MARSHALL_READ(bool,         bool             );
@@ -103,6 +106,5 @@ PROTO_MARSHALL_READ(u64,          u64              );
 PROTO_MARSHALL_READ(unquote,      s_unquote        );
 PROTO_MARSHALL_READ(uw,           uw               );
 PROTO_MARSHALL_READ(var,          s_var            );
-
 
 #endif /* LIBKC3_MARSHALL_READ_H */

@@ -356,7 +356,6 @@ s_facts * facts_init (s_facts *facts)
   return facts;
 }
 
-// TODO: if (binary) {
 sw facts_load (s_facts *facts, s_buf *buf, const s_str *path,
                bool binary)
 {
@@ -368,13 +367,13 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path,
   sw result = 0;
   assert(facts);
   assert(buf);
+  if (binary)
+    return facts_load_binary(facts, buf, path);
   if (env_global()->trace) {
     err_write_1("facts_load: ");
     err_inspect_str(path);
     err_write_1("\n");
   }
-  if (binary)
-    return -1;
   if ((r = buf_read_1(buf,
                       "%{module: KC3.Facts.Dump,\n"
                       "  version: 1}\n")) <= 0) {
@@ -481,6 +480,103 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path,
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
 #endif
+  return -1;
+}
+
+sw facts_load_binary (s_facts *facts, s_buf *buf, const s_str *path)
+{
+  u8 action;
+  s_env *env;
+  s_fact fact;
+  uw i;
+  s_marshall_read mr = {0};
+  sw result = -1;
+  assert(facts);
+  assert(buf);
+  env = env_global();
+  assert(env);
+  if (env->trace) {
+    err_write_1("facts_load: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+  }
+  if (! marshall_read_init_buf(&mr, buf)) {
+    err_puts("facts_load_binary: marshall_read_init_buf");
+    assert(! "facts_load_binary: marshall_read_init_buf");
+    goto ko;
+  }
+#if HAVE_PTHREAD
+  rwlock_w(&facts->rwlock);
+#endif
+  i = 0;
+  while (1) {
+    i++;
+    if (! marshall_read_u8(&mr, false, &action))
+      break;
+    if (! marshall_read_fact(&mr, false, &fact)) {
+      err_write_1("facts_load_binary: invalid fact #");
+      err_inspect_uw_decimal(i);
+      err_write_1(": ");
+      err_inspect_str(path);
+      err_write_1("\n");
+      err_inspect_buf(buf);
+      err_write_1("\n");
+      assert(! "facts_load_binary: invalid fact");
+      goto ko_unlock;
+    }
+    switch (action) {
+    case FACT_ACTION_REPLACE:
+      if (! facts_replace_fact(facts, &fact)) {
+	fact_clean_all(&fact);
+	err_write_1("facts_load_binary: failed to replace fact #");
+	err_inspect_uw_decimal(i);
+	err_write_1(": ");
+	err_inspect_str(path);
+        err_write_1("\n");
+	assert(! "facts_load_binary: failed to replace fact");
+	goto ko_unlock;
+      }
+      break;
+    case FACT_ACTION_ADD:
+      if (! facts_add_fact(facts, &fact)) {
+	fact_clean_all(&fact);
+	err_write_1("facts_load_binary: failed to add fact #");
+	err_inspect_sw_decimal(i);
+	err_write_1(": ");
+	err_inspect_str(path);
+        err_write_1("\n");
+	assert(! "facts_load_binary: failed to add fact");
+	goto ko_unlock;
+      }
+      break;
+    default:
+      err_puts("facts_load_binary: invalid fact action");
+      assert(! "facts_load_binary: invalid fact action");
+      goto ko_unlock;
+    }
+  }
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&facts->rwlock);
+#endif
+  result = marshall_read_size(&mr);
+  marshall_read_clean(&mr);
+  if (env->trace) {
+    err_write_1("facts_load: ");
+    err_inspect_str(path);
+    err_write_1(": OK\n");
+  }
+  return result;
+ ko_unlock:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&facts->rwlock);
+#endif
+ ko:
+  marshall_read_clean(&mr);
+  if (env->trace) {
+    err_write_1("facts_load: ");
+    err_inspect_str(path);
+    err_write_1(": ERROR\n");
+  }
   return -1;
 }
 
