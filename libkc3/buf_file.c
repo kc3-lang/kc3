@@ -105,7 +105,6 @@ sw buf_file_open_r_refill (s_buf *buf)
 s64 buf_file_open_r_seek (s_buf *buf, s64 offset, s8 from)
 {
   s_buf_file *buf_file;
-  sw r;
   s64 result;
   assert(buf);
   assert(! buf->save);
@@ -117,8 +116,7 @@ s64 buf_file_open_r_seek (s_buf *buf, s64 offset, s8 from)
   }
   buf->rpos = 0;
   buf->wpos = 0;
-  if ((r = buf_refill(buf, buf->size)) < 0)
-    return r;
+  buf_refill(buf, buf->size); // soft fail
   return result;
 }
 
