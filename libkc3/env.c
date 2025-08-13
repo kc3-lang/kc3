@@ -635,6 +635,7 @@ bool env_dump_restore_path (s_env *env)
       str_clean(&path);
       return true;
     }
+    str_clean(&path);
   }
   path = STR_1("kc3.dump");
   if (file_search(&path, &g_sym_r, &tmp))
