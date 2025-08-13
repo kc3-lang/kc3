@@ -220,6 +220,10 @@ distclean:
 	${MAKE} -C gtk4 distclean
 #	${MAKE} -C fs distclean
 
+dump: build
+	kc3s/kc3s --dump lib/kc3/0.1/kc3.dump --quit
+	kc3s/kc3s --load lib/kc3/0.1/httpd.kc3 --dump lib/kc3/0.1/httpd.dump --quit
+
 ekc3:
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
@@ -779,10 +783,6 @@ kubz_asan:
 kubz_debug:
 	${MAKE} debug
 	window/sdl2/kubz/.libs/kubz_debug
-
-lib_dumps: build
-	ikc3/ikc3 --dump lib/kc3/0.1/ikc3.dump --quit
-	ikc3/ikc3 --load lib/kc3/0.1/httpd.kc3 --dump lib/kc3/0.1/httpd.dump --quit
 
 lib_links:
 	${MAKE} lib_links_${ARCH}
@@ -1347,8 +1347,7 @@ uninstall:
 	asan \
 	assets \
 	build \
-	kc3.index \
-	kc3s \
+	dump \
 	cov \
 	clean \
 	clean_cov \
@@ -1430,6 +1429,8 @@ uninstall:
 	json_asan \
 	json_cov \
 	json_debug \
+	kc3.index \
+	kc3s \
 	kmsg \
 	lib_links \
 	lib_links_asan \
