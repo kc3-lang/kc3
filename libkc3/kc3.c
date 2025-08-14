@@ -10,7 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <dlfcn.h>
 #include <errno.h>
 #include <pthread.h>
 #include <signal.h>
@@ -322,20 +321,7 @@ void ** kc3_dlopen (const s_str *path, void **dest)
 {
   assert(path);
   assert(dest);
-  if (env_global()->trace) {
-    err_write_1("kc3_dlopen: ");
-    err_inspect_str(path);
-    err_write_1("\n");
-  }
-  *dest = dlopen(path->ptr.pchar, RTLD_LAZY | RTLD_GLOBAL);
-  if (! *dest) {
-    err_write_1("kc3_dlopen: ");
-    err_inspect_str(path);
-    err_write_1(": dlopen: ");
-    err_puts(dlerror());
-    assert(! "kc3_dlopen: dlopen failed");
-  }
-  return dest;
+  return env_dlopen(env_global(), path, dest);
 }
 
 sw kc3_dump (const s_str *path)

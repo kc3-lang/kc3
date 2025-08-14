@@ -24,6 +24,7 @@
 # endif
 #endif
 
+#include <dlfcn.h>
 #include <unistd.h>
 #include "alloc.h"
 #include "array.h"
@@ -588,6 +589,35 @@ const s_sym * env_defstruct (s_env *env, s_list *spec)
   }
   tag_clean(&tag_st);
   return env->current_defmodule;
+}
+
+void ** env_dlopen (s_env *env, const s_str *path, void **dest)
+{
+  s_list *list = NULL;
+  void *tmp = NULL;
+  assert(env);
+  assert(path);
+  assert(dest);
+  if (env->trace) {
+    err_write_1("kc3_dlopen: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+  }
+  if (! (tmp = dlopen(path->ptr.pchar, RTLD_LAZY | RTLD_GLOBAL))) {
+    err_write_1("kc3_dlopen: ");
+    err_inspect_str(path);
+    err_write_1(": dlopen: ");
+    err_puts(dlerror());
+    assert(! "kc3_dlopen: dlopen failed");
+    return NULL;
+  }
+  if (! (list = list_new_str_copy(path, env->dlopen_list))) {
+    dlclose(tmp);
+    return NULL;
+  }
+  env->dlopen_list = list;
+  *dest = tmp;
+  return dest;
 }
 
 sw env_dump (const s_env *env, const char *path)
@@ -1525,26 +1555,11 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     return NULL;
   }
   if (env->restore_path.size) {
-    if (env->trace) {
-      err_write_1("env_init: env_dump_restore: ");
-      err_inspect_str(&env->restore_path);
-      err_puts(":");
-    }
     if (env_dump_restore(env, env->restore_path.ptr.pchar) <= 0) {
-      if (env->trace) {
-        err_write_1("env_init: env_dump_restore: ");
-        err_inspect_str(&env->restore_path);
-        err_puts(": ERROR");
-      }
       env_clean(env);
       return NULL;
     }
     env->loaded = true;
-    if (env->trace) {
-      err_write_1("env_init: env_dump_restore: ");
-      err_inspect_str(&env->restore_path);
-      err_puts(": OK");
-    }
   }
   else {
     if (! env_module_load(env, &g_sym_KC3)) {

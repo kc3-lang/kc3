@@ -34,6 +34,7 @@ s_marshall * marshall_new (void);
 sw marshall_size (const s_marshall *m);
 
 /* Operators. */
+PROTO_MARSHALL(1, const char *);
 PROTO_MARSHALL(array, const s_array *);
 PROTO_MARSHALL(bool, bool);
 PROTO_MARSHALL(call, const s_call *);

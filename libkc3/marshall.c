@@ -44,7 +44,11 @@
     s_buf *buf;                                                       \
     type le;                                                          \
     sw r;                                                             \
-    assert(m);                                                        \
+    if (! m) {                                                        \
+      err_puts("marshall_" # type ": invalid argument");              \
+      assert(! "marshall_" # type ": invalid argument");              \
+      return NULL;                                                    \
+    }                                                                 \
     le = _Generic(src,                                                \
                   s16:     htole16(src),                              \
                   u16:     htole16(src),                              \
@@ -54,6 +58,12 @@
                   u64:     htole64(src),                              \
                   default: src);                                      \
     buf = heap ? &m->heap : &m->buf;                                  \
+    if ((r = buf_write_1(buf, "_KC3" # type "_")) <= 0)               \
+      return NULL;                                                    \
+    if (heap)                                                         \
+      m->heap_pos += r;                                               \
+    else                                                              \
+      m->buf_pos += r;                                                \
     if ((r = buf_write_ ## type(buf, le)) <= 0)                       \
       return NULL;                                                    \
     if (heap)                                                         \
@@ -74,12 +84,17 @@
       assert(! "marshall_p" # name ": invalid argument");             \
       return NULL;                                                    \
     }                                                                 \
-    if (! marshall_heap_pointer(m, heap, *data, &present)) {           \
+    if (! marshall_1(m, heap, "_KC3P" # name "_")) {                  \
+      err_puts("marshall_p" # name ": marshall_1 magic");             \
+      assert(! "marshall_p" # name ": marshall_1 magic");             \
+      return NULL;                                                    \
+    }                                                                 \
+    if (! marshall_heap_pointer(m, heap, *data, &present)) {          \
       err_puts("marshall_p" # name ": marshall_heap_pointer");        \
       assert(! "marshall_p" # name ": marshall_heap_pointer");        \
       return NULL;                                                    \
     }                                                                 \
-    if (! present && *data &&                                          \
+    if (! present && *data &&                                         \
         ! marshall_ ## name(m, true, *data)) {                        \
       err_puts("marshall_p" # name ": marshall_" # name);             \
       assert(! "marshall_p" # name ": marshall_" # name);             \
@@ -87,6 +102,29 @@
     }                                                                 \
     return m;                                                         \
   }
+
+s_marshall * marshall_1 (s_marshall *m, bool heap,
+                         const char *p)
+{
+  s_buf *buf = NULL;
+  sw r;
+  if (! m || ! p || ! p[0]) {
+    err_puts("marshall_1: invalid argument");
+    assert(! "marshall_1: invalid argument");
+    return NULL;
+  }
+  buf = heap ? &m->heap : &m->buf;
+  if ((r = buf_write_1(buf, p)) <= 0) {
+    err_puts("marshall_1: buf_write_1");
+    assert(! "marshall_1: buf_write_1");
+    return NULL;
+  }
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
+  return m;
+}
 
 s_marshall * marshall_array (s_marshall *m, bool heap,
                              const s_array *array)
@@ -623,6 +661,16 @@ s_marshall * marshall_env (s_marshall *m, bool heap, const s_env *env)
     assert(! "marshall_env: invalid argument");
     return NULL;
   }
+  if (! marshall_1(m, heap, "_KC3ENV_")) {
+    err_puts("marshall_env: marshall_1 magic");
+    assert(! "marshall_env: marshall_1 magic");
+    return NULL;
+  }
+  if (! marshall_plist(m, heap, &env->dlopen_list)) {
+    err_puts("marshall_env: marshall_plist dlopen_plist");
+    assert(! "marshall_env: marshall_plist dlopen_plist");
+    return NULL;
+  }
   if (! marshall_facts(m, heap, env->facts)) {
     err_puts("marshall_env: marshall_facts");
     assert(! "marshall_env: marshall_facts");
@@ -666,6 +714,7 @@ s_marshall * marshall_fact (s_marshall *m, bool heap,
 {
   assert(m);
   if (! m ||
+      ! marshall_1(m, heap, "_KC3FACT_") ||
       ! marshall_ptag(m, heap, &fact->subject) ||
       ! marshall_ptag(m, heap, &fact->predicate) ||
       ! marshall_ptag(m, heap, &fact->object) ||
@@ -679,14 +728,19 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
   s_facts_cursor cursor;
   s_fact *fact;
   uw i;
-  s_tag predicate;
   s_tag object;
+  s_tag predicate;
   s_tag subject;
   assert(m);
   assert(facts);
 #if HAVE_PTHREAD
   rwlock_r(&facts->rwlock);
 #endif
+  if (! marshall_1(m, heap, "_KC3FACTS_")) {
+    err_puts("marshall_facts: marshall_1");
+    assert(! "marshall_facts: marshall_1");
+    return NULL;
+  }
   if (! marshall_uw(m, heap, facts->facts.count)) {
     err_puts("marshall_facts: marshall_uw");
     assert(! "marshall_facts: marshall_uw");
@@ -718,12 +772,31 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
         assert(! "marshall_facts: invalid facts count");
         goto ko;
       }
+      if (false) {
+        err_write_1("marshall_facts: #");
+        err_inspect_uw_decimal(fact->id);
+        err_write_1("\n");
+      }
       if (! marshall_fact(m, heap, fact)) {
         err_puts("marshall_facts: marshall_fact");
         assert(! "marshall_facts: marshall_fact");
         goto ko;
       }
       i++;
+    }
+    if (! facts_cursor_next(&cursor, &fact)) {
+      err_puts("marshall_facts: facts_cursor_next");
+      assert(! "marshall_facts: facts_cursor_next");
+      goto ko;
+    }
+    if (fact) {
+      err_write_1("marshall_facts: invalid facts count (i = ");
+      err_inspect_uw_decimal(i);
+      err_write_1(", count = ");
+      err_inspect_uw_decimal(facts->facts.count);
+      err_puts(")");
+      assert(! "marshall_facts: invalid facts count");
+      goto ko;
     }
     tag_clean(&subject);
     tag_clean(&predicate);
@@ -940,7 +1013,8 @@ s_marshall * marshall_op (s_marshall *m, bool heap,
 {
   assert(m);
   assert(op);
-  if (! marshall_psym(m, heap, &op->sym) ||
+  if (! marshall_1(m, heap, "_KC3OP_") ||
+      ! marshall_psym(m, heap, &op->sym) ||
       ! marshall_u8(m, heap, op->arity) ||
       ! marshall_bool(m, heap, op->special) ||
       ! marshall_u8(m, heap, op->precedence) ||
@@ -962,6 +1036,11 @@ s_marshall * marshall_ops (s_marshall *m, bool heap, s_ops *ops)
   if (! m || ! ops) {
     err_puts("marshall_ops: invalid argument");
     assert(! "marshall_ops: invalid argument");
+    return NULL;
+  }
+  if (! marshall_1(m, heap, "_KC3OPS_")) {
+    err_puts("marshall_ops: marshall_1 magic");
+    assert(! "marshall_ops: marshall_1 magic");
     return NULL;
   }
 #if HAVE_PTHREAD
@@ -1090,6 +1169,11 @@ s_marshall * marshall_str (s_marshall *m, bool heap, const s_str *src)
     assert(! "marshall_str: invalid argument");
     return NULL;
   }
+  if (! marshall_1(m, heap, "_KC3STR_")) {
+    err_puts("marshall_str: marshall_1 magic");
+    assert(! "marshall_str: marshall_1 magic");
+    return NULL;
+  }
   if (! marshall_u32(m, heap, src->size)) {
     err_puts("marshall_str: marshall_u32");
     assert(! "marshall_str: marshall_u32");
@@ -1119,6 +1203,11 @@ s_marshall * marshall_struct (s_marshall *m, bool heap,
   if (! m || ! s) {
     err_puts("marshall_struct: invalid argument");
     assert(! "marshall_struct: invalid argument");
+    return NULL;
+  }
+  if (! marshall_1(m, heap, "_KC3STRUCT_")) {
+    err_puts("marshall_struct: marshall_1 magic");
+    assert(! "marshall_struct: marshall_1 magic");
     return NULL;
   }
   if (! marshall_pstruct_type(m, heap, &s->pstruct_type)) {
@@ -1177,8 +1266,14 @@ s_marshall * marshall_struct_type (s_marshall *m, bool heap,
   assert(st);
   assert(st->module);
   assert(st->offset);
-  if (! m || ! st || ! st->module || ! st->offset ||
-      ! marshall_psym(m, heap, &st->module) ||
+  if (! m || ! st || ! st->module || ! st->offset)
+    return NULL;
+  if (! marshall_1(m, heap, "_KC3STRUCTTYPE_")) {
+    err_puts("marshall_struct_type: marshall_1 magic");
+    assert(! "marshall_struct_type: marshall_1 magic");
+    return NULL;
+  }
+  if (! marshall_psym(m, heap, &st->module) ||
       ! marshall_map(m, heap, &st->map))
     return NULL;
   i = 0;
@@ -1202,6 +1297,11 @@ s_marshall * marshall_sym (s_marshall *m, bool heap,
     assert(! "marshall_sym: invalid argument");
     return NULL;
   }
+  if (! marshall_1(m, heap, "_KC3SYM_")) {
+    err_puts("marshall_sym: marshall_1 magic");
+    assert(! "marshall_sym: marshall_1 magic");
+    return NULL;
+  }
   if (! marshall_str(m, heap, &sym->str)) {
     err_puts("marshall_sym: marshall_str");
     assert(! "marshall_sym: marshall_str");
@@ -1210,7 +1310,14 @@ s_marshall * marshall_sym (s_marshall *m, bool heap,
   return m;
 }
 
-DEF_MARSHALL(sw)
+s_marshall * marshall_sw (s_marshall *m, bool heap, sw src)
+{
+  if (! marshall_1(m, heap, "_KC3SW_"))
+    return NULL;
+  if (! marshall_s64(m, heap, src))
+    return NULL;
+  return m;
+}
 
 s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
 {
@@ -1218,7 +1325,16 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   assert(m);
   assert(tag);
   type = tag->type;
-  marshall_u8(m, heap, type);
+  if (! marshall_1(m, heap, "_KC3TAG_")) {
+    err_puts("marshall_tag: marshall_1 magic");
+    assert(! "marshall_tag: marshall_1 magic");
+    return NULL;
+  }
+  if (! marshall_u8(m, heap, type)) {
+    err_puts("marshall_tag: marshall_u8");
+    assert(! "marshall_tag: marshall_u8");
+    return NULL;
+  }
   switch (tag->type) {
   case TAG_VOID: return m;
   case TAG_ARRAY: return marshall_array(m, heap, &tag->data.array);
@@ -1240,7 +1356,7 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
     return marshall_pcallable(m, heap, &tag->data.pcallable);
   case TAG_PCOMPLEX:
     return marshall_pcomplex(m, heap, &tag->data.pcomplex);
-  case TAG_PCOW:  return marshall_pcow(m, heap, &tag->data.pcow); 
+  case TAG_PCOW:  return marshall_pcow(m, heap, &tag->data.pcow);
   case TAG_PLIST: return marshall_plist(m, heap, &tag->data.plist);
   case TAG_PSTRUCT:
     return marshall_pstruct(m, heap, &tag->data.pstruct);
@@ -1382,6 +1498,15 @@ DEF_MARSHALL(u16)
 DEF_MARSHALL(u32)
 DEF_MARSHALL(u64)
 
+s_marshall * marshall_uw (s_marshall *m, bool heap, uw src)
+{
+  if (! marshall_1(m, heap, "_KC3UW_"))
+    return NULL;
+  if (! marshall_u64(m, heap, src))
+    return NULL;
+  return m;
+}
+
 s_marshall *marshall_unquote(s_marshall *m, bool heap,
                              const s_unquote *unquote)
 {
@@ -1393,7 +1518,6 @@ s_marshall *marshall_unquote(s_marshall *m, bool heap,
   return m;
 }
 
-DEF_MARSHALL(uw)
 
 s_marshall * marshall_var (s_marshall *m, bool heap, const s_var *var)
 {
@@ -1401,7 +1525,7 @@ s_marshall * marshall_var (s_marshall *m, bool heap, const s_var *var)
   assert(var);
   if (! m || ! var ||
       ! marshall_ident(m, heap, &var->name) ||
-      ! marshall_psym(m, heap, &var->type) || 
+      ! marshall_psym(m, heap, &var->type) ||
       ! marshall_bool(m, heap, var->bound) ||
       (var->bound &&
        ! marshall_tag(m, heap, &var->tag)))
@@ -1426,4 +1550,3 @@ s_marshall * marshall_void (s_marshall *m, bool heap)
   }
 
 DEF_MARSHALL_STUB(cow, const s_cow *)
-

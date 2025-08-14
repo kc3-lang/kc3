@@ -226,12 +226,12 @@ clean_dump:
 dump: build
 	${MAKE} clean_dump
 	kc3s/kc3s --trace --dump lib/kc3/0.1/kc3.dump --quit
-#	${MAKE} -C test/httpd dump
+	${MAKE} -C test/httpd dump
 
 dump_debug: debug
 	${MAKE} clean_dump
 	kc3s/kc3s_debug --trace --dump lib/kc3/0.1/kc3.dump --quit
-#	${MAKE} -C test/httpd dump_debug
+	${MAKE} -C test/httpd dump_debug
 
 ekc3:
 	${MAKE} -C libtommath build
@@ -1360,6 +1360,7 @@ uninstall:
 	cov \
 	clean \
 	clean_cov \
+	clean_dump \
 	debug \
 	demo \
 	demo_asan \

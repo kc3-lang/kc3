@@ -63,8 +63,10 @@ const s_sym *  env_def_clean (s_env *env, const s_sym *module,
 s_tag *        env_defmodule (s_env *env, const s_sym * const *name,
                               const s_do_block *do_block, s_tag *dest);
 bool           env_defoperator (s_env *env, s_tag *tag_op);
-s_tag *        env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest);
+s_tag *        env_defspecial_operator (s_env *env, s_tag *tag,
+                                        s_tag *dest);
 const s_sym *  env_defstruct (s_env *env, s_list *spec);
+void **        env_dlopen (s_env *env, const s_str *path, void **dest);
 void           env_error_handler_pop (s_env *env,
                                       s_error_handler *eh);
 void           env_error_handler_push (s_env *env,

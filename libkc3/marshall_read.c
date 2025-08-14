@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <dlfcn.h>
 
 #include "alloc.h"
 #include "array.h"
@@ -29,6 +30,7 @@
 #include "frame.h"
 #include "hash.h"
 #include "ht.h"
+#include "kc3_main.h"
 #include "list.h"
 #include "map.h"
 #include "marshall.h"
@@ -36,6 +38,7 @@
 #include "mutex.h"
 #include "ops.h"
 #include "pcallable.h"
+#include "plist.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "psym.h"
@@ -53,13 +56,18 @@
                                             bool heap,                 \
                                             type *dest)                \
   {                                                                    \
-    s_buf *buf = {0};                                                  \
+    s_buf *buf = NULL;                                                 \
     assert(mr);                                                        \
     assert(dest);                                                      \
     buf = heap ? &mr->heap : &mr->buf;                                 \
+    if (buf_read_1(buf, "_KC3" # name "_") <= 0) {                          \
+      err_puts("marshall_read_"#name": buf_read_1 magic");             \
+      assert(! "marshall_read_"#name": buf_read_1 magic");             \
+      return NULL;                                                     \
+    }                                                                  \
     if (buf_read_ ## name (buf, dest) <= 0) {                          \
-      err_puts("marshall_read_" # name ": buf_read_" # name);          \
-      assert(! "marshall_read_" # name ": buf_read_" # name);          \
+      err_puts("marshall_read_"#name": buf_read_"#name);               \
+      assert(! "marshall_read_"#name": buf_read_"#name);               \
       return NULL;                                                     \
     }                                                                  \
     return mr;                                                         \
@@ -68,7 +76,23 @@
 static s8 marshall_read_ht_compare (const s_tag *a, const s_tag *b);
 static uw marshall_read_ht_hash (const s_tag *tag);
 
-DEF_MARSHALL_READ(bool, bool)
+s_marshall_read * marshall_read_1 (s_marshall_read *mr, bool heap,
+                                   const char *p)
+{
+  s_buf *buf = NULL;
+  if (! mr || ! p || ! p[0]) {
+    err_puts("marshall_read_1: invalid argument");
+    assert(! "marshall_read_1: invalid argument");
+    return NULL;
+  }
+  buf = heap ? &mr->heap : &mr->buf;
+  if (buf_read_1(buf, p) <= 0) {
+    err_puts("marshall_read_1: buf_read_1");
+    assert(! "marshall_read_1: buf_read_1");
+    return NULL;
+  }
+  return mr;
+}
 
 s_marshall_read * marshall_read_array (s_marshall_read *mr,
                                        bool heap,
@@ -142,6 +166,8 @@ s_marshall_read * marshall_read_array_data (s_marshall_read *mr,
   }
   return mr;
 }
+
+DEF_MARSHALL_READ(bool, bool)
 
 s_marshall_read * marshall_read_call (s_marshall_read *mr,
                                       bool heap,
@@ -470,11 +496,37 @@ s_marshall_read * marshall_read_do_block (s_marshall_read *mr,
 s_marshall_read * marshall_read_env (s_marshall_read *mr,
                                      bool heap, s_env *env)
 {
-  (void) heap;
+  void   *dl;
+  s_list *dlopen_list_reverse = NULL;
+  s_list *dlopen_list = NULL;
   if (! mr || ! env) {
     err_puts("marshall_read_env: invalid argument");
     assert(! "marshall_read_env: invalid argument");
     return NULL;
+  }
+  if (! marshall_read_1(mr, heap, "_KC3ENV_")) {
+    err_puts("marshall_read_env: marshall_read_1 magic");
+    assert(! "marshall_read_env: marshall_read_1 magic");
+    return NULL;
+  }
+  if (! marshall_read_plist(mr, heap, &dlopen_list_reverse)) {
+    err_puts("marshall_read_env: marshall_read_plist dlopen_list");
+    assert(! "marshall_read_env: marshall_read_plist dlopen_list");
+    return NULL;
+  }
+  if (! plist_reverse(&dlopen_list_reverse, &dlopen_list)) {
+    err_puts("marshall_read_env: plist dlopen_list");
+    assert(! "marshall_read_env: plist dlopen_list");
+    return NULL;
+  }
+  list_delete_all(dlopen_list_reverse);
+  while (dlopen_list) {
+    if (! kc3_dlopen(&dlopen_list->tag.data.str, &dl)) {
+      err_puts("marshall_read_env: dlopen_list has a non-Str");
+      assert(! "marshall_read_env: dlopen_list has a non-Str");
+      return NULL;
+    }
+    dlopen_list = list_delete(dlopen_list);
   }
   if (! env->facts &&
       ! (env->facts = facts_new())) {
@@ -548,18 +600,32 @@ s_marshall_read * marshall_read_fact (s_marshall_read *mr,
   s_fact tmp = {0};
   assert(mr);
   assert(dest);
-  if (! marshall_read_ptag(mr, heap, &tmp.subject))
+  if (! marshall_read_1(mr, heap, "_KC3FACT_")) {
+    err_puts("marshall_read_fact: marshall_read_1 magic");
+    assert(! "marshall_read_fact: marshall_read_1 magic");
     return NULL;
+  }
+  if (! marshall_read_ptag(mr, heap, &tmp.subject)) {
+    err_puts("marshall_read_fact: marshall_read_ptag subject");
+    assert(! "marshall_read_fact: marshall_read_ptag subject");
+    return NULL;
+  }
   if (! marshall_read_ptag(mr, heap, &tmp.predicate)) {
+    err_puts("marshall_read_fact: marshall_read_ptag predicate");
+    assert(! "marshall_read_fact: marshall_read_ptag predicate");
     tag_clean(tmp.subject);
     return NULL;
   }
   if (! marshall_read_ptag(mr, heap, &tmp.object)) {
+    err_puts("marshall_read_fact: marshall_read_ptag object");
+    assert(! "marshall_read_fact: marshall_read_ptag object");
     tag_clean(tmp.subject);
     tag_clean(tmp.predicate);
     return NULL;
   }
   if (! marshall_read_uw(mr, heap, &tmp.id)) {
+    err_puts("marshall_read_fact: marshall_read_uw id");
+    assert(! "marshall_read_fact: marshall_read_uw id");
     tag_clean(tmp.subject);
     tag_clean(tmp.predicate);
     tag_clean(tmp.object);
@@ -577,12 +643,23 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
   uw i;
   if (! mr || ! facts)
     return NULL;
-  if (! marshall_read_uw(mr, heap, &count))
+  if (! marshall_read_1(mr, heap, "_KC3FACTS_")) {
+    err_puts("marshall_read_facts: marshall_read_1 magic");
+    assert(! "marshall_read_facts: marshall_read_1 magic");
     return NULL;
+  }
+  if (! marshall_read_uw(mr, heap, &count)) {
+    err_puts("marshall_read_facts: marshall_read_uw count");
+    assert(! "marshall_read_facts: marshall_read_uw count");
+    return NULL;
+  }
   i = 0;
   while (i < count) {
-    if (! marshall_read_fact(mr, heap, &fact))
+    if (! marshall_read_fact(mr, heap, &fact)) {
+      err_puts("marshall_read_facts: marshall_read_fact");
+      assert(! "marshall_read_facts: marshall_read_fact");
       return NULL;
+    }
     if (! facts_add_fact(facts, &fact)) {
       fact_clean_all(&fact);
       return NULL;
@@ -992,7 +1069,8 @@ s_marshall_read * marshall_read_op (s_marshall_read *mr,
     assert(! "marshall_read_op: invalid argument");
     return NULL;
   }
-  if (! marshall_read_psym(mr, heap, &op->sym) ||
+  if (! marshall_read_1(mr, heap, "_KC3OP_") ||
+      ! marshall_read_psym(mr, heap, &op->sym) ||
       ! marshall_read_u8(mr, heap, &op->arity) ||
       ! marshall_read_bool(mr, heap, &op->special) ||
       ! marshall_read_u8(mr, heap, &op->precedence) ||
@@ -1011,6 +1089,11 @@ s_marshall_read * marshall_read_ops (s_marshall_read *mr,
   uw count = 0;
   uw i;
   s_op op = {0};
+  if (! marshall_read_1(mr, heap, "_KC3OPS_")) {
+    err_puts("marshall_read_ops: marshall_read_1 magic");
+    assert(! "marshall_read_ops: marshall_read_1 magic");
+    return NULL;
+  }
   if (! marshall_read_uw(mr, heap, &count))
     return NULL;
   if (! count)
@@ -1037,11 +1120,17 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
                                            p_callable *dest)
 {
   u64 offset = 0;
-  void *present = NULL;
+  p_callable present = NULL;
   p_callable tmp = NULL;
   assert(mr);
   assert(dest);
-  if (! marshall_read_heap_pointer(mr, heap, &offset, &present)) {
+  if (! marshall_read_1(mr, heap, "_KC3Pcallable_")) {
+    err_puts("marshall_read_pcallable: marshall_read_1 magic");
+    assert(! "marshall_read_pcallable: marshall_read_1 magic");
+    return NULL;
+  }
+  if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                   (void **) &present)) {
     err_puts("marshall_read_pcallable: marshall_read_heap_pointer");
     assert(! "marshall_read_pcallable: marshall_read_heap_pointer");
     return NULL;
@@ -1051,7 +1140,7 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
     return mr;
   }
   if (present) {
-    if (! pcallable_init_copy(dest, (p_callable *) &present)) {
+    if (! pcallable_init_copy(dest, &present)) {
       err_puts("marshall_read_pcallable: pcallable_init_copy");
       assert(! "marshall_read_pcallable: pcallable_init_copy");
       return NULL;
@@ -1076,7 +1165,7 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
   }
   if (! marshall_read_ht_add(mr, offset, tmp)) {
     err_puts("marshall_read_pcallable: marshall_read_ht_add");
-    assert(! "marshall_read_pcallable: marshall_read_ht_add");    
+    assert(! "marshall_read_pcallable: marshall_read_ht_add");
     callable_delete(tmp);
     return NULL;
   }
@@ -1093,6 +1182,11 @@ s_marshall_read * marshall_read_pcomplex (s_marshall_read *mr,
   p_complex tmp = NULL;
   assert(mr);
   assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3Pcomplex_")) {
+    err_puts("marshall_read_pcomplex: marshall_read_1 magic");
+    assert(! "marshall_read_pcomplex: marshall_read_1 magic");
+    return NULL;
+  }
   if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
     return NULL;
   if (! offset) {
@@ -1135,6 +1229,11 @@ s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
   p_frame tmp = NULL;
   assert(mr);
   assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3Pframe_")) {
+    err_puts("marshall_read_pframe: marshall_read_1 magic");
+    assert(! "marshall_read_pframe: marshall_read_1 magic");
+    return NULL;
+  }
   if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
     return NULL;
   if (! offset) {
@@ -1166,6 +1265,12 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
   p_list tmp = NULL;
   assert(mr);
   assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3Plist_")) {
+    err_puts("marshall_read_plist: marshall_read_1 magicb");
+    err_inspect_buf(heap ? &mr->heap : &mr->buf);
+    assert(! "marshall_read_plist: marshall_read_1 magic");
+    return NULL;
+  }
   if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
     return NULL;
   if (! offset) {
@@ -1200,6 +1305,11 @@ s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,
   p_struct tmp = NULL;
   assert(mr);
   assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3Pstruct_")) {
+    err_puts("marshall_read_pstruct: marshall_read_1 magic");
+    assert(! "marshall_read_pstruct: marshall_read_1 magic");
+    return NULL;
+  }
   if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
     return NULL;
   if (! offset) {
@@ -1235,6 +1345,11 @@ s_marshall_read * marshall_read_pstruct_type (s_marshall_read *mr,
   p_struct_type tmp = NULL;
   assert(mr);
   assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3Pstruct_type_")) {
+    err_puts("marshall_read_pstruct_type: marshall_read_1 magic");
+    assert(! "marshall_read_pstruct_type: marshall_read_1 magic");
+    return NULL;
+  }
   if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
     return NULL;
   if (! offset) {
@@ -1269,6 +1384,11 @@ s_marshall_read * marshall_read_psym (s_marshall_read *mr,
   p_sym tmp = NULL;
   assert(mr);
   assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3Psym_")) {
+    err_puts("marshall_read_psym: marshall_read_1 magic");
+    assert(! "marshall_read_psym: marshall_read_1 magic");
+    return NULL;
+  }
   if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
     return NULL;
   if (present || ! offset) {
@@ -1283,25 +1403,37 @@ s_marshall_read * marshall_read_psym (s_marshall_read *mr,
   return mr;
 }
 
-s_marshall_read * marshall_read_ptag  (s_marshall_read *mr,
-                                       bool heap,
-                                       p_tag *dest)
+s_marshall_read * marshall_read_ptag (s_marshall_read *mr,
+                                      bool heap,
+                                      p_tag *dest)
 {
   u64 offset = 0;
-  void *present = NULL;
+  p_tag present = NULL;
   p_tag tmp = NULL;
   assert(mr);
   assert(dest);
-  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+  if (! marshall_read_1(mr, heap, "_KC3Ptag_")) {
+    err_puts("marshall_read_ptag: marshall_read_1 magic");
+    assert(! "marshall_read_ptag: marshall_read_1 magic");
+    return NULL;
+  }
+  if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                   (void **) &present))
     return NULL;
   if (present || ! offset) {
     *dest = present;
     return mr;
   }
-  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
-      ! (tmp = alloc(sizeof(s_tag))))
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
+    err_puts("marshall_read_ptag: buf_seek");
+    assert(! "marshall_read_ptag: buf_seek");
+    return NULL;
+  }
+  if (! (tmp = alloc(sizeof(s_tag))))
     return NULL;
   if (! marshall_read_tag(mr, true, tmp)) {
+    err_puts("marshall_read_ptag: marshall_read_tag");
+    assert(! "marshall_read_ptag: marshall_read_tag");
     free(tmp);
     return NULL;
   }
@@ -1419,6 +1551,12 @@ s_marshall_read * marshall_read_str (s_marshall_read *mr,
   u32 size = 0;
   assert(mr);
   assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3STR_")) {
+    err_puts("marshall_read_str: marshall_read_1 magic");
+    err_inspect_buf(heap ? &mr->heap : &mr->buf);
+    assert(! "marshall_read_str: marshall_read_1 magic");
+    return NULL;
+  }
   buf = heap ? &mr->heap : &mr->buf;
   if (! marshall_read_u32(mr, heap, &size))
     return NULL;
@@ -1439,6 +1577,11 @@ s_marshall_read * marshall_read_struct (s_marshall_read *mr,
   p_sym type = NULL;
   assert(mr);
   assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3STRUCT_")) {
+    err_puts("marshall_read_struct: marshall_read_1 magic");
+    assert(! "marshall_read_struct: marshall_read_1 magic");
+    return NULL;
+  }
   if (! marshall_read_pstruct_type(mr, heap, &tmp.pstruct_type))
     return NULL;
   if (! marshall_read_bool(mr, heap, &has_tags))
@@ -1490,6 +1633,11 @@ s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
   s_struct_type tmp = {0};
   assert(mr);
   assert(mr);
+  if (! marshall_read_1(mr, heap, "_KC3STRUCTTYPE_")) {
+    err_puts("marshall_read_str: marshall_read_1 magic");
+    assert(! "marshall_read_str: marshall_read_1 magic");
+    return NULL;
+  }
   if (! marshall_read_psym(mr, heap, &tmp.module) ||
       ! marshall_read_map(mr, heap, &tmp.map) ||
       ! (tmp.offset = alloc(tmp.map.count * sizeof(uw))))
@@ -1510,7 +1658,29 @@ s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
   return mr;
 }
 
-DEF_MARSHALL_READ(sw, sw)
+s_marshall_read * marshall_read_sw (s_marshall_read *mr,
+                                    bool heap,
+                                    sw *dest)
+{
+  s64 s;
+  if (! marshall_read_1(mr, heap, "_KC3SW_")) {
+    err_puts("marshall_read_sw: marshall_read_1 magic");
+    assert(! "marshall_read_sw: marshall_read_1 magic");
+    return NULL;
+  }
+  if (! marshall_read_s64(mr, heap, &s)) {
+    err_puts("marshall_read_sw: marshall_read_s64");
+    assert(! "marshall_read_sw: marshall_read_s64");
+    return NULL;
+  }
+  if (s < SW_MIN || s > SW_MAX) {
+    err_puts("marshall_read_sw: value out of range");
+    assert(! "marshall_read_sw: value out of range");
+    return NULL;
+  }
+  *dest = s;
+  return mr;
+}
 
 s_marshall_read * marshall_read_sym (s_marshall_read *mr,
                                      bool heap, p_sym *dest)
@@ -1518,6 +1688,11 @@ s_marshall_read * marshall_read_sym (s_marshall_read *mr,
   s_str tmp = {0};
   assert(mr);
   assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3SYM_")) {
+    err_puts("marshall_read_sym: marshall_read_1 magic");
+    assert(! "marshall_read_sym: marshall_read_1 magic");
+    return NULL;
+  }
   if (! marshall_read_str(mr, heap, &tmp))
     return NULL;
   if (! (*dest = str_to_sym(&tmp))) {
@@ -1534,7 +1709,16 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
   u8 type = 0;
   assert(mr);
   assert(dest);
-  marshall_read_u8(mr, heap, &type);
+  if (! marshall_read_1(mr, heap, "_KC3TAG_")) {
+    err_puts("marshall_read_tag: marshall_read_1 magic");
+    assert(! "marshall_read_tag: marshall_read_1 magic");
+    return NULL;
+  }
+  if (! marshall_read_u8(mr, heap, &type)) {
+    err_puts("marshall_read_tag: marshall_read_u8 type");
+    assert(! "marshall_read_tag: marshall_read_u8 type");
+    return NULL;
+  }
   dest->type = type;
   switch (dest->type) {
     case TAG_VOID:
@@ -1697,7 +1881,30 @@ DEF_MARSHALL_READ(u8,  u8)
 DEF_MARSHALL_READ(u16, u16)
 DEF_MARSHALL_READ(u32, u32)
 DEF_MARSHALL_READ(u64, u64)
-DEF_MARSHALL_READ(uw, uw)
+
+s_marshall_read * marshall_read_uw (s_marshall_read *mr,
+                                    bool heap,
+                                    uw *dest)
+{
+  u64 u;
+  if (! marshall_read_1(mr, heap, "_KC3UW_")) {
+    err_puts("marshall_read_uw: marshall_read_1 magic");
+    assert(! "marshall_read_uw: marshall_read_1 magic");
+    return NULL;
+  }
+  if (! marshall_read_u64(mr, heap, &u)) {
+    err_puts("marshall_read_uw: marshall_read_u64");
+    assert(! "marshall_read_uw: marshall_read_u64");
+    return NULL;
+  }
+  if (u > UW_MAX) {
+    err_puts("marshall_read_uw: value out of range");
+    assert(! "marshall_read_uw: value out of range");
+    return NULL;
+  }
+  *dest = u;
+  return mr;
+}
 
 s_marshall_read * marshall_read_var (s_marshall_read *mr,
                                      bool heap,
@@ -1733,4 +1940,3 @@ s_marshall_read * marshall_read_var (s_marshall_read *mr,
     assert(! "marshall_read_" # name ": not implemented");             \
     return NULL;                                                       \
   }
-

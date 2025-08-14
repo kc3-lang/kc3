@@ -864,7 +864,7 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
   }
   if (! struct_type_exists(sym, &b))
     return false;
-  if (b) {
+  if (b || true) { // Last chance, so suppose unknown type is a pointer.
     *dest = &ffi_type_pointer;
     return true;
   }

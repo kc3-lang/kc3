@@ -45,6 +45,8 @@ s_marshall_read * marshall_read_new_str (const s_str *src);
 sw marshall_read_size (const s_marshall_read *mr);
 
 /* Operators. */
+s_marshall_read * marshall_read_1 (s_marshall_read *mr, bool heap,
+                                   const char *p);
 PROTO_MARSHALL_READ(array,        s_array          );
 PROTO_MARSHALL_READ(bool,         bool             );
 PROTO_MARSHALL_READ(call,         s_call           );
