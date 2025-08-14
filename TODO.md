@@ -50,8 +50,10 @@
 
 ## Env init args --dump and --load-dump
 
- - [ ] `s_marshall * marshall_facts (s_marshall *m, const s_facts *x);`
- - [lyzer] `s_marshall_read * marshall_read_facts (s_marshall_read *mr, const s_env *env);`
+ - [ ] `s_marshall * marshall_ops (s_marshall *m, const s_ops *ops);`
+ - [ ] `s_marshall_read * marshall_read_ops (s_marshall *m, s_ops *ops);`
+ - [X] `s_marshall * marshall_facts (s_marshall *m, const s_facts *x);`
+ - [X] `s_marshall_read * marshall_read_facts (s_marshall_read *mr, const s_env *env);`
  - [ ] `s_marshall * marshall_env (s_marshall *m, const s_env *env);`
  - [lyzer] `s_marshall_read * marshall_read_env (s_marshall_read *mr, const s_env *env);`
  - [lpinf] `sw env_dump (const s_env *env, const char *path);`
