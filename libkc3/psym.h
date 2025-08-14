@@ -15,6 +15,8 @@
 
 #include "types.h"
 
+extern uw g_psym_anon_serial;
+
 /* Allocation functions. */
 p_sym * psym_init_1 (p_sym *sym, const char *p);
 p_sym * psym_init_anon (p_sym *sym, const s_str *prefix);

@@ -147,13 +147,8 @@ s_tag * ops_get_tag (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
   s_struct op_struct = {0};
   s_tag    op_tag = {0};
   assert(ops);
-  if (! env_global()->loaded)
+  if (! env_global()->loaded || ! sym || ! arity)
     return NULL;
-  if (! sym || ! arity) {
-    err_puts("ops_get_tag: invalid argument");
-    assert(! "ops_get_tag: invalid argument");
-    return NULL;
-  }
   op_tag.type = TAG_PSTRUCT;
   op_tag.data.pstruct = &op_struct;
   op_struct.data = &op;

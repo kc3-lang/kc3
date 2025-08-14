@@ -38,6 +38,7 @@
 #include "pcallable.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
+#include "psym.h"
 #include "rwlock.h"
 #include "str.h"
 #include "struct.h"
@@ -495,6 +496,11 @@ s_marshall_read * marshall_read_env (s_marshall_read *mr,
   if (! marshall_read_ops(mr, heap, env->ops)) {
     err_puts("marshall_read_env: marshall_read_ops");
     assert(! "marshall_read_env: marshall_read_ops");
+    return NULL;
+  }
+  if (! marshall_read_uw(mr, heap, &g_psym_anon_serial)) {
+    err_puts("marshall_read_env: marshall_read_uw anon Sym serial");
+    assert(! "marshall_read_env: marshall_read_uw anon Sym serial");
     return NULL;
   }
   return mr;

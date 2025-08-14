@@ -30,6 +30,7 @@
 #include "struct_type.h"
 #include "sym.h"
 #include "list.h"
+#include "psym.h"
 #include "rwlock.h"
 #include "str.h"
 #include "tag.h"
@@ -630,6 +631,11 @@ s_marshall * marshall_env (s_marshall *m, bool heap, const s_env *env)
   if (! marshall_ops(m, heap, env->ops)) {
     err_puts("marshall_env: marshall_ops");
     assert(! "marshall_env: marshall_ops");
+    return NULL;
+  }
+  if (! marshall_uw(m, heap, g_psym_anon_serial)) {
+    err_puts("marshall_env: marshall_uw anonymous Sym serial");
+    assert(! "marshall_env: marshall_uw anonymous Sym serial");
     return NULL;
   }
   return m;

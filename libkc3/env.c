@@ -1525,13 +1525,13 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     return NULL;
   }
   if (env->restore_path.size) {
-    if (env->trace || true) {
+    if (env->trace) {
       err_write_1("env_init: env_dump_restore: ");
       err_inspect_str(&env->restore_path);
       err_puts(":");
     }
     if (env_dump_restore(env, env->restore_path.ptr.pchar) <= 0) {
-      if (env->trace || true) {
+      if (env->trace) {
         err_write_1("env_init: env_dump_restore: ");
         err_inspect_str(&env->restore_path);
         err_puts(": ERROR");
@@ -1540,7 +1540,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
       return NULL;
     }
     env->loaded = true;
-    if (env->trace || true) {
+    if (env->trace) {
       err_write_1("env_init: env_dump_restore: ");
       err_inspect_str(&env->restore_path);
       err_puts(": OK");

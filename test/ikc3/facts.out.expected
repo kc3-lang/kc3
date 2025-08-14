@@ -3,7 +3,10 @@
       predicate: (Ptr) 0x0,
       object: (Ptr) 0x0,
       id: (Uw) 0}
-db = Facts.database() ; void
+do
+  db = Facts.database()
+  void
+end
 void
 Facts.add_tags(db, 1, 2, 3)
 true
@@ -28,7 +31,10 @@ Facts.with_tags(db, s = ?, p = ?, o = ?, fn (fact) { puts("#{s} #{p} #{o}") ; :o
 :ok
 Facts.delete(db)
 void
-db = Facts.database() ; void
+do
+  db = Facts.database()
+  void
+end
 void
 Facts.add_tags(db, (F128) 1.0, (F128) 2.0, (F128) 3.0)
 true

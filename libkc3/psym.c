@@ -18,6 +18,19 @@
 #include "sym.h"
 #include "tag_type.h"
 
+uw g_psym_anon_serial = 0;
+
+uw * psym_anon_serial (uw *dest)
+{
+  *dest = ++g_psym_anon_serial;
+  return dest;
+}
+
+void psym_anon_serial_set (uw x)
+{
+  g_psym_anon_serial = x;
+}
+
 p_sym * psym_init_1 (p_sym *sym, const char *p)
 {
   assert(sym);
@@ -29,8 +42,8 @@ p_sym * psym_init_1 (p_sym *sym, const char *p)
 p_sym * psym_init_anon (p_sym *sym, const s_str *prefix)
 {
   s_list *list;
-  static uw serial = 0;
-  s_str    *serial_str = NULL;
+  uw     serial;
+  s_str *serial_str = NULL;
   s_str str = {0};
   const s_sym *tmp = NULL;
   const s_str underscore = {{NULL}, 1, {"_"}};
@@ -42,7 +55,7 @@ p_sym * psym_init_anon (p_sym *sym, const s_str *prefix)
   list->tag.type = TAG_STR;
   str_init_copy(&list->tag.data.str, prefix);
   while (1) {
-    serial++;
+    psym_anon_serial(&serial);
     str_clean(serial_str);
     str_init_uw(serial_str, serial);
     if (! str_init_concatenate_list(&str, list)) {
