@@ -687,21 +687,42 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
 #if HAVE_PTHREAD
   rwlock_r(&facts->rwlock);
 #endif
-  if (! marshall_uw(m, heap, facts->facts.count))
+  if (! marshall_uw(m, heap, facts->facts.count)) {
+    err_puts("marshall_facts: marshall_uw");
+    assert(! "marshall_facts: marshall_uw");
     goto ko;
+  }
   if (facts->facts.count) {
     tag_init_pvar(&subject,   &g_sym_Tag);
     tag_init_pvar(&predicate, &g_sym_Tag);
     tag_init_pvar(&object,    &g_sym_Tag);
     if (! facts_with_0_id(facts, &cursor, subject.data.pvar,
-                          predicate.data.pvar, object.data.pvar))
+                          predicate.data.pvar, object.data.pvar)) {
+      err_puts("marshall_facts: facts_with_0_id");
+      assert(! "marshall_facts: facts_with_0_id");
       goto ko;
+    }
     i = 0;
     while (i < facts->facts.count) {
-      if (! facts_cursor_next(&cursor, &fact) ||
-          ! fact ||
-          ! marshall_fact(m, heap, fact))
+      if (! facts_cursor_next(&cursor, &fact)) {
+        err_puts("marshall_facts: facts_cursor_next");
+        assert(! "marshall_facts: facts_cursor_next");
         goto ko;
+      }
+      if (! fact) {
+        err_write_1("marshall_facts: invalid facts count (i = ");
+        err_inspect_uw_decimal(i);
+        err_write_1(", count = ");
+        err_inspect_uw_decimal(facts->facts.count);
+        err_puts(")");
+        assert(! "marshall_facts: invalid facts count");
+        goto ko;
+      }
+      if (! marshall_fact(m, heap, fact)) {
+        err_puts("marshall_facts: marshall_fact");
+        assert(! "marshall_facts: marshall_fact");
+        goto ko;
+      }
       i++;
     }
     tag_clean(&subject);

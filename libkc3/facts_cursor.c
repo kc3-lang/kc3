@@ -75,6 +75,7 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
     tmp.start.subject   = TAG_FIRST;
     tmp.start.predicate = TAG_FIRST;
     tmp.start.object    = TAG_FIRST;
+    tmp.start.id        = 0;
   }
   if (end) {
     tmp.end = *end;
@@ -89,6 +90,7 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
     tmp.end.subject   = TAG_LAST;
     tmp.end.predicate = TAG_LAST;
     tmp.end.object    = TAG_LAST;
+    tmp.end.id        = (uw) -1;
   }
   tmp.facts = facts;
 #if HAVE_PTHREAD
