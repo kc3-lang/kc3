@@ -28,7 +28,7 @@ cov: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd_cov -C ${SRC_TOP}/test/httpd -d 127.0.0.1 15004
 
 debug: assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd_debug -C ${SRC_TOP}/test/httpd -d 127.0.0.1 15004
+	${SRC_TOP}/httpd/.libs/kc3_httpd_debug -C ${SRC_TOP}/test/httpd --trace -d 127.0.0.1 15004
 
 dump: clean_dump
 	../../kc3s/kc3s --trace --load ../../lib/kc3/0.1/httpd.kc3 --dump kc3.dump --quit

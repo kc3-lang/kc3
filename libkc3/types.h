@@ -851,6 +851,7 @@ struct var {
 struct facts {
   s_set__tag           tags;
   s_set__fact          facts;
+  s_skiplist__fact    *index;
   s_skiplist__fact    *index_spo;
   s_skiplist__fact    *index_pos;
   s_skiplist__fact    *index_osp;

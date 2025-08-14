@@ -96,16 +96,23 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
   if (! item)
     goto ko;
   f = &item->data;
+  if (! skiplist_insert__fact(facts->index, f)) {
+    set_remove__fact(&facts->facts, f);
+    goto ko;
+  }
   if (! skiplist_insert__fact(facts->index_spo, f)) {
+    skiplist_remove__fact(facts->index, f);
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
   if (! skiplist_insert__fact(facts->index_pos, f)) {
+    skiplist_remove__fact(facts->index, f);
     skiplist_remove__fact(facts->index_spo, f);
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
   if (! skiplist_insert__fact(facts->index_osp, f)) {
+    skiplist_remove__fact(facts->index, f);
     skiplist_remove__fact(facts->index_spo, f);
     skiplist_remove__fact(facts->index_pos, f);
     set_remove__fact(&facts->facts, f);
@@ -113,6 +120,7 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
   }
   if (facts->log &&
       ! facts_log_add(facts->log, &tmp)) {
+    skiplist_remove__fact(facts->index, f);
     skiplist_remove__fact(facts->index_spo, f);
     skiplist_remove__fact(facts->index_pos, f);
     skiplist_remove__fact(facts->index_osp, f);
@@ -147,6 +155,7 @@ void facts_clean (s_facts *facts)
   if (facts->log)
     facts_close(facts);
   facts_remove_all(facts);
+  skiplist_delete__fact(facts->index);
   skiplist_delete__fact(facts->index_osp);
   skiplist_delete__fact(facts->index_pos);
   skiplist_delete__fact(facts->index_spo);
@@ -321,18 +330,25 @@ s_tag ** facts_find_tag (s_facts *facts, const s_tag *tag, s_tag **dest)
 
 s_facts * facts_init (s_facts *facts)
 {
-  const u8 max_height = 10;
+  const u8 max_height = 20;
   const double spacing = 2.7;
   s_facts tmp = {0};
   assert(facts);
   set_init__tag(&tmp.tags, 1024);
   set_init__fact(&tmp.facts, 1024);
+  // id index
+  tmp.index = skiplist_new__fact(max_height, spacing);
+  assert(tmp.index);
+  tmp.index->compare = compare_fact_id;
+  // spo index
   tmp.index_spo = skiplist_new__fact(max_height, spacing);
   assert(tmp.index_spo);
   tmp.index_spo->compare = compare_fact;
+  // pos index
   tmp.index_pos = skiplist_new__fact(max_height, spacing);
   assert(tmp.index_pos);
   tmp.index_pos->compare = compare_fact_pos;
+  // osp index
   tmp.index_osp = skiplist_new__fact(max_height, spacing);
   assert(tmp.index_osp);
   tmp.index_osp->compare = compare_fact_osp;
@@ -818,6 +834,7 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
   if (found) {
     if (facts->log)
       facts_log_remove(facts->log, found);
+    skiplist_remove__fact(facts->index, found);
     skiplist_remove__fact(facts->index_spo, found);
     skiplist_remove__fact(facts->index_pos, found);
     skiplist_remove__fact(facts->index_osp, found);

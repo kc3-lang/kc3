@@ -41,6 +41,7 @@
 
 bool file_access (const s_str *path, const s_sym *mode)
 {
+  s32 e;
   sw m;
   bool r;
   if (mode == &g_sym_r)
@@ -59,16 +60,19 @@ bool file_access (const s_str *path, const s_sym *mode)
     m = X_OK;
   else
     m = F_OK;
-  if (false) {
+  if (true) {
     err_write_1("file_access: ");
     err_inspect_str(path);
   }
   r = ! access(path->ptr.pchar, m);
-  if (false) {
+  if (true) {
     if (r)
       err_puts(": OK");
-    else
-      err_puts(": ERROR");
+    else {
+      e = errno;
+      err_write_1(": ERROR: ");
+      err_puts(strerror(e));
+    }
   }
   return r;
 }

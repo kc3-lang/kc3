@@ -35,8 +35,9 @@ COMPARE_PROTOTYPE(f32);
 COMPARE_PROTOTYPE(f64);
 COMPARE_PROTOTYPE(f128);
 s8 compare_fact (const s_fact *a, const s_fact *b);
-s8 compare_fact_pos (const s_fact *a, const s_fact *b);
+s8 compare_fact_id (const s_fact *a, const s_fact *b);
 s8 compare_fact_osp (const s_fact *a, const s_fact *b);
+s8 compare_fact_pos (const s_fact *a, const s_fact *b);
 s8 compare_fact_unbound_var_count (const s_fact *a,
                                    const s_fact *b);
 s8 compare_fn (const s_fn *a, const s_fn *b);

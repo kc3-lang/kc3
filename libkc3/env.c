@@ -617,13 +617,13 @@ sw env_dump_restore (s_env *env, const char *path)
 
 bool env_dump_restore_path_resolve (s_env *env)
 {
-  const s_str kc3_dump = STR_1("kc3.dump");
+  const s_str filename = STR_1("kc3.dump");
   s_str path = {0};
-  if (file_access(&kc3_dump, &g_sym_r)) {
-    env->restore_path = kc3_dump;
+  if (file_access(&filename, &g_sym_r)) {
+    env->restore_path = filename;
     return true;
   }
-  if (! str_init_concatenate(&path, env->module_path, &kc3_dump))
+  if (! str_init_concatenate(&path, env->module_path, &filename))
     return false;
   if (file_access(&path, &g_sym_r))
     env->restore_path = path;

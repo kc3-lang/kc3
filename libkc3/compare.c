@@ -186,7 +186,6 @@ COMPARE_DEF(f32)
 COMPARE_DEF(f64)
 COMPARE_DEF(f128)
 
-
 s8 compare_fact (const s_fact *a, const s_fact *b)
 {
   s8 r;
@@ -195,6 +194,27 @@ s8 compare_fact (const s_fact *a, const s_fact *b)
   if (!a)
     return -1;
   if (!b)
+    return 1;
+  if ((r = compare_tag_deref(a->subject, b->subject)))
+    return r;
+  if ((r = compare_tag_deref(a->predicate, b->predicate)))
+    return r;
+  r = compare_tag_deref(a->object, b->object);
+  return r;
+}
+
+s8 compare_fact_id (const s_fact *a, const s_fact *b)
+{
+  s8 r;
+  if (a == b)
+    return 0;
+  if (!a)
+    return -1;
+  if (!b)
+    return 1;
+  if (a->id < b->id)
+    return -1;
+  if (a->id > b->id)
     return 1;
   if ((r = compare_tag_deref(a->subject, b->subject)))
     return r;

@@ -256,8 +256,10 @@ s_marshall_read * marshall_read_cfn (s_marshall_read *mr,
     tail = &(*tail)->next.data.plist;
     i++;
   }
+  /*
   cfn_link(&tmp);
   cfn_prep_cif(&tmp);
+  */
 #if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
 #endif
