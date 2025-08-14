@@ -693,8 +693,8 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
     tag_init_pvar(&subject,   &g_sym_Tag);
     tag_init_pvar(&predicate, &g_sym_Tag);
     tag_init_pvar(&object,    &g_sym_Tag);
-    if (! facts_with_0(facts, &cursor, subject.data.pvar,
-                       predicate.data.pvar, object.data.pvar))
+    if (! facts_with_0_id(facts, &cursor, subject.data.pvar,
+                          predicate.data.pvar, object.data.pvar))
       goto ko;
     i = 0;
     while (i < facts->facts.count) {

@@ -228,8 +228,8 @@ sw facts_dump (s_facts *facts, s_buf *buf)
 #if HAVE_PTHREAD
   rwlock_r(&facts->rwlock);
 #endif
-  facts_with_0(facts, &cursor, subject.data.pvar, predicate.data.pvar,
-               object.data.pvar);
+  facts_with_0_id(facts, &cursor, subject.data.pvar, predicate.data.pvar,
+                  object.data.pvar);
   if (! facts_cursor_next(&cursor, &fact))
     goto clean;
   while (fact) {

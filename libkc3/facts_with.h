@@ -25,6 +25,12 @@ s_facts_cursor *      facts_with_0 (s_facts *facts,
                                     s_var *var_predicate,
                                     s_var *var_object);
 
+s_facts_cursor *      facts_with_0_id (s_facts *facts,
+                                       s_facts_cursor *cursor,
+                                       s_var *var_subject,
+                                       s_var *var_predicate,
+                                       s_var *var_object);
+
 s_facts_cursor *      facts_with_1_2 (s_facts *facts,
                                       s_facts_cursor *cursor,
                                       s_tag *subject,

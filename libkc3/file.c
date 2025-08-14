@@ -60,12 +60,12 @@ bool file_access (const s_str *path, const s_sym *mode)
     m = X_OK;
   else
     m = F_OK;
-  if (true) {
+  if (false) {
     err_write_1("file_access: ");
     err_inspect_str(path);
   }
   r = ! access(path->ptr.pchar, m);
-  if (true) {
+  if (false) {
     if (r)
       err_puts(": OK");
     else {

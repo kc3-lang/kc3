@@ -74,6 +74,21 @@ s_facts_cursor * facts_with_0 (s_facts *facts,
   return cursor;
 }
 
+s_facts_cursor * facts_with_0_id (s_facts *facts,
+                                  s_facts_cursor *cursor,
+                                  p_var pvar_subject,
+                                  p_var pvar_predicate,
+                                  p_var pvar_object)
+{
+  assert(facts);
+  assert(cursor);
+  facts_cursor_init(facts, cursor, facts->index, NULL, NULL);
+  pvar_init_copy(&cursor->pvar_subject, &pvar_subject);
+  pvar_init_copy(&cursor->pvar_predicate, &pvar_predicate);
+  pvar_init_copy(&cursor->pvar_object, &pvar_object);
+  return cursor;
+}
+
 s_facts_cursor * facts_with_1_2 (s_facts *facts,
                                  s_facts_cursor *cursor,
                                  s_tag *subject,
