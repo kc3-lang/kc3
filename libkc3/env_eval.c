@@ -585,7 +585,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   global_env = env_global();
   if (arity >= 1 && arity <= 2) {
     ops = global_env->ops;
-    if (ops_get(ops, tmp.ident.sym, arity, &op_tag)) {
+    if (ops_get_tag(ops, tmp.ident.sym, arity, &op_tag)) {
       op = op_tag.data.pstruct->data;
       if (! pcallable_init_copy(&tmp.pcallable, &op->pcallable))
         return false;

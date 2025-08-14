@@ -909,7 +909,7 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   if ((r = buf_peek_ident(buf, &ident)) <= 0)
     goto restore;
   ops = env_global()->ops;
-  if (! ops_get(ops, ident.sym, 2, &op_tag)) {
+  if (! ops_get_tag(ops, ident.sym, 2, &op_tag)) {
     r = 0;
     goto restore;
   }
@@ -958,9 +958,14 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     goto restore;
   // FIXME: acquire read-only lock for ops
   ops = env_global()->ops;
-  if (! ops_get(ops, next_ident.sym, 2, &next_op_tag)) {
+  if (! ops_get_tag(ops, next_ident.sym, 2, &next_op_tag)) {
     r = 0;
     goto restore;
+  }
+  if (false) {
+    err_write_1("buf_parse_call_op_rec: op = ");
+    err_inspect_tag(&next_op_tag);
+    err_write_1("\n");
   }
   next_op = next_op_tag.data.pstruct->data;
   while (r > 0 && next_op->precedence >= min_precedence) {
@@ -969,7 +974,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     if ((r = buf_parse_ident(buf, &next_ident)) <= 0)
       goto restore;
     result += r;
-    if (! ops_get(ops, next_ident.sym, 2, &next_op_tag)) {
+    if (! ops_get_tag(ops, next_ident.sym, 2, &next_op_tag)) {
       r = 0;
       goto restore;
     }
@@ -1013,8 +1018,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     r = buf_peek_ident(buf, &next_ident);
     if (r <= 0)
       break;
-    if (! ops_get(ops, next_ident.sym, 2, &next_op_tag) &&
-        ! ops_get(ops, next_ident.sym, 1, &next_op_tag))
+    if (! ops_get_tag(ops, next_ident.sym, 2, &next_op_tag) &&
+        ! ops_get_tag(ops, next_ident.sym, 1, &next_op_tag))
       break;
     next_op = next_op_tag.data.pstruct->data;
     while ((next_op->arity == 2 &&
@@ -1043,7 +1048,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       tag_clean(&next_op_tag);
       next_op_tag = (s_tag) {0};
       r = buf_peek_ident(buf, &next_ident);
-      if (r <= 0 || ! (ops_get(ops, next_ident.sym, 2, &next_op_tag)))
+      if (r <= 0 || ! (ops_get_tag(ops, next_ident.sym, 2, &next_op_tag)))
         goto ok;
       next_op = next_op_tag.data.pstruct->data;
     }
@@ -1082,7 +1087,7 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
     goto restore;
   result += r;
   ops = env_global()->ops;
-  if (! ops_get(ops, tmp.ident.sym, 1, &op_tag)) {
+  if (! ops_get_tag(ops, tmp.ident.sym, 1, &op_tag)) {
     if (false) {
       err_write_1("buf_parse_call_op_unary: ");
       err_inspect_ident(&tmp.ident);

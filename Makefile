@@ -220,9 +220,18 @@ distclean:
 	${MAKE} -C gtk4 distclean
 #	${MAKE} -C fs distclean
 
+clean_dump:
+	rm -f lib/kc3/0.1/kc3.dump test/httpd/kc3.dump
+
 dump: build
-	kc3s/kc3s --dump lib/kc3/0.1/kc3.dump --quit
+	${MAKE} clean_dump
+	kc3s/kc3s --trace --dump lib/kc3/0.1/kc3.dump --quit
 	${MAKE} -C test/httpd dump
+
+dump_debug: debug
+	${MAKE} clean_dump
+	kc3s/kc3s_debug --trace --dump lib/kc3/0.1/kc3.dump --quit
+	${MAKE} -C test/httpd dump_debug
 
 ekc3:
 	${MAKE} -C libtommath build

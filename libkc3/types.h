@@ -216,6 +216,7 @@ typedef struct fn                      s_fn;
 typedef struct fn_clause               s_fn_clause;
 typedef struct frame                   s_frame;
 typedef struct ht                      s_ht;
+typedef struct ht_iterator             s_ht_iterator;
 typedef struct ident                   s_ident;
 typedef struct integer                 s_integer;
 typedef struct integer_fraction        s_integer_fraction;
@@ -340,6 +341,12 @@ struct frame {
 struct fact_list {
   s_fact *fact;
   s_fact_list *next;
+};
+
+struct ht_iterator {
+  s_ht *ht;
+  uw position;
+  s_list *items;
 };
 
 struct map {

@@ -21,12 +21,52 @@
 #include "op.h"
 #include "ops.h"
 #include "pstruct_type.h"
+#include "struct.h"
 #include "struct_type.h"
 #include "sym.h"
 #include "tag.h"
 
+/* Returns true if s_op was added or is already present. */
+bool ops_add (s_ops *ops, s_op *op)
+{
+  s_tag op_tag = {0};
+  bool r;
+  assert(ops);
+  assert(op);
+  if (! op ||
+      ! op->sym ||
+      ! op->arity ||
+      op->arity > 2 ||
+      op->associativity < 1 ||
+      op->associativity > 2 ||
+      ! op->pcallable) {
+    err_puts("ops_add: invalid op");
+    assert(! "ops_add: invalid op");
+    return false;
+  }
+  if (op->special)
+    callable_set_special(op->pcallable, true);
+  if (! tag_init_pstruct(&op_tag, &g_sym_KC3_Op) ||
+      ! op_tag.data.pstruct) {
+    err_puts("ops_add: tag_init_pstruct");
+    assert(! "ops_add: tag_init_pstruct");
+    return false;
+  }
+  if (! struct_allocate(op_tag.data.pstruct) ||
+      ! op_tag.data.pstruct->data)
+    return false;
+  *(s_op *) op_tag.data.pstruct->data = *op;
+  if (false) {
+    err_write_1("ops_add: ");
+    err_inspect_tag(&op_tag);
+    err_write_1("\n");
+  }
+  r = ht_add(&ops->ht, &op_tag);
+  return r;
+}
+
 /* Returns true if %KC3.Op{} was added or is already present. */
-bool ops_add (s_ops *ops, s_tag *op_tag)
+bool ops_add_tag (s_ops *ops, s_tag *op_tag)
 {
   s_op *op;
   assert(ops);
@@ -36,8 +76,8 @@ bool ops_add (s_ops *ops, s_tag *op_tag)
       ! op_tag->data.pstruct ||
       op_tag->data.pstruct->pstruct_type->module != &g_sym_KC3_Op ||
       ! op_tag->data.pstruct->data) {
-    err_puts("ops_add: invalid op");
-    assert(! "ops_add: invalid op");
+    err_puts("ops_add_tag: invalid op");
+    assert(! "ops_add_tag: invalid op");
     return false;
   }
   op = op_tag->data.pstruct->data;
@@ -48,8 +88,8 @@ bool ops_add (s_ops *ops, s_tag *op_tag)
       op->associativity < 1 ||
       op->associativity > 2 ||
       ! op->pcallable) {
-    err_puts("ops_add: invalid op");
-    assert(! "ops_add: invalid op");
+    err_puts("ops_add_tag: invalid op");
+    assert(! "ops_add_tag: invalid op");
     return false;
   }
   if (op->special)
@@ -101,14 +141,19 @@ void ops_delete (s_ops *ops)
   free(ops);
 }
 
-s_tag * ops_get (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
+s_tag * ops_get_tag (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
 {
   s_op     op = {0};
   s_struct op_struct = {0};
   s_tag    op_tag = {0};
   assert(ops);
-  if (! env_global()->loaded || ! sym || ! arity)
+  if (! env_global()->loaded)
     return NULL;
+  if (! sym || ! arity) {
+    err_puts("ops_get_tag: invalid argument");
+    assert(! "ops_get_tag: invalid argument");
+    return NULL;
+  }
   op_tag.type = TAG_PSTRUCT;
   op_tag.data.pstruct = &op_struct;
   op_struct.data = &op;

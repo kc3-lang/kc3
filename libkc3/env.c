@@ -475,7 +475,7 @@ bool env_defoperator (s_env *env, s_tag *tag_op)
     assert(! "env_defoperator: invalid operator, expected %KC3.Op{}");
   }
   op = tag_op->data.pstruct->data;
-  if (! ops_add(env->ops, tag_op))
+  if (! ops_add_tag(env->ops, tag_op))
     return false;
   tag_init_psym_anon(&tag_id, &g_sym_op.str);
   tag_init_psym(&tag_is_a, &g_sym_is_a);
@@ -615,31 +615,20 @@ sw env_dump_restore (s_env *env, const char *path)
   return result;
 }
 
-bool env_dump_restore_path (s_env *env)
+bool env_dump_restore_path_resolve (s_env *env)
 {
-  const s_str ext = STR_1(".dump");
-  s_str name = {0};
+  const s_str kc3_dump = STR_1("kc3.dump");
   s_str path = {0};
-  s_str tmp = {0};
-  path = STR_1("kc3.dump");
-  if (file_access(&path, &g_sym_r)) {
-    env->restore_path = path;
+  if (file_access(&kc3_dump, &g_sym_r)) {
+    env->restore_path = kc3_dump;
     return true;
   }
-  if (env->argv && env->argv[0]) {
-    if (! str_init_1(&name, NULL, env->argv[0]) ||
-        ! str_init_concatenate(&path, &name, &ext))
-      return false;
-    if (file_search(&path, &g_sym_r, &tmp)) {
-      env->restore_path = tmp;
-      str_clean(&path);
-      return true;
-    }
+  if (! str_init_concatenate(&path, env->module_path, &kc3_dump))
+    return false;
+  if (file_access(&path, &g_sym_r))
+    env->restore_path = path;
+  else
     str_clean(&path);
-  }
-  path = STR_1("kc3.dump");
-  if (file_search(&path, &g_sym_r, &tmp))
-    env->restore_path = tmp;
   return true;
 }
 
@@ -1531,14 +1520,30 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   env->search_modules = env->search_modules_default;
   env->ops = ops_new();
   if (! env->restore_path.size &&
-      ! env_dump_restore_path(env)) {
+      ! env_dump_restore_path_resolve(env)) {
     env_clean(env);
     return NULL;
   }
   if (env->restore_path.size) {
+    if (env->trace || true) {
+      err_write_1("env_init: env_dump_restore: ");
+      err_inspect_str(&env->restore_path);
+      err_puts(":");
+    }
     if (env_dump_restore(env, env->restore_path.ptr.pchar) <= 0) {
+      if (env->trace || true) {
+        err_write_1("env_init: env_dump_restore: ");
+        err_inspect_str(&env->restore_path);
+        err_puts(": ERROR");
+      }
       env_clean(env);
       return NULL;
+    }
+    env->loaded = true;
+    if (env->trace || true) {
+      err_write_1("env_init: env_dump_restore: ");
+      err_inspect_str(&env->restore_path);
+      err_puts(": OK");
     }
   }
   else {

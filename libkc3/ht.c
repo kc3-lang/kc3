@@ -148,3 +148,43 @@ s_ht * ht_init (s_ht *ht, const s_sym *type, uw size)
   *ht = tmp;
   return ht;
 }
+
+s_ht_iterator * ht_iterator_init (s_ht_iterator *i, s_ht *ht)
+{
+  s_ht_iterator tmp = {0};
+  if (! i || ! ht) {
+    err_puts("ht_iterator_init: invalid argument");
+    assert(! "ht_iterator_init: invalid argument");
+    return NULL;
+  }
+  tmp.ht = ht;
+  *i = tmp;
+  return i;
+}
+
+s_tag ** ht_iterator_next (s_ht_iterator *i, s_tag **dest)
+{
+  if (! i || ! dest) {
+    err_puts("ht_iterator_next: invalid argument");
+    assert(! "ht_iterator_next: invalid argument");
+    return NULL;
+  }
+  if (i->position == i->ht->size) {
+    err_puts("ht_iterator_next: called after end");
+    assert(! "ht_iterator_next: called after end");
+    return NULL;
+  }
+  if (i->items)
+    i->items = list_next(i->items);
+  while (i->position < i->ht->size - 1 && ! i->items) {
+    i->position++;
+    i->items = i->ht->items[i->position];
+  }
+  if (i->position == i->ht->size || ! i->items) {
+    err_puts("ht_iterator_next: reached end");
+    assert(! "ht_iterator_next: reached end");
+    return NULL;
+  }
+  *dest = &i->items->tag;
+  return dest;
+}

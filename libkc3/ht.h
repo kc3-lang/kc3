@@ -30,4 +30,8 @@ bool    ht_has (s_ht *ht, const s_tag *key);
 bool ht_add (s_ht *ht, s_tag *tag);
 bool ht_add_hash (s_ht *ht, s_tag *tag, uw hash);
 
+/* Iterator. */
+s_ht_iterator * ht_iterator_init (s_ht_iterator *i, s_ht *ht);
+s_tag **        ht_iterator_next (s_ht_iterator *i, s_tag **dest);
+
 #endif /* LIBKC3_HT_H */

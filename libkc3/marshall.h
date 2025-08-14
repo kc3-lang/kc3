@@ -59,6 +59,8 @@ PROTO_MARSHALL(ident, const s_ident *);
 PROTO_MARSHALL(integer, const s_integer *);
 PROTO_MARSHALL(frame, const s_frame *);
 PROTO_MARSHALL(map, const s_map *);
+PROTO_MARSHALL(op, const s_op *);
+PROTO_MARSHALL(ops, s_ops *);
 PROTO_MARSHALL(pcallable, const p_callable *);
 PROTO_MARSHALL(pcow, const p_cow *);
 PROTO_MARSHALL(pframe, const p_frame *);

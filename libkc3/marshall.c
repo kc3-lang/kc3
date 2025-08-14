@@ -26,6 +26,7 @@
 #include "ht.h"
 #include "io.h"
 #include "pstruct_type.h"
+#include "rwlock.h"
 #include "struct_type.h"
 #include "sym.h"
 #include "list.h"
@@ -621,8 +622,16 @@ s_marshall * marshall_env (s_marshall *m, bool heap, const s_env *env)
     assert(! "marshall_env: invalid argument");
     return NULL;
   }
-  if (! marshall_facts(m, heap, env->facts))
+  if (! marshall_facts(m, heap, env->facts)) {
+    err_puts("marshall_env: marshall_facts");
+    assert(! "marshall_env: marshall_facts");
     return NULL;
+  }
+  if (! marshall_ops(m, heap, env->ops)) {
+    err_puts("marshall_env: marshall_ops");
+    assert(! "marshall_env: marshall_ops");
+    return NULL;
+  }
   return m;
 }
 
@@ -663,30 +672,36 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
 {
   s_facts_cursor cursor;
   s_fact *fact;
+  uw i;
   s_tag predicate;
   s_tag object;
   s_tag subject;
   assert(m);
   assert(facts);
-  tag_init_pvar(&subject, &g_sym_Tag);
-  tag_init_pvar(&predicate, &g_sym_Tag);
-  tag_init_pvar(&object, &g_sym_Tag);
 #if HAVE_PTHREAD
   rwlock_r(&facts->rwlock);
 #endif
-  facts_with_0(facts, &cursor, subject.data.pvar, predicate.data.pvar,
-               object.data.pvar);
-  if (! marshall_uw(m, heap, facts->facts.count) ||
-      ! facts_cursor_next(&cursor, &fact))
+  if (! marshall_uw(m, heap, facts->facts.count))
     goto ko;
-  while (fact) {
-    if (! marshall_fact(m, heap, fact) ||
-        ! facts_cursor_next(&cursor, &fact))
+  if (facts->facts.count) {
+    tag_init_pvar(&subject,   &g_sym_Tag);
+    tag_init_pvar(&predicate, &g_sym_Tag);
+    tag_init_pvar(&object,    &g_sym_Tag);
+    if (! facts_with_0(facts, &cursor, subject.data.pvar,
+                       predicate.data.pvar, object.data.pvar))
       goto ko;
+    i = 0;
+    while (i < facts->facts.count) {
+      if (! facts_cursor_next(&cursor, &fact) ||
+          ! fact ||
+          ! marshall_fact(m, heap, fact))
+        goto ko;
+      i++;
+    }
+    tag_clean(&subject);
+    tag_clean(&predicate);
+    tag_clean(&object);
   }
-  tag_clean(&subject);
-  tag_clean(&predicate);
-  tag_clean(&object);
 #if HAVE_PTHREAD
   rwlock_unlock_r(&facts->rwlock);
 #endif
@@ -891,6 +906,85 @@ s_marshall * marshall_new (void)
     return NULL;
   }
   return m;
+}
+
+s_marshall * marshall_op (s_marshall *m, bool heap,
+                          const s_op *op)
+{
+  assert(m);
+  assert(op);
+  if (! marshall_psym(m, heap, &op->sym) ||
+      ! marshall_u8(m, heap, op->arity) ||
+      ! marshall_bool(m, heap, op->special) ||
+      ! marshall_u8(m, heap, op->precedence) ||
+      ! marshall_u8(m, heap, op->associativity) ||
+      ! marshall_pcallable(m, heap, &op->pcallable)) {
+    err_puts("marshall_op: marshall error");
+    assert(! "marshall_op: marshall error");
+    return NULL;
+  }
+  return m;
+}
+
+s_marshall * marshall_ops (s_marshall *m, bool heap, s_ops *ops)
+{
+  s_ht_iterator ht_i = {0};
+  uw i;
+  s_op  *op;
+  s_tag *op_tag;
+  if (! m || ! ops) {
+    err_puts("marshall_ops: invalid argument");
+    assert(! "marshall_ops: invalid argument");
+    return NULL;
+  }
+#if HAVE_PTHREAD
+  rwlock_r(&ops->ht.rwlock);
+#endif
+  if (! marshall_uw(m, heap, ops->ht.count))
+    goto ko;
+  if (ops->ht.count) {
+    if (! ht_iterator_init(&ht_i, &ops->ht)) {
+      err_puts("marshall_ops: ht_iterator_init");
+      assert(! "marshall_ops: ht_iterator_init");
+      goto ko;
+    }
+    i = 0;
+    while (i < ops->ht.count) {
+      if (! ht_iterator_next(&ht_i, &op_tag)) {
+        err_puts("marshall_ops: ht_iterator_next");
+        assert(! "marshall_ops: ht_iterator_next");
+        goto ko;
+      }
+      if (! op_tag) {
+        err_puts("marshall_ops: invalid ht count");
+        assert(! "marshall_ops: invalid ht count");
+        goto ko;
+      }
+      if (op_tag->type != TAG_PSTRUCT ||
+          ! op_tag->data.pstruct ||
+          op_tag->data.pstruct->pstruct_type->module != &g_sym_KC3_Op ||
+          ! (op = op_tag->data.pstruct->data)) {
+        err_puts("marshall_ops: invalid op");
+        assert(! "marshall_ops: invalid op");
+        goto ko;
+      }
+      if (! marshall_op(m, heap, op)) {
+        err_puts("marshall_ops: marshall_op");
+        assert(! "marshall_ops: marshall_op");
+        goto ko;
+      }
+      i++;
+    }
+  }
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&ops->ht.rwlock);
+#endif
+  return m;
+  ko:
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&ops->ht.rwlock);
+#endif
+  return NULL;
 }
 
 DEF_MARSHALL_P(callable, p_callable)

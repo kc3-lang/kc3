@@ -23,15 +23,15 @@
 
 TEST_CASE_PROTOTYPE(ops_init_clean);
 TEST_CASE_PROTOTYPE(ops_new_delete);
-TEST_CASE_PROTOTYPE(ops_add);
-TEST_CASE_PROTOTYPE(ops_get);
+TEST_CASE_PROTOTYPE(ops_add_tag);
+TEST_CASE_PROTOTYPE(ops_get_tag);
 
 void ops_test (void)
 {
   TEST_CASE_RUN(ops_init_clean);
   TEST_CASE_RUN(ops_new_delete);
-  TEST_CASE_RUN(ops_add);
-  TEST_CASE_RUN(ops_get);
+  TEST_CASE_RUN(ops_add_tag);
+  TEST_CASE_RUN(ops_get_tag);
 }
 
 TEST_CASE(ops_init_clean)
@@ -54,12 +54,12 @@ TEST_CASE(ops_new_delete)
 }
 TEST_CASE_END(ops_init_clean)
 
-TEST_CASE(ops_add)
+TEST_CASE(ops_add_tag)
 {
   s_ops *ops;
   s_op *op;
   s_tag op_tag = {0};
-  test_context("ops_add");
+  test_context("ops_add_tag");
   TEST_ASSERT((ops = ops_new()));
   TEST_EQ(tag_init_pstruct(&op_tag, &g_sym_KC3_Op), &op_tag);
   struct_allocate(op_tag.data.pstruct);
@@ -69,20 +69,20 @@ TEST_CASE(ops_add)
   op->precedence = 1;
   op->associativity = 1;
   TEST_ASSERT(pcallable_init(&op->pcallable));
-  TEST_ASSERT(ops_add(ops, &op_tag));
+  TEST_ASSERT(ops_add_tag(ops, &op_tag));
   TEST_EQ(ops->ht.count, 1);
   tag_clean(&op_tag);
   ops_delete(ops);
   test_context(NULL);
 }
-TEST_CASE_END(ops_add)
+TEST_CASE_END(ops_add_tag)
 
-TEST_CASE(ops_get)
+TEST_CASE(ops_get_tag)
 {
   s_ops *ops;
   s_op *op;
   s_tag op_tag = {0};
-  test_context("ops_add");
+  test_context("ops_get_tag");
   TEST_ASSERT((ops = ops_new()));
   TEST_EQ(tag_init_pstruct(&op_tag, &g_sym_KC3_Op), &op_tag);
   struct_allocate(op_tag.data.pstruct);
@@ -92,11 +92,11 @@ TEST_CASE(ops_get)
   op->precedence = 3;
   op->associativity = 1;
   TEST_ASSERT(pcallable_init(&op->pcallable));
-  TEST_ASSERT(ops_add(ops, &op_tag));
+  TEST_ASSERT(ops_add_tag(ops, &op_tag));
   TEST_EQ(ops->ht.count, 1);
   tag_clean(&op_tag);
   op_tag = (s_tag) {0};
-  TEST_ASSERT(ops_get(ops, sym_1("+"), 2, &op_tag));
+  TEST_ASSERT(ops_get_tag(ops, sym_1("+"), 2, &op_tag));
   TEST_EQ(op_tag.type, TAG_PSTRUCT);
   TEST_ASSERT(op_tag.data.pstruct);
   TEST_ASSERT(op_tag.data.pstruct->pstruct_type);
@@ -110,4 +110,4 @@ TEST_CASE(ops_get)
   ops_delete(ops);
   test_context(NULL);
 }
-TEST_CASE_END(ops_get)
+TEST_CASE_END(ops_get_tag)

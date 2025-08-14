@@ -34,6 +34,7 @@
 #include "marshall.h"
 #include "marshall_read.h"
 #include "mutex.h"
+#include "ops.h"
 #include "pcallable.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
@@ -485,6 +486,17 @@ s_marshall_read * marshall_read_env (s_marshall_read *mr,
     assert(! "marshall_read_env: marshall_read_facts");
     return NULL;
   }
+  if (! env->ops &&
+      ! (env->ops = ops_new())) {
+    err_puts("marshall_read_env: ops_new");
+    assert(! "marshall_read_env: ops_new");
+    return NULL;
+  }
+  if (! marshall_read_ops(mr, heap, env->ops)) {
+    err_puts("marshall_read_env: marshall_read_ops");
+    assert(! "marshall_read_env: marshall_read_ops");
+    return NULL;
+  }
   return mr;
 }
 
@@ -536,10 +548,15 @@ s_marshall_read * marshall_read_fact (s_marshall_read *mr,
     tag_clean(tmp.subject);
     return NULL;
   }
-  if (! marshall_read_ptag(mr, heap, &tmp.object)       ||
-      ! marshall_read_uw(mr, heap, &tmp.id)) {
+  if (! marshall_read_ptag(mr, heap, &tmp.object)) {
     tag_clean(tmp.subject);
     tag_clean(tmp.predicate);
+    return NULL;
+  }
+  if (! marshall_read_uw(mr, heap, &tmp.id)) {
+    tag_clean(tmp.subject);
+    tag_clean(tmp.predicate);
+    tag_clean(tmp.object);
     return NULL;
   }
   *dest = tmp;
@@ -563,6 +580,10 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
     if (! facts_add_fact(facts, &fact)) {
       fact_clean_all(&fact);
       return NULL;
+    }
+    if (false) {
+      err_inspect_fact(&fact);
+      err_write_1("\n");
     }
     fact_clean_all(&fact);
     i++;
@@ -953,6 +974,54 @@ s_marshall_read * marshall_read_new_str (const s_str *input)
   if (! marshall_read_init_str(mr, input)) {
     free(mr);
     return NULL;
+  }
+  return mr;
+}
+
+s_marshall_read * marshall_read_op (s_marshall_read *mr,
+                                    bool heap, s_op *op)
+{
+  if (! mr || ! op) {
+    err_puts("marshall_read_op: invalid argument");
+    assert(! "marshall_read_op: invalid argument");
+    return NULL;
+  }
+  if (! marshall_read_psym(mr, heap, &op->sym) ||
+      ! marshall_read_u8(mr, heap, &op->arity) ||
+      ! marshall_read_bool(mr, heap, &op->special) ||
+      ! marshall_read_u8(mr, heap, &op->precedence) ||
+      ! marshall_read_u8(mr, heap, &op->associativity) ||
+      ! marshall_read_pcallable(mr, heap, &op->pcallable)) {
+    err_puts("marshall_read_op: marshall read error");
+    assert(! "marshall_read_op: marshall read error");
+    return NULL;
+  }
+  return mr;
+}
+
+s_marshall_read * marshall_read_ops (s_marshall_read *mr,
+                                     bool heap, s_ops *ops)
+{
+  uw count = 0;
+  uw i;
+  s_op op = {0};
+  if (! marshall_read_uw(mr, heap, &count))
+    return NULL;
+  if (! count)
+    return mr;
+  i = 0;
+  while (i < count) {
+    if (! marshall_read_op(mr, heap, &op)) {
+      err_puts("marshall_read_ops: marshall_read_op");
+      assert(! "marshall_read_ops: marshall_read_op");
+      return NULL;
+    }
+    if (! ops_add(ops, &op)) {
+      err_puts("marshall_read_ops: ops_add");
+      assert(! "marshall_read_ops: ops_add");
+      return NULL;
+    }
+    i++;
   }
   return mr;
 }

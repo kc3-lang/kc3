@@ -540,7 +540,7 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   arity = call_arity(call);
   if (arity > 0 && arity <= 2) {
     ops = env_global()->ops;
-    if (ops_get(ops, call->ident.sym, arity, &op_tag)) {
+    if (ops_get_tag(ops, call->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
           op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
@@ -900,7 +900,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call,
   ops = env_global()->ops;
   if (left->type == TAG_CALL) {
     arity = call_arity(&left->data.call);
-    if (ops_get(ops, left->data.call.ident.sym, arity, &op_tag)) {
+    if (ops_get_tag(ops, left->data.call.ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
           op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
@@ -940,7 +940,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call,
   paren = false;
   if (right->type == TAG_CALL) {
     arity = call_arity(&right->data.call);
-    if (ops_get(ops, right->data.call.ident.sym, arity, &op_tag)) {
+    if (ops_get_tag(ops, right->data.call.ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
           op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
@@ -991,7 +991,7 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
   ops = env_global()->ops;
   if (left->type == TAG_CALL) {
     arity = call_arity(&left->data.call);
-    if (ops_get(ops, left->data.call.ident.sym, arity, &op_tag)) {
+    if (ops_get_tag(ops, left->data.call.ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
           op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
@@ -1032,7 +1032,7 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
   paren = false;
   if (right->type == TAG_CALL) {
     arity = call_arity(&right->data.call);
-    if (ops_get(ops, right->data.call.ident.sym, arity, &op_tag)) {
+    if (ops_get_tag(ops, right->data.call.ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
           op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
@@ -1074,7 +1074,7 @@ sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
   assert(buf);
   assert(call);
   ops = env_global()->ops;
-  if (! ops_get(ops, call->ident.sym, 1, &op_tag))
+  if (! ops_get_tag(ops, call->ident.sym, 1, &op_tag))
     return -1;
   if (op_tag.type != TAG_PSTRUCT ||
       ! op_tag.data.pstruct ||
@@ -1112,7 +1112,7 @@ sw buf_inspect_call_op_unary_size (s_pretty *pretty, const s_call *call)
   assert(pretty);
   assert(call);
   ops = env_global()->ops;
-  if (! ops_get(ops, call->ident.sym, 1, &op_tag))
+  if (! ops_get_tag(ops, call->ident.sym, 1, &op_tag))
     return -1;
   if (op_tag.type != TAG_PSTRUCT ||
       ! op_tag.data.pstruct ||
@@ -1206,7 +1206,7 @@ sw buf_inspect_call_size (s_pretty *pretty, const s_call *call)
   arity = call_arity(call);
   if (arity > 0 && arity <= 2) {
     ops = env_global()->ops;
-    if (ops_get(ops, call->ident.sym, arity, &op_tag)) {
+    if (ops_get_tag(ops, call->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
           op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
