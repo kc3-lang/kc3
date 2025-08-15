@@ -758,11 +758,6 @@ s_marshall_read * marshall_read_frame (s_marshall_read *mr, bool heap,
   binding = &tmp.bindings;
   i = 0;
   while (i < binding_count) {
-    if (true) {
-      err_write_1("marshall_read_frame: binding #");
-      err_inspect_uw_decimal(i);
-      err_write_1("\n");
-    }
     if (! (*binding = alloc(sizeof(s_binding))))
       goto ko;
     if (! marshall_read_psym(mr, heap, &(*binding)->name)) {
@@ -776,6 +771,10 @@ s_marshall_read * marshall_read_frame (s_marshall_read *mr, bool heap,
     binding = &(*binding)->next;
     i++;
   }
+  if (! marshall_read_pframe(mr, heap, &tmp.next)) {
+      err_puts("marshall_read_frame: marshall_read_pframe next");
+      goto ko;
+    }
   *dest = tmp;
   return mr;
  ko:

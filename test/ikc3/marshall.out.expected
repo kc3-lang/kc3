@@ -229,3 +229,5 @@ loopback(do
   f()
 end)
 {:ok, 56}
+loopback([[A, B], [C, D]])
+{:ok, 640}

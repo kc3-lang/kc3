@@ -244,3 +244,5 @@ loopback(do
   f = fn () { a } [a: 2]
   f()
 end)
+quote loopback([[A, B], [C, D]])
+loopback([[A, B], [C, D]])
