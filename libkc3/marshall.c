@@ -884,7 +884,7 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
   u64 offset;
   assert(m);
   if (! p)
-    return marshall_u64(m, heap, 0);
+    return marshall_offset(m, heap, 0);
   tag_init_tuple(&key, 2);
   key.data.tuple.tag[0].type = TAG_U64;
   key.data.tuple.tag[0].data.u64 = (u64) p;
@@ -915,7 +915,7 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
     goto ko;
   }
   offset = tag.data.tuple.tag[1].data.u64;
-  if (! marshall_u64(m, heap, offset))
+  if (! marshall_offset(m, heap, offset))
     goto ko;
   tag_clean(&key);
   tag_clean(&tag);
@@ -960,6 +960,8 @@ s_marshall * marshall_integer (s_marshall *m, bool heap,
   assert(m);
   assert(i);
   buf = heap ? &m->heap : &m->buf;
+  if (! marshall_1(m, heap, "_KC3integer_"))
+    return NULL;
   if ((r = buf_write_integer(buf, i)) <= 0)
     return NULL;
   if (heap)
@@ -1005,6 +1007,27 @@ s_marshall * marshall_new (void)
     free(m);
     return NULL;
   }
+  return m;
+}
+
+s_marshall * marshall_offset (s_marshall *m, bool heap, u64 src)
+{
+  s_buf *buf;
+  u64 le;
+  sw r;
+  if (! m) {
+    err_puts("marshall_offset: invalid argument");
+    assert(! "marshall_offset: invalid argument");
+    return NULL;
+  }
+  le = htole64(src);
+  buf = heap ? &m->heap : &m->buf;
+  if ((r = buf_write_u64(buf, le)) <= 0)
+    return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
   return m;
 }
 
@@ -1524,6 +1547,7 @@ s_marshall * marshall_var (s_marshall *m, bool heap, const s_var *var)
   assert(m);
   assert(var);
   if (! m || ! var ||
+      ! marshall_1(m, heap, "_KC3VAR_") ||
       ! marshall_ident(m, heap, &var->name) ||
       ! marshall_psym(m, heap, &var->type) ||
       ! marshall_bool(m, heap, var->bound) ||

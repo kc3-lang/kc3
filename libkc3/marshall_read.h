@@ -77,6 +77,7 @@ PROTO_MARSHALL_READ(list,         s_list           );
 PROTO_MARSHALL_READ(ident,        s_ident          );
 PROTO_MARSHALL_READ(integer,      s_integer        );
 PROTO_MARSHALL_READ(map,          s_map            );
+PROTO_MARSHALL_READ(offset,       u64              );
 PROTO_MARSHALL_READ(ops,          s_ops            );
 PROTO_MARSHALL_READ(pcallable,    p_callable       );
 PROTO_MARSHALL_READ(pcomplex,     p_complex        );

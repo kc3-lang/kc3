@@ -67,9 +67,26 @@ sw err_inspect (const s_tag *x)
 sw err_inspect_buf (const s_buf *buf)
 {
   uw pos;
+  sw r;
+  sw result = 0;
+  sw size;
   pos = (buf->rpos < IO_INSPECT_BUF_SIZE) ? 0 :
     buf->rpos - IO_INSPECT_BUF_SIZE;
-  return err_write(buf->ptr.pchar + pos, buf->rpos - pos);
+  if ((r = err_write(buf->ptr.pchar + pos, buf->rpos - pos)) <= 0)
+    return r;
+  result += r;
+  if ((r = err_write_1("\n----HERE---\n")) <= 0)
+    return r;
+  result += r;
+  size = buf->wpos - buf->rpos;
+  size = (size < IO_INSPECT_BUF_SIZE) ? size : IO_INSPECT_BUF_SIZE;
+  if ((r = err_write(buf->ptr.pchar + buf->rpos, size)) <= 0)
+    return r;
+  result += r;
+  if ((r = err_write_1("\n")) <= 0)
+    return r;
+  result += r;
+  return result;
 }
 
 sw err_inspect_tag_type (e_tag_type type)

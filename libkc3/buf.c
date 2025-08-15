@@ -1399,11 +1399,19 @@ s64 buf_seek (s_buf *buf, s64 position, s8 from)
 
 s64 buf_seek_set (s_buf *buf, s64 position)
 {
-  if (position < 0 ||
-      (uw) position > buf->wpos ||
-      (uw) position > buf->size) {
-    err_puts("buf_seek_set: invalid position");
-    assert(! "buf_seek_set: invalid position");
+  if (position < 0) {
+    err_puts("buf_seek_set: negative position");
+    assert(! "buf_seek_set: negative position");
+    return -1;
+  }
+  if (buf->wpos > buf->size) {
+    err_puts("buf_seek_set: buf wpos > size");
+    assert(! "buf_seek_set: buf wpos > size");
+    return -1;
+  }
+  if ((uw) position > buf->wpos) {
+    err_puts("buf_seek_set: position > buf wpos");
+    assert(! "buf_seek_set: position > buf wpos");
     return -1;
   }
   buf->rpos = position;

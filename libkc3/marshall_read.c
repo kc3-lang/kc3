@@ -88,6 +88,10 @@ s_marshall_read * marshall_read_1 (s_marshall_read *mr, bool heap,
   buf = heap ? &mr->heap : &mr->buf;
   if (buf_read_1(buf, p) <= 0) {
     err_puts("marshall_read_1: buf_read_1");
+    err_write_1("Expected: ");
+    err_puts(p);
+    err_puts("Buffer contents:");
+    err_inspect_buf(buf);
     assert(! "marshall_read_1: buf_read_1");
     return NULL;
   }
@@ -655,6 +659,11 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
   }
   i = 0;
   while (i < count) {
+    if (true) {
+      err_write_1("marshall_read_facts: #");
+      err_inspect_uw_decimal(i);
+      err_write_1("\n");
+    }
     if (! marshall_read_fact(mr, heap, &fact)) {
       err_puts("marshall_read_facts: marshall_read_fact");
       assert(! "marshall_read_facts: marshall_read_fact");
@@ -791,7 +800,7 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
   assert(present);
   s_tag key = {0};
   s_tag tag = {0};
-  if (! marshall_read_u64(mr, heap, offset))
+  if (! marshall_read_offset(mr, heap, offset))
     return NULL;
   if (! *offset) {
     *present = NULL;
@@ -811,7 +820,7 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
     err_puts("marshall_read_heap_pointer: invalid tag in ht");
     assert(! "marshall_read_heap_pointer: invalid tag in ht");
   }
-  *present = (void *)tag.data.tuple.tag[1].data.uw;
+  *present = (void *) tag.data.tuple.tag[1].data.uw;
   tag_clean(&tag);
   return mr;
 }
@@ -1058,6 +1067,23 @@ s_marshall_read * marshall_read_new_str (const s_str *input)
     free(mr);
     return NULL;
   }
+  return mr;
+}
+
+s_marshall_read * marshall_read_offset (s_marshall_read *mr,
+                                        bool heap, u64 *dest)
+{
+  s_buf *buf = NULL;
+  u64 tmp = 0;
+  assert(mr);
+  assert(dest);
+  buf = heap ? &mr->heap : &mr->buf;
+  if (buf_read_u64(buf, &tmp) <= 0) {
+    err_puts("marshall_read_offset: buf_read_u64");
+    assert(! "marshall_read_offset: buf_read_u64");
+    return NULL;
+  }
+  *dest = le64toh(tmp);
   return mr;
 }
 
@@ -1485,6 +1511,11 @@ s_marshall_read * marshall_read_pvar (s_marshall_read *mr,
   p_var tmp = NULL;
   assert(mr);
   assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3Pvar_")) {
+    err_puts("marshall_read_pvar: marshall_read_1 magic");
+    assert(! "marshall_read_pvar: marshall_read_1 magic");
+    return NULL;
+  }
   if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
     return NULL;
   if (! offset) {
@@ -1913,7 +1944,8 @@ s_marshall_read * marshall_read_var (s_marshall_read *mr,
   s_var tmp = {0};
   assert(mr);
   assert(dest);
-  if (! marshall_read_ident(mr, heap, &tmp.name) ||
+  if (! marshall_read_1(mr, heap, "_KC3VAR_") ||
+      ! marshall_read_ident(mr, heap, &tmp.name) ||
       ! marshall_read_psym(mr, heap, &tmp.type) ||
       ! marshall_read_bool(mr, heap, &tmp.bound) ||
       (tmp.bound &&

@@ -60,6 +60,7 @@ PROTO_MARSHALL(ident, const s_ident *);
 PROTO_MARSHALL(integer, const s_integer *);
 PROTO_MARSHALL(frame, const s_frame *);
 PROTO_MARSHALL(map, const s_map *);
+s_marshall * marshall_offset (s_marshall *m, bool heap, u64 src);
 PROTO_MARSHALL(op, const s_op *);
 PROTO_MARSHALL(ops, s_ops *);
 PROTO_MARSHALL(pcallable, const p_callable *);

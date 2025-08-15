@@ -21,205 +21,205 @@ fn (tag) do
   end
 end
 loopback(false)
-{:ok, 34}
+{:ok, 58}
 loopback(true)
-{:ok, 34}
+{:ok, 58}
 loopback('A')
-{:ok, 34}
+{:ok, 49}
 loopback('\0')
-{:ok, 34}
+{:ok, 49}
 loopback('Z')
-{:ok, 34}
+{:ok, 49}
 loopback(0)
-{:ok, 34}
-loopback(1)
-{:ok, 34}
-loopback(2)
-{:ok, 34}
-loopback(255)
-{:ok, 34}
-loopback(256)
-{:ok, 35}
-loopback(-1234)
-{:ok, 35}
-loopback(1234)
-{:ok, 35}
-loopback(-123456789)
-{:ok, 37}
-loopback(123456789)
-{:ok, 37}
-loopback((F32) 0.0)
-{:ok, 37}
-loopback((F32) 1.0)
-{:ok, 37}
-loopback((F64) 0.0)
-{:ok, 41}
-loopback((F64) 1.0)
-{:ok, 41}
-loopback((F128) 0.0)
-{:ok, 49}
-loopback((F128) 1.0)
-{:ok, 49}
-loopback("")
-{:ok, 37}
-loopback("hello")
-{:ok, 42}
-loopback("héllo wörld")
-{:ok, 50}
-loopback([0, 1])
-{:ok, 63}
-loopback([[2, 3], [4, 5]])
-{:ok, 121}
-loopback(%Time{})
-{:ok, 50}
-loopback((Ptr) 0x0)
-{:ok, 41}
-loopback(1 +i 2)
-{:ok, 45}
-loopback(false)
-{:ok, 34}
-loopback(true)
-{:ok, 34}
-loopback('0')
-{:ok, 34}
-loopback('z')
-{:ok, 34}
-loopback('\n')
-{:ok, 34}
-loopback('\t')
-{:ok, 34}
-loopback(255)
-{:ok, 34}
-loopback(127)
-{:ok, 34}
-loopback(128)
-{:ok, 34}
-loopback(-1)
-{:ok, 34}
-loopback(-32768)
-{:ok, 35}
-loopback(32767)
-{:ok, 35}
-loopback(65535)
-{:ok, 35}
-loopback(-2147483648)
-{:ok, 37}
-loopback(2147483647)
-{:ok, 37}
-loopback(4294967295)
-{:ok, 37}
-loopback(-9223372036854775808)
-{:ok, 41}
-loopback(9223372036854775807)
-{:ok, 41}
-loopback(18446744073709551615)
-{:ok, 41}
-loopback((Integer) 1024)
-{:ok, 44}
-loopback(10000000000000000000000000000000000)
-{:ok, 57}
-loopback(123456789012345678901234567890)
-{:ok, 55}
-loopback((F32) -1.0)
-{:ok, 37}
-loopback((F32) 3.141592)
-{:ok, 37}
-loopback((F32) 4.294966e+9)
-{:ok, 37}
-loopback((F64) -1.0)
-{:ok, 41}
-loopback((F64) 3.14159265358979)
-{:ok, 41}
-loopback((F64) 4.294967296e+9)
-{:ok, 41}
-loopback((F128) -1.0)
-{:ok, 49}
-loopback((F128) 3.141592653589793237862287655914883)
-{:ok, 49}
-loopback(2/6)
-{:ok, 53}
-loopback(1/3)
-{:ok, 53}
-loopback(22/7)
-{:ok, 53}
-loopback(0 +i 1)
-{:ok, 45}
-loopback(-1 +i -2)
-{:ok, 45}
-loopback((F32) 3.14 +i (F32) 2.71)
-{:ok, 51}
-loopback("test\ntab\there")
-{:ok, 50}
-loopback([])
-{:ok, 41}
-loopback([1, 2, 3, 4, 5])
-{:ok, 96}
-loopback([true, false, 'A'])
-{:ok, 74}
-loopback(["hello", "world"])
-{:ok, 79}
-loopback([[[1]]])
-{:ok, 88}
-loopback({1, 2, 3})
-{:ok, 47}
-loopback({true, 'A', "test"})
-{:ok, 54}
-loopback({1, 2, [3, 4]})
-{:ok, 76}
-loopback(do end)
-{:ok, 33}
-loopback(Module)
-{:ok, 51}
-loopback(:test)
-{:ok, 49}
-loopback(:hello_world)
 {:ok, 56}
+loopback(1)
+{:ok, 56}
+loopback(2)
+{:ok, 56}
+loopback(255)
+{:ok, 56}
+loopback(256)
+{:ok, 58}
+loopback(-1234)
+{:ok, 58}
+loopback(1234)
+{:ok, 58}
+loopback(-123456789)
+{:ok, 60}
+loopback(123456789)
+{:ok, 60}
+loopback((F32) 0.0)
+{:ok, 60}
+loopback((F32) 1.0)
+{:ok, 60}
+loopback((F64) 0.0)
+{:ok, 64}
+loopback((F64) 1.0)
+{:ok, 64}
+loopback((F128) 0.0)
+{:ok, 73}
+loopback((F128) 1.0)
+{:ok, 73}
+loopback("")
+{:ok, 68}
+loopback("hello")
+{:ok, 73}
+loopback("héllo wörld")
+{:ok, 81}
+loopback([0, 1])
+{:ok, 182}
+loopback([[2, 3], [4, 5]])
+{:ok, 434}
+loopback(%Time{})
+{:ok, 104}
+loopback((Ptr) 0x0)
+{:ok, 71}
+loopback(1 +i 2)
+{:ok, 117}
+loopback(false)
+{:ok, 58}
+loopback(true)
+{:ok, 58}
+loopback('0')
+{:ok, 49}
+loopback('z')
+{:ok, 49}
+loopback('\n')
+{:ok, 49}
+loopback('\t')
+{:ok, 49}
+loopback(255)
+{:ok, 56}
+loopback(127)
+{:ok, 56}
+loopback(128)
+{:ok, 56}
+loopback(-1)
+{:ok, 56}
+loopback(-32768)
+{:ok, 58}
+loopback(32767)
+{:ok, 58}
+loopback(65535)
+{:ok, 58}
+loopback(-2147483648)
+{:ok, 60}
+loopback(2147483647)
+{:ok, 60}
+loopback(4294967295)
+{:ok, 60}
+loopback(-9223372036854775808)
+{:ok, 64}
+loopback(9223372036854775807)
+{:ok, 64}
+loopback(18446744073709551615)
+{:ok, 64}
+loopback((Integer) 1024)
+{:ok, 71}
+loopback(10000000000000000000000000000000000)
+{:ok, 84}
+loopback(123456789012345678901234567890)
+{:ok, 82}
+loopback((F32) -1.0)
+{:ok, 60}
+loopback((F32) 3.141592)
+{:ok, 60}
+loopback((F32) 4.294966e+9)
+{:ok, 60}
+loopback((F64) -1.0)
+{:ok, 64}
+loopback((F64) 3.14159265358979)
+{:ok, 64}
+loopback((F64) 4.294967296e+9)
+{:ok, 64}
+loopback((F128) -1.0)
+{:ok, 73}
+loopback((F128) 3.141592653589793237862287655914883)
+{:ok, 73}
+loopback(2/6)
+{:ok, 92}
+loopback(1/3)
+{:ok, 92}
+loopback(22/7)
+{:ok, 92}
+loopback(0 +i 1)
+{:ok, 117}
+loopback(-1 +i -2)
+{:ok, 117}
+loopback((F32) 3.14 +i (F32) 2.71)
+{:ok, 125}
+loopback("test\ntab\there")
+{:ok, 81}
+loopback([])
+{:ok, 66}
+loopback([1, 2, 3, 4, 5])
+{:ok, 356}
+loopback([true, false, 'A'])
+{:ok, 237}
+loopback(["hello", "world"])
+{:ok, 216}
+loopback([[[1]]])
+{:ok, 260}
+loopback({1, 2, 3})
+{:ok, 143}
+loopback({true, 'A', "test"})
+{:ok, 154}
+loopback({1, 2, [3, 4]})
+{:ok, 269}
+loopback(do end)
+{:ok, 48}
+loopback(Module)
+{:ok, 99}
+loopback(:test)
+{:ok, 97}
+loopback(:hello_world)
+{:ok, 104}
 loopback(%{})
-{:ok, 41}
+{:ok, 71}
 loopback(%{a: 1,
            b: 2})
-{:ok, 73}
+{:ok, 243}
 loopback(%{key: "value",
            num: 42})
-{:ok, 85}
+{:ok, 264}
 loopback(%{nested: %{inner: true}})
-{:ok, 89}
+{:ok, 269}
 loopback(%Time{tv_sec: 1000, tv_nsec: 2000})
-{:ok, 50}
+{:ok, 104}
 loopback(%Time{tv_sec: 1 + 1, tv_nsec: 2 + 2})
-{:ok, 50}
+{:ok, 104}
 loopback((Ptr) 0x0)
-{:ok, 41}
+{:ok, 71}
 loopback((PtrFree) 0x0)
-{:ok, 41}
+{:ok, 71}
 loopback((U8) ?)
-{:ok, 86}
+{:ok, 226}
 loopback(?)
-{:ok, 87}
+{:ok, 227}
 loopback(fn (x) { x * 2 })
-{:ok, 231}
+{:ok, 717}
 loopback(fn (a, b) { a + b })
-{:ok, 282}
+{:ok, 885}
 loopback(List.reverse([]))
-{:ok, 41}
+{:ok, 66}
 loopback(a = 1)
-{:ok, 34}
+{:ok, 56}
 loopback(defmodule Test do end)
-{:ok, 49}
+{:ok, 97}
 loopback(do
   1
   2
   3
 end)
-{:ok, 34}
+{:ok, 56}
 loopback(cfn Tag "tag_add" (Tag, Tag, Result))
-{:ok, 157}
+{:ok, 449}
 loopback(%KC3.Op{sym: :-,
                  callable: cfn Tag "tag_add" (Tag, Tag, Result)})
-{:ok, 461}
+{:ok, 1535}
 loopback((U8[]) {})
-{:ok, 71}
+{:ok, 167}
 loopback((U8[]) {0, 1, 2, 254, 255})
-{:ok, 109}
+{:ok, 309}
 loopback((U8[]) {0, 1 + 1, 2 + 2, 254, 255})
-{:ok, 109}
+{:ok, 309}
