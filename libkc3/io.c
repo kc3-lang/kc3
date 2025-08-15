@@ -70,17 +70,22 @@ sw err_inspect_buf (const s_buf *buf)
   sw r;
   sw result = 0;
   sw size;
+  s_str str = {0};
   pos = (buf->rpos < IO_INSPECT_BUF_SIZE) ? 0 :
     buf->rpos - IO_INSPECT_BUF_SIZE;
-  if ((r = err_write(buf->ptr.pchar + pos, buf->rpos - pos)) <= 0)
+  str.ptr.pchar = buf->ptr.pchar + pos;
+  str.size = buf->rpos - pos;
+  if ((r = err_inspect_str(&str)) <= 0)
     return r;
   result += r;
-  if ((r = err_write_1("\n----HERE---\n")) <= 0)
+  if ((r = err_write_1("\n---HERE---\n")) <= 0)
     return r;
   result += r;
   size = buf->wpos - buf->rpos;
   size = (size < IO_INSPECT_BUF_SIZE) ? size : IO_INSPECT_BUF_SIZE;
-  if ((r = err_write(buf->ptr.pchar + buf->rpos, size)) <= 0)
+  str.ptr.pchar = buf->ptr.pchar + buf->rpos;
+  str.size = size;
+  if ((r = err_inspect_str(&str)) <= 0)
     return r;
   result += r;
   if ((r = err_write_1("\n")) <= 0)
