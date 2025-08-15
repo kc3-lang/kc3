@@ -2174,7 +2174,7 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
     result += r;
   }
   if (fn->frame && fn->frame->bindings) {
-    if ((r = buf_write_1(buf, " [")) < 0)
+    if ((r = buf_write_1(buf, "[")) < 0)
       return r;
     result += r;
     binding = fn->frame->bindings;

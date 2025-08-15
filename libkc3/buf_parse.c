@@ -2028,9 +2028,8 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
       goto restore;
     result += r;
   }
-  buf_save_clean(buf, &save);
-  buf_save_init(buf, &save);
-  if ((r = buf_ignore_spaces_but_newline(buf)) <= 0 ||
+  buf_save_update(buf, &save);
+  if ((r = buf_ignore_spaces_but_newline(buf)) < 0 ||
       (r1 = buf_parse_plist(buf, &frame_list)) <= 0)
     goto ok;
   result += r + r1;

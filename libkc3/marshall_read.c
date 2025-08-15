@@ -697,12 +697,26 @@ s_marshall_read * marshall_read_fn (s_marshall_read *mr, bool heap,
     assert(! "marshall_read_fn: marshall_read_1 magic");
     return NULL;
   }
-  if (! marshall_read_bool(mr, heap, &tmp.macro) ||
-      ! marshall_read_bool(mr, heap, &tmp.special_operator) ||
-      ! marshall_read_ident(mr, heap, &tmp.name) ||
-      ! marshall_read_psym(mr, heap, &tmp.module) ||
-      ! marshall_read_uw(mr, heap, &clause_count))
+  if (! marshall_read_bool(mr, heap, &tmp.macro)) {
+    err_puts("marshall_read_fn: marshall_read_bool macro");
     return NULL;
+  }
+  if (! marshall_read_bool(mr, heap, &tmp.special_operator)) {
+    err_puts("marshall_read_fn: marshall_read_bool special_operator");
+    return NULL;
+  }
+  if (! marshall_read_ident(mr, heap, &tmp.name)) {
+    err_puts("marshall_read_fn: marshall_read_ident name");
+    return NULL;
+  }
+  if (! marshall_read_psym(mr, heap, &tmp.module)) {
+    err_puts("marshall_read_fn: marshall_read_psym module");
+    return NULL;
+  }
+  if (! marshall_read_uw(mr, heap, &clause_count)) {
+    err_puts("marshall_read_fn: marshall_read_uw clause_count");
+    return NULL;
+  }
   clause = &tmp.clauses;
   i = 0;
   while (i < clause_count) {
@@ -716,6 +730,7 @@ s_marshall_read * marshall_read_fn (s_marshall_read *mr, bool heap,
     i++;
   }
   if (! marshall_read_pframe(mr, heap, &tmp.frame)) {
+    err_puts("marshall_read_fn: marshall_read_pframe frame");
     fn_clean(&tmp);
     return NULL;
   }
@@ -735,15 +750,29 @@ s_marshall_read * marshall_read_frame (s_marshall_read *mr, bool heap,
     assert(! "marshall_read_frame: marshall_read_1 magic");
     return NULL;
   }
-  if (! marshall_read_uw(mr, heap, &binding_count))
+  if (! marshall_read_uw(mr, heap, &binding_count)) {
+    err_puts("marshall_read_frame: marshall_read_uw binding_count");
+    assert(! "marshall_read_frame: marshall_read_uw binding_count");
     return NULL;
+  }
   binding = &tmp.bindings;
   i = 0;
   while (i < binding_count) {
-    if (! (*binding = alloc(sizeof(s_binding))) ||
-        ! marshall_read_psym(mr, heap, &(*binding)->name) ||
-        ! marshall_read_tag(mr, heap, &(*binding)->value))
+    if (true) {
+      err_write_1("marshall_read_frame: binding #");
+      err_inspect_uw_decimal(i);
+      err_write_1("\n");
+    }
+    if (! (*binding = alloc(sizeof(s_binding))))
       goto ko;
+    if (! marshall_read_psym(mr, heap, &(*binding)->name)) {
+      err_puts("marshall_read_frame: marshall_read_psym name");
+      goto ko;
+    }
+    if (! marshall_read_tag(mr, heap, &(*binding)->value)) {
+      err_puts("marshall_read_frame: marshall_read_tag value");
+      goto ko;
+    }
     binding = &(*binding)->next;
     i++;
   }
@@ -751,6 +780,7 @@ s_marshall_read * marshall_read_frame (s_marshall_read *mr, bool heap,
   return mr;
  ko:
   frame_clean(&tmp);
+  assert("marshall_read_frame: error");
   return NULL;
 }
 
@@ -1272,11 +1302,11 @@ s_marshall_read * marshall_read_pcow  (s_marshall_read *mr,
 }
 
 s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
-                                       bool heap,
-                                       p_frame *dest)
+                                        bool heap,
+                                        p_frame *dest)
 {
   u64 offset = 0;
-  void *present = NULL;
+  p_frame present = NULL;
   p_frame tmp = NULL;
   assert(mr);
   assert(dest);
@@ -1285,8 +1315,11 @@ s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
     assert(! "marshall_read_pframe: marshall_read_1 magic");
     return NULL;
   }
-  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+  if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                   (void**) &present)) {
+    err_puts("marshall_read_pframe: marshall_read_heap_pointer");
     return NULL;
+  }
   if (! offset) {
     *dest = NULL;
     return mr;
@@ -1295,11 +1328,19 @@ s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
     *dest = frame_new_ref(present);
     return mr;
   }
-  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
-      ! (tmp = alloc(sizeof(s_frame))))
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
+    err_puts("marshall_read_pframe: buf_seek failed");
     return NULL;
-  if (! marshall_read_frame(mr, true, tmp) ||
-      ! marshall_read_ht_add(mr, offset, tmp)) {
+  }
+  if (! (tmp = alloc(sizeof(s_frame))))
+    return NULL;
+  if (! marshall_read_frame(mr, true, tmp)) {
+    err_puts("marshall_read_pframe: marshall_read_frame");
+    frame_delete(tmp);
+    return NULL;
+  }
+  if (! marshall_read_ht_add(mr, offset, tmp)) {
+    err_puts("marshall_read_pframe: marshall_read_ht_add");
     frame_delete(tmp);
     return NULL;
   }
@@ -1446,10 +1487,18 @@ s_marshall_read * marshall_read_psym (s_marshall_read *mr,
     *dest = present;
     return mr;
   }
-  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
-      ! marshall_read_sym(mr, true, &tmp) ||
-      ! marshall_read_ht_add(mr, offset, tmp))
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
+    err_puts("marshall_read_psym: buf_seek failed");
     return NULL;
+  }
+  if (! marshall_read_sym(mr, true, &tmp)) {
+    err_puts("marshall_read_psym: marshall_read_sym failed");
+    return NULL;
+  }
+  if (! marshall_read_ht_add(mr, offset, tmp)) {
+    err_puts("marshall_read_psym: marshall_read_ht_add failed");
+    return NULL;
+  }
   *dest = tmp;
   return mr;
 }

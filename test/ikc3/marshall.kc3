@@ -234,3 +234,13 @@ quote loopback((U8[]) {0, 1, 2, 254, 255})
 loopback((U8[]) {0, 1, 2, 254, 255})
 quote loopback((U8[]) {0, 1 + 1, 2 + 2, 254, 255})
 loopback((U8[]) {0, 1 + 1, 2 + 2, 254, 255})
+quote loopback(do
+  a = 1
+  f = fn () { a } [a: 2]
+  f()
+end)
+loopback(do
+  a = 1
+  f = fn () { a } [a: 2]
+  f()
+end)
