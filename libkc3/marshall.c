@@ -38,7 +38,7 @@
 #include "types.h"
 #include "marshall.h"
 
-#define DEF_MARSHALL(type)                                            \
+#define DEF_MARSHALL(type, magic)                                     \
   s_marshall * marshall_ ## type (s_marshall *m, bool heap, type src) \
   {                                                                   \
     s_buf *buf;                                                       \
@@ -58,7 +58,7 @@
                   u64:     htole64(src),                              \
                   default: src);                                      \
     buf = heap ? &m->heap : &m->buf;                                  \
-    if ((r = buf_write_1(buf, "_KC3" # type "_")) <= 0)               \
+    if ((r = buf_write_1(buf, magic)) <= 0)                           \
       return NULL;                                                    \
     if (heap)                                                         \
       m->heap_pos += r;                                               \
@@ -73,7 +73,7 @@
     return m;                                                         \
   }
 
-#define DEF_MARSHALL_P(name, type)                                    \
+#define DEF_MARSHALL_P(name, magic, type)                                   \
   s_marshall * marshall_p ## name (s_marshall *m, bool heap,          \
                                    const type *data)                  \
   {                                                                   \
@@ -84,7 +84,7 @@
       assert(! "marshall_p" # name ": invalid argument");             \
       return NULL;                                                    \
     }                                                                 \
-    if (! marshall_1(m, heap, "_KC3P" # name "_")) {                  \
+    if (! marshall_1(m, heap, magic)) {                               \
       err_puts("marshall_p" # name ": marshall_1 magic");             \
       assert(! "marshall_p" # name ": marshall_1 magic");             \
       return NULL;                                                    \
@@ -177,7 +177,7 @@ s_marshall * marshall_array (s_marshall *m, bool heap,
   return m;
 }
 
-DEF_MARSHALL(bool)
+DEF_MARSHALL(bool, "_KC3BOOL_")
 
 s_marshall * marshall_call (s_marshall *m, bool heap,
                             const s_call *call)
@@ -705,9 +705,9 @@ sw marshall_env_to_file (const s_env *env, const char *path)
   return -1;
 }
 
-DEF_MARSHALL(f32)
-DEF_MARSHALL(f64)
-DEF_MARSHALL(f128)
+DEF_MARSHALL(f32, "_KC3F32_")
+DEF_MARSHALL(f64, "_KC3F64_")
+DEF_MARSHALL(f128, "_KC3F128_")
 
 s_marshall * marshall_fact (s_marshall *m, bool heap,
                             const s_fact *fact)
@@ -830,7 +830,8 @@ s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)
     clause_count++;
     clause = clause->next;
   }
-  if (! marshall_bool(m, heap, fn->macro) ||
+  if (! marshall_1(m, heap, "_KC3FN_") ||
+      ! marshall_bool(m, heap, fn->macro) ||
       ! marshall_bool(m, heap, fn->special_operator) ||
       ! marshall_ident(m, heap, &fn->name) ||
       ! marshall_psym(m, heap, &fn->module) ||
@@ -856,6 +857,8 @@ s_marshall * marshall_frame (s_marshall *m, bool heap,
   assert(m);
   assert(frame);
   if (! m || ! frame)
+    return NULL;
+  if (! marshall_1(m, heap, "_KC3FRAME_"))
     return NULL;
   binding = frame->bindings;
   while (binding) {
@@ -932,6 +935,7 @@ s_marshall * marshall_ident (s_marshall *m, bool heap,
   assert(m);
   assert(ident);
   if (! m || ! ident ||
+      ! marshall_1(m, heap, "_KC3IDENT_") ||
       ! marshall_psym(m, heap, &ident->module) ||
       ! marshall_psym(m, heap, &ident->sym))
     return NULL;
@@ -960,7 +964,7 @@ s_marshall * marshall_integer (s_marshall *m, bool heap,
   assert(m);
   assert(i);
   buf = heap ? &m->heap : &m->buf;
-  if (! marshall_1(m, heap, "_KC3integer_"))
+  if (! marshall_1(m, heap, "_KC3INTEGER_"))
     return NULL;
   if ((r = buf_write_integer(buf, i)) <= 0)
     return NULL;
@@ -976,7 +980,8 @@ s_marshall * marshall_list (s_marshall *m, bool heap,
 {
   assert(m);
   assert(list);
-  if (! marshall_tag(m, heap, &list->tag) ||
+  if (! marshall_1(m, heap, "_KC3LIST_") ||
+      ! marshall_tag(m, heap, &list->tag) ||
       ! marshall_tag(m, heap, &list->next))
     return NULL;
   return m;
@@ -987,7 +992,8 @@ s_marshall * marshall_map (s_marshall *m, bool heap, const s_map *map)
   uw i = 0;
   assert(m);
   assert(map);
-  if (! marshall_uw(m, heap, map->count))
+  if (! marshall_1(m, heap, "_KC3MAP_") ||
+      ! marshall_uw(m, heap, map->count))
     return NULL;
   while (i < map->count) {
     if (! marshall_tag(m, heap, map->key + i) ||
@@ -1116,19 +1122,21 @@ s_marshall * marshall_ops (s_marshall *m, bool heap, s_ops *ops)
   return NULL;
 }
 
-DEF_MARSHALL_P(callable, p_callable)
-DEF_MARSHALL_P(complex, p_complex)
-DEF_MARSHALL_P(cow, p_cow)
-DEF_MARSHALL_P(frame, p_frame)
-DEF_MARSHALL_P(list, p_list)
-DEF_MARSHALL_P(struct, p_struct)
-DEF_MARSHALL_P(struct_type, p_struct_type)
-DEF_MARSHALL_P(sym, p_sym)
-DEF_MARSHALL_P(tag, p_tag)
+DEF_MARSHALL_P(callable,    "_KC3PCALLABLE_",   p_callable)
+DEF_MARSHALL_P(complex,     "_KC3PCOMPLEX_",    p_complex)
+DEF_MARSHALL_P(cow,         "_KC3PCOW_",        p_cow)
+DEF_MARSHALL_P(frame,       "_KC3PFRAME_",      p_frame)
+DEF_MARSHALL_P(list,        "_KC3PLIST_",       p_list)
+DEF_MARSHALL_P(struct,      "_KC3PSTRUCT_",     p_struct)
+DEF_MARSHALL_P(struct_type, "_KC3PSTRUCTTYPE_", p_struct_type)
+DEF_MARSHALL_P(sym,         "_KC3PSYM_",        p_sym)
+DEF_MARSHALL_P(tag,         "_KC3PTAG_",        p_tag)
 
 s_marshall * marshall_ptr (s_marshall *m, bool heap, u_ptr_w ptr)
 {
   assert(m);
+  if (! marshall_1(m, heap, "_KC3PTR_"))
+    return NULL;
   if (! ptr.p)
     return marshall_uw(m, heap, 0);
   err_puts("marshall_ptr: non-null pointer.");
@@ -1140,6 +1148,8 @@ s_marshall * marshall_ptr_free (s_marshall *m, bool heap,
                                 u_ptr_w ptr_free)
 {
   assert(m);
+  if (! marshall_1(m, heap, "_KC3PTRFREE_"))
+    return NULL;
   if (! ptr_free.p)
     return marshall_uw(m, heap, 0);
   err_puts("marshall_ptr_free: non-null pointer.");
@@ -1147,7 +1157,7 @@ s_marshall * marshall_ptr_free (s_marshall *m, bool heap,
   return NULL;
 }
 
-DEF_MARSHALL_P(var, p_var)
+DEF_MARSHALL_P(var, "_KC3PVAR_", p_var)
 
 s_marshall * marshall_quote (s_marshall *m, bool heap,
                              const s_quote *quote)
@@ -1155,7 +1165,13 @@ s_marshall * marshall_quote (s_marshall *m, bool heap,
   assert(m);
   assert(quote);
   assert(quote->tag);
-  if (! quote->tag || ! marshall_tag(m, heap, quote->tag))
+  if (! m || ! quote || ! quote->tag) {
+    err_puts("marshall_quote: invalid argument");
+    assert(! "marshall_quote: invalid argument");
+    return NULL;
+  }
+  if (! marshall_1(m, heap, "_KC3QUOTE_") ||
+      ! marshall_tag(m, heap, quote->tag))
     return NULL;
   return m;
 }
@@ -1165,16 +1181,17 @@ s_marshall * marshall_ratio (s_marshall *m, bool heap,
 {
   assert(m);
   assert(ratio);
-  if (! marshall_integer(m, heap, &ratio->numerator) ||
+  if (! marshall_1(m, heap, "_KC3RATIO_") ||
+      ! marshall_integer(m, heap, &ratio->numerator) ||
       ! marshall_integer(m, heap, &ratio->denominator))
     return NULL;
   return m;
 }
 
-DEF_MARSHALL(s8)
-DEF_MARSHALL(s16)
-DEF_MARSHALL(s32)
-DEF_MARSHALL(s64)
+DEF_MARSHALL(s8, "_KC3S8_")
+DEF_MARSHALL(s16, "_KC3S16_")
+DEF_MARSHALL(s32, "_KC3S32_")
+DEF_MARSHALL(s64, "_KC3S64_")
 
 sw marshall_size (const s_marshall *m)
 {
@@ -1516,10 +1533,10 @@ s_marshall * marshall_tuple (s_marshall *m, bool heap,
   return m;
 }
 
-DEF_MARSHALL(u8)
-DEF_MARSHALL(u16)
-DEF_MARSHALL(u32)
-DEF_MARSHALL(u64)
+DEF_MARSHALL(u8, "_KC3U8_")
+DEF_MARSHALL(u16, "_KC3U16_")
+DEF_MARSHALL(u32, "_KC3U32_")
+DEF_MARSHALL(u64, "_KC3U64_")
 
 s_marshall * marshall_uw (s_marshall *m, bool heap, uw src)
 {

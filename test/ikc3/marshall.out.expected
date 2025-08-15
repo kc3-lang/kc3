@@ -67,13 +67,13 @@ loopback("hello")
 loopback("héllo wörld")
 {:ok, 81}
 loopback([0, 1])
-{:ok, 182}
+{:ok, 200}
 loopback([[2, 3], [4, 5]])
-{:ok, 434}
+{:ok, 488}
 loopback(%Time{})
 {:ok, 104}
 loopback((Ptr) 0x0)
-{:ok, 71}
+{:ok, 79}
 loopback(1 +i 2)
 {:ok, 117}
 loopback(false)
@@ -137,11 +137,11 @@ loopback((F128) -1.0)
 loopback((F128) 3.141592653589793237862287655914883)
 {:ok, 73}
 loopback(2/6)
-{:ok, 92}
+{:ok, 102}
 loopback(1/3)
-{:ok, 92}
+{:ok, 102}
 loopback(22/7)
-{:ok, 92}
+{:ok, 102}
 loopback(0 +i 1)
 {:ok, 117}
 loopback(-1 +i -2)
@@ -153,19 +153,19 @@ loopback("test\ntab\there")
 loopback([])
 {:ok, 66}
 loopback([1, 2, 3, 4, 5])
-{:ok, 356}
+{:ok, 401}
 loopback([true, false, 'A'])
-{:ok, 237}
+{:ok, 264}
 loopback(["hello", "world"])
-{:ok, 216}
+{:ok, 234}
 loopback([[[1]]])
-{:ok, 260}
+{:ok, 287}
 loopback({1, 2, 3})
 {:ok, 143}
 loopback({true, 'A', "test"})
 {:ok, 154}
 loopback({1, 2, [3, 4]})
-{:ok, 269}
+{:ok, 287}
 loopback(do end)
 {:ok, 48}
 loopback(Module)
@@ -175,31 +175,31 @@ loopback(:test)
 loopback(:hello_world)
 {:ok, 104}
 loopback(%{})
-{:ok, 71}
+{:ok, 79}
 loopback(%{a: 1,
            b: 2})
-{:ok, 243}
+{:ok, 251}
 loopback(%{key: "value",
            num: 42})
-{:ok, 264}
+{:ok, 272}
 loopback(%{nested: %{inner: true}})
-{:ok, 269}
+{:ok, 285}
 loopback(%Time{tv_sec: 1000, tv_nsec: 2000})
 {:ok, 104}
 loopback(%Time{tv_sec: 1 + 1, tv_nsec: 2 + 2})
 {:ok, 104}
 loopback((Ptr) 0x0)
-{:ok, 71}
+{:ok, 79}
 loopback((PtrFree) 0x0)
-{:ok, 71}
+{:ok, 83}
 loopback((U8) ?)
-{:ok, 226}
+{:ok, 236}
 loopback(?)
-{:ok, 227}
+{:ok, 237}
 loopback(fn (x) { x * 2 })
-{:ok, 717}
+{:ok, 783}
 loopback(fn (a, b) { a + b })
-{:ok, 885}
+{:ok, 980}
 loopback(List.reverse([]))
 {:ok, 66}
 loopback(a = 1)
@@ -213,10 +213,10 @@ loopback(do
 end)
 {:ok, 56}
 loopback(cfn Tag "tag_add" (Tag, Tag, Result))
-{:ok, 449}
+{:ok, 459}
 loopback(%KC3.Op{sym: :-,
                  callable: cfn Tag "tag_add" (Tag, Tag, Result)})
-{:ok, 1535}
+{:ok, 1562}
 loopback((U8[]) {})
 {:ok, 167}
 loopback((U8[]) {0, 1, 2, 254, 255})
