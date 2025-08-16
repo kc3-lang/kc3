@@ -24,6 +24,7 @@ int main (int argc, char **argv)
   bool    daemonize = true;
   s_ident daemonize_ident;
   s_tag   daemonize_value;
+  const s_str dump_path = STR_1("kc3.dump");
   s32 e;
   s_env *env;
   char  log_buf[64] = {0};
@@ -136,14 +137,20 @@ int main (int argc, char **argv)
   }
 #endif
   module = sym_1("HTTPd");
-  if (! module_load(module)) {
-    kc3_clean(NULL);
-    return 1;
-  }
   call_init(&call);
   call.ident.module = module;
-  call.ident.sym = sym_1("main");
-  //FIXME
+  if (! file_access(&dump_path, &g_sym_r)) {
+    if (! module_load(module)) {
+      kc3_clean(NULL);
+      return 1;
+    }
+    call.ident.sym = sym_1("main");
+  }
+  else {
+    io_puts("loaded local dump");
+    call.ident.sym = sym_1("server");
+  }
+    //FIXME
   if (argc >= 2)
     call.arguments = list_new_str_1
       (NULL, argv[0], list_new_str_1
