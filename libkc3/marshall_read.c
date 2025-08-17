@@ -23,6 +23,7 @@
 #include "compare.h"
 #include "complex.h"
 #include "do_block.h"
+#include "endian.h"
 #include "fact.h"
 #include "facts.h"
 #include "file.h"
@@ -342,10 +343,12 @@ s_marshall_read *marshall_read_cow (s_marshall_read *mr,
   if (! marshall_read_sym(mr, heap, &tmp.type) ||
       ! marshall_read_list(mr, heap, tmp.list))
         return NULL;
+#if HAVE_PTHREAD
   if (! mutex_init(&tmp.mutex)) {
     list_clean(tmp.list);
     return NULL;
   }
+#endif
   tmp.ref_count = 1;
   *dest = tmp;
   return mr;
@@ -1043,7 +1046,7 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
   tmp.heap.free = false;
   tmp.heap.rpos = sizeof(s_marshall_header);
   tmp.heap.wpos = tmp.heap.rpos + tmp.heap_size;
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
   rwlock_init(&tmp.heap.rwlock);
 #endif
   *mr = tmp;
@@ -1745,8 +1748,10 @@ s_marshall_read * marshall_read_struct (s_marshall_read *mr,
     }
   }
   tmp.ref_count = 1;
+#if HAVE_PTHREAD
   if (! mutex_init(&tmp.mutex))
     goto ko;
+#endif
   *dest = tmp;
   return mr;
 ko:
@@ -1780,10 +1785,13 @@ s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
   }
   if (! marshall_read_uw(mr, heap, &tmp.size) ||
       ! marshall_read_pcallable(mr, heap, &tmp.clean) ||
-      ! marshall_read_bool(mr, heap, &tmp.must_clean) ||
-      ! mutex_init(&tmp.mutex))
+      ! marshall_read_bool(mr, heap, &tmp.must_clean))
     return NULL;
   tmp.ref_count = 1;
+#if HAVE_PTHREAD
+  if (! mutex_init(&tmp.mutex))
+    return NULL;
+#endif
   *dest = tmp;
   return mr;
 }
@@ -2051,10 +2059,12 @@ s_marshall_read * marshall_read_var (s_marshall_read *mr,
        ! marshall_read_tag(mr, heap, &tmp.tag)))
     return NULL;
   tmp.ref_count = 1;
+#if HAVE_PTHREAD
   if (! mutex_init(&tmp.mutex)) {
     var_clean(&tmp);
     return NULL;
   }
+#endif
   *dest = tmp;
   return mr;
 }

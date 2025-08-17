@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-
-#include <endian.h>
+#include "../libkc3/endian.h"
 #include "../libkc3/file.h"
 #include "../libkc3/inspect.h"
 #include "../libkc3/marshall.h"
