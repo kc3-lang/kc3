@@ -1367,8 +1367,9 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
       return NULL;
     }
   }
-  if (! env_module_ensure_loaded(env, module))
-    return NULL;
+  // too slow, use require
+  // if (! env_module_ensure_loaded(env, module))
+  //   return NULL;
   tag_init_ident(&tag_ident, ident);
   tag_init_psym(  &tag_is_a, &g_sym_is_a);
   tag_init_psym(  &tag_macro, &g_sym_macro);
@@ -1706,6 +1707,7 @@ bool env_load (s_env *env, const s_str *path)
     err_write_1("env_load: ");
     err_inspect_str(path);
     err_write_1("\n");
+    //err_stacktrace();
   }
   if (! buf_init_alloc(&buf, BUF_SIZE))
     return false;

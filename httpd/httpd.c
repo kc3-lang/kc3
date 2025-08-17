@@ -137,20 +137,20 @@ int main (int argc, char **argv)
   }
 #endif
   module = sym_1("HTTPd");
-  call_init(&call);
-  call.ident.module = module;
+  // TODO: env_module_is_loaded
   if (! file_access(&dump_path, &g_sym_r)) {
     if (! module_load(module)) {
       kc3_clean(NULL);
       return 1;
     }
-    call.ident.sym = sym_1("main");
   }
   else {
     io_puts("loaded local dump");
-    call.ident.sym = sym_1("server");
   }
-    //FIXME
+  call_init(&call);
+  call.ident.module = module;
+  call.ident.sym = sym_1("main");
+  // TODO: better argument parsing
   if (argc >= 2)
     call.arguments = list_new_str_1
       (NULL, argv[0], list_new_str_1

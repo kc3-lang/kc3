@@ -23,9 +23,9 @@
 #include "types.h"
 
 /* Modifiers */
-bool module_ensure_loaded (const s_sym *module);
+bool module_ensure_loaded_ (const s_sym *module);
 bool module_load (const s_sym *module);
-bool module_maybe_reload (const s_sym *module);
+bool module_maybe_reload_ (const s_sym *module);
 
 /* Observers */
 bool *          module_has_ident (const s_sym *module,
