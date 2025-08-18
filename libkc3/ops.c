@@ -46,15 +46,22 @@ bool ops_add (s_ops *ops, s_op *op)
   }
   if (op->special)
     callable_set_special(op->pcallable, true);
-  if (! tag_init_pstruct(&op_tag, &g_sym_KC3_Op) ||
-      ! op_tag.data.pstruct) {
+  if (! tag_init_pstruct(&op_tag, &g_sym_KC3_Op)) {
     err_puts("ops_add: tag_init_pstruct");
     assert(! "ops_add: tag_init_pstruct");
     return false;
   }
-  if (! struct_allocate(op_tag.data.pstruct) ||
-      ! op_tag.data.pstruct->data)
+  if (! op_tag.data.pstruct) {
+    err_puts("ops_add: tag_init_pstruct == null");
+    assert(! "ops_add: tag_init_pstruct == null");
+    tag_clean(&op_tag);
     return false;
+  }
+  if (! struct_allocate(op_tag.data.pstruct) ||
+      ! op_tag.data.pstruct->data) {
+    tag_clean(&op_tag);
+    return false;
+  }
   *(s_op *) op_tag.data.pstruct->data = *op;
   if (false) {
     err_write_1("ops_add: ");
@@ -62,6 +69,7 @@ bool ops_add (s_ops *ops, s_op *op)
     err_write_1("\n");
   }
   r = ht_add(&ops->ht, &op_tag);
+  tag_clean(&op_tag);
   return r;
 }
 

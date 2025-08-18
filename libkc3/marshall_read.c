@@ -310,6 +310,8 @@ void marshall_read_clean (s_marshall_read *mr)
 {
   assert(mr);
   buf_clean(&mr->buf);
+  if (mr->buf.ptr.p != mr->heap.ptr.p)
+    buf_clean(&mr->heap);
   ht_clean(&mr->ht);
 }
 
@@ -966,7 +968,8 @@ s_marshall_read * marshall_read_init_file (s_marshall_read *mr,
   s_marshall_read tmp = {0};
   assert(mr);
   assert(path);
-  marshall_read_init(&tmp);
+  if (! marshall_read_init(&tmp))
+    return NULL;
   if (! (fp = file_open(path, "rb"))) {
     error_msg = "file_open buf";
     goto ko;
