@@ -47,6 +47,7 @@
 #include "compare.h"
 #include "data.h"
 #include "do_block.h"
+#include "endian.h"
 #include "env.h"
 #include "env_eval.h"
 #include "error.h"
