@@ -13,8 +13,50 @@
 #ifndef LIBKC3_ENDIAN_H
 #define LIBKC3_ENDIAN_H
 
+#ifdef htobe16
+# undef htobe16
+# undef htole16
+# undef be16toh
+# undef le16toh
+# undef htobe32
+# undef htole32
+# undef be32toh
+# undef le32toh
+# undef htobe64
+# undef htole64
+# undef be64toh
+# undef le64toh
+#endif
+
 #if ! defined(__APPLE__)
-# include <endian.h>
+# define BSWAP(b, x) __builtin_bswap ## b (x)
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+# define htobe16(x) BSWAP(16, x)
+# define htole16(x) (x)
+# define be16toh(x) BSWAP(16, x)
+# define le16toh(x) (x)
+# define htobe32(x) BSWAP(32, x)
+# define htole32(x) (x)
+# define be32toh(x) BSWAP(32, x)
+# define le32toh(x) (x)
+# define htobe64(x) BSWAP(64, x)
+# define htole64(x) (x)
+# define be64toh(x) BSWAP(64, x)
+# define le64toh(x) (x)
+#else
+# define htobe16(x) (x)
+# define htole16(x) BSWAP(16, x)
+# define be16toh(x) (x)
+# define le16toh(x) BSWAP(16, x)
+# define htobe32(x) (x)
+# define htole32(x) BSWAP(32, x)
+# define be32toh(x) (x)
+# define le32toh(x) BSWAP(32, x)
+# define htobe64(x) (x)
+# define htole64(x) BSWAP(64, x)
+# define be64toh(x) (x)
+# define le64toh(x) BSWAP(64, x)
+#endif
 #else
 # include <libkern/OSByteOrder.h>
 # define htobe16(x) OSSwapHostToBigInt16(x)
