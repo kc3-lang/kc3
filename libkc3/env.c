@@ -306,6 +306,7 @@ void env_clean (s_env *env)
     err_write_1("\n");
   }
   //facts_save_file(env->facts, "debug.facts"); // debug
+  str_clean(&env->restore_path);
   list_delete_all(env->dlopen_list);
   env_globals_clean(env);
   env_toplevel_clean(env);
