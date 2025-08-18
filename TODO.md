@@ -3,6 +3,7 @@
 ## libkc3
 
  - Typed pointers (Buf*)
+ - dlopen inside lib only
 
 ## Marshall
 
