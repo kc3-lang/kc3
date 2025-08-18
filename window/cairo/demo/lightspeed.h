@@ -17,8 +17,8 @@
 
 #define LIGHTSPEED_STARS 1000
 
-bool lightspeed_load (s_sequence *seq);
-bool lightspeed_render (s_sequence *seq);
-bool lightspeed_unload (s_sequence *seq);
+u8 lightspeed_load (s_sequence *seq);
+u8 lightspeed_render (s_sequence *seq);
+u8 lightspeed_unload (s_sequence *seq);
 
 #endif /* LIGHTSPEED_H */

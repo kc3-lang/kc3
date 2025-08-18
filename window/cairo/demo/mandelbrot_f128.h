@@ -15,9 +15,9 @@
 
 #include "../types.h"
 
-bool mandelbrot_f128_button (s_sequence *seq, u8 button, s64 x, s64 y);
-bool mandelbrot_f128_load (s_sequence *seq);
-bool mandelbrot_f128_render (s_sequence *seq);
-bool mandelbrot_f128_unload (s_sequence *seq);
+u8 mandelbrot_f128_button (s_sequence *seq, u8 button, s64 x, s64 y);
+u8 mandelbrot_f128_load (s_sequence *seq);
+u8 mandelbrot_f128_render (s_sequence *seq);
+u8 mandelbrot_f128_unload (s_sequence *seq);
 
 #endif /* MANDELBROT_F128_H */
