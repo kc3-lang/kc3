@@ -226,6 +226,7 @@ s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
   case TAG_INTEGER:
   case TAG_PCOMPLEX:
   case TAG_PCOW:
+  case TAG_PFACTS:
   case TAG_PSTRUCT_TYPE:
   case TAG_PSYM:
   case TAG_PTR:

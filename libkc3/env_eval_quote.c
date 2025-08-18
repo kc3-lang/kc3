@@ -339,6 +339,7 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_IDENT:
   case TAG_INTEGER:
   case TAG_PCALLABLE:
+  case TAG_PFACTS:
   case TAG_PSTRUCT_TYPE:
   case TAG_PSYM:
   case TAG_PTAG:

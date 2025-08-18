@@ -450,6 +450,16 @@ s8 compare_map (const s_map *a, const s_map *b)
   return 0;
 }
 
+// shallow comparison
+s8 compare_pfacts (const s_facts *a, const s_facts *b)
+{
+  if (a == b)
+    return 0;
+  if (a < b)
+    return -1;
+  return 1;
+}
+
 s8 compare_plist (const p_list *a, const p_list *b)
 {
   return compare_list(*a, *b);
@@ -1233,12 +1243,14 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                            &b->data.fact);
   case TAG_IDENT:      return compare_ident(&a->data.ident,
                                             &b->data.ident);
-  case TAG_PLIST:      return compare_list(a->data.plist,
-                                           b->data.plist);
   case TAG_MAP:        return compare_map(&a->data.map, &b->data.map);
   case TAG_PCALLABLE:  return compare_callable(a->data.pcallable,
                                                b->data.pcallable);
   case TAG_PCOW:       return compare_cow(a->data.pcow, b->data.pcow);
+  case TAG_PFACTS:     return compare_pfacts(a->data.pfacts,
+                                             b->data.pfacts);
+  case TAG_PLIST:      return compare_list(a->data.plist,
+                                           b->data.plist);
   case TAG_PSTRUCT:    return compare_struct(a->data.pstruct,
                                              b->data.pstruct);
   case TAG_PSTRUCT_TYPE:

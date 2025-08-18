@@ -142,6 +142,7 @@ HEADERS = \
 	"pcallable.h" \
 	"pcomplex.h" \
 	"pcow.h" \
+	"pfacts.h" \
 	"plist.h" \
 	"pretty.h" \
 	"pstruct.h" \
@@ -339,6 +340,7 @@ SOURCES = \
 	"pcallable.c" \
 	"pcomplex.c" \
 	"pcow.c" \
+	"pfacts.c" \
 	"plist.c" \
 	"pretty.c" \
 	"pstruct.c" \
@@ -653,6 +655,7 @@ LO_SOURCES = \
 	"pcallable.c" \
 	"pcomplex.c" \
 	"pcow.c" \
+	"pfacts.c" \
 	"plist.c" \
 	"pretty.c" \
 	"pstruct.c" \

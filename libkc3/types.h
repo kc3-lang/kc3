@@ -179,7 +179,8 @@ typedef enum {
   TAG_TIME         = 36, // \x24
   TAG_TUPLE        = 37, // \x25
   TAG_UNQUOTE      = 38, // \x26
-  TAG_IDENT        = 39  // \x27
+  TAG_IDENT        = 39, // \x27
+  TAG_PFACTS       = 40, // \x28
 } e_tag_type;
 
 
@@ -271,6 +272,7 @@ typedef s_buf *           p_buf;
 typedef s_callable *      p_callable;
 typedef s_complex *       p_complex;
 typedef s_cow *           p_cow;
+typedef s_facts *         p_facts;
 typedef s_tag **          p_facts_spec;
 typedef s_frame *         p_frame;
 typedef s_list *          p_list;
@@ -665,6 +667,7 @@ union tag_data {
   p_complex     pcomplex;
   p_cow         pcow;
   p_callable    pcallable;
+  p_facts       pfacts;
   p_list        plist;
   p_struct      pstruct;
   p_struct_type pstruct_type;

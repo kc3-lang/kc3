@@ -82,6 +82,7 @@ PROTO_MARSHALL_READ(ops,          s_ops            );
 PROTO_MARSHALL_READ(pcallable,    p_callable       );
 PROTO_MARSHALL_READ(pcomplex,     p_complex        );
 PROTO_MARSHALL_READ(pcow,         p_cow            );
+PROTO_MARSHALL_READ(pfacts,       p_facts          );
 PROTO_MARSHALL_READ(pframe,       p_frame          );
 PROTO_MARSHALL_READ(plist,        p_list           );
 PROTO_MARSHALL_READ(pstruct,      p_struct         );

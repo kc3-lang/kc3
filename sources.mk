@@ -536,6 +536,8 @@ KC3_C_SOURCES = \
 	"libkc3/pcomplex.h" \
 	"libkc3/pcow.c" \
 	"libkc3/pcow.h" \
+	"libkc3/pfacts.c" \
+	"libkc3/pfacts.h" \
 	"libkc3/plist.c" \
 	"libkc3/plist.h" \
 	"libkc3/pretty.c" \
@@ -1186,6 +1188,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/bool.facts" \
 	"lib/kc3/0.1/buf.kc3" \
 	"lib/kc3/0.1/buf_rw.kc3" \
+	"lib/kc3/0.1/call.kc3" \
 	"lib/kc3/0.1/character.kc3" \
 	"lib/kc3/0.1/compare.kc3" \
 	"lib/kc3/0.1/complex.facts" \
@@ -1567,6 +1570,9 @@ KC3_TEST_EKC3_SOURCES = \
 	"test/ekc3/parse_verbose.kc3" \
 	"test/ekc3/parse_verbose.out.expected" \
 	"test/ekc3/parse_verbose.ret.expected" \
+	"test/ekc3/render_file.kc3" \
+	"test/ekc3/render_file.out.expected" \
+	"test/ekc3/render_file.ret.expected" \
 	"test/ekc3_test" \
 
 KC3_TEST_HTTP_SOURCES = \

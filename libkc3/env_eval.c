@@ -963,6 +963,7 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_F128:
   case TAG_FACT:
   case TAG_INTEGER:
+  case TAG_PFACTS:
   case TAG_PSTRUCT_TYPE:
   case TAG_PSYM:
   case TAG_PTAG:

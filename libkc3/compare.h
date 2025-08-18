@@ -48,6 +48,7 @@ s8 compare_integer_s64 (const s_integer *a, s64 b);
 s8 compare_integer_u64 (const s_integer *a, u64 b);
 s8 compare_list (const s_list *a, const s_list *b);
 s8 compare_map (const s_map *a, const s_map *b);
+s8 compare_pfacts (const s_facts *a, const s_facts *b);
 s8 compare_plist (const p_list *a, const p_list *b);
 s8 compare_ptag (const p_tag a, const p_tag b);
 s8 compare_ptr (const void *a, const void *b);

@@ -19,6 +19,7 @@ defmodule Facts do
 
   defstruct [tags: %Set.Tag{},
              facts: %Set.Fact{},
+             index: (Ptr) 0,
              index_spo: (Ptr) 0,
              index_pos: (Ptr) 0,
              index_osp: (Ptr) 0,
@@ -40,12 +41,12 @@ defmodule Facts do
     cfn Tag "kc3_facts_collect_with_tags" (Facts, Tag, Tag, Tag,
       Callable, Result)
 
-  def database = cfn Ptr "facts_database" (Result)
+  def database = cfn Facts* "facts_database" (Result)
 
   def delete = cfn Void "facts_delete" (Facts)
 
   # env_db() -> facts
-  def env_db = cfn Ptr "kc3_env_db" (Result)
+  def env_db = cfn Facts* "kc3_env_db" (Result)
 
   def first_with =
     cfn Tag "kc3_facts_first_with" (Facts, List, Callable, Result)

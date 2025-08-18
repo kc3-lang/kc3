@@ -31,7 +31,7 @@ debug: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd_debug -C ${SRC_TOP}/test/httpd --trace -d 127.0.0.1 15004
 
 dump: clean_dump
-	../../kc3s/kc3s --trace --load ../../lib/kc3/0.1/httpd.kc3 --dump kc3.dump --quit
+	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd -d
 	../../kc3s/kc3s --trace --quit
 
 dump_debug: clean_dump

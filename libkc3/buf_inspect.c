@@ -4300,6 +4300,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_MAP:     return buf_inspect_map(buf, &tag->data.map);
   case TAG_PCALLABLE:
     return buf_inspect_callable(buf, tag->data.pcallable);
+  case TAG_PFACTS:  return buf_inspect_pfacts(buf, &tag->data.pfacts);
   case TAG_PCOMPLEX:
     return buf_inspect_complex(buf, tag->data.pcomplex);
   case TAG_PCOW:    return buf_inspect_cow(buf, tag->data.pcow);
@@ -4366,12 +4367,14 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_ident_size(pretty, &tag->data.ident);
   case TAG_INTEGER:
     return buf_inspect_integer_size(pretty, &tag->data.integer);
-  case TAG_PLIST:
-    return buf_inspect_list_size(pretty, tag->data.plist);
   case TAG_MAP:
     return buf_inspect_map_size(pretty, &tag->data.map);
   case TAG_PCALLABLE:
     return buf_inspect_callable_size(pretty, tag->data.pcallable);
+  case TAG_PFACTS:
+    return buf_inspect_pfacts_size(pretty, &tag->data.pfacts);
+  case TAG_PLIST:
+    return buf_inspect_list_size(pretty, tag->data.plist);
   case TAG_PSTRUCT:
     return buf_inspect_struct_size(pretty, tag->data.pstruct);
   case TAG_PSTRUCT_TYPE:

@@ -39,6 +39,7 @@
 #include "pcallable.h"
 #include "pcomplex.h"
 #include "pcow.h"
+#include "pfacts.h"
 #include "plist.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
@@ -243,6 +244,7 @@ void tag_clean (s_tag *tag)
   case TAG_PCALLABLE:   pcallable_clean(&tag->data.pcallable); break;
   case TAG_PCOMPLEX:    pcomplex_clean(&tag->data.pcomplex);   break;
   case TAG_PCOW:        pcow_clean(&tag->data.pcow);           break;
+  case TAG_PFACTS:      pfacts_clean(&tag->data.pfacts);       break;
   case TAG_PLIST:       list_delete_all(tag->data.plist);      break;
   case TAG_PSTRUCT:     pstruct_clean(&tag->data.pstruct);     break;
   case TAG_PSTRUCT_TYPE:
@@ -567,6 +569,11 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     if (! pcow_init_copy(&tag->data.pcow, &src->data.pcow))
       return NULL;
     return tag;
+  case TAG_PFACTS:
+    tag->type = src->type;
+    if (! pfacts_init_copy(&tag->data.pfacts, &src->data.pfacts))
+      return NULL;
+    return tag;
   case TAG_PSTRUCT:
     tag->type = src->type;
     if (! pstruct_init_copy(&tag->data.pstruct, &src->data.pstruct))
@@ -889,6 +896,7 @@ bool tag_is_integer (s_tag *tag)
   case TAG_MAP:
   case TAG_PCALLABLE:
   case TAG_PCOMPLEX:
+  case TAG_PFACTS:
   case TAG_PLIST:
   case TAG_PSTRUCT:
   case TAG_PSTRUCT_TYPE:
@@ -940,6 +948,7 @@ bool tag_is_number (s_tag *tag)
   case TAG_FACT:
   case TAG_MAP:
   case TAG_PCALLABLE:
+  case TAG_PFACTS:
   case TAG_PLIST:
   case TAG_PSTRUCT:
   case TAG_PSTRUCT_TYPE:
@@ -1250,9 +1259,10 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
   case TAG_INTEGER:      *dest = &tag->data.integer;      return true;
   case TAG_MAP:          *dest = &tag->data.map;          return true;
   case TAG_PCALLABLE:    *dest = &tag->data.pcallable;    return true;
-  case TAG_PCOMPLEX:      *dest = &tag->data.pcomplex;     return true;
-  case TAG_PCOW:          *dest = &tag->data.pcow;         return true;
-  case TAG_PLIST:         *dest = &tag->data.plist;        return true;
+  case TAG_PCOMPLEX:     *dest = &tag->data.pcomplex;     return true;
+  case TAG_PCOW:         *dest = &tag->data.pcow;         return true;
+  case TAG_PFACTS:       *dest = &tag->data.pfacts;       return true;
+  case TAG_PLIST:        *dest = &tag->data.plist;        return true;
   case TAG_PSTRUCT:
     if (type == &g_sym_Struct) {
       *dest = &tag->data.pstruct;
@@ -1415,6 +1425,16 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     // FIXME: other types
+    goto invalid_cast;
+  case TAG_PFACTS:
+    if (type == &g_sym_Facts) {
+      *dest = tag->data.pfacts;
+      return true;
+    }
+    if (type == &g_sym_Facts_star) {
+      *dest = &tag->data.pfacts;
+      return true;
+    }
     goto invalid_cast;
   case TAG_PLIST:
     if (type == &g_sym_List) {
@@ -1635,9 +1655,10 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_INTEGER:      *dest = &tag->data.integer;      return true;
   case TAG_MAP:          *dest = &tag->data.map;          return true;
   case TAG_PCALLABLE:    *dest = &tag->data.pcallable;    return true;
-  case TAG_PCOMPLEX:      *dest = &tag->data.pcomplex;     return true;
-  case TAG_PCOW:          *dest = &tag->data.pcow;         return true;
-  case TAG_PLIST:         *dest = &tag->data.plist;        return true;
+  case TAG_PCOMPLEX:     *dest = &tag->data.pcomplex;     return true;
+  case TAG_PCOW:         *dest = &tag->data.pcow;         return true;
+  case TAG_PFACTS:       *dest = &tag->data.pfacts;       return true;
+  case TAG_PLIST:        *dest = &tag->data.plist;        return true;
   case TAG_PSTRUCT:
     if (type == &g_sym_Struct) {
       *dest = &tag->data.pstruct;
@@ -1711,6 +1732,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_PCALLABLE:    *dest = &g_sym_Callable;    return dest;
   case TAG_PCOMPLEX:     *dest = &g_sym_Complex;     return dest;
   case TAG_PCOW:         *dest = &g_sym_Cow;         return dest;
+  case TAG_PFACTS:       *dest = &g_sym_Facts;       return dest;
   case TAG_PLIST:        *dest = &g_sym_List;        return dest;
   case TAG_PSTRUCT:
     *dest = tag->data.pstruct->pstruct_type->module; return dest;

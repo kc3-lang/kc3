@@ -369,6 +369,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   case TAG_FACT:
   case TAG_IDENT:
   case TAG_PCALLABLE:
+  case TAG_PFACTS:
   case TAG_PSTRUCT:
   case TAG_PSTRUCT_TYPE:
   case TAG_PSYM:

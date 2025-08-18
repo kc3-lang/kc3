@@ -1397,6 +1397,8 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   case TAG_PCOMPLEX:
     return marshall_pcomplex(m, heap, &tag->data.pcomplex);
   case TAG_PCOW:  return marshall_pcow(m, heap, &tag->data.pcow);
+  case TAG_PFACTS:
+    return marshall_pfacts(m, heap, &tag->data.pfacts);
   case TAG_PLIST: return marshall_plist(m, heap, &tag->data.plist);
   case TAG_PSTRUCT:
     return marshall_pstruct(m, heap, &tag->data.pstruct);

@@ -1894,6 +1894,8 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
       return marshall_read_pcomplex(mr, heap, &dest->data.pcomplex);
     case TAG_PCOW:
       return marshall_read_pcow(mr, heap, &dest->data.pcow);
+    case TAG_PFACTS:
+      return marshall_read_pfacts(mr, heap, &dest->data.pfacts);
     case TAG_PLIST:
       return marshall_read_plist(mr, heap, &dest->data.plist);
     case TAG_PSTRUCT:

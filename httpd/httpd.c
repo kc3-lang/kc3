@@ -156,6 +156,8 @@ int main (int argc, char **argv)
       assert("kc3_httpd: env_dump");
       goto clean;
     }
+    kc3_clean(NULL);
+    return 0;
   }
   else {
     io_puts("loaded local dump");
