@@ -10,6 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require HTTP.Upload
+
 defmodule HTTP do
 
   dlopen(__DIR__ + "http.so")

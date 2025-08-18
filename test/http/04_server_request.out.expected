@@ -1,3 +1,5 @@
+require HTTP
+true
 require HTTP.Request
 true
 require HTTP.Response

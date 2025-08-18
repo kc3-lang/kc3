@@ -1,3 +1,5 @@
+require HTTP
+true
 require Socket
 true
 require Socket.Buf
