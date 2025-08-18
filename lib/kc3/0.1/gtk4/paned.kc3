@@ -12,7 +12,7 @@
 
 defmodule Gtk4.Paned do
 
-  dlopen(__DIR__ + "../gtk4.so")
+  dlopen("gtk4.so")
 
   # new(:horizontal)
   # new(:vertical)

@@ -12,7 +12,7 @@
 
 defmodule URL do
 
-  dlopen(__DIR__ + "http.so")
+  dlopen("http.so")
 
   def eat = fn {
     ([], _) { "/" }

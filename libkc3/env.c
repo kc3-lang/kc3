@@ -593,27 +593,32 @@ const s_sym * env_defstruct (s_env *env, s_list *spec)
   return env->current_defmodule;
 }
 
-void ** env_dlopen (s_env *env, const s_str *path, void **dest)
+void ** env_dlopen (s_env *env, const s_str *so_path, void **dest)
 {
+  s_str path = {0};
   s_list *list = NULL;
   void *tmp = NULL;
   assert(env);
-  assert(path);
+  assert(so_path);
   assert(dest);
+  if (! str_init_concatenate(&path, env->module_path, so_path))
+    return NULL;
   if (env->trace) {
     err_write_1("kc3_dlopen: ");
-    err_inspect_str(path);
+    err_inspect_str(&path);
     err_write_1("\n");
   }
-  if (! (tmp = dlopen(path->ptr.pchar, RTLD_LAZY | RTLD_GLOBAL))) {
+  if (! (tmp = dlopen(path.ptr.pchar, RTLD_LAZY | RTLD_GLOBAL))) {
     err_write_1("kc3_dlopen: ");
-    err_inspect_str(path);
+    err_inspect_str(&path);
     err_write_1(": dlopen: ");
     err_puts(dlerror());
     assert(! "kc3_dlopen: dlopen failed");
+    str_clean(&path);
     return NULL;
   }
-  if (! (list = list_new_str_copy(path, env->dlopen_list))) {
+  str_clean(&path);
+  if (! (list = list_new_str_copy(so_path, env->dlopen_list))) {
     dlclose(tmp);
     return NULL;
   }

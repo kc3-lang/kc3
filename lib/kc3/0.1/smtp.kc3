@@ -12,7 +12,7 @@
 
 defmodule SMTP do
 
-  dlopen(__DIR__ + "smtp.so")
+  dlopen("smtp.so")
 
   # address_add(smtp, address_type, address, name)
   def address_add = cfn Bool "kc3_smtp_address_add" (Ptr, Sym, Str, Str)

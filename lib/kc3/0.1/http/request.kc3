@@ -25,7 +25,7 @@ defmodule HTTP.Request do
              cookies: [],
              params: %{}]
 
-  dlopen(__DIR__ + "../http.so")
+  dlopen("http.so")
 
   def allowed_methods = [DELETE,
                          GET,

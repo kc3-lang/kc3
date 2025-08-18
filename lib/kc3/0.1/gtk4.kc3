@@ -12,7 +12,7 @@
 
 defmodule Gtk4 do
 
-  dlopen(__DIR__ + "gtk4.so")
+  dlopen("gtk4.so")
 
   # Call this function before using any other GTK functions in your GUI
   # applications.

@@ -12,7 +12,7 @@
 
 defmodule Gtk4.Window do
 
-  dlopen(__DIR__ + "../gtk4.so")
+  dlopen("gtk4.so")
 
   def delete = cfn Void "kc3_gtk4_window_destroy" (Ptr)
   

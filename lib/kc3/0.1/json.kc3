@@ -14,7 +14,7 @@ require Buf
 
 defmodule JSON do
 
-  dlopen(__DIR__ + "json.so")
+  dlopen("json.so")
 
   def buf_inspect = cfn Sw "json_buf_inspect" (Buf, Tag)
 

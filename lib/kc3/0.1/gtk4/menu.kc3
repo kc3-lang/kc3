@@ -12,7 +12,7 @@
 
 defmodule Gtk4.Menu do
 
-  dlopen(__DIR__ + "../gtk4.so")
+  dlopen("gtk4.so")
 
   def new = cfn Ptr "kc3_gtk4_menu_new" (Result)
 

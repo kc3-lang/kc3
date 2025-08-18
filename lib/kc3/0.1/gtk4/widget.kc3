@@ -12,7 +12,7 @@
 
 defmodule Gtk4.Widget do
 
-  dlopen(__DIR__ + "../gtk4.so")
+  dlopen("gtk4.so")
 
   def set_halign = cfn Ptr "kc3_gtk4_widget_set_halign" (Ptr, Sym)
 

@@ -12,7 +12,7 @@
 
 defmodule HTML do
 
-  dlopen(__DIR__ + "ekc3.so")
+  dlopen("ekc3.so")
 
   def escape = cfn Str "html_escape" (Tag, Result)
 

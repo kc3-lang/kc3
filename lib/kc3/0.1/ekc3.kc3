@@ -15,7 +15,7 @@ require HTML
 
 defmodule EKC3 do
 
-  dlopen(__DIR__ + "ekc3.so")
+  dlopen("ekc3.so")
 
   def load = cfn Tag "embed_parse_template_file" (Str, Result)
 

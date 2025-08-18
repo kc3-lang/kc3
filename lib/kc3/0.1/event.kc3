@@ -12,7 +12,7 @@
 
 defmodule Event do
 
-  dlopen(__DIR__ + "event.so")
+  dlopen("event.so")
 
   def add = cfn S32 "kc3_event_add" (Ptr, Time)
 

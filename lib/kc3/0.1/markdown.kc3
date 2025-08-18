@@ -12,7 +12,7 @@
 
 defmodule Markdown do
 
-  dlopen(__DIR__ + "markdown.so")
+  dlopen("markdown.so")
 
   def titles = cfn List "markdown_titles" (Str, Result)
 

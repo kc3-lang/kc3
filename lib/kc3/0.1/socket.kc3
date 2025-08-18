@@ -14,7 +14,7 @@ defmodule Socket do
 
   defstruct [fd: (S64) -1]
 
-  dlopen(__DIR__ + "socket.so")
+  dlopen("socket.so")
 
   def close = cfn Void "socket_close" (Socket)
 
