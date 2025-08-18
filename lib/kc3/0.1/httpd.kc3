@@ -188,7 +188,6 @@ defmodule HTTPd do
       daemonize()
       puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
-      load_app()
       if HTTPd.thread_count > 1 do
         threads = List.map(List.count(HTTPd.thread_count - 1), fn (x) {
           Thread.new(HTTPd.server_thread)
