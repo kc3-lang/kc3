@@ -28,35 +28,50 @@
 # undef le64toh
 #endif
 
+#ifdef htons
+# undef htons
+# undef ntohs
+# undef htonl
+# undef ntohl
+#endif
+
 #if ! defined(__APPLE__)
 # define BSWAP(b, x) __builtin_bswap ## b (x)
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-# define htobe16(x) BSWAP(16, x)
-# define htole16(x) (x)
-# define be16toh(x) BSWAP(16, x)
-# define le16toh(x) (x)
-# define htobe32(x) BSWAP(32, x)
-# define htole32(x) (x)
-# define be32toh(x) BSWAP(32, x)
-# define le32toh(x) (x)
-# define htobe64(x) BSWAP(64, x)
-# define htole64(x) (x)
-# define be64toh(x) BSWAP(64, x)
-# define le64toh(x) (x)
-#else
-# define htobe16(x) (x)
-# define htole16(x) BSWAP(16, x)
-# define be16toh(x) (x)
-# define le16toh(x) BSWAP(16, x)
-# define htobe32(x) (x)
-# define htole32(x) BSWAP(32, x)
-# define be32toh(x) (x)
-# define le32toh(x) BSWAP(32, x)
-# define htobe64(x) (x)
-# define htole64(x) BSWAP(64, x)
-# define be64toh(x) (x)
-# define le64toh(x) BSWAP(64, x)
-#endif
+# if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#  define htobe16(x) BSWAP(16, x)
+#  define htole16(x) (x)
+#  define be16toh(x) BSWAP(16, x)
+#  define le16toh(x) (x)
+#  define htons(x)   BSWAP(16, x)
+#  define ntohs(x)   BSWAP(16, x)
+#  define htobe32(x) BSWAP(32, x)
+#  define htole32(x) (x)
+#  define be32toh(x) BSWAP(32, x)
+#  define le32toh(x) (x)
+#  define htonl(x)   BSWAP(32, x)
+#  define ntohl(x)   BSWAP(32, x)
+#  define htobe64(x) BSWAP(64, x)
+#  define htole64(x) (x)
+#  define be64toh(x) BSWAP(64, x)
+#  define le64toh(x) (x)
+# else
+#  define htobe16(x) (x)
+#  define htole16(x) BSWAP(16, x)
+#  define be16toh(x) (x)
+#  define le16toh(x) BSWAP(16, x)
+#  define htons(x)   (x)
+#  define ntohs(x)   (x)
+#  define htobe32(x) (x)
+#  define htole32(x) BSWAP(32, x)
+#  define be32toh(x) (x)
+#  define le32toh(x) BSWAP(32, x)
+#  define htonl(x)   (x)
+#  define ntohl(x)   (x)
+#  define htobe64(x) (x)
+#  define htole64(x) BSWAP(64, x)
+#  define be64toh(x) (x)
+#  define le64toh(x) BSWAP(64, x)
+# endif
 #else
 # include <libkern/OSByteOrder.h>
 # define htobe16(x) OSSwapHostToBigInt16(x)
