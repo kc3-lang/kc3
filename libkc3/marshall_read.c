@@ -310,6 +310,9 @@ s_marshall_read * marshall_read_character (s_marshall_read *mr,
 void marshall_read_clean (s_marshall_read *mr)
 {
   assert(mr);
+  if (mr->buf.user_ptr != mr->heap.user_ptr)
+    buf_file_close(&mr->heap);
+  buf_file_close(&mr->buf);
   buf_clean(&mr->buf);
   if (mr->buf.ptr.p != mr->heap.ptr.p)
     buf_clean(&mr->heap);
