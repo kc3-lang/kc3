@@ -2174,7 +2174,7 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
     result += r;
   }
   if (fn->frame && fn->frame->bindings) {
-    if ((r = buf_write_1(buf, "[")) < 0)
+    if ((r = buf_write_1(buf, " [")) < 0)
       return r;
     result += r;
     binding = fn->frame->bindings;
@@ -2301,10 +2301,12 @@ sw buf_inspect_fn_pattern_size (s_pretty *pretty, const s_list *pattern)
 
 sw buf_inspect_fn_size (s_pretty *pretty, const s_fn *fn)
 {
-  const s_fn_clause *clause;
-  s_ident ident;
+  const s_binding *binding = NULL;
+  const s_fn_clause *clause = NULL;
+  s_ident ident = {0};
   sw r;
   sw result = 0;
+  s_tag *tag;
   assert(pretty);
   assert(fn);
   if (fn->macro)
@@ -2342,6 +2344,43 @@ sw buf_inspect_fn_size (s_pretty *pretty, const s_fn *fn)
   }
   else {
     if ((r = buf_inspect_fn_clause_size(pretty, clause)) < 0)
+      return r;
+    result += r;
+  }
+  if (fn->frame && fn->frame->bindings) {
+    if ((r = buf_write_1_size(pretty, " [")) < 0)
+      return r;
+    result += r;
+    binding = fn->frame->bindings;
+    while (binding) {
+      if ((r = buf_inspect_ident_sym_size(pretty, binding->name)) < 0)
+        return r;
+      result += r;
+      if ((r = buf_write_1_size(pretty, ": ")) < 0)
+        return r;
+      result += r;
+      if (binding->value.type == TAG_PVAR &&
+          binding->value.data.pvar->bound) {
+        tag = &binding->value.data.pvar->tag;
+        if (tag->type == TAG_PCALLABLE &&
+            tag->data.pcallable->type == CALLABLE_FN &&
+            tag->data.pcallable->data.fn.name.module ==
+            fn->name.module &&
+            tag->data.pcallable->data.fn.name.sym ==
+            fn->name.sym) {
+          if ((r = buf_inspect_ident_size(pretty, &fn->name)) <= 0)
+            return r;
+          result += r;
+          goto next;
+        }
+      }
+      if ((r = buf_inspect_tag_size(pretty, &binding->value)) < 0)
+        return r;
+      result += r;
+    next:
+      binding = binding->next;
+    }
+    if ((r = buf_write_1_size(pretty, "]")) < 0)
       return r;
     result += r;
   }
