@@ -358,6 +358,14 @@ bool hash_update_map (t_hash *hash, const s_map *map)
   return true;
 }
 
+bool hash_update_pfacts (t_hash *hash, const s_facts *pfacts)
+{
+  const char type[] = "facts*";
+  if (! hash_update(hash, type, strlen(type)))
+    return false;
+  return hash_update(hash, pfacts, sizeof(void *));
+}
+
 bool hash_update_plist (t_hash *hash, const p_list *plist)
 {
   return hash_update_list(hash, *plist);
