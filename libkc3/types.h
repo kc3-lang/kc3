@@ -584,10 +584,10 @@ struct fn {
 };
 
 struct log {
-  bool   binary;
   s_buf  buf;
   u64    count;
   t_hash hash;
+  s_str  path;
 };
 
 struct ratio {

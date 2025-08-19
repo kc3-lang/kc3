@@ -310,10 +310,11 @@ TEST_CASE(facts_log_add)
   s_fact fact[24];
   s_facts facts;
   FILE *fp;
+  s_str path = STR_1("facts_test_log_add.facts");
   fp = fopen("facts_test_log_add.facts", "wb");
   facts_init(&facts);
   facts.log = log_new();
-  log_open(facts.log, fp, false);
+  log_open(facts.log, fp, &path);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);
@@ -362,10 +363,11 @@ TEST_CASE(facts_log_remove)
   s_fact fact[24];
   s_facts facts;
   FILE *fp;
+  s_str path = STR_1("facts_test_log_remove.facts");
   fp = fopen("facts_test_log_remove.facts", "wb");
   facts_init(&facts);
   facts.log = log_new();
-  log_open(facts.log, fp, false);
+  log_open(facts.log, fp, &path);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);

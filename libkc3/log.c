@@ -16,6 +16,7 @@
 #include "buf_file.h"
 #include "hash.h"
 #include "log.h"
+#include "str.h"
 
 void log_clean (s_log *log)
 {
@@ -58,15 +59,19 @@ s_log * log_new (void)
   return log;
 }
 
-s_log * log_open (s_log *log, FILE *fp, bool binary)
+s_log * log_open (s_log *log, FILE *fp, const s_str *path)
 {
   s_log tmp = {0};
   assert(log);
   assert(fp);
+  assert(path);
   tmp = *log;
   if (! buf_file_open_w(&tmp.buf, fp))
     return NULL;
-  tmp.binary = binary;
+  if (! str_init_copy(&tmp.path, path)) {
+    buf_file_close(&tmp.buf);
+    return NULL;
+  }
   *log = tmp;
   return log;
 }

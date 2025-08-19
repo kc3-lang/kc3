@@ -37,6 +37,7 @@
 #include "set__tag.h"
 #include "set_cursor__fact.h"
 #include "skiplist__fact.h"
+#include "str.h"
 #include "sym.h"
 #include "tag.h"
 
@@ -627,8 +628,6 @@ sw facts_log_add (s_log *log, const s_fact *fact)
   sw result = 0;
   assert(log);
   assert(fact);
-  if (log->binary)
-    return -1;
   if ((r = buf_write_1(&log->buf, "add ")) < 0)
     return r;
   result += r;
@@ -648,8 +647,6 @@ sw facts_log_remove (s_log *log, const s_fact *fact)
   sw result = 0;
   assert(log);
   assert(fact);
-  if (log->binary)
-    return -1;
   if ((r = buf_write_1(&log->buf, "remove ")) < 0)
     return r;
   result += r;
@@ -732,7 +729,7 @@ sw facts_open_file (s_facts *facts, const s_str *path)
     return -1;
   if (! (facts->log = log_new()))
     return -1;
-  log_open(facts->log, fp, false);
+  log_open(facts->log, fp, path);
   return result;
 }
 
@@ -753,7 +750,7 @@ sw facts_open_file_create (s_facts *facts, const s_str *path)
   buf_flush(out);
   if (! (facts->log = log_new()))
     return -1;
-  if (! log_open(facts->log, fp, false)) {
+  if (! log_open(facts->log, fp, path)) {
     log_delete(facts->log);
     facts->log = NULL;
     return -1;
@@ -1008,7 +1005,9 @@ sw facts_save_file (s_facts *facts, const char *path)
   buf.user_ptr = NULL;
   if (! (facts->log = log_new()))
     goto ko;
-  if (! log_open(facts->log, fp, false))
+  s_str path_str;
+  str_init_1(&path_str, NULL, path);
+  if (! log_open(facts->log, fp, &path_str))
     goto ko;
   return result;
  ko:
