@@ -27,6 +27,7 @@ p_facts * pfacts_init (p_facts *pfacts)
   assert(pfacts);
   if (! (tmp = facts_new()))
     return NULL;
+  assert(tmp->ref_count == 1);
   *pfacts = tmp;
   return pfacts;
 }
