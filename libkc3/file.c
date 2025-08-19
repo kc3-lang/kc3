@@ -390,17 +390,18 @@ s_str * file_name (const s_str *path, s_str *dest)
   return str_init_empty(dest);
 }
 
-FILE * file_open (const char *path, const char *mode)
+FILE * file_open (const s_str *path, const char *mode)
 {
   s32 e;
   FILE *fp;
-  fp = fopen(path, mode);
+  fp = fopen(path->ptr.pchar, mode);
   if (! fp) {
     e = errno;
     err_write_1("file_open: ");
     err_write_1(strerror(e));
     err_write_1(": ");
-    err_puts(path);
+    err_inspect_str(path);
+    err_write_1("\n");
     assert(! "facts_open_file: fopen");
     return NULL;
   }

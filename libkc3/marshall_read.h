@@ -30,7 +30,7 @@ s_marshall_read * marshall_read_init_1 (s_marshall_read *mr,
 s_marshall_read * marshall_read_init_buf (s_marshall_read *mr,
                                           s_buf *buf);
 s_marshall_read * marshall_read_init_file (s_marshall_read *mr,
-                                           const char *path);
+                                           const s_str *path);
 s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
                                           const s_str *src);
 
@@ -38,7 +38,7 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
 void              marshall_read_delete (s_marshall_read *mr);
 s_marshall_read * marshall_read_new (void);
 s_marshall_read * marshall_read_new_buf (s_buf *buf);
-s_marshall_read * marshall_read_new_file (const char *path);
+s_marshall_read * marshall_read_new_file (const s_str *path);
 s_marshall_read * marshall_read_new_str (const s_str *src);
 
 /* Observers. */
@@ -115,6 +115,6 @@ PROTO_MARSHALL_READ(uw,           uw               );
 PROTO_MARSHALL_READ(var,          s_var            );
 
 /* Env. */
-sw marshall_read_env_from_file (s_env *env, const char *path);
+sw marshall_read_env_from_file (s_env *env, const s_str *path);
 
 #endif /* LIBKC3_MARSHALL_READ_H */

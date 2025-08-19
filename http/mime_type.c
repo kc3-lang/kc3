@@ -140,7 +140,7 @@ bool http_mime_type_load (s_str *path)
 {
   s_buf buf;
   FILE *fp;
-  fp = file_open(path->ptr.pchar, "rb");
+  fp = file_open(path, "rb");
   if (! fp)
     return false;
   if (! buf_init_alloc(&buf, BUF_SIZE)) {

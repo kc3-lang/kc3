@@ -22,12 +22,14 @@ void log_clean (s_log *log)
 {
   assert(log);
   buf_clean(&log->buf);
-  hash_clean(&log->hash);
+  if (log->binary_buf.free)
+    buf_clean(&log->binary_buf);
 }
 
 void log_close (s_log *log)
 {
   buf_file_close(&log->buf);
+  buf_file_close(&log->binary_buf);
 }
 
 void log_delete (s_log *log)
@@ -39,10 +41,10 @@ void log_delete (s_log *log)
 
 s_log * log_init (s_log *log)
 {
-  if (! buf_init_alloc(&log->buf, BUF_SIZE))
+  s_log tmp = {0};
+  if (! buf_init_alloc(&tmp.buf, BUF_SIZE))
     return NULL;
-  log->count = 0;
-  hash_init(&log->hash);
+  *log = tmp;
   return log;
 }
 
@@ -67,6 +69,25 @@ s_log * log_open (s_log *log, FILE *fp, const s_str *path)
   assert(path);
   tmp = *log;
   if (! buf_file_open_w(&tmp.buf, fp))
+    return NULL;
+  if (! str_init_copy(&tmp.path, path)) {
+    buf_file_close(&tmp.buf);
+    return NULL;
+  }
+  *log = tmp;
+  return log;
+}
+
+s_log * log_open_binary (s_log *log, FILE *fp, const s_str *path)
+{
+  s_log tmp = {0};
+  assert(log);
+  assert(fp);
+  assert(path);
+  tmp = *log;
+  if (! buf_init_alloc(&tmp.binary_buf, BUF_SIZE))
+    return NULL;
+  if (! buf_file_open_w(&tmp.binary_buf, fp))
     return NULL;
   if (! str_init_copy(&tmp.path, path)) {
     buf_file_close(&tmp.buf);

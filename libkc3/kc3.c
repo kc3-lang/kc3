@@ -329,7 +329,7 @@ sw kc3_dump (const s_str *path)
   s_env *env;
   assert(path);
   env = env_global();
-  return env_dump(env, path->ptr.pchar);
+  return env_dump(env, path);
 }
 
 p_facts * kc3_env_db (p_facts *dest)

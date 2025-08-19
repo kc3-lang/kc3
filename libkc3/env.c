@@ -177,7 +177,8 @@ s_env * env_args_init (s_env *env, int *argc, char ***argv)
       }
       if (*argc > 1 && (*argv)[0] && (*argv)[1] &&
           ! strcmp((*argv)[0], "--dump")) {
-        env->dump_path = (*argv)[1];
+        if (! str_init_1(&env->dump_path, NULL, (*argv)[1]))
+          return NULL;
         (*argc) -= 2;
         (*argv) += 2;
       }
@@ -308,6 +309,7 @@ void env_clean (s_env *env)
   }
   //facts_save_file(env->facts, "debug.facts"); // debug
   str_clean(&env->restore_path);
+  str_clean(&env->dump_path);
   list_delete_all(env->dlopen_list);
   env_globals_clean(env);
   env_toplevel_clean(env);
@@ -628,23 +630,23 @@ void ** env_dlopen (s_env *env, const s_str *so_path, void **dest)
   return dest;
 }
 
-sw env_dump (const s_env *env, const char *path)
+sw env_dump (const s_env *env, const s_str *path)
 {
   return marshall_env_to_file(env, path);
 }
 
-sw env_dump_restore (s_env *env, const char *path)
+sw env_dump_restore (s_env *env, const s_str *path)
 {
   sw result = -1;
   if (env->trace) {
     err_write_1("env_dump_restore: ");
-    err_write_1(path);
-    err_puts(":");
+    err_inspect_str(path);
+    err_write_1("\n");
   }
   result = marshall_read_env_from_file(env, path);
   if (env->trace) {
     err_write_1("env_dump_restore: ");
-    err_write_1(path);
+    err_inspect_str(path);
     if (result <= 0)
       err_puts(": ERROR");
     else
@@ -1563,7 +1565,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     return NULL;
   }
   if (env->restore_path.size) {
-    if (env_dump_restore(env, env->restore_path.ptr.pchar) <= 0) {
+    if (env_dump_restore(env, &env->restore_path) <= 0) {
       env_clean(env);
       return NULL;
     }
@@ -1580,8 +1582,8 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
       return NULL;
     }
   }
-  if (env->dump_path &&
-      env_dump(env, env->dump_path) <= 0) {
+  if (env->dump_path.size &&
+      env_dump(env, &env->dump_path) <= 0) {
     env_clean(env);
     return NULL;
   }

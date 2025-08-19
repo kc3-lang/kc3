@@ -40,6 +40,7 @@ sw        facts_load (s_facts *facts, s_buf *buf,
                       const s_str *path);
 sw        facts_load_file (s_facts *facts, const s_str *path);
 sw        facts_open_file (s_facts *facts, const s_str *path);
+sw        facts_open_file_binary (s_facts *facts, const s_str *path);
 s_tag *   facts_ref_tag (s_facts *facts, s_tag *tag);
 bool *    facts_remove_fact (s_facts *facts, const s_fact *fact,
                              bool *dest);
@@ -52,7 +53,7 @@ s_facts * facts_remove_all (s_facts *facts);
 s_fact *  facts_replace_fact (s_facts *facts, s_fact *fact);
 s_fact *  facts_replace_tags (s_facts *facts, s_tag *subject,
                               s_tag *predicate, s_tag *object);
-sw        facts_save_file (s_facts *facts, const char *path);
+sw        facts_save_file (s_facts *facts, const s_str *path);
 s_facts_transaction *
           facts_transaction_clean (s_facts_transaction *transaction);
 s_facts * facts_transaction_rollback
@@ -63,7 +64,7 @@ bool      facts_unref_tag (s_facts *facts, const s_tag *tag);
 
 /* Observers */
 sw        facts_dump (s_facts *facts, s_buf *buf);
-sw        facts_dump_file (s_facts *facts, const char *path);
+sw        facts_dump_file (s_facts *facts, const s_str *path);
 s_fact ** facts_find_fact (s_facts *facts, const s_fact *fact,
                            s_fact **dest);
 s_fact ** facts_find_fact_by_tags (s_facts *facts,

@@ -585,9 +585,10 @@ struct fn {
 
 struct log {
   s_buf  buf;
-  u64    count;
-  t_hash hash;
   s_str  path;
+  u64    count;
+  s_buf  binary_buf;
+  s_str  binary_path;
 };
 
 struct ratio {
@@ -888,7 +889,7 @@ struct env {
   s_time            boot_time;
   const s_sym      *current_defmodule;
   s_list           *dlopen_list;
-  const char       *dump_path;
+  s_str             dump_path;
   s_buf            *err;
   s_error_handler  *error_handler;
   s_facts          *facts;

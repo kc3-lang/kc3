@@ -92,6 +92,7 @@ int main (int argc, char **argv)
   s_tag  file_path_save;
   FILE *fp = 0;
   s_buf in_original;
+  s_str path = {0};
   sw r;
   if (argc < 1)
     return usage("ikc3");
@@ -116,11 +117,12 @@ int main (int argc, char **argv)
         err_write_1(argv[1]);
         err_write_1("\n");
       }
-      fp = file_open(argv[1], "rb");
+      str_init_1(&path, NULL, argv[1]);
+      fp = file_open(&path, "rb");
       if (! fp) {
         e = errno;
         err_write_1("ikc3: ");
-        err_write_1(argv[1]);
+        err_inspect_str(&path);
         err_write_1(": ");
         err_write_1(strerror(e));
         err_write_1("\n");
@@ -128,6 +130,7 @@ int main (int argc, char **argv)
         r = 1;
         goto clean;
       }
+      str_clean(&path);
       if (! buf_file_open_r(env->in, fp)) {
         r = -1;
         goto clean;
@@ -160,10 +163,13 @@ int main (int argc, char **argv)
     }
     else if (argc > 1 && argv[0] && argv[1] &&
              ! strcmp(argv[0], "--dump")) {
-      if (! env_dump(env, argv[1])) {
+      str_init_1(&path, NULL, argv[1]);
+      if (! env_dump(env, &path)) {
         r = 1;
+        str_clean(&path);
         goto clean;
       }
+      str_clean(&path);
       argc -= 2;
       argv += 2;
     }

@@ -99,9 +99,9 @@ PROTO_MARSHALL(var, const s_var *);
 s_marshall * marshall_void (s_marshall *m, bool heap);
 
 /* Export. */
-sw      marshall_env_to_file (const s_env *env, const char *path);
+sw      marshall_env_to_file (const s_env *env, const s_str *path);
 sw      marshall_to_buf (s_marshall *m, s_buf *buf);
 s_str * marshall_to_str (s_marshall *m, s_str *dest);
-sw      marshall_to_file (s_marshall *m, const char *path);
+sw      marshall_to_file (s_marshall *m, const s_str *path);
 
 #endif /* LIBKC3_MARSHALL_H */

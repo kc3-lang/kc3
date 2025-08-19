@@ -131,6 +131,7 @@ TEST_CASE(facts_dump_file)
     "-0x10000000000000000",
     NULL
   };
+  const s_str path = STR_1("facts_test_dump_file.facts");
   s_fact fact[24];
   s_facts facts;
   facts_init(&facts);
@@ -139,7 +140,7 @@ TEST_CASE(facts_dump_file)
     facts_add_fact(&facts, fact + i);
     i++;
   }
-  facts_dump_file(&facts, "facts_test_dump_file.facts");
+  facts_dump_file(&facts, &path);
   test_file_compare("facts_test_dump_file.facts",
                     "facts_test_dump_file.expected.facts");
   if (g_test_last_ok)
@@ -648,6 +649,7 @@ TEST_CASE(facts_save)
     "-0x10000000000000000",
     NULL
   };
+  s_str path = STR_1("facts_test_save.facts");
   s_fact fact[24];
   s_facts facts;
   facts_init(&facts);
@@ -656,9 +658,8 @@ TEST_CASE(facts_save)
     facts_add_fact(&facts, fact + i);
     i++;
   }
-  facts_save_file(&facts, "facts_test_save.facts");
-  test_file_compare("facts_test_save.facts",
-                    "facts_test_save.expected.facts");
+  facts_save_file(&facts, &path);
+  test_file_compare(path.ptr.pchar, "facts_test_save.expected.facts");
   if (g_test_last_ok)
     unlink("facts_test_save.facts");
   i = 0;

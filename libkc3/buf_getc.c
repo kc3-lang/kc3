@@ -30,7 +30,7 @@ void buf_getc_close (s_buf *buf)
   fclose(fp);
 }
 
-s_buf * buf_getc_open_r (s_buf *buf, const char *path)
+s_buf * buf_getc_open_r (s_buf *buf, const s_str *path)
 {
   FILE *fp;
   assert(buf);

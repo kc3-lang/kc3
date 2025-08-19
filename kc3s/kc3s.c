@@ -97,6 +97,7 @@ int main (int argc, char **argv)
   FILE *fp;
   char  in_data[BUF_SIZE];
   s_buf in_original;
+  s_str path = {0};
   sw r;
   if (argc < 1)
     return usage(argv[0]);
@@ -117,7 +118,14 @@ int main (int argc, char **argv)
         r = 1;
         goto clean;
       }
-      fp = fopen(argv[1], "rb");
+      str_init_1(&path, NULL, argv[1]);
+      fp = file_open(&path, "rb");
+      if (! fp) {
+        r = -1;
+        str_clean(&path);
+        goto clean;
+      }
+      str_clean(&path);
       if (! buf_file_open_r(env->in, fp)) {
         r = -1;
         goto clean;
@@ -145,10 +153,13 @@ int main (int argc, char **argv)
     }
     else if (argc > 1 && argv[0] && argv[1] &&
              ! strcmp(argv[0], "--dump")) {
-      if (! env_dump(env, argv[1])) {
+      str_init_1(&path, NULL, argv[1]);
+      if (! env_dump(env, &path)) {
         r = 1;
+        str_clean(&path);
         goto clean;
       }
+      str_clean(&path);
       argc -= 2;
       argv += 2;
     }

@@ -689,7 +689,7 @@ s_marshall * marshall_env (s_marshall *m, bool heap, const s_env *env)
   return m;
 }
 
-sw marshall_env_to_file (const s_env *env, const char *path)
+sw marshall_env_to_file (const s_env *env, const s_str *path)
 {
   s_marshall m = {0};
   sw result = -1;
@@ -801,6 +801,23 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
     tag_clean(&subject);
     tag_clean(&predicate);
     tag_clean(&object);
+  }
+  if (! marshall_bool(m, heap, facts->log ? true : false)) {
+    err_puts("marshall_facts: marshall_bool log");
+    assert(! "marshall_facts: marshall_bool log");
+    return NULL;
+  }
+  if (facts->log) {
+    if (! marshall_str(m, heap, &facts->log->path)) {
+      err_puts("marshall_facts: marshall_str log path");
+      assert(! "marshall_facts: marshall_str log path");
+      return NULL;
+    }
+    if (! marshall_str(m, heap, &facts->log->binary_path)) {
+      err_puts("marshall_facts: marshall_str log binary path");
+      assert(! "marshall_facts: marshall_str log binary path");
+      return NULL;
+    }
   }
 #if HAVE_PTHREAD
   rwlock_unlock_r(&facts->rwlock);
@@ -1477,7 +1494,7 @@ sw marshall_to_buf (s_marshall *m, s_buf *out)
   return result;
 }
 
-sw marshall_to_file (s_marshall *m, const char *path)
+sw marshall_to_file (s_marshall *m, const s_str *path)
 {
   FILE *fp;
   s_buf out;

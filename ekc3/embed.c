@@ -288,7 +288,7 @@ s_tag * embed_parse_template_file (const s_str *path, s_tag *dest)
   }
   if (! buf_init_alloc(&buf, BUF_SIZE))
     return NULL;
-  if (! (fp = file_open(path->ptr.pchar, "r"))) {
+  if (! (fp = file_open(path, "r"))) {
     buf_clean(&buf);
     return NULL;
   }

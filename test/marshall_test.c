@@ -835,19 +835,15 @@ TEST_CASE(marshall_to_file)
 {
   u32 value = 42;
   s_marshall m = {0};
-  s_str path = {0};
+  const s_str path = STR_1(".marshall_test_to_file.1.kc3m");
   TEST_ASSERT(marshall_init(&m));
   TEST_ASSERT(marshall_u32(&m, false, value));
-  TEST_EQ(marshall_to_file(&m, ".marshall_test_to_file.1.kc3m"),
-          sizeof(s_marshall_header) +
-          sizeof(u32));
+  TEST_EQ(marshall_to_file(&m, &path),
+          sizeof(s_marshall_header) + sizeof(u32));
   TEST_EQ(test_file_compare(".marshall_test_to_file.1.kc3m",
                             "marshall_test_to_file.1.expected.kc3m"),
           0);
-  TEST_EQ(str_init_1(&path, NULL, ".marshall_test_to_file.1.kc3m"),
-          &path);
   TEST_ASSERT(file_unlink(&path));
-  str_clean(&path);
   marshall_clean(&m);
 }
 TEST_CASE_END(marshall_to_file)

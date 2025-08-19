@@ -571,11 +571,11 @@ s_marshall_read * marshall_read_env (s_marshall_read *mr,
   return mr;
 }
 
-sw marshall_read_env_from_file (s_env *env, const char *path)
+sw marshall_read_env_from_file (s_env *env, const s_str *path)
 {
   s_marshall_read mr = {0};
   sw result = -1;
-  if (! env || ! path) {
+  if (! env || ! path || ! path->size) {
     err_puts("marshall_read_env_from_file: invalid argument");
     assert(! "marshall_read_env_from_file: invalid argument");
     return -1;
@@ -651,9 +651,12 @@ s_marshall_read * marshall_read_fact (s_marshall_read *mr,
 s_marshall_read * marshall_read_facts (s_marshall_read *mr,
                                        bool heap, s_facts *facts)
 {
+  s_str binary_path = {0};
   uw count;
   s_fact fact = {0};
+  bool has_log = false;
   uw i;
+  s_str path = {0};
   if (! mr || ! facts)
     return NULL;
   if (! marshall_read_1(mr, heap, "_KC3FACTS_")) {
@@ -688,6 +691,44 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
     }
     fact_clean_all(&fact);
     i++;
+  }
+  if (! marshall_read_bool(mr, heap, &has_log)) {
+    err_puts("marshall_facts: marshall_bool log");
+    assert(! "marshall_facts: marshall_bool log");
+    return NULL;
+  }
+  if (has_log) {
+    if (! marshall_read_str(mr, heap, &path)) {
+      err_puts("marshall_facts: marshall_str path");
+      assert(! "marshall_facts: marshall_str path");
+      return NULL;
+    }
+    if (! marshall_read_str(mr, heap, &binary_path)) {
+      err_puts("marshall_facts: marshall_str binary path");
+      assert(! "marshall_facts: marshall_str binary path");
+      str_clean(&path);
+      return NULL;
+    }
+    if (! facts_open_file_binary(facts, &binary_path)) {
+      err_write_1("marshall_facts: facts_open_file_binary: ");
+      err_inspect_str(&path);
+      err_write_1("\n");
+      assert(! "marshall_facts: facts_open_file_binary");
+      str_clean(&binary_path);
+      str_clean(&path);
+      return NULL;
+    }
+    if (! facts_save_file(facts, &path)) {
+      err_write_1("marshall_facts: facts_save_file: ");
+      err_inspect_str(&path);
+      err_write_1("\n");
+      assert(! "marshall_facts: facts_save_file");
+      str_clean(&binary_path);
+      str_clean(&path);
+      return NULL;
+    }
+    str_clean(&binary_path);
+    str_clean(&path);
   }
   return mr;
 }
@@ -968,7 +1009,7 @@ s_marshall_read * marshall_read_init_1 (s_marshall_read *mr,
 }
 
 s_marshall_read * marshall_read_init_file (s_marshall_read *mr,
-                                           const char *path)
+                                           const s_str *path)
 {
   const char *error_msg = "unknown error";
   FILE *fp;
@@ -1015,7 +1056,7 @@ s_marshall_read * marshall_read_init_file (s_marshall_read *mr,
   buf_file_close(&tmp.buf);
  ko:
   err_write_1("marshall_read_init_file: ");
-  err_write_1(path);
+  err_inspect_str(path);
   err_write_1(": ");
   err_puts(error_msg);
   assert(! "marshall_read_init_file: error");
@@ -1310,9 +1351,9 @@ s_marshall_read * marshall_read_pcow  (s_marshall_read *mr,
   // return marshall_read_cow(mr, heap, *dest);
 }
 
-s_marshall_read * marshall_read_pfacts(s_marshall_read *mr,
-                                       bool heap,
-                                       p_facts *dest)
+s_marshall_read * marshall_read_pfacts (s_marshall_read *mr,
+                                        bool heap,
+                                        p_facts *dest)
 {
   p_facts tmp;
   p_facts present = NULL;
@@ -1769,8 +1810,11 @@ s_marshall_read * marshall_read_struct (s_marshall_read *mr,
   }
   if (! marshall_read_pstruct_type(mr, heap, &tmp.pstruct_type))
     return NULL;
-  if (! marshall_read_bool(mr, heap, &has_tags))
+  if (! marshall_read_bool(mr, heap, &has_tags)) {
+    err_puts("marshall_read_struct: marshall_read_bool has tags");
+    assert(! "marshall_read_struct: marshall_read_bool has tags");    
     return NULL;
+  }
   if (has_tags) {
     if (! (tmp.tag = alloc(tmp.pstruct_type->map.count *
                            sizeof(s_tag))))
@@ -1782,8 +1826,11 @@ s_marshall_read * marshall_read_struct (s_marshall_read *mr,
       i++;
     }
   }
-  if (! marshall_read_bool(mr, heap, &has_data))
+  if (! marshall_read_bool(mr, heap, &has_data)) {
+    err_puts("marshall_read_struct: marshall_read_bool has data");
+    assert(! "marshall_read_struct: marshall_read_bool has data");    
     goto ko;
+  }
   if (has_data) {
     if (! (tmp.data = alloc(tmp.pstruct_type->size)))
       goto ko;
@@ -1836,9 +1883,15 @@ s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
     i++;
   }
   if (! marshall_read_uw(mr, heap, &tmp.size) ||
-      ! marshall_read_pcallable(mr, heap, &tmp.clean) ||
-      ! marshall_read_bool(mr, heap, &tmp.must_clean))
+      ! marshall_read_pcallable(mr, heap, &tmp.clean))
     return NULL;
+  if (! marshall_read_bool(mr, heap, &tmp.must_clean)) {
+    err_puts("marshall_read_struct_type: marshall_read_bool "
+             "must_clean");
+    assert(!("marshall_read_struct_type: marshall_read_bool "
+             "must_clean"));
+    return NULL;
+  }
   tmp.ref_count = 1;
 #if HAVE_PTHREAD
   if (! mutex_init(&tmp.mutex))
