@@ -395,6 +395,7 @@ TEST_CASE(facts_new_delete)
   TEST_EQ(facts->tags.count, 0);
   TEST_EQ(facts->facts.count, 0);
   TEST_EQ(facts->log, NULL);
+  TEST_EQ(facts->ref_count, 1);
   facts_delete(facts);
 }
 TEST_CASE_END(facts_new_delete)
