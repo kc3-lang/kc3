@@ -31,6 +31,7 @@
 #include "log.h"
 #include "marshall.h"
 #include "marshall_read.h"
+#include "mutex.h"
 #include "rwlock.h"
 #include "set__fact.h"
 #include "set__tag.h"
@@ -163,6 +164,7 @@ void facts_clean (s_facts *facts)
   set_clean__tag(&facts->tags);
 #if HAVE_PTHREAD
   rwlock_clean(&facts->rwlock);
+  mutex_clean(&facts->ref_count_mutex);
 #endif
 }
 
@@ -196,6 +198,24 @@ int facts_compare_pfact_id_reverse (const void *a, const void *b)
 void facts_delete (s_facts *facts)
 {
   assert(facts);
+#if HAVE_PTHREAD
+  mutex_lock(&facts->ref_count_mutex);
+#endif
+  if (facts->ref_count <= 0) {
+    err_puts("facts_delete: invalid reference count");
+    assert(! "facts_delete: invalid reference count");
+    abort();
+  }
+  facts->ref_count--;
+  if (facts->ref_count) {
+#if HAVE_PTHREAD
+    mutex_unlock(&facts->ref_count_mutex);
+#endif
+    return;
+  }
+#if HAVE_PTHREAD
+  mutex_unlock(&facts->ref_count_mutex);
+#endif
   facts_clean(facts);
   free(facts);
 }
@@ -645,6 +665,24 @@ s_facts * facts_new (void)
     return NULL;
   }
   return facts;
+}
+
+s_facts * facts_new_ref (s_facts *src)
+{
+  assert(src);
+#if HAVE_PTHREAD
+  mutex_lock(&src->ref_count_mutex);
+#endif
+  if (src->ref_count <= 0) {
+    err_puts("facts_new_ref: invalid reference count");
+    assert(! "facts_new_ref: invalid reference count");
+    abort();
+  }
+  src->ref_count++;
+#if HAVE_PTHREAD
+  mutex_unlock(&src->ref_count_mutex);
+#endif
+  return src;
 }
 
 sw facts_open_buf (s_facts *facts, s_buf *buf, const s_str *path)

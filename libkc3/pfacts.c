@@ -10,21 +10,31 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <stdlib.h>
 #include "assert.h"
 #include "facts.h"
+#include "pfacts.h"
 
 void pfacts_clean (p_facts *pfacts)
 {
-  assert(pfacts);
-  if (pfacts != NULL)
-    free(pfacts);
+  facts_delete(*pfacts);
 }
 
 p_facts * pfacts_init (p_facts *pfacts)
 {
   p_facts tmp;
   if (! (tmp = facts_new()))
+    return NULL;
+  *pfacts = tmp;
+  return pfacts;
+}
+
+p_facts * pfacts_init_copy (p_facts *pfacts, p_facts *src)
+{
+  p_facts tmp;
+  assert(pfacts);
+  assert(src);
+  assert(*src);
+  if (! (tmp = facts_new_ref(*src)))
     return NULL;
   *pfacts = tmp;
   return pfacts;

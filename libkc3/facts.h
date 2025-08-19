@@ -26,6 +26,7 @@ s_facts * facts_init (s_facts *facts);
 
 /* Constructors */
 s_facts * facts_new (void);
+s_facts * facts_new_ref (s_facts *src);
 
 /* Destructor */
 void     facts_delete (s_facts *facts);

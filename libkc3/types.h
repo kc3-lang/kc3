@@ -862,6 +862,8 @@ struct facts {
   uw                   next_id;
   s_rwlock             rwlock;
   s_facts_transaction *transaction;
+  sw                   ref_count;
+  s_mutex              ref_count_mutex;
 };
 
 struct facts_cursor {
