@@ -73,7 +73,7 @@
     return m;                                                         \
   }
 
-#define DEF_MARSHALL_P(name, magic, type)                                   \
+#define DEF_MARSHALL_P(name, magic, type)                             \
   s_marshall * marshall_p ## name (s_marshall *m, bool heap,          \
                                    const type *data)                  \
   {                                                                   \
@@ -1125,6 +1125,7 @@ s_marshall * marshall_ops (s_marshall *m, bool heap, s_ops *ops)
 DEF_MARSHALL_P(callable,    "_KC3PCALLABLE_",   p_callable)
 DEF_MARSHALL_P(complex,     "_KC3PCOMPLEX_",    p_complex)
 DEF_MARSHALL_P(cow,         "_KC3PCOW_",        p_cow)
+DEF_MARSHALL_P(facts,       "_KC3PFRAME_",      p_facts)
 DEF_MARSHALL_P(frame,       "_KC3PFRAME_",      p_frame)
 DEF_MARSHALL_P(list,        "_KC3PLIST_",       p_list)
 DEF_MARSHALL_P(struct,      "_KC3PSTRUCT_",     p_struct)

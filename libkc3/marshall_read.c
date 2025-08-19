@@ -50,6 +50,7 @@
 #include "sym.h"
 #include "tag.h"
 #include "time.h"
+#include "types.h"
 #include "var.h"
 
 #define DEF_MARSHALL_READ(name, magic, type)                           \
@@ -1309,25 +1310,62 @@ s_marshall_read * marshall_read_pcow  (s_marshall_read *mr,
   // return marshall_read_cow(mr, heap, *dest);
 }
 
+s_marshall_read * marshall_read_pfacts(s_marshall_read *mr,
+                                      bool heap,
+                                      p_facts *dest)
+{
+  p_facts tmp = NULL;
+  void *present = NULL;
+  u64 offset = 0;
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3PFACTS_")) {
+    err_puts("marshall_read_pframe: marshall_read_1 magic");
+    err_inspect_buf(heap ? &mr->heap : &mr->buf);
+    assert(! "marshall_read_pframe: marshall_read_1 magic");
+    return NULL;
+  }
+  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+    return NULL;
+  if (! offset) {
+    *dest = NULL;
+    return mr;
+  }
+  if (present) {
+    return mr;
+  }
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+      ! (tmp = alloc(sizeof(s_frame))))
+    return NULL;
+  if (! marshall_read_facts(mr, true, tmp)) {
+    free(tmp);
+    return NULL;
+  }
+  if (! marshall_read_ht_add(mr, offset, tmp)) {
+    facts_delete(tmp);
+    return NULL;
+  }
+  *dest = tmp;
+  return mr;
+}
+
 s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
                                         bool heap,
                                         p_frame *dest)
 {
-  u64 offset = 0;
-  p_frame present = NULL;
   p_frame tmp = NULL;
+  void *present = NULL;
+  u64 offset = 0;
   assert(mr);
   assert(dest);
   if (! marshall_read_1(mr, heap, "_KC3PFRAME_")) {
     err_puts("marshall_read_pframe: marshall_read_1 magic");
+    err_inspect_buf(heap ? &mr->heap : &mr->buf);
     assert(! "marshall_read_pframe: marshall_read_1 magic");
     return NULL;
   }
-  if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void**) &present)) {
-    err_puts("marshall_read_pframe: marshall_read_heap_pointer");
+  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
     return NULL;
-  }
   if (! offset) {
     *dest = NULL;
     return mr;
@@ -1336,19 +1374,14 @@ s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
     *dest = frame_new_ref(present);
     return mr;
   }
-  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
-    err_puts("marshall_read_pframe: buf_seek failed");
-    return NULL;
-  }
-  if (! (tmp = alloc(sizeof(s_frame))))
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+      ! (tmp = alloc(sizeof(s_frame))))
     return NULL;
   if (! marshall_read_frame(mr, true, tmp)) {
-    err_puts("marshall_read_pframe: marshall_read_frame");
-    frame_delete(tmp);
+    free(tmp);
     return NULL;
   }
   if (! marshall_read_ht_add(mr, offset, tmp)) {
-    err_puts("marshall_read_pframe: marshall_read_ht_add");
     frame_delete(tmp);
     return NULL;
   }

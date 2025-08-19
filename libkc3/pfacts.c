@@ -10,7 +10,16 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <stdlib.h>
+#include "assert.h"
 #include "facts.h"
+
+void pfacts_clean (p_facts *pfacts)
+{
+  assert(pfacts);
+  if (pfacts != NULL)
+    free(pfacts);
+}
 
 p_facts * pfacts_init (p_facts *pfacts)
 {
