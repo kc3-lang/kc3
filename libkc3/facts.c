@@ -197,7 +197,12 @@ int facts_compare_pfact_id_reverse (const void *a, const void *b)
 
 void facts_delete (s_facts *facts)
 {
-  assert(facts);
+  if (! facts) {
+    err_puts("facts_delete: invalid argument");
+    err_stacktrace();
+    assert(! "facts_delete: invalid argument");
+    return;
+  }
 #if HAVE_PTHREAD
   mutex_lock(&facts->ref_count_mutex);
 #endif

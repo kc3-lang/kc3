@@ -16,12 +16,15 @@
 
 void pfacts_clean (p_facts *pfacts)
 {
-  facts_delete(*pfacts);
+  assert(pfacts);
+  if (*pfacts)
+    facts_delete(*pfacts);
 }
 
 p_facts * pfacts_init (p_facts *pfacts)
 {
   p_facts tmp;
+  assert(pfacts);
   if (! (tmp = facts_new()))
     return NULL;
   *pfacts = tmp;

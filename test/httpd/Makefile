@@ -25,18 +25,18 @@ clean_dump:
 	rm -f kc3.dump
 
 cov: assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd_cov -d 127.0.0.1 15004
+	${SRC_TOP}/httpd/kc3_httpd_cov -d 127.0.0.1 15004
 
 debug: assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd_debug --trace -d 127.0.0.1 15004
+	${SRC_TOP}/httpd/kc3_httpd_debug --trace -d 127.0.0.1 15004
 
 dump: clean_dump
-	${SRC_TOP}/httpd/.libs/kc3_httpd -d
+	${SRC_TOP}/httpd/kc3_httpd -d
 	${SRC_TOP}/kc3s/kc3s --trace --quit
 
 dump_debug: clean_dump
-	${SRC_TOP}/httpd/.libs/kc3_httpd_debug -d
-	${SRC_TOP}/kc3s/.libs/kc3s_debug --trace --quit
+	${SRC_TOP}/httpd/kc3_httpd_debug -d
+	${SRC_TOP}/kc3s/kc3s_debug --trace --quit
 
 gdb: assets
 	if [ -f kc3_httpd_debug.core ]; then gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug kc3_httpd_debug.core; else gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug; fi
@@ -49,6 +49,12 @@ gdb_dump_restore:
 
 ikc3: assets
 	${SRC_TOP}/ikc3/ikc3 127.0.0.1 15004
+
+lldb_dump: clean_dump
+	lldb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug
+
+lldb_dump_restore:
+	lldb ${SRC_TOP}/kc3s/.libs/kc3s_debug
 
 run: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd 127.0.0.1 15004
