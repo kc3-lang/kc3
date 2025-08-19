@@ -47,6 +47,8 @@ const s_sym g_sym_F64             = {{{NULL},  3, {"F64"}}};
 const s_sym g_sym_F128            = {{{NULL},  4, {"F128"}}};
 const s_sym g_sym_Fact            = {{{NULL},  4, {"Fact"}}};
 const s_sym g_sym_FactW           = {{{NULL},  5, {"FactW"}}};
+const s_sym g_sym_Facts           = {{{NULL},  5, {"Facts"}}};
+const s_sym g_sym_Facts_star      = {{{NULL},  6, {"Facts*"}}};
 const s_sym g_sym_Fn              = {{{NULL},  2, {"Fn"}}};
 const s_sym g_sym_Ident           = {{{NULL},  5, {"Ident"}}};
 const s_sym g_sym_Integer         = {{{NULL},  7, {"Integer"}}};
@@ -329,6 +331,8 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_F128, NULL);
   sym_register(&g_sym_Fact, NULL);
   sym_register(&g_sym_FactW, NULL);
+  sym_register(&g_sym_Facts, NULL);
+  sym_register(&g_sym_Facts_star, NULL);
   sym_register(&g_sym_Fn, NULL);
   sym_register(&g_sym_Ident, NULL);
   sym_register(&g_sym_Integer, NULL);
