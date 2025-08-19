@@ -73,6 +73,7 @@
 #include "op.h"
 #include "ops.h"
 #include "pcallable.h"
+#include "pfacts.h"
 #include "plist.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
@@ -1190,6 +1191,7 @@ s_tag * env_facts_with_transaction (s_env *env, s_tag *facts_arg,
   s_tag * volatile dest_v = dest;
   s_tag facts_tag = {0};
   s_facts *facts;
+  const s_sym *sym_Facts_star = &g_sym_Facts_star;
   s_tag tmp = {0};
   s_facts_transaction transaction = {0};
   s_unwind_protect unwind_protect;
@@ -1199,11 +1201,9 @@ s_tag * env_facts_with_transaction (s_env *env, s_tag *facts_arg,
     facts_transaction_clean(&transaction);
     return NULL;
   }
-  if (facts_tag.type != TAG_PTR) {
-    err_puts("env_facts_with_transaction: first arg is not a Ptr to"
-             " Facts");
-    assert(!("env_facts_with_transaction: first arg is not a Ptr to"
-             " Facts"));
+  if (! pfacts_init_cast(&facts, &sym_Facts_star, &facts_tag)) {
+    err_puts("env_facts_with_transaction: expected Facts*");
+    assert(!("env_facts_with_transaction: expected Facts*"));
     tag_clean(&facts_tag);
     facts_transaction_clean(&transaction);
     return NULL;

@@ -31,6 +31,26 @@ p_facts * pfacts_init (p_facts *pfacts)
   return pfacts;
 }
 
+p_facts * pfacts_init_cast (p_facts *pfacts, const p_sym *type,
+                            s_tag *src)
+{
+  assert(pfacts);
+  assert(src);
+  switch (src->type) {
+  case TAG_PFACTS:
+    return pfacts_init_copy(pfacts, &src->data.pfacts);
+  default:
+    err_write_1("pfacts_init_cast: cannot cast to ");
+    err_inspect_sym(*type);
+    err_write_1("\n");
+    assert(! "pfacts_init_cast: cannot cast");
+    return NULL;
+  }
+  err_puts("pfacts_init_cast: unknown tag type");
+  assert(! "pfacts_init_cast: unknown tag type");
+  return NULL;
+}
+
 p_facts * pfacts_init_copy (p_facts *pfacts, p_facts *src)
 {
   p_facts tmp;

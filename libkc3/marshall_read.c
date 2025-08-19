@@ -1311,37 +1311,53 @@ s_marshall_read * marshall_read_pcow  (s_marshall_read *mr,
 }
 
 s_marshall_read * marshall_read_pfacts(s_marshall_read *mr,
-                                      bool heap,
-                                      p_facts *dest)
+                                       bool heap,
+                                       p_facts *dest)
 {
-  p_facts tmp = NULL;
-  void *present = NULL;
+  p_facts tmp;
+  p_facts present = NULL;
   u64 offset = 0;
   assert(mr);
   assert(dest);
   if (! marshall_read_1(mr, heap, "_KC3PFACTS_")) {
-    err_puts("marshall_read_pframe: marshall_read_1 magic");
+    err_puts("marshall_read_pfacts: marshall_read_1 magic");
     err_inspect_buf(heap ? &mr->heap : &mr->buf);
-    assert(! "marshall_read_pframe: marshall_read_1 magic");
+    assert(! "marshall_read_pfacts: marshall_read_1 magic");
     return NULL;
   }
-  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+  if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                   (void **) &present)) {
+    err_puts("marshall_read_pfacts: marshall_read_heap_pointer");
+    assert(! "marshall_read_pfacts: marshall_read_heap_pointer");
     return NULL;
+  }
   if (! offset) {
     *dest = NULL;
     return mr;
   }
   if (present) {
+    *dest = facts_new_ref(present);
     return mr;
   }
-  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
-      ! (tmp = alloc(sizeof(s_frame))))
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
+    err_puts("marshall_read_pfacts: buf_seek");
+    assert(! "marshall_read_pfacts: buf_seek");
     return NULL;
+  }
+  if (! (tmp = facts_new())) {
+    err_puts("marshall_read_pfacts: facts_new");
+    assert(! "marshall_read_pfacts: facts_new");
+    return NULL;
+  }
   if (! marshall_read_facts(mr, true, tmp)) {
-    free(tmp);
+    err_puts("marshall_read_pfacts: marshall_read_facts");
+    assert(! "marshall_read_pfacts: marshall_read_facts");
+    facts_delete(tmp);
     return NULL;
   }
   if (! marshall_read_ht_add(mr, offset, tmp)) {
+    err_puts("marshall_read_pfacts: marshall_read_ht_add");
+    assert(! "marshall_read_pfacts: marshall_read_ht_add");
     facts_delete(tmp);
     return NULL;
   }

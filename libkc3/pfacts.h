@@ -19,6 +19,8 @@
 /* Initialization functions, call pfacts_clean after use. */
 void      pfacts_clean (p_facts *pfacts);
 p_facts * pfacts_init (p_facts *pfacts);
+p_facts * pfacts_init_cast (p_facts *pfacts, const p_sym *type,
+                            s_tag *src);
 p_facts * pfacts_init_copy (p_facts *pfacts, p_facts *src);
 
 #endif /* LIBKC3_PFACTS_H */
