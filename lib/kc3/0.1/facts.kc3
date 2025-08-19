@@ -43,9 +43,6 @@ defmodule Facts do
 
   def database = cfn Facts* "pfacts_init" (Result)
 
-  def delete = cfn Void "facts_delete" (Facts)
-
-  # env_db() -> facts
   def env_db = cfn Facts* "kc3_env_db" (Result)
 
   def first_with =

@@ -1127,6 +1127,14 @@ uw * sym_type_size (const s_sym *type, uw *dest)
     *dest = sizeof(s_fact);
     return dest;
   }
+  if (type == &g_sym_Facts) {
+    *dest = sizeof(s_facts);
+    return dest;
+  }
+  if (type == &g_sym_Facts_star) {
+    *dest = sizeof(p_facts);
+    return dest;
+  }
   if (type == &g_sym_Ident) {
     *dest = sizeof(s_ident);
     return dest;

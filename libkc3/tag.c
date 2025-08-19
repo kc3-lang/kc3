@@ -542,11 +542,6 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     if (! integer_init_copy(&tag->data.integer, &src->data.integer))
       return NULL;
     return tag;
-  case TAG_PLIST:
-    tag->type = src->type;
-    if (! plist_init_copy(&tag->data.plist, &src->data.plist))
-      return NULL;
-    return tag;
   case TAG_MAP:
     tag->type = src->type;
     if (! map_init_copy(&tag->data.map, &src->data.map))
@@ -572,6 +567,11 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
   case TAG_PFACTS:
     tag->type = src->type;
     if (! pfacts_init_copy(&tag->data.pfacts, &src->data.pfacts))
+      return NULL;
+    return tag;
+  case TAG_PLIST:
+    tag->type = src->type;
+    if (! plist_init_copy(&tag->data.plist, &src->data.plist))
       return NULL;
     return tag;
   case TAG_PSTRUCT:
