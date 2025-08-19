@@ -13,36 +13,42 @@
 SRC_TOP = ../..
 
 main: assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd -d 127.0.0.1 15004
+	${SRC_TOP}/httpd/.libs/kc3_httpd -d 127.0.0.1 15004
 
 assets:
 	${MAKE} -C assets
 
 asan: assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd_asan -C ${SRC_TOP}/test/httpd -d 127.0.0.1 15004
+	${SRC_TOP}/httpd/.libs/kc3_httpd_asan -d 127.0.0.1 15004
 
 clean_dump:
 	rm -f kc3.dump
 
 cov: assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd_cov -C ${SRC_TOP}/test/httpd -d 127.0.0.1 15004
+	${SRC_TOP}/httpd/.libs/kc3_httpd_cov -d 127.0.0.1 15004
 
 debug: assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd_debug -C ${SRC_TOP}/test/httpd --trace -d 127.0.0.1 15004
+	${SRC_TOP}/httpd/.libs/kc3_httpd_debug --trace -d 127.0.0.1 15004
 
 dump: clean_dump
-	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd -d
-	../../kc3s/kc3s --trace --quit
+	${SRC_TOP}/httpd/.libs/kc3_httpd -d
+	${SRC_TOP}/kc3s/kc3s --trace --quit
 
 dump_debug: clean_dump
-	../../kc3s/kc3s_debug --trace --load ../../lib/kc3/0.1/httpd.kc3 --dump kc3.dump --quit
-	../../kc3s/kc3s_debug --trace --quit
+	${SRC_TOP}/httpd/.libs/kc3_httpd_debug -d
+	${SRC_TOP}/kc3s/.libs/kc3s_debug --trace --quit
 
 gdb: assets
 	if [ -f kc3_httpd_debug.core ]; then gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug kc3_httpd_debug.core; else gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug; fi
 
+gdb_dump: clean_dump
+	gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug
+
+gdb_dump_restore:
+	gdb ${SRC_TOP}/kc3s/.libs/kc3s_debug
+
 ikc3: assets
-	../../ikc3/ikc3 127.0.0.1 15004
+	${SRC_TOP}/ikc3/ikc3 127.0.0.1 15004
 
 run: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd 127.0.0.1 15004

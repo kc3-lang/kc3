@@ -366,10 +366,13 @@ s_facts * facts_init (s_facts *facts)
   tmp.index_osp = skiplist_new__fact(max_height, spacing);
   assert(tmp.index_osp);
   tmp.index_osp->compare = compare_fact_osp;
+  
 #if HAVE_PTHREAD
-  rwlock_init(&facts->rwlock);
+  rwlock_init(&tmp.rwlock);
+  mutex_init(&tmp.ref_count_mutex);
 #endif
   tmp.next_id = 1;
+  tmp.ref_count = 1;
   *facts = tmp;
   return facts;
 }

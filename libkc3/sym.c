@@ -929,6 +929,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_F128;
     return true;
   }
+  if (sym == &g_sym_Facts_star) {
+    *dest = TAG_PFACTS;
+    return true;
+  }
   if (sym == &g_sym_Ident) {
     *dest = TAG_IDENT;
     return true;

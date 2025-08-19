@@ -342,6 +342,10 @@ gdb_demo_kubz: lib_links_debug
 	${MAKE} debug
 	${MAKE} -C window/sdl2/kubz gdb_demo
 
+gdb_dump: debug
+	${MAKE} clean_dump
+	gdb kc3s/.libs/kc3s_debug
+
 gdb_fx: httpd_debug lib_links_debug
 	${MAKE} -C httpd gdb_fx
 
