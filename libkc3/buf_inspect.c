@@ -3063,6 +3063,32 @@ sw buf_inspect_pcow_size (s_pretty *pretty, p_cow const *pcow)
   return buf_inspect_cow_size(pretty, *pcow);
 }
 
+sw buf_inspect_pfacts (s_buf *buf, const p_facts *x)
+{
+  sw r;
+  sw result = 0;
+  if ((r = buf_write_1(buf, "(Facts*) 0x")) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw_hexadecimal(buf, (uw) *x)))
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_pfacts_size (s_pretty *pretty, const p_facts *x)
+{
+  sw r;
+  sw result = 0;
+  if ((r = buf_write_1_size(pretty, "(Facts*) 0x")) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw_hexadecimal_size(pretty, (uw) *x)))
+    return r;
+  result += r;
+  return result;
+}
+
 sw buf_inspect_plist (s_buf *buf, const p_list *x)
 {
   return buf_inspect_list(buf, *x);
