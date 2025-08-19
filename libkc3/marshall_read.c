@@ -33,6 +33,7 @@
 #include "ht.h"
 #include "kc3_main.h"
 #include "list.h"
+#include "log.h"
 #include "map.h"
 #include "marshall.h"
 #include "marshall_read.h"
@@ -709,14 +710,16 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
       str_clean(&path);
       return NULL;
     }
-    if (! facts_open_file_binary(facts, &binary_path)) {
-      err_write_1("marshall_facts: facts_open_file_binary: ");
-      err_inspect_str(&path);
-      err_write_1("\n");
-      assert(! "marshall_facts: facts_open_file_binary");
-      str_clean(&binary_path);
-      str_clean(&path);
-      return NULL;
+    if (binary_path.size) {
+      if (! facts_open_file_binary(facts, &binary_path)) {
+        err_write_1("marshall_facts: facts_open_file_binary: ");
+        err_inspect_str(&path);
+        err_write_1("\n");
+        assert(! "marshall_facts: facts_open_file_binary");
+        str_clean(&binary_path);
+        str_clean(&path);
+        return NULL;
+      }
     }
     if (! facts_save_file(facts, &path)) {
       err_write_1("marshall_facts: facts_save_file: ");
@@ -727,7 +730,21 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
       str_clean(&path);
       return NULL;
     }
+    if (! binary_path.size) {
+      if (! log_path_to_binary_path(&path, &binary_path)) {
+        err_puts("marshall_facts: log_path_to_binary_path");
+        assert(! "marshall_facts: log_path_to_binary_path");
+        str_clean(&path);
+        return NULL;
+      }
+      if (! facts_open_file_binary_create(facts, &binary_path)) {
+        err_puts("marshall_facts: facts_open_file_binary_create");
+        assert(! "marshall_facts: facts_open_file_binary_create");
+        str_clean(&path);
+        return NULL;
+      }
     str_clean(&binary_path);
+    }
     str_clean(&path);
   }
   return mr;

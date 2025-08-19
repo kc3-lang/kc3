@@ -19,6 +19,6 @@
 
 /* Operators. */
 void    buf_getc_close (s_buf *buf);
-s_buf * buf_getc_open_r (s_buf *buf, const char *path);
+s_buf * buf_getc_open_r (s_buf *buf, const s_str *path);
 
 #endif /* LIBKC3_BUF_GETC_H */

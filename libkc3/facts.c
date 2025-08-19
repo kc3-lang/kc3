@@ -43,8 +43,6 @@
 
 static int facts_compare_pfact_id_reverse (const void *a,
                                            const void *b);
-static bool facts_open_file_binary_create (s_facts *facts,
-                                           const s_str *path);
 static sw facts_open_file_create (s_facts *facts, const s_str *path);
 static sw facts_open_log (s_facts *facts, s_buf *buf);
 

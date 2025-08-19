@@ -32,11 +32,11 @@ debug: assets
 
 dump: clean_dump
 	${SRC_TOP}/httpd/kc3_httpd -d
-	${SRC_TOP}/kc3s/kc3s --trace --quit
+	time ${SRC_TOP}/kc3s/kc3s --trace --quit
 
 dump_debug: clean_dump
 	${SRC_TOP}/httpd/kc3_httpd_debug -d
-	${SRC_TOP}/kc3s/kc3s_debug --trace --quit
+	time ${SRC_TOP}/kc3s/kc3s_debug --trace --quit
 
 gdb: assets
 	if [ -f kc3_httpd_debug.core ]; then gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug kc3_httpd_debug.core; else gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug; fi

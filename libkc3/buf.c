@@ -797,7 +797,7 @@ s_str * buf_read (s_buf *buf, uw size, s_str *dest)
     assert(! "buffer overflow");
     goto clean;
   }
-  p = alloc(size);
+  p = alloc(size + 1);
   if (! p)
     goto clean;
   str_init(&tmp, p, size, p);

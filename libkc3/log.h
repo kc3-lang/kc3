@@ -28,4 +28,7 @@ void log_close (s_log *log);
 s_log * log_open (s_log *log, FILE *fp, const s_str *path);
 s_log * log_open_binary (s_log *log, FILE *fp, const s_str *path);
 
+/* Misc. */
+s_str * log_path_to_binary_path (const s_str *path, s_str *dest);
+
 #endif /* LIBKC3_LOG_H */

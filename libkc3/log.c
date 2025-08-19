@@ -96,3 +96,13 @@ s_log * log_open_binary (s_log *log, FILE *fp, const s_str *path)
   *log = tmp;
   return log;
 }
+
+s_str * log_path_to_binary_path (const s_str *path, s_str *dest)
+{
+  const s_str suffix = STR_1(".bin.log");
+  s_str tmp = {0};
+  if (! str_init_concatenate(&tmp, path, &suffix))
+    return NULL;
+  *dest = tmp;
+  return dest;
+}

@@ -1720,7 +1720,7 @@ bool env_load (s_env *env, const s_str *path)
   }
   if (! buf_init_alloc(&buf, BUF_SIZE))
     return false;
-  if (! buf_getc_open_r(&buf, path->ptr.pchar)) {
+  if (! buf_getc_open_r(&buf, path)) {
     buf_clean(&buf);
     return false;
   }
