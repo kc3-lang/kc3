@@ -1,0 +1,2 @@
+%{module: KC3.Facts.Dump,
+  version: 1}
