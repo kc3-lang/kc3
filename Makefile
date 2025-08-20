@@ -223,12 +223,12 @@ distclean:
 clean_dump:
 	rm -f lib/kc3/0.1/kc3.dump test/httpd/kc3.dump
 
-dump: build
+dump:
 	${MAKE} clean_dump
 	kc3s/kc3s --trace --dump lib/kc3/0.1/kc3.dump --quit
 	${MAKE} -C test/httpd dump
 
-dump_debug: debug
+dump_debug:
 	${MAKE} clean_dump
 	kc3s/kc3s_debug --trace --dump lib/kc3/0.1/kc3.dump --quit
 	${MAKE} -C test/httpd dump_debug
