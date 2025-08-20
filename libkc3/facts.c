@@ -289,18 +289,31 @@ sw facts_dump_file (s_facts *facts, const s_str *path)
 {
   char b[BUF_SIZE];
   s_buf buf;
+  s_env *env;
   FILE *fp;
-  sw r;
+  sw r = -1;
   assert(facts);
   assert(path);
+  env = env_global();
+  assert(env);
+  if (env->trace) {
+    err_write_1("facts_dump_file: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+  }
   buf_init(&buf, false, sizeof(b), b);
   fp = file_open(path, "wb");
-  if (! fp)
-    return -1;
-  buf_file_open_w(&buf, fp);
-  r = facts_dump(facts, &buf);
-  buf_file_close(&buf);
-  fclose(fp);
+  if (fp) {
+    buf_file_open_w(&buf, fp);
+    r = facts_dump(facts, &buf);
+    buf_file_close(&buf);
+    fclose(fp);
+  }
+  if (env->trace) {
+    err_write_1("facts_dump_file: ");
+    err_inspect_str(path);
+    err_write_1(r > 0 ? ": OK\n" : ": ERROR\n");
+  }
   return r;
 }
 
@@ -810,7 +823,11 @@ sw facts_open_file_binary (s_facts *facts, const s_str *path)
     assert(! "facts_open_file_binary: log_new");
     return -1;
   }
-  log_open_binary(facts->log, fp, path);
+  if (! log_open_binary(facts->log, fp, path)) {
+    err_puts("facts_open_file_binary: log_open_binary");
+    assert(! "facts_open_file_binary: log_open_binary");
+    return -1;
+  }
   return result;
 }
 
@@ -1092,7 +1109,6 @@ sw facts_save_file (s_facts *facts, const s_str *path)
   sw result = 0;
   assert(facts);
   assert(path);
-  assert(! facts->log);
   if (env_global()->trace) {
     err_write_1("facts_save_file: ");
     err_inspect_str(path);
@@ -1110,7 +1126,8 @@ sw facts_save_file (s_facts *facts, const s_str *path)
   buf_flush(&buf);
   free(buf.user_ptr);
   buf.user_ptr = NULL;
-  if (! (facts->log = log_new()))
+  if (! facts->log &&
+      ! (facts->log = log_new()))
     goto clean;
   if (! log_open(facts->log, fp, path))
     goto clean;

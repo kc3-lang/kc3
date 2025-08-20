@@ -95,6 +95,7 @@ s_log * log_open_binary (s_log *log, FILE *fp, const s_str *path)
     return NULL;
   if (! str_init_copy(&tmp.binary_path, path)) {
     buf_file_close(&tmp.binary_buf);
+    buf_clean(&tmp.binary_buf);
     return NULL;
   }
   *log = tmp;

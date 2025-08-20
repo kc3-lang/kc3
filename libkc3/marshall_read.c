@@ -726,7 +726,7 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
       err_write_1("\n");
     }
     if (! facts_open_file_binary(facts, &binary_path)) {
-      err_write_1("marshall_read_facts: binary log: ");
+      err_write_1("marshall_read_facts: facts_open_file_binary: ");
       err_inspect_str(&binary_path);
       err_write_1(": ERROR\n");
       assert(! "marshall_read_facts: facts_open_file_binary");

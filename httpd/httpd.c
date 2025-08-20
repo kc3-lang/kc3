@@ -41,7 +41,6 @@ int main (int argc, char **argv)
   const struct tm *utc = NULL;
   kc3_init(NULL, &argc, &argv);
   env = env_global();
-  env->trace = true;
   while (argc > 0 && argv[0] && argv[0][0] == '-') {
     skip = 1;
     p = argv[0] + 1;
@@ -163,9 +162,6 @@ int main (int argc, char **argv)
     }
     kc3_clean(NULL);
     return 0;
-  }
-  else {
-    io_puts("loaded local dump");
   }
   call_init(&call);
   call.ident.module = module;

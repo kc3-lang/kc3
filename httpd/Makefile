@@ -41,16 +41,16 @@ distclean:
 	rm -rf ${DISTCLEANFILES}
 
 fx: kc3_httpd
-	httpd/.libs/kc3_httpd -C httpd/fx -d
+	httpd/.libs/kc3_httpd -C httpd/fx --trace -d
 
 fx_asan: kc3_httpd_asan
-	httpd/.libs/kc3_httpd_asan -C httpd/fx -d
+	httpd/.libs/kc3_httpd_asan -C httpd/fx --trace -d
 
 fx_cov: kc3_httpd_cov
-	httpd/.libs/kc3_httpd_cov -C httpd/fx -d
+	httpd/.libs/kc3_httpd_cov -C httpd/fx --trace -d
 
 fx_debug: kc3_httpd_debug
-	httpd/.libs/kc3_httpd_debug -C httpd/fx -d
+	httpd/.libs/kc3_httpd_debug -C httpd/fx --trace -d
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details kc3_httpd.html

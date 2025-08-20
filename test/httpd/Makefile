@@ -13,29 +13,29 @@
 SRC_TOP = ../..
 
 main: assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd -d 127.0.0.1 15004
+	${SRC_TOP}/httpd/.libs/kc3_httpd --trace -d 127.0.0.1 15004
 
 assets:
 	${MAKE} -C assets
 
 asan: assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd_asan -d 127.0.0.1 15004
+	${SRC_TOP}/httpd/.libs/kc3_httpd_asan --trace -d 127.0.0.1 15004
 
 clean_dump:
 	rm -f kc3.dump db/*.bin.facts
 
 cov: assets
-	${SRC_TOP}/httpd/kc3_httpd_cov -d 127.0.0.1 15004
+	${SRC_TOP}/httpd/kc3_httpd_cov --trace -d 127.0.0.1 15004
 
 debug: assets
 	${SRC_TOP}/httpd/kc3_httpd_debug --trace -d 127.0.0.1 15004
 
 dump: clean_dump
-	${SRC_TOP}/httpd/kc3_httpd -d
+	${SRC_TOP}/httpd/kc3_httpd --trace -d
 	time ${SRC_TOP}/kc3s/kc3s --trace --quit
 
 dump_debug: clean_dump
-	${SRC_TOP}/httpd/kc3_httpd_debug -d
+	${SRC_TOP}/httpd/kc3_httpd_debug --trace -d
 	time ${SRC_TOP}/kc3s/kc3s_debug --trace --quit
 
 gdb: assets
