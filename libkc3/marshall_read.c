@@ -1878,12 +1878,10 @@ ko:
   return NULL;
 }
 
-// TODO: convert f_clean to p_callable
 s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
                                              bool heap,
                                              s_struct_type *dest)
 {
-  uw i;
   s_struct_type tmp = {0};
   assert(mr);
   assert(mr);
@@ -1893,30 +1891,16 @@ s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
     return NULL;
   }
   if (! marshall_read_psym(mr, heap, &tmp.module) ||
-      ! marshall_read_map(mr, heap, &tmp.map) ||
-      ! (tmp.offset = alloc(tmp.map.count * sizeof(uw))))
+      ! marshall_read_map(mr, heap, &tmp.map))
     return NULL;
-  i = 0;
-  while (i < tmp.map.count) {
-    if (! marshall_read_uw(mr, heap, tmp.offset + i))
-      return NULL;
-    i++;
-  }
-  if (! marshall_read_uw(mr, heap, &tmp.size) ||
-      ! marshall_read_pcallable(mr, heap, &tmp.clean))
+  if (! marshall_read_pcallable(mr, heap, &tmp.clean))
     return NULL;
-  if (! marshall_read_bool(mr, heap, &tmp.must_clean)) {
-    err_puts("marshall_read_struct_type: marshall_read_bool "
-             "must_clean");
-    assert(!("marshall_read_struct_type: marshall_read_bool "
-             "must_clean"));
-    return NULL;
-  }
   tmp.ref_count = 1;
 #if HAVE_PTHREAD
   if (! mutex_init(&tmp.mutex))
     return NULL;
 #endif
+  struct_type_update_map(&tmp);
   *dest = tmp;
   return mr;
 }

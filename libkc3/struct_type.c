@@ -135,7 +135,6 @@ s_struct_type * struct_type_init (s_struct_type *st,
   s_struct_type tmp = {0};
   const s_tuple *tuple;
   const s_sym *type;
-  bool win64 = false;
   assert(st);
   assert(module);
   assert(spec);
@@ -195,22 +194,62 @@ s_struct_type * struct_type_init (s_struct_type *st,
     i++;
     s = list_next(s);
   }
-#ifdef WIN64
-  win64 = true;
-#endif
-  if (sizeof(long) == 4 && ! win64)
-    tmp.size = (offset + 3) / 4 * 4;
-  else {
-#ifdef __APPLE__
-    tmp.size = (offset + 7) / 8 * 8;
-#else
-    tmp.size = (offset + 15) / 16 * 16;
-#endif
-  }
+  tmp.size = struct_type_compute_size(offset);
   tmp.ref_count = 1;
 #if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
 #endif
+  *st = tmp;
+  return st;
+}
+
+uw struct_type_compute_size (uw offset)
+{
+#ifdef WIN64
+  const bool win64 = true;
+#else
+  const bool win64 = false;
+#endif
+  if (sizeof(long) == 4 && ! win64)
+    return (offset + 3) / 4 * 4;
+#ifdef __APPLE__
+  return (offset + 7) / 8 * 8;
+#else
+  return (offset + 15) / 16 * 16;
+#endif
+}
+
+s_struct_type * struct_type_update_map (s_struct_type *st)
+{
+  uw i;
+  uw offset;
+  uw size;
+  s_struct_type tmp;
+  const s_sym *type;
+  assert(st);
+  assert(st->map.count);
+  tmp = *st;
+  if (! (tmp.offset = alloc(tmp.map.count * sizeof(uw))))
+    return NULL;
+  i = 0;
+  while (i < tmp.map.count) {
+    if (tmp.map.value[i].type == TAG_PVAR) {
+      type = tmp.map.value[i].data.pvar->type;
+      if (! sym_type_size(type, &size)) {
+        free(tmp.offset);
+        return NULL;
+      }
+    }
+    else if (! tag_size(tmp.map.value + i, &size)) {
+      free(tmp.offset);
+      return NULL;
+    }
+    offset = struct_type_padding(offset, size);
+    tmp.offset[i] = offset;
+    offset += size;
+    i++;
+  }
+  tmp.size = struct_type_compute_size(offset);
   *st = tmp;
   return st;
 }

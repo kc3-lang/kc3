@@ -43,14 +43,18 @@ s_struct_type * struct_type_new_copy (const s_struct_type *src);
 s_struct_type * struct_type_new_ref (s_struct_type *src);
 
 /* Observers. */
-void *           struct_type_copy_data (const s_struct_type *st,
-                                        void *dest,
-                                        const void *src);
-bool *           struct_type_exists (const s_sym *module,
-                                     bool *dest);
-uw *             struct_type_find_key_index (const s_struct_type *st,
-                                             const s_sym *key,
-                                             uw *dest);
-uw               struct_type_padding (uw offset, uw size);
+uw     struct_type_compute_size (uw offset);
+void * struct_type_copy_data (const s_struct_type *st,
+                              void *dest,
+                              const void *src);
+bool * struct_type_exists (const s_sym *module,
+                           bool *dest);
+uw *   struct_type_find_key_index (const s_struct_type *st,
+                                   const s_sym *key,
+                                   uw *dest);
+uw     struct_type_padding (uw offset, uw size);
+
+/* Operators */
+s_struct_type * struct_type_update_map (s_struct_type *st);
 
 #endif /* LIBKC3_STRUCT_TYPE_H */

@@ -1315,11 +1315,9 @@ s_marshall * marshall_struct (s_marshall *m, bool heap,
   return m;
 }
 
-// TODO: convert f_clean to p_callable
 s_marshall * marshall_struct_type (s_marshall *m, bool heap,
                                    const s_struct_type *st)
 {
-  uw i;
   assert(m);
   assert(st);
   assert(st->module);
@@ -1332,17 +1330,8 @@ s_marshall * marshall_struct_type (s_marshall *m, bool heap,
     return NULL;
   }
   if (! marshall_psym(m, heap, &st->module) ||
-      ! marshall_map(m, heap, &st->map))
-    return NULL;
-  i = 0;
-  while (i < st->map.count) {
-    if (! marshall_uw(m, heap, st->offset[i]))
-      return NULL;
-    i++;
-  }
-  if (! marshall_uw(m, heap, st->size) ||
-      ! marshall_pcallable(m, heap, &st->clean) ||
-      ! marshall_bool(m, heap, st->must_clean))
+      ! marshall_map(m, heap, &st->map) ||
+      ! marshall_pcallable(m, heap, &st->clean))
     return NULL;
   return m;
 }
