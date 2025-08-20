@@ -1232,27 +1232,27 @@ s_tag * env_facts_with_transaction (s_env *env, s_tag *facts_arg,
     facts_transaction_clean(&transaction);
     return NULL;
   }
-  facts = facts_tag.data.ptr.p;
+  tag_clean(&facts_tag);
   facts_transaction_start(facts, &transaction);
   env_unwind_protect_push(env, &unwind_protect);
   if (setjmp(unwind_protect.buf)) {
     env_unwind_protect_pop(env, &unwind_protect);
     facts_transaction_end(facts, &transaction);
-    tag_clean(&facts_tag);
     facts_transaction_clean(&transaction);
+    pfacts_clean(&facts);
     longjmp(*unwind_protect.jmp, 1);
   }
   if (! env_eval_tag(env, tag_arg, &tmp)) {
     env_unwind_protect_pop(env, &unwind_protect);
     facts_transaction_end(facts, &transaction);
-    tag_clean(&facts_tag);
     facts_transaction_clean(&transaction);
+    pfacts_clean(&facts);
     return NULL;
   }
   env_unwind_protect_pop(env, &unwind_protect);
   facts_transaction_end(facts, &transaction);
-  tag_clean(&facts_tag);
   facts_transaction_clean(&transaction);
+  pfacts_clean(&facts);
   *dest_v = tmp;
   return dest_v;
 }
