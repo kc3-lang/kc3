@@ -2,13 +2,20 @@
 
 ## libkc3
 
- - Typed pointers (Buf*)
- - dlopen inside lib only
+ - [x] dlopen inside lib only
+ - [x] Typed pointer example : `Fact*`
+ - [ ] Generic typed pointers : `MyType*`
+   - [ ] `sym_is_pointer_type`
 
 ## Marshall
 
- - test_httpd
- - www
+ - env_dump/restore
+   - [x] test_httpd
+   - [x] www
+ - StructType
+   - we should not record offsets in struct type but rather just
+     the map and recalculate offsets and size at `marshall_read`
+
 
 |       Type      | Write  |  Read  |      Needs      |
 | --------------- | ------ | ------ | --------------- |
@@ -39,13 +46,15 @@
 | Ptr free        |  [x]   |  [x]   |
 | Array           |  [x]   |  [x]   |
 | Fact            |  [x]   |  [x]   |
+| Struct          |  [x]   |  [x]   |
+| StructType      |  [.]   |  [.]   |
 | PStruct         |  [x]   |  [x]   |
-| PStruct Type    |  [x]   |  [x]   |
-| PTag            |  [x]   |  [ ]   | Tag             |
-| Facts           |  [x]   |  [X]   |
+| PStructType     |  [x]   |  [x]   |
+| PTag            |  [x]   |  [x]   | Tag             |
+| Facts           |  [x]   |  [x]   |
 | Env             |  [x]   |  [x]   | Facts           |
 
-[X] : Done
+[x] : Done
 [ ] : Not implemented
 [.] : Work in progress
 [?] : Has to be tested/verified
