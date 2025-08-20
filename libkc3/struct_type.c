@@ -222,8 +222,8 @@ uw struct_type_compute_size (uw offset)
 s_struct_type * struct_type_update_map (s_struct_type *st)
 {
   uw i;
-  uw offset;
-  uw size;
+  uw offset = 0;
+  uw size = 0;
   s_struct_type tmp;
   const s_sym *type;
   assert(st);
