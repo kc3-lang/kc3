@@ -49,6 +49,7 @@
 #include "map.h"
 #include "marshall.h"
 #include "marshall_read.h"
+#include "pfacts.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "s32.h"
@@ -334,8 +335,7 @@ sw kc3_dump (const s_str *path)
 
 p_facts * kc3_env_db (p_facts *dest)
 {
-  *dest = facts_new_ref(env_global()->facts);
-  return dest;
+  return pfacts_init_copy(dest, &env_global()->facts);
 }
 
 s_buf ** kc3_err_buf (s_buf **dest)

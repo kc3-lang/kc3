@@ -22,7 +22,7 @@ asan: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd_asan -d 127.0.0.1 15004
 
 clean_dump:
-	rm -f kc3.dump
+	rm -f kc3.dump db/*.bin.facts
 
 cov: assets
 	${SRC_TOP}/httpd/kc3_httpd_cov -d 127.0.0.1 15004

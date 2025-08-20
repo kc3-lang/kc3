@@ -41,7 +41,7 @@ sw        facts_load (s_facts *facts, s_buf *buf,
 sw        facts_load_file (s_facts *facts, const s_str *path);
 sw        facts_open_file (s_facts *facts, const s_str *path);
 sw        facts_open_file_binary (s_facts *facts, const s_str *path);
-bool      facts_open_file_binary_create (s_facts *facts,
+sw        facts_open_file_binary_create (s_facts *facts,
                                          const s_str *path);
 s_tag *   facts_ref_tag (s_facts *facts, s_tag *tag);
 bool *    facts_remove_fact (s_facts *facts, const s_fact *fact,

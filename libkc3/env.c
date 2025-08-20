@@ -315,6 +315,7 @@ void env_clean (s_env *env)
   env_toplevel_clean(env);
   error_handler_delete_all(env->error_handler);
   env->error_handler = NULL;
+  assert(env->facts->ref_count == 1);
   facts_delete(env->facts);
   env->facts = NULL;
   ops_delete(env->ops);

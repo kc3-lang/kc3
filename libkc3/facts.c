@@ -213,6 +213,15 @@ void facts_delete (s_facts *facts)
     abort();
   }
   facts->ref_count--;
+  if (true) {
+    err_write_1("facts_delete: ");
+    if (facts->log) {
+      err_inspect_str(&facts->log->path);
+      err_write_1(": ");
+    }
+    err_inspect_uw_decimal(facts->ref_count);
+    err_write_1("\n");
+  }
   if (facts->ref_count) {
 #if HAVE_PTHREAD
     mutex_unlock(&facts->ref_count_mutex);
@@ -714,6 +723,15 @@ s_facts * facts_new_ref (s_facts *src)
     abort();
   }
   src->ref_count++;
+  if (true) {
+    err_write_1("facts_new_ref: ");
+    if (src->log) {
+      err_inspect_str(&src->log->path);
+      err_write_1(": ");
+    }
+    err_inspect_uw_decimal(src->ref_count);
+    err_write_1("\n");
+  }
 #if HAVE_PTHREAD
   mutex_unlock(&src->ref_count_mutex);
 #endif
@@ -764,7 +782,6 @@ sw facts_open_file (s_facts *facts, const s_str *path)
   return result;
 }
 
-
 sw facts_open_file_binary (s_facts *facts, const s_str *path)
 {
   FILE *fp;
@@ -775,11 +792,8 @@ sw facts_open_file_binary (s_facts *facts, const s_str *path)
   buf_init(&in, false, sizeof(i), i);
   fp = fopen(path->ptr.pchar, "rb");
   if (! fp) {
-    if (errno == ENOENT) {
-      if (! facts_open_file_binary_create(facts, path))
-        return -1;
-      return 0;
-    }
+    if (errno == ENOENT)
+      return facts_open_file_binary_create(facts, path);
     return -1;
   }
   buf_file_open_r(&in, fp);
@@ -794,21 +808,24 @@ sw facts_open_file_binary (s_facts *facts, const s_str *path)
   return result;
 }
 
-bool facts_open_file_binary_create (s_facts *facts, const s_str *path)
+sw facts_open_file_binary_create (s_facts *facts, const s_str *path)
 {
   FILE *fp;
   fp = file_open(path, "wb");
   if (! fp)
-    return false;
+    return -1;
+  if (! facts->log &&
+      ! (facts->log = log_new())) {
+    fclose(fp);
+    return -1;
+  }
   if (! log_open_binary(facts->log, fp, path)) {
     fclose(fp);
-    return false;
+    return -1;
   }
-  if (buf_write_1(&facts->log->binary_buf,
-                  "%{module: KC3.Facts.Dump,\n"
-                  "  version: 1}\n") < 0)
-    return false;
-  return true;
+  return buf_write_1(&facts->log->binary_buf,
+                     "%{module: KC3.Facts.Dump,\n"
+                     "  version: 1}\n");
 }
 
 sw facts_open_file_create (s_facts *facts, const s_str *path)

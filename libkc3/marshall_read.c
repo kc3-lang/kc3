@@ -654,11 +654,13 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
 {
   s_str binary_path = {0};
   uw count;
+  s_env *env;
   s_fact fact = {0};
   bool has_log = false;
   uw i;
   s_str path = {0};
-  if (! mr || ! facts)
+  env = env_global();
+  if (! mr || ! facts || ! env)
     return NULL;
   if (! marshall_read_1(mr, heap, "_KC3FACTS_")) {
     err_puts("marshall_read_facts: marshall_read_1 magic");
@@ -694,56 +696,57 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
     i++;
   }
   if (! marshall_read_bool(mr, heap, &has_log)) {
-    err_puts("marshall_facts: marshall_bool log");
-    assert(! "marshall_facts: marshall_bool log");
+    err_puts("marshall_read_facts: marshall_bool log");
+    assert(! "marshall_read_facts: marshall_bool log");
     return NULL;
   }
   if (has_log) {
     if (! marshall_read_str(mr, heap, &path)) {
-      err_puts("marshall_facts: marshall_str path");
-      assert(! "marshall_facts: marshall_str path");
+      err_puts("marshall_read_facts: marshall_str path");
+      assert(! "marshall_read_facts: marshall_str path");
       return NULL;
     }
     if (! marshall_read_str(mr, heap, &binary_path)) {
-      err_puts("marshall_facts: marshall_str binary path");
-      assert(! "marshall_facts: marshall_str binary path");
-      str_clean(&path);
-      return NULL;
-    }
-    if (binary_path.size) {
-      if (! facts_open_file_binary(facts, &binary_path)) {
-        err_write_1("marshall_facts: facts_open_file_binary: ");
-        err_inspect_str(&path);
-        err_write_1("\n");
-        assert(! "marshall_facts: facts_open_file_binary");
-        str_clean(&binary_path);
-        str_clean(&path);
-        return NULL;
-      }
-    }
-    if (! facts_save_file(facts, &path)) {
-      err_write_1("marshall_facts: facts_save_file: ");
-      err_inspect_str(&path);
-      err_write_1("\n");
-      assert(! "marshall_facts: facts_save_file");
-      str_clean(&binary_path);
+      err_puts("marshall_read_facts: marshall_str binary path");
+      assert(! "marshall_read_facts: marshall_str binary path");
       str_clean(&path);
       return NULL;
     }
     if (! binary_path.size) {
       if (! log_path_to_binary_path(&path, &binary_path)) {
-        err_puts("marshall_facts: log_path_to_binary_path");
-        assert(! "marshall_facts: log_path_to_binary_path");
+        err_puts("marshall_read_facts: log_path_to_binary_path");
+        assert(! "marshall_read_facts: log_path_to_binary_path");
         str_clean(&path);
         return NULL;
       }
-      if (! facts_open_file_binary_create(facts, &binary_path)) {
-        err_puts("marshall_facts: facts_open_file_binary_create");
-        assert(! "marshall_facts: facts_open_file_binary_create");
-        str_clean(&path);
-        return NULL;
-      }
+    }
+    if (env->trace) {
+      err_write_1("marshall_read_facts: facts_open_file_binary: ");
+      err_inspect_str(&binary_path);
+      err_write_1("\n");
+    }
+    if (! facts_open_file_binary(facts, &binary_path)) {
+      err_write_1("marshall_read_facts: binary log: ");
+      err_inspect_str(&binary_path);
+      err_write_1(": ERROR\n");
+      assert(! "marshall_read_facts: facts_open_file_binary");
       str_clean(&binary_path);
+      str_clean(&path);
+      return NULL;
+    }
+    if (env->trace) {
+      err_write_1("marshall_read_facts: binary log: ");
+      err_inspect_str(&binary_path);
+      err_write_1(": OK\n");
+    }
+    if (! facts_save_file(facts, &path)) {
+      err_write_1("marshall_read_facts: facts_save_file: ");
+      err_inspect_str(&path);
+      err_write_1("\n");
+      assert(! "marshall_read_facts: facts_save_file");
+      str_clean(&binary_path);
+      str_clean(&path);
+      return NULL;
     }
     str_clean(&path);
   }
