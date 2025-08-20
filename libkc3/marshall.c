@@ -963,9 +963,9 @@ s_marshall * marshall_init (s_marshall *m)
 {
   s_marshall tmp = {0};
   if (! ht_init(&tmp.ht, &g_sym_Tag, 1024) ||
-    ! buf_init_alloc(&tmp.heap, 1024024))
+    ! buf_init_alloc(&tmp.heap, 128 * 1024 * 1024))
     return NULL;
-  if (! buf_init_alloc(&tmp.buf, 1024024)) {
+  if (! buf_init_alloc(&tmp.buf, 128 * 1024 * 1024)) {
     buf_delete(&tmp.heap);
     return NULL;
   }
@@ -1482,14 +1482,23 @@ sw marshall_to_buf (s_marshall *m, s_buf *out)
   mh.le_heap_count = htole64(m->heap_count);
   mh.le_heap_size = htole64(m->heap_pos);
   mh.le_buf_size = htole64(m->buf_pos);
-  if ((r = buf_write(out, &mh, sizeof(mh))) != sizeof(mh))
+  if ((r = buf_write(out, &mh, sizeof(mh))) != sizeof(mh)) {
+    err_puts("marshall_to_buf: buf_write marshall header");
+    assert(! "marshall_to_buf: buf_write marshall header");
     return -1;
+  }
   result += r;
-  if ((r = buf_xfer(out, &m->heap, m->heap_pos)) != m->heap_pos)
+  if ((r = buf_xfer(out, &m->heap, m->heap_pos)) != m->heap_pos) {
+    err_puts("marshall_to_buf: buf_xfer heap");
+    assert(! "marshall_to_buf: buf_xfer heap");
     return -1;
+  }
   result += r;
-  if ((r = buf_xfer(out, &m->buf, m->buf_pos)) != m->buf_pos)
+  if ((r = buf_xfer(out, &m->buf, m->buf_pos)) != m->buf_pos) {
+    err_puts("marshall_to_buf: buf_xfer buf");
+    assert(! "marshall_to_buf: buf_xfer buf");
     return -1;
+  }
   result += r;
   return result;
 }
@@ -1502,7 +1511,7 @@ sw marshall_to_file (s_marshall *m, const s_str *path)
   sw result = 0;
   assert(m);
   assert(path);
-  if (! buf_init_alloc(&out, 1024 * 1024))
+  if (! buf_init_alloc(&out, 257 * 1024 * 1024))
     return -1;
   if (! (fp = file_open(path, "wb")) ||
       ! buf_file_open_w(&out, fp) ||

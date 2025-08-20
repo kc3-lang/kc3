@@ -22,14 +22,15 @@ void log_clean (s_log *log)
 {
   assert(log);
   buf_clean(&log->buf);
-  if (log->binary_buf.free)
+  if (log->binary_path.size)
     buf_clean(&log->binary_buf);
 }
 
 void log_close (s_log *log)
 {
   buf_file_close(&log->buf);
-  buf_file_close(&log->binary_buf);
+  if (log->binary_path.size)
+    buf_file_close(&log->binary_buf);
 }
 
 void log_delete (s_log *log)
@@ -89,8 +90,8 @@ s_log * log_open_binary (s_log *log, FILE *fp, const s_str *path)
     return NULL;
   if (! buf_file_open_w(&tmp.binary_buf, fp))
     return NULL;
-  if (! str_init_copy(&tmp.path, path)) {
-    buf_file_close(&tmp.buf);
+  if (! str_init_copy(&tmp.binary_path, path)) {
+    buf_file_close(&tmp.binary_buf);
     return NULL;
   }
   *log = tmp;
@@ -99,7 +100,7 @@ s_log * log_open_binary (s_log *log, FILE *fp, const s_str *path)
 
 s_str * log_path_to_binary_path (const s_str *path, s_str *dest)
 {
-  const s_str suffix = STR_1(".bin.log");
+  const s_str suffix = STR_1(".bin.facts");
   s_str tmp = {0};
   if (! str_init_concatenate(&tmp, path, &suffix))
     return NULL;

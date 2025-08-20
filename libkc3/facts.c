@@ -240,11 +240,11 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   tag_init_pvar(&subject, &g_sym_Tag);
   tag_init_pvar(&predicate, &g_sym_Tag);
   tag_init_pvar(&object, &g_sym_Tag);
-    if ((r = buf_write_1(buf,
-                         "%{module: KC3.Facts.Dump,\n"
-                         "  version: 1}\n")) < 0)
-      return r;
-    result += r;
+  if ((r = buf_write_1(buf,
+                       "%{module: KC3.Facts.Dump,\n"
+                       "  version: 1}\n")) < 0)
+    return r;
+  result += r;
 #if HAVE_PTHREAD
   rwlock_r(&facts->rwlock);
 #endif
@@ -629,15 +629,30 @@ sw facts_log_add (s_log *log, const s_fact *fact)
   assert(log);
   assert(fact);
   if ((r = buf_write_1(&log->buf, "add ")) < 0)
-    return r;
+    goto ko;
   result += r;
   if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
-    return r;
+    goto ko;
   result += r;
   if ((r = buf_write_1(&log->buf, "\n")) < 0)
-    return r;
+    goto ko;
   result += r;
+  if (log->binary_path.size) {
+    if ((r = buf_write_1(&log->binary_buf, "add ")) < 0)
+      goto ko;
+    result += r;
+    if ((r = buf_inspect_fact(&log->binary_buf, fact)) < 0)
+      goto ko;
+    result += r;
+    if ((r = buf_write_1(&log->binary_buf, "\n")) < 0)
+      goto ko;
+    result += r;
+  }
   return result;
+ ko:
+  err_puts("facts_log_add: error");
+  assert(! "facts_log_add: error");
+  return r;
 }
 
 // TODO: if (binary) {
@@ -648,15 +663,30 @@ sw facts_log_remove (s_log *log, const s_fact *fact)
   assert(log);
   assert(fact);
   if ((r = buf_write_1(&log->buf, "remove ")) < 0)
-    return r;
+    goto ko;
   result += r;
   if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
-    return r;
+    goto ko;
   result += r;
   if ((r = buf_write_1(&log->buf, "\n")) < 0)
-    return r;
+    goto ko;
   result += r;
+  if (log->binary_path.size) {
+    if ((r = buf_write_1(&log->binary_buf, "remove ")) < 0)
+      goto ko;
+    result += r;
+    if ((r = buf_inspect_fact(&log->binary_buf, fact)) < 0)
+      goto ko;
+    result += r;
+    if ((r = buf_write_1(&log->binary_buf, "\n")) < 0)
+      goto ko;
+    result += r;
+  }
   return result;
+ ko:
+  err_puts("facts_log_remove: error");
+  assert(! "facts_log_remove: error");
+  return r;
 }
 
 s_facts * facts_new (void)
@@ -774,6 +804,10 @@ bool facts_open_file_binary_create (s_facts *facts, const s_str *path)
     fclose(fp);
     return false;
   }
+  if (buf_write_1(&facts->log->binary_buf,
+                  "%{module: KC3.Facts.Dump,\n"
+                  "  version: 1}\n") < 0)
+    return false;
   return true;
 }
 
@@ -1036,24 +1070,41 @@ sw facts_save_file (s_facts *facts, const s_str *path)
   assert(facts);
   assert(path);
   assert(! facts->log);
+  if (env_global()->trace) {
+    err_write_1("facts_save_file: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+  }
   buf_init(&buf, false, sizeof(b), b);
-  fp = file_open(path, "wb");
-  if (! fp)
-    return -1;
+  if (! (fp = file_open(path, "wb"))) {
+    r = -1;
+    goto ko;
+  }
   buf_file_open_w(&buf, fp);
   if ((r = facts_dump(facts, &buf)) < 0)
-    goto ko;
+    goto clean;
   result += r;
   buf_flush(&buf);
   free(buf.user_ptr);
   buf.user_ptr = NULL;
   if (! (facts->log = log_new()))
-    goto ko;
+    goto clean;
   if (! log_open(facts->log, fp, path))
-    goto ko;
+    goto clean;
+  if (env_global()->trace) {
+    err_write_1("facts_save_file: ");
+    err_inspect_str(path);
+    err_puts(": OK");
+  }
   return result;
- ko:
+ clean:
   fclose(fp);
+ ko:
+  if (env_global()->trace) {
+    err_write_1("facts_save_file: ");
+    err_inspect_str(path);
+    err_puts(": ERROR");
+  }
   return r;
 }
 

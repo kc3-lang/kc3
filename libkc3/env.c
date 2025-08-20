@@ -632,7 +632,20 @@ void ** env_dlopen (s_env *env, const s_str *so_path, void **dest)
 
 sw env_dump (const s_env *env, const s_str *path)
 {
-  return marshall_env_to_file(env, path);
+  sw r;
+  if (env->trace) {
+    err_write_1("env_dump: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+  }
+  r = marshall_env_to_file(env, path);
+  if (env->trace) {
+    err_write_1("env_dump: ");
+    err_inspect_str(path);
+    err_write_1(": ");
+    err_puts(r > 0 ? "OK" : "ERROR");
+  }
+  return r;
 }
 
 sw env_dump_restore (s_env *env, const s_str *path)
@@ -1075,18 +1088,26 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag,
   s_tag    facts_eval;
   s_list *spec = NULL;
   s_tag   spec_eval = {0};
+  const s_sym *sym_Facts_star = &g_sym_Facts_star;
   s_tag tmp = {0};
   s_unwind_protect unwind_protect;
-  if (! env_eval_tag(env, facts_tag, &facts_eval))
-    return NULL;
-  if (facts_eval.type != TAG_PTR) {
-    err_puts("env_facts_with_macro: facts is not a Ptr");
-    assert(! "env_facts_with_macro: facts is not a Ptr");
+  if (! env_eval_tag(env, facts_tag, &facts_eval)) {
+    err_puts("env_facts_with_macro: env_eval_tag Facts*");
+    assert(! "env_facts_with_macro: env_eval_tag Facts*");
     return NULL;
   }
-  facts = facts_eval.data.ptr.p;
-  if (! env_eval_tag(env, spec_tag, &spec_eval))
+  if (! pfacts_init_cast(&facts, &sym_Facts_star, &facts_eval)) {
+    err_puts("env_facts_with_macro: pfacts_init_cast Facts*");
+    assert(! "env_facts_with_macro: pfacts_init_cast Facts*");
+    tag_clean(&facts_eval);
     return NULL;
+  }
+  tag_clean(&facts_eval);
+  if (! env_eval_tag(env, spec_tag, &spec_eval)) {
+    err_puts("env_facts_with_macro: env_eval_tag spec");
+    assert(! "env_facts_with_macro: env_eval_tag spec");
+    return NULL;
+  }
   if (spec_eval.type != TAG_PLIST) {
     err_puts("env_facts_with_macro: spec is not a List");
     assert(! "env_facts_with_macro: spec is not a List");

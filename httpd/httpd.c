@@ -148,13 +148,18 @@ int main (int argc, char **argv)
     call.ident.sym = sym_1("load_app");
     if (! eval_call(&call, &tmp)) {
       err_puts("kc3_httpd: eval_call");
-      goto clean;
+      assert(! "kc3_httpd: eval_call");
+      call_clean(&call);
+      kc3_clean(NULL);
+      return 1;
     }
+    call_clean(&call);
     tag_clean(&tmp);
     if (! env_dump(env, &dump_path)) {
       err_puts("kc3_httpd: env_dump");
       assert("kc3_httpd: env_dump");
-      goto clean;
+      kc3_clean(NULL);
+      return 1;
     }
     kc3_clean(NULL);
     return 0;
