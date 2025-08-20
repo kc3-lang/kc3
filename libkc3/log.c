@@ -22,8 +22,11 @@ void log_clean (s_log *log)
 {
   assert(log);
   buf_clean(&log->buf);
-  if (log->binary_path.size)
+  str_clean(&log->path);
+  if (log->binary_path.size) {
     buf_clean(&log->binary_buf);
+    str_clean(&log->binary_path);
+  }
 }
 
 void log_close (s_log *log)
