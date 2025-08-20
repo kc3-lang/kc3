@@ -804,6 +804,12 @@ sw facts_open_file_binary (s_facts *facts, const s_str *path)
   fp = file_open(path, "ab");
   if (! fp)
     return -1;
+  if (! facts->log &&
+      ! (facts->log = log_new())) {
+    err_puts("facts_open_file_binary: log_new");
+    assert(! "facts_open_file_binary: log_new");
+    return -1;
+  }
   log_open_binary(facts->log, fp, path);
   return result;
 }
