@@ -213,7 +213,7 @@ void facts_delete (s_facts *facts)
     abort();
   }
   facts->ref_count--;
-  if (true) {
+  if (false) {
     err_write_1("facts_delete: ");
     if (facts->log) {
       err_inspect_str(&facts->log->path);
@@ -723,7 +723,7 @@ s_facts * facts_new_ref (s_facts *src)
     abort();
   }
   src->ref_count++;
-  if (true) {
+  if (false) {
     err_write_1("facts_new_ref: ");
     if (src->log) {
       err_inspect_str(&src->log->path);
