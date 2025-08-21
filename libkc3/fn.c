@@ -42,7 +42,10 @@ void fn_clean (s_fn *fn)
 {
   assert(fn);
   fn_clause_delete_all(fn->clauses);
-  frame_delete_all(fn->frame);
+  if (frame_delete(fn->frame)) {
+    err_puts("fn_clean: frame has next");
+    assert(! "fn_clean: frame has next");
+  }
 }
 
 void fn_delete (s_fn *fn)
