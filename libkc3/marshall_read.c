@@ -38,6 +38,7 @@
 #include "marshall.h"
 #include "marshall_read.h"
 #include "mutex.h"
+#include "op.h"
 #include "ops.h"
 #include "pcallable.h"
 #include "plist.h"
@@ -1261,6 +1262,7 @@ s_marshall_read * marshall_read_ops (s_marshall_read *mr,
       assert(! "marshall_read_ops: ops_add");
       return NULL;
     }
+    op_clean(&op);
     i++;
   }
   return mr;

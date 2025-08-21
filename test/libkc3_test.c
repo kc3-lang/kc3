@@ -86,10 +86,9 @@ int main (int argc, char **argv)
   TEST_TARGET(facts_with);
   TEST_TARGET(struct);
   TEST_TARGET(ratio);
-  // TEST_TARGET(marshall);
-  // TEST_TARGET(marshall_read);
-  // too long :3
-  // TEST_TARGET(env);
+  TEST_TARGET(marshall);
+  TEST_TARGET(marshall_read);
+  TEST_TARGET(env);
   test_summary();
   test_clean();
   kc3_clean(NULL);
