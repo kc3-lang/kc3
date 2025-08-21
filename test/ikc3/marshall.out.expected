@@ -216,7 +216,7 @@ loopback(cfn Tag "tag_add" (Tag, Tag, Result))
 {:ok, 459}
 loopback(%KC3.Op{sym: :-,
                  callable: cfn Tag "tag_add" (Tag, Tag, Result)})
-{:ok, 1562}
+{:ok, 1391}
 loopback((U8[]) {})
 {:ok, 167}
 loopback((U8[]) {0, 1, 2, 254, 255})
