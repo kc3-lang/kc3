@@ -17,11 +17,9 @@
 #include <ffi.h>
 #include <limits.h>
 #include <setjmp.h>
-#include <stdio.h>
 #include <sys/types.h>
 #include <time.h>
 #include <pthread.h>
-#include "config.h"
 #include "sha1.h"
 
 #define MP_28BIT
@@ -233,6 +231,7 @@ typedef struct marshall_read           s_marshall_read;
 typedef struct mutex                   s_mutex;
 typedef struct op                      s_op;
 typedef struct ops                     s_ops;
+typedef struct pointer                 s_pointer;
 typedef struct pretty                  s_pretty;
 typedef struct pretty_save             s_pretty_save;
 typedef struct queue                   s_queue;
@@ -524,6 +523,11 @@ struct loop_context {
   jmp_buf break_buf;
   s_unwind_protect up;
   s_loop_context *next;
+};
+
+struct pointer {
+  const s_sym *target_type;
+  u_ptr_w ptr;
 };
 
 struct str {
