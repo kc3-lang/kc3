@@ -63,23 +63,23 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **type);
 const s_sym ** tag_type_var (const s_tag *tag, const s_sym **type);
 
 /* Operators. */
-s_tag * tag_1 (s_tag *tag, const char *p);
-s_tag * tag_integer_cast_to_s16 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_s32 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_s64 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_s8 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_u16 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_u32 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_u64 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_u8 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_reduce (s_tag *tag);
-bool    tag_is_number (s_tag *tag);
-s_tag * tag_list_1 (s_tag *tag, const char *p);
-s_tag * tag_set_name_if_null (s_tag *tag, const s_ident *name);
-bool    tag_to_const_pointer (s_tag *tag, const s_sym *type,
-                              void **dest);
-bool    tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest);
-bool    tag_to_pointer (s_tag *tag, const s_sym *type, void **dest);
+s_tag *     tag_1 (s_tag *tag, const char *p);
+s_pointer * tag_address (s_tag *tag, s_pointer *dest);
+s_tag *     tag_integer_cast_to_s16 (const s_tag *tag, s_tag *dest);
+s_tag *     tag_integer_cast_to_s32 (const s_tag *tag, s_tag *dest);
+s_tag *     tag_integer_cast_to_s64 (const s_tag *tag, s_tag *dest);
+s_tag *     tag_integer_cast_to_s8 (const s_tag *tag, s_tag *dest);
+s_tag *     tag_integer_cast_to_u16 (const s_tag *tag, s_tag *dest);
+s_tag *     tag_integer_cast_to_u32 (const s_tag *tag, s_tag *dest);
+s_tag *     tag_integer_cast_to_u64 (const s_tag *tag, s_tag *dest);
+s_tag *     tag_integer_cast_to_u8 (const s_tag *tag, s_tag *dest);
+s_tag *     tag_integer_reduce (s_tag *tag);
+bool        tag_is_number (s_tag *tag);
+s_tag *     tag_list_1 (s_tag *tag, const char *p);
+s_tag *     tag_set_name_if_null (s_tag *tag, const s_ident *name);
+bool        tag_to_ffi_pointer (s_tag *tag, const s_sym *type,
+                                void **dest);
+bool        tag_to_pointer (s_tag *tag, const s_sym *type, void **dest);
 
 /* KC3 operators. */
 s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest);

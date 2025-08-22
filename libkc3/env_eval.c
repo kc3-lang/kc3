@@ -873,14 +873,14 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
       if (s->tag) {
         if (! env_eval_tag(env, s->tag + i, &tag))
           goto ko;
-        if (! tag_to_const_pointer(&tag, type, &data)) {
+        if (! tag_to_pointer(&tag, type, &data)) {
           tag_clean(&tag);
           goto ko;
         }
       }
       else {
-        if (! tag_to_const_pointer(tmp->pstruct_type->map.value + i,
-                                   type, &data))
+        if (! tag_to_pointer(tmp->pstruct_type->map.value + i,
+                             type, &data))
           goto ko;
       }
       if (false) {

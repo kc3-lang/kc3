@@ -588,7 +588,7 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
       if (type_sym == &g_sym_Var)
         type_sym = s->pstruct_type->map.value[i].data.pvar->type;
       data = (s8 *) s->data + s->pstruct_type->offset[i];
-      if (! tag_to_const_pointer(value, type_sym, &data_src)) {
+      if (! tag_to_pointer(value, type_sym, &data_src)) {
         err_puts("struct_set: tag_to_const_pointer");
         assert(! "struct_set: tag_to_const_pointer");
         return NULL;

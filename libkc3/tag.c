@@ -1241,13 +1241,6 @@ uw * tag_size (const s_tag *tag, uw *dest)
   return dest;
 }
 
-bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
-                           void **dest)
-{
-  assert(! "tag_to_const_pointer: deprecated");
-  return tag_to_pointer(tag, type, dest);
-}
-
 bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
 {
   assert(tag);
