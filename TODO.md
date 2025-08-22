@@ -21,7 +21,7 @@
 ## LibreSSL/OpenSSL
  - [ ] new library
  - [ ] explore SSL API for stream socket connections with a certificate.
- 
+
 ## HTTPd
  - [ ] partial requests
  - [ ] SSL
@@ -38,7 +38,6 @@
  - StructType
    - we should not record offsets in struct type but rather just
      the map and recalculate offsets and size at `marshall_read`
-
 
 |       Type      | Write  |  Read  |      Needs      |
 | --------------- | ------ | ------ | --------------- |
