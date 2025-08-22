@@ -1530,7 +1530,7 @@ s_marshall_read * marshall_read_pointer(s_marshall_read *mr,
     assert(mr);
     assert(dest);
     *dest = tmp;
-    if (! marshall_read_psym(&mr, heap, &tmp.target_type) ||
+    if (! marshall_read_psym(mr, heap, &tmp.target_type) ||
         ! marshall_read_uw(mr, heap, &tmp.ptr.uw))
       return NULL;
     return mr;
