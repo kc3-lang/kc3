@@ -371,6 +371,16 @@ bool hash_update_plist (t_hash *hash, const p_list *plist)
   return hash_update_list(hash, *plist);
 }
 
+bool hash_update_pointer (t_hash *hash, const s_pointer *p)
+{
+  const char type[] = "pointer";
+  if (! hash_update(hash, type, strlen(type)) ||
+      ! hash_update_sym(hash, p->target_type) ||
+      ! hash_update(hash, p->ptr.p, sizeof(void *)))
+      return false;
+    return true;
+}
+
 bool hash_update_psym (t_hash *hash, p_sym const *psym)
 {
   return hash_update_sym(hash, *psym);
