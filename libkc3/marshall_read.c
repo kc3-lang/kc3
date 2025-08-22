@@ -1522,6 +1522,20 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
   return mr;
 }
 
+s_marshall_read * marshall_read_pointer(s_marshall_read *mr,
+                                     bool heap,
+                                     s_pointer *dest)
+{
+    s_pointer tmp = {0};
+    assert(mr);
+    assert(dest);
+    *dest = tmp;
+    if (! marshall_read_psym(&mr, heap, &tmp.target_type) ||
+        ! marshall_read_uw(mr, heap, tmp.ptr.uw))
+      return NULL;
+    return mr;
+}
+
 s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,
                                          bool heap,
                                          p_struct *dest)
