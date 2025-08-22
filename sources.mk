@@ -540,6 +540,8 @@ KC3_C_SOURCES = \
 	"libkc3/pfacts.h" \
 	"libkc3/plist.c" \
 	"libkc3/plist.h" \
+	"libkc3/pointer.c" \
+	"libkc3/pointer.h" \
 	"libkc3/pretty.c" \
 	"libkc3/pretty.h" \
 	"libkc3/pstruct.c" \

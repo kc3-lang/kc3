@@ -144,6 +144,7 @@ HEADERS = \
 	"pcow.h" \
 	"pfacts.h" \
 	"plist.h" \
+	"pointer.h" \
 	"pretty.h" \
 	"pstruct.h" \
 	"pstruct_type.h" \
@@ -342,6 +343,7 @@ SOURCES = \
 	"pcow.c" \
 	"pfacts.c" \
 	"plist.c" \
+	"pointer.c" \
 	"pretty.c" \
 	"pstruct.c" \
 	"pstruct_type.c" \
@@ -657,6 +659,7 @@ LO_SOURCES = \
 	"pcow.c" \
 	"pfacts.c" \
 	"plist.c" \
+	"pointer.c" \
 	"pretty.c" \
 	"pstruct.c" \
 	"pstruct_type.c" \
