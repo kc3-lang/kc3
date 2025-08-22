@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <pthread.h>
 #include "assert.h"
+#include "config.h"
 #include "io.h"
 #include "rwlock.h"
 
