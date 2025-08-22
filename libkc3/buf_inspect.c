@@ -3164,6 +3164,52 @@ sw buf_inspect_pstruct_type_size (s_pretty *pretty,
   return buf_inspect_struct_type_size(pretty, *pstruct_type);
 }
 
+sw buf_inspect_pointer (s_buf *buf, const s_pointer *pointer)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  if ((r = buf_write_1(buf, "(")) < 0)
+    return r;
+  result += r;
+  if (! sym_is_module(pointer->target_type)) {
+    err_puts("buf_inspect_pointer: invalid pointer type");
+    assert(! "buf_inspect_pointer: invalid pointer type");
+    return -1;
+  }
+  if ((r = buf_write_1(buf, "*) 0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw_hexadecimal(buf, pointer->ptr.uw)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_pointer_size (s_pretty *pretty, const s_pointer *pointer)
+{
+  sw r;
+  sw result = 0;
+  assert(pretty);
+  assert(pointer);
+  if ((r = buf_write_1_size(pretty, "(")) < 0)
+    return r;
+  result += r;
+  if (! sym_is_module(pointer->target_type)) {
+    err_puts("buf_inspect_pointer: invalid pointer type");
+    assert(! "buf_inspect_pointer: invalid pointer type");
+    return -1;
+  }
+  if ((r = buf_write_1_size(pretty, "*) 0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw_hexadecimal_size(pretty,
+                                           pointer->ptr.uw)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
 sw buf_inspect_psym (s_buf *buf, p_sym const *psym)
 {
   return buf_inspect_sym(buf, *psym);
