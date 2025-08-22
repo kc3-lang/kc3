@@ -60,6 +60,9 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
     return b;
   case TAG_PCOW:
     return bool_init_cast(b, type, cow_read_only(tag->data.pcow));
+  case TAG_PTR:       *b = tag->data.ptr.p != 0;               return b;
+  //TODO:// case TAG_POINTER:   *b = tag->data.pointer.ptr.p != 0;       return b;
+  case TAG_PTR_FREE:  *b = tag->data.ptr_free.p != 0;          return b;
   case TAG_RATIO:
     *b = ! ratio_is_zero(&tag->data.ratio);
     return b;
@@ -73,8 +76,6 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_U32:       *b = tag->data.u32 != 0;                 return b;
   case TAG_U64:       *b = tag->data.u64 != 0;                 return b;
   case TAG_UW:        *b = tag->data.uw != 0;                  return b;
-  case TAG_PTR:       *b = tag->data.ptr.p != 0;               return b;
-  case TAG_PTR_FREE:  *b = tag->data.ptr_free.p != 0;          return b;
   case TAG_ARRAY:
   case TAG_DO_BLOCK:
   case TAG_CALL:

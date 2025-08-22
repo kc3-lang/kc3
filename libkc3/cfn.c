@@ -165,9 +165,9 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
         err_write_1(" ");
         err_inspect_list(args);
         err_write_1(": ");
-        err_inspect_pointer(result_pointer);
+        err_inspect_c_pointer(result_pointer);
         err_write_1(" != ");
-        err_inspect_pointer(arg_pointer_result);
+        err_inspect_c_pointer(arg_pointer_result);
         err_write_1("\n");
         assert(env->stacktrace == trace);
         env->stacktrace = list_delete(trace);

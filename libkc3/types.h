@@ -179,6 +179,7 @@ typedef enum {
   TAG_UNQUOTE      = 38, // \x26
   TAG_IDENT        = 39, // \x27
   TAG_PFACTS       = 40, // \x28
+  // TAG_POINTER      = 41, // \x29
 } e_tag_type;
 
 
@@ -674,6 +675,7 @@ union tag_data {
   p_callable    pcallable;
   p_facts       pfacts;
   p_list        plist;
+  s_pointer     pointer;
   p_struct      pstruct;
   p_struct_type pstruct_type;
   p_sym         psym;

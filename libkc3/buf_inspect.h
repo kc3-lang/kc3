@@ -179,10 +179,11 @@ sw buf_inspect_pcomplex_size (s_pretty *pretty,
                               p_complex const *pcomplex);
 sw buf_inspect_pcow (s_buf *buf, p_cow const *pcow);
 sw buf_inspect_pcow_size (s_pretty *pretty, p_cow const *pcow);
-sw buf_inspect_pointer (s_buf *buf, const void *ptr);
-sw buf_inspect_pointer_size (s_pretty *pretty, const void *ptr);
+sw buf_inspect_c_pointer (s_buf *buf, const void *ptr);
+sw buf_inspect_c_pointer_size (s_pretty *pretty, const void *ptr);
 sw buf_inspect_pstruct (s_buf *buf, p_struct const *pstruct);
-sw buf_inspect_pstruct_size (s_pretty *pretty, p_struct const *pstruct);
+sw buf_inspect_pstruct_size (s_pretty *pretty,
+                             p_struct const *pstruct);
 sw buf_inspect_pstruct_type (s_buf *buf,
                              p_struct_type const *pstruct_type);
 sw buf_inspect_pstruct_type_size (s_pretty *pretty,
