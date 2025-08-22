@@ -179,7 +179,7 @@ typedef enum {
   TAG_UNQUOTE      = 38, // \x26
   TAG_IDENT        = 39, // \x27
   TAG_PFACTS       = 40, // \x28
-  // TAG_POINTER      = 41, // \x29
+  TAG_POINTER      = 41, // \x29
 } e_tag_type;
 
 

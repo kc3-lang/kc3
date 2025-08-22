@@ -1262,6 +1262,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_PTR:        return compare_ptr(a->data.ptr.p, b->data.ptr.p);
   case TAG_PTR_FREE:   return compare_ptr(a->data.ptr_free.p,
                                           b->data.ptr_free.p);
+  case TAG_POINTER:    return compare_pointer(&a->data.pointer,
+                                              &b->data.pointer);
   case TAG_PVAR:       return compare_var(a->data.pvar, b->data.pvar);
   case TAG_QUOTE:      return compare_quote(&a->data.quote,
                                             &b->data.quote);

@@ -22,7 +22,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
   switch (type) {
   case TAG_VOID:         *dest = 0;                     return true;
   case TAG_ARRAY:        *dest = sizeof(s_array);       return true;
-  case TAG_DO_BLOCK:     *dest = sizeof(s_do_block);       return true;
+  case TAG_DO_BLOCK:     *dest = sizeof(s_do_block);    return true;
   case TAG_BOOL:         *dest = sizeof(bool);          return true;
   case TAG_CALL:         *dest = sizeof(s_call);        return true;
   case TAG_CHARACTER:    *dest = sizeof(character);     return true;
@@ -38,6 +38,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_PCOW:         *dest = sizeof(p_cow);         return true;
   case TAG_PFACTS:       *dest = sizeof(p_facts);       return true;
   case TAG_PLIST:        *dest = sizeof(p_list);        return true;
+  case TAG_POINTER:      *dest = sizeof(s_pointer);     return true;
   case TAG_PSTRUCT:      *dest = sizeof(p_struct);      return true;
   case TAG_PSTRUCT_TYPE: *dest = sizeof(p_struct_type); return true;
   case TAG_PTAG:         *dest = sizeof(p_tag);         return true;
@@ -52,7 +53,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_S64:          *dest = sizeof(s64);           return true;
   case TAG_STR:          *dest = sizeof(s_str);         return true;
   case TAG_SW:           *dest = sizeof(sw);            return true;
-  case TAG_PSYM:          *dest = sizeof(s_sym *);       return true;
+  case TAG_PSYM:         *dest = sizeof(s_sym *);       return true;
   case TAG_TIME:         *dest = sizeof(s_time);        return true;
   case TAG_TUPLE:        *dest = sizeof(s_tuple);       return true;
   case TAG_U8:           *dest = sizeof(u8);            return true;
@@ -82,6 +83,7 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_IDENT:        *dest = &ffi_type_pointer;    return true;
   case TAG_INTEGER:      *dest = &ffi_type_pointer;    return true;
   case TAG_MAP:          *dest = &ffi_type_pointer;    return true;
+  case TAG_POINTER:      *dest = &ffi_type_pointer;    return true;
   case TAG_PCALLABLE:    *dest = &ffi_type_pointer;    return true;
   case TAG_PCOMPLEX:     *dest = &ffi_type_pointer;    return true;
   case TAG_PCOW:         *dest = &ffi_type_pointer;    return true;
@@ -101,7 +103,7 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_S64:          *dest = &ffi_type_sint64;     return true;
   case TAG_SW:           *dest = &ffi_type_slong;      return true;
   case TAG_STR:          *dest = &ffi_type_pointer;    return true;
-  case TAG_PSYM:          *dest = &ffi_type_pointer;    return true;
+  case TAG_PSYM:         *dest = &ffi_type_pointer;    return true;
   case TAG_TIME :        *dest = &ffi_type_pointer;    return true;
   case TAG_TUPLE:        *dest = &ffi_type_pointer;    return true;
   case TAG_U8:           *dest = &ffi_type_uint8;      return true;
@@ -133,6 +135,7 @@ const char * tag_type_to_string (e_tag_type tag_type)
   case TAG_IDENT:        return "Ident";
   case TAG_INTEGER:      return "Integer";
   case TAG_MAP:          return "Map";
+  case TAG_POINTER:      return "Pointer";
   case TAG_PCALLABLE:    return "Callable";
   case TAG_PCOMPLEX:     return "Complex";
   case TAG_PCOW:         return "Cow";

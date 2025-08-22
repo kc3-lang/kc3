@@ -52,6 +52,7 @@ s8 compare_pfacts (const s_facts *a, const s_facts *b);
 s8 compare_plist (const p_list *a, const p_list *b);
 s8 compare_ptag (const p_tag a, const p_tag b);
 s8 compare_ptr (const void *a, const void *b);
+s8 compare_pointer (const s_pointer *a, const s_pointer *b);
 s8 compare_quote (const s_quote *a, const s_quote *b);
 COMPARE_PROTOTYPE(s8);
 COMPARE_PROTOTYPE(s16);

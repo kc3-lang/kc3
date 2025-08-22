@@ -41,6 +41,7 @@
 #include "pcow.h"
 #include "pfacts.h"
 #include "plist.h"
+#include "pointer.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "ptr.h"
@@ -264,6 +265,7 @@ void tag_clean (s_tag *tag)
   case TAG_F128:
   case TAG_FACT:
   case TAG_IDENT:
+  case TAG_POINTER:
   case TAG_PSYM:
   case TAG_PTAG:
   case TAG_PTR:
@@ -445,6 +447,11 @@ s_tag * tag_init_cast (s_tag *tag, const s_sym * const *type,
   assert(*type);
   assert(src);
   switch (src->type) {
+  case TAG_POINTER:
+    if (*type != &g_sym_Tag ||
+        src->data.pointer.target_type != &g_sym_Tag)
+      break;
+    return tag_init_copy(tag, src->data.pointer.ptr.p);
   case TAG_PTR:
     if (*type != &g_sym_Tag)
       break;
@@ -572,6 +579,11 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
   case TAG_PLIST:
     tag->type = src->type;
     if (! plist_init_copy(&tag->data.plist, &src->data.plist))
+      return NULL;
+    return tag;
+  case TAG_POINTER:
+    tag->type = src->type;
+    if (! pointer_init_copy(&tag->data.pointer, &src->data.pointer))
       return NULL;
     return tag;
   case TAG_PSTRUCT:
@@ -898,6 +910,7 @@ bool tag_is_integer (s_tag *tag)
   case TAG_PCOMPLEX:
   case TAG_PFACTS:
   case TAG_PLIST:
+  case TAG_POINTER:
   case TAG_PSTRUCT:
   case TAG_PSTRUCT_TYPE:
   case TAG_PSYM:
@@ -950,6 +963,7 @@ bool tag_is_number (s_tag *tag)
   case TAG_PCALLABLE:
   case TAG_PFACTS:
   case TAG_PLIST:
+  case TAG_POINTER:
   case TAG_PSTRUCT:
   case TAG_PSTRUCT_TYPE:
   case TAG_PSYM:
@@ -1230,85 +1244,8 @@ uw * tag_size (const s_tag *tag, uw *dest)
 bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
                            void **dest)
 {
-  e_tag_type tag_type;
-  if (type == &g_sym_Tag) {
-    *dest = tag;
-    return true;
-  }
-  if (! sym_to_tag_type(type, &tag_type))
-    return false;
-  if (tag->type != tag_type) {
-    err_write_1("tag_to_const_pointer: cannot cast ");
-    err_write_1(tag_type_to_string(tag->type));
-    err_write_1(" to ");
-    err_puts(type->str.ptr.pchar);
-    assert(! "tag_to_const_pointer: cannot cast");
-    return false;
-  }
-  switch (tag_type) {
-  case TAG_ARRAY:        *dest = &tag->data.array;        return true;
-  case TAG_BOOL:         *dest = &tag->data.bool_;        return true;
-  case TAG_CALL:         *dest = &tag->data.call;         return true;
-  case TAG_CHARACTER:    *dest = &tag->data.character;    return true;
-  case TAG_DO_BLOCK:     *dest = &tag->data.do_block;     return true;
-  case TAG_F32:          *dest = &tag->data.f32;          return true;
-  case TAG_F64:          *dest = &tag->data.f64;          return true;
-  case TAG_F128:         *dest = &tag->data.f128;         return true;
-  case TAG_FACT:         *dest = &tag->data.fact;         return true;
-  case TAG_IDENT:        *dest = &tag->data.ident;        return true;
-  case TAG_INTEGER:      *dest = &tag->data.integer;      return true;
-  case TAG_MAP:          *dest = &tag->data.map;          return true;
-  case TAG_PCALLABLE:    *dest = &tag->data.pcallable;    return true;
-  case TAG_PCOMPLEX:     *dest = &tag->data.pcomplex;     return true;
-  case TAG_PCOW:         *dest = &tag->data.pcow;         return true;
-  case TAG_PFACTS:       *dest = &tag->data.pfacts;       return true;
-  case TAG_PLIST:        *dest = &tag->data.plist;        return true;
-  case TAG_PSTRUCT:
-    if (type == &g_sym_Struct) {
-      *dest = &tag->data.pstruct;
-      return true;
-    }
-    if (type == tag->data.pstruct->pstruct_type->module) {
-      *dest = tag->data.pstruct->data;
-      assert(*dest);
-      return true;
-    }
-    err_write_1("tag_to_const_pointer: cannot cast ");
-    err_write_1(tag_type_to_string(tag->type));
-    err_write_1(" to ");
-    err_inspect_sym(type);
-    err_write_1("\n");
-    assert(! "tag_to_const_pointer: cannot cast");
-    return false;
-  case TAG_PSTRUCT_TYPE: *dest = &tag->data.pstruct_type; return true;
-  case TAG_PSYM:         *dest = &tag->data.psym;         return true;
-  case TAG_PTAG:         *dest = &tag->data.ptag;         return true;
-  case TAG_PTR:          *dest = &tag->data.ptr.p;        return true;
-  case TAG_PTR_FREE:     *dest = &tag->data.ptr_free.p;   return true;
-  case TAG_PVAR:
-    return tag_to_const_pointer(&tag->data.pvar->tag, type, dest);
-  case TAG_QUOTE:        *dest = &tag->data.quote;        return true;
-  case TAG_RATIO:        *dest = &tag->data.ratio;        return true;
-  case TAG_S8:           *dest = &tag->data.s8;           return true;
-  case TAG_S16:          *dest = &tag->data.s16;          return true;
-  case TAG_S32:          *dest = &tag->data.s32;          return true;
-  case TAG_S64:          *dest = &tag->data.s64;          return true;
-  case TAG_SW:           *dest = &tag->data.sw;           return true;
-  case TAG_STR:          *dest = &tag->data.str;          return true;
-  case TAG_TIME:         *dest = &tag->data.time;         return true;
-  case TAG_TUPLE:        *dest = &tag->data.tuple;        return true;
-  case TAG_U8:           *dest = &tag->data.u8;           return true;
-  case TAG_U16:          *dest = &tag->data.u16;          return true;
-  case TAG_U32:          *dest = &tag->data.u32;          return true;
-  case TAG_U64:          *dest = &tag->data.u64;          return true;
-  case TAG_UNQUOTE:      *dest = &tag->data.unquote;      return true;
-  case TAG_UW:           *dest = &tag->data.uw;           return true;
-  case TAG_VOID:         *dest = NULL;                    return true;
-  }
-  err_write_1("tag_to_const_pointer: invalid tag type: ");
-  err_puts(tag_type_to_string(tag_type));
-  assert(! "tag_to_const_pointer: invalid tag type");
-  return false;
+  assert(! "tag_to_const_pointer: deprecated");
+  return tag_to_pointer(tag, type, dest);
 }
 
 bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
@@ -1442,6 +1379,13 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     goto invalid_cast;
+  case TAG_POINTER:
+    if (type == &g_sym_Pointer) {
+      *dest = &tag->data.pointer;
+      return true;
+    }
+    *dest = tag->data.pointer.ptr.p;
+    return true;
   case TAG_PSTRUCT:
     if (type == &g_sym_Struct) {
       *dest = tag->data.pstruct;
@@ -1659,6 +1603,13 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_PCOW:         *dest = &tag->data.pcow;         return true;
   case TAG_PFACTS:       *dest = &tag->data.pfacts;       return true;
   case TAG_PLIST:        *dest = &tag->data.plist;        return true;
+  case TAG_POINTER:
+    if (type == &g_sym_Pointer ||
+        sym_is_pointer_type(type, tag->data.pointer.target_type)) {
+      *dest = &tag->data.pointer;
+      return true;
+    }
+    goto invalid_cast;
   case TAG_PSTRUCT:
     if (type == &g_sym_Struct) {
       *dest = &tag->data.pstruct;
@@ -1734,6 +1685,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_PCOW:         *dest = &g_sym_Cow;         return dest;
   case TAG_PFACTS:       *dest = &g_sym_Facts;       return dest;
   case TAG_PLIST:        *dest = &g_sym_List;        return dest;
+  case TAG_POINTER:      *dest = &g_sym_Pointer;     return dest;
   case TAG_PSTRUCT:
     *dest = tag->data.pstruct->pstruct_type->module; return dest;
   case TAG_PSTRUCT_TYPE: *dest = &g_sym_StructType;  return dest;

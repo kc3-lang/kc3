@@ -4355,7 +4355,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
     return buf_inspect_complex(buf, tag->data.pcomplex);
   case TAG_PCOW:    return buf_inspect_cow(buf, tag->data.pcow);
   case TAG_PLIST:   return buf_inspect_list(buf, tag->data.plist);
-  // case TAG_POINTER: return 0;//TODO: //buf_inspect_pointer(buf, &tag->data.pointer);
+  case TAG_POINTER: return buf_inspect_pointer(buf, &tag->data.pointer);
   case TAG_PSTRUCT: return buf_inspect_struct(buf, tag->data.pstruct);
   case TAG_PSTRUCT_TYPE:
     return buf_inspect_struct_type(buf, tag->data.pstruct_type);
@@ -4434,9 +4434,8 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_sym_size(pretty, tag->data.psym);
   case TAG_PTAG:
     return buf_inspect_ptag_size(pretty, &tag->data.ptag);
-  // TODO:
-  // case TAG_POINTER:
-  //   return buf_inspect_pointer_size(pretty, &tag->data.pointer);
+  case TAG_POINTER:
+    return buf_inspect_pointer_size(pretty, &tag->data.pointer);
   case TAG_PTR:
     return buf_inspect_ptr_size(pretty, &tag->data.ptr);
   case TAG_PTR_FREE:

@@ -540,6 +540,8 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_PCOW:    return hash_update_cow(hash, tag->data.pcow);
   case TAG_PFACTS:  return hash_update_pfacts(hash, tag->data.pfacts);
   case TAG_PLIST:   return hash_update_list(hash, tag->data.plist);
+  case TAG_POINTER:
+    return hash_update_pointer(hash, &tag->data.pointer);
   case TAG_PSTRUCT: return hash_update_struct(hash, tag->data.pstruct);
   case TAG_PSTRUCT_TYPE:
     return hash_update_struct_type(hash, tag->data.pstruct_type);

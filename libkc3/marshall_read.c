@@ -2021,6 +2021,8 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
       return marshall_read_pfacts(mr, heap, &dest->data.pfacts);
     case TAG_PLIST:
       return marshall_read_plist(mr, heap, &dest->data.plist);
+    case TAG_POINTER:
+      return marshall_read_pointer(mr, heap, &dest->data.pointer);
     case TAG_PSTRUCT:
       return marshall_read_pstruct(mr, heap, &dest->data.pstruct);
     case TAG_PSTRUCT_TYPE:

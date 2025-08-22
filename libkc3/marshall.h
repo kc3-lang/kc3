@@ -68,6 +68,7 @@ PROTO_MARSHALL(pcow, const p_cow *);
 PROTO_MARSHALL(pfacts, const p_facts *);
 PROTO_MARSHALL(pframe, const p_frame *);
 PROTO_MARSHALL(plist, const p_list *);
+PROTO_MARSHALL(pointer, const s_pointer *);
 PROTO_MARSHALL(pstruct, const p_struct *);
 PROTO_MARSHALL(pstruct_type, const p_struct_type *);
 PROTO_MARSHALL(ptag, const p_tag *);

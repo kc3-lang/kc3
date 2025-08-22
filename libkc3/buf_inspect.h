@@ -82,6 +82,8 @@ sw buf_inspect_array (s_buf *buf, const s_array *a);
 sw buf_inspect_array_size (s_pretty *pretty, const s_array *a);
 sw buf_inspect_bool (s_buf *buf, bool b);
 sw buf_inspect_bool_size (s_pretty *pretty, bool b);
+sw buf_inspect_c_pointer (s_buf *buf, const void *ptr);
+sw buf_inspect_c_pointer_size (s_pretty *pretty, const void *ptr);
 sw buf_inspect_call (s_buf *buf, const s_call *call);
 sw buf_inspect_call_access (s_buf *buf, const s_call *call);
 sw buf_inspect_call_access_size (s_pretty *pretty, const s_call *call);
@@ -161,13 +163,15 @@ sw buf_inspect_list_tag_size (s_pretty *pretty, const s_tag *tag);
 sw buf_inspect_list (s_buf *buf, const s_list *list);
 sw buf_inspect_list_paren (s_buf *buf, const s_list *list);
 sw buf_inspect_list_size (s_pretty *pretty, const s_list *list);
+sw buf_inspect_map (s_buf *buf, const s_map *map);
+sw buf_inspect_map_size (s_pretty *pretty, const s_map *map);
 sw buf_inspect_pfacts (s_buf *buf, const p_facts *pfacts);
 sw buf_inspect_pfacts_size (s_pretty *pretty, const p_facts *pfacts);
 sw buf_inspect_plist (s_buf *buf, const p_list *plist);
 sw buf_inspect_plist_paren (s_buf *buf, const p_list *plist);
 sw buf_inspect_plist_size (s_pretty *pretty, const p_list *plist);
-sw buf_inspect_map (s_buf *buf, const s_map *map);
-sw buf_inspect_map_size (s_pretty *pretty, const s_map *map);
+sw buf_inspect_pointer (s_buf *buf, const s_pointer *ptr);
+sw buf_inspect_pointer_size (s_pretty *pretty, const s_pointer *ptr);
 sw buf_inspect_paren_sym (s_buf *buf, const s_sym *sym);
 sw buf_inspect_paren_sym_size (s_pretty *pretty, const s_sym *sym);
 sw buf_inspect_pcallable (s_buf *buf,
@@ -179,8 +183,6 @@ sw buf_inspect_pcomplex_size (s_pretty *pretty,
                               p_complex const *pcomplex);
 sw buf_inspect_pcow (s_buf *buf, p_cow const *pcow);
 sw buf_inspect_pcow_size (s_pretty *pretty, p_cow const *pcow);
-sw buf_inspect_c_pointer (s_buf *buf, const void *ptr);
-sw buf_inspect_c_pointer_size (s_pretty *pretty, const void *ptr);
 sw buf_inspect_pstruct (s_buf *buf, p_struct const *pstruct);
 sw buf_inspect_pstruct_size (s_pretty *pretty,
                              p_struct const *pstruct);

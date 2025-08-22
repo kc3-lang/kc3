@@ -47,6 +47,7 @@ bool hash_update_list (t_hash *hash, const s_list *list);
 bool hash_update_map (t_hash *hash, const s_map *map);
 bool hash_update_pfacts (t_hash *hash, const s_facts *facts);
 bool hash_update_plist (t_hash *hash, const p_list *plist);
+bool hash_update_pointer (t_hash *hash, const s_pointer *p);
 bool hash_update_psym (t_hash *hash, p_sym const *psym);
 bool hash_update_ptag (t_hash *hash, const p_tag *ptag);
 bool hash_update_ptr (t_hash *hash, const u_ptr_w *ptr);

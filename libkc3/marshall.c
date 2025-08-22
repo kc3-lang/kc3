@@ -1410,6 +1410,8 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   case TAG_PFACTS:
     return marshall_pfacts(m, heap, &tag->data.pfacts);
   case TAG_PLIST: return marshall_plist(m, heap, &tag->data.plist);
+  case TAG_POINTER:
+    return marshall_pointer(m, heap, &tag->data.pointer);
   case TAG_PSTRUCT:
     return marshall_pstruct(m, heap, &tag->data.pstruct);
   case TAG_PSTRUCT_TYPE:
