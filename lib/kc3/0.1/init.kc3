@@ -42,6 +42,18 @@ defoperator %KC3.Op{sym: :!,
                     associativity: 2,
                     callable: cfn Bool "tag_not" (Tag, Result)}
 
+defoperator %KC3.Op{sym: :*,
+                    arity: 1,
+                    precedence: 14,
+                    associativity: 2,
+                    callable: cfn Tag "pointer_deref" (Pointer, Result)}
+
+defoperator %KC3.Op{sym: :&,
+                    arity: 1,
+                    precedence: 14,
+                    associativity: 2,
+                    callable: cfn Pointer "tag_address" (Tag, Result)}
+
 defoperator %KC3.Op{sym: :^,
                     arity: 1,
                     precedence: 14,
