@@ -252,7 +252,7 @@ TEST_CASE_END(buf_ignore)
 
 TEST_CASE(buf_init_clean)
 {
-  char a[4] = "test";
+  char a[] = "test";
   size_t len;
   char *m;
   s_buf buf;
@@ -277,7 +277,7 @@ TEST_CASE_END(buf_init_clean)
 
 TEST_CASE(buf_new_delete)
 {
-  char a[4] = "test";
+  char a[] = "test";
   size_t len;
   char *m;
   s_buf *buf;
@@ -394,7 +394,7 @@ TEST_CASE_END(buf_peek_s16)
 
 TEST_CASE(buf_peek_u8)
 {
-  char a[4] = "ABCD";
+  char a[] = "ABCD";
   s_buf buf;
   u8 byte;
   buf_init(&buf, false, sizeof(a), a);
@@ -980,9 +980,9 @@ TEST_CASE_END(buf_write_str)
 
 TEST_CASE(buf_xfer)
 {
-  char d[16];
+  char d[17] = {0};
   s_buf dest;
-  char s[16] = "0123456789ABCDEF";
+  char s[] = "0123456789ABCDEF";
   s_buf src;
   buf_init(&src, false, sizeof(s), s);
   src.wpos = 16;
