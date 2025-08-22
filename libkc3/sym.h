@@ -26,6 +26,8 @@
 
 #define SYM_MAX 1024
 
+#define SYM_1(bytes) {{{0}, sizeof(bytes) - 1, {bytes}}}
+
 extern const s_sym g_sym___DIR__;
 extern const s_sym g_sym___FILE__;
 extern const s_sym g_sym__brackets;
