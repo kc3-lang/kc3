@@ -474,6 +474,18 @@ s8 compare_ptag (const p_tag a, const p_tag b)
   return 1;
 }
 
+s8 compare_pointer (const s_pointer *a, const s_pointer *b)
+{
+  s8 r = compare_sym(a->target_type, b->target_type);
+  if (r)
+    return r;
+  if (a->ptr.p < b->ptr.p)
+    return -1;
+  if (a->ptr.p == b->ptr.p)
+    return 0;
+  return 1;
+}
+
 s8 compare_ptr (const void *a, const void *b)
 {
   if (a < b)
