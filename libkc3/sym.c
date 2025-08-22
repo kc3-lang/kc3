@@ -56,6 +56,7 @@ const s_sym g_sym_KC3              = SYM_1("KC3");
 const s_sym g_sym_KC3_Op           = SYM_1("KC3.Op");
 const s_sym g_sym_List             = SYM_1("List");
 const s_sym g_sym_Map              = SYM_1("Map");
+const s_sym g_sym_Pointer          = SYM_1("Pointer");
 const s_sym g_sym_Ptag             = SYM_1("Ptag");
 const s_sym g_sym_Ptr              = SYM_1("Ptr");
 const s_sym g_sym_PtrFree          = SYM_1("PtrFree");
@@ -498,6 +499,23 @@ bool sym_is_module (const s_sym *sym)
       if (c == '[')
         return false;
     }
+  }
+  return true;
+}
+
+bool sym_is_pointer_type (p_sym sym, p_sym target_type)
+{
+  s_buf buf;
+  assert(sym);
+  assert(target_type);
+  assert(target_type->str.size);
+  assert(target_type->str.ptr.pchar);
+  buf_init_str_const(&buf, &sym->str);
+  if (buf_read_str(&buf, &target_type->str) <= 0) {
+    return false;
+  }
+  if (buf_read_1(&buf, "*") <= 0) {
+    return false;
   }
   return true;
 }
