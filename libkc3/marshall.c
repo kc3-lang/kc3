@@ -179,6 +179,18 @@ s_marshall * marshall_array (s_marshall *m, bool heap,
 
 DEF_MARSHALL(bool, "_KC3BOOL_")
 
+s_marshall * marshall_pointer (
+    s_marshall *m, bool heap, const s_pointer *pointer)
+{
+  assert(m);
+  assert(pointer);
+  if (! m || ! pointer ||
+      ! marshall_psym(m, heap, &pointer->target_type) ||
+      ! marshall_ptr(m, heap, pointer->ptr))
+    return NULL;
+  return m;
+}
+
 s_marshall * marshall_call (s_marshall *m, bool heap,
                             const s_call *call)
 {
