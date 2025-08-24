@@ -360,6 +360,22 @@ s_list * list_init_pstruct_copy (s_list *list, p_struct *src,
   return list;
 }
 
+s_list * list_init_pstruct_copy_data (s_list *list,
+                                      const s_sym *module, void *data,
+                                      s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pstruct_copy_data(&tmp.tag, module, data)) {
+    err_puts("list_init_pstruct_copy_data: tag_init_pstruct_copy_data");
+    assert(! "list_init_pstruct_copy_data: tag_init_pstruct_copy_data");
+    return NULL;
+  }
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_pstruct_with_data (s_list *list,
                                       const s_sym *module, void *data,
                                       bool free_data, s_list *next)
@@ -1362,6 +1378,25 @@ s_list * list_new_pstruct_copy (p_struct *src, s_list *next)
   if (! tag_init_pstruct_copy(&list->tag, src)) {
     err_puts("list_new_pstruct_copy: tag_init_pstruct_copy");
     assert(! "list_new_pstruct_copy: tag_init_pstruct_copy");
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pstruct_copy_data (const s_sym *module, void *data,
+                                     s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list) {
+    err_puts("list_new_pstruct_copy_data: list_new");
+    assert(! "list_new_pstruct_copy_data: list_new");
+    return NULL;
+  }
+  if (! tag_init_pstruct_copy_data(&list->tag, module, data)) {
+    err_puts("list_new_pstruct_copy_data: tag_init_pstruct_copy_data");
+    assert(! "list_new_pstruct_copy_data: tag_init_pstruct_copy_data");
     free(list);
     return NULL;
   }

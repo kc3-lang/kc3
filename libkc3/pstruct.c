@@ -18,6 +18,7 @@
 #include "eval.h"
 #include "pstruct.h"
 #include "struct.h"
+#include "struct_type.h"
 #include "tag.h"
 
 void pstruct_clean (p_struct *s)
@@ -106,6 +107,29 @@ p_struct * pstruct_init_copy (p_struct *s, p_struct *src)
     tmp = struct_new_ref(*src);
   if (! tmp)
     return NULL;
+  *s = tmp;
+  return s;
+}
+
+p_struct * pstruct_init_copy_data (p_struct *s, const s_sym *module,
+                                   void *data)
+{
+  p_struct tmp;
+  if (! pstruct_init(&tmp, module)) {
+    err_write_1("pstruct_init_copy_data: pstruct_init ");
+    err_inspect_sym(module);
+    err_write_1("\n");
+    assert(! "pstruct_init_copy_data: pstruct_init");
+    return NULL;
+  }
+  if (! struct_allocate(tmp) || ! tmp->data) {
+    pstruct_clean(&tmp);
+    return NULL;
+  }
+  if (! struct_type_copy_data(tmp->pstruct_type, tmp->data, data)) {
+    pstruct_clean(&tmp);
+    return NULL;
+  }
   *s = tmp;
   return s;
 }

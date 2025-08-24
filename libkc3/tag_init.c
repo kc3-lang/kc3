@@ -285,6 +285,18 @@ s_tag * tag_init_pstruct_copy (s_tag *tag, p_struct *src)
   return tag;
 }
 
+s_tag * tag_init_pstruct_copy_data (s_tag *tag, const s_sym *module,
+                                    void *data)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_PSTRUCT;
+  if (! pstruct_init_copy_data(&tmp.data.pstruct, module, data))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_pstruct_with_data (s_tag *tag, const s_sym *module,
                                     void *data, bool free_data)
 {
@@ -1024,6 +1036,20 @@ s_tag * tag_new_pstruct_copy (p_struct *src)
     return NULL;
   tag->type = TAG_PSTRUCT;
   if (! pstruct_init_copy(&tag->data.pstruct, src)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_pstruct_copy_data (const s_sym *module, void *data)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_PSTRUCT;
+  if (! pstruct_init_copy_data(&tag->data.pstruct, module, data)) {
     free(tag);
     return NULL;
   }
@@ -1841,6 +1867,19 @@ s_tag * tag_pstruct_copy (s_tag *tag, p_struct *src)
   tag_clean(tag);
   tmp.type = TAG_PSTRUCT;
   if (! pstruct_init_copy(&tmp.data.pstruct, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_pstruct_copy_data (s_tag *tag, const s_sym *module,
+                               void *data)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_PSTRUCT;
+  if (! pstruct_init_copy_data(&tmp.data.pstruct, module, data))
     return NULL;
   *tag = tmp;
   return tag;

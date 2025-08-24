@@ -50,6 +50,9 @@ s_list * list_init_pstruct (s_list *list, const s_sym *module,
                             s_list *next);
 s_list * list_init_pstruct_copy (s_list *list, p_struct *src,
                                  s_list *next);
+s_list * list_init_pstruct_copy_data (s_list *list,
+                                      const s_sym *module, void *data,
+                                      s_list *next);
 s_list * list_init_pstruct_with_data (s_list *list,
                                       const s_sym *module, void *data,
                                       bool free_data, s_list *next);
@@ -144,6 +147,8 @@ s_list * list_new_plist (p_list plist, s_list *next);
 s_list * list_new_plist_1 (const char *p, s_list *next);
 s_list * list_new_pstruct (const s_sym *module, s_list *next);
 s_list * list_new_pstruct_copy (p_struct *src, s_list *next);
+s_list * list_new_pstruct_copy_data (const s_sym *module, void *data,
+                                     s_list *next);
 s_list * list_new_pstruct_with_data (const s_sym *module, void *data,
                                      bool free_data, s_list *next);
 s_list * list_new_pstruct_with_type (s_struct_type *st, s_list *next);
