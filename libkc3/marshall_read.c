@@ -1266,6 +1266,7 @@ s_marshall_read * marshall_read_ops (s_marshall_read *mr,
     if (! ops_add(ops, &op)) {
       err_puts("marshall_read_ops: ops_add");
       assert(! "marshall_read_ops: ops_add");
+      op_clean(&op);
       return NULL;
     }
     assert(op.pcallable->ref_count == 2);
