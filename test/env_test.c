@@ -15,8 +15,10 @@
 #include "../libkc3/env.h"
 #include "../libkc3/env_eval.h"
 #include "../libkc3/env_eval_equal.h"
+#include "../libkc3/file.h"
 #include "../libkc3/frame.h"
 #include "../libkc3/list.h"
+#include "../libkc3/str.h"
 #include "../libkc3/sym.h"
 #include "../libkc3/tag.h"
 #include "test.h"
@@ -27,6 +29,8 @@ TEST_CASE_PROTOTYPE(env_eval_equal_tag);
 TEST_CASE_PROTOTYPE(env_eval_tag);
 TEST_CASE_PROTOTYPE(env_init_clean);
 TEST_CASE_PROTOTYPE(env_module_load);
+TEST_CASE_PROTOTYPE(env_dump);
+TEST_CASE_PROTOTYPE(env_dump_restore);
 
 void env_test (void)
 {
@@ -35,7 +39,36 @@ void env_test (void)
   TEST_CASE_RUN(env_eval_call);
   TEST_CASE_RUN(env_eval_tag);
   TEST_CASE_RUN(env_module_load);
+  TEST_CASE_RUN(env_dump);
+  TEST_CASE_RUN(env_dump_restore);
 }
+
+TEST_CASE(env_dump)
+{
+  s_env env;
+  const s_str path = STR_1("env_test_dump.1.dump");
+  env_init(&env, 0, NULL);
+  TEST_EQ(env_dump(&env, &path), 42);
+  env_clean(&env);
+}
+TEST_CASE_END(env_dump)
+
+TEST_CASE(env_dump_restore)
+{
+  s_env env;
+  const s_str path = STR_1("kc3.dump");
+  env_init(&env, 0, NULL);
+  TEST_EQ(env_dump(&env, &path), 42);
+  env_clean(&env);
+  env_init(&env, 0, NULL);
+  TEST_EQ(env_dump(&env, &path), 42);
+  env_clean(&env);
+  env_init(&env, 0, NULL);
+  TEST_EQ(env_dump(&env, &path), 42);
+  env_clean(&env);
+  file_unlink(&path);
+}
+TEST_CASE_END(env_dump)
 
 TEST_CASE(env_eval_call)
 {
