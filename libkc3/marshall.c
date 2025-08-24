@@ -206,8 +206,11 @@ s_marshall * marshall_callable (s_marshall *m, bool heap,
 {
   assert(m);
   assert(callable);
-  if (! m || ! callable)
+  if (! m || ! callable || callable->ref_count <= 0) {
+    err_puts("marshall_callable: invalid argument");
+    assert(! "marshall_callable: invalid argument");
     return NULL;
+  }
   if (! marshall_u8(m, heap, callable->type)) {
     err_puts("marshall_callable: marshall_u8");
     return NULL;
