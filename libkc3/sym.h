@@ -157,7 +157,9 @@ bool    sym_is_module (p_sym sym);
 bool    sym_is_pointer_type (p_sym sym, p_sym target_type);
 uw *    sym_list_size (uw *dest);
 bool *  sym_must_clean (p_sym sym, bool *must_clean);
+p_sym   sym_pointer_to_target_type (p_sym pointer_type);
 bool    sym_search_modules (p_sym sym, p_sym *dest);
+p_sym   sym_target_to_pointer_type (p_sym target_type);
 bool    sym_to_ffi_type (p_sym sym, ffi_type *result_type,
                          ffi_type **dest);
 bool    sym_to_tag_type (p_sym sym, e_tag_type *dest);

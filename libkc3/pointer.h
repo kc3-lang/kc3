@@ -16,7 +16,8 @@
 #include "types.h"
 
 /* Stack-allocation compatible functions. */
-s_pointer * pointer_init (s_pointer *pointer, void *p);
+s_pointer * pointer_init (s_pointer *pointer, const s_sym *pointer_type,
+                          const s_sym *target_type, void *p);
 s_pointer * pointer_init_cast (s_pointer *pointer,
                                const p_sym *type,
                                const s_tag *tag);
@@ -27,5 +28,8 @@ s_pointer * pointer_init_copy (s_pointer *pointer,
 void        pointer_delete (s_pointer *pointer);
 s_pointer * pointer_new (void *p);
 s_pointer * pointer_new_copy (const s_pointer *src);
+
+/* Observers. */
+s_tag * pointer_deref (const s_pointer *pointer, s_tag *dest);
 
 #endif /* LIBKC3_POINTER_H */

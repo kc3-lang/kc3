@@ -10,10 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <string.h>
 #include "alloc.h"
 #include "assert.h"
 #include "buf.h"
 #include "buf_inspect.h"
+#include "buf_parse.h"
 #include "character.h"
 #include "compare.h"
 #include "ident.h"
@@ -511,8 +513,18 @@ bool sym_is_pointer_type (p_sym sym, p_sym target_type)
   assert(target_type->str.size);
   assert(target_type->str.ptr.pchar);
   buf_init_str_const(&buf, &sym->str);
-  if (buf_read_str(&buf, &target_type->str) <= 0) {
-    return false;
+  if (target_type) {
+    if (buf_read_str(&buf, &target_type->str) <= 0) {
+      return false;
+    }
+  }
+  else {
+    if (buf_parse_sym(&buf, &target_type) <= 0 ||
+        ! target_type ||
+        ! target_type->str.size ||
+        ! target_type->str.ptr.pchar ||
+        ! character_is_uppercase(target_type->str.ptr.pchar[0]))
+      return false;
   }
   if (buf_read_1(&buf, "*") <= 0) {
     return false;
@@ -706,9 +718,39 @@ const s_sym * sym_new (const s_str *src)
   return sym;
 }
 
+p_sym sym_pointer_to_target_type (p_sym pointer_type)
+{
+  s_str str;
+  assert(sym_is_pointer_type(pointer_type, NULL));
+  str_init(&str, NULL, pointer_type->str.size - 1,
+           pointer_type->str.ptr.pchar);
+  return str_to_sym(&str);
+}
+
 bool sym_search_modules (const s_sym *sym, p_sym *dest)
 {
   return env_sym_search_modules(env_global(), sym, dest);
+}
+
+p_sym sym_target_to_pointer_type (p_sym target_type)
+{
+  uw size;
+  s_str str;
+  p_sym tmp;
+  if (! target_type ||
+      ! target_type->str.size ||
+      ! target_type->str.ptr.p ||
+      ! character_is_uppercase(target_type->str.ptr.pchar[0])) {
+    err_puts("sym_target_to_pointer_type: invalid target type");
+    return NULL;
+  }
+  size = target_type->str.size;
+  str_init_alloc(&str, size + 1);
+  memcpy(str.free.p, target_type->str.ptr.p, size);
+  str.free.pchar[size] = '*';
+  tmp = str_to_sym(&str);
+  str_clean(&str);
+  return tmp;
 }
 
 bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
@@ -964,6 +1006,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   }
   if (sym == &g_sym_Map) {
     *dest = TAG_MAP;
+    return true;
+  }
+  if (sym == &g_sym_Pointer) {
+    *dest = TAG_POINTER;
     return true;
   }
   if (sym == &g_sym_Ptag) {

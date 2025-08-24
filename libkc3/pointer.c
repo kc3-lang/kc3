@@ -11,7 +11,54 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
+#include "data.h"
 #include "pointer.h"
+#include "sym.h"
+#include "tag.h"
+
+s_tag * pointer_deref (const s_pointer *pointer, s_tag *dest)
+{
+  s_tag tmp = {0};
+  void *tmp_data = NULL;
+  assert(pointer);
+  if (! sym_to_tag_type(pointer->target_type, &tmp.type)) {
+    err_puts("pointer_deref: sym_to_tag_type");
+    assert(! "pointer_deref: sym_to_tag_type");
+    return NULL;
+  }
+  if (! tag_to_pointer(&tmp, pointer->target_type, &tmp_data)) {
+    err_puts("pointer_deref: tag_to_pointer");
+    assert(! "pointer_deref: tag_to_pointer");
+    return NULL;
+  }
+  if (! data_init_copy(pointer->target_type, tmp_data,
+                       pointer->ptr.p)) {
+    err_puts("pointer_deref: data_init_copy");
+    assert(! "pointer_deref: data_init_copy");
+    return NULL;
+  }
+  *dest = tmp;
+  return dest;
+}
+
+s_pointer * pointer_init (s_pointer *pointer,
+                          const s_sym *pointer_type,
+                          const s_sym *target_type,
+                          void *p)
+{
+  s_pointer tmp = {0};
+  if (! pointer_type && ! target_type)
+    target_type = &g_sym_Tag;
+  if (! pointer_type)
+    pointer_type = sym_target_to_pointer_type(target_type);
+  else if (! target_type)
+    target_type = sym_pointer_to_target_type(pointer_type);
+  tmp.pointer_type = pointer_type;
+  tmp.target_type = target_type;
+  tmp.ptr.p = p;
+  *pointer = tmp;
+  return pointer;
+}
 
 s_pointer * pointer_init_copy (s_pointer *pointer,
                                const s_pointer *src)

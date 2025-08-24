@@ -54,6 +54,8 @@ defoperator %KC3.Op{sym: :&,
                     associativity: 2,
                     callable: cfn Pointer "tag_address" (Tag, Result)}
 
+# TODO: add test to check if s_pointer Pointer to ffi_pointer is ok
+
 defoperator %KC3.Op{sym: :^,
                     arity: 1,
                     precedence: 14,

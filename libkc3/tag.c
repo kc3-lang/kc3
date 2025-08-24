@@ -69,6 +69,23 @@ s_tag * tag_1 (s_tag *tag, const char *p)
   return tag_init_1(tag, p);
 }
 
+s_pointer * tag_address (s_tag *tag, s_pointer *dest)
+{
+  s_pointer tmp = {0};
+  if (! tag_type(tag, &tmp.target_type)) {
+    err_puts("tag_address: invalid tag type");
+    assert(! "tag_address: invalid tag type");
+    return NULL;
+  }
+  if (! tag_to_pointer(tag, tmp.target_type, &tmp.ptr.p)) {
+    err_puts("tag_address: tag_to_pointer");
+    assert(! "tag_address: tag_to_pointer");
+    return NULL;
+  }
+  *dest = tmp;
+  return dest;
+}
+
 s_tag * tag_and (s_tag *a, s_tag *b, s_tag *dest)
 {
   bool p;
@@ -1676,9 +1693,10 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_PCALLABLE:    *dest = &g_sym_Callable;    return dest;
   case TAG_PCOMPLEX:     *dest = &g_sym_Complex;     return dest;
   case TAG_PCOW:         *dest = &g_sym_Cow;         return dest;
-  case TAG_PFACTS:       *dest = &g_sym_Facts;       return dest;
+  case TAG_PFACTS:       *dest = &g_sym_Facts_star;  return dest;
   case TAG_PLIST:        *dest = &g_sym_List;        return dest;
-  case TAG_POINTER:      *dest = &g_sym_Pointer;     return dest;
+  case TAG_POINTER:
+    *dest = tag->data.pointer.pointer_type;          return dest;
   case TAG_PSTRUCT:
     *dest = tag->data.pstruct->pstruct_type->module; return dest;
   case TAG_PSTRUCT_TYPE: *dest = &g_sym_StructType;  return dest;

@@ -4405,16 +4405,6 @@ sw buf_parse_tag_integer (s_buf *buf, s_tag *dest)
   return r;
 }
 
-sw buf_parse_tag_plist (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_plist(buf, &dest->data.plist)) > 0)
-    dest->type = TAG_PLIST;
-  return r;
-}
-
 sw buf_parse_tag_map (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -4496,6 +4486,26 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_tag_plist (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_plist(buf, &dest->data.plist)) > 0)
+    dest->type = TAG_PLIST;
+  return r;
+}
+
+sw buf_parse_tag_pointer (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_ptr(buf, &dest->data.ptr)) > 0)
+    dest->type = TAG_PTR;
   return r;
 }
 
@@ -4636,6 +4646,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
         (r = buf_parse_tag_cow(buf, dest)) ||
         (r = buf_parse_tag_number(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)) ||
+        (r = buf_parse_tag_pointer(buf, dest)) ||
         (r = buf_parse_tag_ptr(buf, dest)) ||
         (r = buf_parse_tag_ptr_free(buf, dest)) ||
         (r = buf_parse_tag_array(buf, dest)) ||

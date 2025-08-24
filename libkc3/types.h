@@ -527,8 +527,9 @@ struct loop_context {
 };
 
 struct pointer {
-  const s_sym *target_type;
   u_ptr_w ptr;
+  const s_sym *pointer_type;
+  const s_sym *target_type;
 };
 
 struct str {
