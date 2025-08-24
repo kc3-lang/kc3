@@ -49,7 +49,6 @@ ikc3/ikc3_cov
 ikc3/ikc3_debug
 /kc3-*/
 /kc3-*.tar.gz
-kc3.dump
 kc3c/kc3c
 kc3c/kc3c_asan
 kc3c/kc3c_cov
