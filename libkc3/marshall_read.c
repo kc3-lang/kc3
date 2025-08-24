@@ -1269,7 +1269,8 @@ s_marshall_read * marshall_read_ops (s_marshall_read *mr,
       op_clean(&op);
       return NULL;
     }
-    assert(op.pcallable->ref_count == 2);
+    if (! env_global()->pass_by_copy)
+      assert(op.pcallable->ref_count == 2);
     op_clean(&op);
     i++;
   }
