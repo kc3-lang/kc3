@@ -30,6 +30,7 @@ CLEANFILES = \
 	ikc3/*.err \
 	ikc3/*.out \
 	ikc3/*.ret \
+	kc3.dump \
 	libkc3_test \
 	libkc3_test_asan \
 	libkc3_test_cov \
@@ -72,9 +73,11 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details test.html
 
 gdb_test: debug
+	rm -f kc3.dump
 	if [ -f libkc3_test_debug.core ]; then ${GDB} .libs/libkc3_test_debug libkc3_test_debug.core; else ${GDB} .libs/libkc3_test_debug; fi
 
 gdb_test_asan: asan
+	rm -f kc3.dump
 	if [ -f libkc3_test_asan.core ]; then ${GDB} .libs/libkc3_test_asan libkc3_test_asan.core; else ${GDB} .libs/libkc3_test_asan; fi
 
 gdb_test_ekc3:
@@ -111,9 +114,11 @@ gdb_test_markdown_asan:
 	cd markdown && ${GDB} ../../ikc3/.libs/ikc3_asan
 
 lldb_test: debug
+	rm -f kc3.dump
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi
 
 test: libkc3_test
+	rm -f kc3.dump
 	time ./libkc3_test
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s time ./kc3s_test
@@ -123,6 +128,7 @@ test: libkc3_test
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./http_test
 
 test_asan: libkc3_test_asan
+	rm -f kc3.dump
 	time ./libkc3_test_asan --copy
 	time ./libkc3_test_asan
 	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./ikc3_test
@@ -133,6 +139,7 @@ test_asan: libkc3_test_asan
 	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./http_test
 
 test_cov:
+	rm -f kc3.dump
 	time ./libkc3_test_cov
 	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./ikc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./kc3s_test
@@ -142,6 +149,7 @@ test_cov:
 	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./http_test
 
 test_debug: libkc3_test_debug
+	rm -f kc3.dump
 	time ./libkc3_test_debug
 	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./ikc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./kc3s_test
@@ -223,15 +231,19 @@ test_kc3s_debug:
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./kc3s_test
 
 test_libkc3: libkc3_test
+	rm -f kc3.dump
 	time ./libkc3_test
 
 test_libkc3_asan: libkc3_test_asan
+	rm -f kc3.dump
 	time ./libkc3_test_asan
 
 test_libkc3_cov: libkc3_test_cov
+	rm -f kc3.dump
 	time ./libkc3_test_cov
 
 test_libkc3_debug: libkc3_test_debug
+	rm -f kc3.dump
 	time ./libkc3_test_debug
 
 test_markdown:
