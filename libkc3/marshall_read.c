@@ -1269,8 +1269,13 @@ s_marshall_read * marshall_read_ops (s_marshall_read *mr,
       op_clean(&op);
       return NULL;
     }
-    if (! env_global()->pass_by_copy)
-      assert(op.pcallable->ref_count == 2);
+    if (! env_global()->pass_by_copy &&
+        op.pcallable->ref_count < 2) {
+      err_puts("marshall_read_ops: invalid op ref count");
+      assert(! "marshall_read_ops: invalid op ref count");
+      op_clean(&op);
+      return NULL;
+    }
     op_clean(&op);
     i++;
   }
