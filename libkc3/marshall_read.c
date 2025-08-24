@@ -224,7 +224,9 @@ s_marshall_read * marshall_read_callable (s_marshall_read *mr,
   tmp.type = type;
   switch (tmp.type) {
   case CALLABLE_VOID:
-    goto ok;
+    err_puts("marshall_read: CALLABLE_VOID");
+    assert(! "marshall_read: CALLABLE_VOID");
+    return NULL;
   case CALLABLE_CFN:
     if (! marshall_read_cfn(mr, heap, &tmp.data.cfn)) {
       err_puts("marshall_read_callable: marshall_read_cfn");
@@ -290,8 +292,11 @@ s_marshall_read * marshall_read_cfn (s_marshall_read *mr,
     tail = &(*tail)->next.data.plist;
     i++;
   }
-  cfn_link(&tmp);
-  cfn_prep_cif(&tmp);
+  if (! cfn_link(&tmp) ||
+      ! cfn_prep_cif(&tmp)) {
+    cfn_clean(&tmp);
+    return NULL;
+  }
   tmp.cif_ready = true;
 #if HAVE_PTHREAD
   mutex_init(&tmp.cif_mutex);
