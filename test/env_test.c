@@ -43,13 +43,17 @@ void env_test (void)
   TEST_CASE_RUN(env_dump_restore);
 }
 
+#define ENV_TEST_DUMP_SIZE 256426
+
 TEST_CASE(env_dump)
 {
   s_env env;
   const s_str path = STR_1("env_test_dump.1.dump");
+  file_unlink(&path);
   env_init(&env, 0, NULL);
-  TEST_EQ(env_dump(&env, &path), 42);
+  TEST_EQ(env_dump(&env, &path), ENV_TEST_DUMP_SIZE);
   env_clean(&env);
+  file_unlink(&path);
 }
 TEST_CASE_END(env_dump)
 
@@ -57,16 +61,16 @@ TEST_CASE(env_dump_restore)
 {
   s_env env;
   const s_str path = STR_1("kc3.dump");
-  env_init(&env, 0, NULL);
-  TEST_EQ(env_dump(&env, &path), 42);
-  env_clean(&env);
-  env_init(&env, 0, NULL);
-  TEST_EQ(env_dump(&env, &path), 42);
-  env_clean(&env);
-  env_init(&env, 0, NULL);
-  TEST_EQ(env_dump(&env, &path), 42);
-  env_clean(&env);
   file_unlink(&path);
+  env_init(&env, 0, NULL);
+  TEST_EQ(env_dump(&env, &path), ENV_TEST_DUMP_SIZE);
+  env_clean(&env);
+  env_init(&env, 0, NULL);
+  TEST_EQ(env_dump(&env, &path), ENV_TEST_DUMP_SIZE);
+  env_clean(&env);
+  env_init(&env, 0, NULL);
+  TEST_EQ(env_dump(&env, &path), ENV_TEST_DUMP_SIZE);
+  env_clean(&env);
 }
 TEST_CASE_END(env_dump)
 
