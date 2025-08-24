@@ -570,8 +570,8 @@ struct cfn {
   bool arg_result;
   s_list *arg_types;
   ffi_cif cif;
+  s_mutex cif_mutex;
   bool    cif_ready;
-  s_mutex mutex;
 };
 
 struct fn {

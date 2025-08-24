@@ -292,8 +292,9 @@ s_marshall_read * marshall_read_cfn (s_marshall_read *mr,
   }
   cfn_link(&tmp);
   cfn_prep_cif(&tmp);
+  tmp.cif_ready = true;
 #if HAVE_PTHREAD
-  mutex_init(&tmp.mutex);
+  mutex_init(&tmp.cif_mutex);
 #endif
   *dest = tmp;
   return mr;
