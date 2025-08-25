@@ -22,13 +22,12 @@
 
 void pcallable_clean (p_callable *callable)
 {
-  bool nullify;
-  if (*callable) {
-    nullify = (*callable)->ref_count == 1;
-    callable_delete(*callable);
-    if (nullify)
-      *callable = NULL;
+  if (! callable || ! *callable) {
+    err_puts("pcallable_clean: invalid argument");
+    assert(! "pcallable_clean: invalid argument");
+    return;
   }
+  callable_delete(*callable);
 }
 
 p_callable * pcallable_init (p_callable *callable)
