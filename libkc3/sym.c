@@ -684,6 +684,11 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = false;
     return must_clean;
   }
+  if (sym == &g_sym_Pointer ||
+      sym_is_pointer_type(sym, NULL)) {
+    *must_clean = false;
+    return must_clean;
+  }
   if (! pstruct_type_find(sym, &st))
     return NULL;
   if (st) {
