@@ -1567,7 +1567,7 @@ s_marshall_read * marshall_read_pstruct_type (s_marshall_read *mr,
                                               p_struct_type *dest)
 {
   u64 offset = 0;
-  void *present = NULL;
+  p_struct_type present = NULL;
   p_struct_type tmp = NULL;
   assert(mr);
   assert(dest);
@@ -1576,25 +1576,26 @@ s_marshall_read * marshall_read_pstruct_type (s_marshall_read *mr,
     assert(! "marshall_read_pstruct_type: marshall_read_1 magic");
     return NULL;
   }
-  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+  if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                   (void **) &present))
     return NULL;
   if (! offset) {
     *dest = NULL;
     return mr;
   }
   if (present) {
-    *dest = struct_type_new_ref(present);
+    pstruct_type_init_copy(dest, &present);
     return mr;
   }
   if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
       ! (tmp = alloc(sizeof(s_struct_type))))
     return NULL;
   if (! marshall_read_struct_type(mr, true, tmp)) {
-    free(tmp);
+    pstruct_type_clean(&tmp);
     return NULL;
   }
   if (! marshall_read_ht_add(mr, offset, tmp)) {
-    struct_type_delete(tmp);
+    pstruct_type_clean(&tmp);
     return NULL;
   }
   *dest = tmp;
