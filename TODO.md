@@ -5,7 +5,30 @@
  - [x] dlopen inside lib only
  - [x] Typed pointer example : `Fact*`
  - [ ] Generic typed pointers : `MyType*`
-   - [ ] `sym_is_pointer_type`
+   - [x] `buf_inspect_pointer`
+   - [x] `buf_inspect_pointer_size`
+   - [x] `hash_update_pointer`
+   - [x] `pointer_init_copy`
+   - [x] `marshall_read_pointer`
+   - [x] `marshall_pointer`
+   - [x] `g_sym_Pointer`
+   - [x] `sym_is_pointer_type`
+   - [x] `compare_pointer`
+   - [ ] sym_to_tag_type
+   - [ ] sym_must_clean
+   - [ ] data_*
+
+## LibreSSL/OpenSSL
+ - [ ] new library
+ - [ ] explore SSL API for stream socket connections with a certificate.
+ 
+## HTTPd
+ - [ ] partial requests
+ - [ ] SSL
+
+## RPC
+ - [ ] lib/kc3/0.1/rpc.kc3
+ - [ ] libkc3_rpc.so (add to `make lib_links`)
 
 ## Marshall
 

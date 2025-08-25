@@ -1,16 +1,23 @@
 # KC3
 
 ## v0.1.14
- - pretty printer
-   - auto indent KC3 code
- - map
-   - `access`
-   - `get` (get key value)
-   - `put` (return a new map)
- - struct
-   - `access`
-   - `get`
-   - `put`
+ - libkc3
+   - pretty printer
+     - auto indent KC3 code
+   - map
+     - `access`
+     - `get` (get key value)
+     - `put` (return a new map)
+   - struct
+     - `access`
+     - `get`
+     - `put`
+   - marshall / marshall_read of all data types
+   - `env_dump` / `env_dump_restore`
+   - automatic loading of env dump from kc3.dump if present
+     - in lib/kc3/0.1
+     - in current workoing dir
+     - reduced loading time of environment from minutes to sub-second !
  - facts database (triple store) accessible from KC3
    - `new database (Ptr)`
    - `add_tags`
