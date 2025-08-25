@@ -1243,8 +1243,9 @@ sw buf_inspect_call_size (s_pretty *pretty, const s_call *call)
         return buf_inspect_call_op_unary_size(pretty, call);
       }
       if (arity == 2 && op->precedence) {
+        r = buf_inspect_call_op_size(pretty, call, op->precedence);
         tag_clean(&op_tag);
-        return buf_inspect_call_op_size(pretty, call, op->precedence);
+        return r;
       }
       tag_clean(&op_tag);
     }
