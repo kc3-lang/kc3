@@ -1008,10 +1008,6 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_MAP;
     return true;
   }
-  if (sym == &g_sym_Pointer) {
-    *dest = TAG_POINTER;
-    return true;
-  }
   if (sym == &g_sym_Ptag) {
     *dest = TAG_PTAG;
     return true;
@@ -1106,6 +1102,11 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   }
   if (sym == &g_sym_Void) {
     *dest = TAG_VOID;
+    return true;
+  }
+  if (sym == &g_sym_Pointer ||
+      sym_is_pointer_type(sym, NULL)) {
+    *dest = TAG_POINTER;
     return true;
   }
   if (! struct_type_exists(sym, &b))
