@@ -1016,8 +1016,10 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
       op = op_tag.data.pstruct->data;
       if (op->precedence < op_precedence) {
         paren = true;
-        if ((r = buf_write_1_size(pretty, "(")) < 0)
+        if ((r = buf_write_1_size(pretty, "(")) < 0) {
+          tag_clean(&op_tag);
           return r;
+        }
         result += r;
       }
       tag_clean(&op_tag);
@@ -1055,13 +1057,15 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
         return -1;
       }
       op = op_tag.data.pstruct->data;
-      tag_clean(&op_tag);
       if (op->precedence < op_precedence) {
         paren = true;
-        if ((r = buf_write_1_size(pretty, "(")) < 0)
+        if ((r = buf_write_1_size(pretty, "(")) < 0) {
+          tag_clean(&op_tag);
           return r;
+        }
         result += r;
       }
+      tag_clean(&op_tag);
     }
   }
   if ((r = buf_inspect_tag_size(pretty, right)) < 0)
@@ -1242,6 +1246,7 @@ sw buf_inspect_call_size (s_pretty *pretty, const s_call *call)
         tag_clean(&op_tag);
         return buf_inspect_call_op_size(pretty, call, op->precedence);
       }
+      tag_clean(&op_tag);
     }
   }
   if (! ident_is_special_operator(&call->ident, &b))
