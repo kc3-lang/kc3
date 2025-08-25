@@ -15,7 +15,9 @@
    - [x] `sym_is_pointer_type`
    - [x] `compare_pointer`
    - [ ] `sym_to_tag_type`
+     - `sym_is_pointer_type() → TAG_POINTER`
    - [ ] `sym_must_clean`
+     - `sym_is_pointer_type() → false`
    - [ ] `data_*`
      - [ ] `data_buf_inspect`
      - [ ] `data_buf_inspect_size`
