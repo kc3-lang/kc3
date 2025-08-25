@@ -1051,9 +1051,9 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       if (r <= 0 || ! (ops_get_tag(ops, next_ident.sym, 2, &next_op_tag)))
         goto ok;
       next_op = next_op_tag.data.pstruct->data;
-      tag_clean(&op_tag);
-      op_tag = (s_tag) {0};
     }
+    tag_clean(&op_tag);
+    op_tag = (s_tag) {0};
   }
  ok:
   result -= (buf->rpos - save.rpos);
