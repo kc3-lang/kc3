@@ -45,6 +45,22 @@ void struct_type_clean (s_struct_type *st)
 #endif
 }
 
+uw struct_type_compute_size (uw offset)
+{
+#ifdef WIN64
+  const bool win64 = true;
+#else
+  const bool win64 = false;
+#endif
+  if (sizeof(long) == 4 && ! win64)
+    return (offset + 3) / 4 * 4;
+#ifdef __APPLE__
+  return (offset + 7) / 8 * 8;
+#else
+  return (offset + 15) / 16 * 16;
+#endif
+}
+
 void * struct_type_copy_data (const s_struct_type *st, void *dest,
                               const void *src)
 {
@@ -180,7 +196,7 @@ s_struct_type * struct_type_init (s_struct_type *st,
     }
     tag_init_copy(tmp.map.key + i,   tuple->tag + 0);
     tag_init_copy(tmp.map.value + i, tuple->tag + 1);
-    tag_type(tmp.map.value + i, &type);
+    tag_type_var(tmp.map.value + i, &type);
     if (! sym_must_clean(type, &must_clean)) {
       map_clean(&tmp.map);
       free(tmp.offset);
@@ -199,57 +215,6 @@ s_struct_type * struct_type_init (s_struct_type *st,
 #if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
 #endif
-  *st = tmp;
-  return st;
-}
-
-uw struct_type_compute_size (uw offset)
-{
-#ifdef WIN64
-  const bool win64 = true;
-#else
-  const bool win64 = false;
-#endif
-  if (sizeof(long) == 4 && ! win64)
-    return (offset + 3) / 4 * 4;
-#ifdef __APPLE__
-  return (offset + 7) / 8 * 8;
-#else
-  return (offset + 15) / 16 * 16;
-#endif
-}
-
-s_struct_type * struct_type_update_map (s_struct_type *st)
-{
-  uw i;
-  uw offset = 0;
-  uw size = 0;
-  s_struct_type tmp;
-  const s_sym *type;
-  assert(st);
-  assert(st->map.count);
-  tmp = *st;
-  if (! (tmp.offset = alloc(tmp.map.count * sizeof(uw))))
-    return NULL;
-  i = 0;
-  while (i < tmp.map.count) {
-    if (tmp.map.value[i].type == TAG_PVAR) {
-      type = tmp.map.value[i].data.pvar->type;
-      if (! sym_type_size(type, &size)) {
-        free(tmp.offset);
-        return NULL;
-      }
-    }
-    else if (! tag_size(tmp.map.value + i, &size)) {
-      free(tmp.offset);
-      return NULL;
-    }
-    offset = struct_type_padding(offset, size);
-    tmp.offset[i] = offset;
-    offset += size;
-    i++;
-  }
-  tmp.size = struct_type_compute_size(offset);
   *st = tmp;
   return st;
 }
@@ -356,4 +321,48 @@ uw struct_type_padding (uw offset, uw size)
   if (size >= 8)
     align = 8;
   return (offset + (align - 1)) / align * align;
+}
+
+s_struct_type * struct_type_update_map (s_struct_type *st)
+{
+  uw i;
+  bool must_clean;
+  uw offset = 0;
+  uw size = 0;
+  s_struct_type tmp;
+  const s_sym *type;
+  assert(st);
+  assert(st->map.count);
+  tmp = *st;
+  if (! (tmp.offset = alloc(tmp.map.count * sizeof(uw))))
+    return NULL;
+  tmp.must_clean = false;
+  i = 0;
+  while (i < tmp.map.count) {
+    if (tmp.map.value[i].type == TAG_PVAR) {
+      type = tmp.map.value[i].data.pvar->type;
+      if (! sym_type_size(type, &size)) {
+        free(tmp.offset);
+        return NULL;
+      }
+    }
+    else if (! tag_size(tmp.map.value + i, &size)) {
+      free(tmp.offset);
+      return NULL;
+    }
+    offset = struct_type_padding(offset, size);
+    tmp.offset[i] = offset;
+    offset += size;
+    tag_type_var(tmp.map.value + i, &type);
+    if (! sym_must_clean(type, &must_clean)) {
+      free(tmp.offset);
+      return NULL;
+    }
+    if (must_clean)
+      tmp.must_clean = true;
+    i++;
+  }
+  tmp.size = struct_type_compute_size(offset);
+  *st = tmp;
+  return st;
 }
