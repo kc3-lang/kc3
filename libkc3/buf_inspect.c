@@ -518,7 +518,7 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
 {
   sw arity;
   bool b;
-  s_op  op = {0};
+  s_op *op;
   s_tag op_tag = {0};
   s_ops *ops = NULL;
   sw r;
@@ -550,14 +550,21 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
                  " %KC3.Op{}"));
         return -1;
       }
-      op = *(s_op *) op_tag.data.pstruct->data;
-      tag_clean(&op_tag);
-      if (op.sym == &g_sym__brackets)
+      op = op_tag.data.pstruct->data;
+      if (op->sym == &g_sym__brackets) {
+        tag_clean(&op_tag);
         return buf_inspect_call_brackets(buf, call);
-      if (arity == 1)
+      }
+      if (arity == 1) {
+        tag_clean(&op_tag);
         return buf_inspect_call_op_unary(buf, call);
-      if (arity == 2 && op.precedence)
-        return buf_inspect_call_op(buf, call, op.precedence);
+      }
+      if (arity == 2 && op->precedence) {
+        r = buf_inspect_call_op(buf, call, op->precedence);
+        tag_clean(&op_tag);
+        return r;
+      }
+      tag_clean(&op_tag);
     }
   }
   if (! ident_is_special_operator(&call->ident, &b))
@@ -886,7 +893,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call,
 {
   sw arity;
   s_tag *left;
-  s_op  op = {0};
+  s_op *op;
   s_tag op_tag = {0};
   s_ops *ops = NULL;
   bool paren;
@@ -910,14 +917,16 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call,
                  " a valid %KC3.Op{}"));
         return -1;
       }
-      op = *(s_op *) op_tag.data.pstruct->data;
-      tag_clean(&op_tag);
-      if (op.precedence < op_precedence) {
+      op = op_tag.data.pstruct->data;
+      if (op->precedence < op_precedence) {
         paren = true;
-        if ((r = buf_write_1(buf, "(")) < 0)
+        if ((r = buf_write_1(buf, "(")) < 0) {
+          tag_clean(&op_tag);
           return r;
+        }
         result += r;
       }
+      tag_clean(&op_tag);
     }
   }
   if ((r = buf_inspect_tag(buf, left)) < 0)
@@ -951,14 +960,16 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call,
         tag_clean(&op_tag);
         return -1;
       }
-      op = *(s_op *) op_tag.data.pstruct->data;
-      tag_clean(&op_tag);
-      if (op.precedence < op_precedence) {
+      op = op_tag.data.pstruct->data;
+      if (op->precedence < op_precedence) {
         paren = true;
-        if ((r = buf_write_1(buf, "(")) < 0)
+        if ((r = buf_write_1(buf, "(")) < 0) {
+          tag_clean(&op_tag);
           return r;
+        }
         result += r;
       }
+      tag_clean(&op_tag);
     }
   }
   if ((r = buf_inspect_tag(buf, right)) < 0)
@@ -977,7 +988,7 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
 {
   sw arity;
   s_tag *left;
-  s_op  op = {0};
+  s_op *op;
   s_tag op_tag = {0};
   s_ops *ops = NULL;
   bool paren;
@@ -1002,14 +1013,14 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
         tag_clean(&op_tag);
         return -1;
       }
-      op = *(s_op *) op_tag.data.pstruct->data;
-      tag_clean(&op_tag);
-      if (op.precedence < op_precedence) {
+      op = op_tag.data.pstruct->data;
+      if (op->precedence < op_precedence) {
         paren = true;
         if ((r = buf_write_1_size(pretty, "(")) < 0)
           return r;
         result += r;
       }
+      tag_clean(&op_tag);
     }
   }
   if ((r = buf_inspect_tag_size(pretty, left)) < 0)
@@ -1040,11 +1051,12 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
                  " a valid %KC3.Op{}");
         assert(!("buf_inspect_call_op: right: ops_get did not return"
                  " a valid %KC3.Op{}"));
+        tag_clean(&op_tag);
         return -1;
       }
-      op = *(s_op *) op_tag.data.pstruct->data;
+      op = op_tag.data.pstruct->data;
       tag_clean(&op_tag);
-      if (op.precedence < op_precedence) {
+      if (op->precedence < op_precedence) {
         paren = true;
         if ((r = buf_write_1_size(pretty, "(")) < 0)
           return r;
@@ -1066,7 +1078,7 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
 sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
 {
   s_ident ident = {0};
-  s_op   op = {0};
+  s_op  *op;
   s_tag  op_tag = {0};
   s_ops *ops;
   sw r;
@@ -1085,11 +1097,13 @@ sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
              " a valid %KC3.Op{}"));
     return -1;
   }
-  op = *(s_op *) op_tag.data.pstruct->data;
-  tag_clean(&op_tag);
-  if (op.sym == &g_sym__paren)
+  op = op_tag.data.pstruct->data;
+  if (op->sym == &g_sym__paren) {
+    tag_clean(&op_tag);
     return buf_inspect_call_paren(buf, call);
-  ident.sym = op.sym;
+  }
+  ident.sym = op->sym;
+  tag_clean(&op_tag);
   if ((r = buf_inspect_ident(buf, &ident)) < 0)
     return r;
   result += r;
@@ -1104,7 +1118,7 @@ sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
 
 sw buf_inspect_call_op_unary_size (s_pretty *pretty, const s_call *call)
 {
-  s_op   op = {0};
+  s_op  *op;
   s_tag  op_tag = {0};
   s_ops *ops;
   sw r;
@@ -1123,13 +1137,12 @@ sw buf_inspect_call_op_unary_size (s_pretty *pretty, const s_call *call)
              " a valid %KC3.Op{}"));
     return -1;
   }
-  op = *(s_op *) op_tag.data.pstruct->data;
-  tag_clean(&op_tag);
-  if (op.sym == &g_sym__paren) {
+  op = op_tag.data.pstruct->data;
+  if (op->sym == &g_sym__paren) {
     tag_clean(&op_tag);
     return buf_inspect_call_paren_size(pretty, call);
   }
-  if ((r = buf_inspect_sym_size(pretty, op.sym)) < 0) {
+  if ((r = buf_inspect_sym_size(pretty, op->sym)) < 0) {
     tag_clean(&op_tag);
     return r;
   }
@@ -1184,7 +1197,7 @@ sw buf_inspect_call_size (s_pretty *pretty, const s_call *call)
 {
   sw arity;
   bool b;
-  s_op  op = {0};
+  s_op *op;
   s_tag op_tag = {0};
   s_ops *ops = NULL;
   sw r;
@@ -1216,14 +1229,19 @@ sw buf_inspect_call_size (s_pretty *pretty, const s_call *call)
                  " %KC3.Op{}"));
         return -1;
       }
-      op = *(s_op *) op_tag.data.pstruct->data;
-      tag_clean(&op_tag);
-      if (op.sym == &g_sym__brackets)
+      op = op_tag.data.pstruct->data;
+      if (op->sym == &g_sym__brackets) {
+        tag_clean(&op_tag);
         return buf_inspect_call_brackets_size(pretty, call);
-      if (arity == 1)
+      }
+      if (arity == 1) {
+        tag_clean(&op_tag);
         return buf_inspect_call_op_unary_size(pretty, call);
-      if (arity == 2 && op.precedence)
-        return buf_inspect_call_op_size(pretty, call, op.precedence);
+      }
+      if (arity == 2 && op->precedence) {
+        tag_clean(&op_tag);
+        return buf_inspect_call_op_size(pretty, call, op->precedence);
+      }
     }
   }
   if (! ident_is_special_operator(&call->ident, &b))
