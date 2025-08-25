@@ -14,9 +14,18 @@
    - [x] `g_sym_Pointer`
    - [x] `sym_is_pointer_type`
    - [x] `compare_pointer`
-   - [ ] sym_to_tag_type
-   - [ ] sym_must_clean
-   - [ ] data_*
+   - [ ] `sym_to_tag_type`
+   - [ ] `sym_must_clean`
+   - [ ] `data_*`
+     - [ ] `data_buf_inspect`
+     - [ ] `data_buf_inspect_size`
+     - [ ] `data_clean`
+     - [ ] `data_compare`
+     - [ ] `data_hash_update`
+     - [ ] `data_init_cast`
+     - [ ] `data_init_copy`
+
+## Release v0.1.15
 
 ## LibreSSL/OpenSSL
  - [ ] new library
