@@ -1,0 +1,12 @@
+quote * & 1
+* & 1
+quote do
+  a = 1
+  b = & a
+  * b
+end
+do
+  a = 1
+  b = & a
+  * b
+end

@@ -77,6 +77,12 @@ s_pointer * tag_address (s_tag *tag, s_pointer *dest)
     assert(! "tag_address: invalid tag type");
     return NULL;
   }
+  if (! (tmp.pointer_type =
+         sym_target_to_pointer_type(tmp.target_type))) {
+    err_puts("tag_address: sym_target_to_pointer_type");
+    assert(! "tag_address: sym_target_to_pointer_type");
+    return NULL;
+  }
   if (! tag_to_pointer(tag, tmp.target_type, &tmp.ptr.p)) {
     err_puts("tag_address: tag_to_pointer");
     assert(! "tag_address: tag_to_pointer");

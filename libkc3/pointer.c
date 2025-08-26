@@ -68,16 +68,24 @@ s_pointer * pointer_init_cast (s_pointer *pointer,
   assert(pointer);
   assert(type);
   assert(tag);
-  tmp.pointer_type = *type;
   if (! tag_type(tag, &tmp.target_type)) {
     err_puts("pointer_init_cast: tag_type");
     assert(! "pointer_init_cast: tag_type");
     return NULL;
   }
-  if (! sym_is_pointer_type(tmp.pointer_type, tmp.target_type)) {
-    err_puts("pointer_init_cast: sym_is_pointer_type");
-    assert(! "pointer_init_cast: sym_is_pointer_type");
-    return NULL;
+  // TODO: pointer pointer
+  if (*type == &g_sym_Pointer) {
+    if (! (tmp.pointer_type =
+           sym_target_to_pointer_type(tmp.target_type)))
+      return NULL;
+  }
+  else {
+    tmp.pointer_type = *type;
+    if (! sym_is_pointer_type(tmp.pointer_type, tmp.target_type)) {
+      err_puts("pointer_init_cast: sym_is_pointer_type");
+      assert(! "pointer_init_cast: sym_is_pointer_type");
+      return NULL;
+    }
   }
   if (! tag_to_pointer(tag, tmp.target_type, &tmp.ptr.p)) {
     err_puts("pointer_init_cast: tag_to_pointer");

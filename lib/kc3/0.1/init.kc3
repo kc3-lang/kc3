@@ -288,6 +288,7 @@ require F64
 require F128
 require List
 require Map
+require Pointer
 require S8
 require S16
 require S32

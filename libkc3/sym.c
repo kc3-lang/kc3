@@ -511,7 +511,8 @@ bool sym_is_pointer_type (p_sym sym, p_sym target_type)
   assert(sym);
   buf_init_str_const(&buf, &sym->str);
   if (target_type) {
-    if (buf_read_str(&buf, &target_type->str) <= 0) {
+    if (buf_read_str(&buf, &target_type->str) <= 0 ||
+        buf_read_1(&buf, "*") <= 0) {
       return false;
     }
   }
@@ -520,11 +521,9 @@ bool sym_is_pointer_type (p_sym sym, p_sym target_type)
         ! target_type ||
         ! target_type->str.size ||
         ! target_type->str.ptr.pchar ||
-        ! character_is_uppercase(target_type->str.ptr.pchar[0]))
+        ! character_is_uppercase(target_type->str.ptr.pchar[0]) ||
+        target_type->str.ptr.pchar[target_type->str.size - 1] != '*')
       return false;
-  }
-  if (buf_read_1(&buf, "*") <= 0) {
-    return false;
   }
   return true;
 }
