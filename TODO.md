@@ -56,7 +56,7 @@ tls_read(ctx, buffer, sizeof(buffer));
 
 tls_close(ctx);
 ```
-     - [ ] Basic TLS Server :
+     - [ ] Basic TLS Server, see `libtls_server_example.c`
 
 ## HTTPd
  - [ ] partial requests
