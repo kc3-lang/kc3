@@ -78,6 +78,7 @@ ${DEST_TMP}:
 	cp -a "${SRC_TOP}"/test/ikc3_test ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/test/*.facts ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/test/*.kc3 ${DEST_TMP}/test
+	cp -a "${SRC_TOP}"/test/*.kc3m ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/test/zero ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/test/ikc3/*.kc3 "${SRC_TOP}"/test/ikc3/*.expected ${DEST_TMP}/test/ikc3
 
