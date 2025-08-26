@@ -33,6 +33,33 @@
  - [ ] new library
  - [ ] explore SSL API for stream socket connections with a certificate.
 
+<https://github.com/bob-beck/libtls/blob/master/TUTORIAL.md>
+
+This tutorial teaches LibreSSL's libtls API, which is much simpler than
+raw OpenSSL.
+
+Quick Start Example
+
+Basic TLS Client:
+```c
+#include <tls.h>
+
+struct tls_config *config = tls_config_new();
+tls_config_set_ca_file(config, "/etc/ssl/cert.pem");
+
+struct tls *ctx = tls_client();
+tls_configure(ctx, config);
+
+// Connect to existing socket
+tls_connect_socket(ctx, socket_fd, "hostname");
+
+// Use like regular read/write
+tls_write(ctx, "GET / HTTP/1.0\r\n\r\n", 18);
+tls_read(ctx, buffer, sizeof(buffer));
+
+tls_close(ctx);
+```
+
 ## HTTPd
  - [ ] partial requests
  - [ ] SSL
@@ -80,7 +107,7 @@
 | Array           |  [x]   |  [x]   |
 | Fact            |  [x]   |  [x]   |
 | Struct          |  [x]   |  [x]   |
-| StructType      |  [.]   |  [.]   |
+| StructType      |  [x]   |  [x]   |
 | PStruct         |  [x]   |  [x]   |
 | PStructType     |  [x]   |  [x]   |
 | PTag            |  [x]   |  [x]   | Tag             |
