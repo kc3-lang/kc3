@@ -19,8 +19,7 @@ ${DEST_TMP}:
 	mkdir -p ${DEST_TMP}/test/ikc3
 	cp -a "${SRC_TOP}/README.md" ${DEST_TMP}
 	cp -a /clang64/bin/edit.dll ${DEST_TMP}
-#	cp -a /usr/bin/msys-2.0.dll ${DEST_TMP}
-#	cp -a /usr/bin/msys-2.0.dll ${DEST_TMP}/test
+	cp -a /usr/bin/msys-2.0.dll ${DEST_TMP}
 #	cp -a /usr/bin/msys-gcc_s-seh-1.dll ${DEST_TMP}
 #	cp -a /usr/bin/msys-gcc_s-seh-1.dll ${DEST_TMP}/test
 	cp -a /clang64/bin/libbsd-0.dll ${DEST_TMP}
