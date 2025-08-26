@@ -1183,7 +1183,6 @@ KC3_IMG_SOURCES = \
 	"img/toast.png" \
 
 KC3_LIB_SOURCES = \
-	"lib/kc3/0.1/.#array.kc3" \
 	"lib/kc3/0.1/alist.kc3" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/bin/primes.kc3" \
@@ -1270,6 +1269,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/math.kc3" \
 	"lib/kc3/0.1/metric.kc3" \
 	"lib/kc3/0.1/parse.kc3" \
+	"lib/kc3/0.1/pointer.kc3" \
 	"lib/kc3/0.1/pretty.kc3" \
 	"lib/kc3/0.1/pretty_save.kc3" \
 	"lib/kc3/0.1/prime.kc3" \
@@ -1499,6 +1499,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/plist.kc3" \
 	"test/ikc3/plist.out.expected" \
 	"test/ikc3/plist.ret.expected" \
+	"test/ikc3/pointer.kc3" \
+	"test/ikc3/pointer.out.expected" \
+	"test/ikc3/pointer.ret.expected" \
 	"test/ikc3/ptr.kc3" \
 	"test/ikc3/ptr.out.expected" \
 	"test/ikc3/ptr.ret.expected" \
@@ -1648,6 +1651,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/config/mime.types" \
 	"test/httpd/config/routes.kc3" \
 	"test/httpd/db/app.facts" \
+	"test/httpd/db/app.facts.bin.facts" \
 	"test/httpd/doc" \
 	"test/httpd/pages" \
 	"test/httpd/pages/index.en.html" \
@@ -2028,7 +2032,6 @@ KC3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/extracted/DerivedNumericValues.txt" \
 
 KC3_DOC_SOURCES = \
-	"doc/1_KC3/.#1.05_List.en.md" \
 	"doc/1_KC3/1.01_Introduction.en.md" \
 	"doc/1_KC3/1.01_Introduction.fr.md" \
 	"doc/1_KC3/1.02_Array.en.md" \
