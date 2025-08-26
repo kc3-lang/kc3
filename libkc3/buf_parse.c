@@ -1195,10 +1195,12 @@ sw buf_parse_cast (s_buf *buf, s_call *dest)
     goto restore;
   result += r;
   call_init_op(&tmp);
+  if (sym_is_pointer_type(module, NULL))
+    module = &g_sym_Pointer;
   ident_init(&tmp.ident, module, &g_sym_cast);
   tag_init_psym(&tmp.arguments->tag, module);
-  if ((r = buf_parse_tag_primary(buf,
-                                 &list_next(tmp.arguments)->tag)) <= 0)
+  if ((r = buf_parse_tag_primary
+       (buf, &list_next(tmp.arguments)->tag)) <= 0)
     goto clean;
   result += r;
   *dest = tmp;
