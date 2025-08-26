@@ -1341,6 +1341,12 @@ test_socket_debug: lib_links_debug
 	${MAKE} -C socket debug
 	${MAKE} -C test test_socket_debug
 
+tls:
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
+	${MAKE} -C tls build
+
 uninstall:
 	rm -rf ${prefix}/lib/kc3
 	rm -rf ${prefix}/share/kc3
