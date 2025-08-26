@@ -4,7 +4,7 @@
 
  - [x] dlopen inside lib only
  - [x] Typed pointer example : `Fact*`
- - [ ] Generic typed pointers : `MyType*`
+ - [?] Generic typed pointers : `MyType*`
    - [x] `buf_inspect_pointer`
    - [x] `buf_inspect_pointer_size`
    - [x] `hash_update_pointer`
@@ -31,17 +31,13 @@
 ## Release v0.1.15
 
 ## LibreSSL/OpenSSL
- - [ ] new library
- - [ ] explore SSL API for stream socket connections with a certificate.
 
 <https://github.com/bob-beck/libtls/blob/master/TUTORIAL.md>
 
-This tutorial teaches LibreSSL's libtls API, which is much simpler than
-raw OpenSSL.
-
-Quick Start Example
-
-Basic TLS Client:
+ - [x] new library
+   - [x] explore SSL API for stream socket connections with a certificate.
+   - [ ] wrap the following functions :
+     - [ ] Basic TLS Client :
 ```c
 #include <tls.h>
 
@@ -60,6 +56,7 @@ tls_read(ctx, buffer, sizeof(buffer));
 
 tls_close(ctx);
 ```
+     - [ ] Basic TLS Server :
 
 ## HTTPd
  - [ ] partial requests
