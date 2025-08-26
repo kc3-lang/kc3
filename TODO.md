@@ -18,14 +18,15 @@
      - `sym_is_pointer_type() → TAG_POINTER`
    - [x] `sym_must_clean`
      - `sym_is_pointer_type() → false`
-   - [ ] `data_*`
-     - [v] `data_buf_inspect`
-     - [v] `data_buf_inspect_size`
-     - [v] `data_clean`
-     - [ ] `data_compare`
-     - [ ] `data_hash_update`
-     - [ ] `data_init_cast`
-     - [ ] `data_init_copy`
+   - [x] `data_*`
+     - [x] `data_buf_inspect`
+     - [x] `data_buf_inspect_size`
+     - [x] `data_clean`
+     - [x] `data_compare`
+     - [x] `data_hash_update`
+     - [x] `data_init_cast`
+     - [x] `data_init_copy`
+   - [x] `pointer_init_cast`
 
 ## Release v0.1.15
 

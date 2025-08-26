@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include "kc3.h"
-#include "sym.h"
 
 sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
 {
@@ -97,7 +96,7 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
   if (type == &g_sym_Void)
     return buf_inspect_void(buf, data);
   if (type == &g_sym_Pointer ||
-      sym_is_pointer_type(data, NULL))
+      sym_is_pointer_type(type, NULL))
     return buf_inspect_pointer(buf, data);
   if (! pstruct_type_find(type, &st))
     return -1;
@@ -194,7 +193,8 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
     return buf_inspect_var_size(pretty, data);
   if (type == &g_sym_Void)
     return buf_inspect_void_size(pretty, data);
-  if (type == &g_sym_Pointer || sym_is_pointer_type(data, NULL))
+  if (type == &g_sym_Pointer ||
+      sym_is_pointer_type(type, NULL))
     return buf_inspect_pointer_size(pretty, data);
   if (! pstruct_type_find(type, &st))
     return -1;
@@ -344,7 +344,7 @@ bool data_clean (const s_sym *type, void *data)
     return true;
   }
   if (type == &g_sym_Pointer ||
-      sym_is_pointer_type(data, NULL))
+      sym_is_pointer_type(type, NULL))
     return true;
   if (! pstruct_type_find(type, &st))
     return false;
@@ -436,6 +436,9 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
     return compare_var(a, b);
   if (type == &g_sym_Void)
     return 0;
+  if (type == &g_sym_Pointer ||
+      sym_is_pointer_type(type, NULL))
+    return compare_pointer(a, b);
   if (env_global()->loaded) {
     if (! pstruct_type_find(type, &st))
       return COMPARE_ERROR;
@@ -535,6 +538,9 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
     return hash_update_var(hash, data);
   if (type == &g_sym_Void)
     return hash_update_void(hash);
+  if (type == &g_sym_Pointer ||
+      sym_is_pointer_type(type, NULL))
+    return hash_update_pointer(hash, data);
   if (! pstruct_type_find(type, &st))
     return false;
   if (st) {
@@ -629,6 +635,9 @@ void * data_init_cast (void *data, const s_sym * const *type,
     return pvar_init_cast(data, type, tag);
   if (t == &g_sym_Void)
     return data;
+  if (t == &g_sym_Pointer ||
+      sym_is_pointer_type(t, NULL))
+    return pointer_init_cast(data, type, tag);
   if (! pstruct_type_find(t, &st))
     return NULL;
   if (st)
@@ -720,6 +729,9 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
     return tag_init_copy(data, src);
   if (type == &g_sym_Void)
     return data;
+  if (type == &g_sym_Pointer ||
+      sym_is_pointer_type(type, NULL))
+    return pointer_init_copy(data, src);
   if (! pstruct_type_find(type, &st))
     return NULL;
   if (st)

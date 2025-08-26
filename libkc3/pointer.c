@@ -60,6 +60,34 @@ s_pointer * pointer_init (s_pointer *pointer,
   return pointer;
 }
 
+s_pointer * pointer_init_cast (s_pointer *pointer,
+                               const p_sym *type,
+                               s_tag *tag)
+{
+  s_pointer tmp = {0};
+  assert(pointer);
+  assert(type);
+  assert(tag);
+  tmp.pointer_type = *type;
+  if (! tag_type(tag, &tmp.target_type)) {
+    err_puts("pointer_init_cast: tag_type");
+    assert(! "pointer_init_cast: tag_type");
+    return NULL;
+  }
+  if (! sym_is_pointer_type(tmp.pointer_type, tmp.target_type)) {
+    err_puts("pointer_init_cast: sym_is_pointer_type");
+    assert(! "pointer_init_cast: sym_is_pointer_type");
+    return NULL;
+  }
+  if (! tag_to_pointer(tag, tmp.target_type, &tmp.ptr.p)) {
+    err_puts("pointer_init_cast: tag_to_pointer");
+    assert(! "pointer_init_cast: tag_to_pointer");
+    return NULL;
+  }
+  *pointer = tmp;
+  return pointer;
+}
+
 s_pointer * pointer_init_copy (s_pointer *pointer,
                                const s_pointer *src)
 {

@@ -20,7 +20,7 @@ s_pointer * pointer_init (s_pointer *pointer, const s_sym *pointer_type,
                           const s_sym *target_type, void *p);
 s_pointer * pointer_init_cast (s_pointer *pointer,
                                const p_sym *type,
-                               const s_tag *tag);
+                               s_tag *tag);
 s_pointer * pointer_init_copy (s_pointer *pointer,
                                const s_pointer *src);
 
