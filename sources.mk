@@ -1458,6 +1458,8 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/tag.kc3" \
 	"lib/kc3/0.1/thread.kc3" \
 	"lib/kc3/0.1/time.kc3" \
+	"lib/kc3/0.1/tls.kc3" \
+	"lib/kc3/0.1/tls/config.kc3" \
 	"lib/kc3/0.1/u16.facts" \
 	"lib/kc3/0.1/u32.facts" \
 	"lib/kc3/0.1/u64.facts" \

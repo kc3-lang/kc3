@@ -1513,4 +1513,5 @@ uninstall:
 	test_socket_asan \
 	test_socket_cov \
 	test_socket_debug \
+	tls \
 	uninstall
