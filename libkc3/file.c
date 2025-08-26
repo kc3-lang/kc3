@@ -741,7 +741,6 @@ struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
   return dest;
 }
 
-#if ! (defined(WIN32) || defined(WIN64))
 bool file_unlink (const s_str *path)
 {
   sw e;
@@ -756,7 +755,6 @@ bool file_unlink (const s_str *path)
   }
   return true;
 }
-#endif
 
 bool file_write (const s_str *path, const s_str *data)
 {
