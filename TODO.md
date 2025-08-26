@@ -37,26 +37,25 @@
  - [x] new library
    - [x] explore SSL API for stream socket connections with a certificate.
    - [ ] wrap the following functions :
+     - [ ] Common TLS API :
+       - [ ] `#include <tls.h>`
+       - [ ] `tls_init() != 0`
+       - [ ] `struct tls_config *config = tls_config_new();`
+       - [ ] `tls_configure(ctx, config);`
+       - [ ] `tls_write(ctx, data, size)`
+       - [ ] `tls_read(ctx, data, size);`
+       - [ ] `tls_close(ctx);`
+       - [ ] `tls_free`
+       - [ ] `tls_config_free`
      - [ ] Basic TLS Client :
-```c
-#include <tls.h>
-
-struct tls_config *config = tls_config_new();
-tls_config_set_ca_file(config, "/etc/ssl/cert.pem");
-
-struct tls *ctx = tls_client();
-tls_configure(ctx, config);
-
-// Connect to existing socket
-tls_connect_socket(ctx, socket_fd, "hostname");
-
-// Use like regular read/write
-tls_write(ctx, "GET / HTTP/1.0\r\n\r\n", 18);
-tls_read(ctx, buffer, sizeof(buffer));
-
-tls_close(ctx);
-```
+       - [ ] `tls_config_set_ca_file(config, "/etc/ssl/cert.pem");`
+       - [ ] `struct tls *ctx = tls_client();`
+       - [ ] `tls_connect_socket(ctx, socket_fd, "hostname");`
      - [ ] Basic TLS Server, see `libtls_server_example.c`
+       - [ ] `tls_config_set_cert_file` set server certificate
+       - [ ] `tls_config_set_key_file` set server certificate private key
+       - [ ] `ctx = tls_server()`
+       - [ ] `tls_accept_socket`
 
 ## HTTPd
  - [ ] partial requests
