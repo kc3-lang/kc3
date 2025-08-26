@@ -509,9 +509,6 @@ bool sym_is_pointer_type (p_sym sym, p_sym target_type)
 {
   s_buf buf;
   assert(sym);
-  assert(target_type);
-  assert(target_type->str.size);
-  assert(target_type->str.ptr.pchar);
   buf_init_str_const(&buf, &sym->str);
   if (target_type) {
     if (buf_read_str(&buf, &target_type->str) <= 0) {
