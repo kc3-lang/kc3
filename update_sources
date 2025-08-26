@@ -40,7 +40,7 @@ sources KC3_LIB_SOURCES "$KC3_LIB_SOURCES"
 KC3_OBJC_SOURCES="$(find window -name "[a-z]*.m" -or -name "[a-z]*.m.in")"
 sources KC3_OBJC_SOURCES "$KC3_OBJC_SOURCES"
 
-KC3_TEST_SOURCES="$(ls test/*.facts test/*.rb)
+KC3_TEST_SOURCES="$(ls test/*.facts test/*.kc3 test/*.kc3m test/*.rb)
 test/zero"
 sources KC3_TEST_SOURCES "$KC3_TEST_SOURCES"
 

@@ -1330,7 +1330,9 @@ KC3_TEST_SOURCES = \
 	"test/facts_test_open_file.3.expected.facts" \
 	"test/facts_test_open_file.3.in.facts" \
 	"test/facts_test_save.expected.facts" \
+	"test/marshall_test_to_file.1.expected.kc3m" \
 	"test/replace_lines.rb" \
+	"test/struct_test.kc3" \
 	"test/test.rb" \
 	"test/test_case_end.rb" \
 	"test/zero" \
@@ -1651,7 +1653,6 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/config/mime.types" \
 	"test/httpd/config/routes.kc3" \
 	"test/httpd/db/app.facts" \
-	"test/httpd/db/app.facts.bin.facts" \
 	"test/httpd/doc" \
 	"test/httpd/pages" \
 	"test/httpd/pages/index.en.html" \

@@ -1450,7 +1450,6 @@ test/httpd/config/db.kc3
 test/httpd/config/mime.types
 test/httpd/config/routes.kc3
 test/httpd/db/app.facts
-test/httpd/db/app.facts.bin.facts
 test/httpd/doc
 test/httpd/pages
 test/httpd/pages/index.en.html
@@ -1768,6 +1767,7 @@ test/markdown/to_html_str.ret.expected
 test/markdown_test
 test/marshall_read_test.c
 test/marshall_test.c
+test/marshall_test_to_file.1.expected.kc3m
 test/ops_test.c
 test/ratio_test.c
 test/replace_lines.rb
@@ -1778,6 +1778,7 @@ test/sources.mk
 test/sources.sh
 test/str_test.c
 test/struct_test.c
+test/struct_test.kc3
 test/sym_test.c
 test/tag_test.c
 test/tag_test.h
