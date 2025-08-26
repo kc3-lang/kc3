@@ -48,6 +48,7 @@ ${DEST_TMP}:
 	cp -a /clang64/bin/SDL2.dll ${DEST_TMP}
 	cp -a /clang64/bin/libxkbcommon-0.dll ${DEST_TMP}
 	cp -a /clang64/bin/libwinpthread-1.dll ${DEST_TMP}
+	cp -a /clang64/bin/libwinpthread-1.dll ${DEST_TMP}/test
 #	cp -a /clang64/bin/libstdc++-6.dll ${DEST_TMP}
 	cp -a /clang64/bin/libfontconfig-1.dll ${DEST_TMP}
 	cp -a /clang64/bin/libfreetype-6.dll ${DEST_TMP}
@@ -66,6 +67,7 @@ ${DEST_TMP}:
 	cp -a /clang64/bin/libpcre2-8-0.dll ${DEST_TMP}
 	cp -a /clang64/bin/libc++.dll ${DEST_TMP}
 	cp -a /clang64/bin/libffi-8.dll ${DEST_TMP}
+	cp -a /clang64/bin/libffi-8.dll ${DEST_TMP}/test
 	mkdir -p ${DEST_TMP}/fonts
 	cp -RL "${SRC_TOP}"/fonts/Courier\ New ${DEST_TMP}/fonts/
 	cp -RL "${SRC_TOP}"/fonts/Noto\ Sans ${DEST_TMP}/fonts/
@@ -75,6 +77,8 @@ ${DEST_TMP}:
 	cp -a "${SRC_TOP}"/test/.libs/libkc3*.exe ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/test/ikc3_test ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/test/*.facts ${DEST_TMP}/test
+	cp -a "${SRC_TOP}"/test/*.kc3 ${DEST_TMP}/test
+	cp -a "${SRC_TOP}"/test/zero ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/test/ikc3/*.kc3 "${SRC_TOP}"/test/ikc3/*.expected ${DEST_TMP}/test/ikc3
 
 
