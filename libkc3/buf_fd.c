@@ -12,6 +12,7 @@
  */
 #if defined(WIN32) || defined(WIN64)
 # include <winsock2.h>
+# define MSG_NOSIGNAL 0
 #else
 # include <sys/types.h>
 # include <sys/ioctl.h>
