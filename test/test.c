@@ -48,8 +48,8 @@ void test_context (const char *context)
 
 int test_file_compare (const char *path_a, const char *path_b)
 {
-  FILE *fp_a;
-  FILE *fp_b;
+  FILE *fp_a = NULL;
+  FILE *fp_b = NULL;
   char buf_a[1024];
   char buf_b[1024];
   unsigned lineno = 0;
@@ -73,6 +73,8 @@ int test_file_compare (const char *path_a, const char *path_b)
   }
   /* never reached */
  ko:
+  fclose(fp_a);
+  fclose(fp_b);
   fprintf(stderr, "\n%sFiles %s and %s differ line %u.%s",
           TEST_COLOR_KO,
           path_a, path_b, lineno,
@@ -80,6 +82,8 @@ int test_file_compare (const char *path_a, const char *path_b)
   test_ko();
   return 1;
  ok:
+  fclose(fp_a);
+  fclose(fp_b);
   test_ok();
   return 0;
 }
