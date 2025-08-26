@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include "kc3.h"
+#include "sym.h"
 
 sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
 {
@@ -95,6 +96,9 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
     return buf_inspect_var(buf, data);
   if (type == &g_sym_Void)
     return buf_inspect_void(buf, data);
+  if (type == &g_sym_Pointer ||
+      sym_is_pointer_type(data, NULL))
+    return buf_inspect_pointer(buf, data);
   if (! pstruct_type_find(type, &st))
     return -1;
   if (st) {
@@ -190,6 +194,8 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
     return buf_inspect_var_size(pretty, data);
   if (type == &g_sym_Void)
     return buf_inspect_void_size(pretty, data);
+  if (type == &g_sym_Pointer || sym_is_pointer_type(data, NULL))
+    return buf_inspect_pointer_size(pretty, data);
   if (! pstruct_type_find(type, &st))
     return -1;
   if (st) {
@@ -337,6 +343,9 @@ bool data_clean (const s_sym *type, void *data)
   if (type == &g_sym_Void) {
     return true;
   }
+  if (type == &g_sym_Pointer ||
+      sym_is_pointer_type(data, NULL))
+    return true;
   if (! pstruct_type_find(type, &st))
     return false;
   if (st) {

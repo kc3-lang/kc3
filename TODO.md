@@ -19,9 +19,9 @@
    - [x] `sym_must_clean`
      - `sym_is_pointer_type() → false`
    - [ ] `data_*`
-     - [ ] `data_buf_inspect`
-     - [ ] `data_buf_inspect_size`
-     - [ ] `data_clean`
+     - [v] `data_buf_inspect`
+     - [v] `data_buf_inspect_size`
+     - [v] `data_clean`
      - [ ] `data_compare`
      - [ ] `data_hash_update`
      - [ ] `data_init_cast`
