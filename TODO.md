@@ -67,12 +67,13 @@
 
 ## Marshall
 
- - env_dump/restore
+ - [x] env_dump/restore
    - [x] test_httpd
    - [x] www
- - StructType
-   - we should not record offsets in struct type but rather just
+ - [x] StructType
+   - [x] we should not record offsets in struct type but rather just
      the map and recalculate offsets and size at `marshall_read`
+     - [x] must_clean
 
 |       Type      | Write  |  Read  |      Needs      |
 | --------------- | ------ | ------ | --------------- |
