@@ -79,10 +79,6 @@ KC3_CONFIGURES = \
 	"window/sdl2/demo/macos/configure" \
 	"window/sdl2/demo/sources.sh" \
 	"window/sdl2/demo/update_sources" \
-	"window/sdl2/kubz/configure" \
-	"window/sdl2/kubz/macos/configure" \
-	"window/sdl2/kubz/sources.sh" \
-	"window/sdl2/kubz/update_sources" \
 	"window/sdl2/sources.sh" \
 	"window/sdl2/update_sources" \
 	"window/sources.sh" \
@@ -148,9 +144,6 @@ KC3_MAKEFILES = \
 	"window/sdl2/demo/Makefile" \
 	"window/sdl2/demo/macos/Makefile" \
 	"window/sdl2/demo/sources.mk" \
-	"window/sdl2/kubz/Makefile" \
-	"window/sdl2/kubz/macos/Makefile" \
-	"window/sdl2/kubz/sources.mk" \
 	"window/sdl2/sources.mk" \
 	"window/sources.mk" \
 
@@ -1026,25 +1019,6 @@ KC3_C_SOURCES = \
 	"window/sdl2/gl_vertex.h" \
 	"window/sdl2/gl_vtext.c" \
 	"window/sdl2/gl_vtext.h" \
-	"window/sdl2/kubz/console.c" \
-	"window/sdl2/kubz/console.h" \
-	"window/sdl2/kubz/game.c" \
-	"window/sdl2/kubz/game.h" \
-	"window/sdl2/kubz/gl_marching_cube.c" \
-	"window/sdl2/kubz/gl_marching_cube.h" \
-	"window/sdl2/kubz/gl_marching_cubes.c" \
-	"window/sdl2/kubz/gl_marching_cubes.h" \
-	"window/sdl2/kubz/help.c" \
-	"window/sdl2/kubz/help.h" \
-	"window/sdl2/kubz/info.c" \
-	"window/sdl2/kubz/info.h" \
-	"window/sdl2/kubz/intro.c" \
-	"window/sdl2/kubz/intro.h" \
-	"window/sdl2/kubz/kubz.c" \
-	"window/sdl2/kubz/kubz.h" \
-	"window/sdl2/kubz/menu.c" \
-	"window/sdl2/kubz/menu.h" \
-	"window/sdl2/kubz/types.h" \
 	"window/sdl2/mat3.h" \
 	"window/sdl2/mat4.c" \
 	"window/sdl2/mat4.h" \
