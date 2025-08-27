@@ -27,31 +27,31 @@ all:
 build:
 	${MAKE} ${LIB}
 	${MAKE} -C demo build
-	${MAKE} -C kubz build
+	! test -d kubz || ${MAKE} -C kubz build
 
 asan:
 	${MAKE} ${LIB_ASAN}
 	${MAKE} -C demo asan
-	${MAKE} -C kubz asan
+	! test -d kubz || ${MAKE} -C kubz asan
 
 clean:
 	rm -rf ${CLEANFILES}
 	${MAKE} -C demo clean
-	${MAKE} -C kubz clean
+	! test -d kubz || ${MAKE} -C kubz clean
 
 clean_cov:
 	${MAKE} -C demo clean_cov
-	${MAKE} -C kubz clean_cov
+	! test -d kubz || ${MAKE} -C kubz clean_cov
 
 cov:
 	${MAKE} ${LIB_COV}
 	${MAKE} -C demo cov
-	${MAKE} -C kubz cov
+	! test -d kubz || ${MAKE} -C kubz cov
 
 debug:
 	${MAKE} ${LIB_DEBUG}
 	${MAKE} -C demo debug
-	${MAKE} -C kubz debug
+	! test -d kubz || ${MAKE} -C kubz debug
 
 demo: build
 	${MAKE} -C demo demo
