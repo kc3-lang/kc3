@@ -614,11 +614,13 @@ ikc3_gcovr:
 	${MAKE} ikc3_test_cov
 	${MAKE} gcovr
 
-install: lib_links
+install: lib_links_debug
 	${INSTALL} -m 0755 -d ${prefix}/lib/kc3
 	${INSTALL} -m 0755 -d ${prefix}/lib/kc3/0.1
 	find lib/kc3/ -type d | while read F; do \
 	    ${INSTALL} -m 0755 -d ${prefix}/"$$F"; done
+	${INSTALL} -m 0644 lib/kc3/0.1/kc3.dump \
+	    ${prefix}/lib/kc3/0.1/kc3.dump
 	find lib -name '*.facts' -or -name '*.kc3' | while read F; do \
 	    ${INSTALL} -m 0644 $$F ${prefix}/"$$F"; done
 	${INSTALL} -m 0755 -d ${prefix}/share/kc3
