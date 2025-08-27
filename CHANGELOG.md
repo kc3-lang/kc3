@@ -16,7 +16,7 @@
    - `env_dump` / `env_dump_restore`
    - automatic loading of env dump from kc3.dump if present
      - in lib/kc3/0.1
-     - in current workoing dir
+     - in current working dir
      - reduced loading time of environment from minutes to sub-second !
  - facts database (triple store) accessible from KC3
    - `new database (Ptr)`

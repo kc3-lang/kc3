@@ -7,9 +7,8 @@ for semantic programming, and programming the semantic web.
 You can easily convert each KC3 function to a C function. KC3 is both
 a language and a runtime.
 
-This is a development branch see
-[KC3 v0.1.14](https://git.kmx.io/kc3-lang/kc3/_tree/v0.1.14)
-for a stable release.
+This is a stable release, for the development branch see the [KC3 master
+branch at kmxgit](https://git.kmx.io/kc3-lang/kc3).
 
 KC3 is currently a programming language project, inspired by C, Elixir
 and Common Lisp. It could be described as C with Elixir modules,
@@ -51,6 +50,7 @@ Supported architectures :
 
 To install and test KC3 for yourself, you can follow the
 [KC3 Installation Guide](https://kc3-lang.org/doc/3_Guides/3.1_Install).
+
 
 ## Users
 
@@ -103,7 +103,15 @@ There are now four full applications written in KC3 that we know of :
        operator parsing.
    - converted almost every file to 72 columns max
    - added licenses to kc3 files
-   - started to work on marshall/marshall_read (not ready yet)
+   - defspecial_operator is a special operator that allows (not unlike
+     `def`) the runtime definition of special operators.
+   - `marshall/marshall_read` allow for `env_dump` and
+     `env_dump_restore` to save and restore all KC3 values for
+     disk or network i/o.
+   - automatic loading of env dump from kc3.dump if present
+     - in lib/kc3/0.1/
+     - in current working dir
+     - reduced loading time of environment from minutes to sub-second !
 
 
 ## Discord invite
@@ -136,7 +144,6 @@ to discover how to use KC3 for your own projects.
      - recursive
  - libkc3
    - hash-table as a KC3 value (map ?)
-    - defspecial
    - special operators hash table
    - pass by reference and reference counting in all data structures
      - array
