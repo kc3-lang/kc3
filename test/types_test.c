@@ -23,6 +23,9 @@ void types_test (void)
 
 TEST_CASE(types_sizeof)
 {
+  TEST_EQ(sizeof(f32), 4);
+  TEST_EQ(sizeof(f64), 8);
+  TEST_EQ(sizeof(f128), 16);
   TEST_EQ(sizeof(s8), 1);
   TEST_EQ(sizeof(s16), 2);
   TEST_EQ(sizeof(s32), 4);
