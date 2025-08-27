@@ -90,6 +90,16 @@ int fork (void)
 }
 #endif
 
+s_pointer * kc3_address_of (s_ident *ident, s_pointer *dest)
+{
+  s_env *env;
+  env = env_global();
+  assert(ident);
+  assert(dest);
+  assert(env);
+  return env_address_of(env, ident, dest);
+}
+
 s_tag * kc3_access (s_tag *tag, s_list **key,
                     s_tag *dest)
 {

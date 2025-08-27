@@ -69,29 +69,6 @@ s_tag * tag_1 (s_tag *tag, const char *p)
   return tag_init_1(tag, p);
 }
 
-s_pointer * tag_address (s_tag *tag, s_pointer *dest)
-{
-  s_pointer tmp = {0};
-  if (! tag_type(tag, &tmp.target_type)) {
-    err_puts("tag_address: invalid tag type");
-    assert(! "tag_address: invalid tag type");
-    return NULL;
-  }
-  if (! (tmp.pointer_type =
-         sym_target_to_pointer_type(tmp.target_type))) {
-    err_puts("tag_address: sym_target_to_pointer_type");
-    assert(! "tag_address: sym_target_to_pointer_type");
-    return NULL;
-  }
-  if (! tag_to_pointer(tag, tmp.target_type, &tmp.ptr.p)) {
-    err_puts("tag_address: tag_to_pointer");
-    assert(! "tag_address: tag_to_pointer");
-    return NULL;
-  }
-  *dest = tmp;
-  return dest;
-}
-
 s_tag * tag_and (s_tag *a, s_tag *b, s_tag *dest)
 {
   bool p;

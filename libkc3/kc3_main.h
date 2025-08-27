@@ -63,6 +63,7 @@ s32      kc3_tag_type (const s_tag *tag);
 s_time * kc3_uptime (s_time *dest);
 
 /* Operators. */
+s_pointer *  kc3_address_of (s_ident *ident, s_pointer *dest);
 s_tag *      kc3_access (s_tag *tag, s_list **addr,
                          s_tag *dest);
 s_tag *      kc3_and (s_tag *a, s_tag *b, s_tag *dest);

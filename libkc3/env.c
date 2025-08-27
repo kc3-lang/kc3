@@ -97,6 +97,46 @@ static s_env * env_globals_init (s_env *env);
 static void    env_toplevel_clean (s_env *env);
 static s_env * env_toplevel_init (s_env *env);
 
+// Special operator.
+s_pointer * env_address_of (s_env *env, s_ident *ident, s_pointer *dest)
+{
+  s_tag *tag;
+  s_pointer tmp = {0};
+  assert(env);
+  assert(ident);
+  assert(dest);
+  if (ident->module) {
+    err_puts("env_address_of: ident with a module");
+    assert(! "env_address_of: ident with a module");
+    return NULL;
+  }
+  if (! (tag = env_frames_get (env, ident->sym))) {
+    err_write_1("env_address_of: undeclared ident ");
+    err_inspect_ident(ident);
+    err_write_1("\n");
+    assert(! "env_address_of: undeclared ident");
+    return NULL;
+  }
+  if (! tag_type(tag, &tmp.target_type)) {
+    err_puts("env_address_of: invalid tag type");
+    assert(! "env_address_of: invalid tag type");
+    return NULL;
+  }
+  if (! (tmp.pointer_type =
+         sym_target_to_pointer_type(tmp.target_type))) {
+    err_puts("env_address_of: sym_target_to_pointer_type");
+    assert(! "env_address_of: sym_target_to_pointer_type");
+    return NULL;
+  }
+  if (! tag_to_pointer(tag, tmp.target_type, &tmp.ptr.p)) {
+    err_puts("env_address_of: tag_to_pointer");
+    assert(! "env_address_of: tag_to_pointer");
+    return NULL;
+  }
+  *dest = tmp;
+  return dest;
+}
+
 // TODO: unwind_protect
 s_tag * env_and (s_env *env, s_tag *a, s_tag *b, s_tag *dest)
 {
@@ -1289,7 +1329,7 @@ s_frame * env_frame_new_capture (s_env *env, s_fn *fn)
   }
   return frame;
 }
-  
+
 s_tag * env_frames_get (s_env *env, const s_sym *name)
 {
   s_tag *tag;
