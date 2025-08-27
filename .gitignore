@@ -95,6 +95,7 @@ test/http/*.err
 test/http/*.out
 test/http/*.ret
 test/httpd/*.bin
+test/httpd/db/app.facts.bin.facts
 test/ikc3/.ikc3_history
 test/ikc3/.gdb_history
 test/ikc3/*.diff
@@ -105,6 +106,7 @@ test/json/*.diff
 test/json/*.err
 test/json/*.out
 test/json/*.ret
+test/kc3.dump
 test/kc3s/.ikc3_history
 test/kc3s/.gdb_history
 test/kc3s/*.diff
