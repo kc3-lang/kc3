@@ -47,8 +47,8 @@ gdb_kc3s: debug
 	if [ -f kc3s_debug.core ]; then gdb kc3s_debug kc3s_debug.core; else gdb kc3s_debug; fi
 
 install:
-	mkdir -p ${prefix}/bin
-	install -m 755 .libs/kc3s ${prefix}/bin/kc3s
+	mkdir -p ${DESTDIR}${prefix}/bin
+	install -m 755 .libs/kc3s ${DESTDIR}${prefix}/bin/kc3s
 
 uninstall:
 	rm -f ${prefix}/bin/kc3s

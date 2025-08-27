@@ -50,8 +50,8 @@ gdb_ikc3_asan: asan
 	if [ -f ikc3_debug.core ]; then gdb .libs/ikc3_asan ikc3_asan.core; else gdb .libs/ikc3_asan; fi
 
 install:
-	mkdir -p ${prefix}/bin
-	${INSTALL} -m 755 .libs/ikc3 ${prefix}/bin/ikc3
+	mkdir -p ${DESTDIR}${prefix}/bin
+	${INSTALL} -m 755 .libs/ikc3 ${DESTDIR}${prefix}/bin/ikc3
 
 lldb_ikc3: debug
 	if [ -f ikc3_debug.core ]; then lldb .libs/ikc3_debug ikc3_debug.core; else lldb .libs/ikc3_debug; fi

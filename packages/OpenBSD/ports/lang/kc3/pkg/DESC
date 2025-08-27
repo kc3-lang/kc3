@@ -1,0 +1,3 @@
+KC3 is a programming language with an Elixir-like syntax, Common-Lisp
+macros and eval, and system and libraries interoperability with KC3
+functions or C11 with libffi.

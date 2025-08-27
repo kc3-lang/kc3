@@ -68,8 +68,8 @@ gdb_demo: debug
 	if [ -f ${PROG_DEBUG}.core ]; then gdb .libs/${PROG_DEBUG} ${PROG_DEBUG}.core; else gdb .libs/${PROG_DEBUG}; fi
 
 install:
-	${INSTALL} -m 755 -d ${prefix}/bin
-	${INSTALL} -m 755 ${PROG} ${prefix}/bin/${PROG}
+	${INSTALL} -m 755 -d ${DESTDIR}${prefix}/bin
+	${INSTALL} -m 755 ${PROG} ${DESTDIR}${prefix}/bin/${PROG}
 
 lldb_demo: debug
 	if [ -f ${PROG_DEBUG}.core ]; then lldb .libs/${PROG_DEBUG} ${PROG_DEBUG}.core; else lldb .libs/${PROG_DEBUG}; fi
