@@ -86,11 +86,11 @@ gdb_kubz: debug
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 gdb_kubz; fi
 
 install:
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/window
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libkc3/window
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/lib
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
-	${LIBTOOL} --finish ${prefix}/lib
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/include/libkc3/window
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${DESTDIR}${prefix}/include/libkc3/window
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --finish ${DESTDIR}${prefix}/lib
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo install; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 install; fi
 
