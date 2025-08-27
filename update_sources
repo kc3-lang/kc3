@@ -70,6 +70,10 @@ KC3_TEST_JSON_SOURCES="$(ls test/json/*.expected test/json/*.kc3)
 test/json_test"
 sources KC3_TEST_JSON_SOURCES "$KC3_TEST_JSON_SOURCES"
 
+KC3_TEST_KC3S_SOURCES="$(ls test/kc3s/*.expected test/kc3s/*.kc3)
+test/kc3s_test"
+sources KC3_TEST_KC3S_SOURCES "$KC3_TEST_KC3S_SOURCES"
+
 KC3_TEST_MARKDOWN_SOURCES="$(ls test/markdown/*.expected test/markdown/*.kc3)
 test/markdown_test"
 sources KC3_TEST_MARKDOWN_SOURCES "$KC3_TEST_MARKDOWN_SOURCES"

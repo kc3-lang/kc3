@@ -1253,6 +1253,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/integer.facts" \
 	"lib/kc3/0.1/json.kc3" \
 	"lib/kc3/0.1/kc3.1.kc3" \
+	"lib/kc3/0.1/kc3.dump" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/op.kc3" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
@@ -1653,10 +1654,10 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/config/mime.types" \
 	"test/httpd/config/routes.kc3" \
 	"test/httpd/db/app.facts" \
+	"test/httpd/db/app.facts.bin.facts" \
 	"test/httpd/doc" \
 	"test/httpd/pages" \
 	"test/httpd/pages/index.en.html" \
-	"test/httpd/pages/index.en.html~" \
 	"test/httpd/pages/index.fr.html" \
 	"test/httpd/static" \
 	"test/httpd/static/_assets" \
@@ -1741,6 +1742,12 @@ KC3_TEST_JSON_SOURCES = \
 	"test/json/to_str.out.expected" \
 	"test/json/to_str.ret.expected" \
 	"test/json_test" \
+
+KC3_TEST_KC3S_SOURCES = \
+	"test/kc3s/comments.kc3" \
+	"test/kc3s/comments.out.expected" \
+	"test/kc3s/comments.ret.expected" \
+	"test/kc3s_test" \
 
 KC3_TEST_MARKDOWN_SOURCES = \
 	"test/markdown/titles.kc3" \
