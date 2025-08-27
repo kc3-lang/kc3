@@ -34,7 +34,7 @@ sources KC3_HTTPD_SOURCES "$KC3_HTTPD_SOURCES"
 KC3_IMG_SOURCES="$(find img -name '*.png' -or -name '*.jpg' -or -name '*.jpeg' -or -name '*.xcf')"
 sources KC3_IMG_SOURCES "$KC3_IMG_SOURCES"
 
-KC3_LIB_SOURCES="$(find lib -name '*.facts' -or -name '*.kc3')"
+KC3_LIB_SOURCES="$(find lib -name '*.dump' -or -name '*.facts' -or -name '*.kc3')"
 sources KC3_LIB_SOURCES "$KC3_LIB_SOURCES"
 
 KC3_OBJC_SOURCES="$(find window -name "[a-z]*.m" -or -name "[a-z]*.m.in")"
