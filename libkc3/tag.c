@@ -731,6 +731,17 @@ s_tag * tag_init_pvar (s_tag *tag, const s_sym *type)
 }
 */
 
+s_tag * tag_init_uw_reduce (s_tag *tag, uw src)
+{
+  if (src >= U32_MAX)
+    return tag_init_uw(tag, src);
+  if (src >= U16_MAX)
+    return tag_init_u32(tag, src);
+  if (src >= U8_MAX)
+    return tag_init_u16(tag, src);
+  return tag_init_u8(tag, src);
+}
+
 s_tag * tag_init_void (s_tag *tag)
 {
   assert(tag);

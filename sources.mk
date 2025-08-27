@@ -1362,6 +1362,9 @@ KC3_IMG_SOURCES = \
 	"img/toast.128.png" \
 	"img/toast.png" \
 
+KC3_KMSG_SOURCES = \
+	"kmsg/kmsg.kc3" \
+
 KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/alist.kc3" \
 	"lib/kc3/0.1/array.kc3" \

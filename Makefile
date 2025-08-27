@@ -743,6 +743,7 @@ kc3.index: sources.mk Makefile
 	for F in ${KC3_FONT_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_HTTPD_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_IMG_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_KMSG_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_LIB_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_OBJC_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_SOURCES}; do echo "$$F"; done >> kc3.index.tmp

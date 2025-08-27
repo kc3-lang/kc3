@@ -43,6 +43,7 @@ s_list * list_new_map (uw count, s_list *next);
 s_list * list_new_ref (s_list *list);
 s_list * list_new_str_1 (char *free, const char *p, s_list *next);
 s_list * list_new_tag_copy (s_tag *tag, s_list *next);
+s_list * list_new_uw_reduce (uw src, s_list *next);
 
 /* Observers */
 s_tag *   list_at (s_list *list, uw position, s_tag *dest);

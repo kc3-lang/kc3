@@ -192,6 +192,35 @@ p_list * plist_init_copy (p_list *plist, p_list *src)
   return plist;
 }
 
+p_list * plist_init_count (p_list *plist, s_tag *number)
+{
+  uw i;
+  uw number_uw;
+  p_sym sym_Uw = &g_sym_Uw;
+  s_list **tail;
+  s_list *tmp = NULL;
+  assert(plist);
+  assert(number);
+  if (! uw_init_cast(&number_uw, &sym_Uw, number)) {
+    err_puts("plist_init_count: cannot cast to Uw");
+    assert(! "plist_init_count: cannot cast to Uw");
+    return NULL;
+  }
+  tail = &tmp;
+  i = 0;
+  while (i++ < number_uw) {
+    if (! (*tail = list_new_uw_reduce(i, NULL))) {
+      err_puts("plist_init_count: list_new_uw_reduce");
+      assert(! "plist_init_count: list_new_uw_reduce");
+      list_delete_all(tmp);
+      return NULL;
+    }
+    tail = &(*tail)->next.data.plist;
+  }
+  *plist = tmp;
+  return plist;
+}
+
 s_str * plist_join (p_list *plist, s_str *sep, s_str *dest)
 {
   p_list i;

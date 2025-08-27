@@ -309,6 +309,19 @@ s_list * list_new_tag_copy (s_tag *x, s_list *next)
   return dest;
 }
 
+s_list * list_new_uw_reduce (uw src, s_list *next)
+{
+  s_list *dest;
+  dest = list_new(next);
+  if (! dest)
+    return NULL;
+  if (! tag_init_uw_reduce(&dest->tag, src)) {
+    free(dest);
+    return NULL;
+  }
+  return dest;
+}
+
 s_array * list_to_array (s_list *list, const s_sym *array_type,
                          s_array *dest)
 {

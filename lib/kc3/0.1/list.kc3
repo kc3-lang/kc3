@@ -16,17 +16,7 @@ defmodule List do
 
   def cast = cfn List "plist_init_cast" (Result, Sym, Tag)
 
-  def count = fn {
-    (n) { count(n, []) }
-    (0, acc) { acc }
-    (n, acc) {
-      if n > 0 do
-        count(n - 1, [n | acc])
-      else
-        []
-      end
-    }
-  }
+  def count = cfn List "plist_init_count" (Result, Tag)
 
   def count_items = fn {
     (list) { count_items(list, %{}) }
