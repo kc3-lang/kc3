@@ -28,9 +28,8 @@ All binaries can be compiled for four targets :
  - __main__ : speed optimizations from GCC/Clang -O2 and
    debug code like `assert` is disabled.
  - __debug__ : no optimization and debug code like `assert` is enabled
- - __cov__ : code coverage instrumentation (breaks `dlsym` and thus
-   all `Cfn` at the moment)
- - __asan__ : memory safety instrumentation with ASAN, an absolutely
+ - __cov__ : code coverage instrumentation
+ - __asan__ : memory safety instrumentation with ASan, an absolutely
    awesome tool to detect all memory leaks, double free, segmentation
    faults, invalid read, invalid write, general memory corruption
    errors, etc., just run the __asan__ target for a full report at
