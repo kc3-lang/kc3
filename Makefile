@@ -1500,7 +1500,7 @@ uninstall:
 	test_kc3s \
 	test_kc3s_asan \
 	test_kc3s_cov \
-	test_kc3s_debug
+	test_kc3s_debug \
 	test_libkc3 \
 	test_libkc3_asan \
 	test_libkc3_cov \
