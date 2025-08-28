@@ -21,29 +21,34 @@
 #include <libkc3/kc3.h>
 #include "tls.h"
 
-const s_str * kc3_tls_get_ca_cert_path (void)
+s_str * kc3_tls_get_ca_cert_path (s_str *dest)
 {
-  static const s_str ca_cert_paths[] = {
-    STR_2("/etc/certs/ca-certificates.crt"),
-    STR_2("/etc/pki/tls/certs/ca-bundle.crt"),
-    STR_2("/etc/ssl/cert.pem"),
-    STR_2("/etc/ssl/certs/ca-certificates.crt"),
-    STR_2("/usr/local/share/certs/ca-root-nss.crt"),
-    STR_2("/usr/ssl/certs/ca-bundle.crt"),
-    NULL
+  uw i;
+  static const s_str paths[] = {
+    STR("/etc/certs/ca-certificates.crt"),
+    STR("/etc/pki/tls/certs/ca-bundle.crt"),
+    STR("/etc/ssl/cert.pem"),
+    STR("/etc/ssl/certs/ca-certificates.crt"),
+    STR("/usr/local/share/certs/ca-root-nss.crt"),
+    STR("/usr/ssl/certs/ca-bundle.crt"),
   };
-  const char *cert_file = getenv("SSL_CERT_FILE");
-  if (cert_file && access(cert_file, R_OK) == 0) {
-    return cert_file;
-  }
-  for (int i = 0; ca_cert_paths[i]; i++) {
-    if (access(ca_cert_paths[i], R_OK) == 0) {
-      return ca_cert_paths[i];
+  const char *ssl_cert_file = getenv("SSL_CERT_FILE");
+  if (ssl_cert_file && access(ssl_cert_file, R_OK) == 0)
+    return str_init_1_alloc(dest, ssl_cert_file);
+  i = 0;
+  while (i < sizeof(paths) / sizeof(*paths)) {
+    if (access(paths[i].ptr.pchar, R_OK) == 0) {
+      *dest = paths[i];
+      return dest;
     }
+    i++;
   }
 #if defined(WIN32) || defined(WIN64)
   err_puts("kc3_tls_get_ca_cert_path: not implemented");
   assert(! "kc3_tls_get_ca_cert_path: not implemented");
+#else
+  err_puts("kc3_tls_get_ca_cert_path: not found");
+  assert(! "kc3_tls_get_ca_cert_path: not found");
 #endif
   return NULL;
 }
