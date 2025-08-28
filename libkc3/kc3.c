@@ -1067,20 +1067,32 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
     mib[mib_len] = CTL_DDB;
     mib_len++;
     l = list_next(l);
-    
   }
   else if (l->tag.data.psym == sym_1("debug")) {
     mib[mib_len] = CTL_DEBUG;
     mib_len++;
     l = list_next(l);
-    
   }
+#ifdef CTL_FS
   else if (l->tag.data.psym == sym_1("fs")) {
     mib[mib_len] = CTL_FS;
     mib_len++;
-    l = list_next(l);
-    
+    if ((l = list_next(l))) {
+      if (l->tag.data.psym == sym_1("posix")) {
+        mib[mib_len] = FS_POSIX;
+        mib_len++;
+        if ((l = list_next(l))) {
+          if (l->tag.data.psym == sym_1("setuid")) {
+            mib[mib_len] = FS_POSIX;
+            mib_len++;
+            if (! (l = list_next(l)))
+              tmp.type = TAG_S32;
+          }
+        }
+      }
+    }
   }
+#endif
   else if (l->tag.data.psym == sym_1("hw")) {
     mib[mib_len] = CTL_HW;
     mib_len++;
@@ -1088,8 +1100,7 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
       if (l->tag.data.psym == sym_1("ncpu")) {
         mib[mib_len] = HW_NCPU;
         mib_len++;
-        l = list_next(l);
-        if (! l)
+        if (! (l = list_next(l)))
           tmp.type = TAG_S32;
       }
       else if (l->tag.data.psym == sym_1("ncpufound")) {
