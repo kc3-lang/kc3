@@ -35,7 +35,8 @@
 #define PROTOTYPE_STR_INIT_STRUCT(type)                         \
   s_str * str_init_ ## type (s_str *str, const s_ ## type *x)
 
-#define STR_1(bytes) (const s_str) {{0}, sizeof(bytes) - 1, {bytes}}
+#define STR(bytes) {{0}, sizeof(bytes) - 1, {bytes}}
+#define STR_CONST(bytes) ((const s_str) STR(bytes))
 
 /* Stack allocation compatible functions */
 void    str_clean (s_str *str);

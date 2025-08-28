@@ -19,57 +19,57 @@
 #include "../libkc3/tag.h"
 #include "test.h"
 
-#define MARSHALL_TEST(type, test, expected)                           \
-  do {                                                                \
-    s_marshall m = {0};                                               \
-    const s_str expected_str = STR_1(expected);                       \
-    s_str test_str = {0};                                             \
-    test_context("marshall_" # type "(&m, " # test ") -> "            \
-                 # expected);                                         \
-    TEST_ASSERT(marshall_init(&m));                                   \
-    TEST_ASSERT(marshall_ ## type (&m, false, (type) (test)));        \
-    TEST_ASSERT(marshall_to_str(&m, &test_str));                      \
-    TEST_STR_HEX_EQ(test_str, expected_str);                          \
-    marshall_clean(&m);                                               \
-    str_clean(&test_str);                                             \
-    test_context(NULL);                                               \
+#define MARSHALL_TEST(type, test, expected)                     \
+  do {                                                          \
+    s_marshall m = {0};                                         \
+    const s_str expected_str = STR(expected);                   \
+    s_str test_str = {0};                                       \
+    test_context("marshall_" # type "(&m, " # test ") -> "      \
+                 # expected);                                   \
+    TEST_ASSERT(marshall_init(&m));                             \
+    TEST_ASSERT(marshall_ ## type (&m, false, (type) (test)));  \
+    TEST_ASSERT(marshall_to_str(&m, &test_str));                \
+    TEST_STR_HEX_EQ(test_str, expected_str);                    \
+    marshall_clean(&m);                                         \
+    str_clean(&test_str);                                       \
+    test_context(NULL);                                         \
   } while (0)
 
-#define MARSHALL_TEST_STR(test, expected)                             \
-  do {                                                                \
-    s_marshall m = {0};                                               \
-    s_str str_expected = STR_1(expected);                             \
-    s_str str_test = {0};                                             \
-    s_str str_result = {0};                                           \
-    test_context("marshall_str(&m, " # test ") -> " # expected);      \
-    TEST_EQ(marshall_init(&m), &m);                                   \
-    TEST_EQ(str_init(&str_test, NULL, sizeof(test) - 1, (test)),      \
-            &str_test);                                               \
-    TEST_EQ(marshall_str(&m, false, &str_test), &m);                  \
-    TEST_EQ(marshall_to_str(&m, &str_result), &str_result);           \
-    TEST_STR_HEX_EQ(str_result, str_expected);                        \
-    str_clean(&str_result);                                           \
-    str_clean(&str_test);                                             \
-    marshall_clean(&m);                                               \
-    test_context(NULL);                                               \
+#define MARSHALL_TEST_STR(test, expected)                               \
+  do {                                                                  \
+    s_marshall m = {0};                                                 \
+    const s_str str_expected = STR(expected);                           \
+    s_str str_test = {0};                                               \
+    s_str str_result = {0};                                             \
+    test_context("marshall_str(&m, " # test ") -> " # expected);        \
+    TEST_EQ(marshall_init(&m), &m);                                     \
+    TEST_EQ(str_init(&str_test, NULL, sizeof(test) - 1, (test)),        \
+            &str_test);                                                 \
+    TEST_EQ(marshall_str(&m, false, &str_test), &m);                    \
+    TEST_EQ(marshall_to_str(&m, &str_result), &str_result);             \
+    TEST_STR_HEX_EQ(str_result, str_expected);                          \
+    str_clean(&str_result);                                             \
+    str_clean(&str_test);                                               \
+    marshall_clean(&m);                                                 \
+    test_context(NULL);                                                 \
   } while (0)
 
-#define MARSHALL_TEST_TAG(test, expected)                             \
-  do {                                                                \
-    s_marshall m = {0};                                               \
-    const s_str expected_str = STR_1(expected);                       \
-    s_tag tag = {0};                                                  \
-    s_str test_str = {0};                                             \
-    test_context("marshall_tag(" # test ") -> " # expected);          \
-    TEST_ASSERT(tag_init_1(&tag, test));                              \
-    TEST_EQ(marshall_init(&m), &m);                                   \
-    TEST_EQ(marshall_tag(&m, false, &tag), &m);                       \
-    TEST_ASSERT(marshall_to_str(&m, &test_str));                      \
-    TEST_STR_HEX_EQ(test_str, expected_str);                          \
-    marshall_clean(&m);                                               \
-    tag_clean(&tag);                                                  \
-    str_clean(&test_str);                                             \
-    test_context(NULL);                                               \
+#define MARSHALL_TEST_TAG(test, expected)                       \
+  do {                                                          \
+    s_marshall m = {0};                                         \
+    const s_str expected_str = STR(expected);                   \
+    s_tag tag = {0};                                            \
+    s_str test_str = {0};                                       \
+    test_context("marshall_tag(" # test ") -> " # expected);    \
+    TEST_ASSERT(tag_init_1(&tag, test));                        \
+    TEST_EQ(marshall_init(&m), &m);                             \
+    TEST_EQ(marshall_tag(&m, false, &tag), &m);                 \
+    TEST_ASSERT(marshall_to_str(&m, &test_str));                \
+    TEST_STR_HEX_EQ(test_str, expected_str);                    \
+    marshall_clean(&m);                                         \
+    tag_clean(&tag);                                            \
+    str_clean(&test_str);                                       \
+    test_context(NULL);                                         \
   } while (0)
 
 void marshal_test (void);
@@ -164,29 +164,29 @@ TEST_CASE(marshall_plist)
   s_marshall m = {0};
   s_list *list_test;
   s_str str = {0};
-  const s_str expected = STR_1("KC3MARSH"
-                               "\x02\x00\x00\x00\x00\x00\x00\x00"
-                               "\x86\x00\x00\x00\x00\x00\x00\x00"
-                               "\x12\x00\x00\x00\x00\x00\x00\x00"
-                               "\x5f\x4b\x43\x33\x4c\x49\x53\x54"
-                               "\x5f\x5f\x4b\x43\x33\x54\x41\x47"
-                               "\x5f\x5f\x4b\x43\x33\x55\x38\x5f"
-                               "\x11\x5f\x4b\x43\x33\x55\x38\x5f"
-                               "\x00\x5f\x4b\x43\x33\x54\x41\x47"
-                               "\x5f\x5f\x4b\x43\x33\x55\x38\x5f"
-                               "\x16\x5f\x4b\x43\x33\x50\x4c\x49"
-                               "\x53\x54\x5f\x63\x00\x00\x00\x00"
-                               "\x00\x00\x00\x5f\x4b\x43\x33\x4c"
-                               "\x49\x53\x54\x5f\x5f\x4b\x43\x33"
-                               "\x54\x41\x47\x5f\x5f\x4b\x43\x33"
-                               "\x55\x38\x5f\x11\x5f\x4b\x43\x33"
-                               "\x55\x38\x5f\x01\x5f\x4b\x43\x33"
-                               "\x54\x41\x47\x5f\x5f\x4b\x43\x33"
-                               "\x55\x38\x5f\x16\x5f\x4b\x43\x33"
-                               "\x50\x4c\x49\x53\x54\x5f\x00\x00"
-                               "\x00\x00\x00\x00\x00\x00\x5f\x4b"
-                               "\x43\x33\x50\x4c\x49\x53\x54\x5f"
-                               "\x20\x00\x00\x00\x00\x00\x00\x00");
+  const s_str expected = STR("KC3MARSH"
+                             "\x02\x00\x00\x00\x00\x00\x00\x00"
+                             "\x86\x00\x00\x00\x00\x00\x00\x00"
+                             "\x12\x00\x00\x00\x00\x00\x00\x00"
+                             "\x5f\x4b\x43\x33\x4c\x49\x53\x54"
+                             "\x5f\x5f\x4b\x43\x33\x54\x41\x47"
+                             "\x5f\x5f\x4b\x43\x33\x55\x38\x5f"
+                             "\x11\x5f\x4b\x43\x33\x55\x38\x5f"
+                             "\x00\x5f\x4b\x43\x33\x54\x41\x47"
+                             "\x5f\x5f\x4b\x43\x33\x55\x38\x5f"
+                             "\x16\x5f\x4b\x43\x33\x50\x4c\x49"
+                             "\x53\x54\x5f\x63\x00\x00\x00\x00"
+                             "\x00\x00\x00\x5f\x4b\x43\x33\x4c"
+                             "\x49\x53\x54\x5f\x5f\x4b\x43\x33"
+                             "\x54\x41\x47\x5f\x5f\x4b\x43\x33"
+                             "\x55\x38\x5f\x11\x5f\x4b\x43\x33"
+                             "\x55\x38\x5f\x01\x5f\x4b\x43\x33"
+                             "\x54\x41\x47\x5f\x5f\x4b\x43\x33"
+                             "\x55\x38\x5f\x16\x5f\x4b\x43\x33"
+                             "\x50\x4c\x49\x53\x54\x5f\x00\x00"
+                             "\x00\x00\x00\x00\x00\x00\x5f\x4b"
+                             "\x43\x33\x50\x4c\x49\x53\x54\x5f"
+                             "\x20\x00\x00\x00\x00\x00\x00\x00");
 
   TEST_ASSERT(marshall_init(&m));
   list_test = list_new_1("[0, 1]");
@@ -205,48 +205,48 @@ TEST_CASE(marshall_plist_twice)
   s_marshall m = {0};
   s_list *list_test;
   s_str str = {0};
-  const s_str expected = STR_1("KC3MARSH"
-                               "\x04\x00\x00\x00\x00\x00\x00\x00"
-                               "\x0c\x01\x00\x00\x00\x00\x00\x00"
-                               "\x24\x00\x00\x00\x00\x00\x00\x00"
-                               "\x5f\x4b\x43\x33\x4c\x49\x53\x54"
-                               "\x5f\x5f\x4b\x43\x33\x54\x41\x47"
-                               "\x5f\x5f\x4b\x43\x33\x55\x38\x5f"
-                               "\x11\x5f\x4b\x43\x33\x55\x38\x5f"
-                               "\x00\x5f\x4b\x43\x33\x54\x41\x47"
-                               "\x5f\x5f\x4b\x43\x33\x55\x38\x5f"
-                               "\x16\x5f\x4b\x43\x33\x50\x4c\x49"
-                               "\x53\x54\x5f\x63\x00\x00\x00\x00"
-                               "\x00\x00\x00\x5f\x4b\x43\x33\x4c"
-                               "\x49\x53\x54\x5f\x5f\x4b\x43\x33"
-                               "\x54\x41\x47\x5f\x5f\x4b\x43\x33"
-                               "\x55\x38\x5f\x11\x5f\x4b\x43\x33"
-                               "\x55\x38\x5f\x01\x5f\x4b\x43\x33"
-                               "\x54\x41\x47\x5f\x5f\x4b\x43\x33"
-                               "\x55\x38\x5f\x16\x5f\x4b\x43\x33"
-                               "\x50\x4c\x49\x53\x54\x5f\x00\x00"
-                               "\x00\x00\x00\x00\x00\x00\x5f\x4b"
-                               "\x43\x33\x4c\x49\x53\x54\x5f\x5f"
-                               "\x4b\x43\x33\x54\x41\x47\x5f\x5f"
-                               "\x4b\x43\x33\x55\x38\x5f\x11\x5f"
-                               "\x4b\x43\x33\x55\x38\x5f\x00\x5f"
-                               "\x4b\x43\x33\x54\x41\x47\x5f\x5f"
-                               "\x4b\x43\x33\x55\x38\x5f\x16\x5f"
-                               "\x4b\x43\x33\x50\x4c\x49\x53\x54"
-                               "\x5f\xe9\x00\x00\x00\x00\x00\x00"
-                               "\x00\x5f\x4b\x43\x33\x4c\x49\x53"
-                               "\x54\x5f\x5f\x4b\x43\x33\x54\x41"
-                               "\x47\x5f\x5f\x4b\x43\x33\x55\x38"
-                               "\x5f\x11\x5f\x4b\x43\x33\x55\x38"
-                               "\x5f\x01\x5f\x4b\x43\x33\x54\x41"
-                               "\x47\x5f\x5f\x4b\x43\x33\x55\x38"
-                               "\x5f\x16\x5f\x4b\x43\x33\x50\x4c"
-                               "\x49\x53\x54\x5f\x00\x00\x00\x00"
-                               "\x00\x00\x00\x00\x5f\x4b\x43\x33"
-                               "\x50\x4c\x49\x53\x54\x5f\x20\x00"
-                               "\x00\x00\x00\x00\x00\x00\x5f\x4b"
-                               "\x43\x33\x50\x4c\x49\x53\x54\x5f"
-                               "\xa6\x00\x00\x00\x00\x00\x00\x00");
+  const s_str expected = STR("KC3MARSH"
+                             "\x04\x00\x00\x00\x00\x00\x00\x00"
+                             "\x0c\x01\x00\x00\x00\x00\x00\x00"
+                             "\x24\x00\x00\x00\x00\x00\x00\x00"
+                             "\x5f\x4b\x43\x33\x4c\x49\x53\x54"
+                             "\x5f\x5f\x4b\x43\x33\x54\x41\x47"
+                             "\x5f\x5f\x4b\x43\x33\x55\x38\x5f"
+                             "\x11\x5f\x4b\x43\x33\x55\x38\x5f"
+                             "\x00\x5f\x4b\x43\x33\x54\x41\x47"
+                             "\x5f\x5f\x4b\x43\x33\x55\x38\x5f"
+                             "\x16\x5f\x4b\x43\x33\x50\x4c\x49"
+                             "\x53\x54\x5f\x63\x00\x00\x00\x00"
+                             "\x00\x00\x00\x5f\x4b\x43\x33\x4c"
+                             "\x49\x53\x54\x5f\x5f\x4b\x43\x33"
+                             "\x54\x41\x47\x5f\x5f\x4b\x43\x33"
+                             "\x55\x38\x5f\x11\x5f\x4b\x43\x33"
+                             "\x55\x38\x5f\x01\x5f\x4b\x43\x33"
+                             "\x54\x41\x47\x5f\x5f\x4b\x43\x33"
+                             "\x55\x38\x5f\x16\x5f\x4b\x43\x33"
+                             "\x50\x4c\x49\x53\x54\x5f\x00\x00"
+                             "\x00\x00\x00\x00\x00\x00\x5f\x4b"
+                             "\x43\x33\x4c\x49\x53\x54\x5f\x5f"
+                             "\x4b\x43\x33\x54\x41\x47\x5f\x5f"
+                             "\x4b\x43\x33\x55\x38\x5f\x11\x5f"
+                             "\x4b\x43\x33\x55\x38\x5f\x00\x5f"
+                             "\x4b\x43\x33\x54\x41\x47\x5f\x5f"
+                             "\x4b\x43\x33\x55\x38\x5f\x16\x5f"
+                             "\x4b\x43\x33\x50\x4c\x49\x53\x54"
+                             "\x5f\xe9\x00\x00\x00\x00\x00\x00"
+                             "\x00\x5f\x4b\x43\x33\x4c\x49\x53"
+                             "\x54\x5f\x5f\x4b\x43\x33\x54\x41"
+                             "\x47\x5f\x5f\x4b\x43\x33\x55\x38"
+                             "\x5f\x11\x5f\x4b\x43\x33\x55\x38"
+                             "\x5f\x01\x5f\x4b\x43\x33\x54\x41"
+                             "\x47\x5f\x5f\x4b\x43\x33\x55\x38"
+                             "\x5f\x16\x5f\x4b\x43\x33\x50\x4c"
+                             "\x49\x53\x54\x5f\x00\x00\x00\x00"
+                             "\x00\x00\x00\x00\x5f\x4b\x43\x33"
+                             "\x50\x4c\x49\x53\x54\x5f\x20\x00"
+                             "\x00\x00\x00\x00\x00\x00\x5f\x4b"
+                             "\x43\x33\x50\x4c\x49\x53\x54\x5f"
+                             "\xa6\x00\x00\x00\x00\x00\x00\x00");
 
   TEST_ASSERT(marshall_init(&m));
   list_test = list_new_1("[0, 1]");
@@ -266,7 +266,7 @@ TEST_CASE(marshall_fact)
   s_marshall m = {0};
   s_fact fact = {0};
   s_str str = {0};
-  const s_str expected = STR_1("");
+  const s_str expected = STR("");
 
   TEST_ASSERT(marshall_init(&m));
   fact_init_1(&fact, "{1, 2, 3}");
@@ -1196,7 +1196,7 @@ TEST_CASE(marshall_to_file)
 {
   u32 value = 42;
   s_marshall m = {0};
-  const s_str path = STR_1(".marshall_test_to_file.1.kc3m");
+  const s_str path = STR(".marshall_test_to_file.1.kc3m");
   test_context("marshall_to_file(\".marshall_test_to_file.1.kc3m\")");
   TEST_ASSERT(marshall_init(&m));
   TEST_ASSERT(marshall_u32(&m, false, value));
@@ -1221,12 +1221,12 @@ TEST_CASE(marshall_to_str)
   TEST_ASSERT(marshall_u32(&m, false, value));
   TEST_EQ(marshall_to_str(&m, &str), &str);
   marshall_clean(&m);
-  expected = STR_1("KC3MARSH"
-                   "\x00\x00\x00\x00\x00\x00\x00\x00"
-                   "\x00\x00\x00\x00\x00\x00\x00\x00"
-                   "\x0c\x00\x00\x00\x00\x00\x00\x00"
-                   "\x5f\x4b\x43\x33\x55\x33\x32\x5f"
-                   "\x32\x79\x06\x00");
+  expected = STR_CONST("KC3MARSH"
+                       "\x00\x00\x00\x00\x00\x00\x00\x00"
+                       "\x00\x00\x00\x00\x00\x00\x00\x00"
+                       "\x0c\x00\x00\x00\x00\x00\x00\x00"
+                       "\x5f\x4b\x43\x33\x55\x33\x32\x5f"
+                       "\x32\x79\x06\x00");
   TEST_STR_HEX_EQ(str, expected);
   str_clean(&str);
 }
@@ -1306,4 +1306,3 @@ TEST_CASE(marshall_uw)
                 "\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_uw)
-

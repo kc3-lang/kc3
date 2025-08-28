@@ -51,7 +51,7 @@ TEST_CASE_PROTOTYPE(struct_test_time);
 
 void struct_test (void)
 {
-  const s_str path = STR_1("struct_test.kc3");
+  const s_str path = STR("struct_test.kc3");
   env_load(env_global(), &path);
   TEST_CASE_RUN(struct_test_fact_w);
   TEST_CASE_RUN(struct_test_http_request);

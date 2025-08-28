@@ -131,7 +131,7 @@ TEST_CASE(facts_dump_file)
     "-0x10000000000000000",
     NULL
   };
-  const s_str path = STR_1("facts_test_dump_file.facts");
+  const s_str path = STR("facts_test_dump_file.facts");
   s_fact fact[24];
   s_facts facts;
   facts_init(&facts);
@@ -311,7 +311,7 @@ TEST_CASE(facts_log_add)
   s_fact fact[24];
   s_facts facts;
   FILE *fp;
-  s_str path = STR_1("facts_test_log_add.facts");
+  const s_str path = STR("facts_test_log_add.facts");
   fp = fopen("facts_test_log_add.facts", "wb");
   facts_init(&facts);
   facts.log = log_new();
@@ -364,7 +364,7 @@ TEST_CASE(facts_log_remove)
   s_fact fact[24];
   s_facts facts;
   FILE *fp;
-  s_str path = STR_1("facts_test_log_remove.facts");
+  const s_str path = STR("facts_test_log_remove.facts");
   fp = fopen("facts_test_log_remove.facts", "wb");
   facts_init(&facts);
   facts.log = log_new();
@@ -649,7 +649,7 @@ TEST_CASE(facts_save)
     "-0x10000000000000000",
     NULL
   };
-  s_str path = STR_1("facts_test_save.facts");
+  const s_str path = STR("facts_test_save.facts");
   s_fact fact[24];
   s_facts facts;
   facts_init(&facts);

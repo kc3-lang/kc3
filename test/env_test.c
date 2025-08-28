@@ -48,7 +48,7 @@ void env_test (void)
 TEST_CASE(env_dump)
 {
   s_env env;
-  const s_str path = STR_1("env_test_dump.1.dump");
+  const s_str path = STR("env_test_dump.1.dump");
   env_init(&env, 0, NULL);
   TEST_EQ(env_dump(&env, &path), ENV_TEST_DUMP_SIZE);
   env_clean(&env);
@@ -59,7 +59,7 @@ TEST_CASE_END(env_dump)
 TEST_CASE(env_dump_restore)
 {
   s_env env;
-  const s_str path = STR_1("kc3.dump");
+  const s_str path = STR("kc3.dump");
   env_init(&env, 0, NULL);
   TEST_EQ(env_dump(&env, &path), ENV_TEST_DUMP_SIZE);
   env_clean(&env);

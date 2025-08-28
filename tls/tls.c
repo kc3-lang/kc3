@@ -21,15 +21,15 @@
 #include <libkc3/kc3.h>
 #include "tls.h"
 
-const char * kc3_tls_get_ca_cert_path (void)
+const s_str * kc3_tls_get_ca_cert_path (void)
 {
-  static const char* ca_cert_paths[] = {
-    "/etc/certs/ca-certificates.crt",
-    "/etc/pki/tls/certs/ca-bundle.crt",
-    "/etc/ssl/cert.pem",
-    "/etc/ssl/certs/ca-certificates.crt",
-    "/usr/local/share/certs/ca-root-nss.crt",
-    "/usr/ssl/certs/ca-bundle.crt",
+  static const s_str ca_cert_paths[] = {
+    STR_2("/etc/certs/ca-certificates.crt"),
+    STR_2("/etc/pki/tls/certs/ca-bundle.crt"),
+    STR_2("/etc/ssl/cert.pem"),
+    STR_2("/etc/ssl/certs/ca-certificates.crt"),
+    STR_2("/usr/local/share/certs/ca-root-nss.crt"),
+    STR_2("/usr/ssl/certs/ca-bundle.crt"),
     NULL
   };
   const char *cert_file = getenv("SSL_CERT_FILE");

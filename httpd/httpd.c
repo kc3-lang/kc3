@@ -24,7 +24,7 @@ int main (int argc, char **argv)
   bool    daemonize = true;
   s_ident daemonize_ident;
   s_tag   daemonize_value;
-  const s_str dump_path = STR_1("kc3.dump");
+  const s_str dump_path = STR("kc3.dump");
   s32 e;
   s_env *env;
   char  log_buf[64] = {0};

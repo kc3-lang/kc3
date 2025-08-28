@@ -707,7 +707,7 @@ sw env_dump_restore (s_env *env, const s_str *path)
 
 bool env_dump_restore_path_resolve (s_env *env)
 {
-  const s_str filename = STR_1("kc3.dump");
+  const s_str filename = STR("kc3.dump");
   s_str path = {0};
   if (file_access(&filename, &g_sym_r)) {
     env->restore_path = filename;
