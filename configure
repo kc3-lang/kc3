@@ -63,6 +63,7 @@ config_subdirs \
     markdown \
     smtp \
     socket \
+    tls \
     http \
     httpd \
     test \

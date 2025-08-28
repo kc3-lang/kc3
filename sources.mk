@@ -48,6 +48,9 @@ KC3_CONFIGURES = \
 	"test/configure" \
 	"test/sources.sh" \
 	"test/update_sources" \
+	"tls/configure" \
+	"tls/sources.sh" \
+	"tls/update_sources" \
 	"ucd2c/configure" \
 	"window/cairo/configure" \
 	"window/cairo/demo/configure" \
@@ -122,6 +125,8 @@ KC3_MAKEFILES = \
 	"test/httpd/Makefile" \
 	"test/httpd/assets/Makefile" \
 	"test/sources.mk" \
+	"tls/Makefile" \
+	"tls/sources.mk" \
 	"ucd2c/Makefile" \
 	"window/Makefile" \
 	"window/cairo/Makefile" \
@@ -920,6 +925,8 @@ KC3_C_SOURCES = \
 	"test/test.h" \
 	"test/tuple_test.c" \
 	"test/types_test.c" \
+	"tls/tls.c" \
+	"tls/tls.h" \
 	"ucd2c/ucd.c" \
 	"ucd2c/ucd.h" \
 	"ucd2c/ucd2c.c" \
