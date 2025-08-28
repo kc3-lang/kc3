@@ -4,4 +4,5 @@ HEADERS = \
 
 SOURCES = \
 	"tls.c" \
+	"tls_config.c" \
 

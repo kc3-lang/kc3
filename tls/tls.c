@@ -21,7 +21,7 @@
 #include <libkc3/kc3.h>
 #include "tls.h"
 
-s_str * kc3_tls_get_ca_cert_path (s_str *dest)
+s_str * kc3_tls_ca_cert_path (s_str *dest)
 {
   uw i;
   static const s_str paths[] = {
@@ -35,6 +35,9 @@ s_str * kc3_tls_get_ca_cert_path (s_str *dest)
   const char *ssl_cert_file = getenv("SSL_CERT_FILE");
   if (ssl_cert_file && access(ssl_cert_file, R_OK) == 0)
     return str_init_1_alloc(dest, ssl_cert_file);
+  const char *default_path = tls_default_ca_cert_file();
+  if (default_path && access(default_path, R_OK) == 0)
+    return str_init_1_alloc(dest, default_path);
   i = 0;
   while (i < sizeof(paths) / sizeof(*paths)) {
     if (access(paths[i].ptr.pchar, R_OK) == 0) {
@@ -53,13 +56,12 @@ s_str * kc3_tls_get_ca_cert_path (s_str *dest)
   return NULL;
 }
 
-s_pointer * kc3_tls_config_new (s_pointer *dest)
+bool kc3_tls_init (void)
 {
-  s_pointer tmp = {0};
-  tmp.pointer_type = sym_1("KC3.Config*");
-  tmp.target_type = sym_1("KC3.Config");
-  if (! (tmp.ptr.p = tls_config_new()))
-    return NULL;
-  *dest = tmp;
-  return dest;
+  if (tls_init()) {
+    err_puts("kc3_tls_init: tls_init");
+    assert(! "kc3_tls_init: tls_init");
+    return false;
+  }
+  return true;
 }

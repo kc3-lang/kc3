@@ -16,8 +16,10 @@ defmodule TLS do
 
   dlopen("tls.so")
 
-  def ca_cert_path = cfn Str "kc3_tls_get_ca_cert_path" (Result)
+  def ca_cert_path = cfn Str "kc3_tls_ca_cert_path" (Result)
 
   def client = cfn TLS* "tls_client" ()
+
+  def init = cfn Bool "kc3_tls_init" ()
 
 end

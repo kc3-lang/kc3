@@ -15,7 +15,13 @@
 
 #include <libkc3/types.h>
 
+/* Library initialization. */
+bool kc3_tls_init (void);
+
 /* Heap-allocation functions, call *_delete after use. */
 s_pointer * kc3_tls_config_new (s_pointer *dest);
+
+/* Operating system helpers. */
+s_str * kc3_tls_ca_cert_path (s_str *dest);
 
 #endif /* KC3_TLS_H */
