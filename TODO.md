@@ -42,9 +42,9 @@
        - [lyzer] `tls_init() != 0`
        - [lyzer] `struct tls_config *config = tls_config_new();`
        - [lyzer] `tls_configure(ctx, config);`
-       - [ ] `tls_write(ctx, data, size)`
-       - [ ] `tls_read(ctx, data, size);`
-       - [ ] `tls_close(ctx);`
+       - [perle] `tls_write(ctx, data, size)`
+       - [perle] `tls_read(ctx, data, size);`
+       - [perle] `tls_close(ctx);`
        - [ ] `tls_free`
        - [ ] `tls_config_free`
      - [ ] Basic TLS Client :
