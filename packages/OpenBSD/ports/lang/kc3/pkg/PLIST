@@ -1,0 +1,581 @@
+@bin bin/ikc3
+@bin bin/kc3_httpd
+@bin bin/kc3_window_cairo_xcb_demo
+@bin bin/kc3_window_sdl2_demo
+@bin bin/kc3s
+include/libc3/
+include/libc3/window/
+include/libc3/window/cairo/
+include/libc3/window/cairo/xcb/
+include/libkc3/
+include/libkc3/abs.h
+include/libkc3/alist.h
+include/libkc3/alloc.h
+include/libkc3/arg.h
+include/libkc3/array.h
+include/libkc3/assert.h
+include/libkc3/binding.h
+include/libkc3/block.h
+include/libkc3/bool.h
+include/libkc3/buf.h
+include/libkc3/buf_fd.h
+include/libkc3/buf_file.h
+include/libkc3/buf_getc.h
+include/libkc3/buf_getchar.h
+include/libkc3/buf_inspect.h
+include/libkc3/buf_inspect_s16.h
+include/libkc3/buf_inspect_s16_binary.h
+include/libkc3/buf_inspect_s16_decimal.h
+include/libkc3/buf_inspect_s16_hexadecimal.h
+include/libkc3/buf_inspect_s16_octal.h
+include/libkc3/buf_inspect_s32.h
+include/libkc3/buf_inspect_s32_binary.h
+include/libkc3/buf_inspect_s32_decimal.h
+include/libkc3/buf_inspect_s32_hexadecimal.h
+include/libkc3/buf_inspect_s32_octal.h
+include/libkc3/buf_inspect_s64.h
+include/libkc3/buf_inspect_s64_binary.h
+include/libkc3/buf_inspect_s64_decimal.h
+include/libkc3/buf_inspect_s64_hexadecimal.h
+include/libkc3/buf_inspect_s64_octal.h
+include/libkc3/buf_inspect_s8.h
+include/libkc3/buf_inspect_s8_binary.h
+include/libkc3/buf_inspect_s8_decimal.h
+include/libkc3/buf_inspect_s8_hexadecimal.h
+include/libkc3/buf_inspect_s8_octal.h
+include/libkc3/buf_inspect_sw.h
+include/libkc3/buf_inspect_sw_binary.h
+include/libkc3/buf_inspect_sw_decimal.h
+include/libkc3/buf_inspect_sw_hexadecimal.h
+include/libkc3/buf_inspect_sw_octal.h
+include/libkc3/buf_inspect_u16.h
+include/libkc3/buf_inspect_u16_binary.h
+include/libkc3/buf_inspect_u16_decimal.h
+include/libkc3/buf_inspect_u16_hexadecimal.h
+include/libkc3/buf_inspect_u16_octal.h
+include/libkc3/buf_inspect_u32.h
+include/libkc3/buf_inspect_u32_binary.h
+include/libkc3/buf_inspect_u32_decimal.h
+include/libkc3/buf_inspect_u32_hexadecimal.h
+include/libkc3/buf_inspect_u32_octal.h
+include/libkc3/buf_inspect_u64.h
+include/libkc3/buf_inspect_u64_binary.h
+include/libkc3/buf_inspect_u64_decimal.h
+include/libkc3/buf_inspect_u64_hexadecimal.h
+include/libkc3/buf_inspect_u64_octal.h
+include/libkc3/buf_inspect_u8.h
+include/libkc3/buf_inspect_u8_binary.h
+include/libkc3/buf_inspect_u8_decimal.h
+include/libkc3/buf_inspect_u8_hexadecimal.h
+include/libkc3/buf_inspect_u8_octal.h
+include/libkc3/buf_inspect_uw.h
+include/libkc3/buf_inspect_uw_binary.h
+include/libkc3/buf_inspect_uw_decimal.h
+include/libkc3/buf_inspect_uw_hexadecimal.h
+include/libkc3/buf_inspect_uw_octal.h
+include/libkc3/buf_parse.h
+include/libkc3/buf_parse_s16.h
+include/libkc3/buf_parse_s32.h
+include/libkc3/buf_parse_s64.h
+include/libkc3/buf_parse_s8.h
+include/libkc3/buf_parse_sw.h
+include/libkc3/buf_parse_u16.h
+include/libkc3/buf_parse_u32.h
+include/libkc3/buf_parse_u64.h
+include/libkc3/buf_parse_u8.h
+include/libkc3/buf_parse_uw.h
+include/libkc3/buf_rw.h
+include/libkc3/buf_save.h
+include/libkc3/call.h
+include/libkc3/callable.h
+include/libkc3/cast.h
+include/libkc3/ceiling.h
+include/libkc3/cfn.h
+include/libkc3/character.h
+include/libkc3/compare.h
+include/libkc3/complex.h
+include/libkc3/config.h
+include/libkc3/cow.h
+include/libkc3/crypt.h
+include/libkc3/data.h
+include/libkc3/do_block.h
+include/libkc3/ekc3/
+include/libkc3/ekc3/ekc3.h
+include/libkc3/ekc3/embed.h
+include/libkc3/ekc3/html.h
+include/libkc3/ekc3/types.h
+include/libkc3/endian.h
+include/libkc3/env.h
+include/libkc3/env_eval.h
+include/libkc3/env_eval_equal.h
+include/libkc3/env_eval_quote.h
+include/libkc3/env_fork.h
+include/libkc3/env_frame_capture.h
+include/libkc3/error.h
+include/libkc3/error_handler.h
+include/libkc3/eval.h
+include/libkc3/event/
+include/libkc3/event/event.h
+include/libkc3/explicit_bzero.h
+include/libkc3/f128.h
+include/libkc3/f32.h
+include/libkc3/f64.h
+include/libkc3/fact.h
+include/libkc3/fact_action.h
+include/libkc3/fact_list.h
+include/libkc3/facts.h
+include/libkc3/facts_cursor.h
+include/libkc3/facts_spec.h
+include/libkc3/facts_spec_cursor.h
+include/libkc3/facts_transaction.h
+include/libkc3/facts_with.h
+include/libkc3/facts_with_cursor.h
+include/libkc3/fd.h
+include/libkc3/file.h
+include/libkc3/float.h
+include/libkc3/fn.h
+include/libkc3/fn_clause.h
+include/libkc3/frame.h
+include/libkc3/gtk4/
+include/libkc3/gtk4/action_map.h
+include/libkc3/gtk4/application.h
+include/libkc3/gtk4/application_window.h
+include/libkc3/gtk4/box.h
+include/libkc3/gtk4/button.h
+include/libkc3/gtk4/entry.h
+include/libkc3/gtk4/entry_buffer.h
+include/libkc3/gtk4/file.h
+include/libkc3/gtk4/frame.h
+include/libkc3/gtk4/gsk_gl_renderer.h
+include/libkc3/gtk4/gsk_renderer.h
+include/libkc3/gtk4/kc3_glib.h
+include/libkc3/gtk4/kc3_gtk4.h
+include/libkc3/gtk4/label.h
+include/libkc3/gtk4/list_box.h
+include/libkc3/gtk4/menu.h
+include/libkc3/gtk4/menu_item.h
+include/libkc3/gtk4/object.h
+include/libkc3/gtk4/paned.h
+include/libkc3/gtk4/scrolled_window.h
+include/libkc3/gtk4/signal.h
+include/libkc3/gtk4/simple_action.h
+include/libkc3/gtk4/text.h
+include/libkc3/gtk4/text_view.h
+include/libkc3/gtk4/types.h
+include/libkc3/gtk4/widget.h
+include/libkc3/gtk4/window.h
+include/libkc3/hash.h
+include/libkc3/ht.h
+include/libkc3/http/
+include/libkc3/http/http.h
+include/libkc3/http/http_request.h
+include/libkc3/http/http_response.h
+include/libkc3/http/mime_type.h
+include/libkc3/http/types.h
+include/libkc3/http/url.h
+include/libkc3/ident.h
+include/libkc3/inspect.h
+include/libkc3/integer.h
+include/libkc3/io.h
+include/libkc3/json/
+include/libkc3/json/json.h
+include/libkc3/kc3.h
+include/libkc3/kc3_main.h
+include/libkc3/list.h
+include/libkc3/list_init.h
+include/libkc3/log.h
+include/libkc3/map.h
+include/libkc3/markdown/
+include/libkc3/markdown/entity.h
+include/libkc3/markdown/markdown.h
+include/libkc3/markdown/md4c-html.h
+include/libkc3/markdown/md4c.h
+include/libkc3/marshall.h
+include/libkc3/marshall_read.h
+include/libkc3/module.h
+include/libkc3/mutex.h
+include/libkc3/op.h
+include/libkc3/ops.h
+include/libkc3/pbuf.h
+include/libkc3/pcallable.h
+include/libkc3/pcomplex.h
+include/libkc3/pcow.h
+include/libkc3/pfacts.h
+include/libkc3/plist.h
+include/libkc3/pointer.h
+include/libkc3/pretty.h
+include/libkc3/pstruct.h
+include/libkc3/pstruct_type.h
+include/libkc3/psym.h
+include/libkc3/ptag.h
+include/libkc3/ptr.h
+include/libkc3/ptr_free.h
+include/libkc3/pvar.h
+include/libkc3/queue.h
+include/libkc3/quote.h
+include/libkc3/ratio.h
+include/libkc3/rwlock.h
+include/libkc3/s16.h
+include/libkc3/s32.h
+include/libkc3/s64.h
+include/libkc3/s8.h
+include/libkc3/sequence.h
+include/libkc3/set__fact.h
+include/libkc3/set__tag.h
+include/libkc3/set__uw.h
+include/libkc3/set_cursor__fact.h
+include/libkc3/set_cursor__tag.h
+include/libkc3/set_cursor__uw.h
+include/libkc3/set_item__fact.h
+include/libkc3/set_item__tag.h
+include/libkc3/set_item__uw.h
+include/libkc3/sh.h
+include/libkc3/sha1.h
+include/libkc3/sign.h
+include/libkc3/skiplist__fact.h
+include/libkc3/skiplist_node__fact.h
+include/libkc3/smtp/
+include/libkc3/smtp/kc3_smtp.h
+include/libkc3/smtp/smtp.h
+include/libkc3/smtp/types.h
+include/libkc3/socket/
+include/libkc3/socket/socket.h
+include/libkc3/socket/socket_addr.h
+include/libkc3/socket/socket_buf.h
+include/libkc3/socket/types.h
+include/libkc3/special_operator.h
+include/libkc3/str.h
+include/libkc3/struct.h
+include/libkc3/struct_type.h
+include/libkc3/sw.h
+include/libkc3/sym.h
+include/libkc3/tag.h
+include/libkc3/tag_init.h
+include/libkc3/tag_type.h
+include/libkc3/time.h
+include/libkc3/timespec.h
+include/libkc3/to_lisp.h
+include/libkc3/tuple.h
+include/libkc3/types.h
+include/libkc3/u16.h
+include/libkc3/u32.h
+include/libkc3/u64.h
+include/libkc3/u8.h
+include/libkc3/ucd.h
+include/libkc3/unquote.h
+include/libkc3/uw.h
+include/libkc3/var.h
+include/libkc3/void.h
+include/libkc3/wait.h
+include/libkc3/window/
+include/libkc3/window/cairo/
+include/libkc3/window/cairo/cairo_font.h
+include/libkc3/window/cairo/cairo_sprite.h
+include/libkc3/window/cairo/cairo_text.h
+include/libkc3/window/cairo/types.h
+include/libkc3/window/cairo/window_cairo.h
+include/libkc3/window/cairo/xcb
+include/libkc3/window/sdl2/
+include/libkc3/window/sdl2/dmat3.h
+include/libkc3/window/sdl2/dmat4.h
+include/libkc3/window/sdl2/dvec2.h
+include/libkc3/window/sdl2/dvec3.h
+include/libkc3/window/sdl2/gl_box.h
+include/libkc3/window/sdl2/gl_camera.h
+include/libkc3/window/sdl2/gl_cylinder.h
+include/libkc3/window/sdl2/gl_deprecated.h
+include/libkc3/window/sdl2/gl_font.h
+include/libkc3/window/sdl2/gl_lines.h
+include/libkc3/window/sdl2/gl_object.h
+include/libkc3/window/sdl2/gl_ortho.h
+include/libkc3/window/sdl2/gl_sphere.h
+include/libkc3/window/sdl2/gl_sprite.h
+include/libkc3/window/sdl2/gl_square.h
+include/libkc3/window/sdl2/gl_text.h
+include/libkc3/window/sdl2/gl_triangle.h
+include/libkc3/window/sdl2/gl_vertex.h
+include/libkc3/window/sdl2/gl_vtext.h
+include/libkc3/window/sdl2/mat3.h
+include/libkc3/window/sdl2/mat4.h
+include/libkc3/window/sdl2/types.h
+include/libkc3/window/sdl2/vec2.h
+include/libkc3/window/sdl2/vec3.h
+include/libkc3/window/sdl2/window_sdl2.h
+include/libkc3/window/types.h
+include/libkc3/window/window.h
+include/libtommath/
+include/libtommath/tommath.h
+include/libtommath/tommath_class.h
+include/libtommath/tommath_cutoffs.h
+include/libtommath/tommath_private.h
+include/libtommath/tommath_superclass.h
+lib/kc3/
+lib/kc3/0.1/
+lib/kc3/0.1/alist.kc3
+lib/kc3/0.1/array.kc3
+lib/kc3/0.1/bin/
+lib/kc3/0.1/bin/primes.kc3
+lib/kc3/0.1/bool.facts
+lib/kc3/0.1/buf.kc3
+lib/kc3/0.1/buf_rw.kc3
+lib/kc3/0.1/call.kc3
+lib/kc3/0.1/character.kc3
+lib/kc3/0.1/compare.kc3
+lib/kc3/0.1/complex.facts
+lib/kc3/0.1/cow.kc3
+lib/kc3/0.1/crypt.kc3
+lib/kc3/0.1/deserialize.kc3
+lib/kc3/0.1/ekc3.kc3
+@so lib/kc3/0.1/ekc3.so
+lib/kc3/0.1/env.kc3
+lib/kc3/0.1/event.kc3
+@so lib/kc3/0.1/event.so
+lib/kc3/0.1/f128.facts
+lib/kc3/0.1/f32.facts
+lib/kc3/0.1/f64.facts
+lib/kc3/0.1/fact.kc3
+lib/kc3/0.1/fact_w.kc3
+lib/kc3/0.1/facts/
+lib/kc3/0.1/facts.kc3
+lib/kc3/0.1/facts/cursor.kc3
+lib/kc3/0.1/fd.kc3
+lib/kc3/0.1/file/
+lib/kc3/0.1/file.kc3
+lib/kc3/0.1/file/stat.kc3
+lib/kc3/0.1/file_stat.kc3
+lib/kc3/0.1/gl/
+lib/kc3/0.1/gl/box.kc3
+lib/kc3/0.1/gl/dvec2.kc3
+lib/kc3/0.1/gl/dvec3.kc3
+lib/kc3/0.1/gl/marching_cubes.kc3
+lib/kc3/0.1/gl/object.kc3
+lib/kc3/0.1/gl/sphere.kc3
+lib/kc3/0.1/gl/triangle.kc3
+lib/kc3/0.1/gl/vec2.kc3
+lib/kc3/0.1/gl/vec3.kc3
+lib/kc3/0.1/gl/vertex.kc3
+lib/kc3/0.1/gtk4/
+lib/kc3/0.1/gtk4.kc3
+@so lib/kc3/0.1/gtk4.so
+lib/kc3/0.1/gtk4/action_map.kc3
+lib/kc3/0.1/gtk4/application.kc3
+lib/kc3/0.1/gtk4/application_window.kc3
+lib/kc3/0.1/gtk4/box.kc3
+lib/kc3/0.1/gtk4/button.kc3
+lib/kc3/0.1/gtk4/entry.kc3
+lib/kc3/0.1/gtk4/entry_buffer.kc3
+lib/kc3/0.1/gtk4/file.kc3
+lib/kc3/0.1/gtk4/frame.kc3
+lib/kc3/0.1/gtk4/label.kc3
+lib/kc3/0.1/gtk4/list_box.kc3
+lib/kc3/0.1/gtk4/menu.kc3
+lib/kc3/0.1/gtk4/menu_item.kc3
+lib/kc3/0.1/gtk4/object.kc3
+lib/kc3/0.1/gtk4/paned.kc3
+lib/kc3/0.1/gtk4/scrolled_window.kc3
+lib/kc3/0.1/gtk4/simple_action.kc3
+lib/kc3/0.1/gtk4/text.kc3
+lib/kc3/0.1/gtk4/text_view.kc3
+lib/kc3/0.1/gtk4/widget.kc3
+lib/kc3/0.1/gtk4/window.kc3
+lib/kc3/0.1/html.kc3
+lib/kc3/0.1/http/
+lib/kc3/0.1/http.kc3
+@so lib/kc3/0.1/http.so
+lib/kc3/0.1/http/request.kc3
+lib/kc3/0.1/http/response.kc3
+lib/kc3/0.1/http/upload.kc3
+lib/kc3/0.1/httpd/
+lib/kc3/0.1/httpd.kc3
+lib/kc3/0.1/httpd/route.kc3
+lib/kc3/0.1/init.kc3
+lib/kc3/0.1/integer.facts
+lib/kc3/0.1/json.kc3
+@so lib/kc3/0.1/json.so
+lib/kc3/0.1/kc3/
+lib/kc3/0.1/kc3.1.kc3
+lib/kc3/0.1/kc3.dump
+lib/kc3/0.1/kc3.facts
+lib/kc3/0.1/kc3/op.kc3
+lib/kc3/0.1/kc3/operator.kc3
+lib/kc3/0.1/kc3/ops.kc3
+lib/kc3/0.1/kpkg/
+lib/kc3/0.1/kpkg.kc3
+lib/kc3/0.1/kpkg/package.kc3
+lib/kc3/0.1/kpkg/repos/
+lib/kc3/0.1/kpkg/repos/kc3.kc3
+lib/kc3/0.1/kubz.kc3
+lib/kc3/0.1/list.kc3
+lib/kc3/0.1/map.facts
+lib/kc3/0.1/markdown.kc3
+@so lib/kc3/0.1/markdown.so
+lib/kc3/0.1/marshall.kc3
+lib/kc3/0.1/marshall_read.kc3
+lib/kc3/0.1/math.kc3
+lib/kc3/0.1/metric.kc3
+lib/kc3/0.1/parse.kc3
+lib/kc3/0.1/pointer.kc3
+lib/kc3/0.1/pretty.kc3
+lib/kc3/0.1/pretty_save.kc3
+lib/kc3/0.1/prime.kc3
+lib/kc3/0.1/ptr.facts
+lib/kc3/0.1/ptr_free.facts
+lib/kc3/0.1/ratio.facts
+lib/kc3/0.1/rwlock.kc3
+lib/kc3/0.1/s16.facts
+lib/kc3/0.1/s32.facts
+lib/kc3/0.1/s64.facts
+lib/kc3/0.1/s8.facts
+lib/kc3/0.1/serialize.kc3
+lib/kc3/0.1/set/
+lib/kc3/0.1/set.kc3
+lib/kc3/0.1/set/fact.kc3
+lib/kc3/0.1/set/item/
+lib/kc3/0.1/set/item/fact.kc3
+lib/kc3/0.1/set/item/tag.kc3
+lib/kc3/0.1/set/tag.kc3
+lib/kc3/0.1/sh.kc3
+lib/kc3/0.1/smtp.kc3
+@so lib/kc3/0.1/smtp.so
+lib/kc3/0.1/socket/
+lib/kc3/0.1/socket.kc3
+@so lib/kc3/0.1/socket.so
+lib/kc3/0.1/socket/addr.kc3
+lib/kc3/0.1/socket/buf.kc3
+lib/kc3/0.1/spam/
+lib/kc3/0.1/spam/bayes.kc3
+lib/kc3/0.1/str.facts
+lib/kc3/0.1/struct.kc3
+lib/kc3/0.1/sw.facts
+lib/kc3/0.1/sym.facts
+lib/kc3/0.1/tag.kc3
+lib/kc3/0.1/thread.kc3
+lib/kc3/0.1/time.kc3
+lib/kc3/0.1/u16.facts
+lib/kc3/0.1/u32.facts
+lib/kc3/0.1/u64.facts
+lib/kc3/0.1/u8.facts
+lib/kc3/0.1/unit.kc3
+lib/kc3/0.1/url.kc3
+lib/kc3/0.1/uw.facts
+lib/kc3/0.1/var.facts
+lib/kc3/0.1/void.facts
+@static-lib lib/libekc3.a
+lib/libekc3.la
+@lib lib/libekc3.so.${LIBekc3_VERSION}
+@static-lib lib/libekc3_debug.a
+lib/libekc3_debug.la
+@lib lib/libekc3_debug.so.${LIBekc3_debug_VERSION}
+@static-lib lib/libkc3.a
+lib/libkc3.la
+@lib lib/libkc3.so.${LIBkc3_VERSION}
+@static-lib lib/libkc3_debug.a
+lib/libkc3_debug.la
+@lib lib/libkc3_debug.so.${LIBkc3_debug_VERSION}
+@static-lib lib/libkc3_event.a
+lib/libkc3_event.la
+@lib lib/libkc3_event.so.${LIBkc3_event_VERSION}
+@static-lib lib/libkc3_event_debug.a
+lib/libkc3_event_debug.la
+@lib lib/libkc3_event_debug.so.${LIBkc3_event_debug_VERSION}
+@static-lib lib/libkc3_gtk4.a
+lib/libkc3_gtk4.la
+@lib lib/libkc3_gtk4.so.${LIBkc3_gtk4_VERSION}
+@static-lib lib/libkc3_gtk4_debug.a
+lib/libkc3_gtk4_debug.la
+@lib lib/libkc3_gtk4_debug.so.${LIBkc3_gtk4_debug_VERSION}
+@static-lib lib/libkc3_http.a
+lib/libkc3_http.la
+@lib lib/libkc3_http.so.${LIBkc3_http_VERSION}
+@static-lib lib/libkc3_http_debug.a
+lib/libkc3_http_debug.la
+@lib lib/libkc3_http_debug.so.${LIBkc3_http_debug_VERSION}
+@static-lib lib/libkc3_json.a
+lib/libkc3_json.la
+@lib lib/libkc3_json.so.${LIBkc3_json_VERSION}
+@static-lib lib/libkc3_json_debug.a
+lib/libkc3_json_debug.la
+@lib lib/libkc3_json_debug.so.${LIBkc3_json_debug_VERSION}
+@static-lib lib/libkc3_markdown.a
+lib/libkc3_markdown.la
+@lib lib/libkc3_markdown.so.${LIBkc3_markdown_VERSION}
+@static-lib lib/libkc3_markdown_debug.a
+lib/libkc3_markdown_debug.la
+@lib lib/libkc3_markdown_debug.so.${LIBkc3_markdown_debug_VERSION}
+@static-lib lib/libkc3_smtp.a
+lib/libkc3_smtp.la
+@lib lib/libkc3_smtp.so.${LIBkc3_smtp_VERSION}
+@static-lib lib/libkc3_smtp_debug.a
+lib/libkc3_smtp_debug.la
+@lib lib/libkc3_smtp_debug.so.${LIBkc3_smtp_debug_VERSION}
+@static-lib lib/libkc3_socket.a
+lib/libkc3_socket.la
+@lib lib/libkc3_socket.so.${LIBkc3_socket_VERSION}
+@static-lib lib/libkc3_socket_debug.a
+lib/libkc3_socket_debug.la
+@lib lib/libkc3_socket_debug.so.${LIBkc3_socket_debug_VERSION}
+@static-lib lib/libkc3_window.a
+lib/libkc3_window.la
+@lib lib/libkc3_window.so.${LIBkc3_window_VERSION}
+@static-lib lib/libkc3_window_cairo.a
+lib/libkc3_window_cairo.la
+@lib lib/libkc3_window_cairo.so.${LIBkc3_window_cairo_VERSION}
+@static-lib lib/libkc3_window_cairo_xcb.a
+lib/libkc3_window_cairo_xcb.la
+@lib lib/libkc3_window_cairo_xcb.so.${LIBkc3_window_cairo_xcb_VERSION}
+@static-lib lib/libkc3_window_sdl2.a
+lib/libkc3_window_sdl2.la
+@lib lib/libkc3_window_sdl2.so.${LIBkc3_window_sdl2_VERSION}
+share/kc3/
+share/kc3/img/
+share/kc3/img/earth.jpg
+share/kc3/img/earth.png
+share/kc3/img/flaps.256.png
+share/kc3/img/flaps.png
+share/kc3/img/fly-dead.png
+share/kc3/img/fly-noto.png
+share/kc3/img/kc3.1024.png
+share/kc3/img/kc3.1080.jpg
+share/kc3/img/kc3.1080.png
+share/kc3/img/kc3.128.jpg
+share/kc3/img/kc3.128.png
+share/kc3/img/kc3.16.jpg
+share/kc3/img/kc3.16.png
+share/kc3/img/kc3.256.jpg
+share/kc3/img/kc3.256.png
+share/kc3/img/kc3.32.jpg
+share/kc3/img/kc3.32.png
+share/kc3/img/kc3.512.jpg
+share/kc3/img/kc3.512.png
+share/kc3/img/kc3.64.jpg
+share/kc3/img/kc3.64.png
+share/kc3/img/kc3.640.jpg
+share/kc3/img/kc3.640.png
+share/kc3/img/kc3.720.jpg
+share/kc3/img/kc3.720.png
+share/kc3/img/kc3.96.jpg
+share/kc3/img/kc3.96.png
+share/kc3/img/kc3.iconset/
+share/kc3/img/kc3.iconset/icon_128x128.png
+share/kc3/img/kc3.iconset/icon_128x128@2x.png
+share/kc3/img/kc3.iconset/icon_16x16.png
+share/kc3/img/kc3.iconset/icon_16x16@2x.png
+share/kc3/img/kc3.iconset/icon_256x256.png
+share/kc3/img/kc3.iconset/icon_256x256@2x.png
+share/kc3/img/kc3.iconset/icon_32x32.png
+share/kc3/img/kc3.iconset/icon_32x32@2x.png
+share/kc3/img/kc3.iconset/icon_512x512.png
+share/kc3/img/kc3.iconset/icon_512x512@2x.png
+share/kc3/img/kc3.iconset/icon_64x64.png
+share/kc3/img/kc3.iconset/icon_64x64@2x.png
+share/kc3/img/kmx.logo.text.256.a10.png
+share/kc3/img/kmx.logo.text.256.a20.png
+share/kc3/img/kmx.logo.text.256.a50.png
+share/kc3/img/kmx.logo.text.256.png
+share/kc3/img/mandelbrot_f128_limit.1.png
+share/kc3/img/mandelbrot_f128_limit.2.png
+share/kc3/img/mandelbrot_f128_limit.3.png
+share/kc3/img/mandelbrot_f128_limit.png
+share/kc3/img/matrix_shade.png
+share/kc3/img/toast.128.png
+share/kc3/img/toast.png
