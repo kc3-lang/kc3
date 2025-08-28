@@ -23,6 +23,7 @@ all:
 	${MAKE} -C markdown all
 	${MAKE} -C smtp all
 	${MAKE} -C socket all
+	${MAKE} -C tls all
 	${MAKE} -C http all
 	${MAKE} -C httpd all
 	${MAKE} -C test all
@@ -45,6 +46,7 @@ asan:
 	${MAKE} -C markdown asan
 	${MAKE} -C smtp asan
 	${MAKE} -C socket asan
+	${MAKE} -C tls asan
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
 	${MAKE} -C test asan
@@ -68,6 +70,7 @@ build:
 	${MAKE} -C markdown build
 	${MAKE} -C smtp build
 	${MAKE} -C socket build
+	${MAKE} -C tls build
 	${MAKE} -C http build
 	${MAKE} -C httpd build
 	${MAKE} -C test build
@@ -87,6 +90,7 @@ clean:
 	${MAKE} -C markdown clean
 	${MAKE} -C smtp clean
 	${MAKE} -C socket clean
+	${MAKE} -C tls clean
 	${MAKE} -C http clean
 	${MAKE} -C httpd clean
 	${MAKE} -C test clean
@@ -105,6 +109,7 @@ clean_cov:
 	${MAKE} -C markdown clean_cov
 	${MAKE} -C smtp clean_cov
 	${MAKE} -C socket clean_cov
+	${MAKE} -C tls clean_cov
 	${MAKE} -C http clean_cov
 	${MAKE} -C httpd clean_cov
 	${MAKE} -C test clean_cov
@@ -124,6 +129,7 @@ cov:
 	${MAKE} -C markdown cov
 	${MAKE} -C smtp cov
 	${MAKE} -C socket cov
+	${MAKE} -C tls cov
 	${MAKE} -C http cov
 	${MAKE} -C httpd cov
 	${MAKE} -C test cov
@@ -143,6 +149,7 @@ debug:
 	${MAKE} -C markdown debug
 	${MAKE} -C smtp debug
 	${MAKE} -C socket debug
+	${MAKE} -C tls debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
 	${MAKE} -C test debug
@@ -213,6 +220,7 @@ distclean:
 	${MAKE} -C markdown distclean
 	${MAKE} -C smtp distclean
 	${MAKE} -C socket distclean
+	${MAKE} -C tls distclean
 	${MAKE} -C http distclean
 	${MAKE} -C httpd distclean
 	${MAKE} -C test distclean
@@ -322,6 +330,7 @@ gcovr:
 	${MAKE} -C markdown gcovr
 	${MAKE} -C smtp gcovr
 	${MAKE} -C socket gcovr
+	${MAKE} -C tls gcovr
 	${MAKE} -C http gcovr
 	${MAKE} -C httpd gcovr
 	${MAKE} -C test gcovr
@@ -407,6 +416,7 @@ gdb_test_http: lib_links_debug
 	${MAKE} -C markdown debug
 	${MAKE} -C smtp debug
 	${MAKE} -C socket debug
+	${MAKE} -C tls debug
 	${MAKE} -C http debug
 	${MAKE} -C test gdb_test_http
 
@@ -420,6 +430,7 @@ gdb_test_http_asan: lib_links_asan
 	${MAKE} -C markdown asan
 	${MAKE} -C smtp asan
 	${MAKE} -C socket asan
+	${MAKE} -C tls asan
 	${MAKE} -C http asan
 	${MAKE} -C test gdb_test_http_asan
 
@@ -435,6 +446,7 @@ gdb_test_httpd: lib_links_debug
 	${MAKE} -C markdown debug
 	${MAKE} -C smtp debug
 	${MAKE} -C socket debug
+	${MAKE} -C tls debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
 	${MAKE} -C test gdb_test_httpd
@@ -451,6 +463,7 @@ gdb_test_httpd_asan: lib_links_asan
 	${MAKE} -C markdown asan
 	${MAKE} -C smtp asan
 	${MAKE} -C socket asan
+	${MAKE} -C tls asan
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
 	${MAKE} -C test gdb_test_httpd_asan
@@ -551,6 +564,7 @@ http:
 	${MAKE} -C json build
 	${MAKE} -C markdown build
 	${MAKE} -C socket build
+	${MAKE} -C tls build
 	${MAKE} -C http build
 
 httpd:
@@ -564,6 +578,7 @@ httpd:
 	${MAKE} -C json build
 	${MAKE} -C markdown build
 	${MAKE} -C socket build
+	${MAKE} -C tls build
 	${MAKE} -C http build
 	${MAKE} -C httpd build
 
@@ -578,6 +593,7 @@ httpd_debug:
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
 	${MAKE} -C socket debug
+	${MAKE} -C tls debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
 
@@ -639,6 +655,7 @@ install: lib_links_debug
 	${MAKE} -C markdown install
 	${MAKE} -C smtp install
 	${MAKE} -C socket install
+	${MAKE} -C tls install
 	${MAKE} -C http install
 	${MAKE} -C httpd install
 	${MAKE} -C window install
@@ -658,6 +675,7 @@ install_lib_links_bsd:
 	ln -sf ../../libkc3_markdown.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_smtp.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/smtp.so
 	ln -sf ../../libkc3_socket.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
+	ln -sf ../../libkc3_tls.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
 
 install_lib_links_darwin:
 	ln -sf ../../libekc3.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
@@ -668,6 +686,7 @@ install_lib_links_darwin:
 	ln -sf ../../libkc3_markdown.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_smtp.so.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/smtp.so
 	ln -sf ../../libkc3_socket.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
+	ln -sf ../../libkc3_tls.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
 
 install_lib_links_freebsd:
 	ln -sf ../../libekc3.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
@@ -677,6 +696,7 @@ install_lib_links_freebsd:
 	ln -sf ../../libkc3_json.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/json.so
 	ln -sf ../../libkc3_markdown.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_socket.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
+	ln -sf ../../libkc3_tls.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
 
 install_lib_links_linux:
 	ln -sf ../../libekc3.so ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
@@ -687,6 +707,7 @@ install_lib_links_linux:
 	ln -sf ../../libkc3_markdown.so ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_smtp.so ${DESTDIR}${prefix}/lib/kc3/0.1/smtp.so
 	ln -sf ../../libkc3_socket.so ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
+	ln -sf ../../libkc3_tls.so ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
 
 install_lib_links_windows:
 	ln -sf ../../../bin/libekc3-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
@@ -697,6 +718,7 @@ install_lib_links_windows:
 	ln -sf ../../../bin/libkc3_markdown-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
 	ln -sf ../../../bin/libkc3_smtp-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/smtp.so
 	ln -sf ../../../bin/libkc3_socket-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
+	ln -sf ../../../bin/libkc3_tls-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
 
 json:
 	${MAKE} -C libtommath build
@@ -822,6 +844,7 @@ lib_links_bsd:
 	ln -sf ../../../markdown/.libs/libkc3_markdown.so.0.0 lib/kc3/0.1/markdown.so
 	ln -sf ../../../smtp/.libs/libkc3_smtp.so.0.0 lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket.so.0.0 lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls.so.0.0 lib/kc3/0.1/tls.so
 
 lib_links_bsd_debug:
 	ln -sf ../../../ekc3/.libs/libekc3_debug.so.0.0 lib/kc3/0.1/ekc3.so
@@ -832,6 +855,7 @@ lib_links_bsd_debug:
 	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.so.0.0 lib/kc3/0.1/markdown.so
 	ln -sf ../../../smtp/.libs/libkc3_smtp_debug.so.0.0 lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug.so.0.0 lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls_debug.so.0.0 lib/kc3/0.1/tls.so
 
 lib_links_clean:
 	rm lib/kc3/0.1/ekc3.so
@@ -842,6 +866,7 @@ lib_links_clean:
 	rm lib/kc3/0.1/markdown.so
 	rm lib/kc3/0.1/smtp.so
 	rm lib/kc3/0.1/socket.so
+	rm lib/kc3/0.1/tls.so
 
 lib_links_darwin:
 	ln -sf ../../../ekc3/.libs/libekc3.0.dylib lib/kc3/0.1/ekc3.so
@@ -852,6 +877,7 @@ lib_links_darwin:
 	ln -sf ../../../markdown/.libs/libkc3_markdown.0.dylib lib/kc3/0.1/markdown.so
 	ln -sf ../../../smtp/.libs/libkc3_smtp.so.0.dylib lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket.0.dylib lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls.0.dylib lib/kc3/0.1/tls.so
 
 lib_links_darwin_debug:
 	ln -sf ../../../ekc3/.libs/libekc3_debug.0.dylib lib/kc3/0.1/ekc3.so
@@ -862,6 +888,7 @@ lib_links_darwin_debug:
 	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.0.dylib lib/kc3/0.1/markdown.so
 	ln -sf ../../../smtp/.libs/libkc3_smtp_debug.so.0.dylib lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug.0.dylib lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls_debug.0.dylib lib/kc3/0.1/tls.so
 
 lib_links_freebsd:
 	ln -sf ../../../ekc3/.libs/libekc3.so.0.0.0 lib/kc3/0.1/ekc3.so
@@ -871,6 +898,7 @@ lib_links_freebsd:
 	ln -sf ../../../json/.libs/libkc3_json.so.0.0.0 lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown.so.0.0.0 lib/kc3/0.1/markdown.so
 	ln -sf ../../../socket/.libs/libkc3_socket.so.0.0.0 lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls.so.0.0.0 lib/kc3/0.1/tls.so
 
 lib_links_freebsd_debug:
 	ln -sf ../../../ekc3/.libs/libekc3_debug.so.0.0.0 lib/kc3/0.1/ekc3.so
@@ -880,6 +908,7 @@ lib_links_freebsd_debug:
 	ln -sf ../../../json/.libs/libkc3_json_debug.so.0.0.0 lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.so.0.0.0 lib/kc3/0.1/markdown.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug.so.0.0.0 lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls_debug.so.0.0.0 lib/kc3/0.1/tls.so
 
 lib_links_linux:
 	ln -sf ../../../ekc3/.libs/libekc3.so lib/kc3/0.1/ekc3.so
@@ -890,6 +919,7 @@ lib_links_linux:
 	ln -sf ../../../markdown/.libs/libkc3_markdown.so lib/kc3/0.1/markdown.so
 	ln -sf ../../../smtp/.libs/libkc3_smtp.so lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket.so lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls.so lib/kc3/0.1/tls.so
 
 lib_links_linux_asan:
 	ln -sf ../../../ekc3/.libs/libekc3_asan.so lib/kc3/0.1/ekc3.so
@@ -900,6 +930,7 @@ lib_links_linux_asan:
 	ln -sf ../../../markdown/.libs/libkc3_markdown_asan.so lib/kc3/0.1/markdown.so
 	ln -sf ../../../smtp/.libs/libkc3_smtp_asan.so lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_asan.so lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls_asan.so lib/kc3/0.1/tls.so
 
 lib_links_linux_cov:
 	ln -sf ../../../ekc3/.libs/libekc3_cov.so lib/kc3/0.1/ekc3.so
@@ -910,6 +941,7 @@ lib_links_linux_cov:
 	ln -sf ../../../markdown/.libs/libkc3_markdown_cov.so lib/kc3/0.1/markdown.so
 	ln -sf ../../../smtp/.libs/libkc3_smtp_cov.so lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_cov.so lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls_cov.so lib/kc3/0.1/tls.so
 
 lib_links_linux_debug:
 	ln -sf ../../../ekc3/.libs/libekc3_debug.so lib/kc3/0.1/ekc3.so
@@ -920,6 +952,7 @@ lib_links_linux_debug:
 	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.so lib/kc3/0.1/markdown.so
 	ln -sf ../../../smtp/.libs/libkc3_smtp_debug.so lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug.so lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls_debug.so lib/kc3/0.1/tls.so
 
 lib_links_windows:
 	ln -sf ../../../ekc3/.libs/libekc3-0.dll lib/kc3/0.1/ekc3.so
@@ -930,6 +963,7 @@ lib_links_windows:
 	ln -sf ../../../markdown/.libs/libkc3_markdown-0.dll lib/kc3/0.1/markdown.so
 	ln -sf ../../../smtp/.libs/libkc3_smtp-0.dll lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket-0.dll lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls-0.dll lib/kc3/0.1/tls.so
 
 lib_links_windows_debug:
 	ln -sf ../../../ekc3/.libs/libekc3_debug-0.dll lib/kc3/0.1/ekc3.so
@@ -940,6 +974,7 @@ lib_links_windows_debug:
 	ln -sf ../../../markdown/.libs/libkc3_markdown_debug-0.dll lib/kc3/0.1/markdown.so
 	ln -sf ../../../smtp/.libs/libkc3_smtp_debug-0.dll lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug-0.dll lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls_debug-0.dll lib/kc3/0.1/tls.so
 
 libkc3_gcovr:
 	${MAKE} clean_cov
@@ -974,6 +1009,7 @@ lldb_test:
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
 	${MAKE} -C socket debug
+	${MAKE} -C tls debug
 	${MAKE} -C smtp debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
@@ -1067,6 +1103,7 @@ test_http: lib_links
 	${MAKE} -C markdown build
 	${MAKE} -C smtp build
 	${MAKE} -C socket build
+	${MAKE} -C tls build
 	${MAKE} -C http build
 	${MAKE} -C test test_http
 
@@ -1080,6 +1117,7 @@ test_http_asan: lib_links_asan
 	${MAKE} -C markdown asan
 	${MAKE} -C smtp asan
 	${MAKE} -C socket asan
+	${MAKE} -C tls asan
 	${MAKE} -C http asan
 	${MAKE} -C test test_http_asan
 
@@ -1093,6 +1131,7 @@ test_http_cov: lib_links_cov
 	${MAKE} -C markdown cov
 	${MAKE} -C smtp cov
 	${MAKE} -C socket cov
+	${MAKE} -C tls cov
 	${MAKE} -C http cov
 	${MAKE} -C test test_http_cov
 
@@ -1105,6 +1144,7 @@ test_http_debug: lib_links_debug
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
 	${MAKE} -C socket debug
+	${MAKE} -C tls debug
 	${MAKE} -C http debug
 	${MAKE} -C test test_http_debug
 
@@ -1119,6 +1159,7 @@ test_httpd: lib_links
 	${MAKE} -C json build
 	${MAKE} -C markdown build
 	${MAKE} -C socket build
+	${MAKE} -C tls build
 	${MAKE} -C http build
 	${MAKE} -C httpd build
 	${MAKE} -C test test_httpd
@@ -1134,6 +1175,7 @@ test_httpd_asan: lib_links_asan
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
 	${MAKE} -C socket asan
+	${MAKE} -C tls asan
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
 	${MAKE} -C test test_httpd_asan
@@ -1149,6 +1191,7 @@ test_httpd_cov: lib_links_cov
 	${MAKE} -C json cov
 	${MAKE} -C markdown cov
 	${MAKE} -C socket cov
+	${MAKE} -C tls cov
 	${MAKE} -C http cov
 	${MAKE} -C httpd cov
 	${MAKE} -C test test_httpd_cov
@@ -1164,6 +1207,7 @@ test_httpd_debug: lib_links_debug
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
 	${MAKE} -C socket debug
+	${MAKE} -C tls debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
 	${MAKE} -C test test_httpd_debug
@@ -1341,6 +1385,46 @@ test_socket_debug: lib_links_debug
 	${MAKE} -C socket debug
 	${MAKE} -C test test_socket_debug
 
+test_tls: lib_links
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
+	${MAKE} -C kc3s build
+	${MAKE} -C socket build
+	${MAKE} -C tls build
+	${MAKE} -C test test_tls
+
+test_tls_asan: lib_links_asan
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C kc3s asan
+	${MAKE} -C socket asan
+	${MAKE} -C tls asan
+	${MAKE} -C test test_tls_asan
+
+test_tls_cov: lib_links_cov
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
+	${MAKE} -C ikc3 cov
+	${MAKE} -C kc3s cov
+	${MAKE} -C socket cov
+	${MAKE} -C tls cov
+	${MAKE} -C test test_tls_cov
+
+test_tls_debug: lib_links_debug
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C socket debug
+	${MAKE} -C tls debug
+	${MAKE} -C test test_tls_debug
+
 tls:
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
@@ -1360,6 +1444,7 @@ uninstall:
 	${MAKE} -C markdown uninstall
 	${MAKE} -C smtp uninstall
 	${MAKE} -C socket uninstall
+	${MAKE} -C tls uninstall
 	${MAKE} -C http uninstall
 	${MAKE} -C httpd uninstall
 	${MAKE} -C window uninstall
@@ -1432,6 +1517,9 @@ uninstall:
 	gdb_test_socket \
 	gdb_test_socket_asan \
 	gdb_test_socket_debug \
+	gdb_test_tls \
+	gdb_test_tls_asan \
+	gdb_test_tls_debug \
 	gtk4 \
 	gtk4_asan \
 	gtk4_cov \
@@ -1513,5 +1601,9 @@ uninstall:
 	test_socket_asan \
 	test_socket_cov \
 	test_socket_debug \
+	test_tls \
+	test_tls_asan \
+	test_tls_cov \
+	test_tls_debug \
 	tls \
 	uninstall
