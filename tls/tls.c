@@ -10,12 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifdef _WIN32
-#include <windows.h>
-#include <wincrypt.h>
+#if defined(WIN32) || defined(WIN64)
+# include <windows.h>
+# include <wincrypt.h>
 #else
-#include <unistd.h>
-#include <stdlib.h>
+# include <unistd.h>
+# include <stdlib.h>
 #endif
 #include <tls.h>
 #include <libkc3/kc3.h>
@@ -24,11 +24,12 @@
 const char * kc3_tls_get_ca_cert_path (void)
 {
   static const char* ca_cert_paths[] = {
-    "/etc/ssl/certs/ca-certificates.crt",
+    "/etc/certs/ca-certificates.crt",
     "/etc/pki/tls/certs/ca-bundle.crt",
     "/etc/ssl/cert.pem",
+    "/etc/ssl/certs/ca-certificates.crt",
     "/usr/local/share/certs/ca-root-nss.crt",
-    "/etc/certs/ca-certificates.crt",
+    "/usr/ssl/certs/ca-bundle.crt",
     NULL
   };
   const char *cert_file = getenv("SSL_CERT_FILE");
@@ -40,6 +41,10 @@ const char * kc3_tls_get_ca_cert_path (void)
       return ca_cert_paths[i];
     }
   }
+#if defined(WIN32) || defined(WIN64)
+  err_puts("kc3_tls_get_ca_cert_path: not implemented");
+  assert(! "kc3_tls_get_ca_cert_path: not implemented");
+#endif
   return NULL;
 }
 
