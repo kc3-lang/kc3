@@ -38,10 +38,10 @@
    - [x] explore SSL API for stream socket connections with a certificate.
    - [ ] wrap the following functions :
      - [ ] Common TLS API :
-       - [ ] `#include <tls.h>`
-       - [ ] `tls_init() != 0`
-       - [ ] `struct tls_config *config = tls_config_new();`
-       - [ ] `tls_configure(ctx, config);`
+       - [x] `#include <tls.h>`
+       - [lyzer] `tls_init() != 0`
+       - [lyzer] `struct tls_config *config = tls_config_new();`
+       - [lyzer] `tls_configure(ctx, config);`
        - [ ] `tls_write(ctx, data, size)`
        - [ ] `tls_read(ctx, data, size);`
        - [ ] `tls_close(ctx);`
