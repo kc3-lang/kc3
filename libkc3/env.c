@@ -105,12 +105,8 @@ s_pointer * env_address_of (s_env *env, s_ident *ident, s_pointer *dest)
   assert(env);
   assert(ident);
   assert(dest);
-  if (ident->module) {
-    err_puts("env_address_of: ident with a module");
-    assert(! "env_address_of: ident with a module");
-    return NULL;
-  }
-  if (! (tag = env_frames_get (env, ident->sym))) {
+  if (! (ident->module && (tag = env_frames_get (env, ident->sym))) &&
+      ! (tag = env_ident_get_address(env, ident))) {
     err_write_1("env_address_of: undeclared ident ");
     err_inspect_ident(ident);
     err_write_1("\n");
@@ -1503,6 +1499,68 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
   facts_with_cursor_clean(&cursor);
   *dest = tmp;
   return dest;
+}
+
+s_tag * env_ident_get_address (s_env *env, const s_ident *ident)
+{
+  s_facts_cursor cursor;
+  s_fact *fact;
+  const s_sym *module;
+  s_tag tag_ident;
+  s_tag tag_is_a;
+  s_tag tag_macro;
+  s_tag tag_module;
+  s_tag tag_pvar;
+  s_tag tag_special_operator;
+  s_tag tag_sym;
+  s_tag tag_symbol;
+  s_tag tag_symbol_value;
+  s_tag *tmp;
+  module = ident->module;
+  if (! module) {
+    if (! env_sym_search_modules(env, ident->sym, &module) ||
+        ! module) {
+      err_write_1("env_ident_get: symbol not found: ");
+      err_inspect_sym(ident->sym);
+      err_write_1("\n");
+      assert(! "env_ident_get: symbol not found");
+      return NULL;
+    }
+  }
+  // too slow, use require
+  // if (! env_module_ensure_loaded(env, module))
+  //   return NULL;
+  tag_init_ident(&tag_ident, ident);
+  tag_init_psym(  &tag_is_a, &g_sym_is_a);
+  tag_init_psym(  &tag_macro, &g_sym_macro);
+  tag_init_psym(  &tag_module, module);
+  tag_init_psym(  &tag_special_operator, &g_sym_special_operator);
+  tag_init_psym(  &tag_sym, ident->sym);
+  tag_init_psym(  &tag_symbol, &g_sym_symbol);
+  tag_init_psym(  &tag_symbol_value, &g_sym_symbol_value);
+  tag_init_pvar( &tag_pvar, &g_sym_Tag);
+  if (! facts_find_fact_by_tags(env->facts, &tag_module, &tag_symbol,
+                                &tag_ident, &fact) ||
+      ! fact) {
+    tag_clean(&tag_pvar);
+    return NULL;
+  }
+  if (! facts_with_tags(env->facts, &cursor, &tag_ident,
+                        &tag_symbol_value, &tag_pvar)) {
+    tag_clean(&tag_pvar);
+    return NULL;
+  }
+  if (! facts_cursor_next(&cursor, &fact)) {
+    facts_cursor_clean(&cursor);
+    tag_clean(&tag_pvar);
+    return NULL;
+  }
+  if (! fact)
+    return NULL;
+  tmp = fact->object;
+  facts_cursor_clean(&cursor);
+  tag_clean(&tag_pvar);
+  return tmp;
 }
 
 bool * env_ident_is_special_operator (s_env *env,
