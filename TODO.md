@@ -28,7 +28,21 @@
      - [x] `data_init_copy`
    - [x] `pointer_init_cast`
 
+
 ## Release v0.1.15
+ - [x] ok
+
+
+## IKC3 RPC
+
+ - ikc3/
+   - ikc3 --server HOST PORT
+     - argument parsing
+     - socket_buf_init_listen / socket_buf_init_accept
+   - ikc3 --client HOST PORT
+     - argument parsing
+     - socket_buf_init_connect
+
 
 ## LibreSSL/OpenSSL
 
@@ -60,10 +74,6 @@
 ## HTTPd
  - [ ] partial requests
  - [ ] SSL
-
-## RPC
- - [ ] lib/kc3/0.1/rpc.kc3
- - [ ] libkc3_rpc.so (add to `make lib_links`)
 
 ## Marshall
 
