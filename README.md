@@ -1,4 +1,4 @@
-# KC3 v0.1.15
+# KC3 v0.1.16
 
 KC3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
@@ -7,8 +7,8 @@ for semantic programming, and programming the semantic web.
 You can easily convert each KC3 function to a C function. KC3 is both
 a language and a runtime.
 
-This is a stable release, for the development branch see the [KC3 master
-branch at kmxgit](https://git.kmx.io/kc3-lang/kc3).
+This is a development branch, for the latest release see [KC3 v0.1.15]
+(https://git.kmx.io/kc3-lang/kc3/tree/v0.1.15).
 
 KC3 is currently a programming language project, inspired by C, Elixir
 and Common Lisp. It could be described as C with Elixir modules,
@@ -66,51 +66,6 @@ There are now four full applications written in KC3 that we know of :
 
 
 ## New in this release
-
- - libkc3
-   - stacktrace (in gdb: `gdb> p err_stacktrace()`)
-   - hash table (ht.h, ht.c)
-   - operators hash table
-     - defoperator
-     - ops_get
-     - facts_add/replace
-   - pass by reference and reference counting in a few data structures
-     - Callable (Fn, Cfn)
-     - Struct
-     - StructType
-   - optional pass by copy (--copy) for use with ASAN.
-     - `env_init_args` now parses `--copy`
-   - documentation
-     - document all basic types (see /doc/*/*.md or
-       <https://kc3-lang.org/doc>)
-     - document facts module
-   - rename block into do_block
-   - implement named blocks, return and return_from like in Common Lisp
-   - add a named block to function evaluation to implement return from
-     functions. The first name you give to the function is the name of
-     the function implicit block.
-   - added `unwind_protect` and `env_unwind_protect_push/pop` dance to a
-     few functions
-     - marked remaining code paths with TODO where unwind_protect is
-       still needed (potential memleaks / env corruption)
-   - `env_frame_capture` implements closures that capture their lexical
-     environment (free variables)
-   - while, break, continue as special operators with tests
-     - reworked parser and evaluator to allow for special operators
-       without arguments
-     - introduced a new syntax `(Ident) Module.sym` to exclude special
-       operator parsing.
-   - converted almost every file to 72 columns max
-   - added licenses to kc3 files
-   - defspecial_operator is a special operator that allows (not unlike
-     `def`) the runtime definition of special operators.
-   - `marshall/marshall_read` allow for `env_dump` and
-     `env_dump_restore` to save and restore all KC3 values for
-     disk or network i/o.
-   - automatic loading of env dump from kc3.dump if present
-     - in lib/kc3/0.1/
-     - in current working dir
-     - reduced loading time of environment from minutes to sub-second !
 
 
 ## Discord invite
