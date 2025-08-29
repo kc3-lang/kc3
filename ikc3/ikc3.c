@@ -25,24 +25,29 @@
 
 #define BUFSZ 0x10000
 
-bool  g_client = false;
-s_str g_host = {0};
-s_str g_port = {0};
-bool  g_server = false;
+bool   g_client = false;
+s_str  g_host = {0};
+s_str  g_port = {0};
+bool   g_server = false;
+s_buf *g_server_env_err = NULL;
+s_buf *g_server_env_in = NULL;
+s_buf *g_server_env_out = NULL;
 
 sw  buf_ignore_character (s_buf *buf);
 
 // TODO: use positive return value to increment argc and argv
 // TODO: remove one reference level (*)
-int ikc3_arg_client (s_env *env, int *argc, char ***argv);
-int ikc3_arg_dump (s_env *env, int *argc, char ***argv);
-int ikc3_arg_load (s_env *env, int *argc, char ***argv);
-int ikc3_arg_server (s_env *env, int *argc, char ***argv);
-int ikc3_client (s_env *env);
-sw  ikc3_run (void);
-int ikc3_server_init (s_env *env, p_socket socket,
-                      s_socket_buf *socket_buf);
-int usage (char *argv0);
+int  ikc3_arg_client (s_env *env, int *argc, char ***argv);
+int  ikc3_arg_dump (s_env *env, int *argc, char ***argv);
+int  ikc3_arg_load (s_env *env, int *argc, char ***argv);
+int  ikc3_arg_server (s_env *env, int *argc, char ***argv);
+int  ikc3_client (s_env *env);
+sw   ikc3_run (void);
+void ikc3_server_clean (s_env *env, p_socket socket,
+                        s_socket_buf *socket_buf);
+int  ikc3_server_init (s_env *env, p_socket socket,
+                       s_socket_buf *socket_buf);
+int  usage (char *argv0);
 
 sw buf_ignore_character (s_buf *buf)
 {
@@ -241,6 +246,11 @@ int ikc3_client (s_env *env)
     err_puts("ikc3: unable to connect");
     return 1;
   }
+  io_write_1("ikc3: connected to ");
+  io_inspect_str(&g_host);
+  io_write_1(" ");
+  io_inspect_str(&g_port);
+  io_write_1("\n");
   remote_in = socket_buf.buf_rw.w;
   remote_out = socket_buf.buf_rw.r;
 #if HAVE_WINEDITLINE
@@ -252,8 +262,10 @@ int ikc3_client (s_env *env)
     buf_write_str(remote_in, &line);
     str_clean(&line);
     while (buf_refill(remote_out, 1) > 0 &&
-           buf_read_line(remote_out, &line))
+           buf_read_line(remote_out, &line)) {
       buf_write_str(env->out, &line);
+      str_clean(&line);
+    }
   }
 #if HAVE_WINEDITLINE
   buf_wineditline_close(remote_in, ".ikc3_history");
@@ -264,22 +276,43 @@ int ikc3_client (s_env *env)
   return 0;
 }
 
+void ikc3_server_clean (s_env *env, p_socket socket,
+                       s_socket_buf *socket_buf)
+{
+  env->in  = g_server_env_in;
+  env->out = g_server_env_out;
+  env->err = g_server_env_err;
+  socket_buf_close(socket_buf);
+  socket_close(socket);
+}
+
 int ikc3_server_init (s_env *env, p_socket socket,
                       s_socket_buf *socket_buf)
 {
-    if (! socket_init_listen(socket, &g_host, &g_port)) {
-      err_puts("ikc3: unable to init socket");
-      return 1;
-    }
-    if (! socket_buf_init_accept(socket_buf, socket)) {
-      err_puts("ikc3: socket_buf_init_accept");
-      socket_close(socket);
-      return 1;
-    }
-    env->in = socket_buf->buf_rw.r;
-    env->out = socket_buf->buf_rw.w;
-    env->err = socket_buf->buf_rw.w;
-    return 0;
+  if (! socket_init_listen(socket, &g_host, &g_port)) {
+    err_puts("ikc3: unable to init socket");
+    return 1;
+  }
+  io_write_1("ikc3: listening on ");
+  io_inspect_str(&g_host);
+  io_write_1(" ");
+  io_inspect_str(&g_port);
+  io_write_1("\n");
+  if (! socket_buf_init_accept(socket_buf, socket)) {
+    err_puts("ikc3: socket_buf_init_accept");
+    socket_close(socket);
+    return 1;
+  }
+  io_write_1("ikc3: connected to ");
+  io_inspect_str(&socket_buf->addr_str);
+  io_write_1("\n");
+  g_server_env_in = env->in;
+  g_server_env_out = env->out;
+  g_server_env_err = env->err;
+  env->in = socket_buf->buf_rw.r;
+  env->out = socket_buf->buf_rw.w;
+  env->err = socket_buf->buf_rw.w;
+  return 0;
 }
 
 int main (int argc, char **argv)
@@ -338,15 +371,12 @@ int main (int argc, char **argv)
 #endif
     goto clean;
   }
-  if (g_server) {
-    if ((r = ikc3_server_init(env, &socket, &socket_buf)))
-      goto clean;
-  }
+  if (g_server &&
+      (r = ikc3_server_init(env, &socket, &socket_buf)))
+    goto clean;
   r = ikc3_run();
-  if (g_server) {
-    socket_buf_close(&socket_buf);
-    socket_close(&socket);
-  }
+  if (g_server)
+    ikc3_server_clean(env, &socket, &socket_buf);
   else {
 #if HAVE_WINEDITLINE
     buf_wineditline_close(env->in, ".ikc3_history");
