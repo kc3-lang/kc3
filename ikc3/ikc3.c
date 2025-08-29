@@ -12,7 +12,9 @@
  */
 #include <errno.h>
 #include <string.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
+#include "../socket/socket.h"
+#include "../socket/socket_buf.h"
 #include "config.h"
 
 #if HAVE_WINEDITLINE
@@ -230,6 +232,8 @@ int main (int argc, char **argv)
   s_env *env;
   s_buf in_original;
   sw r;
+  t_socket socket;
+  s_socket_buf socket_buf;
   if (argc < 1)
     return usage("ikc3");
   if (! kc3_init(NULL, &argc, &argv))
@@ -269,10 +273,12 @@ int main (int argc, char **argv)
   if (g_server) {
     if (! socket_init_listen(&socket, &g_host, &g_port)) {
       err_puts("ikc3: unable to init socket");
+      r = 1;
       goto clean;
     }
-    if (! socket_buf_init_accept (&socket_buf, socket)) {
+    if (! socket_buf_init_accept(&socket_buf, &socket)) {
       err_puts("ikc3: socket_buf_init_accept");
+      r = 1;
       goto clean;
     }
     env->in = socket_buf.buf_rw.r;
