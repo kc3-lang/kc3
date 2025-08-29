@@ -143,11 +143,24 @@ int ikc3_load (s_env *env, int *argc, char ***argv)
   return 0;
 }
 
+int ikc3_dump (s_env *env, int *argc, char ***argv)
+{
+  s_str path = {0};
+  str_init_1(&path, NULL, (*argv)[1]);
+  if (! env_dump(env, &path)) {
+    str_clean(&path);
+    return 1;
+  }
+  str_clean(&path);
+  *argc -= 2;
+  *argv += 2;
+  return 0;
+}
+
 int main (int argc, char **argv)
 {
   s_env *env;
   s_buf in_original;
-  s_str path = {0};
   sw r;
   if (argc < 1)
     return usage("ikc3");
@@ -156,22 +169,15 @@ int main (int argc, char **argv)
   env = env_global();
   in_original = *env->in;
   while (argc) {
-    if (! strcmp("--load", *argv) ||
-        ! strcmp("-l", *argv)) {
-      if ((r = ikc3_load(env, &argc, &argv)))
+    if (argc > 1 && argv[0] && argv[1] &&
+        ! strcmp(argv[0], "--dump")) {
+      if ((r = ikc3_dump(env, &argc, &argv)))
         goto clean;
     }
-    else if (argc > 1 && argv[0] && argv[1] &&
-             ! strcmp(argv[0], "--dump")) {
-      str_init_1(&path, NULL, argv[1]);
-      if (! env_dump(env, &path)) {
-        r = 1;
-        str_clean(&path);
+    else if (! strcmp("--load", *argv) ||
+      ! strcmp("-l", *argv)) {
+      if ((r = ikc3_load(env, &argc, &argv)))
         goto clean;
-      }
-      str_clean(&path);
-      argc -= 2;
-      argv += 2;
     }
     else if (argc == 1 && ! strcmp("--quit", *argv)) {
       r = 0;
