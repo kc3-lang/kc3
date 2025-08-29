@@ -38,7 +38,7 @@ int ikc3_arg_client (s_env *env, int *argc, char ***argv);
 int ikc3_arg_dump (s_env *env, int *argc, char ***argv);
 int ikc3_arg_load (s_env *env, int *argc, char ***argv);
 int ikc3_arg_server (s_env *env, int *argc, char ***argv);
-int ikc3_client (void);
+int ikc3_client (s_env *env);
 sw  ikc3_run (void);
 int ikc3_server_init (s_env *env, p_socket socket,
                       s_socket_buf *socket_buf);
@@ -232,9 +232,8 @@ sw ikc3_run (void)
 
 int ikc3_client (s_env *env)
 {
-  s_buf *in;
-  s_buf *out;
-  sw r;
+  s_buf *remote_in;
+  s_buf *remote_out;
   s_socket_buf socket_buf = {0};
   s_str line = {0};
   assert(env);
@@ -257,11 +256,12 @@ int ikc3_client (s_env *env)
       buf_write_str(env->out, &line);
   }
 #if HAVE_WINEDITLINE
-  buf_wineditline_close(in, ".ikc3_history");
+  buf_wineditline_close(remote_in, ".ikc3_history");
 #else
-  buf_linenoise_close(in, ".ikc3_history");
+  buf_linenoise_close(remote_in, ".ikc3_history");
 #endif
   socket_buf_close(&socket_buf);
+  return 0;
 }
 
 int ikc3_server_init (s_env *env, p_socket socket,
@@ -322,20 +322,25 @@ int main (int argc, char **argv)
       break;
   }
   *env->in = in_original;
-  if (g_client) {
-    r = ikc3_client();
-    goto clean;
-  }
-  if (g_server) {
-    if ((r = ikc3_server_init(env, &socket, &socket_buf)))
-      goto clean;
-  }
-  else {
+  if (! g_server) {
 #if HAVE_WINEDITLINE
     buf_wineditline_open_r(env->in, "ikc3> ", ".ikc3_history");
 #else
     buf_linenoise_open_r(env->in, "ikc3> ", ".ikc3_history");
 #endif
+  }
+  if (g_client) {
+    r = ikc3_client(env);
+#if HAVE_WINEDITLINE
+    buf_wineditline_close(env->in, ".ikc3_history");
+#else
+    buf_linenoise_close(env->in, ".ikc3_history");
+#endif
+    goto clean;
+  }
+  if (g_server) {
+    if ((r = ikc3_server_init(env, &socket, &socket_buf)))
+      goto clean;
   }
   r = ikc3_run();
   if (g_server) {
