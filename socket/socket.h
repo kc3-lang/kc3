@@ -15,10 +15,10 @@
 
 #include "types.h"
 
-/* Call socket_init before any socket operation. Call socket_clean after
-   all socket operations were completed. */
-void socket_clean (void);
-bool socket_init (void);
+/* Call libsocket_init before any socket operation. Call
+ * libsocket_clean after all socket operations were completed. */
+void libsocket_clean (void);
+bool libsocket_init (void);
 
 /* Stack-allocation compatible functions. */
 p_socket socket_init_accept (p_socket s, p_socket listening);

@@ -227,6 +227,34 @@ sw ikc3_run (void)
   return 0;
 }
 
+int ikc3_client_init (s_env *env, s_socket_buf *socket_buf)
+{
+    if (! socket_buf_init_connect(socket_buf, &g_host, &g_port)) {
+      err_puts("ikc3: unable to connect");
+      return 1;
+    }
+    env->in = socket_buf->buf_rw.r;
+    env->out = socket_buf->buf_rw.w;
+    return 0;
+}
+
+int ikc3_server_init (s_env *env, p_socket socket,
+                      s_socket_buf *socket_buf)
+{
+    if (! socket_init_listen(socket, &g_host, &g_port)) {
+      err_puts("ikc3: unable to init socket");
+      return 1;
+    }
+    if (! socket_buf_init_accept(socket_buf, socket)) {
+      err_puts("ikc3: socket_buf_init_accept");
+      socket_close(socket);
+      return 1;
+    }
+    env->in = socket_buf->buf_rw.r;
+    env->out = socket_buf->buf_rw.w;
+    return 0;
+}
+
 int main (int argc, char **argv)
 {
   s_env *env;
@@ -268,22 +296,14 @@ int main (int argc, char **argv)
   }
   *env->in = in_original;
   if (g_client) {
-    // TODO: open env->in and env->out from socket_buf
+    if ((r = ikc3_client_init (env, &socket_buf)))
+      goto clean;
   }
   if (g_server) {
-    if (! socket_init_listen(&socket, &g_host, &g_port)) {
-      err_puts("ikc3: unable to init socket");
-      r = 1;
+    if ((r = ikc3_server_init (env, &socket, &socket_buf)))
       goto clean;
-    }
-    if (! socket_buf_init_accept(&socket_buf, &socket)) {
-      err_puts("ikc3: socket_buf_init_accept");
-      r = 1;
-      goto clean;
-    }
-    env->in = socket_buf.buf_rw.r;
-    env->out = socket_buf.buf_rw.w;
-  } else {
+  }
+  else {
 #if HAVE_WINEDITLINE
     buf_wineditline_open_r(env->in, "ikc3> ", ".ikc3_history");
 #else
@@ -291,20 +311,19 @@ int main (int argc, char **argv)
 #endif
   }
   r = ikc3_run();
-  if (! g_server) {
+  if (g_server) {
+    socket_buf_close(&socket_buf);
+    socket_close(&socket);
+  }
+  else {
 #if HAVE_WINEDITLINE
     buf_wineditline_close(env->in, ".ikc3_history");
 #else
     buf_linenoise_close(env->in, ".ikc3_history");
 #endif
   }
-  if (g_client) {
-    // TODO: restore env->in and env->out and close socket_buf
-  }
-  if (g_server) {
+  if (g_client)
     socket_buf_close(&socket_buf);
-    socket_close(&socket);
-  }
  clean:
   *env->in = in_original;
   kc3_clean(NULL);
