@@ -29,6 +29,9 @@ s_str g_port = {0};
 bool  g_server = false;
 
 sw  buf_ignore_character (s_buf *buf);
+
+// TODO: use positive return value to increment argc and argv
+// TODO: remove one reference level (*)
 int ikc3_arg_client (s_env *env, int *argc, char ***argv);
 int ikc3_arg_dump (s_env *env, int *argc, char ***argv);
 int ikc3_arg_load (s_env *env, int *argc, char ***argv);
