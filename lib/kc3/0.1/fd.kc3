@@ -12,6 +12,6 @@
 
 defmodule FD do
 
-  def set_blocking = cfn Bool "fd_set_blocking" (S32, Bool, Result)
+  def set_blocking = cfn Bool "fd_set_blocking" (S32, Bool)
 
 end

@@ -68,7 +68,7 @@ s_str * fd_read_until_eof (s32 fd, s_str *dest)
   return NULL;
 }
 
-bool * fd_set_blocking (s32 fd, bool blocking, bool *result)
+bool fd_set_blocking (s32 fd, bool blocking)
 {
 #ifdef WIN32
   unsigned long b;
@@ -76,20 +76,19 @@ bool * fd_set_blocking (s32 fd, bool blocking, bool *result)
   if (ioctlsocket(fd, FIONBIO, &b) != NO_ERROR) {
     err_puts("fd_set_blocking: ioctlsocket");
     assert(! "fd_set_blocking: ioctlsocket");
-    return NULL;
+    return false;
   }
 #else
   s32 flags;
   flags = fcntl(fd, F_GETFL);
   if (flags == -1)
-    return NULL;
+    return false;
   if (! blocking)
     flags |= O_NONBLOCK;
   else
     flags &= ~ (s32) O_NONBLOCK;
   if (fcntl(fd, F_SETFL, flags) == -1)
-    return NULL;
+    return false;
 #endif
-  *result = true;
-  return result;
+  return true;
 }

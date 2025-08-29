@@ -253,18 +253,20 @@ int ikc3_client (s_env *env)
   io_write_1("\n");
   remote_in = socket_buf.buf_rw.w;
   remote_out = socket_buf.buf_rw.r;
+  fd_set_blocking(socket_buf.sockfd, true);
 #if HAVE_WINEDITLINE
-  buf_wineditline_open_r(remote_in, "ikc3> ", ".ikc3_history");
+  buf_wineditline_open_r(env->in, "ikc3> ", ".ikc3_history");
 #else
-  buf_linenoise_open_r(remote_in, "ikc3> ", ".ikc3_history");
+  buf_linenoise_open_r(env->in, "ikc3> ", ".ikc3_history");
 #endif
   while (buf_read_line(env->in, &line)) {
     buf_write_str(remote_in, &line);
     str_clean(&line);
-    while (buf_refill(remote_out, 1) > 0 &&
-           buf_read_line(remote_out, &line)) {
+    buf_write_1(remote_in, "\n");
+    while (buf_read_line(remote_out, &line)) {
       buf_write_str(env->out, &line);
       str_clean(&line);
+      buf_write_1(env->out, "\n");
     }
   }
 #if HAVE_WINEDITLINE

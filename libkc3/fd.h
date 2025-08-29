@@ -23,6 +23,6 @@
 
 /* Operators. */
 s_str * fd_read_until_eof (s32 fd, s_str *dest);
-bool *  fd_set_blocking (s32 fd, bool blocking, bool *result);
+bool fd_set_blocking (s32 fd, bool blocking);
 
 #endif /* LIBKC3_FD_H */
