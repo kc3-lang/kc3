@@ -82,15 +82,70 @@ sw ikc3_run (void)
   return 0;
 }
 
-int main (int argc, char **argv)
+int ikc3_load (s_env *env, int *argc, char ***argv)
 {
   sw     e = 0;
-  s_env *env;
+  FILE *fp = 0;
   s_tag *file_dir;
   s_tag  file_dir_save;
   s_tag *file_path;
   s_tag  file_path_save;
-  FILE *fp = 0;
+  s_str path = {0};
+  sw r;
+  if (*argc < 2) {
+    err_write_1(env->argv[0]);
+    err_write_1(": ");
+    err_write_1(**argv);
+    err_write_1(" without an argument\n");
+    assert(! "env_init: -l or --load without an argument");
+    return -1;
+    }
+  if (env->trace) {
+    err_write_1("ikc3: load: ");
+    err_write_1((*argv)[1]);
+    err_write_1("\n");
+  }
+  str_init_1(&path, NULL, (*argv)[1]);
+  fp = file_open(&path, "rb");
+  if (! fp) {
+    e = errno;
+    err_write_1("ikc3: ");
+    err_inspect_str(&path);
+    err_write_1(": ");
+    err_write_1(strerror(e));
+    err_write_1("\n");
+    assert(! "ikc3: fopen");
+    return 1;
+  }
+  str_clean(&path);
+  if (! buf_file_open_r(env->in, fp)) {
+    return -1;
+  }
+  file_dir = frame_get_w(env->global_frame, &g_sym___DIR__);
+  file_dir_save = *file_dir;
+  file_path = frame_get_w(env->global_frame, &g_sym___FILE__);
+  file_path_save = *file_path;
+  tag_init_str_1(file_path, NULL, (*argv)[1]);
+  file_dir->type = TAG_STR;
+  if (! file_dirname(&file_path->data.str, &file_dir->data.str)) {
+    buf_file_close(env->in);
+    return -1;
+  }
+  r = ikc3_run();
+  *file_dir = file_dir_save;
+  *file_path = file_path_save;
+  buf_file_close(env->in);
+  fclose(fp);
+  if (r)
+    return r;
+  *argc -= 2;
+  *argv += 2;
+  return 0;
+}
+
+int main (int argc, char **argv)
+{
+  s_env *env;
   s_buf in_original;
   s_str path = {0};
   sw r;
@@ -103,58 +158,8 @@ int main (int argc, char **argv)
   while (argc) {
     if (! strcmp("--load", *argv) ||
         ! strcmp("-l", *argv)) {
-      if (argc < 2) {
-        err_write_1(env->argv[0]);
-        err_write_1(": ");
-        err_write_1(*argv);
-        err_write_1(" without an argument\n");
-        assert(! "env_init: -l or --load without an argument");
-        r = 1;
+      if ((r = ikc3_load(env, &argc, &argv)))
         goto clean;
-      }
-      if (env->trace) {
-        err_write_1("ikc3: load: ");
-        err_write_1(argv[1]);
-        err_write_1("\n");
-      }
-      str_init_1(&path, NULL, argv[1]);
-      fp = file_open(&path, "rb");
-      if (! fp) {
-        e = errno;
-        err_write_1("ikc3: ");
-        err_inspect_str(&path);
-        err_write_1(": ");
-        err_write_1(strerror(e));
-        err_write_1("\n");
-        assert(! "ikc3: fopen");
-        r = 1;
-        goto clean;
-      }
-      str_clean(&path);
-      if (! buf_file_open_r(env->in, fp)) {
-        r = -1;
-        goto clean;
-      }
-      file_dir = frame_get_w(env->global_frame, &g_sym___DIR__);
-      file_dir_save = *file_dir;
-      file_path = frame_get_w(env->global_frame, &g_sym___FILE__);
-      file_path_save = *file_path;
-      tag_init_str_1(file_path, NULL, argv[1]);
-      file_dir->type = TAG_STR;
-      if (! file_dirname(&file_path->data.str, &file_dir->data.str)) {
-        buf_file_close(env->in);
-        r = -1;
-        goto clean;
-      }
-      r = ikc3_run();
-      *file_dir = file_dir_save;
-      *file_path = file_path_save;
-      buf_file_close(env->in);
-      fclose(fp);
-      if (r)
-        goto clean;
-      argc -= 2;
-      argv += 2;
     }
     else if (argc > 1 && argv[0] && argv[1] &&
              ! strcmp(argv[0], "--dump")) {
