@@ -33,7 +33,7 @@ s_http_response * http_response_buf_parse (s_http_response *response,
   assert(response);
   assert(buf);
   buf_save_init(buf, &save);
-  if (! buf_read_until_1_into_str(buf, " ", &tmp.protocol))
+  if (buf_read_until_1_into_str(buf, " ", &tmp.protocol) <= 0)
     goto clean;
   if (buf_parse_u16(buf, &tmp.code) <= 0)
     goto restore;
@@ -43,7 +43,7 @@ s_http_response * http_response_buf_parse (s_http_response *response,
   }
   if ((r = buf_read_1(buf, " ")) <= 0)
     goto restore;
-  if (! buf_read_until_1_into_str(buf, "\r\n", &tmp.message))
+  if (buf_read_until_1_into_str(buf, "\r\n", &tmp.message) <= 0)
     goto restore;
   str_init_1(&content_length_str, NULL, "content-length");
   l = &tmp.headers;
@@ -59,12 +59,12 @@ s_http_response * http_response_buf_parse (s_http_response *response,
     key = tuple->tag;
     value = tuple->tag + 1;
     key->type = TAG_STR;
-    if (! buf_read_until_1_into_str(buf, ":", &key->data.str))
+    if (buf_read_until_1_into_str(buf, ":", &key->data.str) <= 0)
       goto restore;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     value->type = TAG_STR;
-    if (! buf_read_until_1_into_str(buf, "\r\n", &value->data.str))
+    if (buf_read_until_1_into_str(buf, "\r\n", &value->data.str) <= 0)
       goto restore;
     if (! str_init_to_lower(&str, &key->data.str))
       goto restore;
@@ -241,7 +241,7 @@ sw http_response_buf_write (const s_http_response *response,
       in = response->body.data.pstruct->data;
       while (buf_refill(in, in->size) > 0) {
         err_inspect_buf(in);
-        if (! buf_read_to_str(in, &str))
+        if (buf_read_to_str(in, &str) <= 0)
           return -1;
         err_inspect_str(&str);
         if ((r = buf_write(buf, str.ptr.pchar, str.size)) <= 0)

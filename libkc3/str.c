@@ -543,7 +543,7 @@ s_str * str_init_character (s_str *str, const character src)
   buf_init(&buf, false, sizeof(b), b);
   if (buf_write_character_utf8(&buf, src) < 0)
     return NULL;
-  if (! buf_read_to_str(&buf, str))
+  if (buf_read_to_str(&buf, str) <= 0)
     return NULL;
   return str;
 }
@@ -1015,7 +1015,7 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
     assert(! "str_init_slice: invalid positions");
     return NULL;
   }
-  if (! buf_read_to_str(&buf, &tmp)) {
+  if (buf_read_to_str(&buf, &tmp) <= 0) {
     err_puts("str_init_slice: buf_read_to_str");
     assert(! "str_init_slice: buf_read_to_str");
     return NULL;
@@ -1488,7 +1488,7 @@ s_list ** str_split_words (const s_str *str, s_list **dest)
     *t = list_new(NULL);
     (*t)->tag.type = TAG_STR;
     t_str = &(*t)->tag.data.str;
-    if (! buf_read_word_into_str(&buf, t_str)) {
+    if (buf_read_word_into_str(&buf, t_str) <= 0) {
       if (buf_read_to_str(&buf, t_str) < 0)
         goto clean;
       if (! t_str->size)
@@ -1531,8 +1531,8 @@ s_list ** str_split (const s_str *str, const s_str *separator,
     *t = list_new(NULL);
     (*t)->tag.type = TAG_STR;
     t_str = &(*t)->tag.data.str;
-    if (! buf_read_until_str_into_str(&buf, sep, t_str)) {
-      if (! buf_read_to_str(&buf, t_str))
+    if (buf_read_until_str_into_str(&buf, sep, t_str) <= 0) {
+      if (buf_read_to_str(&buf, t_str) <= 0)
         goto clean;
       break;
     }
@@ -1560,8 +1560,8 @@ s_list ** str_split_list (const s_str *str,
     *t = list_new(NULL);
     (*t)->tag.type = TAG_STR;
     t_str = &(*t)->tag.data.str;
-    if (! buf_read_until_list_into_str(&buf, sep, t_str)) {
-      if (! buf_read_to_str(&buf, t_str))
+    if (buf_read_until_list_into_str(&buf, sep, t_str) <= 0) {
+      if (buf_read_to_str(&buf, t_str) <= 0)
         goto clean;
       break;
     }

@@ -93,7 +93,7 @@ s_str * sh_escape (const s_str *src, s_str *dest)
   tag_clean(&tag);
   if (buf_write_1(&buf, "\"") <= 0)
     goto ko_buf;
-  if (! buf_read_to_str(&buf, &tmp))
+  if (buf_read_to_str(&buf, &tmp) <= 0)
     goto ko_buf;
   buf_clean(&buf);
   *dest = tmp;

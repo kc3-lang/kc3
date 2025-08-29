@@ -108,7 +108,7 @@ s_str * html_escape (s_tag *src, s_str *dest)
   tag_clean(&escape_tag);
   str_clean(&str);
   s = (s_str) {0};
-  if (! buf_read_to_str(&buf, &s)) {
+  if (buf_read_to_str(&buf, &s) <= 0) {
     buf_clean(&buf);
     return NULL;
   }

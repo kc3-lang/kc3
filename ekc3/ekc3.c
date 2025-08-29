@@ -44,32 +44,30 @@ s_tag * ekc3_parse_template (s_buf *input, s_tag *dest)
     if (buf_read_character_utf8(input, &c) <= 0) {
       switch (state) {
       case EKC3_STATE_RAW:
-        if (! buf_write_character_utf8(&buf, '\n') ||
-            ! buf_write_1(&buf, "EKC3.verbose "))
+        if (buf_write_character_utf8(&buf, '\n') <= 0 ||
+            buf_write_1(&buf, "EKC3.verbose ") <= 0 ||
+            buf_read_to_str(&token_buf, &token_str) <= 0)
           goto error;
-        if (! buf_read_to_str(&token_buf, &token_str))
-          goto error;
-        if (! buf_inspect_str(&buf, &token_str)) {
+        if (buf_inspect_str(&buf, &token_str) <= 0) {
           str_clean(&token_str);
           goto error;
         }
         str_clean(&token_str);
         break;
       case EKC3_STATE_VERBOSE:
-        if (! buf_write_1(&buf, "\nEKC3.verbose "))
+        if (buf_write_1(&buf, "\nEKC3.verbose ") <= 0 ||
+            buf_read_to_str(&token_buf, &token_str) <= 0)
           goto error;
-        if (! buf_read_to_str(&token_buf, &token_str))
-          goto error;
-        if (! buf_write_str(&buf, &token_str)) {
+        if (buf_write_str(&buf, &token_str) <= 0) {
           str_clean(&token_str);
           goto error;
         }
         str_clean(&token_str);
         break;
       case EKC3_STATE_SILENT:
-        if (! buf_read_to_str(&token_buf, &token_str))
+        if (buf_read_to_str(&token_buf, &token_str) <= 0)
           goto error;
-        if (! buf_write_str(&buf, &token_str)) {
+        if (buf_write_str(&buf, &token_str) <= 0) {
           str_clean(&token_str);
           goto error;
         }
@@ -85,7 +83,7 @@ s_tag * ekc3_parse_template (s_buf *input, s_tag *dest)
         if (c == '<') {
           token_position = 1;
         } else {
-          if (! buf_write_character_utf8(&token_buf, c)) {
+          if (buf_write_character_utf8(&token_buf, c) <= 0) {
             goto error;
           }
         }
@@ -95,19 +93,19 @@ s_tag * ekc3_parse_template (s_buf *input, s_tag *dest)
           token_position = 2;
         } else {
           token_position = 0;
-          if (! buf_write_character_utf8(&token_buf, '<') ||
-              ! buf_write_character_utf8(&token_buf, c)) {
+          if (buf_write_character_utf8(&token_buf, '<') <= 0 ||
+              buf_write_character_utf8(&token_buf, c) <= 0) {
             goto error;
           }
         }
         break;
       case 2:
-        if (! buf_write_character_utf8(&buf, '\n') ||
-            ! buf_write_1(&buf, "EKC3.verbose "))
+        if (buf_write_character_utf8(&buf, '\n') <= 0 ||
+            buf_write_1(&buf, "EKC3.verbose ") <= 0)
           goto error;
-        if (! buf_read_to_str(&token_buf, &token_str))
+        if (buf_read_to_str(&token_buf, &token_str) <= 0)
           goto error;
-        if (! buf_inspect_str(&buf, &token_str)) {
+        if (buf_inspect_str(&buf, &token_str) <= 0) {
           str_clean(&token_str);
           goto error;
         }
@@ -119,7 +117,7 @@ s_tag * ekc3_parse_template (s_buf *input, s_tag *dest)
         } else {
           state = EKC3_STATE_SILENT;
           token_position = 0;
-          if (! buf_write_character_utf8(&token_buf, c)) {
+          if (buf_write_character_utf8(&token_buf, c) <= 0) {
             goto error;
           }
         }
@@ -132,19 +130,19 @@ s_tag * ekc3_parse_template (s_buf *input, s_tag *dest)
       case 0:
         if (c == '%')
           token_position = 1;
-        else if (! buf_write_character_utf8(&token_buf, c))
+        else if (buf_write_character_utf8(&token_buf, c) <= 0)
           goto error;
         break;
       case 1:
         if (c == '>') {
-          if (! buf_read_to_str(&token_buf, &token_str))
+          if (buf_read_to_str(&token_buf, &token_str) <= 0)
             goto error;
           if (state == EKC3_STATE_VERBOSE &&
-              ! buf_write_1(&buf, "\nEKC3.verbose ")) {
+              buf_write_1(&buf, "\nEKC3.verbose ") <= 0) {
             str_clean(&token_str);
             goto error;
           }
-          if (! buf_write_str(&buf, &token_str)) {
+          if (buf_write_str(&buf, &token_str) <= 0) {
             str_clean(&token_str);
             goto error;
           }
@@ -154,8 +152,8 @@ s_tag * ekc3_parse_template (s_buf *input, s_tag *dest)
           buf_empty(&token_buf);
         }
         else {
-          if (! buf_write_character_utf8(&token_buf, '%') ||
-              ! buf_write_character_utf8(&token_buf, c))
+          if (buf_write_character_utf8(&token_buf, '%') <= 0 ||
+              buf_write_character_utf8(&token_buf, c) <= 0)
             goto error;
           token_position = 0;
         }
@@ -228,7 +226,7 @@ s_list *** ekc3_append_and_empty_buf (s_list ***tail, s_buf *buf)
   assert(*tail);
   assert(! **tail);
   assert(buf);
-  if (! buf_read_to_str(buf, &str)) {
+  if (buf_read_to_str(buf, &str) <= 0) {
     err_puts("ekc3_append_and_empty_buf: buf_read_to_str");
     assert(! "ekc3_append_and_empty_buf: buf_read_to_str");
     return NULL;

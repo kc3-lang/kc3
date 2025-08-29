@@ -1072,8 +1072,7 @@ sw buf_read_until_space_into_str (s_buf *buf, s_str *dest)
       buf_init(&tmp, false, buf->size, buf->ptr.pchar);
       tmp.rpos = save.rpos;
       tmp.wpos = buf->rpos;
-      if (! buf_read_to_str(&tmp, dest)) {
-        r = -1;
+      if (buf_read_to_str(&tmp, dest) <= 0) {
         goto restore;
       }
       r = result;
@@ -1123,7 +1122,7 @@ s_str * buf_read_until_list_into_str (s_buf *buf,
         buf_init(&tmp, false, buf->size, buf->ptr.pchar);
         tmp.rpos = save.rpos;
         tmp.wpos = buf->rpos - e->tag.data.str.size;
-        if (! buf_read_to_str(&tmp, dest)) {
+        if (buf_read_to_str(&tmp, dest) <= 0) {
           err_puts("buf_read_until_str_into_str: buf_read_to_str");
           goto restore;
         }
@@ -1248,7 +1247,7 @@ sw buf_read_until_str_into_str (s_buf *buf, const s_str *end,
       buf_init(&tmp, false, buf->size, buf->ptr.pchar);
       tmp.rpos = save.rpos;
       tmp.wpos = buf->rpos - end->size;
-      if (! buf_read_to_str(&tmp, dest)) {
+      if (buf_read_to_str(&tmp, dest) <= 0) {
         err_puts("buf_read_until_str_into_str: buf_read_to_str");
         r = -1;
         goto restore;
@@ -1305,7 +1304,7 @@ s_str * buf_read_word_into_str(s_buf *buf, s_str *dest)
       buf_init(&tmp, false, buf->size, buf->ptr.pchar);
       tmp.rpos = save.rpos;
       tmp.wpos = buf->rpos - r1;
-      if (! buf_read_to_str(&tmp, dest)) {
+      if (buf_read_to_str(&tmp, dest) <= 0) {
         err_puts("buf_read_word_into_str: buf_read_to_str");
         goto restore;
       }

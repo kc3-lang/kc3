@@ -100,7 +100,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     err_inspect_tag(&tmp_req.method);
     err_write_1("\n");
   }
-  if (! buf_read_until_1_into_str(buf, " ", &url) ||
+  if (buf_read_until_1_into_str(buf, " ", &url) <= 0 ||
       url.size < 1 ||
       url.ptr.pchar[0] != '/') {
     err_puts("http_request_buf_parse: invalid URL");
@@ -128,7 +128,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     err_inspect_str(&tmp_req.url);
     err_write_1("\n");
   }
-  if (! buf_read_until_1_into_str(buf, "\r\n", &tmp_req.protocol)) {
+  if (buf_read_until_1_into_str(buf, "\r\n", &tmp_req.protocol) <= 0) {
     err_puts("http_request_buf_parse: invalid protocol");
     goto restore;
   }
@@ -139,7 +139,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   }
   tail = &tmp_req.headers;
   while (1) {
-    if (! buf_read_until_1_into_str(buf, "\r\n", &line)) {
+    if (buf_read_until_1_into_str(buf, "\r\n", &line) <= 0) {
       err_puts("http_request_buf_parse: invalid header");
       goto restore;
     }
@@ -203,7 +203,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         multipart_headers = NULL;
         tail = &multipart_headers;
         while (1) {
-          if (! buf_read_until_str_into_str(buf, &newline, &line)) {
+          if (buf_read_until_str_into_str(buf, &newline, &line) <= 0) {
             err_puts("http_request_buf_parse: invalid multipart"
                      " header");
             goto restore;
@@ -230,17 +230,19 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
               goto restore;
             }
             multipart_name.type = TAG_STR;
-            if (! buf_read_until_1_into_str
-                (&header_buf, "\"", &multipart_name.data.str)) {
+            if (buf_read_until_1_into_str(&header_buf, "\"",
+                                          &multipart_name.data.str)
+                <= 0) {
               err_puts("http_request_buf_parse: invalid name");
               goto restore;
             }
             tag_clean(&filename);
             tag_init_str_empty(&filename);
             if (buf_read_1(&header_buf, "; filename=\"") > 0) {
-              if (! buf_read_until_1_into_str(&header_buf, "\"",
-                                              &filename.data.str) ||
-                  str_character_position(&filename.data.str, '/') >= 0) {
+              if (buf_read_until_1_into_str(&header_buf, "\"",
+                                            &filename.data.str) <= 0 ||
+                  str_character_position(&filename.data.str, '/')
+                  >= 0) {
                 err_puts("http_request_buf_parse: invalid filename");
                 goto restore;
               }
@@ -296,7 +298,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             goto restore;
           }
 	  path.type = TAG_STR;
-          if (! buf_read_to_str(&path_buf, &path.data.str)) {
+          if (buf_read_to_str(&path_buf, &path.data.str) <= 0) {
             err_puts("http_request_buf_parse:"
                      " buf_read_to_str(path_buf, path)");
             goto restore;
@@ -337,8 +339,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
                              tmp_req.body.data.plist);	  
         }
         else { // if (filename.data.str.size)
-          if (! buf_read_until_str_into_str(buf, &boundary_newline,
-                                            &multipart_value)) {
+          if (buf_read_until_str_into_str(buf, &boundary_newline,
+                                          &multipart_value) <= 0) {
             err_puts("http_request_buf_parse: failed to parse"
                      " multipart value");
             goto restore;
@@ -417,7 +419,7 @@ s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   //buf_save_init(buf, &save);
-  if (! buf_read_until_1_into_str(buf, " ", &str)) {
+  if (buf_read_until_1_into_str(buf, " ", &str) <= 0) {
     if (false)
       err_puts("http_request_buf_parse_method: buf_read_until_1_into_str");
     goto restore;

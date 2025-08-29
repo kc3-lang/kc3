@@ -38,7 +38,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
     return NULL;
   }
   tail = &(*tail)->next.data.plist;
-  if (! buf_init_alloc(&token_buf, BUF_SIZE)) {
+  if (buf_init_alloc(&token_buf, BUF_SIZE) <= 0) {
     err_puts("embed_parse_template: buf_init_alloc failed");
     return NULL;
   }
@@ -78,7 +78,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
             return NULL;
           }
           tail = &(*tail)->next.data.plist;
-          if (! buf_read_to_str(&token_buf, &str)) {
+          if (buf_read_to_str(&token_buf, &str) <= 0) {
             list_delete_all(template);
             buf_clean(&token_buf);
             return NULL;
@@ -153,7 +153,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
               return NULL;
             }
             tail = &(*tail)->next.data.plist;
-            if (! buf_read_to_str(&token_buf, &str)) {
+            if (buf_read_to_str(&token_buf, &str) <= 0) {
               list_delete_all(template);
               buf_clean(&token_buf);
               return NULL;
@@ -226,7 +226,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
       assert(! "embed_parse_template: EMBED_STATE_VOID 3");
       return NULL;
     }
-    if (! buf_read_to_str(&token_buf, &str)) {
+    if (buf_read_to_str(&token_buf, &str) <= 0) {
       list_delete_all(template);
       buf_clean(&token_buf);
       return NULL;

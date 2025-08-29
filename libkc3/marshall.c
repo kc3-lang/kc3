@@ -1543,7 +1543,7 @@ s_str * marshall_to_str (s_marshall *m, s_str *dest)
     buf_clean(&out);
     return NULL;
   }
-  if (! buf_read_to_str(&out, dest)) {
+  if (buf_read_to_str(&out, dest) <= 0) {
     buf_clean(&out);
     return NULL;
   }

@@ -396,15 +396,14 @@ s_tag * json_buf_parse_number (s_buf *buf, s_tag *dest)
 {
   assert(buf);
   assert(dest);
-  if (! buf_parse_tag_number(buf, dest))
+  if (buf_parse_tag_number(buf, dest) <= 0)
     return NULL;
   return dest;
 }
 
 s_tag * json_buf_parse_str (s_buf *buf, s_tag *dest)
 {
-  sw r;
-  if ((r = buf_parse_tag_str(buf, dest)) <= 0)
+  if (buf_parse_tag_str(buf, dest) <= 0)
     return NULL;
   return dest;
 }

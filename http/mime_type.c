@@ -91,7 +91,7 @@ bool http_mime_type_buf_parse_type (s_buf *buf)
         buf_init(&tmp, false, buf->size, buf->ptr.pchar);
         tmp.rpos = save.rpos;
         tmp.wpos = buf->rpos;
-        if (! buf_read_to_str(&tmp, &str)) {
+        if (buf_read_to_str(&tmp, &str) <= 0) {
           r = -1;
           goto restore;
         }
