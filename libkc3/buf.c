@@ -1092,14 +1092,14 @@ sw buf_read_until_space_into_str (s_buf *buf, s_str *dest)
   return r;
 }
 
-s_str * buf_read_until_list_into_str (s_buf *buf,
-                                      const s_list * const *end,
-                                      s_str *dest)
+sw buf_read_until_list_into_str (s_buf *buf,
+                                 p_list *end,
+                                 s_str *dest)
 {
   const s_list *e;
   character c;
   sw r;
-  s_str *result = NULL;
+  sw result = 0;
   s_buf_save save;
   s_buf tmp;
 #if HAVE_PTHREAD
@@ -1112,10 +1112,10 @@ s_str * buf_read_until_list_into_str (s_buf *buf,
       err_puts("buf_read_until_list_into_str: invalid end List of Str");
       assert(! "buf_read_until_list_into_str: invalid end List of Str");
     }
-    while (e){
+    while (e) {
       if ((r = buf_read_str(buf, &e->tag.data.str)) < 0) {
         if (false)
-          err_puts("buf_read_until_str_into_str: buf_read_str");
+          err_puts("buf_read_until_list_into_str: buf_read_str");
         goto restore;
       }
       if (r) {
@@ -1123,17 +1123,17 @@ s_str * buf_read_until_list_into_str (s_buf *buf,
         tmp.rpos = save.rpos;
         tmp.wpos = buf->rpos - e->tag.data.str.size;
         if (buf_read_to_str(&tmp, dest) <= 0) {
-          err_puts("buf_read_until_str_into_str: buf_read_to_str");
+          err_puts("buf_read_until_list_into_str: buf_read_to_str");
           goto restore;
         }
-        result = dest;
+        r = result;
         goto clean;
       }
       e = list_next(e);
     }
     if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
       if (false)
-        err_puts("buf_read_until_str_into_str: "
+        err_puts("buf_read_until_list_into_str: "
                  "buf_read_character_utf8");
       goto restore;
     }
@@ -1166,8 +1166,11 @@ sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
         err_puts("buf_read_until_str_into_buf: buf_read_str");
       goto restore;
     }
-    if (r)
+    if (r) {
+      result += r;
+      r = result;
       goto clean;
+    }
     if ((r = buf_read_u8(buf, &c)) <= 0) {
       if (true)
         err_puts("buf_read_until_str_into_buf: buf_read_u8");
@@ -1188,7 +1191,7 @@ sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
   rwlock_unlock_w(&buf->rwlock);
   rwlock_unlock_w(&dest->rwlock);
 #endif
-  return r > 0 ? result : -1;
+  return r;
 }
 
 sw buf_read_until_str_into_file (s_buf *buf, const s_str *end,
@@ -1231,6 +1234,7 @@ sw buf_read_until_str_into_str (s_buf *buf, const s_str *end,
 {
   character c;
   sw r;
+  sw result = 0;
   s_buf_save save;
   s_buf tmp;
 #if HAVE_PTHREAD
@@ -1244,15 +1248,16 @@ sw buf_read_until_str_into_str (s_buf *buf, const s_str *end,
       goto restore;
     }
     if (r) {
+      result += r;
       buf_init(&tmp, false, buf->size, buf->ptr.pchar);
       tmp.rpos = save.rpos;
       tmp.wpos = buf->rpos - end->size;
-      if (buf_read_to_str(&tmp, dest) <= 0) {
+      if (buf_read_to_str(&tmp, dest) < 0) {
         err_puts("buf_read_until_str_into_str: buf_read_to_str");
         r = -1;
         goto restore;
       }
-      r = dest->size;
+      r = result;
       goto clean;
     }
     if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
@@ -1261,6 +1266,7 @@ sw buf_read_until_str_into_str (s_buf *buf, const s_str *end,
                  "buf_read_character_utf8");
       goto restore;
     }
+    result += r;
   }
  restore:
   buf_save_restore_rpos(buf, &save);
@@ -1272,12 +1278,12 @@ sw buf_read_until_str_into_str (s_buf *buf, const s_str *end,
   return r;
 }
 
-s_str * buf_read_word_into_str(s_buf *buf, s_str *dest)
+sw buf_read_word_into_str(s_buf *buf, s_str *dest)
 {
   character c;
   sw r;
   sw r1 = 0;
-  s_str *result = NULL;
+  sw result = 0;
   s_buf_save save;
   s_buf tmp;
   buf_save_init(buf, &save);
@@ -1287,6 +1293,7 @@ s_str * buf_read_word_into_str(s_buf *buf, s_str *dest)
   while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
          ! character_is_alphanum(c)) {
     buf_ignore(buf, r);
+    result += r;
   }
   while (1) {
     if ((r = buf_read_character_utf8(buf, &c)) < 0) {
@@ -1294,21 +1301,23 @@ s_str * buf_read_word_into_str(s_buf *buf, s_str *dest)
         err_puts("buf_read_word_into_str: buf_read_character_utf8");
       goto restore;
     }
+    result += r;
     if (r && ! character_is_alphanum(c)) {
       r1 = r;
       while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
              ! character_is_alphanum(c)) {
         buf_ignore(buf, r);
+        result += r;
         r1 += r;
       }
       buf_init(&tmp, false, buf->size, buf->ptr.pchar);
       tmp.rpos = save.rpos;
       tmp.wpos = buf->rpos - r1;
-      if (buf_read_to_str(&tmp, dest) <= 0) {
+      if ((r = buf_read_to_str(&tmp, dest)) <= 0) {
         err_puts("buf_read_word_into_str: buf_read_to_str");
         goto restore;
       }
-      result = dest;
+      r = result;
       goto clean;
     }
   }
@@ -1319,7 +1328,7 @@ s_str * buf_read_word_into_str(s_buf *buf, s_str *dest)
 #if HAVE_PTHREAD
   rwlock_unlock_w(&buf->rwlock);
 #endif
-  return result;
+  return r;
 }
 
 DEF_BUF_READ(uw)

@@ -98,7 +98,7 @@ sw        buf_read_str (s_buf *buf, const s_str *src);
 PROTO_BUF_READ(sw);
 sw        buf_read_sym (s_buf *buf, const s_sym *src);
 sw        buf_read_to_str (s_buf *buf, s_str *dest);
-s_str *   buf_read_word_into_str(s_buf *buf, s_str *dest); 
+sw        buf_read_word_into_str(s_buf *buf, s_str *dest); 
 PROTO_BUF_READ(u8);
 PROTO_BUF_READ(u16);
 PROTO_BUF_READ(u32);
@@ -109,8 +109,8 @@ sw        buf_read_until_character_into_str (s_buf *buf, character end,
                                              s_str *dest);
 sw        buf_read_until_list_into_buf (s_buf *buf, const s_list *end,
                                         s_buf *dest);
-s_str *   buf_read_until_list_into_str (s_buf *buf,
-                                        const s_list * const *end,
+sw        buf_read_until_list_into_str (s_buf *buf,
+                                        p_list *end,
                                         s_str *dest);
 
 sw        buf_read_until_space_into_str (s_buf *buf, s_str *dest);

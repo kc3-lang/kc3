@@ -155,8 +155,8 @@ s_tag *       str_size (const s_str *str, s_tag *dest);
 s_list **     str_split (const s_str *str, const s_str *separator,
                          s_list **dest);
 s_list **     str_split_list (const s_str *str,
-                              const s_list * const *sep,
-                              s_list **dest);
+                              p_list *sep,
+                              p_list *dest);
 bool *        str_starts_with (const s_str *str, const s_str *start,
                                bool *dest);
 bool *        str_starts_with_case_insensitive (const s_str *str,

@@ -38,7 +38,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
     return NULL;
   }
   tail = &(*tail)->next.data.plist;
-  if (buf_init_alloc(&token_buf, BUF_SIZE) <= 0) {
+  if (! buf_init_alloc(&token_buf, BUF_SIZE)) {
     err_puts("embed_parse_template: buf_init_alloc failed");
     return NULL;
   }

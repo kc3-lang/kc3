@@ -1546,7 +1546,7 @@ s_list ** str_split (const s_str *str, const s_str *separator,
 }
 
 s_list ** str_split_list (const s_str *str,
-                          const s_list * const *sep,
+                          p_list *sep,
                           s_list **dest)
 {
   s_buf buf;
