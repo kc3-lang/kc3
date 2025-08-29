@@ -891,6 +891,48 @@ sw buf_read_integer (s_buf *buf, s_integer *dest)
   return result;
 }
 
+s_str * buf_read_line (s_buf *buf, s_str *dest)
+{
+  return buf_read_until_1_into_str(buf, "\n", dest);
+}
+
+s_str * buf_read_max (s_buf *buf, s_str *dest)
+{
+  char *p;
+  sw r;
+  s_str *result = NULL;
+  sw size;
+  s_str tmp = {0};
+  assert(buf);
+#if HAVE_PTHREAD
+  rwlock_w(&buf->rwlock);
+#endif
+  if (buf->rpos > buf->wpos)
+    goto clean;
+  if ((r = buf_refill(buf, buf->size)) < 0)
+    goto clean;
+  size = r;
+  if (! size)
+    return str_init_empty(dest);
+  if (buf->rpos + size > buf->wpos) {
+    assert(! "buffer overflow");
+    goto clean;
+  }
+  p = alloc(size + 1);
+  if (! p)
+    goto clean;
+  str_init(&tmp, p, size, p);
+  memcpy(p, buf->ptr.ps8 + buf->rpos, size);
+  buf->rpos += size;
+  *dest = tmp;
+  result = dest;
+ clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&buf->rwlock);
+#endif
+  return result;
+}
+
 DEF_BUF_READ(s8)
 DEF_BUF_READ(s16)
 DEF_BUF_READ(s32)

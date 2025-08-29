@@ -88,6 +88,8 @@ PROTO_BUF_READ(f32);
 PROTO_BUF_READ(f64);
 PROTO_BUF_READ(f128);
 sw        buf_read_integer (s_buf *buf, s_integer *dest);
+s_str *   buf_read_line (s_buf *buf, s_str *dest);
+s_str *   buf_read_max (s_buf *buf, s_str *dest);
 PROTO_BUF_READ(s8);
 PROTO_BUF_READ(s16);
 PROTO_BUF_READ(s32);
