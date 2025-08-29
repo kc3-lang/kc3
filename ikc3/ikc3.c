@@ -265,7 +265,19 @@ int main (int argc, char **argv)
 #else
   buf_linenoise_open_r(env->in, "ikc3> ", ".ikc3_history");
 #endif
+  if (g_client) {
+    // TODO: open env->in and env->out from socket_buf
+  }
+  if (g_server) {
+    // TODO: open env->in and env->out from socket_buf
+  }
   r = ikc3_run();
+  if (g_client) {
+    // TODO: restore env->in and env->out and close socket_buf
+  }
+  if (g_server) {
+    // TODO: restore env->in and env->out and close socket_buf
+  }
 #if HAVE_WINEDITLINE
   buf_wineditline_close(env->in, ".ikc3_history");
 #else
