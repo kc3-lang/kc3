@@ -28,11 +28,12 @@ s_str g_host = {0};
 s_str g_port = {0};
 bool  g_server = false;
 
-int ikc3_client (s_env *env, int *argc, char ***argv);
-int ikc3_dump (s_env *env, int *argc, char ***argv);
-int ikc3_load (s_env *env, int *argc, char ***argv);
-sw ikc3_run (void);
-int ikc3_server (s_env *env, int *argc, char ***argv);
+sw  buf_ignore_character (s_buf *buf);
+int ikc3_arg_client (s_env *env, int *argc, char ***argv);
+int ikc3_arg_dump (s_env *env, int *argc, char ***argv);
+int ikc3_arg_load (s_env *env, int *argc, char ***argv);
+int ikc3_arg_server (s_env *env, int *argc, char ***argv);
+sw  ikc3_run (void);
 int usage (char *argv0);
 
 sw buf_ignore_character (s_buf *buf)
@@ -52,36 +53,52 @@ sw buf_ignore_character (s_buf *buf)
   return csize;
 }
 
-int ikc3_dump (s_env *env, int *argc, char ***argv)
+int ikc3_arg_client (s_env *env, int *argc, char ***argv)
 {
-  s_str path = {0};
-  if (*argc < 2 || ! (*argv)[0] || ! (*argv)[1])
-    return usage(env->argv[0]);
-  str_init_1(&path, NULL, (*argv)[1]);
-  if (! env_dump(env, &path)) {
-    str_clean(&path);
-    return 1;
+  if (g_server) {
+    err_puts("ikc3_arg_client: --client and --server are mutually"
+             " exclusive");
+    usage(env->argv[0]);
+    return -1;
   }
-  str_clean(&path);
-  *argc -= 2;
-  *argv += 2;
-  return 0;
-}
-
-int ikc3_client (s_env *env, int *argc, char ***argv)
-{
-  if (g_client || g_server ||
-      *argc < 3 || ! (*argv)[0] || ! (*argv)[1] || ! (*argv)[2])
-    return usage(env->argv[0]);
+  if (g_client) {
+    err_puts("ikc3_arg_client: --client can only be set once");
+    usage(env->argv[0]);
+    return -1;
+  }
+  if (*argc < 3 || ! (*argv)[0] || ! (*argv)[1] || ! (*argv)[2]) {
+    err_puts("ikc3_arg_client: --client invalid argument");
+    usage(env->argv[0]);
+    return -1;
+  }
   str_init_1(&g_host, NULL, (*argv)[1]);
   str_init_1(&g_port, NULL, (*argv)[2]);
   g_client = true;
   *argc -= 3;
   *argv += 3;
-  return 0;
+  return 3;
 }
 
-int ikc3_load (s_env *env, int *argc, char ***argv)
+int ikc3_arg_dump (s_env *env, int *argc, char ***argv)
+{
+  s_str path = {0};
+  if (*argc < 2 || ! (*argv)[0] || ! (*argv)[1]) {
+    err_puts("ikc3_arg_dump: invalid argument");
+    usage(env->argv[0]);
+    return -1;
+  }
+  str_init_1(&path, NULL, (*argv)[1]);
+  if (! env_dump(env, &path)) {
+    str_clean(&path);
+    return -1;
+  }
+  str_clean(&path);
+  *argc -= 2;
+  *argv += 2;
+  return 2;
+}
+
+int ikc3_arg_load (s_env *env, int *argc, char ***argv)
 {
   sw     e = 0;
   FILE *fp = 0;
@@ -92,15 +109,12 @@ int ikc3_load (s_env *env, int *argc, char ***argv)
   s_str path = {0};
   sw r;
   if (*argc < 2) {
-    err_write_1(env->argv[0]);
-    err_write_1(": ");
-    err_write_1(**argv);
-    err_write_1(" without an argument\n");
-    assert(! "env_init: -l or --load without an argument");
+    err_puts("ikc3_arg_load: --load without an argument");
+    assert(! "ikc3_arg_load: --load without an argument");
     return -1;
     }
   if (env->trace) {
-    err_write_1("ikc3: load: ");
+    err_write_1("ikc3_arg_load: ");
     err_write_1((*argv)[1]);
     err_write_1("\n");
   }
@@ -140,6 +154,32 @@ int ikc3_load (s_env *env, int *argc, char ***argv)
   *argc -= 2;
   *argv += 2;
   return 0;
+}
+
+int ikc3_arg_server (s_env *env, int *argc, char ***argv)
+{
+  if (g_client) {
+    err_puts("ikc3_arg_server: --client and --server are mutually"
+             " exclusive");
+    usage(env->argv[0]);
+    return -1;
+  }
+  if (g_server) {
+    err_puts("ikc3_arg_server: --server can only be set once");
+    usage(env->argv[0]);
+    return -1;
+  }
+  if (*argc < 3 || ! (*argv)[0] || ! (*argv)[1] || ! (*argv)[2]) {
+    err_puts("ikc3_arg_server: --server invalid argument");
+    usage(env->argv[0]);
+    return -1;
+  }
+  str_init_1(&g_host, NULL, (*argv)[1]);
+  str_init_1(&g_port, NULL, (*argv)[2]);
+  g_server = true;
+  *argc -= 3;
+  *argv += 3;
+  return 3;
 }
 
 sw ikc3_run (void)
@@ -182,19 +222,6 @@ sw ikc3_run (void)
   return 0;
 }
 
-int ikc3_server (s_env *env, int *argc, char ***argv)
-{
-  if (g_client || g_server ||
-      *argc < 3 || ! (*argv)[0] || ! (*argv)[1] || ! (*argv)[2])
-    return usage(env->argv[0]);
-  str_init_1(&g_host, NULL, (*argv)[1]);
-  str_init_1(&g_port, NULL, (*argv)[2]);
-  g_server = true;
-  *argc -= 3;
-  *argv += 3;
-  return 0;
-}
-
 int main (int argc, char **argv)
 {
   s_env *env;
@@ -207,24 +234,25 @@ int main (int argc, char **argv)
   env = env_global();
   in_original = *env->in;
   while (argc) {
-    if (! strcmp(argv[0], "--dump")) {
-      if ((r = ikc3_dump(env, &argc, &argv)))
+    if (! strcmp("--client", *argv)) {
+      if ((r = ikc3_arg_client(env, &argc, &argv)) < 0)
+        goto clean;
+    }
+    else if (! strcmp(argv[0], "--dump")) {
+      if ((r = ikc3_arg_dump(env, &argc, &argv)) < 0)
         goto clean;
     }
     else if (! strcmp("--load", *argv) ||
-      ! strcmp("-l", *argv)) {
-      if ((r = ikc3_load(env, &argc, &argv)))
-        goto clean;
-    }
-    else if (! strcmp("--client", *argv)) {
-      if ((r = ikc3_client(env, &argc, &argv)))
+             ! strcmp("-l", *argv)) {
+      if ((r = ikc3_arg_load(env, &argc, &argv)) < 0)
         goto clean;
     }
     else if (! strcmp("--server", *argv)) {
-      if ((r = ikc3_server(env, &argc, &argv)))
+      if ((r = ikc3_arg_server(env, &argc, &argv)) < 0)
         goto clean;
     }
-    else if (argc == 1 && ! strcmp("--quit", *argv)) {
+    else if (argc == 1 &&
+             ! strcmp("--quit", *argv)) {
       r = 0;
       goto clean;
     }
