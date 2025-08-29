@@ -23,14 +23,17 @@
 
 #define BUFSZ 0x10000
 
+bool  g_client = false;
+s_str g_host = {0};
+s_str g_port = {0};
+bool  g_server = false;
+
 int ikc3_client (s_env *env, int *argc, char ***argv);
 int ikc3_dump (s_env *env, int *argc, char ***argv);
 int ikc3_load (s_env *env, int *argc, char ***argv);
 sw ikc3_run (void);
 int ikc3_server (s_env *env, int *argc, char ***argv);
 int usage (char *argv0);
-
-
 
 sw buf_ignore_character (s_buf *buf)
 {
@@ -52,6 +55,8 @@ sw buf_ignore_character (s_buf *buf)
 int ikc3_dump (s_env *env, int *argc, char ***argv)
 {
   s_str path = {0};
+  if (*argc < 2 || ! (*argv)[0] || ! (*argv)[1])
+    return usage(env->argv[0]);
   str_init_1(&path, NULL, (*argv)[1]);
   if (! env_dump(env, &path)) {
     str_clean(&path);
@@ -65,6 +70,14 @@ int ikc3_dump (s_env *env, int *argc, char ***argv)
 
 int ikc3_client (s_env *env, int *argc, char ***argv)
 {
+  if (g_client || g_server ||
+      *argc < 3 || ! (*argv)[0] || ! (*argv)[1] || ! (*argv)[2])
+    return usage(env->argv[0]);
+  str_init_1(&g_host, NULL, (*argv)[1]);
+  str_init_1(&g_port, NULL, (*argv)[2]);
+  g_client = true;
+  *argc -= 3;
+  *argv += 3;
   return 0;
 }
 
@@ -171,6 +184,14 @@ sw ikc3_run (void)
 
 int ikc3_server (s_env *env, int *argc, char ***argv)
 {
+  if (g_client || g_server ||
+      *argc < 3 || ! (*argv)[0] || ! (*argv)[1] || ! (*argv)[2])
+    return usage(env->argv[0]);
+  str_init_1(&g_host, NULL, (*argv)[1]);
+  str_init_1(&g_port, NULL, (*argv)[2]);
+  g_server = true;
+  *argc -= 3;
+  *argv += 3;
   return 0;
 }
 
@@ -180,14 +201,13 @@ int main (int argc, char **argv)
   s_buf in_original;
   sw r;
   if (argc < 1)
-    return usage("ikc3"); // Unreachable
+    return usage("ikc3");
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
   env = env_global();
   in_original = *env->in;
   while (argc) {
-    if (argc > 1 && argv[0] && argv[1] &&
-        ! strcmp(argv[0], "--dump")) {
+    if (! strcmp(argv[0], "--dump")) {
       if ((r = ikc3_dump(env, &argc, &argv)))
         goto clean;
     }
@@ -231,6 +251,8 @@ int main (int argc, char **argv)
 
 int usage (char *argv0)
 {
-  printf("Usage: %s [--load FILE] [--quit]\n", argv0);
+  printf("Usage: %s [--load FILE] [--client HOST PORT]\n"
+         "  [--server HOST PORT] [--dump FILE] [--quit]\n",
+         argv0);
   return 1;
 }
