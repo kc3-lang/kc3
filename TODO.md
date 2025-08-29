@@ -36,12 +36,12 @@
 ## IKC3 RPC
 
  - ikc3/
-   - ikc3 --server HOST PORT
-     - argument parsing
-     - socket_buf_init_listen / socket_buf_init_accept
-   - ikc3 --client HOST PORT
-     - argument parsing
-     - socket_buf_init_connect
+   - [x] ikc3 --server HOST PORT
+     - [x] argument parsing
+     - [x] socket_buf_init_listen / socket_buf_init_accept
+   - [ ] ikc3 --client HOST PORT
+     - [x] argument parsing
+     - [.] socket_buf_init_connect
 
 
 ## LibreSSL/OpenSSL
