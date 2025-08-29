@@ -100,12 +100,14 @@ static s_env * env_toplevel_init (s_env *env);
 // Special operator.
 s_pointer * env_address_of (s_env *env, s_ident *ident, s_pointer *dest)
 {
-  s_tag *tag;
+  s_tag *tag = NULL;
   s_pointer tmp = {0};
   assert(env);
   assert(ident);
   assert(dest);
-  if (! (ident->module && (tag = env_frames_get (env, ident->sym))) &&
+  if (! ident->module)
+    tag = env_frames_get(env, ident->sym);
+  if (! tag &&
       ! (tag = env_ident_get_address(env, ident))) {
     err_write_1("env_address_of: undeclared ident ");
     err_inspect_ident(ident);
@@ -1520,10 +1522,10 @@ s_tag * env_ident_get_address (s_env *env, const s_ident *ident)
   if (! module) {
     if (! env_sym_search_modules(env, ident->sym, &module) ||
         ! module) {
-      err_write_1("env_ident_get: symbol not found: ");
+      err_write_1("env_ident_get_address: symbol not found: ");
       err_inspect_sym(ident->sym);
       err_write_1("\n");
-      assert(! "env_ident_get: symbol not found");
+      assert(! "env_ident_get_address: symbol not found");
       return NULL;
     }
   }
