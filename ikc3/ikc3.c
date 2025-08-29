@@ -156,11 +156,6 @@ int main (int argc, char **argv)
       argc -= 2;
       argv += 2;
     }
-    else if (argc > 0 && ! strcmp("--trace", *argv)) {
-      env->trace = true;
-      argc--;
-      argv++;
-    }
     else if (argc > 1 && argv[0] && argv[1] &&
              ! strcmp(argv[0], "--dump")) {
       str_init_1(&path, NULL, argv[1]);
