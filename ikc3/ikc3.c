@@ -13,6 +13,9 @@
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
+#ifdef HAVE_PTHREAD
+# include <pthread.h>
+#endif
 #include "../libkc3/kc3.h"
 #include "../socket/socket.h"
 #include "../socket/socket_buf.h"
@@ -26,6 +29,13 @@
 
 #define BUFSZ 0x10000
 
+typedef struct ikc3_client_thread_state s_ikc3_client_thread_state;
+
+struct ikc3_client_thread_state {
+  s_buf *buf;
+  s_socket_buf *socket_buf;
+};
+
 bool   g_client = false;
 s_str  g_host = {0};
 s_str  g_port = {0};
@@ -38,17 +48,21 @@ sw  buf_ignore_character (s_buf *buf);
 
 // TODO: use positive return value to increment argc and argv
 // TODO: remove one reference level (*)
-int  ikc3_arg_client (s_env *env, int *argc, char ***argv);
-int  ikc3_arg_dump (s_env *env, int *argc, char ***argv);
-int  ikc3_arg_load (s_env *env, int *argc, char ***argv);
-int  ikc3_arg_server (s_env *env, int *argc, char ***argv);
-int  ikc3_client (s_env *env);
-sw   ikc3_run (void);
-void ikc3_server_clean (s_env *env, p_socket socket,
-                        s_socket_buf *socket_buf);
-int  ikc3_server_init (s_env *env, p_socket socket,
-                       s_socket_buf *socket_buf);
-int  usage (char *argv0);
+int    ikc3_arg_client (s_env *env, int *argc, char ***argv);
+int    ikc3_arg_dump (s_env *env, int *argc, char ***argv);
+int    ikc3_arg_load (s_env *env, int *argc, char ***argv);
+int    ikc3_arg_server (s_env *env, int *argc, char ***argv);
+int    ikc3_client (s_env *env);
+#ifdef HAVE_PTHREAD
+void * ikc3_client_thread_rx (void *arg);
+void * ikc3_client_thread_tx (void *arg);
+#endif
+sw     ikc3_run (void);
+void   ikc3_server_clean (s_env *env, p_socket socket,
+                          s_socket_buf *socket_buf);
+int    ikc3_server_init (s_env *env, p_socket socket,
+                         s_socket_buf *socket_buf);
+int    usage (char *argv0);
 
 sw buf_ignore_character (s_buf *buf)
 {
@@ -196,6 +210,111 @@ int ikc3_arg_server (s_env *env, int *argc, char ***argv)
   return 3;
 }
 
+int ikc3_client (s_env *env)
+{
+  s_socket_buf socket_buf = {0};
+  if (! socket_buf_init_connect(&socket_buf, &g_host, &g_port)) {
+    err_write_1("ikc3: unable to connect to ");
+    err_inspect_str(&g_host);
+    err_write_1(" ");
+    err_inspect_str(&g_port);
+    err_write_1("\n");
+    return 1;
+  }
+  io_write_1("ikc3: connected to ");
+  io_inspect_str(&g_host);
+  io_write_1(" ");
+  io_inspect_str(&g_port);
+  io_write_1("\n");
+#ifdef HAVE_PTHREAD
+  pthread_t                  thread_rx;
+  s_ikc3_client_thread_state thread_rx_state;
+  pthread_t                  thread_tx;
+  s_ikc3_client_thread_state thread_tx_state;
+  thread_rx_state.buf = env->out;
+  thread_rx_state.socket_buf = &socket_buf;
+  if (pthread_create(&thread_rx, NULL, ikc3_client_thread_rx,
+                     &thread_rx_state) != 0) {
+    err_puts("ikc3: failed to create client rx thread");
+    socket_buf_close(&socket_buf);
+    return 1;
+  }
+  thread_tx_state.buf = env->in;
+  thread_tx_state.socket_buf = &socket_buf;
+  if (pthread_create(&thread_tx, NULL, ikc3_client_thread_tx,
+                     &thread_tx_state) != 0) {
+    err_puts("ikc3: failed to create client tx thread for stdin");
+    pthread_cancel(thread_rx);
+    socket_buf_close(&socket_buf);
+    return 1;
+  }
+  pthread_join(thread_rx, NULL);
+  pthread_join(thread_tx, NULL);
+#else
+  err_puts("ikc3_client: not implemented");
+#endif
+  socket_buf_close(&socket_buf);
+  return 0;
+}
+
+#ifdef HAVE_PTHREAD
+
+void * ikc3_client_thread_rx (void *arg)
+{
+  sw r;
+  s_ikc3_client_thread_state *state = arg;
+  s_str line = {0};
+  assert(state);
+  assert(state->buf);
+  assert(state->socket_buf);
+  while (1) {
+    if ((r = buf_read_line(state->socket_buf->buf_rw.r, &line)) < 0)
+      break;
+    if (r > 0) {
+      if (buf_write_str(state->buf, &line) < 0 ||
+          buf_write_1(state->buf, "\n") < 0) {
+        str_clean(&line);
+        break;
+      }
+      if (buf_flush(state->buf) < 0) {
+        str_clean(&line);
+        break;
+      }
+      str_clean(&line);
+    }
+  }
+  return NULL;
+}
+  
+void * ikc3_client_thread_tx (void *arg)
+{
+  sw r;
+  s_ikc3_client_thread_state *state = arg;
+  s_str line = {0};
+  assert(state);
+  assert(state->buf);
+  assert(state->socket_buf);
+  while (1) {
+    if ((r = buf_read_line(state->buf, &line)) < 0)
+      break;
+    if (r > 0) {
+      if (buf_write_str(state->socket_buf->buf_rw.w, &line) < 0 ||
+          buf_write_1(state->socket_buf->buf_rw.w, "\n") < 0) {
+        str_clean(&line);
+        break;
+      }
+      if (buf_flush(state->socket_buf->buf_rw.w) < 0) {
+        str_clean(&line);
+        break;
+      }
+      str_clean(&line);
+    }
+  }
+  return NULL;
+}
+
+#endif
+
 sw ikc3_run (void)
 {
   s_env *env;
@@ -203,6 +322,7 @@ sw ikc3_run (void)
   sw r;
   s_tag result;
   env = env_global();
+  assert(env);
   while (1) {
     r = buf_ignore_spaces(env->in);
     if (r < 0)
@@ -233,63 +353,6 @@ sw ikc3_run (void)
     if ((r = buf_flush(env->out)) < 0)
       return 0;
   }
-  return 0;
-}
-
-int ikc3_client (s_env *env)
-{
-  s_buf *remote_in;
-  s_buf *remote_out;
-  s_socket_buf socket_buf = {0};
-  s_str line = {0};
-  assert(env);
-  if (! socket_buf_init_connect(&socket_buf, &g_host, &g_port)) {
-    err_puts("ikc3: unable to connect");
-    return 1;
-  }
-  io_write_1("ikc3: connected to ");
-  io_inspect_str(&g_host);
-  io_write_1(" ");
-  io_inspect_str(&g_port);
-  io_write_1("\n");
-  remote_in = socket_buf.buf_rw.w;
-  remote_out = socket_buf.buf_rw.r;
-  if (! fd_set_blocking(socket_buf.sockfd, false)) {
-    err_puts("ikc3_client: fd_set_blocking");
-    assert(! "ikc3_client: fd_set_blocking");
-    return 1;
-  }
-#if HAVE_WINEDITLINE
-  buf_wineditline_open_r(env->in, "ikc3> ", ".ikc3_history");
-#else
-  buf_linenoise_open_r(env->in, "ikc3> ", ".ikc3_history");
-#endif
-  while (buf_read_line(env->in, &line)) {
-    buf_write_str(remote_in, &line);
-    str_clean(&line);
-    buf_write_1(remote_in, "\n");
-    if (! fd_set_blocking(socket_buf.sockfd, true)) {
-      err_puts("ikc3_client: fd_set_blocking");
-      assert(! "ikc3_client: fd_set_blocking");
-      return 1;
-    }
-    while (buf_read_line(remote_out, &line)) {
-      buf_write_str(env->out, &line);
-      str_clean(&line);
-      buf_write_1(env->out, "\n");
-      if (! fd_set_blocking(socket_buf.sockfd, false)) {
-        err_puts("ikc3_client: fd_set_blocking");
-        assert(! "ikc3_client: fd_set_blocking");
-        return 1;
-      }
-    }
-  }
-#if HAVE_WINEDITLINE
-  buf_wineditline_close(remote_in, ".ikc3_history");
-#else
-  buf_linenoise_close(remote_in, ".ikc3_history");
-#endif
-  socket_buf_close(&socket_buf);
   return 0;
 }
 
