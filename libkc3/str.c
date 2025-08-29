@@ -1489,7 +1489,7 @@ s_list ** str_split_words (const s_str *str, s_list **dest)
     (*t)->tag.type = TAG_STR;
     t_str = &(*t)->tag.data.str;
     if (! buf_read_word_into_str(&buf, t_str)) {
-      if (! buf_read_to_str(&buf, t_str))
+      if (buf_read_to_str(&buf, t_str) < 0)
         goto clean;
       if (! t_str->size)
         *t = list_delete(*t);

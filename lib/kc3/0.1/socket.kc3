@@ -18,7 +18,7 @@ defmodule Socket do
 
   def close = cfn Void "socket_close" (Socket)
 
-  def init = cfn Bool "socket_init" ()
+  def init = cfn Bool "libsocket_init" ()
 
   def listen = cfn Socket "socket_init_listen" (Result, Str, Str)
 
