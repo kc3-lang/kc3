@@ -21,6 +21,8 @@ void           socket_buf_clean (s_socket_buf *sb);
 void           socket_buf_close (s_socket_buf *sb);
 s_socket_buf * socket_buf_init (s_socket_buf *sb, t_socket sockfd,
                                 struct sockaddr *addr, u32 addr_len);
+s_socket_buf * socket_buf_init_accept (s_socket_buf *sb,
+                                       p_socket listening);
 s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
                                         const s_str *host,
                                         const s_str *service);

@@ -263,29 +263,42 @@ int main (int argc, char **argv)
       break;
   }
   *env->in = in_original;
-#if HAVE_WINEDITLINE
-  buf_wineditline_open_r(env->in, "ikc3> ", ".ikc3_history");
-#else
-  buf_linenoise_open_r(env->in, "ikc3> ", ".ikc3_history");
-#endif
   if (g_client) {
     // TODO: open env->in and env->out from socket_buf
   }
   if (g_server) {
-    // TODO: open env->in and env->out from socket_buf
+    if (! socket_init_listen(&socket, &g_host, &g_port)) {
+      err_puts("ikc3: unable to init socket");
+      goto clean;
+    }
+    if (! socket_buf_init_accept (&socket_buf, socket)) {
+      err_puts("ikc3: socket_buf_init_accept");
+      goto clean;
+    }
+    env->in = socket_buf.buf_rw.r;
+    env->out = socket_buf.buf_rw.w;
+  } else {
+#if HAVE_WINEDITLINE
+    buf_wineditline_open_r(env->in, "ikc3> ", ".ikc3_history");
+#else
+    buf_linenoise_open_r(env->in, "ikc3> ", ".ikc3_history");
+#endif
   }
   r = ikc3_run();
+  if (! g_server) {
+#if HAVE_WINEDITLINE
+    buf_wineditline_close(env->in, ".ikc3_history");
+#else
+    buf_linenoise_close(env->in, ".ikc3_history");
+#endif
+  }
   if (g_client) {
     // TODO: restore env->in and env->out and close socket_buf
   }
   if (g_server) {
-    // TODO: restore env->in and env->out and close socket_buf
+    socket_buf_close(&socket_buf);
+    socket_close(&socket);
   }
-#if HAVE_WINEDITLINE
-  buf_wineditline_close(env->in, ".ikc3_history");
-#else
-  buf_linenoise_close(env->in, ".ikc3_history");
-#endif
  clean:
   *env->in = in_original;
   kc3_clean(NULL);
