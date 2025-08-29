@@ -23,7 +23,14 @@
 
 #define BUFSZ 0x10000
 
+int ikc3_client (s_env *env, int *argc, char ***argv);
+int ikc3_dump (s_env *env, int *argc, char ***argv);
+int ikc3_load (s_env *env, int *argc, char ***argv);
+sw ikc3_run (void);
+int ikc3_server (s_env *env, int *argc, char ***argv);
 int usage (char *argv0);
+
+
 
 sw buf_ignore_character (s_buf *buf)
 {
@@ -42,43 +49,22 @@ sw buf_ignore_character (s_buf *buf)
   return csize;
 }
 
-sw ikc3_run (void)
+int ikc3_dump (s_env *env, int *argc, char ***argv)
 {
-  s_env *env;
-  s_tag input;
-  sw r;
-  s_tag result;
-  env = env_global();
-  while (1) {
-    r = buf_ignore_spaces(env->in);
-    if (r < 0)
-      return 0;
-    r = buf_parse_comments(env->in);
-    if (r < 0)
-      return 0;
-    r = buf_parse_tag(env->in, &input);
-    if (r > 0) {
-      if (! eval_tag(&input, &result)) {
-        tag_clean(&input);
-        continue;
-      }
-      if (buf_inspect_tag(env->out, &result) < 0) {
-	tag_clean(&input);
-	tag_clean(&result);
-        return 0;
-      }
-      tag_clean(&input);
-      tag_clean(&result);
-    }
-    if (r < 0 ||
-        (r == 0 &&
-         (r = buf_ignore_character(env->in)) <= 0))
-      return 0;
-    if ((r = buf_write_1(env->out, "\n")) < 0)
-      return 0;
-    if ((r = buf_flush(env->out)) < 0)
-      return 0;
+  s_str path = {0};
+  str_init_1(&path, NULL, (*argv)[1]);
+  if (! env_dump(env, &path)) {
+    str_clean(&path);
+    return 1;
   }
+  str_clean(&path);
+  *argc -= 2;
+  *argv += 2;
+  return 0;
+}
+
+int ikc3_client (s_env *env, int *argc, char ***argv)
+{
   return 0;
 }
 
@@ -143,17 +129,48 @@ int ikc3_load (s_env *env, int *argc, char ***argv)
   return 0;
 }
 
-int ikc3_dump (s_env *env, int *argc, char ***argv)
+sw ikc3_run (void)
 {
-  s_str path = {0};
-  str_init_1(&path, NULL, (*argv)[1]);
-  if (! env_dump(env, &path)) {
-    str_clean(&path);
-    return 1;
+  s_env *env;
+  s_tag input;
+  sw r;
+  s_tag result;
+  env = env_global();
+  while (1) {
+    r = buf_ignore_spaces(env->in);
+    if (r < 0)
+      return 0;
+    r = buf_parse_comments(env->in);
+    if (r < 0)
+      return 0;
+    r = buf_parse_tag(env->in, &input);
+    if (r > 0) {
+      if (! eval_tag(&input, &result)) {
+        tag_clean(&input);
+        continue;
+      }
+      if (buf_inspect_tag(env->out, &result) < 0) {
+	tag_clean(&input);
+	tag_clean(&result);
+        return 0;
+      }
+      tag_clean(&input);
+      tag_clean(&result);
+    }
+    if (r < 0 ||
+        (r == 0 &&
+         (r = buf_ignore_character(env->in)) <= 0))
+      return 0;
+    if ((r = buf_write_1(env->out, "\n")) < 0)
+      return 0;
+    if ((r = buf_flush(env->out)) < 0)
+      return 0;
   }
-  str_clean(&path);
-  *argc -= 2;
-  *argv += 2;
+  return 0;
+}
+
+int ikc3_server (s_env *env, int *argc, char ***argv)
+{
   return 0;
 }
 
@@ -163,7 +180,7 @@ int main (int argc, char **argv)
   s_buf in_original;
   sw r;
   if (argc < 1)
-    return usage("ikc3");
+    return usage("ikc3"); // Unreachable
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
   env = env_global();
@@ -177,6 +194,14 @@ int main (int argc, char **argv)
     else if (! strcmp("--load", *argv) ||
       ! strcmp("-l", *argv)) {
       if ((r = ikc3_load(env, &argc, &argv)))
+        goto clean;
+    }
+    else if (! strcmp("--client", *argv)) {
+      if ((r = ikc3_client(env, &argc, &argv)))
+        goto clean;
+    }
+    else if (! strcmp("--server", *argv)) {
+      if ((r = ikc3_server(env, &argc, &argv)))
         goto clean;
     }
     else if (argc == 1 && ! strcmp("--quit", *argv)) {
