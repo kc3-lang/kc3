@@ -135,7 +135,7 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
   assert(sb);
   assert(host);
   assert(service);
-  if (! socket_init())
+  if (! libsocket_init())
     return NULL;
   e = getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0);
   if (e) {

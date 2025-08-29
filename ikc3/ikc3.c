@@ -227,15 +227,13 @@ sw ikc3_run (void)
   return 0;
 }
 
-int ikc3_client_init (s_env *env, s_socket_buf *socket_buf)
+int ikc3_client_init (s_socket_buf *socket_buf)
 {
-    if (! socket_buf_init_connect(socket_buf, &g_host, &g_port)) {
-      err_puts("ikc3: unable to connect");
-      return 1;
-    }
-    env->in = socket_buf->buf_rw.r;
-    env->out = socket_buf->buf_rw.w;
-    return 0;
+  if (! socket_buf_init_connect(socket_buf, &g_host, &g_port)) {
+    err_puts("ikc3: unable to connect");
+    return 1;
+  }
+  return 0;
 }
 
 int ikc3_server_init (s_env *env, p_socket socket,
@@ -252,13 +250,15 @@ int ikc3_server_init (s_env *env, p_socket socket,
     }
     env->in = socket_buf->buf_rw.r;
     env->out = socket_buf->buf_rw.w;
+    env->err = socket_buf->buf_rw.w;
     return 0;
 }
 
 int main (int argc, char **argv)
 {
   s_env *env;
-  s_buf in_original;
+  s_buf *in;
+  s_buf  in_original;
   sw r;
   t_socket socket;
   s_socket_buf socket_buf;
@@ -296,18 +296,24 @@ int main (int argc, char **argv)
   }
   *env->in = in_original;
   if (g_client) {
-    if ((r = ikc3_client_init (env, &socket_buf)))
+    if ((r = ikc3_client_init(&socket_buf)))
       goto clean;
   }
   if (g_server) {
-    if ((r = ikc3_server_init (env, &socket, &socket_buf)))
+    if ((r = ikc3_server_init(env, &socket, &socket_buf)))
       goto clean;
   }
   else {
+    if (g_client) {
+      in = socket_buf.buf_rw.r;
+    }
+    else {
+      in = env->in;
+    }
 #if HAVE_WINEDITLINE
-    buf_wineditline_open_r(env->in, "ikc3> ", ".ikc3_history");
+    buf_wineditline_open_r(in, "ikc3> ", ".ikc3_history");
 #else
-    buf_linenoise_open_r(env->in, "ikc3> ", ".ikc3_history");
+    buf_linenoise_open_r(in, "ikc3> ", ".ikc3_history");
 #endif
   }
   r = ikc3_run();

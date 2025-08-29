@@ -31,7 +31,7 @@
 static bool g_socket_init = false;
 #endif
 
-void socket_clean (void)
+void libsocket_clean (void)
 {
 #if (defined(WIN32) || defined(WIN64))
   if (g_socket_init) {
@@ -48,7 +48,7 @@ void socket_close (p_socket s)
   *s = -1;
 }
 
-bool socket_init (void)
+bool libsocket_init (void)
 {
 #if (defined(WIN32) || defined(WIN64))
   static WSADATA wsa_data;
@@ -102,7 +102,7 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
   t_socket sockfd;
   assert(s);
   assert(host);
-  if (! socket_init())
+  if (! libsocket_init())
     return NULL;
   e = getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0);
   if (e) {
