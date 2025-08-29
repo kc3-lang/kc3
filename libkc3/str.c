@@ -728,7 +728,9 @@ s_str * str_init_f32 (s_str *str, f32 x)
       return NULL;
   }
  ok:
-  return buf_read_to_str(&buf, str);
+  if (buf_read_to_str(&buf, str) <= 0)
+    return NULL;
+  return str;
 }
 
 s_str * str_init_f64 (s_str *str, f64 x)
@@ -789,7 +791,9 @@ s_str * str_init_f64 (s_str *str, f64 x)
       return NULL;
   }
  ok:
-  return buf_read_to_str(&buf, str);
+  if (buf_read_to_str(&buf, str) <= 0)
+    return NULL;
+  return str;
 }
 
 s_str * str_init_f128 (s_str *str, f128 x)
@@ -850,7 +854,9 @@ s_str * str_init_f128 (s_str *str, f128 x)
       return NULL;
   }
  ok:
-  return buf_read_to_str(&buf, str);
+  if (buf_read_to_str(&buf, str) <= 0)
+    return NULL;
+  return str;
 }
 
 DEF_STR_INIT_STRUCT(fn)

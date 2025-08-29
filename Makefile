@@ -365,12 +365,16 @@ gdb_ikc3: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
+	${MAKE} -C socket debug
+	${MAKE} -C tls debug
 	${MAKE} -C ikc3 gdb_ikc3
 
 gdb_ikc3_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
+	${MAKE} -C socket asan
+	${MAKE} -C tls asan
 	${MAKE} -C ikc3 gdb_ikc3_asan
 
 gdb_kmsg: lib_links_debug

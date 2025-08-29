@@ -891,7 +891,7 @@ sw buf_read_integer (s_buf *buf, s_integer *dest)
   return result;
 }
 
-s_str * buf_read_line (s_buf *buf, s_str *dest)
+sw buf_read_line (s_buf *buf, s_str *dest)
 {
   return buf_read_until_1_into_str(buf, "\n", dest);
 }
@@ -980,10 +980,9 @@ sw buf_read_sym (s_buf *buf, const s_sym *src)
   return r;
 }
 
-s_str * buf_read_to_str (s_buf *buf, s_str *dest)
+sw buf_read_to_str (s_buf *buf, s_str *dest)
 {
   sw r;
-  s_str *result = NULL;
   sw size;
   s_str tmp = {0};
   assert(buf);
@@ -994,38 +993,40 @@ s_str * buf_read_to_str (s_buf *buf, s_str *dest)
   if (buf->rpos > buf->wpos) {
     err_puts("buf_read_to_str: buf->rpos > buf->wpos");
     assert(! "buf_read_to_str: buf->rpos > buf->wpos");
+    r = -1;
     goto clean;
   }
   if (buf->wpos > buf->size) {
     err_puts("buf_read_to_str: buf->wpos > buf->size");
     assert(! "buf_read_to_str: buf->wpos > buf->size");
+    r = -1;
     goto clean;
   }
   size = buf->wpos - buf->rpos;
   if (! size) {
     str_init_empty(dest);
-    result = dest;
+    r = 0;
     goto clean;
   }
   if (! str_init_alloc_copy(&tmp, size, buf->ptr.pchar + buf->rpos)) {
     err_puts("buf_read_to_str: str_init_alloc_copy");
     assert(! "buf_read_to_str: str_init_alloc_copy");
+    r = -1;
     goto clean;
   }
-  r = buf_ignore(buf, size);
-  if (r < 0) {
+  if ((r = buf_ignore(buf, size)) < 0) {
     err_puts("buf_read_to_str: buf_ignore");
     assert(! "buf_read_to_str: buf_ignore");
     str_clean(&tmp);
     goto clean;
   }
   *dest = tmp;
-  result = dest;
+  r = size;
  clean:
 #if HAVE_PTHREAD
   rwlock_unlock_w(&buf->rwlock);
 #endif
-  return result;
+  return r;
 }
 
 DEF_BUF_READ(u8)
@@ -1033,7 +1034,7 @@ DEF_BUF_READ(u16)
 DEF_BUF_READ(u32)
 DEF_BUF_READ(u64)
 
-s_str * buf_read_until_1_into_str (s_buf *buf, const char *end,
+sw buf_read_until_1_into_str (s_buf *buf, const char *end,
                                    s_str *dest)
 {
   s_str str;
@@ -1041,13 +1042,13 @@ s_str * buf_read_until_1_into_str (s_buf *buf, const char *end,
   return buf_read_until_str_into_str(buf, &str, dest);
 }
 
-s_str * buf_read_until_character_into_str (s_buf *buf, character end,
+sw buf_read_until_character_into_str (s_buf *buf, character end,
                                            s_str *dest)
 {
   s_str end_str;
-  s_str *r;
+  sw r;
   if (! str_init_character(&end_str, end))
-    return NULL;
+    return -1;
   r = buf_read_until_str_into_str(buf, &end_str, dest);
   str_clean(&end_str);
   return r;
@@ -1226,12 +1227,11 @@ sw buf_read_until_str_into_file (s_buf *buf, const s_str *end,
   return r;
 }
 
-s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end,
-                                     s_str *dest)
+sw buf_read_until_str_into_str (s_buf *buf, const s_str *end,
+                                s_str *dest)
 {
   character c;
   sw r;
-  s_str *result = NULL;
   s_buf_save save;
   s_buf tmp;
 #if HAVE_PTHREAD
@@ -1250,9 +1250,10 @@ s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end,
       tmp.wpos = buf->rpos - end->size;
       if (! buf_read_to_str(&tmp, dest)) {
         err_puts("buf_read_until_str_into_str: buf_read_to_str");
+        r = -1;
         goto restore;
       }
-      result = dest;
+      r = dest->size;
       goto clean;
     }
     if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
@@ -1269,7 +1270,7 @@ s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end,
 #if HAVE_PTHREAD
   rwlock_unlock_w(&buf->rwlock);
 #endif
-  return result;
+  return r;
 }
 
 s_str * buf_read_word_into_str(s_buf *buf, s_str *dest)

@@ -88,7 +88,7 @@ PROTO_BUF_READ(f32);
 PROTO_BUF_READ(f64);
 PROTO_BUF_READ(f128);
 sw        buf_read_integer (s_buf *buf, s_integer *dest);
-s_str *   buf_read_line (s_buf *buf, s_str *dest);
+sw        buf_read_line (s_buf *buf, s_str *dest);
 s_str *   buf_read_max (s_buf *buf, s_str *dest);
 PROTO_BUF_READ(s8);
 PROTO_BUF_READ(s16);
@@ -97,28 +97,28 @@ PROTO_BUF_READ(s64);
 sw        buf_read_str (s_buf *buf, const s_str *src);
 PROTO_BUF_READ(sw);
 sw        buf_read_sym (s_buf *buf, const s_sym *src);
-s_str *   buf_read_to_str (s_buf *buf, s_str *dest);
+sw        buf_read_to_str (s_buf *buf, s_str *dest);
 s_str *   buf_read_word_into_str(s_buf *buf, s_str *dest); 
 PROTO_BUF_READ(u8);
 PROTO_BUF_READ(u16);
 PROTO_BUF_READ(u32);
 PROTO_BUF_READ(u64);
-s_str *   buf_read_until_1_into_str(s_buf *buf, const char *end,
+sw        buf_read_until_1_into_str(s_buf *buf, const char *end,
                                     s_str *dest);
-s_str *   buf_read_until_character_into_str (s_buf *buf, character end,
+sw        buf_read_until_character_into_str (s_buf *buf, character end,
                                              s_str *dest);
 sw        buf_read_until_list_into_buf (s_buf *buf, const s_list *end,
                                         s_buf *dest);
-s_str * buf_read_until_list_into_str (s_buf *buf,
-                                      const s_list * const *end,
-                                      s_str *dest);
+s_str *   buf_read_until_list_into_str (s_buf *buf,
+                                        const s_list * const *end,
+                                        s_str *dest);
 
 sw        buf_read_until_space_into_str (s_buf *buf, s_str *dest);
 sw        buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
                                        s_buf *dest);
 sw        buf_read_until_str_into_file (s_buf *buf, const s_str *end,
                                         s_str *path);
-s_str *   buf_read_until_str_into_str (s_buf *buf, const s_str *end,
+sw        buf_read_until_str_into_str (s_buf *buf, const s_str *end,
                                        s_str *dest);
 PROTO_BUF_READ(uw);
 sw        buf_refill (s_buf *buf, sw size);

@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <errno.h>
+#include <signal.h>
 #include <string.h>
 #include "../libkc3/kc3.h"
 #include "../socket/socket.h"
@@ -253,7 +254,11 @@ int ikc3_client (s_env *env)
   io_write_1("\n");
   remote_in = socket_buf.buf_rw.w;
   remote_out = socket_buf.buf_rw.r;
-  fd_set_blocking(socket_buf.sockfd, true);
+  if (! fd_set_blocking(socket_buf.sockfd, false)) {
+    err_puts("ikc3_client: fd_set_blocking");
+    assert(! "ikc3_client: fd_set_blocking");
+    return 1;
+  }
 #if HAVE_WINEDITLINE
   buf_wineditline_open_r(env->in, "ikc3> ", ".ikc3_history");
 #else
@@ -263,10 +268,20 @@ int ikc3_client (s_env *env)
     buf_write_str(remote_in, &line);
     str_clean(&line);
     buf_write_1(remote_in, "\n");
+    if (! fd_set_blocking(socket_buf.sockfd, true)) {
+      err_puts("ikc3_client: fd_set_blocking");
+      assert(! "ikc3_client: fd_set_blocking");
+      return 1;
+    }
     while (buf_read_line(remote_out, &line)) {
       buf_write_str(env->out, &line);
       str_clean(&line);
       buf_write_1(env->out, "\n");
+      if (! fd_set_blocking(socket_buf.sockfd, false)) {
+        err_puts("ikc3_client: fd_set_blocking");
+        assert(! "ikc3_client: fd_set_blocking");
+        return 1;
+      }
     }
   }
 #if HAVE_WINEDITLINE
@@ -373,9 +388,11 @@ int main (int argc, char **argv)
 #endif
     goto clean;
   }
-  if (g_server &&
-      (r = ikc3_server_init(env, &socket, &socket_buf)))
-    goto clean;
+  if (g_server) {
+    signal(SIGPIPE, SIG_IGN);
+    if ((r = ikc3_server_init(env, &socket, &socket_buf)))
+      goto clean;
+  }
   r = ikc3_run();
   if (g_server)
     ikc3_server_clean(env, &socket, &socket_buf);

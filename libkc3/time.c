@@ -106,7 +106,9 @@ s_str * time_diff_to_str (const s_time *time, s_str *dest)
   buf_inspect_uw_decimal_pad(&buf, 2, '0', seconds);
   buf_write_1(&buf, ".");
   buf_inspect_uw_decimal_pad(&buf, 3, '0', milliseconds);
-  return buf_read_to_str(&buf, dest);
+  if (buf_read_to_str(&buf, dest) <= 0)
+    return NULL;
+  return dest;
 }
 
 s_time * time_init (s_time *time)
