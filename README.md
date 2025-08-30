@@ -67,6 +67,13 @@ There are now four full applications written in KC3 that we know of :
 
 ## New in this release
 
+ - ikc3
+   - Remote procedure call
+     - client : ikc3 --client HOST PORT
+       - opens a prompt on stdin and forwards parsed tags to server 
+       - reads successful response from server, errors stay on server
+     - server : ikc3 --server HOST PORT
+       - accepts only one connection and exits
 
 ## Discord invite
 
