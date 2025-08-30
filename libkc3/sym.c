@@ -55,6 +55,7 @@ const s_sym g_sym_Fn               = SYM_1("Fn");
 const s_sym g_sym_Ident            = SYM_1("Ident");
 const s_sym g_sym_Integer          = SYM_1("Integer");
 const s_sym g_sym_KC3              = SYM_1("KC3");
+const s_sym g_sym_KC3_Error        = SYM_1("KC3.Error");
 const s_sym g_sym_KC3_Op           = SYM_1("KC3.Op");
 const s_sym g_sym_List             = SYM_1("List");
 const s_sym g_sym_Map              = SYM_1("Map");
@@ -339,6 +340,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_Ident, NULL);
   sym_register(&g_sym_Integer, NULL);
   sym_register(&g_sym_KC3, NULL);
+  sym_register(&g_sym_KC3_Error, NULL);
   sym_register(&g_sym_KC3_Op, NULL);
   sym_register(&g_sym_List, NULL);
   sym_register(&g_sym_Map, NULL);

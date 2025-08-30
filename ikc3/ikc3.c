@@ -251,6 +251,7 @@ sw ikc3_run (void)
   s_buf *env_err;
   s_buf err_buf;
   s_tag input;
+  bool inspect = true;
   sw r;
   s_tag result = {0};
   env = env_global();
@@ -277,11 +278,34 @@ sw ikc3_run (void)
           r = 1;
           goto clean;
         }
-        if (buf_parse_tag(g_socket_buf.buf_rw.r, &result) <= 0 ||
-            buf_read_1(g_socket_buf.buf_rw.r, "\n") <= 0) {
+        if (buf_parse_tag(g_socket_buf.buf_rw.r, &result) <= 0) {
           tag_clean(&input);
           r = 1;
           goto clean;
+        }
+        if (buf_read_1(g_socket_buf.buf_rw.r, "\n") <= 0) {
+          tag_clean(&result);
+          tag_clean(&input);
+          r = 1;
+          goto clean;
+        }
+        if (result.type == TAG_TUPLE &&
+            result.data.tuple.count == 2 &&
+            result.data.tuple.tag[0].type == TAG_PSYM &&
+            result.data.tuple.tag[0].data.psym == &g_sym_KC3_Error &&
+            result.data.tuple.tag[1].type == TAG_STR) {
+          if (buf_inspect_void(env->out, NULL) <= 0 ||
+              buf_write_1(env->out, "\n") <= 0 ||
+              buf_write_str(env->err,
+                            &result.data.tuple.tag[1].data.str) <= 0) {
+            tag_clean(&input);
+            tag_clean(&result);
+            r = 1;
+            goto clean;
+          }
+          tag_clean(&input);
+          tag_clean(&result);
+          continue;
         }
       }
       else if (! eval_tag(&input, &result)) {
@@ -291,7 +315,7 @@ sw ikc3_run (void)
             r = 1;
             goto clean;
           }
-          tag_init_psym(result.data.tuple.tag, sym_1("IKC3.Error"));
+          tag_init_psym(result.data.tuple.tag, &g_sym_KC3_Error);
           result.data.tuple.tag[1].type = TAG_STR;
           if (buf_read_to_str(&err_buf,
                               &result.data.tuple.tag[1].data.str) < 0) {
@@ -309,12 +333,16 @@ sw ikc3_run (void)
         // XXX not secure (--pedantic)
         goto next;
       }
-      if (buf_inspect_tag(env->out, &result) < 0) {
-	tag_clean(&input);
-	tag_clean(&result);
-        r = 0;
-        goto clean;
+      if (inspect) {
+        if (buf_inspect_tag(env->out, &result) < 0) {
+          tag_clean(&input);
+          tag_clean(&result);
+          r = 0;
+          goto clean;
+        }
       }
+      else
+        inspect = true;
       tag_clean(&input);
       tag_clean(&result);
     }
