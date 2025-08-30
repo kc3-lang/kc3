@@ -279,7 +279,10 @@ sw ikc3_run (void)
       else if (! eval_tag(&input, &result)) {
         tag_clean(&input);
         // XXX not secure (--pedantic)
-        continue;
+        if (g_server &&
+            buf_inspect_tag(env->out, &result) < 0)
+          return 1;
+        goto next;
       }
       if (buf_inspect_tag(env->out, &result) < 0) {
 	tag_clean(&input);
@@ -293,10 +296,11 @@ sw ikc3_run (void)
         (r == 0 &&
          (r = buf_ignore_character(env->in)) <= 0))
       return 0;
+  next:
     if ((r = buf_write_1(env->out, "\n")) < 0)
-      return 0;
+      return 1;
     if ((r = buf_flush(env->out)) < 0)
-      return 0;
+      return 1;
   }
   return 0;
 }
