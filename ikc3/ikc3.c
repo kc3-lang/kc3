@@ -256,8 +256,8 @@ sw ikc3_run (void)
   s_tag result = {0};
   env = env_global();
   assert(env);
+  env_err = env->err;
   if (g_server) {
-    env_err = env->err;
     if (! buf_init_alloc(&err_buf, BUF_SIZE))
       return 1;
     env->err = &err_buf;
