@@ -74,6 +74,7 @@ There are now four full applications written in KC3 that we know of :
        - reads successful response from server, errors stay on server
      - server : ikc3 --server HOST PORT
        - accepts only one connection and exits
+       - works with netcat (no prompt)
 
 ## Discord invite
 

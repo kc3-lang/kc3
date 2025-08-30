@@ -39,9 +39,10 @@
    - [x] ikc3 --server HOST PORT
      - [x] argument parsing
      - [x] socket_buf_init_listen / socket_buf_init_accept
-   - [ ] ikc3 --client HOST PORT
+   - [x] ikc3 --client HOST PORT
      - [x] argument parsing
-     - [.] socket_buf_init_connect
+     - [x] socket_buf_init_connect
+     - [x] custom REPL with RPC I/O
 
 
 ## LibreSSL/OpenSSL
