@@ -95,6 +95,7 @@ const s_sym g_sym_directory        = SYM_1("directory");
 const s_sym g_sym_do               = SYM_1("do");
 const s_sym g_sym_else             = SYM_1("else");
 const s_sym g_sym_end              = SYM_1("end");
+const s_sym g_sym_error            = SYM_1("error");
 const s_sym g_sym_file             = SYM_1("file");
 const s_sym g_sym_fn               = SYM_1("fn");
 const s_sym g_sym_if               = SYM_1("if");
@@ -378,6 +379,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_do, NULL);
   sym_register(&g_sym_else, NULL);
   sym_register(&g_sym_end, NULL);
+  sym_register(&g_sym_error, NULL);
   sym_register(&g_sym_file, NULL);
   sym_register(&g_sym_fn, NULL);
   sym_register(&g_sym_if, NULL);

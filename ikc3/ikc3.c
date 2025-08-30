@@ -248,61 +248,98 @@ int ikc3_client_init (void)
 sw ikc3_run (void)
 {
   s_env *env;
+  s_buf *env_err;
+  s_buf err_buf;
   s_tag input;
   sw r;
   s_tag result = {0};
   env = env_global();
   assert(env);
+  if (g_server) {
+    env_err = env->err;
+    if (! buf_init_alloc(&err_buf, BUF_SIZE))
+      return 1;
+    env->err = &err_buf;
+  }
   while (1) {
-    r = buf_ignore_spaces(env->in);
-    if (r < 0)
-      return 0;
-    r = buf_parse_comments(env->in);
-    if (r < 0)
-      return 0;
-    r = buf_parse_tag(env->in, &input);
-    if (r > 0) {
+    if ((r = buf_ignore_spaces(env->in)) < 0 ||
+        (r = buf_parse_comments(env->in)) < 0) {
+      r = 0;
+      goto clean;
+    }
+    if ((r = buf_parse_tag(env->in, &input)) > 0) {
       tag_init(&result);
       if (g_client) {
         if (buf_inspect_tag(g_socket_buf.buf_rw.w, &input) <= 0 ||
             buf_write_1(g_socket_buf.buf_rw.w, "\n") <= 0 ||
             buf_flush(g_socket_buf.buf_rw.w) < 0) {
           tag_clean(&input);
-          return 1;
+          r = 1;
+          goto clean;
         }
         if (buf_parse_tag(g_socket_buf.buf_rw.r, &result) <= 0 ||
             buf_read_1(g_socket_buf.buf_rw.r, "\n") <= 0) {
           tag_clean(&input);
-          return 1;
+          r = 1;
+          goto clean;
         }
       }
       else if (! eval_tag(&input, &result)) {
         tag_clean(&input);
+        if (g_server) {
+          if (! tag_init_tuple(&result, 2)) {
+            r = 1;
+            goto clean;
+          }
+          tag_init_psym(result.data.tuple.tag, sym_1("IKC3.Error"));
+          result.data.tuple.tag[1].type = TAG_STR;
+          if (buf_read_to_str(&err_buf,
+                              &result.data.tuple.tag[1].data.str) < 0) {
+            tag_clean(&result);
+            r = 1;
+            goto clean;
+          }
+          if (buf_inspect_tag(env->out, &result) < 0) {
+            tag_clean(&result);
+            r = 1;
+            goto clean;
+          }
+          tag_clean(&result);
+        }
         // XXX not secure (--pedantic)
-        if (g_server &&
-            buf_inspect_tag(env->out, &result) < 0)
-          return 1;
         goto next;
       }
       if (buf_inspect_tag(env->out, &result) < 0) {
 	tag_clean(&input);
 	tag_clean(&result);
-        return 0;
+        r = 0;
+        goto clean;
       }
       tag_clean(&input);
       tag_clean(&result);
     }
     if (r < 0 ||
         (r == 0 &&
-         (r = buf_ignore_character(env->in)) <= 0))
-      return 0;
+         (r = buf_ignore_character(env->in)) <= 0)) {
+      r = 0;
+      goto clean;
+    }
   next:
-    if ((r = buf_write_1(env->out, "\n")) < 0)
-      return 1;
-    if ((r = buf_flush(env->out)) < 0)
-      return 1;
+    if ((r = buf_write_1(env->out, "\n")) < 0) {
+      r = 1;
+      goto clean;
+    }
+    if ((r = buf_flush(env->out)) < 0) {
+      r = 1;
+      goto clean;
+    }
   }
-  return 0;
+ clean:
+  if (g_server) {
+    env->err = env_err;
+    buf_clean(&err_buf);
+  }
+  return r;
 }
 
 void ikc3_server_clean (s_env *env)

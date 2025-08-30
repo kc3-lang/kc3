@@ -26,7 +26,7 @@
 
 #define SYM_MAX 1024
 
-#define SYM_1(bytes) {{{0}, sizeof(bytes) - 1, {bytes}}}
+#define SYM_1(bytes) {STR(bytes)}
 
 extern const s_sym g_sym___DIR__;
 extern const s_sym g_sym___FILE__;
@@ -97,6 +97,7 @@ extern const s_sym g_sym_directory;
 extern const s_sym g_sym_do;
 extern const s_sym g_sym_else;
 extern const s_sym g_sym_end;
+extern const s_sym g_sym_error;
 extern const s_sym g_sym_file;
 extern const s_sym g_sym_fn;
 extern const s_sym g_sym_if;
