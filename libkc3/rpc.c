@@ -16,6 +16,7 @@
 #include "env.h"
 #include "eval.h"
 #include "str.h"
+#include "struct.h"
 #include "sym.h"
 #include "tag.h"
 
@@ -25,58 +26,70 @@ s_tag * rpc_request (const s_str *input, s_tag *dest)
   s_buf *env_err;
   s_buf *env_out;
   s_buf err_buf;
+  char  err_buf_data[BUF_SIZE];
   s_buf out_buf;
+  char  out_buf_data[BUF_SIZE];
   s_tag input_tag;
-  s_rpc_response response = {0};
+  s_rpc_response *response;
+  s_tag tmp = {0};
   assert(input);
   assert(dest);
   env = env_global();
-  if (! env)
-    return NULL;
+  assert(env);
   env_err = env->err;
-  env_out = env->out;
-  if (! buf_init_alloc(&err_buf, BUF_SIZE)) {
-    return NULL;
-  }
-  if (! buf_init_alloc(&out_buf, BUF_SIZE)) {
-    buf_clean(&err_buf);
-    return NULL;
-  }
+  buf_init(&err_buf, false, sizeof(err_buf_data), err_buf_data);
   env->err = &err_buf;
+  env_out = env->out;
+  buf_init(&out_buf, false, sizeof(out_buf_data), out_buf_data);
   env->out = &out_buf;
   if (! tag_init_from_str(&input_tag, input)) {
-    buf_clean(&err_buf);
-    buf_clean(&out_buf);
     env->err = env_err;
     env->out = env_out;
+    err_puts("rpc_request: invalid input");
+    assert(! "rpc_request: invalid input");
     return NULL;
   }
-  tag_init(&response.result);
-  if (! eval_tag(&input_tag, &response.result)) {
-    tag_init_void(&response.result);
+  if (! tag_init_pstruct(&tmp, &g_sym_RPC_Response)) {
+    env->err = env_err;
+    env->out = env_out;
+    err_puts("rpc_request: tag_init_pstruct %RPC.Response{}");
+    assert(! "rpc_request: tag_init_pstruct %RPC.Response{}");
+    tag_clean(&input_tag);
+    return NULL;
   }
-  if (buf_read_to_str(&err_buf, &response.err) < 0 ||
-      buf_read_to_str(&out_buf, &response.out) < 0 ||
-      ! tag_init_pstruct_copy_data(dest, &g_sym_RPC_Response,
-                                   &response))
-    goto clean;
+  if (! struct_allocate(tmp.data.pstruct)) {
+    env->err = env_err;
+    env->out = env_out;
+    err_puts("rpc_request: struct_allocate");
+    assert(! "rpc_request: struct_allocate");
+    tag_clean(&tmp);
+    tag_clean(&input_tag);
+    return NULL;
+  }
+  response = tmp.data.pstruct->data;
+  eval_tag(&input_tag, &response->result);
+  if (buf_read_to_str(&err_buf, &response->err) < 0 ||
+      buf_read_to_str(&out_buf, &response->out) < 0) {
+    env->err = env_err;
+    env->out = env_out;
+    err_puts("rpc_request: buf_read_to_str");
+    assert(! "rpc_request: buf_read_to_str");
+    tag_clean(&tmp);
+    tag_clean(&input_tag);
+    return NULL;
+  }
   tag_clean(&input_tag);
-  str_clean(&response.err);
-  str_clean(&response.out);
-  tag_clean(&response.result);
-  buf_clean(&err_buf);
-  buf_clean(&out_buf);
   env->err = env_err;
   env->out = env_out;
+  *dest = tmp;
   return dest;
- clean:
-  tag_clean(&input_tag);
-  tag_clean(&response.result);
-  str_clean(&response.err);
-  str_clean(&response.out);
-  buf_clean(&err_buf);
-  buf_clean(&out_buf);
-  env->err = env_err;
-  env->out = env_out;
-  return NULL;
 }
+
+void rpc_response_clean (s_rpc_response *response)
+{
+  assert(response);
+  str_clean(&response->err);
+  str_clean(&response->out);
+  tag_clean(&response->result);
+}
+

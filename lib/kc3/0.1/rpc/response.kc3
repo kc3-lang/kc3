@@ -2,6 +2,6 @@ defmodule RPC.Response do
 
   defstruct [err: "",
              out: "",
-             tag: ?]
+             result: ?]
 
 end

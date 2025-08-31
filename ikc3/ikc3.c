@@ -94,6 +94,11 @@ int ikc3_arg_client (s_env *env, int *argc, char ***argv)
   str_init_1(&g_host, NULL, (*argv)[1]);
   str_init_1(&g_port, NULL, (*argv)[2]);
   g_client = true;
+  if (! env_module_load(env, &g_sym_RPC_Response)) {
+    err_puts("ikc3_arg_client: failed to load RPC.Response module");
+    assert(! "ikc3_arg_client: failed to load RPC.Response module");
+    return -1;
+  }
   *argc -= 3;
   *argv += 3;
   return 3;
@@ -197,6 +202,16 @@ int ikc3_arg_server (s_env *env, int *argc, char ***argv)
   str_init_1(&g_host, NULL, (*argv)[1]);
   str_init_1(&g_port, NULL, (*argv)[2]);
   g_server = true;
+  if (! env_module_load(env, &g_sym_RPC)) {
+    err_puts("ikc3_arg_client: failed to load RPC module");
+    assert(! "ikc3_arg_client: failed to load RPC module");
+    return -1;
+  }
+  if (! env_module_load(env, &g_sym_RPC_Response)) {
+    err_puts("ikc3_arg_client: failed to load RPC.Response module");
+    assert(! "ikc3_arg_client: failed to load RPC.Response module");
+    return -1;
+  }
   *argc -= 3;
   *argv += 3;
   return 3;
