@@ -267,6 +267,7 @@ sw ikc3_run (void)
   s_buf err_buf;
   s_tag input;
   sw r;
+  s_tag *response;
   s_tag result = {0};
   s_tag rpc_tag = {0};
   env = env_global();
@@ -326,6 +327,23 @@ sw ikc3_run (void)
           r = 1;
           goto clean;
         }
+        if (result.type != TAG_PSTRUCT ||
+            ! result.data.pstruct ||
+            result.data.pstruct->pstruct_type->module !=
+            &g_sym_RPC_Response ||
+            ! (response = result.data.pstruct->tag) ||
+            response[0].type != TAG_STR ||
+            response[1].type != TAG_STR) {
+          err_puts("ikc3_run: invalid RPC response");
+          assert(! "ikc3_run: invalid RPC response");
+          tag_clean(&result);
+          tag_clean(&input);
+          r = 1;
+          goto clean;
+        }
+        buf_write_str(env->err, &response[0].data.str);
+        buf_write_str(env->out, &response[1].data.str);
+        buf_inspect_tag(env->out, &response[2]);
       }
       else if (! eval_tag(&input, &result)) {
         tag_clean(&input);
@@ -353,11 +371,13 @@ sw ikc3_run (void)
         // XXX not secure (--pedantic)
         goto next;
       }
-      if (buf_inspect_tag(env->out, &result) < 0) {
-        tag_clean(&input);
-        tag_clean(&result);
-        r = 0;
-        goto clean;
+      if (! g_client) {
+        if (buf_inspect_tag(env->out, &result) < 0) {
+          tag_clean(&input);
+          tag_clean(&result);
+          r = 0;
+          goto clean;
+        }
       }
       tag_clean(&input);
       tag_clean(&result);
