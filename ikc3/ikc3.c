@@ -251,9 +251,9 @@ sw ikc3_run (void)
   s_buf *env_err;
   s_buf err_buf;
   s_tag input;
-  bool inspect = true;
   sw r;
   s_tag result = {0};
+  s_tag rpc_tag = {0};
   env = env_global();
   assert(env);
   env_err = env->err;
@@ -271,13 +271,35 @@ sw ikc3_run (void)
     if ((r = buf_parse_tag(env->in, &input)) > 0) {
       tag_init(&result);
       if (g_client) {
-        if (buf_inspect_tag(g_socket_buf.buf_rw.w, &input) <= 0 ||
-            buf_write_1(g_socket_buf.buf_rw.w, "\n") <= 0 ||
-            buf_flush(g_socket_buf.buf_rw.w) < 0) {
+        s_str input_str;
+        s_list *args;
+        tag_init_call(&rpc_tag);
+        rpc_tag.data.call.ident.module = &g_sym_RPC;
+        rpc_tag.data.call.ident.sym = &g_sym_request;
+        if (! inspect_tag(&input, &input_str)) {
           tag_clean(&input);
           r = 1;
           goto clean;
         }
+        args = list_new(NULL);
+        if (! args) {
+          tag_clean(&input);
+          str_clean(&input_str);
+          r = 1;
+          goto clean;
+        }
+        args->tag.type = TAG_STR;
+        args->tag.data.str = input_str;
+        rpc_tag.data.call.arguments = args;
+        if (buf_inspect_tag(g_socket_buf.buf_rw.w, &rpc_tag) <= 0 ||
+            buf_write_1(g_socket_buf.buf_rw.w, "\n") <= 0 ||
+            buf_flush(g_socket_buf.buf_rw.w) < 0) {
+          tag_clean(&input);
+          tag_clean(&rpc_tag);
+          r = 1;
+          goto clean;
+        }
+        tag_clean(&rpc_tag);
         if (buf_parse_tag(g_socket_buf.buf_rw.r, &result) <= 0) {
           tag_clean(&input);
           r = 1;
@@ -289,37 +311,20 @@ sw ikc3_run (void)
           r = 1;
           goto clean;
         }
-        if (result.type == TAG_TUPLE &&
-            result.data.tuple.count == 2 &&
-            result.data.tuple.tag[0].type == TAG_PSYM &&
-            result.data.tuple.tag[0].data.psym == &g_sym_KC3_Error &&
-            result.data.tuple.tag[1].type == TAG_STR) {
-          if (buf_inspect_void(env->out, NULL) <= 0 ||
-              buf_write_1(env->out, "\n") <= 0 ||
-              buf_write_str(env->err,
-                            &result.data.tuple.tag[1].data.str) <= 0) {
-            tag_clean(&input);
-            tag_clean(&result);
-            r = 1;
-            goto clean;
-          }
-          tag_clean(&input);
-          tag_clean(&result);
-          continue;
-        }
       }
       else if (! eval_tag(&input, &result)) {
         tag_clean(&input);
         if (g_server) {
-          if (! tag_init_tuple(&result, 2)) {
+          s_rpc_response response = {0};
+          if (buf_read_to_str(&err_buf, &response.err) < 0) {
             r = 1;
             goto clean;
           }
-          tag_init_psym(result.data.tuple.tag, &g_sym_KC3_Error);
-          result.data.tuple.tag[1].type = TAG_STR;
-          if (buf_read_to_str(&err_buf,
-                              &result.data.tuple.tag[1].data.str) < 0) {
-            tag_clean(&result);
+          str_init_empty(&response.out);
+          tag_init_void(&response.result);
+          if (! tag_init_pstruct_copy_data(&result, &g_sym_RPC_Response,
+                                           &response)) {
+            str_clean(&response.err);
             r = 1;
             goto clean;
           }
@@ -333,16 +338,12 @@ sw ikc3_run (void)
         // XXX not secure (--pedantic)
         goto next;
       }
-      if (inspect) {
-        if (buf_inspect_tag(env->out, &result) < 0) {
-          tag_clean(&input);
-          tag_clean(&result);
-          r = 0;
-          goto clean;
-        }
+      if (buf_inspect_tag(env->out, &result) < 0) {
+        tag_clean(&input);
+        tag_clean(&result);
+        r = 0;
+        goto clean;
       }
-      else
-        inspect = true;
       tag_clean(&input);
       tag_clean(&result);
     }

@@ -563,6 +563,8 @@ KC3_C_SOURCES = \
 	"libkc3/quote.h" \
 	"libkc3/ratio.c" \
 	"libkc3/ratio.h" \
+	"libkc3/rpc.c" \
+	"libkc3/rpc.h" \
 	"libkc3/rwlock.c" \
 	"libkc3/rwlock.h" \
 	"libkc3/s.c.in" \
@@ -1442,6 +1444,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/ptr.facts" \
 	"lib/kc3/0.1/ptr_free.facts" \
 	"lib/kc3/0.1/ratio.facts" \
+	"lib/kc3/0.1/rpc/response.kc3" \
 	"lib/kc3/0.1/rwlock.kc3" \
 	"lib/kc3/0.1/s16.facts" \
 	"lib/kc3/0.1/s32.facts" \

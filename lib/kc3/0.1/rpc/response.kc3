@@ -1,0 +1,7 @@
+defmodule RPC.Response do
+
+  defstruct [err: "",
+             out: "",
+             tag: ?]
+
+end

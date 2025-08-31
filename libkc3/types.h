@@ -238,6 +238,7 @@ typedef struct pretty_save             s_pretty_save;
 typedef struct queue                   s_queue;
 typedef struct quote                   s_quote;
 typedef struct ratio                   s_ratio;
+typedef struct rpc_response            s_rpc_response;
 typedef struct rwlock                  s_rwlock;
 typedef struct sequence                s_sequence;
 typedef struct str                     s_str;
@@ -775,6 +776,12 @@ struct op {
 
 struct ops {
   s_ht ht;
+};
+
+struct rpc_response {
+  s_str out;
+  s_str err;
+  s_tag result;
 };
 
 struct sequence {

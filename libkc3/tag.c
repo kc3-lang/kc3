@@ -695,7 +695,7 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
   return NULL;
 }
 
-s_tag * tag_init_from_str (s_tag *tag, s_str *str)
+s_tag * tag_init_from_str (s_tag *tag, const s_str *str)
 {
   s_buf buf;
   sw r;
