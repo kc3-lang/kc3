@@ -84,8 +84,9 @@
        - [ ] `tls_accept_socket`
 
 ## libkc3
-
  - --pedantic option (env)
+   - ikc3
+   - `env_eval_do_block`
  - securelevel
    - 0 = cfn + system + dlopen + eval + def*
    - 1 = eval + def*
