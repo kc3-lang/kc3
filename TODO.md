@@ -90,6 +90,8 @@
    - 0 = cfn + system + dlopen + eval + def*
    - 1 = eval + def*
    - 2 = ø
+ - unveil
+ - pledge
 
 ## HTTPd
  - [ ] partial requests
