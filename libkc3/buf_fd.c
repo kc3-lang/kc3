@@ -168,6 +168,7 @@ sw buf_fd_open_w_flush (s_buf *buf)
   buf_fd = buf->user_ptr;
   bytes = 0;
   while (bytes < size) {
+    // XXX TODO: #ifdef WIN32 || WIN64
     if ((w = send(buf_fd->fd, buf->ptr.pchar + bytes,
                   size - bytes, MSG_NOSIGNAL)) < 0) {
       if ((w = write(buf_fd->fd, buf->ptr.pchar + bytes,
