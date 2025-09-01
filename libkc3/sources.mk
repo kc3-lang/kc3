@@ -162,6 +162,7 @@ HEADERS = \
 	"s32.h" \
 	"s64.h" \
 	"s8.h" \
+	"securelevel.h" \
 	"sequence.h" \
 	"set__fact.h" \
 	"set__tag.h" \
@@ -362,6 +363,7 @@ SOURCES = \
 	"s32.c" \
 	"s64.c" \
 	"s8.c" \
+	"securelevel.c" \
 	"sequence.c" \
 	"set__fact.c" \
 	"set__tag.c" \
@@ -679,6 +681,7 @@ LO_SOURCES = \
 	"s32.c" \
 	"s64.c" \
 	"s8.c" \
+	"securelevel.c" \
 	"sequence.c" \
 	"set__fact.c" \
 	"set__tag.c" \

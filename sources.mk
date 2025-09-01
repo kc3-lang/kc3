@@ -577,6 +577,8 @@ KC3_C_SOURCES = \
 	"libkc3/s64.h" \
 	"libkc3/s8.c" \
 	"libkc3/s8.h" \
+	"libkc3/securelevel.c" \
+	"libkc3/securelevel.h" \
 	"libkc3/sequence.c" \
 	"libkc3/sequence.h" \
 	"libkc3/set.c.in" \
@@ -1444,6 +1446,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/ptr.facts" \
 	"lib/kc3/0.1/ptr_free.facts" \
 	"lib/kc3/0.1/ratio.facts" \
+	"lib/kc3/0.1/rpc.kc3" \
 	"lib/kc3/0.1/rpc/response.kc3" \
 	"lib/kc3/0.1/rwlock.kc3" \
 	"lib/kc3/0.1/s16.facts" \
