@@ -7,14 +7,14 @@
  - [x] new library
    - [x] explore SSL API for stream socket connections with a certificate.
    - implement
-     - `buf_tls.c/h`
-     - struct `s_buf_tls`
-     - `buf_tls_open_r` opens a tls connection for reading
+     - `tls_buf.c/h`
+     - struct `s_tls_buf`
+     - `tls_buf_open_r` opens a tls connection for reading
        - `buf->refill` callback to refill the `tls_open_r` buffer
-     - `buf_tls_open_w` opens a tls connection for writing
+     - `tls_buf_open_w` opens a tls connection for writing
        - `buf->flush` callback to flush the `tls_open_w` buffer
          - `sw buf_fd_open_w_flush (s_buf *buf)`
-     - `buf_tls_close`
+     - `tls_buf_close`
    - ikc3 **--tls** --client/server
      - `puts("ikc3: connected with TLS v1.2 to ${g_host} ${g_port}")`
    - [ ] wrap the following functions in lib/kc3/0.1 :
