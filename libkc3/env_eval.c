@@ -36,6 +36,7 @@
 #include "pcallable.h"
 #include "pstruct.h"
 #include "pvar.h"
+#include "securelevel.h"
 #include "struct.h"
 #include "sw.h"
 #include "tag.h"
@@ -643,6 +644,11 @@ bool env_eval_callable (s_env *env, s_callable *callable,
   (void) env;
   switch (callable->type) {
   case CALLABLE_CFN:
+    if (securelevel(0)) {
+      err_puts("env_eval_callable: cannot eval Cfn with securelevel"
+               " > 0");
+      abort();
+    }
     if (! pcallable_init_copy(&tmp, &callable))
       return false;
     if (! cfn_eval(&tmp->data.cfn))

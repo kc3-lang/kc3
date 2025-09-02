@@ -18,6 +18,7 @@
 #include "list.h"
 #include "mutex.h"
 #include "pstruct.h"
+#include "securelevel.h"
 #include "str.h"
 #include "struct.h"
 #include "sym.h"
@@ -228,6 +229,10 @@ void cfn_delete (s_cfn *cfn)
 bool cfn_eval (s_cfn *cfn)
 {
   assert(cfn);
+  if (securelevel(0)) {
+    err_puts("cfn_eval: cannot eval Cfn with securelevel > 0");
+    abort();
+  }
 #if HAVE_PTHREAD
   mutex_lock(&cfn->cif_mutex);
 #endif
@@ -336,6 +341,10 @@ s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
 s_cfn * cfn_link (s_cfn *cfn)
 {
   assert(cfn);
+  if (securelevel(0)) {
+    err_puts("cfn_link: cannot eval Cfn with securelevel > 0");
+    abort();
+  }
   if (! (cfn->ptr.p = dlsym(RTLD_DEFAULT, cfn->c_name->str.ptr.pchar))) {
     err_write_1("cfn_link: ");
     err_write_1(cfn->c_name->str.ptr.pchar);
@@ -366,6 +375,10 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
   ffi_type *result_ffi_type;
   ffi_status status;
   assert(cfn);
+  if (securelevel(0)) {
+    err_puts("cfn_prep_cif: cannot eval Cfn with securelevel > 0");
+    abort();
+  }
   if (cfn->cif_ready) {
     result = cfn;
     goto clean;

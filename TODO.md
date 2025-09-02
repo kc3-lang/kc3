@@ -62,7 +62,7 @@
      - `buf_tls_close`
    - ikc3 **--tls** --client/server
      - `puts("ikc3: connected with TLS v1.2 to ${g_host} ${g_port}")`
-   - [ ] wrap the following functions :
+   - [ ] wrap the following functions in lib/kc3/0.1 :
      - [ ] Common TLS API :
        - [x] `#include <tls.h>`
        - [lyzer] `tls_init() != 0`
@@ -88,9 +88,24 @@
    - ikc3
    - `env_eval_do_block`
  - securelevel
-   - 0 = cfn + system + dlopen + eval + def*
+   - [x] API that can only increase securelevel between 0 and 2
+   - 0 = (cfn + system + dlopen + dlsym) + (eval + def*)
    - 1 = eval + def*
+     - [x] block all Cfn definition if `securelevel(0) > 0`
+       - [x] `env_eval_callable`
+       - [x] `cfn_eval`
+       - [x] `cfn_link`
+       - [x] `cfn_prep_cif`
+       - [x] `buf_parse_pcallable`
+       - [x] `buf_parse_cfn`
+     - [x] block system() calls if `securelevel(0) > 0`
+       - [x] `kc3_system`
+       - [x] `kc3_system_pipe_exec`
+     - [ ] block dlopen() calls if `securelevel(0) > 0`
+     - [ ] block dlsym() calls if `securelevel(0) > 0`
    - 2 = ø
+     - [ ] block kc3_eval() calls if `securelevel(0) > 1`
+     - [ ] block all def* calls if `securelevel(0) > 1`
  - unveil
  - pledge
 

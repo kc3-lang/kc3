@@ -10,11 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "assert.h"
 #include "securelevel.h"
 
 u8 securelevel (u8 level)
 {
   static u8 securelevel = 0;
+  assert(securelevel < 2);
   if (level > 2)
     level = 2;
   if (level > securelevel)

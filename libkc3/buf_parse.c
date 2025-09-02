@@ -44,6 +44,7 @@
 #include "pcallable.h"
 #include "pvar.h"
 #include "ratio.h"
+#include "securelevel.h"
 #include "special_operator.h"
 #include "str.h"
 #include "struct.h"
@@ -1158,6 +1159,11 @@ sw buf_parse_pcallable (s_buf *buf, p_callable *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_cfn(buf, &cfn)) > 0) {
+    if (securelevel(0)) {
+      err_puts("buf_parse_pcallable: cannot parse Cfn with securelevel"
+               " > 0");
+      abort();
+    }
     if (! (tmp = callable_new())) {
       cfn_clean(&cfn);
       return -1;
@@ -1240,6 +1246,11 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
+  if (securelevel(0)) {
+    err_puts("buf_parse_cfn: cannot parse Cfn with securelevel"
+             " > 0");
+    abort();
+  }
   if ((r = buf_parse_sym(buf, &result_type)) <= 0)
     goto restore;
   result += r;

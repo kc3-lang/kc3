@@ -1422,7 +1422,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/integer.facts" \
 	"lib/kc3/0.1/json.kc3" \
 	"lib/kc3/0.1/kc3.1.kc3" \
-	"lib/kc3/0.1/kc3.dump" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/op.kc3" \
 	"lib/kc3/0.1/kc3/operator.kc3" \

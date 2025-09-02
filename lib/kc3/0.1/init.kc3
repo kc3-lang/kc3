@@ -280,6 +280,7 @@ def maybe_reload_directory = fn (dir) {
 }
 
 def dump = cfn Sw "kc3_dump" (Str)
+def securelevel = cfn U8 "securelevel" (U8)
 
 require Bool
 require Call

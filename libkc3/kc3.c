@@ -53,6 +53,7 @@
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "s32.h"
+#include "securelevel.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -1207,6 +1208,10 @@ s_str * kc3_system (const s_list * const *list, s_str *dest)
   s_str tmp;
   assert(list);
   assert(dest);
+  if (securelevel(0) > 0) {
+    err_puts("kc3_system: cannot call system when securelevel > 0");
+    abort();
+  }
   if ((len = list_length(*list)) < 1) {
     err_puts("kc3_system: empty argument list");
     assert(! "kc3_system: empty argument list");
@@ -1275,6 +1280,11 @@ void kc3_system_pipe_exec (s32 pipe_w, char **argv,
                            const s_list * const *list)
 {
   sw e;
+  if (securelevel(0) > 0) {
+    err_puts("kc3_system_pipe_exec: cannot call system when"
+             " securelevel > 0");
+    abort();
+  }
   if (dup2(pipe_w, 1) < 0) {
     e = errno;
     err_write_1("kc3_system: dup2(pipe_w, 1): ");
