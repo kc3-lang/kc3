@@ -13,6 +13,7 @@
 #ifndef KC3_TLS_H
 #define KC3_TLS_H
 
+#include <tls.h>
 #include "../libkc3/types.h"
 
 /* Library initialization. */
@@ -23,5 +24,7 @@ s_pointer * kc3_tls_config_new (s_pointer *dest);
 
 /* Operating system helpers. */
 s_str * kc3_tls_ca_cert_path (s_str *dest);
+
+void kc3_tls_free (struct tls *ctx);
 
 #endif /* KC3_TLS_H */
