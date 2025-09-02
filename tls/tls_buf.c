@@ -11,31 +11,47 @@
  * THIS SOFTWARE.
  */
 
-#include "assert.h"
+#include "../libkc3/alloc.h"
 #include "../libkc3/io.h"
+#include "assert.h"
+#include "types.h"
 #include "tls_buf.h"
 
-int buf_tls_open_r(s_tls_buf *buf, p_tls ctx)
+sw tls_buf_open_r_refill(s_buf *buf);
+sw tls_buf_open_w_flush(s_buf *buf);
+
+s_buf * tls_buf_open_r (s_buf *buf, p_tls ctx)
 {
+  s_tls_buf * tls_buf = NULL;
   assert(buf);
   assert(ctx);
   if (buf == NULL || ctx == NULL) {
-    err_puts(" buf_tls_open_r: invalid input");
-    assert(! " buf_tls_open_r: invalid input");
-    return -1;
+    err_puts("buf_tls_open_r: invalid input");
+    assert(! "buf_tls_open_r: invalid input");
+    return NULL;
   }
-  return 0;
+  if (! (tls_buf = alloc(sizeof(s_tls_buf))))
+    return NULL;
+  tls_buf->ctx = ctx;
+  buf->refill = tls_buf_open_r_refill;
+  buf->user_ptr = tls_buf;
+  return buf;
 }
 
-int buf_tls_open_w(s_tls_buf *buf, struct tls *ctx)
+s_buf * tls_buf_open_w (s_buf *buf, struct tls *ctx)
 {
+  s_tls_buf * tls_buf = NULL;
   assert(buf);
   assert(ctx);
   if (buf == NULL || ctx == NULL) {
-    err_puts(" buf_tls_open_w: invalid input");  
-    assert(! " buf_tls_open_w: invalid input");
-
-    return -1;
+    err_puts("buf_tls_open_w: invalid input");
+    assert(! "buf_tls_open_w: invalid input");
+    return NULL;
   }
-  return 0;
+  if (! (tls_buf = alloc(sizeof(s_tls_buf))))
+    return NULL;
+  tls_buf->ctx = ctx;
+  buf->flush = tls_buf_open_w_flush;
+  buf->user_ptr = tls_buf;
+  return buf;
 }

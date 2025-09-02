@@ -21,7 +21,7 @@ typedef struct tls_buf s_tls_buf;
 typedef struct tls_config *p_tls_config;
 
 struct tls_buf {
-  s_buf_fd buf_fd;
+  p_tls ctx;
 };
 
 #endif
