@@ -22,7 +22,6 @@
  *                           environment database read-only.
  *          securelevel(3) → disable KC3 code evaluation completely
  *                           (C-only mode).
- *          
  */
 #ifndef LIBKC3_SECURELEVEL_H
 #define LIBKC3_SECURELEVEL_H
