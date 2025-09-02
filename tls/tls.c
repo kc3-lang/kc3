@@ -66,10 +66,14 @@ bool kc3_tls_init (void)
   return true;
 }
 
-void kc3_tls_free (struct tls *ctx)
+p_tls * kc3_tls_client (p_tls *result)
 {
-  assert(! "kc3_tls_free: ctx cannot be null");
-  if (! ctx)
-    err_puts("kc3_tls_free: ctx cannot be null");
-  tls_free(ctx);
+  p_tls tmp = NULL;
+  if (! (tmp = tls_client())) {
+    err_puts("kc3_tls_client: tls_client");
+    assert(! "kc3_tls_client: tls_client");
+    return NULL;
+  }
+  *result = tmp;
+  return result;
 }

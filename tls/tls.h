@@ -15,16 +15,15 @@
 
 #include <tls.h>
 #include "../libkc3/types.h"
+#include "types.h"
 
 /* Library initialization. */
 bool kc3_tls_init (void);
 
 /* Heap-allocation functions, call *_delete after use. */
-s_pointer * kc3_tls_config_new (s_pointer *dest);
+p_tls_config * kc3_tls_config_new (p_tls_config *dest);
 
 /* Operating system helpers. */
 s_str * kc3_tls_ca_cert_path (s_str *dest);
-
-void kc3_tls_free (struct tls *ctx);
 
 #endif /* KC3_TLS_H */
