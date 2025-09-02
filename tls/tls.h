@@ -16,12 +16,17 @@
 #include <tls.h>
 #include "../libkc3/types.h"
 #include "types.h"
+#include "../socket/types.h"
 
 /* Library initialization. */
 bool kc3_tls_init (void);
 
 /* Heap-allocation functions, call *_delete after use. */
 p_tls_config * kc3_tls_config_new (p_tls_config *dest);
+
+/* Operators. */
+bool kc3_tls_connect_socket (p_tls ctx, t_socket sockfd,
+                             const s_str *hostname);
 
 /* Operating system helpers. */
 s_str * kc3_tls_ca_cert_path (s_str *dest);
