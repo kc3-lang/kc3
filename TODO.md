@@ -113,9 +113,9 @@
      - [x] block env_eval_callable if `securelevel(0) > 1`
      - [x] block all env_def* if `securelevel(0) > 1`
      - [x] block all kc3_def* if `securelevel(0) > 1`
-     - [ ] block all facts_add* on global env facts
+     - [x] block all facts_add* on global env facts
            if `securelevel(0) > 1`
-     - [ ] block all facts_remove* on global env facts
+     - [x] block all facts_remove* on global env facts
            if `securelevel(0) > 1`
    - 3 = ø (no KC3 eval, C-mode only)
      - [ ] block all env_eval_* if `securelevel(0) > 2`
