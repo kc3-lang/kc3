@@ -20,6 +20,7 @@
 #include "buf_parse.h"
 #include "compare.h"
 #include "config.h"
+#include "env.h"
 #include "fact.h"
 #include "facts.h"
 #include "facts_cursor.h"
@@ -33,6 +34,7 @@
 #include "marshall_read.h"
 #include "mutex.h"
 #include "rwlock.h"
+#include "securelevel.h"
 #include "set__fact.h"
 #include "set__tag.h"
 #include "set_cursor__fact.h"
@@ -53,6 +55,12 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
   s_set_item__fact *item;
   assert(facts);
   assert(fact);
+  if (securelevel(0) > 1 &&
+      facts == env_global()->facts) {
+    err_puts("facts_add_fact: cannot add fact to env facts with"
+             " securelevel > 1");
+    abort();
+  }
 #if HAVE_PTHREAD
   if (! rwlock_w(&facts->rwlock))
     return NULL;
@@ -148,6 +156,12 @@ s_fact * facts_add_tags (s_facts *facts, s_tag *subject,
                          s_tag *predicate, s_tag *object)
 {
   s_fact fact;
+  if (securelevel(0) > 1 &&
+      facts == env_global()->facts) {
+    err_puts("facts_add_tags: cannot add tags to env facts with"
+             " securelevel > 1");
+    abort();
+  }
   fact_init(&fact, subject, predicate, object);
   return facts_add_fact(facts, &fact);
 }
@@ -946,6 +960,13 @@ s_facts * facts_remove_all (s_facts *facts)
   uw j;
   s_set_item__fact *item;
   assert(facts);
+  if (! env_cleaning(false) &&
+      securelevel(0) > 1 &&
+      facts == env_global()->facts) {
+    err_puts("facts_remove_all: cannot remove all facts from env facts"
+             " with securelevel > 1 unless cleaning global env");
+    abort();
+  }
   count = facts->facts.count;
   if (! count)
     return facts;
@@ -980,6 +1001,13 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
   s_fact *found;
   assert(facts);
   assert(fact);
+  if (! env_cleaning(false) &&
+      securelevel(0) > 1 &&
+      facts == env_global()->facts) {
+    err_puts("facts_remove_fact: cannot remove fact from env facts with"
+             " securelevel > 1 unless cleaning global env");
+    abort();
+  }
 #if HAVE_PTHREAD
   rwlock_w(&facts->rwlock);
 #endif
@@ -1016,6 +1044,13 @@ bool * facts_remove_fact_tags (s_facts *facts, s_tag *subject,
   assert(subject);
   assert(predicate);
   assert(object);
+  if (! env_cleaning(false) &&
+      securelevel(0) > 1 &&
+      facts == env_global()->facts) {
+    err_puts("facts_remove_fact_tags: cannot remove tags from env facts"
+             " with securelevel > 1");
+    abort();
+  }
   fact.subject = subject;
   fact.predicate = predicate;
   fact.object = object;

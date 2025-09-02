@@ -355,6 +355,8 @@ void env_clean (s_env *env)
   error_handler_delete_all(env->error_handler);
   env->error_handler = NULL;
   assert(env->facts->ref_count == 1);
+  if (env == env_global())
+    env_cleaning(true);
   facts_delete(env->facts);
   env->facts = NULL;
   ops_delete(env->ops);
@@ -387,6 +389,14 @@ void env_clean (s_env *env)
     free(g_kc3_env_default);
     g_kc3_env_default = NULL;
   }
+}
+
+bool env_cleaning (bool enable)
+{
+  static bool cleaning = false;
+  if (enable)
+    cleaning = true;
+  return cleaning;
 }
 
 bool env_def (s_env *env, const s_ident *ident, s_tag *value)
