@@ -38,16 +38,16 @@ s_pointer * kc3_tls_config_new (s_pointer *dest)
   return dest;
 }
 
-bool kc3_tls_config_set_ca_file (struct tls_config **config,
+bool kc3_tls_config_set_ca_file (p_tls_config config,
                                  s_str *path)
 {
   assert(config);
   assert(path);
   assert(path->size);
   assert(path->ptr.pchar);
-  if (tls_config_set_ca_file(*config, path->ptr.pchar)) {
+  if (tls_config_set_ca_file(config, path->ptr.pchar)) {
     err_write_1("kc3_tls_config_set_ca_file: tls_config_set_ca_file: ");
-    err_write_1(tls_config_error(*config));
+    err_write_1(tls_config_error(config));
     err_write_1("\n");
     assert(! "kc3_tls_config_set_ca_file: tls_config_set_ca_file");
     return false;
