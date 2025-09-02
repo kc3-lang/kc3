@@ -10,6 +10,20 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/** @brief Securelevel : limit code loading functionality.
+ *  @desc  There are 4 security levels, from 0 to 3.
+           Each higher security level inherits all the security features
+           of previous levels :
+            securelevel(0) → all code loading is enabled (by default)
+            securelevel(1) → disable Cfn eval and parsing,
+                             disable kc3_system() and related functions,
+                             disable kc3_dlopen() and related functions.
+            securelevel(2) → disable all KC3 code loading and make environment
+                             database read-only.
+            securelevel(3) → disable KC3 code evaluation completely
+                             (C-only mode).
+            
+ */
 #ifndef LIBKC3_SECURELEVEL_H
 #define LIBKC3_SECURELEVEL_H
 

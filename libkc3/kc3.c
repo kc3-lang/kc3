@@ -333,6 +333,10 @@ void ** kc3_dlopen (const s_str *path, void **dest)
 {
   assert(path);
   assert(dest);
+  if (securelevel(0) > 0) {
+    err_puts("kc3_dlopen: cannot dlopen with securelevel > 0");
+    abort();
+  }
   return env_dlopen(env_global(), path, dest);
 }
 

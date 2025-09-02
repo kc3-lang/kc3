@@ -342,7 +342,8 @@ s_cfn * cfn_link (s_cfn *cfn)
 {
   assert(cfn);
   if (securelevel(0)) {
-    err_puts("cfn_link: cannot eval Cfn with securelevel > 0");
+    err_puts("cfn_link: cannot eval Cfn or call dlsym with"
+             " securelevel > 0");
     abort();
   }
   if (! (cfn->ptr.p = dlsym(RTLD_DEFAULT, cfn->c_name->str.ptr.pchar))) {

@@ -16,9 +16,10 @@
 u8 securelevel (u8 level)
 {
   static u8 securelevel = 0;
-  assert(securelevel < 2);
-  if (level > 2)
-    level = 2;
+  const u8 securelevel_max = 3;
+  assert(securelevel < securelevel_max);
+  if (level > securelevel_max)
+    level = securelevel_max;
   if (level > securelevel)
     securelevel = level;
   return securelevel;

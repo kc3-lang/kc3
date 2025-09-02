@@ -77,6 +77,7 @@
 #include "plist.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
+#include "securelevel.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -643,6 +644,10 @@ void ** env_dlopen (s_env *env, const s_str *so_path, void **dest)
   assert(env);
   assert(so_path);
   assert(dest);
+  if (securelevel(0) > 0) {
+    err_puts("env_dlopen: cannot dlopen with securelevel > 0");
+    abort();
+  }
   if (! str_init_concatenate(&path, env->module_path, so_path))
     return NULL;
   if (env->trace) {
