@@ -655,6 +655,11 @@ bool env_eval_callable (s_env *env, s_callable *callable,
       return false;
     goto ok;
   case CALLABLE_FN:
+    if (securelevel(0) > 1) {
+      err_puts("env_eval_callable: cannot eval Fn with securelevel"
+               " > 1");
+      abort();
+    }
     if (! (tmp = callable_new_copy(callable)))
       return false;
     if (! tmp->data.fn.module)

@@ -265,12 +265,20 @@ void kc3_continue (void)
 
 s_tag * kc3_def (const s_call *call, s_tag *dest)
 {
+  if (securelevel(0) > 1) {
+    err_puts("kc3_def: cannot use def with securelevel > 1");
+    abort();
+  }
   return env_kc3_def(env_global(), call, dest);
 }
 
 s_tag * kc3_defmodule (p_sym const *name, const s_do_block *do_block,
                        s_tag *dest)
 {
+  if (securelevel(0) > 1) {
+    err_puts("kc3_defmodule: cannot use def with securelevel > 1");
+    abort();
+  }
   return env_defmodule(env_global(), name, do_block, dest);
 }
 
@@ -279,6 +287,11 @@ s_tag * kc3_defoperator (s_tag *tag_op, s_tag *dest)
 {
   s_env *env;
   s_tag tmp = {0};
+  if (securelevel(0) > 1) {
+    err_puts("kc3_defoperator: cannot use defoperator with"
+             " securelevel > 1");
+    abort();
+  }
   if (! tag_op || tag_op->type != TAG_PSTRUCT ||
       tag_op->data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
     err_puts("kc3_defoperator: not a %KC3.Op{}");
@@ -307,6 +320,11 @@ s_tag * kc3_defspecial_operator (s_tag *tag, s_tag *dest)
   s_env *env;
   assert(tag);
   assert(dest);
+  if (securelevel(0) > 1) {
+    err_puts("kc3_defspecial_operator: cannot use defspecial_operator"
+             " with securelevel > 1");
+    abort();
+  }
   env = env_global();
   return env_defspecial_operator(env, tag, dest);
 }
@@ -316,6 +334,11 @@ s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
   s_tag tag;
   s_tag tmp = {0};
   assert(spec);
+  if (securelevel(0) > 1) {
+    err_puts("kc3_defstruct: cannot use defstruct"
+             " with securelevel > 1");
+    abort();
+  }
   if (! spec)
     return NULL;
   if (! env_eval_list(env_global(), *spec, &tag))

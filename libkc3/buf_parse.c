@@ -1173,6 +1173,11 @@ sw buf_parse_pcallable (s_buf *buf, p_callable *dest)
     *dest = tmp;
   }
   else if ((r = buf_parse_fn(buf, &fn)) > 0) {
+    if (securelevel(0) > 1) {
+      err_puts("buf_parse_pcallable: cannot parse Fn with securelevel"
+               " > 1");
+      abort();
+    }
     if (! (tmp = callable_new())) {
       fn_clean(&fn);
       return -1;
@@ -1993,8 +1998,8 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
   sw r1;
   sw result = 0;
   s_buf_save save;
-  s_fn tmp = {0};
   s_fn_clause **tail;
+  s_fn tmp = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -2006,11 +2011,15 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
     r = 0;
     goto restore;
   }
-  fn_init(&tmp, ident.module);
-  tail = &tmp.clauses;
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
+  if (securelevel(0) > 1) {
+    err_puts("buf_parse_fn: cannot parse Fn with securelevel > 1");
+    abort();
+  }
+  fn_init(&tmp, ident.module);
+  tail = &tmp.clauses;
   if ((r = buf_read_1(buf, "{")) < 0)
     goto restore;
   if (r > 0) {

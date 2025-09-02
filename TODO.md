@@ -108,11 +108,12 @@
        - [x] only ever called by cfn_apply which is already blocked at
              securelevel > 0
    - 2 = eval
-     - [ ] block buf_parse_fn if `securelevel(0) > 1`
-     - [ ] block buf_parse_callable if `securelevel(0) > 1`
-     - [ ] block env_eval_callable if `securelevel(0) > 1`
-     - [ ] block all env_def* if `securelevel(0) > 1`
-     - [ ] block all facts_add_* if `securelevel(0) > 1`
+     - [x] block buf_parse_fn if `securelevel(0) > 1`
+     - [x] block buf_parse_pcallable if `securelevel(0) > 1`
+     - [x] block env_eval_callable if `securelevel(0) > 1`
+     - [x] block all env_def* if `securelevel(0) > 1`
+     - [ ] block all facts_add on env->facts if `securelevel(0) > 1`
+     - [ ] block all facts_remove on env->facts if `securelevel(0) > 1`
    - 3 = ø (no KC3 eval, C-mode only)
      - [ ] block all env_eval_* if `securelevel(0) > 2`
  - unveil

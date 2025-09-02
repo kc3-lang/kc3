@@ -399,6 +399,10 @@ bool env_def (s_env *env, const s_ident *ident, s_tag *value)
   assert(env);
   assert(ident);
   assert(value);
+  if (securelevel(0) > 1) {
+    err_puts("env_def: cannot use def with securelevel > 1");
+    abort();
+  }
   tag_ident.type = TAG_IDENT;
   tag_ident.data.ident.sym = ident->sym;
   if (ident->module)
@@ -428,6 +432,11 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
                              const s_tag *clean)
 {
   s_struct_type *st;
+  if (securelevel(0) > 1) {
+    err_puts("env_def_clean: cannot use def clean with"
+             " securelevel > 1");
+    abort();
+  }
   if (! env_pstruct_type_find(env, module, &st))
     return NULL;
   if (! st) {
@@ -477,6 +486,11 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
   assert(*name);
   assert(do_block);
   assert(dest);
+  if (securelevel(0) > 1) {
+    err_puts("env_defmodule: cannot use defmodule with"
+             " securelevel > 1");
+    abort();
+  }
   prev_defmodule = env->current_defmodule;
   env_module_is_loading_set(env, *name, true);
   env->current_defmodule = *name;
@@ -513,6 +527,11 @@ bool env_defoperator (s_env *env, s_tag *tag_op)
   assert(env);
   assert(tag_op);
   assert(env->ops);
+  if (securelevel(0) > 1) {
+    err_puts("env_defoperator: cannot use defoperator with"
+             " securelevel > 1");
+    abort();
+  }
   if (! tag_op ||
       tag_op->type != TAG_PSTRUCT ||
       ! tag_op->data.pstruct ||
@@ -552,6 +571,11 @@ s_tag * env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest)
   assert(env);
   assert(tag);
   assert(dest);
+  if (securelevel(0) > 1) {
+    err_puts("env_defspecial_operator: cannot use defspecial_operator"
+             " with securelevel > 1");
+    abort();
+  }
   if (tag->type != TAG_CALL) {
     err_puts("env_defspecial_operator: expected Call");
     return NULL;
@@ -624,6 +648,11 @@ const s_sym * env_defstruct (s_env *env, s_list *spec)
   s_tag tag_module_name;
   s_tag tag_st;
   s_tag tag_struct_type;
+  if (securelevel(0) > 1) {
+    err_puts("env_defstruct: cannot use defstruct with"
+             " securelevel > 1");
+    abort();
+  }
   tag_init_psym(&tag_module_name, env->current_defmodule);
   tag_init_pstruct_type(&tag_st, env->current_defmodule, spec);
   tag_init_psym(&tag_struct_type, &g_sym_struct_type);
