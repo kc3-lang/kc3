@@ -26,11 +26,11 @@
        - [perle] `tls_write(ctx, data, size)`
        - [perle] `tls_read(ctx, data, size);`
        - [perle] `tls_close(ctx);`
-       - [?] `tls_free`
-       - [?] `tls_config_free` (isn't that tls_config_delete, what's the difference ?)
+       - [x] `tls_free`
+       - [x] `tls_config_free` (isn't that tls_config_delete, what's the difference ?)
      - [ ] Basic TLS Client :
-       - [?] `tls_config_set_ca_file(config, "/etc/ssl/cert.pem");`
-       - [ ] `struct tls *ctx = tls_client();`
+       - [x] `tls_config_set_ca_file(config, "/etc/ssl/cert.pem");`
+       - [x] `struct tls *ctx = tls_client();`
        - [ ] `tls_connect_socket(ctx, socket_fd, "hostname");`
      - [ ] Basic TLS Server, see `libtls_server_example.c`
        - [ ] `tls_config_set_cert_file` set server certificate
