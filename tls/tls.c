@@ -10,6 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "libkc3/types.h"
+#include "tls/types.h"
 #if defined(WIN32) || defined(WIN64)
 # include <windows.h>
 # include <wincrypt.h>
@@ -18,7 +20,7 @@
 # include <stdlib.h>
 #endif
 #include <tls.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "tls.h"
 
 s_str * kc3_tls_ca_cert_path (s_str *dest)
@@ -76,4 +78,16 @@ p_tls * kc3_tls_client (p_tls *result)
   }
   *result = tmp;
   return result;
+}
+
+bool kc3_tls_connect_socket (p_tls ctx, t_socket sockfd,
+                             const s_str *hostname)
+{
+  if (tls_connect_socket(ctx, sockfd, hostname->ptr.pchar)) {
+    err_write_1("kc3_tls_connect_socket: tls_connect_socket: ");
+    err_puts(tls_error(ctx));
+    assert(! "kc3_tls_connect_socket: tls_connect_socket");
+    return false;
+  }
+  return true;
 }
