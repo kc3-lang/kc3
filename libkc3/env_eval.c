@@ -56,6 +56,10 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
   assert(env);
   assert(array);
   assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_array: cannot eval with securelevel > 2");
+    abort();
+  }
   array_init_copy(&tmp, array);
   if (tmp.dimension_count) {
     item_size = tmp.dimensions[tmp.dimension_count - 1].item_size;
@@ -96,33 +100,15 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
 bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
 {
   s_array tmp = {0};
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_array_tag: cannot eval with securelevel > 2");
+    abort();
+  }
   if (! env_eval_array(env, array, &tmp))
     return false;
   dest->type = TAG_ARRAY;
   dest->data.array = tmp;
   return true;
-}
-
-bool env_eval_do_block (s_env *env, const s_do_block *do_block,
-                        s_tag *dest)
-{
-  uw i = 0;
-  s_tag tmp = {0};
-  assert(env);
-  assert(do_block);
-  assert(dest);
-  if (! do_block->count) {
-    tag_init_void(dest);
-    return true;
-  }
-  // TODO unwind protect
-  while (i < do_block->count - 1) {
-    // TODO error handling
-    if (env_eval_tag(env, do_block->tag + i, &tmp))
-      tag_clean(&tmp);
-    i++;
-  }
-  return env_eval_tag(env, do_block->tag + i, dest);
 }
 
 bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
@@ -133,6 +119,10 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   assert(env);
   assert(call);
   assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_call: cannot eval with securelevel > 2");
+    abort();
+  }
   call_init_copy(&c, call);
   if (c.pcallable)
     pcallable_clean(&c.pcallable);
@@ -180,6 +170,11 @@ bool env_eval_call_arguments (s_env *env, s_list *args,
   s_list ** volatile tail;
   s_list *tmp = NULL;
   s_unwind_protect up = {0};
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_call_arguments: cannot eval with"
+             " securelevel > 2");
+    abort();
+  }
   tail = &tmp;
   a = args;
   while (a) {
@@ -209,6 +204,11 @@ bool env_eval_call_arguments (s_env *env, s_list *args,
 bool env_eval_call_callable (s_env *env, const s_call *call,
                              s_tag *dest)
 {
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_call_callable: cannot eval with"
+             " securelevel > 2");
+    abort();
+  }
   switch (call->pcallable->type) {
   case CALLABLE_CFN:
     return env_eval_call_cfn_args(env, &call->pcallable->data.cfn,
@@ -231,6 +231,11 @@ bool env_eval_call_callable_args (s_env *env,
                                   s_list *arguments,
                                   s_tag *dest)
 {
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_call_callable_args: cannot eval with"
+             " securelevel > 2");
+    abort();
+  }
   switch (callable->type) {
   case CALLABLE_CFN:
     return env_eval_call_cfn_args(env, &callable->data.cfn,
@@ -259,6 +264,11 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
   assert(env);
   assert(cfn);
   assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_call_cfn_args: cannot eval with"
+             " securelevel > 2");
+    abort();
+  }
   //if (! frame_init(&frame, env->frame))
   //  return false;
   //env->frame = &frame;
@@ -289,6 +299,10 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
   assert(env);
   assert(call);
   assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_call_fn: cannot eval with securelevel > 2");
+    abort();
+  }
   if (! call->pcallable ||
       call->pcallable->type != CALLABLE_FN) {
     err_puts("env_eval_call_fn: not a Fn");
@@ -325,6 +339,11 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   assert(env);
   assert(fn);
   assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_call_fn_args: cannot eval with"
+             " securelevel > 2");
+    abort();
+  }
   search_modules = env->search_modules;
   module = fn->module;
   if (! module)
@@ -557,6 +576,11 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   assert(env);
   assert(env->ops);
   assert(call);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_call_resolve: cannot eval with"
+             " securelevel > 2");
+    abort();
+  }
   tmp = *call;
   if (tmp.ident.module == NULL &&
       (value = env_frames_get(env, tmp.ident.sym))) {
@@ -642,6 +666,11 @@ bool env_eval_callable (s_env *env, s_callable *callable,
   assert(callable);
   assert(dest);
   (void) env;
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_callable: cannot eval with"
+             " securelevel > 2");
+    abort();
+  }
   switch (callable->type) {
   case CALLABLE_CFN:
     if (securelevel(0)) {
@@ -690,6 +719,11 @@ bool env_eval_complex (s_env *env, s_complex *c, s_tag *dest)
   assert(env);
   assert(c);
   assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_complex: cannot eval with"
+             " securelevel > 2");
+    abort();
+  }
   tmp = alloc(sizeof(s_complex));
   if (! tmp)
     return false;
@@ -707,39 +741,30 @@ bool env_eval_complex (s_env *env, s_complex *c, s_tag *dest)
   return true;
 }
 
-// TODO unwind_protect
-bool env_eval_pcow (s_env *env, p_cow *pcow, p_cow *dest)
+bool env_eval_do_block (s_env *env, const s_do_block *do_block,
+                        s_tag *dest)
 {
-  p_cow cow = *pcow;
-  p_cow tmp = NULL;
-  assert(env);
-  assert(pcow);
-  assert(cow);
-  assert(dest);
-  tmp = cow_new(cow->type);
-  if (! tmp)
-    return false;
-  if (! env_eval_tag(env, cow_read_only(cow),
-                     cow_read_write(tmp))) {
-    free(tmp);
-    return false;
-  }
-  cow_freeze(tmp);
-  *dest = tmp;
-  return true;
-}
-
-bool env_eval_pcow_tag (s_env *env, p_cow *cow, s_tag *dest)
-{
+  uw i = 0;
   s_tag tmp = {0};
   assert(env);
-  assert(cow);
+  assert(do_block);
   assert(dest);
-  if (! env_eval_pcow(env, cow, &tmp.data.pcow))
-    return false;
-  tmp.type = TAG_PCOW;
-  *dest = tmp;
-  return true;
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_do_block: cannot eval with securelevel > 2");
+    abort();
+  }
+  if (! do_block->count) {
+    tag_init_void(dest);
+    return true;
+  }
+  // TODO unwind protect
+  while (i < do_block->count - 1) {
+    // TODO error handling
+    if (env_eval_tag(env, do_block->tag + i, &tmp))
+      tag_clean(&tmp);
+    i++;
+  }
+  return env_eval_tag(env, do_block->tag + i, dest);
 }
 
 bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
@@ -750,6 +775,11 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   assert(env);
   assert(ident);
   assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_ident: cannot eval with"
+             " securelevel > 2");
+    abort();
+  }
   if ((tag = env_frames_get(env, ident->sym))) {
     tag_init_copy(dest, tag);
     return true;
@@ -782,6 +812,11 @@ bool env_eval_ident_is_bound (s_env *env, const s_ident *ident)
   s_tag tmp = {0};
   assert(env);
   assert(ident);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_ident_is_bound: cannot eval with"
+             " securelevel > 2");
+    abort();
+  }
   if (env_frames_get(env, ident->sym))
     return true;
   if (env_ident_resolve_module(env, ident, &tmp_ident) &&
@@ -800,6 +835,10 @@ bool env_eval_list (s_env *env, s_list *list, s_tag *dest)
   s_list **tail = &tmp;
   assert(env);
   assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_list: cannot eval with securelevel > 2");
+    abort();
+  }
   while (list) {
     *tail = list_new(NULL);
     if (! env_eval_tag(env, &list->tag, &(*tail)->tag))
@@ -827,6 +866,10 @@ bool env_eval_map (s_env *env, s_map *map, s_tag *dest)
   assert(env);
   assert(map);
   assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_map: cannot eval with securelevel > 2");
+    abort();
+  }
   if (! map_init(&tmp, map->count))
     return false;
   while (i < tmp.count) {
@@ -844,6 +887,49 @@ bool env_eval_map (s_env *env, s_map *map, s_tag *dest)
   return false;
 }
 
+// TODO unwind_protect
+bool env_eval_pcow (s_env *env, p_cow *pcow, p_cow *dest)
+{
+  p_cow cow = *pcow;
+  p_cow tmp = NULL;
+  assert(env);
+  assert(pcow);
+  assert(cow);
+  assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_pcow: cannot eval with securelevel > 2");
+    abort();
+  }
+  tmp = cow_new(cow->type);
+  if (! tmp)
+    return false;
+  if (! env_eval_tag(env, cow_read_only(cow),
+                     cow_read_write(tmp))) {
+    free(tmp);
+    return false;
+  }
+  cow_freeze(tmp);
+  *dest = tmp;
+  return true;
+}
+
+bool env_eval_pcow_tag (s_env *env, p_cow *cow, s_tag *dest)
+{
+  s_tag tmp = {0};
+  assert(env);
+  assert(cow);
+  assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_pcow_tag: cannot eval with securelevel > 2");
+    abort();
+  }
+  if (! env_eval_pcow(env, cow, &tmp.data.pcow))
+    return false;
+  tmp.type = TAG_PCOW;
+  *dest = tmp;
+  return true;
+}
+
 // TODO: unwind_protect
 bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
 {
@@ -857,6 +943,10 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
   assert(env);
   assert(s);
   assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_struct: cannot eval with securelevel > 2");
+    abort();
+  }
   if (s->data) {
     if (! pstruct_init_copy(&tmp, &s))
       return false;
@@ -924,6 +1014,13 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
 
 bool env_eval_struct_tag (s_env *env, s_struct *s, s_tag *dest)
 {
+  assert(env);
+  assert(s);
+  assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_struct_tag: cannot eval with securelevel > 2");
+    abort();
+  }
   if (! env_eval_struct(env, s, &dest->data.pstruct))
     return false;
   dest->type = TAG_PSTRUCT;
@@ -935,6 +1032,10 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
   assert(env);
   assert(tag);
   assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_tag: cannot eval with securelevel > 2");
+    abort();
+  }
   switch (tag->type) {
   case TAG_VOID:
     tag_init_void(dest);
@@ -1008,6 +1109,10 @@ bool env_eval_time (s_env *env, const s_time *time, s_tag *dest)
   const s_sym *sym_Sw = &g_sym_Sw;
   s_tag tag[2] = {0};
   s_tag tmp = {0};
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_time: cannot eval with securelevel > 2");
+    abort();
+  }
   tmp.type = TAG_TIME;
   if (time->tag) {
     if (! env_eval_tag(env, time->tag, tag))
@@ -1051,6 +1156,10 @@ bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
   assert(env);
   assert(tuple);
   assert(dest);
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_tuple: cannot eval with securelevel > 2");
+    abort();
+  }
   tuple_init(&tmp, tuple->count);
   while (i < tuple->count) {
     if (! env_eval_tag(env, tuple->tag + i, tmp.tag + i))
@@ -1068,6 +1177,10 @@ bool env_eval_var (s_env *env, s_var *var, s_tag *dest)
   assert(env);
   assert(dest);
   (void) env;
+  if (securelevel(0) > 2) {
+    err_puts("env_eval_var: cannot eval with securelevel > 2");
+    abort();
+  }
   if (var && var->bound) {
     if (! tag_init_copy(dest, &var->tag))
       return false;
