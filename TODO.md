@@ -29,7 +29,7 @@
        - [?] `tls_free`
        - [?] `tls_config_free` (isn't that tls_config_delete, what's the difference ?)
      - [ ] Basic TLS Client :
-       - [ ] `tls_config_set_ca_file(config, "/etc/ssl/cert.pem");`
+       - [?] `tls_config_set_ca_file(config, "/etc/ssl/cert.pem");`
        - [ ] `struct tls *ctx = tls_client();`
        - [ ] `tls_connect_socket(ctx, socket_fd, "hostname");`
      - [ ] Basic TLS Server, see `libtls_server_example.c`
