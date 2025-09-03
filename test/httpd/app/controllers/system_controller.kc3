@@ -17,8 +17,9 @@ defmodule SystemController do
   def dashboard = fn (url) {
     slug = "system system-dashboard"
     title = "System dashboard"
+    securelevel_str = "#{securelevel(0)}"
     uptime_str = Time.diff_to_str(Time.uptime())
-    page = SystemView.render_dashboard(uptime_str)
+    page = SystemView.render_dashboard(securelevel_str, uptime_str)
     body = SystemView.render_layout(slug, title, page, url)
     %HTTP.Response{body: body}
   }
