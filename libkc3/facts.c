@@ -378,8 +378,9 @@ s_fact ** facts_find_fact (s_facts *facts, const s_fact *fact,
   }
   *dest = NULL;
   if (f.subject && f.predicate && f.object) {
-    if (! (item = set_get__fact(&facts->facts, &f)))
+    if (! (item = set_get__fact(&facts->facts, &f))) {
       err_puts("facts_find_fact: set_get__fact");
+    }
     else
       *dest = &item->data;
   }
@@ -1055,7 +1056,6 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
 #endif
     return NULL;
   }
-  *dest = found ? true : false;
   if (found) {
     if (facts->log)
       facts_log_remove(facts->log, found);
@@ -1068,9 +1068,12 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
     facts_unref_tag(facts, f.subject);
     facts_unref_tag(facts, f.predicate);
     facts_unref_tag(facts, f.object);
+    *dest = true;
   }
   else {
     err_puts("facts_remove_fact: fact not found");
+    assert(! "facts_remove_fact: fact not found");
+    *dest = false;
   }
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
