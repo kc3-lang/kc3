@@ -760,8 +760,9 @@ bool env_eval_do_block (s_env *env, const s_do_block *do_block,
   // TODO unwind protect
   while (i < do_block->count - 1) {
     // TODO error handling
-    if (env_eval_tag(env, do_block->tag + i, &tmp))
-      tag_clean(&tmp);
+    if (! env_eval_tag(env, do_block->tag + i, &tmp))
+      return false;
+    tag_clean(&tmp);
     i++;
   }
   return env_eval_tag(env, do_block->tag + i, dest);

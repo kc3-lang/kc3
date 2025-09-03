@@ -47,6 +47,7 @@ defmodule HTTPd do
       load("config/routes.kc3")
     end
     load_directory("app/plugs/")
+    securelevel(2)
     puts("HTTPd.load_app: done")
   }
 

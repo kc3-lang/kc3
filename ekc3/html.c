@@ -53,6 +53,8 @@ s_str * html_escape (s_tag *src, s_str *dest)
   }
   escape = escape_tag.data.plist;
   if (! buf_init_alloc(&buf, str.size * 8)) {
+    err_puts("html_escape: buf_init_alloc");
+    assert(! "html_escape: buf_init_alloc");
     tag_clean(&escape_tag);
     str_clean(&str);
     return NULL;
@@ -61,8 +63,11 @@ s_str * html_escape (s_tag *src, s_str *dest)
   tag.data.str = (s_str) {0};
   s = str;
   while (str_read_character_utf8(&s, &c) > 0) {
-    if (! str_init_character(&tag.data.str, c))
+    if (! str_init_character(&tag.data.str, c)) {
+      err_puts("html_escape: invalid character");
+      assert(! "html_escape: invalid character");
       goto ko;
+    }
     replace = NULL;
     e = escape;
     while (e) {
@@ -108,7 +113,9 @@ s_str * html_escape (s_tag *src, s_str *dest)
   tag_clean(&escape_tag);
   str_clean(&str);
   s = (s_str) {0};
-  if (buf_read_to_str(&buf, &s) <= 0) {
+  if (buf_read_to_str(&buf, &s) < 0) {
+    err_puts("html_escape: buf_read_to_str");
+    assert(! "html_escape: buf_read_to_str");
     buf_clean(&buf);
     return NULL;
   }

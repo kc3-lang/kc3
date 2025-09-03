@@ -1015,7 +1015,7 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
     assert(! "str_init_slice: invalid positions");
     return NULL;
   }
-  if (buf_read_to_str(&buf, &tmp) <= 0) {
+  if (buf_read_to_str(&buf, &tmp) < 0) {
     err_puts("str_init_slice: buf_read_to_str");
     assert(! "str_init_slice: buf_read_to_str");
     return NULL;
