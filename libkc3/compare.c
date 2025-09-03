@@ -1243,14 +1243,14 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_VOID:       return 0;
   case TAG_ARRAY:      return compare_array(&a->data.array,
                                             &b->data.array);
-  case TAG_DO_BLOCK:   return compare_do_block(&a->data.do_block,
-                                               &b->data.do_block);
   case TAG_BOOL:       return compare_bool(a->data.bool_,
                                            b->data.bool_);
   case TAG_CALL:       return compare_call(&a->data.call,
                                            &b->data.call);
   case TAG_CHARACTER:  return compare_character(a->data.character,
                                                 b->data.character);
+  case TAG_DO_BLOCK:   return compare_do_block(&a->data.do_block,
+                                               &b->data.do_block);
   case TAG_FACT:       return compare_fact(&a->data.fact,
                                            &b->data.fact);
   case TAG_IDENT:      return compare_ident(&a->data.ident,
