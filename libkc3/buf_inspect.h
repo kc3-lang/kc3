@@ -207,7 +207,7 @@ BUF_INSPECT_S_PROTOTYPES(8);
 BUF_INSPECT_S_PROTOTYPES(16);
 BUF_INSPECT_S_PROTOTYPES(32);
 BUF_INSPECT_S_PROTOTYPES(64);
-sw buf_inspect_stacktrace (s_buf *buf, const s_list *stacktrace);
+sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace);
 sw buf_inspect_stacktrace_size (s_pretty *pretty,
                                 const s_list *stacktrace);
 sw buf_inspect_str (s_buf *buf, const s_str *str);

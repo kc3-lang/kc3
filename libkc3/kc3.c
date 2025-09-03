@@ -265,8 +265,8 @@ void kc3_continue (void)
 
 s_tag * kc3_def (const s_call *call, s_tag *dest)
 {
-  if (securelevel(0) > 1) {
-    err_puts("kc3_def: cannot use def with securelevel > 1");
+  if (securelevel(0) > 2) {
+    err_puts("kc3_def: cannot use def with securelevel > 2");
     abort();
   }
   return env_kc3_def(env_global(), call, dest);

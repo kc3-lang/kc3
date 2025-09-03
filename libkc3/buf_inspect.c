@@ -33,6 +33,7 @@
 #include "list.h"
 #include "op.h"
 #include "ops.h"
+#include "plist.h"
 #include "pretty.h"
 #include "special_operator.h"
 #include "str.h"
@@ -3371,56 +3372,68 @@ sw buf_inspect_ratio_size (s_pretty *pretty, const s_ratio *ratio)
   return result;
 }
 
-sw buf_inspect_stacktrace (s_buf *buf, const s_list *stacktrace)
+sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
 {
-  const s_list *arg;
+  p_list arg;
   s_pretty_save pretty_save;
   sw r;
   sw result = 0;
-  const s_list *s;
+  p_list reverse = NULL;
+  p_list s;
   assert(buf);
   pretty_save_init(&pretty_save, &buf->pretty);
   pretty_indent_at_column(&buf->pretty, 0);
-  if ((r = buf_write_1(buf, "Stacktrace:\n")) < 0)
+  if ((r = buf_write_1(buf, "Stacktrace:\n")) < 0) {
+    pretty_save_clean(&pretty_save, &buf->pretty);
     return r;
+  }
   result += r;
-  s = stacktrace;
+  if (! plist_reverse(&stacktrace, &reverse)) {
+    err_puts("buf_inspect_stacktrace: plist_reverse");
+    assert(! "buf_inspect_stacktrace: plist_reverse");
+    pretty_save_clean(&pretty_save, &buf->pretty);
+    return -1;
+  }
+  s = reverse;
   while (s) {
     if ((r = buf_write_1(buf, " ")) < 0)
-      return r;
+      goto clean;
     result += r;
     if (s->tag.type == TAG_PLIST) {
       if ((r = buf_inspect_tag(buf, &s->tag.data.plist->tag)) < 0)
-        return r;
+        goto clean;
       result += r;
       if ((r = buf_write_1(buf, "(")) < 0)
-        return r;
+        goto clean;
       result += r;
       arg = list_next(s->tag.data.plist);
       while (arg) {
         if ((r = buf_inspect_tag(buf, &arg->tag)) < 0)
-          return r;
+          goto clean;
         result += r;
         arg = list_next(arg);
         if (arg) {
           if ((r = buf_write_1(buf, ", ")) < 0)
-            return r;
+            goto clean;
           result += r;
         }
       }
       if ((r = buf_write_1(buf, ")\n")) < 0)
-        return r;    
+        goto clean;
       result += r;
     }
     else {
       if ((r = buf_write_1(buf, "???\n")) < 0)
-        return r;    
+        goto clean;
       result += r;
     }
     s = list_next(s);
   }
+  r = result;
+ clean:
+  list_delete_all(reverse);
   pretty_save_clean(&pretty_save, &buf->pretty);
-  return result;
+  return r;
 }
 
 sw buf_inspect_stacktrace_size (s_pretty *pretty,

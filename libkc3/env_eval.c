@@ -673,6 +673,10 @@ bool env_eval_callable (s_env *env, s_callable *callable,
   }
   switch (callable->type) {
   case CALLABLE_CFN:
+    if (callable->data.cfn.cif_ready) {
+      tmp = callable_new_ref(callable);
+      goto ok;
+    }
     if (securelevel(0)) {
       err_puts("env_eval_callable: cannot eval Cfn with securelevel"
                " > 0");
@@ -684,6 +688,11 @@ bool env_eval_callable (s_env *env, s_callable *callable,
       return false;
     goto ok;
   case CALLABLE_FN:
+    if (callable->data.fn.frame) {
+      if (! (tmp = callable_new_ref(callable)))
+        return false;
+      goto ok;
+    }
     if (securelevel(0) > 1) {
       err_puts("env_eval_callable: cannot eval Fn with securelevel"
                " > 1");

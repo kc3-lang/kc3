@@ -84,7 +84,7 @@ PROTOTYPES_ERR_IO_INSPECT(s32_hexadecimal,     s32);
 PROTOTYPES_ERR_IO_INSPECT(s64,                 s64);
 PROTOTYPES_ERR_IO_INSPECT(s64_decimal,         s64);
 PROTOTYPES_ERR_IO_INSPECT(s64_hexadecimal,     s64);
-PROTOTYPES_ERR_IO_INSPECT(stacktrace,          const s_list *);
+PROTOTYPES_ERR_IO_INSPECT(stacktrace,          p_list);
 PROTOTYPES_ERR_IO_INSPECT(str,                 const s_str *);
 PROTOTYPES_ERR_IO_INSPECT(str_hex,             const s_str *);
 PROTOTYPES_ERR_IO_INSPECT(struct,              const s_struct *);
