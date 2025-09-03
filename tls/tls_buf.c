@@ -15,10 +15,23 @@
 #include "../libkc3/io.h"
 #include "assert.h"
 #include "types.h"
+#include <string.h>
 #include "tls_buf.h"
 
-sw tls_buf_open_r_refill(s_buf *buf);
-sw tls_buf_open_w_flush(s_buf *buf);
+static sw tls_buf_open_w_flush(s_buf *buf)
+{
+    assert(buf);
+    return buf && (sw)(! memset(buf->user_ptr, 0, buf->size));
+}
+
+static sw tls_buf_open_r_refill(s_buf *buf)
+{
+  assert(buf);
+  if (buf == NULL)
+    return -1;
+  return 0;
+}
+
 
 s_buf * tls_buf_open_r (s_buf *buf, p_tls ctx)
 {
