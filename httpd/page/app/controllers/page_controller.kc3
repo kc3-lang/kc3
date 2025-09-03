@@ -113,7 +113,8 @@ defmodule PageController do
           l
         end
       end || "en"
-      route_locale(url, locale, locale) || route_locale(url, locale, "en")
+      route_locale(url, locale, locale) ||
+        route_locale(url, locale, "en")
     end
   }
 

@@ -14,15 +14,18 @@ require EKC3
 
 defmodule SitemapView do
 
-  def template = EKC3.load("app/templates/sitemap/sitemap.xml.ekc3")
+  def template =
+    EKC3.load("app/templates/sitemap/sitemap.xml.ekc3")
 
-  def template_doc = EKC3.load("app/templates/sitemap/sitemap_doc.xml.ekc3")
+  def template_doc =
+    EKC3.load("app/templates/sitemap/sitemap_doc.xml.ekc3")
 
-  def template_page = EKC3.load("app/templates/sitemap/sitemap_page.xml.ekc3")
+  def template_page =
+    EKC3.load("app/templates/sitemap/sitemap_page.xml.ekc3")
 
-  def render_doc = fn (url) { EKC3.render(template_doc) }
+  def render_doc = fn (url) { EKC3.render(SitemapView.template_doc) }
 
-  def render_page = fn (url) { EKC3.render(template_page) }
+  def render_page = fn (url) { EKC3.render(SitemapView.template_page) }
 
   def render = fn (prefix_url, doc_index, page_index) {
     doc_index = List.join(List.map(doc_index,

@@ -17,8 +17,10 @@ require Markdown
 defmodule DocController do
 
   def doc_index = fn {
-    (input, path_md) { doc_index(input, path_md, input, []) }
-    (input, path_md, dir, acc) {
+    (input, locale) {
+      doc_index(input, locale, input, [])
+    }
+    (input, locale, dir, acc) {
       while input != [] do
         if (type(input) == Str) do
           input = List.sort(File.list(input))
@@ -41,8 +43,8 @@ defmodule DocController do
                                    }) do
                 input = ^ rest
               else
-                items = doc_index(List.sort(File.list(path)), path_md,
-                  path + "/", [])
+                items = doc_index(List.sort(File.list(path)),
+                  locale, path + "/", [])
                 url_locale = if locale == "en" do url else
                   "/#{locale}#{url}"
                 end
@@ -226,9 +228,12 @@ defmodule DocController do
     }
   }
 
+  def doc_index_menu = %{"" => doc_index("./doc/", ""),
+                         "en" => doc_index("./doc/", "en"),
+                         "fr" => doc_index("./doc/", "fr")}
+
   def show_html = fn (path_html, url, locale) {
-    index = doc_index("./doc/", path_html)
-    menu = DocView.render_menu(index)
+    menu = doc_index_menu[locale]
     title = "kc3-lang.org"
     slug = Str.slice(path_html, 0, -9)
     slug = Str.subst(slug, " ", "-")
@@ -242,8 +247,7 @@ defmodule DocController do
   }
 
   def show_md = fn (path_md, url, locale) {
-    index = doc_index("./doc/", path_md)
-    menu = DocView.render_menu(index)
+    menu = doc_index_menu[locale]
     title = "kc3-lang.org"
     md = File.read_all(path_md)
     [title | _] = Markdown.titles(md)
