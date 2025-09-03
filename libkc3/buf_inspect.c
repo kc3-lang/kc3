@@ -2155,6 +2155,7 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
   s_binding *binding = NULL;
   const s_fn_clause *clause = NULL;
   s_ident ident = {0};
+  s_pretty_save pretty_save = {0};
   sw r;
   sw result = 0;
   s_tag *tag = NULL;
@@ -2165,50 +2166,52 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
   else
     ident.sym = &g_sym_fn;
   ident.module = fn->module;
+  pretty_save_init(&pretty_save, &buf->pretty);
   if ((r = buf_inspect_ident(buf, &ident)) < 0)
-    return r;
+    goto clean;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
-    return r;
+    goto clean;
   result += r;
   clause = fn->clauses;
   assert(clause);
   if (clause->next) {
     if ((r = buf_write_1(buf, "{\n")) < 0)
-      return r;
+      goto clean;
     result += r;
     while (clause) {
       if ((r = buf_write_1(buf, "  ")) < 0)
-        return r;
+        goto clean;
       result += r;
       if ((r = buf_inspect_fn_clause(buf, clause)) < 0)
-        return r;
+        goto clean;
       result += r;
       if ((r = buf_write_1(buf, "\n")) < 0)
-        return r;
+        goto clean;
       result += r;
       clause = clause->next;
     }
     if ((r = buf_write_1(buf, "}")) < 0)
-      return r;
+      goto clean;
     result += r;
   }
   else {
     if ((r = buf_inspect_fn_clause(buf, clause)) < 0)
-      return r;
+      goto clean;
     result += r;
   }
   if (fn->frame && fn->frame->bindings) {
     if ((r = buf_write_1(buf, " [")) < 0)
-      return r;
+      goto clean;
     result += r;
+    pretty_indent_from_column(&buf->pretty, 0);
     binding = fn->frame->bindings;
     while (binding) {
       if ((r = buf_inspect_ident_sym(buf, binding->name)) < 0)
-        return r;
+        goto clean;
       result += r;
       if ((r = buf_write_1(buf, ": ")) < 0)
-        return r;
+        goto clean;
       result += r;
       if (binding->value.type == TAG_PVAR &&
           binding->value.data.pvar->bound) {
@@ -2220,22 +2223,28 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
             tag->data.pcallable->data.fn.name.sym ==
             fn->name.sym) {
           if ((r = buf_inspect_ident(buf, &fn->name)) <= 0)
-            return r;
+            goto clean;
           result += r;
           goto next;
         }
       }
       if ((r = buf_inspect_tag(buf, &binding->value)) < 0)
-        return r;
+        goto clean;
       result += r;
     next:
       binding = binding->next;
+      if (binding &&
+          (r = buf_write_1(buf, ",\n")) < 0)
+        goto clean;
     }
     if ((r = buf_write_1(buf, "]")) < 0)
-      return r;
+      goto clean;
     result += r;
   }
-  return result;
+  r = result;
+ clean:
+  pretty_save_clean(&pretty_save, &buf->pretty);
+  return r;
 }
 
 sw buf_inspect_fn_clause (s_buf *buf, const s_fn_clause *clause)

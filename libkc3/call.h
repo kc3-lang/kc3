@@ -15,7 +15,7 @@
 
 #include "types.h"
 
-/* Stack-allocation compatible functions */
+/* Stack-allocation compatible functions, call call_clean after use. */
 void     call_clean (s_call *call);
 s_call * call_init (s_call *call);
 s_call * call_init_1 (s_call *call, const char *p);
@@ -25,6 +25,17 @@ s_call * call_init_cast (s_call *call, const s_sym * const *type,
 s_call * call_init_copy (s_call *call, s_call *src);
 s_call * call_init_op (s_call *call);
 s_call * call_init_op_unary (s_call *call);
+
+/* Heap-allocation functions, call call_delete after use. */
+void     call_delete (s_call *call);
+s_call * call_new (void);
+s_call * call_new_1 (const char *p);
+s_call * call_new_call_cast (const s_sym *type);
+s_call * call_new_cast (const s_sym * const *type,
+                        s_tag *tag);
+s_call * call_new_copy (s_call *src);
+s_call * call_new_op (void);
+s_call * call_new_op_unary (void);
 
 /* Observers. */
 sw        call_arity (const s_call *call);

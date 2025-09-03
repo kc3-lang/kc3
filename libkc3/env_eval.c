@@ -113,7 +113,6 @@ bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
 
 bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
 {
-  s_call c = {0};
   bool result;
   s_unwind_protect up = {0};
   assert(env);
@@ -123,27 +122,26 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
     err_puts("env_eval_call: cannot eval with securelevel > 2");
     abort();
   }
-  call_init_copy(&c, call);
-  if (c.pcallable)
-    pcallable_clean(&c.pcallable);
-  if (! env_eval_call_resolve(env, &c)) {
-    err_write_1("env_eval_call: env_eval_call_resolve: ");
-    err_inspect_ident(&c.ident);
-    err_write_1("\n");
-    result = false;
-    goto clean;
-  }
-  if (! c.pcallable || c.pcallable->type == CALLABLE_VOID) {
-    err_write_1("env_eval_call: could not resolve call ");
-    err_inspect_ident(&c.ident);
-    err_write_1("\n");
-    result = false;
-    goto clean;
+  if (! call->pcallable) {
+    if (! env_eval_call_resolve(env, call)) {
+      err_write_1("env_eval_call: env_eval_call_resolve: ");
+      err_inspect_ident(&call->ident);
+      err_write_1("\n");
+      result = false;
+      goto clean;
+    }
+    if (! call->pcallable ||
+        call->pcallable->type == CALLABLE_VOID) {
+      err_write_1("env_eval_call: could not resolve call ");
+      err_inspect_ident(&call->ident);
+      err_write_1("\n");
+      result = false;
+      goto clean;
+    }
   }
   env_unwind_protect_push(env, &up);
   if (setjmp(up.buf)) {
     env_unwind_protect_pop(env, &up);
-    call_clean(&c);
     longjmp(*up.jmp, 1);
     abort();
   }
@@ -154,11 +152,10 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
     abort();
   }
   env->stacktrace_depth++;
-  result = env_eval_call_callable(env, &c, dest);
+  result = env_eval_call_callable(env, call, dest);
   env->stacktrace_depth--;
   env_unwind_protect_pop(env, &up);
  clean:
-  call_clean(&c);
   return result;
 }
 

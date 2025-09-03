@@ -422,18 +422,24 @@ bool env_def (s_env *env, const s_ident *ident, s_tag *value)
   tag_init_psym(&tag_module, tag_ident.data.ident.module);
   tag_init_psym(&tag_symbol, &g_sym_symbol);
   if (! facts_add_tags(env->facts, &tag_module, &tag_symbol,
-                       &tag_ident))
+                       &tag_ident)) {
+    err_puts("env_def: facts_add_tags");
+    assert(! "env_def: facts_add_tags");
     return false;
+  }
   tag_init_psym(&tag_symbol_value, &g_sym_symbol_value);
   if (! facts_replace_tags(env->facts, &tag_ident, &tag_symbol_value,
                            value)) {
+    err_puts("env_def: facts_replace_tags");
+    assert(! "env_def: facts_replace_tags");
     return false;
   }
   if (tag_ident.data.ident.module == env->current_defmodule &&
-      tag_ident.data.ident.sym == &g_sym_clean) {
-    if (! env_def_clean(env, env->current_defmodule, value)) {
-      return false;
-    }
+      tag_ident.data.ident.sym == &g_sym_clean &&
+      ! env_def_clean(env, env->current_defmodule, value)) {
+    err_puts("env_def: env_def_clean");
+    assert(! "env_def: env_def_clean");
+    return false;
   }
   return true;
 }
@@ -1792,6 +1798,8 @@ s_tag * env_kc3_def (s_env *env, const s_call *call, s_tag *dest)
     return NULL;
   }
   if (! env_def(env, ident, &tag_value)) {
+    err_puts("env_kc3_def: env_def");
+    assert(! "env_kc3_def: env_def");
     tag_clean(&tag_value);
     return NULL;
   }

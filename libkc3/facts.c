@@ -67,6 +67,8 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
 #endif
   tmp.subject = facts_ref_tag(facts, fact->subject);
   if (! tmp.subject) {
+    err_puts("facts_add_fact: facts_ref_tag subject");
+    assert(! "facts_add_fact: facts_ref_tag subject");
 #if HAVE_PTHREAD
     rwlock_unlock_w(&facts->rwlock);
 #endif
@@ -74,6 +76,8 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
   }
   tmp.predicate = facts_ref_tag(facts, fact->predicate);
   if (! tmp.predicate) {
+    err_puts("facts_add_fact: facts_ref_tag predicate");
+    assert(! "facts_add_fact: facts_ref_tag predicate");
     facts_unref_tag(facts, tmp.subject);
 #if HAVE_PTHREAD
     rwlock_unlock_w(&facts->rwlock);
@@ -82,6 +86,8 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
   }
   tmp.object = facts_ref_tag(facts, fact->object);
   if (! tmp.object) {
+    err_puts("facts_add_fact: facts_ref_tag object");
+    assert(! "facts_add_fact: facts_ref_tag object");
     facts_unref_tag(facts, tmp.subject);
     facts_unref_tag(facts, tmp.predicate);
 #if HAVE_PTHREAD
@@ -103,25 +109,36 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
     goto ko;
   }
   item = set_add__fact(&facts->facts, &tmp);
-  if (! item)
+  if (! item) {
+    err_puts("facts_add_fact: set_add__fact");
+    assert(! "facts_add_fact: set_add__fact");
     goto ko;
+  }
   f = &item->data;
   if (! skiplist_insert__fact(facts->index, f)) {
+    err_puts("facts_add_fact: skiplist_insert__fact index");
+    assert(! "facts_add_fact: skiplist_insert__fact index");
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
   if (! skiplist_insert__fact(facts->index_spo, f)) {
+    err_puts("facts_add_fact: skiplist_insert__fact spo");
+    assert(! "facts_add_fact: skiplist_insert__fact spo");
     skiplist_remove__fact(facts->index, f);
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
   if (! skiplist_insert__fact(facts->index_pos, f)) {
+    err_puts("facts_add_fact: skiplist_insert__fact pos");
+    assert(! "facts_add_fact: skiplist_insert__fact pos");
     skiplist_remove__fact(facts->index, f);
     skiplist_remove__fact(facts->index_spo, f);
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
   if (! skiplist_insert__fact(facts->index_osp, f)) {
+    err_puts("facts_add_fact: skiplist_insert__fact osp");
+    assert(! "facts_add_fact: skiplist_insert__fact osp");
     skiplist_remove__fact(facts->index, f);
     skiplist_remove__fact(facts->index_spo, f);
     skiplist_remove__fact(facts->index_pos, f);
@@ -130,6 +147,8 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
   }
   if (facts->log &&
       ! facts_log_add(facts->log, &tmp)) {
+    err_puts("facts_add_fact: facts_log_add");
+    assert(! "facts_add_fact: facts_log_add");
     skiplist_remove__fact(facts->index, f);
     skiplist_remove__fact(facts->index_spo, f);
     skiplist_remove__fact(facts->index_pos, f);
@@ -1011,8 +1030,11 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
 #if HAVE_PTHREAD
   rwlock_w(&facts->rwlock);
 #endif
-  if (! facts_find_fact(facts, fact, &found))
+  if (! facts_find_fact(facts, fact, &found)) {
+    err_puts("facts_remove_fact: facts_find_fact");
+    assert(! "facts_remove_fact: facts_find_fact");
     return NULL;
+  }
   *dest = false;
   if (found) {
     if (facts->log)
@@ -1089,12 +1111,16 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
 #if HAVE_PTHREAD
     rwlock_unlock_w(&facts->rwlock);
 #endif
+    err_puts("facts_replace_tags: facts_with_tags");
+    assert(! "facts_replace_tags: facts_with_tags");
     return NULL;
   }
   if (! facts_cursor_next(&cursor, &fact)) {
 #if HAVE_PTHREAD
     rwlock_unlock_w(&facts->rwlock);
 #endif
+    err_puts("facts_replace_tags: facts_cursor_next 1");
+    assert(! "facts_replace_tags: facts_cursor_next 1");
     return NULL;
   }
   while (fact) {
@@ -1105,6 +1131,8 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
 #if HAVE_PTHREAD
       rwlock_unlock_w(&facts->rwlock);
 #endif
+      err_puts("facts_replace_tags: facts_cursor_next 2");
+      assert(! "facts_replace_tags: facts_cursor_next 2");
       list_delete_all(list);
       tag_clean(&pvar);
       return NULL;
@@ -1114,6 +1142,8 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   while (list) {
     if (! facts_remove_fact(facts, &list->tag.data.fact, &b) ||
         ! b) {
+      err_puts("facts_replace_tags: facts_remove_fact");
+      assert(! "facts_replace_tags: facts_remove_fact");
       list_delete_all(list);
       facts_transaction_rollback(facts, &transaction);
       facts_cursor_clean(&cursor);
@@ -1125,7 +1155,6 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
     }
     list = list_delete(list);
   }
-  facts_cursor_clean(&cursor);
   tag_clean(&pvar);
   fact = facts_add_tags(facts, subject, predicate, object);
   facts_transaction_end(facts, &transaction);
