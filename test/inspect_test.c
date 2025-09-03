@@ -14,12 +14,12 @@
 #include <string.h>
 #include "../libkc3/array.h"
 #include "../libkc3/buf_inspect.h"
-#include "../libkc3/call.h"
 #include "../libkc3/fact.h"
 #include "../libkc3/ident.h"
 #include "../libkc3/inspect.h"
 #include "../libkc3/integer.h"
 #include "../libkc3/list.h"
+#include "../libkc3/pcall.h"
 #include "../libkc3/pstruct.h"
 #include "../libkc3/pvar.h"
 #include "../libkc3/ratio.h"
@@ -56,15 +56,15 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define INSPECT_TEST_CALL(test)                                        \
+#define INSPECT_TEST_CALL(test)                                       \
   do {                                                                 \
-    s_call call;                                                       \
+    p_call pcall;                                                      \
     s_str result;                                                      \
-    TEST_EQ(call_init_1(&call, (test)), &call);                        \
-    TEST_EQ(inspect_call(&call, &result), &result);                    \
+    TEST_EQ(pcall_init_1(&pcall, (test)), &pcall);                     \
+    TEST_EQ(inspect_call(pcall, &result), &result);                    \
     TEST_STRNCMP(result.ptr.p, (test), result.size);                   \
     TEST_EQ(result.size, strlen(test));                                \
-    call_clean(&call);						       \
+    pcall_clean(&pcall);                                               \
     str_clean(&result);						       \
   } while (0)
 

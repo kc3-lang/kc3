@@ -529,6 +529,8 @@ KC3_C_SOURCES = \
 	"libkc3/ops.h" \
 	"libkc3/pbuf.c" \
 	"libkc3/pbuf.h" \
+	"libkc3/pcall.c" \
+	"libkc3/pcall.h" \
 	"libkc3/pcallable.c" \
 	"libkc3/pcallable.h" \
 	"libkc3/pcomplex.c" \
@@ -896,7 +898,6 @@ KC3_C_SOURCES = \
 	"test/buf_parse_test_u64.c" \
 	"test/buf_parse_test_u8.c" \
 	"test/buf_test.c" \
-	"test/call_test.c" \
 	"test/cfn_test.c" \
 	"test/character_test.c" \
 	"test/compare_test.c" \
@@ -916,6 +917,7 @@ KC3_C_SOURCES = \
 	"test/marshall_read_test.c" \
 	"test/marshall_test.c" \
 	"test/ops_test.c" \
+	"test/pcall_test.c" \
 	"test/ratio_test.c" \
 	"test/set__fact_test.c" \
 	"test/set__tag_test.c" \
@@ -1826,7 +1828,6 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/config/mime.types" \
 	"test/httpd/config/routes.kc3" \
 	"test/httpd/db/app.facts" \
-	"test/httpd/db/app.facts.bin.facts" \
 	"test/httpd/doc" \
 	"test/httpd/pages" \
 	"test/httpd/pages/index.en.html" \

@@ -22,7 +22,7 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
   if (type == &g_sym_Bool)
     return buf_inspect_bool(buf, *(bool *) data);
   if (type == &g_sym_Call)
-    return buf_inspect_call(buf, data);
+    return buf_inspect_call(buf, *(p_call *) data);
   if (type == &g_sym_Callable ||
       type == &g_sym_Cfn ||
       type == &g_sym_Fn)
@@ -123,7 +123,7 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
   if (type == &g_sym_Bool)
     return buf_inspect_bool_size(pretty, *(bool *) data);
   if (type == &g_sym_Call)
-    return buf_inspect_call_size(pretty, data);
+    return buf_inspect_call_size(pretty, *(p_call *) data);
   if (type == &g_sym_Callable ||
       type == &g_sym_Cfn ||
       type == &g_sym_Fn)
@@ -226,7 +226,7 @@ bool data_clean (const s_sym *type, void *data)
     return true;
   }
   if (type == &g_sym_Call) {
-    call_clean(data);
+    pcall_clean(data);
     return true;
   }
   if (type == &g_sym_Callable ||
@@ -370,7 +370,7 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
   if (type == &g_sym_Bool)
     return compare_bool(*(bool *) a, *(bool *) b);
   if (type == &g_sym_Call)
-    return compare_call(a, b);
+    return compare_call(*(p_call *) a, *(p_call *) b);
   if (type == &g_sym_Callable ||
       type == &g_sym_Cfn ||
       type == &g_sym_Fn)
@@ -471,7 +471,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
   if (type == &g_sym_Bool)
     return hash_update_bool(hash, data);
   if (type == &g_sym_Call)
-    return hash_update_call(hash, data);
+    return hash_update_call(hash, *(p_call *) data);
   if (type == &g_sym_Callable ||
       type == &g_sym_Cfn ||
       type == &g_sym_Fn)
@@ -555,8 +555,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
   return false;
 }
 
-void * data_init_cast (void *data, const s_sym * const *type,
-                       s_tag *tag)
+void * data_init_cast (void *data, p_sym *type, s_tag *tag)
 {
   p_struct s = NULL;
   s_struct_type *st;
@@ -568,7 +567,7 @@ void * data_init_cast (void *data, const s_sym * const *type,
   if (t == &g_sym_Bool)
     return bool_init_cast(data, type, tag);
   if (t == &g_sym_Call)
-    return call_init_cast(data, type, tag);
+    return pcall_init_cast(data, type, tag);
   if (t == &g_sym_Callable ||
       t == &g_sym_Cfn ||
       t == &g_sym_Fn)
@@ -658,7 +657,7 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_Bool)
     return bool_init_copy(data, src);
   if (type == &g_sym_Call)
-    return call_init_copy(data, src);
+    return pcall_init_copy(data, src);
   if (type == &g_sym_Callable ||
       type == &g_sym_Cfn ||
       type == &g_sym_Fn)

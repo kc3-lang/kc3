@@ -377,13 +377,9 @@ s_fact ** facts_find_fact (s_facts *facts, const s_fact *fact,
     goto clean;
   }
   *dest = NULL;
-  if (f.subject && f.predicate && f.object) {
-    if (! (item = set_get__fact(&facts->facts, &f))) {
-      err_puts("facts_find_fact: set_get__fact");
-    }
-    else
-      *dest = &item->data;
-  }
+  if (f.subject && f.predicate && f.object &&
+      (item = set_get__fact(&facts->facts, &f)))
+    *dest = &item->data;
 #if HAVE_PTHREAD
   rwlock_unlock_r(&facts->rwlock);
 #endif

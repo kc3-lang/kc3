@@ -40,6 +40,7 @@
 #include "mutex.h"
 #include "op.h"
 #include "ops.h"
+#include "pcall.h"
 #include "pcallable.h"
 #include "plist.h"
 #include "pstruct.h"
@@ -1282,6 +1283,64 @@ s_marshall_read * marshall_read_ops (s_marshall_read *mr,
   return mr;
 }
 
+s_marshall_read * marshall_read_pcall (s_marshall_read *mr,
+                                           bool heap,
+                                           p_call *dest)
+{
+  u64 offset = 0;
+  p_call present = NULL;
+  p_call tmp = NULL;
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3PCALL_")) {
+    err_puts("marshall_read_pcall: marshall_read_1 magic");
+    assert(! "marshall_read_pcall: marshall_read_1 magic");
+    return NULL;
+  }
+  if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                   (void **) &present)) {
+    err_puts("marshall_read_pcall: marshall_read_heap_pointer");
+    assert(! "marshall_read_pcall: marshall_read_heap_pointer");
+    return NULL;
+  }
+  if (! offset) {
+    *dest = NULL;
+    return mr;
+  }
+  if (present) {
+    if (! pcall_init_copy(dest, &present)) {
+      err_puts("marshall_read_pcall: pcall_init_copy");
+      assert(! "marshall_read_pcall: pcall_init_copy");
+      return NULL;
+    }
+    return mr;
+  }
+  if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
+    err_puts("marshall_read_pcall: buf_seek");
+    assert(! "marshall_read_pcall: buf_seek");
+    return NULL;
+  }
+  if (! (tmp = alloc(sizeof(s_call)))) {
+    err_puts("marshall_read_pcall: alloc");
+    assert(! "marshall_read_pcall: alloc");
+    return NULL;
+  }
+  if (! marshall_read_call(mr, true, tmp)) {
+    err_puts("marshall_read_pcall: marshall_read_call");
+    assert(! "marshall_read_pcall: marshall_read_call");
+    free(tmp);
+    return NULL;
+  }
+  if (! marshall_read_ht_add(mr, offset, tmp)) {
+    err_puts("marshall_read_pcall: marshall_read_ht_add");
+    assert(! "marshall_read_pcall: marshall_read_ht_add");
+    call_delete(tmp);
+    return NULL;
+  }
+  *dest = tmp;
+  return mr;
+}
+
 s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
                                            bool heap,
                                            p_callable *dest)
@@ -1325,8 +1384,8 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
     return NULL;
   }
   if (! marshall_read_callable(mr, true, tmp)) {
-    err_puts("marshall_read_pcallable: read_callable");
-    assert(! "marshall_read_pcallable: read_callable");
+    err_puts("marshall_read_pcallable: marshall_read_callable");
+    assert(! "marshall_read_pcallable: marshall_read_callable");
     free(tmp);
     return NULL;
   }
@@ -2007,8 +2066,6 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
       return marshall_read_do_block(mr, heap, &dest->data.do_block);
     case TAG_BOOL:
       return marshall_read_bool(mr, heap, &dest->data.bool_);
-    case TAG_CALL:
-      return marshall_read_call(mr, heap, &dest->data.call);
     case TAG_CHARACTER:
       return marshall_read_character(mr, heap, &dest->data.character);
     case TAG_F32:
@@ -2025,6 +2082,8 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
       return marshall_read_integer(mr, heap, &dest->data.integer);
     case TAG_MAP:
       return marshall_read_map(mr, heap, &dest->data.map);
+    case TAG_PCALL:
+      return marshall_read_pcall(mr, heap, &dest->data.pcall);
     case TAG_PCALLABLE:
       return marshall_read_pcallable(mr, heap, &dest->data.pcallable);
     case TAG_PCOMPLEX:

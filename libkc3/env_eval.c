@@ -1050,12 +1050,12 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_array_tag(env, &tag->data.array, dest);
   case TAG_DO_BLOCK:
     return env_eval_do_block(env, &tag->data.do_block, dest);
-  case TAG_CALL:
-    return env_eval_call(env, &tag->data.call, dest);
   case TAG_IDENT:
     return env_eval_ident(env, &tag->data.ident, dest);
   case TAG_MAP:
     return env_eval_map(env, &tag->data.map, dest);
+  case TAG_PCALL:
+    return env_eval_call(env, tag->data.pcall, dest);
   case TAG_PCALLABLE:
     return env_eval_callable(env, tag->data.pcallable, dest);
   case TAG_PCOMPLEX:

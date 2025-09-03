@@ -78,11 +78,11 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_UW:        *b = tag->data.uw != 0;                  return b;
   case TAG_ARRAY:
   case TAG_DO_BLOCK:
-  case TAG_CALL:
   case TAG_FACT:
   case TAG_IDENT:
   case TAG_PLIST:
   case TAG_MAP:
+  case TAG_PCALL:
   case TAG_PCALLABLE:
   case TAG_PFACTS:
   case TAG_PSTRUCT:

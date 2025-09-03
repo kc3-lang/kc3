@@ -308,7 +308,7 @@ class TagInitList
                    [Arg.new("const s_array *", "a")]),
        TagInitProto.new("bool", "TAG_BOOL", :init_mode_direct,
                         [Arg.new("bool", "b")]),
-       TagInit.new("call", "TAG_CALL", :init_mode_init, []),
+       TagInit.new("pcall", "TAG_PCALL", :init_mode_init, []),
        TagInit.new("character", "TAG_CHARACTER", :init_mode_direct,
                    [Arg.new("character", "c")]),
        TagInitProto.new("copy", nil, :init_mode_none,
@@ -571,6 +571,7 @@ tag_init_c.content = <<EOF
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "pcall.h"
 #include "pcallable.h"
 #include "plist.h"
 #include "pstruct.h"

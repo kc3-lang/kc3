@@ -194,12 +194,12 @@ s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
     return env_frame_capture_array(env, frame, &tag->data.array);
   case TAG_DO_BLOCK:
     return env_frame_capture_do_block(env, frame, &tag->data.do_block);
-  case TAG_CALL:
-    return env_frame_capture_call(env, frame, &tag->data.call);
   case TAG_FACT:
     return env_frame_capture_fact(env, frame, &tag->data.fact);
   case TAG_MAP:
     return env_frame_capture_map(env, frame, &tag->data.map);
+  case TAG_PCALL:
+    return env_frame_capture_call(env, frame, tag->data.pcall);
   case TAG_PLIST:
     return env_frame_capture_list(env, frame, tag->data.plist);
   case TAG_PTAG:

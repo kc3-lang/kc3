@@ -964,7 +964,7 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     return true;
   }
   if (sym == &g_sym_Call) {
-    *dest = TAG_CALL;
+    *dest = TAG_PCALL;
     return true;
   }
   if (sym == &g_sym_Callable ||

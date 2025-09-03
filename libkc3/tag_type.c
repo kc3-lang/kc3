@@ -24,7 +24,6 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_ARRAY:        *dest = sizeof(s_array);       return true;
   case TAG_DO_BLOCK:     *dest = sizeof(s_do_block);    return true;
   case TAG_BOOL:         *dest = sizeof(bool);          return true;
-  case TAG_CALL:         *dest = sizeof(s_call);        return true;
   case TAG_CHARACTER:    *dest = sizeof(character);     return true;
   case TAG_F32:          *dest = sizeof(f32);           return true;
   case TAG_F64:          *dest = sizeof(f64);           return true;
@@ -33,6 +32,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_IDENT:        *dest = sizeof(s_ident);       return true;
   case TAG_INTEGER:      *dest = sizeof(s_integer);     return true;
   case TAG_MAP:          *dest = sizeof(s_map);         return true;
+  case TAG_PCALL:        *dest = sizeof(p_call);        return true;
   case TAG_PCALLABLE:    *dest = sizeof(p_callable);    return true;
   case TAG_PCOMPLEX:     *dest = sizeof(p_complex);     return true;
   case TAG_PCOW:         *dest = sizeof(p_cow);         return true;
@@ -74,7 +74,6 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_ARRAY:        *dest = &ffi_type_pointer;    return true;
   case TAG_DO_BLOCK:     *dest = &ffi_type_pointer;    return true;
   case TAG_BOOL:         *dest = &ffi_type_uint8;      return true;
-  case TAG_CALL:         *dest = &ffi_type_pointer;    return true;
   case TAG_CHARACTER:    *dest = &ffi_type_uint32;     return true;
   case TAG_F32:          *dest = &ffi_type_float;      return true;
   case TAG_F64:          *dest = &ffi_type_double;     return true;
@@ -84,6 +83,7 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_INTEGER:      *dest = &ffi_type_pointer;    return true;
   case TAG_MAP:          *dest = &ffi_type_pointer;    return true;
   case TAG_POINTER:      *dest = &ffi_type_pointer;    return true;
+  case TAG_PCALL:        *dest = &ffi_type_pointer;    return true;
   case TAG_PCALLABLE:    *dest = &ffi_type_pointer;    return true;
   case TAG_PCOMPLEX:     *dest = &ffi_type_pointer;    return true;
   case TAG_PCOW:         *dest = &ffi_type_pointer;    return true;
@@ -126,7 +126,6 @@ const char * tag_type_to_string (e_tag_type tag_type)
   case TAG_ARRAY:        return "Array";
   case TAG_DO_BLOCK:     return "Block";
   case TAG_BOOL:         return "Bool";
-  case TAG_CALL:         return "Call";
   case TAG_CHARACTER:    return "Character";
   case TAG_F32:          return "F32";
   case TAG_F64:          return "F64";
@@ -135,12 +134,13 @@ const char * tag_type_to_string (e_tag_type tag_type)
   case TAG_IDENT:        return "Ident";
   case TAG_INTEGER:      return "Integer";
   case TAG_MAP:          return "Map";
-  case TAG_POINTER:      return "Pointer";
+  case TAG_PCALL:        return "Call";
   case TAG_PCALLABLE:    return "Callable";
   case TAG_PCOMPLEX:     return "Complex";
   case TAG_PCOW:         return "Cow";
   case TAG_PFACTS:       return "Facts*";
   case TAG_PLIST:        return "List";
+  case TAG_POINTER:      return "Pointer";
   case TAG_PSTRUCT:      return "Struct";
   case TAG_PSTRUCT_TYPE: return "StructType";
   case TAG_PTAG:         return "Ptag";

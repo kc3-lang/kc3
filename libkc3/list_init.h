@@ -22,7 +22,7 @@ s_list * list_init_array (s_list *list, const s_sym *type,
 s_list * list_init_array_copy (s_list *list, const s_array *a,
                                s_list *next);
 s_list * list_init_bool (s_list *list, bool b, s_list *next);
-s_list * list_init_call (s_list *list, s_list *next);
+s_list * list_init_pcall (s_list *list, s_list *next);
 s_list * list_init_character (s_list *list, character c, s_list *next);
 
 s_list * list_init_f32 (s_list *list, f32 f, s_list *next);
@@ -125,7 +125,7 @@ s_list * list_new_array (const s_sym *type, uw dimension,
                          const uw *dimensions, s_list *next);
 s_list * list_new_array_copy (const s_array *a, s_list *next);
 s_list * list_new_bool (bool b, s_list *next);
-s_list * list_new_call (s_list *next);
+s_list * list_new_pcall (s_list *next);
 s_list * list_new_character (character c, s_list *next);
 
 s_list * list_new_f32 (f32 f, s_list *next);

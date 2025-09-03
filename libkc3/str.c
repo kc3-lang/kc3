@@ -1302,24 +1302,24 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
     free(list);
   }
   else {
-    tag_init_call(&tmp);
-    ident_init(&tmp.data.call.ident, &g_sym_KC3, &g_sym_str);
-    tmp.data.call.arguments = list_new(NULL);
+    tag_init_pcall(&tmp);
+    ident_init(&tmp.data.pcall->ident, &g_sym_KC3, &g_sym_str);
+    tmp.data.pcall->arguments = list_new(NULL);
     l = list;
     while (l) {
       if (l->tag.type == TAG_STR ||
-          (l->tag.type == TAG_CALL &&
-           l->tag.data.call.ident.module == &g_sym_Str &&
-           l->tag.data.call.ident.sym == &g_sym_cast))
+          (l->tag.type == TAG_PCALL &&
+           l->tag.data.pcall->ident.module == &g_sym_Str &&
+           l->tag.data.pcall->ident.sym == &g_sym_cast))
         goto next;
       tag_init_call_cast(&tag, &g_sym_Str);
-      arg = &list_next(tag.data.call.arguments)->tag;
+      arg = &list_next(tag.data.pcall->arguments)->tag;
       *arg = l->tag;
       l->tag = tag;
     next:
       l = list_next(l);
     }
-    arg = &tmp.data.call.arguments->tag;
+    arg = &tmp.data.pcall->arguments->tag;
     arg->type = TAG_PLIST;
     arg->data.plist = list;
   }

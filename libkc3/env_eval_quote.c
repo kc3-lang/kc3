@@ -139,8 +139,10 @@ bool env_eval_quote_call (s_env *env, s_call *call, s_tag *dest)
   if (call->pcallable &&
       ! pcallable_init_copy(&tmp.pcallable, &call->pcallable))
     goto ko;
-  dest->type = TAG_CALL;
-  dest->data.call = tmp;
+  dest->type = TAG_PCALL;
+  if (! (dest->data.pcall = alloc(sizeof(s_call))))
+    goto ko;
+  *dest->data.pcall = tmp;
   return true;
  ko:
   call_clean(&tmp);
@@ -309,16 +311,16 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_quote_array(env, &tag->data.array, dest);
   case TAG_DO_BLOCK:
     return env_eval_quote_do_block(env, &tag->data.do_block, dest);
-  case TAG_CALL:
-    return env_eval_quote_call(env, &tag->data.call, dest);
+  case TAG_MAP:
+    return env_eval_quote_map(env, &tag->data.map, dest);
+  case TAG_PCALL:
+    return env_eval_quote_call(env, tag->data.pcall, dest);
   case TAG_PCOMPLEX:
     return env_eval_quote_complex(env, tag->data.pcomplex, dest);
   case TAG_PCOW:
     return env_eval_quote_cow(env, tag->data.pcow, dest);
   case TAG_PLIST:
     return env_eval_quote_list(env, tag->data.plist, dest);
-  case TAG_MAP:
-    return env_eval_quote_map(env, &tag->data.map, dest);
   case TAG_PSTRUCT:
     return env_eval_quote_struct(env, tag->data.pstruct, dest);
   case TAG_QUOTE:

@@ -55,8 +55,7 @@ p_cow * pcow_init (p_cow *p, const s_sym *type)
   return p;
 }
 
-p_cow * pcow_init_cast (p_cow *p, const s_sym * const *type,
-                         s_tag *src)
+p_cow * pcow_init_cast (p_cow *p, p_sym *type, s_tag *src)
 {
   p_cow tmp = NULL;
   assert(p);

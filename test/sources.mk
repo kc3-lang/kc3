@@ -22,7 +22,6 @@ SOURCES = \
 	"buf_parse_test_u64.c" \
 	"buf_parse_test_u8.c" \
 	"buf_test.c" \
-	"call_test.c" \
 	"cfn_test.c" \
 	"character_test.c" \
 	"compare_test.c" \
@@ -40,6 +39,7 @@ SOURCES = \
 	"marshall_read_test.c" \
 	"marshall_test.c" \
 	"ops_test.c" \
+	"pcall_test.c" \
 	"ratio_test.c" \
 	"set__fact_test.c" \
 	"set__tag_test.c" \

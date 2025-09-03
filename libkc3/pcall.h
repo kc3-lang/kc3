@@ -10,18 +10,17 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBKC3_PCOW_H
-#define LIBKC3_PCOW_H
+#ifndef LIBKC3_PCALL_H
+#define LIBKC3_PCALL_H
 
 #include "types.h"
 
-/* Stack-allocation compatible functions, call pcow_clean after use. */
-void     pcow_clean (s_cow **p);
-s_cow ** pcow_init (s_cow **p, const s_sym *type);
-s_cow ** pcow_init_cast (s_cow **p, p_sym *type, s_tag *src);
-s_cow ** pcow_init_copy (s_cow **p, s_cow **src);
+/* Call pcall_clean after use. */
+void     pcall_clean (p_call *pcall);
+p_call * pcall_init (p_call *pcall);
+p_call * pcall_init_1 (p_call *pcall, const char *p);
+p_call * pcall_init_call_cast (p_call *pcall, const s_sym *type);
+p_call * pcall_init_cast (p_call *pcall, p_sym *type, s_tag *src);
+p_call * pcall_init_copy (p_call *pcall, p_call *src);
 
-/* Operators. */
-s_tag * pcow_assign (s_cow **cow, s_tag *value, s_tag *dest);
-
-#endif /* LIBKC3_PCOW_H */
+#endif /* LIBKC3_PCALL_H */

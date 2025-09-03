@@ -26,8 +26,8 @@ s_tag * to_lisp (s_tag *tag, s_tag *dest)
   assert(tag);
   assert(dest);
   switch (tag->type) {
-  case TAG_CALL:
-    return to_lisp_call(&tag->data.call, dest);
+  case TAG_PCALL:
+    return to_lisp_call(tag->data.pcall, dest);
   case TAG_PLIST:
     return to_lisp_list(tag->data.plist, dest);
   case TAG_TUPLE:

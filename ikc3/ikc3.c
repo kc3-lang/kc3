@@ -289,9 +289,9 @@ sw ikc3_run (void)
       if (g_client) {
         s_str input_str;
         s_list *args;
-        tag_init_call(&rpc_tag);
-        rpc_tag.data.call.ident.module = &g_sym_RPC;
-        rpc_tag.data.call.ident.sym = &g_sym_request;
+        tag_init_pcall(&rpc_tag);
+        rpc_tag.data.pcall->ident.module = &g_sym_RPC;
+        rpc_tag.data.pcall->ident.sym = &g_sym_request;
         if (! inspect_tag(&input, &input_str)) {
           tag_clean(&input);
           r = 1;
@@ -306,7 +306,7 @@ sw ikc3_run (void)
         }
         args->tag.type = TAG_STR;
         args->tag.data.str = input_str;
-        rpc_tag.data.call.arguments = args;
+        rpc_tag.data.pcall->arguments = args;
         if (buf_inspect_tag(g_socket_buf.buf_rw.w, &rpc_tag) <= 0 ||
             buf_write_1(g_socket_buf.buf_rw.w, "\n") <= 0 ||
             buf_flush(g_socket_buf.buf_rw.w) < 0) {

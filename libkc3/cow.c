@@ -101,8 +101,7 @@ s_cow * cow_init_1 (s_cow *cow, const char *utf8)
   return cow;
 }
 
-s_cow * cow_init_cast (s_cow *cow, const s_sym * const *type,
-                       s_tag *tag)
+s_cow * cow_init_cast (s_cow *cow, p_sym *type, s_tag *tag)
 {
   void *data;
   s_cow tmp;
@@ -194,7 +193,7 @@ s_cow * cow_new_1 (const char *utf8)
   return cow;
 }
 
-s_cow * cow_new_cast (const s_sym * const *type, s_tag *tag)
+s_cow * cow_new_cast (p_sym *type, s_tag *tag)
 {
   s_cow *cow;
   cow = alloc(sizeof(s_cow));

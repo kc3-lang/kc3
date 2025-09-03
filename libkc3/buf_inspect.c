@@ -906,9 +906,9 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call,
   right = &list_next(call->arguments)->tag;
   paren = false;
   ops = env_global()->ops;
-  if (left->type == TAG_CALL) {
-    arity = call_arity(&left->data.call);
-    if (ops_get_tag(ops, left->data.call.ident.sym, arity, &op_tag)) {
+  if (left->type == TAG_PCALL) {
+    arity = call_arity(left->data.pcall);
+    if (ops_get_tag(ops, left->data.pcall->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
           op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
@@ -948,9 +948,9 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call,
     return r;
   result += r;
   paren = false;
-  if (right->type == TAG_CALL) {
-    arity = call_arity(&right->data.call);
-    if (ops_get_tag(ops, right->data.call.ident.sym, arity, &op_tag)) {
+  if (right->type == TAG_PCALL) {
+    arity = call_arity(right->data.pcall);
+    if (ops_get_tag(ops, right->data.pcall->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
           op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
@@ -1001,9 +1001,9 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
   right = &list_next(call->arguments)->tag;
   paren = false;
   ops = env_global()->ops;
-  if (left->type == TAG_CALL) {
-    arity = call_arity(&left->data.call);
-    if (ops_get_tag(ops, left->data.call.ident.sym, arity, &op_tag)) {
+  if (left->type == TAG_PCALL) {
+    arity = call_arity(left->data.pcall);
+    if (ops_get_tag(ops, left->data.pcall->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
           op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
@@ -1044,9 +1044,9 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
     return r;
   result += r;
   paren = false;
-  if (right->type == TAG_CALL) {
-    arity = call_arity(&right->data.call);
-    if (ops_get_tag(ops, right->data.call.ident.sym, arity, &op_tag)) {
+  if (right->type == TAG_PCALL) {
+    arity = call_arity(right->data.pcall);
+    if (ops_get_tag(ops, right->data.pcall->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
           op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
@@ -3695,7 +3695,7 @@ sw buf_inspect_str_eval (s_buf *buf, const s_list *list)
       result += r;
       tag = &l->tag;
       if (tag_is_cast(tag, &g_sym_Str))
-        tag = &list_next(tag->data.call.arguments)->tag;
+        tag = &list_next(tag->data.pcall->arguments)->tag;
       if ((r = buf_inspect_tag(buf, tag)) <= 0)
         return r;
       result += r;
@@ -3734,7 +3734,7 @@ sw buf_inspect_str_eval_size (s_pretty *pretty, const s_list *list)
       result += r;
       tag = &l->tag;
       if (tag_is_cast(tag, &g_sym_Str))
-        tag = &list_next(tag->data.call.arguments)->tag;
+        tag = &list_next(tag->data.pcall->arguments)->tag;
       if ((r = buf_inspect_tag_size(pretty, tag)) <= 0)
         return r;
       result += r;
@@ -4397,7 +4397,6 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_DO_BLOCK:
     return buf_inspect_do_block(buf, &tag->data.do_block);
   case TAG_BOOL:    return buf_inspect_bool(buf, tag->data.bool_);
-  case TAG_CALL:    return buf_inspect_call(buf, &tag->data.call);
   case TAG_CHARACTER:
     return buf_inspect_character(buf, tag->data.character);
   case TAG_F32:     return buf_inspect_f32(buf, tag->data.f32);
@@ -4407,12 +4406,13 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
   case TAG_MAP:     return buf_inspect_map(buf, &tag->data.map);
+  case TAG_PCALL:   return buf_inspect_call(buf, tag->data.pcall);
   case TAG_PCALLABLE:
     return buf_inspect_callable(buf, tag->data.pcallable);
-  case TAG_PFACTS:  return buf_inspect_pfacts(buf, &tag->data.pfacts);
   case TAG_PCOMPLEX:
     return buf_inspect_complex(buf, tag->data.pcomplex);
   case TAG_PCOW:    return buf_inspect_cow(buf, tag->data.pcow);
+  case TAG_PFACTS:  return buf_inspect_pfacts(buf, &tag->data.pfacts);
   case TAG_PLIST:   return buf_inspect_list(buf, tag->data.plist);
   case TAG_POINTER: return buf_inspect_pointer(buf, &tag->data.pointer);
   case TAG_PSTRUCT: return buf_inspect_struct(buf, tag->data.pstruct);
@@ -4457,14 +4457,8 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_do_block_size(pretty, &tag->data.do_block);
   case TAG_BOOL:
     return buf_inspect_bool_size(pretty, tag->data.bool_);
-  case TAG_CALL:
-    return buf_inspect_call_size(pretty, &tag->data.call);
   case TAG_CHARACTER:
     return buf_inspect_character_size(pretty, tag->data.character);
-  case TAG_PCOMPLEX:
-    return buf_inspect_complex_size(pretty, tag->data.pcomplex);
-  case TAG_PCOW:
-    return buf_inspect_cow_size(pretty, tag->data.pcow);
   case TAG_F32:
     return buf_inspect_f32_size(pretty, tag->data.f32);
   case TAG_F64:
@@ -4479,8 +4473,14 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_integer_size(pretty, &tag->data.integer);
   case TAG_MAP:
     return buf_inspect_map_size(pretty, &tag->data.map);
+  case TAG_PCALL:
+    return buf_inspect_call_size(pretty, tag->data.pcall);
   case TAG_PCALLABLE:
     return buf_inspect_callable_size(pretty, tag->data.pcallable);
+  case TAG_PCOMPLEX:
+    return buf_inspect_complex_size(pretty, tag->data.pcomplex);
+  case TAG_PCOW:
+    return buf_inspect_cow_size(pretty, tag->data.pcow);
   case TAG_PFACTS:
     return buf_inspect_pfacts_size(pretty, &tag->data.pfacts);
   case TAG_PLIST:

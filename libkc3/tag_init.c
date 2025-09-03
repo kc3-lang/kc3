@@ -28,6 +28,7 @@
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "pcall.h"
 #include "pcallable.h"
 #include "plist.h"
 #include "pstruct.h"
@@ -71,12 +72,12 @@ s_tag * tag_init_array_copy (s_tag *tag, const s_array *a)
   return tag;
 }
 
-s_tag * tag_init_call (s_tag *tag)
+s_tag * tag_init_pcall (s_tag *tag)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_CALL;
-  if (! call_init(&tmp.data.call))
+  tmp.type = TAG_PCALL;
+  if (! pcall_init(&tmp.data.pcall))
     return NULL;
   *tag = tmp;
   return tag;
@@ -783,14 +784,14 @@ s_tag * tag_new_array_copy (const s_array *a)
   return tag;
 }
 
-s_tag * tag_new_call (void)
+s_tag * tag_new_pcall (void)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
-  tag->type = TAG_CALL;
-  if (! call_init(&tag->data.call)) {
+  tag->type = TAG_PCALL;
+  if (! pcall_init(&tag->data.pcall)) {
     free(tag);
     return NULL;
   }
@@ -1639,13 +1640,13 @@ s_tag * tag_array_copy (s_tag *tag, const s_array *a)
   return tag;
 }
 
-s_tag * tag_call (s_tag *tag)
+s_tag * tag_pcall (s_tag *tag)
 {
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  tmp.type = TAG_CALL;
-  if (! call_init(&tmp.data.call))
+  tmp.type = TAG_PCALL;
+  if (! pcall_init(&tmp.data.pcall))
     return NULL;
   *tag = tmp;
   return tag;

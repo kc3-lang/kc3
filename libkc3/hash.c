@@ -532,7 +532,6 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_DO_BLOCK:
     return hash_update_do_block(hash, &tag->data.do_block);
   case TAG_BOOL:    return hash_update_bool(hash, &tag->data.bool_);
-  case TAG_CALL:    return hash_update_call(hash, &tag->data.call);
   case TAG_CHARACTER:
     return hash_update_character(hash, tag->data.character);
   case TAG_F32:     return hash_update_f32(hash, tag->data.f32);
@@ -543,6 +542,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_INTEGER:
     return hash_update_integer(hash, &tag->data.integer);
   case TAG_MAP:     return hash_update_map(hash, &tag->data.map);
+  case TAG_PCALL:   return hash_update_call(hash, tag->data.pcall);
   case TAG_PCALLABLE:
     return hash_update_callable(hash, tag->data.pcallable);
   case TAG_PCOMPLEX:

@@ -256,7 +256,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     return true;
   }
   if (! macro &&
-      a->type == TAG_CALL) {
+      a->type == TAG_PCALL) {
     if (! env_eval_tag(env, a, &tmp_a))
       return false;
     if (! env_eval_equal_tag(env, macro, &tmp_a, b, dest)) {
@@ -267,7 +267,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     return true;
   }
   if (! macro &&
-      b->type == TAG_CALL) {
+      b->type == TAG_PCALL) {
     if (! env_eval_tag(env, b, &tmp_b))
       return false;
     if (! env_eval_equal_tag(env, macro, a, &tmp_b, dest)) {
@@ -364,10 +364,10 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   case TAG_ARRAY:
   case TAG_DO_BLOCK:
   case TAG_BOOL:
-  case TAG_CALL:
   case TAG_CHARACTER:
   case TAG_FACT:
   case TAG_IDENT:
+  case TAG_PCALL:
   case TAG_PCALLABLE:
   case TAG_PFACTS:
   case TAG_POINTER:

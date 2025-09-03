@@ -139,6 +139,7 @@ HEADERS = \
 	"op.h" \
 	"ops.h" \
 	"pbuf.h" \
+	"pcall.h" \
 	"pcallable.h" \
 	"pcomplex.h" \
 	"pcow.h" \
@@ -340,6 +341,7 @@ SOURCES = \
 	"op.c" \
 	"ops.c" \
 	"pbuf.c" \
+	"pcall.c" \
 	"pcallable.c" \
 	"pcomplex.c" \
 	"pcow.c" \
@@ -658,6 +660,7 @@ LO_SOURCES = \
 	"op.c" \
 	"ops.c" \
 	"pbuf.c" \
+	"pcall.c" \
 	"pcallable.c" \
 	"pcomplex.c" \
 	"pcow.c" \

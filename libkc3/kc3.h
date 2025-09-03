@@ -73,6 +73,8 @@
 #include "kc3_main.h"
 #include "list.h"
 #include "map.h"
+#include "pcall.h"
+#include "pcallable.h"
 #include "pcow.h"
 #include "ptag.h"
 #include "ptr.h"

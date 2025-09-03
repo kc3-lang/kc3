@@ -41,39 +41,6 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define BUF_PARSE_TEST_CALL(test)                                      \
-  do {                                                                 \
-    s_buf buf;                                                         \
-    s_call dest;                                                       \
-    test_context("buf_parse_call(" # test ")");                        \
-    buf_init_1(&buf, false, (test));                                   \
-    TEST_EQ(buf_parse_call(&buf, &dest), strlen(test));                \
-    call_clean(&dest);                                                 \
-    test_context(NULL);                                                \
-  } while (0)
-
-#define BUF_PARSE_TEST_CALL_OP(test)                                   \
-  do {                                                                 \
-    s_buf buf;                                                         \
-    s_call dest = {0};                                                 \
-    test_context("buf_parse_call_op(" # test ")");                     \
-    buf_init_1(&buf, false, (test));                                   \
-    TEST_EQ(buf_parse_call_op(&buf, &dest), strlen(test));             \
-    call_clean(&dest);                                                 \
-    test_context(NULL);                                                \
-  } while (0)
-
-#define BUF_PARSE_TEST_CALL_PAREN(test)                                \
-  do {                                                                 \
-    s_buf buf;                                                         \
-    s_call dest = {0};                                                 \
-    test_context("buf_parse_call_paren(" # test ")");                  \
-    buf_init_1(&buf, false, (test));                                   \
-    TEST_EQ(buf_parse_call_paren(&buf, &dest), strlen(test));          \
-    call_clean(&dest);                                                 \
-    test_context(NULL);                                                \
-  } while (0)
-
 #define BUF_PARSE_TEST_CFN(test)                                       \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -277,13 +244,13 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define BUF_PARSE_TEST_NOT_CALL(test)                                  \
+#define BUF_PARSE_TEST_NOT_PCALL(test)                                 \
   do {                                                                 \
     s_buf buf;                                                         \
-    s_call dest = {0};                                                 \
-    test_context("buf_parse_call(" # test ") -> 0");                   \
+    p_call dest = {0};                                                 \
+    test_context("buf_parse_pcall(" # test ") -> 0");                  \
     buf_init_1(&buf, false, (test));                                   \
-    TEST_EQ(buf_parse_call(&buf, &dest), 0);                           \
+    TEST_EQ(buf_parse_pcall(&buf, &dest), 0);                          \
     TEST_EQ(buf.rpos, 0);                                              \
     test_context(NULL);                                                \
   } while (0)
@@ -459,6 +426,39 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_PARSE_TEST_PCALL(test)                                     \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    p_call dest;                                                       \
+    test_context("buf_parse_pcall(" # test ")");                       \
+    buf_init_1(&buf, false, (test));                                   \
+    TEST_EQ(buf_parse_pcall(&buf, &dest), strlen(test));               \
+    pcall_clean(&dest);                                                \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define BUF_PARSE_TEST_PCALL_OP(test)                                  \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    p_call dest = {0};                                                 \
+    test_context("buf_parse_pcall_op(" # test ")");                    \
+    buf_init_1(&buf, false, (test));                                   \
+    TEST_EQ(buf_parse_pcall_op(&buf, &dest), strlen(test));            \
+    pcall_clean(&dest);                                                 \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define BUF_PARSE_TEST_PCALL_PAREN(test)                               \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    p_call dest = {0};                                                 \
+    test_context("buf_parse_pcall_paren(" # test ")");                 \
+    buf_init_1(&buf, false, (test));                                   \
+    TEST_EQ(buf_parse_pcall_paren(&buf, &dest), strlen(test));         \
+    pcall_clean(&dest);                                                 \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define BUF_PARSE_TEST_PLIST(test)                                     \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -626,9 +626,9 @@
 
 TEST_CASE_PROTOTYPE(buf_parse_array);
 TEST_CASE_PROTOTYPE(buf_parse_bool);
-TEST_CASE_PROTOTYPE(buf_parse_call);
-TEST_CASE_PROTOTYPE(buf_parse_call_op);
-TEST_CASE_PROTOTYPE(buf_parse_call_paren);
+TEST_CASE_PROTOTYPE(buf_parse_pcall);
+TEST_CASE_PROTOTYPE(buf_parse_pcall_op);
+TEST_CASE_PROTOTYPE(buf_parse_pcall_paren);
 TEST_CASE_PROTOTYPE(buf_parse_cfn);
 TEST_CASE_PROTOTYPE(buf_parse_character);
 TEST_CASE_PROTOTYPE(buf_parse_digit_bin);
@@ -658,9 +658,9 @@ void buf_parse_test (void)
 {
   TEST_CASE_RUN(buf_parse_array);
   TEST_CASE_RUN(buf_parse_bool);
-  TEST_CASE_RUN(buf_parse_call);
-  TEST_CASE_RUN(buf_parse_call_op);
-  TEST_CASE_RUN(buf_parse_call_paren);
+  TEST_CASE_RUN(buf_parse_pcall);
+  TEST_CASE_RUN(buf_parse_pcall_op);
+  TEST_CASE_RUN(buf_parse_pcall_paren);
   TEST_CASE_RUN(buf_parse_digit_bin);
   TEST_CASE_RUN(buf_parse_digit_hex);
   TEST_CASE_RUN(buf_parse_digit_oct);
@@ -769,52 +769,52 @@ TEST_CASE(buf_parse_bool)
 }
 TEST_CASE_END(buf_parse_bool)
 
-TEST_CASE(buf_parse_call)
+TEST_CASE(buf_parse_pcall)
 {
-  BUF_PARSE_TEST_NOT_CALL("0");
-  BUF_PARSE_TEST_NOT_CALL("9");
-  BUF_PARSE_TEST_NOT_CALL("A");
-  BUF_PARSE_TEST_NOT_CALL("Z");
-  BUF_PARSE_TEST_NOT_CALL("a");
-  BUF_PARSE_TEST_NOT_CALL("z");
-  BUF_PARSE_TEST_NOT_CALL("()");
-  BUF_PARSE_TEST_CALL("A.b()");
-  BUF_PARSE_TEST_CALL("A.b(c)");
-  BUF_PARSE_TEST_CALL("A.b(c, d)");
-  BUF_PARSE_TEST_CALL("A.b(c, d, e)");
-  BUF_PARSE_TEST_CALL("a()");
-  BUF_PARSE_TEST_CALL("a()");
-  BUF_PARSE_TEST_CALL("a(b)");
-  BUF_PARSE_TEST_CALL("a(b, c)");
-  BUF_PARSE_TEST_CALL("A.b(c(d), e)");
-  BUF_PARSE_TEST_CALL("A.b(C.d(e))");
-  BUF_PARSE_TEST_CALL("A.b(C.d(E.f(g, h), I.j(k, l)))");
-  BUF_PARSE_TEST_CALL("a(b, c, d)");
-  BUF_PARSE_TEST_CALL("a(b(c), d)");
-  BUF_PARSE_TEST_CALL("a(B.c(d))");
-  BUF_PARSE_TEST_CALL("a(B.c(D.e(f, g), H.i(j, k)))");
+  BUF_PARSE_TEST_NOT_PCALL("0");
+  BUF_PARSE_TEST_NOT_PCALL("9");
+  BUF_PARSE_TEST_NOT_PCALL("A");
+  BUF_PARSE_TEST_NOT_PCALL("Z");
+  BUF_PARSE_TEST_NOT_PCALL("a");
+  BUF_PARSE_TEST_NOT_PCALL("z");
+  BUF_PARSE_TEST_NOT_PCALL("()");
+  BUF_PARSE_TEST_PCALL("A.b()");
+  BUF_PARSE_TEST_PCALL("A.b(c)");
+  BUF_PARSE_TEST_PCALL("A.b(c, d)");
+  BUF_PARSE_TEST_PCALL("A.b(c, d, e)");
+  BUF_PARSE_TEST_PCALL("a()");
+  BUF_PARSE_TEST_PCALL("a()");
+  BUF_PARSE_TEST_PCALL("a(b)");
+  BUF_PARSE_TEST_PCALL("a(b, c)");
+  BUF_PARSE_TEST_PCALL("A.b(c(d), e)");
+  BUF_PARSE_TEST_PCALL("A.b(C.d(e))");
+  BUF_PARSE_TEST_PCALL("A.b(C.d(E.f(g, h), I.j(k, l)))");
+  BUF_PARSE_TEST_PCALL("a(b, c, d)");
+  BUF_PARSE_TEST_PCALL("a(b(c), d)");
+  BUF_PARSE_TEST_PCALL("a(B.c(d))");
+  BUF_PARSE_TEST_PCALL("a(B.c(D.e(f, g), H.i(j, k)))");
 }
-TEST_CASE_END(buf_parse_call)
+TEST_CASE_END(buf_parse_pcall)
 
-TEST_CASE(buf_parse_call_op)
+TEST_CASE(buf_parse_pcall_op)
 {
-  BUF_PARSE_TEST_CALL_OP("1 + 2");
-  BUF_PARSE_TEST_CALL_OP("1 + 2 + 3");
-  BUF_PARSE_TEST_CALL_OP("1 + 2 / 3");
-  BUF_PARSE_TEST_CALL_OP("1 + 2 / 3 * 4");
-  BUF_PARSE_TEST_CALL_OP("1 + 2 / 3 * 4 - 5");
+  BUF_PARSE_TEST_PCALL_OP("1 + 2");
+  BUF_PARSE_TEST_PCALL_OP("1 + 2 + 3");
+  BUF_PARSE_TEST_PCALL_OP("1 + 2 / 3");
+  BUF_PARSE_TEST_PCALL_OP("1 + 2 / 3 * 4");
+  BUF_PARSE_TEST_PCALL_OP("1 + 2 / 3 * 4 - 5");
 }
-TEST_CASE_END(buf_parse_call_op)
+TEST_CASE_END(buf_parse_pcall_op)
 
-TEST_CASE(buf_parse_call_paren)
+TEST_CASE(buf_parse_pcall_paren)
 {
-  BUF_PARSE_TEST_CALL_PAREN("(1 + 2)");
-  BUF_PARSE_TEST_CALL_PAREN("(1 + 2 + 3)");
-  BUF_PARSE_TEST_CALL_PAREN("(1 + 2 / 3)");
-  BUF_PARSE_TEST_CALL_PAREN("(1 + 2 / 3 ; 4)");
-  BUF_PARSE_TEST_CALL_PAREN("(1 + 2 / 3 ; 4 - 5)");
+  BUF_PARSE_TEST_PCALL_PAREN("(1 + 2)");
+  BUF_PARSE_TEST_PCALL_PAREN("(1 + 2 + 3)");
+  BUF_PARSE_TEST_PCALL_PAREN("(1 + 2 / 3)");
+  BUF_PARSE_TEST_PCALL_PAREN("(1 + 2 / 3 ; 4)");
+  BUF_PARSE_TEST_PCALL_PAREN("(1 + 2 / 3 ; 4 - 5)");
 }
-TEST_CASE_END(buf_parse_call_paren)
+TEST_CASE_END(buf_parse_pcall_paren)
 
 TEST_CASE(buf_parse_cfn)
 {

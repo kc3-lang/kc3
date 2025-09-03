@@ -36,6 +36,7 @@
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "pcall.h"
 #include "pcallable.h"
 #include "pcomplex.h"
 #include "pcow.h"
@@ -238,10 +239,10 @@ void tag_clean (s_tag *tag)
   assert(tag);
   switch (tag->type) {
   case TAG_ARRAY:       array_clean(&tag->data.array);         break;
-  case TAG_CALL:        call_clean(&tag->data.call);           break;
   case TAG_DO_BLOCK:    do_block_clean(&tag->data.do_block);   break;
   case TAG_INTEGER:     integer_clean(&tag->data.integer);     break;
   case TAG_MAP:         map_clean(&tag->data.map);             break;
+  case TAG_PCALL:       pcall_clean(&tag->data.pcall);         break;
   case TAG_PCALLABLE:   pcallable_clean(&tag->data.pcallable); break;
   case TAG_PCOMPLEX:    pcomplex_clean(&tag->data.pcomplex);   break;
   case TAG_PCOW:        pcow_clean(&tag->data.pcow);           break;
@@ -410,30 +411,8 @@ s_tag * tag_init_bool (s_tag *tag, bool b)
 s_tag * tag_init_call_cast (s_tag *tag, const s_sym *type)
 {
   s_tag tmp = {0};
-  tmp.type = TAG_CALL;
-  if (! call_init_call_cast(&tmp.data.call, type))
-    return NULL;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_init_callable (s_tag *tag)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_CALL;
-  if (! pcallable_init(&tmp.data.pcallable))
-    return NULL;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_init_callable_copy (s_tag *tag, p_callable *src)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_PCALLABLE;
-  if (! pcallable_init_copy(&tmp.data.pcallable, src))
+  tmp.type = TAG_PCALL;
+  if (! pcall_init_call_cast(&tmp.data.pcall, type))
     return NULL;
   *tag = tmp;
   return tag;
@@ -510,11 +489,6 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     tag->type = src->type;
     tag->data.bool_ = src->data.bool_;
     return tag;
-  case TAG_CALL:
-    tag->type = src->type;
-    if (! call_init_copy(&tag->data.call, &src->data.call))
-      return NULL;
-    return tag;
   case TAG_CHARACTER:
     tag->type = src->type;
     tag->data.character = src->data.character;
@@ -552,6 +526,11 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
   case TAG_MAP:
     tag->type = src->type;
     if (! map_init_copy(&tag->data.map, &src->data.map))
+      return NULL;
+    return tag;
+  case TAG_PCALL:
+    tag->type = src->type;
+    if (! pcall_init_copy(&tag->data.pcall, &src->data.pcall))
       return NULL;
     return tag;
   case TAG_PCALLABLE:
@@ -896,9 +875,9 @@ bool tag_is_cast (const s_tag *tag, const s_sym *type)
   assert(tag);
   return (tag &&
           type &&
-          tag->type == TAG_CALL &&
-          tag->data.call.ident.module == type &&
-          tag->data.call.ident.sym == &g_sym_cast);
+          tag->type == TAG_PCALL &&
+          tag->data.pcall->ident.module == type &&
+          tag->data.pcall->ident.sym == &g_sym_cast);
 }
 
 bool tag_is_integer (s_tag *tag)
@@ -909,7 +888,6 @@ bool tag_is_integer (s_tag *tag)
   case TAG_VOID:
   case TAG_ARRAY:
   case TAG_BOOL:
-  case TAG_CALL:
   case TAG_CHARACTER:
   case TAG_DO_BLOCK:
   case TAG_F32:
@@ -917,6 +895,7 @@ bool tag_is_integer (s_tag *tag)
   case TAG_F128:
   case TAG_FACT:
   case TAG_MAP:
+  case TAG_PCALL:
   case TAG_PCALLABLE:
   case TAG_PCOMPLEX:
   case TAG_PFACTS:
@@ -966,11 +945,11 @@ bool tag_is_number (s_tag *tag)
   case TAG_VOID:
   case TAG_ARRAY:
   case TAG_BOOL:
-  case TAG_CALL:
   case TAG_CHARACTER:
   case TAG_DO_BLOCK:
   case TAG_FACT:
   case TAG_MAP:
+  case TAG_PCALL:
   case TAG_PCALLABLE:
   case TAG_PFACTS:
   case TAG_PLIST:
@@ -1283,12 +1262,6 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     goto invalid_cast;
-  case TAG_CALL:
-    if (type == &g_sym_Call) {
-      *dest = &tag->data.call;
-      return true;
-    }
-    goto invalid_cast;
   case TAG_CHARACTER:
     if (type == &g_sym_Character) {
       *dest = &tag->data.character;
@@ -1340,6 +1313,12 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_MAP:
     if (type == &g_sym_Map) {
       *dest = &tag->data.map;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_PCALL:
+    if (type == &g_sym_Call) {
+      *dest = tag->data.pcall;
       return true;
     }
     goto invalid_cast;
@@ -1592,7 +1571,6 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   switch (tag_type) {
   case TAG_ARRAY:        *dest = &tag->data.array;        return true;
   case TAG_BOOL:         *dest = &tag->data.bool_;        return true;
-  case TAG_CALL:         *dest = &tag->data.call;         return true;
   case TAG_CHARACTER:    *dest = &tag->data.character;    return true;
   case TAG_DO_BLOCK:     *dest = &tag->data.do_block;     return true;
   case TAG_F32:          *dest = &tag->data.f32;          return true;
@@ -1602,6 +1580,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_IDENT:        *dest = &tag->data.ident;        return true;
   case TAG_INTEGER:      *dest = &tag->data.integer;      return true;
   case TAG_MAP:          *dest = &tag->data.map;          return true;
+  case TAG_PCALL:        *dest = &tag->data.pcall;        return true;
   case TAG_PCALLABLE:    *dest = &tag->data.pcallable;    return true;
   case TAG_PCOMPLEX:     *dest = &tag->data.pcomplex;     return true;
   case TAG_PCOW:         *dest = &tag->data.pcow;         return true;
@@ -1674,7 +1653,6 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
     *dest = tag->data.array.array_type;
     return dest;
   case TAG_BOOL:         *dest = &g_sym_Bool;        return dest;
-  case TAG_CALL:         *dest = &g_sym_Call;        return dest;
   case TAG_CHARACTER:    *dest = &g_sym_Character;   return dest;
   case TAG_DO_BLOCK:     *dest = &g_sym_Block;       return dest;
   case TAG_F32:          *dest = &g_sym_F32;         return dest;
@@ -1684,6 +1662,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_IDENT:        *dest = &g_sym_Ident;       return dest;
   case TAG_INTEGER:      *dest = &g_sym_Integer;     return dest;
   case TAG_MAP:          *dest = &g_sym_Map;         return dest;
+  case TAG_PCALL:        *dest = &g_sym_Call;        return dest;
   case TAG_PCALLABLE:    *dest = &g_sym_Callable;    return dest;
   case TAG_PCOMPLEX:     *dest = &g_sym_Complex;     return dest;
   case TAG_PCOW:         *dest = &g_sym_Cow;         return dest;

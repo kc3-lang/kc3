@@ -573,7 +573,7 @@ bool env_defoperator (s_env *env, s_tag *tag_op)
 s_tag * env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest)
 {
   s8 arity;
-  s_call *call;
+  p_call call;
   s_tag callable_tag = {0};
   s_tag ident_tag = {0};
   p_list second;
@@ -592,11 +592,11 @@ s_tag * env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest)
              " with securelevel > 1");
     abort();
   }
-  if (tag->type != TAG_CALL) {
+  if (tag->type != TAG_PCALL) {
     err_puts("env_defspecial_operator: expected Call");
     return NULL;
   }
-  call = &tag->data.call;
+  call = tag->data.pcall;
   if (call->ident.sym != &g_sym__equal ||
       ! call->arguments ||
       ! (second = list_next(call->arguments)) ||
@@ -2233,6 +2233,7 @@ bool env_module_load (s_env *env, const s_sym *module)
       err_inspect_sym(module);
       err_puts(": env_load");
       str_clean(&path);
+      env_module_is_loading_set(env, module, false);
       goto rollback;
     }
   }
@@ -2242,10 +2243,13 @@ bool env_module_load (s_env *env, const s_sym *module)
       err_write_1("env_module_load: ");
       err_write_1(module->str.ptr.pchar);
       err_puts(": module_path");
+      env_module_is_loading_set(env, module, false);
       goto rollback;
     }
-    if (! file_access(&path, &g_sym_r))
+    if (! file_access(&path, &g_sym_r)) {
+      env_module_is_loading_set(env, module, false);
       goto rollback;
+    }
     tag_init_time_now(&tag_time);
     if (facts_load_file(env->facts, &path) < 0) {
       err_write_1("env_module_load: ");
@@ -2253,6 +2257,7 @@ bool env_module_load (s_env *env, const s_sym *module)
       err_puts(": facts_load_file");
       str_clean(&path);
       tag_clean(&tag_time);
+      env_module_is_loading_set(env, module, false);
       goto rollback;
     }
   }
@@ -2260,8 +2265,10 @@ bool env_module_load (s_env *env, const s_sym *module)
   tag_init_psym(&tag_module_name, module);
   tag_init_psym(&tag_load_time, &g_sym_load_time);
   if (! facts_replace_tags(env->facts, &tag_module_name,
-                           &tag_load_time, &tag_time))
+                           &tag_load_time, &tag_time)) {
+    env_module_is_loading_set(env, module, false);
     goto rollback;
+  }
   tag_clean(&tag_time);
   env_module_is_loading_set(env, module, false);
   facts_transaction_end(env->facts, &transaction);

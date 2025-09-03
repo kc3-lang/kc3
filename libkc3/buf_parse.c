@@ -649,146 +649,6 @@ sw buf_parse_bool (s_buf *buf, bool *p)
   return r;
 }
 
-sw buf_parse_brackets (s_buf *buf, s_call *dest)
-{
-  s_tag *arg_addr;
-  uw address = 0;
-  s_list *addr = NULL;
-  s_list **addr_last = &addr;
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  s_call tmp = {0};
-  assert(buf);
-  assert(dest);
-  buf_save_init(buf, &save);
-  tmp.arguments = list_new(list_new(NULL));
-  arg_addr = &(list_next(tmp.arguments)->tag);
-  if ((r = buf_parse_tag_ident(buf, &tmp.arguments->tag)) <= 0)
-    goto restore;
-  result += r;
-  while (1) {
-    if ((r = buf_read_1(buf, "[")) < 0)
-      goto restore;
-    if (! r)
-      break;
-    result += r;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-    *addr_last = list_new(NULL);
-    if ((r = buf_parse_tag(buf, &(*addr_last)->tag)) <= 0)
-      goto restore;
-    result += r;
-    addr_last = &(*addr_last)->next.data.plist;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-    if ((r = buf_read_1(buf, "]")) <= 0)
-      goto restore;
-    result += r;
-    address++;
-  }
-  if (! address) {
-    goto restore;
-  }
-  tmp.ident.module = &g_sym_KC3;
-  tmp.ident.sym = &g_sym__brackets;
-  arg_addr->type = TAG_PLIST;
-  arg_addr->data.plist = addr;
-  *dest = tmp;
-  r = result;
-  goto clean;
- restore:
-  r = 0;
-  buf_save_restore_rpos(buf, &save);
-  call_clean(&tmp);
-  list_delete_all(addr);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
-sw buf_parse_call (s_buf *buf, s_call *dest)
-{
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  s_call tmp = {0};
-  assert(buf);
-  assert(dest);
-  buf_save_init(buf, &save);
-  call_init(&tmp);
-  if ((r = buf_parse_ident(buf, &tmp.ident)) <= 0) {
-    call_clean(&tmp);
-    goto clean;
-  }
-  result += r;
-  if ((r = buf_parse_call_args_paren(buf, &tmp)) <= 0)
-    goto restore;
-  result += r;
-  *dest = tmp;
-  r = result;
-  goto clean;
- restore:
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
-sw buf_parse_call_access (s_buf *buf, s_call *dest)
-{
-  s_list **k;
-  s_list  *key = NULL;
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  s_call tmp = {0};
-  assert(buf);
-  assert(dest);
-  buf_save_init(buf, &save);
-  if (! call_init_op(&tmp))
-    return -1;
-  tmp.ident.module = &g_sym_KC3;
-  tmp.ident.sym = &g_sym_access;
-  r = buf_parse_tag_ident(buf, &tmp.arguments->tag);
-  if (r <= 0)
-    goto restore;
-  result += r;
-  k = &key;
-  while (1) {
-    if ((r = buf_read_1(buf, ".")) <= 0)
-      goto restore;
-    result += r;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-    *k = list_new(NULL);
-    r = buf_parse_tag_ident_sym(buf, &(*k)->tag);
-    k = &(*k)->next.data.plist;
-    if (r <= 0)
-      goto restore;
-    result += r;
-    if ((r = buf_peek_1(buf, ".")) < 0)
-      goto restore;
-    if (r == 0)
-      break;
-  }
-  list_next(tmp.arguments)->tag.type = TAG_PLIST;
-  list_next(tmp.arguments)->tag.data.plist = key;
-  *dest = tmp;
-  r = result;
-  goto clean;
- restore:
-  list_delete_all(key);
-  call_clean(&tmp);
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
 sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
 {
   s_list **args;
@@ -883,53 +743,6 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
   return r;
 }
 
-sw buf_parse_call_op (s_buf *buf, s_call *dest)
-{
-  s_ident ident;
-  s_tag  op_tag = {0};
-  s_ops *ops;
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  s_call tmp;
-  assert(buf);
-  assert(dest);
-  buf_save_init(buf, &save);
-  if (! call_init_op(&tmp)) {
-    r = -1;
-    goto clean;
-  }
-  if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0) {
-    call_clean(&tmp);
-    goto clean;
-  }
-  result += r;
-  if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
-    goto restore;
-  result += r;
-  if ((r = buf_peek_ident(buf, &ident)) <= 0)
-    goto restore;
-  ops = env_global()->ops;
-  if (! ops_get_tag(ops, ident.sym, 2, &op_tag)) {
-    r = 0;
-    goto restore;
-  }
-  tag_clean(&op_tag);
-  if ((r = buf_parse_call_op_rec(buf, &tmp, 0)) <= 0)
-    goto restore;
-  result += r;
-  *dest = tmp;
-  r = result;
-  goto clean;
- restore:
-  call_clean(&tmp);
-  r = 0;
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
 sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
 {
   character c;
@@ -986,8 +799,12 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       tmp3.ident.sym = op->sym;
       tmp3.arguments->tag = *left;
       list_next(tmp3.arguments)->tag = *right;
-      tag_init_call(left);
-      left->data.call = tmp3;
+      left->type = TAG_PCALL;
+      if (! (left->data.pcall = alloc(sizeof(s_call)))) {
+        r = -1;
+        goto restore;
+      }
+      *left->data.pcall = tmp3;
     }
     else
       merge_left = true;
@@ -1036,8 +853,12 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
         goto ok;
       }
       result += r;
-      tag_init_call(right);
-      right->data.call = tmp2;
+      right->type = TAG_PCALL;
+      if (! (right->data.pcall = alloc(sizeof(s_call)))) {
+        r = -1;
+        goto restore;
+      }
+      *right->data.pcall = tmp2;
       buf_save_update(buf, &save);
       if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
         goto ok;
@@ -1072,7 +893,330 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   return r;
 }
 
-sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
+sw buf_parse_pcall (s_buf *buf, p_call *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_call tmp = {0};
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  call_init(&tmp);
+  if ((r = buf_parse_ident(buf, &tmp.ident)) <= 0) {
+    call_clean(&tmp);
+    goto clean;
+  }
+  result += r;
+  if ((r = buf_parse_call_args_paren(buf, &tmp)) <= 0)
+    goto restore;
+  result += r;
+  if (! (dest = alloc(sizeof(s_call)))) {
+    r = -1;
+    goto restore;
+  }
+  if (! (*dest = alloc(sizeof(s_call)))) {
+    r = -1;
+    goto restore;
+  }
+  **dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_pcall_access (s_buf *buf, p_call *dest)
+{
+  s_list **k;
+  s_list  *key = NULL;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_call tmp = {0};
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if (! call_init_op(&tmp))
+    return -1;
+  tmp.ident.module = &g_sym_KC3;
+  tmp.ident.sym = &g_sym_access;
+  r = buf_parse_tag_ident(buf, &tmp.arguments->tag);
+  if (r <= 0)
+    goto restore;
+  result += r;
+  k = &key;
+  while (1) {
+    if ((r = buf_read_1(buf, ".")) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    *k = list_new(NULL);
+    r = buf_parse_tag_ident_sym(buf, &(*k)->tag);
+    k = &(*k)->next.data.plist;
+    if (r <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_peek_1(buf, ".")) < 0)
+      goto restore;
+    if (r == 0)
+      break;
+  }
+  list_next(tmp.arguments)->tag.type = TAG_PLIST;
+  list_next(tmp.arguments)->tag.data.plist = key;
+  if (! (*dest = alloc(sizeof(s_call)))) {
+    r = -1;
+    goto restore;
+  }
+  **dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  list_delete_all(key);
+  call_clean(&tmp);
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_pcall_brackets (s_buf *buf, p_call *dest)
+{
+  s_tag *arg_addr;
+  uw address = 0;
+  s_list *addr = NULL;
+  s_list **addr_last = &addr;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_call tmp = {0};
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  tmp.arguments = list_new(list_new(NULL));
+  arg_addr = &(list_next(tmp.arguments)->tag);
+  if ((r = buf_parse_tag_ident(buf, &tmp.arguments->tag)) <= 0)
+    goto restore;
+  result += r;
+  while (1) {
+    if ((r = buf_read_1(buf, "[")) < 0)
+      goto restore;
+    if (! r)
+      break;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    *addr_last = list_new(NULL);
+    if ((r = buf_parse_tag(buf, &(*addr_last)->tag)) <= 0)
+      goto restore;
+    result += r;
+    addr_last = &(*addr_last)->next.data.plist;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "]")) <= 0)
+      goto restore;
+    result += r;
+    address++;
+  }
+  if (! address) {
+    goto restore;
+  }
+  tmp.ident.module = &g_sym_KC3;
+  tmp.ident.sym = &g_sym__brackets;
+  arg_addr->type = TAG_PLIST;
+  arg_addr->data.plist = addr;
+  if (! (*dest = alloc(sizeof(s_call)))) {
+    r = -1;
+    goto restore;
+  }
+  **dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  r = 0;
+  buf_save_restore_rpos(buf, &save);
+  call_clean(&tmp);
+  list_delete_all(addr);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_pcall_cast (s_buf *buf, p_call *dest)
+{
+  const s_sym *module = NULL;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_call tmp;
+  buf_save_init(buf, &save);
+  if ((r = buf_parse_paren_sym(buf, &module)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  call_init_op(&tmp);
+  if (sym_is_pointer_type(module, NULL))
+    module = &g_sym_Pointer;
+  ident_init(&tmp.ident, module, &g_sym_cast);
+  tag_init_psym(&tmp.arguments->tag, module);
+  if ((r = buf_parse_tag_primary
+       (buf, &list_next(tmp.arguments)->tag)) <= 0)
+    goto clean;
+  result += r;
+  if (! (*dest = alloc(sizeof(s_call)))) {
+    r = -1;
+    goto restore;
+  }
+  **dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  call_clean(&tmp);
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_pcall_if (s_buf *buf, p_call *dest)
+{
+  s_list **args_last;
+  s_tag *condition;
+  s_tag *else_;
+  bool has_else;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_tag *then;
+  s_call tmp = {0};
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_sym(buf, &g_sym_if)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  tmp.ident.module = &g_sym_KC3;
+  tmp.ident.sym = &g_sym_if_then_else;
+  args_last = &tmp.arguments;
+  *args_last = list_new(NULL);
+  condition = &(*args_last)->tag;
+  if ((r = buf_parse_tag(buf, condition)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  args_last = &(*args_last)->next.data.plist;
+  *args_last = list_new(NULL);
+  then = &(*args_last)->tag;
+  if ((r = buf_parse_if_then(buf, then, &has_else)) < 0)
+    goto restore;
+  result += r;
+  args_last = &(*args_last)->next.data.plist;
+  *args_last = list_new(NULL);
+  else_ = &(*args_last)->tag;
+  if (has_else) {
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    else_->type = TAG_DO_BLOCK;
+    if ((r = buf_parse_do_block_inner(buf, false,
+                                      &else_->data.do_block)) <= 0)
+      goto restore;
+    result += r;
+  }
+  if (! (*dest = alloc(sizeof(s_call)))) {
+    r = -1;
+    goto restore;
+  }
+  **dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+  call_clean(&tmp);
+  r = -1;
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_pcall_op (s_buf *buf, p_call *dest)
+{
+  s_ident ident;
+  s_tag  op_tag = {0};
+  s_ops *ops;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_call tmp;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if (! call_init_op(&tmp)) {
+    r = -1;
+    goto clean;
+  }
+  if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0) {
+    call_clean(&tmp);
+    goto clean;
+  }
+  result += r;
+  if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_peek_ident(buf, &ident)) <= 0)
+    goto restore;
+  ops = env_global()->ops;
+  if (! ops_get_tag(ops, ident.sym, 2, &op_tag)) {
+    r = 0;
+    goto restore;
+  }
+  tag_clean(&op_tag);
+  if ((r = buf_parse_call_op_rec(buf, &tmp, 0)) <= 0)
+    goto restore;
+  result += r;
+  if (! (*dest = alloc(sizeof(s_call)))) {
+    r = -1;
+    goto restore;
+  }
+  **dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  call_clean(&tmp);
+  r = 0;
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_pcall_op_unary (s_buf *buf, p_call *dest)
 {
   s_tag  op_tag = {0};
   s_ops *ops;
@@ -1104,7 +1248,11 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
   if ((r = buf_parse_tag(buf, &tmp.arguments->tag)) <= 0)
     goto clean;
   result += r;
-  *dest = tmp;
+  if (! (*dest = alloc(sizeof(s_call)))) {
+    r = -1;
+    goto clean;
+  }
+  **dest = tmp;
   return result;
  restore:
   buf_save_restore_rpos(buf, &save);
@@ -1115,7 +1263,7 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
   return r;
 }
 
-sw buf_parse_call_paren (s_buf *buf, s_call *dest)
+sw buf_parse_pcall_paren (s_buf *buf, p_call *dest)
 {
   sw r;
   sw result = 0;
@@ -1139,7 +1287,11 @@ sw buf_parse_call_paren (s_buf *buf, s_call *dest)
   if ((r = buf_read_1(buf, ")")) <= 0)
     goto restore;
   result += r;
-  *dest = tmp;
+  if (! (*dest = alloc(sizeof(s_call)))) {
+    r = -1;
+    goto restore;
+  }
+  **dest = tmp;
   r = result;
   goto clean;
  restore:
@@ -1188,40 +1340,6 @@ sw buf_parse_pcallable (s_buf *buf, p_callable *dest)
   }
   else
     return 0;
-  return r;
-}
-
-sw buf_parse_cast (s_buf *buf, s_call *dest)
-{
-  const s_sym *module = NULL;
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  s_call tmp;
-  buf_save_init(buf, &save);
-  if ((r = buf_parse_paren_sym(buf, &module)) <= 0)
-    goto clean;
-  result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
-    goto restore;
-  result += r;
-  call_init_op(&tmp);
-  if (sym_is_pointer_type(module, NULL))
-    module = &g_sym_Pointer;
-  ident_init(&tmp.ident, module, &g_sym_cast);
-  tag_init_psym(&tmp.arguments->tag, module);
-  if ((r = buf_parse_tag_primary
-       (buf, &list_next(tmp.arguments)->tag)) <= 0)
-    goto clean;
-  result += r;
-  *dest = tmp;
-  r = result;
-  goto clean;
- restore:
-  call_clean(&tmp);
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
   return r;
 }
 
@@ -2290,80 +2408,6 @@ sw buf_parse_ident_sym (s_buf *buf, const s_sym **dest)
   r = 0;
  restore:
   buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
-sw buf_parse_if (s_buf *buf, s_call *dest)
-{
-  s_list **args_last;
-  s_tag *condition;
-  s_tag *else_;
-  bool has_else;
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  s_tag *then;
-  s_call tmp = {0};
-  assert(buf);
-  assert(dest);
-  buf_save_init(buf, &save);
-  if ((r = buf_read_sym(buf, &g_sym_if)) <= 0)
-    goto clean;
-  result += r;
-  if ((r = buf_ignore_spaces(buf)) <= 0)
-    goto restore;
-  result += r;
-  if ((r = buf_parse_comments(buf)) < 0)
-    goto restore;
-  result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
-    goto restore;
-  result += r;
-  tmp.ident.module = &g_sym_KC3;
-  tmp.ident.sym = &g_sym_if_then_else;
-  args_last = &tmp.arguments;
-  *args_last = list_new(NULL);
-  condition = &(*args_last)->tag;
-  if ((r = buf_parse_tag(buf, condition)) <= 0)
-    goto restore;
-  result += r;
-  if ((r = buf_parse_comments(buf)) < 0)
-    goto restore;
-  result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
-    goto restore;
-  result += r;
-  args_last = &(*args_last)->next.data.plist;
-  *args_last = list_new(NULL);
-  then = &(*args_last)->tag;
-  if ((r = buf_parse_if_then(buf, then, &has_else)) < 0)
-    goto restore;
-  result += r;
-  args_last = &(*args_last)->next.data.plist;
-  *args_last = list_new(NULL);
-  else_ = &(*args_last)->tag;
-  if (has_else) {
-    if ((r = buf_parse_comments(buf)) < 0)
-      goto restore;
-    result += r;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-    else_->type = TAG_DO_BLOCK;
-    if ((r = buf_parse_do_block_inner(buf, false,
-                                      &else_->data.do_block)) <= 0)
-      goto restore;
-    result += r;
-  }
-  *dest = tmp;
-  r = result;
-  goto clean;
- restore:
-  buf_save_restore_rpos(buf, &save);
-  call_clean(&tmp);
-  r = -1;
  clean:
   buf_save_clean(buf, &save);
   return r;
@@ -3595,7 +3639,7 @@ sw buf_parse_ratio (s_buf *buf, s_ratio *dest)
   return r;
 }
 
-sw buf_parse_special_operator (s_buf *buf, s_call *dest)
+sw buf_parse_special_operator (s_buf *buf, p_call *dest)
 {
   bool b;
   s_list **args_last;
@@ -3608,8 +3652,9 @@ sw buf_parse_special_operator (s_buf *buf, s_call *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
+  call_init(&tmp);
   if ((r = buf_parse_ident(buf, &tmp.ident)) <= 0)
-    goto clean;
+    goto restore;
   result += r;
   if (! ident_is_special_operator(&tmp.ident, &b)) {
     err_write_1("buf_parse_special_operator: ");
@@ -3671,8 +3716,12 @@ sw buf_parse_special_operator (s_buf *buf, s_call *dest)
     args_last = &(*args_last)->next.data.plist;
     i++;
   }
+  if (! (*dest = alloc(sizeof(s_call)))) {
+    r = -1;
+    goto restore;
+  }
   r = result;
-  *dest = tmp;
+  **dest = tmp;
   goto clean;
  restore:
   call_clean(&tmp);
@@ -3693,12 +3742,12 @@ sw buf_parse_static_tag (s_buf *buf, s_tag *tag)
   buf_save_init(buf, &save);
   if ((r = buf_parse_tag(buf, &tmp)) <= 0)
     return r;
-  if (tmp.type == TAG_CALL &&
-      (! tmp.data.call.ident.module ||
-       tmp.data.call.ident.module == &g_sym_KC3) &&
-      tmp.data.call.ident.sym == &g_sym_str &&
-      tmp.data.call.arguments &&
-      tmp.data.call.arguments->tag.type == TAG_PLIST) {
+  if (tmp.type == TAG_PCALL &&
+      (! tmp.data.pcall->ident.module ||
+       tmp.data.pcall->ident.module == &g_sym_KC3) &&
+      tmp.data.pcall->ident.sym == &g_sym_str &&
+      tmp.data.pcall->arguments &&
+      tmp.data.pcall->arguments->tag.type == TAG_PLIST) {
     tag_void(&tmp);
     buf_save_restore_rpos(buf, &save);
     if ((r = buf_parse_str(buf, &str)) <= 0)
@@ -4179,13 +4228,13 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
     goto restore;
   switch (c) {
   case '{':
-    if ((r = buf_parse_tag_call_op(buf, dest)) ||
+    if ((r = buf_parse_tag_pcall_op(buf, dest)) ||
         (r = buf_parse_tag_tuple(buf, dest)) ||
         (r = buf_parse_tag_do_block(buf, dest)))
       goto end;
     goto restore;
   default:
-    if ((r = buf_parse_tag_call_op(buf, dest)) ||
+    if ((r = buf_parse_tag_pcall_op(buf, dest)) ||
         (r = buf_parse_tag_primary(buf, dest)))
       goto end;
   }
@@ -4234,86 +4283,6 @@ sw buf_parse_tag_bool (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = buf_parse_bool(buf, &dest->data.bool_)) > 0)
     dest->type = TAG_BOOL;
-  return r;
-}
-
-sw buf_parse_tag_brackets (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_brackets(buf, &dest->data.call)) > 0)
-    dest->type = TAG_CALL;
-  return r;
-}
-
-sw buf_parse_tag_call (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_call(buf, &dest->data.call)) > 0)
-    dest->type = TAG_CALL;
-  return r;
-}
-
-sw buf_parse_tag_call_access (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_call_access(buf, &dest->data.call)) > 0)
-    dest->type = TAG_CALL;
-  return r;
-}
-
-sw buf_parse_tag_call_op (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_call_op(buf, &dest->data.call)) > 0)
-    dest->type = TAG_CALL;
-  return r;
-}
-
-sw buf_parse_tag_call_paren (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_call_paren(buf, &dest->data.call)) > 0)
-    dest->type = TAG_CALL;
-  return r;
-}
-
-sw buf_parse_tag_call_op_unary (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_call_op_unary(buf, &dest->data.call)) > 0)
-    dest->type = TAG_CALL;
-  return r;
-}
-
-sw buf_parse_tag_pcallable (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_pcallable(buf, &dest->data.pcallable)) > 0)
-    dest->type = TAG_PCALLABLE;
-  return r;
-}
-
-sw buf_parse_tag_cast (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_cast(buf, &dest->data.call)) > 0)
-    dest->type = TAG_CALL;
   return r;
 }
 
@@ -4404,16 +4373,6 @@ sw buf_parse_tag_ident_sym (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = buf_parse_ident_sym(buf, &dest->data.psym)) > 0)
     dest->type = TAG_PSYM;
-  return r;
-}
-
-sw buf_parse_tag_if (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_if(buf, &dest->data.call)) > 0)
-    dest->type = TAG_CALL;
   return r;
 }
 
@@ -4511,6 +4470,96 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_pcall (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pcall(buf, &dest->data.pcall)) > 0)
+    dest->type = TAG_PCALL;
+  return r;
+}
+
+sw buf_parse_tag_pcall_access (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pcall_access(buf, &dest->data.pcall)) > 0)
+    dest->type = TAG_PCALL;
+  return r;
+}
+
+sw buf_parse_tag_pcall_brackets (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pcall_brackets(buf, &dest->data.pcall)) > 0)
+    dest->type = TAG_PCALL;
+  return r;
+}
+
+sw buf_parse_tag_pcall_cast (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pcall_cast(buf, &dest->data.pcall)) > 0)
+    dest->type = TAG_PCALL;
+  return r;
+}
+
+sw buf_parse_tag_pcall_if (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pcall_if(buf, &dest->data.pcall)) > 0)
+    dest->type = TAG_PCALL;
+  return r;
+}
+
+sw buf_parse_tag_pcall_op (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pcall_op(buf, &dest->data.pcall)) > 0)
+    dest->type = TAG_PCALL;
+  return r;
+}
+
+sw buf_parse_tag_pcall_paren (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pcall_paren(buf, &dest->data.pcall)) > 0)
+    dest->type = TAG_PCALL;
+  return r;
+}
+
+sw buf_parse_tag_pcall_op_unary (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pcall_op_unary(buf, &dest->data.pcall)) > 0)
+    dest->type = TAG_PCALL;
+  return r;
+}
+
+sw buf_parse_tag_pcallable (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pcallable(buf, &dest->data.pcallable)) > 0)
+    dest->type = TAG_PCALLABLE;
+  return r;
+}
+
 sw buf_parse_tag_plist (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -4548,7 +4597,7 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
     result += r;
   }
   if ((r = buf_parse_tag_special_operator(buf, dest)) ||
-      (r = buf_parse_tag_brackets(buf, dest)) ||
+      (r = buf_parse_tag_pcall_brackets(buf, dest)) ||
       (r = buf_parse_tag_primary_2(buf, dest)))
     goto end;
   goto restore;
@@ -4585,7 +4634,7 @@ sw buf_parse_tag_primary_2 (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_call_access(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_pcall_access(buf, dest)) != 0 ||
       (r = buf_parse_tag_primary_3(buf, dest)) != 0)
     goto end;
   goto restore;
@@ -4622,7 +4671,7 @@ sw buf_parse_tag_primary_3 (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_pcall_op_unary(buf, dest)) != 0 ||
       (r = buf_parse_tag_primary_4(buf, dest)) != 0)
     goto end;
   goto restore;
@@ -4672,8 +4721,8 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
         (r = buf_parse_tag_ptr(buf, dest)) ||
         (r = buf_parse_tag_ptr_free(buf, dest)) ||
         (r = buf_parse_tag_array(buf, dest)) ||
-        (r = buf_parse_tag_cast(buf, dest)) ||
-        (r = buf_parse_tag_call_paren(buf, dest)))
+        (r = buf_parse_tag_pcall_cast(buf, dest)) ||
+        (r = buf_parse_tag_pcall_paren(buf, dest)))
       goto end;
     goto restore;
   case '?':
@@ -4683,7 +4732,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
   case 'v':
     if ((r = buf_parse_tag_special_operator(buf, dest)) ||
         (r = buf_parse_tag_void(buf, dest)) ||
-        (r = buf_parse_tag_call(buf, dest)) ||
+        (r = buf_parse_tag_pcall(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
@@ -4705,35 +4754,35 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
     if ((r = buf_parse_tag_special_operator(buf, dest)) ||
         (r = buf_parse_tag_cow(buf, dest)) ||
         (r = buf_parse_tag_pcallable(buf, dest)) ||
-        (r = buf_parse_tag_call(buf, dest)) ||
+        (r = buf_parse_tag_pcall(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
   case 'd':
     if ((r = buf_parse_tag_special_operator(buf, dest)) ||
         (r = buf_parse_tag_do_block(buf, dest)) ||
-        (r = buf_parse_tag_call(buf, dest)) ||
+        (r = buf_parse_tag_pcall(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
   case 'u':
     if ((r = buf_parse_tag_special_operator(buf, dest)) ||
         (r = buf_parse_tag_unquote(buf, dest)) ||
-        (r = buf_parse_tag_call(buf, dest)) ||
+        (r = buf_parse_tag_pcall(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
   case 'i':
     if ((r = buf_parse_tag_special_operator(buf, dest)) ||
-        (r = buf_parse_tag_if(buf, dest)) ||
-        (r = buf_parse_tag_call(buf, dest)) ||
+        (r = buf_parse_tag_pcall_if(buf, dest)) ||
+        (r = buf_parse_tag_pcall(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
   case 'q':
     if ((r = buf_parse_tag_special_operator(buf, dest)) ||
         (r = buf_parse_tag_quote(buf, dest)) ||
-        (r = buf_parse_tag_call(buf, dest)) ||
+        (r = buf_parse_tag_pcall(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
@@ -4742,14 +4791,14 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
     if ((r = buf_parse_tag_special_operator(buf, dest)) ||
         (r = buf_parse_tag_pcallable(buf, dest)) ||
         (r = buf_parse_tag_bool(buf, dest)) ||
-        (r = buf_parse_tag_call(buf, dest)) ||
+        (r = buf_parse_tag_pcall(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
   case 't':
     if ((r = buf_parse_tag_special_operator(buf, dest)) ||
         (r = buf_parse_tag_bool(buf, dest)) ||
-        (r = buf_parse_tag_call(buf, dest)) ||
+        (r = buf_parse_tag_pcall(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
@@ -4782,7 +4831,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
   default:
     if ((r = buf_parse_tag_special_operator(buf, dest)) ||
         (r = buf_parse_tag_pcallable(buf, dest)) ||
-        (r = buf_parse_tag_call(buf, dest)) ||
+        (r = buf_parse_tag_pcall(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)) ||
         (r = buf_parse_tag_sym(buf, dest)))
       goto end;
@@ -4870,8 +4919,8 @@ sw buf_parse_tag_special_operator (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_special_operator(buf, &dest->data.call)) > 0)
-    dest->type = TAG_CALL;
+  if ((r = buf_parse_special_operator(buf, &dest->data.pcall)) > 0)
+    dest->type = TAG_PCALL;
   return r;
 }
 

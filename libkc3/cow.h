@@ -32,8 +32,7 @@
 void    cow_clean (s_cow *cow);
 s_cow * cow_init (s_cow *cow, const s_sym *type);
 /* s_cow * cow_init_1 (s_cow *cow, const char *utf8); */
-s_cow * cow_init_cast (s_cow *cow, const s_sym * const *type,
-                       s_tag *tag);
+s_cow * cow_init_cast (s_cow *cow, p_sym *type, s_tag *tag);
 s_cow * cow_init_copy (s_cow *cow, s_cow *src);
 s_cow * cow_init_tag_copy (s_cow *cow, const s_sym *type,
                            s_tag *src);
@@ -42,7 +41,7 @@ s_cow * cow_init_tag_copy (s_cow *cow, const s_sym *type,
 void    cow_delete (s_cow *cow);
 s_cow * cow_new (const s_sym *type);
 /* s_cow * cow_new_1 (const char *utf8); */
-s_cow * cow_new_cast (const s_sym * const *type, s_tag *tag);
+s_cow * cow_new_cast (p_sym *type, s_tag *tag);
 s_cow * cow_new_copy (s_cow *src);
 s_cow * cow_new_ref (s_cow *src);
 s_cow * cow_new_tag_copy (const s_sym *type, s_tag *src);

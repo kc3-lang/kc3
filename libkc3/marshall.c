@@ -344,7 +344,7 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
     return m;
   }
   if (type == &g_sym_Call) {
-    if (! marshall_call(m, heap, data)) {
+    if (! marshall_pcall(m, heap, data)) {
       err_puts("marshall_data: marshall_call");
       assert(! "marshall_data: marshall_call");
       return NULL;
@@ -1154,6 +1154,7 @@ s_marshall * marshall_ops (s_marshall *m, bool heap, s_ops *ops)
   return NULL;
 }
 
+DEF_MARSHALL_P(call,        "_KC3PCALL_",       p_call)
 DEF_MARSHALL_P(callable,    "_KC3PCALLABLE_",   p_callable)
 DEF_MARSHALL_P(complex,     "_KC3PCOMPLEX_",    p_complex)
 DEF_MARSHALL_P(cow,         "_KC3PCOW_",        p_cow)
@@ -1401,7 +1402,6 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   case TAG_VOID: return m;
   case TAG_ARRAY: return marshall_array(m, heap, &tag->data.array);
   case TAG_BOOL:  return marshall_bool(m, heap, tag->data.bool_);
-  case TAG_CALL:  return marshall_call(m, heap, &tag->data.call);
   case TAG_CHARACTER:
     return marshall_character(m, heap, tag->data.character);
   case TAG_DO_BLOCK:
@@ -1414,6 +1414,7 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   case TAG_INTEGER:
     return marshall_integer(m, heap, &tag->data.integer);
   case TAG_MAP:   return marshall_map(m, heap, &tag->data.map);
+  case TAG_PCALL: return marshall_pcall(m, heap, &tag->data.pcall);
   case TAG_PCALLABLE:
     return marshall_pcallable(m, heap, &tag->data.pcallable);
   case TAG_PCOMPLEX:

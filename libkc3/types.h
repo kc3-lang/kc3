@@ -142,44 +142,44 @@ typedef enum {
   TAG_ARRAY        =  1, // \x01
   TAG_DO_BLOCK     =  2, // \x02
   TAG_BOOL         =  3, // \x03
-  TAG_CALL         =  4, // \x04
-  TAG_CHARACTER    =  5, // \x05
-  TAG_F32          =  6, // \x06
-  TAG_F64          =  7, // \x07
-  TAG_F128         =  8, // \x08
-  TAG_FACT         =  9, // \x09
-  TAG_INTEGER      = 10, // \x0A
-  TAG_RATIO        = 11, // \x0B
-  TAG_SW           = 12, // \x0C
-  TAG_S64          = 13, // \x0D
-  TAG_S32          = 14, // \x0E
-  TAG_S16          = 15, // \x0F
-  TAG_S8           = 16, // \x10
-  TAG_U8           = 17, // \x11
-  TAG_U16          = 18, // \x12
-  TAG_U32          = 19, // \x13
-  TAG_U64          = 20, // \x14
-  TAG_UW           = 21, // \x15
-  TAG_PLIST        = 22, // \x16
-  TAG_MAP          = 23, // \x17
+  TAG_CHARACTER    =  4, // \x05
+  TAG_F32          =  5, // \x06
+  TAG_F64          =  6, // \x07
+  TAG_F128         =  7, // \x08
+  TAG_FACT         =  8, // \x09
+  TAG_INTEGER      =  9, // \x0A
+  TAG_RATIO        = 10, // \x0B
+  TAG_SW           = 11, // \x0C
+  TAG_S64          = 12, // \x0D
+  TAG_S32          = 13, // \x0E
+  TAG_S16          = 14, // \x0F
+  TAG_S8           = 15, // \x10
+  TAG_U8           = 16, // \x11
+  TAG_U16          = 17, // \x12
+  TAG_U32          = 18, // \x13
+  TAG_U64          = 19, // \x14
+  TAG_UW           = 20, // \x15
+  TAG_PLIST        = 21, // \x16
+  TAG_MAP          = 22, // \x17
+  TAG_PCALL        = 23, // \x04
   TAG_PCALLABLE    = 24, // \x18
   TAG_PCOMPLEX     = 25, // \x19
   TAG_PCOW         = 26, // \x1A
-  TAG_PSTRUCT      = 27, // \x1B
-  TAG_PSTRUCT_TYPE = 28, // \x1C
-  TAG_PSYM         = 29, // \x1D
-  TAG_PTAG         = 30, // \x1E
-  TAG_PTR          = 31, // \x1F
-  TAG_PTR_FREE     = 32, // \x20
-  TAG_PVAR         = 33, // \x21
-  TAG_QUOTE        = 34, // \x22
-  TAG_STR          = 35, // \x23
-  TAG_TIME         = 36, // \x24
-  TAG_TUPLE        = 37, // \x25
-  TAG_UNQUOTE      = 38, // \x26
-  TAG_IDENT        = 39, // \x27
-  TAG_PFACTS       = 40, // \x28
-  TAG_POINTER      = 41, // \x29
+  TAG_PFACTS       = 27, // \x28
+  TAG_POINTER      = 28, // \x29
+  TAG_PSTRUCT      = 29, // \x1B
+  TAG_PSTRUCT_TYPE = 30, // \x1C
+  TAG_PSYM         = 31, // \x1D
+  TAG_PTAG         = 32, // \x1E
+  TAG_PTR          = 33, // \x1F
+  TAG_PTR_FREE     = 34, // \x20
+  TAG_PVAR         = 35, // \x21
+  TAG_QUOTE        = 36, // \x22
+  TAG_STR          = 37, // \x23
+  TAG_TIME         = 38, // \x24
+  TAG_TUPLE        = 39, // \x25
+  TAG_UNQUOTE      = 40, // \x26
+  TAG_IDENT        = 41, // \x27
 } e_tag_type;
 
 
@@ -270,6 +270,7 @@ typedef u64            t_skiplist_height;
 
 /* pointer types */
 typedef s_buf *           p_buf;
+typedef s_call *          p_call;
 typedef s_callable *      p_callable;
 typedef s_complex *       p_complex;
 typedef s_cow *           p_cow;
@@ -665,7 +666,6 @@ union tag_data {
   s_array       array;
   s_do_block    do_block;
   bool          bool_;
-  s_call        call;
   character     character;
   f32           f32;
   f64           f64;
@@ -676,6 +676,7 @@ union tag_data {
   s_map         map;
   p_complex     pcomplex;
   p_cow         pcow;
+  p_call        pcall;
   p_callable    pcallable;
   p_facts       pfacts;
   p_list        plist;
