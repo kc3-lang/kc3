@@ -14,22 +14,19 @@ require EKC3
 
 defmodule LayoutView do
 
-  def template = fn () {
+  def template =
     EKC3.load("app/templates/layout.html.ekc3")
-  }
   
-  def template_footer = fn () {
+  def template_footer =
     EKC3.load("app/templates/footer.html.ekc3")
-  }
 
-  def template_nav = fn () {
+  def template_nav =
     EKC3.load("app/templates/nav.html.ekc3")
-  }
 
   def render = fn (slug, title, page, url) {
-    nav = EKC3.render(LayoutView.template_nav())
-    footer = EKC3.render(LayoutView.template_footer())
-    EKC3.render(LayoutView.template())
+    nav = EKC3.render(LayoutView.template_nav)
+    footer = EKC3.render(LayoutView.template_footer)
+    EKC3.render(LayoutView.template)
   }
 
 end

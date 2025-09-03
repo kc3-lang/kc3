@@ -14,20 +14,18 @@ require EKC3
 
 defmodule SystemView do
 
-  def template_dashboard = fn () {
+  def template_dashboard =
     EKC3.load("app/templates/system/dashboard.html.ekc3")
-  }
 
-  def template_layout = fn () {
+  def template_layout =
     EKC3.load("app/templates/system/layout.html.ekc3")
-  }
   
   def render_dashboard = fn (uptime_str) {
-    EKC3.render(SystemView.template_dashboard())
+    EKC3.render(SystemView.template_dashboard)
   }
   
   def render_layout = fn (slug, title, page, url) {
-    EKC3.render(SystemView.template_layout())
+    EKC3.render(SystemView.template_layout)
   }
 
 end

@@ -14,12 +14,11 @@ require EKC3
 
 defmodule PageView do
 
-  def template_show = fn () {
+  def template_show =
     EKC3.load("app/templates/page/show.html.ekc3")
-  }
 
   def render_show = fn (html) {
-    EKC3.render(PageView.template_show())
+    EKC3.render(PageView.template_show)
   }
 
 end
