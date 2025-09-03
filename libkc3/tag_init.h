@@ -20,7 +20,6 @@ s_tag * tag_init_array (s_tag *tag, const s_sym *type, uw dimension,
                         const uw *dimensions);
 s_tag * tag_init_array_copy (s_tag *tag, const s_array *a);
 s_tag * tag_init_bool (s_tag *tag, bool b);
-s_tag * tag_init_pcall (s_tag *tag);
 s_tag * tag_init_character (s_tag *tag, character c);
 s_tag * tag_init_copy (s_tag *tag, s_tag *src);
 s_tag * tag_init_f32 (s_tag *tag, f32 f);
@@ -35,6 +34,7 @@ s_tag * tag_init_map (s_tag *tag, uw count);
 s_tag * tag_init_map_1 (s_tag *tag, const char *p);
 s_tag * tag_init_map_from_lists (s_tag *tag, s_list *keys,
                                  s_list *values);
+s_tag * tag_init_pcall (s_tag *tag);
 s_tag * tag_init_pcallable (s_tag *tag);
 s_tag * tag_init_pcallable_copy (s_tag *tag, p_callable *src);
 s_tag * tag_init_pcomplex (s_tag *tag, p_complex c);
@@ -100,7 +100,6 @@ s_tag * tag_new_array (const s_sym *type, uw dimension,
                        const uw *dimensions);
 s_tag * tag_new_array_copy (const s_array *a);
 s_tag * tag_new_bool (bool b);
-s_tag * tag_new_pcall (void);
 s_tag * tag_new_character (character c);
 s_tag * tag_new_copy (s_tag *src);
 s_tag * tag_new_f32 (f32 f);
@@ -114,6 +113,7 @@ s_tag * tag_new_integer_zero (void);
 s_tag * tag_new_map (uw count);
 s_tag * tag_new_map_1 (const char *p);
 s_tag * tag_new_map_from_lists (s_list *keys, s_list *values);
+s_tag * tag_new_pcall (void);
 s_tag * tag_new_pcallable (void);
 s_tag * tag_new_pcallable_copy (p_callable *src);
 s_tag * tag_new_pcomplex (p_complex c);
@@ -174,7 +174,6 @@ s_tag * tag_array (s_tag *tag, const s_sym *type, uw dimension,
                    const uw *dimensions);
 s_tag * tag_array_copy (s_tag *tag, const s_array *a);
 s_tag * tag_bool (s_tag *tag, bool b);
-s_tag * tag_pcall (s_tag *tag);
 s_tag * tag_character (s_tag *tag, character c);
 s_tag * tag_copy (s_tag *tag, s_tag *src);
 s_tag * tag_f32 (s_tag *tag, f32 f);
@@ -188,6 +187,7 @@ s_tag * tag_integer_zero (s_tag *tag);
 s_tag * tag_map (s_tag *tag, uw count);
 s_tag * tag_map_1 (s_tag *tag, const char *p);
 s_tag * tag_map_from_lists (s_tag *tag, s_list *keys, s_list *values);
+s_tag * tag_pcall (s_tag *tag);
 s_tag * tag_pcallable (s_tag *tag);
 s_tag * tag_pcallable_copy (s_tag *tag, p_callable *src);
 s_tag * tag_pcomplex (s_tag *tag, p_complex c);

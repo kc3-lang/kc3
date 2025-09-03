@@ -74,20 +74,6 @@ s_list * list_init_array_copy (s_list *list, const s_array *a,
   return list;
 }
 
-s_list * list_init_pcall (s_list *list, s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pcall(&tmp.tag)) {
-    err_puts("list_init_pcall: tag_init_pcall");
-    assert(! "list_init_pcall: tag_init_pcall");
-    return NULL;
-  }
-  *list = tmp;
-  return list;
-}
-
 s_list * list_init_character (s_list *list, character c, s_list *next)
 {
   s_list tmp = {0};
@@ -253,6 +239,20 @@ s_list * list_init_map_from_lists (s_list *list, s_list *keys,
   if (! tag_init_map_from_lists(&tmp.tag, keys, values)) {
     err_puts("list_init_map_from_lists: tag_init_map_from_lists");
     assert(! "list_init_map_from_lists: tag_init_map_from_lists");
+    return NULL;
+  }
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_pcall (s_list *list, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pcall(&tmp.tag)) {
+    err_puts("list_init_pcall: tag_init_pcall");
+    assert(! "list_init_pcall: tag_init_pcall");
     return NULL;
   }
   *list = tmp;
@@ -1023,24 +1023,6 @@ s_list * list_new_array_copy (const s_array *a, s_list *next)
   return list;
 }
 
-s_list * list_new_pcall (s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list) {
-    err_puts("list_new_pcall: list_new");
-    assert(! "list_new_pcall: list_new");
-    return NULL;
-  }
-  if (! tag_init_pcall(&list->tag)) {
-    err_puts("list_new_pcall: tag_init_pcall");
-    assert(! "list_new_pcall: tag_init_pcall");
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
 s_list * list_new_character (character c, s_list *next)
 {
   s_list *list;
@@ -1252,6 +1234,24 @@ s_list * list_new_map_from_lists (s_list *keys, s_list *values,
   if (! tag_init_map_from_lists(&list->tag, keys, values)) {
     err_puts("list_new_map_from_lists: tag_init_map_from_lists");
     assert(! "list_new_map_from_lists: tag_init_map_from_lists");
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pcall (s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list) {
+    err_puts("list_new_pcall: list_new");
+    assert(! "list_new_pcall: list_new");
+    return NULL;
+  }
+  if (! tag_init_pcall(&list->tag)) {
+    err_puts("list_new_pcall: tag_init_pcall");
+    assert(! "list_new_pcall: tag_init_pcall");
     free(list);
     return NULL;
   }

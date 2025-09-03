@@ -72,17 +72,6 @@ s_tag * tag_init_array_copy (s_tag *tag, const s_array *a)
   return tag;
 }
 
-s_tag * tag_init_pcall (s_tag *tag)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_PCALL;
-  if (! pcall_init(&tmp.data.pcall))
-    return NULL;
-  *tag = tmp;
-  return tag;
-}
-
 s_tag * tag_init_character (s_tag *tag, character c)
 {
   s_tag tmp = {0};
@@ -206,6 +195,17 @@ s_tag * tag_init_map_from_lists (s_tag *tag, s_list *keys,
   assert(tag);
   tmp.type = TAG_MAP;
   if (! map_init_from_lists(&tmp.data.map, keys, values))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_pcall (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_PCALL;
+  if (! pcall_init(&tmp.data.pcall))
     return NULL;
   *tag = tmp;
   return tag;
@@ -784,20 +784,6 @@ s_tag * tag_new_array_copy (const s_array *a)
   return tag;
 }
 
-s_tag * tag_new_pcall (void)
-{
-  s_tag *tag;
-  tag = alloc(sizeof(s_tag));
-  if (! tag)
-    return NULL;
-  tag->type = TAG_PCALL;
-  if (! pcall_init(&tag->data.pcall)) {
-    free(tag);
-    return NULL;
-  }
-  return tag;
-}
-
 s_tag * tag_new_character (character c)
 {
   s_tag *tag;
@@ -945,6 +931,20 @@ s_tag * tag_new_map_from_lists (s_list *keys, s_list *values)
     return NULL;
   tag->type = TAG_MAP;
   if (! map_init_from_lists(&tag->data.map, keys, values)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_pcall (void)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_PCALL;
+  if (! pcall_init(&tag->data.pcall)) {
     free(tag);
     return NULL;
   }
@@ -1640,18 +1640,6 @@ s_tag * tag_array_copy (s_tag *tag, const s_array *a)
   return tag;
 }
 
-s_tag * tag_pcall (s_tag *tag)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tag_clean(tag);
-  tmp.type = TAG_PCALL;
-  if (! pcall_init(&tmp.data.pcall))
-    return NULL;
-  *tag = tmp;
-  return tag;
-}
-
 s_tag * tag_character (s_tag *tag, character c)
 {
   s_tag tmp = {0};
@@ -1786,6 +1774,18 @@ s_tag * tag_map_from_lists (s_tag *tag, s_list *keys, s_list *values)
   tag_clean(tag);
   tmp.type = TAG_MAP;
   if (! map_init_from_lists(&tmp.data.map, keys, values))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_pcall (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_PCALL;
+  if (! pcall_init(&tmp.data.pcall))
     return NULL;
   *tag = tmp;
   return tag;
