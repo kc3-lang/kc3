@@ -91,6 +91,7 @@
 #include "s16.h"
 #include "s32.h"
 #include "s64.h"
+#include "securelevel.h"
 #include "sequence.h"
 #include "sh.h"
 #include "str.h"
