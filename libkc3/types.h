@@ -561,6 +561,8 @@ struct call {
   s_ident ident;
   s_list *arguments;
   p_callable pcallable;
+  s_mutex mutex;
+  sw ref_count;
 };
 
 struct cfn {

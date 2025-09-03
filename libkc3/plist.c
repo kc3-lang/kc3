@@ -98,6 +98,40 @@ p_list * plist_filter (p_list *plist, p_callable *function,
   return NULL;
 }
 
+s_tag * plist_find_if (p_list *plist, p_callable *function,
+                       s_tag *dest)
+{
+  s_list *arg;
+  bool b;
+  s_list *list;
+  const s_sym *sym_Bool = &g_sym_Bool;
+  s_tag tmp = {0};
+  if (! (arg = list_new(NULL)))
+    return NULL;
+  tag_init_bool(&tmp, false);
+  list = *plist;
+  while (list) {
+    arg->tag = list->tag;
+    if (! eval_callable_call(*function, arg, &tmp)) {
+      tag_init_void(&arg->tag);
+      break;
+    }
+    tag_init_void(&arg->tag);
+    if (! bool_init_cast(&b, &sym_Bool, &tmp)) {
+      tag_bool(&tmp, false);
+      break;
+    }
+    if (b)
+      break;
+    tag_void(&tmp);
+    tag_bool(&tmp, false);
+    list = list_next(list);
+  }
+  *dest = tmp;
+  list_delete_all(arg);
+  return dest;
+}
+
 bool * plist_has (const s_list * const *plist, const s_tag *tag,
                   bool *dest)
 {

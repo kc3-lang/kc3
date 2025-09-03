@@ -24,6 +24,7 @@
 #include "fn.h"
 #include "ident.h"
 #include "list.h"
+#include "mutex.h"
 #include "pcallable.h"
 #include "plist.h"
 #include "tag.h"
@@ -39,6 +40,9 @@ void call_clean (s_call *call)
   list_delete_all(call->arguments);
   if (call->pcallable)
     pcallable_clean(&call->pcallable);
+#if HAVE_PTHREAD
+  mutex_clean(&call->mutex);
+#endif
 }
 
 bool call_get (s_call *call)
@@ -59,8 +63,13 @@ s_ident * call_ident (const s_call *call, s_ident *dest)
 
 s_call * call_init (s_call *call)
 {
+  s_call tmp = {0};
   assert(call);
-  *call = (s_call) {0};
+#if HAVE_PTHREAD
+  mutex_init(&tmp.mutex);
+#endif
+  tmp.ref_count = 1;
+  *call = tmp;
   return call;
 }
 
@@ -89,7 +98,8 @@ s_call * call_init_1 (s_call *call, const char *p)
 s_call * call_init_call_cast (s_call *call, const s_sym *type)
 {
   s_list *next;
-  s_call tmp = {0};
+  s_call tmp;
+  call_init(&tmp);
   tmp.ident.module = type;
   tmp.ident.sym = &g_sym_cast;
   next = list_new(NULL);
@@ -135,6 +145,7 @@ s_call * call_init_copy (s_call *call, s_call *src)
   s_call tmp = {0};
   assert(src);
   assert(call);
+  call_init(&tmp);
   if (! ident_init_copy(&tmp.ident, &src->ident) ||
       ! plist_init_copy(&tmp.arguments, &src->arguments))
     return NULL;
@@ -152,6 +163,7 @@ s_call * call_init_op (s_call *call)
   s_list *arg;
   s_call tmp = {0};
   assert(call);
+  call_init(&tmp);
   arg = list_new(NULL);
   if (! arg)
     return NULL;
@@ -168,6 +180,7 @@ s_call * call_init_op_unary (s_call *call)
 {
   s_call tmp = {0};
   assert(call);
+  call_init(&tmp);
   tmp.arguments = list_new(NULL);
   *call = tmp;
   return call;

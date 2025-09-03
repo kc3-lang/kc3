@@ -361,20 +361,37 @@ s_fact ** facts_find_fact (s_facts *facts, const s_fact *fact,
   if (! rwlock_r(&facts->rwlock))
     return NULL;
 #endif
-  if (! facts_find_tag(facts, fact->subject, &f.subject))
-    return NULL;
-  if (! facts_find_tag(facts, fact->predicate, &f.predicate))
-    return NULL;
-  if (! facts_find_tag(facts, fact->object, &f.object))
-    return NULL;
+  if (! facts_find_tag(facts, fact->subject, &f.subject)) {
+    err_puts("facts_find_fact: facts_find_tag subject");
+    assert(! "facts_find_fact: facts_find_tag subject");
+    goto clean;
+  }
+  if (! facts_find_tag(facts, fact->predicate, &f.predicate)) {
+    err_puts("facts_find_fact: facts_find_tag predicate");
+    assert(! "facts_find_fact: facts_find_tag predicate");
+    goto clean;
+  }
+  if (! facts_find_tag(facts, fact->object, &f.object)) {
+    err_puts("facts_find_fact: facts_find_tag object");
+    assert(! "facts_find_fact: facts_find_tag object");
+    goto clean;
+  }
   *dest = NULL;
-  if (f.subject && f.predicate && f.object &&
-      (item = set_get__fact(&facts->facts, &f)))
-    *dest = &item->data;
+  if (f.subject && f.predicate && f.object) {
+    if (! (item = set_get__fact(&facts->facts, &f)))
+      err_puts("facts_find_fact: set_get__fact");
+    else
+      *dest = &item->data;
+  }
 #if HAVE_PTHREAD
   rwlock_unlock_r(&facts->rwlock);
 #endif
   return dest;
+ clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
+  return NULL;
 }
 
 s_fact ** facts_find_fact_by_tags (s_facts *facts, s_tag *subject,
@@ -1033,9 +1050,12 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
   if (! facts_find_fact(facts, fact, &found)) {
     err_puts("facts_remove_fact: facts_find_fact");
     assert(! "facts_remove_fact: facts_find_fact");
+#if HAVE_PTHREAD
+    rwlock_unlock_w(&facts->rwlock);
+#endif
     return NULL;
   }
-  *dest = false;
+  *dest = found ? true : false;
   if (found) {
     if (facts->log)
       facts_log_remove(facts->log, found);
@@ -1048,7 +1068,9 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
     facts_unref_tag(facts, f.subject);
     facts_unref_tag(facts, f.predicate);
     facts_unref_tag(facts, f.object);
-    *dest = true;
+  }
+  else {
+    err_puts("facts_remove_fact: fact not found");
   }
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
@@ -1144,9 +1166,8 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
         ! b) {
       err_puts("facts_replace_tags: facts_remove_fact");
       assert(! "facts_replace_tags: facts_remove_fact");
-      list_delete_all(list);
       facts_transaction_rollback(facts, &transaction);
-      facts_cursor_clean(&cursor);
+      list_delete_all(list);
       tag_clean(&pvar);
 #if HAVE_PTHREAD
       rwlock_unlock_w(&facts->rwlock);

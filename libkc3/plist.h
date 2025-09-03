@@ -30,6 +30,8 @@ p_list * plist_cast (p_list *plist, const s_sym * const *type,
 bool *   plist_each (p_list *plist, p_callable *function, bool *dest);
 p_list * plist_filter (p_list *plist, p_callable *function,
                        p_list *dest);
+s_tag *  plist_find_if (p_list *plist, p_callable *function,
+                        s_tag *dest);
 bool *   plist_has (const s_list * const *plist, const s_tag *tag,
                     bool *dest);
 s_str  * plist_join (p_list *plist, s_str *sep, s_str *dest);

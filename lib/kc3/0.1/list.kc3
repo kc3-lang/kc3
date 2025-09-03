@@ -32,17 +32,7 @@ defmodule List do
 
   def filter = cfn List "plist_filter" (List, Callable, Result)
 
-  def find_if = fn {
-    ([], _) { false }
-    ([a | b], f) do
-      c = f(a)
-      if c do
-        c
-      else
-        find_if(b, f)
-      end              
-    end
-  }
+  def find_if = cfn Tag "plist_find_if" (List, Callable, Result)
 
   def first = fn ([a | _]) { a }
 

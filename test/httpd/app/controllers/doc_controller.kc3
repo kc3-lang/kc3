@@ -73,7 +73,7 @@ defmodule DocController do
                   url = Str.slice(url, 0, end_)
                 end
               end
-              if List.find_if(acc, fn (item) {
+              if List.find_if(acc, file_with_same_url = fn (item) {
                                      item.type == :file &&
                                      item.base_url == url
                                    }) do
@@ -228,12 +228,13 @@ defmodule DocController do
     }
   }
 
-  def doc_index_menu = %{"" => doc_index("./doc/", ""),
-                         "en" => doc_index("./doc/", "en"),
-                         "fr" => doc_index("./doc/", "fr")}
+  def doc_index_menu =
+    %{""   => doc_index("./doc/", "en"),
+      "en" => doc_index("./doc/", "en"),
+      "fr" => doc_index("./doc/", "fr")}
 
   def show_html = fn (path_html, url, locale) {
-    menu = doc_index_menu[locale]
+    menu = DocView.render_menu(doc_index_menu[locale])
     title = "kc3-lang.org"
     slug = Str.slice(path_html, 0, -9)
     slug = Str.subst(slug, " ", "-")
@@ -247,7 +248,7 @@ defmodule DocController do
   }
 
   def show_md = fn (path_md, url, locale) {
-    menu = doc_index_menu[locale]
+    menu = DocView.render_menu(doc_index_menu[locale])
     title = "kc3-lang.org"
     md = File.read_all(path_md)
     [title | _] = Markdown.titles(md)
