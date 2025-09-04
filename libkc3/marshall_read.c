@@ -1285,8 +1285,8 @@ s_marshall_read * marshall_read_ops (s_marshall_read *mr,
 }
 
 s_marshall_read * marshall_read_pcall (s_marshall_read *mr,
-                                           bool heap,
-                                           p_call *dest)
+                                       bool heap,
+                                       p_call *dest)
 {
   u64 offset = 0;
   p_call present = NULL;

@@ -142,6 +142,7 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   env_unwind_protect_push(env, &up);
   if (setjmp(up.buf)) {
     env_unwind_protect_pop(env, &up);
+    // TODO: env->stacktrace_depth
     longjmp(*up.jmp, 1);
     abort();
   }

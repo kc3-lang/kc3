@@ -371,15 +371,14 @@ sw ikc3_run (void)
         // XXX not secure (--pedantic)
         goto next;
       }
+      tag_clean(&input);
       if (! g_client) {
         if (buf_inspect_tag(env->out, &result) < 0) {
-          tag_clean(&input);
           tag_clean(&result);
           r = 0;
           goto clean;
         }
       }
-      tag_clean(&input);
       tag_clean(&result);
     }
     if (r < 0 ||
