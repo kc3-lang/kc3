@@ -60,6 +60,13 @@ void call_delete (s_call *call)
 #if HAVE_PTHREAD
   mutex_lock(&call->mutex);
 #endif
+  if (false) {
+    err_write_1("call_delete: 0x");
+    err_inspect_uw_hexadecimal((uw) call);
+    err_write_1(" ref count = ");
+    err_inspect_uw_decimal(call->ref_count);
+    err_write_1("\n");
+  }
   if (--call->ref_count) {
 #if HAVE_PTHREAD
     mutex_unlock(&call->mutex);
