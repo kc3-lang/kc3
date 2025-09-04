@@ -1133,16 +1133,19 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   assert(object);
   tag_init_pvar(&pvar, &g_sym_Tag);
 #if HAVE_PTHREAD
-  if (! rwlock_w(&facts->rwlock))
+  if (! rwlock_w(&facts->rwlock)) {
+    tag_clean(&pvar);
     return NULL;
+  }
 #endif
-  if (! facts_with_tags(facts, &cursor, (s_tag *) subject,
-                        (s_tag *) predicate, &pvar)) {
+  if (! facts_with_tags(facts, &cursor, subject,
+                        predicate, &pvar)) {
 #if HAVE_PTHREAD
     rwlock_unlock_w(&facts->rwlock);
 #endif
     err_puts("facts_replace_tags: facts_with_tags");
     assert(! "facts_replace_tags: facts_with_tags");
+    tag_clean(&pvar);
     return NULL;
   }
   if (! facts_cursor_next(&cursor, &fact)) {
@@ -1151,6 +1154,7 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
 #endif
     err_puts("facts_replace_tags: facts_cursor_next 1");
     assert(! "facts_replace_tags: facts_cursor_next 1");
+    tag_clean(&pvar);
     return NULL;
   }
   while (fact) {
