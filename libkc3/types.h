@@ -25,6 +25,8 @@
 #define MP_28BIT
 #include "../libtommath/tommath.h"
 
+#include "config.h"
+
 #ifdef __cplusplus
 extern "C" {
 #else

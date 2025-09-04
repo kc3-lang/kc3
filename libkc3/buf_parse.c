@@ -799,13 +799,15 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       tmp3.ident.module = NULL;
       tmp3.ident.sym = op->sym;
       tmp3.arguments->tag = *left;
+      *left = (s_tag) {0};
       list_next(tmp3.arguments)->tag = *right;
-      left->type = TAG_PCALL;
+      *right = (s_tag) {0};
       if (! (left->data.pcall = alloc(sizeof(s_call)))) {
         r = -1;
         goto restore;
       }
       *left->data.pcall = tmp3;
+      left->type = TAG_PCALL;
     }
     else
       merge_left = true;
@@ -847,6 +849,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
             next_op->precedence == op->precedence)) {
       call_init_op(&tmp2);
       tmp2.arguments->tag = *right;
+      *right = (s_tag) {0};
       if ((r = buf_parse_call_op_rec
            (buf, &tmp2, (next_op->precedence > op->precedence) ?
             op->precedence + 1 : op->precedence)) <= 0) {
@@ -854,12 +857,12 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
         goto ok;
       }
       result += r;
-      right->type = TAG_PCALL;
       if (! (right->data.pcall = alloc(sizeof(s_call)))) {
         r = -1;
         goto restore;
       }
       *right->data.pcall = tmp2;
+      right->type = TAG_PCALL;
       buf_save_update(buf, &save);
       if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
         goto ok;
