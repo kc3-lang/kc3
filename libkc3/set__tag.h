@@ -58,6 +58,9 @@ set_add_h__tag (s_set__tag *set, s_tag * data, uw hash);
 bool
 set_remove__tag (s_set__tag *set, const s_tag * data);
 
+void
+set_remove_all__tag (s_set__tag *set);
+
 bool
 set_remove_item__tag (s_set__tag *set, s_set_item__tag *item);
 

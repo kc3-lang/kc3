@@ -188,6 +188,7 @@ s_marshall_read * marshall_read_call (s_marshall_read *mr,
   s_call tmp = {0};
   assert(mr);
   assert(dest);
+  call_init(&tmp);
   if (! marshall_read_ident(mr, heap, &tmp.ident) ||
       ! marshall_read_uw(mr, heap, &len))
     goto ko;

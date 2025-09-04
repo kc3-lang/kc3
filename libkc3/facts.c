@@ -1012,6 +1012,7 @@ s_facts * facts_remove_all (s_facts *facts)
   f = alloc(count * sizeof(s_fact *));
   if (! f)
     return NULL;
+  // TODO: FIXME
   i = 0;
   set_cursor_init__fact(&facts->facts, &cursor);
   while (i < count &&
@@ -1077,11 +1078,8 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
     facts_unref_tag(facts, f.object);
     *dest = true;
   }
-  else {
-    err_puts("facts_remove_fact: fact not found");
-    assert(! "facts_remove_fact: fact not found");
+  else
     *dest = false;
-  }
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
 #endif

@@ -58,6 +58,9 @@ set_add_h__fact (s_set__fact *set, s_fact * data, uw hash);
 bool
 set_remove__fact (s_set__fact *set, const s_fact * data);
 
+void
+set_remove_all__fact (s_set__fact *set);
+
 bool
 set_remove_item__fact (s_set__fact *set, s_set_item__fact *item);
 

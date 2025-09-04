@@ -71,4 +71,8 @@ skiplist_remove___NAME$
 (s_skiplist___NAME$ *skiplist,
  const _TYPE$ value);
 
+void
+skiplist_remove_all___NAME$
+(s_skiplist___NAME$ *skiplist);
+
 #endif /* LIBKC3_SKIPLIST___NAME$_H */

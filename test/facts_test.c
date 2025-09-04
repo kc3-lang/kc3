@@ -218,6 +218,7 @@ TEST_CASE_END(facts_find)
 TEST_CASE(facts_init_clean)
 {
   s_facts facts;
+  test_context("facts_init, facts_clean");
   TEST_EQ(facts_init(&facts), &facts);
   TEST_EQ(facts.tags.count, 0);
   TEST_EQ(facts.facts.count, 0);
@@ -228,6 +229,7 @@ TEST_CASE(facts_init_clean)
   TEST_EQ(facts.facts.count, 0);
   TEST_EQ(facts.log, NULL);
   facts_clean(&facts);
+  test_context(NULL);
 }
 TEST_CASE_END(facts_init_clean)
 

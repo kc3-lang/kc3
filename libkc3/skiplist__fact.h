@@ -71,4 +71,8 @@ skiplist_remove__fact
 (s_skiplist__fact *skiplist,
  const s_fact * value);
 
+void
+skiplist_remove_all__fact
+(s_skiplist__fact *skiplist);
+
 #endif /* LIBKC3_SKIPLIST__fact_H */

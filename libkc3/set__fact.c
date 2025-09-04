@@ -201,6 +201,17 @@ set_remove__fact (s_set__fact *set, const s_fact * data)
   return false;
 }
 
+void
+set_remove_all__fact (s_set__fact *set)
+{
+  uw i = 0;
+  assert(set);
+  while (i < set->max) {
+    set_item_delete_all__fact(set->items[i]);
+    i++;
+  }
+}
+
 bool
 set_remove_item__fact (s_set__fact *set, s_set_item__fact *item)
 {

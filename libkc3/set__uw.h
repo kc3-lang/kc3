@@ -58,6 +58,9 @@ set_add_h__uw (s_set__uw *set, uw data, uw hash);
 bool
 set_remove__uw (s_set__uw *set, const uw data);
 
+void
+set_remove_all__uw (s_set__uw *set);
+
 bool
 set_remove_item__uw (s_set__uw *set, s_set_item__uw *item);
 

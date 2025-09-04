@@ -58,6 +58,9 @@ set_add_h___NAME$ (s_set___NAME$ *set, _TYPE$ data, uw hash);
 bool
 set_remove___NAME$ (s_set___NAME$ *set, const _TYPE$ data);
 
+void
+set_remove_all___NAME$ (s_set___NAME$ *set);
+
 bool
 set_remove_item___NAME$ (s_set___NAME$ *set, s_set_item___NAME$ *item);
 

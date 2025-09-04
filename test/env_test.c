@@ -49,10 +49,12 @@ TEST_CASE(env_dump)
 {
   s_env env;
   const s_str path = STR("env_test_dump.1.dump");
+  test_context("env_dump()");
   env_init(&env, 0, NULL);
   TEST_EQ(env_dump(&env, &path), ENV_TEST_DUMP_SIZE);
   env_clean(&env);
   file_unlink(&path);
+  test_context(NULL);
 }
 TEST_CASE_END(env_dump)
 
@@ -60,6 +62,7 @@ TEST_CASE(env_dump_restore)
 {
   s_env env;
   const s_str path = STR("kc3.dump");
+  test_context("env_dump() + env_restore()");
   env_init(&env, 0, NULL);
   TEST_EQ(env_dump(&env, &path), ENV_TEST_DUMP_SIZE);
   env_clean(&env);
@@ -69,6 +72,7 @@ TEST_CASE(env_dump_restore)
   env_init(&env, 0, NULL);
   TEST_EQ(env_dump(&env, &path), ENV_TEST_DUMP_SIZE);
   env_clean(&env);
+  test_context(NULL);
 }
 TEST_CASE_END(env_dump)
 

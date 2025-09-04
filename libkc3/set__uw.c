@@ -201,6 +201,17 @@ set_remove__uw (s_set__uw *set, const uw data)
   return false;
 }
 
+void
+set_remove_all__uw (s_set__uw *set)
+{
+  uw i = 0;
+  assert(set);
+  while (i < set->max) {
+    set_item_delete_all__uw(set->items[i]);
+    i++;
+  }
+}
+
 bool
 set_remove_item__uw (s_set__uw *set, s_set_item__uw *item)
 {

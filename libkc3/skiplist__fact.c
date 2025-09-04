@@ -252,3 +252,12 @@ skiplist_remove__fact
   skiplist_node_delete__fact(next);
   return true;
 }
+
+void
+skiplist_remove_all__fact
+(s_skiplist__fact *skiplist)
+{
+  s_skiplist_node__fact *node;
+  while ((node = SKIPLIST_NODE_NEXT__fact(skiplist->head, 0)))
+    skiplist_remove__fact(skiplist, node->fact);
+}

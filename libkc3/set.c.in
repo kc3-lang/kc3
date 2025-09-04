@@ -201,6 +201,17 @@ set_remove___NAME$ (s_set___NAME$ *set, const _TYPE$ data)
   return false;
 }
 
+void
+set_remove_all___NAME$ (s_set___NAME$ *set)
+{
+  uw i = 0;
+  assert(set);
+  while (i < set->max) {
+    set_item_delete_all___NAME$(set->items[i]);
+    i++;
+  }
+}
+
 bool
 set_remove_item___NAME$ (s_set___NAME$ *set, s_set_item___NAME$ *item)
 {

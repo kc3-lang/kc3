@@ -252,3 +252,12 @@ skiplist_remove___NAME$
   skiplist_node_delete___NAME$(next);
   return true;
 }
+
+void
+skiplist_remove_all___NAME$
+(s_skiplist___NAME$ *skiplist)
+{
+  s_skiplist_node___NAME$ *node;
+  while ((node = SKIPLIST_NODE_NEXT___NAME$(skiplist->head, 0)))
+    skiplist_remove___NAME$(skiplist, node->_NAME$);
+}

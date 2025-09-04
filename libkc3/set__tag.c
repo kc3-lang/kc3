@@ -201,6 +201,17 @@ set_remove__tag (s_set__tag *set, const s_tag * data)
   return false;
 }
 
+void
+set_remove_all__tag (s_set__tag *set)
+{
+  uw i = 0;
+  assert(set);
+  while (i < set->max) {
+    set_item_delete_all__tag(set->items[i]);
+    i++;
+  }
+}
+
 bool
 set_remove_item__tag (s_set__tag *set, s_set_item__tag *item)
 {
