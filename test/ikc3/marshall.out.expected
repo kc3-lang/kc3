@@ -197,9 +197,9 @@ loopback((U8) ?)
 loopback(?)
 {:ok, 237}
 loopback(fn (x) { x * 2 })
-{:ok, 783}
+{:ok, 801}
 loopback(fn (a, b) { a + b })
-{:ok, 980}
+{:ok, 998}
 loopback(List.reverse([]))
 {:ok, 66}
 loopback(a = 1)
