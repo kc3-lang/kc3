@@ -121,12 +121,15 @@ bool env_eval_quote_do_block (s_env *env, s_do_block *do_block,
 bool env_eval_quote_call (s_env *env, s_call *call, s_tag *dest)
 {
   s_list *arg;
-  s_call        tmp = {0};
+  s_call   tmp = {0};
   s_list **tmp_arg_last;
   assert(call);
   assert(dest);
-  if (! ident_init_copy(&tmp.ident, &call->ident))
+  call_init(&tmp);
+  if (! ident_init_copy(&tmp.ident, &call->ident)) {
+    call_clean(&tmp);
     return false;
+  }
   tmp_arg_last = &tmp.arguments;
   arg = call->arguments;
   while (arg) {
