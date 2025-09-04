@@ -799,9 +799,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       tmp3.ident.module = NULL;
       tmp3.ident.sym = op->sym;
       tmp3.arguments->tag = *left;
-      *left = (s_tag) {0};
       list_next(tmp3.arguments)->tag = *right;
-      *right = (s_tag) {0};
       if (! (left->data.pcall = alloc(sizeof(s_call)))) {
         r = -1;
         goto restore;
@@ -849,7 +847,6 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
             next_op->precedence == op->precedence)) {
       call_init_op(&tmp2);
       tmp2.arguments->tag = *right;
-      *right = (s_tag) {0};
       if ((r = buf_parse_call_op_rec
            (buf, &tmp2, (next_op->precedence > op->precedence) ?
             op->precedence + 1 : op->precedence)) <= 0) {
@@ -998,6 +995,7 @@ sw buf_parse_pcall_brackets (s_buf *buf, p_call *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
+  call_init(&tmp);
   tmp.arguments = list_new(list_new(NULL));
   arg_addr = &(list_next(tmp.arguments)->tag);
   if ((r = buf_parse_tag_ident(buf, &tmp.arguments->tag)) <= 0)
