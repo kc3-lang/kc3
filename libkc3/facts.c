@@ -160,6 +160,11 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
 #endif
+  if (false) {
+    err_write_1("facts_add_fact: ");
+    err_inspect_fact(f);
+    err_write_1(": OK\n");
+  }
   return f;
  ko:
   facts_unref_tag(facts, tmp.subject);
@@ -376,6 +381,7 @@ s_fact ** facts_find_fact (s_facts *facts, const s_fact *fact,
     assert(! "facts_find_fact: facts_find_tag object");
     goto clean;
   }
+  f.id = 0;
   *dest = NULL;
   if (f.subject && f.predicate && f.object &&
       (item = set_get__fact(&facts->facts, &f)))
@@ -1053,6 +1059,11 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
     return NULL;
   }
   if (found) {
+    if (false) {
+      err_write_1("facts_remove_fact: ");
+      err_inspect_fact(found);
+      err_write_1("\n");
+    }
     if (facts->log)
       facts_log_remove(facts->log, found);
     skiplist_remove__fact(facts->index, found);

@@ -3,8 +3,6 @@
 replace {KC3, :is_a, :module}
 replace {KC3, :symbol, KC3.license}
 replace {KC3.license, :symbol_value, cfn Void "kc3_license" ()}
-add {KC3, :symbol, KC3.break}
-replace {KC3.break, :symbol_value, cfn Void "kc3_break" ()}
 add {KC3, :symbol, KC3.if_then_else}
 replace {KC3.if_then_else, :arity, 3}
 replace {KC3.if_then_else, :is_a, :special_operator}
@@ -50,7 +48,7 @@ replace {KC3.module, :symbol_value, cfn Sym "kc3_module" (Result)}
 add {KC3, :symbol, KC3.require}
 replace {KC3.require, :arity, 1}
 replace {KC3.require, :is_a, :special_operator}
-replace {KC3.require, :symbol_value, cfn Tag "kc3_require" (Sym, Result)}
+replace {KC3.require, :symbol_value, cfn Bool "kc3_require" (Sym)}
 add {KC3, :symbol, KC3.search_modules}
 replace {KC3.search_modules, :symbol_value, cfn List "kc3_search_modules" (Result)}
 add {KC3, :symbol, KC3.access}
@@ -67,8 +65,6 @@ add {KC3, :symbol, KC3.maybe_reload}
 replace {KC3.maybe_reload, :symbol_value, cfn Bool "kc3_maybe_reload" (Str)}
 add {KC3, :symbol, KC3.must_clean}
 replace {KC3.must_clean, :symbol_value, cfn Bool "kc3_must_clean" (Sym, Result)}
-add {KC3, :symbol, KC3.require}
-replace {KC3.require, :symbol_value, cfn Bool "kc3_require" (Sym)}
 add {KC3, :symbol, KC3.while}
 replace {KC3.while, :arity, 2}
 replace {KC3.while, :is_a, :special_operator}

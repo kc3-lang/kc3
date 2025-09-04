@@ -146,11 +146,14 @@ s_call * call_init_op (s_call *call)
   assert(call);
   call_init(&tmp);
   arg = list_new(NULL);
-  if (! arg)
+  if (! arg) {
+    call_clean(&tmp);
     return NULL;
+  }
   tmp.arguments = list_new(arg);
   if (! tmp.arguments) {
     list_delete(arg);
+    call_clean(&tmp);
     return NULL;
   }
   *call = tmp;

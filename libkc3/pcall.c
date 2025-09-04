@@ -22,6 +22,7 @@
 
 void pcall_clean (p_call *pcall)
 {
+  assert(pcall);
   call_delete(*pcall);
 }
 

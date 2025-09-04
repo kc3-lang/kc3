@@ -1318,7 +1318,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     goto invalid_cast;
   case TAG_PCALL:
     if (type == &g_sym_Call) {
-      *dest = &tag->data.pcall;
+      *dest = tag->data.pcall;
       return true;
     }
     goto invalid_cast;

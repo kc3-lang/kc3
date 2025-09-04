@@ -41,6 +41,7 @@
 #include "map.h"
 #include "op.h"
 #include "ops.h"
+#include "pcall.h"
 #include "pcallable.h"
 #include "pvar.h"
 #include "ratio.h"
@@ -911,10 +912,6 @@ sw buf_parse_pcall (s_buf *buf, p_call *dest)
   if ((r = buf_parse_call_args_paren(buf, &tmp)) <= 0)
     goto restore;
   result += r;
-  if (! (dest = alloc(sizeof(s_call)))) {
-    r = -1;
-    goto restore;
-  }
   if (! (*dest = alloc(sizeof(s_call)))) {
     r = -1;
     goto restore;
@@ -1113,6 +1110,7 @@ sw buf_parse_pcall_if (s_buf *buf, p_call *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
+  call_init(&tmp);
   tmp.ident.module = &g_sym_KC3;
   tmp.ident.sym = &g_sym_if_then_else;
   args_last = &tmp.arguments;
@@ -1173,7 +1171,7 @@ sw buf_parse_pcall_op (s_buf *buf, p_call *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_call tmp;
+  s_call tmp = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -1192,18 +1190,14 @@ sw buf_parse_pcall_op (s_buf *buf, p_call *dest)
   if ((r = buf_peek_ident(buf, &ident)) <= 0)
     goto restore;
   ops = env_global()->ops;
-  if (! ops_get_tag(ops, ident.sym, 2, &op_tag)) {
-    r = 0;
+  if (! ops_get_tag(ops, ident.sym, 2, &op_tag))
     goto restore;
-  }
   tag_clean(&op_tag);
   if ((r = buf_parse_call_op_rec(buf, &tmp, 0)) <= 0)
     goto restore;
   result += r;
-  if (! (*dest = alloc(sizeof(s_call)))) {
-    r = -1;
+  if (! (*dest = alloc(sizeof(s_call))))
     goto restore;
-  }
   **dest = tmp;
   r = result;
   goto clean;
@@ -1223,7 +1217,7 @@ sw buf_parse_pcall_op_unary (s_buf *buf, p_call *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_call tmp;
+  s_call tmp = {0};
   assert(buf);
   assert(dest);
   call_init_op_unary(&tmp);

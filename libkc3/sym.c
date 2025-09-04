@@ -1163,7 +1163,7 @@ uw * sym_type_size (const s_sym *type, uw *dest)
     return dest;
   }
   if (type == &g_sym_Call) {
-    *dest = sizeof(s_call);
+    *dest = sizeof(p_call);
     return dest;
   }
   if (type == &g_sym_Callable ||

@@ -490,6 +490,7 @@ void env_default_set (s_env *env)
 s_tag * env_defmodule (s_env *env, const s_sym * const *name,
                        const s_do_block *do_block, s_tag *dest)
 {
+  bool is_loading;
   const s_sym *prev_defmodule;
   s_tag *result = NULL;
   s_list *search_modules;
@@ -508,7 +509,11 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
     abort();
   }
   prev_defmodule = env->current_defmodule;
-  env_module_is_loading_set(env, *name, true);
+  if (! env_module_is_loading(env, *name, &is_loading))
+    return NULL;
+  if (! is_loading &&
+      ! env_module_is_loading_set(env, *name, true))
+    return NULL;
   env->current_defmodule = *name;
   search_modules = env->search_modules;
   if (! env_module_search_modules(env, name, &env->search_modules))
@@ -528,7 +533,9 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
   list_delete_all(env->search_modules);
   env->search_modules = search_modules;
   env->current_defmodule = prev_defmodule;
-  env_module_is_loading_set(env, *name, false);
+  if (! is_loading &&
+      ! env_module_is_loading_set(env, *name, false))
+    return NULL;
   return result;
 }
 
@@ -2218,6 +2225,11 @@ bool env_module_load (s_env *env, const s_sym *module)
   s_facts_transaction transaction;
   assert(env);
   assert(module);
+  if (true) {
+    err_write_1("env_module_load: ");
+    err_inspect_sym(module);
+    err_write_1(":\n");
+  }
   if (! env_module_is_loading(env, module, &b))
     return false;
   if (b)
@@ -2233,7 +2245,6 @@ bool env_module_load (s_env *env, const s_sym *module)
       err_inspect_sym(module);
       err_puts(": env_load");
       str_clean(&path);
-      env_module_is_loading_set(env, module, false);
       goto rollback;
     }
   }
@@ -2243,11 +2254,9 @@ bool env_module_load (s_env *env, const s_sym *module)
       err_write_1("env_module_load: ");
       err_write_1(module->str.ptr.pchar);
       err_puts(": module_path");
-      env_module_is_loading_set(env, module, false);
       goto rollback;
     }
     if (! file_access(&path, &g_sym_r)) {
-      env_module_is_loading_set(env, module, false);
       goto rollback;
     }
     tag_init_time_now(&tag_time);
@@ -2257,7 +2266,6 @@ bool env_module_load (s_env *env, const s_sym *module)
       err_puts(": facts_load_file");
       str_clean(&path);
       tag_clean(&tag_time);
-      env_module_is_loading_set(env, module, false);
       goto rollback;
     }
   }
@@ -2266,14 +2274,23 @@ bool env_module_load (s_env *env, const s_sym *module)
   tag_init_psym(&tag_load_time, &g_sym_load_time);
   if (! facts_replace_tags(env->facts, &tag_module_name,
                            &tag_load_time, &tag_time)) {
-    env_module_is_loading_set(env, module, false);
     goto rollback;
   }
   tag_clean(&tag_time);
   env_module_is_loading_set(env, module, false);
   facts_transaction_end(env->facts, &transaction);
+  if (env->trace) {
+    err_write_1("env_module_load: ");
+    err_inspect_sym(module);
+    err_write_1(": OK\n");
+  }
   return true;
  rollback:
+  if (env->trace) {
+    err_write_1("env_module_load: ");
+    err_inspect_sym(module);
+    err_write_1(": KO\n");
+  }
   if (! facts_transaction_rollback(env->facts, &transaction)) {
     abort();
     return false;
