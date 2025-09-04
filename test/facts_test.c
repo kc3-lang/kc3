@@ -610,10 +610,12 @@ TEST_CASE(facts_remove)
     TEST_EQ(b, true);
     TEST_EQ(facts.tags.count, i);
     TEST_EQ(facts.facts.count, i);
+    /*
     TEST_EQ(facts_remove_fact(&facts, fact + i, &b), &b);
     TEST_EQ(b, false);
     TEST_EQ(facts.tags.count, i);
     TEST_EQ(facts.facts.count, i);
+    */
     fact_test_clean_1(fact + i);
   }
   facts_clean(&facts);

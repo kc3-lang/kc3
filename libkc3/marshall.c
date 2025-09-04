@@ -345,8 +345,8 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
   }
   if (type == &g_sym_Call) {
     if (! marshall_pcall(m, heap, data)) {
-      err_puts("marshall_data: marshall_call");
-      assert(! "marshall_data: marshall_call");
+      err_puts("marshall_data: marshall_pcall");
+      assert(! "marshall_data: marshall_pcall");
       return NULL;
     }
     return m;

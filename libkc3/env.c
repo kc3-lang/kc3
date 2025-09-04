@@ -2225,7 +2225,7 @@ bool env_module_load (s_env *env, const s_sym *module)
   s_facts_transaction transaction;
   assert(env);
   assert(module);
-  if (true) {
+  if (env->trace) {
     err_write_1("env_module_load: ");
     err_inspect_sym(module);
     err_write_1(":\n");
