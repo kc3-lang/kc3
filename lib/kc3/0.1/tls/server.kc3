@@ -10,6 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require Socket
+require TLS
+
 defmodule TLS.Server do
 
   dlopen("tls.so")
@@ -19,9 +22,9 @@ defmodule TLS.Server do
 
   def ca_set_cert_path = cfn Str "kc3_tls_ca_cert_path" (Str)
 
-  def server = cfn TLS* "kc3_tls_server" (Void);
+  def server = cfn TLS* "kc3_tls_server" (Void)
 
   def accept_socket = cfn Bool "kc3_tls_accept_socket" (TLS*, TLS**,
-    Socket)
+    S64)
 
 end
