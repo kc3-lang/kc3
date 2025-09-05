@@ -664,7 +664,7 @@ s_tag * kc3_integer_reduce (s_tag *tag, s_tag *dest)
   return dest;
 }
 
-bool kc3_killpg (sw process_group, const s_sym * const *signal)
+bool kc3_killpg (sw process_group, p_sym *signal)
 {
 #if (defined(WIN32) || defined(WIN64))
   (void) process_group;
@@ -794,7 +794,7 @@ s_tag * kc3_plist_length (const s_list **plist, s_tag *dest)
 }
 
 s_array * kc3_plist_to_array (p_list *plist,
-                              const s_sym * const *array_type,
+                              p_sym *array_type,
                               s_array *dest)
 {
   return list_to_array(*plist, *array_type, dest);
@@ -916,14 +916,14 @@ const s_sym ** kc3_module (const s_sym **dest)
   return env_module(env_global(), dest);
 }
 
-bool * kc3_must_clean (const s_sym * const *sym, bool *dest)
+bool * kc3_must_clean (p_sym *sym, bool *dest)
 {
   assert(sym);
   return sym_must_clean(*sym, dest);
 }
 
-uw * kc3_offsetof (const s_sym * const *module,
-                   const s_sym * const *key, uw *dest)
+uw * kc3_offsetof (p_sym *module,
+                   p_sym *key, uw *dest)
 {
   uw i = 0;
   s_struct_type *st;
@@ -979,7 +979,7 @@ sw kc3_puts (const s_tag *tag)
   return result;
 }
 
-bool kc3_require (const s_sym * const *module)
+bool kc3_require (p_sym *module)
 {
   return env_module_ensure_loaded(env_global(), *module);
 }
@@ -1055,7 +1055,7 @@ s_str * kc3_strerror (sw err_no, s_str *dest)
   return str_init_1_alloc(dest, s);
 }
 
-s_tag * kc3_struct_put (s_tag *s, const s_sym * const *key,
+s_tag * kc3_struct_put (s_tag *s, p_sym *key,
                         s_tag *value, s_tag *dest)
 {
   p_struct tmp;

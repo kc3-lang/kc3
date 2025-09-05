@@ -53,8 +53,8 @@ s_buf ** kc3_in_buf (s_buf **dest);
 void     kc3_license (void);
 s_tag *  kc3_list_length (const s_list **list, s_tag *dest);
 p_sym *  kc3_module (const s_sym **dest);
-uw *     kc3_offsetof (const s_sym * const *module,
-                       const s_sym * const *field, uw *dest);
+uw *     kc3_offsetof (p_sym *module,
+                       p_sym *field, uw *dest);
 s_buf ** kc3_out_buf (s_buf **dest);
 sw       kc3_puts (const s_tag *tag);
 p_list * kc3_stacktrace (s_list **dest);
@@ -117,10 +117,10 @@ s_tag *      kc3_facts_with_transaction (s_tag *facts_arg,
                                          s_tag *tag_arg, s_tag *dest);
 s_tag *      kc3_identity (s_tag *tag, s_tag *dest);
 s_tag *      kc3_integer_reduce (s_tag *tag, s_tag *dest);
-bool         kc3_killpg (sw process_group, const s_sym * const *signal);
+bool         kc3_killpg (sw process_group, p_sym *signal);
 s_tag *      kc3_let (s_tag *vars, s_tag *tag, s_tag *dest);
 s_array *    kc3_list_to_array (s_list **list,
-                                const s_sym * const *array_type,
+                                p_sym *array_type,
                                 s_array *dest);
 bool         kc3_load (const s_str *path);
 void         kc3_marshall_delete (p_marshall *m);
@@ -139,9 +139,9 @@ s_str *      kc3_marshall_to_str (p_marshall *m, s_str *dest);
 bool         kc3_maybe_reload (const s_str *path);
 s_tag *      kc3_or (s_tag *a, s_tag *b, s_tag *dest);
 s_tag *      kc3_parse_tag (s_tag *tag, const s_str *src);
-bool         kc3_require (const s_sym * const *module);
+bool         kc3_require (p_sym *module);
 s_str *      kc3_strerror (sw err_no, s_str *dest);
-s_tag *      kc3_struct_put (s_tag *s, const s_sym * const *key,
+s_tag *      kc3_struct_put (s_tag *s, p_sym *key,
                              s_tag *value, s_tag *dest);
 s_str *      kc3_system (const s_list * const *list, s_str *dest);
 s_tag *      kc3_thread_delete (u_ptr_w *thread, s_tag *dest);
