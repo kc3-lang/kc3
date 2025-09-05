@@ -907,8 +907,7 @@ sw buf_parse_pcall (s_buf *buf, p_call *dest)
   buf_save_init(buf, &save);
   call_init(&tmp);
   if ((r = buf_parse_ident(buf, &tmp.ident)) <= 0) {
-    call_clean(&tmp);
-    goto clean;
+    goto restore;
   }
   result += r;
   if ((r = buf_parse_call_args_paren(buf, &tmp)) <= 0)
@@ -922,6 +921,7 @@ sw buf_parse_pcall (s_buf *buf, p_call *dest)
   r = result;
   goto clean;
  restore:
+  call_clean(&tmp);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -2915,7 +2915,6 @@ sw buf_parse_plist_paren (s_buf *buf, p_list *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  tail = &tmp;
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "(")) <= 0)
     goto clean;
@@ -2932,6 +2931,7 @@ sw buf_parse_plist_paren (s_buf *buf, p_list *dest)
     result += r;
     goto ok;
   }
+  tail = &tmp;
   while (1) {
     *tail = list_new(NULL);
     if ((r = buf_parse_tag(buf, &(*tail)->tag)) <= 0)
