@@ -806,6 +806,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       }
       *left->data.pcall = tmp3;
       left->type = TAG_PCALL;
+      *right = (s_tag) {0};
     }
     else
       merge_left = true;
