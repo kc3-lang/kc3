@@ -57,3 +57,29 @@ bool kc3_tls_config_set_ca_file (p_tls_config config,
   }
   return true;
 }
+
+bool kc3_tls_config_set_cert_file (p_tls_config config,
+                                   const s_str *file_path)
+{
+  if (tls_config_set_cert_file(config, file_path->ptr.pchar)) {
+    err_write_1("kc3_tls_config_set_cert_file: "
+                "tls_config_set_cert_file: ");
+    err_puts(tls_config_error(config));
+    assert(! "kc3_tls_config_set_cert_file: tls_config_set_cert_file");
+    return false;
+  }
+  return true;
+}
+
+bool kc3_tls_config_set_key_file (p_tls_config config,
+                                   const s_str *key_file_path)
+{
+  if (tls_config_set_key_file(config, key_file_path->ptr.pchar)) {
+    err_write_1("kc3_tls_config_set_key_file: "
+                "tls_config_set_key_file: ");
+    err_puts(tls_config_error(config));
+    assert(! "kc3_tls_config_set_key_file: tls_config_set_key_file: ");
+    return false;
+  }
+  return true;
+}
