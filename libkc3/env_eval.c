@@ -682,8 +682,10 @@ bool env_eval_callable (s_env *env, s_callable *callable,
     }
     if (! pcallable_init_copy(&tmp, &callable))
       return false;
-    if (! cfn_eval(&tmp->data.cfn))
+    if (! cfn_eval(&tmp->data.cfn)) {
+      pcallable_clean(&tmp);
       return false;
+    }
     goto ok;
   case CALLABLE_FN:
     if (callable->data.fn.frame) {

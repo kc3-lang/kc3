@@ -52,9 +52,6 @@ void call_delete (s_call *call)
   if (call->ref_count <= 0) {
     err_puts("call_delete: invalid ref count");
     assert(! "call_delete: invalid ref count");
-#if HAVE_PTHREAD
-    mutex_unlock(&call->mutex);
-#endif
     return;
   }
 #if HAVE_PTHREAD
@@ -67,7 +64,8 @@ void call_delete (s_call *call)
     err_inspect_uw_decimal(call->ref_count);
     err_write_1("\n");
   }
-  if (--call->ref_count) {
+  call->ref_count--;
+  if (call->ref_count) {
 #if HAVE_PTHREAD
     mutex_unlock(&call->mutex);
 #endif
