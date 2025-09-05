@@ -42,10 +42,14 @@
 #include "ops.h"
 #include "pcall.h"
 #include "pcallable.h"
+#include "pcomplex.h"
+#include "pfacts.h"
+#include "pframe.h"
 #include "plist.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "psym.h"
+#include "pvar.h"
 #include "rwlock.h"
 #include "str.h"
 #include "struct.h"
@@ -1405,7 +1409,7 @@ s_marshall_read * marshall_read_pcomplex (s_marshall_read *mr,
                                           p_complex *dest)
 {
   u64 offset = 0;
-  void *present = NULL;
+  p_complex present = NULL;
   p_complex tmp = NULL;
   assert(mr);
   assert(dest);
@@ -1414,14 +1418,19 @@ s_marshall_read * marshall_read_pcomplex (s_marshall_read *mr,
     assert(! "marshall_read_pcomplex: marshall_read_1 magic");
     return NULL;
   }
-  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+  if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                   (void **) &present))
     return NULL;
   if (! offset) {
     *dest = NULL;
     return mr;
   }
   if (present) {
-    *dest = complex_new_ref(present);
+    if (! pcomplex_init_copy(dest, &present)) {
+      err_puts("marshall_read_pcomplex: pcomplex_init_copy");
+      assert(! "marshall_read_pcomplex: pcomplex_init_copy");
+      return NULL;
+    }
     return mr;
   }
   if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
@@ -1473,7 +1482,11 @@ s_marshall_read * marshall_read_pfacts (s_marshall_read *mr,
     return mr;
   }
   if (present) {
-    *dest = facts_new_ref(present);
+    if (! pfacts_init_copy(dest, &present)) {
+      err_puts("marshall_read_pfacts: pfacts_init_copy");
+      assert(! "marshall_read_pfacts: pfacts_init_copy");
+      return NULL;
+    }
     return mr;
   }
   if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
@@ -1506,9 +1519,9 @@ s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
                                         bool heap,
                                         p_frame *dest)
 {
-  p_frame tmp = NULL;
-  void *present = NULL;
   u64 offset = 0;
+  p_frame present = NULL;
+  p_frame tmp = NULL;
   assert(mr);
   assert(dest);
   if (! marshall_read_1(mr, heap, "_KC3PFRAME_")) {
@@ -1517,14 +1530,19 @@ s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
     assert(! "marshall_read_pframe: marshall_read_1 magic");
     return NULL;
   }
-  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+  if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                   (void **) &present))
     return NULL;
   if (! offset) {
     *dest = NULL;
     return mr;
   }
   if (present) {
-    *dest = frame_new_ref(present);
+    if (! pframe_init_copy(dest, &present)) {
+      err_puts("marshall_read_pframe: pframe_init_copy");
+      assert(! "marshall_read_pframe: pframe_init_copy");
+      return NULL;
+    }
     return mr;
   }
   if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
@@ -1547,7 +1565,7 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
                                        p_list *dest)
 {
   u64 offset = 0;
-  void *present = NULL;
+  p_list present = NULL;
   p_list tmp = NULL;
   assert(mr);
   assert(dest);
@@ -1557,14 +1575,19 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
     assert(! "marshall_read_plist: marshall_read_1 magic");
     return NULL;
   }
-  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+  if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                   (void **) &present))
     return NULL;
   if (! offset) {
     *dest = NULL;
     return mr;
   }
   if (present) {
-    *dest = list_new_ref(present);
+    if (! plist_init_copy(dest, &present)) {
+      err_puts("marshall_read_plist: plist_init_copy");
+      assert(! "marshall_read_plist: plist_init_copy");
+      return NULL;
+    }
     return mr;
   }
   if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
@@ -1601,7 +1624,7 @@ s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,
                                          p_struct *dest)
 {
   u64 offset = 0;
-  void *present = NULL;
+  p_struct present = NULL;
   p_struct tmp = NULL;
   assert(mr);
   assert(dest);
@@ -1610,14 +1633,19 @@ s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,
     assert(! "marshall_read_pstruct: marshall_read_1 magic");
     return NULL;
   }
-  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+  if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                   (void **) &present))
     return NULL;
   if (! offset) {
     *dest = NULL;
     return mr;
   }
   if (present) {
-    *dest = struct_new_ref(present);
+    if (! pstruct_init_copy(dest, &present)) {
+      err_puts("marshall_read_pstruct: pstruct_init_copy");
+      assert(! "marshall_read_pstruct: pstruct_init_copy");
+      return NULL;
+    }
     return mr;
   }
   if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
@@ -1800,7 +1828,7 @@ s_marshall_read * marshall_read_pvar (s_marshall_read *mr,
                                       p_var *dest)
 {
   u64 offset = 0;
-  void *present = NULL;
+  p_var present = NULL;
   p_var tmp = NULL;
   assert(mr);
   assert(dest);
@@ -1809,14 +1837,19 @@ s_marshall_read * marshall_read_pvar (s_marshall_read *mr,
     assert(! "marshall_read_pvar: marshall_read_1 magic");
     return NULL;
   }
-  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
+  if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                   (void **) &present))
     return NULL;
   if (! offset) {
     *dest = NULL;
     return mr;
   }
   if (present) {
-    *dest = var_new_ref(present);
+    if (! pvar_init_copy(dest, &present)) {
+      err_puts("marshall_read_pvar: pvar_init_copy");
+      assert(! "marshall_read_pvar: pvar_init_copy");
+      return NULL;
+    }
     return mr;
   }
   if (buf_seek(&mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||

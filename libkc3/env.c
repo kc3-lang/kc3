@@ -445,7 +445,7 @@ bool env_def (s_env *env, const s_ident *ident, s_tag *value)
 }
 
 const s_sym * env_def_clean (s_env *env, const s_sym *module,
-                             const s_tag *clean)
+                             s_tag *clean)
 {
   s_struct_type *st;
   if (securelevel(0) > 1) {
@@ -469,7 +469,13 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
     assert(! "env_def_clean: module clean method must be a Callable");
     return NULL;
   }
-  st->clean = callable_new_ref(clean->data.pcallable);
+  if (! pcallable_init_copy(&st->clean, &clean->data.pcallable)) {
+    err_write_1("env_def_clean: module ");
+    err_inspect_sym(module);
+    err_write_1(": pcallable_init_copy");
+    assert(! "env_def_clean: pcallable_init_copy");
+    return NULL;
+  }
   return module;
 }
 
@@ -2711,7 +2717,15 @@ p_callable env_struct_type_get_clean (s_env *env, const s_sym *module)
     tag_clean(&tag_pvar);
     return NULL;
   }
-  tmp = callable_new_ref(found->object->data.pcallable);
+  if (! pcallable_init_copy(&tmp, &found->object->data.pcallable)) {
+    err_write_1("env_struct_type_get_clean: ");
+    err_inspect_sym(module);
+    err_puts(": pcallable_init_copy");
+    assert(! "env_struct_type_get_clean: pcallable_init_copy");
+    facts_with_cursor_clean(&cursor);
+    tag_clean(&tag_pvar);
+    return NULL;
+  }
   facts_with_cursor_clean(&cursor);
   tag_clean(&tag_pvar);
   return tmp;

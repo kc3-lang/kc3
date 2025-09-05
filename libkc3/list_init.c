@@ -259,6 +259,20 @@ s_list * list_init_pcall (s_list *list, s_list *next)
   return list;
 }
 
+s_list * list_init_pcall_copy (s_list *list, p_call *src, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pcall_copy(&tmp.tag, src)) {
+    err_puts("list_init_pcall_copy: tag_init_pcall_copy");
+    assert(! "list_init_pcall_copy: tag_init_pcall_copy");
+    return NULL;
+  }
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_pcallable (s_list *list, s_list *next)
 {
   s_list tmp = {0};
@@ -422,8 +436,7 @@ s_list * list_init_pstruct_type (s_list *list, const s_sym *module,
   return list;
 }
 
-s_list * list_init_pstruct_type_clean (s_list *list,
-                                       const s_struct_type *st,
+s_list * list_init_pstruct_type_clean (s_list *list, s_struct_type *st,
                                        p_callable clean, s_list *next)
 {
   s_list tmp = {0};
@@ -1258,6 +1271,24 @@ s_list * list_new_pcall (s_list *next)
   return list;
 }
 
+s_list * list_new_pcall_copy (p_call *src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list) {
+    err_puts("list_new_pcall_copy: list_new");
+    assert(! "list_new_pcall_copy: list_new");
+    return NULL;
+  }
+  if (! tag_init_pcall_copy(&list->tag, src)) {
+    err_puts("list_new_pcall_copy: tag_init_pcall_copy");
+    assert(! "list_new_pcall_copy: tag_init_pcall_copy");
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
 s_list * list_new_pcallable (s_list *next)
 {
   s_list *list;
@@ -1460,7 +1491,7 @@ s_list * list_new_pstruct_type (const s_sym *module, s_list *spec,
   return list;
 }
 
-s_list * list_new_pstruct_type_clean (const s_struct_type *st,
+s_list * list_new_pstruct_type_clean (s_struct_type *st,
                                       p_callable clean, s_list *next)
 {
   s_list *list;

@@ -211,6 +211,17 @@ s_tag * tag_init_pcall (s_tag *tag)
   return tag;
 }
 
+s_tag * tag_init_pcall_copy (s_tag *tag, p_call *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_PCALL;
+  if (! pcall_init_copy(&tmp.data.pcall, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_pcallable (s_tag *tag)
 {
   s_tag tmp = {0};
@@ -334,8 +345,7 @@ s_tag * tag_init_pstruct_type (s_tag *tag, const s_sym *module,
   return tag;
 }
 
-s_tag * tag_init_pstruct_type_clean (s_tag *tag,
-                                     const s_struct_type *st,
+s_tag * tag_init_pstruct_type_clean (s_tag *tag, s_struct_type *st,
                                      p_callable clean)
 {
   s_tag tmp = {0};
@@ -951,6 +961,20 @@ s_tag * tag_new_pcall (void)
   return tag;
 }
 
+s_tag * tag_new_pcall_copy (p_call *src)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_PCALL;
+  if (! pcall_init_copy(&tag->data.pcall, src)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
 s_tag * tag_new_pcallable (void)
 {
   s_tag *tag;
@@ -1101,8 +1125,7 @@ s_tag * tag_new_pstruct_type (const s_sym *module, s_list *spec)
   return tag;
 }
 
-s_tag * tag_new_pstruct_type_clean (const s_struct_type *st,
-                                    p_callable clean)
+s_tag * tag_new_pstruct_type_clean (s_struct_type *st, p_callable clean)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
@@ -1791,6 +1814,18 @@ s_tag * tag_pcall (s_tag *tag)
   return tag;
 }
 
+s_tag * tag_pcall_copy (s_tag *tag, p_call *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_PCALL;
+  if (! pcall_init_copy(&tmp.data.pcall, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_pcallable (s_tag *tag)
 {
   s_tag tmp = {0};
@@ -1924,7 +1959,7 @@ s_tag * tag_pstruct_type (s_tag *tag, const s_sym *module, s_list *spec)
   return tag;
 }
 
-s_tag * tag_pstruct_type_clean (s_tag *tag, const s_struct_type *st,
+s_tag * tag_pstruct_type_clean (s_tag *tag, s_struct_type *st,
                                 p_callable clean)
 {
   s_tag tmp = {0};

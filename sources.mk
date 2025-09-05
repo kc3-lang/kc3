@@ -539,6 +539,8 @@ KC3_C_SOURCES = \
 	"libkc3/pcow.h" \
 	"libkc3/pfacts.c" \
 	"libkc3/pfacts.h" \
+	"libkc3/pframe.c" \
+	"libkc3/pframe.h" \
 	"libkc3/plist.c" \
 	"libkc3/plist.h" \
 	"libkc3/pointer.c" \
@@ -1947,6 +1949,7 @@ KC3_OTHER_SOURCES = \
 	"env" \
 	"kc3.index" \
 	"kc3.version" \
+	"libkc3/.#tag_init.rb" \
 	"libkc3/tag_init.rb" \
 	"license.h" \
 	"sources.mk" \

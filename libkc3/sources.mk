@@ -144,6 +144,7 @@ HEADERS = \
 	"pcomplex.h" \
 	"pcow.h" \
 	"pfacts.h" \
+	"pframe.h" \
 	"plist.h" \
 	"pointer.h" \
 	"pretty.h" \
@@ -346,6 +347,7 @@ SOURCES = \
 	"pcomplex.c" \
 	"pcow.c" \
 	"pfacts.c" \
+	"pframe.c" \
 	"plist.c" \
 	"pointer.c" \
 	"pretty.c" \
@@ -665,6 +667,7 @@ LO_SOURCES = \
 	"pcomplex.c" \
 	"pcow.c" \
 	"pfacts.c" \
+	"pframe.c" \
 	"plist.c" \
 	"pointer.c" \
 	"pretty.c" \

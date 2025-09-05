@@ -29,17 +29,14 @@ void            struct_type_clean (s_struct_type *st);
 s_struct_type * struct_type_init (s_struct_type *st,
                                   const s_sym *module,
                                   const s_list *spec);
-s_struct_type * struct_type_init_clean (s_struct_type *st,
-                                        const s_struct_type *src,
-                                        p_callable clean);
 s_struct_type * struct_type_init_copy (s_struct_type *st,
-                                       const s_struct_type *src);
+                                       s_struct_type *src);
 
 /* Heap-allocation functions, call struct_type_delete after use. */
 void            struct_type_delete (s_struct_type *st);
 s_struct_type * struct_type_new (const s_sym *module,
                                  const s_list *spec);
-s_struct_type * struct_type_new_copy (const s_struct_type *src);
+s_struct_type * struct_type_new_copy (s_struct_type *src);
 s_struct_type * struct_type_new_ref (s_struct_type *src);
 
 /* Observers. */

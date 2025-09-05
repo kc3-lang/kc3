@@ -13,8 +13,9 @@
 #include "alloc.h"
 #include "assert.h"
 #include "callable.h"
-#include "struct_type.h"
+#include "pcallable.h"
 #include "pstruct_type.h"
+#include "struct_type.h"
 #include "sym.h"
 #include "tag.h"
 
@@ -41,7 +42,7 @@ p_struct_type * pstruct_type_init (p_struct_type *st,
 }
 
 p_struct_type * pstruct_type_init_cast (p_struct_type *st,
-                                        const s_sym * const *type,
+                                        p_sym *type,
                                         s_tag *tag)
 {
   assert(st);
@@ -75,7 +76,7 @@ p_struct_type * pstruct_type_init_copy (p_struct_type *st,
 }
 
 p_struct_type * pstruct_type_init_clean (p_struct_type *st,
-                                         const s_struct_type *src,
+                                         s_struct_type *src,
                                          p_callable clean)
 {
   p_struct_type tmp = NULL;
@@ -88,7 +89,7 @@ p_struct_type * pstruct_type_init_clean (p_struct_type *st,
     free(tmp);
     return NULL;
   }
-  if (! (tmp->clean = callable_new_ref(clean))) {
+  if (! pcallable_init_copy(&tmp->clean, &clean)) {
     struct_type_delete(tmp);
     return NULL;
   }

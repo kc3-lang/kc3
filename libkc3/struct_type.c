@@ -19,6 +19,7 @@
 #include "list.h"
 #include "map.h"
 #include "mutex.h"
+#include "pcallable.h"
 #include "struct.h"
 #include "struct_type.h"
 #include "sym.h"
@@ -220,15 +221,19 @@ s_struct_type * struct_type_init (s_struct_type *st,
 }
 
 s_struct_type * struct_type_init_copy (s_struct_type *st,
-                                       const s_struct_type *src)
+                                       s_struct_type *src)
 {
   s_struct_type tmp = {0};
   assert(st);
   assert(src);
   assert(src->module);
   assert(src->map.count);
-  if (src->clean)
-    tmp.clean = callable_new_ref(src->clean);
+  if (src->clean &&
+      ! pcallable_init_copy(&tmp.clean, &src->clean)) {
+    err_puts("struct_type_init_copy: pcallable_init_copy clean");
+    assert(! "struct_type_init_copy: pcallable_init_copy clean");
+    return NULL;
+  }
   if (! map_init_copy(&tmp.map, &src->map))
     return NULL;
   tmp.module = src->module;
@@ -280,7 +285,7 @@ s_struct_type * struct_type_new (const s_sym *module,
   return st;
 }
 
-s_struct_type * struct_type_new_copy (const s_struct_type *src)
+s_struct_type * struct_type_new_copy (s_struct_type *src)
 {
   s_struct_type *st;
   assert(src);

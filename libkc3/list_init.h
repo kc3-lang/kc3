@@ -40,6 +40,7 @@ s_list * list_init_map_1 (s_list *list, const char *p, s_list *next);
 s_list * list_init_map_from_lists (s_list *list, s_list *keys,
                                    s_list *values, s_list *next);
 s_list * list_init_pcall (s_list *list, s_list *next);
+s_list * list_init_pcall_copy (s_list *list, p_call *src, s_list *next);
 s_list * list_init_pcallable (s_list *list, s_list *next);
 s_list * list_init_pcallable_copy (s_list *list, p_callable *src,
                                    s_list *next);
@@ -60,8 +61,7 @@ s_list * list_init_pstruct_with_type (s_list *list, s_struct_type *st,
                                       s_list *next);
 s_list * list_init_pstruct_type (s_list *list, const s_sym *module,
                                  s_list *spec, s_list *next);
-s_list * list_init_pstruct_type_clean (s_list *list,
-                                       const s_struct_type *st,
+s_list * list_init_pstruct_type_clean (s_list *list, s_struct_type *st,
                                        p_callable clean, s_list *next);
 s_list * list_init_psym (s_list *list, const s_sym *sym, s_list *next);
 s_list * list_init_psym_anon (s_list *list, const s_str *src,
@@ -140,6 +140,7 @@ s_list * list_new_map_1 (const char *p, s_list *next);
 s_list * list_new_map_from_lists (s_list *keys, s_list *values,
                                   s_list *next);
 s_list * list_new_pcall (s_list *next);
+s_list * list_new_pcall_copy (p_call *src, s_list *next);
 s_list * list_new_pcallable (s_list *next);
 s_list * list_new_pcallable_copy (p_callable *src, s_list *next);
 s_list * list_new_pcomplex (p_complex c, s_list *next);
@@ -154,7 +155,7 @@ s_list * list_new_pstruct_with_data (const s_sym *module, void *data,
 s_list * list_new_pstruct_with_type (s_struct_type *st, s_list *next);
 s_list * list_new_pstruct_type (const s_sym *module, s_list *spec,
                                 s_list *next);
-s_list * list_new_pstruct_type_clean (const s_struct_type *st,
+s_list * list_new_pstruct_type_clean (s_struct_type *st,
                                       p_callable clean, s_list *next);
 s_list * list_new_psym (const s_sym *sym, s_list *next);
 s_list * list_new_psym_anon (const s_str *src, s_list *next);

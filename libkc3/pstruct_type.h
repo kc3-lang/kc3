@@ -26,12 +26,12 @@ p_struct_type * pstruct_type_init (p_struct_type *st,
                                    const s_sym *module,
                                    const s_list *spec);
 p_struct_type * pstruct_type_init_cast (p_struct_type *st,
-                                        const s_sym * const *type,
+                                        p_sym *type,
                                         s_tag *tag);
 p_struct_type * pstruct_type_init_copy (p_struct_type *st,
                                         p_struct_type *src);
 p_struct_type * pstruct_type_init_clean (p_struct_type *st,
-                                         const s_struct_type *src,
+                                         s_struct_type *src,
                                          p_callable clean);
 
 /* Operators. */

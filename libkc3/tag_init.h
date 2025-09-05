@@ -35,6 +35,7 @@ s_tag * tag_init_map_1 (s_tag *tag, const char *p);
 s_tag * tag_init_map_from_lists (s_tag *tag, s_list *keys,
                                  s_list *values);
 s_tag * tag_init_pcall (s_tag *tag);
+s_tag * tag_init_pcall_copy (s_tag *tag, p_call *src);
 s_tag * tag_init_pcallable (s_tag *tag);
 s_tag * tag_init_pcallable_copy (s_tag *tag, p_callable *src);
 s_tag * tag_init_pcomplex (s_tag *tag, p_complex c);
@@ -49,8 +50,7 @@ s_tag * tag_init_pstruct_with_data (s_tag *tag, const s_sym *module,
 s_tag * tag_init_pstruct_with_type (s_tag *tag, s_struct_type *st);
 s_tag * tag_init_pstruct_type (s_tag *tag, const s_sym *module,
                                s_list *spec);
-s_tag * tag_init_pstruct_type_clean (s_tag *tag,
-                                     const s_struct_type *st,
+s_tag * tag_init_pstruct_type_clean (s_tag *tag, s_struct_type *st,
                                      p_callable clean);
 s_tag * tag_init_psym (s_tag *tag, const s_sym *sym);
 s_tag * tag_init_psym_anon (s_tag *tag, const s_str *src);
@@ -114,6 +114,7 @@ s_tag * tag_new_map (uw count);
 s_tag * tag_new_map_1 (const char *p);
 s_tag * tag_new_map_from_lists (s_list *keys, s_list *values);
 s_tag * tag_new_pcall (void);
+s_tag * tag_new_pcall_copy (p_call *src);
 s_tag * tag_new_pcallable (void);
 s_tag * tag_new_pcallable_copy (p_callable *src);
 s_tag * tag_new_pcomplex (p_complex c);
@@ -126,7 +127,7 @@ s_tag * tag_new_pstruct_with_data (const s_sym *module, void *data,
                                    bool free_data);
 s_tag * tag_new_pstruct_with_type (s_struct_type *st);
 s_tag * tag_new_pstruct_type (const s_sym *module, s_list *spec);
-s_tag * tag_new_pstruct_type_clean (const s_struct_type *st,
+s_tag * tag_new_pstruct_type_clean (s_struct_type *st,
                                     p_callable clean);
 s_tag * tag_new_psym (const s_sym *sym);
 s_tag * tag_new_psym_anon (const s_str *src);
@@ -188,6 +189,7 @@ s_tag * tag_map (s_tag *tag, uw count);
 s_tag * tag_map_1 (s_tag *tag, const char *p);
 s_tag * tag_map_from_lists (s_tag *tag, s_list *keys, s_list *values);
 s_tag * tag_pcall (s_tag *tag);
+s_tag * tag_pcall_copy (s_tag *tag, p_call *src);
 s_tag * tag_pcallable (s_tag *tag);
 s_tag * tag_pcallable_copy (s_tag *tag, p_callable *src);
 s_tag * tag_pcomplex (s_tag *tag, p_complex c);
@@ -202,7 +204,7 @@ s_tag * tag_pstruct_with_data (s_tag *tag, const s_sym *module,
 s_tag * tag_pstruct_with_type (s_tag *tag, s_struct_type *st);
 s_tag * tag_pstruct_type (s_tag *tag, const s_sym *module,
                           s_list *spec);
-s_tag * tag_pstruct_type_clean (s_tag *tag, const s_struct_type *st,
+s_tag * tag_pstruct_type_clean (s_tag *tag, s_struct_type *st,
                                 p_callable clean);
 s_tag * tag_psym (s_tag *tag, const s_sym *sym);
 s_tag * tag_psym_anon (s_tag *tag, const s_str *src);
