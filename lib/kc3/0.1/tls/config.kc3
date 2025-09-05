@@ -23,11 +23,11 @@ defmodule TLS.Config do
   def set_ca_file = cfn Bool "kc3_tls_config_set_ca_file" (TLS.Config*,
     Str)
 
-  def set_cert_file = cfn s32 "tls_config_set_cert_file"
+  def set_cert_file = cfn S32 "tls_config_set_cert_file"
     (TLS.Config*, Str)
 
   def config_set_key = cfn TLS "kc3_tls_config_set_key_file"
-    (TLS.Config, Str)
+    (TLS.Config*, Str)
 
   def free = cfn Void "tls_config_free" (TLS.Config*)
 

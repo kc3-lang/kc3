@@ -1047,9 +1047,13 @@ KC3_C_SOURCES = \
 	"test/test.h" \
 	"test/tuple_test.c" \
 	"test/types_test.c" \
+	"tls/server.c" \
 	"tls/tls.c" \
 	"tls/tls.h" \
+	"tls/tls_buf.c" \
+	"tls/tls_buf.h" \
 	"tls/tls_config.c" \
+	"tls/types.h" \
 	"ucd2c/ucd.c" \
 	"ucd2c/ucd.h" \
 	"ucd2c/ucd2c.c" \
@@ -1598,6 +1602,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/time.kc3" \
 	"lib/kc3/0.1/tls.kc3" \
 	"lib/kc3/0.1/tls/config.kc3" \
+	"lib/kc3/0.1/tls/server.kc3" \
 	"lib/kc3/0.1/u16.facts" \
 	"lib/kc3/0.1/u32.facts" \
 	"lib/kc3/0.1/u64.facts" \
