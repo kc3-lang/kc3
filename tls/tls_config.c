@@ -15,12 +15,6 @@
 #include "tls.h"
 #include "tls/types.h"
 
-void kc3_tls_config_delete (p_tls_config config)
-{
-  assert(config);
-  tls_config_free(config);
-}
-
 s_str * kc3_tls_config_error (p_tls_config config, s_str *dest)
 {
   assert(config);
@@ -31,10 +25,6 @@ s_str * kc3_tls_config_error (p_tls_config config, s_str *dest)
 p_tls_config * kc3_tls_config_new (p_tls_config *dest)
 {
   p_tls_config tmp = {0};
-  // tmp.pointer_type = sym_1("KC3.Config*");
-  // tmp.target_type = sym_1("KC3.Config");
-  // if (! (tmp.ptr.p = tls_config_new()))
-  //   return NULL;
   if (! (tmp = tls_config_new()))
      return NULL;
   *dest = tmp;
@@ -72,7 +62,7 @@ bool kc3_tls_config_set_cert_file (p_tls_config config,
 }
 
 bool kc3_tls_config_set_key_file (p_tls_config config,
-                                   const s_str *key_file_path)
+                                  const s_str *key_file_path)
 {
   if (tls_config_set_key_file(config, key_file_path->ptr.pchar)) {
     err_write_1("kc3_tls_config_set_key_file: "

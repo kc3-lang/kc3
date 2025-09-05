@@ -28,14 +28,13 @@ p_tls kc3_tls_server(void)
     return ctx;
 }
 
-bool kc3_tls_accept_socket (p_tls ctx, p_tls *client_ctx,
-                            t_socket client_fd)
+bool kc3_tls_server_accept_socket (p_tls ctx, p_tls *client_ctx,
+                                   t_socket client_fd)
 {
   if (tls_accept_socket(ctx, client_ctx, client_fd)) {
-    err_write_1("kc3_tls_accept_socket: "
-                "tls_accept_socket: ");
-    assert(! "kc3_tls_accept_socket: tls_accept_socket: ");
-    close(client_fd);
+    err_write_1("kc3_tls_server_accept_socket: "
+                "tls_accept_socket");
+    assert(! "kc3_tls_accept_socket: tls_accept_socket");
     return false;
   }
   return true;

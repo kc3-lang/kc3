@@ -14,7 +14,7 @@ defmodule TLS.Config do
 
   dlopen("tls.so")
 
-  def delete = cfn Void "kc3_tls_config_delete" (TLS.Config*)
+  def delete = cfn Void "tls_config_free" (TLS.Config*)
 
   def error = cfn Str "kc3_tls_config_error" (TLS.Config*, Result)
 
@@ -23,12 +23,10 @@ defmodule TLS.Config do
   def set_ca_file = cfn Bool "kc3_tls_config_set_ca_file" (TLS.Config*,
     Str)
 
-  def set_cert_file = cfn S32 "tls_config_set_cert_file"
+  def set_cert_file = cfn Bool "tls_config_set_cert_file"
     (TLS.Config*, Str)
 
-  def config_set_key = cfn TLS "kc3_tls_config_set_key_file"
+  def set_key = cfn Bool "kc3_tls_config_set_key_file"
     (TLS.Config*, Str)
-
-  def free = cfn Void "tls_config_free" (TLS.Config*)
 
 end
