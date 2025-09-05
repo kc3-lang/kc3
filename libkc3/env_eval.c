@@ -687,7 +687,7 @@ bool env_eval_callable (s_env *env, s_callable *callable,
     goto ok;
   case CALLABLE_FN:
     if (callable->data.fn.frame) {
-      if (! (tmp = callable_new_ref(callable)))
+      if (! pcallable_init_copy(&tmp, &callable))
         return false;
       goto ok;
     }
