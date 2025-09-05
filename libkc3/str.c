@@ -593,7 +593,6 @@ s_str * str_init_concatenate_list (s_str *str, const s_list *list)
   }
   p = tmp.free.pchar;
   l = str_list;
-
   while (l) {
     if (p + l->tag.data.str.size > tmp.free.pchar + tmp.size) {
       err_puts("str_init_concatenate_list: buffer overflow");
@@ -1299,7 +1298,8 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
   else if (list->tag.type == TAG_STR &&
            ! list_next(list)) {
     tmp = list->tag;
-    free(list);
+    tag_init(&list->tag);
+    list_delete_all(list);
   }
   else {
     tag_init_pcall(&tmp);

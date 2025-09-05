@@ -109,6 +109,7 @@ s_call * call_init_call_cast (s_call *call, const s_sym *type)
     return NULL;
   tmp.arguments = list_new(next);
   if (! tmp.arguments) {
+    call_clean(&tmp);
     list_delete_all(next);
     return NULL;
   }
