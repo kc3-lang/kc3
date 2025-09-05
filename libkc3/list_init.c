@@ -259,6 +259,21 @@ s_list * list_init_pcall (s_list *list, s_list *next)
   return list;
 }
 
+s_list * list_init_pcall_call_cast (s_list *list, const s_sym *type,
+                                    s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pcall_call_cast(&tmp.tag, type)) {
+    err_puts("list_init_pcall_call_cast: tag_init_pcall_call_cast");
+    assert(! "list_init_pcall_call_cast: tag_init_pcall_call_cast");
+    return NULL;
+  }
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_pcall_copy (s_list *list, p_call *src, s_list *next)
 {
   s_list tmp = {0};
@@ -1265,6 +1280,24 @@ s_list * list_new_pcall (s_list *next)
   if (! tag_init_pcall(&list->tag)) {
     err_puts("list_new_pcall: tag_init_pcall");
     assert(! "list_new_pcall: tag_init_pcall");
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pcall_call_cast (const s_sym *type, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list) {
+    err_puts("list_new_pcall_call_cast: list_new");
+    assert(! "list_new_pcall_call_cast: list_new");
+    return NULL;
+  }
+  if (! tag_init_pcall_call_cast(&list->tag, type)) {
+    err_puts("list_new_pcall_call_cast: tag_init_pcall_call_cast");
+    assert(! "list_new_pcall_call_cast: tag_init_pcall_call_cast");
     free(list);
     return NULL;
   }

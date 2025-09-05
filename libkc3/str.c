@@ -1312,7 +1312,7 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
            l->tag.data.pcall->ident.module == &g_sym_Str &&
            l->tag.data.pcall->ident.sym == &g_sym_cast))
         goto next;
-      tag_init_call_cast(&tag, &g_sym_Str);
+      tag_init_pcall_call_cast(&tag, &g_sym_Str);
       arg = &list_next(tag.data.pcall->arguments)->tag;
       *arg = l->tag;
       l->tag = tag;

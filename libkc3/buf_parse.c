@@ -2908,13 +2908,14 @@ sw buf_parse_plist (s_buf *buf, p_list *plist)
   return r;
 }
 
-sw buf_parse_plist_paren (s_buf *buf, p_list *plist)
+sw buf_parse_plist_paren (s_buf *buf, p_list *dest)
 {
-  p_list *i;
+  p_list tmp = NULL;
+  p_list *tail;
   sw r;
   sw result = 0;
   s_buf_save save;
-  i = plist;
+  tail = &tmp;
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "(")) <= 0)
     goto clean;
@@ -2929,14 +2930,13 @@ sw buf_parse_plist_paren (s_buf *buf, p_list *plist)
     goto restore;
   if (r > 0) {
     result += r;
-    *plist = NULL;
+    *dest = NULL;
     r = result;
     goto clean;
   }
-  *i = NULL;
   while (1) {
-    *i = list_new(NULL);
-    if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
+    *tail = list_new(NULL);
+    if ((r = buf_parse_tag(buf, &(*tail)->tag)) <= 0)
       goto restore;
     result += r;
     if ((r = buf_parse_comments(buf)) < 0)
@@ -2956,41 +2956,38 @@ sw buf_parse_plist_paren (s_buf *buf, p_list *plist)
       goto restore;
     if (r > 0) {
       result += r;
-      i = &(*i)->next.data.plist;
       if ((r = buf_parse_comments(buf)) < 0)
         goto restore;
       result += r;
       if ((r = buf_ignore_spaces(buf)) < 0)
         goto restore;
       result += r;
+      tail = &(*tail)->next.data.plist;
       continue;
     }
-    if ((r = buf_read_1(buf, "|")) < 0)
+    if ((r = buf_read_1(buf, "|")) <= 0)
       goto restore;
-    if (r > 0) {
-      result += r;
-      if ((r = buf_parse_comments(buf)) < 0)
-        goto restore;
-      result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore;
-      result += r;
-      if ((r = buf_parse_tag(buf, &(*i)->next)) <= 0)
-        goto restore;
-      result += r;
-      if ((r = buf_parse_comments(buf)) < 0)
-        goto restore;
-      result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore;
-      result += r;
-      if ((r = buf_read_1(buf, ")")) <= 0)
-        goto restore;
-      result += r;
-      r = result;
-      goto clean;
-    }
-    goto restore;
+    result += r;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_parse_tag(buf, &(*tail)->next)) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, ")")) <= 0)
+      goto restore;
+    result += r;
+    r = result;
+    goto clean;
   }
  restore:
   list_delete_all(*plist);

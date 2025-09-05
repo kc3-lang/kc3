@@ -408,16 +408,6 @@ s_tag * tag_init_bool (s_tag *tag, bool b)
   return tag;
 }
 
-s_tag * tag_init_call_cast (s_tag *tag, const s_sym *type)
-{
-  s_tag tmp = {0};
-  tmp.type = TAG_PCALL;
-  if (! pcall_init_call_cast(&tmp.data.pcall, type))
-    return NULL;
-  *tag = tmp;
-  return tag;
-}
-
 s_tag * tag_init_cast (s_tag *tag, const s_sym * const *type,
                        s_tag *src)
 {

@@ -335,6 +335,8 @@ class TagInitList
                    [Arg.new("s_list *", "keys"),
                     Arg.new("s_list *", "values")]),
        TagInit.new("pcall", "TAG_PCALL", :init_mode_init, []),
+       TagInit.new("pcall", "call_cast", "TAG_PCALL", :init_mode_init,
+                   [Arg.new("const s_sym *", "type")]),
        TagInit.new("pcall", "copy", "TAG_PCALL", :init_mode_init,
                    [Arg.new("p_call *", "src")]),
        TagInit.new("pcallable", "TAG_PCALLABLE", :init_mode_init, []),

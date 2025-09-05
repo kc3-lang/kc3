@@ -105,8 +105,10 @@ s_call * call_init_call_cast (s_call *call, const s_sym *type)
   tmp.ident.module = type;
   tmp.ident.sym = &g_sym_cast;
   next = list_new(NULL);
-  if (! next)
+  if (! next) {
+    call_clean(&tmp);
     return NULL;
+  }
   tmp.arguments = list_new(next);
   if (! tmp.arguments) {
     call_clean(&tmp);
@@ -125,8 +127,10 @@ s_call * call_init_copy (s_call *call, s_call *src)
   assert(call);
   call_init(&tmp);
   if (! ident_init_copy(&tmp.ident, &src->ident) ||
-      ! plist_init_copy(&tmp.arguments, &src->arguments))
+      ! plist_init_copy(&tmp.arguments, &src->arguments)) {
+    call_clean(&tmp);
     return NULL;
+  }
   if (src->pcallable &&
       ! pcallable_init_copy(&tmp.pcallable, &src->pcallable)) {
     call_clean(&tmp);

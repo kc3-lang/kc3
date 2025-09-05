@@ -40,6 +40,8 @@ s_list * list_init_map_1 (s_list *list, const char *p, s_list *next);
 s_list * list_init_map_from_lists (s_list *list, s_list *keys,
                                    s_list *values, s_list *next);
 s_list * list_init_pcall (s_list *list, s_list *next);
+s_list * list_init_pcall_call_cast (s_list *list, const s_sym *type,
+                                    s_list *next);
 s_list * list_init_pcall_copy (s_list *list, p_call *src, s_list *next);
 s_list * list_init_pcallable (s_list *list, s_list *next);
 s_list * list_init_pcallable_copy (s_list *list, p_callable *src,
@@ -140,6 +142,7 @@ s_list * list_new_map_1 (const char *p, s_list *next);
 s_list * list_new_map_from_lists (s_list *keys, s_list *values,
                                   s_list *next);
 s_list * list_new_pcall (s_list *next);
+s_list * list_new_pcall_call_cast (const s_sym *type, s_list *next);
 s_list * list_new_pcall_copy (p_call *src, s_list *next);
 s_list * list_new_pcallable (s_list *next);
 s_list * list_new_pcallable_copy (p_callable *src, s_list *next);
