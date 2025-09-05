@@ -1145,8 +1145,7 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
 #endif
     err_puts("facts_replace_tags: facts_with_tags");
     assert(! "facts_replace_tags: facts_with_tags");
-    tag_clean(&pvar);
-    return NULL;
+    goto clean;
   }
   if (! facts_cursor_next(&cursor, &fact)) {
 #if HAVE_PTHREAD
@@ -1154,8 +1153,7 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
 #endif
     err_puts("facts_replace_tags: facts_cursor_next 1");
     assert(! "facts_replace_tags: facts_cursor_next 1");
-    tag_clean(&pvar);
-    return NULL;
+    goto clean;
   }
   while (fact) {
     list = list_new(list);
@@ -1168,23 +1166,22 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
       err_puts("facts_replace_tags: facts_cursor_next 2");
       assert(! "facts_replace_tags: facts_cursor_next 2");
       list_delete_all(list);
-      tag_clean(&pvar);
-      return NULL;
+      goto clean;
     }
   }
   facts_transaction_start(facts, &transaction);  
   while (list) {
-    if (! facts_remove_fact(facts, &list->tag.data.fact, &b) ||
-        ! b) {
+    if (! facts_remove_fact(facts, &list->tag.data.fact, &b)) {
       err_puts("facts_replace_tags: facts_remove_fact");
       assert(! "facts_replace_tags: facts_remove_fact");
-      facts_transaction_rollback(facts, &transaction);
-      list_delete_all(list);
-      tag_clean(&pvar);
-#if HAVE_PTHREAD
-      rwlock_unlock_w(&facts->rwlock);
-#endif
-      return NULL;
+      goto rollback;
+    }
+    if (! b) {
+      err_puts("facts_replace_tags: facts_remove_fact:"
+               " fact not found");
+      assert(!("facts_replace_tags: facts_remove_fact:"
+               " fact not found"));
+      goto rollback;
     }
     list = list_delete(list);
   }
@@ -1195,6 +1192,15 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   rwlock_unlock_w(&facts->rwlock);
 #endif
   return fact;
+ rollback:
+  facts_transaction_rollback(facts, &transaction);
+  list_delete_all(list);
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&facts->rwlock);
+#endif
+ clean:
+  tag_clean(&pvar);
+  return NULL;
 }
 
 sw facts_save_file (s_facts *facts, const s_str *path)
