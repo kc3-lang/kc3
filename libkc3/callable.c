@@ -113,8 +113,6 @@ s_callable * callable_new_copy (s_callable *src)
 s_callable * callable_new_ref (s_callable *callable)
 {
   assert(callable);
-  if (env_global()->pass_by_copy)
-    return callable_new_copy(callable);
 #if HAVE_PTHREAD
   mutex_lock(&callable->mutex);
 #endif

@@ -59,7 +59,7 @@ replace {Str.has_characters?, :symbol_value,
 add {Str, :symbol, Str.split_words}
 replace {Str.split_words, :symbol_value, cfn List "str_split_words" (Str, Result)}
 add {Str, :symbol, Str.count_words}
-replace {Str.count_words, :symbol_value, fn (doc) {
+replace {Str.count_words, :symbol_value, Str.fn (doc) {
   List.count_items(List.map(Str.split_words(doc), Str.to_lower))
 }}
 add {Str, :symbol, Str.to_lower}

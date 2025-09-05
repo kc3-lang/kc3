@@ -663,7 +663,6 @@ bool env_eval_callable (s_env *env, s_callable *callable,
   assert(env);
   assert(callable);
   assert(dest);
-  (void) env;
   if (securelevel(0) > 2) {
     err_puts("env_eval_callable: cannot eval with"
              " securelevel > 2");
