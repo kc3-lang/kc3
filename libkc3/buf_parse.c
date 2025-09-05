@@ -2930,9 +2930,7 @@ sw buf_parse_plist_paren (s_buf *buf, p_list *dest)
     goto restore;
   if (r > 0) {
     result += r;
-    *dest = NULL;
-    r = result;
-    goto clean;
+    goto ok;
   }
   while (1) {
     *tail = list_new(NULL);
@@ -2949,9 +2947,7 @@ sw buf_parse_plist_paren (s_buf *buf, p_list *dest)
       goto restore;
     if (r > 0) {
       result += r;
-      *dest = tmp;
-      r = result;
-      goto clean;
+      goto ok;
     }
     if ((r = buf_read_1(buf, ",")) < 0)
       goto restore;
@@ -2987,10 +2983,12 @@ sw buf_parse_plist_paren (s_buf *buf, p_list *dest)
     if ((r = buf_read_1(buf, ")")) <= 0)
       goto restore;
     result += r;
-    *dest = tmp;
-    r = result;
-    goto clean;
+    goto ok;
   }
+ ok:
+  *dest = tmp;
+  r = result;
+  goto clean;
  restore:
   list_delete_all(tmp);
   buf_save_restore_rpos(buf, &save);
