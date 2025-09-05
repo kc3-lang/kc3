@@ -31,4 +31,16 @@ bool kc3_tls_connect_socket (p_tls ctx, t_socket sockfd,
 /* Operating system helpers. */
 s_str * kc3_tls_ca_cert_path (s_str *dest);
 
+
+bool kc3_tls_config_set_cert_file (p_tls_config config,
+                                   const s_str *file_path);
+
+p_tls kc3_tls_server(void);
+
+bool kc3_tls_config_set_key_file (p_tls_config config,
+                                  const s_str *key_file_path);
+
+bool kc3_tls_accept_socket (p_tls ctx, p_tls *client_ctx,
+                            t_socket client_fd);
+
 #endif /* KC3_TLS_H */

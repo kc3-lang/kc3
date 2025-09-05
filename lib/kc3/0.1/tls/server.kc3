@@ -10,18 +10,18 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-require TLS.Config
-
-defmodule TLS do
+defmodule TLS.Server do
 
   dlopen("tls.so")
 
-  def ca_cert_path = cfn Str "kc3_tls_ca_cert_path" (Result)
+  def connect_socket = cfn Bool "kc3_tls_connect_socket" (TLS*,
+    Socket, Str)
 
-  def client = cfn TLS* "tls_client" ()
+  def ca_set_cert_path = cfn Str "kc3_tls_ca_cert_path" (Str)
 
-  def init = cfn Bool "kc3_tls_init" ()
+  def server = cfn TLS* "kc3_tls_server" (Void);
 
-  def free = cfn Void "tls_free" (TLS*)
+  def accept_socket = cfn Bool "kc3_tls_accept_socket" (TLS*, TLS**,
+    Socket)
 
 end
