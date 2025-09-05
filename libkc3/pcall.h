@@ -15,12 +15,16 @@
 
 #include "types.h"
 
-/* Call pcall_clean after use. */
+/* Initialization functions, call pcall_clean after use. */
 void     pcall_clean (p_call *pcall);
 p_call * pcall_init (p_call *pcall);
 p_call * pcall_init_1 (p_call *pcall, const char *p);
 p_call * pcall_init_call_cast (p_call *pcall, const s_sym *type);
 p_call * pcall_init_cast (p_call *pcall, p_sym *type, s_tag *src);
 p_call * pcall_init_copy (p_call *pcall, p_call *src);
+
+/* Operators. */
+s_ident *      pcall_ident (p_call *pcall, s_ident *dest);
+const s_sym ** pcall_sym (p_call *pcall, const s_sym **dest);
 
 #endif /* LIBKC3_PCALL_H */

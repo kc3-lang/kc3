@@ -26,6 +26,17 @@ void pcall_clean (p_call *pcall)
   call_delete(*pcall);
 }
 
+s_ident * pcall_ident (p_call *pcall, s_ident *dest)
+{
+  if (! pcall || ! dest) {
+    err_puts("pcall_ident: invalid argument");
+    assert(! "pcall_ident: invalid argument");
+    return NULL;
+  }
+  *dest = (*pcall)->ident;
+  return dest;
+}
+
 p_call * pcall_init (p_call *pcall)
 {
   p_call tmp = NULL;
@@ -100,4 +111,15 @@ p_call * pcall_init_copy (p_call *pcall, p_call *src)
   assert(src);
   *pcall = call_new_ref(*src);
   return pcall;
+}
+
+const s_sym ** pcall_sym (p_call *pcall, const s_sym **dest)
+{
+  if (! pcall || ! dest) {
+    err_puts("pcall_sym: invalid argument");
+    assert(! "pcall_sym: invalid argument");
+    return NULL;
+  }
+  *dest = (*pcall)->ident.sym;
+  return dest;
 }

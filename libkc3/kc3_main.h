@@ -68,7 +68,7 @@ s_tag *      kc3_access (s_tag *tag, s_list **addr,
                          s_tag *dest);
 s_tag *      kc3_and (s_tag *a, s_tag *b, s_tag *dest);
 s_tag *      kc3_buf_parse_tag (s_buf *buf, s_tag *dest);
-s_tag *      kc3_def (const s_call *call, s_tag *dest);
+s_tag *      kc3_def (p_call *pcall, s_tag *dest);
 s_tag *      kc3_defmodule (p_sym const *name,
                             const s_do_block *do_block, s_tag *dest);
 s_tag *      kc3_defoperator (s_tag *op_tag, s_tag *dest);

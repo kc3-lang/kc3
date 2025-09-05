@@ -12,8 +12,8 @@
 
 defmodule Call do
 
-  def ident = cfn Ident "call_ident" (Call, Result)
+  def ident = cfn Ident "pcall_ident" (Call, Result)
 
-  def sym = cfn Sym "call_psym" (Call, Result)
+  def sym = cfn Sym "pcall_sym" (Call, Result)
 
 end

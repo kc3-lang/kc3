@@ -263,13 +263,13 @@ void kc3_continue (void)
   abort();
 }
 
-s_tag * kc3_def (const s_call *call, s_tag *dest)
+s_tag * kc3_def (p_call *pcall, s_tag *dest)
 {
   if (securelevel(0) > 2) {
     err_puts("kc3_def: cannot use def with securelevel > 2");
     abort();
   }
-  return env_kc3_def(env_global(), call, dest);
+  return env_kc3_def(env_global(), *pcall, dest);
 }
 
 s_tag * kc3_defmodule (p_sym const *name, const s_do_block *do_block,
