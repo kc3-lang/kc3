@@ -28,10 +28,13 @@ sw buf_linenoise_refill_linenoise (s_buf *buf);
 
 void buf_linenoise_close (s_buf *buf, const char *history_path)
 {
+  s_buf_linenoise *buf_linenoise;
   assert(buf);
+  buf_linenoise = buf->user_ptr;
   if (history_path)
     linenoiseHistorySave(history_path);
   buf->refill = NULL;
+  buf_clean(&buf_linenoise->buf);
   free(buf->user_ptr);
   buf->user_ptr = NULL;
   if (isatty(STDIN_FILENO))
@@ -44,7 +47,7 @@ s_buf * buf_linenoise_open_r (s_buf *buf, const char *prompt,
   s_buf_linenoise *buf_linenoise;
   assert(buf);
   buf->line = 0;
-  buf_linenoise = malloc(sizeof(s_buf_linenoise));
+  buf_linenoise = alloc(sizeof(s_buf_linenoise));
   if (! buf_linenoise) {
     err_puts("buf_linenoise_open_r: failed to allocate memory");
     return NULL;
