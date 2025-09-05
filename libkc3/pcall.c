@@ -107,15 +107,30 @@ p_call * pcall_init_cast (p_call *pcall, p_sym *type, s_tag *tag)
 
 p_call * pcall_init_copy (p_call *pcall, p_call *src)
 {
+  p_call tmp;
   assert(pcall);
   assert(src);
-  *pcall = call_new_ref(*src);
+  if (env_global()->pass_by_copy) {
+    if (! (tmp = call_new_copy(*src))) {
+      err_puts("pcall_init_copy: call_new_copy");
+      assert(! "pcall_init_copy: call_new_copy");
+      return NULL;
+    }
+  }
+  else {
+    if (! (tmp = call_new_ref(*src))) {
+      err_puts("pcall_init_copy: call_new_ref");
+      assert(! "pcall_init_copy: call_new_ref");
+      return NULL;
+    }
+  }
+  *pcall = tmp;
   return pcall;
 }
 
 const s_sym ** pcall_sym (p_call *pcall, const s_sym **dest)
 {
-  if (! pcall || ! dest) {
+  if (! pcall || ! *pcall || ! (*pcall)->ident.sym || ! dest) {
     err_puts("pcall_sym: invalid argument");
     assert(! "pcall_sym: invalid argument");
     return NULL;

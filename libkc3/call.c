@@ -85,17 +85,6 @@ bool call_get (s_call *call)
   return env_call_get(env_global(), call);
 }
 
-s_ident * call_ident (const s_call *call, s_ident *dest)
-{
-  if (! call || ! dest) {
-    err_puts("call_ident: invalid argument");
-    assert(! "call_ident: invalid argument");
-    return NULL;
-  }
-  *dest = call->ident;
-  return dest;
-}
-
 s_call * call_init (s_call *call)
 {
   s_call tmp = {0};
@@ -189,6 +178,18 @@ s_call * call_new (void)
   return call;
 }
 
+s_call * call_new_copy (s_call *src)
+{
+  s_call *call;
+  if (! (call = alloc(sizeof(s_call))))
+    return NULL;
+  if (! call_init_copy(call, src)) {
+    free(call);
+    return NULL;
+  }
+  return call;
+}
+
 s_call * call_new_ref (s_call *src)
 {
   assert(src);
@@ -208,15 +209,4 @@ s_call * call_new_ref (s_call *src)
   mutex_unlock(&src->mutex);
 #endif
   return src;
-}
-
-p_sym * call_psym (const s_call *call, p_sym *dest)
-{
-  if (! call || ! call->ident.sym || ! dest) {
-    err_puts("call_psym: invalid argument");
-    assert(! "call_psym: invalid argument");
-    return NULL;
-  }
-  *dest = call->ident.sym;
-  return dest;
 }
