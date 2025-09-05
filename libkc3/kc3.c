@@ -1036,14 +1036,13 @@ s_list ** kc3_stacktrace (s_list **dest)
 
 s_str * kc3_str (const s_tag *tag, s_str *dest)
 {
-  const s_sym *sym;
+  const s_sym *sym = &g_sym_Str;
   switch (tag->type) {
   case TAG_PLIST:
     return str_init_concatenate_list(dest, tag->data.plist);
   case TAG_STR:
     return str_init_copy(dest, &tag->data.str);
   default:
-    sym = &g_sym_Str;
     return str_init_cast(dest, &sym, tag);
   }
 }
