@@ -122,7 +122,7 @@ test/markdown/*.err
 test/markdown/*.out
 test/markdown/*.ret
 test/.*.kc3m
-test/wget/127.0.0.1:15004
+test/wget/*/
 *.tmp
 ucd2c/ucd2c
 win32/kc3*
