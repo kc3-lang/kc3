@@ -10,26 +10,58 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-LOCAL_TEST = 127.0.0.1:15004
-LOCAL_WWW  = 127.0.0.1:15007
+LOCAL_KC3 = 127.0.0.1:15004
+LOCAL_WWW = 127.0.0.1:15007
+
+DT_KC3 = dt.kc3-lang.org
+DT_WWW = www-dt.kmx.io
+
+PROD_KC3 = kc3-lang.org
+PROD_WWW = www.kmx.io
 
 CLEANFILES = \
-	127.0.0.1:15004
+	${LOCAL_KC3} \
+	${LOCAL_WWW} \
+	${DT_KC3} \
+	${DT_WWW} \
+	${PROD_KC3} \
+	${PROD_WWW} \
 
 all:
-	echo ${MAKE} local_test | local_www
+	echo ${MAKE} local_kc3 | local_www
 
 clean:
 	rm -rf ${CLEANFILES}
 
-local_test:
-	rm -rf ${LOCAL_TEST}
-	wget -kmr "http://${LOCAL_TEST}/"
+dt_kc3:
+	rm -rf ${DT_KC3}
+	wget -kmr "http://${DT_KC3}/"
+
+dt_www:
+	rm -rf ${DT_WWW}
+	wget -kmr "http://${DT_WWW}/"
+
+local_kc3:
+	rm -rf ${LOCAL_KC3}
+	wget -kmr "http://${LOCAL_KC3}/"
 
 local_www:
 	rm -rf ${LOCAL_WWW}
 	wget -kmr "http://${LOCAL_WWW}/"
 
+prod_kc3:
+	rm -rf ${PROD_KC3}
+	wget -kmr "http://${PROD_KC3}/"
+
+prod_www:
+	rm -rf ${PROD_WWW}
+	wget -kmr "http://${PROD_WWW}/"
+
 .PHONY: \
 	clean \
-	local
+	dt_kc3 \
+	dt_www \
+	local_kc3 \
+	local_www \
+	prod_kc3 \
+	prod_www
