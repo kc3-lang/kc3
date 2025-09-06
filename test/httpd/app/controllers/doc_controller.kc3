@@ -234,7 +234,8 @@ defmodule DocController do
       "fr" => doc_index("./doc/", "fr")}
 
   def show_html = fn (path_html, url, locale) {
-    menu = DocView.render_menu(doc_index_menu[locale])
+    index = doc_index_menu[locale]
+    menu = DocView.render_menu(index)
     title = "kc3-lang.org"
     slug = Str.slice(path_html, 0, -9)
     slug = Str.subst(slug, " ", "-")
@@ -248,7 +249,8 @@ defmodule DocController do
   }
 
   def show_md = fn (path_md, url, locale) {
-    menu = DocView.render_menu(doc_index_menu[locale])
+    index = doc_index_menu[locale]
+    menu = DocView.render_menu(index)
     title = "kc3-lang.org"
     md = File.read_all(path_md)
     [title | _] = Markdown.titles(md)
