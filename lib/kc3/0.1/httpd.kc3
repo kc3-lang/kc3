@@ -117,6 +117,7 @@ defmodule HTTPd do
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
         puts("#{response.code} #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)}")
+        Err.puts("#{response.code} #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)}")
       else
         Event.del(client_ev)
         File.close(socket)

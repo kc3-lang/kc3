@@ -27,6 +27,9 @@ int main (int argc, char **argv)
   const s_str dump_path = STR("kc3.dump");
   s32 e;
   s_env *env;
+  char  err_buf[64] = {0};
+  s32   err_fd = -1;
+  s_str err_str = {0};
   char  log_buf[64] = {0};
   s32   log_fd = -1;
   s_str log_str = {0};
@@ -46,22 +49,6 @@ int main (int argc, char **argv)
     p = argv[0] + 1;
     while (*p) {
       switch (*p) {
-      case 'D':
-        if (argc <= skip || ! argv[skip]) {
-          err_puts("kc3_httpd: -D without an argument");
-          assert(! "kc3_httpd: -D without an argument");
-          kc3_clean(NULL);
-          return 1;
-        }
-        str_init_1(&str, NULL, argv[1]);
-        if (! facts_open_file(env->facts, &str)) {
-          err_puts("kc3_httpd: -D: facts_open_file");
-          assert(! "kc3_httpd: -D: facts_open_file");
-          kc3_clean(NULL);
-          return 1;
-        }
-        skip++;
-        break;
       case 'd':
         daemonize = false;
         break;
@@ -106,7 +93,8 @@ int main (int argc, char **argv)
       kc3_clean(NULL);
       return 1;
     }
-    strftime(log_buf, sizeof(log_buf) - 1, "log/kc3_httpd_%Y-%m-%d_%H:%M:%S.log",
+    strftime(log_buf, sizeof(log_buf) - 1,
+             "log/kc3_httpd_%Y-%m-%d_%H:%M:%S.log",
              utc);
     str_init_1(&log_str, NULL, log_buf);
     if (! file_open_w(&log_str, &log_fd)) {
@@ -117,8 +105,17 @@ int main (int argc, char **argv)
     buf_file_close(env->out);
     dup2(log_fd, 1);
     buf_fd_open_w(env->out, 1);
+    strftime(err_buf, sizeof(err_buf) - 1,
+             "log/kc3_httpd_%Y-%m-%d_%H:%M:%S.error.log",
+             utc);
+    str_init_1(&err_str, NULL, err_buf);
+    if (! file_open_w(&err_str, &err_fd)) {
+      str_clean(&err_str);
+      kc3_clean(NULL);
+      return 1;
+    }
     buf_file_close(env->err);
-    dup2(log_fd, 2);
+    dup2(err_fd, 2);
     buf_fd_open_w(env->err, 2);
     buf_file_close(env->in);
     close(0);

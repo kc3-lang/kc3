@@ -309,3 +309,6 @@ require Void
 require Fact
 require FactW
 require Facts
+
+require IO
+require Err
