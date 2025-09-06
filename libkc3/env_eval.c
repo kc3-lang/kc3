@@ -683,10 +683,10 @@ bool env_eval_callable (s_env *env, s_callable *callable,
                " > 0");
       abort();
     }
-    if (! pcallable_init_copy(&tmp, &callable))
+    if (! (tmp = callable_new_copy(callable)))
       return false;
     if (! cfn_eval(&tmp->data.cfn)) {
-      pcallable_clean(&tmp);
+      callable_delete(tmp);
       return false;
     }
     goto ok;
