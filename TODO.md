@@ -2,8 +2,6 @@
 
 ## libkc3
 
- - [x] dlopen inside lib only
- - [x] Typed pointer example : `Fact*`
  - [?] Generic typed pointers : `MyType*`
    - [x] `buf_inspect_pointer`
    - [x] `buf_inspect_pointer_size`
@@ -27,22 +25,6 @@
      - [x] `data_init_cast`
      - [x] `data_init_copy`
    - [x] `pointer_init_cast`
-
-
-## Release v0.1.15
- - [x] ok
-
-
-## IKC3 RPC
-
- - ikc3/
-   - [x] ikc3 --server HOST PORT
-     - [x] argument parsing
-     - [x] socket_buf_init_listen / socket_buf_init_accept
-   - [x] ikc3 --client HOST PORT
-     - [x] argument parsing
-     - [x] socket_buf_init_connect
-     - [x] custom REPL with RPC I/O
 
 
 ## LibreSSL/OpenSSL
@@ -84,41 +66,6 @@
        - [ ] `tls_accept_socket`
 
 ## libkc3
- - --pedantic option (env)
-   - ikc3
-   - `env_eval_do_block`
- - securelevel between 0 and 3
-   - [x] API that can only increase securelevel between 0 and 2
-   - 0 = (cfn + system + dlopen + dlsym) + (eval + def*)
-   - 1 = def* + eval
-     - [x] block all Cfn definition if `securelevel(0) > 0`
-       - [x] `env_eval_callable`
-       - [x] `cfn_eval`
-       - [x] `cfn_link`
-       - [x] `cfn_prep_cif`
-       - [x] `buf_parse_pcallable`
-       - [x] `buf_parse_cfn`
-     - [x] block system() calls if `securelevel(0) > 0`
-       - [x] `kc3_system`
-       - [x] `kc3_system_pipe_exec`
-     - [x] block dlopen() calls if `securelevel(0) > 0`
-       - [x] kc3_dlopen
-       - [x] env_dlopen
-     - [x] block dlsym() calls if `securelevel(0) > 0`
-       - [x] only ever called by cfn_apply which is already blocked at
-             securelevel > 0
-   - 2 = eval
-     - [x] block buf_parse_fn if `securelevel(0) > 1`
-     - [x] block buf_parse_pcallable if `securelevel(0) > 1`
-     - [x] block env_eval_callable if `securelevel(0) > 1`
-     - [x] block all env_def* if `securelevel(0) > 1`
-     - [x] block all kc3_def* if `securelevel(0) > 1`
-     - [x] block all facts_add* on global env facts
-           if `securelevel(0) > 1`
-     - [x] block all facts_remove* on global env facts
-           if `securelevel(0) > 1`
-   - 3 = ø (no KC3 eval, C-mode only)
-     - [ ] block all env_eval_* if `securelevel(0) > 2`
  - unveil
  - pledge
 
