@@ -10,18 +10,26 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+LOCAL_TEST = 127.0.0.1:15004
+LOCAL_WWW  = 127.0.0.1:15007
+
 CLEANFILES = \
 	127.0.0.1:15004
 
-all: local_test
+all:
+	echo ${MAKE} local_test | local_www
 
 clean:
 	rm -rf ${CLEANFILES}
 
 local_test:
-	rm -rf '127.0.0.1:15004'
-	wget -kmr http://127.0.0.1:15004/
+	rm -rf ${LOCAL_TEST}
+	wget -kmr "http://${LOCAL_TEST}/"
+
+local_www:
+	rm -rf ${LOCAL_WWW}
+	wget -kmr "http://${LOCAL_WWW}/"
 
 .PHONY: \
 	clean \
-	local_test
+	local
