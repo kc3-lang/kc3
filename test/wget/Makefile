@@ -11,7 +11,7 @@
 ## THIS SOFTWARE.
 
 LOCAL_KC3 = 127.0.0.1:15004
-LOCAL_WWW = 127.0.0.1:15007
+LOCAL_WWW  = 127.0.0.1:15007
 
 DT_KC3 = dt.kc3-lang.org
 DT_WWW = www-dt.kmx.io
