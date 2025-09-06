@@ -26,7 +26,7 @@ Follow the [KC3 Structure Guide](/doc/3_Guides/3.4_Structure) to
 discover the structure of the whole KC3 project and its components.
 
 
-## 3.5 [Tutorial](/doc/3_Guides/3.5_Turorial)
+## 3.5 [Tutorial](/doc/3_Guides/3.5_Tutorial)
 
 Follow the [KC3 Tutorial Guide](/doc/3_Guides/3.5_Tutorial) to
 learn about developping software in KC3.
