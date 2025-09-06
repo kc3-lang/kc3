@@ -38,7 +38,6 @@ int main (int argc, char **argv)
   char *p;
   s32 r = 1;
   s32 skip = 0;
-  s_str str;
   time_t t;
   s_tag tmp = {0};
   const struct tm *utc = NULL;

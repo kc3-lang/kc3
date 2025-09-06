@@ -48,7 +48,7 @@ defmodule HTTPd do
     end
     load_directory("app/plugs/")
     securelevel(1)
-    puts("HTTPd.load_app: done")
+    IO.puts("HTTPd.load_app: done")
   }
 
   def clean_all_uploads = fn () {
@@ -57,7 +57,7 @@ defmodule HTTPd do
         fn (file) {
           if (file != "." && file != "..") do
             path = HTTP.Upload.tmp_filename_prefix + file
-            puts("HTTPd.clean_all_uploads: RM #{inspect(path)}")
+            IO.puts("HTTPd.clean_all_uploads: RM #{inspect(path)}")
             File.unlink(path)
           end
         })
@@ -72,7 +72,7 @@ defmodule HTTPd do
               Str.starts_with?(value.tmp_path,
                 HTTP.Upload.tmp_filename_prefix) &&
               File.exists?(value.tmp_path)) do
-            puts("HTTPd.clean_request_uploads: RM #{inspect(value.tmp_path)}")
+            IO.puts("HTTPd.clean_request_uploads: RM #{inspect(value.tmp_path)}")
             File.unlink(value.tmp_path)
           end
         }
@@ -98,7 +98,7 @@ defmodule HTTPd do
         end
         request = Struct.put(request, :client_addr, client_addr)
         user_agent = HTTP.Request.header(request, "User-Agent")
-        puts("--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)}")
+        IO.puts("--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)}")
         if (type(request.method) == Str) do
           response = error_405_page(request)
         else
@@ -116,8 +116,12 @@ defmodule HTTPd do
           "Accept-Ranges", "bytes")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
-        puts("#{response.code} #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)}")
-        Err.puts("#{response.code} #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)}")
+        IO.puts("#{response.code} #{client_addr} #{request.method}" +
+          " #{request.url} #{inspect(user_agent)}")
+        if (response.code >= 400) do
+          Err.puts("#{response.code} #{client_addr} #{request.method}" +
+            " #{request.url} #{inspect(user_agent)}")
+        end
       else
         Event.del(client_ev)
         File.close(socket)
@@ -143,7 +147,7 @@ defmodule HTTPd do
 
   def daemonize = fn () {
     if (KC3.daemonize) do
-      puts("forking to background")
+      IO.puts("forking to background")
       if (pid = fork()) > 0 do
         _exit(0)
       end
@@ -160,7 +164,7 @@ defmodule HTTPd do
       r = Event.dispatch(event_base)
       if r do
         e = errno()
-        puts("KC3 HTTPd: event dispatch error: #{strerror(e)}")
+        IO.puts("KC3 HTTPd: event dispatch error: #{strerror(e)}")
       end
       Socket.close(socket)
     end
@@ -173,7 +177,7 @@ defmodule HTTPd do
     def socket = Socket.listen(host, port)
     if socket do
       daemonize()
-      puts("KC3 HTTPd: listening on #{host}:#{port}")
+      IO.puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
       if HTTPd.thread_count > 1 do
         threads = List.map(List.count(HTTPd.thread_count - 1), fn (x) {
@@ -186,7 +190,7 @@ defmodule HTTPd do
       end
       0
     else
-      puts("KC3 HTTPd: cannot listen on #{host}:#{port}")
+      Err.puts("KC3 HTTPd: cannot listen on #{host}:#{port}")
       -1
     end
   }

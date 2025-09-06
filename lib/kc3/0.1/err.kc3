@@ -14,7 +14,7 @@ defmodule Err do
 
   def inspect = cfn Sw "err_inspect_tag" (Tag)
 
-  def puts = cfn Sw "err_puts" (Str)
+  def puts = cfn Sw "err_puts" (Char*)
 
   def write_str = cfn Sw "err_write_str" (Str)
 
