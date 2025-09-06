@@ -67,11 +67,21 @@ There are now four full applications written in KC3 that we know of :
 
 ## New in this release
 
+ - libkc3
+   - dlopen inside lib/ only
+   - Typed pointer example : `(Facts*)` → `p_facts`
+
  - ikc3
    - Remote procedure call
      - client : ikc3 --client HOST PORT
-       - opens a prompt on stdin and forwards parsed tags to server 
-       - reads successful response from server, errors stay on server
+       - opens a prompt on stdin and forwards parsed tags to server
+         using `RPC.request("input")`
+       - reads structured response from server :
+         ```elixir
+         %RPC.Response{out: "plop\n",
+                       err: "warning: message\n",
+                       result: (Sw) 5}
+         ```
      - server : ikc3 --server HOST PORT
        - accepts only one connection and exits
        - works with netcat (no prompt)
@@ -89,6 +99,8 @@ to discover how to use KC3 for your own projects.
 
 ## TODO
 
+ - libkc3
+   - env_init: find lib dir for /usr/local/lib/kc3/0.1/
  - HTTPd
    - limit acceptor loop
    - OAuth2 / jwt
