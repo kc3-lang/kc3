@@ -51,20 +51,6 @@ defmodule HTTPd do
     puts("HTTPd.load_app: done")
   }
 
-  def maybe_reload_app = fn () {
-    maybe_reload(__FILE__)
-    maybe_reload_directory("app/models/")
-    if (File.exists?("config/db.kc3")) do
-      maybe_reload("config/db.kc3")
-    end
-    maybe_reload_directory("app/controllers/")
-    maybe_reload_directory("app/views/")
-    if (File.exists?("config/routes.kc3")) do
-      maybe_reload("config/routes.kc3")
-    end
-    maybe_reload_directory("app/plugs/")
-  }
-
   def clean_all_uploads = fn () {
     if (File.exists?(HTTP.Upload.tmp_filename_prefix)) do
       List.each(File.list(HTTP.Upload.tmp_filename_prefix),
@@ -100,7 +86,6 @@ defmodule HTTPd do
       Facts.with_transaction(Facts.env_db(), do
         def concurrent_requests = concurrent_requests + 1
       end)
-      # maybe_reload_app()
       request = void
       request = HTTP.Request.buf_parse(client.buf_rw.r)
       result = if request do
