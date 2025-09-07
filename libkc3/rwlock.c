@@ -23,17 +23,19 @@ void rwlock_clean (s_rwlock *rwlock)
 {
   int e;
   assert(rwlock);
-  if ((e = pthread_rwlock_destroy(&rwlock->rwlock))) {
-    err_write_1("rwlock_clean: pthread_rwlock_destroy: ");
-    switch (e) {
-    case EPERM: err_puts("permission denied"); break;
-    case EBUSY: err_puts("rw lock is locked"); break;
-    case EINVAL: err_puts("invalid rw lock"); break;
-    default: err_puts("unknown error"); break;
+  if (rwlock->ready) {
+    if ((e = pthread_rwlock_destroy(&rwlock->rwlock))) {
+      err_write_1("rwlock_clean: pthread_rwlock_destroy: ");
+      switch (e) {
+      case EPERM: err_puts("permission denied"); break;
+      case EBUSY: err_puts("rw lock is locked"); break;
+      case EINVAL: err_puts("invalid rw lock"); break;
+      default: err_puts("unknown error"); break;
+      }
+      err_stacktrace();
+      assert(! "rwlock_clean: pthread_rwlock_destroy");
+      abort();
     }
-    err_stacktrace();
-    assert(! "rwlock_clean: pthread_rwlock_destroy");
-    abort();
   }
 }
 
