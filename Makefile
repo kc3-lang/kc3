@@ -671,15 +671,14 @@ install_lib_links:
 	${MAKE} install_lib_links_${ARCH}
 
 install_lib_links_bsd:
-	ln -sf ../../libekc3.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
-	ln -sf ../../libkc3_event.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/event.so
-	ln -sf ../../libkc3_gtk4.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/gtk4.so
-	ln -sf ../../libkc3_http.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/http.so
-	ln -sf ../../libkc3_json.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/json.so
-	ln -sf ../../libkc3_markdown.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
-	ln -sf ../../libkc3_smtp.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/smtp.so
-	ln -sf ../../libkc3_socket.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
-	ln -sf ../../libkc3_tls.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
+	ln -sf ../../libekc3.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
+	ln -sf ../../libkc3_event.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/event.so
+	ln -sf ../../libkc3_gtk4.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/gtk4.so
+	ln -sf ../../libkc3_http.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/http.so
+	ln -sf ../../libkc3_json.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/json.so
+	ln -sf ../../libkc3_markdown.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
+	ln -sf ../../libkc3_socket.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
+	ln -sf ../../libkc3_tls.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
 
 install_lib_links_darwin:
 	ln -sf ../../libekc3.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
@@ -692,16 +691,6 @@ install_lib_links_darwin:
 	ln -sf ../../libkc3_socket.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
 	ln -sf ../../libkc3_tls.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
 
-install_lib_links_freebsd:
-	ln -sf ../../libekc3.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
-	ln -sf ../../libkc3_event.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/event.so
-	ln -sf ../../libkc3_gtk4.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/gtk4.so
-	ln -sf ../../libkc3_http.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/http.so
-	ln -sf ../../libkc3_json.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/json.so
-	ln -sf ../../libkc3_markdown.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
-	ln -sf ../../libkc3_socket.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
-	ln -sf ../../libkc3_tls.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
-
 install_lib_links_linux:
 	ln -sf ../../libekc3.so ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
 	ln -sf ../../libkc3_event.so ${DESTDIR}${prefix}/lib/kc3/0.1/event.so
@@ -712,6 +701,17 @@ install_lib_links_linux:
 	ln -sf ../../libkc3_smtp.so ${DESTDIR}${prefix}/lib/kc3/0.1/smtp.so
 	ln -sf ../../libkc3_socket.so ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
 	ln -sf ../../libkc3_tls.so ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
+
+install_lib_links_openbsd:
+	ln -sf ../../libekc3.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
+	ln -sf ../../libkc3_event.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/event.so
+	ln -sf ../../libkc3_gtk4.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/gtk4.so
+	ln -sf ../../libkc3_http.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/http.so
+	ln -sf ../../libkc3_json.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/json.so
+	ln -sf ../../libkc3_markdown.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
+	ln -sf ../../libkc3_smtp.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/smtp.so
+	ln -sf ../../libkc3_socket.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
+	ln -sf ../../libkc3_tls.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
 
 install_lib_links_windows:
 	ln -sf ../../../bin/libekc3-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
@@ -833,44 +833,41 @@ lib_links:
 lib_links_asan:
 	${MAKE} lib_links_${ARCH}_asan
 
+lib_links_bsd:
+	ln -sf ../../../ekc3/.libs/libekc3.so.0.0.0 lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/.libs/libkc3_event.so.0.0.0 lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4.so.0.0.0 lib/kc3/0.1/gtk4.so
+	ln -sf ../../../http/.libs/libkc3_http.so.0.0.0 lib/kc3/0.1/http.so
+	ln -sf ../../../json/.libs/libkc3_json.so.0.0.0 lib/kc3/0.1/json.so
+	ln -sf ../../../markdown/.libs/libkc3_markdown.so.0.0.0 lib/kc3/0.1/markdown.so
+	ln -sf ../../../socket/.libs/libkc3_socket.so.0.0.0 lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls.so.0.0.0 lib/kc3/0.1/tls.so
+
+lib_links_bsd_asan:
+	ln -sf ../../../ekc3/.libs/libekc3_asan.so.0.0.0 lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/.libs/libkc3_event_asan.so.0.0.0 lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4_asan.so.0.0.0 lib/kc3/0.1/gtk4.so
+	ln -sf ../../../http/.libs/libkc3_http_asan.so.0.0.0 lib/kc3/0.1/http.so
+	ln -sf ../../../json/.libs/libkc3_json_asan.so.0.0.0 lib/kc3/0.1/json.so
+	ln -sf ../../../markdown/.libs/libkc3_markdown_asan.so.0.0.0 lib/kc3/0.1/markdown.so
+	ln -sf ../../../socket/.libs/libkc3_socket_asan.so.0.0.0 lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls_asan.so.0.0.0 lib/kc3/0.1/tls.so
+
+lib_links_bsd_debug:
+	ln -sf ../../../ekc3/.libs/libekc3_debug.so.0.0.0 lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/.libs/libkc3_event_debug.so.0.0.0 lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4_debug.so.0.0.0 lib/kc3/0.1/gtk4.so
+	ln -sf ../../../http/.libs/libkc3_http_debug.so.0.0.0 lib/kc3/0.1/http.so
+	ln -sf ../../../json/.libs/libkc3_json_debug.so.0.0.0 lib/kc3/0.1/json.so
+	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.so.0.0.0 lib/kc3/0.1/markdown.so
+	ln -sf ../../../socket/.libs/libkc3_socket_debug.so.0.0.0 lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls_debug.so.0.0.0 lib/kc3/0.1/tls.so
+
 lib_links_cov:
 	${MAKE} lib_links_${ARCH}_cov
 
 lib_links_debug:
 	${MAKE} lib_links_${ARCH}_debug
-
-lib_links_bsd:
-	ln -sf ../../../ekc3/.libs/libekc3.so.0.0 lib/kc3/0.1/ekc3.so
-	ln -sf ../../../event/.libs/libkc3_event.so.0.0 lib/kc3/0.1/event.so
-	ln -sf ../../../gtk4/.libs/libkc3_gtk4.so.0.0 lib/kc3/0.1/gtk4.so
-	ln -sf ../../../http/.libs/libkc3_http.so.0.0 lib/kc3/0.1/http.so
-	ln -sf ../../../json/.libs/libkc3_json.so.0.0 lib/kc3/0.1/json.so
-	ln -sf ../../../markdown/.libs/libkc3_markdown.so.0.0 lib/kc3/0.1/markdown.so
-	ln -sf ../../../smtp/.libs/libkc3_smtp.so.0.0 lib/kc3/0.1/smtp.so
-	ln -sf ../../../socket/.libs/libkc3_socket.so.0.0 lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/.libs/libkc3_tls.so.0.0 lib/kc3/0.1/tls.so
-
-lib_links_bsd_debug:
-	ln -sf ../../../ekc3/.libs/libekc3_debug.so.0.0 lib/kc3/0.1/ekc3.so
-	ln -sf ../../../event/.libs/libkc3_event_debug.so.0.0 lib/kc3/0.1/event.so
-	ln -sf ../../../gtk4/.libs/libkc3_gtk4_debug.so.0.0 lib/kc3/0.1/gtk4.so
-	ln -sf ../../../http/.libs/libkc3_http_debug.so.0.0 lib/kc3/0.1/http.so
-	ln -sf ../../../json/.libs/libkc3_json_debug.so.0.0 lib/kc3/0.1/json.so
-	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.so.0.0 lib/kc3/0.1/markdown.so
-	ln -sf ../../../smtp/.libs/libkc3_smtp_debug.so.0.0 lib/kc3/0.1/smtp.so
-	ln -sf ../../../socket/.libs/libkc3_socket_debug.so.0.0 lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/.libs/libkc3_tls_debug.so.0.0 lib/kc3/0.1/tls.so
-
-lib_links_clean:
-	rm -f lib/kc3/0.1/ekc3.so
-	rm -f lib/kc3/0.1/event.so
-	rm -f lib/kc3/0.1/gtk4.so
-	rm -f lib/kc3/0.1/http.so
-	rm -f lib/kc3/0.1/json.so
-	rm -f lib/kc3/0.1/markdown.so
-	rm -f lib/kc3/0.1/smtp.so
-	rm -f lib/kc3/0.1/socket.so
-	rm -f lib/kc3/0.1/tls.so
 
 lib_links_darwin:
 	ln -sf ../../../ekc3/.libs/libekc3.0.dylib lib/kc3/0.1/ekc3.so
@@ -893,26 +890,6 @@ lib_links_darwin_debug:
 	ln -sf ../../../smtp/.libs/libkc3_smtp_debug.so.0.dylib lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug.0.dylib lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/.libs/libkc3_tls_debug.0.dylib lib/kc3/0.1/tls.so
-
-lib_links_freebsd:
-	ln -sf ../../../ekc3/.libs/libekc3.so.0.0.0 lib/kc3/0.1/ekc3.so
-	ln -sf ../../../event/.libs/libkc3_event.so.0.0.0 lib/kc3/0.1/event.so
-	ln -sf ../../../gtk4/.libs/libkc3_gtk4.so.0.0.0 lib/kc3/0.1/gtk4.so
-	ln -sf ../../../http/.libs/libkc3_http.so.0.0.0 lib/kc3/0.1/http.so
-	ln -sf ../../../json/.libs/libkc3_json.so.0.0.0 lib/kc3/0.1/json.so
-	ln -sf ../../../markdown/.libs/libkc3_markdown.so.0.0.0 lib/kc3/0.1/markdown.so
-	ln -sf ../../../socket/.libs/libkc3_socket.so.0.0.0 lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/.libs/libkc3_tls.so.0.0.0 lib/kc3/0.1/tls.so
-
-lib_links_freebsd_debug:
-	ln -sf ../../../ekc3/.libs/libekc3_debug.so.0.0.0 lib/kc3/0.1/ekc3.so
-	ln -sf ../../../event/.libs/libkc3_event_debug.so.0.0.0 lib/kc3/0.1/event.so
-	ln -sf ../../../gtk4/.libs/libkc3_gtk4_debug.so.0.0.0 lib/kc3/0.1/gtk4.so
-	ln -sf ../../../http/.libs/libkc3_http_debug.so.0.0.0 lib/kc3/0.1/http.so
-	ln -sf ../../../json/.libs/libkc3_json_debug.so.0.0.0 lib/kc3/0.1/json.so
-	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.so.0.0.0 lib/kc3/0.1/markdown.so
-	ln -sf ../../../socket/.libs/libkc3_socket_debug.so.0.0.0 lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/.libs/libkc3_tls_debug.so.0.0.0 lib/kc3/0.1/tls.so
 
 lib_links_linux:
 	ln -sf ../../../ekc3/.libs/libekc3.so lib/kc3/0.1/ekc3.so
@@ -957,6 +934,39 @@ lib_links_linux_debug:
 	ln -sf ../../../smtp/.libs/libkc3_smtp_debug.so lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug.so lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/.libs/libkc3_tls_debug.so lib/kc3/0.1/tls.so
+
+lib_links_openbsd:
+	ln -sf ../../../ekc3/.libs/libekc3.so.0.0 lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/.libs/libkc3_event.so.0.0 lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4.so.0.0 lib/kc3/0.1/gtk4.so
+	ln -sf ../../../http/.libs/libkc3_http.so.0.0 lib/kc3/0.1/http.so
+	ln -sf ../../../json/.libs/libkc3_json.so.0.0 lib/kc3/0.1/json.so
+	ln -sf ../../../markdown/.libs/libkc3_markdown.so.0.0 lib/kc3/0.1/markdown.so
+	ln -sf ../../../smtp/.libs/libkc3_smtp.so.0.0 lib/kc3/0.1/smtp.so
+	ln -sf ../../../socket/.libs/libkc3_socket.so.0.0 lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls.so.0.0 lib/kc3/0.1/tls.so
+
+lib_links_openbsd_debug:
+	ln -sf ../../../ekc3/.libs/libekc3_debug.so.0.0 lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/.libs/libkc3_event_debug.so.0.0 lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4_debug.so.0.0 lib/kc3/0.1/gtk4.so
+	ln -sf ../../../http/.libs/libkc3_http_debug.so.0.0 lib/kc3/0.1/http.so
+	ln -sf ../../../json/.libs/libkc3_json_debug.so.0.0 lib/kc3/0.1/json.so
+	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.so.0.0 lib/kc3/0.1/markdown.so
+	ln -sf ../../../smtp/.libs/libkc3_smtp_debug.so.0.0 lib/kc3/0.1/smtp.so
+	ln -sf ../../../socket/.libs/libkc3_socket_debug.so.0.0 lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/.libs/libkc3_tls_debug.so.0.0 lib/kc3/0.1/tls.so
+
+lib_links_clean:
+	rm -f lib/kc3/0.1/ekc3.so
+	rm -f lib/kc3/0.1/event.so
+	rm -f lib/kc3/0.1/gtk4.so
+	rm -f lib/kc3/0.1/http.so
+	rm -f lib/kc3/0.1/json.so
+	rm -f lib/kc3/0.1/markdown.so
+	rm -f lib/kc3/0.1/smtp.so
+	rm -f lib/kc3/0.1/socket.so
+	rm -f lib/kc3/0.1/tls.so
 
 lib_links_windows:
 	ln -sf ../../../ekc3/.libs/libekc3-0.dll lib/kc3/0.1/ekc3.so

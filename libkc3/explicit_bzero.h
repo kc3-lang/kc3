@@ -13,7 +13,9 @@
 #ifndef KC3_EXPLICIT_BZERO_H
 #define KC3_EXPLICIT_BZERO_H
 
-#ifdef __APPLE__
+#include "config.h"
+
+#if ! HAVE_EXPLICIT_BZERO
 # define explicit_bzero(p, size) bzero(p, size)
 #endif
 
