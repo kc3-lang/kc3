@@ -410,6 +410,7 @@ struct quote {
 };
 
 struct rwlock {
+  bool             ready;
   pthread_rwlock_t rwlock;
   sw               count;
   pthread_t        thread;
