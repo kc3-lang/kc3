@@ -1447,8 +1447,10 @@ s_env * env_globals_init (s_env *env)
   if (! (ncpu = frame_binding_new_void(env->read_time_frame,
                                        &g_sym_ncpu)))
     return NULL;
-#if HAVE_PTHREAD
-# if (defined(__FreeBSD__) || defined(__OpenBSD__))
+#if ! HAVE_PTHREAD
+  tag_init_u8(ncpu, 1);
+#else
+# if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
   {
     s32 mib[2];
     s32 hw_ncpu;
@@ -1466,8 +1468,6 @@ s_env * env_globals_init (s_env *env)
 # else
   tag_init_u8(ncpu, get_nprocs());
 # endif
-#else
-  tag_init_u8(ncpu, 1);
 #endif
   return env;
 
