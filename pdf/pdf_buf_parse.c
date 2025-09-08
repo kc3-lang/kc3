@@ -80,10 +80,23 @@ sw pdf_buf_parse_comments (s_buf *buf)
 
 sw pdf_buf_parse_integer (s_buf *buf, s32 *dest)
 {
+  bool negative = false;
   sw r;
   sw result = 0;
   s32 tmp;
-  if ((r = buf_parse_s32_decimal(buf, &tmp)) <= 0)
+  if ((r = buf_read_1(buf, "+")) < 0)
+    return r;
+  if (r)
+    result += r;
+  else {
+    if ((r = buf_read_1(buf, "-")) < 0)
+      return r;
+    if (r) {
+      negative = true;
+      result += r;
+    }
+  }
+  if ((r = buf_parse_s32_decimal(buf, negative, &tmp)) <= 0)
     return r;
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0)
