@@ -1,4 +1,6 @@
+quote require File
+require File
 quote require TLS
 require TLS
-quote TLS.ca_cert_path()
-TLS.ca_cert_path()
+quote File.access(TLS.ca_cert_path(), :r)
+File.access(TLS.ca_cert_path(), :r)

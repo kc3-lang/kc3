@@ -111,7 +111,7 @@ gdb_test_markdown:
 	cd markdown && ${GDB} ../../ikc3/.libs/ikc3_debug
 
 gdb_test_markdown_asan:
-	cd markdown && ${GDB} ../../ikc3/.libs/ikc3_asan
+	cd markdown && ${GDB} ../../ikc3/.libs/ikc3_asa
 
 gdb_test_pdf:
 	cd pdf && ${GDB} ../../ikc3/.libs/ikc3_debug
@@ -132,6 +132,7 @@ test: libkc3_test
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./json_test
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./markdown_test
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./pdf_test
+	IKC3=${SRC_TOP}/ikc3/ikc3 time ./tls_test
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./http_test
 
 test_asan: libkc3_test_asan
@@ -292,6 +293,18 @@ test_socket_cov:
 test_socket_debug:
 	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./socket_test
 
+test_tls:
+	IKC3=${SRC_TOP}/ikc3/ikc3 time ./tls_test
+
+test_tls_asan:
+	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./tls_test
+
+test_tls_cov:
+	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./tls_test
+
+test_tls_debug:
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./tls_test
+
 test_valgrind: libkc3_test
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./libkc3_test
 
@@ -329,6 +342,7 @@ test_valgrind: libkc3_test
 	test_libkc3_cov \
 	test_libkc3_debug \
 	test_socket \
+	test_tls \
 	test_valgrind
 
 include config.mk

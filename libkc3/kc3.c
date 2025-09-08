@@ -45,6 +45,7 @@
 #include "facts.h"
 #include "facts_cursor.h"
 #include "fd.h"
+#include "file.h"
 #include "kc3_main.h"
 #include "list.h"
 #include "map.h"
@@ -621,6 +622,11 @@ s_tag * kc3_facts_with_tuple (s_facts *facts, s_tuple *tuple,
   return env_facts_with_tags(env_global(), facts, tuple->tag,
                              tuple->tag + 1, tuple->tag + 2,
                              *callback, dest);
+}
+
+bool kc3_file_access (s_str *path, p_sym *mode)
+{
+  return file_access(path, *mode);
 }
 
 s_tag * kc3_quote_cfn (const s_sym **sym, s_tag *dest)

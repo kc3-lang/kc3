@@ -16,6 +16,8 @@ defmodule File do
 
   def access? = cfn Bool "file_access" (Str, Sym)
 
+  def access = cfn Bool "kc3_file_access" (Str, Sym)
+
   def close = cfn Void "file_close" (Tag)
 
   def dirname = cfn Str "file_dirname" (Str, Result)

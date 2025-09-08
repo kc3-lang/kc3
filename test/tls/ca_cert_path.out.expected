@@ -1,4 +1,6 @@
+require File
+true
 require TLS
 true
-TLS.ca_cert_path()
-""
+File.access(TLS.ca_cert_path(), :r)
+true
