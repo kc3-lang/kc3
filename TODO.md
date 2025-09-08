@@ -47,9 +47,9 @@
    - [ ] wrap the following functions in lib/kc3/0.1 :
      - [ ] Common TLS API :
        - [x] `#include <tls.h>`
-       - [lyzer] `tls_init() != 0`
-       - [lyzer] `struct tls_config *config = tls_config_new();`
-       - [lyzer] `tls_configure(ctx, config);`
+       - [ ] `tls_init() != 0`
+       - [x] `struct tls_config *config = tls_config_new();`
+       - [ ] `tls_configure(ctx, config);`
        - [perle] `tls_write(ctx, data, size)`
        - [perle] `tls_read(ctx, data, size);`
        - [perle] `tls_close(ctx);`
