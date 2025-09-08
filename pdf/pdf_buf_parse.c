@@ -78,6 +78,59 @@ sw pdf_buf_parse_comments (s_buf *buf)
   return result;
 }
 
+sw pdf_buf_parse_float (s_buf *buf, f32 *dest)
+{
+  u8 digit;
+  f32 i;
+  bool negative = false;
+  sw r;
+  sw result = 0;
+  f32 tmp;
+  if ((r = buf_read_1(buf, "+")) < 0)
+    return r;
+  if (r)
+    result += r;
+  else {
+    if ((r = buf_read_1(buf, "-")) < 0)
+      return r;
+    if (r) {
+      negative = true;
+      result += r;
+    }
+  }
+  if ((r = buf_parse_digit_dec(buf, &digit)) <= 0)
+    return r;
+  result += r;
+  tmp = digit;
+  while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+    result += r;
+    tmp = tmp * 10 + digit;
+  }
+  if (r < 0 ||
+      (r = buf_read_1(buf, ".")) <= 0)
+    goto ok;
+  result += r;
+  i = 10;
+  while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+    tmp += (f32) digit / i;
+    i *= 10;
+    result += r;
+  }
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto ok;
+  result += r;
+  if ((r = pdf_buf_parse_comments(buf)) < 0)
+    goto ok;
+  if (! r)
+    return -1;
+  result += r;
+ ok:
+  if (negative)
+    tmp = -tmp;
+  *dest = tmp;
+  return result;
+}
+
 sw pdf_buf_parse_integer (s_buf *buf, s32 *dest)
 {
   bool negative = false;
