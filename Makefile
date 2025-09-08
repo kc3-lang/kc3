@@ -305,20 +305,17 @@ event_debug:
 	${MAKE} -C kc3s debug
 	${MAKE} -C event debug
 
-fx: httpd fx_assets
-	${PWD}/httpd/.libs/kc3_httpd -C httpd/fx -d 127.0.0.1 58001
+fx:
+	${MAKE} -C httpd fx
 
-fx_asan: httpd_asan fx_assets
-	${PWD}/httpd/.libs/kc3_httpd_asan -C httpd/fx -d 127.0.0.1 58001
+fx_asan:
+	${MAKE} -C httpd fx_asan
 
-fx_assets:
-	${MAKE} -C httpd/fx/assets
+fx_cov:
+	${MAKE} -C httpd fx_cov
 
-fx_cov: httpd_cov fx_assets
-	${PWD}/httpd/.libs/kc3_httpd_cov -C httpd/fx -d 127.0.0.1 58001
-
-fx_debug: httpd_debug fx_assets
-	${PWD}/httpd/.libs/kc3_httpd_debug -C httpd/fx -d 127.0.0.1 58001
+fx_debug:
+	${MAKE} -C httpd fx_debug
 
 gcovr:
 	${MAKE} -C libkc3 gcovr
@@ -1494,7 +1491,6 @@ uninstall:
 	event_debug \
 	fx \
 	fx_asan \
-	fx_assets \
 	fx_cov \
 	fx_debug \
 	gcovr \

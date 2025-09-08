@@ -31,6 +31,7 @@ current_test
 .DS_Store
 ekc3/embed
 *.exe
+*.facts.bin.facts
 fs/fuse/mount_kc3fs
 fs/fuse/mount_kc3fs_asan
 fs/fuse/mount_kc3fs_cov

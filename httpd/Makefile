@@ -41,16 +41,16 @@ distclean:
 	rm -rf ${DISTCLEANFILES}
 
 fx: kc3_httpd
-	httpd/.libs/kc3_httpd -C httpd/fx --trace -d
+	../httpd/.libs/kc3_httpd --trace -C fx -d
 
 fx_asan: kc3_httpd_asan
-	httpd/.libs/kc3_httpd_asan -C httpd/fx --trace -d
+	../httpd/.libs/kc3_httpd_asan --trace -C fx -d
 
 fx_cov: kc3_httpd_cov
-	httpd/.libs/kc3_httpd_cov -C httpd/fx --trace -d
+	../httpd/.libs/kc3_httpd_cov --trace -C fx -d
 
 fx_debug: kc3_httpd_debug
-	httpd/.libs/kc3_httpd_debug -C httpd/fx --trace -d
+	../httpd/.libs/kc3_httpd_debug --trace -C fx -d
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details kc3_httpd.html
@@ -82,9 +82,19 @@ uninstall:
 	cov \
 	debug \
 	distclean \
+	fx \
+	fx_asan \
+	fx_cov \
+	fx_debug \
+	gdb_fx \
+	gdb_fx_asan \
 	gdb_httpd \
+	gdb_httpd_asan \
 	install \
+	lldb_fx \
+	lldb_fx_asan \
 	lldb_httpd \
+	lldb_httpd_asan \
 	update_sources \
 	uninstall
 
