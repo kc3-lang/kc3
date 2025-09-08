@@ -415,7 +415,7 @@ gdb_test_asan: lib_links_asan
 	${MAKE} -C libkc3 asan
 	${MAKE} -C test gdb_test_asan
 
-gdb_test_ekc3: lib_links_debugOA
+gdb_test_ekc3: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
@@ -1088,7 +1088,7 @@ lldb_test:
 	${MAKE} -C test lldb_test
 
 markdown:
-	${MAKE} -C libtommath buildOA
+	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
@@ -1116,7 +1116,7 @@ markdown_debug:
 	${MAKE} -C markdown debug
 
 pdf:
-	${MAKE} -C libtommath buildOA
+	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
