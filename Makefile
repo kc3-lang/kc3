@@ -229,12 +229,15 @@ distclean:
 #	${MAKE} -C fs distclean
 
 clean_dump:
-	rm -f lib/kc3/0.1/kc3.dump test/httpd/kc3.dump
+	rm -f lib/kc3/0.1/kc3.dump
+	rm -f test/httpd/kc3.dump
+	rm -f httpd/fx/kc3.dump
 
 dump:
 	${MAKE} clean_dump
 	kc3s/kc3s --trace --dump lib/kc3/0.1/kc3.dump --quit
 	${MAKE} -C test/httpd dump
+	${MAKE} -C httpd/fx dump
 
 dump_debug:
 	${MAKE} clean_dump
