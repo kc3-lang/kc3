@@ -20,6 +20,7 @@ defmodule TLS do
 
   def client = cfn TLS* "tls_client" ()
 
+  # at program start : TLS.init() = true
   def init = cfn Bool "kc3_tls_init" ()
 
   def free = cfn Void "tls_free" (TLS*)
