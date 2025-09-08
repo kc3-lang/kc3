@@ -13,15 +13,51 @@
 #include "../libkc3/kc3.h"
 #include "pdf_buf_parse.h"
 
+sw pdf_buf_parse (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  sw result = 0;
+  s_tag tmp = {0};
+  if ((r = buf_parse_comments(buf)) < 0)
+    return r;
+  result += r;
+  *dest = tmp;
+  r = result;
+  return r;
+}
+
+sw pdf_buf_parse_bool (s_buf *buf, bool *dest)
+{
+  sw r;
+  sw result = 0;
+  bool tmp;
+  if ((r = buf_read_1(buf, "true")) > 0)
+    tmp = true;
+  else if ((r = buf_read_1(buf, "false")) > 0)
+    tmp = false;
+  else
+    return r;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    return result;
+  if (! r)
+    return r;
+  result += r;
+  *dest = tmp;
+  return result;
+}
+
 sw pdf_buf_parse_comment (s_buf *buf)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_parse_1(buf, "%")) <= 0)
+  s_str str = {0};
+  if ((r = buf_read_1(buf, "%")) <= 0)
     return r;
   result += r;
-  if ((r = buf_read_until_1_into_str(buf, "\n")) < 0)
+  if ((r = buf_read_until_1_into_str(buf, "\n", &str)) < 0)
     return result;
+  str_clean(&str);
   return result;
 }
 

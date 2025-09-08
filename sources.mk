@@ -1839,6 +1839,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/config/mime.types" \
 	"test/httpd/config/routes.kc3" \
 	"test/httpd/db/app.facts" \
+	"test/httpd/db/app.facts.bin.facts" \
 	"test/httpd/doc" \
 	"test/httpd/pages" \
 	"test/httpd/pages/index.en.html" \
