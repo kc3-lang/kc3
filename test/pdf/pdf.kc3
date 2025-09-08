@@ -1,0 +1,4 @@
+quote require PDF
+require PDF
+quote PDF.parse_str("%Hello, PDF !\n")
+PDF.parse_str("%Hello, PDF !\n")

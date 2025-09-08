@@ -1956,6 +1956,11 @@ KC3_TEST_MARKDOWN_SOURCES = \
 	"test/markdown/to_html_str.ret.expected" \
 	"test/markdown_test" \
 
+KC3_TEST_PDF_SOURCES = \
+	"test/pdf/pdf.kc3" \
+	"test/pdf/pdf.out.expected" \
+	"test/pdf_test" \
+
 KC3_OTHER_SOURCES = \
 	"AUTHORS.md" \
 	"BUGS.md" \

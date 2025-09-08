@@ -61,6 +61,7 @@ config_subdirs \
     event \
     json \
     markdown \
+    pdf \
     smtp \
     socket \
     tls \

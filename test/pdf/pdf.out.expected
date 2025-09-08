@@ -1,0 +1,4 @@
+require PDF
+true
+PDF.parse_str("%Hello, PDF !\n")
+void

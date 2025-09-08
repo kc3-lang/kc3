@@ -83,6 +83,10 @@ KC3_TEST_MARKDOWN_SOURCES="$(ls test/markdown/*.expected test/markdown/*.kc3)
 test/markdown_test"
 sources KC3_TEST_MARKDOWN_SOURCES "$KC3_TEST_MARKDOWN_SOURCES"
 
+KC3_TEST_PDF_SOURCES="$(ls test/pdf/*.expected test/pdf/*.kc3)
+test/pdf_test"
+sources KC3_TEST_PDF_SOURCES "$KC3_TEST_PDF_SOURCES"
+
 KC3_OTHER_SOURCES="$(ls *.md)
 Makefile
 config_common
@@ -120,6 +124,7 @@ update_sources_sh
 ( cd event      && ./update_sources; )
 ( cd json       && ./update_sources; )
 ( cd markdown   && ./update_sources; )
+( cd pdf        && ./update_sources; )
 ( cd smtp       && ./update_sources; )
 ( cd socket     && ./update_sources; )
 ( cd tls        && ./update_sources; )

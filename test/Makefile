@@ -113,6 +113,12 @@ gdb_test_markdown:
 gdb_test_markdown_asan:
 	cd markdown && ${GDB} ../../ikc3/.libs/ikc3_asan
 
+gdb_test_pdf:
+	cd pdf && ${GDB} ../../ikc3/.libs/ikc3_debug
+
+gdb_test_pdf_asan:
+	cd pdf && ${GDB} ../../ikc3/.libs/ikc3_asan
+
 lldb_test: debug
 	rm -f kc3.dump
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi
@@ -125,6 +131,7 @@ test: libkc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s time ./ekc3_test
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./json_test
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./markdown_test
+	IKC3=${SRC_TOP}/ikc3/ikc3 time ./pdf_test
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./http_test
 
 test_asan: libkc3_test_asan
@@ -136,6 +143,7 @@ test_asan: libkc3_test_asan
 	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./ekc3_test
 	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./json_test
 	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./markdown_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./pdf_test
 	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./http_test
 
 test_cov:
@@ -146,6 +154,7 @@ test_cov:
 	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./ekc3_test
 	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./json_test
 	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./markdown_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./pdf_test
 	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./http_test
 
 test_debug: libkc3_test_debug
@@ -156,6 +165,7 @@ test_debug: libkc3_test_debug
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./ekc3_test
 	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./json_test
 	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./markdown_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./pdf_test
 	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./http_test
 
 test_ekc3:
@@ -257,6 +267,18 @@ test_markdown_cov:
 
 test_markdown_debug:
 	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./markdown_test
+
+test_pdf:
+	IKC3=${SRC_TOP}/ikc3/ikc3 time ./pdf_test
+
+test_pdf_asan:
+	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./pdf_test
+
+test_pdf_cov:
+	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./pdf_test
+
+test_pdf_debug:
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./pdf_test
 
 test_socket:
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./socket_test
