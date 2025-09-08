@@ -10,9 +10,9 @@
      - [x] `tls_buf.c/h`
      - [x] struct `s_tls_buf`
      - `tls_buf_open_r` opens a tls connection for reading
-       [x] - `buf->refill` callback to refill the `tls_open_r` buffer
+       - [x] `buf->refill` callback to refill the `tls_open_r` buffer
      - `tls_buf_open_w` opens a tls connection for writing
-       [x] - `buf->flush` callback to flush the `tls_open_w` buffer
+       - [x] `buf->flush` callback to flush the `tls_open_w` buffer
          - `sw buf_fd_open_w_flush (s_buf *buf)`
      - `tls_buf_close`
    - ikc3 **--tls** --client/server
