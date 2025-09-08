@@ -164,3 +164,95 @@ sw pdf_buf_parse_integer (s_buf *buf, s32 *dest)
   *dest = tmp;
   return result;
 }
+
+sw pdf_buf_parse_string (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  s_tag tmp = {0};
+  if ((r = pdf_buf_parse_string_paren(buf, &tmp)) > 0) {
+    *dest = tmp;
+    return r;
+  }
+  return 0;
+}
+
+// parentheses must be balanced or backslashed
+sw pdf_buf_parse_string_paren (s_buf *buf, s_tag *dest)
+{
+  char a[BUF_SIZE + 1] = {0};
+  character c;
+  character c1;
+  character c2;
+  s32 paren = 0;
+  sw r;
+  sw result = 0;
+  s_buf_save save = {0};
+  s_tag tmp = {0};
+  s_buf tmp_buf = {0};
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(")) <= 0)
+    goto clean;
+  result += r;
+  paren++;
+  buf_init(&tmp_buf, false, sizeof(a) - 1, a);
+  while (1) {
+    if ((r = buf_read_character_utf8(buf, &c)) <= 0)
+      break;
+    result += r;
+    if (c == ')') {
+      result += r;
+      paren--;
+      if (! paren)
+        break;
+    }
+    else if (c == '\\') {
+      if ((r = buf_read_character_utf8(buf, &c)) <= 0)
+        break;
+      result += r;
+      switch (c) {
+      case 'n':  c = '\n'; break;
+      case 'r':  c = '\r'; break;
+      case 't':  c = '\t'; break;
+      case 'b':  c = '\b'; break;
+      case 'f':  c = '\f'; break;
+      case '(':  c = '(';  break;
+      case ')':  c = ')';  break;
+      case '\\': c = '\\'; break;
+      case '0': case '1': case '2': case '3':
+        if ((r = buf_read_character_utf8(buf, &c1)) <= 0)
+          break;
+        if (c1 < '0' || c1 > '7') {
+          r = -1;
+          break;
+        }
+        result += r;
+        if ((r = buf_read_character_utf8(buf, &c2)) <= 0)
+          break;
+        if (c2 < '0' || c2 > '7') {
+          r = -1;
+          break;
+        }
+        result += r;
+        c = (c - '0') * 0100 + (c1 - '0') * 010 + (c2 - '0');
+        break;
+      case '\n':
+        continue;
+      }
+    }
+    if ((r = buf_write_character_utf8(&tmp_buf, c)) <= 0)
+      break;
+  }
+  if (r < 0)
+    goto restore;
+  tmp.type = TAG_STR;
+  if ((r = buf_read_to_str(&tmp_buf, &tmp.data.str)) < 0)
+    goto restore;
+  *dest = tmp;
+  r = result;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_clean(&tmp_buf);
+  buf_save_clean(buf, &save);
+  return r;
+}

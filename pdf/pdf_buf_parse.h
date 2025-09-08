@@ -19,6 +19,7 @@ sw pdf_buf_parse (s_buf *buf, s_tag *dest);
 sw pdf_buf_parse_bool (s_buf *buf, bool *dest);
 sw pdf_buf_parse_comment (s_buf *buf);
 sw pdf_buf_parse_comments (s_buf *buf);
-
+sw pdf_buf_parse_string (s_buf *buf, s_tag *dest);
+sw pdf_buf_parse_string_paren (s_buf *buf, s_tag *dest);
 
 #endif /* KC3_PDF_H */
