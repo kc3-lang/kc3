@@ -1,0 +1,10 @@
+quote require Socket
+require Socket
+quote require Socket.Buf
+require Socket.Buf
+quote server = Socket.listen("localhost", "15000")
+server = Socket.listen("localhost", "15000")
+quote client = Socket.Buf.connect("localhost", "15000")
+client = Socket.Buf.connect("localhost", "15000")
+quote server_client = Socket.Buf.accept(server)
+server_client = Socket.Buf.accept(server)
