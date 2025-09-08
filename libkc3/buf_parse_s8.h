@@ -19,6 +19,8 @@
 sw buf_parse_s8 (s_buf *buf, s8 *dest);
 sw buf_parse_s8_base (s_buf *buf, const s_str *base,
                            bool negative, s8 *dest);
+sw buf_parse_s8_decimal (s_buf *buf, bool negative,
+                              s8 *dest);
 s_tag * buf_parse_tag_s8 (s_buf *buf, s_tag *dest);
 s_tag * buf_parse_tag_s8_base (s_buf *buf, const s_str *base,
                                     bool negative, s_tag *dest);

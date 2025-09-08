@@ -65,9 +65,36 @@ sw pdf_buf_parse_comments (s_buf *buf)
 {
   sw r;
   sw result = 0;
-  while ((r = pdf_buf_parse_comment(buf)) > 0)
-    ;
+  while (1) {
+    if ((r = pdf_buf_parse_comment(buf)) <= 0)
+      break;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      break;
+    result += r;
+  }
   if (r < 0)
     return r;
+  return result;
+}
+
+sw pdf_buf_parse_integer (s_buf *buf, s32 *dest)
+{
+  sw r;
+  sw result = 0;
+  s32 tmp;
+  if ((r = buf_parse_s32_decimal(buf, &tmp)) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto ok;
+  result += r;
+  if ((r = pdf_buf_parse_comments(buf)) < 0)
+    goto ok;
+  if (! r)
+    return -1;
+  result += r;
+ ok:
+  *dest = tmp;
   return result;
 }

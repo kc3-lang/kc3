@@ -19,6 +19,8 @@
 sw buf_parse_s_bits$ (s_buf *buf, s_bits$ *dest);
 sw buf_parse_s_bits$_base (s_buf *buf, const s_str *base,
                            bool negative, s_bits$ *dest);
+sw buf_parse_s_bits$_decimal (s_buf *buf, bool negative,
+                              s_bits$ *dest);
 s_tag * buf_parse_tag_s_bits$ (s_buf *buf, s_tag *dest);
 s_tag * buf_parse_tag_s_bits$_base (s_buf *buf, const s_str *base,
                                     bool negative, s_tag *dest);

@@ -173,6 +173,13 @@ sw buf_parse_sw_base (s_buf *buf, const s_str *base,
   return r;
 }
 
+sw buf_parse_sw_decimal (s_buf *buf, bool negative,
+                              sw *dest)
+{
+  return buf_parse_sw_base(buf, &g_kc3_base_decimal,
+                                negative, dest);
+}
+
 s_tag * buf_parse_tag_sw (s_buf *buf, s_tag *dest)
 {
   s_tag tmp = {0};

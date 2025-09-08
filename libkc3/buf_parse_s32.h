@@ -19,6 +19,8 @@
 sw buf_parse_s32 (s_buf *buf, s32 *dest);
 sw buf_parse_s32_base (s_buf *buf, const s_str *base,
                            bool negative, s32 *dest);
+sw buf_parse_s32_decimal (s_buf *buf, bool negative,
+                              s32 *dest);
 s_tag * buf_parse_tag_s32 (s_buf *buf, s_tag *dest);
 s_tag * buf_parse_tag_s32_base (s_buf *buf, const s_str *base,
                                     bool negative, s_tag *dest);

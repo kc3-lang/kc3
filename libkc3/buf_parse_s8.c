@@ -173,6 +173,13 @@ sw buf_parse_s8_base (s_buf *buf, const s_str *base,
   return r;
 }
 
+sw buf_parse_s8_decimal (s_buf *buf, bool negative,
+                              s8 *dest)
+{
+  return buf_parse_s8_base(buf, &g_kc3_base_decimal,
+                                negative, dest);
+}
+
 s_tag * buf_parse_tag_s8 (s_buf *buf, s_tag *dest)
 {
   s_tag tmp = {0};
