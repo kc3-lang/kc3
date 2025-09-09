@@ -10,3 +10,7 @@ PDF.parse_str("(ab(())c)\n")
 "ab(())c"
 PDF.parse_str("<41424344>\n")
 "ABCD"
+PDF.parse_str("/name\n")
+:name
+PDF.parse_str("[/section 123 <4142> (greet(name))]\n")
+[:section 123 "AB" "greet(name)"]

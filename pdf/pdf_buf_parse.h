@@ -15,14 +15,18 @@
 
 #include "../libkc3/types.h"
 
-sw pdf_buf_parse (s_buf *buf, s_tag *dest);
-sw pdf_buf_parse_bool (s_buf *buf, bool *dest);
-sw pdf_buf_parse_comment (s_buf *buf);
-sw pdf_buf_parse_comments (s_buf *buf);
-sw pdf_buf_parse_name (s_buf *buf, p_sym *dest);
-sw pdf_buf_parse_number (s_buf *buf, s_tag *dest);
-sw pdf_buf_parse_string (s_buf *buf, s_tag *dest);
-sw pdf_buf_parse_string_hex (s_buf *buf, s_str *dest);
-sw pdf_buf_parse_string_paren (s_buf *buf, s_tag *dest);
+/* Parser functions. */
+sw   pdf_buf_parse (s_buf *buf, s_tag *dest);
+sw   pdf_buf_parse_array (s_buf *buf, p_list *dest);
+sw   pdf_buf_parse_bool (s_buf *buf, bool *dest);
+sw   pdf_buf_parse_comment (s_buf *buf);
+sw   pdf_buf_parse_comments (s_buf *buf);
+sw   pdf_buf_parse_name (s_buf *buf, p_sym *dest);
+sw   pdf_buf_parse_number (s_buf *buf, s_tag *dest);
+sw   pdf_buf_parse_object_end (s_buf *buf, bool *end);
+sw   pdf_buf_parse_string (s_buf *buf, s_tag *dest);
+sw   pdf_buf_parse_string_hex (s_buf *buf, s_str *dest);
+sw   pdf_buf_parse_string_paren (s_buf *buf, s_str *dest);
+bool pdf_character_is_delimiter (character c);
 
 #endif /* KC3_PDF_BUF_PARSE_H */
