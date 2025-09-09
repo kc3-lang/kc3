@@ -1548,6 +1548,22 @@ sw buf_str_to_hex (s_buf *buf, const s_str *src)
   return r;
 }
 
+s64 * buf_tell_r (s_buf *buf, s64 *dest)
+{
+  if (buf->tell)
+    return buf->tell(buf, dest);
+  *dest = buf->rpos;
+  return dest;
+}
+
+s64 * buf_tell_w (s_buf *buf, s64 *dest)
+{
+  if (buf->tell)
+    return buf->tell(buf, dest);
+  *dest = buf->wpos;
+  return dest;
+}
+
 s_str * buf_to_str (s_buf *buf, s_str *str)
 {
   void *p_free;

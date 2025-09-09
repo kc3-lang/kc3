@@ -131,6 +131,8 @@ s_str *   buf_slice_to_str (s_buf *buf, uw start, uw end,
                             s_str *dest);
 sw        buf_str_to_hex (s_buf *buf, const s_str *src);
 sw        buf_str_to_hex_size (const s_str *src);
+s64 *     buf_tell_r (s_buf *buf, s64 *position);
+s64 *     buf_tell_w (s_buf *buf, s64 *position);
 s_str *   buf_to_str (s_buf *buf, s_str *dest);
 s_ratio * buf_to_ratio (s_buf *buf, s_ratio *ratio);
 sw        buf_u8_to_hex (s_buf *buf, const u8 *x);

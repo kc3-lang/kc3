@@ -155,9 +155,10 @@ sw buf_parse_s16_base (s_buf *buf, const s_str *base,
       goto restore;
     }
     u *= radix;
-    if (negative ? -u < (u16) S16_MIN + digit :
-        u > (u16) (S16_MAX - digit)) {
+    if (negative ? (-((s16) u) < S16_MIN + digit) :
+        (u > (u16) S16_MAX - digit)) {
       err_puts("buf_parse_s16_base: +: integer overflow");
+      assert(! "buf_parse_s16_base: +: integer overflow");
       r = -1;
       goto restore;
     }

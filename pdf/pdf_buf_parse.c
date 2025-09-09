@@ -13,6 +13,26 @@
 #include "../libkc3/kc3.h"
 #include "pdf_buf_parse.h"
 
+sw pdf_buf_ignore_until_token (s_buf *buf, const char *token)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(token);
+  while (1) {
+    if ((r = pdf_buf_parse_token(buf, token)) < 0)
+      return r;
+    if (r) {
+      result += r;
+      break;
+    }
+    if ((r = buf_ignore(buf, 1)) <= 0)
+      return r;
+    result += r;
+  }
+  return result;
+}
+
 sw pdf_buf_parse (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -24,55 +44,39 @@ sw pdf_buf_parse (s_buf *buf, s_tag *dest)
   if ((r = buf_parse_comments(buf)) < 0)
     goto ok;
   result += r;
-  if ((r = pdf_buf_parse_indirect_object(buf, &tmp.data.tuple)) < 0)
-    goto ok;
-  if (r) {
+  if ((r = pdf_buf_parse_indirect_object(buf, &tmp.data.tuple)) > 0) {
     result += r;
     tmp.type = TAG_TUPLE;
     goto ok;
   }
-  if ((r = pdf_buf_parse_bool(buf, &tmp.data.bool_)) < 0)
-    goto ok;
-  if (r) {
+  if ((r = pdf_buf_parse_bool(buf, &tmp.data.bool_)) > 0) {
     result += r;
     tmp.type = TAG_BOOL;
     goto ok;
   }
-  if ((r = pdf_buf_parse_null(buf, &tmp)) < 0)
-    goto ok;
-  if (r) {
+  if ((r = pdf_buf_parse_null(buf, &tmp)) > 0) {
     result += r;
     goto ok;
   }
-  if ((r = pdf_buf_parse_number(buf, &tmp)) < 0)
-    goto ok;
-  if (r) {
+  if ((r = pdf_buf_parse_number(buf, &tmp)) > 0) {
     result += r;
     goto ok;
   }
-  if ((r = pdf_buf_parse_dictionnary(buf, &tmp.data.map)) < 0)
-    goto ok;
-  if (r) {
+  if ((r = pdf_buf_parse_dictionnary(buf, &tmp.data.map)) > 0) {
     result += r;
     tmp.type = TAG_MAP;
     goto ok;
   }
-  if ((r = pdf_buf_parse_string(buf, &tmp)) < 0)
-    goto ok;
-  if (r) {
+  if ((r = pdf_buf_parse_string(buf, &tmp)) > 0) {
     result += r;
     goto ok;
   }
-  if ((r = pdf_buf_parse_name(buf, &tmp.data.psym)) < 0)
-    goto ok;
-  if (r) {
+  if ((r = pdf_buf_parse_name(buf, &tmp.data.psym)) > 0) {
     tmp.type = TAG_PSYM;
     result += r;
     goto ok;
   }
-  if ((r = pdf_buf_parse_array(buf, &tmp.data.plist)) < 0)
-    goto ok;
-  if (r) {
+  if ((r = pdf_buf_parse_array(buf, &tmp.data.plist)) > 0) {
     tmp.type = TAG_PLIST;
     result += r;
     goto ok;
@@ -226,6 +230,8 @@ sw pdf_buf_parse_dictionnary (s_buf *buf, s_map *dest)
     if ((r = pdf_buf_parse(buf, &(*values_tail)->tag)) <= 0)
       goto restore;
     result += r;
+    keys_tail = &(*keys_tail)->next.data.plist;
+    values_tail = &(*values_tail)->next.data.plist;
   }
  ok:
   if (! map_init_from_lists(&tmp, keys, values)) {
@@ -244,16 +250,16 @@ sw pdf_buf_parse_dictionnary (s_buf *buf, s_map *dest)
   return r;
 }
 
-sw pdf_buf_parse_float (s_buf *buf, f32 *dest)
+sw pdf_buf_parse_float (s_buf *buf, f64 *dest)
 {
   u8 digit;
   bool end;
-  f32 i;
+  f64 i;
   bool negative = false;
   sw r;
   sw result = 0;
   s_buf_save save;
-  f32 tmp;
+  f64 tmp;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -283,9 +289,9 @@ sw pdf_buf_parse_float (s_buf *buf, f32 *dest)
   result += r;
   i = 10;
   while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+    result += r;
     tmp += (f32) digit / i;
     i *= 10;
-    result += r;
   }
   if ((r = pdf_buf_parse_object_end(buf, &end)) > 0)
     result += r;
@@ -309,8 +315,8 @@ sw pdf_buf_parse_float (s_buf *buf, f32 *dest)
 
 sw pdf_buf_parse_indirect_object (s_buf *buf, s_tuple *dest)
 {
-  s32 generation_number;
-  s32 object_number;
+  s_tag generation_number = {0};
+  s_tag object_number = {0};
   sw r;
   sw result = 0;
   s_buf_save save = {0};
@@ -331,7 +337,10 @@ sw pdf_buf_parse_indirect_object (s_buf *buf, s_tuple *dest)
       r = -1;
       goto restore;
     }
-    if ((r = pdf_buf_parse(buf, tmp.tag + 3)) <= 0)
+    if ((r = pdf_buf_parse_stream(buf, tmp.tag + 3)) < 0)
+      goto restore;
+    if (! r &&
+        (r = pdf_buf_parse(buf, tmp.tag + 3)) <= 0)
       goto restore;
     goto ok;
   }
@@ -345,45 +354,46 @@ sw pdf_buf_parse_indirect_object (s_buf *buf, s_tuple *dest)
     }
     goto ok;
   }
+  goto restore;
  ok:
   tag_init_psym(tmp.tag, sym_indirect_object);
-  tag_init_s32(tmp.tag + 1, object_number);
-  tag_init_s32(tmp.tag + 2, generation_number);
+  tmp.tag[1] = object_number;
+  tmp.tag[2] = generation_number;
   *dest = tmp;
   r = result;
   goto clean;
  restore:
   tuple_clean(&tmp);
+  tag_clean(&object_number);
+  tag_clean(&generation_number);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
   return r;
 }
 
-sw pdf_buf_parse_integer (s_buf *buf, s32 *dest)
+sw pdf_buf_parse_integer (s_buf *buf, s_tag *dest)
 {
   bool end;
   bool negative = false;
   sw r;
   sw result = 0;
   s_buf_save save = {0};
-  s32 tmp;
+  s_tag tmp = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "+")) < 0)
     goto clean;
-  if (r)
-    result += r;
-  else {
+  if (! r) {
     if ((r = buf_read_1(buf, "-")) < 0)
       goto clean;
-    if (r) {
+    if (r)
       negative = true;
-      result += r;
-    }
   }
-  if ((r = buf_parse_s32_decimal(buf, negative, &tmp)) <= 0)
+  result += r;
+  if ((r = buf_parse_integer_decimal(buf, negative,
+                                     &tmp.data.integer)) <= 0)
     goto restore;
   result += r;
   if ((r = pdf_buf_parse_object_end(buf, &end)) > 0)
@@ -392,8 +402,8 @@ sw pdf_buf_parse_integer (s_buf *buf, s32 *dest)
     r = -1;
     goto restore;
   }
-  if (negative)
-    tmp = -tmp;
+  tmp.type = TAG_INTEGER;
+  tag_integer_reduce(&tmp);
   *dest = tmp;
   r = result;
   goto clean;
@@ -499,18 +509,12 @@ sw pdf_buf_parse_number (s_buf *buf, s_tag *dest)
   s_tag tmp = {0};
   assert(buf);
   assert(dest);
-  if ((r = pdf_buf_parse_integer(buf, &tmp.data.s32)) < 0) {
-    tmp.type = TAG_S32;
-    return r;
-  }
-  if (r)
+  if ((r = pdf_buf_parse_integer(buf, &tmp)) > 0)
     goto ok;
-  if ((r = pdf_buf_parse_float(buf, &tmp.data.f32)) < 0) {
-    tmp.type = TAG_F32;
-    return r;
-  }
-  if (r)
+  if ((r = pdf_buf_parse_float(buf, &tmp.data.f64)) < 0) {
+    tmp.type = TAG_F64;
     goto ok;
+  }
   return 0;
  ok:
   *dest = tmp;
@@ -537,6 +541,66 @@ sw pdf_buf_parse_object_end (s_buf *buf, bool *end)
  end:
   *end = true;
   return result;
+}
+
+sw pdf_buf_parse_stream (s_buf *buf, s_tag *dest)
+{
+  s_pdf_stream *pdf_stream;
+  s_map map = {0};
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  const s_sym *sym_PDF_Stream = sym_1("PDF.Stream");
+  s_tag tmp = {0};
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = pdf_buf_parse_dictionnary(buf, &map)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_read_1(buf, "stream")) <= 0) {
+    map_clean(&map);
+    goto restore;
+  }
+  result += r;
+  if ((r = buf_read_1(buf, "\r")) < 0) {
+    map_clean(&map);
+    goto restore;
+  }
+  result += r;
+  if ((r = buf_read_1(buf, "\n")) <= 0) {
+    map_clean(&map);
+    goto restore;
+  }
+  result += r;
+  if (! tag_init_pstruct(&tmp, sym_PDF_Stream) ||
+      ! struct_allocate(tmp.data.pstruct) ||
+      ! (pdf_stream = tmp.data.pstruct->data)) {
+    tag_clean(&tmp);
+    map_clean(&map);
+    r = -1;
+    goto clean;
+  }
+  pdf_stream->dictionnary = map;
+  if (! buf_tell_r(buf, &pdf_stream->offset)) {
+    tag_clean(&tmp);
+    r = -1;
+    goto clean;
+  }
+  buf_save_clean(buf, &save);
+  if ((r = pdf_buf_ignore_until_token(buf, "endstream")) <= 0) {
+    tag_clean(&tmp);
+    goto restore;
+  }
+  result += r;
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw pdf_buf_parse_string (s_buf *buf, s_tag *dest)

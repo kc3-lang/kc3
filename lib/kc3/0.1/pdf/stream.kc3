@@ -10,12 +10,10 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-require PDF.Stream
+defmodule PDF.Stream do
 
-defmodule PDF do
-
-  dlopen("pdf.so")
-
-  def parse_str = cfn Tag "pdf_parse_from_str" (Str, Result)
+  defstruct [dictionnary: %{},
+             offset: (S64) 0,
+             length: (S64) 0]
 
 end

@@ -28,9 +28,11 @@
 #include "buf_fd.h"
 #include "buf_save.h"
 
-sw  buf_fd_open_r_refill (s_buf *buf);
-sw  buf_fd_open_w_flush (s_buf *buf);
-s64 buf_fd_open_w_seek (s_buf *buf, s64 offset, s8 from);
+sw    buf_fd_open_r_refill (s_buf *buf);
+s64 * buf_fd_open_r_tell (s_buf *buf, s64 *dest);
+sw    buf_fd_open_w_flush (s_buf *buf);
+s64   buf_fd_open_w_seek (s_buf *buf, s64 offset, s8 from);
+s64 * buf_fd_open_w_tell (s_buf *buf, s64 *dest);
 
 void buf_fd_close (s_buf *buf)
 {
@@ -38,6 +40,7 @@ void buf_fd_close (s_buf *buf)
   buf_flush(buf);
   buf->flush = NULL;
   buf->refill = NULL;
+  buf->tell = NULL;
   free(buf->user_ptr);
   buf->user_ptr = NULL;
 }
@@ -53,6 +56,7 @@ s_buf * buf_fd_open_r (s_buf *buf, s64 fd)
   buf_fd->fd = fd;
   buf->line = 0;
   buf->refill = buf_fd_open_r_refill;
+  buf->tell = buf_fd_open_r_tell;
   buf->user_ptr = buf_fd;
   return buf;
 }
@@ -129,6 +133,26 @@ sw buf_fd_open_r_seek (s_buf *buf, sw offset, u8 from)
   return result;
 }
 
+s64 * buf_fd_open_r_tell (s_buf *buf, s64 *dest)
+{
+  s_buf_fd *buf_fd;
+  s32 e;
+  s64 tmp;
+  assert(buf);
+  assert(buf->user_ptr);
+  assert(dest);
+  buf_fd = buf->user_ptr;
+  if ((tmp = lseek(buf_fd->fd, 0, SEEK_CUR)) < 0) {
+    e = errno;
+    err_write_1("buf_fd_tell: lseek: ");
+    err_puts(strerror(e));
+    assert(! "buf_fd_tell: lseek");
+    return NULL;
+  }
+  *dest = tmp + buf->rpos;
+  return dest;
+}
+
 s_buf * buf_fd_open_w (s_buf *buf, s64 fd)
 {
   s_buf_fd *buf_fd;
@@ -140,6 +164,7 @@ s_buf * buf_fd_open_w (s_buf *buf, s64 fd)
   buf_fd->fd = fd;
   buf->flush = buf_fd_open_w_flush;
   buf->seek = buf_fd_open_w_seek;
+  buf->tell = buf_fd_open_w_tell;
   buf->user_ptr = buf_fd;
   return buf;
 }
@@ -205,4 +230,24 @@ s64 buf_fd_open_w_seek (s_buf *buf, s64 offset, s8 from)
     return -1;
   }
   return r;
+}
+
+s64 * buf_fd_open_w_tell (s_buf *buf, s64 *dest)
+{
+  s_buf_fd *buf_fd;
+  s32 e;
+  s64 tmp;
+  assert(buf);
+  assert(buf->user_ptr);
+  assert(dest);
+  buf_fd = buf->user_ptr;
+  if ((tmp = lseek(buf_fd->fd, 0, SEEK_CUR)) < 0) {
+    e = errno;
+    err_write_1("buf_fd_tell: lseek: ");
+    err_puts(strerror(e));
+    assert(! "buf_fd_tell: lseek");
+    return NULL;
+  }
+  *dest = tmp + buf->wpos;
+  return dest;
 }

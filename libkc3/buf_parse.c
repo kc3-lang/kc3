@@ -2610,6 +2610,23 @@ sw buf_parse_integer (s_buf *buf, s_integer *dest)
   return r;
 }
 
+sw buf_parse_integer_decimal (s_buf *buf, bool negative,
+                              s_integer *dest)
+{
+  sw r;
+  s_integer tmp = {0};
+  s_integer tmp2 = {0};
+  if ((r = buf_parse_integer_unsigned_dec(buf, &tmp)) <= 0)
+    return r;
+  if (negative) {
+    integer_neg(&tmp, &tmp2);
+    integer_clean(&tmp);
+    tmp = tmp2;
+  }
+  *dest = tmp;
+  return r;
+}
+
 sw buf_parse_integer_unsigned_bin (s_buf *buf, s_integer *dest)
 {
   const mp_digit radix = 2;

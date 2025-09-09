@@ -70,6 +70,8 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest);
 sw buf_parse_ident_sym (s_buf *buf, const s_sym **dest);
 sw buf_parse_if_then (s_buf *buf, s_tag *dest, bool *has_else);
 sw buf_parse_integer (s_buf *buf, s_integer *dest);
+sw buf_parse_integer_decimal (s_buf *buf, bool negative,
+                              s_integer *dest);
 sw buf_parse_integer_unsigned_bin (s_buf *buf, s_integer *dest);
 sw buf_parse_integer_unsigned_dec (s_buf *buf, s_integer *dest);
 sw buf_parse_integer_unsigned_hex (s_buf *buf, s_integer *dest);
