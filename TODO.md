@@ -47,9 +47,9 @@
    - [ ] wrap the following functions in lib/kc3/0.1 :
      - [ ] Common TLS API :
        - [x] `#include <tls.h>`
-       - [ ] `tls_init() != 0`
+       - [x] `tls_init() != 0`
        - [x] `struct tls_config *config = tls_config_new();`
-       - [ ] `tls_configure(ctx, config);`
+       - [?] `tls_configure(ctx, config);`
        - [perle] `tls_write(ctx, data, size)`
        - [perle] `tls_read(ctx, data, size);`
        - [perle] `tls_close(ctx);`
@@ -61,7 +61,7 @@
        - [x] `tls_connect_socket(ctx, socket_fd, "hostname");`
      - [ ] Basic TLS Server, see `libtls_server_example.c`
        - [?] `tls_config_set_cert_file` set server certificate
-       - [ ] `tls_config_set_key_file` set server certificate private key
+       - [?] `tls_config_set_key_file` set server certificate private key
        - [?] `ctx = tls_server()`
        - [?] `tls_accept_socket`
    - [ ] ikc3 tests
