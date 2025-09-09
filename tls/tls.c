@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "libkc3/io.h"
 #include "libkc3/types.h"
 #include "tls/types.h"
 #if defined(WIN32) || defined(WIN64)
@@ -22,6 +23,18 @@
 #include <tls.h>
 #include "../libkc3/kc3.h"
 #include "tls.h"
+
+
+bool kc3_tls_configure(p_tls ctx, p_tls_config cfg)
+{
+  if (tls_configure(ctx, cfg)) {
+    err_puts("kc3_tls_configure: tls_configure: ");
+    err_puts(tls_error(ctx));
+    assert(! "kc3_tls_configure: tls_configure");
+    return false;
+  }
+  return true;
+}
 
 s_str * kc3_tls_ca_cert_path (s_str *dest)
 {
