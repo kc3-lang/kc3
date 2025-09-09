@@ -28,3 +28,7 @@ PDF.parse_str("<< /Type /Example >>\n")
 %{Type: Example}
 PDF.parse_str("<< /Type /Example\n   /Sub << /Type /SubExample >> >>\n")
 %{Sub: %{Type: SubExample}}
+PDF.parse_str("1 0 obj (Test) endobj\n")
+{:indirect_object, (S32) 1, (S32) 0, "Test"}
+PDF.parse_str("1 0 R\n")
+{:indirect_object, (S32) 1, (S32) 0}
