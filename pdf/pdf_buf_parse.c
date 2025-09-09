@@ -429,7 +429,7 @@ sw pdf_buf_parse_string (s_buf *buf, s_tag *dest)
   r = 0;
   goto clean;
  ok:
-  if (true) {
+  if (false) {
     err_write_1("pdf_buf_parse_string: str = ");
     err_inspect_str(&str);
     err_write_1("\n");
@@ -438,6 +438,7 @@ sw pdf_buf_parse_string (s_buf *buf, s_tag *dest)
     err_puts("pdf_buf_parse_string: str_parse_eval");
     assert(! "pdf_buf_parse_string: str_parse_eval");
     r = -1;
+    str_clean(&str);
     goto restore;
   }
   str_clean(&str);
@@ -535,19 +536,18 @@ sw pdf_buf_parse_string_paren (s_buf *buf, s_str *dest)
   buf_init(&tmp_buf, false, sizeof(a) - 1, a);
   while (1) {
     if ((r = buf_read_character_utf8(buf, &c)) <= 0)
-      break;
+      goto restore;
     result += r;
-    if (c == '(') {
+    if (c == '(')
       paren++;
-    }
     else if (c == ')') {
       paren--;
       if (! paren)
-        break;
+        goto ok;
     }
     else if (c == '\\') {
       if ((r = buf_read_character_utf8(buf, &c)) <= 0)
-        break;
+        goto restore;
       result += r;
       switch (c) {
       case 'n':  c = '\n'; break;
@@ -576,18 +576,20 @@ sw pdf_buf_parse_string_paren (s_buf *buf, s_str *dest)
         c = (c - '0') * 0100 + (c1 - '0') * 010 + (c2 - '0');
         break;
       case '\n':
-        continue;
+        goto next;
       }
     }
     if ((r = buf_write_character_utf8(&tmp_buf, c)) <= 0)
-      break;
+      goto restore;
+  next:
+    continue;
   }
-  if (r < 0)
-    goto restore;
+ ok:
   if ((r = buf_read_to_str(&tmp_buf, &tmp)) < 0)
     goto restore;
   *dest = tmp;
   r = result;
+  goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:

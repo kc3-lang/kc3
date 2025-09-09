@@ -12,5 +12,15 @@ PDF.parse_str("<41424344>\n")
 "ABCD"
 PDF.parse_str("/name\n")
 :name
+PDF.parse_str("[]\n")
+[]
+PDF.parse_str("[/section]\n")
+[:section]
+PDF.parse_str("[123]\n")
+[void]
+PDF.parse_str("[<4142>]\n")
+["AB"]
+PDF.parse_str("[(greet(name))]\n")
+["greet(name)"]
 PDF.parse_str("[/section 123 <4142> (greet(name))]\n")
-[:section 123 "AB" "greet(name)"]
+[:section, void, "AB", "greet(name)"]
