@@ -24,3 +24,7 @@ PDF.parse_str("[(greet(name))]\n")
 ["greet(name)"]
 PDF.parse_str("[/section 123 <4142> (greet(name))]\n")
 [:section, void, "AB", "greet(name)"]
+PDF.parse_str("<< /Type /Example >>\n")
+%{Type: Example}
+PDF.parse_str("<< /Type /Example\n   /Sub << /Type /SubExample >> >>\n")
+%{Sub: %{Type: SubExample}}
