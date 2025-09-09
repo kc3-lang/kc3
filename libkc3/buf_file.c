@@ -21,10 +21,12 @@ typedef struct buf_file {
   FILE *fp;
 } s_buf_file;
 
-sw  buf_file_open_r_refill (s_buf *buf);
-s64 buf_file_open_r_seek (s_buf *buf, s64 offset, s8 from);
-sw  buf_file_open_w_flush (s_buf *buf);
-s64 buf_file_open_w_seek (s_buf *buf, s64 offset, s8 from);
+sw    buf_file_open_r_refill (s_buf *buf);
+s64   buf_file_open_r_seek (s_buf *buf, s64 offset, s8 from);
+u64 * buf_file_open_r_tell (s_buf *buf, u64 *dest);
+sw    buf_file_open_w_flush (s_buf *buf);
+s64   buf_file_open_w_seek (s_buf *buf, s64 offset, s8 from);
+u64 * buf_file_open_w_tell (s_buf *buf, u64 *dest);
 
 void buf_file_close (s_buf *buf)
 {
@@ -70,6 +72,7 @@ s_buf * buf_file_open_r (s_buf *buf, FILE *fp)
   buf->line = 0;
   buf->refill = buf_file_open_r_refill;
   buf->seek = buf_file_open_r_seek;
+  buf->tell = buf_file_open_r_tell;
   buf->user_ptr = buf_file;
   return buf;
 }
@@ -124,6 +127,23 @@ s64 buf_file_open_r_seek (s_buf *buf, s64 offset, s8 from)
   return (s64) result;
 }
 
+u64 * buf_file_open_r_tell (s_buf *buf, u64 *dest)
+{
+  s_buf_file *buf_file;
+  s64 tmp;
+  assert(buf);
+  assert(buf->user_ptr);
+  assert(dest);
+  buf_file = buf->user_ptr;
+  if ((tmp = ftello(buf_file->fp)) < 0) {
+    err_puts("buf_file_open_r_tell: ftello");
+    assert(! "buf_file_open_r_tell: ftello");
+    return NULL;
+  }
+  *dest = tmp + buf->rpos;
+  return dest;
+}
+
 s_buf * buf_file_open_w (s_buf *buf, FILE *fp)
 {
   s_buf_file *buf_file;
@@ -135,6 +155,7 @@ s_buf * buf_file_open_w (s_buf *buf, FILE *fp)
   buf_file->fp = fp;
   buf->flush = buf_file_open_w_flush;
   buf->seek = buf_file_open_w_seek;
+  buf->tell = buf_file_open_w_tell;
   buf->user_ptr = buf_file;
   return buf;
 }
@@ -192,4 +213,21 @@ s64 buf_file_open_w_seek (s_buf *buf, s64 offset, s8 from)
     return -1;
   }
   return (s64) result;
+}
+
+u64 * buf_file_open_w_tell (s_buf *buf, u64 *dest)
+{
+  s_buf_file *buf_file;
+  s64 tmp;
+  assert(buf);
+  assert(buf->user_ptr);
+  assert(dest);
+  buf_file = buf->user_ptr;
+  if ((tmp = ftello(buf_file->fp)) < 0) {
+    err_puts("buf_file_open_w_tell: ftello");
+    assert(! "buf_file_open_w_tell: ftello");
+    return NULL;
+  }
+  *dest = tmp + buf->wpos;
+  return dest;
 }

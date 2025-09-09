@@ -16,14 +16,30 @@
 #include "../libkc3/types.h"
 
 /* Struct types. */
+typedef struct pdf_file   s_pdf_file;
 typedef struct pdf_stream s_pdf_stream;
+typedef struct pdf_trailer s_pdf_trailer;
 
 /* 1 */
 
 struct pdf_stream {
   s_map dictionnary;
-  s64 offset;
-  s64 length;
+  u64 offset;
+  u64 length;
+};
+
+struct pdf_trailer {
+  s_map dictionnary;
+  u64   startxref;
+};
+
+/* 2 */
+
+struct pdf_file {
+  s_pdf_trailer trailer;
+  s_str         header;
+  s_do_block    body;
+  s_map         xref;
 };
 
 #endif /* KC3_PDF_TYPES_H */

@@ -16,6 +16,8 @@ defmodule PDF do
 
   dlopen("pdf.so")
 
+  def parse_file = cfn Tag "pdf_parse_from_file" (Str, Result)
+
   def parse_str = cfn Tag "pdf_parse_from_str" (Str, Result)
 
 end

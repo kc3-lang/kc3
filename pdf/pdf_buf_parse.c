@@ -250,6 +250,18 @@ sw pdf_buf_parse_dictionnary (s_buf *buf, s_map *dest)
   return r;
 }
 
+sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
+{
+  sw r;
+  sw result = 0;
+  s_pdf_file tmp = {0};
+  if ((r = pdf_buf_parse_trailer(buf, &tmp.trailer)) <= 0)
+    return r;
+  result += r;
+  *dest = tmp;
+  return result;
+}
+
 sw pdf_buf_parse_float (s_buf *buf, f64 *dest)
 {
   u8 digit;
@@ -543,6 +555,42 @@ sw pdf_buf_parse_object_end (s_buf *buf, bool *end)
   return result;
 }
 
+sw pdf_buf_parse_rewind_to_trailer (s_buf *buf)
+{
+  bool end;
+  sw pos;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  assert(buf);
+  if (buf->rpos < 9)
+    return -1;
+  buf->rpos -= 9;
+  buf_save_init(buf, &save);
+  while (1) {
+    if (! buf->rpos) {
+      r = -1;
+      goto restore;
+    }
+    buf->rpos--;
+    pos = buf->rpos;
+    if ((r = pdf_buf_parse_object_end(buf, &end)) > 0 &&
+        (result += r) &&
+        end &&
+        (r = pdf_buf_parse_token(buf, "trailer")) > 0) {
+      result += r;
+      r = result;
+      goto clean;
+    }
+    buf->rpos = pos;
+  }
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+    
 sw pdf_buf_parse_stream (s_buf *buf, s_tag *dest)
 {
   s_pdf_stream *pdf_stream;
@@ -587,7 +635,6 @@ sw pdf_buf_parse_stream (s_buf *buf, s_tag *dest)
     r = -1;
     goto clean;
   }
-  buf_save_clean(buf, &save);
   if ((r = pdf_buf_ignore_until_token(buf, "endstream")) <= 0) {
     tag_clean(&tmp);
     goto restore;
@@ -821,9 +868,77 @@ sw pdf_buf_parse_token (s_buf *buf, const char *pchar)
   return r;
 }
 
+sw pdf_buf_parse_trailer (s_buf *buf, s_pdf_trailer *dest)
+{
+  u64 pos;
+  sw r;
+  sw result = 0;
+  const s_sym *sym_U64 = &g_sym_U64;
+  s_tag tag = {0};
+  s_pdf_trailer tmp = {0};
+  if (! buf_total_size(buf, &pos)) {
+    err_puts("pdf_buf_parse_trailer: buf_total_size");
+    assert(! "pdf_buf_parse_trailer: buf_total_size");
+    return -1;
+  }
+  if (pos < buf->size)
+    pos = 0;
+  else
+    pos -= buf->size;
+  if ((r = buf_seek(buf, pos, SEEK_SET)) < 0 ||
+      (uw) r != pos) {
+    err_puts("pdf_buf_parse_trailer: buf_seek");
+    assert(! "pdf_buf_parse_trailer: buf_seek");
+    return r;
+  }
+  buf->rpos = buf->wpos;
+  if ((r = pdf_buf_parse_rewind_to_trailer(buf)) <= 0) {
+    err_puts("pdf_buf_parse_trailer: pdf_buf_parse_rewind_to_trailer");
+    assert(! "pdf_buf_parse_trailer: pdf_buf_parse_rewind_to_trailer");
+    return r;
+  }
+  result += r;
+  if ((r = pdf_buf_parse_dictionnary(buf, &tmp.dictionnary)) <= 0) {
+    err_puts("pdf_buf_parse_trailer: pdf_buf_parse_dictionnary");
+    err_inspect_buf(buf);
+    assert(! "pdf_buf_parse_trailer: pdf_buf_parse_dictionnary");
+    return r;
+  }
+  result += r;
+  if ((r = pdf_buf_parse_token(buf, "startxref")) <= 0) {
+    err_puts("pdf_buf_parse_trailer: pdf_buf_parse_token startxref");
+    assert(! "pdf_buf_parse_trailer: pdf_buf_parse_token startxref");
+    return r;
+  }
+  result += r;
+  if ((r = pdf_buf_parse_integer(buf, &tag)) <= 0) {
+    err_puts("pdf_buf_parse_trailer: pdf_buf_parse_integer");
+    assert(! "pdf_buf_parse_trailer: pdf_buf_parse_integer");
+    return r;
+  }
+  result += r;
+  if (! u64_init_cast(&tmp.startxref, &sym_U64, &tag)) {
+    err_puts("pdf_buf_parse_trailer: u64_init_cast");
+    assert(! "pdf_buf_parse_trailer: u64_init_cast");
+    tag_clean(&tag);
+    return -1;
+  }
+  tag_clean(&tag);
+  if ((r = buf_read_1(buf, "%%EOF\n")) <= 0) {
+    err_puts("pdf_buf_parse_trailer: pdf_buf_parse_1");
+    assert(! "pdf_buf_parse_trailer: pdf_buf_parse_1");
+    return r;
+  }
+  result += r;
+  *dest = tmp;
+  return result;
+}
+
 bool pdf_character_is_delimiter (character c)
 {
-  return (c == ']' ||
-          c == '%' ||
+  return (c == '%' ||
+          c == '/' ||
+          c == '>' ||
+          c == ']' ||
           character_is_space(c));
 }

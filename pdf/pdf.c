@@ -14,23 +14,30 @@
 #include "pdf.h"
 #include "pdf_buf_parse.h"
 
-s_tag * pdf_parse_from_file (s_str *path, s_tag *dest)
+s_pdf_file * pdf_parse_from_file (s_str *path, s_pdf_file *dest)
 {
   s_buf buf = {0};
   FILE *fp = NULL;
-  s_tag tmp = {0};
+  s_pdf_file tmp = {0};
   if (! (fp = file_open(path, "rb")))
     return NULL;
-  if (! buf_file_open_r(&buf, fp)) {
+  if (! buf_init_alloc(&buf, BUF_SIZE)) {
     fclose(fp);
     return NULL;
   }
-  if (pdf_buf_parse(&buf, &tmp) < 0) { 
+  if (! buf_file_open_r(&buf, fp)) {
+    buf_clean(&buf);
+    fclose(fp);
+    return NULL;
+  }
+  if (pdf_buf_parse_file(&buf, &tmp) < 0) { 
     buf_file_close(&buf);
+    buf_clean(&buf);
     fclose(fp);
     return NULL;
   }
   buf_file_close(&buf);
+  buf_clean(&buf);
   fclose(fp);
   *dest = tmp;
   return dest;

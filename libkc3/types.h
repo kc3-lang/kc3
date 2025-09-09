@@ -473,7 +473,8 @@ struct buf {
   s_buf_save       *save;
   s64             (*seek) (s_buf *buf, s64 offset, s8 from);
   uw                size;
-  s64 *           (*tell) (s_buf *buf, s64 *dest);
+  u64 *           (*tell) (s_buf *buf, u64 *dest);
+  u64 *           (*total_size) (s_buf *buf, u64 *dest);
   void *            user_ptr;
   uw                wpos;
 };

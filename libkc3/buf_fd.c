@@ -29,10 +29,10 @@
 #include "buf_save.h"
 
 sw    buf_fd_open_r_refill (s_buf *buf);
-s64 * buf_fd_open_r_tell (s_buf *buf, s64 *dest);
+u64 * buf_fd_open_r_tell (s_buf *buf, u64 *dest);
 sw    buf_fd_open_w_flush (s_buf *buf);
 s64   buf_fd_open_w_seek (s_buf *buf, s64 offset, s8 from);
-s64 * buf_fd_open_w_tell (s_buf *buf, s64 *dest);
+u64 * buf_fd_open_w_tell (s_buf *buf, u64 *dest);
 
 void buf_fd_close (s_buf *buf)
 {
@@ -133,7 +133,7 @@ sw buf_fd_open_r_seek (s_buf *buf, sw offset, u8 from)
   return result;
 }
 
-s64 * buf_fd_open_r_tell (s_buf *buf, s64 *dest)
+u64 * buf_fd_open_r_tell (s_buf *buf, u64 *dest)
 {
   s_buf_fd *buf_fd;
   s32 e;
@@ -232,7 +232,7 @@ s64 buf_fd_open_w_seek (s_buf *buf, s64 offset, s8 from)
   return r;
 }
 
-s64 * buf_fd_open_w_tell (s_buf *buf, s64 *dest)
+u64 * buf_fd_open_w_tell (s_buf *buf, u64 *dest)
 {
   s_buf_fd *buf_fd;
   s32 e;

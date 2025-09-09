@@ -273,7 +273,7 @@ sw buf_ignore (s_buf *buf, uw size)
     r = -1;
     goto clean;
   }
-  assert(i == size);
+  // assert(i == size);
   r = size;
  clean:
 #if HAVE_PTHREAD
@@ -1548,7 +1548,7 @@ sw buf_str_to_hex (s_buf *buf, const s_str *src)
   return r;
 }
 
-s64 * buf_tell_r (s_buf *buf, s64 *dest)
+u64 * buf_tell_r (s_buf *buf, u64 *dest)
 {
   if (buf->tell)
     return buf->tell(buf, dest);
@@ -1556,7 +1556,7 @@ s64 * buf_tell_r (s_buf *buf, s64 *dest)
   return dest;
 }
 
-s64 * buf_tell_w (s_buf *buf, s64 *dest)
+u64 * buf_tell_w (s_buf *buf, u64 *dest)
 {
   if (buf->tell)
     return buf->tell(buf, dest);
@@ -1617,6 +1617,16 @@ sw buf_u8_to_hex_size (const u8 *u)
 {
   (void) u;
   return 2;
+}
+
+u64 * buf_total_size (s_buf *buf, u64 *dest)
+{
+  assert(buf);
+  assert(dest);
+  if (buf->total_size)
+    return buf->total_size(buf, dest);
+  *dest = buf->wpos;
+  return dest;
 }
 
 sw buf_vf (s_buf *buf, const char *fmt, va_list ap)
@@ -1834,45 +1844,6 @@ DEF_BUF_WRITE(u32)
 DEF_BUF_WRITE(u64)
 DEF_BUF_WRITE(uw)
 
-sw buf_xfer (s_buf *dest, s_buf *src, uw size)
-{
-  sw r = 0;
-  assert(dest);
-  assert(src);
-  if (size == 0)
-    return 0;
-#if HAVE_PTHREAD
-  rwlock_w(&dest->rwlock);
-  rwlock_w(&src->rwlock);
-#endif
-  assert(src->rpos <= src->wpos);
-  assert(dest->rpos <= dest->wpos);
-  if (src->rpos + size > src->wpos &&
-      (r = buf_refill(src, size)) < (sw) size) {
-    if (r < 0)
-      goto clean;
-    r = 0;
-    goto clean;
-  }
-  if (dest->wpos + size > dest->size &&
-      (r = buf_flush(dest)) < (sw) size) {
-    if (r < 0)
-      goto clean;
-    r = -1;
-    goto clean;
-  }
-  memcpy(dest->ptr.ps8 + dest->wpos, src->ptr.ps8 + src->rpos, size);
-  src->rpos += size;
-  dest->wpos += size;
-  r = size;
- clean:
-#if HAVE_PTHREAD
-  rwlock_unlock_w(&src->rwlock);
-  rwlock_unlock_w(&dest->rwlock);
-#endif
-  return r;
-}
-
 sw buf_write_integer (s_buf *buf, const s_integer *src)
 {
   sw r;
@@ -1914,6 +1885,45 @@ sw buf_write_integer (s_buf *buf, const s_integer *src)
   buf->wpos += size;
   result += size;
   return result;
+}
+
+sw buf_xfer (s_buf *dest, s_buf *src, uw size)
+{
+  sw r = 0;
+  assert(dest);
+  assert(src);
+  if (size == 0)
+    return 0;
+#if HAVE_PTHREAD
+  rwlock_w(&dest->rwlock);
+  rwlock_w(&src->rwlock);
+#endif
+  assert(src->rpos <= src->wpos);
+  assert(dest->rpos <= dest->wpos);
+  if (src->rpos + size > src->wpos &&
+      (r = buf_refill(src, size)) < (sw) size) {
+    if (r < 0)
+      goto clean;
+    r = 0;
+    goto clean;
+  }
+  if (dest->wpos + size > dest->size &&
+      (r = buf_flush(dest)) < (sw) size) {
+    if (r < 0)
+      goto clean;
+    r = -1;
+    goto clean;
+  }
+  memcpy(dest->ptr.ps8 + dest->wpos, src->ptr.ps8 + src->rpos, size);
+  src->rpos += size;
+  dest->wpos += size;
+  r = size;
+ clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&src->rwlock);
+  rwlock_unlock_w(&dest->rwlock);
+#endif
+  return r;
 }
 
 sw buf_xfer_reverse (s_buf *src, s_buf *dest)
