@@ -1295,6 +1295,7 @@ KC3_HTTPD_SOURCES = \
 	"httpd/fx/config/mime.types" \
 	"httpd/fx/config/routes.kc3" \
 	"httpd/fx/db/app.facts" \
+	"httpd/fx/db/app.facts.bin.facts" \
 	"httpd/page/app/controllers/page_controller.kc3" \
 	"httpd/page/app/templates/page/menu.html.ekc3" \
 	"httpd/page/app/templates/page/show.html.ekc3" \
@@ -1451,6 +1452,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/math.kc3" \
 	"lib/kc3/0.1/metric.kc3" \
 	"lib/kc3/0.1/parse.kc3" \
+	"lib/kc3/0.1/pdf.kc3" \
 	"lib/kc3/0.1/pointer.kc3" \
 	"lib/kc3/0.1/pretty.kc3" \
 	"lib/kc3/0.1/pretty_save.kc3" \

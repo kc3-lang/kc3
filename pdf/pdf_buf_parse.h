@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef KC3_PDF_H
-#define KC3_PDF_H
+#ifndef KC3_PDF_BUF_PARSE_H
+#define KC3_PDF_BUF_PARSE_H
 
 #include "../libkc3/types.h"
 
@@ -19,7 +19,10 @@ sw pdf_buf_parse (s_buf *buf, s_tag *dest);
 sw pdf_buf_parse_bool (s_buf *buf, bool *dest);
 sw pdf_buf_parse_comment (s_buf *buf);
 sw pdf_buf_parse_comments (s_buf *buf);
+sw pdf_buf_parse_name (s_buf *buf, p_sym *dest);
+sw pdf_buf_parse_number (s_buf *buf, s_tag *dest);
 sw pdf_buf_parse_string (s_buf *buf, s_tag *dest);
+sw pdf_buf_parse_string_hex (s_buf *buf, s_str *dest);
 sw pdf_buf_parse_string_paren (s_buf *buf, s_tag *dest);
 
-#endif /* KC3_PDF_H */
+#endif /* KC3_PDF_BUF_PARSE_H */

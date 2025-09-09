@@ -18,12 +18,42 @@ sw pdf_buf_parse (s_buf *buf, s_tag *dest)
   sw r;
   sw result = 0;
   s_tag tmp = {0};
-  if ((r = buf_parse_comments(buf)) < 0)
+  if ((r = buf_ignore_spaces(buf)) < 0)
     return r;
   result += r;
-  *dest = tmp;
-  r = result;
-  return r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto ok;
+  result += r;
+  if ((r = pdf_buf_parse_bool(buf, &tmp.data.bool_)) < 0)
+    goto ok;
+  if (r) {
+    result += r;
+    tmp.type = TAG_BOOL;
+    goto ok;
+  }
+  if ((r = pdf_buf_parse_number(buf, &tmp)) < 0)
+    goto ok;
+  if (r) {
+    result += r;
+    goto ok;
+  }
+  if ((r = pdf_buf_parse_string(buf, &tmp)) < 0)
+    goto ok;
+  if (r) {
+    result += r;
+    goto ok;
+  }
+  if ((r = pdf_buf_parse_name(buf, &tmp.data.psym)) < 0)
+    goto ok;
+  if (r) {
+    tmp.type = TAG_PSYM;
+    result += r;
+    goto ok;
+  }
+ ok:
+  if (result)
+    *dest = tmp;
+  return result;
 }
 
 sw pdf_buf_parse_bool (s_buf *buf, bool *dest)
@@ -165,21 +195,187 @@ sw pdf_buf_parse_integer (s_buf *buf, s32 *dest)
   return result;
 }
 
+sw pdf_buf_parse_name (s_buf *buf, p_sym *dest)
+{
+  character c;
+  u8 d;
+  u8 d1;
+  sw r;
+  sw result = 0;
+  s_buf_save save = {0};
+  s_str str = {0};
+  p_sym tmp = {0};
+  s_buf tmp_buf;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "/")) <= 0)
+    goto clean;
+  result += r;
+  while (1) {
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      break;
+    if (r) {
+      result += r;
+      goto ok;
+    }
+    if ((r = buf_read_character_utf8(buf, &c)) <= 0)
+      break;
+    result += r;
+    if (c == '#') {
+      if ((r = buf_read_character_utf8(buf, &c)) <= 0)
+        break;
+      result += r;
+      if (c >= '0' && c <= '9')
+        d = c - '0';
+      else if (c >= 'A' && c <= 'F')
+        d = c - 'A';
+      else if (c >= 'a' && c <= 'f')
+        d = c - 'a';
+      else {
+        r = 0;
+        goto restore;
+      }
+      if ((r = buf_read_character_utf8(buf, &c)) <= 0)
+        break;
+      result += r;
+      if (c >= '0' && c <= '9')
+        d1 = c - '0';
+      else if (c >= 'A' && c <= 'F')
+        d1 = c - 'A';
+      else if (c >= 'a' && c <= 'f')
+        d1 = c - 'a';
+      else {
+        r = 0;
+        goto restore;
+      }
+      c = d * 0x10 + d1;
+    }
+    if ((r = buf_write_character_utf8(&tmp_buf, c)) <= 0)
+      goto restore;
+  }
+ ok:
+  if (! buf_read_to_str(&tmp_buf, &str)) {
+    r = -2;
+    goto clean;
+  }
+  if (! (tmp = str_to_sym(&str))) {
+    r = -2;
+    goto clean;
+  }
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw pdf_buf_parse_number (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  s_tag tmp = {0};
+  if ((r = pdf_buf_parse_integer(buf, &tmp.data.s32)) < 0) {
+    tmp.type = TAG_S32;
+    return r;
+  }
+  if (r)
+    goto ok;
+  if ((r = pdf_buf_parse_float(buf, &tmp.data.f32)) < 0) {
+    tmp.type = TAG_F32;
+    return r;
+  }
+  if (r)
+    goto ok;
+  return 0;
+ ok:
+  *dest = tmp;
+  return r;
+}
+
 sw pdf_buf_parse_string (s_buf *buf, s_tag *dest)
 {
   sw r;
   s_tag tmp = {0};
-  if ((r = pdf_buf_parse_string_paren(buf, &tmp)) > 0) {
-    *dest = tmp;
+  if ((r = pdf_buf_parse_string_paren(buf, &tmp)) < 0)
     return r;
+  if (r)
+    goto ok;
+  if ((r = pdf_buf_parse_string_hex(buf, &tmp.data.str)) < 0)
+    return r;
+  if (r) {
+    tmp.type = TAG_STR;
+    goto ok;
   }
   return 0;
+ ok:
+  *dest = tmp;
+  return r;
+}
+
+sw pdf_buf_parse_string_hex (s_buf *buf, s_str *dest)
+{
+  char a[BUF_SIZE] = {0};
+  character c;
+  u8 d;
+  u8 d1;
+  sw r;
+  sw result = 0;
+  s_buf_save save = {0};
+  s_str tmp = {0};
+  s_buf tmp_buf = {0};
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "<")) <= 0)
+    goto clean;
+  result += r;
+  buf_init(&tmp_buf, false, sizeof(a) - 1, a);
+  while (1) {
+    if ((r = buf_read_character_utf8(buf, &c)) <= 0)
+      goto restore;
+    result += r;
+    if (c == '>')
+      break;
+    if (c >= '0' && c <= '9')
+      d = c - '0';
+    else if (c >= 'a' && c <= 'f')
+      d = c - 'a' + 10;
+    else if (c >= 'A' && c <= 'F')
+      d = c - 'A' + 10;
+    else
+      goto restore;
+    if ((r = buf_read_character_utf8(buf, &c)) <= 0)
+      goto restore;
+    result += r;
+    if (c >= '0' && c <= '9')
+      d1 = c - '0';
+    else if (c >= 'a' && c <= 'f')
+      d1 = c - 'a' + 10;
+    else if (c >= 'A' && c <= 'F')
+      d1 = c - 'A' + 10;
+    else
+      goto restore;
+    if ((r = buf_write_u8(&tmp_buf, (d << 4) + d1)) <= 0)
+      goto restore;
+  }
+  if (! buf_read_to_str(&tmp_buf, &tmp)) {
+    r = -2;
+    goto restore;
+  }
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_clean(&tmp_buf);
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 // parentheses must be balanced or backslashed
 sw pdf_buf_parse_string_paren (s_buf *buf, s_tag *dest)
 {
-  char a[BUF_SIZE + 1] = {0};
+  char a[BUF_SIZE] = {0};
   character c;
   character c1;
   character c2;
@@ -199,8 +395,10 @@ sw pdf_buf_parse_string_paren (s_buf *buf, s_tag *dest)
     if ((r = buf_read_character_utf8(buf, &c)) <= 0)
       break;
     result += r;
-    if (c == ')') {
-      result += r;
+    if (c == '(') {
+      paren++;
+    }
+    else if (c == ')') {
       paren--;
       if (! paren)
         break;
