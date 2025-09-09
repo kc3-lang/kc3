@@ -3,7 +3,7 @@ true
 PDF.parse_str("%Hello, PDF !\n")
 void
 PDF.parse_str("123\n")
-void
+123
 PDF.parse_str("(abc)\n")
 "abc"
 PDF.parse_str("(ab(())c)\n")
@@ -17,20 +17,37 @@ PDF.parse_str("[]\n")
 PDF.parse_str("[/section]\n")
 [:section]
 PDF.parse_str("[123]\n")
-[void]
+[123]
 PDF.parse_str("[<4142>]\n")
 ["AB"]
 PDF.parse_str("[(greet(name))]\n")
 ["greet(name)"]
 PDF.parse_str("[/section 123 <4142> (greet(name))]\n")
-[:section, void, "AB", "greet(name)"]
+[:section, 123, "AB", "greet(name)"]
 PDF.parse_str("<< /Type /Example >>\n")
 %{Type: Example}
 PDF.parse_str("<< /Type /Example\n   /Sub << /Type /SubExample >> >>\n")
-%{Sub: %{Type: SubExample}}
+%{Sub: %{Type: SubExample},
+  Type: Example}
 PDF.parse_str("1 0 obj (Test) endobj\n")
-{:indirect_object, (S32) 1, (S32) 0, "Test"}
+{:indirect_object, 1, 0, "Test"}
 PDF.parse_str("1 0 R\n")
-{:indirect_object, (S32) 1, (S32) 0}
+{:indirect_object, 1, 0}
 PDF.parse_str("null\n")
 void
+PDF.parse_str("+3\n")
+3
+PDF.parse_str("3\n")
+3
+PDF.parse_str("-3\n")
+-3
+PDF.parse_str("<< /Length 3 >>\n")
+%{Length: 3}
+PDF.parse_str("1 0 obj << /Length 3 >> stream\n123\nendstream\n")
+{:indirect_object, 1, 0, %PDF.Stream{dictionnary: %{Length: 3},
+                                     offset: (S64) 31,
+                                     length: (S64) 0}}
+PDF.parse_str("1 0 obj << /Length 2 0 R >> stream\n123\nendstream\n")
+{:indirect_object, 1, 0, %PDF.Stream{dictionnary: %{Length: {:indirect_object, 2, 0}},
+                                     offset: (S64) 35,
+                                     length: (S64) 0}}
