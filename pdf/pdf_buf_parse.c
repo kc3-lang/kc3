@@ -37,6 +37,13 @@ sw pdf_buf_parse (s_buf *buf, s_tag *dest)
     result += r;
     goto ok;
   }
+  if ((r = pdf_buf_parse_dictionnary(buf, &tmp.data.map)) < 0)
+    goto ok;
+  if (r) {
+    result += r;
+    tmp.type = TAG_MAP;
+    goto ok;
+  }
   if ((r = pdf_buf_parse_string(buf, &tmp)) < 0)
     goto ok;
   if (r) {
@@ -168,6 +175,73 @@ sw pdf_buf_parse_comments (s_buf *buf)
   if (r < 0)
     return r;
   return result;
+}
+
+sw pdf_buf_parse_dictionnary (s_buf *buf, s_map *dest)
+{
+  bool end;
+  p_list  keys = NULL;
+  p_list *keys_tail = &keys;
+  const s_sym *name;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_map tmp = {0};
+  p_list  values = NULL;
+  p_list *values_tail = &values;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "<<")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = pdf_buf_parse_object_end(buf, &end)) > 0)
+    result += r;
+  if (! end) {
+    r = 0;
+    goto restore;
+  }
+  while (1) {
+    if ((r = buf_read_1(buf, ">>")) < 0)
+      goto restore;
+    if (r) {
+      result += r;
+      if ((r = pdf_buf_parse_object_end(buf, &end)) > 0)
+        result += r;
+      if (! end) {
+        r = 0;
+        goto restore;
+      }
+      goto ok;
+    }
+    if ((r = pdf_buf_parse_name(buf, &name)) <= 0)
+      goto restore;
+    result += r;
+    if (! (*keys_tail = list_new_psym(name, NULL))) {
+      r = -1;
+      goto restore;
+    }
+    if (! (*values_tail = list_new(NULL))) {
+      r = -1;
+      goto restore;
+    }
+    if ((r = pdf_buf_parse(buf, &(*values_tail)->tag)) <= 0)
+      goto restore;
+    result += r;
+  }
+ ok:
+  if (! map_init_from_lists(&tmp, keys, values)) {
+    r = -1;
+    goto restore;
+  }
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  list_delete_all(values);
+  list_delete_all(keys);
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw pdf_buf_parse_float (s_buf *buf, f32 *dest)

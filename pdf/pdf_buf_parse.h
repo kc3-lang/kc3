@@ -21,6 +21,7 @@ sw   pdf_buf_parse_array (s_buf *buf, p_list *dest);
 sw   pdf_buf_parse_bool (s_buf *buf, bool *dest);
 sw   pdf_buf_parse_comment (s_buf *buf);
 sw   pdf_buf_parse_comments (s_buf *buf);
+sw   pdf_buf_parse_dictionnary (s_buf *buf, s_map *dest);
 sw   pdf_buf_parse_name (s_buf *buf, p_sym *dest);
 sw   pdf_buf_parse_number (s_buf *buf, s_tag *dest);
 sw   pdf_buf_parse_object_end (s_buf *buf, bool *end);
