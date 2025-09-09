@@ -1340,36 +1340,38 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
     (*tail)->tag.type = TAG_STR;
     buf_read_to_str(&out_buf, &(*tail)->tag.data.str);
   }
-  if (! list)
+  if (! list) {
     tag_init_str_empty(&tmp);
-  else if (list->tag.type == TAG_STR &&
-           ! list_next(list)) {
+    goto ok;
+  }
+  if (list->tag.type == TAG_STR &&
+      ! list_next(list)) {
     tmp = list->tag;
     tag_init(&list->tag);
     list_delete_all(list);
+    goto ok;
   }
-  else {
-    tag_init_pcall(&tmp);
-    ident_init(&tmp.data.pcall->ident, &g_sym_KC3, &g_sym_str);
-    tmp.data.pcall->arguments = list_new(NULL);
-    l = list;
-    while (l) {
-      if (l->tag.type == TAG_STR ||
-          (l->tag.type == TAG_PCALL &&
-           l->tag.data.pcall->ident.module == &g_sym_Str &&
-           l->tag.data.pcall->ident.sym == &g_sym_cast))
-        goto next;
-      tag_init_pcall_call_cast(&tag, &g_sym_Str);
-      arg = &list_next(tag.data.pcall->arguments)->tag;
-      *arg = l->tag;
-      l->tag = tag;
-    next:
-      l = list_next(l);
-    }
-    arg = &tmp.data.pcall->arguments->tag;
-    arg->type = TAG_PLIST;
-    arg->data.plist = list;
+  tag_init_pcall(&tmp);
+  ident_init(&tmp.data.pcall->ident, &g_sym_KC3, &g_sym_str);
+  tmp.data.pcall->arguments = list_new(NULL);
+  l = list;
+  while (l) {
+    if (l->tag.type == TAG_STR ||
+        (l->tag.type == TAG_PCALL &&
+         l->tag.data.pcall->ident.module == &g_sym_Str &&
+         l->tag.data.pcall->ident.sym == &g_sym_cast))
+      goto next;
+    tag_init_pcall_call_cast(&tag, &g_sym_Str);
+    arg = &list_next(tag.data.pcall->arguments)->tag;
+    *arg = l->tag;
+    l->tag = tag;
+  next:
+    l = list_next(l);
   }
+  arg = &tmp.data.pcall->arguments->tag;
+  arg->type = TAG_PLIST;
+  arg->data.plist = list;
+ ok:
   *dest = tmp;
   buf_clean(&out_buf);
   return true;
