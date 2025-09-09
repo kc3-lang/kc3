@@ -32,3 +32,5 @@ PDF.parse_str("1 0 obj (Test) endobj\n")
 {:indirect_object, (S32) 1, (S32) 0, "Test"}
 PDF.parse_str("1 0 R\n")
 {:indirect_object, (S32) 1, (S32) 0}
+PDF.parse_str("null\n")
+void

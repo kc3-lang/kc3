@@ -26,6 +26,7 @@ sw   pdf_buf_parse_float (s_buf *buf, f32 *dest);
 sw   pdf_buf_parse_indirect_object (s_buf *buf, s_tuple *dest);
 sw   pdf_buf_parse_integer (s_buf *buf, s32 *dest);
 sw   pdf_buf_parse_name (s_buf *buf, p_sym *dest);
+sw   pdf_buf_parse_null (s_buf *buf, s_tag *dest);
 sw   pdf_buf_parse_number (s_buf *buf, s_tag *dest);
 sw   pdf_buf_parse_object_end (s_buf *buf, bool *end);
 sw   pdf_buf_parse_string (s_buf *buf, s_tag *dest);

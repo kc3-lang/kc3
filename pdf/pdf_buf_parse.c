@@ -38,6 +38,12 @@ sw pdf_buf_parse (s_buf *buf, s_tag *dest)
     tmp.type = TAG_BOOL;
     goto ok;
   }
+  if ((r = pdf_buf_parse_null(buf, &tmp)) < 0)
+    goto ok;
+  if (r) {
+    result += r;
+    goto ok;
+  }
   if ((r = pdf_buf_parse_number(buf, &tmp)) < 0)
     goto ok;
   if (r) {
@@ -501,6 +507,14 @@ sw pdf_buf_parse_name (s_buf *buf, p_sym *dest)
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
+  return r;
+}
+
+sw pdf_buf_parse_null (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = pdf_buf_parse_1(buf, "null")) > 0)
+    tag_init_void(dest);
   return r;
 }
 
