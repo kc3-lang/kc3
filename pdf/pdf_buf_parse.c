@@ -83,31 +83,6 @@ sw pdf_buf_parse (s_buf *buf, s_tag *dest)
   return result;
 }
 
-sw pdf_buf_parse_1 (s_buf *buf, const char *pchar)
-{
-  bool end;
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, pchar)) <= 0)
-    goto clean;
-  result += r;
-  if ((r = pdf_buf_parse_object_end(buf, &end)) < 0)
-    goto restore;
-  if (! end) {
-    r = 0;
-    goto restore;
-  }
-  r = result;
-  goto clean;
- restore:
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
 sw pdf_buf_parse_array (s_buf *buf, p_list *dest)
 {
   sw r;
@@ -227,11 +202,11 @@ sw pdf_buf_parse_dictionnary (s_buf *buf, s_map *dest)
   p_list  values = NULL;
   p_list *values_tail = &values;
   buf_save_init(buf, &save);
-  if ((r = pdf_buf_parse_1(buf, "<<")) <= 0)
+  if ((r = pdf_buf_parse_token(buf, "<<")) <= 0)
     goto clean;
   result += r;
   while (1) {
-    if ((r = pdf_buf_parse_1(buf, ">>")) < 0)
+    if ((r = pdf_buf_parse_token(buf, ">>")) < 0)
       goto restore;
     if (r) {
       result += r;
@@ -348,7 +323,7 @@ sw pdf_buf_parse_indirect_object (s_buf *buf, s_tuple *dest)
   if ((r = pdf_buf_parse_integer(buf, &generation_number)) <= 0)
     goto restore;
   result += r;
-  if ((r = pdf_buf_parse_1(buf, "obj")) < 0)
+  if ((r = pdf_buf_parse_token(buf, "obj")) < 0)
     goto restore;
   if (r) {
     result += r;
@@ -360,7 +335,7 @@ sw pdf_buf_parse_indirect_object (s_buf *buf, s_tuple *dest)
       goto restore;
     goto ok;
   }
-  if ((r = pdf_buf_parse_1(buf, "R")) < 0)
+  if ((r = pdf_buf_parse_token(buf, "R")) < 0)
     goto restore;
   if (r) {
     result += r;
@@ -513,7 +488,7 @@ sw pdf_buf_parse_name (s_buf *buf, p_sym *dest)
 sw pdf_buf_parse_null (s_buf *buf, s_tag *dest)
 {
   sw r;
-  if ((r = pdf_buf_parse_1(buf, "null")) > 0)
+  if ((r = pdf_buf_parse_token(buf, "null")) > 0)
     tag_init_void(dest);
   return r;
 }
@@ -748,6 +723,31 @@ sw pdf_buf_parse_string_paren (s_buf *buf, s_str *dest)
   if ((r = buf_read_to_str(&tmp_buf, &tmp)) < 0)
     goto restore;
   *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw pdf_buf_parse_token (s_buf *buf, const char *pchar)
+{
+  bool end;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, pchar)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = pdf_buf_parse_object_end(buf, &end)) < 0)
+    goto restore;
+  if (! end) {
+    r = 0;
+    goto restore;
+  }
   r = result;
   goto clean;
  restore:

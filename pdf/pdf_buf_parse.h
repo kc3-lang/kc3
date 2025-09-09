@@ -32,6 +32,7 @@ sw   pdf_buf_parse_object_end (s_buf *buf, bool *end);
 sw   pdf_buf_parse_string (s_buf *buf, s_tag *dest);
 sw   pdf_buf_parse_string_hex (s_buf *buf, s_str *dest);
 sw   pdf_buf_parse_string_paren (s_buf *buf, s_str *dest);
+sw   pdf_buf_parse_token (s_buf *buf, const char *token);
 bool pdf_character_is_delimiter (character c);
 
 #endif /* KC3_PDF_BUF_PARSE_H */
