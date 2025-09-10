@@ -22,6 +22,35 @@ sw pdf_buf_write_bool (s_buf *buf, bool src)
   return pdf_buf_write_token(buf, "false");
 }
 
+/*sw pdf_buf_write_dictionnary (s_buf *buf, s_map *src)
+{
+  uw i;
+  s_tag *tag;
+  for (i = 0; i < src->count; i++) {
+    pdf_buf_write_name(s_buf *buf, p_sym src)
+  }
+}*/
+
+sw pdf_buf_write_float (s_buf *buf, f64 src)
+{
+  return buf_inspect_f64(buf, src);
+}
+
+sw pdf_buf_write_integer (s_buf *buf, const s_integer *x)
+{
+  return buf_inspect_integer(buf, x);
+}
+
+sw pdf_buf_write_name(s_buf *buf, p_sym src)
+{
+  sw r = 0;
+  if ((r = buf_write_u8(buf, '/')) < 0
+    || (r = buf_write_str(buf, &src->str)) < 0) {
+    return r;
+  }
+  return r;
+}
+
 sw pdf_buf_write_null (s_buf *buf)
 {
     return pdf_buf_write_token(buf, "null");
@@ -29,18 +58,27 @@ sw pdf_buf_write_null (s_buf *buf)
 
 sw pdf_buf_write_string_hex (s_buf *buf, s_str *dest)
 {
-  sw r = 0;
   u8 c;
+  sw i;
+  sw r = 0;
   s_buf read_buf = {0};
   const char *base = g_kc3_base_hexadecimal.ptr.pchar;
   buf_init_str_const(&read_buf, dest);
-  for (sw i = 0; i < dest->size; i++) {
+
+  if ((r = buf_write_1(buf, "<")) < 0) {
+    goto cleanup;
+  }
+  for (i = 0; i < dest->size; i++) {
     if ((r = buf_read_u8(&read_buf, &c)) < 0
       || (r = buf_write_u8(buf, base[c & 0xf])) < 0
       || (r = buf_write_u8(buf, base[(c >> 4) & 0xf])) < 0) {
-      break;
+      goto cleanup;
     }
   }
+  if ((r = buf_write_1(buf, ">")) < 0) {
+    goto cleanup;
+  }
+ cleanup:
   buf_clean(&read_buf);
   return r;
 }
