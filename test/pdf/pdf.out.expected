@@ -51,3 +51,11 @@ PDF.parse_str("1 0 obj << /Length 2 0 R >> stream\n123\nendstream\n")
 {:indirect_object, 1, 0, %PDF.Stream{dictionnary: %{Length: {:indirect_object, 2, 0}},
                                      offset: (S64) 35,
                                      length: (S64) 0}}
+PDF.parse_str("<</Size 333187>>\n")
+%{Size: 333187}
+PDF.parse_file("pdf.pdf")
+%PDF.File{trailer: %PDF.Trailer{dictionnary: %{Size: 333187},
+                                startxref: (U64) 129},
+          header: "",
+          body: void,
+          xref: %{}}

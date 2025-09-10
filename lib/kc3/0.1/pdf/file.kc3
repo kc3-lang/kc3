@@ -10,15 +10,13 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-require PDF.File
-require PDF.Stream
+require PDF.Trailer
 
-defmodule PDF do
+defmodule PDF.File do
 
-  dlopen("pdf.so")
-
-  def parse_file = cfn PDF.File "pdf_parse_from_file" (Str, Result)
-
-  def parse_str = cfn Tag "pdf_parse_from_str" (Str, Result)
+  defstruct [trailer: %PDF.Trailer{},
+             header: "",
+             body: do end,
+             xref: %{}]
 
 end

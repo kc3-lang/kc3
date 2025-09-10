@@ -178,19 +178,18 @@ sw pdf_buf_parse_comment (s_buf *buf)
 
 sw pdf_buf_parse_comments (s_buf *buf)
 {
-  sw r;
+  sw r1 = 1;
+  sw r2 = 1;
   sw result = 0;
   assert(buf);
-  while (1) {
-    if ((r = pdf_buf_parse_comment(buf)) <= 0)
-      break;
-    result += r;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      break;
-    result += r;
+  while (r1 | r2) {
+    if ((r1 = pdf_buf_parse_comment(buf)) < 0)
+      return r1;
+    result += r1;
+    if ((r2 = buf_ignore_spaces(buf)) < 0)
+      return r2;
+    result += r2;
   }
-  if (r < 0)
-    return r;
   return result;
 }
 
@@ -562,7 +561,7 @@ sw pdf_buf_parse_rewind_to_trailer (s_buf *buf)
   sw r;
   sw result = 0;
   assert(buf);
-  if (true) {
+  if (false) {
     err_write_1("pdf_buf_parse_rewind_to_trailer: rpos = ");
     err_inspect_sw_decimal(buf->rpos);
     err_write_1("\n");
@@ -929,11 +928,16 @@ sw pdf_buf_parse_trailer (s_buf *buf, s_pdf_trailer *dest)
     tag_clean(&tag);
     return -1;
   }
+  if (false) {
+    err_write_1("pdf_buf_parse_trailer: startxref = ");
+    err_inspect_u64_decimal(tmp.startxref);
+    err_write_1("\n");
+  }
   tag_clean(&tag);
-  if ((r = buf_read_1(buf, "%%EOF\n")) <= 0) {
-    err_puts("pdf_buf_parse_trailer: pdf_buf_parse_1");
-    assert(! "pdf_buf_parse_trailer: pdf_buf_parse_1");
-    return r;
+  if (buf->rpos < buf->wpos) {
+    err_puts("pdf_buf_parse_trailer: data after %%EOF");
+    assert(! "pdf_buf_parse_trailer: data after %%EOF");
+    return -1;
   }
   result += r;
   *dest = tmp;

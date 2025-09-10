@@ -492,6 +492,8 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
     return hash_update_integer(hash, data);
   if (type == &g_sym_List)
     return hash_update_plist(hash, data);
+  if (type == &g_sym_Map)
+    return hash_update_map(hash, data);
   if (type == &g_sym_Ptag)
     return hash_update_ptag(hash, data);
   if (type == &g_sym_Ptr)
