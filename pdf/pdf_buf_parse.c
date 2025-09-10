@@ -561,17 +561,18 @@ sw pdf_buf_parse_rewind_to_trailer (s_buf *buf)
   sw pos;
   sw r;
   sw result = 0;
-  s_buf_save save;
   assert(buf);
+  if (true) {
+    err_write_1("pdf_buf_parse_rewind_to_trailer: rpos = ");
+    err_inspect_sw_decimal(buf->rpos);
+    err_write_1("\n");
+  }
   if (buf->rpos < 9)
     return -1;
   buf->rpos -= 9;
-  buf_save_init(buf, &save);
   while (1) {
-    if (! buf->rpos) {
-      r = -1;
-      goto restore;
-    }
+    if (! buf->rpos)
+      return -1;
     buf->rpos--;
     pos = buf->rpos;
     if ((r = pdf_buf_parse_object_end(buf, &end)) > 0 &&
@@ -579,16 +580,11 @@ sw pdf_buf_parse_rewind_to_trailer (s_buf *buf)
         end &&
         (r = pdf_buf_parse_token(buf, "trailer")) > 0) {
       result += r;
-      r = result;
-      goto clean;
+      return result;
     }
     buf->rpos = pos;
   }
- restore:
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
+  return -1;
 }
     
 sw pdf_buf_parse_stream (s_buf *buf, s_tag *dest)
@@ -877,9 +873,9 @@ sw pdf_buf_parse_trailer (s_buf *buf, s_pdf_trailer *dest)
   const s_sym *sym_U64 = &g_sym_U64;
   s_tag tag = {0};
   s_pdf_trailer tmp = {0};
-  if (! buf_total_size(buf, &pos)) {
-    err_puts("pdf_buf_parse_trailer: buf_total_size");
-    assert(! "pdf_buf_parse_trailer: buf_total_size");
+  if (! buf_total_size(buf, &pos) || ! pos) {
+    err_puts("pdf_buf_parse_trailer: invalid buf_total_size");
+    assert(! "pdf_buf_parse_trailer: invalid buf_total_size");
     return -1;
   }
   if (pos < buf->size) {

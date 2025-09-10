@@ -12,7 +12,9 @@
  */
 #include "alloc.h"
 #include "assert.h"
+#include <errno.h>
 #include <stdio.h>
+#include <string.h>
 #include "buf.h"
 #include "buf_file.h"
 #include "buf_save.h"
@@ -27,6 +29,7 @@ u64 * buf_file_open_r_tell (s_buf *buf, u64 *dest);
 sw    buf_file_open_w_flush (s_buf *buf);
 s64   buf_file_open_w_seek (s_buf *buf, s64 offset, s8 from);
 u64 * buf_file_open_w_tell (s_buf *buf, u64 *dest);
+u64 * buf_file_total_size (s_buf *buf, u64 *dest);
 
 void buf_file_close (s_buf *buf)
 {
@@ -73,6 +76,7 @@ s_buf * buf_file_open_r (s_buf *buf, FILE *fp)
   buf->refill = buf_file_open_r_refill;
   buf->seek = buf_file_open_r_seek;
   buf->tell = buf_file_open_r_tell;
+  buf->total_size = buf_file_total_size;
   buf->user_ptr = buf_file;
   return buf;
 }
@@ -156,6 +160,7 @@ s_buf * buf_file_open_w (s_buf *buf, FILE *fp)
   buf->flush = buf_file_open_w_flush;
   buf->seek = buf_file_open_w_seek;
   buf->tell = buf_file_open_w_tell;
+  buf->total_size = buf_file_total_size;
   buf->user_ptr = buf_file;
   return buf;
 }
@@ -229,5 +234,47 @@ u64 * buf_file_open_w_tell (s_buf *buf, u64 *dest)
     return NULL;
   }
   *dest = tmp + buf->wpos;
+  return dest;
+}
+
+u64 * buf_file_total_size (s_buf *buf, u64 *dest)
+{
+  s_buf_file *buf_file;
+  s32 e;
+  off_t end;
+  off_t offset;
+  assert(buf);
+  assert(buf->user_ptr);
+  assert(dest);
+  buf_file = buf->user_ptr;
+  if ((offset = ftello(buf_file->fp)) < 0) {
+    e = errno;
+    err_write_1("buf_file_total_size: ftello 1: ");
+    err_puts(strerror(e));
+    assert(! "buf_file_total_size: ftello 1");
+    return NULL;
+  }
+  if (fseek(buf_file->fp, 0, SEEK_END) < 0) {
+    e = errno;
+    err_write_1("buf_file_total_size: fseek 1: ");
+    err_puts(strerror(e));
+    assert(! "buf_file_total_size: fseek 1");
+    return NULL;
+  }
+  if ((end = ftello(buf_file->fp)) < 0) {
+    e = errno;
+    err_write_1("buf_file_total_size: ftello 2: ");
+    err_puts(strerror(e));
+    assert(! "buf_file_total_size: ftello 2");
+    return NULL;
+  }
+  if (fseek(buf_file->fp, offset, SEEK_SET) < 0) {
+    e = errno;
+    err_write_1("buf_file_total_size: fseek 2: ");
+    err_puts(strerror(e));
+    assert(! "buf_file_total_size: fseek 2");
+    return NULL;
+  }
+  *dest = end;
   return dest;
 }
