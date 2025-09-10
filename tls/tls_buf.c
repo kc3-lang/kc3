@@ -14,24 +14,100 @@
 #include "../libkc3/alloc.h"
 #include "../libkc3/io.h"
 #include "assert.h"
+#include "libkc3/buf.h"
+#include "libkc3/buf_save.h"
 #include "types.h"
 #include <string.h>
+#include <tls.h>
+#include <unistd.h>
 #include "tls_buf.h"
 
-static sw tls_buf_open_w_flush(s_buf *buf)
+void tls_buf_close (s_buf *buf)
 {
-    assert(buf);
-    return buf && (sw)(! memset(buf->user_ptr, 0, buf->size));
-}
-
-static sw tls_buf_open_r_refill(s_buf *buf)
-{
+  s_tls_buf *tls_buf;
   assert(buf);
-  if (buf == NULL)
-    return -1;
-  return 0;
+  assert(buf->user_ptr);
+  tls_buf = buf->user_ptr;
+  buf_flush(buf);
+  tls_close(tls_buf->ctx);
+  buf->flush = NULL;
+  buf->refill = NULL;
+  free(buf->user_ptr);
+  buf->user_ptr = NULL;
 }
 
+sw tls_buf_open_r_refill (s_buf *buf)
+{
+  s32 avail;
+  p_tls ctx;
+  sw r;
+  uw size;
+  assert(buf);
+  assert(buf->user_ptr);
+  if (buf->rpos > buf->wpos) {
+    err_puts("tls_buf_open_r_refill: buf->rpos > buf->wpos");
+    assert(! "tls_buf_open_r_refill: buf->rpos > buf->wpos");
+    return -1;
+  }
+  if (buf->wpos > buf->size) {
+    err_puts("tls_buf_open_r_refill: buf->wpos > buf->size");
+    assert(! "tls_buf_open_r_refill: buf->wpos > buf->size");
+    return -1;
+  }
+  size = buf->size - buf->wpos;
+  ctx = ((s_tls_buf *) (buf->user_ptr))->ctx;
+  if ((r = tls_read(ctx, buf->ptr.pchar + buf->wpos, size)) < 0)
+    return r;
+  if (buf->wpos + r > buf->size) {
+    err_puts("tls_buf_open_r_refill: buffer overflow");
+    assert(! "tls_buf_open_r_refill: buffer overflow");
+    return -1;
+  }
+  buf->wpos += r;
+  return r;
+}
+
+sw tls_buf_open_w_flush (s_buf *buf)
+{
+  sw bytes;
+  s_tls_buf *tls_buf;
+  sw e;
+  uw min_wpos;
+  s_buf_save *save;
+  sw size;
+  sw w;
+  assert(buf);
+  assert(buf->user_ptr);
+  if (buf->rpos)
+    return -1;
+  if (buf->rpos > buf->wpos)
+    return -1;
+  if (buf->wpos > buf->size)
+    return -1;
+  min_wpos = buf_save_min_wpos(buf);
+  size = min_wpos;
+  if (size == 0)
+    return buf->size - buf->wpos;
+  tls_buf = buf->user_ptr;
+  bytes = 0;
+  while (bytes < size) {
+    // XXX TODO: #ifdef WIN32 || WIN64
+    if ((w = tls_write(tls_buf->ctx, buf->ptr.pchar + bytes,
+                  size - bytes)) < 0) {
+      err_write_1("buf_fd_open_w_flush: tls_write: ");
+      err_puts(tls_error(tls_buf->ctx));
+      return -1;
+    }
+    bytes += w;
+  }
+  buf->wpos -= size;
+  save = buf->save;
+  while (save) {
+    save->wpos -= size;
+    save = save->next;
+  }
+  return size;
+}
 
 s_buf * tls_buf_open_r (s_buf *buf, p_tls ctx)
 {

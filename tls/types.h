@@ -15,6 +15,7 @@
 #define  LIBKC3_TLS_TYPES_H
 
 #include "../libkc3/types.h"
+#include "../socket/types.h"
 
 typedef struct tls *p_tls;
 typedef struct tls_buf s_tls_buf;
@@ -22,6 +23,7 @@ typedef struct tls_config *p_tls_config;
 
 struct tls_buf {
   p_tls ctx;
+  t_socket socket;
 };
 
 #endif
