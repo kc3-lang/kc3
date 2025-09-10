@@ -20,7 +20,7 @@ sw   pdf_buf_write_bool (s_buf *buf, bool src);
 //sw   pdf_buf_write_comment (s_buf *buf);
 //sw   pdf_buf_write_comments (s_buf *buf);
 sw   pdf_buf_write_dictionnary (s_buf *buf, s_map *src);
-sw   pdf_buf_write_float (s_buf *buf, s_tag *src);
+sw   pdf_buf_write_float (s_buf *buf, f32 src);
 sw   pdf_buf_write_indirect_object (s_buf *buf, s_tuple *src);
 sw   pdf_buf_write_integer (s_buf *buf, s_tag *src);
 sw   pdf_buf_write_name (s_buf *buf, p_sym src);

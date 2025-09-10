@@ -16,16 +16,12 @@
 
 sw pdf_buf_write(s_buf *buf, s_tag *src)
 {
-  if (! src) {
-      err_puts("pdf_buf_write: invalid tag");
-      assert(! "pdf_buf_write: invalid tag");
-      return -1;
-  }
+  assert(buf);
+  assert(src);
   switch (src->type) {
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_F128:
-      return pdf_buf_write_float(buf, src);
+    case TAG_F32:  return pdf_buf_write_float(buf, src->data.f32);
+    case TAG_F64:  return pdf_buf_write_float(buf, src->data.f64);
+    case TAG_F128: return pdf_buf_write_float(buf, src->data.f128);
     case TAG_INTEGER:
     case TAG_SW:
     case TAG_S64:
@@ -36,12 +32,10 @@ sw pdf_buf_write(s_buf *buf, s_tag *src)
     case TAG_U16:
     case TAG_U32:
     case TAG_U64:
-    case TAG_UW:
-      return pdf_buf_write_integer(buf, src);
+    case TAG_UW:   return pdf_buf_write_integer(buf, src);
     case TAG_MAP:
       return pdf_buf_write_dictionnary(buf, &src->data.map);
-    case TAG_STR:
-      return pdf_buf_write_string_hex(buf, &src->data.str);
+    case TAG_STR:  return pdf_buf_write_string_hex(buf, &src->data.str);
     case TAG_PSYM: return pdf_buf_write_name(buf, src->data.psym);
     default:
       err_puts("pdf_buf_write: unsupported tag");
