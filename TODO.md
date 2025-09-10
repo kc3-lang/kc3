@@ -50,9 +50,9 @@
        - [x] `tls_init() != 0`
        - [x] `struct tls_config *config = tls_config_new();`
        - [?] `tls_configure(ctx, config);`
-       - [perle] `tls_write(ctx, data, size)`
-       - [perle] `tls_read(ctx, data, size);`
-       - [perle] `tls_close(ctx);`
+       - [ ] `tls_write(ctx, data, size)`
+       - [ ] `tls_read(ctx, data, size);`
+       - [ ] `tls_close(ctx);`
        - [x] `tls_free`
        - [x] `tls_config_free` (isn't that tls_config_delete, what's the difference ?)
      - [ ] Basic TLS Client :
