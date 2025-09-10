@@ -23,7 +23,7 @@ defmodule TLS do
   # at program start : TLS.init() = true
   def init = cfn Bool "kc3_tls_init" ()
 
-  def free = cfn Bool "kc3_tls_configure" (TLS*, TLS.Config*)
+  def configure = cfn Bool "kc3_tls_configure" (TLS*, TLS.Config*)
 
   def free = cfn Void "tls_free" (TLS*)
 
