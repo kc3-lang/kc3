@@ -37,11 +37,11 @@
      - [x] `tls_buf.c/h`
      - [x] struct `s_tls_buf`
      - `tls_buf_open_r` opens a tls connection for reading
-       - [.] `buf->refill` callback to refill the `tls_open_r` buffer
+       - [x] `buf->refill` callback to refill the `tls_open_r` buffer
      - `tls_buf_open_w` opens a tls connection for writing
-       - [.] `buf->flush` callback to flush the `tls_open_w` buffer
+       - [x] `buf->flush` callback to flush the `tls_open_w` buffer
          - `sw buf_fd_open_w_flush (s_buf *buf)`
-     - [ ] `tls_buf_close`
+     - [x] `tls_buf_close`
    - ikc3 **--tls** --client/server
      - `puts("ikc3: connected with TLS v1.2 to ${g_host} ${g_port}")`
    - [ ] wrap the following functions in lib/kc3/0.1 :
@@ -50,16 +50,16 @@
        - [x] `tls_init() != 0`
        - [x] `struct tls_config *config = tls_config_new();`
        - [?] `tls_configure(ctx, config);`
-       - [ ] `tls_write(ctx, data, size)`
-       - [ ] `tls_read(ctx, data, size);`
-       - [ ] `tls_close(ctx);`
+       - [?] `tls_write(ctx, data, size)`
+       - [x] `tls_read(ctx, data, size);`
+       - [?] `tls_close(ctx);`
        - [x] `tls_free`
        - [x] `tls_config_free` (isn't that tls_config_delete, what's the difference ?)
-     - [ ] Basic TLS Client :
+     - [?] Basic TLS Client :
        - [x] `tls_config_set_ca_file(config, "/etc/ssl/cert.pem");`
        - [x] `struct tls *ctx = tls_client();`
        - [x] `tls_connect_socket(ctx, socket_fd, "hostname");`
-     - [ ] Basic TLS Server, see `libtls_server_example.c`
+     - [?] Basic TLS Server, see `libtls_server_example.c`
        - [?] `tls_config_set_cert_file` set server certificate
        - [?] `tls_config_set_key_file` set server certificate private key
        - [?] `ctx = tls_server()`
