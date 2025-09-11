@@ -13,6 +13,7 @@
 #include "../libkc3/kc3.h"
 #include "pdf_buf_parse.h"
 
+// TODO: use xref instead
 sw pdf_buf_ignore_until_token (s_buf *buf, const char *token)
 {
   sw r;
@@ -257,6 +258,17 @@ sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
   if ((r = pdf_buf_parse_trailer(buf, &tmp.trailer)) <= 0)
     return r;
   result += r;
+  if ((r = buf_seek(buf, tmp.trailer.startxref, SEEK_SET)) < 0 ||
+      (u64) r != tmp.trailer.startxref) {
+    err_puts("pdf_buf_parse_file: buf_seek");
+    assert(! "pdf_buf_parse_file: buf_seek");
+    return -1;
+  }
+  if ((r = pdf_buf_parse_xref(buf, &tmp.xref)) <= 0) {
+    err_puts("pdf_buf_parse_file: pdf_buf_parse_xref");
+    assert(! "pdf_buf_parse_file: pdf_buf_parse_xref");
+    return -1;
+  }
   *dest = tmp;
   return result;
 }

@@ -1453,6 +1453,9 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/metric.kc3" \
 	"lib/kc3/0.1/parse.kc3" \
 	"lib/kc3/0.1/pdf.kc3" \
+	"lib/kc3/0.1/pdf/file.kc3" \
+	"lib/kc3/0.1/pdf/stream.kc3" \
+	"lib/kc3/0.1/pdf/trailer.kc3" \
 	"lib/kc3/0.1/pointer.kc3" \
 	"lib/kc3/0.1/pretty.kc3" \
 	"lib/kc3/0.1/pretty_save.kc3" \
@@ -1961,6 +1964,7 @@ KC3_TEST_MARKDOWN_SOURCES = \
 KC3_TEST_PDF_SOURCES = \
 	"test/pdf/pdf.kc3" \
 	"test/pdf/pdf.out.expected" \
+	"test/pdf/pdf.ret.expected" \
 	"test/pdf_test" \
 
 KC3_OTHER_SOURCES = \
