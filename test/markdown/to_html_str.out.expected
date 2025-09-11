@@ -1,5 +1,5 @@
 require Markdown
-true
+Markdown
 Markdown.to_html_str("Text.\n")
 "<p>Text.</p>\n"
 Markdown.to_html_str("# Title\nText.\n\n## Title 2\n")
