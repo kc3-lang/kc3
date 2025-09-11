@@ -1692,6 +1692,41 @@ s_ident * env_ident_resolve_module (s_env *env,
   return dest;
 }
 
+/* Special operator. */
+s_tag * env_if_then_else (s_env *env, s_tag *cond, s_tag *then,
+                          s_tag *else_, s_tag *dest)
+{
+  bool  cond_bool = false;
+  s_tag cond_eval = {0};
+  bool silence_errors;
+  const s_sym *type;
+  silence_errors = env->silence_errors;
+  env->silence_errors = true;
+  if (! env_eval_tag(env, cond, &cond_eval)) {
+    env->silence_errors = silence_errors;
+    return NULL;
+  }
+  env->silence_errors = silence_errors;
+  if (cond_eval.type == TAG_BOOL)
+    cond_bool = cond_eval.data.bool_;
+  else {
+    type = &g_sym_Bool;
+    if (! bool_init_cast(&cond_bool, &type, &cond_eval)) {
+      tag_clean(&cond_eval);
+      return NULL;
+    }
+  }
+  tag_clean(&cond_eval);
+  if (cond_bool) {
+    if (! env_eval_tag(env, then, dest))
+      return NULL;
+    return dest;
+  }
+  if (! env_eval_tag(env, else_, dest))
+    return NULL;
+  return dest;
+}
+
 s_env * env_init (s_env *env, int *argc, char ***argv)
 {
   s_str path;

@@ -608,35 +608,7 @@ s_tag * kc3_identity (s_tag *tag, s_tag *dest)
 s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
                           s_tag *else_, s_tag *dest)
 {
-  bool  cond_bool = false;
-  s_tag cond_eval = {0};
-  bool silence_errors;
-  const s_sym *type;
-  silence_errors = env_global()->silence_errors;
-  env_global()->silence_errors = true;
-  if (env_eval_tag(env_global(), cond, &cond_eval)) {
-    env_global()->silence_errors = silence_errors;
-    if (cond_eval.type == TAG_BOOL)
-      cond_bool = cond_eval.data.bool_;
-    else {
-      type = &g_sym_Bool;
-      if (! bool_init_cast(&cond_bool, &type, &cond_eval)) {
-        tag_clean(&cond_eval);
-        return NULL;
-      }
-    }
-    tag_clean(&cond_eval);
-    if (cond_bool) {
-      if (! env_eval_tag(env_global(), then, dest))
-        return NULL;
-      return dest;
-    }
-  }
-  else
-    env_global()->silence_errors = silence_errors;
-  if (! env_eval_tag(env_global(), else_, dest))
-    return NULL;
-  return dest;
+  return env_if_then_else(env_global(), cond, then, else_, dest);
 }
 
 s_buf ** kc3_in_buf (s_buf **dest)

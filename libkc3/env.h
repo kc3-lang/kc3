@@ -116,6 +116,8 @@ s_tag *        env_ident_get (s_env *env, const s_ident *ident,
 bool *         env_ident_is_special_operator (s_env *env,
                                               const s_ident *ident,
                                               bool *dest);
+s_tag *        env_if_then_else (s_env *env, s_tag *cond, s_tag *then,
+                                 s_tag *else_, s_tag *dest);
 s_tag *        env_kc3_def (s_env *env, const s_call *call,
                             s_tag *dest);
 s_tag *        env_let (s_env *env, s_tag *vars, s_tag *tag,
