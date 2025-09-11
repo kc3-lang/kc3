@@ -155,6 +155,11 @@ sw buf_parse_u64_base (s_buf *buf, const s_str *base,
   return r;
 }
 
+sw buf_parse_u64_decimal (s_buf *buf, u64 *dest)
+{
+  return buf_parse_u64_base(buf, &g_kc3_base_decimal, dest);
+}
+
 sw buf_parse_u64_hexadecimal (s_buf *buf, u64 *dest)
 {
   return buf_parse_u64_base(buf, &g_kc3_base_hexadecimal, dest);

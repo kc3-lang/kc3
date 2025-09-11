@@ -155,6 +155,11 @@ sw buf_parse_u16_base (s_buf *buf, const s_str *base,
   return r;
 }
 
+sw buf_parse_u16_decimal (s_buf *buf, u16 *dest)
+{
+  return buf_parse_u16_base(buf, &g_kc3_base_decimal, dest);
+}
+
 sw buf_parse_u16_hexadecimal (s_buf *buf, u16 *dest)
 {
   return buf_parse_u16_base(buf, &g_kc3_base_hexadecimal, dest);
