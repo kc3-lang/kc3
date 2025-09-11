@@ -13,6 +13,7 @@
 require EKC3
 require File
 require HTML
+require Inspect
 require Sh
 require URL
 
@@ -105,11 +106,9 @@ defmodule FXView do
             """<pre class="#{size}"><code #{class}>#{HTML.escape(file)}</code>    </pre>"""
           else
             file = if (size == :small) do
-              sh_path = Sh.escape(path)
-              system(["sh", "-c",
-                      "head -n 1 #{sh_path} | cut -b 1-47 | hexdump -C | head -n 3"])
+              Inspect.str_hex(File.read_slice(path, 0, 42))
             else
-              system(["hexdump", "-C", path])
+              Inspect.str_hex(File.read_all(path))
             end
             """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
           end
@@ -117,7 +116,7 @@ defmodule FXView do
       end
     end
     """<span class="size">#{HTML.escape(human_size(file_size))}</span>
-       <span class="file">#{HTML.escape(system(["file", "-b", path]))}</span>
+       <span class="file">#{HTML.escape(mime)}</span>
        <div class="#{size}">#{preview}<hr /></div>"""
   }
 

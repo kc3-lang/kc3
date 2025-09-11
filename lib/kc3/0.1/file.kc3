@@ -84,7 +84,15 @@ defmodule File do
 
   def read_max_cfn = cfn Str "file_read_max" (Str, Uw, Result)
 
-  def read_max = fn (path, max) { read_max_cfn(path, (Uw) max) }
+  def read_max = fn (path, max) do
+    File.read_max_cfn(path, (Uw) max)
+  end
+
+  def read_slice_cfn = cfn Str "file_read_slice" (Str, U64, U64, Result)
+
+  def read_slice = fn (path, start, end_) do
+    File.read_slice_cfn(path, (U64) start, (U64) end_)
+  end
 
   # rename(old, new) => success
   def rename = cfn Bool "file_rename" (Str, Str)

@@ -475,6 +475,13 @@ s_str * file_read_slice (s_str *path, u64 start, u64 end, s_str *dest)
   }
   if ((u64) r < end)
     end = r;
+  if ((r = lseek(fd, start, SEEK_SET)) < 0 ||
+      (u64) r != start) {
+    err_puts("file_read_slice: lseek 3");
+    assert(! "file_read_slice: lseek 3");
+    close(fd);
+    return NULL;
+  }
   if (! (size = end - start)) {
     close(fd);
     return str_init_empty(dest);
