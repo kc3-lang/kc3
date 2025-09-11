@@ -1,13 +1,13 @@
 require HTTP
-true
+HTTP
 require Socket
-true
+Socket
 require Socket.Buf
-true
+Socket.Buf
 require HTTP.Request
-true
+HTTP.Request
 require HTTP.Response
-true
+HTTP.Response
 (server = Socket.listen("localhost", "57000")) ; void
 void
 (client = Socket.Buf.connect("localhost", "57000")) ; void

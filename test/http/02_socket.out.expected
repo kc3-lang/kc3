@@ -1,4 +1,4 @@
 require Socket
-true
+Socket
 %Socket{}
 %Socket{fd: (S64) -1}
