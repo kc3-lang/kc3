@@ -2000,6 +2000,9 @@ bool env_load (s_env *env, const s_str *path)
   }
   return true;
  ko:
+  err_write_1("env_load: ");
+  err_inspect_str(path);
+  err_puts(": KO");
   tag_clean(file_dir);
   *file_dir = file_dir_save;
   *file_path = file_path_save;

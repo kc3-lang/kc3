@@ -1493,6 +1493,7 @@ sw buf_parse_comments (s_buf *buf)
   sw csize;
   sw r;
   sw result = 0;
+  sw result_inner;
   s_buf_save save;
   assert(buf);
   buf_save_init(buf, &save);
@@ -1507,6 +1508,7 @@ sw buf_parse_comments (s_buf *buf)
   if ((r = buf_parse_comment(buf)) <= 0)
     goto restore;
   result += r;
+  result_inner = result;
   while (1) {
     buf_save_update(buf, &save);
     while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
@@ -1515,11 +1517,12 @@ sw buf_parse_comments (s_buf *buf)
       csize = r;
       if ((r = buf_ignore(buf, csize)) <= 0)
         break;
-      result += csize;
+      result_inner += csize;
     }
     if ((r = buf_parse_comment(buf)) <= 0)
       break;
-    result += r;
+    result_inner += r;
+    result = result_inner;
   }
   if (r <= 0)
     buf_save_restore_rpos(buf, &save);

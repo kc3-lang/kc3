@@ -798,14 +798,14 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   }
   if (env_ident_resolve_module(env, ident, &tmp_ident) &&
       ! (tag = env_ident_get(env, &tmp_ident, &tmp))) {
-    err_write_1("env_eval_ident: unbound ident: ");
-    err_inspect_ident(ident);
-    err_write_1("\n");
     if (true) {
       err_puts("env_eval_ident: stacktrace:");
       err_inspect_stacktrace(env->stacktrace);
       err_write_1("\n");
     }
+    err_write_1("env_eval_ident: unbound ident: ");
+    err_inspect_ident(ident);
+    err_write_1("\n");
     if (false) {
       err_write_1("frame: ");
       err_inspect_frame(env->frame);

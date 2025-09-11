@@ -105,10 +105,13 @@ defmodule FXView do
             end
             """<pre class="#{size}"><code #{class}>#{HTML.escape(file)}</code>    </pre>"""
           else
-            file = if (size == :small) do
-              Inspect.str_hex(File.read_slice(path, 0, 42))
+            content = if (size == :small) do
+              File.read_slice(path, 0, 42)
             else
-              Inspect.str_hex(File.read_all(path))
+              File.read_all(path)
+            end
+            file = if (Str.is_utf8?(content)) do content else
+              Inspect.str_hex(content)
             end
             """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
           end
@@ -121,8 +124,8 @@ defmodule FXView do
   }
 
   def render_show_file = fn (path, menu, file, properties) {
-    nav2 = LayoutView.render_nav2()
-    EKC3.render(show_file_template)
+    nav2 = ""
+    EKC3.render(FXView.show_file_template)
   }
 
 end

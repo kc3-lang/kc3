@@ -3384,38 +3384,49 @@ sw buf_inspect_ratio_size (s_pretty *pretty, const s_ratio *ratio)
 sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
 {
   p_list arg;
+  sw count = 30;
+  sw depth;
+  sw i;
   s_pretty_save pretty_save;
   sw r;
   sw result = 0;
   p_list reverse = NULL;
   p_list s;
+  s_tag **trace;
   assert(buf);
+  depth = list_length(stacktrace);
+  if (depth < count)
+    count = depth;
+  if (! (trace = alloc(count * sizeof(s_tag *))))
+    return -1;
   pretty_save_init(&pretty_save, &buf->pretty);
   pretty_indent_at_column(&buf->pretty, 0);
   if ((r = buf_write_1(buf, "Stacktrace:\n")) < 0) {
     pretty_save_clean(&pretty_save, &buf->pretty);
     return r;
   }
-  result += r;
-  if (! plist_reverse(&stacktrace, &reverse)) {
-    err_puts("buf_inspect_stacktrace: plist_reverse");
-    assert(! "buf_inspect_stacktrace: plist_reverse");
-    pretty_save_clean(&pretty_save, &buf->pretty);
-    return -1;
+  i = 0;
+  s = stacktrace;
+  while (s && i < count) {
+    trace[i] = &s->tag;
+    s = list_next(s);
+    i++;
   }
-  s = reverse;
-  while (s) {
-    if ((r = buf_write_1(buf, " ")) < 0)
+  while (i--) {
+    if ((r = buf_inspect_sw_decimal(buf, i)) < 0)
       goto clean;
     result += r;
-    if (s->tag.type == TAG_PLIST) {
-      if ((r = buf_inspect_tag(buf, &s->tag.data.plist->tag)) < 0)
+    if ((r = buf_write_1(buf, ": ")) < 0)
+      goto clean;
+    result += r;
+    if (trace[i]->type == TAG_PLIST) {
+      if ((r = buf_inspect_tag(buf, &trace[i]->data.plist->tag)) < 0)
         goto clean;
       result += r;
       if ((r = buf_write_1(buf, "(")) < 0)
         goto clean;
       result += r;
-      arg = list_next(s->tag.data.plist);
+      arg = list_next(trace[i]->data.plist);
       while (arg) {
         if ((r = buf_inspect_tag(buf, &arg->tag)) < 0)
           goto clean;
@@ -3436,7 +3447,6 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
         goto clean;
       result += r;
     }
-    s = list_next(s);
   }
   r = result;
  clean:

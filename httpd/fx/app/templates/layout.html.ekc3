@@ -15,6 +15,6 @@
   <body>
     <%= raw nav %>
     <%= raw page %>
-    <%= raw footer %>
+    <%= raw LayoutView.footer %>
   </body>
 </html>
