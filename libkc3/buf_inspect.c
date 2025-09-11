@@ -3384,7 +3384,7 @@ sw buf_inspect_ratio_size (s_pretty *pretty, const s_ratio *ratio)
 sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
 {
   p_list arg;
-  sw count = 30;
+  sw count = 10;
   sw depth;
   sw i;
   s_pretty_save pretty_save;

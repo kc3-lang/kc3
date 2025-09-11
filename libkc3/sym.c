@@ -43,6 +43,7 @@ const s_sym g_sym_Cfn              = SYM_1("Cfn");
 const s_sym g_sym_Character        = SYM_1("Character");
 const s_sym g_sym_Char__star       = SYM_1("Char*");
 const s_sym g_sym_Complex          = SYM_1("Complex");
+const s_sym g_sym_Counter          = SYM_1("Counter");
 const s_sym g_sym_Cow              = SYM_1("Cow");
 const s_sym g_sym_F32              = SYM_1("F32");
 const s_sym g_sym_F64              = SYM_1("F64");
@@ -330,6 +331,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_Character, NULL);
   sym_register(&g_sym_Char__star, NULL);
   sym_register(&g_sym_Complex, NULL);
+  sym_register(&g_sym_Counter, NULL);
   sym_register(&g_sym_Cow, NULL);
   sym_register(&g_sym_F32, NULL);
   sym_register(&g_sym_F64, NULL);
@@ -585,6 +587,10 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
     return must_clean;
   }
   if (sym == &g_sym_F128) {
+    *must_clean = false;
+    return must_clean;
+  }
+  if (sym == &g_sym_Ident) {
     *must_clean = false;
     return must_clean;
   }

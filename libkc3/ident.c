@@ -60,6 +60,17 @@ s_tag * ident_get (const s_ident *ident, s_tag *dest)
   return env_ident_get(env_global(), ident, dest);
 }
 
+uw * ident_hash_uw (const s_ident *ident, uw *dest)
+{
+  t_hash hash;
+  assert(ident);
+  hash_init(&hash);
+  if (! hash_update_ident(&hash, ident))
+    return NULL;
+  *dest = hash_to_uw(&hash);
+  return dest;
+}
+
 s_ident * ident_init (s_ident *ident, const s_sym *module,
                       const s_sym *sym)
 {

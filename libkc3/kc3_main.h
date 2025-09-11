@@ -69,6 +69,7 @@ s_tag *      kc3_access (s_tag *tag, s_list **addr,
 s_tag *      kc3_and (s_tag *a, s_tag *b, s_tag *dest);
 s_tag *      kc3_buf_parse_tag (s_buf *buf, s_tag *dest);
 s_tag *      kc3_def (p_call *pcall, s_tag *dest);
+s_tag *      kc3_defcounter (p_call *pcall, s_tag *dest);
 s_tag *      kc3_defmodule (p_sym const *name,
                             const s_do_block *do_block, s_tag *dest);
 s_tag *      kc3_defoperator (s_tag *op_tag, s_tag *dest);
@@ -139,7 +140,7 @@ s_str *      kc3_marshall_to_str (p_marshall *m, s_str *dest);
 bool         kc3_maybe_reload (const s_str *path);
 s_tag *      kc3_or (s_tag *a, s_tag *b, s_tag *dest);
 s_tag *      kc3_parse_tag (s_tag *tag, const s_str *src);
-bool         kc3_require (p_sym *module);
+s_tag *      kc3_require (p_sym *module, s_tag *dest);
 s_str *      kc3_strerror (sw err_no, s_str *dest);
 s_tag *      kc3_struct_put (s_tag *s, p_sym *key,
                              s_tag *value, s_tag *dest);

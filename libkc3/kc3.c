@@ -265,11 +265,20 @@ void kc3_continue (void)
 
 s_tag * kc3_def (p_call *pcall, s_tag *dest)
 {
-  if (securelevel(0) > 2) {
-    err_puts("kc3_def: cannot use def with securelevel > 2");
+  if (securelevel(0) > 1) {
+    err_puts("kc3_def: cannot use def with securelevel > 1");
     abort();
   }
   return env_kc3_def(env_global(), *pcall, dest);
+}
+
+s_tag * kc3_defcounter (p_call *pcall, s_tag *dest)
+{
+  if (securelevel(0) > 1) {
+    err_puts("kc3_def: cannot use defcounter with securelevel > 1");
+    abort();
+  }
+  return env_kc3_defcounter(env_global(), *pcall, dest);
 }
 
 s_tag * kc3_defmodule (p_sym const *name, const s_do_block *do_block,
@@ -951,9 +960,20 @@ sw kc3_puts (const s_tag *tag)
   return result;
 }
 
-bool kc3_require (p_sym *module)
+s_tag * kc3_require (p_sym *module, s_tag *dest)
 {
-  return env_module_ensure_loaded(env_global(), *module);
+  assert(module);
+  assert(*module);
+  assert(sym_is_module(*module));
+  assert(dest);
+  if (! env_module_ensure_loaded(env_global(), *module)) {
+    err_write_1("kc3_require: ");
+    err_inspect_sym(*module);
+    err_puts(": env_module_ensure_loaded");
+    assert(! "kc3_require: env_module_ensure_loaded");
+    return NULL;
+  }
+  return tag_init_psym(dest, *module);
 }
 
 void kc3_return (s_tag *value)

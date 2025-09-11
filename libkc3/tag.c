@@ -983,6 +983,63 @@ bool tag_is_number (s_tag *tag)
   return false;
 }
 
+bool tag_is_positive_integer (s_tag *tag)
+{
+  assert(tag);
+  tag = tag_resolve_cow(tag);
+  switch (tag->type) {
+  case TAG_VOID:
+  case TAG_ARRAY:
+  case TAG_BOOL:
+  case TAG_CHARACTER:
+  case TAG_DO_BLOCK:
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_F128:
+  case TAG_FACT:
+  case TAG_MAP:
+  case TAG_PCALL:
+  case TAG_PCALLABLE:
+  case TAG_PCOMPLEX:
+  case TAG_PFACTS:
+  case TAG_PLIST:
+  case TAG_POINTER:
+  case TAG_PSTRUCT:
+  case TAG_PSTRUCT_TYPE:
+  case TAG_PSYM:
+  case TAG_PTAG:
+  case TAG_PTR:
+  case TAG_PTR_FREE:
+  case TAG_PVAR:
+  case TAG_QUOTE:
+  case TAG_RATIO:
+  case TAG_STR:
+  case TAG_TIME:
+  case TAG_TUPLE:
+  case TAG_UNQUOTE:
+  case TAG_IDENT:
+    return false;
+  case TAG_INTEGER: return integer_is_positive(&tag->data.integer);
+  case TAG_S8:      return tag->data.s8 > 0;
+  case TAG_S16:     return tag->data.s16 > 0;
+  case TAG_S32:     return tag->data.s32 > 0;
+  case TAG_S64:     return tag->data.s64 > 0;
+  case TAG_SW:      return tag->data.sw > 0;
+  case TAG_U8:      return tag->data.u8 > 0;
+  case TAG_U16:     return tag->data.u16 > 0;
+  case TAG_U32:     return tag->data.u32 > 0;
+  case TAG_U64:     return tag->data.u64 > 0;
+  case TAG_UW:      return tag->data.uw > 0;
+    return true;
+  case TAG_PCOW:
+    break;
+  }
+  err_puts("tag_is_positive_integer: invalid tag type");
+  assert(! "tag_is_positive_integer: invalid tag type");
+  abort();
+  return false;
+}
+
 bool tag_is_struct (const s_tag *tag, const s_sym *module)
 {
   return tag &&

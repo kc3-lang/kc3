@@ -34,6 +34,7 @@ s_ident * ident_resolve_module (const s_ident *ident, s_ident *dest);
 bool    ident_character_is_reserved (character c);
 bool    ident_first_character_is_reserved (character c);
 s_tag * ident_get (const s_ident *ident, s_tag *dest);
+uw *    ident_hash_uw (const s_ident *ident, uw *dest);
 bool *  ident_is_special_operator (const s_ident *ident, bool *dest);
 bool    ident_to_tag_type (const s_ident *ident, e_tag_type *dest);
 

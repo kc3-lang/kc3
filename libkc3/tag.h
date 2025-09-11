@@ -51,6 +51,7 @@ bool           tag_is_alist (const s_tag *tag);
 bool           tag_is_bound_var (const s_tag *tag);
 bool           tag_is_cast (const s_tag *tag, const s_sym *type);
 bool           tag_is_integer (s_tag *tag);
+bool           tag_is_positive_integer (s_tag *tag);
 bool           tag_is_struct (const s_tag *tag, const s_sym *module);
 bool *         tag_is_unbound_var (const s_tag *tag, bool *dest);
 bool           tag_is_zero(const s_tag *tag);

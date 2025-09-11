@@ -100,6 +100,7 @@ KC3_MAKEFILES = \
 	"http/Makefile" \
 	"http/sources.mk" \
 	"httpd/Makefile" \
+	"httpd/fx/Makefile" \
 	"httpd/fx/assets/Makefile" \
 	"httpd/sources.mk" \
 	"ikc3/Makefile" \
@@ -125,6 +126,7 @@ KC3_MAKEFILES = \
 	"test/httpd/Makefile" \
 	"test/httpd/assets/Makefile" \
 	"test/sources.mk" \
+	"test/wget/Makefile" \
 	"tls/Makefile" \
 	"tls/sources.mk" \
 	"ucd2c/Makefile" \
@@ -425,6 +427,8 @@ KC3_C_SOURCES = \
 	"libkc3/compare.h" \
 	"libkc3/complex.c" \
 	"libkc3/complex.h" \
+	"libkc3/counter.c" \
+	"libkc3/counter.h" \
 	"libkc3/cow.c" \
 	"libkc3/cow.h" \
 	"libkc3/crypt.c" \
@@ -1366,11 +1370,13 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/character.kc3" \
 	"lib/kc3/0.1/compare.kc3" \
 	"lib/kc3/0.1/complex.facts" \
+	"lib/kc3/0.1/counter.kc3" \
 	"lib/kc3/0.1/cow.kc3" \
 	"lib/kc3/0.1/crypt.kc3" \
 	"lib/kc3/0.1/deserialize.kc3" \
 	"lib/kc3/0.1/ekc3.kc3" \
 	"lib/kc3/0.1/env.kc3" \
+	"lib/kc3/0.1/err.kc3" \
 	"lib/kc3/0.1/event.kc3" \
 	"lib/kc3/0.1/f128.facts" \
 	"lib/kc3/0.1/f32.facts" \
@@ -1423,9 +1429,12 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/httpd.kc3" \
 	"lib/kc3/0.1/httpd/route.kc3" \
 	"lib/kc3/0.1/init.kc3" \
+	"lib/kc3/0.1/inspect.kc3" \
 	"lib/kc3/0.1/integer.facts" \
+	"lib/kc3/0.1/io.kc3" \
 	"lib/kc3/0.1/json.kc3" \
 	"lib/kc3/0.1/kc3.1.kc3" \
+	"lib/kc3/0.1/kc3.dump" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/op.kc3" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
@@ -1866,7 +1875,20 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/static/_fonts/courier_new.woff2" \
 	"test/httpd/static/_fonts/fontawesome-webfont.woff" \
 	"test/httpd/static/_fonts/fontawesome-webfont.woff2" \
+	"test/httpd/static/_fonts/free-fa-brands-400.eot" \
+	"test/httpd/static/_fonts/free-fa-brands-400.svg" \
+	"test/httpd/static/_fonts/free-fa-brands-400.ttf" \
+	"test/httpd/static/_fonts/free-fa-brands-400.woff" \
 	"test/httpd/static/_fonts/free-fa-brands-400.woff2" \
+	"test/httpd/static/_fonts/free-fa-regular-400.eot" \
+	"test/httpd/static/_fonts/free-fa-regular-400.svg" \
+	"test/httpd/static/_fonts/free-fa-regular-400.ttf" \
+	"test/httpd/static/_fonts/free-fa-regular-400.woff" \
+	"test/httpd/static/_fonts/free-fa-regular-400.woff2" \
+	"test/httpd/static/_fonts/free-fa-solid-900.eot" \
+	"test/httpd/static/_fonts/free-fa-solid-900.svg" \
+	"test/httpd/static/_fonts/free-fa-solid-900.ttf" \
+	"test/httpd/static/_fonts/free-fa-solid-900.woff" \
 	"test/httpd/static/_fonts/free-fa-solid-900.woff2" \
 	"test/httpd/static/_images" \
 	"test/httpd/static/_images/iris-kc3-004.jpeg" \
@@ -1949,7 +1971,6 @@ KC3_OTHER_SOURCES = \
 	"env" \
 	"kc3.index" \
 	"kc3.version" \
-	"libkc3/.#tag_init.rb" \
 	"libkc3/tag_init.rb" \
 	"license.h" \
 	"sources.mk" \

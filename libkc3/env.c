@@ -43,6 +43,7 @@
 #include "cfn.h"
 #include "compare.h"
 #include "complex.h"
+#include "counter.h"
 #include "cow.h"
 #include "data.h"
 #include "env.h"
@@ -61,6 +62,7 @@
 #include "fn.h"
 #include "fn_clause.h"
 #include "frame.h"
+#include "ht.h"
 #include "ident.h"
 #include "integer.h"
 #include "io.h"
@@ -77,6 +79,7 @@
 #include "plist.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
+#include "rwlock.h"
 #include "securelevel.h"
 #include "str.h"
 #include "struct.h"
@@ -634,6 +637,9 @@ s_tag * env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest)
     return NULL;
   }
   arity = callable_arity(callable_tag.data.pcallable);
+  if (callable_tag.data.pcallable->type == CALLABLE_CFN &&
+      callable_tag.data.pcallable->data.cfn.result_type)
+    arity--;
   if (arity < 0) {
     err_puts("env_defspecial_operator: invalid arity");
     tag_clean(&callable_tag);
@@ -1854,6 +1860,62 @@ s_tag * env_kc3_def (s_env *env, const s_call *call, s_tag *dest)
   tag_clean(&tag_value);
   tag_init_ident(dest, &tag_ident.data.ident);
   return dest;
+}
+
+s_tag * env_kc3_defcounter (s_env *env, s_call *call, s_tag *dest)
+{
+  s_counter *counter;
+  s_tag counter_tag;
+  s_ident ident;
+  s_tag *value;
+  assert(env);
+  assert(call);
+  assert(dest);
+  if ((call->ident.module &&
+       call->ident.module != &g_sym_KC3) ||
+      call->ident.sym != &g_sym__equal ||
+      call->arguments->tag.type != TAG_IDENT ||
+      ! (value = &list_next(call->arguments)->tag) ||
+      ! tag_is_integer(value)) {
+    err_puts("env_kc3_defcounter: expected Ident = value");
+    assert(! "env_kc3_defcounter: expected Ident = value");
+    return NULL;
+  }
+  ident = call->arguments->tag.data.ident;
+  if (! ident.module)
+    ident.module = env->current_defmodule;
+  if (! (counter = counter_new(&ident, value)))
+    return NULL;
+  if (! tag_init_pstruct_with_data(&counter_tag, &g_sym_Counter,
+                                   counter, true)) {
+    counter_delete(counter);
+    return NULL;
+  }
+#if HAVE_PTHREAD
+  rwlock_w(&g_counter_ht.rwlock);
+#endif
+  if (ht_has(&g_counter_ht, &counter_tag)) {
+    err_puts("env_kc3_defcounter: counter is already defined");
+    assert(! "env_kc3_defcounter: counter is already defined");
+    goto clean;
+  }
+  if (! ht_add(&g_counter_ht, &counter_tag)) {
+    err_puts("env_kc3_defcounter: ht_add");
+    assert(! "env_kc3_defcounter: ht_add");
+    tag_clean(&counter_tag);
+    return NULL;
+  }
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&g_counter_ht.rwlock);
+#endif
+  tag_clean(&counter_tag);
+  return tag_init_copy(dest, value);
+ clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&g_counter_ht.rwlock);
+#endif
+  tag_clean(&counter_tag);
+  return NULL;
 }
 
 s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,

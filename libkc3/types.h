@@ -199,6 +199,7 @@ typedef struct call                    s_call;
 typedef struct callable                s_callable;
 typedef struct cfn                     s_cfn;
 typedef struct complex                 s_complex;
+typedef struct counter                 s_counter;
 typedef struct cow                     s_cow;
 typedef struct do_block                s_do_block;
 typedef struct env                     s_env;
@@ -740,6 +741,12 @@ struct block {
 struct complex {
   s_tag x;
   s_tag y;
+};
+
+struct counter {
+  s_ident ident;
+  s_mutex mutex;
+  s_tag count;
 };
 
 struct error_handler

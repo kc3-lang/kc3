@@ -86,6 +86,7 @@ HEADERS = \
 	"character.h" \
 	"compare.h" \
 	"complex.h" \
+	"counter.h" \
 	"cow.h" \
 	"crypt.h" \
 	"data.h" \
@@ -291,6 +292,7 @@ SOURCES = \
 	"character.c" \
 	"compare.c" \
 	"complex.c" \
+	"counter.c" \
 	"cow.c" \
 	"crypt.c" \
 	"crypt_sha512.c" \
@@ -611,6 +613,7 @@ LO_SOURCES = \
 	"character.c" \
 	"compare.c" \
 	"complex.c" \
+	"counter.c" \
 	"cow.c" \
 	"crypt.c" \
 	"crypt_sha512.c" \
