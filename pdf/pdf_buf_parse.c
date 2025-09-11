@@ -90,6 +90,7 @@ sw pdf_buf_parse (s_buf *buf, s_tag *dest)
 
 sw pdf_buf_parse_array (s_buf *buf, p_list *dest)
 {
+  bool end;
   sw r;
   sw result = 0;
   p_list *tail;
@@ -106,8 +107,14 @@ sw pdf_buf_parse_array (s_buf *buf, p_list *dest)
     if ((r = buf_read_1(buf, "]")) < 0)
       goto restore;
     result += r;
-    if (r)
+    if (r) {
+      result += r;
+      if ((r = pdf_buf_parse_object_end(buf, &end)) > 0)
+        result += r;
+      if (! end)
+        goto restore;
       break;
+    }
     if (! (*tail = list_new(NULL))) {
       r = -2;
       goto restore;
@@ -211,30 +218,32 @@ sw pdf_buf_parse_dictionnary (s_buf *buf, s_map *dest)
   result += r;
   while (1) {
     if ((r = pdf_buf_parse_token(buf, ">>")) < 0)
-      goto restore;
+      goto clean;
     if (r) {
       result += r;
       goto ok;
     }
     if ((r = pdf_buf_parse_name(buf, &name)) <= 0)
-      goto restore;
+      goto clean;
     result += r;
     if (! (*keys_tail = list_new_psym(name, NULL))) {
       r = -1;
-      goto restore;
+      goto clean;
     }
     if (! (*values_tail = list_new(NULL))) {
       r = -1;
-      goto restore;
+      goto clean;
     }
     if ((r = pdf_buf_parse(buf, &(*values_tail)->tag)) <= 0)
-      goto restore;
+      goto clean;
     result += r;
     keys_tail = &(*keys_tail)->next.data.plist;
     values_tail = &(*values_tail)->next.data.plist;
   }
  ok:
   if (! map_init_from_lists(&tmp, keys, values)) {
+    err_puts("pdf_buf_parse_dictionnary: map_init_from_lists");
+    assert(! "pdf_buf_parse_dictionnary: map_init_from_lists");
     r = -1;
     goto restore;
   }
@@ -954,6 +963,101 @@ sw pdf_buf_parse_trailer (s_buf *buf, s_pdf_trailer *dest)
   result += r;
   *dest = tmp;
   return result;
+}
+
+sw pdf_buf_parse_xref (s_buf *buf, s_map *dest)
+{
+  char c;
+  u32 count;
+  u16 generation_number;
+  u32 i;
+  p_list  keys;
+  p_list *keys_tail;
+  u32 object_number;
+  u32 offset;
+  sw r;
+  sw r1;
+  sw r2;
+  sw r3;
+  sw r4;
+  sw r5;
+  sw result = 0;
+  sw result_inner;
+  s_buf_save save;
+  s_map tmp = {0};
+  p_list  values;
+  p_list *values_tail;
+  assert(buf);
+  assert(dest);
+  if ((r = pdf_buf_parse_token(buf, "xref")) <= 0)
+    return r;
+  result += r;
+  buf_save_init(buf, &save);
+  result_inner = result;
+  keys = NULL;
+  keys_tail = &keys;
+  values = NULL;
+  values_tail = &values;
+  while (1) {
+    buf_save_update(buf, &save);
+    result = result_inner;
+    if ((r = buf_parse_u32_decimal(buf, &object_number)) <= 0 ||
+        (r1 = buf_read_1(buf, " ")) <= 0 ||
+        (r2 = buf_parse_u32_decimal(buf, &count)) <= 0 ||
+        ((r3 = buf_read_1(buf, "\n")) <= 0 &&
+         (r3 = buf_read_1(buf, "\r\n")) <= 0))
+      break;
+    result_inner += r + r1 + r2 + r3;
+    i = 0;
+    while (i < count) {
+      if ((r = buf_parse_u32_decimal(buf, &offset)) != 10 ||
+          (r1 = buf_read_1(buf, " ")) != 1 ||
+          (r2 = buf_parse_u16_decimal(buf, &generation_number)) != 5 ||
+          (r3 = buf_read_1(buf, " ")) != 1 ||
+          (r4 = buf_read_u8(buf, (u8 *) &c)) != 1 ||
+          ((r5 = buf_read_1(buf, " \n")) <= 0 &&
+           (r5 = buf_read_1(buf, "\r\n")) != 2)) {
+        err_puts("pdf_buf_parse_xref: invalid xref");
+        err_inspect_buf(buf);
+        assert(! "pdf_buf_parse_xref: invalid xref");
+        goto error;
+      }
+      result_inner += r + r1 + r2 + r3 + r4 + r5;
+      if (! (*keys_tail = list_new_tuple(2, NULL)) ||
+          ! (*values_tail = list_new_u64(offset, NULL)))
+        goto error;
+      tag_init_u32((*keys_tail)->tag.data.tuple.tag, object_number);
+      tag_init_u16((*keys_tail)->tag.data.tuple.tag + 1, generation_number);
+      keys_tail = &(*keys_tail)->next.data.plist;
+      values_tail = &(*values_tail)->next.data.plist;
+      i++;
+      object_number++;
+    }
+  }
+  //restore_inner:
+  buf_save_restore_rpos(buf, &save);
+  buf_save_clean(buf, &save);
+  if (! keys || ! values) {
+    err_puts("pdf_buf_parse_xref: empty xref");
+    err_inspect_buf(buf);
+    assert(! "pdf_buf_parse_xref: empty xref");
+    return -1;
+  }
+  if (! map_init_from_lists(&tmp, keys, values)) {
+    err_puts("pdf_buf_parse_xref: map_init_from_lists");
+    assert(! "pdf_buf_parse_xref: map_init_from_lists");
+    list_delete_all(keys);
+    list_delete_all(values);
+    return -1;
+  }
+  *dest = tmp;
+  return result;
+ error:
+  list_delete_all(keys);
+  list_delete_all(values);
+  buf_save_restore_rpos(buf, &save);
+  buf_save_clean(buf, &save);
+  return -1;
 }
 
 bool pdf_character_is_delimiter (character c)
