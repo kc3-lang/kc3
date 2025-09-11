@@ -41,6 +41,9 @@ sw pdf_buf_write(s_buf *buf, s_tag *src)
       assert(! "pdf_buf_write: unsupported tag");
       return -1;
   }
+  err_puts("pdf_buf_write: unknown tag type");
+  assert(! "pdf_buf_write: unknown tag type");
+  return -1;
 }
 
 sw pdf_buf_write_bool (s_buf *buf, bool src)
@@ -55,25 +58,34 @@ sw pdf_buf_write_dictionnary (s_buf *buf, s_map *src)
 {
   uw i;
   sw r;
+  sw result = 0;
   if ((r = pdf_buf_write_token(buf, "<<")) < 0) {
     return r;
   }
+  result += r;
   for (i = 0; i < src->count; i++) {
     if (src->key[i].type != TAG_PSYM) {
       err_puts("pdf_buf_write_dictionary: key must be psym");
       assert(! "pdf_buf_write_dictionary: key must be psym");
       return -1;
     }
-    if ((r = pdf_buf_write_name(buf, src->key[i].data.psym)) < 0
-      || (r = pdf_buf_write_token(buf, " ")) < 0
-      || (r = pdf_buf_write(buf, &src->value[i])) < 0
-      || (r = pdf_buf_write_token(buf, " ")) < 0) {
+    if ((r = pdf_buf_write_name(buf, src->key[i].data.psym)) < 0)
       return r;
-    }
+    result += r;
+    if ((r = pdf_buf_write_token(buf, " ")) < 0)
+      return r;
+    result += r;
+    if ((r = pdf_buf_write(buf, &src->value[i])) < 0)
+      return r;
+    result += r;
+    if ((r = pdf_buf_write_token(buf, " ")) < 0)
+      return r;
   }
   if ((r = pdf_buf_write_token(buf, ">>")) < 0) {
     return r;
   }
+  result += r;
+  return result;
 }
 
 sw pdf_buf_write_float (s_buf *buf, f32 src)

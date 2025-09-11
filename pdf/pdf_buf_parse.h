@@ -38,6 +38,7 @@ sw   pdf_buf_parse_string_hex (s_buf *buf, s_str *dest);
 sw   pdf_buf_parse_string_paren (s_buf *buf, s_str *dest);
 sw   pdf_buf_parse_token (s_buf *buf, const char *token);
 sw   pdf_buf_parse_trailer (s_buf *buf, s_pdf_trailer *dest);
+sw   pdf_buf_parse_xref (s_buf *buf, s_map *dest);
 bool pdf_character_is_delimiter (character c);
 
 #endif /* KC3_PDF_BUF_PARSE_H */

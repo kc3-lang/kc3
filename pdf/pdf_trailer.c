@@ -13,14 +13,14 @@
 #include "../libkc3/kc3.h"
 #include "pdf_trailer.h"
 
-s_pdf_trailer * pdf_trailer_init (s_pdf_trailer *pdf_trailer)
+s_pdf_trailer * pdf_trailer_init (s_pdf_trailer *trailer)
 {
   s_pdf_trailer tmp = {0};
   *trailer = tmp;
   return trailer;
 }
 
-void pdf_trailer_clean (s_pdf_trailer *pdf_trailer)
+void pdf_trailer_clean (s_pdf_trailer *trailer)
 {
-  map_clean(&pdf_trailer->dictionnary);
+  map_clean(&trailer->dictionnary);
 }

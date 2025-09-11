@@ -12,6 +12,7 @@
  */
 #include "../libkc3/kc3.h"
 #include "pdf_file.h"
+#include "pdf_trailer.h"
 
 s_pdf_file * pdf_file_init (s_pdf_file *pdf_file)
 {
