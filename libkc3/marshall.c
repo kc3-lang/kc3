@@ -915,6 +915,7 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
                                     const void *p, bool *present)
 {
   s_tag key = {0};
+  s_tag *ptag = NULL;
   s_tag tag = {0};
   u64 offset;
   assert(m);
@@ -923,7 +924,7 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
   tag_init_tuple(&key, 2);
   key.data.tuple.tag[0].type = TAG_U64;
   key.data.tuple.tag[0].data.u64 = (u64) p;
-  if (ht_get(&m->ht, &key, &tag)) {
+  if (ht_get(&m->ht, &key, &ptag)) {
     *present = true;
     goto ok;
   }
@@ -939,17 +940,18 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
   if (! ht_add(&m->ht, &tag))
     goto ko;
   m->heap_count++;
+  ptag = &tag;
  ok:
-  if (tag.type != TAG_TUPLE ||
-      tag.data.tuple.count != 2 ||
-      tag.data.tuple.tag[1].type != TAG_U64) {
+  if (ptag->type != TAG_TUPLE ||
+      ptag->data.tuple.count != 2 ||
+      ptag->data.tuple.tag[1].type != TAG_U64) {
     err_puts("marshall_heap_pointer: invalid offset in hash table");
     err_inspect_tag(&tag);
     err_write_1("\n");
     assert(! "marshall_heap_pointer: invalid offset in hash table");
     goto ko;
   }
-  offset = tag.data.tuple.tag[1].data.u64;
+  offset = ptag->data.tuple.tag[1].data.u64;
   if (! marshall_offset(m, heap, offset))
     goto ko;
   tag_clean(&key);

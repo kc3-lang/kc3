@@ -78,13 +78,12 @@ s_counter ** counter_find (s_ident *ident, s_counter **dest)
 {
   s_counter key = {0};
   s_tag     key_tag = {0};
-  s_counter *tmp = NULL;
   s_tag *value_tag = NULL;
   key.ident = *ident;
   if (! tag_init_pstruct_with_data(&key_tag, &g_sym_Counter, &key,
                                    false))
     return NULL;
-  if (! ht_get(&g_counter_ht, &key, &value_tag))
+  if (! ht_get(&g_counter_ht, &key_tag, &value_tag))
     return NULL;
   if (value_tag->type != TAG_PSTRUCT ||
       ! value_tag->data.pstruct ||
@@ -97,6 +96,21 @@ s_counter ** counter_find (s_ident *ident, s_counter **dest)
   }
   *dest = value_tag->data.pstruct->data;
   return dest;
+}
+
+s_tag * counter_get (s_counter *counter, s_tag *dest)
+{
+  s_tag *result;
+  assert(counter);
+  assert(dest);
+#if HAVE_PTHREAD
+  mutex_lock(&counter->mutex);
+#endif
+  result = tag_init_copy(dest, &counter->count);
+#if HAVE_PTHREAD
+  mutex_unlock(&counter->mutex);
+#endif
+  return result;
 }
 
 void counter_ht_clean (s_ht *ht)
@@ -153,6 +167,44 @@ s_ht * counter_ht_init (s_ht *ht)
   tmp.hash = counter_ht_hash;
   *ht = tmp;
   return ht;
+}
+
+s_tag * counter_increment (s_counter *counter, s_tag *positive,
+                           s_tag *dest)
+{
+  s_tag tmp = {0};
+  assert(counter);
+  assert(positive);
+  assert(dest);
+#if HAVE_PTHREAD
+  mutex_lock(&counter->mutex);
+#endif
+  if (! tag_is_positive_integer(positive)) {
+    err_puts("counter_increment: tag_is_positive_integer");
+    assert(! "counter_increment: tag_is_positive_integer");
+    goto clean;
+  }
+  if (! tag_add(&counter->count, positive, &tmp)) {
+    err_puts("counter_increment: tag_sub");
+    assert(! "counter_increment: tag_sub");
+    tag_clean(&tmp);
+    goto clean;
+  }
+  tag_clean(&counter->count);
+  if (! tag_init_copy(&counter->count, &tmp)) {
+    tag_clean(&tmp);
+    goto clean;
+  }
+#if HAVE_PTHREAD
+  mutex_unlock(&counter->mutex);
+#endif
+  *dest = tmp;
+  return dest;
+ clean:
+#if HAVE_PTHREAD
+  mutex_unlock(&counter->mutex);
+#endif
+  return NULL;
 }
 
 s_counter * counter_init (s_counter *counter, s_ident *ident,

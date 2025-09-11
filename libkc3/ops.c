@@ -142,6 +142,7 @@ s_tag * ops_get_tag (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
   s_op     op = {0};
   s_struct op_struct = {0};
   s_tag    op_tag = {0};
+  s_tag *ptag;
   assert(ops);
   if (! env_global()->loaded || ! sym || ! arity)
     return NULL;
@@ -154,9 +155,9 @@ s_tag * ops_get_tag (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
     return NULL;
   op.sym = sym;
   op.arity = arity;
-  if (! ht_get(&ops->ht, &op_tag, dest))
+  if (! ht_get(&ops->ht, &op_tag, &ptag))
     return NULL;
-  return dest;
+  return tag_init_copy(dest, ptag);
 }
 
 uw ops_hash_tag (const s_tag *op_tag)

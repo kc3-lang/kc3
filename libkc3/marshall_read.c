@@ -921,6 +921,7 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
   assert(offset);
   assert(present);
   s_tag key = {0};
+  s_tag *ptag = NULL;
   s_tag tag = {0};
   if (! marshall_read_offset(mr, heap, offset))
     return NULL;
@@ -931,18 +932,18 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
   if (! tag_init_tuple(&key, 2))
     return NULL;
   tag_init_u64(key.data.tuple.tag, *offset);
-  if (! ht_get(&mr->ht, &key, &tag)) {
+  if (! ht_get(&mr->ht, &key, &ptag)) {
     *present = NULL;
     tag_clean(&key);
     return mr;
   }
   tag_clean(&key);
-  if (tag.type != TAG_TUPLE ||
-      tag.data.tuple.tag[1].type != TAG_UW) {
+  if (ptag->type != TAG_TUPLE ||
+      ptag->data.tuple.tag[1].type != TAG_UW) {
     err_puts("marshall_read_heap_pointer: invalid tag in ht");
     assert(! "marshall_read_heap_pointer: invalid tag in ht");
   }
-  *present = (void *) tag.data.tuple.tag[1].data.uw;
+  *present = (void *) ptag->data.tuple.tag[1].data.uw;
   tag_clean(&tag);
   return mr;
 }
