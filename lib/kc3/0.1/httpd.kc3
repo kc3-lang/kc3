@@ -11,6 +11,7 @@
 ## THIS SOFTWARE.
 
 require Buf
+require Event
 require File
 require HTTP
 require HTTP.Response
@@ -78,7 +79,8 @@ defmodule HTTPd do
 
   def http_client = fn (socket, events, client_ev, client) do
     if List.has?(events, :read) do
-      Counter.increment(HTTPd.concurrent_requests)
+      counter = Counter.find(HTTPd.concurrent_requests)
+      Counter.increment(counter, 1)
       request = void
       request = HTTP.Request.buf_parse(client.buf_rw.r)
       result = if request do
@@ -119,7 +121,7 @@ defmodule HTTPd do
         Event.del(client_ev)
         File.close(socket)
       end
-      Counter.decrement(HTTPd.concurrent_requests)
+      Counter.decrement(counter, 1)
       result
     end
   end
@@ -127,8 +129,9 @@ defmodule HTTPd do
   def timeout = %Time{tv_sec: 5}
 
   def acceptor = fn (server_socket, events, acceptor_ev, void) do
+    counter = Counter.find(HTTPd.concurrent_requests)
     if List.has?(events, :read) &&
-       concurrent_requests < concurrent_requests_max do
+       Counter.get(counter) < concurrent_requests_max do
       client = Socket.Buf.accept(%Socket{fd: server_socket})
       client_ev = Event.new(event_base, client.sockfd, [:read, :persist],
         http_client, client)
