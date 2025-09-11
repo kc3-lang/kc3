@@ -38,7 +38,8 @@ s_tag * counter_get (s_counter *c, s_tag *dest);
 s_tag * counter_increment (s_counter *c, s_tag *positive, s_tag *dest);
 
 /* Hash table of counters. */
-void   counter_ht_clean (s_ht *ht);
-s_ht * counter_ht_init (s_ht *ht);
+s_counter ** counter_find (s_ident *ident, s_counter **dest);
+void         counter_ht_clean (s_ht *ht);
+s_ht *       counter_ht_init (s_ht *ht);
 
 #endif /* LIBKC3_COUNTER_H */

@@ -74,10 +74,33 @@ void counter_delete (s_counter *counter)
   free(counter);
 }
 
+s_counter ** counter_find (s_ident *ident, s_counter **dest)
+{
+  s_counter key = {0};
+  s_tag     key_tag = {0};
+  s_counter *tmp = NULL;
+  s_tag *value_tag = NULL;
+  key.ident = *ident;
+  if (! tag_init_pstruct_with_data(&key_tag, &g_sym_Counter, &key,
+                                   false))
+    return NULL;
+  if (! ht_get(&g_counter_ht, &key, &value_tag))
+    return NULL;
+  if (value_tag->type != TAG_PSTRUCT ||
+      ! value_tag->data.pstruct ||
+      ! value_tag->data.pstruct->pstruct_type ||
+      value_tag->data.pstruct->pstruct_type->module != &g_sym_Counter ||
+      ! value_tag->data.pstruct->data) {
+    err_puts("counter_find: ht_get: invalid value");
+    assert(! "counter_find: ht_get: invalid value");
+    return NULL;
+  }
+  *dest = value_tag->data.pstruct->data;
+  return dest;
+}
+
 void counter_ht_clean (s_ht *ht)
 {
-  if (! ht)
-    ht = &g_counter_ht;
   ht_clean(ht);
 }
 
@@ -125,8 +148,6 @@ uw counter_ht_hash (const s_tag *x)
 s_ht * counter_ht_init (s_ht *ht)
 {
   s_ht tmp = {0};
-  if (! ht)
-    ht = &g_counter_ht;
   ht_init(&tmp, &g_sym_Ident, 1024);
   tmp.compare = counter_ht_compare;
   tmp.hash = counter_ht_hash;

@@ -22,9 +22,9 @@ void   ht_clean (s_ht *ht);
 s_ht * ht_init (s_ht *ht, const s_sym *type, uw size);
 
 /* Observers. */
-s_tag * ht_get (s_ht *ht, s_tag *key, s_tag *dest);
-s_tag * ht_get_hash (s_ht *ht, s_tag *tag, uw hash, s_tag *dest);
-bool    ht_has (s_ht *ht, const s_tag *key);
+s_tag ** ht_get (s_ht *ht, s_tag *key, s_tag **dest);
+s_tag ** ht_get_hash (s_ht *ht, s_tag *tag, uw hash, s_tag **dest);
+bool     ht_has (s_ht *ht, const s_tag *key);
 
 /* Operators. */
 bool ht_add (s_ht *ht, s_tag *tag);

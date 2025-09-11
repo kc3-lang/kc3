@@ -77,13 +77,13 @@ void ht_clean (s_ht *ht)
 #endif
 }
 
-s_tag * ht_get (s_ht *ht, s_tag *key, s_tag *dest)
+s_tag ** ht_get (s_ht *ht, s_tag *key, s_tag **dest)
 {
   uw hash = ht->hash(key);
   return ht_get_hash(ht, key, hash, dest);
 }
 
-s_tag * ht_get_hash (s_ht *ht, s_tag *key, uw hash, s_tag *dest)
+s_tag ** ht_get_hash (s_ht *ht, s_tag *key, uw hash, s_tag **dest)
 {
   sw c = -1;
   s_list *item;
@@ -94,12 +94,7 @@ s_tag * ht_get_hash (s_ht *ht, s_tag *key, uw hash, s_tag *dest)
   while (item && (c = ht->compare(&item->tag, key)) < 0)
     item = list_next(item);
   if (item && ! c) {
-    if (! tag_init_copy(dest, &item->tag)) {
-#if HAVE_PTHREAD
-      rwlock_unlock_r(&ht->rwlock);
-#endif
-      return NULL;
-    }
+    *dest = &item->tag;
 #if HAVE_PTHREAD
     rwlock_unlock_r(&ht->rwlock);
 #endif

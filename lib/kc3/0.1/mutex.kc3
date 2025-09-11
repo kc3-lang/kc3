@@ -10,20 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-require Mutex
+defmodule Mutex do
 
-defmodule Counter do
-
-  defstruct [ident: (Ident) ?,
-             mutex: %Mutex{},
-             count: (Tag) ?]
-
-  def decrement = cfn Tag "counter_decrement" (Counter, Tag, Result)
-
-  def find = cfn Counter* "counter_find" (Ident, Result)
-
-  def get = cfn Tag "counter_get" (Counter, Result)
-
-  def increment = cfn Tag "counter_increment" (Counter, Tag, Result)
+  defstruct [mutex: (Uw) 0,
+             ready: false]
 
 end
