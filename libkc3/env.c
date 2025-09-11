@@ -1891,6 +1891,11 @@ s_tag * env_kc3_defcounter (s_env *env, s_call *call, s_tag *dest)
     counter_delete(counter);
     return NULL;
   }
+  if (! g_counter_ht.rwlock.ready &&
+      ! counter_ht_init(&g_counter_ht)) {
+    tag_clean(&counter_tag);
+    return NULL;
+  }
 #if HAVE_PTHREAD
   rwlock_w(&g_counter_ht.rwlock);
 #endif

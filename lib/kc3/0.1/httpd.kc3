@@ -11,16 +11,10 @@
 ## THIS SOFTWARE.
 
 require Buf
-require Event
-require Facts
 require File
-require HTML
 require HTTP
-require HTTP.Request
 require HTTP.Response
-require HTTP.Upload
 require HTTPd.Route
-require List
 require Socket
 require Socket.Buf
 require Str
