@@ -21,7 +21,9 @@ assets:
 asan: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd_asan --trace -d 127.0.0.1 15051
 
-clean:
+clean: clean_dump
+
+clean_dump:
 	rm -f kc3.dump db/*.bin.facts
 
 cov: assets
@@ -81,6 +83,7 @@ vegeta_production:
 
 .PHONY:	assets \
 	asan \
+	clean_dump \
 	cov \
 	debug \
 	dump \

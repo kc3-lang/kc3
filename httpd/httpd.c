@@ -28,10 +28,10 @@ int main (int argc, char **argv)
   s32 e;
   s_env *env;
   char  err_buf[64] = {0};
-  s32   err_fd = -1;
+  s64   err_fd = -1;
   s_str err_str = {0};
   char  log_buf[64] = {0};
-  s32   log_fd = -1;
+  s64   log_fd = -1;
   s_str log_str = {0};
   s_call call = {0};
   const s_sym *module = NULL;

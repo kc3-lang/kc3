@@ -408,10 +408,10 @@ FILE * file_open (const s_str *path, const char *mode)
   return fp;
 }
 
-s32 * file_open_r (const s_str *path, s32 *dest)
+s64 * file_open_r (const s_str *path, s64 *dest)
 {
   sw e;
-  s32 fd;
+  s64 fd;
   assert(path);
   assert(dest);
   if ((fd = open(path->ptr.pchar, O_RDONLY | O_BINARY)) < 0) {
@@ -426,10 +426,10 @@ s32 * file_open_r (const s_str *path, s32 *dest)
   return dest;
 }
 
-s32 * file_open_w (const s_str *path, s32 *dest)
+s64 * file_open_w (const s_str *path, s64 *dest)
 {
   sw e;
-  s32 fd;
+  s64 fd;
   static const mode_t mode = 0666;
   assert(path);
   assert(dest);
@@ -447,6 +447,61 @@ s32 * file_open_w (const s_str *path, s32 *dest)
     return NULL;
   }
   *dest = fd;
+  return dest;
+}
+
+s_str * file_read_slice (s_str *path, u64 start, u64 end, s_str *dest)
+{
+  s64 fd;
+  char *p = NULL;
+  s64 r;
+  s64 remaining;
+  s64 size;
+  s_str tmp = {0};
+  if (! file_open_r(path, &fd))
+    return NULL;
+  if ((r = lseek(fd, start, SEEK_SET)) < 0 ||
+      (u64) r != start) {
+    err_puts("file_read_slice: lseek 1");
+    assert(! "file_read_slice: lseek 1");
+    close(fd);
+    return NULL;
+  }
+  if ((r = lseek(fd, 0, SEEK_END)) < 0) {
+    err_puts("file_read_slice: lseek 2");
+    assert(! "file_read_slice: lseek 2");
+    close(fd);
+    return NULL;
+  }
+  if ((u64) r < end)
+    end = r;
+  if (! (size = end - start)) {
+    close(fd);
+    return str_init_empty(dest);
+  }
+  if (! (p = alloc(size))) {
+    close(fd);
+    return NULL;
+  }
+  str_init(&tmp, p, size, p);
+  remaining = size;
+  while (remaining > 0) {
+    if ((r = read(fd, p, remaining)) <= 0) {
+      err_puts("file_read_slice: read");
+      assert(! "file_read_slice: read");
+      free(p);
+      close(fd);
+      return NULL;
+    }
+    remaining -= r;
+    p += r;
+  }
+  if (remaining < 0) {
+    err_puts("file_read_slice: buffer overflow");
+    assert(! "file_read_slice: buffer overflow");
+    abort();
+  }
+  *dest = tmp;
   return dest;
 }
 

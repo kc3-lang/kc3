@@ -244,6 +244,10 @@ dump_debug:
 	kc3s/kc3s_debug --trace --dump lib/kc3/0.1/kc3.dump --quit
 	${MAKE} -C test/httpd dump_debug
 
+dump_fx:
+	${MAKE} -C httpd/fx clean_dump
+	${MAKE} -C httpd/fx dump
+
 ekc3:
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c

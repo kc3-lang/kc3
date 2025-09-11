@@ -51,8 +51,8 @@ bool          file_ensure_parent_directory (const s_str *path,
 bool          file_link (const s_str *from, const s_str *to);
 s_str *       file_pwd (s_str *dest);
 FILE *        file_open (const s_str *path, const char *mode);
-s32 *         file_open_r (const s_str *path, s32 *dest);
-s32 *         file_open_w (const s_str *path, s32 *dest);
+s64 *         file_open_r (const s_str *path, s64 *dest);
+s64 *         file_open_w (const s_str *path, s64 *dest);
 bool          file_rename (const s_str *src, const s_str *dest);
 struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
                                         struct stat *dest);
