@@ -1,5 +1,5 @@
 require JSON
-true
+JSON
 JSON.to_str(%{})
 "{}"
 JSON.to_str(%{"a" => true})

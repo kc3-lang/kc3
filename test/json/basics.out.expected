@@ -1,5 +1,5 @@
 require JSON
-true
+JSON
 JSON.from_str("{}")
 %{}
 JSON.from_str("{\"a\": \"b\"}")
