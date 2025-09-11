@@ -1,5 +1,5 @@
 require Thread
-true
+Thread
 if t = Thread.new(fn () { puts("ok from thread") ; :ok_from_thread }) do
   Thread.delete(t)
 end

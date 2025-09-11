@@ -1,9 +1,9 @@
 require Buf
-true
+Buf
 require BufRW
-true
+BufRW
 require Socket.Buf
-true
+Socket.Buf
 " "
 "\n"
 "\0"

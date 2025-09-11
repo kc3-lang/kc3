@@ -1,5 +1,5 @@
 require Sh
-true
+Sh
 Sh.escape("")
 "\"\""
 Sh.escape("a")

@@ -1,5 +1,5 @@
 require Buf
-true
+Buf
 %Buf{}
 %Buf{flush: (Ptr) 0x0,
      free: false,

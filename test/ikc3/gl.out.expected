@@ -1,11 +1,11 @@
 require GL.Triangle
-true
+GL.Triangle
 require GL.Vec2
-true
+GL.Vec2
 require GL.Vec3
-true
+GL.Vec3
 require GL.Vertex
-true
+GL.Vertex
 %GL.Vec2{}
 %GL.Vec2{x: (F32) 0.0,
          y: (F32) 0.0}

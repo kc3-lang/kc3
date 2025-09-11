@@ -1,7 +1,7 @@
 require Marshall
-true
+Marshall
 require MarshallRead
-true
+MarshallRead
 loopback = fn (tag) do
   str = Marshall.tag_to_str(tag)
   result = MarshallRead.tag_from_str(str)

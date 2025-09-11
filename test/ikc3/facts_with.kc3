@@ -1,4 +1,3 @@
-require KC3.Op
 quote Facts.with(Facts.env_db(), [[op = ?, :is_a, :op],
                                   [op, :op_sym, sym = ?]],
   fn (fact) {
