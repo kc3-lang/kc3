@@ -1,4 +1,3 @@
-true
 Facts.with(Facts.env_db(), [[op = ?, :is_a, :op], [op, :op_sym, sym = ?]], fn (fact) { puts("#{inspect(sym)} #{inspect(op)}"); 1 })
 :"()" :op_1
 :mod :op_10
