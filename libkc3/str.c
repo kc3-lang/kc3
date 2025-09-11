@@ -1347,7 +1347,7 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
   if (list->tag.type == TAG_STR &&
       ! list_next(list)) {
     tmp = list->tag;
-    tag_init(&list->tag);
+    tag_init_void(&list->tag);
     list_delete_all(list);
     goto ok;
   }
