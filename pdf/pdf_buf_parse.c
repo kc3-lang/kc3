@@ -720,6 +720,7 @@ sw pdf_buf_parse_string_hex (s_buf *buf, s_str *dest)
   character c;
   u8 d;
   u8 d1;
+  bool end;
   sw r;
   sw result = 0;
   s_buf_save save = {0};
@@ -744,8 +745,10 @@ sw pdf_buf_parse_string_hex (s_buf *buf, s_str *dest)
       d = c - 'a' + 10;
     else if (c >= 'A' && c <= 'F')
       d = c - 'A' + 10;
-    else
+    else {
+      r = -1;
       goto restore;
+    }
     if ((r = buf_read_character_utf8(buf, &c)) <= 0)
       goto restore;
     result += r;
@@ -755,15 +758,24 @@ sw pdf_buf_parse_string_hex (s_buf *buf, s_str *dest)
       d1 = c - 'a' + 10;
     else if (c >= 'A' && c <= 'F')
       d1 = c - 'A' + 10;
-    else
+    else {
+      r = -1;
       goto restore;
-    if ((r = buf_write_u8(&tmp_buf, (d << 4) + d1)) <= 0)
+    }
+    if ((r = buf_write_u8(&tmp_buf, (d << 4) | d1)) <= 0)
       goto restore;
   }
-  if (! buf_read_to_str(&tmp_buf, &tmp)) {
-    r = -2;
+  if ((r = pdf_buf_parse_object_end(buf, &end)) > 0)
+    result += r;
+  if (! end) {
+    r = -1;
     goto restore;
   }
+  if (! buf_read_to_str(&tmp_buf, &tmp)) {
+    r = -1;
+    goto restore;
+  }
+  buf_clean(&tmp_buf);
   *dest = tmp;
   r = result;
   goto clean;
