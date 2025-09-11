@@ -517,23 +517,15 @@ bool sym_is_pointer_type (p_sym sym, p_sym target_type)
 {
   s_buf buf;
   assert(sym);
-  buf_init_str_const(&buf, &sym->str);
   if (target_type) {
+    buf_init_str_const(&buf, &sym->str);
     if (buf_read_str(&buf, &target_type->str) <= 0 ||
         buf_read_1(&buf, "*") <= 0) {
       return false;
     }
+    return true;
   }
-  else {
-    if (buf_parse_sym(&buf, &target_type) <= 0 ||
-        ! target_type ||
-        ! target_type->str.size ||
-        ! target_type->str.ptr.pchar ||
-        ! character_is_uppercase(target_type->str.ptr.pchar[0]) ||
-        target_type->str.ptr.pchar[target_type->str.size - 1] != '*')
-      return false;
-  }
-  return true;
+  return sym->str.ptr.pchar[sym->str.size - 1] == '*';
 }
 
 s_sym_list * sym_list_new (const s_sym *sym, s_sym *free_sym,

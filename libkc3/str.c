@@ -1141,6 +1141,18 @@ s_str * str_init_vf (s_str *str, const char *fmt, va_list ap)
   return str_init(str, s, len, s);
 }
 
+bool str_is_utf8 (const s_str *str)
+{
+  character c;
+  sw r;
+  s_str tmp;
+  assert(str);
+  tmp = *str;
+  while ((r = str_read_character_utf8(&tmp, &c)) > 0)
+    (void) 0;
+  return tmp.size == 0;
+}
+
 sw str_length_utf8 (const s_str *str)
 {
   character c;
