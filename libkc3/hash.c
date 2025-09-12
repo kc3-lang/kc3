@@ -371,12 +371,14 @@ bool hash_update_plist (t_hash *hash, const p_list *plist)
   return hash_update_list(hash, *plist);
 }
 
-bool hash_update_pointer (t_hash *hash, const s_pointer *p)
+bool hash_update_pointer (t_hash *hash, const s_pointer *pointer)
 {
   const char type[] = "pointer";
+  assert(hash);
+  assert(pointer);
   if (! hash_update(hash, type, strlen(type)) ||
-      ! hash_update_sym(hash, p->target_type) ||
-      ! hash_update(hash, p->ptr.p, sizeof(void *)))
+      ! hash_update_sym(hash, pointer->target_type) ||
+      ! hash_update(hash, &pointer->ptr.p, sizeof(void *)))
       return false;
     return true;
 }

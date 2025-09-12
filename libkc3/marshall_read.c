@@ -46,6 +46,7 @@
 #include "pfacts.h"
 #include "pframe.h"
 #include "plist.h"
+#include "pointer.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "psym.h"
@@ -1606,18 +1607,30 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
   return mr;
 }
 
-s_marshall_read * marshall_read_pointer(s_marshall_read *mr,
-                                     bool heap,
-                                     s_pointer *dest)
+s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
+                                         bool heap,
+                                         s_pointer *dest)
 {
-    s_pointer tmp = {0};
-    assert(mr);
-    assert(dest);
-    *dest = tmp;
-    if (! marshall_read_psym(mr, heap, &tmp.target_type) ||
-        ! marshall_read_uw(mr, heap, &tmp.ptr.uw))
-      return NULL;
-    return mr;
+  p_sym target_type;
+  s_pointer tmp = {0};
+  uw u;
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_psym(mr, heap, &target_type) ||
+      ! marshall_read_uw(mr, heap, &u))
+    return NULL;
+  if (u) {
+    err_puts("marshall_read_pointer: cannot read non-null pointer");
+    assert(! "marshall_read_pointer: cannot read non-null pointer");
+    return NULL;
+  }
+  if (! pointer_init(&tmp, NULL, target_type, (void *) u)) {
+    err_puts("marshall_read_pointer: pointer_init");
+    assert(! "marshall_read_pointer: pointer_init");
+    return NULL;
+  }
+  *dest = tmp;
+  return mr;
 }
 
 s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,

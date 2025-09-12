@@ -1029,6 +1029,19 @@ sw buf_read_to_str (s_buf *buf, s_str *dest)
   return r;
 }
 
+sw buf_read_to_sym (s_buf *buf, p_sym *dest)
+{
+  sw r;
+  s_str str = {0};
+  p_sym sym;
+  if ((r = buf_read_to_str(buf, &str)) > 0) {
+    sym = str_to_sym(&str);
+    str_clean(&str);
+    *dest = sym;
+  }
+  return r;
+}
+
 DEF_BUF_READ(u8)
 DEF_BUF_READ(u16)
 DEF_BUF_READ(u32)

@@ -43,6 +43,7 @@
 #include "ops.h"
 #include "pcall.h"
 #include "pcallable.h"
+#include "pointer.h"
 #include "pvar.h"
 #include "ratio.h"
 #include "securelevel.h"
@@ -3273,38 +3274,38 @@ sw buf_parse_map_key_tag (s_buf *buf, s_tag *dest)
   return r;
 }
 
-sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
+sw buf_parse_module_name (s_buf *buf, p_sym *dest)
 {
-  s_buf buf_tmp = {0};
   sw r;
+  sw r1;
   sw result = 0;
   s_buf_save save;
   s_str str;
-  const s_sym *sym;
-  const s_sym *tmp;
+  p_sym tmp;
+  s_buf tmp_buf = {0};
   buf_save_init(buf, &save);
-  if ((r = buf_parse_sym(buf, &sym)) <= 0)
+  if ((r = buf_parse_module_name_sym_ignore(buf)) <= 0)
     goto clean;
-  if (! sym_is_module(sym)) {
-    r = 0;
+  result += r;
+  while (1) {
+    if ((r = buf_read_1(buf, ".")) <= 0)
+      break;
+    if ((r1 = buf_parse_module_name_sym_ignore(buf)) <= 0) {
+      if (buf->rpos < (uw) r) {
+        err_puts("buf_parse_module_name: invalid rpos");
+        assert(! "buf_parse_module_name: invalid rpos");
+        abort();
+      }
+      buf->rpos -= r;
+      break;
+    }
+    result += r + r1;
+  }
+  if (! str_init_alloc(&str, buf->rpos - save.rpos)) {
+    r = -1;
     goto restore;
   }
-  result += r;
-  buf_init_alloc(&buf_tmp, SYM_MAX);
-  if ((r = buf_inspect_sym(&buf_tmp, sym)) < 0)
-    goto clean;
-  save.rpos = buf->rpos;
-  while ((r = buf_read_1(buf, ".")) > 0 &&
-         (r = buf_parse_sym(buf, &sym)) > 0 &&
-         sym_is_module(sym)) {
-    result += r + 1;
-    save.rpos = buf->rpos;
-    if ((r = buf_write_1(&buf_tmp, ".")) < 0 ||
-        (r = buf_inspect_sym(&buf_tmp, sym)) < 0)
-      goto clean;
-  }
-  buf_save_restore_rpos(buf, &save);
-  buf_read_to_str(&buf_tmp, &str);
+  memcpy(str.free.p, buf->ptr.pchar + save.rpos, str.size);
   tmp = str_to_sym(&str);
   str_clean(&str);
   if (! tmp) {
@@ -3318,8 +3319,28 @@ sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
-  buf_clean(&buf_tmp);
+  buf_clean(&tmp_buf);
   return r;
+}
+
+sw buf_parse_module_name_sym_ignore (s_buf *buf)
+{
+  character c;
+  sw r;
+  sw result = 0;
+  if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
+    return r;
+  if (! character_is_uppercase(c))
+    return 0;
+  result += r;
+  while (1) {
+    if ((r = buf_peek_character_utf8(buf, &c)) <= 0 ||
+        ! character_is_alphanum(c))
+      break;
+    if ((r = buf_ignore(buf, r)) <= 0)
+      return -1;
+  }
+  return result;
 }
 
 sw buf_parse_new_tag (s_buf *buf, s_tag **dest)
@@ -3421,6 +3442,92 @@ sw buf_parse_pcow (s_buf *buf, s_cow **c)
     return r;
   }
   *c = tmp;
+  return r;
+}
+
+sw buf_parse_pointer (s_buf *buf, s_pointer *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save = {0};
+  const s_sym *module_name;
+  const s_sym *pointer_type;
+  s_buf        pointer_type_buf = {0};
+  s_pointer tmp = {0};
+  uw u;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_parse_module_name(buf, &module_name)) <= 0)
+    goto restore;
+  result += r;
+  if (false) {
+    err_write_1("buf_parse_pointer: module_name = ");
+    err_inspect_sym(module_name);
+    err_write_1("\n");
+  }
+  if ((r = buf_read_1(buf, "*")) <= 0)
+    goto restore;
+  result += r;
+  if (! buf_init_alloc(&pointer_type_buf, BUF_SIZE)) {
+    r = -1;
+    goto restore;
+  }
+  if ((r = buf_inspect_sym(&pointer_type_buf, module_name)) <= 0 ||
+      (r = buf_write_1(&pointer_type_buf, "*")) <= 0) {
+    r = -1;
+    buf_clean(&pointer_type_buf);
+    goto restore;
+  }
+  while (1) {
+    if ((r = buf_read_1(buf, "*")) < 0) {
+      buf_clean(&pointer_type_buf);
+      goto restore;
+    }
+    if (! r)
+      break;
+    if ((r = buf_write_1(&pointer_type_buf, "*")) <= 0) {
+      r = -1;
+      buf_clean(&pointer_type_buf);
+      goto restore;
+    }
+  }
+  if ((r = buf_read_to_sym(&pointer_type_buf, &pointer_type)) <= 0) {
+    r = -1;
+    buf_clean(&pointer_type_buf);
+    goto restore;
+  }
+  buf_clean(&pointer_type_buf);
+  if ((r = buf_read_1(buf, ")")) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_uw(buf, &u)) <= 0)
+    goto restore;
+  result += r;
+  if (false) {
+    err_write_1("buf_parse_pointer: ");
+    err_inspect_sym(pointer_type);
+    err_write_1(" = 0x");
+    err_inspect_uw_hexadecimal(u);
+    err_write_1("\n");
+  }
+  if (! pointer_init(&tmp, pointer_type, NULL, (void *) u)) {
+    r = -1;
+    goto restore;
+  }
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
   return r;
 }
 
@@ -4572,8 +4679,8 @@ sw buf_parse_tag_pointer (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_ptr(buf, &dest->data.ptr)) > 0)
-    dest->type = TAG_PTR;
+  if ((r = buf_parse_pointer(buf, &dest->data.pointer)) > 0)
+    dest->type = TAG_POINTER;
   return r;
 }
 

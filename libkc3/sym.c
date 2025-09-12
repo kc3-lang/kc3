@@ -59,6 +59,7 @@ const s_sym g_sym_KC3              = SYM_1("KC3");
 const s_sym g_sym_KC3_Op           = SYM_1("KC3.Op");
 const s_sym g_sym_List             = SYM_1("List");
 const s_sym g_sym_Map              = SYM_1("Map");
+const s_sym g_sym_Mutex            = SYM_1("Mutex");
 const s_sym g_sym_Pointer          = SYM_1("Pointer");
 const s_sym g_sym_Ptag             = SYM_1("Ptag");
 const s_sym g_sym_Ptr              = SYM_1("Ptr");
@@ -107,6 +108,7 @@ const s_sym g_sym_is_a             = SYM_1("is_a");
 const s_sym g_sym_is_loading       = SYM_1("is_loading");
 const s_sym g_sym_load_time        = SYM_1("load_time");
 const s_sym g_sym_macro            = SYM_1("macro");
+const s_sym g_sym_marshall         = SYM_1("marshall");
 const s_sym g_sym_module           = SYM_1("module");
 const s_sym g_sym_ncpu             = SYM_1("ncpu");
 const s_sym g_sym_op               = SYM_1("op");
@@ -347,6 +349,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_KC3_Op, NULL);
   sym_register(&g_sym_List, NULL);
   sym_register(&g_sym_Map, NULL);
+  sym_register(&g_sym_Mutex, NULL);
   sym_register(&g_sym_Pointer, NULL);
   sym_register(&g_sym_Ptag, NULL);
   sym_register(&g_sym_Ptr, NULL);
@@ -395,6 +398,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_is_loading, NULL);
   sym_register(&g_sym_load_time, NULL);
   sym_register(&g_sym_macro, NULL);
+  sym_register(&g_sym_marshall, NULL);
   sym_register(&g_sym_module, NULL);
   sym_register(&g_sym_ncpu, NULL);
   sym_register(&g_sym_op, NULL);
@@ -1220,6 +1224,11 @@ uw * sym_type_size (const s_sym *type, uw *dest)
   }
   if (type == &g_sym_Map) {
     *dest = sizeof(s_map);
+    return dest;
+  }
+  if (type == &g_sym_Pointer ||
+      sym_is_pointer_type(type, NULL)) {
+    *dest = sizeof(s_pointer);
     return dest;
   }
   if (type == &g_sym_Ptag) {

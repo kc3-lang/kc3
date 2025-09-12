@@ -81,6 +81,7 @@ sw buf_parse_map_key_str (s_buf *buf, s_tag *dest);
 sw buf_parse_map_key_sym (s_buf *buf, s_tag *dest);
 sw buf_parse_map_key_tag (s_buf *buf, s_tag *dest);
 sw buf_parse_module_name (s_buf *buf, const s_sym **dest);
+sw buf_parse_module_name_sym_ignore (s_buf *buf);
 sw buf_parse_new_tag (s_buf *buf, s_tag **dest);
 sw buf_parse_paren_sym (s_buf *buf, const s_sym **dest);
 sw buf_parse_pcall (s_buf *buf, p_call *dest);

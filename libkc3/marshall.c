@@ -179,14 +179,26 @@ s_marshall * marshall_array (s_marshall *m, bool heap,
 
 DEF_MARSHALL(bool, "_KC3BOOL_")
 
-s_marshall * marshall_pointer (
-    s_marshall *m, bool heap, const s_pointer *pointer)
+s_marshall * marshall_pointer (s_marshall *m, bool heap,
+                               const s_pointer *pointer)
 {
+  void *p;
   assert(m);
   assert(pointer);
-  if (! m || ! pointer ||
-      ! marshall_psym(m, heap, &pointer->target_type) ||
-      ! marshall_ptr(m, heap, pointer->ptr))
+  if (! m || ! pointer)
+    return NULL;
+  p = pointer->ptr.p;
+  if (pointer->target_type == &g_sym_Mutex)
+    p = NULL;
+  if (p) {
+    err_write_1("marshall_pointer: cannot marshall non-null pointer ");
+    err_inspect_sym(pointer->pointer_type);
+    err_write_1("\n");
+    assert(! "marshall_pointer: cannot marshall non-null pointer");
+    return NULL;
+  }
+  if (! marshall_psym(m, heap, &pointer->target_type) ||
+      ! marshall_uw(m, heap, (uw) p))
     return NULL;
   return m;
 }
@@ -458,7 +470,7 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
     return m;
   }
   if (type == &g_sym_Ptr) {
-    if (! marshall_ptr(m, heap, *(u_ptr_w *) data)) {
+    if (! marshall_ptr(m, heap, *(void **) data)) {
       err_puts("marshall_data: marshall_ptr");
       assert(! "marshall_data: marshall_ptr");
       return NULL;
@@ -466,7 +478,7 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
     return m;
   }
   if (type == &g_sym_PtrFree) {
-    if (! marshall_ptr_free(m, heap, *(u_ptr_w *) data)) {
+    if (! marshall_ptr_free(m, heap, *(void **) data)) {
       err_puts("marshall_data: marshall_ptr_free");
       assert(! "marshall_data: marshall_ptr_free");
       return NULL;
@@ -1168,12 +1180,12 @@ DEF_MARSHALL_P(struct_type, "_KC3PSTRUCTTYPE_", p_struct_type)
 DEF_MARSHALL_P(sym,         "_KC3PSYM_",        p_sym)
 DEF_MARSHALL_P(tag,         "_KC3PTAG_",        p_tag)
 
-s_marshall * marshall_ptr (s_marshall *m, bool heap, u_ptr_w ptr)
+s_marshall * marshall_ptr (s_marshall *m, bool heap, void *p)
 {
   assert(m);
   if (! marshall_1(m, heap, "_KC3PTR_"))
     return NULL;
-  if (! ptr.p)
+  if (! p)
     return marshall_uw(m, heap, 0);
   err_puts("marshall_ptr: non-null pointer.");
   assert(! "marshall_ptr: non-null pointer.");
@@ -1181,12 +1193,12 @@ s_marshall * marshall_ptr (s_marshall *m, bool heap, u_ptr_w ptr)
 }
 
 s_marshall * marshall_ptr_free (s_marshall *m, bool heap,
-                                u_ptr_w ptr_free)
+                                void *p)
 {
   assert(m);
   if (! marshall_1(m, heap, "_KC3PTRFREE_"))
     return NULL;
-  if (! ptr_free.p)
+  if (! p)
     return marshall_uw(m, heap, 0);
   err_puts("marshall_ptr_free: non-null pointer.");
   assert(! "marshall_ptr_free: non-null pointer.");
@@ -1349,8 +1361,13 @@ s_marshall * marshall_struct_type (s_marshall *m, bool heap,
   }
   if (! marshall_psym(m, heap, &st->module) ||
       ! marshall_map(m, heap, &st->map) ||
-      ! marshall_pcallable(m, heap, &st->clean))
+      ! marshall_pcallable(m, heap, &st->clean)) {
+    err_write_1("marshall_struct_type: inner fields: ");
+    err_inspect_sym(st->module);
+    err_write_1("\n");
+    assert(! "marshall_struct_type: inner fields");
     return NULL;
+  }
   return m;
 }
 
@@ -1433,9 +1450,9 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
     return marshall_pstruct_type(m, heap, &tag->data.pstruct_type);
   case TAG_PSYM:  return marshall_psym(m, heap, &tag->data.psym);
   case TAG_PTAG:  return marshall_ptag(m, heap, &tag->data.ptag);
-  case TAG_PTR:   return marshall_ptr(m, heap, tag->data.ptr);
+  case TAG_PTR:   return marshall_ptr(m, heap, tag->data.ptr.p);
   case TAG_PTR_FREE:
-    return marshall_ptr_free(m, heap, tag->data.ptr_free);
+    return marshall_ptr_free(m, heap, tag->data.ptr_free.p);
   case TAG_PVAR:  return marshall_pvar(m, heap, &tag->data.pvar);
   case TAG_QUOTE: return marshall_quote(m, heap, &tag->data.quote);
   case TAG_RATIO: return marshall_ratio(m, heap, &tag->data.ratio);
