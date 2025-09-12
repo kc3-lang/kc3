@@ -31,7 +31,7 @@ void counter_clean (s_counter *counter)
 #endif
 }
 
-s_tag * counter_decrement (s_counter *counter, s_tag *positive,
+s_tag * counter_decrease (s_counter *counter, s_tag *positive,
                            s_tag *dest)
 {
   s_tag tmp = {0};
@@ -42,13 +42,13 @@ s_tag * counter_decrement (s_counter *counter, s_tag *positive,
   mutex_lock(counter->mutex);
 #endif
   if (! tag_is_positive_integer(positive)) {
-    err_puts("counter_decrement: tag_is_positive_integer");
-    assert(! "counter_decrement: tag_is_positive_integer");
+    err_puts("counter_decrease: tag_is_positive_integer");
+    assert(! "counter_decrease: tag_is_positive_integer");
     goto clean;
   }
   if (! tag_sub(&counter->count, positive, &tmp)) {
-    err_puts("counter_decrement: tag_sub");
-    assert(! "counter_decrement: tag_sub");
+    err_puts("counter_decrease: tag_sub");
+    assert(! "counter_decrease: tag_sub");
     tag_clean(&tmp);
     goto clean;
   }
@@ -179,7 +179,7 @@ uw counter_ht_hash (const s_tag *x)
     abort();
   }
   ident_hash_uw(&counter->ident, &hash);
-  if (true) {
+  if (false) {
     err_write_1("counter_ht_hash: ");
     err_inspect_uw_hexadecimal(hash);
     err_write_1("\n");
@@ -210,7 +210,7 @@ s_ht * counter_ht_new (void)
   return ht;
 }
 
-s_tag * counter_increment (s_counter *counter, s_tag *positive,
+s_tag * counter_increase (s_counter *counter, s_tag *positive,
                            s_tag *dest)
 {
   s_tag tmp = {0};
@@ -221,13 +221,13 @@ s_tag * counter_increment (s_counter *counter, s_tag *positive,
   mutex_lock(counter->mutex);
 #endif
   if (! tag_is_positive_integer(positive)) {
-    err_puts("counter_increment: tag_is_positive_integer");
-    assert(! "counter_increment: tag_is_positive_integer");
+    err_puts("counter_increase: tag_is_positive_integer");
+    assert(! "counter_increase: tag_is_positive_integer");
     goto clean;
   }
   if (! tag_add(&counter->count, positive, &tmp)) {
-    err_puts("counter_increment: tag_sub");
-    assert(! "counter_increment: tag_sub");
+    err_puts("counter_increase: tag_sub");
+    assert(! "counter_increase: tag_sub");
     tag_clean(&tmp);
     goto clean;
   }

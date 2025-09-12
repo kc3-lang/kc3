@@ -1404,8 +1404,7 @@ s_marshall * marshall_struct_type (s_marshall *m, bool heap,
   assert(m);
   assert(st);
   assert(st->module);
-  assert(st->offset);
-  if (! m || ! st || ! st->module || ! st->offset)
+  if (! m || ! st || ! st->module)
     return NULL;
   if (! marshall_1(m, heap, "_KC3STRUCTTYPE_")) {
     err_puts("marshall_struct_type: marshall_1 magic");

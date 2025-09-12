@@ -31,11 +31,11 @@ void        counter_delete (s_counter *c);
 s_counter * counter_new (s_ident *ident, s_tag *value);
 
 /* Operators. */
-s_tag * counter_decrement (s_counter *c, s_tag *positive,
-                           s_tag *dest);
+s_tag * counter_decrease (s_counter *c, s_tag *positive,
+                          s_tag *dest);
 s_tag * counter_get (s_counter *c, s_tag *dest);
-s_tag * counter_increment (s_counter *c, s_tag *positive,
-                           s_tag *dest);
+s_tag * counter_increase (s_counter *c, s_tag *positive,
+                          s_tag *dest);
 
 /* Hash table of counters. */
 /*   Stack-allocation compatible functions, call counter_ht_clean

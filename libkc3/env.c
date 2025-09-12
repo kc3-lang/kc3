@@ -537,6 +537,13 @@ s_tag * env_defcounter (s_env *env, s_ident *name, s_tag *value,
   rwlock_unlock_w(&env->counter_ht->rwlock);
 #endif
   tag_clean(&counter_tag);
+  if (true) {
+    err_write_1("env_defcounter: ");
+    err_inspect_ident(&ident);
+    err_write_1(" = ");
+    err_inspect_tag(value);
+    err_write_1("\n");
+  }
   return tag_init_copy(dest, value);
  clean:
 #if HAVE_PTHREAD

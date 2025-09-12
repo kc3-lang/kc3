@@ -2104,7 +2104,8 @@ s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
   if (! mutex_init(&tmp.mutex))
     return NULL;
 #endif
-  struct_type_update_map(&tmp);
+  if (tmp.map.count)
+    struct_type_update_map(&tmp);
   *dest = tmp;
   return mr;
 }
@@ -2172,91 +2173,91 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
   }
   dest->type = type;
   switch (dest->type) {
-    case TAG_VOID:
-      return mr;
-    case TAG_ARRAY:
-      return marshall_read_array(mr, heap, &dest->data.array);
-    case TAG_DO_BLOCK:
-      return marshall_read_do_block(mr, heap, &dest->data.do_block);
-    case TAG_BOOL:
-      return marshall_read_bool(mr, heap, &dest->data.bool_);
-    case TAG_CHARACTER:
-      return marshall_read_character(mr, heap, &dest->data.character);
-    case TAG_F32:
-      return marshall_read_f32(mr, heap, &dest->data.f32);
-    case TAG_F64:
-      return marshall_read_f64(mr, heap, &dest->data.f64);
-    case TAG_F128:
-      return marshall_read_f128(mr, heap, &dest->data.f128);
-    case TAG_FACT:
-      return marshall_read_fact(mr, heap, &dest->data.fact);
-    case TAG_IDENT:
-      return marshall_read_ident(mr, heap, &dest->data.ident);
-    case TAG_INTEGER:
-      return marshall_read_integer(mr, heap, &dest->data.integer);
-    case TAG_MAP:
-      return marshall_read_map(mr, heap, &dest->data.map);
-    case TAG_PCALL:
-      return marshall_read_pcall(mr, heap, &dest->data.pcall);
-    case TAG_PCALLABLE:
-      return marshall_read_pcallable(mr, heap, &dest->data.pcallable);
-    case TAG_PCOMPLEX:
-      return marshall_read_pcomplex(mr, heap, &dest->data.pcomplex);
-    case TAG_PCOW:
-      return marshall_read_pcow(mr, heap, &dest->data.pcow);
-    case TAG_PFACTS:
-      return marshall_read_pfacts(mr, heap, &dest->data.pfacts);
-    case TAG_PLIST:
-      return marshall_read_plist(mr, heap, &dest->data.plist);
-    case TAG_POINTER:
-      return marshall_read_pointer(mr, heap, &dest->data.pointer);
-    case TAG_PSTRUCT:
-      return marshall_read_pstruct(mr, heap, &dest->data.pstruct);
-    case TAG_PSTRUCT_TYPE:
-      return marshall_read_pstruct_type(mr, heap,
-                                        &dest->data.pstruct_type);
-    case TAG_PSYM:
-      return marshall_read_psym(mr, heap, &dest->data.psym);
-    case TAG_PTAG:
-      return marshall_read_ptag(mr, heap, &dest->data.ptag);
-    case TAG_PTR:
-      return marshall_read_ptr(mr, heap, &dest->data.ptr);
-    case TAG_PTR_FREE:
-      return marshall_read_ptr_free(mr, heap, &dest->data.ptr_free);
-    case TAG_QUOTE:
-      return marshall_read_quote(mr, heap, &dest->data.quote);
-    case TAG_RATIO:
-      return marshall_read_ratio(mr, heap, &dest->data.ratio);
-    case TAG_STR:
-      return marshall_read_str(mr, heap, &dest->data.str);
-    case TAG_S8:
-      return marshall_read_s8(mr, heap, &dest->data.s8);
-    case TAG_S16:
-      return marshall_read_s16(mr, heap, &dest->data.s16);
-    case TAG_S32:
-      return marshall_read_s32(mr, heap, &dest->data.s32);
-    case TAG_S64:
-      return marshall_read_s64(mr, heap, &dest->data.s64);
-    case TAG_SW:
-      return marshall_read_sw(mr, heap, &dest->data.sw);
-    case TAG_TIME:
-      return marshall_read_time(mr, heap, &dest->data.time);
-    case TAG_TUPLE:
-      return marshall_read_tuple(mr, heap, &dest->data.tuple);
-    case TAG_U8:
-      return marshall_read_u8(mr, heap, &dest->data.u8);
-    case TAG_U16:
-      return marshall_read_u16(mr, heap, &dest->data.u16);
-    case TAG_U32:
-      return marshall_read_u32(mr, heap, &dest->data.u32);
-    case TAG_U64:
-      return marshall_read_u64(mr, heap, &dest->data.u64);
-    case TAG_UNQUOTE:
-      return marshall_read_unquote(mr, heap, &dest->data.unquote);
-    case TAG_UW:
-      return marshall_read_uw(mr, heap, &dest->data.uw);
-    case TAG_PVAR:
-      return marshall_read_pvar(mr, heap, &dest->data.pvar);
+  case TAG_VOID:
+    return mr;
+  case TAG_ARRAY:
+    return marshall_read_array(mr, heap, &dest->data.array);
+  case TAG_DO_BLOCK:
+    return marshall_read_do_block(mr, heap, &dest->data.do_block);
+  case TAG_BOOL:
+    return marshall_read_bool(mr, heap, &dest->data.bool_);
+  case TAG_CHARACTER:
+    return marshall_read_character(mr, heap, &dest->data.character);
+  case TAG_F32:
+    return marshall_read_f32(mr, heap, &dest->data.f32);
+  case TAG_F64:
+    return marshall_read_f64(mr, heap, &dest->data.f64);
+  case TAG_F128:
+    return marshall_read_f128(mr, heap, &dest->data.f128);
+  case TAG_FACT:
+    return marshall_read_fact(mr, heap, &dest->data.fact);
+  case TAG_IDENT:
+    return marshall_read_ident(mr, heap, &dest->data.ident);
+  case TAG_INTEGER:
+    return marshall_read_integer(mr, heap, &dest->data.integer);
+  case TAG_MAP:
+    return marshall_read_map(mr, heap, &dest->data.map);
+  case TAG_PCALL:
+    return marshall_read_pcall(mr, heap, &dest->data.pcall);
+  case TAG_PCALLABLE:
+    return marshall_read_pcallable(mr, heap, &dest->data.pcallable);
+  case TAG_PCOMPLEX:
+    return marshall_read_pcomplex(mr, heap, &dest->data.pcomplex);
+  case TAG_PCOW:
+    return marshall_read_pcow(mr, heap, &dest->data.pcow);
+  case TAG_PFACTS:
+    return marshall_read_pfacts(mr, heap, &dest->data.pfacts);
+  case TAG_PLIST:
+    return marshall_read_plist(mr, heap, &dest->data.plist);
+  case TAG_POINTER:
+    return marshall_read_pointer(mr, heap, &dest->data.pointer);
+  case TAG_PSTRUCT:
+    return marshall_read_pstruct(mr, heap, &dest->data.pstruct);
+  case TAG_PSTRUCT_TYPE:
+    return marshall_read_pstruct_type(mr, heap,
+                                      &dest->data.pstruct_type);
+  case TAG_PSYM:
+    return marshall_read_psym(mr, heap, &dest->data.psym);
+  case TAG_PTAG:
+    return marshall_read_ptag(mr, heap, &dest->data.ptag);
+  case TAG_PTR:
+    return marshall_read_ptr(mr, heap, &dest->data.ptr);
+  case TAG_PTR_FREE:
+    return marshall_read_ptr_free(mr, heap, &dest->data.ptr_free);
+  case TAG_QUOTE:
+    return marshall_read_quote(mr, heap, &dest->data.quote);
+  case TAG_RATIO:
+    return marshall_read_ratio(mr, heap, &dest->data.ratio);
+  case TAG_STR:
+    return marshall_read_str(mr, heap, &dest->data.str);
+  case TAG_S8:
+    return marshall_read_s8(mr, heap, &dest->data.s8);
+  case TAG_S16:
+    return marshall_read_s16(mr, heap, &dest->data.s16);
+  case TAG_S32:
+    return marshall_read_s32(mr, heap, &dest->data.s32);
+  case TAG_S64:
+    return marshall_read_s64(mr, heap, &dest->data.s64);
+  case TAG_SW:
+    return marshall_read_sw(mr, heap, &dest->data.sw);
+  case TAG_TIME:
+    return marshall_read_time(mr, heap, &dest->data.time);
+  case TAG_TUPLE:
+    return marshall_read_tuple(mr, heap, &dest->data.tuple);
+  case TAG_U8:
+    return marshall_read_u8(mr, heap, &dest->data.u8);
+  case TAG_U16:
+    return marshall_read_u16(mr, heap, &dest->data.u16);
+  case TAG_U32:
+    return marshall_read_u32(mr, heap, &dest->data.u32);
+  case TAG_U64:
+    return marshall_read_u64(mr, heap, &dest->data.u64);
+  case TAG_UNQUOTE:
+    return marshall_read_unquote(mr, heap, &dest->data.unquote);
+  case TAG_UW:
+    return marshall_read_uw(mr, heap, &dest->data.uw);
+  case TAG_PVAR:
+    return marshall_read_pvar(mr, heap, &dest->data.pvar);
   }
   err_write_1("marshall_read_tag: unknown tag type: ");
   err_inspect_u8_decimal(type);
@@ -2385,16 +2386,3 @@ s_marshall_read * marshall_read_var (s_marshall_read *mr,
   *dest = tmp;
   return mr;
 }
-
-// more complex types :
-
-#define DEF_MARSHALL_READ_STUB(name, type)                             \
-  PROTO_MARSHALL_READ(name, type)                                      \
-  {                                                                    \
-    (void) mr;                                                         \
-    (void) heap;                                                       \
-    (void) dest;                                                       \
-    err_puts("marshall_read_" # name ": not implemented");             \
-    assert(! "marshall_read_" # name ": not implemented");             \
-    return NULL;                                                       \
-  }

@@ -264,17 +264,17 @@ void kc3_continue (void)
   abort();
 }
 
-s_tag * kc3_counter_decrement (const s_ident *name,
-                               s_tag *positive,
-                               s_tag *dest)
+s_tag * kc3_counter_decrease (const s_ident *name,
+                              s_tag *positive,
+                              s_tag *dest)
 {
   s_counter *counter;
   if (! counter_find(name, &counter)) {
-    err_puts("kc3_counter_decrement: counter_find");
-    assert(! "kc3_counter_decrement: counter_find");
+    err_puts("kc3_counter_decrease: counter_find");
+    assert(! "kc3_counter_decrease: counter_find");
     return NULL;
   }
-  return counter_decrement(counter, positive, dest);
+  return counter_decrease(counter, positive, dest);
 }
 
 s_tag * kc3_counter_get (const s_ident *name, s_tag *dest)
@@ -288,17 +288,17 @@ s_tag * kc3_counter_get (const s_ident *name, s_tag *dest)
   return counter_get(counter, dest);
 }
 
-s_tag * kc3_counter_increment (const s_ident *name,
+s_tag * kc3_counter_increase (const s_ident *name,
                                s_tag *positive,
                                s_tag *dest)
 {
   s_counter *counter;
   if (! counter_find(name, &counter)) {
-    err_puts("kc3_counter_increment: counter_find");
-    assert(! "kc3_counter_increment: counter_find");
+    err_puts("kc3_counter_increase: counter_find");
+    assert(! "kc3_counter_increase: counter_find");
     return NULL;
   }
-  return counter_increment(counter, positive, dest);
+  return counter_increase(counter, positive, dest);
 }
 
 s_tag * kc3_def (p_call *pcall, s_tag *dest)

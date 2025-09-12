@@ -154,7 +154,6 @@ s_struct_type * struct_type_init (s_struct_type *st,
   const s_sym *type;
   assert(st);
   assert(module);
-  assert(spec);
   if (false) {
     err_write_1("struct_type_init: ");
     err_inspect_sym(module);
@@ -162,56 +161,58 @@ s_struct_type * struct_type_init (s_struct_type *st,
   }
   count = list_length(spec);
   tmp.module = module;
-  if (! map_init(&tmp.map, count))
-    return NULL;
-  tmp.offset = alloc(count * sizeof(uw));
-  if (! tmp.offset) {
-    map_clean(&tmp.map);
-    return NULL;
-  }
-  tmp.must_clean = false;
-  offset = 0;
-  i = 0;
-  s = spec;
-  while (s) {
-    if (s->tag.type != TAG_TUPLE || s->tag.data.tuple.count != 2) {
-      err_puts("struct_type_init: invalid spec");
-      assert(! "struct_type_init: invalid spec");
+  if (count) {
+    if (! map_init(&tmp.map, count))
+      return NULL;
+    tmp.offset = alloc(count * sizeof(uw));
+    if (! tmp.offset) {
       map_clean(&tmp.map);
-      free(tmp.offset);
       return NULL;
     }
-    tuple = &s->tag.data.tuple;
-    if (tuple->tag[1].type == TAG_PVAR) {
-      type = tuple->tag[1].data.pvar->type;
-      if (! sym_type_size(type, &size)) {
+    tmp.must_clean = false;
+    offset = 0;
+    i = 0;
+    s = spec;
+    while (s) {
+      if (s->tag.type != TAG_TUPLE || s->tag.data.tuple.count != 2) {
+        err_puts("struct_type_init: invalid spec");
+        assert(! "struct_type_init: invalid spec");
         map_clean(&tmp.map);
         free(tmp.offset);
         return NULL;
       }
+      tuple = &s->tag.data.tuple;
+      if (tuple->tag[1].type == TAG_PVAR) {
+        type = tuple->tag[1].data.pvar->type;
+        if (! sym_type_size(type, &size)) {
+          map_clean(&tmp.map);
+          free(tmp.offset);
+          return NULL;
+        }
+      }
+      else if (! tag_size(tuple->tag + 1, &size)) {
+        map_clean(&tmp.map);
+        free(tmp.offset);
+        return NULL;
+      }
+      tag_init_copy(tmp.map.key + i,   tuple->tag + 0);
+      tag_init_copy(tmp.map.value + i, tuple->tag + 1);
+      tag_type_var(tmp.map.value + i, &type);
+      if (! sym_must_clean(type, &must_clean)) {
+        map_clean(&tmp.map);
+        free(tmp.offset);
+        return NULL;
+      }
+      if (must_clean)
+        tmp.must_clean = true;
+      offset = struct_type_padding(offset, size);
+      tmp.offset[i] = offset;
+      offset += size;
+      i++;
+      s = list_next(s);
     }
-    else if (! tag_size(tuple->tag + 1, &size)) {
-      map_clean(&tmp.map);
-      free(tmp.offset);
-      return NULL;
-    }
-    tag_init_copy(tmp.map.key + i,   tuple->tag + 0);
-    tag_init_copy(tmp.map.value + i, tuple->tag + 1);
-    tag_type_var(tmp.map.value + i, &type);
-    if (! sym_must_clean(type, &must_clean)) {
-      map_clean(&tmp.map);
-      free(tmp.offset);
-      return NULL;
-    }
-    if (must_clean)
-      tmp.must_clean = true;
-    offset = struct_type_padding(offset, size);
-    tmp.offset[i] = offset;
-    offset += size;
-    i++;
-    s = list_next(s);
+    tmp.size = struct_type_compute_size(offset);
   }
-  tmp.size = struct_type_compute_size(offset);
   tmp.ref_count = 1;
 #if HAVE_PTHREAD
   mutex_init(&tmp.mutex);

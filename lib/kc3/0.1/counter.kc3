@@ -14,16 +14,14 @@ require Mutex
 
 defmodule Counter do
 
-  defstruct [ident: (Ident) ?,
-             mutex: (Mutex*) 0,
-             count: (Tag) ?]
+  defstruct []
 
-  def decrement = cfn Tag "counter_decrement" (Counter, Tag, Result)
+  def decrease = cfn_macro Tag "kc3_counter_decrease" (Ident, Tag,
+    Result)
 
-  def find = cfn_macro Counter* "counter_find" (Ident, Result)
+  def get = cfn_macro Tag "kc3_counter_get" (Ident, Result)
 
-  def get = cfn Tag "counter_get" (Counter, Result)
-
-  def increment = cfn Tag "counter_increment" (Counter, Tag, Result)
+  def increase = cfn_macro Tag "kc3_counter_increase" (Ident, Tag,
+    Result)
 
 end
