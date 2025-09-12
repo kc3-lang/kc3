@@ -6,10 +6,10 @@ require TLS
 TLS
 TLS.init()
 TLS
-config = TLS.Config.new()
-(TLS.Config*) 0xee5465f2780
-TLS.Config.set_ca_cert_path(config, TLS.ca_cert_path())
-(TLS.Config*) 0xee5465f2780
+(config = TLS.Config.new()) ; void
+void
+TLS.Config.set_ca_file(config, TLS.ca_cert_path()) ; void
+void
 (server = Socket.listen("127.0.0.1", "57000")) ; void
 void
 (client = Socket.Buf.connect("127.0.0.1", "57000")) ; void
