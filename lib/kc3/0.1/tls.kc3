@@ -18,12 +18,12 @@ defmodule TLS do
 
   def ca_cert_path = cfn Str "kc3_tls_ca_cert_path" (Result)
 
-  def client = cfn TLS* "tls_client" ()
+  def client = cfn TLS* "tls_client" (Result)
 
-  # at program start : TLS.init() = true
-  def init = cfn Bool "kc3_tls_init" ()
+  # at program start : TLS.init()
+  def init = cfn Tag "kc3_tls_init" (Result)
 
-  def configure = cfn Bool "kc3_tls_configure" (TLS*, TLS.Config*)
+  def configure = cfn TLS* "kc3_tls_configure" (TLS*, TLS.Config*, Result)
 
   def free = cfn Void "tls_free" (TLS*)
 

@@ -19,28 +19,17 @@
 #include "../socket/types.h"
 
 /* Library initialization. */
-bool kc3_tls_init (void);
-
-/* Heap-allocation functions, call *_delete after use. */
-p_tls_config * kc3_tls_config_new (p_tls_config *dest);
+s_tag * kc3_tls_init (s_tag *dest);
 
 /* Operators. */
-bool kc3_tls_connect_socket (p_tls ctx, t_socket sockfd,
-                             const s_str *hostname);
+p_tls kc3_tls_accept_socket (p_tls *ctx, p_tls *client_ctx,
+                             t_socket client_fd, p_tls *dest);
+p_tls * kc3_tls_client (p_tls *dest);
+p_tls * kc3_tls_connect_socket (p_tls *ctx, t_socket sockfd,
+                                const s_str *hostname, p_tls *dest);
+p_tls * kc3_tls_server (p_tls *dest);
 
 /* Operating system helpers. */
 s_str * kc3_tls_ca_cert_path (s_str *dest);
-
-
-bool kc3_tls_config_set_cert_file (p_tls_config config,
-                                   const s_str *file_path);
-
-p_tls kc3_tls_server(void);
-
-bool kc3_tls_config_set_key_file (p_tls_config config,
-                                  const s_str *key_file_path);
-
-bool kc3_tls_accept_socket (p_tls ctx, p_tls *client_ctx,
-                            t_socket client_fd);
 
 #endif /* KC3_TLS_H */

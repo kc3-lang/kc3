@@ -1,0 +1,19 @@
+--- tls.out.expected	Fri Sep 12 16:14:59 2025
++++ tls.out	Fri Sep 12 16:15:10 2025
+@@ -1 +1,10 @@
+-
++require Socket
++true
++require Socket.Buf
++true
++require TLS
++true
++TLS.init()
++TLS
++config = TLS.Config.new()
++Segmentation fault (core dumped) 
+--- tls.ret.expected	Fri Sep 12 16:15:05 2025
++++ tls.ret	Fri Sep 12 16:15:10 2025
+@@ -1 +1 @@
+-0
++139

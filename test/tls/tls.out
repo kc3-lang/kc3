@@ -1,0 +1,10 @@
+require Socket
+true
+require Socket.Buf
+true
+require TLS
+true
+TLS.init()
+TLS
+config = TLS.Config.new()
+Segmentation fault (core dumped) 
