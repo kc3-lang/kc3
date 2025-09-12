@@ -70,10 +70,14 @@ There are now four full applications written in KC3 that we know of :
  - libkc3
    - dlopen inside lib/ only
    - Typed pointer example : `(Facts*)` → `p_facts`
+   - Generic typed pointers : `(U8*) 0x0`
+   - make `kc3_require` and `env_eval_do_block` more careful about error
+     handling
    - securelevel between 0 and 3
      - API that can only increase securelevel between 0 and 2
-     - 0 = (cfn + system + dlopen + dlsym) + (eval + def*)
-     - 1 = def* + eval
+     - 0 → (cfn + system + dlopen + dlsym) + (eval + def*)
+     - 1 → def* + eval
+>>>>>>> 224b1777 (readme, todo, new in this release)
        - block all Cfn definition if `securelevel(0) > 0`
          - `env_eval_callable`
          - `cfn_eval`
@@ -90,7 +94,7 @@ There are now four full applications written in KC3 that we know of :
        - block dlsym() calls if `securelevel(0) > 0`
          - only ever called by cfn_apply which is already blocked at
            securelevel > 0
-     - 2 = eval
+     - 2 → eval
        - block buf_parse_fn if `securelevel(0) > 1`
        - block buf_parse_pcallable if `securelevel(0) > 1`
        - block env_eval_callable if `securelevel(0) > 1`
@@ -100,8 +104,15 @@ There are now four full applications written in KC3 that we know of :
          if `securelevel(0) > 1`
        - block all facts_remove* on global env facts
          if `securelevel(0) > 1`
-     - 3 = ø (no KC3 eval, C-mode only)
-       - [ ] block all env_eval_* if `securelevel(0) > 2`
+     - 3 → ø (no KC3 eval, C-mode only)
+       - block all env_eval_* if `securelevel(0) > 2`
+   - MP-safe integer counters : `defcounter name = value`
+     - environment hash table for name resolution
+     - mp-safe
+     - `Counter.decrease(Ident, Tag positive)` as a `cfn_macro`
+     - `Counter.get(Ident)` as a `cfn_macro`
+     - `Counter.increase(Ident, Tag positive)` as a `cfn_macro`
+     - `Counter` module included at init
 
  - ikc3
    - Remote procedure call
@@ -131,6 +142,9 @@ There are now four full applications written in KC3 that we know of :
    - removed ugly `sleep 2` that slowed each ikc3 test
    - all tests suites run in under 30 seconds now compared to
      more than 5 minutes before
+
+ - HTTPd
+   - limit acceptor loop using defcounter
 
 
 ## Discord invite
