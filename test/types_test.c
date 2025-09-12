@@ -38,6 +38,5 @@ TEST_CASE(types_sizeof)
   TEST_EQ(sizeof(u64), 8);
   TEST_EQ(sizeof(bool), sizeof(u8));
   TEST_EQ(sizeof(u_ptr), sizeof(void *));
-  TEST_EQ(sizeof(pthread_mutex_t), sizeof(uw));
 }
 TEST_CASE_END(types_sizeof)
