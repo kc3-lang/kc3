@@ -2,6 +2,7 @@
 HEADERS = \
 	"tls.h" \
 	"tls_buf.h" \
+	"tls_config.h" \
 	"types.h" \
 
 SOURCES = \
