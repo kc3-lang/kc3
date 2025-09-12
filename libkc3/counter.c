@@ -27,6 +27,10 @@ void counter_clean (s_counter *counter)
 {
   assert(counter);
   tag_clean(&counter->count);
+#if HAVE_PTHREAD
+  if (counter->mutex)
+    mutex_delete(counter->mutex);
+#endif
 }
 
 s_tag * counter_decrement (s_counter *counter, s_tag *positive,
@@ -37,7 +41,7 @@ s_tag * counter_decrement (s_counter *counter, s_tag *positive,
   assert(positive);
   assert(dest);
 #if HAVE_PTHREAD
-  mutex_lock(&counter->mutex);
+  mutex_lock(counter->mutex);
 #endif
   if (! tag_is_positive_integer(positive)) {
     err_puts("counter_decrement: tag_is_positive_integer");
@@ -56,13 +60,13 @@ s_tag * counter_decrement (s_counter *counter, s_tag *positive,
     goto clean;
   }
 #if HAVE_PTHREAD
-  mutex_unlock(&counter->mutex);
+  mutex_unlock(counter->mutex);
 #endif
   *dest = tmp;
   return dest;
  clean:
 #if HAVE_PTHREAD
-  mutex_unlock(&counter->mutex);
+  mutex_unlock(counter->mutex);
 #endif
   return NULL;
 }
@@ -108,11 +112,11 @@ s_tag * counter_get (s_counter *counter, s_tag *dest)
   assert(counter);
   assert(dest);
 #if HAVE_PTHREAD
-  mutex_lock(&counter->mutex);
+  mutex_lock(counter->mutex);
 #endif
   result = tag_init_copy(dest, &counter->count);
 #if HAVE_PTHREAD
-  mutex_unlock(&counter->mutex);
+  mutex_unlock(counter->mutex);
 #endif
   return result;
 }
@@ -187,7 +191,7 @@ s_tag * counter_increment (s_counter *counter, s_tag *positive,
   assert(positive);
   assert(dest);
 #if HAVE_PTHREAD
-  mutex_lock(&counter->mutex);
+  mutex_lock(counter->mutex);
 #endif
   if (! tag_is_positive_integer(positive)) {
     err_puts("counter_increment: tag_is_positive_integer");
@@ -206,13 +210,13 @@ s_tag * counter_increment (s_counter *counter, s_tag *positive,
     goto clean;
   }
 #if HAVE_PTHREAD
-  mutex_unlock(&counter->mutex);
+  mutex_unlock(counter->mutex);
 #endif
   *dest = tmp;
   return dest;
  clean:
 #if HAVE_PTHREAD
-  mutex_unlock(&counter->mutex);
+  mutex_unlock(counter->mutex);
 #endif
   return NULL;
 }
@@ -232,7 +236,14 @@ s_counter * counter_init (s_counter *counter, s_ident *ident,
     return NULL;
   }
   tmp.ident = *ident;
-  tag_init_copy(&tmp.count, value);
+  if (! tag_init_copy(&tmp.count, value))
+    return NULL;
+#if HAVE_PTHREAD
+  if (! (tmp.mutex = mutex_new())) {
+    tag_clean(&tmp.count);
+    return NULL;
+  }
+#endif
   *counter = tmp;
   return counter;
 }

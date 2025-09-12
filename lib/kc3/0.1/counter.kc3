@@ -15,7 +15,7 @@ require Mutex
 defmodule Counter do
 
   defstruct [ident: (Ident) ?,
-             mutex: %Mutex{},
+             mutex: (Mutex*) 0,
              count: (Tag) ?]
 
   def decrement = cfn Tag "counter_decrement" (Counter, Tag, Result)
