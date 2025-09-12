@@ -1,6 +1,6 @@
 require File
-true
+File
 require TLS
-true
+TLS
 File.access(TLS.ca_cert_path(), :r)
 true

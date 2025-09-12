@@ -1,1 +1,24 @@
-
+require Socket
+Socket
+require Socket.Buf
+Socket.Buf
+require TLS
+TLS
+TLS.init()
+TLS
+config = TLS.Config.new()
+(TLS.Config*) 0xee5465f2780
+TLS.Config.set_ca_cert_path(config, TLS.ca_cert_path())
+(TLS.Config*) 0xee5465f2780
+(server = Socket.listen("127.0.0.1", "57000")) ; void
+void
+(client = Socket.Buf.connect("127.0.0.1", "57000")) ; void
+void
+(server_client = Socket.Buf.accept(server)) ; void
+void
+Socket.Buf.close(server_client)
+void
+Socket.Buf.close(client)
+void
+Socket.close(server)
+void

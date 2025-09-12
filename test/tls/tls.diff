@@ -1,19 +1,17 @@
---- tls.out.expected	Fri Sep 12 16:14:59 2025
-+++ tls.out	Fri Sep 12 16:15:10 2025
-@@ -1 +1,10 @@
--
-+require Socket
-+true
-+require Socket.Buf
-+true
-+require TLS
-+true
-+TLS.init()
-+TLS
-+config = TLS.Config.new()
-+Segmentation fault (core dumped) 
---- tls.ret.expected	Fri Sep 12 16:15:05 2025
-+++ tls.ret	Fri Sep 12 16:15:10 2025
-@@ -1 +1 @@
--0
-+139
+--- tls.out.expected	Sat Sep 13 01:32:22 2025
++++ tls.out	Sat Sep 13 01:36:24 2025
+@@ -6,10 +6,10 @@
+ TLS
+ TLS.init()
+ TLS
+-config = TLS.Config.new()
+-(TLS.Config*) 0xee5465f2780
+-TLS.Config.set_ca_cert_path(config, TLS.ca_cert_path())
+-(TLS.Config*) 0xee5465f2780
++(config = TLS.Config.new()) ; void
++void
++TLS.Config.set_ca_file(config, TLS.ca_cert_path())
++(TLS.Config*) 0x5d80a60a780
+ (server = Socket.listen("127.0.0.1", "57000")) ; void
+ void
+ (client = Socket.Buf.connect("127.0.0.1", "
