@@ -60,6 +60,8 @@ s_marshall_read * marshall_read_data (s_marshall_read *mr, bool heap,
 PROTO_MARSHALL_READ(dimensions,   s_array_dimension);
 PROTO_MARSHALL_READ(do_block,     s_do_block       );
 PROTO_MARSHALL_READ(env,          s_env            );
+s_marshall_read * marshall_read_env_counters (s_marshall_read *mr,
+                                              bool heap, s_env *env);
 PROTO_MARSHALL_READ(f128,         f128             );
 PROTO_MARSHALL_READ(f32,          f32              );
 PROTO_MARSHALL_READ(f64,          f64              );

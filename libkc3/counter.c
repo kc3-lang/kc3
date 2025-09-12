@@ -21,8 +21,6 @@
 #include "sym.h"
 #include "tag.h"
 
-s_ht g_counter_ht = {0};
-
 void counter_clean (s_counter *counter)
 {
   assert(counter);
@@ -80,30 +78,12 @@ void counter_delete (s_counter *counter)
 
 s_counter ** counter_find (const s_ident *ident, s_counter **dest)
 {
-  s_counter key = {0};
-  s_tag     key_tag = {0};
-  s_tag *value_tag = NULL;
-  key.ident = *ident;
-  if (! key.ident.module)
-    key.ident.module = env_global()->current_defmodule;
-  if (! key.ident.module)
-    return NULL;
-  if (! tag_init_pstruct_with_data(&key_tag, &g_sym_Counter, &key,
-                                   false))
-    return NULL;
-  if (! ht_get(&g_counter_ht, &key_tag, &value_tag))
-    return NULL;
-  if (value_tag->type != TAG_PSTRUCT ||
-      ! value_tag->data.pstruct ||
-      ! value_tag->data.pstruct->pstruct_type ||
-      value_tag->data.pstruct->pstruct_type->module != &g_sym_Counter ||
-      ! value_tag->data.pstruct->data) {
-    err_puts("counter_find: ht_get: invalid value");
-    assert(! "counter_find: ht_get: invalid value");
-    return NULL;
-  }
-  *dest = value_tag->data.pstruct->data;
-  return dest;
+  s_env *env;
+  assert(ident);
+  assert(dest);
+  env = env_global();
+  assert(env);
+  return counter_ht_find(env->counter_ht, ident, dest);
 }
 
 s_tag * counter_get (s_counter *counter, s_tag *dest)
@@ -149,6 +129,41 @@ s8 counter_ht_compare (const s_tag *a, const s_tag *b)
   return compare_ident(&counter_a->ident, &counter_b->ident);
 }
 
+void counter_ht_delete (s_ht *ht)
+{
+  assert(ht);
+  ht_delete(ht);
+}
+
+s_counter ** counter_ht_find (s_ht *ht, const s_ident *ident,
+                              s_counter **dest)
+{
+  s_counter key = {0};
+  s_tag     key_tag = {0};
+  s_tag *value_tag = NULL;
+  key.ident = *ident;
+  if (! key.ident.module)
+    key.ident.module = env_global()->current_defmodule;
+  if (! key.ident.module)
+    return NULL;
+  if (! tag_init_pstruct_with_data(&key_tag, &g_sym_Counter, &key,
+                                   false))
+    return NULL;
+  if (! ht_get(ht, &key_tag, &value_tag))
+    return NULL;
+  if (value_tag->type != TAG_PSTRUCT ||
+      ! value_tag->data.pstruct ||
+      ! value_tag->data.pstruct->pstruct_type ||
+      value_tag->data.pstruct->pstruct_type->module != &g_sym_Counter ||
+      ! value_tag->data.pstruct->data) {
+    err_puts("counter_ht_find: ht_get: invalid value");
+    assert(! "counter_ht_find: ht_get: invalid value");
+    return NULL;
+  }
+  *dest = value_tag->data.pstruct->data;
+  return dest;
+}
+
 uw counter_ht_hash (const s_tag *x)
 {
   s_counter *counter;
@@ -180,6 +195,18 @@ s_ht * counter_ht_init (s_ht *ht)
   tmp.compare = counter_ht_compare;
   tmp.hash = counter_ht_hash;
   *ht = tmp;
+  return ht;
+}
+
+s_ht * counter_ht_new (void)
+{
+  s_ht *ht;
+  if (! (ht = alloc(sizeof(s_ht))))
+    return NULL;
+  if (! counter_ht_init(ht)) {
+    free(ht);
+    return NULL;
+  }
   return ht;
 }
 

@@ -514,6 +514,8 @@ struct ht {
   s_rwlock     rwlock;
   uw           size;
   const s_sym *type;
+  sw           ref_count;
+  s_mutex      ref_count_mutex;
 };
 
 struct ident {
@@ -914,6 +916,7 @@ struct env {
   s_str            *argv0_dir;
   s_block          *block;
   s_time            boot_time;
+  s_ht             *counter_ht;
   const s_sym      *current_defmodule;
   s_list           *dlopen_list;
   s_str             dump_path;

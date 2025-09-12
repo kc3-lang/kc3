@@ -18,6 +18,7 @@
 #include "alloc.h"
 #include "buf.h"
 #include "buf_file.h"
+#include "counter.h"
 #include "endian.h"
 #include "facts.h"
 #include "facts_cursor.h"
@@ -713,9 +714,61 @@ s_marshall * marshall_env (s_marshall *m, bool heap, const s_env *env)
     assert(! "marshall_env: marshall_uw anonymous Sym serial");
     return NULL;
   }
+  if (! marshall_env_counters(m, heap, env)) {
+    err_puts("marshall_env: marshall_env_counters");
+    assert(! "marshall_env: marshall_env_counters");
+    return NULL;
+  }
   return m;
 }
 
+s_marshall * marshall_env_counters (s_marshall *m, bool heap,
+                                    const s_env *env)
+{
+  s_counter *counter = NULL;
+  s_ht_iterator ht_iter = {0};
+  s_tag *item = NULL;
+  if (! m || ! env || ! env->counter_ht || ! env->counter_ht->size) {
+    err_puts("marshall_env_counters: invalid argument");
+    assert(! "marshall_env_counters: invalid argument");
+    return NULL;
+  }
+  if (! marshall_uw(m, heap, env->counter_ht->count)) {
+    err_puts("marshall_env_counters: marshall_uw");
+    assert(! "marshall_env_counters: marshall_uw");
+    return NULL;
+  }
+  if (! ht_iterator_init(&ht_iter, env->counter_ht))
+    return NULL;
+  while (ht_iterator_next(&ht_iter, &item)) {
+    if (item->type != TAG_PSTRUCT ||
+        ! item->data.pstruct ||
+        ! item->data.pstruct->pstruct_type ||
+        item->data.pstruct->pstruct_type->module != &g_sym_Counter ||
+        ! (counter = item->data.pstruct->data)) {
+      err_puts("marshall_env_counters: invalid counter in hash table");
+      assert(! "marshall_env_counters: invalid counter in hash table");
+      return NULL;
+    }
+    if (! marshall_ident(m, heap, &counter->ident)) {
+      err_puts("marshall_env_counters: marshall_ident");
+      assert(! "marshall_env_counters: marshall_ident");
+      return NULL;
+    }
+    if (! tag_is_integer(&counter->count)) {
+      err_puts("marshall_env_counters: counter is not an integer");
+      assert(! "marshall_env_counters: counter is not an integer");
+      return NULL;
+    }
+    if (! marshall_tag(m, heap, &counter->count)) {
+      err_puts("marshall_env_counters: marshall_tag");
+      assert(! "marshall_env_counters: marshall_tag");
+      return NULL;
+    }
+  }
+  return m;
+}
+      
 sw marshall_env_to_file (const s_env *env, const s_str *path)
 {
   s_marshall m = {0};

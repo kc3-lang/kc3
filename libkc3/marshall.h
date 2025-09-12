@@ -47,6 +47,8 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
                             void *data);
 PROTO_MARSHALL(do_block, const s_do_block *);
 PROTO_MARSHALL(env, const s_env *);
+s_marshall * marshall_env_counters (s_marshall *m, bool heap,
+                                    const s_env *env);
 PROTO_MARSHALL(f32, f32);
 PROTO_MARSHALL(f64, f64);
 PROTO_MARSHALL(f128, f128);

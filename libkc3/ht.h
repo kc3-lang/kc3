@@ -21,6 +21,10 @@
 void   ht_clean (s_ht *ht);
 s_ht * ht_init (s_ht *ht, const s_sym *type, uw size);
 
+/* Heap-allocation functions, call ht_delete after use. */
+s_ht * ht_new_ref (s_ht *src);
+void   ht_delete (s_ht *ht);
+
 /* Observers. */
 s_tag ** ht_get (s_ht *ht, s_tag *key, s_tag **dest);
 s_tag ** ht_get_hash (s_ht *ht, s_tag *tag, uw hash, s_tag **dest);

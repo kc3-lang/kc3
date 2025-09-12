@@ -22,6 +22,7 @@
 #include "cfn.h"
 #include "compare.h"
 #include "complex.h"
+#include "counter.h"
 #include "do_block.h"
 #include "endian.h"
 #include "fact.h"
@@ -582,6 +583,60 @@ s_marshall_read * marshall_read_env (s_marshall_read *mr,
     err_puts("marshall_read_env: marshall_read_uw anon Sym serial");
     assert(! "marshall_read_env: marshall_read_uw anon Sym serial");
     return NULL;
+  }
+  if (! marshall_read_env_counters(mr, heap, env)) {
+    err_puts("marshall_read_env: marshall_read_env_counters");
+    assert(! "marshall_read_env: marshall_read_env_counters");
+    return NULL;
+  }
+  return mr;
+}
+
+s_marshall_read * marshall_read_env_counters (s_marshall_read *mr,
+                                              bool heap, s_env *env)
+{
+  uw count;
+  uw i;
+  s_ident ident;
+  s_tag tmp = {0};
+  s_tag value;
+  if (! mr || ! env) {
+    err_puts("marshall_read_env_counters: invalid argument");
+    assert(! "marshall_read_env_counters: invalid argument");
+    return NULL;
+  }
+  if (! env->counter_ht &&
+      ! (env->counter_ht = counter_ht_new())) {
+    err_puts("marshall_read_env_counters: counter_ht_new");
+    assert(! "marshall_read_env_counters: counter_ht_new");
+    return NULL;
+  }
+  if (! marshall_read_uw(mr, heap, &count)) {
+    err_puts("marshall_read_env_counters: marshall_read_uw");
+    assert(! "marshall_read_env_counters: marshall_read_uw");
+    return NULL;
+  }
+  i = 0;
+  while (i < count) {
+    if (! marshall_read_ident(mr, heap, &ident)) {
+      err_puts("marshall_read_env_counters: marshall_read_ident");
+      assert(! "marshall_read_env_counters: marshall_read_ident");
+      return NULL;
+    }
+    if (! marshall_read_tag(mr, heap, &value)) {
+      err_puts("marshall_read_env_counters: marshall_read_tag");
+      assert(! "marshall_read_env_counters: marshall_read_tag");
+      return NULL;
+    }
+    if (! env_defcounter(env, &ident, &value, &tmp)) {
+      err_puts("marshall_read_env_counters: env_defcounter");
+      assert(! "marshall_read_env_counters: env_defcounter");
+      tag_clean(&value);
+      return NULL;
+    }
+    tag_clean(&tmp);
+    tag_clean(&value);
+    i++;
   }
   return mr;
 }
@@ -1623,6 +1678,13 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
     err_puts("marshall_read_pointer: cannot read non-null pointer");
     assert(! "marshall_read_pointer: cannot read non-null pointer");
     return NULL;
+  }
+  if (target_type == &g_sym_Mutex) {
+    if (! (u = (uw) mutex_new())) {
+      err_puts("marshall_read_pointer: Mutex*: mutex_new");
+      assert(! "marshall_read_pointer: Mutex*: mutex_new");
+      return NULL;
+    }
   }
   if (! pointer_init(&tmp, NULL, target_type, (void *) u)) {
     err_puts("marshall_read_pointer: pointer_init");

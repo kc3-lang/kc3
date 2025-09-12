@@ -64,6 +64,8 @@ s_tag *        env_and (s_env *env, s_tag *a, s_tag *b, s_tag *dest);
 bool           env_def (s_env *env, const s_ident *ident, s_tag *value);
 const s_sym *  env_def_clean (s_env *env, const s_sym *module,
                               s_tag *tag_clean);
+s_tag *        env_defcounter (s_env *env, s_ident *name, s_tag *value,
+                               s_tag *dest);
 s_tag *        env_defmodule (s_env *env, const s_sym * const *name,
                               const s_do_block *do_block, s_tag *dest);
 bool           env_defoperator (s_env *env, s_tag *tag_op);

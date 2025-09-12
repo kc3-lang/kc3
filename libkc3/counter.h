@@ -21,8 +21,6 @@
 
 #include "types.h"
 
-extern s_ht g_counter_ht;
-
 /* Stack-allocation compatible functions, call counter_clean
    after use. */
 void        counter_clean (s_counter *c);
@@ -40,8 +38,19 @@ s_tag * counter_increment (s_counter *c, s_tag *positive,
                            s_tag *dest);
 
 /* Hash table of counters. */
+/*   Stack-allocation compatible functions, call counter_ht_clean
+     after use. */
+void   counter_ht_clean (s_ht *ht);
+s_ht * counter_ht_init (s_ht *ht);
+
+/*   Heap-allocation functions, call counter_ht_delete after use. */
+void   counter_ht_delete (s_ht *ht);
+s_ht * counter_ht_new (void);
+s_ht * counter_ht_new_ref (s_ht *ht);
+
+/*   Operators. */
 s_counter ** counter_find (const s_ident *ident, s_counter **dest);
-void         counter_ht_clean (s_ht *ht);
-s_ht *       counter_ht_init (s_ht *ht);
+s_counter ** counter_ht_find (s_ht *ht, const s_ident *ident,
+                              s_counter **dest);
 
 #endif /* LIBKC3_COUNTER_H */

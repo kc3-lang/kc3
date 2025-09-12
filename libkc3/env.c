@@ -364,6 +364,10 @@ void env_clean (s_env *env)
   env->facts = NULL;
   ops_delete(env->ops);
   env->ops = NULL;
+  if (env == env_global()) {
+    counter_ht_delete(env->counter_ht);
+    env->counter_ht = NULL;
+  }
   buf_file_close(env->in);
   buf_delete(env->in);
   env->in = NULL;
@@ -492,6 +496,54 @@ void env_default_set (s_env *env)
   assert(env);
   g_kc3_env_default = env;
   g_kc3_env_global = env;
+}
+
+s_tag * env_defcounter (s_env *env, s_ident *name, s_tag *value,
+                        s_tag *dest)
+{
+  s_counter *counter = NULL;
+  s_tag      counter_tag = {0};
+  s_ident ident;
+  ident = *name;
+  if (! tag_is_integer(value)) {
+    err_puts("env_defcounter: value is not an integer");
+    assert(! "env_defcounter: value is not an integer");
+    return NULL;
+  }
+  if (! ident.module)
+    ident.module = env->current_defmodule;
+  if (! (counter = counter_new(&ident, value)))
+    return NULL;
+  if (! tag_init_pstruct_with_data(&counter_tag, &g_sym_Counter,
+                                   counter, true)) {
+    counter_delete(counter);
+    return NULL;
+  }
+#if HAVE_PTHREAD
+  rwlock_w(&env->counter_ht->rwlock);
+#endif
+  if (ht_has(env->counter_ht, &counter_tag)) {
+    err_puts("env_defcounter: counter is already defined");
+    assert(! "env_defcounter: counter is already defined");
+    goto clean;
+  }
+  if (! ht_add(env->counter_ht, &counter_tag)) {
+    err_puts("env_defcounter: ht_add");
+    assert(! "env_defcounter: ht_add");
+    tag_clean(&counter_tag);
+    return NULL;
+  }
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&env->counter_ht->rwlock);
+#endif
+  tag_clean(&counter_tag);
+  return tag_init_copy(dest, value);
+ clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&env->counter_ht->rwlock);
+#endif
+  tag_clean(&counter_tag);
+  return NULL;
 }
 
 // FIXME: transaction ?
@@ -1784,7 +1836,14 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   env->current_defmodule = &g_sym_KC3;
   env->search_modules_default = list_new_psym(&g_sym_KC3, NULL);
   env->search_modules = env->search_modules_default;
-  env->ops = ops_new();
+  if (! (env->ops = ops_new())) {
+    env_clean(env);
+    return NULL;
+  }
+  if (! (env->counter_ht = counter_ht_new())) {
+    env_clean(env);
+    return NULL;
+  }
   if (! env->restore_path.size &&
       ! env_dump_restore_path_resolve(env)) {
     env_clean(env);
@@ -1864,9 +1923,7 @@ s_tag * env_kc3_def (s_env *env, const s_call *call, s_tag *dest)
 
 s_tag * env_kc3_defcounter (s_env *env, s_call *call, s_tag *dest)
 {
-  s_counter *counter;
-  s_tag counter_tag;
-  s_ident ident;
+  s_ident *ident;
   s_tag *value;
   assert(env);
   assert(call);
@@ -1874,53 +1931,14 @@ s_tag * env_kc3_defcounter (s_env *env, s_call *call, s_tag *dest)
   if ((call->ident.module &&
        call->ident.module != &g_sym_KC3) ||
       call->ident.sym != &g_sym__equal ||
-      call->arguments->tag.type != TAG_IDENT ||
-      ! (value = &list_next(call->arguments)->tag) ||
-      ! tag_is_integer(value)) {
+      call->arguments->tag.type != TAG_IDENT) {
     err_puts("env_kc3_defcounter: expected Ident = value");
     assert(! "env_kc3_defcounter: expected Ident = value");
     return NULL;
   }
-  ident = call->arguments->tag.data.ident;
-  if (! ident.module)
-    ident.module = env->current_defmodule;
-  if (! (counter = counter_new(&ident, value)))
-    return NULL;
-  if (! tag_init_pstruct_with_data(&counter_tag, &g_sym_Counter,
-                                   counter, true)) {
-    counter_delete(counter);
-    return NULL;
-  }
-  if (! g_counter_ht.rwlock.ready &&
-      ! counter_ht_init(&g_counter_ht)) {
-    tag_clean(&counter_tag);
-    return NULL;
-  }
-#if HAVE_PTHREAD
-  rwlock_w(&g_counter_ht.rwlock);
-#endif
-  if (ht_has(&g_counter_ht, &counter_tag)) {
-    err_puts("env_kc3_defcounter: counter is already defined");
-    assert(! "env_kc3_defcounter: counter is already defined");
-    goto clean;
-  }
-  if (! ht_add(&g_counter_ht, &counter_tag)) {
-    err_puts("env_kc3_defcounter: ht_add");
-    assert(! "env_kc3_defcounter: ht_add");
-    tag_clean(&counter_tag);
-    return NULL;
-  }
-#if HAVE_PTHREAD
-  rwlock_unlock_w(&g_counter_ht.rwlock);
-#endif
-  tag_clean(&counter_tag);
-  return tag_init_copy(dest, value);
- clean:
-#if HAVE_PTHREAD
-  rwlock_unlock_w(&g_counter_ht.rwlock);
-#endif
-  tag_clean(&counter_tag);
-  return NULL;
+  ident = &call->arguments->tag.data.ident;
+  value = &list_next(call->arguments)->tag;
+  return env_defcounter(env, ident, value, dest);
 }
 
 s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,

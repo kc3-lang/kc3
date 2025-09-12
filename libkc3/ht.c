@@ -17,6 +17,7 @@
 #include "hash.h"
 #include "ht.h"
 #include "list.h"
+#include "mutex.h"
 #include "rwlock.h"
 #include "tag.h"
 
@@ -75,6 +76,31 @@ void ht_clean (s_ht *ht)
 #if HAVE_PTHREAD
   rwlock_clean(&ht->rwlock);
 #endif
+}
+
+void ht_delete (s_ht *ht)
+{
+  assert(ht);
+  if (ht->ref_count <= 0) {
+    err_puts("ht_delete: invalid reference count");
+    assert(! "ht_delete: invalid reference count");
+    return;
+  }
+#if HAVE_PTHREAD
+  mutex_lock(&ht->ref_count_mutex);
+#endif
+  ht->ref_count--;
+  if (ht->ref_count) {
+#if HAVE_PTHREAD
+    mutex_unlock(&ht->ref_count_mutex);
+#endif
+    return;
+  }
+#if HAVE_PTHREAD
+  mutex_unlock(&ht->ref_count_mutex);
+#endif
+  ht_clean(ht);
+  free(ht);
 }
 
 s_tag ** ht_get (s_ht *ht, s_tag *key, s_tag **dest)
@@ -138,8 +164,10 @@ s_ht * ht_init (s_ht *ht, const s_sym *type, uw size)
     return NULL;
   tmp.compare = compare_tag;
   tmp.hash = hash_tag;
+  tmp.ref_count = 1;
 #if HAVE_PTHREAD
   rwlock_init(&tmp.rwlock);
+  mutex_init(&tmp.ref_count_mutex);
 #endif
   *ht = tmp;
   return ht;
@@ -183,4 +211,22 @@ s_tag ** ht_iterator_next (s_ht_iterator *i, s_tag **dest)
   }
   *dest = &i->items->tag;
   return dest;
+}
+
+s_ht * ht_new_ref (s_ht *src)
+{
+  assert(src);
+  if (src->ref_count <= 0) {
+    err_puts("ht_new_ref: invalid reference count");
+    assert(! "ht_new_ref: invalid reference count");
+    return NULL;
+  }
+#if HAVE_PTHREAD
+  mutex_lock(&src->ref_count_mutex);
+#endif
+  src->ref_count++;
+#if HAVE_PTHREAD
+  mutex_unlock(&src->ref_count_mutex);
+#endif
+  return src;
 }
