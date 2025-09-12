@@ -464,7 +464,13 @@ s_tag * cfn_tag_init (s_tag *tag, const s_sym *type)
   }
   switch (tmp.type) {
   case TAG_POINTER:
-    pointer_init(&tmp.data.pointer, type, NULL, NULL);
+    if (type == &g_sym_Pointer) {
+      if (! pointer_init(&tmp.data.pointer, NULL, NULL, NULL))
+        return NULL;
+    }
+    else
+      if (! pointer_init(&tmp.data.pointer, type, NULL, NULL))
+        return NULL;
     break;
   case TAG_PSTRUCT:
     if (! pstruct_init(&tmp.data.pstruct, type)) {
