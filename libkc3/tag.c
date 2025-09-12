@@ -1413,7 +1413,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       *dest = &tag->data.pointer;
       return true;
     }
-    *dest = tag->data.pointer.ptr.p;
+    *dest = &tag->data.pointer.ptr.p;
     return true;
   case TAG_PSTRUCT:
     if (type == &g_sym_Struct) {

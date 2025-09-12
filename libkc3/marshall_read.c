@@ -388,7 +388,7 @@ s_marshall_read * marshall_read_data (s_marshall_read *mr, bool heap,
   if (type == &g_sym_Bool)
     return marshall_read_bool(mr, heap, data);
   if (type == &g_sym_Call)
-    return marshall_read_call(mr, heap, data);
+    return marshall_read_pcall(mr, heap, data);
   if (type == &g_sym_Callable ||
       type == &g_sym_Cfn ||
       type == &g_sym_Fn)
@@ -1877,8 +1877,12 @@ s_marshall_read * marshall_read_quote (s_marshall_read *mr,
     assert(! "marshall_read_quote: marshall_read_1 magic");
     return NULL;
   }
-  if (! marshall_read_tag(mr, heap, tmp.tag))
+  if (! (tmp.tag = alloc(sizeof(s_tag))))
     return NULL;
+  if (! marshall_read_tag(mr, heap, tmp.tag)) {
+    free(tmp.tag);
+    return NULL;
+  }
   *dest = tmp;
   return mr;
 }
