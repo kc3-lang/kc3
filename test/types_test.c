@@ -30,13 +30,16 @@ TEST_CASE(types_sizeof)
   TEST_EQ(sizeof(s16), 2);
   TEST_EQ(sizeof(s32), 4);
   TEST_ASSERT(sizeof(sw) == 4 || sizeof(sw) == 8);
+  TEST_EQ(sizeof(sw), sizeof(void *));
   TEST_EQ(sizeof(s64), 8);
   TEST_EQ(sizeof(u8), 1);
   TEST_EQ(sizeof(u16), 2);
   TEST_EQ(sizeof(u32), 4);
   TEST_ASSERT(sizeof(uw) == 4 || sizeof(uw) == 8);
+  TEST_EQ(sizeof(uw), sizeof(void *));
   TEST_EQ(sizeof(u64), 8);
   TEST_EQ(sizeof(bool), sizeof(u8));
   TEST_EQ(sizeof(u_ptr), sizeof(void *));
+  TEST_EQ(sizeof(u_ptr_w), sizeof(void *));
 }
 TEST_CASE_END(types_sizeof)
