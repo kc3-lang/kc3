@@ -3301,7 +3301,13 @@ sw buf_parse_module_name (s_buf *buf, p_sym *dest)
     }
     result += r + r1;
   }
-  if (! str_init_alloc(&str, buf->rpos - save.rpos)) {
+  if ((uw) result != buf->rpos - save.rpos) {
+    err_puts("buf_parse_module_name: invalid result");
+    assert(! "buf_parse_module_name: invalid result");
+    r = -1;
+    goto restore;
+  }
+  if (! str_init_alloc(&str, result)) {
     r = -1;
     goto restore;
   }
@@ -3333,10 +3339,13 @@ sw buf_parse_module_name_sym_ignore (s_buf *buf)
   if (! character_is_uppercase(c))
     return 0;
   result += r;
+  if ((r = buf_ignore(buf, r)) <= 0)
+    return -1;
   while (1) {
     if ((r = buf_peek_character_utf8(buf, &c)) <= 0 ||
         ! character_is_alphanum(c))
       break;
+    result += r;
     if ((r = buf_ignore(buf, r)) <= 0)
       return -1;
   }

@@ -3397,6 +3397,8 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
   depth = list_length(stacktrace);
   if (depth < count)
     count = depth;
+  if (! count)
+    return 0;
   if (! (trace = alloc(count * sizeof(s_tag *))))
     return -1;
   pretty_save_init(&pretty_save, &buf->pretty);

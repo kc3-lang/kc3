@@ -232,6 +232,16 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_PARSE_TEST_MODULE_NAME(test)                               \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    p_sym result;                                                      \
+    test_context("buf_parse_module_name(" # test ")");                 \
+    buf_init_1(&buf, false, (test));                                   \
+    TEST_EQ(buf_parse_module_name(&buf, &result), strlen(test));       \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define BUF_PARSE_TEST_NOT_BOOL(test)                                  \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -644,6 +654,7 @@ TEST_CASE_PROTOTYPE(buf_parse_integer_hex);
 TEST_CASE_PROTOTYPE(buf_parse_integer_oct);
 TEST_CASE_PROTOTYPE(buf_parse_integer_bin);
 TEST_CASE_PROTOTYPE(buf_parse_ident);
+TEST_CASE_PROTOTYPE(buf_parse_module_name);
 TEST_CASE_PROTOTYPE(buf_parse_plist);
 TEST_CASE_PROTOTYPE(buf_parse_pvar);
 TEST_CASE_PROTOTYPE(buf_parse_str);
@@ -678,6 +689,7 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_integer_oct);
   TEST_CASE_RUN(buf_parse_integer);
   TEST_CASE_RUN(buf_parse_str);
+  TEST_CASE_RUN(buf_parse_module_name);
   TEST_CASE_RUN(buf_parse_sym);
   TEST_CASE_RUN(buf_parse_ident);
   TEST_CASE_RUN(buf_parse_plist);
@@ -1394,3 +1406,15 @@ TEST_CASE(buf_parse_uw)
 {
 }
 TEST_CASE_END(buf_parse_uw)
+
+TEST_CASE(buf_parse_module_name)
+{
+  BUF_PARSE_TEST_MODULE_NAME("A");
+  BUF_PARSE_TEST_MODULE_NAME("Ab");
+  BUF_PARSE_TEST_MODULE_NAME("AbcD");
+  BUF_PARSE_TEST_MODULE_NAME("AbcDEF");
+  BUF_PARSE_TEST_MODULE_NAME("Abc.Def");
+  BUF_PARSE_TEST_MODULE_NAME("Abc.Def.GhIJK");
+  BUF_PARSE_TEST_MODULE_NAME("Abc0.D1ef.Gh2IJK3");
+}
+TEST_CASE_END(buf_parse_integer_bin)

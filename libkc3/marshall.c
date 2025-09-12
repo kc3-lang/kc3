@@ -738,6 +738,8 @@ s_marshall * marshall_env_counters (s_marshall *m, bool heap,
     assert(! "marshall_env_counters: marshall_uw");
     return NULL;
   }
+  if (! env->counter_ht->count)
+    return m;
   if (! ht_iterator_init(&ht_iter, env->counter_ht))
     return NULL;
   while (ht_iterator_next(&ht_iter, &item)) {
