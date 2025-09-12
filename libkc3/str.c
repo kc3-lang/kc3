@@ -900,7 +900,42 @@ s_str * str_init_inspect_str (s_str *str, const s_str *src)
   return inspect_str(src, str);
 }
 
-DEF_STR_INIT_STRUCT(integer)
+s_str * str_init_integer (s_str *str, const s_integer *x)
+{
+  s_buf buf = {0};
+  s_pretty pretty = {0};
+  sw r;
+  sw size;
+  size = buf_inspect_integer_decimal_size(&pretty, x);
+  if (! size)
+    return str_init_empty(str);
+  if (size < 0) {
+    err_puts("str_init_integer: buf_inspect_integer_decimal_size < 0");
+    return NULL;
+  }
+  if (! buf_init_alloc(&buf, size)) {
+    err_puts("str_init_integer: buf_init_alloc");
+    return NULL;
+  }
+  if ((r = buf_inspect_integer_decimal(&buf, x)) < 0) {
+    err_puts("str_init_integer: buf_inspect_integer_decimal < 0");
+    err_inspect_integer(x);
+    buf_clean(&buf);
+    return NULL;
+  }
+  if (r != size) {
+    err_write_1("str_init_integer: buf_inspect_integer_decimal: ");
+    err_inspect_sw_decimal(r);
+    err_write_1(" != ");
+    err_inspect_sw_decimal(size);
+    err_write_1("\n");
+    buf_clean(&buf);
+    return NULL;
+  }
+  assert(buf.wpos == (uw) size);
+  return buf_to_str(&buf, str);
+}
+
 DEF_STR_INIT_PTR(list, const s_list *)
 DEF_STR_INIT_PTR(plist, p_list *)
 DEF_STR_INIT_STRUCT(map)
@@ -1516,7 +1551,7 @@ s_list ** str_split_words (const s_str *str, s_list **dest)
   return dest;
  clean:
   list_delete_all(tmp);
-  return NULL;  
+  return NULL;
 }
 
 s_tag * str_size (const s_str *str, s_tag *dest)
