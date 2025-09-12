@@ -108,9 +108,11 @@ There are now four full applications written in KC3 that we know of :
    - `defcounter name = value`
      - environment hash table for name resolution
      - mp-safe
-     - `Counter.decrease(Ident, Tag positive)` as a `cfn_macro`
+     - `Counter.decrease(Ident, Tag)` as a `cfn_macro`, Tag must be a
+       positive integer (non-zero)
      - `Counter.get(Ident)` as a `cfn_macro`
-     - `Counter.increase(Ident, Tag positive)` as a `cfn_macro`
+     - `Counter.increase(Ident, Tag)` as a `cfn_macro`, Tag must be a
+       positive integer (non-zero)
      - `Counter` module included at init
 
  - ikc3
@@ -147,6 +149,7 @@ to discover how to use KC3 for your own projects.
  - libkc3
    - env_init: find lib dir for /usr/local/lib/kc3/0.1/
  - HTTPd
+   - securelevel(2) after load_app()
    - OAuth2 / jwt
    - dynamic router
      - def_route(:get, "/user/:id/articles/*slug/edit", UserArticlesController.edit)
