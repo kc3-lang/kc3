@@ -20,13 +20,13 @@ defmodule TLS.Config do
 
   def new = cfn TLS.Config* "kc3_tls_config_new" (Result)
 
-  def set_ca_file = cfn Bool "kc3_tls_config_set_ca_file" (TLS.Config*,
-    Str)
+  def set_ca_file = cfn TLS.Config* "kc3_tls_config_set_ca_file" (TLS.Config*,
+    Str, Result)
 
-  def set_cert_file = cfn Bool "tls_config_set_cert_file"
-    (TLS.Config*, Str)
+  def set_cert_file = cfn TLS.Config* "tls_config_set_cert_file"
+    (TLS.Config*, Str, Result)
 
-  def set_key = cfn Bool "kc3_tls_config_set_key_file"
-    (TLS.Config*, Str)
+  def set_key = cfn TLS.Config* "kc3_tls_config_set_key_file"
+    (TLS.Config*, Str, Result)
 
 end

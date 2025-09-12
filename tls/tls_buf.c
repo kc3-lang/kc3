@@ -10,7 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-
 #include "../libkc3/alloc.h"
 #include "../libkc3/io.h"
 #include "assert.h"
@@ -38,7 +37,6 @@ void tls_buf_close (s_buf *buf)
 
 sw tls_buf_open_r_refill (s_buf *buf)
 {
-  s32 avail;
   p_tls ctx;
   sw r;
   uw size;
@@ -71,7 +69,6 @@ sw tls_buf_open_w_flush (s_buf *buf)
 {
   sw bytes;
   s_tls_buf *tls_buf;
-  sw e;
   uw min_wpos;
   s_buf_save *save;
   sw size;
