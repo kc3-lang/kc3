@@ -943,6 +943,7 @@ KC3_C_SOURCES = \
 	"tls/tls_buf.c" \
 	"tls/tls_buf.h" \
 	"tls/tls_config.c" \
+	"tls/tls_config.h" \
 	"tls/types.h" \
 	"ucd2c/ucd.c" \
 	"ucd2c/ucd.h" \
