@@ -22,15 +22,19 @@ defmodule HTTPd.Route do
     directory_page = HTTPd.fn (request) {
       url = URL.eat(request.url, url_skip)
       files = List.sort(File.list(root_dir + url))
-      file_li = HTTPd.fn (file) {
-        slash = if Str.ends_with?(url, "/") do "" else "/" end
-        real_path = "#{root_dir}#{url}#{slash}#{file}"
-        dir? = File.is_directory?(real_path)
-        dir_slash = if dir? do "/" else "" end
-        path = "#{prefix}#{url}#{slash}#{file}#{dir_slash}"
-        mode = if dir? do "dr-xr-xr-x" else "-r--r--r--" end
-        """<li>#{mode} <a href="#{URL.escape(path)}">#{HTML.escape(file)}</a>#{dir_slash}</li>\n"""
-      }
+      file_li = HTTPd.fn (file) do
+        if Str.starts_with?(file, ".") do
+          ""
+        else
+          slash = if Str.ends_with?(url, "/") do "" else "/" end
+          real_path = "#{root_dir}#{url}#{slash}#{file}"
+          dir? = File.is_directory?(real_path)
+          dir_slash = if dir? do "/" else "" end
+          path = "#{prefix}#{url}#{slash}#{file}#{dir_slash}"
+          mode = if dir? do "dr-xr-xr-x" else "-r--r--r--" end
+          """<li>#{mode} <a href="#{URL.escape(path)}">#{HTML.escape(file)}</a>#{dir_slash}</li>\n"""
+        end
+      end
       body = """
 <html>
   <head>
