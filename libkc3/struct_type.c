@@ -228,7 +228,6 @@ s_struct_type * struct_type_init_copy (s_struct_type *st,
   assert(st);
   assert(src);
   assert(src->module);
-  assert(src->map.count);
   if (src->clean &&
       ! pcallable_init_copy(&tmp.clean, &src->clean)) {
     err_puts("struct_type_init_copy: pcallable_init_copy clean");
@@ -239,12 +238,14 @@ s_struct_type * struct_type_init_copy (s_struct_type *st,
     return NULL;
   tmp.module = src->module;
   tmp.must_clean = src->must_clean;
-  tmp.offset = alloc(tmp.map.count * sizeof(uw));
-  if (! tmp.offset) {
-    map_clean(&tmp.map);
-    return NULL;
+  if (tmp.map.count) {
+    tmp.offset = alloc(tmp.map.count * sizeof(uw));
+    if (! tmp.offset) {
+      map_clean(&tmp.map);
+      return NULL;
+    }
+    memcpy(tmp.offset, src->offset, tmp.map.count * sizeof(uw));
   }
-  memcpy(tmp.offset, src->offset, tmp.map.count * sizeof(uw));
   tmp.size = src->size;
   tmp.ref_count = 1;
 #if HAVE_PTHREAD
