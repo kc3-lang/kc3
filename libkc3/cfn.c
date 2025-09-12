@@ -17,6 +17,7 @@
 #include "cfn.h"
 #include "list.h"
 #include "mutex.h"
+#include "pointer.h"
 #include "pstruct.h"
 #include "securelevel.h"
 #include "str.h"
@@ -461,7 +462,11 @@ s_tag * cfn_tag_init (s_tag *tag, const s_sym *type)
     assert(! "cfn_tag_init: invalid type");
     return NULL;
   }
-  if (tmp.type == TAG_PSTRUCT) {
+  switch (tmp.type) {
+  case TAG_POINTER:
+    pointer_init(&tmp.data.pointer, type, NULL, NULL);
+    break;
+  case TAG_PSTRUCT:
     if (! pstruct_init(&tmp.data.pstruct, type)) {
       err_write_1("cfn_tag_init: struct_init: ");
       err_puts(type->str.ptr.pchar);
@@ -474,6 +479,9 @@ s_tag * cfn_tag_init (s_tag *tag, const s_sym *type)
       assert(! "cfn_tag_init: struct_allocate");
       return NULL;
     }
+    break;
+  default:
+    break;
   }
   *tag = tmp;
   return tag;

@@ -36,6 +36,7 @@
 #include "buf_fd.h"
 #include "buf_parse.h"
 #include "call.h"
+#include "counter.h"
 #include "env.h"
 #include "env_eval.h"
 #include "env_fork.h"
@@ -263,6 +264,43 @@ void kc3_continue (void)
   abort();
 }
 
+s_tag * kc3_counter_decrement (const s_ident *name,
+                               s_tag *positive,
+                               s_tag *dest)
+{
+  s_counter *counter;
+  if (! counter_find(name, &counter)) {
+    err_puts("kc3_counter_decrement: counter_find");
+    assert(! "kc3_counter_decrement: counter_find");
+    return NULL;
+  }
+  return counter_decrement(counter, positive, dest);
+}
+
+s_tag * kc3_counter_get (const s_ident *name, s_tag *dest)
+{
+  s_counter *counter;
+  if (! counter_find(name, &counter)) {
+    err_puts("kc3_counter_get: counter_find");
+    assert(! "kc3_counter_get: counter_find");
+    return NULL;
+  }
+  return counter_get(counter, dest);
+}
+
+s_tag * kc3_counter_increment (const s_ident *name,
+                               s_tag *positive,
+                               s_tag *dest)
+{
+  s_counter *counter;
+  if (! counter_find(name, &counter)) {
+    err_puts("kc3_counter_increment: counter_find");
+    assert(! "kc3_counter_increment: counter_find");
+    return NULL;
+  }
+  return counter_increment(counter, positive, dest);
+}
+
 s_tag * kc3_def (p_call *pcall, s_tag *dest)
 {
   if (securelevel(0) > 1) {
@@ -274,6 +312,9 @@ s_tag * kc3_def (p_call *pcall, s_tag *dest)
 
 s_tag * kc3_defcounter (p_call *pcall, s_tag *dest)
 {
+  assert(pcall);
+  assert(*pcall);
+  assert(dest);
   if (securelevel(0) > 1) {
     err_puts("kc3_def: cannot use defcounter with securelevel > 1");
     abort();

@@ -33,12 +33,14 @@ void        counter_delete (s_counter *c);
 s_counter * counter_new (s_ident *ident, s_tag *value);
 
 /* Operators. */
-s_tag * counter_decrement (s_counter *c, s_tag *positive, s_tag *dest);
+s_tag * counter_decrement (s_counter *c, s_tag *positive,
+                           s_tag *dest);
 s_tag * counter_get (s_counter *c, s_tag *dest);
-s_tag * counter_increment (s_counter *c, s_tag *positive, s_tag *dest);
+s_tag * counter_increment (s_counter *c, s_tag *positive,
+                           s_tag *dest);
 
 /* Hash table of counters. */
-s_counter ** counter_find (s_ident *ident, s_counter **dest);
+s_counter ** counter_find (const s_ident *ident, s_counter **dest);
 void         counter_ht_clean (s_ht *ht);
 s_ht *       counter_ht_init (s_ht *ht);
 

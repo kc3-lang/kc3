@@ -74,12 +74,16 @@ void counter_delete (s_counter *counter)
   free(counter);
 }
 
-s_counter ** counter_find (s_ident *ident, s_counter **dest)
+s_counter ** counter_find (const s_ident *ident, s_counter **dest)
 {
   s_counter key = {0};
   s_tag     key_tag = {0};
   s_tag *value_tag = NULL;
   key.ident = *ident;
+  if (! key.ident.module)
+    key.ident.module = env_global()->current_defmodule;
+  if (! key.ident.module)
+    return NULL;
   if (! tag_init_pstruct_with_data(&key_tag, &g_sym_Counter, &key,
                                    false))
     return NULL;
@@ -156,13 +160,19 @@ uw counter_ht_hash (const s_tag *x)
     abort();
   }
   ident_hash_uw(&counter->ident, &hash);
+  if (true) {
+    err_write_1("counter_ht_hash: ");
+    err_inspect_uw_hexadecimal(hash);
+    err_write_1("\n");
+  }
   return hash;
 }
 
 s_ht * counter_ht_init (s_ht *ht)
 {
   s_ht tmp = {0};
-  ht_init(&tmp, &g_sym_Ident, 1024);
+  if (! ht_init(&tmp, &g_sym_Ident, 1024))
+    return NULL;
   tmp.compare = counter_ht_compare;
   tmp.hash = counter_ht_hash;
   *ht = tmp;

@@ -20,7 +20,7 @@ defmodule Counter do
 
   def decrement = cfn Tag "counter_decrement" (Counter, Tag, Result)
 
-  def find = cfn Counter* "counter_find" (Ident, Result)
+  def find = cfn_macro Counter* "counter_find" (Ident, Result)
 
   def get = cfn Tag "counter_get" (Counter, Result)
 
