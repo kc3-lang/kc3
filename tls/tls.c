@@ -50,6 +50,7 @@ s_str * kc3_tls_ca_cert_path (s_str *dest)
     STR("/etc/pki/tls/certs/ca-bundle.crt"),
     STR("/etc/ssl/cert.pem"),
     STR("/etc/ssl/certs/ca-certificates.crt"),
+    STR("/usr/share/certs/ca-root-nss.crt"),
     STR("/usr/local/share/certs/ca-root-nss.crt"),
     STR("/usr/ssl/certs/ca-bundle.crt"),
   };
@@ -68,11 +69,11 @@ s_str * kc3_tls_ca_cert_path (s_str *dest)
     i++;
   }
 #if defined(WIN32) || defined(WIN64)
-  err_puts("kc3_tls_get_ca_cert_path: not implemented");
-  assert(! "kc3_tls_get_ca_cert_path: not implemented");
+  err_puts("kc3_tls_ca_cert_path: not implemented");
+  assert(! "kc3_tls_ca_cert_path: not implemented");
 #else
-  err_puts("kc3_tls_get_ca_cert_path: not found");
-  assert(! "kc3_tls_get_ca_cert_path: not found");
+  err_puts("kc3_tls_ca_cert_path: not found");
+  assert(! "kc3_tls_ca_cert_path: not found");
 #endif
   return NULL;
 }
