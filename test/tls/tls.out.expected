@@ -6,11 +6,15 @@ require TLS
 TLS
 TLS.init()
 TLS
-(config = TLS.Config.new()) ; void
+(server_config = TLS.Config.new()) ; void
 void
-TLS.Config.set_ca_file(config, TLS.ca_cert_path()) ; void
+TLS.Config.set_key_file(server_config, "/etc/ssl/private/privkey.pem") ; void
 void
 (server = Socket.listen("127.0.0.1", "57000")) ; void
+void
+(client_config = TLS.Config.new()) ; void
+void
+TLS.Config.set_ca_file(client_config, TLS.ca_cert_path()) ; void
 void
 (client = Socket.Buf.connect("127.0.0.1", "57000")) ; void
 void
@@ -22,5 +26,7 @@ Socket.Buf.close(client)
 void
 Socket.close(server)
 void
-TLS.Config.free(config)
+TLS.Config.free(client_config)
+void
+TLS.Config.free(server_config)
 void
