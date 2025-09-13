@@ -22,3 +22,5 @@ Socket.Buf.close(client)
 void
 Socket.close(server)
 void
+TLS.Config.free(config)
+void

@@ -18,12 +18,13 @@
 #include "types.h"
 #include "../socket/types.h"
 
-/* Library initialization. */
+/* Library functions. */
+void    kc3_tls_free (p_tls *ctx);
 s_tag * kc3_tls_init (s_tag *dest);
 
 /* Operators. */
-p_tls kc3_tls_accept_socket (p_tls *ctx, p_tls *client_ctx,
-                             t_socket client_fd, p_tls *dest);
+p_tls   kc3_tls_accept_socket (p_tls *ctx, p_tls *client_ctx,
+                               t_socket client_fd, p_tls *dest);
 p_tls * kc3_tls_client (p_tls *dest);
 p_tls * kc3_tls_connect_socket (p_tls *ctx, t_socket sockfd,
                                 const s_str *hostname, p_tls *dest);

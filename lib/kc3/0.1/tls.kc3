@@ -25,6 +25,6 @@ defmodule TLS do
 
   def configure = cfn TLS* "kc3_tls_configure" (TLS*, TLS.Config*, Result)
 
-  def free = cfn Void "tls_free" (TLS*)
+  def free = cfn Void "kc3_tls_free" (TLS*)
 
 end
