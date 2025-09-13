@@ -77,6 +77,13 @@ s_str * kc3_tls_ca_cert_path (s_str *dest)
   return NULL;
 }
 
+void kc3_tls_free (p_tls *ctx)
+{
+  assert(ctx);
+  assert(*ctx);
+  tls_free(*ctx);
+}
+
 s_tag * kc3_tls_init (s_tag *dest)
 {
   if (tls_init()) {
