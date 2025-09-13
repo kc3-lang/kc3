@@ -23,6 +23,13 @@ s_str * kc3_tls_config_error (p_tls_config *config, s_str *dest)
   return str_init_1_alloc(dest, tls_config_error(*config));
 }
 
+void kc3_tls_config_free (p_tls_config *config)
+{
+  assert(config);
+  assert(*config);
+  tls_config_free(*config);
+}
+
 p_tls_config * kc3_tls_config_new (p_tls_config *dest)
 {
   p_tls_config tmp = {0};
