@@ -48,16 +48,18 @@ defmodule HTTPd do
     IO.puts("HTTPd.load_app: done")
   }
 
+  def clean_upload = fn (file) {
+    if (file != "." && file != "..") do
+      path = HTTP.Upload.tmp_filename_prefix + file
+      IO.puts("HTTPd.clean_all_uploads: RM #{inspect(path)}")
+      File.unlink(path)
+    end
+  }
+
   def clean_all_uploads = fn () {
     if (File.exists?(HTTP.Upload.tmp_filename_prefix)) do
       List.each(File.list(HTTP.Upload.tmp_filename_prefix),
-        fn (file) {
-          if (file != "." && file != "..") do
-            path = HTTP.Upload.tmp_filename_prefix + file
-            IO.puts("HTTPd.clean_all_uploads: RM #{inspect(path)}")
-            File.unlink(path)
-          end
-        })
+        HTTPd.clean_upload)
     end
   }
 
@@ -163,19 +165,24 @@ defmodule HTTPd do
     end
   }
 
+  def server_thread_new = fn (x) {
+    Thread.new(HTTPd.server_thread)
+  }
+
   #def thread_count = 1
   def thread_count = ncpu
 
+  def socket = ?
+
   def server = fn (host, port) {
-    def socket = Socket.listen(host, port)
-    if socket do
+    HTTPd.socket <- Socket.listen(host, port)
+    if HTTPd.socket do
       daemonize()
       IO.puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
       if HTTPd.thread_count > 1 do
-        threads = List.map(List.count(HTTPd.thread_count - 1), fn (x) {
-          Thread.new(HTTPd.server_thread)
-        })
+        threads = List.map(List.count(HTTPd.thread_count - 1),
+          HTTPd.server_thread_new)
         HTTPd.server_thread()
         List.map(threads, Thread.delete)
       else
