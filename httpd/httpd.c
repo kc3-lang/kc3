@@ -159,7 +159,7 @@ int main (int argc, char **argv)
     kc3_clean(NULL);
     return 0;
   }
-  securelevel(1);
+  securelevel(2);
   call_init(&call);
   call.ident.module = module;
   call.ident.sym = sym_1("main");
