@@ -8,7 +8,7 @@ You can easily convert each KC3 function to a C function. KC3 is both
 a language and a runtime.
 
 This is a development branch, for the latest release see
-[KC3 v0.1.15](https://git.kmx.io/kc3-lang/kc3/tree/v0.1.15).
+[KC3 v0.1.15](https://git.kmx.io/kc3-lang/kc3/_tree/v0.1.15).
 
 KC3 is currently a programming language project, inspired by C, Elixir
 and Common Lisp. It could be described as C with Elixir modules,
