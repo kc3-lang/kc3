@@ -317,6 +317,7 @@ s_tag * kc3_defcounter (p_call *pcall, s_tag *dest)
   assert(*pcall);
   assert(dest);
   if (securelevel(0) > 1) {
+    err_stacktrace();
     err_puts("kc3_def: cannot use defcounter with securelevel > 1");
     abort();
   }
@@ -327,6 +328,7 @@ s_tag * kc3_defmodule (p_sym const *name, const s_do_block *do_block,
                        s_tag *dest)
 {
   if (securelevel(0) > 1) {
+    err_stacktrace();
     err_puts("kc3_defmodule: cannot use def with securelevel > 1");
     abort();
   }
@@ -339,6 +341,7 @@ s_tag * kc3_defoperator (s_tag *tag_op, s_tag *dest)
   s_env *env;
   s_tag tmp = {0};
   if (securelevel(0) > 1) {
+    err_stacktrace();
     err_puts("kc3_defoperator: cannot use defoperator with"
              " securelevel > 1");
     abort();
@@ -372,6 +375,7 @@ s_tag * kc3_defspecial_operator (s_tag *tag, s_tag *dest)
   assert(tag);
   assert(dest);
   if (securelevel(0) > 1) {
+    err_stacktrace();
     err_puts("kc3_defspecial_operator: cannot use defspecial_operator"
              " with securelevel > 1");
     abort();
@@ -386,6 +390,7 @@ s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
   s_tag tmp = {0};
   assert(spec);
   if (securelevel(0) > 1) {
+    err_stacktrace();
     err_puts("kc3_defstruct: cannot use defstruct"
              " with securelevel > 1");
     abort();
@@ -408,6 +413,7 @@ void ** kc3_dlopen (const s_str *path, void **dest)
   assert(path);
   assert(dest);
   if (securelevel(0) > 0) {
+    err_stacktrace();
     err_puts("kc3_dlopen: cannot dlopen with securelevel > 0");
     abort();
   }
