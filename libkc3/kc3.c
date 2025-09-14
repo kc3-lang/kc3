@@ -304,6 +304,7 @@ s_tag * kc3_counter_increase (const s_ident *name,
 s_tag * kc3_def (p_call *pcall, s_tag *dest)
 {
   if (securelevel(0) > 1) {
+    err_stacktrace();
     err_puts("kc3_def: cannot use def with securelevel > 1");
     abort();
   }
