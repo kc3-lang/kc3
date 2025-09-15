@@ -1451,6 +1451,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/marshall_read.kc3" \
 	"lib/kc3/0.1/math.kc3" \
 	"lib/kc3/0.1/metric.kc3" \
+	"lib/kc3/0.1/mutex.kc3" \
 	"lib/kc3/0.1/parse.kc3" \
 	"lib/kc3/0.1/pdf.kc3" \
 	"lib/kc3/0.1/pdf/file.kc3" \
