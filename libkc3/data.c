@@ -19,6 +19,8 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
     return buf_inspect_array(buf, data);
+  if (type == &g_sym_Block)
+    return buf_inspect_do_block(buf, data);
   if (type == &g_sym_Bool)
     return buf_inspect_bool(buf, *(bool *) data);
   if (type == &g_sym_Call)
@@ -120,6 +122,8 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
     return buf_inspect_array_size(pretty, data);
+  if (type == &g_sym_Block)
+    return buf_inspect_do_block_size(pretty, data);
   if (type == &g_sym_Bool)
     return buf_inspect_bool_size(pretty, *(bool *) data);
   if (type == &g_sym_Call)
@@ -220,6 +224,10 @@ bool data_clean (const s_sym *type, void *data)
   if (type == &g_sym_Array ||
       sym_is_array_type(type)) {
     array_clean(data);
+    return true;
+  }
+  if (type == &g_sym_Block) {
+    do_block_clean(data);
     return true;
   }
   if (type == &g_sym_Bool) {
@@ -367,6 +375,8 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
   s_struct sa = {0};
   s_struct sb = {0};
   s_struct_type *st;
+  if (type == &g_sym_Block)
+    return compare_do_block(a, b);
   if (type == &g_sym_Bool)
     return compare_bool(*(bool *) a, *(bool *) b);
   if (type == &g_sym_Call)
@@ -470,8 +480,10 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
     return hash_update_array(hash, data);
+  if (type == &g_sym_Block)
+    return hash_update_do_block(hash, data);
   if (type == &g_sym_Bool)
-    return hash_update_bool(hash, data);
+    return hash_update_bool(hash, *(bool *) data);
   if (type == &g_sym_Call)
     return hash_update_call(hash, *(p_call *) data);
   if (type == &g_sym_Callable ||

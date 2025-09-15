@@ -144,13 +144,13 @@ bool hash_update_do_block (t_hash *hash, const s_do_block *do_block)
   return true;
 }
 
-bool hash_update_bool (t_hash *hash, const bool *x)
+bool hash_update_bool (t_hash *hash, bool x)
 {
   bool b;
   const char type[] = "bool";
   assert(hash);
   assert(x);
-  b = x ? 1 : 0;
+  b = x ? true : false;
   return hash_update(hash, type, sizeof(type)) &&
     hash_update(hash, &b, sizeof(b));
 }
@@ -245,8 +245,8 @@ bool hash_update_fn (t_hash *hash, const s_fn *fn)
   assert(hash);
   assert(fn);
   if (! hash_update(hash, type, sizeof(type)) ||
-      ! hash_update_bool(hash, &fn->macro) ||
-      ! hash_update_bool(hash, &fn->special_operator))
+      ! hash_update_bool(hash, fn->macro) ||
+      ! hash_update_bool(hash, fn->special_operator))
     return false;
   if (fn->module && ! hash_update_sym(hash, fn->module))
     return false;
@@ -533,7 +533,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_ARRAY:   return hash_update_array(hash, &tag->data.array);
   case TAG_DO_BLOCK:
     return hash_update_do_block(hash, &tag->data.do_block);
-  case TAG_BOOL:    return hash_update_bool(hash, &tag->data.bool_);
+  case TAG_BOOL:    return hash_update_bool(hash, tag->data.bool_);
   case TAG_CHARACTER:
     return hash_update_character(hash, tag->data.character);
   case TAG_F32:     return hash_update_f32(hash, tag->data.f32);
@@ -595,7 +595,7 @@ bool hash_update_time (t_hash *hash, const s_time *time)
   assert(hash);
   b = time->tag ? true : false;
   if (! hash_update(hash, type, sizeof(type)) ||
-      ! hash_update_bool(hash, &b))
+      ! hash_update_bool(hash, b))
     return false;
   if (time->tag) {
     if (! hash_update_tag(hash, time->tag) ||
