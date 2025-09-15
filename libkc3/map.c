@@ -53,7 +53,7 @@ s_tag * map_access (const s_map *map, s_list *key,
   return r;
 }
 
-s_map * map_init_cast (s_map *map, const s_tag *tag)
+s_map * map_init_cast (s_map *map, p_sym *type, s_tag *tag)
 {
   assert(tag);
   if (tag->type == TAG_MAP)
@@ -186,7 +186,7 @@ s_map * map_init_1 (s_map *map, const char *p)
   return map;
 }
 
-s_map * map_init_copy (s_map *map, const s_map *src)
+s_map * map_init_copy (s_map *map, s_map *src)
 {
   uw i = 0;
   s_map tmp = {0};

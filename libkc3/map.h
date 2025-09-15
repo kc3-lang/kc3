@@ -19,8 +19,8 @@
 void    map_clean (s_map *map);
 s_map * map_init (s_map *map, uw count);
 s_map * map_init_1 (s_map *map, const char *p);
-s_map * map_init_cast (s_map *map, const s_tag *tag);
-s_map * map_init_copy (s_map *map, const s_map *src);
+s_map * map_init_cast (s_map *map, p_sym *type, s_tag *tag);
+s_map * map_init_copy (s_map *map, s_map *src);
 s_map * map_init_from_lists (s_map *map, s_list *keys, s_list *values);
 s_map * map_init_from_alist (s_map *map, s_list *alist);
 
