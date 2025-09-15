@@ -12,6 +12,7 @@
  */
 #include "../libkc3/kc3.h"
 #include "pdf_buf_parse.h"
+#include "pdf_file.h"
 
 // TODO: use xref instead
 sw pdf_buf_ignore_until_token (s_buf *buf, const char *token)
@@ -307,14 +308,17 @@ sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
   sw r;
   sw result = 0;
   s_pdf_file tmp = {0};
-  
   if ((r = pdf_buf_parse_file_header(buf, &tmp.header)) <= 0) {
     err_puts("pdf_buf_parse_file: pdf_buf_parse_file_header");
     assert(! "pdf_buf_parse_file: pdf_buf_parse_file_header");
     return r;
   }
-  if ((r = pdf_buf_parse_trailer(buf, &tmp.trailer) <= 0))
+  result += r;
+  if ((r = pdf_buf_parse_trailer(buf, &tmp.trailer) <= 0)) {
+    err_puts("pdf_buf_parse_file: pdf_buf_parse_trailer");
+    assert(! "pdf_buf_parse_file: pdf_buf_parse_trailer");
     return r;
+  }
   result += r;
   if ((r = buf_seek(buf, tmp.trailer.startxref, SEEK_SET)) < 0 ||
       (u64) r != tmp.trailer.startxref) {
@@ -325,8 +329,10 @@ sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
   if ((r = pdf_buf_parse_xref(buf, &tmp.xref)) <= 0) {
     err_puts("pdf_buf_parse_file: pdf_buf_parse_xref");
     assert(! "pdf_buf_parse_file: pdf_buf_parse_xref");
+    pdf_file_clean(&tmp);
     return -1;
   }
+  result += r;
   *dest = tmp;
   return result;
 }
@@ -1053,8 +1059,11 @@ sw pdf_buf_parse_xref (s_buf *buf, s_map *dest)
   p_list *values_tail;
   assert(buf);
   assert(dest);
-  if ((r = pdf_buf_parse_token(buf, "xref")) <= 0)
+  if ((r = pdf_buf_parse_token(buf, "xref")) <= 0) {
+    err_puts(" pdf_buf_parse_xref: pdf_buf_parse_token");
+    assert(! " pdf_buf_parse_xref: pdf_buf_parse_token");
     return r;
+  }
   result += r;
   buf_save_init(buf, &save);
   result_inner = result;
@@ -1069,8 +1078,9 @@ sw pdf_buf_parse_xref (s_buf *buf, s_map *dest)
         (r1 = buf_read_1(buf, " ")) <= 0 ||
         (r2 = buf_parse_u32_decimal(buf, &count)) <= 0 ||
         ((r3 = buf_read_1(buf, "\n")) <= 0 &&
-         (r3 = buf_read_1(buf, "\r\n")) <= 0))
+         (r3 = buf_read_1(buf, "\r\n")) <= 0)) {
       break;
+    }
     result_inner += r + r1 + r2 + r3;
     i = 0;
     while (i < count) {

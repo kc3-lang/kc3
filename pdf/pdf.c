@@ -13,6 +13,7 @@
 #include "../libkc3/kc3.h"
 #include "pdf.h"
 #include "pdf_buf_parse.h"
+#include <assert.h>
 
 s_pdf_file * pdf_parse_from_file (s_str *path, s_pdf_file *dest)
 {
@@ -22,15 +23,21 @@ s_pdf_file * pdf_parse_from_file (s_str *path, s_pdf_file *dest)
   if (! (fp = file_open(path, "rb")))
     return NULL;
   if (! buf_init_alloc(&buf, BUF_SIZE)) {
+    err_puts("pdf_parse_from_file: buf_init_alloc");
+    assert(! "pdf_parse_from_file: buf_init_alloc");
     fclose(fp);
     return NULL;
   }
   if (! buf_file_open_r(&buf, fp)) {
+    err_puts("pdf_parse_from_file: buf_file_open_r");
+    assert(! "pdf_parse_from_file: buf_file_open_r");
     buf_clean(&buf);
     fclose(fp);
     return NULL;
   }
-  if (pdf_buf_parse_file(&buf, &tmp) < 0) { 
+  if (pdf_buf_parse_file(&buf, &tmp) <= 0) {
+    err_puts("pdf_parse_from_file: pdf_buf_parse_file");
+    assert(! "pdf_parse_from_file: pdf_buf_parse_file");
     buf_file_close(&buf);
     buf_clean(&buf);
     fclose(fp);

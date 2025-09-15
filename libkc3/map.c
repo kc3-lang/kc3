@@ -56,6 +56,7 @@ s_tag * map_access (const s_map *map, s_list *key,
 s_map * map_init_cast (s_map *map, p_sym *type, s_tag *tag)
 {
   assert(tag);
+  (void) type;
   if (tag->type == TAG_MAP)
     return map_init_copy(map, &tag->data.map);
   err_write_1("map_init_cast: cannot cast ");

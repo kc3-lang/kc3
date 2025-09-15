@@ -124,10 +124,10 @@ bool env_eval_equal_list (s_env *env, bool macro, s_list *a,
 }
 
 // TODO: unwind protect
-bool env_eval_equal_map (s_env *env, bool macro, const s_map *a,
-                         const s_map *b, s_map *dest)
+bool env_eval_equal_map (s_env *env, bool macro, s_map *a,
+                         s_map *b, s_map *dest)
 {
-  const s_map *c;
+  s_map *c;
   uw i;
   uw j;
   s_tag tmp = {0};
