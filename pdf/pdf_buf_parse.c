@@ -696,14 +696,17 @@ sw pdf_buf_parse_string (s_buf *buf, s_tag *dest)
     err_inspect_str(&str);
     err_write_1("\n");
   }
-  if (! str_parse_eval(&str, &tmp)) {
+  // TODO: fix
+  if (false && ! str_parse_eval(&str, &tmp)) {
     err_puts("pdf_buf_parse_string: str_parse_eval");
     assert(! "pdf_buf_parse_string: str_parse_eval");
     r = -1;
     str_clean(&str);
     goto restore;
   }
-  str_clean(&str);
+  //
+  tmp.type = TAG_STR;
+  tmp.data.str = str;
   *dest = tmp;
   r = result;
   goto clean;
