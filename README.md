@@ -70,6 +70,38 @@ There are now four full applications written in KC3 that we know of :
  - libkc3
    - dlopen inside lib/ only
    - Typed pointer example : `(Facts*)` → `p_facts`
+   - securelevel between 0 and 3
+     - API that can only increase securelevel between 0 and 2
+     - 0 = (cfn + system + dlopen + dlsym) + (eval + def*)
+     - 1 = def* + eval
+       - block all Cfn definition if `securelevel(0) > 0`
+         - `env_eval_callable`
+         - `cfn_eval`
+         - `cfn_link`
+         - `cfn_prep_cif`
+         - `buf_parse_pcallable`
+         - `buf_parse_cfn`
+       - block system() calls if `securelevel(0) > 0`
+         - `kc3_system`
+         - `kc3_system_pipe_exec`
+       - block dlopen() calls if `securelevel(0) > 0`
+         - kc3_dlopen
+         - env_dlopen
+       - block dlsym() calls if `securelevel(0) > 0`
+         - only ever called by cfn_apply which is already blocked at
+           securelevel > 0
+     - 2 = eval
+       - block buf_parse_fn if `securelevel(0) > 1`
+       - block buf_parse_pcallable if `securelevel(0) > 1`
+       - block env_eval_callable if `securelevel(0) > 1`
+       - block all env_def* if `securelevel(0) > 1`
+       - block all kc3_def* if `securelevel(0) > 1`
+       - block all facts_add* on global env facts
+         if `securelevel(0) > 1`
+       - block all facts_remove* on global env facts
+         if `securelevel(0) > 1`
+     - 3 = ø (no KC3 eval, C-mode only)
+       - [ ] block all env_eval_* if `securelevel(0) > 2`
 
  - ikc3
    - Remote procedure call
@@ -101,45 +133,11 @@ to discover how to use KC3 for your own projects.
 
  - libkc3
    - env_init: find lib dir for /usr/local/lib/kc3/0.1/
-   - `--pedantic` option (env_init)
-     - ikc3_run
-   - securelevel between 0 and 3
-     - [x] API that can only increase securelevel between 0 and 2
-     - 0 = (cfn + system + dlopen + dlsym) + (eval + def*)
-     - 1 = def* + eval
-       - [x] block all Cfn definition if `securelevel(0) > 0`
-         - [x] `env_eval_callable`
-         - [x] `cfn_eval`
-         - [x] `cfn_link`
-         - [x] `cfn_prep_cif`
-         - [x] `buf_parse_pcallable`
-         - [x] `buf_parse_cfn`
-       - [x] block system() calls if `securelevel(0) > 0`
-         - [x] `kc3_system`
-         - [x] `kc3_system_pipe_exec`
-       - [x] block dlopen() calls if `securelevel(0) > 0`
-         - [x] kc3_dlopen
-         - [x] env_dlopen
-       - [x] block dlsym() calls if `securelevel(0) > 0`
-         - [x] only ever called by cfn_apply which is already blocked at
-               securelevel > 0
-     - 2 = eval
-       - [x] block buf_parse_fn if `securelevel(0) > 1`
-       - [x] block buf_parse_pcallable if `securelevel(0) > 1`
-       - [x] block env_eval_callable if `securelevel(0) > 1`
-       - [x] block all env_def* if `securelevel(0) > 1`
-       - [x] block all kc3_def* if `securelevel(0) > 1`
-       - [x] block all facts_add* on global env facts
-             if `securelevel(0) > 1`
-       - [x] block all facts_remove* on global env facts
-             if `securelevel(0) > 1`
-     - 3 = ø (no KC3 eval, C-mode only)
-       - [ ] block all env_eval_* if `securelevel(0) > 2`
  - HTTPd
-   - limit acceptor loop
    - OAuth2 / jwt
    - dynamic router
      - def_route(:get, "/user/:id/articles/*slug/edit", UserArticlesController.edit)
+ - tls
  - fx
    - chaining of audio and video previews (folder as a playlist)
    - tags
