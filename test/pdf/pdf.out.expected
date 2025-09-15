@@ -59,3 +59,13 @@ PDF.parse_file("pdf.pdf")
           header: "",
           body: void,
           xref: %{}}
+PDF.parse_file("pdf.ekc3.pdf")
+%PDF.File{trailer: %PDF.Trailer{dictionnary: %{DocChecksum: :7AB514FD25E9BF8F2F6AB53FC511363A,
+                                               ID: ["\xC4\xFC\xA2̬\xB3\x9C\xD4\xCB\xF5P\x10A\x06S", "\xC4\xFC\xA2̬\xB3\x9C\xD4\xCB\xF5P\x10A\x06S"],
+                                               Info: {:indirect_object, 319, 0},
+                                               Root: {:indirect_object, 318, 0},
+                                               Size: 320},
+                                startxref: (U64) 59446},
+          header: "",
+          body: void,
+          xref: %{}}

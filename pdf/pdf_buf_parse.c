@@ -691,7 +691,7 @@ sw pdf_buf_parse_string (s_buf *buf, s_tag *dest)
   r = 0;
   goto clean;
  ok:
-  if (true) {
+  if (false) {
     err_write_1("pdf_buf_parse_string: str = ");
     err_inspect_str(&str);
     err_write_1("\n");
