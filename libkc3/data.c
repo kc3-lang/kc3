@@ -391,6 +391,8 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
     return compare_integer(a, b);
   if (type == &g_sym_List)
     return compare_plist(a, b);
+  if (type == &g_sym_Map)
+    return compare_map(a, b);
   if (type == &g_sym_Ptag)
     return compare_ptag((const p_tag) a, (const p_tag) b);
   if (type == &g_sym_Ptr)
@@ -590,6 +592,8 @@ void * data_init_cast (void *data, p_sym *type, s_tag *tag)
     return integer_init_cast(data, type, tag);
   if (t == &g_sym_List)
     return plist_init_cast(data, type, tag);
+  if (t == &g_sym_Map)
+    return map_init_cast(data, type, tag);
   if (t == &g_sym_Ptag)
     return ptag_init_cast(data, type, tag);
   if (t == &g_sym_Ptr)
