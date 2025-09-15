@@ -149,7 +149,6 @@ bool hash_update_bool (t_hash *hash, bool x)
   bool b;
   const char type[] = "bool";
   assert(hash);
-  assert(x);
   b = x ? true : false;
   return hash_update(hash, type, sizeof(type)) &&
     hash_update(hash, &b, sizeof(b));
