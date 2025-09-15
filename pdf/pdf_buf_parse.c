@@ -259,12 +259,61 @@ sw pdf_buf_parse_dictionnary (s_buf *buf, s_map *dest)
   return r;
 }
 
+sw pdf_buf_parse_file_header (s_buf *buf, s_str *dest)
+{
+  u16 i;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_str tmp = {0};
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "%PDF-")) <= 0) 
+    goto clean;
+  result += r;
+  if ((r = buf_parse_u16_decimal(buf, &i)) <= 0 || i < 1) {
+    err_puts("pdf_buf_parse_file_header: buf_parse_u16_decimal 1");
+    assert(! "pdf_buf_parse_file_header: buf_parse_u16_decimal 1");
+    goto restore;
+  }
+  result += r;
+  if ((r = buf_read_1(buf, ".")) <= 0) {
+    err_puts("pdf_buf_parse_file_header: buf_read_1 2");
+    assert(! "pdf_buf_parse_file_header: buf_read_1 2");
+    goto restore;
+  }
+  result += r;
+  if ((r = buf_parse_u16_decimal(buf, &i)) <= 0) {
+    err_puts("pdf_buf_parse_file_header: buf_parse_u16_decimal");
+    assert(! "pdf_buf_parse_file_header: buf_parse_u16_decimal");
+    goto restore;
+  }
+  result += r;
+  if (! str_init_alloc_copy(&tmp, result, buf->ptr.pchar + save.rpos)) {
+    r = -1;
+    goto clean;
+  }
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
 {
   sw r;
   sw result = 0;
   s_pdf_file tmp = {0};
-  if ((r = pdf_buf_parse_trailer(buf, &tmp.trailer)) <= 0)
+  
+  if ((r = pdf_buf_parse_file_header(buf, &tmp.header)) <= 0) {
+    err_puts("pdf_buf_parse_file: pdf_buf_parse_file_header");
+    assert(! "pdf_buf_parse_file: pdf_buf_parse_file_header");
+    return r;
+  }
+  if ((r = pdf_buf_parse_trailer(buf, &tmp.trailer) <= 0))
     return r;
   result += r;
   if ((r = buf_seek(buf, tmp.trailer.startxref, SEEK_SET)) < 0 ||

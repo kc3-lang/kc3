@@ -56,7 +56,7 @@ PDF.parse_str("<</Size 333187>>\n")
 PDF.parse_file("pdf.pdf")
 %PDF.File{trailer: %PDF.Trailer{dictionnary: %{Size: 333187},
                                 startxref: (U64) 129},
-          header: "",
+          header: "%PDF-1.4",
           body: void,
           xref: %{}}
 PDF.parse_file("pdf.ekc3.pdf")
@@ -66,6 +66,6 @@ PDF.parse_file("pdf.ekc3.pdf")
                                                Root: {:indirect_object, 318, 0},
                                                Size: 320},
                                 startxref: (U64) 59446},
-          header: "",
+          header: "%PDF-1.7",
           body: void,
           xref: %{}}
