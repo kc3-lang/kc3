@@ -314,7 +314,7 @@ sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
     return r;
   }
   result += r;
-  if ((r = pdf_buf_parse_trailer(buf, &tmp.trailer) <= 0)) {
+  if ((r = pdf_buf_parse_trailer(buf, &tmp.trailer)) <= 0) {
     err_puts("pdf_buf_parse_file: pdf_buf_parse_trailer");
     assert(! "pdf_buf_parse_file: pdf_buf_parse_trailer");
     return r;
@@ -598,7 +598,7 @@ sw pdf_buf_parse_number (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = pdf_buf_parse_integer(buf, &tmp)) > 0)
     goto ok;
-  if ((r = pdf_buf_parse_float(buf, &tmp.data.f64)) < 0) {
+  if ((r = pdf_buf_parse_float(buf, &tmp.data.f64)) > 0) {
     tmp.type = TAG_F64;
     goto ok;
   }
@@ -795,6 +795,8 @@ sw pdf_buf_parse_string_hex (s_buf *buf, s_str *dest)
     if ((r = buf_read_character_utf8(buf, &c)) <= 0)
       goto restore;
     result += r;
+    if (character_is_space(c))
+      continue;
     if (c == '>')
       break;
     if (c >= '0' && c <= '9')
@@ -807,6 +809,9 @@ sw pdf_buf_parse_string_hex (s_buf *buf, s_str *dest)
       r = -1;
       goto restore;
     }
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
     if ((r = buf_read_character_utf8(buf, &c)) <= 0)
       goto restore;
     result += r;
