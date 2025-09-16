@@ -1,5 +1,5 @@
 require PDF
-true
+PDF
 PDF.parse_str("%Hello, PDF !\n")
 void
 PDF.parse_str("123\n")
