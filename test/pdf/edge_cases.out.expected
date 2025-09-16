@@ -1,0 +1,48 @@
+require PDF
+PDF
+PDF.parse_str("   123   ")
+123
+PDF.parse_str("(Hello \\n World)")
+"Hello \n World"
+PDF.parse_str("(Tab\\tTest)")
+"Tab\tTest"
+PDF.parse_str("(Quote\\\"Test)")
+"Quote\"Test"
+PDF.parse_str("(Backslash\\\\Test)")
+"Backslash\\Test"
+PDF.parse_str("(\\101\\102\\103)")
+"ABC"
+PDF.parse_str("(outer \\(inner\\) text)")
+"outer (inner) text"
+PDF.parse_str("<41 42 43 44>")
+"ABCD"
+PDF.parse_str("/VeryLongNameWithManyCharactersToTestParsing")
+VeryLongNameWithManyCharactersToTestParsing
+PDF.parse_str("/Name#20With#20Spaces")
+:"Name With Spaces"
+PDF.parse_str("[ ]")
+[void]
+PDF.parse_str("<<>>")
+%{}
+PDF.parse_str("[true false null]")
+[true, false, void]
+PDF.parse_str("[[[[/nested]]]]")
+[[[[nested]]]]
+PDF.parse_str("<< /A << /B << /C /D >> >> >>")
+%{A: %{B: %{C: D}}}
+PDF.parse_str("999999999999999999")
+999999999999999999
+PDF.parse_str("-0")
+0
+PDF.parse_str("1.23")
+(F64) 1.23
+PDF.parse_str("true")
+true
+PDF.parse_str("false")
+false
+PDF.parse_str("42 0 obj /Test endobj")
+{:indirect_object, 42, 0, Test}
+PDF.parse_str("42 5 R")
+{:indirect_object, 42, 5}
+PDF.parse_str("123 % This is a comment\n")
+123
