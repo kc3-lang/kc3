@@ -717,10 +717,11 @@ s_tag * tag_init_void (s_tag *tag)
   return tag;
 }
 
-s_tag * tag_integer_reduce (s_tag *tag)
+s_tag * tag_integer_reduce (s_tag *tag, s_tag *dest)
 {
   s_integer *i;
   s_integer j;
+  static bool static_init = false;
   static s_integer s8_min = {0};
   static s_integer s16_min = {0};
   static s_integer s32_min = {0};
@@ -731,7 +732,8 @@ s_tag * tag_integer_reduce (s_tag *tag)
   static s_integer u64_max = {0};
   static s_integer zero = {0};
   assert(tag);
-  if (s8_min.mp_int.sign != MP_NEG) {
+  if (! static_init) {
+    static_init = true;
     integer_init_s8(&s8_min, S8_MIN);
     integer_init_s16(&s16_min, S16_MIN);
     integer_init_s32(&s32_min, S32_MIN);
@@ -746,107 +748,77 @@ s_tag * tag_integer_reduce (s_tag *tag)
   case TAG_INTEGER:
     i = &tag->data.integer;
     if (compare_integer(i, &u64_max) > 0)
-      return tag;
-    if (compare_integer(i, &u32_max) > 0) {
-      j = tag->data.integer;
-      tag_init_u64(tag, integer_to_u64(&j));
-      integer_clean(&j);
-      return tag;
-    }
-    if (compare_integer(i, &u16_max) > 0) {
-      j = tag->data.integer;
-      tag_init_u32(tag, integer_to_u32(&j));
-      integer_clean(&j);
-      return tag;
-    }
-    if (compare_integer(i, &u8_max) > 0) {
-      j = tag->data.integer;
-      tag_init_u16(tag, integer_to_u16(&j));
-      integer_clean(&j);
-      return tag;
-    }
-    if (compare_integer(i, &zero) >= 0) {
-      j = tag->data.integer;
-      tag_init_u8(tag, integer_to_u8(&j));
-      integer_clean(&j);
-      return tag;
-    }
-    if (compare_integer(i, &s8_min) >= 0) {
-      j = tag->data.integer;
-      tag_init_s8(tag, integer_to_s8(&j));
-      integer_clean(&j);
-      return tag;
-    }
-    if (compare_integer(i, &s16_min) >= 0) {
-      j = tag->data.integer;
-      tag_init_s16(tag, integer_to_s16(&j));
-      integer_clean(&j);
-      return tag;
-    }
-    if (compare_integer(i, &s32_min) >= 0) {
-      j = tag->data.integer;
-      tag_init_s32(tag, integer_to_s32(&j));
-      integer_clean(&j);
-      return tag;
-    }
-    if (compare_integer(i, &s64_min) >= 0) {
-      j = tag->data.integer;
-      tag_init_s64(tag, integer_to_s64(&j));
-      integer_clean(&j);
-      return tag;
-    }
-    return tag;
+      return tag_init_copy(dest, tag);
+    if (compare_integer(i, &u32_max) > 0)
+      return tag_init_u64(dest, integer_to_u64(i));
+    if (compare_integer(i, &u16_max) > 0)
+      return tag_init_u32(dest, integer_to_u32(i));
+    if (compare_integer(i, &u8_max) > 0)
+      return tag_init_u16(dest, integer_to_u16(i));
+    if (compare_integer(i, &zero) >= 0)
+      return tag_init_u8(dest, integer_to_u8(i));
+    if (compare_integer(i, &s8_min) >= 0)
+      return tag_init_s8(dest, integer_to_s8(i));
+    if (compare_integer(i, &s16_min) >= 0)
+      return tag_init_s16(dest, integer_to_s16(i));
+    if (compare_integer(i, &s32_min) >= 0)
+      return tag_init_s32(dest, integer_to_s32(i));
+    if (compare_integer(i, &s64_min) >= 0)
+      return tag_init_s64(dest, integer_to_s64(i));
+    return tag_init_copy(dest, tag);
   case TAG_S8:
     integer_init_s8(&j, tag->data.s8);
-    integer_reduce(&j, tag);
+    integer_reduce(&j, dest);
     integer_clean(&j);
-    return tag;
+    return dest;
   case TAG_S16:
     integer_init_s16(&j, tag->data.s16);
-    integer_reduce(&j, tag);
+    integer_reduce(&j, dest);
     integer_clean(&j);
-    return tag;
+    return dest;
   case TAG_S32:
     integer_init_s32(&j, tag->data.s32);
-    integer_reduce(&j, tag);
+    integer_reduce(&j, dest);
     integer_clean(&j);
-    return tag;
+    return dest;
   case TAG_S64:
     integer_init_s64(&j, tag->data.s64);
-    integer_reduce(&j, tag);
+    integer_reduce(&j, dest);
     integer_clean(&j);
-    return tag;
+    return dest;
   case TAG_SW:
     integer_init_sw(&j, tag->data.sw);
-    integer_reduce(&j, tag);
+    integer_reduce(&j, dest);
     integer_clean(&j);
-    return tag;
+    return dest;
   case TAG_U8:
-    return tag;
+    return tag_init_copy(tag, dest);
   case TAG_U16:
     integer_init_u16(&j, tag->data.u16);
-    integer_reduce(&j, tag);
+    integer_reduce(&j, dest);
     integer_clean(&j);
-    return tag;
+    return dest;
   case TAG_U32:
     integer_init_u32(&j, tag->data.u32);
-    integer_reduce(&j, tag);
+    integer_reduce(&j, dest);
     integer_clean(&j);
-    return tag;
+    return dest;
   case TAG_U64:
     integer_init_u64(&j, tag->data.u64);
-    integer_reduce(&j, tag);
+    integer_reduce(&j, dest);
     integer_clean(&j);
-    return tag;
+    return dest;
   case TAG_UW:
     integer_init_uw(&j, tag->data.uw);
-    integer_reduce(&j, tag);
+    integer_reduce(&j, dest);
     integer_clean(&j);
-    return tag;
+    return dest;
   default:
     break;
   }
-  return tag;
+  err_puts("tag_integer_reduce: not an integer");
+  assert(! "tag_integer_reduce: not an integer");
+  return NULL;
 }
 
 bool tag_is_alist (const s_tag *tag)
