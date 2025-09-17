@@ -16,23 +16,31 @@ quote TLS.Config.set_key_file(server_config,
   "/etc/ssl/private/privkey.pem") ; void
 TLS.Config.set_key_file(server_config,
   "/etc/ssl/private/privkey.pem") ; void
-quote (server = Socket.listen("127.0.0.1", "57000")); void
-(server = Socket.listen("127.0.0.1", "57000")) ; void
+quote (server_ctx = TLS.server()) ; void
+(server_ctx = TLS.server()) ; void
+quote (server_socket = Socket.listen("127.0.0.1", "57000")); void
+(server_socket = Socket.listen("127.0.0.1", "57000")) ; void
 quote (client_config = TLS.Config.new()) ; void
 (client_config = TLS.Config.new()) ; void
 quote TLS.Config.set_ca_file(client_config, TLS.ca_cert_path()) ; void
 TLS.Config.set_ca_file(client_config, TLS.ca_cert_path()) ; void
+quote (client_ctx = TLS.client()) ; void
+(client_ctx = TLS.client()) ; void
 quote (client = Socket.Buf.connect("127.0.0.1", "57000")) ; void
 (client = Socket.Buf.connect("127.0.0.1", "57000")) ; void
-quote (server_client = Socket.Buf.accept(server)) ; void
-(server_client = Socket.Buf.accept(server)) ; void
+quote (server_client = Socket.Buf.accept(server_socket)) ; void
+(server_client = Socket.Buf.accept(server_socket)) ; void
 quote Socket.Buf.close(server_client)
 Socket.Buf.close(server_client)
 quote Socket.Buf.close(client)
 Socket.Buf.close(client)
-quote Socket.close(server)
-Socket.close(server)
+quote Socket.close(server_socket)
+Socket.close(server_socket)
 quote TLS.Config.free(client_config)
 TLS.Config.free(client_config)
 quote TLS.Config.free(server_config)
 TLS.Config.free(server_config)
+quote TLS.free(client_ctx)
+TLS.free(client_ctx)
+quote TLS.free(server_ctx)
+TLS.free(server_ctx)
