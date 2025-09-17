@@ -95,7 +95,7 @@ s_tag * kc3_tls_init (s_tag *dest)
   return tag_init_psym(dest, sym_1("TLS"));
 }
 
-p_tls * kc3_tls_client (p_tls *result)
+p_tls * kc3_tls_client (p_tls *dest)
 {
   p_tls tmp = NULL;
   if (! (tmp = tls_client())) {
@@ -103,8 +103,8 @@ p_tls * kc3_tls_client (p_tls *result)
     assert(! "kc3_tls_client: tls_client");
     return NULL;
   }
-  *result = tmp;
-  return result;
+  *dest = tmp;
+  return dest;
 }
 
 p_tls * kc3_tls_connect_socket (p_tls *ctx, t_socket sockfd,

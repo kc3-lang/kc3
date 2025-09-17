@@ -12,23 +12,31 @@ TLS.Config.set_cert_file(server_config, "/etc/ssl/fullchain.pem") ; void
 void
 TLS.Config.set_key_file(server_config, "/etc/ssl/private/privkey.pem") ; void
 void
-(server = Socket.listen("127.0.0.1", "57000")) ; void
+(server_ctx = TLS.server()) ; void
+void
+(server_socket = Socket.listen("127.0.0.1", "57000")) ; void
 void
 (client_config = TLS.Config.new()) ; void
 void
 TLS.Config.set_ca_file(client_config, TLS.ca_cert_path()) ; void
 void
+(client_ctx = TLS.client()) ; void
+void
 (client = Socket.Buf.connect("127.0.0.1", "57000")) ; void
 void
-(server_client = Socket.Buf.accept(server)) ; void
+(server_client = Socket.Buf.accept(server_socket)) ; void
 void
 Socket.Buf.close(server_client)
 void
 Socket.Buf.close(client)
 void
-Socket.close(server)
+Socket.close(server_socket)
 void
 TLS.Config.free(client_config)
 void
 TLS.Config.free(server_config)
+void
+TLS.free(client_ctx)
+void
+TLS.free(server_ctx)
 void
