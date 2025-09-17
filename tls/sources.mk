@@ -5,7 +5,6 @@ HEADERS = \
 	"types.h" \
 
 SOURCES = \
-	"server.c" \
 	"tls.c" \
 	"tls_buf.c" \
 	"tls_config.c" \

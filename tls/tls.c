@@ -24,6 +24,18 @@
 #include "../libkc3/kc3.h"
 #include "tls.h"
 
+p_tls * kc3_tls_accept_socket (p_tls *ctx, p_tls *client_ctx,
+                               p_socket client_fd, p_tls *dest)
+{
+  if (tls_accept_socket(*ctx, client_ctx, *client_fd)) {
+    err_write_1("kc3_tls_accept_socket: "
+                "tls_accept_socket");
+    assert(! "kc3_tls_accept_socket: tls_accept_socket");
+    return NULL;
+  }
+  *dest = *ctx;
+  return dest;
+}
 
 p_tls * kc3_tls_configure (p_tls *ctx, p_tls_config *cfg, p_tls *dest)
 {
@@ -78,23 +90,6 @@ s_str * kc3_tls_ca_cert_path (s_str *dest)
   return NULL;
 }
 
-void kc3_tls_free (p_tls *ctx)
-{
-  assert(ctx);
-  assert(*ctx);
-  tls_free(*ctx);
-}
-
-s_tag * kc3_tls_init (s_tag *dest)
-{
-  if (tls_init()) {
-    err_puts("kc3_tls_init: tls_init");
-    assert(! "kc3_tls_init: tls_init");
-    return NULL;
-  }
-  return tag_init_psym(dest, sym_1("TLS"));
-}
-
 p_tls * kc3_tls_client (p_tls *dest)
 {
   p_tls tmp = NULL;
@@ -118,5 +113,34 @@ p_tls * kc3_tls_connect_socket (p_tls *ctx, t_socket sockfd,
     return NULL;
   }
   *dest = *ctx;
+  return dest;
+}
+
+void kc3_tls_free (p_tls *ctx)
+{
+  assert(ctx);
+  assert(*ctx);
+  tls_free(*ctx);
+}
+
+s_tag * kc3_tls_init (s_tag *dest)
+{
+  if (tls_init()) {
+    err_puts("kc3_tls_init: tls_init");
+    assert(! "kc3_tls_init: tls_init");
+    return NULL;
+  }
+  return tag_init_psym(dest, sym_1("TLS"));
+}
+
+p_tls * kc3_tls_server (p_tls *dest)
+{
+  p_tls tmp;
+  if (! (tmp = tls_server())) {
+    err_write_1("kc3_tls_server: tls_server: ");
+    err_puts(tls_error(tmp));
+    assert(! "kc3_tls_server: tls_server");
+  }
+  *dest = tmp;
   return dest;
 }

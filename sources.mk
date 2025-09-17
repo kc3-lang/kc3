@@ -1047,7 +1047,6 @@ KC3_C_SOURCES = \
 	"test/test.h" \
 	"test/tuple_test.c" \
 	"test/types_test.c" \
-	"tls/server.c" \
 	"tls/tls.c" \
 	"tls/tls.h" \
 	"tls/tls_buf.c" \
