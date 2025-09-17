@@ -30,6 +30,12 @@ quote (client_socket = Socket.connect("127.0.0.1", "57000")) ; void
 (client_socket = Socket.connect("127.0.0.1", "57000")) ; void
 quote (server_client_socket = Socket.accept(server_socket)) ; void
 (server_client_socket = Socket.accept(server_socket)) ; void
+quote (server_client_ctx = TLS.accept_socket(server_ctx, server_client_socket)) ; void
+(server_client_ctx = TLS.accept_socket(server_ctx, server_client_socket)) ; void
+quote TLS.connect_socket(client_ctx, client_socket, hostname()) ; void
+TLS.connect_socket(client_ctx, client_socket, hostname()) ; void
+quote TLS.free(server_client_ctx)
+TLS.free(server_client_ctx)
 quote Socket.close(server_client_socket)
 Socket.close(server_client_socket)
 quote Socket.close(client_socket)

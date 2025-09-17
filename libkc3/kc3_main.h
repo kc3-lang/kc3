@@ -49,6 +49,7 @@ uw *     kc3_facts_next_id (uw *dest);
 s_tag *  kc3_getenv (const s_str *name, s_tag *dest);
 sw       kc3_getpid (void);
 sw       kc3_getppid (void);
+s_str *  kc3_hostname (s_str *dest);
 s_buf ** kc3_in_buf (s_buf **dest);
 void     kc3_license (void);
 s_tag *  kc3_list_length (const s_list **list, s_tag *dest);

@@ -662,6 +662,20 @@ sw kc3_getppid (void)
 #endif
 }
 
+s_str * kc3_hostname (s_str *dest)
+{
+  sw e;
+  char name[HOST_NAME_MAX + 1] = {0};
+  if (gethostname(name, sizeof(name) - 1)) {
+    e = errno;
+    err_write_1("kc3_hostname: gethostname: ");
+    err_puts(strerror(e));
+    assert(! "kc3_hostname: gethostname");
+    return NULL;
+  }
+  return str_init_1_alloc(dest, name);
+}
+
 s_tag * kc3_identity (s_tag *tag, s_tag *dest)
 {
   return tag_init_copy(dest, tag);
