@@ -27,6 +27,11 @@
 p_tls * kc3_tls_accept_socket (p_tls *ctx, p_tls *client_ctx,
                                p_socket client_fd, p_tls *dest)
 {
+  assert(ctx);
+  assert(*ctx);
+  assert(client_ctx);
+  assert(client_fd);
+  assert(dest);
   if (tls_accept_socket(*ctx, client_ctx, *client_fd)) {
     err_write_1("kc3_tls_accept_socket: "
                 "tls_accept_socket");
@@ -56,8 +61,9 @@ p_tls * kc3_tls_configure (p_tls *ctx, p_tls_config *cfg, p_tls *dest)
 
 s_str * kc3_tls_ca_cert_path (s_str *dest)
 {
+  const char *default_path;
   uw i;
-  static const s_str paths[] = {
+  const s_str paths[] = {
     STR("/etc/certs/ca-certificates.crt"),
     STR("/etc/pki/tls/certs/ca-bundle.crt"),
     STR("/etc/ssl/cert.pem"),
@@ -66,10 +72,12 @@ s_str * kc3_tls_ca_cert_path (s_str *dest)
     STR("/usr/local/share/certs/ca-root-nss.crt"),
     STR("/usr/ssl/certs/ca-bundle.crt"),
   };
-  const char *ssl_cert_file = getenv("SSL_CERT_FILE");
+  const char *ssl_cert_file;
+  assert(dest);
+  ssl_cert_file = getenv("SSL_CERT_FILE");
   if (ssl_cert_file && access(ssl_cert_file, R_OK) == 0)
     return str_init_1_alloc(dest, ssl_cert_file);
-  const char *default_path = tls_default_ca_cert_file();
+  default_path = tls_default_ca_cert_file();
   if (default_path && access(default_path, R_OK) == 0)
     return str_init_1_alloc(dest, default_path);
   i = 0;
@@ -93,6 +101,7 @@ s_str * kc3_tls_ca_cert_path (s_str *dest)
 p_tls * kc3_tls_client (p_tls *dest)
 {
   p_tls tmp = NULL;
+  assert(dest);
   if (! (tmp = tls_client())) {
     err_puts("kc3_tls_client: tls_client");
     assert(! "kc3_tls_client: tls_client");
@@ -102,11 +111,15 @@ p_tls * kc3_tls_client (p_tls *dest)
   return dest;
 }
 
-p_tls * kc3_tls_connect_socket (p_tls *ctx, t_socket sockfd,
+p_tls * kc3_tls_connect_socket (p_tls *ctx, p_socket sockfd,
                                 const s_str *hostname,
                                 p_tls *dest)
 {
-  if (tls_connect_socket(*ctx, sockfd, hostname->ptr.pchar)) {
+  assert(ctx);
+  assert(sockfd);
+  assert(hostname);
+  assert(dest);
+  if (tls_connect_socket(*ctx, *sockfd, hostname->ptr.pchar)) {
     err_write_1("kc3_tls_connect_socket: tls_connect_socket: ");
     err_puts(tls_error(*ctx));
     assert(! "kc3_tls_connect_socket: tls_connect_socket");
