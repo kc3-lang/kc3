@@ -486,6 +486,7 @@ sw pdf_buf_parse_integer (s_buf *buf, s_tag *dest)
   if ((r = pdf_buf_parse_object_end(buf, &end)) > 0)
     result += r;
   if (! end) {
+    integer_clean(&tmp.data.integer);
     r = -1;
     goto restore;
   }
