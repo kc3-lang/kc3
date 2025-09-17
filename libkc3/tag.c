@@ -792,7 +792,7 @@ s_tag * tag_integer_reduce (s_tag *tag, s_tag *dest)
     integer_clean(&j);
     return dest;
   case TAG_U8:
-    return tag_init_copy(tag, dest);
+    return tag_init_copy(dest, tag);
   case TAG_U16:
     integer_init_u16(&j, tag->data.u16);
     integer_reduce(&j, dest);
