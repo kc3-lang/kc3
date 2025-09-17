@@ -4584,12 +4584,12 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
       goto restore;
     }
     tag_clean(&i);
-    *dest = tmp;
   }
   else {
-    tag_integer_reduce(&i);
-    *dest = i;
+    tag_integer_reduce(&i, &tmp);
+    tag_clean(&i);
   }
+  *dest = tmp;
   r = result;
   goto clean;
  restore:

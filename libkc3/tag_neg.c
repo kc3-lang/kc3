@@ -15,63 +15,71 @@
 #include "ratio.h"
 #include "tag.h"
 
-s_tag * tag_neg (s_tag *tag, s_tag *dest)
+s_tag * tag_neg (s_tag *src, s_tag *dest)
 {
+  s_tag tag = {0};
   s_integer tmp = {0};
-  switch (tag->type) {
+  switch (src->type) {
   case TAG_INTEGER:
-    dest->type = TAG_INTEGER;
-    integer_neg(&tag->data.integer, &dest->data.integer);
-    return tag_integer_reduce(dest);
+    tag.type = TAG_INTEGER;
+    integer_neg(&src->data.integer, &tag.data.integer);
+    goto integer_reduce;
   case TAG_RATIO:
     dest->type = TAG_RATIO;
-    ratio_neg(&tag->data.ratio, &dest->data.ratio);
+    ratio_neg(&src->data.ratio, &dest->data.ratio);
     return dest;
   case TAG_SW:
-    integer_init_sw(&tmp, tag->data.sw);
-    dest->type = TAG_INTEGER;
-    integer_neg(&tmp, &dest->data.integer);
+    integer_init_sw(&tmp, src->data.sw);
+    tag.type = TAG_INTEGER;
+    integer_neg(&tmp, &tag.data.integer);
     integer_clean(&tmp);
-    return tag_integer_reduce(dest);
+    goto integer_reduce;
   case TAG_S64:
-    integer_init_s64(&tmp, tag->data.s64);
-    dest->type = TAG_INTEGER;
-    integer_neg(&tmp, &dest->data.integer);
+    integer_init_s64(&tmp, src->data.s64);
+    tag.type = TAG_INTEGER;
+    integer_neg(&tmp, &tag.data.integer);
     integer_clean(&tmp);
-    return tag_integer_reduce(dest);
+    goto integer_reduce;
   case TAG_S32:
-    tag_init_s64(dest, - (s64) tag->data.s32);
-    return tag_integer_reduce(dest);
+    tag_init_s64(dest, - (s64) src->data.s32);
+    goto integer_reduce;
   case TAG_S16:
-    tag_init_s32(dest, - (s32) tag->data.s16);
-    return tag_integer_reduce(dest);
+    tag_init_s32(dest, - (s32) src->data.s16);
+    goto integer_reduce;
   case TAG_S8:
-    tag_init_s16(dest, - (s16) tag->data.s8);
-    return tag_integer_reduce(dest);
+    tag_init_s16(dest, - (s16) src->data.s8);
+    goto integer_reduce;
   case TAG_U8:
-    tag_init_s16(dest, - (s16) tag->data.u8);
-    return tag_integer_reduce(dest);
+    tag_init_s16(dest, - (s16) src->data.u8);
+    goto integer_reduce;
   case TAG_U16:
-    tag_init_s32(dest, - (s32) tag->data.u16);
-    return tag_integer_reduce(dest);
+    tag_init_s32(dest, - (s32) src->data.u16);
+    goto integer_reduce;
   case TAG_U32:
-    tag_init_s64(dest, - (s64) tag->data.u32);
-    return tag_integer_reduce(dest);
+    tag_init_s64(dest, - (s64) src->data.u32);
+    goto integer_reduce;
   case TAG_U64:
-    integer_init_u64(&tmp, tag->data.u64);
-    dest->type = TAG_INTEGER;
-    integer_neg(&tmp, &dest->data.integer);
+    integer_init_u64(&tmp, src->data.u64);
+    tag.type = TAG_INTEGER;
+    integer_neg(&tmp, &tag.data.integer);
     integer_clean(&tmp);
-    return tag_integer_reduce(dest);
+    goto integer_reduce;
   case TAG_UW:
-    integer_init_uw(&tmp, tag->data.uw);
-    dest->type = TAG_INTEGER;
-    integer_neg(&tmp, &dest->data.integer);
+    integer_init_uw(&tmp, src->data.uw);
+    tag.type = TAG_INTEGER;
+    integer_neg(&tmp, &tag.data.integer);
     integer_clean(&tmp);
-    return tag_integer_reduce(dest);
+    goto integer_reduce;
   default:
     err_write_1("tag_neg: invalid tag type: ");
-    err_puts(tag_type_to_string(tag->type));
+    err_puts(tag_type_to_string(src->type));
   }
   return NULL;
+ integer_reduce:
+  if (! tag_integer_reduce(&tag, dest)) {
+    tag_clean(&tag);
+    return NULL;
+  }
+  tag_clean(&tag);
+  return dest;
 }

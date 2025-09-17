@@ -1558,11 +1558,9 @@ s_list ** str_split_words (const s_str *str, s_list **dest)
 
 s_tag * str_size (const s_str *str, s_tag *dest)
 {
-  s_tag tmp;
-  tag_init_uw(&tmp, str->size);
-  tag_integer_reduce(&tmp);
-  *dest = tmp;
-  return dest;
+  s_tag u;
+  tag_init_uw(&u, str->size);
+  return tag_integer_reduce(&u, dest);
 }
 
 s_list ** str_split (const s_str *str, const s_str *separator,

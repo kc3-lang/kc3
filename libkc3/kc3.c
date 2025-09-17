@@ -685,12 +685,7 @@ s_env * kc3_init (s_env *env, int *argc, char ***argv)
 
 s_tag * kc3_integer_reduce (s_tag *tag, s_tag *dest)
 {
-  s_tag tmp;
-  if (! tag_init_copy(&tmp, tag))
-    return NULL;
-  tag_integer_reduce(&tmp);
-  *dest = tmp;
-  return dest;
+  return tag_integer_reduce(tag, dest);
 }
 
 bool kc3_killpg (sw process_group, p_sym *signal)
@@ -815,11 +810,9 @@ s_buf ** kc3_out_buf (s_buf **dest)
 
 s_tag * kc3_plist_length (const s_list **plist, s_tag *dest)
 {
-  s_tag tmp = {0};
-  tag_init_sw(&tmp, list_length(*plist));
-  tag_integer_reduce(&tmp);
-  *dest = tmp;
-  return dest;
+  s_tag s = {0};
+  tag_init_sw(&s, list_length(*plist));
+  return tag_integer_reduce(&s, dest);
 }
 
 s_array * kc3_plist_to_array (p_list *plist,

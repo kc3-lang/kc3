@@ -490,8 +490,12 @@ sw pdf_buf_parse_integer (s_buf *buf, s_tag *dest)
     goto restore;
   }
   tmp.type = TAG_INTEGER;
-  tag_integer_reduce(&tmp);
-  *dest = tmp;
+  if (! tag_integer_reduce(&tmp, dest)) {
+    integer_clean(&tmp.data.integer);
+    r = -1;
+    goto clean;
+  }
+  integer_clean(&tmp.data.integer);
   r = result;
   goto clean;
  restore:

@@ -73,7 +73,7 @@ s_tag *     tag_integer_cast_to_u16 (const s_tag *tag, s_tag *dest);
 s_tag *     tag_integer_cast_to_u32 (const s_tag *tag, s_tag *dest);
 s_tag *     tag_integer_cast_to_u64 (const s_tag *tag, s_tag *dest);
 s_tag *     tag_integer_cast_to_u8 (const s_tag *tag, s_tag *dest);
-s_tag *     tag_integer_reduce (s_tag *tag);
+s_tag *     tag_integer_reduce (s_tag *tag, s_tag *dest);
 bool        tag_is_number (s_tag *tag);
 s_tag *     tag_list_1 (s_tag *tag, const char *p);
 s_tag *     tag_set_name_if_null (s_tag *tag, const s_ident *name);
