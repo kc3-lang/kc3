@@ -17,8 +17,8 @@ defmodule TLS do
 
   dlopen("tls.so")
 
-  def accept_socket = cfn TLS* "kc3_tls_accept_socket" (TLS*, TLS*,
-    Socket, Result)
+  def accept_socket = cfn TLS* "kc3_tls_accept_socket" (TLS*, Result,
+    Socket)
 
   def ca_cert_path = cfn Str "kc3_tls_ca_cert_path" (Result)
 
