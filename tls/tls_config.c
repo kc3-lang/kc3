@@ -76,7 +76,7 @@ p_tls_config * kc3_tls_config_set_cert_file (p_tls_config *config,
     return NULL;
   }
   *dest = *config;
-  return NULL;
+  return dest;
 }
 
 p_tls_config * kc3_tls_config_set_key_file (p_tls_config *config,
