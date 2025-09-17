@@ -90,6 +90,60 @@ p_socket socket_init_accept (p_socket s, p_socket listening)
   return s;
 }
 
+p_socket socket_init_connect (p_socket s, const s_str *host,
+                              const s_str *service)
+{
+  struct addrinfo hints = {0};
+  struct addrinfo *res;
+  struct addrinfo *res0;
+  s32 e;
+  const char *error_reason = "error";
+  t_socket sockfd;
+  assert(s);
+  assert(host);
+  if (! libsocket_init())
+    return NULL;
+  e = getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0);
+  if (e) {
+    err_write_1("socket_init_connect(");
+    err_write_1(host->ptr.pchar);
+    err_write_1(", ");
+    err_write_1(service->ptr.pchar);
+    err_write_1("): getaddrinfo: ");
+    err_inspect_s32_decimal(e);
+    err_write_1(" ");
+    err_puts((char *) gai_strerror(e));
+    assert(! "socket_init_connect: getaddrinfo");
+    return NULL;
+  }
+  e = 0;
+  sockfd = -1;
+  res = res0;
+  while (res) {
+    sockfd = socket(res->ai_family, SOCK_STREAM, res->ai_protocol);
+    if (sockfd < 0) {
+      e = errno;
+      error_reason = "socket_init_connect: socket: ";
+      goto next;
+    }
+    if (connect(sockfd, res->ai_addr, res->ai_addrlen) < 0) {
+      e = errno;
+      error_reason = "socket_init_connect: connect: ";
+      goto next;
+    }
+    freeaddrinfo(res0);
+    *s = sockfd;
+    return s;
+  next:
+    res = res->ai_next;
+  }
+  freeaddrinfo(res0);
+  err_write_1(error_reason);
+  err_puts(strerror(e));
+  assert(! "socket_init_connect");
+  return NULL;
+}
+
 p_socket socket_init_listen (p_socket s, const s_str *host,
                              const s_str *service)
 {
