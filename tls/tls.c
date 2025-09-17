@@ -24,22 +24,22 @@
 #include "../libkc3/kc3.h"
 #include "tls.h"
 
-p_tls * kc3_tls_accept_socket (p_tls *ctx, p_tls *client_ctx,
-                               p_socket client_fd, p_tls *dest)
+p_tls * kc3_tls_accept_socket (p_tls *ctx, p_tls *dest_client_ctx,
+                               p_socket client_fd)
 {
+  p_tls tmp = NULL;
   assert(ctx);
   assert(*ctx);
-  assert(client_ctx);
+  assert(dest_client_ctx);
   assert(client_fd);
-  assert(dest);
-  if (tls_accept_socket(*ctx, client_ctx, *client_fd)) {
-    err_write_1("kc3_tls_accept_socket: "
-                "tls_accept_socket");
+  if (tls_accept_socket(*ctx, &tmp, *client_fd)) {
+    err_write_1("kc3_tls_accept_socket: tls_accept_socket: ");
+    err_puts(tls_error(*ctx));
     assert(! "kc3_tls_accept_socket: tls_accept_socket");
     return NULL;
   }
-  *dest = *ctx;
-  return dest;
+  *dest_client_ctx = tmp;
+  return dest_client_ctx;
 }
 
 p_tls * kc3_tls_configure (p_tls *ctx, p_tls_config *cfg, p_tls *dest)
