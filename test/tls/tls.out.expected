@@ -22,13 +22,13 @@ TLS.Config.set_ca_file(client_config, TLS.ca_cert_path()) ; void
 void
 (client_ctx = TLS.client()) ; void
 void
-(client = Socket.Buf.connect("127.0.0.1", "57000")) ; void
+(client_socket = Socket.connect("127.0.0.1", "57000")) ; void
 void
-(server_client = Socket.Buf.accept(server_socket)) ; void
+(server_client_socket = Socket.accept(server_socket)) ; void
 void
-Socket.Buf.close(server_client)
+Socket.close(server_client_socket)
 void
-Socket.Buf.close(client)
+Socket.close(client_socket)
 void
 Socket.close(server_socket)
 void

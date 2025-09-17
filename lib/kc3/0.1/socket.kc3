@@ -16,7 +16,11 @@ defmodule Socket do
 
   dlopen("socket.so")
 
+  def accept = cfn Socket "socket_init_accept" (Result, Socket)
+
   def close = cfn Void "socket_close" (Socket)
+
+  def connect = cfn Socket "socket_init_connect" (Result, Str, Str)
 
   def init = cfn Bool "libsocket_init" ()
 
