@@ -8,6 +8,10 @@ quote TLS.init()
 TLS.init()
 quote (server_config = TLS.Config.new()) ; void
 (server_config = TLS.Config.new()) ; void
+quote TLS.Config.set_cert_file(server_config,
+  "/etc/ssl/fullchain.pem") ; void
+TLS.Config.set_cert_file(server_config,
+  "/etc/ssl/fullchain.pem") ; void
 quote TLS.Config.set_key_file(server_config,
   "/etc/ssl/private/privkey.pem") ; void
 TLS.Config.set_key_file(server_config,
