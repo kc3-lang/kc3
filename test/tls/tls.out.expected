@@ -8,6 +8,8 @@ TLS.init()
 TLS
 (server_config = TLS.Config.new()) ; void
 void
+TLS.Config.set_cert_file(server_config, "/etc/ssl/fullchain.pem") ; void
+void
 TLS.Config.set_key_file(server_config, "/etc/ssl/private/privkey.pem") ; void
 void
 (server = Socket.listen("127.0.0.1", "57000")) ; void
