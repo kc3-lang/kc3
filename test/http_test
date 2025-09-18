@@ -1,80 +1,32 @@
 #!/bin/sh
-cd "$(dirname $0)/http" || exit
+## kc3
+## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
 
-TEST_COLOR_KO="[0;91m"
-TEST_COLOR_OK="[0;92m"
-TEST_COLOR_RESET="[0m"
-TEST_COUNT=0
-TEST_KO=0
-TEST_OK=0
+TEST_NAME=http
 
-if [ "x$IKC3" = "x" ]; then
-    if [ -f ../../ikc3/ikc3 ]; then
-	IKC3=../../ikc3/ikc3
-    elif [ -f ../../ikc3 ]; then
-	IKC3=../../ikc3
-    fi
-fi
+SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
-test_ko() {
-    printf "%s" "${TEST_COLOR_KO}F${TEST_COLOR_RESET}"
-    TEST_KO=$(($TEST_KO + 1))
-    TEST_COUNT=$(($TEST_COUNT + 1))
-}
+cd "${SRC_TOP}/test/${TEST_NAME}" || exit
 
-test_ok() {
-    printf "%s" "${TEST_COLOR_OK}.${TEST_COLOR_RESET}"
-    TEST_OK=$(($TEST_OK + 1))
-    TEST_COUNT=$(($TEST_COUNT + 1))
-}
+. ../test.subr
 
 if [ $# = 0 ]; then
     if [ "x${HTTP_TEST}" = "x" ]; then
         TARGETS="$(ls -1 *.kc3 | sed -e 's/[.]kc3$//')"
     else
-        TARGETS="${HTTP_TEST}"
+        TARGETS="$(echo "${HTTP_TEST}" | tr ' ' '\n')"
     fi
 else
-    TARGETS="$@"
+    TARGETS="$(echo "$@" | tr ' ' '\n')"
 fi
 
-rm -f *.diff *.out *.ret
-for TARGET in $TARGETS; do
-    RESULT=test_ok
-    $IKC3 --load ${TARGET}.kc3 --quit > ${TARGET}.out 2>&1
-    echo $? > ${TARGET}.ret
-    if ! diff -abu ${TARGET}.out.expected ${TARGET}.out > ${TARGET}.diff
-    then
-        RESULT=test_ko
-    fi
-    if ! diff -abu ${TARGET}.ret.expected ${TARGET}.ret >> ${TARGET}.diff
-    then
-        RESULT=test_ko
-    fi
-    if [ "x$RESULT" = "xtest_ok" ]; then
-        rm ${TARGET}.diff
-        test_ok
-    else
-        test_ko
-    fi
-done
-echo
-DIFFS="$(for TARGET in $TARGETS; do
-    if [ -f "${TARGET}.diff" ]; then
-        printf "%s " "${TARGET}.diff"
-    fi
-done)"
-if [ "x$DIFFS" != "x" ]; then
-    ls $DIFFS
-    less $DIFFS || cat $DIFFS
-fi
-echo
-printf "%s" "Total $TEST_COUNT tests. "
-printf "%s" "${TEST_COLOR_OK}OK $TEST_OK ($(($TEST_OK * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}. "
-echo "${TEST_COLOR_KO}KO $TEST_KO ($(($TEST_KO * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}."
-
-if [ "x$TEST_KO" = "x0" ]; then
-    exit 0
-fi
-
-exit 1
+test_run "$IKC3" $TARGETS
