@@ -44,6 +44,7 @@ httpd/kc3_httpd_asan
 httpd/kc3_httpd_cov
 httpd/kc3_httpd_debug
 httpd/fx/log/*.log
+httpd/fx/static/*.mp4
 ikc3/ikc3
 ikc3/ikc3_asan
 ikc3/ikc3_cov
