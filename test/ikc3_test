@@ -39,4 +39,4 @@ else
     TARGETS="$(echo "$@" | tr ' ' '\n')"
 fi
 
-test_run ikc3_test_target $TARGETS
+test_run "$IKC3" $TARGETS

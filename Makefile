@@ -844,6 +844,30 @@ kc3.index: sources.mk Makefile
 	sort -u < kc3.index.tmp > kc3.index
 	rm kc3.index.tmp
 
+kc3s:
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
+	${MAKE} -C kc3s build
+
+kc3s_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C kc3s asan
+
+kc3s_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
+	${MAKE} -C kc3s cov
+
+kc3s_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C kc3s debug
+
 kmsg:
 	${MAKE} -C runj all
 	${MAKE} gen

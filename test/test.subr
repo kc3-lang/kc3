@@ -53,7 +53,7 @@ test_run () (
     rm -f .test .test_ko .test_ok
     touch .test .test_ko .test_ok
     for TARGET in $TARGETS; do
-        echo "( ../${TEST_RUNNER} ${TARGET}; )"
+        echo "( ../test_runner ${TEST_RUNNER} ${TARGET}; )"
     done | runj -1 /bin/sh
     TEST_COUNT=$(echo $(wc -l .test) | cut -f 1 -d ' ')
     TEST_KO=$(echo $(wc -l .test_ko) | cut -f 1 -d ' ')
