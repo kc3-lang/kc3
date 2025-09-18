@@ -17,6 +17,6 @@ defmodule KC3.Op do
              special: false,
              precedence: 0,
              associativity: 1,
-             callable: (Callable) ?]
+             callable: cfn Tag "tag_add" (Tag, Tag, Result)]
 
 end

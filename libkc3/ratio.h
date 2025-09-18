@@ -21,7 +21,7 @@
 void      ratio_clean (s_ratio *r);
 s_ratio * ratio_init (s_ratio *dest);
 s_ratio * ratio_init_1 (s_ratio *r, const char *p);
-s_ratio * ratio_init_cast (s_ratio *r, const s_tag *src);
+s_ratio * ratio_init_cast (s_ratio *r, p_sym *type, s_tag *src);
 s_ratio * ratio_init_copy (s_ratio *r, const s_ratio *src);
 s_ratio * ratio_init_f32 (s_ratio *r, f32 src);
 s_ratio * ratio_init_f64 (s_ratio *r, f64 src);

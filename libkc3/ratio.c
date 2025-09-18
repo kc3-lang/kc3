@@ -141,41 +141,44 @@ s_ratio * ratio_init_1 (s_ratio *q, const char *p)
   return q;
 }
 
-s_ratio * ratio_init_cast (s_ratio *c, const s_tag *src)
+s_ratio * ratio_init_cast (s_ratio *ratio, p_sym *type,
+			   s_tag *src)
 {
-  assert(c);
+  assert(ratio);
+  assert(type);
   assert(src);
+  (void) type;
   switch (src->type) {
   case TAG_F32:
-    return ratio_init_f32(c, src->data.f32);
+    return ratio_init_f32(ratio, src->data.f32);
   case TAG_F64:
-    return ratio_init_f64(c, src->data.f64);
+    return ratio_init_f64(ratio, src->data.f64);
   case TAG_F128:
-    return ratio_init_f128(c, src->data.f128);
+    return ratio_init_f128(ratio, src->data.f128);
   case TAG_INTEGER:
-    return ratio_init_integer(c, &src->data.integer);
+    return ratio_init_integer(ratio, &src->data.integer);
   case TAG_RATIO:
-    return ratio_init_copy(c, &src->data.ratio);
+    return ratio_init_copy(ratio, &src->data.ratio);
   case TAG_SW:
-    return ratio_init_sw(c, src->data.sw);
+    return ratio_init_sw(ratio, src->data.sw);
   case TAG_S64:
-    return ratio_init_s64(c, src->data.s64);
+    return ratio_init_s64(ratio, src->data.s64);
   case TAG_S32:
-    return ratio_init_s32(c, src->data.s32);
+    return ratio_init_s32(ratio, src->data.s32);
   case TAG_S16:
-    return ratio_init_s16(c, src->data.s16);
+    return ratio_init_s16(ratio, src->data.s16);
   case TAG_S8:
-    return ratio_init_s8(c, src->data.s8);
+    return ratio_init_s8(ratio, src->data.s8);
   case TAG_U8:
-    return ratio_init_u8(c, src->data.u8);
+    return ratio_init_u8(ratio, src->data.u8);
   case TAG_U16:
-    return ratio_init_u16(c, src->data.u16);
+    return ratio_init_u16(ratio, src->data.u16);
   case TAG_U32:
-    return ratio_init_u32(c, src->data.u32);
+    return ratio_init_u32(ratio, src->data.u32);
   case TAG_U64:
-    return ratio_init_u64(c, src->data.u64);
+    return ratio_init_u64(ratio, src->data.u64);
   case TAG_UW:
-    return ratio_init_uw(c, src->data.uw);
+    return ratio_init_uw(ratio, src->data.uw);
   default:
     break;
   }
