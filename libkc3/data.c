@@ -59,6 +59,8 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
     return buf_inspect_ptr_free(buf, data);
   if (type == &g_sym_Quote)
     return buf_inspect_quote(buf, data);
+  if (type == &g_sym_Ratio)
+    return buf_inspect_ratio(buf, data);
   if (type == &g_sym_S8)
     return buf_inspect_s8(buf, *(s8 *) data);
   if (type == &g_sym_S16)
@@ -134,6 +136,8 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
     return buf_inspect_callable_size(pretty, *(p_callable *) data);
   if (type == &g_sym_Character)
     return buf_inspect_character_size(pretty, *(character *) data);
+  if (type == &g_sym_Complex)
+    return buf_inspect_pcomplex_size(pretty, data);
   if (type == &g_sym_F32)
     return buf_inspect_f32_size(pretty, *(f32 *) data);
   if (type == &g_sym_F64)
@@ -158,6 +162,8 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
     return buf_inspect_ptr_free_size(pretty, data);
   if (type == &g_sym_Quote)
     return buf_inspect_quote_size(pretty, data);
+  if (type == &g_sym_Ratio)
+    return buf_inspect_ratio_size(pretty, data);
   if (type == &g_sym_S8)
     return buf_inspect_s8_size(pretty, *(s8 *) data);
   if (type == &g_sym_S16)
@@ -246,6 +252,10 @@ bool data_clean (const s_sym *type, void *data)
   if (type == &g_sym_Character) {
     return true;
   }
+  if (type == &g_sym_Complex) {
+    pcomplex_clean(data);
+    return true;
+  }
   if (type == &g_sym_F32) {
     return true;
   }
@@ -285,6 +295,10 @@ bool data_clean (const s_sym *type, void *data)
   }
   if (type == &g_sym_Quote) {
     quote_clean(data);
+    return true;
+  }
+  if (type == &g_sym_Ratio) {
+    ratio_clean(data);
     return true;
   }
   if (type == &g_sym_S8) {
@@ -387,6 +401,8 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
     return compare_callable(*(p_callable *) a, *(p_callable *) b);
   if (type == &g_sym_Character)
     return compare_character(*(character *) a, *(character *) b);
+  if (type == &g_sym_Complex)
+    return compare_pcomplex(a, b);
   if (type == &g_sym_F32)
     return compare_f32(*(f64 *) a, *(f64 *) b);
   if (type == &g_sym_F64)
@@ -411,6 +427,8 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
     return compare_ptr(a, b);
   if (type == &g_sym_Quote)
     return compare_quote(a, b);
+  if (type == &g_sym_Ratio)
+    return compare_ratio(a, b);
   if (type == &g_sym_S8)
     return compare_s8(*(s8 *) a, *(s8 *) b);
   if (type == &g_sym_S16)
@@ -492,6 +510,8 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
     return hash_update_callable(hash, *(p_callable *) data);
   if (type == &g_sym_Character)
     return hash_update_character(hash, *(character *) data);
+  if (type == &g_sym_Complex)
+    return hash_update_pcomplex(hash, data);
   if (type == &g_sym_F32)
     return hash_update_f32(hash, *(f32 *) data);
   if (type == &g_sym_F64)
@@ -516,6 +536,8 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
     return hash_update_ptr_free(hash, data);
   if (type == &g_sym_Quote)
     return hash_update_quote(hash, data);
+  if (type == &g_sym_Ratio)
+    return hash_update_ratio(hash, data);
   if (type == &g_sym_S8)
     return hash_update_s8(hash, *(s8 *) data);
   if (type == &g_sym_S16)
@@ -533,7 +555,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
   if (type == &g_sym_Sw)
     return hash_update_sw(hash, *(sw *) data);
   if (type == &g_sym_Sym)
-    return hash_update_sym(hash, data);
+    return hash_update_psym(hash, data);
   if (type == &g_sym_Tag)
     return hash_update_tag(hash, data);
   if (type == &g_sym_Time)
@@ -590,6 +612,8 @@ void * data_init_cast (void *data, p_sym *type, s_tag *tag)
     return pcallable_init_cast(data, type, tag);
   if (t == &g_sym_Character)
     return character_init_cast(data, type, tag);
+  if (t == &g_sym_Complex)
+    return pcomplex_init_cast(data, type, tag);
   if (t == &g_sym_F32)
     return f32_init_cast(data, type, tag);
   if (t == &g_sym_F64)
@@ -614,6 +638,8 @@ void * data_init_cast (void *data, p_sym *type, s_tag *tag)
     return ptr_free_init_cast(data, type, tag);
   if (t == &g_sym_Quote)
     return quote_init_cast(data, type, tag);
+  if (t == &g_sym_Ratio)
+    return ratio_init_cast(data, type, tag);
   if (t == &g_sym_S8)
     return s8_init_cast(data, type, tag);
   if (t == &g_sym_S16)
@@ -682,6 +708,8 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
     return pcallable_init_copy(data, src);
   if (type == &g_sym_Character)
     return character_init_copy(data, src);
+  if (type == &g_sym_Complex)
+    return pcomplex_init_copy(data, src);
   if (type == &g_sym_Cow)
     return pcow_init_copy(data, src);
   if (type == &g_sym_F32)
@@ -708,6 +736,8 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
     return ptr_free_init_copy(data, src);
   if (type == &g_sym_Quote)
     return quote_init_copy(data, src);
+  if (type == &g_sym_Ratio)
+    return ratio_init_copy(data, src);
   if (type == &g_sym_S8)
     return s8_init_copy(data, *(s8 *) src);
   if (type == &g_sym_S16)

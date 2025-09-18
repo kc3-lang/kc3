@@ -450,6 +450,17 @@ s8 compare_map (const s_map *a, const s_map *b)
   return 0;
 }
 
+s8 compare_pcomplex (const p_complex *a, const p_complex *b)
+{
+  if (a == b)
+    return 0;
+  if (! a)
+    return -1;
+  if (! b)
+    return 1;
+  return compare_complex(*a, *b);
+}
+
 // shallow comparison
 s8 compare_pfacts (const s_facts *a, const s_facts *b)
 {

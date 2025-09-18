@@ -357,6 +357,11 @@ bool hash_update_map (t_hash *hash, const s_map *map)
   return true;
 }
 
+bool hash_update_pcomplex (t_hash *hash, const p_complex *c)
+{
+  return hash_update_complex(hash, *c);
+}
+
 bool hash_update_pfacts (t_hash *hash, const s_facts *pfacts)
 {
   const char type[] = "facts*";

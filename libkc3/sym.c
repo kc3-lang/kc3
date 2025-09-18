@@ -618,6 +618,10 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = true;
     return must_clean;
   }
+  if (sym == &g_sym_Quote) {
+    *must_clean = true;
+    return must_clean;
+  }
   if (sym == &g_sym_Ratio) {
     *must_clean = true;
     return must_clean;
@@ -659,6 +663,14 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
     return must_clean;
   }
   if (sym == &g_sym_Tag) {
+    *must_clean = true;
+    return must_clean;
+  }
+  if (sym == &g_sym_Time) {
+    *must_clean = true;
+    return must_clean;
+  }
+  if (sym == &g_sym_Tuple) {
     *must_clean = true;
     return must_clean;
   }
