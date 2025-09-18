@@ -1963,9 +1963,15 @@ KC3_TEST_MARKDOWN_SOURCES = \
 	"test/markdown_test" \
 
 KC3_TEST_PDF_SOURCES = \
+	"test/pdf/edge_cases.kc3" \
+	"test/pdf/edge_cases.out.expected" \
+	"test/pdf/edge_cases.ret.expected" \
 	"test/pdf/pdf.kc3" \
 	"test/pdf/pdf.out.expected" \
 	"test/pdf/pdf.ret.expected" \
+	"test/pdf/stream.kc3" \
+	"test/pdf/stream.out.expected" \
+	"test/pdf/stream.ret.expected" \
 	"test/pdf_test" \
 
 KC3_OTHER_SOURCES = \
