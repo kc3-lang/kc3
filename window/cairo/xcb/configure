@@ -15,7 +15,7 @@ set -e
 
 echo "$PWD/configure"
 
-export SRC_TOP="$(dirname "$PWD")"
+export SRC_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
 
 CONFIG_H_PREFIX=LIBKC3_WINDOW_CAIRO_XCB_
 

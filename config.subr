@@ -554,8 +554,8 @@ config_objc_lib_have() {
 
 config_subdirs() {
     for SUBDIR; do
-        ( cd "$SUBDIR" && ./configure; )
-    done
+        echo "( cd $SUBDIR && ./configure; )"
+    done | "${SRC_TOP}/bin/runj" -1 /bin/sh
 }
 
 config_win32() {
