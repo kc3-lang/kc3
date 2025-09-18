@@ -1,0 +1,37 @@
+#!/bin/sh
+## kc3
+## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+. "$(dirname "$0")/test.subr"
+
+TARGET="$1"
+
+RESULT=test_ok
+
+$IKC3 --load ${TARGET}.kc3 --quit > ${TARGET}.out 2>&1
+echo $? > ${TARGET}.ret
+if ! diff -abu ${TARGET}.out.expected ${TARGET}.out \
+     > ${TARGET}.diff
+then
+    RESULT=test_ko
+fi
+if ! diff -abu ${TARGET}.ret.expected ${TARGET}.ret \
+     >> ${TARGET}.diff
+then
+    RESULT=test_ko
+fi
+if [ "x$RESULT" = "xtest_ok" ]; then
+    rm ${TARGET}.diff
+    test_ok ${TARGET}
+else
+    test_ko ${TARGET}
+fi

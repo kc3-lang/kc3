@@ -1,32 +1,19 @@
 #!/bin/sh
+## kc3
+## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
 cd "$(dirname $0)/ikc3" || exit
 
-TEST_COLOR_KO="[0;91m"
-TEST_COLOR_OK="[0;92m"
-TEST_COLOR_RESET="[0m"
-TEST_COUNT=0
-TEST_KO=0
-TEST_OK=0
-
-if [ "x$IKC3" = "x" ]; then
-    if [ -f ../../ikc3/ikc3 ]; then
-	IKC3=../../ikc3/ikc3
-    elif [ -f ../../ikc3 ]; then
-	IKC3=../../ikc3
-    fi
-fi
-
-test_ko() {
-    printf "%s" "${TEST_COLOR_KO}F${TEST_COLOR_RESET}"
-    echo $@ >> .test_ko
-    echo $@ >> .test
-}
-
-test_ok() {
-    printf "%s" "${TEST_COLOR_OK}.${TEST_COLOR_RESET}"
-    echo $@ >> .test_ok
-    echo $@ >> .test
-}
+. ../test.subr
 
 if [ $# = 0 ]; then
     if [ "x${IKC3_TEST}" = "x" ]; then
@@ -34,50 +21,27 @@ if [ $# = 0 ]; then
         case "$IKC3" in
             *_asan)
                 TARGETS="$(echo "${TARGETS}" |
-                                tr ' ' '\n' |
-                                egrep -v -e '^block$' \
-                                         -e '^unwind_protect$' \
-                                         -e '^while$')"
+                                grep -E -v -e '^block$' \
+                                           -e '^unwind_protect$' \
+                                           -e '^while$')"
                 ;;
             *)
                 ;;
         esac
     else
-        TARGETS="${IKC3_TEST}"
+        TARGETS="$(echo "${IKC3_TEST}" | tr ' ' '\n')"
     fi
 else
-    TARGETS="$@"
+    TARGETS="$(echo "$@" | tr ' ' '\n')"
 fi
 
 rm -f *.diff *.out *.ret
 rm -f .test .test_ko .test_ok
 touch .test .test_ko .test_ok
 for TARGET in $TARGETS; do
-    (
-        RESULT=test_ok
-        echo $TARGET > current_test
-        $IKC3 --load ${TARGET}.kc3 --quit > ${TARGET}.out 2>&1
-        echo $? > ${TARGET}.ret
-        if ! diff -abu ${TARGET}.out.expected ${TARGET}.out \
-             > ${TARGET}.diff
-        then
-            RESULT=test_ko
-        fi
-        if ! diff -abu ${TARGET}.ret.expected ${TARGET}.ret \
-             >> ${TARGET}.diff
-        then
-            RESULT=test_ko
-        fi
-        if [ "x$RESULT" = "xtest_ok" ]; then
-            rm ${TARGET}.diff
-            test_ok ${TARGET}
-        else
-            test_ko ${TARGET}
-        fi
-    )
-    sleep 2
-done
-wait
+    echo "( ../ikc3_test_target $TARGET; )"
+done | runj -1 /bin/sh
+
 TEST_COUNT=$(echo $(wc -l .test) | cut -f 1 -d ' ')
 TEST_KO=$(echo $(wc -l .test_ko) | cut -f 1 -d ' ')
 TEST_OK=$(echo $(wc -l .test_ok) | cut -f 1 -d ' ')
