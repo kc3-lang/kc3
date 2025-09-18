@@ -1107,9 +1107,17 @@ sw pdf_buf_parse_xref (s_buf *buf, s_map *dest)
         goto error;
       }
       result_inner += r + r1 + r2 + r3 + r4 + r5;
-      if (! (*keys_tail = list_new_tuple(2, NULL)) ||
-          ! (*values_tail = list_new_u64(offset, NULL)))
+      if (! (*keys_tail = list_new_tuple(2, NULL)))
         goto error;
+      if (c == 'f')
+        *values_tail = list_new(NULL);
+      else if (c == 'n')
+        *values_tail = list_new_u64(offset, NULL);
+      else {
+        err_puts("pdf_buf_parse_xref: expected 'n' or 'f'");
+        assert(! "pdf_buf_parse_xref: expected 'n' or 'f'");
+        goto error;
+      }
       tag_init_u32((*keys_tail)->tag.data.tuple.tag, object_number);
       tag_init_u16((*keys_tail)->tag.data.tuple.tag + 1, generation_number);
       keys_tail = &(*keys_tail)->next.data.plist;
