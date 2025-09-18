@@ -11,6 +11,7 @@
 ## THIS SOFTWARE.
 
 all:
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath all
 	${MAKE} -C ucd2c
@@ -36,6 +37,7 @@ include config.mk
 include sources.mk
 
 asan:
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
@@ -60,6 +62,7 @@ assets:
 	make -C test/httpd/assets
 
 build:
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
@@ -82,6 +85,7 @@ build:
 #	${MAKE} -C fs build
 
 clean:
+	${MAKE} -C runj clean
 	${MAKE} -C libtommath clean
 	${MAKE} -C ucd2c clean
 	${MAKE} -C libkc3 clean
@@ -103,6 +107,7 @@ clean:
 #	${MAKE} -C fs clean
 
 clean_cov:
+	${MAKE} -C runj all
 	${MAKE} -C libtommath clean_cov
 	${MAKE} -C libkc3 clean_cov
 	${MAKE} -C socket clean_cov
@@ -123,6 +128,7 @@ clean_cov:
 #	${MAKE} -C fs clean_cov
 
 cov:
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
@@ -144,6 +150,7 @@ cov:
 #	${MAKE} -C fs cov
 
 debug:
+	${MAKE} -C runj all
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
@@ -177,6 +184,7 @@ demo_debug: debug
 	${MAKE} -C window demo_debug
 
 demo_gl:
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
@@ -184,6 +192,7 @@ demo_gl:
 	${MAKE} -C window demo_gl
 
 demo_gl_asan: asan
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
@@ -191,6 +200,7 @@ demo_gl_asan: asan
 	${MAKE} -C window demo_gl_asan
 
 demo_gl_cov: cov
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath cov
 	${MAKE} -C ucd2c
@@ -198,6 +208,7 @@ demo_gl_cov: cov
 	${MAKE} -C window demo_gl_cov
 
 demo_gl_debug: debug
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
@@ -391,6 +402,7 @@ gdb_ikc3_asan: lib_links_asan
 	${MAKE} -C ikc3 gdb_ikc3_asan
 
 gdb_kmsg: lib_links_debug
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
@@ -555,6 +567,7 @@ gen:
 	${MAKE} -C libkc3 gen
 
 gtk4:
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
@@ -564,6 +577,7 @@ gtk4:
 	${MAKE} -C gtk4 build
 
 gtk4_asan:
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
@@ -573,6 +587,7 @@ gtk4_asan:
 	${MAKE} -C gtk4 asan
 
 gtk4_cov:
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath cov
 	${MAKE} -C ucd2c
@@ -582,6 +597,7 @@ gtk4_cov:
 	${MAKE} -C gtk4 cov
 
 gtk4_debug:
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
@@ -829,6 +845,7 @@ kc3.index: sources.mk Makefile
 	rm kc3.index.tmp
 
 kmsg:
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
@@ -839,6 +856,7 @@ kmsg:
 	${MAKE} -C kmsg
 
 kmsg_asan:
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
@@ -849,6 +867,7 @@ kmsg_asan:
 	${MAKE} -C kmsg run_asan
 
 kmsg_debug:
+	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
