@@ -4054,10 +4054,8 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
         }
         result += r;
         if (s->data) {
-          if (s->pstruct_type->map.value[i].type == TAG_PVAR)
-            type = s->pstruct_type->map.value[i].data.pvar->type;
-          else if (! tag_type(s->pstruct_type->map.value + i, &type)) {
-            assert(! "buf_inspect_struct: tag_type");
+          if (! tag_type_var(s->pstruct_type->map.value + i, &type)) {
+            assert(! "buf_inspect_struct: tag_type_var");
             goto clean;
           }
           assert(s->pstruct_type->offset[i] < s->pstruct_type->size);
