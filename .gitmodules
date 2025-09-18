@@ -5,16 +5,24 @@
 [submodule "linenoise"]
 	path = linenoise
 	url = https://git.kmx.io/kc3-lang/linenoise.git
-        branch = 1.0
+        branch = master
 [submodule "fonts"]
 	path = fonts
 	url = https://git.kmx.io/kc3-lang/fonts.git
+	branch = master
 [submodule "smtp"]
 	path = smtp
 	url = https://git.kmx.io/kc3-lang/smtp.git
+	branch = master
 [submodule "window/sdl2/kubz"]
 	path = window/sdl2/kubz
 	url = https://git.kmx.io/kc3-lang/kubz.git
+	branch = master
 [submodule "kpkg"]
 	path = kpkg
 	url = https://git.kmx.io/kc3-lang/kpkg.git
+	branch = master
+[submodule "runj"]
+	path = runj
+	url = https://git.kmx.io/kmx.io/runj.git
+	branch = master
