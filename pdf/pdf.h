@@ -16,7 +16,7 @@
 #include "types.h"
 
 /* Observers. */
-s_pdf_file * pdf_parse_file (s_str *path, s_pdf_file *dest);
-s_tag *      pdf_parse_from_str (s_str *str, s_tag *dest);
+s_pdf_file ** pdf_parse_file (s_str *path, s_pdf_file **dest);
+s_tag *       pdf_parse_from_str (s_str *str, s_tag *dest);
 
 #endif /* KC3_PDF_H */
