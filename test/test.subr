@@ -26,6 +26,14 @@ if [ "x$IKC3" = "x" ]; then
     fi
 fi
 
+if [ "x$KC3S" = "x" ]; then
+    if [ -f ../../kc3s/kc3s ]; then
+	KC3S=../../kc3s/kc3s
+    elif [ -f ../../kc3s ]; then
+	KC3S=../../kc3s
+    fi
+fi
+
 test_ko() {
     printf "%s" "${TEST_COLOR_KO}F${TEST_COLOR_RESET}"
     echo $@ >> .test_ko
@@ -37,3 +45,35 @@ test_ok() {
     echo $@ >> .test_ok
     echo $@ >> .test
 }
+
+test_run () (
+    TEST_RUNNER="$1"; shift
+    TARGETS="$@"
+    rm -f *.diff *.out *.ret
+    rm -f .test .test_ko .test_ok
+    touch .test .test_ko .test_ok
+    for TARGET in $TARGETS; do
+        echo "( ../${TEST_RUNNER} ${TARGET}; )"
+    done | runj -1 /bin/sh
+    TEST_COUNT=$(echo $(wc -l .test) | cut -f 1 -d ' ')
+    TEST_KO=$(echo $(wc -l .test_ko) | cut -f 1 -d ' ')
+    TEST_OK=$(echo $(wc -l .test_ok) | cut -f 1 -d ' ')
+    echo
+    DIFFS="$(for TARGET in $TARGETS; do
+    if [ -f "${TARGET}.diff" ]; then
+        printf "%s " "${TARGET}.diff"
+    fi
+done)"
+    if [ "x$DIFFS" != "x" ]; then
+        ls $DIFFS
+        less $DIFFS || cat $DIFFS
+    fi
+    echo
+    printf "%s" "Total $TEST_COUNT tests. "
+    printf "%s" "${TEST_COLOR_OK}OK $TEST_OK ($(($TEST_OK * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}. "
+    echo "${TEST_COLOR_KO}KO $TEST_KO ($(($TEST_KO * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}."
+    if [ "x$TEST_KO" = "x0" ]; then
+        exit 0
+    fi
+    exit 1
+)
