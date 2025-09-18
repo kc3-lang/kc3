@@ -483,6 +483,7 @@ s_tag * cfn_tag_init (s_tag *tag, const s_sym *type)
       err_write_1("cfn_tag_init: struct_allocate: ");
       err_puts(type->str.ptr.pchar);
       assert(! "cfn_tag_init: struct_allocate");
+      pstruct_clean(&tmp.data.pstruct);
       return NULL;
     }
     break;

@@ -15,11 +15,11 @@
 #include "pdf_buf_parse.h"
 #include <assert.h>
 
-s_pdf_file ** pdf_parse_from_file (s_str *path, s_pdf_file **dest)
+s_pdf_file * pdf_parse_from_file (s_str *path, s_pdf_file *dest)
 {
   s_buf buf = {0};
   FILE *fp = NULL;
-  s_pdf_file *tmp = NULL;
+  s_pdf_file tmp = {0};
   if (! (fp = file_open(path, "rb")))
     return NULL;
   if (! buf_init_alloc(&buf, BUF_SIZE)) {
@@ -35,15 +35,9 @@ s_pdf_file ** pdf_parse_from_file (s_str *path, s_pdf_file **dest)
     fclose(fp);
     return NULL;
   }
-  if (! (tmp = alloc(sizeof(s_pdf_file)))) {
-    buf_clean(&buf);
-    fclose(fp);
-    return NULL;
-  }
-  if (pdf_buf_parse_file(&buf, tmp) <= 0) {
+  if (pdf_buf_parse_file(&buf, &tmp) <= 0) {
     err_puts("pdf_parse_from_file: pdf_buf_parse_file");
     assert(! "pdf_parse_from_file: pdf_buf_parse_file");
-    free(tmp);
     buf_file_close(&buf);
     buf_clean(&buf);
     fclose(fp);

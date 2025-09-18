@@ -14,9 +14,9 @@ require PDF.Trailer
 
 defmodule PDF.File do
 
-  defstruct [trailer: %PDF.Trailer{},
-             header: "",
+  defstruct [header: "",
+             xref: %{},
              body: do end,
-             xref: %{}]
+             trailer: %PDF.Trailer{}]
 
 end
