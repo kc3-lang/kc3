@@ -1142,6 +1142,8 @@ sw pdf_buf_parse_xref (s_buf *buf, s_map *dest)
     list_delete_all(values);
     return -1;
   }
+  list_delete_all(keys);
+  list_delete_all(values);
   *dest = tmp;
   return result;
  error:
