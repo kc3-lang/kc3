@@ -14,7 +14,9 @@ quote [position:  %GL.Vec3{},
  tex_coord: %GL.Vec2{}]
 quote defmodule Test do
   defstruct [array: (U8[]) {},
-	     do_block: do end,
+	     do_block: quote do
+               0
+             end,
 	     bool: false,
 	     character: '→',
 	     f32: (F32) 0.0,
@@ -50,7 +52,9 @@ quote defmodule Test do
 end
 defmodule Test do
   defstruct [array: (U8[]) {},
-	     do_block: do end,
+	     do_block: quote do
+               0
+             end,
 	     bool: false,
 	     character: '0',
 	     f32: (F32) 0.0,
