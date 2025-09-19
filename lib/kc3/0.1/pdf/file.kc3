@@ -16,7 +16,7 @@ defmodule PDF.File do
 
   defstruct [header: "",
              xref: %{},
-             body: do end,
+             body: quote do end,
              trailer: %PDF.Trailer{}]
 
 end
