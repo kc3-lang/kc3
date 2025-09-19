@@ -1314,6 +1314,7 @@ s_str * kc3_system (const s_list * const *list, s_str *dest)
     a++;
     l = list_next(l);
   }
+  a--;
   if (pipe(pipe_fd)) {
     e = errno;
     err_write_1("kc3_system: pipe: ");
@@ -1328,8 +1329,10 @@ s_str * kc3_system (const s_list * const *list, s_str *dest)
     assert(! "kc3_system: fork");
     goto clean;
   }
-  if (! pid)
+  if (! pid) {
     kc3_system_pipe_exec(pipe_fd[1], argv, list);
+    _exit(1);
+  }
   close(pipe_fd[1]);
   if (! fd_read_until_eof(pipe_fd[0], &tmp)) {
     err_puts("kc3_system: fd_read_until_eof");
@@ -1347,10 +1350,11 @@ s_str * kc3_system (const s_list * const *list, s_str *dest)
   *dest = tmp;
   r = dest;
  clean:
-  while (a > argv) {
-    a--;
+  while (a >= argv) {
     free(*a);
+    a--;
   }
+  free(argv);
   return r;
 #endif
 }
