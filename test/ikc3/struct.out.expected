@@ -21,7 +21,7 @@ GL.Vec3
                      y: (F32) 0.0}]
 defmodule Test do
   defstruct [array: (U8[]) {},
-             do_block: do end,
+             do_block: do 0 end,
              bool: false,
              character: '→',
              f32: (F32) 0.0,
@@ -58,7 +58,7 @@ end
 Test
 %Test{}
 %Test{array: (U8[]) {},
-      do_block: void,
+      do_block: do 0 end,
       bool: false,
       character: '0',
       f32: (F32) 0.0,
