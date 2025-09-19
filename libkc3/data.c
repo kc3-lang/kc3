@@ -602,6 +602,8 @@ void * data_init_cast (void *data, p_sym *type, s_tag *tag)
   if (t == &g_sym_Array ||
       sym_is_array_type(*type))
     return array_init_cast(data, type, tag);
+  if (t == &g_sym_Block)
+    return do_block_init_cast(data, type, tag);
   if (t == &g_sym_Bool)
     return bool_init_cast(data, type, tag);
   if (t == &g_sym_Call)
@@ -698,6 +700,8 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
     return array_init_copy(data, src);
+  if (type == &g_sym_Block)
+    return do_block_init_copy(data, src);
   if (type == &g_sym_Bool)
     return bool_init_copy(data, src);
   if (type == &g_sym_Call)
