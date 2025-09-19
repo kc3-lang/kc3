@@ -25,7 +25,8 @@
 /* Stack allocation compatible functions */
 s_do_block * do_block_init (s_do_block *do_block, uw count);
 s_do_block * do_block_init_1 (s_do_block *do_block, const char *p);
-s_do_block * do_block_init_cast (s_do_block *do_block, s_tag *tag);
+s_do_block * do_block_init_cast (s_do_block *do_block, p_sym *type,
+                                 s_tag *tag);
 s_do_block * do_block_init_copy (s_do_block *do_block, s_do_block *src);
 s_do_block * do_block_init_from_list (s_do_block *do_block,
                                 s_list **list);

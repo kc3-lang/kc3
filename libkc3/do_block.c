@@ -76,8 +76,14 @@ s_do_block * do_block_init_1 (s_do_block *do_block, const char *p)
   return do_block;
 }
 
-s_do_block * do_block_init_cast (s_do_block *do_block, s_tag *tag)
+s_do_block * do_block_init_cast (s_do_block *do_block, p_sym *type,
+                                 s_tag *tag)
 {
+  assert(do_block);
+  assert(type);
+  assert(*type);
+  assert(tag);
+  (void) type;
   switch (tag->type) {
   case TAG_DO_BLOCK:
     return do_block_init_copy(do_block, &tag->data.do_block);
