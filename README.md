@@ -1,4 +1,4 @@
-# KC3 v0.1.16
+# KC3 v0.1.16-git
 
 KC3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
