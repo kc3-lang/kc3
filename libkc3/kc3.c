@@ -665,15 +665,34 @@ sw kc3_getppid (void)
 s_str * kc3_hostname (s_str *dest)
 {
   sw e;
+#if defined(HOST_NAME_MAX)
   char name[HOST_NAME_MAX + 1] = {0};
-  if (gethostname(name, sizeof(name) - 1)) {
+  size_t size = HOST_NAME_MAX;
+#else
+# if defined(__FreeBSD__)
+  char *name;
+  s_str *result;
+  size_t size;
+  size = sysconf(_SC_HOST_NAME_MAX);
+  name = calloc(1, size + 1);
+# endif
+#endif
+  if (gethostname(name, size)) {
     e = errno;
     err_write_1("kc3_hostname: gethostname: ");
     err_puts(strerror(e));
     assert(! "kc3_hostname: gethostname");
     return NULL;
   }
+#if defined(HOST_NAME_MAX)
   return str_init_1_alloc(dest, name);
+#else
+# if defined(__FreeBSD__)
+  result = str_init_1_alloc(dest, name);
+  free(name);
+  return result;
+# endif
+#endif
 }
 
 s_tag * kc3_identity (s_tag *tag, s_tag *dest)
