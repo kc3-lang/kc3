@@ -10,15 +10,16 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-
-#ifndef  LIBKC3_TLS_BUF_H
-#define  LIBKC3_TLS_BUF_H
+#ifndef KC3_TLS_CLIENT_H
+#define KC3_TLS_CLIENT_H
 
 #include "types.h"
 
-/* TLS buf open functions, call tls_buf_close after use. */
-void    tls_buf_close(s_buf *buf);
-s_buf * tls_buf_open_r(s_buf *buf, struct tls *ctx);
-s_buf * tls_buf_open_w(s_buf *buf, struct tls *ctx);
+/* Stack-allocation compatible functions, call kc3_tls_client_clean
+   after use. */
+void           kc3_tls_client_clean (s_tls_client *tls_client);
+s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
+                                            p_tls *ctx, s_str *host,
+                                            s_str *port);
 
-#endif // ! LIBKC3_TLS_BUF_H
+#endif /* KC3_TLS_CLIENT_H */
