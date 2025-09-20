@@ -4,6 +4,10 @@ quote require Socket.Buf
 require Socket.Buf
 quote require TLS
 require TLS
+quote require TLS.Client
+require TLS.Client
+quote require TLS.Server
+require TLS.Server
 quote TLS.init()
 TLS.init()
 quote (server_config = TLS.Config.new()) ; void
@@ -20,8 +24,8 @@ quote (server_ctx = TLS.server()) ; void
 (server_ctx = TLS.server()) ; void
 quote TLS.configure(server_ctx, server_config) ; void
 TLS.configure(server_ctx, server_config) ; void
-quote (server_socket = Socket.listen("127.0.0.1", "57000")); void
-(server_socket = Socket.listen("127.0.0.1", "57000")) ; void
+quote (server_socket = Socket.listen(hostname(), "57000")); void
+(server_socket = Socket.listen(hostname(), "57000")) ; void
 quote (client_config = TLS.Config.new()) ; void
 (client_config = TLS.Config.new()) ; void
 quote TLS.Config.set_ca_file(client_config, TLS.ca_cert_path()) ; void
@@ -30,14 +34,18 @@ quote (client_ctx = TLS.client()) ; void
 (client_ctx = TLS.client()) ; void
 quote TLS.configure(client_ctx, client_config) ; void
 TLS.configure(client_ctx, client_config) ; void
-quote (client_socket = Socket.connect("127.0.0.1", "57000")) ; void
-(client_socket = Socket.connect("127.0.0.1", "57000")) ; void
-quote TLS.connect_socket(client_ctx, client_socket, hostname()) ; void
-TLS.connect_socket(client_ctx, client_socket, hostname()) ; void
-quote (server_client_socket = Socket.accept(server_socket)) ; void
-(server_client_socket = Socket.accept(server_socket)) ; void
-quote (server_client_ctx = TLS.accept_socket(server_ctx, server_client_socket)) ; void
-(server_client_ctx = TLS.accept_socket(server_ctx, server_client_socket)) ; void
+quote (client_tls = TLS.Client.connect(client_ctx, hostname(),
+  "57000")) ; void
+(client_tls = TLS.Client.connect(client_ctx, hostname(),
+  "57000")) ; void
+quote (server_client_tls = TLS.Server.accept(server_ctx,
+  server_socket)) ; void
+(server_client_tls = TLS.Server.accept(server_ctx,
+  server_socket)) ; void
+quote Buf.write_str(server_client_tls_buf.buf_rw.w, "Hello, world !\n")
+Buf.write_str(server_client_tls_buf.buf_rw.w, "Hello, world !\n")
+quote Buf.read_until_str_into_str(client_tls_buf.buf_rw.r, "\n")
+Buf.read_until_str_into_str(client_tls_buf.buf_rw.r, "\n")
 quote TLS.free(server_client_ctx)
 TLS.free(server_client_ctx)
 quote Socket.close(server_client_socket)

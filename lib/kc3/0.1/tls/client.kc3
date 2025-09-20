@@ -10,18 +10,14 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-require Socket
-require TLS
-
-defmodule TLS.Server do
+defmodule TLS.Client do
 
   defstruct [socket: %Socket{},
-             ctx: (TLS*) 0,
              buf_rw: %BufRW{}]
 
   dlopen("tls.so")
 
-  def accept = cfn TLS.Server "kc3_tls_server_init_accept" (Result,
-    TLS*, TLS**, Socket)
+  def connect = cfn TLS.Client "kc3_tls_client_init_connect" (Result,
+    TLS*, Str, Str)
 
 end

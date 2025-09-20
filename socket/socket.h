@@ -22,6 +22,8 @@ bool libsocket_init (void);
 
 /* Stack-allocation compatible functions. */
 p_socket socket_init_accept (p_socket s, p_socket listening);
+p_socket socket_init_connect (p_socket s, const s_str *host,
+                              const s_str *service);
 p_socket socket_init_listen (p_socket s, const s_str *host,
                              const s_str *service);
 

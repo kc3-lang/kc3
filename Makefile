@@ -1736,6 +1736,7 @@ tls:
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
+	${MAKE} -C socket build
 	${MAKE} -C tls build
 
 uninstall:
@@ -1874,6 +1875,10 @@ uninstall:
 	pdf_asan \
 	pdf_cov \
 	pdf_debug \
+	socket \
+	socket_asan \
+	socket_cov \
+	socket_debug \
 	test \
 	test_asan \
 	test_cov \
