@@ -401,6 +401,7 @@ http/url.c
 http/url.h
 httpd/Makefile
 httpd/configure
+httpd/fx/Makefile
 httpd/fx/app/controllers/fx_controller.kc3
 httpd/fx/app/models/fx.kc3
 httpd/fx/app/templates/footer.html.ekc3
@@ -527,6 +528,7 @@ lib/kc3/0.1/call.kc3
 lib/kc3/0.1/character.kc3
 lib/kc3/0.1/compare.kc3
 lib/kc3/0.1/complex.facts
+lib/kc3/0.1/counter.kc3
 lib/kc3/0.1/cow.kc3
 lib/kc3/0.1/crypt.kc3
 lib/kc3/0.1/deserialize.kc3
@@ -585,6 +587,7 @@ lib/kc3/0.1/http/upload.kc3
 lib/kc3/0.1/httpd.kc3
 lib/kc3/0.1/httpd/route.kc3
 lib/kc3/0.1/init.kc3
+lib/kc3/0.1/inspect.kc3
 lib/kc3/0.1/integer.facts
 lib/kc3/0.1/io.kc3
 lib/kc3/0.1/json.kc3
@@ -605,8 +608,12 @@ lib/kc3/0.1/marshall.kc3
 lib/kc3/0.1/marshall_read.kc3
 lib/kc3/0.1/math.kc3
 lib/kc3/0.1/metric.kc3
+lib/kc3/0.1/mutex.kc3
 lib/kc3/0.1/parse.kc3
 lib/kc3/0.1/pdf.kc3
+lib/kc3/0.1/pdf/file.kc3
+lib/kc3/0.1/pdf/stream.kc3
+lib/kc3/0.1/pdf/trailer.kc3
 lib/kc3/0.1/pointer.kc3
 lib/kc3/0.1/pretty.kc3
 lib/kc3/0.1/pretty_save.kc3
@@ -836,6 +843,8 @@ libkc3/compare.h
 libkc3/complex.c
 libkc3/complex.h
 libkc3/configure
+libkc3/counter.c
+libkc3/counter.h
 libkc3/cow.c
 libkc3/cow.h
 libkc3/crypt.c
@@ -1805,8 +1814,15 @@ test/marshall_test.c
 test/marshall_test_to_file.1.expected.kc3m
 test/ops_test.c
 test/pcall_test.c
+test/pdf/edge_cases.kc3
+test/pdf/edge_cases.out.expected
+test/pdf/edge_cases.ret.expected
 test/pdf/pdf.kc3
 test/pdf/pdf.out.expected
+test/pdf/pdf.ret.expected
+test/pdf/stream.kc3
+test/pdf/stream.out.expected
+test/pdf/stream.ret.expected
 test/pdf_test
 test/ratio_test.c
 test/replace_lines.rb
