@@ -13,8 +13,10 @@
 
 set -e
 
-. ../config.subr
-
 echo "$PWD/update_sources"
+
+export SRC_TOP="$(dirname "$PWD")"
+
+. "${SRC_TOP}/config.subr"
 
 ( cd fuse && ./update_sources; )

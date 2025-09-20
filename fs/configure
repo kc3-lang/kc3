@@ -15,9 +15,9 @@ set -e
 
 echo "$PWD/configure"
 
-export SRC_TOP="$(dirname "$PWD")"
+SRC_TOP="$(dirname "$PWD")"
 
-. ../config.subr
+. "${SRC_TOP}/config.subr"
 
 config_fuse
 

@@ -15,7 +15,7 @@ set -e
 
 export SRC_TOP="$(dirname "$(dirname "$(pwd)")")"
 
-. ../../config.subr
+. "${SRC_TOP}/config.subr"
 
 KC3_VERSION="$(cat ../../kc3.version)"
 echo "KC3_VERSION = $KC3_VERSION" >> ${CONFIG_MK}

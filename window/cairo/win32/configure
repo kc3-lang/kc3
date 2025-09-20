@@ -13,9 +13,9 @@
 
 set -e
 
-export SRC_TOP="$(dirname "$PWD")"
+SRC_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
 
-. ../../../config.subr
+. "${SRC_TOP}/config.subr"
 
 LIB=libkc3_window_cairo_win32.la
 LIB_ASAN=libkc3_window_cairo_win32_asan.la

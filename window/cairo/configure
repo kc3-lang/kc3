@@ -19,7 +19,7 @@ export SRC_TOP="$(dirname "$(dirname "$PWD")")"
 
 CONFIG_H_PREFIX=LIBKC3_WINDOW_CAIRO_
 
-. ../../config.subr
+. "${SRC_TOP}/config.subr"
 
 LIB=libkc3_window_cairo.la
 LIB_ASAN=libkc3_window_cairo_asan.la

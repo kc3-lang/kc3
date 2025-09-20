@@ -15,11 +15,11 @@ set -e
 
 echo "$PWD/configure"
 
-export SRC_TOP="$(dirname "$PWD")"
+SRC_TOP="$(dirname "$PWD")"
 
 CONFIG_H_PREFIX=KC3_PDF_
 
-. ../config.subr
+. "${SRC_TOP}/config.subr"
 
 LIB=libkc3_pdf.la
 LIB_ASAN=libkc3_pdf_asan.la

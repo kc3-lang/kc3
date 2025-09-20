@@ -4,7 +4,9 @@ set -e
 make -C runj
 make -C sort
 
-. ./config.subr
+SRC_TOP="$PWD"
+
+. "${SRC_TOP}/config.subr"
 
 echo "$PWD/update_sources"
 

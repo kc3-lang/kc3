@@ -19,7 +19,7 @@ export SRC_TOP="$(dirname "$PWD")"
 
 CONFIG_H_PREFIX=KC3_JSON_
 
-. ../config.subr
+. "${SRC_TOP}/config.subr"
 
 LIB=libkc3_json.la
 LIB_ASAN=libkc3_json_asan.la

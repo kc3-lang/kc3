@@ -17,7 +17,7 @@ echo "$PWD/configure"
 
 export SRC_TOP="$(dirname "$PWD")"
 
-. ../config.subr
+. "${SRC_TOP}/config.subr"
 
 PROG=libkc3_test
 PROG_ASAN=libkc3_test_asan

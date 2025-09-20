@@ -15,11 +15,11 @@ set -e
 
 echo "$PWD/configure"
 
-export SRC_TOP="$(dirname "$(dirname "$PWD")")"
+SRC_TOP="$(dirname "$(dirname "$PWD")")"
 
 CONFIG_H_PREFIX=KC3_FS_
 
-. ../../config.subr
+. "${SRC_TOP}/config.subr"
 
 PROG=mount_kc3fs
 PROG_ASAN=mount_kc3fs_asan

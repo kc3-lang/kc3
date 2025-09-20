@@ -15,11 +15,11 @@ set -e
 
 echo "$PWD/configure"
 
-export SRC_TOP="$(dirname "$PWD")"
+SRC_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
 
 CONFIG_H_PREFIX=LIBKC3_WINDOW_CAIRO_QUARTZ
 
-. ../../../config.subr
+. "${SRC_TOP}/config.subr"
 
 LIB=libkc3_window_cairo_quartz.la
 LIB_ASAN=libkc3_window_cairo_quartz_asan.la

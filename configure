@@ -27,7 +27,7 @@ if [ "x$1" = "x--prefix" ]; then
 fi
 export PREFIX
 
-. ./config.subr
+. "${SRC_TOP}/config.subr"
 
 require_pkg_config
 
