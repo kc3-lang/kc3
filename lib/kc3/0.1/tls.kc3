@@ -36,5 +36,4 @@ defmodule TLS do
 
   def server = cfn TLS* "kc3_tls_server" (Result)
 
-
 end
