@@ -1295,7 +1295,6 @@ KC3_HTTPD_SOURCES = \
 	"httpd/fx/config/mime.types" \
 	"httpd/fx/config/routes.kc3" \
 	"httpd/fx/db/app.facts" \
-	"httpd/fx/db/app.facts.bin.facts" \
 	"httpd/page/app/controllers/page_controller.kc3" \
 	"httpd/page/app/templates/page/menu.html.ekc3" \
 	"httpd/page/app/templates/page/show.html.ekc3" \
@@ -1845,7 +1844,6 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/config/mime.types" \
 	"test/httpd/config/routes.kc3" \
 	"test/httpd/db/app.facts" \
-	"test/httpd/db/app.facts.bin.facts" \
 	"test/httpd/doc" \
 	"test/httpd/pages" \
 	"test/httpd/pages/index.en.html" \
