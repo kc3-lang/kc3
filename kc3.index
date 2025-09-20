@@ -421,7 +421,6 @@ httpd/fx/config/db.kc3
 httpd/fx/config/mime.types
 httpd/fx/config/routes.kc3
 httpd/fx/db/app.facts
-httpd/fx/db/app.facts.bin.facts
 httpd/httpd.c
 httpd/httpd.h
 httpd/page/app/controllers/page_controller.kc3
@@ -1477,7 +1476,6 @@ test/httpd/config/db.kc3
 test/httpd/config/mime.types
 test/httpd/config/routes.kc3
 test/httpd/db/app.facts
-test/httpd/db/app.facts.bin.facts
 test/httpd/doc
 test/httpd/pages
 test/httpd/pages/index.en.html
