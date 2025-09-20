@@ -1726,6 +1726,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/hello.kc3" \
 	"test/ikc3/hello.out.expected" \
 	"test/ikc3/hello.ret.expected" \
+	"test/ikc3/hostname.kc3" \
+	"test/ikc3/hostname.out.expected" \
+	"test/ikc3/hostname.ret.expected" \
 	"test/ikc3/ident.err.expected" \
 	"test/ikc3/ident.kc3" \
 	"test/ikc3/ident.out.expected" \
