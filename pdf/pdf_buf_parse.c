@@ -260,6 +260,23 @@ sw pdf_buf_parse_dictionnary (s_buf *buf, s_map *dest)
   return r;
 }
 
+s_do_block * pdf_buf_parse_file_body(s_buf *body, s_map *xref, s_do_block *dest)
+{
+  uw i = 0;
+  s_do_block tmp = {0};
+  if (! do_block_init(&tmp, xref->count)) {
+    err_puts("pdf_buf_parse_file_body: do_block_init");
+    assert(! "pdf_buf_parse_file_body: do_block_init");
+    return NULL;
+  }
+  while (i < xref->count) {
+    tmp.tag->data.ptag[i].data = xref->value->data.ptag[i].data;
+    i++;
+  }
+  *dest = tmp;
+  return dest;
+}
+
 sw pdf_buf_parse_file_header (s_buf *buf, s_str *dest)
 {
   u16 i;
