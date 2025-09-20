@@ -129,7 +129,8 @@ There are now four full applications written in KC3 that we know of :
      test/test_runner
    - use shipped `runj` to call test_runner in parallel
    - removed ugly `sleep 2` that slowed each ikc3 test
-   - all tests suites run in under 30 seconds now
+   - all tests suites run in under 30 seconds now compared to
+     more than 5 minutes before
 
 
 ## Discord invite
