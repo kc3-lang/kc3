@@ -698,7 +698,9 @@ require_pkg_config() {
 }
 
 sources() {
-    SOURCES_TMP="$(echo "$2" | "${SRC_TOP}/bin/sort" -u)"
+    SOURCES_TMP="$(echo "$2" |
+                   "${SRC_TOP}/bin/sort" -u |
+                   grep -Ev -e '~$' -e '/\.#')"
     echo "$1 = \\
 $(echo "$SOURCES_TMP" | sed -e 's/^\(.*\)$/	"\1" \\/')
 " >> ${SOURCES_MK}
