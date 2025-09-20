@@ -118,6 +118,20 @@ There are now four full applications written in KC3 that we know of :
        - accepts only one connection and exits
        - works with netcat (no prompt)
 
+ - build system
+   - use shipped `runj` as a git submodule to parallelize configure
+     and update_sources
+   - use shipped `sort` as a git submodule to have a portable sort
+     algorithm that gives consistent results across Linux and BSD.
+
+ - test infrastructure
+   - modular test infrastructure with test/test.subr and
+     test/test_runner
+   - use shipped `runj` to call test_runner in parallel
+   - removed ugly `sleep 2` that slowed each ikc3 test
+   - all tests suites run in under 30 seconds now
+
+
 ## Discord invite
 
 [Join us on kmx.io Discord server !](https://discord.gg/A4MWkpUDsG)
