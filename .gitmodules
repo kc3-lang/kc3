@@ -26,3 +26,7 @@
 	path = runj
 	url = https://git.kmx.io/kmx.io/runj.git
 	branch = master
+[submodule "sort"]
+	path = sort
+	url = https://git.kmx.io/kmx.io/sort.git
+	branch = master
