@@ -16,6 +16,7 @@ set -e
 echo "$PWD/configure"
 
 make -C runj
+make -C sort
 
 export SRC_TOP="$PWD"
 
