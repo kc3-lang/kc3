@@ -1679,13 +1679,14 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
     assert(! "marshall_read_pointer: cannot read non-null pointer");
     return NULL;
   }
-  if (target_type == &g_sym_Mutex) {
-    if (! (u = (uw) mutex_new())) {
-      err_puts("marshall_read_pointer: Mutex*: mutex_new");
-      assert(! "marshall_read_pointer: Mutex*: mutex_new");
-      return NULL;
-    }
+#if HAVE_PTHREAD
+  if (target_type == &g_sym_Mutex &&
+      ! (u = (uw) mutex_new())) {
+    err_puts("marshall_read_pointer: Mutex*: mutex_new");
+    assert(! "marshall_read_pointer: Mutex*: mutex_new");
+    return NULL;
   }
+#endif
   if (! pointer_init(&tmp, NULL, target_type, (void *) u)) {
     err_puts("marshall_read_pointer: pointer_init");
     assert(! "marshall_read_pointer: pointer_init");
