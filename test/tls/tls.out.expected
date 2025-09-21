@@ -1,52 +1,26 @@
+require Buf
+Buf
 require Socket
 Socket
 require Socket.Buf
 Socket.Buf
+require Thread
+Thread
 require TLS
 TLS
-TLS.init()
-TLS
-(server_config = TLS.Config.new()) ; void
+require TLS.Client
+TLS.Client
+require TLS.Server
+TLS.Server
+(r = fork()) ; void
 void
-TLS.Config.set_cert_file(server_config, "/etc/ssl/fullchain.pem") ; void
 void
-TLS.Config.set_key_file(server_config, "/etc/ssl/private/privkey.pem") ; void
 void
-(server_ctx = TLS.server()) ; void
 void
-TLS.configure(server_ctx, server_config) ; void
-void
-(server_socket = Socket.listen("127.0.0.1", "57000")) ; void
-void
-(client_config = TLS.Config.new()) ; void
-void
-TLS.Config.set_ca_file(client_config, TLS.ca_cert_path()) ; void
-void
-(client_ctx = TLS.client()) ; void
-void
-TLS.configure(client_ctx, client_config) ; void
-void
-(client_socket = Socket.connect("127.0.0.1", "57000")) ; void
-void
-TLS.connect_socket(client_ctx, client_socket, hostname()) ; void
-void
-(server_client_socket = Socket.accept(server_socket)) ; void
-void
-(server_client_ctx = TLS.accept_socket(server_ctx, server_client_socket)) ; void
-void
-TLS.free(server_client_ctx)
-void
-Socket.close(server_client_socket)
-void
-Socket.close(client_socket)
-void
-Socket.close(server_socket)
-void
-TLS.Config.free(client_config)
-void
-TLS.Config.free(server_config)
-void
-TLS.free(client_ctx)
-void
-TLS.free(server_ctx)
+server: listening on egress 57000
+kc3_tls_server_init_accept: accept: OK
+kc3_tls_server_init_accept: tls_accept_socket: OK
+client: connected to egress 57000
+server: Hello from client !
+client: Hello from server !
 void

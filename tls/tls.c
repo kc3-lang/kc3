@@ -167,6 +167,7 @@ p_tls * kc3_tls_server (p_tls *dest)
     err_write_1("kc3_tls_server: tls_server: ");
     err_puts(tls_error(tmp));
     assert(! "kc3_tls_server: tls_server");
+    return NULL;
   }
   *dest = tmp;
   return dest;
