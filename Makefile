@@ -817,7 +817,7 @@ kc3-${KC3_VERSION}.tar.gz: kc3.index
 	pax -rw < kc3.index kc3-${KC3_VERSION}
 	pax -wz kc3-${KC3_VERSION} > kc3-${KC3_VERSION}.tar.gz
 
-kc3.index: sources.mk Makefile
+kc3.index: sort sources.mk Makefile
 	echo -n > kc3.index.tmp
 	for F in ${KC3_EXTERNAL_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_CONFIGURES}; do echo "$$F"; done >> kc3.index.tmp
@@ -841,7 +841,7 @@ kc3.index: sources.mk Makefile
 	for F in ${KC3_TEST_PDF_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_OTHER_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_DOC_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
-	sort -u < kc3.index.tmp > kc3.index
+	./bin/sort -u < kc3.index.tmp > kc3.index
 	rm kc3.index.tmp
 
 kc3s:

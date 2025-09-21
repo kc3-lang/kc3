@@ -1317,6 +1317,8 @@ markdown/md4c.h
 markdown/sources.mk
 markdown/sources.sh
 markdown/update_sources
+runj/Makefile
+runj/runj.c
 smtp/Makefile
 smtp/configure
 smtp/kc3_smtp.c
@@ -1339,6 +1341,8 @@ socket/sources.mk
 socket/sources.sh
 socket/types.h
 socket/update_sources
+sort/Makefile
+sort/sort.c
 sources.mk
 sources.sh
 test/Makefile
