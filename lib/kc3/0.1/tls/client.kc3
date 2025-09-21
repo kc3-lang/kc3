@@ -12,8 +12,8 @@
 
 defmodule TLS.Client do
 
-  defstruct [socket: %Socket{},
-             buf_rw: %BufRW{}]
+  defstruct [buf_rw: %BufRW{},
+             socket: %Socket{}]
 
   dlopen("tls.so")
 

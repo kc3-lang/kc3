@@ -17,5 +17,7 @@ Buf
      save: (Ptr) 0x0,
      seek: (Ptr) 0x0,
      size: (Uw) 0,
+     tell: (Ptr) 0x0,
+     total_size: (Ptr) 0x0,
      user_ptr: (Ptr) 0x0,
      wpos: (Uw) 0}

@@ -29,14 +29,13 @@ struct tls_buf {
 };
 
 struct tls_client {
-  t_socket socket;
   s_buf_rw buf_rw;
+  t_socket socket;
 };
 
 struct tls_server {
-  t_socket socket;
-  p_tls ctx;
   s_buf_rw buf_rw;
+  t_socket socket;
 };
 
 #endif
