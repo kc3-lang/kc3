@@ -55,7 +55,7 @@ uw struct_type_compute_size (uw offset)
 #endif
   if (sizeof(long) == 4 && ! win64)
     return (offset + 3) / 4 * 4;
-#ifdef __APPLE__
+#if defined(__APPLE__) && defined(__aarch64__)
   return (offset + 7) / 8 * 8;
 #else
   return (offset + 15) / 16 * 16;
