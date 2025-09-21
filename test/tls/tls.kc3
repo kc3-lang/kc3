@@ -12,7 +12,8 @@ quote require TLS.Client
 require TLS.Client
 quote require TLS.Server
 require TLS.Server
-r = fork()
+quote (r = fork()) ; void
+(r = fork()) ; void
 if (r < 0) do
   exit(1)
 end
@@ -28,14 +29,12 @@ if r == 0 do
   server_client_tls = TLS.Server.accept(server_socket, server_ctx)
   line = Buf.read_line(server_client_tls.buf_rw.r)
   puts("server: #{line}")
-  r = Buf.write_str(server_client_tls.buf_rw.w, "Hello from server !\n")
-  puts("server: write_str: #{r}")
+  Buf.write_str(server_client_tls.buf_rw.w, "Hello from server !\n")
   TLS.Server.close(server_client_tls)
-  TLS.close(server_ctx)
   Socket.close(server_socket)
   TLS.Config.free(server_config)
   TLS.free(server_ctx)
-  exit_subprocess(1)
+  exit_subprocess(0)
 else
   TLS.init()
   client_config = TLS.Config.new()
@@ -46,12 +45,10 @@ else
   client_tls = TLS.Client.connect(client_ctx, hostname(),
     "57000")
   puts("client: connected to egress 57000")
-  r = Buf.write_str(client_tls.buf_rw.w, "Hello from client !\n")
-  puts("client: write_str: #{r}")
+  Buf.write_str(client_tls.buf_rw.w, "Hello from client !\n")
   line = Buf.read_line(client_tls.buf_rw.r)
   puts("client: #{line}")
   TLS.Client.close(client_tls)
-  TLS.close(client_ctx)
   TLS.Config.free(client_config)
   TLS.free(client_ctx)
 end

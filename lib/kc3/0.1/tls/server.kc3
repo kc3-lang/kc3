@@ -23,4 +23,6 @@ defmodule TLS.Server do
   def accept = cfn TLS.Server "kc3_tls_server_init_accept" (Result,
     Socket, TLS*)
 
+  def close = cfn Void "kc3_tls_server_close" (TLS.Server)
+
 end

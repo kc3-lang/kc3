@@ -26,12 +26,9 @@ sw tls_buf_open_w_flush (s_buf *buf);
 
 void tls_buf_close (s_buf *buf)
 {
-  s_tls_buf *tls_buf;
   assert(buf);
   assert(buf->user_ptr);
-  tls_buf = buf->user_ptr;
   buf_flush(buf);
-  tls_close(tls_buf->ctx);
   buf->flush = NULL;
   buf->refill = NULL;
   free(buf->user_ptr);
@@ -95,7 +92,7 @@ sw tls_buf_open_r_refill (s_buf *buf)
   return r;
 }
 
-s_buf * tls_buf_open_w (s_buf *buf, struct tls *ctx)
+s_buf * tls_buf_open_w (s_buf *buf, p_tls ctx)
 {
   s_tls_buf * tls_buf = NULL;
   assert(buf);

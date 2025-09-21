@@ -17,8 +17,12 @@
 #include "tls_buf.h"
 #include "tls_server.h"
 
-void kc3_tls_server_clean (s_tls_server *tls_server)
+void kc3_tls_server_close (s_tls_server *tls_server)
 {
+  s_tls_buf *tls_buf;
+  buf_flush(tls_server->buf_rw.w);
+  tls_buf = tls_server->buf_rw.w->user_ptr;
+  tls_close(tls_buf->ctx);
   tls_buf_close(tls_server->buf_rw.r);
   tls_buf_close(tls_server->buf_rw.w);
   buf_rw_clean(&tls_server->buf_rw);
@@ -40,11 +44,17 @@ s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
     assert(! "kc3_tls_server_init_accept: socket_init_accept");
     return NULL;
   }
-  if (tls_accept_socket(*ctx, &tmp_ctx, *socket)) {
+  if (true) {
+    err_puts("kc3_tls_server_init_accept: accept: OK");
+  }
+  if (tls_accept_socket(*ctx, &tmp_ctx, tmp.socket)) {
     err_write_1("kc3_tls_server_init_accept: tls_accept_socket: ");
     err_puts(tls_error(*ctx));
     assert(! "kc3_tls_server_init_accept: tls_accept_socket");
     return NULL;
+  }
+  if (true) {
+    err_puts("kc3_tls_server_init_accept: tls_accept_socket: OK");
   }
   if (! (tmp.buf_rw.r = buf_new_alloc(BUF_SIZE))) {
     err_puts("kc3_tls_server_init_accept: buf_new_alloc r");
