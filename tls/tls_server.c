@@ -29,6 +29,7 @@ s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
                                            p_socket socket,
                                            p_tls *ctx)
 {
+  sw r;
   s_tls_server tmp = {0};
   p_tls        tmp_ctx = NULL;
   assert(tls_server);
@@ -66,6 +67,19 @@ s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
   if (! tls_buf_open_w(tmp.buf_rw.w, tmp_ctx)) {
     err_puts("kc3_tls_server_init_accept: tls_buf_open_w");
     assert(! "kc3_tls_server_init_accept: tls_buf_open_w");
+    tls_buf_close(tmp.buf_rw.r);
+    buf_delete(tmp.buf_rw.w);
+    buf_delete(tmp.buf_rw.r);
+    return NULL;
+  }
+  while ((r = tls_handshake(tmp_ctx)) == TLS_WANT_POLLIN ||
+         r == TLS_WANT_POLLOUT)
+    ;
+  if (r) {
+    err_write_1("kc3_tls_server_init_accept: tls_handshake: ");
+    err_puts(tls_error(tmp_ctx));
+    assert(! "kc3_tls_server_init_accept: tls_handshake");
+    tls_buf_close(tmp.buf_rw.w);
     tls_buf_close(tmp.buf_rw.r);
     buf_delete(tmp.buf_rw.w);
     buf_delete(tmp.buf_rw.r);

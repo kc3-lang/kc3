@@ -29,6 +29,7 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
                                             p_tls *ctx, s_str *host,
                                             s_str *port)
 {
+  sw r;
   s_tls_client tmp = {0};
   assert(tls_client);
   assert(ctx);
@@ -54,6 +55,19 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
   if (! (tmp.buf_rw.w = buf_new_alloc(BUF_SIZE))) {
     err_puts("kc3_tls_client_init_connect: buf_new_alloc w");
     assert(! "kc3_tls_client_init_connect: buf_new_alloc w");
+    buf_delete(tmp.buf_rw.r);
+    return NULL;
+  }
+  while ((r = tls_handshake(*ctx)) == TLS_WANT_POLLIN ||
+         r == TLS_WANT_POLLOUT)
+    ;
+  if (r) {
+    err_write_1("kc3_tls_client_init_connect: tls_handshake: ");
+    err_puts(tls_error(*ctx));
+    assert(! "kc3_tls_client_init_connect: tls_handshake");
+    tls_buf_close(tmp.buf_rw.w);
+    tls_buf_close(tmp.buf_rw.r);
+    buf_delete(tmp.buf_rw.w);
     buf_delete(tmp.buf_rw.r);
     return NULL;
   }
