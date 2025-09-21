@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <unistd.h>
 #include <tls.h>
 #include "../libkc3/kc3.h"
 #include "../socket/socket.h"
@@ -29,6 +30,7 @@ s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
                                            p_tls *ctx)
 {
   s_tls_server tmp = {0};
+  p_tls        tmp_ctx = NULL;
   assert(tls_server);
   assert(ctx);
   assert(*ctx);
@@ -37,24 +39,33 @@ s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
     assert(! "kc3_tls_server_init_accept: socket_init_accept");
     return NULL;
   }
-  if (tls_accept_socket(*ctx, &tmp.ctx, *socket)) {
+  if (tls_accept_socket(*ctx, &tmp_ctx, *socket)) {
     err_write_1("kc3_tls_server_init_accept: tls_accept_socket: ");
     err_puts(tls_error(*ctx));
     assert(! "kc3_tls_server_init_accept: tls_accept_socket");
     return NULL;
   }
-  if (! (tmp.buf_rw.r = buf_new_alloc(BUF_SIZE)))
+  if (! (tmp.buf_rw.r = buf_new_alloc(BUF_SIZE))) {
+    err_puts("kc3_tls_server_init_accept: buf_new_alloc r");
+    assert(! "kc3_tls_server_init_accept: buf_new_alloc r");
     return NULL;
+  }
   if (! (tmp.buf_rw.w = buf_new_alloc(BUF_SIZE))) {
+    err_puts("kc3_tls_server_init_accept: buf_new_alloc w");
+    assert(! "kc3_tls_server_init_accept: buf_new_alloc w");
     buf_delete(tmp.buf_rw.r);
     return NULL;
   }
-  if (! tls_buf_open_r(tmp.buf_rw.r, *ctx)) {
+  if (! tls_buf_open_r(tmp.buf_rw.r, tmp_ctx)) {
+    err_puts("kc3_tls_server_init_accept: tls_buf_open_r");
+    assert(! "kc3_tls_server_init_accept: tls_buf_open_r");
     buf_delete(tmp.buf_rw.w);
     buf_delete(tmp.buf_rw.r);
     return NULL;
   }
-  if (! tls_buf_open_w(tmp.buf_rw.w, *ctx)) {
+  if (! tls_buf_open_w(tmp.buf_rw.w, tmp_ctx)) {
+    err_puts("kc3_tls_server_init_accept: tls_buf_open_w");
+    assert(! "kc3_tls_server_init_accept: tls_buf_open_w");
     tls_buf_close(tmp.buf_rw.r);
     buf_delete(tmp.buf_rw.w);
     buf_delete(tmp.buf_rw.r);

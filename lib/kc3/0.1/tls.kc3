@@ -24,6 +24,8 @@ defmodule TLS do
 
   def client = cfn TLS* "kc3_tls_client" (Result)
 
+  def close = cfn TLS* "kc3_tls_close" (TLS*, Result)
+
   def configure = cfn TLS* "kc3_tls_configure" (TLS*, TLS.Config*, Result)
 
   def connect_socket = cfn TLS* "kc3_tls_connect_socket" (TLS*, Socket,
