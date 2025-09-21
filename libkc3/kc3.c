@@ -16,8 +16,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <unistd.h>
 
-#ifdef __OpenBSD__
+#if defined(__OpenBSD__)
 # include <sys/sysctl.h>
 #endif
 
@@ -25,7 +27,6 @@
 # include <sys/wait.h>
 #endif
 
-#include <unistd.h>
 #include "alist.h"
 #include "alloc.h"
 #include "array.h"
@@ -62,6 +63,7 @@
 #include "sym.h"
 #include "tag.h"
 #include "time.h"
+#include "timespec.h"
 #include "u8.h"
 #include "uw.h"
 
@@ -238,9 +240,21 @@ void kc3_break (void)
 
 s_tag * kc3_buf_parse_tag (s_buf *buf, s_tag *dest)
 {
-  sw r;
-  r = buf_parse_tag(buf, dest);
-  if (r <= 0)
+  if (buf_parse_tag(buf, dest) <= 0)
+    return NULL;
+  return dest;
+}
+
+s_str * kc3_buf_read_line (s_buf *buf, s_str *dest)
+{
+  if (buf_read_until_1_into_str(buf, "\n", dest) < 0)
+    return NULL;
+  return dest;
+}
+
+s_str * kc3_buf_read_to_str (s_buf *buf, s_str *dest)
+{
+  if (buf_read_to_str(buf, dest) < 0)
     return NULL;
   return dest;
 }
@@ -462,7 +476,7 @@ void kc3_exit (s_tag *code)
   exit((int) code_u8);
 }
 
-void kc3__exit (s_tag *code)
+void kc3_exit_subprocess (s_tag *code)
 {
   u8 code_u8;
   const s_sym *type;
@@ -1130,6 +1144,15 @@ void kc3_return_from (const s_sym **name, s_tag *value)
 s_list ** kc3_search_modules (s_list **dest)
 {
   return env_search_modules(env_global(), dest);
+}
+
+void kc3_sleep (s_tag *timeout)
+{
+  s_timespec time = {0};
+  const s_sym *sym_Timespec;
+  sym_Timespec = sym_1("Timespec");
+  if (timespec_init_cast(&time, &sym_Timespec, timeout))
+    nanosleep(&time, NULL);
 }
 
 s_list ** kc3_stacktrace (s_list **dest)

@@ -71,6 +71,7 @@ PROTOTYPES_ERR_IO_INSPECT(map,                 const s_map *);
 PROTOTYPES_ERR_IO_INSPECT(plist,               p_list *);
 PROTOTYPES_ERR_IO_INSPECT(psym,                p_sym const *);
 PROTOTYPES_ERR_IO_INSPECT(ptr,                 const u_ptr_w *);
+PROTOTYPES_ERR_IO_INSPECT(quote,               const s_quote *);
 PROTOTYPES_ERR_IO_INSPECT(ratio,               const s_ratio *);
 PROTOTYPES_ERR_IO_INSPECT(s8,                  s8);
 PROTOTYPES_ERR_IO_INSPECT(s8_decimal,          s8);

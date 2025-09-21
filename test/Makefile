@@ -119,6 +119,12 @@ gdb_test_pdf:
 gdb_test_pdf_asan:
 	cd pdf && ${GDB} ../../ikc3/.libs/ikc3_asan
 
+gdb_test_tls:
+	cd tls && ${GDB} ../../ikc3/.libs/ikc3_debug
+
+gdb_test_tls_asan:
+	cd tls && ${GDB} ../../ikc3/.libs/ikc3_asan
+
 lldb_test: debug
 	rm -f kc3.dump
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi

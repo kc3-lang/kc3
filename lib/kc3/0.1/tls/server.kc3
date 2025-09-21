@@ -15,13 +15,12 @@ require TLS
 
 defmodule TLS.Server do
 
-  defstruct [socket: %Socket{},
-             ctx: (TLS*) 0,
-             buf_rw: %BufRW{}]
+  defstruct [buf_rw: %BufRW{},
+             socket: %Socket{}]
 
   dlopen("tls.so")
 
   def accept = cfn TLS.Server "kc3_tls_server_init_accept" (Result,
-    TLS*, TLS**, Socket)
+    Socket, TLS*)
 
 end

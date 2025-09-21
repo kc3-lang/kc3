@@ -1274,7 +1274,7 @@ sw buf_read_until_str_into_str (s_buf *buf, const s_str *end,
       goto clean;
     }
     if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
-      if (false)
+      if (true)
         err_puts("buf_read_until_str_into_str: "
                  "buf_read_character_utf8");
       goto restore;

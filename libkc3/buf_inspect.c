@@ -626,6 +626,10 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
       if (arity == 2 && op->precedence) {
         r = buf_inspect_call_op(buf, call, op->precedence);
         tag_clean(&op_tag);
+        if (r < 0) {
+          err_puts("buf_inspect_call: buf_inspect_call_op");
+          assert(! "buf_inspect_call: buf_inspect_call_op");
+        }
         return r;
       }
       tag_clean(&op_tag);
@@ -3548,6 +3552,7 @@ sw buf_inspect_quote (s_buf *buf, const s_quote *quote)
   result += r;
   if ((r = buf_inspect_tag(buf, quote->tag)) < 0)
     goto restore;
+  result += r;
   r = result;
   goto clean;
  restore:

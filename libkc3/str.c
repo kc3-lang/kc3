@@ -446,6 +446,7 @@ s_str * str_init_alloc_copy (s_str *str, uw size, const char *p)
 
 DEF_STR_INIT_STRUCT(array)
 DEF_STR_INIT(bool, bool)
+DEF_STR_INIT_STRUCT(call)
 DEF_STR_INIT_STRUCT(callable)
 
 s_str * str_init_cast (s_str *str, const s_sym * const *type,
@@ -478,6 +479,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_list(str, tag->data.plist);
   case TAG_MAP:
     return str_init_map(str, &tag->data.map);
+  case TAG_PCALL:
+    return str_init_call(str, tag->data.pcall);
   case TAG_PCALLABLE:
     return str_init_callable(str, tag->data.pcallable);
   case TAG_PSTRUCT:
@@ -488,6 +491,10 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_ptr_free(str, &tag->data.ptr_free);
   case TAG_PVAR:
     return str_init_var(str, tag->data.pvar);
+  case TAG_QUOTE:
+    return str_init_quote(str, &tag->data.quote);
+  case TAG_RATIO:
+    return str_init_ratio(str, &tag->data.ratio);
   case TAG_S8:
     return str_init_s8(str, tag->data.s8);
   case TAG_S16:
@@ -988,6 +995,7 @@ DEF_STR_INIT_PTR(plist, p_list *)
 DEF_STR_INIT_STRUCT(map)
 DEF_STR_INIT_PTR(ptr, const u_ptr_w *)
 DEF_STR_INIT_PTR(ptr_free, const u_ptr_w *)
+DEF_STR_INIT_STRUCT(quote)
 
 s_str * str_init_random_base64 (s_str *str, const s_tag *len)
 {

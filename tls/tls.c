@@ -111,6 +111,20 @@ p_tls * kc3_tls_client (p_tls *dest)
   return dest;
 }
 
+p_tls * kc3_tls_close (p_tls *ctx, p_tls *dest)
+{
+  assert(ctx);
+  assert(*ctx);
+  assert(dest);
+  if (tls_close(*ctx)) {
+    err_write_1("kc3_tls_close: tls_close: ");
+    err_puts(tls_error(*ctx));
+    return NULL;
+  }
+  *dest = *ctx;
+  return dest;
+}
+
 p_tls * kc3_tls_connect_socket (p_tls *ctx, p_socket sockfd,
                                 const s_str *hostname,
                                 p_tls *dest)

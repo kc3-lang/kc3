@@ -1,64 +1,53 @@
+quote require Buf
+require Buf
 quote require Socket
 require Socket
 quote require Socket.Buf
 require Socket.Buf
+quote require Thread
+require Thread
 quote require TLS
 require TLS
 quote require TLS.Client
 require TLS.Client
 quote require TLS.Server
 require TLS.Server
-quote TLS.init()
-TLS.init()
-quote (server_config = TLS.Config.new()) ; void
-(server_config = TLS.Config.new()) ; void
-quote TLS.Config.set_cert_file(server_config,
-  "/etc/ssl/fullchain.pem") ; void
-TLS.Config.set_cert_file(server_config,
-  "/etc/ssl/fullchain.pem") ; void
-quote TLS.Config.set_key_file(server_config,
-  "/etc/ssl/private/privkey.pem") ; void
-TLS.Config.set_key_file(server_config,
-  "/etc/ssl/private/privkey.pem") ; void
-quote (server_ctx = TLS.server()) ; void
-(server_ctx = TLS.server()) ; void
-quote TLS.configure(server_ctx, server_config) ; void
-TLS.configure(server_ctx, server_config) ; void
-quote (server_socket = Socket.listen(hostname(), "57000")); void
-(server_socket = Socket.listen(hostname(), "57000")) ; void
-quote (client_config = TLS.Config.new()) ; void
-(client_config = TLS.Config.new()) ; void
-quote TLS.Config.set_ca_file(client_config, TLS.ca_cert_path()) ; void
-TLS.Config.set_ca_file(client_config, TLS.ca_cert_path()) ; void
-quote (client_ctx = TLS.client()) ; void
-(client_ctx = TLS.client()) ; void
-quote TLS.configure(client_ctx, client_config) ; void
-TLS.configure(client_ctx, client_config) ; void
-quote (client_tls = TLS.Client.connect(client_ctx, hostname(),
-  "57000")) ; void
-(client_tls = TLS.Client.connect(client_ctx, hostname(),
-  "57000")) ; void
-quote (server_client_tls = TLS.Server.accept(server_ctx,
-  server_socket)) ; void
-(server_client_tls = TLS.Server.accept(server_ctx,
-  server_socket)) ; void
-quote Buf.write_str(server_client_tls_buf.buf_rw.w, "Hello, world !\n")
-Buf.write_str(server_client_tls_buf.buf_rw.w, "Hello, world !\n")
-quote Buf.read_until_str_into_str(client_tls_buf.buf_rw.r, "\n")
-Buf.read_until_str_into_str(client_tls_buf.buf_rw.r, "\n")
-quote TLS.free(server_client_ctx)
-TLS.free(server_client_ctx)
-quote Socket.close(server_client_socket)
-Socket.close(server_client_socket)
-quote Socket.close(client_socket)
-Socket.close(client_socket)
-quote Socket.close(server_socket)
-Socket.close(server_socket)
-quote TLS.Config.free(client_config)
-TLS.Config.free(client_config)
-quote TLS.Config.free(server_config)
-TLS.Config.free(server_config)
-quote TLS.free(client_ctx)
-TLS.free(client_ctx)
-quote TLS.free(server_ctx)
-TLS.free(server_ctx)
+r = fork()
+if (r < 0) do
+  exit(1)
+end
+if r == 0 do
+  TLS.init()
+  server_config = TLS.Config.new()
+  TLS.Config.set_cert_file(server_config, "/etc/ssl/fullchain.pem")
+  TLS.Config.set_key_file(server_config, "/etc/ssl/private/privkey.pem")
+  server_ctx = TLS.server()
+  TLS.configure(server_ctx, server_config)
+  server_socket = Socket.listen(hostname(), "57000")
+  puts("server: listening on egress 57000")
+  server_client_tls = TLS.Server.accept(server_socket, server_ctx)
+  Buf.read_line(server_client_tls.buf_rw.r)
+  Buf.write_str(server_client_tls.buf_rw.w, "Hello, client !\n")
+  TLS.Server.close(server_client_tls)
+  TLS.close(server_ctx)
+  Socket.close(server_socket)
+  TLS.Config.free(server_config)
+  TLS.free(server_ctx)
+  exit_subprocess(1)
+else
+  TLS.init()
+  client_config = TLS.Config.new()
+  TLS.Config.set_ca_file(client_config, TLS.ca_cert_path())
+  client_ctx = TLS.client()
+  TLS.configure(client_ctx, client_config)
+  sleep(1)
+  client_tls = TLS.Client.connect(client_ctx, hostname(),
+    "57000")
+  puts("client: connected to egress 57000")
+  Buf.write_str(client_tls.buf_rw.w, "Hello, server !\n")
+  Buf.read_line(client_tls.buf_rw.r)
+  TLS.Client.close(client_tls)
+  TLS.close(client_ctx)
+  TLS.Config.free(client_config)
+  TLS.free(client_ctx)
+end

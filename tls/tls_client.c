@@ -46,18 +46,27 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
     assert(! "kc3_tls_client_init_connect: tls_connect_socket");
     return NULL;
   }
-  if (! (tmp.buf_rw.r = buf_new_alloc(BUF_SIZE)))
+  if (! (tmp.buf_rw.r = buf_new_alloc(BUF_SIZE))) {
+    err_puts("kc3_tls_client_init_connect: buf_new_alloc r");
+    assert(! "kc3_tls_client_init_connect: buf_new_alloc r");
     return NULL;
+  }
   if (! (tmp.buf_rw.w = buf_new_alloc(BUF_SIZE))) {
+    err_puts("kc3_tls_client_init_connect: buf_new_alloc w");
+    assert(! "kc3_tls_client_init_connect: buf_new_alloc w");
     buf_delete(tmp.buf_rw.r);
     return NULL;
   }
   if (! tls_buf_open_r(tmp.buf_rw.r, *ctx)) {
+    err_puts("kc3_tls_client_init_connect: tls_buf_open_r");
+    assert(! "kc3_tls_client_init_connect: tls_buf_open_r");
     buf_delete(tmp.buf_rw.w);
     buf_delete(tmp.buf_rw.r);
     return NULL;
   }
   if (! tls_buf_open_w(tmp.buf_rw.w, *ctx)) {
+    err_puts("kc3_tls_client_init_connect: ");
+    assert(! "kc3_tls_client_init_connect: ");
     tls_buf_close(tmp.buf_rw.r);
     buf_delete(tmp.buf_rw.w);
     buf_delete(tmp.buf_rw.r);

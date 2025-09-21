@@ -20,6 +20,21 @@
 
 #include "types.h"
 
+#define DEF_TIMESPEC_INIT(type)                                       \
+  s_timespec * timespec_init_ ## type (s_timespec *time, type src)    \
+
+/* Stack-allocation compatible functions. */
+s_timespec * timespec_init_cast (s_timespec *time, p_sym *type,
+                                 s_tag *src);
+DEF_TIMESPEC_INIT(f32);
+DEF_TIMESPEC_INIT(f64);
+DEF_TIMESPEC_INIT(f128);
+DEF_TIMESPEC_INIT(u8);
+DEF_TIMESPEC_INIT(u16);
+DEF_TIMESPEC_INIT(u32);
+DEF_TIMESPEC_INIT(u64);
+DEF_TIMESPEC_INIT(uw);
+
 /* Operators. */
 s_timespec * timespec_sub (const s_timespec *a, const s_timespec *b,
                            s_timespec *dest);

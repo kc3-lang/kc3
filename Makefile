@@ -626,6 +626,24 @@ gdb_test_pdf_asan: lib_links_asan
 	${MAKE} -C pdf asan
 	${MAKE} -C test gdb_test_pdf_asan
 
+gdb_test_tls: lib_links_debug
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C socket debug
+	${MAKE} -C tls debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C test gdb_test_tls
+
+gdb_test_tls_asan: lib_links_asan
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C socket asan
+	${MAKE} -C tls asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C test gdb_test_tls_asan
+
 gen:
 	${MAKE} -C libkc3 gen
 

@@ -27,6 +27,8 @@ defmodule Buf do
              save: (Ptr) 0,
              seek: (Ptr) 0,
              size: (Uw) 0,
+             tell: (Ptr) 0,
+             total_size: (Ptr) 0,
              user_ptr: (Ptr) 0,
              wpos: (Uw) 0]
 
@@ -44,10 +46,9 @@ defmodule Buf do
 
   def parse_tag = cfn Tag "kc3_buf_parse_tag" (Buf, Result)
 
-  def read_to_str = cfn Str "buf_read_to_str" (Buf, Result)
+  def read_to_str = cfn Str "kc3_buf_read_to_str" (Buf, Result)
 
-  def read_until_str_into_str = cfn Str "buf_read_until_str_into_str" (
-    Buf, Str, Result)
+  def read_line = cfn Str "kc3_buf_read_line" (Buf, Result)
 
   def refill = cfn Sw "buf_refill" (Buf)
 

@@ -20,6 +20,15 @@
 void           kc3_tls_server_clean (s_tls_server *tls_server);
 s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
                                            p_socket socket,
-                                           p_tls *ctx)
+                                           p_tls *ctx);
+
+/* Heap-allocation functions, call kc3_tls_server_delete
+   after use. */
+/*
+void           kc3_tls_server_delete (p_tls_server *tls_server);
+p_tls_server * kc3_tls_server_new_accept (p_tls_server *pserver,
+                                          p_socket socket,
+                                          p_tls *ctx);
+*/
 
 #endif /* KC3_TLS_SERVER_H */
