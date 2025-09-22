@@ -291,12 +291,14 @@ sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
     pdf_file_clean(&tmp);
     return -1;
   }
-   if ((r = pdf_buf_parse_file_body(buf, &xref, &tmp.xref)) <= 0) {
+  if ((r = pdf_buf_parse_file_body(buf, &xref, &tmp.xref)) <= 0) {
     err_puts("pdf_buf_parse_file: pdf_buf_parse_file_body");
     assert(! "pdf_buf_parse_file: pdf_buf_parse_file_body");
+    map_clean(&xref);
     pdf_file_clean(&tmp);
     return -1;
   }
+  map_clean(&xref);
   result += r;
   *dest = tmp;
   return result;
