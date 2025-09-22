@@ -128,9 +128,12 @@ echo "HAVE_SDL2 = $HAVE_SDL2" >> ${CONFIG_MK}
 update_config_mk
 env_reset
 
+SUBDIRS=
 if ${HAVE_CAIRO}; then
-    config_subdirs cairo
+    SUBDIRS="${SUBDIRS} cairo"
 fi
 if ${HAVE_SDL2}; then
-    config_subdirs sdl2
+    SUBDIRS="${SUBDIRS} sdl2"
 fi
+
+config_subdirs ${SUBDIRS}
