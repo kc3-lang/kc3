@@ -261,55 +261,111 @@ sw pdf_buf_parse_dictionnary (s_buf *buf, s_map *dest)
   return r;
 }
 
+sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
+{
+  sw r;
+  sw result = 0;
+  s_pdf_file tmp = {0};
+  s_map xref = {0};
+  if ((r = pdf_buf_parse_file_header(buf, &tmp.header)) <= 0) {
+    err_puts("pdf_buf_parse_file: pdf_buf_parse_file_header");
+    assert(! "pdf_buf_parse_file: pdf_buf_parse_file_header");
+    return r;
+  }
+  result += r;
+  if ((r = pdf_buf_parse_trailer(buf, &tmp.trailer)) <= 0) {
+    err_puts("pdf_buf_parse_file: pdf_buf_parse_trailer");
+    assert(! "pdf_buf_parse_file: pdf_buf_parse_trailer");
+    return r;
+  }
+  result += r;
+  if ((r = buf_seek(buf, tmp.trailer.startxref, SEEK_SET)) < 0 ||
+      (u64) r != tmp.trailer.startxref) {
+    err_puts("pdf_buf_parse_file: buf_seek");
+    assert(! "pdf_buf_parse_file: buf_seek");
+    return -1;
+  }
+  if ((r = pdf_buf_parse_xref(buf, &xref)) <= 0) {
+    err_puts("pdf_buf_parse_file: pdf_buf_parse_xref f");
+    assert(! "pdf_buf_parse_file: pdf_buf_parse_xref");
+    pdf_file_clean(&tmp);
+    return -1;
+  }
+   if ((r = pdf_buf_parse_file_body(buf, &xref, &tmp.xref)) <= 0) {
+    err_puts("pdf_buf_parse_file: pdf_buf_parse_file_body");
+    assert(! "pdf_buf_parse_file: pdf_buf_parse_file_body");
+    pdf_file_clean(&tmp);
+    return -1;
+  }
+  result += r;
+  *dest = tmp;
+  return result;
+}
+
 sw pdf_buf_parse_file_body (s_buf *buf, s_map *xref, s_map *dest)
 {
-  uw i = 0;
+  uw i;
   s_map tmp = {0};
   s_tuple tmp_tuple = {0};
   s64 offset;
   sw r;
   sw result = 0;
   if (! map_init(&tmp, xref->count)) {
-    err_puts("pdf_buf_parse_file_body: do_block_init");
-    assert(! "pdf_buf_parse_file_body: do_block_init");
-    return NULL;
+    err_puts("pdf_buf_parse_file_body: map_init");
+    assert(! "pdf_buf_parse_file_body: map_init");
+    return -1;
   }
+  i = 0;
   while (i < xref->count) {
-    offset = xref->value[i].data.u64;
-    if (buf_seek(buf, offset, SEEK_SET) != offset) {
-      err_puts("pdf_buf_parse_file_body: pdf_buf_parse_indirect_object");
-      assert(! "pdf_buf_parse_file_body: pdf_buf_parse_indirect_object");
-      goto clean;
-    }
-    if ((r = pdf_buf_parse_indirect_object(buf, &tmp_tuple)) <= 0) {
-      err_puts("pdf_buf_parse_file_body: pdf_buf_parse_indirect_object");
-      assert(! "pdf_buf_parse_file_body: pdf_buf_parse_indirect_object");
-      goto clean;
-    }
-    result += r;
-    if (tmp_tuple.count != 4) {
-      err_puts("pdf_buf_parse_file_body: tmp_tuple.count != 4)");
-      assert(! "pdf_buf_parse_file_body: tmp_tuple.count != 4)");
-      goto clean;
+    if (true) {
+      err_write_1("pdf_buf_parse_file_body: i=");
+      err_inspect_uw_decimal(i);
+      err_write_1(" key=");
+      err_inspect_tag(xref->key + i);
+      err_write_1("\n");
     }
     if (! tag_init_copy(tmp.key + i, xref->key + i)) {
       err_puts("pdf_buf_parse_file_body: tag_init_copy key");
       assert(! "pdf_buf_parse_file_body: tag_init_copy key");
       goto clean;
     }
-    if (! tag_init_copy(tmp.value + i, tmp_tuple.tag + 3)) {
-      err_puts("pdf_buf_parse_file_body: tag_init_copy value");
-      assert(! "pdf_buf_parse_file_body: tag_init_copy value");
-      goto clean; 
+    if (xref->value[i].type == TAG_U64) {
+      offset = xref->value[i].data.u64;
+      if (true) {
+        err_write_1("pdf_buf_parse_file_body: offset=");
+        err_inspect_s64(offset);
+        err_write_1("\n");
+      }
+      if (buf_seek(buf, offset, SEEK_SET) != offset) {
+        err_puts("pdf_buf_parse_file_body: buf_seek");
+        assert(! "pdf_buf_parse_file_body: buf_seek");
+        goto clean;
+      }
+      if ((r = pdf_buf_parse_indirect_object(buf, &tmp_tuple)) > 0) {
+        result += r;
+        if (tmp_tuple.count != 4) {
+          err_puts("pdf_buf_parse_file_body:"
+                   " pdf_buf_parse_indirect_object count != 4)");
+          assert(!("pdf_buf_parse_file_body:"
+                   " pdf_buf_parse_indirect_object count != 4)"));
+          tuple_clean(&tmp_tuple);
+          goto clean;
+        }
+        if (! tag_init_copy(tmp.value + i, tmp_tuple.tag + 3)) {
+          err_puts("pdf_buf_parse_file_body: tag_init_copy value");
+          assert(! "pdf_buf_parse_file_body: tag_init_copy value");
+          tuple_clean(&tmp_tuple);
+          goto clean; 
+        }
+        tuple_clean(&tmp_tuple);
+      }
     }
-    tuple_clean(&tmp_tuple);
     i++;
   }
   *dest = tmp;
   return result;
  clean:
   map_clean(&tmp);
-  tuple_clean(&tmp_tuple);
   return -1;
 }
 
@@ -354,47 +410,6 @@ sw pdf_buf_parse_file_header (s_buf *buf, s_str *dest)
  clean:
   buf_save_clean(buf, &save);
   return r;
-}
-
-sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
-{
-  sw r;
-  sw result = 0;
-  s_pdf_file tmp = {0};
-  s_map xref = {0};
-  if ((r = pdf_buf_parse_file_header(buf, &tmp.header)) <= 0) {
-    err_puts("pdf_buf_parse_file: pdf_buf_parse_file_header");
-    assert(! "pdf_buf_parse_file: pdf_buf_parse_file_header");
-    return r;
-  }
-  result += r;
-  if ((r = pdf_buf_parse_trailer(buf, &tmp.trailer)) <= 0) {
-    err_puts("pdf_buf_parse_file: pdf_buf_parse_trailer");
-    assert(! "pdf_buf_parse_file: pdf_buf_parse_trailer");
-    return r;
-  }
-  result += r;
-  if ((r = buf_seek(buf, tmp.trailer.startxref, SEEK_SET)) < 0 ||
-      (u64) r != tmp.trailer.startxref) {
-    err_puts("pdf_buf_parse_file: buf_seek");
-    assert(! "pdf_buf_parse_file: buf_seek");
-    return -1;
-  }
-  if ((r = pdf_buf_parse_xref(buf, &xref)) <= 0) {
-    err_puts("pdf_buf_parse_file: pdf_buf_parse_xref f");
-    assert(! "pdf_buf_parse_file: pdf_buf_parse_xref");
-    pdf_file_clean(&tmp);
-    return -1;
-  }
-   if ((r = pdf_buf_parse_file_body(buf, &xref, &tmp.xref)) <= 0) {
-    err_puts("pdf_buf_parse_file: pdf_buf_parse_xref");
-    assert(! "pdf_buf_parse_file: pdf_buf_parse_xref");
-    pdf_file_clean(&tmp);
-    return -1;
-  }
-  result += r;
-  *dest = tmp;
-  return result;
 }
 
 sw pdf_buf_parse_float (s_buf *buf, f64 *dest)
@@ -471,7 +486,7 @@ sw pdf_buf_parse_indirect_object (s_buf *buf, s_tuple *dest)
   s_tuple tmp = {0};
   buf_save_init(buf, &save);
   if ((r = pdf_buf_parse_integer(buf, &object_number)) <= 0)
-    goto clean;
+    goto restore;
   result += r;
   if ((r = pdf_buf_parse_integer(buf, &generation_number)) <= 0)
     goto restore;
@@ -514,6 +529,11 @@ sw pdf_buf_parse_indirect_object (s_buf *buf, s_tuple *dest)
   tag_clean(&object_number);
   tag_clean(&generation_number);
   buf_save_restore_rpos(buf, &save);
+  if (r < 0) {
+    err_puts("pdf_buf_parse_indirect_object: error");
+    err_inspect_buf(buf);
+    assert(! "pdf_buf_parse_indirect_object: error");
+  }
  clean:
   buf_save_clean(buf, &save);
   return r;
