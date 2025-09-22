@@ -13,6 +13,7 @@
 #include "../libkc3/kc3.h"
 #include "pdf_buf_parse.h"
 #include "pdf_file.h"
+#include <stdlib.h>
 
 // TODO: use xref instead
 sw pdf_buf_ignore_until_token (s_buf *buf, const char *token)
@@ -260,21 +261,56 @@ sw pdf_buf_parse_dictionnary (s_buf *buf, s_map *dest)
   return r;
 }
 
-s_do_block * pdf_buf_parse_file_body(s_buf *body, s_map *xref, s_do_block *dest)
+sw pdf_buf_parse_file_body (s_buf *buf, s_map *xref, s_map *dest)
 {
   uw i = 0;
-  s_do_block tmp = {0};
-  if (! do_block_init(&tmp, xref->count)) {
+  s_map tmp = {0};
+  s_tuple tmp_tuple = {0};
+  s64 offset;
+  sw r;
+  sw result = 0;
+  if (! map_init(&tmp, xref->count)) {
     err_puts("pdf_buf_parse_file_body: do_block_init");
     assert(! "pdf_buf_parse_file_body: do_block_init");
     return NULL;
   }
   while (i < xref->count) {
-    tmp.tag->data.ptag[i].data = xref->value->data.ptag[i].data;
+    offset = xref->value[i].data.u64;
+    if (buf_seek(buf, offset, SEEK_SET) != offset) {
+      err_puts("pdf_buf_parse_file_body: pdf_buf_parse_indirect_object");
+      assert(! "pdf_buf_parse_file_body: pdf_buf_parse_indirect_object");
+      goto clean;
+    }
+    if ((r = pdf_buf_parse_indirect_object(buf, &tmp_tuple)) <= 0) {
+      err_puts("pdf_buf_parse_file_body: pdf_buf_parse_indirect_object");
+      assert(! "pdf_buf_parse_file_body: pdf_buf_parse_indirect_object");
+      goto clean;
+    }
+    result += r;
+    if (tmp_tuple.count != 4) {
+      err_puts("pdf_buf_parse_file_body: tmp_tuple.count != 4)");
+      assert(! "pdf_buf_parse_file_body: tmp_tuple.count != 4)");
+      goto clean;
+    }
+    if (! tag_init_copy(tmp.key + i, xref->key + i)) {
+      err_puts("pdf_buf_parse_file_body: tag_init_copy key");
+      assert(! "pdf_buf_parse_file_body: tag_init_copy key");
+      goto clean;
+    }
+    if (! tag_init_copy(tmp.value + i, tmp_tuple.tag + 3)) {
+      err_puts("pdf_buf_parse_file_body: tag_init_copy value");
+      assert(! "pdf_buf_parse_file_body: tag_init_copy value");
+      goto clean; 
+    }
+    tuple_clean(&tmp_tuple);
     i++;
   }
   *dest = tmp;
-  return dest;
+  return result;
+ clean:
+  map_clean(&tmp);
+  tuple_clean(&tmp_tuple);
+  return -1;
 }
 
 sw pdf_buf_parse_file_header (s_buf *buf, s_str *dest)
@@ -325,6 +361,7 @@ sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
   sw r;
   sw result = 0;
   s_pdf_file tmp = {0};
+  s_map xref = {0};
   if ((r = pdf_buf_parse_file_header(buf, &tmp.header)) <= 0) {
     err_puts("pdf_buf_parse_file: pdf_buf_parse_file_header");
     assert(! "pdf_buf_parse_file: pdf_buf_parse_file_header");
@@ -343,7 +380,13 @@ sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
     assert(! "pdf_buf_parse_file: buf_seek");
     return -1;
   }
-  if ((r = pdf_buf_parse_xref(buf, &tmp.xref)) <= 0) {
+  if ((r = pdf_buf_parse_xref(buf, &xref)) <= 0) {
+    err_puts("pdf_buf_parse_file: pdf_buf_parse_xref f");
+    assert(! "pdf_buf_parse_file: pdf_buf_parse_xref");
+    pdf_file_clean(&tmp);
+    return -1;
+  }
+   if ((r = pdf_buf_parse_file_body(buf, &xref, &tmp.xref)) <= 0) {
     err_puts("pdf_buf_parse_file: pdf_buf_parse_xref");
     assert(! "pdf_buf_parse_file: pdf_buf_parse_xref");
     pdf_file_clean(&tmp);

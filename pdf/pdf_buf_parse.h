@@ -24,6 +24,7 @@ sw   pdf_buf_parse_comment (s_buf *buf);
 sw   pdf_buf_parse_comments (s_buf *buf);
 sw   pdf_buf_parse_dictionnary (s_buf *buf, s_map *dest);
 sw   pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest);
+sw   pdf_buf_parse_file_body (s_buf *buf, s_map *xref, s_map *dest);
 sw   pdf_buf_parse_float (s_buf *buf, f64 *dest);
 sw   pdf_buf_parse_indirect_object (s_buf *buf, s_tuple *dest);
 sw   pdf_buf_parse_integer (s_buf *buf, s_tag *dest);
