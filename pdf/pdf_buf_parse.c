@@ -360,6 +360,12 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_map *xref, s_map *dest)
           goto clean; 
         }
         tuple_clean(&tmp_tuple);
+      } else {
+        err_write_1("pdf_buf_parse_file_body: failed to parse indirect object at offset ");
+        err_inspect_s64(offset);
+        err_write_1(", r=");
+        err_inspect_sw_decimal(r);
+        err_write_1("\n");
       }
     }
     i++;
@@ -1229,13 +1235,4 @@ sw pdf_buf_parse_xref (s_buf *buf, s_map *dest)
   buf_save_restore_rpos(buf, &save);
   buf_save_clean(buf, &save);
   return -1;
-}
-
-bool pdf_character_is_delimiter (character c)
-{
-  return (c == '%' ||
-          c == '/' ||
-          c == '>' ||
-          c == ']' ||
-          character_is_space(c));
 }

@@ -15,6 +15,19 @@
 #include "pdf_buf_parse.h"
 #include <assert.h>
 
+bool pdf_character_is_delimiter (character c)
+{
+  return (c == '%' ||
+          c == '/' ||
+          c == '(' ||
+          c == ')' ||
+          c == '<' ||
+          c == '>' ||
+          c == '[' ||
+          c == ']' ||
+          character_is_space(c));
+}
+
 s_pdf_file * pdf_parse_from_file (s_str *path, s_pdf_file *dest)
 {
   s_buf buf = {0};
