@@ -75,37 +75,10 @@ There are now four full applications written in KC3 that we know of :
      handling
    - securelevel between 0 and 3
      - API that can only increase securelevel between 0 and 2
-     - 0 → (cfn + system + dlopen + dlsym) + (eval + def*)
-     - 1 → def* + eval
->>>>>>> 224b1777 (readme, todo, new in this release)
-       - block all Cfn definition if `securelevel(0) > 0`
-         - `env_eval_callable`
-         - `cfn_eval`
-         - `cfn_link`
-         - `cfn_prep_cif`
-         - `buf_parse_pcallable`
-         - `buf_parse_cfn`
-       - block system() calls if `securelevel(0) > 0`
-         - `kc3_system`
-         - `kc3_system_pipe_exec`
-       - block dlopen() calls if `securelevel(0) > 0`
-         - kc3_dlopen
-         - env_dlopen
-       - block dlsym() calls if `securelevel(0) > 0`
-         - only ever called by cfn_apply which is already blocked at
-           securelevel > 0
+     - 0 → (cfn + system + dlopen + dlsym) + eval + def*
+     - 1 → eval + def*
      - 2 → eval
-       - block buf_parse_fn if `securelevel(0) > 1`
-       - block buf_parse_pcallable if `securelevel(0) > 1`
-       - block env_eval_callable if `securelevel(0) > 1`
-       - block all env_def* if `securelevel(0) > 1`
-       - block all kc3_def* if `securelevel(0) > 1`
-       - block all facts_add* on global env facts
-         if `securelevel(0) > 1`
-       - block all facts_remove* on global env facts
-         if `securelevel(0) > 1`
      - 3 → ø (no KC3 eval, C-mode only)
-       - block all env_eval_* if `securelevel(0) > 2`
    - MP-safe integer counters : `defcounter name = value`
      - environment hash table for name resolution
      - mp-safe
