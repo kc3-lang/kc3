@@ -24,14 +24,13 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_str boundary = {0};
   s_str boundary_newline = {0};
   s_str boundary_tmp = {0};
-  const s_str content_disposition_str = {{NULL}, 19,
-                                         {"Content-Disposition"}};
-  const s_str content_length_str = {{NULL}, 14, {"Content-Length"}};
+  const s_str content_disposition_str = STR("Content-Disposition");
+  const s_str content_length_str = STR("Content-Length");
   uw          content_length_uw = 0;
   s_str      *content_type = NULL;
-  const s_str content_type_str = {{NULL}, 12, {"Content-Type"}};
-  const s_str cookie_str = {{NULL}, 6, {"Cookie"}};
-  const s_str dash = {{NULL}, 2, {"--"}};
+  const s_str content_type_str = STR("Content-Type");
+  const s_str cookie_str = STR("Cookie");
+  const s_str dash = STR("--");
   s_env *env;
   s_tag filename = {0};
   s_buf header_buf = {0};
@@ -41,7 +40,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_tag method_value = {0};
   static s_tag mode = {0};
   static const s_str multipart_form_data =
-    {{NULL}, 30, {"multipart/form-data; boundary="}};
+    STR("multipart/form-data; boundary=");
   s_list            *multipart_headers = NULL;
   s_tag              multipart_name = {0};
   s_str              multipart_value = {0};
@@ -53,7 +52,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   static s_tag   prefix = {0};
   static s_ident prefix_ident;
   s_list *           query_split;
-  static const s_str query_separator = {{NULL}, 1, {"?"}};
+  static const s_str query_separator = STR("?");
   sw r;
   static s_tag   random_len = {0};
   static s_ident random_len_ident;
@@ -66,7 +65,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_tag upload = {0};
   s_str       url;
   static const s_str urlencoded =
-    {{NULL}, 33, {"application/x-www-form-urlencoded"}};
+    STR("application/x-www-form-urlencoded");
   s_str *value;
   assert(req);
   assert(buf);
