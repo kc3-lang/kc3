@@ -317,7 +317,7 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_map *xref, s_map *dest)
   }
   i = 0;
   while (i < xref->count) {
-    if (true) {
+    if (false) {
       err_write_1("pdf_buf_parse_file_body: i=");
       err_inspect_uw_decimal(i);
       err_write_1(" key=");
@@ -331,7 +331,7 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_map *xref, s_map *dest)
     }
     if (xref->value[i].type == TAG_U64) {
       offset = xref->value[i].data.u64;
-      if (true) {
+      if (false) {
         err_write_1("pdf_buf_parse_file_body: offset=");
         err_inspect_s64(offset);
         err_write_1("\n");
