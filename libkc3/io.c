@@ -29,22 +29,26 @@
 #define DEF_ERR_INSPECT(name, type)                                    \
   sw err_inspect_ ## name (type x)                                     \
   {                                                                    \
+    s_env *env;                                                        \
     sw r;                                                              \
-    r = buf_inspect_ ## name(env_global()->err, x);                    \
+    env = env_global();                                                \
+    r = buf_inspect_ ## name(env->err, x);                             \
     if (r < 0)                                                         \
       return r;                                                        \
-    buf_flush(env_global()->err);                                      \
+    buf_flush(env->err);                                               \
     return r;                                                          \
   }
 
 #define DEF_IO_INSPECT(name, type)                                     \
   sw io_inspect_ ## name (type x)                                      \
   {                                                                    \
+    s_env *env;                                                        \
     sw r;                                                              \
-    r = buf_inspect_ ## name(env_global()->out, x);                    \
+    env = env_global();                                                \
+    r = buf_inspect_ ## name(env->out, x);                             \
     if (r < 0)                                                         \
       return r;                                                        \
-    buf_flush(env_global()->out);                                      \
+    buf_flush(env->out);                                               \
     return r;                                                          \
   }
 
@@ -54,7 +58,9 @@
 
 sw err_flush (void)
 {
-  return buf_flush(env_global()->err);
+  s_env *env;
+  env = env_global();
+  return buf_flush(env->err);
 }
 
 sw err_inspect (const s_tag *x)
@@ -101,71 +107,87 @@ sw err_inspect_tag_type (e_tag_type type)
 
 sw err_stacktrace (void)
 {
-  return err_inspect_stacktrace(env_global()->stacktrace);
+  s_env *env;
+  env = env_global();
+  return err_inspect_stacktrace(env->stacktrace);
 }
 
 sw err_puts (const char *x)
 {
+  s_env *env;
   sw r;
   sw result = 0;
-  if ((r = buf_write_1(env_global()->err, x)) < 0)
+  env = env_global();
+  if ((r = buf_write_1(env->err, x)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_u8(env_global()->err, '\n')) < 0)
+  if ((r = buf_write_u8(env->err, '\n')) < 0)
     return r;
   result += r;
-  buf_flush(env_global()->err);
+  buf_flush(env->err);
   return result;
 }
 
 sw err_write (const void *x, uw len)
 {
+  s_env *env;
   sw r;
-  if ((r = buf_write(env_global()->err, x, len)) > 0)
-    buf_flush(env_global()->err);
+  env = env_global();
+  if ((r = buf_write(env->err, x, len)) > 0)
+    buf_flush(env->err);
   return r;
 }
 
 sw err_write_1 (const char *x)
 {
+  s_env *env;
   sw r;
-  if ((r = buf_write_1(env_global()->err, x)) > 0)
-    buf_flush(env_global()->err);
+  env = env_global();
+  if ((r = buf_write_1(env->err, x)) > 0)
+    buf_flush(env->err);
   return r;
 }
 
 sw err_write_str (const s_str *x)
 {
+  s_env *env;
   sw r;
-  if ((r = buf_write_str(env_global()->err, x)) > 0)
-    buf_flush(env_global()->err);
+  env = env_global();
+  if ((r = buf_write_str(env->err, x)) > 0)
+    buf_flush(env->err);
   return r;
 }
 
 sw err_write_u8 (u8 x)
 {
+  s_env *env;
   sw r;
-  if ((r = buf_write_u8(env_global()->err, x)) > 0)
-    buf_flush(env_global()->err);
+  env = env_global();
+  if ((r = buf_write_u8(env->err, x)) > 0)
+    buf_flush(env->err);
   return r;
 }
 
 sw io_flush (void)
 {
-  return buf_flush(env_global()->out);
+  s_env *env;
+  env = env_global();
+  return buf_flush(env->out);
 }
 
 sw io_inspect (const s_tag *x)
 {
+  s_env *env;
   sw r;
   sw result = 0;
-  if ((r = buf_inspect_tag(env_global()->out, x)) < 0)
+  env = env_global();
+  if ((r = buf_inspect_tag(env->out, x)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_u8(env_global()->out, '\n')) < 0)
+  if ((r = buf_write_u8(env->out, '\n')) < 0)
     return r;
   result += r;
-  buf_flush(env_global()->out);
+  buf_flush(env->out);
   return result;
 }
 
@@ -176,52 +198,64 @@ sw io_inspect_tag_type (e_tag_type type)
 
 sw io_stacktrace (void)
 {
-  return io_inspect_stacktrace(env_global()->stacktrace);
+  s_env *env;
+  env = env_global();
+  return io_inspect_stacktrace(env->stacktrace);
 }
 
 sw io_puts (const char *x)
 {
+  s_env *env;
   sw r;
   sw result = 0;
-  if ((r = buf_write_1(env_global()->out, x)) < 0)
+  env = env_global();
+  if ((r = buf_write_1(env->out, x)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_u8(env_global()->out, '\n')) < 0)
+  if ((r = buf_write_u8(env->out, '\n')) < 0)
     return r;
   result += r;
-  buf_flush(env_global()->out);
+  buf_flush(env->out);
   return result;
 }
 
 sw io_write (const void *x, uw len)
 {
+  s_env *env;
   sw r;
-  if ((r = buf_write(env_global()->out, x, len)) > 0)
-    buf_flush(env_global()->out);
+  env = env_global();
+  if ((r = buf_write(env->out, x, len)) > 0)
+    buf_flush(env->out);
   return r;
 }
 
 sw io_write_1 (const char *x)
 {
+  s_env *env;
   sw r;
-  if ((r = buf_write_1(env_global()->out, x)) > 0)
-    buf_flush(env_global()->out);
+  env = env_global();
+  if ((r = buf_write_1(env->out, x)) > 0)
+    buf_flush(env->out);
   return r;
 }
 
 sw io_write_str (const s_str *x)
 {
+  s_env *env;
   sw r;
-  if ((r = buf_write_str(env_global()->out, x)) > 0)
-    buf_flush(env_global()->out);
+  env = env_global();
+  if ((r = buf_write_str(env->out, x)) > 0)
+    buf_flush(env->out);
   return r;
 }
 
 sw io_write_u8 (u8 x)
 {
+  s_env *env;
   sw r;
-  if ((r = buf_write_u8(env_global()->out, x)) > 0)
-    buf_flush(env_global()->out);
+  env = env_global();
+  if ((r = buf_write_u8(env->out, x)) > 0)
+    buf_flush(env->out);
   return r;
 }
 
