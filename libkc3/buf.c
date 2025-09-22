@@ -1048,7 +1048,7 @@ DEF_BUF_READ(u32)
 DEF_BUF_READ(u64)
 
 sw buf_read_until_1_into_str (s_buf *buf, const char *end,
-                                   s_str *dest)
+                              s_str *dest)
 {
   s_str str;
   str_init_1(&str, NULL, end);
@@ -1274,7 +1274,7 @@ sw buf_read_until_str_into_str (s_buf *buf, const s_str *end,
       goto clean;
     }
     if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
-      if (true)
+      if (false)
         err_puts("buf_read_until_str_into_str: "
                  "buf_read_character_utf8");
       goto restore;
