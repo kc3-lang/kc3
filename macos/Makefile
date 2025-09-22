@@ -1,5 +1,5 @@
-## c3
-## Copyright 2022,2023 kmx.io <contact@kmx.io>
+## kc3
+## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
 ##
 ## Permission is hereby granted to use this software granted the above
 ## copyright notice and this permission paragraph are included in all
@@ -12,15 +12,17 @@
 
 all: dmg
 
-DMG_FILES = \
-	../ikc3/.libs/ikc3 \
-	../ikc3/.libs/ikc3_debug \
-	../kc3s/.libs/kc3s \
-	../kc3s/.libs/kc3s_debug \
+APP_FILES = \
 	../window/cairo/quartz/demo/kc3_window_cairo_quartz_demo.app \
 	../window/cairo/quartz/demo/kc3_window_cairo_quartz_demo_debug.app \
 	../window/sdl2/demo/macos/kc3_window_sdl2_demo.app \
 	../window/sdl2/demo/macos/kc3_window_sdl2_demo_debug.app \
+
+BIN_FILES = \
+	../ikc3/.libs/ikc3 \
+	../ikc3/.libs/ikc3_debug \
+	../kc3s/.libs/kc3s \
+	../kc3s/.libs/kc3s_debug
 
 DESTDIR = kc3-v${KC3_VERSION}-${MACHINE}
 DMG = ${DESTDIR}.dmg
