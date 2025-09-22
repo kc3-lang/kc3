@@ -529,11 +529,6 @@ sw pdf_buf_parse_indirect_object (s_buf *buf, s_tuple *dest)
   tag_clean(&object_number);
   tag_clean(&generation_number);
   buf_save_restore_rpos(buf, &save);
-  if (r < 0) {
-    err_puts("pdf_buf_parse_indirect_object: error");
-    err_inspect_buf(buf);
-    assert(! "pdf_buf_parse_indirect_object: error");
-  }
  clean:
   buf_save_clean(buf, &save);
   return r;
