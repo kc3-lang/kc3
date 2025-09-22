@@ -36,9 +36,10 @@ FONT_SOURCES = \
 build:
 	${MAKE} ${APP_PROG}
 	${MAKE} ${APP}/Contents/Frameworks
-	rsync -aP --delete ../../../../lib ${APP}/Contents/
-	rsync -aP ${IMG_SOURCES} ${APP}/Contents/img/
-	rsync -aP ${FONT_SOURCES} ${APP}/Contents/fonts/
+	rm -rf ${APP}/Contents/lib
+	cp -R ../../../../lib ${APP}/Contents/
+	cp -LR ${IMG_SOURCES} ${APP}/Contents/img/
+	cp -LR ${FONT_SOURCES} ${APP}/Contents/fonts/
 
 all:
 	${MAKE} build
@@ -49,9 +50,10 @@ all:
 asan:
 	${MAKE} ${APP_PROG_ASAN}
 	${MAKE} ${APP_ASAN}/Contents/Frameworks
-	rsync -aP --delete ../../../../lib ${APP_ASAN}/Contents/
-	rsync -aP ${IMG_SOURCES} ${APP_ASAN}/Contents/img/
-	rsync -aP ${FONT_SOURCES} ${APP_ASAN}/Contents/fonts/
+	rm -rf ${APP_ASAN}/Contents/lib
+	cp -R ../../../../lib ${APP_ASAN}/Contents/
+	cp -RL ${IMG_SOURCES} ${APP_ASAN}/Contents/img/
+	cp -RL ${FONT_SOURCES} ${APP_ASAN}/Contents/fonts/
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -62,16 +64,18 @@ clean_cov:
 cov:
 	${MAKE} ${APP_PROG_COV}
 	${MAKE} ${APP_COV}/Contents/Frameworks
-	rsync -aP --delete ../../../../lib ${APP_COV}/Contents/
-	rsync -aP ${IMG_SOURCES} ${APP_COV}/Contents/img/
-	rsync -aP ${FONT_SOURCES} ${APP_COV}/Contents/fonts/
+	rm -rf ${APP}/Contents/lib
+	cp -R ../../../../lib ${APP_COV}/Contents/
+	cp -RL ${IMG_SOURCES} ${APP_COV}/Contents/img/
+	cp -RL ${FONT_SOURCES} ${APP_COV}/Contents/fonts/
 
 debug:
 	${MAKE} ${APP_PROG_DEBUG}
 	${MAKE} ${APP_DEBUG}/Contents/Frameworks
-	rsync -aP --delete ../../../../lib ${APP_DEBUG}/Contents/
-	rsync -aP ${IMG_SOURCES} ${APP_DEBUG}/Contents/img/
-	rsync -aP ${FONT_SOURCES} ${APP_DEBUG}/Contents/fonts/
+	rm -rf ${APP}/Contents/lib
+	cp -R ../../../../lib ${APP_DEBUG}/Contents/
+	cp -RL ${IMG_SOURCES} ${APP_DEBUG}/Contents/img/
+	cp -RL ${FONT_SOURCES} ${APP_DEBUG}/Contents/fonts/
 
 demo: build
 	time ${APP_PROG}

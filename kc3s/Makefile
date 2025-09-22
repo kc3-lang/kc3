@@ -10,7 +10,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a kc3s kc3s_asan kc3s_cov kc3s_debug *.css *.gcno *.html *.o .libs *.lo
+CLEANFILES = *.a *.command kc3s kc3s_asan kc3s_cov kc3s_debug *.css *.gcno *.html *.o .libs *.lo
 
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 CLEANFILES += ${CLEANFILES_COV}
@@ -23,9 +23,9 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-build: kc3s
+build: kc3s kc3s.command
 
-asan: kc3s_asan
+asan: kc3s_asan kc3s_asan.command
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -33,9 +33,9 @@ clean:
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
-cov:   kc3s_cov
+cov: kc3s_cov kc3s_cov.command
 
-debug: kc3s_debug
+debug: kc3s_debug kc3s_debug.command
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
@@ -49,6 +49,18 @@ gdb_kc3s: debug
 install:
 	mkdir -p ${DESTDIR}${prefix}/bin
 	install -m 755 .libs/kc3s ${DESTDIR}${prefix}/bin/kc3s
+
+kc3s.command:
+	cp .libs/kc3s kc3s.command
+
+kc3s_asan.command:
+	cp .libs/kc3s_asan kc3s_asan.command
+
+kc3s_cov.command:
+	cp .libs/kc3s_cov kc3s_cov.command
+
+kc3s_debug.command:
+	cp .libs/kc3s_debug kc3s_debug.command
 
 uninstall:
 	rm -f ${prefix}/bin/kc3s

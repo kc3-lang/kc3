@@ -22,6 +22,7 @@ build_prog_asan
 build_prog_cov
 build_prog_debug
 build_prog_main
+*.command
 config.h
 config.mk
 *.core
