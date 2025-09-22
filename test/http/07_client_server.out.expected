@@ -8,9 +8,9 @@ require HTTP.Request
 HTTP.Request
 require HTTP.Response
 HTTP.Response
-(server = Socket.listen("localhost", "57000")) ; void
+(server = Socket.listen("localhost", "57002")) ; void
 void
-(client = Socket.Buf.connect("localhost", "57000")) ; void
+(client = Socket.Buf.connect("localhost", "57002")) ; void
 void
 (server_client = Socket.Buf.accept(server)) ; void
 void

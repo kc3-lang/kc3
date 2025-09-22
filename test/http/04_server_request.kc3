@@ -8,10 +8,10 @@ quote require Socket
 require Socket
 quote require Socket.Buf
 require Socket.Buf
-quote (server = Socket.listen("127.0.0.1", "57000")) ; void
-(server = Socket.listen("127.0.0.1", "57000")) ; void
-quote (client = Socket.Buf.connect("127.0.0.1", "57000")) ; void
-(client = Socket.Buf.connect("127.0.0.1", "57000")) ; void
+quote (server = Socket.listen("127.0.0.1", "57001")) ; void
+(server = Socket.listen("127.0.0.1", "57001")) ; void
+quote (client = Socket.Buf.connect("127.0.0.1", "57001")) ; void
+(client = Socket.Buf.connect("127.0.0.1", "57001")) ; void
 quote (server_client = Socket.accept(server)) ; void
 (server_client = Socket.Buf.accept(server)) ; void
 quote Buf.write_str(client.buf_rw.w, "GET / HTTP/1.0\r\n\r\n")
