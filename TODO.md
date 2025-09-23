@@ -55,29 +55,33 @@
        remplacer la logique de connection `t_socket` en logique de
        connection `s_tls_server` uniquement dans le cas où
        `g_tls == true && g_server == true`.
-   - pour le client
+
+     - [ ] Afficher des messages indiquant la progression de la connection
+       TLS indiquant la version de TLS utilisée pour la connection :
+       - [ ] "ikc3: TLS server: listening on HOST PORT"
+       - [ ] "ikc3: TLS server: client connected: HOST PORT TLS-4.2"
+
+   - [ ] Client TLS
      - [ ] ikc3 doit changer ses buffers d'entrée/sortie apres s'être
        connecté lorsqu'il est en mode serveur il faut remplacer la
        logique de connection `t_socket` en logique de connection
        `s_tls_client` uniquement dans le cas où
        `g_tls == true && g_client == true`.
-   - [ ] Afficher des messages indiquant la progression de la connection
-     TLS indiquant la version de TLS utilisée pour la connection :
-     - [ ] Pour le serveur :
-       - [ ] "ikc3: TLS server: listening on HOST PORT"
-       - [ ] "ikc3: TLS server: client connected: HOST PORT TLS-4.2"
-     - [ ] Pour le client :
+
+     - [ ] Afficher un message indiquant la connection TLS établie
+       indiquant la version de TLS utilisée pour la connection :
        - [ ] "ikc3: TLS client: connected to HOST PORT TLS-4.2"
+
 
 ## libkc3
  - [ ] unveil
  - [ ] pledge
 
 ## HTTPd
- - [ ] partial requests
-   - HTTP 206 partial content
  - [ ] SSL
    - ajouter le support de tls dans lib/kc3/0.1/httpd.kc3
+ - [ ] partial requests
+   - HTTP 206 partial content
  - [x] Securelevel = 2
 
 
