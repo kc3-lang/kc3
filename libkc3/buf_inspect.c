@@ -3311,9 +3311,25 @@ sw buf_inspect_ptag_size (s_pretty *pretty, const p_tag *ptag)
 
 sw buf_inspect_ptr (s_buf *buf, const u_ptr_w *ptr)
 {
+  s_env *env;
   sw r;
   sw result = 0;
   assert(buf);
+  env = env_global();
+  assert(env);
+  if (env->bool_ptr) {
+    if (ptr->uw) {
+      if ((r = buf_write_1(buf, "(Ptr) 1")) < 0)
+        return r;
+      result += r;
+    }
+    else {
+      if ((r = buf_write_1(buf, "(Ptr) 0")) < 0)
+        return r;
+      result += r;
+    }
+    return result;
+  }
   if ((r = buf_write_1(buf, "(Ptr) 0x")) < 0)
     return r;
   result += r;
@@ -3325,9 +3341,26 @@ sw buf_inspect_ptr (s_buf *buf, const u_ptr_w *ptr)
 
 sw buf_inspect_ptr_free (s_buf *buf, const u_ptr_w *ptr_free)
 {
+  s_env *env;
   sw r;
   sw result = 0;
   assert(buf);
+  assert(ptr_free);
+  env = env_global();
+  assert(env);
+  if (env->bool_ptr) {
+    if (ptr_free->uw) {
+      if ((r = buf_write_1(buf, "(PtrFree) 1")) < 0)
+        return r;
+      result += r;
+    }
+    else {
+      if ((r = buf_write_1(buf, "(PtrFree) 0")) < 0)
+        return r;
+      result += r;
+    }
+    return result;
+  }
   if ((r = buf_write_1(buf, "(PtrFree) 0x")) < 0)
     return r;
   result += r;
@@ -3340,9 +3373,24 @@ sw buf_inspect_ptr_free (s_buf *buf, const u_ptr_w *ptr_free)
 
 sw buf_inspect_ptr_free_size (s_pretty *pretty, const u_ptr_w *ptr)
 {
+  s_env *env;
   sw r;
   sw result = 0;
-  (void) ptr;
+  env = env_global();
+  assert(env);
+  if (env->bool_ptr) {
+    if (ptr->uw) {
+      if ((r = buf_write_1_size(pretty, "(PtrFree) 1")) < 0)
+        return r;
+      result += r;
+    }
+    else {
+      if ((r = buf_write_1_size(pretty, "(PtrFree) 0")) < 0)
+        return r;
+      result += r;
+    }
+    return result;
+  }
   if ((r = buf_write_1_size(pretty, "(PtrFree) 0x")) < 0)
     return r;
   result += r;
@@ -3354,9 +3402,24 @@ sw buf_inspect_ptr_free_size (s_pretty *pretty, const u_ptr_w *ptr)
 
 sw buf_inspect_ptr_size (s_pretty *pretty, const u_ptr_w *ptr)
 {
+  s_env *env;
   sw r;
   sw result = 0;
-  (void) ptr;
+  env = env_global();
+  assert(env);
+  if (env->bool_ptr) {
+    if (ptr->uw) {
+      if ((r = buf_write_1_size(pretty, "(Ptr) 1")) < 0)
+        return r;
+      result += r;
+    }
+    else {
+      if ((r = buf_write_1_size(pretty, "(Ptr) 0")) < 0)
+        return r;
+      result += r;
+    }
+    return result;
+  }
   if ((r = buf_write_1_size(pretty, "(Ptr) 0x")) < 0)
     return r;
   result += r;

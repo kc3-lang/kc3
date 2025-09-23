@@ -72,7 +72,7 @@ loopback([[2, 3], [4, 5]])
 {:ok, 488}
 loopback(%Time{})
 {:ok, 104}
-loopback((Ptr) 0x0)
+loopback((Ptr) 0)
 {:ok, 79}
 loopback(1 +i 2)
 {:ok, 117}
@@ -188,9 +188,9 @@ loopback(%Time{tv_sec: 1000, tv_nsec: 2000})
 {:ok, 104}
 loopback(%Time{tv_sec: 1 + 1, tv_nsec: 2 + 2})
 {:ok, 104}
-loopback((Ptr) 0x0)
+loopback((Ptr) 0)
 {:ok, 79}
-loopback((PtrFree) 0x0)
+loopback((PtrFree) 0)
 {:ok, 83}
 loopback((U8) ?)
 {:ok, 236}

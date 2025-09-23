@@ -231,6 +231,11 @@ s_env * env_args_init (s_env *env, int *argc, char ***argv)
         (*argc) -= 2;
         (*argv) += 2;
       }
+      if (**argv && ! strcmp(**argv, "--bool-ptr")) {
+        env->bool_ptr = true;
+        (*argc)--;
+        (*argv)++;
+      }
     }
     return env;
   }

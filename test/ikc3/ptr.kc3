@@ -1,4 +1,4 @@
 quote (Ptr) 0
 (Ptr) 0
-quote (Ptr) 1
-(Ptr) 1
+quote (PtrFree) 0
+(PtrFree) 0

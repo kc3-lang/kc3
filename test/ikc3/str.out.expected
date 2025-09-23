@@ -56,22 +56,22 @@ Socket.Buf
            callable: fn (a, b) { a + b }}}"
 "#{false}"
 "false"
-"#{(Ptr) 0x0}"
-"(Ptr) 0x0"
+"#{(Ptr) 0}"
+"(Ptr) 0"
 "#{(Sw) 0}"
 "0"
 "#{(Uw) 0}"
 "0"
 "#{%Buf{}}"
-"%Buf{flush: (Ptr) 0x0,\n     free: false,\n     line: (Sw) 0,\n     pretty: %Pretty{base_column: (Uw) 0,\n                     column: (Sw) 0,\n                     disable: false},\n     ptr: (Ptr) 0x0,\n     read_only: false,\n     refill: (Ptr) 0x0,\n     rpos: (Uw) 0,\n     rwlock: %Rwlock{rwlock: (Ptr) 0x0,\n                     count: (Sw) 0,\n                     thread: (Ptr) 0x0},\n     save: (Ptr) 0x0,\n     seek: (Ptr) 0x0,\n     size: (Uw) 0,\n     user_ptr: (Ptr) 0x0,\n     wpos: (Uw) 0}"
+"%Buf{flush: (Ptr) 0,\n     free: false,\n     line: (Sw) 0,\n     pretty: %Pretty{base_column: (Uw) 0,\n                     column: (Sw) 0,\n                     disable: false},\n     ptr: (Ptr) 0,\n     read_only: false,\n     refill: (Ptr) 0,\n     rpos: (Uw) 0,\n     rwlock: %Rwlock{rwlock: (Ptr) 0,\n                     count: (Sw) 0,\n                     thread: (Ptr) 0},\n     save: (Ptr) 0,\n     seek: (Ptr) 0,\n     size: (Uw) 0,\n     user_ptr: (Ptr) 0,\n     wpos: (Uw) 0}"
 "#{%BufRW{}}"
-"%BufRW{r: (Ptr) 0x0,\n       w: (Ptr) 0x0}"
+"%BufRW{r: (Ptr) 0,\n       w: (Ptr) 0}"
 "#{(U8[]) {{0, 0},
            {0, 0},
            {0, 0}}}"
 "(U8[]) {{0, 0},\n        {0, 0},\n        {0, 0}}"
 "#{%Socket.Buf{}}"
-"%Socket.Buf{addr: (Ptr) 0x0,\n            addr_len: (U32) 0,\n            addr_str: \"\",\n            sockfd: (S64) -1,\n            buf_rw: %BufRW{r: (Ptr) 0x0,\n                           w: (Ptr) 0x0}}"
+"%Socket.Buf{addr: (Ptr) 0,\n            addr_len: (U32) 0,\n            addr_str: \"\",\n            sockfd: (S64) -1,\n            buf_rw: %BufRW{r: (Ptr) 0,\n                           w: (Ptr) 0}}"
 Str.size(Str.random_base64(1))
 1
 Str.size(Str.random_base64(2))

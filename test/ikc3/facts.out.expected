@@ -1,7 +1,7 @@
 %Fact{}
-%Fact{subject: (Ptr) 0x0,
-      predicate: (Ptr) 0x0,
-      object: (Ptr) 0x0,
+%Fact{subject: (Ptr) 0,
+      predicate: (Ptr) 0,
+      object: (Ptr) 0,
       id: (Uw) 0}
 do
   db = Facts.database()

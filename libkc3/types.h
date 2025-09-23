@@ -918,6 +918,7 @@ struct env {
   char            **argv;
   s_str            *argv0_dir;
   s_block          *block;
+  bool              bool_ptr;
   s_time            boot_time;
   s_ht             *counter_ht;
   const s_sym      *current_defmodule;

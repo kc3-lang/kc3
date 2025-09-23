@@ -1,5 +1,5 @@
 require BufRW
 BufRW
 %BufRW{}
-%BufRW{r: (Ptr) 0x0,
-       w: (Ptr) 0x0}
+%BufRW{r: (Ptr) 0,
+       w: (Ptr) 0}
