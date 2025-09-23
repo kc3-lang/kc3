@@ -15,6 +15,9 @@
 
 #include "types.h"
 
+/* Heap-allocation functions. */
+void pdf_name_list_delete_all (p_pdf_name_list *name_list);
+
 /* Operators. */
 p_pdf_name pdf_name_1 (p_pdf_name_list *name_list,
                        const char *pchar);

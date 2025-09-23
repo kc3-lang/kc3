@@ -39,6 +39,17 @@ p_pdf_name pdf_name_from_str (p_pdf_name_list *name_list,
   return name;
 }
 
+void pdf_name_list_delete_all (p_pdf_name_list *name_list)
+{
+  p_pdf_name_list list;
+  assert(name_list);
+  list = *name_list;
+  while (list) {
+    sym_delete(list->free_sym);
+    list = list->next;
+  }
+}
+
 p_pdf_name pdf_name_new (p_pdf_name_list *name_list,
                          const s_str *str)
 {

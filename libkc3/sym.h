@@ -150,6 +150,7 @@ void    sym_init_g_sym (void);
 bool    sym_register (p_sym sym, s_sym *free_sym);
 
 /* Heap-allocation functions, call sym_delete_all at exit. */
+void    sym_delete (s_sym *sym);
 void    sym_delete_all (void);
 p_sym   sym_new (const s_str *src);
 

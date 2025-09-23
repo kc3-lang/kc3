@@ -144,7 +144,6 @@ const s_sym g_sym_x                = SYM_1("x");
 
 static s_sym_list * g_sym_list = NULL;
 
-void         sym_delete (s_sym *sym);
 s_sym_list * sym_list_new (const s_sym *sym, s_sym *free_sym,
                            s_sym_list *next);
 
