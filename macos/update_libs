@@ -1,0 +1,67 @@
+#!/bin/sh
+## kc3
+## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+. ./config.sh
+
+DESTDIR="$1"; shift
+
+run() {
+    echo "$@"
+    "$@"
+}
+
+for BIN in ${DESTDIR}/bin/*; do
+    LIBS=$(otool -L "${BIN}" |
+	       awk '/^\t(\/usr\/lib|\/System)/ { next } /^\t/ { print $1 }' |
+	       grep -v '/usr/local/lib/libkc3')
+    for LIB in $LIBS; do
+	run install -m 0755 $LIB ${DESTDIR}/lib/
+	L=$(basename $LIB)
+	if [ -f ${DESTDIR}/lib/$L ]; then
+	    run install_name_tool -id @executable_path/../lib/$L ${DESTDIR}/lib/$L
+	fi
+    done
+done
+
+for BIN in ${DESTDIR}/bin/* ${DESTDIR}/lib/*; do
+    LIBS=$(otool -L "${BIN}" |
+	       awk '/^\t(\/usr\/lib|\/System)/ { next } /^\t/ { print $1 }')
+    for LIB in $LIBS; do
+	L=$(basename $LIB)
+	if [ -f ${DESTDIR}/lib/$L ]; then
+	    run install_name_tool -change ${LIB} @executable_path/../lib/$L ${BIN}
+	    run install_name_tool -change ${PREFIX}/lib/$L @executable_path/../lib/$L ${BIN}
+	    DEPS=$(otool -L "${DESTDIR}/lib/$L" |
+		       awk '/^\t(\/usr\/lib|\/System)/ { next } /^\t/ { print $1 }')
+	    for DEP in ${DEPS}; do
+		D=$(basename "${DEP}")
+		if [ -f ${DESTDIR}/lib/$D ]; then
+		    run install_name_tool -change ${DEP} @executable_path/../lib/$D ${DESTDIR}/lib/$L
+		fi
+	    done
+	fi
+    done
+done
+
+LIBS=$(ls ${DESTDIR}/lib/libkc3_*.0.dylib |
+	   grep -v 'libkc3_debug.0.dylib' |
+	   sed -e 's,.*\/libkc3_\(.*\).0.dylib,\1,')
+(
+    cd ${DESTDIR}/lib/kc3/0.1/
+    for NAME in $LIBS; do
+	ls -la ../../libkc3_$NAME.0.dylib
+	rm -f $NAME.so
+	ln -s ../../libkc3_$NAME.0.dylib $NAME.so
+	ls -la $NAME.so
+    done
+)

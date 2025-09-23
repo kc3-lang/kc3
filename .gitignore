@@ -23,8 +23,10 @@ build_prog_cov
 build_prog_debug
 build_prog_main
 *.command
+*.config_*
 config.h
 config.mk
+config.sh
 *.core
 *.css
 current_test
