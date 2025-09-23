@@ -71,3 +71,5 @@ add {Str, :symbol, Str.inpect_hex}
 replace {Str.inspect_hex, :symbol_value, cfn Str "inspect_str_hex" (Str, Result)}
 add {Str, :symbol, Str.is_utf8?}
 replace {Str.is_utf8?, :symbol_value, cfn Bool "str_is_utf8" (Str)}
+add {Str, :symbol, Str.character_is_reserved?}
+replace {Str.character_is_reserved?, :symbol_value, cfn Bool "str_character_is_reserved" (Character)}
