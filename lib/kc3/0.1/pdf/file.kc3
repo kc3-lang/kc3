@@ -20,4 +20,8 @@ defmodule PDF.File do
              trailer: %PDF.Trailer{},
              xref: %{}]
 
+  dlopen("pdf.so")
+
+  def clean = cfn Void "pdf_file_clean" (PDF.File)
+
 end
