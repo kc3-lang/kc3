@@ -35,11 +35,39 @@
        - [x] `tls_config_set_key_file` set server certificate private key
        - [x] `ctx = tls_server()`
        - [x] `tls_accept_socket`
+
  - [x] ikc3 tests
    - [x] copier test/ikc3_test test/tls_test
    - [x] ecrire des tests fonctionnels dans test/tls/
+
  - [ ] ikc3 **--tls** --client/server
-   - `puts("ikc3: connected with TLS v1.2 to ${g_host} ${g_port}")`
+
+   - [ ] Il faut parser l'argument en ligne de commande --tls dans ikc3/ikc3.c .
+
+     - [ ] Declarer une variable globale `bool g_tls` dans ikc3.c .
+
+     - [ ] Setter la variable globale `bool g_tls` qui indique si
+       l'argument --tls est present dans le parsing des arguments en ligne de commande.
+
+   - [ ] Serveur TLS
+     - [ ] ikc3 doit changer ses buffers d'entrée/sortie apres avoir
+       accepté une connection lorsqu'il est en mode serveur il faut
+       remplacer la logique de connection `t_socket` en logique de
+       connection `s_tls_server` uniquement dans le cas où
+       `g_tls == true && g_server == true`.
+   - pour le client
+     - [ ] ikc3 doit changer ses buffers d'entrée/sortie apres s'être
+       connecté lorsqu'il est en mode serveur il faut remplacer la
+       logique de connection `t_socket` en logique de connection
+       `s_tls_client` uniquement dans le cas où
+       `g_tls == true && g_client == true`.
+   - [ ] Afficher des messages indiquant la progression de la connection
+     TLS indiquant la version de TLS utilisée pour la connection :
+     - [ ] Pour le serveur :
+       - [ ] "ikc3: TLS server: listening on HOST PORT"
+       - [ ] "ikc3: TLS server: client connected (HOST PORT) (TLS v4.2)"
+     - [ ] Pour le client :
+       - [ ] "ikc3: TLS client: connected to HOST PORT (TLS v4.2)"
 
 ## libkc3
  - [ ] unveil
