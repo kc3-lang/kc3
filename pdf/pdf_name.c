@@ -67,6 +67,7 @@ void pdf_name_list_delete_all (p_pdf_name_list *name_list)
     free(list);
     list = next;
   }
+  *name_list = NULL;
 }
 
 p_pdf_name pdf_name_new (p_pdf_name_list *name_list,
