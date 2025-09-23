@@ -13,6 +13,13 @@
 #include "../libkc3/kc3.h"
 #include "pdf_name.h"
 
+p_pdf_name_list g_pdf_name_list = NULL;
+
+void kc3_pdf_name_list_delete_all (void)
+{
+  pdf_name_list_delete_all(&g_pdf_name_list);
+}
+
 p_pdf_name pdf_name_find (p_pdf_name_list *name_list,
                           const s_str *str)
 {

@@ -17,6 +17,8 @@ defmodule PDF do
 
   dlopen("pdf.so")
 
+  def name_list_delete_all = cfn Void "pdf_name_list_delete_all" ()
+
   def parse_file = cfn PDF.File "pdf_parse_from_file" (Str, Result)
 
   def parse_str = cfn Tag "pdf_parse_from_str" (Str, Result)

@@ -15,6 +15,8 @@
 
 #include "types.h"
 
+extern p_pdf_name_list g_pdf_name_list;
+
 /* Heap-allocation functions. */
 void pdf_name_list_delete_all (p_pdf_name_list *name_list);
 

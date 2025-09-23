@@ -13,6 +13,7 @@
 #include "../libkc3/kc3.h"
 #include "pdf.h"
 #include "pdf_buf_parse.h"
+#include "pdf_name.h"
 #include <assert.h>
 
 bool pdf_character_is_delimiter (character c)
@@ -79,6 +80,5 @@ s_tag * pdf_parse_object_from_str (s_str *str,
 s_tag * pdf_parse_from_str (s_str *str,
                             s_tag *dest)
 {
-  static p_pdf_name_list name_list = NULL;
-  return pdf_parse_object_from_str(str, &name_list, dest);
+  return pdf_parse_object_from_str(str, &g_pdf_name_list, dest);
 }
