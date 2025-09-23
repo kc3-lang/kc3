@@ -3,6 +3,7 @@ HEADERS = \
 	"pdf.h" \
 	"pdf_buf_parse.h" \
 	"pdf_file.h" \
+	"pdf_name.h" \
 	"pdf_trailer.h" \
 	"pdf_write.h" \
 	"types.h" \
@@ -11,6 +12,7 @@ SOURCES = \
 	"pdf.c" \
 	"pdf_buf_parse.c" \
 	"pdf_file.c" \
+	"pdf_name.c" \
 	"pdf_trailer.c" \
 	"pdf_write.c" \
 

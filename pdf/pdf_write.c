@@ -14,7 +14,7 @@
 #include "../libkc3/kc3_main.h"
 #include "pdf_write.h"
 
-sw pdf_buf_write(s_buf *buf, s_tag *src)
+sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
 {
   assert(buf);
   assert(src);
@@ -22,27 +22,28 @@ sw pdf_buf_write(s_buf *buf, s_tag *src)
     case TAG_F32:  return pdf_buf_write_float(buf, src->data.f32);
     case TAG_F64:  return pdf_buf_write_float(buf, src->data.f64);
     case TAG_F128: return pdf_buf_write_float(buf, src->data.f128);
-    case TAG_SW:  return pdf_buf_write_integer(buf, src->data.sw);
-    case TAG_S64: return pdf_buf_write_integer(buf, src->data.s64);
-    case TAG_S32: return pdf_buf_write_integer(buf, src->data.s32);
-    case TAG_S16: return pdf_buf_write_integer(buf, src->data.s16);
-    case TAG_S8:  return pdf_buf_write_integer(buf, src->data.s8);
-    case TAG_U8:  return pdf_buf_write_integer(buf, src->data.u8);
-    case TAG_U16: return pdf_buf_write_integer(buf, src->data.u16);
-    case TAG_U32: return pdf_buf_write_integer(buf, src->data.u32);
-    case TAG_U64: return pdf_buf_write_integer(buf, src->data.u64);
-    case TAG_UW:  return pdf_buf_write_integer(buf, src->data.uw);
+    case TAG_SW:   return pdf_buf_write_integer(buf, src->data.sw);
+    case TAG_S64:  return pdf_buf_write_integer(buf, src->data.s64);
+    case TAG_S32:  return pdf_buf_write_integer(buf, src->data.s32);
+    case TAG_S16:  return pdf_buf_write_integer(buf, src->data.s16);
+    case TAG_S8:   return pdf_buf_write_integer(buf, src->data.s8);
+    case TAG_U8:   return pdf_buf_write_integer(buf, src->data.u8);
+    case TAG_U16:  return pdf_buf_write_integer(buf, src->data.u16);
+    case TAG_U32:  return pdf_buf_write_integer(buf, src->data.u32);
+    case TAG_U64:  return pdf_buf_write_integer(buf, src->data.u64);
+    case TAG_UW:   return pdf_buf_write_integer(buf, src->data.uw);
     case TAG_MAP:
       return pdf_buf_write_dictionnary(buf, &src->data.map);
     case TAG_STR:  return pdf_buf_write_string_hex(buf, &src->data.str);
     case TAG_PSYM: return pdf_buf_write_name(buf, src->data.psym);
     default:
-      err_puts("pdf_buf_write: unsupported tag");
-      assert(! "pdf_buf_write: unsupported tag");
+      err_write_1("pdf_buf_write_tag: invalid PDF tag type: ");
+      err_puts(tag_type_to_string(src->type));
+      assert(! "pdf_buf_write_tag: invalid PDF tag type");
       return -1;
   }
-  err_puts("pdf_buf_write: unknown tag type");
-  assert(! "pdf_buf_write: unknown tag type");
+  err_puts("pdf_buf_write_tag: unknown tag type");
+  assert(! "pdf_buf_write_tag: unknown tag type");
   return -1;
 }
 
@@ -54,7 +55,7 @@ sw pdf_buf_write_bool (s_buf *buf, bool src)
   return pdf_buf_write_token(buf, "false");
 }
 
-sw pdf_buf_write_dictionnary (s_buf *buf, s_map *src)
+sw pdf_buf_write_dictionnary (s_buf *buf, const s_map *src)
 {
   uw i;
   sw r;
@@ -75,7 +76,7 @@ sw pdf_buf_write_dictionnary (s_buf *buf, s_map *src)
     if ((r = pdf_buf_write_token(buf, " ")) < 0)
       return r;
     result += r;
-    if ((r = pdf_buf_write(buf, &src->value[i])) < 0)
+    if ((r = pdf_buf_write_tag(buf, &src->value[i])) < 0)
       return r;
     result += r;
     if ((r = pdf_buf_write_token(buf, " ")) < 0)
@@ -100,7 +101,7 @@ sw pdf_buf_write_integer (s_buf *buf, s32 src)
   return buf_inspect_s32(buf, src);
 }
 
-sw pdf_buf_write_name(s_buf *buf, p_sym src)
+sw pdf_buf_write_name (s_buf *buf, p_pdf_name src)
 {
   sw r = 0;
   if ((r = buf_write_u8(buf, '/')) < 0
@@ -115,7 +116,7 @@ sw pdf_buf_write_null (s_buf *buf)
     return pdf_buf_write_token(buf, "null");
 }
 
-sw pdf_buf_write_string_hex (s_buf *buf, s_str *dest)
+sw pdf_buf_write_string_hex (s_buf *buf, const s_str *dest)
 {
   u8 c;
   sw i;
@@ -142,6 +143,7 @@ sw pdf_buf_write_string_hex (s_buf *buf, s_str *dest)
   return r;
 }
 
+// writes token without separators
 sw pdf_buf_write_token(s_buf *buf, const char *pchar)
 {
   return buf_write_1(buf, pchar);

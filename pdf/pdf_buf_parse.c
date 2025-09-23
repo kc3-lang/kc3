@@ -595,7 +595,7 @@ sw pdf_buf_parse_integer (s_buf *buf, s_tag *dest)
   return r;
 }
 
-sw pdf_buf_parse_name (s_buf *buf, p_sym *dest)
+sw pdf_buf_parse_name (s_buf *buf, p_pdf_name *dest)
 {
   char a[BUF_SIZE];
   character c;
@@ -660,6 +660,7 @@ sw pdf_buf_parse_name (s_buf *buf, p_sym *dest)
     r = -2;
     goto clean;
   }
+  // TODO: find or create the symbol in a separate pdf symbol table
   if (! (tmp = str_to_sym(&str))) {
     r = -2;
     str_clean(&str);

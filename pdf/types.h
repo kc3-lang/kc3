@@ -20,6 +20,10 @@ typedef struct pdf_file   s_pdf_file;
 typedef struct pdf_stream s_pdf_stream;
 typedef struct pdf_trailer s_pdf_trailer;
 
+/* Pointer types. */
+typedef p_sym      p_pdf_name;
+typedef p_sym_list p_pdf_name_list;
+
 /* 1 */
 
 struct pdf_stream {
