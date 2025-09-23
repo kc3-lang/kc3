@@ -3236,12 +3236,28 @@ sw buf_inspect_pstruct_type_size (s_pretty *pretty,
 
 sw buf_inspect_pointer (s_buf *buf, const s_pointer *pointer)
 {
+  s_env *env;
   sw r;
   sw result = 0;
   assert(buf);
+  env = env_global();
+  assert(env);
   if ((r = buf_inspect_paren_sym(buf, pointer->pointer_type)) < 0)
     return r;
   result += r;
+  if (env->bool_ptr) {
+    if (pointer->ptr.uw) {
+      if ((r = buf_write_1(buf, " 1")) < 0)
+        return r;
+      result += r;
+    }
+    else {
+      if ((r = buf_write_1(buf, " 0")) < 0)
+        return r;
+      result += r;
+    }
+    return result;
+  }
   if ((r = buf_write_1(buf, " 0x")) < 0)
     return r;
   result += r;
@@ -3253,14 +3269,30 @@ sw buf_inspect_pointer (s_buf *buf, const s_pointer *pointer)
 
 sw buf_inspect_pointer_size (s_pretty *pretty, const s_pointer *pointer)
 {
+  s_env *env;
   sw r;
   sw result = 0;
   assert(pretty);
   assert(pointer);
+  env = env_global();
+  assert(env);
   if ((r = buf_inspect_paren_sym_size(pretty,
                                       pointer->pointer_type)) < 0)
     return r;
   result += r;
+  if (env->bool_ptr) {
+    if (pointer->ptr.uw) {
+      if ((r = buf_write_1_size(pretty, " 1")) < 0)
+        return r;
+      result += r;
+    }
+    else {
+      if ((r = buf_write_1_size(pretty, " 0")) < 0)
+        return r;
+      result += r;
+    }
+    return result;
+  }
   if ((r = buf_write_1_size(pretty, " 0x")) < 0)
     return r;
   result += r;
