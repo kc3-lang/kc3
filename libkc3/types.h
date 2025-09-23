@@ -286,6 +286,7 @@ typedef s_marshall_read * p_marshall_read;
 typedef s_struct *        p_struct;
 typedef s_struct_type *   p_struct_type;
 typedef const s_sym *     p_sym;
+typedef s_sym_list *      p_sym_list;
 typedef s_tag *           p_tag;
 typedef s_var *           p_var;
 
