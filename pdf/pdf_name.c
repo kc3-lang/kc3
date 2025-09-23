@@ -13,20 +13,23 @@
 #include "../libkc3/kc3.h"
 #include "pdf_name.h"
 
-p_pdf_name pdf_name_find (p_pdf_name_list name_list,
+p_pdf_name pdf_name_find (p_pdf_name_list *name_list,
                           const s_str *str)
 {
+  p_pdf_name_list list;
+  assert(name_list);
   assert(str);
-  while (name_list) {
-    p_pdf_name name = name_list->sym;
+  list = *name_list;
+  while (list) {
+    p_pdf_name name = list->sym;
     if (compare_str(str, &name->str) == 0)
       return name;
-    name_list = name_list->next;
+    list = list->next;
   }
   return NULL;
 }
 
-p_pdf_name pdf_name_from_str (p_pdf_name_list name_list,
+p_pdf_name pdf_name_from_str (p_pdf_name_list *name_list,
                               const s_str *str)
 {
   p_pdf_name name;
@@ -34,4 +37,21 @@ p_pdf_name pdf_name_from_str (p_pdf_name_list name_list,
   if (! (name = pdf_name_find(name_list, str)))
     name = pdf_name_new(name_list, str);
   return name;
+}
+
+p_pdf_name pdf_name_new (p_pdf_name_list *name_list,
+                         const s_str *str)
+{
+  s_sym *sym;
+  p_pdf_name_list tmp;
+  if (! (sym = alloc(sizeof(s_sym))) ||
+      ! (tmp = alloc(sizeof(s_sym_list))))
+    return NULL;
+  str_init_copy(&sym->str, str);
+  tmp->sym = sym;
+  tmp->free_sym = sym;
+  tmp->next = *name_list;
+  *name_list = tmp;
+  return sym;
+
 }

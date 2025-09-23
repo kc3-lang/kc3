@@ -40,10 +40,11 @@ struct pdf_trailer {
 /* 2 */
 
 struct pdf_file {
-  s_str         header;
-  s_map         xref;
-  s_do_block    body;
-  s_pdf_trailer trailer;
+  s_map           body;
+  s_str           header;
+  p_pdf_name_list name_list;
+  s_pdf_trailer   trailer;
+  s_map           xref;
 };
 
 #endif /* KC3_PDF_TYPES_H */

@@ -16,13 +16,13 @@
 #include "types.h"
 
 /* Operators. */
-p_pdf_name pdf_name_1 (p_pdf_name_list name_list,
+p_pdf_name pdf_name_1 (p_pdf_name_list *name_list,
                        const char *pchar);
-p_pdf_name pdf_name_find (p_pdf_name_list name_list,
+p_pdf_name pdf_name_find (p_pdf_name_list *name_list,
                           const s_str *str);
-p_pdf_name pdf_name_from_str (p_pdf_name_list name_list,
+p_pdf_name pdf_name_from_str (p_pdf_name_list *name_list,
                               const s_str *str);
-p_pdf_name pdf_name_new (p_pdf_name_list name_list,
+p_pdf_name pdf_name_new (p_pdf_name_list *name_list,
                          const s_str *str);
 
 #endif /* KC3_PDF_NAME_H */

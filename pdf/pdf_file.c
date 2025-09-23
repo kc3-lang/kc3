@@ -25,6 +25,7 @@ void pdf_file_clean (s_pdf_file *pdf_file)
 {
   pdf_trailer_clean(&pdf_file->trailer);
   str_clean(&pdf_file->header);
-  do_block_clean(&pdf_file->body);
+  map_clean(&pdf_file->body);
   map_clean(&pdf_file->xref);
+  pdf_name_list_delete_all(&pdf_file->name_list);
 }
