@@ -53,6 +53,8 @@ PDF.parse_str("1 0 obj << /Length 2 0 R >> stream\n123\nendstream\n")
                                      length: (S64) 0}}
 PDF.parse_str("<</Size 333187>>\n")
 %{Size: 333187}
+PDF.name_list_delete_all()
+void
 PDF.parse_file("pdf.pdf")
 pdf_buf_parse_file_body: failed to parse indirect object at offset (S64) 191971, r=0
 pdf_buf_parse_file_body: failed to parse indirect object at offset (S64) 198518, r=0
