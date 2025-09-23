@@ -146,14 +146,16 @@ void struct_clean (s_struct *s)
       }
       tag_clean(&result);
     }
-    if (s->pstruct_type->must_clean) {
-      i = 0;
-      while (i < s->pstruct_type->map.count) {
-        if (! tag_type_var(s->pstruct_type->map.value + i, &type))
-          goto ko;
-        data_clean(type, (s8 *) s->data + s->pstruct_type->offset[i]);
-      ko:
-        i++;
+    else {
+      if (s->pstruct_type->must_clean) {
+        i = 0;
+        while (i < s->pstruct_type->map.count) {
+          if (! tag_type_var(s->pstruct_type->map.value + i, &type))
+            goto ko;
+          data_clean(type, (s8 *) s->data + s->pstruct_type->offset[i]);
+        ko:
+          i++;
+        }
       }
     }
     if (s->free_data)
