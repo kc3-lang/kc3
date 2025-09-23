@@ -65,13 +65,13 @@ s_pdf_file * pdf_parse_from_file (s_str *path, s_pdf_file *dest)
 }
 
 s_tag * pdf_parse_object_from_str (s_str *str,
-                                   p_pdf_name_list *name_list,
+                                   s_pdf_file *pdf_file,
                                    s_tag *dest)
 {
   s_buf buf = {0};
   s_tag tmp = {0};
   buf_init_str_const(&buf, str);
-  if (pdf_buf_parse_object(&buf, name_list, &tmp) < 0)
+  if (pdf_buf_parse_object(&buf, pdf_file, &tmp) < 0)
     return NULL;
   *dest = tmp;
   return dest;
@@ -80,5 +80,5 @@ s_tag * pdf_parse_object_from_str (s_str *str,
 s_tag * pdf_parse_from_str (s_str *str,
                             s_tag *dest)
 {
-  return pdf_parse_object_from_str(str, &g_pdf_name_list, dest);
+  return pdf_parse_object_from_str(str, NULL, dest);
 }

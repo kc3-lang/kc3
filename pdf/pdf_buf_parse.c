@@ -16,7 +16,6 @@
 #include "pdf_name.h"
 #include <stdlib.h>
 
-// TODO: use xref instead
 sw pdf_buf_ignore_until_token (s_buf *buf, const char *token)
 {
   sw r;
@@ -37,7 +36,7 @@ sw pdf_buf_ignore_until_token (s_buf *buf, const char *token)
   return result;
 }
 
-sw pdf_buf_parse_object (s_buf *buf, p_pdf_name_list *name_list,
+sw pdf_buf_parse_object (s_buf *buf, s_pdf_file *pdf_file,
                          s_tag *dest)
 {
   sw r;
@@ -49,7 +48,7 @@ sw pdf_buf_parse_object (s_buf *buf, p_pdf_name_list *name_list,
   if ((r = buf_parse_comments(buf)) < 0)
     goto ok;
   result += r;
-  if ((r = pdf_buf_parse_indirect_object(buf, name_list,
+  if ((r = pdf_buf_parse_indirect_object(buf, pdf_file,
                                          &tmp.data.tuple)) > 0) {
     result += r;
     tmp.type = TAG_TUPLE;
@@ -68,7 +67,7 @@ sw pdf_buf_parse_object (s_buf *buf, p_pdf_name_list *name_list,
     result += r;
     goto ok;
   }
-  if ((r = pdf_buf_parse_dictionnary(buf, name_list,
+  if ((r = pdf_buf_parse_dictionnary(buf, pdf_file,
                                      &tmp.data.map)) > 0) {
     result += r;
     tmp.type = TAG_MAP;
@@ -78,12 +77,12 @@ sw pdf_buf_parse_object (s_buf *buf, p_pdf_name_list *name_list,
     result += r;
     goto ok;
   }
-  if ((r = pdf_buf_parse_name(buf, name_list, &tmp.data.psym)) > 0) {
+  if ((r = pdf_buf_parse_name(buf, pdf_file, &tmp.data.psym)) > 0) {
     tmp.type = TAG_PSYM;
     result += r;
     goto ok;
   }
-  if ((r = pdf_buf_parse_array(buf, name_list, &tmp.data.plist)) > 0) {
+  if ((r = pdf_buf_parse_array(buf, pdf_file, &tmp.data.plist)) > 0) {
     tmp.type = TAG_PLIST;
     result += r;
     goto ok;
@@ -94,7 +93,7 @@ sw pdf_buf_parse_object (s_buf *buf, p_pdf_name_list *name_list,
   return result;
 }
 
-sw pdf_buf_parse_array (s_buf *buf, p_pdf_name_list *name_list,
+sw pdf_buf_parse_array (s_buf *buf, s_pdf_file *pdf_file,
                         p_list *dest)
 {
   bool end;
@@ -126,7 +125,7 @@ sw pdf_buf_parse_array (s_buf *buf, p_pdf_name_list *name_list,
       r = -2;
       goto restore;
     }
-    if ((r = pdf_buf_parse_object(buf, name_list, &(*tail)->tag)) <= 0)
+    if ((r = pdf_buf_parse_object(buf, pdf_file, &(*tail)->tag)) <= 0)
       goto restore;
     result += r;
     tail = &(*tail)->next.data.plist;
@@ -208,7 +207,7 @@ sw pdf_buf_parse_comments (s_buf *buf)
   return result;
 }
 
-sw pdf_buf_parse_dictionnary (s_buf *buf, p_pdf_name_list *name_list,
+sw pdf_buf_parse_dictionnary (s_buf *buf, s_pdf_file *pdf_file,
                               s_map *dest)
 {
   p_list  keys = NULL;
@@ -231,7 +230,7 @@ sw pdf_buf_parse_dictionnary (s_buf *buf, p_pdf_name_list *name_list,
       result += r;
       goto ok;
     }
-    if ((r = pdf_buf_parse_name(buf, name_list, &name)) <= 0)
+    if ((r = pdf_buf_parse_name(buf, pdf_file, &name)) <= 0)
       goto clean;
     result += r;
     if (! (*keys_tail = list_new_psym(name, NULL))) {
@@ -242,7 +241,7 @@ sw pdf_buf_parse_dictionnary (s_buf *buf, p_pdf_name_list *name_list,
       r = -1;
       goto clean;
     }
-    if ((r = pdf_buf_parse_object(buf, name_list, &(*values_tail)->tag)) <= 0)
+    if ((r = pdf_buf_parse_object(buf, pdf_file, &(*values_tail)->tag)) <= 0)
       goto clean;
     result += r;
     keys_tail = &(*keys_tail)->next.data.plist;
@@ -278,8 +277,7 @@ sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
     return r;
   }
   result += r;
-  if ((r = pdf_buf_parse_trailer(buf, &tmp.name_list,
-                                 &tmp.trailer)) <= 0) {
+  if ((r = pdf_buf_parse_trailer(buf, NULL, &tmp.trailer)) <= 0) {
     err_puts("pdf_buf_parse_file: pdf_buf_parse_trailer");
     assert(! "pdf_buf_parse_file: pdf_buf_parse_trailer");
     return r;
@@ -297,8 +295,7 @@ sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
     pdf_file_clean(&tmp);
     return -1;
   }
-  if ((r = pdf_buf_parse_file_body(buf, &tmp.xref, &tmp.name_list,
-                                   &tmp.body)) <= 0) {
+  if ((r = pdf_buf_parse_file_body(buf, &tmp)) <= 0) {
     err_puts("pdf_buf_parse_file: pdf_buf_parse_file_body");
     assert(! "pdf_buf_parse_file: pdf_buf_parse_file_body");
     map_clean(&tmp.xref);
@@ -310,9 +307,7 @@ sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
   return result;
 }
 
-sw pdf_buf_parse_file_body (s_buf *buf, s_map *xref,
-                            p_pdf_name_list *name_list,
-                            s_map *dest)
+sw pdf_buf_parse_file_body (s_buf *buf, s_pdf_file *pdf_file)
 {
   uw i;
   s_map tmp = {0};
@@ -321,27 +316,29 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_map *xref,
   sw r;
   sw result = 0;
   s_tuple *tuple = NULL;
-  if (! map_init(&tmp, xref->count)) {
+  assert(buf);
+  assert(pdf_file);
+  if (! map_init(&tmp, pdf_file->xref.count)) {
     err_puts("pdf_buf_parse_file_body: map_init");
     assert(! "pdf_buf_parse_file_body: map_init");
     return -1;
   }
   i = 0;
-  while (i < xref->count) {
+  while (i < pdf_file->xref.count) {
     if (false) {
       err_write_1("pdf_buf_parse_file_body: i=");
       err_inspect_uw_decimal(i);
       err_write_1(" key=");
-      err_inspect_tag(xref->key + i);
+      err_inspect_tag(pdf_file->xref.key + i);
       err_write_1("\n");
     }
-    if (! tag_init_copy(tmp.key + i, xref->key + i)) {
+    if (! tag_init_copy(tmp.key + i, pdf_file->xref.key + i)) {
       err_puts("pdf_buf_parse_file_body: tag_init_copy key");
       assert(! "pdf_buf_parse_file_body: tag_init_copy key");
       goto clean;
     }
-    if (xref->value[i].type == TAG_U64) {
-      offset = xref->value[i].data.u64;
+    if (pdf_file->xref.value[i].type == TAG_U64) {
+      offset = pdf_file->xref.value[i].data.u64;
       if (false) {
         err_write_1("pdf_buf_parse_file_body: offset=");
         err_inspect_s64(offset);
@@ -352,7 +349,7 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_map *xref,
         assert(! "pdf_buf_parse_file_body: buf_seek");
         goto clean;
       }
-      if ((r = pdf_buf_parse_indirect_object(buf, name_list,
+      if ((r = pdf_buf_parse_indirect_object(buf, pdf_file,
                                              &tmp_tuple)) <= 0) {
         err_write_1("pdf_buf_parse_file_body: failed to parse indirect object at offset ");
         err_inspect_s64(offset);
@@ -385,7 +382,7 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_map *xref,
     }
     i++;
   }
-  *dest = tmp;
+  pdf_file->body = tmp;
   return result;
  clean:
   map_clean(&tmp);
@@ -499,7 +496,7 @@ sw pdf_buf_parse_float (s_buf *buf, f64 *dest)
 }
 
 sw pdf_buf_parse_indirect_object (s_buf *buf,
-                                  p_pdf_name_list *name_list,
+                                  s_pdf_file *pdf_file,
                                   s_tuple *dest)
 {
   s_tag generation_number = {0};
@@ -524,10 +521,10 @@ sw pdf_buf_parse_indirect_object (s_buf *buf,
       r = -1;
       goto restore;
     }
-    if ((r = pdf_buf_parse_stream(buf, name_list, tmp.tag + 3)) < 0)
+    if ((r = pdf_buf_parse_stream(buf, pdf_file, tmp.tag + 3)) < 0)
       goto restore;
     if (! r &&
-        (r = pdf_buf_parse_object(buf, name_list, tmp.tag + 3)) <= 0)
+        (r = pdf_buf_parse_object(buf, pdf_file, tmp.tag + 3)) <= 0)
       goto restore;
     goto ok;
   }
@@ -606,7 +603,7 @@ sw pdf_buf_parse_integer (s_buf *buf, s_tag *dest)
   return r;
 }
 
-sw pdf_buf_parse_name (s_buf *buf, p_pdf_name_list *name_list,
+sw pdf_buf_parse_name (s_buf *buf, s_pdf_file *pdf_file,
                        p_pdf_name *dest)
 {
   char a[BUF_SIZE];
@@ -614,6 +611,7 @@ sw pdf_buf_parse_name (s_buf *buf, p_pdf_name_list *name_list,
   u8 d;
   u8 d1;
   bool end;
+  p_pdf_name_list *name_list = NULL;
   sw r;
   sw result = 0;
   s_buf_save save = {0};
@@ -672,6 +670,7 @@ sw pdf_buf_parse_name (s_buf *buf, p_pdf_name_list *name_list,
     r = -2;
     goto clean;
   }
+  name_list = pdf_file ? &pdf_file->name_list : &g_pdf_name_list;
   if (! (tmp = pdf_name_from_str(name_list, &str))) {
     r = -2;
     str_clean(&str);
@@ -768,20 +767,26 @@ sw pdf_buf_parse_rewind_to_trailer (s_buf *buf)
   return -1;
 }
     
-sw pdf_buf_parse_stream (s_buf *buf, p_pdf_name_list *name_list,
-                         s_tag *dest)
+sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
 {
-  s_pdf_stream *pdf_stream;
   s_map map = {0};
+  p_pdf_name_list *name_list = NULL;
+  s_tag name_tag = {0};
+  s64 offset;
+  s_pdf_stream *pdf_stream;
   sw r;
   sw result = 0;
   s_buf_save save;
-  const s_sym *sym_PDF_Stream = sym_1("PDF.Stream");
+  s64   size = 0;
+  s_tag size_tag = {0};
+  s_tag size_tmp = {0};
+  const p_sym sym_PDF_Stream = sym_1("PDF.Stream");
+  const p_sym sym_S64 = &g_sym_S64;
   s_tag tmp = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if ((r = pdf_buf_parse_dictionnary(buf, name_list, &map)) <= 0)
+  if ((r = pdf_buf_parse_dictionnary(buf, pdf_file, &map)) <= 0)
     goto clean;
   result += r;
   if ((r = buf_read_1(buf, "stream")) <= 0) {
@@ -802,6 +807,8 @@ sw pdf_buf_parse_stream (s_buf *buf, p_pdf_name_list *name_list,
   if (! tag_init_pstruct(&tmp, sym_PDF_Stream) ||
       ! struct_allocate(tmp.data.pstruct) ||
       ! (pdf_stream = tmp.data.pstruct->data)) {
+    err_puts("pdf_buf_parse_stream: failed to init pstruct");
+    assert(! "pdf_buf_parse_stream: failed to init pstruct");
     tag_clean(&tmp);
     map_clean(&map);
     r = -1;
@@ -809,15 +816,62 @@ sw pdf_buf_parse_stream (s_buf *buf, p_pdf_name_list *name_list,
   }
   pdf_stream->dictionnary = map;
   if (! buf_tell_r(buf, &pdf_stream->offset)) {
+    err_puts("pdf_buf_parse_stream: buf_tell_r");
+    assert(! "pdf_buf_parse_stream: buf_tell_r");
     tag_clean(&tmp);
     r = -1;
     goto clean;
   }
-  if ((r = pdf_buf_ignore_until_token(buf, "endstream")) <= 0) {
-    tag_clean(&tmp);
-    goto restore;
+  name_list = pdf_file ? &pdf_file->name_list : &g_pdf_name_list;
+  name_tag.type = TAG_PSYM;
+  name_tag.data.psym = pdf_name_1(name_list, "Length");
+  if (map_get(&pdf_stream->dictionnary, &name_tag, &size_tag)) {
+    if (size_tag.type == TAG_TUPLE &&
+        size_tag.data.tuple.count == 3 &&
+        size_tag.data.tuple.tag[0].type == TAG_PSYM &&
+        size_tag.data.tuple.tag[0].data.psym == sym_1("indirect_object")) {
+      if (! pdf_file_get_indirect_object(pdf_file, &size_tag, &size_tmp)) {
+        err_puts("pdf_buf_parse_stream: pdf_file_get_indirect_object");
+        assert(! "pdf_buf_parse_stream: pdf_file_get_indirect_object");
+        tag_clean(&tmp);
+        r = -1;
+        goto clean;
+      }
+      tag_clean(&size_tag);
+      size_tag = size_tmp;
+    }
+    s64_init_cast(&size, &sym_S64, &size_tag); // XXX soft fail
+    tag_clean(&size_tag);
   }
-  result += r;
+  pdf_stream->length = size;
+  if (! size) {
+    err_puts("pdf_buf_parse_stream: zero Length");
+    pdf_buf_ignore_until_token(buf, "endstream");
+  }
+  else {
+    offset = pdf_stream->offset + size;
+    if (buf_seek(buf, offset, SEEK_SET) != offset) {
+      tag_clean(&tmp);
+      r = -1;
+      goto clean;
+    }
+    if ((r = buf_ignore_spaces(buf)) < 0) {
+      err_puts("pdf_buf_parse_stream: missing 'endstream'");
+      assert(! "pdf_buf_parse_stream: missing 'endstream'");
+      tag_clean(&tmp);
+      r = -1;
+      goto clean;
+    }
+    result += r;
+    if ((r = pdf_buf_parse_token(buf, "endstream")) <= 0) {
+      err_puts("pdf_buf_parse_stream: missing 'endstream'");
+      assert(! "pdf_buf_parse_stream: missing 'endstream'");
+      tag_clean(&tmp);
+      r = -1;
+      goto clean;
+    }
+    result += r;
+  }
   *dest = tmp;
   r = result;
   goto clean;
@@ -1066,7 +1120,7 @@ sw pdf_buf_parse_token (s_buf *buf, const char *pchar)
   return r;
 }
 
-sw pdf_buf_parse_trailer (s_buf *buf, p_pdf_name_list *name_list,
+sw pdf_buf_parse_trailer (s_buf *buf, s_pdf_file *pdf_file,
                           s_pdf_trailer *dest)
 {
   u64 pos;
@@ -1107,7 +1161,7 @@ sw pdf_buf_parse_trailer (s_buf *buf, p_pdf_name_list *name_list,
     return r;
   }
   result += r;
-  if ((r = pdf_buf_parse_dictionnary(buf, name_list,
+  if ((r = pdf_buf_parse_dictionnary(buf, pdf_file,
                                      &tmp.dictionnary)) <= 0) {
     err_puts("pdf_buf_parse_trailer: pdf_buf_parse_dictionnary");
     err_inspect_buf(buf);

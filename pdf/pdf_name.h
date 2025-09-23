@@ -21,8 +21,7 @@ extern p_pdf_name_list g_pdf_name_list;
 void pdf_name_list_delete_all (p_pdf_name_list *name_list);
 
 /* Operators. */
-p_pdf_name pdf_name_1 (p_pdf_name_list *name_list,
-                       const char *pchar);
+p_pdf_name pdf_name_1 (p_pdf_name_list *name_list, const char *pchar);
 p_pdf_name pdf_name_find (p_pdf_name_list *name_list,
                           const s_str *str);
 p_pdf_name pdf_name_from_str (p_pdf_name_list *name_list,

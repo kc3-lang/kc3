@@ -30,3 +30,43 @@ void pdf_file_clean (s_pdf_file *pdf_file)
   map_clean(&pdf_file->xref);
   pdf_name_list_delete_all(&pdf_file->name_list);
 }
+
+s_tag * pdf_file_get_indirect_object (s_pdf_file *pdf_file,
+                                      s_tag *ref, s_tag *dest)
+{
+  u32 object_number;
+  u16 generation_number;
+  uw i;
+  if (ref->type != TAG_TUPLE ||
+      ref->data.tuple.count != 3 ||
+      ref->data.tuple.tag[0].type != TAG_PSYM ||
+      ref->data.tuple.tag[0].data.psym != sym_1("indirect_object") ||
+      ref->data.tuple.tag[1].type != TAG_U32 ||
+      ref->data.tuple.tag[2].type != TAG_U16) {
+    err_puts("pdf_file_get_indirect_object: invalid indirect object"
+             " reference");
+    assert(!("pdf_file_get_indirect_object: invalid indirect object"
+             " reference"));
+    return NULL;
+  }
+  object_number = ref->data.tuple.tag[1].data.u32;
+  generation_number = ref->data.tuple.tag[2].data.u16;
+  i = 0;
+  while (i < pdf_file->body.count) {
+    if (pdf_file->body.key[i].type != TAG_TUPLE ||
+        pdf_file->body.key[i].data.tuple.count != 2 ||
+        pdf_file->body.key[i].data.tuple.tag[0].type != TAG_U32 ||
+        pdf_file->body.key[i].data.tuple.tag[1].type != TAG_U16) {
+      err_puts("pdf_file_get_indirect_object: invalid pdf file body");
+      assert(! "pdf_file_get_indirect_object: invalid pdf file body");
+      return NULL;
+    }
+    if (pdf_file->body.key[i].data.tuple.tag[0].data.u32 ==
+        object_number &&
+        pdf_file->body.key[i].data.tuple.tag[1].data.u16 ==
+        generation_number)
+      return tag_init_copy(dest, pdf_file->body.value + i);
+    i++;
+  }
+  return tag_init_void(dest);
+}

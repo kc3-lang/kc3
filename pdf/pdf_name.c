@@ -15,6 +15,13 @@
 
 p_pdf_name_list g_pdf_name_list = NULL;
 
+p_pdf_name pdf_name_1 (p_pdf_name_list *name_list, const char *pchar)
+{
+  s_str str;
+  str_init_1(&str, NULL, pchar);
+  return pdf_name_from_str(name_list, &str);
+}
+
 void kc3_pdf_name_list_delete_all (void)
 {
   pdf_name_list_delete_all(&g_pdf_name_list);
@@ -41,6 +48,8 @@ p_pdf_name pdf_name_from_str (p_pdf_name_list *name_list,
 {
   p_pdf_name name;
   assert(str);
+  if (! name_list)
+    name_list = &g_pdf_name_list;
   if (! (name = pdf_name_find(name_list, str)))
     name = pdf_name_new(name_list, str);
   return name;
@@ -64,10 +73,13 @@ p_pdf_name pdf_name_new (p_pdf_name_list *name_list,
                          const s_str *str)
 {
   s_sym *sym;
-  p_pdf_name_list tmp;
-  if (! (sym = alloc(sizeof(s_sym))) ||
-      ! (tmp = alloc(sizeof(s_sym_list))))
+  s_sym_list *tmp;
+  if (! (sym = alloc(sizeof(s_sym))))
     return NULL;
+  if (! (tmp = alloc(sizeof(s_sym_list)))) {
+    free(sym);
+    return NULL;
+  }
   str_init_copy(&sym->str, str);
   tmp->sym = sym;
   tmp->free_sym = sym;

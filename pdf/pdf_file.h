@@ -18,4 +18,8 @@
 /* Stack-allocation compatible functions. */
 void pdf_file_clean (s_pdf_file *pdf_file);
 
+/* Observers. */
+s_tag * pdf_file_get_indirect_object (s_pdf_file *pdf_file,
+                                      s_tag *ref, s_tag *dest);
+
 #endif /* KC3_PDF_FILE_H */
