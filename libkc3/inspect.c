@@ -65,6 +65,29 @@ s_str * inspect_bool (bool b, s_str *dest)
   return buf_to_str(&buf, dest);
 }
 
+s_str * inspect_buf (const s_buf *src, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw size;
+  size = buf_inspect_buf_size(&pretty, src);
+  if (size < 0) {
+    err_write_1("inspect_buf: buf_inspect_buf_size: ");
+    err_inspect_sw_decimal(size);
+    assert(! "inspect_buf: buf_inspect_buf_size");
+    return NULL;
+  }
+  buf_init_alloc(&buf, size);
+  buf_inspect_buf(&buf, src);
+  assert(buf.wpos == buf.size);
+  if (buf.wpos != buf.size) {
+    buf_clean(&buf);
+    err_write_1("inspect_buf: buf_inspect_buf");
+    return NULL;
+  }
+  return buf_to_str(&buf, dest);
+}
+
 s_str * inspect_call (const s_call *call, s_str *dest)
 {
   s_buf buf;

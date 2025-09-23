@@ -52,8 +52,6 @@
   DEF_ERR_INSPECT(name, type)                                          \
   DEF_IO_INSPECT(name, type)
 
-#define IO_INSPECT_BUF_SIZE 100
-
 sw err_flush (void)
 {
   return buf_flush(env_global()->err);
@@ -64,6 +62,7 @@ sw err_inspect (const s_tag *x)
   return err_inspect_tag(x);
 }
 
+/*
 sw err_inspect_buf (const s_buf *buf)
 {
   uw pos;
@@ -93,6 +92,7 @@ sw err_inspect_buf (const s_buf *buf)
   result += r;
   return result;
 }
+*/
 
 sw err_inspect_tag_type (e_tag_type type)
 {
@@ -169,14 +169,6 @@ sw io_inspect (const s_tag *x)
   return result;
 }
 
-sw io_inspect_buf (const s_buf *buf)
-{
-  uw pos;
-  pos = (buf->rpos < IO_INSPECT_BUF_SIZE) ? 0 :
-    buf->rpos - IO_INSPECT_BUF_SIZE;
-  return io_write(buf->ptr.pchar + pos, buf->rpos - pos);
-}
-
 sw io_inspect_tag_type (e_tag_type type)
 {
   return io_write_1(tag_type_to_string(type));
@@ -234,6 +226,8 @@ sw io_write_u8 (u8 x)
 }
 
 DEF_ERR_IO_INSPECT(array,               const s_array *)
+DEF_ERR_IO_INSPECT(bool,                bool)
+DEF_ERR_IO_INSPECT(buf,                 const s_buf *)
 DEF_ERR_IO_INSPECT(do_block,            const s_do_block *)
 DEF_ERR_IO_INSPECT(c_pointer,           const void *)
 DEF_ERR_IO_INSPECT(call,                const s_call *)

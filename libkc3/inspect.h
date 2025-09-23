@@ -24,6 +24,7 @@
 s_str * inspect_array (const s_array *array, s_str *dest);
 s_str * inspect_do_block (const s_do_block *do_block, s_str *dest);
 s_str * inspect_bool (bool b, s_str *dest);
+s_str * inspect_buf (const s_buf *buf, s_str *dest);
 s_str * inspect_call (const s_call *call, s_str *dest);
 s_str * inspect_character (character c, s_str *dest);
 s_str * inspect_fact (const s_fact *fact, s_str *dest);

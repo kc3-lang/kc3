@@ -842,6 +842,21 @@ s_list * list_init_str_empty (s_list *list, s_list *next)
   return list;
 }
 
+s_list * list_init_str_inspect_buf (s_list *list, const s_buf *src,
+                                    s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_str_inspect_buf(&tmp.tag, src)) {
+    err_puts("list_init_str_inspect_buf: tag_init_str_inspect_buf");
+    assert(! "list_init_str_inspect_buf: tag_init_str_inspect_buf");
+    return NULL;
+  }
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_str_inspect_str (s_list *list, const s_str *src,
                                     s_list *next)
 {
@@ -2007,6 +2022,24 @@ s_list * list_new_str_empty (s_list *next)
   if (! tag_init_str_empty(&list->tag)) {
     err_puts("list_new_str_empty: tag_init_str_empty");
     assert(! "list_new_str_empty: tag_init_str_empty");
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_str_inspect_buf (const s_buf *src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list) {
+    err_puts("list_new_str_inspect_buf: list_new");
+    assert(! "list_new_str_inspect_buf: list_new");
+    return NULL;
+  }
+  if (! tag_init_str_inspect_buf(&list->tag, src)) {
+    err_puts("list_new_str_inspect_buf: tag_init_str_inspect_buf");
+    assert(! "list_new_str_inspect_buf: tag_init_str_inspect_buf");
     free(list);
     return NULL;
   }

@@ -650,6 +650,17 @@ s_tag * tag_init_str_empty (s_tag *tag)
   return tag;
 }
 
+s_tag * tag_init_str_inspect_buf (s_tag *tag, const s_buf *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_STR;
+  if (! str_init_inspect_buf(&tmp.data.str, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_str_inspect_str (s_tag *tag, const s_str *src)
 {
   s_tag tmp = {0};
@@ -1513,6 +1524,20 @@ s_tag * tag_new_str_empty (void)
   return tag;
 }
 
+s_tag * tag_new_str_inspect_buf (const s_buf *src)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_STR;
+  if (! str_init_inspect_buf(&tag->data.str, src)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
 s_tag * tag_new_str_inspect_str (const s_str *src)
 {
   s_tag *tag;
@@ -2311,6 +2336,18 @@ s_tag * tag_str_empty (s_tag *tag)
   tag_clean(tag);
   tmp.type = TAG_STR;
   if (! str_init_empty(&tmp.data.str))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_str_inspect_buf (s_tag *tag, const s_buf *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_STR;
+  if (! str_init_inspect_buf(&tmp.data.str, src))
     return NULL;
   *tag = tmp;
   return tag;

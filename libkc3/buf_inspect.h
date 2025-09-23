@@ -78,10 +78,14 @@ extern const s_sym *g_buf_inspect_type;
   BUF_INSPECT_U_BASE_PROTOTYPES(bits, hexadecimal);                    \
   BUF_INSPECT_U_BASE_PROTOTYPES(bits, octal)
 
+#define BUF_INSPECT_BUF_SIZE 1000
+
 sw buf_inspect_array (s_buf *buf, const s_array *a);
 sw buf_inspect_array_size (s_pretty *pretty, const s_array *a);
 sw buf_inspect_bool (s_buf *buf, bool b);
 sw buf_inspect_bool_size (s_pretty *pretty, bool b);
+sw buf_inspect_buf (s_buf *buf, const s_buf *src);
+sw buf_inspect_buf_size (s_pretty *pretty, const s_buf *src);
 sw buf_inspect_c_pointer (s_buf *buf, const void *ptr);
 sw buf_inspect_c_pointer_size (s_pretty *pretty, const void *ptr);
 sw buf_inspect_call (s_buf *buf, const s_call *call);

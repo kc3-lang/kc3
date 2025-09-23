@@ -895,6 +895,11 @@ s_str * str_init_ftime (s_str *str, s_time *time, const s_str *format)
 
 DEF_STR_INIT_STRUCT(ident)
 
+s_str * str_init_inspect_buf (s_str *str, const s_buf *src)
+{
+  return inspect_buf(src, str);
+}
+
 s_str * str_init_inspect_str (s_str *str, const s_str *src)
 {
   return inspect_str(src, str);

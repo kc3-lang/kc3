@@ -515,6 +515,66 @@ sw buf_inspect_bool_size (s_pretty *pretty, bool b)
   return buf_write_1_size(pretty, "false");
 }
 
+sw buf_inspect_buf (s_buf *buf, const s_buf *src)
+{
+  uw pos;
+  sw r;
+  sw result = 0;
+  sw size;
+  s_str str = {0};
+  pos = (src->rpos < BUF_INSPECT_BUF_SIZE) ? 0 :
+    src->rpos - BUF_INSPECT_BUF_SIZE;
+  str.ptr.pchar = src->ptr.pchar + pos;
+  str.size = src->rpos - pos;
+  if ((r = buf_inspect_str(buf, &str)) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n---HERE---\n")) <= 0)
+    return r;
+  result += r;
+  size = src->wpos - src->rpos;
+  size = (size < BUF_INSPECT_BUF_SIZE) ? size : BUF_INSPECT_BUF_SIZE;
+  str.ptr.pchar = src->ptr.pchar + src->rpos;
+  str.size = size;
+  if ((r = buf_inspect_str(buf, &str)) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n")) <= 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_buf_size (s_pretty *pretty, const s_buf *src)
+{
+  uw pos;
+  sw r;
+  sw result = 0;
+  sw size;
+  s_str str = {0};
+  pos = (src->rpos < BUF_INSPECT_BUF_SIZE) ? 0 :
+    src->rpos - BUF_INSPECT_BUF_SIZE;
+  str.ptr.pchar = src->ptr.pchar + pos;
+  str.size = src->rpos - pos;
+  if ((r = buf_inspect_str_size(pretty, &str)) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1_size(pretty, "\n---HERE---\n")) <= 0)
+    return r;
+  result += r;
+  size = src->wpos - src->rpos;
+  size = (size < BUF_INSPECT_BUF_SIZE) ? size : BUF_INSPECT_BUF_SIZE;
+  str.ptr.pchar = src->ptr.pchar + src->rpos;
+  str.size = size;
+  if ((r = buf_inspect_str_size(pretty, &str)) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1_size(pretty, "\n")) <= 0)
+    return r;
+  result += r;
+  return result;
+}
+
 sw buf_inspect_call (s_buf *buf, const s_call *call)
 {
   sw arity;

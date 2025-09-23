@@ -427,6 +427,8 @@ class TagInitList
        TagInit.new("str", "copy", "TAG_STR", :init_mode_init,
                    [Arg.new("const s_str *", "src")]),
        TagInit.new("str", "empty", "TAG_STR", :init_mode_init, []),
+       TagInit.new("str", "inspect_buf", "TAG_STR", :init_mode_init,
+                   [Arg.new("const s_buf *", "src")]),
        TagInit.new("str", "inspect_str", "TAG_STR", :init_mode_init,
                    [Arg.new("const s_str *", "src")]),
        TagInit.new("sw", "TAG_SW", :init_mode_direct,

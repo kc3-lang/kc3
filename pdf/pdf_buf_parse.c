@@ -312,6 +312,7 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_map *xref, s_map *dest)
   s64 offset;
   sw r;
   sw result = 0;
+  s_tuple *tuple = NULL;
   if (! map_init(&tmp, xref->count)) {
     err_puts("pdf_buf_parse_file_body: map_init");
     assert(! "pdf_buf_parse_file_body: map_init");
@@ -343,7 +344,20 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_map *xref, s_map *dest)
         assert(! "pdf_buf_parse_file_body: buf_seek");
         goto clean;
       }
-      if ((r = pdf_buf_parse_indirect_object(buf, &tmp_tuple)) > 0) {
+      if ((r = pdf_buf_parse_indirect_object(buf, &tmp_tuple)) <= 0) {
+        err_write_1("pdf_buf_parse_file_body: failed to parse indirect object at offset ");
+        err_inspect_s64(offset);
+        err_write_1(", r=");
+        err_inspect_sw_decimal(r);
+        err_write_1("\n");
+        if (! tag_init_tuple(tmp.value + i, 2) ||
+            ! (tuple = &tmp.value[i].data.tuple) ||
+            ! tag_init_psym(tuple->tag, &g_sym_error) ||
+            ! tag_init_str_inspect_buf(tmp.value[i].data.tuple.tag + 1,
+                                       buf))
+          goto clean;
+      }
+      else {
         result += r;
         if (tmp_tuple.count != 4) {
           err_puts("pdf_buf_parse_file_body:"
@@ -360,12 +374,6 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_map *xref, s_map *dest)
           goto clean; 
         }
         tuple_clean(&tmp_tuple);
-      } else {
-        err_write_1("pdf_buf_parse_file_body: failed to parse indirect object at offset ");
-        err_inspect_s64(offset);
-        err_write_1(", r=");
-        err_inspect_sw_decimal(r);
-        err_write_1("\n");
       }
     }
     i++;
