@@ -65,9 +65,9 @@
      TLS indiquant la version de TLS utilisée pour la connection :
      - [ ] Pour le serveur :
        - [ ] "ikc3: TLS server: listening on HOST PORT"
-       - [ ] "ikc3: TLS server: client connected (HOST PORT) (TLS v4.2)"
+       - [ ] "ikc3: TLS server: client connected: HOST PORT TLS-4.2"
      - [ ] Pour le client :
-       - [ ] "ikc3: TLS client: connected to HOST PORT (TLS v4.2)"
+       - [ ] "ikc3: TLS client: connected to HOST PORT TLS-4.2"
 
 ## libkc3
  - [ ] unveil
