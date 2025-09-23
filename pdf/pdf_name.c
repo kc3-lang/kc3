@@ -49,11 +49,14 @@ p_pdf_name pdf_name_from_str (p_pdf_name_list *name_list,
 void pdf_name_list_delete_all (p_pdf_name_list *name_list)
 {
   p_pdf_name_list list;
+  p_pdf_name_list next;
   assert(name_list);
   list = *name_list;
   while (list) {
+    next = list->next;
     sym_delete(list->free_sym);
-    list = list->next;
+    free(list);
+    list = next;
   }
 }
 
