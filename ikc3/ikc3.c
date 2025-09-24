@@ -40,6 +40,7 @@ s_buf       *g_server_env_in  = NULL;
 s_buf       *g_server_env_out = NULL;
 t_socket     g_server_socket = -1;
 s_socket_buf g_socket_buf = {0};
+bool         g_tls = false;
 
 sw  buf_ignore_character (s_buf *buf);
 
@@ -217,6 +218,17 @@ int ikc3_arg_server (s_env *env, int *argc, char ***argv)
   *argc -= 3;
   *argv += 3;
   return 3;
+}
+
+int ikc3_arg_tls (s_env *env)
+{
+  if (g_client ^ g_server) {
+    err_puts("ikc3_arg_tls: incompatible network options");
+    usage(env->argv[0]);
+    return -1;
+  }
+  g_tls = true;
+  return 1;
 }
 
 void ikc3_buf_editline_close (s_buf *buf)
@@ -480,6 +492,10 @@ int main (int argc, char **argv)
     }
     else if (! strcmp("--server", *argv)) {
       if ((r = ikc3_arg_server(env, &argc, &argv)) < 0)
+        goto clean;
+    }
+    else if (! strcmp(argv[0], "--tls")) {
+      if ((r = ikc3_arg_tls(env, &argc, &argv)) < 0)
         goto clean;
     }
     else if (argc == 1 &&

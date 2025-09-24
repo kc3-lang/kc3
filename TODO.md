@@ -42,11 +42,11 @@
 
  - [ ] ikc3 **--tls** --client/server
 
-   - [ ] Il faut parser l'argument en ligne de commande --tls dans ikc3/ikc3.c .
+   - [x] Il faut parser l'argument en ligne de commande --tls dans ikc3/ikc3.c .
 
-     - [ ] Declarer une variable globale `bool g_tls` dans ikc3.c .
+     - [x] Declarer une variable globale `bool g_tls` dans ikc3.c .
 
-     - [ ] Setter la variable globale `bool g_tls` qui indique si
+     - [x] Setter la variable globale `bool g_tls` qui indique si
        l'argument --tls est present dans le parsing des arguments en ligne de commande.
 
    - [ ] Serveur TLS
