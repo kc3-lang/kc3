@@ -10,7 +10,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a *.command ikc3 ikc3_asan ikc3_cov ikc3_debug *.css *.gcno *.html *.o .libs *.lo
+CLEANFILES = *.a ikc3 ikc3_asan ikc3_cov ikc3_debug *.css *.gcno *.html *.o .libs *.lo
 
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 CLEANFILES += ${CLEANFILES_COV}
@@ -23,9 +23,9 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-build: ikc3 ikc3.command
+build: ikc3
 
-asan: ikc3_asan ikc3_asan.command
+asan: ikc3_asan
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -33,9 +33,9 @@ clean:
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
-cov: ikc3_cov ikc3_cov.command
+cov: ikc3_cov
 
-debug: ikc3_debug ikc3_debug.command
+debug: ikc3_debug
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
@@ -48,18 +48,6 @@ gdb_ikc3: debug
 
 gdb_ikc3_asan: asan
 	if [ -f ikc3_debug.core ]; then gdb .libs/ikc3_asan ikc3_asan.core; else gdb .libs/ikc3_asan; fi
-
-ikc3.command:
-	cp .libs/ikc3 ikc3.command
-
-ikc3_asan.command:
-	cp .libs/ikc3_asan ikc3_asan.command
-
-ikc3_cov.command:
-	cp .libs/ikc3_cov ikc3_cov.command
-
-ikc3_debug.command:
-	cp .libs/ikc3_debug ikc3_debug.command
 
 install:
 	mkdir -p ${DESTDIR}${prefix}/bin
