@@ -37,6 +37,8 @@ s_tag * pdf_file_get_indirect_object (s_pdf_file *pdf_file,
   u32 object_number;
   u16 generation_number;
   uw i;
+  if (! pdf_file)
+    return tag_init_void(dest);
   if (ref->type != TAG_TUPLE ||
       ref->data.tuple.count != 3 ||
       ref->data.tuple.tag[0].type != TAG_PSYM ||

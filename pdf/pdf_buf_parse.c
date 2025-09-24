@@ -752,9 +752,13 @@ sw pdf_buf_parse_object_end (s_buf *buf, bool *end)
   if (r && pdf_character_is_delimiter(c))
     goto end;
   *end = result > 0 ? true : false;
+  if (r < 0)
+    return r;
   return result;
  end:
   *end = true;
+  if (r < 0)
+    return r;
   return result;
 }
 
@@ -853,6 +857,7 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
       if (! pdf_file_get_indirect_object(pdf_file, &size_tag, &size_tmp)) {
         err_puts("pdf_buf_parse_stream: pdf_file_get_indirect_object");
         assert(! "pdf_buf_parse_stream: pdf_file_get_indirect_object");
+        tag_clean(&size_tag);
         goto ko;
       }
       tag_clean(&size_tag);
@@ -863,22 +868,50 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
   }
   pdf_stream->length = size;
   if (! size) {
-    err_puts("pdf_buf_parse_stream: zero Length");
-    pdf_buf_ignore_until_token(buf, "endstream");
+    if (false) {
+      err_write_1("pdf_buf_parse_stream: zero Length: ");
+      err_inspect_map(&pdf_stream->dictionnary);
+      err_write_1("\n");
+    }
+    if ((r = pdf_buf_ignore_until_token(buf, "endstream")) <= 0) {
+      err_puts("pdf_buf_parse_stream: endstream:"
+               " pdf_buf_ignore_until_token");
+      assert(!("pdf_buf_parse_stream: endstream:"
+               " pdf_buf_ignore_until_token"));
+      goto ko;
+    }
   }
   else {
+    if (false) {
+      err_write_1("pdf_buf_parse_stream: Length = ");
+      err_inspect_s64_decimal(size);
+      err_write_1(", offset = ");
+      err_inspect_s64_decimal(pdf_stream->offset);
+      err_write_1("\n");
+    }
     offset = pdf_stream->offset + size;
-    if (buf_seek(buf, offset, SEEK_SET) != offset)
+    if (buf_seek(buf, offset, SEEK_SET) != offset) {
+      err_puts("pdf_buf_parse_stream: buf_seek");
+      assert(! "pdf_buf_parse_stream: buf_seek");
       goto ko;
+    }
+    if (false) {
+      err_write_1("pdf_buf_parse_stream: after buf_seek:");
+      err_inspect_buf(buf);
+    }
     if ((r = buf_ignore_spaces(buf)) < 0) {
-      err_puts("pdf_buf_parse_stream: missing 'endstream'");
-      assert(! "pdf_buf_parse_stream: missing 'endstream'");
+      if (false) {
+        err_puts("pdf_buf_parse_stream: endstream: buf_ignore_spaces");
+        assert(! "pdf_buf_parse_stream: endstream: buf_ignore_spaces");
+      }
       goto ko;
     }
     result += r;
     if ((r = pdf_buf_parse_token(buf, "endstream")) <= 0) {
-      err_puts("pdf_buf_parse_stream: missing 'endstream'");
-      assert(! "pdf_buf_parse_stream: missing 'endstream'");
+      if (false) {
+        err_puts("pdf_buf_parse_stream: endstream: pdf_buf_parse_token");
+        assert(! "pdf_buf_parse_stream: endstream: pdf_buf_parse_token");
+      }
       goto ko;
     }
     result += r;
@@ -1115,11 +1148,12 @@ sw pdf_buf_parse_token (s_buf *buf, const char *pchar)
   sw result = 0;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, pchar)) <= 0)
+  if ((r = buf_read_1(buf, pchar)) <= 0) {
     goto clean;
+  }
   result += r;
-  if ((r = pdf_buf_parse_object_end(buf, &end)) < 0)
-    goto restore;
+  if ((r = pdf_buf_parse_object_end(buf, &end)) > 0)
+    result += r;
   if (! end) {
     r = 0;
     goto restore;
