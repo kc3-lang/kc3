@@ -41,8 +41,8 @@ true
 PDF.parse_str("false")
 false
 PDF.parse_str("42 0 obj /Test endobj")
-{:indirect_object, 42, 0, Test}
+{:indirect_object, (U32) 42, (U16) 0, Test}
 PDF.parse_str("42 5 R")
-{:indirect_object, 42, 5}
+{:indirect_object, (U32) 42, (U16) 5}
 PDF.parse_str("123 % This is a comment\n")
 123

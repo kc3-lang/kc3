@@ -87,6 +87,9 @@ s64 * s64_init_cast
   case TAG_UW:
     *s = (s64) tag->data.uw;
     return s;
+  case TAG_VOID:
+    *s = 0;
+    return s;
   default:
     break;
   }

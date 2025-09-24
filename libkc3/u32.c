@@ -98,6 +98,9 @@ u32 * u32_init_cast
   case TAG_UW:
     *u = (u32) tag->data.uw;
     return u;
+  case TAG_VOID:
+    *u = 0;
+    return u;
   default:
     break;
   }

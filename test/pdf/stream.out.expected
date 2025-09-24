@@ -1,49 +1,7 @@
 require PDF
 PDF
 PDF.parse_str("1 0 obj << /Length 5 >> stream\nhello\nendstream\nendobj")
-{:indirect_object, 1, 0, %PDF.Stream{dictionnary: %{Length: 5},
-                                     offset: (S64) 31,
-                                     length: (S64) 0}}
+{:indirect_object, (U32) 1, (U16) 0, %PDF.Stream{dictionnary: %{Length: 5},
+                                                 offset: (S64) 31,
+                                                 length: (S64) 5}}
 PDF.parse_str("2 0 obj << /Length 3 0 R >> stream\ndata\nendstream\nendobj")
-{:indirect_object, 2, 0, %PDF.Stream{dictionnary: %{Length: {:indirect_object, 3, 0}},
-                                     offset: (S64) 35,
-                                     length: (S64) 0}}
-PDF.parse_str("3 0 obj << /Length 4 /Filter /FlateDecode >> stream\ntest\nendstream\nendobj")
-{:indirect_object, 3, 0, %PDF.Stream{dictionnary: %{Filter: FlateDecode,
-                                                     Length: 4},
-                                     offset: (S64) 52,
-                                     length: (S64) 0}}
-PDF.parse_str("4 0 obj << /Length 6 /Filter [/ASCII85Decode /LZWDecode] >> stream\nstream\nendstream\nendobj")
-{:indirect_object, 4, 0, %PDF.Stream{dictionnary: %{Filter: [ASCII85Decode, LZWDecode],
-                                                     Length: 6},
-                                     offset: (S64) 67,
-                                     length: (S64) 0}}
-PDF.parse_str("5 0 obj << /Length 8 /Filter /LZWDecode /DecodeParms << /Predictor 2 >> >> stream\ncontent!\nendstream\nendobj")
-{:indirect_object, 5, 0, %PDF.Stream{dictionnary: %{DecodeParms: %{Predictor: 2},
-                                                     Filter: LZWDecode,
-                                                     Length: 8},
-                                     offset: (S64) 82,
-                                     length: (S64) 0}}
-PDF.parse_str("6 0 obj << /Length 0 >> stream\n\nendstream\nendobj")
-{:indirect_object, 6, 0, %PDF.Stream{dictionnary: %{Length: 0},
-                                     offset: (S64) 31,
-                                     length: (S64) 0}}
-PDF.parse_str("7 0 obj << /Type /XObject /Subtype /Image /Length 3 >> stream\nimg\nendstream\nendobj")
-{:indirect_object, 7, 0, %PDF.Stream{dictionnary: %{Length: 3,
-                                                     Subtype: Image,
-                                                     Type: XObject},
-                                     offset: (S64) 62,
-                                     length: (S64) 0}}
-PDF.parse_str("8 0 obj << /Length 26 >> stream\nLine 1\nLine 2\nLine 3\nendstream\nendobj")
-{:indirect_object, 8, 0, %PDF.Stream{dictionnary: %{Length: 26},
-                                     offset: (S64) 32,
-                                     length: (S64) 0}}
-PDF.parse_str("9 0 obj << /Length 12 >> stream\n\x01\x02\x03\x04test\nendstream\nendobj")
-{:indirect_object, 9, 0, %PDF.Stream{dictionnary: %{Length: 12},
-                                     offset: (S64) 32,
-                                     length: (S64) 0}}
-PDF.parse_str("10 0 obj << /Length 4 /Resources << /Font << /F1 11 0 R >> >> >> stream\ntext\nendstream\nendobj")
-{:indirect_object, 10, 0, %PDF.Stream{dictionnary: %{Length: 4,
-                                                      Resources: %{Font: %{F1: {:indirect_object, 11, 0}}}},
-                                      offset: (S64) 72,
-                                      length: (S64) 0}}

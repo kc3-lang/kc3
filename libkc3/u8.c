@@ -98,6 +98,9 @@ u8 * u8_init_cast
   case TAG_UW:
     *u = (u8) tag->data.uw;
     return u;
+  case TAG_VOID:
+    *u = 0;
+    return u;
   default:
     break;
   }

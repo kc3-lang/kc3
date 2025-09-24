@@ -298,7 +298,6 @@ sw pdf_buf_parse_file (s_buf *buf, s_pdf_file *dest)
   if ((r = pdf_buf_parse_file_body(buf, &tmp)) <= 0) {
     err_puts("pdf_buf_parse_file: pdf_buf_parse_file_body");
     assert(! "pdf_buf_parse_file: pdf_buf_parse_file_body");
-    map_clean(&tmp.xref);
     pdf_file_clean(&tmp);
     return -1;
   }
@@ -504,7 +503,9 @@ sw pdf_buf_parse_indirect_object (s_buf *buf,
   sw r;
   sw result = 0;
   s_buf_save save = {0};
-  const s_sym *sym_indirect_object = sym_1("indirect_object");
+  p_sym sym_indirect_object = sym_1("indirect_object");
+  p_sym sym_U16 = &g_sym_U16;
+  p_sym sym_U32 = &g_sym_U32;
   s_tuple tmp = {0};
   buf_save_init(buf, &save);
   if ((r = pdf_buf_parse_integer(buf, &object_number)) <= 0)
@@ -517,42 +518,64 @@ sw pdf_buf_parse_indirect_object (s_buf *buf,
     goto restore;
   if (r) {
     result += r;
+    buf_save_clean(buf, &save);
     if (! tuple_init(&tmp, 4)) {
       r = -1;
-      goto restore;
+      goto ko;
     }
     if ((r = pdf_buf_parse_stream(buf, pdf_file, tmp.tag + 3)) < 0)
-      goto restore;
+      goto ko;
     if (! r &&
         (r = pdf_buf_parse_object(buf, pdf_file, tmp.tag + 3)) <= 0)
-      goto restore;
+      goto ko;
     goto ok;
   }
   if ((r = pdf_buf_parse_token(buf, "R")) < 0)
     goto restore;
   if (r) {
     result += r;
+    buf_save_clean(buf, &save);
     if (! tuple_init(&tmp, 3)) {
       r = -1;
-      goto restore;
+      goto ko;
     }
     goto ok;
   }
   goto restore;
  ok:
   tag_init_psym(tmp.tag, sym_indirect_object);
-  tmp.tag[1] = object_number;
-  tmp.tag[2] = generation_number;
+  tmp.tag[1].type = TAG_U32;
+  if (! u32_init_cast(&tmp.tag[1].data.u32, &sym_U32, &object_number)) {
+    err_puts("pdf_buf_parse_indirect_object: invalid object number");
+    assert(! "pdf_buf_parse_indirect_object: invalid object number");
+    r = -1;
+    goto ko;
+  }
+  tag_void(&object_number);
+  tmp.tag[2].type = TAG_U16;
+  if (! u16_init_cast(&tmp.tag[2].data.u16, &sym_U16,
+                      &generation_number)) {
+    err_puts("pdf_buf_parse_indirect_object: invalid generation"
+             " number");
+    assert(!("pdf_buf_parse_indirect_object: invalid generation"
+             " number"));
+    r = -1;
+    goto ko;
+  }
+  tag_void(&generation_number);
   *dest = tmp;
-  r = result;
-  goto clean;
+  return result;
  restore:
   tuple_clean(&tmp);
   tag_clean(&object_number);
   tag_clean(&generation_number);
   buf_save_restore_rpos(buf, &save);
- clean:
   buf_save_clean(buf, &save);
+  return r;
+ ko:
+  tuple_clean(&tmp);
+  tag_clean(&object_number);
+  tag_clean(&generation_number);
   return r;
 }
 
@@ -804,23 +827,20 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
     goto restore;
   }
   result += r;
+  buf_save_clean(buf, &save);
   if (! tag_init_pstruct(&tmp, sym_PDF_Stream) ||
       ! struct_allocate(tmp.data.pstruct) ||
       ! (pdf_stream = tmp.data.pstruct->data)) {
     err_puts("pdf_buf_parse_stream: failed to init pstruct");
     assert(! "pdf_buf_parse_stream: failed to init pstruct");
-    tag_clean(&tmp);
     map_clean(&map);
-    r = -1;
-    goto clean;
+    goto ko;
   }
   pdf_stream->dictionnary = map;
   if (! buf_tell_r(buf, &pdf_stream->offset)) {
     err_puts("pdf_buf_parse_stream: buf_tell_r");
     assert(! "pdf_buf_parse_stream: buf_tell_r");
-    tag_clean(&tmp);
-    r = -1;
-    goto clean;
+    goto ko;
   }
   name_list = pdf_file ? &pdf_file->name_list : &g_pdf_name_list;
   name_tag.type = TAG_PSYM;
@@ -833,9 +853,7 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
       if (! pdf_file_get_indirect_object(pdf_file, &size_tag, &size_tmp)) {
         err_puts("pdf_buf_parse_stream: pdf_file_get_indirect_object");
         assert(! "pdf_buf_parse_stream: pdf_file_get_indirect_object");
-        tag_clean(&tmp);
-        r = -1;
-        goto clean;
+        goto ko;
       }
       tag_clean(&size_tag);
       size_tag = size_tmp;
@@ -850,36 +868,31 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
   }
   else {
     offset = pdf_stream->offset + size;
-    if (buf_seek(buf, offset, SEEK_SET) != offset) {
-      tag_clean(&tmp);
-      r = -1;
-      goto clean;
-    }
+    if (buf_seek(buf, offset, SEEK_SET) != offset)
+      goto ko;
     if ((r = buf_ignore_spaces(buf)) < 0) {
       err_puts("pdf_buf_parse_stream: missing 'endstream'");
       assert(! "pdf_buf_parse_stream: missing 'endstream'");
-      tag_clean(&tmp);
-      r = -1;
-      goto clean;
+      goto ko;
     }
     result += r;
     if ((r = pdf_buf_parse_token(buf, "endstream")) <= 0) {
       err_puts("pdf_buf_parse_stream: missing 'endstream'");
       assert(! "pdf_buf_parse_stream: missing 'endstream'");
-      tag_clean(&tmp);
-      r = -1;
-      goto clean;
+      goto ko;
     }
     result += r;
   }
   *dest = tmp;
-  r = result;
-  goto clean;
+  return result;
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
   return r;
+ ko:
+  tag_clean(&tmp);
+  return -1;
 }
 
 sw pdf_buf_parse_string (s_buf *buf, s_tag *dest)

@@ -44,7 +44,8 @@ s_tag * pdf_file_get_indirect_object (s_pdf_file *pdf_file,
       ref->data.tuple.tag[1].type != TAG_U32 ||
       ref->data.tuple.tag[2].type != TAG_U16) {
     err_puts("pdf_file_get_indirect_object: invalid indirect object"
-             " reference");
+             " reference:");
+    err_inspect_tag(ref);
     assert(!("pdf_file_get_indirect_object: invalid indirect object"
              " reference"));
     return NULL;

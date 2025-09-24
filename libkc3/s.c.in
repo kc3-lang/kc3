@@ -87,6 +87,9 @@ s_bits$ * s_bits$_init_cast
   case TAG_UW:
     *s = (s_bits$) tag->data.uw;
     return s;
+  case TAG_VOID:
+    *s = 0;
+    return s;
   default:
     break;
   }

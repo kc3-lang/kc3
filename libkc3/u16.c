@@ -98,6 +98,9 @@ u16 * u16_init_cast
   case TAG_UW:
     *u = (u16) tag->data.uw;
     return u;
+  case TAG_VOID:
+    *u = 0;
+    return u;
   default:
     break;
   }
