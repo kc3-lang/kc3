@@ -50,6 +50,7 @@ int    ikc3_arg_client (s_env *env, int *argc, char ***argv);
 int    ikc3_arg_dump (s_env *env, int *argc, char ***argv);
 int    ikc3_arg_load (s_env *env, int *argc, char ***argv);
 int    ikc3_arg_server (s_env *env, int *argc, char ***argv);
+int    ikc3_arg_tls (s_env *env, int *argc, char ***argv);
 void   ikc3_buf_editline_close (s_buf *buf);
 void   ikc3_buf_editline_open_r (s_buf *buf);
 void   ikc3_client_clean (void);
@@ -220,14 +221,12 @@ int ikc3_arg_server (s_env *env, int *argc, char ***argv)
   return 3;
 }
 
-int ikc3_arg_tls (s_env *env)
+int ikc3_arg_tls (s_env *env, int *argc, char ***argv)
 {
-  if (g_client ^ g_server) {
-    err_puts("ikc3_arg_tls: incompatible network options");
-    usage(env->argv[0]);
-    return -1;
-  }
+  (void) env;
   g_tls = true;
+  *argc -= 1;
+  *argv += 1;
   return 1;
 }
 
@@ -272,6 +271,13 @@ int ikc3_client_init (void)
     io_write_1("\n");
   }
   return 0;
+}
+
+int ikc3_client_init_tls (void)
+{
+  // TODO: TLS init
+  // TODO: replace ikc3_client_init with TLS.Client init code in tests
+  //       for TLS connection option (--tls)
 }
 
 sw ikc3_run (void)
@@ -465,6 +471,45 @@ int ikc3_server_init (s_env *env)
   return 0;
 }
 
+int ikc3_server_init_tls (s_env *env)
+{
+  assert(env);
+  // TODO: TLS init
+  if (! socket_init_listen(&g_server_socket, &g_host, &g_port)) {
+    err_write_1("ikc3: failed to listen on ");
+    err_inspect_str(&g_host);
+    err_write_1(" ");
+    err_inspect_str(&g_port);
+    err_write_1("\n");
+    return 1;
+  }
+  if (true) {
+    io_write_1("ikc3: listening on ");
+    io_inspect_str(&g_host);
+    io_write_1(" ");
+    io_inspect_str(&g_port);
+    io_write_1("\n");
+  }
+  if (! socket_buf_init_accept(&g_socket_buf, &g_server_socket)) {
+    err_puts("ikc3: ikc3_server_init: socket_buf_init_accept");
+    socket_close(&g_server_socket);
+    return 1;
+  }
+  // TODO: TLS server up to tls_handshake()
+  if (true) {
+    io_write_1("ikc3: connected to ");
+    io_inspect_str(&g_socket_buf.addr_str);
+    io_write_1("\n");
+  }
+  g_server_env_in = env->in;
+  g_server_env_out = env->out;
+  g_server_env_err = env->err;
+  env->in = g_socket_buf.buf_rw.r;
+  env->out = g_socket_buf.buf_rw.w;
+  //env->err = g_socket_buf.buf_rw.w;
+  return 0;
+}
+
 int main (int argc, char **argv)
 {
   s_env *env = NULL;
@@ -494,7 +539,7 @@ int main (int argc, char **argv)
       if ((r = ikc3_arg_server(env, &argc, &argv)) < 0)
         goto clean;
     }
-    else if (! strcmp(argv[0], "--tls")) {
+    else if (! strcmp("--tls", argv[0])) {
       if ((r = ikc3_arg_tls(env, &argc, &argv)) < 0)
         goto clean;
     }
@@ -505,6 +550,16 @@ int main (int argc, char **argv)
     }
     else
       break;
+  }
+  if (g_client && g_server) {
+    err_puts("ikc3: --client and --server is not supported");
+    return usage(env->argv[0]);
+  }
+  if (g_tls) {
+    if (! g_client && ! g_server) {
+      err_puts("ikc3: --tls without --client or --server");
+      return usage(env->argv[0]);
+    }
   }
   *env->in = in_original;
   if (g_server) {

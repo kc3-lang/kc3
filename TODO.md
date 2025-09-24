@@ -50,6 +50,8 @@
        l'argument --tls est present dans le parsing des arguments en ligne de commande.
 
    - [ ] Serveur TLS
+     - [ ] voir les commentaires `// TODO` dans le fichier ikc3.c
+
      - [ ] ikc3 doit changer ses buffers d'entrée/sortie apres avoir
        accepté une connection lorsqu'il est en mode serveur il faut
        remplacer la logique de connection `t_socket` en logique de
@@ -62,6 +64,8 @@
        - [ ] "ikc3: TLS server: client connected: HOST PORT TLS-4.2"
 
    - [ ] Client TLS
+     - [ ] voir les commentaires `// TODO` dans le fichier ikc3.c
+
      - [ ] ikc3 doit changer ses buffers d'entrée/sortie apres s'être
        connecté lorsqu'il est en mode serveur il faut remplacer la
        logique de connection `t_socket` en logique de connection
