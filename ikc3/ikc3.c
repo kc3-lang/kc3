@@ -278,6 +278,7 @@ int ikc3_client_init_tls (void)
   // TODO: TLS init
   // TODO: replace ikc3_client_init with TLS.Client init code in tests
   //       for TLS connection option (--tls)
+  return -1;
 }
 
 sw ikc3_run (void)
