@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
+#include <tls.h>
 #ifdef HAVE_PTHREAD
 # include <pthread.h>
 #endif
@@ -20,6 +21,9 @@
 #include "../socket/socket.h"
 #include "../socket/socket_buf.h"
 #include "config.h"
+#include "../tls/tls.h"
+#include "../tls/tls_client.h"
+#include "../tls/tls_server.h"
 
 #if HAVE_WINEDITLINE
 # include "buf_wineditline.h"
@@ -275,10 +279,31 @@ int ikc3_client_init (void)
 
 int ikc3_client_init_tls (void)
 {
-  // TODO: TLS init
-  // TODO: replace ikc3_client_init with TLS.Client init code in tests
-  //       for TLS connection option (--tls)
-  return -1;
+  s_tag tls_tag;
+  p_tls tls;
+  s_tls_client tls_client;
+
+  if (! g_tls) {
+    err_puts("ikc3_client_init_tls: tls not enabled");
+    assert(! "ikc3_client_init_tls: tls not enabled");
+    return 1;
+  }
+  if (! kc3_tls_init(&tls_tag)) {
+    err_puts("ikc3_client_init_tls: failed to init tls");
+    assert(! "ikc3_client_init_tls: failed to init tls");
+    return 1;
+  }
+  if (! kc3_tls_client(&tls)) {
+    err_puts("ikc3_client_init_tls: failed to retrieve tls_client");
+    assert(! "ikc3_client_init_tls: failed to retrieve tls_client");
+    return 1;
+  }
+  if (! kc3_tls_client_init_connect(&tls_client, &tls, &g_host, &g_port)) {
+    err_puts("ikc3_client_init_tls: failed to connect tls client");
+    assert(! "ikc3_client_init_tls: failed to connect tls client");
+    return 1;
+  }
+  return 0;
 }
 
 sw ikc3_run (void)
