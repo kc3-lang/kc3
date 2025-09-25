@@ -8,9 +8,9 @@ require Socket
 Socket
 require Socket.Buf
 Socket.Buf
-(server = Socket.listen("127.0.0.1", "57000")) ; void
+(server = Socket.listen("127.0.0.1", "57001")) ; void
 void
-(client = Socket.Buf.connect("127.0.0.1", "57000")) ; void
+(client = Socket.Buf.connect("127.0.0.1", "57001")) ; void
 void
 (server_client = Socket.accept(server)) ; void
 void
