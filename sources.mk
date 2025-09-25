@@ -39,6 +39,9 @@ KC3_CONFIGURES = \
 	"markdown/configure" \
 	"markdown/sources.sh" \
 	"markdown/update_sources" \
+	"pdf/configure" \
+	"pdf/sources.sh" \
+	"pdf/update_sources" \
 	"smtp/configure" \
 	"smtp/sources.sh" \
 	"smtp/update_sources" \
@@ -118,10 +121,14 @@ KC3_MAKEFILES = \
 	"libtommath/sources.mk" \
 	"markdown/Makefile" \
 	"markdown/sources.mk" \
+	"pdf/Makefile" \
+	"pdf/sources.mk" \
+	"runj/Makefile" \
 	"smtp/Makefile" \
 	"smtp/sources.mk" \
 	"socket/Makefile" \
 	"socket/sources.mk" \
+	"sort/Makefile" \
 	"test/Makefile" \
 	"test/httpd/Makefile" \
 	"test/httpd/assets/Makefile" \
@@ -876,6 +883,19 @@ KC3_C_SOURCES = \
 	"markdown/md4c-html.h" \
 	"markdown/md4c.c" \
 	"markdown/md4c.h" \
+	"pdf/pdf.c" \
+	"pdf/pdf.h" \
+	"pdf/pdf_buf_parse.c" \
+	"pdf/pdf_buf_parse.h" \
+	"pdf/pdf_file.c" \
+	"pdf/pdf_file.h" \
+	"pdf/pdf_name.c" \
+	"pdf/pdf_name.h" \
+	"pdf/pdf_trailer.c" \
+	"pdf/pdf_trailer.h" \
+	"pdf/pdf_write.c" \
+	"pdf/pdf_write.h" \
+	"pdf/types.h" \
 	"smtp/kc3_smtp.c" \
 	"smtp/kc3_smtp.h" \
 	"smtp/smtp.c" \
@@ -2194,6 +2214,8 @@ KC3_EXTERNAL_SOURCES = \
 	"linenoise/example.c" \
 	"linenoise/linenoise.c" \
 	"linenoise/linenoise.h" \
+	"runj/runj.c" \
+	"sort/sort.c" \
 	"ucd2c/UCD.zip" \
 	"ucd2c/UCD/ArabicShaping.txt" \
 	"ucd2c/UCD/BidiBrackets.txt" \
