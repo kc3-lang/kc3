@@ -123,10 +123,12 @@ KC3_MAKEFILES = \
 	"markdown/sources.mk" \
 	"pdf/Makefile" \
 	"pdf/sources.mk" \
+	"runj/Makefile" \
 	"smtp/Makefile" \
 	"smtp/sources.mk" \
 	"socket/Makefile" \
 	"socket/sources.mk" \
+	"sort/Makefile" \
 	"test/Makefile" \
 	"test/httpd/Makefile" \
 	"test/httpd/assets/Makefile" \
@@ -2198,6 +2200,8 @@ KC3_EXTERNAL_SOURCES = \
 	"linenoise/example.c" \
 	"linenoise/linenoise.c" \
 	"linenoise/linenoise.h" \
+	"runj/runj.c" \
+	"sort/sort.c" \
 	"ucd2c/UCD.zip" \
 	"ucd2c/UCD/ArabicShaping.txt" \
 	"ucd2c/UCD/BidiBrackets.txt" \
