@@ -357,7 +357,8 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_pdf_file *pdf_file)
         err_write_1("\n");
         if (! tag_init_tuple(tmp.value + i, 2) ||
             ! (tuple = &tmp.value[i].data.tuple) ||
-            ! tag_init_psym(tuple->tag, &g_sym_error))
+            ! tag_init_psym(tuple->tag, &g_sym_error) ||
+            ! tag_init_str_inspect_buf(tuple->tag + 1, buf))
           goto clean;
       }
       else {

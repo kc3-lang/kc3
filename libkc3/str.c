@@ -1403,7 +1403,7 @@ sw str_peek_character_utf8 (const s_str *str, character *c)
   const u8 _11110000 = 0xF0;
   const u8 _11111000 = 0xF8;
   if (str->size <= 0)
-    return 0;
+    return -1;
   b = str->ptr.pu8;
   if ((b[0] & _10000000) == 0) {
     *c = *b;
@@ -1411,9 +1411,9 @@ sw str_peek_character_utf8 (const s_str *str, character *c)
   }
   if ((b[0] & _11100000) == _11000000) {
     if (str->size < 2)
-      return 0;
-    if ((b[1] & _11000000) != _10000000)
       return -1;
+    if ((b[1] & _11000000) != _10000000)
+      return 0;
     x[0] = b[0] & _00011111;
     x[1] = b[1] & _00111111;
     *c = (x[0] << 6) | x[1];
@@ -1421,11 +1421,11 @@ sw str_peek_character_utf8 (const s_str *str, character *c)
   }
   if ((b[0] & _11110000) == _11100000) {
     if (str->size < 3)
-      return 0;
+      return -1;
     if ((b[1] & _11000000) != _10000000)
-      return -1;
+      return 0;
     if ((b[2] & _11000000) != _10000000)
-      return -1;
+      return 0;
     x[0] = b[0] & _00001111;
     x[1] = b[1] & _00111111;
     x[2] = b[2] & _00111111;
@@ -1434,13 +1434,13 @@ sw str_peek_character_utf8 (const s_str *str, character *c)
   }
   if ((b[0] & _11111000) == _11110000) {
     if (str->size < 4)
-      return 0;
+      return -1;
     if ((b[1] & _11000000) != _10000000)
-      return -1;
+      return 0;
     if ((b[2] & _11000000) != _10000000)
-      return -1;
+      return 0;
     if ((b[3] & _11000000) != _10000000)
-      return -1;
+      return 0;
     x[0] = b[0] & _00000111;
     x[1] = b[1] & _00111111;
     x[2] = b[2] & _00111111;
@@ -1450,7 +1450,7 @@ sw str_peek_character_utf8 (const s_str *str, character *c)
       return 0;
     return 4;
   }
-  return -1;
+  return 0;
 }
 
 sw str_position_1 (const s_str *str, const char *token)
