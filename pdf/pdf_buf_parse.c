@@ -220,14 +220,19 @@ sw pdf_buf_parse_dictionnary (s_buf *buf, s_pdf_file *pdf_file,
   p_list  values = NULL;
   p_list *values_tail = &values;
   buf_save_init(buf, &save);
-  if ((r = pdf_buf_parse_token(buf, "<<")) <= 0)
+  if ((r = buf_read_1(buf, "<<")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
     goto clean;
   result += r;
   while (1) {
-    if ((r = pdf_buf_parse_token(buf, ">>")) < 0)
+    if ((r = buf_read_1(buf, ">>")) < 0)
       goto clean;
     if (r) {
       result += r;
+      if ((r = buf_ignore_spaces(buf)) > 0)
+        result += r;
       goto ok;
     }
     if ((r = pdf_buf_parse_name(buf, pdf_file, &name)) <= 0)
