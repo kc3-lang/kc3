@@ -1391,6 +1391,7 @@ sw str_peek_character_utf8 (const s_str *str, character *c)
   //assert(str);
   //assert(c);
   const u8 *b;
+  character tmp = 0;
   u8 x[4];
   const u8 _00000111 = 0x07;
   const u8 _00001111 = 0x0F;
@@ -1444,7 +1445,9 @@ sw str_peek_character_utf8 (const s_str *str, character *c)
     x[1] = b[1] & _00111111;
     x[2] = b[2] & _00111111;
     x[3] = b[3] & _00111111;
-    *c = (x[0] << 18) | (x[1] << 12) | (x[2] << 6) | x[3];
+    tmp = (x[0] << 18) | (x[1] << 12) | (x[2] << 6) | x[3];
+    if (tmp > 0x110000)
+      return 0;
     return 4;
   }
   return -1;
