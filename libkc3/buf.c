@@ -1703,8 +1703,11 @@ sw buf_write_character_utf8 (s_buf *buf, character c)
   sw r;
   sw size;
   csize = character_utf8_size(c);
-  if (csize <= 0)
+  if (csize <= 0) {
+    err_puts("buf_write_character_utf8: character_utf8_size");
+    assert(! "buf_write_character_utf8: character_utf8_size");
     return csize;
+  }
 #if HAVE_PTHREAD
   rwlock_w(&buf->rwlock);
 #endif

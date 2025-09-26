@@ -38,6 +38,7 @@
 #include "special_operator.h"
 #include "str.h"
 #include "tag.h"
+#include "ucd.h"
 
 const s_sym *g_buf_inspect_type = NULL;
 
@@ -3772,15 +3773,21 @@ sw buf_inspect_str_character_size (s_pretty *pretty, character c)
   sw r;
   sw result = 0;
   sw result1 = 0;
-  if (! str_character_is_reserved(c))
+  if (c < UCD_MAX && ! str_character_is_reserved(c))
     return buf_write_character_utf8_size(pretty, c);
-  if ((r = buf_write_1_size(pretty, "\\")) <= 0)
+  if ((r = buf_write_1_size(pretty, "\\")) <= 0) {
+    err_puts("buf_inspect_str_character_size: buf_write_1_size 1");
+    assert(! "buf_inspect_str_character_size: buf_write_1_size 1");
     goto restore;
+  }
   result += r;
   switch (c) {
   case '\0':
-    if ((r = buf_write_1_size(pretty, "0")) <= 0)
+    if ((r = buf_write_1_size(pretty, "0")) <= 0) {
+      err_puts("buf_inspect_str_character_size: buf_write_1_size 2");
+      assert(! "buf_inspect_str_character_size: buf_write_1_size 2");
       goto restore;
+    }
     break;
   case '\n':
     if ((r = buf_write_character_utf8_size(pretty, 'n')) <= 0)
@@ -3812,11 +3819,17 @@ sw buf_inspect_str_character_size (s_pretty *pretty, character c)
     break;
   default:
     buf_init(&char_buf, false, sizeof(b), b);
-    if ((r = buf_write_character_utf8(&char_buf, c)) <= 0)
+    if ((r = buf_write_character_utf8(&char_buf, c)) <= 0) {
+      err_puts("buf_inspect_str_character_size: buf_write_character_utf8");
+      assert(! "buf_inspect_str_character_size: buf_write_character_utf8");
       goto restore;
+    }
     i = r - 1;
-    if ((r = buf_write_character_utf8_size(pretty, 'x')) != 1)
+    if ((r = buf_write_character_utf8_size(pretty, 'x')) != 1) {
+      err_puts("buf_inspect_str_character_size: buf_write_character_utf8_size");
+      assert(! "buf_inspect_str_character_size: buf_write_character_utf8_size");
       goto restore;
+    }
     result1 += r;
     r = 2;
     result1 += r;
