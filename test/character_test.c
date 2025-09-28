@@ -15,6 +15,38 @@
 #include "../libkc3/character.h"
 #include "test.h"
 
+#define CHARACTER_TEST_1_ASCII(string)                                 \
+  do {                                                                 \
+    test_context("character_1(" string ") -> " # string);              \
+    TEST_EQ(character_1(string), string[0]);                           \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define CHARACTER_TEST_1_UTF8(string, expected)                        \
+  do {                                                                 \
+    test_context("character_1(" string ") -> " # expected ")");        \
+    TEST_EQ(character_1(string), expected);                            \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define CHARACTER_TEST_IS_ALPHANUM_ASCII(character, expected)          \
+  do {                                                                 \
+    test_context("character_is_alphanum(" # character ") -> "          \
+                 # expected ")");                                      \
+    TEST_EQ(character_is_alphanum(character), expected);               \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define CHARACTER_TEST_IS_ALPHANUM_UTF8(string, expected)              \
+  do {                                                                 \
+  character c;                                                         \
+    test_context("character_is_alphanum(" # string ") -> "             \
+                 # expected ")");                                      \
+    c = character_1(string);                                           \
+    TEST_EQ(character_is_alphanum(c), expected);                       \
+    test_context(NULL);                                                \
+  } while (0)
+
 TEST_CASE_PROTOTYPE(character_1);
 TEST_CASE_PROTOTYPE(character_is_alphanum);
 TEST_CASE_PROTOTYPE(character_is_digit);
@@ -35,9 +67,6 @@ void character_test (void)
   TEST_CASE_RUN(character_utf8_size);
   TEST_CASE_RUN(character_utf8);
 }
-
-#define CHARACTER_TEST_1_ASCII(string)        \
-  TEST_EQ(character_1(string), string[0])
 
 TEST_CASE(character_1)
 {
@@ -64,15 +93,16 @@ TEST_CASE(character_1)
   CHARACTER_TEST_1_ASCII("x");
   CHARACTER_TEST_1_ASCII("y");
   CHARACTER_TEST_1_ASCII("z");
-  TEST_EQ(character_1("À"), 192);
-  TEST_EQ(character_1("É"), 201);
-  TEST_EQ(character_1("à"), 224);
-  TEST_EQ(character_1("é"), 233);
-  TEST_EQ(character_1("Π"), 928);
-  TEST_EQ(character_1("π"), 960);
-  TEST_EQ(character_1("꒴"), 42164);
-  TEST_EQ(character_1("Ꝝ"), 42844);
-  TEST_EQ(character_1("ꝝ"), 42845);
+  CHARACTER_TEST_1_UTF8("À",  192);
+  CHARACTER_TEST_1_UTF8("É",  201);
+  CHARACTER_TEST_1_UTF8("à",  224);
+  CHARACTER_TEST_1_UTF8("é",  233);
+  CHARACTER_TEST_1_UTF8("Π",  928);
+  CHARACTER_TEST_1_UTF8("π",  960);
+  CHARACTER_TEST_1_UTF8("꒴", 42164);
+  CHARACTER_TEST_1_UTF8("Ꝝ",  42844);
+  CHARACTER_TEST_1_UTF8("ꝝ",  42845);
+  CHARACTER_TEST_1_UTF8("𐅀", 0x10140);
 }
 TEST_CASE_END(character_1)
 
@@ -80,46 +110,46 @@ TEST_CASE(character_is_alphanum)
 {
   character c;
   for (c = -10; c < 40; c++)
-    TEST_ASSERT(! character_is_alphanum(c));
-  TEST_ASSERT(! character_is_alphanum('\x00'));
-  TEST_ASSERT(! character_is_alphanum('\x01'));
-  TEST_ASSERT(! character_is_alphanum('\r'));
-  TEST_ASSERT(! character_is_alphanum('\n'));
-  TEST_ASSERT(! character_is_alphanum(' '));
-  TEST_ASSERT(! character_is_alphanum('_'));
-  TEST_ASSERT(character_is_alphanum('0'));
-  TEST_ASSERT(character_is_alphanum('1'));
-  TEST_ASSERT(character_is_alphanum('2'));
-  TEST_ASSERT(character_is_alphanum('3'));
-  TEST_ASSERT(character_is_alphanum('4'));
-  TEST_ASSERT(character_is_alphanum('5'));
-  TEST_ASSERT(character_is_alphanum('6'));
-  TEST_ASSERT(character_is_alphanum('7'));
-  TEST_ASSERT(character_is_alphanum('8'));
-  TEST_ASSERT(character_is_alphanum('9'));
-  TEST_ASSERT(character_is_alphanum('A'));
-  TEST_ASSERT(character_is_alphanum('B'));
-  TEST_ASSERT(character_is_alphanum('C'));
-  TEST_ASSERT(character_is_alphanum('X'));
-  TEST_ASSERT(character_is_alphanum('Y'));
-  TEST_ASSERT(character_is_alphanum('Z'));
-  TEST_ASSERT(character_is_alphanum(character_1("À")));
-  TEST_ASSERT(character_is_alphanum(character_1("É")));
-  TEST_ASSERT(character_is_alphanum(character_1("Π")));
-  TEST_ASSERT(character_is_alphanum(character_1("Ꝝ")));
-  TEST_ASSERT(! character_is_alphanum(character_1("꒴")));
-  TEST_ASSERT(character_is_alphanum(character_1("𐅀")));
-  TEST_ASSERT(character_is_alphanum('a'));
-  TEST_ASSERT(character_is_alphanum('b'));
-  TEST_ASSERT(character_is_alphanum('c'));
-  TEST_ASSERT(character_is_alphanum('x'));
-  TEST_ASSERT(character_is_alphanum('y'));
-  TEST_ASSERT(character_is_alphanum('z'));
-  TEST_ASSERT(character_is_alphanum(character_1("à")));
-  TEST_ASSERT(character_is_alphanum(character_1("é")));
-  TEST_ASSERT(character_is_alphanum(character_1("π")));
-  TEST_ASSERT(character_is_alphanum(character_1("ꝝ")));
-  TEST_ASSERT(! character_is_alphanum('!'));
+    CHARACTER_TEST_IS_ALPHANUM_ASCII(c, false);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII(' ', false);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('!', false);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('0', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('1', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('2', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('3', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('4', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('5', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('6', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('7', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('8', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('9', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('A', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('B', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('C', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('X', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('Y', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('Z', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('\n', false);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('\r', false);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('\x00', false);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('\x01', false);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('_', false);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('a', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('b', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('c', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('x', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('y', true);
+  CHARACTER_TEST_IS_ALPHANUM_ASCII('z', true);
+  CHARACTER_TEST_IS_ALPHANUM_UTF8("À", true);
+  CHARACTER_TEST_IS_ALPHANUM_UTF8("É", true);
+  CHARACTER_TEST_IS_ALPHANUM_UTF8("à", true);
+  CHARACTER_TEST_IS_ALPHANUM_UTF8("é", true);
+  CHARACTER_TEST_IS_ALPHANUM_UTF8("Π", true);
+  CHARACTER_TEST_IS_ALPHANUM_UTF8("π", true);
+  CHARACTER_TEST_IS_ALPHANUM_UTF8("꒴", false);
+  CHARACTER_TEST_IS_ALPHANUM_UTF8("Ꝝ", true);
+  CHARACTER_TEST_IS_ALPHANUM_UTF8("ꝝ", true);
+  CHARACTER_TEST_IS_ALPHANUM_UTF8("𐅀", true);
 }
 TEST_CASE_END(character_is_alphanum)
 
