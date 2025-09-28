@@ -944,48 +944,38 @@ sw pdf_buf_parse_string (s_buf *buf, s_tag *dest)
 {
   sw r;
   sw result = 0;
-  s_buf_save save = {0};
   s_str str = {0};
   s_tag tmp = {0};
   assert(buf);
   assert(dest);
-  buf_save_init(buf, &save);
   if ((r = pdf_buf_parse_string_paren(buf, &str)) < 0)
-    goto clean;
+    return r;
   if (r) {
     result += r;
     goto ok;
   }
   if ((r = pdf_buf_parse_string_hex(buf, &str)) < 0)
-    goto clean;
+    return r;
   if (r) {
     result += r;
     goto ok;
   }
-  r = 0;
-  goto clean;
+  return 0;
  ok:
-  if (false) {
+  if (true) {
     err_write_1("pdf_buf_parse_string: str = ");
     err_inspect_str(&str);
     err_write_1("\n");
   }
-  // TODO: fix
-  if (! str_parse_eval(&str, &tmp)) {
-    err_puts("pdf_buf_parse_string: str_parse_eval");
-    assert(! "pdf_buf_parse_string: str_parse_eval");
-    r = -1;
+  if (str_parse_eval(&str, &tmp)) {
     str_clean(&str);
-    goto restore;
+    *dest = tmp;
+  } else {
+    tmp.type = TAG_STR;
+    tmp.data.str = str;
+    *dest = tmp;
   }
-  *dest = tmp;
-  r = result;
-  goto clean;
- restore:
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
+  return result;
 }
 
 sw pdf_buf_parse_string_hex (s_buf *buf, s_str *dest)
