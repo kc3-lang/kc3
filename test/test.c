@@ -139,9 +139,11 @@ void test_ko (void)
   g_test_count++;
   g_test_ko++;
   fprintf(stderr, "%sF%s", TEST_COLOR_KO, TEST_COLOR_RESET);
-  if (g_test_context)
+  if (g_test_context) {
     fprintf(stderr, "\n%s%s%s", TEST_COLOR_KO, g_test_context,
             TEST_COLOR_RESET);
+    g_test_context = NULL;
+  }
   g_test_last_ok = 0;
   if (g_test_ko >= TEST_KO_MAX) {
     fprintf(stderr, "\nMaximum number of errors reached, exiting.\n");
