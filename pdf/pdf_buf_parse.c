@@ -345,7 +345,7 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_pdf_file *pdf_file)
       offset = pdf_file->xref.value[i].data.u64;
       if (false) {
         err_write_1("pdf_buf_parse_file_body: offset=");
-        err_inspect_s64(offset);
+        err_inspect_s64_decimal(offset);
         err_write_1("\n");
       }
       if (buf_seek(buf, offset, SEEK_SET) != offset) {
@@ -355,9 +355,14 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_pdf_file *pdf_file)
       }
       if ((r = pdf_buf_parse_indirect_object(buf, pdf_file,
                                              &tmp_tuple)) <= 0) {
-        err_write_1("pdf_buf_parse_file_body: failed to parse indirect object at offset ");
-        err_inspect_s64(offset);
-        err_write_1(", r=");
+        err_write_1("pdf_buf_parse_file_body: failed to parse indirect"
+                    " object ");
+        err_inspect_u32_decimal(tmp.key[i].data.tuple.tag[0].data.u32);
+        err_write_1(" ");
+        err_inspect_u16_decimal(tmp.key[i].data.tuple.tag[1].data.u16);
+        err_write_1(" at offset ");
+        err_inspect_s64_decimal(offset);
+        err_write_1(" , r = ");
         err_inspect_sw_decimal(r);
         err_write_1("\n");
         if (! tag_init_tuple(tmp.value + i, 2) ||
