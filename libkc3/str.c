@@ -1388,8 +1388,6 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
 
 sw str_peek_character_utf8 (const s_str *str, character *c)
 {
-  //assert(str);
-  //assert(c);
   const u8 *b;
   character tmp = 0;
   u8 x[4];
@@ -1446,8 +1444,9 @@ sw str_peek_character_utf8 (const s_str *str, character *c)
     x[2] = b[2] & _00111111;
     x[3] = b[3] & _00111111;
     tmp = (x[0] << 18) | (x[1] << 12) | (x[2] << 6) | x[3];
-    if (tmp > 0x110000)
+    if (tmp >= 0x110000)
       return 0;
+    *c = tmp;
     return 4;
   }
   return 0;
@@ -1491,7 +1490,7 @@ sw str_read_character_utf8 (s_str *str, character *c)
   if (str->size == 0)
     return 0;
   size = str_peek_character_utf8(str, c);
-  if (size < 0)
+  if (size <= 0)
     return size;
   str->size -= size;
   str->ptr.p = str->ptr.pchar + size;

@@ -24,7 +24,11 @@ character character_1 (const char *p)
   s_str stra;
   assert(p);
   str_init_1(&stra, NULL, p);
-  str_peek_character_utf8(&stra, &c);
+  if (str_peek_character_utf8(&stra, &c) <= 0) {
+    err_puts("character_1: str_peek_character_utf8");
+    assert(! "character_1: str_peek_character_utf8");
+    return 0;
+  }
   return c;
 }
 
