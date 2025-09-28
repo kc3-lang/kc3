@@ -913,9 +913,8 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
       err_inspect_buf(buf);
     }
     if ((r = buf_ignore_spaces(buf)) < 0) {
-      if (false) {
+      if (true) {
         err_puts("pdf_buf_parse_stream: endstream: buf_ignore_spaces");
-        assert(! "pdf_buf_parse_stream: endstream: buf_ignore_spaces");
       }
       goto ko;
     }
@@ -924,7 +923,6 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
       if (true) {
         err_puts("pdf_buf_parse_stream: endstream: pdf_buf_parse_token");
         err_inspect_buf(buf);
-        assert(! "pdf_buf_parse_stream: endstream: pdf_buf_parse_token");
       }
       goto ko;
     }
@@ -973,16 +971,13 @@ sw pdf_buf_parse_string (s_buf *buf, s_tag *dest)
     err_write_1("\n");
   }
   // TODO: fix
-  if (false && ! str_parse_eval(&str, &tmp)) {
+  if (! str_parse_eval(&str, &tmp)) {
     err_puts("pdf_buf_parse_string: str_parse_eval");
     assert(! "pdf_buf_parse_string: str_parse_eval");
     r = -1;
     str_clean(&str);
     goto restore;
   }
-  //
-  tmp.type = TAG_STR;
-  tmp.data.str = str;
   *dest = tmp;
   r = result;
   goto clean;

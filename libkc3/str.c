@@ -1292,6 +1292,7 @@ s_str * str_new_vf (const char *fmt, va_list ap)
 bool str_parse_eval (const s_str *str, s_tag *dest)
 {
   s_tag *arg;
+  u8 byte;
   character c;
   s_buf in_buf;
   s_list  *l;
@@ -1334,7 +1335,8 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
       continue;
     }
     r = buf_peek_character_utf8(&in_buf, &c);
-    if (r <= 0)
+    if (r <= 0 &&
+        (r = buf_peek_u8(&in_buf, &byte)) <= 0)
       break;
     r = buf_xfer(&out_buf, &in_buf, r);
     if (r <= 0)

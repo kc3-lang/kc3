@@ -34,10 +34,14 @@ PDF.parse_str("7 0 obj << /Type /XObject /Subtype /Image /Length 3 >> stream\nim
                                                                 Type: XObject},
                                                  offset: (S64) 62,
                                                  length: (S64) 3}}
-PDF.parse_str("8 0 obj << /Length 26 >> stream\nLine 1\nLine 2\nLine 3\nendstream\nendobj")
-void
-PDF.parse_str("9 0 obj << /Length 12 >> stream\n\x01\x02\x03\x04test\nendstream\nendobj")
-void
+PDF.parse_str("8 0 obj << /Length 20 >> stream\nLine 1\nLine 2\nLine 3\nendstream\nendobj")
+{:indirect_object, (U32) 8, (U16) 0, %PDF.Stream{dictionnary: %{Length: 20},
+                                                 offset: (S64) 32,
+                                                 length: (S64) 20}}
+PDF.parse_str("9 0 obj << /Length 8 >> stream\n\x01\x02\x03\x04test\nendstream\nendobj")
+{:indirect_object, (U32) 9, (U16) 0, %PDF.Stream{dictionnary: %{Length: 8},
+                                                 offset: (S64) 31,
+                                                 length: (S64) 8}}
 PDF.parse_str("10 0 obj << /Length 4 /Resources << /Font << /F1 11 0 R >> >> >> stream\ntext\nendstream\nendobj")
 {:indirect_object, (U32) 10, (U16) 0, %PDF.Stream{dictionnary: %{Length: 4,
                                                                  Resources: %{Font: %{F1: {:indirect_object, (U32) 11, (U16) 0}}}},
