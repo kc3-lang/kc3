@@ -365,6 +365,7 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_pdf_file *pdf_file)
         err_write_1(" , r = ");
         err_inspect_sw_decimal(r);
         err_write_1("\n");
+        err_inspect_buf(buf);
         if (! tag_init_tuple(tmp.value + i, 2) ||
             ! (tuple = &tmp.value[i].data.tuple) ||
             ! tag_init_psym(tuple->tag, &g_sym_error) ||
@@ -539,6 +540,7 @@ sw pdf_buf_parse_indirect_object (s_buf *buf,
     if (! r &&
         (r = pdf_buf_parse_object(buf, pdf_file, tmp.tag + 3)) <= 0)
       goto ko;
+    result += r;
     goto ok;
   }
   if ((r = pdf_buf_parse_token(buf, "R")) < 0)
@@ -919,8 +921,9 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
     }
     result += r;
     if ((r = pdf_buf_parse_token(buf, "endstream")) <= 0) {
-      if (false) {
+      if (true) {
         err_puts("pdf_buf_parse_stream: endstream: pdf_buf_parse_token");
+        err_inspect_buf(buf);
         assert(! "pdf_buf_parse_stream: endstream: pdf_buf_parse_token");
       }
       goto ko;
