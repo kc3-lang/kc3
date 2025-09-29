@@ -13,7 +13,7 @@
 
 echo "$PWD/update_sources"
 
-SRC_TOP="$(dirname "$PWD")"
+SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
 
 . "${SRC_TOP}/config.subr"
 
@@ -28,7 +28,3 @@ sources SOURCES "$SOURCES"
 
 update_sources_mk
 update_sources_sh
-
-( cd cairo && ./update_sources; )
-( cd egl && ./update_sources; )
-( cd sdl2 && ./update_sources; )

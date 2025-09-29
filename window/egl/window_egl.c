@@ -12,6 +12,8 @@
  */
 #include <assert.h>
 #include <stdlib.h>
+#include <EGL/egl.h>
+#include <GL/gl.h>
 #include <xkbcommon/xkbcommon.h>
 #include <libkc3/io.h>
 #include <libkc3/tag.h>

@@ -39,6 +39,16 @@ debug:
 	if ${HAVE_XCB}; then ${MAKE} -C xcb debug; fi
 
 demo: build
+	if ${HAVE_XCB}; then ${MAKE} -C xcb demo; fi
+
+demo_asan: asan
+	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_asan; fi
+
+demo_cov: cov
+	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_cov; fi
+
+demo_debug: debug
+	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_debug; fi
 
 dist:
 	${MAKE} -C xcb dist
@@ -75,5 +85,5 @@ update_sources:
 	test \
 	update_sources \
 
-include ${TOP}/config.mk
+include config.mk
 include sources.mk

@@ -137,6 +137,10 @@ window/cairo/xcb/demo/kc3_window_cairo_xcb_demo
 window/cairo/xcb/demo/kc3_window_cairo_xcb_demo_asan
 window/cairo/xcb/demo/kc3_window_cairo_xcb_demo_cov
 window/cairo/xcb/demo/kc3_window_cairo_xcb_demo_debug
+window/egl/xcb/demo/kc3_window_egl_demo
+window/egl/xcb/demo/kc3_window_egl_demo_asan
+window/egl/xcb/demo/kc3_window_egl_demo_cov
+window/egl/xcb/demo/kc3_window_egl_demo_debug
 window/sdl2/demo/kc3_window_sdl2_demo
 window/sdl2/demo/kc3_window_sdl2_demo_asan
 window/sdl2/demo/kc3_window_sdl2_demo_cov

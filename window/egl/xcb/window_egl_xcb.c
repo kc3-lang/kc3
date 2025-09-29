@@ -22,6 +22,10 @@
 #include <xkbcommon/xkbcommon-x11.h>
 #include "window_egl_xcb.h"
 
+#ifndef EGL_PLATFORM_XCB_EXT
+#define EGL_PLATFORM_XCB_EXT 0x31DC
+#endif
+
 bool window_egl_run (s_window_egl *window)
 {
   return window_egl_xcb_run(window);
@@ -33,6 +37,7 @@ static bool window_egl_xcb_setup (s_window_egl *window,
                                   xcb_window_t xcb_window)
 {
   EGLint major, minor;
+  (void) screen;
   EGLint config_attribs[] = {
     EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
     EGL_BLUE_SIZE, 8,
@@ -50,7 +55,7 @@ static bool window_egl_xcb_setup (s_window_egl *window,
   EGLint num_configs;
   EGLConfig config;
 
-  window->egl_display = eglGetDisplay((EGLNativeDisplayType)conn);
+  window->egl_display = eglGetPlatformDisplay(EGL_PLATFORM_XCB_EXT, conn, NULL);
   if (window->egl_display == EGL_NO_DISPLAY) {
     err_puts("window_egl_xcb_setup: eglGetDisplay failed");
     return false;
@@ -70,10 +75,10 @@ static bool window_egl_xcb_setup (s_window_egl *window,
 
   eglBindAPI(EGL_OPENGL_API);
 
-  window->egl_surface = eglCreateWindowSurface(window->egl_display,
-                                               config,
-                                               (EGLNativeWindowType)xcb_window,
-                                               NULL);
+  window->egl_surface = eglCreatePlatformWindowSurface(window->egl_display,
+                                                       config,
+                                                       &xcb_window,
+                                                       NULL);
   if (window->egl_surface == EGL_NO_SURFACE) {
     err_puts("window_egl_xcb_setup: eglCreateWindowSurface failed");
     return false;
@@ -104,6 +109,9 @@ bool window_egl_xcb_event (s_window_egl *window,
                            struct xkb_state *xkb_state)
 {
   xcb_button_press_event_t     *event_button;
+  (void) conn;
+  (void) screen;
+  (void) xcb_window;
   xcb_configure_notify_event_t *event_config;
   xcb_key_press_event_t        *event_key;
   xcb_motion_notify_event_t    *event_motion;
@@ -119,6 +127,7 @@ bool window_egl_xcb_event (s_window_egl *window,
   case XCB_EXPOSE:
     if (! window->render(window))
       goto ko;
+    eglSwapBuffers(window->egl_display, window->egl_surface);
     break;
   case XCB_CONFIGURE_NOTIFY:
     event_config = (xcb_configure_notify_event_t *) event;
@@ -162,7 +171,7 @@ bool window_egl_xcb_run (s_window_egl *window)
   xcb_connection_t *conn;
   xcb_screen_t *screen;
   xcb_window_t xcb_window;
-  xcb_visualtype_t *visual;
+  /* xcb_visualtype_t *visual; */
   xcb_generic_event_t *event;
   xcb_intern_atom_cookie_t protocols_cookie;
   xcb_intern_atom_reply_t *protocols_reply;
@@ -174,16 +183,13 @@ bool window_egl_xcb_run (s_window_egl *window)
   int32_t xkb_device_id;
   u32 value_mask;
   u32 value_list[2];
-
   conn = xcb_connect(NULL, NULL);
   if (xcb_connection_has_error(conn)) {
     err_puts("window_egl_xcb_run: xcb_connect");
     goto ko;
   }
-
   screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data;
-  visual = xcb_screen_visual_type(screen);
-
+  /* visual = xcb_screen_visual_type(screen); */
   xcb_window = xcb_generate_id(conn);
   value_mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
   value_list[0] = screen->black_pixel;
@@ -194,7 +200,6 @@ bool window_egl_xcb_run (s_window_egl *window)
                     screen->root, window->x, window->y, window->w,
                     window->h, 10, XCB_WINDOW_CLASS_INPUT_OUTPUT,
                     screen->root_visual, value_mask, value_list);
-
   protocols_cookie = xcb_intern_atom(conn, 1, 12, "WM_PROTOCOLS");
   delete_cookie = xcb_intern_atom(conn, 0, 16, "WM_DELETE_WINDOW");
   protocols_reply = xcb_intern_atom_reply(conn, protocols_cookie, 0);
@@ -203,7 +208,6 @@ bool window_egl_xcb_run (s_window_egl *window)
                       (*protocols_reply).atom, 4, 32, 1,
                       &(*delete_reply).atom);
   free(protocols_reply);
-
   xcb_change_property(conn, XCB_PROP_MODE_REPLACE, xcb_window,
                       XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8,
                       strlen(window->title), window->title);
@@ -212,43 +216,57 @@ bool window_egl_xcb_run (s_window_egl *window)
     err_puts("window_egl_xcb_run: window_egl_xcb_setup failed");
     goto ko_conn;
   }
-
   xkb_context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
+  if (xkb_x11_setup_xkb_extension(conn, XKB_X11_MIN_MAJOR_XKB_VERSION,
+                                  XKB_X11_MIN_MINOR_XKB_VERSION,
+                                  0, NULL, NULL, NULL, NULL) != 1) {
+    err_puts("window_egl_xcb_run: xkb_x11_setup_xkb_extension failed");
+    goto ko_conn;
+  }
   xkb_device_id = xkb_x11_get_core_keyboard_device_id(conn);
+  if (xkb_device_id == -1) {
+    err_puts("window_egl_xcb_run: xkb_x11_get_core_keyboard_device_id failed");
+    goto ko_conn;
+  }
   xkb_keymap = xkb_x11_keymap_new_from_device(xkb_context, conn,
                                               xkb_device_id,
                                               XKB_KEYMAP_COMPILE_NO_FLAGS);
+  if (!xkb_keymap) {
+    err_puts("window_egl_xcb_run: xkb_x11_keymap_new_from_device failed");
+    goto ko_conn;
+  }
   xkb_state = xkb_x11_state_new_from_device(xkb_keymap, conn, xkb_device_id);
-
+  if (!xkb_state) {
+    err_puts("window_egl_xcb_run: xkb_x11_state_new_from_device failed");
+    goto ko_conn;
+  }
   if (! window->load(window))
     goto ko_conn;
-
   xcb_map_window(conn, xcb_window);
   xcb_flush(conn);
-
   while (1) {
-    event = xcb_wait_for_event(conn);
-    if (!event)
-      break;
-    xkb_x11_state_update_mask(xkb_state, conn, event);
-    if (! window_egl_xcb_event(window, conn, screen, xcb_window,
-                               delete_reply, event, xkb_state)) {
+    while ((event = xcb_poll_for_event(conn))) {
+      if (! window_egl_xcb_event(window, conn, screen, xcb_window,
+                                 delete_reply, event, xkb_state)) {
+        free(event);
+        goto done;
+      }
       free(event);
-      break;
     }
-    free(event);
+    if (! window->render(window))
+      break;
+    eglSwapBuffers(window->egl_display, window->egl_surface);
+    xcb_flush(conn);
   }
-
+done:
   if (window->unload)
     window->unload(window);
-
   xkb_state_unref(xkb_state);
   xkb_keymap_unref(xkb_keymap);
   xkb_context_unref(xkb_context);
   free(delete_reply);
   xcb_disconnect(conn);
   return true;
-
  ko_conn:
   xcb_disconnect(conn);
  ko:

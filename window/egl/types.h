@@ -11,42 +11,60 @@
  * THIS SOFTWARE.
  */
 /** @file types.h
- *  @brief Module C3.Window.EGL
+ *  @brief Module KC3.Window.EGL
  *
- *  Struct for all GUI window EGL graphics operations.
+ *  Struct for all GUI window with EGL graphics operations.
  */
 #ifndef LIBKC3_WINDOW_EGL_TYPES_H
 #define LIBKC3_WINDOW_EGL_TYPES_H
 
 #include <EGL/egl.h>
-#include <GL/gl.h>
 #include <libkc3/types.h>
 #include "../types.h"
 
+typedef struct sequence_egl s_sequence_egl;
 typedef struct window_egl s_window_egl;
 
 /* return false to break event loop */
+typedef bool (*f_sequence_egl) (s_sequence_egl *seq);
+typedef bool (*f_sequence_egl_button) (s_sequence_egl *seq, u8 button,
+                                       s64 x, s64 y);
+typedef bool (*f_sequence_egl_key) (s_sequence_egl *seq, u32 keysym);
 typedef bool (*f_window_egl_button) (s_window_egl *window,
                                      u8 button, s64 x, s64 y);
-
-/* return false to break event loop */
 typedef bool (*f_window_egl_key) (s_window_egl *window, u32 keysym);
-
-/* return false to break event loop */
 typedef bool (*f_window_egl_load) (s_window_egl *window);
-
-/* return false to break event loop */
 typedef bool (*f_window_egl_motion) (s_window_egl *window, s64 x,
                                      s64 y);
-
-/* return false to break event loop */
 typedef bool (*f_window_egl_render) (s_window_egl *window);
-
-/* return false to break event loop */
 typedef bool (*f_window_egl_resize) (s_window_egl *window,
                                      u64 w, u64 h);
-
 typedef void (*f_window_egl_unload) (s_window_egl *window);
+
+struct rgb {
+  f32 r;
+  f32 g;
+  f32 b;
+};
+
+typedef struct rgb s_rgb;
+
+/* Subtype of s_sequence. See libkc3/types.h */
+struct sequence_egl {
+  s_tag tag;
+  f64 dt;
+  f64 duration;
+  u64 frame;
+  f64 t;
+  s_timespec t0;
+  const char *title;
+  s_window_egl *window;
+  f_sequence_egl load;
+  f_sequence_egl render;
+  f_sequence_egl unload;
+  f_sequence_egl_button button;
+  f_sequence_egl_key key;
+};
 
 /* Subtype of s_window. See libkc3/window/types.h */
 struct window_egl {
@@ -62,8 +80,8 @@ struct window_egl {
   f_window_egl_render render;
   EGLContext          egl_context;
   f_window_egl_resize resize;
-  s_sequence         *seq;
-  s_sequence         *sequence;
+  s_sequence_egl     *seq;
+  s_sequence_egl     *sequence;
   u32                 sequence_count;
   u32                 sequence_pos;
   s_tag               tag; // TODO: move sequence to tag

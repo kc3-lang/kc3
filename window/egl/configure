@@ -98,8 +98,17 @@ echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
 echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
 echo "LIBS = $LIBS" >> ${CONFIG_MK}
 
+if pkg-config xcb; then
+    HAVE_XCB=true
+else
+    HAVE_XCB=false
+fi
+echo "HAVE_XCB = $HAVE_XCB" >> ${CONFIG_MK}
+
+SUBDIRS=
+
 if ${HAVE_XCB}; then
-    SUBDIRS=xcb
+    SUBDIRS="$SUBDIRS xcb"
 fi
 
 update_build_c

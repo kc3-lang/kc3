@@ -28,3 +28,5 @@ sources SOURCES "$SOURCES"
 
 update_sources_mk
 update_sources_sh
+
+( cd demo && ./update_sources; )

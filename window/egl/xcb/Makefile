@@ -20,6 +20,7 @@ DISTCLEANFILES = ${CLEANFILES} config.h config.mk
 
 build:
 	${MAKE} ${LIB}
+	${MAKE} -C demo build
 
 all:
 	${MAKE} build
@@ -29,20 +30,34 @@ all:
 
 asan:
 	${MAKE} ${LIB_ASAN}
+	${MAKE} -C demo asan
 
 clean:
 	rm -rf ${CLEANFILES}
+	${MAKE} -C demo clean
 
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
 cov:
 	${MAKE} ${LIB_COV}
+	${MAKE} -C demo cov
 
 debug:
 	${MAKE} ${LIB_DEBUG}
+	${MAKE} -C demo debug
 
 demo: build
+	${MAKE} -C demo demo
+
+demo_asan: asan
+	${MAKE} -C demo demo_asan
+
+demo_cov: cov
+	${MAKE} -C demo demo_cov
+
+demo_debug: debug
+	${MAKE} -C demo demo_debug
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
@@ -84,5 +99,5 @@ update_sources:
 	test \
 	update_sources \
 
-include ${TOP}/config.mk
+include config.mk
 include sources.mk

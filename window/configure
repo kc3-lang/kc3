@@ -118,6 +118,13 @@ else
 fi
 echo "HAVE_CAIRO = $HAVE_CAIRO" >> ${CONFIG_MK}
 
+if pkg-config egl; then
+    HAVE_EGL=true
+else
+    HAVE_EGL=false
+fi
+echo "HAVE_EGL = $HAVE_EGL" >> ${CONFIG_MK}
+
 if pkg-config sdl2; then
     HAVE_SDL2=true
 else
@@ -131,6 +138,9 @@ env_reset
 SUBDIRS=
 if ${HAVE_CAIRO}; then
     SUBDIRS="${SUBDIRS} cairo"
+fi
+if ${HAVE_EGL}; then
+    SUBDIRS="${SUBDIRS} egl"
 fi
 if ${HAVE_SDL2}; then
     SUBDIRS="${SUBDIRS} sdl2"
