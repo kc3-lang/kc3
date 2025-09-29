@@ -1069,6 +1069,7 @@ sw pdf_buf_parse_string_paren (s_buf *buf, s_str *dest)
   s_buf_save save = {0};
   s_str tmp = {0};
   s_buf tmp_buf = {0};
+  u8 u;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -1078,8 +1079,13 @@ sw pdf_buf_parse_string_paren (s_buf *buf, s_str *dest)
   paren++;
   buf_init(&tmp_buf, false, sizeof(a) - 1, a);
   while (1) {
-    if ((r = buf_read_character_utf8(buf, &c)) <= 0)
+    if ((r = buf_read_character_utf8(buf, &c)) < 0)
       goto restore;
+    if (! r) {
+      if ((r = buf_read_u8(buf, &u)) <= 0 ||
+          (r = buf_write_u8(&tmp_buf, u)) <= 0)
+      goto restore;
+    }
     result += r;
     if (c == '(')
       paren++;
