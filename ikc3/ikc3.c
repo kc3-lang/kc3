@@ -39,6 +39,8 @@ bool         g_client = false;
 s_str        g_host = {0};
 s_str        g_port = {0};
 bool         g_server = false;
+s_tls_client g_tls_client = {0};
+s_tls_server g_tls_server = {0};
 s_buf       *g_server_env_err = NULL;
 s_buf       *g_server_env_in  = NULL;
 s_buf       *g_server_env_out = NULL;
@@ -281,7 +283,6 @@ int ikc3_client_init_tls (void)
 {
   s_tag tls_tag;
   p_tls tls;
-  s_tls_client tls_client;
 
   if (! g_tls) {
     err_puts("ikc3_client_init_tls: tls not enabled");
@@ -298,7 +299,7 @@ int ikc3_client_init_tls (void)
     assert(! "ikc3_client_init_tls: failed to retrieve tls_client");
     return 1;
   }
-  if (! kc3_tls_client_init_connect(&tls_client, &tls, &g_host, &g_port)) {
+  if (! kc3_tls_client_init_connect(&g_tls_client, &tls, &g_host, &g_port)) {
     err_puts("ikc3_client_init_tls: failed to connect tls client");
     assert(! "ikc3_client_init_tls: failed to connect tls client");
     return 1;
@@ -316,6 +317,7 @@ sw ikc3_run (void)
   s_tag *response;
   s_tag result = {0};
   s_tag rpc_tag = {0};
+  s_buf_rw *buf_rw;
   env = env_global();
   assert(env);
   env_err = env->err;
@@ -353,21 +355,23 @@ sw ikc3_run (void)
         args->tag.type = TAG_STR;
         args->tag.data.str = input_str;
         rpc_tag.data.pcall->arguments = args;
-        if (buf_inspect_tag(g_socket_buf.buf_rw.w, &rpc_tag) <= 0 ||
-            buf_write_1(g_socket_buf.buf_rw.w, "\n") <= 0 ||
-            buf_flush(g_socket_buf.buf_rw.w) < 0) {
+
+        buf_rw = g_tls ? &g_tls_client.buf_rw : &g_socket_buf.buf_rw;
+        if (buf_inspect_tag(buf_rw->w, &rpc_tag) <= 0 ||
+            buf_write_1(buf_rw->w, "\n") <= 0 ||
+            buf_flush(buf_rw->w) < 0) {
           tag_clean(&input);
           tag_clean(&rpc_tag);
           r = 1;
           goto clean;
         }
         tag_clean(&rpc_tag);
-        if (buf_parse_tag(g_socket_buf.buf_rw.r, &result) <= 0) {
+        if (buf_parse_tag(buf_rw->r, &result) <= 0) {
           tag_clean(&input);
           r = 1;
           goto clean;
         }
-        if (buf_read_1(g_socket_buf.buf_rw.r, "\n") <= 0) {
+        if (buf_read_1(buf_rw->r, "\n") <= 0) {
           tag_clean(&result);
           tag_clean(&input);
           r = 1;
@@ -565,7 +569,7 @@ int main (int argc, char **argv)
       if ((r = ikc3_arg_server(env, &argc, &argv)) < 0)
         goto clean;
     }
-    else if (! strcmp("--tls", argv[0])) {
+    else if (! strcmp("--tls", *argv)) {
       if ((r = ikc3_arg_tls(env, &argc, &argv)) < 0)
         goto clean;
     }
