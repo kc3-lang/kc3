@@ -29,6 +29,8 @@ sources SOURCES "$SOURCES"
 update_sources_mk
 update_sources_sh
 
+../bin/runj -1 /bin/sh <<EOF
 ( cd cairo && ./update_sources; )
 ( cd egl && ./update_sources; )
 ( cd sdl2 && ./update_sources; )
+EOF

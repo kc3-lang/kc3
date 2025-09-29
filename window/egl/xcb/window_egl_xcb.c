@@ -13,9 +13,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-#include <GL/gl.h>
 #include <libkc3/kc3.h>
 #include <xcb/xcb.h>
 #include <xkbcommon/xkbcommon.h>
@@ -37,8 +34,8 @@ static bool window_egl_xcb_setup (s_window_egl *window,
                                   xcb_window_t xcb_window)
 {
   EGLint major, minor;
-  (void) screen;
-  EGLint config_attribs[] = {
+  EGLConfig config;
+  EGLint    config_attribs[] = {
     EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
     EGL_BLUE_SIZE, 8,
     EGL_GREEN_SIZE, 8,
@@ -52,51 +49,49 @@ static bool window_egl_xcb_setup (s_window_egl *window,
     EGL_CONTEXT_MINOR_VERSION, 0,
     EGL_NONE
   };
+  EGLint gl_w, gl_h;
   EGLint num_configs;
-  EGLConfig config;
-
-  window->egl_display = eglGetPlatformDisplay(EGL_PLATFORM_XCB_EXT, conn, NULL);
+  (void) screen;
+  window->egl_display = eglGetPlatformDisplay(EGL_PLATFORM_XCB_EXT,
+                                              conn, NULL);
   if (window->egl_display == EGL_NO_DISPLAY) {
     err_puts("window_egl_xcb_setup: eglGetDisplay failed");
     return false;
   }
-
-  if (!eglInitialize(window->egl_display, &major, &minor)) {
+  if (! eglInitialize(window->egl_display, &major, &minor)) {
     err_puts("window_egl_xcb_setup: eglInitialize failed");
     return false;
   }
-
-  if (!eglChooseConfig(window->egl_display, config_attribs, &config, 1,
-                       &num_configs) || num_configs != 1) {
+  if (! eglChooseConfig(window->egl_display, config_attribs, &config, 1,
+                        &num_configs) || num_configs != 1) {
     err_puts("window_egl_xcb_setup: eglChooseConfig failed");
     return false;
   }
   window->egl_config = config;
-
   eglBindAPI(EGL_OPENGL_API);
-
-  window->egl_surface = eglCreatePlatformWindowSurface(window->egl_display,
-                                                       config,
-                                                       &xcb_window,
-                                                       NULL);
+  window->egl_surface = eglCreatePlatformWindowSurface
+    (window->egl_display, config, &xcb_window, NULL);
   if (window->egl_surface == EGL_NO_SURFACE) {
     err_puts("window_egl_xcb_setup: eglCreateWindowSurface failed");
     return false;
   }
-
   window->egl_context = eglCreateContext(window->egl_display, config,
                                          EGL_NO_CONTEXT, context_attribs);
   if (window->egl_context == EGL_NO_CONTEXT) {
     err_puts("window_egl_xcb_setup: eglCreateContext failed");
     return false;
   }
-
   if (!eglMakeCurrent(window->egl_display, window->egl_surface,
                       window->egl_surface, window->egl_context)) {
     err_puts("window_egl_xcb_setup: eglMakeCurrent failed");
     return false;
   }
-
+  eglQuerySurface(window->egl_display, window->egl_surface,
+                  EGL_WIDTH, &gl_w);
+  eglQuerySurface(window->egl_display, window->egl_surface,
+                  EGL_HEIGHT, &gl_h);
+  window->gl_w = gl_w;
+  window->gl_h = gl_h;
   return true;
 }
 

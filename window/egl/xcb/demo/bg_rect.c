@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include <math.h>
-#include <GL/gl.h>
 #include <libkc3/kc3.h>
 #include "../../types.h"
 #include "bg_rect.h"

@@ -10,9 +10,15 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBKC3_WINDOW_EGL_DEMO_H
-#define LIBKC3_WINDOW_EGL_DEMO_H
+#include <libkc3/kc3.h>
+#include "gl_triangle.h"
 
-#include "../types.h"
-
-#endif /* LIBKC3_WINDOW_EGL_DEMO_H */
+s_gl_triangle * gl_triangle_init (s_gl_triangle *triangle, GLuint a,
+                                  GLuint b, GLuint c)
+{
+  assert(triangle);
+  triangle->a = a;
+  triangle->b = b;
+  triangle->c = c;
+  return triangle;
+}

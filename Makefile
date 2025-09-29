@@ -183,6 +183,38 @@ demo_cov: cov
 demo_debug: debug
 	${MAKE} -C window demo_debug
 
+demo_egl:
+	${MAKE} -C runj all
+	${MAKE} gen
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
+	${MAKE} -C window demo_egl
+
+demo_egl_asan: asan
+	${MAKE} -C runj all
+	${MAKE} gen
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C window demo_egl_asan
+
+demo_egl_cov: cov
+	${MAKE} -C runj all
+	${MAKE} gen
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
+	${MAKE} -C window demo_egl_cov
+
+demo_egl_debug: debug
+	${MAKE} -C runj all
+	${MAKE} gen
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C window demo_egl_debug
+
 demo_gl:
 	${MAKE} -C runj all
 	${MAKE} gen

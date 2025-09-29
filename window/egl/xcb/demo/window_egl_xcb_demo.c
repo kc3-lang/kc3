@@ -12,15 +12,23 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <GL/gl.h>
 #include <libkc3/kc3.h>
 #include "../../../window.h"
+#include "../../gl_font.h"
+#include "../../gl_ortho.h"
+#include "../../gl_text.h"
+#include "../../mat4.h"
 #include "../../window_egl.h"
 #include "../../sequence.h"
 #include "../window_egl_xcb.h"
 #include "bg_rect.h"
 
 #define WINDOW_EGL_DEMO_SEQUENCE_COUNT 1
+
+s_gl_font g_font_courier_new = {0};
+s_gl_ortho g_ortho = {0};
+s_gl_text g_text_fps = {0};
+s_gl_text g_text_seq_title = {0};
 
 static bool window_egl_demo_button (s_window_egl *window, u8 button,
                                     s64 x, s64 y);
@@ -33,6 +41,10 @@ static void window_egl_demo_unload (s_window_egl *window);
 int main (int argc, char **argv)
 {
   s_window_egl window;
+  if (FT_Init_FreeType(&g_ft)) {
+    err_puts("main: failed to initialize FreeType");
+    return 1;
+  }
   if (! kc3_init(NULL, &argc, &argv)) {
     err_puts("kc3_init");
     return 1;
@@ -54,6 +66,7 @@ int main (int argc, char **argv)
   }
   window_egl_clean(&window);
   kc3_clean(NULL);
+  FT_Done_FreeType(g_ft);
   return 0;
 }
 
@@ -94,7 +107,30 @@ bool window_egl_demo_key (s_window_egl *window, u32 keysym)
 
 bool window_egl_demo_load (s_window_egl *window)
 {
+  f32 point_per_pixel;
   assert(window);
+  point_per_pixel = (f32) window->w / window->gl_w;
+  err_write_1("point_per_pixel: ");
+  err_inspect_f32(point_per_pixel);
+  err_write_1("\n");
+  if (! gl_ortho_init(&g_ortho))
+    return false;
+  gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, 0, 1);
+  if (! gl_font_init(&g_font_courier_new,
+                     "fonts/CourierNew/CourierNew.ttf",
+                     point_per_pixel)) {
+    err_puts("window_egl_demo_load: gl_font_init");
+    return false;
+  }
+  gl_font_set_size(&g_font_courier_new, 20);
+  if (! gl_text_init(&g_text_fps, &g_font_courier_new)) {
+    err_puts("window_egl_demo_load: gl_text_init g_text_fps");
+    return false;
+  }
+  if (! gl_text_init(&g_text_seq_title, &g_font_courier_new)) {
+    err_puts("window_egl_demo_load: gl_text_init g_text_seq_title");
+    return false;
+  }
   sequence_egl_init(window->sequence, 8.0, "01. Background rect",
                     bg_rect_load, bg_rect_render, bg_rect_unload, window);
   window_set_sequence_pos((s_window *) window, 0);
@@ -104,6 +140,8 @@ bool window_egl_demo_load (s_window_egl *window)
 bool window_egl_demo_render (s_window_egl *window)
 {
   s_sequence_egl *seq;
+  s_rgb text_color         = {1.0f, 1.0f, 1.0f};
+  s_rgb text_color_outline = {0.0f, 0.0f, 0.0f};
   assert(window);
   if (! window_animate((s_window *) window)) {
     err_puts("window_egl_demo_render: window_animate");
@@ -113,6 +151,19 @@ bool window_egl_demo_render (s_window_egl *window)
   if (seq && seq->render && ! seq->render(seq)) {
     err_puts("window_egl_demo_render: seq->render");
     return false;
+  }
+  if (seq && seq->title) {
+    gl_text_update_1(&g_text_seq_title, seq->title);
+    mat4_init_identity(&g_ortho.model_matrix);
+    gl_ortho_render(&g_ortho);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                        GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    gl_ortho_text_render_outline(&g_ortho, &g_text_seq_title,
+                                 20.0f, 30.0f, &text_color_outline,
+                                 &text_color);
+    gl_ortho_render_end(&g_ortho);
   }
   return true;
 }
@@ -134,5 +185,8 @@ void window_egl_demo_unload (s_window_egl *window)
 {
   assert(window);
   (void) window;
+  gl_text_clean(&g_text_fps);
+  gl_text_clean(&g_text_seq_title);
+  gl_font_clean(&g_font_courier_new);
   err_puts("window_egl_demo_unload");
 }
