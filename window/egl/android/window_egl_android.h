@@ -20,7 +20,8 @@
 #include "../window_egl.h"
 #include "types.h"
 
-bool window_egl_android_run (s_window_egl *window);
+/* Main loop. */
+bool window_egl_android_run (s_window_egl_android *window);
 
 /* Android input handling */
 int32_t window_egl_android_handle_input (p_android_app app,
