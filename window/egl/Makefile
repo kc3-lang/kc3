@@ -26,47 +26,55 @@ all:
 
 build:
 	${MAKE} ${LIB}
+	if ${HAVE_ANDROID}; then ${MAKE} -C android build; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb build; fi
 
 asan:
 	${MAKE} ${LIB_ASAN}
+	if ${HAVE_ANDROID}; then ${MAKE} -C android asan; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb asan; fi
 
 clean:
 	rm -f ${CLEANFILES}
+	if ${HAVE_ANDROID}; then ${MAKE} -C android clean; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean; fi
 
 clean_cov:
 	rm -f ${CLEANFILES_COV}
+	if ${HAVE_ANDROID}; then ${MAKE} -C android clean_cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean_cov; fi
 
 cov:
 	${MAKE} ${LIB_COV}
+	if ${HAVE_ANDROID}; then ${MAKE} -C android cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb cov; fi
 
 debug:
 	${MAKE} ${LIB_DEBUG}
+	if ${HAVE_ANDROID}; then ${MAKE} -C android debug; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb debug; fi
 
 demo: build
+	if ${HAVE_ANDROID}; then ${MAKE} -C android demo; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb demo; fi
 
 demo_asan: asan
+	if ${HAVE_ANDROID}; then ${MAKE} -C android demo_asan; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_asan; fi
 
 demo_cov: cov
+	if ${HAVE_ANDROID}; then ${MAKE} -C android demo_cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_cov; fi
 
 demo_debug: debug
+	if ${HAVE_ANDROID}; then ${MAKE} -C android demo_debug; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_debug; fi
-
-dist:
-	${MAKE} -C xcb dist
 
 distclean:
 	rm -f ${DISTCLEANFILES}
 
 gdb_demo: debug
+	if ${HAVE_ANDROID}; then ${MAKE} -C android gdb_demo; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb gdb_demo; fi
 
 install:
