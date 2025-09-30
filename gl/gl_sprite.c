@@ -10,7 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/kc3.h>
+#include <png.h>
+#include "../libkc3/kc3.h"
 #include "gl_deprecated.h"
 #include "gl_object.h"
 #include "gl_sprite.h"

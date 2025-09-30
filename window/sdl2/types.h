@@ -28,36 +28,7 @@
 #include <SDL_opengl.h>
 #include "../types.h"
 
-#define GL_CAMERA_LIGHT_MAX 16          // keep in sync with shader
-
-typedef struct dmat3        s_dmat3;
-typedef struct dmat4        s_dmat4;
-typedef struct dvec2        s_dvec2;
-typedef struct dvec3        s_dvec3;
-typedef struct dvec4        s_dvec4;
-typedef struct gl_box       s_gl_box;
-typedef struct gl_camera    s_gl_camera;
-typedef struct gl_cylinder  s_gl_cylinder;
-typedef struct gl_font      s_gl_font;
-typedef struct gl_light     s_gl_light;
-typedef struct gl_lines     s_gl_lines;
-typedef struct gl_material  s_gl_material;
-typedef struct gl_object    s_gl_object;
-typedef struct gl_ortho     s_gl_ortho;
-typedef struct gl_sphere    s_gl_sphere;
-typedef struct gl_sprite    s_gl_sprite;
-typedef struct gl_square    s_gl_square;
-typedef struct gl_text      s_gl_text;
-typedef struct gl_triangle  s_gl_triangle;
-typedef struct gl_vertex    s_gl_vertex;
-typedef struct mat3         s_mat3;
-typedef struct mat4         s_mat4;
-typedef struct rgb          s_rgb;
-typedef struct rgba         s_rgba;
-typedef struct vec2         s_vec2;
-typedef struct vec3         s_vec3;
-typedef struct vec4         s_vec4;
-typedef struct window_sdl2  s_window_sdl2;
+typedef struct window_sdl2 s_window_sdl2;
 
 /* return false to break event loop */
 typedef bool (*f_window_sdl2_button) (s_window_sdl2 *window,

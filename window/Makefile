@@ -10,6 +10,14 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+CLEANFILES = *.a *.gcno *.la .libs *.lo *.o
+
+CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
+
+CLEANFILES += ${CLEANFILES_COV}
+
+DISTCLEANFILES = ${CLEANFILES} config.h config.mk
+
 all:
 	${MAKE} build
 	${MAKE} debug
@@ -29,11 +37,13 @@ build:
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 build; fi
 
 clean:
+	rm -f ${CLEANFILES}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo clean; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl clean; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 clean; fi
 
 clean_cov:
+	rm -f ${CLEANFILES_COV}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo clean_cov; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl clean_cov; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 clean_cov; fi

@@ -11,12 +11,8 @@
  * THIS SOFTWARE.
  */
 #include <math.h>
-#include <libkc3/kc3.h>
-#include "../gl_deprecated.h"
-#include "../gl_font.h"
-#include "../mat4.h"
-#include "../gl_ortho.h"
-#include "../gl_text.h"
+#include "../../../libkc3/kc3.h"
+#include "../../../gl/gl.h"
 #include "mandelbrot_f128.h"
 #include "window_sdl2_demo.h"
 

@@ -16,7 +16,7 @@
 #include <xkbcommon/xkbcommon.h>
 #include <libkc3/kc3.h>
 #include "../window.h"
-#include "gl_deprecated.h"
+#include "../../gl/gl_deprecated.h"
 #include "window_sdl2.h"
 
 const char *g_gray_3_bits_utf8[] = {

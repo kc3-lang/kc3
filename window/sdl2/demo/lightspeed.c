@@ -10,11 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/kc3.h>
-#include "../gl_lines.h"
-#include "../mat4.h"
-#include "../gl_ortho.h"
-#include "../vec3.h"
+#include "../../../libkc3/kc3.h"
+#include "../../../gl/gl.h"
 #include "window_sdl2_demo.h"
 #include "lightspeed.h"
 

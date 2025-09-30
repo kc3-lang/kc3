@@ -11,12 +11,8 @@
  * THIS SOFTWARE.
  */
 #include <math.h>
-#include <libkc3/kc3.h>
-#include "../gl_font.h"
-#include "../gl_ortho.h"
-#include "../gl_sprite.h"
-#include "../gl_vtext.h"
-#include "../mat4.h"
+#include "../../../libkc3/kc3.h"
+#include "../../../gl/gl.h"
 #include "window_sdl2_demo.h"
 #include "matrix.h"
 

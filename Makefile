@@ -29,6 +29,7 @@ all:
 	${MAKE} -C http all
 	${MAKE} -C httpd all
 	${MAKE} -C test all
+	${MAKE} -C gl all
 	${MAKE} -C window all
 	${MAKE} -C gtk4 all
 #	${MAKE} -C fs all
@@ -54,6 +55,7 @@ asan:
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
 	${MAKE} -C test asan
+	${MAKE} -C gl asan
 	${MAKE} -C window asan
 	${MAKE} -C gtk4 asan
 #	${MAKE} -C fs asan
@@ -80,6 +82,7 @@ build:
 	${MAKE} -C http build
 	${MAKE} -C httpd build
 	${MAKE} -C test build
+	${MAKE} -C gl build
 	${MAKE} -C window build
 	${MAKE} -C gtk4 build
 #	${MAKE} -C fs build
@@ -102,6 +105,7 @@ clean:
 	${MAKE} -C http clean
 	${MAKE} -C httpd clean
 	${MAKE} -C test clean
+	${MAKE} -C gl clean
 	${MAKE} -C window clean
 	${MAKE} -C gtk4 clean
 #	${MAKE} -C fs clean
@@ -123,6 +127,7 @@ clean_cov:
 	${MAKE} -C http clean_cov
 	${MAKE} -C httpd clean_cov
 	${MAKE} -C test clean_cov
+	${MAKE} -C gl clean_cov
 	${MAKE} -C window clean_cov
 	${MAKE} -C gtk4 clean_cov
 #	${MAKE} -C fs clean_cov
@@ -145,6 +150,7 @@ cov:
 	${MAKE} -C http cov
 	${MAKE} -C httpd cov
 	${MAKE} -C test cov
+	${MAKE} -C gl cov
 	${MAKE} -C window cov
 	${MAKE} -C gtk4 cov
 #	${MAKE} -C fs cov
@@ -167,6 +173,7 @@ debug:
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
 	${MAKE} -C test debug
+	${MAKE} -C gl debug
 	${MAKE} -C window debug
 	${MAKE} -C gtk4 debug
 #	${MAKE} -C fs debug
@@ -183,68 +190,28 @@ demo_cov: cov
 demo_debug: debug
 	${MAKE} -C window demo_debug
 
-demo_egl:
-	${MAKE} -C runj all
-	${MAKE} gen
-	${MAKE} -C libtommath build
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 build
+demo_egl: build
 	${MAKE} -C window demo_egl
 
 demo_egl_asan: asan
-	${MAKE} -C runj all
-	${MAKE} gen
-	${MAKE} -C libtommath asan
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 asan
 	${MAKE} -C window demo_egl_asan
 
 demo_egl_cov: cov
-	${MAKE} -C runj all
-	${MAKE} gen
-	${MAKE} -C libtommath cov
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 cov
 	${MAKE} -C window demo_egl_cov
 
 demo_egl_debug: debug
-	${MAKE} -C runj all
-	${MAKE} gen
-	${MAKE} -C libtommath debug
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 debug
 	${MAKE} -C window demo_egl_debug
 
-demo_gl:
-	${MAKE} -C runj all
-	${MAKE} gen
-	${MAKE} -C libtommath build
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 build
+demo_gl: build
 	${MAKE} -C window demo_gl
 
 demo_gl_asan: asan
-	${MAKE} -C runj all
-	${MAKE} gen
-	${MAKE} -C libtommath asan
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 asan
 	${MAKE} -C window demo_gl_asan
 
 demo_gl_cov: cov
-	${MAKE} -C runj all
-	${MAKE} gen
-	${MAKE} -C libtommath cov
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 cov
 	${MAKE} -C window demo_gl_cov
 
 demo_gl_debug: debug
-	${MAKE} -C runj all
-	${MAKE} gen
-	${MAKE} -C libtommath debug
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 debug
 	${MAKE} -C window demo_gl_debug
 
 demo_kubz: build
@@ -275,6 +242,7 @@ distclean:
 	${MAKE} -C http distclean
 	${MAKE} -C httpd distclean
 	${MAKE} -C test distclean
+	${MAKE} -C gl distclean
 	${MAKE} -C window distclean
 	${MAKE} -C gtk4 distclean
 #	${MAKE} -C fs distclean
@@ -411,20 +379,16 @@ gcovr:
 #	${MAKE} -C fs gcovr
 	if [ -d "$$HOME/Downloads/kc3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
-gdb_demo: lib_links_debug
-	${MAKE} debug
+gdb_demo: debug lib_links_debug
 	${MAKE} -C libkc3 gdb_demo
 
-gdb_demo_egl: lib_links_debug
-	${MAKE} debug
+gdb_demo_egl: debug lib_links_debug
 	${MAKE} -C window/egl gdb_demo
 
-gdb_demo_gl: lib_links_debug
-	${MAKE} debug
+gdb_demo_gl: debug lib_links_debug
 	${MAKE} -C window/sdl2 gdb_demo
 
-gdb_demo_kubz: lib_links_debug
-	${MAKE} debug
+gdb_demo_kubz: debug lib_links_debug
 	${MAKE} -C window/sdl2/kubz gdb_demo
 
 gdb_dump: debug

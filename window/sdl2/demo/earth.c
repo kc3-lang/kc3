@@ -11,13 +11,9 @@
  * THIS SOFTWARE.
  */
 #include <math.h>
-#include <libkc3/kc3.h>
+#include "../../../libkc3/kc3.h"
+#include "../../../gl/gl.h"
 #include "../window_sdl2.h"
-#include "../gl_camera.h"
-#include "../mat4.h"
-#include "../gl_object.h"
-#include "../gl_sphere.h"
-#include "../gl_sprite.h"
 #include "earth.h"
 
 #define EARTH_CAMERA_ROTATION_Z_SPEED 0.1

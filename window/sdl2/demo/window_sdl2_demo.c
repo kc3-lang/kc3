@@ -12,16 +12,9 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <libkc3/kc3.h>
+#include "../../../libkc3/kc3.h"
 #include "../../window.h"
-#include "../gl_font.h"
-#include "../gl_lines.h"
-#include "../mat4.h"
-#include "../gl_object.h"
-#include "../gl_ortho.h"
-#include "../gl_square.h"
-#include "../gl_text.h"
-#include "../gl_sprite.h"
+#include "../../../gl/gl.h"
 #include "../window_sdl2.h"
 #include "bg_rect.h"
 #include "lightspeed.h"

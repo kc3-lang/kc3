@@ -11,6 +11,8 @@ KC3_CONFIGURES = \
 	"fs/fuse/sources.sh" \
 	"fs/fuse/update_sources" \
 	"fs/update_sources" \
+	"gl/configure" \
+	"gl/sources.sh" \
 	"gl/update_sources" \
 	"gtk4/configure" \
 	"gtk4/sources.sh" \
@@ -108,6 +110,8 @@ KC3_MAKEFILES = \
 	"fs/Makefile" \
 	"fs/fuse/Makefile" \
 	"fs/fuse/sources.mk" \
+	"gl/Makefile" \
+	"gl/sources.mk" \
 	"gtk4/Makefile" \
 	"gtk4/sources.mk" \
 	"http/Makefile" \
@@ -190,6 +194,14 @@ KC3_C_SOURCES = \
 	"fs/OpenBSD/kc3fs.h" \
 	"fs/fuse/mount_kc3fs.c" \
 	"fs/fuse/types.h" \
+	"gl/dmat3.h" \
+	"gl/dmat4.c" \
+	"gl/dmat4.h" \
+	"gl/dvec2.c" \
+	"gl/dvec2.h" \
+	"gl/dvec3.c" \
+	"gl/dvec3.h" \
+	"gl/gl.h" \
 	"gl/gl_box.c" \
 	"gl/gl_box.h" \
 	"gl/gl_camera.c" \
@@ -220,9 +232,12 @@ KC3_C_SOURCES = \
 	"gl/gl_vertex.h" \
 	"gl/gl_vtext.c" \
 	"gl/gl_vtext.h" \
+	"gl/mat3.h" \
 	"gl/mat4.c" \
 	"gl/mat4.h" \
 	"gl/types.h" \
+	"gl/vec2.c" \
+	"gl/vec2.h" \
 	"gl/vec3.c" \
 	"gl/vec3.h" \
 	"gtk4/action_map.c" \
@@ -1084,17 +1099,7 @@ KC3_C_SOURCES = \
 	"window/sdl2/disabled/sdl2_font.h" \
 	"window/sdl2/disabled/sdl2_sprite.c" \
 	"window/sdl2/disabled/sdl2_sprite.h" \
-	"window/sdl2/dmat3.h" \
-	"window/sdl2/dmat4.c" \
-	"window/sdl2/dmat4.h" \
-	"window/sdl2/dvec2.c" \
-	"window/sdl2/dvec2.h" \
-	"window/sdl2/dvec3.c" \
-	"window/sdl2/dvec3.h" \
-	"window/sdl2/mat3.h" \
 	"window/sdl2/types.h" \
-	"window/sdl2/vec2.c" \
-	"window/sdl2/vec2.h" \
 	"window/sdl2/window_sdl2.c" \
 	"window/sdl2/window_sdl2.h" \
 	"window/types.h" \
