@@ -19,7 +19,6 @@
 #define LIBKC3_WINDOW_EGL_ANDROID_TYPES_H
 
 #include <android/native_activity.h>
-#include <android/native_app.h>
 #include <android/native_window.h>
 #include "config.h"
 #include "../types.h"
