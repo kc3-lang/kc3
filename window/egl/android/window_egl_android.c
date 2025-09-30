@@ -68,7 +68,8 @@ static bool window_egl_android_setup (s_window_egl *window,
     return false;
   }
   window->egl_surface = eglCreateWindowSurface(window->egl_display,
-                                               config, native_window,
+                                               config,
+                                               (EGLNativeWindowType) native_window,
                                                NULL);
   if (window->egl_surface == EGL_NO_SURFACE) {
     err_puts("window_egl_android_setup: eglCreateWindowSurface");
