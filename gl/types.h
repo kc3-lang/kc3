@@ -22,8 +22,56 @@
 # include <windef.h>
 #endif
 
-#include <GL/glew.h>
-#include <GL/gl.h>
+#if defined(__APPLE__)
+# include <OpenGL/gl3.h>
+#elif defined(WIN32) || defined(WIN64)
+# include <GL/gl.h>
+# include <GL/glext.h>
+#else
+# include <GL/gl.h>
+# include <GL/glu.h>
+# include <GL/glext.h>
+# ifndef GL_VERSION_2_0
+typedef char GLchar;
+typedef ptrdiff_t GLsizeiptr;
+typedef ptrdiff_t GLintptr;
+# endif
+extern GLuint glCreateShader(GLenum shaderType);
+extern void glShaderSource(GLuint shader, GLsizei count, const GLchar **string, const GLint *length);
+extern void glCompileShader(GLuint shader);
+extern void glGetShaderiv(GLuint shader, GLenum pname, GLint *params);
+extern void glGetShaderInfoLog(GLuint shader, GLsizei maxLength, GLsizei *length, GLchar *infoLog);
+extern GLuint glCreateProgram(void);
+extern void glAttachShader(GLuint program, GLuint shader);
+extern void glLinkProgram(GLuint program);
+extern void glUseProgram(GLuint program);
+extern void glDeleteShader(GLuint shader);
+extern void glDeleteProgram(GLuint program);
+extern GLint glGetUniformLocation(GLuint program, const GLchar *name);
+extern void glUniform1i(GLint location, GLint v0);
+extern void glUniform1f(GLint location, GLfloat v0);
+extern void glUniform3fv(GLint location, GLsizei count, const GLfloat *value);
+extern void glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+extern void glUniform4fv(GLint location, GLsizei count, const GLfloat *value);
+extern void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
+extern void glGenVertexArrays(GLsizei n, GLuint *arrays);
+extern void glBindVertexArray(GLuint array);
+extern void glDeleteVertexArrays(GLsizei n, const GLuint *arrays);
+extern void glGenBuffers(GLsizei n, GLuint *buffers);
+extern void glBindBuffer(GLenum target, GLuint buffer);
+extern void glBufferData(GLenum target, GLsizeiptr size, const void *data, GLenum usage);
+extern void glDeleteBuffers(GLsizei n, const GLuint *buffers);
+extern void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void *pointer);
+extern void glEnableVertexAttribArray(GLuint index);
+extern void glDisableVertexAttribArray(GLuint index);
+extern void glBlendFuncSeparate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
+extern void glGenerateMipmap(GLenum target);
+
+/* Debug functions */
+typedef void (*GLDEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
+extern void glDebugMessageCallback(GLDEBUGPROC callback, const void *userParam);
+
+#endif
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <libkc3/types.h>

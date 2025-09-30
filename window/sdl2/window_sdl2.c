@@ -212,11 +212,6 @@ bool window_sdl2_run (s_window_sdl2 *window)
           gl_error_string(gl_error));
     goto ko;
   }
-  glewExperimental = GL_TRUE;
-  if (glewInit() != GLEW_OK) {
-    fprintf(stderr, "window_sdl2_run: failed to initialize GLEW");
-    goto ko;
-  }
   const char * version = (const char *) glGetString(GL_VERSION);
   if (version) {
     err_write_1("window_sdl2_run: OpenGL Version: ");
@@ -225,10 +220,8 @@ bool window_sdl2_run (s_window_sdl2 *window)
     err_puts("window_sdl2_run: failed to retrieve OpenGL version");
     version = "unknown";
   }
-  if (glDebugMessageCallback) {
-    glEnable(GL_DEBUG_OUTPUT);
-    glDebugMessageCallback((GLDEBUGPROC) gl_debug, NULL);
-  }
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback((GLDEBUGPROC) gl_debug, NULL);
   int gl_w = window->w;
   int gl_h = window->h;
   SDL_GL_GetDrawableSize(window->sdl_window, &gl_w, &gl_h);

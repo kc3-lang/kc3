@@ -44,7 +44,6 @@ ${DEST_TMP}:
 	cp -a "${SRC_TOP}/window/sdl2/demo/.libs/kc3_window_sdl2_demo_debug.exe" ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/sdl2/kubz/.libs/kubz.exe" ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/sdl2/kubz/.libs/kubz_debug.exe" ${DEST_TMP}
-	cp -a /clang64/bin/glew32.dll ${DEST_TMP}
 	cp -a /clang64/bin/SDL2.dll ${DEST_TMP}
 	cp -a /clang64/bin/libxkbcommon-0.dll ${DEST_TMP}
 	cp -a /clang64/bin/libwinpthread-1.dll ${DEST_TMP}

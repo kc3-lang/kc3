@@ -91,12 +91,6 @@ static bool window_egl_xcb_setup (s_window_egl *window,
     err_write_1("OpenGL Version: ");
     err_puts(gl_version);
   }
-  glewExperimental = GL_TRUE;
-  GLenum glew_error = glewInit();
-  if (glew_error != GLEW_OK) {
-    err_write_1("window_egl_xcb_setup: glewInit failed: ");
-    err_puts((const char*)glewGetErrorString(glew_error));
-  }
   eglQuerySurface(window->egl_display, window->egl_surface,
                   EGL_WIDTH, &gl_w);
   eglQuerySurface(window->egl_display, window->egl_surface,
