@@ -143,16 +143,6 @@ bool window_egl_android_run (s_window_egl *window)
   return true;
 }
 
-ANativeWindow *
-window_egl_android_get_native_window (s_window_egl *window)
-{
-  assert(window);
-  if (window->app && window->app->window) {
-    return window->app->window;
-  }
-  return NULL;
-}
-
 /* Android input event handling */
 static u32 android_keycode_to_kc3 (int32_t android_keycode)
 {

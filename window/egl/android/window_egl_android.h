@@ -19,14 +19,13 @@
 #include <android/native_activity.h>
 #include "../window_egl.h"
 
+typedef struct android_app *p_android_app;
+
 bool window_egl_android_run (s_window_egl *window);
 
-ANativeWindow *
-window_egl_android_get_native_window (s_window_egl *window);
-
 /* Android input handling */
-int32_t window_egl_android_handle_input (struct android_app *app,
+int32_t window_egl_android_handle_input (p_android_app app,
                                          AInputEvent *event);
-void window_egl_android_handle_cmd (struct android_app *app, int32_t cmd);
+void window_egl_android_handle_cmd (p_android_app app, int32_t cmd);
 
 #endif /* LIBKC3_WINDOW_EGL_ANDROID_H */
