@@ -65,9 +65,6 @@ pkg_config libpng
 config_lib OPENMP -fopenmp
 config_define HAVE_OPENMP "${HAVE_OPENMP}"
 pkg_config egl
-pkg_config xcb
-pkg_config xcb-xkb
-pkg_config xkbcommon
 update_config_h
 
 # Asan config

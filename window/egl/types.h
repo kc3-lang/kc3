@@ -18,10 +18,15 @@
 #ifndef LIBKC3_WINDOW_EGL_TYPES_H
 #define LIBKC3_WINDOW_EGL_TYPES_H
 
+#include "config.h"
 #include <EGL/egl.h>
 #include "../../libkc3/types.h"
 #include "../../gl/types.h"
 #include "../types.h"
+
+#if HAVE_ANDROID
+#include <android/native_activity.h>
+#endif
 
 typedef struct sequence_egl s_sequence_egl;
 typedef struct window_egl   s_window_egl;
@@ -82,6 +87,9 @@ struct window_egl {
   EGLDisplay          egl_display;
   EGLConfig           egl_config;
   EGLSurface          egl_surface;
+#if HAVE_ANDROID
+  struct android_app *app;
+#endif
 };
 
 #endif /* LIBKC3_WINDOW_EGL_TYPES_H */

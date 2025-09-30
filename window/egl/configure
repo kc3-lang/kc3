@@ -46,7 +46,6 @@ pkg_config egl
 pkg_config freetype2
 pkg_config gl
 pkg_config xkbcommon
-update_config_h
 
 . ./sources.sh
 
@@ -111,6 +110,7 @@ else
     HAVE_ANDROID=false
 fi
 echo "HAVE_ANDROID = $HAVE_ANDROID" >> ${CONFIG_MK}
+echo "#define HAVE_ANDROID $HAVE_ANDROID" >> ${CONFIG_H}
 
 if pkg-config xcb; then
     HAVE_XCB=true
@@ -118,6 +118,9 @@ else
     HAVE_XCB=false
 fi
 echo "HAVE_XCB = $HAVE_XCB" >> ${CONFIG_MK}
+echo "#define HAVE_XCB $HAVE_XCB" >> ${CONFIG_H}
+
+update_config_h
 
 SUBDIRS=demo
 if ${HAVE_ANDROID}; then
