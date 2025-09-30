@@ -54,23 +54,36 @@ echo "ARCH = $ARCH" >> ${CONFIG_MK}
 update_config_mk
 env_reset
 
-config_subdirs \
-    libtommath \
-    ucd2c \
-    libkc3 \
-    ikc3 \
-    kc3s \
-    ekc3 \
-    event \
-    json \
-    markdown \
-    pdf \
-    smtp \
-    socket \
-    tls \
-    http \
-    httpd \
-    test \
-    window \
-    gtk4 \
+if pkg-config gtk4; then
+    HAVE_GTK4=true
+else
+    HAVE_GTK4=false
+fi
+echo "HAVE_GTK4 = $HAVE_GTK4" >> ${CONFIG_MK}
+
+SUBDIRS="
+    libtommath
+    ucd2c
+    libkc3
+    ikc3
+    kc3s
+    ekc3
+    event
+    json
+    markdown
+    pdf
+    smtp
+    socket
+    tls
+    http
+    httpd
+    test
+    window
     fs
+"
+
+if $HAVE_GTK4; then
+    SUBDIRS="$SUBDIRS gtk4"
+fi
+
+config_subdirs $SUBDIRS
