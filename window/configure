@@ -118,7 +118,7 @@ else
 fi
 echo "HAVE_CAIRO = $HAVE_CAIRO" >> ${CONFIG_MK}
 
-if pkg-config egl; then
+if pkg-config egl && pkg-config xkbcommon; then
     HAVE_EGL=true
 else
     HAVE_EGL=false
