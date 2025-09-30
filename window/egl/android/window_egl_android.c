@@ -43,74 +43,66 @@ static bool window_egl_android_setup (s_window_egl *window,
     EGL_NONE
   };
   EGLint num_config;
-
   window->egl_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
   if (window->egl_display == EGL_NO_DISPLAY) {
     err_puts("window_egl_android_setup: eglGetDisplay");
     return false;
   }
-
-  if (!eglInitialize(window->egl_display, &major, &minor)) {
+  if (! eglInitialize(window->egl_display, &major, &minor)) {
     err_puts("window_egl_android_setup: eglInitialize");
     return false;
   }
-
-  io_printf("EGL version: %d.%d\n", major, minor);
-
-  if (!eglChooseConfig(window->egl_display, config_attribs, &config, 1,
-                       &num_config)) {
+  if (true) {
+    err_write_1("EGL version: ");
+    err_inspect_s32_decimal(major);
+    err_write_1(".");
+    err_inspect_s32_decimal(minor);
+  }
+  if (! eglChooseConfig(window->egl_display, config_attribs, &config, 1,
+                        &num_config)) {
     err_puts("window_egl_android_setup: eglChooseConfig");
     return false;
   }
-
   if (num_config != 1) {
     err_puts("window_egl_android_setup: no suitable EGL config");
     return false;
   }
-
-  window->egl_surface = eglCreateWindowSurface(window->egl_display, config,
-                                               native_window, NULL);
+  window->egl_surface = eglCreateWindowSurface(window->egl_display,
+                                               config, native_window,
+                                               NULL);
   if (window->egl_surface == EGL_NO_SURFACE) {
     err_puts("window_egl_android_setup: eglCreateWindowSurface");
     return false;
   }
-
   window->egl_context = eglCreateContext(window->egl_display, config,
                                          EGL_NO_CONTEXT, context_attribs);
   if (window->egl_context == EGL_NO_CONTEXT) {
     err_puts("window_egl_android_setup: eglCreateContext");
     return false;
   }
-
   if (!eglMakeCurrent(window->egl_display, window->egl_surface,
                       window->egl_surface, window->egl_context)) {
     err_puts("window_egl_android_setup: eglMakeCurrent");
     return false;
   }
-
   return true;
 }
 
 bool window_egl_android_run (s_window_egl *window)
 {
   ANativeWindow *native_window;
-
   assert(window);
-
   native_window = window_egl_android_get_native_window(window);
-  if (!native_window) {
+  if (! native_window) {
     err_puts("window_egl_android_run: native window");
     return false;
   }
-
-  if (!window_egl_android_setup(window, native_window)) {
+  if (! window_egl_android_setup(window, native_window)) {
     err_puts("window_egl_android_run: setup");
     return false;
   }
-
   // Main render loop would go here
   // For now, just return success
-
   return true;
 }
 
