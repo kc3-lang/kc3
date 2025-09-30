@@ -15,47 +15,49 @@ set -e
 
 echo "$PWD/configure"
 
-export SRC_TOP="$(dirname "$(dirname "$PWD")")"
+export SRC_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
 
-CONFIG_H_PREFIX=LIBKC3_WINDOW_EGL_
+CONFIG_H_PREFIX=LIBKC3_WINDOW_EGL_DEMO_
 
 . "${SRC_TOP}/config.subr"
 
-LIB=libkc3_window_egl.la
-LIB_ASAN=libkc3_window_egl_asan.la
-LIB_COV=libkc3_window_egl_cov.la
-LIB_DEBUG=libkc3_window_egl_debug.la
+LIB=libkc3_window_egl_demo.la
+LIB_ASAN=libkc3_window_egl_demo_asan.la
+LIB_COV=libkc3_window_egl_demo_cov.la
+LIB_DEBUG=libkc3_window_egl_demo_debug.la
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
 echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
 echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 
+. ./sources.sh
+
+OBJECTS="$(c2ext .main.lo "$SOURCES")"
+echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
+OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
+OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
+OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
+
 # Common config for all targets
-CPPFLAGS="-I../.. $CPPFLAGS"
+CPPFLAGS="-I../../.. $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
 LDFLAGS="--shared ${LDFLAGS}"
-LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 config_i386
 pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
-pkg_config egl
 pkg_config freetype2
-pkg_config gl
 pkg_config xkbcommon
+pkg_config egl
+pkg_config glesv2
+config_define PREFIX "\"${PREFIX}\""
 update_config_h
+LIBS="$LIBS -lxkbcommon -lxkbcommon-x11"
+LIBS="$LIBS -rpath ${PREFIX}/lib"
 
-. ./sources.sh
-
-OBJECTS="$(c2ext .main.lo "$SOURCES")"
-OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
-OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
-OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
-
-echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
@@ -64,8 +66,7 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -O1 -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../../gl/libkc3_gl_asan.la"
-LIBS_ASAN="$LIBS_LOCAL_ASAN $LIBS"
+LIBS_ASAN="$LIBS"
 
 echo "CPPFLAGS_ASAN = $CPPFLAGS_ASAN" >> ${CONFIG_MK}
 echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
@@ -76,8 +77,7 @@ echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
 LDFLAGS_COV="$LDFLAGS"
-LIBS_LOCAL_COV="../../gl/libkc3_gl_cov.la"
-LIBS_COV="$LIBS_LOCAL_COV $LIBS -lgcov"
+LIBS_COV="$LIBS -lgcov"
 
 echo "CPPFLAGS_COV = $CPPFLAGS_COV" >> ${CONFIG_MK}
 echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
@@ -88,8 +88,7 @@ echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../../gl/libkc3_gl_debug.la"
-LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
+LIBS_DEBUG="$LIBS"
 
 echo "CPPFLAGS_DEBUG = $CPPFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
@@ -97,35 +96,10 @@ echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 # Main config
-LIBS_LOCAL="../../gl/libkc3_gl.la"
-LIBS="$LIBS_LOCAL $LIBS"
-
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
 echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
 echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
 echo "LIBS = $LIBS" >> ${CONFIG_MK}
-
-if [ -f /system/lib64/libGLESv2.so ]; then
-    HAVE_ANDROID=true
-else
-    HAVE_ANDROID=false
-fi
-echo "HAVE_ANDROID = $HAVE_ANDROID" >> ${CONFIG_MK}
-
-if pkg-config xcb; then
-    HAVE_XCB=true
-else
-    HAVE_XCB=false
-fi
-echo "HAVE_XCB = $HAVE_XCB" >> ${CONFIG_MK}
-
-SUBDIRS=demo
-if ${HAVE_ANDROID}; then
-    SUBDIRS="$SUBDIRS android"
-fi
-if ${HAVE_XCB}; then
-    SUBDIRS="$SUBDIRS xcb"
-fi
 
 update_build_c
 update_build_lib
@@ -134,6 +108,3 @@ build_lo_c
 build_lib
 
 update_config_mk
-env_reset
-
-config_subdirs $SUBDIRS

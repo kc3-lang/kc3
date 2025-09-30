@@ -21,7 +21,7 @@
 #include "../../window_egl.h"
 #include "../../sequence.h"
 #include "../window_egl_xcb.h"
-#include "bg_rect.h"
+#include "../../demo/bg_rect.h"
 
 #define WINDOW_EGL_DEMO_SEQUENCE_COUNT 1
 
@@ -83,7 +83,7 @@ bool window_egl_demo_button (s_window_egl *window, u8 button,
   err_inspect_s64(y);
   err_puts(")");
   if (window->seq && window->seq->button &&
-      ! window->seq->button(window->seq, button, x, y))
+      ! window->seq->button((s_sequence *) window->seq, button, x, y))
     return false;
   return true;
 }
@@ -100,7 +100,7 @@ bool window_egl_demo_key (s_window_egl *window, u32 keysym)
     return false;
   }
   if (window->seq && window->seq->key &&
-      ! window->seq->key(window->seq, keysym))
+      ! window->seq->key((s_sequence *) window->seq, keysym))
     return false;
   return true;
 }
@@ -155,7 +155,7 @@ bool window_egl_demo_render (s_window_egl *window)
     return false;
   }
   seq = window->seq;
-  if (seq && seq->render && ! seq->render(seq)) {
+  if (seq && seq->render && ! seq->render((s_sequence *) seq)) {
     err_puts("window_egl_demo_render: seq->render");
     return false;
   }

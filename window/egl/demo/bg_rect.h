@@ -13,10 +13,10 @@
 #ifndef BG_RECT_H
 #define BG_RECT_H
 
-#include "../../types.h"
+#include "../types.h"
 
-bool bg_rect_load (s_sequence_egl *seq);
-bool bg_rect_render (s_sequence_egl *seq);
-bool bg_rect_unload (s_sequence_egl *seq);
+bool bg_rect_load (s_sequence *seq);
+bool bg_rect_render (s_sequence *seq);
+bool bg_rect_unload (s_sequence *seq);
 
 #endif /* BG_RECT_H */

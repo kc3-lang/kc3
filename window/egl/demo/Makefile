@@ -26,57 +26,42 @@ all:
 
 build:
 	${MAKE} ${LIB}
-	if ${HAVE_XCB}; then ${MAKE} -C xcb build; fi
 
 asan:
 	${MAKE} ${LIB_ASAN}
-	if ${HAVE_XCB}; then ${MAKE} -C xcb asan; fi
 
 clean:
-	rm -f ${CLEANFILES}
-	if ${HAVE_XCB}; then ${MAKE} -C xcb clean; fi
+	rm -rf ${CLEANFILES}
 
 clean_cov:
-	rm -f ${CLEANFILES_COV}
-	if ${HAVE_XCB}; then ${MAKE} -C xcb clean_cov; fi
+	rm -rf ${CLEANFILES_COV}
 
 cov:
 	${MAKE} ${LIB_COV}
-	if ${HAVE_XCB}; then ${MAKE} -C xcb cov; fi
 
 debug:
 	${MAKE} ${LIB_DEBUG}
-	if ${HAVE_XCB}; then ${MAKE} -C xcb debug; fi
 
 demo: build
-	if ${HAVE_XCB}; then ${MAKE} -C xcb demo; fi
+	./${PROG}
 
 demo_asan: asan
-	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_asan; fi
+	./${PROG_ASAN}
 
 demo_cov: cov
-	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_cov; fi
+	./${PROG_COV}
 
 demo_debug: debug
-	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_debug; fi
-
-dist:
-	${MAKE} -C xcb dist
+	./${PROG_DEBUG}
 
 distclean:
-	rm -f ${DISTCLEANFILES}
+	rm -rf ${DISTCLEANFILES}
 
 gdb_demo: debug
-	if ${HAVE_XCB}; then ${MAKE} -C xcb gdb_demo; fi
-
-install:
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/window/egl
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libkc3/window/egl
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB_DEBUG} ${prefix}/lib
-	${LIBTOOL} --finish ${prefix}/lib
+	gdb ./.libs/${PROG_DEBUG}
 
 lldb_demo: debug
+	lldb ./.libs/${PROG_DEBUG}
 
 test:
 
@@ -92,7 +77,6 @@ update_sources:
 	cov \
 	debug \
 	demo \
-	dist \
 	distclean \
 	gdb_demo \
 	install \

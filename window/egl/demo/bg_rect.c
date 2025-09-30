@@ -11,17 +11,17 @@
  * THIS SOFTWARE.
  */
 #include <math.h>
-#include <libkc3/kc3.h>
-#include "../../types.h"
+#include "../../../libkc3/kc3.h"
+#include "../types.h"
 #include "bg_rect.h"
 
-bool bg_rect_load (s_sequence_egl *seq)
+bool bg_rect_load (s_sequence *seq)
 {
   (void) seq;
   return true;
 }
 
-bool bg_rect_render (s_sequence_egl *seq)
+bool bg_rect_render (s_sequence *seq)
 {
 #define BG_RECT_COLOR_MAX 8
   const s_rgb color[BG_RECT_COLOR_MAX] = {
@@ -54,7 +54,7 @@ bool bg_rect_render (s_sequence_egl *seq)
   return true;
 }
 
-bool bg_rect_unload (s_sequence_egl *seq)
+bool bg_rect_unload (s_sequence *seq)
 {
   (void) seq;
   return true;

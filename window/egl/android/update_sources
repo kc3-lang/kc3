@@ -13,7 +13,7 @@
 
 echo "$PWD/update_sources"
 
-SRC_TOP="$(dirname "$(dirname "$PWD")")"
+SRC_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
 
 . "${SRC_TOP}/config.subr"
 
@@ -26,13 +26,7 @@ sources HEADERS "$HEADERS"
 SOURCES="$(ls *.c)"
 sources SOURCES "$SOURCES"
 
-OBJC_SOURCES="$(ls *.m 2>/dev/null || true)"
-sources OBJC_SOURCES "$OBJC_SOURCES"
-
 update_sources_mk
 update_sources_sh
 
-"${SRC_TOP}/runj/runj" -1 /bin/sh <<EOF
 ( cd demo && ./update_sources; )
-( cd xcb && ./update_sources; )
-EOF

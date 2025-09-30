@@ -22,9 +22,9 @@ void sequence_egl_clean (s_sequence_egl *seq)
 s_sequence_egl * sequence_egl_init (s_sequence_egl *sequence,
                                     f64 duration,
                                     const char *title,
-                                    f_sequence_egl load,
-                                    f_sequence_egl render,
-                                    f_sequence_egl unload,
+                                    f_sequence load,
+                                    f_sequence render,
+                                    f_sequence unload,
                                     s_window_egl *window)
 {
   s_sequence_egl tmp = {0};

@@ -294,6 +294,7 @@ typedef s_var *           p_var;
 typedef bool (* f_sequence) (s_sequence *seq);
 typedef bool (* f_sequence_button) (s_sequence *seq, u8 button, s64 x,
                                     s64 y);
+typedef bool (* f_sequence_key) (s_sequence *seq, u32 keysym);
 
 #define CHARACTER_MAX S32_MAX
 #define SKIPLIST_HEIGHT_MAX U64_MAX
@@ -815,6 +816,7 @@ struct sequence {
   f_sequence render;
   f_sequence unload;
   f_sequence_button button;
+  f_sequence_key key;
 };
 
 #define TYPEDEF_SET_ITEM(name, type)                                   \

@@ -27,10 +27,6 @@ typedef struct sequence_egl s_sequence_egl;
 typedef struct window_egl   s_window_egl;
 
 /* return false to break event loop */
-typedef bool (*f_sequence_egl) (s_sequence_egl *seq);
-typedef bool (*f_sequence_egl_button) (s_sequence_egl *seq, u8 button,
-                                       s64 x, s64 y);
-typedef bool (*f_sequence_egl_key) (s_sequence_egl *seq, u32 keysym);
 typedef bool (*f_window_egl_button) (s_window_egl *window,
                                      u8 button, s64 x, s64 y);
 typedef bool (*f_window_egl_key) (s_window_egl *window, u32 keysym);
@@ -53,11 +49,11 @@ struct sequence_egl {
   s_timespec t0;
   const char *title;
   s_window_egl *window;
-  f_sequence_egl load;
-  f_sequence_egl render;
-  f_sequence_egl unload;
-  f_sequence_egl_button button;
-  f_sequence_egl_key key;
+  f_sequence load;
+  f_sequence render;
+  f_sequence unload;
+  f_sequence_button button;
+  f_sequence_key key;
 };
 
 /* Subtype of s_window. See libkc3/window/types.h */
