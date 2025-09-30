@@ -11,37 +11,34 @@
  * THIS SOFTWARE.
  */
 /** @file types.h
- *  @brief Module KC3.Window.EGL
+ *  @brief Module KC3.Window.EGL.Android
  *
- *  Struct for all GUI window with EGL graphics operations.
+ *  Struct for an Android window with EGL graphics operations.
  */
-#ifndef LIBKC3_WINDOW_EGL_TYPES_H
-#define LIBKC3_WINDOW_EGL_TYPES_H
+#ifndef LIBKC3_WINDOW_EGL_ANDROID_TYPES_H
+#define LIBKC3_WINDOW_EGL_ANDROID_TYPES_H
 
 #include "config.h"
-#include <EGL/egl.h>
-#include "../../libkc3/types.h"
-#include "../../gl/types.h"
 #include "../types.h"
 
-typedef struct sequence_egl s_sequence_egl;
-typedef struct window_egl   s_window_egl;
+typedef struct window_egl_android s_window_egl_android;
 
 /* return false to break event loop */
-typedef bool (*f_window_egl_button) (s_window_egl *window,
-                                     u8 button, s64 x, s64 y);
-typedef bool (*f_window_egl_key) (s_window_egl *window, u32 keysym);
-typedef bool (*f_window_egl_load) (s_window_egl *window);
-typedef bool (*f_window_egl_motion) (s_window_egl *window, s64 x,
+typedef bool (*f_window_egl_android_button)
+(s_window_egl_android *window, u8 button, s64 x, s64 y);
+typedef bool (*f_window_egl_android_key) (s_window_egl_android *window,
+                                  u32 keysym);
+typedef bool (*f_window_egl_android_load) (s_window_egl_android *window);
+typedef bool (*f_window_egl_android_motion) (s_window_egl_android *window, s64 x,
                                      s64 y);
-typedef bool (*f_window_egl_render) (s_window_egl *window);
-typedef bool (*f_window_egl_resize) (s_window_egl *window,
+typedef bool (*f_window_egl_android_render) (s_window_egl_android *window);
+typedef bool (*f_window_egl_android_resize) (s_window_egl_android *window,
                                      u64 w, u64 h);
-typedef void (*f_window_egl_unload) (s_window_egl *window);
+typedef void (*f_window_egl_android_unload) (s_window_egl_android *window);
 
 
 /* Subtype of s_sequence. See libkc3/types.h */
-struct sequence_egl {
+struct sequence_egl_android {
   s_tag tag;
   f64 dt;
   f64 duration;
@@ -49,7 +46,7 @@ struct sequence_egl {
   f64 t;
   s_timespec t0;
   const char *title;
-  s_window_egl *window;
+  s_window_egl_android *window;
   f_sequence load;
   f_sequence render;
   f_sequence unload;
@@ -58,26 +55,26 @@ struct sequence_egl {
 };
 
 /* Subtype of s_window. See libkc3/window/types.h */
-struct window_egl {
+struct window_egl_android {
   s64                 x;
   s64                 y;
   u64                 w;
   u64                 h;
   bool                fullscreen;
-  f_window_egl_button button;
-  f_window_egl_key    key;
-  f_window_egl_load   load;
-  f_window_egl_motion motion;
-  f_window_egl_render render;
+  f_window_egl_android_button button;
+  f_window_egl_android_key    key;
+  f_window_egl_android_load   load;
+  f_window_egl_android_motion motion;
+  f_window_egl_android_render render;
   EGLContext          egl_context;
-  f_window_egl_resize resize;
-  s_sequence_egl     *seq;
-  s_sequence_egl     *sequence;
+  f_window_egl_android_resize resize;
+  s_sequence_egl_android     *seq;
+  s_sequence_egl_android     *sequence;
   u32                 sequence_count;
   u32                 sequence_pos;
   s_tag               tag; // TODO: move sequence to tag
   const char         *title;
-  f_window_egl_unload unload;
+  f_window_egl_android_unload unload;
   u64                 gl_w;
   u64                 gl_h;
   EGLDisplay          egl_display;
@@ -85,4 +82,4 @@ struct window_egl {
   EGLSurface          egl_surface;
 };
 
-#endif /* LIBKC3_WINDOW_EGL_TYPES_H */
+#endif /* LIBKC3_WINDOW_EGL_ANDROID_TYPES_H */
