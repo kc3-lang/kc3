@@ -15,6 +15,7 @@
 #include <string.h>
 #include <android/native_window.h>
 #include <android/looper.h>
+#include <android/native_activity.h>
 #include <libkc3/kc3.h>
 #include <xkbcommon/xkbcommon.h>
 #include "window_egl_android.h"

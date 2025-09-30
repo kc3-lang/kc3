@@ -18,6 +18,7 @@
 #ifndef LIBKC3_WINDOW_EGL_ANDROID_TYPES_H
 #define LIBKC3_WINDOW_EGL_ANDROID_TYPES_H
 
+#include <android_native_app_glue.h>
 #include "config.h"
 #include "../types.h"
 
