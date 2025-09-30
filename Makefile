@@ -415,6 +415,10 @@ gdb_demo: lib_links_debug
 	${MAKE} debug
 	${MAKE} -C libkc3 gdb_demo
 
+gdb_demo_egl: lib_links_debug
+	${MAKE} debug
+	${MAKE} -C window/egl gdb_demo
+
 gdb_demo_gl: lib_links_debug
 	${MAKE} debug
 	${MAKE} -C window/sdl2 gdb_demo

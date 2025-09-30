@@ -67,6 +67,7 @@ dist:
 	tar czf ${DIST_DIR}/${TARGET}_${VERSION}.tar.gz LICENSE ${DIST_SRC}
 
 gdb_demo: debug
+	${MAKE} -C demo gdb_demo
 
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/window/egl/xcb

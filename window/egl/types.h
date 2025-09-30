@@ -35,6 +35,7 @@ typedef struct gl_triangle  s_gl_triangle;
 typedef struct gl_vertex    s_gl_vertex;
 typedef struct mat4         s_mat4;
 typedef struct rgb          s_rgb;
+typedef struct rgba         s_rgba;
 typedef struct sequence_egl s_sequence_egl;
 typedef struct vec3         s_vec3;
 typedef struct window_egl   s_window_egl;
@@ -61,7 +62,12 @@ struct rgb {
   f32 b;
 };
 
-typedef struct rgb s_rgb;
+struct rgba {
+  f32 r;
+  f32 g;
+  f32 b;
+  f32 a;
+};
 
 struct vec3 {
   f32 x;

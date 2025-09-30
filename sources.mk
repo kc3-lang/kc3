@@ -1015,15 +1015,34 @@ KC3_C_SOURCES = \
 	"window/cairo/xcb/demo/window_cairo_xcb_demo.c" \
 	"window/cairo/xcb/window_cairo_xcb.c" \
 	"window/cairo/xcb/window_cairo_xcb.h" \
+	"window/egl/gl_deprecated.c" \
+	"window/egl/gl_deprecated.h" \
+	"window/egl/gl_font.c" \
+	"window/egl/gl_font.h" \
+	"window/egl/gl_object.c" \
+	"window/egl/gl_object.h" \
+	"window/egl/gl_ortho.c" \
+	"window/egl/gl_ortho.h" \
+	"window/egl/gl_square.c" \
+	"window/egl/gl_square.h" \
+	"window/egl/gl_text.c" \
+	"window/egl/gl_text.h" \
+	"window/egl/gl_triangle.c" \
+	"window/egl/gl_triangle.h" \
+	"window/egl/gl_vertex.c" \
+	"window/egl/gl_vertex.h" \
+	"window/egl/mat4.c" \
+	"window/egl/mat4.h" \
 	"window/egl/sequence.c" \
 	"window/egl/sequence.h" \
 	"window/egl/types.h" \
+	"window/egl/vec3.h" \
 	"window/egl/window_egl.c" \
 	"window/egl/window_egl.h" \
 	"window/egl/xcb/demo/bg_rect.c" \
 	"window/egl/xcb/demo/bg_rect.h" \
-	"window/egl/xcb/demo/window_egl_demo.c" \
-	"window/egl/xcb/demo/window_egl_demo.h" \
+	"window/egl/xcb/demo/window_egl_xcb_demo.c" \
+	"window/egl/xcb/demo/window_egl_xcb_demo.h" \
 	"window/egl/xcb/window_egl_xcb.c" \
 	"window/egl/xcb/window_egl_xcb.h" \
 	"window/sdl2/demo/bg_rect.c" \

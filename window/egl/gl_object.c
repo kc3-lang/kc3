@@ -50,6 +50,7 @@ void gl_object_clean (s_gl_object *object)
 s_gl_object * gl_object_init (s_gl_object *object)
 {
   s_gl_object tmp = {0};
+  assert(object);
   assert(glGetError() == GL_NO_ERROR);
   glGenVertexArrays(1, &tmp.gl_vao);
   assert(glGetError() == GL_NO_ERROR);

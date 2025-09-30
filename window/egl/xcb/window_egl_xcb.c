@@ -86,6 +86,17 @@ static bool window_egl_xcb_setup (s_window_egl *window,
     err_puts("window_egl_xcb_setup: eglMakeCurrent failed");
     return false;
   }
+  const char *gl_version = (const char*) glGetString(GL_VERSION);
+  if (gl_version) {
+    err_write_1("OpenGL Version: ");
+    err_puts(gl_version);
+  }
+  glewExperimental = GL_TRUE;
+  GLenum glew_error = glewInit();
+  if (glew_error != GLEW_OK) {
+    err_write_1("window_egl_xcb_setup: glewInit failed: ");
+    err_puts((const char*)glewGetErrorString(glew_error));
+  }
   eglQuerySurface(window->egl_display, window->egl_surface,
                   EGL_WIDTH, &gl_w);
   eglQuerySurface(window->egl_display, window->egl_surface,
@@ -254,8 +265,6 @@ bool window_egl_xcb_run (s_window_egl *window)
     xcb_flush(conn);
   }
 done:
-  if (window->unload)
-    window->unload(window);
   xkb_state_unref(xkb_state);
   xkb_keymap_unref(xkb_keymap);
   xkb_context_unref(xkb_context);

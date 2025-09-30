@@ -54,6 +54,7 @@ dist:
 	${MAKE} -C xcb dist
 
 gdb_demo: debug
+	if ${HAVE_XCB}; then ${MAKE} -C xcb gdb_demo; fi
 
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/window/egl

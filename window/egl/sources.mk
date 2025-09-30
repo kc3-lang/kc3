@@ -25,6 +25,7 @@ SOURCES = \
 	"gl_vertex.c" \
 	"mat4.c" \
 	"sequence.c" \
+	"vec3.c" \
 	"window_egl.c" \
 
 OBJC_SOURCES = \
