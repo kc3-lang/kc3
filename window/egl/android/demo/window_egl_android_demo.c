@@ -39,20 +39,25 @@ static u8 window_egl_demo_render (s_window_egl *window);
 static u8 window_egl_demo_resize (s_window_egl *window, u64 w, u64 h);
 static void window_egl_demo_unload (s_window_egl *window);
 
-int main (int argc, char **argv)
+void android_main (struct android_app *app)
 {
+  int argc = 1;
+  char *argv[] = {"kc3_window_egl_android_demo", NULL};
   s_window_egl window;
   if (FT_Init_FreeType(&g_ft)) {
-    err_puts("main: failed to initialize FreeType");
-    return 1;
+    err_puts("android_main: failed to initialize FreeType");
+    return;
   }
   if (! kc3_init(NULL, &argc, &argv)) {
     err_puts("kc3_init");
-    return 1;
+    FT_Done_FreeType(g_ft);
+    return;
   }
   window_egl_init(&window, 50, 50, 800, 600,
                   "KC3.Window.EGL Android demo",
                   WINDOW_EGL_DEMO_SEQUENCE_COUNT);
+  // Set the android app
+  window.app = app;
   window.button = window_egl_demo_button;
   window.key    = window_egl_demo_key;
   window.load   = window_egl_demo_load;
@@ -61,14 +66,10 @@ int main (int argc, char **argv)
   window.unload = window_egl_demo_unload;
   if (! window_egl_android_run(&window)) {
     err_puts("window_egl_android_run -> false");
-    window_egl_clean(&window);
-    kc3_clean(NULL);
-    return g_kc3_exit_code;
   }
   window_egl_clean(&window);
   kc3_clean(NULL);
   FT_Done_FreeType(g_ft);
-  return 0;
 }
 
 u8 window_egl_demo_button (s_window_egl *window, u8 button,

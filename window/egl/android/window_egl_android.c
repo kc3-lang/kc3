@@ -91,28 +91,65 @@ static bool window_egl_android_setup (s_window_egl *window,
 
 bool window_egl_android_run (s_window_egl *window)
 {
-  ANativeWindow *native_window;
+  int events;
+  struct android_poll_source *source;
+
   assert(window);
-  native_window = window_egl_android_get_native_window(window);
-  if (! native_window) {
-    err_puts("window_egl_android_run: native window");
+
+  if (!window->app) {
+    err_puts("window_egl_android_run: no android_app");
     return false;
   }
-  if (! window_egl_android_setup(window, native_window)) {
-    err_puts("window_egl_android_run: setup");
+
+  window->app->userData = window;
+  window->app->onAppCmd = window_egl_android_handle_cmd;
+  window->app->onInputEvent = window_egl_android_handle_input;
+
+  // Initialize window if load callback exists
+  if (window->load && !window->load(window)) {
+    err_puts("window_egl_android_run: load failed");
     return false;
   }
-  // Main render loop would go here
-  // For now, just return success
+
+  // Main event loop
+  while (true) {
+    // Poll for events with timeout
+    while ((ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0) {
+      // Process this event
+      if (source != NULL) {
+        source->process(window->app, source);
+      }
+
+      // Check if we're exiting
+      if (window->app->destroyRequested != 0) {
+        if (window->unload)
+          window->unload(window);
+        return true;
+      }
+    }
+
+    // Render frame if we have a valid context
+    if (window->egl_display != EGL_NO_DISPLAY &&
+        window->egl_surface != EGL_NO_SURFACE) {
+      if (window->render && !window->render(window)) {
+        break; // Exit requested from render
+      }
+      eglSwapBuffers(window->egl_display, window->egl_surface);
+    }
+  }
+
+  if (window->unload)
+    window->unload(window);
   return true;
 }
 
 ANativeWindow *
 window_egl_android_get_native_window (s_window_egl *window)
 {
-  // This would typically be passed from Java via JNI
-  // For now, return NULL as placeholder
-  (void) window;
+  assert(window);
+  if (window->app && window->app->window) {
+    return window->app->window;
+  }
   return NULL;
 }
 
