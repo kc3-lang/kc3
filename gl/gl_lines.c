@@ -31,7 +31,7 @@ void gl_lines_clean (s_gl_lines *lines)
 {
   assert(lines);
   array_clean(&lines->vertex);
-  glDeleteVertexArrays(1, &lines->gl_vao);
+  /* glDeleteVertexArrays(1, &lines->gl_vao); // VAO not supported in GLES 2.0 */
   glDeleteBuffers(1, &lines->gl_vbo);
 }
 
@@ -39,7 +39,7 @@ s_gl_lines * gl_lines_init (s_gl_lines *lines)
 {
   s_gl_lines tmp = {0};
   assert(glGetError() == GL_NO_ERROR);
-  glGenVertexArrays(1, &tmp.gl_vao);
+  /* glGenVertexArrays(1, &tmp.gl_vao); // VAO not supported in GLES 2.0 */
   glGenBuffers(1, &tmp.gl_vbo);
   assert(glGetError() == GL_NO_ERROR);
   *lines = tmp;
@@ -52,9 +52,10 @@ void gl_lines_render (const s_gl_lines *lines, u32 lines_count)
   if (lines_count > lines->vertex.count / 2)
     lines_count = lines->vertex.count / 2;
   assert(glGetError() == GL_NO_ERROR);
-  glBindVertexArray(lines->gl_vao);
-  assert(glGetError() == GL_NO_ERROR);
-  glBindVertexArray(lines->gl_vao);
+  glBindBuffer(GL_ARRAY_BUFFER, lines->gl_vbo);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
+                        (void*)offsetof(s_gl_vertex, pos_x));
+  glEnableVertexAttribArray(0);
   assert(glGetError() == GL_NO_ERROR);
   glDrawArrays(GL_LINES, 0, lines_count * 2);
   assert(glGetError() == GL_NO_ERROR);
@@ -70,7 +71,6 @@ bool gl_lines_update (s_gl_lines *lines, u32 lines_count)
   assert(glGetError() == GL_NO_ERROR);
   if (lines_count > lines->vertex.count / 2)
     lines_count = lines->vertex.count / 2;
-  glBindVertexArray(lines->gl_vao);
   assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ARRAY_BUFFER, lines->gl_vbo);
   assert(glGetError() == GL_NO_ERROR);

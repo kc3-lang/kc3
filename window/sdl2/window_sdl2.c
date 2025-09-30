@@ -25,6 +25,7 @@ const char *g_gray_3_bits_utf8[] = {
 
 static bool g_window_sdl2_initialized = false;
 
+/* Debug callback not used in GLES 2.0
 static void gl_debug (GLenum source, GLenum type, GLuint id,
                       GLenum severity, GLsizei length,
                       const GLchar* message, const void* user_param)
@@ -44,6 +45,7 @@ static void gl_debug (GLenum source, GLenum type, GLuint id,
   else
     fprintf(stderr, "gl_debug_callback: %s\n", message);
 }
+*/
 
 void window_sdl2_clean (s_window_sdl2 *window)
 {
@@ -176,10 +178,10 @@ bool window_sdl2_run (s_window_sdl2 *window)
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                      SDL_GL_CONTEXT_PROFILE_CORE);
+                      SDL_GL_CONTEXT_PROFILE_ES);
   window->sdl_window = SDL_CreateWindow(window->title,
                                 window->x, window->y,
                                 window->w, window->h,
@@ -220,8 +222,10 @@ bool window_sdl2_run (s_window_sdl2 *window)
     err_puts("window_sdl2_run: failed to retrieve OpenGL version");
     version = "unknown";
   }
+  /* Debug output not available in GLES 2.0
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback((GLDEBUGPROC) gl_debug, NULL);
+  */
   int gl_w = window->w;
   int gl_h = window->h;
   SDL_GL_GetDrawableSize(window->sdl_window, &gl_w, &gl_h);

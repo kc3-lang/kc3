@@ -41,19 +41,19 @@ static bool png_info_to_gl_info (s32 png_color_type,
   switch (png_color_type) {
   case PNG_COLOR_TYPE_GRAY:
     *components = 1;
-    *gl_format = GL_RED;
+    *gl_format = GL_LUMINANCE;
     switch (png_bit_depth) {
-    case 8:  *gl_internal_format = GL_RED;  break;
-    case 16: *gl_internal_format = GL_RED; break;
+    case 8:  *gl_internal_format = GL_LUMINANCE;  break;
+    case 16: *gl_internal_format = GL_LUMINANCE; break;
     default: *gl_internal_format = 0; return false;
     }
     break;
   case PNG_COLOR_TYPE_GRAY_ALPHA:
     *components = 2;
-    *gl_format = GL_RG;
+    *gl_format = GL_LUMINANCE_ALPHA;
     switch (png_bit_depth) {
-    case 8:  *gl_internal_format = GL_RG;  break;
-    case 16: *gl_internal_format = GL_RG; break;
+    case 8:  *gl_internal_format = GL_LUMINANCE_ALPHA;  break;
+    case 16: *gl_internal_format = GL_LUMINANCE_ALPHA; break;
     default: *gl_internal_format = 0; return false;
     }
     break;

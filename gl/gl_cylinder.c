@@ -61,6 +61,4 @@ void gl_cylinder_render (const s_gl_cylinder *cylinder)
 {
   assert(cylinder);
   (void) cylinder;
-  glBegin(GL_POINTS);
-  glEnd();
 }

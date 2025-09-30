@@ -34,9 +34,6 @@ void gl_object_clean (s_gl_object *object)
 {
   assert(object);
   assert(glGetError() == GL_NO_ERROR);
-  if (object->gl_vao)
-    glDeleteVertexArrays(1, &object->gl_vao);
-  assert(glGetError() == GL_NO_ERROR);
   if (object->gl_vbo)
     glDeleteBuffers(1, &object->gl_vbo);
   assert(glGetError() == GL_NO_ERROR);
@@ -51,8 +48,6 @@ s_gl_object * gl_object_init (s_gl_object *object)
 {
   s_gl_object tmp = {0};
   assert(glGetError() == GL_NO_ERROR);
-  glGenVertexArrays(1, &tmp.gl_vao);
-  assert(glGetError() == GL_NO_ERROR);
   glGenBuffers(1, &tmp.gl_vbo);
   assert(glGetError() == GL_NO_ERROR);
   glGenBuffers(1, &tmp.gl_ebo);
@@ -66,9 +61,16 @@ void gl_object_render (const s_gl_object *object)
   GLenum error;
   assert(object);
   assert(glGetError() == GL_NO_ERROR);
-  glBindVertexArray(object->gl_vao);
-  assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
+                        (void*)offsetof(s_gl_vertex, pos_x));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
+                        (void*)offsetof(s_gl_vertex, normal_x));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
+                        (void*)offsetof(s_gl_vertex, tex_coord_x));
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(2);
   assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
   assert(glGetError() == GL_NO_ERROR);
@@ -88,7 +90,10 @@ void gl_object_render_points (const s_gl_object *object, u32 count)
   GLenum error;
   assert(object);
   assert(glGetError() == GL_NO_ERROR);
-  glBindVertexArray(object->gl_vao);
+  glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
+                        (void*)offsetof(s_gl_vertex, pos_x));
+  glEnableVertexAttribArray(0);
   assert(glGetError() == GL_NO_ERROR);
   glDrawArrays(GL_POINTS, 0, count);
   if ((error = glGetError()) != GL_NO_ERROR) {
@@ -103,8 +108,16 @@ void gl_object_render_triangles (const s_gl_object *object,
 {
   GLenum error;
   assert(object);
-  assert(glGetError() == GL_NO_ERROR);
-  glBindVertexArray(object->gl_vao);
+  glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
+                        (void*)offsetof(s_gl_vertex, pos_x));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
+                        (void*)offsetof(s_gl_vertex, normal_x));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
+                        (void*)offsetof(s_gl_vertex, tex_coord_x));
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(2);
   assert(glGetError() == GL_NO_ERROR);
   glDrawArrays(GL_TRIANGLES, 0, triangle_count * 3);
   if ((error = glGetError()) != GL_NO_ERROR) {
@@ -118,9 +131,10 @@ void gl_object_render_wireframe (const s_gl_object *object)
 {
   assert(object);
   assert(glGetError() == GL_NO_ERROR);
-  glBindVertexArray(object->gl_vao);
-  assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
+                        (void*)offsetof(s_gl_vertex, pos_x));
+  glEnableVertexAttribArray(0);
   assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
   assert(glGetError() == GL_NO_ERROR);
@@ -149,13 +163,12 @@ bool gl_object_update (s_gl_object *object)
 {
   //GLenum gl_error;
   assert(object);
-  assert(object->gl_vao);
   assert(object->gl_vbo);
   assert(object->gl_ebo);
   assert(object->vertex.data);
   assert(object->triangle.data);
   assert(glGetError() == GL_NO_ERROR);
-  glBindVertexArray(object->gl_vao);
+  /* glBindVertexArray(object->gl_vao); // VAO not supported in GLES 2.0 */
   assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
   assert(glGetError() == GL_NO_ERROR);

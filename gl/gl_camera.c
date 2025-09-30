@@ -16,13 +16,13 @@
 #include "mat4.h"
 
 static const char * g_gl_camera_vertex_shader_src =
-  "#version 330 core\n"
-  "layout (location = 0) in vec3 iPos;\n"
-  "layout (location = 1) in vec3 iNormal;\n"
-  "layout (location = 2) in vec2 iTexCoord;\n"
-  "out vec3 ioNormal;\n"
-  "out vec3 ioPos;\n"
-  "out vec2 ioTexCoord;\n"
+  "#version 100\n"
+  "attribute vec3 iPos;\n"
+  "attribute vec3 iNormal;\n"
+  "attribute vec2 iTexCoord;\n"
+  "varying vec3 ioNormal;\n"
+  "varying vec3 ioPos;\n"
+  "varying vec2 ioTexCoord;\n"
   "uniform mat4 uProjectionMatrix;\n"
   "uniform mat4 uViewMatrix;\n"
   "uniform mat4 uModelMatrix;\n"
@@ -35,12 +35,12 @@ static const char * g_gl_camera_vertex_shader_src =
   "}\n";
 
 static const char * g_gl_camera_fragment_shader_src =
-  "#version 330 core\n"
+  "#version 100\n"
+  "precision highp float;\n"
   "const float PI = 3.141592653;\n"
-  "in vec3 ioNormal;\n"
-  "in vec3 ioPos;\n"
-  "in vec2 ioTexCoord;\n"
-  "out vec4 oColor;\n"
+  "varying vec3 ioNormal;\n"
+  "varying vec3 ioPos;\n"
+  "varying vec2 ioTexCoord;\n"
   "uniform bool uEnableTex2D;\n"
   "uniform sampler2D uTex2D;\n"
   "uniform vec3 uAmbiantLightColor;\n"
@@ -49,19 +49,19 @@ static const char * g_gl_camera_fragment_shader_src =
   "uniform vec3 uLightColor[16];\n"
   "void main() {\n"
   "  vec4 ambiantColor;"
-  "  vec4 texColor = texture(uTex2D, ioTexCoord);\n"
+  "  vec4 texColor = texture2D(uTex2D, ioTexCoord);\n"
   "  if (uEnableTex2D)\n"
-  "    oColor = texColor;\n"
+  "    gl_FragColor = texColor;\n"
   "  else\n"
-  "    oColor = vec4(1.0f);\n"
-  "  ambiantColor = oColor * vec4(uAmbiantLightColor, 1.0f);\n"
-  "  oColor = ambiantColor;\n"
+  "    gl_FragColor = vec4(1.0);\n"
+  "  ambiantColor = gl_FragColor * vec4(uAmbiantLightColor, 1.0);\n"
+  "  gl_FragColor = ambiantColor;\n"
   "  //oColor = vec4(vec3(gl_FragCoord.z), 1.0);\n"
   "}\n";
 
 /*
 static const char * g_gl_camera_vertex_shader_src =
-  "#version 330 core\n"
+  "#version 100\n"
   "layout (location = 0) in vec3 iPos;\n"
   "layout (location = 1) in vec3 iNormal;\n"
   "layout (location = 2) in vec2 iTexCoord;\n"
@@ -81,12 +81,12 @@ static const char * g_gl_camera_vertex_shader_src =
   "}\n";
 
 static const char * g_gl_camera_fragment_shader_src =
-  "#version 330 core\n"
+  "#version 100\n"
+  "precision highp float;\n"
   "const float PI = 3.141592653;\n"
-  "in vec3 ioNormal;\n"
-  "in vec3 ioPos;\n"
-  "in vec2 ioTexCoord;\n"
-  "out vec4 oColor;\n"
+  "varying vec3 ioNormal;\n"
+  "varying vec3 ioPos;\n"
+  "varying vec2 ioTexCoord;\n"
   "uniform bool uEnableTex2D;\n"
   "uniform sampler2D uTex2D;\n"
   "uniform int uLightCount;\n"
@@ -143,17 +143,17 @@ static const char * g_gl_camera_fragment_shader_src =
   "  return (diffuseBrdf + PI * specBrdf) * lightI * nDotL;\n"
   "}\n"
   "void main() {\n"
-  "  vec4 texColor = texture(uTex2D, ioTexCoord);\n"
-  "  oColor = vec4(uMaterial.Color, 1.0f);\n"
+  "  vec4 texColor = texture2D(uTex2D, ioTexCoord);\n"
+  "  gl_FragColor = vec4(uMaterial.Color, 1.0);\n"
   "  if (uEnableTex2D)\n"
-  "    oColor *= texColor;\n"
+  "    gl_FragColor *= texColor;\n"
   "  vec3 sum = vec3(0);\n"
   "  vec3 n = normalize(ioNormal);\n"
   "  for (int i = 0; i < uLightCount; i++) {\n"
   "    sum = sum + microfacetModel(i, ioPos, n);\n"
   "  }\n"
-  "  sum = pow(sum, vec3(1.0f / 2.2f));\n"
-  "  oColor *= vec4(sum, 1.0);\n"
+  "  sum = pow(sum, vec3(1.0 / 2.2));\n"
+  "  gl_FragColor *= vec4(sum, 1.0);\n"
   "}\n";
 */
 
@@ -346,7 +346,7 @@ void gl_camera_render (s_gl_camera *camera)
   assert(glGetError() == GL_NO_ERROR);
   glDisable(GL_CULL_FACE);
   assert(glGetError() == GL_NO_ERROR);
-  glDepthRange(camera->clip_z_near, camera->clip_z_far);
+  glDepthRangef(camera->clip_z_near, camera->clip_z_far);
   assert(glGetError() == GL_NO_ERROR);
 }
 

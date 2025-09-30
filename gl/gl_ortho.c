@@ -18,12 +18,12 @@
 #include "gl_square.h"
 
 static const char * g_gl_ortho_vertex_shader_src =
-  "#version 330 core\n"
-  "layout (location = 0) in vec3 iPos;\n"
-  "layout (location = 1) in vec3 iNormal;\n"
-  "layout (location = 2) in vec2 iTexCoord;\n"
-  "out vec3 ioFragNormal;\n"
-  "out vec2 ioTexCoord;\n"
+  "#version 100\n"
+  "attribute vec3 iPos;\n"
+  "attribute vec3 iNormal;\n"
+  "attribute vec2 iTexCoord;\n"
+  "varying vec3 ioFragNormal;\n"
+  "varying vec2 ioTexCoord;\n"
   "uniform mat4 uProjectionMatrix;\n"
   "uniform mat4 uViewMatrix;\n"
   "uniform mat4 uModelMatrix;\n"
@@ -31,28 +31,27 @@ static const char * g_gl_ortho_vertex_shader_src =
   "  gl_Position = vec4(uProjectionMatrix * uViewMatrix * \n"
   "                     uModelMatrix * vec4(iPos, 1.0));\n"
   "  ioTexCoord = iTexCoord;\n"
-  "  ioFragNormal = vec3(mat3(transpose(inverse(uModelMatrix))) *\n"
-  "                      iNormal);\n"
+  "  ioFragNormal = vec3(mat3(uModelMatrix) * iNormal);\n"
   "}\n";
 
 static const char * g_gl_ortho_fragment_shader_src =
-  "#version 330 core\n"
-  "in vec3 ioFragNormal;\n"
-  "in vec2 ioTexCoord;\n"
-  "out vec4 oFragColor;\n"
+  "#version 100\n"
+  "precision highp float;\n"
+  "varying vec3 ioFragNormal;\n"
+  "varying vec2 ioTexCoord;\n"
   "uniform vec4 uColor;\n"
   "uniform bool uEnableTex2D;\n"
   "uniform sampler2D uTex2D;\n"
   "void main() {\n"
-  "  vec4 texColor = texture(uTex2D, ioTexCoord);\n"
+  "  vec4 texColor = texture2D(uTex2D, ioTexCoord);\n"
   "  if (uEnableTex2D) {\n"
-  "    oFragColor = vec4(texColor[0] * uColor[0],\n"
+  "    gl_FragColor = vec4(texColor[0] * uColor[0],\n"
   "                      texColor[1] * uColor[1],\n"
   "                      texColor[2] * uColor[2],\n"
   "                      texColor[3] * uColor[3]);\n"
   "  }\n"
   "  else\n"
-  "    oFragColor = uColor;\n"
+  "    gl_FragColor = uColor;\n"
   "}\n";
 
 void gl_ortho_bind_texture (s_gl_ortho *ortho, GLuint texture)
@@ -242,7 +241,7 @@ void gl_ortho_render (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   glUniform4f(ortho->gl_color_loc, 1.0f, 1.0f, 1.0f, 1.0f);
   assert(glGetError() == GL_NO_ERROR);
-  glDepthRange(ortho->clip_z_near, ortho->clip_z_far);
+  glDepthRangef(ortho->clip_z_near, ortho->clip_z_far);
   assert(glGetError() == GL_NO_ERROR);
 }
 
