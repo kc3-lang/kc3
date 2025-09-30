@@ -18,8 +18,7 @@
 #include <android/looper.h>
 #include <android/native_activity.h>
 #include "../window_egl.h"
-
-typedef struct android_app *p_android_app;
+#include "types.h"
 
 bool window_egl_android_run (s_window_egl *window);
 

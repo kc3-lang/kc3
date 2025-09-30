@@ -21,6 +21,8 @@
 #include "config.h"
 #include "../types.h"
 
+typedef struct android_app *p_android_app;
+
 typedef struct window_egl_android s_window_egl_android;
 
 /* return false to break event loop */
@@ -56,30 +58,31 @@ struct sequence_egl_android {
 
 /* Subtype of s_window. See libkc3/window/types.h */
 struct window_egl_android {
-  s64                 x;
-  s64                 y;
-  u64                 w;
-  u64                 h;
-  bool                fullscreen;
+  s64                         x;
+  s64                         y;
+  u64                         w;
+  u64                         h;
+  bool                        fullscreen;
   f_window_egl_android_button button;
   f_window_egl_android_key    key;
   f_window_egl_android_load   load;
   f_window_egl_android_motion motion;
   f_window_egl_android_render render;
-  EGLContext          egl_context;
+  EGLContext                  egl_context;
   f_window_egl_android_resize resize;
   s_sequence_egl_android     *seq;
   s_sequence_egl_android     *sequence;
-  u32                 sequence_count;
-  u32                 sequence_pos;
-  s_tag               tag; // TODO: move sequence to tag
-  const char         *title;
+  u32                         sequence_count;
+  u32                         sequence_pos;
+  s_tag                       tag;
+  const char                 *title;
   f_window_egl_android_unload unload;
-  u64                 gl_w;
-  u64                 gl_h;
-  EGLDisplay          egl_display;
-  EGLConfig           egl_config;
-  EGLSurface          egl_surface;
+  u64                         gl_w;
+  u64                         gl_h;
+  EGLDisplay                  egl_display;
+  EGLConfig                   egl_config;
+  EGLSurface                  egl_surface;
+  p_android_app               app;
 };
 
 #endif /* LIBKC3_WINDOW_EGL_ANDROID_TYPES_H */
