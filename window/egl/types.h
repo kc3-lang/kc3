@@ -19,9 +19,9 @@
 #define LIBKC3_WINDOW_EGL_TYPES_H
 
 #include <EGL/egl.h>
-#include <libkc3/types.h>
-#include "../types.h"
+#include "../../libkc3/types.h"
 #include "../../gl/types.h"
+#include "../types.h"
 
 typedef struct sequence_egl s_sequence_egl;
 typedef struct window_egl   s_window_egl;

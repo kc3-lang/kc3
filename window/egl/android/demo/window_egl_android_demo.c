@@ -12,16 +12,17 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <libkc3/kc3.h>
-#include "../../../window.h"
+#include "../../../../libkc3/kc3.h"
 #include "../../../../gl/gl_font.h"
 #include "../../../../gl/gl_ortho.h"
 #include "../../../../gl/gl_text.h"
 #include "../../../../gl/mat4.h"
+#include "../../../window.h"
 #include "../../window_egl.h"
 #include "../../sequence.h"
 #include "../window_egl_android.h"
 #include "../../demo/bg_rect.h"
+#include "window_egl_android_demo.h"
 
 #define WINDOW_EGL_DEMO_SEQUENCE_COUNT 1
 

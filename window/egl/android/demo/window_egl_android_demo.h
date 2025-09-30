@@ -13,6 +13,6 @@
 #ifndef LIBKC3_WINDOW_EGL_ANDROID_DEMO_H
 #define LIBKC3_WINDOW_EGL_ANDROID_DEMO_H
 
-#include "../types.h"
+#include "../../types.h"
 
 #endif /* LIBKC3_WINDOW_EGL_ANDROID_DEMO_H */
