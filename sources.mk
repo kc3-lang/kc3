@@ -11,6 +11,7 @@ KC3_CONFIGURES = \
 	"fs/fuse/sources.sh" \
 	"fs/fuse/update_sources" \
 	"fs/update_sources" \
+	"gl/update_sources" \
 	"gtk4/configure" \
 	"gtk4/sources.sh" \
 	"gtk4/update_sources" \
@@ -189,6 +190,41 @@ KC3_C_SOURCES = \
 	"fs/OpenBSD/kc3fs.h" \
 	"fs/fuse/mount_kc3fs.c" \
 	"fs/fuse/types.h" \
+	"gl/gl_box.c" \
+	"gl/gl_box.h" \
+	"gl/gl_camera.c" \
+	"gl/gl_camera.h" \
+	"gl/gl_cylinder.c" \
+	"gl/gl_cylinder.h" \
+	"gl/gl_deprecated.c" \
+	"gl/gl_deprecated.h" \
+	"gl/gl_font.c" \
+	"gl/gl_font.h" \
+	"gl/gl_lines.c" \
+	"gl/gl_lines.h" \
+	"gl/gl_object.c" \
+	"gl/gl_object.h" \
+	"gl/gl_ortho.c" \
+	"gl/gl_ortho.h" \
+	"gl/gl_sphere.c" \
+	"gl/gl_sphere.h" \
+	"gl/gl_sprite.c" \
+	"gl/gl_sprite.h" \
+	"gl/gl_square.c" \
+	"gl/gl_square.h" \
+	"gl/gl_text.c" \
+	"gl/gl_text.h" \
+	"gl/gl_triangle.c" \
+	"gl/gl_triangle.h" \
+	"gl/gl_vertex.c" \
+	"gl/gl_vertex.h" \
+	"gl/gl_vtext.c" \
+	"gl/gl_vtext.h" \
+	"gl/mat4.c" \
+	"gl/mat4.h" \
+	"gl/types.h" \
+	"gl/vec3.c" \
+	"gl/vec3.h" \
 	"gtk4/action_map.c" \
 	"gtk4/action_map.h" \
 	"gtk4/application.c" \
@@ -1015,28 +1051,9 @@ KC3_C_SOURCES = \
 	"window/cairo/xcb/demo/window_cairo_xcb_demo.c" \
 	"window/cairo/xcb/window_cairo_xcb.c" \
 	"window/cairo/xcb/window_cairo_xcb.h" \
-	"window/egl/gl_deprecated.c" \
-	"window/egl/gl_deprecated.h" \
-	"window/egl/gl_font.c" \
-	"window/egl/gl_font.h" \
-	"window/egl/gl_object.c" \
-	"window/egl/gl_object.h" \
-	"window/egl/gl_ortho.c" \
-	"window/egl/gl_ortho.h" \
-	"window/egl/gl_square.c" \
-	"window/egl/gl_square.h" \
-	"window/egl/gl_text.c" \
-	"window/egl/gl_text.h" \
-	"window/egl/gl_triangle.c" \
-	"window/egl/gl_triangle.h" \
-	"window/egl/gl_vertex.c" \
-	"window/egl/gl_vertex.h" \
-	"window/egl/mat4.c" \
-	"window/egl/mat4.h" \
 	"window/egl/sequence.c" \
 	"window/egl/sequence.h" \
 	"window/egl/types.h" \
-	"window/egl/vec3.h" \
 	"window/egl/window_egl.c" \
 	"window/egl/window_egl.h" \
 	"window/egl/xcb/demo/bg_rect.c" \
@@ -1074,44 +1091,10 @@ KC3_C_SOURCES = \
 	"window/sdl2/dvec2.h" \
 	"window/sdl2/dvec3.c" \
 	"window/sdl2/dvec3.h" \
-	"window/sdl2/gl_box.c" \
-	"window/sdl2/gl_box.h" \
-	"window/sdl2/gl_camera.c" \
-	"window/sdl2/gl_camera.h" \
-	"window/sdl2/gl_cylinder.c" \
-	"window/sdl2/gl_cylinder.h" \
-	"window/sdl2/gl_deprecated.c" \
-	"window/sdl2/gl_deprecated.h" \
-	"window/sdl2/gl_font.c" \
-	"window/sdl2/gl_font.h" \
-	"window/sdl2/gl_lines.c" \
-	"window/sdl2/gl_lines.h" \
-	"window/sdl2/gl_object.c" \
-	"window/sdl2/gl_object.h" \
-	"window/sdl2/gl_ortho.c" \
-	"window/sdl2/gl_ortho.h" \
-	"window/sdl2/gl_sphere.c" \
-	"window/sdl2/gl_sphere.h" \
-	"window/sdl2/gl_sprite.c" \
-	"window/sdl2/gl_sprite.h" \
-	"window/sdl2/gl_square.c" \
-	"window/sdl2/gl_square.h" \
-	"window/sdl2/gl_text.c" \
-	"window/sdl2/gl_text.h" \
-	"window/sdl2/gl_triangle.c" \
-	"window/sdl2/gl_triangle.h" \
-	"window/sdl2/gl_vertex.c" \
-	"window/sdl2/gl_vertex.h" \
-	"window/sdl2/gl_vtext.c" \
-	"window/sdl2/gl_vtext.h" \
 	"window/sdl2/mat3.h" \
-	"window/sdl2/mat4.c" \
-	"window/sdl2/mat4.h" \
 	"window/sdl2/types.h" \
 	"window/sdl2/vec2.c" \
 	"window/sdl2/vec2.h" \
-	"window/sdl2/vec3.c" \
-	"window/sdl2/vec3.h" \
 	"window/sdl2/window_sdl2.c" \
 	"window/sdl2/window_sdl2.h" \
 	"window/types.h" \

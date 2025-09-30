@@ -12,7 +12,6 @@
  */
 #include <libkc3/kc3.h>
 #include "gl_text.h"
-#include "window_egl.h"
 
 void gl_text_clean (s_gl_text *text)
 {
@@ -28,7 +27,7 @@ s_gl_text * gl_text_init (s_gl_text *text, const s_gl_font *font)
   glGenTextures(1, &tmp.texture);
   assert(glGetError() == GL_NO_ERROR);
   assert(tmp.texture);
-  *text = tmp;
+  *text = tmp;  
   return text;
 }
 

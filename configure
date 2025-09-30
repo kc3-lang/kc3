@@ -62,24 +62,25 @@ fi
 echo "HAVE_GTK4 = $HAVE_GTK4" >> ${CONFIG_MK}
 
 SUBDIRS="
-    libtommath
-    ucd2c
-    libkc3
-    ikc3
-    kc3s
     ekc3
     event
+    fs
+    gl
+    http
+    httpd
+    ikc3
     json
+    kc3s
+    libkc3
+    libtommath
     markdown
     pdf
     smtp
     socket
-    tls
-    http
-    httpd
     test
+    tls
+    ucd2c
     window
-    fs
 "
 
 if $HAVE_GTK4; then

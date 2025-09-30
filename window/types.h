@@ -18,34 +18,24 @@
 #ifndef LIBKC3_WINDOW_TYPES_H
 #define LIBKC3_WINDOW_TYPES_H
 
-#include <libkc3/types.h>
+#include "../libkc3/types.h"
 
 typedef struct window s_window;
 
 /* return false to break event loop */
 typedef bool (*f_window_button) (s_window *window, u8 button, s64 x,
                                  s64 y);
-
-/* return false to break event loop */
 typedef bool (*f_window_key) (s_window *window, u32 keysym);
-
-/* return false to break event loop */
 typedef bool (*f_window_load) (s_window *window);
-
-/* return false to break event loop */
 typedef bool (*f_window_motion) (s_window *window, s64 x, s64 y);
-
-/* return false to break event loop */
 typedef bool (*f_window_render) (s_window *window);
-
-/* return false to break event loop */
 typedef bool (*f_window_resize) (s_window *window, u64 w, u64 h);
 
 typedef void (*f_window_unload) (s_window *window);
 
 /* To subtype make a copy of this struct while replacing
  * pointer types (including pointer to function types).
- * E.g. see libkc3/window/cairo/types.h */
+ * E.g. see window/egl/types.h */
 struct window {
   s64             x;
   s64             y;
@@ -63,7 +53,7 @@ struct window {
   s_sequence     *sequence;
   u32             sequence_count;
   u32             sequence_pos;
-  s_tag           tag; // TODO: move sequence to tag
+  s_tag           tag;
   const char     *title;
   f_window_unload unload;
 };

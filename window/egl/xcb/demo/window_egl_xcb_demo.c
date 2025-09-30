@@ -14,10 +14,10 @@
 #include <stdlib.h>
 #include <libkc3/kc3.h>
 #include "../../../window.h"
-#include "../../gl_font.h"
-#include "../../gl_ortho.h"
-#include "../../gl_text.h"
-#include "../../mat4.h"
+#include "../../../../gl/gl_font.h"
+#include "../../../../gl/gl_ortho.h"
+#include "../../../../gl/gl_text.h"
+#include "../../../../gl/mat4.h"
 #include "../../window_egl.h"
 #include "../../sequence.h"
 #include "../window_egl_xcb.h"
