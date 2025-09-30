@@ -13,8 +13,8 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <xkbcommon/xkbcommon.h>
-#include <libkc3/io.h>
-#include <libkc3/tag.h>
+#include "../../libkc3/io.h"
+#include "../../libkc3/tag.h"
 #include "../window.h"
 #include "window_egl.h"
 
