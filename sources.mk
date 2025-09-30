@@ -83,7 +83,13 @@ KC3_CONFIGURES = \
 	"window/cairo/xcb/sources.sh" \
 	"window/cairo/xcb/update_sources" \
 	"window/configure" \
+	"window/egl/android/configure" \
+	"window/egl/android/demo/update_sources" \
+	"window/egl/android/update_sources" \
 	"window/egl/configure" \
+	"window/egl/demo/configure" \
+	"window/egl/demo/sources.sh" \
+	"window/egl/demo/update_sources" \
 	"window/egl/sources.sh" \
 	"window/egl/update_sources" \
 	"window/egl/xcb/configure" \
@@ -169,6 +175,9 @@ KC3_MAKEFILES = \
 	"window/cairo/xcb/demo/sources.mk" \
 	"window/cairo/xcb/sources.mk" \
 	"window/egl/Makefile" \
+	"window/egl/android/Makefile" \
+	"window/egl/demo/Makefile" \
+	"window/egl/demo/sources.mk" \
 	"window/egl/sources.mk" \
 	"window/egl/xcb/Makefile" \
 	"window/egl/xcb/demo/Makefile" \
@@ -1066,13 +1075,15 @@ KC3_C_SOURCES = \
 	"window/cairo/xcb/demo/window_cairo_xcb_demo.c" \
 	"window/cairo/xcb/window_cairo_xcb.c" \
 	"window/cairo/xcb/window_cairo_xcb.h" \
+	"window/egl/android/window_egl_android.c" \
+	"window/egl/android/window_egl_android.h" \
+	"window/egl/demo/bg_rect.c" \
+	"window/egl/demo/bg_rect.h" \
 	"window/egl/sequence.c" \
 	"window/egl/sequence.h" \
 	"window/egl/types.h" \
 	"window/egl/window_egl.c" \
 	"window/egl/window_egl.h" \
-	"window/egl/xcb/demo/bg_rect.c" \
-	"window/egl/xcb/demo/bg_rect.h" \
 	"window/egl/xcb/demo/window_egl_xcb_demo.c" \
 	"window/egl/xcb/demo/window_egl_xcb_demo.h" \
 	"window/egl/xcb/window_egl_xcb.c" \
