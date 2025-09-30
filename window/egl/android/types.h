@@ -21,10 +21,13 @@
 #include "config.h"
 #include "../types.h"
 
+/* Struct types. */
+typedef struct window_egl_android   s_window_egl_android;
+
+/* Pointer types. */
 typedef struct android_app *p_android_app;
 
-typedef struct window_egl_android s_window_egl_android;
-
+/* Function types. */
 /* return false to break event loop */
 typedef bool (*f_window_egl_android_button)
 (s_window_egl_android *window, u8 button, s64 x, s64 y);
@@ -70,8 +73,8 @@ struct window_egl_android {
   f_window_egl_android_render render;
   EGLContext                  egl_context;
   f_window_egl_android_resize resize;
-  s_sequence_egl_android     *seq;
-  s_sequence_egl_android     *sequence;
+  s_sequence                 *seq;
+  s_sequence                 *sequence;
   u32                         sequence_count;
   u32                         sequence_pos;
   s_tag                       tag;
