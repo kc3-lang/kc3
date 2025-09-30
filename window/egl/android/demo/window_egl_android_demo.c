@@ -138,7 +138,9 @@ u8 window_egl_demo_load (s_window_egl *window)
     return false;
   }
   sequence_egl_init(window->sequence, 8.0, "01. Background rect",
-                    bg_rect_load, bg_rect_render, bg_rect_unload, window);
+                    (f_sequence) bg_rect_load,
+                    (f_sequence) bg_rect_render,
+                    (f_sequence) bg_rect_unload, window);
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }
