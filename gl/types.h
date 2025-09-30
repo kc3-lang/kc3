@@ -128,7 +128,6 @@ struct gl_font {
 
 struct gl_lines {
   s_array vertex;
-  GLuint gl_vao;
   GLuint gl_vbo;
 };
 

@@ -65,7 +65,6 @@ bool gl_lines_update (s_gl_lines *lines, u32 lines_count)
 {
   //GLenum gl_error;
   assert(lines);
-  assert(lines->gl_vao);
   assert(lines->gl_vbo);
   assert(lines->vertex.data);
   assert(glGetError() == GL_NO_ERROR);
