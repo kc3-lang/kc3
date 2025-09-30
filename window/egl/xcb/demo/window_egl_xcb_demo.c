@@ -171,6 +171,17 @@ bool window_egl_demo_render (s_window_egl *window)
   gl_ortho_text_render_outline(&g_ortho, &g_text_seq_title,
                                20.0f, 30.0f, text_color,
                                text_color + 1);
+  mat4_init_identity(&g_ortho.model_matrix);
+  glDisable(GL_BLEND);
+  gl_ortho_bind_texture(&g_ortho, 0);
+  gl_ortho_color(&g_ortho, 1.0f, 1.0f, 1.0f, 1.0f);
+  gl_ortho_rect(&g_ortho, 19, 11,
+                (window->w - 40.0) * seq->t / seq->duration + 2,
+                4);
+  gl_ortho_color(&g_ortho, 0.0f, 0.0f, 0.0f, 1.0f);
+  gl_ortho_rect(&g_ortho, 20, 12,
+                (window->w - 40.0) * seq->t / seq->duration,
+                2);
   char fps[32];
   snprintf(fps, sizeof(fps), "%.1f", (f64) seq->frame / seq->t);
   mat4_init_identity(&g_ortho.model_matrix);
