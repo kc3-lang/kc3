@@ -21,10 +21,10 @@
 
 bool window_egl_run (s_window_egl *window)
 {
-  return window_egl_android_run(window);
+  return window_egl_android_run((s_window_egl_android *) window);
 }
 
-static bool window_egl_android_setup (s_window_egl *window,
+static bool window_egl_android_setup (s_window_egl_android *window,
                                       ANativeWindow *native_window)
 {
   EGLint major, minor;
@@ -89,55 +89,41 @@ static bool window_egl_android_setup (s_window_egl *window,
   return true;
 }
 
-bool window_egl_android_run (s_window_egl *window)
+bool window_egl_android_run (s_window_egl_android *window)
 {
   int events;
   struct android_poll_source *source;
-
   assert(window);
-
-  if (!window->app) {
+  if (! window->app) {
     err_puts("window_egl_android_run: no android_app");
     return false;
   }
-
   window->app->userData = window;
   window->app->onAppCmd = window_egl_android_handle_cmd;
   window->app->onInputEvent = window_egl_android_handle_input;
-
-  // Initialize window if load callback exists
   if (window->load && !window->load(window)) {
     err_puts("window_egl_android_run: load failed");
     return false;
   }
-
-  // Main event loop
   while (true) {
-    // Poll for events with timeout
     while ((ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0) {
-      // Process this event
       if (source != NULL) {
         source->process(window->app, source);
       }
-
-      // Check if we're exiting
       if (window->app->destroyRequested != 0) {
         if (window->unload)
           window->unload(window);
         return true;
       }
     }
-
-    // Render frame if we have a valid context
     if (window->egl_display != EGL_NO_DISPLAY &&
         window->egl_surface != EGL_NO_SURFACE) {
-      if (window->render && !window->render(window)) {
-        break; // Exit requested from render
+      if (window->render && ! window->render(window)) {
+        break;
       }
       eglSwapBuffers(window->egl_display, window->egl_surface);
     }
   }
-
   if (window->unload)
     window->unload(window);
   return true;
@@ -180,10 +166,10 @@ static u32 android_keycode_to_kc3 (int32_t android_keycode)
   }
 }
 
-int32_t window_egl_android_handle_input (struct android_app *app,
+int32_t window_egl_android_handle_input (p_android_app app,
                                          AInputEvent *event)
 {
-  s_window_egl *window = (s_window_egl *) app->userData;
+  s_window_egl_android *window = (s_window_egl_android *) app->userData;
   if (!window)
     return 0;
 
@@ -218,22 +204,18 @@ int32_t window_egl_android_handle_input (struct android_app *app,
   return 0; // Event not handled
 }
 
-void window_egl_android_handle_cmd (struct android_app *app, int32_t cmd)
+void window_egl_android_handle_cmd (p_android_app app, int32_t cmd)
 {
-  s_window_egl *window = (s_window_egl *) app->userData;
-
+  s_window_egl_android *window = (s_window_egl_android *) app->userData;
   switch (cmd) {
   case APP_CMD_INIT_WINDOW:
     if (app->window && window) {
-      // Initialize EGL context when window is ready
-      if (!window_egl_android_setup(window, app->window)) {
+      if (! window_egl_android_setup(window, app->window)) {
         err_puts("window_egl_android_handle_cmd: setup failed");
       }
     }
     break;
-
   case APP_CMD_TERM_WINDOW:
-    // Clean up EGL context
     if (window) {
       if (window->egl_display != EGL_NO_DISPLAY) {
         eglMakeCurrent(window->egl_display, EGL_NO_SURFACE,
@@ -248,7 +230,6 @@ void window_egl_android_handle_cmd (struct android_app *app, int32_t cmd)
       }
     }
     break;
-
   case APP_CMD_WINDOW_RESIZED:
     if (window && window->resize) {
       int32_t w = ANativeWindow_getWidth(app->window);
@@ -256,7 +237,6 @@ void window_egl_android_handle_cmd (struct android_app *app, int32_t cmd)
       window->resize(window, w, h);
     }
     break;
-
   default:
     break;
   }
