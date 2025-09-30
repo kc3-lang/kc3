@@ -31,7 +31,7 @@ all:
 	${MAKE} -C test all
 	${MAKE} -C gl all
 	${MAKE} -C window all
-	${MAKE} -C gtk4 all
+	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 all; fi
 #	${MAKE} -C fs all
 
 include config.mk
@@ -57,7 +57,7 @@ asan:
 	${MAKE} -C test asan
 	${MAKE} -C gl asan
 	${MAKE} -C window asan
-	${MAKE} -C gtk4 asan
+	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 asan; fi
 #	${MAKE} -C fs asan
 
 assets:
@@ -84,7 +84,7 @@ build:
 	${MAKE} -C test build
 	${MAKE} -C gl build
 	${MAKE} -C window build
-	${MAKE} -C gtk4 build
+	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 build; fi
 #	${MAKE} -C fs build
 
 clean:
@@ -152,7 +152,7 @@ cov:
 	${MAKE} -C test cov
 	${MAKE} -C gl cov
 	${MAKE} -C window cov
-	${MAKE} -C gtk4 cov
+	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 cov; fi
 #	${MAKE} -C fs cov
 
 debug:
@@ -175,7 +175,7 @@ debug:
 	${MAKE} -C test debug
 	${MAKE} -C gl debug
 	${MAKE} -C window debug
-	${MAKE} -C gtk4 debug
+	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 debug; fi
 #	${MAKE} -C fs debug
 
 demo: build
@@ -375,7 +375,7 @@ gcovr:
 	${MAKE} -C httpd gcovr
 	${MAKE} -C test gcovr
 	${MAKE} -C window gcovr
-	${MAKE} -C gtk4 gcovr
+	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 gcovr; fi
 #	${MAKE} -C fs gcovr
 	if [ -d "$$HOME/Downloads/kc3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
@@ -603,6 +603,7 @@ gen:
 	${MAKE} -C libkc3 gen
 
 gtk4:
+	${HAVE_GTK4} || echo "please install gtk+4"
 	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath build
@@ -615,6 +616,7 @@ gtk4:
 	${MAKE} -C gtk4 build
 
 gtk4_asan:
+	${HAVE_GTK4} || echo "please install gtk+4"
 	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath asan
@@ -627,6 +629,7 @@ gtk4_asan:
 	${MAKE} -C gtk4 asan
 
 gtk4_cov:
+	${HAVE_GTK4} || echo "please install gtk+4"
 	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath cov
@@ -639,6 +642,7 @@ gtk4_cov:
 	${MAKE} -C gtk4 cov
 
 gtk4_debug:
+	${HAVE_GTK4} || echo "please install gtk+4"
 	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath debug
@@ -770,7 +774,7 @@ install: lib_links_debug
 	${MAKE} -C http install
 	${MAKE} -C httpd install
 	${MAKE} -C window install
-	${MAKE} -C gtk4 install
+	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 install; fi
 #	${MAKE} -C fs install
 	${MAKE} install_lib_links
 

@@ -51,9 +51,6 @@ elif uname -s | grep -qi mingw; then
 fi
 echo "ARCH = $ARCH" >> ${CONFIG_MK}
 
-update_config_mk
-env_reset
-
 if pkg-config gtk4; then
     HAVE_GTK4=true
 else
@@ -61,26 +58,29 @@ else
 fi
 echo "HAVE_GTK4 = $HAVE_GTK4" >> ${CONFIG_MK}
 
+update_config_mk
+env_reset
+
 SUBDIRS="
-    ekc3
-    event
-    fs
-    gl
-    http
-    httpd
-    ikc3
-    json
-    kc3s
-    libkc3
-    libtommath
-    markdown
-    pdf
-    smtp
-    socket
-    test
-    tls
-    ucd2c
-    window
+ekc3
+event
+fs
+gl
+http
+httpd
+ikc3
+json
+kc3s
+libkc3
+libtommath
+markdown
+pdf
+smtp
+socket
+test
+tls
+ucd2c
+window
 "
 
 if $HAVE_GTK4; then
