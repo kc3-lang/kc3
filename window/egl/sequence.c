@@ -30,8 +30,7 @@ s_sequence_egl * sequence_egl_init (s_sequence_egl *sequence,
   s_sequence_egl tmp = {0};
   assert(sequence);
   sequence_init((s_sequence *) &tmp, duration, title,
-                (f_sequence) load, (f_sequence) render,
-                (f_sequence) unload, (s_window *) window);
+                load, render, unload, (s_window *) window);
   *sequence = tmp;
   return sequence;
 }

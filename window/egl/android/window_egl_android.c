@@ -46,45 +46,45 @@ static bool window_egl_android_setup (s_window_egl *window,
 
   window->egl_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
   if (window->egl_display == EGL_NO_DISPLAY) {
-    fprintf(stderr, "window_egl_android_setup: eglGetDisplay failed\n");
+    err_puts("window_egl_android_setup: eglGetDisplay");
     return false;
   }
 
   if (!eglInitialize(window->egl_display, &major, &minor)) {
-    fprintf(stderr, "window_egl_android_setup: eglInitialize failed\n");
+    err_puts("window_egl_android_setup: eglInitialize");
     return false;
   }
 
-  printf("EGL version: %d.%d\n", major, minor);
+  io_printf("EGL version: %d.%d\n", major, minor);
 
   if (!eglChooseConfig(window->egl_display, config_attribs, &config, 1,
                        &num_config)) {
-    fprintf(stderr, "window_egl_android_setup: eglChooseConfig failed\n");
+    err_puts("window_egl_android_setup: eglChooseConfig");
     return false;
   }
 
   if (num_config != 1) {
-    fprintf(stderr, "window_egl_android_setup: no suitable EGL config found\n");
+    err_puts("window_egl_android_setup: no suitable EGL config");
     return false;
   }
 
   window->egl_surface = eglCreateWindowSurface(window->egl_display, config,
                                                native_window, NULL);
   if (window->egl_surface == EGL_NO_SURFACE) {
-    fprintf(stderr, "window_egl_android_setup: eglCreateWindowSurface failed\n");
+    err_puts("window_egl_android_setup: eglCreateWindowSurface");
     return false;
   }
 
   window->egl_context = eglCreateContext(window->egl_display, config,
                                          EGL_NO_CONTEXT, context_attribs);
   if (window->egl_context == EGL_NO_CONTEXT) {
-    fprintf(stderr, "window_egl_android_setup: eglCreateContext failed\n");
+    err_puts("window_egl_android_setup: eglCreateContext");
     return false;
   }
 
   if (!eglMakeCurrent(window->egl_display, window->egl_surface,
                       window->egl_surface, window->egl_context)) {
-    fprintf(stderr, "window_egl_android_setup: eglMakeCurrent failed\n");
+    err_puts("window_egl_android_setup: eglMakeCurrent");
     return false;
   }
 
@@ -99,12 +99,12 @@ bool window_egl_android_run (s_window_egl *window)
 
   native_window = window_egl_android_get_native_window(window);
   if (!native_window) {
-    fprintf(stderr, "window_egl_android_run: failed to get native window\n");
+    err_puts("window_egl_android_run: native window");
     return false;
   }
 
   if (!window_egl_android_setup(window, native_window)) {
-    fprintf(stderr, "window_egl_android_run: setup failed\n");
+    err_puts("window_egl_android_run: setup");
     return false;
   }
 
@@ -114,7 +114,8 @@ bool window_egl_android_run (s_window_egl *window)
   return true;
 }
 
-ANativeWindow * window_egl_android_get_native_window (s_window_egl *window)
+ANativeWindow *
+window_egl_android_get_native_window (s_window_egl *window)
 {
   // This would typically be passed from Java via JNI
   // For now, return NULL as placeholder
