@@ -72,6 +72,7 @@ config_lib OPENGL -lopengl32 -lglu32
 config_lib OPENMP -fopenmp
 config_define HAVE_OPENMP "${HAVE_OPENMP}"
 pkg_config egl
+pkg_config xkbcommon-x11
 pkg_config xcb
 update_config_h
 
