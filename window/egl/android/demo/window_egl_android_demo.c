@@ -64,6 +64,7 @@ void android_main (struct android_app *app)
   window.render = window_egl_demo_render;
   window.resize = window_egl_demo_resize;
   window.unload = window_egl_demo_unload;
+  window.app    = app;
   if (! window_egl_android_run(&window)) {
     err_puts("window_egl_android_run -> false");
   }
