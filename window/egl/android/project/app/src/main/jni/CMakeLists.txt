@@ -66,7 +66,7 @@ list(APPEND KC3_SOURCES "${KC3_ROOT}/window/egl/android/demo/window_egl_android_
 
 # Remove conflicting files if any (using older CMake syntax)
 foreach(source ${KC3_SOURCES})
-    if(source MATCHES ".*test.*" OR source MATCHES ".*_test\\.c$")
+    if(source MATCHES ".*test.*" OR source MATCHES ".*_test\\.c$" OR source MATCHES ".*/libffi/.*")
         list(REMOVE_ITEM KC3_SOURCES ${source})
     endif()
 endforeach()
