@@ -18,32 +18,34 @@
 #include "../../../../gl/gl_text.h"
 #include "../../../../gl/mat4.h"
 #include "../../../window.h"
-#include "../../window_egl.h"
+#include "../../demo/bg_rect.h"
 #include "../../sequence.h"
 #include "../window_egl_android.h"
-#include "../../demo/bg_rect.h"
 #include "window_egl_android_demo.h"
 
-#define WINDOW_EGL_DEMO_SEQUENCE_COUNT 1
+#define WINDOW_EGL_ANDROID_DEMO_SEQUENCE_COUNT 1
 
-s_gl_font g_font_courier_new = {0};
+s_gl_font  g_font_courier_new = {0};
 s_gl_ortho g_ortho = {0};
-s_gl_text g_text_fps = {0};
-s_gl_text g_text_seq_title = {0};
+s_gl_text  g_text_fps = {0};
+s_gl_text  g_text_seq_title = {0};
 
-static u8 window_egl_demo_button (s_window_egl *window, u8 button,
-                                    s64 x, s64 y);
-static u8 window_egl_demo_key (s_window_egl *window, u32 keysym);
-static u8 window_egl_demo_load (s_window_egl *window);
-static u8 window_egl_demo_render (s_window_egl *window);
-static u8 window_egl_demo_resize (s_window_egl *window, u64 w, u64 h);
-static void window_egl_demo_unload (s_window_egl *window);
+static u8 window_egl_android_demo_button (s_window_egl_android *window,
+                                          u8 button, s64 x, s64 y);
+static u8 window_egl_android_demo_key (s_window_egl_android *window,
+                                       u32 keysym);
+static u8 window_egl_android_demo_load (s_window_egl_android *window);
+static u8 window_egl_android_demo_render (s_window_egl_android *window);
+static u8 window_egl_android_demo_resize (s_window_egl_android *window,
+                                          u64 w, u64 h);
+static void
+window_egl_android_demo_unload (s_window_egl_android *window);
 
 void android_main (struct android_app *app)
 {
   int argc = 1;
   char *argv[] = {"kc3_window_egl_android_demo", NULL};
-  s_window_egl window;
+  s_window_egl_android window;
   if (FT_Init_FreeType(&g_ft)) {
     err_puts("android_main: failed to initialize FreeType");
     return;
@@ -53,32 +55,30 @@ void android_main (struct android_app *app)
     FT_Done_FreeType(g_ft);
     return;
   }
-  window_egl_init(&window, 50, 50, 800, 600,
-                  "KC3.Window.EGL Android demo",
-                  WINDOW_EGL_DEMO_SEQUENCE_COUNT);
-  // Set the android app
-  window.app = app;
-  window.button = window_egl_demo_button;
-  window.key    = window_egl_demo_key;
-  window.load   = window_egl_demo_load;
-  window.render = window_egl_demo_render;
-  window.resize = window_egl_demo_resize;
-  window.unload = window_egl_demo_unload;
+  window_egl_android_init(&window, 50, 50, 800, 600,
+                          "KC3.Window.EGL Android demo",
+                          WINDOW_EGL_ANDROID_DEMO_SEQUENCE_COUNT);
   window.app    = app;
+  window.button = window_egl_android_demo_button;
+  window.key    = window_egl_android_demo_key;
+  window.load   = window_egl_android_demo_load;
+  window.render = window_egl_android_demo_render;
+  window.resize = window_egl_android_demo_resize;
+  window.unload = window_egl_android_demo_unload;
   if (! window_egl_android_run(&window)) {
     err_puts("window_egl_android_run -> false");
   }
-  window_egl_clean(&window);
+  window_egl_android_clean(&window);
   kc3_clean(NULL);
   FT_Done_FreeType(g_ft);
 }
 
-u8 window_egl_demo_button (s_window_egl *window, u8 button,
-                             s64 x, s64 y)
+u8 window_egl_android_demo_button (s_window_egl_android *window,
+                                   u8 button, s64 x, s64 y)
 {
   assert(window);
   (void) window;
-  err_write_1("window_egl_demo_button: ");
+  err_write_1("window_egl_android_demo_button: ");
   err_inspect_u8(button);
   err_write_1(" (");
   err_inspect_s64(x);
@@ -91,11 +91,12 @@ u8 window_egl_demo_button (s_window_egl *window, u8 button,
   return true;
 }
 
-u8 window_egl_demo_key (s_window_egl *window, u32 keysym)
+u8 window_egl_android_demo_key (s_window_egl_android *window,
+                                u32 keysym)
 {
   assert(window);
   (void) window;
-  err_write_1("window_egl_demo_key: ");
+  err_write_1("window_egl_android_demo_key: ");
   err_inspect_u32(keysym);
   err_write_1("\n");
   switch (keysym) {
@@ -108,7 +109,7 @@ u8 window_egl_demo_key (s_window_egl *window, u32 keysym)
   return true;
 }
 
-u8 window_egl_demo_load (s_window_egl *window)
+u8 window_egl_android_demo_load (s_window_egl_android *window)
 {
   f32 point_per_pixel;
   assert(window);
@@ -127,41 +128,43 @@ u8 window_egl_demo_load (s_window_egl *window)
   if (! gl_font_init(&g_font_courier_new,
                      "fonts/Courier New/Courier New.ttf",
                      point_per_pixel)) {
-    err_puts("window_egl_demo_load: gl_font_init");
+    err_puts("window_egl_android_demo_load: gl_font_init");
     return false;
   }
   gl_font_set_size(&g_font_courier_new, 20);
   if (! gl_text_init_1(&g_text_fps, &g_font_courier_new, "0.00")) {
-    err_puts("window_egl_demo_load: gl_text_init g_text_fps");
+    err_puts("window_egl_android_demo_load: gl_text_init g_text_fps");
     return false;
   }
   if (! gl_text_init_1(&g_text_seq_title, &g_font_courier_new, "")) {
-    err_puts("window_egl_demo_load: gl_text_init g_text_seq_title");
+    err_puts("window_egl_android_demo_load: gl_text_init"
+             " g_text_seq_title");
     return false;
   }
-  sequence_egl_init(window->sequence, 8.0, "01. Background rect",
-                    (f_sequence) bg_rect_load,
-                    (f_sequence) bg_rect_render,
-                    (f_sequence) bg_rect_unload, window);
+  sequence_egl_android_init(window->sequence, 8.0,
+                            "01. Background rect",
+                            (f_sequence) bg_rect_load,
+                            (f_sequence) bg_rect_render,
+                            (f_sequence) bg_rect_unload, window);
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }
 
-u8 window_egl_demo_render (s_window_egl *window)
+u8 window_egl_android_demo_render (s_window_egl_android *window)
 {
-  s_sequence_egl *seq;
+  s_sequence *seq;
   const s_rgb text_color[2] = {
     {1.0f, 1.0f, 1.0f},
     {0.0f, 0.0f, 0.0f}
   };
   assert(window);
   if (! window_animate((s_window *) window)) {
-    err_puts("window_egl_demo_render: window_animate");
+    err_puts("window_egl_android_demo_render: window_animate");
     return false;
   }
   seq = window->seq;
   if (seq && seq->render && ! seq->render((s_sequence *) seq)) {
-    err_puts("window_egl_demo_render: seq->render");
+    err_puts("window_egl_android_demo_render: seq->render");
     return false;
   }
   mat4_init_identity(&g_ortho.model_matrix);
@@ -199,11 +202,12 @@ u8 window_egl_demo_render (s_window_egl *window)
   return true;
 }
 
-u8 window_egl_demo_resize (s_window_egl *window, u64 w, u64 h)
+u8 window_egl_android_demo_resize (s_window_egl_android *window,
+                                   u64 w, u64 h)
 {
   assert(window);
   (void) window;
-  err_write_1("window_egl_demo_resize: ");
+  err_write_1("window_egl_android_demo_resize: ");
   err_inspect_u64(w);
   err_write_1(" x ");
   err_inspect_u64(h);
@@ -212,7 +216,7 @@ u8 window_egl_demo_resize (s_window_egl *window, u64 w, u64 h)
   return true;
 }
 
-void window_egl_demo_unload (s_window_egl *window)
+void window_egl_android_demo_unload (s_window_egl_android *window)
 {
   assert(window);
   (void) window;
@@ -220,5 +224,5 @@ void window_egl_demo_unload (s_window_egl *window)
   gl_text_clean(&g_text_seq_title);
   gl_font_clean(&g_font_courier_new);
   gl_ortho_clean(&g_ortho);
-  err_puts("window_egl_demo_unload");
+  err_puts("window_egl_android_demo_unload");
 }
