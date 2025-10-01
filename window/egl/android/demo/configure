@@ -15,138 +15,96 @@ set -e
 
 echo "$PWD/configure"
 
-export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
+export SRC_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
+
+CONFIG_H_PREFIX=LIBKC3_WINDOW_EGL_ANDROID_DEMO_
 
 . "${SRC_TOP}/config.subr"
 
-PROG=kc3_window_egl_android_demo
-PROG_ASAN=kc3_window_egl_android_demo_asan
-PROG_COV=kc3_window_egl_android_demo_cov
-PROG_DEBUG=kc3_window_egl_android_demo_debug
+LIB=libkc3_window_egl_android_demo.la
+LIB_ASAN=libkc3_window_egl_android_demo_asan.la
+LIB_COV=libkc3_window_egl_android_demo_cov.la
+LIB_DEBUG=libkc3_window_egl_android_demo_debug.la
 
-echo "PROG = $PROG" >> ${CONFIG_MK}
-echo "PROG_ASAN = $PROG_ASAN" >> ${CONFIG_MK}
-echo "PROG_COV = $PROG_COV" >> ${CONFIG_MK}
-echo "PROG_DEBUG = $PROG_DEBUG" >> ${CONFIG_MK}
+echo "LIB = $LIB" >> ${CONFIG_MK}
+echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
+echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
+echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 
 . ./sources.sh
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
-
 OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
-echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
-
-if $HAVE_GCOV; then
-    OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
-    echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
-fi
-
+OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
-echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CPPFLAGS="-I../../../.. $CPPFLAGS"
-CFLAGS="$CFLAGS -W -Wall -Werror -Wno-error=unknown-pragmas"
-CFLAGS="$CFLAGS -std=c11 -pedantic -pipe"
-LIBS="$LIBS -lm"
+CPPFLAGS="-I../../.. $CPPFLAGS"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
+LDFLAGS="--shared ${LDFLAGS} -u ANativeActivity_onCreate"
+LIBS="${LIBS} -llog -landroid"
 config_asan
-config_cocoa
 config_gnu
 config_i386
-config_win32
-config_win64
 pkg_config libbsd-overlay
+pkg_config libffi
 pkg_config libmd
 pkg_config freetype2
-pkg_config glesv2
-pkg_config libffi
-pkg_config libpng
-config_lib OPENMP -fopenmp
-config_define HAVE_OPENMP "${HAVE_OPENMP}"
+pkg_config android
 pkg_config egl
+pkg_config glesv2
+config_define PREFIX "\"${PREFIX}\""
 update_config_h
+LIBS="$LIBS -rpath ${PREFIX}/lib"
 
-# Asan config
+echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
+echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
+echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
+
+# Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"
-CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
-CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
+CFLAGS_ASAN="$CFLAGS -O1 -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope"
 LDFLAGS_ASAN="$LDFLAGS"
-LOCAL_LIBS_ASAN="../../../../libkc3/libkc3_asan.la"
-LOCAL_LIBS_ASAN="$LOCAL_LIBS_ASAN ../../../libkc3_window_asan.la"
-LOCAL_LIBS_ASAN="$LOCAL_LIBS_ASAN ../../libkc3_window_egl_asan.la"
-LOCAL_LIBS_ASAN="$LOCAL_LIBS_ASAN ../../demo/libkc3_window_egl_demo_asan.la"
-LOCAL_LIBS_ASAN="$LOCAL_LIBS_ASAN ../libkc3_window_egl_android_asan.la"
-LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
+LIBS_ASAN="$LIBS"
+
+echo "CPPFLAGS_ASAN = $CPPFLAGS_ASAN" >> ${CONFIG_MK}
+echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
+echo "LDFLAGS_ASAN = $LDFLAGS_ASAN" >> ${CONFIG_MK}
+echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
-CFLAGS_COV="$CFLAGS -DDEBUG -fprofile-arcs -ftest-coverage"
-LDFLAGS_COV="$LDFLAGS --coverage"
-LOCAL_LIBS_COV="../../../../libkc3/libkc3_cov.la"
-LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../../../libkc3_window_cov.la"
-LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../../libkc3_window_egl_cov.la"
-LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../../demo/libkc3_window_egl_demo_cov.la"
-LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../libkc3_window_egl_android_cov.la"
-LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
+CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
+LDFLAGS_COV="$LDFLAGS"
+LIBS_COV="$LIBS -lgcov"
+
+echo "CPPFLAGS_COV = $CPPFLAGS_COV" >> ${CONFIG_MK}
+echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
+echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
+echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LOCAL_LIBS_DEBUG="../../../../libkc3/libkc3_debug.la"
-LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../../../libkc3_window_debug.la"
-LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../../libkc3_window_egl_debug.la"
-LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../../demo/libkc3_window_egl_demo_debug.la"
-LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../libkc3_window_egl_android_debug.la"
-LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
+LIBS_DEBUG="$LIBS"
 
-# Main config
-DEFAULT_CFLAGS="-O2 -fPIC"
-if [ "x$ENV_CFLAGS" = "x" ]; then
-    CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
-fi
-CFLAGS="$CFLAGS -DNDEBUG"
-LOCAL_LIBS="../../../../libkc3/libkc3.la"
-LOCAL_LIBS="$LOCAL_LIBS ../../../libkc3_window.la"
-LOCAL_LIBS="$LOCAL_LIBS ../../libkc3_window_egl.la"
-LOCAL_LIBS="$LOCAL_LIBS ../../demo/libkc3_window_egl_demo.la"
-LOCAL_LIBS="$LOCAL_LIBS ../libkc3_window_egl_android.la"
-LIBS="$LOCAL_LIBS $LIBS"
-
-echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
-echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
-echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
-echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
-echo "LIBS = $LIBS" >> ${CONFIG_MK}
-echo >> ${CONFIG_MK}
-echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
-echo "LDFLAGS_ASAN = $LDFLAGS_ASAN" >> ${CONFIG_MK}
-echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
-echo >> ${CONFIG_MK}
-echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
-echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
-echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
-echo >> ${CONFIG_MK}
+echo "CPPFLAGS_DEBUG = $CPPFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
-update_build
-update_build_prog
+# Main config
+echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
+echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
+echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
+echo "LIBS = $LIBS" >> ${CONFIG_MK}
 
-build_lo
-build_prog
+update_build_c
+update_build_lib
 
-if [ "x$(uname)" = "xDarwin" ]; then
-    HAVE_DARWIN=true
-else
-    HAVE_DARWIN=false
-fi
-echo "HAVE_DARWIN = $HAVE_DARWIN" >> ${CONFIG_MK}
+build_lo_c
+build_lib
 
 update_config_mk
-
-if ${HAVE_DARWIN}; then
-    config_subdirs macos
-fi

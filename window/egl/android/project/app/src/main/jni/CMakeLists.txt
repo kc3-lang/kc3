@@ -31,6 +31,9 @@ file(GLOB_RECURSE KC3_SOURCES
     "${KC3_ROOT}/gl/*.c"
 )
 
+# Add the demo source that contains android_main
+list(APPEND KC3_SOURCES "${KC3_ROOT}/window/egl/android/demo/window_egl_android_demo.c")
+
 # Remove conflicting files if any (using older CMake syntax)
 foreach(source ${KC3_SOURCES})
     if(source MATCHES ".*test.*" OR source MATCHES ".*_test\\.c$")
