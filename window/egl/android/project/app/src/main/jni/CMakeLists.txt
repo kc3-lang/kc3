@@ -14,9 +14,29 @@ find_library(ffi-lib ffi)
 # KC3 source path (relative to this CMakeLists.txt)
 set(KC3_ROOT "../../../../../../../..")
 
-# Build libffi with its own CMakeLists.txt
+# Build libffi with autotools
 set(LIBFFI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libffi)
-add_subdirectory(${LIBFFI_DIR})
+set(LIBFFI_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/libffi-build)
+
+# Configure and build libffi using autotools
+add_custom_command(
+  OUTPUT ${LIBFFI_BUILD_DIR}/.libs/libffi.a
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBFFI_BUILD_DIR}
+  COMMAND cd ${LIBFFI_DIR} && ./autogen.sh
+  COMMAND cd ${LIBFFI_BUILD_DIR} && ${LIBFFI_DIR}/configure --host=arm-linux-androideabi --prefix=${LIBFFI_BUILD_DIR}/install --enable-static --disable-shared CC=${CMAKE_C_COMPILER} CFLAGS="${CMAKE_C_FLAGS}" AR=${CMAKE_AR} RANLIB=${CMAKE_RANLIB}
+  COMMAND cd ${LIBFFI_BUILD_DIR} && make
+  WORKING_DIRECTORY ${LIBFFI_BUILD_DIR}
+  COMMENT "Building libffi with autotools"
+)
+
+add_custom_target(libffi_build DEPENDS ${LIBFFI_BUILD_DIR}/.libs/libffi.a)
+
+# Import the built library
+add_library(ffi STATIC IMPORTED)
+set_target_properties(ffi PROPERTIES
+  IMPORTED_LOCATION ${LIBFFI_BUILD_DIR}/.libs/libffi.a
+)
+add_dependencies(ffi libffi_build)
 
 # Include directories
 include_directories(
@@ -25,7 +45,7 @@ include_directories(
     ${KC3_ROOT}/window/egl
     ${KC3_ROOT}/window/egl/android
     ${ANDROID_NDK}/sources/android/native_app_glue
-    ${LIBFFI_DIR}/linux-arm
+    ${LIBFFI_BUILD_DIR}/install/include
 )
 
 # Add all KC3 source files (simplified - you may need to adjust paths)
@@ -60,12 +80,16 @@ add_library(kc3_egl_android_demo SHARED
 
 # Link libraries
 target_link_libraries(kc3_egl_android_demo
+    ffi
     ${log-lib}
     ${android-lib}
     ${EGL-lib}
     ${GLESv2-lib}
     m  # math library
 )
+
+# Make sure libffi is built before the main library
+add_dependencies(kc3_egl_android_demo libffi_build)
 
 # Compiler flags
 target_compile_definitions(kc3_egl_android_demo PRIVATE
