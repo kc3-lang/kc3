@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 36
-    buildToolsVersion "debian"
+    buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "io.kmx.kc3.demo"
