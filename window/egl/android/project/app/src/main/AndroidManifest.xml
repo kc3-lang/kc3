@@ -12,7 +12,7 @@
 
     <application
         android:label="KC3 EGL Demo"
-        android:icon="@android:drawable/ic_launcher"
+        android:icon="@drawable/ic_launcher"
         android:hasCode="false">
 
         <activity android:name="android.app.NativeActivity"
