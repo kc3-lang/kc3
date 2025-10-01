@@ -29,8 +29,12 @@ include_directories(
     ${KC3_ROOT}/window/egl
     ${KC3_ROOT}/window/egl/android
     ${ANDROID_NDK}/sources/android/native_app_glue
-    ${FFI_INCLUDE_DIR}
 )
+
+# Add FFI include if found
+if(FFI_INCLUDE_DIR)
+    include_directories(${FFI_INCLUDE_DIR})
+endif()
 
 # Add all KC3 source files (simplified - you may need to adjust paths)
 file(GLOB_RECURSE KC3_SOURCES
