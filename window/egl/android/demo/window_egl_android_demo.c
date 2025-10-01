@@ -56,7 +56,7 @@ void android_main (struct android_app *app)
     return;
   }
   window_egl_android_init(&window, 50, 50, 800, 600,
-                          "KC3.Window.EGL Android demo",
+                          "KC3.Window.EGL.Android demo",
                           WINDOW_EGL_ANDROID_DEMO_SEQUENCE_COUNT);
   window.app    = app;
   window.button = window_egl_android_demo_button;
