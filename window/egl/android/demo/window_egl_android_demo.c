@@ -141,11 +141,11 @@ bool window_egl_android_demo_load (s_window_egl_android *window)
              " g_text_seq_title");
     return false;
   }
-  sequence_egl_android_init(window->sequence, 8.0,
-                            "01. Background rect",
-                            (f_sequence) bg_rect_load,
-                            (f_sequence) bg_rect_render,
-                            (f_sequence) bg_rect_unload, window);
+  sequence_init(window->sequence, 8.0,
+                "01. Background rect",
+                bg_rect_load,
+                bg_rect_render,
+                bg_rect_unload, (s_window *) window);
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }

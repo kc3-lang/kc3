@@ -131,6 +131,11 @@ int32_t window_egl_android_handle_input (p_android_app app,
   return 0;
 }
 
+void window_egl_android_clean (s_window_egl_android *window)
+{
+  window_egl_clean((s_window_egl *) window);
+}
+
 s_window_egl_android *
 window_egl_android_init (s_window_egl_android *window,
                          s64 x, s64 y, u64 w, u64 h,
