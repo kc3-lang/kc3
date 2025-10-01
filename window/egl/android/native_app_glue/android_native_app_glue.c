@@ -188,9 +188,10 @@ static void android_app_destroy (struct android_app *android_app)
 }
 
 static void process_input (struct android_app *app,
-                           struct android_poll_source* source)
+                           struct android_poll_source *source)
 {
   AInputEvent* event = NULL;
+  (void) source;
   while (AInputQueue_getEvent(app->inputQueue, &event) >= 0) {
     LOGV("New input event: type=%d", AInputEvent_getType(event));
     if (AInputQueue_preDispatchEvent(app->inputQueue, event)) {
@@ -206,6 +207,7 @@ static void process_cmd (struct android_app *app,
                          struct android_poll_source *source)
 {
   int8_t cmd = android_app_read_cmd(app);
+  (void) source;
   android_app_pre_exec_cmd(app, cmd);
   if (app->onAppCmd != NULL) app->onAppCmd(app, cmd);
   android_app_post_exec_cmd(app, cmd);
@@ -351,13 +353,13 @@ static void onDestroy (ANativeActivity *activity)
 
 static void onStart (ANativeActivity *activity)
 {
-  LOGV("Start: %p", activity);
+  LOGV("Start: %p", (void *) activity);
   android_app_set_activity_state(ToApp(activity), APP_CMD_START);
 }
 
 static void onResume (ANativeActivity *activity)
 {
-  LOGV("Resume: %p", activity);
+  LOGV("Resume: %p", (void *) activity);
   android_app_set_activity_state(ToApp(activity), APP_CMD_RESUME);
 }
 
