@@ -20,7 +20,9 @@
 #include "../window_egl.h"
 #include "types.h"
 
-/* Stack-allocation compatible functions. */
+/* Stack-allocation compatible functions. Call window_egl_android_clean
+   after use. */
+void window_egl_android_clean (s_window_egl_android *window);
 s_window_egl_android *
 window_egl_android_init (s_window_egl_android *window, s64 x, s64 y,
                          u64 w, u64 h, const char *title,
