@@ -14,9 +14,14 @@ find_library(ffi-lib ffi)
 # KC3 source path (relative to this CMakeLists.txt)
 set(KC3_ROOT "../../../../../../../..")
 
-# Use Android's libffi
+# Use Android's libffi - compile sources directly
 set(LIBFFI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libffi)
-add_subdirectory(${LIBFFI_DIR} libffi_build)
+
+# Manually add libffi sources for ARM
+file(GLOB LIBFFI_SOURCES
+    ${LIBFFI_DIR}/src/*.c
+    ${LIBFFI_DIR}/src/arm/*.c
+)
 
 # Include directories
 include_directories(
@@ -26,6 +31,7 @@ include_directories(
     ${KC3_ROOT}/window/egl/android
     ${ANDROID_NDK}/sources/android/native_app_glue
     ${LIBFFI_DIR}/include
+    ${LIBFFI_DIR}
 )
 
 # Add all KC3 source files (simplified - you may need to adjust paths)
@@ -54,6 +60,7 @@ include_directories(${APP_GLUE_DIR})
 # Create the library
 add_library(kc3_egl_android_demo SHARED
     ${KC3_SOURCES}
+    ${LIBFFI_SOURCES}
     ${APP_GLUE_DIR}/android_native_app_glue.c
 )
 
@@ -63,7 +70,6 @@ target_link_libraries(kc3_egl_android_demo
     ${android-lib}
     ${EGL-lib}
     ${GLESv2-lib}
-    ffi
     m  # math library
 )
 
