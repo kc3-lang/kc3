@@ -79,7 +79,7 @@ bool window_egl_button_default (s_window_egl *window, u8 button,
 
 bool window_egl_key_default (s_window_egl *window, u32 keysym)
 {
-  char keysym_name[64];
+  // char keysym_name[64];
   assert(window);
   (void) window;
   // xkb_keysym_get_name(keysym, keysym_name, sizeof(keysym_name));
