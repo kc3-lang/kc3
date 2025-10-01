@@ -44,7 +44,10 @@ debug:
 	${MAKE} ${LIB_DEBUG}
 
 demo: build
-	${MAKE} -C demo build
+	${MAKE} -C demo demo
+
+demo_debug: debug
+	${MAKE} -C demo demo_debug
 
 update_sources:
 	./update_sources
