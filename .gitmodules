@@ -30,3 +30,6 @@
 	path = sort
 	url = https://git.kmx.io/kmx.io/sort.git
 	branch = master
+[submodule "window/egl/android/project/app/src/main/jni/libffi"]
+	path = window/egl/android/project/app/src/main/jni/libffi
+	url = https://android.googlesource.com/platform/external/libffi
