@@ -18,12 +18,18 @@ set(KC3_ROOT "../../../../../../../..")
 set(LIBFFI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libffi)
 set(LIBFFI_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/libffi-build)
 
+# Set up proper Android toolchain variables for libffi
+set(LIBFFI_CC "${ANDROID_TOOLCHAIN_ROOT}/bin/${ANDROID_TOOLCHAIN_PREFIX}clang")
+set(LIBFFI_AR "${ANDROID_TOOLCHAIN_ROOT}/bin/${ANDROID_TOOLCHAIN_PREFIX}ar")
+set(LIBFFI_RANLIB "${ANDROID_TOOLCHAIN_ROOT}/bin/${ANDROID_TOOLCHAIN_PREFIX}ranlib")
+set(LIBFFI_CFLAGS "-target ${ANDROID_LLVM_TRIPLE} --gcc-toolchain=${ANDROID_TOOLCHAIN_ROOT} --sysroot=${CMAKE_SYSROOT} -fPIC")
+
 # Configure and build libffi using autotools
 add_custom_command(
   OUTPUT ${LIBFFI_BUILD_DIR}/.libs/libffi.a
   COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBFFI_BUILD_DIR}
   COMMAND cd ${LIBFFI_DIR} && ./autogen.sh
-  COMMAND cd ${LIBFFI_BUILD_DIR} && ${LIBFFI_DIR}/configure --host=arm-linux-androideabi --prefix=${LIBFFI_BUILD_DIR}/install --enable-static --disable-shared CC=${CMAKE_C_COMPILER} CFLAGS="${CMAKE_C_FLAGS} --target=armv7-none-linux-androideabi${ANDROID_PLATFORM}" LDFLAGS="${CMAKE_SHARED_LINKER_FLAGS}" AR=${CMAKE_AR} RANLIB=${CMAKE_RANLIB}
+  COMMAND cd ${LIBFFI_BUILD_DIR} && ${LIBFFI_DIR}/configure --host=arm-linux-androideabi --prefix=${LIBFFI_BUILD_DIR}/install --enable-static --disable-shared CC="${LIBFFI_CC}" CFLAGS="${LIBFFI_CFLAGS}" AR="${LIBFFI_AR}" RANLIB="${LIBFFI_RANLIB}"
   COMMAND cd ${LIBFFI_BUILD_DIR} && make
   WORKING_DIRECTORY ${LIBFFI_BUILD_DIR}
   COMMENT "Building libffi with autotools"
