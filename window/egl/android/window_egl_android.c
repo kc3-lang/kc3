@@ -131,6 +131,17 @@ int32_t window_egl_android_handle_input (p_android_app app,
   return 0;
 }
 
+s_window_egl_android *
+window_egl_android_init (s_window_egl_android *window,
+                         s64 x, s64 y, u64 w, u64 h,
+                         const char *title,
+                         u64 sequence_count)
+{
+  return (s_window_egl_android *)
+    window_egl_init((s_window_egl *) window, x, y, w, h,
+                    title, sequence_count);
+}
+
 bool window_egl_android_run (s_window_egl_android *window)
 {
   int events;
