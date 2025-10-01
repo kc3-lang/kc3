@@ -30,6 +30,7 @@ include_directories(
     ${KC3_ROOT}/window/egl
     ${KC3_ROOT}/window/egl/android
     ${ANDROID_NDK}/sources/android/native_app_glue
+    ${LIBFFI_DIR}/linux-arm
     ${LIBFFI_DIR}/include
     ${LIBFFI_DIR}
 )
