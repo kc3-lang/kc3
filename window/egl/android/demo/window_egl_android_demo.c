@@ -30,13 +30,13 @@ s_gl_ortho g_ortho = {0};
 s_gl_text  g_text_fps = {0};
 s_gl_text  g_text_seq_title = {0};
 
-static u8 window_egl_android_demo_button (s_window_egl_android *window,
+static bool window_egl_android_demo_button (s_window_egl_android *window,
                                           u8 button, s64 x, s64 y);
-static u8 window_egl_android_demo_key (s_window_egl_android *window,
+static bool window_egl_android_demo_key (s_window_egl_android *window,
                                        u32 keysym);
-static u8 window_egl_android_demo_load (s_window_egl_android *window);
-static u8 window_egl_android_demo_render (s_window_egl_android *window);
-static u8 window_egl_android_demo_resize (s_window_egl_android *window,
+static bool window_egl_android_demo_load (s_window_egl_android *window);
+static bool window_egl_android_demo_render (s_window_egl_android *window);
+static bool window_egl_android_demo_resize (s_window_egl_android *window,
                                           u64 w, u64 h);
 static void
 window_egl_android_demo_unload (s_window_egl_android *window);
@@ -73,8 +73,8 @@ void android_main (struct android_app *app)
   FT_Done_FreeType(g_ft);
 }
 
-u8 window_egl_android_demo_button (s_window_egl_android *window,
-                                   u8 button, s64 x, s64 y)
+bool window_egl_android_demo_button (s_window_egl_android *window,
+                                     u8 button, s64 x, s64 y)
 {
   assert(window);
   (void) window;
@@ -91,8 +91,8 @@ u8 window_egl_android_demo_button (s_window_egl_android *window,
   return true;
 }
 
-u8 window_egl_android_demo_key (s_window_egl_android *window,
-                                u32 keysym)
+bool window_egl_android_demo_key (s_window_egl_android *window,
+                                  u32 keysym)
 {
   assert(window);
   (void) window;
@@ -109,7 +109,7 @@ u8 window_egl_android_demo_key (s_window_egl_android *window,
   return true;
 }
 
-u8 window_egl_android_demo_load (s_window_egl_android *window)
+bool window_egl_android_demo_load (s_window_egl_android *window)
 {
   f32 point_per_pixel;
   assert(window);
@@ -150,7 +150,7 @@ u8 window_egl_android_demo_load (s_window_egl_android *window)
   return true;
 }
 
-u8 window_egl_android_demo_render (s_window_egl_android *window)
+bool window_egl_android_demo_render (s_window_egl_android *window)
 {
   s_sequence *seq;
   const s_rgb text_color[2] = {
@@ -202,8 +202,8 @@ u8 window_egl_android_demo_render (s_window_egl_android *window)
   return true;
 }
 
-u8 window_egl_android_demo_resize (s_window_egl_android *window,
-                                   u64 w, u64 h)
+bool window_egl_android_demo_resize (s_window_egl_android *window,
+                                     u64 w, u64 h)
 {
   assert(window);
   (void) window;
