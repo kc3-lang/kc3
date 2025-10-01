@@ -32,4 +32,5 @@
 	branch = master
 [submodule "window/egl/android/project/app/src/main/jni/libffi"]
 	path = window/egl/android/project/app/src/main/jni/libffi
-	url = https://android.googlesource.com/platform/external/libffi
+	url = https://git.kmx.io/kc3-lang/libffi.git
+	branch = android
