@@ -26,16 +26,17 @@ set(LIBFFI_CFLAGS "-fPIC")
 
 # Configure and build libffi using autotools
 add_custom_command(
-  OUTPUT ${LIBFFI_BUILD_DIR}/.libs/libffi.a
+  OUTPUT ${LIBFFI_BUILD_DIR}/.libs/libffi.a ${LIBFFI_BUILD_DIR}/install/include/ffi.h
   COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBFFI_BUILD_DIR}
   COMMAND cd ${LIBFFI_DIR} && ./autogen.sh
   COMMAND cd ${LIBFFI_BUILD_DIR} && ${LIBFFI_DIR}/configure --host=arm-linux-androideabi --prefix=${LIBFFI_BUILD_DIR}/install --enable-static --disable-shared CC="${LIBFFI_CC}" CFLAGS="${LIBFFI_CFLAGS}" AR="${LIBFFI_AR}" RANLIB="${LIBFFI_RANLIB}"
   COMMAND cd ${LIBFFI_BUILD_DIR} && make
+  COMMAND cd ${LIBFFI_BUILD_DIR} && make install
   WORKING_DIRECTORY ${LIBFFI_BUILD_DIR}
   COMMENT "Building libffi with autotools"
 )
 
-add_custom_target(libffi_build DEPENDS ${LIBFFI_BUILD_DIR}/.libs/libffi.a)
+add_custom_target(libffi_build DEPENDS ${LIBFFI_BUILD_DIR}/.libs/libffi.a ${LIBFFI_BUILD_DIR}/install/include/ffi.h)
 
 # Import the built library
 add_library(ffi STATIC IMPORTED)
