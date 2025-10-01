@@ -23,7 +23,7 @@ add_custom_command(
   OUTPUT ${LIBFFI_BUILD_DIR}/.libs/libffi.a
   COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBFFI_BUILD_DIR}
   COMMAND cd ${LIBFFI_DIR} && ./autogen.sh
-  COMMAND cd ${LIBFFI_BUILD_DIR} && ${LIBFFI_DIR}/configure --host=arm-linux-androideabi --prefix=${LIBFFI_BUILD_DIR}/install --enable-static --disable-shared CC=${CMAKE_C_COMPILER} CFLAGS="${CMAKE_C_FLAGS}" AR=${CMAKE_AR} RANLIB=${CMAKE_RANLIB}
+  COMMAND cd ${LIBFFI_BUILD_DIR} && ${LIBFFI_DIR}/configure --host=arm-linux-androideabi --prefix=${LIBFFI_BUILD_DIR}/install --enable-static --disable-shared CC=${CMAKE_C_COMPILER} CFLAGS="${CMAKE_C_FLAGS} --target=armv7-none-linux-androideabi${ANDROID_PLATFORM}" LDFLAGS="${CMAKE_SHARED_LINKER_FLAGS}" AR=${CMAKE_AR} RANLIB=${CMAKE_RANLIB}
   COMMAND cd ${LIBFFI_BUILD_DIR} && make
   WORKING_DIRECTORY ${LIBFFI_BUILD_DIR}
   COMMENT "Building libffi with autotools"
