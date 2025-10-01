@@ -9,9 +9,18 @@ find_library(log-lib log)
 find_library(android-lib android)
 find_library(EGL-lib EGL)
 find_library(GLESv2-lib GLESv2)
+find_library(ffi-lib ffi)
 
 # KC3 source path (relative to this CMakeLists.txt)
 set(KC3_ROOT "../../../../../../../..")
+
+# Find libffi
+find_path(FFI_INCLUDE_DIR ffi.h
+    PATHS
+    /usr/include
+    /usr/local/include
+    ${ANDROID_NDK}/sysroot/usr/include
+)
 
 # Include directories
 include_directories(
@@ -20,6 +29,7 @@ include_directories(
     ${KC3_ROOT}/window/egl
     ${KC3_ROOT}/window/egl/android
     ${ANDROID_NDK}/sources/android/native_app_glue
+    ${FFI_INCLUDE_DIR}
 )
 
 # Add all KC3 source files (simplified - you may need to adjust paths)
@@ -57,6 +67,7 @@ target_link_libraries(kc3_egl_android_demo
     ${android-lib}
     ${EGL-lib}
     ${GLESv2-lib}
+    ${ffi-lib}
     m  # math library
 )
 
