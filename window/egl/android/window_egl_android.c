@@ -104,17 +104,19 @@ bool window_egl_android_run (s_window_egl_android *window)
     err_puts("window_egl_android_run: load failed");
     return false;
   }
-  while (true) {
-    while ((ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0) {
+  while (1) {
+    if (ALooper_pollOnce(0, NULL, &events, (void**) &source) >= 0) {
       if (source != NULL) {
         source->process(window->app, source);
       }
-      if (window->app->destroyRequested != 0) {
-        if (window->unload)
-          window->unload(window);
-        return true;
-      }
     }
+
+    if (window->app->destroyRequested != 0) {
+      if (window->unload)
+        window->unload(window);
+      return true;
+    }
+
     if (window->egl_display != EGL_NO_DISPLAY &&
         window->egl_surface != EGL_NO_SURFACE) {
       if (window->render && ! window->render(window)) {
@@ -169,38 +171,35 @@ int32_t window_egl_android_handle_input (p_android_app app,
                                          AInputEvent *event)
 {
   s_window_egl_android *window = (s_window_egl_android *) app->userData;
-  if (!window)
+  if (! window)
     return 0;
-
   if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_KEY) {
     int32_t keycode = AKeyEvent_getKeyCode(event);
     int32_t action = AKeyEvent_getAction(event);
-
     if (action == AKEY_EVENT_ACTION_DOWN) {
       u32 kc3_keysym = android_keycode_to_kc3(keycode);
-      if (window->key && !window->key(window, kc3_keysym)) {
-        return 1; // Exit requested
+      if (window->key && ! window->key(window, kc3_keysym)) {
+        return 1;
       }
     }
-    return 1; // Event consumed
+    return 1;
   }
-
   if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
-    int32_t action = AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_MASK;
+    int32_t action = AMotionEvent_getAction(event) &
+      AMOTION_EVENT_ACTION_MASK;
     float x = AMotionEvent_getX(event, 0);
     float y = AMotionEvent_getY(event, 0);
-
     if (action == AMOTION_EVENT_ACTION_DOWN ||
         action == AMOTION_EVENT_ACTION_UP) {
-      u8 button = (action == AMOTION_EVENT_ACTION_DOWN) ? 1 : 0;
-      if (window->button && !window->button(window, button, (s64)x, (s64)y)) {
-        return 1; // Exit requested
+      u8 button = 1;
+      if (window->button && ! window->button(window, button,
+                                             (s64) x, (s64) y)) {
+        return 1;
       }
     }
-    return 1; // Event consumed
+    return 1;
   }
-
-  return 0; // Event not handled
+  return 0;
 }
 
 void window_egl_android_handle_cmd (p_android_app app, int32_t cmd)
