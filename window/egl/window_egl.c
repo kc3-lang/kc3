@@ -12,7 +12,6 @@
  */
 #include <assert.h>
 #include <stdlib.h>
-#include <xkbcommon/xkbcommon.h>
 #include "../../libkc3/io.h"
 #include "../../libkc3/tag.h"
 #include "../window.h"
@@ -83,11 +82,11 @@ bool window_egl_key_default (s_window_egl *window, u32 keysym)
   char keysym_name[64];
   assert(window);
   (void) window;
-  xkb_keysym_get_name(keysym, keysym_name, sizeof(keysym_name));
+  // xkb_keysym_get_name(keysym, keysym_name, sizeof(keysym_name));
   err_write_1("window_egl_key_default: ");
   err_inspect_u32_decimal(keysym);
-  err_write_1(" ");
-  err_puts(keysym_name);
+  err_write_1("\n");
+  // err_puts(keysym_name);
   return true;
 }
 

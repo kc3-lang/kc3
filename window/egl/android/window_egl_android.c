@@ -15,7 +15,6 @@
 #include <string.h>
 #include <android/looper.h>
 #include <libkc3/kc3.h>
-#include <xkbcommon/xkbcommon.h>
 #include "window_egl_android.h"
 
 static u32  android_keycode_to_kc3 (int32_t android_keycode);
