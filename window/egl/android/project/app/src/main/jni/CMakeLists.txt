@@ -48,9 +48,6 @@ add_dependencies(ffi libffi_build)
 # Include directories
 include_directories(
     ${KC3_ROOT}
-    ${KC3_ROOT}/libkc3
-    ${KC3_ROOT}/window/egl
-    ${KC3_ROOT}/window/egl/android
     ${ANDROID_NDK}/sources/android/native_app_glue
     ${LIBFFI_BUILD_DIR}/install/include
 )
