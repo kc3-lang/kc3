@@ -14,14 +14,9 @@ find_library(ffi-lib ffi)
 # KC3 source path (relative to this CMakeLists.txt)
 set(KC3_ROOT "../../../../../../../..")
 
-# Use Android's libffi - compile sources directly
+# Build libffi with its own CMakeLists.txt
 set(LIBFFI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libffi)
-
-# Manually add libffi sources for ARM
-file(GLOB LIBFFI_SOURCES
-    ${LIBFFI_DIR}/src/*.c
-    ${LIBFFI_DIR}/src/arm/*.c
-)
+add_subdirectory(${LIBFFI_DIR})
 
 # Include directories
 include_directories(
@@ -31,8 +26,6 @@ include_directories(
     ${KC3_ROOT}/window/egl/android
     ${ANDROID_NDK}/sources/android/native_app_glue
     ${LIBFFI_DIR}/linux-arm
-    ${LIBFFI_DIR}/include
-    ${LIBFFI_DIR}
 )
 
 # Add all KC3 source files (simplified - you may need to adjust paths)
