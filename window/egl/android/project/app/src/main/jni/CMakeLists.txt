@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.10.2)
 project(kc3_egl_android_demo)
 
 # Set C standard
@@ -31,9 +31,12 @@ file(GLOB_RECURSE KC3_SOURCES
     "${KC3_ROOT}/gl/*.c"
 )
 
-# Remove conflicting files if any
-list(FILTER KC3_SOURCES EXCLUDE REGEX ".*test.*")
-list(FILTER KC3_SOURCES EXCLUDE REGEX ".*_test\\.c$")
+# Remove conflicting files if any (using older CMake syntax)
+foreach(source ${KC3_SOURCES})
+    if(source MATCHES ".*test.*" OR source MATCHES ".*_test\\.c$")
+        list(REMOVE_ITEM KC3_SOURCES ${source})
+    endif()
+endforeach()
 
 # Add native app glue
 set(APP_GLUE_DIR ${ANDROID_NDK}/sources/android/native_app_glue)
