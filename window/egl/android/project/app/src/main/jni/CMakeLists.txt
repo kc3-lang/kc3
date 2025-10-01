@@ -19,10 +19,10 @@ set(LIBFFI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libffi)
 set(LIBFFI_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/libffi-build)
 
 # Set up proper Android toolchain variables for libffi
-set(LIBFFI_CC "${ANDROID_TOOLCHAIN_ROOT}/bin/${ANDROID_TOOLCHAIN_PREFIX}clang")
-set(LIBFFI_AR "${ANDROID_TOOLCHAIN_ROOT}/bin/${ANDROID_TOOLCHAIN_PREFIX}ar")
-set(LIBFFI_RANLIB "${ANDROID_TOOLCHAIN_ROOT}/bin/${ANDROID_TOOLCHAIN_PREFIX}ranlib")
-set(LIBFFI_CFLAGS "-target ${ANDROID_LLVM_TRIPLE} --gcc-toolchain=${ANDROID_TOOLCHAIN_ROOT} --sysroot=${CMAKE_SYSROOT} -fPIC")
+set(LIBFFI_CC "${ANDROID_TOOLCHAIN_ROOT}/bin/armv7a-linux-androideabi${ANDROID_NATIVE_API_LEVEL}-clang")
+set(LIBFFI_AR "${ANDROID_TOOLCHAIN_ROOT}/bin/llvm-ar")
+set(LIBFFI_RANLIB "${ANDROID_TOOLCHAIN_ROOT}/bin/llvm-ranlib")
+set(LIBFFI_CFLAGS "-fPIC")
 
 # Configure and build libffi using autotools
 add_custom_command(
