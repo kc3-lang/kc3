@@ -20,6 +20,12 @@
 #include "../window_egl.h"
 #include "types.h"
 
+/* Stack-allocation compatible functions. */
+s_window_egl_android *
+window_egl_android_init (s_window_egl_android *window, s64 x, s64 y,
+                         u64 w, u64 h, const char *title,
+                         u64 sequence_count);
+
 /* Main loop. */
 bool window_egl_android_run (s_window_egl_android *window);
 
