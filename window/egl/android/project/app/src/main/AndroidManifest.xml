@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.kmx.kc3.demo"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="34" />
+
+    <!-- Permissions for EGL/OpenGL -->
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:label="KC3 EGL Demo"
+        android:icon="@android:drawable/ic_launcher"
+        android:hasCode="false">
+
+        <activity android:name="android.app.NativeActivity"
+            android:label="KC3 EGL Demo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true">
+
+            <!-- Tell NativeActivity the name of our native library -->
+            <meta-data android:name="android.app.lib_name"
+                android:value="kc3_egl_android_demo" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
