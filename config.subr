@@ -798,7 +798,7 @@ update_build_c() {
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_C_ASAN}
     echo "export CC=\"${CC}\"" >> ${BUILD_C_ASAN}
     echo "export CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_C_ASAN}
-    echo "export CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_C_ASAN}
+    echo "export CFLAGS=\"${CFLAGS_ASAN} ${CFLAGS_HOST} ${CFLAGS_TARGET}\"" >> ${BUILD_C_ASAN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_ASAN}
     update_and_chmod 755 ${BUILD_C_ASAN} build_c_asan
 
@@ -807,7 +807,7 @@ update_build_c() {
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_C_COV}
     echo "export CC=\"${CC}\"" >> ${BUILD_C_COV}
     echo "export CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_C_COV}
-    echo "export CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_C_COV}
+    echo "export CFLAGS=\"${CFLAGS_COV} ${CFLAGS_HOST} ${CFLAGS_TARGET}\"" >> ${BUILD_C_COV}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_COV}
     update_and_chmod 755 ${BUILD_C_COV} build_c_cov
 
@@ -816,7 +816,7 @@ update_build_c() {
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_C_DEBUG}
     echo "export CC=\"${CC}\"" >> ${BUILD_C_DEBUG}
     echo "export CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_C_DEBUG}
-    echo "export CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_C_DEBUG}
+    echo "export CFLAGS=\"${CFLAGS_DEBUG}\" ${CFLAGS_HOST} ${CFLAGS_TARGET}" >> ${BUILD_C_DEBUG}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_DEBUG}
     update_and_chmod 755 ${BUILD_C_DEBUG} build_c_debug
 
@@ -825,7 +825,7 @@ update_build_c() {
     echo "LOG=\".build/\$1.main.log\"" >> ${BUILD_C_MAIN}
     echo "export CC=\"${CC}\"" >> ${BUILD_C_MAIN}
     echo "export CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_C_MAIN}
-    echo "export CFLAGS=\"${CFLAGS}\"" >> ${BUILD_C_MAIN}
+    echo "export CFLAGS=\"${CFLAGS} ${CFLAGS_HOST} ${CFLAGS_TARGET}\"" >> ${BUILD_C_MAIN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_MAIN}
     update_and_chmod 755 ${BUILD_C_MAIN} build_c_main
 }
@@ -893,10 +893,12 @@ update_build_lib() {
     echo "# gen by configure" >> ${BUILD_LIB_ASAN}
     echo "LOG=\".build/\$1.asan.log\"" >> ${BUILD_LIB_ASAN}
     echo "export CC=\"${CC}\"" >> ${BUILD_LIB_ASAN}
-    echo "export CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_LIB_ASAN}
-    echo "LDFLAGS=\"${LDFLAGS_ASAN}\"" >> ${BUILD_LIB_ASAN}
-    echo "OBJECTS=\"${OBJECTS_ASAN}\"" >> ${BUILD_LIB_ASAN}
-    echo "LIBS=\"${LIBS_ASAN}\"" >> ${BUILD_LIB_ASAN}
+    echo "export CFLAGS=\"${CFLAGS_ASAN}\" ${CFLAGS_HOST} ${CFLAGS_TARGET}" >> ${BUILD_LIB_ASAN}
+    echo "export LDFLAGS=\"${LDFLAGS_ASAN}\"" >> ${BUILD_LIB_ASAN}
+    echo "export OBJECTS=\"${OBJECTS_ASAN}\"" >> ${BUILD_LIB_ASAN}
+    echo "export LIBS=\"${LIBS_ASAN}\"" >> ${BUILD_LIB_ASAN}
+    echo "export AR=\"${AR}\"" >> ${BUILD_LIB_ASAN}
+    echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_ASAN}
     echo >> ${BUILD_LIB_ASAN}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_LIB_ASAN}
     update_and_chmod 755 ${BUILD_LIB_ASAN} build_lib_asan
@@ -905,10 +907,12 @@ update_build_lib() {
     echo "# gen by configure" >> ${BUILD_LIB_COV}
     echo "LOG=\".build/\$1.cov.log\"" >> ${BUILD_LIB_COV}
     echo "export CC=\"${CC}\"" >> ${BUILD_LIB_COV}
-    echo "export CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_LIB_COV}
-    echo "LDFLAGS=\"${LDFLAGS_COV}\"" >> ${BUILD_LIB_COV}
-    echo "OBJECTS=\"${OBJECTS_COV}\"" >> ${BUILD_LIB_COV}
-    echo "LIBS=\"${LIBS_COV}\"" >> ${BUILD_LIB_COV}
+    echo "export CFLAGS=\"${CFLAGS_COV} ${CFLAGS_HOST} ${CFLAGS_TARGET}\"" >> ${BUILD_LIB_COV}
+    echo "export LDFLAGS=\"${LDFLAGS_COV}\"" >> ${BUILD_LIB_COV}
+    echo "export OBJECTS=\"${OBJECTS_COV}\"" >> ${BUILD_LIB_COV}
+    echo "export LIBS=\"${LIBS_COV}\"" >> ${BUILD_LIB_COV}
+    echo "export AR=\"${AR}\"" >> ${BUILD_LIB_COV}
+    echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_COV}
     echo >> ${BUILD_LIB_COV}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_LIB_COV}
     update_and_chmod 755 ${BUILD_LIB_COV} build_lib_cov
@@ -917,10 +921,12 @@ update_build_lib() {
     echo "# gen by configure" >> ${BUILD_LIB_DEBUG}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_LIB_DEBUG}
     echo "export CC=\"${CC}\"" >> ${BUILD_LIB_DEBUG}
-    echo "export CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
-    echo "LDFLAGS=\"${LDFLAGS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
-    echo "OBJECTS=\"${OBJECTS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
-    echo "LIBS=\"${LIBS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
+    echo "export CFLAGS=\"${CFLAGS_DEBUG} ${CFLAGS_HOST} ${CFLAGS_TARGET}\"" >> ${BUILD_LIB_DEBUG}
+    echo "export LDFLAGS=\"${LDFLAGS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
+    echo "export OBJECTS=\"${OBJECTS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
+    echo "export LIBS=\"${LIBS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
+    echo "export AR=\"${AR}\"" >> ${BUILD_LIB_DEBUG}
+    echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_DEBUG}
     echo >> ${BUILD_LIB_DEBUG}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_LIB_DEBUG}
     update_and_chmod 755 ${BUILD_LIB_DEBUG} build_lib_debug
@@ -929,10 +935,12 @@ update_build_lib() {
     echo "# gen by configure" >> ${BUILD_LIB_MAIN}
     echo "LOG=\".build/\$1.main.log\"" >> ${BUILD_LIB_MAIN}
     echo "export CC=\"${CC}\"" >> ${BUILD_LIB_MAIN}
-    echo "export CFLAGS=\"${CFLAGS}\"" >> ${BUILD_LIB_MAIN}
-    echo "LDFLAGS=\"${LDFLAGS}\"" >> ${BUILD_LIB_MAIN}
-    echo "OBJECTS=\"${OBJECTS}\"" >> ${BUILD_LIB_MAIN}
-    echo "LIBS=\"${LIBS}\"" >> ${BUILD_LIB_MAIN}
+    echo "export CFLAGS=\"${CFLAGS}\" ${CFLAGS_HOST} ${CFLAGS_TARGET}" >> ${BUILD_LIB_MAIN}
+    echo "export LDFLAGS=\"${LDFLAGS}\"" >> ${BUILD_LIB_MAIN}
+    echo "export OBJECTS=\"${OBJECTS}\"" >> ${BUILD_LIB_MAIN}
+    echo "export LIBS=\"${LIBS}\"" >> ${BUILD_LIB_MAIN}
+    echo "export AR=\"${AR}\"" >> ${BUILD_LIB_MAIN}
+    echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_MAIN}
     echo >> ${BUILD_LIB_MAIN}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_LIB_MAIN}
     update_and_chmod 755 ${BUILD_LIB_MAIN} build_lib_main
@@ -1146,6 +1154,25 @@ if [ "x$CXX" = "x" ]; then
 fi
 echo "CXX = $CXX" >> ${CONFIG_MK}
 
+if [ "x$host" != "x" ]; then
+    echo "host = $host" >> ${CONFIG_MK}
+    echo "CFLAGS_HOST = --host $host" >> ${CONFIG_MK}
+else
+    echo "CFLAGS_HOST =" >> ${CONFIG_MK}
+fi
+if [ "x$target" != "x" ]; then
+    echo "target = $target" >> ${CONFIG_MK}
+    echo "CFLAGS_TARGET = --target $target" >> ${CONFIG_MK}
+else
+    echo "CFLAGS_TARGET =" >> ${CONFIG_MK}
+fi
+if [ "x$AR" != "x" ]; then
+    echo "AR = $AR" >> ${CONFIG_MK}
+fi
+if [ "x$RANLIB" != "x" ]; then
+    echo "RANLIB = $RANLIB" >> ${CONFIG_MK}
+fi
+
 HAVE_GCOV=false
 if [ "x$GCOV" = "xfalse" ]; then
     HAVE_GCOV=false
@@ -1253,12 +1280,5 @@ if [ "x$LIBDIR" = "x" ]; then
     LIBDIR="${PREFIX}/lib"
 fi
 echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}
-
-if [ "x$host" != "x" ]; then
-    echo "host = $host" >> ${CONFIG_MK}
-fi
-if [ "x$target" != "x" ]; then
-    echo "target = $target" >> ${CONFIG_MK}
-fi
 
 config_no_undefined
