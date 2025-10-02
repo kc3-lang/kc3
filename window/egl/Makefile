@@ -37,13 +37,13 @@ asan:
 	if ${HAVE_XCB}; then ${MAKE} -C xcb asan; fi
 
 clean:
-	rm -f ${CLEANFILES}
+	rm -rf ${CLEANFILES}
 	${MAKE} -C demo clean
 	if ${HAVE_ANDROID}; then ${MAKE} -C android clean; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean; fi
 
 clean_cov:
-	rm -f ${CLEANFILES_COV}
+	rm -rf ${CLEANFILES_COV}
 	${MAKE} -C demo clean_cov
 	if ${HAVE_ANDROID}; then ${MAKE} -C android clean_cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean_cov; fi
@@ -77,7 +77,7 @@ demo_debug: debug
 	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_debug; fi
 
 distclean:
-	rm -f ${DISTCLEANFILES}
+	rm -rf ${DISTCLEANFILES}
 
 gdb_demo: debug
 	if ${HAVE_ANDROID}; then ${MAKE} -C android gdb_demo; fi

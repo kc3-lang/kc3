@@ -32,10 +32,10 @@ asan:
 	${MAKE} ${LIB_ASAN}
 
 clean:
-	rm -f ${CLEANFILES}
+	rm -rf ${CLEANFILES}
 
 clean_cov:
-	rm -f ${CLEANFILES_COV}
+	rm -rf ${CLEANFILES_COV}
 
 cov:
 	${MAKE} ${LIB_COV}
@@ -49,6 +49,9 @@ demo: build
 demo_debug: debug
 	${MAKE} -C demo demo_debug
 
+distclean:
+	rm -rf ${DISTCLEANFILES}
+
 update_sources:
 	./update_sources
 
@@ -61,6 +64,7 @@ update_sources:
 	cov \
 	debug \
 	demo \
+	distclean \
 	install \
 	test \
 	update_sources \

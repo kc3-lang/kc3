@@ -31,10 +31,10 @@ build:
 	${MAKE} ${LIB}
 
 clean:
-	rm -f ${CLEANFILES}
+	rm -rf ${CLEANFILES}
 
 clean_cov:
-	rm -f ${CLEANFILES_COV}
+	rm -rf ${CLEANFILES_COV}
 
 cov:
 	${MAKE} ${LIB_COV}
@@ -43,7 +43,7 @@ debug:
 	${MAKE} ${LIB_DEBUG}
 
 distclean:
-	rm -f ${DISTCLEANFILES}
+	rm -rf ${DISTCLEANFILES}
 
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/include/libkc3/gl

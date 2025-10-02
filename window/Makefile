@@ -37,13 +37,13 @@ build:
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 build; fi
 
 clean:
-	rm -f ${CLEANFILES}
+	rm -rf ${CLEANFILES}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo clean; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl clean; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 clean; fi
 
 clean_cov:
-	rm -f ${CLEANFILES_COV}
+	rm -rf ${CLEANFILES_COV}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo clean_cov; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl clean_cov; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 clean_cov; fi
@@ -97,6 +97,7 @@ demo_gl_debug: debug
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 demo_debug; fi
 
 distclean:
+	rm -rf ${DISTCLEANFILES}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo distclean; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 distclean; fi
 
