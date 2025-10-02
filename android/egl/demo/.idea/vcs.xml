@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/../../../.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../fonts" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../fonts/Computer Modern" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../fonts/Courier" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../fonts/Courier New" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../fonts/Inter" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../fonts/Noto Sans" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../fonts/opensans" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../kpkg" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../libtommath" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../linenoise" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../runj" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../smtp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../sort" vcs="Git" />
+  </component>
+</project>

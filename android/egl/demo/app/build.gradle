@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
+    namespace 'io.kmx.kc3.window.egl.android.demo'
     compileSdkVersion 30
-    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "io.kmx.kc3.demo"
@@ -34,7 +34,7 @@ android {
 
     sourceSets {
         main {
-            jni.srcDirs = []  // Disable built-in ndk-build
+            jni.srcDirs = ["src/main/jni/libffi"]
         }
     }
 }

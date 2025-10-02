@@ -15,6 +15,14 @@ set -e
 
 cd "$(dirname "$0")"
 
+bool() {
+    case "$2" in
+        false|no|0) eval "$1=false";;
+        true|yes|1) eval "$1=true";;
+        *)          echo "invalid bool $1 $2" >&2; exit 1
+    esac
+}
+
 build_lib() {
     echo >> ${CONFIG_MK}
     echo "$LIB_ASAN: $OBJECTS_ASAN build_lib_asan" >> ${CONFIG_MK}
@@ -168,6 +176,20 @@ c2o() {
 
 c2prog() {
     echo "$@" | sed -e 's/[.]c$//' -e 's/[.]c / /g'
+}
+
+config_android() {
+    if [ "x$HAVE_ANDROID" = "x" ]; then
+        if [ -f /system/lib64/libGLESv2.so ]; then
+            HAVE_ANDROID=true
+        else
+            HAVE_ANDROID=false
+        fi
+    else
+        bool HAVE_ANDROID "$HAVE_ANDROID"
+    fi
+    echo "HAVE_ANDROID = $HAVE_ANDROID" >> ${CONFIG_MK}
+    echo "#define HAVE_ANDROID $HAVE_ANDROID" >> ${CONFIG_H}
 }
 
 config_asan() {
@@ -705,10 +727,13 @@ objc2ext() {
 }
 
 pkg_config() {
+    NAME=$(echo $1 | tr [-a-z] [_A-Z])
     if pkg-config "$1"; then
 	CFLAGS="$CFLAGS $(pkg-config --cflags "$1")"
 	CXXFLAGS="$CXXFLAGS $(pkg-config --cflags "$1")"
 	LIBS="$LIBS $(pkg-config --libs "$1")"
+        echo "HAVE_$NAME = true" >> "${CONFIG_MK}"
+        echo "#define HAVE_$NAME 1" >> "${CONFIG_H}"
     fi
 }
 
@@ -771,36 +796,36 @@ update_build_c() {
     echo "#!/bin/sh" >> ${BUILD_C_ASAN}
     echo "# gen by configure" >> ${BUILD_C_ASAN}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_C_ASAN}
-    echo "CC=\"${CC}\"" >> ${BUILD_C_ASAN}
-    echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_C_ASAN}
-    echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_C_ASAN}
+    echo "export CC=\"${CC}\"" >> ${BUILD_C_ASAN}
+    echo "export CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_C_ASAN}
+    echo "export CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_C_ASAN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_ASAN}
     update_and_chmod 755 ${BUILD_C_ASAN} build_c_asan
 
     echo "#!/bin/sh" >> ${BUILD_C_COV}
     echo "# gen by configure" >> ${BUILD_C_COV}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_C_COV}
-    echo "CC=\"${CC}\"" >> ${BUILD_C_COV}
-    echo "CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_C_COV}
-    echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_C_COV}
+    echo "export CC=\"${CC}\"" >> ${BUILD_C_COV}
+    echo "export CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_C_COV}
+    echo "export CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_C_COV}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_COV}
     update_and_chmod 755 ${BUILD_C_COV} build_c_cov
 
     echo "#!/bin/sh" >> ${BUILD_C_DEBUG}
     echo "# gen by configure" >> ${BUILD_C_DEBUG}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_C_DEBUG}
-    echo "CC=\"${CC}\"" >> ${BUILD_C_DEBUG}
-    echo "CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_C_DEBUG}
-    echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_C_DEBUG}
+    echo "export CC=\"${CC}\"" >> ${BUILD_C_DEBUG}
+    echo "export CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_C_DEBUG}
+    echo "export CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_C_DEBUG}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_DEBUG}
     update_and_chmod 755 ${BUILD_C_DEBUG} build_c_debug
 
     echo "#!/bin/sh" >> ${BUILD_C_MAIN}
     echo "# gen by configure" >> ${BUILD_C_MAIN}
     echo "LOG=\".build/\$1.main.log\"" >> ${BUILD_C_MAIN}
-    echo "CC=\"${CC}\"" >> ${BUILD_C_MAIN}
-    echo "CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_C_MAIN}
-    echo "CFLAGS=\"${CFLAGS}\"" >> ${BUILD_C_MAIN}
+    echo "export CC=\"${CC}\"" >> ${BUILD_C_MAIN}
+    echo "export CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_C_MAIN}
+    echo "export CFLAGS=\"${CFLAGS}\"" >> ${BUILD_C_MAIN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_MAIN}
     update_and_chmod 755 ${BUILD_C_MAIN} build_c_main
 }
@@ -819,36 +844,36 @@ update_build_cxx() {
     echo "#!/bin/sh" >> ${BUILD_CXX_ASAN}
     echo "# gen by configure" >> ${BUILD_CXX_ASAN}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_CXX_ASAN}
-    echo "CXX=\"${CXX}\"" >> ${BUILD_CXX_ASAN}
-    echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_CXX_ASAN}
-    echo "CXXFLAGS=\"${CXXFLAGS_ASAN}\"" >> ${BUILD_CXX_ASAN}
+    echo "export CXX=\"${CXX}\"" >> ${BUILD_CXX_ASAN}
+    echo "export CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_CXX_ASAN}
+    echo "export CXXFLAGS=\"${CXXFLAGS_ASAN}\"" >> ${BUILD_CXX_ASAN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_CXX_ASAN}
     update_and_chmod 755 ${BUILD_CXX_ASAN} build_cxx_asan
 
     echo "#!/bin/sh" >> ${BUILD_CXX_COV}
     echo "# gen by configure" >> ${BUILD_CXX_COV}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_CXX_COV}
-    echo "CXX=\"${CXX}\"" >> ${BUILD_CXX_COV}
-    echo "CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_CXX_COV}
-    echo "CXXFLAGS=\"${CXXFLAGS_COV}\"" >> ${BUILD_CXX_COV}
+    echo "export CXX=\"${CXX}\"" >> ${BUILD_CXX_COV}
+    echo "export CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_CXX_COV}
+    echo "export CXXFLAGS=\"${CXXFLAGS_COV}\"" >> ${BUILD_CXX_COV}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_CXX_COV}
     update_and_chmod 755 ${BUILD_CXX_COV} build_cxx_cov
 
     echo "#!/bin/sh" >> ${BUILD_CXX_DEBUG}
     echo "# gen by configure" >> ${BUILD_CXX_DEBUG}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_CXX_DEBUG}
-    echo "CXX=\"${CXX}\"" >> ${BUILD_CXX_DEBUG}
-    echo "CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_CXX_DEBUG}
-    echo "CXXFLAGS=\"${CXXFLAGS_DEBUG}\"" >> ${BUILD_CXX_DEBUG}
+    echo "export CXX=\"${CXX}\"" >> ${BUILD_CXX_DEBUG}
+    echo "export CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_CXX_DEBUG}
+    echo "export CXXFLAGS=\"${CXXFLAGS_DEBUG}\"" >> ${BUILD_CXX_DEBUG}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_CXX_DEBUG}
     update_and_chmod 755 ${BUILD_CXX_DEBUG} build_cxx_debug
 
     echo "#!/bin/sh" >> ${BUILD_CXX_MAIN}
     echo "# gen by configure" >> ${BUILD_CXX_MAIN}
     echo "LOG=\".build/\$1.main.log\"" >> ${BUILD_CXX_MAIN}
-    echo "CXX=\"${CXX}\"" >> ${BUILD_CXX_MAIN}
-    echo "CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_CXX_MAIN}
-    echo "CXXFLAGS=\"${CXXFLAGS}\"" >> ${BUILD_CXX_MAIN}
+    echo "export CXX=\"${CXX}\"" >> ${BUILD_CXX_MAIN}
+    echo "export CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_CXX_MAIN}
+    echo "export CXXFLAGS=\"${CXXFLAGS}\"" >> ${BUILD_CXX_MAIN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_CXX_MAIN}
     update_and_chmod 755 ${BUILD_CXX_MAIN} build_cxx_main
 }
@@ -867,8 +892,8 @@ update_build_lib() {
     echo "#!/bin/sh" >> ${BUILD_LIB_ASAN}
     echo "# gen by configure" >> ${BUILD_LIB_ASAN}
     echo "LOG=\".build/\$1.asan.log\"" >> ${BUILD_LIB_ASAN}
-    echo "CC=\"${CC}\"" >> ${BUILD_LIB_ASAN}
-    echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_LIB_ASAN}
+    echo "export CC=\"${CC}\"" >> ${BUILD_LIB_ASAN}
+    echo "export CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_LIB_ASAN}
     echo "LDFLAGS=\"${LDFLAGS_ASAN}\"" >> ${BUILD_LIB_ASAN}
     echo "OBJECTS=\"${OBJECTS_ASAN}\"" >> ${BUILD_LIB_ASAN}
     echo "LIBS=\"${LIBS_ASAN}\"" >> ${BUILD_LIB_ASAN}
@@ -879,8 +904,8 @@ update_build_lib() {
     echo "#!/bin/sh" >> ${BUILD_LIB_COV}
     echo "# gen by configure" >> ${BUILD_LIB_COV}
     echo "LOG=\".build/\$1.cov.log\"" >> ${BUILD_LIB_COV}
-    echo "CC=\"${CC}\"" >> ${BUILD_LIB_COV}
-    echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_LIB_COV}
+    echo "export CC=\"${CC}\"" >> ${BUILD_LIB_COV}
+    echo "export CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_LIB_COV}
     echo "LDFLAGS=\"${LDFLAGS_COV}\"" >> ${BUILD_LIB_COV}
     echo "OBJECTS=\"${OBJECTS_COV}\"" >> ${BUILD_LIB_COV}
     echo "LIBS=\"${LIBS_COV}\"" >> ${BUILD_LIB_COV}
@@ -891,8 +916,8 @@ update_build_lib() {
     echo "#!/bin/sh" >> ${BUILD_LIB_DEBUG}
     echo "# gen by configure" >> ${BUILD_LIB_DEBUG}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_LIB_DEBUG}
-    echo "CC=\"${CC}\"" >> ${BUILD_LIB_DEBUG}
-    echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
+    echo "export CC=\"${CC}\"" >> ${BUILD_LIB_DEBUG}
+    echo "export CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
     echo "LDFLAGS=\"${LDFLAGS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
     echo "OBJECTS=\"${OBJECTS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
     echo "LIBS=\"${LIBS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
@@ -903,8 +928,8 @@ update_build_lib() {
     echo "#!/bin/sh" >> ${BUILD_LIB_MAIN}
     echo "# gen by configure" >> ${BUILD_LIB_MAIN}
     echo "LOG=\".build/\$1.main.log\"" >> ${BUILD_LIB_MAIN}
-    echo "CC=\"${CC}\"" >> ${BUILD_LIB_MAIN}
-    echo "CFLAGS=\"${CFLAGS}\"" >> ${BUILD_LIB_MAIN}
+    echo "export CC=\"${CC}\"" >> ${BUILD_LIB_MAIN}
+    echo "export CFLAGS=\"${CFLAGS}\"" >> ${BUILD_LIB_MAIN}
     echo "LDFLAGS=\"${LDFLAGS}\"" >> ${BUILD_LIB_MAIN}
     echo "OBJECTS=\"${OBJECTS}\"" >> ${BUILD_LIB_MAIN}
     echo "LIBS=\"${LIBS}\"" >> ${BUILD_LIB_MAIN}
@@ -925,32 +950,32 @@ update_build_objc() {
     echo "#!/bin/sh" >> ${BUILD_OBJC_ASAN}
     echo "# gen by configure" >> ${BUILD_OBJC_ASAN}
     echo "OBJC=\"${OBJC}\"" >> ${BUILD_OBJC_ASAN}
-    echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_OBJC_ASAN}
-    echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_OBJC_ASAN}
+    echo "export CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_OBJC_ASAN}
+    echo "export CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_OBJC_ASAN}
     echo "${COMPILE} >> ${LOG} 2>&1 || ${COMPILE}" >> ${BUILD_OBJC_ASAN}
     update_and_chmod 755 ${BUILD_OBJC_ASAN} build_objc_asan
 
     echo "#!/bin/sh" >> ${BUILD_OBJC_COV}
     echo "# gen by configure" >> ${BUILD_OBJC_COV}
     echo "OBJC=\"${OBJC}\"" >> ${BUILD_OBJC_COV}
-    echo "CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_OBJC_COV}
-    echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_OBJC_COV}
+    echo "export CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_OBJC_COV}
+    echo "export CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_OBJC_COV}
     echo "${COMPILE} >> ${LOG} 2>&1 || ${COMPILE}" >> ${BUILD_OBJC_COV}
     update_and_chmod 755 ${BUILD_OBJC_COV} build_objc_cov
 
     echo "#!/bin/sh" >> ${BUILD_OBJC_DEBUG}
     echo "# gen by configure" >> ${BUILD_OBJC_DEBUG}
     echo "OBJC=\"${OBJC}\"" >> ${BUILD_OBJC_DEBUG}
-    echo "CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_OBJC_DEBUG}
-    echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_OBJC_DEBUG}
+    echo "export CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_OBJC_DEBUG}
+    echo "export CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_OBJC_DEBUG}
     echo "${COMPILE} >> ${LOG} 2>&1 || ${COMPILE}" >> ${BUILD_OBJC_DEBUG}
     update_and_chmod 755 ${BUILD_OBJC_DEBUG} build_objc_debug
 
     echo "#!/bin/sh" >> ${BUILD_OBJC_MAIN}
     echo "# gen by configure" >> ${BUILD_OBJC_MAIN}
     echo "OBJC=\"${OBJC}\"" >> ${BUILD_OBJC_MAIN}
-    echo "CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_OBJC_MAIN}
-    echo "CFLAGS=\"${CFLAGS}\"" >> ${BUILD_OBJC_MAIN}
+    echo "export CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_OBJC_MAIN}
+    echo "export CFLAGS=\"${CFLAGS}\"" >> ${BUILD_OBJC_MAIN}
     echo "${COMPILE} >> ${LOG} 2>&1 || ${COMPILE}" >> ${BUILD_OBJC_MAIN}
     update_and_chmod 755 ${BUILD_OBJC_MAIN} build_objc_main
 }
@@ -969,8 +994,8 @@ update_build_prog() {
     echo "#!/bin/sh" >> ${BUILD_PROG_ASAN}
     echo "# gen by configure" >> ${BUILD_PROG_ASAN}
     echo "LOG=\".build/\$1.asan.log\"" >> ${BUILD_PROG_ASAN}
-    echo "CC=\"${CC}\"" >> ${BUILD_PROG_ASAN}
-    echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_PROG_ASAN}
+    echo "export CC=\"${CC}\"" >> ${BUILD_PROG_ASAN}
+    echo "export CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_PROG_ASAN}
     echo "LDFLAGS=\"${LDFLAGS_ASAN}\"" >> ${BUILD_PROG_ASAN}
     echo "OBJECTS=\"${OBJECTS_ASAN}\"" >> ${BUILD_PROG_ASAN}
     echo "LIBS=\"${LIBS_ASAN}\"" >> ${BUILD_PROG_ASAN}
@@ -981,8 +1006,8 @@ update_build_prog() {
     echo "#!/bin/sh" >> ${BUILD_PROG_COV}
     echo "# gen by configure" >> ${BUILD_PROG_COV}
     echo "LOG=\".build/\$1.cov.log\"" >> ${BUILD_PROG_COV}
-    echo "CC=\"${CC}\"" >> ${BUILD_PROG_COV}
-    echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_PROG_COV}
+    echo "export CC=\"${CC}\"" >> ${BUILD_PROG_COV}
+    echo "export CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_PROG_COV}
     echo "LDFLAGS=\"${LDFLAGS_COV}\"" >> ${BUILD_PROG_COV}
     echo "OBJECTS=\"${OBJECTS_COV}\"" >> ${BUILD_PROG_COV}
     echo "LIBS=\"${LIBS_COV}\"" >> ${BUILD_PROG_COV}
@@ -993,8 +1018,8 @@ update_build_prog() {
     echo "#!/bin/sh" >> ${BUILD_PROG_DEBUG}
     echo "# gen by configure" >> ${BUILD_PROG_DEBUG}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_PROG_DEBUG}
-    echo "CC=\"${CC}\"" >> ${BUILD_PROG_DEBUG}
-    echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_PROG_DEBUG}
+    echo "export CC=\"${CC}\"" >> ${BUILD_PROG_DEBUG}
+    echo "export CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_PROG_DEBUG}
     echo "LDFLAGS=\"${LDFLAGS_DEBUG}\"" >> ${BUILD_PROG_DEBUG}
     echo "OBJECTS=\"${OBJECTS_DEBUG}\"" >> ${BUILD_PROG_DEBUG}
     echo "LIBS=\"${LIBS_DEBUG}\"" >> ${BUILD_PROG_DEBUG}
@@ -1005,8 +1030,8 @@ update_build_prog() {
     echo "#!/bin/sh" >> ${BUILD_PROG_MAIN}
     echo "# gen by configure" >> ${BUILD_PROG_MAIN}
     echo "LOG=\".build/\$1.main.log\"" >> ${BUILD_PROG_MAIN}
-    echo "CC=\"${CC}\"" >> ${BUILD_PROG_MAIN}
-    echo "CFLAGS=\"${CFLAGS}\"" >> ${BUILD_PROG_MAIN}
+    echo "export CC=\"${CC}\"" >> ${BUILD_PROG_MAIN}
+    echo "export CFLAGS=\"${CFLAGS}\"" >> ${BUILD_PROG_MAIN}
     echo "LDFLAGS=\"${LDFLAGS}\"" >> ${BUILD_PROG_MAIN}
     echo "OBJECTS=\"${OBJECTS}\"" >> ${BUILD_PROG_MAIN}
     echo "LIBS=\"${LIBS}\"" >> ${BUILD_PROG_MAIN}
@@ -1228,5 +1253,12 @@ if [ "x$LIBDIR" = "x" ]; then
     LIBDIR="${PREFIX}/lib"
 fi
 echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}
+
+if [ "x$host" != "x" ]; then
+    echo "host = $host" >> ${CONFIG_MK}
+fi
+if [ "x$target" != "x" ]; then
+    echo "target = $target" >> ${CONFIG_MK}
+fi
 
 config_no_undefined

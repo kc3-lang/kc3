@@ -13,7 +13,6 @@
 #ifndef LIBKC3_WINDOW_H
 #define LIBKC3_WINDOW_H
 
-#include <libkc3/types.h>
 #include "types.h"
 
 /* Stack-allocation compatible functions, call window_clean

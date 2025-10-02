@@ -35,7 +35,7 @@
 #endif
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include <libkc3/types.h>
+#include "../libkc3/types.h"
 
 #define GL_CAMERA_LIGHT_MAX 16          // keep in sync with shader
 

@@ -37,6 +37,9 @@ all:
 include config.mk
 include sources.mk
 
+android:
+	cd android/egl/demo && gradle assembleDebug
+
 asan:
 	${MAKE} -C runj all
 	${MAKE} gen
@@ -1764,6 +1767,7 @@ uninstall:
 #	${MAKE} -C fs uninstall
 
 .PHONY: all \
+	android \
 	asan \
 	assets \
 	build \

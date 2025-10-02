@@ -103,18 +103,16 @@ echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
 echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
 echo "LIBS = $LIBS" >> ${CONFIG_MK}
 
-if [ -f /system/lib64/libGLESv2.so ]; then
-    HAVE_ANDROID=true
-else
-    HAVE_ANDROID=false
-fi
-echo "HAVE_ANDROID = $HAVE_ANDROID" >> ${CONFIG_MK}
-echo "#define HAVE_ANDROID $HAVE_ANDROID" >> ${CONFIG_H}
+config_android
 
-if pkg-config xcb; then
-    HAVE_XCB=true
+if [ "x$HAVE_XCB" = "x" ]; then
+    if pkg-config xcb; then
+        HAVE_XCB=true
+    else
+        HAVE_XCB=false
+    fi
 else
-    HAVE_XCB=false
+    bool HAVE_XCB "$HAVE_XCB"
 fi
 echo "HAVE_XCB = $HAVE_XCB" >> ${CONFIG_MK}
 echo "#define HAVE_XCB $HAVE_XCB" >> ${CONFIG_H}

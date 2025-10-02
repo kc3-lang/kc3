@@ -1535,6 +1535,8 @@ s_env * env_globals_init (s_env *env)
     }
     tag_init_u8(ncpu, hw_ncpu);
   }
+# elif defined(HAVE_ANDROID)
+  tag_init_u8(ncpu, sysconf(_SC_NPROCESSORS_ONLN));
 # else
   tag_init_u8(ncpu, get_nprocs());
 # endif

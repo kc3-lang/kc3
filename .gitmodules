@@ -30,7 +30,22 @@
 	path = sort
 	url = https://git.kmx.io/kmx.io/sort.git
 	branch = master
-[submodule "window/egl/android/project/app/src/main/jni/libffi"]
-	path = window/egl/android/project/app/src/main/jni/libffi
-	url = https://git.kmx.io/kc3-lang/libffi.git
+[submodule "android/egl/demo/app/src/main/jni/libffi"]
+	path = android/egl/demo/app/src/main/jni/libffi
+	url = https://github.com/libffi/libffi.git
 	branch = android
+[submodule "android/egl/demo/app/src/main/jni/libpng"]
+	path = android/egl/demo/app/src/main/jni/libpng
+	url = https://github.com/pnggroup/libpng.git
+[submodule "android/egl/demo/app/src/main/jni/libevent"]
+	path = android/egl/demo/app/src/main/jni/libevent
+	url = https://github.com/libevent/libevent.git
+[submodule "android/egl/demo/app/src/main/jni/portable"]
+	path = android/egl/demo/app/src/main/jni/portable
+	url = https://github.com/libressl/portable.git
+[submodule "android/egl/demo/app/src/main/jni/freetype"]
+	path = android/egl/demo/app/src/main/jni/freetype
+	url = https://gitlab.freedesktop.org/freetype/freetype.git
+[submodule "android/egl/demo/app/src/main/jni/libressl"]
+	path = android/egl/demo/app/src/main/jni/libressl
+	url = https://github.com/libressl/portable.git

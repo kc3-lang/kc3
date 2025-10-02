@@ -1,5 +1,7 @@
 *~
 *.a
+android/egl/demo/app/build/
+android/egl/demo/app/src/main/jni/obj
 bank/
 .build/
 build_c_asan
@@ -29,6 +31,7 @@ config.sh
 *.core
 *.css
 current_test
+.cxx
 *.dll
 .DS_Store
 ekc3/embed
@@ -39,6 +42,7 @@ fs/fuse/mount_kc3fs_asan
 fs/fuse/mount_kc3fs_cov
 fs/fuse/mount_kc3fs_debug
 *.gcno
+.gradle
 *.html
 httpd.log
 httpd/kc3_httpd
@@ -47,6 +51,7 @@ httpd/kc3_httpd_cov
 httpd/kc3_httpd_debug
 httpd/fx/log/*.log
 httpd/fx/static/*.mp4
+.idea
 ikc3/ikc3
 ikc3/ikc3_asan
 ikc3/ikc3_cov
