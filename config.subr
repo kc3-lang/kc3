@@ -893,6 +893,7 @@ update_build_lib() {
     echo "# gen by configure" >> ${BUILD_LIB_ASAN}
     echo "LOG=\".build/\$1.asan.log\"" >> ${BUILD_LIB_ASAN}
     echo "export CC=\"${CC}\"" >> ${BUILD_LIB_ASAN}
+    echo "export LD=\"${LD}\"" >> ${BUILD_LIB_ASAN}
     echo "export CFLAGS=\"${CFLAGS_ASAN}\" ${CFLAGS_HOST} ${CFLAGS_TARGET}" >> ${BUILD_LIB_ASAN}
     echo "export LDFLAGS=\"${LDFLAGS_ASAN}\"" >> ${BUILD_LIB_ASAN}
     echo "export OBJECTS=\"${OBJECTS_ASAN}\"" >> ${BUILD_LIB_ASAN}
@@ -907,6 +908,7 @@ update_build_lib() {
     echo "# gen by configure" >> ${BUILD_LIB_COV}
     echo "LOG=\".build/\$1.cov.log\"" >> ${BUILD_LIB_COV}
     echo "export CC=\"${CC}\"" >> ${BUILD_LIB_COV}
+    echo "export LD=\"${LD}\"" >> ${BUILD_LIB_COV}
     echo "export CFLAGS=\"${CFLAGS_COV} ${CFLAGS_HOST} ${CFLAGS_TARGET}\"" >> ${BUILD_LIB_COV}
     echo "export LDFLAGS=\"${LDFLAGS_COV}\"" >> ${BUILD_LIB_COV}
     echo "export OBJECTS=\"${OBJECTS_COV}\"" >> ${BUILD_LIB_COV}
@@ -921,6 +923,7 @@ update_build_lib() {
     echo "# gen by configure" >> ${BUILD_LIB_DEBUG}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_LIB_DEBUG}
     echo "export CC=\"${CC}\"" >> ${BUILD_LIB_DEBUG}
+    echo "export LD=\"${LD}\"" >> ${BUILD_LIB_DEBUG}
     echo "export CFLAGS=\"${CFLAGS_DEBUG} ${CFLAGS_HOST} ${CFLAGS_TARGET}\"" >> ${BUILD_LIB_DEBUG}
     echo "export LDFLAGS=\"${LDFLAGS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
     echo "export OBJECTS=\"${OBJECTS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
@@ -935,6 +938,7 @@ update_build_lib() {
     echo "# gen by configure" >> ${BUILD_LIB_MAIN}
     echo "LOG=\".build/\$1.main.log\"" >> ${BUILD_LIB_MAIN}
     echo "export CC=\"${CC}\"" >> ${BUILD_LIB_MAIN}
+    echo "export LD=\"${LD}\"" >> ${BUILD_LIB_MAIN}
     echo "export CFLAGS=\"${CFLAGS}\" ${CFLAGS_HOST} ${CFLAGS_TARGET}" >> ${BUILD_LIB_MAIN}
     echo "export LDFLAGS=\"${LDFLAGS}\"" >> ${BUILD_LIB_MAIN}
     echo "export OBJECTS=\"${OBJECTS}\"" >> ${BUILD_LIB_MAIN}
@@ -1166,6 +1170,14 @@ if [ "x$target" != "x" ]; then
 else
     echo "CFLAGS_TARGET =" >> ${CONFIG_MK}
 fi
+
+if [ "x$LD" = "x" ]; then
+    if test -n $(which ld); then
+        LD=ld
+    fi
+fi
+echo "LD = $LD" >> ${CONFIG_MK}
+
 if [ "x$AR" != "x" ]; then
     echo "AR = $AR" >> ${CONFIG_MK}
 fi
