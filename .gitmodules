@@ -49,3 +49,9 @@
 [submodule "android/egl/demo/app/src/main/jni/libressl"]
 	path = android/egl/demo/app/src/main/jni/libressl
 	url = https://github.com/libressl/portable.git
+[submodule "android/egl/demo/app/src/main/jni/libmd"]
+	path = android/egl/demo/app/src/main/jni/libmd
+	url = https://git.hadrons.org/git/libmd.git
+[submodule "android/egl/demo/app/src/main/jni/libbsd"]
+	path = android/egl/demo/app/src/main/jni/libbsd
+	url = https://gitlab.freedesktop.org/libbsd/libbsd.git
