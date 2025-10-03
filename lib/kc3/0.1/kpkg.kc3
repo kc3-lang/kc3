@@ -11,6 +11,7 @@
 ## THIS SOFTWARE.
 
 require File
+require IO
 require Kpkg.Package
 require Sh
 
@@ -95,7 +96,7 @@ defmodule Kpkg do
     }
     ([name | rest]) {
        load()
-       if pkg = get_package(name) do
+       if pkg = Kpkg.get_package(name) do
          main_args(pkg, rest)
        else
          puts("kpkg: package not found: #{name}")
@@ -119,7 +120,7 @@ defmodule Kpkg do
       0
     }
     (pkg, tree, args, 0) {
-      puts("unknown argument : #{args}")
+      puts("kpkg: unknown argument : #{args}")
       1
     }
     (pkg, tree, args, ret) { ret }
@@ -149,13 +150,14 @@ defmodule Kpkg do
     pkg_git_dir = Kpkg.git_dir(pkg)
     if ! File.is_directory?(pkg_git_dir) do
       Kpkg.exec(["mkdir", "-p", Kpkg.git_parent_dir(pkg)])
-      Kpkg.exec(["git", "clone", pkg.git, dir])
-      Kpkg.exec(["git", "submodule", "init"])
-      Kpkg.exec(["git", "submodule", "update", "--recursive",
-                 "--remote"])
+      Kpkg.exec(["git", "clone", pkg.git, pkg_git_dir])
+      File.chdir(pkg_git_dir)
+      Kpkg.exec(["git", "-C", pkg_git_dir, "submodule", "init"])
+      Kpkg.exec(["git", "-C", pkg_git_dir, "submodule", "update",
+                 "--recursive", "--remote"])
     end
     0
-             }
+  }
 
   def usage = fn () {
     puts("""

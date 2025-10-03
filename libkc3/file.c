@@ -287,6 +287,10 @@ bool * file_is_directory (const s_str *path, bool *dest)
   assert(path);
   if (stat(path->ptr.pchar, &sb)) {
     e = errno;
+    if (e == ENOENT) {
+      *dest = false;
+      return dest;
+    }
     err_write_1("file_is_directory: ");
     err_write_1(strerror(e));
     err_write_1(": ");

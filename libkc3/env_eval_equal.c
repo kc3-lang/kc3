@@ -381,8 +381,10 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   case TAG_QUOTE:
   case TAG_STR:
     if (compare_tag(a, b)) {
-      err_puts("env_eval_equal_tag: value mismatch");
-      err_stacktrace();
+      if (false) {
+        err_puts("env_eval_equal_tag: value mismatch");
+        err_stacktrace();
+      }
       return false;
     }
     tag_init_copy(dest, a);
