@@ -57,6 +57,8 @@ defmodule Kpkg do
     Facts.add_tags(db, name, :kpkg_package_alias_target, target)
   }
 
+  ## Package API
+
   def get_kpkg_package = fn (name) {
     Facts.first_with(db, [[name, :is_a, Kpkg.Package],
                           [name, :kpkg_package_dir, dir = ?],
@@ -83,11 +85,6 @@ defmodule Kpkg do
     end
   }
 
-  def load = fn () {
-    File.ensure_directory(dir(), 0o755)
-    Kpkg.Package.load_all()
-  }
-
   ## Main entry point
 
   def main = fn {
@@ -96,7 +93,7 @@ defmodule Kpkg do
       0
     }
     ([name | rest]) {
-       load()
+       Kpkg.load()
        if pkg = Kpkg.get_package(name) do
          main_args(pkg, rest)
        else
@@ -104,6 +101,10 @@ defmodule Kpkg do
          1
        end
      }
+  }
+  def load = fn () {
+    File.ensure_directory(dir(), 0o755)
+    Kpkg.Package.load_all()
   }
 
   ## Argument parsing
