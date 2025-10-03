@@ -12,8 +12,17 @@
 
 defmodule Kpkg.Package do
 
-  defstruct [name: :name,
-             depends_on: [],
+  # Base module for all Kpkg.Package.* modules
+  #
+  # Usage :
+  # ╭─────────────────────────────────────╮
+  # │ require Kpkg                        │
+  # │ Kpkg.defpackage(%Kpkg.Package{...}) │
+  # ╰─────────────────────────────────────╯
+
+  defstruct [name: :sym,
+             default_branch: "master",
+             depends_on: [], # list of :sym or {:sym, "tree"}
              dir: "org/subdir/repo",
              git: "https://github.com/dir.git",
              git_push: "git@github.com:dir.git",

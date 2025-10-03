@@ -15,6 +15,8 @@ require IO
 require Kpkg.Package
 require Sh
 
+# Kpkg
+
 defmodule Kpkg do
 
   ## Configuration
@@ -112,36 +114,39 @@ defmodule Kpkg do
 
   def main_args = fn {
     (pkg, []) { puts(pkg) }
-    (pkg, args) { Kpkg.main_args(pkg, "master", args, 0) }
-    (pkg, tree, ["checkout" | rest], 0) {
-      Kpkg.main_args(pkg, tree, rest,
+    (pkg, args) { Kpkg.main_args(pkg, "master", "", args, 0) }
+    (pkg, tree, arch, ["--arch", arch_arg | rest], 0) {
+      Kpkg.main_args(pkg, tree, arch_arg, rest, 0)
+    }
+    (pkg, tree, arch, ["checkout" | rest], 0) {
+      Kpkg.main_args(pkg, tree, arch, rest,
         Kpkg.checkout(pkg, tree))
     }
-    (pkg, tree, ["checkout-clean" | rest], 0) {
-      Kpkg.main_args(pkg, tree, rest,
+    (pkg, tree, arch, ["checkout-clean" | rest], 0) {
+      Kpkg.main_args(pkg, tree, arch, rest,
         Kpkg.checkout_clean(pkg, tree))
     }
-    (pkg, tree, ["clone" | rest], 0) {
-      Kpkg.main_args(pkg, tree, rest,
+    (pkg, tree, arch, ["clone" | rest], 0) {
+      Kpkg.main_args(pkg, tree, arch, rest,
         Kpkg.clone(pkg))
     }
-    (pkg, tree, ["clone-clean" | rest], 0) {
-      Kpkg.main_args(pkg, tree, rest,
+    (pkg, tree, arch, ["clone-clean" | rest], 0) {
+      Kpkg.main_args(pkg, tree, arch, rest,
         Kpkg.clone_clean(pkg))
     }
-    (pkg, tree, ["info" | rest], 0) {
+    (pkg, tree, arch, ["info" | rest], 0) {
       puts(pkg)
-      Kpkg.main_args(pkg, tree, rest, 0)
+      Kpkg.main_args(pkg, tree, arch, rest, 0)
     }
-    (pkg, tree, ["--tree", tree_arg | rest], 0) {
-      Kpkg.main_args(pkg, tree_arg, rest, 0)
+    (pkg, tree, arch, ["--tree", tree_arg | rest], 0) {
+      Kpkg.main_args(pkg, tree_arg, arch, rest, 0)
     }
-    (pkg, tree, [], 0) { 0 }
-    (pkg, tree, args, 0) {
-      puts("kpkg: unknown argument : #{args}")
+    (pkg, tree, arch, [], 0) { 0 }
+    (pkg, tree, arch, args, 0) {
+      puts("kpkg: unknown argument: #{args}")
       1
     }
-    (pkg, tree, args, ret) { ret }
+    (pkg, tree, arch, args, ret) { ret }
   }
 
   def usage = fn () {
@@ -173,12 +178,20 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
     "#{Kpkg.dir()}/git/#{File.dirname(pkg.dir)}"
   }
 
+  def src_parent_dir = fn (pkg) {
+    "#{Kpkg.dir()}/src/#{pkg.dir}"
+  }
+
+  ## Tree configuration
+
   def src_dir = fn (pkg, tree) {
     "#{Kpkg.dir()}/src/#{pkg.dir}/#{tree}"
   }
 
-  def src_parent_dir = fn (pkg) {
-    "#{Kpkg.dir()}/src/#{pkg.dir}"
+  ## Arch configuration
+
+  def arch_dir = fn (pkg, tree, arch) {
+    "#{Kpkg.dir()}/arch/#{arch}/src/#{pkg.dir}/#{tree}"
   }
 
   ## Internal API
@@ -195,7 +208,19 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
     end
   }
 
-  ## Main API
+  ## Main API - sources from git
+
+  def autogen = fn (pkg, tree) {
+    Kpkg.checkout(pkg, tree)
+    pkg_src_dir = Kpkg.src_dir(pkg, tree)
+    if File.exists?(pkg_src_dir + "/autogen.sh") do
+      Kpkg.exec(["/bin/sh", "-c", "cd #{Sh.escape(pkg_src_dir)} && /bin/sh autogen.sh"])
+    else
+      if File.exists?(pkg_src_dir + "/autogen") do
+        Kpkg.exec(["/bin/sh", "-c", "cd #{Sh.escape(pkg_src_dir)} && /bin/sh autogen"])
+      end
+    end
+  }
 
   def checkout = fn (pkg, tree) {
     Kpkg.clone(pkg)
@@ -207,6 +232,7 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
       Kpkg.exec(["git", "-C", pkg_src_dir, "submodule", "init"])
       Kpkg.exec(["git", "-C", pkg_src_dir, "submodule", "update",
                  "--recursive", "--remote"])
+      Kpkg.autogen(pkg, tree)
     end
     0
   }
@@ -238,6 +264,29 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
     end
     0
   }
+
+  ## Main API - dependencies
+
+  def install_dependencies = fn (pkg, tree, arch) {
+    List.each(pkg.depends_on, fn (dep_name) {
+      if type(dep_name) == Tuple do
+        {dep_name, dep_tree} = ^ dep_name
+        dep_pkg = Kpkg.get_package(dep_name)
+      else
+        dep_pkg = Kpkg.get_package(dep_name)
+        dep_tree = dep_pkg.default_branch
+      end
+      Kpkg.install(dep_pkg, dep_tree, arch)
+    })
+  }
+
+  ## Main API - build
+
+  def configure = fn (pkg, tree, arch) {
+    Kpkg.install_dependencies(pkg, tree, arch)
+  }
+
+  ## Main API - misc
 
   def info = fn (pkg, tree) {
     puts("#{pkg}")
