@@ -576,7 +576,6 @@ KC3_C_SOURCES = \
 	"libkc3/fd.h" \
 	"libkc3/file.c" \
 	"libkc3/file.h" \
-	"libkc3/float.h" \
 	"libkc3/fn.c" \
 	"libkc3/fn.h" \
 	"libkc3/fn_clause.c" \

@@ -117,7 +117,6 @@ HEADERS = \
 	"facts_with_cursor.h" \
 	"fd.h" \
 	"file.h" \
-	"float.h" \
 	"fn.h" \
 	"fn_clause.h" \
 	"frame.h" \
