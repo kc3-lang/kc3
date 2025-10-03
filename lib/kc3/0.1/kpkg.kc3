@@ -63,9 +63,10 @@ defmodule Kpkg do
     Facts.first_with(db, [[name, :is_a, Kpkg.Package],
                           [name, :kpkg_package_dir, dir = ?],
                           [name, :kpkg_package_git, git = ?],
+                          [name, :kpkg_package_git_push, git_push = ?],
                           [name, :kpkg_package_module, module = ?]],
       fn (fact) { %Kpkg.Package{name: name, dir: dir, git: git,
-                                module: module} })
+                                git_push: git_push, module: module} })
   }
   
   def get_kpkg_package_alias = fn (name) {
@@ -110,7 +111,12 @@ defmodule Kpkg do
   ## Argument parsing
 
   def main_args = fn {
+    (pkg, []) { puts(pkg) }
     (pkg, args) { Kpkg.main_args(pkg, "master", args, 0) }
+    (pkg, tree, ["checkout" | rest], 0) {
+      Kpkg.main_args(pkg, tree, rest,
+        Kpkg.checkout(pkg, tree))
+    }
     (pkg, tree, ["clean-source-tree" | rest], 0) {
       Kpkg.main_args(pkg, tree, rest,
         Kpkg.clean_source_tree(pkg, tree))
@@ -123,12 +129,12 @@ defmodule Kpkg do
       Kpkg.main_args(pkg, tree, rest,
         Kpkg.clone(pkg))
     }
+    (pkg, tree, ["info" | rest], 0) {
+      puts(pkg)
+      Kpkg.main_args(pkg, tree, rest, 0)
+    }
     (pkg, tree, ["--tree", tree_arg | rest], 0) {
       Kpkg.main_args(pkg, tree_arg, rest, 0)
-    }
-    (pkg, tree, ["checkout" | rest], 0) {
-      Kpkg.main_args(pkg, tree, rest,
-        Kpkg.checkout(pkg, tree))
     }
     (pkg, tree, [], 0) { 0 }
     (pkg, tree, args, 0) {
@@ -144,10 +150,10 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
  Options :
   --tree TREE           work on $TREE
  Source directory commands :
-  checkout              into src/$DIR/$TREE
-  clone                 into git/$DIR
-  clean-source-tree     clean src/$DIR/$TREE
-  clean-source-git      clean git/$DIR
+  checkout              git checkout $TREE into src/$DIR/$TREE
+  checkout-clean        remove checkout files :  src/$DIR/$TREE
+  clone                 git clone into git/$DIR
+  clone-clean           remove git repo files: git/$DIR
   clean-sources         clean src/$DIR and git/$DIR
  Build commands :
   configure
@@ -167,8 +173,12 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
     "#{Kpkg.dir()}/git/#{File.dirname(pkg.dir)}"
   }
 
-  def tree_dir = fn (pkg, tree) {
+  def src_dir = fn (pkg, tree) {
     "#{Kpkg.dir()}/src/#{pkg.dir}/#{tree}"
+  }
+
+  def src_parent_dir = fn (pkg) {
+    "#{Kpkg.dir()}/src/#{pkg.dir}"
   }
 
   ## Internal API
@@ -186,6 +196,20 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
   }
 
   ## Main API
+
+  def checkout = fn (pkg, tree) {
+    Kpkg.clone(pkg)
+    pkg_git_dir = Kpkg.git_dir(pkg) + "/.git"
+    pkg_src_dir = Kpkg.src_dir(pkg, tree)
+    if ! File.is_directory?(pkg_src_dir) do
+      Kpkg.exec(["mkdir", "-p", Kpkg.src_parent_dir(pkg)])
+      Kpkg.exec(["git", "clone", pkg_git_dir, pkg_src_dir])
+      Kpkg.exec(["git", "-C", pkg_src_dir, "submodule", "init"])
+      Kpkg.exec(["git", "-C", pkg_src_dir, "submodule", "update",
+                 "--recursive", "--remote"])
+    end
+    0
+  }
 
   def clean_source_git = fn (pkg) {
     pkg_git_dir = Kpkg.git_dir(pkg)
