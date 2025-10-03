@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/assert.h>
+#include "../libkc3/assert.h"
 #include "application.h"
 
 #define G_APPLICATION_DEFAULT_FLAGS 0

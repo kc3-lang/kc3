@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <math.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "vec2.h"
 
 s_vec2 * vec2_init (s_vec2 *p, f32 x, f32 y)

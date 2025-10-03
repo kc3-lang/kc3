@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <math.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "gl_object.h"
 #include "gl_box.h"
 

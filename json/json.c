@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "json.h"
 
 sw json_buf_inspect (s_buf *buf, const s_tag *tag)

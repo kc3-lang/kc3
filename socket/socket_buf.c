@@ -25,7 +25,7 @@
 #endif
 
 #include <unistd.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "./socket.h"
 #include "socket_addr.h"
 #include "socket_buf.h"

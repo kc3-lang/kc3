@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <xkbcommon/xkbcommon.h>
-#include <libkc3/kc3.h>
+#include "../../libkc3/kc3.h"
 #include "../window.h"
 #include "../../gl/gl_deprecated.h"
 #include "window_sdl2.h"

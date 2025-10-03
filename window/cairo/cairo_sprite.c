@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/kc3.h>
+#include "../../libkc3/kc3.h"
 #include "cairo_sprite.h"
 
 void cairo_sprite_blit (const s_cairo_sprite *sprite, uw frame,

@@ -15,7 +15,7 @@
 
 #include <gtk/gtk.h>
 #include <gsk/gsk.h>
-#include <libkc3/types.h>
+#include "../libkc3/types.h"
 
 typedef struct action_callback s_action_callback;
 

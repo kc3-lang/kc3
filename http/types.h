@@ -19,7 +19,7 @@
 # include <sys/socket.h>
 #endif
 
-#include <libkc3/types.h>
+#include "../libkc3/types.h"
 
 /* 1 */
 typedef s32                  t_socket;

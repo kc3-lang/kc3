@@ -13,7 +13,7 @@
 #ifndef KC3_JSON_H
 #define KC3_JSON_H
 
-#include <libkc3/types.h>
+#include "../libkc3/types.h"
 
 sw      json_buf_inspect (s_buf *buf, const s_tag *tag);
 sw      json_buf_inspect_bool (s_buf *buf, bool b);

@@ -1,4 +1,4 @@
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 
 void display_min_max() {
   s8 s8_min = S8_MIN;

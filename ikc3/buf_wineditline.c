@@ -15,7 +15,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <readline.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 
 typedef struct buf_wineditline {
   s_buf       buf;

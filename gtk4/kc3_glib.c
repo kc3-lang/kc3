@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "kc3_glib.h"
 
 bool g_kc3_g_main_stop = false;

@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "gsk_gl_renderer.h"
 
 GskRenderer ** kc3_gtk4_gsk_gl_renderer_new (GskRenderer **dest)

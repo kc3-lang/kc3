@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <math.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "dvec3.h"
 
 s_dvec3 * dvec3_init (s_dvec3 *p, f64 x, f64 y, f64 z)

@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/assert.h>
+#include "../libkc3/assert.h"
 #include "action_map.h"
 
 void kc3_gtk4_action_map_add_action (GActionMap **map,

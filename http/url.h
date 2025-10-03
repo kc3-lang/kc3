@@ -13,7 +13,7 @@
 #ifndef URL_H
 #define URL_H
 
-#include <libkc3/types.h>
+#include "../libkc3/types.h"
 
 s_str * url_escape (const s_str *src, s_str *dest);
 sw      url_escape_size (const s_str *src);

@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <event2/event.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include <signal.h>
 #include "event.h"
 

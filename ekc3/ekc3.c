@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <string.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include <unistd.h>
 #include "ekc3.h"
 #include "html.h"

@@ -13,7 +13,7 @@
 #ifndef KC3_FS_TYPES_H
 #define KC3_FS_TYPES_H
 
-#include <libkc3/types.h>
+#include "../../libkc3/types.h"
 
 /* Type definitions. */
 

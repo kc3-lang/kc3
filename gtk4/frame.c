@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/alloc.h>
-#include <libkc3/assert.h>
+#include "../libkc3/alloc.h"
+#include "../libkc3/assert.h"
 #include "frame.h"
 
 void kc3_gtk4_frame_delete (GtkFrame **frame)

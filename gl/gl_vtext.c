@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "gl_vtext.h"
 
 void gl_vtext_clean (s_gl_text *text)

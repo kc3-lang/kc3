@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <string.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "http.h"
 #include "http_request.h"
 #include "url.h"

@@ -29,7 +29,7 @@
 #endif
 
 #include <png.h>
-#include <libkc3/types.h>
+#include "../../libkc3/types.h"
 #include "../types.h"
 
 typedef struct cairo_font   s_cairo_font;

@@ -12,7 +12,7 @@
  */
 #include "md4c.h"
 #include "md4c-html.h"
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "markdown.h"
 
 s32 markdown_titles_enter_block (MD_BLOCKTYPE type, void *detail,

@@ -13,6 +13,6 @@
 #ifndef KC3_HTTPD_H
 #define KC3_HTTPD_H
 
-#include <libkc3/http/types.h>
+#include "../libkc3/http/types.h"
 
 #endif /* KC3_HTTPD_H */

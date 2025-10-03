@@ -10,9 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/assert.h>
-#include <libkc3/s32.h>
-#include <libkc3/sym.h>
+#include "../libkc3/assert.h"
+#include "../libkc3/s32.h"
+#include "../libkc3/sym.h"
 #include "widget.h"
 
 GtkWidget ** kc3_gtk4_widget_set_halign (GtkWidget **widget,

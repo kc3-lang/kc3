@@ -10,13 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/assert.h>
-#include <libkc3/callable.h>
-#include <libkc3/eval.h>
-#include <libkc3/list.h>
-#include <libkc3/pcallable.h>
-#include <libkc3/tag.h>
-#include <libkc3/tuple.h>
+#include "../libkc3/assert.h"
+#include "../libkc3/callable.h"
+#include "../libkc3/eval.h"
+#include "../libkc3/list.h"
+#include "../libkc3/pcallable.h"
+#include "../libkc3/tag.h"
+#include "../libkc3/tuple.h"
 #include "signal.h"
 
 void kc3_gtk4_signal_callback (GObject *object, s_tuple *tuple)

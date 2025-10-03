@@ -13,7 +13,7 @@
 #ifndef KC3_TLS_H
 #define KC3_TLS_H
 
-#include <libkc3/types.h>
+#include "../libkc3/types.h"
 
 /* Library initialization. */
 bool kc3_tls_init (void);

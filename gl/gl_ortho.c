@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <math.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "gl_deprecated.h"
 #include "mat4.h"
 #include "gl_ortho.h"

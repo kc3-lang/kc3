@@ -17,7 +17,7 @@
 # error "not supposed to be exposed to userland"
 #endif
 
-#include <libkc3/types.h>
+#include "../../libkc3/types.h"
 
 /* Type definitions. */
 

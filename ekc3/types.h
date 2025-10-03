@@ -13,7 +13,7 @@
 #ifndef EKC3_TYPES_H
 #define EKC3_TYPES_H
 
-#include <libkc3/types.h>
+#include "../libkc3/types.h"
 
 typedef enum {
   EKC3_STATE_RAW = 0,

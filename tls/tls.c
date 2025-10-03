@@ -18,7 +18,7 @@
 # include <stdlib.h>
 #endif
 #include <tls.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "tls.h"
 
 s_str * kc3_tls_ca_cert_path (s_str *dest)

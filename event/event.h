@@ -13,7 +13,7 @@
 #ifndef KC3_EVENT_H
 #define KC3_EVENT_H
 
-#include <libkc3/types.h>
+#include "../libkc3/types.h"
 
 /* Heap-allocation functions, call *_delete after use. */
 struct event_base * kc3_event_base_new (void);

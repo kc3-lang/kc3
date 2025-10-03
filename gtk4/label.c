@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/assert.h>
+#include "../libkc3/assert.h"
 #include "label.h"
 
 GtkWidget ** kc3_gtk4_label_new (GtkWidget **dest, s_str *str)

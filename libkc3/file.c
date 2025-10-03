@@ -280,21 +280,21 @@ s_str * file_ext (const s_str *path, s_str *dest)
   return str_init_slice(dest, path, dot_pos + 1, -1);
 }
 
-bool file_rename (const s_str *from, const s_str *to)
+bool * file_is_directory (const s_str *path, bool *dest)
 {
-  sw e;
-  if (rename(from->ptr.pchar, to->ptr.pchar)) {
+  s32 e;
+  struct stat sb;
+  assert(path);
+  if (stat(path->ptr.pchar, &sb)) {
     e = errno;
-    err_write_1("file_rename: rename: ");
-    err_inspect_str(from);
-    err_write_1(": ");
-    err_inspect_str(to);
-    err_write_1(": ");
+    err_write_1("file_is_directory: ");
     err_write_1(strerror(e));
-    err_write_1("\n");
-    return false;
+    err_write_1(": ");
+    err_puts(path->ptr.pchar);
+    return NULL;
   }
-  return true;
+  *dest = S_ISDIR(sb.st_mode) ? true : false;
+  return dest;
 }
 
 #if ! (defined(WIN32) || defined(WIN64))
@@ -450,68 +450,6 @@ s64 * file_open_w (const s_str *path, s64 *dest)
   return dest;
 }
 
-s_str * file_read_slice (s_str *path, u64 start, u64 end, s_str *dest)
-{
-  s64 fd;
-  char *p = NULL;
-  s64 r;
-  s64 remaining;
-  s64 size;
-  s_str tmp = {0};
-  if (! file_open_r(path, &fd))
-    return NULL;
-  if ((r = lseek(fd, start, SEEK_SET)) < 0 ||
-      (u64) r != start) {
-    err_puts("file_read_slice: lseek 1");
-    assert(! "file_read_slice: lseek 1");
-    close(fd);
-    return NULL;
-  }
-  if ((r = lseek(fd, 0, SEEK_END)) < 0) {
-    err_puts("file_read_slice: lseek 2");
-    assert(! "file_read_slice: lseek 2");
-    close(fd);
-    return NULL;
-  }
-  if ((u64) r < end)
-    end = r;
-  if ((r = lseek(fd, start, SEEK_SET)) < 0 ||
-      (u64) r != start) {
-    err_puts("file_read_slice: lseek 3");
-    assert(! "file_read_slice: lseek 3");
-    close(fd);
-    return NULL;
-  }
-  if (! (size = end - start)) {
-    close(fd);
-    return str_init_empty(dest);
-  }
-  if (! (p = alloc(size))) {
-    close(fd);
-    return NULL;
-  }
-  str_init(&tmp, p, size, p);
-  remaining = size;
-  while (remaining > 0) {
-    if ((r = read(fd, p, remaining)) <= 0) {
-      err_puts("file_read_slice: read");
-      assert(! "file_read_slice: read");
-      free(p);
-      close(fd);
-      return NULL;
-    }
-    remaining -= r;
-    p += r;
-  }
-  if (remaining < 0) {
-    err_puts("file_read_slice: buffer overflow");
-    assert(! "file_read_slice: buffer overflow");
-    abort();
-  }
-  *dest = tmp;
-  return dest;
-}
-
 s_str * file_pwd (s_str *dest)
 {
   char buf[PATH_MAX];
@@ -626,6 +564,85 @@ s_str * file_read_max (const s_str *path, uw max, s_str *dest)
   free(buf);
   *dest = tmp;
   return dest;
+}
+
+s_str * file_read_slice (s_str *path, u64 start, u64 end, s_str *dest)
+{
+  s64 fd;
+  char *p = NULL;
+  s64 r;
+  s64 remaining;
+  s64 size;
+  s_str tmp = {0};
+  if (! file_open_r(path, &fd))
+    return NULL;
+  if ((r = lseek(fd, start, SEEK_SET)) < 0 ||
+      (u64) r != start) {
+    err_puts("file_read_slice: lseek 1");
+    assert(! "file_read_slice: lseek 1");
+    close(fd);
+    return NULL;
+  }
+  if ((r = lseek(fd, 0, SEEK_END)) < 0) {
+    err_puts("file_read_slice: lseek 2");
+    assert(! "file_read_slice: lseek 2");
+    close(fd);
+    return NULL;
+  }
+  if ((u64) r < end)
+    end = r;
+  if ((r = lseek(fd, start, SEEK_SET)) < 0 ||
+      (u64) r != start) {
+    err_puts("file_read_slice: lseek 3");
+    assert(! "file_read_slice: lseek 3");
+    close(fd);
+    return NULL;
+  }
+  if (! (size = end - start)) {
+    close(fd);
+    return str_init_empty(dest);
+  }
+  if (! (p = alloc(size))) {
+    close(fd);
+    return NULL;
+  }
+  str_init(&tmp, p, size, p);
+  remaining = size;
+  while (remaining > 0) {
+    if ((r = read(fd, p, remaining)) <= 0) {
+      err_puts("file_read_slice: read");
+      assert(! "file_read_slice: read");
+      free(p);
+      close(fd);
+      return NULL;
+    }
+    remaining -= r;
+    p += r;
+  }
+  if (remaining < 0) {
+    err_puts("file_read_slice: buffer overflow");
+    assert(! "file_read_slice: buffer overflow");
+    abort();
+  }
+  *dest = tmp;
+  return dest;
+}
+
+bool file_rename (const s_str *from, const s_str *to)
+{
+  sw e;
+  if (rename(from->ptr.pchar, to->ptr.pchar)) {
+    e = errno;
+    err_write_1("file_rename: rename: ");
+    err_inspect_str(from);
+    err_write_1(": ");
+    err_inspect_str(to);
+    err_write_1(": ");
+    err_write_1(strerror(e));
+    err_write_1("\n");
+    return false;
+  }
+  return true;
 }
 
 s_str * file_search (const s_str *suffix, const s_sym *mode,

@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <string.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "embed.h"
 
 s_tag * embed_parse_template (s_buf *input, s_tag *dest)

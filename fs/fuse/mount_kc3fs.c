@@ -15,7 +15,7 @@
 #include <fuse.h>
 #include <fuse_opt.h>
 #include <string.h>
-#include <libkc3/kc3.h>
+#include "../../libkc3/kc3.h"
 #include "types.h"
 
 static int fs_readdir (const char *path, void *data,

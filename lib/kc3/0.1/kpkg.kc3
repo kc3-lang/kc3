@@ -12,35 +12,38 @@
 
 require File
 require Kpkg.Package
+require Sh
 
 defmodule Kpkg do
 
-  def dir = do
-    dir = if kpg_dir = getenv("KPKG_DIR") do
-      kpkg_dir
+  def dir = fn () {
+    dir = if from_env = getenv("KPKG_DIR") do
+      from_env
     else
       if home = getenv("HOME") do
         "#{home}/kpkg/"
       end
     end
     if Str.ends_with?(dir, "/") do
-      dir
+      Str.slice(dir, 0, -2)
     else
-      dir + "/"
+      dir
     end
-  end
+  }
 
   def db = Facts.database()
 
   def defpackage = fn (package) {
-    Facts.add_tags(db, package.name, :is_a, Kpkg.Package)
-    Facts.replace_tags(db, package.name,
+    Facts.add_tags(Kpkg.db, package.name, :is_a, Kpkg.Package)
+    Facts.replace_tags(Kpkg.db, package.name,
       :kpkg_package_depends_on, package.depends_on)
-    Facts.replace_tags(db, package.name,
+    Facts.replace_tags(Kpkg.db, package.name,
       :kpkg_package_dir, package.dir)
-    Facts.replace_tags(db, package.name,
+    Facts.replace_tags(Kpkg.db, package.name,
       :kpkg_package_git, package.git)
-    Facts.replace_tags(db, package.name,
+    Facts.replace_tags(Kpkg.db, package.name,
+      :kpkg_package_git_push, package.git_push)
+    Facts.replace_tags(Kpkg.db, package.name,
       :kpkg_package_module, package.module)
   }
 
@@ -81,13 +84,81 @@ defmodule Kpkg do
   }
 
   def load = fn () {
-    File.ensure_directory(dir, 0o755)
+    File.ensure_directory(dir(), 0o755)
     Kpkg.Package.load_all()
   }
 
   def main = fn {
     ([]) {
-      puts("""
+      Kpkg.usage()
+      0
+    }
+    ([name | rest]) {
+       load()
+       if pkg = get_package(name) do
+         main_args(pkg, rest)
+       else
+         puts("kpkg: package not found: #{name}")
+         1
+       end
+     }
+  }
+
+  def main_args = fn {
+    (pkg, args) { Kpkg.main_args(pkg, "master", args, 0) }
+    (pkg, tree, ["clone" | rest], 0) {
+      Kpkg.main_args(pkg, tree, rest, Kpkg.clone(pkg))
+    }
+    (pkg, tree, ["--tree", tree_arg | rest], 0) {
+      Kpkg.main_args(pkg, tree_arg, rest, 0)
+    }
+    (pkg, tree, ["checkout" | rest], 0) {
+      Kpkg.main_args(pkg, tree, rest, Kpkg.checkout(pkg, tree))
+    }
+    (pkg, tree, [], 0) {
+      0
+    }
+    (pkg, tree, args, 0) {
+      puts("unknown argument : #{args}")
+      1
+    }
+    (pkg, tree, args, ret) { ret }
+  }
+
+  def git_dir = fn (pkg) {
+    "#{Kpkg.dir()}/git/#{pkg.dir}"
+  }
+
+  def git_parent_dir = fn (pkg) {
+    "#{Kpkg.dir()}/git/#{File.dirname(pkg.dir)}"
+  }
+
+  def exec = fn (cmd) {
+    puts(List.join(cmd, " "))
+    result = system(cmd)
+    if (result && result != "") do
+      if (Str.ends_with?(result, "\n")) do
+        IO.write_str(result)
+      else
+        IO.puts(result)
+      end
+    end
+  }
+
+  def clone = fn (pkg) {
+    pkg_git_dir = Kpkg.git_dir(pkg)
+    if ! File.is_directory?(pkg_git_dir) do
+      Kpkg.exec(["mkdir", "-p", Kpkg.git_parent_dir(pkg)])
+      Kpkg.exec(["git", "clone", pkg.git, dir])
+      Kpkg.exec(["git", "submodule", "init"])
+      Kpkg.exec(["git", "submodule", "update", "--recursive",
+                 "--remote"])
+    end
+    0
+             }
+
+  def usage = fn () {
+    puts("""
 Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
  Options :
   --tree TREE           work on $TREE
@@ -103,32 +174,5 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
   build                 run parallel build
   clean-build           remove object files
 """)
-      0
-    }
-    ([name | rest]) {
-       load()
-       if pkg = get_package(name) do
-         main_args(pkg, rest)
-       else
-         puts("kpkg: package not found: #{name}")
-         1
-       end
-     }
   }
-
-  def main_args = fn {
-    (pkg, args) { main_args(pkg, "master", args, 0) }
-    (pkg, tree, ["--tree", tree_arg | rest], 0) {
-      main_args(pkg, tree_arg, rest, 0)
-    }
-    (pkg, tree, ["checkout" | rest], 0) {
-      main_args(pkg, tree, rest, fetch(pkg, tree))
-    }
-    (pkg, tree, [], 0) {
-      info(pkg, tree)
-      0
-    }
-    (pkg, tree, args, ret) { ret }
-  }
-
 end

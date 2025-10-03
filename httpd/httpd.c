@@ -16,7 +16,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
-#include <libkc3/kc3.h>
+#include "../libkc3/kc3.h"
 #include "config.h"
 
 int main (int argc, char **argv)
