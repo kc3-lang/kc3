@@ -17,6 +17,8 @@ require Sh
 
 defmodule Kpkg do
 
+  ## Configuration
+
   def dir = fn () {
     dir = if from_env = getenv("KPKG_DIR") do
       from_env
@@ -33,6 +35,8 @@ defmodule Kpkg do
   }
 
   def db = Facts.database()
+
+  ## Package definition
 
   def defpackage = fn (package) {
     Facts.add_tags(Kpkg.db, package.name, :is_a, Kpkg.Package)
@@ -79,15 +83,12 @@ defmodule Kpkg do
     end
   }
 
-  def info = fn (pkg, tree) {
-    puts("#{pkg}")
-    puts("tree: #{tree}")
-  }
-
   def load = fn () {
     File.ensure_directory(dir(), 0o755)
     Kpkg.Package.load_all()
   }
+
+  ## Main entry point
 
   def main = fn {
     ([]) {
@@ -104,6 +105,8 @@ defmodule Kpkg do
        end
      }
   }
+
+  ## Argument parsing
 
   def main_args = fn {
     (pkg, args) { Kpkg.main_args(pkg, "master", args, 0) }
@@ -134,6 +137,27 @@ defmodule Kpkg do
     (pkg, tree, args, ret) { ret }
   }
 
+  def usage = fn () {
+    puts("""
+Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
+ Options :
+  --tree TREE           work on $TREE
+ Source directory commands :
+  checkout              into src/$DIR/$TREE
+  clone                 into git/$DIR
+  clean-source-tree     clean src/$DIR/$TREE
+  clean-source-git      clean git/$DIR
+  clean-sources         clean src/$DIR and git/$DIR
+ Build commands :
+  configure
+  clean-configure       remove configure-done tag
+  build                 run parallel build
+  clean-build           remove object files
+""")
+  }
+
+  ## Package configuration
+
   def git_dir = fn (pkg) {
     "#{Kpkg.dir()}/git/#{pkg.dir}"
   }
@@ -145,6 +169,8 @@ defmodule Kpkg do
   def tree_dir = fn (pkg, tree) {
     "#{Kpkg.dir()}/src/#{pkg.dir}/#{tree}"
   }
+
+  ## Internal API
 
   def exec = fn (cmd) {
     puts(List.join(cmd, " "))
@@ -165,6 +191,7 @@ defmodule Kpkg do
     if File.is_directory?(pkg_git_dir) do
       Kpkg.exec(["rm", "-rf", pkg_git_dir])
     end
+    0
   }
 
   def clean_source_tree = fn (pkg, tree) {
@@ -172,6 +199,7 @@ defmodule Kpkg do
     if File.is_directory?(pkg_tree_dir) do
       Kpkg.exec(["rm", "-rf", pkg_tree_dir])
     end
+    0
   }
 
   def clone = fn (pkg) {
@@ -179,7 +207,6 @@ defmodule Kpkg do
     if ! File.is_directory?(pkg_git_dir) do
       Kpkg.exec(["mkdir", "-p", Kpkg.git_parent_dir(pkg)])
       Kpkg.exec(["git", "clone", pkg.git, pkg_git_dir])
-      File.chdir(pkg_git_dir)
       Kpkg.exec(["git", "-C", pkg_git_dir, "submodule", "init"])
       Kpkg.exec(["git", "-C", pkg_git_dir, "submodule", "update",
                  "--recursive", "--remote"])
@@ -187,22 +214,9 @@ defmodule Kpkg do
     0
   }
 
-  def usage = fn () {
-    puts("""
-Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
- Options :
-  --tree TREE           work on $TREE
- Source directory commands :
-  checkout              into src/$DIR/$TREE
-  clone                 into git/$DIR
-  clean-source-tree     clean src/$DIR/$TREE
-  clean-source-git      clean git/$DIR
-  clean-sources         clean src/$DIR and git/$DIR
- Build commands :
-  configure
-  clean-configure       remove configure-done tag
-  build                 run parallel build
-  clean-build           remove object files
-""")
+  def info = fn (pkg, tree) {
+    puts("#{pkg}")
+    puts("tree: #{tree}")
   }
+
 end
