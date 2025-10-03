@@ -10,9 +10,10 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Kpkg do
+require File
+require Kpkg.Package
 
-  require Kpkg.Package
+defmodule Kpkg do
 
   def dir = do
     dir = if kpg_dir = getenv("KPKG_DIR") do

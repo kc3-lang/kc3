@@ -12,10 +12,11 @@
 
 defmodule Kpkg.Package do
 
-  defstruct [name: (Sym) ?,
+  defstruct [name: :name,
              depends_on: [],
              dir: "org/subdir/repo",
              git: "https://github.com/dir.git",
+             git_push: "git@github.com:dir.git",
              make: "make",
              module: Module]
 

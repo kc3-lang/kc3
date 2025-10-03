@@ -1,3 +1,4 @@
+#!/bin/sh
 ## kc3
 ## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
 ##
@@ -10,14 +11,10 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Kpkg.Repos.Kc3 do
+kc3s "$@" <<EOF
+require Kpkg
 
-  Kpkg.defpackage(%Kpkg.Package{name: :kc3,
-                                depends_on: [:libbsd, :libmd],
-                                dir: "kc3-lang/kc3",
-                                git: "https://git.kmx.io/kc3-lang/kc3.git",
-                                git_push: "git@git.kmx.io:kc3-lang/kc3.git",
-                                module: module()})
+[argv0 | args_rest] = args()
 
-end
-
+exit(Kpkg.main(args_rest))
+EOF
