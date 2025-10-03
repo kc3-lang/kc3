@@ -117,17 +117,17 @@ defmodule Kpkg do
       Kpkg.main_args(pkg, tree, rest,
         Kpkg.checkout(pkg, tree))
     }
-    (pkg, tree, ["clean-source-tree" | rest], 0) {
+    (pkg, tree, ["checkout-clean" | rest], 0) {
       Kpkg.main_args(pkg, tree, rest,
-        Kpkg.clean_source_tree(pkg, tree))
-    }
-    (pkg, tree, ["clean-source-git" | rest], 0) {
-      Kpkg.main_args(pkg, tree, rest,
-        Kpkg.clean_source_git(pkg))
+        Kpkg.checkout_clean(pkg, tree))
     }
     (pkg, tree, ["clone" | rest], 0) {
       Kpkg.main_args(pkg, tree, rest,
         Kpkg.clone(pkg))
+    }
+    (pkg, tree, ["clone-clean" | rest], 0) {
+      Kpkg.main_args(pkg, tree, rest,
+        Kpkg.clone_clean(pkg))
     }
     (pkg, tree, ["info" | rest], 0) {
       puts(pkg)
@@ -203,7 +203,7 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
     if ! File.is_directory?(pkg_src_dir) do
       Kpkg.exec(["mkdir", "-p", Kpkg.src_parent_dir(pkg)])
-      Kpkg.exec(["git", "clone", pkg_git_dir, pkg_src_dir])
+      Kpkg.exec(["git", "clone", "-b", tree, pkg_git_dir, pkg_src_dir])
       Kpkg.exec(["git", "-C", pkg_src_dir, "submodule", "init"])
       Kpkg.exec(["git", "-C", pkg_src_dir, "submodule", "update",
                  "--recursive", "--remote"])
@@ -211,18 +211,10 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
     0
   }
 
-  def clean_source_git = fn (pkg) {
-    pkg_git_dir = Kpkg.git_dir(pkg)
-    if File.is_directory?(pkg_git_dir) do
-      Kpkg.exec(["rm", "-rf", pkg_git_dir])
-    end
-    0
-  }
-
-  def clean_source_tree = fn (pkg, tree) {
-    pkg_tree_dir = Kpkg.tree_dir(pkg, tree)
-    if File.is_directory?(pkg_tree_dir) do
-      Kpkg.exec(["rm", "-rf", pkg_tree_dir])
+  def checkout_clean = fn (pkg, tree) {
+    pkg_src_dir = Kpkg.src_dir(pkg, tree)
+    if File.is_directory?(pkg_src_dir) do
+      Kpkg.exec(["rm", "-rf", pkg_src_dir])
     end
     0
   }
@@ -235,6 +227,14 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
       Kpkg.exec(["git", "-C", pkg_git_dir, "submodule", "init"])
       Kpkg.exec(["git", "-C", pkg_git_dir, "submodule", "update",
                  "--recursive", "--remote"])
+    end
+    0
+  }
+
+  def clone_clean = fn (pkg) {
+    pkg_git_dir = Kpkg.git_dir(pkg)
+    if File.is_directory?(pkg_git_dir) do
+      Kpkg.exec(["rm", "-rf", pkg_git_dir])
     end
     0
   }
