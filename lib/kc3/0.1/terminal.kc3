@@ -17,5 +17,7 @@ defmodule Terminal do
   def dim       = "\x1b[2m"
   def italic    = "\x1b[3m"
   def underline = "\x1b[4m"
+  def fg_blue   = "\x1b[34m"
+  def bg_blue   = "\x1b[44m"
 
 end

@@ -344,11 +344,11 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   }
 
   def resolve_dependencies = fn (list, dependencies_callable) {
-    puts("resolve_dependencies: list: #{inspect(list)}")
+    # puts("resolve_dependencies: list: #{inspect(list)}")
     pkg_tree_tuple_list = []
     while list != [] do
       [dep_name | rest] = ^ list
-      puts("resolve_dependencies: dep_name: #{inspect(dep_name)}")
+      # puts("resolve_dependencies: dep_name: #{inspect(dep_name)}")
       if type(dep_name) == Tuple do
         {dep_name, dep_tree} = ^ dep_name
         dep_pkg = Kpkg.get_package_or_die(dep_name)
@@ -401,14 +401,18 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
     else
       ""
     end
+    reset = "#{Terminal.reset}"
+    title = "#{Terminal.bold}#{Terminal.fg_blue}"
+    puts("#{title}pkg:#{reset}")
     puts("#{pkg}")
-    puts("tree: #{inspect(tree)}")
-    puts("arch:       #{inspect(arch)}#{local_or_empty}")
-    puts("arch_local: #{inspect(arch_local)}")
-    puts("cc:       #{inspect(Kpkg.cc())}")
-    puts("cc_local: #{inspect(Kpkg.cc_local())}")
-    puts("build_dependencies: #{Kpkg.build_dependencies(pkg)}")
-    puts("dependencies: #{Kpkg.dependencies(pkg)}")
+    puts("#{title}tree:#{reset} #{inspect(tree)}")
+    puts("#{title}arch:#{reset}       #{inspect(arch)}#{local_or_empty}")
+    puts("#{title}arch_local:#{reset} #{inspect(arch_local)}")
+    puts("#{title}cc:#{reset}       #{inspect(Kpkg.cc())}")
+    puts("#{title}cc_local:#{reset} #{inspect(Kpkg.cc_local())}")
+    puts("#{title}build_dependencies:#{reset} #{Kpkg.build_dependencies(pkg)}")
+    puts("#{title}dependencies:")
+    puts(Kpkg.dependencies(pkg))
   }
 
 end
