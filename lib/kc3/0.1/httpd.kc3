@@ -296,7 +296,7 @@ defmodule HTTPd do
   def plugs = []
 
   def def_plug = fn (plug) {
-    tmp = List.append(HTTPd.plugs, plug)
+    tmp = List.append_one(HTTPd.plugs, plug)
     def HTTPd.plugs = tmp
   }
 
@@ -310,7 +310,7 @@ defmodule HTTPd do
 
   def def_route = fn (path, controller) {
     Facts.with_transaction(Facts.env_db(), do
-      tmp = List.append(HTTPd.routes,
+      tmp = List.append_one(HTTPd.routes,
         %HTTPd.Route{path: path,
                      controller: controller})
       def HTTPd.routes = tmp

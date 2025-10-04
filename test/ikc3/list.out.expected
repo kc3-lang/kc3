@@ -53,3 +53,5 @@ Str
 [":"]
 List.append([], [])
 []
+List.append_one([], :x)
+[:x]

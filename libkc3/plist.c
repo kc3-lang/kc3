@@ -171,21 +171,44 @@ p_list * plist_init_1 (p_list *plist, const char *p)
   return plist;
 }
 
-p_list * plist_init_append (p_list *plist, p_list *src,
-                            s_tag *tag)
+p_list * plist_init_append (p_list *plist, p_list *a, p_list *b)
 {
-  s_list *s;
-  s_list *tmp;
+  p_list list;
+  p_list tmp;
   p_list *tail;
   tmp = NULL;
   tail = &tmp;
-  s = *src;
-  while (s) {
-    *tail = list_new_tag_copy(&s->tag, NULL);
+  list = *a;
+  while (list) {
+    *tail = list_new_tag_copy(&list->tag, NULL);
     tail = &(*tail)->next.data.plist;
-    s = list_next(s);
+    list = list_next(list);
   }
-  *tail = list_new_tag_copy(tag, NULL);
+  list = *b;
+  while (list) {
+    *tail = list_new_tag_copy(&list->tag, NULL);
+    tail = &(*tail)->next.data.plist;
+    list = list_next(list);
+  }
+  *plist = tmp;
+  return plist;
+}
+
+p_list * plist_init_append_one (p_list *plist, p_list *a, s_tag *b)
+{
+  p_list list;
+  p_list tmp;
+  p_list *tail;
+  tmp = NULL;
+  tail = &tmp;
+  list = *a;
+  while (list) {
+    *tail = list_new_tag_copy(&list->tag, NULL);
+    tail = &(*tail)->next.data.plist;
+    list = list_next(list);
+  }
+  *tail = list_new_tag_copy(b, NULL);
+  tail = &(*tail)->next.data.plist;
   *plist = tmp;
   return plist;
 }

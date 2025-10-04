@@ -70,3 +70,5 @@ quote [":"]
 [":"]
 quote List.append([], [])
 List.append([], [])
+quote List.append_one([], :x)
+List.append_one([], :x)

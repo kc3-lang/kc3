@@ -18,8 +18,7 @@
 /* Stack-allocation compatible functions, call plist_clean after use. */
 void     plist_clean (p_list *plist);
 p_list * plist_init_1 (p_list *plist, const char *p);
-p_list * plist_init_append (p_list *plist, p_list *src,
-                            s_tag *tag);
+p_list * plist_init_append (p_list *plist, p_list *a, p_list *b);
 p_list * plist_init_cast (p_list *plist, const s_sym * const *type,
                           s_tag *tag);
 p_list * plist_init_copy (p_list *plist, p_list *src);
