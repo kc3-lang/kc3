@@ -10,6 +10,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require FD
 require File
 require IO
 require Kpkg.Package
@@ -39,7 +40,7 @@ defmodule Kpkg do
       cc_local()
     }
     (arch) {
-      if arch == arch_local() do
+      if arch == Kpkg.arch_local() do
         return cc_local()
       else
         pathname = File.which(getenv("CC"))
@@ -409,8 +410,8 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
     else
       ""
     end
-    reset = "#{Terminal.reset}"
-    title = "#{Terminal.bold}#{Terminal.fg_blue}"
+    reset = if FD.is_a_tty?(1) do "#{Terminal.reset}" end
+    title = if FD.is_a_tty?(1) do "#{Terminal.bold}#{Terminal.fg_blue}" end
     puts("#{title}pkg:#{reset}")
     puts("#{pkg}")
     puts("#{title}tree:#{reset} #{inspect(tree)}")
@@ -421,7 +422,7 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
     puts("#{title}cc_local:#{reset} #{inspect(Kpkg.cc_local())}")
     puts("#{title}dependencies:#{reset}")
     puts(Kpkg.dependencies(pkg))
-    puts("#{title}uname:#{reset} #{Kpkg.uname()}")
+    puts("#{title}uname:#{reset} #{inspect(Kpkg.uname())}")
   }
 
 end
