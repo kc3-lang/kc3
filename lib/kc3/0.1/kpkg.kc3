@@ -135,8 +135,8 @@ defmodule Kpkg do
         Kpkg.clone_clean(pkg))
     }
     (pkg, tree, arch, ["info" | rest], 0) {
-      puts(pkg)
-      Kpkg.main_args(pkg, tree, arch, rest, 0)
+      Kpkg.main_args(pkg, tree, arch, rest,
+        Kpkg.info(pkg, tree, arch))
     }
     (pkg, tree, arch, ["--tree", tree_arg | rest], 0) {
       Kpkg.main_args(pkg, tree_arg, arch, rest, 0)
@@ -165,6 +165,11 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
   clean-configure       remove configure-done tag
   build                 run parallel build
   clean-build           remove object files
+ Dependencies commands :
+  build-dependencies    show build-time dependencies
+  dependencies          show dependencies
+ Misc commands :
+  info                  show current state
 """)
   }
 
@@ -192,6 +197,15 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
 
   def arch_dir = fn (pkg, tree, arch) {
     "#{Kpkg.dir()}/arch/#{arch}/src/#{pkg.dir}/#{tree}"
+  }
+
+  def arch_local = fn () {
+    List.each(Str.split(system(["clang", "-v"]), "\n"),
+      fn (line) {
+        if Str.starts_with?(line, "Target: ") do
+          return_from :arch_local Str.slice(line, 8, -1)
+        end
+      })
   }
 
   ## Internal API
@@ -267,8 +281,20 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
 
   ## Main API - dependencies
 
-  def install_dependencies = fn (pkg, tree, arch) {
-    List.each(pkg.depends_on, fn (dep_name) {
+  def build_dependencies = fn (pkg) {
+    Kpkg.resolve_dependencies(pkg.build_depends_on)
+  }
+
+  def dependencies = fn (pkg) {
+    Kpkg.resolve_dependencies(pkg.depends_on)
+  }
+
+  def resolve_dependencies = fn (list) {
+    type(list) = List
+    pkg_tree_tuple_list = []
+    while list != [] do
+      [dep_name | rest] = ^ list
+      list = ^ rest
       if type(dep_name) == Tuple do
         {dep_name, dep_tree} = ^ dep_name
         dep_pkg = Kpkg.get_package(dep_name)
@@ -276,6 +302,24 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
         dep_pkg = Kpkg.get_package(dep_name)
         dep_tree = dep_pkg.default_branch
       end
+      dep_tuple = {dep_pkg, dep_tree}
+      if ! List.has?(pkg_tree_tuple_list, dep_tuple) do
+        pkg_tree_tuple_list = [dep_tuple | pkg_tree_tuple_list]
+      end
+    end
+    pkg_tree_tuple_list
+  }
+
+  def install_build_dependencies = fn (pkg, tree) {
+    deps = resolve_dependencies(pkg.depends_on)
+    List.each(deps, fn ({dep_pkg, dep_tree}) {
+      Kpkg.install(dep_pkg, dep_tree, Kpkg.local_arch)
+    })
+  }
+
+  def install_dependencies = fn (pkg, tree, arch) {
+    deps = resolve_dependencies(pkg.depends_on)
+    List.each(deps, fn ({dep_pkg, dep_tree}) {
       Kpkg.install(dep_pkg, dep_tree, arch)
     })
   }
@@ -288,9 +332,11 @@ Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
 
   ## Main API - misc
 
-  def info = fn (pkg, tree) {
-    puts("#{pkg}")
-    puts("tree: #{tree}")
+  def info = fn (pkg, tree, arch) {
+    puts("pkg: #{pkg}")
+    puts("tree: #{inspect(tree)}")
+    puts("arch: #{inspect(arch)}")
+    puts("arch_local: #{inspect(Kpkg.arch_local())}")
   }
 
 end
