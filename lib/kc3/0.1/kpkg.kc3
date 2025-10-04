@@ -205,9 +205,9 @@ defmodule Kpkg do
   }
 
   def usage = fn () {
-    reset = ^ Terminal.reset
-    bold = ^ Terminal.bold
-    underline = ^ Terminal.underline
+    reset = if FD.is_a_tty?(1) do "#{Terminal.reset}" end
+    bold  = if FD.is_a_tty?(1) do "#{Terminal.bold}" end
+    underline  = if FD.is_a_tty?(1) do "#{Terminal.underline}" end
     puts("""
 Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   #{underline}Options :#{reset}
