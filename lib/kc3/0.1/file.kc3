@@ -14,6 +14,8 @@ require File.Stat
 
 defmodule File do
 
+  def access? = cfn Bool "file_access" (Str, Sym)
+
   def close = cfn Void "file_close" (Tag)
 
   def dirname = cfn Str "file_dirname" (Str, Result)
@@ -91,5 +93,30 @@ defmodule File do
   def rename = cfn Bool "file_rename" (Str, Str)
 
   def unlink = cfn Bool "file_unlink" (Str)
+
+  def which = fn (name) {
+    if name do
+      if Str.starts_with?(name, "/") do
+        name
+      else
+        if path = getenv("PATH") do
+          path_list = Str.split(path, ":")
+          while path_list != [] do
+            [dir | rest] = ^ path_list
+            pathname = if Str.ends_with?(dir, "/") do
+              "#{dir}#{name}"
+            else
+              "#{dir}/#{name}"
+            end
+            if File.access?(pathname, :x) do
+              return pathname
+            end
+            path_list = ^ rest
+          end
+        end
+        void
+      end
+    end
+  }
 
 end

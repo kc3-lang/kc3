@@ -22,6 +22,33 @@ defmodule Kpkg do
 
   ## Configuration
 
+  def cc_local = fn () {
+    pathname = File.which(getenv("CC")) || File.which("cc") ||
+      File.which("clang") || File.which("gcc")
+    if File.access?(pathname, :x) do
+      pathname
+    end
+  }
+
+  def cc_arch = fn {
+    () {
+      cc_local()
+    }
+    (arch) {
+      if arch == arch_local() do
+        return cc_local()
+      else
+        var = "CC_#{Str.to_uppercase(arch)}"
+        pathname = File.which(getenv(var))
+        if File.access?(pathname, :x) do
+          pathname
+        else
+          puts("Please set #{var}")
+        end
+      end
+    }
+  }
+
   def dir = fn () {
     dir = if from_env = getenv("KPKG_DIR") do
       from_env
@@ -115,7 +142,9 @@ defmodule Kpkg do
 
   def main_args = fn {
     (pkg, []) { puts(pkg) }
-    (pkg, args) { Kpkg.main_args(pkg, pkg.default_branch, "", args, 0) }
+    (pkg, args) {
+      Kpkg.main_args(pkg, pkg.default_branch, arch_local(), args, 0)
+    }
     (pkg, tree, arch, ["--arch", arch_arg | rest], 0) {
       Kpkg.main_args(pkg, tree, arch_arg, rest, 0)
     }
@@ -207,7 +236,7 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   }
 
   def arch_local = fn () {
-    List.each(Str.split(system(["clang", "-v"]), "\n"),
+    List.each(Str.split(system([Kpkg.cc_local(), "-v"]), "\n"),
       fn (line) {
         if Str.starts_with?(line, "Target: ") do
           return_from :arch_local Str.slice(line, 8, -1)
@@ -340,9 +369,15 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   ## Main API - misc
 
   def info = fn (pkg, tree, arch) {
+    arch_local = Kpkg.arch_local()
+    local_or_empty = if arch == arch_local do
+      " (local)"
+    else
+      ""
+    end
     puts("pkg: #{pkg}")
     puts("tree: #{inspect(tree)}")
-    puts("arch: #{inspect(arch)}")
+    puts("arch:       #{inspect(arch)}#{local_or_empty}")
     puts("arch_local: #{inspect(Kpkg.arch_local())}")
   }
 
