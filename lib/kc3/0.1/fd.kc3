@@ -12,6 +12,8 @@
 
 defmodule FD do
 
-  def set_blocking = cfn Bool "fd_set_blocking" (S32, Bool)
+  def is_a_tty? = cfn Bool "fd_is_a_tty" (S64, Result)
+
+  def set_blocking = cfn Bool "fd_set_blocking" (S64, Bool)
 
 end

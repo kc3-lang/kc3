@@ -26,7 +26,25 @@
 #include "list.h"
 #include "str.h"
 
-s_str * fd_read_until_eof (s32 fd, s_str *dest)
+bool * fd_is_a_tty (s64 fd, bool *dest)
+{
+  s32 e;
+  if (isatty(fd)) {
+    *dest = true;
+    return dest;
+  }
+  e = errno;
+  if (e == ENOTTY) {
+    *dest = false;
+    return dest;
+  }
+  err_write_1("fd_is_a_tty: isatty: ");
+  err_puts(strerror(e));
+  assert(! "fd_is_a_tty: isatty");
+  return NULL;
+}
+
+s_str * fd_read_until_eof (s64 fd, s_str *dest)
 {
   s_buf buf;
   sw e;
@@ -68,7 +86,7 @@ s_str * fd_read_until_eof (s32 fd, s_str *dest)
   return NULL;
 }
 
-bool fd_set_blocking (s32 fd, bool blocking)
+bool fd_set_blocking (s64 fd, bool blocking)
 {
 #ifdef WIN32
   unsigned long b;

@@ -23,10 +23,14 @@ defmodule Kpkg do
   ## Configuration
 
   def cc_local = fn () {
-    pathname = File.which(getenv("CC")) || File.which("cc") ||
-      File.which("clang") || File.which("gcc")
+    pathname = File.which(getenv("CC_LOCAL")) ||
+      File.which("cc") || File.which("clang") ||
+      File.which("gcc")
     if File.access?(pathname, :x) do
       pathname
+    else
+      puts("Please set CC_LOCAL to a valid local C compiler")
+      exit(1)
     end
   }
 
@@ -38,12 +42,12 @@ defmodule Kpkg do
       if arch == arch_local() do
         return cc_local()
       else
-        var = "CC_#{Str.to_uppercase(arch)}"
-        pathname = File.which(getenv(var))
+        pathname = File.which(getenv("CC"))
         if File.access?(pathname, :x) do
           pathname
         else
-          puts("Please set #{var}")
+          puts("Please set CC to a valid target C compiler")
+          exit(1)
         end
       end
     }
@@ -413,9 +417,9 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
     puts("#{title}arch:#{reset}       #{inspect(arch)}#{local_or_empty}")
     puts("#{title}arch_local:#{reset} #{inspect(arch_local)}")
     puts("#{title}build_dependencies:#{reset} #{Kpkg.build_dependencies(pkg)}")
-    puts("#{title}cc:#{reset}       #{inspect(Kpkg.cc())}")
+    puts("#{title}cc:#{reset}       #{inspect(Kpkg.cc(arch))}")
     puts("#{title}cc_local:#{reset} #{inspect(Kpkg.cc_local())}")
-    puts("#{title}dependencies:")
+    puts("#{title}dependencies:#{reset}")
     puts(Kpkg.dependencies(pkg))
     puts("#{title}uname:#{reset} #{Kpkg.uname()}")
   }

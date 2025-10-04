@@ -1208,9 +1208,9 @@ sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
 }
 
 sw buf_read_until_str_into_file (s_buf *buf, const s_str *end,
-                                   s_str *path)
+                                 s_str *path)
 {
-  s64 fd;
+  t_fd fd;
   s_buf dest = {0};
   sw r;
   if (! file_open_w(path, &fd)) {

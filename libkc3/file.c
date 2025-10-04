@@ -125,8 +125,8 @@ sw file_copy (const char *from, const char *to)
 {
   char buf[4096];
   s32 e;
-  sw fd_from = -1;
-  sw fd_to = -1;
+  t_fd fd_from = -1;
+  t_fd fd_to = -1;
   char *out;
   sw r;
   sw saved_errno;
@@ -412,10 +412,10 @@ FILE * file_open (const s_str *path, const char *mode)
   return fp;
 }
 
-s64 * file_open_r (const s_str *path, s64 *dest)
+t_fd * file_open_r (const s_str *path, t_fd *dest)
 {
   sw e;
-  s64 fd;
+  t_fd fd;
   assert(path);
   assert(dest);
   if ((fd = open(path->ptr.pchar, O_RDONLY | O_BINARY)) < 0) {
@@ -430,10 +430,10 @@ s64 * file_open_r (const s_str *path, s64 *dest)
   return dest;
 }
 
-s64 * file_open_w (const s_str *path, s64 *dest)
+t_fd * file_open_w (const s_str *path, t_fd *dest)
 {
   sw e;
-  s64 fd;
+  t_fd fd;
   static const mode_t mode = 0666;
   assert(path);
   assert(dest);
@@ -472,7 +472,7 @@ s_str * file_read_all (const s_str *path, s_str *dest)
 {
   char *buf;
   s32 e;
-  s32 fd;
+  t_fd fd;
   sw pos = 0;
   sw r;
   struct stat sb;
@@ -525,7 +525,7 @@ s_str * file_read_max (const s_str *path, uw max, s_str *dest)
 {
   char *buf;
   s32 e;
-  s32 fd;
+  t_fd fd;
   sw r;
   uw size;
   s_str tmp;
@@ -572,7 +572,7 @@ s_str * file_read_max (const s_str *path, uw max, s_str *dest)
 
 s_str * file_read_slice (s_str *path, u64 start, u64 end, s_str *dest)
 {
-  s64 fd;
+  t_fd fd;
   char *p = NULL;
   s64 r;
   s64 remaining;
@@ -842,7 +842,7 @@ bool file_unlink (const s_str *path)
 bool file_write (const s_str *path, const s_str *data)
 {
   s32 e;
-  s32 fd;
+  t_fd fd;
   static const mode_t mode = 0666;
   sw pos = 0;
   sw w;

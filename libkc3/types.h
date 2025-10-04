@@ -267,6 +267,7 @@ typedef union tag_data      u_tag_data;
 /* typedefs */
 typedef u32            character;
 typedef s_tag *        t_facts_spec[];
+typedef s64            t_fd;
 typedef SHA1_CTX       t_hash;
 typedef u64            t_skiplist_height;
 
@@ -306,7 +307,7 @@ struct array_dimension {
 };
 
 struct buf_fd {
-  s64 fd;
+  t_fd fd;
 };
 
 struct buf_save {

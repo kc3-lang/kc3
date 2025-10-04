@@ -99,7 +99,7 @@ sw http_response_buf_write (const s_http_response *response,
   s_tag default_messages = {0};
   s32 e;
   sw end;
-  s32 fd;
+  t_fd fd;
   s_ident ident = {0};
   s_buf *in;
   s_tag *key = NULL;
