@@ -114,7 +114,7 @@ defmodule Kpkg do
 
   def main_args = fn {
     (pkg, []) { puts(pkg) }
-    (pkg, args) { Kpkg.main_args(pkg, "master", "", args, 0) }
+    (pkg, args) { Kpkg.main_args(pkg, pkg.default_branch, "", args, 0) }
     (pkg, tree, arch, ["--arch", arch_arg | rest], 0) {
       Kpkg.main_args(pkg, tree, arch_arg, rest, 0)
     }
