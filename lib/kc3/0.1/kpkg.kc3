@@ -152,24 +152,27 @@ defmodule Kpkg do
   def usage = fn () {
     puts("""
 Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
- Options :
-  --tree TREE           work on $TREE
- Source directory commands :
-  checkout              git checkout $TREE into src/$DIR/$TREE
-  checkout-clean        remove checkout files :  src/$DIR/$TREE
-  clone                 git clone into git/$DIR
-  clone-clean           remove git repo files: git/$DIR
-  clean-sources         clean src/$DIR and git/$DIR
- Build commands :
-  configure
-  clean-configure       remove configure-done tag
-  build                 run parallel build
-  clean-build           remove object files
- Dependencies commands :
-  build-dependencies    show build-time dependencies
-  dependencies          show dependencies
- Misc commands :
-  info                  show current state
+  Options :
+    --arch ARCH          build for $ARCH
+    --tree TREE          work on $TREE
+  Source directory commands :
+    checkout             git checkout $TREE into src/$DIR/$TREE
+    checkout-clean       remove checkout files :  src/$DIR/$TREE
+    clone                git clone into git/$DIR
+    clone-clean          remove git repo files: git/$DIR
+    clean-sources        clean src/$DIR and git/$DIR
+  Dependencies commands :
+    build-dependencies   show build-time dependencies
+    dependencies         show dependencies
+    install-build-deps   install build-time dependencies into arch/$ARCH/
+    install-deps
+  Build commands :
+    configure            run configure in arch/$ARCH/obj/$DIR/$TREE
+    clean-configure      remove configure-done tag
+    build                run parallel build
+    clean-build          remove object files
+  Misc commands :
+    info                 show current state
 """)
   }
 
