@@ -205,9 +205,9 @@ defmodule Kpkg do
   }
 
   def usage = fn () {
-    reset = if FD.is_a_tty?(1) do "#{Terminal.reset}" end
-    bold  = if FD.is_a_tty?(1) do "#{Terminal.bold}" end
-    underline  = if FD.is_a_tty?(1) do "#{Terminal.underline}" end
+    reset     = if FD.is_a_tty?(1) do "#{Terminal.reset}" end
+    bold      = if FD.is_a_tty?(1) do "#{Terminal.bold}" end
+    underline = if FD.is_a_tty?(1) do "#{Terminal.underline}" end
     puts("""
 Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   #{underline}Options :#{reset}
@@ -215,7 +215,7 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
     --tree TREE          work on $TREE
   #{underline}Source directory commands :#{reset}
     checkout             git checkout $TREE into src/$DIR/$TREE
-    checkout-clean       remove checkout files :  src/$DIR/$TREE
+    checkout-clean       remove checkout files : src/$DIR/$TREE
     clone                git clone into git/$DIR
     clone-clean          remove git repo files: git/$DIR
   #{underline}Dependencies commands :#{reset}
