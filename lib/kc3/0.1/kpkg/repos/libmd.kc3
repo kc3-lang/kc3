@@ -10,16 +10,16 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Kpkg.Repos.Kc3 do
+defmodule Kpkg.Repos.LibMD do
 
   Kpkg.defpackage(
-    %Kpkg.Package{name: :kc3,
+    %Kpkg.Package{name: :libmd,
                   build_depends_on: [],
                   default_branch: "master",
-                  depends_on: [:libbsd, :libmd],
-                  dir: "kc3-lang/kc3",
-                  git: "https://git.kmx.io/kc3-lang/kc3.git",
-                  git_push: "git@git.kmx.io:kc3-lang/kc3.git",
+                  depends_on: [],
+                  dir: "hadrons.org/libmd",
+                  git: "https://git.kmx.io/kc3-lang/libmd.git",
+                  git_push: "git@git.kmx.io:kc3-lang/libmd.git",
                   module: module()}
   )
 
