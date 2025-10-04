@@ -30,7 +30,7 @@ defmodule Kpkg do
     end
   }
 
-  def cc_arch = fn {
+  def cc = fn {
     () {
       cc_local()
     }
@@ -379,6 +379,8 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
     puts("tree: #{inspect(tree)}")
     puts("arch:       #{inspect(arch)}#{local_or_empty}")
     puts("arch_local: #{inspect(arch_local)}")
+    puts("cc:       #{inspect(Kpkg.cc())}")
+    puts("cc_local: #{inspect(Kpkg.cc_local())}")
   }
 
 end
