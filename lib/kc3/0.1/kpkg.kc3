@@ -66,6 +66,10 @@ defmodule Kpkg do
 
   def db = Facts.database()
 
+  def uname = fn () {
+    Str.slice(system(["uname"]), 0, -2);
+  }
+
   ## Package definition
 
   def defpackage = fn (package) {
@@ -408,11 +412,12 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
     puts("#{title}tree:#{reset} #{inspect(tree)}")
     puts("#{title}arch:#{reset}       #{inspect(arch)}#{local_or_empty}")
     puts("#{title}arch_local:#{reset} #{inspect(arch_local)}")
+    puts("#{title}build_dependencies:#{reset} #{Kpkg.build_dependencies(pkg)}")
     puts("#{title}cc:#{reset}       #{inspect(Kpkg.cc())}")
     puts("#{title}cc_local:#{reset} #{inspect(Kpkg.cc_local())}")
-    puts("#{title}build_dependencies:#{reset} #{Kpkg.build_dependencies(pkg)}")
     puts("#{title}dependencies:")
     puts(Kpkg.dependencies(pkg))
+    puts("#{title}uname:#{reset} #{Kpkg.uname()}")
   }
 
 end
