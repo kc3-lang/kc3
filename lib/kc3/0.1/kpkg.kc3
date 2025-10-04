@@ -14,6 +14,7 @@ require File
 require IO
 require Kpkg.Package
 require Sh
+require Terminal
 
 # Kpkg
 
@@ -150,28 +151,31 @@ defmodule Kpkg do
   }
 
   def usage = fn () {
+    reset = ^ Terminal.reset
+    bold = ^ Terminal.bold
+    underline = ^ Terminal.underline
     puts("""
-Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
-  Options :
+Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
+  #{underline}Options :#{reset}
     --arch ARCH          build for $ARCH
     --tree TREE          work on $TREE
-  Source directory commands :
+  #{underline}Source directory commands :#{reset}
     checkout             git checkout $TREE into src/$DIR/$TREE
     checkout-clean       remove checkout files :  src/$DIR/$TREE
     clone                git clone into git/$DIR
     clone-clean          remove git repo files: git/$DIR
     clean-sources        clean src/$DIR and git/$DIR
-  Dependencies commands :
+  #{underline}Dependencies commands :#{reset}
     build-dependencies   show build-time dependencies
     dependencies         show dependencies
     install-build-deps   install build-time dependencies into arch/$ARCH/
     install-deps
-  Build commands :
+  #{underline}Build commands :#{reset}
     configure            run configure in arch/$ARCH/obj/$DIR/$TREE
     clean-configure      remove configure-done tag
     build                run parallel build
     clean-build          remove object files
-  Misc commands :
+  #{underline}Misc commands :#{reset}
     info                 show current state
 """)
   }
