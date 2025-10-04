@@ -12,7 +12,9 @@
 
 defmodule FD do
 
-  def is_a_tty? = cfn Bool "fd_is_a_tty" (S64, Result)
+  def is_a_tty? = fn (fd) { FD.is_a_tty_cfn((S64) fd) }
+
+  def is_a_tty_cfn = cfn Bool "fd_is_a_tty" (S64, Result)
 
   def set_blocking = cfn Bool "fd_set_blocking" (S64, Bool)
 
