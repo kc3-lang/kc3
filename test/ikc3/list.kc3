@@ -68,3 +68,5 @@ quote type(":")
 type(":")
 quote [":"]
 [":"]
+quote List.append([], [])
+List.append([], [])
