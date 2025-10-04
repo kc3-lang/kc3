@@ -375,10 +375,10 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
     else
       ""
     end
-    puts("pkg: #{pkg}")
+    puts("#{pkg}")
     puts("tree: #{inspect(tree)}")
     puts("arch:       #{inspect(arch)}#{local_or_empty}")
-    puts("arch_local: #{inspect(Kpkg.arch_local())}")
+    puts("arch_local: #{inspect(arch_local)}")
   }
 
 end
