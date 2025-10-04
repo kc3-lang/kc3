@@ -218,12 +218,11 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
     checkout-clean       remove checkout files :  src/$DIR/$TREE
     clone                git clone into git/$DIR
     clone-clean          remove git repo files: git/$DIR
-    clean-sources        clean src/$DIR and git/$DIR
   #{underline}Dependencies commands :#{reset}
     build-dependencies   show build-time dependencies
     dependencies         show dependencies
-    install-build-deps   install build-time dependencies into arch/$ARCH/
-    install-deps
+    install-build-deps   install build-time dependencies
+    install-deps         install dependencies
   #{underline}Build commands :#{reset}
     configure            run configure in arch/$ARCH/obj/$DIR/$TREE
     clean-configure      remove configure-done tag
