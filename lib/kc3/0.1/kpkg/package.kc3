@@ -22,7 +22,8 @@ defmodule Kpkg.Package do
 
   defstruct [name: :sym,
              default_branch: "master",
-             depends_on: [], # list of :sym or {:sym, "tree"}
+             build_depends_on: [], # list of name or {name, "tree"}
+             depends_on: [],       # list of name or {name, "tree"}
              dir: "org/subdir/repo",
              git: "https://github.com/dir.git",
              git_push: "git@github.com:dir.git",

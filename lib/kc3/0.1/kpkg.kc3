@@ -363,6 +363,7 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   ## Main API - build
 
   def configure = fn (pkg, tree, arch) {
+    Kpkg.install_build_dependencies(pkg, tree)
     Kpkg.install_dependencies(pkg, tree, arch)
   }
 
@@ -381,6 +382,8 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
     puts("arch_local: #{inspect(arch_local)}")
     puts("cc:       #{inspect(Kpkg.cc())}")
     puts("cc_local: #{inspect(Kpkg.cc_local())}")
+    puts("build_dependencies: #{Kpkg.build_dependencies(pkg)}")
+    puts("dependencies: #{Kpkg.dependencies(pkg)}")
   }
 
 end
