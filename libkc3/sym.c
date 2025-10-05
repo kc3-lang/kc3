@@ -109,6 +109,7 @@ const s_sym g_sym_is_loading       = SYM_1("is_loading");
 const s_sym g_sym_load_time        = SYM_1("load_time");
 const s_sym g_sym_macro            = SYM_1("macro");
 const s_sym g_sym_marshall         = SYM_1("marshall");
+const s_sym g_sym_match            = SYM_1("match");
 const s_sym g_sym_module           = SYM_1("module");
 const s_sym g_sym_ncpu             = SYM_1("ncpu");
 const s_sym g_sym_op               = SYM_1("op");
@@ -398,6 +399,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_load_time, NULL);
   sym_register(&g_sym_macro, NULL);
   sym_register(&g_sym_marshall, NULL);
+  sym_register(&g_sym_match, NULL);
   sym_register(&g_sym_module, NULL);
   sym_register(&g_sym_ncpu, NULL);
   sym_register(&g_sym_op, NULL);

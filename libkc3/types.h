@@ -291,6 +291,7 @@ typedef s_tag *           p_tag;
 typedef s_var *           p_var;
 
 /* function typedefs */
+typedef sw   (* f_buf_parse_end) (s_buf *buf, bool *dest);
 typedef bool (* f_sequence) (s_sequence *seq);
 typedef bool (* f_sequence_button) (s_sequence *seq, u8 button, s64 x,
                                     s64 y);

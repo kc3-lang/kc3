@@ -112,6 +112,7 @@ extern const s_sym g_sym_is_loading;
 extern const s_sym g_sym_load_time;
 extern const s_sym g_sym_macro;
 extern const s_sym g_sym_marshall;
+extern const s_sym g_sym_match;
 extern const s_sym g_sym_module;
 extern const s_sym g_sym_ncpu;
 extern const s_sym g_sym_op;
