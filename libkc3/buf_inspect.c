@@ -585,12 +585,14 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   s_ops *ops = NULL;
   sw r;
   sw result = 0;
-  if (call->ident.module == &g_sym_KC3 &&
-      call->ident.sym == &g_sym_access)
-    return buf_inspect_call_access(buf, call);
-  if (call->ident.module == &g_sym_KC3 &&
-      call->ident.sym == &g_sym_if_then_else)
-    return buf_inspect_call_if_then_else(buf, call);
+  if (call->ident.module == &g_sym_KC3) {
+    if (call->ident.sym == &g_sym_access)
+      return buf_inspect_call_access(buf, call);
+    if (call->ident.sym == &g_sym_if_then_else)
+      return buf_inspect_call_if_then_else(buf, call);
+    if (call->ident.sym == &g_sym_match)
+      return buf_inspect_match(buf, call);
+  }
   if ((! call->ident.module ||
        call->ident.module == &g_sym_KC3) &&
       call->ident.sym == &g_sym_str &&
@@ -3076,6 +3078,79 @@ sw buf_inspect_map_size (s_pretty *pretty, const s_map *map)
   if ((r = buf_write_1_size(pretty, "}")) < 0)
     return r;
   result += r;
+  return result;
+}
+
+sw buf_inspect_match (s_buf *buf, const s_call *match)
+{
+  p_list arg;
+  s_do_block *do_block;
+  uw i;
+  uw j;
+  s_map *map;
+  s_pretty_save pretty_save;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(match);
+  if (! match->arguments ||
+      ! (arg = list_next(match->arguments)) ||
+      list_next(arg)) {
+    err_puts("buf_inspect_match: invalid arity");
+    assert(! "buf_inspect_match: invalid arity");
+    return -1;
+  }
+  if (arg->tag.type != TAG_MAP) {
+    err_puts("buf_inspect_match: invalid match: not a Map");
+    assert(! "buf_inspect_match: invalid match: not a Map");
+    return -1;
+  }
+  map = &arg->tag.data.map;
+  pretty_save_init(&pretty_save, &buf->pretty);
+  pretty_indent_from_column(&buf->pretty, 0);
+  if ((r = buf_write_1(buf, "match ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_tag(buf, &match->arguments->tag)) < 0)
+    return r;
+  result += r;
+  pretty_indent(&buf->pretty, 2);
+  if ((r = buf_write_1(buf, "\n")) < 0)
+    return r;
+  result += r;
+  i = 0;
+  while (i < map->count) {
+    if ((r = buf_inspect_tag(buf, map->key + i)) < 0)
+      return r;
+    result += r;
+    pretty_indent(&buf->pretty, 2);
+    if ((r = buf_write_1(buf, " →\n")) < 0)
+      return r;
+    result += r;
+    if (map->value[i].type != TAG_DO_BLOCK) {
+      err_puts("buf_inspect_match: invalid match: not a Block");
+      assert(! "buf_inspect_match: invalid match: not a Block");
+      return -1;
+    }
+    do_block = &map->value[i].data.do_block;
+    j = 0;
+    while (j < do_block->count) {
+      if ((r = buf_inspect_tag(buf, do_block->tag + j)) < 0)
+        return r;
+      result += r;
+      if (j == do_block->count - 1)
+        pretty_indent(&buf->pretty, (i == map->count - 1) ? -4 : -2);
+      if ((r = buf_write_1(buf, "\n")) < 0)
+        return r;
+      result += r;
+      j++;
+    }
+    i++;
+  }
+  if ((r = buf_write_1(buf, "end")) < 0)
+    return r;
+  result += r;
+  pretty_save_clean(&pretty_save, &buf->pretty);
   return result;
 }
 

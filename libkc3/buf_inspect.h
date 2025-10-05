@@ -169,6 +169,7 @@ sw buf_inspect_list_paren (s_buf *buf, const s_list *list);
 sw buf_inspect_list_size (s_pretty *pretty, const s_list *list);
 sw buf_inspect_map (s_buf *buf, const s_map *map);
 sw buf_inspect_map_size (s_pretty *pretty, const s_map *map);
+sw buf_inspect_match (s_buf *buf, const s_call *match);
 sw buf_inspect_pfacts (s_buf *buf, const p_facts *pfacts);
 sw buf_inspect_pfacts_size (s_pretty *pretty, const p_facts *pfacts);
 sw buf_inspect_plist (s_buf *buf, const p_list *plist);
