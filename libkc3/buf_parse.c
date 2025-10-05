@@ -3489,6 +3489,12 @@ sw buf_parse_match (s_buf *buf, p_call *pcall)
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
+  if ((r = buf_read_1(buf, "do")) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
+  result += r;
   while (1) {
     if (! (*keys_tail = list_new(NULL)) ||
         (r = buf_parse_tag(buf, &(*keys_tail)->tag)) <= 0 ||

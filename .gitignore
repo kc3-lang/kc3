@@ -66,6 +66,10 @@ kc3s/kc3s
 kc3s/kc3s_asan
 kc3s/kc3s_cov
 kc3s/kc3s_debug
+kpkg/kpkg
+kpkg/kpkg_asan
+kpkg/kpkg_cov
+kpkg/kpkg_debug
 *.la
 lib/kc3/0.1/ekc3.so
 lib/kc3/0.1/event.so

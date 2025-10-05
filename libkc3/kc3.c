@@ -928,6 +928,37 @@ s_str * kc3_marshall_to_str (p_marshall *m, s_str *dest)
   return marshall_to_str(*m, dest);
 }
 
+s_tag * kc3_match (s_tag *tag, s_map *map, s_tag *dest)
+{
+  s_env *env;
+  uw i;
+  s_tag tag_eval;
+  s_tag tag_tmp;
+  assert(tag);
+  assert(map);
+  assert(dest);
+  env = env_global();
+  assert(env);
+  if (! eval_tag(tag, &tag_eval))
+    return NULL;
+  i = 0;
+  while (i < map->count) {
+    if (tag_equal(&tag_eval, map->key + i, &tag_tmp)) {
+      tag_clean(&tag_tmp);
+      if (map->value[i].type != TAG_DO_BLOCK) {
+        err_puts("kc3_match: invalid match: not a Block");
+        assert(! "kc3_match: invalid match: not a Block");
+        return NULL;
+      }
+      if (! env_eval_do_block(env, &map->value[i].data.do_block, dest))
+        return NULL;
+      return dest;
+    }
+    i++;
+  }
+  return tag_init_void(dest);
+}
+
 bool kc3_maybe_reload (const s_str *path)
 {
   return env_maybe_reload(env_global(), path);

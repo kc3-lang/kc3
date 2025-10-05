@@ -596,6 +596,17 @@ config_objc_lib_have() {
     rm -f "$OUT" "$OUT_M"
 }
 
+config_prog() {
+    PROG="$1"
+    PROG_ASAN="${PROG}_asan"
+    PROG_COV="${PROG}_cov"
+    PROG_DEBUG="${PROG}_debug"
+    echo "PROG       = ${PROG}"       >> ${CONFIG_MK}
+    echo "PROG_ASAN  = ${PROG_ASAN}"  >> ${CONFIG_MK}
+    echo "PROG_COV   = ${PROG_COV}"   >> ${CONFIG_MK}
+    echo "PROG_DEBUG = ${PROG_DEBUG}" >> ${CONFIG_MK}
+}
+
 config_subdirs() {
     for SUBDIR; do
         echo "( cd $SUBDIR && ./configure; )"
@@ -792,6 +803,11 @@ update_build_c() {
     COMPILE="${LIBTOOL} --tag=CC --mode=compile"
     COMPILE="$COMPILE \${CC} \${CPPFLAGS} \${CFLAGS}"
     COMPILE="$COMPILE -c \"\$1\" -o \"\$2\""
+
+    CPPFLAGS="${CPPFLAGS} -DPROG=\\\"${PROG}\\\""
+    CPPFLAGS_ASAN="${CPPFLAGS_ASAN} -DPROG=\\\"${PROG_ASAN}\\\""
+    CPPFLAGS_COV="${CPPFLAGS_COV} -DPROG=\\\"${PROG_COV}\\\""
+    CPPFLAGS_DEBUG="${CPPFLAGS_DEBUG} -DPROG=\\\"${PROG_DEBUG}\\\""
 
     echo "#!/bin/sh" >> ${BUILD_C_ASAN}
     echo "# gen by configure" >> ${BUILD_C_ASAN}

@@ -615,6 +615,45 @@ s_str * str_init_concatenate_plist (s_str *str, p_list *plist)
   return str_init_concatenate_list(str, *plist);
 }
 
+s_str * str_init_concatenate_v (s_str *str, uw count, const s_str **src)
+{
+  uw i;
+  uw pos = 0;
+  s_str tmp = {0};
+  assert(str);
+  assert(src);
+  if (! count)
+    return str_init_empty(str);
+  i = 0;
+  while (i < count) {
+    if (tmp.size > U32_MAX - src[i]->size) {
+      err_puts("str_init_concatenate_v: size overflow (U32_MAX)");
+      assert(! "str_init_concatenate_v: size overflow (U32_MAX)");
+      return NULL;
+    }
+    tmp.size += src[i]->size;
+    i++;
+  }
+  tmp.free.p = alloc(tmp.size + 1);
+  if (! tmp.free.p)
+    return NULL;
+  tmp.ptr.p = tmp.free.p;
+  i = 0;
+  while (i < count) {
+    if (src[i]->size) {
+      if (pos > tmp.size - src[i]->size) {
+        err_puts("str_init_concatenate_v: buffer overflow");
+        assert(! "str_init_concatenate_v: buffer overflow");
+        return NULL;
+      }
+      memcpy(tmp.free.ps8 + pos, src[i]->ptr.p, src[i]->size);
+    }
+    i++;
+  }
+  *str = tmp;
+  return str;
+}
+
 s_str * str_init_copy (s_str *str, const s_str *src)
 {
   s_str tmp = {0};

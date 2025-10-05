@@ -1,0 +1,48 @@
+/* kc3
+ * Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+ *
+ * Permission is hereby granted to use this software granted the above
+ * copyright notice and this permission paragraph are included in all
+ * copies and substantial portions of this software.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+ * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+ * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+ * THIS SOFTWARE.
+ */
+#include "../libkc3/kc3.h"
+#include "config.h"
+
+int main (int argc, char **argv)
+{
+  s_call call = {0};
+  const s_str dump_name = STR("kpkg.dump");
+  // s_env *env;
+  const s_sym *module = NULL;
+  sw r = 1;
+  s_tag tmp = {0};
+  kc3_init(NULL, &argc, &argv);
+  // env = env_global();
+  module = sym_1("Kpkg.Main");
+  call_init(&call);
+  call.ident.module = module;
+  call.ident.sym = sym_1("main");
+  if (! eval_call(&call, &tmp)) {
+    err_puts("kpkg: eval_call");
+    goto clean;
+  }
+  switch (tmp.type) {
+  case TAG_U8:
+    r = tmp.data.u8;
+    break;
+  default:
+    err_write_1("invalid return type from main: ");
+    err_inspect_tag(&tmp);
+    err_write_1("\n");
+  }
+ clean:
+  tag_clean(&tmp);
+  call_clean(&call);
+  kc3_clean(NULL);
+  return r;
+}

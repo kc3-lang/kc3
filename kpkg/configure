@@ -15,19 +15,27 @@ set -e
 
 echo "$PWD/configure"
 
-SRC_TOP="$(dirname "$PWD")"
+export SRC_TOP="$(dirname "$PWD")"
 
-CONFIG_H_PREFIX=IKC3_
+CONFIG_H_PREFIX=KPKG_
 
 . "${SRC_TOP}/config.subr"
 
-config_prog ikc3
+PROG=kpkg
+PROG_ASAN=kpkg_asan
+PROG_COV=kpkg_cov
+PROG_DEBUG=kpkg_debug
+
+echo "PROG       = $PROG"       >> ${CONFIG_MK}
+echo "PROG_ASAN  = $PROG_ASAN"  >> ${CONFIG_MK}
+echo "PROG_COV   = $PROG_COV"   >> ${CONFIG_MK}
+echo "PROG_DEBUG = $PROG_DEBUG" >> ${CONFIG_MK}
 
 . ./sources.sh
 
 # Common config for all targets
-CPPFLAGS="-I.. $CPPFLAGS"
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC -pthread"
+CPPFLAGS="-I .. ${CPPFLAGS}"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC"
 config_asan
 config_gnu
 config_i386
@@ -38,22 +46,11 @@ pkg_config libffi
 pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
-pkg_config wineditline
+config_define PREFIX "\"${PREFIX}\""
 if ! $HAVE_WIN32; then
     LDFLAGS="$LDFLAGS -rdynamic"
 fi
-LIBS="$LIBS"
-
-if pkg-config wineditline; then
-    echo "#define HAVE_WINEDITLINE 1" >> ${CONFIG_H}
-    HAVE_WINEDITLINE=true
-    SOURCES="$SOURCES $SOURCES_WINEDITLINE"
-else
-    echo "#define HAVE_WINEDITLINE 0" >> ${CONFIG_H}
-    HAVE_WINEDITLINE=false
-    SOURCES="$SOURCES $SOURCES_LINENOISE"
-fi
-
+LIBS="$LIBS -pthread"
 update_config_h
 
 # Sources
@@ -74,24 +71,22 @@ CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBKC3_ASAN=../libkc3/libkc3_asan.la
-LOCAL_LIBS_ASAN="$LIBKC3_ASAN ../socket/libkc3_socket_asan.la"
-LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS -lasan"
+LOCAL_LIBS_ASAN="../libkc3/libkc3_asan.la ../http/libkc3_http_asan.la"
+LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBKC3_COV=../libkc3/libkc3_cov.la
-LOCAL_LIBS_COV="$LIBKC3_COV ../socket/libkc3_socket_cov.la"
+LIBKC3_COV=
+LOCAL_LIBS_COV="../libkc3/libkc3_cov.la ../http/libkc3_http_cov.la"
 LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBKC3_DEBUG=../libkc3/libkc3_debug.la
-LOCAL_LIBS_DEBUG="$LIBKC3_DEBUG ../socket/libkc3_socket_debug.la"
+LOCAL_LIBS_DEBUG="../libkc3/libkc3_debug.la ../http/libkc3_http_debug.la"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
@@ -100,8 +95,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBKC3=../libkc3/libkc3.la
-LOCAL_LIBS="$LIBKC3 ../socket/libkc3_socket.la"
+LOCAL_LIBS="../libkc3/libkc3.la ../http/libkc3_http.la"
 LIBS="$LOCAL_LIBS $LIBS"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
@@ -125,10 +119,10 @@ echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
-update_build_c
+update_build
 update_build_prog
 
-build_lo_c
+build_lo
 build_prog
 
 update_config_mk

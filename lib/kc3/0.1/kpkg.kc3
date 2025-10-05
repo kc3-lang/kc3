@@ -168,40 +168,33 @@ defmodule Kpkg do
   def main_args = fn {
     (pkg, []) { puts(pkg) }
     (pkg, args) {
-      Kpkg.main_args(pkg, pkg.default_branch, arch_local(), args, 0)
+      tree = pkg.default_branch
+      arch = Kpkg.arch_local()
+      result = 0
+      rest = ^ args
+      while result == 0 && (args = ^ rest) != [] do
+        match args do
+          ["--arch", arch_arg | rest] ->
+            arch = ^ arch_arg
+          ["checkout" | rest] ->
+            result = Kpkg.checkout(pkg, tree)
+          ["checkout-clean" | rest] ->
+            result = Kpkg.checkout_clean(pkg, tree)
+          ["clone" | rest] ->
+            result = Kpkg.clone(pkg)
+          ["clone-clean" | rest] ->
+            result = Kpkg.clone_clean(pkg)
+          ["info" | rest] ->
+            result = Kpkg.info(pkg, tree, arch)
+          ["--tree", tree_arg | rest] ->
+            tree = ^ tree_arg
+          args ->
+            puts("kpkg: unknown argument: #{args}")
+            result = 1
+        end
+      end
+      result
     }
-    (pkg, tree, arch, ["--arch", arch_arg | rest], 0) {
-      Kpkg.main_args(pkg, tree, arch_arg, rest, 0)
-    }
-    (pkg, tree, arch, ["checkout" | rest], 0) {
-      Kpkg.main_args(pkg, tree, arch, rest,
-        Kpkg.checkout(pkg, tree))
-    }
-    (pkg, tree, arch, ["checkout-clean" | rest], 0) {
-      Kpkg.main_args(pkg, tree, arch, rest,
-        Kpkg.checkout_clean(pkg, tree))
-    }
-    (pkg, tree, arch, ["clone" | rest], 0) {
-      Kpkg.main_args(pkg, tree, arch, rest,
-        Kpkg.clone(pkg))
-    }
-    (pkg, tree, arch, ["clone-clean" | rest], 0) {
-      Kpkg.main_args(pkg, tree, arch, rest,
-        Kpkg.clone_clean(pkg))
-    }
-    (pkg, tree, arch, ["info" | rest], 0) {
-      Kpkg.main_args(pkg, tree, arch, rest,
-        Kpkg.info(pkg, tree, arch))
-    }
-    (pkg, tree, arch, ["--tree", tree_arg | rest], 0) {
-      Kpkg.main_args(pkg, tree_arg, arch, rest, 0)
-    }
-    (pkg, tree, arch, [], 0) { 0 }
-    (pkg, tree, arch, args, 0) {
-      puts("kpkg: unknown argument: #{args}")
-      1
-    }
-    (pkg, tree, arch, args, ret) { ret }
   }
 
   def usage = fn () {

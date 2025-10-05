@@ -241,7 +241,8 @@ s_env * env_args_init (s_env *env, int *argc, char ***argv)
   }
   env->argc = 0;
   env->argv = NULL;
-  env->argv0_dir = str_new_1(NULL, "./");
+  env->argv0 = str_new_1(NULL, g_argv0_default);
+  env->argv0_dir = str_new_1(NULL, g_argv0_dir_default);
   return env;
 }
 
@@ -842,13 +843,17 @@ sw env_dump_restore (s_env *env, const s_str *path)
 
 bool env_dump_restore_path_resolve (s_env *env)
 {
-  static const s_str filename = STR("kc3.dump");
+  static const s_str ext = STR(".dump");
+  static const s_str kc3_dump = STR("kc3.dump");
   s_str path = {0};
-  if (file_access(&filename, &g_sym_r)) {
-    env->restore_path = filename;
+  if (! str_init_concatenate_v(&path, 3, (const s_str*[])
+                               {env->module_path, env->argv0, &ext}))
+    return false;
+  if (file_access(&kc3_dump, &g_sym_r)) {
+    env->restore_path = kc3_dump;
     return true;
   }
-  if (! str_init_concatenate(&path, env->module_path, &filename))
+  if (! str_init_concatenate(&path, env->module_path, &kc3_dump))
     return false;
   if (file_access(&path, &g_sym_r))
     env->restore_path = path;
