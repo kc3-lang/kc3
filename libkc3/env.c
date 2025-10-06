@@ -95,6 +95,7 @@
 static thread_local s_env *g_kc3_env_default = NULL;
 static thread_local s_env *g_kc3_env_global = NULL;
 
+void           env_args_clean (s_env *env);
 static s_env * env_args_init (s_env *env, int *argc, char ***argv);
 static void    env_globals_clean (s_env *env);
 static s_env * env_globals_init (s_env *env);
@@ -191,6 +192,12 @@ s_list ** env_args (s_env *env, s_list **dest)
  clean:
   list_delete_all(tmp);
   return NULL;
+}
+
+void env_args_clean (s_env *env)
+{
+  str_delete(env->argv0);
+  str_delete(env->argv0_dir);
 }
 
 s_env * env_args_init (s_env *env, int *argc, char ***argv)
@@ -383,8 +390,7 @@ void env_clean (s_env *env)
   buf_file_close(env->err);
   buf_delete(env->err);
   env->err = NULL;
-  str_delete(env->argv0_dir);
-  env->argv0_dir = NULL;
+  env_args_clean(env);
   str_delete(env->module_path);
   env->module_path = NULL;
   list_delete_all(env->path);
@@ -852,7 +858,7 @@ bool env_dump_restore_path_resolve (s_env *env)
     return false;
   if (! str_init_concatenate_v(&path, 4, (const s_str*[])
                                {env->module_path, &slash,
-                                env->argv0, &ext}))
+                                &progname, &ext}))
     return false;
   if (true) {
     err_write_1("env_dump_restore_path_resolve: path: ");
