@@ -11,7 +11,16 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/kc3.h"
+#include "config.h"
 #include "test.h"
+
+#define TEST_TARGET(name)                           \
+  do {                                              \
+    if (test_target(# name)) {                      \
+      fprintf(stderr, "\n" # name " ");             \
+      name ## _test();                              \
+    }                                               \
+  } while (0)
 
 void array_test (void);
 void bool_test (void);
@@ -45,13 +54,8 @@ void tag_test (void);
 void tuple_test (void);
 void types_test (void);
 
-#define TEST_TARGET(name)                           \
-  do {                                              \
-    if (test_target(# name)) {                      \
-      fprintf(stderr, "\n" # name " ");             \
-      name ## _test();                              \
-    }                                               \
-  } while (0)
+const char *g_argv0_default = PROG;
+const char *g_argv0_dir_default = PREFIX;
 
 int main (int argc, char **argv)
 {

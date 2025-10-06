@@ -25,10 +25,12 @@
 
 #define WINDOW_EGL_DEMO_SEQUENCE_COUNT 1
 
-s_gl_font g_font_courier_new = {0};
-s_gl_ortho g_ortho = {0};
-s_gl_text g_text_fps = {0};
-s_gl_text g_text_seq_title = {0};
+const char *g_argv0_default = PROG;
+const char *g_argv0_dir_default = PREFIX;
+s_gl_font   g_font_courier_new = {0};
+s_gl_ortho  g_ortho = {0};
+s_gl_text   g_text_fps = {0};
+s_gl_text   g_text_seq_title = {0};
 
 static bool window_egl_demo_button (s_window_egl *window, u8 button,
                                     s64 x, s64 y);

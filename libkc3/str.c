@@ -619,6 +619,7 @@ s_str * str_init_concatenate_v (s_str *str, uw count, const s_str **src)
 {
   uw i;
   uw pos = 0;
+  u32 size;
   s_str tmp = {0};
   assert(str);
   assert(src);
@@ -640,13 +641,15 @@ s_str * str_init_concatenate_v (s_str *str, uw count, const s_str **src)
   tmp.ptr.p = tmp.free.p;
   i = 0;
   while (i < count) {
-    if (src[i]->size) {
-      if (pos > tmp.size - src[i]->size) {
+    size = src[i]->size;
+    if (size) {
+      if (pos > tmp.size - size) {
         err_puts("str_init_concatenate_v: buffer overflow");
         assert(! "str_init_concatenate_v: buffer overflow");
         return NULL;
       }
-      memcpy(tmp.free.ps8 + pos, src[i]->ptr.p, src[i]->size);
+      memcpy(tmp.free.ps8 + pos, src[i]->ptr.p, size);
+      pos += size;
     }
     i++;
   }

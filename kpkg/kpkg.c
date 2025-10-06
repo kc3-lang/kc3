@@ -13,10 +13,12 @@
 #include "../libkc3/kc3.h"
 #include "config.h"
 
+const char *g_argv0_default = PROG;
+const char *g_argv0_dir_default = PREFIX;
+
 int main (int argc, char **argv)
 {
   s_call call = {0};
-  const s_str dump_name = STR("kpkg.dump");
   // s_env *env;
   const s_sym *module = NULL;
   sw r = 1;

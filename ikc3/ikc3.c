@@ -29,7 +29,7 @@
 
 #define BUFSZ 0x10000
 
-const char  *g_argv0_default     = PROG;
+const char  *g_argv0_default = PROG;
 const char  *g_argv0_dir_default = PREFIX;
 bool         g_client = false;
 s_str        g_host = {0};

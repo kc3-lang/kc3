@@ -155,6 +155,7 @@ update_sources_sh
 ( cd ikc3       && ./update_sources; )
 ( cd json       && ./update_sources; )
 ( cd kc3s       && ./update_sources; )
+( cd kpkg       && ./update_sources; )
 ( cd libkc3     && ./update_sources; )
 ( cd libtommath && ./update_sources; )
 ( cd markdown   && ./update_sources; )

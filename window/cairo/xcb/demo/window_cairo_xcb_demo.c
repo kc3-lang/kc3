@@ -17,6 +17,9 @@
 #include "../../demo/window_cairo_demo.h"
 #include "../window_cairo_xcb.h"
 
+const char *g_argv0_default = PROG;
+const char *g_argv0_dir_default = PREFIX;
+
 int main (int argc, char **argv)
 {
   s_window_cairo window;

@@ -10,13 +10,4 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-require Kpkg
-
-defmodule Kpkg.Main do
-
-  def main = fn () {
-    [argv0 | args_rest] = args()
-    exit(Kpkg.main(args_rest))
-  }
-
-end
+require Kpkg.Main

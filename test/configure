@@ -17,12 +17,11 @@ echo "$PWD/configure"
 
 export SRC_TOP="$(dirname "$PWD")"
 
+CONFIG_H_PREFIX=LIBKC3_TEST_
+
 . "${SRC_TOP}/config.subr"
 
-PROG=libkc3_test
-PROG_ASAN=libkc3_test_asan
-PROG_COV=libkc3_test_cov
-PROG_DEBUG=libkc3_test_debug
+config_prog libkc3_test
 
 . ./sources.sh
 
@@ -120,3 +119,4 @@ build_lo
 build_prog
 
 update_config_mk
+

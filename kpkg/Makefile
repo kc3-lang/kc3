@@ -18,15 +18,13 @@ CLEANFILES += ${CLEANFILES_COV}
 DISTCLEANFILES = ${CLEANFILES} config.mk
 
 all:
-
-include config.mk
-include sources.mk
-
-all:
 	${MAKE} build
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
+
+include config.mk
+include sources.mk
 
 asan: ${PROG_ASAN}
 
@@ -38,6 +36,9 @@ clean:
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
+clean_dump:
+	rm -f ${SRC_TOP}/lib/kc3/0.1/kpkg.dump
+
 cov:   ${PROG_COV}
 
 debug: ${PROG_DEBUG}
@@ -45,10 +46,14 @@ debug: ${PROG_DEBUG}
 distclean:
 	rm -rf ${DISTCLEANFILES}
 
+dump: clean_dump
+	${SRC_TOP}/kc3s/kc3s --trace --load kpkg.kc3 --dump ${SRC_TOP}/lib/kc3/0.1/kpkg.dump --quit
+	time ${SRC_TOP}/kc3s/kc3s --trace --restore ${SRC_TOP}/lib/kc3/0.1/kpkg.dump --quit
+
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details ${PROG}.html
 
-gdb_${PROG}: debug
+gdb: debug
 	if [ -f ${PROG_DEBUG}.core ]; then gdb .libs/${PROG_DEBUG} ${PROG_DEBUG}.core; else gdb .libs/${PROG_DEBUG}; fi
 
 install:
@@ -70,10 +75,10 @@ uninstall:
 	cov \
 	debug \
 	distclean \
-	gdb_${PROG} \
-	gdb_${PROG_ASAN} \
+	gdb \
+	gdb_asan \
 	install \
-	lldb_${PROG} \
-	lldb_${PROG_ASAN} \
+	lldb \
+	lldb_asan \
 	update_sources \
 	uninstall

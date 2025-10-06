@@ -20,6 +20,7 @@ all:
 	${MAKE} -C tls all
 	${MAKE} -C ikc3 all
 	${MAKE} -C kc3s all
+	${MAKE} -C kpkg all
 	${MAKE} -C ekc3 all
 	${MAKE} -C event all
 	${MAKE} -C json all
@@ -49,6 +50,7 @@ asan:
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
+	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
 	${MAKE} -C event asan
 	${MAKE} -C json asan
@@ -76,6 +78,7 @@ build:
 	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
+	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
 	${MAKE} -C event build
 	${MAKE} -C json build
@@ -99,6 +102,7 @@ clean:
 	${MAKE} -C tls clean
 	${MAKE} -C ikc3 clean
 	${MAKE} -C kc3s clean
+	${MAKE} -C kc3s clean
 	${MAKE} -C ekc3 clean
 	${MAKE} -C event clean
 	${MAKE} -C json clean
@@ -120,6 +124,7 @@ clean_cov:
 	${MAKE} -C socket clean_cov
 	${MAKE} -C tls clean_cov
 	${MAKE} -C ikc3 clean_cov
+	${MAKE} -C kc3s clean_cov
 	${MAKE} -C kc3s clean_cov
 	${MAKE} -C ekc3 clean_cov
 	${MAKE} -C event clean_cov
@@ -144,6 +149,7 @@ cov:
 	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
+	${MAKE} -C kc3s cov
 	${MAKE} -C ekc3 cov
 	${MAKE} -C event cov
 	${MAKE} -C json cov
@@ -166,6 +172,7 @@ debug:
 	${MAKE} -C socket debug
 	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C ekc3 debug
 	${MAKE} -C event debug
@@ -236,6 +243,7 @@ distclean:
 	${MAKE} -C tls distclean
 	${MAKE} -C ikc3 distclean
 	${MAKE} -C kc3s distclean
+	${MAKE} -C kc3s distclean
 	${MAKE} -C ekc3 distclean
 	${MAKE} -C event distclean
 	${MAKE} -C json distclean
@@ -252,18 +260,21 @@ distclean:
 
 clean_dump:
 	rm -f lib/kc3/0.1/kc3.dump
+	rm -f lib/kc3/0.1/kpkg.dump
 	rm -f test/httpd/kc3.dump
 	rm -f httpd/fx/kc3.dump
 
 dump:
 	${MAKE} clean_dump
 	kc3s/kc3s --trace --dump lib/kc3/0.1/kc3.dump --quit
+	${MAKE} -C kpkg dump
 	${MAKE} -C test/httpd dump
 	${MAKE} -C httpd/fx dump
 
 dump_debug:
 	${MAKE} clean_dump
 	kc3s/kc3s_debug --trace --dump lib/kc3/0.1/kc3.dump --quit
+	${MAKE} -C kpkg dump_debug
 	${MAKE} -C test/httpd dump_debug
 
 dump_fx:
@@ -367,6 +378,7 @@ gcovr:
 	${MAKE} -C socket gcovr
 	${MAKE} -C tls gcovr
 	${MAKE} -C ikc3 gcovr
+	${MAKE} -C kc3s gcovr
 	${MAKE} -C kc3s gcovr
 	${MAKE} -C ekc3 gcovr
 	${MAKE} -C event gcovr
@@ -768,6 +780,7 @@ install: lib_links_debug
 	${MAKE} -C tls install
 	${MAKE} -C ikc3 install
 	${MAKE} -C kc3s install
+	${MAKE} -C kc3s install
 	${MAKE} -C ekc3 install
 	${MAKE} -C event install
 	${MAKE} -C json install
@@ -975,6 +988,46 @@ kmsg_debug:
 	${MAKE} -C kc3s debug
 	${MAKE} -C gtk4 debug
 	${MAKE} -C kmsg run_debug
+
+kpkg:
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
+	${MAKE} -C socket build
+	${MAKE} -C tls build
+	${MAKE} -C ikc3 build
+	${MAKE} -C kc3s build
+	${MAKE} -C kpkg build
+
+kpkg_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C socket asan
+	${MAKE} -C tls asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C kc3s asan
+	${MAKE} -C kpkg asan
+
+kpkg_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
+	${MAKE} -C socket cov
+	${MAKE} -C tls cov
+	${MAKE} -C ikc3 cov
+	${MAKE} -C kc3s cov
+	${MAKE} -C kpkg cov
+
+kpkg_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C socket debug
+	${MAKE} -C tls debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C kpkg debug
 
 kubz:
 	${MAKE} build
@@ -1195,6 +1248,7 @@ lldb_test:
 	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
+	${MAKE} -C kpkg debug
 	${MAKE} -C ekc3 debug
 	${MAKE} -C event debug
 	${MAKE} -C json debug
@@ -1545,7 +1599,7 @@ test_kc3s_asan: lib_links_asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
 	${MAKE} -C kc3s asan
-	${MAKE} -C test test_ekc3_asan
+	${MAKE} -C test test_kc3s_asan
 
 test_kc3s_cov: lib_links_cov
 	${MAKE} -C libtommath cov
@@ -1560,6 +1614,30 @@ test_kc3s_debug: lib_links_debug
 	${MAKE} -C libkc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C test test_kc3s_debug
+
+test_kpkg: kpkg lib_links
+	${MAKE} -C test test_kpkg
+
+test_kpkg_asan: lib_links_asan
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C kpkg asan
+	${MAKE} -C test test_kpkg_asan
+
+test_kpkg_cov: lib_links_cov
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
+	${MAKE} -C kpkg cov
+	${MAKE} -C test test_kpkg_cov
+
+test_kpkg_debug: lib_links_debug
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C kpkg debug
+	${MAKE} -C test test_kpkg_debug
 
 test_libkc3: lib_links
 	${MAKE} -C libtommath build

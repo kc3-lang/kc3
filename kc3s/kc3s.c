@@ -18,6 +18,9 @@
 
 int usage (char *argv0);
 
+const char *g_argv0_default = PROG;
+const char *g_argv0_dir_default = PREFIX;
+
 sw buf_ignore_character (s_buf *buf)
 {
   u8 b;

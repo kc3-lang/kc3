@@ -196,15 +196,15 @@ s_list ** env_args (s_env *env, s_list **dest)
 s_env * env_args_init (s_env *env, int *argc, char ***argv)
 {
   s32 argc_prev = 0;
-  s_str argv0;
   assert(env);
   if (argc && argv && *argc && *argv) {
     env->argc = (*argc)--;
     env->argv = (*argv)++;
-    str_init_1(&argv0, NULL, env->argv[0]);
+    if (! (env->argv0 = str_new_1(NULL, env->argv[0])))
+      return NULL;
     if (! (env->argv0_dir = alloc(sizeof(s_str))))
       return NULL;
-    file_dirname(&argv0, env->argv0_dir);
+    file_dirname(env->argv0, env->argv0_dir);
     while (*argc > 0 && *argc != argc_prev) {
       argc_prev = *argc;
       if (**argv && ! strcmp(**argv, "--trace")) {
@@ -846,9 +846,23 @@ bool env_dump_restore_path_resolve (s_env *env)
   static const s_str ext = STR(".dump");
   static const s_str kc3_dump = STR("kc3.dump");
   s_str path = {0};
-  if (! str_init_concatenate_v(&path, 3, (const s_str*[])
-                               {env->module_path, env->argv0, &ext}))
+  s_str progname = {0};
+  static const s_str slash = STR("/");
+  if (! file_name(env->argv0, &progname))
     return false;
+  if (! str_init_concatenate_v(&path, 4, (const s_str*[])
+                               {env->module_path, &slash,
+                                env->argv0, &ext}))
+    return false;
+  if (true) {
+    err_write_1("env_dump_restore_path_resolve: path: ");
+    err_inspect_str(&path);
+    err_write_1("\n");
+  }
+  if (file_access(&path, &g_sym_r)) {
+    env->restore_path = path;
+    return true;
+  }
   if (file_access(&kc3_dump, &g_sym_r)) {
     env->restore_path = kc3_dump;
     return true;

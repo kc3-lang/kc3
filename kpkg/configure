@@ -21,15 +21,7 @@ CONFIG_H_PREFIX=KPKG_
 
 . "${SRC_TOP}/config.subr"
 
-PROG=kpkg
-PROG_ASAN=kpkg_asan
-PROG_COV=kpkg_cov
-PROG_DEBUG=kpkg_debug
-
-echo "PROG       = $PROG"       >> ${CONFIG_MK}
-echo "PROG_ASAN  = $PROG_ASAN"  >> ${CONFIG_MK}
-echo "PROG_COV   = $PROG_COV"   >> ${CONFIG_MK}
-echo "PROG_DEBUG = $PROG_DEBUG" >> ${CONFIG_MK}
+config_prog kpkg
 
 . ./sources.sh
 
