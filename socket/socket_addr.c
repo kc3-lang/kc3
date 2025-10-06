@@ -85,18 +85,16 @@ s32 socket_addr_port(const struct sockaddr *addr)
 
 int socket_addr_port_set (struct sockaddr *addr, s32 port)
 {
-    if (addr->sa_family == AF_INET) {
-        struct sockaddr_in *ipv4 = (struct sockaddr_in *) addr;
-        ipv4->sin_port = htons(port);
-        return 0;
-    }
-    else if (addr->sa_family == AF_INET6) {
-        struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *) addr;
-        ipv6->sin6_port = htons(port);
-        return 0;
-    }
-    else {
-        // Unsupported address family
-        return -1;
-    }
+  if (addr->sa_family == AF_INET) {
+    struct sockaddr_in *ipv4 = (struct sockaddr_in *) addr;
+    ipv4->sin_port = htons(port);
+    return 0;
+  }
+  if (addr->sa_family == AF_INET6) {
+    struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *) addr;
+    ipv6->sin6_port = htons(port);
+    return 0;
+  }
+  // Unsupported address family
+  return -1;
 }
