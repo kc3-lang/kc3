@@ -858,9 +858,12 @@ bool env_dump_restore_path_resolve (s_env *env)
     return false;
   if (! str_init_concatenate_v(&path, 4, (const s_str*[])
                                {env->module_path, &slash,
-                                &progname, &ext}))
+                                &progname, &ext})) {
+    str_clean(&progname);
     return false;
-  if (true) {
+  }
+  str_clean(&progname);
+  if (false) {
     err_write_1("env_dump_restore_path_resolve: path: ");
     err_inspect_str(&path);
     err_write_1("\n");
