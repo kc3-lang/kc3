@@ -26,6 +26,7 @@ void kc3_tls_server_close (s_tls_server *tls_server)
   tls_buf_close(tls_server->buf_rw.r);
   tls_buf_close(tls_server->buf_rw.w);
   buf_rw_clean(&tls_server->buf_rw);
+  //TODO: avoid leaks in tests if this is removed
   close(tls_server->socket);
 }
 

@@ -41,32 +41,28 @@
    - [x] ecrire des tests fonctionnels dans test/tls/
 
  - [ ] ikc3 **--tls** --client/server
-
    - [x] Il faut parser l'argument en ligne de commande --tls dans ikc3/ikc3.c .
-
      - [x] Declarer une variable globale `bool g_tls` dans ikc3.c .
-
      - [x] Setter la variable globale `bool g_tls` qui indique si
        l'argument --tls est present dans le parsing des arguments en ligne de commande.
 
    - [ ] Serveur TLS
      - [ ] voir les commentaires `// TODO` dans le fichier ikc3.c
-
-     - [ ] ikc3 doit changer ses buffers d'entrée/sortie apres avoir
+     - [x] ikc3 doit changer ses buffers d'entrée/sortie apres avoir
        accepté une connection lorsqu'il est en mode serveur il faut
        remplacer la logique de connection `t_socket` en logique de
        connection `s_tls_server` uniquement dans le cas où
        `g_tls == true && g_server == true`.
-
+     - [x] ikc3_tls_server_clean
      - [ ] Afficher des messages indiquant la progression de la connection
        TLS indiquant la version de TLS utilisée pour la connection :
-       - [ ] "ikc3: TLS server: listening on HOST PORT"
-       - [ ] "ikc3: TLS server: client connected: HOST PORT TLS-4.2"
+       - [x] "ikc3: TLS server: listening on HOST PORT"
+       - [x] "ikc3: TLS server: client connected: HOST PORT TLS-4.2"
 
    - [ ] Client TLS
      - [ ] voir les commentaires `// TODO` dans le fichier ikc3.c
 
-     - [ ] ikc3 doit changer ses buffers d'entrée/sortie apres s'être
+     - [x] ikc3 doit changer ses buffers d'entrée/sortie apres s'être
        connecté lorsqu'il est en mode serveur il faut remplacer la
        logique de connection `t_socket` en logique de connection
        `s_tls_client` uniquement dans le cas où
