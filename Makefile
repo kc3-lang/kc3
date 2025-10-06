@@ -1939,7 +1939,17 @@ uninstall:
 	json_debug \
 	kc3.index \
 	kc3s \
+	kc3s_asan \
+	kc3s_cov \
+	kc3s_debug \
 	kmsg \
+	kmsg_asan \
+	kmsg_cov \
+	kmsg_debug \
+	kpkg \
+	kpkg_asan \
+	kpkg_cov \
+	kpkg_debug \
 	lib_links \
 	lib_links_asan \
 	lib_links_debug \
