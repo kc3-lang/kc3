@@ -33,20 +33,20 @@
 
 #define BUFSZ 0x10000
 
-const char  *g_argv0_default = PROG;
-const char  *g_argv0_dir_default = PREFIX;
-bool         g_client = false;
-s_str        g_host = {0};
-s_str        g_port = {0};
-bool         g_server = false;
-s_tls_client g_tls_client = {0};
-s_tls_server g_tls_server = {0};
-s_buf       *g_server_env_err = NULL;
-s_buf       *g_server_env_in  = NULL;
-s_buf       *g_server_env_out = NULL;
-t_socket     g_server_socket = -1;
-s_socket_buf g_socket_buf = {0};
-bool         g_tls = false;
+static const char  *g_argv0_default = PROG;
+static const char  *g_argv0_dir_default = PREFIX;
+static bool         g_client = false;
+static s_str        g_host = {0};
+static s_str        g_port = {0};
+static bool         g_server = false;
+static s_tls_client g_tls_client = {0};
+static s_tls_server g_tls_server = {0};
+static s_buf       *g_server_env_err = NULL;
+static s_buf       *g_server_env_in  = NULL;
+static s_buf       *g_server_env_out = NULL;
+static t_socket     g_server_socket = -1;
+static s_socket_buf g_socket_buf = {0};
+static bool         g_tls = false;
 
 sw  buf_ignore_character (s_buf *buf);
 
@@ -256,7 +256,10 @@ void ikc3_buf_editline_open_r (s_buf *buf)
 
 void ikc3_client_clean (void)
 {
-  socket_buf_close(&g_socket_buf);
+  if (g_tls)
+    kc3_tls_client_clean(&g_tls_client);
+  else
+    socket_buf_close(&g_socket_buf);
 }
 
 int ikc3_client_init (void)
@@ -460,8 +463,12 @@ void ikc3_server_clean (s_env *env)
   env->in  = g_server_env_in;
   env->out = g_server_env_out;
   env->err = g_server_env_err;
-  socket_buf_close(&g_socket_buf);
-  socket_close(&g_server_socket);
+  if (g_tls)
+    kc3_tls_server_clean(&g_tls_server);
+  else {
+    socket_buf_close(&g_socket_buf);
+    socket_close(&g_server_socket);
+  }
 }
 
 int ikc3_server_init (s_env *env)
@@ -537,6 +544,18 @@ int ikc3_server_init_tls (s_env *env)
   env->in = g_socket_buf.buf_rw.r;
   env->out = g_socket_buf.buf_rw.w;
   //env->err = g_socket_buf.buf_rw.w;
+  io_write_1("ikc3: TLS server: listening on ");
+  io_inspect_str(&g_host);
+  io_write_1(" ");
+  io_inspect_str(&g_port);
+  io_write_1("\n");
+  io_write_1("ikc3: TLS server: client connected: ");
+  io_inspect_str(&g_host);
+  io_write_1(" ");
+  io_inspect_str(&g_port);
+  io_write_1(" ");
+  io_inspect_str(&g_tls_client->version);
+  io_write_1("\n");
   return 0;
 }
 

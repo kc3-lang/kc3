@@ -31,11 +31,13 @@ struct tls_buf {
 struct tls_client {
   s_buf_rw buf_rw;
   t_socket socket;
+  s_str version;
 };
 
 struct tls_server {
   s_buf_rw buf_rw;
   t_socket socket;
+  s_str version;
 };
 
 #endif
