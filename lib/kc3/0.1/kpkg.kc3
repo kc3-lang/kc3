@@ -198,30 +198,31 @@ defmodule Kpkg do
   }
 
   def usage = fn () {
-    reset     = if FD.is_a_tty?(1) do "#{Terminal.reset}" end
-    bold      = if FD.is_a_tty?(1) do "#{Terminal.bold}" end
-    underline = if FD.is_a_tty?(1) do "#{Terminal.underline}" end
+    tty? = FD.is_a_tty?(1)
+    reset = if tty? do "#{Terminal.reset}" end
+    bold  = if tty? do "#{Terminal.bold}" end
+    title = if tty? do "#{Terminal.bold}#{Terminal.fg_blue}" end
     puts("""
 Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
-  #{underline}Options :#{reset}
+  #{title}Options :#{reset}
     --arch ARCH          build for $ARCH
     --tree TREE          work on $TREE
-  #{underline}Source directory commands :#{reset}
+  #{title}Source directory commands :#{reset}
     checkout             git checkout $TREE into src/$DIR/$TREE
     checkout-clean       remove checkout files : src/$DIR/$TREE
     clone                git clone into git/$DIR
     clone-clean          remove git repo files: git/$DIR
-  #{underline}Dependencies commands :#{reset}
+  #{title}Dependencies commands :#{reset}
     build-dependencies   show build-time dependencies
     dependencies         show dependencies
     install-build-deps   install build-time dependencies
     install-deps         install dependencies
-  #{underline}Build commands :#{reset}
+  #{title}Build commands :#{reset}
     configure            run configure in arch/$ARCH/obj/$DIR/$TREE
     clean-configure      remove configure-done tag
     build                run parallel build
     clean-build          remove object files
-  #{underline}Misc commands :#{reset}
+  #{title}Misc commands :#{reset}
     info                 show current state
 """)
   }

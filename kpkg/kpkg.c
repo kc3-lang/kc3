@@ -18,18 +18,29 @@ const char *g_argv0_dir_default = PREFIX;
 
 int main (int argc, char **argv)
 {
+  bool b;
   s_call call = {0};
-  // s_env *env;
+  s_env *env;
   const s_sym *module = NULL;
   sw r = 1;
   s_tag tmp = {0};
   kc3_init(NULL, &argc, &argv);
-  // env = env_global();
+  env = env_global();
+  assert(env);
   module = sym_1("Kpkg.Main");
   call_init(&call);
   call.ident.module = module;
   call.ident.sym = sym_1("main");
-  if (! eval_call(&call, &tmp)) {
+  if (! env_module_has_ident(env, module, &call.ident, &b)) {
+    err_puts("kpkg: env_module_has_ident");
+    goto clean;
+  }
+  if (! b &&
+      ! env_module_load(env, module)) {
+    err_puts("kpkg: env_module_load");
+    goto clean;
+  }
+  if (! env_eval_call(env, &call, &tmp)) {
     err_puts("kpkg: eval_call");
     goto clean;
   }
