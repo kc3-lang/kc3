@@ -20,13 +20,14 @@
 void kc3_tls_client_close (s_tls_client *tls_client)
 {
   s_tls_buf *tls_buf;
-  buf_flush(tls_client->buf_rw.w);
-  tls_buf = tls_client->buf_rw.r->user_ptr;
+  buf_flush(tls_client->socket_buf.buf_rw.w);
+  tls_buf = tls_client->socket_buf.buf_rw.r->user_ptr;
   tls_close(tls_buf->ctx);
-  tls_buf_close(tls_client->buf_rw.r);
-  tls_buf_close(tls_client->buf_rw.w);
-  buf_rw_clean(&tls_client->buf_rw);
-  close(tls_client->socket);
+  tls_buf_close(tls_client->socket_buf.buf_rw.r);
+  tls_buf_close(tls_client->socket_buf.buf_rw.w);
+  buf_rw_clean(&tls_client->socket_buf.buf_rw);
+  // TODO: check if tests leak without that
+  close(tls_client->socket_buf.sockfd);
 }
 
 s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
@@ -40,26 +41,26 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
   assert(*ctx);
   assert(host);
   assert(port);
-  if (! socket_init_connect(&tmp.socket, host, port)) {
+  if (! socket_init_connect(&tmp.socket_buf.sockfd, host, port)) {
     err_puts("kc3_tls_client_init_connect: socket_init_connect");
     assert(! "kc3_tls_client_init_connect: socket_init_connect");
     return NULL;
   }
-  if (tls_connect_socket(*ctx, tmp.socket, host->ptr.pchar)) {
+  if (tls_connect_socket(*ctx, tmp.socket_buf.sockfd, host->ptr.pchar)) {
     err_write_1("kc3_tls_client_init_connect: tls_connect_socket: ");
     err_puts(tls_error(*ctx));
     assert(! "kc3_tls_client_init_connect: tls_connect_socket");
     return NULL;
   }
-  if (! (tmp.buf_rw.r = buf_new_alloc(BUF_SIZE))) {
+  if (! (tmp.socket_buf.buf_rw.r = buf_new_alloc(BUF_SIZE))) {
     err_puts("kc3_tls_client_init_connect: buf_new_alloc r");
     assert(! "kc3_tls_client_init_connect: buf_new_alloc r");
     return NULL;
   }
-  if (! (tmp.buf_rw.w = buf_new_alloc(BUF_SIZE))) {
+  if (! (tmp.socket_buf.buf_rw.w = buf_new_alloc(BUF_SIZE))) {
     err_puts("kc3_tls_client_init_connect: buf_new_alloc w");
     assert(! "kc3_tls_client_init_connect: buf_new_alloc w");
-    buf_delete(tmp.buf_rw.r);
+    buf_delete(tmp.socket_buf.buf_rw.r);
     return NULL;
   }
   while ((r = tls_handshake(*ctx)) == TLS_WANT_POLLIN ||
@@ -69,25 +70,25 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
     err_write_1("kc3_tls_client_init_connect: tls_handshake: ");
     err_puts(tls_error(*ctx));
     assert(! "kc3_tls_client_init_connect: tls_handshake");
-    tls_buf_close(tmp.buf_rw.w);
-    tls_buf_close(tmp.buf_rw.r);
-    buf_delete(tmp.buf_rw.w);
-    buf_delete(tmp.buf_rw.r);
+    tls_buf_close(tmp.socket_buf.buf_rw.w);
+    tls_buf_close(tmp.socket_buf.buf_rw.r);
+    buf_delete(tmp.socket_buf.buf_rw.w);
+    buf_delete(tmp.socket_buf.buf_rw.r);
     return NULL;
   }
-  if (! tls_buf_open_r(tmp.buf_rw.r, *ctx)) {
+  if (! tls_buf_open_r(tmp.socket_buf.buf_rw.r, *ctx)) {
     err_puts("kc3_tls_client_init_connect: tls_buf_open_r");
     assert(! "kc3_tls_client_init_connect: tls_buf_open_r");
-    buf_delete(tmp.buf_rw.w);
-    buf_delete(tmp.buf_rw.r);
+    buf_delete(tmp.socket_buf.buf_rw.w);
+    buf_delete(tmp.socket_buf.buf_rw.r);
     return NULL;
   }
-  if (! tls_buf_open_w(tmp.buf_rw.w, *ctx)) {
+  if (! tls_buf_open_w(tmp.socket_buf.buf_rw.w, *ctx)) {
     err_puts("kc3_tls_client_init_connect: ");
     assert(! "kc3_tls_client_init_connect: ");
-    tls_buf_close(tmp.buf_rw.r);
-    buf_delete(tmp.buf_rw.w);
-    buf_delete(tmp.buf_rw.r);
+    tls_buf_close(tmp.socket_buf.buf_rw.r);
+    buf_delete(tmp.socket_buf.buf_rw.w);
+    buf_delete(tmp.socket_buf.buf_rw.r);
     return NULL;
   }
   *tls_client = tmp;

@@ -17,27 +17,29 @@
 #include "../libkc3/types.h"
 #include "../socket/types.h"
 
-typedef struct tls        *p_tls;
+/* Struct types. */
 typedef struct tls_buf     s_tls_buf;
 typedef struct tls_client  s_tls_client;
-typedef struct tls_config *p_tls_config;
 typedef struct tls_server  s_tls_server;
 
+/* Pointer types. */
+typedef struct tls        *p_tls;
+typedef struct tls_config *p_tls_config;
+
+/* 1 */
 struct tls_buf {
   p_tls ctx;
   t_socket socket;
 };
 
 struct tls_client {
-  s_buf_rw buf_rw;
-  t_socket socket;
-  s_str version;
+  s_socket_buf socket_buf;
+  s_str tls_version;
 };
 
 struct tls_server {
-  s_buf_rw buf_rw;
-  t_socket socket;
-  s_str version;
+  s_socket_buf socket_buf;
+  s_str tls_version;
 };
 
 #endif
