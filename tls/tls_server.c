@@ -14,20 +14,21 @@
 #include <tls.h>
 #include "../libkc3/kc3.h"
 #include "../socket/socket.h"
+#include "../socket/socket_buf.h"
 #include "tls_buf.h"
 #include "tls_server.h"
 
 void kc3_tls_server_close (s_tls_server *tls_server)
 {
   s_tls_buf *tls_buf;
-  buf_flush(tls_server->buf_rw.w);
-  tls_buf = tls_server->buf_rw.w->user_ptr;
+  buf_flush(tls_server->socket_buf.buf_rw.w);
+  tls_buf = tls_server->socket_buf.buf_rw.w->user_ptr;
   tls_close(tls_buf->ctx);
-  tls_buf_close(tls_server->buf_rw.r);
-  tls_buf_close(tls_server->buf_rw.w);
-  buf_rw_clean(&tls_server->buf_rw);
+  tls_buf_close(tls_server->socket_buf.buf_rw.r);
+  tls_buf_close(tls_server->socket_buf.buf_rw.w);
+  buf_rw_clean(&tls_server->socket_buf.buf_rw);
   //TODO: avoid leaks in tests if this is removed
-  close(tls_server->socket);
+  close(tls_server->socket_buf.sockfd);
 }
 
 s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
@@ -40,15 +41,15 @@ s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
   assert(tls_server);
   assert(ctx);
   assert(*ctx);
-  if (! socket_init_accept(&tmp.socket, socket)) {
-    err_puts("kc3_tls_server_init_accept: socket_init_accept");
-    assert(! "kc3_tls_server_init_accept: socket_init_accept");
+  if (! socket_buf_init_accept(&tmp.socket_buf, socket)) {
+    err_puts("kc3_tls_server_init_accept: socket_buf_init_accept");
+    assert(! "kc3_tls_server_init_accept: socket_buf_init_accept");
     return NULL;
   }
   if (true) {
     err_puts("kc3_tls_server_init_accept: accept: OK");
   }
-  if (tls_accept_socket(*ctx, &tmp_ctx, tmp.socket)) {
+  if (tls_accept_socket(*ctx, &tmp_ctx, tmp.socket_buf.sockfd)) {
     err_write_1("kc3_tls_server_init_accept: tls_accept_socket: ");
     err_puts(tls_error(*ctx));
     assert(! "kc3_tls_server_init_accept: tls_accept_socket");
@@ -57,30 +58,30 @@ s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
   if (true) {
     err_puts("kc3_tls_server_init_accept: tls_accept_socket: OK");
   }
-  if (! (tmp.buf_rw.r = buf_new_alloc(BUF_SIZE))) {
+  if (! (tmp.socket_buf.buf_rw.r = buf_new_alloc(BUF_SIZE))) {
     err_puts("kc3_tls_server_init_accept: buf_new_alloc r");
     assert(! "kc3_tls_server_init_accept: buf_new_alloc r");
     return NULL;
   }
-  if (! (tmp.buf_rw.w = buf_new_alloc(BUF_SIZE))) {
+  if (! (tmp.socket_buf.buf_rw.w = buf_new_alloc(BUF_SIZE))) {
     err_puts("kc3_tls_server_init_accept: buf_new_alloc w");
     assert(! "kc3_tls_server_init_accept: buf_new_alloc w");
-    buf_delete(tmp.buf_rw.r);
+    buf_delete(tmp.socket_buf.buf_rw.r);
     return NULL;
   }
-  if (! tls_buf_open_r(tmp.buf_rw.r, tmp_ctx)) {
+  if (! tls_buf_open_r(tmp.socket_buf.buf_rw.r, tmp_ctx)) {
     err_puts("kc3_tls_server_init_accept: tls_buf_open_r");
     assert(! "kc3_tls_server_init_accept: tls_buf_open_r");
-    buf_delete(tmp.buf_rw.w);
-    buf_delete(tmp.buf_rw.r);
+    buf_delete(tmp.socket_buf.buf_rw.w);
+    buf_delete(tmp.socket_buf.buf_rw.r);
     return NULL;
   }
-  if (! tls_buf_open_w(tmp.buf_rw.w, tmp_ctx)) {
+  if (! tls_buf_open_w(tmp.socket_buf.buf_rw.w, tmp_ctx)) {
     err_puts("kc3_tls_server_init_accept: tls_buf_open_w");
     assert(! "kc3_tls_server_init_accept: tls_buf_open_w");
-    tls_buf_close(tmp.buf_rw.r);
-    buf_delete(tmp.buf_rw.w);
-    buf_delete(tmp.buf_rw.r);
+    tls_buf_close(tmp.socket_buf.buf_rw.r);
+    buf_delete(tmp.socket_buf.buf_rw.w);
+    buf_delete(tmp.socket_buf.buf_rw.r);
     return NULL;
   }
   while ((r = tls_handshake(tmp_ctx)) == TLS_WANT_POLLIN ||
@@ -90,10 +91,10 @@ s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
     err_write_1("kc3_tls_server_init_accept: tls_handshake: ");
     err_puts(tls_error(tmp_ctx));
     assert(! "kc3_tls_server_init_accept: tls_handshake");
-    tls_buf_close(tmp.buf_rw.w);
-    tls_buf_close(tmp.buf_rw.r);
-    buf_delete(tmp.buf_rw.w);
-    buf_delete(tmp.buf_rw.r);
+    tls_buf_close(tmp.socket_buf.buf_rw.w);
+    tls_buf_close(tmp.socket_buf.buf_rw.r);
+    buf_delete(tmp.socket_buf.buf_rw.w);
+    buf_delete(tmp.socket_buf.buf_rw.r);
     return NULL;
   }
   *tls_server = tmp;

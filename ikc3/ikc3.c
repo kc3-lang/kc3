@@ -19,11 +19,13 @@
 #endif
 #include "../libkc3/kc3.h"
 #include "../socket/socket.h"
+#include "../socket/socket_addr.h"
 #include "../socket/socket_buf.h"
 #include "config.h"
 #include "../tls/tls.h"
 #include "../tls/tls_client.h"
 #include "../tls/tls_server.h"
+
 
 #if HAVE_WINEDITLINE
 # include "buf_wineditline.h"
@@ -359,7 +361,7 @@ sw ikc3_run (void)
         args->tag.data.str = input_str;
         rpc_tag.data.pcall->arguments = args;
 
-        buf_rw = g_tls ? &g_tls_client.buf_rw : &g_socket_buf.buf_rw;
+        buf_rw = g_tls ? &g_tls_client.socket_buf.buf_rw : &g_socket_buf.buf_rw;
         if (buf_inspect_tag(buf_rw->w, &rpc_tag) <= 0 ||
             buf_write_1(buf_rw->w, "\n") <= 0 ||
             buf_flush(buf_rw->w) < 0) {
@@ -504,14 +506,28 @@ int ikc3_server_init (s_env *env)
   g_server_env_err = env->err;
   env->in = g_socket_buf.buf_rw.r;
   env->out = g_socket_buf.buf_rw.w;
-  //env->err = g_socket_buf.buf_rw.w;
   return 0;
 }
 
-int ikc3_server_init_tls (s_env *env)
+int ikc3_server_init_tls (void)
 {
-  assert(env);
-  // TODO: TLS init
+  s_tag tls_tag;
+  p_tls tls;
+  if (! g_tls) {
+    err_puts("ikc3_server_init_tls: g_tls");
+    assert(! "ikc3_server_init_tls: g_tls");
+    return 1;
+  }
+  if (! kc3_tls_init(&tls_tag)) {
+    err_puts("ikc3_server_init_tls: kc3_tls_init");
+    assert(! "ikc3_server_init_tls: kc3_tls_init");
+    return 1;
+  }
+  if (! kc3_tls_server(&tls)) {
+    err_puts("ikc3_server_init_tls: kc3_tls_server");
+    assert(! "ikc3_server_init_tls: kc3_tls_server");
+    return 1;
+  }
   if (! socket_init_listen(&g_server_socket, &g_host, &g_port)) {
     err_write_1("ikc3: failed to listen on ");
     err_inspect_str(&g_host);
@@ -527,34 +543,21 @@ int ikc3_server_init_tls (s_env *env)
     io_inspect_str(&g_port);
     io_write_1("\n");
   }
-  if (! socket_buf_init_accept(&g_socket_buf, &g_server_socket)) {
-    err_puts("ikc3: ikc3_server_init: socket_buf_init_accept");
-    socket_close(&g_server_socket);
+  if (! kc3_tls_server_init_accept(&g_tls_server, &g_server_socket,
+                                   &tls)) {
+    err_puts("ikc3_server_init_tls: kc3_tls_server_init_accept");
+    assert(! "ikc3_server_init_tls: kc3_tls_server_init_accept");
     return 1;
   }
-  // TODO: TLS server up to tls_handshake()
-  if (true) {
-    io_write_1("ikc3: connected to ");
-    io_inspect_str(&g_socket_buf.addr_str);
-    io_write_1("\n");
-  }
-  g_server_env_in = env->in;
-  g_server_env_out = env->out;
-  g_server_env_err = env->err;
-  env->in = g_socket_buf.buf_rw.r;
-  env->out = g_socket_buf.buf_rw.w;
-  //env->err = g_socket_buf.buf_rw.w;
-  io_write_1("ikc3: TLS server: listening on ");
-  io_inspect_str(&g_host);
-  io_write_1(" ");
-  io_inspect_str(&g_port);
-  io_write_1("\n");
   io_write_1("ikc3: TLS server: client connected: ");
-  io_inspect_str(&g_host);
+  // socket_addr_to_str(&g_tls_server.socket_buf.addr_str,
+  //                    g_tls_server.socket_buf.addr,
+  //                    g_tls_server.socket_buf.addr_len);
+  io_inspect_str(&g_tls_server.socket_buf.addr_str);
   io_write_1(" ");
   io_inspect_str(&g_port);
   io_write_1(" ");
-  io_inspect_str(&g_tls_client->version);
+  io_write_1(tls_conn_cipher(tls));
   io_write_1("\n");
   return 0;
 }
