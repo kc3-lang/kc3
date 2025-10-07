@@ -77,7 +77,7 @@ LOCAL_LIBS_ASAN="$LOCAL_LIBS_ASAN ../../../../gl/libkc3_gl_asan.la"
 LOCAL_LIBS_ASAN="$LOCAL_LIBS_ASAN ../../../libkc3_window_asan.la"
 LOCAL_LIBS_ASAN="$LOCAL_LIBS_ASAN ../../libkc3_window_egl_asan.la"
 LOCAL_LIBS_ASAN="$LOCAL_LIBS_ASAN ../../demo/libkc3_window_egl_demo_asan.la"
-LOCAL_LIBS_ASAN="$LOCAL_LIBS_ASAN ../libkc3_window_egl_xcb_asan.la"
+LOCAL_LIBS_ASAN="$LOCAL_LIBS_ASAN ../libkc3_window_egl_drm_asan.la"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
@@ -89,7 +89,7 @@ LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../../../../gl/libkc3_gl_cov.la"
 LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../../../libkc3_window_cov.la"
 LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../../libkc3_window_egl_cov.la"
 LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../../demo/libkc3_window_egl_demo_cov.la"
-LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../libkc3_window_egl_xcb_cov.la"
+LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../libkc3_window_egl_drm_cov.la"
 LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
 
 # Debug config
@@ -101,7 +101,7 @@ LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../../../../gl/libkc3_gl_debug.la"
 LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../../../libkc3_window_debug.la"
 LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../../libkc3_window_egl_debug.la"
 LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../../demo/libkc3_window_egl_demo_debug.la"
-LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../libkc3_window_egl_xcb_debug.la"
+LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../libkc3_window_egl_drm_debug.la"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
@@ -115,7 +115,7 @@ LOCAL_LIBS="$LOCAL_LIBS ../../../../gl/libkc3_gl.la"
 LOCAL_LIBS="$LOCAL_LIBS ../../../libkc3_window.la"
 LOCAL_LIBS="$LOCAL_LIBS ../../libkc3_window_egl.la"
 LOCAL_LIBS="$LOCAL_LIBS ../../demo/libkc3_window_egl_demo.la"
-LOCAL_LIBS="$LOCAL_LIBS ../libkc3_window_egl_xcb.la"
+LOCAL_LIBS="$LOCAL_LIBS ../libkc3_window_egl_drm.la"
 LIBS="$LOCAL_LIBS $LIBS"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

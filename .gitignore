@@ -149,6 +149,10 @@ window/cairo/xcb/demo/kc3_window_cairo_xcb_demo_debug
 window/egl/android/project/.gradle/
 window/egl/android/project/app/.cxx/
 window/egl/android/project/app/build/
+window/egl/drm/demo/kc3_window_egl_drm_demo
+window/egl/drm/demo/kc3_window_egl_drm_demo_asan
+window/egl/drm/demo/kc3_window_egl_drm_demo_cov
+window/egl/drm/demo/kc3_window_egl_drm_demo_debug
 window/egl/xcb/demo/kc3_window_egl_xcb_demo
 window/egl/xcb/demo/kc3_window_egl_xcb_demo_asan
 window/egl/xcb/demo/kc3_window_egl_xcb_demo_cov

@@ -18,15 +18,15 @@ CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.h config.mk
 
-build:
-	${MAKE} ${LIB}
-	${MAKE} -C demo build
-
 all:
 	${MAKE} build
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
+
+build:
+	${MAKE} ${LIB}
+	${MAKE} -C demo build
 
 asan:
 	${MAKE} ${LIB_ASAN}

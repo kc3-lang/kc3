@@ -91,7 +91,7 @@ static bool drm_context_init (s_drm_context *ctx, s_window_egl *window)
   ctx->gbm_surface = gbm_surface_create(ctx->gbm_device,
                                         ctx->mode->hdisplay,
                                         ctx->mode->vdisplay,
-                                        GBM_FORMAT_XRGB8888,
+                                        GBM_FORMAT_ARGB8888,
                                         GBM_BO_USE_SCANOUT |
                                         GBM_BO_USE_RENDERING);
   if (!ctx->gbm_surface) {
@@ -193,41 +193,58 @@ static bool window_egl_drm_setup (s_window_egl *window,
   EGLConfig config;
   EGLint config_attribs[] = {
     EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-    EGL_BLUE_SIZE, 8,
-    EGL_GREEN_SIZE, 8,
     EGL_RED_SIZE, 8,
-    EGL_DEPTH_SIZE, 8,
-    EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+    EGL_GREEN_SIZE, 8,
+    EGL_BLUE_SIZE, 8,
+    EGL_ALPHA_SIZE, 8,
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
     EGL_NONE
   };
   EGLint context_attribs[] = {
-    EGL_CONTEXT_MAJOR_VERSION, 3,
-    EGL_CONTEXT_MINOR_VERSION, 0,
+    EGL_CONTEXT_CLIENT_VERSION, 2,
     EGL_NONE
   };
   EGLint gl_w, gl_h;
   EGLint num_configs;
-  window->egl_display = eglGetPlatformDisplay(EGL_PLATFORM_GBM_KHR,
-                                              ctx->gbm_device, NULL);
+  window->egl_display = eglGetDisplay((EGLNativeDisplayType)
+                                      ctx->gbm_device);
   if (window->egl_display == EGL_NO_DISPLAY) {
-    err_puts("window_egl_drm_setup: eglGetDisplay failed");
+    err_puts("window_egl_drm_setup: eglGetDisplay");
     return false;
   }
   if (!eglInitialize(window->egl_display, &major, &minor)) {
-    err_puts("window_egl_drm_setup: eglInitialize failed");
+    err_puts("window_egl_drm_setup: eglInitialize");
     return false;
   }
   if (!eglChooseConfig(window->egl_display, config_attribs, &config,
-                       1, &num_configs) || num_configs != 1) {
-    err_puts("window_egl_drm_setup: eglChooseConfig failed");
+                       1, &num_configs)) {
+    err_puts("window_egl_drm_setup: eglChooseConfig");
     return false;
   }
+  if (num_configs == 0) {
+    err_puts("window_egl_drm_setup: no matching EGL config found");
+    return false;
+  }
+  EGLint visual_id, alpha_size;
+  eglGetConfigAttrib(window->egl_display, config,
+                     EGL_NATIVE_VISUAL_ID, &visual_id);
+  eglGetConfigAttrib(window->egl_display, config,
+                     EGL_ALPHA_SIZE, &alpha_size);
+  err_write_1("EGL config visual ID: 0x");
+  err_inspect_u32_hexadecimal((u32) visual_id);
+  err_write_1(" alpha_size: ");
+  err_inspect_s32_decimal((s32) alpha_size);
+  err_write_1("\n");
   window->egl_config = config;
-  eglBindAPI(EGL_OPENGL_API);
-  window->egl_surface = eglCreatePlatformWindowSurface
-    (window->egl_display, config, ctx->gbm_surface, NULL);
+  eglBindAPI(EGL_OPENGL_ES_API);
+  window->egl_surface = eglCreateWindowSurface
+    (window->egl_display, config,
+     (EGLNativeWindowType) ctx->gbm_surface, NULL);
   if (window->egl_surface == EGL_NO_SURFACE) {
-    err_puts("window_egl_drm_setup: eglCreateWindowSurface failed");
+    EGLint error = eglGetError();
+    err_write_1("window_egl_drm_setup: eglCreateWindowSurface failed: 0x");
+    err_inspect_u32_hexadecimal((u32) error);
+    err_write_1("\n");
     return false;
   }
   window->egl_context = eglCreateContext(window->egl_display, config,
@@ -259,11 +276,11 @@ static bool window_egl_drm_setup (s_window_egl *window,
 bool window_egl_drm_run (s_window_egl *window)
 {
   s_drm_context ctx;
-  if (!drm_context_init(&ctx, window)) {
+  if (! drm_context_init(&ctx, window)) {
     err_puts("window_egl_drm_run: drm_context_init failed");
     return false;
   }
-  if (!window_egl_drm_setup(window, &ctx)) {
+  if (! window_egl_drm_setup(window, &ctx)) {
     err_puts("window_egl_drm_run: window_egl_drm_setup failed");
     goto ko_drm;
   }
