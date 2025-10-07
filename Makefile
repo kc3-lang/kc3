@@ -200,6 +200,18 @@ demo_cov: cov
 demo_debug: debug
 	${MAKE} -C window demo_debug
 
+demo_drm: build
+	${MAKE} -C window/egl/drm demo
+
+demo_drm_asan: asan
+	${MAKE} -C window/egl/drm demo_asan
+
+demo_drm_cov: cov
+	${MAKE} -C window/egl/drm demo_cov
+
+demo_drm_debug: debug
+	${MAKE} -C window/egl/drm demo_debug
+
 demo_egl: build
 	${MAKE} -C window demo_egl
 
