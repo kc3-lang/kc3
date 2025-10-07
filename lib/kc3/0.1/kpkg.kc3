@@ -86,6 +86,8 @@ defmodule Kpkg do
     Facts.replace_tags(Kpkg.db, package.name,
       :kpkg_package_build_depends_on, package.build_depends_on)
     Facts.replace_tags(Kpkg.db, package.name,
+      :kpkg_package_default_branch, package.default_branch)
+    Facts.replace_tags(Kpkg.db, package.name,
       :kpkg_package_depends_on, package.depends_on)
     Facts.replace_tags(Kpkg.db, package.name,
       :kpkg_package_dir, package.dir)
@@ -108,6 +110,8 @@ defmodule Kpkg do
     Facts.first_with(db, [[name, :is_a, Kpkg.Package],
                           [name, :kpkg_package_build_depends_on,
                            build_depends_on = ?],
+                          [name, :kpkg_package_default_branch,
+                           default_branch = ?],
                           [name, :kpkg_package_depends_on,
                            depends_on = ?],
                           [name, :kpkg_package_dir, dir = ?],
@@ -116,6 +120,7 @@ defmodule Kpkg do
                           [name, :kpkg_package_module, module = ?]],
       fn (fact) { %Kpkg.Package{name: name,
                                 build_depends_on: build_depends_on,
+                                default_branch: default_branch,
                                 depends_on: depends_on,
                                 dir: dir,
                                 git: git,
