@@ -17,7 +17,7 @@
 #include "tls_buf.h"
 #include "tls_client.h"
 
-void kc3_tls_client_close (s_tls_client *tls_client)
+void kc3_tls_client_clean (s_tls_client *tls_client)
 {
   s_tls_buf *tls_buf;
   buf_flush(tls_client->socket_buf.buf_rw.w);
@@ -26,6 +26,7 @@ void kc3_tls_client_close (s_tls_client *tls_client)
   tls_buf_close(tls_client->socket_buf.buf_rw.r);
   tls_buf_close(tls_client->socket_buf.buf_rw.w);
   buf_rw_clean(&tls_client->socket_buf.buf_rw);
+
   // TODO: check if tests leak without that
   close(tls_client->socket_buf.sockfd);
 }

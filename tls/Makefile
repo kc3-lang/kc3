@@ -46,7 +46,7 @@ distclean:
 	rm -rf ${DISTCLEANFILES}
 
 gcovr:
-	gcovr --gcov-executable ${GCOV} --html-details libkc3_web.html
+	gcovr --gcov-executable ${GCOV} --gcov-ignore-errors=no_working_dir_found --html-details libkc3_web.html
 
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/tls
