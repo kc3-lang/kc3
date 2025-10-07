@@ -738,7 +738,7 @@ objc2ext() {
 }
 
 pkg_config() {
-    NAME=$(echo $1 | tr [-a-z] [_A-Z])
+    NAME=$(echo $1 | tr '[a-z-]' '[A-Z_]')
     if pkg-config "$1"; then
 	CFLAGS="$CFLAGS $(pkg-config --cflags "$1")"
 	CXXFLAGS="$CXXFLAGS $(pkg-config --cflags "$1")"
