@@ -15,7 +15,7 @@ defmodule Kpkg.Repos.LibMD do
   Kpkg.defpackage(
     %Kpkg.Package{name: :libmd,
                   build_depends_on: [],
-                  default_branch: "master",
+                  default_branch: "main",
                   depends_on: [],
                   dir: "hadrons.org/libmd",
                   git: "https://git.kmx.io/kc3-lang/libmd.git",

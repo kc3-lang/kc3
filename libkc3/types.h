@@ -918,7 +918,7 @@ struct facts_cursor {
 
 struct env {
   sw                argc;
-  s_list           *args_list;
+  s_list           *args;
   char            **argv;
   s_str            *argv0;
   s_str            *argv0_dir;

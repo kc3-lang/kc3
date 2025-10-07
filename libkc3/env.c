@@ -175,23 +175,11 @@ s_tag * env_and (s_env *env, s_tag *a, s_tag *b, s_tag *dest)
 
 s_list ** env_args (s_env *env, s_list **dest)
 {
-  sw i;
-  s_list *tmp;
-  s_list **tail;
-  tmp = NULL;
-  tail = &tmp;
-  i = 0;
-  while (i < env->argc) {
-    if (! (*tail = list_new_str_1(NULL, env->argv[i], NULL)))
-      goto clean;
-    tail = &(*tail)->next.data.plist;
-    i++;
-  }
+  p_list tmp;
+  if (! plist_init_copy(&tmp, &env->args))
+    return NULL;
   *dest = tmp;
   return dest;
- clean:
-  list_delete_all(tmp);
-  return NULL;
 }
 
 void env_args_clean (s_env *env)
@@ -203,6 +191,8 @@ void env_args_clean (s_env *env)
 s_env * env_args_init (s_env *env, int *argc, char ***argv)
 {
   s32 argc_prev = 0;
+  int count;
+  char **vector;
   assert(env);
   if (argc && argv && *argc && *argv) {
     env->argc = (*argc)--;
@@ -244,12 +234,19 @@ s_env * env_args_init (s_env *env, int *argc, char ***argv)
         (*argv)++;
       }
     }
+    count = *argc;
+    vector = *argv;
+    while (count-- > 0) {
+      env->args = list_new_str_1(NULL, vector[count], env->args);
+      env->args = list_new_str_copy(env->argv0, env->args);
+    }
     return env;
   }
   env->argc = 0;
   env->argv = NULL;
   env->argv0 = str_new_1(NULL, g_argv0_default);
   env->argv0_dir = str_new_1(NULL, g_argv0_dir_default);
+  env->args = list_new_str_copy(env->argv0, NULL);
   return env;
 }
 

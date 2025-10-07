@@ -54,6 +54,8 @@ defmodule Kpkg do
     }
   }
 
+  def color? = false
+
   def dir = fn () {
     dir = if from_env = getenv("KPKG_DIR") do
       from_env
@@ -186,6 +188,8 @@ defmodule Kpkg do
             result = Kpkg.clone(pkg)
           ["clone-clean" | rest] ->
             result = Kpkg.clone_clean(pkg)
+          ["--color" | rest] ->
+            def color? = true
           ["configure" | rest] ->
             result = Kpkg.configure(pkg, tree, arch)
           ["info" | rest] ->
@@ -202,14 +206,15 @@ defmodule Kpkg do
   }
 
   def usage = fn () {
-    tty? = FD.is_a_tty?(1)
-    reset = if tty? do "#{Terminal.reset}" end
-    bold  = if tty? do "#{Terminal.bold}" end
-    title = if tty? do "#{Terminal.bold}#{Terminal.fg_blue}" end
+    style? = Kpkg.style?()
+    reset = if style? do "#{Terminal.reset}" end
+    bold  = if style? do "#{Terminal.bold}" end
+    title = if style? do "#{Terminal.bold}#{Terminal.fg_blue}" end
     puts("""
 Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   #{title}Options :#{reset}
     --arch ARCH          build for $ARCH
+    --color              enable text styling and colors
     --tree TREE          work on $TREE
   #{title}Source directory commands :#{reset}
     checkout             git checkout $TREE into src/$DIR/$TREE
@@ -286,9 +291,9 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   ## Internal API
 
   def exec = fn (cmd) {
-    tty? = FD.is_a_tty?(1)
-    reset = if tty? do "#{Terminal.reset}" end
-    style = if tty? do "#{Terminal.bold}#{Terminal.fg_blue}" end
+    style? = Kpkg.style?()
+    reset = if style? do "#{Terminal.reset}" end
+    style = if style? do "#{Terminal.bold}#{Terminal.fg_blue}" end
     cmd_str = List.join(cmd, " ")
     puts("#{style}#{cmd_str}#{reset}")
     result = system(cmd)
@@ -301,9 +306,21 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
     end
   }
 
+  def log_call = fn (msg) {
+    style? = Kpkg.style?()
+    reset = if style? do "#{Terminal.reset}" end
+    style = if style? do "#{Terminal.bold}#{Terminal.fg_magenta}" end
+    puts("#{style}#{msg}#{reset}")
+  }
+
+  def style? = fn () {
+    FD.is_a_tty?(1) || Kpkg.color?
+  }
+
   ## Main API - sources from git
 
   def autogen = fn (pkg, tree) {
+    log_call("autogen #{pkg.name} #{tree}")
     Kpkg.checkout(pkg, tree)
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
     if File.exists?(pkg_src_dir + "/autogen.sh") do
@@ -316,6 +333,7 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   }
 
   def checkout = fn (pkg, tree) {
+    log_call("checkout #{pkg.name} #{tree}")
     Kpkg.clone(pkg)
     pkg_git_dir = Kpkg.git_dir(pkg) + "/.git"
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
@@ -331,6 +349,7 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   }
 
   def checkout_clean = fn (pkg, tree) {
+    log_call("checkout_clean #{pkg.name} #{tree}")
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
     if File.is_directory?(pkg_src_dir) do
       Kpkg.exec(["rm", "-rf", pkg_src_dir])
@@ -339,6 +358,7 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   }
 
   def clone = fn (pkg) {
+    log_call("clone #{pkg.name}")
     pkg_git_dir = Kpkg.git_dir(pkg)
     if ! File.is_directory?(pkg_git_dir) do
       Kpkg.exec(["mkdir", "-p", Kpkg.git_parent_dir(pkg)])
@@ -351,6 +371,7 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   }
 
   def clone_clean = fn (pkg) {
+    log_call("clone_clean #{pkg.name}")
     pkg_git_dir = Kpkg.git_dir(pkg)
     if File.is_directory?(pkg_git_dir) do
       Kpkg.exec(["rm", "-rf", pkg_git_dir])
@@ -361,60 +382,71 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   ## Main API - dependencies
 
   def build_dependencies = fn (pkg) {
-    Kpkg.resolve_dependencies(pkg.build_depends_on,
-      Kpkg.build_dependencies)
+    log_call("build_dependencies #{pkg.name}")
+    deps = Kpkg.resolve_dependencies(pkg, :build_depends_on)
+    log_call("build_dependencies #{pkg.name}: #{deps}")
+    deps
   }
 
   def dependencies = fn (pkg) {
-    Kpkg.resolve_dependencies(pkg.depends_on,
-      Kpkg.dependencies)
-  }
-
-  def resolve_dependencies = fn (list, dependencies_callable) {
-    # puts("resolve_dependencies: list: #{inspect(list)}")
-    pkg_tree_tuple_list = []
-    while list != [] do
-      [dep_name | rest] = ^ list
-      # puts("resolve_dependencies: dep_name: #{inspect(dep_name)}")
-      if type(dep_name) == Tuple do
-        {dep_name, dep_tree} = ^ dep_name
-        dep_pkg = Kpkg.get_package_or_die(dep_name)
-      else
-        if type(dep_name) == Sym do
-          dep_pkg = Kpkg.get_package_or_die(dep_name)
-          dep_tree = dep_pkg.default_branch
-        else
-          puts("kpkg: resolve_dependencies: invalid package: " +
-            inspect(dep_name))
-          exit(1)
-        end
-      end
-      dep_tuple = {dep_name, dep_tree}
-      if ! List.has?(pkg_tree_tuple_list, dep_tuple) do
-        pkg_tree_tuple_list = [dep_tuple | pkg_tree_tuple_list]
-      end
-      list = List.append(rest, dependencies_callable(dep_pkg))
-    end
-    pkg_tree_tuple_list
+    log_call("dependencies #{pkg.name}")
+    deps = Kpkg.resolve_dependencies(pkg, :depends_on)
+    log_call("dependencies #{pkg.name}: #{deps}")
+    deps
   }
 
   def install_build_dependencies = fn (pkg, tree) {
+    log_call("install_build_dependencies #{pkg.name} #{tree}")
     deps = Kpkg.build_dependencies(pkg)
-    List.each(deps, fn ({dep_pkg, dep_tree}) {
+    List.each(deps, fn ({dep_name, dep_tree}) {
+      dep_pkg = Kpkg.get_package_or_die(dep_name)
       Kpkg.install(dep_pkg, dep_tree, Kpkg.local_arch)
     })
+    log_call("install_build_dependencies #{pkg.name} #{tree}: OK")
   }
 
   def install_dependencies = fn (pkg, tree, arch) {
+    log_call("install_dependencies #{pkg.name} #{tree} #{arch}")
     deps = Kpkg.dependencies(pkg)
-    List.each(deps, fn ({dep_pkg, dep_tree}) {
+    List.each(deps, fn ({dep_name, dep_tree}) {
+      dep_pkg = Kpkg.get_package_or_die(dep_name)
       Kpkg.install(dep_pkg, dep_tree, arch)
     })
+    log_call("install_dependencies #{pkg.name} #{tree} #{arch}: OK")
+  }
+
+  def resolve_dependencies = fn (pkg, sym) {
+    log_call("resolve_dependencies #{pkg.name} #{sym}")
+    list = pkg[sym]
+    pkg_tree_tuple_list = []
+    while list != [] do
+      [dep_name | rest] = ^ list
+      match type(dep_name) do
+        Tuple ->
+          {dep_name, dep_tree} = ^ dep_name
+          dep_pkg = Kpkg.get_package_or_die(dep_name)
+        Sym ->
+          dep_pkg = Kpkg.get_package_or_die(dep_name)
+          dep_tree = dep_pkg.default_branch
+        _ ->
+          puts("kpkg: resolve_dependencies: invalid package: " +
+            inspect(dep_name))
+          exit(1)
+      end
+      dep_tuple = ^ {dep_name, dep_tree}
+      if ! List.has?(pkg_tree_tuple_list, dep_tuple) do
+        pkg_tree_tuple_list = [dep_tuple | pkg_tree_tuple_list]
+      end
+      list = List.append(rest, dep_pkg[sym])
+    end
+    log_call("resolve_dependencies #{pkg.name} #{sym}: #{pkg_tree_tuple_list}")
+    pkg_tree_tuple_list
   }
 
   ## Main API - build
 
   def configure = fn (pkg, tree, arch) {
+    log_call("configure #{pkg.name} #{tree} #{arch}")
     Kpkg.checkout(pkg, tree)
     Kpkg.install_build_dependencies(pkg, tree)
     Kpkg.install_dependencies(pkg, tree, arch)
@@ -428,6 +460,7 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   }
 
   def build = fn (pkg, tree, arch) {
+    log_call("build #{pkg.name} #{tree} #{arch}")
     Kpkg.configure(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     Kpkg.exec([pkg.make, "-C", build_dir])
@@ -437,12 +470,14 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   ## Main API - package
 
   def fake = fn (pkg, tree, arch) {
+    log_call("fake #{pkg.name} #{tree} #{arch}")
     Kpkg.build(pkg, tree, arch)
     # DESTDIR=... make install
     0
   }
 
   def package = fn (pkg, tree, arch) {
+    log_call("package #{pkg.name} #{tree} #{arch}")
     pathname = package_path(pkg, tree, arch)
     if ! File.exists?(pathname) do
       Kpkg.fake(pkg, tree, arch)
@@ -455,6 +490,7 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   ## Main API - install
 
   def install = fn (pkg, tree, arch) {
+    log_call("install #{pkg.name} #{tree} #{arch}")
     Kpkg.package(pkg, tree, arch)
     0
   }
@@ -462,14 +498,16 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   ## Main API - misc
 
   def info = fn (pkg, tree, arch) {
+    log_call("info #{pkg.name} #{tree} #{arch}")
     arch_local = Kpkg.arch_local()
     local_or_empty = if arch == arch_local do
       " (local)"
     else
       ""
     end
-    reset = if FD.is_a_tty?(1) do "#{Terminal.reset}" end
-    title = if FD.is_a_tty?(1) do "#{Terminal.bold}#{Terminal.fg_blue}" end
+    style? = Kpkg.style?()
+    reset = if style? do "#{Terminal.reset}" end
+    title = if style? do "#{Terminal.bold}#{Terminal.fg_blue}" end
     puts("#{title}pkg:#{reset}")
     puts("#{pkg}")
     puts("#{title}tree:#{reset} #{inspect(tree)}")
