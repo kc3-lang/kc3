@@ -71,6 +71,8 @@ defmodule Kpkg do
 
   def db = Facts.database()
 
+  def umask = 0o750
+
   def uname = fn () {
     Str.slice(system(["uname"]), 0, -2);
   }
@@ -159,7 +161,7 @@ defmodule Kpkg do
   }
 
   def load = fn () {
-    File.ensure_directory(dir(), 0o755)
+    File.ensure_directory(dir(), Kpkg.umask)
     Kpkg.Package.load_all()
   }
 
@@ -184,6 +186,8 @@ defmodule Kpkg do
             result = Kpkg.clone(pkg)
           ["clone-clean" | rest] ->
             result = Kpkg.clone_clean(pkg)
+          ["configure" | rest] ->
+            result = Kpkg.configure(pkg, tree, arch)
           ["info" | rest] ->
             result = Kpkg.info(pkg, tree, arch)
           ["--tree", tree_arg | rest] ->
@@ -247,10 +251,19 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
     "#{Kpkg.dir()}/src/#{pkg.dir}/#{tree}"
   }
 
+  def configure_path = fn (pkg, tree) {
+    "#{Kpkg.src_dir(pkg, tree)}/configure"
+  }
+
   ## Arch configuration
 
-  def arch_dir = fn (pkg, tree, arch) {
-    "#{Kpkg.dir()}/arch/#{arch}/src/#{pkg.dir}/#{tree}"
+  def arch_dir = fn {
+    (pkg, tree, arch) {
+      arch_dir(pkg, tree, arch, "src")
+    }
+    (pkg, tree, arch, subdir) {
+      "#{Kpkg.dir()}/arch/#{arch}/#{subdir}/#{pkg.dir}/#{tree}"
+    }
   }
 
   def arch_local = fn () {
@@ -262,10 +275,22 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
       })
   }
 
+  def build_dir = fn (pkg, tree, arch) {
+    arch_dir(pkg, tree, arch, "obj")
+  }
+
+  def package_path = fn (pkg, tree, arch) {
+    arch_dir(pkg, tree, arch, "pkg")
+  }
+
   ## Internal API
 
   def exec = fn (cmd) {
-    puts(List.join(cmd, " "))
+    tty? = FD.is_a_tty?(1)
+    reset = if tty? do "#{Terminal.reset}" end
+    style = if tty? do "#{Terminal.bold}#{Terminal.fg_blue}" end
+    cmd_str = List.join(cmd, " ")
+    puts("#{style}#{cmd_str}#{reset}")
     result = system(cmd)
     if (result && result != "") do
       if (Str.ends_with?(result, "\n")) do
@@ -390,8 +415,48 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
   ## Main API - build
 
   def configure = fn (pkg, tree, arch) {
+    Kpkg.checkout(pkg, tree)
     Kpkg.install_build_dependencies(pkg, tree)
     Kpkg.install_dependencies(pkg, tree, arch)
+    build_dir = Kpkg.build_dir(pkg, tree, arch)
+    build_dir_sh = Sh.escape(build_dir)
+    configure_path_sh = Sh.escape(Kpkg.configure_path(pkg, tree))
+    File.ensure_directory(build_dir, Kpkg.umask)
+    Kpkg.exec(["/bin/sh", "-c",
+               "cd #{build_dir_sh} && #{configure_path_sh}"])
+    0
+  }
+
+  def build = fn (pkg, tree, arch) {
+    Kpkg.configure(pkg, tree, arch)
+    build_dir = Kpkg.build_dir(pkg, tree, arch)
+    Kpkg.exec([pkg.make, "-C", build_dir])
+    0
+  }
+
+  ## Main API - package
+
+  def fake = fn (pkg, tree, arch) {
+    Kpkg.build(pkg, tree, arch)
+    # DESTDIR=... make install
+    0
+  }
+
+  def package = fn (pkg, tree, arch) {
+    pathname = package_path(pkg, tree, arch)
+    if ! File.exists?(pathname) do
+      Kpkg.fake(pkg, tree, arch)
+      
+      return 0
+    end
+    0
+  }
+
+  ## Main API - install
+
+  def install = fn (pkg, tree, arch) {
+    Kpkg.package(pkg, tree, arch)
+    0
   }
 
   ## Main API - misc
@@ -416,6 +481,7 @@ Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
     puts("#{title}dependencies:#{reset}")
     puts(Kpkg.dependencies(pkg))
     puts("#{title}uname:#{reset} #{inspect(Kpkg.uname())}")
+    0
   }
 
 end
