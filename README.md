@@ -164,6 +164,8 @@ to discover how to use KC3 for your own projects.
    - properties
      - recursive
  - libkc3
+   - unions
+   - enums
    - hash-table as a KC3 value (map ?)
    - special operators hash table
    - pass by reference and reference counting in all data structures
