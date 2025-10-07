@@ -28,52 +28,62 @@ build:
 	${MAKE} ${LIB}
 	${MAKE} -C demo build
 	if ${HAVE_ANDROID}; then ${MAKE} -C android build; fi
+	if ${HAVE_DRM}; then ${MAKE} -C drm build; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb build; fi
 
 asan:
 	${MAKE} ${LIB_ASAN}
 	${MAKE} -C demo asan
 	if ${HAVE_ANDROID}; then ${MAKE} -C android asan; fi
+	if ${HAVE_DRM}; then ${MAKE} -C drm asan; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb asan; fi
 
 clean:
 	rm -rf ${CLEANFILES}
 	${MAKE} -C demo clean
 	if ${HAVE_ANDROID}; then ${MAKE} -C android clean; fi
+	if ${HAVE_DRM}; then ${MAKE} -C drm clean; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean; fi
 
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 	${MAKE} -C demo clean_cov
 	if ${HAVE_ANDROID}; then ${MAKE} -C android clean_cov; fi
+	if ${HAVE_DRM}; then ${MAKE} -C drm clean_cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean_cov; fi
 
 cov:
 	${MAKE} ${LIB_COV}
 	${MAKE} -C demo cov
 	if ${HAVE_ANDROID}; then ${MAKE} -C android cov; fi
+	if ${HAVE_DRM}; then ${MAKE} -C drm cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb cov; fi
 
 debug:
 	${MAKE} ${LIB_DEBUG}
 	${MAKE} -C demo debug
 	if ${HAVE_ANDROID}; then ${MAKE} -C android debug; fi
+	if ${HAVE_DRM}; then ${MAKE} -C drm debug; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb debug; fi
 
 demo: build
 	if ${HAVE_ANDROID}; then ${MAKE} -C android demo; fi
+	if ${HAVE_DRM}; then ${MAKE} -C drm demo; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb demo; fi
 
 demo_asan: asan
 	if ${HAVE_ANDROID}; then ${MAKE} -C android demo_asan; fi
+	if ${HAVE_DRM}; then ${MAKE} -C drm demo_asan; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_asan; fi
 
 demo_cov: cov
 	if ${HAVE_ANDROID}; then ${MAKE} -C android demo_cov; fi
+	if ${HAVE_DRM}; then ${MAKE} -C drm demo_cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_cov; fi
 
 demo_debug: debug
 	if ${HAVE_ANDROID}; then ${MAKE} -C android demo_debug; fi
+	if ${HAVE_DRM}; then ${MAKE} -C drm demo_debug; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_debug; fi
 
 distclean:
@@ -81,6 +91,7 @@ distclean:
 
 gdb_demo: debug
 	if ${HAVE_ANDROID}; then ${MAKE} -C android gdb_demo; fi
+	if ${HAVE_DRM}; then ${MAKE} -C drm gdb_demo; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb gdb_demo; fi
 
 install:

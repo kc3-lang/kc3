@@ -93,6 +93,12 @@ KC3_CONFIGURES = \
 	"window/egl/demo/configure" \
 	"window/egl/demo/sources.sh" \
 	"window/egl/demo/update_sources" \
+	"window/egl/drm/configure" \
+	"window/egl/drm/demo/configure" \
+	"window/egl/drm/demo/sources.sh" \
+	"window/egl/drm/demo/update_sources" \
+	"window/egl/drm/sources.sh" \
+	"window/egl/drm/update_sources" \
 	"window/egl/sources.sh" \
 	"window/egl/update_sources" \
 	"window/egl/xcb/configure" \
@@ -184,6 +190,10 @@ KC3_MAKEFILES = \
 	"window/egl/android/sources.mk" \
 	"window/egl/demo/Makefile" \
 	"window/egl/demo/sources.mk" \
+	"window/egl/drm/Makefile" \
+	"window/egl/drm/demo/Makefile" \
+	"window/egl/drm/demo/sources.mk" \
+	"window/egl/drm/sources.mk" \
 	"window/egl/sources.mk" \
 	"window/egl/xcb/Makefile" \
 	"window/egl/xcb/demo/Makefile" \
@@ -1090,6 +1100,11 @@ KC3_C_SOURCES = \
 	"window/egl/android/window_egl_android.h" \
 	"window/egl/demo/bg_rect.c" \
 	"window/egl/demo/bg_rect.h" \
+	"window/egl/drm/demo/window_egl_drm_demo.c" \
+	"window/egl/drm/demo/window_egl_drm_demo.h" \
+	"window/egl/drm/types.h" \
+	"window/egl/drm/window_egl_drm.c" \
+	"window/egl/drm/window_egl_drm.h" \
 	"window/egl/sequence.c" \
 	"window/egl/sequence.h" \
 	"window/egl/types.h" \
@@ -1515,8 +1530,11 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/kc3/operator.kc3" \
 	"lib/kc3/0.1/kc3/ops.kc3" \
 	"lib/kc3/0.1/kpkg.kc3" \
+	"lib/kc3/0.1/kpkg/main.kc3" \
 	"lib/kc3/0.1/kpkg/package.kc3" \
 	"lib/kc3/0.1/kpkg/repos/kc3.kc3" \
+	"lib/kc3/0.1/kpkg/repos/libbsd.kc3" \
+	"lib/kc3/0.1/kpkg/repos/libmd.kc3" \
 	"lib/kc3/0.1/kubz.kc3" \
 	"lib/kc3/0.1/list.kc3" \
 	"lib/kc3/0.1/map.facts" \
@@ -1562,6 +1580,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/sw.facts" \
 	"lib/kc3/0.1/sym.facts" \
 	"lib/kc3/0.1/tag.kc3" \
+	"lib/kc3/0.1/terminal.kc3" \
 	"lib/kc3/0.1/thread.kc3" \
 	"lib/kc3/0.1/time.kc3" \
 	"lib/kc3/0.1/tls.kc3" \
