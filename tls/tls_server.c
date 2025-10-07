@@ -18,7 +18,7 @@
 #include "tls_buf.h"
 #include "tls_server.h"
 
-void kc3_tls_server_close (s_tls_server *tls_server)
+void kc3_tls_server_clean (s_tls_server *tls_server)
 {
   s_tls_buf *tls_buf;
   buf_flush(tls_server->socket_buf.buf_rw.w);
