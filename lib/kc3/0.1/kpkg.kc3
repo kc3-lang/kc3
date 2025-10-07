@@ -189,14 +189,14 @@ defmodule Kpkg do
           ["clone-clean" | rest] ->
             result = Kpkg.clone_clean(pkg)
           ["--color" | rest] ->
-            def color? = true
+            def Kpkg.color? = true
           ["configure" | rest] ->
             result = Kpkg.configure(pkg, tree, arch)
           ["info" | rest] ->
             result = Kpkg.info(pkg, tree, arch)
           ["--tree", tree_arg | rest] ->
             tree = ^ tree_arg
-          args ->
+          _ ->
             puts("kpkg: unknown argument: #{args}")
             result = 1
         end
