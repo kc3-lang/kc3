@@ -160,6 +160,11 @@ defmodule Kpkg do
       Kpkg.usage()
       0
     }
+    (["--color"]) {
+      def Kpkg.color? = true
+      Kpkg.usage()
+      0
+    }
     ([name | rest]) {
        Kpkg.load()
        pkg = Kpkg.get_package_or_die(name)
@@ -216,27 +221,27 @@ defmodule Kpkg do
     bold  = if style? do "#{Terminal.bold}" end
     title = if style? do "#{Terminal.bold}#{Terminal.fg_blue}" end
     puts("""
-Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTIONS] COMMAND [ARG ...] ...
-  #{title}Options :#{reset}
+Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] …
+🐢 #{title}Options :#{reset}
     --arch ARCH          build for $ARCH
     --color              enable text styling and colors
     --tree TREE          work on $TREE
-  #{title}Source directory commands :#{reset}
+🐢 #{title}Source directory commands :#{reset}
     checkout             git checkout $TREE into src/$DIR/$TREE
     checkout-clean       remove checkout files : src/$DIR/$TREE
     clone                git clone into git/$DIR
     clone-clean          remove git repo files: git/$DIR
-  #{title}Dependencies commands :#{reset}
+🐢 #{title}Dependencies commands :#{reset}
     build-dependencies   show build-time dependencies
     dependencies         show dependencies
     install-build-deps   install build-time dependencies
     install-deps         install dependencies
-  #{title}Build commands :#{reset}
+🐢 #{title}Build commands :#{reset}
     configure            run configure in arch/$ARCH/obj/$DIR/$TREE
     clean-configure      remove configure-done tag
     build                run parallel build
     clean-build          remove object files
-  #{title}Misc commands :#{reset}
+🐢 #{title}Misc commands :#{reset}
     info                 show current state
 """)
   }
