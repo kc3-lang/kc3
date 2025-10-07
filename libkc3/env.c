@@ -238,8 +238,8 @@ s_env * env_args_init (s_env *env, int *argc, char ***argv)
     vector = *argv;
     while (count-- > 0) {
       env->args = list_new_str_1(NULL, vector[count], env->args);
-      env->args = list_new_str_copy(env->argv0, env->args);
     }
+    env->args = list_new_str_copy(env->argv0, env->args);
     return env;
   }
   env->argc = 0;
