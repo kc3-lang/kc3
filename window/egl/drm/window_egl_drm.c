@@ -379,7 +379,7 @@ bool window_egl_run (s_window_egl *window)
   return window_egl_drm_run(window);
 }
 
-static bool drm_process_input(s_drm_context *ctx, s_window_egl *window)
+static bool drm_process_input (s_drm_context *ctx, s_window_egl *window)
 {
   struct libinput_event *event;
   if (ctx->libinput_fd < 0)
