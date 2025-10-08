@@ -325,5 +325,6 @@ static u8 mandelbrot_f128_update (s_sequence_egl *seq)
   err_inspect_u64_decimal(win->w);
   err_write_1(" x ");
   err_inspect_u64_decimal(win->h);
+  err_write_1("\n");
   return true;
 }

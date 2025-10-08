@@ -47,7 +47,7 @@ u8 earth_load (s_sequence_egl *seq)
     return false;
   map = &seq->tag.data.map;
   tag_init_psym(             map->key   + 0, sym_1("camera"));
-  tag_init_ptr_free(         map->value + 0, camera);
+  tag_init_ptr(              map->value + 0, camera);
   tag_init_psym(             map->key   + 1,
                 sym_1("camera_rot_x_speed"));
   tag_init_f64(              map->value + 1, 0.01);
@@ -73,7 +73,7 @@ u8 earth_render (s_sequence_egl *seq)
     return false;
   }
   map = &seq->tag.data.map;
-  if (map->value[0].type != TAG_PTR_FREE ||
+  if (map->value[0].type != TAG_PTR ||
       map->value[1].type != TAG_F64 ||
       map->value[2].type != TAG_PSTRUCT) {
     err_puts("earth_render: invalid map");
@@ -112,11 +112,23 @@ u8 earth_render (s_sequence_egl *seq)
   assert(glGetError() == GL_NO_ERROR);
   gl_sphere_render(sphere);
   glDisable(GL_DEPTH_TEST);
+  assert(glGetError() == GL_NO_ERROR);
+  gl_camera_render_end(camera);
+  assert(glGetError() == GL_NO_ERROR);
   return true;
 }
 
 u8 earth_unload (s_sequence_egl *seq)
 {
-  (void) seq;
+  s_gl_camera *camera;
+  s_map *map;
+  if (seq && seq->tag.type == TAG_MAP) {
+    map = &seq->tag.data.map;
+    if (map->count >= 1 && map->value[0].type == TAG_PTR) {
+      camera = map->value[0].data.ptr.p;
+      if (camera)
+        gl_camera_delete(camera);
+    }
+  }
   return true;
 }

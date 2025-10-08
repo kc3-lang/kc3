@@ -57,7 +57,8 @@ static const char * g_gl_camera_fragment_shader_src =
   "    oFragColor = vec4(1.0);\n"
   "  ambiantColor = oFragColor * vec4(uAmbiantLightColor, 1.0);\n"
   "  oFragColor = ambiantColor;\n"
-  "  //oFragColor = vec4(vec3(gl_FragCoord.z), 1.0);\n"
+  "  // Debug: show texture coordinates as color\n"
+  "  oFragColor = vec4(ioTexCoord.x, ioTexCoord.y, 0.5, 1.0);\n"
   "}\n";
 
 /*
@@ -162,6 +163,8 @@ void gl_camera_bind_texture (s_gl_camera *camera, GLuint texture)
 {
   assert(camera);
   assert(glGetError() == GL_NO_ERROR);
+  glUseProgram(camera->gl_shader_program);
+  assert(glGetError() == GL_NO_ERROR);
   if (! texture) {
     glActiveTexture(GL_TEXTURE0);
     assert(glGetError() == GL_NO_ERROR);
@@ -202,7 +205,7 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   GLuint vertex_shader;
   assert(camera);
   gl_camera_set_aspect_ratio(camera, w, h);
-  camera->clip_z_far = 10.0f;
+  camera->clip_z_far = 20.0f;
   camera->clip_z_near = 1.0f;
   camera->fov_y = 90.0f;
   camera->position.x = 0.0f;
