@@ -41,7 +41,7 @@ static bool window_egl_xcb_setup (s_window_egl *window,
     EGL_GREEN_SIZE, 8,
     EGL_RED_SIZE, 8,
     EGL_DEPTH_SIZE, 8,
-    EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
     EGL_NONE
   };
   EGLint context_attribs[] = {
@@ -68,7 +68,7 @@ static bool window_egl_xcb_setup (s_window_egl *window,
     return false;
   }
   window->egl_config = config;
-  eglBindAPI(EGL_OPENGL_API);
+  eglBindAPI(EGL_OPENGL_ES_API);
   window->egl_surface = eglCreatePlatformWindowSurface
     (window->egl_display, config, &xcb_window, NULL);
   if (window->egl_surface == EGL_NO_SURFACE) {

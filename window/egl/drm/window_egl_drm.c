@@ -298,11 +298,12 @@ static bool window_egl_drm_setup (s_window_egl *window,
     EGL_GREEN_SIZE, 8,
     EGL_BLUE_SIZE, 8,
     EGL_ALPHA_SIZE, 8,
-    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
     EGL_NONE
   };
   EGLint context_attribs[] = {
-    EGL_CONTEXT_CLIENT_VERSION, 2,
+    EGL_CONTEXT_MAJOR_VERSION, 3,
+    EGL_CONTEXT_MINOR_VERSION, 0,
     EGL_NONE
   };
   EGLint gl_w, gl_h;
@@ -315,6 +316,13 @@ static bool window_egl_drm_setup (s_window_egl *window,
   }
   if (!eglInitialize(window->egl_display, &major, &minor)) {
     err_puts("window_egl_drm_setup: eglInitialize");
+    return false;
+  }
+  if (!eglBindAPI(EGL_OPENGL_ES_API)) {
+    EGLint error = eglGetError();
+    err_write_1("window_egl_drm_setup: eglBindAPI(EGL_OPENGL_ES_API) failed: 0x");
+    err_inspect_u32_hexadecimal((u32) error);
+    err_write_1("\n");
     return false;
   }
   if (!eglChooseConfig(window->egl_display, config_attribs, &config,
@@ -337,7 +345,13 @@ static bool window_egl_drm_setup (s_window_egl *window,
   err_inspect_s32_decimal((s32) alpha_size);
   err_write_1("\n");
   window->egl_config = config;
-  eglBindAPI(EGL_OPENGL_ES_API);
+  if (!eglBindAPI(EGL_OPENGL_ES_API)) {
+    EGLint error = eglGetError();
+    err_write_1("window_egl_drm_setup: eglBindAPI(EGL_OPENGL_ES_API) failed: 0x");
+    err_inspect_u32_hexadecimal((u32) error);
+    err_write_1("\n");
+    return false;
+  }
   window->egl_surface = eglCreateWindowSurface
     (window->egl_display, config,
      (EGLNativeWindowType) ctx->gbm_surface, NULL);

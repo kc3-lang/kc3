@@ -18,12 +18,12 @@
 #include "gl_square.h"
 
 static const char * g_gl_ortho_vertex_shader_src =
-  "#version 100\n"
-  "attribute vec3 iPos;\n"
-  "attribute vec3 iNormal;\n"
-  "attribute vec2 iTexCoord;\n"
-  "varying vec3 ioFragNormal;\n"
-  "varying vec2 ioTexCoord;\n"
+  "#version 300 es\n"
+  "in vec3 iPos;\n"
+  "in vec3 iNormal;\n"
+  "in vec2 iTexCoord;\n"
+  "out vec3 ioFragNormal;\n"
+  "out vec2 ioTexCoord;\n"
   "uniform mat4 uProjectionMatrix;\n"
   "uniform mat4 uViewMatrix;\n"
   "uniform mat4 uModelMatrix;\n"
@@ -35,23 +35,24 @@ static const char * g_gl_ortho_vertex_shader_src =
   "}\n";
 
 static const char * g_gl_ortho_fragment_shader_src =
-  "#version 100\n"
+  "#version 300 es\n"
   "precision highp float;\n"
-  "varying vec3 ioFragNormal;\n"
-  "varying vec2 ioTexCoord;\n"
+  "in vec3 ioFragNormal;\n"
+  "in vec2 ioTexCoord;\n"
+  "out vec4 oFragColor;\n"
   "uniform vec4 uColor;\n"
   "uniform bool uEnableTex2D;\n"
   "uniform sampler2D uTex2D;\n"
   "void main() {\n"
-  "  vec4 texColor = texture2D(uTex2D, ioTexCoord);\n"
+  "  vec4 texColor = texture(uTex2D, ioTexCoord);\n"
   "  if (uEnableTex2D) {\n"
-  "    gl_FragColor = vec4(texColor[0] * uColor[0],\n"
+  "    oFragColor = vec4(texColor[0] * uColor[0],\n"
   "                      texColor[1] * uColor[1],\n"
   "                      texColor[2] * uColor[2],\n"
   "                      texColor[3] * uColor[3]);\n"
   "  }\n"
   "  else\n"
-  "    gl_FragColor = uColor;\n"
+  "    oFragColor = uColor;\n"
   "}\n";
 
 void gl_ortho_bind_texture (s_gl_ortho *ortho, GLuint texture)
@@ -154,7 +155,18 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   glAttachShader(ortho->gl_shader_program, fragment_shader);
   assert(glGetError() == GL_NO_ERROR);
+  glBindAttribLocation(ortho->gl_shader_program, 0, "iPos");
+  glBindAttribLocation(ortho->gl_shader_program, 1, "iNormal");
+  glBindAttribLocation(ortho->gl_shader_program, 2, "iTexCoord");
   glLinkProgram(ortho->gl_shader_program);
+  glGetProgramiv(ortho->gl_shader_program, GL_LINK_STATUS, &success);
+  if (! success) {
+    char info_log[512];
+    glGetProgramInfoLog(ortho->gl_shader_program, sizeof(info_log),
+                        NULL, info_log);
+    err_write_1("gl_ortho_init: program linking failed: ");
+    err_puts(info_log);
+  }
   assert(glGetError() == GL_NO_ERROR);
   glDeleteShader(vertex_shader);
   assert(glGetError() == GL_NO_ERROR);
@@ -311,6 +323,8 @@ void gl_ortho_update_model_matrix (s_gl_ortho *ortho)
 {
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
+  glUseProgram(ortho->gl_shader_program);
+  assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
                      &ortho->model_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);
@@ -340,6 +354,8 @@ void gl_ortho_update_view_matrix (s_gl_ortho *ortho)
                    &(s_vec3) { 0.0f, 0.0f, 1.0f });
   mat4_scale(&ortho->view_matrix, ortho->scale.x,
              ortho->scale.y, ortho->scale.z);
+  glUseProgram(ortho->gl_shader_program);
+  assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(ortho->gl_view_matrix_loc, 1, GL_FALSE,
                      &ortho->view_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);

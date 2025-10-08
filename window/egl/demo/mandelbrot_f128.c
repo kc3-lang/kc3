@@ -50,7 +50,7 @@ u8 mandelbrot_f128_button (s_sequence_egl *seq, u8 button, s64 x, s64 y)
   next_z = &map->value[3].data.f128;
   if (button == 1) {
     *next_x = *next_x + *next_z * (x - (f128) win->w / 2);
-    *next_y = *next_y + *next_z * ((f128) win->h / 2 - y);
+    *next_y = *next_y + *next_z * (y - (f128) win->h / 2);
   }
   else if (button == 5) {
     *next_z = *next_z * exp2l(0.5);
@@ -177,11 +177,13 @@ u8 mandelbrot_f128_render (s_sequence_egl *seq)
   }
   glClearColor(0, 0, 0, 0);
   glClear(GL_COLOR_BUFFER_BIT);
+  gl_ortho_render(&g_ortho);
   mat4_init_identity(&g_ortho.model_matrix);
   gl_ortho_bind_texture(&g_ortho, g_mandelbrot_f128_texture);
   gl_ortho_rect(&g_ortho, 0, 0, win->w, win->h);
   gl_ortho_text_render_outline(&g_ortho, &g_mandelbrot_f128_text,
                                20.0, 66.0, text_color, text_color + 1);
+  gl_ortho_render_end(&g_ortho);
   return true;
 }
 

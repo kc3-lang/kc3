@@ -143,6 +143,7 @@ u8 toasters_render (s_sequence_egl *seq)
   assert(window);
   glClearColor(0.7f, 0.95f, 1.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
+  gl_ortho_render(&g_ortho);
   mat4_init_identity(&g_ortho.model_matrix);
   mat4_translate(&g_ortho.model_matrix, 0, window->h, 0);
   mat4_scale(&g_ortho.model_matrix, 1, -1, 1);
@@ -155,6 +156,7 @@ u8 toasters_render (s_sequence_egl *seq)
     toasters_render_toasts(toasts, window, seq);
     toasters_render_toasters(toasters, window, seq);
   }
+  gl_ortho_render_end(&g_ortho);
   return true;
 }
 

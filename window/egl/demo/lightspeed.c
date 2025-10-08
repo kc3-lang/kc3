@@ -125,7 +125,13 @@ u8 lightspeed_render (s_sequence_egl *seq)
   assert(glGetError() == GL_NO_ERROR);
   /* glEnable(GL_LINE_SMOOTH); */ /* Not available in OpenGL ES */
   assert(glGetError() == GL_NO_ERROR);
+  gl_ortho_render(&g_ortho);
+  assert(glGetError() == GL_NO_ERROR);
+  gl_ortho_color(&g_ortho, 1.0f, 1.0f, 1.0f, 0.7f);
+  assert(glGetError() == GL_NO_ERROR);
   gl_lines_render(&g_lines_stars, star_count);
+  assert(glGetError() == GL_NO_ERROR);
+  gl_ortho_render_end(&g_ortho);
   assert(glGetError() == GL_NO_ERROR);
   return true;
 }

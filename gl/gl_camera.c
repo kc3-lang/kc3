@@ -16,13 +16,13 @@
 #include "mat4.h"
 
 static const char * g_gl_camera_vertex_shader_src =
-  "#version 100\n"
-  "attribute vec3 iPos;\n"
-  "attribute vec3 iNormal;\n"
-  "attribute vec2 iTexCoord;\n"
-  "varying vec3 ioNormal;\n"
-  "varying vec3 ioPos;\n"
-  "varying vec2 ioTexCoord;\n"
+  "#version 300 es\n"
+  "in vec3 iPos;\n"
+  "in vec3 iNormal;\n"
+  "in vec2 iTexCoord;\n"
+  "out vec3 ioNormal;\n"
+  "out vec3 ioPos;\n"
+  "out vec2 ioTexCoord;\n"
   "uniform mat4 uProjectionMatrix;\n"
   "uniform mat4 uViewMatrix;\n"
   "uniform mat4 uModelMatrix;\n"
@@ -35,12 +35,13 @@ static const char * g_gl_camera_vertex_shader_src =
   "}\n";
 
 static const char * g_gl_camera_fragment_shader_src =
-  "#version 100\n"
+  "#version 300 es\n"
   "precision highp float;\n"
   "const float PI = 3.141592653;\n"
-  "varying vec3 ioNormal;\n"
-  "varying vec3 ioPos;\n"
-  "varying vec2 ioTexCoord;\n"
+  "in vec3 ioNormal;\n"
+  "in vec3 ioPos;\n"
+  "in vec2 ioTexCoord;\n"
+  "out vec4 oFragColor;\n"
   "uniform bool uEnableTex2D;\n"
   "uniform sampler2D uTex2D;\n"
   "uniform vec3 uAmbiantLightColor;\n"
@@ -49,14 +50,14 @@ static const char * g_gl_camera_fragment_shader_src =
   "uniform vec3 uLightColor[16];\n"
   "void main() {\n"
   "  vec4 ambiantColor;"
-  "  vec4 texColor = texture2D(uTex2D, ioTexCoord);\n"
+  "  vec4 texColor = texture(uTex2D, ioTexCoord);\n"
   "  if (uEnableTex2D)\n"
-  "    gl_FragColor = texColor;\n"
+  "    oFragColor = texColor;\n"
   "  else\n"
-  "    gl_FragColor = vec4(1.0);\n"
-  "  ambiantColor = gl_FragColor * vec4(uAmbiantLightColor, 1.0);\n"
-  "  gl_FragColor = ambiantColor;\n"
-  "  //oColor = vec4(vec3(gl_FragCoord.z), 1.0);\n"
+  "    oFragColor = vec4(1.0);\n"
+  "  ambiantColor = oFragColor * vec4(uAmbiantLightColor, 1.0);\n"
+  "  oFragColor = ambiantColor;\n"
+  "  //oFragColor = vec4(vec3(gl_FragCoord.z), 1.0);\n"
   "}\n";
 
 /*
@@ -240,7 +241,18 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   camera->gl_shader_program = glCreateProgram();
   glAttachShader(camera->gl_shader_program, vertex_shader);
   glAttachShader(camera->gl_shader_program, fragment_shader);
+  glBindAttribLocation(camera->gl_shader_program, 0, "iPos");
+  glBindAttribLocation(camera->gl_shader_program, 1, "iNormal");
+  glBindAttribLocation(camera->gl_shader_program, 2, "iTexCoord");
   glLinkProgram(camera->gl_shader_program);
+  glGetProgramiv(camera->gl_shader_program, GL_LINK_STATUS, &success);
+  if (! success) {
+    char info_log[512];
+    glGetProgramInfoLog(camera->gl_shader_program, sizeof(info_log),
+                        NULL, info_log);
+    err_write_1("gl_camera_init: program linking failed: ");
+    err_puts(info_log);
+  }
   assert(glGetError() == GL_NO_ERROR);
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
