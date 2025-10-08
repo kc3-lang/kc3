@@ -27,10 +27,11 @@ static const char * g_gl_camera_vertex_shader_src =
   "uniform mat4 uViewMatrix;\n"
   "uniform mat4 uModelMatrix;\n"
   "void main () {\n"
-  "  gl_Position = uProjectionMatrix * uViewMatrix *\n"
-  "    uModelMatrix * vec4(iPos, 1.0);\n"
-  "  ioNormal = iNormal;\n"
-  "  ioPos = vec3(gl_Position);\n"
+  "  mat4 m = uViewMatrix * uModelMatrix;\n"
+  "  vec4 viewPos = m * vec4(iPos, 1.0);\n"
+  "  ioNormal = normalize(vec3(m * vec4(iNormal, 1.0)));\n"
+  "  gl_Position = uProjectionMatrix * viewPos;\n"
+  "  ioPos = vec3(viewPos);\n"
   "  ioTexCoord = iTexCoord;\n"
   "}\n";
 
@@ -226,8 +227,9 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   if (! success) {
     char info_log[512];
     glGetShaderInfoLog(vertex_shader, sizeof(info_log), NULL, info_log);
-    err_write_1("gl_camera_init: shader compilation failed: ");
+    err_write_1("gl_camera_init: vertex shader compilation failed: ");
     err_puts(info_log);
+    return NULL;
   }
   fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragment_shader, 1, &g_gl_camera_fragment_shader_src,
@@ -238,8 +240,9 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
     char info_log[512];
     glGetShaderInfoLog(fragment_shader, sizeof(info_log), NULL,
                        info_log);
-    err_write_1("gl_camera_init: shader compilation failed: ");
+    err_write_1("gl_camera_init: fragment shader compilation failed: ");
     err_puts(info_log);
+    return NULL;
   }
   camera->gl_shader_program = glCreateProgram();
   glAttachShader(camera->gl_shader_program, vertex_shader);
@@ -255,6 +258,7 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
                         NULL, info_log);
     err_write_1("gl_camera_init: program linking failed: ");
     err_puts(info_log);
+    return NULL;
   }
   assert(glGetError() == GL_NO_ERROR);
   glDeleteShader(vertex_shader);
@@ -283,6 +287,10 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   camera->gl_ambiant_light_color_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uAmbiantLightColor");
+  assert(glGetError() == GL_NO_ERROR);
+  camera->gl_light_count_loc =
+    glGetUniformLocation(camera->gl_shader_program,
+                         "uLightCount");
   assert(glGetError() == GL_NO_ERROR);
   camera->gl_light_pos_loc =
     glGetUniformLocation(camera->gl_shader_program,
@@ -352,6 +360,8 @@ void gl_camera_render (s_gl_camera *camera)
   assert(glGetError() == GL_NO_ERROR);
   glUniform3fv(camera->gl_ambiant_light_color_loc, 1,
                &camera->ambiant_light_color.r);
+  assert(glGetError() == GL_NO_ERROR);
+  glUniform1i(camera->gl_light_count_loc, camera->light_count);
   assert(glGetError() == GL_NO_ERROR);
   glUniform4fv(camera->gl_light_pos_loc, camera->light_count,
                &camera->light_pos[0].x);

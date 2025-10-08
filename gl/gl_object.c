@@ -61,6 +61,10 @@ void gl_object_render (const s_gl_object *object)
   GLenum error;
   assert(object);
   assert(glGetError() == GL_NO_ERROR);
+  if (object->triangle.count == 0) {
+    err_puts("gl_object_render: triangle count is 0!");
+    return;
+  }
   glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
                         (void*)offsetof(s_gl_vertex, pos_x));

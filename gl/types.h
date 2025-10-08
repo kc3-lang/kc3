@@ -304,6 +304,7 @@ struct gl_camera {
   GLuint gl_enable_tex2d_loc;
   GLuint gl_tex2d_loc;
   GLuint gl_ambiant_light_color_loc;
+  GLuint gl_light_count_loc;
   GLuint gl_light_pos_loc;
   GLuint gl_light_color_loc;
   GLuint gl_shader_program;
