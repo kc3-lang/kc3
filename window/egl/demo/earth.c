@@ -70,7 +70,7 @@ u8 earth_load (s_sequence_egl *seq)
 u8 earth_render (s_sequence_egl *seq)
 {
   s_gl_camera *camera;
-  f64         *camera_rot_x_speed;
+  //f64         *camera_rot_x_speed;
   s_map *map;
   s_gl_sphere *sphere;
   s_window_egl *window;
@@ -90,13 +90,14 @@ u8 earth_render (s_sequence_egl *seq)
     return false;
   }
   camera             =  map->value[0].data.ptr.p;
-  camera_rot_x_speed = &map->value[1].data.f64;
+  //camera_rot_x_speed = &map->value[1].data.f64;
   sphere             =  map->value[2].data.pstruct->data;
   gl_camera_set_aspect_ratio(camera, window->w, window->h);
-  camera->rotation.x += seq->dt * (*camera_rot_x_speed) *
+  camera->rotation.x = 0.0f; // DEBUG: disable rotation
+  /*camera->rotation.x += seq->dt * (*camera_rot_x_speed) *
     M_PI * 2.0f;
   if (camera->rotation.x > M_PI || camera->rotation.x < 0)
-    *camera_rot_x_speed *= -1.0;
+    *camera_rot_x_speed *= -1.0;*/
   camera->rotation.z += seq->dt * EARTH_CAMERA_ROTATION_Z_SPEED *
     M_PI * 2.0f;
   camera->light_count = 1;

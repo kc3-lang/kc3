@@ -27,11 +27,10 @@ static const char * g_gl_camera_vertex_shader_src =
   "uniform mat4 uViewMatrix;\n"
   "uniform mat4 uModelMatrix;\n"
   "void main () {\n"
-  "  mat4 m = uViewMatrix * uModelMatrix;\n"
-  "  vec4 viewPos = m * vec4(iPos, 1.0);\n"
-  "  ioNormal = normalize(vec3(m * vec4(iNormal, 1.0)));\n"
-  "  gl_Position = uProjectionMatrix * viewPos;\n"
-  "  ioPos = vec3(viewPos);\n"
+  "  gl_Position = uProjectionMatrix * uViewMatrix *\n"
+  "    uModelMatrix * vec4(iPos, 1.0);\n"
+  "  ioNormal = iNormal;\n"
+  "  ioPos = vec3(gl_Position);\n"
   "  ioTexCoord = iTexCoord;\n"
   "}\n";
 
@@ -50,16 +49,7 @@ static const char * g_gl_camera_fragment_shader_src =
   "uniform vec4 uLightPos[16]; // Light position in camera coords.\n"
   "uniform vec3 uLightColor[16];\n"
   "void main() {\n"
-  "  vec4 ambiantColor;"
-  "  vec4 texColor = texture(uTex2D, ioTexCoord);\n"
-  "  if (uEnableTex2D)\n"
-  "    oFragColor = texColor;\n"
-  "  else\n"
-  "    oFragColor = vec4(1.0);\n"
-  "  ambiantColor = oFragColor * vec4(uAmbiantLightColor, 1.0);\n"
-  "  oFragColor = ambiantColor;\n"
-  "  // Debug: show texture coordinates as color\n"
-  "  oFragColor = vec4(ioTexCoord.x, ioTexCoord.y, 0.5, 1.0);\n"
+  "  oFragColor = vec4(1.0, 0.0, 1.0, 1.0);\n"
   "}\n";
 
 /*
@@ -268,14 +258,20 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
     glGetUniformLocation(camera->gl_shader_program,
                          "uProjectionMatrix");
   assert(glGetError() == GL_NO_ERROR);
+  if (camera->gl_projection_matrix_loc == (GLuint)-1)
+    err_puts("gl_camera_init: uProjectionMatrix location is -1!");
   camera->gl_view_matrix_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uViewMatrix");
   assert(glGetError() == GL_NO_ERROR);
+  if (camera->gl_view_matrix_loc == (GLuint)-1)
+    err_puts("gl_camera_init: uViewMatrix location is -1!");
   camera->gl_model_matrix_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uModelMatrix");
   assert(glGetError() == GL_NO_ERROR);
+  if (camera->gl_model_matrix_loc == (GLuint)-1)
+    err_puts("gl_camera_init: uModelMatrix location is -1!");
   camera->gl_enable_tex2d_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uEnableTex2D");
@@ -323,6 +319,10 @@ void gl_camera_render (s_gl_camera *camera)
   s_mat4 matrix;
   assert(camera);
   assert(glGetError() == GL_NO_ERROR);
+  if (camera->gl_shader_program == 0) {
+    err_puts("gl_camera_render: shader program is 0!");
+    return;
+  }
   mat4_init_identity(&camera->projection_matrix);
   mat4_perspective(&camera->projection_matrix, camera->fov_y,
                    camera->aspect_ratio, camera->clip_z_near,
