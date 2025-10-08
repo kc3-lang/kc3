@@ -20,6 +20,7 @@
 
 #include "config.h"
 #include <gbm.h>
+#include <libinput.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 #include "../types.h"
@@ -37,6 +38,8 @@ struct drm_context {
   u32 crtc_id;
   struct gbm_bo *previous_bo;
   u32 previous_fb;
+  struct libinput *libinput;
+  int libinput_fd;
 };
 
 #endif /* LIBKC3_WINDOW_EGL_DRM_TYPES_H */

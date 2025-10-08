@@ -15,15 +15,23 @@
 #include <libkc3/kc3.h>
 #include "../../../window.h"
 #include "../../../../gl/gl_font.h"
+#include "../../../../gl/gl_lines.h"
 #include "../../../../gl/gl_ortho.h"
+#include "../../../../gl/gl_sprite.h"
 #include "../../../../gl/gl_text.h"
 #include "../../../../gl/mat4.h"
 #include "../../window_egl.h"
 #include "../../sequence.h"
 #include "../window_egl_xcb.h"
 #include "../../demo/bg_rect.h"
+#include "../../demo/lightspeed.h"
+#include "../../demo/toasters.h"
+#include "../../demo/flies.h"
+#include "../../demo/earth.h"
+#include "../../demo/mandelbrot_f128.h"
+#include "../../demo/matrix.h"
 
-#define WINDOW_EGL_DEMO_SEQUENCE_COUNT 1
+#define WINDOW_EGL_DEMO_SEQUENCE_COUNT 7
 
 const char *g_argv0_default = PROG;
 const char *g_argv0_dir_default = PREFIX;
@@ -98,8 +106,23 @@ bool window_egl_demo_key (s_window_egl *window, u32 keysym)
   err_inspect_u32(keysym);
   err_write_1("\n");
   switch (keysym) {
-  case 0xff1b:
+  case 0xff1b: /* Escape */
+  case 'q':
+    g_kc3_exit_code = 0;
     return false;
+  case 0xff51: /* Left */
+    if (! window_set_sequence_pos((s_window *) window,
+                                  (window->sequence_pos +
+                                   window->sequence_count - 1) %
+                                  window->sequence_count))
+      return false;
+    break;
+  case 0xff53: /* Right */
+    if (! window_set_sequence_pos((s_window *) window,
+                                  (window->sequence_pos + 1) %
+                                  window->sequence_count))
+      return false;
+    break;
   }
   if (window->seq && window->seq->key &&
       ! window->seq->key((s_sequence *) window->seq, keysym))
@@ -114,12 +137,20 @@ bool window_egl_demo_load (s_window_egl *window)
   assert(glGetError() == GL_NO_ERROR);
   if (! module_load(sym_1("GL.Vertex")) ||
       ! module_load(sym_1("GL.Triangle")) ||
-      ! module_load(sym_1("GL.Object")))
+      ! module_load(sym_1("GL.Object")) ||
+      ! module_load(sym_1("GL.Sphere")))
     return false;
   point_per_pixel = (f32) window->w / window->gl_w;
   err_write_1("point_per_pixel: ");
   err_inspect_f32(point_per_pixel);
   err_write_1("\n");
+  if (window->sequence_count != WINDOW_EGL_DEMO_SEQUENCE_COUNT) {
+    err_write_1("window_egl_demo_load: window->sequence_count = ");
+    err_inspect_u32_decimal(window->sequence_count);
+    err_write_1("\n");
+    assert(window->sequence_count == WINDOW_EGL_DEMO_SEQUENCE_COUNT);
+    return false;
+  }
   if (! gl_ortho_init(&g_ortho))
     return false;
   gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, 0, 1);
@@ -138,8 +169,52 @@ bool window_egl_demo_load (s_window_egl *window)
     err_puts("window_egl_demo_load: gl_text_init g_text_seq_title");
     return false;
   }
-  sequence_egl_init(window->sequence, 8.0, "01. Background rect",
-                    bg_rect_load, bg_rect_render, bg_rect_unload, window);
+  sequence_egl_init(window->sequence, 8.0, "01. Background rectangles",
+                    bg_rect_load, bg_rect_render, bg_rect_unload,
+                    window);
+  if (! gl_lines_init(&g_lines_stars) ||
+      ! gl_lines_allocate(&g_lines_stars, LIGHTSPEED_STAR_MAX))
+    return false;
+  sequence_egl_init(window->sequence + 1, 20.0, "02. Lightspeed",
+                    lightspeed_load, lightspeed_render,
+                    lightspeed_unload, window);
+  if (! gl_sprite_init(&g_sprite_toaster, "img/flaps.256.png",
+                       4, 1, 4, 1))
+    return false;
+  if (! gl_sprite_init(&g_sprite_toast, "img/toast.128.png",
+                       1, 1, 1, 1))
+    return false;
+  sequence_egl_init(window->sequence + 2, 60.0, "03. Toasters",
+                    toasters_load, toasters_render, toasters_unload,
+                    window);
+  if (! gl_font_init(&g_font_flies,
+                     "fonts/Courier New/Courier New.ttf",
+                     point_per_pixel))
+    return false;
+  if (! gl_sprite_init(&g_sprite_fly, "img/fly-noto.png",
+                       1, 1, 1, point_per_pixel))
+    return false;
+  if (! gl_sprite_init(&g_sprite_dead_fly, "img/fly-dead.png",
+                       1, 1, 1, point_per_pixel))
+    return false;
+  sequence_egl_init(window->sequence + 3, 60.0, "04. Flies",
+                    flies_load, flies_render, flies_unload, window);
+  if (! gl_sprite_init(&g_sprite_earth, "img/earth.png",
+                       1, 1, 1, point_per_pixel))
+    return false;
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  assert(glGetError() == GL_NO_ERROR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  assert(glGetError() == GL_NO_ERROR);
+  sequence_egl_init(window->sequence + 4, 120.0, "05. Earth",
+                    earth_load, earth_render, earth_unload, window);
+  sequence_egl_init(window->sequence + 5, 3600.0,
+                    "06. Mandelbrot (f128)", mandelbrot_f128_load,
+                    mandelbrot_f128_render, mandelbrot_f128_unload,
+                    window);
+  window->sequence[5].button = mandelbrot_f128_button;
+  sequence_egl_init(window->sequence + 6, 3600.0, "07. Matrix",
+                    matrix_load, matrix_render, matrix_unload, window);
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }
@@ -216,6 +291,13 @@ void window_egl_demo_unload (s_window_egl *window)
   gl_text_clean(&g_text_fps);
   gl_text_clean(&g_text_seq_title);
   gl_font_clean(&g_font_courier_new);
+  gl_lines_clean(&g_lines_stars);
+  gl_sprite_clean(&g_sprite_toaster);
+  gl_sprite_clean(&g_sprite_toast);
+  gl_font_clean(&g_font_flies);
+  gl_sprite_clean(&g_sprite_fly);
+  gl_sprite_clean(&g_sprite_dead_fly);
+  gl_sprite_clean(&g_sprite_earth);
   gl_ortho_clean(&g_ortho);
   err_puts("window_egl_demo_unload");
 }

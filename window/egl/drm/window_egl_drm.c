@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,6 +23,30 @@
 #ifndef EGL_PLATFORM_GBM_KHR
 #define EGL_PLATFORM_GBM_KHR 0x31D7
 #endif
+
+/* Libinput interface callbacks */
+static int libinput_open_restricted (const char *path, int flags,
+                                     void *user_data)
+{
+  int fd = open(path, flags);
+  (void) user_data;
+  if (fd < 0) {
+    err_write_1("libinput_open_restricted: failed to open ");
+    err_puts(path);
+  }
+  return fd < 0 ? -errno : fd;
+}
+
+static void libinput_close_restricted (int fd, void *user_data)
+{
+  (void) user_data;
+  close(fd);
+}
+
+static const struct libinput_interface libinput_interface = {
+  .open_restricted = libinput_open_restricted,
+  .close_restricted = libinput_close_restricted,
+};
 
 bool window_egl_run (s_window_egl *window)
 {
@@ -72,6 +97,28 @@ static bool drm_context_init (s_drm_context *ctx, s_window_egl *window)
     goto ko_resources;
   }
   ctx->connector_id = ctx->connector->connector_id;
+  drmModeObjectProperties *props;
+  props = drmModeObjectGetProperties(ctx->drm_fd, ctx->connector_id,
+                                     DRM_MODE_OBJECT_CONNECTOR);
+  if (props) {
+    u32 i;
+    for (i = 0; i < props->count_props; i++) {
+      drmModePropertyRes *prop = drmModeGetProperty(ctx->drm_fd,
+                                                     props->props[i]);
+      if (prop) {
+        if (strcmp(prop->name, "max_bpc") == 0) {
+          err_write_1("Connector max_bpc: ");
+          err_inspect_u64_decimal(props->prop_values[i]);
+          err_write_1("\n");
+        }
+        if (strcmp(prop->name, "HDR_OUTPUT_METADATA") == 0) {
+          err_puts("Connector supports HDR_OUTPUT_METADATA");
+        }
+        drmModeFreeProperty(prop);
+      }
+    }
+    drmModeFreeObjectProperties(props);
+  }
   encoder = find_encoder(ctx->drm_fd, ctx->connector);
   if (!encoder) {
     err_puts("drm_context_init: no encoder");
@@ -101,7 +148,25 @@ static bool drm_context_init (s_drm_context *ctx, s_window_egl *window)
   drmModeFreeResources(resources);
   ctx->previous_bo = NULL;
   ctx->previous_fb = 0;
+  /* Initialize libinput */
+  ctx->libinput = libinput_path_create_context(&libinput_interface,
+                                                NULL);
+  if (!ctx->libinput) {
+    err_puts("drm_context_init: libinput_path_create_context failed");
+    goto ko_gbm_surface;
+  }
+  ctx->libinput_fd = -1;
+  /* Try to add keyboard device */
+  if (libinput_path_add_device(ctx->libinput, "/dev/wskbd")) {
+    ctx->libinput_fd = libinput_get_fd(ctx->libinput);
+    err_puts("drm_context_init: keyboard initialized on /dev/wskbd");
+  }
+  else {
+    err_puts("drm_context_init: failed to add keyboard device");
+  }
   return true;
+ ko_gbm_surface:
+  gbm_surface_destroy(ctx->gbm_surface);
  ko_gbm_device:
   gbm_device_destroy(ctx->gbm_device);
  ko_crtc:
@@ -117,6 +182,8 @@ static bool drm_context_init (s_drm_context *ctx, s_window_egl *window)
 
 static void drm_context_clean (s_drm_context *ctx)
 {
+  if (ctx->libinput)
+    libinput_unref(ctx->libinput);
   if (ctx->previous_fb)
     drmModeRmFB(ctx->drm_fd, ctx->previous_fb);
   if (ctx->previous_bo)
@@ -273,6 +340,57 @@ static bool window_egl_drm_setup (s_window_egl *window,
   return true;
 }
 
+/* Map Linux input keycodes to X11 keysyms */
+static u32 keycode_to_keysym(u32 keycode)
+{
+  /* Common keycodes from linux/input-event-codes.h */
+  switch (keycode) {
+  case 1:   return 0xff1b; /* KEY_ESC -> XK_Escape */
+  case 16:  return 'q';     /* KEY_Q */
+  case 105: return 0xff51; /* KEY_LEFT -> XK_Left */
+  case 106: return 0xff53; /* KEY_RIGHT -> XK_Right */
+  case 103: return 0xff52; /* KEY_UP -> XK_Up */
+  case 108: return 0xff54; /* KEY_Down -> XK_Down */
+  default:
+    if (keycode >= 2 && keycode <= 11)
+      return '0' + ((keycode + 8) % 10); /* Number keys */
+    if (keycode >= 16 && keycode <= 25)
+      return 'a' + (keycode - 16); /* Q-P */
+    if (keycode >= 30 && keycode <= 38)
+      return 'a' + (keycode - 30 + 10); /* A-L */
+    if (keycode >= 44 && keycode <= 50)
+      return 'a' + (keycode - 44 + 19); /* Z-M */
+    return 0;
+  }
+}
+
+static bool drm_process_input(s_drm_context *ctx, s_window_egl *window)
+{
+  struct libinput_event *event;
+  if (ctx->libinput_fd < 0)
+    return true;
+  libinput_dispatch(ctx->libinput);
+  while ((event = libinput_get_event(ctx->libinput))) {
+    enum libinput_event_type type = libinput_event_get_type(event);
+    if (type == LIBINPUT_EVENT_KEYBOARD_KEY) {
+      struct libinput_event_keyboard *kev =
+        libinput_event_get_keyboard_event(event);
+      enum libinput_key_state state =
+        libinput_event_keyboard_get_key_state(kev);
+      if (state == LIBINPUT_KEY_STATE_PRESSED) {
+        u32 keycode = libinput_event_keyboard_get_key(kev);
+        u32 keysym = keycode_to_keysym(keycode);
+        if (keysym && window->key && !window->key(window, keysym)) {
+          libinput_event_destroy(event);
+          return false;
+        }
+      }
+    }
+    libinput_event_destroy(event);
+  }
+  return true;
+}
+
 bool window_egl_drm_run (s_window_egl *window)
 {
   s_drm_context ctx;
@@ -287,6 +405,8 @@ bool window_egl_drm_run (s_window_egl *window)
   if (!window->load(window))
     goto ko_drm;
   while (1) {
+    if (!drm_process_input(&ctx, window))
+      break;
     if (!window->render(window))
       break;
     eglSwapBuffers(window->egl_display, window->egl_surface);
