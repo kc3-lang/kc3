@@ -72,13 +72,13 @@ static bool drm_context_init (s_drm_context *ctx, s_window_egl *window)
   const char *drm_device = "/dev/dri/card0";
   ctx->drm_fd = open(drm_device, O_RDWR);
   if (ctx->drm_fd < 0) {
-    err_write_1("drm_context_init: failed to open ");
+    err_write_1("drm_context_init: open: ");
     err_puts(drm_device);
     return false;
   }
   resources = drmModeGetResources(ctx->drm_fd);
   if (!resources) {
-    err_puts("drm_context_init: drmModeGetResources failed");
+    err_puts("drm_context_init: drmModeGetResources");
     goto ko_fd;
   }
   ctx->connector = find_connector(ctx->drm_fd, resources);
@@ -122,7 +122,7 @@ static bool drm_context_init (s_drm_context *ctx, s_window_egl *window)
   window->h = ctx->mode->vdisplay;
   ctx->gbm_device = gbm_create_device(ctx->drm_fd);
   if (!ctx->gbm_device) {
-    err_puts("drm_context_init: gbm_create_device failed");
+    err_puts("drm_context_init: gbm_create_device");
     goto ko_crtc;
   }
   ctx->gbm_surface = gbm_surface_create(ctx->gbm_device,
@@ -132,7 +132,7 @@ static bool drm_context_init (s_drm_context *ctx, s_window_egl *window)
                                         GBM_BO_USE_SCANOUT |
                                         GBM_BO_USE_RENDERING);
   if (!ctx->gbm_surface) {
-    err_puts("drm_context_init: gbm_surface_create failed");
+    err_puts("drm_context_init: gbm_surface_create");
     goto ko_gbm_device;
   }
   drmModeFreeResources(resources);
@@ -142,7 +142,7 @@ static bool drm_context_init (s_drm_context *ctx, s_window_egl *window)
   ctx->libinput = libinput_path_create_context(&libinput_interface,
                                                 NULL);
   if (!ctx->libinput) {
-    err_puts("drm_context_init: libinput_path_create_context failed");
+    err_puts("drm_context_init: libinput_path_create_context");
     goto ko_gbm_surface;
   }
   ctx->libinput_fd = -1;
@@ -152,7 +152,7 @@ static bool drm_context_init (s_drm_context *ctx, s_window_egl *window)
     err_puts("drm_context_init: keyboard initialized on /dev/wskbd");
   }
   else {
-    err_puts("drm_context_init: failed to add keyboard device");
+    err_puts("drm_context_init: libinput_path_add_device");
   }
   return true;
  ko_gbm_surface:
@@ -410,11 +410,11 @@ bool window_egl_drm_run (s_window_egl *window)
 {
   s_drm_context ctx;
   if (! drm_context_init(&ctx, window)) {
-    err_puts("window_egl_drm_run: drm_context_init failed");
+    err_puts("window_egl_drm_run: drm_context_init");
     return false;
   }
   if (! window_egl_drm_setup(window, &ctx)) {
-    err_puts("window_egl_drm_run: window_egl_drm_setup failed");
+    err_puts("window_egl_drm_run: window_egl_drm_setup");
     goto ko_drm;
   }
   if (!window->load(window))
