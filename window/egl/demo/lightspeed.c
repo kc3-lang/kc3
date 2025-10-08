@@ -35,7 +35,8 @@ static void star_init (s_tag *star)
   tag_init_f64(star->data.map.value + 2, 2.0 * y - 1.0);
 }
 
-static void star_render (s_tag *star, s_sequence *seq, s_gl_vertex *v)
+static void star_render (s_tag *star, s_sequence_egl *seq,
+                         s_gl_vertex *v)
 {
   f64 q;
   f64 *speed;
@@ -63,7 +64,7 @@ static void star_render (s_tag *star, s_sequence *seq, s_gl_vertex *v)
     star_init(star);
 }
 
-bool lightspeed_load (s_sequence *seq)
+u8 lightspeed_load (s_sequence_egl *seq)
 {
   uw i;
   uw star_count;
@@ -83,7 +84,7 @@ bool lightspeed_load (s_sequence *seq)
   return true;
 }
 
-bool lightspeed_render (s_sequence *seq)
+u8 lightspeed_render (s_sequence_egl *seq)
 {
   uw i;
   uw star_count;
@@ -129,7 +130,7 @@ bool lightspeed_render (s_sequence *seq)
   return true;
 }
 
-bool lightspeed_unload (s_sequence *seq)
+u8 lightspeed_unload (s_sequence_egl *seq)
 {
   (void) seq;
   return true;

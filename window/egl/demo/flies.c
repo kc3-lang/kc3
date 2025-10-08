@@ -52,7 +52,7 @@ static void fly_init (s_map *map)
   (*in)++;
 }
 
-bool flies_load (s_sequence *seq)
+u8 flies_load (s_sequence_egl *seq)
 {
   uw address[2];
   s_array *board;
@@ -133,7 +133,7 @@ bool flies_load (s_sequence *seq)
   return true;
 }
 
-bool flies_render (s_sequence *seq)
+u8 flies_render (s_sequence_egl *seq)
 {
   char a[BOARD_SIZE];
   uw address[2];
@@ -353,7 +353,7 @@ bool flies_render (s_sequence *seq)
   return true;
 }
 
-bool flies_unload (s_sequence *seq)
+u8 flies_unload (s_sequence_egl *seq)
 {
   (void) seq;
   gl_text_clean(&g_text_flies_in);

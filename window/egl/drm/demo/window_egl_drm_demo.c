@@ -10,9 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <libkc3/kc3.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+#include "../../../../libkc3/kc3.h"
 #include "../../../window.h"
 #include "../../../../gl/gl_font.h"
 #include "../../../../gl/gl_lines.h"
@@ -21,7 +21,7 @@
 #include "../../../../gl/gl_text.h"
 #include "../../../../gl/mat4.h"
 #include "../../window_egl.h"
-#include "../../sequence.h"
+#include "../../sequence_egl.h"
 #include "../window_egl_drm.h"
 #include "../../demo/bg_rect.h"
 #include "../../demo/lightspeed.h"
@@ -40,12 +40,12 @@ s_gl_ortho  g_ortho = {0};
 s_gl_text   g_text_fps = {0};
 s_gl_text   g_text_seq_title = {0};
 
-static bool window_egl_demo_button (s_window_egl *window, u8 button,
+static u8   window_egl_demo_button (s_window_egl *window, u8 button,
                                     s64 x, s64 y);
-static bool window_egl_demo_key (s_window_egl *window, u32 keysym);
-static bool window_egl_demo_load (s_window_egl *window);
-static bool window_egl_demo_render (s_window_egl *window);
-static bool window_egl_demo_resize (s_window_egl *window, u64 w, u64 h);
+static u8   window_egl_demo_key (s_window_egl *window, u32 keysym);
+static u8   window_egl_demo_load (s_window_egl *window);
+static u8   window_egl_demo_render (s_window_egl *window);
+static u8   window_egl_demo_resize (s_window_egl *window, u64 w, u64 h);
 static void window_egl_demo_unload (s_window_egl *window);
 
 int main (int argc, char **argv)
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
   return 0;
 }
 
-bool window_egl_demo_button (s_window_egl *window, u8 button,
+u8 window_egl_demo_button (s_window_egl *window, u8 button,
                              s64 x, s64 y)
 {
   assert(window);
@@ -98,7 +98,7 @@ bool window_egl_demo_button (s_window_egl *window, u8 button,
   return true;
 }
 
-bool window_egl_demo_key (s_window_egl *window, u32 keysym)
+u8 window_egl_demo_key (s_window_egl *window, u32 keysym)
 {
   assert(window);
   (void) window;
@@ -130,7 +130,7 @@ bool window_egl_demo_key (s_window_egl *window, u32 keysym)
   return true;
 }
 
-bool window_egl_demo_load (s_window_egl *window)
+u8 window_egl_demo_load (s_window_egl *window)
 {
   f32 point_per_pixel;
   assert(window);
@@ -205,14 +205,15 @@ bool window_egl_demo_load (s_window_egl *window)
                     "06. Mandelbrot (f128)", mandelbrot_f128_load,
                     mandelbrot_f128_render, mandelbrot_f128_unload,
                     window);
-  window->sequence[5].button = mandelbrot_f128_button;
+  window->sequence[5].button = (f_sequence_button)
+    mandelbrot_f128_button;
   sequence_egl_init(window->sequence + 6, 3600.0, "07. Matrix",
                     matrix_load, matrix_render, matrix_unload, window);
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }
 
-bool window_egl_demo_render (s_window_egl *window)
+u8 window_egl_demo_render (s_window_egl *window)
 {
   s_sequence_egl *seq;
   const s_rgb text_color[2] = {
@@ -264,7 +265,7 @@ bool window_egl_demo_render (s_window_egl *window)
   return true;
 }
 
-bool window_egl_demo_resize (s_window_egl *window, u64 w, u64 h)
+u8 window_egl_demo_resize (s_window_egl *window, u64 w, u64 h)
 {
   assert(window);
   (void) window;

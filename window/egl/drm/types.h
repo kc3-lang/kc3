@@ -23,6 +23,7 @@
 #include <libinput.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
+#include "../../../libkc3/types.h"
 #include "../types.h"
 
 typedef struct drm_context s_drm_context;

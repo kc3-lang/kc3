@@ -20,8 +20,8 @@ extern s_gl_font   g_font_flies;
 extern s_gl_sprite g_sprite_dead_fly;
 extern s_gl_sprite g_sprite_fly;
 
-bool flies_load (s_sequence *seq);
-bool flies_render (s_sequence *seq);
-bool flies_unload (s_sequence *seq);
+u8 flies_load (s_sequence_egl *seq);
+u8 flies_render (s_sequence_egl *seq);
+u8 flies_unload (s_sequence_egl *seq);
 
 #endif /* FLIES_H */

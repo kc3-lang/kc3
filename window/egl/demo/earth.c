@@ -22,7 +22,7 @@
 
 s_gl_sprite g_sprite_earth = {0};
 
-bool earth_load (s_sequence *seq)
+u8 earth_load (s_sequence_egl *seq)
 {
   s_gl_camera *camera;
   s_map *map;
@@ -57,7 +57,7 @@ bool earth_load (s_sequence *seq)
   return true;
 }
 
-bool earth_render (s_sequence *seq)
+u8 earth_render (s_sequence_egl *seq)
 {
   s_gl_camera *camera;
   f64         *camera_rot_x_speed;
@@ -115,7 +115,7 @@ bool earth_render (s_sequence *seq)
   return true;
 }
 
-bool earth_unload (s_sequence *seq)
+u8 earth_unload (s_sequence_egl *seq)
 {
   (void) seq;
   return true;

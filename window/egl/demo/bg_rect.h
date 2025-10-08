@@ -15,8 +15,8 @@
 
 #include "../types.h"
 
-bool bg_rect_load (s_sequence *seq);
-bool bg_rect_render (s_sequence *seq);
-bool bg_rect_unload (s_sequence *seq);
+u8 bg_rect_load (s_sequence_egl *seq);
+u8 bg_rect_render (s_sequence_egl *seq);
+u8 bg_rect_unload (s_sequence_egl *seq);
 
 #endif /* BG_RECT_H */

@@ -13,7 +13,7 @@
 #ifndef LIBKC3_WINDOW_EGL_DRM_H
 #define LIBKC3_WINDOW_EGL_DRM_H
 
-#include "../window_egl.h"
+#include "types.h"
 
 bool window_egl_drm_run (s_window_egl *window);
 

@@ -24,15 +24,15 @@ static s_gl_sprite g_matrix_shade = {0};
 static f64         g_matrix_time;
 
 void matrix_column_clean (s_tag *tag);
-bool matrix_column_init (s_sequence *seq, s_tag *tag);
-bool matrix_column_render (s_sequence *seq, s_tag *tag);
+u8 matrix_column_init (s_sequence_egl *seq, s_tag *tag);
+u8 matrix_column_render (s_sequence_egl *seq, s_tag *tag);
 void matrix_screen_clean (s_tag *tag);
-bool matrix_screen_init (s_tag *tag);
-bool matrix_screen_render (s_sequence *seq, s_tag *tag);
+u8 matrix_screen_init (s_tag *tag);
+u8 matrix_screen_render (s_sequence_egl *seq, s_tag *tag);
 void matrix_text_clean (s_tag *tag);
-bool matrix_text_init (s_tag *tag, f32 y);
-bool matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py);
-bool matrix_update (s_sequence *seq);
+u8 matrix_text_init (s_tag *tag, f32 y);
+u8 matrix_text_render (s_sequence_egl *seq, const s_tag *tag, f32 **py);
+u8 matrix_update (s_sequence_egl *seq);
 
 void matrix_column_clean (s_tag *tag)
 {
@@ -49,7 +49,7 @@ void matrix_column_clean (s_tag *tag)
   }
 }
 
-bool matrix_column_init (s_sequence *seq, s_tag *tag)
+u8 matrix_column_init (s_sequence_egl *seq, s_tag *tag)
 {
   s_list *list;
   s_window_egl *window;
@@ -66,7 +66,7 @@ bool matrix_column_init (s_sequence *seq, s_tag *tag)
   return true;
 }
 
-bool matrix_column_render (s_sequence *seq, s_tag *tag)
+u8 matrix_column_render (s_sequence_egl *seq, s_tag *tag)
 {
   s_list **list;
   f32 *py;
@@ -102,7 +102,7 @@ bool matrix_column_render (s_sequence *seq, s_tag *tag)
   return true;
 }
 
-bool matrix_load (s_sequence *seq)
+u8 matrix_load (s_sequence_egl *seq)
 {
   f32 point_per_pixel;
   s_window_egl *window;
@@ -126,7 +126,7 @@ bool matrix_load (s_sequence *seq)
   return true;
 }
 
-bool matrix_render (s_sequence *seq)
+u8 matrix_render (s_sequence_egl *seq)
 {
   assert(seq);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -155,13 +155,13 @@ void matrix_screen_clean (s_tag *tag)
   }
 }
 
-bool matrix_screen_init (s_tag *tag)
+u8 matrix_screen_init (s_tag *tag)
 {
   tag_init_plist(tag, NULL);
   return true;
 }
 
-bool matrix_screen_render (s_sequence *seq, s_tag *tag)
+u8 matrix_screen_render (s_sequence_egl *seq, s_tag *tag)
 {
   s_list **l;
   s_list *list;
@@ -208,7 +208,7 @@ bool matrix_screen_render (s_sequence *seq, s_tag *tag)
   return true;
 }
 
-bool matrix_text_init (s_tag *tag, f32 y)
+u8 matrix_text_init (s_tag *tag, f32 y)
 {
   char a[1024];
   s_buf buf;
@@ -241,7 +241,7 @@ bool matrix_text_init (s_tag *tag, f32 y)
   return true;
 }
 
-bool matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py)
+u8 matrix_text_render (s_sequence_egl *seq, const s_tag *tag, f32 **py)
 {
   const s_map *map;
   s_mat4 matrix;
@@ -315,7 +315,7 @@ void matrix_text_clean (s_tag *tag)
   gl_vtext_delete(text);
 }
 
-bool matrix_unload (s_sequence *seq)
+u8 matrix_unload (s_sequence_egl *seq)
 {
   assert(seq);
   matrix_screen_clean(&seq->tag);

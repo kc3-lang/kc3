@@ -26,12 +26,12 @@ static const f64 g_speed_y = -40.0;
 s_gl_sprite    g_sprite_toast = {0};
 s_gl_sprite    g_sprite_toaster = {0};
 
-static bool toasters_render_toasters (s_list **toasters,
+static u8 toasters_render_toasters (s_list **toasters,
                                       s_window_egl *window,
-                                      s_sequence *seq);
-static bool toasters_render_toasts (s_list **toasts,
+                                      s_sequence_egl *seq);
+static u8 toasters_render_toasts (s_list **toasts,
                                     s_window_egl *window,
-                                    s_sequence *seq);
+                                    s_sequence_egl *seq);
 
 static s_tag * toast_init (s_tag *toast, f64 x, f64 y)
 {
@@ -45,7 +45,7 @@ static s_tag * toast_init (s_tag *toast, f64 x, f64 y)
 
 
 static void toast_render (s_tag *toast, s_window_egl *window,
-                          s_sequence *seq)
+                          s_sequence_egl *seq)
 {
   s_mat4 matrix;
   GLuint texture;
@@ -87,7 +87,7 @@ static s_tag * toaster_init (s_tag *toaster, f64 y)
 }
 
 static void toaster_render (s_tag *toaster, s_window_egl *window,
-                            s_sequence *seq)
+                            s_sequence_egl *seq)
 {
   s_mat4 matrix;
   GLuint texture;
@@ -121,7 +121,7 @@ static void toaster_render (s_tag *toaster, s_window_egl *window,
   }
 }
 
-bool toasters_load (s_sequence *seq)
+u8 toasters_load (s_sequence_egl *seq)
 {
   s_map *map;
   tag_map(&seq->tag, 2);
@@ -133,7 +133,7 @@ bool toasters_load (s_sequence *seq)
   return true;
 }
 
-bool toasters_render (s_sequence *seq)
+u8 toasters_render (s_sequence_egl *seq)
 {
   s_list **toasters;
   s_list **toasts;
@@ -158,8 +158,8 @@ bool toasters_render (s_sequence *seq)
   return true;
 }
 
-bool toasters_render_toasts (s_list **toasts, s_window_egl *window,
-                             s_sequence *seq)
+u8 toasters_render_toasts (s_list **toasts, s_window_egl *window,
+                             s_sequence_egl *seq)
 {
   s_list *i;
   s_list *j;
@@ -210,8 +210,8 @@ bool toasters_render_toasts (s_list **toasts, s_window_egl *window,
   return true;
 }
 
-bool toasters_render_toasters (s_list **toasters, s_window_egl *window,
-                               s_sequence *seq)
+u8 toasters_render_toasters (s_list **toasters, s_window_egl *window,
+                               s_sequence_egl *seq)
 {
   s_list *i;
   s_list *j;
@@ -262,7 +262,7 @@ bool toasters_render_toasters (s_list **toasters, s_window_egl *window,
   return true;
 }
 
-bool toasters_unload (s_sequence *seq)
+u8 toasters_unload (s_sequence_egl *seq)
 {
   (void) seq;
   return true;

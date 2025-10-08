@@ -17,62 +17,52 @@
 #include <string.h>
 #include <unistd.h>
 #include <libkc3/kc3.h>
-#include "types.h"
 #include "window_egl_drm.h"
 
+/*
 #ifndef EGL_PLATFORM_GBM_KHR
 #define EGL_PLATFORM_GBM_KHR 0x31D7
 #endif
+*/
 
-/* Libinput interface callbacks */
-static int libinput_open_restricted (const char *path, int flags,
-                                     void *user_data)
-{
-  int fd = open(path, flags);
-  (void) user_data;
-  if (fd < 0) {
-    err_write_1("libinput_open_restricted: failed to open ");
-    err_puts(path);
-  }
-  return fd < 0 ? -errno : fd;
-}
-
-static void libinput_close_restricted (int fd, void *user_data)
-{
-  (void) user_data;
-  close(fd);
-}
+static void drm_context_clean (s_drm_context *ctx);
+static bool drm_context_init (s_drm_context *ctx, s_window_egl *window);
+static drmModeConnector * find_connector (int drm_fd,
+                                          drmModeRes *resources);
+static drmModeEncoder *   find_encoder (int drm_fd,
+                                        drmModeConnector *connector);
+static u32  keycode_to_keysym(u32 keycode);
+static void libinput_close_restricted (int fd, void *user_data);
+static int  libinput_open_restricted (const char *path, int flags,
+                                      void *user_data);
 
 static const struct libinput_interface libinput_interface = {
-  .open_restricted = libinput_open_restricted,
+  .open_restricted  = libinput_open_restricted,
   .close_restricted = libinput_close_restricted,
 };
 
-bool window_egl_run (s_window_egl *window)
+static void drm_context_clean (s_drm_context *ctx)
 {
-  return window_egl_drm_run(window);
-}
-
-static drmModeConnector * find_connector (int drm_fd,
-                                          drmModeRes *resources)
-{
-  drmModeConnector *connector;
-  u32 i;
-  for (i = 0; i < (u32) resources->count_connectors; i++) {
-    connector = drmModeGetConnector(drm_fd, resources->connectors[i]);
-    if (connector->connection == DRM_MODE_CONNECTED)
-      return connector;
-    drmModeFreeConnector(connector);
+  if (ctx->libinput)
+    libinput_unref(ctx->libinput);
+  if (ctx->previous_fb)
+    drmModeRmFB(ctx->drm_fd, ctx->previous_fb);
+  if (ctx->previous_bo)
+    gbm_surface_release_buffer(ctx->gbm_surface, ctx->previous_bo);
+  if (ctx->gbm_surface)
+    gbm_surface_destroy(ctx->gbm_surface);
+  if (ctx->gbm_device)
+    gbm_device_destroy(ctx->gbm_device);
+  if (ctx->crtc) {
+    drmModeSetCrtc(ctx->drm_fd, ctx->crtc->crtc_id,
+                   ctx->crtc->buffer_id, ctx->crtc->x, ctx->crtc->y,
+                   &ctx->connector_id, 1, &ctx->crtc->mode);
+    drmModeFreeCrtc(ctx->crtc);
   }
-  return NULL;
-}
-
-static drmModeEncoder * find_encoder (int drm_fd,
-                                      drmModeConnector *connector)
-{
-  if (connector->encoder_id)
-    return drmModeGetEncoder(drm_fd, connector->encoder_id);
-  return NULL;
+  if (ctx->connector)
+    drmModeFreeConnector(ctx->connector);
+  if (ctx->drm_fd >= 0)
+    close(ctx->drm_fd);
 }
 
 static bool drm_context_init (s_drm_context *ctx, s_window_egl *window)
@@ -180,30 +170,6 @@ static bool drm_context_init (s_drm_context *ctx, s_window_egl *window)
   return false;
 }
 
-static void drm_context_clean (s_drm_context *ctx)
-{
-  if (ctx->libinput)
-    libinput_unref(ctx->libinput);
-  if (ctx->previous_fb)
-    drmModeRmFB(ctx->drm_fd, ctx->previous_fb);
-  if (ctx->previous_bo)
-    gbm_surface_release_buffer(ctx->gbm_surface, ctx->previous_bo);
-  if (ctx->gbm_surface)
-    gbm_surface_destroy(ctx->gbm_surface);
-  if (ctx->gbm_device)
-    gbm_device_destroy(ctx->gbm_device);
-  if (ctx->crtc) {
-    drmModeSetCrtc(ctx->drm_fd, ctx->crtc->crtc_id,
-                   ctx->crtc->buffer_id, ctx->crtc->x, ctx->crtc->y,
-                   &ctx->connector_id, 1, &ctx->crtc->mode);
-    drmModeFreeCrtc(ctx->crtc);
-  }
-  if (ctx->connector)
-    drmModeFreeConnector(ctx->connector);
-  if (ctx->drm_fd >= 0)
-    close(ctx->drm_fd);
-}
-
 static bool drm_fb_from_bo (s_drm_context *ctx, struct gbm_bo *bo,
                             u32 *fb_id)
 {
@@ -251,6 +217,74 @@ static bool drm_swap_buffers (s_drm_context *ctx)
   ctx->previous_bo = bo;
   ctx->previous_fb = fb_id;
   return true;
+}
+
+static drmModeConnector * find_connector (int drm_fd,
+                                          drmModeRes *resources)
+{
+  drmModeConnector *connector;
+  u32 i;
+  for (i = 0; i < (u32) resources->count_connectors; i++) {
+    connector = drmModeGetConnector(drm_fd, resources->connectors[i]);
+    if (connector->connection == DRM_MODE_CONNECTED)
+      return connector;
+    drmModeFreeConnector(connector);
+  }
+  return NULL;
+}
+
+static drmModeEncoder * find_encoder (int drm_fd,
+                                      drmModeConnector *connector)
+{
+  if (connector->encoder_id)
+    return drmModeGetEncoder(drm_fd, connector->encoder_id);
+  return NULL;
+}
+
+// Map Linux input keycodes to X11 keysyms
+static u32 keycode_to_keysym(u32 keycode)
+{
+  // Common keycodes from linux/input-event-codes.h
+  switch (keycode) {
+  case 1:   return 0xff1b; // KEY_ESC -> XK_Escape
+  case 16:  return 'q';    // KEY_Q
+  case 105: return 0xff51; // KEY_LEFT -> XK_Left
+  case 106: return 0xff53; // KEY_RIGHT -> XK_Right
+  case 103: return 0xff52; // KEY_UP -> XK_Up
+  case 108: return 0xff54; // KEY_Down -> XK_Down
+  default:
+    if (keycode >= 2 && keycode <= 11)
+      return '0' + ((keycode + 8) % 10); // Number keys
+    if (keycode >= 16 && keycode <= 25)
+      return 'a' + (keycode - 16); // Q-P
+    if (keycode >= 30 && keycode <= 38)
+      return 'a' + (keycode - 30 + 10); // A-L
+    if (keycode >= 44 && keycode <= 50)
+      return 'a' + (keycode - 44 + 19); // Z-M
+    return 0;
+  }
+}
+
+static void libinput_close_restricted (int fd, void *user_data)
+{
+  (void) user_data;
+  close(fd);
+}
+
+static int libinput_open_restricted (const char *path, int flags,
+                                     void *user_data)
+{
+  int e;
+  int fd = open(path, flags);
+  (void) user_data;
+  if (fd < 0) {
+    e = errno;
+    err_write_1("libinput_open_restricted: ");
+    err_write_1(path);
+    err_write_1(": ");
+    err_puts(strerror(e));
+  }
+  return fd < 0 ? -errno : fd;
 }
 
 static bool window_egl_drm_setup (s_window_egl *window,
@@ -340,28 +374,9 @@ static bool window_egl_drm_setup (s_window_egl *window,
   return true;
 }
 
-/* Map Linux input keycodes to X11 keysyms */
-static u32 keycode_to_keysym(u32 keycode)
+bool window_egl_run (s_window_egl *window)
 {
-  /* Common keycodes from linux/input-event-codes.h */
-  switch (keycode) {
-  case 1:   return 0xff1b; /* KEY_ESC -> XK_Escape */
-  case 16:  return 'q';     /* KEY_Q */
-  case 105: return 0xff51; /* KEY_LEFT -> XK_Left */
-  case 106: return 0xff53; /* KEY_RIGHT -> XK_Right */
-  case 103: return 0xff52; /* KEY_UP -> XK_Up */
-  case 108: return 0xff54; /* KEY_Down -> XK_Down */
-  default:
-    if (keycode >= 2 && keycode <= 11)
-      return '0' + ((keycode + 8) % 10); /* Number keys */
-    if (keycode >= 16 && keycode <= 25)
-      return 'a' + (keycode - 16); /* Q-P */
-    if (keycode >= 30 && keycode <= 38)
-      return 'a' + (keycode - 30 + 10); /* A-L */
-    if (keycode >= 44 && keycode <= 50)
-      return 'a' + (keycode - 44 + 19); /* Z-M */
-    return 0;
-  }
+  return window_egl_drm_run(window);
 }
 
 static bool drm_process_input(s_drm_context *ctx, s_window_egl *window)

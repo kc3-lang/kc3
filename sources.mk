@@ -1100,13 +1100,26 @@ KC3_C_SOURCES = \
 	"window/egl/android/window_egl_android.h" \
 	"window/egl/demo/bg_rect.c" \
 	"window/egl/demo/bg_rect.h" \
+	"window/egl/demo/earth.c" \
+	"window/egl/demo/earth.h" \
+	"window/egl/demo/flies.c" \
+	"window/egl/demo/flies.h" \
+	"window/egl/demo/lightspeed.c" \
+	"window/egl/demo/lightspeed.h" \
+	"window/egl/demo/mandelbrot_f128.c" \
+	"window/egl/demo/mandelbrot_f128.h" \
+	"window/egl/demo/matrix.c" \
+	"window/egl/demo/matrix.h" \
+	"window/egl/demo/toasters.c" \
+	"window/egl/demo/toasters.h" \
+	"window/egl/demo/window_egl_demo.h" \
 	"window/egl/drm/demo/window_egl_drm_demo.c" \
 	"window/egl/drm/demo/window_egl_drm_demo.h" \
 	"window/egl/drm/types.h" \
 	"window/egl/drm/window_egl_drm.c" \
 	"window/egl/drm/window_egl_drm.h" \
-	"window/egl/sequence.c" \
-	"window/egl/sequence.h" \
+	"window/egl/sequence_egl.c" \
+	"window/egl/sequence_egl.h" \
 	"window/egl/types.h" \
 	"window/egl/window_egl.c" \
 	"window/egl/window_egl.h" \

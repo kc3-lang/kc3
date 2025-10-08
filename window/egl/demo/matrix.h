@@ -15,8 +15,8 @@
 
 #include "../types.h"
 
-bool matrix_load (s_sequence *seq);
-bool matrix_render (s_sequence *seq);
-bool matrix_unload (s_sequence *seq);
+u8 matrix_load (s_sequence_egl *seq);
+u8 matrix_render (s_sequence_egl *seq);
+u8 matrix_unload (s_sequence_egl *seq);
 
 #endif /* MATRIX_H */

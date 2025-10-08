@@ -13,14 +13,13 @@
 #ifndef EARTH_H
 #define EARTH_H
 
-#include "../types.h"
 #include "window_egl_demo.h"
 
 extern s_gl_sprite g_sprite_earth;
 extern s_gl_sprite g_sprite_earth_night;
 
-bool earth_load (s_sequence *seq);
-bool earth_render (s_sequence *seq);
-bool earth_unload (s_sequence *seq);
+u8 earth_load (s_sequence_egl *seq);
+u8 earth_render (s_sequence_egl *seq);
+u8 earth_unload (s_sequence_egl *seq);
 
 #endif /* EARTH_H */

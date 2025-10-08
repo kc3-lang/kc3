@@ -10,17 +10,19 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBKC3_WINDOW_EGL_SEQUENCE_H
-#define LIBKC3_WINDOW_EGL_SEQUENCE_H
+#ifndef LIBKC3_WINDOW_EGL_SEQUENCE_EGL_H
+#define LIBKC3_WINDOW_EGL_SEQUENCE_EGL_H
 
 #include "types.h"
 
 /* Stack-allocation compatible functions, call sequence_egl_clean
    after use. */
 void             sequence_egl_clean (s_sequence_egl *seq);
-s_sequence_egl * sequence_egl_init (s_sequence_egl *sequence, f64 duration,
-                                    const char *title, f_sequence load,
-                                    f_sequence render, f_sequence unload,
+s_sequence_egl * sequence_egl_init (s_sequence_egl *sequence,
+                                    f64 duration, const char *title,
+                                    f_sequence_egl load,
+                                    f_sequence_egl render,
+                                    f_sequence_egl unload,
                                     s_window_egl *window);
 
-#endif /* LIBKC3_WINDOW_EGL_SEQUENCE_H */
+#endif /* LIBKC3_WINDOW_EGL_SEQUENCE_EGL_H */

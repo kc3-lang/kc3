@@ -18,9 +18,8 @@
 #ifndef LIBKC3_WINDOW_EGL_TYPES_H
 #define LIBKC3_WINDOW_EGL_TYPES_H
 
-#include "config.h"
 #include <EGL/egl.h>
-#include "../../libkc3/types.h"
+#include "config.h"
 #include "../../gl/types.h"
 #include "../types.h"
 
@@ -28,6 +27,7 @@ typedef struct sequence_egl s_sequence_egl;
 typedef struct window_egl   s_window_egl;
 
 /* return false to break event loop */
+typedef bool (*f_sequence_egl) (s_sequence_egl *seq);
 typedef bool (*f_window_egl_button) (s_window_egl *window,
                                      u8 button, s64 x, s64 y);
 typedef bool (*f_window_egl_key) (s_window_egl *window, u32 keysym);

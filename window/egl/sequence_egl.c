@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 #include "../../libkc3/kc3.h"
-#include "sequence.h"
+#include "sequence_egl.h"
 
 void sequence_egl_clean (s_sequence_egl *seq)
 {
@@ -22,15 +22,17 @@ void sequence_egl_clean (s_sequence_egl *seq)
 s_sequence_egl * sequence_egl_init (s_sequence_egl *sequence,
                                     f64 duration,
                                     const char *title,
-                                    f_sequence load,
-                                    f_sequence render,
-                                    f_sequence unload,
+                                    f_sequence_egl load,
+                                    f_sequence_egl render,
+                                    f_sequence_egl unload,
                                     s_window_egl *window)
 {
   s_sequence_egl tmp = {0};
   assert(sequence);
+  assert(sizeof(tmp) == sizeof(s_sequence));
   sequence_init((s_sequence *) &tmp, duration, title,
-                load, render, unload, (s_window *) window);
+                (f_sequence) load, (f_sequence) render,
+                (f_sequence) unload, (s_window *) window);
   *sequence = tmp;
   return sequence;
 }

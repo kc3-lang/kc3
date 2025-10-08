@@ -15,13 +15,13 @@
 #include "../types.h"
 #include "bg_rect.h"
 
-bool bg_rect_load (s_sequence *seq)
+bool bg_rect_load (s_sequence_egl *seq)
 {
   (void) seq;
   return true;
 }
 
-bool bg_rect_render (s_sequence *seq)
+bool bg_rect_render (s_sequence_egl *seq)
 {
 #define BG_RECT_COLOR_MAX 8
   const s_rgb color[BG_RECT_COLOR_MAX] = {
@@ -54,7 +54,7 @@ bool bg_rect_render (s_sequence *seq)
   return true;
 }
 
-bool bg_rect_unload (s_sequence *seq)
+bool bg_rect_unload (s_sequence_egl *seq)
 {
   (void) seq;
   return true;

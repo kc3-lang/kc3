@@ -20,10 +20,10 @@ static s_gl_font g_mandelbrot_f128_font = {0};
 static s_gl_text g_mandelbrot_f128_text = {0};
 static GLuint g_mandelbrot_f128_texture = 0;
 
-static bool mandelbrot_f128_resize (s_sequence *seq);
-static bool mandelbrot_f128_update (s_sequence *seq);
+static u8 mandelbrot_f128_resize (s_sequence_egl *seq);
+static u8 mandelbrot_f128_update (s_sequence_egl *seq);
 
-bool mandelbrot_f128_button (s_sequence *seq, u8 button, s64 x, s64 y)
+u8 mandelbrot_f128_button (s_sequence_egl *seq, u8 button, s64 x, s64 y)
 {
   s_map *map;
   f128 *next_x;
@@ -61,7 +61,7 @@ bool mandelbrot_f128_button (s_sequence *seq, u8 button, s64 x, s64 y)
   return true;
 }
 
-bool mandelbrot_f128_load (s_sequence *seq)
+u8 mandelbrot_f128_load (s_sequence_egl *seq)
 {
   f32 point_per_pixel;
   s_map *map;
@@ -108,7 +108,7 @@ bool mandelbrot_f128_load (s_sequence *seq)
   return true;
 }
 
-bool mandelbrot_f128_render (s_sequence *seq)
+u8 mandelbrot_f128_render (s_sequence_egl *seq)
 {
   uw *h;
   s_map *map;
@@ -185,7 +185,7 @@ bool mandelbrot_f128_render (s_sequence *seq)
   return true;
 }
 
-static bool mandelbrot_f128_resize (s_sequence *seq)
+static u8 mandelbrot_f128_resize (s_sequence_egl *seq)
 {
   uw dim[3];
   s_map *map;
@@ -216,7 +216,7 @@ static bool mandelbrot_f128_resize (s_sequence *seq)
   return true;
 }
 
-bool mandelbrot_f128_unload (s_sequence *seq)
+u8 mandelbrot_f128_unload (s_sequence_egl *seq)
 {
   (void) seq;
   glDeleteTextures(1, &g_mandelbrot_f128_texture);
@@ -225,7 +225,7 @@ bool mandelbrot_f128_unload (s_sequence *seq)
   return true;
 }
 
-static bool mandelbrot_f128_update (s_sequence *seq)
+static u8 mandelbrot_f128_update (s_sequence_egl *seq)
 {
   f128 _2z_xz_y;
   char a[512];
