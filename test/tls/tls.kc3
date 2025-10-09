@@ -44,7 +44,6 @@ else
   sleep(1)
   client_tls = TLS.Client.connect(client_ctx, hostname(),
     "57000")
-  puts(client_tls)
   puts("client: connected to egress 57000")
   Buf.write_str(client_tls.socket_buf.buf_rw.w, "Hello from client !\n")
   line = Buf.read_line(client_tls.socket_buf.buf_rw.r)
