@@ -31,6 +31,8 @@ p_tls * kc3_tls_connect_socket (p_tls *ctx, p_socket sockfd,
                                 const s_str *hostname, p_tls *dest);
 p_tls * kc3_tls_server (p_tls *dest);
 
+p_tls * kc3_tls_configure (p_tls *ctx, p_tls_config *cfg, p_tls *dest);
+
 /* Operating system helpers. */
 s_str * kc3_tls_ca_cert_path (s_str *dest);
 
