@@ -129,6 +129,12 @@ lldb_test: debug
 	rm -f kc3.dump
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi
 
+lldb_test_tls:
+	cd tls && lldb ../../ikc3/.libs/ikc3_debug
+
+lldb_test_tls_asan:
+	cd tls && lldb ../../ikc3/.libs/ikc3_asan
+
 test: libkc3_test
 	rm -f kc3.dump
 	time ./libkc3_test
