@@ -48,7 +48,6 @@ p_tls * kc3_tls_configure (p_tls *ctx, p_tls_config *cfg, p_tls *dest)
   assert(*ctx);
   assert(cfg);
   assert(*cfg);
-  assert(dest);
   if (tls_configure(*ctx, *cfg)) {
     err_puts("kc3_tls_configure: tls_configure: ");
     err_puts(tls_error(*ctx));

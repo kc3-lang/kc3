@@ -51,7 +51,6 @@ p_tls_config * kc3_tls_config_set_ca_file (p_tls_config *config,
   assert(path);
   assert(path->size);
   assert(path->ptr.pchar);
-  assert(dest);
   if (tls_config_set_ca_file(*config, path->ptr.pchar)) {
     err_write_1("kc3_tls_config_set_ca_file: tls_config_set_ca_file: ");
     err_write_1(tls_config_error(*config));
@@ -91,7 +90,6 @@ p_tls_config * kc3_tls_config_set_key_file (p_tls_config *config,
   assert(config);
   assert(*config);
   assert(key_file_path);
-  assert(dest);
   if (tls_config_set_key_file(*config, key_file_path->ptr.pchar)) {
     err_write_1("kc3_tls_config_set_key_file: "
                 "tls_config_set_key_file: ");
