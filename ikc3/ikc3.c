@@ -25,6 +25,7 @@
 #include "../tls/tls.h"
 #include "../tls/tls_client.h"
 #include "../tls/tls_server.h"
+#include "../tls/tls_config.h"
 
 #if HAVE_WINEDITLINE
 # include "buf_wineditline.h"
@@ -293,33 +294,44 @@ static int ikc3_client_init_tls (void)
   p_tls        tls;
   p_tls_config tls_config;
   s_tag        tls_tag;
+  s_str        ca_cert_path;
   if (! g_tls) {
-    err_puts("ikc3_client_init_tls: tls not enabled");
-    assert(! "ikc3_client_init_tls: tls not enabled");
+    ERROR("TLS not enabled");
     return 1;
   }
   if (! kc3_tls_init(&tls_tag)) {
-    err_puts("ikc3_client_init_tls: failed to init tls");
-    assert(! "ikc3_client_init_tls: failed to init tls");
+    ERROR("failed to init TLS");
     return 1;
   }
   tag_clean(&tls_tag);
-  /* TODO:
-     client_config = TLS.Config.new()
-     TLS.Config.set_ca_file(client_config, TLS.ca_cert_path())
-  */
-  if (! kc3_tls_client(&tls)) {
-    err_puts("ikc3_client_init_tls: kc3_tls_client");
-    assert(! "ikc3_client_init_tls: kc3_tls_client");
+  if (! kc3_tls_config_new(&tls_config)) {
+    ERROR("kc3_tls_config_new");
     return 1;
   }
-  /* TODO:
-     TLS.configure(client_ctx, client_config)
-  */
+  if (! kc3_tls_ca_cert_path(&ca_cert_path)) {
+    ERROR("kc3_tls_ca_cert_path");
+    kc3_tls_config_free(&tls_config);
+    return 1;
+  }
+  if (! kc3_tls_config_set_ca_file(&tls_config, &ca_cert_path, NULL)) {
+    ERROR("kc3_tls_config_new");
+    kc3_tls_config_free(&tls_config);
+    return 1;
+  }
+  if (! kc3_tls_client(&tls)) {
+    ERROR("kc3_tls_client");
+    kc3_tls_config_free(&tls_config);
+    return 1;
+  }
+  if (! kc3_tls_configure(&tls, &tls_config, NULL)) {
+    ERROR("kc3_tls_configure");
+    kc3_tls_config_free(&tls_config);
+    return 1;
+  }
   if (! kc3_tls_client_init_connect(&g_tls_client, &tls, &g_host,
                                     &g_port)) {
-    err_puts("ikc3_client_init_tls: kc3_tls_client_init_connect");
-    assert(! "ikc3_client_init_tls: kc3_tls_client_init_connect");
+    ERROR("kc3_tls_client_init_connect");
+    kc3_tls_config_free(&tls_config);
     return 1;
   }
   if (true) {
@@ -537,6 +549,9 @@ static int ikc3_server_init_tls (void)
   p_tls        tls;
   p_tls_config tls_config;
   s_tag        tls_tag;
+  s_str        tls_ssl_fullchain_path = STR("/etc/ssl/fullchain.pem");
+  s_str        tls_ssl_private_key_path =
+    STR("/etc/ssl/private/privkey.pem");
   if (! g_tls) {
     err_puts("ikc3_server_init_tls: g_tls");
     assert(! "ikc3_server_init_tls: g_tls");
@@ -547,20 +562,30 @@ static int ikc3_server_init_tls (void)
     assert(! "ikc3_server_init_tls: kc3_tls_init");
     return 1;
   }
+
   tag_clean(&tls_tag);
-  /* TODO:
-     server_config = TLS.Config.new()
-     TLS.Config.set_cert_file(server_config, "/etc/ssl/fullchain.pem")
-     TLS.Config.set_key_file(server_config, "/etc/ssl/private/privkey.pem")
-  */
-  if (! kc3_tls_server(&tls)) {
-    err_puts("ikc3_server_init_tls: kc3_tls_server");
-    assert(! "ikc3_server_init_tls: kc3_tls_server");
+  if (! kc3_tls_config_new(&tls_config)) {
+    ERROR("kc3_tls_config_new");
     return 1;
   }
-  /* TODO:
-     TLS.configure(server_ctx, server_config)
-  */
+  if (! kc3_tls_config_set_ca_file(&tls_config,
+                                   &tls_ssl_fullchain_path,
+                                   NULL) ||
+      ! kc3_tls_config_set_key_file(&tls_config,
+                                    &tls_ssl_private_key_path,
+                                    NULL)) {
+    ERROR("kc3_tls_config_new");
+    kc3_tls_config_free(&tls_config);
+    return 1;
+  }
+  if (! kc3_tls_server(&tls)) {
+    ERROR("kc3_tls_server");
+    return 1;
+  }
+  if (! kc3_tls_configure(&tls, &tls_config, NULL)) {
+    ERROR("kc3_tls_configure");
+    return 1;
+  }
   if (! socket_init_listen(&g_server_socket, &g_host, &g_port)) {
     err_write_1("ikc3: failed to listen on ");
     err_inspect_str(&g_host);
