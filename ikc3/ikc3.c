@@ -546,10 +546,13 @@ static int ikc3_server_init (s_env *env)
 
 static int ikc3_server_init_tls (void)
 {
-  p_tls        tls;
-  p_tls_config tls_config;
-  s_tag        tls_tag;
-  s_str        tls_ssl_fullchain_path = STR("/etc/ssl/fullchain.pem");
+  p_tls        tls = NULL;
+  p_tls        tls_tmp = NULL;
+  p_tls_config tls_config = NULL;
+  p_tls_config tls_config_tmp = NULL;
+  s_tag        tls_tag = {0};
+  s_str        tls_ssl_fullchain_path =
+    STR("/etc/ssl/fullchain.pem");
   s_str        tls_ssl_private_key_path =
     STR("/etc/ssl/private/privkey.pem");
   if (! g_tls) {
@@ -567,14 +570,14 @@ static int ikc3_server_init_tls (void)
   }
   if (! kc3_tls_config_set_ca_file(&tls_config,
                                    &tls_ssl_fullchain_path,
-                                   NULL)) {
+                                   &tls_config_tmp)) {
     ERROR("kc3_tls_config_set_ca_file");
     kc3_tls_config_free(&tls_config);
     return 1;
   }
   if (! kc3_tls_config_set_key_file(&tls_config,
                                     &tls_ssl_private_key_path,
-                                    NULL)) {
+                                    &tls_config_tmp)) {
     ERROR("kc3_tls_config_set_key_file");
     kc3_tls_config_free(&tls_config);
     return 1;
@@ -583,7 +586,7 @@ static int ikc3_server_init_tls (void)
     ERROR("kc3_tls_server");
     return 1;
   }
-  if (! kc3_tls_configure(&tls, &tls_config, NULL)) {
+  if (! kc3_tls_configure(&tls, &tls_config, &tls_tmp)) {
     ERROR("kc3_tls_configure");
     return 1;
   }
