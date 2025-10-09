@@ -71,7 +71,6 @@ p_tls_config * kc3_tls_config_set_cert_file (p_tls_config *config,
   assert(config);
   assert(*config);
   assert(file_path);
-  assert(dest);
   if (tls_config_set_cert_file(*config, file_path->ptr.pchar)) {
     err_write_1("kc3_tls_config_set_cert_file: "
                 "tls_config_set_cert_file: ");
@@ -79,6 +78,8 @@ p_tls_config * kc3_tls_config_set_cert_file (p_tls_config *config,
     assert(! "kc3_tls_config_set_cert_file: tls_config_set_cert_file");
     return NULL;
   }
+  if (! dest)
+    return config;
   *dest = *config;
   return dest;
 }
