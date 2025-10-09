@@ -290,8 +290,9 @@ static int ikc3_client_init (void)
 
 static int ikc3_client_init_tls (void)
 {
-  s_tag tls_tag;
-  p_tls tls;
+  p_tls        tls;
+  p_tls_config tls_config;
+  s_tag        tls_tag;
   if (! g_tls) {
     err_puts("ikc3_client_init_tls: tls not enabled");
     assert(! "ikc3_client_init_tls: tls not enabled");
@@ -303,11 +304,18 @@ static int ikc3_client_init_tls (void)
     return 1;
   }
   tag_clean(&tls_tag);
+  /* TODO:
+     client_config = TLS.Config.new()
+     TLS.Config.set_ca_file(client_config, TLS.ca_cert_path())
+  */
   if (! kc3_tls_client(&tls)) {
     err_puts("ikc3_client_init_tls: kc3_tls_client");
     assert(! "ikc3_client_init_tls: kc3_tls_client");
     return 1;
   }
+  /* TODO:
+     TLS.configure(client_ctx, client_config)
+  */
   if (! kc3_tls_client_init_connect(&g_tls_client, &tls, &g_host,
                                     &g_port)) {
     err_puts("ikc3_client_init_tls: kc3_tls_client_init_connect");
@@ -526,8 +534,9 @@ static int ikc3_server_init (s_env *env)
 
 static int ikc3_server_init_tls (void)
 {
-  s_tag tls_tag;
-  p_tls tls;
+  p_tls        tls;
+  p_tls_config tls_config;
+  s_tag        tls_tag;
   if (! g_tls) {
     err_puts("ikc3_server_init_tls: g_tls");
     assert(! "ikc3_server_init_tls: g_tls");
@@ -539,11 +548,19 @@ static int ikc3_server_init_tls (void)
     return 1;
   }
   tag_clean(&tls_tag);
+  /* TODO:
+     server_config = TLS.Config.new()
+     TLS.Config.set_cert_file(server_config, "/etc/ssl/fullchain.pem")
+     TLS.Config.set_key_file(server_config, "/etc/ssl/private/privkey.pem")
+  */
   if (! kc3_tls_server(&tls)) {
     err_puts("ikc3_server_init_tls: kc3_tls_server");
     assert(! "ikc3_server_init_tls: kc3_tls_server");
     return 1;
   }
+  /* TODO:
+     TLS.configure(server_ctx, server_config)
+  */
   if (! socket_init_listen(&g_server_socket, &g_host, &g_port)) {
     err_write_1("ikc3: failed to listen on ");
     err_inspect_str(&g_host);
