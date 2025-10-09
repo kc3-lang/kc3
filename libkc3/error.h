@@ -15,11 +15,11 @@
 
 #include "types.h"
 
-#define error(message)                                                 \
-  do {                                                                 \
-    err_puts(message);                                                 \
-    assert(! message);                                                 \
-    abort();                                                           \
+#define ERROR(msg)                                                    \
+  do {                                                                \
+    err_write_1(__func__);                                            \
+    err_puts(": " msg);                                               \
+    assert(! msg);                                                    \
   } while (0)
 
 void error_print (s_buf *buf, const s_error_handler *error_handler);
