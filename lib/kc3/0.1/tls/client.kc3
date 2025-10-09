@@ -17,7 +17,7 @@ defmodule TLS.Client do
 
   dlopen("tls.so")
 
-  def close = cfn Void "kc3_tls_client_close" (TLS.Client)
+  def close = cfn Void "kc3_tls_client_clean" (TLS.Client)
 
   def connect = cfn TLS.Client "kc3_tls_client_init_connect" (Result,
     TLS*, Str, Str)
