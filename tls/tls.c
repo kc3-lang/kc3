@@ -55,6 +55,8 @@ p_tls * kc3_tls_configure (p_tls *ctx, p_tls_config *cfg, p_tls *dest)
     assert(! "kc3_tls_configure: tls_configure");
     return NULL;
   }
+  if (! dest)
+    return ctx;
   *dest = *ctx;
   return dest;
 }
