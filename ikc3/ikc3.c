@@ -26,7 +26,6 @@
 #include "../tls/tls_client.h"
 #include "../tls/tls_server.h"
 
-
 #if HAVE_WINEDITLINE
 # include "buf_wineditline.h"
 #else
@@ -50,25 +49,25 @@ static t_socket     g_server_socket = -1;
 static s_socket_buf g_socket_buf = {0};
 static bool         g_tls = false;
 
-sw  buf_ignore_character (s_buf *buf);
+static sw  buf_ignore_character (s_buf *buf);
 
 // TODO: use positive return value to increment argc and argv
 // TODO: remove one reference level (*)
-int    ikc3_arg_client (s_env *env, int *argc, char ***argv);
-int    ikc3_arg_dump (s_env *env, int *argc, char ***argv);
-int    ikc3_arg_load (s_env *env, int *argc, char ***argv);
-int    ikc3_arg_server (s_env *env, int *argc, char ***argv);
-int    ikc3_arg_tls (s_env *env, int *argc, char ***argv);
-void   ikc3_buf_editline_close (s_buf *buf);
-void   ikc3_buf_editline_open_r (s_buf *buf);
-void   ikc3_client_clean (void);
-int    ikc3_client_init (void);
-sw     ikc3_run (void);
-void   ikc3_server_clean (s_env *env);
-int    ikc3_server_init (s_env *env);
-int    usage (char *argv0);
+static int    ikc3_arg_client (s_env *env, int *argc, char ***argv);
+static int    ikc3_arg_dump (s_env *env, int *argc, char ***argv);
+static int    ikc3_arg_load (s_env *env, int *argc, char ***argv);
+static int    ikc3_arg_server (s_env *env, int *argc, char ***argv);
+static int    ikc3_arg_tls (s_env *env, int *argc, char ***argv);
+static void   ikc3_buf_editline_close (s_buf *buf);
+static void   ikc3_buf_editline_open_r (s_buf *buf);
+static void   ikc3_client_clean (void);
+static int    ikc3_client_init (void);
+static sw     ikc3_run (void);
+static void   ikc3_server_clean (s_env *env);
+static int    ikc3_server_init (s_env *env);
+static int    usage (char *argv0);
 
-sw buf_ignore_character (s_buf *buf)
+static sw buf_ignore_character (s_buf *buf)
 {
   u8 b;
   character c = 0;
@@ -85,7 +84,7 @@ sw buf_ignore_character (s_buf *buf)
   return csize;
 }
 
-int ikc3_arg_client (s_env *env, int *argc, char ***argv)
+static int ikc3_arg_client (s_env *env, int *argc, char ***argv)
 {
   if (g_server) {
     err_puts("ikc3_arg_client: --client and --server are mutually"
@@ -116,7 +115,7 @@ int ikc3_arg_client (s_env *env, int *argc, char ***argv)
   return 3;
 }
 
-int ikc3_arg_dump (s_env *env, int *argc, char ***argv)
+static int ikc3_arg_dump (s_env *env, int *argc, char ***argv)
 {
   s_str path = {0};
   if (*argc < 2 || ! (*argv)[0] || ! (*argv)[1]) {
@@ -135,7 +134,7 @@ int ikc3_arg_dump (s_env *env, int *argc, char ***argv)
   return 2;
 }
 
-int ikc3_arg_load (s_env *env, int *argc, char ***argv)
+static int ikc3_arg_load (s_env *env, int *argc, char ***argv)
 {
   sw     e = 0;
   FILE *fp = 0;
@@ -193,7 +192,7 @@ int ikc3_arg_load (s_env *env, int *argc, char ***argv)
   return 0;
 }
 
-int ikc3_arg_server (s_env *env, int *argc, char ***argv)
+static int ikc3_arg_server (s_env *env, int *argc, char ***argv)
 {
   if (g_client) {
     err_puts("ikc3_arg_server: --client and --server are mutually"
@@ -229,7 +228,7 @@ int ikc3_arg_server (s_env *env, int *argc, char ***argv)
   return 3;
 }
 
-int ikc3_arg_tls (s_env *env, int *argc, char ***argv)
+static int ikc3_arg_tls (s_env *env, int *argc, char ***argv)
 {
   (void) env;
   if (g_tls) {
@@ -243,7 +242,7 @@ int ikc3_arg_tls (s_env *env, int *argc, char ***argv)
   return 1;
 }
 
-void ikc3_buf_editline_close (s_buf *buf)
+static void ikc3_buf_editline_close (s_buf *buf)
 {
 #if HAVE_WINEDITLINE
   buf_wineditline_close(buf, ".ikc3_history");
@@ -252,7 +251,7 @@ void ikc3_buf_editline_close (s_buf *buf)
 #endif
 }
 
-void ikc3_buf_editline_open_r (s_buf *buf)
+static void ikc3_buf_editline_open_r (s_buf *buf)
 {
 #if HAVE_WINEDITLINE
   buf_wineditline_open_r(buf, "ikc3> ", ".ikc3_history");
@@ -261,7 +260,7 @@ void ikc3_buf_editline_open_r (s_buf *buf)
 #endif
 }
 
-void ikc3_client_clean (void)
+static void ikc3_client_clean (void)
 {
   if (g_tls)
     kc3_tls_client_clean(&g_tls_client);
@@ -269,7 +268,7 @@ void ikc3_client_clean (void)
     socket_buf_close(&g_socket_buf);
 }
 
-int ikc3_client_init (void)
+static int ikc3_client_init (void)
 {
   if (! socket_buf_init_connect(&g_socket_buf, &g_host, &g_port)) {
     err_write_1("ikc3: unable to connect to ");
@@ -289,7 +288,7 @@ int ikc3_client_init (void)
   return 0;
 }
 
-int ikc3_client_init_tls (void)
+static int ikc3_client_init_tls (void)
 {
   s_tag tls_tag;
   p_tls tls;
@@ -317,7 +316,7 @@ int ikc3_client_init_tls (void)
   }
   if (true) {
     io_write_1("ikc3: connected with TLS ");
-    io_write_1(tls_conn_cipher(tls));
+    io_write_1(tls_conn_version(tls));
     io_write_1(" to ");
     io_inspect_str(&g_host);
     io_write_1(" ");
@@ -327,7 +326,7 @@ int ikc3_client_init_tls (void)
   return 0;
 }
 
-sw ikc3_run (void)
+static sw ikc3_run (void)
 {
   s_env *env;
   s_buf *env_err;
@@ -476,7 +475,7 @@ sw ikc3_run (void)
   return r;
 }
 
-void ikc3_server_clean (s_env *env)
+static void ikc3_server_clean (s_env *env)
 {
   env->in  = g_server_env_in;
   env->out = g_server_env_out;
@@ -489,7 +488,7 @@ void ikc3_server_clean (s_env *env)
   }
 }
 
-int ikc3_server_init (s_env *env)
+static int ikc3_server_init (s_env *env)
 {
   assert(env);
   if (! socket_init_listen(&g_server_socket, &g_host, &g_port)) {
@@ -525,7 +524,7 @@ int ikc3_server_init (s_env *env)
   return 0;
 }
 
-int ikc3_server_init_tls (void)
+static int ikc3_server_init_tls (void)
 {
   s_tag tls_tag;
   p_tls tls;
@@ -629,14 +628,22 @@ int main (int argc, char **argv)
   }
   *env->in = in_original;
   if (g_server) {
-    if (ikc3_server_init(env))
+    if (g_tls) {
+      if (ikc3_server_init_tls())
+        goto clean;
+    }
+    else if (ikc3_server_init(env))
       goto clean;
     r = ikc3_run();
     goto clean;
   }
   ikc3_buf_editline_open_r(env->in);
   if (g_client) {
-    if (ikc3_client_init())
+    if (g_tls) {
+      if (ikc3_client_init_tls())
+        goto close;
+    }
+    else if (ikc3_client_init())
       goto close;
   }
   r = ikc3_run();
@@ -652,7 +659,7 @@ int main (int argc, char **argv)
   return r;
 }
 
-int usage (char *argv0)
+static int usage (char *argv0)
 {
   printf("Usage: %s [--load FILE] [--client HOST PORT]\n"
          "  [--server HOST PORT] [--dump FILE] [--quit]\n",
