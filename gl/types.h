@@ -301,6 +301,7 @@ struct gl_camera {
   GLuint gl_projection_matrix_loc;
   GLuint gl_view_matrix_loc;
   GLuint gl_model_matrix_loc;
+  GLuint gl_color_loc;
   GLuint gl_enable_tex2d_loc;
   GLuint gl_tex2d_loc;
   GLuint gl_ambiant_light_color_loc;

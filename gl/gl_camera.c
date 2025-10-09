@@ -17,6 +17,24 @@
 
 static const char * g_gl_camera_vertex_shader_src =
   "#version 300 es\n"
+  "precision highp float;\n"
+  "in vec3 iPos;\n"
+  "in vec3 iNormal;\n"
+  "in vec2 iTexCoord;\n"
+  "out vec3 ioFragNormal;\n"
+  "out vec2 ioTexCoord;\n"
+  "uniform mat4 uProjectionMatrix;\n"
+  "uniform mat4 uViewMatrix;\n"
+  "uniform mat4 uModelMatrix;\n"
+  "void main() {\n"
+  "  gl_Position = uProjectionMatrix * uViewMatrix * \n"
+  "                uModelMatrix * vec4(iPos, 1.0);\n"
+  "  ioTexCoord = iTexCoord;\n"
+  "  ioFragNormal = vec3(mat3(uModelMatrix) * iNormal);\n"
+  "}\n";
+/*
+"#version 300 es\n"
+  "precision highp float;\n"
   "in vec3 iPos;\n"
   "in vec3 iNormal;\n"
   "in vec2 iTexCoord;\n"
@@ -29,27 +47,30 @@ static const char * g_gl_camera_vertex_shader_src =
   "void main () {\n"
   "  gl_Position = uProjectionMatrix * uViewMatrix *\n"
   "    uModelMatrix * vec4(iPos, 1.0);\n"
-  "  ioNormal = iNormal;\n"
-  "  ioPos = vec3(gl_Position);\n"
+  "  ioNormal = vec3(uViewMatrix * uModelMatrix * vec4(iNormal, 0.0));\n"
+  "  ioPos = (uViewMatrix * uModelMatrix * vec4(iPos, 1.0)).xyz;\n"
   "  ioTexCoord = iTexCoord;\n"
   "}\n";
-
+*/
 static const char * g_gl_camera_fragment_shader_src =
   "#version 300 es\n"
   "precision highp float;\n"
-  "const float PI = 3.141592653;\n"
-  "in vec3 ioNormal;\n"
-  "in vec3 ioPos;\n"
+  "in vec3 ioFragNormal;\n"
   "in vec2 ioTexCoord;\n"
   "out vec4 oFragColor;\n"
+  "uniform vec4 uColor;\n"
   "uniform bool uEnableTex2D;\n"
   "uniform sampler2D uTex2D;\n"
-  "uniform vec3 uAmbiantLightColor;\n"
-  "uniform int uLightCount;\n"
-  "uniform vec4 uLightPos[16]; // Light position in camera coords.\n"
-  "uniform vec3 uLightColor[16];\n"
   "void main() {\n"
-  "  oFragColor = vec4(1.0, 0.0, 1.0, 1.0);\n"
+  "  vec4 texColor = texture(uTex2D, ioTexCoord);\n"
+  "  if (uEnableTex2D) {\n"
+  "    oFragColor = vec4(texColor[0] * uColor[0],\n"
+  "                      texColor[1] * uColor[1],\n"
+  "                      texColor[2] * uColor[2],\n"
+  "                      texColor[3] * uColor[3]);\n"
+  "  }\n"
+  "  else\n"
+  "    oFragColor = uColor;\n"
   "}\n";
 
 /*
@@ -272,6 +293,10 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   assert(glGetError() == GL_NO_ERROR);
   if (camera->gl_model_matrix_loc == (GLuint)-1)
     err_puts("gl_camera_init: uModelMatrix location is -1!");
+  camera->gl_color_loc =
+    glGetUniformLocation(camera->gl_shader_program,
+                         "uColor");
+  assert(glGetError() == GL_NO_ERROR);
   camera->gl_enable_tex2d_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uEnableTex2D");
@@ -353,6 +378,8 @@ void gl_camera_render (s_gl_camera *camera)
   assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(camera->gl_model_matrix_loc, 1, GL_FALSE,
                      &camera->model_matrix.xx);
+  assert(glGetError() == GL_NO_ERROR);
+  glUniform4f(camera->gl_color_loc, 1.0f, 1.0f, 1.0f, 1.0f);
   assert(glGetError() == GL_NO_ERROR);
   glUniform1i(camera->gl_enable_tex2d_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
