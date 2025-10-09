@@ -309,7 +309,8 @@ int ikc3_client_init_tls (void)
     assert(! "ikc3_client_init_tls: kc3_tls_client");
     return 1;
   }
-  if (! kc3_tls_client_init_connect(&g_tls_client, &tls, &g_host, &g_port)) {
+  if (! kc3_tls_client_init_connect(&g_tls_client, &tls, &g_host,
+                                    &g_port)) {
     err_puts("ikc3_client_init_tls: kc3_tls_client_init_connect");
     assert(! "ikc3_client_init_tls: kc3_tls_client_init_connect");
     return 1;
@@ -322,6 +323,7 @@ int ikc3_client_init_tls (void)
     io_write_1(" ");
     io_inspect_str(&g_port);
     io_write_1("\n");
+  }
   return 0;
 }
 
