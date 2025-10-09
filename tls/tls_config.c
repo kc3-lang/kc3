@@ -12,6 +12,7 @@
  */
 #include <tls.h>
 #include "../libkc3/kc3.h"
+#include "libkc3/error.h"
 #include "tls.h"
 #include "tls/types.h"
 
@@ -33,8 +34,10 @@ void kc3_tls_config_free (p_tls_config *config)
 p_tls_config * kc3_tls_config_new (p_tls_config *dest)
 {
   p_tls_config tmp = {0};
-  if (! (tmp = tls_config_new()))
-     return NULL;
+  if (! (tmp = tls_config_new())) {
+    ERROR("tls_config_new");
+    return NULL;
+  }
   *dest = tmp;
   return dest;
 }
@@ -56,6 +59,8 @@ p_tls_config * kc3_tls_config_set_ca_file (p_tls_config *config,
     assert(! "kc3_tls_config_set_ca_file: tls_config_set_ca_file");
     return NULL;
   }
+  if (! dest)
+    return config;
   *dest = *config;
   return dest;
 }
@@ -94,6 +99,8 @@ p_tls_config * kc3_tls_config_set_key_file (p_tls_config *config,
     assert(! "kc3_tls_config_set_key_file: tls_config_set_key_file: ");
     return NULL;
   }
+  if (! dest)
+    return config;
   *dest = *config;
   return dest;
 }
