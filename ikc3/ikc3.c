@@ -232,6 +232,11 @@ int ikc3_arg_server (s_env *env, int *argc, char ***argv)
 int ikc3_arg_tls (s_env *env, int *argc, char ***argv)
 {
   (void) env;
+  if (g_tls) {
+    err_puts("ikc3_arg_tls: --tls can only be set once");
+    usage(env->argv[0]);
+    return -1;
+  }
   g_tls = true;
   *argc -= 1;
   *argv += 1;
@@ -288,7 +293,6 @@ int ikc3_client_init_tls (void)
 {
   s_tag tls_tag;
   p_tls tls;
-
   if (! g_tls) {
     err_puts("ikc3_client_init_tls: tls not enabled");
     assert(! "ikc3_client_init_tls: tls not enabled");
@@ -299,16 +303,25 @@ int ikc3_client_init_tls (void)
     assert(! "ikc3_client_init_tls: failed to init tls");
     return 1;
   }
+  tag_clean(&tls_tag);
   if (! kc3_tls_client(&tls)) {
-    err_puts("ikc3_client_init_tls: failed to retrieve tls_client");
-    assert(! "ikc3_client_init_tls: failed to retrieve tls_client");
+    err_puts("ikc3_client_init_tls: kc3_tls_client");
+    assert(! "ikc3_client_init_tls: kc3_tls_client");
     return 1;
   }
   if (! kc3_tls_client_init_connect(&g_tls_client, &tls, &g_host, &g_port)) {
-    err_puts("ikc3_client_init_tls: failed to connect tls client");
-    assert(! "ikc3_client_init_tls: failed to connect tls client");
+    err_puts("ikc3_client_init_tls: kc3_tls_client_init_connect");
+    assert(! "ikc3_client_init_tls: kc3_tls_client_init_connect");
     return 1;
   }
+  if (true) {
+    io_write_1("ikc3: connected with TLS ");
+    io_write_1(tls_conn_cipher(tls));
+    io_write_1(" to ");
+    io_inspect_str(&g_host);
+    io_write_1(" ");
+    io_inspect_str(&g_port);
+    io_write_1("\n");
   return 0;
 }
 
@@ -361,7 +374,8 @@ sw ikc3_run (void)
         args->tag.data.str = input_str;
         rpc_tag.data.pcall->arguments = args;
 
-        buf_rw = g_tls ? &g_tls_client.socket_buf.buf_rw : &g_socket_buf.buf_rw;
+        buf_rw = g_tls ? &g_tls_client.socket_buf.buf_rw :
+          &g_socket_buf.buf_rw;
         if (buf_inspect_tag(buf_rw->w, &rpc_tag) <= 0 ||
             buf_write_1(buf_rw->w, "\n") <= 0 ||
             buf_flush(buf_rw->w) < 0) {
@@ -523,6 +537,7 @@ int ikc3_server_init_tls (void)
     assert(! "ikc3_server_init_tls: kc3_tls_init");
     return 1;
   }
+  tag_clean(&tls_tag);
   if (! kc3_tls_server(&tls)) {
     err_puts("ikc3_server_init_tls: kc3_tls_server");
     assert(! "ikc3_server_init_tls: kc3_tls_server");
@@ -550,9 +565,6 @@ int ikc3_server_init_tls (void)
     return 1;
   }
   io_write_1("ikc3: TLS server: client connected: ");
-  // socket_addr_to_str(&g_tls_server.socket_buf.addr_str,
-  //                    g_tls_server.socket_buf.addr,
-  //                    g_tls_server.socket_buf.addr_len);
   io_inspect_str(&g_tls_server.socket_buf.addr_str);
   io_write_1(" ");
   io_inspect_str(&g_port);
