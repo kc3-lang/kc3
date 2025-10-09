@@ -15,8 +15,8 @@ require TLS
 
 defmodule TLS.Server do
 
-  defstruct [buf_rw: %BufRW{},
-             socket: %Socket{}]
+  defstruct [socket_buf: %Socket.Buf{},
+             tls_version: ""]
 
   dlopen("tls.so")
 
