@@ -553,16 +553,13 @@ static int ikc3_server_init_tls (void)
   s_str        tls_ssl_private_key_path =
     STR("/etc/ssl/private/privkey.pem");
   if (! g_tls) {
-    err_puts("ikc3_server_init_tls: g_tls");
-    assert(! "ikc3_server_init_tls: g_tls");
+    ERROR("g_tls");
     return 1;
   }
   if (! kc3_tls_init(&tls_tag)) {
-    err_puts("ikc3_server_init_tls: kc3_tls_init");
-    assert(! "ikc3_server_init_tls: kc3_tls_init");
+    ERROR("kc3_tls_init");
     return 1;
   }
-
   tag_clean(&tls_tag);
   if (! kc3_tls_config_new(&tls_config)) {
     ERROR("kc3_tls_config_new");
@@ -570,11 +567,15 @@ static int ikc3_server_init_tls (void)
   }
   if (! kc3_tls_config_set_ca_file(&tls_config,
                                    &tls_ssl_fullchain_path,
-                                   NULL) ||
-      ! kc3_tls_config_set_key_file(&tls_config,
+                                   NULL)) {
+    ERROR("kc3_tls_config_set_ca_file");
+    kc3_tls_config_free(&tls_config);
+    return 1;
+  }
+  if (! kc3_tls_config_set_key_file(&tls_config,
                                     &tls_ssl_private_key_path,
                                     NULL)) {
-    ERROR("kc3_tls_config_new");
+    ERROR("kc3_tls_config_set_key_file");
     kc3_tls_config_free(&tls_config);
     return 1;
   }
@@ -587,7 +588,7 @@ static int ikc3_server_init_tls (void)
     return 1;
   }
   if (! socket_init_listen(&g_server_socket, &g_host, &g_port)) {
-    err_write_1("ikc3: failed to listen on ");
+    err_write_1("ikc3: TLS server: failed to listen on ");
     err_inspect_str(&g_host);
     err_write_1(" ");
     err_inspect_str(&g_port);
@@ -595,7 +596,7 @@ static int ikc3_server_init_tls (void)
     return 1;
   }
   if (true) {
-    io_write_1("ikc3: listening on ");
+    io_write_1("ikc3: TLS server: listening on ");
     io_inspect_str(&g_host);
     io_write_1(" ");
     io_inspect_str(&g_port);
