@@ -21,7 +21,7 @@
 #include "../../../../gl/gl_text.h"
 #include "../../../../gl/mat4.h"
 #include "../../window_egl.h"
-#include "../../sequence.h"
+#include "../../sequence_egl.h"
 #include "../window_egl_xcb.h"
 #include "../../demo/bg_rect.h"
 #include "../../demo/lightspeed.h"
