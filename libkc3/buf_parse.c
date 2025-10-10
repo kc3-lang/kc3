@@ -1391,7 +1391,6 @@ sw buf_parse_do_block_inner (s_buf *buf, f_buf_parse_end f_end,
   buf_save_clean(buf, &save);
   return r;
  ok:
-  result += r;
   j = list_length(list);
   if (! do_block_init(&tmp, j)) {
     r = -1;
