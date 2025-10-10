@@ -23,6 +23,11 @@
 # include <sys/sysctl.h>
 #endif
 
+#if defined(__NetBSD__)
+# include <sys/param.h>
+# define HOST_NAME_MAX MAXHOSTNAMELEN
+#endif
+
 #ifndef WIN32
 # include <sys/wait.h>
 #endif
