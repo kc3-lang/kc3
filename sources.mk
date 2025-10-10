@@ -1550,6 +1550,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/kc3/op.kc3" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
 	"lib/kc3/0.1/kc3/ops.kc3" \
+	"lib/kc3/0.1/kpkg.dump" \
 	"lib/kc3/0.1/kpkg.kc3" \
 	"lib/kc3/0.1/kpkg/main.kc3" \
 	"lib/kc3/0.1/kpkg/package.kc3" \
