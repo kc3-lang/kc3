@@ -872,17 +872,18 @@ bool env_dump_restore_path_resolve (s_env *env)
     env->restore_path = path;
     return true;
   }
+  str_clean(&path);
   if (file_access(&kc3_dump, &g_sym_r)) {
     env->restore_path = kc3_dump;
     return true;
   }
   if (! str_init_concatenate(&path, env->module_path, &kc3_dump))
     return false;
-  if (file_access(&path, &g_sym_r))
+  if (file_access(&path, &g_sym_r)) {
     env->restore_path = path;
-  else
-    str_clean(&path);
-  return true;
+    return true;
+  }
+  return false;
 }
 
 void env_error_f (s_env *env, const char *fmt, ...)
