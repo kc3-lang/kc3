@@ -42,7 +42,6 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="-I../../.. $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
-CFLAGS="$CFLAGS -fopenmp"
 LDFLAGS="--shared ${LDFLAGS}"
 config_asan
 config_gnu
