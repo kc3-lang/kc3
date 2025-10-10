@@ -176,6 +176,9 @@ p_list * plist_init_append (p_list *plist, p_list *a, p_list *b)
   p_list list;
   p_list tmp;
   p_list *tail;
+  assert(plist);
+  assert(a);
+  assert(b);
   tmp = NULL;
   tail = &tmp;
   list = *a;
