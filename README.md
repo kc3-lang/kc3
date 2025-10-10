@@ -88,6 +88,8 @@ There are now four full applications written in KC3 that we know of :
      - `Counter.increase(Ident, Tag)` as a `cfn_macro`, Tag must be a
        positive integer (non-zero)
      - `Counter` module included at init
+ - libtls
+     - basic TLS client and server in test/tls/tls.kc3
 
  - ikc3
    - Remote procedure call
@@ -103,6 +105,10 @@ There are now four full applications written in KC3 that we know of :
      - server : ikc3 --server HOST PORT
        - accepts only one connection and exits
        - works with netcat (no prompt)
+     - TLS with libtls : ikc3 --tls (--client|--server) HOST PORT
+       - "ikc3: TLS server: listening on HOST PORT"
+       - "ikc3: TLS server: client connected: HOST PORT TLS-1.3"
+       - "ikc3: TLS client: connected to HOST PORT TLS-1.3"
 
  - build system
    - use shipped `runj` as a git submodule to parallelize configure
