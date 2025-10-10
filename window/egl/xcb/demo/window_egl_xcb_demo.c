@@ -275,13 +275,13 @@ bool window_egl_demo_render (s_window_egl *window)
 bool window_egl_demo_resize (s_window_egl *window, u64 w, u64 h)
 {
   assert(window);
-  (void) window;
   err_write_1("window_egl_demo_resize: ");
   err_inspect_u64(w);
   err_write_1(" x ");
   err_inspect_u64(h);
   err_write_1("\n");
   glViewport(0, 0, w, h);
+  gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, 0, 1);
   return true;
 }
 

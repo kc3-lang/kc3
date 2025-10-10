@@ -131,11 +131,19 @@ bool window_egl_xcb_event (s_window_egl *window,
     break;
   case XCB_CONFIGURE_NOTIFY:
     event_config = (xcb_configure_notify_event_t *) event;
-    if (! window->resize(window, event_config->width,
-                         event_config->height))
-      goto ko;
     window->w = event_config->width;
     window->h = event_config->height;
+    {
+      EGLint gl_w, gl_h;
+      eglQuerySurface(window->egl_display, window->egl_surface,
+                      EGL_WIDTH, &gl_w);
+      eglQuerySurface(window->egl_display, window->egl_surface,
+                      EGL_HEIGHT, &gl_h);
+      window->gl_w = gl_w;
+      window->gl_h = gl_h;
+    }
+    if (! window->resize(window, window->gl_w, window->gl_h))
+      goto ko;
     break;
   case XCB_KEY_PRESS:
     event_key = (xcb_key_press_event_t *) event;
