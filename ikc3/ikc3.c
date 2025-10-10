@@ -63,9 +63,11 @@ static void   ikc3_buf_editline_close (s_buf *buf);
 static void   ikc3_buf_editline_open_r (s_buf *buf);
 static void   ikc3_client_clean (void);
 static int    ikc3_client_init (void);
+static int    ikc3_client_init_tls (void);
 static sw     ikc3_run (void);
 static void   ikc3_server_clean (s_env *env);
 static int    ikc3_server_init (s_env *env);
+static int    ikc3_server_init_tls (s_env *env);
 static int    usage (char *argv0);
 
 static sw buf_ignore_character (s_buf *buf)
@@ -544,7 +546,7 @@ static int ikc3_server_init (s_env *env)
   return 0;
 }
 
-static int ikc3_server_init_tls (void)
+static int ikc3_server_init_tls (s_env *env)
 {
   p_tls        tls = NULL;
   p_tls        tls_tmp = NULL;
@@ -568,9 +570,9 @@ static int ikc3_server_init_tls (void)
     ERROR("kc3_tls_config_new");
     return 1;
   }
-  if (! kc3_tls_config_set_ca_file(&tls_config,
-                                   &tls_ssl_fullchain_path,
-                                   &tls_config_tmp)) {
+  if (! kc3_tls_config_set_cert_file(&tls_config,
+                                     &tls_ssl_fullchain_path,
+                                     &tls_config_tmp)) {
     ERROR("kc3_tls_config_set_ca_file");
     kc3_tls_config_free(&tls_config);
     return 1;
@@ -618,6 +620,11 @@ static int ikc3_server_init_tls (void)
   io_write_1(" ");
   io_write_1(tls_conn_cipher(tls));
   io_write_1("\n");
+  g_server_env_in = env->in;
+  g_server_env_out = env->out;
+  g_server_env_err = env->err;
+  env->in = g_tls_server.socket_buf.buf_rw.r;
+  env->out = g_tls_server.socket_buf.buf_rw.w;
   return 0;
 }
 
@@ -675,7 +682,7 @@ int main (int argc, char **argv)
   *env->in = in_original;
   if (g_server) {
     if (g_tls) {
-      if (ikc3_server_init_tls())
+      if (ikc3_server_init_tls(env))
         goto clean;
     }
     else if (ikc3_server_init(env))
