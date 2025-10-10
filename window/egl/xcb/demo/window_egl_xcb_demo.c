@@ -212,7 +212,8 @@ bool window_egl_demo_load (s_window_egl *window)
                     "06. Mandelbrot (f128)", mandelbrot_f128_load,
                     mandelbrot_f128_render, mandelbrot_f128_unload,
                     window);
-  window->sequence[5].button = mandelbrot_f128_button;
+  window->sequence[5].button =
+    (f_sequence_button) mandelbrot_f128_button;
   sequence_egl_init(window->sequence + 6, 3600.0, "07. Matrix",
                     matrix_load, matrix_render, matrix_unload, window);
   window_set_sequence_pos((s_window *) window, 0);

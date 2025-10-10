@@ -67,24 +67,24 @@ debug:
 	if ${HAVE_XCB}; then ${MAKE} -C xcb debug; fi
 
 demo: build
-	if ${HAVE_ANDROID}; then ${MAKE} -C android demo; fi
-	if ${HAVE_DRM}; then ${MAKE} -C drm demo; fi
-	if ${HAVE_XCB}; then ${MAKE} -C xcb demo; fi
+	if ${HAVE_ANDROID}; then ${MAKE} -C android demo; else \
+	    if ${HAVE_XCB} && [ -n "${DISPLAY}" ]; then ${MAKE} -C xcb demo; else \
+	        if ${HAVE_DRM}; then ${MAKE} -C drm demo; fi; fi; fi
 
 demo_asan: asan
-	if ${HAVE_ANDROID}; then ${MAKE} -C android demo_asan; fi
-	if ${HAVE_DRM}; then ${MAKE} -C drm demo_asan; fi
-	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_asan; fi
+	if ${HAVE_ANDROID}; then ${MAKE} -C android demo_asan; else \
+	    if ${HAVE_XCB} && [ -n "${DISPLAY}" ]; then ${MAKE} -C xcb demo_asan; else \
+	        if ${HAVE_DRM}; then ${MAKE} -C drm demo_asan; fi; fi; fi
 
 demo_cov: cov
-	if ${HAVE_ANDROID}; then ${MAKE} -C android demo_cov; fi
-	if ${HAVE_DRM}; then ${MAKE} -C drm demo_cov; fi
-	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_cov; fi
+	if ${HAVE_ANDROID}; then ${MAKE} -C android demo_cov; else \
+	    if ${HAVE_XCB} && [ -n "${DISPLAY}" ]; then ${MAKE} -C xcb demo_cov; else \
+	        if ${HAVE_DRM}; then ${MAKE} -C drm demo_cov; fi; fi; fi
 
 demo_debug: debug
-	if ${HAVE_ANDROID}; then ${MAKE} -C android demo_debug; fi
-	if ${HAVE_DRM}; then ${MAKE} -C drm demo_debug; fi
-	if ${HAVE_XCB}; then ${MAKE} -C xcb demo_debug; fi
+	if ${HAVE_ANDROID}; then ${MAKE} -C android demo_debug; else \
+	    if ${HAVE_XCB} && [ -n "${DISPLAY}" ]; then ${MAKE} -C xcb demo_debug; else \
+	        if ${HAVE_DRM}; then ${MAKE} -C drm demo_debug; fi; fi; fi
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
