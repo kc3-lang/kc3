@@ -42,6 +42,7 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="-I../../.. $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
+CFLAGS="$CFLAGS -Wno-error=unknown-pragmas"
 LDFLAGS="--shared ${LDFLAGS}"
 config_asan
 config_gnu
@@ -52,6 +53,8 @@ pkg_config libmd
 pkg_config freetype2
 pkg_config egl
 pkg_config glesv2
+config_lib OPENMP -fopenmp
+config_define HAVE_OPENMP "${HAVE_OPENMP}"
 config_define PREFIX "\"${PREFIX}\""
 update_config_h
 LIBS="$LIBS -rpath ${PREFIX}/lib"
