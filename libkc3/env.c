@@ -184,6 +184,7 @@ s_list ** env_args (s_env *env, s_list **dest)
 
 void env_args_clean (s_env *env)
 {
+  list_delete_all(env->args);
   str_delete(env->argv0);
   str_delete(env->argv0_dir);
 }
