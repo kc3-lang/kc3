@@ -919,15 +919,26 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
       goto ko;
     }
     result += r;
-    if ((r = pdf_buf_parse_token(buf, "endstream")) <= 0) {
+    if ((r = pdf_buf_parse_token(buf, "endstream")) < 0) {
       if (true) {
         err_puts("pdf_buf_parse_stream: endstream: pdf_buf_parse_token");
         err_inspect_buf(buf);
       }
       goto ko;
     }
-    result += r;
+    if (r) {
+      result += r;
+      goto ok;
+    }
+    if ((r = pdf_buf_ignore_until_token(buf, "endstream")) <= 0) {
+      err_puts("pdf_buf_parse_stream: endstream:"
+               " pdf_buf_ignore_until_token");
+      assert(!("pdf_buf_parse_stream: endstream:"
+               " pdf_buf_ignore_until_token"));
+      goto ko;
+    }
   }
+ ok:
   *dest = tmp;
   return result;
  restore:
@@ -1084,7 +1095,8 @@ sw pdf_buf_parse_string_paren (s_buf *buf, s_str *dest)
     if (! r) {
       if ((r = buf_read_u8(buf, &u)) <= 0 ||
           (r = buf_write_u8(&tmp_buf, u)) <= 0)
-      goto restore;
+        goto restore;
+      continue;
     }
     result += r;
     if (c == '(')
