@@ -173,25 +173,34 @@ p_list * plist_init_1 (p_list *plist, const char *p)
 
 p_list * plist_init_append (p_list *plist, p_list *a, p_list *b)
 {
-  p_list list;
+  p_list src;
   p_list tmp;
   p_list *tail;
   assert(plist);
   assert(a);
   assert(b);
+  if (false) {
+    err_write_1("plist_init_append: a = ");
+    err_inspect_uw_hexadecimal((uw) *a);
+    err_write_1(" b = ");
+    err_inspect_uw_hexadecimal((uw) *b);
+    err_write_1("\n");
+  }
   tmp = NULL;
   tail = &tmp;
-  list = *a;
-  while (list) {
-    *tail = list_new_tag_copy(&list->tag, NULL);
+  src = *a;
+  while (src) {
+    if (! (*tail = list_new_tag_copy(&src->tag, NULL)))
+      return NULL;
     tail = &(*tail)->next.data.plist;
-    list = list_next(list);
+    src = list_next(src);
   }
-  list = *b;
-  while (list) {
-    *tail = list_new_tag_copy(&list->tag, NULL);
+  src = *b;
+  while (src) {
+    if (! (*tail = list_new_tag_copy(&src->tag, NULL)))
+      return NULL;
     tail = &(*tail)->next.data.plist;
-    list = list_next(list);
+    src = list_next(src);
   }
   *plist = tmp;
   return plist;
