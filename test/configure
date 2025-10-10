@@ -23,6 +23,8 @@ CONFIG_H_PREFIX=LIBKC3_TEST_
 
 config_prog libkc3_test
 
+update_config_h
+
 . ./sources.sh
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
@@ -119,4 +121,3 @@ build_lo
 build_prog
 
 update_config_mk
-
