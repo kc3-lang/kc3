@@ -26,7 +26,8 @@ BIN_FILES = \
 
 LIB_FILES = \
 	../*/.libs/libkc3*.0.dylib \
-	/usr/local/lib/libevent-2.1.7.dylib
+	/opt/homebrew/lib/libevent-2.1.7.dylib
+#	/usr/local/lib/libevent-2.1.7.dylib
 
 DESTDIR = kc3-v${KC3_VERSION}-${MACHINE}
 DMG = ${DESTDIR}.dmg
