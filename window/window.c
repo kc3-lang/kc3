@@ -17,7 +17,7 @@ bool window_animate (s_window *window)
 {
   s_timespec clock_monotonic;
   s_timespec delta;
-  const f64 expected_dt = 1.0 / 120.0;
+  const f64 expected_dt = 1.0 / 140.0;
   s_timespec expected_delta;
   s_sequence *seq;
   f64 t;
