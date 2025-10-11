@@ -144,7 +144,6 @@ HEADERS = \
 	"pcomplex.h" \
 	"pcow.h" \
 	"pfacts.h" \
-	"pfp128.h" \
 	"pframe.h" \
 	"plist.h" \
 	"pointer.h" \

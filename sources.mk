@@ -762,6 +762,7 @@ KC3_C_SOURCES = \
 	"libkc3/timespec.h" \
 	"libkc3/to_lisp.c" \
 	"libkc3/to_lisp.h" \
+	"libkc3/tommath.h" \
 	"libkc3/tuple.c" \
 	"libkc3/tuple.h" \
 	"libkc3/types.h" \

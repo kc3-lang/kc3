@@ -19,7 +19,6 @@
 #include <sys/types.h>
 #include <time.h>
 #include <pthread.h>
-#include "pfp128.h"
 #include "sha1.h"
 
 #define MP_28BIT
