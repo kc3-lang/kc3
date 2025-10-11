@@ -105,25 +105,21 @@ u8 earth_render (s_sequence_egl *seq)
   assert(glGetError() == GL_NO_ERROR);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   assert(glGetError() == GL_NO_ERROR);
+  glClearDepthf(1.0f);
+  assert(glGetError() == GL_NO_ERROR);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   assert(glGetError() == GL_NO_ERROR);
   gl_camera_render(camera);
   assert(glGetError() == GL_NO_ERROR);
-  //glEnable(GL_DEPTH_TEST);
+  glEnable(GL_DEPTH_TEST);
   assert(glGetError() == GL_NO_ERROR);
-  //err_puts("earth_render: binding texture");
   GLuint tex = gl_sprite_texture(&g_sprite_earth, 0);
-  /*err_write_1("earth_render: texture id = ");
-  err_inspect_u32(tex);
-  err_write_1("\n");*/
   gl_camera_bind_texture(camera, tex);
   assert(glGetError() == GL_NO_ERROR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                   GL_LINEAR_MIPMAP_LINEAR);
   assert(glGetError() == GL_NO_ERROR);
-  //err_puts("earth_render: rendering sphere");
   gl_sphere_render(sphere);
-  //err_puts("earth_render: sphere rendered");
   glDisable(GL_DEPTH_TEST);
   assert(glGetError() == GL_NO_ERROR);
   gl_camera_render_end(camera);
