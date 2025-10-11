@@ -44,6 +44,7 @@ CPPFLAGS="-I.. $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
 LDFLAGS="--shared ${LDFLAGS} -rdynamic"
 config_asan
+config_cocoa
 config_gnu
 config_i386
 pkg_config libbsd-overlay
@@ -52,6 +53,9 @@ pkg_config libmd
 pkg_config freetype2
 pkg_config glesv2
 pkg_config libpng
+if ${HAVE_COCOA}; then
+    config_lib OPENGL -framework OpenGL
+fi
 config_define PREFIX "\"${PREFIX}\""
 update_config_h
 LIBS="$LIBS -rpath ${PREFIX}/lib"

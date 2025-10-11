@@ -23,8 +23,9 @@
 #endif
 
 #if defined(__APPLE__)
-# include <OpenGLES/ES2/gl.h>
-# include <OpenGLES/ES2/glext.h>
+# define GL_SILENCE_DEPRECATION 1
+# include <OpenGL/gl.h>
+# include <OpenGL/glext.h>
 #elif defined(WIN32) || defined(WIN64)
 # include <GLES2/gl2.h>
 # include <GLES2/gl2ext.h>
