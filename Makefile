@@ -930,8 +930,7 @@ kc3-${KC3_VERSION}.tar.gz: kc3.index
 	pax -wz kc3-${KC3_VERSION} > kc3-${KC3_VERSION}.tar.gz
 
 kc3.index: sort sources.mk Makefile
-	echo -n > kc3.index.tmp
-	for F in ${KC3_EXTERNAL_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_EXTERNAL_SOURCES}; do echo "$$F"; done > kc3.index.tmp
 	for F in ${KC3_CONFIGURES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_MAKEFILES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_C_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
