@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 /**
- * @file time.h
+ * @file timespec.h
  * @brief operations on s_timespec
  *
  */
