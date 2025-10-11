@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <xkbcommon/xkbcommon.h>
+#include <EGL/egl.h>
 #include "../../libkc3/kc3.h"
 #include "../window.h"
 #include "../../gl/gl_deprecated.h"
@@ -246,16 +247,10 @@ bool window_sdl2_run (s_window_sdl2 *window)
   }
   fprintf(stderr, "window_sdl2_run: dpi=%.2f, dpi_w=%.2f, dpi_h=%.2f\n",
           window->dpi, window->dpi_w, window->dpi_h);
-  if (SDL_GL_SetSwapInterval(1) < 0) {
-    err_write_1("window_sdl2_run: SDL_GL_SetSwapInterval(1) failed: ");
-    err_puts(SDL_GetError());
-    err_puts("window_sdl2_run: trying adaptive vsync (-1)");
-    if (SDL_GL_SetSwapInterval(-1) < 0) {
-      err_write_1("window_sdl2_run: SDL_GL_SetSwapInterval(-1) failed: ");
-      err_puts(SDL_GetError());
-      err_puts("window_sdl2_run: running without vsync");
-    }
-  }
+  SDL_GL_SetSwapInterval(1);
+  EGLDisplay egl_display = eglGetCurrentDisplay();
+  if (egl_display != EGL_NO_DISPLAY)
+    eglSwapInterval(egl_display, 1);
   assert(glGetError() == GL_NO_ERROR);
   if (! window->load(window)) {
     err_puts("window_sdl2_run: window->load => false");
@@ -334,6 +329,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
       err_puts("window_sdl2_run: window->render => false");
       quit = 1;
     }
+    glFinish();
     SDL_GL_SwapWindow(window->sdl_window);
   }
   SDL_GL_DeleteContext(window->context);
