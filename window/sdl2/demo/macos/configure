@@ -61,7 +61,11 @@ echo "${APP_PROG}: ../.libs/${PROG}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP}/Contents/MacOS" >> ${CONFIG_MK}
 echo "	install -m 0755 ../.libs/${PROG} ${APP_PROG}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS_COMMON="/opt/homebrew/lib/libSDL2.dylib"
+echo "${APP_PROG}.sh: ${PROG}.sh" >> ${CONFIG_MK}
+echo "	mkdir -p ${APP}/Contents/MacOS" >> ${CONFIG_MK}
+echo "	install -m 0755 ${PROG}.sh ${APP_PROG}.sh" >> ${CONFIG_MK}
+
+BUNDLE_LIBS_COMMON="/opt/homebrew/lib/libSDL2.dylib /usr/local/lib/libEGL.dylib /usr/local/lib/libGLESv2.dylib"
 
 BUNDLE_LIBS="${BUNDLE_LIBS_COMMON} ../../../../libkc3/.libs/libkc3.0.dylib ../../../../gl/.libs/libkc3_gl.0.dylib ../../../.libs/libkc3_window.0.dylib ../../.libs/libkc3_window_sdl2.0.dylib"
 echo >> ${CONFIG_MK}

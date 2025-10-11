@@ -246,7 +246,16 @@ bool window_sdl2_run (s_window_sdl2 *window)
   }
   fprintf(stderr, "window_sdl2_run: dpi=%.2f, dpi_w=%.2f, dpi_h=%.2f\n",
           window->dpi, window->dpi_w, window->dpi_h);
-  SDL_GL_SetSwapInterval(1);
+  if (SDL_GL_SetSwapInterval(1) < 0) {
+    err_write_1("window_sdl2_run: SDL_GL_SetSwapInterval(1) failed: ");
+    err_puts(SDL_GetError());
+    err_puts("window_sdl2_run: trying adaptive vsync (-1)");
+    if (SDL_GL_SetSwapInterval(-1) < 0) {
+      err_write_1("window_sdl2_run: SDL_GL_SetSwapInterval(-1) failed: ");
+      err_puts(SDL_GetError());
+      err_puts("window_sdl2_run: running without vsync");
+    }
+  }
   assert(glGetError() == GL_NO_ERROR);
   if (! window->load(window)) {
     err_puts("window_sdl2_run: window->load => false");

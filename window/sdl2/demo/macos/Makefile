@@ -78,10 +78,10 @@ debug:
 	cp -RL ${FONT_SOURCES} ${APP_DEBUG}/Contents/fonts/
 
 demo: build
-	time ${APP_PROG}
+	time ${APP_PROG}.sh
 
 demo_debug: debug
-	time ${APP_PROG_DEBUG}
+	time ${APP_PROG_DEBUG}.sh
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
