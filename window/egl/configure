@@ -39,6 +39,8 @@ LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 config_i386
+config_android
+config_cocoa
 pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
@@ -62,7 +64,7 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -O1 -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../../gl/libkc3_gl_asan.la"
+LIBS_LOCAL_ASAN="../../libkc3/libkc3_asan.la ../../gl/libkc3_gl_asan.la ../libkc3_window_asan.la"
 LIBS_ASAN="$LIBS_LOCAL_ASAN $LIBS"
 
 echo "CPPFLAGS_ASAN = $CPPFLAGS_ASAN" >> ${CONFIG_MK}
@@ -74,7 +76,7 @@ echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
 LDFLAGS_COV="$LDFLAGS"
-LIBS_LOCAL_COV="../../gl/libkc3_gl_cov.la"
+LIBS_LOCAL_COV="../../libkc3/libkc3_cov.la ../../gl/libkc3_gl_cov.la ../libkc3_window_cov.la"
 LIBS_COV="$LIBS_LOCAL_COV $LIBS -lgcov"
 
 echo "CPPFLAGS_COV = $CPPFLAGS_COV" >> ${CONFIG_MK}
@@ -86,7 +88,7 @@ echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../../gl/libkc3_gl_debug.la"
+LIBS_LOCAL_DEBUG="../../libkc3/libkc3_debug.la ../../gl/libkc3_gl_debug.la ../libkc3_window_debug.la"
 LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
 
 echo "CPPFLAGS_DEBUG = $CPPFLAGS_DEBUG" >> ${CONFIG_MK}
@@ -95,15 +97,13 @@ echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 # Main config
-LIBS_LOCAL="../../gl/libkc3_gl.la"
+LIBS_LOCAL="../../libkc3/libkc3.la ../../gl/libkc3_gl.la ../libkc3_window.la"
 LIBS="$LIBS_LOCAL $LIBS"
 
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
 echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
 echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
 echo "LIBS = $LIBS" >> ${CONFIG_MK}
-
-config_android
 
 if [ "x$HAVE_DRM" = "x" ]; then
     if pkg-config gbm && pkg-config libdrm; then

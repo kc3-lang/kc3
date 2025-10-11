@@ -15,8 +15,8 @@
 
 #include "types.h"
 
-extern const char *g_argv0_default;
-extern const char *g_argv0_dir_default;
+extern const char *g_env_argv0_default;
+extern const char *g_env_argv0_dir_default;
 
 /* Global singletons. */
 s_env * env_default (void);

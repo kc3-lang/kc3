@@ -105,7 +105,11 @@ u8 earth_render (s_sequence_egl *seq)
   assert(glGetError() == GL_NO_ERROR);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   assert(glGetError() == GL_NO_ERROR);
+#if defined(__APPLE__)
+  glClearDepth(1.0);
+#else
   glClearDepthf(1.0f);
+#endif
   assert(glGetError() == GL_NO_ERROR);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   assert(glGetError() == GL_NO_ERROR);

@@ -57,9 +57,6 @@ pkg_config libpng
 if ${HAVE_COCOA}; then
     config_lib OPENGL -framework OpenGL
 fi
-if ${HAVE_WIN32}; then
-    LIBS="$LIBS -lSDL2Main"
-fi
 config_lib OPENGL -lopengl32 -lglu32
 config_lib OPENMP -fopenmp
 config_define HAVE_OPENMP "${HAVE_OPENMP}"
@@ -142,15 +139,16 @@ update_build_prog
 build_lo
 build_prog
 
-if [ "x$(uname)" = "xDarwin" ]; then
-    HAVE_DARWIN=true
-else
+#if [ "x$(uname)" = "xDarwin" ]; then
+#    HAVE_DARWIN=true
+#else
     HAVE_DARWIN=false
-fi
+#fi
 echo "HAVE_DARWIN = $HAVE_DARWIN" >> ${CONFIG_MK}
 
 update_config_mk
 
+# TODO: configure macos subdir
 if ${HAVE_DARWIN}; then
     config_subdirs macos
 fi

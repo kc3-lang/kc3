@@ -26,8 +26,8 @@
 
 #define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 7
 
-const char *g_argv0_default = PROG;
-const char *g_argv0_dir_default = PREFIX;
+const char *g_env_argv0_default = PROG;
+const char *g_env_argv0_dir_default = PREFIX;
 //s_gl_font   g_font_computer_modern = {0};
 s_gl_font   g_font_courier_new = {0};
 s_gl_ortho  g_ortho = {0};

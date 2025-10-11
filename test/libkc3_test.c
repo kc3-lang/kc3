@@ -54,8 +54,8 @@ void tag_test (void);
 void tuple_test (void);
 void types_test (void);
 
-const char *g_argv0_default = PROG;
-const char *g_argv0_dir_default = PREFIX;
+const char *g_env_argv0_default = PROG;
+const char *g_env_argv0_dir_default = PREFIX;
 
 int main (int argc, char **argv)
 {

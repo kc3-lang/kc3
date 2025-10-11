@@ -17,4 +17,5 @@ SOURCES = \
 	"mandelbrot_f128.c" \
 	"matrix.c" \
 	"toasters.c" \
+	"window_egl_demo.c" \
 

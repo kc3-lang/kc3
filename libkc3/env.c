@@ -27,6 +27,10 @@
 #include <dlfcn.h>
 #include <unistd.h>
 #include "alloc.h"
+
+const char *g_env_argv0_default = "";
+const char *g_env_argv0_dir_default = "";
+
 #include "array.h"
 #include "assert.h"
 #include "binding.h"
@@ -245,9 +249,9 @@ s_env * env_args_init (s_env *env, int *argc, char ***argv)
   }
   env->argc = 0;
   env->argv = NULL;
-  env->argv0 = str_new_1(NULL, g_argv0_default);
+  env->argv0 = str_new_1(NULL, g_env_argv0_default);
   // TODO: FIXME: breaks debug
-  // env->argv0_dir = str_new_1(NULL, g_argv0_dir_default);
+  // env->argv0_dir = str_new_1(NULL, g_env_argv0_dir_default);
   env->argv0_dir = str_new_empty();
   env->args = list_new_str_copy(env->argv0, NULL);
   return env;
