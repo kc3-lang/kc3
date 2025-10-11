@@ -26,3 +26,6 @@
 	path = window/sdl2/kubz
 	url = https://git.kmx.io/kc3-lang/kubz.git
 	branch = master
+[submodule "PortableFP128"]
+	path = PortableFP128
+	url = https://git.kmx.io/kc3-lang/PortableFP128.git

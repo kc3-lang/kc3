@@ -144,6 +144,7 @@ HEADERS = \
 	"pcomplex.h" \
 	"pcow.h" \
 	"pfacts.h" \
+	"pfp128.h" \
 	"pframe.h" \
 	"plist.h" \
 	"pointer.h" \
@@ -192,6 +193,7 @@ HEADERS = \
 	"time.h" \
 	"timespec.h" \
 	"to_lisp.h" \
+	"tommath.h" \
 	"tuple.h" \
 	"types.h" \
 	"u16.h" \
