@@ -17,21 +17,31 @@ bool window_animate (s_window *window)
 {
   s_timespec clock_monotonic;
   s_timespec delta;
+  const f64 expected_dt = 1.0 / 120.0;
+  s_timespec expected_delta;
   s_sequence *seq;
   f64 t;
-  if (clock_gettime(CLOCK_MONOTONIC, &clock_monotonic)) {
-    err_puts("window_animate: clock_gettime");
-    return false;
-  }
   if (window->sequence_pos >= window->sequence_count) {
     err_puts("window_animate: window->sequence_pos >="
              " window->sequence_count");
     return false;
   }
   seq = window->sequence + window->sequence_pos;
-  timespec_sub(&clock_monotonic, &seq->t0, &delta);
-  timespec_to_f64(&delta, &t);
-  seq->dt = t - seq->t;
+  while (1) {
+    if (clock_gettime(CLOCK_MONOTONIC, &clock_monotonic)) {
+      err_puts("window_animate: clock_gettime");
+      return false;
+    }
+    timespec_sub(&clock_monotonic, &seq->t0, &delta);
+    timespec_to_f64(&delta, &t);
+    seq->dt = t - seq->t;
+    if (seq->dt < expected_dt) {
+      timespec_init_f64(&expected_delta, expected_dt - seq->dt);
+      nanosleep(&expected_delta, NULL);
+    }
+    else
+      break;
+  }
   seq->frame++;
   seq->t = t;
   /* printf("window_animate: %f\n", t); */
