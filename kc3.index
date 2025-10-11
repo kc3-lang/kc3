@@ -1144,6 +1144,7 @@ libkc3/timespec.c
 libkc3/timespec.h
 libkc3/to_lisp.c
 libkc3/to_lisp.h
+libkc3/tommath.h
 libkc3/tuple.c
 libkc3/tuple.h
 libkc3/types.h
@@ -2143,6 +2144,7 @@ window/egl/demo/sources.sh
 window/egl/demo/toasters.c
 window/egl/demo/toasters.h
 window/egl/demo/update_sources
+window/egl/demo/window_egl_demo.c
 window/egl/demo/window_egl_demo.h
 window/egl/drm/Makefile
 window/egl/drm/configure
@@ -2195,6 +2197,8 @@ window/sdl2/demo/lightspeed.c
 window/sdl2/demo/lightspeed.h
 window/sdl2/demo/macos/Makefile
 window/sdl2/demo/macos/configure
+window/sdl2/demo/macos/kc3_window_sdl2_demo.app/Contents/MacOS/kc3_window_sdl2_demo.sh
+window/sdl2/demo/macos/kc3_window_sdl2_demo_debug.app/Contents/MacOS/kc3_window_sdl2_demo_debug.sh
 window/sdl2/demo/mandelbrot_f128.c
 window/sdl2/demo/mandelbrot_f128.h
 window/sdl2/demo/matrix.c
