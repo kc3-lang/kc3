@@ -104,6 +104,7 @@
 #include "sym.h"
 #include "tag.h"
 #include "time.h"
+#include "timespec.h"
 #include "tuple.h"
 #include "u8.h"
 #include "u16.h"
