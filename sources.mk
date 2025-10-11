@@ -1121,6 +1121,7 @@ KC3_C_SOURCES = \
 	"window/egl/demo/matrix.h" \
 	"window/egl/demo/toasters.c" \
 	"window/egl/demo/toasters.h" \
+	"window/egl/demo/window_egl_demo.c" \
 	"window/egl/demo/window_egl_demo.h" \
 	"window/egl/drm/demo/window_egl_drm_demo.c" \
 	"window/egl/drm/demo/window_egl_drm_demo.h" \
@@ -1627,6 +1628,10 @@ KC3_OBJC_SOURCES = \
 	"window/cairo/quartz/window_cairo_quartz_app_delegate.m" \
 	"window/cairo/quartz/window_cairo_quartz_view.m" \
 	"window/cairo/quartz/window_cairo_quartz_view_controller.m" \
+
+KC3_SH_SOURCES = \
+	"window/sdl2/demo/macos/kc3_window_sdl2_demo.app/Contents/MacOS/kc3_window_sdl2_demo.sh" \
+	"window/sdl2/demo/macos/kc3_window_sdl2_demo_debug.app/Contents/MacOS/kc3_window_sdl2_demo_debug.sh" \
 
 KC3_TEST_SOURCES = \
 	"test/buf_parse_test_su.rb" \
