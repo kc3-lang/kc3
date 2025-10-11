@@ -23,7 +23,7 @@
 # include <sys/sysctl.h>
 #endif
 
-#if defined(__NetBSD__)
+#if defined(__NetBSD__) || defined(__APPLE__)
 # include <sys/param.h>
 # define HOST_NAME_MAX MAXHOSTNAMELEN
 #endif
