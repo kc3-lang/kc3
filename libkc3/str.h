@@ -155,6 +155,7 @@ sw            str_peek_u16 (const s_str *str, u16 *dest);
 sw            str_peek_u32 (const s_str *str, u32 *dest);
 sw            str_peek_u64 (const s_str *str, u64 *dest);
 sw            str_position_1 (const s_str *str, const char *token);
+sw            str_position_str (const s_str *str, const s_str *token);
 sw            str_rindex_character (const s_str *str, character c,
                                     sw start, sw end);
 s_tag *       str_size (const s_str *str, s_tag *dest);

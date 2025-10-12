@@ -76,3 +76,5 @@ add {Str, :symbol, Str.is_utf8?}
 replace {Str.is_utf8?, :symbol_value, cfn Bool "str_is_utf8" (Str)}
 add {Str, :symbol, Str.character_is_reserved?}
 replace {Str.character_is_reserved?, :symbol_value, cfn Bool "str_character_is_reserved" (Character)}
+add {Str, :symbol, Str.position_str}
+replace {Str.position_str, :symbol_value, cfn Sw "str_position_str" (Str, Str)}

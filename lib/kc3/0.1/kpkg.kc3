@@ -228,6 +228,8 @@ defmodule Kpkg do
             result = Kpkg.package_clean(pkg, tree, arch)
           ["--tree", tree_arg | rest] ->
             tree = ^ tree_arg
+          ["uninstall" | rest] ->
+            result = Kpkg.uninstall(pkg, tree, arch)
           _ ->
             puts("kpkg: unknown argument: #{args}")
             result = 1
@@ -577,8 +579,11 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     File.ensure_directory(pkg_path, Kpkg.umask)
     files = File.list_recursive(destdir_prefix)
     manifest = str(List.map(files, fn (file_path) {
-      checksum = File.sha512_base64url(file_path)
-      "#{checksum} #{file_path}\n"
+      if ! File.is_directory?(file_path) do
+        checksum = File.sha512_base64url(file_path)
+        rel_path = Str.slice(file_path, Str.size(destdir_prefix) + 1, -1)
+        "#{checksum} #{rel_path}\n"
+      end
     }))
     File.write_str(manifest_file, manifest)
     Kpkg.exec(["tar", "-C", destdir_prefix, "-czf", pkg_file, "."])
@@ -616,15 +621,50 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     end
     Kpkg.package(pkg, tree, arch)
     pkg_path = package_path(pkg, tree, arch)
-    pkg_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.tar.gz"
+    pkg_name = "#{pkg.name}-#{tree}-#{arch}"
+    pkg_pathname = "#{pkg_path}/#{pkg_name}"
+    pkg_file = "#{pkg_pathname}.tar.gz"
+    manifest_file = "#{pkg_pathname}.manifest"
     prefix = Kpkg.prefix_dir(arch)
     installed_path = Kpkg.installed_db_path(pkg, tree, arch)
     installed_dir = File.dirname(installed_path)
     File.ensure_directory(prefix, Kpkg.umask)
     File.ensure_directory(installed_dir, Kpkg.umask)
     Kpkg.exec(["tar", "-C", prefix, "-xzf", pkg_file])
-    Kpkg.exec(["touch", installed_path])
+    Kpkg.exec(["cp", manifest_file, installed_path])
     Kpkg.log_call("install #{pkg.name} #{tree} #{arch}: OK")
+    0
+  }
+
+  def uninstall = fn (pkg, tree, arch) {
+    Kpkg.log_call("uninstall #{pkg.name} #{tree} #{arch}")
+    if ! Kpkg.is_installed?(pkg, tree, arch) do
+      return 0
+    end
+    prefix = Kpkg.prefix_dir(arch)
+    pkg_path = package_path(pkg, tree, arch)
+    pkg_name = "#{pkg.name}-#{tree}-#{arch}"
+    pkg_pathname = "#{pkg_path}/#{pkg_name}"
+    installed_path = Kpkg.installed_db_path(pkg, tree, arch)
+    installed = File.read_all(installed_path)
+    List.each(Str.split(installed, "\n"), fn (line) {
+      if (line != "") do
+        pos = Str.position_str(line, " ")
+        hash = Str.slice(line, 0, pos)
+        filename = "#{prefix}/#{Str.slice(line, pos + 1, -1)}"
+        if File.exists?(filename) do
+          if File.sha512_base64url(filename) == hash do
+            Kpkg.exec(["rm", "-f", filename])
+          else
+            puts("kpkg: uninstall: checksum changed: #{filename}")
+          end
+        else
+          puts("kpkg: uninstall: file was removed: #{filename}")
+        end
+      end
+    })
+    Kpkg.exec(["rm", "-f", installed_path])
+    Kpkg.log_call("uninstall #{pkg.name} #{tree} #{arch}: OK")
     0
   }
 

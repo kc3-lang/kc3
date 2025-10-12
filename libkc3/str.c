@@ -1566,6 +1566,28 @@ sw str_position_1 (const s_str *str, const char *token)
       return -1;
     result += r;
   }
+  return -1;
+}
+
+sw str_position_str (const s_str *str, const s_str *token)
+{
+  character c;
+  sw r;
+  sw result = 0;
+  s_str s;
+  assert(str);
+  assert(token);
+  s = *str;
+  while (1) {
+    if (s.size < token->size)
+      return -1;
+    if (! memcmp(s.ptr.pchar, token->ptr.pchar, token->size))
+      return result;
+    if ((r = str_read_character_utf8(&s, &c)) < 0)
+      return -1;
+    result += r;
+  }
+  return -1;
 }
 
 sw str_read_u8 (s_str *str, u8 *c)
