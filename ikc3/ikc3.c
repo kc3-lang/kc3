@@ -35,9 +35,6 @@
 
 #define BUFSZ 0x10000
 
-const char  *g_env_argv0_default = PROG;
-const char  *g_env_argv0_dir_default = PREFIX;
-
 static bool         g_client = false;
 static s_str        g_host = {0};
 static s_str        g_port = {0};
@@ -636,6 +633,8 @@ int main (int argc, char **argv)
   sw r = 0;
   if (argc < 1)
     return usage("ikc3");
+  g_env_argv0_default = PROG;
+  g_env_argv0_dir_default = PREFIX;
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
   env = env_global();

@@ -18,9 +18,6 @@
 
 int usage (char *argv0);
 
-const char *g_env_argv0_default = PROG;
-const char *g_env_argv0_dir_default = PREFIX;
-
 sw buf_ignore_character (s_buf *buf)
 {
   u8 b;
@@ -104,6 +101,8 @@ int main (int argc, char **argv)
   sw r;
   if (argc < 1)
     return usage(argv[0]);
+  g_env_argv0_default = PROG;
+  g_env_argv0_dir_default = PREFIX;
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
   env = env_global();
