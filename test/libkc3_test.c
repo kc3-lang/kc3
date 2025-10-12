@@ -54,11 +54,10 @@ void tag_test (void);
 void tuple_test (void);
 void types_test (void);
 
-const char *g_env_argv0_default = PROG;
-const char *g_env_argv0_dir_default = PREFIX;
-
 int main (int argc, char **argv)
 {
+  g_env_argv0_default = PROG;
+  g_env_argv0_dir_default = PREFIX;
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
   test_init(env_global()->argv[0], &argc, &argv);
