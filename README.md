@@ -143,6 +143,7 @@ There are now four full applications written in KC3 that we know of :
 
   - kpkg - KC3 package manager
     - Argument parsing as a `while` loop
+    - Added __libmd__, __libbsd__ and __kc3__ repo definitions
 
 
 ## Discord invite
