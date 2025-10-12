@@ -210,6 +210,10 @@ defmodule Kpkg do
             result = Kpkg.configure_clean(pkg, tree, arch)
           ["dependencies" | rest] ->
             puts(Kpkg.dependencies(pkg))
+          ["fake" | rest] ->
+            result = Kpkg.fake(pkg, tree, arch)
+          ["fake-clean" | rest] ->
+            result = Kpkg.fake_clean(pkg, tree, arch)
           ["info" | rest] ->
             result = Kpkg.info(pkg, tree, arch)
           ["install" | rest] ->
@@ -218,6 +222,10 @@ defmodule Kpkg do
             result = Kpkg.install_build_dependencies(pkg, tree)
           ["install-deps" | rest] ->
             result = Kpkg.install_dependencies(pkg, tree, arch)
+          ["package" | rest] ->
+            result = Kpkg.package(pkg, tree, arch)
+          ["package-clean" | rest] ->
+            result = Kpkg.package_clean(pkg, tree, arch)
           ["--tree", tree_arg | rest] ->
             tree = ^ tree_arg
           _ ->
@@ -255,6 +263,9 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     configure-clean      remove configure-done tag
     build                run parallel build
     clean-build          remove object files
+   #{title}Package commands :#{reset}
+    fake                 fake installation just before packaging
+    package              create manifest, package and checksum
    #{title}Install commands :#{reset}
     install              install package
 🐢 #{title}Misc commands :#{reset}
@@ -322,6 +333,10 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     "#{Kpkg.dir()}/arch/#{arch}/destdir/#{pkg.dir}/#{tree}"
   }
 
+  def installed_db_path = fn (pkg, tree, arch) {
+    "#{Kpkg.dir()}/var/db/kpkg/installed/#{arch}/#{pkg.name}-#{tree}"
+  }
+
   ## Internal API
 
   def exec = fn (cmd) {
@@ -354,7 +369,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   ## Main API - sources from git
 
   def autogen = fn (pkg, tree) {
-    log_call("autogen #{pkg.name} #{tree}")
+    Kpkg.log_call("autogen #{pkg.name} #{tree}")
     Kpkg.checkout(pkg, tree)
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
     if File.exists?(pkg_src_dir + "/autogen.sh") do
@@ -367,7 +382,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   }
 
   def checkout = fn (pkg, tree) {
-    log_call("checkout #{pkg.name} #{tree}")
+    Kpkg.log_call("checkout #{pkg.name} #{tree}")
     Kpkg.clone(pkg)
     pkg_git_dir = Kpkg.git_dir(pkg) + "/.git"
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
@@ -383,7 +398,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   }
 
   def checkout_clean = fn (pkg, tree) {
-    log_call("checkout_clean #{pkg.name} #{tree}")
+    Kpkg.log_call("checkout_clean #{pkg.name} #{tree}")
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
     if File.is_directory?(pkg_src_dir) do
       Kpkg.exec(["rm", "-rf", pkg_src_dir])
@@ -392,7 +407,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   }
 
   def clone = fn (pkg) {
-    log_call("clone #{pkg.name}")
+    Kpkg.log_call("clone #{pkg.name}")
     pkg_git_dir = Kpkg.git_dir(pkg)
     if ! File.is_directory?(pkg_git_dir) do
       Kpkg.exec(["mkdir", "-p", Kpkg.git_parent_dir(pkg)])
@@ -406,7 +421,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   }
 
   def clone_clean = fn (pkg) {
-    log_call("clone_clean #{pkg.name}")
+    Kpkg.log_call("clone_clean #{pkg.name}")
     pkg_git_dir = Kpkg.git_dir(pkg)
     if File.is_directory?(pkg_git_dir) do
       Kpkg.exec(["rm", "-rf", pkg_git_dir])
@@ -417,41 +432,41 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   ## Main API - dependencies
 
   def build_dependencies = fn (pkg) {
-    log_call("build_dependencies #{pkg.name}")
+    Kpkg.log_call("build_dependencies #{pkg.name}")
     deps = Kpkg.resolve_dependencies(pkg, :build_depends_on)
-    log_call("build_dependencies #{pkg.name}: #{deps}")
+    Kpkg.log_call("build_dependencies #{pkg.name}: #{deps}")
     deps
   }
 
   def dependencies = fn (pkg) {
-    log_call("dependencies #{pkg.name}")
+    Kpkg.log_call("dependencies #{pkg.name}")
     deps = Kpkg.resolve_dependencies(pkg, :depends_on)
-    log_call("dependencies #{pkg.name}: #{deps}")
+    Kpkg.log_call("dependencies #{pkg.name}: #{deps}")
     deps
   }
 
   def install_build_dependencies = fn (pkg, tree) {
-    log_call("install_build_dependencies #{pkg.name} #{tree}")
+    Kpkg.log_call("install_build_dependencies #{pkg.name} #{tree}")
     deps = Kpkg.build_dependencies(pkg)
     List.each(deps, fn ({dep_name, dep_tree}) {
       dep_pkg = Kpkg.get_package_or_die(dep_name)
       Kpkg.install(dep_pkg, dep_tree, Kpkg.local_arch)
     })
-    log_call("install_build_dependencies #{pkg.name} #{tree}: OK")
+    Kpkg.log_call("install_build_dependencies #{pkg.name} #{tree}: OK")
   }
 
   def install_dependencies = fn (pkg, tree, arch) {
-    log_call("install_dependencies #{pkg.name} #{tree} #{arch}")
+    Kpkg.log_call("install_dependencies #{pkg.name} #{tree} #{arch}")
     deps = Kpkg.dependencies(pkg)
     List.each(deps, fn ({dep_name, dep_tree}) {
       dep_pkg = Kpkg.get_package_or_die(dep_name)
       Kpkg.install(dep_pkg, dep_tree, arch)
     })
-    log_call("install_dependencies #{pkg.name} #{tree} #{arch}: OK")
+    Kpkg.log_call("install_dependencies #{pkg.name} #{tree} #{arch}: OK")
   }
 
   def resolve_dependencies = fn (pkg, sym) {
-    log_call("resolve_dependencies #{pkg.name} #{sym}")
+    Kpkg.log_call("resolve_dependencies #{pkg.name} #{sym}")
     list = pkg[sym]
     pkg_tree_tuple_list = []
     while list != [] do
@@ -474,14 +489,14 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
       end
       list = List.append(rest, dep_pkg[sym])
     end
-    log_call("resolve_dependencies #{pkg.name} #{sym}: #{pkg_tree_tuple_list}")
+    Kpkg.log_call("resolve_dependencies #{pkg.name} #{sym}: #{pkg_tree_tuple_list}")
     pkg_tree_tuple_list
   }
 
   ## Main API - build
 
   def build = fn (pkg, tree, arch) {
-    log_call("build #{pkg.name} #{tree} #{arch}")
+    Kpkg.log_call("build #{pkg.name} #{tree} #{arch}")
     Kpkg.configure(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     Kpkg.exec([pkg.make, "-C", build_dir])
@@ -489,7 +504,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   }
 
   def configure = fn (pkg, tree, arch) {
-    log_call("configure #{pkg.name} #{tree} #{arch}")
+    Kpkg.log_call("configure #{pkg.name} #{tree} #{arch}")
     Kpkg.checkout(pkg, tree)
     Kpkg.install_build_dependencies(pkg, tree)
     Kpkg.install_dependencies(pkg, tree, arch)
@@ -509,7 +524,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   }
 
   def configure_clean = fn (pkg, tree, arch) {
-    log_call("configure-clean #{pkg.name} #{tree} #{arch}")
+    Kpkg.log_call("configure-clean #{pkg.name} #{tree} #{arch}")
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     configure_done = "#{build_dir}/.kpkg_configure_done"
     if File.access?(configure_done, :r) do
@@ -521,7 +536,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   ## Main API - package
 
   def fake = fn (pkg, tree, arch) {
-    log_call("fake #{pkg.name} #{tree} #{arch}")
+    Kpkg.log_call("fake #{pkg.name} #{tree} #{arch}")
     Kpkg.build(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     destdir = Kpkg.destdir(pkg, tree, arch)
@@ -533,38 +548,89 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     0
   }
 
+  def fake_clean = fn (pkg, tree, arch) {
+    Kpkg.log_call("fake_clean #{pkg.name} #{tree} #{arch}")
+    destdir = Kpkg.destdir(pkg, tree, arch)
+    if File.exists?(destdir) do
+      Kpkg.exec(["rm", "-rf", destdir])
+    end
+    0
+  }
+
   def package = fn (pkg, tree, arch) {
-    log_call("package #{pkg.name} #{tree} #{arch}")
-    pkg_path = package_path(pkg, tree, arch)
+    Kpkg.log_call("package #{pkg.name} #{tree} #{arch}")
+    pkg_path = Kpkg.package_path(pkg, tree, arch)
     pkg_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.tar.gz"
+    manifest_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.manifest"
+    checksum_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.sha512"
     if File.exists?(pkg_file) do
       return 0
     end
     Kpkg.fake(pkg, tree, arch)
     destdir = Kpkg.destdir(pkg, tree, arch)
     prefix = Kpkg.prefix_dir(arch)
+    destdir_prefix = "#{destdir}#{prefix}"
     File.ensure_directory(pkg_path, Kpkg.umask)
-    Kpkg.exec(["tar", "-C", "#{destdir}#{prefix}", "-czf", pkg_file, "."])
+    files = File.list_recursive(destdir_prefix)
+    manifest = List.join(List.map(files, fn (file_path) {
+      full_path = "#{destdir_prefix}/#{file_path}"
+      if File.is_directory?(full_path) do
+        nil
+      else
+        checksum = File.sha512_base64url(full_path)
+        "#{checksum}  #{file_path}"
+      end
+    }), "\n")
+    File.write(manifest_file, manifest)
+    Kpkg.exec(["tar", "-C", destdir_prefix, "-czf", pkg_file, "."])
+    pkg_checksum = File.sha512_base64url(pkg_file)
+    File.write(checksum_file, pkg_checksum)
+    0
+  }
+
+  def package_clean = fn (pkg, tree, arch) {
+    Kpkg.log_call("package_clean #{pkg.name} #{tree} #{arch}")
+    pkg_path = package_path(pkg, tree, arch)
+    pkg_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.tar.gz"
+    manifest_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.manifest"
+    checksum_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.sha512"
+    if File.exists?(pkg_file) ||
+       File.exists?(manifest_file) ||
+       File.exists?(checksum_file) do
+      Kpkg.exec(["rm", "-f", pkg_file, manifest_file, checksum_file])
+    end
     0
   }
 
   ## Main API - install
 
+  def is_installed? = fn (pkg, tree, arch) {
+    installed_path = Kpkg.installed_db_path(pkg, tree, arch)
+    File.exists?(installed_path)
+  }
+
   def install = fn (pkg, tree, arch) {
-    log_call("install #{pkg.name} #{tree} #{arch}")
+    Kpkg.log_call("install #{pkg.name} #{tree} #{arch}")
+    if Kpkg.is_installed?(pkg, tree, arch) do
+      return 0
+    end
     Kpkg.package(pkg, tree, arch)
     pkg_path = package_path(pkg, tree, arch)
     pkg_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.tar.gz"
     prefix = Kpkg.prefix_dir(arch)
+    installed_path = Kpkg.installed_db_path(pkg, tree, arch)
+    installed_dir = File.dirname(installed_path)
     File.ensure_directory(prefix, Kpkg.umask)
+    File.ensure_directory(installed_dir, Kpkg.umask)
     Kpkg.exec(["tar", "-C", prefix, "-xzf", pkg_file])
+    Kpkg.exec(["touch", installed_path])
     0
   }
 
   ## Main API - misc
 
   def info = fn (pkg, tree, arch) {
-    log_call("info #{pkg.name} #{tree} #{arch}")
+    Kpkg.log_call("info #{pkg.name} #{tree} #{arch}")
     arch_local = Kpkg.arch_local()
     local_or_empty = if arch == arch_local do
       " (local)"
