@@ -109,6 +109,9 @@ There are now four full applications written in KC3 that we know of :
        - "ikc3: TLS server: listening on HOST PORT"
        - "ikc3: TLS server: client connected: HOST PORT TLS-1.3"
        - "ikc3: TLS client: connected to HOST PORT TLS-1.3"
+   - ship ikc3 as a standalone file that links to the right lib directory
+     on MacOS, this way you can open ikc3 using Finder in a Terminal.app
+     and the dynamic libraries will still be found
 
  - build system
    - use shipped `runj` as a git submodule to parallelize configure
@@ -126,6 +129,20 @@ There are now four full applications written in KC3 that we know of :
 
  - HTTPd
    - limit acceptor loop using defcounter
+   - achieved securelevel(2) after load_app() by moving all
+     `def*` into proper modules
+
+ - window
+   - OpenGLESv3
+     - Use [Angle](https://github.com/google/angle) GLESv3
+       implementation with Metal backend on MacOS. This provides
+       SDL2 with an EGL/GLESv3 driver on MacOS despite OpenGL support
+       being dropped by Apple.
+   - EGL backend
+     - VT-backend on Linux and OpenBSD using DRM KMS and GBM
+
+  - kpkg - KC3 package manager
+    - Argument parsing as a `while` loop
 
 
 ## Discord invite
@@ -144,7 +161,6 @@ to discover how to use KC3 for your own projects.
  - libkc3
    - env_init: find lib dir for /usr/local/lib/kc3/0.1/
  - HTTPd
-   - securelevel(2) after load_app()
    - OAuth2 / jwt
    - dynamic router
      - def_route(:get, "/user/:id/articles/*slug/edit", UserArticlesController.edit)
