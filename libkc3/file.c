@@ -25,6 +25,7 @@
 #include "buf_save.h"
 #include "config.h"
 #include "env.h"
+#include "error.h"
 #include "file.h"
 #include "io.h"
 #include "list.h"
@@ -303,6 +304,18 @@ bool * file_is_directory (const s_str *path, bool *dest)
   return dest;
 }
 
+bool file_is_directory_1 (const char *path)
+{
+  s_str str;
+  bool tmp;
+  str_init_1(&str, NULL, path);
+  if (! file_is_directory(&str, &tmp)) {
+    ERROR("file_is_directory_1: file_is_directory");
+    abort();
+  }
+  return tmp;
+}
+
 #if ! (defined(WIN32) || defined(WIN64))
 bool file_link (const s_str *from, const s_str *to)
 {
@@ -351,6 +364,79 @@ s_list ** file_list (const s_str *path, s_list **dest)
   closedir(dir);
   *dest = tmp;
   return dest;
+}
+
+s_list ** file_list_recursive (const s_str *path, s_list **dest)
+{
+  char b[PATH_MAX];
+  u32  b_pos = 0;
+  DIR           *dir;
+  struct dirent *dirent;
+  s32 e;
+  s_list  *in;
+  s_list **in_tail;
+  sw len;
+  s_list  *tmp;
+  s_list **tmp_tail;
+  tmp = NULL;
+  tmp_tail = &tmp;
+  if (! (in = list_new_str(NULL, path->size, path->ptr.p, NULL)))
+    return NULL;
+  in_tail = &in->next.data.plist;
+  while (in) {
+    if (in->tag.type != TAG_STR) {
+      ERROR("not an Str");
+      return NULL;
+    }
+    if (in->tag.data.str.size >= PATH_MAX - 2) {
+      ERROR("path is longer than PATH_MAX 1");
+      return NULL;
+    }
+    memcpy(b, in->tag.data.str.ptr.pchar, in->tag.data.str.size);
+    b_pos = in->tag.data.str.size;
+    b[b_pos++] = '/';
+    b[b_pos] = 0;
+    dir = opendir(in->tag.data.str.ptr.pchar);
+    if (! dir) {
+      e = errno;
+      err_write_1("file_list_recursive: opendir: ");
+      err_write_1(strerror(e));
+      err_write_1(": ");
+      err_inspect_str(path);
+      goto ko;
+    }
+    while ((dirent = readdir(dir))) {
+      if (dirent->d_name[0] == '.')
+        continue;
+      len = strlen(dirent->d_name);
+      if (b_pos + len >= PATH_MAX) {
+        ERROR("path is longer than PATH_MAX 2");
+        goto ko;
+      }
+      memcpy(b + b_pos, dirent->d_name, len);
+      b[b_pos + len] = 0;
+      if (file_is_directory_1(b)) {
+        if (! (*in_tail = list_new_str_1_alloc(b, NULL)))
+          goto ko;
+        in_tail = &(*in_tail)->next.data.plist;
+      }
+      else {
+        if (! (*tmp_tail = list_new_str_1_alloc(b, NULL)))
+          goto ko;
+        tmp_tail = &(*tmp_tail)->next.data.plist;
+      }
+    }
+    closedir(dir);
+    dir = NULL;
+    in = list_delete(in);
+  }
+  *dest = tmp;
+  return dest;
+ ko:
+  list_delete_all(tmp);
+  list_delete_all(in);
+  closedir(dir);
+  return NULL;
 }
 
 s_time * file_mtime (const s_str *path, s_time *dest)

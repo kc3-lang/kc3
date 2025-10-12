@@ -38,6 +38,8 @@ defmodule File do
 
   def list = cfn List "file_list" (Str, Result)
 
+  def list_recursive = cfn List "file_list_recursive" (Str, Result)
+
 #  def list_recursive = fn {
 #    (dir) { list_recursive(dir, "", []) }
 #    ([], dir, acc) { List.sort(acc) }
