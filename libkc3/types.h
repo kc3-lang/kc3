@@ -243,6 +243,7 @@ typedef struct ratio                   s_ratio;
 typedef struct rpc_response            s_rpc_response;
 typedef struct rwlock                  s_rwlock;
 typedef struct sequence                s_sequence;
+typedef struct sha512                  s_sha512;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
 typedef struct struct_type             s_struct_type;
@@ -418,6 +419,12 @@ struct rwlock {
   pthread_rwlock_t rwlock;
   sw               count;
   pthread_t        thread;
+};
+
+struct sha512 {
+  u64 len;
+  u64 h[8];
+  u8  buf[128];
 };
 
 struct struct_ {

@@ -46,7 +46,7 @@ s_str * str_init_1_alloc (s_str *str, const char *p);
 s_str * str_init_alloc (s_str *str, uw size);
 s_str * str_init_alloc_copy (s_str *str, uw size, const char *p);
 PROTOTYPE_STR_INIT_STRUCT(array);
-PROTOTYPE_STR_INIT(inspect_buf, const s_buf *);
+s_str * str_init_base64url (s_str *str, void *data, uw size);
 s_str * str_init_cast (s_str *str, const s_sym * const *type,
                        const s_tag *tag);
 s_str * str_init_concatenate (s_str *str, const s_str *a,
@@ -70,6 +70,7 @@ PROTOTYPE_STR_INIT_STRUCT(call);
 PROTOTYPE_STR_INIT_STRUCT(callable);
 s_str * str_init_ftime (s_str *str, s_time *time, const s_str *format);
 PROTOTYPE_STR_INIT_STRUCT(ident);
+PROTOTYPE_STR_INIT(inspect_buf, const s_buf *);
 s_str * str_init_inspect_str (s_str *str, const s_str *src);
 PROTOTYPE_STR_INIT_STRUCT(integer);
 PROTOTYPE_STR_INIT(list, const s_list *);

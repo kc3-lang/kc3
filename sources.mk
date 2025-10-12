@@ -714,6 +714,8 @@ KC3_C_SOURCES = \
 	"libkc3/sh.h" \
 	"libkc3/sha1.c" \
 	"libkc3/sha1.h" \
+	"libkc3/sha512.c" \
+	"libkc3/sha512.h" \
 	"libkc3/sign.c" \
 	"libkc3/sign.h" \
 	"libkc3/skiplist.c.in" \
@@ -1537,7 +1539,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/kc3/op.kc3" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
 	"lib/kc3/0.1/kc3/ops.kc3" \
-	"lib/kc3/0.1/kpkg.dump" \
 	"lib/kc3/0.1/kpkg.kc3" \
 	"lib/kc3/0.1/kpkg/main.kc3" \
 	"lib/kc3/0.1/kpkg/package.kc3" \
@@ -1593,7 +1594,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/thread.kc3" \
 	"lib/kc3/0.1/time.kc3" \
 	"lib/kc3/0.1/tls.kc3" \
-	"lib/kc3/0.1/tls/buf.kc3" \
 	"lib/kc3/0.1/tls/client.kc3" \
 	"lib/kc3/0.1/tls/config.kc3" \
 	"lib/kc3/0.1/tls/server.kc3" \

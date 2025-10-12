@@ -29,6 +29,8 @@
 #include "io.h"
 #include "list.h"
 #include "plist.h"
+#include "sha1.h"
+#include "sha512.h"
 #include "str.h"
 #include "sym.h"
 #include "tag.h"
@@ -692,6 +694,80 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
     path = list_next(path);
   }
   return NULL;
+}
+
+// dest should be 20 bytes long
+u8 * file_sha1 (const s_str *path, u8 *dest)
+{
+  u8 buf[BUF_SIZE];
+  sw e;
+  t_fd fd = -1;
+  sw r;
+  SHA1_CTX sha1;
+  if (! file_open_r(path, &fd))
+    return NULL;
+  SHA1Init(&sha1);
+  while (1) {
+    if ((r = read(fd, buf, sizeof(buf))) < 0) {
+      e = errno;
+      err_write_1("file_sha1: read: ");
+      err_write_1(strerror(e));
+      err_write_1("\n");
+      assert(! "file_sha1: read");
+      return NULL;
+    }
+    if (! r)
+      break;
+    SHA1Update(&sha1, buf, r);
+  }
+  close(fd);
+  SHA1Final(dest, &sha1);
+  return dest;
+}
+
+s_str * file_sha1_base64url (const s_str *path, s_str *dest)
+{
+  u8 sha1[20];
+  if (! file_sha1(path, sha1))
+    return NULL;
+  return str_init_base64url(dest, sha1, 20);
+}
+
+// dest should be 64 bytes long
+u8 * file_sha512 (const s_str *path, u8 *dest)
+{
+  u8 buf[BUF_SIZE];
+  sw e;
+  t_fd fd = -1;
+  sw r;
+  s_sha512 sha512 = {0};
+  if (! file_open_r(path, &fd))
+    return NULL;
+  sha512_init(&sha512);
+  while (1) {
+    if ((r = read(fd, buf, sizeof(buf))) < 0) {
+      e = errno;
+      err_write_1("file_sha512: read: ");
+      err_write_1(strerror(e));
+      err_write_1("\n");
+      assert(! "file_sha512: read");
+      return NULL;
+    }
+    if (! r)
+      break;
+    sha512_update(&sha512, buf, r);
+  }
+  close(fd);
+  sha512_sum(&sha512, dest);
+  return dest;
+}
+
+s_str * file_sha512_base64url (const s_str *path, s_str *dest)
+{
+  u8 sha512[64];
+  if (! file_sha512(path, sha512))
+    return NULL;
+  return str_init_base64url(dest, sha512, 64);
 }
 
 s_file_stat * file_stat (const s_str *path, s_file_stat *dest)

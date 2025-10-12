@@ -445,6 +445,48 @@ s_str * str_init_alloc_copy (s_str *str, uw size, const char *p)
 }
 
 DEF_STR_INIT_STRUCT(array)
+
+s_str * str_init_base64url (s_str *str, void *data, uw size)
+{
+  const char *base = g_kc3_base64url.ptr.pchar;
+  char *dest;
+  uw    dest_size;
+  uw i;
+  uw j;
+  u32 n;
+  const u8 *src;
+  assert(str);
+  assert(data || ! size);
+  if (! size)
+    return str_init_empty(str);
+  src = data;
+  dest_size = ((size + 2) / 3) * 4;
+  if (! (dest = alloc(dest_size + 1)))
+    return NULL;
+  i = 0;
+  j = 0;
+  while (i + 2 < size) {
+    n = (src[i] << 16) | (src[i + 1] << 8) | src[i + 2];
+    dest[j]     = base[(n >> 18) & 63];
+    dest[j + 1] = g_kc3_base64url.ptr.pchar[(n >> 12) & 63];
+    dest[j + 2] = g_kc3_base64url.ptr.pchar[(n >> 6) & 63];
+    dest[j + 3] = g_kc3_base64url.ptr.pchar[n & 63];
+    i += 3;
+    j += 4;
+  }
+  if (i < size) {
+    n = src[i] << 16;
+    if (i + 1 < size)
+      n |= src[i + 1] << 8;
+    dest[j++] = g_kc3_base64url.ptr.pchar[(n >> 18) & 63];
+    dest[j++] = g_kc3_base64url.ptr.pchar[(n >> 12) & 63];
+    if (i + 1 < size)
+      dest[j++] = g_kc3_base64url.ptr.pchar[(n >> 6) & 63];
+  }
+  dest[j] = 0;
+  return str_init(str, dest, j, dest);
+}
+
 DEF_STR_INIT(bool, bool)
 DEF_STR_INIT_STRUCT(call)
 DEF_STR_INIT_STRUCT(callable)
