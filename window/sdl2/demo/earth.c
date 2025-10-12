@@ -43,16 +43,19 @@ bool earth_load (s_sequence *seq)
                   sphere_radius);
   gl_object_transform(&sphere->object, &matrix);
   gl_object_update(&sphere->object);
-  if (! tag_map(&seq->tag, 3))
+  if (! tag_map(&seq->tag, 4))
     return false;
   map = &seq->tag.data.map;
   tag_init_psym(             map->key   + 0, sym_1("camera"));
   tag_init_ptr_free(         map->value + 0, camera);
   tag_init_psym(             map->key   + 1,
                 sym_1("camera_rot_x_speed"));
-  tag_init_f64(              map->value + 1, 0.01);
-  tag_init_psym(             map->key   + 2, sym_1("sphere"));
-  tag_init_pstruct_with_data(map->value + 2, sym_1("GL.Sphere"),
+  tag_init_f64(              map->value + 1, 0.1);
+  tag_init_psym(             map->key   + 2,
+                sym_1("earth_rot_z_speed"));
+  tag_init_f64(              map->value + 2, 0.1);
+  tag_init_psym(             map->key   + 3, sym_1("sphere"));
+  tag_init_pstruct_with_data(map->value + 3, sym_1("GL.Sphere"),
                              sphere, false);
   return true;
 }
@@ -61,6 +64,7 @@ bool earth_render (s_sequence *seq)
 {
   s_gl_camera *camera;
   f64         *camera_rot_x_speed;
+  f64         *earth_rot_z_speed;
   s_map *map;
   s_gl_sphere *sphere;
   s_window_sdl2 *window;
@@ -68,30 +72,33 @@ bool earth_render (s_sequence *seq)
   window = seq->window;
   assert(window);
   if (! seq || seq->tag.type != TAG_MAP ||
-      seq->tag.data.map.count != 3) {
+      seq->tag.data.map.count != 4) {
     err_puts("earth_render: invalid seq->tag");
     return false;
   }
   map = &seq->tag.data.map;
   if (map->value[0].type != TAG_PTR_FREE ||
       map->value[1].type != TAG_F64 ||
-      map->value[2].type != TAG_PSTRUCT) {
+      map->value[2].type != TAG_F64 ||
+      map->value[3].type != TAG_PSTRUCT) {
     err_puts("earth_render: invalid map");
     return false;
   }
   camera             =  map->value[0].data.ptr_free.p;
   camera_rot_x_speed = &map->value[1].data.f64;
-  sphere             =  map->value[2].data.pstruct->data;
+  earth_rot_z_speed  = &map->value[2].data.f64;
+  sphere             =  map->value[3].data.pstruct->data;
   gl_camera_set_aspect_ratio(camera, window->w, window->h);
-  camera->rotation.x += seq->dt * (*camera_rot_x_speed) *
-    M_PI * 2.0f;
+  camera->light_count = 1;
+  camera->light_pos[0] = (s_vec4) { -20.0f, 0.0f, 0.0f, 0.0f };
+  camera->light_color[0] = (s_rgb) { 1.0f, 0.98f, 0.95f };
+  camera->rotation.x += seq->dt * (*camera_rot_x_speed) * M_PI * 2.0f;
   if (camera->rotation.x > M_PI || camera->rotation.x < 0)
     *camera_rot_x_speed *= -1.0;
-  camera->rotation.z += seq->dt * EARTH_CAMERA_ROTATION_Z_SPEED *
-    M_PI * 2.0f;
-  camera->light_count = 1;
-  camera->light_pos[0] = (s_vec4) { 1.0f, 0.0f, 0.0f, 0.0f };
-  camera->light_color[0] = (s_rgb) { 1.0f, 0.98f, 0.95f };
+  camera->rotation.z = -0.3 * M_PI * 2.0f;
+  mat4_init_identity(&camera->model_matrix);
+  mat4_rotate_axis(&camera->model_matrix, seq->t * (*earth_rot_z_speed) *
+                   M_PI * 2.0f, &(s_vec3) { 0.0f, 0.0f, 1.0f });
   assert(glGetError() == GL_NO_ERROR);
   gl_camera_render(camera);
   assert(glGetError() == GL_NO_ERROR);

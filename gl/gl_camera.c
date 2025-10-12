@@ -22,154 +22,65 @@ static const char * g_gl_camera_vertex_shader_src =
   "in vec3 iNormal;\n"
   "in vec2 iTexCoord;\n"
   "out vec3 ioFragNormal;\n"
+  "out vec3 ioPos;\n"
   "out vec2 ioTexCoord;\n"
+  "out mat4 ioViewMat;\n"
   "uniform mat4 uProjectionMatrix;\n"
   "uniform mat4 uViewMatrix;\n"
   "uniform mat4 uModelMatrix;\n"
   "void main() {\n"
-  "  gl_Position = uProjectionMatrix * uViewMatrix * \n"
-  "                uModelMatrix * vec4(iPos, 1.0);\n"
-  "  ioTexCoord = iTexCoord;\n"
-  "  ioFragNormal = vec3(mat3(uModelMatrix) * iNormal);\n"
-  "}\n";
-/*
-"#version 300 es\n"
-  "precision highp float;\n"
-  "in vec3 iPos;\n"
-  "in vec3 iNormal;\n"
-  "in vec2 iTexCoord;\n"
-  "out vec3 ioNormal;\n"
-  "out vec3 ioPos;\n"
-  "out vec2 ioTexCoord;\n"
-  "uniform mat4 uProjectionMatrix;\n"
-  "uniform mat4 uViewMatrix;\n"
-  "uniform mat4 uModelMatrix;\n"
-  "void main () {\n"
-  "  gl_Position = uProjectionMatrix * uViewMatrix *\n"
-  "    uModelMatrix * vec4(iPos, 1.0);\n"
-  "  ioNormal = vec3(uViewMatrix * uModelMatrix * vec4(iNormal, 0.0));\n"
-  "  ioPos = (uViewMatrix * uModelMatrix * vec4(iPos, 1.0)).xyz;\n"
+  "  ioViewMat = uViewMatrix;\n"
+  "  gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(iPos, 1.0);\n"
+  "  ioFragNormal = vec3(mat3(uViewMatrix * uModelMatrix) * iNormal);\n"
+  "  ioPos = vec3(uViewMatrix * uModelMatrix * vec4(iPos, 1.0));\n"
   "  ioTexCoord = iTexCoord;\n"
   "}\n";
-*/
+
 static const char * g_gl_camera_fragment_shader_src =
   "#version 300 es\n"
   "precision highp float;\n"
+  "struct Light {\n"
+  "  vec4 position;\n"
+  "  vec4 intensity;\n"
+  "};\n"
   "in vec3 ioFragNormal;\n"
+  "in vec3 ioPos;\n"
   "in vec2 ioTexCoord;\n"
+  "in mat4 ioViewMat;\n"
   "out vec4 oFragColor;\n"
   "uniform vec4 uColor;\n"
   "uniform bool uEnableTex2D;\n"
   "uniform sampler2D uTex2D;\n"
-  "void main() {\n"
-  "  vec4 texColor = texture(uTex2D, ioTexCoord);\n"
-  "  if (uEnableTex2D) {\n"
-  "    oFragColor = vec4(texColor[0] * uColor[0],\n"
-  "                      texColor[1] * uColor[1],\n"
-  "                      texColor[2] * uColor[2],\n"
-  "                      texColor[3] * uColor[3]);\n"
-  "  }\n"
-  "  else\n"
-  "    oFragColor = uColor;\n"
-  "}\n";
-
-/*
-static const char * g_gl_camera_vertex_shader_src =
-  "#version 100\n"
-  "layout (location = 0) in vec3 iPos;\n"
-  "layout (location = 1) in vec3 iNormal;\n"
-  "layout (location = 2) in vec2 iTexCoord;\n"
-  "out vec3 ioNormal;\n"
-  "out vec3 ioPos;\n"
-  "out vec2 ioTexCoord;\n"
-  "uniform mat4 uProjectionMatrix;\n"
-  "uniform mat4 uViewMatrix;\n"
-  "uniform mat4 uModelMatrix;\n"
-  "\n"
-  "void main() {\n"
-  "  gl_Position = vec4(uProjectionMatrix * uViewMatrix *\n"
-  "                     uModelMatrix * vec4(iPos, 1.0));\n"
-  "  ioNormal = vec3(uViewMatrix * uModelMatrix * vec4(iNormal, 1.0));\n"
-  "  ioPos = (uViewMatrix * uModelMatrix * vec4(iPos, 1.0)).xyz;\n"
-  "  ioTexCoord = iTexCoord;\n"
-  "}\n";
-
-static const char * g_gl_camera_fragment_shader_src =
-  "#version 100\n"
-  "precision highp float;\n"
-  "const float PI = 3.141592653;\n"
-  "varying vec3 ioNormal;\n"
-  "varying vec3 ioPos;\n"
-  "varying vec2 ioTexCoord;\n"
-  "uniform bool uEnableTex2D;\n"
-  "uniform sampler2D uTex2D;\n"
+  "uniform Light uLight[128];\n"
   "uniform int uLightCount;\n"
-  "uniform vec4 uLightPos[16]; // Light position in cam. coords.\n"
-  "uniform vec3 uLightColor[16];\n"
-  "uniform struct MaterialInfo {\n"
-  "  float Rough; // Roughness\n"
-  "  bool Metal;  // Metallic (true) or dielectric (false)\n"
-  "  vec3 Color;  // Diffuse color for dielectrics, f0 for metallic\n"
-  "} uMaterial;\n"
-  "float ggxDistribution( float nDotH ) {\n"
-  "  float alpha2 = uMaterial.Rough * uMaterial.Rough *\n"
-  "                 uMaterial.Rough * uMaterial.Rough;\n"
-  "  float d = (nDotH * nDotH) * (alpha2 - 1) + 1;\n"
-  "  return alpha2 / (PI * d * d);\n"
-  "}\n"
-  "float geomSmith( float dotProd ) {\n"
-  "  float k = (uMaterial.Rough + 1.0) *\n"
-  "    (uMaterial.Rough + 1.0) / 8.0;\n"
-  "  float denom = dotProd * (1 - k) + k;\n"
-  "  return 1.0 / denom;\n"
-  "}\n"
-  "vec3 schlickFresnel( float lDotH ) {\n"
-  "  vec3 f0 = vec3(0.04);\n"
-  "  if( uMaterial.Metal ) {\n"
-  "    f0 = uMaterial.Color;\n"
-  "  }\n"
-  "  return f0 + (1 - f0) * pow(1.0 - lDotH, 5);\n"
-  "}\n"
-  "vec3 microfacetModel (int lightIdx, vec3 pos, vec3 n) {\n"
-  "  vec3 diffuseBrdf = vec3(0.0, 0.0, 0.0);  // Metallic\n"
-  "  if (! uMaterial.Metal) {\n"
-  "    diffuseBrdf = uMaterial.Color;\n"
-  "  }\n"
-  "  vec3 l = vec3(0.0);\n"
-  "  vec3 lightI = uLightColor[lightIdx];\n"
-  "  if (uLightPos[lightIdx].w == 0.0) {\n"
-  "    l = normalize(uLightPos[lightIdx].xyz);\n"
-  "  }\n"
-  "  else {\n"
-  "    l = uLightPos[lightIdx].xyz - pos;\n"
-  "    float dist = length(l);\n"
-  "    l = normalize(l);\n"
-  "    lightI /= dist * dist;\n"
-  "  }\n"
-  "  vec3 v = normalize(-pos);\n"
-  "  vec3 h = normalize(v + l);\n"
-  "  float nDotH = dot(n, h);\n"
-  "  float lDotH = dot(l, h);\n"
-  "  float nDotL = max(dot(n, l), 0.0);\n"
-  "  float nDotV = dot(n, v);\n"
-  "  vec3 specBrdf = 0.25 * ggxDistribution(nDotH) *\n"
-  "    schlickFresnel(lDotH) * geomSmith(nDotL) * geomSmith(nDotV);\n"
-  "  return (diffuseBrdf + PI * specBrdf) * lightI * nDotL;\n"
-  "}\n"
   "void main() {\n"
-  "  vec4 texColor = texture2D(uTex2D, ioTexCoord);\n"
-  "  gl_FragColor = vec4(uMaterial.Color, 1.0);\n"
-  "  if (uEnableTex2D)\n"
-  "    gl_FragColor *= texColor;\n"
-  "  vec3 sum = vec3(0);\n"
-  "  vec3 n = normalize(ioNormal);\n"
+  "  vec3 lightColor = vec3(0, 0, 0);\n"
+  "  vec3 normal = normalize(ioFragNormal);\n"
+  "  vec4 texColor = texture(uTex2D, ioTexCoord);\n"
   "  for (int i = 0; i < uLightCount; i++) {\n"
-  "    sum = sum + microfacetModel(i, ioPos, n);\n"
+  "    vec3 lightDir;\n"
+  "    if (uLight[i].position.w == 0.0)\n"
+  "      lightDir = normalize(vec3(ioViewMat * vec4(uLight[i].position.xyz, 1)));\n"  // directional
+  "    else\n"
+  "      lightDir = normalize(vec3(ioViewMat * vec4(uLight[i].position.xyz, 1)) - ioPos);\n"  // point
+  "    float diffuse = max(dot(normal, lightDir), 0.0);\n"
+  "    vec3 viewDir = normalize(-ioPos);\n"
+  "    vec3 halfDir = normalize(lightDir + viewDir);\n"
+  "    float specular = 0.0;\n"
+  "    if (diffuse > 0.0) {\n"
+  "      specular = pow(max(dot(normal, halfDir), 0.0), 16.0);\n"
+  "    }\n"
+  "    lightColor += (diffuse + specular) * uLight[i].intensity.rgb;\n"
   "  }\n"
-  "  sum = pow(sum, vec3(1.0 / 2.2));\n"
-  "  gl_FragColor *= vec4(sum, 1.0);\n"
+  "  oFragColor = uColor;\n"
+  "  if (uLightCount > 0) {\n"
+  "    oFragColor.r *= lightColor.r;\n"
+  "    oFragColor.g *= lightColor.g;\n"
+  "    oFragColor.b *= lightColor.b;\n"
+  "  }\n"
+  "  if (uEnableTex2D)\n"
+  "    oFragColor *= texColor;\n"
   "}\n";
-*/
 
 void gl_camera_bind_texture (s_gl_camera *camera, GLuint texture)
 {
@@ -305,21 +216,9 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
     glGetUniformLocation(camera->gl_shader_program,
                          "uTex2D");
   assert(glGetError() == GL_NO_ERROR);
-  camera->gl_ambiant_light_color_loc =
-    glGetUniformLocation(camera->gl_shader_program,
-                         "uAmbiantLightColor");
-  assert(glGetError() == GL_NO_ERROR);
   camera->gl_light_count_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uLightCount");
-  assert(glGetError() == GL_NO_ERROR);
-  camera->gl_light_pos_loc =
-    glGetUniformLocation(camera->gl_shader_program,
-                         "uLightPos");
-  assert(glGetError() == GL_NO_ERROR);
-  camera->gl_light_color_loc =
-    glGetUniformLocation(camera->gl_shader_program,
-                         "uLightColor");
   assert(glGetError() == GL_NO_ERROR);
   return camera;
 }
@@ -341,7 +240,6 @@ s_gl_camera * gl_camera_new (uw w, uw h)
 
 void gl_camera_render (s_gl_camera *camera)
 {
-  s_mat4 matrix;
   assert(camera);
   assert(glGetError() == GL_NO_ERROR);
   if (camera->gl_shader_program == 0) {
@@ -361,13 +259,6 @@ void gl_camera_render (s_gl_camera *camera)
                    &(s_vec3) { 0.0f, 1.0f, 0.0f });
   mat4_rotate_axis(&camera->view_matrix, camera->rotation.z,
                    &(s_vec3) { 0.0f, 0.0f, 1.0f });
-  mat4_init_identity(&camera->model_matrix);
-  mat4_init_copy(&matrix, &camera->view_matrix);
-  /*
-  for (int i = 0; i < camera->light_count; i++)
-    mat4_mult_vec3(&matrix, camera->light_pos + i,
-                   camera->light_pos_cam + i);
-  */
   glUseProgram(camera->gl_shader_program);
   assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(camera->gl_projection_matrix_loc, 1, GL_FALSE,
@@ -385,17 +276,28 @@ void gl_camera_render (s_gl_camera *camera)
   assert(glGetError() == GL_NO_ERROR);
   glUniform1i(camera->gl_tex2d_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
-  glUniform3fv(camera->gl_ambiant_light_color_loc, 1,
-               &camera->ambiant_light_color.r);
-  assert(glGetError() == GL_NO_ERROR);
   glUniform1i(camera->gl_light_count_loc, camera->light_count);
   assert(glGetError() == GL_NO_ERROR);
-  glUniform4fv(camera->gl_light_pos_loc, camera->light_count,
-               &camera->light_pos[0].x);
-  assert(glGetError() == GL_NO_ERROR);
-  glUniform3fv(camera->gl_light_color_loc, camera->light_count,
-               &camera->light_color[0].r);
-  assert(glGetError() == GL_NO_ERROR);
+  for (int i = 0; i < camera->light_count; i++) {
+    char uniform_name[64];
+    GLint loc;
+    snprintf(uniform_name, sizeof(uniform_name),
+             "uLight[%d].position", i);
+    loc = glGetUniformLocation(camera->gl_shader_program,
+                               uniform_name);
+    if (loc != -1)
+      glUniform4fv(loc, 1, &camera->light_pos[i].x);
+    assert(glGetError() == GL_NO_ERROR);
+    snprintf(uniform_name, sizeof(uniform_name),
+             "uLight[%d].intensity", i);
+    loc = glGetUniformLocation(camera->gl_shader_program,
+                               uniform_name);
+    if (loc != -1)
+      glUniform4f(loc, camera->light_color[i].r,
+                  camera->light_color[i].g,
+                  camera->light_color[i].b, 1.0f);
+    assert(glGetError() == GL_NO_ERROR);
+  }
   glDisable(GL_CULL_FACE);
   assert(glGetError() == GL_NO_ERROR);
 #if defined(__APPLE__)
