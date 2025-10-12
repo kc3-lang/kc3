@@ -221,7 +221,7 @@ defmodule Kpkg do
     bold  = if style? do "#{Terminal.bold}" end
     title = if style? do "#{Terminal.bold}#{Terminal.fg_blue}" end
     puts("""
-Usage: KPKG_DIR=~/kpkg #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] …
+Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] …
 🐢 #{title}Options :#{reset}
     --arch ARCH          build for $ARCH
     --color              enable text styling and colors
