@@ -1,1 +1,0 @@
-../../egl/demo/bg_rect.c

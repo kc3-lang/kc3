@@ -52,8 +52,8 @@ s_window_egl * window_egl_init (s_window_egl *window,
   tmp.motion = window_egl_motion_default;
   tmp.render = window_egl_render_default;
   tmp.resize = window_egl_resize_default;
-  tmp.gl_w = w;
-  tmp.gl_h = h;
+  tmp.pixel_w = w;
+  tmp.pixel_h = h;
   tmp.egl_display = EGL_NO_DISPLAY;
   tmp.egl_config = NULL;
   tmp.egl_context = EGL_NO_CONTEXT;

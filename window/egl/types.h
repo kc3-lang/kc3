@@ -63,6 +63,8 @@ struct window_egl {
   s64                 y;
   u64                 w;
   u64                 h;
+  u64                 pixel_w;
+  u64                 pixel_h;
   bool                fullscreen;
   f_window_egl_button button;
   f_window_egl_key    key;
@@ -78,8 +80,6 @@ struct window_egl {
   s_tag               tag; // TODO: move sequence to tag
   const char         *title;
   f_window_egl_unload unload;
-  u64                 gl_w;
-  u64                 gl_h;
   EGLDisplay          egl_display;
   EGLConfig           egl_config;
   EGLSurface          egl_surface;

@@ -41,6 +41,8 @@ struct window {
   s64             y;
   u64             w;
   u64             h;
+  u64             pixel_w;
+  u64             pixel_h;
   bool            fullscreen;
   f_window_button button;
   f_window_key    key;

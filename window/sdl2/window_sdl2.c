@@ -230,8 +230,8 @@ bool window_sdl2_run (s_window_sdl2 *window)
   int gl_w = window->w;
   int gl_h = window->h;
   SDL_GL_GetDrawableSize(window->sdl_window, &gl_w, &gl_h);
-  window->gl_w = gl_w;
-  window->gl_h = gl_h;
+  window->pixel_w = gl_w;
+  window->pixel_h = gl_h;
   int display_index;
   display_index = SDL_GetWindowDisplayIndex(window->sdl_window);
   if (display_index < 0) {
@@ -308,8 +308,8 @@ bool window_sdl2_run (s_window_sdl2 *window)
           window->h = sdl_event.window.data2;
           SDL_GL_GetDrawableSize(window->sdl_window, &gl_w, &gl_h);
           assert(glGetError() == GL_NO_ERROR);
-          window->gl_w = gl_w;
-          window->gl_h = gl_h;
+          window->pixel_w = gl_w;
+          window->pixel_h = gl_h;
           glViewport(0, 0, gl_w, gl_h);
         }
         break;

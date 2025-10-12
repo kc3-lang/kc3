@@ -15,9 +15,4 @@
 
 #include "../types.h"
 
-extern s_gl_font  g_font_computer_modern;
-extern s_gl_font  g_font_courier_new;
-
-extern s_gl_ortho g_ortho;
-
 #endif /* LIBKC3_WINDOW_SDL2_DEMO_H */

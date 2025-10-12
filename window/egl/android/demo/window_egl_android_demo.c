@@ -135,7 +135,7 @@ static bool window_egl_android_demo_load (s_window_egl_android *window)
       ! module_load(sym_1("GL.Triangle")) ||
       ! module_load(sym_1("GL.Object")))
     return false;
-  point_per_pixel = (f32) window->w / window->gl_w;
+  point_per_pixel = (f32) window->w / window->pixel_w;
   err_write_1("point_per_pixel: ");
   err_inspect_f32(point_per_pixel);
   err_write_1("\n");

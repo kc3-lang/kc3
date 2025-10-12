@@ -13,16 +13,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../../libkc3/kc3.h"
-#include "../../window.h"
 #include "../../../gl/gl.h"
+#include "../../demo/bg_rect.h"
+#include "../../demo/lightspeed.h"
+#include "../../demo/toasters.h"
+#include "../../demo/flies.h"
+#include "../../demo/earth.h"
+#include "../../demo/mandelbrot_f128.h"
+#include "../../demo/matrix.h"
+#include "../../window.h"
 #include "../window_sdl2.h"
-#include "bg_rect.h"
-#include "lightspeed.h"
-#include "toasters.h"
-#include "flies.h"
-#include "earth.h"
-#include "mandelbrot_f128.h"
-#include "matrix.h"
 
 #define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 7
 
@@ -161,7 +161,7 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
       ! module_load(sym_1("GL.Object")) ||
       ! module_load(sym_1("GL.Sphere")))
     return false;
-  point_per_pixel = (f32) window->w / window->gl_w;
+  point_per_pixel = (f32) window->w / window->pixel_w;
   err_write_1("point_per_pixel: ");
   err_inspect_f32(point_per_pixel);
   err_write_1("\n");

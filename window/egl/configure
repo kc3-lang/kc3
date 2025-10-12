@@ -131,7 +131,8 @@ echo "#define HAVE_XCB $HAVE_XCB" >> ${CONFIG_H}
 
 update_config_h
 
-SUBDIRS=demo
+SUBDIRS=
+
 if ${HAVE_ANDROID}; then
     SUBDIRS="$SUBDIRS android"
 fi

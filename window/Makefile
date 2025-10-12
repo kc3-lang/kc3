@@ -26,36 +26,42 @@ all:
 
 asan:
 	${MAKE} ${LIB_ASAN}
+	${MAKE} -C demo asan
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo asan; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl asan; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 asan; fi
 
 build:
 	${MAKE} ${LIB}
+	${MAKE} -C demo build
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo build; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl build; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 build; fi
 
 clean:
 	rm -rf ${CLEANFILES}
+	${MAKE} -C demo clean
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo clean; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl clean; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 clean; fi
 
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
+	${MAKE} -C demo clean_cov
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo clean_cov; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl clean_cov; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 clean_cov; fi
 
 cov:
 	${MAKE} ${LIB_COV}
+	${MAKE} -C demo cov
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo cov; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl cov; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 cov; fi
 
 debug:
 	${MAKE} ${LIB_DEBUG}
+	${MAKE} -C demo debug
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo debug; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl debug; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 debug; fi

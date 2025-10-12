@@ -83,6 +83,8 @@ KC3_CONFIGURES = \
 	"window/cairo/xcb/sources.sh" \
 	"window/cairo/xcb/update_sources" \
 	"window/configure" \
+	"window/demo/configure" \
+	"window/demo/update_sources" \
 	"window/egl/android/configure" \
 	"window/egl/android/demo/configure" \
 	"window/egl/android/demo/sources.sh" \
@@ -90,9 +92,6 @@ KC3_CONFIGURES = \
 	"window/egl/android/sources.sh" \
 	"window/egl/android/update_sources" \
 	"window/egl/configure" \
-	"window/egl/demo/configure" \
-	"window/egl/demo/sources.sh" \
-	"window/egl/demo/update_sources" \
 	"window/egl/drm/configure" \
 	"window/egl/drm/demo/configure" \
 	"window/egl/drm/demo/sources.sh" \
@@ -183,13 +182,12 @@ KC3_MAKEFILES = \
 	"window/cairo/xcb/demo/Makefile" \
 	"window/cairo/xcb/demo/sources.mk" \
 	"window/cairo/xcb/sources.mk" \
+	"window/demo/Makefile" \
 	"window/egl/Makefile" \
 	"window/egl/android/Makefile" \
 	"window/egl/android/demo/Makefile" \
 	"window/egl/android/demo/sources.mk" \
 	"window/egl/android/sources.mk" \
-	"window/egl/demo/Makefile" \
-	"window/egl/demo/sources.mk" \
 	"window/egl/drm/Makefile" \
 	"window/egl/drm/demo/Makefile" \
 	"window/egl/drm/demo/sources.mk" \
@@ -1099,6 +1097,24 @@ KC3_C_SOURCES = \
 	"window/cairo/xcb/demo/window_cairo_xcb_demo.c" \
 	"window/cairo/xcb/window_cairo_xcb.c" \
 	"window/cairo/xcb/window_cairo_xcb.h" \
+	"window/demo/bg_rect.c" \
+	"window/demo/bg_rect.h" \
+	"window/demo/demo.h" \
+	"window/demo/earth.c" \
+	"window/demo/earth.h" \
+	"window/demo/flies.c" \
+	"window/demo/flies.h" \
+	"window/demo/lightspeed.c" \
+	"window/demo/lightspeed.h" \
+	"window/demo/mandelbrot_f128.c" \
+	"window/demo/mandelbrot_f128.h" \
+	"window/demo/matrix.c" \
+	"window/demo/matrix.h" \
+	"window/demo/toasters.c" \
+	"window/demo/toasters.h" \
+	"window/demo/types.h" \
+	"window/demo/window_egl_demo.c" \
+	"window/demo/window_egl_demo.h" \
 	"window/egl/android/android_native_app_glue.c" \
 	"window/egl/android/demo/window_egl_android_demo.c" \
 	"window/egl/android/demo/window_egl_android_demo.h" \
@@ -1107,29 +1123,11 @@ KC3_C_SOURCES = \
 	"window/egl/android/types.h" \
 	"window/egl/android/window_egl_android.c" \
 	"window/egl/android/window_egl_android.h" \
-	"window/egl/demo/bg_rect.c" \
-	"window/egl/demo/bg_rect.h" \
-	"window/egl/demo/earth.c" \
-	"window/egl/demo/earth.h" \
-	"window/egl/demo/flies.c" \
-	"window/egl/demo/flies.h" \
-	"window/egl/demo/lightspeed.c" \
-	"window/egl/demo/lightspeed.h" \
-	"window/egl/demo/mandelbrot_f128.c" \
-	"window/egl/demo/mandelbrot_f128.h" \
-	"window/egl/demo/matrix.c" \
-	"window/egl/demo/matrix.h" \
-	"window/egl/demo/toasters.c" \
-	"window/egl/demo/toasters.h" \
-	"window/egl/demo/window_egl_demo.c" \
-	"window/egl/demo/window_egl_demo.h" \
 	"window/egl/drm/demo/window_egl_drm_demo.c" \
 	"window/egl/drm/demo/window_egl_drm_demo.h" \
 	"window/egl/drm/types.h" \
 	"window/egl/drm/window_egl_drm.c" \
 	"window/egl/drm/window_egl_drm.h" \
-	"window/egl/sequence_egl.c" \
-	"window/egl/sequence_egl.h" \
 	"window/egl/types.h" \
 	"window/egl/window_egl.c" \
 	"window/egl/window_egl.h" \
@@ -1137,20 +1135,6 @@ KC3_C_SOURCES = \
 	"window/egl/xcb/demo/window_egl_xcb_demo.h" \
 	"window/egl/xcb/window_egl_xcb.c" \
 	"window/egl/xcb/window_egl_xcb.h" \
-	"window/sdl2/demo/bg_rect.c" \
-	"window/sdl2/demo/bg_rect.h" \
-	"window/sdl2/demo/earth.c" \
-	"window/sdl2/demo/earth.h" \
-	"window/sdl2/demo/flies.c" \
-	"window/sdl2/demo/flies.h" \
-	"window/sdl2/demo/lightspeed.c" \
-	"window/sdl2/demo/lightspeed.h" \
-	"window/sdl2/demo/mandelbrot_f128.c" \
-	"window/sdl2/demo/mandelbrot_f128.h" \
-	"window/sdl2/demo/matrix.c" \
-	"window/sdl2/demo/matrix.h" \
-	"window/sdl2/demo/toasters.c" \
-	"window/sdl2/demo/toasters.h" \
 	"window/sdl2/demo/window_sdl2_demo.c" \
 	"window/sdl2/demo/window_sdl2_demo.h" \
 	"window/sdl2/disabled/mandelbrot.c" \

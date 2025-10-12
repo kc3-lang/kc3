@@ -95,8 +95,8 @@ static bool window_egl_xcb_setup (s_window_egl *window,
                   EGL_WIDTH, &gl_w);
   eglQuerySurface(window->egl_display, window->egl_surface,
                   EGL_HEIGHT, &gl_h);
-  window->gl_w = gl_w;
-  window->gl_h = gl_h;
+  window->pixel_w = gl_w;
+  window->pixel_h = gl_h;
   return true;
 }
 
@@ -139,10 +139,10 @@ bool window_egl_xcb_event (s_window_egl *window,
                       EGL_WIDTH, &gl_w);
       eglQuerySurface(window->egl_display, window->egl_surface,
                       EGL_HEIGHT, &gl_h);
-      window->gl_w = gl_w;
-      window->gl_h = gl_h;
+      window->pixel_w = gl_w;
+      window->pixel_h = gl_h;
     }
-    if (! window->resize(window, window->gl_w, window->gl_h))
+    if (! window->resize(window, window->pixel_w, window->pixel_h))
       goto ko;
     break;
   case XCB_KEY_PRESS:

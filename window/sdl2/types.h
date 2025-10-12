@@ -67,6 +67,8 @@ struct window_sdl2 {
   s64                  y;
   u64                  w;
   u64                  h;
+  u64                  pixel_w;
+  u64                  pixel_h;
   bool                 fullscreen;
   f_window_sdl2_button button;
   f_window_sdl2_key    key;
@@ -82,8 +84,6 @@ struct window_sdl2 {
   s_tag                tag; // TODO: move sequence to tag
   const char          *title;
   f_window_sdl2_unload unload;
-  u64 gl_w;
-  u64 gl_h;
   float dpi;
   float dpi_w;
   float dpi_h;

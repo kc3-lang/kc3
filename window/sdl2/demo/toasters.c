@@ -1,1 +1,0 @@
-../../egl/demo/toasters.c
