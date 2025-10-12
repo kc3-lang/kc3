@@ -206,6 +206,8 @@ defmodule Kpkg do
             def Kpkg.color? = true
           ["configure" | rest] ->
             result = Kpkg.configure(pkg, tree, arch)
+          ["configure-clean" | rest] ->
+            result = Kpkg.configure_clean(pkg, tree, arch)
           ["dependencies" | rest] ->
             puts(Kpkg.dependencies(pkg))
           ["info" | rest] ->
@@ -250,7 +252,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     install-deps         install dependencies
 🐢 #{title}Build commands :#{reset}
     configure            run configure in arch/$ARCH/obj/$DIR/$TREE
-    clean-configure      remove configure-done tag
+    configure-clean      remove configure-done tag
     build                run parallel build
     clean-build          remove object files
    #{title}Install commands :#{reset}
@@ -310,6 +312,14 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
 
   def package_path = fn (pkg, tree, arch) {
     arch_dir(pkg, tree, arch, "pkg")
+  }
+
+  def prefix_dir = fn (arch) {
+    "#{Kpkg.dir()}/arch/#{arch}/local"
+  }
+
+  def destdir = fn (pkg, tree, arch) {
+    "#{Kpkg.dir()}/arch/#{arch}/destdir/#{pkg.dir}/#{tree}"
   }
 
   ## Internal API
@@ -470,6 +480,14 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
 
   ## Main API - build
 
+  def build = fn (pkg, tree, arch) {
+    log_call("build #{pkg.name} #{tree} #{arch}")
+    Kpkg.configure(pkg, tree, arch)
+    build_dir = Kpkg.build_dir(pkg, tree, arch)
+    Kpkg.exec([pkg.make, "-C", build_dir])
+    0
+  }
+
   def configure = fn (pkg, tree, arch) {
     log_call("configure #{pkg.name} #{tree} #{arch}")
     Kpkg.checkout(pkg, tree)
@@ -481,18 +499,22 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     end
     build_dir_sh = Sh.escape(build_dir)
     configure_path_sh = Sh.escape(Kpkg.configure_path(pkg, tree))
+    prefix_sh = Sh.escape(Kpkg.prefix_dir(arch))
     File.ensure_directory(build_dir, Kpkg.umask)
     Kpkg.exec(["/bin/sh", "-c",
-               "cd #{build_dir_sh} && #{configure_path_sh} &&" +
+               "cd #{build_dir_sh} && #{configure_path_sh}" +
+               " --prefix #{prefix_sh} &&" +
                " echo 1 > .kpkg_configure_done"])
     0
   }
 
-  def build = fn (pkg, tree, arch) {
-    log_call("build #{pkg.name} #{tree} #{arch}")
-    Kpkg.configure(pkg, tree, arch)
+  def configure_clean = fn (pkg, tree, arch) {
+    log_call("configure-clean #{pkg.name} #{tree} #{arch}")
     build_dir = Kpkg.build_dir(pkg, tree, arch)
-    Kpkg.exec([pkg.make, "-C", build_dir])
+    configure_done = "#{build_dir}/.kpkg_configure_done"
+    if File.access?(configure_done, :r) do
+      Kpkg.exec(["rm", configure_done])
+    end
     0
   }
 
@@ -501,18 +523,28 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   def fake = fn (pkg, tree, arch) {
     log_call("fake #{pkg.name} #{tree} #{arch}")
     Kpkg.build(pkg, tree, arch)
-    # DESTDIR=... make install
+    build_dir = Kpkg.build_dir(pkg, tree, arch)
+    destdir = Kpkg.destdir(pkg, tree, arch)
+    destdir_sh = Sh.escape(destdir)
+    File.ensure_directory(destdir, Kpkg.umask)
+    Kpkg.exec(["/bin/sh", "-c",
+               "make -C #{Sh.escape(build_dir)}" +
+               " DESTDIR=#{destdir_sh} install"])
     0
   }
 
   def package = fn (pkg, tree, arch) {
     log_call("package #{pkg.name} #{tree} #{arch}")
-    pathname = package_path(pkg, tree, arch)
-    if ! File.exists?(pathname) do
-      Kpkg.fake(pkg, tree, arch)
-      
+    pkg_path = package_path(pkg, tree, arch)
+    pkg_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.tar.gz"
+    if File.exists?(pkg_file) do
       return 0
     end
+    Kpkg.fake(pkg, tree, arch)
+    destdir = Kpkg.destdir(pkg, tree, arch)
+    prefix = Kpkg.prefix_dir(arch)
+    File.ensure_directory(pkg_path, Kpkg.umask)
+    Kpkg.exec(["tar", "-C", "#{destdir}#{prefix}", "-czf", pkg_file, "."])
     0
   }
 
@@ -521,6 +553,11 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   def install = fn (pkg, tree, arch) {
     log_call("install #{pkg.name} #{tree} #{arch}")
     Kpkg.package(pkg, tree, arch)
+    pkg_path = package_path(pkg, tree, arch)
+    pkg_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.tar.gz"
+    prefix = Kpkg.prefix_dir(arch)
+    File.ensure_directory(prefix, Kpkg.umask)
+    Kpkg.exec(["tar", "-C", prefix, "-xzf", pkg_file])
     0
   }
 
