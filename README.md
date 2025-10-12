@@ -133,17 +133,21 @@ There are now four full applications written in KC3 that we know of :
      `def*` into proper modules
 
  - window
-   - OpenGLESv3
-     - Use [Angle](https://github.com/google/angle) GLESv3
-       implementation with Metal backend on MacOS. This provides
-       SDL2 with an EGL/GLESv3 driver on MacOS despite OpenGL support
-       being dropped by Apple.
+   - demo
+     - unified all OpenGL demos under window/demo
+   - SDL2
+     - OpenGLESv3
+       - Use [Angle](https://github.com/google/angle) GLESv3
+         implementation with Metal backend on MacOS. This provides
+         SDL2 with an EGL/GLESv3 driver on MacOS despite OpenGL support
+         being dropped by Apple.
    - EGL backend
-     - VT-backend on Linux and OpenBSD using DRM KMS and GBM
+     - XCB backend for X11
+     - VT backend on Linux and OpenBSD using DRM KMS and GBM
 
-  - kpkg - KC3 package manager
-    - Argument parsing as a `while` loop
-    - Added __libmd__, __libbsd__ and __kc3__ repo definitions
+ - kpkg - KC3 package manager
+   - Argument parsing as a `while` loop
+   - Added __libmd__, __libbsd__ and __kc3__ repo definitions
 
 
 ## Discord invite
