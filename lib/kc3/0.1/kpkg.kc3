@@ -190,6 +190,10 @@ defmodule Kpkg do
         match args do
           ["--arch", arch_arg | rest] ->
             arch = ^ arch_arg
+          ["build" | rest] ->
+            result = Kpkg.build(pkg, tree, arch)
+          ["build-dependencies" | rest] ->
+            puts(Kpkg.build_dependencies(pkg))
           ["checkout" | rest] ->
             result = Kpkg.checkout(pkg, tree)
           ["checkout-clean" | rest] ->
@@ -202,8 +206,16 @@ defmodule Kpkg do
             def Kpkg.color? = true
           ["configure" | rest] ->
             result = Kpkg.configure(pkg, tree, arch)
+          ["dependencies" | rest] ->
+            puts(Kpkg.dependencies(pkg))
           ["info" | rest] ->
             result = Kpkg.info(pkg, tree, arch)
+          ["install" | rest] ->
+            result = Kpkg.install(pkg, tree, arch)
+          ["install-build-deps" | rest] ->
+            result = Kpkg.install_build_dependencies(pkg, tree)
+          ["install-deps" | rest] ->
+            result = Kpkg.install_dependencies(pkg, tree, arch)
           ["--tree", tree_arg | rest] ->
             tree = ^ tree_arg
           _ ->
@@ -241,6 +253,8 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     clean-configure      remove configure-done tag
     build                run parallel build
     clean-build          remove object files
+   #{title}Install commands :#{reset}
+    install              install package
 🐢 #{title}Misc commands :#{reset}
     info                 show current state
 """)
@@ -372,7 +386,8 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     pkg_git_dir = Kpkg.git_dir(pkg)
     if ! File.is_directory?(pkg_git_dir) do
       Kpkg.exec(["mkdir", "-p", Kpkg.git_parent_dir(pkg)])
-      Kpkg.exec(["git", "clone", pkg.git, pkg_git_dir])
+      Kpkg.exec(["git", "clone", "-b", pkg.default_branch, pkg.git,
+                 pkg_git_dir])
       Kpkg.exec(["git", "-C", pkg_git_dir, "submodule", "init"])
       Kpkg.exec(["git", "-C", pkg_git_dir, "submodule", "update",
                  "--recursive", "--remote"])
@@ -461,11 +476,15 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.install_build_dependencies(pkg, tree)
     Kpkg.install_dependencies(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
+    if File.access?("#{build_dir}/.kpkg_configure_done", :r) do
+      return 0
+    end
     build_dir_sh = Sh.escape(build_dir)
     configure_path_sh = Sh.escape(Kpkg.configure_path(pkg, tree))
     File.ensure_directory(build_dir, Kpkg.umask)
     Kpkg.exec(["/bin/sh", "-c",
-               "cd #{build_dir_sh} && #{configure_path_sh}"])
+               "cd #{build_dir_sh} && #{configure_path_sh} &&" +
+               " echo 1 > .kpkg_configure_done"])
     0
   }
 
