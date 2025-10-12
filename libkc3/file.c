@@ -1037,3 +1037,26 @@ bool file_write (const s_str *path, const s_str *data)
   close(fd);
   return true;
 }
+
+sw file_write_str (const s_str *path, const s_str *str)
+{
+  t_fd fd;
+  sw r;
+  sw result = 0;
+  if (! file_open_w(path, &fd))
+    return -1;
+  while (result < str->size) {
+    if ((r = write(fd, str->ptr.pchar + result,
+                   str->size - result)) <= 0)
+      goto clean;
+    result += r;
+  }
+  if (result != str->size) {
+    ERROR("buffer overflow");
+    abort();
+  }
+  r = result;
+ clean:
+  close(fd);
+  return r;
+}

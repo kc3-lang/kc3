@@ -59,5 +59,6 @@ bool          file_rename (const s_str *src, const s_str *dest);
 struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
                                         struct stat *dest);
 bool          file_unlink (const s_str *path);
+sw            file_write_str (const s_str *path, const s_str *str);
 
 #endif /* LIBKC3_FILE_H */

@@ -560,10 +560,14 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   def package = fn (pkg, tree, arch) {
     Kpkg.log_call("package #{pkg.name} #{tree} #{arch}")
     pkg_path = Kpkg.package_path(pkg, tree, arch)
-    pkg_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.tar.gz"
-    manifest_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.manifest"
-    checksum_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.sha512"
-    if File.exists?(pkg_file) do
+    pkg_name = "#{pkg.name}-#{tree}-#{arch}"
+    pkg_pathname = "#{pkg_path}/#{pkg_name}"
+    pkg_file = "#{pkg_pathname}.tar.gz"
+    manifest_file = "#{pkg_pathname}.manifest"
+    checksum_file = "#{pkg_pathname}.sha512"
+    if File.exists?(pkg_file) &&
+       File.exists?(manifest_file) &&
+       File.exists?(checksum_file) do
       return 0
     end
     Kpkg.fake(pkg, tree, arch)
@@ -572,19 +576,15 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     destdir_prefix = "#{destdir}#{prefix}"
     File.ensure_directory(pkg_path, Kpkg.umask)
     files = File.list_recursive(destdir_prefix)
-    manifest = List.join(List.map(files, fn (file_path) {
-      full_path = "#{destdir_prefix}/#{file_path}"
-      if File.is_directory?(full_path) do
-        nil
-      else
-        checksum = File.sha512_base64url(full_path)
-        "#{checksum}  #{file_path}"
-      end
-    }), "\n")
-    File.write(manifest_file, manifest)
+    manifest = str(List.map(files, fn (file_path) {
+      checksum = File.sha512_base64url(file_path)
+      "#{checksum} #{file_path}\n"
+    }))
+    File.write_str(manifest_file, manifest)
     Kpkg.exec(["tar", "-C", destdir_prefix, "-czf", pkg_file, "."])
-    pkg_checksum = File.sha512_base64url(pkg_file)
-    File.write(checksum_file, pkg_checksum)
+    pkg_checksum = "#{File.sha512_base64url(pkg_file)} #{pkg_name}\n"
+    File.write_str(checksum_file, pkg_checksum)
+    Kpkg.log_call("package #{pkg.name} #{tree} #{arch}: OK")
     0
   }
 
@@ -624,6 +624,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     File.ensure_directory(installed_dir, Kpkg.umask)
     Kpkg.exec(["tar", "-C", prefix, "-xzf", pkg_file])
     Kpkg.exec(["touch", installed_path])
+    Kpkg.log_call("install #{pkg.name} #{tree} #{arch}: OK")
     0
   }
 

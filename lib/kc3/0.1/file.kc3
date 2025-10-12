@@ -125,4 +125,6 @@ defmodule File do
     end
   }
 
+  def write_str = cfn Sw "file_write_str" (Str, Str)
+
 end
