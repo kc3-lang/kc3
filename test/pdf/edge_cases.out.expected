@@ -3,18 +3,25 @@ PDF
 PDF.parse_str("   123   ")
 123
 PDF.parse_str("(Hello \\n World)")
+pdf_buf_parse_string: str = "Hello \n World"
 "Hello \n World"
 PDF.parse_str("(Tab\\tTest)")
+pdf_buf_parse_string: str = "Tab\tTest"
 "Tab\tTest"
 PDF.parse_str("(Quote\\\"Test)")
+pdf_buf_parse_string: str = "Quote\"Test"
 "Quote\"Test"
 PDF.parse_str("(Backslash\\\\Test)")
+pdf_buf_parse_string: str = "Backslash\\Test"
 "Backslash\\Test"
 PDF.parse_str("(\\101\\102\\103)")
+pdf_buf_parse_string: str = "ABC"
 "ABC"
 PDF.parse_str("(outer \\(inner\\) text)")
+pdf_buf_parse_string: str = "outer (inner) text"
 "outer (inner) text"
 PDF.parse_str("<41 42 43 44>")
+pdf_buf_parse_string: str = "ABCD"
 "ABCD"
 PDF.parse_str("/VeryLongNameWithManyCharactersToTestParsing")
 VeryLongNameWithManyCharactersToTestParsing
@@ -44,6 +51,8 @@ PDF.parse_str("42 0 obj /Test endobj")
 {:indirect_object, (U32) 42, (U16) 0, Test}
 PDF.parse_str("42 5 R")
 {:indirect_object, (U32) 42, (U16) 5}
+PDF.parse_str("0 0 R/Name")
+{:indirect_object, (U32) 0, (U16) 0}
 PDF.parse_str("123 % This is a comment\n")
 123
 PDF.parse_str("<</Length 306/Filter/FlateDecode>>")
