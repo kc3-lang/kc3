@@ -50,7 +50,7 @@ debug:
 
 demo:
 	${MAKE} ${PROG}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo; else time ./${PROG}.sh; fi
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo; else time ./${PROG}; fi
 
 demo_asan:
 	${MAKE} asan
