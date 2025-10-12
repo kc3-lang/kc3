@@ -36,12 +36,12 @@ if r == 0 do
   TLS.free(server_ctx)
   exit_subprocess(0)
 else
+  sleep(1)
   TLS.init()
   client_config = TLS.Config.new()
   TLS.Config.set_ca_file(client_config, TLS.ca_cert_path())
   client_ctx = TLS.client()
   TLS.configure(client_ctx, client_config)
-  sleep(1)
   client_tls = TLS.Client.connect(client_ctx, hostname(),
     "57000")
   puts("client: connected to egress 57000")
