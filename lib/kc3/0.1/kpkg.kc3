@@ -593,7 +593,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     }))
     File.write_str(manifest_file, manifest)
     Kpkg.exec(["tar", "-C", destdir_prefix, "-czf", pkg_file, "."])
-    pkg_checksum = "#{File.sha512_base64url(pkg_file)} #{pkg_name}\n"
+    pkg_checksum = "#{File.sha512_base64url(pkg_file)} #{pkg_name}.tar.gz\n"
     File.write_str(checksum_file, pkg_checksum)
     Kpkg.log_call("package #{pkg.name} #{tree} #{arch}: OK")
     0
@@ -620,6 +620,14 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     File.exists?(installed_path)
   }
 
+  def tmp = fn (name) {
+    if (type(name) != Str || name[0] != '/') do
+      puts("tmp: #{name}: invalid name")
+      exit(1)
+    end
+    "#{Kpkg.dir()}/tmp#{name}"
+  }
+
   def install = fn (pkg, tree, arch) {
     Kpkg.log_call("install #{pkg.name} #{tree} #{arch}")
     if Kpkg.is_installed?(pkg, tree, arch) do
@@ -634,9 +642,24 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     prefix = Kpkg.prefix_dir(arch)
     installed_path = Kpkg.installed_db_path(pkg, tree, arch)
     installed_dir = File.dirname(installed_path)
+    tmp_dir = Kpkg.tmp(prefix)
     File.ensure_directory(prefix, Kpkg.umask)
     File.ensure_directory(installed_dir, Kpkg.umask)
-    Kpkg.exec(["tar", "-C", prefix, "-xzf", pkg_file])
+    File.ensure_directory(tmp_dir, Kpkg.umask)
+    Kpkg.exec(["tar", "-C", tmp_dir, "-xzf", pkg_file])
+    tmp_files = File.list_recursive(tmp_dir)
+    List.each(tmp_files, fn (file) {
+      if ! File.is_directory?(file) do
+        src = Str.slice(file, Str.size(tmp_dir), -1)
+        target = "#{prefix}#{src}"
+        if File.exists?(target) do
+          puts("install: file exists, not copying: #{target}")
+        else
+          Kpkg.exec(["cp", file, target])
+        end
+      end
+    })
+    Kpkg.exec(["rm", "-rf", tmp_dir])
     Kpkg.exec(["cp", manifest_file, installed_path])
     Kpkg.log_call("install #{pkg.name} #{tree} #{arch}: OK")
     0
