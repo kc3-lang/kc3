@@ -26,61 +26,61 @@ all:
 
 build:
 	${MAKE} ${PROG}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos build; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos build; fi
 
 asan:
 	${MAKE} ${PROG_ASAN}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos asan; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos asan; fi
 
 clean:
 	rm -rf ${CLEANFILES}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos clean; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos clean; fi
 
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos clean_cov; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos clean_cov; fi
 
 cov:
 	${MAKE} ${PROG_COV}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos cov; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos cov; fi
 
 debug:
 	${MAKE} ${PROG_DEBUG}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos debug; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos debug; fi
 
 demo:
 	${MAKE} ${PROG}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo; else time ./${PROG}; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos demo; else time ./${PROG}; fi
 
 demo_asan:
 	${MAKE} asan
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo_asan; else time ./${PROG_ASAN}; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos demo_asan; else time ./${PROG_ASAN}; fi
 
 demo_cov:
 	${MAKE} cov
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo_cov; else time ./${PROG_COV}; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos demo_cov; else time ./${PROG_COV}; fi
 
 demo_debug:
 	${MAKE} debug
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo_debug; else time ./${PROG_DEBUG}; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos demo_debug; else time ./${PROG_DEBUG}; fi
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos distclean; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos distclean; fi
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details ${PROG}.html
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos gcovr; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos gcovr; fi
 
 gdb_demo: debug
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos gdb_demo; else gdb .libs/${PROG_DEBUG}; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos gdb_demo; else gdb .libs/${PROG_DEBUG}; fi
 
 install:
 	install -m 755 -d ${DESTDIR}${prefix}/bin
 	install -m 755 .libs/${PROG} ${DESTDIR}${prefix}/bin/${PROG}
 
 lldb_demo: debug
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos lldb_demo; else lldb .libs/${PROG_DEBUG}; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C macos lldb_demo; else lldb .libs/${PROG_DEBUG}; fi
 
 update_sources:
 	./update_sources

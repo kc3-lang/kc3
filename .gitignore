@@ -156,6 +156,16 @@ window/egl/xcb/demo/kc3_window_egl_xcb_demo
 window/egl/xcb/demo/kc3_window_egl_xcb_demo_asan
 window/egl/xcb/demo/kc3_window_egl_xcb_demo_cov
 window/egl/xcb/demo/kc3_window_egl_xcb_demo_debug
+window/egl/xcb/demo/macos/kc3_window_egl_xcb_demo.app/Contents/fonts
+window/egl/xcb/demo/macos/kc3_window_egl_xcb_demo.app/Contents/Frameworks
+window/egl/xcb/demo/macos/kc3_window_egl_xcb_demo.app/Contents/img
+window/egl/xcb/demo/macos/kc3_window_egl_xcb_demo.app/Contents/lib
+window/egl/xcb/demo/macos/kc3_window_egl_xcb_demo.app/Contents/MacOS/kc3_window_egl_xcb_demo
+window/egl/xcb/demo/macos/kc3_window_egl_xcb_demo_debug.app/Contents/fonts
+window/egl/xcb/demo/macos/kc3_window_egl_xcb_demo_debug.app/Contents/Frameworks
+window/egl/xcb/demo/macos/kc3_window_egl_xcb_demo_debug.app/Contents/img
+window/egl/xcb/demo/macos/kc3_window_egl_xcb_demo_debug.app/Contents/lib
+window/egl/xcb/demo/macos/kc3_window_egl_xcb_demo_debug.app/Contents/MacOS/kc3_window_egl_xcb_demo_debug
 window/sdl2/demo/kc3_window_sdl2_demo
 window/sdl2/demo/kc3_window_sdl2_demo_asan
 window/sdl2/demo/kc3_window_sdl2_demo_cov

@@ -54,9 +54,6 @@ pkg_config freetype2
 pkg_config glesv2
 pkg_config libffi
 pkg_config libpng
-if ${HAVE_COCOA}; then
-    config_lib OPENGL -framework OpenGL
-fi
 config_lib OPENGL -lopengl32 -lglu32
 config_lib OPENMP -fopenmp
 config_define HAVE_OPENMP "${HAVE_OPENMP}"
@@ -149,6 +146,6 @@ echo "HAVE_DARWIN = $HAVE_DARWIN" >> ${CONFIG_MK}
 update_config_mk
 
 # TODO: configure macos subdir
-if ${HAVE_DARWIN}; then
+if ${HAVE_COCOA}; then
     config_subdirs macos
 fi
