@@ -385,15 +385,6 @@ void env_clean (s_env *env)
     counter_ht_delete(env->counter_ht);
     env->counter_ht = NULL;
   }
-  buf_file_close(env->in);
-  buf_delete(env->in);
-  env->in = NULL;
-  buf_file_close(env->out);
-  buf_delete(env->out);
-  env->out = NULL;
-  buf_file_close(env->err);
-  buf_delete(env->err);
-  env->err = NULL;
   env_args_clean(env);
   str_delete(env->module_path);
   env->module_path = NULL;
@@ -412,6 +403,15 @@ void env_clean (s_env *env)
     free(g_kc3_env_default);
     g_kc3_env_default = NULL;
   }
+  buf_file_close(env->in);
+  buf_delete(env->in);
+  env->in = NULL;
+  buf_file_close(env->out);
+  buf_delete(env->out);
+  env->out = NULL;
+  buf_file_close(env->err);
+  buf_delete(env->err);
+  env->err = NULL;
 }
 
 bool env_cleaning (bool enable)
