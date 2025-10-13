@@ -55,9 +55,34 @@ sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
 sw pdf_buf_write_bool (s_buf *buf, bool src)
 {
   if (src) {
-    return pdf_buf_write_token(buf, "true");
+    return buf_write_1(buf, "true");
   }
-  return pdf_buf_write_token(buf, "false");
+  return buf_write_1(buf, "false");
+}
+
+sw pdf_buf_write_array (s_buf *buf, const p_list src)
+{
+  p_list n = src;
+  sw r;
+  sw result = 0;
+  assert(src);
+  if ((r = buf_write_1(buf, "[")) < 0) {
+    return r;
+  }
+  result += r;
+  while (n) {
+    if ((r = pdf_buf_write_tag(buf, &n->tag)) < 0)
+      return r;
+    result += r;
+    n = list_next(n);
+    if (n && (r = buf_write_1(buf, " ")) < 0)
+      return r;
+  }
+  if ((r = buf_write_1(buf, "]")) < 0) {
+    return r;
+  }
+  result += r;
+  return result;
 }
 
 sw pdf_buf_write_dictionnary (s_buf *buf, const s_map *src)
@@ -65,7 +90,7 @@ sw pdf_buf_write_dictionnary (s_buf *buf, const s_map *src)
   uw i;
   sw r;
   sw result = 0;
-  if ((r = pdf_buf_write_token(buf, "<<")) < 0) {
+  if ((r = buf_write_1(buf, "<<")) < 0) {
     return r;
   }
   result += r;
@@ -78,16 +103,16 @@ sw pdf_buf_write_dictionnary (s_buf *buf, const s_map *src)
     if ((r = pdf_buf_write_name(buf, src->key[i].data.psym)) < 0)
       return r;
     result += r;
-    if ((r = pdf_buf_write_token(buf, " ")) < 0)
+    if ((r = buf_write_1(buf, " ")) < 0)
       return r;
     result += r;
     if ((r = pdf_buf_write_tag(buf, &src->value[i])) < 0)
       return r;
     result += r;
-    if ((r = pdf_buf_write_token(buf, " ")) < 0)
+    if (i < src->count - 1 && (r = buf_write_1(buf, " ")) < 0)
       return r;
   }
-  if ((r = pdf_buf_write_token(buf, ">>")) < 0) {
+  if ((r = buf_write_1(buf, ">>")) < 0) {
     return r;
   }
   result += r;
@@ -118,7 +143,7 @@ sw pdf_buf_write_name (s_buf *buf, p_pdf_name src)
 
 sw pdf_buf_write_null (s_buf *buf)
 {
-    return pdf_buf_write_token(buf, "null");
+    return buf_write_1(buf, "null");
 }
 
 sw pdf_buf_write_string_hex (s_buf *buf, const s_str *dest)
@@ -130,7 +155,7 @@ sw pdf_buf_write_string_hex (s_buf *buf, const s_str *dest)
   const char *base = g_kc3_base_hexadecimal.ptr.pchar;
   buf_init_str_const(&read_buf, dest);
 
-  if ((r = pdf_buf_write_token(buf, "<")) < 0) {
+  if ((r = buf_write_1(buf, "<")) < 0) {
     goto cleanup;
   }
   for (i = 0; i < dest->size; i++) {
@@ -140,7 +165,7 @@ sw pdf_buf_write_string_hex (s_buf *buf, const s_str *dest)
       goto cleanup;
     }
   }
-  if ((r = pdf_buf_write_token(buf, ">")) < 0) {
+  if ((r = buf_write_1(buf, ">")) < 0) {
     goto cleanup;
   }
  cleanup:
