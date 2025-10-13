@@ -269,7 +269,7 @@ bool * file_exists (const s_str *path, bool *dest)
   struct stat sb;
   assert(path);
   assert(dest);
-  *dest = ! stat(path->ptr.pchar, &sb);
+  *dest = ! lstat(path->ptr.pchar, &sb);
   return dest;
 }
 
