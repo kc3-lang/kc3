@@ -398,11 +398,8 @@ void env_clean (s_env *env)
     else
       g_kc3_env_global = g_kc3_env_default;
   }
-  if (g_kc3_env_default == env) {
+  if (g_kc3_env_default == env)
     sym_delete_all();
-    free(g_kc3_env_default);
-    g_kc3_env_default = NULL;
-  }
   buf_file_close(env->in);
   buf_delete(env->in);
   env->in = NULL;
@@ -412,6 +409,10 @@ void env_clean (s_env *env)
   buf_file_close(env->err);
   buf_delete(env->err);
   env->err = NULL;
+  if (g_kc3_env_default == env) {
+    free(g_kc3_env_default);
+    g_kc3_env_default = NULL;
+  }
 }
 
 bool env_cleaning (bool enable)
