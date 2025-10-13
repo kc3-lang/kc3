@@ -84,6 +84,7 @@ KC3_CONFIGURES = \
 	"window/cairo/xcb/update_sources" \
 	"window/configure" \
 	"window/demo/configure" \
+	"window/demo/sources.sh" \
 	"window/demo/update_sources" \
 	"window/egl/android/configure" \
 	"window/egl/android/demo/configure" \
@@ -183,6 +184,7 @@ KC3_MAKEFILES = \
 	"window/cairo/xcb/demo/sources.mk" \
 	"window/cairo/xcb/sources.mk" \
 	"window/demo/Makefile" \
+	"window/demo/sources.mk" \
 	"window/egl/Makefile" \
 	"window/egl/android/Makefile" \
 	"window/egl/android/demo/Makefile" \
@@ -1099,6 +1101,7 @@ KC3_C_SOURCES = \
 	"window/cairo/xcb/window_cairo_xcb.h" \
 	"window/demo/bg_rect.c" \
 	"window/demo/bg_rect.h" \
+	"window/demo/demo.c" \
 	"window/demo/demo.h" \
 	"window/demo/earth.c" \
 	"window/demo/earth.h" \
@@ -1113,8 +1116,6 @@ KC3_C_SOURCES = \
 	"window/demo/toasters.c" \
 	"window/demo/toasters.h" \
 	"window/demo/types.h" \
-	"window/demo/window_egl_demo.c" \
-	"window/demo/window_egl_demo.h" \
 	"window/egl/android/android_native_app_glue.c" \
 	"window/egl/android/demo/window_egl_android_demo.c" \
 	"window/egl/android/demo/window_egl_android_demo.h" \
