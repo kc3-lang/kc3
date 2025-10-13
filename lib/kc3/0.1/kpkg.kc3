@@ -471,7 +471,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   }
 
   def resolve_dependencies = fn (pkg, sym) {
-    Kpkg.log_call("resolve_dependencies #{pkg.name} #{sym}")
+    #Kpkg.log_call("resolve_dependencies #{pkg.name} #{sym}")
     list = pkg[sym]
     pkg_tree_tuple_list = []
     while list != [] do
@@ -494,7 +494,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
       end
       list = List.append(rest, dep_pkg[sym])
     end
-    Kpkg.log_call("resolve_dependencies #{pkg.name} #{sym}: #{pkg_tree_tuple_list}")
+    #Kpkg.log_call("resolve_dependencies #{pkg.name} #{sym}: #{pkg_tree_tuple_list}")
     pkg_tree_tuple_list
   }
 
@@ -505,6 +505,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.configure(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     Kpkg.exec([pkg.make, "-C", build_dir])
+    Kpkg.log_call("build #{pkg.name} #{tree} #{arch}: OK")
     0
   }
 
@@ -525,6 +526,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
                "cd #{build_dir_sh} && #{configure_path_sh}" +
                " --prefix #{prefix_sh} &&" +
                " echo 1 > .kpkg_configure_done"])
+    Kpkg.log_call("configure #{pkg.name} #{tree} #{arch}: OK")
     0
   }
 
@@ -550,6 +552,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.exec(["/bin/sh", "-c",
                "make -C #{Sh.escape(build_dir)}" +
                " DESTDIR=#{destdir_sh} install"])
+    Kpkg.log_call("fake #{pkg.name} #{tree} #{arch}: OK")
     0
   }
 
