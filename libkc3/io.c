@@ -24,6 +24,7 @@
 #include "buf_inspect_uw_decimal.h"
 #include "env.h"
 #include "io.h"
+#include "rwlock.h"
 #include "tag_type.h"
 
 #define DEF_ERR_INSPECT(name, type)                                    \
@@ -118,14 +119,22 @@ sw err_puts (const char *x)
   sw r;
   sw result = 0;
   env = env_global();
+#if HAVE_PTHREAD
+  rwlock_w(&env->err->rwlock);
+#endif
   if ((r = buf_write_1(env->err, x)) < 0)
-    return r;
+    goto clean;
   result += r;
   if ((r = buf_write_u8(env->err, '\n')) < 0)
-    return r;
+    goto clean;
   result += r;
   buf_flush(env->err);
-  return result;
+  r = result;
+ clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&env->err->rwlock);
+#endif
+  return r;
 }
 
 sw err_write (const void *x, uw len)
@@ -209,14 +218,22 @@ sw io_puts (const char *x)
   sw r;
   sw result = 0;
   env = env_global();
+#if HAVE_PTHREAD
+  rwlock_w(&env->out->rwlock);
+#endif
   if ((r = buf_write_1(env->out, x)) < 0)
-    return r;
+    goto clean;
   result += r;
   if ((r = buf_write_u8(env->out, '\n')) < 0)
-    return r;
+    goto clean;
   result += r;
   buf_flush(env->out);
-  return result;
+  r = result;
+ clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&env->out->rwlock);
+#endif
+  return r;
 }
 
 sw io_write (const void *x, uw len)
