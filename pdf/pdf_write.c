@@ -122,7 +122,6 @@ sw pdf_buf_write_indirect_start (s_buf *buf, const s_tuple *src)
 sw pdf_buf_write_indirect_end (s_buf *buf)
 {
   assert(buf);
-
   buf_write_1(buf, "endobj");
 }
 
@@ -212,6 +211,5 @@ sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
 sw pdf_buf_write_token(s_buf *buf, const char *pchar)
 {
   assert(buf);
-
   return buf_write_1(buf, pchar);
 }
