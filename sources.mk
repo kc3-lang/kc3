@@ -103,6 +103,7 @@ KC3_CONFIGURES = \
 	"window/egl/update_sources" \
 	"window/egl/xcb/configure" \
 	"window/egl/xcb/demo/configure" \
+	"window/egl/xcb/demo/macos/configure" \
 	"window/egl/xcb/demo/sources.sh" \
 	"window/egl/xcb/demo/update_sources" \
 	"window/egl/xcb/sources.sh" \
@@ -197,6 +198,7 @@ KC3_MAKEFILES = \
 	"window/egl/sources.mk" \
 	"window/egl/xcb/Makefile" \
 	"window/egl/xcb/demo/Makefile" \
+	"window/egl/xcb/demo/macos/Makefile" \
 	"window/egl/xcb/demo/sources.mk" \
 	"window/egl/xcb/sources.mk" \
 	"window/sdl2/Makefile" \
