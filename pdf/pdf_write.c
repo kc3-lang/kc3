@@ -91,7 +91,6 @@ sw pdf_buf_write_indirect_ref (s_buf *buf, const s_tuple *src)
 {
   assert(buf);
   assert(src);
-
   if (src->count != 2) {
     err_puts("pdf_buf_write_indirect_object: invalid tuple size");
     assert(! "pdf_buf_write_indirect_object: invalid tuple size");
@@ -107,7 +106,6 @@ sw pdf_buf_write_indirect_start (s_buf *buf, const s_tuple *src)
 {
   assert(buf);
   assert(src);
-
   if (src->count != 2) {
     err_puts("pdf_buf_write_indirect_object: invalid tuple size");
     assert(! "pdf_buf_write_indirect_object: invalid tuple size");
@@ -116,7 +114,7 @@ sw pdf_buf_write_indirect_start (s_buf *buf, const s_tuple *src)
   pdf_buf_write_tag(buf, &src->tag[0]);
   buf_write_u8(buf, ' ');
   pdf_buf_write_tag(buf, &src->tag[1]);
-  buf_write_1(buf, " R");
+  buf_write_1(buf, " obj");
 }
 
 sw pdf_buf_write_indirect_end (s_buf *buf)
