@@ -1,26 +1,6 @@
-require Buf
-Buf
-require Socket
-Socket
-require Socket.Buf
-Socket.Buf
-require Thread
-Thread
-require TLS
-TLS
-require TLS.Client
-TLS.Client
-require TLS.Server
-TLS.Server
-(r = fork()) ; void
-void
-void
-void
-void
 server: listening on egress 57000
-kc3_tls_server_init_accept: accept: OK
-kc3_tls_server_init_accept: tls_accept_socket: OK
 client: connected to egress 57000
 server: Hello from client !
+server: OK
 client: Hello from server !
-void
+client: OK

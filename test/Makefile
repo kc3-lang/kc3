@@ -309,16 +309,16 @@ test_socket_debug:
 	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./socket_test
 
 test_tls:
-	IKC3=${SRC_TOP}/ikc3/ikc3 time ./tls_test
+	KC3S=${SRC_TOP}/kc3s/kc3s time ./tls_test
 
 test_tls_asan:
-	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./tls_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./tls_test
 
 test_tls_cov:
-	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./tls_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./tls_test
 
 test_tls_debug:
-	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./tls_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./tls_test
 
 test_valgrind: libkc3_test
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./libkc3_test

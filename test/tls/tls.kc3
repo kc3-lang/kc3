@@ -1,18 +1,10 @@
-quote require Buf
 require Buf
-quote require Socket
 require Socket
-quote require Socket.Buf
 require Socket.Buf
-quote require Thread
 require Thread
-quote require TLS
 require TLS
-quote require TLS.Client
 require TLS.Client
-quote require TLS.Server
 require TLS.Server
-quote (r = fork()) ; void
 (r = fork()) ; void
 if (r < 0) do
   exit(1)
@@ -34,6 +26,7 @@ if r == 0 do
   Socket.close(server_socket)
   TLS.Config.free(server_config)
   TLS.free(server_ctx)
+  puts("server: OK")
   exit_subprocess(0)
 else
   sleep(1)
@@ -47,8 +40,11 @@ else
   puts("client: connected to egress 57000")
   Buf.write_str(client_tls.socket_buf.buf_rw.w, "Hello from client !\n")
   line = Buf.read_line(client_tls.socket_buf.buf_rw.r)
-  puts("client: #{line}")
   TLS.Client.close(client_tls)
   TLS.Config.free(client_config)
   TLS.free(client_ctx)
+  sleep(1)
+  puts("client: #{line}")
+  puts("client: OK")
 end
+0
