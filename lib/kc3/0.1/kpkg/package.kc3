@@ -27,6 +27,7 @@ defmodule Kpkg.Package do
              dir: "org/subdir/repo",
              git: "https://github.com/dir.git",
              git_push: "git@github.com:dir.git",
+             is_needed?: fn () { true },
              make: "make",
              module: Module]
 

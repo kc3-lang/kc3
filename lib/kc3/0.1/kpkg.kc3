@@ -96,6 +96,8 @@ defmodule Kpkg do
     Facts.replace_tags(Kpkg.db, package.name,
       :kpkg_package_git_push, package.git_push)
     Facts.replace_tags(Kpkg.db, package.name,
+      :kpkg_package_is_needed?, package.is_needed?)
+    Facts.replace_tags(Kpkg.db, package.name,
       :kpkg_package_module, package.module)
   }
 
@@ -117,6 +119,7 @@ defmodule Kpkg do
                           [name, :kpkg_package_dir, dir = ?],
                           [name, :kpkg_package_git, git = ?],
                           [name, :kpkg_package_git_push, git_push = ?],
+                          [name, :kpkg_package_is_needed?, is_needed? = ?],
                           [name, :kpkg_package_module, module = ?]],
       fn (fact) { %Kpkg.Package{name: name,
                                 build_depends_on: build_depends_on,
@@ -125,6 +128,7 @@ defmodule Kpkg do
                                 dir: dir,
                                 git: git,
                                 git_push: git_push,
+                                is_needed?: is_needed?,
                                 module: module} })
   }
   
@@ -630,6 +634,10 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
 
   def install = fn (pkg, tree, arch) {
     Kpkg.log_call("install #{pkg.name} #{tree} #{arch}")
+    is_needed? = pkg.is_needed?
+    if ! is_needed?() do
+      return 0
+    end
     if Kpkg.is_installed?(pkg, tree, arch) do
       return 0
     end

@@ -10,7 +10,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Kpkg.Repos.Kc3 do
+defmodule Kpkg.Repos.KC3 do
 
   Kpkg.defpackage(
     %Kpkg.Package{name: :kc3,

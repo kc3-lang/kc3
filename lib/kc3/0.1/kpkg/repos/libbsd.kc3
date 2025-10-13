@@ -20,6 +20,9 @@ defmodule Kpkg.Repos.LibBSD do
                   dir: "freedesktop.org/libbsd",
                   git: "https://git.kmx.io/kc3-lang/libbsd.git",
                   git_push: "git@git.kmx.io:kc3-lang/libbsd.git",
+                  is_needed?: fn () {
+                    ! Str.ends_with?(Kpkg.uname(), "BSD")
+                  },
                   module: module()}
   )
 

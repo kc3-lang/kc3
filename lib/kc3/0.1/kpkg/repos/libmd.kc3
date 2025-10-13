@@ -20,8 +20,10 @@ defmodule Kpkg.Repos.LibMD do
                   dir: "hadrons.org/libmd",
                   git: "https://git.kmx.io/kc3-lang/libmd.git",
                   git_push: "git@git.kmx.io:kc3-lang/libmd.git",
+                  is_needed?: fn () {
+                    ! Str.ends_with?(Kpkg.uname(), "BSD")
+                  },
                   module: module()}
   )
 
 end
-
