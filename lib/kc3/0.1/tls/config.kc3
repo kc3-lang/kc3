@@ -12,8 +12,6 @@
 
 defmodule TLS.Config do
 
-  dlopen("tls.so")
-
   def free = cfn Void "kc3_tls_config_free" (TLS.Config*)
 
   def error = cfn Str "kc3_tls_config_error" (TLS.Config*, Result)

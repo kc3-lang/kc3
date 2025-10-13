@@ -18,8 +18,6 @@ defmodule TLS.Server do
   defstruct [socket_buf: %Socket.Buf{},
              tls_version: ""]
 
-  dlopen("tls.so")
-
   def accept = cfn TLS.Server "kc3_tls_server_init_accept" (Result,
     Socket, TLS*)
 

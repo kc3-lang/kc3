@@ -15,7 +15,7 @@ require TLS.Config
 
 defmodule TLS do
 
-  dlopen("tls.so")
+  # dlopen("tls.so") # not needed, link directly to libkc3_tls.la
 
   def accept_socket = cfn TLS* "kc3_tls_accept_socket" (TLS*, Result,
     Socket)
