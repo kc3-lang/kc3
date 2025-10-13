@@ -12,18 +12,13 @@
    - libressl/
 
  - Trouver le repo git original sur Google de chaque package JNI.
-
-   |-------------------------------------------------------------------|
-   | package  | repo git upstream                                      |
-   |-------------------------------------------------------------------|
-   | freetype |
-   | libbsd   |
-   | libevent |
-   | libffi   |
-   | libmd    |
-   | libpng   |
-   | libressl |
-   |-------------------------------------------------------------------|
+   - freetype : <>
+   - libbsd   : <>
+   - libevent : <>
+   - libffi   : <>
+   - libmd    : <>
+   - libpng   : <>
+   - libressl : <>
 
  - Faire un repo git sur https://git.kmx.io/kc3-lang/ pour chaque
    package JNI :
@@ -87,4 +82,3 @@
 [ ] : Not implemented
 [.] : Work in progress
 [?] : Has to be tested/verified
-
