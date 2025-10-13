@@ -87,6 +87,45 @@ sw pdf_buf_write_float (s_buf *buf, f32 src)
   return buf_inspect_f32(buf, src);
 }
 
+sw pdf_buf_write_indirect_ref (s_buf *buf, const s_tuple *src)
+{
+  assert(buf);
+  assert(src);
+
+  if (src->count != 2) {
+    err_puts("pdf_buf_write_indirect_object: invalid tuple size");
+    assert(! "pdf_buf_write_indirect_object: invalid tuple size");
+    return -1;
+  }
+  pdf_buf_write_tag(buf, &src->tag[0]);
+  buf_write_u8(buf, ' ');
+  pdf_buf_write_tag(buf, &src->tag[1]);
+  buf_write_1(buf, " R");
+}
+
+sw pdf_buf_write_indirect_start (s_buf *buf, const s_tuple *src)
+{
+  assert(buf);
+  assert(src);
+
+  if (src->count != 2) {
+    err_puts("pdf_buf_write_indirect_object: invalid tuple size");
+    assert(! "pdf_buf_write_indirect_object: invalid tuple size");
+    return -1;
+  }
+  pdf_buf_write_tag(buf, &src->tag[0]);
+  buf_write_u8(buf, ' ');
+  pdf_buf_write_tag(buf, &src->tag[1]);
+  buf_write_1(buf, " R");
+}
+
+sw pdf_buf_write_indirect_end (s_buf *buf)
+{
+  assert(buf);
+
+  buf_write_1(buf, "endobj");
+}
+
 sw pdf_buf_write_integer (s_buf *buf, s32 src)
 {
   assert(buf);
@@ -152,6 +191,8 @@ sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
     case TAG_U32:  return pdf_buf_write_integer(buf, src->data.u32);
     case TAG_U64:  return pdf_buf_write_integer(buf, src->data.u64);
     case TAG_UW:   return pdf_buf_write_integer(buf, src->data.uw);
+    case TAG_INTEGER:
+      return buf_inspect_integer(buf, &src->data.integer);
     case TAG_MAP:
       return pdf_buf_write_dictionnary(buf, &src->data.map);
     case TAG_STR:  return pdf_buf_write_string_hex(buf, &src->data.str);
@@ -170,5 +211,7 @@ sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
 // writes token without separators
 sw pdf_buf_write_token(s_buf *buf, const char *pchar)
 {
+  assert(buf);
+
   return buf_write_1(buf, pchar);
 }
