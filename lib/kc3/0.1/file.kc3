@@ -33,6 +33,8 @@ defmodule File do
 
   def is_directory? = cfn Bool "file_is_directory" (Str, Result)
 
+  def is_regular? = cfn Bool "file_is_regular" (Str, Result)
+
   # link(old, new) => success
   def link = cfn Bool "file_link" (Str, Str)
 

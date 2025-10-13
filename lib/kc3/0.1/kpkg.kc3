@@ -653,13 +653,17 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
         hash = Str.slice(line, 0, pos)
         filename = "#{prefix}/#{Str.slice(line, pos + 1, -1)}"
         if File.exists?(filename) do
-          if File.sha512_base64url(filename) == hash do
-            Kpkg.exec(["rm", "-f", filename])
+          if File.is_regular?(filename) do
+            if File.sha512_base64url(filename) == hash do
+              Kpkg.exec(["rm", "-f", filename])
+            else
+              puts("kpkg: uninstall: checksum changed: #{filename}")
+            end
           else
-            puts("kpkg: uninstall: checksum changed: #{filename}")
+            Kpkg.exec(["rm", "-f", filename])
           end
         else
-          puts("kpkg: uninstall: file was removed: #{filename}")
+          puts("kpkg: uninstall: missing file: #{filename}")
         end
       end
     })

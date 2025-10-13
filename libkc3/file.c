@@ -316,6 +316,27 @@ bool file_is_directory_1 (const char *path)
   return tmp;
 }
 
+bool * file_is_regular (const s_str *path, bool *dest)
+{
+  s32 e;
+  struct stat sb;
+  assert(path);
+  if (lstat(path->ptr.pchar, &sb)) {
+    e = errno;
+    if (e == ENOENT) {
+      *dest = false;
+      return dest;
+    }
+    err_write_1("file_is_regular: ");
+    err_write_1(strerror(e));
+    err_write_1(": ");
+    err_puts(path->ptr.pchar);
+    return NULL;
+  }
+  *dest = S_ISREG(sb.st_mode) ? true : false;
+  return dest;
+}
+
 #if ! (defined(WIN32) || defined(WIN64))
 bool file_link (const s_str *from, const s_str *to)
 {
