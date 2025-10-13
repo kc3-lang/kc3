@@ -190,6 +190,8 @@ defmodule Kpkg do
         match args do
           ["--arch", arch_arg | rest] ->
             arch = ^ arch_arg
+          ["--branch", branch_arg | rest] ->
+            tree = ^ branch_arg
           ["build" | rest] ->
             result = Kpkg.build(pkg, tree, arch)
           ["build-dependencies" | rest] ->
@@ -248,8 +250,9 @@ defmodule Kpkg do
 Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] …
 🐢 #{title}Options :#{reset}
     --arch ARCH          build for $ARCH
+    --branch BRANCH      work on tree $BRANCH (same as --tree)
     --color              enable text styling and colors
-    --tree TREE          work on $TREE
+    --tree TREE          work on tree $TREE (same as --branch)
 🐢 #{title}Source directory commands :#{reset}
     checkout             git checkout $TREE into src/$DIR/$TREE
     checkout-clean       remove checkout files : src/$DIR/$TREE
@@ -278,7 +281,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   ## Package configuration
 
   def git_dir = fn (pkg) {
-    "#{Kpkg.dir()}/git/#{pkg.dir}"
+    "#{Kpkg.dir()}/git/#{pkg.dir}.git"
   }
 
   def git_parent_dir = fn (pkg) {
@@ -376,17 +379,20 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
     if File.exists?(pkg_src_dir + "/autogen.sh") do
       Kpkg.exec(["/bin/sh", "-c", "cd #{Sh.escape(pkg_src_dir)} && /bin/sh autogen.sh"])
+      Kpkg.log_call("autogen #{pkg.name} #{tree}: OK")
     else
       if File.exists?(pkg_src_dir + "/autogen") do
         Kpkg.exec(["/bin/sh", "-c", "cd #{Sh.escape(pkg_src_dir)} && /bin/sh autogen"])
+        Kpkg.log_call("autogen #{pkg.name} #{tree}: OK")
       end
     end
+    0
   }
 
   def checkout = fn (pkg, tree) {
     Kpkg.log_call("checkout #{pkg.name} #{tree}")
     Kpkg.clone(pkg)
-    pkg_git_dir = Kpkg.git_dir(pkg) + "/.git"
+    pkg_git_dir = Kpkg.git_dir(pkg)
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
     if ! File.is_directory?(pkg_src_dir) do
       Kpkg.exec(["mkdir", "-p", Kpkg.src_parent_dir(pkg)])
@@ -395,6 +401,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
       Kpkg.exec(["git", "-C", pkg_src_dir, "submodule", "update",
                  "--recursive", "--remote"])
       Kpkg.autogen(pkg, tree)
+      Kpkg.log_call("checkout #{pkg.name} #{tree}: OK")
     end
     0
   }
@@ -404,6 +411,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
     if File.is_directory?(pkg_src_dir) do
       Kpkg.exec(["rm", "-rf", pkg_src_dir])
+      Kpkg.log_call("checkout_clean #{pkg.name} #{tree}: OK")
     end
     0
   }
@@ -413,11 +421,10 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     pkg_git_dir = Kpkg.git_dir(pkg)
     if ! File.is_directory?(pkg_git_dir) do
       Kpkg.exec(["mkdir", "-p", Kpkg.git_parent_dir(pkg)])
-      Kpkg.exec(["git", "clone", "-b", pkg.default_branch, pkg.git,
+      # TODO: --bare ?
+      Kpkg.exec(["git", "clone", "--bare", "--mirror", pkg.git,
                  pkg_git_dir])
-      Kpkg.exec(["git", "-C", pkg_git_dir, "submodule", "init"])
-      Kpkg.exec(["git", "-C", pkg_git_dir, "submodule", "update",
-                 "--recursive", "--remote"])
+      Kpkg.log_call("clone #{pkg.name}: OK")
     end
     0
   }
@@ -434,16 +441,12 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   ## Main API - dependencies
 
   def build_dependencies = fn (pkg) {
-    Kpkg.log_call("build_dependencies #{pkg.name}")
     deps = Kpkg.resolve_dependencies(pkg, :build_depends_on)
-    Kpkg.log_call("build_dependencies #{pkg.name}: #{deps}")
     deps
   }
 
   def dependencies = fn (pkg) {
-    Kpkg.log_call("dependencies #{pkg.name}")
     deps = Kpkg.resolve_dependencies(pkg, :depends_on)
-    Kpkg.log_call("dependencies #{pkg.name}: #{deps}")
     deps
   }
 
