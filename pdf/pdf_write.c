@@ -58,8 +58,8 @@ sw pdf_buf_write_dictionnary (s_buf *buf, const s_map *src)
   result += r;
   for (i = 0; i < src->count; i++) {
     if (src->key[i].type != TAG_PSYM) {
-      err_puts("pdf_buf_write_dictionary: key must be psym");
-      assert(! "pdf_buf_write_dictionary: key must be psym");
+      err_puts("pdf_buf_write_dictionary: key is not a Sym");
+      assert(! "pdf_buf_write_dictionary: key is not a Sym");
       return -1;
     }
     if ((r = pdf_buf_write_name(buf, src->key[i].data.psym)) < 0)
@@ -71,7 +71,8 @@ sw pdf_buf_write_dictionnary (s_buf *buf, const s_map *src)
     if ((r = pdf_buf_write_tag(buf, &src->value[i])) < 0)
       return r;
     result += r;
-    if (i < src->count - 1 && (r = buf_write_1(buf, " ")) < 0)
+    if (i < src->count - 1 &&
+        (r = buf_write_1(buf, " ")) < 0)
       return r;
   }
   if ((r = buf_write_1(buf, ">>")) < 0) {
@@ -92,12 +93,12 @@ sw pdf_buf_write_indirect_ref (s_buf *buf, const s_tuple *src)
   assert(buf);
   assert(src);
   if (src->count != 2) {
-    err_puts("pdf_buf_write_indirect_object: invalid tuple size");
-    assert(! "pdf_buf_write_indirect_object: invalid tuple size");
+    err_puts("pdf_buf_write_indirect_object: invalid Tuple");
+    assert(! "pdf_buf_write_indirect_object: invalid Tuple");
     return -1;
   }
   pdf_buf_write_tag(buf, &src->tag[0]);
-  buf_write_u8(buf, ' ');
+  buf_write_1(buf, " ");
   pdf_buf_write_tag(buf, &src->tag[1]);
   buf_write_1(buf, " R");
 }
@@ -112,7 +113,7 @@ sw pdf_buf_write_indirect_start (s_buf *buf, const s_tuple *src)
     return -1;
   }
   pdf_buf_write_tag(buf, &src->tag[0]);
-  buf_write_u8(buf, ' ');
+  buf_write_1(buf, " ");
   pdf_buf_write_tag(buf, &src->tag[1]);
   buf_write_1(buf, " obj");
 }
@@ -132,8 +133,8 @@ sw pdf_buf_write_integer (s_buf *buf, s32 src)
 sw pdf_buf_write_name (s_buf *buf, p_pdf_name src)
 {
   sw r = 0;
-  if ((r = buf_write_u8(buf, '/')) < 0
-    || (r = buf_write_str(buf, &src->str)) < 0) {
+  if ((r = buf_write_1(buf, "/")) < 0 ||
+      (r = buf_write_str(buf, &src->str)) < 0) {
     return r;
   }
   return r;
@@ -144,6 +145,7 @@ sw pdf_buf_write_null (s_buf *buf)
     return buf_write_1(buf, "null");
 }
 
+// FIXME: dest(ination) ?
 sw pdf_buf_write_string_hex (s_buf *buf, const s_str *dest)
 {
   u8 c;
@@ -152,20 +154,16 @@ sw pdf_buf_write_string_hex (s_buf *buf, const s_str *dest)
   s_buf read_buf = {0};
   const char *base = g_kc3_base_hexadecimal.ptr.pchar;
   buf_init_str_const(&read_buf, dest);
-
-  if ((r = buf_write_1(buf, "<")) < 0) {
+  if ((r = buf_write_1(buf, "<")) < 0)
     goto cleanup;
-  }
   for (i = 0; i < dest->size; i++) {
     if ((r = buf_read_u8(&read_buf, &c)) < 0
       || (r = buf_write_u8(buf, base[c & 0xf])) < 0
-      || (r = buf_write_u8(buf, base[(c >> 4) & 0xf])) < 0) {
+      || (r = buf_write_u8(buf, base[(c >> 4) & 0xf])) < 0)
       goto cleanup;
-    }
   }
-  if ((r = buf_write_1(buf, ">")) < 0) {
+  if ((r = buf_write_1(buf, ">")) < 0)
     goto cleanup;
-  }
  cleanup:
   buf_clean(&read_buf);
   return r;
