@@ -31,6 +31,7 @@
 #include "buf_parse.h"
 #include "call.h"
 #include "character.h"
+#include "error.h"
 #include "ident.h"
 #include "inspect.h"
 #include "io.h"
@@ -1033,6 +1034,34 @@ s_str * str_init_integer (s_str *str, const s_integer *x)
 }
 
 DEF_STR_INIT_PTR(list, const s_list *)
+
+s_str * str_init_mul (s_str *str, const s_str *src, uw count)
+{
+  uw i;
+  s_str tmp = {0};
+  char *pchar;
+  i = 0;
+  while (i < count) {
+    if (tmp.size > U32_MAX - src->size) {
+      ERROR("size > U32_MAX");
+      return NULL;
+    }
+    tmp.size += src->size;
+    i++;
+  }
+  if (! str_init_alloc(&tmp, tmp.size))
+    return NULL;
+  pchar = tmp.free.pchar;
+  i = 0;
+  while (i < count) {
+    memcpy(pchar, src->ptr.p, src->size);
+    pchar += src->size;
+    i++;
+  }
+  *str = tmp;
+  return str;
+}
+
 DEF_STR_INIT_PTR(plist, p_list *)
 DEF_STR_INIT_STRUCT(map)
 DEF_STR_INIT_PTR(ptr, const u_ptr_w *)

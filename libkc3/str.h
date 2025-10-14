@@ -74,6 +74,7 @@ PROTOTYPE_STR_INIT(inspect_buf, const s_buf *);
 s_str * str_init_inspect_str (s_str *str, const s_str *src);
 PROTOTYPE_STR_INIT_STRUCT(integer);
 PROTOTYPE_STR_INIT(list, const s_list *);
+s_str * str_init_mul (s_str *str, const s_str *src, uw count);
 PROTOTYPE_STR_INIT(plist, p_list *);
 PROTOTYPE_STR_INIT_STRUCT(map);
 PROTOTYPE_STR_INIT(ptr, const u_ptr_w *);

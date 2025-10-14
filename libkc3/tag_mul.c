@@ -15,12 +15,18 @@
 #include "complex.h"
 #include "integer.h"
 #include "ratio.h"
+#include "str.h"
+#include "sym.h"
 #include "tag.h"
+#include "uw.h"
 
 s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
 {
   s_complex c = {0};
+  uw i;
   s_ratio r = {0};
+  s_str str = {0};
+  const s_sym *sym_Uw = &g_sym_Uw;
   s_tag tag = {0};
   s_integer tmp = {0};
   s_integer tmp2 = {0};
@@ -780,6 +786,17 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
     default:
       goto ko;
     }
+  case TAG_STR:
+    if (uw_init_cast(&i, &sym_Uw, b)) {
+      if (! str_init_mul(&str, &a->data.str, i)) {
+        err_puts("tag_mul: str_init_mul");
+        return NULL;
+      }
+      dest->type = TAG_STR;
+      dest->data.str = str;
+      return dest;
+    }
+    goto ko;
   case TAG_SW:
     switch (b->type) {
     case TAG_PCOMPLEX:

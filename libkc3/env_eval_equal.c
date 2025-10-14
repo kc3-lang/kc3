@@ -489,10 +489,12 @@ bool env_eval_equal_tuple (s_env *env, bool macro, s_tuple *a,
   while (i < a->count) {
     if (! env_eval_equal_tag(env, macro, a->tag + i, b->tag + i,
                              tmp.tag + i)) {
-      err_write_1("env_eval_equal_tuple: tuple tag mismatch index ");
-      err_inspect_uw(i);
-      err_write_1("\n");
-      assert(! "env_eval_equal_tuple: tuple tag mismatch");
+      if (false) {
+        err_write_1("env_eval_equal_tuple: tuple tag mismatch index ");
+        err_inspect_uw(i);
+        err_write_1("\n");
+        assert(! "env_eval_equal_tuple: tuple tag mismatch");
+      }
       tuple_clean(&tmp);
       return false;
     }
