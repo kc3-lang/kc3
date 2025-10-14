@@ -10,6 +10,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require Counter
 require FD
 require File
 require IO
@@ -326,6 +327,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     {code, out_err} = system([Kpkg.cc_local(), "-v"])
     if (code) do
       puts("kpkg: arch_local: cc_local")
+      puts(out_err)
       exit(1)
     end
     List.each(Str.split(out_err, "\n"), fn (line) {
@@ -362,7 +364,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     reset = if style? do "#{Terminal.reset}" end
     style = if style? do "#{Terminal.bold}#{Terminal.fg_blue}" end
     cmd_str = List.join(cmd, " ")
-    puts("#{style}#{cmd_str}#{reset}")
+    Kpkg.indent_puts("#{style}#{cmd_str}#{reset}")
     match system(cmd) do
       {0, out_err} ->
         if (Str.ends_with?(out_err, "\n")) do
@@ -381,11 +383,26 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     end
   }
 
+  defcounter indent_level = 0
+
+  def indent = fn (level) {
+    if level > 0 do
+      Counter.increase(Kpkg.indent_level, level)
+    else
+      Counter.decrease(Kpkg.indent_level, - level)
+    end
+  }
+
+  def indent_puts = fn (msg) {
+    spaces = " " * Counter.get(Kpkg.indent_level)
+    puts("#{spaces}#{msg}")
+  }
+
   def log_call = fn (msg) {
     style? = Kpkg.style?()
     reset = if style? do "#{Terminal.reset}" end
     style = if style? do "#{Terminal.bold}#{Terminal.fg_magenta}" end
-    puts("#{style}#{msg}#{reset}")
+    Kpkg.indent_puts("#{style}#{msg}#{reset}")
   }
 
   def style? = fn () {
@@ -396,22 +413,24 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
 
   def autogen = fn (pkg, tree) {
     Kpkg.log_call("autogen #{pkg.name} #{tree}")
+    Kpkg.indent(2)
     Kpkg.checkout(pkg, tree)
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
     if File.exists?(pkg_src_dir + "/autogen.sh") do
       Kpkg.exec!(["/bin/sh", "-c", "cd #{Sh.escape(pkg_src_dir)} && /bin/sh autogen.sh"])
-      Kpkg.log_call("autogen #{pkg.name} #{tree}: OK")
     else
       if File.exists?(pkg_src_dir + "/autogen") do
         Kpkg.exec!(["/bin/sh", "-c", "cd #{Sh.escape(pkg_src_dir)} && /bin/sh autogen"])
-        Kpkg.log_call("autogen #{pkg.name} #{tree}: OK")
       end
     end
+    Kpkg.indent(-2)
+    Kpkg.log_call("autogen #{pkg.name} #{tree}: OK")
     0
   }
 
   def checkout = fn (pkg, tree) {
     Kpkg.log_call("checkout #{pkg.name} #{tree}")
+    Kpkg.indent(2)
     Kpkg.clone(pkg)
     pkg_git_dir = Kpkg.git_dir(pkg)
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
@@ -422,40 +441,48 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
       Kpkg.exec!(["git", "-C", pkg_src_dir, "submodule", "update",
                   "--recursive", "--remote"])
       Kpkg.autogen(pkg, tree)
-      Kpkg.log_call("checkout #{pkg.name} #{tree}: OK")
     end
+    Kpkg.indent(-2)
+    Kpkg.log_call("checkout #{pkg.name} #{tree}: OK")
     0
   }
 
   def checkout_clean = fn (pkg, tree) {
     Kpkg.log_call("checkout_clean #{pkg.name} #{tree}")
+    Kpkg.indent(2)
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
     if File.is_directory?(pkg_src_dir) do
       Kpkg.exec!(["rm", "-rf", pkg_src_dir])
-      Kpkg.log_call("checkout_clean #{pkg.name} #{tree}: OK")
     end
+    Kpkg.indent(-2)
+    Kpkg.log_call("checkout_clean #{pkg.name} #{tree}: OK")
     0
   }
 
   def clone = fn (pkg) {
     Kpkg.log_call("clone #{pkg.name}")
+    Kpkg.indent(2)
     pkg_git_dir = Kpkg.git_dir(pkg)
     if ! File.is_directory?(pkg_git_dir) do
       Kpkg.exec!(["mkdir", "-p", Kpkg.git_parent_dir(pkg)])
       # TODO: --bare ?
       Kpkg.exec!(["git", "clone", "--bare", "--mirror", pkg.git,
                   pkg_git_dir])
-      Kpkg.log_call("clone #{pkg.name}: OK")
     end
+    Kpkg.indent(-2)
+    Kpkg.log_call("clone #{pkg.name}: OK")
     0
   }
 
   def clone_clean = fn (pkg) {
     Kpkg.log_call("clone_clean #{pkg.name}")
+    Kpkg.indent(2)
     pkg_git_dir = Kpkg.git_dir(pkg)
     if File.is_directory?(pkg_git_dir) do
       Kpkg.exec!(["rm", "-rf", pkg_git_dir])
     end
+    Kpkg.indent(-2)
+    Kpkg.log_call("clone_clean #{pkg.name}: OK")
     0
   }
 
@@ -473,21 +500,25 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
 
   def install_build_dependencies = fn (pkg, tree) {
     Kpkg.log_call("install_build_dependencies #{pkg.name} #{tree}")
+    Kpkg.indent(2)
     deps = Kpkg.build_dependencies(pkg)
     List.each(deps, fn ({dep_name, dep_tree}) {
       dep_pkg = Kpkg.get_package_or_die(dep_name)
       Kpkg.install(dep_pkg, dep_tree, Kpkg.local_arch)
     })
+    Kpkg.indent(-2)
     Kpkg.log_call("install_build_dependencies #{pkg.name} #{tree}: OK")
   }
 
   def install_dependencies = fn (pkg, tree, arch) {
     Kpkg.log_call("install_dependencies #{pkg.name} #{tree} #{arch}")
+    Kpkg.indent(2)
     deps = Kpkg.dependencies(pkg)
     List.each(deps, fn ({dep_name, dep_tree}) {
       dep_pkg = Kpkg.get_package_or_die(dep_name)
       Kpkg.install(dep_pkg, dep_tree, arch)
     })
+    Kpkg.indent(-2)
     Kpkg.log_call("install_dependencies #{pkg.name} #{tree} #{arch}: OK")
   }
 
@@ -523,41 +554,47 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
 
   def build = fn (pkg, tree, arch) {
     Kpkg.log_call("build #{pkg.name} #{tree} #{arch}")
+    Kpkg.indent(2)
     Kpkg.configure(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     Kpkg.exec!([pkg.make, "-C", build_dir])
+    Kpkg.indent(-2)
     Kpkg.log_call("build #{pkg.name} #{tree} #{arch}: OK")
     0
   }
 
   def configure = fn (pkg, tree, arch) {
     Kpkg.log_call("configure #{pkg.name} #{tree} #{arch}")
+    Kpkg.indent(2)
     Kpkg.checkout(pkg, tree)
     Kpkg.install_build_dependencies(pkg, tree)
     Kpkg.install_dependencies(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
-    if File.access?("#{build_dir}/.kpkg_configure_done", :r) do
-      return 0
+    if ! File.access?("#{build_dir}/.kpkg_configure_done", :r) do
+      build_dir_sh = Sh.escape(build_dir)
+      configure_path_sh = Sh.escape(Kpkg.configure_path(pkg, tree))
+      prefix_sh = Sh.escape(Kpkg.prefix_dir(arch))
+      File.ensure_directory(build_dir, Kpkg.umask)
+      Kpkg.exec!(["/bin/sh", "-c",
+                  "cd #{build_dir_sh} && #{configure_path_sh}" +
+                  " --prefix #{prefix_sh} &&" +
+                  " echo 1 > .kpkg_configure_done"])
     end
-    build_dir_sh = Sh.escape(build_dir)
-    configure_path_sh = Sh.escape(Kpkg.configure_path(pkg, tree))
-    prefix_sh = Sh.escape(Kpkg.prefix_dir(arch))
-    File.ensure_directory(build_dir, Kpkg.umask)
-    Kpkg.exec!(["/bin/sh", "-c",
-                "cd #{build_dir_sh} && #{configure_path_sh}" +
-                " --prefix #{prefix_sh} &&" +
-                " echo 1 > .kpkg_configure_done"])
+    Kpkg.indent(-2)
     Kpkg.log_call("configure #{pkg.name} #{tree} #{arch}: OK")
     0
   }
 
   def configure_clean = fn (pkg, tree, arch) {
-    Kpkg.log_call("configure-clean #{pkg.name} #{tree} #{arch}")
+    Kpkg.log_call("configure_clean #{pkg.name} #{tree} #{arch}")
+    Kpkg.indent(2)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     configure_done = "#{build_dir}/.kpkg_configure_done"
     if File.access?(configure_done, :r) do
       Kpkg.exec!(["rm", configure_done])
     end
+    Kpkg.indent(-2)
+    Kpkg.log_call("configure_clean #{pkg.name} #{tree} #{arch}")
     0
   }
 
@@ -565,6 +602,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
 
   def fake = fn (pkg, tree, arch) {
     Kpkg.log_call("fake #{pkg.name} #{tree} #{arch}")
+    Kpkg.indent(2)
     Kpkg.build(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     destdir = Kpkg.destdir(pkg, tree, arch)
@@ -573,55 +611,61 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.exec!(["/bin/sh", "-c",
                 "make -C #{Sh.escape(build_dir)}" +
                 " DESTDIR=#{destdir_sh} install"])
+    Kpkg.indent(-2)
     Kpkg.log_call("fake #{pkg.name} #{tree} #{arch}: OK")
     0
   }
 
   def fake_clean = fn (pkg, tree, arch) {
     Kpkg.log_call("fake_clean #{pkg.name} #{tree} #{arch}")
+    Kpkg.indent(2)
     destdir = Kpkg.destdir(pkg, tree, arch)
     if File.exists?(destdir) do
       Kpkg.exec!(["rm", "-rf", destdir])
     end
+    Kpkg.indent(-2)
+    Kpkg.log_call("fake_clean #{pkg.name} #{tree} #{arch}: OK")
     0
   }
 
   def package = fn (pkg, tree, arch) {
     Kpkg.log_call("package #{pkg.name} #{tree} #{arch}")
+    Kpkg.indent(2)
     pkg_path = Kpkg.package_path(pkg, tree, arch)
     pkg_name = "#{pkg.name}-#{tree}-#{arch}"
     pkg_pathname = "#{pkg_path}/#{pkg_name}"
     pkg_file = "#{pkg_pathname}.tar.gz"
     manifest_file = "#{pkg_pathname}.manifest"
     checksum_file = "#{pkg_pathname}.sha512"
-    if File.exists?(pkg_file) &&
-       File.exists?(manifest_file) &&
-       File.exists?(checksum_file) do
-      return 0
+    if ! File.exists?(pkg_file) ||
+       ! File.exists?(manifest_file) ||
+       ! File.exists?(checksum_file) do
+      Kpkg.fake(pkg, tree, arch)
+      destdir = Kpkg.destdir(pkg, tree, arch)
+      prefix = Kpkg.prefix_dir(arch)
+      destdir_prefix = "#{destdir}#{prefix}"
+      File.ensure_directory(pkg_path, Kpkg.umask)
+      files = File.list_recursive(destdir_prefix)
+      manifest = str(List.map(files, fn (file_path) {
+        if ! File.is_directory?(file_path) do
+          checksum = File.sha512_base64url(file_path)
+          rel_path = Str.slice(file_path, Str.size(destdir_prefix) + 1, -1)
+          "#{checksum} #{rel_path}\n"
+        end
+      }))
+      File.write_str(manifest_file, manifest)
+      Kpkg.exec!(["tar", "-C", destdir_prefix, "-czf", pkg_file, "."])
+      pkg_checksum = "#{File.sha512_base64url(pkg_file)} #{pkg_name}.tar.gz\n"
+      File.write_str(checksum_file, pkg_checksum)
     end
-    Kpkg.fake(pkg, tree, arch)
-    destdir = Kpkg.destdir(pkg, tree, arch)
-    prefix = Kpkg.prefix_dir(arch)
-    destdir_prefix = "#{destdir}#{prefix}"
-    File.ensure_directory(pkg_path, Kpkg.umask)
-    files = File.list_recursive(destdir_prefix)
-    manifest = str(List.map(files, fn (file_path) {
-      if ! File.is_directory?(file_path) do
-        checksum = File.sha512_base64url(file_path)
-        rel_path = Str.slice(file_path, Str.size(destdir_prefix) + 1, -1)
-        "#{checksum} #{rel_path}\n"
-      end
-    }))
-    File.write_str(manifest_file, manifest)
-    Kpkg.exec!(["tar", "-C", destdir_prefix, "-czf", pkg_file, "."])
-    pkg_checksum = "#{File.sha512_base64url(pkg_file)} #{pkg_name}.tar.gz\n"
-    File.write_str(checksum_file, pkg_checksum)
+    Kpkg.indent(-2)
     Kpkg.log_call("package #{pkg.name} #{tree} #{arch}: OK")
     0
   }
 
   def package_clean = fn (pkg, tree, arch) {
     Kpkg.log_call("package_clean #{pkg.name} #{tree} #{arch}")
+    Kpkg.indent(2)
     pkg_path = package_path(pkg, tree, arch)
     pkg_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.tar.gz"
     manifest_file = "#{pkg_path}/#{pkg.name}-#{tree}-#{arch}.manifest"
@@ -631,6 +675,8 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
        File.exists?(checksum_file) do
       Kpkg.exec!(["rm", "-f", pkg_file, manifest_file, checksum_file])
     end
+    Kpkg.indent(-2)
+    Kpkg.log_call("package_clean #{pkg.name} #{tree} #{arch}: OK")
     0
   }
 
@@ -651,77 +697,77 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
 
   def install = fn (pkg, tree, arch) {
     Kpkg.log_call("install #{pkg.name} #{tree} #{arch}")
+    Kpkg.indent(2)
     is_needed? = pkg.is_needed?
-    if ! is_needed?() do
-      return 0
-    end
-    if Kpkg.is_installed?(pkg, tree, arch) do
-      return 0
-    end
-    Kpkg.package(pkg, tree, arch)
-    pkg_path = package_path(pkg, tree, arch)
-    pkg_name = "#{pkg.name}-#{tree}-#{arch}"
-    pkg_pathname = "#{pkg_path}/#{pkg_name}"
-    pkg_file = "#{pkg_pathname}.tar.gz"
-    manifest_file = "#{pkg_pathname}.manifest"
-    prefix = Kpkg.prefix_dir(arch)
-    installed_path = Kpkg.installed_db_path(pkg, tree, arch)
-    installed_dir = File.dirname(installed_path)
-    tmp_dir = Kpkg.tmp(prefix)
-    File.ensure_directory(prefix, Kpkg.umask)
-    File.ensure_directory(installed_dir, Kpkg.umask)
-    File.ensure_directory(tmp_dir, Kpkg.umask)
-    Kpkg.exec!(["tar", "-C", tmp_dir, "-xzf", pkg_file])
-    tmp_files = File.list_recursive(tmp_dir)
-    List.each(tmp_files, fn (file) {
-      if ! File.is_directory?(file) do
-        src = Str.slice(file, Str.size(tmp_dir), -1)
-        target = "#{prefix}#{src}"
-        if File.exists?(target) do
-          puts("install: file exists, not copying: #{target}")
-        else
-          Kpkg.exec!(["cp", file, target])
+    if is_needed?() &&
+       ! Kpkg.is_installed?(pkg, tree, arch) do
+      Kpkg.package(pkg, tree, arch)
+      pkg_path = package_path(pkg, tree, arch)
+      pkg_name = "#{pkg.name}-#{tree}-#{arch}"
+      pkg_pathname = "#{pkg_path}/#{pkg_name}"
+      pkg_file = "#{pkg_pathname}.tar.gz"
+      manifest_file = "#{pkg_pathname}.manifest"
+      prefix = Kpkg.prefix_dir(arch)
+      installed_path = Kpkg.installed_db_path(pkg, tree, arch)
+      installed_dir = File.dirname(installed_path)
+      tmp_dir = Kpkg.tmp(prefix)
+      File.ensure_directory(prefix, Kpkg.umask)
+      File.ensure_directory(installed_dir, Kpkg.umask)
+      File.ensure_directory(tmp_dir, Kpkg.umask)
+      Kpkg.exec!(["tar", "-C", tmp_dir, "-xzf", pkg_file])
+      tmp_files = File.list_recursive(tmp_dir)
+      List.each(tmp_files, fn (file) {
+        if ! File.is_directory?(file) do
+          src = Str.slice(file, Str.size(tmp_dir), -1)
+          target = "#{prefix}#{src}"
+          if File.exists?(target) do
+            puts("install: file exists, not copying: #{target}")
+          else
+            Kpkg.exec!(["cp", file, target])
+          end
         end
-      end
-    })
-    Kpkg.exec!(["rm", "-rf", tmp_dir])
-    Kpkg.exec!(["cp", manifest_file, installed_path])
+      })
+      Kpkg.exec!(["rm", "-rf", tmp_dir])
+      Kpkg.exec!(["cp", manifest_file, installed_path])
+    end
+    Kpkg.indent(-2)
     Kpkg.log_call("install #{pkg.name} #{tree} #{arch}: OK")
     0
   }
 
   def uninstall = fn (pkg, tree, arch) {
     Kpkg.log_call("uninstall #{pkg.name} #{tree} #{arch}")
-    if ! Kpkg.is_installed?(pkg, tree, arch) do
-      return 0
-    end
-    prefix = Kpkg.prefix_dir(arch)
-    pkg_path = package_path(pkg, tree, arch)
-    pkg_name = "#{pkg.name}-#{tree}-#{arch}"
-    pkg_pathname = "#{pkg_path}/#{pkg_name}"
-    installed_path = Kpkg.installed_db_path(pkg, tree, arch)
-    installed = File.read_all(installed_path)
-    List.each(Str.split(installed, "\n"), fn (line) {
-      if (line != "") do
-        pos = Str.position_str(line, " ")
-        hash = Str.slice(line, 0, pos)
-        filename = "#{prefix}/#{Str.slice(line, pos + 1, -1)}"
-        if File.exists?(filename) do
-          if File.is_regular?(filename) do
-            if File.sha512_base64url(filename) == hash do
-              Kpkg.exec!(["rm", "-f", filename])
+    Kpkg.indent(2)
+    if Kpkg.is_installed?(pkg, tree, arch) do
+      prefix = Kpkg.prefix_dir(arch)
+      pkg_path = package_path(pkg, tree, arch)
+      pkg_name = "#{pkg.name}-#{tree}-#{arch}"
+      pkg_pathname = "#{pkg_path}/#{pkg_name}"
+      installed_path = Kpkg.installed_db_path(pkg, tree, arch)
+      installed = File.read_all(installed_path)
+      List.each(Str.split(installed, "\n"), fn (line) {
+        if (line != "") do
+          pos = Str.position_str(line, " ")
+          hash = Str.slice(line, 0, pos)
+          filename = "#{prefix}/#{Str.slice(line, pos + 1, -1)}"
+          if File.exists?(filename) do
+            if File.is_regular?(filename) do
+              if File.sha512_base64url(filename) == hash do
+                Kpkg.exec!(["rm", "-f", filename])
+              else
+                puts("kpkg: uninstall: checksum changed: #{filename}")
+              end
             else
-              puts("kpkg: uninstall: checksum changed: #{filename}")
+              Kpkg.exec!(["rm", "-f", filename])
             end
           else
-            Kpkg.exec!(["rm", "-f", filename])
+            puts("kpkg: uninstall: missing file: #{filename}")
           end
-        else
-          puts("kpkg: uninstall: missing file: #{filename}")
         end
-      end
-    })
-    Kpkg.exec!(["rm", "-f", installed_path])
+      })
+      Kpkg.exec!(["rm", "-f", installed_path])
+    end
+    Kpkg.indent(-2)
     Kpkg.log_call("uninstall #{pkg.name} #{tree} #{arch}: OK")
     0
   }
