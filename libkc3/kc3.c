@@ -69,6 +69,7 @@
 #include "tag.h"
 #include "time.h"
 #include "timespec.h"
+#include "tuple.h"
 #include "u8.h"
 #include "uw.h"
 
@@ -87,8 +88,8 @@ const s_str g_kc3_base64url = STR("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 sw          g_kc3_exit_code = 1;
 
 #ifndef WIN32
-void kc3_system_pipe_exec (s32 pipe_fd, char **argv,
-                           const s_list * const *list);
+static void kc3_system_pipe_exec (s32 pipe_w, char **argv,
+                                  p_list *list);
 #endif
 
 #ifdef WIN32
@@ -1343,7 +1344,7 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
 #endif
 }
 
-s_str * kc3_system (const s_list * const *list, s_str *dest)
+s_tuple * kc3_system (p_list *list, s_tuple *dest)
 {
 #ifdef WIN32
   (void) list;
@@ -1357,10 +1358,11 @@ s_str * kc3_system (const s_list * const *list, s_str *dest)
   sw len;
   pid_t pid;
   s32 pipe_fd[2];
-  s_str *r = NULL;
+  s_tuple *r = NULL;
   s32 status;
   const s_str *str;
-  s_str tmp;
+  s_tuple tmp = {0};
+  s_str tmp_str = {0};
   assert(list);
   assert(dest);
   if (securelevel(0) > 0) {
@@ -1410,7 +1412,7 @@ s_str * kc3_system (const s_list * const *list, s_str *dest)
     _exit(1);
   }
   close(pipe_fd[1]);
-  if (! fd_read_until_eof(pipe_fd[0], &tmp)) {
+  if (! fd_read_until_eof(pipe_fd[0], &tmp_str)) {
     err_puts("kc3_system: fd_read_until_eof");
     assert(! "kc3_system: fd_read_until_eof");
     goto clean;
@@ -1421,8 +1423,16 @@ s_str * kc3_system (const s_list * const *list, s_str *dest)
     err_write_1("kc3_system: waitpid: ");
     err_puts(strerror(e));
     assert(! "kc3_system: waitpid");
+    str_clean(&tmp_str);
     goto clean;
   }
+  if (! tuple_init(&tmp, 2))
+    goto clean;
+  tmp.tag[0].type = TAG_S32;
+  tmp.tag[0].data.s32 = status;
+  tag_integer_reduce(tmp.tag, tmp.tag);
+  tmp.tag[1].type = TAG_STR;
+  tmp.tag[1].data.str = tmp_str;
   *dest = tmp;
   r = dest;
  clean:
@@ -1435,8 +1445,8 @@ s_str * kc3_system (const s_list * const *list, s_str *dest)
 #endif
 }
 
-void kc3_system_pipe_exec (s32 pipe_w, char **argv,
-                           const s_list * const *list)
+static void kc3_system_pipe_exec (s32 pipe_w, char **argv,
+                                  p_list *list)
 {
   sw e;
   if (securelevel(0) > 0) {

@@ -145,7 +145,7 @@ s_tag *      kc3_require (p_sym *module, s_tag *dest);
 s_str *      kc3_strerror (sw err_no, s_str *dest);
 s_tag *      kc3_struct_put (s_tag *s, p_sym *key,
                              s_tag *value, s_tag *dest);
-s_str *      kc3_system (const s_list * const *list, s_str *dest);
+s_tuple *    kc3_system (p_list *list, s_tuple *dest);
 s_tag *      kc3_thread_delete (u_ptr_w *thread, s_tag *dest);
 u_ptr_w *    kc3_thread_new (u_ptr_w *dest, p_callable *start);
 void *       kc3_thread_start (void *arg);

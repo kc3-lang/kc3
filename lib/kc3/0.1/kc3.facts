@@ -92,7 +92,7 @@ replace {KC3.to_lisp, :symbol_value, cfn Tag "to_lisp" (Tag, Result)}
 add {KC3, :symbol, KC3.inspect}
 replace {KC3.inspect, :symbol_value, cfn Str "inspect_tag" (Tag, Result)}
 add {KC3, :symbol, KC3.system}
-replace {KC3.system, :symbol_value, cfn Str "kc3_system" (List, Result)}
+replace {KC3.system, :symbol_value, cfn Tuple "kc3_system" (List, Result)}
 add {KC3, :symbol, KC3.integer_reduce}
 replace {KC3.integer_reduce, :symbol_value, cfn Tag "kc3_integer_reduce" (Tag, Result)}
 add {KC3, :symbol, KC3.args}
