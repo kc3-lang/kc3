@@ -221,7 +221,9 @@ s_tag * counter_increase (s_counter *counter, s_tag *positive,
   mutex_lock(counter->mutex);
 #endif
   if (! tag_is_positive_integer(positive)) {
-    err_puts("counter_increase: tag_is_positive_integer");
+    err_write_1("counter_increase: tag_is_positive_integer: ");
+    err_inspect_tag(positive);
+    err_write_1("\n");
     assert(! "counter_increase: tag_is_positive_integer");
     goto clean;
   }

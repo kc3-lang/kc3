@@ -14,8 +14,6 @@ require Mutex
 
 defmodule Counter do
 
-  defstruct []
-
   def decrease = cfn_macro Tag "kc3_counter_decrease" (Ident, Tag,
     Result)
 
