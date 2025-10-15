@@ -44,73 +44,79 @@ build_lo() {
 }
 
 build_lo_c() {
-    for SRC in $SOURCES; do
-        echo >> ${CONFIG_MK}
-        SRC_ASAN_LO="$(c2ext .asan.lo "$SRC")"
-        c_ext_rule .asan.lo "$SRC" build_c_asan >> ${CONFIG_MK}
-        echo "	./build_c_asan $SRC $SRC_ASAN_LO" >> ${CONFIG_MK}
+    for S in $SOURCES; do
+        SRC="${SRC_DIR}/${S}"
 
         echo >> ${CONFIG_MK}
-        SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
-        c_ext_rule .cov.lo "$SRC" build_c_cov >> ${CONFIG_MK}
+        SRC_ASAN_LO="$(c2ext .asan.lo "$S")"
+        c_ext_rule .asan.lo "$S" build_c_asan >> ${CONFIG_MK}
+        echo "	./build_c_asan $SRC ${SRC_ASAN_LO}" >> ${CONFIG_MK}
+
+        echo >> ${CONFIG_MK}
+        SRC_COV_LO="$(c2ext .cov.lo "$S")"
+        c_ext_rule .cov.lo "$S" build_c_cov >> ${CONFIG_MK}
         echo "	./build_c_cov $SRC $SRC_COV_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
-        SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
-        c_ext_rule .debug.lo "$SRC" build_c_debug >> ${CONFIG_MK}
+        SRC_DEBUG_LO="$(c2ext .debug.lo "$S")"
+        c_ext_rule .debug.lo "$S" build_c_debug >> ${CONFIG_MK}
         echo "	./build_c_debug $SRC $SRC_DEBUG_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
-        SRC_LO="$(c2ext .main.lo "$SRC")"
-        c_ext_rule .main.lo "$SRC" build_c_main >> ${CONFIG_MK}
+        SRC_LO="$(c2ext .main.lo "$S")"
+        c_ext_rule .main.lo "$S" build_c_main >> ${CONFIG_MK}
         echo "	./build_c_main $SRC $SRC_LO" >> ${CONFIG_MK}
     done
 }
 
 build_lo_cxx() {
-    for SRC in $SOURCES_CXX; do
+    for S in $SOURCES_CXX; do
+        SRC="${SRC_DIR}/${S}"
+
         echo >> ${CONFIG_MK}
-        SRC_ASAN_LO="$(cxx2ext .asan.lo "$SRC")"
-        cxx_ext_rule .asan.lo "$SRC" build_cxx_asan >> ${CONFIG_MK}
+        SRC_ASAN_LO="$(cxx2ext .asan.lo "$S")"
+        cxx_ext_rule .asan.lo "$S" build_cxx_asan >> ${CONFIG_MK}
         echo "	./build_cxx_asan $SRC $SRC_ASAN_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
-        SRC_COV_LO="$(cxx2ext .cov.lo "$SRC")"
-        cxx_ext_rule .cov.lo "$SRC" build_cxx_cov >> ${CONFIG_MK}
+        SRC_COV_LO="$(cxx2ext .cov.lo "$S")"
+        cxx_ext_rule .cov.lo "$S" build_cxx_cov >> ${CONFIG_MK}
         echo "	./build_cxx_cov $SRC $SRC_COV_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
-        SRC_DEBUG_LO="$(cxx2ext .debug.lo "$SRC")"
-        cxx_ext_rule .debug.lo "$SRC" build_cxx_debug >> ${CONFIG_MK}
+        SRC_DEBUG_LO="$(cxx2ext .debug.lo "$S")"
+        cxx_ext_rule .debug.lo "$S" build_cxx_debug >> ${CONFIG_MK}
         echo "	./build_cxx_debug $SRC $SRC_DEBUG_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
-        SRC_LO="$(cxx2ext .main.lo "$SRC")"
-        cxx_ext_rule .main.lo "$SRC" build_cxx_main >> ${CONFIG_MK}
+        SRC_LO="$(cxx2ext .main.lo "$S")"
+        cxx_ext_rule .main.lo "$S" build_cxx_main >> ${CONFIG_MK}
         echo "	./build_cxx_main $SRC $SRC_LO" >> ${CONFIG_MK}
     done
 }
 
 build_lo_objc() {
-    for SRC in $OBJC_SOURCES; do
+    for S in $OBJC_SOURCES; do
+        SRC="${SRC_DIR}/${S}"
+
         echo >> ${CONFIG_MK}
-        SRC_ASAN_LO="$(objc2ext .asan.lo "$SRC")"
-        objc_ext_rule .asan.lo "$SRC" build_objc_asan >> ${CONFIG_MK}
+        SRC_ASAN_LO="$(objc2ext .asan.lo "$S")"
+        objc_ext_rule .asan.lo "$S" build_objc_asan >> ${CONFIG_MK}
         echo "	./build_objc_asan $SRC $SRC_ASAN_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
-        SRC_COV_LO="$(objc2ext .cov.lo "$SRC")"
-        objc_ext_rule .cov.lo "$SRC" build_objc_cov >> ${CONFIG_MK}
+        SRC_COV_LO="$(objc2ext .cov.lo "$S")"
+        objc_ext_rule .cov.lo "$S" build_objc_cov >> ${CONFIG_MK}
         echo "	./build_objc_cov $SRC $SRC_COV_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
-        SRC_DEBUG_LO="$(objc2ext .debug.lo "$SRC")"
-        objc_ext_rule .debug.lo "$SRC" build_objc_debug >> ${CONFIG_MK}
+        SRC_DEBUG_LO="$(objc2ext .debug.lo "$S")"
+        objc_ext_rule .debug.lo "$S" build_objc_debug >> ${CONFIG_MK}
         echo "	./build_objc_debug $SRC $SRC_DEBUG_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
-        SRC_MAIN_LO="$(objc2ext .main.lo "$SRC")"
-        objc_ext_rule .main.lo "$SRC" build_objc_main >> ${CONFIG_MK}
+        SRC_MAIN_LO="$(objc2ext .main.lo "$S")"
+        objc_ext_rule .main.lo "$S" build_objc_main >> ${CONFIG_MK}
         echo "	./build_objc_main $SRC $SRC_MAIN_LO" >> ${CONFIG_MK}
     done
 }
@@ -137,7 +143,7 @@ build_prog() {
 }
 
 c_o_rule() {
-    "$CC" $CPPFLAGS $CFLAGS -M "$1" || {
+    "$CC" $CPPFLAGS $CFLAGS -M "$SRC_DIR/$1" || {
         echo "$1" | sed -e 's/^\(.*\)\.c$/\1.o: \1.c/'
     }
     echo "$1: $2" | sed -e 's/^\(.*\)\.c:/\1.o:/'
@@ -626,8 +632,17 @@ config_prog() {
 
 config_subdirs() {
     for SUBDIR; do
-        echo "( cd $SUBDIR && ./configure; )"
-    done | runj -1 /bin/sh
+        if [ "x$SUBDIR" = "x" -o \
+             "x$SRC_TOP" = "x" -o \
+             "x$DIR" = "x" -o \
+             "x$SRC_DIR" = "x" ]; then
+            echo "$0: config_subdirs: missing configuration"
+            exit 1
+        fi
+        ( mkdir -p "$SUBDIR" && \
+              cd "$SUBDIR" && \
+              "$SRC_TOP/$DIR/$SUBDIR/configure"; )
+    done
 }
 
 config_win32() {
@@ -1175,6 +1190,9 @@ SOURCES_SH=".sources.sh.tmp"
 VER=0.1
 echo "VER = $VER" >> ${CONFIG_MK}
 echo "SRC_TOP = $SRC_TOP" >> ${CONFIG_MK}
+
+SRC_DIR="${SRC_TOP}/${DIR}"
+echo "SRC_DIR = $SRC_DIR" >> ${CONFIG_MK}
 
 ENV_CPPFLAGS="$CPPFLAGS"
 ENV_CFLAGS="$CFLAGS"

@@ -15,8 +15,9 @@ set -e
 
 echo "$0"
 
-export SRC_TOP="$(dirname "$0")"
 export BUILD_TOP="$PWD"
+export DIR="."
+export SRC_TOP="$(cd "$(dirname "$0")" && pwd)"
 
 : ${PREFIX:=/usr/local}
 if [ "x$1" = "x--prefix" ]; then
@@ -58,6 +59,10 @@ echo "HAVE_GTK4 = $HAVE_GTK4" >> ${CONFIG_MK}
 
 update_config_mk
 env_reset
+
+if [ "x$(dirname "$0")" != "x." ]; then
+    cp ${SRC_DIR}/Makefile ${SRC_DIR}/sources.mk ./
+fi
 
 SUBDIRS="
 ekc3

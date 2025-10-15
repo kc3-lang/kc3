@@ -4,6 +4,7 @@ android/egl/demo/app/build/
 android/egl/demo/app/src/main/jni/obj
 bank/
 .build/
+/build/
 build_c_asan
 build_c_cov
 build_c_debug

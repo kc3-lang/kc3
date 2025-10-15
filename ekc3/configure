@@ -13,9 +13,11 @@
 
 set -e
 
-echo "$PWD/configure"
+echo "$0"
 
-export SRC_TOP="$(dirname "$PWD")"
+export BUILD_TOP="$(dirname "$PWD")"
+export DIR="ekc3"
+export SRC_TOP="$(cd "$(dirname "$(dirname "$0")")" && pwd)"
 
 CONFIG_H_PREFIX=LIBKC3_WEB_
 
@@ -31,7 +33,7 @@ echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
 echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
 echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 
-. ./sources.sh
+. "${SRC_DIR}/sources.sh"
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
@@ -116,3 +118,7 @@ build_lo
 build_lib
 
 update_config_mk
+
+if [ "x$(dirname "$0")" != "x." ]; then
+    cp ${SRC_DIR}/Makefile ${SRC_DIR}/sources.mk ./
+fi
