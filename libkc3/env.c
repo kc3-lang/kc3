@@ -888,6 +888,7 @@ bool env_dump_restore_path_resolve (s_env *env)
     env->restore_path = path;
     return true;
   }
+  str_clean(&path);
   return true;
 }
 
