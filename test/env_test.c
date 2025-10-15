@@ -23,7 +23,7 @@
 #include "../libkc3/tag.h"
 #include "test.h"
 
-#define ENV_TEST_DUMP_SIZE 283237
+#define ENV_TEST_DUMP_SIZE 283239
 
 void env_test (void);
 TEST_CASE_PROTOTYPE(env_eval_call);
@@ -47,7 +47,7 @@ void env_test (void)
 
 TEST_CASE(env_dump)
 {
-  s_env env;
+  s_env env = {0};
   const s_str path = STR("env_test_dump.1.dump");
   test_context("env_dump()");
   env_init(&env, 0, NULL);
@@ -60,7 +60,7 @@ TEST_CASE_END(env_dump)
 
 TEST_CASE(env_dump_restore)
 {
-  s_env env;
+  s_env env = {0};
   const s_str path = STR("kc3.dump");
   test_context("env_dump() + env_restore()");
   env_init(&env, 0, NULL);
