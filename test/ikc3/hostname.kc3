@@ -1,6 +1,6 @@
 quote (host_name = hostname()) ; void
 (host_name = hostname()) ; void
-quote (system_hostname = system(["hostname"])) ; void
-(system_hostname = system(["hostname"])) ; void
+quote ({0, system_hostname} = system(["hostname"])) ; void
+({0, system_hostname} = system(["hostname"])) ; void
 quote system_hostname == host_name + "\n"
 system_hostname == host_name + "\n"

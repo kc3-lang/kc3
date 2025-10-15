@@ -1,6 +1,6 @@
 (host_name = hostname()) ; void
 void
-(system_hostname = system(["hostname"])) ; void
+({0, system_hostname} = system(["hostname"])) ; void
 void
 system_hostname == host_name + "\n"
 true
