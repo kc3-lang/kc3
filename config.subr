@@ -772,6 +772,18 @@ require_pkg_config() {
     fi
 }
 
+sh_quote() {
+    printf '"'
+    {
+	printf "%s" "$1"
+	shift
+	for ARG; do
+	    printf " %s" "$ARG"
+	done
+    } | sed -e 's,\(["\\]\),\\\1,g'
+    printf '"\n'
+}
+
 sources() {
     SOURCES_TMP="$(echo "$2" | sort -u | grep -Ev -e '~$' -e '/\.#')"
     echo "$1 = \\
@@ -1306,13 +1318,15 @@ echo "DESTDIR ?=" >> ${CONFIG_MK}
 echo "prefix ?= ${DESTDIR}${PREFIX}" >> ${CONFIG_MK}
 echo "prefix=${DESTDIR}${PREFIX}" >> ${CONFIG_SH}
 
+mkdir -p "$DESTDIR"
+
 if [ "x$OWNER" = "x" ]; then
-    OWNER="$(ls -ld "$PREFIX" | tr -s ' ' | cut -d ' ' -f 3)"
+    OWNER="$(ls -ld "$DESTDIR" | tr -s ' ' | cut -d ' ' -f 3)"
 fi
 echo "OWNER = $OWNER" >> ${CONFIG_MK}
 
 if [ "x$GROUP" = "x" ]; then
-    GROUP="$(ls -ld "$PREFIX" | tr -s ' ' | cut -d ' ' -f 4)"
+    GROUP="$(ls -ld "$DESTDIR" | tr -s ' ' | cut -d ' ' -f 4)"
 fi
 echo "GROUP = $GROUP" >> ${CONFIG_MK}
 

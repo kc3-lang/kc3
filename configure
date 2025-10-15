@@ -13,7 +13,7 @@
 
 set -e
 
-echo "$PWD/configure"
+echo "$0"
 
 export SRC_TOP="$(dirname "$0")"
 export BUILD_TOP="$PWD"
@@ -29,7 +29,7 @@ export PREFIX
 
 require_pkg_config
 
-KC3_VERSION="$(cat kc3.version)"
+KC3_VERSION="$(cat "${SRC_TOP}/kc3.version")"
 echo "KC3_VERSION = $KC3_VERSION" >> ${CONFIG_MK}
 
 config_asan
