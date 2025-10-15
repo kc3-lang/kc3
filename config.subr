@@ -13,8 +13,6 @@
 
 set -e
 
-cd "$(dirname "$0")"
-
 bool() {
     case "$2" in
         false|no|0) eval "$1=false";;
