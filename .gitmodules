@@ -10,19 +10,7 @@
 	path = linenoise
 	url = https://git.kmx.io/kc3-lang/linenoise.git
         branch = master
-[submodule "runj"]
-	path = runj
-	url = https://git.kmx.io/kmx.io/runj.git
-	branch = master
-[submodule "sort"]
-	path = sort
-	url = https://git.kmx.io/kmx.io/sort.git
-	branch = master
 [submodule "smtp"]
 	path = smtp
 	url = https://git.kmx.io/kc3-lang/smtp.git
-	branch = master
-[submodule "window/sdl2/kubz"]
-	path = window/sdl2/kubz
-	url = https://git.kmx.io/kc3-lang/kubz.git
 	branch = master
