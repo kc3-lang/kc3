@@ -10,18 +10,17 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Kpkg.Repos.KC3 do
+defmodule Kpkg.Repos.RunJ do
 
   Kpkg.defpackage(
-    %Kpkg.Package{name: :kc3,
+    %Kpkg.Package{name: :runj,
                   build_depends_on: [],
                   default_branch: "master",
-                  depends_on: [:libbsd, :libmd, :runj, :sort],
-                  dir: "kc3-lang/kc3",
-                  git: "https://git.kmx.io/kc3-lang/kc3.git",
-                  git_push: "git@git.kmx.io:kc3-lang/kc3.git",
+                  depends_on: [],
+                  dir: "kmx.io/runj",
+                  git: "https://git.kmx.io/kmx.io/runj.git",
+                  git_push: "git@git.kmx.io:kmx.io/runj.git",
                   module: module()}
   )
 
 end
-
