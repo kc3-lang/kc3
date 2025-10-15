@@ -32,7 +32,7 @@ sources OBJC_SOURCES "$OBJC_SOURCES"
 update_sources_mk
 update_sources_sh
 
-"${SRC_TOP}/runj/runj" -1 /bin/sh <<EOF
+runj -1 /bin/sh <<EOF
 ( cd android && ./update_sources; )
 ( cd xcb && ./update_sources; )
 EOF

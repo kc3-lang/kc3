@@ -1,9 +1,6 @@
 #!/bin/sh
 set -e
 
-make -C runj
-make -C sort
-
 SRC_TOP="$PWD"
 
 . "${SRC_TOP}/config.subr"
@@ -38,10 +35,10 @@ KC3_DIRS="
  window
 "
 
-KC3_CONFIGURES="$(find runj sort $KC3_DIRS -name configure -or -name update_sources -or -name sources.sh)"
+KC3_CONFIGURES="$(find $KC3_DIRS -name configure -or -name update_sources -or -name sources.sh)"
 sources KC3_CONFIGURES "$KC3_CONFIGURES"
 
-KC3_MAKEFILES="$(find runj sort $KC3_DIRS -name Makefile -or -name gen.mk -or -name sources.mk)"
+KC3_MAKEFILES="$(find $KC3_DIRS -name Makefile -or -name gen.mk -or -name sources.mk)"
 KC3_MAKEFILES="$(echo "$KC3_MAKEFILES" | grep -v 'libtommath/logs/Makefile')"
 sources KC3_MAKEFILES "$KC3_MAKEFILES"
 
@@ -132,7 +129,7 @@ sources.sh
 $(find libkc3 -name '*.rb')"
 sources KC3_OTHER_SOURCES "$KC3_OTHER_SOURCES"
 
-KC3_EXTERNAL_SOURCES="$(find libtommath linenoise runj sort -name '*.[ch]')
+KC3_EXTERNAL_SOURCES="$(find libtommath linenoise -name '*.[ch]')
 libtommath/LICENSE
 libtommath/README.md
 linenoise/LICENSE
@@ -147,7 +144,7 @@ sources KC3_DOC_SOURCES "$KC3_DOC_SOURCES"
 update_sources_mk
 update_sources_sh
 
-./bin/runj -1 /bin/sh <<EOF
+runj -1 /bin/sh <<EOF
 ( cd ekc3       && ./update_sources; )
 ( cd event      && ./update_sources; )
 ( cd fs         && ./update_sources; )

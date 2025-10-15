@@ -32,7 +32,7 @@ sources OBJC_SOURCES "$OBJC_SOURCES"
 update_sources_mk
 update_sources_sh
 
-../../bin/runj -1 /bin/sh <<EOF
+runj -1 /bin/sh <<EOF
 ( cd demo && ./update_sources; )
 ( cd quartz && ./update_sources; )
 ( cd win32 && ./update_sources; )
