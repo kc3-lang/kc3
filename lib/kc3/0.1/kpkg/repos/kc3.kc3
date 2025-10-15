@@ -14,9 +14,9 @@ defmodule Kpkg.Repos.KC3 do
 
   Kpkg.defpackage(
     %Kpkg.Package{name: :kc3,
-                  build_depends_on: [],
+                  build_depends_on: [:runj, :sort],
                   default_branch: "master",
-                  depends_on: [:libbsd, :libmd, :runj, :sort],
+                  depends_on: [:libbsd, :libmd],
                   dir: "kc3-lang/kc3",
                   git: "https://git.kmx.io/kc3-lang/kc3.git",
                   git_push: "git@git.kmx.io:kc3-lang/kc3.git",

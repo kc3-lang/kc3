@@ -522,7 +522,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     deps = Kpkg.build_dependencies(pkg)
     List.each(deps, fn ({dep_name, dep_tree}) {
       dep_pkg = Kpkg.get_package_or_die(dep_name)
-      Kpkg.install(dep_pkg, dep_tree, Kpkg.local_arch)
+      Kpkg.install(dep_pkg, dep_tree, Kpkg.arch_local())
     })
     Kpkg.indent(-1)
     Kpkg.log_call("install_build_dependencies #{pkg.name} #{tree}: OK")
