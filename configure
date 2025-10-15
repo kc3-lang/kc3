@@ -15,9 +15,6 @@ set -e
 
 echo "$PWD/configure"
 
-make -C runj
-make -C sort
-
 export SRC_TOP="$(dirname "$0")"
 export BUILD_TOP="$PWD"
 

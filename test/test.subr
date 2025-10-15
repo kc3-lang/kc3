@@ -54,7 +54,7 @@ test_run () (
     touch .test .test_ko .test_ok
     for TARGET in $TARGETS; do
         echo "( ../test_runner ${TEST_RUNNER} ${TARGET}; )"
-    done | ../../bin/runj -1 /bin/sh
+    done | runj -1 /bin/sh
     TEST_COUNT=$(echo $(wc -l .test) | cut -f 1 -d ' ')
     TEST_KO=$(echo $(wc -l .test_ko) | cut -f 1 -d ' ')
     TEST_OK=$(echo $(wc -l .test_ok) | cut -f 1 -d ' ')

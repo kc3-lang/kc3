@@ -629,7 +629,7 @@ config_prog() {
 config_subdirs() {
     for SUBDIR; do
         echo "( cd $SUBDIR && ./configure; )"
-    done | "${SRC_TOP}/bin/runj" -1 /bin/sh
+    done | runj -1 /bin/sh
 }
 
 config_win32() {
@@ -775,9 +775,7 @@ require_pkg_config() {
 }
 
 sources() {
-    SOURCES_TMP="$(echo "$2" |
-                   "${SRC_TOP}/bin/sort" -u |
-                   grep -Ev -e '~$' -e '/\.#')"
+    SOURCES_TMP="$(echo "$2" | sort -u | grep -Ev -e '~$' -e '/\.#')"
     echo "$1 = \\
 $(echo "$SOURCES_TMP" | sed -e 's/^\(.*\)$/	"\1" \\/')
 " >> ${SOURCES_MK}

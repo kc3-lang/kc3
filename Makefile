@@ -11,7 +11,6 @@
 ## THIS SOFTWARE.
 
 all:
-	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath all
 	${MAKE} -C ucd2c
@@ -42,7 +41,6 @@ android:
 	cd android/egl/demo && gradle assembleDebug
 
 asan:
-	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
@@ -69,7 +67,6 @@ assets:
 	make -C test/httpd/assets
 
 build:
-	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
@@ -94,7 +91,6 @@ build:
 #	${MAKE} -C fs build
 
 clean:
-	${MAKE} -C runj clean
 	${MAKE} -C libtommath clean
 	${MAKE} -C ucd2c clean
 	${MAKE} -C libkc3 clean
@@ -118,7 +114,6 @@ clean:
 #	${MAKE} -C fs clean
 
 clean_cov:
-	${MAKE} -C runj all
 	${MAKE} -C libtommath clean_cov
 	${MAKE} -C libkc3 clean_cov
 	${MAKE} -C socket clean_cov
@@ -141,7 +136,6 @@ clean_cov:
 #	${MAKE} -C fs clean_cov
 
 cov:
-	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
@@ -165,7 +159,6 @@ cov:
 #	${MAKE} -C fs cov
 
 debug:
-	${MAKE} -C runj all
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
@@ -445,7 +438,6 @@ gdb_ikc3_asan: lib_links_asan
 	${MAKE} -C ikc3 gdb_ikc3_asan
 
 gdb_kmsg: lib_links_debug
-	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
@@ -649,7 +641,6 @@ gen:
 
 gtk4:
 	${HAVE_GTK4} || echo "please install gtk+4"
-	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
@@ -662,7 +653,6 @@ gtk4:
 
 gtk4_asan:
 	${HAVE_GTK4} || echo "please install gtk+4"
-	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
@@ -675,7 +665,6 @@ gtk4_asan:
 
 gtk4_cov:
 	${HAVE_GTK4} || echo "please install gtk+4"
-	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath cov
 	${MAKE} -C ucd2c
@@ -688,7 +677,6 @@ gtk4_cov:
 
 gtk4_debug:
 	${HAVE_GTK4} || echo "please install gtk+4"
-	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
@@ -929,7 +917,7 @@ kc3-${KC3_VERSION}.tar.gz: kc3.index
 	pax -rw < kc3.index kc3-${KC3_VERSION}
 	pax -wz kc3-${KC3_VERSION} > kc3-${KC3_VERSION}.tar.gz
 
-kc3.index: sort sources.mk Makefile
+kc3.index: sources.mk Makefile
 	for F in ${KC3_EXTERNAL_SOURCES}; do echo "$$F"; done > kc3.index.tmp
 	for F in ${KC3_CONFIGURES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_MAKEFILES}; do echo "$$F"; done >> kc3.index.tmp
@@ -953,7 +941,7 @@ kc3.index: sort sources.mk Makefile
 	for F in ${KC3_TEST_PDF_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_OTHER_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_DOC_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
-	./bin/sort -u < kc3.index.tmp > kc3.index
+	sort -u < kc3.index.tmp > kc3.index
 	rm kc3.index.tmp
 
 kc3s:
@@ -981,7 +969,6 @@ kc3s_debug:
 	${MAKE} -C kc3s debug
 
 kmsg:
-	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
@@ -994,7 +981,6 @@ kmsg:
 	${MAKE} -C kmsg
 
 kmsg_asan:
-	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
@@ -1007,7 +993,6 @@ kmsg_asan:
 	${MAKE} -C kmsg run_asan
 
 kmsg_debug:
-	${MAKE} -C runj all
 	${MAKE} gen
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
