@@ -733,6 +733,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
           if File.exists?(target) do
             puts("install: file exists, not copying: #{target}")
           else
+            File.ensure_directory(File.dirname(target), Kpkg.umask)
             Kpkg.exec!(["cp", file, target])
           end
         end
@@ -793,18 +794,20 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.exec!(["sh", "-c", "rm -rf #{dir_sh}"])
     Kpkg.indent(-1)
     Kpkg.log_call("clean_pkg #{pkg.name}: OK")
+    0
   }
 
   def clean_pkg_tree = fn (pkg, tree) {
     Kpkg.log_call("clean_pkg_tree #{pkg.name} #{tree}")
     Kpkg.indent(1)
     Kpkg.exec!(["rm", "-rf", Kpkg.src_dir(pkg, tree)])
-    dir_part_1= "#{Kpkg.dir()}/arch"
-    dir_part_2 = "#{pkg.dir}/#{tree}"
-    dir_sh = "#{Sh.escape(dir_part_1)/*/*/#{Sh.escape(dir_part_2)}"
+    dir_sh_1 = Sh.escape("#{Kpkg.dir()}/arch")
+    dir_sh_2 = Sh.escape("#{pkg.dir}/#{tree}")
+    dir_sh = "#{dir_sh_1}/*/*/#{dir_sh_2}"
     Kpkg.exec!(["sh", "-c", "rm -rf #{dir_sh}"])
     Kpkg.indent(-1)
     Kpkg.log_call("clean_pkg_tree #{pkg.name} #{tree}: OK")
+    0
   }
 
   def clean_pkg_tree_arch = fn (pkg, tree, arch) {
@@ -817,6 +820,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.exec!(["sh", "-c", "rm -rf #{dir_sh}"])
     Kpkg.indent(-1)
     Kpkg.log_call("clean_pkg #{pkg.name}: OK")
+    0
   }
 
   def info = fn (pkg, tree, arch) {
