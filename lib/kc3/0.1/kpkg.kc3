@@ -541,7 +541,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   }
 
   def resolve_dependencies = fn (pkg, sym) {
-    #Kpkg.log_call("resolve_dependencies #{pkg.name} #{sym}")
+    # Kpkg.log_call("resolve_dependencies #{pkg.name} #{sym}")
     list = pkg[sym]
     pkg_tree_tuple_list = []
     while list != [] do
@@ -564,7 +564,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
       end
       list = List.append(rest, dep_pkg[sym])
     end
-    #Kpkg.log_call("resolve_dependencies #{pkg.name} #{sym}: #{pkg_tree_tuple_list}")
+    # Kpkg.log_call("resolve_dependencies #{pkg.name} #{sym}: #{pkg_tree_tuple_list}")
     pkg_tree_tuple_list
   }
 
