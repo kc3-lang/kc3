@@ -218,6 +218,12 @@ defmodule Kpkg do
             result = Kpkg.checkout(pkg, tree)
           ["checkout-clean" | rest] ->
             result = Kpkg.checkout_clean(pkg, tree)
+          ["clean" | rest] ->
+            result = Kpkg.clean_pkg(pkg)
+          ["clean-arch" | rest] ->
+            result = Kpkg.clean_tree_arch(pkg)
+          ["clean-tree" | rest] ->
+            result = Kpkg.clean_tree(pkg)
           ["clone" | rest] ->
             result = Kpkg.clone(pkg)
           ["clone-clean" | rest] ->
@@ -292,6 +298,9 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
    #{title}Install commands :#{reset}
     install              install package
 🐢 #{title}Misc commands :#{reset}
+    clean                remove all files related to $PKG
+    clean-tree           remove all files related to $PKG $TREE
+    clean-arch           remove all files related to $PKG $TREE $ARCH
     info                 show current state
 """)
   }
@@ -374,6 +383,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     cmd_str = List.join(cmd, " ")
     Kpkg.indent_puts("#{style}#{cmd_str}#{reset}")
     match system(cmd) do
+      {0, ""} -> ""
       {0, out_err} ->
         if (Str.ends_with?(out_err, "\n")) do
           IO.write_str(out_err)
@@ -773,6 +783,41 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   }
 
   ## Main API - misc
+
+  def clean_pkg = fn (pkg) {
+    Kpkg.log_call("clean_pkg #{pkg.name}")
+    Kpkg.indent(1)
+    Kpkg.exec!(["rm", "-rf", Kpkg.git_dir(pkg)])
+    Kpkg.exec!(["rm", "-rf", "#{Kpkg.dir()}/src/#{pkg.dir}"])
+    dir_sh = "#{Sh.escape(Kpkg.dir())}/arch/*/*/#{Sh.escape(pkg.dir)}"
+    Kpkg.exec!(["sh", "-c", "rm -rf #{dir_sh}"])
+    Kpkg.indent(-1)
+    Kpkg.log_call("clean_pkg #{pkg.name}: OK")
+  }
+
+  def clean_pkg_tree = fn (pkg, tree) {
+    Kpkg.log_call("clean_pkg_tree #{pkg.name} #{tree}")
+    Kpkg.indent(1)
+    Kpkg.exec!(["rm", "-rf", Kpkg.src_dir(pkg, tree)])
+    dir_part_1= "#{Kpkg.dir()}/arch"
+    dir_part_2 = "#{pkg.dir}/#{tree}"
+    dir_sh = "#{Sh.escape(dir_part_1)/*/*/#{Sh.escape(dir_part_2)}"
+    Kpkg.exec!(["sh", "-c", "rm -rf #{dir_sh}"])
+    Kpkg.indent(-1)
+    Kpkg.log_call("clean_pkg_tree #{pkg.name} #{tree}: OK")
+  }
+
+  def clean_pkg_tree_arch = fn (pkg, tree, arch) {
+    Kpkg.log_call("clean_pkg_tree_arch #{pkg.name} #{tree} #{arch}")
+    Kpkg.indent(1)
+    arch_sh = Sh.escape(arch)
+    kpkg_dir_sh = Sh.escape(Kpkg.dir())
+    pkg_dir_sh = Sh.escape("#{pkg.dir}/#{tree}")
+    dir_sh = " #{kpkg_dir_sh}/arch/#{arch_sh}/*/#{pkg_dir_sh}"
+    Kpkg.exec!(["sh", "-c", "rm -rf #{dir_sh}"])
+    Kpkg.indent(-1)
+    Kpkg.log_call("clean_pkg #{pkg.name}: OK")
+  }
 
   def info = fn (pkg, tree, arch) {
     Kpkg.log_call("info #{pkg.name} #{tree} #{arch}")
