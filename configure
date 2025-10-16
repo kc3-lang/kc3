@@ -81,8 +81,6 @@ smtp
 socket
 test
 tls
-"
-SUBDIRS="
 window
 "
 
