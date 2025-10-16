@@ -80,11 +80,11 @@ pdf
 smtp
 socket
 test
+tls
+ucd2c
 "
 
 SUBDIRS="
-tls
-ucd2c
 window
 "
 

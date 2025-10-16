@@ -13,9 +13,10 @@
 
 set -e
 
-echo "$PWD/configure"
-
-SRC_TOP="$(dirname "$PWD")"
+echo "$0"
+export BUILD_TOP="$(dirname "$PWD")"
+export DIR="$(basename $PWD)"
+export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
 . "${SRC_TOP}/config.subr"
 
@@ -61,3 +62,7 @@ build_lo
 build_prog
 
 update_config_mk
+
+if [ "x$(dirname "$0")" != "x." ]; then
+    cp ${SRC_DIR}/Makefile ./
+fi
