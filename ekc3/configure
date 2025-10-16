@@ -14,12 +14,11 @@
 set -e
 
 echo "$0"
-
 export BUILD_TOP="$(dirname "$PWD")"
-export DIR="ekc3"
-export SRC_TOP="$(cd "$(dirname "$(dirname "$0")")" && pwd)"
+export DIR="$(basename $PWD)"
+export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
-CONFIG_H_PREFIX=LIBKC3_WEB_
+CONFIG_H_PREFIX=LIBKC3_EKC3_
 
 . "${SRC_TOP}/config.subr"
 

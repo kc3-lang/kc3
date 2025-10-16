@@ -13,9 +13,10 @@
 
 set -e
 
-echo "$PWD/configure"
-
-export SRC_TOP="$(dirname "$PWD")"
+echo "$0"
+export BUILD_TOP="$(dirname "$PWD")"
+export DIR="$(basename $PWD)"
+export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
 CONFIG_H_PREFIX=LIBKC3_
 
@@ -31,7 +32,7 @@ echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
 echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
 echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 
-. ./sources.sh
+. "${SRC_DIR}/sources.sh"
 
 OBJECTS="$(c2ext .main.lo "$LO_SOURCES") $(cxx2ext .main.lo "$SOURCES_CXX")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
@@ -77,7 +78,12 @@ fi
 CXXFLAGS="$CXXFLAGS -DNDEBUG"
 LIBS="$LIBS"
 
-make -f gen.mk
+if [ "x$(dirname "$0")" != "x." ]; then
+    cp "${SRC_DIR}/Makefile" ./
+    cp "${SRC_DIR}/sources.mk" ./
+else
+    make -f gen.mk
+fi
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

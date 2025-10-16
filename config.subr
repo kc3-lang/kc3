@@ -633,15 +633,12 @@ config_prog() {
 config_subdirs() {
     for SUBDIR; do
         if [ "x$SUBDIR" = "x" -o \
-             "x$SRC_TOP" = "x" -o \
-             "x$DIR" = "x" -o \
              "x$SRC_DIR" = "x" ]; then
             echo "$0: config_subdirs: missing configuration"
             exit 1
         fi
-        ( mkdir -p "$SUBDIR" && \
-              cd "$SUBDIR" && \
-              "$SRC_TOP/$DIR/$SUBDIR/configure"; )
+        ( mkdir -p "$SUBDIR" && cd "$SUBDIR" && \
+              "$SRC_DIR/$SUBDIR/configure"; )
     done
 }
 
@@ -1189,9 +1186,9 @@ SOURCES_SH=".sources.sh.tmp"
 
 VER=0.1
 echo "VER = $VER" >> ${CONFIG_MK}
-echo "SRC_TOP = $SRC_TOP" >> ${CONFIG_MK}
 
-SRC_DIR="${SRC_TOP}/${DIR}"
+export SRC_DIR="${SRC_TOP}/${DIR}"
+echo "SRC_TOP = $SRC_TOP" >> ${CONFIG_MK}
 echo "SRC_DIR = $SRC_DIR" >> ${CONFIG_MK}
 
 ENV_CPPFLAGS="$CPPFLAGS"

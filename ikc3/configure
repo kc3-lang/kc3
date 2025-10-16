@@ -13,9 +13,10 @@
 
 set -e
 
-echo "$PWD/configure"
-
-SRC_TOP="$(dirname "$PWD")"
+echo "$0"
+export BUILD_TOP="$(dirname "$PWD")"
+export DIR="$(basename $PWD)"
+export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
 CONFIG_H_PREFIX=IKC3_
 
@@ -23,7 +24,7 @@ CONFIG_H_PREFIX=IKC3_
 
 config_prog ikc3
 
-. ./sources.sh
+. "${SRC_DIR}/sources.sh"
 
 # Common config for all targets
 CPPFLAGS="-I.. $CPPFLAGS"
@@ -137,3 +138,7 @@ build_lo_c
 build_prog
 
 update_config_mk
+
+if [ "x$(dirname "$0")" != "x." ]; then
+    cp ${SRC_DIR}/Makefile ${SRC_DIR}/sources.mk ./
+fi

@@ -29,6 +29,6 @@ LIBS="$LIBS -lm -lpthread -rpath ${PREFIX}/lib"
 if $HAVE_WIN32 || $HAVE_WIN64; then
     LIBS="$LIBS -lws2_32 -ldl"
 fi
-if ! [ -f ../ucd2c/ucd.c ]; then
-    touch ../ucd2c/ucd.c
+if ! [ -f "${SRC_TOP}/ucd2c/ucd.c" ]; then
+    touch "${SRC_TOP}/ucd2c/ucd.c"
 fi
