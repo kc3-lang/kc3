@@ -57,11 +57,8 @@ fi
 echo "HAVE_GTK4 = $HAVE_GTK4" >> ${CONFIG_MK}
 
 update_config_mk
+update_makefile
 env_reset
-
-if [ "x$(dirname "$0")" != "x." ]; then
-    cp ${SRC_DIR}/Makefile ${SRC_DIR}/sources.mk ./
-fi
 
 SUBDIRS="
 ekc3

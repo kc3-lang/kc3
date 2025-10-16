@@ -110,11 +110,7 @@ build_lo_c
 build_lib
 
 update_config_mk
-
-if [ "x$(dirname "$0")" != "x." ]; then
-    cp ${SRC_DIR}/Makefile ${SRC_DIR}/sources.mk ./
-fi
-
+update_makefile
 env_reset
 
 config_subdirs demo

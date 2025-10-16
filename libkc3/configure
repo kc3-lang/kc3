@@ -78,9 +78,7 @@ fi
 CXXFLAGS="$CXXFLAGS -DNDEBUG"
 LIBS="$LIBS"
 
-if [ "x$(dirname "$0")" != "x." ]; then
-    cp "${SRC_DIR}/Makefile" ./
-    cp "${SRC_DIR}/sources.mk" ./
+if [ "x${BUILD_TOP}" != "x${SRC_TOP}" ]; then
     echo "gen:" > gen.mk
 else
     make -f gen.mk
@@ -122,3 +120,4 @@ build_lo_c
 build_lib
 
 update_config_mk
+update_makefile

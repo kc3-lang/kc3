@@ -145,10 +145,8 @@ build_prog
 echo "HAVE_DARWIN = $HAVE_DARWIN" >> ${CONFIG_MK}
 
 update_config_mk
-
-if [ "x$(dirname "$0")" != "x." ]; then
-    cp ${SRC_DIR}/Makefile ${SRC_DIR}/sources.mk ./
-fi
+update_makefile
+env_reset
 
 # TODO: configure macos subdir
 if ${HAVE_COCOA}; then

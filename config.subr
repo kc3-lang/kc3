@@ -1151,6 +1151,15 @@ update_config_sh() {
     fi
 }
 
+update_makefile() {
+    if [ "x${BUILD_TOP}" != "x${SRC_TOP}" ]; then
+        echo "-> ${PWD}/Makefile"
+        cp ${SRC_DIR}/Makefile ./
+        echo "-> ${PWD}/sources.mk"
+        cp ${SRC_DIR}/sources.mk ./
+    fi
+}
+
 update_sources_mk() {
     if ! cmp "${SOURCES_MK}" sources.mk >/dev/null 2>&1; then
         mv "${SOURCES_MK}" sources.mk
@@ -1337,16 +1346,23 @@ echo "DESTDIR ?=" >> ${CONFIG_MK}
 echo "prefix ?= ${DESTDIR}${PREFIX}" >> ${CONFIG_MK}
 echo "prefix=${DESTDIR}${PREFIX}" >> ${CONFIG_SH}
 
-mkdir -p "$DESTDIR"
-
-if [ "x$OWNER" = "x" ]; then
-    OWNER="$(ls -ld "$DESTDIR" | tr -s ' ' | cut -d ' ' -f 3)"
+if [ "x$DESTDIR" != "x" ]; then
+    mkdir -p "$DESTDIR"
+    if [ "x$OWNER" = "x" ]; then
+        OWNER="$(ls -ld "$DESTDIR" | tr -s ' ' | cut -d ' ' -f 3)"
+    fi
+    if [ "x$GROUP" = "x" ]; then
+        GROUP="$(ls -ld "$DESTDIR" | tr -s ' ' | cut -d ' ' -f 4)"
+    fi
+else
+    if [ "x$OWNER" = "x" ]; then
+        OWNER="$(ls -ld "$PREFIX" | tr -s ' ' | cut -d ' ' -f 3)"
+    fi
+    if [ "x$GROUP" = "x" ]; then
+        GROUP="$(ls -ld "$PREFIX" | tr -s ' ' | cut -d ' ' -f 4)"
+    fi
 fi
 echo "OWNER = $OWNER" >> ${CONFIG_MK}
-
-if [ "x$GROUP" = "x" ]; then
-    GROUP="$(ls -ld "$DESTDIR" | tr -s ' ' | cut -d ' ' -f 4)"
-fi
 echo "GROUP = $GROUP" >> ${CONFIG_MK}
 
 if [ "x$BINDIR" = "x" ]; then

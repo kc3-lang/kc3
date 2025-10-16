@@ -142,11 +142,7 @@ fi
 echo "HAVE_SDL2 = $HAVE_SDL2" >> ${CONFIG_MK}
 
 update_config_mk
-
-if [ "x$(dirname "$0")" != "x." ]; then
-    cp ${SRC_DIR}/Makefile ${SRC_DIR}/sources.mk ./
-fi
-
+update_makefile
 env_reset
 
 SUBDIRS="demo"
