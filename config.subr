@@ -634,12 +634,12 @@ config_subdirs() {
     for SUBDIR; do
         if [ "x$SUBDIR" = "x" -o \
              "x$SRC_DIR" = "x" ]; then
-            echo "$0: config_subdirs: missing configuration"
+            echo "$0: config_subdirs: missing configuration" >&2
             exit 1
         fi
-        ( mkdir -p "$SUBDIR" && cd "$SUBDIR" && \
-              "$SRC_DIR/$SUBDIR/configure"; )
-    done
+        SUBDIR_SH="$(sh_quote "$SUBDIR")"
+        echo "( mkdir -p $SUBDIR_SH && cd $SUBDIR_SH && $SRC_DIR/$SUBDIR/configure; )"
+    done | runj -1 /bin/sh
 }
 
 config_win32() {
