@@ -1154,9 +1154,9 @@ update_config_sh() {
 update_makefile() {
     if [ "x${BUILD_TOP}" != "x${SRC_TOP}" ]; then
         echo "-> ${PWD}/Makefile"
-        cp ${SRC_DIR}/Makefile ./
+        ln -sf ${SRC_DIR}/Makefile ./
         echo "-> ${PWD}/sources.mk"
-        cp ${SRC_DIR}/sources.mk ./
+        ln -sf ${SRC_DIR}/sources.mk ./
     fi
 }
 
