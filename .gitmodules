@@ -14,3 +14,6 @@
 	path = smtp
 	url = https://git.kmx.io/kc3-lang/smtp.git
 	branch = master
+[submodule "ucd2c"]
+	path = ucd2c
+	url = https://git.kmx.io/kc3-lang/ucd2c.git
