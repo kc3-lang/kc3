@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/kc3.h>
+#include "../../../libkc3/kc3.h"
 #include "lightspeed.h"
 
 static void star_init (s_tag *star)

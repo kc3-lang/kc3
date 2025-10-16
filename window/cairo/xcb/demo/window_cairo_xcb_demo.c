@@ -12,7 +12,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <libkc3/kc3.h>
+#include "../../../../libkc3/kc3.h"
 #include "../../window_cairo.h"
 #include "../../demo/window_cairo_demo.h"
 #include "../window_cairo_xcb.h"

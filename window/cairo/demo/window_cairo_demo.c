@@ -12,8 +12,8 @@
  */
 #include <math.h>
 #include <stdlib.h>
-#include <libkc3/kc3.h>
 #include <xkbcommon/xkbcommon.h>
+#include "../../../libkc3/kc3.h"
 #include "../../window.h"
 #include "../cairo_font.h"
 #include "../cairo_sprite.h"

@@ -13,7 +13,6 @@
 #ifndef BG_RECT_H
 #define BG_RECT_H
 
-#include <libkc3/types.h>
 #include "../types.h"
 
 u8 bg_rect_load (s_sequence *seq);

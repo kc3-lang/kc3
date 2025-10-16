@@ -13,10 +13,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libkc3/kc3.h>
 #include <xcb/xcb.h>
 #include <xkbcommon/xkbcommon.h>
 #include <xkbcommon/xkbcommon-x11.h>
+#include "../../../libkc3/kc3.h"
 #include "window_egl_xcb.h"
 
 #ifndef EGL_PLATFORM_XCB_EXT

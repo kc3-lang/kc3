@@ -12,8 +12,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <libkc3/kc3.h>
-#include "../../../window.h"
+#include "../../../../libkc3/kc3.h"
 #include "../../../../gl/gl_font.h"
 #include "../../../../gl/gl_lines.h"
 #include "../../../../gl/gl_ortho.h"
@@ -27,6 +26,7 @@
 #include "../../../demo/earth.h"
 #include "../../../demo/mandelbrot_f128.h"
 #include "../../../demo/matrix.h"
+#include "../../../window.h"
 #include "../../window_egl.h"
 #include "../window_egl_xcb.h"
 

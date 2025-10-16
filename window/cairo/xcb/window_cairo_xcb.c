@@ -14,10 +14,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <cairo/cairo-xcb.h>
-#include <libkc3/kc3.h>
 #include <xcb/xcb.h>
 #include <xkbcommon/xkbcommon.h>
 #include <xkbcommon/xkbcommon-x11.h>
+#include "../../../libkc3/kc3.h"
 #include "window_cairo_xcb.h"
 
 bool window_cairo_run (s_window_cairo *window)

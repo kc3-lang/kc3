@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <math.h>
-#include <libkc3/kc3.h>
+#include "../../../libkc3/kc3.h"
 #include "../cairo_sprite.h"
 #include "toasters.h"
 

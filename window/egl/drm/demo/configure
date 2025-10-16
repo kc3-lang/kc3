@@ -13,15 +13,16 @@
 
 set -e
 
-echo "$PWD/configure"
-
-export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
+echo "$0"
+export BUILD_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
+export DIR="window/egl/drm/demo"
+export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")")")"
 
 . "${SRC_TOP}/config.subr"
 
 config_prog kc3_window_egl_drm_demo
 
-. ./sources.sh
+. "${SRC_DIR}/sources.sh"
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
@@ -151,6 +152,10 @@ fi
 echo "HAVE_DARWIN = $HAVE_DARWIN" >> ${CONFIG_MK}
 
 update_config_mk
+
+if [ "x$(dirname "$0")" != "x." ]; then
+    cp ${SRC_DIR}/Makefile ${SRC_DIR}/sources.mk ./
+fi
 
 if ${HAVE_DARWIN}; then
     config_subdirs macos

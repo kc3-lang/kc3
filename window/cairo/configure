@@ -13,9 +13,10 @@
 
 set -e
 
-echo "$PWD/configure"
-
-export SRC_TOP="$(dirname "$(dirname "$PWD")")"
+echo "$0"
+export BUILD_TOP="$(dirname "$(dirname "$PWD")")"
+export DIR="window/cairo"
+export SRC_TOP="$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")"
 
 CONFIG_H_PREFIX=LIBKC3_WINDOW_CAIRO_
 
@@ -52,7 +53,7 @@ pkg_config xkbcommon
 config_cocoa
 update_config_h
 
-. ./sources.sh
+. "${SRC_DIR}/sources.sh"
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
 if ${HAVE_COCOA}; then
@@ -151,6 +152,11 @@ fi
 echo "HAVE_WIN32 = $HAVE_WIN32" >> ${CONFIG_MK}
 
 update_config_mk
+
+if [ "x$(dirname "$0")" != "x." ]; then
+    cp ${SRC_DIR}/Makefile ${SRC_DIR}/sources.mk ./
+fi
+
 env_reset
 
 config_subdirs demo

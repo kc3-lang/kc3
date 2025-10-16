@@ -13,9 +13,10 @@
 
 set -e
 
-echo "$PWD/configure"
-
-export SRC_TOP="$(dirname "$(dirname "$PWD")")"
+echo "$0"
+export BUILD_TOP="$(dirname "$(dirname "$PWD")")"
+export DIR="window/egl"
+export SRC_TOP="$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")"
 
 CONFIG_H_PREFIX=LIBKC3_WINDOW_EGL_
 
@@ -48,7 +49,7 @@ pkg_config egl
 pkg_config freetype2
 pkg_config gl
 
-. ./sources.sh
+. "${SRC_DIR}/sources.sh"
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
 OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
@@ -150,6 +151,11 @@ build_lo_c
 build_lib
 
 update_config_mk
+
+if [ "x$(dirname "$0")" != "x." ]; then
+    cp ${SRC_DIR}/Makefile ${SRC_DIR}/sources.mk ./
+fi
+
 env_reset
 
 config_subdirs $SUBDIRS
