@@ -26,7 +26,8 @@ BIN_FILES = \
 
 LIB_FILES = \
 	../*/.libs/libkc3*.0.dylib \
-	/opt/homebrew/lib/libevent-2.1.7.dylib
+	/opt/homebrew/lib/libevent-2.1.7.dylib \
+	/opt/homebrew/opt/libffi/lib/libffi.8.dylib
 #	/usr/local/lib/libevent-2.1.7.dylib
 
 DESTDIR = kc3-v${KC3_VERSION}-${MACHINE}
@@ -48,7 +49,7 @@ dmg:
 	cp -RL ${LIB_FILES} ${DESTDIR}/lib/
 	cp -R ../lib/kc3 ${DESTDIR}/lib/
 	./update_libs ${DESTDIR}
-#	hdiutil create -volname "KC3 v${KC3_VERSION}" -srcfolder ${DESTDIR} -ov -format UDZO ${DESTDIR}.dmg
+	hdiutil create -volname "KC3 v${KC3_VERSION}" -srcfolder ${DESTDIR} -ov -format UDZO ${DESTDIR}.dmg
 
 .PHONY: all clean dmg
 

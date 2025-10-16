@@ -48,6 +48,7 @@ s_window_cairo * window_cairo_init (s_window_cairo *window,
   tmp.motion = window_cairo_motion_default;
   tmp.render = window_cairo_render_default;
   tmp.resize = window_cairo_resize_default;
+  tmp.unload = window_cairo_unload_default;
   *window = tmp;
   return window;
 }
@@ -125,4 +126,10 @@ bool window_cairo_resize_default (s_window_cairo *window, u64 w, u64 h)
   err_inspect_u64(h);
   err_write_1("\n");
   return true;
+}
+
+void window_cairo_unload_default (s_window_cairo *window)
+{
+  assert(window);
+  (void) window;
 }

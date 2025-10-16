@@ -183,6 +183,18 @@ demo: build
 demo_asan: asan
 	${MAKE} -C window demo_asan
 
+demo_cairo: build
+	${MAKE} -C window demo_cairo
+
+demo_cairo_asan: asan
+	${MAKE} -C window demo_cairo_asan
+
+demo_cairo_cov: cov
+	${MAKE} -C window demo_cairo_cov
+
+demo_cairo_debug: debug
+	${MAKE} -C window demo_cairo_debug
+
 demo_cov: cov
 	${MAKE} -C window demo_cov
 

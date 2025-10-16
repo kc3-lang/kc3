@@ -37,5 +37,6 @@ bool window_cairo_load_default (s_window_cairo *window);
 bool window_cairo_motion_default (s_window_cairo *window, s64 x, s64 y);
 bool window_cairo_render_default (s_window_cairo *window);
 bool window_cairo_resize_default (s_window_cairo *window, u64 w, u64 h);
+void window_cairo_unload_default (s_window_cairo *window);
 
 #endif /* LIBKC3_WINDOW_CAIRO_H */
