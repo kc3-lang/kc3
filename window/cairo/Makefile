@@ -83,10 +83,20 @@ gdb_demo: debug
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz gdb_demo; else if ${HAVE_WIN32}; then ${MAKE} -C win32 gdb_demo; else if ${HAVE_XCB}; then ${MAKE} -C xcb gdb_demo; fi; fi; fi
 
 install:
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/include/libkc3/window/cairo
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${DESTDIR}${prefix}/include/libkc3/window/cairo
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/lib
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${DESTDIR}${prefix}/lib
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
+	    ${DESTDIR}${prefix}/include/libkc3/window/cairo
+	for H in config.h ${HEADERS}; do \
+	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
+		${SRC_DIR}/$$H \
+		${DESTDIR}${prefix}/include/libkc3/window/cairo; done
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
+	    ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
+	    -o ${OWNER} -g ${GROUP} -m 0644 \
+	    ${LIB} ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
+	    -o ${OWNER} -g ${GROUP} -m 0644 \
+	    ${LIB_DEBUG} ${DESTDIR}${prefix}/lib
 	${LIBTOOL} --finish ${DESTDIR}${prefix}/lib
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz install; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 install; fi

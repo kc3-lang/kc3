@@ -49,11 +49,20 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details libkc3_web.html
 
 install:
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/include/libkc3/socket
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${DESTDIR}${prefix}/include/libkc3/socket
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/lib
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${DESTDIR}${prefix}/lib
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB_DEBUG} ${DESTDIR}${prefix}/lib
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
+	    ${DESTDIR}${prefix}/include/libkc3/socket
+	for H in config.h ${HEADERS}; do \
+	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
+		${SRC_DIR}/$$H \
+		${DESTDIR}${prefix}/include/libkc3/socket; done
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
+	    ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
+	    -o ${OWNER} -g ${GROUP} -m 0644 \
+	    ${LIB} ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
+	    -o ${OWNER} -g ${GROUP} -m 0644 \
+	    ${LIB_DEBUG} ${DESTDIR}${prefix}/lib
 	${LIBTOOL} --finish ${DESTDIR}${prefix}/lib
 
 test:

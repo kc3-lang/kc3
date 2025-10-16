@@ -52,11 +52,20 @@ include gen.mk
 CLEANFILES += ${GENERATED_FILES}
 
 install:
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/include/libkc3
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} config.h ${DESTDIR}${prefix}/include/libkc3
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/lib
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${DESTDIR}${prefix}/lib
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB_DEBUG} ${DESTDIR}${prefix}/lib
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
+	    ${DESTDIR}${prefix}/include/libkc3
+	for H in config.h ${HEADERS}; do \
+	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
+		${SRC_DIR}/$$H \
+		${DESTDIR}${prefix}/include/libkc3; done
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
+	    ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
+	    -o ${OWNER} -g ${GROUP} -m 0644 \
+	    ${LIB} ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
+	    -o ${OWNER} -g ${GROUP} -m 0644 \
+	    ${LIB_DEBUG} ${DESTDIR}${prefix}/lib
 	${LIBTOOL} --finish ${DESTDIR}${prefix}/lib
 
 test:

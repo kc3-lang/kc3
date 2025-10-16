@@ -69,7 +69,12 @@ gdb_demo: debug
 
 install:
 	${INSTALL} -m 755 -d ${DESTDIR}${prefix}/bin
-	${INSTALL} -m 755 ${PROG} ${DESTDIR}${prefix}/bin/${PROG}
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
+	    -o ${OWNER} -g ${GROUP} -m 0755 \
+	    ${PROG} ${DESTDIR}${prefix}/bin
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
+	    -o ${OWNER} -g ${GROUP} -m 0755 \
+	    ${PROG_DEBUG} ${DESTDIR}${prefix}/bin
 
 lldb_demo: debug
 	if [ -f ${PROG_DEBUG}.core ]; then lldb .libs/${PROG_DEBUG} ${PROG_DEBUG}.core; else lldb .libs/${PROG_DEBUG}; fi

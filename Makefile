@@ -765,6 +765,7 @@ install:
 	${MAKE} -C smtp install
 	${MAKE} -C http install
 	${MAKE} -C httpd install
+	${MAKE} -C gl install
 	${MAKE} -C window install
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 install; fi
 #	${MAKE} -C fs install

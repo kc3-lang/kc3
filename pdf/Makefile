@@ -49,12 +49,21 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details libkc3_web.html
 
 install:
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/pdf
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libkc3/pdf
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/lib
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB_DEBUG} ${prefix}/lib
-	${LIBTOOL} --finish ${prefix}/lib
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
+	    ${DESTDIR}${prefix}/include/libkc3/pdf
+	for H in config.h ${HEADERS}; do \
+	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
+		${SRC_DIR}/$$H \
+		${DESTDIR}${prefix}/include/libkc3/pdf; done
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
+	    ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
+	    -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} \
+	    ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
+	    -o ${OWNER} -g ${GROUP} -m 0644 ${LIB_DEBUG} \
+	    ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --finish ${DESTDIR}${prefix}/lib
 
 test:
 

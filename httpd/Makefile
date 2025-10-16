@@ -65,8 +65,8 @@ gdb_httpd: debug
 	if [ -f kc3_httpd_debug.core ]; then gdb .libs/kc3_httpd_debug kc3_httpd_debug.core; else gdb .libs/kc3_httpd_debug; fi
 
 install:
-	mkdir -p ${DESTDIR}${prefix}/bin
-	${INSTALL} -m 755 .libs/kc3_httpd ${DESTDIR}${prefix}/bin/kc3_httpd
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/bin
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 kc3_httpd ${DESTDIR}${prefix}/bin/kc3_httpd
 
 lldb_httpd: debug
 	if [ -f kc3_httpd_debug.core ]; then lldb .libs/kc3_httpd_debug kc3_httpd_debug.core; else lldb .libs/kc3_httpd_debug; fi
