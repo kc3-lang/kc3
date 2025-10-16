@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include "../../../libkc3/kc3.h"
 #include "../../../gl/gl.h"
+#include "../../demo/demo.h"
 #include "../../demo/bg_rect.h"
 #include "../../demo/lightspeed.h"
 #include "../../demo/toasters.h"
@@ -30,7 +31,6 @@ const char *g_env_argv0_default = PROG;
 const char *g_env_argv0_dir_default = PREFIX;
 //s_gl_font   g_font_computer_modern = {0};
 s_gl_font   g_font_courier_new = {0};
-s_gl_ortho  g_ortho = {0};
 s_gl_square g_square = {0};
 s_gl_text   g_text_fps = {0};
 s_gl_text   g_text_seq_title = {0};

@@ -197,9 +197,6 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   ortho->gl_model_matrix_loc =
     glGetUniformLocation(ortho->gl_shader_program, "uModelMatrix");
-  if (ortho->gl_model_matrix_loc == (GLuint)-1) {
-    err_puts("gl_ortho_init: failed to get uModelMatrix location");
-  }
   assert(glGetError() == GL_NO_ERROR);
   ortho->gl_enable_tex2d_loc =
     glGetUniformLocation(ortho->gl_shader_program, "uEnableTex2D");
@@ -238,6 +235,8 @@ void gl_ortho_rect (s_gl_ortho *ortho, f32 x, f32 y, f32 w, f32 h)
   matrix = ortho->model_matrix;
   mat4_translate(&ortho->model_matrix, x, y, 0.0f);
   mat4_scale(&ortho->model_matrix, w, h, 1.0f);
+  assert(glGetError() == GL_NO_ERROR);
+  glUseProgram(ortho->gl_shader_program);
   gl_ortho_update_model_matrix(ortho);
   assert(glGetError() == GL_NO_ERROR);
   gl_square_render(&ortho->square);
@@ -253,12 +252,17 @@ void gl_ortho_render (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   glUseProgram(ortho->gl_shader_program);
   assert(glGetError() == GL_NO_ERROR);
+  if (ortho->gl_projection_matrix_loc < 0) {
+    err_write_1("gl_ortho_render: invalid projection_matrix_loc: ");
+    err_inspect_s32(ortho->gl_projection_matrix_loc);
+    err_write_1("\n");
+  }
   glUniformMatrix4fv(ortho->gl_projection_matrix_loc, 1, GL_FALSE,
                      &ortho->projection_matrix.xx);
   if ((error = glGetError()) != GL_NO_ERROR) {
-    err_write_1("gl_ortho_render: glUniformMatrix4fv: ");
+    err_write_1("gl_ortho_render: glUniformMatrix4fv(projection): ");
     err_puts(gl_error_string(error));
-    assert(! "gl_ortho_render: glUniformMatrix4fv");
+    assert(! "gl_ortho_render: glUniformMatrix4fv(projection)");
   }
   assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(ortho->gl_view_matrix_loc, 1, GL_FALSE,
@@ -348,18 +352,13 @@ void gl_ortho_text_render_outline (s_gl_ortho *ortho, s_gl_text *text,
 
 void gl_ortho_update_model_matrix (s_gl_ortho *ortho)
 {
-  GLenum error;
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
   glUseProgram(ortho->gl_shader_program);
   assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
                      &ortho->model_matrix.xx);
-  if ((error = glGetError()) != GL_NO_ERROR) {
-    err_write_1("gl_ortho_update_model_matrix: glUniformMatrix4fv: ");
-    err_puts(gl_error_string(error));
-    assert(! "gl_ortho_update_model_matrix: glUniformMatrix4fv");
-  }
+  assert(glGetError() == GL_NO_ERROR);
   /*
   err_puts("gl_ortho_update_model_matrix projection matrix");
   mat4_buf_inspect(&g_c3_env.err, &ortho->projection_matrix);
