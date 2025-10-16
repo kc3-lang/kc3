@@ -81,10 +81,6 @@ smtp
 socket
 test
 tls
-ucd2c
-"
-
-SUBDIRS="
 window
 "
 

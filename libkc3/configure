@@ -81,6 +81,7 @@ LIBS="$LIBS"
 if [ "x$(dirname "$0")" != "x." ]; then
     cp "${SRC_DIR}/Makefile" ./
     cp "${SRC_DIR}/sources.mk" ./
+    echo "gen:" > gen.mk
 else
     make -f gen.mk
 fi

@@ -852,6 +852,7 @@ update_build_c() {
 
     echo "#!/bin/sh" >> ${BUILD_C_ASAN}
     echo "# gen by configure" >> ${BUILD_C_ASAN}
+    echo "mkdir -p \"\$(dirname \".build/\$1\")\"" >> ${BUILD_C_ASAN}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_C_ASAN}
     echo "export CC=\"${CC}\"" >> ${BUILD_C_ASAN}
     echo "export CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_C_ASAN}
@@ -861,6 +862,7 @@ update_build_c() {
 
     echo "#!/bin/sh" >> ${BUILD_C_COV}
     echo "# gen by configure" >> ${BUILD_C_COV}
+    echo "mkdir -p \"\$(dirname \".build/\$1\")\"" >> ${BUILD_C_COV}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_C_COV}
     echo "export CC=\"${CC}\"" >> ${BUILD_C_COV}
     echo "export CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_C_COV}
@@ -870,6 +872,7 @@ update_build_c() {
 
     echo "#!/bin/sh" >> ${BUILD_C_DEBUG}
     echo "# gen by configure" >> ${BUILD_C_DEBUG}
+    echo "mkdir -p \"\$(dirname \".build/\$1\")\"" >> ${BUILD_C_DEBUG}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_C_DEBUG}
     echo "export CC=\"${CC}\"" >> ${BUILD_C_DEBUG}
     echo "export CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_C_DEBUG}
@@ -879,6 +882,7 @@ update_build_c() {
 
     echo "#!/bin/sh" >> ${BUILD_C_MAIN}
     echo "# gen by configure" >> ${BUILD_C_MAIN}
+    echo "mkdir -p \"\$(dirname \".build/\$1\")\"" >> ${BUILD_C_MAIN}
     echo "LOG=\".build/\$1.main.log\"" >> ${BUILD_C_MAIN}
     echo "export CC=\"${CC}\"" >> ${BUILD_C_MAIN}
     echo "export CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_C_MAIN}
