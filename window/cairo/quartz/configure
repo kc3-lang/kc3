@@ -13,11 +13,12 @@
 
 set -e
 
-echo "$PWD/configure"
+echo "$0"
+export BUILD_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
+export DIR="window/cairo/quartz"
+export SRC_TOP="$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")")"
 
-SRC_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
-
-CONFIG_H_PREFIX=LIBKC3_WINDOW_CAIRO_QUARTZ
+CONFIG_H_PREFIX=LIBKC3_WINDOW_CAIRO_QUARTZ_
 
 . "${SRC_TOP}/config.subr"
 
@@ -31,7 +32,7 @@ echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
 echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
 echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 
-. ./sources.sh
+. "${SRC_DIR}/sources.sh"
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
 OBJECTS="$OBJECTS $(objc2ext .main.lo "$OBJC_SOURCES")"
@@ -126,6 +127,7 @@ build_lo_objc
 build_lib
 
 update_config_mk
+update_makefile
 env_reset
 
 config_subdirs demo

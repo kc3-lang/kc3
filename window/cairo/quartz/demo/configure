@@ -13,9 +13,10 @@
 
 set -e
 
-echo "$PWD/configure"
-
-SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
+echo "$0"
+export BUILD_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
+export DIR="window/cairo/quartz/demo"
+export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")")")"
 
 . "${SRC_TOP}/config.subr"
 
@@ -49,7 +50,7 @@ echo "APP_PROG_ASAN = $APP_PROG_ASAN" >> ${CONFIG_MK}
 echo "APP_PROG_COV = $APP_PROG_COV" >> ${CONFIG_MK}
 echo "APP_PROG_DEBUG = $APP_PROG_DEBUG" >> ${CONFIG_MK}
 
-. ./sources.sh
+. "${SRC_DIR}/sources.sh"
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
@@ -228,3 +229,4 @@ echo "	${APP_DEBUG}/Contents/Frameworks \\" >> ${CONFIG_MK}
 echo "	${APP_PROG_DEBUG}" >> ${CONFIG_MK}
 
 update_config_mk
+update_makefile
