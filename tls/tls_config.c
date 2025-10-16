@@ -12,9 +12,7 @@
  */
 #include <tls.h>
 #include "../libkc3/kc3.h"
-#include "libkc3/error.h"
 #include "tls.h"
-#include "tls/types.h"
 
 s_str * kc3_tls_config_error (p_tls_config *config, s_str *dest)
 {

@@ -10,9 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "libkc3/io.h"
-#include "libkc3/types.h"
-#include "tls/types.h"
 #if defined(WIN32) || defined(WIN64)
 # include <windows.h>
 # include <wincrypt.h>

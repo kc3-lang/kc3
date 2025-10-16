@@ -77,12 +77,12 @@ libkc3
 libtommath
 markdown
 pdf
-"
-
-SUBDIRS="
 smtp
 socket
 test
+"
+
+SUBDIRS="
 tls
 ucd2c
 window

@@ -10,15 +10,14 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "../libkc3/alloc.h"
-#include "../libkc3/io.h"
-#include "assert.h"
-#include "libkc3/buf.h"
-#include "libkc3/buf_save.h"
-#include "types.h"
 #include <string.h>
-#include <tls.h>
 #include <unistd.h>
+#include <tls.h>
+#include "../libkc3/alloc.h"
+#include "../libkc3/buf.h"
+#include "../libkc3/buf_save.h"
+#include "../libkc3/io.h"
+#include "../libkc3/assert.h"
 #include "tls_buf.h"
 
 sw tls_buf_open_r_refill (s_buf *buf);

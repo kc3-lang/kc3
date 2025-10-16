@@ -15,8 +15,8 @@
 
 #include <tls.h>
 #include "../libkc3/types.h"
-#include "types.h"
 #include "../socket/types.h"
+#include "types.h"
 
 /* Library functions. */
 void    kc3_tls_free (p_tls *ctx);
