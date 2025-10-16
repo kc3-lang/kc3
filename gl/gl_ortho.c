@@ -19,6 +19,7 @@
 
 static const char * g_gl_ortho_vertex_shader_src =
   "#version 300 es\n"
+  "precision highp float;\n"
   "in vec3 iPos;\n"
   "in vec3 iNormal;\n"
   "in vec2 iTexCoord;\n"
@@ -59,10 +60,12 @@ void gl_ortho_bind_texture (s_gl_ortho *ortho, GLuint texture)
 {
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
+  glUseProgram(ortho->gl_shader_program);
+  assert(glGetError() == GL_NO_ERROR);
   if (! texture) {
     glActiveTexture(GL_TEXTURE0);
     assert(glGetError() == GL_NO_ERROR);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_2D, ortho->gl_dummy_texture);
     assert(glGetError() == GL_NO_ERROR);
     glUniform1i(ortho->gl_enable_tex2d_loc, 0);
     assert(glGetError() == GL_NO_ERROR);
@@ -84,6 +87,8 @@ void gl_ortho_clean (s_gl_ortho *ortho)
 {
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
+  glDeleteTextures(1, &ortho->gl_dummy_texture);
+  assert(glGetError() == GL_NO_ERROR);
   glDeleteProgram(ortho->gl_shader_program);
   assert(glGetError() == GL_NO_ERROR);
   gl_square_clean(&ortho->square);
@@ -95,7 +100,9 @@ void gl_ortho_color (s_gl_ortho *ortho, f32 r, f32 g, f32 b, f32 a)
   s_rgba color = {r, g, b, a};
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
-  glUniform4fv(ortho->gl_color_loc, 1, &color.r);    
+  glUseProgram(ortho->gl_shader_program);
+  assert(glGetError() == GL_NO_ERROR);
+  glUniform4fv(ortho->gl_color_loc, 1, &color.r);
   assert(glGetError() == GL_NO_ERROR);
 }
 
@@ -110,6 +117,7 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   GLuint fragment_shader;
   GLint success;
   GLuint vertex_shader;
+  GLubyte white_pixel[4] = {255, 255, 255, 255};
   assert(ortho);
   if (! gl_square_init(&ortho->square, 2, 2))
     return NULL;
@@ -126,6 +134,13 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   ortho->scale.z = 1.0f;
   mat4_init_identity(&ortho->view_matrix);
   mat4_init_identity(&ortho->model_matrix);
+  glGenTextures(1, &ortho->gl_dummy_texture);
+  glBindTexture(GL_TEXTURE_2D, ortho->gl_dummy_texture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA,
+               GL_UNSIGNED_BYTE, white_pixel);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glBindTexture(GL_TEXTURE_2D, 0);
   vertex_shader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex_shader, 1, &g_gl_ortho_vertex_shader_src,
                  NULL);
@@ -172,6 +187,8 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   glDeleteShader(fragment_shader);
   assert(glGetError() == GL_NO_ERROR);
+  glUseProgram(ortho->gl_shader_program);
+  assert(glGetError() == GL_NO_ERROR);
   ortho->gl_projection_matrix_loc =
     glGetUniformLocation(ortho->gl_shader_program, "uProjectionMatrix");
   assert(glGetError() == GL_NO_ERROR);
@@ -180,6 +197,9 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   ortho->gl_model_matrix_loc =
     glGetUniformLocation(ortho->gl_shader_program, "uModelMatrix");
+  if (ortho->gl_model_matrix_loc == (GLuint)-1) {
+    err_puts("gl_ortho_init: failed to get uModelMatrix location");
+  }
   assert(glGetError() == GL_NO_ERROR);
   ortho->gl_enable_tex2d_loc =
     glGetUniformLocation(ortho->gl_shader_program, "uEnableTex2D");
@@ -189,6 +209,8 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   ortho->gl_color_loc =
     glGetUniformLocation(ortho->gl_shader_program, "uColor");
+  assert(glGetError() == GL_NO_ERROR);
+  glUseProgram(0);
   assert(glGetError() == GL_NO_ERROR);
   return ortho;
 }
@@ -247,7 +269,7 @@ void gl_ortho_render (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   glUniform1i(ortho->gl_enable_tex2d_loc, 0);
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D, ortho->gl_dummy_texture);
   assert(glGetError() == GL_NO_ERROR);
   glUniform1i(ortho->gl_tex2d_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
@@ -326,13 +348,18 @@ void gl_ortho_text_render_outline (s_gl_ortho *ortho, s_gl_text *text,
 
 void gl_ortho_update_model_matrix (s_gl_ortho *ortho)
 {
+  GLenum error;
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
   glUseProgram(ortho->gl_shader_program);
   assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
                      &ortho->model_matrix.xx);
-  assert(glGetError() == GL_NO_ERROR);
+  if ((error = glGetError()) != GL_NO_ERROR) {
+    err_write_1("gl_ortho_update_model_matrix: glUniformMatrix4fv: ");
+    err_puts(gl_error_string(error));
+    assert(! "gl_ortho_update_model_matrix: glUniformMatrix4fv");
+  }
   /*
   err_puts("gl_ortho_update_model_matrix projection matrix");
   mat4_buf_inspect(&g_c3_env.err, &ortho->projection_matrix);

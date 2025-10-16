@@ -16,7 +16,7 @@
 #include "lightspeed.h"
 
 s_gl_lines g_lines_stars = {0};
-s_gl_ortho g_ortho_lightspeed = {0};
+//s_gl_ortho g_ortho_lightspeed = {0};
 
 static void star_init (s_tag *star)
 {
@@ -93,11 +93,15 @@ u8 lightspeed_render (s_sequence *seq)
   assert(seq);
   window = seq->window;
   assert(window);
+  assert(glGetError() == GL_NO_ERROR);
   mat4_init_identity(&g_ortho.model_matrix);
   mat4_scale(&g_ortho.model_matrix, (f32) window->w / 2.0f,
                      (f32) window->h / 2.0f, 1.0f);
   mat4_translate(&g_ortho.model_matrix, 1, 1, 0);
+  glUseProgram(g_ortho.gl_shader_program);
+  assert(glGetError() == GL_NO_ERROR);
   gl_ortho_update_model_matrix(&g_ortho);
+  assert(glGetError() == GL_NO_ERROR);
   star_count = window->w * window->h * LIGHTSPEED_STAR_PROBABILITY;
   if (star_count > LIGHTSPEED_STAR_MAX)
     star_count = LIGHTSPEED_STAR_MAX;

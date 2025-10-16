@@ -54,9 +54,6 @@ pkg_config libmd
 pkg_config freetype2
 pkg_config glesv2
 pkg_config libpng
-if ${HAVE_COCOA}; then
-    config_lib OPENGL -framework OpenGL
-fi
 config_define PREFIX "\"${PREFIX}\""
 update_config_h
 LIBS="$LIBS -rpath ${PREFIX}/lib"

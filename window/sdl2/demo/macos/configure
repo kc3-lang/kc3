@@ -15,7 +15,7 @@ set -e
 
 echo "$0"
 export BUILD_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
-export DIR="window/cairo/quartz/demo"
+export DIR="window/sdl2/demo/macos"
 export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")")")"
 
 . "${SRC_TOP}/config.subr"
@@ -68,7 +68,7 @@ echo "	install -m 0755 ${PROG}.sh ${APP_PROG}.sh" >> ${CONFIG_MK}
 
 BUNDLE_LIBS_COMMON="/opt/homebrew/lib/libSDL2.dylib /usr/local/lib/libEGL.dylib /usr/local/lib/libGLESv2.dylib"
 
-BUNDLE_LIBS="${BUNDLE_LIBS_COMMON} ../../../../libkc3/.libs/libkc3.0.dylib ../../../../gl/.libs/libkc3_gl.0.dylib ../../../.libs/libkc3_window.0.dylib ../../.libs/libkc3_window_sdl2.0.dylib"
+BUNDLE_LIBS="${BUNDLE_LIBS_COMMON} ../../../../libkc3/.libs/libkc3.0.dylib ../../../../gl/.libs/libkc3_gl.0.dylib ../../../.libs/libkc3_window.0.dylib ../../../demo/.libs/libkc3_window_demo.0.dylib ../../.libs/libkc3_window_sdl2.0.dylib"
 echo >> ${CONFIG_MK}
 echo "${APP}/Contents/Frameworks: ${BUNDLE_LIBS}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP}/Contents/Frameworks" >> ${CONFIG_MK}
@@ -88,7 +88,7 @@ echo "${APP_PROG_ASAN}: ../.libs/${PROG_ASAN}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP_ASAN}/Contents/MacOS" >> ${CONFIG_MK}
 echo "	install -m 0755 ../.libs/${PROG_ASAN} ${APP_PROG_ASAN}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS_ASAN="${BUNDLE_LIBS_COMMON} ../../../../libkc3/.libs/libkc3_asan.0.dylib ../../../../gl/.libs/libkc3_gl_asan.0.dylib ../../../.libs/libkc3_window_asan.0.dylib ../../.libs/libkc3_window_sdl2_asan.0.dylib"
+BUNDLE_LIBS_ASAN="${BUNDLE_LIBS_COMMON} ../../../../libkc3/.libs/libkc3_asan.0.dylib ../../../../gl/.libs/libkc3_gl_asan.0.dylib ../../../.libs/libkc3_window_asan.0.dylib ../../../demo/.libs/libkc3_window_demo_asan.0.dylib ../../.libs/libkc3_window_sdl2_asan.0.dylib"
 echo >> ${CONFIG_MK}
 echo "${APP_ASAN}/Contents/Frameworks: ${BUNDLE_LIBS_ASAN}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP_ASAN}/Contents/Frameworks" >> ${CONFIG_MK}
@@ -108,7 +108,7 @@ echo "${APP_PROG_COV}: ../.libs/${PROG_COV}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP_COV}/Contents/MacOS" >> ${CONFIG_MK}
 echo "	install -m 0755 ../.libs/${PROG_COV} ${APP_PROG_COV}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS_COV="${BUNDLE_LIBS_COMMON} ../../../../libkc3/.libs/libkc3_cov.0.dylib ../../../../gl/.libs/libkc3_gl_cov.0.dylib ../../../.libs/libkc3_window_cov.0.dylib ../../.libs/libkc3_window_sdl2_cov.0.dylib"
+BUNDLE_LIBS_COV="${BUNDLE_LIBS_COMMON} ../../../../libkc3/.libs/libkc3_cov.0.dylib ../../../../gl/.libs/libkc3_gl_cov.0.dylib ../../../.libs/libkc3_window_cov.0.dylib ../../../demo/.libs/libkc3_window_demo_cov.0.dylib ../../.libs/libkc3_window_sdl2_cov.0.dylib"
 echo >> ${CONFIG_MK}
 echo "${APP_COV}/Contents/Frameworks: ${BUNDLE_LIBS_COV}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP_COV}/Contents/Frameworks" >> ${CONFIG_MK}
@@ -128,7 +128,7 @@ echo "${APP_PROG_DEBUG}: ../.libs/${PROG_DEBUG}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP_DEBUG}/Contents/MacOS" >> ${CONFIG_MK}
 echo "	install -m 0755 ../.libs/${PROG_DEBUG} ${APP_PROG_DEBUG}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS_DEBUG="${BUNDLE_LIBS_COMMON} ../../../../libkc3/.libs/libkc3_debug.0.dylib ../../../../gl/.libs/libkc3_gl_debug.0.dylib ../../../.libs/libkc3_window_debug.0.dylib ../../.libs/libkc3_window_sdl2_debug.0.dylib"
+BUNDLE_LIBS_DEBUG="${BUNDLE_LIBS_COMMON} ../../../../libkc3/.libs/libkc3_debug.0.dylib ../../../../gl/.libs/libkc3_gl_debug.0.dylib ../../../.libs/libkc3_window_debug.0.dylib ../../../demo/.libs/libkc3_window_demo_debug.0.dylib ../../.libs/libkc3_window_sdl2_debug.0.dylib"
 echo >> ${CONFIG_MK}
 echo "${APP_DEBUG}/Contents/Frameworks: ${BUNDLE_LIBS_DEBUG}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP_DEBUG}/Contents/Frameworks" >> ${CONFIG_MK}

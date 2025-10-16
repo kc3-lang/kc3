@@ -332,6 +332,7 @@ struct gl_ortho {
   GLuint gl_tex2d_loc;
   GLuint gl_color_loc;
   GLuint gl_shader_program;
+  GLuint gl_dummy_texture;
   s_gl_square square;
 };
 
