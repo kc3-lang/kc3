@@ -196,13 +196,18 @@ void env_args_clean (s_env *env)
 s_env * env_args_init (s_env *env, int *argc, char ***argv)
 {
   s32 argc_prev = 0;
+  char argv0_real[PATH_MAX];
   int count;
   char **vector;
   assert(env);
   if (argc && argv && *argc && *argv) {
     env->argc = (*argc)--;
     env->argv = (*argv)++;
-    if (! (env->argv0 = str_new_1(NULL, env->argv[0])))
+    if (realpath(env->argv[0], argv0_real))
+      env->argv0 = str_new_1_alloc(argv0_real);
+    else
+      env->argv0 = str_new_1(NULL, env->argv[0]);
+    if (! env->argv0)
       return NULL;
     if (! (env->argv0_dir = alloc(sizeof(s_str))))
       return NULL;
