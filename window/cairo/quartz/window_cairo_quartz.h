@@ -13,7 +13,7 @@
 #ifndef LIBKC3_WINDOW_CAIRO_QUARTZ_H
 #define LIBKC3_WINDOW_CAIRO_QUARTZ_H
 
-#include <libkc3/types.h>
+#include "../../../libkc3/types.h"
 #include "../types.h"
 #include "../window_cairo.h"
 

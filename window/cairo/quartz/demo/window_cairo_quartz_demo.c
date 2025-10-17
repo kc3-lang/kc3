@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cairo/cairo.h>
-#include <libkc3/kc3.h>
+#include "../../../../libkc3/kc3.h"
 #include "../../../window.h"
 #include "../../demo/window_cairo_demo.h"
 #include "../window_cairo_quartz.h"

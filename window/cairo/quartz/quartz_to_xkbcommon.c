@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/types.h>
 #include <xkbcommon/xkbcommon.h>
+#include "../../../libkc3/types.h"
 
 u32 quartz_to_xkbcommon (u16 quartz_key)
 {
