@@ -20,6 +20,11 @@ run() {
     "$@"
 }
 
+sign_binary() {
+    codesign --remove-signature "$1" 2>/dev/null || true
+    codesign -s - "$1" 2>/dev/null || true
+}
+
 for BIN in ${DESTDIR}/bin/*; do
     LIBS=$(otool -L "${BIN}" |
 	       awk '/^\t(\/usr\/lib|\/System)/ { next } /^\t/ { print $1 }' |
@@ -53,6 +58,15 @@ for BIN in ${DESTDIR}/bin/* ${DESTDIR}/lib/*; do
     done
 done
 
+# Fix /usr/lib/libffi.dylib reference to use our packaged libffi.8.dylib
+for BIN in ${DESTDIR}/bin/* ${DESTDIR}/lib/*; do
+    if otool -L "${BIN}" | grep -q '/usr/lib/libffi.dylib'; then
+	if [ -f ${DESTDIR}/lib/libffi.8.dylib ]; then
+	    run install_name_tool -change /usr/lib/libffi.dylib @executable_path/../lib/libffi.8.dylib ${BIN}
+	fi
+    fi
+done
+
 LIBS=$(ls ${DESTDIR}/lib/libkc3_*.0.dylib |
 	   grep -v 'libkc3_debug.0.dylib' |
 	   sed -e 's,.*\/libkc3_\(.*\).0.dylib,\1,')
@@ -65,3 +79,8 @@ LIBS=$(ls ${DESTDIR}/lib/libkc3_*.0.dylib |
 	ls -la $NAME.so
     done
 )
+
+# Re-sign all modified binaries and libraries with ad-hoc signature
+for BIN in ${DESTDIR}/bin/* ${DESTDIR}/lib/*.dylib; do
+    sign_binary "${BIN}"
+done

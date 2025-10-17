@@ -40,6 +40,8 @@ echo "APP_ASAN = ${APP_ASAN}" >> ${CONFIG_MK}
 echo "APP_COV = ${APP_COV}" >> ${CONFIG_MK}
 echo "APP_DEBUG = ${APP_DEBUG}" >> ${CONFIG_MK}
 
+config_asan
+
 update_build
 update_build_objc
 update_build_prog

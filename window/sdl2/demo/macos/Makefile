@@ -33,6 +33,9 @@ FONT_SOURCES = \
 	${SRC_TOP}/fonts/Courier\ New \
 	${SRC_TOP}/fonts/Noto\ Sans \
 
+RESOURCES = \
+	${SRC_TOP}/img/kc3.icns
+
 all:
 	${MAKE} build
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
@@ -48,16 +51,22 @@ build:
 	cp -LR ${IMG_SOURCES} ${APP}/Contents/img/
 	mkdir -p ${APP}/Contents/fonts/
 	cp -LR ${FONT_SOURCES} ${APP}/Contents/fonts/
+	mkdir -p ${APP}/Contents/Resources/
+	cp -RL ${RESOURCES} ${APP}/Contents/Resources/
+	touch ${APP}
 
 asan:
 	${MAKE} ${APP_PROG_ASAN}
 	${MAKE} ${APP_ASAN}/Contents/Frameworks
 	rm -rf ${APP_ASAN}/Contents/lib
 	cp -R ${SRC_TOP}/lib ${APP_ASAN}/Contents/
-	mkdir -p ${APP_ASAN}/Contents/img/
-	cp -RL ${IMG_SOURCES} ${APP_ASAN}/Contents/img/
 	mkdir -p ${APP_ASAN}/Contents/fonts/
 	cp -RL ${FONT_SOURCES} ${APP_ASAN}/Contents/fonts/
+	mkdir -p ${APP_ASAN}/Contents/img/
+	cp -RL ${IMG_SOURCES} ${APP_ASAN}/Contents/img/
+	mkdir -p ${APP_ASAN}/Contents/Resources/
+	cp -RL ${RESOURCES} ${APP_ASAN}/Contents/Resources/
+	touch ${APP_ASAN}
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -70,20 +79,26 @@ cov:
 	${MAKE} ${APP_COV}/Contents/Frameworks
 	rm -rf ${APP_COV}/Contents/lib
 	cp -R ${SRC_TOP}/lib ${APP_COV}/Contents/
-	mkdir -p ${APP_COV}/Contents/img/
-	cp -RL ${IMG_SOURCES} ${APP_COV}/Contents/img/
 	mkdir -p ${APP_COV}/Contents/fonts/
 	cp -RL ${FONT_SOURCES} ${APP_COV}/Contents/fonts/
+	mkdir -p ${APP_COV}/Contents/img/
+	cp -RL ${IMG_SOURCES} ${APP_COV}/Contents/img/
+	mkdir -p ${APP_COV}/Contents/Resources/
+	cp -RL ${RESOURCES} ${APP_COV}/Contents/Resources/
+	touch ${APP_COV}
 
 debug:
 	${MAKE} ${APP_PROG_DEBUG}
 	${MAKE} ${APP_DEBUG}/Contents/Frameworks
 	rm -rf ${APP_DEBUG}/Contents/lib
 	cp -R ${SRC_TOP}/lib ${APP_DEBUG}/Contents/
-	mkdir -p ${APP_DEBUG}/Contents/img/
-	cp -RL ${IMG_SOURCES} ${APP_DEBUG}/Contents/img/
 	mkdir -p ${APP_DEBUG}/Contents/fonts/
 	cp -RL ${FONT_SOURCES} ${APP_DEBUG}/Contents/fonts/
+	mkdir -p ${APP_DEBUG}/Contents/img/
+	cp -RL ${IMG_SOURCES} ${APP_DEBUG}/Contents/img/
+	mkdir -p ${APP_DEBUG}/Contents/Resources/
+	cp -RL ${RESOURCES} ${APP_DEBUG}/Contents/Resources/
+	touch ${APP_DEBUG}
 
 demo: build
 	time ${APP_PROG}.sh
@@ -104,8 +119,8 @@ lldb_demo: debug
 	lldb ${APP_PROG_DEBUG}
 
 install:
-	install -m 755 -d ${prefix}/bin
-	install -m 755 ${PROG} ${prefix}/bin/${PROG}
+	cp -R ${APP} ${DESTDIR}${prefix}
+	cp -R ${APP_DEBUG} ${DESTDIR}${prefix}
 
 .PHONY: \
 	all \
