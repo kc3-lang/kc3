@@ -39,7 +39,7 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CPPFLAGS="-I../../.. $CPPFLAGS"
+CPPFLAGS="-I${SRC_TOP} $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -Wno-error=unknown-pragmas"
 CFLAGS="$CFLAGS -std=c11 -pedantic -pipe"
 LIBS="$LIBS -lm"

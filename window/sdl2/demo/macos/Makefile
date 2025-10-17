@@ -20,26 +20,18 @@ CLEANFILES += ${CLEANFILES_COV}
 DISTCLEANFILES = ${CLEANFILES} config.mk
 
 IMG_SOURCES = \
-	../../../../img/earth.png \
-	../../../../img/flaps.256.png \
-	../../../../img/flaps.png \
-	../../../../img/fly-dead.png \
-	../../../../img/fly-noto.png \
-	../../../../img/matrix_shade.png \
-	../../../../img/toast.128.png \
-	../../../../img/toast.png \
+	${SRC_TOP}/img/earth.png \
+	${SRC_TOP}/img/flaps.256.png \
+	${SRC_TOP}/img/flaps.png \
+	${SRC_TOP}/img/fly-dead.png \
+	${SRC_TOP}/img/fly-noto.png \
+	${SRC_TOP}/img/matrix_shade.png \
+	${SRC_TOP}/img/toast.128.png \
+	${SRC_TOP}/img/toast.png \
 
 FONT_SOURCES = \
-	../../../../fonts/Courier\ New \
-	../../../../fonts/Noto\ Sans \
-
-build:
-	${MAKE} ${APP_PROG}
-	${MAKE} ${APP}/Contents/Frameworks
-	rm -rf ${APP}/Contents/lib
-	cp -R ../../../../lib ${APP}/Contents/
-	cp -LR ${IMG_SOURCES} ${APP}/Contents/img/
-	cp -LR ${FONT_SOURCES} ${APP}/Contents/fonts/
+	${SRC_TOP}/fonts/Courier\ New \
+	${SRC_TOP}/fonts/Noto\ Sans \
 
 all:
 	${MAKE} build
@@ -47,12 +39,24 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
+build:
+	${MAKE} ${APP_PROG}
+	${MAKE} ${APP}/Contents/Frameworks
+	rm -rf ${APP}/Contents/lib
+	cp -R ${SRC_TOP}/lib ${APP}/Contents/
+	mkdir -p ${APP}/Contents/img/
+	cp -LR ${IMG_SOURCES} ${APP}/Contents/img/
+	mkdir -p ${APP}/Contents/fonts/
+	cp -LR ${FONT_SOURCES} ${APP}/Contents/fonts/
+
 asan:
 	${MAKE} ${APP_PROG_ASAN}
 	${MAKE} ${APP_ASAN}/Contents/Frameworks
 	rm -rf ${APP_ASAN}/Contents/lib
-	cp -R ../../../../lib ${APP_ASAN}/Contents/
+	cp -R ${SRC_TOP}/lib ${APP_ASAN}/Contents/
+	mkdir -p ${APP_ASAN}/Contents/img/
 	cp -RL ${IMG_SOURCES} ${APP_ASAN}/Contents/img/
+	mkdir -p ${APP_ASAN}/Contents/fonts/
 	cp -RL ${FONT_SOURCES} ${APP_ASAN}/Contents/fonts/
 
 clean:
@@ -64,17 +68,21 @@ clean_cov:
 cov:
 	${MAKE} ${APP_PROG_COV}
 	${MAKE} ${APP_COV}/Contents/Frameworks
-	rm -rf ${APP}/Contents/lib
-	cp -R ../../../../lib ${APP_COV}/Contents/
+	rm -rf ${APP_COV}/Contents/lib
+	cp -R ${SRC_TOP}/lib ${APP_COV}/Contents/
+	mkdir -p ${APP_COV}/Contents/img/
 	cp -RL ${IMG_SOURCES} ${APP_COV}/Contents/img/
+	mkdir -p ${APP_COV}/Contents/fonts/
 	cp -RL ${FONT_SOURCES} ${APP_COV}/Contents/fonts/
 
 debug:
 	${MAKE} ${APP_PROG_DEBUG}
 	${MAKE} ${APP_DEBUG}/Contents/Frameworks
-	rm -rf ${APP}/Contents/lib
-	cp -R ../../../../lib ${APP_DEBUG}/Contents/
+	rm -rf ${APP_DEBUG}/Contents/lib
+	cp -R ${SRC_TOP}/lib ${APP_DEBUG}/Contents/
+	mkdir -p ${APP_DEBUG}/Contents/img/
 	cp -RL ${IMG_SOURCES} ${APP_DEBUG}/Contents/img/
+	mkdir -p ${APP_DEBUG}/Contents/fonts/
 	cp -RL ${FONT_SOURCES} ${APP_DEBUG}/Contents/fonts/
 
 demo: build
