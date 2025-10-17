@@ -76,6 +76,13 @@
  - [ ] `tls`
  - [ ] `tls-rebased`
 
+## MacOS release
+ - [x] cairo demo app/_debug
+ - [ ] build and install sdl2 demo/_debug app
+ - [ ] bin
+   - [ ] install dependent libs in `${DESTDIR}${prefix}/lib`
+   - [ ] fix libs and executables lib search path
+
 ---
 
 [x] : Done
