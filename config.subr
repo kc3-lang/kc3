@@ -1153,10 +1153,14 @@ update_config_sh() {
 
 update_makefile() {
     if [ "x${BUILD_TOP}" != "x${SRC_TOP}" ]; then
-        echo "-> ${PWD}/Makefile"
-        ln -sf "${SRC_DIR}/Makefile" ./
-        echo "-> ${PWD}/sources.mk"
-        ln -sf "${SRC_DIR}/sources.mk" ./
+	if ! [ -h Makefile ]; then
+            echo "-> ${PWD}/Makefile"
+            ln -sf "${SRC_DIR}/Makefile" ./
+	fi
+	if [ -f "${SRC_DIR}/sources.mk" ] && ! [ -h sources.mk ]; then
+            echo "-> ${PWD}/sources.mk"
+            ln -sf "${SRC_DIR}/sources.mk" ./
+	fi
     fi
 }
 
