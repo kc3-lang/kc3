@@ -751,9 +751,10 @@ install:
 	    ${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/"$$F"; done
 	${INSTALL} -m 0644 ${SRC_DIR}/lib/kc3/0.1/kc3.dump \
 	    ${DESTDIR}${prefix}/lib/kc3/0.1/kc3.dump
-	find ${SRC_DIR}/lib -name '*.facts' -or -name '*.kc3' | \
-	    while read F; do \
-		${INSTALL} -m 0644 $$F ${DESTDIR}${prefix}/"$$F"; done
+	( cd ${SRC_DIR} && \
+	  find lib -name '*.facts' -or -name '*.kc3'; ) | \
+	      while read F; do \
+		  ${INSTALL} -m 0644 "${SRC_DIR}/$$F" "${DESTDIR}${prefix}/$$F"; done
 	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3
 	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3/img
 	( cd ${SRC_DIR} && find img -name '*.png' -or -name '*.jpg'; ) | \
