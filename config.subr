@@ -754,7 +754,7 @@ env_reset() {
 
 objc_o_rule() {
     OBJC_O_RULE_ARG="$(echo "$1" | sed -e 's/^\(.*\)\.m$/\1/')"
-    echo "${OBJC_O_RULE_ARG}.o: ${OBJC_O_RULE_ARG}.m"
+    echo "${OBJC_O_RULE_ARG}.o: ${SRC_DIR}/${OBJC_O_RULE_ARG}.m"
     echo "${OBJC_O_RULE_ARG}.o: ${SRC_DIR}/$2"
 }
 
