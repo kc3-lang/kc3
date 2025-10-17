@@ -754,13 +754,18 @@ install:
 	( cd ${SRC_DIR} && \
 	  find lib -name '*.facts' -or -name '*.kc3'; ) | \
 	      while read F; do \
-		  ${INSTALL} -m 0644 "${SRC_DIR}/$$F" "${DESTDIR}${prefix}/$$F"; done
+		  mkdir -p \
+		      "$$(dirname ${DESTDIR}${prefix}/$$F)"; \
+		  ${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
+		      "${DESTDIR}${prefix}/$$F"; done
 	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3
 	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3/img
 	( cd ${SRC_DIR} && find img -name '*.png' -or -name '*.jpg'; ) | \
 	    while read F; do \
-		${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
-		    ${DESTDIR}${prefix}/share/kc3/"$$F"; done
+		  mkdir -p \
+		      "$$(dirname ${DESTDIR}${prefix}/share/kc3/$$F)"; \
+		  ${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
+		      "${DESTDIR}${prefix}/share/kc3/$$F"; done
 	${MAKE} -C libtommath install
 	${MAKE} -C libkc3 install
 	${MAKE} -C socket install
