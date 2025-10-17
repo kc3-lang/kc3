@@ -10,6 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+DEST=kc3-v${KC3_VERSION}-${MACHINE}
+DEST_DMG = ${DEST}.dmg
+
 all:
 	${MAKE} gen
 	${MAKE} -C libtommath all
@@ -31,7 +34,6 @@ all:
 	${MAKE} -C gl all
 	${MAKE} -C window all
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 all; fi
-#	${MAKE} -C fs all
 
 include config.mk
 include sources.mk
@@ -60,7 +62,6 @@ asan:
 	${MAKE} -C gl asan
 	${MAKE} -C window asan
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 asan; fi
-#	${MAKE} -C fs asan
 
 assets:
 	make -C test/httpd/assets
@@ -86,7 +87,6 @@ build:
 	${MAKE} -C gl build
 	${MAKE} -C window build
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 build; fi
-#	${MAKE} -C fs build
 
 clean:
 	${MAKE} -C libtommath clean
@@ -108,7 +108,6 @@ clean:
 	${MAKE} -C gl clean
 	${MAKE} -C window clean
 	${MAKE} -C gtk4 clean
-#	${MAKE} -C fs clean
 
 clean_cov:
 	${MAKE} -C libtommath clean_cov
@@ -130,7 +129,6 @@ clean_cov:
 	${MAKE} -C gl clean_cov
 	${MAKE} -C window clean_cov
 	${MAKE} -C gtk4 clean_cov
-#	${MAKE} -C fs clean_cov
 
 cov:
 	${MAKE} gen
@@ -153,7 +151,6 @@ cov:
 	${MAKE} -C gl cov
 	${MAKE} -C window cov
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 cov; fi
-#	${MAKE} -C fs cov
 
 debug:
 	${MAKE} -C libtommath debug
@@ -175,7 +172,6 @@ debug:
 	${MAKE} -C gl debug
 	${MAKE} -C window debug
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 debug; fi
-#	${MAKE} -C fs debug
 
 demo: build
 	${MAKE} -C window demo
@@ -268,7 +264,6 @@ distclean:
 	${MAKE} -C gl distclean
 	${MAKE} -C window distclean
 	${MAKE} -C gtk4 distclean
-#	${MAKE} -C fs distclean
 
 clean_dump:
 	rm -f lib/kc3/0.1/kc3.dump
@@ -395,7 +390,6 @@ gcovr:
 	${MAKE} -C test gcovr
 	${MAKE} -C window gcovr
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 gcovr; fi
-#	${MAKE} -C fs gcovr
 	if [ -d "$$HOME/Downloads/kc3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
 gdb_demo: debug lib_links_debug
@@ -779,8 +773,10 @@ install:
 	${MAKE} -C gl install
 	${MAKE} -C window install
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 install; fi
-#	${MAKE} -C fs install
 	${MAKE} install_lib_links
+	if which hdiutil; then \
+	    hdiutil create -volname "KC3 v${KC3_VERSION}" \
+		-srcfolder ${DEST} -ov -format UDZO ${DEST}.dmg; fi
 
 install_lib_links:
 	${MAKE} install_lib_links_${ARCH}
@@ -1759,7 +1755,6 @@ uninstall:
 	${MAKE} -C httpd uninstall
 	${MAKE} -C window uninstall
 	${MAKE} -C gtk4 uninstall
-#	${MAKE} -C fs uninstall
 
 .PHONY: all \
 	android \
