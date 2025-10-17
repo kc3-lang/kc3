@@ -26,7 +26,7 @@ int main (int argc, char **argv)
     return 1;
   kc3_window_cairo_init();
   window_cairo_init(&window, 0, 0, 800, 600,
-                    "C3.Window.Cairo.Quartz demo",
+                    "KC3.Window.Cairo.Quartz demo",
                     WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
   window.button = window_cairo_demo_button;
   window.key    = window_cairo_demo_key;
