@@ -12,7 +12,7 @@
  */
 #include <windows.h>
 #include <xkbcommon/xkbcommon.h>
-#include <libkc3/types.h>
+#include "../../../libkc3/types.h"
 
 u32 vk_to_xkbcommon (u32 vk_key)
 {

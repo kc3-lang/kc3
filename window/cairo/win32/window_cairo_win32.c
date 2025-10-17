@@ -16,7 +16,7 @@
 #include <windows.h>
 #include <cairo.h>
 #include <cairo-win32.h>
-#include <libkc3/kc3.h>
+#include "../../../libkc3/kc3.h"
 #include "vk_to_xkbcommon.h"
 #include "window_cairo_win32.h"
 

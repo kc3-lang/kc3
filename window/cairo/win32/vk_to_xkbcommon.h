@@ -13,7 +13,7 @@
 #ifndef LIBKC3_WINDOW_CAIRO_WIN32_VK_TO_XKBCOMMON_H
 #define LIBKC3_WINDOW_CAIRO_WIN32_VK_TO_XKBCOMMON_H
 
-#include <libkc3/types.h>
+#include "../../../libkc3/types.h"
 
 u32 vk_to_xkbcommon (u32 vk_key);
 
