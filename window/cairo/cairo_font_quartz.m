@@ -13,10 +13,10 @@
 #import <Cocoa/Cocoa.h>
 
 #include <cairo-quartz.h>
-#include <libkc3/file.h>
-#include <libkc3/io.h>
-#include <libkc3/str.h>
-#include <libkc3/sym.h>
+#include "../../libkc3/file.h"
+#include "../../libkc3/io.h"
+#include "../../libkc3/str.h"
+#include "../../libkc3/sym.h"
 #include "cairo_font.h"
 
 s_cairo_font * cairo_font_init (s_cairo_font *font, const char *path)
