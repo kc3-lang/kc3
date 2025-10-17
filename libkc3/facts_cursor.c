@@ -12,7 +12,7 @@
  */
 #include <stdlib.h>
 #include "assert.h"
-#include "config.h"
+#include <config.h>
 #include "facts.h"
 #include "facts_cursor.h"
 #include "pvar.h"

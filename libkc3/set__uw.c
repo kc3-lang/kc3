@@ -14,7 +14,7 @@
 #include "alloc.h"
 #include "assert.h"
 #include "compare.h"
-#include "config.h"
+#include <config.h>
 #include "uw.h"
 #include "set__uw.h"
 #include "set_item__uw.h"

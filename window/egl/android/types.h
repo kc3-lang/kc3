@@ -21,7 +21,7 @@
 #include <android/native_activity.h>
 #include <android/native_window.h>
 #include "native_app_glue/android_native_app_glue.h"
-#include "config.h"
+#include <config.h>
 #include "../types.h"
 
 /* Struct types. */

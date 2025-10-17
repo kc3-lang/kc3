@@ -13,7 +13,7 @@
 #ifndef KC3_EXPLICIT_BZERO_H
 #define KC3_EXPLICIT_BZERO_H
 
-#include "config.h"
+#include <config.h>
 
 #if ! HAVE_EXPLICIT_BZERO
 # define explicit_bzero(p, size) memset(p, 0, size)

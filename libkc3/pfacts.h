@@ -14,7 +14,7 @@
 #define LIBKC3_PFACTS_H
 
 #include "types.h"
-#include "config.h"
+#include <config.h>
 
 /* Initialization functions, call pfacts_clean after use. */
 void      pfacts_clean (p_facts *pfacts);

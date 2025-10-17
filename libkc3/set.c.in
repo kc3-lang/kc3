@@ -14,7 +14,7 @@
 #include "alloc.h"
 #include "assert.h"
 #include "compare.h"
-#include "config.h"
+#include <config.h>
 #include "_NAME$.h"
 #include "set___NAME$.h"
 #include "set_item___NAME$.h"

@@ -19,7 +19,7 @@
 #include "buf_fd.h"
 #include "buf_save.h"
 #include "character.h"
-#include "config.h"
+#include <config.h>
 #include "error.h"
 #include "file.h"
 #include "integer.h"

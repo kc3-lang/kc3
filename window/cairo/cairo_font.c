@@ -12,7 +12,7 @@
  */
 #include "../../libkc3/kc3.h"
 #include "cairo_font.h"
-#include "config.h"
+#include <config.h>
 
 #if ! HAVE_COCOA
 

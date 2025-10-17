@@ -18,7 +18,7 @@
 #ifndef LIBKC3_WINDOW_EGL_DRM_TYPES_H
 #define LIBKC3_WINDOW_EGL_DRM_TYPES_H
 
-#include "config.h"
+#include <config.h>
 #include <gbm.h>
 #include <libinput.h>
 #include <xf86drm.h>

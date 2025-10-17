@@ -1215,6 +1215,8 @@ ENV_CXXFLAGS="$CXXFLAGS"
 ENV_LDFLAGS="$LDFLAGS"
 ENV_LIBS="$LIBS"
 
+CPPFLAGS="$CPPFLAGS -I."
+
 if [ "x$CC" = "x" ]; then
     if test -n $(which cc); then
         CC=cc

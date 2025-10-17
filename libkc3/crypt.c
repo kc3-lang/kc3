@@ -18,7 +18,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "assert.h"
-#include "config.h"
+#include <config.h>
 #include "crypt.h"
 #include "str.h"
 #include "tag.h"
