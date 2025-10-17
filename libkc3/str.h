@@ -110,6 +110,7 @@ s_str * str_init_vf (s_str *str, const char *fmt, va_list ap);
 /* Constructors, call str_delete after use */
 s_str * str_new (char *free, uw size, const char *p);
 s_str * str_new_1 (char *free, const char *p);
+s_str * str_new_1_alloc (const char *p);
 s_str * str_new_cpy (const char *p, uw size);
 s_str * str_new_copy (const s_str *src);
 s_str * str_new_empty (void);

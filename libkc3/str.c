@@ -1345,6 +1345,19 @@ s_str * str_new_1 (char *free, const char *s)
   return str;
 }
 
+s_str * str_new_1_alloc (const char *p)
+{
+  s_str *str;
+  str = alloc(sizeof(s_str));
+  if (! str)
+    return NULL;
+  if (! str_init_1_alloc(str, p)) {
+    free(str);
+    return NULL;
+  }
+  return str;
+}
+
 s_str * str_new_cpy (const char *p, uw size)
 {
   char *a;

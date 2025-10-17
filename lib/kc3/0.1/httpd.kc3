@@ -13,6 +13,7 @@
 require Buf
 require Event
 require File
+require HTML
 require HTTP
 require HTTP.Request
 require HTTP.Response

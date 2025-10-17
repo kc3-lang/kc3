@@ -34,6 +34,7 @@ config.sh
 current_test
 .cxx
 *.dll
+*.dmg
 .DS_Store
 ekc3/embed
 *.exe
@@ -89,6 +90,7 @@ macos/kc3-v*
 /msys2/clang64/kc3-*
 node_modules/
 *.o
+out/
 release/
 *.so
 .test

@@ -10,8 +10,6 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-DEST = kc3-v${KC3_VERSION}-${MACHINE}
-
 all:
 	${MAKE} gen
 	${MAKE} -C libtommath all
@@ -129,6 +127,12 @@ clean_cov:
 	${MAKE} -C window clean_cov
 	${MAKE} -C gtk4 clean_cov
 
+clean_dump:
+	rm -f lib/kc3/0.1/kc3.dump
+	rm -f lib/kc3/0.1/kpkg.dump
+	rm -f test/httpd/kc3.dump
+	rm -f httpd/fx/kc3.dump
+
 cov:
 	${MAKE} gen
 	${MAKE} -C libtommath cov
@@ -240,6 +244,20 @@ demo_kubz_debug: debug
 
 dist: kc3-${KC3_VERSION}.tar.gz
 
+DIST_DMG = kc3-v${KC3_VERSION}-${MACHINE}
+
+dist_dmg:
+	mkdir -p out/dmg
+	cd out/dmg && \
+	    DESTDIR="$$PWD/install" ../../configure --prefix /Applications/kc3 && \
+	    make -j8 && \
+	    make install && \
+	    ${SRC_TOP}/bin/update_dyld "$$PWD/install" && \
+	    mkdir -p ${DIST_DMG} && \
+	    cp -R install/Applications/kc3 ${DIST_DMG}/ && \
+	    hdiutil create -volname "KC3 v${KC3_VERSION}" \
+		-srcfolder ${DIST_DMG} -ov -format UDZO ${DIST_DMG}.dmg
+
 dist_msys2_clang64: all
 	${MAKE} -C msys2/clang64
 
@@ -263,12 +281,6 @@ distclean:
 	${MAKE} -C gl distclean
 	${MAKE} -C window distclean
 	${MAKE} -C gtk4 distclean
-
-clean_dump:
-	rm -f lib/kc3/0.1/kc3.dump
-	rm -f lib/kc3/0.1/kpkg.dump
-	rm -f test/httpd/kc3.dump
-	rm -f httpd/fx/kc3.dump
 
 dump:
 	${MAKE} clean_dump
@@ -773,12 +785,6 @@ install:
 	${MAKE} -C window install
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 install; fi
 	${MAKE} install_lib_links
-
-dist_dmg:
-	mkdir -p ${DEST}
-	cp -R ${DESTDIR}${prefix} ${DEST}
-	hdiutil create -volname "KC3 v${KC3_VERSION}" \
-	    -srcfolder ${DEST} -ov -format UDZO ${DESTDIR}/${DEST}.dmg
 
 install_lib_links:
 	${MAKE} install_lib_links_${ARCH}

@@ -31,9 +31,11 @@ require_pkg_config
 
 MACHINE=$(uname -m)
 echo "MACHINE = $MACHINE" >> ${CONFIG_MK}
+echo "MACHINE=$MACHINE" >> ${CONFIG_SH}
 
 KC3_VERSION="$(cat "${SRC_TOP}/kc3.version")"
 echo "KC3_VERSION = $KC3_VERSION" >> ${CONFIG_MK}
+echo "KC3_VERSION=$KC3_VERSION" >> ${CONFIG_SH}
 
 config_asan
 echo "HAVE_ASAN = ${HAVE_ASAN}" >> ${CONFIG_MK}
@@ -59,6 +61,7 @@ else
 fi
 echo "HAVE_GTK4 = $HAVE_GTK4" >> ${CONFIG_MK}
 
+update_config_sh
 update_config_mk
 update_makefile
 env_reset
