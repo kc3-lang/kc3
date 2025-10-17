@@ -1,0 +1,8 @@
+#!/bin/sh
+git pull && \
+    mkdir -p build && \
+    cd build && \
+    DESTDIR="$PWD/install" ../configure --prefix /Applications/kc3 && \
+    make -j8 && \
+    make install && \
+    make dist_dmg

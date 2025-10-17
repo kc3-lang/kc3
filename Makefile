@@ -10,8 +10,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-DEST=kc3-v${KC3_VERSION}-${MACHINE}
-DEST_DMG = ${DEST}.dmg
+DEST = kc3-v${KC3_VERSION}-${MACHINE}
 
 all:
 	${MAKE} gen
@@ -774,9 +773,12 @@ install:
 	${MAKE} -C window install
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 install; fi
 	${MAKE} install_lib_links
-	if which hdiutil; then \
-	    hdiutil create -volname "KC3 v${KC3_VERSION}" \
-		-srcfolder ${DEST} -ov -format UDZO ${DEST}.dmg; fi
+
+dist_dmg:
+	mkdir -p ${DEST}
+	cp -R ${DESTDIR}${prefix} ${DEST}
+	hdiutil create -volname "KC3 v${KC3_VERSION}" \
+	    -srcfolder ${DEST} -ov -format UDZO ${DESTDIR}/${DEST}.dmg
 
 install_lib_links:
 	${MAKE} install_lib_links_${ARCH}

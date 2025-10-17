@@ -30,9 +30,6 @@ LIB_FILES = \
 	/opt/homebrew/opt/libffi/lib/libffi.8.dylib
 #	/usr/local/lib/libevent-2.1.7.dylib
 
-DESTDIR = kc3-v${KC3_VERSION}-${MACHINE}
-DMG = ${DESTDIR}.dmg
-
 CLEANFILES = ${DMG} ${DESTDIR} ${DESTDIR}.old
 
 clean:

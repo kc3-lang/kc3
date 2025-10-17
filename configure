@@ -29,6 +29,9 @@ export PREFIX
 
 require_pkg_config
 
+MACHINE=$(uname -m)
+echo "MACHINE = $MACHINE" >> ${CONFIG_MK}
+
 KC3_VERSION="$(cat "${SRC_TOP}/kc3.version")"
 echo "KC3_VERSION = $KC3_VERSION" >> ${CONFIG_MK}
 
