@@ -1344,12 +1344,14 @@ if [ "x$OBJC" = "x" ]; then
 fi
 echo "OBJC = $OBJC" >> ${CONFIG_MK}
 
-PREFIX="${PREFIX:-/usr/local}"
+: ${DESTDIR:=}
+echo "DESTDIR ?= ${DESTDIR}" >> ${CONFIG_MK}
+
+: ${PREFIX:=/usr/local}
 echo "PREFIX = $PREFIX" >> ${CONFIG_MK}
 echo "PREFIX=$PREFIX" >> ${CONFIG_SH}
-echo "DESTDIR ?=" >> ${CONFIG_MK}
-echo "prefix ?= ${DESTDIR}${PREFIX}" >> ${CONFIG_MK}
-echo "prefix=${DESTDIR}${PREFIX}" >> ${CONFIG_SH}
+echo "prefix ?= ${PREFIX}" >> ${CONFIG_MK}
+echo "prefix=${PREFIX}" >> ${CONFIG_SH}
 
 if [ "x$DESTDIR" != "x" ]; then
     mkdir -p "$DESTDIR"

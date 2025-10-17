@@ -18,14 +18,14 @@ CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.h config.mk
 
-build: libkc3_window_cairo_quartz.la
-	${MAKE} -C demo build
-
 all:
 	${MAKE} build
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
+
+build: libkc3_window_cairo_quartz.la
+	${MAKE} -C demo build
 
 asan: libkc3_window_cairo_quartz_asan.la
 	${MAKE} -C demo asan
@@ -58,6 +58,22 @@ gdb_demo: debug
 	${MAKE} -C demo gdb_demo
 
 install:
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
+	    ${DESTDIR}${prefix}/include/libkc3/window/cairo/quartz
+	for H in config.h ${HEADERS}; do \
+	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
+		${SRC_DIR}/$$H \
+		${DESTDIR}${prefix}/include/libkc3/window/cairo/quartz; done
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
+	    ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
+	    -o ${OWNER} -g ${GROUP} -m 0644 \
+	    ${LIB} ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
+	    -o ${OWNER} -g ${GROUP} -m 0644 \
+	    ${LIB_DEBUG} ${DESTDIR}${prefix}/lib
+	${LIBTOOL} --finish ${DESTDIR}${prefix}/lib
+	${MAKE} -C demo install
 
 lldb_demo: debug
 	${MAKE} -C demo lldb_demo
@@ -69,6 +85,9 @@ update_sources:
 	./update_sources
 
 uninstall:
+	rm -rf ${prefix}/include/libkc3/window/cairo/quartz
+	rm -f ${prefix}/lib/${LIB}
+	${MAKE} -C demo uninstall
 
 .PHONY: \
 	all \

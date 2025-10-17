@@ -89,9 +89,14 @@ lldb_demo: debug
 	lldb ${APP_PROG_DEBUG}
 
 install:
+	install -m 0755 -d ${DESTDIR}/Applications
 	install -m 0755 -d ${DESTDIR}/Applications/kc3
 	cp -R ${APP} ${DESTDIR}/Applications/kc3/
 	cp -R ${APP_DEBUG} ${DESTDIR}/Applications/kc3/
+
+uninstall:
+	rm -rf /Applications/kc3/${APP}
+	rm -rf /Applications/kc3/${APP_DEBUG}
 
 .PHONY: \
 	all \
