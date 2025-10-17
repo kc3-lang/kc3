@@ -1617,9 +1617,23 @@ KC3_OBJC_SOURCES = \
 	"window/cairo/quartz/window_cairo_quartz_view.m" \
 	"window/cairo/quartz/window_cairo_quartz_view_controller.m" \
 
+KC3_PLIST_SOURCES = \
+	"window/cairo/quartz/demo/app_asan_info.plist" \
+	"window/cairo/quartz/demo/app_cov_info.plist" \
+	"window/cairo/quartz/demo/app_debug_info.plist" \
+	"window/cairo/quartz/demo/app_info.plist" \
+	"window/sdl2/demo/macos/app_asan_info.plist" \
+	"window/sdl2/demo/macos/app_cov_info.plist" \
+	"window/sdl2/demo/macos/app_debug_info.plist" \
+	"window/sdl2/demo/macos/app_info.plist" \
+
 KC3_SH_SOURCES = \
-	"window/sdl2/demo/macos/kc3_window_sdl2_demo.app/Contents/MacOS/kc3_window_sdl2_demo.sh" \
-	"window/sdl2/demo/macos/kc3_window_sdl2_demo_debug.app/Contents/MacOS/kc3_window_sdl2_demo_debug.sh" \
+	"window/sdl2/demo/kc3_window_sdl2_demo.sh" \
+	"window/sdl2/demo/kc3_window_sdl2_demo_debug.sh" \
+	"window/sdl2/demo/macos/kc3_window_sdl2_demo.sh" \
+	"window/sdl2/demo/macos/kc3_window_sdl2_demo_asan.sh" \
+	"window/sdl2/demo/macos/kc3_window_sdl2_demo_cov.sh" \
+	"window/sdl2/demo/macos/kc3_window_sdl2_demo_debug.sh" \
 
 KC3_TEST_SOURCES = \
 	"test/buf_parse_test_su.rb" \
