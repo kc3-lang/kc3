@@ -753,8 +753,9 @@ env_reset() {
 }
 
 objc_o_rule() {
-    echo "$1" | sed -e 's/^\(.*\)\.m$/\1.o: \1.m/'
-    echo "$1: ${SRC_DIR}/$2" | sed -e 's/^\(.*\)\.m: /\1.o: /'
+    OBJC_O_RULE_ARG="$(echo "$1" | sed -e 's/^\(.*)\.m$/\1/')"
+    echo "${OBJC_O_RULE_ARG}.o: ${OBJC_O_RULE_ARG}.m"
+    echo "${OBJC_O_RULE_ARG}.o: ${SRC_DIR}/$2"
 }
 
 objc_ext_rule() {
