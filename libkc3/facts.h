@@ -14,7 +14,6 @@
 #define LIBKC3_FACTS_H
 
 #include "types.h"
-#include <config.h>
 
 #define FACTS_EXT ".facts"
 

@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$PWD")"
 export DIR="$(basename $PWD)"
 export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
-CONFIG_H_PREFIX=LIBKC3_PDF_
 
 . "${SRC_TOP}/config.subr"
 
@@ -53,7 +52,6 @@ pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
 config_define PREFIX "\"${PREFIX}\""
-update_config_h
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 
 # Address Sanitizer config

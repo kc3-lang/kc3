@@ -65,7 +65,6 @@ config_lib OPENGL -lopengl32 -lglu32
 config_lib OPENMP -fopenmp
 config_define HAVE_OPENMP "${HAVE_OPENMP}"
 pkg_config sdl2
-update_config_h
 
 # Asan config
 CPPFLAGS_ASAN="$CPPFLAGS"

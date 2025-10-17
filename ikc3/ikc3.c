@@ -21,7 +21,6 @@
 #include "../socket/socket.h"
 #include "../socket/socket_addr.h"
 #include "../socket/socket_buf.h"
-#include <config.h>
 #include "../tls/tls.h"
 #include "../tls/tls_client.h"
 #include "../tls/tls_server.h"

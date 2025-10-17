@@ -18,13 +18,11 @@ export BUILD_TOP="$(dirname "$PWD")"
 export DIR="$(basename $PWD)"
 export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
-CONFIG_H_PREFIX=LIBKC3_TEST_
 
 . "${SRC_TOP}/config.subr"
 
 config_prog libkc3_test
 
-update_config_h
 
 . "${SRC_DIR}/sources.sh"
 

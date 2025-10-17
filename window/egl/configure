@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$(dirname "$PWD")")"
 export DIR="window/egl"
 export SRC_TOP="$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")"
 
-CONFIG_H_PREFIX=LIBKC3_WINDOW_EGL_
 
 . "${SRC_TOP}/config.subr"
 
@@ -116,7 +115,7 @@ else
     bool HAVE_DRM "$HAVE_DRM"
 fi
 echo "HAVE_DRM = $HAVE_DRM" >> ${CONFIG_MK}
-echo "#define HAVE_DRM $HAVE_DRM" >> ${CONFIG_H}
+if $HAVE_DRM; then config_define HAVE_DRM 1; fi
 
 if [ "x$HAVE_XCB" = "x" ]; then
     if pkg-config xcb; then
@@ -128,9 +127,8 @@ else
     bool HAVE_XCB "$HAVE_XCB"
 fi
 echo "HAVE_XCB = $HAVE_XCB" >> ${CONFIG_MK}
-echo "#define HAVE_XCB $HAVE_XCB" >> ${CONFIG_H}
+if $HAVE_XCB; then config_define HAVE_XCB 1; fi
 
-update_config_h
 
 SUBDIRS=
 

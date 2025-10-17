@@ -19,7 +19,6 @@
 #define LIBKC3_WINDOW_EGL_TYPES_H
 
 #include <EGL/egl.h>
-#include <config.h>
 #include "../../gl/types.h"
 #include "../types.h"
 

@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$PWD")"
 export DIR="$(basename $PWD)"
 export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
-CONFIG_H_PREFIX=KPKG_
 
 . "${SRC_TOP}/config.subr"
 
@@ -44,7 +43,6 @@ if ! $HAVE_WIN32; then
     LDFLAGS="$LDFLAGS -rdynamic"
 fi
 LIBS="$LIBS -pthread"
-update_config_h
 
 # Sources
 OBJECTS="$(c2ext .main.lo "$SOURCES")"

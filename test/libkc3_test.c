@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/kc3.h"
-#include <config.h>
 #include "test.h"
 
 #define TEST_TARGET(name)                           \

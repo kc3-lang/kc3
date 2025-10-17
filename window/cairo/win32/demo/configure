@@ -53,7 +53,6 @@ pkg_config libbsd-overlay
 pkg_config cairo
 pkg_config cairo-win32
 LIBS="$LIBS"
-update_config_h
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"

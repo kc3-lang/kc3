@@ -17,7 +17,6 @@ echo "$PWD/configure"
 
 SRC_TOP="$(dirname "$(dirname "$PWD")")"
 
-CONFIG_H_PREFIX=KC3_FS_
 
 . "${SRC_TOP}/config.subr"
 
@@ -46,7 +45,6 @@ if ! $HAVE_WIN32; then
 fi
 LIBS="$LIBS"
 
-update_config_h
 
 # Sources
 OBJECTS="$(c2ext .main.lo "$SOURCES")"

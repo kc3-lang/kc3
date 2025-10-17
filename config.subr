@@ -193,7 +193,9 @@ config_android() {
         bool HAVE_ANDROID "$HAVE_ANDROID"
     fi
     echo "HAVE_ANDROID = $HAVE_ANDROID" >> ${CONFIG_MK}
-    echo "#define HAVE_ANDROID $HAVE_ANDROID" >> ${CONFIG_H}
+    if $HAVE_ANDROID; then
+        config_define HAVE_ANDROID 1
+    fi
 }
 
 config_asan() {
@@ -233,18 +235,17 @@ config_cocoa() {
                 "$OUT_M" ${LIBS} -framework Cocoa -o "$OUT" >/dev/null 2>&1; then
         eval "HAVE_COCOA=true"
         echo "HAVE_COCOA = true" >> "${CONFIG_MK}"
-        echo "#define HAVE_COCOA 1" >> "${CONFIG_H}"
+        config_define HAVE_COCOA 1
         LIBS="$LIBS -framework Cocoa"
     else
         eval "HAVE_COCOA=false"
         echo "HAVE_COCOA = false" >> "${CONFIG_MK}"
-        echo "#define HAVE_COCOA 0" >> "${CONFIG_H}"
     fi
     rm -f "$OUT" "$OUT_M"
 }
 
 config_define() {
-    echo "#define $1 $2" >> "${CONFIG_H}"
+    CPPFLAGS="$CPPFLAGS -D$1=$2"
 }
 
 config_fuse() {
@@ -260,10 +261,9 @@ config_fuse() {
     echo "}" >> "$OUT_C"
     if $LIBTOOL --tag CC --mode link ${CC} ${CPPFLAGS} ${CFLAGS} \
                 "$OUT_C" -o "$OUT" >/dev/null 2>&1; then
-        echo "#define HAVE_FUSE 1" >> "${CONFIG_H}"
+        config_define HAVE_FUSE 1
         HAVE_FUSE=true
     else
-        echo "#define HAVE_FUSE 0" >> "${CONFIG_H}"
         HAVE_FUSE=false
     fi
     rm -f "$OUT_C"
@@ -278,9 +278,7 @@ config_gnu() {
 
 config_have() {
     if "$2"; then
-        echo "#define HAVE_$1 1" >> "${CONFIG_H}"
-    else
-        echo "#define HAVE_$1 0" >> "${CONFIG_H}"
+        config_define "HAVE_$1" 1
     fi
     eval "HAVE_$1=$2"
 }
@@ -296,10 +294,9 @@ config_have_bcrypt() {
     echo "}" >> "$OUT_C"
     if $LIBTOOL --tag CC --mode link ${CC} ${CPPFLAGS} ${CFLAGS} \
                 "$OUT_C" -o "$OUT" >/dev/null 2>&1; then
-        echo "#define HAVE_BCRYPT 1" >> "${CONFIG_H}"
+        config_define HAVE_BCRYPT 1
         HAVE_BCRYPT=true
     else
-        echo "#define HAVE_BCRYPT 0" >> "${CONFIG_H}"
         HAVE_BCRYPT=false
     fi
     rm -f "$OUT_C"
@@ -318,10 +315,9 @@ config_have_crypt_newhash() {
     echo "}" >> "$OUT_C"
     if $LIBTOOL --tag CC --mode link ${CC} ${CPPFLAGS} ${CFLAGS} \
                 "$OUT_C" -o "$OUT" >/dev/null 2>&1; then
-        echo "#define HAVE_CRYPT_NEWHASH 1" >> "${CONFIG_H}"
+        config_define HAVE_CRYPT_NEWHASH 1
         HAVE_CRYPT_NEWHASH=true
     else
-        echo "#define HAVE_CRYPT_NEWHASH 0" >> "${CONFIG_H}"
         HAVE_CRYPT_NEWHASH=false
     fi
     rm -f "$OUT_C"
@@ -340,10 +336,9 @@ config_have_explicit_bzero() {
     echo "}" >> "$OUT_C"
     if $LIBTOOL --tag CC --mode link ${CC} ${CPPFLAGS} ${CFLAGS} \
                 "$OUT_C" -o "$OUT" >/dev/null 2>&1; then
-        echo "#define HAVE_EXPLICIT_BZERO 1" >> "${CONFIG_H}"
+        config_define HAVE_EXPLICIT_BZERO 1
         HAVE_EXPLICIT_BZERO=true
     else
-        echo "#define HAVE_EXPLICIT_BZERO 0" >> "${CONFIG_H}"
         HAVE_EXPLICIT_BZERO=false
     fi
     rm -f "$OUT_C"
@@ -379,10 +374,9 @@ int main (void)
 }" >> "$OUT_C"
     if $LIBTOOL --tag CC --mode link ${CC} ${CPPFLAGS} ${CFLAGS} \
                 "$OUT_C" -o "$OUT" >/dev/null 2>&1 && ./"$OUT"; then
-        echo "#define HAVE_GENERIC_SW_UW 1" >> "${CONFIG_H}"
+        config_define HAVE_GENERIC_SW_UW 1
         eval "HAVE_GENERIC_SW_UW=Yes"
     else
-        echo "#define HAVE_GENERIC_SW_UW 0" >> "${CONFIG_H}"
         eval "HAVE_GENERIC_SW_UW=No"
     fi
     rm -f "$OUT_C"
@@ -409,11 +403,10 @@ config_have_quadmath() {
     echo "int main (void) { return 0; }" >> "$OUT_C"
     if $LIBTOOL --tag CC --mode link ${CC} ${CPPFLAGS} ${CFLAGS} \
                 "$OUT_C" ${LDFLAGS} ${LIBS} $@ -o "$OUT" >/dev/null 2>&1; then
-        echo "#define HAVE_QUADMATH 1" >> ${CONFIG_H}
+        config_define HAVE_QUADMATH 1
         echo "HAVE_QUADMATH = true" >> ${CONFIG_MK}
         HAVE_QUADMATH=true
     else
-        echo "#define HAVE_QUADMATH 0" >> ${CONFIG_H}
         echo "HAVE_QUADMATH = false" >> ${CONFIG_MK}
         HAVE_QUADMATH=false
     fi
@@ -437,10 +430,9 @@ config_have_stat_mtim() {
     echo "}" >> "$OUT_C"
     if $LIBTOOL --tag CC --mode link ${CC} ${CPPFLAGS} ${CFLAGS} \
                 "$OUT_C" -o "$OUT" >/dev/null 2>&1; then
-        echo "#define HAVE_STAT_MTIM 1" >> "${CONFIG_H}"
+        config_define HAVE_STAT_MTIM 1
         HAVE_STAT_MTIM=true
     else
-        echo "#define HAVE_STAT_MTIM 0" >> "${CONFIG_H}"
         HAVE_STAT_MTIM=false
     fi
     rm -f "$OUT_C"
@@ -459,10 +451,9 @@ config_have_sysctl() {
     echo "}" >> "$OUT_C"
     if $LIBTOOL --tag CC --mode link ${CC} ${CPPFLAGS} ${CFLAGS} \
                 "$OUT_C" -o "$OUT" >/dev/null 2>&1; then
-        echo "#define HAVE_SYSCTL 1" >> "${CONFIG_H}"
+        config_define HAVE_SYSCTL 1
         HAVE_SYSCTL=true
     else
-        echo "#define HAVE_SYSCTL 0" >> "${CONFIG_H}"
         HAVE_SYSCTL=false
     fi
     rm -f "$OUT_C"
@@ -487,10 +478,9 @@ config_include() {
     echo "int main (void) { return 0; }" >> "$OUT_C"
     if $LIBTOOL --tag CC --mode link ${CC} ${CPPFLAGS} ${CFLAGS} \
                 "$OUT_C" -o "$OUT" >/dev/null 2>&1; then
-        echo "#define $1 1" >> "${CONFIG_H}"
+        config_define "$1" 1
         eval "$1=Yes"
     else
-        echo "#define $1 0" >> "${CONFIG_H}"
         eval "$1=No"
     fi
     rm -f "$OUT_C"
@@ -774,7 +764,7 @@ pkg_config() {
 	CXXFLAGS="$CXXFLAGS $(pkg-config --cflags "$1")"
 	LIBS="$LIBS $(pkg-config --libs "$1")"
         echo "HAVE_$NAME = true" >> "${CONFIG_MK}"
-        echo "#define HAVE_$NAME 1" >> "${CONFIG_H}"
+        config_define "HAVE_$NAME" 1
     fi
 }
 
@@ -1123,16 +1113,6 @@ update_file() {
     fi
 }
 
-update_config_h() {
-    echo >> "${CONFIG_H}"
-    echo "#endif /* ${CONFIG_H_PREFIX}CONFIG_H */" >> ${CONFIG_H}
-    if ! cmp "${CONFIG_H}" config.h >/dev/null 2>&1; then
-        mv "${CONFIG_H}" config.h
-        echo "-> ${PWD}/config.h"
-    else
-        rm "${CONFIG_H}"
-    fi
-}
 
 update_config_mk() {
     if ! cmp "${CONFIG_MK}" config.mk >/dev/null 2>&1; then
@@ -1182,13 +1162,6 @@ update_sources_sh() {
         rm "${SOURCES_SH}"
     fi
 }
-
-CONFIG_H=config.h
-CONFIG_H=".config.h.tmp"
-echo "/* config.h generated by configure */" > ${CONFIG_H}
-echo "#ifndef ${CONFIG_H_PREFIX}CONFIG_H" >> ${CONFIG_H}
-echo "#define ${CONFIG_H_PREFIX}CONFIG_H" >> ${CONFIG_H}
-echo >> "${CONFIG_H}"
 
 CONFIG_MK=config.mk
 CONFIG_MK=".config.mk.tmp"

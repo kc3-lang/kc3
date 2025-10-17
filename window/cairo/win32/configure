@@ -54,7 +54,6 @@ pkg_config cairo-win32
 pkg_config libbsd-overlay
 pkg_config libmd
 config_define PREFIX "\"${PREFIX}\""
-update_config_h
 LIBS="$LIBS -lxkbcommon"
 
 # Address Sanitizer config

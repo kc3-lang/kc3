@@ -14,7 +14,6 @@
 #define LIBKC3_FACTS_CURSOR_H
 
 #include "types.h"
-#include <config.h>
 
 /* Stack allocation compatible functions */
 void             facts_cursor_clean (s_facts_cursor *cursor);

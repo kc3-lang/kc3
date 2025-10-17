@@ -14,7 +14,6 @@
 #include "alloc.h"
 #include "assert.h"
 #include "compare.h"
-#include <config.h>
 #include "tag.h"
 #include "set__tag.h"
 #include "set_item__tag.h"

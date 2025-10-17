@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$(dirname "$PWD")")"
 export DIR="window/cairo"
 export SRC_TOP="$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")"
 
-CONFIG_H_PREFIX=LIBKC3_WINDOW_CAIRO_
 
 . "${SRC_TOP}/config.subr"
 
@@ -51,7 +50,6 @@ pkg_config cairo-quartz-font
 pkg_config freetype2
 pkg_config xkbcommon
 config_cocoa
-update_config_h
 
 . "${SRC_DIR}/sources.sh"
 

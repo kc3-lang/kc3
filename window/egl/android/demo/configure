@@ -17,7 +17,6 @@ echo "$PWD/configure"
 
 export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
 
-CONFIG_H_PREFIX=LIBKC3_WINDOW_EGL_ANDROID_DEMO_
 
 . "${SRC_TOP}/config.subr"
 
@@ -56,7 +55,6 @@ pkg_config egl
 pkg_config glesv2
 config_define PREFIX "\"${PREFIX}\""
 config_android
-update_config_h
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}

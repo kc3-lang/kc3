@@ -61,7 +61,6 @@ pkg_config sdl2
 #fi
 config_define PREFIX "\"${PREFIX}\""
 LIBS="$LIBS -rpath ${PREFIX}/lib"
-update_config_h
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"

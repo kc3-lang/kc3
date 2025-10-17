@@ -18,7 +18,6 @@
 #ifndef LIBKC3_WINDOW_CAIRO_TYPES_H
 #define LIBKC3_WINDOW_CAIRO_TYPES_H
 
-#include <config.h>
 
 #include <cairo.h>
 

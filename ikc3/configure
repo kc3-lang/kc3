@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$PWD")"
 export DIR="$(basename $PWD)"
 export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
-CONFIG_H_PREFIX=IKC3_
 
 . "${SRC_TOP}/config.subr"
 
@@ -47,16 +46,14 @@ fi
 LIBS="$LIBS"
 
 if pkg-config wineditline; then
-    echo "#define HAVE_WINEDITLINE 1" >> ${CONFIG_H}
+    config_define HAVE_WINEDITLINE 1
     HAVE_WINEDITLINE=true
     SOURCES="$SOURCES $SOURCES_WINEDITLINE"
 else
-    echo "#define HAVE_WINEDITLINE 0" >> ${CONFIG_H}
     HAVE_WINEDITLINE=false
     SOURCES="$SOURCES $SOURCES_LINENOISE"
 fi
 
-update_config_h
 
 # Sources
 OBJECTS="$(c2ext .main.lo "$SOURCES")"

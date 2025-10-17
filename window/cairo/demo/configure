@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
 export DIR="window/cairo/demo"
 export SRC_TOP="$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")")"
 
-CONFIG_H_PREFIX=LIBKC3_WINDOW_CAIRO_DEMO_
 
 . "${SRC_TOP}/config.subr"
 

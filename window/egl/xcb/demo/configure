@@ -60,7 +60,6 @@ config_lib OPENMP -fopenmp
 config_define HAVE_OPENMP "${HAVE_OPENMP}"
 pkg_config egl
 pkg_config xcb
-update_config_h
 
 # Asan config
 CPPFLAGS_ASAN="$CPPFLAGS"

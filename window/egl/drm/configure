@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
 export DIR="window/egl/drm"
 export SRC_TOP="$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")")"
 
-CONFIG_H_PREFIX=LIBKC3_WINDOW_EGL_DRM_
 
 . "${SRC_TOP}/config.subr"
 
@@ -57,7 +56,6 @@ pkg_config gbm
 pkg_config egl
 pkg_config gl
 config_define PREFIX "\"${PREFIX}\""
-update_config_h
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}

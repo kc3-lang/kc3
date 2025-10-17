@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
 export DIR="window/egl/xcb"
 export SRC_TOP="$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")")"
 
-CONFIG_H_PREFIX=LIBKC3_WINDOW_EGL_XCB_
 
 . "${SRC_TOP}/config.subr"
 
@@ -57,7 +56,6 @@ pkg_config xkbcommon-x11
 pkg_config egl
 pkg_config glesv2
 config_define PREFIX "\"${PREFIX}\""
-update_config_h
 LIBS="$LIBS -lxkbcommon -lxkbcommon-x11"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 

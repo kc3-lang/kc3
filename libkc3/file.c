@@ -23,7 +23,6 @@
 #include "buf_fd.h"
 #include "buf_file.h"
 #include "buf_save.h"
-#include <config.h>
 #include "env.h"
 #include "error.h"
 #include "file.h"

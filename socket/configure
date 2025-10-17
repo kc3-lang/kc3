@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$PWD")"
 export DIR="$(basename $PWD)"
 export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
-CONFIG_H_PREFIX=KC3_SOCKET_
 
 . "${SRC_TOP}/config.subr"
 
@@ -54,7 +53,6 @@ pkg_config libevent
 pkg_config libffi
 pkg_config libmd
 config_define PREFIX "\"${PREFIX}\""
-update_config_h
 LIBS="$LIBS -lm -rpath ${PREFIX}/lib"
 if $HAVE_WIN32; then
     LIBS="$LIBS -lws2_32"

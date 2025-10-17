@@ -14,7 +14,6 @@
 #include "alloc.h"
 #include "assert.h"
 #include "compare.h"
-#include <config.h>
 #include "fact.h"
 #include "set__fact.h"
 #include "set_item__fact.h"

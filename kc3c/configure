@@ -17,7 +17,6 @@ echo "$PWD/configure"
 
 export SRC_TOP="$(dirname "$PWD")"
 
-CONFIG_H_PREFIX=KC3S_
 
 . "${SRC_TOP}/config.subr"
 

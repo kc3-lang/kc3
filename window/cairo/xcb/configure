@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
 export DIR="window/cairo/xcb"
 export SRC_TOP="$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")")"
 
-CONFIG_H_PREFIX=LIBKC3_WINDOW_CAIRO_XCB_
 
 . "${SRC_TOP}/config.subr"
 
@@ -55,7 +54,6 @@ pkg_config xkbcommon
 pkg_config cairo
 pkg_config cairo-xcb
 config_define PREFIX "\"${PREFIX}\""
-update_config_h
 LIBS="$LIBS -lxkbcommon -lxkbcommon-x11"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 

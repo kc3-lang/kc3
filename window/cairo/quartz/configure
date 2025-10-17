@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
 export DIR="window/cairo/quartz"
 export SRC_TOP="$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")")"
 
-CONFIG_H_PREFIX=LIBKC3_WINDOW_CAIRO_QUARTZ_
 
 . "${SRC_TOP}/config.subr"
 
@@ -68,7 +67,6 @@ pkg_config libffi
 pkg_config libmd
 pkg_config xkbcommon
 config_cocoa
-update_config_h
 
 # Asan config
 CPPFLAGS_ASAN="$CPPFLAGS"
