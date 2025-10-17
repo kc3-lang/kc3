@@ -280,11 +280,7 @@ void gl_ortho_render (s_gl_ortho *ortho)
   glUniform4f(ortho->gl_color_loc, 1.0f, 1.0f, 1.0f, 1.0f);
   assert(glGetError() == GL_NO_ERROR);
   // glDepthRangef(ortho->clip_z_near, ortho->clip_z_far);
-#if defined(__APPLE__)
-  glDepthRange(0.0, 1.0);
-#else
   glDepthRangef(0.0f, 1.0f);
-#endif
   assert(glGetError() == GL_NO_ERROR);
 }
 

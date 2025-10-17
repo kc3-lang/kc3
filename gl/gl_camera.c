@@ -300,11 +300,7 @@ void gl_camera_render (s_gl_camera *camera)
   }
   glDisable(GL_CULL_FACE);
   assert(glGetError() == GL_NO_ERROR);
-#if defined(__APPLE__)
-  glDepthRange(0.0f, 1.0f);
-#else
   glDepthRangef(0.0f, 1.0f);
-#endif
   assert(glGetError() == GL_NO_ERROR);
 }
 
