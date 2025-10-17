@@ -52,7 +52,9 @@ cov:
 debug:
 	${MAKE} ${LIB_DEBUG}
 	${MAKE} -C demo debug
-	if ${HAVE_COCOA}; then ${MAKE} -C quartz debug; else if ${HAVE_WIN32}; then ${MAKE} -C win32 debug; else if ${HAVE_XCB}; then ${MAKE} -C xcb debug; fi; fi; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz debug; fi
+	if ${HAVE_WIN32}; then ${MAKE} -C win32 debug; fi
+	if ${HAVE_XCB}; then ${MAKE} -C xcb debug; fi
 
 demo: build
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz demo; else if ${HAVE_WIN32}; then ${MAKE} -C win32 demo; else if ${HAVE_XCB}; then ${MAKE} -C xcb demo; fi; fi; fi

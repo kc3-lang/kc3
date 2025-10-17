@@ -20,8 +20,8 @@ DISTCLEANFILES = ${CLEANFILES} config.h config.mk
 
 all:
 	${MAKE} build
-	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
+	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 build:
