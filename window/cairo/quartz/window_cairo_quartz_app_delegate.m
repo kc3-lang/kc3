@@ -69,7 +69,7 @@
 - (void)windowDidResize:(NSNotification *)notification {
   printf("windowDidResize\n");
   NSWindow *window = (NSWindow *)notification.object;
-  NSSize size = window.frame.size;
+  NSSize size = window.contentView.frame.size;
   [self.view setFrameSize:size];
   if (! self.window_cairo->resize(self.window_cairo, (uw) size.width,
                                   size.height))
