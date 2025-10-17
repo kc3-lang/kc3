@@ -22,18 +22,9 @@
 # include <windef.h>
 #endif
 
-#if defined(__APPLE__)
-# define GL_SILENCE_DEPRECATION 1
-# include <OpenGL/gl.h>
-# include <OpenGL/glext.h>
-#elif defined(WIN32) || defined(WIN64)
-# include <GLES2/gl2.h>
-# include <GLES2/gl2ext.h>
-#else
-# include <GLES2/gl2.h>
-# include <GLES2/gl2ext.h>
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
 
-#endif
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include "../libkc3/types.h"
