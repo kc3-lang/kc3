@@ -756,11 +756,9 @@ install:
 		${INSTALL} -m 0644 $$F ${DESTDIR}${prefix}/"$$F"; done
 	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3
 	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3/img
-	find ${SRC_DIR}/img/*/ -type d | while read F; do \
-	    ${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3/"$$F"; done
-	find ${SRC_DIR}/img -name '*.png' -or -name '*.jpg' | \
+	( cd ${SRC_DIR} && find img -name '*.png' -or -name '*.jpg'; ) | \
 	    while read F; do \
-		${INSTALL} -m 0644 "$$F" \
+		${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
 		    ${DESTDIR}${prefix}/share/kc3/"$$F"; done
 	${MAKE} -C libtommath install
 	${MAKE} -C libkc3 install

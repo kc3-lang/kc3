@@ -88,8 +88,6 @@ lldb_demo: debug
 	lldb ${APP_PROG_DEBUG}
 
 install:
-	install -m 755 -d ${prefix}/bin
-	install -m 755 ${PROG} ${prefix}/bin/${PROG}
 
 .PHONY: \
 	all \
