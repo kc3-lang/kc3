@@ -10,18 +10,18 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+all:
+	${MAKE} build
+	if ${HAVE_GCOV}; then ${MAKE} cov; fi
+	${MAKE} debug
+	if ${HAVE_ASAN}; then ${MAKE} asan; fi
+
 build:
 	${MAKE} ${LIB}
 	${MAKE} -C demo build
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz build; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 build; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb build; fi
-
-all:
-	${MAKE} build
-	if ${HAVE_GCOV}; then ${MAKE} cov; fi
-	${MAKE} debug
-	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 asan:
 	${MAKE} ${LIB_ASAN}

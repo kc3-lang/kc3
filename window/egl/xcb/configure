@@ -55,7 +55,7 @@ pkg_config xcb
 pkg_config xkbcommon
 pkg_config xkbcommon-x11
 pkg_config egl
-pkg_config gl
+pkg_config glesv2
 config_define PREFIX "\"${PREFIX}\""
 update_config_h
 LIBS="$LIBS -lxkbcommon -lxkbcommon-x11"
