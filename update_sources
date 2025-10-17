@@ -70,6 +70,9 @@ sources KC3_LIB_SOURCES "$KC3_LIB_SOURCES"
 KC3_OBJC_SOURCES="$(find window -name "[a-z]*.m" -or -name "[a-z]*.m.in")"
 sources KC3_OBJC_SOURCES "$KC3_OBJC_SOURCES"
 
+KC3_PLIST_SOURCES="$(find window -name "[a-z]*.plist")"
+sources KC3_PLIST_SOURCES "$KC3_PLIST_SOURCES"
+
 KC3_SH_SOURCES="$(find window -name "[a-z]*.sh" | grep -v sources.sh)"
 sources KC3_SH_SOURCES "$KC3_SH_SOURCES"
 

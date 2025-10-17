@@ -899,6 +899,7 @@ kc3.index: sources.mk Makefile
 	for F in ${KC3_KMSG_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_LIB_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_OBJC_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_PLIST_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_SH_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_IKC3_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
