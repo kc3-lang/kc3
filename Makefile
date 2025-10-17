@@ -747,24 +747,19 @@ ikc3_gcovr:
 install:
 	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/lib/kc3
 	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/lib/kc3/0.1
-	find ${SRC_DIR}/lib/kc3/ -type d | while read F; do \
+	( cd ${SRC_DIR} && find lib/kc3/ -type d; ) | while read F; do \
 	    ${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/"$$F"; done
 	${INSTALL} -m 0644 ${SRC_DIR}/lib/kc3/0.1/kc3.dump \
 	    ${DESTDIR}${prefix}/lib/kc3/0.1/kc3.dump
 	( cd ${SRC_DIR} && \
-	  find lib -name '*.facts' -or -name '*.kc3'; ) | \
-	      while read F; do \
-		  mkdir -p \
-		      "$$(dirname ${DESTDIR}${prefix}/$$F)"; \
-		  ${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
-		      "${DESTDIR}${prefix}/$$F"; done
+	  find lib/kc3 -name '*.facts' -or -name '*.kc3'; ) | \
+	      while read F; do ${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
+		  "${DESTDIR}${prefix}/$$F"; done
 	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3
-	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3/img
+	( cd ${SRC_DIR} && find img -type d; ) | while read F; do \
+	    ${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3/"$$F"; done
 	( cd ${SRC_DIR} && find img -name '*.png' -or -name '*.jpg'; ) | \
-	    while read F; do \
-		  mkdir -p \
-		      "$$(dirname ${DESTDIR}${prefix}/share/kc3/$$F)"; \
-		  ${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
+	    while read F; do ${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
 		      "${DESTDIR}${prefix}/share/kc3/$$F"; done
 	${MAKE} -C libtommath install
 	${MAKE} -C libkc3 install
