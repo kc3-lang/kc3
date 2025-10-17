@@ -78,6 +78,7 @@ gdb_demo: debug
 install:
 	install -m 755 -d ${DESTDIR}${prefix}/bin
 	install -m 755 .libs/${PROG} ${DESTDIR}${prefix}/bin/${PROG}
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos install; fi
 
 lldb_demo: debug
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos lldb_demo; else lldb .libs/${PROG_DEBUG}; fi

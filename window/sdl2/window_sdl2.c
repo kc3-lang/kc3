@@ -274,7 +274,8 @@ bool window_sdl2_run (s_window_sdl2 *window)
         break;
       case SDL_MOUSEBUTTONDOWN:
         if (! window->button(window, sdl_event.button.button,
-                             sdl_event.button.x, sdl_event.button.y)) {
+                             sdl_event.button.x,
+                             window->h - sdl_event.button.y)) {
           err_puts("window_sdl2_run: window->button => false");
           quit = 1;
         }
@@ -282,7 +283,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
       case SDL_MOUSEWHEEL:
         SDL_GetMouseState(&mouse_x, &mouse_y);
         if (! window->button(window, sdl_event.wheel.y > 0 ? 4 : 5,
-                             mouse_x, mouse_y)) {
+                             mouse_x, window->h - mouse_y)) {
           err_puts("window_sdl2_run: window->button => false");
           quit = 1;
         }
@@ -291,7 +292,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
         //int relativeX = sdl_event.motion.xrel;
         //int relativeY = sdl_event.motion.yrel;
         if (! window->motion(window, sdl_event.motion.x,
-                             sdl_event.motion.y)) {
+                             window->h - sdl_event.motion.y)) {
           err_puts("window_sdl2_run: window->motion => false");
           quit = 1;
         }

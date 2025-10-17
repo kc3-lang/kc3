@@ -79,6 +79,7 @@ for BUNDLE_LIB in ${BUNDLE_LIBS}; do
     L=$(basename $BUNDLE_LIB)
     echo "	install_name_tool -id @executable_path/../Frameworks/ ${APP}/Contents/Frameworks/$L" >> ${CONFIG_MK}
     echo "	install_name_tool -change ${LIBDIR}/$L @executable_path/../Frameworks/$L ${APP}/Contents/MacOS/${PROG}" >> ${CONFIG_MK}
+    echo "	install_name_tool -change ${BUNDLE_LIB} @executable_path/../Frameworks/$L ${APP}/Contents/MacOS/${PROG}" >> ${CONFIG_MK}
     echo "	DEPS=\$\$(otool -L '${BUNDLE_LIB}' | awk '/^\t.+(\/usr\/lib|\/System)/ { next } /^\t/ { print \$\$1 }'); for DEP in \$\${DEPS}; do D=\$\$(basename \"\$\${DEP}\"); if [ -f ${APP}/Contents/Frameworks/\$\$D ]; then install_name_tool -change \$\${DEP} @executable_path/../Frameworks/\$\$D ${APP}/Contents/Frameworks/$L; fi; done" >> ${CONFIG_MK}
 done
 echo >> ${CONFIG_MK}
@@ -99,6 +100,7 @@ for BUNDLE_LIB in ${BUNDLE_LIBS_ASAN}; do
     L=$(basename $BUNDLE_LIB)
     echo "	install_name_tool -id @executable_path/../Frameworks/ ${APP_ASAN}/Contents/Frameworks/$L" >> ${CONFIG_MK}
     echo "	install_name_tool -change ${LIBDIR}/$L @executable_path/../Frameworks/$L ${APP_ASAN}/Contents/MacOS/${PROG_ASAN}" >> ${CONFIG_MK}
+    echo "	install_name_tool -change ${BUNDLE_LIB} @executable_path/../Frameworks/$L ${APP_ASAN}/Contents/MacOS/${PROG_ASAN}" >> ${CONFIG_MK}
     echo "	DEPS=\$\$(otool -L '${BUNDLE_LIB}' | awk '/^\t.+(\/usr\/lib|\/System)/ { next } /^\t/ { print \$\$1 }'); for DEP in \$\${DEPS}; do D=\$\$(basename \"\$\${DEP}\"); if [ -f ${APP_ASAN}/Contents/Frameworks/\$\$D ]; then install_name_tool -change \$\${DEP} @executable_path/../Frameworks/\$\$D ${APP_ASAN}/Contents/Frameworks/$L; fi; done" >> ${CONFIG_MK}
 done
 echo >> ${CONFIG_MK}
@@ -118,7 +120,8 @@ echo "	install -m 0755 ${BUNDLE_LIBS_COV} ${APP_COV}/Contents/Frameworks/" >> ${
 for BUNDLE_LIB in ${BUNDLE_LIBS_COV}; do
     L=$(basename $BUNDLE_LIB)
     echo "	install_name_tool -id @executable_path/../Frameworks/ ${APP_COV}/Contents/Frameworks/$L" >> ${CONFIG_MK}
-    echo "	install_name_tool -change ${LIBDIR}/$L @executable_path/../Frameworks/$L ${APP_COV}/Contents/MacOS/${PROG}" >> ${CONFIG_MK}
+    echo "	install_name_tool -change ${LIBDIR}/$L @executable_path/../Frameworks/$L ${APP_COV}/Contents/MacOS/${PROG_COV}" >> ${CONFIG_MK}
+    echo "	install_name_tool -change ${BUNDLE_LIB} @executable_path/../Frameworks/$L ${APP_COV}/Contents/MacOS/${PROG_COV}" >> ${CONFIG_MK}
     echo "	DEPS=\$\$(otool -L '${BUNDLE_LIB}' | awk '/^\t.+(\/usr\/lib|\/System)/ { next } /^\t/ { print \$\$1 }'); for DEP in \$\${DEPS}; do D=\$\$(basename \"\$\${DEP}\"); if [ -f ${APP_COV}/Contents/Frameworks/\$\$D ]; then install_name_tool -change \$\${DEP} @executable_path/../Frameworks/\$\$D ${APP_COV}/Contents/Frameworks/$L; fi; done" >> ${CONFIG_MK}
 done
 echo >> ${CONFIG_MK}
@@ -139,6 +142,7 @@ for BUNDLE_LIB in ${BUNDLE_LIBS_DEBUG}; do
     L=$(basename $BUNDLE_LIB)
     echo "	install_name_tool -id @executable_path/../Frameworks/ ${APP_DEBUG}/Contents/Frameworks/$L" >> ${CONFIG_MK}
     echo "	install_name_tool -change ${LIBDIR}/$L @executable_path/../Frameworks/$L ${APP_DEBUG}/Contents/MacOS/${PROG_DEBUG}" >> ${CONFIG_MK}
+    echo "	install_name_tool -change ${BUNDLE_LIB} @executable_path/../Frameworks/$L ${APP_DEBUG}/Contents/MacOS/${PROG_DEBUG}" >> ${CONFIG_MK}
     echo "	DEPS=\$\$(otool -L '${BUNDLE_LIB}' | awk '/^\t.+(\/usr\/lib|\/System)/ { next } /^\t/ { print \$\$1 }'); for DEP in \$\${DEPS}; do D=\$\$(basename \"\$\${DEP}\"); if [ -f ${APP_DEBUG}/Contents/Frameworks/\$\$D ]; then install_name_tool -change \$\${DEP} @executable_path/../Frameworks/\$\$D ${APP_DEBUG}/Contents/Frameworks/$L; fi; done" >> ${CONFIG_MK}
 done
 echo >> ${CONFIG_MK}

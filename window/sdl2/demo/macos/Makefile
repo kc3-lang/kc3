@@ -44,6 +44,8 @@ all:
 
 build:
 	${MAKE} ${APP_PROG}
+	cp ${SRC_DIR}/app_info.plist ${APP}/Contents/Info.plist
+	cp ${SRC_DIR}/kc3_window_sdl2_demo.sh ${APP_PROG}.sh
 	${MAKE} ${APP}/Contents/Frameworks
 	rm -rf ${APP}/Contents/lib
 	cp -R ${SRC_TOP}/lib ${APP}/Contents/
@@ -57,6 +59,8 @@ build:
 
 asan:
 	${MAKE} ${APP_PROG_ASAN}
+	cp ${SRC_DIR}/app_asan_info.plist ${APP_ASAN}/Contents/Info.plist
+	cp ${SRC_DIR}/kc3_window_sdl2_demo_asan.sh ${APP_PROG_ASAN}.sh
 	${MAKE} ${APP_ASAN}/Contents/Frameworks
 	rm -rf ${APP_ASAN}/Contents/lib
 	cp -R ${SRC_TOP}/lib ${APP_ASAN}/Contents/
@@ -76,6 +80,8 @@ clean_cov:
 
 cov:
 	${MAKE} ${APP_PROG_COV}
+	cp ${SRC_DIR}/app_cov_info.plist ${APP_COV}/Contents/Info.plist
+	cp ${SRC_DIR}/kc3_window_sdl2_demo_cov.sh ${APP_PROG_COV}.sh
 	${MAKE} ${APP_COV}/Contents/Frameworks
 	rm -rf ${APP_COV}/Contents/lib
 	cp -R ${SRC_TOP}/lib ${APP_COV}/Contents/
@@ -89,6 +95,8 @@ cov:
 
 debug:
 	${MAKE} ${APP_PROG_DEBUG}
+	cp ${SRC_DIR}/app_debug_info.plist ${APP_DEBUG}/Contents/Info.plist
+	cp ${SRC_DIR}/kc3_window_sdl2_demo_debug.sh ${APP_PROG_DEBUG}.sh
 	${MAKE} ${APP_DEBUG}/Contents/Frameworks
 	rm -rf ${APP_DEBUG}/Contents/lib
 	cp -R ${SRC_TOP}/lib ${APP_DEBUG}/Contents/
@@ -119,8 +127,11 @@ lldb_demo: debug
 	lldb ${APP_PROG_DEBUG}
 
 install:
-	cp -R ${APP} ${DESTDIR}${prefix}
-	cp -R ${APP_DEBUG} ${DESTDIR}${prefix}
+	install -m 0755 -d ${DESTDIR}${prefix}
+	cp -R ${APP} ${DESTDIR}${prefix}/
+	touch ${DESTDIR}${prefix}/${APP}
+	cp -R ${APP_DEBUG} ${DESTDIR}${prefix}/
+	touch ${DESTDIR}${prefix}/${APP_DEBUG}
 
 .PHONY: \
 	all \
