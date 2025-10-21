@@ -257,7 +257,30 @@ dist_dmg:
 	    cp -R install/Applications/kc3 ${DIST_DMG}/ && \
 	    ln -s /Applications ${DIST_DMG}/Applications && \
 	    hdiutil create -volname "KC3 v${KC3_VERSION}" \
-		-srcfolder ${DIST_DMG} -ov -format UDZO ${DIST_DMG}.dmg
+		-srcfolder ${DIST_DMG} -ov -format UDRW ${DIST_DMG}.tmp.dmg && \
+	    hdiutil attach ${DIST_DMG}.tmp.dmg -mountpoint /Volumes/KC3 && \
+	    sleep 2 && \
+	    osascript -e 'tell application "Finder"' \
+		-e 'tell disk "KC3"' \
+		-e 'open' \
+		-e 'set current view of container window to icon view' \
+		-e 'set toolbar visible of container window to false' \
+		-e 'set statusbar visible of container window to false' \
+		-e 'set the bounds of container window to {100, 100, 700, 500}' \
+		-e 'set viewOptions to the icon view options of container window' \
+		-e 'set arrangement of viewOptions to not arranged' \
+		-e 'set icon size of viewOptions to 128' \
+		-e 'set position of item "kc3" to {150, 200}' \
+		-e 'set position of item "Applications" to {450, 200}' \
+		-e 'update without registering applications' \
+		-e 'delay 2' \
+		-e 'close' \
+		-e 'end tell' \
+		-e 'end tell' && \
+	    sync && \
+	    hdiutil detach /Volumes/KC3 && \
+	    hdiutil convert ${DIST_DMG}.tmp.dmg -format UDZO -o ${DIST_DMG}.dmg && \
+	    rm ${DIST_DMG}.tmp.dmg
 
 dist_msys2_clang64: all
 	${MAKE} -C msys2/clang64
