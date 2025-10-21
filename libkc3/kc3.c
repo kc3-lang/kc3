@@ -1617,9 +1617,9 @@ void kc3_unveil (const s_str *path, const s_str *permissions)
   const char *unveil_path = NULL;
   const char *unveil_permissions = NULL;
   if (path && path->size)
-    unveil_path = path;
+    unveil_path = path->ptr.pchar;
   if (permissions && permissions->size)
-    unveil_permissions = permissions;
+    unveil_permissions = permissions->ptr.pchar;
   if (unveil(unveil_path, unveil_permissions)) {
     e = errno;
     err_write_1("kc3_unveil: ");
