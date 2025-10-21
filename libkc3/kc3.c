@@ -918,6 +918,8 @@ void kc3_pledge (const s_str *promises, const s_str *execpromises)
 {
   assert(promises);
   assert(execpromises);
+  (void) promises;
+  (void) execpromises;
   err_puts("kc3_pledge: not implemented");
 }
 
@@ -1671,6 +1673,8 @@ void kc3_unveil (const s_str *path, const s_str *permissions)
 {
   assert(path);
   assert(permissions);
+  (void) path;
+  (void) permissions;
   err_puts("kc3_unveil: not implemented");
 }
 
