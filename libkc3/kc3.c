@@ -893,6 +893,36 @@ s_buf ** kc3_out_buf (s_buf **dest)
   return dest;
 }
 
+#ifdef __OpenBSD__
+
+void kc3_pledge (const s_str *promises, const s_str *execpromises)
+{
+  s32 e;
+  assert(promises);
+  assert(execpromises);
+  if (pledge(promises->ptr.pchar, execpromises->ptr.pchar)) {
+    e = errno;
+    err_write_1("kc3_pledge: ");
+    err_inspect_str(promises);
+    err_write_1(": ");
+    err_write_1(strerror(e));
+    err_write_1("\n");
+    assert(! "kc3_pledge");
+    abort();
+  }
+}
+
+#else
+
+void kc3_pledge (const s_str *promises, const s_str *execpromises)
+{
+  assert(promises);
+  assert(execpromises);
+  err_puts("kc3_pledge: not implemented");
+}
+
+#endif
+
 s_tag * kc3_plist_length (const s_list **plist, s_tag *dest)
 {
   s_tag s = {0};
