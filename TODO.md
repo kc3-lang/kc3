@@ -11,14 +11,33 @@
    - libpng/
    - libressl/
 
- - Trouver le repo git original sur Google de chaque package JNI.
-   - freetype : <>
-   - libbsd   : <>
-   - libevent : <>
-   - libffi   : <>
-   - libmd    : <>
-   - libpng   : <>
-   - libressl : <>
+ - [x] Trouver la homepage et le repo git original sur Google de
+   chaque package JNI.
+   - [x] freetype
+     - [Homepage](https://freetype.org/)
+     - [Github](https://github.com/freetype/freetype)
+     - [Gitlab](https://gitlab.freedesktop.org/freetype/freetype.git)
+   - [x]libbsd
+     - [Homepage](https://libbsd.freedesktop.org/wiki/)
+     - [Github](https://github.com/guillemj/libbsd)
+     - [Gitlab](https://gitlab.freedesktop.org/libbsd/libbsd.git)
+   - [x] libevent
+     - [Homepage](https://libevent.org/)
+     - [Github](https://github.com/libevent/libevent)
+   - [x] libffi
+     - [Homepage](https://sourceware.org/libffi/)
+     - [Github](https://github.com/libffi/libffi)
+   - [x] libmd
+     - [Homepage](https://www.hadrons.org/software/libmd/)
+     - [Github](https://github.com/guillemj/libmd)
+     - [Git](https://git.hadrons.org/git/libmd.git)
+   - [x] libpng
+     - [Homepage](https://www.libpng.org/pub/png/libpng.html)
+     - [Github](https://github.com/pnggroup/libpng)
+     - [Sourceforge](https://git.code.sf.net/p/libpng/code)
+   - [x] libressl
+     - [Homepage](https://www.libressl.org/)
+     - [Github](https://github.com/libressl/portable)
 
  - Faire un repo git sur https://git.kmx.io/kc3-lang/ pour chaque
    package JNI :
@@ -82,6 +101,9 @@
  - [x] bin
    - [x] install dependent libs in `${DESTDIR}${prefix}/lib`
    - [x] fix libs and executables lib search path
+ - [ ] dmg target
+   - [ ] large icons
+   - [ ] arrow
 
 ---
 
