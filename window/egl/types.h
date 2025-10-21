@@ -38,7 +38,6 @@ typedef bool (*f_window_egl_resize) (s_window_egl *window,
                                      u64 w, u64 h);
 typedef void (*f_window_egl_unload) (s_window_egl *window);
 
-
 /* Subtype of s_sequence. See libkc3/types.h */
 struct sequence_egl {
   s_tag tag;

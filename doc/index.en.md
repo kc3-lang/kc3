@@ -14,7 +14,6 @@ that you know might be in the database.
 Caveats : KC3 is still a prototype and we will phase optimizations in
 when more money comes along.
 
-
 ## Index
 
 [1 KC3](1_KC3/) core language.
@@ -22,7 +21,6 @@ when more money comes along.
 [2 HTTPd](2_HTTPd/) web server.
 
 [3 Guides](3_Guides/) about KC3.
-
 
 ## Other links
 

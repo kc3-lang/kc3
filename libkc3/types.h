@@ -24,7 +24,6 @@
 #define MP_28BIT
 #include "tommath.h"
 
-
 #ifdef __cplusplus
 extern "C" {
 #else
@@ -181,7 +180,6 @@ typedef enum {
   TAG_UNQUOTE      = 40, // \x28
   TAG_IDENT        = 41, // \x29
 } e_tag_type;
-
 
 /* structs */
 typedef struct arg                     s_arg;

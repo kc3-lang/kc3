@@ -13,7 +13,6 @@
 #ifndef KC3_EXPLICIT_BZERO_H
 #define KC3_EXPLICIT_BZERO_H
 
-
 #if ! HAVE_EXPLICIT_BZERO
 # define explicit_bzero(p, size) memset(p, 0, size)
 #endif

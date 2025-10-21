@@ -29,7 +29,6 @@
 #include "md4c-html.h"
 #include "entity.h"
 
-
 #if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 199409L
     /* C89/90 or old compilers in general may not understand "inline". */
     #if defined __GNUC__
@@ -45,8 +44,6 @@
     #define snprintf _snprintf
 #endif
 
-
-
 typedef struct MD_HTML_tag MD_HTML;
 struct MD_HTML_tag {
     void (*process_output)(const MD_CHAR*, MD_SIZE, void*);
@@ -59,7 +56,6 @@ struct MD_HTML_tag {
 #define NEED_HTML_ESC_FLAG   0x1
 #define NEED_URL_ESC_FLAG    0x2
 
-
 /*****************************************
  ***  HTML rendering helper functions  ***
  *****************************************/
@@ -68,7 +64,6 @@ struct MD_HTML_tag {
 #define ISLOWER(ch)     ('a' <= (ch) && (ch) <= 'z')
 #define ISUPPER(ch)     ('A' <= (ch) && (ch) <= 'Z')
 #define ISALNUM(ch)     (ISLOWER(ch) || ISUPPER(ch) || ISDIGIT(ch))
-
 
 static inline void
 render_verbatim(MD_HTML* r, const MD_CHAR* text, MD_SIZE size)
@@ -80,7 +75,6 @@ render_verbatim(MD_HTML* r, const MD_CHAR* text, MD_SIZE size)
  * the strlen() call with a compile-time constant if the string is a C literal. */
 #define RENDER_VERBATIM(r, verbatim)                                    \
         render_verbatim((r), (verbatim), (MD_SIZE) (strlen(verbatim)))
-
 
 static void
 render_html_escaped(MD_HTML* r, const MD_CHAR* data, MD_SIZE size)
@@ -265,7 +259,6 @@ render_attribute(MD_HTML* r, const MD_ATTRIBUTE* attr,
     }
 }
 
-
 static void
 render_open_ol_block(MD_HTML* r, const MD_BLOCK_OL_DETAIL* det)
 {
@@ -365,7 +358,6 @@ render_open_wikilink_span(MD_HTML* r, const MD_SPAN_WIKILINK_DETAIL* det)
 
     RENDER_VERBATIM(r, "\">");
 }
-
 
 /**************************************
  ***  HTML renderer implementation  ***

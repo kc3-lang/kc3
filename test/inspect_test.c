@@ -550,7 +550,6 @@ TEST_CASE(inspect_tag)
 }
 TEST_CASE_END(inspect_tag)
 
-
 TEST_CASE(inspect_tuple)
 {
   INSPECT_TEST_TUPLE("{:a, :b}", "{:a, :b}");

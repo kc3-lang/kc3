@@ -687,7 +687,6 @@ DEF_BUF_PEEK(s32)
 DEF_BUF_PEEK(s64)
 DEF_BUF_PEEK(bool)
 
-
 sw buf_peek_str (s_buf *buf, const s_str *src)
 {
   sw r;

@@ -101,7 +101,6 @@
  - HTTPd
    - `make test_httpd`
 
-
 ## v0.1.11
 
  - libc3
@@ -140,7 +139,6 @@ See [lib/kc3/0.1/list.kc3](https://git.kmx.io/kc3-lang/kc3/_tree/master/lib/kc3/
    - rational numbers and corresponding operations
    - complex numbers and corresponding operations
    - float 128 bit (F128) and corresponding operations
-
 
 ## v0.1.9
 

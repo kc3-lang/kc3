@@ -1859,7 +1859,6 @@ s_marshall_read * marshall_read_ptag (s_marshall_read *mr,
   return mr;
 }
 
-
 s_marshall_read * marshall_read_ptr (s_marshall_read *mr,
                                      bool heap,
                                      u_ptr_w *dest)

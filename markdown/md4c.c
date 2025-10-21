@@ -31,7 +31,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 /*****************************
  ***  Miscellaneous Stuff  ***
  *****************************/
@@ -118,7 +117,6 @@
 /* Suppress "unused parameter" warnings. */
 #define MD_UNUSED(x)                ((void)x)
 
-
 /******************************
  ***  Some internal limits  ***
  ******************************/
@@ -133,7 +131,6 @@
  * of rows where rows are requested with as little as single character
  * per-line, relying on us to "helpfully" fill all the missing "<td></td>". */
 #define TABLE_MAXCOLCOUNT       128
-
 
 /************************
  ***  Internal Types  ***
@@ -155,7 +152,6 @@ typedef struct MD_MARK_tag MD_MARK;
 typedef struct MD_BLOCK_tag MD_BLOCK;
 typedef struct MD_CONTAINER_tag MD_CONTAINER;
 typedef struct MD_REF_DEF_tag MD_REF_DEF;
-
 
 /* During analyzes of inline marks, we need to manage stacks of unresolved
  * openers of the given type.
@@ -308,7 +304,6 @@ struct MD_VERBATIMLINE_tag {
     OFF indent;
 };
 
-
 /*****************
  ***  Helpers  ***
  *****************/
@@ -352,13 +347,11 @@ struct MD_VERBATIMLINE_tag {
 #define ISXDIGIT(off)                   ISXDIGIT_(CH(off))
 #define ISALNUM(off)                    ISALNUM_(CH(off))
 
-
 #if defined MD4C_USE_UTF16
     #define md_strchr wcschr
 #else
     #define md_strchr strchr
 #endif
-
 
 /* Case insensitive check of string equality. */
 static inline int
@@ -415,14 +408,12 @@ md_text_with_null_replacement(MD_CTX* ctx, MD_TEXTTYPE type, const CHAR* str, SZ
     }
 }
 
-
 #define MD_CHECK(func)                                                      \
     do {                                                                    \
         ret = (func);                                                       \
         if(ret < 0)                                                         \
             goto abort;                                                     \
     } while(0)
-
 
 #define MD_TEMP_BUFFER(sz)                                                  \
     do {                                                                    \
@@ -441,7 +432,6 @@ md_text_with_null_replacement(MD_CTX* ctx, MD_TEXTTYPE type, const CHAR* str, SZ
             ctx->alloc_buffer = new_size;                                   \
         }                                                                   \
     } while(0)
-
 
 #define MD_ENTER_BLOCK(type, arg)                                           \
     do {                                                                    \
@@ -501,7 +491,6 @@ md_text_with_null_replacement(MD_CTX* ctx, MD_TEXTTYPE type, const CHAR* str, SZ
         }                                                                   \
     } while(0)
 
-
 /* If the offset falls into a gap between line, we return the following
  * line. */
 static const MD_LINE*
@@ -536,7 +525,6 @@ md_lookup_line(OFF off, const MD_LINE* lines, MD_SIZE n_lines, MD_SIZE* p_line_i
     return NULL;
 }
 
-
 /*************************
  ***  Unicode Support  ***
  *************************/
@@ -546,7 +534,6 @@ struct MD_UNICODE_FOLD_INFO_tag {
     unsigned codepoints[3];
     unsigned n_codepoints;
 };
-
 
 #if defined MD4C_USE_UTF16 || defined MD4C_USE_UTF8
     /* Binary search over sorted "map" of codepoints. Consecutive sequences
@@ -831,7 +818,6 @@ struct MD_UNICODE_FOLD_INFO_tag {
     }
 #endif
 
-
 #if defined MD4C_USE_UTF16
     #define IS_UTF16_SURROGATE_HI(word)     (((WORD)(word) & 0xfc00) == 0xd800)
     #define IS_UTF16_SURROGATE_LO(word)     (((WORD)(word) & 0xfc00) == 0xdc00)
@@ -981,7 +967,6 @@ struct MD_UNICODE_FOLD_INFO_tag {
     }
 #endif
 
-
 /*************************************
  ***  Helper string manipulations  ***
  *************************************/
@@ -1064,7 +1049,6 @@ md_skip_unicode_whitespace(const CHAR* label, OFF off, SZ size)
 
     return off;
 }
-
 
 /******************************
  ***  Recognizing raw HTML  ***
@@ -1317,7 +1301,6 @@ md_is_html_any(MD_CTX* ctx, const MD_LINE* lines, MD_SIZE n_lines, OFF beg, OFF 
             md_is_html_cdata(ctx, lines, n_lines, beg, max_end, p_end));
 }
 
-
 /****************************
  ***  Recognizing Entity  ***
  ****************************/
@@ -1408,7 +1391,6 @@ md_is_entity(MD_CTX* ctx, OFF beg, OFF max_end, OFF* p_end)
     return md_is_entity_str(ctx, ctx->text, beg, max_end, p_end);
 }
 
-
 /******************************
  ***  Attribute Management  ***
  ******************************/
@@ -1423,7 +1405,6 @@ struct MD_ATTRIBUTE_BUILD_tag {
     MD_TEXTTYPE trivial_types[1];
     OFF trivial_offsets[2];
 };
-
 
 #define MD_BUILD_ATTR_NO_ESCAPES    0x0001
 
@@ -1560,7 +1541,6 @@ abort:
     return -1;
 }
 
-
 /*********************************************
  ***  Dictionary of Reference Definitions  ***
  *********************************************/
@@ -1582,7 +1562,6 @@ md_fnv1a(unsigned base, const void* data, size_t n)
 
     return hash;
 }
-
 
 struct MD_REF_DEF_tag {
     CHAR* label;
@@ -1914,7 +1893,6 @@ md_lookup_ref_def(MD_CTX* ctx, const CHAR* label, SZ label_size)
     }
 }
 
-
 /***************************
  ***  Recognizing Links  ***
  ***************************/
@@ -1932,7 +1910,6 @@ struct MD_LINK_ATTR_tag {
     SZ title_size;
     int title_needs_free;
 };
-
 
 static int
 md_is_link_label(MD_CTX* ctx, const MD_LINE* lines, MD_SIZE n_lines, OFF beg,
@@ -2456,7 +2433,6 @@ md_free_ref_defs(MD_CTX* ctx)
     free(ctx->ref_defs);
 }
 
-
 /******************************************
  ***  Processing Inlines (a.k.a Spans)  ***
  ******************************************/
@@ -2492,7 +2468,6 @@ md_free_ref_defs(MD_CTX* ctx)
  *     by calling MD_RENDERER::text() callback, interrupting by ::enter_span()
  *     or ::close_span() whenever we reach a resolved mark.
  */
-
 
 /* The mark structure.
  *
@@ -2640,7 +2615,6 @@ md_add_mark(MD_CTX* ctx)
             mark->flags = (flags_);                                     \
         } while(0)
 
-
 static inline void
 md_mark_stack_push(MD_CTX* ctx, MD_MARKSTACK* stack, int mark_index)
 {
@@ -2694,7 +2668,6 @@ md_resolve_range(MD_CTX* ctx, int opener_index, int closer_index)
     opener->flags |= MD_MARK_OPENER | MD_MARK_RESOLVED;
     closer->flags |= MD_MARK_CLOSER | MD_MARK_RESOLVED;
 }
-
 
 #define MD_ROLLBACK_CROSSING    0
 #define MD_ROLLBACK_ALL         1
@@ -4207,7 +4180,6 @@ abort:
     return ret;
 }
 
-
 /* Render the output, accordingly to the analyzed ctx->marks. */
 static int
 md_process_inlines(MD_CTX* ctx, const MD_LINE* lines, MD_SIZE n_lines)
@@ -4499,7 +4471,6 @@ abort:
     return ret;
 }
 
-
 /***************************
  ***  Processing Tables  ***
  ***************************/
@@ -4650,7 +4621,6 @@ abort:
     return ret;
 }
 
-
 /**************************
  ***  Processing Block  ***
  **************************/
@@ -4689,7 +4659,6 @@ struct MD_CONTAINER_tag {
     OFF block_byte_off;
     OFF task_mark_off;
 };
-
 
 static int
 md_process_normal_block_contents(MD_CTX* ctx, const MD_LINE* lines, MD_SIZE n_lines)
@@ -4975,7 +4944,6 @@ abort:
     return ret;
 }
 
-
 /************************************
  ***  Grouping Lines into Blocks  ***
  ************************************/
@@ -5208,8 +5176,6 @@ abort:
     return ret;
 }
 
-
-
 /***********************
  ***  Line Analysis  ***
  ***********************/
@@ -5406,7 +5372,6 @@ out:
     *p_end = off;
     return ret;
 }
-
 
 /* Helper data for md_is_html_block_start_condition() and
  * md_is_html_block_end_condition() */
@@ -5613,7 +5578,6 @@ md_is_html_block_end_condition(MD_CTX* ctx, OFF beg, OFF* p_end)
     }
     return FALSE;
 }
-
 
 static int
 md_is_container_compatible(const MD_CONTAINER* pivot, const MD_CONTAINER* container)
@@ -6442,7 +6406,6 @@ abort:
 
     return ret;
 }
-
 
 /********************
  ***  Public API  ***

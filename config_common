@@ -24,7 +24,6 @@ config_have_generic_sw_uw
 config_have_pthread
 config_have_quadmath
 config_have_stat_mtim
-update_config_h
 LIBS="$LIBS -lm -lpthread -rpath ${PREFIX}/lib"
 if $HAVE_WIN32 || $HAVE_WIN64; then
     LIBS="$LIBS -lws2_32 -ldl"

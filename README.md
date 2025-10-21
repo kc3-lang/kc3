@@ -50,7 +50,6 @@ Supported architectures :
 To install and test KC3 for yourself, you can follow the
 [KC3 Installation Guide](https://kc3-lang.org/doc/3_Guides/3.1_Install).
 
-
 ## Users
 
 There are now four full applications written in KC3 that we know of :
@@ -63,7 +62,6 @@ There are now four full applications written in KC3 that we know of :
    source and is hosted on kmx.io servers in France using OpenBSD
    everywhere. We donate to OpenBSD every month because a healthy
    software ecosystem is a funded ecosystem.
-
 
 ## New in this release
 
@@ -149,17 +147,14 @@ There are now four full applications written in KC3 that we know of :
    - Argument parsing as a `while` loop
    - Added __libmd__, __libbsd__ and __kc3__ repo definitions
 
-
 ## Discord invite
 
 [Join us on kmx.io Discord server !](https://discord.gg/A4MWkpUDsG)
-
 
 ## [Guides](https://kc3-lang.org/doc/3_Guides)
 
 Follow the [KC3 guides](https://kc3-lang.org/doc/3_Guides)
 to discover how to use KC3 for your own projects.
-
 
 ## TODO
 

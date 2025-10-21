@@ -81,7 +81,6 @@ ${DEST_TMP}:
 	cp -a "${SRC_TOP}"/test/zero ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/test/ikc3/*.kc3 "${SRC_TOP}"/test/ikc3/*.expected ${DEST_TMP}/test/ikc3
 
-
 ${DEST_ZIP}: ${DEST}
 	rm -f ${DEST_ZIP}~
 	if test -f ${DEST_ZIP}; then mv ${DEST_ZIP} ${DEST_ZIP}~; fi

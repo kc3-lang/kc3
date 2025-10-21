@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$PWD")"
 export DIR="$(basename $PWD)"
 export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
-
 . "${SRC_TOP}/config.subr"
 
 config_prog ikc3
@@ -53,7 +52,6 @@ else
     HAVE_WINEDITLINE=false
     SOURCES="$SOURCES $SOURCES_LINENOISE"
 fi
-
 
 # Sources
 OBJECTS="$(c2ext .main.lo "$SOURCES")"

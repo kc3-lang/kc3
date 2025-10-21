@@ -43,7 +43,6 @@ static s_tag * toast_init (s_tag *toast, f64 x, f64 y)
   return toast;
 }
 
-
 static void toast_render (s_tag *toast, s_window *window,
                           s_sequence *seq)
 {

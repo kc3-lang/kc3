@@ -618,6 +618,7 @@ config_prog() {
     echo "PROG_ASAN  = ${PROG_ASAN}"  >> ${CONFIG_MK}
     echo "PROG_COV   = ${PROG_COV}"   >> ${CONFIG_MK}
     echo "PROG_DEBUG = ${PROG_DEBUG}" >> ${CONFIG_MK}
+    CPPFLAGS="$CPPFLAGS -DPREFIX=\\\"${PREFIX}\\\""
 }
 
 config_subdirs() {
@@ -1113,7 +1114,6 @@ update_file() {
     fi
 }
 
-
 update_config_mk() {
     if ! cmp "${CONFIG_MK}" config.mk >/dev/null 2>&1; then
         mv "${CONFIG_MK}" config.mk
@@ -1187,8 +1187,6 @@ ENV_CFLAGS="$CFLAGS"
 ENV_CXXFLAGS="$CXXFLAGS"
 ENV_LDFLAGS="$LDFLAGS"
 ENV_LIBS="$LIBS"
-
-CPPFLAGS="$CPPFLAGS -I."
 
 if [ "x$CC" = "x" ]; then
     if test -n $(which cc); then

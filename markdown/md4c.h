@@ -47,7 +47,6 @@
 typedef unsigned MD_SIZE;
 typedef unsigned MD_OFFSET;
 
-
 /* Block represents a part of document hierarchy structure like a paragraph
  * or list item.
  */
@@ -191,7 +190,6 @@ typedef enum MD_TEXTTYPE {
     MD_TEXT_LATEXMATH
 } MD_TEXTTYPE;
 
-
 /* Alignment enumeration. */
 typedef enum MD_ALIGN {
     MD_ALIGN_DEFAULT = 0,   /* When unspecified. */
@@ -199,7 +197,6 @@ typedef enum MD_ALIGN {
     MD_ALIGN_CENTER,
     MD_ALIGN_RIGHT
 } MD_ALIGN;
-
 
 /* String attribute.
  *
@@ -234,7 +231,6 @@ typedef struct MD_ATTRIBUTE {
     const MD_TEXTTYPE* substr_types;
     const MD_OFFSET* substr_offsets;
 } MD_ATTRIBUTE;
-
 
 /* Detailed info for MD_BLOCK_UL. */
 typedef struct MD_BLOCK_UL_DETAIL {
@@ -382,11 +378,9 @@ typedef struct MD_PARSER {
     void (*syntax)(void);
 } MD_PARSER;
 
-
 /* For backward compatibility. Do not use in new code.
  */
 typedef MD_PARSER MD_RENDERER;
-
 
 /* Parse the Markdown document stored in the string 'text' of size 'size'.
  * The parser provides callbacks to be called during the parsing so the
@@ -398,7 +392,6 @@ typedef MD_PARSER MD_RENDERER;
  * returning non-zero, the return value of the callback is returned.
  */
 int md_parse(const MD_CHAR* text, MD_SIZE size, const MD_PARSER* parser, void* userdata);
-
 
 #ifdef __cplusplus
     }  /* extern "C" { */

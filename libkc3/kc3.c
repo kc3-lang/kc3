@@ -1232,7 +1232,6 @@ s_tag * kc3_struct_put (s_tag *s, p_sym *key,
   return dest;
 }
 
-
 s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
 {
 #ifdef __OpenBSD__

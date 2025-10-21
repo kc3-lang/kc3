@@ -17,7 +17,6 @@ echo "$PWD/configure"
 
 SRC_TOP="$(dirname "$(dirname "$PWD")")"
 
-
 . "${SRC_TOP}/config.subr"
 
 PROG=mount_kc3fs
@@ -44,7 +43,6 @@ if ! $HAVE_WIN32; then
     LDFLAGS="$LDFLAGS -rdynamic"
 fi
 LIBS="$LIBS"
-
 
 # Sources
 OBJECTS="$(c2ext .main.lo "$SOURCES")"

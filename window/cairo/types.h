@@ -18,7 +18,6 @@
 #ifndef LIBKC3_WINDOW_CAIRO_TYPES_H
 #define LIBKC3_WINDOW_CAIRO_TYPES_H
 
-
 #include <cairo.h>
 
 #if ! HAVE_COCOA

@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$PWD")"
 export DIR="$(basename $PWD)"
 export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
-
 . "${SRC_TOP}/config.subr"
 
 config_prog kpkg
@@ -26,7 +25,6 @@ config_prog kpkg
 . "${SRC_DIR}/sources.sh"
 
 # Common config for all targets
-CPPFLAGS="-I .. ${CPPFLAGS}"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC"
 config_asan
 config_gnu
@@ -38,7 +36,7 @@ pkg_config libffi
 pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
-config_define PREFIX "\"${PREFIX}\""
+
 if ! $HAVE_WIN32; then
     LDFLAGS="$LDFLAGS -rdynamic"
 fi

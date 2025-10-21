@@ -18,13 +18,9 @@ export BUILD_TOP="$(dirname "$PWD")"
 export DIR="$(basename $PWD)"
 export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
-
 . "${SRC_TOP}/config.subr"
 
-PROG=kc3_httpd
-PROG_ASAN=kc3_httpd_asan
-PROG_COV=kc3_httpd_cov
-PROG_DEBUG=kc3_httpd_debug
+config_prog kc3_httpd
 
 . "${SRC_DIR}/sources.sh"
 
@@ -41,7 +37,7 @@ pkg_config libffi
 pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
-config_define PREFIX "\"${PREFIX}\""
+
 if ! $HAVE_WIN32; then
     LDFLAGS="$LDFLAGS -rdynamic"
 fi

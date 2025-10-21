@@ -27,12 +27,10 @@ f128 cosl (f128 x)
   return __builtin_cosl(x);
 }
 
-
 f128 sinl (f128 x)
 {
   return __builtin_sinl(x);
 }
-
 
 f128 tanl (f128 x)
 {

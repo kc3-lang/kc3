@@ -102,7 +102,6 @@ bool character_is_digit (character c)
   return ('0' <= c && c <= '9');
 }
 
-
 bool character_is_lowercase (character c)
 {
   return (c < UCD_MAX &&

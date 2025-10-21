@@ -26,7 +26,6 @@
 #include "socket.h"
 #include "socket_buf.h"
 
-
 #if (defined(WIN32) || defined(WIN64))
 static bool g_socket_init = false;
 #endif

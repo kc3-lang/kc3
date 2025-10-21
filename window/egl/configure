@@ -18,7 +18,6 @@ export BUILD_TOP="$(dirname "$(dirname "$PWD")")"
 export DIR="window/egl"
 export SRC_TOP="$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")"
 
-
 . "${SRC_TOP}/config.subr"
 
 LIB=libkc3_window_egl.la
@@ -128,7 +127,6 @@ else
 fi
 echo "HAVE_XCB = $HAVE_XCB" >> ${CONFIG_MK}
 if $HAVE_XCB; then config_define HAVE_XCB 1; fi
-
 
 SUBDIRS=
 

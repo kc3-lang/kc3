@@ -18,5 +18,4 @@
 s_tag * http_header_split (s_str *header, s_tag *dest);
 s_tag * http_request_buf_parse (s_tag *request, s_buf *buf);
 
-
 #endif /* HTTP_H */

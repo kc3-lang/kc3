@@ -25,5 +25,4 @@ p_callable * pcallable_init_cast (p_callable *callable,
 p_callable * pcallable_init_copy (p_callable *callable,
                                   p_callable *src);
 
-
 #endif /* LIBKC3_PCALLABLE_H */

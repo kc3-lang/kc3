@@ -73,7 +73,6 @@ s_fact * fact_init_1(s_fact *fact, const char *p)
   return fact;
 }
 
-
 s_fact * fact_init_cast (s_fact *fact, const s_sym * const *type,
                          s_tag *tag)
 {

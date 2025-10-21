@@ -16,7 +16,6 @@
 #include "../libkc3/kc3.h"
 #include "http_response.h"
 
-
 s_http_response * http_response_buf_parse (s_http_response *response,
                                            s_buf *buf, bool parse_body)
 {

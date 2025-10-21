@@ -17,7 +17,6 @@ echo "$PWD/configure"
 
 export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
 
-
 . "${SRC_TOP}/config.subr"
 
 LIB=libkc3_window_egl_android_demo.la

@@ -1193,7 +1193,6 @@ TEST_CASE(buf_parse_sw)
 }
 TEST_CASE_END(buf_parse_sw)
 
-
 TEST_CASE(buf_parse_str)
 {
   BUF_PARSE_TEST_NOT_STR("");

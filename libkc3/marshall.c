@@ -1667,7 +1667,6 @@ s_marshall *marshall_unquote(s_marshall *m, bool heap,
   return m;
 }
 
-
 s_marshall * marshall_var (s_marshall *m, bool heap, const s_var *var)
 {
   assert(m);

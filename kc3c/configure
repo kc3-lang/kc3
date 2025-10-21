@@ -17,7 +17,6 @@ echo "$PWD/configure"
 
 export SRC_TOP="$(dirname "$PWD")"
 
-
 . "${SRC_TOP}/config.subr"
 
 PROG=kc3s
