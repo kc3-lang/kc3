@@ -176,6 +176,10 @@ defmodule HTTPd do
   def socket = ?
 
   def server = fn (host, port) {
+    unveil(".", "r")       # can read current directory
+    unveil("./db/", "rw")  # can write database
+    unveil("./log/", "rw") # can write logs
+    unveil("", "")         # lock
     HTTPd.socket <- Socket.listen(host, port)
     if HTTPd.socket do
       daemonize()
