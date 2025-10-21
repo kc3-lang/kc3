@@ -141,6 +141,8 @@ s_str *      kc3_marshall_to_str (p_marshall *m, s_str *dest);
 bool         kc3_maybe_reload (const s_str *path);
 s_tag *      kc3_or (s_tag *a, s_tag *b, s_tag *dest);
 s_tag *      kc3_parse_tag (s_tag *tag, const s_str *src);
+void         kc3_pledge (const s_str *promises,
+                         const s_str *execpromises);
 s_tag *      kc3_require (p_sym *module, s_tag *dest);
 s_str *      kc3_strerror (sw err_no, s_str *dest);
 s_tag *      kc3_struct_put (s_tag *s, p_sym *key,
