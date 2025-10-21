@@ -5,7 +5,6 @@ HEADERS = \
 	"window_cairo_quartz_app_delegate.h" \
 	"window_cairo_quartz_view.h" \
 	"window_cairo_quartz_view_controller.h" \
-	"xkbquartz.h" \
 
 SOURCES = \
 	"quartz_to_xkbcommon.c" \

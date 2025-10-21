@@ -1089,7 +1089,6 @@ KC3_C_SOURCES = \
 	"window/cairo/quartz/window_cairo_quartz_app_delegate.h" \
 	"window/cairo/quartz/window_cairo_quartz_view.h" \
 	"window/cairo/quartz/window_cairo_quartz_view_controller.h" \
-	"window/cairo/quartz/xkbquartz.h" \
 	"window/cairo/types.h" \
 	"window/cairo/win32/demo/window_cairo_win32_demo.c" \
 	"window/cairo/win32/vk_to_xkbcommon.c" \
