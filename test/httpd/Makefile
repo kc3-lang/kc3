@@ -30,6 +30,9 @@ cov: assets
 debug: assets
 	${SRC_TOP}/httpd/kc3_httpd_debug --trace -d 127.0.0.1 15004
 
+doc:
+	rsync -aP --delete ../../doc ./
+
 dump: clean_dump
 	${SRC_TOP}/httpd/kc3_httpd --trace -d
 	time ${SRC_TOP}/kc3s/kc3s --trace --quit
@@ -83,6 +86,7 @@ vegeta_production:
 	asan \
 	cov \
 	debug \
+	doc \
 	dump \
 	main \
 	run \
