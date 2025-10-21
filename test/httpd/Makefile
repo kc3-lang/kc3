@@ -12,22 +12,22 @@
 
 SRC_TOP = ../..
 
-main: assets doc
+main: assets doc release
 	${SRC_TOP}/httpd/.libs/kc3_httpd --trace -d 127.0.0.1 15004
 
 assets:
 	${MAKE} -C assets
 
-asan: assets doc
+asan: assets doc release
 	${SRC_TOP}/httpd/.libs/kc3_httpd_asan --trace -d 127.0.0.1 15004
 
 clean_dump:
 	rm -f kc3.dump db/*.bin.facts
 
-cov: assets doc
+cov: assets doc release
 	${SRC_TOP}/httpd/kc3_httpd_cov --trace -d 127.0.0.1 15004
 
-debug: assets doc
+debug: assets doc release
 	${SRC_TOP}/httpd/kc3_httpd_debug --trace -d 127.0.0.1 15004
 
 doc:
@@ -41,7 +41,7 @@ dump_debug: clean_dump
 	${SRC_TOP}/httpd/kc3_httpd_debug --trace -d
 	time ${SRC_TOP}/kc3s/kc3s_debug --trace --quit
 
-gdb: assets doc
+gdb: assets doc release
 	if [ -f kc3_httpd_debug.core ]; then gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug kc3_httpd_debug.core; else gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug; fi
 
 gdb_dump: clean_dump
@@ -58,6 +58,15 @@ lldb_dump: clean_dump
 
 lldb_dump_restore:
 	lldb ${SRC_TOP}/kc3s/.libs/kc3s_debug
+
+release:
+	if [ -d static/release ]; then \
+		cd static/release && git pull; \
+	else \
+		if [ -d ../../release ]; then \
+			git clone ../../release/.git static/release; \
+		fi \
+	fi
 
 run: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd 127.0.0.1 15004
@@ -89,6 +98,7 @@ vegeta_production:
 	doc \
 	dump \
 	main \
+	release \
 	run \
 	test \
 	vegeta_local \
