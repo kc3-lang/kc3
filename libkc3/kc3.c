@@ -1610,6 +1610,31 @@ void * kc3_thread_start (void *arg)
   return tag;
 }
 
+void kc3_unveil (const s_str *path, const s_str *permissions)
+{
+#ifdef __OpenBSD__
+  s32 e;
+  const char *unveil_path = NULL;
+  const char *unveil_permissions = NULL;
+  if (path && path->size)
+    unveil_path = path;
+  if (permissions && permissions->size)
+    unveil_permissions = permissions;
+  if (unveil(unveil_path, unveil_permissions)) {
+    e = errno;
+    err_write_1("kc3_unveil: ");
+    err_inspect_str(path);
+    err_write_1(": ");
+    err_write_1(strerror(e));
+    err_write_1("\n");
+    assert(! "kc3_unveil");
+    abort();
+  }
+#else
+  err_puts("kc3_unveil: not implemented");
+#endif
+}
+
 s_tag * kc3_unwind_protect (s_tag *protected, s_tag *cleanup,
                             s_tag *dest)
 {

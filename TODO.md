@@ -69,8 +69,8 @@
      alias gradle="rm -f /usr/bin/gradle"
 
 ## libkc3
- - [ ] unveil
- - [ ] pledge
+ - [.] unveil
+ - [.] pledge
 
 ## HTTPd
  - [x] Securelevel = 2 !!!

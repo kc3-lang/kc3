@@ -149,6 +149,7 @@ s_tuple *    kc3_system (p_list *list, s_tuple *dest);
 s_tag *      kc3_thread_delete (u_ptr_w *thread, s_tag *dest);
 u_ptr_w *    kc3_thread_new (u_ptr_w *dest, p_callable *start);
 void *       kc3_thread_start (void *arg);
+void         kc3_unveil (const s_str *path, const s_str *permissions);
 
 /* Special operators. */
 s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest);
