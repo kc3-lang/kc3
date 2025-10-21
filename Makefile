@@ -255,6 +255,7 @@ dist_dmg:
 	    ${SRC_TOP}/bin/update_dyld "$$PWD/install" && \
 	    mkdir -p ${DIST_DMG} && \
 	    cp -R install/Applications/kc3 ${DIST_DMG}/ && \
+	    ln -s /Applications ${DIST_DMG}/Applications && \
 	    hdiutil create -volname "KC3 v${KC3_VERSION}" \
 		-srcfolder ${DIST_DMG} -ov -format UDZO ${DIST_DMG}.dmg
 
