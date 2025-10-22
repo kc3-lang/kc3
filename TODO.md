@@ -47,8 +47,8 @@
    - [x] [freetype](https://git.kmx.io/kc3-lang/freetype)
    - [x] [libbsd](https://git.kmx.io/kc3-lang/libbsd)
    - [ ] [libevent]()
-   - [ ] [libffi]()
-   - [ ] [libmd]()
+   - [x] [libffi](https://git.kmx.io/kc3-lang/libffi)
+   - [x] [libmd](https://git.kmx.io/kc3-lang/libmd)
    - [ ] [libpng]()
    - [ ] [libressl]()
 
