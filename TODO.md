@@ -44,13 +44,13 @@
    - Indiquer l'URL du site web officiel et du repo git sur Github dans
      la description Markdown du repo.
    - Forker le repo git original vers git.kmx.io et github.
-   - [x] [freetype](https://git.kmx.io/kc3-lang/freetype/)
-   - [ ] libbsd
-   - [ ] libevent
-   - [ ] libffi
-   - [ ] libmd
-   - [ ] libpng
-   - [ ] libressl
+   - [x] [freetype](https://git.kmx.io/kc3-lang/freetype)
+   - [x] [libbsd](https://git.kmx.io/kc3-lang/libbsd)
+   - [ ] [libevent]()
+   - [ ] [libffi]()
+   - [ ] [libmd]()
+   - [ ] [libpng]()
+   - [ ] [libressl]()
 
  - Faire des packages __kpkg__ dans lib/kc3/0.1/kpkg/repos/ pour chaque
    package JNI :
