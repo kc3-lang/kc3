@@ -264,10 +264,11 @@ dist_dmg:
 		-srcfolder ${DIST_DMG} -ov -format UDRW ${DIST_DMG}.tmp.dmg && \
 	    hdiutil attach ${DIST_DMG}.tmp.dmg -mountpoint /Volumes/KC3 && \
 	    sleep 5 && \
-	    osascript -e 'tell application "Finder"' \
+	    osascript -e 'with timeout of 300 seconds' \
+		-e 'tell application "Finder"' \
 		-e 'tell disk "KC3"' \
 		-e 'open' \
-		-e 'delay 1' \
+		-e 'delay 2' \
 		-e 'set current view of container window to icon view' \
 		-e 'set toolbar visible of container window to false' \
 		-e 'set statusbar visible of container window to false' \
@@ -278,15 +279,18 @@ dist_dmg:
 		-e 'try' \
 		-e 'set background picture of viewOptions to file ".background:dmg_background.png"' \
 		-e 'end try' \
-		-e 'delay 1' \
+		-e 'delay 2' \
+		-e 'try' \
 		-e 'set position of item "kc3" to {150, 200}' \
 		-e 'set position of item "Applications" to {450, 200}' \
-		-e 'delay 1' \
-		-e 'update without registering applications' \
+		-e 'end try' \
 		-e 'delay 2' \
+		-e 'update without registering applications' \
+		-e 'delay 3' \
 		-e 'close' \
 		-e 'end tell' \
-		-e 'end tell' && \
+		-e 'end tell' \
+		-e 'end timeout' && \
 	    sync && \
 	    hdiutil detach /Volumes/KC3 && \
 	    hdiutil convert ${DIST_DMG}.tmp.dmg -format UDZO -o ${DIST_DMG}.dmg && \
