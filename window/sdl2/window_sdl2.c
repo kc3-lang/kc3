@@ -20,11 +20,68 @@
 #include "../../gl/gl_deprecated.h"
 #include "window_sdl2.h"
 
+#ifdef __APPLE__
+#include <objc/objc.h>
+#include <objc/message.h>
+#include <objc/runtime.h>
+#endif
+
 const char *g_gray_3_bits_utf8[] = {
   " ", ".", ":", "#", "░", "▒", "▓", "█"
 };
 
 static bool g_window_sdl2_initialized = false;
+
+#ifdef __APPLE__
+static void window_sdl2_set_app_name (const char *name)
+{
+  id nsapp;
+  id app_name_str;
+  id main_menu;
+  id app_menu_item;
+  id app_menu;
+  SEL sharedApp;
+  SEL mainMenu;
+  SEL itemAtIndex;
+  SEL submenu;
+  SEL setTitle;
+  SEL stringWithUTF8String;
+  Class nsstring_class;
+  if (! name)
+    return;
+  sharedApp = sel_registerName("sharedApplication");
+  nsapp = ((id (*)(Class, SEL)) objc_msgSend)(objc_getClass
+                                              ("NSApplication"),
+                                              sharedApp);
+  if (! nsapp)
+    return;
+  stringWithUTF8String = sel_registerName("stringWithUTF8String:");
+  nsstring_class = objc_getClass("NSString");
+  app_name_str = ((id (*)(Class, SEL, const char *))
+                  objc_msgSend)(nsstring_class,
+                                stringWithUTF8String, name);
+  if (! app_name_str)
+    return;
+  mainMenu = sel_registerName("mainMenu");
+  main_menu = ((id (*)(id, SEL)) objc_msgSend)(nsapp, mainMenu);
+  if (! main_menu)
+    return;
+  itemAtIndex = sel_registerName("itemAtIndex:");
+  app_menu_item = ((id (*)(id, SEL, long)) objc_msgSend)(main_menu,
+                                                         itemAtIndex,
+                                                         0);
+  if (! app_menu_item)
+    return;
+  submenu = sel_registerName("submenu");
+  app_menu = ((id (*)(id, SEL)) objc_msgSend)(app_menu_item,
+                                              submenu);
+  if (! app_menu)
+    return;
+  setTitle = sel_registerName("setTitle:");
+  ((void (*)(id, SEL, id)) objc_msgSend)(app_menu, setTitle,
+                                         app_name_str);
+}
+#endif
 
 /* Debug callback not used in GLES 2.0
 static void gl_debug (GLenum source, GLenum type, GLuint id,
@@ -195,6 +252,9 @@ bool window_sdl2_run (s_window_sdl2 *window)
           SDL_GetError());
     return false;
   }
+#ifdef __APPLE__
+  window_sdl2_set_app_name(window->title);
+#endif
   SDL_SetWindowBordered(window->sdl_window, SDL_TRUE);
   window->context = SDL_GL_CreateContext(window->sdl_window);
   if (! window->context) {
