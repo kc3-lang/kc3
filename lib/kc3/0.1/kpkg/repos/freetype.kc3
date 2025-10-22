@@ -20,6 +20,7 @@ defmodule Kpkg.Repos.FreeType do
                   dir: "freetype/freetype",
                   git: "https://git.kmx.io/kc3-lang/freetype.git",
                   git_push: "git@git.kmx.io:kc3-lang/freetype.git",
+                  make: "gmake",
                   module: module()}
   )
 

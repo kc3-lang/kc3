@@ -112,6 +112,8 @@ defmodule Kpkg do
     Facts.replace_tags(Kpkg.db, package.name,
       :kpkg_package_is_needed?, package.is_needed?)
     Facts.replace_tags(Kpkg.db, package.name,
+      :kpkg_package_make, package.make)
+    Facts.replace_tags(Kpkg.db, package.name,
       :kpkg_package_module, package.module)
   }
 
@@ -134,6 +136,7 @@ defmodule Kpkg do
                           [name, :kpkg_package_git, git = ?],
                           [name, :kpkg_package_git_push, git_push = ?],
                           [name, :kpkg_package_is_needed?, is_needed? = ?],
+                          [name, :kpkg_package_make, make = ?],
                           [name, :kpkg_package_module, module = ?]],
       fn (fact) { %Kpkg.Package{name: name,
                                 build_depends_on: build_depends_on,
@@ -143,6 +146,7 @@ defmodule Kpkg do
                                 git: git,
                                 git_push: git_push,
                                 is_needed?: is_needed?,
+                                make: make,
                                 module: module} })
   }
   
@@ -627,7 +631,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     destdir_sh = Sh.escape(destdir)
     File.ensure_directory(destdir, Kpkg.umask)
     Kpkg.exec!(["/bin/sh", "-c",
-                "make -C #{Sh.escape(build_dir)}" +
+                "#{pkg.make} -C #{Sh.escape(build_dir)}" +
                 " DESTDIR=#{destdir_sh} install"])
     Kpkg.indent(-1)
     Kpkg.log_call("fake #{pkg.name} #{tree} #{arch}: OK")
