@@ -28,7 +28,7 @@ CLEANFILES = \
 	${PROD_WWW} \
 
 all:
-	echo ${MAKE} local_kc3 | local_www
+	echo "${MAKE} local_kc3 | local_www"
 
 clean:
 	rm -rf ${CLEANFILES}
