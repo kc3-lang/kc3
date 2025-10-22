@@ -20,6 +20,7 @@ defmodule Kpkg.Repos.LibFFI do
                   dir: "libffi/libffi",
                   git: "https://git.kmx.io/kc3-lang/libffi.git",
                   git_push: "git@git.kmx.io:kc3-lang/libffi.git",
+                  make: "gmake",
                   module: module()}
   )
 

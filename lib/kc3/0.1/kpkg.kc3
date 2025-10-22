@@ -597,8 +597,9 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
       configure_path_sh = Sh.escape(Kpkg.configure_path(pkg, tree))
       prefix_sh = Sh.escape(Kpkg.prefix_dir(arch))
       File.ensure_directory(build_dir, Kpkg.umask)
+      make_sh = Sh.escape(pkg.make)
       Kpkg.exec!(["/bin/sh", "-c",
-                  "cd #{build_dir_sh} && #{configure_path_sh}" +
+                  "cd #{build_dir_sh} && MAKE=#{make_sh} #{configure_path_sh}" +
                   " --prefix #{prefix_sh} &&" +
                   " echo 1 > .kpkg_configure_done"])
     end
