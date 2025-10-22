@@ -293,6 +293,8 @@ dist_dmg:
 		-e 'end timeout' && \
 	    sync && \
 	    hdiutil detach /Volumes/KC3 && \
+	    sleep 3 && \
+	    sync && \
 	    hdiutil convert ${DIST_DMG}.tmp.dmg -format UDZO -o ${DIST_DMG}.dmg && \
 	    rm ${DIST_DMG}.tmp.dmg
 
