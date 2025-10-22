@@ -43,6 +43,9 @@ CPPFLAGS="-I${SRC_TOP} $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -Wno-error=unknown-pragmas"
 CFLAGS="$CFLAGS -std=c11 -pedantic -pipe"
 LIBS="$LIBS -lm"
+if [ "x$(uname)" = "xDarwin" ]; then
+    LDFLAGS="$LDFLAGS -Wl,-headerpad_max_install_names"
+fi
 config_asan
 config_cocoa
 config_gnu
