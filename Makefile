@@ -292,11 +292,12 @@ dist_dmg:
 		-e 'end tell' \
 		-e 'end timeout' && \
 	    sync && \
-	    hdiutil detach /Volumes/KC3 && \
-	    sleep 3 && \
+	    hdiutil detach /Volumes/KC3 -force && \
+	    sleep 5 && \
 	    sync && \
-	    hdiutil convert ${DIST_DMG}.tmp.dmg -format UDZO -o ${DIST_DMG}.dmg && \
-	    rm ${DIST_DMG}.tmp.dmg
+	    cp ${DIST_DMG}.tmp.dmg ${DIST_DMG}.tmp2.dmg && \
+	    hdiutil convert ${DIST_DMG}.tmp2.dmg -format UDZO -o ${DIST_DMG}.dmg && \
+	    rm ${DIST_DMG}.tmp.dmg ${DIST_DMG}.tmp2.dmg
 
 dist_msys2_clang64: all
 	${MAKE} -C msys2/clang64
