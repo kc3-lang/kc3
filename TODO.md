@@ -46,7 +46,7 @@
    - Forker le repo git original vers git.kmx.io et github.
    - [x] [freetype](https://git.kmx.io/kc3-lang/freetype)
    - [x] [libbsd](https://git.kmx.io/kc3-lang/libbsd)
-   - [ ] [libevent]()
+   - [x] [libevent](https://git.kmx.io/kc3-lang/libevent)
    - [x] [libffi](https://git.kmx.io/kc3-lang/libffi)
    - [x] [libmd](https://git.kmx.io/kc3-lang/libmd)
    - [x] [libpng](https://git.kmx.io/kc3-lang/libpng)
