@@ -255,7 +255,7 @@ dist_dmg:
 	    ${SRC_TOP}/bin/update_dyld "$$PWD/install" && \
 	    mkdir -p ${DIST_DMG} && \
 	    cp -R install/Applications/kc3 ${DIST_DMG}/ && \
-	    ln -s /Applications ${DIST_DMG}/Applications && \
+	    ln -sf /Applications ${DIST_DMG}/ && \
 	    if [ -f ${SRC_TOP}/img/dmg_background.png ]; then \
 	        mkdir -p ${DIST_DMG}/.background && \
 	        cp ${SRC_TOP}/img/dmg_background.png ${DIST_DMG}/.background/; \
