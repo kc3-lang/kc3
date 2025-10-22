@@ -50,7 +50,7 @@
    - [x] [libffi](https://git.kmx.io/kc3-lang/libffi)
    - [x] [libmd](https://git.kmx.io/kc3-lang/libmd)
    - [x] [libpng](https://git.kmx.io/kc3-lang/libpng)
-   - [ ] [libressl]()
+   - [x] [libressl](https://git.kmx.io/kc3-lang/libressl)
 
  - Faire des packages __kpkg__ dans lib/kc3/0.1/kpkg/repos/ pour chaque
    package JNI :
