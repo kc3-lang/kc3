@@ -55,6 +55,16 @@
  - Faire des packages __kpkg__ dans lib/kc3/0.1/kpkg/repos/ pour chaque
    package JNI :
    - Les packages doivent pointer vers git.kmx.io .
+   - [x] freetype/
+   - [x] libbsd/
+   - [x] libevent/
+   - [x] libffi/
+   - [x] libmd/
+   - [x] libpng/
+   - [x] libressl/
+
+ - Compiler les packages sous Linux
+   - `kpkg PKG clean install`
    - [ ] freetype/
    - [ ] libbsd/
    - [ ] libevent/
