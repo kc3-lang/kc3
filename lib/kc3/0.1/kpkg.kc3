@@ -345,7 +345,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   }
 
   def arch_local = fn () {
-    {code, out_err} = system([Kpkg.cc_local(), "-v"])
+    {code, out_err} = system(["env", "LC_ALL=C", Kpkg.cc_local(), "-v"])
     if (code) do
       puts("kpkg: arch_local: cc_local")
       puts(out_err)
