@@ -20,6 +20,7 @@ defmodule Kpkg.Repos.LibreSSL do
                   dir: "libressl/libressl",
                   git: "https://git.kmx.io/kc3-lang/libressl.git",
                   git_push: "git@git.kmx.io:kc3-lang/libressl.git",
+                  make: "gmake",
                   module: module()}
   )
 
