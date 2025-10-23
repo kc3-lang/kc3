@@ -132,6 +132,10 @@ There are now four full applications written in KC3 that we know of :
    - achieved securelevel(2) after load_app() by moving all
      `def*` into proper modules and using `defcounter`
    - apply unveil filesystem permissions, works on OpenBSD
+     - current dir (./) is read-only and ./log and ./db are read-write
+     - using kc3 unveil wrapper that soft fails on other systems
+     - on OpenBSD a failed unveil call aborts the program into the
+       debugger
 
  - window
    - demo
