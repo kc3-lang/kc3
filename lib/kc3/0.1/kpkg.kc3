@@ -737,6 +737,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
           target = "#{prefix}#{src}"
           if File.exists?(target) do
             puts("install: file exists, not copying: #{target}")
+            exit(1)
           else
             target_dir = File.dirname(target)
             File.ensure_directory(target_dir, Kpkg.umask)
