@@ -10,18 +10,19 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+CLEANFILES = *.a *.gcno *.la .libs *.lo *.o
+
+CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
+
+CLEANFILES += ${CLEANFILES_COV}
+
+DISTCLEANFILES = ${CLEANFILES} config.h config.mk
+
 all:
 	${MAKE} build
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
-
-build:
-	${MAKE} ${LIB}
-	${MAKE} -C demo build
-	if ${HAVE_COCOA}; then ${MAKE} -C quartz build; fi
-	if ${HAVE_WIN32}; then ${MAKE} -C win32 build; fi
-	if ${HAVE_XCB}; then ${MAKE} -C xcb build; fi
 
 asan:
 	${MAKE} ${LIB_ASAN}
@@ -30,7 +31,15 @@ asan:
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 asan; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb asan; fi
 
+build:
+	${MAKE} ${LIB}
+	${MAKE} -C demo build
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz build; fi
+	if ${HAVE_WIN32}; then ${MAKE} -C win32 build; fi
+	if ${HAVE_XCB}; then ${MAKE} -C xcb build; fi
+
 clean:
+	rm -rf ${CLEANFILES}
 	${MAKE} -C demo clean
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz clean; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 clean; fi
