@@ -86,7 +86,10 @@ There are now four full applications written in KC3 that we know of :
      - `Counter.increase(Ident, Tag)` as a `cfn_macro`, Tag must be a
        positive integer (non-zero)
      - `Counter` module included at init
- - libtls
+   - unveil supported on OpenBSD
+   - pledge supported on OpenBSD
+
+- libtls
      - basic TLS client and server in test/tls/tls.kc3
 
  - ikc3
@@ -112,23 +115,23 @@ There are now four full applications written in KC3 that we know of :
      and the dynamic libraries will still be found
 
  - build system
-   - use shipped `runj` as a git submodule to parallelize configure
-     and update_sources
-   - use shipped `sort` as a git submodule to have a portable sort
-     algorithm that gives consistent results across Linux and BSD.
+   - use `runj` to parallelize configure and update_sources
+   - use `sort` to have a portable sort algorithm that gives consistent
+     results across all operating systems.
 
  - test infrastructure
    - modular test infrastructure with test/test.subr and
      test/test_runner
-   - use shipped `runj` to call test_runner in parallel
-   - removed ugly `sleep 2` that slowed each ikc3 test
-   - all tests suites run in under 30 seconds now compared to
+   - use `runj` to call test_runner in parallel
+   - removed `sleep 2` that slowed each ikc3 test
+   - all test suites run in under 30 seconds now compared to
      more than 5 minutes before
 
  - HTTPd
    - limit acceptor loop using defcounter
    - achieved securelevel(2) after load_app() by moving all
-     `def*` into proper modules
+     `def*` into proper modules and using `defcounter`
+   - apply unveil filesystem permissions, works on OpenBSD
 
  - window
    - demo
@@ -146,6 +149,10 @@ There are now four full applications written in KC3 that we know of :
  - kpkg - KC3 package manager
    - Argument parsing as a `while` loop
    - Added __libmd__, __libbsd__ and __kc3__ repo definitions
+
+ - release engineering
+   - compressed dmg with large icons and a nice arrow pointing to
+     applications symlink
 
 ## Discord invite
 

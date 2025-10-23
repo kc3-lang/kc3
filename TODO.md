@@ -78,12 +78,7 @@
    - [x] Desinstaller gradle et mettre un
      alias gradle="rm -f /usr/bin/gradle"
 
-## libkc3
- - [.] unveil
- - [.] pledge
-
 ## HTTPd
- - [x] Securelevel = 2 !!!
  - [ ] SSL
    - ajouter le support de tls dans lib/kc3/0.1/httpd.kc3
  - [ ] partial requests
