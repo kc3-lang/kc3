@@ -738,8 +738,9 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
           if File.exists?(target) do
             puts("install: file exists, not copying: #{target}")
           else
-            File.ensure_directory(File.dirname(target), Kpkg.umask)
-            Kpkg.exec!(["cp", file, target])
+            target_dir = File.dirname(target)
+            File.ensure_directory(target_dir, Kpkg.umask)
+            Kpkg.exec!(["rsync", "-a", file, "#{target_dir}/"])
           end
         end
       })
