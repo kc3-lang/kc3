@@ -145,7 +145,7 @@ defmodule HTTPd do
     if KC3.daemonize do
       IO.puts("forking to background")
       if (pid = fork()) > 0 do
-        _exit(0)
+        exit_subprocess(0)
       end
     end
   }
