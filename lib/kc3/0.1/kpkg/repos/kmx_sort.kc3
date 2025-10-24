@@ -10,16 +10,16 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Kpkg.Repos.Sort do
+defmodule Kpkg.Repos.KmxSort do
 
   Kpkg.defpackage(
-    %Kpkg.Package{name: :sort,
+    %Kpkg.Package{name: :kmx_sort,
                   build_depends_on: [],
                   default_branch: "master",
                   depends_on: [],
-                  dir: "kmx.io/sort",
-                  git: "https://git.kmx.io/kmx.io/sort.git",
-                  git_push: "git@git.kmx.io:kmx.io/sort.git",
+                  dir: "kmx.io/kmx_sort",
+                  git: "https://git.kmx.io/kmx.io/kmx_sort.git",
+                  git_push: "git@git.kmx.io:kmx.io/kmx_sort.git",
                   is_needed?: fn () { Kpkg.uname() != "OpenBSD" },
                   module: module()}
   )

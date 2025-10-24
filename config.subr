@@ -789,7 +789,7 @@ sh_quote() {
 }
 
 sources() {
-    SOURCES_TMP="$(echo "$2" | sort -u | grep -Ev -e '~$' -e '/\.#')"
+    SOURCES_TMP="$(echo "$2" | kmx_sort -u | grep -Ev -e '~$' -e '/\.#')"
     echo "$1 = \\
 $(echo "$SOURCES_TMP" | sed -e 's/^\(.*\)$/	"\1" \\/')
 " >> ${SOURCES_MK}
