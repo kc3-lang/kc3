@@ -83,20 +83,21 @@
    - HTTP 206 partial content
 
 ## Cleanup branches git
- - [ ] `callable`
- - [ ] `callable-rebase`
- - [ ] `fast`
- - [ ] `fast2`
- - [ ] `frame`
- - [ ] `herunstoofastforus`
- - [ ] `httpd`
- - [ ] `jeremy_rebased`
- - [ ] `marshall`
- - [ ] `marshall_before_merge`
- - [ ] `marshall_rebase`
- - [ ] `pointer`
- - [ ] `tls`
- - [ ] `tls-rebased`
+ - [x] `callable`
+ - [x] `callable-rebase`
+ - [x] `fast`
+ - [x] `fast2`
+ - [x] `frame`
+ - [x] `herunstoofastforus`
+ - [x] `httpd`
+ - [x] `jeremy_rebased`
+ - [x] `kpkg`
+ - [x] `marshall`
+ - [x] `marshall_before_merge`
+ - [x] `marshall_rebase`
+ - [x] `pointer`
+ - [x] `tls`
+ - [x] `tls-rebased`
 
 ## MacOS release
  - [x] cairo demo app/_debug
@@ -104,9 +105,16 @@
  - [x] bin
    - [x] install dependent libs in `${DESTDIR}${prefix}/lib`
    - [x] fix libs and executables lib search path
- - [ ] dmg target
-   - [ ] large icons
-   - [ ] arrow
+ - [x] dmg target
+   - [x] large icons
+   - [x] arrow
+
+## Windows release
+ - [x] install sort and runj using MSYS2
+ - [ ] configure
+ - [ ] build
+ - [ ] test
+ - [ ] release
 
 ---
 
