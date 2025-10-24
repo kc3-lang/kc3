@@ -14,7 +14,7 @@
  - Android studio
    - [ ] Installer Android Studio et le dernier NDK Android.
      - [ ] utiliser sdkmanager pour obtenir le dernier NDK Android.
-       - [ ] completer la commande : `sdkmanager ???`
+       - [ ] commande : `sdkmanager --install 'ndk;r29'`
 
 ## libkc3
 
