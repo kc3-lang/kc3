@@ -598,10 +598,21 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
       prefix_sh = Sh.escape(Kpkg.prefix_dir(arch))
       File.ensure_directory(build_dir, Kpkg.umask)
       make_sh = Sh.escape(pkg.make)
-      Kpkg.exec!(["/bin/sh", "-c",
-                  "cd #{build_dir_sh} && MAKE=#{make_sh} #{configure_path_sh}" +
-                  " --prefix #{prefix_sh} &&" +
-                  " echo 1 > .kpkg_configure_done"])
+      if Kpkg.arch_local() == arch do
+        Kpkg.exec!(["/bin/sh", "-c",
+                    "cd #{build_dir_sh} &&" +
+                    " MAKE=#{make_sh} #{configure_path_sh}" +
+                    " --prefix #{prefix_sh} &&" +
+                    " echo 1 > .kpkg_configure_done"])
+      else
+        arch_sh = Sh.escape(arch)
+        Kpkg.exec!(["/bin/sh", "-c",
+                    "cd #{build_dir_sh} &&" +
+                    " MAKE=#{make_sh} #{configure_path_sh}" +
+                    " --host #{arch_sh} --target #{arch_sh}" +
+                    " --prefix #{prefix_sh} &&" +
+                    " echo 1 > .kpkg_configure_done"])
+      end
     end
     Kpkg.indent(-1)
     Kpkg.log_call("configure #{pkg.name} #{tree} #{arch}: OK")
