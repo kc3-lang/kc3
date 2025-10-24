@@ -10,17 +10,16 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Kpkg.Repos.FreeType do
+defmodule Kpkg.Repos.Brotli do
 
   Kpkg.defpackage(
-    %Kpkg.Package{name: :freetype,
+    %Kpkg.Package{name: :brotli,
                   build_depends_on: [],
                   default_branch: "master",
-                  depends_on: [:brotli],
-                  dir: "freetype/freetype",
-                  git: "https://git.kmx.io/kc3-lang/freetype.git",
-                  git_push: "git@git.kmx.io:kc3-lang/freetype.git",
-                  make: "gmake",
+                  depends_on: [],
+                  dir: "google/brotli",
+                  git: "https://git.kmx.io/kc3-lang/brotli.git",
+                  git_push: "git@git.kmx.io:kc3-lang/brotli.git",
                   module: module()}
   )
 
