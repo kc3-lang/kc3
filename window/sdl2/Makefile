@@ -16,7 +16,7 @@ CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 
 CLEANFILES += ${CLEANFILES_COV}
 
-DISTCLEANFILES = ${CLEANFILES} config.h config.mk
+DISTCLEANFILES = ${CLEANFILES} config.mk
 
 all:
 	${MAKE} build
@@ -89,7 +89,7 @@ gdb_kubz: debug
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
 	    ${DESTDIR}${prefix}/include/libkc3/window/egl
-	for H in config.h ${HEADERS}; do \
+	for H in ${HEADERS}; do \
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/window/egl; done

@@ -16,7 +16,7 @@ CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 
 CLEANFILES += ${CLEANFILES_COV}
 
-DISTCLEANFILES = ${CLEANFILES} config.h config.mk
+DISTCLEANFILES = ${CLEANFILES} config.mk
 
 all:
 	${MAKE} build

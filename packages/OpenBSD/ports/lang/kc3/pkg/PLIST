@@ -94,7 +94,6 @@ include/libkc3/cfn.h
 include/libkc3/character.h
 include/libkc3/compare.h
 include/libkc3/complex.h
-include/libkc3/config.h
 include/libkc3/cow.h
 include/libkc3/crypt.h
 include/libkc3/data.h

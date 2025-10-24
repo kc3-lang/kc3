@@ -16,7 +16,7 @@ CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 
 CLEANFILES += ${CLEANFILES_COV}
 
-DISTCLEANFILES = .build ${CLEANFILES} config.h config.mk
+DISTCLEANFILES = .build ${CLEANFILES} config.mk
 
 all:
 	${MAKE} build
@@ -50,7 +50,7 @@ gcovr:
 
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/include/libkc3/ekc3
-	for H in config.h ${HEADERS}; do \
+	for H in ${HEADERS}; do \
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/ekc3; done
