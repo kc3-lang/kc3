@@ -11,6 +11,27 @@
    - libpng/
    - libressl/
 
+ - Android studio
+   - [ ] Installer Android Studio et le dernier NDK Android.
+     - [ ] utiliser sdkmanager pour obtenir le dernier NDK Android.
+       - [ ] completer la commande : `sdkmanager ???`
+
+## HTTPd
+ - [ ] SSL
+   - ajouter le support de tls dans lib/kc3/0.1/httpd.kc3
+ - [ ] partial requests
+   - HTTP 206 partial content
+
+## Windows release
+ - [.] install kmx_sort and runj using MSYS2
+   - [ ] sort was renamed to kmx_sort
+ - [ ] configure
+ - [ ] build
+ - [ ] test
+ - [ ] release
+
+## Kpkg / Android JNI
+
  - [x] Trouver la homepage et le repo git original sur Google de
    chaque package JNI.
    - [x] freetype
@@ -64,7 +85,7 @@
    - [x] libressl/
 
  - Compiler les packages sous Linux
-   - `kpkg PKG clean install`
+   - `kpkg PKG clean uninstall install`
    - [x] freetype/
    - [x] libbsd/
    - [x] libevent/
@@ -72,15 +93,6 @@
    - [x] libmd/
    - [x] libpng/
    - [x] libressl/
-
- - Android studio
-   - [ ] Installer Android Studio et le dernier NDK Android.
-
-## HTTPd
- - [ ] SSL
-   - ajouter le support de tls dans lib/kc3/0.1/httpd.kc3
- - [ ] partial requests
-   - HTTP 206 partial content
 
 ## Cleanup branches git
  - [x] `callable`
@@ -108,13 +120,6 @@
  - [x] dmg target
    - [x] large icons
    - [x] arrow
-
-## Windows release
- - [x] install sort and runj using MSYS2
- - [ ] configure
- - [ ] build
- - [ ] test
- - [ ] release
 
 ---
 
