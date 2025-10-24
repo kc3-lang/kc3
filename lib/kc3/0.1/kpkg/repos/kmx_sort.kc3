@@ -20,7 +20,6 @@ defmodule Kpkg.Repos.KmxSort do
                   dir: "kmx.io/kmx_sort",
                   git: "https://git.kmx.io/kmx.io/kmx_sort.git",
                   git_push: "git@git.kmx.io:kmx.io/kmx_sort.git",
-                  is_needed?: fn () { Kpkg.uname() != "OpenBSD" },
                   module: module()}
   )
 
