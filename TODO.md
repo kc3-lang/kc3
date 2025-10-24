@@ -65,18 +65,16 @@
 
  - Compiler les packages sous Linux
    - `kpkg PKG clean install`
-   - [ ] freetype/
-   - [ ] libbsd/
-   - [ ] libevent/
-   - [ ] libffi/
-   - [ ] libmd/
-   - [ ] libpng/
-   - [ ] libressl/
+   - [x] freetype/
+   - [x] libbsd/
+   - [x] libevent/
+   - [x] libffi/
+   - [x] libmd/
+   - [x] libpng/
+   - [x] libressl/
 
  - Android studio
    - [ ] Installer Android Studio et le dernier NDK Android.
-   - [x] Desinstaller gradle et mettre un
-     alias gradle="rm -f /usr/bin/gradle"
 
 ## HTTPd
  - [ ] SSL
