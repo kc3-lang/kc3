@@ -16,6 +16,17 @@
      - [ ] utiliser sdkmanager pour obtenir le dernier NDK Android.
        - [ ] completer la commande : `sdkmanager ???`
 
+## libkc3
+
+ - [ ] Implementer la fonction `s_tag * tag_init_v_1 (s_tag *, const char *);` :
+   - `tag_init_v_1(&tagv[0], "123, \"123\", true");`
+ - [ ] Implementer la macro `TAG_INIT_V(tagv, ...)`
+   - `TAG_INIT_V(&tagv[0], 123, "123", true);`
+ - [ ] Implementer la fonction `p_list list_new_v_1 (const char *);` :
+   - `list_new_v("123, \"123\", true");`
+ - [ ] Implementer la macro `LIST_NEW_V(...)`
+   - `LIST_NEW_V(123, "123", true);`
+
 ## HTTPd
  - [ ] SSL
    - ajouter le support de tls dans lib/kc3/0.1/httpd.kc3
