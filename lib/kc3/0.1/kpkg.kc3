@@ -632,9 +632,32 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
         if File.exists?(cmakelists) do
           pkg_src_dir = Kpkg.src_dir(pkg, tree)
           pkg_src_dir_sh = Sh.escape(pkg_src_dir)
-          Kpkg.exec!(["cmake", "-B", build_dir, "-S", pkg_src_dir,
-                      "-DCMAKE_INSTALL_PREFIX:PATH=#{prefix}",
-                      "-DCMAKE_BUILD_TYPE=Release"])
+          if Kpkg.arch_local() == arch do
+            Kpkg.exec!(["cmake", "-B", build_dir, "-S", pkg_src_dir,
+                        "-DCMAKE_INSTALL_PREFIX:PATH=#{prefix}",
+                        "-DCMAKE_BUILD_TYPE=Release"])
+          else
+            cc = Env.getenv("CC")
+            cxx = Env.getenv("CXX")
+            if cc do
+              if cxx do
+                Kpkg.exec!(["cmake", "-B", build_dir, "-S", pkg_src_dir,
+                            "-DCMAKE_INSTALL_PREFIX:PATH=#{prefix}",
+                            "-DCMAKE_BUILD_TYPE=Release",
+                            "-DCMAKE_C_COMPILER=#{cc}",
+                            "-DCMAKE_CXX_COMPILER=#{cxx}"])
+              else
+                Kpkg.exec!(["cmake", "-B", build_dir, "-S", pkg_src_dir,
+                            "-DCMAKE_INSTALL_PREFIX:PATH=#{prefix}",
+                            "-DCMAKE_BUILD_TYPE=Release",
+                            "-DCMAKE_C_COMPILER=#{cc}"])
+              end
+            else
+              Kpkg.exec!(["cmake", "-B", build_dir, "-S", pkg_src_dir,
+                          "-DCMAKE_INSTALL_PREFIX:PATH=#{prefix}",
+                          "-DCMAKE_BUILD_TYPE=Release"])
+            end
+          end
         else
           puts("kpkg: configure: could not find a configure method")
           exit(1)
