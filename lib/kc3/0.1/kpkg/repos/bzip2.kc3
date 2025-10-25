@@ -10,16 +10,16 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Kpkg.Repos.FreeType do
+defmodule Kpkg.Repos.Bzip2 do
 
   Kpkg.defpackage(
-    %Kpkg.Package{name: :freetype,
+    %Kpkg.Package{name: :bzip2,
                   build_depends_on: [],
                   default_branch: "master",
-                  depends_on: [:brotli, :bzip2],
-                  dir: "freetype/freetype",
-                  git: "https://git.kmx.io/kc3-lang/freetype.git",
-                  git_push: "git@git.kmx.io:kc3-lang/freetype.git",
+                  depends_on: [],
+                  dir: "sourceware/bzip2",
+                  git: "https://git.kmx.io/kc3-lang/bzip2.git",
+                  git_push: "git@git.kmx.io:kc3-lang/bzip2.git",
                   make: "gmake",
                   module: module()}
   )
