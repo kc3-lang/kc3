@@ -627,7 +627,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
         if File.exists?(cmakelists) do
           pkg_src_dir = Kpkg.src_dir(pkg, tree)
           pkg_src_dir_sh = Sh.escape(pkg_src_dir)
-          Kpkg.exec!(["cmake", "-S", pkg_src_dir, "-B", build_dir,
+          Kpkg.exec!(["cmake", "-B", build_dir, "-S", pkg_src_dir,
                       "-DCMAKE_INSTALL_PREFIX:PATH=#{prefix}",
                       "-DCMAKE_BUILD_TYPE=Release"])
         end
