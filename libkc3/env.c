@@ -99,12 +99,13 @@ const char *g_env_argv0_dir_default = "";
 static thread_local s_env *g_kc3_env_default = NULL;
 static thread_local s_env *g_kc3_env_global = NULL;
 
-void           env_args_clean (s_env *env);
+static void    env_args_clean (s_env *env);
 static s_env * env_args_init (s_env *env, int *argc, char ***argv);
 static void    env_globals_clean (s_env *env);
 static s_env * env_globals_init (s_env *env);
 static void    env_toplevel_clean (s_env *env);
 static s_env * env_toplevel_init (s_env *env);
+static char *  realpath (const char *path, char *resolved_path);
 
 // Special operator.
 s_pointer * env_address_of (s_env *env, s_ident *ident, s_pointer *dest)
@@ -3128,3 +3129,23 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
   call_clean(&cond_cast);
   return NULL;
 }
+
+#if defined(WIN32) || defined(WIN64)
+
+# include <stdlib.h>
+# include <limits.h>
+
+char * realpath(const char *path, char *resolved_path) {
+  char *result;
+  if (resolved_path == NULL) {
+    resolved_path = malloc(PATH_MAX);
+    if (!resolved_path) return NULL;
+  }
+  result = _fullpath(resolved_path, path, PATH_MAX);
+  if (! result && resolved_path) {
+    free(resolved_path);
+  }
+  return result;
+}
+
+#endif
