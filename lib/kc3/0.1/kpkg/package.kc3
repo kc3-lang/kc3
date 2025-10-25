@@ -22,6 +22,7 @@ defmodule Kpkg.Package do
 
   defstruct [name: :sym,
              build_depends_on: [], # list of name or {name, "tree"}
+             configure_options: [],
              default_branch: "master",
              depends_on: [],       # list of name or {name, "tree"}
              dir: "org/subdir/repo",
