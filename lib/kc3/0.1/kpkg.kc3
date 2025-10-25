@@ -329,6 +329,10 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     "#{Kpkg.dir()}/src/#{pkg.dir}/#{tree}"
   }
 
+  def cmake_path = fn (pkg, tree) {
+    "#{Kpkg.src_dir(pkg, tree)}/CMakeLists.txt"
+  }
+
   def configure_path = fn (pkg, tree) {
     "#{Kpkg.src_dir(pkg, tree)}/configure"
   }
@@ -579,7 +583,9 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.indent(1)
     Kpkg.configure(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
-    Kpkg.exec!([pkg.make, "-C", build_dir])
+    if File.exists?("#{build_dir}/Makefile") do
+      Kpkg.exec!([pkg.make, "-C", build_dir])
+    end
     Kpkg.indent(-1)
     Kpkg.log_call("build #{pkg.name} #{tree} #{arch}: OK")
     0
@@ -592,26 +598,38 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.install_build_dependencies(pkg, tree)
     Kpkg.install_dependencies(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
+    build_dir_sh = Sh.escape(build_dir)
+    prefix_sh = Sh.escape(Kpkg.prefix_dir(arch))
     if ! File.access?("#{build_dir}/.kpkg_configure_done", :r) do
-      build_dir_sh = Sh.escape(build_dir)
-      configure_path_sh = Sh.escape(Kpkg.configure_path(pkg, tree))
-      prefix_sh = Sh.escape(Kpkg.prefix_dir(arch))
-      File.ensure_directory(build_dir, Kpkg.umask)
-      make_sh = Sh.escape(pkg.make)
-      if Kpkg.arch_local() == arch do
-        Kpkg.exec!(["/bin/sh", "-c",
-                    "cd #{build_dir_sh} &&" +
-                    " MAKE=#{make_sh} #{configure_path_sh}" +
-                    " --prefix #{prefix_sh} &&" +
-                    " echo 1 > .kpkg_configure_done"])
+      configure = Kpkg.configure_path(pkg, tree)
+      if (File.exists?(configure)) do
+        configure_path_sh = Sh.escape(configure)
+        File.ensure_directory(build_dir, Kpkg.umask)
+        make_sh = Sh.escape(pkg.make)
+        if Kpkg.arch_local() == arch do
+          Kpkg.exec!(["/bin/sh", "-c",
+                      "cd #{build_dir_sh} &&" +
+                      " MAKE=#{make_sh} #{configure_path_sh}" +
+                      " --prefix #{prefix_sh} &&" +
+                      " echo 1 > .kpkg_configure_done"])
+        else
+          arch_sh = Sh.escape(arch)
+          Kpkg.exec!(["/bin/sh", "-c",
+                      "cd #{build_dir_sh} &&" +
+                      " MAKE=#{make_sh} #{configure_path_sh}" +
+                      " --host #{arch_sh} --target #{arch_sh}" +
+                      " --prefix #{prefix_sh} &&" +
+                      " echo 1 > .kpkg_configure_done"])
+        end
       else
-        arch_sh = Sh.escape(arch)
-        Kpkg.exec!(["/bin/sh", "-c",
-                    "cd #{build_dir_sh} &&" +
-                    " MAKE=#{make_sh} #{configure_path_sh}" +
-                    " --host #{arch_sh} --target #{arch_sh}" +
-                    " --prefix #{prefix_sh} &&" +
-                    " echo 1 > .kpkg_configure_done"])
+        cmake = Kpkg.cmake_path(pkg, tree)
+        if File.exists?(cmake) do
+          pkg_src_dir = Kpkg.src_dir(pkg, tree)
+          pkg_src_dir_sh = Sh.escape(pkg_src_dir)
+          Kpkg.exec!(["sh", "-c",
+                      "cd #{build_dir_sh} &&" +
+                      "cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=#{prefix_sh} #{pkg_src_dir_sh}"])
+        end
       end
     end
     Kpkg.indent(-1)
@@ -642,9 +660,15 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     destdir = Kpkg.destdir(pkg, tree, arch)
     destdir_sh = Sh.escape(destdir)
     File.ensure_directory(destdir, Kpkg.umask)
-    Kpkg.exec!(["/bin/sh", "-c",
-                "#{pkg.make} -C #{Sh.escape(build_dir)}" +
-                " DESTDIR=#{destdir_sh} install"])
+    cmake = Kpkg.cmake_path(pkg, tree)
+    if File.exists?("#{build_dir}/CMakeLists.txt") do
+      Kpkg.exec!(["sh", "-c", "cd #{build_dir_sh} &&" +
+                  " cmake --build . --config Release --target install"])
+    else
+      Kpkg.exec!(["/bin/sh", "-c",
+                  "#{pkg.make} -C #{Sh.escape(build_dir)}" +
+                  " DESTDIR=#{destdir_sh} install"])
+    end
     Kpkg.indent(-1)
     Kpkg.log_call("fake #{pkg.name} #{tree} #{arch}: OK")
     0
