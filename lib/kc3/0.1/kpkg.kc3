@@ -394,7 +394,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
               "cpu_family = '#{cpu_family}'\n" +
               "cpu = '#{cpu}'\n" +
               "endian = '#{endian}'\n"
-    File.write(cross_file, content)
+    File.write_str(cross_file, content)
     cross_file
   }
 
