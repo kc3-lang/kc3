@@ -57,6 +57,37 @@ defmodule Kpkg do
 
   def color? = false
 
+  def cxx_local = fn () {
+    pathname = File.which(getenv("CXX_LOCAL")) ||
+      File.which("c++") || File.which("clang++") ||
+      File.which("g++")
+    if File.access?(pathname, :x) do
+      pathname
+    else
+      puts("Please set CXX_LOCAL to a valid local C++ compiler")
+      exit(1)
+    end
+  }
+
+  def cxx = fn {
+    () {
+      cxx_local()
+    }
+    (arch) {
+      if arch == Kpkg.arch_local() do
+        return cxx_local()
+      else
+        pathname = File.which(getenv("CXX"))
+        if File.access?(pathname, :x) do
+          pathname
+        else
+          puts("Please set CXX to a valid target C++ compiler")
+          exit(1)
+        end
+      end
+    }
+  }
+
   def dir = fn () {
     dir = if from_env = getenv("KPKG_DIR") do
       from_env
@@ -333,12 +364,12 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     "#{Kpkg.src_dir(pkg, tree)}/CMakeLists.txt"
   }
 
-  def meson_path = fn (pkg, tree) {
-    "#{Kpkg.src_dir(pkg, tree)}/meson.build"
-  }
-
   def configure_path = fn (pkg, tree) {
     "#{Kpkg.src_dir(pkg, tree)}/configure"
+  }
+
+  def meson_path = fn (pkg, tree) {
+    "#{Kpkg.src_dir(pkg, tree)}/meson.build"
   }
 
   ## Arch configuration
@@ -595,7 +626,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
         Kpkg.exec!(["env", "srcdir=#{pkg_src_dir}",
                     pkg.make, "-C", build_dir])
       else
-        puts("kpkg: build: file not found: #{build_dir}/Makefile")
+        puts("kpkg: build: no build method found in #{build_dir}")
         exit(1)
       end
     end
@@ -613,6 +644,8 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     build_dir_sh = Sh.escape(build_dir)
     File.ensure_directory(build_dir, Kpkg.umask)
+    cc = Kpkg.cc(arch)
+    cxx = Kpkg.cxx(arch)
     prefix = Kpkg.prefix_dir(arch)
     prefix_sh = Sh.escape(prefix)
     if ! File.access?("#{build_dir}/.kpkg_configure_done", :r) do
@@ -645,8 +678,6 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
                         "-DCMAKE_INSTALL_PREFIX:PATH=#{prefix}",
                         "-DCMAKE_BUILD_TYPE=Release"])
           else
-            cc = Env.getenv("CC")
-            cxx = Env.getenv("CXX")
             if cc do
               if cxx do
                 Kpkg.exec!(["cmake", "-B", build_dir, "-S", pkg_src_dir,
@@ -675,8 +706,6 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
                           "--prefix=#{prefix}",
                           "--buildtype=release"])
             else
-              cc = Env.getenv("CC")
-              cxx = Env.getenv("CXX")
               if cc do
                 if cxx do
                   Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
