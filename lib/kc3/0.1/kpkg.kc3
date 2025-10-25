@@ -583,8 +583,10 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.indent(1)
     Kpkg.configure(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
+    pkg_src_dir = Kpkg.src_dir(pkg, tree)
     if File.exists?("#{build_dir}/Makefile") do
-      Kpkg.exec!([pkg.make, "-C", build_dir])
+      Kpkg.exec!(["env", "srcdir=#{pkg_src_dir}",
+                  pkg.make, "-C", build_dir])
     else
       puts("kpkg: build: file not found: #{build_dir}/Makefile")
       exit(1)
