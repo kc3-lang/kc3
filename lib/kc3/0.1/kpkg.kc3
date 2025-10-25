@@ -599,13 +599,13 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.install_dependencies(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     build_dir_sh = Sh.escape(build_dir)
+    File.ensure_directory(build_dir, Kpkg.umask)
     prefix = Kpkg.prefix_dir(arch)
     prefix_sh = Sh.escape(prefix)
     if ! File.access?("#{build_dir}/.kpkg_configure_done", :r) do
       configure = Kpkg.configure_path(pkg, tree)
       if (File.exists?(configure)) do
         configure_path_sh = Sh.escape(configure)
-        File.ensure_directory(build_dir, Kpkg.umask)
         make_sh = Sh.escape(pkg.make)
         if Kpkg.arch_local() == arch do
           Kpkg.exec!(["/bin/sh", "-c",
