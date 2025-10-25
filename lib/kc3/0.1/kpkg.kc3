@@ -390,9 +390,12 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     cpu = ^ cpu_family
     system = List.last(arch_parts)
     endian = "little"
+    prefix = Kpkg.prefix_dir(arch)
+    pkg_config = "PKG_CONFIG_PATH=#{prefix}/lib/pkgconfig pkg-config"
     content = "[binaries]\n" +
               "c = '#{cc}'\n" +
               "cpp = '#{cxx}'\n" +
+              "pkgconfig = '#{pkg_config}'\n" +
               "\n" +
               "[host_machine]\n" +
               "system = '#{system}'\n" +

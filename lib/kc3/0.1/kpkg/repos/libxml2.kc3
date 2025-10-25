@@ -10,17 +10,16 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Kpkg.Repos.LibXkbCommon do
+defmodule Kpkg.Repos.LibXML2 do
 
   Kpkg.defpackage(
-    %Kpkg.Package{name: :libxkbcommon,
+    %Kpkg.Package{name: :libxml2,
                   build_depends_on: [],
-                  configure_options: ["-Denable-x11=false"],
                   default_branch: "master",
-                  depends_on: [:libxml2],
-                  dir: "xkbcommon/libxkbcommon",
-                  git: "https://git.kmx.io/kc3-lang/libxkbcommon.git",
-                  git_push: "git@git.kmx.io:kc3-lang/libxkbcommon.git",
+                  depends_on: [],
+                  dir: "gnome/libxml2",
+                  git: "https://git.kmx.io/kc3-lang/libxml2.git",
+                  git_push: "git@git.kmx.io:kc3-lang/libxml2.git",
                   module: module()}
   )
 
