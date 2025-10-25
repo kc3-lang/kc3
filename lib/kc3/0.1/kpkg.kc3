@@ -585,6 +585,9 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     if File.exists?("#{build_dir}/Makefile") do
       Kpkg.exec!([pkg.make, "-C", build_dir])
+    else
+      puts("kpkg: build: file not found: #{build_dir}/Makefile")
+      exit(1)
     end
     Kpkg.indent(-1)
     Kpkg.log_call("build #{pkg.name} #{tree} #{arch}: OK")
