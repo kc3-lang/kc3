@@ -10,16 +10,16 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Kpkg.Repos.LibXML2 do
+defmodule Kpkg.Repos.LibIconv do
 
   Kpkg.defpackage(
-    %Kpkg.Package{name: :libxml2,
+    %Kpkg.Package{name: :libiconv,
                   build_depends_on: [],
                   default_branch: "master",
-                  depends_on: [:libiconv],
-                  dir: "gnome/libxml2",
-                  git: "https://git.kmx.io/kc3-lang/libxml2.git",
-                  git_push: "git@git.kmx.io:kc3-lang/libxml2.git",
+                  depends_on: [],
+                  dir: "gnu/libiconv",
+                  git: "https://git.kmx.io/kc3-lang/libiconv.git",
+                  git_push: "git@git.kmx.io:kc3-lang/libiconv.git",
                   module: module()}
   )
 
