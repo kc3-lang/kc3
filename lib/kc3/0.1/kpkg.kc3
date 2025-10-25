@@ -732,17 +732,11 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
                           "--prefix=#{prefix}",
                           "--buildtype=release"])
             else
-              if Kpkg.arch_local() == arch do
-                cross_file = Kpkg.meson_cross_file_write(arch, cc, cxx)
-                Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
-                            "--prefix=#{prefix}",
-                            "--buildtype=release",
-                            "--cross-file=#{cross_file}"])
-              else
-                Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
-                            "--prefix=#{prefix}",
-                            "--buildtype=release"])
-              end
+              cross_file = Kpkg.meson_cross_file_write(arch, cc, cxx)
+              Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
+                          "--prefix=#{prefix}",
+                          "--buildtype=release",
+                          "--cross-file=#{cross_file}"])
             end
           else
             puts("kpkg: configure: could not find a configure method")
