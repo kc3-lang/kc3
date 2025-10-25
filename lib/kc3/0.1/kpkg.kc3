@@ -372,6 +372,32 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     "#{Kpkg.src_dir(pkg, tree)}/meson.build"
   }
 
+  def meson_cross_file_path = fn (arch) {
+    "#{Kpkg.dir()}/arch/#{arch}/meson-cross.ini"
+  }
+
+  def meson_cross_file_write = fn (arch, cc, cxx) {
+    cross_file = Kpkg.meson_cross_file_path(arch)
+    cross_dir = File.dirname(cross_file)
+    File.ensure_directory(cross_dir, Kpkg.umask)
+    arch_parts = Str.split(arch, "-")
+    cpu_family = List.first(arch_parts)
+    cpu = ^ cpu_family
+    system = List.last(arch_parts)
+    endian = "little"
+    content = "[binaries]\n" +
+              "c = '#{cc}'\n" +
+              "cpp = '#{cxx}'\n" +
+              "\n" +
+              "[host_machine]\n" +
+              "system = '#{system}'\n" +
+              "cpu_family = '#{cpu_family}'\n" +
+              "cpu = '#{cpu}'\n" +
+              "endian = '#{endian}'\n"
+    File.write(cross_file, content)
+    cross_file
+  }
+
   ## Arch configuration
 
   def arch_dir = fn {
@@ -706,19 +732,12 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
                           "--prefix=#{prefix}",
                           "--buildtype=release"])
             else
-              if cc do
-                if cxx do
-                  Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
-                              "--prefix=#{prefix}",
-                              "--buildtype=release",
-                              "-Dc_compiler=#{cc}",
-                              "-Dcpp_compiler=#{cxx}"])
-                else
-                  Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
-                              "--prefix=#{prefix}",
-                              "--buildtype=release",
-                              "-Dc_compiler=#{cc}"])
-                end
+              if Kpkg.arch_local() == arch do
+                cross_file = Kpkg.meson_cross_file_write(arch, cc, cxx)
+                Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
+                            "--prefix=#{prefix}",
+                            "--buildtype=release",
+                            "--cross-file=#{cross_file}"])
               else
                 Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
                             "--prefix=#{prefix}",
