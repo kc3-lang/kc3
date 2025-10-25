@@ -599,7 +599,8 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.install_dependencies(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     build_dir_sh = Sh.escape(build_dir)
-    prefix_sh = Sh.escape(Kpkg.prefix_dir(arch))
+    prefix = Kpkg.prefix_dir(arch)
+    prefix_sh = Sh.escape(prefix)
     if ! File.access?("#{build_dir}/.kpkg_configure_done", :r) do
       configure = Kpkg.configure_path(pkg, tree)
       if (File.exists?(configure)) do
@@ -622,13 +623,13 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
                       " echo 1 > .kpkg_configure_done"])
         end
       else
-        cmake = Kpkg.cmake_path(pkg, tree)
-        if File.exists?(cmake) do
+        cmakelists = Kpkg.cmake_path(pkg, tree)
+        if File.exists?(cmakelists) do
           pkg_src_dir = Kpkg.src_dir(pkg, tree)
           pkg_src_dir_sh = Sh.escape(pkg_src_dir)
-          Kpkg.exec!(["sh", "-c",
-                      "cd #{build_dir_sh} &&" +
-                      "cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=#{prefix_sh} #{pkg_src_dir_sh}"])
+          Kpkg.exec!(["cmake", "-S", pkg_src_dir, "-B", build_dir,
+                      "-DCMAKE_INSTALL_PREFIX:PATH=#{prefix}",
+                      "-DCMAKE_BUILD_TYPE=Release"])
         end
       end
     end
