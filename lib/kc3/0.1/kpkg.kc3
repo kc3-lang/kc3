@@ -333,6 +333,10 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     "#{Kpkg.src_dir(pkg, tree)}/CMakeLists.txt"
   }
 
+  def meson_path = fn (pkg, tree) {
+    "#{Kpkg.src_dir(pkg, tree)}/meson.build"
+  }
+
   def configure_path = fn (pkg, tree) {
     "#{Kpkg.src_dir(pkg, tree)}/configure"
   }
@@ -584,12 +588,16 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.configure(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
-    if File.exists?("#{build_dir}/Makefile") do
-      Kpkg.exec!(["env", "srcdir=#{pkg_src_dir}",
-                  pkg.make, "-C", build_dir])
+    if File.exists?("#{build_dir}/build.ninja") do
+      Kpkg.exec!(["ninja", "-C", build_dir])
     else
-      puts("kpkg: build: file not found: #{build_dir}/Makefile")
-      exit(1)
+      if File.exists?("#{build_dir}/Makefile") do
+        Kpkg.exec!(["env", "srcdir=#{pkg_src_dir}",
+                    pkg.make, "-C", build_dir])
+      else
+        puts("kpkg: build: file not found: #{build_dir}/Makefile")
+        exit(1)
+      end
     end
     Kpkg.indent(-1)
     Kpkg.log_call("build #{pkg.name} #{tree} #{arch}: OK")
@@ -659,8 +667,39 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
             end
           end
         else
-          puts("kpkg: configure: could not find a configure method")
-          exit(1)
+          mesonbuild = Kpkg.meson_path(pkg, tree)
+          if File.exists?(mesonbuild) do
+            pkg_src_dir = Kpkg.src_dir(pkg, tree)
+            if Kpkg.arch_local() == arch do
+              Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
+                          "--prefix=#{prefix}",
+                          "--buildtype=release"])
+            else
+              cc = Env.getenv("CC")
+              cxx = Env.getenv("CXX")
+              if cc do
+                if cxx do
+                  Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
+                              "--prefix=#{prefix}",
+                              "--buildtype=release",
+                              "-Dc_compiler=#{cc}",
+                              "-Dcpp_compiler=#{cxx}"])
+                else
+                  Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
+                              "--prefix=#{prefix}",
+                              "--buildtype=release",
+                              "-Dc_compiler=#{cc}"])
+                end
+              else
+                Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
+                            "--prefix=#{prefix}",
+                            "--buildtype=release"])
+              end
+            end
+          else
+            puts("kpkg: configure: could not find a configure method")
+            exit(1)
+          end
         end
       end
     end
@@ -689,17 +728,23 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.indent(1)
     Kpkg.build(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
+    build_dir_sh = Sh.escape(build_dir)
     destdir = Kpkg.destdir(pkg, tree, arch)
     destdir_sh = Sh.escape(destdir)
     File.ensure_directory(destdir, Kpkg.umask)
     cmake = Kpkg.cmake_path(pkg, tree)
-    if File.exists?("#{build_dir}/CMakeLists.txt") do
-      Kpkg.exec!(["sh", "-c", "cd #{build_dir_sh} &&" +
-                  " cmake --build . --config Release --target install"])
+    if File.exists?("#{build_dir}/build.ninja") do
+      Kpkg.exec!(["env", "DESTDIR=#{destdir}",
+                  "meson", "install", "-C", build_dir])
     else
-      Kpkg.exec!(["/bin/sh", "-c",
-                  "#{pkg.make} -C #{Sh.escape(build_dir)}" +
-                  " DESTDIR=#{destdir_sh} install"])
+      if File.exists?("#{build_dir}/CMakeLists.txt") do
+        Kpkg.exec!(["sh", "-c", "cd #{build_dir_sh} &&" +
+                    " cmake --build . --config Release --target install"])
+      else
+        Kpkg.exec!(["/bin/sh", "-c",
+                    "#{pkg.make} -C #{Sh.escape(build_dir)}" +
+                    " DESTDIR=#{destdir_sh} install"])
+      end
     end
     Kpkg.indent(-1)
     Kpkg.log_call("fake #{pkg.name} #{tree} #{arch}: OK")
