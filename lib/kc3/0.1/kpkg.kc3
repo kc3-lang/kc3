@@ -633,6 +633,9 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
           Kpkg.exec!(["cmake", "-B", build_dir, "-S", pkg_src_dir,
                       "-DCMAKE_INSTALL_PREFIX:PATH=#{prefix}",
                       "-DCMAKE_BUILD_TYPE=Release"])
+        else
+          puts("kpkg: configure: could not find a configure method")
+          exit(1)
         end
       end
     end
