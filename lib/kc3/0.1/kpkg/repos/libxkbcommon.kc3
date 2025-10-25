@@ -17,7 +17,7 @@ defmodule Kpkg.Repos.LibXkbCommon do
                   build_depends_on: [],
                   default_branch: "master",
                   depends_on: [],
-                  dir: "libxkbcommon/libxkbcommon",
+                  dir: "xkbcommon/libxkbcommon",
                   git: "https://git.kmx.io/kc3-lang/libxkbcommon.git",
                   git_push: "git@git.kmx.io:kc3-lang/libxkbcommon.git",
                   module: module()}
