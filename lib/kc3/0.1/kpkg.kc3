@@ -588,7 +588,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
       end
       Kpkg.exec!(["git", "-C", pkg_src_dir, "submodule", "init"])
       Kpkg.exec!(["git", "-C", pkg_src_dir, "submodule", "update",
-                  "--recursive"])
+                  "--recursive", "--remote"])
       Kpkg.autogen(pkg, tree)
     end
     Kpkg.indent(-1)
