@@ -397,14 +397,19 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     system = List.last(arch_parts)
     endian = "little"
     prefix = Kpkg.prefix_dir(arch)
+    # Create pkg-config wrapper that uses PKG_CONFIG_LIBDIR
+    pkg_config_wrapper = "#{cross_dir}/pkg-config-wrapper.sh"
+    wrapper_content = """#!/bin/sh
+export PKG_CONFIG_LIBDIR=#{prefix}/lib/pkgconfig
+exec pkg-config "$@"
+"""
+    File.write_str(pkg_config_wrapper, wrapper_content)
+    Sh.chmod(pkg_config_wrapper, 0o755)
     content = """## gen by kpkg
 [binaries]
 c = '#{cc}'
 cpp = '#{cxx}'
-pkg-config = 'pkg-config'
-
-[built-in options]
-pkg_config_path = '#{prefix}/lib/pkgconfig'
+pkg-config = '#{pkg_config_wrapper}'
 
 [properties]
 sys_root = '#{prefix}'
@@ -759,11 +764,11 @@ endian = '#{endian}'
                       " echo 1 > .kpkg_configure_done"])
         else
           arch_sh = Sh.escape(arch)
-          pkg_config_path_sh = Sh.escape("#{prefix}/lib/pkgconfig")
+          pkg_config_libdir_sh = Sh.escape("#{prefix}/lib/pkgconfig")
           Kpkg.exec!(["/bin/sh", "-c",
                       "cd #{build_dir_sh} &&" +
                       " MAKE=#{make_sh}" +
-                      " PKG_CONFIG_PATH=#{pkg_config_path_sh}" +
+                      " PKG_CONFIG_LIBDIR=#{pkg_config_libdir_sh}" +
                       " #{configure_path_sh}" +
                       " --host #{arch_sh} --target #{arch_sh}" +
                       " --prefix #{prefix_sh} &&" +
