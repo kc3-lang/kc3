@@ -406,6 +406,9 @@ pkg-config = 'pkg-config'
 [built-in options]
 pkg_config_path = '#{prefix}/lib/pkgconfig'
 
+[properties]
+sys_root = '#{prefix}'
+
 [host_machine]
 system = '#{system}'
 cpu_family = '#{cpu_family}'
