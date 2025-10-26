@@ -250,6 +250,10 @@ defmodule Kpkg do
             arch = ^ arch_arg
           ["--branch", branch_arg | rest] ->
             tree = ^ branch_arg
+          ["autogen" | rest] ->
+            result = Kpkg.autogen(pkg, tree)
+          ["autogen-clean" | rest] ->
+            result = Kpkg.autogen_clean(pkg, tree)
           ["build" | rest] ->
             result = Kpkg.build(pkg, tree, arch)
           ["build-dependencies" | rest] ->
@@ -318,6 +322,8 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     --color              enable text styling and colors
     --tree TREE          work on tree $TREE (same as --branch)
 🐢 #{title}Source directory commands :#{reset}
+    autogen              run autogen or bootstrap script
+    autogen-clean        remove autogen stamp file
     checkout             git checkout $TREE into src/$DIR/$TREE
     checkout-clean       remove checkout files : src/$DIR/$TREE
     clone                git clone into git/$DIR
@@ -523,26 +529,42 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   def autogen = fn (pkg, tree) {
     Kpkg.log_call("autogen #{pkg.name} #{tree}")
     Kpkg.indent(1)
-    Kpkg.checkout(pkg, tree)
-    cc_sh = Sh.escape(Kpkg.cc_local())
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
     pkg_src_dir_sh = Sh.escape(pkg_src_dir)
-    if File.exists?(pkg_src_dir + "/autogen.sh") do
-      Kpkg.exec!(["/bin/sh", "-c", "cd #{pkg_src_dir_sh} && CC=#{cc_sh} /bin/sh autogen.sh"])
-    else
-      if File.exists?(pkg_src_dir + "/autogen") do
-        Kpkg.exec!(["/bin/sh", "-c", "cd #{pkg_src_dir_sh} && CC=#{cc_sh} /bin/sh autogen"])
+    if ! File.exists?(pkg_src_dir + "/.kpkg_autogen_done") do
+      Kpkg.checkout(pkg, tree)
+      cc_sh = Sh.escape(Kpkg.cc_local())
+      if File.exists?(pkg_src_dir + "/autogen.sh") do
+        Kpkg.exec!(["/bin/sh", "-c", "cd #{pkg_src_dir_sh} && CC=#{cc_sh} /bin/sh autogen.sh"])
       else
-        bootstrap = pkg_src_dir + "/bootstrap"
-        if File.exists?(bootstrap) do
-          Kpkg.exec!(["sh", "-c", "cd #{pkg_src_dir_sh} && CC=#{cc_sh} ./bootstrap"])
+        if File.exists?(pkg_src_dir + "/autogen") do
+          Kpkg.exec!(["/bin/sh", "-c", "cd #{pkg_src_dir_sh} && CC=#{cc_sh} /bin/sh autogen"])
         else
-          puts("kpkg: no autogen or boostrap files found")
+          bootstrap = pkg_src_dir + "/bootstrap"
+          if File.exists?(bootstrap) do
+            Kpkg.exec!(["sh", "-c", "cd #{pkg_src_dir_sh} && CC=#{cc_sh} ./bootstrap"])
+          else
+            puts("kpkg: no autogen or boostrap files found")
+          end
         end
       end
+      File.write_str(pkg_src_dir + "/.kpkg_autogen_done", "true\n")
     end
     Kpkg.indent(-1)
     Kpkg.log_call("autogen #{pkg.name} #{tree}: OK")
+    0
+  }
+
+  def autogen_clean = fn (pkg, tree) {
+    Kpkg.log_call("autogen_clean #{pkg.name} #{tree}")
+    Kpkg.indent(1)
+    pkg_src_dir = Kpkg.src_dir(pkg, tree)
+    stamp_file = pkg_src_dir + "/.kpkg_autogen_done"
+    if File.exists?(stamp_file) do
+      Kpkg.exec!(["rm", "-f", stamp_file])
+    end
+    Kpkg.indent(-1)
+    Kpkg.log_call("autogen_clean #{pkg.name} #{tree}: OK")
     0
   }
 
