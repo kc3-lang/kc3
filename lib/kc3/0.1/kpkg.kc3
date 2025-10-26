@@ -753,14 +753,18 @@ endian = '#{endian}'
         if Kpkg.arch_local() == arch do
           Kpkg.exec!(["/bin/sh", "-c",
                       "cd #{build_dir_sh} &&" +
-                      " MAKE=#{make_sh} #{configure_path_sh}" +
+                      " MAKE=#{make_sh}" +
+                      " #{configure_path_sh}" +
                       " --prefix #{prefix_sh} &&" +
                       " echo 1 > .kpkg_configure_done"])
         else
           arch_sh = Sh.escape(arch)
+          pkg_config_path_sh = Sh.escape("#{prefix}/lib/pkgconfig")
           Kpkg.exec!(["/bin/sh", "-c",
                       "cd #{build_dir_sh} &&" +
-                      " MAKE=#{make_sh} #{configure_path_sh}" +
+                      " MAKE=#{make_sh}" +
+                      " PKG_CONFIG_PATH=#{pkg_config_path_sh}" +
+                      " #{configure_path_sh}" +
                       " --host #{arch_sh} --target #{arch_sh}" +
                       " --prefix #{prefix_sh} &&" +
                       " echo 1 > .kpkg_configure_done"])
