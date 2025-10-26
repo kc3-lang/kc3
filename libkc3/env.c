@@ -105,7 +105,10 @@ static void    env_globals_clean (s_env *env);
 static s_env * env_globals_init (s_env *env);
 static void    env_toplevel_clean (s_env *env);
 static s_env * env_toplevel_init (s_env *env);
-static char *  realpath (const char *path, char *resolved_path);
+
+#if defined(WIN32) || defined(WIN64)
+static char * realpath (const char *path, char *resolved_path);
+#endif
 
 // Special operator.
 s_pointer * env_address_of (s_env *env, s_ident *ident, s_pointer *dest)
