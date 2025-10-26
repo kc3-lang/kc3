@@ -10,16 +10,16 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Kpkg.Repos.LibIconv do
+defmodule Kpkg.Repos.Automake do
 
   Kpkg.defpackage(
-    %Kpkg.Package{name: :libiconv,
-                  build_depends_on: [{:automake, "v1.18"}],
-                  default_branch: "master",
+    %Kpkg.Package{name: :automake,
+                  build_depends_on: [],
+                  default_branch: "v1.18",
                   depends_on: [],
-                  dir: "gnu/libiconv",
-                  git: "https://git.kmx.io/kc3-lang/libiconv.git",
-                  git_push: "git@git.kmx.io:kc3-lang/libiconv.git",
+                  dir: "gnu/automake",
+                  git: "https://git.kmx.io/kc3-lang/automake.git",
+                  git_push: "git@git.kmx.io:kc3-lang/automake.git",
                   module: module()}
   )
 
