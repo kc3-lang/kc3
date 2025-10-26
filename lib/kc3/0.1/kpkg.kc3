@@ -489,8 +489,11 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   }
 
   def indent_puts = fn (msg) {
-    spaces = " " * Counter.get(Kpkg.indent_level)
-    puts("#{spaces}#{msg}")
+    spacer = "|" * Counter.get(Kpkg.indent_level)
+    style? = Kpkg.style?()
+    reset         = if style? do "#{Terminal.reset}" end
+    fg_light_gray = if style? do "#{Terminal.fg_light_gray}" end
+    puts("#{fg_light_gray}#{spacer}#{reset}#{msg}")
   }
 
   def log_call = fn (msg) {
