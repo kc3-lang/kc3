@@ -510,17 +510,18 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.log_call("autogen #{pkg.name} #{tree}")
     Kpkg.indent(1)
     Kpkg.checkout(pkg, tree)
+    cc_sh = Sh.escape(Kpkg.cc_local())
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
+    pkg_src_dir_sh = Sh.escape(pkg_src_dir)
     if File.exists?(pkg_src_dir + "/autogen.sh") do
-      Kpkg.exec!(["/bin/sh", "-c", "cd #{Sh.escape(pkg_src_dir)} && /bin/sh autogen.sh"])
+      Kpkg.exec!(["/bin/sh", "-c", "cd #{pkg_src_dir_sh} && CC=#{cc_sh} /bin/sh autogen.sh"])
     else
       if File.exists?(pkg_src_dir + "/autogen") do
-        Kpkg.exec!(["/bin/sh", "-c", "cd #{Sh.escape(pkg_src_dir)} && /bin/sh autogen"])
+        Kpkg.exec!(["/bin/sh", "-c", "cd #{pkg_src_dir_sh} && CC=#{cc_sh} /bin/sh autogen"])
       else
         bootstrap = pkg_src_dir + "/bootstrap"
         if File.exists?(bootstrap) do
-          pkg_src_dir_sh = Sh.escape(pkg_src_dir)
-          Kpkg.exec!(["sh", "-c", "cd #{pkg_src_dir_sh} && ./bootstrap"])
+          Kpkg.exec!(["sh", "-c", "cd #{pkg_src_dir_sh} && CC=#{cc_sh} ./bootstrap"])
         else
           puts("kpkg: no autogen or boostrap files found")
         end
