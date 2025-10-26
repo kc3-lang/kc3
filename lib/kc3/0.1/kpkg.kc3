@@ -401,7 +401,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
 [binaries]
 c = '#{cc}'
 cpp = '#{cxx}'
-pkgconfig = 'pkg-config'
+pkg-config = 'pkg-config'
 
 [built-in options]
 pkg_config_path = '#{prefix}/lib/pkgconfig'
