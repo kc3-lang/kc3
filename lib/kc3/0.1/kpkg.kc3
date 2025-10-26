@@ -677,8 +677,8 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   def configure = fn (pkg, tree, arch) {
     Kpkg.log_call("configure #{pkg.name} #{tree} #{arch}")
     Kpkg.indent(1)
-    Kpkg.checkout(pkg, tree)
     Kpkg.install_build_dependencies(pkg, tree)
+    Kpkg.checkout(pkg, tree)
     Kpkg.install_dependencies(pkg, tree, arch)
     build_dir = Kpkg.build_dir(pkg, tree, arch)
     build_dir_sh = Sh.escape(build_dir)
