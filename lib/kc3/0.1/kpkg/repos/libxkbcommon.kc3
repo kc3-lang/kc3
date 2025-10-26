@@ -15,7 +15,8 @@ defmodule Kpkg.Repos.LibXkbCommon do
   Kpkg.defpackage(
     %Kpkg.Package{name: :libxkbcommon,
                   build_depends_on: [],
-                  configure_options: ["-Denable-tools=false",
+                  configure_options: ["-Denable-tests=false",
+                                      "-Denable-tools=false",
                                       "-Denable-wayland=false",
                                       "-Denable-x11=false"],
                   default_branch: "master",
