@@ -397,11 +397,13 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     system = List.last(arch_parts)
     endian = "little"
     prefix = Kpkg.prefix_dir(arch)
-    pkg_config = "PKG_CONFIG_PATH=#{prefix}/lib/pkgconfig pkg-config"
     content = "[binaries]\n" +
               "c = '#{cc}'\n" +
               "cpp = '#{cxx}'\n" +
-              "pkgconfig = '#{pkg_config}'\n" +
+              "pkgconfig = 'pkg-config'\n" +
+              "\n" +
+              "[built-in options]\n" +
+              "pkg_config_path = '#{prefix}/lib/pkgconfig'\n" +
               "\n" +
               "[host_machine]\n" +
               "system = '#{system}'\n" +
