@@ -459,6 +459,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     style = if style? do "#{Terminal.bold}#{Terminal.fg_blue}" end
     cmd_str = List.join(cmd, " ")
     Kpkg.indent_puts("#{style}#{cmd_str}#{reset}")
+    Kpkg.indent(1)
     match system(cmd) do
       {0, ""} -> ""
       {0, out_err} ->
@@ -471,12 +472,15 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
         out_err
       {code, out_err} ->
         if (Str.ends_with?(out_err, "\n")) do
-          IO.write_str(out_err)
-        else
-          IO.puts(out_err)
+          out_err = Str.slice(out_err, 0, -2)
         end
+        List.each(Str.split(out_err, "\n"), fn (line) {
+          Kpkg.indent_puts(line)
+        })
         exit(1)
     end
+    Kpkg.indent(-1)
+    Kpkg.indent_puts("#{style}#{cmd_str}#{reset}: OK")
   }
 
   defcounter indent_level = 0
