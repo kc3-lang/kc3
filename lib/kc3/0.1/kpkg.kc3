@@ -519,7 +519,8 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
       else
         bootstrap = pkg_src_dir + "/bootstrap"
         if File.exists?(bootstrap) do
-          Kpkg.exec!([bootstrap])
+          pkg_src_dir_sh = Sh.escape(pkg_src_dir)
+          Kpkg.exec!(["sh", "-c", "cd #{pkg_src_dir_sh} && ./bootstrap"])
         else
           puts("kpkg: no autogen or boostrap files found")
         end
