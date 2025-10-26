@@ -5,8 +5,11 @@ set -e
 export  CC=aarch64-linux-android21-clang
 export CXX=aarch64-linux-android21-clang++
 
-export CPPFLAGS="-I/home/dx/kpkg/arch/aarch64-linux-android21/local/include"
-export  LDFLAGS="-L/home/dx/kpkg/arch/aarch64-linux-android21/local/lib"
+export PREFIX="/home/dx/kpkg/arch/aarch64-linux-android21/local"
+export CPPFLAGS="-I${PREFIX}/include"
+export  LDFLAGS="-L${PREFIX}/lib"
+
+export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
 
 PKG="$1"; shift
 
