@@ -476,7 +476,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
           Kpkg.indent_puts(line)
         })
         Kpkg.indent(-1)
-        Kpkg.indent_puts("#{style}#{cmd_str}#{reset}: OK")
+        Kpkg.indent_puts("#{style}#{cmd_str}: OK#{reset}")
         out_err
       {code, out_err} ->
         if (Str.ends_with?(out_err, "\n")) do
@@ -486,11 +486,11 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
           Kpkg.indent_puts(line)
         })
         Kpkg.indent(-1)
-        Kpkg.indent_puts("#{style}#{cmd_str}#{reset}: ERROR")
+        Kpkg.indent_puts("#{style}#{cmd_str}: ERROR#{reset}")
         exit(1)
       _ ->
         Kpkg.indent(-1)
-        Kpkg.indent_puts("#{style}#{cmd_str}#{reset}: ERROR: system")
+        Kpkg.indent_puts("#{style}#{cmd_str}: ERROR: system#{reset}")
         exit(2)
     end
   }
