@@ -14,7 +14,7 @@ defmodule Kpkg.Repos.LibIconv do
 
   Kpkg.defpackage(
     %Kpkg.Package{name: :libiconv,
-                  build_depends_on: [{:automake, "v1.18"}],
+                  build_depends_on: [],
                   default_branch: "master",
                   depends_on: [],
                   dir: "gnu/libiconv",
