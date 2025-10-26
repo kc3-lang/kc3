@@ -16,7 +16,7 @@ defmodule Kpkg.Repos.LibPNG do
     %Kpkg.Package{name: :libpng,
                   build_depends_on: [],
                   default_branch: "libpng16",
-                  depends_on: [],
+                  depends_on: [:zlib],
                   dir: "libpng/libpng",
                   git: "https://git.kmx.io/kc3-lang/libpng.git",
                   git_push: "git@git.kmx.io:kc3-lang/libpng.git",

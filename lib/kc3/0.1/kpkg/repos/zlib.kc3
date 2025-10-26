@@ -10,17 +10,16 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Kpkg.Repos.FreeType do
+defmodule Kpkg.Repos.Zlib do
 
   Kpkg.defpackage(
-    %Kpkg.Package{name: :freetype,
+    %Kpkg.Package{name: :zlib,
                   build_depends_on: [],
                   default_branch: "master",
-                  depends_on: [:brotli, :bzip2, :harfbuzz, :zlib],
-                  dir: "freetype/freetype",
-                  git: "https://git.kmx.io/kc3-lang/freetype.git",
-                  git_push: "git@git.kmx.io:kc3-lang/freetype.git",
-                  make: "gmake",
+                  depends_on: [],
+                  dir: "madler/zlib",
+                  git: "https://git.kmx.io/kc3-lang/zlib.git",
+                  git_push: "git@git.kmx.io:kc3-lang/zlib.git",
                   module: module()}
   )
 

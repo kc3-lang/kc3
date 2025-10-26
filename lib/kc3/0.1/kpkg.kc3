@@ -404,7 +404,7 @@ export PKG_CONFIG_LIBDIR=#{prefix}/lib/pkgconfig
 exec pkg-config "$@"
 """
     File.write_str(pkg_config_wrapper, wrapper_content)
-    Sh.chmod(pkg_config_wrapper, 0o755)
+    Kpkg.exec!(["chmod", "755", pkg_config_wrapper])
     content = """## gen by kpkg
 [binaries]
 c = '#{cc}'
