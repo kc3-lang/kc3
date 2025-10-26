@@ -469,6 +469,8 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
         List.each(Str.split(out_err, "\n"), fn (line) {
           Kpkg.indent_puts(line)
         })
+        Kpkg.indent(-1)
+        Kpkg.indent_puts("#{style}#{cmd_str}#{reset}: OK")
         out_err
       {code, out_err} ->
         if (Str.ends_with?(out_err, "\n")) do
@@ -477,10 +479,14 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
         List.each(Str.split(out_err, "\n"), fn (line) {
           Kpkg.indent_puts(line)
         })
+        Kpkg.indent(-1)
+        Kpkg.indent_puts("#{style}#{cmd_str}#{reset}: ERROR")
         exit(1)
+      _ ->
+        Kpkg.indent(-1)
+        Kpkg.indent_puts("#{style}#{cmd_str}#{reset}: ERROR: system")
+        exit(2)
     end
-    Kpkg.indent(-1)
-    Kpkg.indent_puts("#{style}#{cmd_str}#{reset}: OK")
   }
 
   defcounter indent_level = 0
