@@ -576,16 +576,18 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.clone(pkg)
     pkg_git_dir = Kpkg.git_dir(pkg)
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
-    if ! File.is_directory?(pkg_src_dir) do
-      Kpkg.exec!(["mkdir", "-p", Kpkg.src_parent_dir(pkg)])
-      Kpkg.exec!(["git", "clone", "-b", tree, pkg_git_dir, pkg_src_dir])
-    else
-      Kpkg.exec!(["git", "-C", pkg_src_dir, "pull"])
+    if ! File.exists?(pkg_src_dir + "/.kpkg_autogen") do
+      if ! File.is_directory?(pkg_src_dir) do
+        Kpkg.exec!(["mkdir", "-p", Kpkg.src_parent_dir(pkg)])
+        Kpkg.exec!(["git", "clone", "-b", tree, pkg_git_dir, pkg_src_dir])
+      else
+        Kpkg.exec!(["git", "-C", pkg_src_dir, "pull"])
+      end
+      Kpkg.exec!(["git", "-C", pkg_src_dir, "submodule", "init"])
+      Kpkg.exec!(["git", "-C", pkg_src_dir, "submodule", "update",
+                  "--recursive"])
+      Kpkg.autogen(pkg, tree)
     end
-    Kpkg.exec!(["git", "-C", pkg_src_dir, "submodule", "init"])
-    Kpkg.exec!(["git", "-C", pkg_src_dir, "submodule", "update",
-                "--recursive"])
-    Kpkg.autogen(pkg, tree)
     Kpkg.indent(-1)
     Kpkg.log_call("checkout #{pkg.name} #{tree}: OK")
     0
