@@ -467,7 +467,10 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.indent_puts("#{style}#{cmd_str}#{reset}")
     Kpkg.indent(1)
     match system(cmd) do
-      {0, ""} -> ""
+      {0, ""} ->
+        Kpkg.indent(-1)
+        Kpkg.indent_puts("#{style}#{cmd_str}: OK#{reset}")
+        ""
       {0, out_err} ->
         if (Str.ends_with?(out_err, "\n")) do
           out_err = Str.slice(out_err, 0, -2)
