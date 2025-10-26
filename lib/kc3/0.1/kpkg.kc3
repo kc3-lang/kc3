@@ -516,6 +516,11 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     else
       if File.exists?(pkg_src_dir + "/autogen") do
         Kpkg.exec!(["/bin/sh", "-c", "cd #{Sh.escape(pkg_src_dir)} && /bin/sh autogen"])
+      else
+        bootstrap = pkg_src_dir + "/bootstrap"
+        if File.exists?(bootstrap) do
+          Kpkg.exec!([bootstrap])
+        end
       end
     end
     Kpkg.indent(-1)
