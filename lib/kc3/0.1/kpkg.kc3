@@ -544,7 +544,7 @@ endian = '#{endian}'
       Kpkg.checkout(pkg, tree)
       cc_sh = Sh.escape(Kpkg.cc_local())
       if File.exists?(pkg_src_dir + "/autogen.sh") do
-        Kpkg.exec!(["/bin/sh", "-c", "cd #{pkg_src_dir_sh} && CC=#{cc_sh} /bin/sh autogen.sh"])
+        Kpkg.exec!(["/bin/sh", "-c", "cd #{pkg_src_dir_sh} && CC=#{cc_sh} NOCONFIGURE=1 /bin/sh autogen.sh"])
       else
         if File.exists?(pkg_src_dir + "/autogen") do
           Kpkg.exec!(["/bin/sh", "-c", "cd #{pkg_src_dir_sh} && CC=#{cc_sh} /bin/sh autogen"])
