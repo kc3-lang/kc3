@@ -397,19 +397,21 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     system = List.last(arch_parts)
     endian = "little"
     prefix = Kpkg.prefix_dir(arch)
-    content = "[binaries]\n" +
-              "c = '#{cc}'\n" +
-              "cpp = '#{cxx}'\n" +
-              "pkgconfig = 'pkg-config'\n" +
-              "\n" +
-              "[built-in options]\n" +
-              "pkg_config_path = '#{prefix}/lib/pkgconfig'\n" +
-              "\n" +
-              "[host_machine]\n" +
-              "system = '#{system}'\n" +
-              "cpu_family = '#{cpu_family}'\n" +
-              "cpu = '#{cpu}'\n" +
-              "endian = '#{endian}'\n"
+    content = """## gen by kpkg
+[binaries]
+c = '#{cc}'
+cpp = '#{cxx}'
+pkgconfig = 'pkg-config'
+
+[built-in options]
+pkg_config_path = '#{prefix}/lib/pkgconfig'
+
+[host_machine]
+system = '#{system}'
+cpu_family = '#{cpu_family}'
+cpu = '#{cpu}'
+endian = '#{endian}'
+"""
     File.write_str(cross_file, content)
     cross_file
   }
