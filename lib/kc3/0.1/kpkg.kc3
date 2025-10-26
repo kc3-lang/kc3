@@ -489,7 +489,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
   }
 
   def indent_puts = fn (msg) {
-    spacer = "|" * Counter.get(Kpkg.indent_level)
+    spacer = "│" * Counter.get(Kpkg.indent_level)
     style? = Kpkg.style?()
     reset = if style? do "#{Terminal.reset}" end
     color = if style? do "#{Terminal.fg_light_gray}" end
