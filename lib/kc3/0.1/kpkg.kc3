@@ -767,6 +767,7 @@ endian = '#{endian}'
           pkg_config_libdir_sh = Sh.escape("#{prefix}/lib/pkgconfig")
           Kpkg.exec!(["/bin/sh", "-c",
                       "cd #{build_dir_sh} &&" +
+                      " CHOST=#{arch_sh}" +
                       " MAKE=#{make_sh}" +
                       " PKG_CONFIG_LIBDIR=#{pkg_config_libdir_sh}" +
                       " #{configure_path_sh}" +
