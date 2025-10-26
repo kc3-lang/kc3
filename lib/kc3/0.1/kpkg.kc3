@@ -531,7 +531,9 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.indent(1)
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
     pkg_src_dir_sh = Sh.escape(pkg_src_dir)
-    if ! File.exists?(pkg_src_dir + "/.kpkg_autogen_done") do
+    stamp_file = pkg_src_dir + "/.kpkg_autogen"
+    if ! File.exists?(stamp_file) do
+      File.write_str(stamp_file, "false\n")
       Kpkg.checkout(pkg, tree)
       cc_sh = Sh.escape(Kpkg.cc_local())
       if File.exists?(pkg_src_dir + "/autogen.sh") do
@@ -548,7 +550,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
           end
         end
       end
-      File.write_str(pkg_src_dir + "/.kpkg_autogen_done", "true\n")
+      File.write_str(stamp_file, "true\n")
     end
     Kpkg.indent(-1)
     Kpkg.log_call("autogen #{pkg.name} #{tree}: OK")
@@ -559,7 +561,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     Kpkg.log_call("autogen_clean #{pkg.name} #{tree}")
     Kpkg.indent(1)
     pkg_src_dir = Kpkg.src_dir(pkg, tree)
-    stamp_file = pkg_src_dir + "/.kpkg_autogen_done"
+    stamp_file = pkg_src_dir + "/.kpkg_autogen"
     if File.exists?(stamp_file) do
       Kpkg.exec!(["rm", "-f", stamp_file])
     end
@@ -577,10 +579,12 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     if ! File.is_directory?(pkg_src_dir) do
       Kpkg.exec!(["mkdir", "-p", Kpkg.src_parent_dir(pkg)])
       Kpkg.exec!(["git", "clone", "-b", tree, pkg_git_dir, pkg_src_dir])
-      Kpkg.exec!(["git", "-C", pkg_src_dir, "submodule", "init"])
-      Kpkg.exec!(["git", "-C", pkg_src_dir, "submodule", "update",
-                  "--recursive", "--remote"])
+    else
+      Kpkg.exec!(["git", "-C", pkg_src_dir, "pull"])
     end
+    Kpkg.exec!(["git", "-C", pkg_src_dir, "submodule", "init"])
+    Kpkg.exec!(["git", "-C", pkg_src_dir, "submodule", "update",
+                "--recursive"])
     Kpkg.autogen(pkg, tree)
     Kpkg.indent(-1)
     Kpkg.log_call("checkout #{pkg.name} #{tree}: OK")
