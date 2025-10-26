@@ -12,14 +12,16 @@
 
 defmodule Terminal do
 
-  def reset      = "\x1b[0m"
-  def bold       = "\x1b[1m"
-  def dim        = "\x1b[2m"
-  def italic     = "\x1b[3m"
-  def underline  = "\x1b[4m"
-  def fg_blue    = "\x1b[34m"
-  def fg_magenta = "\x1b[35m"
-  def bg_blue    = "\x1b[44m"
-  def bg_magenta = "\x1b[45m"
+  def reset         = "\x1b[0m"
+  def bold          = "\x1b[1m"
+  def dim           = "\x1b[2m"
+  def italic        = "\x1b[3m"
+  def underline     = "\x1b[4m"
+  def fg_blue       = "\x1b[34m"
+  def fg_magenta    = "\x1b[35m"
+  def fg_light_gray = "\x1b[37m"
+  def bg_blue       = "\x1b[44m"
+  def bg_magenta    = "\x1b[45m"
+  def bg_light_gray = "\x1b[47m"
 
 end
