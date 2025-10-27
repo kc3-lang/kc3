@@ -1,5 +1,15 @@
 # TODO
 
+## KC3S
+
+ - [ ] RPC
+   - [ ] --server 127.0.0.1 1026
+   - [ ] --client 127.0.0.1 1026
+ - [ ] TLS
+   - [ ] --tls
+   - [ ] --tls --server 127.0.0.1 1026
+   - [ ] --tls --client 127.0.0.1 1026
+
 ## Kpkg / Android JNI
 
  - Liste des packages JNI :
