@@ -1915,10 +1915,11 @@ uninstall:
 	kpkg_debug \
 	lib_links \
 	lib_links_asan \
-	lib_links_debug \
 	lib_links_bsd \
 	lib_links_bsd_asan \
 	lib_links_bsd_debug \
+	lib_links_cov \
+	lib_links_debug \
 	lib_links_linux \
 	lib_links_linux_asan \
 	lib_links_linux_debug \
