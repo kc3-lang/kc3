@@ -115,13 +115,13 @@ sw pdf_buf_write_indirect_start (s_buf *buf, const s_tuple *src)
   pdf_buf_write_tag(buf, &src->tag[0]);
   buf_write_1(buf, " ");
   pdf_buf_write_tag(buf, &src->tag[1]);
-  buf_write_1(buf, " obj");
+  buf_write_1(buf, " obj\n");
 }
 
 sw pdf_buf_write_indirect_end (s_buf *buf)
 {
   assert(buf);
-  buf_write_1(buf, "endobj");
+  buf_write_1(buf, "\nendobj");
 }
 
 sw pdf_buf_write_integer (s_buf *buf, s32 src)
