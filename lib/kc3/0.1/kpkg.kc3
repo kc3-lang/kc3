@@ -394,7 +394,7 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     arch_parts = Str.split(arch, "-")
     cpu_family = List.first(arch_parts)
     cpu = ^ cpu_family
-    system = List.last(arch_parts)
+    host_system = List.last(arch_parts)
     endian = "little"
     prefix = Kpkg.prefix_dir(arch)
     # Create pkg-config wrapper that uses PKG_CONFIG_LIBDIR
@@ -415,7 +415,7 @@ pkg-config = '#{pkg_config_wrapper}'
 sys_root = '#{prefix}'
 
 [host_machine]
-system = '#{system}'
+system = '#{host_system}'
 cpu_family = '#{cpu_family}'
 cpu = '#{cpu}'
 endian = '#{endian}'
