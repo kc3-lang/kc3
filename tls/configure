@@ -25,11 +25,6 @@ LIB_ASAN=libkc3_tls_asan.la
 LIB_COV=libkc3_tls_cov.la
 LIB_DEBUG=libkc3_tls_debug.la
 
-echo "LIB = $LIB" >> ${CONFIG_MK}
-echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
-echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
-echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
-
 . "${SRC_DIR}/sources.sh"
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
