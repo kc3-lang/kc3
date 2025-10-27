@@ -55,6 +55,39 @@ defmodule Kpkg do
     }
   }
 
+  def ld_local = fn () {
+    pathname = File.which(getenv("LD_LOCAL")) ||
+      File.which(getenv("CC_LOCAL")) ||
+      File.which("ld") || File.which("clang") ||
+      File.which("gcc")
+    if File.access?(pathname, :x) do
+      pathname
+    else
+      puts("Please set LD_LOCAL to a valid local linker")
+      exit(1)
+    end
+  }
+
+  def ld = fn {
+    () {
+      ld_local()
+    }
+    (arch) {
+      if arch == Kpkg.arch_local() do
+        return ld_local()
+      else
+        pathname = File.which(getenv("LD")) ||
+          File.which(getenv("CC"))
+        if File.access?(pathname, :x) do
+          pathname
+        else
+          puts("Please set LD to a valid target linker")
+          exit(1)
+        end
+      end
+    }
+  }
+
   def color? = false
 
   def cxx_local = fn () {
@@ -747,7 +780,11 @@ endian = '#{endian}'
     build_dir_sh = Sh.escape(build_dir)
     File.ensure_directory(build_dir, Kpkg.umask)
     cc = Kpkg.cc(arch)
+    cc_sh = Sh.escape(cc)
     cxx = Kpkg.cxx(arch)
+    cxx_sh = Sh.escape(cxx)
+    ld = Kpkg.ld(arch)
+    ld_sh = Sh.escape(ld)
     prefix = Kpkg.prefix_dir(arch)
     prefix_sh = Sh.escape(prefix)
     if ! File.access?("#{build_dir}/.kpkg_configure_done", :r) do
@@ -758,6 +795,9 @@ endian = '#{endian}'
         if Kpkg.arch_local() == arch do
           Kpkg.exec!(["/bin/sh", "-c",
                       "cd #{build_dir_sh} &&" +
+                      " CC=#{cc_sh}" +
+                      " CXX=#{cxx_sh}" +
+                      " LD=#{ld_sh}" +
                       " MAKE=#{make_sh}" +
                       " #{configure_path_sh}" +
                       " --prefix #{prefix_sh} &&" +
@@ -767,6 +807,9 @@ endian = '#{endian}'
           pkg_config_libdir_sh = Sh.escape("#{prefix}/lib/pkgconfig")
           Kpkg.exec!(["/bin/sh", "-c",
                       "cd #{build_dir_sh} &&" +
+                      " CC=#{cc_sh}" +
+                      " CXX=#{cxx_sh}" +
+                      " LD=#{ld_sh}" +
                       " CHOST=#{arch_sh}" +
                       " MAKE=#{make_sh}" +
                       " PKG_CONFIG_LIBDIR=#{pkg_config_libdir_sh}" +
