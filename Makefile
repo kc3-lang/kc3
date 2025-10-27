@@ -310,7 +310,6 @@ distclean:
 	${MAKE} -C tls distclean
 	${MAKE} -C ikc3 distclean
 	${MAKE} -C kc3s distclean
-	${MAKE} -C kc3s distclean
 	${MAKE} -C ekc3 distclean
 	${MAKE} -C event distclean
 	${MAKE} -C json distclean
