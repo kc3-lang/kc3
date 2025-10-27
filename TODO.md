@@ -44,6 +44,16 @@
  - [ ] partial requests
    - HTTP 206 partial content
 
+## PDF
+ - Le trailer a une entree /Root qui pointe vers un /Catalog
+   - /Catalog qui detient un /Pages 
+     - le /Pages  detient une array /Kids de /Page et le nombre de pages
+       - chaque /Page lie vers son parent, ressources, et content stream, et indique sa taille
+         - /Resources : /Font...
+         - /Contents : stream (avec BT ET etc)
+         - /Parent : lien vers /Pages
+         - /MediaBox : taille x et y de la page
+
 ## Windows release
  - [.] install kmx_sort and runj using MSYS2
    - [.] sort was renamed to kmx_sort
