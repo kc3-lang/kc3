@@ -5,6 +5,7 @@ set -e
 export ARCH=aarch64-linux-android31
 export  CC=${ARCH}-clang
 export CXX=${ARCH}-clang++
+export  LD=$CC
 
 export PREFIX="/home/dx/kpkg/arch/${ARCH}/local"
 export CPPFLAGS="-I${PREFIX}/include"
