@@ -83,7 +83,6 @@ uninstall:
 	cov \
 	debug \
 	distclean \
-	gen \
 	install \
 	test \
 	update_sources \
