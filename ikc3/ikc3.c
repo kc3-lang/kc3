@@ -14,9 +14,6 @@
 #include <signal.h>
 #include <string.h>
 #include <tls.h>
-#ifdef HAVE_PTHREAD
-# include <pthread.h>
-#endif
 #include "../libkc3/kc3.h"
 #include "../socket/socket.h"
 #include "../socket/socket_addr.h"
