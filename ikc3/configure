@@ -42,7 +42,7 @@ pkg_config wineditline
 if ! $HAVE_WIN32; then
     LDFLAGS="$LDFLAGS -rdynamic"
 fi
-LIBS="$LIBS"
+LIBS="-ltls $LIBS"
 
 if pkg-config wineditline; then
     config_define HAVE_WINEDITLINE 1
