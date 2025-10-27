@@ -25,7 +25,6 @@ build_prog_asan
 build_prog_cov
 build_prog_debug
 build_prog_main
-config.h
 config.mk
 config.sh
 .config_*
