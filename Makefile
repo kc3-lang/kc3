@@ -1786,6 +1786,8 @@ tls:
 	${MAKE} -C libkc3 build
 	${MAKE} -C socket build
 	${MAKE} -C tls build
+	${MAKE} -C ikc3 build
+	${MAKE} -C kc3s build
 
 uninstall:
 	rm -rf ${prefix}/lib/kc3

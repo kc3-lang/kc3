@@ -23,7 +23,7 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-build: kc3s kc3s
+build: kc3s
 
 asan: kc3s_asan
 
