@@ -29,15 +29,16 @@
 
 ## HTTPd
  - [ ] SSL
-   - ajouter le support de tls dans lib/kc3/0.1/httpd.kc3
+   - [ ] ajouter le support de tls dans lib/kc3/0.1/httpd.kc3
+ - [ ] pledge(2) support via `KC3.pledge()`
  - [ ] partial requests
    - HTTP 206 partial content
 
 ## Windows release
  - [.] install kmx_sort and runj using MSYS2
-   - [ ] sort was renamed to kmx_sort
- - [ ] configure
- - [ ] build
+   - [.] sort was renamed to kmx_sort
+ - [.] configure
+ - [.] build
  - [ ] test
  - [ ] release
 
