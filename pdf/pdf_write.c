@@ -145,18 +145,17 @@ sw pdf_buf_write_null (s_buf *buf)
     return buf_write_1(buf, "null");
 }
 
-// FIXME: dest(ination) ?
-sw pdf_buf_write_string_hex (s_buf *buf, const s_str *dest)
+sw pdf_buf_write_string_hex (s_buf *buf, const s_str *str)
 {
   u8 c;
   u32 i;
   sw r = 0;
   s_buf read_buf = {0};
   const char *base = g_kc3_base_hexadecimal.ptr.pchar;
-  buf_init_str_const(&read_buf, dest);
+  buf_init_str_const(&read_buf, str);
   if ((r = buf_write_1(buf, "<")) < 0)
     goto cleanup;
-  for (i = 0; i < dest->size; i++) {
+  for (i = 0; i < str->size; i++) {
     if ((r = buf_read_u8(&read_buf, &c)) < 0
       || (r = buf_write_u8(buf, base[c & 0xf])) < 0
       || (r = buf_write_u8(buf, base[(c >> 4) & 0xf])) < 0)
