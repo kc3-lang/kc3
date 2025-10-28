@@ -2,13 +2,27 @@
 
 ## KC3S
 
- - [ ] RPC
-   - [ ] --server 127.0.0.1 1026
-   - [ ] --client 127.0.0.1 1026
- - [ ] TLS
-   - [ ] --tls
-   - [ ] --tls --server 127.0.0.1 1026
-   - [ ] --tls --client 127.0.0.1 1026
+ - [ ] Tester si kc3s fonctionne avec les options suivantes :
+   - [ ] RPC
+     - [ ] --server 127.0.0.1 1026
+     - [ ] --client 127.0.0.1 1026
+   - [ ] TLS
+     - [ ] --tls
+     - [ ] --tls --server 127.0.0.1 1026
+     - [ ] --tls --client 127.0.0.1 1026
+
+ - [ ] dédupliquer le code entre ikc3 et kc3s
+   - [ ] faire un diff
+   - [ ] ajouter la compilation conditionnelle pour IKC3 et KC3S
+     - [ ] #if KC3_IKC3 / #endif
+     - [ ] #if KC3_KC3S / #endif
+   - [ ] renommer le fichier ikc3/ikc3.c en ikc3_kc3s.c
+   - [ ] créer un fichier ikc3.c avec :
+     - [ ] `#define KC3_IKC3`
+     - [ ] `#include ikc3_kc3s.c`
+   - [ ] remplacer le fichier kc3s/kc3s.c avec :
+     - [ ] `#define KC3_IKC3`
+     - [ ] `#include ikc3_kc3s.c`
 
 ## Kpkg / Android JNI
 
