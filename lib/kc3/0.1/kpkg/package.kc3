@@ -10,6 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require Kpkg
+
 defmodule Kpkg.Package do
 
   # Base module for all Kpkg.Package.* modules
@@ -33,7 +35,7 @@ defmodule Kpkg.Package do
              module: Module]
 
   def load_all = fn () {
-    load_directory(__DIR__ + "repos/")
+    load_directory(Kpkg.dir() + "repos/")
   }
 
 end

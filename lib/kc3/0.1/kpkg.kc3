@@ -265,26 +265,35 @@ defmodule Kpkg do
 
   ## Main entry point
 
-  def main = fn {
-    ([]) {
-      Kpkg.usage()
-      0
-    }
-    (["--color"]) {
-      def Kpkg.color? = true
-      Kpkg.usage()
-      0
-    }
-    ([name | rest]) {
-       Kpkg.load()
-       pkg = Kpkg.get_package_or_die(name)
-       main_args(pkg, rest)
-     }
+  def main = fn () {
+    [argv0 | args_rest] = args()
+    match ^ args_rest do
+      [] ->
+        Kpkg.usage()
+        0
+      ["--color"] ->
+        def Kpkg.color? = true
+        Kpkg.usage()
+        0
+      [name | rest] ->
+        Kpkg.load()
+        pkg = Kpkg.get_package_or_die(name)
+        main_args(pkg, rest)
+    end
   }
 
   def load = fn () {
-    File.ensure_directory(dir(), Kpkg.umask)
-    Kpkg.Package.load_all()
+    File.ensure_directory(Kpkg.dir(), Kpkg.umask)
+    repos_dir = "#{Kpkg.dir()}/repos"
+    if ! File.is_directory?(repos_dir) do
+      File.ensure_directory(repos_dir, Kpkg.umask)
+      system(["sh", "-c", "ln -s #{__DIR__}/kpkg/repos #{repos_dir}/kpkg"])
+    end
+    List.map(File.list(repos_dir), fn (file) {
+      if File.is_directory?(file) do
+        KC3.load_directory("#{repos_dir}/#{file}/")
+      end
+    })
   }
 
   ## Argument parsing

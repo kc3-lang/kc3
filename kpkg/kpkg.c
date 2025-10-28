@@ -26,7 +26,7 @@ int main (int argc, char **argv)
   kc3_init(NULL, &argc, &argv);
   env = env_global();
   assert(env);
-  module = sym_1("Kpkg.Main");
+  module = sym_1("Kpkg");
   call_init(&call);
   call.ident.module = module;
   call.ident.sym = sym_1("main");
