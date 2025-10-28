@@ -15,10 +15,15 @@
 
 sw pdf_stream_text_begin (s_buf *buf)
 {
-  return pdf_buf_write_token(buf, "BT");
+  return pdf_buf_write_token_clean(buf, "BT", true);
+}
+
+sw pdf_stream_text_set_font (s_buf *buf, p_sym font, s32 size)
+{
+
 }
 
 sw pdf_stream_text_end (s_buf *buf)
 {
-  return pdf_buf_write_token(buf, "BT");
+  return pdf_buf_write_token_clean(buf, "BT", true);
 }
