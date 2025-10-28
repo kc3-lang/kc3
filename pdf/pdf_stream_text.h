@@ -13,4 +13,9 @@
 #ifndef KC3_PDF_TEXT_H
 #define KC3_PDF_TEXT_H
 
+#include "types.h"
+
+sw pdf_stream_text_begin (s_buf *buf);
+sw pdf_stream_text_end (s_buf *buf);
+
 #endif /* KC3_PDF_TEXT_H */
