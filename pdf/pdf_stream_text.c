@@ -10,20 +10,27 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "../libkc3/kc3.h"
+#include "../libkc3/kc3_main.h"
 #include "pdf_write.h"
 #include "pdf_stream_text.h"
 
 sw pdf_stream_text_begin (s_buf *buf)
 {
+  assert(buf);
   return pdf_buf_write_token_clean(buf, "BT", true);
 }
 
 sw pdf_stream_text_set_font (s_buf *buf, p_sym font, s32 size)
 {
-
+  assert(buf);
+  return pdf_buf_write_token_clean(buf, "BT", true);
+  return pdf_buf_write_token_clean(buf, "BT", true);
+  return pdf_buf_write_token_clean(buf, "BT", true);
 }
 
 sw pdf_stream_text_end (s_buf *buf)
 {
+  assert(buf);
   return pdf_buf_write_token_clean(buf, "BT", true);
 }
