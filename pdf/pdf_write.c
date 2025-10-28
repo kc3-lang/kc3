@@ -208,3 +208,15 @@ sw pdf_buf_write_token(s_buf *buf, const char *pchar)
   assert(buf);
   return buf_write_1(buf, pchar);
 }
+
+// writes token with separator
+sw pdf_buf_write_token_clean(s_buf *buf, const char *pchar,
+                             bool newline)
+{
+  sw r = 0;
+  assert(buf);
+  if ((r = pdf_buf_write_token(buf, pchar)) < 0) {
+    return r;
+  }
+  return r + buf_write_1(buf, newline ? "\n" : " ");
+}
