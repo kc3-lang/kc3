@@ -244,6 +244,25 @@ defmodule Kpkg do
     pkg
   }
 
+  def get_package_required_by = fn (name) {
+    name_is_dep = fn {
+      ({^ name, _ver}) { true }
+      (^ name) { true }
+      (_) { false }
+    }
+    List.filter(Facts.collect_with(Kpkg.db,
+      [[other = ?, :is_a, Kpkg.Package],
+       [other, :kpkg_package_build_depends_on, other_build_depends_on = ?],
+       [other, :kpkg_package_depends_on, other_depends_on = ?]],
+      fn (fact) {
+        if List.find_if(other_build_depends_on, name_is_dep) ||
+           List.find_if(other_depends_on, name_is_dep) do
+          other
+        end
+      }
+    ), fn (x) { x })
+  }
+
   ## Main entry point
 
   def main = fn {
@@ -1130,6 +1149,8 @@ endian = '#{endian}'
     puts("#{title}cc_local:#{reset} #{inspect(Kpkg.cc_local())}")
     puts("#{title}dependencies:#{reset}")
     puts(Kpkg.dependencies(pkg))
+    puts("#{title}required_by:#{reset}")
+    puts(Kpkg.get_package_required_by(pkg.name))
     puts("#{title}uname:#{reset} #{inspect(Kpkg.uname())}")
     0
   }
