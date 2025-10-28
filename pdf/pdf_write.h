@@ -32,7 +32,7 @@ sw   pdf_buf_write_tag (s_buf *buf, const s_tag *src);
 sw   pdf_buf_write_token (s_buf *buf, const char *token);
 // writes token with separator
 sw pdf_buf_write_token_clean(s_buf *buf, const char *pchar,
-                             bool newline)
+                             bool newline);
 //bool pdf_character_is_delimiter (character c);
 
 #endif /* KC3_PDF_WRITE_H */
