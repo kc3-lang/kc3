@@ -151,11 +151,10 @@ sw pdf_buf_write_integer (s_buf *buf, s32 src)
 sw pdf_buf_write_name (s_buf *buf, p_pdf_name src)
 {
   sw r = 0;
-  if ((r = buf_write_1(buf, "/")) < 0 ||
-      (r = buf_write_str(buf, &src->str)) < 0) {
+  if ((r = buf_write_1(buf, "/")) < 0) {
     return r;
   }
-  return r;
+  return r += buf_write_str(buf, &src->str);
 }
 
 sw pdf_buf_write_null (s_buf *buf)
