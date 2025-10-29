@@ -24,39 +24,49 @@ sw pdf_stream_text_begin (s_buf *buf)
 sw pdf_stream_text_set_font (s_buf *buf, p_sym font, s32 size)
 {
   sw r = 0;
+  sw result = 0;
   assert(buf);
-  if ((r += pdf_buf_write_name(buf, font)) < 0) {
+  if ((r = pdf_buf_write_name(buf, font)) < 0) {
     return r;
   }
-  if ((r += pdf_buf_write_separator(buf, false)) < 0) {
+  result += r;
+  if ((r = pdf_buf_write_separator(buf, false)) < 0) {
     return r;
   }
-  if ((r += pdf_buf_write_integer(buf, size)) < 0) {
+  result += r;
+  if ((r = pdf_buf_write_integer(buf, size)) < 0) {
     return r;
   }
-  if ((r += pdf_buf_write_separator(buf, false)) < 0) {
+  result += r;
+  if ((r = pdf_buf_write_separator(buf, false)) < 0) {
     return r;
   }
-  return pdf_buf_write_token_clean(buf, "Tf", true);
+  result += r;
+  return result + pdf_buf_write_token_clean(buf, "Tf", true);
 }
 
 sw pdf_stream_text_set_pos_xy (s_buf *buf, s32 x, s32 y)
 {
   sw r = 0;
+  sw result = 0;
   assert(buf);
-  if ((r += pdf_buf_write_integer(buf, x)) < 0) {
+  if ((r = pdf_buf_write_integer(buf, x)) < 0) {
     return r;
   }
-  if ((r += pdf_buf_write_separator(buf, false)) < 0) {
+  result += r;
+  if ((r = pdf_buf_write_separator(buf, false)) < 0) {
     return r;
   }
-  if ((r += pdf_buf_write_integer(buf, y)) < 0) {
+  result += r;
+  if ((r = pdf_buf_write_integer(buf, y)) < 0) {
     return r;
   }
-  if ((r += pdf_buf_write_separator(buf, false)) < 0) {
+  result += r;
+  if ((r = pdf_buf_write_separator(buf, false)) < 0) {
     return r;
   }
-  return pdf_buf_write_token_clean(buf, "Td", true);
+  result += r;
+  return result + pdf_buf_write_token_clean(buf, "Td", true);
 }
 
 // REVIEW NOTES:
@@ -67,10 +77,10 @@ sw pdf_stream_text_set_text (s_buf *buf, s_str *text)
 {
   sw r = 0;
   assert(buf);
-  if ((r += pdf_buf_write_string_hex(buf, text)) < 0) {
+  if ((r = pdf_buf_write_string_hex(buf, text)) < 0) {
     return r;
   }
-  return pdf_buf_write_token_clean(buf, "Tj", true);
+  return r + pdf_buf_write_token_clean(buf, "Tj", true);
 }
 
 // REVIEW NOTES:
@@ -81,10 +91,10 @@ sw pdf_stream_text_set_text_array (s_buf *buf, const p_list text_array)
 {
   sw r = 0;
   assert(buf);
-  if ((r += pdf_buf_write_array(buf, text_array)) < 0) {
+  if ((r = pdf_buf_write_array(buf, text_array)) < 0) {
     return r;
   }
-  return pdf_buf_write_token_clean(buf, "TJ", true);
+  return r + pdf_buf_write_token_clean(buf, "TJ", true);
 }
 
 sw pdf_stream_text_end (s_buf *buf)
