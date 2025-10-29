@@ -22,7 +22,7 @@
      - [ ] `#include ikc3_kc3s.c`
    - [ ] remplacer le fichier kc3s/kc3s.c avec :
      - [ ] `#define KC3_IKC3`
-     - [ ] `#include ikc3_kc3s.c`
+     - [ ] `#include "../ikc3/ikc3_kc3s.c"`
 
 ## Kpkg / Android JNI
 
