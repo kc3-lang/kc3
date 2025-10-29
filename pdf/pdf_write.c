@@ -98,7 +98,7 @@ sw pdf_buf_write_indirect_ref (s_buf *buf, const s_tuple *src)
     assert(! "pdf_buf_write_indirect_object: invalid Tuple");
     return -1;
   }
-  if ((r += pdf_buf_write_tag(buf, &src->tag[0])) < 0) {
+  if ((r = pdf_buf_write_tag(buf, &src->tag[0])) < 0) {
     return r;
   }
   if ((r += pdf_buf_write_separator(buf, false)) < 0) {
@@ -112,6 +112,7 @@ sw pdf_buf_write_indirect_ref (s_buf *buf, const s_tuple *src)
 
 sw pdf_buf_write_indirect_start (s_buf *buf, const s_tuple *src)
 {
+  sw r = 0;
   assert(buf);
   assert(src);
   if (src->count != 2) {
@@ -119,16 +120,26 @@ sw pdf_buf_write_indirect_start (s_buf *buf, const s_tuple *src)
     assert(! "pdf_buf_write_indirect_object: invalid tuple size");
     return -1;
   }
-  pdf_buf_write_tag(buf, &src->tag[0]);
-  buf_write_1(buf, " ");
-  pdf_buf_write_tag(buf, &src->tag[1]);
-  buf_write_1(buf, " obj\n");
+  if ((r = pdf_buf_write_tag(buf, &src->tag[0])) < 0) {
+    return r;
+  }
+  if ((r += pdf_buf_write_separator(buf, false)) < 0) {
+    return r;
+  }
+  if ((r += pdf_buf_write_tag(buf, &src->tag[1])) < 0) {
+    return r;
+  }
+  return r + pdf_buf_write_token_clean(buf, " obj", true);
 }
 
 sw pdf_buf_write_indirect_end (s_buf *buf)
 {
+  sw r = 0;
   assert(buf);
-  buf_write_1(buf, "\nendobj");
+  if ((r = pdf_buf_write_separator(buf, true)) < 0) {
+    return r;
+  }
+  return r + pdf_buf_write_token_clean(buf, "endobj", true);
 }
 
 sw pdf_buf_write_integer (s_buf *buf, s32 src)
