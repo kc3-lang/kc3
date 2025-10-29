@@ -267,11 +267,10 @@ s_mat4 * mat4_perspective (s_mat4 *m, f32 fov_y,
 s_mat4 * mat4_scale (s_mat4 *m, f32 x, f32 y, f32 z)
 {
   s_mat4 s;
-  mat4_init_zero(&s);
+  mat4_init_identity(&s);
   s.xx = x;
   s.yy = y;
   s.zz = z;
-  s.tt = 1.0;
   return mat4_mult_mat4(&s, m, m);
 }
 
@@ -279,9 +278,9 @@ s_mat4 * mat4_translate (s_mat4 *m, f32 x, f32 y, f32 z)
 {
   s_mat4 s;
   mat4_init_identity(&s);
-  s.tx = x;
-  s.ty = y;
-  s.tz = z;
+  s.xt = x;
+  s.yt = y;
+  s.zt = z;
   return mat4_mult_mat4(&s, m, m);
 }
 
