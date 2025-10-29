@@ -226,6 +226,8 @@ sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
     case TAG_MAP:
       return pdf_buf_write_dictionnary(buf, &src->data.map);
     case TAG_STR:  return pdf_buf_write_string_hex(buf, &src->data.str);
+    case TAG_PLIST:
+      return pdf_buf_write_array(buf, src->data.plist);
     case TAG_PSYM: return pdf_buf_write_name(buf, src->data.psym);
     default:
       err_write_1("pdf_buf_write_tag: invalid PDF tag type: ");
