@@ -40,6 +40,25 @@ sw pdf_stream_text_set_font (s_buf *buf, p_sym font, s32 size)
   return pdf_buf_write_token_clean(buf, "Tf", true);
 }
 
+sw pdf_stream_text_set_pos_xy (s_buf *buf, s32 x, s32 y)
+{
+  sw r = 0;
+  assert(buf);
+  if ((r += pdf_buf_write_integer(buf, x)) < 0) {
+    return r;
+  }
+  if ((r += pdf_buf_write_separator(buf, false)) < 0) {
+    return r;
+  }
+  if ((r += pdf_buf_write_integer(buf, y)) < 0) {
+    return r;
+  }
+  if ((r += pdf_buf_write_separator(buf, false)) < 0) {
+    return r;
+  }
+  return pdf_buf_write_token_clean(buf, "Td", true);
+}
+
 sw pdf_stream_text_end (s_buf *buf)
 {
   assert(buf);
