@@ -16,6 +16,7 @@
 #include "types.h"
 
 /* Parser functions. */
+sw   pdf_buf_write_array (s_buf *buf, const p_list src);
 sw   pdf_buf_write_bool (s_buf *buf, bool src);
 //sw   pdf_buf_write_comment (s_buf *buf);
 //sw   pdf_buf_write_comments (s_buf *buf);
