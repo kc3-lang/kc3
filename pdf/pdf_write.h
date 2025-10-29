@@ -25,6 +25,7 @@ sw   pdf_buf_write_indirect_object (s_buf *buf, const s_tuple *src);
 sw   pdf_buf_write_integer (s_buf *buf, s32 src);
 sw   pdf_buf_write_name (s_buf *buf, p_sym src);
 sw   pdf_buf_write_null (s_buf *buf);
+sw   pdf_buf_write_separator(s_buf *buf, bool newline);
 sw   pdf_buf_write_string_hex (s_buf *buf, const s_str *src);
 sw   pdf_buf_write_tag (s_buf *buf, const s_tag *src);
 

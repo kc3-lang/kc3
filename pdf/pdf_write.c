@@ -145,6 +145,11 @@ sw pdf_buf_write_null (s_buf *buf)
     return buf_write_1(buf, "null");
 }
 
+sw pdf_buf_write_separator(s_buf *buf, bool newline)
+{
+  return buf_write_1(buf, newline ? "\n" : " ");
+}
+
 sw pdf_buf_write_string_hex (s_buf *buf, const s_str *str)
 {
   u8 c;
@@ -218,5 +223,5 @@ sw pdf_buf_write_token_clean(s_buf *buf, const char *pchar,
   if ((r = pdf_buf_write_token(buf, pchar)) < 0) {
     return r;
   }
-  return r + buf_write_1(buf, newline ? "\n" : " ");
+  return r + pdf_buf_write_separator(buf, newline);
 }
