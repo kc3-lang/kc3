@@ -1,4 +1,4 @@
-## Sharding de `kc3_facts_db`
+## Sharding design for `kc3_facts_db`
 
  - Possible approaches:
    - Partition by namespace/domain - keep related triples together
