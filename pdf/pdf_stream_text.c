@@ -73,6 +73,20 @@ sw pdf_stream_text_set_text (s_buf *buf, s_str *text)
   return pdf_buf_write_token_clean(buf, "Tj", true);
 }
 
+// REVIEW NOTES:
+// This expects a list of only integers and strings, where each integer
+// indicates the horizontal (x) displacement of the next string, for
+// things like kerning. This is TJ, while the simple string is Tj.
+sw pdf_stream_text_set_text_array (s_buf *buf, const p_list text_array)
+{
+  sw r = 0;
+  assert(buf);
+  if ((r += pdf_buf_write_array(buf, text_array)) < 0) {
+    return r;
+  }
+  return pdf_buf_write_token_clean(buf, "TJ", true);
+}
+
 sw pdf_stream_text_end (s_buf *buf)
 {
   assert(buf);
