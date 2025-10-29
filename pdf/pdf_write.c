@@ -31,6 +31,7 @@ sw pdf_buf_write_array (s_buf *buf, const p_list src)
     n = list_next(n);
     if (n && (r = buf_write_1(buf, " ")) < 0)
       return r;
+    result += r;
   }
   if ((r = buf_write_1(buf, "]")) < 0) {
     return r;
@@ -178,12 +179,12 @@ sw pdf_buf_write_string_hex (s_buf *buf, const s_str *str)
   if ((r = buf_write_1(buf, "<")) < 0)
     goto cleanup;
   for (i = 0; i < str->size; i++) {
-    if ((r += buf_read_u8(&read_buf, &c)) < 0
-      || (r += buf_write_u8(buf, base[c & 0xf])) < 0
-      || (r += buf_write_u8(buf, base[(c >> 4) & 0xf])) < 0)
+    if ((r = buf_read_u8(&read_buf, &c)) < 0
+      || (r = buf_write_u8(buf, base[c & 0xf])) < 0
+      || (r = buf_write_u8(buf, base[(c >> 4) & 0xf])) < 0)
       goto cleanup;
   }
-  if ((r += buf_write_1(buf, ">")) < 0)
+  if ((r = buf_write_1(buf, ">")) < 0)
     goto cleanup;
  cleanup:
   buf_clean(&read_buf);
