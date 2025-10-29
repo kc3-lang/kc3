@@ -59,6 +59,20 @@ sw pdf_stream_text_set_pos_xy (s_buf *buf, s32 x, s32 y)
   return pdf_buf_write_token_clean(buf, "Td", true);
 }
 
+// REVIEW NOTES:
+// The lack of separator between the string and "Tj" is normal here
+// as the tokens can't collide (because of the string's bounding
+// characters)
+sw pdf_stream_text_set_text (s_buf *buf, s_str *text)
+{
+  sw r = 0;
+  assert(buf);
+  if ((r += pdf_buf_write_string_hex(buf, text)) < 0) {
+    return r;
+  }
+  return pdf_buf_write_token_clean(buf, "Tj", true);
+}
+
 sw pdf_stream_text_end (s_buf *buf)
 {
   assert(buf);
