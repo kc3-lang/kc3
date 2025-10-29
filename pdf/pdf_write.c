@@ -66,17 +66,18 @@ sw pdf_buf_write_dictionnary (s_buf *buf, const s_map *src)
     if ((r = pdf_buf_write_name(buf, src->key[i].data.psym)) < 0)
       return r;
     result += r;
-    if ((r = buf_write_1(buf, " ")) < 0)
+    if ((r = pdf_buf_write_separator(buf, false)) < 0)
       return r;
     result += r;
     if ((r = pdf_buf_write_tag(buf, &src->value[i])) < 0)
       return r;
     result += r;
     if (i < src->count - 1 &&
-        (r = buf_write_1(buf, " ")) < 0)
+        (r = pdf_buf_write_separator(buf, true)) < 0)
       return r;
+    result += r;
   }
-  if ((r = buf_write_1(buf, ">>")) < 0) {
+  if ((r = pdf_buf_write_token(buf, ">>")) < 0) {
     return r;
   }
   result += r;
@@ -92,6 +93,7 @@ sw pdf_buf_write_float (s_buf *buf, f32 src)
 sw pdf_buf_write_indirect_ref (s_buf *buf, const s_tuple *src)
 {
   sw r = 0;
+  sw result = 0;
   assert(buf);
   assert(src);
   if (src->count != 2) {
@@ -102,18 +104,22 @@ sw pdf_buf_write_indirect_ref (s_buf *buf, const s_tuple *src)
   if ((r = pdf_buf_write_tag(buf, &src->tag[0])) < 0) {
     return r;
   }
-  if ((r += pdf_buf_write_separator(buf, false)) < 0) {
+  result += r;
+  if ((r = pdf_buf_write_separator(buf, false)) < 0) {
     return r;
   }
-  if ((r += pdf_buf_write_tag(buf, &src->tag[1])) < 0) {
+  result += r;
+  if ((r = pdf_buf_write_tag(buf, &src->tag[1])) < 0) {
     return r;
   }
-  return r + pdf_buf_write_token(buf, " R");
+  result += r;
+  return result + pdf_buf_write_token(buf, " R");
 }
 
 sw pdf_buf_write_indirect_start (s_buf *buf, const s_tuple *src)
 {
   sw r = 0;
+  sw result = 0;
   assert(buf);
   assert(src);
   if (src->count != 2) {
@@ -124,13 +130,16 @@ sw pdf_buf_write_indirect_start (s_buf *buf, const s_tuple *src)
   if ((r = pdf_buf_write_tag(buf, &src->tag[0])) < 0) {
     return r;
   }
-  if ((r += pdf_buf_write_separator(buf, false)) < 0) {
+  result += r;
+  if ((r = pdf_buf_write_separator(buf, false)) < 0) {
     return r;
   }
-  if ((r += pdf_buf_write_tag(buf, &src->tag[1])) < 0) {
+  result += r;
+  if ((r = pdf_buf_write_tag(buf, &src->tag[1])) < 0) {
     return r;
   }
-  return r + pdf_buf_write_token_clean(buf, " obj", true);
+  result += r;
+  return result + pdf_buf_write_token_clean(buf, " obj", true);
 }
 
 sw pdf_buf_write_indirect_end (s_buf *buf)
@@ -152,7 +161,7 @@ sw pdf_buf_write_integer (s_buf *buf, s32 src)
 sw pdf_buf_write_name (s_buf *buf, p_pdf_name src)
 {
   sw r = 0;
-  if ((r = buf_write_1(buf, "/")) < 0) {
+  if ((r = pdf_buf_write_token(buf, "/")) < 0) {
     return r;
   }
   return r += buf_write_str(buf, &src->str);
@@ -160,7 +169,7 @@ sw pdf_buf_write_name (s_buf *buf, p_pdf_name src)
 
 sw pdf_buf_write_null (s_buf *buf)
 {
-    return buf_write_1(buf, "null");
+    return pdf_buf_write_token(buf, "null");
 }
 
 sw pdf_buf_write_separator(s_buf *buf, bool newline)
@@ -173,22 +182,26 @@ sw pdf_buf_write_string_hex (s_buf *buf, const s_str *str)
   u8 c;
   u32 i;
   sw r = 0;
+  sw result = 0;
   s_buf read_buf = {0};
   const char *base = g_kc3_base_hexadecimal.ptr.pchar;
   buf_init_str_const(&read_buf, str);
-  if ((r = buf_write_1(buf, "<")) < 0)
+  if ((r = pdf_buf_write_token(buf, "<")) < 0)
     goto cleanup;
+  result += r;
   for (i = 0; i < str->size; i++) {
     if ((r = buf_read_u8(&read_buf, &c)) < 0
       || (r = buf_write_u8(buf, base[c & 0xf])) < 0
       || (r = buf_write_u8(buf, base[(c >> 4) & 0xf])) < 0)
       goto cleanup;
+    result += 2;
   }
-  if ((r = buf_write_1(buf, ">")) < 0)
+  if ((r = pdf_buf_write_token(buf, ">")) < 0)
     goto cleanup;
+  result += r;
  cleanup:
   buf_clean(&read_buf);
-  return r;
+  return result;
 }
 
 sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
