@@ -90,6 +90,7 @@ sw pdf_buf_write_float (s_buf *buf, f32 src)
 
 sw pdf_buf_write_indirect_ref (s_buf *buf, const s_tuple *src)
 {
+  sw r = 0;
   assert(buf);
   assert(src);
   if (src->count != 2) {
@@ -97,10 +98,16 @@ sw pdf_buf_write_indirect_ref (s_buf *buf, const s_tuple *src)
     assert(! "pdf_buf_write_indirect_object: invalid Tuple");
     return -1;
   }
-  pdf_buf_write_tag(buf, &src->tag[0]);
-  buf_write_1(buf, " ");
-  pdf_buf_write_tag(buf, &src->tag[1]);
-  buf_write_1(buf, " R");
+  if ((r += pdf_buf_write_tag(buf, &src->tag[0])) < 0) {
+    return r;
+  }
+  if ((r += pdf_buf_write_separator(buf, false)) < 0) {
+    return r;
+  }
+  if ((r += pdf_buf_write_tag(buf, &src->tag[1])) < 0) {
+    return r;
+  }
+  return r + pdf_buf_write_token(buf, " R");
 }
 
 sw pdf_buf_write_indirect_start (s_buf *buf, const s_tuple *src)
