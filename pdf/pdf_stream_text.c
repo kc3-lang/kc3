@@ -23,10 +23,21 @@ sw pdf_stream_text_begin (s_buf *buf)
 
 sw pdf_stream_text_set_font (s_buf *buf, p_sym font, s32 size)
 {
+  sw r = 0;
   assert(buf);
-  return pdf_buf_write_token_clean(buf, "BT", true);
-  return pdf_buf_write_token_clean(buf, "BT", true);
-  return pdf_buf_write_token_clean(buf, "BT", true);
+  if ((r += pdf_buf_write_name(buf, font)) < 0) {
+    return r;
+  }
+  if ((r += pdf_buf_write_separator(buf, false)) < 0) {
+    return r;
+  }
+  if ((r += pdf_buf_write_integer(buf, size)) < 0) {
+    return r;
+  }
+  if ((r += pdf_buf_write_separator(buf, false)) < 0) {
+    return r;
+  }
+  return pdf_buf_write_token_clean(buf, "Tf", true);
 }
 
 sw pdf_stream_text_end (s_buf *buf)
