@@ -946,9 +946,14 @@ update_build_lib() {
     BUILD_LIB_DEBUG=build_lib_debug.tmp
     mkdir -p .build
 
-    LINK="${LIBTOOL} --tag=CC --mode=link "
-    LINK="$LINK \${CC} -shared \${CFLAGS} \${LDFLAGS}"
-    LINK="$LINK \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\""
+    if echo "${CC}" | grep -q android; then
+        LINK="\${CC} -shared \${CFLAGS} \${LDFLAGS}"
+        LINK="$LINK \${OBJECTS} \${LIBS} -o \"\$1\""
+    else
+        LINK="${LIBTOOL} --tag=CC --mode=link "
+        LINK="$LINK \${CC} -shared \${CFLAGS} \${LDFLAGS}"
+        LINK="$LINK \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\""
+    fi
 
     echo "#!/bin/sh" >> ${BUILD_LIB_ASAN}
     echo "# gen by configure" >> ${BUILD_LIB_ASAN}
