@@ -2,16 +2,18 @@
 
 set -e
 
-export ARCH=aarch64-linux-android31
-export  CC=${ARCH}-clang
-export CXX=${ARCH}-clang++
-export  LD=$CC
+ARCH="aarch64-linux-android31"
+TOOLCHAIN="/opt/android-sdk/ndk/latest/toolchains/llvm/prebuilt/linux-x86_64"
+
+export  CC="${TOOLCHAIN}/bin/${ARCH}-clang"
+export CXX="${TOOLCHAIN}/bin/${ARCH}-clang++"
+export  LD="${TOOLCHAIN}/bin/ld"
 
 export PREFIX="/home/dx/kpkg/arch/${ARCH}/local"
 export CPPFLAGS="-I${PREFIX}/include"
 export  LDFLAGS="-L${PREFIX}/lib"
 
-export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
+export PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig"
 
 PKG="$1"; shift
 
