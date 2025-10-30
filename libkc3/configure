@@ -20,10 +20,10 @@ export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
 . "${SRC_TOP}/config.subr"
 
-LIB=libkc3.la
-LIB_ASAN=libkc3_asan.la
-LIB_COV=libkc3_cov.la
-LIB_DEBUG=libkc3_debug.la
+LIB=libkc3
+LIB_ASAN=libkc3_asan
+LIB_COV=libkc3_cov
+LIB_DEBUG=libkc3_debug
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
@@ -32,11 +32,11 @@ echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 
 . "${SRC_DIR}/sources.sh"
 
-OBJECTS="$(c2ext .main.lo "$LO_SOURCES") $(cxx2ext .main.lo "$SOURCES_CXX")"
+OBJECTS="$(c2ext .main.o "$LO_SOURCES") $(cxx2ext .main.o "$SOURCES_CXX")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
-OBJECTS_ASAN="$(c2ext .asan.lo "$LO_SOURCES") $(cxx2ext .asan.lo "$SOURCES_CXX")"
-OBJECTS_COV="$(c2ext .cov.lo "$LO_SOURCES") $(cxx2ext .cov.lo "$SOURCES_CXX")"
-OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES") $(cxx2ext .debug.lo "$SOURCES_CXX")"
+OBJECTS_ASAN="$(c2ext .asan.o "$LO_SOURCES") $(cxx2ext .asan.o "$SOURCES_CXX")"
+OBJECTS_COV="$(c2ext .cov.o "$LO_SOURCES") $(cxx2ext .cov.o "$SOURCES_CXX")"
+OBJECTS_DEBUG="$(c2ext .debug.o "$LO_SOURCES") $(cxx2ext .debug.o "$SOURCES_CXX")"
 
 . "${SRC_TOP}/config_common"
 
@@ -114,7 +114,7 @@ echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 update_build_c
 update_build_lib
 
-build_lo_c
+build_o_c
 build_lib
 
 update_config_mk

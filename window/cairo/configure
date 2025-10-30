@@ -130,7 +130,7 @@ update_build_c
 update_build_objc
 update_build_lib
 
-build_lo_c
+build_o_c
 build_lo_objc
 build_lib
 

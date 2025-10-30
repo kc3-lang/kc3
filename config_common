@@ -3,15 +3,11 @@
 CPPFLAGS="$CPPFLAGS -I${SRC_TOP}"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
 CXXFLAGS="$CXXFLAGS -W -Wall -Werror -std=c++11 -pedantic -pipe -pthread"
-LDFLAGS="-export-dynamic $LDFLAGS -rdynamic"
 config_asan
 config_gnu
 config_i386
 config_win32
 config_win64
-#if $HAVE_WIN32; then
-#    CPPFLAGS="$CPPFLAGS -I../sys_wait_h/"
-#fi
 pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
@@ -24,10 +20,12 @@ config_have_generic_sw_uw
 config_have_pthread
 config_have_quadmath
 config_have_stat_mtim
-LIBS="$LIBS -lm -lpthread -rpath ${PREFIX}/lib"
+config_lib m -lm
+config_lib pthread -lpthread
 if $HAVE_WIN32 || $HAVE_WIN64; then
     LIBS="$LIBS -lws2_32 -ldl"
 fi
+LIBS="$LIBS -rpath ${PREFIX}/lib"
 if ! [ -f "${SRC_TOP}/ucd2c/ucd.c" ]; then
     touch "${SRC_TOP}/ucd2c/ucd.c"
 fi

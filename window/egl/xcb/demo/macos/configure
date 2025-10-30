@@ -44,7 +44,7 @@ update_build
 update_build_objc
 update_build_prog
 
-build_lo
+build_o
 build_prog
 
 APP_PROG=${APP}/Contents/MacOS/${PROG}

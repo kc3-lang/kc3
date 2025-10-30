@@ -118,7 +118,7 @@ echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 update_build
 update_build_lib
 
-build_lo
+build_o
 build_lib
 
 update_config_mk

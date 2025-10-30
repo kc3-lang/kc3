@@ -130,7 +130,7 @@ echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 update_build_c
 update_build_prog
 
-build_lo_c
+build_o_c
 build_prog
 
 update_config_mk

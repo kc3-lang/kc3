@@ -119,7 +119,7 @@ update_build_c
 update_build_objc
 update_build_lib
 
-build_lo
+build_o
 build_lo_objc
 build_lib
 

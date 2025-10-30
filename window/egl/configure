@@ -143,7 +143,7 @@ fi
 update_build_c
 update_build_lib
 
-build_lo_c
+build_o_c
 build_lib
 
 update_config_mk
