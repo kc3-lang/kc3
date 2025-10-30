@@ -1,4 +1,4 @@
-## Sharding design for `kc3_facts_db`
+## RBACL-based sharding and encryption design for `kc3_facts_db`
 
  - Possible approaches:
    - Partition by namespace/domain - keep related triples together
@@ -180,9 +180,11 @@ When you query:
  1. Global heuristic → score for the triple
  2. Score → multiple candidate hosts (gaussian distribution)
  3. Query those candidates to find who actually has it
- 4. Could be on multiple hosts (redundancy), one, or none (need to fetch from elsewhere)
+ 4. Could be on multiple hosts (redundancy), one, or none (need to fetch
+    from elsewhere)
 
-The global heuristic is probabilistic addressing, not a deterministic "triple X is on host Y" mapping.
+The global heuristic is probabilistic addressing, not a deterministic
+"triple X is on host Y" mapping.
 
 ### cannot be none no host having the data means there's no data, and we cannot know in advance, but we should be able to determine the restrictive set of hosts that altogether are responsible for this triple in this range
 
@@ -242,3 +244,96 @@ API. All the complexity (routing, redundancy, parallel fetching)
 hidden behind Facts.with(). Just works locally or globally.
 
 Ready to build it?
+
+### wait, it's not finished ! we can even do the lower heuristic remotely and have proxy nodes that deep shard the data with RBACLs (rule-based access control lists)
+
+● Ah! So proxy nodes add another layer:
+
+Top level: Global heuristic routes to proxy nodes
+Proxy layer:
+ - Apply local heuristic for deep sharding (further partition within
+   their region)
+ - Enforce RBACLs - control what queries/data are allowed through
+ - Route to actual storage nodes
+
+So you get:
+ - Hierarchical sharding (global → RBACL proxy chain → storage)
+ - Access control at the proxy boundary
+ - Geographic/organizational isolation
+ - All still through the same Facts API
+
+### For secure applications we can encrypt the host machine at the system level
+
+● Right - full disk encryption or system-level encryption on each host. So even if someone gets physical access to a machine or the storage, the data at rest is encrypted. The Facts nodes operate on decrypted data in memory, but storage is protected.
+
+Combined with RBACLs at the application layer and the distributed sharding, you get defense in depth.
+
+### not really as the memory is still full text we could add encryption/decryption of triples you think ? 
+
+● Yes - encrypt triples at the data structure level. Each triple stored encrypted, only decrypted when actually needed for processing/matching during query execution.
+
+This protects against:
+ - Memory dumps/core dumps exposing plaintext
+ - Side channel attacks reading memory
+ - Compromised processes reading other process memory
+
+Trade-off is performance - decrypt on access, encrypt on write. But for
+sensitive data (medical records, financial data) where you want
+zero-trust even within the same machine, encrypting individual triples
+makes sense.
+
+Keys could be managed per-triple, per-namespace, or per-RBACL domain
+depending on granularity needed.
+
+### whoa awesome you're right I think 
+
+● Thanks! It fits naturally with the triple structure - since triples
+are already the atomic unit, they're the right granularity for
+encryption too. Each triple can have its own encryption context based
+on what it contains or who should access it.
+
+And with the RBACL system, you could enforce "only decrypt this triple
+if the current rule allows access to it" - the encryption becomes
+enforcement, not just protection at rest.
+
+### that's not true : multiple rules can access the same piece of information so they both can access it and so it still delegates the security to careful computing, like OpenBSD on amd64.
+
+● Right - encryption isn't the enforcement mechanism for RBACLs.
+Multiple rules can legitimately access the same triple, so you can't
+use encryption keys to enforce access.
+
+The encryption protects against unauthorized external access (memory
+dumps, compromised processes), but the actual RBACL enforcement
+happens in the runtime through careful computing - proper checking
+before allowing access, like OpenBSD's security model relies on
+correct implementation and system design, not cryptographic enforcement.
+
+Two separate layers:
+ - Encryption: protects data from external threats
+ - RBACL checking: enforces which code/rules can access what (relies
+   on correct implementation)
+
+### could the graph database run as a separate process and export a device to userland that would enforce the acls on system users ?
+
+● Yes! Like a character device /dev/kc3facts or Unix domain socket
+with filesystem permissions:
+
+ - Facts database runs as a separate daemon process (maybe even
+   privileged or as specific user)
+ - Exports a device or socket with permissions
+ - Userland processes open the device
+ - The kernel enforces access based on Unix users/groups
+ - The database process sees which UID/GID opened the connection
+   and enforces RBACLs accordingly
+
+This way:
+ - OS-level user separation enforces the security boundary
+ - No application-level RBACL bugs can bypass the kernel's user isolation
+ - Works with existing Unix security tools (sudo, doas, chown, chmod)
+ - The database process can map system users → RBACL rules
+
+Much cleaner than trying to implement your own privilege separation
+in userspace.
+
+
+---
