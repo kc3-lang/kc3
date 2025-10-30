@@ -10,7 +10,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a *.gcno *.la .libs *.lo *.o
+CLEANFILES = *.a *.gcno .libs *.o *.so
 
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 

@@ -14,7 +14,7 @@ pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
-config_lib dl -ldl
+config_lib dl -ldl 2>/dev/null
 config_define PREFIX "\"${PREFIX}\""
 config_have_crypt_newhash
 config_have_explicit_bzero

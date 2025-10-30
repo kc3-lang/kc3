@@ -101,22 +101,22 @@ build_o_objc() {
 
 build_prog() {
     echo >> ${CONFIG_MK}
-    echo "$PROG_ASAN: $LOCAL_LIBS_ASAN $OBJECTS_ASAN build_prog_asan" \
+    echo "$PROG_ASAN: $OBJECTS_ASAN build_prog_asan" \
          >> ${CONFIG_MK}
     echo "	./build_prog_asan $PROG_ASAN" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
-    echo "$PROG_COV: $LOCAL_LIBS_COV $OBJECTS_COV build_prog_cov" \
+    echo "$PROG_COV: $OBJECTS_COV build_prog_cov" \
          >> ${CONFIG_MK}
     echo "	./build_prog_cov $PROG_COV" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
-    echo "$PROG_DEBUG: $LOCAL_LIBS_DEBUG $OBJECTS_DEBUG build_prog_debug" \
+    echo "$PROG_DEBUG: $OBJECTS_DEBUG build_prog_debug" \
          >> ${CONFIG_MK}
     echo "	./build_prog_debug $PROG_DEBUG" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
-    echo "$PROG: $LOCAL_LIBS $OBJECTS build_prog_main" >> ${CONFIG_MK}
+    echo "$PROG: $OBJECTS build_prog_main" >> ${CONFIG_MK}
     echo "	./build_prog_main $PROG" >> ${CONFIG_MK}
 }
 
@@ -744,7 +744,8 @@ pkg_config() {
     if pkg-config "$1"; then
 	CFLAGS="$CFLAGS $(pkg-config --cflags "$1")"
 	CXXFLAGS="$CXXFLAGS $(pkg-config --cflags "$1")"
-	LIBS="$LIBS $(pkg-config --libs "$1")"
+	LIBS="$LIBS $(pkg-config --libs "$1" |
+                          sed -e 's/-Wl,\([^, ]*\),\([^, ]*\)//')"
         echo "HAVE_$NAME = true" >> "${CONFIG_MK}"
         config_define "HAVE_$NAME" 1
     fi

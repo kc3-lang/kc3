@@ -76,22 +76,25 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../libkc3_window_asan.so"
-LIBS_ASAN="$LIBS_LOCAL_ASAN $LIBS"
+LIBS_LOCAL_ASAN="../../libkc3/libkc3_asan.so"
+LIBS_LOCAL_ASAN="$LIBS_LOCAL_ASAN ../libkc3_window_asan.so"
+LIBS_ASAN="$LIBS $LIBS_LOCAL_ASAN"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBS_LOCAL_COV="../libkc3_window_cov.so"
-LIBS_COV="$LIBS_LOCAL_COV $LIBS"
+LIBS_LOCAL_COV="../../libkc3/libkc3_cov.so"
+LIBS_LOCAL_COV="$LIBS_LOCAL_COV ../libkc3_window_cov.so"
+LIBS_COV="$LIBS $LIBS_LOCAL_COV"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../libkc3_window_debug.so"
-LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
+LIBS_LOCAL_DEBUG="../../libkc3/libkc3_debug.so"
+LIBS_LOCAL_DEBUG="$LIBS_LOCAL_DEBUG ../libkc3_window_debug.so"
+LIBS_DEBUG="$LIBS $LIBS_LOCAL_DEBUG"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -fPIC"
@@ -99,8 +102,11 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS_LOCAL="../libkc3_window.so"
-LIBS="$LIBS_LOCAL $LIBS"
+LDFLAGS="$LDFLAGS -L../../libkc3"
+LDFLAGS="$LDFLAGS -L../"
+LIBS_LOCAL="-lkc3"
+LIBS_LOCAL="$LIBS_LOCAL -lkc3_window"
+LIBS="$LIBS $LIBS_LOCAL"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

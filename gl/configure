@@ -51,6 +51,7 @@ pkg_config libmd
 pkg_config freetype2
 pkg_config glesv2
 pkg_config libpng
+config_lib m -lm
 config_define PREFIX "\"${PREFIX}\""
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 
@@ -82,7 +83,8 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS_LOCAL="../libkc3/libkc3.so"
+LDFLAGS="$LDFLAGS -L../libkc3"
+LIBS_LOCAL="-lkc3"
 LIBS="$LIBS_LOCAL $LIBS"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}

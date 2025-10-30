@@ -55,8 +55,8 @@ pkg_config glesv2
 pkg_config libffi
 pkg_config libpng
 config_lib m -lm
-config_lib OPENGL -lopengl32 -lglu32
-config_lib OPENMP -fopenmp
+config_lib OPENGL -lopengl32 -lglu32 2>/dev/null
+config_lib OPENMP -fopenmp 2>/dev/null
 config_define HAVE_OPENMP "${HAVE_OPENMP}"
 pkg_config egl
 pkg_config xcb
@@ -104,12 +104,25 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LOCAL_LIBS="../../../../libkc3/libkc3.so"
-LOCAL_LIBS="$LOCAL_LIBS ../../../../gl/libkc3_gl.so"
-LOCAL_LIBS="$LOCAL_LIBS ../../../libkc3_window.so"
-LOCAL_LIBS="$LOCAL_LIBS ../../../demo/libkc3_window_demo.so"
-LOCAL_LIBS="$LOCAL_LIBS ../../libkc3_window_egl.so"
-LOCAL_LIBS="$LOCAL_LIBS ../libkc3_window_egl_xcb.so"
+LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
+LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/gl"
+LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window"
+LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window/demo"
+LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window/egl"
+LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window/egl/xcb"
+LDFLAGS="$LDFLAGS -L../../../../libkc3"
+LDFLAGS="$LDFLAGS -L../../../../gl"
+LDFLAGS="$LDFLAGS -L../../../"
+LDFLAGS="$LDFLAGS -L../../../demo"
+LDFLAGS="$LDFLAGS -L../../"
+LDFLAGS="$LDFLAGS -L../"
+LOCAL_LIBS="-lkc3"
+LOCAL_LIBS="$LOCAL_LIBS -lkc3_gl"
+LOCAL_LIBS="$LOCAL_LIBS -lkc3_window"
+LOCAL_LIBS="$LOCAL_LIBS -lkc3_window_demo"
+LOCAL_LIBS="$LOCAL_LIBS -lkc3_window_egl"
+LOCAL_LIBS="$LOCAL_LIBS -lkc3_window_egl_xcb"
 LIBS="$LOCAL_LIBS $LIBS"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

@@ -79,8 +79,10 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS_LOCAL="../libkc3/libkc3.so"
-LIBS_LOCAL="${LIBS_LOCAL} ../socket/libkc3_socket.so"
+LDFLAGS="$LDFLAGS -L../libkc3"
+LDFLAGS="$LDFLAGS -L../socket"
+LIBS_LOCAL="-lkc3"
+LIBS_LOCAL="${LIBS_LOCAL} -lkc3_socket"
 LIBS="$LIBS_LOCAL $LIBS"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}

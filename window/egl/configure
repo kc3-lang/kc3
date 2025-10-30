@@ -94,7 +94,10 @@ echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 # Main config
-LIBS_LOCAL="../../libkc3/libkc3.so ../../gl/libkc3_gl.so ../libkc3_window.so"
+LDFLAGS="$LDFLAGS -L../../libkc3"
+LDFLAGS="$LDFLAGS -L../../gl"
+LDFLAGS="$LDFLAGS -L../"
+LIBS_LOCAL="-lkc3 -lkc3_gl -lkc3_window"
 LIBS="$LIBS_LOCAL $LIBS"
 
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
