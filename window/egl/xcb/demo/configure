@@ -39,10 +39,9 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CPPFLAGS="-I../../../.. $CPPFLAGS"
+CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -Wno-error=unknown-pragmas"
-CFLAGS="$CFLAGS -std=c11 -pedantic -pipe"
-LIBS="$LIBS -lm"
+CFLAGS="$CFLAGS -std=c11 -pedantic -pipe -fPIC"
 config_asan
 config_cocoa
 config_gnu
@@ -55,6 +54,7 @@ pkg_config freetype2
 pkg_config glesv2
 pkg_config libffi
 pkg_config libpng
+config_lib m -lm
 config_lib OPENGL -lopengl32 -lglu32
 config_lib OPENMP -fopenmp
 config_define HAVE_OPENMP "${HAVE_OPENMP}"

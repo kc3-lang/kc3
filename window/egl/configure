@@ -31,10 +31,8 @@ echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
 echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CPPFLAGS="-I../.. $CPPFLAGS"
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
-LDFLAGS="--shared ${LDFLAGS}"
-LIBS="$LIBS -rpath ${PREFIX}/lib"
+CPPFLAGS="$CPPFLAGS -DPIC"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
 config_asan
 config_gnu
 config_i386

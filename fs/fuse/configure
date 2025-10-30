@@ -27,8 +27,9 @@ PROG_DEBUG=mount_kc3fs_debug
 . ./sources.sh
 
 # Common config for all targets
-CPPFLAGS="-I../.. $CPPFLAGS"
+CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC -pthread"
+CFLAGS="$CFLAGS -fPIC"
 config_asan
 config_gnu
 config_i386

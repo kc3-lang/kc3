@@ -599,7 +599,7 @@ config_prog() {
     echo "PROG_ASAN  = ${PROG_ASAN}"  >> ${CONFIG_MK}
     echo "PROG_COV   = ${PROG_COV}"   >> ${CONFIG_MK}
     echo "PROG_DEBUG = ${PROG_DEBUG}" >> ${CONFIG_MK}
-    CPPFLAGS="$CPPFLAGS -DPREFIX=\"${PREFIX}\""
+    CPPFLAGS="$CPPFLAGS -DPREFIX=\"\\\"${PREFIX}\\\"\""
 }
 
 config_subdirs() {

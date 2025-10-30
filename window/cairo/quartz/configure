@@ -49,11 +49,9 @@ OBJECTS_DEBUG="$OBJECTS_DEBUG $(objc2ext .debug.o "$OBJC_SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CPPFLAGS="$CPPFLAGS -I../../.."
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
+CPPFLAGS="$CPPFLAGS -DPIC"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
 OBJCFLAGS="$CFLAGS -W -Wall -Werror"
-LDFLAGS="--shared $LDFLAGS"
-LIBS="$LIBS"
 config_asan
 config_gnu
 config_i386

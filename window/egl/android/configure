@@ -38,9 +38,9 @@ OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 
 # Common config for all targets
-CPPFLAGS="-I../../.. $CPPFLAGS"
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
-LDFLAGS="--shared ${LDFLAGS} -u ANativeActivity_onCreate"
+CPPFLAGS="$CPPFLAGS -DPIC"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
+LDFLAGS="${LDFLAGS} -u ANativeActivity_onCreate"
 LIBS="${LIBS} -llog -landroid"
 config_asan
 config_gnu

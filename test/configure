@@ -39,8 +39,9 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CPPFLAGS="$CPPFLAGS -I.."
+CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -g3 -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
+CFLAGS="$CFLAGS -fPIC"
 config_asan
 config_gnu
 config_i386
