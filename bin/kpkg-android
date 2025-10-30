@@ -11,7 +11,7 @@ export  LD="${TOOLCHAIN}/bin/ld"
 
 export PREFIX="/home/dx/kpkg/arch/${ARCH}/local"
 export CPPFLAGS="-I${PREFIX}/include"
-export  LDFLAGS="-L${PREFIX}/lib --ld-path=${LD}"
+export  LDFLAGS="-L${PREFIX}/lib -B${TOOLCHAIN}/bin"
 
 export PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig"
 
