@@ -32,20 +32,20 @@ echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 
 . "${SRC_DIR}/sources.sh"
 
-OBJECTS="$(c2ext .main.lo "$SOURCES")"
-OBJECTS="$OBJECTS $(objc2ext .main.lo "$OBJC_SOURCES")"
+OBJECTS="$(c2ext .main.o "$SOURCES")"
+OBJECTS="$OBJECTS $(objc2ext .main.o "$OBJC_SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 
-OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
-OBJECTS_ASAN="$OBJECTS_ASAN $(objc2ext .asan.lo "$OBJC_SOURCES")"
+OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
+OBJECTS_ASAN="$OBJECTS_ASAN $(objc2ext .asan.o "$OBJC_SOURCES")"
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 
-OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
-OBJECTS_COV="$OBJECTS_COV $(objc2ext .cov.lo "$OBJC_SOURCES")"
+OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
+OBJECTS_COV="$OBJECTS_COV $(objc2ext .cov.o "$OBJC_SOURCES")"
 echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
 
-OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
-OBJECTS_DEBUG="$OBJECTS_DEBUG $(objc2ext .debug.lo "$OBJC_SOURCES")"
+OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
+OBJECTS_DEBUG="$OBJECTS_DEBUG $(objc2ext .debug.o "$OBJC_SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets

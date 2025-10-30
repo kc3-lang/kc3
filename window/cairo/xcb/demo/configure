@@ -24,18 +24,18 @@ config_prog kc3_window_cairo_xcb_demo
 
 . "${SRC_DIR}/sources.sh"
 
-OBJECTS="$(c2ext .main.lo "$SOURCES")"
+OBJECTS="$(c2ext .main.o "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 
-OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
+OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 
 if $HAVE_GCOV; then
-    OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
+    OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
     echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
 fi
 
-OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
+OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets

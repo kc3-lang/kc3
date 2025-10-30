@@ -49,10 +49,10 @@ pkg_config gl
 
 . "${SRC_DIR}/sources.sh"
 
-OBJECTS="$(c2ext .main.lo "$SOURCES")"
-OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
-OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
-OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
+OBJECTS="$(c2ext .main.o "$SOURCES")"
+OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
+OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
+OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}

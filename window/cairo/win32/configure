@@ -34,11 +34,11 @@ echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 
 . ./sources.sh
 
-OBJECTS="$(c2ext .main.lo "$SOURCES")"
+OBJECTS="$(c2ext .main.o "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
-OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
-OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
-OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
+OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
+OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
+OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 
 # Common config for all targets
 CPPFLAGS="-I../../.. $CPPFLAGS"
@@ -123,23 +123,23 @@ echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_DEBUG} ${OBJECT
 
 for SRC in $SOURCES; do
     echo >> ${CONFIG_MK}
-    SRC_LO="$(c2ext .main.lo "$SRC")"
-    c_ext_rule .main.lo "$SRC" >> ${CONFIG_MK}
+    SRC_LO="$(c2ext .main.o "$SRC")"
+    c_ext_rule .main.o "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
-    SRC_ASAN_LO="$(c2ext .asan.lo "$SRC")"
-    c_ext_rule .asan.lo "$SRC" >> ${CONFIG_MK}
+    SRC_ASAN_LO="$(c2ext .asan.o "$SRC")"
+    c_ext_rule .asan.o "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_ASAN_LO" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
-    SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
-    c_ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
+    SRC_COV_LO="$(c2ext .cov.o "$SRC")"
+    c_ext_rule .cov.o "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
-    SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
-    c_ext_rule .debug.lo "$SRC" >> ${CONFIG_MK}
+    SRC_DEBUG_LO="$(c2ext .debug.o "$SRC")"
+    c_ext_rule .debug.o "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
 done
 
