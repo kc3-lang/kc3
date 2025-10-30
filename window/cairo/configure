@@ -20,10 +20,10 @@ export SRC_TOP="$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")"
 
 . "${SRC_TOP}/config.subr"
 
-LIB=libkc3_window_cairo.la
-LIB_ASAN=libkc3_window_cairo_asan.la
-LIB_COV=libkc3_window_cairo_cov.la
-LIB_DEBUG=libkc3_window_cairo_debug.la
+LIB=libkc3_window_cairo.so
+LIB_ASAN=libkc3_window_cairo_asan.so
+LIB_COV=libkc3_window_cairo_cov.so
+LIB_DEBUG=libkc3_window_cairo_debug.so
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
@@ -78,21 +78,21 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../libkc3_window_asan.la"
+LIBS_LOCAL_ASAN="../libkc3_window_asan.so"
 LIBS_ASAN="$LIBS_LOCAL_ASAN $LIBS"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBS_LOCAL_COV="../libkc3_window_cov.la"
+LIBS_LOCAL_COV="../libkc3_window_cov.so"
 LIBS_COV="$LIBS_LOCAL_COV $LIBS"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../libkc3_window_debug.la"
+LIBS_LOCAL_DEBUG="../libkc3_window_debug.so"
 LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
 
 # Main config
@@ -101,7 +101,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS_LOCAL="../libkc3_window.la"
+LIBS_LOCAL="../libkc3_window.so"
 LIBS="$LIBS_LOCAL $LIBS"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
@@ -131,7 +131,7 @@ update_build_objc
 update_build_lib
 
 build_o_c
-build_lo_objc
+build_o_objc
 build_lib
 
 if pkg-config cairo-xcb; then

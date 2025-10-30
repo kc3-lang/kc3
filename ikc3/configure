@@ -71,28 +71,28 @@ CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBKC3_ASAN=../libkc3/libkc3_asan.la
-LOCAL_LIBS_ASAN="$LIBKC3_ASAN ../socket/libkc3_socket_asan.la"
-LOCAL_LIBS_ASAN="$LOCAL_LIBS_ASAN ../tls/libkc3_tls_asan.la"
+LIBKC3_ASAN=../libkc3/libkc3_asan.so
+LOCAL_LIBS_ASAN="$LIBKC3_ASAN ../socket/libkc3_socket_asan.so"
+LOCAL_LIBS_ASAN="$LOCAL_LIBS_ASAN ../tls/libkc3_tls_asan.so"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS -lasan"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBKC3_COV=../libkc3/libkc3_cov.la
-LOCAL_LIBS_COV="$LIBKC3_COV ../socket/libkc3_socket_cov.la"
-LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../tls/libkc3_tls_cov.la"
+LIBKC3_COV=../libkc3/libkc3_cov.so
+LOCAL_LIBS_COV="$LIBKC3_COV ../socket/libkc3_socket_cov.so"
+LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../tls/libkc3_tls_cov.so"
 LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBKC3_DEBUG=../libkc3/libkc3_debug.la
+LIBKC3_DEBUG=../libkc3/libkc3_debug.so
 LOCAL_LIBS_DEBUG="$LIBKC3_DEBUG"
-LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../socket/libkc3_socket_debug.la"
-LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../tls/libkc3_tls_debug.la"
+LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../socket/libkc3_socket_debug.so"
+LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../tls/libkc3_tls_debug.so"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
@@ -101,9 +101,9 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBKC3=../libkc3/libkc3.la
-LOCAL_LIBS="$LIBKC3 ../socket/libkc3_socket.la"
-LOCAL_LIBS="$LOCAL_LIBS ../tls/libkc3_tls.la"
+LIBKC3=../libkc3/libkc3.so
+LOCAL_LIBS="$LIBKC3 ../socket/libkc3_socket.so"
+LOCAL_LIBS="$LOCAL_LIBS ../tls/libkc3_tls.so"
 LIBS="$LOCAL_LIBS $LIBS"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

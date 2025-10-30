@@ -20,10 +20,10 @@ export SRC_TOP="$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")"
 
 . "${SRC_TOP}/config.subr"
 
-LIB=libkc3_window_sdl2.la
-LIB_ASAN=libkc3_window_sdl2_asan.la
-LIB_COV=libkc3_window_sdl2_cov.la
-LIB_DEBUG=libkc3_window_sdl2_debug.la
+LIB=libkc3_window_sdl2.so
+LIB_ASAN=libkc3_window_sdl2_asan.so
+LIB_COV=libkc3_window_sdl2_cov.so
+LIB_DEBUG=libkc3_window_sdl2_debug.so
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
@@ -67,21 +67,21 @@ CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../libkc3_window_asan.la ../../gl/libkc3_gl_asan.la"
+LIBS_LOCAL_ASAN="../libkc3_window_asan.so ../../gl/libkc3_gl_asan.so"
 LIBS_ASAN="$LIBS_LOCAL_ASAN $LIBS"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -DDEBUG --coverage"
 LDFLAGS_COV="$LDFLAGS"
-LIBS_LOCAL_COV="../libkc3_window_cov.la ../../gl/libkc3_gl_cov.la"
+LIBS_LOCAL_COV="../libkc3_window_cov.so ../../gl/libkc3_gl_cov.so"
 LIBS_COV="$LIBS_LOCAL_COV $LIBS"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../libkc3_window_debug.la ../../gl/libkc3_gl_debug.la"
+LIBS_LOCAL_DEBUG="../libkc3_window_debug.so ../../gl/libkc3_gl_debug.so"
 LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
 
 # Main config
@@ -90,7 +90,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS_LOCAL="../libkc3_window.la ../../gl/libkc3_gl.la"
+LIBS_LOCAL="../libkc3_window.so ../../gl/libkc3_gl.so"
 LIBS="$LIBS_LOCAL $LIBS"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}

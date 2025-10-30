@@ -60,7 +60,7 @@ LIBS="$LIBS -lpthread -lm"
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBKC3_ASAN=../libkc3/libkc3_asan.la
+LIBKC3_ASAN=../libkc3/libkc3_asan.so
 LOCAL_LIBS_ASAN="$LIBKC3_ASAN"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
@@ -68,7 +68,7 @@ LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBKC3_COV=../libkc3/libkc3_cov.la
+LIBKC3_COV=../libkc3/libkc3_cov.so
 LOCAL_LIBS_COV="$LIBKC3_COV"
 LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
 
@@ -76,7 +76,7 @@ LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g3"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBKC3_DEBUG=../libkc3/libkc3_debug.la
+LIBKC3_DEBUG=../libkc3/libkc3_debug.so
 LOCAL_LIBS_DEBUG="$LIBKC3_DEBUG"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
@@ -86,7 +86,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBKC3=../libkc3/libkc3.la
+LIBKC3=../libkc3/libkc3.so
 LOCAL_LIBS="$LIBKC3"
 LIBS="$LOCAL_LIBS $LIBS"
 

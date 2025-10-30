@@ -20,10 +20,10 @@ export SRC_TOP="$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)"
 
 . "${SRC_TOP}/config.subr"
 
-LIB=libkc3_window_egl_xcb.la
-LIB_ASAN=libkc3_window_egl_xcb_asan.la
-LIB_COV=libkc3_window_egl_xcb_cov.la
-LIB_DEBUG=libkc3_window_egl_xcb_debug.la
+LIB=libkc3_window_egl_xcb.so
+LIB_ASAN=libkc3_window_egl_xcb_asan.so
+LIB_COV=libkc3_window_egl_xcb_cov.so
+LIB_DEBUG=libkc3_window_egl_xcb_debug.so
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
@@ -66,7 +66,7 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -O1 -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../../../libkc3/libkc3_asan.la"
+LIBS_LOCAL_ASAN="../../../libkc3/libkc3_asan.so"
 LIBS_ASAN="$LIBS_LOCAL_ASAN $LIBS"
 
 echo "CPPFLAGS_ASAN = $CPPFLAGS_ASAN" >> ${CONFIG_MK}
@@ -78,7 +78,7 @@ echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
 LDFLAGS_COV="$LDFLAGS"
-LIBS_LOCAL_COV="../../../libkc3/libkc3_cov.la"
+LIBS_LOCAL_COV="../../../libkc3/libkc3_cov.so"
 LIBS_COV="$LIBS_LOCAL_COV $LIBS -lgcov"
 
 echo "CPPFLAGS_COV = $CPPFLAGS_COV" >> ${CONFIG_MK}
@@ -90,7 +90,7 @@ echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../../../libkc3/libkc3_debug.la"
+LIBS_LOCAL_DEBUG="../../../libkc3/libkc3_debug.so"
 LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
 
 echo "CPPFLAGS_DEBUG = $CPPFLAGS_DEBUG" >> ${CONFIG_MK}
@@ -99,7 +99,7 @@ echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 # Main config
-LIBS_LOCAL="../../../libkc3/libkc3.la"
+LIBS_LOCAL="../../../libkc3/libkc3.so"
 LIBS="$LIBS_LOCAL $LIBS"
 
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}

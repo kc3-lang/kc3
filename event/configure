@@ -20,10 +20,10 @@ export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
 . "${SRC_TOP}/config.subr"
 
-LIB=libkc3_event.la
-LIB_ASAN=libkc3_event_asan.la
-LIB_COV=libkc3_event_cov.la
-LIB_DEBUG=libkc3_event_debug.la
+LIB=libkc3_event.so
+LIB_ASAN=libkc3_event_asan.so
+LIB_COV=libkc3_event_cov.so
+LIB_DEBUG=libkc3_event_debug.so
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
@@ -59,21 +59,21 @@ CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../libkc3/libkc3_asan.la"
+LIBS_LOCAL_ASAN="../libkc3/libkc3_asan.so"
 LIBS_ASAN="$LIBS $LIBS_LOCAL_ASAN"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBS_LOCAL_COV="../libkc3/libkc3_cov.la"
+LIBS_LOCAL_COV="../libkc3/libkc3_cov.so"
 LIBS_COV="$LIBS $LIBS_LOCAL_COV -lgcov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../libkc3/libkc3_debug.la"
+LIBS_LOCAL_DEBUG="../libkc3/libkc3_debug.so"
 LIBS_DEBUG="$LIBS $LIBS_LOCAL_DEBUG"
 
 # Main config
@@ -82,7 +82,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS_LOCAL="../libkc3/libkc3.la"
+LIBS_LOCAL="../libkc3/libkc3.so"
 LIBS="$LIBS $LIBS_LOCAL"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}

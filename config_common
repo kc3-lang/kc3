@@ -1,8 +1,10 @@
 # -*- sh -*-
 # Common config for all targets
-CPPFLAGS="$CPPFLAGS -I${SRC_TOP}"
+CPPFLAGS="$CPPFLAGS -I${SRC_TOP} -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
-CXXFLAGS="$CXXFLAGS -W -Wall -Werror -std=c++11 -pedantic -pipe -pthread"
+CFLAGS="$CFLAGS -fPIC"
+CXXFLAGS="$CXXFLAGS -W -Wall -Werror -std=c++11 -pedantic -pipe"
+CXXFLAGS="$CXXFLAGS -pthread -fPIC"
 config_asan
 config_gnu
 config_i386
@@ -22,6 +24,7 @@ config_have_quadmath
 config_have_stat_mtim
 config_lib m -lm
 config_lib pthread -lpthread
+config_lib compiler_rt -lcompiler_rt
 if $HAVE_WIN32 || $HAVE_WIN64; then
     LIBS="$LIBS -lws2_32 -ldl"
 fi

@@ -57,21 +57,21 @@ LIBS="$LIBS -pthread -lm"
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBKC3_ASAN=../libkc3/libkc3_asan.la
+LIBKC3_ASAN=../libkc3/libkc3_asan.so
 LOCAL_LIBS_ASAN="$LIBKC3_ASAN"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBKC3_COV=../libkc3/libkc3_cov.la
+LIBKC3_COV=../libkc3/libkc3_cov.so
 LOCAL_LIBS_COV="$LIBKC3_COV"
 LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBKC3_DEBUG=../libkc3/libkc3_debug.la
+LIBKC3_DEBUG=../libkc3/libkc3_debug.so
 LOCAL_LIBS_DEBUG="$LIBKC3_DEBUG"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
@@ -81,7 +81,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBKC3=../libkc3/libkc3.la
+LIBKC3=../libkc3/libkc3.so
 LOCAL_LIBS="$LIBKC3"
 LIBS="$LOCAL_LIBS $LIBS"
 

@@ -20,10 +20,10 @@ export SRC_TOP="$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)"
 
 . "${SRC_TOP}/config.subr"
 
-LIB=libkc3_window_egl_drm.la
-LIB_ASAN=libkc3_window_egl_drm_asan.la
-LIB_COV=libkc3_window_egl_drm_cov.la
-LIB_DEBUG=libkc3_window_egl_drm_debug.la
+LIB=libkc3_window_egl_drm.so
+LIB_ASAN=libkc3_window_egl_drm_asan.so
+LIB_COV=libkc3_window_egl_drm_cov.so
+LIB_DEBUG=libkc3_window_egl_drm_debug.so
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}

@@ -19,10 +19,10 @@ export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
 
 . "${SRC_TOP}/config.subr"
 
-LIB=libkc3_window_egl_android_demo.la
-LIB_ASAN=libkc3_window_egl_android_demo_asan.la
-LIB_COV=libkc3_window_egl_android_demo_cov.la
-LIB_DEBUG=libkc3_window_egl_android_demo_debug.la
+LIB=libkc3_window_egl_android_demo.so
+LIB_ASAN=libkc3_window_egl_android_demo_asan.so
+LIB_COV=libkc3_window_egl_android_demo_cov.so
+LIB_DEBUG=libkc3_window_egl_android_demo_debug.so
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
