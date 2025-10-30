@@ -346,6 +346,8 @@ defmodule Kpkg do
             result = Kpkg.fake(pkg, tree, arch)
           ["fake-clean" | rest] ->
             result = Kpkg.fake_clean(pkg, tree, arch)
+          ["fetch" | rest] ->
+            result = Kpkg.fetch(pkg)
           ["info" | rest] ->
             result = Kpkg.info(pkg, tree, arch)
           ["install" | rest] ->
@@ -358,6 +360,8 @@ defmodule Kpkg do
             result = Kpkg.package(pkg, tree, arch)
           ["package-clean" | rest] ->
             result = Kpkg.package_clean(pkg, tree, arch)
+          ["pull" | rest] ->
+            result = Kpkg.pull(pkg, tree)
           ["--tree", tree_arg | rest] ->
             tree = ^ tree_arg
           ["uninstall" | rest] ->
@@ -390,6 +394,8 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     checkout-clean       remove checkout files : src/$DIR/$TREE
     clone                git clone into git/$DIR
     clone-clean          remove git repo files: git/$DIR
+  o fetch                git fetch --all in git/$DIR
+  o pull                 git pull in src/$DIR/$TREE
 🐢 #{title}Dependencies commands :#{reset}
     build-dependencies   show build-time dependencies
     dependencies         show dependencies
@@ -691,8 +697,6 @@ endian = '#{endian}'
       # TODO: --bare ?
       Kpkg.exec!(["git", "clone", "--bare", "--mirror", pkg.git,
                   pkg_git_dir])
-    else
-      Kpkg.exec!(["git", "-C", pkg_git_dir, "fetch", "--all"])
     end
     Kpkg.indent(-1)
     Kpkg.log_call("clone #{pkg.name}: OK")
@@ -708,6 +712,40 @@ endian = '#{endian}'
     end
     Kpkg.indent(-1)
     Kpkg.log_call("clone_clean #{pkg.name}: OK")
+    0
+  }
+
+  def fetch = fn (pkg) {
+    Kpkg.log_call("fetch #{pkg.name}")
+    Kpkg.indent(1)
+    pkg_git_dir = Kpkg.git_dir(pkg)
+    if ! File.is_directory?(pkg_git_dir) do
+      puts("kpkg: fetch #{pkg.name}: please clone first")
+      Kpkg.indent(-1)
+      Kpkg.log_call("fetch #{pkg.name}: ERROR")
+      return 1
+    else
+      Kpkg.exec!(["git", "-C", pkg_git_dir, "fetch", "--all"])
+    end
+    Kpkg.indent(-1)
+    Kpkg.log_call("fetch #{pkg.name}: OK")
+    0
+  }
+
+  def pull = fn (pkg, tree) {
+    Kpkg.log_call("pull #{pkg.name} #{tree}")
+    Kpkg.indent(1)
+    pkg_src_dir = Kpkg.src_dir(pkg, tree)
+    if ! File.is_directory?(pkg_src_dir) do
+      puts("kpkg: fetch #{pkg.name} #{tree}: please checkout first")
+      Kpkg.indent(-1)
+      Kpkg.log_call("fetch #{pkg.name}: ERROR")
+      return 1
+    else
+      Kpkg.exec!(["git", "-C", pkg_src_dir, "pull"])
+    end
+    Kpkg.indent(-1)
+    Kpkg.log_call("fetch #{pkg.name}: OK")
     0
   }
 
