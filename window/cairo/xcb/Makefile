@@ -25,11 +25,11 @@ all:
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 build:
-	${MAKE} ${LIB}
+	${MAKE} ${LIB}.${SHARED_EXT}
 	${MAKE} -C demo build
 
 asan:
-	${MAKE} ${LIB_ASAN}
+	${MAKE} ${LIB_ASAN}.${SHARED_EXT}
 	${MAKE} -C demo asan
 
 clean:
@@ -41,11 +41,11 @@ clean_cov:
 	${MAKE} -C demo clean_cov
 
 cov:
-	${MAKE} ${LIB_COV}
+	${MAKE} ${LIB_COV}.${SHARED_EXT}
 	${MAKE} -C demo cov
 
 debug:
-	${MAKE} ${LIB_DEBUG}
+	${MAKE} ${LIB_DEBUG}.${SHARED_EXT}
 	${MAKE} -C demo debug
 
 demo: build

@@ -25,12 +25,12 @@ all:
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 
 build:
-	${MAKE} ${LIB}
+	${MAKE} ${LIB}.${SHARED_EXT}
 	${MAKE} -C demo build
 	! test -d kubz || ${MAKE} -C kubz build
 
 asan:
-	${MAKE} ${LIB_ASAN}
+	${MAKE} ${LIB_ASAN}.${SHARED_EXT}
 	${MAKE} -C demo asan
 	! test -d kubz || ${MAKE} -C kubz asan
 
@@ -44,12 +44,12 @@ clean_cov:
 	! test -d kubz || ${MAKE} -C kubz clean_cov
 
 cov:
-	${MAKE} ${LIB_COV}
+	${MAKE} ${LIB_COV}.${SHARED_EXT}
 	${MAKE} -C demo cov
 	! test -d kubz || ${MAKE} -C kubz cov
 
 debug:
-	${MAKE} ${LIB_DEBUG}
+	${MAKE} ${LIB_DEBUG}.${SHARED_EXT}
 	${MAKE} -C demo debug
 	! test -d kubz || ${MAKE} -C kubz debug
 

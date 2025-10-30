@@ -25,10 +25,10 @@ all:
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 build:
-	${MAKE} ${LIB}
+	${MAKE} ${LIB}.${SHARED_EXT}
 
 asan:
-	${MAKE} ${LIB_ASAN}
+	${MAKE} ${LIB_ASAN}.${SHARED_EXT}
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -37,10 +37,10 @@ clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
 cov:
-	${MAKE} ${LIB_COV}
+	${MAKE} ${LIB_COV}.${SHARED_EXT}
 
 debug:
-	${MAKE} ${LIB_DEBUG}
+	${MAKE} ${LIB_DEBUG}.${SHARED_EXT}
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
