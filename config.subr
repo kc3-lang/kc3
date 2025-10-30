@@ -849,6 +849,7 @@ update_build_c() {
     echo "export CC=\"${CC}\"" >> ${BUILD_C_ASAN}
     echo "export CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_C_ASAN}
     echo "export CFLAGS=\"${CFLAGS_ASAN} ${CFLAGS_HOST} ${CFLAGS_TARGET}\"" >> ${BUILD_C_ASAN}
+    echo "export LD=\"${LD}\"" >> ${BUILD_C_ASAN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_ASAN}
     update_and_chmod 755 ${BUILD_C_ASAN} build_c_asan
 
@@ -859,6 +860,7 @@ update_build_c() {
     echo "export CC=\"${CC}\"" >> ${BUILD_C_COV}
     echo "export CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_C_COV}
     echo "export CFLAGS=\"${CFLAGS_COV} ${CFLAGS_HOST} ${CFLAGS_TARGET}\"" >> ${BUILD_C_COV}
+    echo "export LD=\"${LD}\"" >> ${BUILD_C_COV}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_COV}
     update_and_chmod 755 ${BUILD_C_COV} build_c_cov
 
@@ -869,6 +871,7 @@ update_build_c() {
     echo "export CC=\"${CC}\"" >> ${BUILD_C_DEBUG}
     echo "export CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_C_DEBUG}
     echo "export CFLAGS=\"${CFLAGS_DEBUG}\" ${CFLAGS_HOST} ${CFLAGS_TARGET}" >> ${BUILD_C_DEBUG}
+    echo "export LD=\"${LD}\"" >> ${BUILD_C_DEBUG}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_DEBUG}
     update_and_chmod 755 ${BUILD_C_DEBUG} build_c_debug
 
@@ -879,6 +882,7 @@ update_build_c() {
     echo "export CC=\"${CC}\"" >> ${BUILD_C_MAIN}
     echo "export CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_C_MAIN}
     echo "export CFLAGS=\"${CFLAGS} ${CFLAGS_HOST} ${CFLAGS_TARGET}\"" >> ${BUILD_C_MAIN}
+    echo "export LD=\"${LD}\"" >> ${BUILD_C_MAIN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_MAIN}
     update_and_chmod 755 ${BUILD_C_MAIN} build_c_main
 }
@@ -900,6 +904,7 @@ update_build_cxx() {
     echo "export CXX=\"${CXX}\"" >> ${BUILD_CXX_ASAN}
     echo "export CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_CXX_ASAN}
     echo "export CXXFLAGS=\"${CXXFLAGS_ASAN}\"" >> ${BUILD_CXX_ASAN}
+    echo "export LD=\"${LD}\"" >> ${BUILD_CXX_ASAN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_CXX_ASAN}
     update_and_chmod 755 ${BUILD_CXX_ASAN} build_cxx_asan
 
@@ -909,6 +914,7 @@ update_build_cxx() {
     echo "export CXX=\"${CXX}\"" >> ${BUILD_CXX_COV}
     echo "export CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_CXX_COV}
     echo "export CXXFLAGS=\"${CXXFLAGS_COV}\"" >> ${BUILD_CXX_COV}
+    echo "export LD=\"${LD}\"" >> ${BUILD_CXX_COV}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_CXX_COV}
     update_and_chmod 755 ${BUILD_CXX_COV} build_cxx_cov
 
@@ -918,6 +924,7 @@ update_build_cxx() {
     echo "export CXX=\"${CXX}\"" >> ${BUILD_CXX_DEBUG}
     echo "export CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_CXX_DEBUG}
     echo "export CXXFLAGS=\"${CXXFLAGS_DEBUG}\"" >> ${BUILD_CXX_DEBUG}
+    echo "export LD=\"${LD}\"" >> ${BUILD_CXX_DEBUG}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_CXX_DEBUG}
     update_and_chmod 755 ${BUILD_CXX_DEBUG} build_cxx_debug
 
@@ -927,6 +934,7 @@ update_build_cxx() {
     echo "export CXX=\"${CXX}\"" >> ${BUILD_CXX_MAIN}
     echo "export CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_CXX_MAIN}
     echo "export CXXFLAGS=\"${CXXFLAGS}\"" >> ${BUILD_CXX_MAIN}
+    echo "export LD=\"${LD}\"" >> ${BUILD_CXX_MAIN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_CXX_MAIN}
     update_and_chmod 755 ${BUILD_CXX_MAIN} build_cxx_main
 }
