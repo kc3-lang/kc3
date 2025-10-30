@@ -947,8 +947,7 @@ update_build_lib() {
     mkdir -p .build
 
     if echo "${CC}" | grep -q android; then
-        LINK="\${CC} -shared \${CFLAGS} \${LDFLAGS}"
-        LINK="$LINK \${OBJECTS} \${LIBS} -o \"\$1\""
+        LINK="\${LD} \${LDFLAGS} \${OBJECTS} \${LIBS} -o \"\$1\""
     else
         LINK="${LIBTOOL} --tag=CC --mode=link "
         LINK="$LINK \${CC} -shared \${CFLAGS} \${LDFLAGS}"
