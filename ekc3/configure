@@ -20,10 +20,10 @@ export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
 . "${SRC_TOP}/config.subr"
 
-LIB=libekc3.so
-LIB_ASAN=libekc3_asan.so
-LIB_COV=libekc3_cov.so
-LIB_DEBUG=libekc3_debug.so
+LIB=libekc3
+LIB_ASAN=libekc3_asan
+LIB_COV=libekc3_cov
+LIB_DEBUG=libekc3_debug
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}

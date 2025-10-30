@@ -17,10 +17,10 @@ SRC_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
 
 . "${SRC_TOP}/config.subr"
 
-LIB=libkc3_window_cairo_win32.so
-LIB_ASAN=libkc3_window_cairo_win32_asan.so
-LIB_COV=libkc3_window_cairo_win32_cov.so
-LIB_DEBUG=libkc3_window_cairo_win32_debug.so
+LIB=libkc3_window_cairo_win32
+LIB_ASAN=libkc3_window_cairo_win32_asan
+LIB_COV=libkc3_window_cairo_win32_cov
+LIB_DEBUG=libkc3_window_cairo_win32_debug
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}

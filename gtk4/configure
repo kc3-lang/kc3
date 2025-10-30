@@ -20,10 +20,10 @@ export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
 . "${SRC_TOP}/config.subr"
 
-LIB=libkc3_gtk4.so
-LIB_ASAN=libkc3_gtk4_asan.so
-LIB_COV=libkc3_gtk4_cov.so
-LIB_DEBUG=libkc3_gtk4_debug.so
+LIB=libkc3_gtk4
+LIB_ASAN=libkc3_gtk4_asan
+LIB_COV=libkc3_gtk4_cov
+LIB_DEBUG=libkc3_gtk4_debug
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}

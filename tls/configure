@@ -20,10 +20,10 @@ export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
 . "${SRC_TOP}/config.subr"
 
-LIB=libkc3_tls.so
-LIB_ASAN=libkc3_tls_asan.so
-LIB_COV=libkc3_tls_cov.so
-LIB_DEBUG=libkc3_tls_debug.so
+LIB=libkc3_tls
+LIB_ASAN=libkc3_tls_asan
+LIB_COV=libkc3_tls_cov
+LIB_DEBUG=libkc3_tls_debug
 
 . "${SRC_DIR}/sources.sh"
 
