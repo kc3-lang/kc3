@@ -290,7 +290,8 @@ defmodule Kpkg do
       system(["sh", "-c", "ln -s #{__DIR__}/kpkg/repos #{repos_dir}/kpkg"])
     end
     List.map(File.list(repos_dir), fn (file) {
-      if File.is_directory?(file) do
+      if ! Str.starts_with?(file, ".") &&
+         File.is_directory?(file) do
         KC3.load_directory("#{repos_dir}/#{file}/")
       end
     })
