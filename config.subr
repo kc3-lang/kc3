@@ -1330,7 +1330,7 @@ case "$(uname -s)" in
         PROG_LDADD="/usr/lib/crt1.o"
         PROG_LDADD="$PROG_LDADD /usr/lib/crti.o"
         PROG_LDADD="$PROG_LDADD /usr/lib/crtbegin.o"
-        PROG_LDADD="$PROG_LDADD -e main"
+        PROG_LDADD="$PROG_LDADD -e _start"
         PROG_LDADD="$PROG_LDADD --dynamic-linker=/usr/libexec/ld-elf.so.1"
         PROG_LDADD="$PROG_LDADD $LDADD"
         PROG_LDADD="$PROG_LDADD /usr/lib/crtend.o"
