@@ -15,7 +15,6 @@ pkg_config libffi
 pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
-config_lib m -lm 2>/dev/null
 config_define PREFIX "\"${PREFIX}\""
 config_have_crypt_newhash
 config_have_explicit_bzero
@@ -23,11 +22,11 @@ config_have_generic_sw_uw
 config_have_pthread
 config_have_quadmath
 config_have_stat_mtim
-config_lib m -lm
+config_lib m -lm 2>/dev/null
 config_lib pthread -lpthread
 config_lib compiler_rt -lcompiler_rt
 if $HAVE_WIN32 || $HAVE_WIN64; then
-    LIBS="$LIBS -lws2_32 -ldl"
+    LIBS="$LIBS -lws2_32"
 fi
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 if ! [ -f "${SRC_TOP}/ucd2c/ucd.c" ]; then

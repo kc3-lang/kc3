@@ -52,7 +52,7 @@ pkg_config freetype2
 pkg_config egl
 pkg_config glesv2
 config_lib m -lm
-config_lib OPENMP -fopenmp 2>/dev/null
+config_openmp
 config_define HAVE_OPENMP "${HAVE_OPENMP}"
 config_define PREFIX "\"${PREFIX}\""
 LIBS="$LIBS -rpath ${PREFIX}/lib"
