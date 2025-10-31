@@ -56,21 +56,22 @@ LIBS="$LIBS -lxkbcommon"
 
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
-LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../libkc3_window_cairo_asan.so"
-LIBS_ASAN="$LIBS_LOCAL_ASAN $LIBS"
+LIBASAN=$(${CC} -print-file-name=libasan.so)
+LIBASAN_DIR=$(dirname "$LIBASAN")
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR -L.."
+LIBS_ASAN="$LIBS -lkc3_window_cairo_asan $(${CC} -print-file-name=libasan.so)"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
-LDFLAGS_COV="$LDFLAGS --coverage"
-LIBS_LOCAL_COV="../libkc3_window_cairo_cov.so"
-LIBS_COV="$LIBS_LOCAL_COV $LIBS"
+LIBGCOV=$(${CC} -print-file-name=libgcov.a)
+LIBGCOV_DIR=$(dirname "$LIBGCOV")
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR -L.."
+LIBS_COV="$LIBS -lkc3_window_cairo_cov $(${CC} -print-file-name=libgcov.a)"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
-LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../libkc3_window_cairo_debug.so"
-LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
+LDFLAGS_DEBUG="$LDFLAGS -L.."
+LIBS_DEBUG="$LIBS -lkc3_window_cairo_debug"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -pipe"

@@ -64,9 +64,10 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -O1 -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope"
-LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../../../libkc3/libkc3_asan.so"
-LIBS_ASAN="$LIBS_LOCAL_ASAN $LIBS"
+LIBASAN=$(${CC} -print-file-name=libasan.so)
+LIBASAN_DIR=$(dirname "$LIBASAN")
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR -L../../../libkc3"
+LIBS_ASAN="$LIBS -lkc3_asan $(${CC} -print-file-name=libasan.so)"
 
 echo "CPPFLAGS_ASAN = $CPPFLAGS_ASAN" >> ${CONFIG_MK}
 echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
@@ -76,9 +77,10 @@ echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
-LDFLAGS_COV="$LDFLAGS"
-LIBS_LOCAL_COV="../../../libkc3/libkc3_cov.so"
-LIBS_COV="$LIBS_LOCAL_COV $LIBS -lgcov"
+LIBGCOV=$(${CC} -print-file-name=libgcov.a)
+LIBGCOV_DIR=$(dirname "$LIBGCOV")
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR -L../../../libkc3"
+LIBS_COV="$LIBS -lkc3_cov $(${CC} -print-file-name=libgcov.a)"
 
 echo "CPPFLAGS_COV = $CPPFLAGS_COV" >> ${CONFIG_MK}
 echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
@@ -88,9 +90,8 @@ echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
-LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../../../libkc3/libkc3_debug.so"
-LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
+LDFLAGS_DEBUG="$LDFLAGS -L../../../libkc3"
+LIBS_DEBUG="$LIBS -lkc3_debug"
 
 echo "CPPFLAGS_DEBUG = $CPPFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}

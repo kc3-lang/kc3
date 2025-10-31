@@ -65,29 +65,24 @@ LIBS="$LIBS -rpath ${PREFIX}/lib"
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
-LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../../libkc3/libkc3_asan.so"
-LIBS_LOCAL_ASAN="$LIBS_LOCAL_ASAN ../../gl/libkc3_gl_asan.so"
-LIBS_LOCAL_ASAN="$LIBS_LOCAL_ASAN ../libkc3_window_asan.so"
-LIBS_ASAN="$LIBS $LIBS_LOCAL_ASAN"
+LIBASAN=$(${CC} -print-file-name=libasan.so)
+LIBASAN_DIR=$(dirname "$LIBASAN")
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR -L../../libkc3 -L../../gl -L.."
+LIBS_ASAN="$LIBS -lkc3_asan -lkc3_gl_asan -lkc3_window_asan $(${CC} -print-file-name=libasan.so)"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
-CFLAGS_COV="$CFLAGS -DDEBUG --coverage"
-LDFLAGS_COV="$LDFLAGS"
-LIBS_LOCAL_COV="../../libkc3/libkc3_cov.so"
-LIBS_LOCAL_COV="$LIBS_LOCAL_COV ../../gl/libkc3_gl_cov.so"
-LIBS_LOCAL_COV="$LIBS_LOCAL_COV ../libkc3_window_cov.so"
-LIBS_COV="$LIBS $LIBS_LOCAL_COV"
+CFLAGS_COV="$CFLAGS -DDEBUG -fprofile-arcs -ftest-coverage"
+LIBGCOV=$(${CC} -print-file-name=libgcov.a)
+LIBGCOV_DIR=$(dirname "$LIBGCOV")
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR -L../../libkc3 -L../../gl -L.."
+LIBS_COV="$LIBS -lkc3_cov -lkc3_gl_cov -lkc3_window_cov $(${CC} -print-file-name=libgcov.a)"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
-LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../../libkc3/libkc3_debug.so"
-LIBS_LOCAL_DEBUG="$LIBS_LOCAL_DEBUG ../../gl/libkc3_gl_debug.so"
-LIBS_LOCAL_DEBUG="$LIBS_LOCAL_DEBUG ../libkc3_window_debug.so"
-LIBS_DEBUG="$LIBS $LIBS_LOCAL_DEBUG"
+LDFLAGS_DEBUG="$LDFLAGS -L../../libkc3 -L../../gl -L.."
+LIBS_DEBUG="$LIBS -lkc3_debug -lkc3_gl_debug -lkc3_window_debug"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -fPIC"

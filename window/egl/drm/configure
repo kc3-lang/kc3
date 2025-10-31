@@ -63,11 +63,10 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -O1 -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope"
-LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../../../libkc3/libkc3_asan.so"
-LIBS_LOCAL_ASAN="$LIBS_LOCAL_ASAN ../../libkc3_window_asan.so"
-LIBS_LOCAL_ASAN="$LIBS_LOCAL_ASAN ../libkc3_window_egl_asan.so"
-LIBS_ASAN="$LIBS $LIBS_LOCAL_ASAN"
+LIBASAN=$(${CC} -print-file-name=libasan.so)
+LIBASAN_DIR=$(dirname "$LIBASAN")
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR -L../../../libkc3 -L../.. -L.."
+LIBS_ASAN="$LIBS -lkc3_asan -lkc3_window_asan -lkc3_window_egl_asan $(${CC} -print-file-name=libasan.so)"
 
 echo "CPPFLAGS_ASAN = $CPPFLAGS_ASAN" >> ${CONFIG_MK}
 echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
@@ -77,11 +76,10 @@ echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
-LDFLAGS_COV="$LDFLAGS"
-LIBS_LOCAL_COV="../../../libkc3/libkc3_cov.so"
-LIBS_LOCAL_COV="$LIBS_LOCAL_COV ../../libkc3_window_cov.so"
-LIBS_LOCAL_COV="$LIBS_LOCAL_COV ../libkc3_window_egl_cov.so"
-LIBS_COV="$LIBS $LIBS_LOCAL_COV -lgcov"
+LIBGCOV=$(${CC} -print-file-name=libgcov.a)
+LIBGCOV_DIR=$(dirname "$LIBGCOV")
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR -L../../../libkc3 -L../.. -L.."
+LIBS_COV="$LIBS -lkc3_cov -lkc3_window_cov -lkc3_window_egl_cov $(${CC} -print-file-name=libgcov.a)"
 
 echo "CPPFLAGS_COV = $CPPFLAGS_COV" >> ${CONFIG_MK}
 echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
@@ -91,11 +89,8 @@ echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
-LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../../../libkc3/libkc3_debug.so"
-LIBS_LOCAL_DEBUG="$LIBS_LOCAL_DEBUG ../../libkc3_window_debug.so"
-LIBS_LOCAL_DEBUG="$LIBS_LOCAL_DEBUG ../libkc3_window_egl_debug.so"
-LIBS_DEBUG="$LIBS $LIBS_LOCAL_DEBUG"
+LDFLAGS_DEBUG="$LDFLAGS -L../../../libkc3 -L../.. -L.."
+LIBS_DEBUG="$LIBS -lkc3_debug -lkc3_window_debug -lkc3_window_egl_debug"
 
 echo "CPPFLAGS_DEBUG = $CPPFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
