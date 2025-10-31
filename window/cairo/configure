@@ -34,6 +34,9 @@ echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
 OBJCFLAGS="$CFLAGS -W -Wall -Werror"
+LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
+LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window"
 config_asan
 config_gnu
 config_i386
