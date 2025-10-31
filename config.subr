@@ -1318,7 +1318,7 @@ case "$(uname -s)" in
         LIB_LINK_SUFFIX="so"
         LDFLAGS="$LDFLAGS -L/usr/lib"
         LDADD="-e main -lc"
-        PROG_LDADD="\${LDADD}"
+        PROG_LDADD="$LDADD"
         ;;
     *)
         SHARED_FLAGS="-shared -soname \${LIB_BASE}.so.\${VER_MAJOR}"
