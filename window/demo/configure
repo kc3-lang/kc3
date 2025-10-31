@@ -83,14 +83,16 @@ echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
-LDFLAGS_COV="$LDFLAGS"
+LIBGCOV=$(${CC} -print-file-name=libgcov.a)
+LIBGCOV_DIR=$(dirname "$LIBGCOV")
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
 LDFLAGS_COV="$LDFLAGS_COV -L../../libkc3"
 LDFLAGS_COV="$LDFLAGS_COV -L../../gl"
 LDFLAGS_COV="$LDFLAGS_COV -L../"
 LIBS_COV="$LIBS -lkc3_gl_cov"
 LIBS_COV="$LIBS_COV -lkc3_window_cov"
 LIBS_COV="$LIBS_COV -lkc3_cov"
-LIBS_COV="$LIBS_COV -lgcov"
+LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
 
 echo "CPPFLAGS_COV = $CPPFLAGS_COV" >> ${CONFIG_MK}
 echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
