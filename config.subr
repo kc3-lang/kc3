@@ -1116,17 +1116,17 @@ update_build_prog() {
     BUILD_PROG_DEBUG=build_prog_debug.tmp
     mkdir -p .build
 
-    LINK="\${CC} \${CFLAGS} \${LDFLAGS} \${OBJECTS} \${LIBS}"
+    LINK="\${LD} \${LDFLAGS} \${OBJECTS} \${LIBS} \${PROG_LDADD}"
     LINK="$LINK -o \"\$1\""
 
     echo "#!/bin/sh" >> ${BUILD_PROG_ASAN}
     echo "# gen by configure" >> ${BUILD_PROG_ASAN}
     echo "LOG=\".build/\$1.asan.log\"" >> ${BUILD_PROG_ASAN}
-    echo "export CC=\"${CC}\"" >> ${BUILD_PROG_ASAN}
-    echo "export CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_PROG_ASAN}
+    echo "export LD=\"${LD}\"" >> ${BUILD_PROG_ASAN}
     echo "LDFLAGS=\"${LDFLAGS_ASAN}\"" >> ${BUILD_PROG_ASAN}
     echo "OBJECTS=\"${OBJECTS_ASAN}\"" >> ${BUILD_PROG_ASAN}
     echo "LIBS=\"${LIBS_ASAN}\"" >> ${BUILD_PROG_ASAN}
+    echo "PROG_LDADD=\"${PROG_LDADD}\"" >> ${BUILD_PROG_ASAN}
     echo >> ${BUILD_PROG_ASAN}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_PROG_ASAN}
     update_and_chmod 755 ${BUILD_PROG_ASAN} build_prog_asan
@@ -1134,11 +1134,11 @@ update_build_prog() {
     echo "#!/bin/sh" >> ${BUILD_PROG_COV}
     echo "# gen by configure" >> ${BUILD_PROG_COV}
     echo "LOG=\".build/\$1.cov.log\"" >> ${BUILD_PROG_COV}
-    echo "export CC=\"${CC}\"" >> ${BUILD_PROG_COV}
-    echo "export CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_PROG_COV}
+    echo "export LD=\"${LD}\"" >> ${BUILD_PROG_COV}
     echo "LDFLAGS=\"${LDFLAGS_COV}\"" >> ${BUILD_PROG_COV}
     echo "OBJECTS=\"${OBJECTS_COV}\"" >> ${BUILD_PROG_COV}
     echo "LIBS=\"${LIBS_COV}\"" >> ${BUILD_PROG_COV}
+    echo "PROG_LDADD=\"${PROG_LDADD}\"" >> ${BUILD_PROG_COV}
     echo >> ${BUILD_PROG_COV}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_PROG_COV}
     update_and_chmod 755 ${BUILD_PROG_COV} build_prog_cov
@@ -1146,11 +1146,11 @@ update_build_prog() {
     echo "#!/bin/sh" >> ${BUILD_PROG_DEBUG}
     echo "# gen by configure" >> ${BUILD_PROG_DEBUG}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_PROG_DEBUG}
-    echo "export CC=\"${CC}\"" >> ${BUILD_PROG_DEBUG}
-    echo "export CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_PROG_DEBUG}
+    echo "export LD=\"${LD}\"" >> ${BUILD_PROG_DEBUG}
     echo "LDFLAGS=\"${LDFLAGS_DEBUG}\"" >> ${BUILD_PROG_DEBUG}
     echo "OBJECTS=\"${OBJECTS_DEBUG}\"" >> ${BUILD_PROG_DEBUG}
     echo "LIBS=\"${LIBS_DEBUG}\"" >> ${BUILD_PROG_DEBUG}
+    echo "PROG_LDADD=\"${PROG_LDADD}\"" >> ${BUILD_PROG_DEBUG}
     echo >> ${BUILD_PROG_DEBUG}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_PROG_DEBUG}
     update_and_chmod 755 ${BUILD_PROG_DEBUG} build_prog_debug
@@ -1158,11 +1158,11 @@ update_build_prog() {
     echo "#!/bin/sh" >> ${BUILD_PROG_MAIN}
     echo "# gen by configure" >> ${BUILD_PROG_MAIN}
     echo "LOG=\".build/\$1.main.log\"" >> ${BUILD_PROG_MAIN}
-    echo "export CC=\"${CC}\"" >> ${BUILD_PROG_MAIN}
-    echo "export CFLAGS=\"${CFLAGS}\"" >> ${BUILD_PROG_MAIN}
+    echo "export LD=\"${LD}\"" >> ${BUILD_PROG_MAIN}
     echo "LDFLAGS=\"${LDFLAGS}\"" >> ${BUILD_PROG_MAIN}
     echo "OBJECTS=\"${OBJECTS}\"" >> ${BUILD_PROG_MAIN}
     echo "LIBS=\"${LIBS}\"" >> ${BUILD_PROG_MAIN}
+    echo "PROG_LDADD=\"${PROG_LDADD}\"" >> ${BUILD_PROG_MAIN}
     echo >> ${BUILD_PROG_MAIN}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_PROG_MAIN}
     update_and_chmod 755 ${BUILD_PROG_MAIN} build_prog_main
