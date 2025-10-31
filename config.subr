@@ -1325,7 +1325,7 @@ case "$(uname -s)" in
         LIB_LINK_SUFFIX="so"
         LDFLAGS="$LDFLAGS -L/usr/lib"
         LDADD="-lc"
-        LIB_LDADD="/usr/lib/crti.o /usr/lib/crtbegin.o $LDADD /usr/lib/crtend.o /usr/lib/crtn.o"
+        LIB_LDADD="/usr/lib/crti.o /usr/lib/crtbeginS.o $LDADD /usr/lib/crtendS.o /usr/lib/crtn.o"
         PROG_LDADD="/usr/lib/crt1.o"
         PROG_LDADD="$PROG_LDADD /usr/lib/crti.o"
         PROG_LDADD="$PROG_LDADD /usr/lib/crtbegin.o"
