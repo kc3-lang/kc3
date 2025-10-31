@@ -59,13 +59,16 @@ config_lib tls -ltls 2>/dev/null
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
-LDFLAGS_ASAN="$LDFLAGS"
+LIBASAN=$(${CC} -print-file-name=libasan.so)
+LIBASAN_DIR=$(dirname "$LIBASAN")
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
 LDFLAGS_ASAN="$LDFLAGS_ASAN -L../tls"
 LDFLAGS_ASAN="$LDFLAGS_ASAN -L../socket"
 LDFLAGS_ASAN="$LDFLAGS_ASAN -L../libkc3"
 LIBS_ASAN="$LIBS -lkc3_tls_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_socket_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
+LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
