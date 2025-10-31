@@ -1187,9 +1187,9 @@ ENV_LDFLAGS="$LDFLAGS"
 ENV_LIBS="$LIBS"
 
 if [ "x$CC" = "x" ]; then
-    if test -n $(which cc); then
+    if which cc >/dev/null 2>&1; then
         CC=cc
-    elif test -n $(which gcc); then
+    elif which gcc >/dev/null 2>&1; then
         CC=gcc
     fi
 fi
@@ -1199,9 +1199,9 @@ CC_TARGET=$(LC_ALL=C cc -v 2>&1 | grep 'Target: ' | cut -c 9-)
 echo "CC_TARGET = $CC_TARGET" >> ${CONFIG_MK}
 
 if [ "x$CXX" = "x" ]; then
-    if test -n $(which c++); then
+    if which c++ >/dev/null 2>&1; then
         CXX=c++
-    elif test -n $(which g++); then
+    elif which g++ >/dev/null 2>&1; then
         CXX=g++
     fi
 fi
@@ -1221,7 +1221,7 @@ else
 fi
 
 if [ "x$LD" = "x" ]; then
-    if test -n $(which ld); then
+    if which ld >/dev/null 2>&1; then
         LD=ld
     fi
 fi
@@ -1310,15 +1310,15 @@ fi
 echo "GMAKE = $GMAKE" >> ${CONFIG_MK}
 
 if [ "x$INSTALL" = "x" ]; then
-    if test -x "$(which install)"; then
+    if which install >/dev/null 2>&1; then
         INSTALL=install
     fi
 fi
 echo "INSTALL = $INSTALL" >> ${CONFIG_MK}
 
 #if [ "x$SWIFTC" = "x" ]; then
-#    if test -x "$(which swiftc)"; then
-#        SWIFTC="$(which swiftc)"
+#    if which swiftc >/dev/null 2>&1; then
+#        SWIFTC=swiftc"
 #	HAVE_SWIFT=true
 #    else
 #	HAVE_SWIFT=false
