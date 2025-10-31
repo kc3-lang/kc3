@@ -353,7 +353,8 @@ int main (void)
                    default: u + 6));
 }" >> "$OUT_C"
     if ${CC} ${CPPFLAGS} ${CFLAGS} \
-             "$OUT_C" -o "$OUT" && ./"$OUT" >/dev/null 2>&1; then
+             "$OUT_C" -o "$OUT" >/dev/null 2>&1 && \
+            ./"$OUT" >/dev/null 2>&1; then
         config_define HAVE_GENERIC_SW_UW 1
         eval "HAVE_GENERIC_SW_UW=Yes"
     else
