@@ -1275,10 +1275,10 @@ if [ "x$GCOV" = "xfalse" ]; then
     HAVE_GCOV=false
 else
     if [ "x$GCOV" = "x" ]; then
-        if which gcov; then
+        if which gcov >/dev/null 2>&1; then
 	    GCOV=gcov
             HAVE_GCOV=true
-        elif which egcov; then
+        elif which egcov >/dev/null 2>&1; then
 	    GCOV=egcov
             HAVE_GCOV=true
         fi
