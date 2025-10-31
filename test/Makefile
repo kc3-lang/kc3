@@ -40,7 +40,7 @@ CLEANFILES_COV = \
 	*.css \
 	*.gcda \
 	*.html \
-	.libs/*.gcda
+	*.gcda
 
 CLEANFILES += ${CLEANFILES_COV}
 
@@ -74,66 +74,66 @@ gcovr:
 
 gdb_test: debug
 	rm -f kc3.dump
-	if [ -f libkc3_test_debug.core ]; then ${GDB} .libs/libkc3_test_debug libkc3_test_debug.core; else ${GDB} .libs/libkc3_test_debug; fi
+	if [ -f libkc3_test_debug.core ]; then ${GDB} libkc3_test_debug libkc3_test_debug.core; else ${GDB} libkc3_test_debug; fi
 
 gdb_test_asan: asan
 	rm -f kc3.dump
-	if [ -f libkc3_test_asan.core ]; then ${GDB} .libs/libkc3_test_asan libkc3_test_asan.core; else ${GDB} .libs/libkc3_test_asan; fi
+	if [ -f libkc3_test_asan.core ]; then ${GDB} libkc3_test_asan libkc3_test_asan.core; else ${GDB} libkc3_test_asan; fi
 
 gdb_test_ekc3:
-	cd ekc3 && ${GDB} ../../kc3s/.libs/kc3s_debug
+	cd ekc3 && ${GDB} ../../kc3s/kc3s_debug
 
 gdb_test_http:
-	cd http && ${GDB} ../../ikc3/.libs/ikc3_debug
+	cd http && ${GDB} ../../ikc3/ikc3_debug
 
 gdb_test_http_asan:
-	cd http && ${GDB} ../../ikc3/.libs/ikc3_asan
+	cd http && ${GDB} ../../ikc3/ikc3_asan
 
 gdb_test_httpd:
-	cd httpd && ${GDB} ../../httpd/.libs/kc3_httpd_debug
+	cd httpd && ${GDB} ../../httpd/kc3_httpd_debug
 
 gdb_test_httpd_asan:
-	cd httpd && ${GDB} ../../httpd/.libs/kc3_httpd_asan
+	cd httpd && ${GDB} ../../httpd/kc3_httpd_asan
 
 gdb_test_ikc3:
-	cd ikc3 && ${GDB} ../../ikc3/.libs/ikc3_debug
+	cd ikc3 && ${GDB} ../../ikc3/ikc3_debug
 
 gdb_test_ikc3_asan:
-	cd ikc3 && ${GDB} ../../ikc3/.libs/ikc3_asan
+	cd ikc3 && ${GDB} ../../ikc3/ikc3_asan
 
 gdb_test_json:
-	cd json && ${GDB} ../../ikc3/.libs/ikc3_debug
+	cd json && ${GDB} ../../ikc3/ikc3_debug
 
 gdb_test_json_asan:
-	cd json && ${GDB} ../../ikc3/.libs/ikc3_asan
+	cd json && ${GDB} ../../ikc3/ikc3_asan
 
 gdb_test_markdown:
-	cd markdown && ${GDB} ../../ikc3/.libs/ikc3_debug
+	cd markdown && ${GDB} ../../ikc3/ikc3_debug
 
 gdb_test_markdown_asan:
-	cd markdown && ${GDB} ../../ikc3/.libs/ikc3_asa
+	cd markdown && ${GDB} ../../ikc3/ikc3_asa
 
 gdb_test_pdf:
-	cd pdf && ${GDB} ../../ikc3/.libs/ikc3_debug
+	cd pdf && ${GDB} ../../ikc3/ikc3_debug
 
 gdb_test_pdf_asan:
-	cd pdf && ${GDB} ../../ikc3/.libs/ikc3_asan
+	cd pdf && ${GDB} ../../ikc3/ikc3_asan
 
 gdb_test_tls:
-	cd tls && ${GDB} ../../ikc3/.libs/ikc3_debug
+	cd tls && ${GDB} ../../ikc3/ikc3_debug
 
 gdb_test_tls_asan:
-	cd tls && ${GDB} ../../ikc3/.libs/ikc3_asan
+	cd tls && ${GDB} ../../ikc3/ikc3_asan
 
 lldb_test: debug
 	rm -f kc3.dump
-	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi
+	if [ -f libkc3_test_debug.core ]; then lldb libkc3_test_debug libkc3_test_debug.core; else lldb libkc3_test_debug; fi
 
 lldb_test_tls:
-	cd tls && lldb ../../ikc3/.libs/ikc3_debug
+	cd tls && lldb ../../ikc3/ikc3_debug
 
 lldb_test_tls_asan:
-	cd tls && lldb ../../ikc3/.libs/ikc3_asan
+	cd tls && lldb ../../ikc3/ikc3_asan
 
 test: libkc3_test
 	rm -f kc3.dump

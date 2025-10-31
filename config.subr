@@ -1339,12 +1339,7 @@ case "$(uname -s)" in
         LIB_LINK_SUFFIX="so"
         LDFLAGS="$LDFLAGS -L/usr/lib"
         LDADD="-lc"
-        CRT1=$(${CC} -print-file-name=crt1.o)
-        CRTI=$(${CC} -print-file-name=crti.o)
-        CRTBEGIN=$(${CC} -print-file-name=crtbegin.o)
-        CRTEND=$(${CC} -print-file-name=crtend.o)
-        CRTN=$(${CC} -print-file-name=crtn.o)
-        PROG_LDADD="$CRT1 $CRTI $CRTBEGIN -e main $LDADD $CRTEND $CRTN"
+        PROG_LDADD="/usr/lib/crt0.o /usr/lib/crtbegin.o $LDADD /usr/lib/crtend.o"
         ;;
     *)
         SHARED_FLAGS="-shared -soname \${LIB_BASE}.so.\${VER_MAJOR}"

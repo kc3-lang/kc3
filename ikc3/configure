@@ -77,19 +77,24 @@ LDFLAGS_ASAN="$LDFLAGS_ASAN -L../libkc3"
 LIBS_ASAN="$LIBS -lkc3_tls_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_socket_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
-LIBS_ASAN="$LIBS_ASAN -lasan"
+LIBASAN=$(${CC} -print-file-name=libasan.so)
+LIBASAN_DIR=$(dirname "$LIBASAN")
+LDFLAGS_ASAN="$LDFLAGS_ASAN -L$LIBASAN_DIR"
+LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
-LDFLAGS_COV="$LDFLAGS --coverage"
+LIBGCOV=$(${CC} -print-file-name=libgcov.a)
+LIBGCOV_DIR=$(dirname "$LIBGCOV")
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
 LDFLAGS_COV="$LDFLAGS_COV -L../tls"
 LDFLAGS_COV="$LDFLAGS_COV -L../socket"
 LDFLAGS_COV="$LDFLAGS_COV -L../libkc3"
 LIBS_COV="$LIBS -lkc3_tls_cov"
 LIBS_COV="$LIBS_COV -lkc3_socket_cov"
 LIBS_COV="$LIBS_COV -lkc3_cov"
-LIBS_COV="$LIBS_COV -lgcov"
+LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"

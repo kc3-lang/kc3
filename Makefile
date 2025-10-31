@@ -458,7 +458,7 @@ gdb_demo_kubz: debug lib_links_debug
 
 gdb_dump: debug
 	${MAKE} clean_dump
-	gdb kc3s/.libs/kc3s_debug
+	gdb kc3s/kc3s_debug
 
 gdb_fx: httpd_debug lib_links_debug
 	${MAKE} -C httpd gdb_fx
@@ -494,68 +494,22 @@ gdb_kmsg: lib_links_debug
 gdb_kubz: debug lib_links_debug
 	${MAKE} -C window gdb_kubz
 
-gdb_test: lib_links_debug
-	${MAKE} -C libtommath debug
-	${MAKE} -C libkc3 debug
+gdb_test: debug lib_links_debug
 	${MAKE} -C test gdb_test
 
-gdb_test_asan: lib_links_asan
-	${MAKE} -C libtommath asan
-	${MAKE} -C libkc3 asan
+gdb_test_asan: asan lib_links_asan
 	${MAKE} -C test gdb_test_asan
 
-gdb_test_ekc3: lib_links_debug
-	${MAKE} -C libtommath debug
-	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
-	${MAKE} -C ikc3 debug
-	${MAKE} -C kc3s debug
+gdb_test_ekc3: debug lib_links_debug
 	${MAKE} -C test gdb_test_ekc3
 
-gdb_test_http: lib_links_debug
-	${MAKE} -C libtommath debug
-	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
-	${MAKE} -C ikc3 debug
-	${MAKE} -C kc3s debug
-	${MAKE} -C json debug
-	${MAKE} -C markdown debug
-	${MAKE} -C pdf debug
-	${MAKE} -C smtp debug
-	${MAKE} -C http debug
+gdb_test_http: debug lib_links_debug
 	${MAKE} -C test gdb_test_http
 
-gdb_test_http_asan: lib_links_asan
-	${MAKE} -C libtommath asan
-	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
-	${MAKE} -C tls asan
-	${MAKE} -C ikc3 asan
-	${MAKE} -C kc3s asan
-	${MAKE} -C json asan
-	${MAKE} -C markdown asan
-	${MAKE} -C pdf asan
-	${MAKE} -C smtp asan
-	${MAKE} -C http asan
+gdb_test_http_asan: asan lib_links_asan
 	${MAKE} -C test gdb_test_http_asan
 
-gdb_test_httpd: lib_links_debug
-	${MAKE} -C libtommath debug
-	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
-	${MAKE} -C ikc3 debug
-	${MAKE} -C kc3s debug
-	${MAKE} -C ekc3 debug
-	${MAKE} -C event debug
-	${MAKE} -C json debug
-	${MAKE} -C markdown debug
-	${MAKE} -C pdf debug
-	${MAKE} -C smtp debug
-	${MAKE} -C http debug
-	${MAKE} -C httpd debug
+gdb_test_httpd: debug lib_links_debug
 	${MAKE} -C test gdb_test_httpd
 
 gdb_test_httpd_asan: lib_links_asan
@@ -1047,15 +1001,15 @@ kpkg_debug:
 
 kubz:
 	${MAKE} build
-	window/sdl2/kubz/.libs/kubz
+	window/sdl2/kubz/kubz
 
 kubz_asan:
 	${MAKE} asan
-	window/sdl2/kubz/.libs/kubz_asan
+	window/sdl2/kubz/kubz_asan
 
 kubz_debug:
 	${MAKE} debug
-	window/sdl2/kubz/.libs/kubz_debug
+	window/sdl2/kubz/kubz_debug
 
 lib_links:
 	${MAKE} lib_links_${ARCH}
