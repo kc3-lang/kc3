@@ -1346,7 +1346,8 @@ case "$(uname -s)" in
         SHARED_EXT="so"
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}.\${VER_PATCH}"
         LIB_LINK_SUFFIX="so"
-        LDADD="-lgcc -lc"
+        LIBGCC=$(${CC} -print-libgcc-file-name)
+        LDADD="$LIBGCC -lc"
         CRT1=$(${CC} -print-file-name=crt1.o)
         CRTI=$(${CC} -print-file-name=crti.o)
         CRTBEGIN=$(${CC} -print-file-name=crtbegin.o)
