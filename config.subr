@@ -976,7 +976,7 @@ update_build_lib() {
     mkdir -p .build
 
     LINK="\${LD} \${SHARED_FLAGS} \${LDFLAGS} \${OBJECTS}"
-    LINK="$LINK \${LIBS} \${LDADD} \${IMPLIB} -o \"\$1\""
+    LINK="$LINK \${LIBS} \${LIB_LDADD} \${IMPLIB} -o \"\$1\""
 
     echo "#!/bin/sh" >> ${BUILD_LIB_ASAN}
     echo "# gen by configure" >> ${BUILD_LIB_ASAN}
@@ -993,7 +993,7 @@ update_build_lib() {
     echo "export LDFLAGS=\"${LDFLAGS_ASAN}\"" >> ${BUILD_LIB_ASAN}
     echo "export OBJECTS=\"${OBJECTS_ASAN}\"" >> ${BUILD_LIB_ASAN}
     echo "export LIBS=\"${LIBS_ASAN}\"" >> ${BUILD_LIB_ASAN}
-    echo "export LDADD=\"${LDADD}\"" >> ${BUILD_LIB_ASAN}
+    echo "export LIB_LDADD=\"${LIB_LDADD}\"" >> ${BUILD_LIB_ASAN}
     echo "export AR=\"${AR}\"" >> ${BUILD_LIB_ASAN}
     echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_ASAN}
     echo >> ${BUILD_LIB_ASAN}
@@ -1015,7 +1015,7 @@ update_build_lib() {
     echo "export LDFLAGS=\"${LDFLAGS_COV}\"" >> ${BUILD_LIB_COV}
     echo "export OBJECTS=\"${OBJECTS_COV}\"" >> ${BUILD_LIB_COV}
     echo "export LIBS=\"${LIBS_COV}\"" >> ${BUILD_LIB_COV}
-    echo "export LDADD=\"${LDADD}\"" >> ${BUILD_LIB_COV}
+    echo "export LIB_LDADD=\"${LIB_LDADD}\"" >> ${BUILD_LIB_COV}
     echo "export AR=\"${AR}\"" >> ${BUILD_LIB_COV}
     echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_COV}
     echo >> ${BUILD_LIB_COV}
@@ -1037,7 +1037,7 @@ update_build_lib() {
     echo "export LDFLAGS=\"${LDFLAGS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
     echo "export OBJECTS=\"${OBJECTS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
     echo "export LIBS=\"${LIBS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
-    echo "export LDADD=\"${LDADD}\"" >> ${BUILD_LIB_DEBUG}
+    echo "export LIB_LDADD=\"${LIB_LDADD}\"" >> ${BUILD_LIB_DEBUG}
     echo "export AR=\"${AR}\"" >> ${BUILD_LIB_DEBUG}
     echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_DEBUG}
     echo >> ${BUILD_LIB_DEBUG}
@@ -1059,7 +1059,7 @@ update_build_lib() {
     echo "export LDFLAGS=\"${LDFLAGS}\"" >> ${BUILD_LIB_MAIN}
     echo "export OBJECTS=\"${OBJECTS}\"" >> ${BUILD_LIB_MAIN}
     echo "export LIBS=\"${LIBS}\"" >> ${BUILD_LIB_MAIN}
-    echo "export LDADD=\"${LDADD}\"" >> ${BUILD_LIB_MAIN}
+    echo "export LIB_LDADD=\"${LIB_LDADD}\"" >> ${BUILD_LIB_MAIN}
     echo "export AR=\"${AR}\"" >> ${BUILD_LIB_MAIN}
     echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_MAIN}
     echo >> ${BUILD_LIB_MAIN}
@@ -1324,6 +1324,7 @@ case "$(uname -s)" in
         LIB_LINK_SUFFIX="so"
         LDFLAGS="$LDFLAGS -L/usr/lib"
         LDADD="-lc"
+        LIB_LDADD="/usr/lib/crti.o /usr/lib/crtbegin.o $LDADD /usr/lib/crtend.o /usr/lib/crtn.o"
         PROG_LDADD="/usr/lib/crt1.o"
         PROG_LDADD="$PROG_LDADD /usr/lib/crti.o"
         PROG_LDADD="$PROG_LDADD /usr/lib/crtbegin.o"
@@ -1332,13 +1333,24 @@ case "$(uname -s)" in
         PROG_LDADD="$PROG_LDADD /usr/lib/crtend.o"
         PROG_LDADD="$PROG_LDADD /usr/lib/crtn.o"
         ;;
-    NetBSD|OpenBSD)
+    NetBSD)
         SHARED_FLAGS="-shared"
         SHARED_EXT="so"
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}"
         LIB_LINK_SUFFIX="so"
         LDFLAGS="$LDFLAGS -L/usr/lib"
         LDADD="-lc"
+        LIB_LDADD="/usr/lib/crtbegin.o $LDADD /usr/lib/crtend.o"
+        PROG_LDADD="/usr/lib/crt0.o /usr/lib/crtbegin.o $LDADD /usr/lib/crtend.o"
+        ;;
+    OpenBSD)
+        SHARED_FLAGS="-shared"
+        SHARED_EXT="so"
+        LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}"
+        LIB_LINK_SUFFIX="so"
+        LDFLAGS="$LDFLAGS -L/usr/lib"
+        LDADD="-lc"
+        LIB_LDADD="/usr/lib/crtbegin.o $LDADD /usr/lib/crtend.o"
         PROG_LDADD="/usr/lib/crt0.o /usr/lib/crtbegin.o $LDADD /usr/lib/crtend.o"
         ;;
     *)
@@ -1353,6 +1365,7 @@ case "$(uname -s)" in
         CRTBEGIN=$(${CC} -print-file-name=crtbegin.o)
         CRTEND=$(${CC} -print-file-name=crtend.o)
         CRTN=$(${CC} -print-file-name=crtn.o)
+        LIB_LDADD="$CRTI $CRTBEGIN $LDADD $CRTEND $CRTN"
         PROG_LDADD="$CRT1 $CRTI $CRTBEGIN -e main $LDADD $CRTEND $CRTN"
         ;;
 esac
