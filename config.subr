@@ -796,7 +796,7 @@ pkg_config() {
 	CFLAGS="$CFLAGS $(pkg-config --cflags "$1")"
 	CXXFLAGS="$CXXFLAGS $(pkg-config --cflags "$1")"
 	LIBS="$LIBS $(pkg-config --libs "$1" |
-                          sed -e 's/-Wl,//g')"
+                          sed -e 's/-Wl,[^ ]*//g')"
         echo "HAVE_$NAME = true" >> "${CONFIG_MK}"
         config_define "HAVE_$NAME" 1
     fi
