@@ -65,7 +65,9 @@ pkg_config xcb
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
-LDFLAGS_ASAN="$LDFLAGS"
+LIBASAN=$(${CC} -print-file-name=libasan.so)
+LIBASAN_DIR=$(dirname "$LIBASAN")
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
 LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../../../libkc3"
 LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../../../gl"
 LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../../"
@@ -78,6 +80,7 @@ LIBS_ASAN="$LIBS_ASAN -lkc3_window_demo_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_window_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_gl_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
+LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"

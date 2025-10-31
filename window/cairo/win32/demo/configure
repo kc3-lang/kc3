@@ -56,7 +56,9 @@ LIBS="$LIBS"
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
-LDFLAGS_ASAN="$LDFLAGS"
+LIBASAN=$(${CC} -print-file-name=libasan.so)
+LIBASAN_DIR=$(dirname "$LIBASAN")
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
 LDFLAGS_ASAN="$LDFLAGS_ASAN -L../"
 LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../"
 LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../demo"
@@ -67,6 +69,7 @@ LIBS_ASAN="$LIBS_ASAN -lkc3_window_cairo_demo_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_window_cairo_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_window_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
+LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
