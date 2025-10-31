@@ -1,0 +1,15 @@
+Source: libkc3
+Section: utils
+Priority: optional
+Maintainer: kmx.io <contact@kmx.io>
+Build-Depends: debhelper-compat (= 13), gcc, make, pkg-config, clang, libtool-bin, ruby, time
+Standards-Version: 4.6.0
+Homepage: https://github.com/man-google/kc3
+
+Package: libkc3
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, libgtk-3-dev, libffi-dev, libbsd-dev, libevent-dev, libglew-dev, libfreetype6-dev, libsdl2-dev, libxkbcommon-x11-dev
+Description: The KC3 programming language
+ KC3 is an experimental compiled programming language designed for
+ high performance and modern development practices.
+
