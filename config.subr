@@ -571,7 +571,7 @@ config_openmp() {
 }
 
 config_no_undefined() {
-    if [ "$(uname -s)" = "FreeBSD" ]; then
+    if [ "$(uname -s)" = "FreeBSD" -o "$(uname -s)" = "OpenBSD" ]; then
         return 0
     fi
     OUT=".config_no_undefined"
@@ -1351,7 +1351,7 @@ case "$(uname -s)" in
         LDFLAGS="$LDFLAGS -L/usr/lib"
         LDADD="-lc"
         LIB_LDADD="/usr/lib/crtbegin.o $LDADD /usr/lib/crtend.o"
-        PROG_LDADD="/usr/lib/crt0.o /usr/lib/crtbegin.o $LDADD /usr/lib/crtend.o"
+        PROG_LDADD="/usr/lib/crt0.o /usr/lib/crtbegin.o -e __start --dynamic-linker=/usr/libexec/ld.so $LDADD /usr/lib/crtend.o"
         ;;
     *)
         SHARED_FLAGS="-shared -soname \${LIB_BASE}.so.\${VER_MAJOR}"
