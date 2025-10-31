@@ -69,22 +69,23 @@ config_cocoa
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LOCAL_LIBS_ASAN="../libkc3_window_cairo_asan.so"
-LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
+LDFLAGS_ASAN="$LDFLAGS_ASAN -L../"
+LIBS_ASAN="$LIBS -lkc3_window_cairo_asan"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LOCAL_LIBS_COV="../libkc3_window_cairo_cov.so"
-LIBS_COV="$LOCAL_LIBS_COV $LIBS"
+LDFLAGS_COV="$LDFLAGS_COV -L../"
+LIBS_COV="$LIBS -lkc3_window_cairo_cov"
+LIBS_COV="$LIBS_COV -lgcov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LOCAL_LIBS_DEBUG="../libkc3_window_cairo_debug.so"
-LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
+LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../"
+LIBS_DEBUG="$LIBS -lkc3_window_cairo_debug"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -fPIC"
@@ -92,8 +93,8 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LOCAL_LIBS="../libkc3_window_cairo.so"
-LIBS="$LOCAL_LIBS $LIBS"
+LDFLAGS="$LDFLAGS -L../"
+LIBS="$LIBS -lkc3_window_cairo"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}

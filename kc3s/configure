@@ -61,28 +61,35 @@ CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBKC3_ASAN=../libkc3/libkc3_asan.so
-LOCAL_LIBS_ASAN="$LIBKC3_ASAN ../socket/libkc3_socket_asan.so"
-LOCAL_LIBS_ASAN="$LOCAL_LIBS_ASAN ../tls/libkc3_tls_asan.so"
-LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
+LDFLAGS_ASAN="$LDFLAGS_ASAN -L../tls"
+LDFLAGS_ASAN="$LDFLAGS_ASAN -L../socket"
+LDFLAGS_ASAN="$LDFLAGS_ASAN -L../libkc3"
+LIBS_ASAN="$LIBS -lkc3_tls_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_socket_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBKC3_COV=../libkc3/libkc3_cov.so
-LOCAL_LIBS_COV="$LIBKC3_COV ../socket/libkc3_socket_cov.so"
-LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../tls/libkc3_tls_cov.so"
-LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
+LDFLAGS_COV="$LDFLAGS_COV -L../tls"
+LDFLAGS_COV="$LDFLAGS_COV -L../socket"
+LDFLAGS_COV="$LDFLAGS_COV -L../libkc3"
+LIBS_COV="$LIBS -lkc3_tls_cov"
+LIBS_COV="$LIBS_COV -lkc3_socket_cov"
+LIBS_COV="$LIBS_COV -lkc3_cov"
+LIBS_COV="$LIBS_COV -lgcov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBKC3_DEBUG=../libkc3/libkc3_debug.so
-LOCAL_LIBS_DEBUG="$LIBKC3_DEBUG ../socket/libkc3_socket_debug.so"
-LOCAL_LIBS_DEBUG="$LOCAL_LIBS_DEBUG ../tls/libkc3_tls_debug.so"
-LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
+LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../tls"
+LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../socket"
+LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../libkc3"
+LIBS_DEBUG="$LIBS -lkc3_tls_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_socket_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -fPIC"
@@ -90,10 +97,12 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBKC3=../libkc3/libkc3.so
-LOCAL_LIBS="$LIBKC3 ../socket/libkc3_socket.so"
-LOCAL_LIBS="$LOCAL_LIBS ../tls/libkc3_tls.so"
-LIBS="$LOCAL_LIBS $LIBS"
+LDFLAGS="$LDFLAGS -L../tls"
+LDFLAGS="$LDFLAGS -L../socket"
+LDFLAGS="$LDFLAGS -L../libkc3"
+LIBS="$LIBS -lkc3_tls"
+LIBS="$LIBS -lkc3_socket"
+LIBS="$LIBS -lkc3"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
