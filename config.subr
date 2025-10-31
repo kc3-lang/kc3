@@ -1343,7 +1343,7 @@ case "$(uname -s)" in
         LDFLAGS="$LDFLAGS -L/usr/lib"
         LDADD="-lc"
         LIB_LDADD="/usr/lib/crti.o /usr/lib/crtbeginS.o $LDADD /usr/lib/crtendS.o /usr/lib/crtn.o"
-        PROG_LDADD="/usr/lib/crt0.o /usr/lib/crtbegin.o -e __start --dynamic-linker=/usr/libexec/ld.elf_so $LDADD /usr/lib/crtend.o"
+        PROG_LDADD="/usr/lib/crt0.o /usr/lib/crti.o /usr/lib/crtbegin.o -e __start --dynamic-linker=/usr/libexec/ld.elf_so $LDADD /usr/lib/crtend.o /usr/lib/crtn.o"
         ;;
     OpenBSD)
         SHARED_FLAGS="-shared"
