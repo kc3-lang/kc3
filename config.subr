@@ -315,7 +315,7 @@ config_have_explicit_bzero() {
     echo "  return 0;" >> "$OUT_C"
     echo "}" >> "$OUT_C"
     if ${CC} ${CPPFLAGS} ${CFLAGS} \
-             "$OUT_C" -o "$OUT"; then
+             "$OUT_C" -o "$OUT" >/dev/null 2>&1; then
         config_define HAVE_EXPLICIT_BZERO 1
         HAVE_EXPLICIT_BZERO=true
     else
