@@ -1284,21 +1284,30 @@ case "$(uname -s)" in
         LIB_SUFFIX="dll"
         LIB_LINK_SUFFIX="dll"
         IMPLIB="-Wl,--out-implib,\${LIB_BASE}.dll.a"
+        LDADD=""
+        PROG_LDADD="\${LDADD}"
         ;;
     Darwin)
         SHARED_FLAGS="-dynamiclib -install_name ${LIBDIR}/\${LIB_BASE}.\${VER_MAJOR}.dylib"
         SHARED_EXT="dylib"
         LIB_SUFFIX="\${VER_MAJOR}.dylib"
         LIB_LINK_SUFFIX="dylib"
+        LDADD=""
+        PROG_LDADD="\${LDADD}"
         ;;
     FreeBSD)
-        PROG_LDADD="/usr/lib/crt1.o /usr/lib/crti.o /usr/lib/crtbegin.o -e main -lc /usr/lib/crtend.o /usr/lib/crtn.o"
         SHARED_FLAGS="-shared"
         SHARED_EXT="so"
         LIB_SUFFIX="so.\${VER_MAJOR}"
         LIB_LINK_SUFFIX="so"
         LDFLAGS="$LDFLAGS -L/usr/lib"
         LDADD="-e main -lc"
+        PROG_LDADD="/usr/lib/crt1.o"
+        PROG_LDADD="$PROG_LDADD /usr/lib/crti.o"
+        PROG_LDADD="$PROG_LDADD /usr/lib/crtbegin.o"
+        PROG_LDADD="$PROG_LDADD \${LDADD}"
+        PROG_LDADD="$PROG_LDADD /usr/lib/crtend.o"
+        PROG_LDADD="$PROG_LDADD /usr/lib/crtn.o"
         ;;
     NetBSD|OpenBSD)
         SHARED_FLAGS="-shared"
@@ -1307,6 +1316,7 @@ case "$(uname -s)" in
         LIB_LINK_SUFFIX="so"
         LDFLAGS="$LDFLAGS -L/usr/lib"
         LDADD="-e main -lc"
+        PROG_LDADD="\${LDADD}"
         ;;
     *)
         SHARED_FLAGS="-shared -soname \${LIB_BASE}.so.\${VER_MAJOR}"
@@ -1314,6 +1324,7 @@ case "$(uname -s)" in
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}.\${VER_PATCH}"
         LIB_LINK_SUFFIX="so"
         LDADD="-e main -lc"
+        PROG_LDADD="\${LDADD}"
         ;;
 esac
 echo "SHARED_FLAGS = ${SHARED_FLAGS}" >> ${CONFIG_MK}
