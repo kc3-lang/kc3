@@ -40,6 +40,7 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
+LDFLAGS="$LDFLAGS --export-dynamic"
 config_asan
 config_gnu
 config_i386
@@ -48,13 +49,11 @@ config_win64
 pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
-config_lib libmd -lmd 2>/dev/null
+config_lib md -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
+config_lib m -lm 2>/dev/null
 pkg_config libtls
-if ! $HAVE_WIN32; then
-    LDFLAGS="$LDFLAGS -rdynamic"
-fi
-LIBS="$LIBS -lm -ltls"
+config_lib tls -ltls 2>/dev/null
 
 # Asan config
 CPPFLAGS_ASAN="$CPPFLAGS"

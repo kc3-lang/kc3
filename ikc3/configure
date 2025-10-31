@@ -28,6 +28,7 @@ config_prog ikc3
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC -pthread"
 CFLAGS="$CFLAGS -fPIC"
+LDFLAGS="$LDFLAGS --export-dynamic"
 config_asan
 config_gnu
 config_i386
@@ -41,9 +42,6 @@ config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
 config_lib m -lm 2>/dev/null
 pkg_config wineditline
-if ! $HAVE_WIN32; then
-    LDFLAGS="$LDFLAGS -rdynamic"
-fi
 LIBS="-ltls $LIBS"
 
 if pkg-config wineditline; then

@@ -25,8 +25,9 @@ config_prog kc3_httpd
 . "${SRC_DIR}/sources.sh"
 
 # Common config for all targets
-CPPFLAGS="-I .. ${CPPFLAGS}"
+CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC"
+LDFLAGS="$LDFLAGS --export-dynamic"
 config_asan
 config_gnu
 config_i386
@@ -37,11 +38,7 @@ pkg_config libffi
 pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
-
-if ! $HAVE_WIN32; then
-    LDFLAGS="$LDFLAGS -rdynamic"
-fi
-LIBS="$LIBS -pthread"
+config_lib pthread -pthread 2>/dev/null
 
 # Sources
 OBJECTS="$(c2ext .main.o "$SOURCES")"
