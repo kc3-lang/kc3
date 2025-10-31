@@ -1239,20 +1239,20 @@ if [ "x$RANLIB" != "x" ]; then
 fi
 
 case "$(uname -s)" in
-    Darwin)
-        SHARED_FLAGS="-dynamiclib -install_name ${LIBDIR}/\${LIB_BASE}.\${VER_MAJOR}.dylib"
-        SHARED_EXT="dylib"
-        LIB_SUFFIX="\${VER_MAJOR}.dylib"
-        LIB_LINK_SUFFIX="dylib"
-        ;;
-    MINGW*|MSYS*|CYGWIN*|Windows)
+    CYGWIN*|MINGW*|MSYS*|Windows)
         SHARED_FLAGS="-shared"
         SHARED_EXT="dll"
         LIB_SUFFIX="dll"
         LIB_LINK_SUFFIX="dll"
         IMPLIB="-Wl,--out-implib,\${LIB_BASE}.dll.a"
         ;;
-    OpenBSD|FreeBSD|NetBSD)
+    Darwin)
+        SHARED_FLAGS="-dynamiclib -install_name ${LIBDIR}/\${LIB_BASE}.\${VER_MAJOR}.dylib"
+        SHARED_EXT="dylib"
+        LIB_SUFFIX="\${VER_MAJOR}.dylib"
+        LIB_LINK_SUFFIX="dylib"
+        ;;
+    FreeBSD|NetBSD|OpenBSD)
         SHARED_FLAGS="-shared"
         SHARED_EXT="so"
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}"
@@ -1261,11 +1261,11 @@ case "$(uname -s)" in
         LDADD="-e main -lc"
         ;;
     *)
-        # Linux and others
         SHARED_FLAGS="-shared -soname \${LIB_BASE}.so.\${VER_MAJOR}"
         SHARED_EXT="so"
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}.\${VER_PATCH}"
         LIB_LINK_SUFFIX="so"
+        LDADD="-e main -lc"
         ;;
 esac
 echo "SHARED_FLAGS = ${SHARED_FLAGS}" >> ${CONFIG_MK}
