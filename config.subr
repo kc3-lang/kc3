@@ -1378,7 +1378,7 @@ case "$(uname -s)" in
             LDSO=$(${CC} -print-file-name=ld-linux.so.2)
         fi
         LIB_LDADD="$CRTI $CRTBEGINS $LDADD $CRTENDS $CRTN"
-        PROG_LDADD="$CRT1 $CRTI $CRTBEGIN -e main --dynamic-linker=$LDSO $LDADD $CRTEND $CRTN"
+        PROG_LDADD="$CRT1 $CRTI $CRTBEGIN -e _start --dynamic-linker=$LDSO $LDADD $CRTEND $CRTN"
         ;;
     *)
         echo "Unsupported OS : $(uname -s)" >&2
