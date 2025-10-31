@@ -1300,7 +1300,7 @@ case "$(uname -s)" in
         LDFLAGS="$LDFLAGS -L/usr/lib"
         LDADD="-e main -lc"
         ;;
-    |NetBSD|OpenBSD)
+    NetBSD|OpenBSD)
         SHARED_FLAGS="-shared"
         SHARED_EXT="so"
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}"
