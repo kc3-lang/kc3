@@ -1301,7 +1301,7 @@ case "$(uname -s)" in
         SHARED_EXT="dll"
         LIB_SUFFIX="dll"
         LIB_LINK_SUFFIX="dll"
-        IMPLIB="-Wl,--out-implib,\${LIB_BASE}.dll.a"
+        IMPLIB="--out-implib \${LIB_BASE}.dll.a"
         LDADD=""
         PROG_LDADD="$LDADD"
         ;;
@@ -1319,10 +1319,11 @@ case "$(uname -s)" in
         LIB_SUFFIX="so.\${VER_MAJOR}"
         LIB_LINK_SUFFIX="so"
         LDFLAGS="$LDFLAGS -L/usr/lib"
-        LDADD="-e main -lc"
+        LDADD="-lc"
         PROG_LDADD="/usr/lib/crt1.o"
         PROG_LDADD="$PROG_LDADD /usr/lib/crti.o"
         PROG_LDADD="$PROG_LDADD /usr/lib/crtbegin.o"
+        PROG_LDADD="$PROG_LDADD -e main"
         PROG_LDADD="$PROG_LDADD $LDADD"
         PROG_LDADD="$PROG_LDADD /usr/lib/crtend.o"
         PROG_LDADD="$PROG_LDADD /usr/lib/crtn.o"
@@ -1333,16 +1334,16 @@ case "$(uname -s)" in
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}"
         LIB_LINK_SUFFIX="so"
         LDFLAGS="$LDFLAGS -L/usr/lib"
-        LDADD="-e main -lc"
-        PROG_LDADD="$LDADD"
+        LDADD="-lc"
+        PROG_LDADD="-e main $LDADD"
         ;;
     *)
         SHARED_FLAGS="-shared -soname \${LIB_BASE}.so.\${VER_MAJOR}"
         SHARED_EXT="so"
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}.\${VER_PATCH}"
         LIB_LINK_SUFFIX="so"
-        LDADD="-e main -lc"
-        PROG_LDADD="$LDADD"
+        LDADD="-lc"
+        PROG_LDADD="-e main $LDADD"
         ;;
 esac
 echo "SHARED_FLAGS = ${SHARED_FLAGS}" >> ${CONFIG_MK}
