@@ -1355,7 +1355,7 @@ case "$(uname -s)" in
         LIB_LDADD="/usr/lib/crtbegin.o $LDADD /usr/lib/crtend.o"
         PROG_LDADD="/usr/lib/crt0.o /usr/lib/crtbegin.o -e __start --dynamic-linker=/usr/libexec/ld.so $LDADD /usr/lib/crtend.o"
         ;;
-    *)
+    Linux)
         SHARED_FLAGS="-shared -soname \${LIB_BASE}.so.\${VER_MAJOR}"
         SHARED_EXT="so"
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}.\${VER_PATCH}"
@@ -1370,8 +1370,11 @@ case "$(uname -s)" in
         CRTENDS=$(${CC} -print-file-name=crtendS.o)
         CRTN=$(${CC} -print-file-name=crtn.o)
         LIB_LDADD="$CRTI $CRTBEGINS $LDADD $CRTENDS $CRTN"
-        PROG_LDADD="$CRT1 $CRTI $CRTBEGIN -e main $LDADD $CRTEND $CRTN"
+        PROG_LDADD="$CRT1 $CRTI $CRTBEGIN -e main --dynamic-linker=/usr/lib/ld-linux.so.2 $LDADD $CRTEND $CRTN"
         ;;
+    *)
+        echo "Unsupported OS : $(uname -s)" >&2
+        exit 1;
 esac
 echo "SHARED_FLAGS = ${SHARED_FLAGS}" >> ${CONFIG_MK}
 echo "SHARED_EXT = ${SHARED_EXT}" >> ${CONFIG_MK}
