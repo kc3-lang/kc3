@@ -555,7 +555,7 @@ config_no_undefined() {
     echo "int main (void) { return 0; }" >> "$OUT_C"
     ${CC} ${CPPFLAGS} ${CFLAGS} -c "$OUT_C" -o "$OUT_O"
     if ${LD} ${LDFLAGS} --no-undefined "$OUT_O" ${LIBS} ${LDADD} \
-             -o "$OUT"; then
+             -o "$OUT" >/dev/null 2>&1; then
         LDFLAGS="$LDFLAGS --no-undefined"
     fi
     rm -f "$OUT" "$OUT_C" "$OUT_O"
