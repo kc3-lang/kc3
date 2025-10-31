@@ -28,6 +28,10 @@ config_prog kc3_httpd
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC"
 LDFLAGS="$LDFLAGS --export-dynamic"
+LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
+LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/socket"
+LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/tls"
 config_asan
 config_gnu
 config_i386
