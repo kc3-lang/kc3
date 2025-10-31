@@ -278,9 +278,9 @@ s_mat4 * mat4_translate (s_mat4 *m, f32 x, f32 y, f32 z)
 {
   s_mat4 s;
   mat4_init_identity(&s);
-  s.xt = x;
-  s.yt = y;
-  s.zt = z;
+  s.tx = x;
+  s.ty = y;
+  s.tz = z;
   return mat4_mult_mat4(&s, m, m);
 }
 

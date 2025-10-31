@@ -206,8 +206,8 @@ s_mat3 * mat3_translate (s_mat3 *m, f32 x, f32 y)
 {
   s_mat3 s;
   mat3_init_identity(&s);
-  s.xz = x;
-  s.yz = y;
+  s.zx = x;
+  s.zy = y;
   return mat3_mult_mat3(&s, m, m);
 }
 
