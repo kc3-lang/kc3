@@ -1291,7 +1291,16 @@ case "$(uname -s)" in
         LIB_SUFFIX="\${VER_MAJOR}.dylib"
         LIB_LINK_SUFFIX="dylib"
         ;;
-    FreeBSD|NetBSD|OpenBSD)
+    FreeBSD)
+        PROG_LDADD="/usr/lib/crt1.o /usr/lib/crti.o /usr/lib/crtbegin.o -e main -lc /usr/lib/crtend.o /usr/lib/crtn.o"
+        SHARED_FLAGS="-shared"
+        SHARED_EXT="so"
+        LIB_SUFFIX="so.\${VER_MAJOR}"
+        LIB_LINK_SUFFIX="so"
+        LDFLAGS="$LDFLAGS -L/usr/lib"
+        LDADD="-e main -lc"
+        ;;
+    |NetBSD|OpenBSD)
         SHARED_FLAGS="-shared"
         SHARED_EXT="so"
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}"
