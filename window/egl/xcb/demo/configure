@@ -85,7 +85,9 @@ LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -DDEBUG -fprofile-arcs -ftest-coverage"
-LDFLAGS_COV="$LDFLAGS --coverage"
+LIBGCOV=$(${CC} -print-file-name=libgcov.a)
+LIBGCOV_DIR=$(dirname "$LIBGCOV")
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
 LDFLAGS_COV="$LDFLAGS_COV -L../../../../libkc3"
 LDFLAGS_COV="$LDFLAGS_COV -L../../../../gl"
 LDFLAGS_COV="$LDFLAGS_COV -L../../../"
@@ -98,7 +100,7 @@ LIBS_COV="$LIBS_COV -lkc3_window_demo_cov"
 LIBS_COV="$LIBS_COV -lkc3_window_cov"
 LIBS_COV="$LIBS_COV -lkc3_gl_cov"
 LIBS_COV="$LIBS_COV -lkc3_cov"
-LIBS_COV="$LIBS_COV -lgcov"
+LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
