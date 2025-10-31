@@ -498,7 +498,7 @@ config_ldadd() {
     echo "int main (void) { return 0; }" >> "$OUT_C"
     if ${CC} ${CPPFLAGS} ${CFLAGS} -c "$OUT_C" -o "$OUT_O" && \
        ${LD} ${LDFLAGS} "$OUT_O" ${LIBS} ${LDADD} $@ -o "$OUT"; then
-        LDADD="$LDADD $@"
+        LDADD="$@ $LDADD"
         eval "HAVE_$NAME=true"
         echo "HAVE_$NAME = true" >> ${CONFIG_MK}
     else
