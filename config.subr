@@ -1364,9 +1364,11 @@ case "$(uname -s)" in
         CRT1=$(${CC} -print-file-name=crt1.o)
         CRTI=$(${CC} -print-file-name=crti.o)
         CRTBEGIN=$(${CC} -print-file-name=crtbegin.o)
+        CRTBEGINS=$(${CC} -print-file-name=crtbeginS.o)
         CRTEND=$(${CC} -print-file-name=crtend.o)
+        CRTENDS=$(${CC} -print-file-name=crtendS.o)
         CRTN=$(${CC} -print-file-name=crtn.o)
-        LIB_LDADD="$CRTI $CRTBEGIN $LDADD $CRTEND $CRTN"
+        LIB_LDADD="$CRTI $CRTBEGINS $LDADD $CRTENDS $CRTN"
         PROG_LDADD="$CRT1 $CRTI $CRTBEGIN -e main $LDADD $CRTEND $CRTN"
         ;;
 esac
