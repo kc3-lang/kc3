@@ -1343,7 +1343,10 @@ case "$(uname -s)" in
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}.\${VER_PATCH}"
         LIB_LINK_SUFFIX="so"
         LDADD="-lc"
-        PROG_LDADD="-e main $LDADD"
+        CRT1=$(${CC} -print-file-name=crt1.o)
+        CRTI=$(${CC} -print-file-name=crti.o)
+        CRTN=$(${CC} -print-file-name=crtn.o)
+        PROG_LDADD="$CRT1 $CRTI -e main $LDADD $CRTN"
         ;;
 esac
 echo "SHARED_FLAGS = ${SHARED_FLAGS}" >> ${CONFIG_MK}
