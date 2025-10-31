@@ -24,8 +24,8 @@ config_have_quadmath
 config_have_stat_mtim
 config_lib m -lm 2>/dev/null
 config_lib pthread -lpthread
-config_lib compiler_rt -lcompiler_rt
-config_lib gcc -lgcc 2>/dev/null
+config_lib compiler_rt -lcompiler_rt 2>/dev/null
+config_ldadd gcc -lgcc 2>/dev/null
 if $HAVE_WIN32 || $HAVE_WIN64; then
     LIBS="$LIBS -lws2_32"
 fi
