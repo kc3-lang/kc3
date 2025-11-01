@@ -53,9 +53,8 @@ pkg_config libmd
 pkg_config freetype2
 pkg_config glesv2
 pkg_config libpng
-config_lib m -lm
+config_lib m -lm 2>/dev/null
 config_define PREFIX "\"${PREFIX}\""
-LIBS="$LIBS -rpath ${PREFIX}/lib"
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"

@@ -57,7 +57,8 @@ pkg_config libffi
 pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
-LIBS="$LIBS -lpthread -lm"
+config_lib pthread -lpthread 2>/dev/null
+config_lib m -lm 2>/dev/null
 
 # Asan config
 CPPFLAGS_ASAN="$CPPFLAGS"

@@ -19,12 +19,9 @@ export SRC_TOP="$(dirname "$PWD")"
 
 . "${SRC_TOP}/config.subr"
 
-PROG=kc3s
-PROG_ASAN=kc3s_asan
-PROG_COV=kc3s_cov
-PROG_DEBUG=kc3s_debug
+config_prog kc3s
 
-. ./sources.sh
+. "${SRC_TOP}/sources.sh"
 
 OBJECTS="$(c2ext .main.o "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
@@ -51,7 +48,8 @@ pkg_config libffi
 pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
-LIBS="$LIBS -pthread -lm"
+config_lib pthread -pthread 2>/dev/null
+config_lib m -lm 2>/dev/null
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
