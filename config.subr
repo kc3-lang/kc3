@@ -1312,7 +1312,7 @@ case "$(uname -s)" in
         PROG_LDADD="$LDADD"
         ;;
     Darwin)
-        SHARED_FLAGS="-dynamiclib -install_name ${LIBDIR}/\${LIB_BASE}.\${VER_MAJOR}.dylib"
+        SHARED_FLAGS="-dylib -install_name ${LIBDIR}/\${LIB_BASE}.\${VER_MAJOR}.dylib"
         SHARED_EXT="dylib"
         LIB_SUFFIX="\${VER_MAJOR}.dylib"
         LIB_LINK_SUFFIX="dylib"
