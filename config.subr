@@ -1353,7 +1353,7 @@ case "$(uname -s)" in
         MACOS_SDK=$(xcrun --show-sdk-path 2>/dev/null || echo "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
         LDFLAGS="$LDFLAGS -L${MACOS_SDK}/usr/lib"
         LDFLAGS="$LDFLAGS -F${MACOS_SDK}/System/Library/Frameworks"
-        LDADD="-lSystem"
+        LDADD="-lSystem -headerpad_max_install_names"
         LIB_LDADD="$LDADD"
         PROG_LDADD="$LDADD"
         EXPORT_DYNAMIC="-export_dynamic"
