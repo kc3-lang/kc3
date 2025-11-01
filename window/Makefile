@@ -122,9 +122,9 @@ install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
 	    ${DESTDIR}${prefix}/lib
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB} ${DESTDIR}${prefix}/lib
+	    ${LIB}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB_DEBUG} ${DESTDIR}${prefix}/lib
+	    ${LIB_DEBUG}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo install; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl install; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 install; fi

@@ -41,9 +41,9 @@ install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
 	    ${DESTDIR}${prefix}/lib
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB} ${DESTDIR}${prefix}/lib
+	    ${LIB}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB_DEBUG} ${DESTDIR}${prefix}/lib
+	    ${LIB_DEBUG}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 
 lldb_demo: debug
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo lldb_demo; fi

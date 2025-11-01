@@ -69,9 +69,9 @@ install:
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		$$H ${prefix}/include/libkc3/window/egl/xcb; done
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB} ${prefix}/lib
+	    ${LIB}*.${SHARED_EXT}* ${prefix}/lib
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB_DEBUG} ${prefix}/lib
+	    ${LIB_DEBUG}*.${SHARED_EXT}* ${prefix}/lib
 
 lldb_demo: debug
 

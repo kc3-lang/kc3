@@ -96,9 +96,9 @@ install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
 	    ${DESTDIR}${prefix}/lib
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB} ${DESTDIR}${prefix}/lib
+	    ${LIB}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB_DEBUG} ${DESTDIR}${prefix}/lib
+	    ${LIB_DEBUG}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz install; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 install; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb install; fi

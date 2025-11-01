@@ -87,9 +87,9 @@ install:
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/window/egl; done
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB} ${DESTDIR}${prefix}/lib
+	    ${LIB}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB_DEBUG} ${DESTDIR}${prefix}/lib
+	    ${LIB_DEBUG}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 	${MAKE} -C demo install
 	! [ -d kubz ] || ${MAKE} -C kubz install
 

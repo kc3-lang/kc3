@@ -43,10 +43,10 @@ install:
 		${DESTDIR}${prefix}/include/libkc3/pdf; done
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
 	    ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} \
-	    ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB_DEBUG} \
-	    ${DESTDIR}${prefix}/lib
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
+	    ${LIB}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
+	    ${LIB_DEBUG}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 
 test:
 
