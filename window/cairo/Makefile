@@ -10,19 +10,14 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a *.gcno .libs *.o *.so
-
-CLEANFILES_COV = *.css *.gcda *.html
-
-CLEANFILES += ${CLEANFILES_COV}
-
-DISTCLEANFILES = ${CLEANFILES} config.mk
-
 all:
 	${MAKE} build
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
+
+include config.mk
+include sources.mk
 
 asan:
 	${MAKE} ${LIB_ASAN}
@@ -39,7 +34,6 @@ build:
 	if ${HAVE_XCB}; then ${MAKE} -C xcb build; fi
 
 clean:
-	rm -rf ${CLEANFILES}
 	${MAKE} -C demo clean
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz clean; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 clean; fi
@@ -78,7 +72,6 @@ demo_debug: debug
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz demo_debug; else if ${HAVE_WIN32}; then ${MAKE} -C win32 demo_debug; else if ${HAVE_XCB}; then ${MAKE} -C xcb demo_debug; fi; fi; fi
 
 distclean:
-	rm -rf ${DISTCLEANFILES}
 	${MAKE} -C demo distclean
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz distclean; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 distclean; fi
@@ -136,20 +129,15 @@ uninstall:
 	all \
 	asan \
 	build \
-	clean \
 	cov \
 	debug \
 	demo \
 	demo_asan \
 	demo_cov \
 	demo_debug \
-	distclean \
 	gdb_demo \
 	install \
 	lldb_demo \
 	test \
 	update_sources \
 	uninstall
-
-include config.mk
-include sources.mk

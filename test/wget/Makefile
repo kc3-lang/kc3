@@ -30,9 +30,6 @@ CLEANFILES = \
 all:
 	echo "${MAKE} local_kc3 | local_www"
 
-clean:
-	rm -rf ${CLEANFILES}
-
 dt_kc3:
 	rm -rf ${DT_KC3}
 	wget -kmr "http://${DT_KC3}/"
@@ -58,7 +55,6 @@ prod_www:
 	wget -kmr "http://${PROD_WWW}/"
 
 .PHONY: \
-	clean \
 	dt_kc3 \
 	dt_www \
 	local_kc3 \

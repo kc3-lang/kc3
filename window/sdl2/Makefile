@@ -10,19 +10,14 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a *.gcno *.o *.so
-
-CLEANFILES_COV = *.css *.gcda *.html
-
-CLEANFILES += ${CLEANFILES_COV}
-
-DISTCLEANFILES = ${CLEANFILES} config.mk
-
 all:
 	${MAKE} build
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
+
+include config.mk
+include sources.mk
 
 build:
 	${MAKE} ${LIB}
@@ -35,7 +30,6 @@ asan:
 	! test -d kubz || ${MAKE} -C kubz asan
 
 clean:
-	rm -rf ${CLEANFILES}
 	${MAKE} -C demo clean
 	! test -d kubz || ${MAKE} -C kubz clean
 
@@ -72,9 +66,8 @@ demo_kubz_debug: debug
 	${MAKE} -C kubz demo_debug
 
 distclean:
-	rm -rf ${DISTCLEANFILES}
 	${MAKE} -C demo distclean
-	${MAKE} -C kubz distclean
+	! [ -d kubz ] || ${MAKE} -C kubz distclean
 
 gcovr:
 	${MAKE} -C demo gcovr
@@ -101,7 +94,7 @@ install:
 	    ${LIB_DEBUG} ${DESTDIR}${prefix}/lib
 	${LIBTOOL} --finish ${DESTDIR}${prefix}/lib
 	${MAKE} -C demo install
-#	if [ -d kubz ]; then ${MAKE} -C kubz install; fi
+	! [ -d kubz ] || ${MAKE} -C kubz install
 
 kubz: all
 	${MAKE} -C kubz all
@@ -119,26 +112,21 @@ uninstall:
 	rm -rf ${prefix}/include/libkc3/window/sdl2
 	rm -f ${prefix}/lib/${LIB}
 	${MAKE} -C demo uninstall
-	! test -d kubz || ${MAKE} -C kubz uninstall
+	! [ -d kubz ] || ${MAKE} -C kubz uninstall
 
 .PHONY: \
 	all \
 	asan \
 	build \
-	clean \
 	cov \
 	debug \
 	demo \
 	demo_asan \
 	demo_cov \
 	demo_debug \
-	distclean \
 	gdb_demo \
 	install \
 	lldb_demo \
 	test \
 	update_sources \
 	uninstall
-
-include config.mk
-include sources.mk

@@ -192,7 +192,6 @@ s_mat3 * mat3_new_zero (void)
   return m;
 }
 
-
 s_mat3 * mat3_scale (s_mat3 *m, f32 x, f32 y)
 {
   s_mat3 s;

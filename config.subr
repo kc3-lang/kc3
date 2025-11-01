@@ -1532,10 +1532,31 @@ case "$(uname -s)" in
         echo "Unsupported OS : $(uname -s)" >&2
         exit 1;
 esac
-echo "SHARED_FLAGS = ${SHARED_FLAGS}" >> ${CONFIG_MK}
-echo "SHARED_EXT = ${SHARED_EXT}" >> ${CONFIG_MK}
-echo "LIB_SUFFIX = ${LIB_SUFFIX}" >> ${CONFIG_MK}
-echo "LIB_LINK_SUFFIX = ${LIB_LINK_SUFFIX}" >> ${CONFIG_MK}
-echo "IMPLIB = ${IMPLIB}" >> ${CONFIG_MK}
+{
+    echo "SHARED_FLAGS = ${SHARED_FLAGS}" >> ${CONFIG_MK}
+    echo "SHARED_EXT = ${SHARED_EXT}" >> ${CONFIG_MK}
+    echo "LIB_SUFFIX = ${LIB_SUFFIX}" >> ${CONFIG_MK}
+    echo "LIB_LINK_SUFFIX = ${LIB_LINK_SUFFIX}" >> ${CONFIG_MK}
+    echo "IMPLIB = ${IMPLIB}"
+} >> ${CONFIG_MK}
+
+{
+    echo "CLEANFILES = *.a *.gcno *.la .libs *.o *.so *.so.* *.dylib"
+    echo "CLEANFILES_COV = *.css *.gcda *.html"
+    echo "CLEANFILES += \${CLEANFILES_COV}"
+    echo "DISTCLEANFILES = .build \${CLEANFILES} config.mk"
+    echo
+    echo "clean:"
+    echo "	rm -rf \${CLEANFILES}"
+    echo
+    echo "clean_cov:"
+    echo "	rm -rf \${CLEANFILES_COV}"
+    echo
+    echo "distclean:"
+    echo "	rm -rf \${DISTCLEANFILES}"
+    echo
+    echo ".PHONY: clean clean_cov distclean"
+    echo
+} >> ${CONFIG_MK}
 
 config_no_undefined

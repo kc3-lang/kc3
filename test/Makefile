@@ -10,43 +10,26 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = \
-	*.a \
-	*.css \
+CLEANFILES += \
 	ekc3/*.diff \
 	ekc3/*.err \
 	ekc3/*.out \
 	ekc3/*.ret \
-	*.gcno \
-	*.html \
 	http/*.diff \
 	http/*.err \
 	http/*.out \
 	http/*.ret \
-	*.lo \
-	*.o \
-	.libs \
 	ikc3/*.diff \
 	ikc3/*.err \
 	ikc3/*.out \
 	ikc3/*.ret \
 	kc3.dump \
-	libkc3_test \
+	${PROG} \
 	libkc3_test_asan \
 	libkc3_test_cov \
 	libkc3_test_debug
 
-CLEANFILES_COV = \
-	*.css \
-	*.gcda \
-	*.html \
-	*.gcda
-
-CLEANFILES += ${CLEANFILES_COV}
-
-DISTCLEANFILES = ${CLEANFILES} config.mk
-
-build: libkc3_test
+build: ${PROG}
 
 all:
 	${MAKE} build
@@ -54,20 +37,11 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: libkc3_test_asan
+asan: ${PROG_ASAN}
 
-clean:
-	rm -rf ${CLEANFILES}
+cov: ${PROG_COV}
 
-clean_cov:
-	rm -rf ${CLEANFILES_COV}
-
-cov: libkc3_test_cov
-
-debug: libkc3_test_debug
-
-distclean:
-	rm -rf ${DISTCLEANFILES}
+debug: ${PROG_DEBUG}
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details test.html
@@ -135,9 +109,9 @@ lldb_test_tls:
 lldb_test_tls_asan:
 	cd tls && lldb ../../ikc3/ikc3_asan
 
-test: libkc3_test
+test: ${PROG}
 	rm -f kc3.dump
-	time ./libkc3_test
+	time ./${PROG}
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s time ./kc3s_test
 	KC3S=${SRC_TOP}/kc3s/kc3s time ./tls_test
@@ -147,10 +121,10 @@ test: libkc3_test
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./markdown_test
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./http_test
 
-test_asan: libkc3_test_asan
+test_asan: ${PROG_ASAN}
 	rm -f kc3.dump
-	time ./libkc3_test_asan --copy
-	time ./libkc3_test_asan
+	time ./${PROG_ASAN} --copy
+	time ./${PROG_ASAN}
 	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./ikc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./kc3s_test
 	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./tls_test
@@ -256,13 +230,13 @@ test_kc3s_cov:
 test_kc3s_debug:
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./kc3s_test
 
-test_libkc3: libkc3_test
+test_libkc3: ${PROG}
 	rm -f kc3.dump
-	time ./libkc3_test
+	time ./${PROG}
 
-test_libkc3_asan: libkc3_test_asan
+test_libkc3_asan: ${PROG_ASAN}
 	rm -f kc3.dump
-	time ./libkc3_test_asan
+	time ./${PROG_ASAN}
 
 test_libkc3_cov: libkc3_test_cov
 	rm -f kc3.dump
@@ -320,16 +294,13 @@ test_tls_cov:
 test_tls_debug:
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./tls_test
 
-test_valgrind: libkc3_test
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./libkc3_test
+test_valgrind: ${PROG}
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./${PROG}
 
 .PHONY: all \
 	asan \
 	cov \
 	debug \
-	clean \
-	clean_cov \
-	distclean_test_cov \
 	gdb_test \
 	gdb_test_ekc3 \
 	gdb_test_http \

@@ -10,18 +10,19 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-all: c3c
-
-CLEANFILES = c3c .libs *.lo *.la
-
-DISTCLEANFILES = ${CLEANFILES} config.mk
-
-clean:
-	rm -rf ${CLEANFILES}
-
-distclean:
-	rm -rf ${DISTCLEANFILES}
-
-.PHONY: all clean distclean
+all:
+	${MAKE} build
+	${MAKE} debug
 
 include config.mk
+include sources.mk
+
+asan: ${PROG_ASAN}
+
+build: ${PROG}
+
+cov: ${PROG_COV}
+
+debug: ${PROG_DEBUG}
+
+.PHONY: all asan build cov debug

@@ -10,32 +10,18 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+all:
+	${MAKE} build
+	${MAKE} debug
+	if ${HAVE_GCOV}; then ${MAKE} cov; fi
+	if ${HAVE_ASAN}; then ${MAKE} asan; fi
+
 include config.mk
 include sources.mk
 
-CLEANFILES = *.a ${PROG} ${PROG_ASAN} ${PROG_COV} ${PROG_DEBUG} *.css \
-	*.gcno *.html *.o .libs *.lo
-
-CLEANFILES_COV = *.css *.gcda *.html
-CLEANFILES += ${CLEANFILES_COV}
-
-DISTCLEANFILES = ${CLEANFILES} config.mk
-
-build: ${PROG}
-
-all:
-	${MAKE} build
-	if ${HAVE_GCOV}; then ${MAKE} cov; fi
-	${MAKE} debug
-	if ${HAVE_ASAN}; then ${MAKE} asan; fi
-
 asan: ${PROG_ASAN}
 
-clean:
-	rm -rf ${CLEANFILES}
-
-clean_cov:
-	rm -rf ${CLEANFILES_COV}
+build: ${PROG}
 
 cov:   ${PROG_COV}
 
@@ -53,9 +39,6 @@ demo_cov: ${PROG_COV}
 demo_debug: ${PROG_DEBUG}
 	time ./${PROG_DEBUG}
 
-distclean:
-	rm -rf ${DISTCLEANFILES}
-
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details ${PROG}.html
 
@@ -69,10 +52,7 @@ install:
 .PHONY: \
 	all \
 	asan \
-	clean \
-	clean_cov \
 	cov \
 	debug \
 	demo \
-	distclean \
 	gdb_demo

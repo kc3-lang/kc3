@@ -10,19 +10,14 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a *.gcno *.o *.so
-
-CLEANFILES_COV = *.css *.gcda *.html
-
-CLEANFILES += ${CLEANFILES_COV}
-
-DISTCLEANFILES = ${CLEANFILES} config.mk
-
 all:
 	${MAKE} build
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
+
+include config.mk
+include sources.mk
 
 build:
 	${MAKE} ${LIB}
@@ -37,13 +32,11 @@ asan:
 	if ${HAVE_XCB}; then ${MAKE} -C xcb asan; fi
 
 clean:
-	rm -rf ${CLEANFILES}
 	if ${HAVE_ANDROID}; then ${MAKE} -C android clean; fi
 	if ${HAVE_DRM}; then ${MAKE} -C drm clean; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean; fi
 
 clean_cov:
-	rm -rf ${CLEANFILES_COV}
 	if ${HAVE_ANDROID}; then ${MAKE} -C android clean_cov; fi
 	if ${HAVE_DRM}; then ${MAKE} -C drm clean_cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean_cov; fi
@@ -80,9 +73,6 @@ demo_debug: debug
 	    if ${HAVE_XCB} && [ -n "${DISPLAY}" ]; then ${MAKE} -C xcb demo_debug; else \
 	        if ${HAVE_DRM}; then ${MAKE} -C drm demo_debug; fi; fi; fi
 
-distclean:
-	rm -rf ${DISTCLEANFILES}
-
 gdb_demo: debug
 	if ${HAVE_ANDROID}; then ${MAKE} -C android gdb_demo; fi
 	if ${HAVE_DRM}; then ${MAKE} -C drm gdb_demo; fi
@@ -114,18 +104,12 @@ update_sources:
 	all \
 	asan \
 	build \
-	clean \
-	clean_cov \
 	cov \
 	debug \
 	demo \
 	dist \
-	distclean \
 	gdb_demo \
 	install \
 	lldb_demo \
 	test \
 	update_sources \
-
-include config.mk
-include sources.mk

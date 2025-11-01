@@ -10,13 +10,6 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a ${PROG} ${PROG_ASAN} ${PROG_COV} ${PROG_DEBUG} *.css *.gcno *.html *.o .libs *.lo
-
-CLEANFILES_COV = *.css *.gcda *.html
-CLEANFILES += ${CLEANFILES_COV}
-
-DISTCLEANFILES = ${CLEANFILES} config.mk
-
 all:
 	${MAKE} build
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
@@ -30,21 +23,12 @@ asan: ${PROG_ASAN}
 
 build: ${PROG}
 
-clean:
-	rm -rf ${CLEANFILES}
-
-clean_cov:
-	rm -rf ${CLEANFILES_COV}
-
 clean_dump:
 	rm -f ${SRC_TOP}/lib/kc3/0.1/kpkg.dump
 
 cov:   ${PROG_COV}
 
 debug: ${PROG_DEBUG}
-
-distclean:
-	rm -rf ${DISTCLEANFILES}
 
 dump: clean_dump
 	${SRC_TOP}/kc3s/kc3s --trace --load kpkg.kc3 --dump ${SRC_TOP}/lib/kc3/0.1/kpkg.dump --quit
@@ -70,11 +54,8 @@ uninstall:
 	all \
 	asan \
 	build \
-	clean \
-	clean_cov \
 	cov \
 	debug \
-	distclean \
 	gdb \
 	gdb_asan \
 	install \

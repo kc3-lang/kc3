@@ -10,31 +10,20 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a *.gcno *.o *.so
-
-CLEANFILES_COV = *.css *.gcda *.html
-
-CLEANFILES += ${CLEANFILES_COV}
-
-DISTCLEANFILES = ${CLEANFILES} config.mk
-
 all:
 	${MAKE} build
-	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
+	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
+
+include config.mk
+include sources.mk
 
 build:
 	${MAKE} ${LIB}
 
 asan:
 	${MAKE} ${LIB_ASAN}
-
-clean:
-	rm -rf ${CLEANFILES}
-
-clean_cov:
-	rm -rf ${CLEANFILES_COV}
 
 cov:
 	${MAKE} ${LIB_COV}
@@ -54,9 +43,6 @@ demo_cov: cov
 demo_debug: debug
 	./${PROG_DEBUG}
 
-distclean:
-	rm -rf ${DISTCLEANFILES}
-
 gdb_demo: debug
 	gdb ./.libs/${PROG_DEBUG}
 
@@ -72,17 +58,11 @@ update_sources:
 	all \
 	asan \
 	build \
-	clean \
-	clean_cov \
 	cov \
 	debug \
 	demo \
-	distclean \
 	gdb_demo \
 	install \
 	lldb_demo \
 	test \
 	update_sources \
-
-include config.mk
-include sources.mk

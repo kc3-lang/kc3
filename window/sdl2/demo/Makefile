@@ -10,34 +10,27 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a ${PROG} ${PROG_ASAN} ${PROG_COV} ${PROG_DEBUG} *.css \
-	*.gcno *.html *.o .libs *.lo
-
-CLEANFILES_COV = *.css *.gcda *.html
-CLEANFILES += ${CLEANFILES_COV}
-
-DISTCLEANFILES = ${CLEANFILES} config.mk
-
-build:
-	${MAKE} ${PROG}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos build; fi
-
 all:
 	${MAKE} build
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
+include config.mk
+include sources.mk
+
 asan:
 	${MAKE} ${PROG_ASAN}
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos asan; fi
 
+build:
+	${MAKE} ${PROG}
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos build; fi
+
 clean:
-	rm -rf ${CLEANFILES}
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos clean; fi
 
 clean_cov:
-	rm -rf ${CLEANFILES_COV}
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos clean_cov; fi
 
 cov:
@@ -65,7 +58,6 @@ demo_debug:
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo_debug; else time ./${PROG_DEBUG}; fi
 
 distclean:
-	rm -rf ${DISTCLEANFILES}
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos distclean; fi
 
 gcovr:
@@ -93,20 +85,14 @@ uninstall:
 	all \
 	asan \
 	build \
-	clean \
-	clean_cov \
 	cov \
 	debug \
 	demo \
 	demo_asan \
 	demo_cov \
 	demo_debug \
-	distclean \
 	gdb_demo \
 	install \
 	lldb_demo \
 	update_sources \
 	uninstall
-
-include config.mk
-include sources.mk

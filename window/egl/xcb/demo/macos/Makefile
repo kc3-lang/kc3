@@ -10,14 +10,12 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a ${APP_PROG} ${APP_PROG_ASAN} ${APP_PROG_COV} \
-	${APP_PROG_DEBUG} ${PROG} ${PROG_ASAN} ${PROG_COV} ${PROG_DEBUG} \
-	*.css *.gcno *.html *.o .libs *.lo
-
-CLEANFILES_COV = *.css *.gcda *.html
-CLEANFILES += ${CLEANFILES_COV}
-
-DISTCLEANFILES = ${CLEANFILES} config.mk
+CLEANFILES += \
+	${APP_PROG_DEBUG} \
+	${PROG} \
+	${PROG_ASAN} \
+	${PROG_COV} \
+	${PROG_DEBUG}
 
 IMG_SOURCES = \
 	${SRC_TOP}/img/earth.png \
@@ -35,19 +33,11 @@ FONT_SOURCES = \
 
 all:
 	${MAKE} build
-	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
+	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-build:
-	${MAKE} ${APP_PROG}
-	${MAKE} ${APP}/Contents/Frameworks
-	rm -rf ${APP}/Contents/lib
-	cp -R ${SRC_TOP}/lib ${APP}/Contents/
-	mkdir -p ${APP}/Contents/img
-	cp -LR ${IMG_SOURCES} ${APP}/Contents/img/
-	mkdir -p ${APP}/Contents/fonts
-	cp -LR ${FONT_SOURCES} ${APP}/Contents/fonts/
+include config.mk
 
 asan:
 	${MAKE} ${APP_PROG_ASAN}
@@ -59,11 +49,15 @@ asan:
 	mkdir -p ${APP_ASAN}/Contents/fonts
 	cp -RL ${FONT_SOURCES} ${APP_ASAN}/Contents/fonts/
 
-clean:
-	rm -rf ${CLEANFILES}
-
-clean_cov:
-	rm -rf ${CLEANFILES_COV}
+build:
+	${MAKE} ${APP_PROG}
+	${MAKE} ${APP}/Contents/Frameworks
+	rm -rf ${APP}/Contents/lib
+	cp -R ${SRC_TOP}/lib ${APP}/Contents/
+	mkdir -p ${APP}/Contents/img
+	cp -LR ${IMG_SOURCES} ${APP}/Contents/img/
+	mkdir -p ${APP}/Contents/fonts
+	cp -LR ${FONT_SOURCES} ${APP}/Contents/fonts/
 
 cov:
 	${MAKE} ${APP_PROG_COV}
@@ -91,9 +85,6 @@ demo: build
 demo_debug: debug
 	time ${APP_PROG_DEBUG}.sh
 
-distclean:
-	rm -rf ${DISTCLEANFILES}
-
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details ${PROG}.html
 
@@ -110,12 +101,7 @@ install:
 .PHONY: \
 	all \
 	asan \
-	clean \
-	clean_cov \
 	cov \
 	debug \
 	demo \
-	distclean \
 	gdb_demo
-
-include config.mk

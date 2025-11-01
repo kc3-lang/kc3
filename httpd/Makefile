@@ -10,66 +10,53 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a kc3_httpd kc3_httpd_asan kc3_httpd_cov kc3_httpd_debug *.css *.gcno *.html *.o .libs *.lo
-
-CLEANFILES_COV = *.css *.gcda *.html
-CLEANFILES += ${CLEANFILES_COV}
-
-DISTCLEANFILES = ${CLEANFILES} config.mk
-
-build: kc3_httpd
-
 all:
 	${MAKE} build
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: kc3_httpd_asan
+include config.mk
+include sources.mk
 
-clean:
-	rm -rf ${CLEANFILES}
+asan: ${PROG_ASAN}
 
-clean_cov:
-	rm -rf ${CLEANFILES_COV}
+build: ${PROG}
 
-cov:   kc3_httpd_cov
+cov: ${PROG_COV}
 
-debug: kc3_httpd_debug
-
-distclean:
-	rm -rf ${DISTCLEANFILES}
+debug: ${PROG_DEBUG}
 
 fx: kc3_httpd
 	${MAKE} -C fx
 
-fx_asan: kc3_httpd_asan
+fx_asan: ${PROG_ASAN}
 	${MAKE} -C fx asan
 
-fx_cov: kc3_httpd_cov
+fx_cov: ${PROG_COV}
 	${MAKE} -C fx cov
 
-fx_debug: kc3_httpd_debug
+fx_debug: ${PROG_DEBUG}
 	${MAKE} -C fx debug
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details kc3_httpd.html
 
-gdb_fx: kc3_httpd_debug
-	cd fx && gdb ../.libs/kc3_httpd_debug
+gdb_fx: ${PROG_DEBUG}
+	cd fx && gdb ../${PROG_DEBUG}
 
-gdb_fx_asan: kc3_httpd_asan
-	cd fx && gdb ../.libs/kc3_httpd_asan
+gdb_fx_asan: ${PROG_ASAN}
+	cd fx && gdb ../${PROG_ASAN}
 
 gdb_httpd: debug
-	if [ -f kc3_httpd_debug.core ]; then gdb kc3_httpd_debug kc3_httpd_debug.core; else gdb kc3_httpd_debug; fi
+	if [ -f ${PROG_DEBUG}.core ]; then gdb ${PROG_DEBUG} ${PROG_DEBUG}.core; else gdb ${PROG_DEBUG}; fi
 
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/bin
 	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 kc3_httpd ${DESTDIR}${prefix}/bin/kc3_httpd
 
 lldb_httpd: debug
-	if [ -f kc3_httpd_debug.core ]; then lldb kc3_httpd_debug kc3_httpd_debug.core; else lldb kc3_httpd_debug; fi
+	if [ -f ${PROG_DEBUG}.core ]; then lldb ${PROG_DEBUG} ${PROG_DEBUG}.core; else lldb ${PROG_DEBUG}; fi
 
 uninstall:
 	rm -f ${prefix}/bin/kc3_httpd
@@ -77,11 +64,8 @@ uninstall:
 .PHONY: \
 	all \
 	asan \
-	clean \
-	clean_cov \
 	cov \
 	debug \
-	distclean \
 	fx \
 	fx_asan \
 	fx_cov \
@@ -97,6 +81,3 @@ uninstall:
 	lldb_httpd_asan \
 	update_sources \
 	uninstall
-
-include config.mk
-include sources.mk

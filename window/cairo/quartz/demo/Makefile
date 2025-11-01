@@ -10,14 +10,12 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a ${APP_PROG} ${APP_PROG_ASAN} ${APP_PROG_COV} \
-	${APP_PROG_DEBUG} ${PROG} ${PROG_ASAN} ${PROG_COV} ${PROG_DEBUG} \
-	*.css *.gcno *.html *.o .libs *.lo
-
-CLEANFILES_COV = *.css *.gcda *.html
-CLEANFILES += ${CLEANFILES_COV}
-
-DISTCLEANFILES = ${CLEANFILES} config.mk
+CLEANFILES += \
+	${APP_PROG_DEBUG} \
+	${PROG} \
+	${PROG_ASAN} \
+	${PROG_COV} \
+	${PROG_DEBUG}
 
 IMG_SOURCES = \
 	${SRC_TOP}/img/flaps.png \
@@ -38,6 +36,9 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
+include config.mk
+include sources.mk
+
 build:
 	${MAKE} ${APP_PROG}
 	${MAKE} ${APP}/Contents/Frameworks
@@ -57,12 +58,6 @@ asan:
 	cp ${SRC_DIR}/app_asan_info.plist ${APP_ASAN}/Contents/Info.plist
 	rsync -aP --delete ${SRC_TOP}/lib ${APP_ASAN}/Contents/
 	touch ${APP_ASAN}
-
-clean:
-	rm -rf ${CLEANFILES}
-
-clean_cov:
-	rm -rf ${CLEANFILES_COV}
 
 cov:
 	${MAKE} ${APP_PROG_COV}
@@ -90,9 +85,6 @@ demo: build
 demo_debug: debug
 	time ${APP_PROG_DEBUG}
 
-distclean:
-	rm -rf ${DISTCLEANFILES}
-
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details ${PROG}.html
 
@@ -118,16 +110,10 @@ uninstall:
 .PHONY: \
 	all \
 	asan \
-	clean \
-	clean_cov \
 	cov \
 	debug \
 	demo \
-	distclean \
 	gdb_demo \
 	install \
 	lldb_demo \
 	uninstall
-
-include config.mk
-include sources.mk

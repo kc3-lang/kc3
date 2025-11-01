@@ -10,19 +10,14 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a *.gcno *.o *.so
-
-CLEANFILES_COV = *.css *.gcda *.html
-
-CLEANFILES += ${CLEANFILES_COV}
-
-DISTCLEANFILES = .build ${CLEANFILES} config.mk
-
 all:
 	${MAKE} build
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
+
+include config.mk
+include sources.mk
 
 asan:
 	${MAKE} ${LIB_ASAN}
@@ -30,23 +25,16 @@ asan:
 build:
 	${MAKE} ${LIB}
 
-clean:
-	rm -rf ${CLEANFILES}
-
-clean_cov:
-	rm -rf ${CLEANFILES_COV}
-
 cov:
 	${MAKE} ${LIB_COV}
 
 debug:
 	${MAKE} ${LIB_DEBUG}
 
-distclean:
-	rm -rf ${DISTCLEANFILES}
-
 gcovr:
-	gcovr --gcov-executable ${GCOV} --gcov-ignore-errors=no_working_dir_found --html-details libkc3_web.html
+	gcovr --gcov-executable ${GCOV} \
+	      --gcov-ignore-errors=no_working_dir_found \
+	      --html-details libkc3_web.html
 
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
@@ -79,13 +67,8 @@ uninstall:
 	all \
 	asan \
 	build \
-	clean \
 	cov \
 	debug \
-	distclean \
 	install \
 	test \
 	update_sources \
-
-include config.mk
-include sources.mk

@@ -10,35 +10,22 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a mount_kc3fs mount_kc3fs_asan mount_kc3fs_cov mount_kc3fs_debug *.css *.gcno *.html *.o .libs *.lo
-
-CLEANFILES_COV = *.css *.gcda *.html
-CLEANFILES += ${CLEANFILES_COV}
-
-DISTCLEANFILES = ${CLEANFILES} config.mk
-
 all:
 	${MAKE} build
-	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
+	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-build: mount_kc3fs
+include config.mk
+include sources.mk
 
 asan: mount_kc3fs_asan
 
-clean:
-	rm -rf ${CLEANFILES}
-
-clean_cov:
-	rm -rf ${CLEANFILES_COV}
+build: mount_kc3fs
 
 cov:   mount_kc3fs_cov
 
 debug: mount_kc3fs_debug
-
-distclean:
-	rm -rf ${DISTCLEANFILES}
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details kc3fs.html
@@ -59,15 +46,9 @@ lldb_kc3fs: debug
 .PHONY: \
 	all \
 	asan \
-	clean \
-	clean_cov \
 	cov \
 	debug \
-	distclean \
 	gdb_kc3fs \
 	install \
 	lldb_kc3fs \
 	update_sources \
-
-include config.mk
-include sources.mk
