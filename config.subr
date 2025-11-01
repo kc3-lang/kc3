@@ -1546,13 +1546,13 @@ esac
     echo "CLEANFILES += \${CLEANFILES_COV}"
     echo "DISTCLEANFILES = .build \${CLEANFILES} config.mk"
     echo
-    echo "clean:"
+    echo "clean::"
     echo "	rm -rf \${CLEANFILES}"
     echo
-    echo "clean_cov:"
+    echo "clean_cov::"
     echo "	rm -rf \${CLEANFILES_COV}"
     echo
-    echo "distclean:"
+    echo "distclean::"
     echo "	rm -rf \${DISTCLEANFILES}"
     echo
     echo ".PHONY: clean clean_cov distclean"
