@@ -30,19 +30,45 @@ build_lib() {
 }
 
 build_lib_shared() {
-    SHARED="$SHARED_EXT.$VER_MAJOR.$VER_MINOR.$VER_PATCH"
-    echo >> ${CONFIG_MK}
-    echo "$LIB_ASAN.$SHARED: $OBJECTS_ASAN build_lib_asan" >> ${CONFIG_MK}
-    echo "	./build_lib_asan $LIB_ASAN.$SHARED" >> ${CONFIG_MK}
-    echo >> ${CONFIG_MK}
-    echo "$LIB_COV.$SHARED: $OBJECTS_COV build_lib_cov" >> ${CONFIG_MK}
-    echo "	./build_lib_cov $LIB_COV.$SHARED" >> ${CONFIG_MK}
-    echo >> ${CONFIG_MK}
-    echo "$LIB_DEBUG.$SHARED: $OBJECTS_DEBUG build_lib_debug" >> ${CONFIG_MK}
-    echo "	./build_lib_debug $LIB_DEBUG.$SHARED" >> ${CONFIG_MK}
-    echo >> ${CONFIG_MK}
-    echo "$LIB.$SHARED: $OBJECTS build_lib_main" >> ${CONFIG_MK}
-    echo "	./build_lib_main $LIB.$SHARED" >> ${CONFIG_MK}
+    {
+        echo
+        echo "$LIB_ASAN.$SHARED_PATCH: $OBJECTS_ASAN build_lib_asan"
+        echo "	./build_lib_asan $LIB_ASAN.$SHARED"
+        echo "$LIB_ASAN.$SHARED_MINOR: $LIB_ASAN.$SHARED_PATCH"
+        echo "	ln -sf $LIB_ASAN.$SHARED_PATCH $LIB_ASAN.$SHARED_MINOR"
+        echo "$LIB_ASAN.$SHARED_MAJOR: $LIB_ASAN.$SHARED_PATCH"
+        echo "	ln -sf $LIB_ASAN.$SHARED_PATCH $LIB_ASAN.$SHARED_MAJOR"
+        echo "$LIB_ASAN.$SHARED_EXT: $LIB_ASAN.$SHARED_PATCH"
+        echo "	ln -sf $LIB_ASAN.$SHARED_PATCH $LIB_ASAN.$SHARED_EXT"
+        echo "$LIB_ASAN: $LIB_ASAN.$SHARED_EXT $LIB_ASAN.$SHARED_MAJOR $LIB_ASAN.$SHARED_MINOR $LIB_ASAN.$SHARED_PATCH"
+        echo
+        echo "$LIB_COV.$SHARED_PATCH: $OBJECTS_COV build_lib_cov"
+        echo "	./build_lib_cov $LIB_COV.$SHARED"
+        echo "$LIB_COV.$SHARED_MINOR: $LIB_COV.$SHARED_PATCH"
+        echo "	ln -sf $LIB_COV.$SHARED_PATCH $LIB_COV.$SHARED_MINOR"
+        echo "$LIB_COV.$SHARED_MAJOR: $LIB_COV.$SHARED_PATCH"
+        echo "	ln -sf $LIB_COV.$SHARED_PATCH $LIB_COV.$SHARED_MAJOR"
+        echo "$LIB_COV.$SHARED_EXT: $LIB_COV.$SHARED_PATCH"
+        echo "	ln -sf $LIB_COV.$SHARED_PATCH $LIB_COV.$SHARED_EXT"
+        echo
+        echo "$LIB_DEBUG.$SHARED_PATCH: $OBJECTS_DEBUG build_lib_debug"
+        echo "	./build_lib_debug $LIB_DEBUG.$SHARED"
+        echo "$LIB_DEBUG.$SHARED_MINOR: $LIB_DEBUG.$SHARED_PATCH"
+        echo "	ln -sf $LIB_DEBUG.$SHARED_PATCH $LIB_DEBUG.$SHARED_MINOR"
+        echo "$LIB_DEBUG.$SHARED_MAJOR: $LIB_DEBUG.$SHARED_PATCH"
+        echo "	ln -sf $LIB_DEBUG.$SHARED_PATCH $LIB_DEBUG.$SHARED_MAJOR"
+        echo "$LIB_DEBUG.$SHARED_EXT: $LIB_DEBUG.$SHARED_PATCH"
+        echo "	ln -sf $LIB_DEBUG.$SHARED_PATCH $LIB_DEBUG.$SHARED_EXT"
+        echo
+        echo "$LIB.$SHARED_PATCH: $OBJECTS build_lib_main"
+        echo "	./build_lib_main $LIB.$SHARED"
+        echo "$LIB.$SHARED_MINOR: $LIB.$SHARED_PATCH"
+        echo "	ln -sf $LIB.$SHARED_PATCH $LIB.$SHARED_MINOR"
+        echo "$LIB.$SHARED_MAJOR: $LIB.$SHARED_PATCH"
+        echo "	ln -sf $LIB.$SHARED_PATCH $LIB.$SHARED_MAJOR"
+        echo "$LIB.$SHARED_EXT: $LIB.$SHARED_PATCH"
+        echo "	ln -sf $LIB.$SHARED_PATCH $LIB.$SHARED_EXT"
+    } >> ${CONFIG_MK}
 }
 
 build_o() {
@@ -1382,6 +1408,9 @@ case "$(uname -s)" in
         echo "Unsupported OS : $(uname -s)" >&2
         exit 1;
 esac
+SHARED_MAJOR="$SHARED_EXT.$VER_MAJOR"
+SHARED_MINOR="$SHARED_MAJOR.$VER_MINOR"
+SHARED_PATH="$SHARED_MINOR.$VER_PATCH"
 echo "SHARED_FLAGS = ${SHARED_FLAGS}" >> ${CONFIG_MK}
 echo "SHARED_EXT = ${SHARED_EXT}" >> ${CONFIG_MK}
 echo "LIB_SUFFIX = ${LIB_SUFFIX}" >> ${CONFIG_MK}
