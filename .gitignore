@@ -35,6 +35,7 @@ current_test
 *.dll
 *.dmg
 .DS_Store
+*.dylib
 ekc3/embed
 *.exe
 *.facts.bin.facts
@@ -71,12 +72,6 @@ kpkg/kpkg
 kpkg/kpkg_asan
 kpkg/kpkg_cov
 kpkg/kpkg_debug
-lib/kc3/0.1/ekc3.so
-lib/kc3/0.1/event.so
-lib/kc3/0.1/http.so
-lib/kc3/0.1/json.so
-lib/kc3/0.1/markdown.so
-lib/kc3/0.1/socket.so
 *.log
 macos/kc3-v*
 /misc/fact_w
