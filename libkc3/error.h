@@ -15,6 +15,10 @@
 
 #include "types.h"
 
+#ifdef ERROR
+# undef ERROR
+#endif
+
 #define ERROR(msg)                                                    \
   do {                                                                \
     err_write_1(__func__);                                            \

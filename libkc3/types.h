@@ -60,6 +60,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #if defined(WIN32) || defined(WIN64)
+# include <winsock2.h>
 # include <sys/stat.h>
 # define lstat(path, buf) _stat(path, buf)
 # define stat _stat

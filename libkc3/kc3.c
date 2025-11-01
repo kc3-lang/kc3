@@ -27,6 +27,9 @@
 # include <sys/param.h>
 # define HOST_NAME_MAX MAXHOSTNAMELEN
 #endif
+#if defined(WIN32) || defined(WIN64)
+# define HOST_NAME_MAX 255
+#endif
 
 #ifndef WIN32
 # include <sys/wait.h>
@@ -1405,7 +1408,7 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
 
 s_tuple * kc3_system (p_list *list, s_tuple *dest)
 {
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64)
   (void) list;
   (void) dest;
   return NULL;
@@ -1504,6 +1507,8 @@ s_tuple * kc3_system (p_list *list, s_tuple *dest)
 #endif
 }
 
+#if ! (defined(WIN32) || defined(WIN64))
+
 static void kc3_system_pipe_exec (s32 pipe_w, char **argv,
                                   p_list *list)
 {
@@ -1537,6 +1542,8 @@ static void kc3_system_pipe_exec (s32 pipe_w, char **argv,
   assert(! "kc3_system: execvp");
   _exit(1);
 }
+
+#endif
 
 s32 kc3_tag_type (const s_tag *tag)
 {
