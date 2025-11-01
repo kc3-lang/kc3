@@ -1343,6 +1343,8 @@ case "$(uname -s)" in
         SHARED_EXT="dylib"
         LIB_SUFFIX="\${VER_MAJOR}.dylib"
         LIB_LINK_SUFFIX="dylib"
+        MACOS_SDK=$(xcrun --show-sdk-path 2>/dev/null || echo "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
+        LDFLAGS="$LDFLAGS -L${MACOS_SDK}/usr/lib"
         LDADD="-lSystem"
         LIB_LDADD="$LDADD"
         PROG_LDADD="$LDADD"
