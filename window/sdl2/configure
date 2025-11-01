@@ -62,7 +62,6 @@ pkg_config sdl2
 #    LIBS="$LIBS -lglu32 -lopengl32"
 #fi
 config_define PREFIX "\"${PREFIX}\""
-LIBS="$LIBS -rpath ${PREFIX}/lib"
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"
