@@ -61,6 +61,9 @@ pkg_config sdl2
 #if $HAVE_WIN32; then
 #    LIBS="$LIBS -lglu32 -lopengl32"
 #fi
+if [ "x$(uname)" = "xDarwin" ]; then
+    LIBS="$LIBS -lobjc"
+fi
 config_define PREFIX "\"${PREFIX}\""
 
 # Address Sanitizer config
