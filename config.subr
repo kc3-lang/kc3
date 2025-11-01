@@ -1012,8 +1012,8 @@ update_build_lib() {
     echo "LOG=\".build/\$(basename \"\$1\").asan.log\"" >> ${BUILD_LIB_ASAN}
     echo "export CC=\"${CC}\"" >> ${BUILD_LIB_ASAN}
     echo "export LD=\"${LD}\"" >> ${BUILD_LIB_ASAN}
-    echo "export PREFIX=\"${PREFIX}\"" >> ${BUILD_LIB_ASAN}
     echo "export LIB_BASE=\"${LIB_ASAN}\"" >> ${BUILD_LIB_ASAN}
+    echo "export PREFIX=\"${PREFIX}\"" >> ${BUILD_LIB_ASAN}
     echo "export VER_MAJOR=\"${VER_MAJOR}\"" >> ${BUILD_LIB_ASAN}
     echo "export VER_MINOR=\"${VER_MINOR}\"" >> ${BUILD_LIB_ASAN}
     echo "export VER_PATCH=\"${VER_PATCH}\"" >> ${BUILD_LIB_ASAN}
@@ -1035,8 +1035,8 @@ update_build_lib() {
     echo "LOG=\".build/\$(basename \"\$1\").cov.log\"" >> ${BUILD_LIB_COV}
     echo "export CC=\"${CC}\"" >> ${BUILD_LIB_COV}
     echo "export LD=\"${LD}\"" >> ${BUILD_LIB_COV}
-    echo "export PREFIX=\"${PREFIX}\"" >> ${BUILD_LIB_COV}
     echo "export LIB_BASE=\"${LIB_COV}\"" >> ${BUILD_LIB_COV}
+    echo "export PREFIX=\"${PREFIX}\"" >> ${BUILD_LIB_COV}
     echo "export VER_MAJOR=\"${VER_MAJOR}\"" >> ${BUILD_LIB_COV}
     echo "export VER_MINOR=\"${VER_MINOR}\"" >> ${BUILD_LIB_COV}
     echo "export VER_PATCH=\"${VER_PATCH}\"" >> ${BUILD_LIB_COV}
@@ -1058,8 +1058,8 @@ update_build_lib() {
     echo "LOG=\".build/\$(basename \"\$1\").debug.log\"" >> ${BUILD_LIB_DEBUG}
     echo "export CC=\"${CC}\"" >> ${BUILD_LIB_DEBUG}
     echo "export LD=\"${LD}\"" >> ${BUILD_LIB_DEBUG}
-    echo "export PREFIX=\"${PREFIX}\"" >> ${BUILD_LIB_DEBUG}
     echo "export LIB_BASE=\"${LIB_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
+    echo "export PREFIX=\"${PREFIX}\"" >> ${BUILD_LIB_DEBUG}
     echo "export VER_MAJOR=\"${VER_MAJOR}\"" >> ${BUILD_LIB_DEBUG}
     echo "export VER_MINOR=\"${VER_MINOR}\"" >> ${BUILD_LIB_DEBUG}
     echo "export VER_PATCH=\"${VER_PATCH}\"" >> ${BUILD_LIB_DEBUG}
@@ -1081,8 +1081,8 @@ update_build_lib() {
     echo "LOG=\".build/\$(basename \"\$1\").main.log\"" >> ${BUILD_LIB_MAIN}
     echo "export CC=\"${CC}\"" >> ${BUILD_LIB_MAIN}
     echo "export LD=\"${LD}\"" >> ${BUILD_LIB_MAIN}
-    echo "export PREFIX=\"${PREFIX}\"" >> ${BUILD_LIB_MAIN}
     echo "export LIB_BASE=\"${LIB}\"" >> ${BUILD_LIB_MAIN}
+    echo "export PREFIX=\"${PREFIX}\"" >> ${BUILD_LIB_MAIN}
     echo "export VER_MAJOR=\"${VER_MAJOR}\"" >> ${BUILD_LIB_MAIN}
     echo "export VER_MINOR=\"${VER_MINOR}\"" >> ${BUILD_LIB_MAIN}
     echo "export VER_PATCH=\"${VER_PATCH}\"" >> ${BUILD_LIB_MAIN}
@@ -1332,6 +1332,99 @@ if [ "x$RANLIB" != "x" ]; then
     echo "RANLIB = $RANLIB" >> ${CONFIG_MK}
 fi
 
+HAVE_GCOV=false
+if [ "x$GCOV" = "xfalse" ]; then
+    HAVE_GCOV=false
+else
+    if [ "x$GCOV" = "x" ]; then
+        if which gcov >/dev/null 2>&1; then
+	    GCOV=gcov
+            HAVE_GCOV=true
+        elif which egcov >/dev/null 2>&1; then
+	    GCOV=egcov
+            HAVE_GCOV=true
+        fi
+    else
+        HAVE_GCOV=true
+    fi
+fi
+echo "HAVE_GCOV = $HAVE_GCOV" >> ${CONFIG_MK}
+if ${HAVE_GCOV}; then
+    echo "GCOV = $GCOV" >> ${CONFIG_MK}
+fi
+
+if [ "x$GDB" = "x" ]; then
+    if which egdb 2>/dev/null; then
+        GDB=egdb
+    else
+        GDB=gdb
+    fi
+fi
+echo "GDB = $GDB" >> ${CONFIG_MK}
+
+if [ "x$GMAKE" = "x" ]; then
+    if which gmake >/dev/null 2>&1; then
+        GMAKE=gmake
+    else
+        GMAKE=make
+    fi
+fi
+echo "GMAKE = $GMAKE" >> ${CONFIG_MK}
+
+if [ "x$INSTALL" = "x" ]; then
+    if which install >/dev/null 2>&1; then
+        INSTALL=install
+    fi
+fi
+echo "INSTALL = $INSTALL" >> ${CONFIG_MK}
+
+if [ "x$OBJC" = "x" ]; then
+    if test -x "$(which clang)"; then
+        OBJC="$(which clang)"
+    else
+        OBJC=clang
+    fi
+fi
+echo "OBJC = $OBJC" >> ${CONFIG_MK}
+
+: ${DESTDIR:=}
+echo "DESTDIR ?= ${DESTDIR}" >> ${CONFIG_MK}
+
+: ${PREFIX:=/usr/local}
+echo "PREFIX = $PREFIX" >> ${CONFIG_MK}
+echo "PREFIX=$PREFIX" >> ${CONFIG_SH}
+echo "prefix ?= ${PREFIX}" >> ${CONFIG_MK}
+echo "prefix=${PREFIX}" >> ${CONFIG_SH}
+
+if [ "x$DESTDIR" != "x" ]; then
+    mkdir -p "$DESTDIR"
+    if [ "x$OWNER" = "x" ]; then
+        OWNER="$(ls -ld "$DESTDIR" | tr -s ' ' | cut -d ' ' -f 3)"
+    fi
+    if [ "x$GROUP" = "x" ]; then
+        GROUP="$(ls -ld "$DESTDIR" | tr -s ' ' | cut -d ' ' -f 4)"
+    fi
+else
+    if [ "x$OWNER" = "x" ]; then
+        OWNER="$(ls -ld "$PREFIX" | tr -s ' ' | cut -d ' ' -f 3)"
+    fi
+    if [ "x$GROUP" = "x" ]; then
+        GROUP="$(ls -ld "$PREFIX" | tr -s ' ' | cut -d ' ' -f 4)"
+    fi
+fi
+echo "OWNER = $OWNER" >> ${CONFIG_MK}
+echo "GROUP = $GROUP" >> ${CONFIG_MK}
+
+if [ "x$BINDIR" = "x" ]; then
+    BINDIR="${PREFIX}/bin"
+fi
+echo "BINDIR = $BINDIR" >> ${CONFIG_MK}
+
+if [ "x$LIBDIR" = "x" ]; then
+    LIBDIR="${PREFIX}/lib"
+fi
+echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}
+
 EXPORT_DYNAMIC="--export-dynamic"
 case "$(uname -s)" in
     CYGWIN*|MINGW*|MSYS*|Windows)
@@ -1444,111 +1537,5 @@ echo "SHARED_EXT = ${SHARED_EXT}" >> ${CONFIG_MK}
 echo "LIB_SUFFIX = ${LIB_SUFFIX}" >> ${CONFIG_MK}
 echo "LIB_LINK_SUFFIX = ${LIB_LINK_SUFFIX}" >> ${CONFIG_MK}
 echo "IMPLIB = ${IMPLIB}" >> ${CONFIG_MK}
-
-HAVE_GCOV=false
-if [ "x$GCOV" = "xfalse" ]; then
-    HAVE_GCOV=false
-else
-    if [ "x$GCOV" = "x" ]; then
-        if which gcov >/dev/null 2>&1; then
-	    GCOV=gcov
-            HAVE_GCOV=true
-        elif which egcov >/dev/null 2>&1; then
-	    GCOV=egcov
-            HAVE_GCOV=true
-        fi
-    else
-        HAVE_GCOV=true
-    fi
-fi
-echo "HAVE_GCOV = $HAVE_GCOV" >> ${CONFIG_MK}
-if ${HAVE_GCOV}; then
-    echo "GCOV = $GCOV" >> ${CONFIG_MK}
-fi
-
-if [ "x$GDB" = "x" ]; then
-    if which egdb 2>/dev/null; then
-        GDB=egdb
-    else
-        GDB=gdb
-    fi
-fi
-echo "GDB = $GDB" >> ${CONFIG_MK}
-
-if [ "x$GMAKE" = "x" ]; then
-    if which gmake >/dev/null 2>&1; then
-        GMAKE=gmake
-    else
-        GMAKE=make
-    fi
-fi
-echo "GMAKE = $GMAKE" >> ${CONFIG_MK}
-
-if [ "x$INSTALL" = "x" ]; then
-    if which install >/dev/null 2>&1; then
-        INSTALL=install
-    fi
-fi
-echo "INSTALL = $INSTALL" >> ${CONFIG_MK}
-
-#if [ "x$SWIFTC" = "x" ]; then
-#    if which swiftc >/dev/null 2>&1; then
-#        SWIFTC=swiftc"
-#	HAVE_SWIFT=true
-#    else
-#	HAVE_SWIFT=false
-#    fi
-#else
-#    HAVE_SWIFT=true
-#fi
-#echo "SWIFTC = $SWIFTC" >> ${CONFIG_MK}
-#echo "HAVE_SWIFT = $HAVE_SWIFT" >> ${CONFIG_MK}
-
-if [ "x$OBJC" = "x" ]; then
-    if test -x "$(which clang)"; then
-        OBJC="$(which clang)"
-    else
-        OBJC=clang
-    fi
-fi
-echo "OBJC = $OBJC" >> ${CONFIG_MK}
-
-: ${DESTDIR:=}
-echo "DESTDIR ?= ${DESTDIR}" >> ${CONFIG_MK}
-
-: ${PREFIX:=/usr/local}
-echo "PREFIX = $PREFIX" >> ${CONFIG_MK}
-echo "PREFIX=$PREFIX" >> ${CONFIG_SH}
-echo "prefix ?= ${PREFIX}" >> ${CONFIG_MK}
-echo "prefix=${PREFIX}" >> ${CONFIG_SH}
-
-if [ "x$DESTDIR" != "x" ]; then
-    mkdir -p "$DESTDIR"
-    if [ "x$OWNER" = "x" ]; then
-        OWNER="$(ls -ld "$DESTDIR" | tr -s ' ' | cut -d ' ' -f 3)"
-    fi
-    if [ "x$GROUP" = "x" ]; then
-        GROUP="$(ls -ld "$DESTDIR" | tr -s ' ' | cut -d ' ' -f 4)"
-    fi
-else
-    if [ "x$OWNER" = "x" ]; then
-        OWNER="$(ls -ld "$PREFIX" | tr -s ' ' | cut -d ' ' -f 3)"
-    fi
-    if [ "x$GROUP" = "x" ]; then
-        GROUP="$(ls -ld "$PREFIX" | tr -s ' ' | cut -d ' ' -f 4)"
-    fi
-fi
-echo "OWNER = $OWNER" >> ${CONFIG_MK}
-echo "GROUP = $GROUP" >> ${CONFIG_MK}
-
-if [ "x$BINDIR" = "x" ]; then
-    BINDIR="${PREFIX}/bin"
-fi
-echo "BINDIR = $BINDIR" >> ${CONFIG_MK}
-
-if [ "x$LIBDIR" = "x" ]; then
-    LIBDIR="${PREFIX}/lib"
-fi
-echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}
 
 config_no_undefined
