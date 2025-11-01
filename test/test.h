@@ -195,7 +195,7 @@
     bool  TEST_STR_EQ_ko = false;                                      \
     s_str TEST_STR_EQ_test_str = (test);                               \
     s_str TEST_STR_EQ_expected_str = (expected);                       \
-    sw i = 0;                                                          \
+    u32 i = 0;                                                          \
     if (TEST_STR_EQ_test_str.size !=                                   \
         TEST_STR_EQ_expected_str.size)                                 \
       TEST_STR_EQ_ko = true;                                           \
