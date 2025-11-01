@@ -25,14 +25,14 @@ all:
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 
 asan:
-	${MAKE} ${LIB_ASAN}.${SHARED_EXT}
+	${MAKE} ${LIB_ASAN}
 	${MAKE} -C demo asan
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo asan; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl asan; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 asan; fi
 
 build:
-	${MAKE} ${LIB}.${SHARED_EXT}
+	${MAKE} ${LIB}
 	${MAKE} -C demo build
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo build; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl build; fi
@@ -53,14 +53,14 @@ clean_cov:
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 clean_cov; fi
 
 cov:
-	${MAKE} ${LIB_COV}.${SHARED_EXT}
+	${MAKE} ${LIB_COV}
 	${MAKE} -C demo cov
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo cov; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl cov; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 cov; fi
 
 debug:
-	${MAKE} ${LIB_DEBUG}.${SHARED_EXT}
+	${MAKE} ${LIB_DEBUG}
 	${MAKE} -C demo debug
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo debug; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl debug; fi

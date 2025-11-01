@@ -19,7 +19,7 @@ CLEANFILES += ${CLEANFILES_COV}
 DISTCLEANFILES = ${CLEANFILES} config.mk
 
 build:
-	${MAKE} ${LIB}.${SHARED_EXT}
+	${MAKE} ${LIB}
 	${MAKE} -C demo build
 
 all:
@@ -29,7 +29,7 @@ all:
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 asan:
-	${MAKE} ${LIB_ASAN}.${SHARED_EXT}
+	${MAKE} ${LIB_ASAN}
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -38,10 +38,10 @@ clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
 cov:
-	${MAKE} ${LIB_COV}.${SHARED_EXT}
+	${MAKE} ${LIB_COV}
 
 debug:
-	${MAKE} ${LIB_DEBUG}.${SHARED_EXT}
+	${MAKE} ${LIB_DEBUG}
 
 demo: build
 	${MAKE} -C demo demo

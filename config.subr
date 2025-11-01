@@ -50,6 +50,7 @@ build_lib_shared() {
         echo "	ln -sf $LIB_COV.$SHARED_PATCH $LIB_COV.$SHARED_MAJOR"
         echo "$LIB_COV.$SHARED_EXT: $LIB_COV.$SHARED_PATCH"
         echo "	ln -sf $LIB_COV.$SHARED_PATCH $LIB_COV.$SHARED_EXT"
+        echo "$LIB_COV: $LIB_COV.$SHARED_EXT $LIB_COV.$SHARED_MAJOR $LIB_COV.$SHARED_MINOR $LIB_COV.$SHARED_PATCH"
         echo
         echo "$LIB_DEBUG.$SHARED_PATCH: $OBJECTS_DEBUG build_lib_debug"
         echo "	./build_lib_debug $LIB_DEBUG.$SHARED_PATCH"
@@ -59,6 +60,7 @@ build_lib_shared() {
         echo "	ln -sf $LIB_DEBUG.$SHARED_PATCH $LIB_DEBUG.$SHARED_MAJOR"
         echo "$LIB_DEBUG.$SHARED_EXT: $LIB_DEBUG.$SHARED_PATCH"
         echo "	ln -sf $LIB_DEBUG.$SHARED_PATCH $LIB_DEBUG.$SHARED_EXT"
+        echo "$LIB_DEBUG: $LIB_DEBUG.$SHARED_EXT $LIB_DEBUG.$SHARED_MAJOR $LIB_DEBUG.$SHARED_MINOR $LIB_DEBUG.$SHARED_PATCH"
         echo
         echo "$LIB.$SHARED_PATCH: $OBJECTS build_lib_main"
         echo "	./build_lib_main $LIB.$SHARED_PATCH"
@@ -68,6 +70,7 @@ build_lib_shared() {
         echo "	ln -sf $LIB.$SHARED_PATCH $LIB.$SHARED_MAJOR"
         echo "$LIB.$SHARED_EXT: $LIB.$SHARED_PATCH"
         echo "	ln -sf $LIB.$SHARED_PATCH $LIB.$SHARED_EXT"
+        echo "$LIB: $LIB.$SHARED_EXT $LIB.$SHARED_MAJOR $LIB.$SHARED_MINOR $LIB.$SHARED_PATCH"
     } >> ${CONFIG_MK}
 }
 

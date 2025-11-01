@@ -25,10 +25,10 @@ all:
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 
 asan:
-	${MAKE} ${LIB_ASAN}.${SHARED_EXT}
+	${MAKE} ${LIB_ASAN}
 
 build:
-	${MAKE} ${LIB}.${SHARED_EXT}
+	${MAKE} ${LIB}
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -37,10 +37,10 @@ clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
 cov:
-	${MAKE} ${LIB_COV}.${SHARED_EXT}
+	${MAKE} ${LIB_COV}
 
 debug:
-	${MAKE} ${LIB_DEBUG}.${SHARED_EXT}
+	${MAKE} ${LIB_DEBUG}
 
 distclean:
 	rm -rf ${DISTCLEANFILES}

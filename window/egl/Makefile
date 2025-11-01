@@ -25,13 +25,13 @@ all:
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 build:
-	${MAKE} ${LIB}.${SHARED_EXT}
+	${MAKE} ${LIB}
 	if ${HAVE_ANDROID}; then ${MAKE} -C android build; fi
 	if ${HAVE_DRM}; then ${MAKE} -C drm build; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb build; fi
 
 asan:
-	${MAKE} ${LIB_ASAN}.${SHARED_EXT}
+	${MAKE} ${LIB_ASAN}
 	if ${HAVE_ANDROID}; then ${MAKE} -C android asan; fi
 	if ${HAVE_DRM}; then ${MAKE} -C drm asan; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb asan; fi
@@ -49,13 +49,13 @@ clean_cov:
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean_cov; fi
 
 cov:
-	${MAKE} ${LIB_COV}.${SHARED_EXT}
+	${MAKE} ${LIB_COV}
 	if ${HAVE_ANDROID}; then ${MAKE} -C android cov; fi
 	if ${HAVE_DRM}; then ${MAKE} -C drm cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb cov; fi
 
 debug:
-	${MAKE} ${LIB_DEBUG}.${SHARED_EXT}
+	${MAKE} ${LIB_DEBUG}
 	if ${HAVE_ANDROID}; then ${MAKE} -C android debug; fi
 	if ${HAVE_DRM}; then ${MAKE} -C drm debug; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb debug; fi

@@ -25,14 +25,14 @@ all:
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 asan:
-	${MAKE} ${LIB_ASAN}.${SHARED_EXT}
+	${MAKE} ${LIB_ASAN}
 	${MAKE} -C demo asan
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz asan; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 asan; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb asan; fi
 
 build:
-	${MAKE} ${LIB}.${SHARED_EXT}
+	${MAKE} ${LIB}
 	${MAKE} -C demo build
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz build; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 build; fi
@@ -52,14 +52,14 @@ clean_cov:
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean_cov; fi
 
 cov:
-	${MAKE} ${LIB_COV}.${SHARED_EXT}
+	${MAKE} ${LIB_COV}
 	${MAKE} -C demo cov
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz cov; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb cov; fi
 
 debug:
-	${MAKE} ${LIB_DEBUG}.${SHARED_EXT}
+	${MAKE} ${LIB_DEBUG}
 	${MAKE} -C demo debug
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz debug; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 debug; fi
