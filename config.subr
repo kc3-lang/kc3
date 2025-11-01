@@ -32,45 +32,45 @@ build_lib() {
 build_lib_shared() {
     {
         echo
-        echo "$LIB_ASAN.$SHARED_PATCH: $OBJECTS_ASAN build_lib_asan"
-        echo "	./build_lib_asan $LIB_ASAN.$SHARED_PATCH"
-        echo "$LIB_ASAN.$SHARED_MINOR: $LIB_ASAN.$SHARED_PATCH"
-        echo "	ln -sf $LIB_ASAN.$SHARED_PATCH $LIB_ASAN.$SHARED_MINOR"
-        echo "$LIB_ASAN.$SHARED_MAJOR: $LIB_ASAN.$SHARED_PATCH"
-        echo "	ln -sf $LIB_ASAN.$SHARED_PATCH $LIB_ASAN.$SHARED_MAJOR"
-        echo "$LIB_ASAN.$SHARED_EXT: $LIB_ASAN.$SHARED_PATCH"
-        echo "	ln -sf $LIB_ASAN.$SHARED_PATCH $LIB_ASAN.$SHARED_EXT"
-        echo "$LIB_ASAN: $LIB_ASAN.$SHARED_EXT $LIB_ASAN.$SHARED_MAJOR $LIB_ASAN.$SHARED_MINOR $LIB_ASAN.$SHARED_PATCH"
+        echo "$LIB_ASAN$SHARED_PATCH: $OBJECTS_ASAN build_lib_asan"
+        echo "	./build_lib_asan $LIB_ASAN$SHARED_PATCH"
+        echo "$LIB_ASAN$SHARED_MINOR: $LIB_ASAN$SHARED_PATCH"
+        echo "	ln -sf $LIB_ASAN$SHARED_PATCH $LIB_ASAN$SHARED_MINOR"
+        echo "$LIB_ASAN$SHARED_MAJOR: $LIB_ASAN$SHARED_PATCH"
+        echo "	ln -sf $LIB_ASAN$SHARED_PATCH $LIB_ASAN$SHARED_MAJOR"
+        echo "$LIB_ASAN$SHARED_EXT: $LIB_ASAN$SHARED_PATCH"
+        echo "	ln -sf $LIB_ASAN$SHARED_PATCH $LIB_ASAN$SHARED_EXT"
+        echo "$LIB_ASAN: $LIB_ASAN$SHARED_EXT $LIB_ASAN$SHARED_MAJOR $LIB_ASAN$SHARED_MINOR $LIB_ASAN$SHARED_PATCH"
         echo
-        echo "$LIB_COV.$SHARED_PATCH: $OBJECTS_COV build_lib_cov"
-        echo "	./build_lib_cov $LIB_COV.$SHARED_PATCH"
-        echo "$LIB_COV.$SHARED_MINOR: $LIB_COV.$SHARED_PATCH"
-        echo "	ln -sf $LIB_COV.$SHARED_PATCH $LIB_COV.$SHARED_MINOR"
-        echo "$LIB_COV.$SHARED_MAJOR: $LIB_COV.$SHARED_PATCH"
-        echo "	ln -sf $LIB_COV.$SHARED_PATCH $LIB_COV.$SHARED_MAJOR"
-        echo "$LIB_COV.$SHARED_EXT: $LIB_COV.$SHARED_PATCH"
-        echo "	ln -sf $LIB_COV.$SHARED_PATCH $LIB_COV.$SHARED_EXT"
-        echo "$LIB_COV: $LIB_COV.$SHARED_EXT $LIB_COV.$SHARED_MAJOR $LIB_COV.$SHARED_MINOR $LIB_COV.$SHARED_PATCH"
+        echo "$LIB_COV$SHARED_PATCH: $OBJECTS_COV build_lib_cov"
+        echo "	./build_lib_cov $LIB_COV$SHARED_PATCH"
+        echo "$LIB_COV$SHARED_MINOR: $LIB_COV$SHARED_PATCH"
+        echo "	ln -sf $LIB_COV$SHARED_PATCH $LIB_COV$SHARED_MINOR"
+        echo "$LIB_COV$SHARED_MAJOR: $LIB_COV$SHARED_PATCH"
+        echo "	ln -sf $LIB_COV$SHARED_PATCH $LIB_COV$SHARED_MAJOR"
+        echo "$LIB_COV$SHARED_EXT: $LIB_COV$SHARED_PATCH"
+        echo "	ln -sf $LIB_COV$SHARED_PATCH $LIB_COV$SHARED_EXT"
+        echo "$LIB_COV: $LIB_COV$SHARED_EXT $LIB_COV$SHARED_MAJOR $LIB_COV$SHARED_MINOR $LIB_COV$SHARED_PATCH"
         echo
-        echo "$LIB_DEBUG.$SHARED_PATCH: $OBJECTS_DEBUG build_lib_debug"
-        echo "	./build_lib_debug $LIB_DEBUG.$SHARED_PATCH"
-        echo "$LIB_DEBUG.$SHARED_MINOR: $LIB_DEBUG.$SHARED_PATCH"
-        echo "	ln -sf $LIB_DEBUG.$SHARED_PATCH $LIB_DEBUG.$SHARED_MINOR"
-        echo "$LIB_DEBUG.$SHARED_MAJOR: $LIB_DEBUG.$SHARED_PATCH"
-        echo "	ln -sf $LIB_DEBUG.$SHARED_PATCH $LIB_DEBUG.$SHARED_MAJOR"
-        echo "$LIB_DEBUG.$SHARED_EXT: $LIB_DEBUG.$SHARED_PATCH"
-        echo "	ln -sf $LIB_DEBUG.$SHARED_PATCH $LIB_DEBUG.$SHARED_EXT"
-        echo "$LIB_DEBUG: $LIB_DEBUG.$SHARED_EXT $LIB_DEBUG.$SHARED_MAJOR $LIB_DEBUG.$SHARED_MINOR $LIB_DEBUG.$SHARED_PATCH"
+        echo "$LIB_DEBUG$SHARED_PATCH: $OBJECTS_DEBUG build_lib_debug"
+        echo "	./build_lib_debug $LIB_DEBUG$SHARED_PATCH"
+        echo "$LIB_DEBUG$SHARED_MINOR: $LIB_DEBUG$SHARED_PATCH"
+        echo "	ln -sf $LIB_DEBUG$SHARED_PATCH $LIB_DEBUG$SHARED_MINOR"
+        echo "$LIB_DEBUG$SHARED_MAJOR: $LIB_DEBUG$SHARED_PATCH"
+        echo "	ln -sf $LIB_DEBUG$SHARED_PATCH $LIB_DEBUG$SHARED_MAJOR"
+        echo "$LIB_DEBUG$SHARED_EXT: $LIB_DEBUG$SHARED_PATCH"
+        echo "	ln -sf $LIB_DEBUG$SHARED_PATCH $LIB_DEBUG$SHARED_EXT"
+        echo "$LIB_DEBUG: $LIB_DEBUG$SHARED_EXT $LIB_DEBUG$SHARED_MAJOR $LIB_DEBUG$SHARED_MINOR $LIB_DEBUG$SHARED_PATCH"
         echo
-        echo "$LIB.$SHARED_PATCH: $OBJECTS build_lib_main"
-        echo "	./build_lib_main $LIB.$SHARED_PATCH"
-        echo "$LIB.$SHARED_MINOR: $LIB.$SHARED_PATCH"
-        echo "	ln -sf $LIB.$SHARED_PATCH $LIB.$SHARED_MINOR"
-        echo "$LIB.$SHARED_MAJOR: $LIB.$SHARED_PATCH"
-        echo "	ln -sf $LIB.$SHARED_PATCH $LIB.$SHARED_MAJOR"
-        echo "$LIB.$SHARED_EXT: $LIB.$SHARED_PATCH"
-        echo "	ln -sf $LIB.$SHARED_PATCH $LIB.$SHARED_EXT"
-        echo "$LIB: $LIB.$SHARED_EXT $LIB.$SHARED_MAJOR $LIB.$SHARED_MINOR $LIB.$SHARED_PATCH"
+        echo "$LIB$SHARED_PATCH: $OBJECTS build_lib_main"
+        echo "	./build_lib_main $LIB$SHARED_PATCH"
+        echo "$LIB$SHARED_MINOR: $LIB$SHARED_PATCH"
+        echo "	ln -sf $LIB$SHARED_PATCH $LIB$SHARED_MINOR"
+        echo "$LIB$SHARED_MAJOR: $LIB$SHARED_PATCH"
+        echo "	ln -sf $LIB$SHARED_PATCH $LIB$SHARED_MAJOR"
+        echo "$LIB$SHARED_EXT: $LIB$SHARED_PATCH"
+        echo "	ln -sf $LIB$SHARED_PATCH $LIB$SHARED_EXT"
+        echo "$LIB: $LIB$SHARED_EXT $LIB$SHARED_MAJOR $LIB$SHARED_MINOR $LIB$SHARED_PATCH"
     } >> ${CONFIG_MK}
 }
 
@@ -1333,6 +1333,9 @@ case "$(uname -s)" in
     CYGWIN*|MINGW*|MSYS*|Windows)
         SHARED_FLAGS="-shared"
         SHARED_EXT="dll"
+        SHARED_MAJOR="-$VER_MAJOR.$SHARED_EXT"
+        SHARED_MINOR="-$VER_MAJOR.$VER_MINOR.$SHARED_EXT"
+        SHARED_PATCH="-$VER_MAJOR.$VER_MINOR.$VER_PATCH.$SHARED_EXT"
         LIB_SUFFIX="dll"
         LIB_LINK_SUFFIX="dll"
         IMPLIB="--out-implib \${LIB_BASE}.dll.a"
@@ -1342,6 +1345,9 @@ case "$(uname -s)" in
     Darwin)
         SHARED_FLAGS="-dylib -install_name ${LIBDIR}/\${LIB_BASE}.\${VER_MAJOR}.dylib"
         SHARED_EXT="dylib"
+        SHARED_MAJOR=".$VER_MAJOR.$SHARED_EXT"
+        SHARED_MINOR=".$VER_MAJOR.$VER_MINOR.$SHARED_EXT"
+        SHARED_PATCH=".$VER_MAJOR.$VER_MINOR.$VER_PATCH.$SHARED_EXT"
         LIB_SUFFIX="\${VER_MAJOR}.dylib"
         LIB_LINK_SUFFIX="dylib"
         MACOS_SDK=$(xcrun --show-sdk-path 2>/dev/null || echo "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
@@ -1355,6 +1361,9 @@ case "$(uname -s)" in
     FreeBSD)
         SHARED_FLAGS="-shared"
         SHARED_EXT="so"
+        SHARED_MAJOR=".$SHARED_EXT.$VER_MAJOR"
+        SHARED_MINOR="$SHARED_MAJOR.$VER_MINOR"
+        SHARED_PATCH="$SHARED_MINOR.$VER_PATCH"
         LIB_SUFFIX="so.\${VER_MAJOR}"
         LIB_LINK_SUFFIX="so"
         LDFLAGS="$LDFLAGS -L/usr/lib"
@@ -1372,6 +1381,9 @@ case "$(uname -s)" in
     NetBSD)
         SHARED_FLAGS="-shared"
         SHARED_EXT="so"
+        SHARED_MAJOR=".$SHARED_EXT.$VER_MAJOR"
+        SHARED_MINOR="$SHARED_MAJOR.$VER_MINOR"
+        SHARED_PATCH="$SHARED_MINOR.$VER_PATCH"
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}"
         LIB_LINK_SUFFIX="so"
         LDFLAGS="$LDFLAGS -L/usr/lib"
@@ -1382,6 +1394,9 @@ case "$(uname -s)" in
     OpenBSD)
         SHARED_FLAGS="-shared"
         SHARED_EXT="so"
+        SHARED_MAJOR=".$SHARED_EXT.$VER_MAJOR"
+        SHARED_MINOR="$SHARED_MAJOR.$VER_MINOR"
+        SHARED_PATCH="$SHARED_MINOR.$VER_PATCH"
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}"
         LIB_LINK_SUFFIX="so"
         LDFLAGS="$LDFLAGS -L/usr/lib"
@@ -1392,6 +1407,9 @@ case "$(uname -s)" in
     Linux)
         SHARED_FLAGS="-shared -soname \${LIB_BASE}.so.\${VER_MAJOR}"
         SHARED_EXT="so"
+        SHARED_MAJOR=".$SHARED_EXT.$VER_MAJOR"
+        SHARED_MINOR="$SHARED_MAJOR.$VER_MINOR"
+        SHARED_PATCH="$SHARED_MINOR.$VER_PATCH"
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}.\${VER_PATCH}"
         LIB_LINK_SUFFIX="so"
         LIBGCC=$(${CC} -print-libgcc-file-name)
@@ -1417,9 +1435,6 @@ case "$(uname -s)" in
         echo "Unsupported OS : $(uname -s)" >&2
         exit 1;
 esac
-SHARED_MAJOR="$SHARED_EXT.$VER_MAJOR"
-SHARED_MINOR="$SHARED_MAJOR.$VER_MINOR"
-SHARED_PATCH="$SHARED_MINOR.$VER_PATCH"
 echo "SHARED_FLAGS = ${SHARED_FLAGS}" >> ${CONFIG_MK}
 echo "SHARED_EXT = ${SHARED_EXT}" >> ${CONFIG_MK}
 echo "LIB_SUFFIX = ${LIB_SUFFIX}" >> ${CONFIG_MK}
