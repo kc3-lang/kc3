@@ -1343,7 +1343,8 @@ case "$(uname -s)" in
         SHARED_EXT="dylib"
         LIB_SUFFIX="\${VER_MAJOR}.dylib"
         LIB_LINK_SUFFIX="dylib"
-        LDADD=""
+        LDADD="-lSystem"
+        LIB_LDADD="$LDADD"
         PROG_LDADD="$LDADD"
         ;;
     FreeBSD)
