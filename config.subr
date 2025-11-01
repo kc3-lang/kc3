@@ -26,7 +26,7 @@ bool() {
 }
 
 build_lib() {
-    build_lib_shared "$@"
+    build_lib_shared
 }
 
 build_lib_shared() {
@@ -71,6 +71,36 @@ build_lib_shared() {
         echo "$LIB.$SHARED_EXT: $LIB$SHARED_PATCH"
         echo "	ln -sf $LIB$SHARED_PATCH $LIB.$SHARED_EXT"
         echo "$LIB: $LIB.$SHARED_EXT $LIB$SHARED_MAJOR $LIB$SHARED_MINOR $LIB$SHARED_PATCH"
+        echo
+        echo "install::"
+        echo "	\${INSTALL} -o \${OWNER} -g \${GROUP} -m 0755 -d \\"
+        echo "	    \${DESTDIR}\${prefix}/lib"
+        echo "	\${INSTALL} -o \${OWNER} -g \${GROUP} -m 0644 \\"
+        echo "	    $LIB$SHARED_PATCH \${DESTDIR}\${prefix}/lib"
+        echo "	ln -sf $LIB$SHARED_PATCH \\"
+        echo "	    \${DESTDIR}\${prefix}/lib/$LIB$SHARED_MINOR"
+        echo "	ln -sf $LIB$SHARED_PATCH \\"
+        echo "	    \${DESTDIR}\${prefix}/lib/$LIB$SHARED_MAJOR"
+        echo "	ln -sf $LIB$SHARED_PATCH \\"
+        echo "	    \${DESTDIR}\${prefix}/lib/$LIB.$SHARED_EXT"
+        echo "	\${INSTALL} -o \${OWNER} -g \${GROUP} -m 0644 \\"
+        echo "	    $LIB_DEBUG$SHARED_PATCH \${DESTDIR}\${prefix}/lib"
+        echo "	ln -sf $LIB_DEBUG$SHARED_PATCH \\"
+        echo "	    \${DESTDIR}\${prefix}/lib/$LIB_DEBUG$SHARED_MINOR"
+        echo "	ln -sf $LIB_DEBUG$SHARED_PATCH \\"
+        echo "	    \${DESTDIR}\${prefix}/lib/$LIB_DEBUG$SHARED_MAJOR"
+        echo "	ln -sf $LIB_DEBUG$SHARED_PATCH \\"
+        echo "	    \${DESTDIR}\${prefix}/lib/$LIB_DEBUG.$SHARED_EXT"
+        echo
+        echo "uninstall::"
+        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB$SHARED_PATCH"
+        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB$SHARED_MINOR"
+        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB$SHARED_MAJOR"
+        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB.$SHARED_EXT"
+        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB_DEBUG$SHARED_PATCH"
+        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB_DEBUG$SHARED_MINOR"
+        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB_DEBUG$SHARED_MAJOR"
+        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB_DEBUG.$SHARED_EXT"
     } >> ${CONFIG_MK}
 }
 
