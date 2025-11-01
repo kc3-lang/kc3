@@ -31,12 +31,12 @@ asan:
 	if ${HAVE_DRM}; then ${MAKE} -C drm asan; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb asan; fi
 
-clean:
+clean::
 	if ${HAVE_ANDROID}; then ${MAKE} -C android clean; fi
 	if ${HAVE_DRM}; then ${MAKE} -C drm clean; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean; fi
 
-clean_cov:
+clean_cov::
 	if ${HAVE_ANDROID}; then ${MAKE} -C android clean_cov; fi
 	if ${HAVE_DRM}; then ${MAKE} -C drm clean_cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean_cov; fi

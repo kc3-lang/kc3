@@ -29,11 +29,11 @@ asan:
 	${MAKE} -C demo asan
 	! test -d kubz || ${MAKE} -C kubz asan
 
-clean:
+clean::
 	${MAKE} -C demo clean
 	! test -d kubz || ${MAKE} -C kubz clean
 
-clean_cov:
+clean_cov::
 	${MAKE} -C demo clean_cov
 	! test -d kubz || ${MAKE} -C kubz clean_cov
 
@@ -65,7 +65,7 @@ demo_kubz: build
 demo_kubz_debug: debug
 	${MAKE} -C kubz demo_debug
 
-distclean:
+distclean::
 	${MAKE} -C demo distclean
 	! [ -d kubz ] || ${MAKE} -C kubz distclean
 

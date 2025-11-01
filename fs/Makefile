@@ -22,10 +22,10 @@ fuse:
 fuse_asan:
 #	${MAKE} -C fuse asan
 
-clean:
+clean::
 #	${MAKE} -C fuse clean
 
-clean_cov:
+clean_cov::
 #	${MAKE} -C fuse clean_cov
 
 cov:
@@ -34,7 +34,7 @@ cov:
 debug:
 #	${MAKE} -C fuse debug
 
-distclean:
+distclean::
 #	${MAKE} -C fuse distclean
 
 gcovr:

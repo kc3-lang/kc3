@@ -85,7 +85,7 @@ build:
 	${MAKE} -C window build
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 build; fi
 
-clean:
+clean::
 	${MAKE} -C libtommath clean
 	${MAKE} -C libkc3 clean
 	${MAKE} -C socket clean
@@ -106,7 +106,7 @@ clean:
 	${MAKE} -C window clean
 	${MAKE} -C gtk4 clean
 
-clean_cov:
+clean_cov::
 	${MAKE} -C libtommath clean_cov
 	${MAKE} -C libkc3 clean_cov
 	${MAKE} -C socket clean_cov
@@ -303,7 +303,7 @@ dist_dmg:
 dist_msys2_clang64: all
 	${MAKE} -C msys2/clang64
 
-distclean:
+distclean::
 	${MAKE} -C libtommath distclean
 	${MAKE} -C libkc3 distclean
 	${MAKE} -C socket distclean

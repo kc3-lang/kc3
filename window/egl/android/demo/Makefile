@@ -27,10 +27,10 @@ asan:
 	${MAKE} ${PROG_ASAN}
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos asan; fi
 
-clean:
+clean::
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos clean; fi
 
-clean_cov:
+clean_cov::
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos clean_cov; fi
 
 cov:
@@ -57,7 +57,7 @@ demo_debug:
 	${MAKE} debug
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo_debug; else time ./${PROG_DEBUG}; fi
 
-distclean:
+distclean::
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos distclean; fi
 
 gcovr:

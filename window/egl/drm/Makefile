@@ -27,10 +27,10 @@ asan:
 	${MAKE} ${LIB_ASAN}
 	${MAKE} -C demo asan
 
-clean:
+clean::
 	${MAKE} -C demo clean
 
-clean_cov:
+clean_cov::
 	${MAKE} -C demo clean_cov
 
 cov:
@@ -53,7 +53,7 @@ demo_cov: cov
 demo_debug: debug
 	${MAKE} -C demo demo_debug
 
-distclean:
+distclean::
 	${MAKE} -C demo distclean
 
 dist:

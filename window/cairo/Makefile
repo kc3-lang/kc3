@@ -33,13 +33,13 @@ build:
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 build; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb build; fi
 
-clean:
+clean::
 	${MAKE} -C demo clean
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz clean; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 clean; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean; fi
 
-clean_cov:
+clean_cov::
 	${MAKE} -C demo clean_cov
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz clean_cov; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 clean_cov; fi
@@ -71,7 +71,7 @@ demo_cov: cov
 demo_debug: debug
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz demo_debug; else if ${HAVE_WIN32}; then ${MAKE} -C win32 demo_debug; else if ${HAVE_XCB}; then ${MAKE} -C xcb demo_debug; fi; fi; fi
 
-distclean:
+distclean::
 	${MAKE} -C demo distclean
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz distclean; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 distclean; fi
