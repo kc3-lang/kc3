@@ -71,15 +71,12 @@ kpkg/kpkg
 kpkg/kpkg_asan
 kpkg/kpkg_cov
 kpkg/kpkg_debug
-*.la
 lib/kc3/0.1/ekc3.so
 lib/kc3/0.1/event.so
 lib/kc3/0.1/http.so
 lib/kc3/0.1/json.so
 lib/kc3/0.1/markdown.so
 lib/kc3/0.1/socket.so
-.libs/
-*.lo
 *.log
 macos/kc3-v*
 /misc/fact_w
@@ -92,6 +89,7 @@ node_modules/
 out/
 release/
 *.so
+*.so.*
 .test
 .test_ko
 .test_ok
