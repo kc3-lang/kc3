@@ -55,8 +55,8 @@ update_sources:
 
 uninstall:
 	rm -rf ${prefix}/include/libkc3/gtk4
-	rm -f ${prefix}/lib/${LIB}
-	rm -f ${prefix}/lib/${LIB_DEBUG}
+	rm -f ${prefix}/lib/${LIB}*.${SHARED_EXT}*
+	rm -f ${prefix}/lib/${LIB_DEBUG}*.${SHARED_EXT}*
 
 .PHONY: \
 	all \

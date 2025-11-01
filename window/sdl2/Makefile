@@ -107,7 +107,8 @@ update_sources:
 
 uninstall:
 	rm -rf ${prefix}/include/libkc3/window/sdl2
-	rm -f ${prefix}/lib/${LIB}
+	rm -f ${prefix}/lib/${LIB}*.${SHARED_EXT}*
+	rm -f ${prefix}/lib/${LIB_DEBUG}*.${SHARED_EXT}*
 	${MAKE} -C demo uninstall
 	! [ -d kubz ] || ${MAKE} -C kubz uninstall
 

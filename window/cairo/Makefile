@@ -117,7 +117,8 @@ update_sources:
 
 uninstall:
 	rm -rf ${prefix}/include/libkc3/window/cairo
-	rm -f ${prefix}/lib/${LIB}
+	rm -f ${prefix}/lib/${LIB}*.${SHARED_EXT}*
+	rm -f ${prefix}/lib/${LIB_DEBUG}*.${SHARED_EXT}*
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz uninstall; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 uninstall; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb uninstall; fi

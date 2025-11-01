@@ -60,8 +60,8 @@ update_sources:
 
 uninstall:
 	rm -rf ${prefix}/include/libkc3/gl
-	rm -f ${prefix}/lib/${LIB}
-	rm -f ${prefix}/lib/${LIB_DEBUG}
+	rm -f ${prefix}/lib/${LIB}*.${SHARED_EXT}*
+	rm -f ${prefix}/lib/${LIB_DEBUG}*.${SHARED_EXT}*
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo uninstall; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 uninstall; fi
 
