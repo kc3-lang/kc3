@@ -1440,7 +1440,7 @@ case "$(uname -s)" in
         PROG_LDADD="$LDADD"
         ;;
     Darwin)
-        SHARED_FLAGS="-dylib -install_name \${PREFIX}/lib/\${LIB_BASE}.\${VER_MAJOR}.dylib"
+        SHARED_FLAGS="-dylib -install_name @rpath/\${LIB_BASE}.\${VER_MAJOR}.dylib"
         SHARED_EXT="dylib"
         SHARED_MAJOR=".$VER_MAJOR.$SHARED_EXT"
         SHARED_MINOR=".$VER_MAJOR.$VER_MINOR.$SHARED_EXT"
