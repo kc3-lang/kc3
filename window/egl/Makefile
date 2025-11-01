@@ -78,17 +78,13 @@ gdb_demo: debug
 	if ${HAVE_DRM}; then ${MAKE} -C drm gdb_demo; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb gdb_demo; fi
 
-install:
+install::
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
 	    ${DESTDIR}${prefix}/include/libkc3/window/egl
 	for H in ${HEADERS}; do \
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/window/egl; done
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB_DEBUG}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 
 lldb_demo: debug
 

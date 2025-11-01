@@ -79,17 +79,13 @@ gdb_demo: debug
 gdb_kubz: debug
 	${MAKE} -C kubz gdb_kubz
 
-install:
+install::
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
 	    ${DESTDIR}${prefix}/include/libkc3/window/egl
 	for H in ${HEADERS}; do \
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/window/egl; done
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB_DEBUG}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 	${MAKE} -C demo install
 	! [ -d kubz ] || ${MAKE} -C kubz install
 
@@ -105,10 +101,8 @@ test:
 update_sources:
 	./update_sources
 
-uninstall:
+uninstall::
 	rm -rf ${prefix}/include/libkc3/window/sdl2
-	rm -f ${prefix}/lib/${LIB}*.${SHARED_EXT}*
-	rm -f ${prefix}/lib/${LIB_DEBUG}*.${SHARED_EXT}*
 	${MAKE} -C demo uninstall
 	! [ -d kubz ] || ${MAKE} -C kubz uninstall
 

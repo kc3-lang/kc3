@@ -86,19 +86,13 @@ gcovr:
 gdb_demo: debug
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz gdb_demo; else if ${HAVE_WIN32}; then ${MAKE} -C win32 gdb_demo; else if ${HAVE_XCB}; then ${MAKE} -C xcb gdb_demo; fi; fi; fi
 
-install:
+install::
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
 	    ${DESTDIR}${prefix}/include/libkc3/window/cairo
 	for H in ${HEADERS}; do \
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/window/cairo; done
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
-	    ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB_DEBUG}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz install; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 install; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb install; fi
@@ -115,10 +109,8 @@ test:
 update_sources:
 	./update_sources
 
-uninstall:
+uninstall::
 	rm -rf ${prefix}/include/libkc3/window/cairo
-	rm -f ${prefix}/lib/${LIB}*.${SHARED_EXT}*
-	rm -f ${prefix}/lib/${LIB_DEBUG}*.${SHARED_EXT}*
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz uninstall; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 uninstall; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb uninstall; fi

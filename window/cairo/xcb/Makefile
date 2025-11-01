@@ -62,7 +62,7 @@ gcovr:
 gdb_demo: debug
 	${MAKE} -C demo gdb_demo
 
-install:
+install::
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
 	    ${DESTDIR}${prefix}/include/libkc3/window/cairo/xcb
 	for H in ${HEADERS}; do \
@@ -70,12 +70,6 @@ install:
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/window/cairo/xcb; \
 	done
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
-	    ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB_DEBUG}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 	${MAKE} -C demo install
 
 test: build
@@ -84,10 +78,8 @@ test: build
 update_sources:
 	./update_sources
 
-uninstall:
+uninstall::
 	rm -rf ${prefix}/include/libkc3/window/cairo/xcb
-	rm -f ${prefix}/lib/${LIB}*.${SHARED_EXT}*
-	rm -f ${prefix}/lib/${LIB_DEBUG}*.${SHARED_EXT}*
 	${MAKE} -C demo uninstall
 
 .PHONY: \

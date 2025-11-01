@@ -31,27 +31,20 @@ debug:
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details libkc3_web.html
 
-install:
+install::
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/include/libkc3/event
 	for H in ${HEADERS}; do \
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/event; done
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB_DEBUG}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 
 test:
 
 update_sources:
 	./update_sources
 
-uninstall:
+uninstall::
 	rm -rf ${prefix}/include/libkc3/event
-	rm -f ${prefix}/lib/${LIB}*.${SHARED_EXT}*
-	rm -f ${prefix}/lib/${LIB_DEBUG}*.${SHARED_EXT}*
 
 .PHONY: \
 	all \

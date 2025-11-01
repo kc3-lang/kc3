@@ -31,19 +31,13 @@ cov:
 debug:
 	${MAKE} ${LIB_DEBUG}
 
-install:
+install::
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
 	    ${DESTDIR}${prefix}/include/libkc3/gl
 	for H in ${HEADERS}; do \
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/gl; done
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
-	    ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB_DEBUG}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 
 lldb_demo: debug
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo lldb_demo; fi
@@ -58,10 +52,8 @@ test:
 update_sources:
 	./update_sources
 
-uninstall:
+uninstall::
 	rm -rf ${prefix}/include/libkc3/gl
-	rm -f ${prefix}/lib/${LIB}*.${SHARED_EXT}*
-	rm -f ${prefix}/lib/${LIB_DEBUG}*.${SHARED_EXT}*
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo uninstall; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 uninstall; fi
 

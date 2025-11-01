@@ -112,19 +112,13 @@ gdb_demo_gl: debug
 gdb_kubz: debug
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 gdb_kubz; fi
 
-install:
+install::
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
 	    ${DESTDIR}${prefix}/include/libkc3/window
 	for H in ${HEADERS}; do \
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/window; done
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
-	    ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-	    ${LIB_DEBUG}*.${SHARED_EXT}* ${DESTDIR}${prefix}/lib
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo install; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl install; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 install; fi
@@ -142,10 +136,8 @@ test:
 update_sources:
 	./update_sources
 
-uninstall:
+uninstall::
 	rm -rf ${prefix}/include/libkc3/window
-	rm -f ${prefix}/lib/${LIB}*.${SHARED_EXT}*
-	rm -f ${prefix}/lib/${LIB_DEBUG}*.${SHARED_EXT}*
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo uninstall; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 uninstall; fi
 
