@@ -12,7 +12,7 @@
 
 CLEANFILES = *.a *.gcno *.la .libs *.o *.so
 
-CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
+CLEANFILES_COV = *.css *.gcda *.html
 
 CLEANFILES += ${CLEANFILES_COV}
 

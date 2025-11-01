@@ -14,7 +14,7 @@ CLEANFILES = *.a ${APP_PROG} ${APP_PROG_ASAN} ${APP_PROG_COV} \
 	${APP_PROG_DEBUG} ${PROG} ${PROG_ASAN} ${PROG_COV} ${PROG_DEBUG} \
 	*.css *.gcno *.html *.o .libs *.lo
 
-CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
+CLEANFILES_COV = *.css *.gcda *.html
 CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.mk
@@ -121,7 +121,7 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details ${PROG}.html
 
 gdb_demo: debug
-	if [ -f ${PROG_DEBUG}.core ]; then gdb .libs/${PROG_DEBUG} ${PROG_DEBUG}.core; else gdb .libs/${PROG_DEBUG}; fi
+	if [ -f ${PROG_DEBUG}.core ]; then gdb ${PROG_DEBUG} ${PROG_DEBUG}.core; else gdb ${PROG_DEBUG}; fi
 
 lldb_demo: debug
 	lldb ${APP_PROG_DEBUG}

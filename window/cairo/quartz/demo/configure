@@ -170,24 +170,24 @@ build_prog
 echo >> ${CONFIG_MK}
 echo "${APP_PROG}: ${PROG}" >> ${CONFIG_MK}
 echo "	mkdir -p $(dirname $APP_PROG)" >> ${CONFIG_MK}
-echo "	cp .libs/${PROG} ${APP_PROG}" >> ${CONFIG_MK}
+echo "	cp ${PROG} ${APP_PROG}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "${APP_PROG_ASAN}: ${PROG_ASAN}" >> ${CONFIG_MK}
 echo "	mkdir -p $(dirname $APP_PROG_ASAN)" >> ${CONFIG_MK}
-echo "	cp .libs/${PROG_ASAN} ${APP_PROG_ASAN}" >> ${CONFIG_MK}
+echo "	cp ${PROG_ASAN} ${APP_PROG_ASAN}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "${APP_PROG_COV}: ${PROG_COV}" >> ${CONFIG_MK}
 echo "	mkdir -p $(dirname $APP_PROG_COV)" >> ${CONFIG_MK}
-echo "	cp .libs/${PROG_COV} ${APP_PROG_COV}" >> ${CONFIG_MK}
+echo "	cp ${PROG_COV} ${APP_PROG_COV}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "${APP_PROG_DEBUG}: ${PROG_DEBUG}" >> ${CONFIG_MK}
 echo "	mkdir -p $(dirname $APP_PROG_DEBUG)" >> ${CONFIG_MK}
-echo "	cp .libs/${PROG_DEBUG} ${APP_PROG_DEBUG}" >> ${CONFIG_MK}
+echo "	cp ${PROG_DEBUG} ${APP_PROG_DEBUG}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS="../../../../libkc3/.libs/libkc3.0.dylib ../../../.libs/libkc3_window.0.dylib ../../.libs/libkc3_window_cairo.0.dylib ../../demo/.libs/libkc3_window_cairo_demo.0.dylib ../.libs/libkc3_window_cairo_quartz.0.dylib"
+BUNDLE_LIBS="../../../../libkc3/libkc3.0.dylib ../../../libkc3_window.0.dylib ../../libkc3_window_cairo.0.dylib ../../demo/libkc3_window_cairo_demo.0.dylib ../libkc3_window_cairo_quartz.0.dylib"
 echo >> ${CONFIG_MK}
 echo "${APP}/Contents/Frameworks: ${BUNDLE_LIBS}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP}/Contents/Frameworks" >> ${CONFIG_MK}
@@ -203,7 +203,7 @@ echo ".PHONY: \\" >> ${CONFIG_MK}
 echo "	${APP}/Contents/Frameworks \\" >> ${CONFIG_MK}
 echo "	${APP_PROG}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS_ASAN="../../../../libkc3/.libs/libkc3_asan.0.dylib ../../../.libs/libkc3_window_asan.0.dylib ../../.libs/libkc3_window_cairo_asan.0.dylib ../../demo/.libs/libkc3_window_cairo_demo_asan.0.dylib ../.libs/libkc3_window_cairo_quartz_asan.0.dylib"
+BUNDLE_LIBS_ASAN="../../../../libkc3/libkc3_asan.0.dylib ../../../libkc3_window_asan.0.dylib ../../libkc3_window_cairo_asan.0.dylib ../../demo/libkc3_window_cairo_demo_asan.0.dylib ../libkc3_window_cairo_quartz_asan.0.dylib"
 echo >> ${CONFIG_MK}
 echo "${APP_ASAN}/Contents/Frameworks: ${BUNDLE_LIBS_ASAN}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP_ASAN}/Contents/Frameworks" >> ${CONFIG_MK}
@@ -219,7 +219,7 @@ echo ".PHONY: \\" >> ${CONFIG_MK}
 echo "	${APP_ASAN}/Contents/Frameworks \\" >> ${CONFIG_MK}
 echo "	${APP_PROG_ASAN}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS_COV="../../../../libkc3/.libs/libkc3_cov.0.dylib ../../../.libs/libkc3_window_cov.0.dylib ../../.libs/libkc3_window_cairo_cov.0.dylib ../../demo/.libs/libkc3_window_cairo_demo_cov.0.dylib ../.libs/libkc3_window_cairo_quartz_cov.0.dylib"
+BUNDLE_LIBS_COV="../../../../libkc3/libkc3_cov.0.dylib ../../../libkc3_window_cov.0.dylib ../../libkc3_window_cairo_cov.0.dylib ../../demo/libkc3_window_cairo_demo_cov.0.dylib ../libkc3_window_cairo_quartz_cov.0.dylib"
 echo >> ${CONFIG_MK}
 echo "${APP_COV}/Contents/Frameworks: ${BUNDLE_LIBS_COV}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP_COV}/Contents/Frameworks" >> ${CONFIG_MK}
@@ -235,7 +235,7 @@ echo ".PHONY: \\" >> ${CONFIG_MK}
 echo "	${APP_COV}/Contents/Frameworks \\" >> ${CONFIG_MK}
 echo "	${APP_PROG}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS_DEBUG="../../../../libkc3/.libs/libkc3_debug.0.dylib ../../../.libs/libkc3_window_debug.0.dylib ../../.libs/libkc3_window_cairo_debug.0.dylib ../../demo/.libs/libkc3_window_cairo_demo_debug.0.dylib ../.libs/libkc3_window_cairo_quartz_debug.0.dylib"
+BUNDLE_LIBS_DEBUG="../../../../libkc3/libkc3_debug.0.dylib ../../../libkc3_window_debug.0.dylib ../../libkc3_window_cairo_debug.0.dylib ../../demo/libkc3_window_cairo_demo_debug.0.dylib ../libkc3_window_cairo_quartz_debug.0.dylib"
 echo >> ${CONFIG_MK}
 echo "${APP_DEBUG}/Contents/Frameworks: ${BUNDLE_LIBS_DEBUG}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP_DEBUG}/Contents/Frameworks" >> ${CONFIG_MK}

@@ -13,7 +13,7 @@
 CLEANFILES = *.a ${PROG} ${PROG_ASAN} ${PROG_COV} ${PROG_DEBUG} *.css \
 	*.gcno *.html *.o .libs *.lo
 
-CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
+CLEANFILES_COV = *.css *.gcda *.html
 CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.mk
@@ -73,15 +73,15 @@ gcovr:
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos gcovr; fi
 
 gdb_demo: debug
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos gdb_demo; else gdb .libs/${PROG_DEBUG}; fi
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos gdb_demo; else gdb ${PROG_DEBUG}; fi
 
 install:
 	install -m 755 -d ${DESTDIR}${prefix}/bin
-	install -m 755 .libs/${PROG} ${DESTDIR}${prefix}/bin/${PROG}
+	install -m 755 ${PROG} ${DESTDIR}${prefix}/bin/${PROG}
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos install; fi
 
 lldb_demo: debug
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos lldb_demo; else lldb .libs/${PROG_DEBUG}; fi
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos lldb_demo; else lldb ${PROG_DEBUG}; fi
 
 update_sources:
 	./update_sources

@@ -12,7 +12,7 @@
 
 CLEANFILES = *.a ikc3 ikc3_asan ikc3_cov ikc3_debug *.css *.gcno *.html *.o .libs *.lo
 
-CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
+CLEANFILES_COV = *.css *.gcda *.html
 CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.mk
@@ -44,17 +44,17 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details ikc3.html
 
 gdb_ikc3: debug
-	if [ -f ikc3_debug.core ]; then gdb .libs/ikc3_debug ikc3_debug.core; else gdb .libs/ikc3_debug; fi
+	if [ -f ikc3_debug.core ]; then gdb ikc3_debug ikc3_debug.core; else gdb ikc3_debug; fi
 
 gdb_ikc3_asan: asan
-	if [ -f ikc3_debug.core ]; then gdb .libs/ikc3_asan ikc3_asan.core; else gdb .libs/ikc3_asan; fi
+	if [ -f ikc3_debug.core ]; then gdb ikc3_asan ikc3_asan.core; else gdb ikc3_asan; fi
 
 install:
 	mkdir -p ${DESTDIR}${prefix}/bin
-	${INSTALL} -m 755 .libs/ikc3 ${DESTDIR}${prefix}/bin/ikc3
+	${INSTALL} -m 755 ikc3 ${DESTDIR}${prefix}/bin/ikc3
 
 lldb_ikc3: debug
-	if [ -f ikc3_debug.core ]; then lldb .libs/ikc3_debug ikc3_debug.core; else lldb .libs/ikc3_debug; fi
+	if [ -f ikc3_debug.core ]; then lldb ikc3_debug ikc3_debug.core; else lldb ikc3_debug; fi
 
 uninstall:
 	rm -f ${prefix}/bin/ikc3

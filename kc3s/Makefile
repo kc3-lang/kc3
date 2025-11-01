@@ -12,7 +12,7 @@
 
 CLEANFILES = *.a kc3s kc3s_asan kc3s_cov kc3s_debug *.css *.gcno *.html *.o .libs *.lo
 
-CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
+CLEANFILES_COV = *.css *.gcda *.html
 CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.mk
@@ -48,7 +48,7 @@ gdb_kc3s: debug
 
 install:
 	mkdir -p ${DESTDIR}${prefix}/bin
-	install -m 755 .libs/kc3s ${DESTDIR}${prefix}/bin/kc3s
+	install -m 755 kc3s ${DESTDIR}${prefix}/bin/kc3s
 
 uninstall:
 	rm -f ${prefix}/bin/kc3s

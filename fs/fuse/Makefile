@@ -12,7 +12,7 @@
 
 CLEANFILES = *.a mount_kc3fs mount_kc3fs_asan mount_kc3fs_cov mount_kc3fs_debug *.css *.gcno *.html *.o .libs *.lo
 
-CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
+CLEANFILES_COV = *.css *.gcda *.html
 CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.mk
@@ -44,17 +44,17 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details kc3fs.html
 
 gdb_kc3fs: debug
-	if [ -f kc3fs_debug.core ]; then gdb .libs/kc3fs_debug kc3fs_debug.core; else gdb .libs/kc3fs_debug; fi
+	if [ -f kc3fs_debug.core ]; then gdb kc3fs_debug kc3fs_debug.core; else gdb kc3fs_debug; fi
 
 gdb_kc3fs_asan: asan
-	if [ -f kc3fs_debug.core ]; then gdb .libs/kc3fs_asan kc3fs_asan.core; else gdb .libs/kc3fs_asan; fi
+	if [ -f kc3fs_debug.core ]; then gdb kc3fs_asan kc3fs_asan.core; else gdb kc3fs_asan; fi
 
 install:
 	mkdir -p ${prefix}/bin
-	install -m 755 .libs/mount_kc3fs ${prefix}/bin/mount_kc3fs
+	install -m 755 mount_kc3fs ${prefix}/bin/mount_kc3fs
 
 lldb_kc3fs: debug
-	if [ -f kc3fs_debug.core ]; then lldb .libs/kc3fs_debug kc3fs_debug.core; else lldb .libs/kc3fs_debug; fi
+	if [ -f kc3fs_debug.core ]; then lldb kc3fs_debug kc3fs_debug.core; else lldb kc3fs_debug; fi
 
 .PHONY: \
 	all \

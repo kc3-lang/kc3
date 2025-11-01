@@ -12,7 +12,7 @@
 
 CLEANFILES = *.a kc3_httpd kc3_httpd_asan kc3_httpd_cov kc3_httpd_debug *.css *.gcno *.html *.o .libs *.lo
 
-CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
+CLEANFILES_COV = *.css *.gcda *.html
 CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.mk
@@ -62,14 +62,14 @@ gdb_fx_asan: kc3_httpd_asan
 	cd fx && gdb ../.libs/kc3_httpd_asan
 
 gdb_httpd: debug
-	if [ -f kc3_httpd_debug.core ]; then gdb .libs/kc3_httpd_debug kc3_httpd_debug.core; else gdb .libs/kc3_httpd_debug; fi
+	if [ -f kc3_httpd_debug.core ]; then gdb kc3_httpd_debug kc3_httpd_debug.core; else gdb kc3_httpd_debug; fi
 
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/bin
 	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 kc3_httpd ${DESTDIR}${prefix}/bin/kc3_httpd
 
 lldb_httpd: debug
-	if [ -f kc3_httpd_debug.core ]; then lldb .libs/kc3_httpd_debug kc3_httpd_debug.core; else lldb .libs/kc3_httpd_debug; fi
+	if [ -f kc3_httpd_debug.core ]; then lldb kc3_httpd_debug kc3_httpd_debug.core; else lldb kc3_httpd_debug; fi
 
 uninstall:
 	rm -f ${prefix}/bin/kc3_httpd
