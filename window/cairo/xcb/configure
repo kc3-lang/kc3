@@ -41,7 +41,9 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
-LDFLAGS="--shared ${LDFLAGS}"
+LDFLAGS="$LDFLAGS -L../../../libkc3"
+LDFLAGS="$LDFLAGS -L../../"
+LDFLAGS="$LDFLAGS -L../"
 config_asan
 config_gnu
 config_i386
@@ -50,11 +52,10 @@ pkg_config libffi
 pkg_config libmd
 pkg_config xcb
 pkg_config xkbcommon
+pkg_config xkbcommon-x11
 pkg_config cairo
 pkg_config cairo-xcb
 config_define PREFIX "\"${PREFIX}\""
-LIBS="$LIBS -lxkbcommon -lxkbcommon-x11"
-LIBS="$LIBS -rpath ${PREFIX}/lib"
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"
@@ -62,22 +63,33 @@ CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
-LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR -L../../../libkc3 -L../.. -L.."
-LIBS_ASAN="$LIBS -lkc3_asan -lkc3_window_asan -lkc3_window_cairo_asan $(${CC} -print-file-name=libasan.so)"
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
+LIBS_ASAN="$(${CC} -print-file-name=libasan.so)"
+LIBS_ASAN="$LIBS_ASAN $LIBS"
+LIBS_ASAN="$LIBS_ASAN -lkc3_window_cairo_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_window_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -DDEBUG -fprofile-arcs -ftest-coverage"
 LIBGCOV=$(${CC} -print-file-name=libgcov.a)
 LIBGCOV_DIR=$(dirname "$LIBGCOV")
-LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR -L../../../libkc3 -L../.. -L.."
-LIBS_COV="$LIBS -lkc3_cov -lkc3_window_cov -lkc3_window_cairo_cov $(${CC} -print-file-name=libgcov.a)"
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
+LIBS_COV="$LIBS"
+LIBS_COV="$LIBS_COV -lkc3_window_cairo_cov"
+LIBS_COV="$LIBS_COV -lkc3_window_cov"
+LIBS_COV="$LIBS_COV -lkc3_cov"
+LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
-LDFLAGS_DEBUG="$LDFLAGS -L../../../libkc3 -L../.. -L.."
-LIBS_DEBUG="$LIBS -lkc3_debug -lkc3_window_debug -lkc3_window_cairo_debug"
+LDFLAGS_DEBUG="$LDFLAGS"
+LIBS_DEBUG="$LIBS"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_cairo_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -fPIC"
@@ -85,13 +97,9 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LDFLAGS="$LDFLAGS -L../../../libkc3"
-LDFLAGS="$LDFLAGS -L../../"
-LDFLAGS="$LDFLAGS -L../"
-LIBS_LOCAL="-lkc3"
-LIBS_LOCAL="$LIBS_LOCAL -lkc3_window"
-LIBS_LOCAL="$LIBS_LOCAL -lkc3_window_cairo"
-LIBS="$LIBS $LIBS_LOCAL"
+LIBS="$LIBS -lkc3_window_cairo"
+LIBS="$LIBS -lkc3_window"
+LIBS="$LIBS -lkc3"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
