@@ -1,6 +1,5 @@
-libkc3 (1.0.0-1) unstable; urgency=medium
+libkc3 (0.1.16-1) unstable; urgency=medium
 
-  * Initial release
+  * Initial packaging.
 
  -- kmx.io <contact@kmx.io> Tue, 21 Oct 2025 12:00:00 +0200
-
