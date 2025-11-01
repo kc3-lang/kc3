@@ -44,10 +44,10 @@ demo_debug: debug
 	./${PROG_DEBUG}
 
 gdb_demo: debug
-	gdb ./.libs/${PROG_DEBUG}
+	gdb ./${PROG_DEBUG}
 
 lldb_demo: debug
-	lldb ./.libs/${PROG_DEBUG}
+	lldb ./${PROG_DEBUG}
 
 test:
 

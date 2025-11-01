@@ -35,23 +35,23 @@ c3-${C3_VERSION}.win32:
 	rm -rf ${DEST}
 	mkdir -p ${DEST}/test/ic3
 	cp -a ../README.md ${DEST}
-	cp -a ../c3s/.libs/c3s*.exe ${DEST}
-	cp -a ../ic3/.libs/ic3*.exe ${DEST}
+	cp -a ../c3s/c3s*.exe ${DEST}
+	cp -a ../ic3/ic3*.exe ${DEST}
 	rsync -aP ${IMG_SOURCES} ${DEST}/img/
 	rsync -aP ${FONT_SOURCES} ${DEST}/fonts/
 	cp -a ../lib ${DEST}/
-	cp -a ../libkc3/.libs/libkc3*-0.dll ${DEST}
-	cp -a ../libkc3/.libs/libkc3*-0.dll ${DEST}/test
-	cp -a ../libkc3/window/.libs/libkc3_window*-0.dll ${DEST}
-	cp -a ../libkc3/window/cairo/.libs/libkc3_window_cairo*-0.dll ${DEST}
-	cp -a ../libkc3/window/cairo/demo/.libs/libkc3_window_cairo_demo*-0.dll ${DEST}
-	cp -a ../libkc3/window/cairo/win32/.libs/libkc3_window_cairo_win32*-0.dll ${DEST}
-	cp -a ../libkc3/window/cairo/win32/demo/.libs/c3_window_cairo_win32_demo*.exe ${DEST}
-	cp -a ../libkc3/window/sdl2/demo/.libs/c3_window_sdl2_demo*.exe ${DEST}
-	cp -a ../libffi/.libs/libffi-8.dll ${DEST}
-	cp -a ../libffi/.libs/libffi-8.dll ${DEST}/test
+	cp -a ../libkc3/libkc3*-0.dll ${DEST}
+	cp -a ../libkc3/libkc3*-0.dll ${DEST}/test
+	cp -a ../libkc3/window/libkc3_window*-0.dll ${DEST}
+	cp -a ../libkc3/window/cairo/libkc3_window_cairo*-0.dll ${DEST}
+	cp -a ../libkc3/window/cairo/demo/libkc3_window_cairo_demo*-0.dll ${DEST}
+	cp -a ../libkc3/window/cairo/win32/libkc3_window_cairo_win32*-0.dll ${DEST}
+	cp -a ../libkc3/window/cairo/win32/demo/c3_window_cairo_win32_demo*.exe ${DEST}
+	cp -a ../libkc3/window/sdl2/demo/c3_window_sdl2_demo*.exe ${DEST}
+	cp -a ../libffi/libffi-8.dll ${DEST}
+	cp -a ../libffi/libffi-8.dll ${DEST}/test
 	cp -a ../test/*.facts ${DEST}/test
-	cp -a ../test/.libs/libkc3*.exe ${DEST}/test
+	cp -a ../test/libkc3*.exe ${DEST}/test
 	cp -a ../test/ic3/*.in ../test/ic3/*.expected ${DEST}/test/ic3
 	cp -a ../test/ic3_test ${DEST}/test
 	cp -a /mingw32/bin/edit.dll ${DEST}

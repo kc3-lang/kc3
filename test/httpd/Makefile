@@ -13,13 +13,13 @@
 SRC_TOP = ../..
 
 main: assets doc release
-	${SRC_TOP}/httpd/.libs/kc3_httpd --trace -d 127.0.0.1 15004
+	${SRC_TOP}/httpd/kc3_httpd --trace -d 127.0.0.1 15004
 
 assets:
 	${MAKE} -C assets
 
 asan: assets doc release
-	${SRC_TOP}/httpd/.libs/kc3_httpd_asan --trace -d 127.0.0.1 15004
+	${SRC_TOP}/httpd/kc3_httpd_asan --trace -d 127.0.0.1 15004
 
 clean_dump:
 	rm -f kc3.dump db/*.bin.facts
@@ -42,22 +42,22 @@ dump_debug: clean_dump
 	time ${SRC_TOP}/kc3s/kc3s_debug --trace --quit
 
 gdb: assets doc release
-	if [ -f kc3_httpd_debug.core ]; then gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug kc3_httpd_debug.core; else gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug; fi
+	if [ -f kc3_httpd_debug.core ]; then gdb ${SRC_TOP}/httpd/kc3_httpd_debug kc3_httpd_debug.core; else gdb ${SRC_TOP}/httpd/kc3_httpd_debug; fi
 
 gdb_dump: clean_dump
-	gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug
+	gdb ${SRC_TOP}/httpd/kc3_httpd_debug
 
 gdb_dump_restore:
-	gdb ${SRC_TOP}/kc3s/.libs/kc3s_debug
+	gdb ${SRC_TOP}/kc3s/kc3s_debug
 
 ikc3: assets
 	${SRC_TOP}/ikc3/ikc3 127.0.0.1 15004
 
 lldb_dump: clean_dump
-	lldb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug
+	lldb ${SRC_TOP}/httpd/kc3_httpd_debug
 
 lldb_dump_restore:
-	lldb ${SRC_TOP}/kc3s/.libs/kc3s_debug
+	lldb ${SRC_TOP}/kc3s/kc3s_debug
 
 release:
 	if [ -d static/release ]; then \
@@ -69,7 +69,7 @@ release:
 	fi
 
 run: assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd 127.0.0.1 15004
+	${SRC_TOP}/httpd/kc3_httpd -C ${SRC_TOP}/test/httpd 127.0.0.1 15004
 
 test: vegeta_local
 
