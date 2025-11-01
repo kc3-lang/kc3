@@ -24,10 +24,12 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-build: libkc3_window_cairo_quartz.la
+build:
+	${MAKE} ${LIB}
 	${MAKE} -C demo build
 
-asan: libkc3_window_cairo_quartz_asan.la
+asan:
+	${MAKE} ${LIB_ASAN}
 	${MAKE} -C demo asan
 
 clean:
@@ -38,10 +40,12 @@ clean_cov:
 	rm -rf ${CLEANFILES_COV}
 	${MAKE} -C demo clean_cov
 
-cov: libkc3_window_cairo_quartz_cov.la
+cov:
+	${MAKE} ${LIB_COV}
 	${MAKE} -C demo cov
 
-debug: libkc3_window_cairo_quartz_debug.la
+debug:
+	${MAKE} ${LIB_DEBUG}
 	${MAKE} -C demo debug
 
 demo: build
