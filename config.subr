@@ -1328,6 +1328,7 @@ if [ "x$RANLIB" != "x" ]; then
     echo "RANLIB = $RANLIB" >> ${CONFIG_MK}
 fi
 
+EXPORT_DYNAMIC="--export-dynamic"
 case "$(uname -s)" in
     CYGWIN*|MINGW*|MSYS*|Windows)
         SHARED_FLAGS="-shared"
@@ -1348,6 +1349,7 @@ case "$(uname -s)" in
         LDADD="-lSystem"
         LIB_LDADD="$LDADD"
         PROG_LDADD="$LDADD"
+        EXPORT_DYNAMIC="-export_dynamic"
         ;;
     FreeBSD)
         SHARED_FLAGS="-shared"

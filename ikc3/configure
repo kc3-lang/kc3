@@ -28,7 +28,7 @@ config_prog ikc3
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC -pthread"
 CFLAGS="$CFLAGS -fPIC"
-LDFLAGS="$LDFLAGS --export-dynamic"
+LDFLAGS="$LDFLAGS ${EXPORT_DYNAMIC}"
 LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
 LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/libkc3"
 LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/socket"

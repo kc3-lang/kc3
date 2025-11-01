@@ -42,7 +42,7 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -g3 -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
 CFLAGS="$CFLAGS -fPIC"
-LDFLAGS="$LDFLAGS --export-dynamic"
+LDFLAGS="$LDFLAGS ${EXPORT_DYNAMIC}"
 LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
 LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/libkc3"
 LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/socket"
