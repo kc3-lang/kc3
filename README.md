@@ -14,7 +14,7 @@ KC3 is currently a programming language project, inspired by C, Elixir
 and Common Lisp. It could be described as C with Elixir modules,
 pattern matching, and a semantic object system. The idea is to plug
 modules, closures, pattern matching, a graph database and
-metaprogramming into C99 with an extremely small set of dependencies.
+metaprogramming into C11 with an extremely small set of dependencies.
 
 Components :
  - The pure C11 `libkc3` library is a full KC3 parser and interpreter.
