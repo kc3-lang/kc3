@@ -119,7 +119,7 @@ sw pdf_buf_write_null (s_buf *buf)
 sw pdf_buf_write_string_hex (s_buf *buf, const s_str *dest)
 {
   u8 c;
-  sw i;
+  u32 i;
   sw r = 0;
   s_buf read_buf = {0};
   const char *base = g_kc3_base_hexadecimal.ptr.pchar;
