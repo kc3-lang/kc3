@@ -14,8 +14,8 @@
 set -e
 
 VER_MAJOR="0"
-VER_MINOR="1"
-VER_PATCH="16"
+VER_MINOR="0"
+VER_PATCH="0"
 
 bool() {
     case "$2" in
@@ -30,21 +30,19 @@ build_lib() {
 }
 
 build_lib_shared() {
+    SHARED="$SHARED_EXT.$VER_MAJOR.$VER_MINOR.$VER_PATCH"
     echo >> ${CONFIG_MK}
-    echo "$LIB_ASAN.$SHARED_EXT: $OBJECTS_ASAN build_lib_asan" >> ${CONFIG_MK}
-    echo "	./build_lib_asan $LIB_ASAN.$SHARED_EXT" >> ${CONFIG_MK}
-
+    echo "$LIB_ASAN.$SHARED: $OBJECTS_ASAN build_lib_asan" >> ${CONFIG_MK}
+    echo "	./build_lib_asan $LIB_ASAN.$SHARED" >> ${CONFIG_MK}
     echo >> ${CONFIG_MK}
-    echo "$LIB_COV.$SHARED_EXT: $OBJECTS_COV build_lib_cov" >> ${CONFIG_MK}
-    echo "	./build_lib_cov $LIB_COV.$SHARED_EXT" >> ${CONFIG_MK}
-
+    echo "$LIB_COV.$SHARED: $OBJECTS_COV build_lib_cov" >> ${CONFIG_MK}
+    echo "	./build_lib_cov $LIB_COV.$SHARED" >> ${CONFIG_MK}
     echo >> ${CONFIG_MK}
-    echo "$LIB_DEBUG.$SHARED_EXT: $OBJECTS_DEBUG build_lib_debug" >> ${CONFIG_MK}
-    echo "	./build_lib_debug $LIB_DEBUG.$SHARED_EXT" >> ${CONFIG_MK}
-
+    echo "$LIB_DEBUG.$SHARED: $OBJECTS_DEBUG build_lib_debug" >> ${CONFIG_MK}
+    echo "	./build_lib_debug $LIB_DEBUG.$SHARED" >> ${CONFIG_MK}
     echo >> ${CONFIG_MK}
-    echo "$LIB.$SHARED_EXT: $OBJECTS build_lib_main" >> ${CONFIG_MK}
-    echo "	./build_lib_main $LIB.$SHARED_EXT" >> ${CONFIG_MK}
+    echo "$LIB.$SHARED: $OBJECTS build_lib_main" >> ${CONFIG_MK}
+    echo "	./build_lib_main $LIB.$SHARED" >> ${CONFIG_MK}
 }
 
 build_o() {
