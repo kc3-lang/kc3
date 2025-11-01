@@ -43,13 +43,10 @@ install:
 		${DESTDIR}${prefix}/include/libkc3/gtk4; done
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
 	    ${DESTDIR}${prefix}/lib
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
-	    -o ${OWNER} -g ${GROUP} -m 0644 \
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 	    ${LIB} ${DESTDIR}${prefix}/lib
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
-	    -o ${OWNER} -g ${GROUP} -m 0644 \
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 	    ${LIB_DEBUG} ${DESTDIR}${prefix}/lib
-	${LIBTOOL} --finish ${DESTDIR}${prefix}/lib
 
 test:
 

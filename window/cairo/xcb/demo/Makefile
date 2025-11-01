@@ -55,11 +55,9 @@ gdb_demo: debug
 
 install:
 	${INSTALL} -m 755 -d ${DESTDIR}${prefix}/bin
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
-	    -o ${OWNER} -g ${GROUP} -m 0755 \
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 \
 	    ${PROG} ${DESTDIR}${prefix}/bin
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} \
-	    -o ${OWNER} -g ${GROUP} -m 0755 \
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 \
 	    ${PROG_DEBUG} ${DESTDIR}${prefix}/bin
 
 lldb_demo: debug

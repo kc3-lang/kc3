@@ -65,10 +65,13 @@ gdb_demo: debug
 
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/window/egl/xcb
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libkc3/window/egl/xcb
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB_DEBUG} ${prefix}/lib
-	${LIBTOOL} --finish ${prefix}/lib
+	for H in ${HEADERS}; do \
+	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
+		$$H ${prefix}/include/libkc3/window/egl/xcb; done
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
+	    ${LIB} ${prefix}/lib
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
+	    ${LIB_DEBUG} ${prefix}/lib
 
 lldb_demo: debug
 

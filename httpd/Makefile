@@ -53,7 +53,7 @@ gdb_httpd: debug
 
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/bin
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 kc3_httpd ${DESTDIR}${prefix}/bin/kc3_httpd
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 kc3_httpd ${DESTDIR}${prefix}/bin/kc3_httpd
 
 lldb_httpd: debug
 	if [ -f ${PROG_DEBUG}.core ]; then lldb ${PROG_DEBUG} ${PROG_DEBUG}.core; else lldb ${PROG_DEBUG}; fi
