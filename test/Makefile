@@ -10,6 +10,15 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+all:
+	${MAKE} build
+	if ${HAVE_GCOV}; then ${MAKE} cov; fi
+	${MAKE} debug
+	if ${HAVE_ASAN}; then ${MAKE} asan; fi
+
+include config.mk
+include sources.mk
+
 CLEANFILES += \
 	ekc3/*.diff \
 	ekc3/*.err \
@@ -25,19 +34,13 @@ CLEANFILES += \
 	ikc3/*.ret \
 	kc3.dump \
 	${PROG} \
-	libkc3_test_asan \
-	libkc3_test_cov \
-	libkc3_test_debug
-
-build: ${PROG}
-
-all:
-	${MAKE} build
-	if ${HAVE_GCOV}; then ${MAKE} cov; fi
-	${MAKE} debug
-	if ${HAVE_ASAN}; then ${MAKE} asan; fi
+	${PROG_ASAN} \
+	${PROG_COV} \
+	${PROG_DEBUG}
 
 asan: ${PROG_ASAN}
+
+build: ${PROG}
 
 cov: ${PROG_COV}
 
@@ -335,6 +338,3 @@ test_valgrind: ${PROG}
 	test_tls_cov \
 	test_tls_debug \
 	test_valgrind
-
-include config.mk
-include sources.mk

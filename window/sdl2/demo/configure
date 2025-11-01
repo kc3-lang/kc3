@@ -114,13 +114,17 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
-LDFLAGS="$LDFLAGS -rpath /usr/X11R6/lib"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/libkc3"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/gl"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window/demo"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window/sdl2"
+if [ "$(uname -s)" = "Darwin" ]; then
+    LDFLAGS="$LDFLAGS -rpath @executable_path/../Frameworks"
+else
+    LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
+    LDFLAGS="$LDFLAGS -rpath /usr/X11R6/lib"
+    LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/libkc3"
+    LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/gl"
+    LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window"
+    LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window/demo"
+    LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window/sdl2"
+fi
 LIBS="$LIBS -lkc3_window_sdl2"
 LIBS="$LIBS -lkc3_window_demo"
 LIBS="$LIBS -lkc3_window"

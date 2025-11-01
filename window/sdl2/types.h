@@ -25,7 +25,6 @@
 #include <SDL.h>
 #include <png.h>
 #include "../../gl/types.h"
-#include <SDL_opengl.h>
 #include "../types.h"
 
 typedef struct window_sdl2 s_window_sdl2;
