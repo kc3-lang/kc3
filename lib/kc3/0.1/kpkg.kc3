@@ -495,12 +495,11 @@ endian = '#{endian}'
   ## Arch configuration
 
   def arch_dir = fn {
-    (pkg, tree, arch) {
-      arch_dir(pkg, tree, arch, "src")
-    }
+    (arch) { "#{Kpkg.dir()}/arch/#{arch}" }
+    (arch, subdir) { "#{Kpkg.arch_dir(arch)}/#{subdir}" }
+    (pkg, tree, arch) { arch_dir(pkg, tree, arch, "src") }
     (pkg, tree, arch, subdir) {
-      "#{Kpkg.dir()}/arch/#{arch}/#{subdir}/#{pkg.dir}/#{tree}"
-    }
+      "#{Kpkg.arch_dir(arch, subdir)}/#{pkg.dir}/#{tree}" }
   }
 
   def arch_local = fn () {
@@ -538,6 +537,16 @@ endian = '#{endian}'
   }
 
   ## Internal API
+
+  def cppflags = fn (arch) {
+    include_dir = Kpkg.arch_dir(arch, "local/include")
+    "-I#{include_dir}"
+  }
+
+  def ldflags = fn (arch) {
+    lib_dir = Kpkg.arch_dir(arch, "local/lib")
+    "-L#{lib_dir}"
+  }
 
   def exec! = fn (cmd) {
     style? = Kpkg.style?()
@@ -577,6 +586,8 @@ endian = '#{endian}'
         exit(2)
     end
   }
+
+  ## Log output
 
   defcounter indent_level = 0
 
@@ -861,29 +872,34 @@ endian = '#{endian}'
         make_sh = Sh.escape(pkg.make)
         if Kpkg.arch_local() == arch do
           Kpkg.exec!(["/bin/sh", "-c",
-                      "cd #{build_dir_sh} &&" +
-                      " CC=#{cc_sh}" +
-                      " CXX=#{cxx_sh}" +
-                      " LD=#{ld_sh}" +
-                      " MAKE=#{make_sh}" +
-                      " #{configure_path_sh}" +
-                      " --prefix #{prefix_sh} &&" +
-                      " echo 1 > .kpkg_configure_done"])
+    """cd #{build_dir_sh} && \\
+    CC=#{cc_sh} \\
+    CPPFLAGS=#{Sh.escape(Kpkg.cppflags(arch))} \\
+    CXX=#{cxx_sh} \\
+    LD=#{ld_sh} \\
+    LDFLAGS=#{Sh.escape(Kpkg.ldflags(arch))} \\
+    MAKE=#{make_sh} \\
+    PKG_CONFIG_LIBDIR=#{pkg_config_libdir_sh} \\
+    #{configure_path_sh} \\
+    --prefix #{prefix_sh} && \\
+    echo 1 > .kpkg_configure_done"""])
         else
           arch_sh = Sh.escape(arch)
           pkg_config_libdir_sh = Sh.escape("#{prefix}/lib/pkgconfig")
           Kpkg.exec!(["/bin/sh", "-c",
-                      "cd #{build_dir_sh} &&" +
-                      " CC=#{cc_sh}" +
-                      " CXX=#{cxx_sh}" +
-                      " LD=#{ld_sh}" +
-                      " CHOST=#{arch_sh}" +
-                      " MAKE=#{make_sh}" +
-                      " PKG_CONFIG_LIBDIR=#{pkg_config_libdir_sh}" +
-                      " #{configure_path_sh}" +
-                      " --host #{arch_sh} --target #{arch_sh}" +
-                      " --prefix #{prefix_sh} &&" +
-                      " echo 1 > .kpkg_configure_done"])
+    """cd #{build_dir_sh} && \\
+    CC=#{cc_sh} \\
+    CPPFLAGS=#{Sh.escape(Kpkg.cppflags(arch))} \\
+    CXX=#{cxx_sh} \\
+    LD=#{ld_sh} \\
+    LDFLAGS=#{Sh.escape(Kpkg.ldflags(arch))} \\
+    CHOST=#{arch_sh} \\
+    MAKE=#{make_sh} \\
+    PKG_CONFIG_LIBDIR=#{pkg_config_libdir_sh} \\
+    #{configure_path_sh} \\
+    --host #{arch_sh} --target #{arch_sh} \\
+    --prefix #{prefix_sh} && \\
+    echo 1 > .kpkg_configure_done"""])
         end
       else
         cmakelists = Kpkg.cmake_path(pkg, tree)
