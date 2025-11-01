@@ -33,7 +33,7 @@ build_lib_shared() {
     {
         echo
         echo "$LIB_ASAN.$SHARED_PATCH: $OBJECTS_ASAN build_lib_asan"
-        echo "	./build_lib_asan $LIB_ASAN.$SHARED"
+        echo "	./build_lib_asan $LIB_ASAN.$SHARED_PATCH"
         echo "$LIB_ASAN.$SHARED_MINOR: $LIB_ASAN.$SHARED_PATCH"
         echo "	ln -sf $LIB_ASAN.$SHARED_PATCH $LIB_ASAN.$SHARED_MINOR"
         echo "$LIB_ASAN.$SHARED_MAJOR: $LIB_ASAN.$SHARED_PATCH"
@@ -43,7 +43,7 @@ build_lib_shared() {
         echo "$LIB_ASAN: $LIB_ASAN.$SHARED_EXT $LIB_ASAN.$SHARED_MAJOR $LIB_ASAN.$SHARED_MINOR $LIB_ASAN.$SHARED_PATCH"
         echo
         echo "$LIB_COV.$SHARED_PATCH: $OBJECTS_COV build_lib_cov"
-        echo "	./build_lib_cov $LIB_COV.$SHARED"
+        echo "	./build_lib_cov $LIB_COV.$SHARED_PATCH"
         echo "$LIB_COV.$SHARED_MINOR: $LIB_COV.$SHARED_PATCH"
         echo "	ln -sf $LIB_COV.$SHARED_PATCH $LIB_COV.$SHARED_MINOR"
         echo "$LIB_COV.$SHARED_MAJOR: $LIB_COV.$SHARED_PATCH"
@@ -52,7 +52,7 @@ build_lib_shared() {
         echo "	ln -sf $LIB_COV.$SHARED_PATCH $LIB_COV.$SHARED_EXT"
         echo
         echo "$LIB_DEBUG.$SHARED_PATCH: $OBJECTS_DEBUG build_lib_debug"
-        echo "	./build_lib_debug $LIB_DEBUG.$SHARED"
+        echo "	./build_lib_debug $LIB_DEBUG.$SHARED_PATCH"
         echo "$LIB_DEBUG.$SHARED_MINOR: $LIB_DEBUG.$SHARED_PATCH"
         echo "	ln -sf $LIB_DEBUG.$SHARED_PATCH $LIB_DEBUG.$SHARED_MINOR"
         echo "$LIB_DEBUG.$SHARED_MAJOR: $LIB_DEBUG.$SHARED_PATCH"
@@ -61,7 +61,7 @@ build_lib_shared() {
         echo "	ln -sf $LIB_DEBUG.$SHARED_PATCH $LIB_DEBUG.$SHARED_EXT"
         echo
         echo "$LIB.$SHARED_PATCH: $OBJECTS build_lib_main"
-        echo "	./build_lib_main $LIB.$SHARED"
+        echo "	./build_lib_main $LIB.$SHARED_PATCH"
         echo "$LIB.$SHARED_MINOR: $LIB.$SHARED_PATCH"
         echo "	ln -sf $LIB.$SHARED_PATCH $LIB.$SHARED_MINOR"
         echo "$LIB.$SHARED_MAJOR: $LIB.$SHARED_PATCH"
