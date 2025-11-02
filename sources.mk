@@ -1481,9 +1481,9 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/env.kc3" \
 	"lib/kc3/0.1/err.kc3" \
 	"lib/kc3/0.1/event.kc3" \
-	"lib/kc3/0.1/f128.facts" \
 	"lib/kc3/0.1/f32.facts" \
 	"lib/kc3/0.1/f64.facts" \
+	"lib/kc3/0.1/f80.facts" \
 	"lib/kc3/0.1/fact.kc3" \
 	"lib/kc3/0.1/fact_w.kc3" \
 	"lib/kc3/0.1/facts.kc3" \
