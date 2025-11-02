@@ -1011,10 +1011,13 @@ kubz_debug:
 	${MAKE} debug
 	window/sdl2/kubz/kubz_debug
 
-lib_links:
+lib:
+	rsync -a ${SRC_DIR}/lib ./
+
+lib_links: lib
 	${MAKE} lib_links_${ARCH}
 
-lib_links_asan:
+lib_links_asan: lib
 	${MAKE} lib_links_${ARCH}_asan
 
 lib_links_bsd:
@@ -1050,10 +1053,10 @@ lib_links_bsd_debug:
 	ln -sf ../../../socket/libkc3_socket_debug.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls_debug.${SHARED_EXT} lib/kc3/0.1/tls.so
 
-lib_links_cov:
+lib_links_cov: lib
 	${MAKE} lib_links_${ARCH}_cov
 
-lib_links_debug:
+lib_links_debug: lib
 	${MAKE} lib_links_${ARCH}_debug
 
 lib_links_darwin:
