@@ -1256,14 +1256,14 @@ TEST_CASE(marshall_to_file)
 {
   u32 value = 42;
   s_marshall m = {0};
-  const s_str path = STR(".marshall_test_to_file.1.kc3m");
-  test_context("marshall_to_file(\".marshall_test_to_file.1.kc3m\")");
+  const s_str path = STR(".marshall_test_to_file.1.dump");
+  test_context("marshall_to_file(\".marshall_test_to_file.1.dump\")");
   TEST_ASSERT(marshall_init(&m));
   TEST_ASSERT(marshall_u32(&m, false, value));
   TEST_EQ(marshall_to_file(&m, &path),
           sizeof(s_marshall_header) + 8 + sizeof(u32));
-  TEST_EQ(test_file_compare(".marshall_test_to_file.1.kc3m",
-                            "marshall_test_to_file.1.expected.kc3m"),
+  TEST_EQ(test_file_compare(".marshall_test_to_file.1.dump",
+                            "marshall_test_to_file.1.dump.expected"),
           0);
   marshall_clean(&m);
   file_unlink(&path);
