@@ -325,8 +325,16 @@ s_struct_type * struct_type_new_ref (s_struct_type *st)
 uw struct_type_padding (uw offset, uw size)
 {
   unsigned int align = 1;
-  if (size >= 8)
-    align = 8;
+  switch (sizeof(uw)) {
+  case 4:
+    if (size >= 4)
+      align = 4;
+    break;
+  case 8:
+    if (size >= 8)
+      align = 8;
+    break;
+  }
   return (offset + (align - 1)) / align * align;
 }
 
