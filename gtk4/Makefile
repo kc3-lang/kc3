@@ -13,8 +13,8 @@
 all:
 	${MAKE} build
 	${MAKE} debug
-	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
+	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 include config.mk
 include sources.mk
