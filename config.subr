@@ -1304,6 +1304,8 @@ SOURCES_SH=".sources.sh.tmp"
 VER=0.1
 echo "VER = $VER" >> ${CONFIG_MK}
 
+echo "BUILD_TOP = $BUILD_TOP" >> ${CONFIG_MK}
+
 export SRC_DIR="${SRC_TOP}/${DIR}"
 echo "SRC_TOP = $SRC_TOP" >> ${CONFIG_MK}
 echo "SRC_DIR = $SRC_DIR" >> ${CONFIG_MK}
