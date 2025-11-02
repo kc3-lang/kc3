@@ -865,6 +865,7 @@ endian = '#{endian}'
     ld_sh = Sh.escape(ld)
     prefix = Kpkg.prefix_dir(arch)
     prefix_sh = Sh.escape(prefix)
+    pkg_config_libdir_sh = Sh.escape("#{prefix}/lib/pkgconfig")
     if ! File.access?("#{build_dir}/.kpkg_configure_done", :r) do
       configure = Kpkg.configure_path(pkg, tree)
       if (File.exists?(configure)) do
@@ -885,7 +886,6 @@ endian = '#{endian}'
     echo 1 > .kpkg_configure_done"""])
         else
           arch_sh = Sh.escape(arch)
-          pkg_config_libdir_sh = Sh.escape("#{prefix}/lib/pkgconfig")
           Kpkg.exec!(["/bin/sh", "-c",
     """cd #{build_dir_sh} && \\
     CC=#{cc_sh} \\
