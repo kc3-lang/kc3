@@ -59,7 +59,9 @@ CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR -L../libkc3"
-LIBS_ASAN="$LIBS -lkc3_asan $(${CC} -print-file-name=libasan.so)"
+LIBS_ASAN="$(${CC} -print-file-name=libasan.so)"
+LIBS_ASAN="$LIBS_ASAN $LIBS"
+LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
