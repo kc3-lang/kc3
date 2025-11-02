@@ -1015,7 +1015,7 @@ lib:
 	rm -rf ${BUILD_TOP}/lib
 	cd ${SRC_TOP} && \
 		find lib -name '*.kc3' -or -name '*.facts' | \
-		cpio -pd ${BUILD_TOP}/
+		pax -rwd ${BUILD_TOP}/
 
 lib_links: lib
 	${MAKE} lib_links_${ARCH}
@@ -1874,6 +1874,7 @@ uninstall:
 	kpkg_asan \
 	kpkg_cov \
 	kpkg_debug \
+	lib \
 	lib_links \
 	lib_links_asan \
 	lib_links_bsd \
