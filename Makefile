@@ -1012,7 +1012,7 @@ kubz_debug:
 	window/sdl2/kubz/kubz_debug
 
 lib:
-	if [ "x$SRC_TOP" != "x$BUILD_TOP" ]; then \
+	if [ "x${SRC_TOP}" != "x${BUILD_TOP}" ]; then \
 		rm -rf ${BUILD_TOP}/lib && \
 		cd ${SRC_TOP} && \
 		find lib -name '*.kc3' -or \
