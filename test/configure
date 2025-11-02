@@ -128,7 +128,7 @@ if [ "x$SRC_TOP" != "x$BUILD_TOP" ]; then
     ( cd "$SRC_TOP/test" && {
           ls -1 test_runner test.subr *_test zero &&
           find . -name '*.facts' -or -name '*.kc3' -or \
-                 -name '*.expected'
+                 -name '*.expected' -or -name '*.pdf'
       } | pax -rwd "$BUILD_TOP/test/"; )
 fi
 
