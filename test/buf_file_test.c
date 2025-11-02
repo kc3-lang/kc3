@@ -52,7 +52,7 @@ TEST_CASE(buf_file_open_r_refill)
   sw i = 64;
   test_context("buf_file_open_r_refill(zero)");
   fp = fopen("zero", "r");
-  assert(fp);
+  TEST_ASSERT(fp);
   buf_init(&buf, false, sizeof(bu), bu);
   buf_file_open_r(&buf, fp);
   while (i--) {
