@@ -1012,10 +1012,10 @@ kubz_debug:
 	window/sdl2/kubz/kubz_debug
 
 lib:
-	rm -rf ./lib
-	( cd ${SRC_TOP} && find lib -name '*.kc3' -or \
-				    -name '*.facts'; ) | \
-		cpio -pd ./
+	rm -rf ${BUILD_TOP}/lib
+	cd ${SRC_TOP} && \
+		find lib -name '*.kc3' -or -name '*.facts' | \
+		cpio -pd ${BUILD_TOP}/
 
 lib_links: lib
 	${MAKE} lib_links_${ARCH}
