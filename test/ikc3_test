@@ -13,9 +13,9 @@
 
 TEST_NAME=ikc3
 
-SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
+TEST_TOP="$(cd "$(dirname "$0")" && pwd)"
 
-cd "${SRC_TOP}/test/${TEST_NAME}" || exit
+cd "${TEST_TOP}/${TEST_NAME}" || exit
 
 . ../test.subr
 
@@ -38,5 +38,7 @@ if [ $# = 0 ]; then
 else
     TARGETS="$(echo "$@" | tr ' ' '\n')"
 fi
+
+: ${IKC3=${TEST_TOP}/../ikc3/ikc3}
 
 test_run "$IKC3" $TARGETS
