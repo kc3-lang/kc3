@@ -62,9 +62,12 @@ PROTO_MARSHALL_READ(do_block,     s_do_block       );
 PROTO_MARSHALL_READ(env,          s_env            );
 s_marshall_read * marshall_read_env_counters (s_marshall_read *mr,
                                               bool heap, s_env *env);
-PROTO_MARSHALL_READ(f128,         f128             );
 PROTO_MARSHALL_READ(f32,          f32              );
 PROTO_MARSHALL_READ(f64,          f64              );
+PROTO_MARSHALL_READ(f80,          f80              );
+#if HAVE_FLOAT128
+PROTO_MARSHALL_READ(f128,         f128             );
+#endif
 PROTO_MARSHALL_READ(fact,         s_fact           );
 PROTO_MARSHALL_READ(facts,        s_facts          );
 PROTO_MARSHALL_READ(fn,           s_fn             );

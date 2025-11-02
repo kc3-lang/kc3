@@ -47,6 +47,7 @@ const s_sym g_sym_Counter          = SYM_1("Counter");
 const s_sym g_sym_Cow              = SYM_1("Cow");
 const s_sym g_sym_F32              = SYM_1("F32");
 const s_sym g_sym_F64              = SYM_1("F64");
+const s_sym g_sym_F80              = SYM_1("F80");
 const s_sym g_sym_F128             = SYM_1("F128");
 const s_sym g_sym_Fact             = SYM_1("Fact");
 const s_sym g_sym_FactW            = SYM_1("FactW");
@@ -337,6 +338,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_Cow, NULL);
   sym_register(&g_sym_F32, NULL);
   sym_register(&g_sym_F64, NULL);
+  sym_register(&g_sym_F80, NULL);
   sym_register(&g_sym_F128, NULL);
   sym_register(&g_sym_Fact, NULL);
   sym_register(&g_sym_FactW, NULL);
@@ -591,6 +593,10 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = false;
     return must_clean;
   }
+  if (sym == &g_sym_F80) {
+    *must_clean = false;
+    return must_clean;
+  }
   if (sym == &g_sym_F128) {
     *must_clean = false;
     return must_clean;
@@ -837,10 +843,16 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     *dest = &ffi_type_double;
     return true;
   }
-  if (sym == &g_sym_F128) {
+  if (sym == &g_sym_F80) {
     *dest = &ffi_type_longdouble;
     return true;
   }
+#if HAVE_FLOAT128
+  if (sym == &g_sym_F128) {
+    *dest = &ffi_type_float128;
+    return true;
+  }
+#endif
   if (sym == &g_sym_Fact) {
     *dest = &ffi_type_pointer;
     return true;
@@ -1008,10 +1020,16 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_F64;
     return true;
   }
+  if (sym == &g_sym_F80) {
+    *dest = TAG_F80;
+    return true;
+  }
+#if HAVE_FLOAT128
   if (sym == &g_sym_F128) {
     *dest = TAG_F128;
     return true;
   }
+#endif
   if (sym == &g_sym_Facts_star) {
     *dest = TAG_PFACTS;
     return true;
@@ -1207,10 +1225,16 @@ uw * sym_type_size (const s_sym *type, uw *dest)
     *dest = sizeof(f64);
     return dest;
   }
+  if (type == &g_sym_F80) {
+    *dest = sizeof(f80);
+    return dest;
+  }
+#if HAVE_FLOAT128
   if (type == &g_sym_F128) {
     *dest = sizeof(f128);
     return dest;
   }
+#endif
   if (type == &g_sym_Fact) {
     *dest = sizeof(s_fact);
     return dest;

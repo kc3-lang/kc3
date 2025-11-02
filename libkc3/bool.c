@@ -49,9 +49,14 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_F64:
     *b = tag->data.f64 != 0.0;
     return b;
+  case TAG_F80:
+    *b = tag->data.f80 != 0.0;
+    return b;
+#if HAVE_FLOAT128
   case TAG_F128:
     *b = tag->data.f128 != 0.0;
     return b;
+#endif
   case TAG_INTEGER:
     *b = ! integer_is_zero(&tag->data.integer);
     return b;

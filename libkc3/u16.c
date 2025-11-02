@@ -16,7 +16,7 @@
 #include "buf_parse_u16.h"
 #include <math.h>
 #include <stdlib.h>
-#include "f128.h"
+#include "f80.h"
 #include "hash.h"
 #include "integer.h"
 #include "ratio.h"
@@ -153,8 +153,8 @@ u16 * u16_random (u16 *u)
 
 u16 * u16_random_uniform (u16 *u, u16 max)
 {
-  f128 x;
-  f128_random(&x);
+  f80 x;
+  f80_random(&x);
   x *= max;
   *u = (u16) x;
   return u;
@@ -173,7 +173,7 @@ u16 * u16_random_uniform (u16 *u, u16 max)
 s_tag * u16_sqrt (const u16 x, s_tag *dest)
 {
   assert(dest);
-  dest->type = TAG_F128;
-  dest->data.f128 = sqrtl((long double) x);
+  dest->type = TAG_F80;
+  dest->data.f80 = sqrtl((f80) x);
   return dest;
 }

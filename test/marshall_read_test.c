@@ -33,19 +33,19 @@
     TEST_EQ(marshall_read_init_1(&mr, (test), sizeof(test) - 1), &mr);  \
     TEST_EQ(marshall_read_## type (&mr, false, &tmp), &mr);             \
     marshall_read_clean(&mr);                                           \
-    inspect_ ## type(_Generic (tmp,                                     \
-                               f32:  tmp,                               \
-                               f64:  tmp,                               \
-                               f128: tmp,                               \
-                               s8:   tmp,                               \
-                               s16:  tmp,                               \
-                               s32:  tmp,                               \
-                               s64:  tmp,                               \
-                               u8:   tmp,                               \
-                               u16:  tmp,                               \
-                               u32:  tmp,                               \
-                               u64:  tmp,                               \
-                               default: &tmp), &test_str);              \
+    inspect_ ## type(_Generic(tmp,                                      \
+                              f32:  tmp,                                \
+                              f64:  tmp,                                \
+                              f80:  tmp,                                \
+                              s8:   tmp,                                \
+                              s16:  tmp,                                \
+                              s32:  tmp,                                \
+                              s64:  tmp,                                \
+                              u8:   tmp,                                \
+                              u16:  tmp,                                \
+                              u32:  tmp,                                \
+                              u64:  tmp,                                \
+                              default: &tmp), &test_str);               \
     TEST_STR_EQ(test_str, tmp_str);                                     \
     str_clean(&test_str);                                               \
     str_clean(&tmp_str);                                                \

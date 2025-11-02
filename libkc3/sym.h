@@ -50,6 +50,7 @@ extern const s_sym g_sym_Counter__star;
 extern const s_sym g_sym_Cow;
 extern const s_sym g_sym_F32;
 extern const s_sym g_sym_F64;
+extern const s_sym g_sym_F80;
 extern const s_sym g_sym_F128;
 extern const s_sym g_sym_Fact;
 extern const s_sym g_sym_Facts;

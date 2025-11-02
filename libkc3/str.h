@@ -65,7 +65,10 @@ s_str * str_init_empty (s_str *str);
 s_str * str_init_f (s_str *str, const char *fmt, ...);
 PROTOTYPE_STR_INIT_DIRECT(f32);
 PROTOTYPE_STR_INIT_DIRECT(f64);
+PROTOTYPE_STR_INIT_DIRECT(f80);
+#if HAVE_FLOAT128
 PROTOTYPE_STR_INIT_DIRECT(f128);
+#endif
 PROTOTYPE_STR_INIT_STRUCT(call);
 PROTOTYPE_STR_INIT_STRUCT(callable);
 s_str * str_init_ftime (s_str *str, s_time *time, const s_str *format);

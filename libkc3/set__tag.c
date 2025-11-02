@@ -105,7 +105,10 @@ set_get_h__tag
     if (! compare_tag(_Generic(item->data,
                                   f32:  item->data,
                                   f64:  item->data,
+                                  f80:  item->data,
+#if HAVE_FLOAT128
                                   f128: item->data,
+#endif
                                   s8:   item->data,
                                   s16:  item->data,
                                   s32:  item->data,
@@ -252,7 +255,10 @@ set_resize__tag (s_set__tag *set, uw max)
       set_add_h__tag(&n, _Generic(item->data,
                                        f32:  item->data,
                                        f64:  item->data,
+                                       f80:  item->data,
+#if HAVE_FLOAT128
                                        f128: item->data,
+#endif
                                        s8:   item->data,
                                        s16:  item->data,
                                        s32:  item->data,

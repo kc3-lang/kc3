@@ -47,8 +47,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       complex_init_f64(&c, b->data.f64);
       return tag_init_pcomplex(dest, complex_new_mul(a->data.pcomplex,
                                                      &c));
-    case TAG_F128:
-      complex_init_f128(&c, b->data.f128);
+    case TAG_F80:
+      complex_init_f80(&c, b->data.f80);
       return tag_init_pcomplex(dest, complex_new_mul(a->data.pcomplex,
                                                      &c));
     case TAG_INTEGER:
@@ -126,8 +126,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.f32 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.f32 * b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, (f128) a->data.f32 * b->data.f128);
+    case TAG_F80:
+      return tag_init_f80(dest, (f80) a->data.f32 * b->data.f80);
     case TAG_INTEGER:
       return tag_init_f32(dest, a->data.f32 *
                           integer_to_f32(&b->data.integer));
@@ -170,8 +170,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f64(dest, a->data.f64 * (f64) b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.f64 * b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, (f128) a->data.f64 * b->data.f128);
+    case TAG_F80:
+      return tag_init_f80(dest, (f80) a->data.f64 * b->data.f80);
     case TAG_INTEGER:
       return tag_init_f64(dest, a->data.f64 *
                           integer_to_f64(&b->data.integer));
@@ -204,47 +204,47 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
     default:
       goto ko;
     }
-  case TAG_F128:
+  case TAG_F80:
     switch (b->type) {
     case TAG_PCOMPLEX:
-      complex_init_f128(&c, a->data.f128);
+      complex_init_f80(&c, a->data.f80);
       return tag_init_pcomplex(dest, complex_new_mul(&c,
                                                      b->data.pcomplex));
     case TAG_F32:
-      return tag_init_f128(dest, a->data.f128 * (f128) b->data.f32);
+      return tag_init_f80(dest, a->data.f80 * (f80) b->data.f32);
     case TAG_F64:
-      return tag_init_f128(dest, a->data.f128 * (f128) b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, a->data.f128 * b->data.f128);
+      return tag_init_f80(dest, a->data.f80 * (f80) b->data.f64);
+    case TAG_F80:
+      return tag_init_f80(dest, a->data.f80 * b->data.f80);
     case TAG_INTEGER:
-      return tag_init_f128(dest, a->data.f128 *
-                           integer_to_f128(&b->data.integer));
+      return tag_init_f80(dest, a->data.f80 *
+                           integer_to_f80(&b->data.integer));
     case TAG_RATIO:
-      ratio_init_f128(&r, a->data.f128);
+      ratio_init_f80(&r, a->data.f80);
       dest->type = TAG_RATIO;
       ratio_mul(&r, &b->data.ratio, &dest->data.ratio);
       ratio_clean(&r);
       return dest;
     case TAG_S8:
-      return tag_init_f128(dest, a->data.f128 * (f128) b->data.s8);
+      return tag_init_f80(dest, a->data.f80 * (f80) b->data.s8);
     case TAG_S16:
-      return tag_init_f128(dest, a->data.f128 * (f128) b->data.s16);
+      return tag_init_f80(dest, a->data.f80 * (f80) b->data.s16);
     case TAG_S32:
-      return tag_init_f128(dest, a->data.f128 * (f128) b->data.s32);
+      return tag_init_f80(dest, a->data.f80 * (f80) b->data.s32);
     case TAG_S64:
-      return tag_init_f128(dest, a->data.f128 * (f128) b->data.s64);
+      return tag_init_f80(dest, a->data.f80 * (f80) b->data.s64);
     case TAG_SW:
-      return tag_init_f128(dest, a->data.f128 * (f128) b->data.sw);
+      return tag_init_f80(dest, a->data.f80 * (f80) b->data.sw);
     case TAG_U8:
-      return tag_init_f128(dest, a->data.f128 * (f128) b->data.u8);
+      return tag_init_f80(dest, a->data.f80 * (f80) b->data.u8);
     case TAG_U16:
-      return tag_init_f128(dest, a->data.f128 * (f128) b->data.u16);
+      return tag_init_f80(dest, a->data.f80 * (f80) b->data.u16);
     case TAG_U32:
-      return tag_init_f128(dest, a->data.f128 * (f128) b->data.u32);
+      return tag_init_f80(dest, a->data.f80 * (f80) b->data.u32);
     case TAG_U64:
-      return tag_init_f128(dest, a->data.f128 * (f128) b->data.u64);
+      return tag_init_f80(dest, a->data.f80 * (f80) b->data.u64);
     case TAG_UW:
-      return tag_init_f128(dest, a->data.f128 * (f128) b->data.uw);
+      return tag_init_f80(dest, a->data.f80 * (f80) b->data.uw);
     default:
       goto ko;
     }
@@ -266,9 +266,9 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
     case TAG_F64:
       return tag_init_f64(dest, integer_to_f64(&a->data.integer) *
                           b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, integer_to_f128(&a->data.integer) *
-                           b->data.f128);
+    case TAG_F80:
+      return tag_init_f80(dest, integer_to_f80(&a->data.integer) *
+                           b->data.f80);
     case TAG_INTEGER:
       tag.type = TAG_INTEGER;
       integer_mul(&a->data.integer, &b->data.integer,
@@ -367,8 +367,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       ratio_mul(&a->data.ratio, &r, &dest->data.ratio);
       ratio_clean(&r);
       return dest;
-    case TAG_F128:
-      ratio_init_f128(&r, b->data.f128);
+    case TAG_F80:
+      ratio_init_f80(&r, b->data.f80);
       dest->type = TAG_RATIO;
       ratio_mul(&a->data.ratio, &r, &dest->data.ratio);
       ratio_clean(&r);
@@ -458,8 +458,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.s8 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.s8 * b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, (f128) a->data.s8 * b->data.f128);
+    case TAG_F80:
+      return tag_init_f80(dest, (f80) a->data.s8 * b->data.f80);
     case TAG_INTEGER:
       integer_init_s8(&tmp, a->data.s8);
       tag.type = TAG_INTEGER;
@@ -535,8 +535,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.s16 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.s16 * b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, (f128) a->data.s16 * b->data.f128);
+    case TAG_F80:
+      return tag_init_f80(dest, (f80) a->data.s16 * b->data.f80);
     case TAG_INTEGER:
       integer_init_s16(&tmp, a->data.s16);
       tag.type = TAG_INTEGER;
@@ -612,8 +612,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.s32 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.s32 * b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, (f128) a->data.s32 * b->data.f128);
+    case TAG_F80:
+      return tag_init_f80(dest, (f80) a->data.s32 * b->data.f80);
     case TAG_INTEGER:
       integer_init_s32(&tmp, a->data.s32);
       tag.type = TAG_INTEGER;
@@ -689,8 +689,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.s64 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.s64 * b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, (f128) a->data.s64 * b->data.f128);
+    case TAG_F80:
+      return tag_init_f80(dest, (f80) a->data.s64 * b->data.f80);
     case TAG_INTEGER:
       integer_init_s64(&tmp, a->data.s64);
       tag.type = TAG_INTEGER;
@@ -807,8 +807,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.sw * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.sw * b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, (f128) a->data.sw * b->data.f128);
+    case TAG_F80:
+      return tag_init_f80(dest, (f80) a->data.sw * b->data.f80);
     case TAG_INTEGER:
       integer_init_sw(&tmp, a->data.sw);
       tag.type = TAG_INTEGER;
@@ -914,8 +914,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.u8 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.u8 * b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, (f128) a->data.u8 * b->data.f128);
+    case TAG_F80:
+      return tag_init_f80(dest, (f80) a->data.u8 * b->data.f80);
     case TAG_INTEGER:
       integer_init_u8(&tmp, a->data.u8);
       tag.type = TAG_INTEGER;
@@ -991,8 +991,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.u16 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.u16 * b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, (f128) a->data.u16 * b->data.f128);
+    case TAG_F80:
+      return tag_init_f80(dest, (f80) a->data.u16 * b->data.f80);
     case TAG_INTEGER:
       integer_init_u16(&tmp, a->data.u16);
       tag.type = TAG_INTEGER;
@@ -1068,8 +1068,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.u32 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.u32 * b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, (f128) a->data.u32 * b->data.f128);
+    case TAG_F80:
+      return tag_init_f80(dest, (f80) a->data.u32 * b->data.f80);
     case TAG_INTEGER:
       integer_init_u32(&tmp, a->data.u32);
       tag.type = TAG_INTEGER;
@@ -1145,8 +1145,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.u64 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.u64 * b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, (f128) a->data.u64 * b->data.f128);
+    case TAG_F80:
+      return tag_init_f80(dest, (f80) a->data.u64 * b->data.f80);
     case TAG_INTEGER:
       integer_init_u64(&tmp, a->data.u64);
       tag.type = TAG_INTEGER;
@@ -1252,8 +1252,8 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.uw * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.uw * b->data.f64);
-    case TAG_F128:
-      return tag_init_f128(dest, (f128) a->data.uw * b->data.f128);
+    case TAG_F80:
+      return tag_init_f80(dest, (f80) a->data.uw * b->data.f80);
     case TAG_INTEGER:
       integer_init_uw(&tmp, a->data.uw);
       tag.type = TAG_INTEGER;

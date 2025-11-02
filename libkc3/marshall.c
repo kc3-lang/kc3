@@ -414,6 +414,15 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
     }
     return m;
   }
+  if (type == &g_sym_F80) {
+    if (! marshall_f80(m, heap, *(f80 *) data)) {
+      err_puts("marshall_data: marshall_f80");
+      assert(! "marshall_data: marshall_f80");
+      return NULL;
+    }
+    return m;
+  }
+#if HAVE_FLOAT128
   if (type == &g_sym_F128) {
     if (! marshall_f128(m, heap, *(f128 *) data)) {
       err_puts("marshall_data: marshall_f128");
@@ -422,6 +431,7 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
     }
     return m;
   }
+#endif
   if (type == &g_sym_Fact) {
     if (! marshall_fact(m, heap, data)) {
       err_puts("marshall_data: marshall_fact");
@@ -789,7 +799,10 @@ sw marshall_env_to_file (const s_env *env, const s_str *path)
 
 DEF_MARSHALL(f32, "_KC3F32_")
 DEF_MARSHALL(f64, "_KC3F64_")
+DEF_MARSHALL(f80, "_KC3F80_")
+#if HAVE_FLOAT128
 DEF_MARSHALL(f128, "_KC3F128_")
+#endif
 
 s_marshall * marshall_fact (s_marshall *m, bool heap,
                             const s_fact *fact)
@@ -1481,7 +1494,10 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
     return marshall_do_block(m, heap, &tag->data.do_block);
   case TAG_F32:   return marshall_f32(m, heap, tag->data.f32);
   case TAG_F64:   return marshall_f64(m, heap, tag->data.f64);
+  case TAG_F80:   return marshall_f80(m, heap, tag->data.f80);
+#if HAVE_FLOAT128
   case TAG_F128:  return marshall_f128(m, heap, tag->data.f128);
+#endif
   case TAG_FACT:  return marshall_fact(m, heap, &tag->data.fact);
   case TAG_IDENT: return marshall_ident(m, heap, &tag->data.ident);
   case TAG_INTEGER:

@@ -16,7 +16,7 @@
 #include "buf_parse_u_bits$.h"
 #include <math.h>
 #include <stdlib.h>
-#include "f128.h"
+#include "f80.h"
 #include "hash.h"
 #include "integer.h"
 #include "ratio.h"
@@ -153,8 +153,8 @@ u_bits$ * u_bits$_random (u_bits$ *u)
 
 u_bits$ * u_bits$_random_uniform (u_bits$ *u, u_bits$ max)
 {
-  f128 x;
-  f128_random(&x);
+  f80 x;
+  f80_random(&x);
   x *= max;
   *u = (u_bits$) x;
   return u;
@@ -173,7 +173,7 @@ u_bits$ * u_bits$_random_uniform (u_bits$ *u, u_bits$ max)
 s_tag * u_bits$_sqrt (const u_bits$ x, s_tag *dest)
 {
   assert(dest);
-  dest->type = TAG_F128;
-  dest->data.f128 = sqrtl((long double) x);
+  dest->type = TAG_F80;
+  dest->data.f80 = sqrtl((f80) x);
   return dest;
 }

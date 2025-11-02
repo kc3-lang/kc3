@@ -53,7 +53,10 @@
 #include "eval.h"
 #include "f32.h"
 #include "f64.h"
+#include "f80.h"
+#if HAVE_FLOAT128
 #include "f128.h"
+#endif
 #include "fact.h"
 #include "facts.h"
 #include "facts_cursor.h"

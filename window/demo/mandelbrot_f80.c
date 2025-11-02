@@ -13,22 +13,22 @@
 #include <math.h>
 #include "../../libkc3/kc3.h"
 #include "../../gl/gl.h"
-#include "mandelbrot_f128.h"
+#include "mandelbrot_f80.h"
 #include "demo.h"
 
-static s_gl_font g_mandelbrot_f128_font = {0};
-static s_gl_text g_mandelbrot_f128_text = {0};
-static GLuint g_mandelbrot_f128_texture = 0;
+static s_gl_font g_mandelbrot_f80_font = {0};
+static s_gl_text g_mandelbrot_f80_text = {0};
+static GLuint g_mandelbrot_f80_texture = 0;
 
-static u8 mandelbrot_f128_resize (s_sequence *seq);
-static u8 mandelbrot_f128_update (s_sequence *seq);
+static u8 mandelbrot_f80_resize (s_sequence *seq);
+static u8 mandelbrot_f80_update (s_sequence *seq);
 
-u8 mandelbrot_f128_button (s_sequence *seq, u8 button, s64 x, s64 y)
+u8 mandelbrot_f80_button (s_sequence *seq, u8 button, s64 x, s64 y)
 {
   s_map *map;
-  f128 *next_x;
-  f128 *next_y;
-  f128 *next_z;
+  f80 *next_x;
+  f80 *next_y;
+  f80 *next_z;
   s_window *win;
   assert(seq);
   win = seq->window;
@@ -38,19 +38,19 @@ u8 mandelbrot_f128_button (s_sequence *seq, u8 button, s64 x, s64 y)
   assert(map->count == 9);
   assert(map->key[1].type == TAG_PSYM);
   assert(map->key[1].data.psym == sym_1("next_x"));
-  assert(map->value[1].type == TAG_F128);
-  next_x = &map->value[1].data.f128;
+  assert(map->value[1].type == TAG_F80);
+  next_x = &map->value[1].data.f80;
   assert(map->key[2].type == TAG_PSYM);
   assert(map->key[2].data.psym == sym_1("next_y"));
-  assert(map->value[2].type == TAG_F128);
-  next_y = &map->value[2].data.f128;
+  assert(map->value[2].type == TAG_F80);
+  next_y = &map->value[2].data.f80;
   assert(map->key[3].type == TAG_PSYM);
   assert(map->key[3].data.psym == sym_1("next_z"));
-  assert(map->value[3].type == TAG_F128);
-  next_z = &map->value[3].data.f128;
+  assert(map->value[3].type == TAG_F80);
+  next_z = &map->value[3].data.f80;
   if (button == 1) {
-    *next_x = *next_x + *next_z * (x - (f128) win->w / 2);
-    *next_y = *next_y + *next_z * (y - (f128) win->h / 2);
+    *next_x = *next_x + *next_z * (x - (f80) win->w / 2);
+    *next_y = *next_y + *next_z * (y - (f80) win->h / 2);
   }
   else if (button == 5) {
     *next_z = *next_z * exp2l(0.5);
@@ -61,7 +61,7 @@ u8 mandelbrot_f128_button (s_sequence *seq, u8 button, s64 x, s64 y)
   return true;
 }
 
-u8 mandelbrot_f128_load (s_sequence *seq)
+u8 mandelbrot_f80_load (s_sequence *seq)
 {
   f32 point_per_pixel;
   s_map *map;
@@ -76,54 +76,54 @@ u8 mandelbrot_f128_load (s_sequence *seq)
   tag_init_psym(   map->key + 0, sym_1("h"));
   tag_init_uw(   map->value + 0, 0);
   tag_init_psym(   map->key + 1, sym_1("next_x"));
-  tag_init_f128( map->value + 1, 0.0);
+  tag_init_f80( map->value + 1, 0.0);
   tag_init_psym(   map->key + 2, sym_1("next_y"));
-  tag_init_f128( map->value + 2, 0.0);
+  tag_init_f80( map->value + 2, 0.0);
   tag_init_psym(   map->key + 3, sym_1("next_z"));
-  tag_init_f128( map->value + 3, 0.01);
+  tag_init_f80( map->value + 3, 0.01);
   tag_init_psym(   map->key + 4, sym_1("pixels"));
   tag_init_array(map->value + 4, sym_1("U8[]"), 0, NULL);
   tag_init_psym(   map->key + 5, sym_1("w"));
   tag_init_uw(   map->value + 5, 0);
   tag_init_psym(   map->key + 6, sym_1("x"));
-  tag_init_f128( map->value + 6, 0.0);
+  tag_init_f80( map->value + 6, 0.0);
   tag_init_psym(   map->key + 7, sym_1("y"));
-  tag_init_f128( map->value + 7, 0.0);
+  tag_init_f80( map->value + 7, 0.0);
   tag_init_psym(   map->key + 8, sym_1("z"));
-  tag_init_f128( map->value + 8, 0.0);
-  if (! gl_font_init(&g_mandelbrot_f128_font,
+  tag_init_f80( map->value + 8, 0.0);
+  if (! gl_font_init(&g_mandelbrot_f80_font,
                      "fonts/Courier New/Courier New.ttf",
                      point_per_pixel))
     return false;
-  gl_font_set_size(&g_mandelbrot_f128_font, 20.0);
-  if (! gl_text_init_1(&g_mandelbrot_f128_text, &g_mandelbrot_f128_font,
+  gl_font_set_size(&g_mandelbrot_f80_font, 20.0);
+  if (! gl_text_init_1(&g_mandelbrot_f80_text, &g_mandelbrot_f80_font,
                        "x: 0.0\n"
                        "y: 0.0\n"
                        "z: 0.01"))
     return false;
-  gl_text_update(&g_mandelbrot_f128_text);
+  gl_text_update(&g_mandelbrot_f80_text);
   assert(glGetError() == GL_NO_ERROR);
-  glGenTextures(1, &g_mandelbrot_f128_texture);
+  glGenTextures(1, &g_mandelbrot_f80_texture);
   assert(glGetError() == GL_NO_ERROR);
   return true;
 }
 
-u8 mandelbrot_f128_render (s_sequence *seq)
+u8 mandelbrot_f80_render (s_sequence *seq)
 {
   uw *h;
   s_map *map;
-  f128 next_x;
-  f128 next_y;
-  f128 next_z;
+  f80 next_x;
+  f80 next_y;
+  f80 next_z;
   const s_rgb text_color[2] = {
     {1.0f, 1.0f, 1.0f},
     {0.0f, 0.0f, 0.0f}
   };
   uw *w;
   s_window *win;
-  f128 *x;
-  f128 *y;
-  f128 *z;
+  f80 *x;
+  f80 *y;
+  f80 *z;
   assert(seq);
   assert(glGetError() == GL_NO_ERROR);
   assert(seq->window);
@@ -137,38 +137,38 @@ u8 mandelbrot_f128_render (s_sequence *seq)
   h = &map->value[0].data.uw;
   assert(map->key[1].type == TAG_PSYM);
   assert(map->key[1].data.psym == sym_1("next_x"));
-  assert(map->value[1].type == TAG_F128);
-  next_x = map->value[1].data.f128;
+  assert(map->value[1].type == TAG_F80);
+  next_x = map->value[1].data.f80;
   assert(map->key[2].type == TAG_PSYM);
   assert(map->key[2].data.psym == sym_1("next_y"));
-  assert(map->value[2].type == TAG_F128);
-  next_y = map->value[2].data.f128;
+  assert(map->value[2].type == TAG_F80);
+  next_y = map->value[2].data.f80;
   assert(map->key[3].type == TAG_PSYM);
   assert(map->key[3].data.psym == sym_1("next_z"));
-  assert(map->value[3].type == TAG_F128);
-  next_z = map->value[3].data.f128;
+  assert(map->value[3].type == TAG_F80);
+  next_z = map->value[3].data.f80;
   assert(map->key[5].type == TAG_PSYM);
   assert(map->key[5].data.psym == sym_1("w"));
   assert(map->value[5].type == TAG_UW);
   w = &map->value[5].data.uw;
   assert(map->key[6].type == TAG_PSYM);
   assert(map->key[6].data.psym == sym_1("x"));
-  assert(map->value[6].type == TAG_F128);
-  x = &map->value[6].data.f128;
+  assert(map->value[6].type == TAG_F80);
+  x = &map->value[6].data.f80;
   assert(map->key[7].type == TAG_PSYM);
   assert(map->key[7].data.psym == sym_1("y"));
-  assert(map->value[7].type == TAG_F128);
-  y = &map->value[7].data.f128;
+  assert(map->value[7].type == TAG_F80);
+  y = &map->value[7].data.f80;
   assert(map->key[8].type == TAG_PSYM);
   assert(map->key[8].data.psym == sym_1("z"));
-  assert(map->value[8].type == TAG_F128);
-  z = &map->value[8].data.f128;
+  assert(map->value[8].type == TAG_F80);
+  z = &map->value[8].data.f80;
   if (*w != win->w || *h != win->h)
-    if (! mandelbrot_f128_resize(seq))
+    if (! mandelbrot_f80_resize(seq))
       return false;
   if (*w != win->w || *h != win->h ||
       *x != next_x || *y != next_y || *z != next_z) {
-    mandelbrot_f128_update(seq);
+    mandelbrot_f80_update(seq);
     *w = win->w;
     *h = win->h;
     *x = next_x;
@@ -179,15 +179,15 @@ u8 mandelbrot_f128_render (s_sequence *seq)
   glClear(GL_COLOR_BUFFER_BIT);
   gl_ortho_render(&g_ortho);
   mat4_init_identity(&g_ortho.model_matrix);
-  gl_ortho_bind_texture(&g_ortho, g_mandelbrot_f128_texture);
+  gl_ortho_bind_texture(&g_ortho, g_mandelbrot_f80_texture);
   gl_ortho_rect(&g_ortho, 0, 0, win->w, win->h);
-  gl_ortho_text_render_outline(&g_ortho, &g_mandelbrot_f128_text,
+  gl_ortho_text_render_outline(&g_ortho, &g_mandelbrot_f80_text,
                                20.0, 66.0, text_color, text_color + 1);
   gl_ortho_render_end(&g_ortho);
   return true;
 }
 
-static u8 mandelbrot_f128_resize (s_sequence *seq)
+static u8 mandelbrot_f80_resize (s_sequence *seq)
 {
   uw dim[3];
   s_map *map;
@@ -210,7 +210,7 @@ static u8 mandelbrot_f128_resize (s_sequence *seq)
     return false;
   if (! array_allocate(pixels))
     return false;
-  err_write_1("mandelbrot_f128_resize: ");
+  err_write_1("mandelbrot_f80_resize: ");
   err_inspect_u64(win->w);
   err_write_1(" x ");
   err_inspect_u64(win->h);
@@ -218,37 +218,37 @@ static u8 mandelbrot_f128_resize (s_sequence *seq)
   return true;
 }
 
-u8 mandelbrot_f128_unload (s_sequence *seq)
+u8 mandelbrot_f80_unload (s_sequence *seq)
 {
   (void) seq;
-  glDeleteTextures(1, &g_mandelbrot_f128_texture);
-  gl_text_clean(&g_mandelbrot_f128_text);
-  gl_font_clean(&g_mandelbrot_f128_font);
+  glDeleteTextures(1, &g_mandelbrot_f80_texture);
+  gl_text_clean(&g_mandelbrot_f80_text);
+  gl_font_clean(&g_mandelbrot_f80_font);
   return true;
 }
 
-static u8 mandelbrot_f128_update (s_sequence *seq)
+static u8 mandelbrot_f80_update (s_sequence *seq)
 {
-  f128 _2z_xz_y;
+  f80 _2z_xz_y;
   char a[512];
   s_buf buf;
-  f128 c_x;
-  f128 c_y;
+  f80 c_x;
+  f80 c_y;
   uw i;
   uw j;
   u8 k;
   u8 level;
   s_map *map;
-  f128 next_x;
-  f128 next_y;
-  f128 next_z;
+  f80 next_x;
+  f80 next_y;
+  f80 next_z;
   s_array *pixels;
   u8 *pix;
   s_window *win;
-  f128 z_x;
-  f128 z_y;
-  f128 z_x2;
-  f128 z_y2;
+  f80 z_x;
+  f80 z_y;
+  f80 z_x2;
+  f80 z_y2;
   assert(seq);
   assert(seq->window);
   win = seq->window;
@@ -257,16 +257,16 @@ static u8 mandelbrot_f128_update (s_sequence *seq)
   assert(map->count == 9);
   assert(map->key[1].type == TAG_PSYM);
   assert(map->key[1].data.psym == sym_1("next_x"));
-  assert(map->value[1].type == TAG_F128);
-  next_x = map->value[1].data.f128;
+  assert(map->value[1].type == TAG_F80);
+  next_x = map->value[1].data.f80;
   assert(map->key[2].type == TAG_PSYM);
   assert(map->key[2].data.psym == sym_1("next_y"));
-  assert(map->value[2].type == TAG_F128);
-  next_y = map->value[2].data.f128;
+  assert(map->value[2].type == TAG_F80);
+  next_y = map->value[2].data.f80;
   assert(map->key[3].type == TAG_PSYM);
   assert(map->key[3].data.psym == sym_1("next_z"));
-  assert(map->value[3].type == TAG_F128);
-  next_z = map->value[3].data.f128;
+  assert(map->value[3].type == TAG_F80);
+  next_z = map->value[3].data.f80;
   assert(map->key[4].type == TAG_PSYM);
   assert(map->key[4].data.psym == sym_1("pixels"));
   assert(map->value[4].type == TAG_ARRAY);
@@ -275,10 +275,10 @@ static u8 mandelbrot_f128_update (s_sequence *seq)
   assert(pix);
 #pragma omp parallel for private(c_x, c_y, j, k, z_x, z_y, z_x2, z_y2, _2z_xz_y, level)
   for (i = 0; i < win->h; i++) {
-    c_y = next_y + next_z * ((f128) i - win->h / 2);
+    c_y = next_y + next_z * ((f80) i - win->h / 2);
     j = 0;
     while (j < win->w) {
-      c_x = next_x + next_z * ((f128) j - win->w / 2);
+      c_x = next_x + next_z * ((f80) j - win->w / 2);
       z_x = c_x;
       z_y = c_y;
       k = 0;
@@ -303,7 +303,7 @@ static u8 mandelbrot_f128_update (s_sequence *seq)
     }
   }
   assert(glGetError() == GL_NO_ERROR);
-  glBindTexture(GL_TEXTURE_2D, g_mandelbrot_f128_texture);
+  glBindTexture(GL_TEXTURE_2D, g_mandelbrot_f80_texture);
   assert(glGetError() == GL_NO_ERROR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -315,13 +315,13 @@ static u8 mandelbrot_f128_update (s_sequence *seq)
   assert(glGetError() == GL_NO_ERROR);
   buf_init(&buf, false, sizeof(a), a);
   buf_write_1(&buf, "x: ");
-  buf_inspect_f128(&buf, next_x);
+  buf_inspect_f80(&buf, next_x);
   buf_write_1(&buf, "\ny: ");
-  buf_inspect_f128(&buf, next_y);
+  buf_inspect_f80(&buf, next_y);
   buf_write_1(&buf, "\nz: ");
-  buf_inspect_f128(&buf, next_z);
-  gl_text_update_buf(&g_mandelbrot_f128_text, &buf);
-  err_write_1("mandelbrot_f128_update: ");
+  buf_inspect_f80(&buf, next_z);
+  gl_text_update_buf(&g_mandelbrot_f80_text, &buf);
+  err_write_1("mandelbrot_f80_update: ");
   err_inspect_u64_decimal(win->w);
   err_write_1(" x ");
   err_inspect_u64_decimal(win->h);

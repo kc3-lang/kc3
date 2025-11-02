@@ -294,7 +294,7 @@ require Call
 require Character
 require F32
 require F64
-require F128
+require F80
 require List
 require Map
 require Pointer

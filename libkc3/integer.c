@@ -149,8 +149,12 @@ s_integer * integer_init_cast (s_integer *a, const s_sym * const *type,
     return integer_init_f32(a, tag->data.f32);
   case TAG_F64:
     return integer_init_f64(a, tag->data.f64);
+  case TAG_F80:
+    return integer_init_f80(a, tag->data.f80);
+#if HAVE_FLOAT128
   case TAG_F128:
     return integer_init_f128(a, tag->data.f128);
+#endif
   case TAG_INTEGER:
     return integer_init_copy(a, &tag->data.integer);
   case TAG_RATIO:
@@ -286,12 +290,23 @@ s_integer * integer_init_f64 (s_integer *a, f64 x)
   return integer_set_f64(a, x);
 }
 
+s_integer * integer_init_f80 (s_integer *a, f80 x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_f80(a, x);
+}
+
+#if HAVE_FLOAT128
+
 s_integer * integer_init_f128 (s_integer *a, f128 x)
 {
   assert(a);
   integer_init(a);
   return integer_set_f128(a, x);
 }
+
+#endif
 
 s_integer * integer_init_ratio (s_integer *a, const s_ratio *r)
 {
@@ -617,19 +632,37 @@ s_integer * integer_set_f64 (s_integer *a, f64 x)
   return a;
 }
 
+s_integer * integer_set_f80 (s_integer *a, f80 x)
+{
+  sw r;
+  assert(a);
+  // TODO: FIXME
+  if ((r = mp_set_double(&a->mp_int, (double) x)) != MP_OKAY) {
+    err_write_1("integer_set_f80: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_set_f80: mp_set_long_double");
+    return NULL;
+  }
+  return a;
+}
+
+#if HAVE_FLOAT128
+
 s_integer * integer_set_f128 (s_integer *a, f128 x)
 {
   sw r;
   assert(a);
   // FIXME
-  if ((r = mp_set_double(&a->mp_int, (f64) x)) != MP_OKAY) {
+  if ((r = mp_set_quad(&a->mp_int, x)) != MP_OKAY) {
     err_write_1("integer_set_f128: ");
     err_puts(mp_error_to_string(r));
-    assert(! "integer_set_f128: mp_set_double");
+    assert(! "integer_set_f128: mp_set_quad");
     return NULL;
   }
   return a;
 }
+
+#endif
 
 s_integer * integer_set_s32 (s_integer *a, s32 x)
 {
@@ -752,12 +785,23 @@ f64 integer_to_f64 (const s_integer *i)
   return mp_get_double(&i->mp_int);
 }
 
+f80 integer_to_f80 (const s_integer *i)
+{
+  assert(i);
+  // TODO: FIXME
+  return mp_get_double(&i->mp_int);
+}
+
+#if HAVE_FLOAT128
+
 f128 integer_to_f128 (const s_integer *i)
 {
   assert(i);
   // FIXME
   return mp_get_double(&i->mp_int);
 }
+
+#endif
 
 s8 integer_to_s8 (const s_integer *i)
 {

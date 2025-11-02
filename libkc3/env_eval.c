@@ -1084,7 +1084,10 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
+  case TAG_F80:
+#if HAVE_FLOAT128
   case TAG_F128:
+#endif
   case TAG_FACT:
   case TAG_INTEGER:
   case TAG_PFACTS:

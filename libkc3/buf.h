@@ -66,7 +66,10 @@ PROTO_BUF_PEEK(bool);
 sw        buf_peek_character_utf8 (s_buf *buf, character *p);
 PROTO_BUF_PEEK(f32);
 PROTO_BUF_PEEK(f64);
+PROTO_BUF_PEEK(f80);
+#if HAVE_FLOAT128
 PROTO_BUF_PEEK(f128);
+#endif
 sw        buf_peek_next_character_utf8 (s_buf *buf, character *p);
 PROTO_BUF_PEEK(s8);
 PROTO_BUF_PEEK(s16);
@@ -86,7 +89,10 @@ sw        buf_read_1 (s_buf *buf, const char *p);
 PROTO_BUF_READ(bool);
 PROTO_BUF_READ(f32);
 PROTO_BUF_READ(f64);
+PROTO_BUF_READ(f80);
+#if HAVE_FLOAT128
 PROTO_BUF_READ(f128);
+#endif
 sw        buf_read_integer (s_buf *buf, s_integer *dest);
 sw        buf_read_line (s_buf *buf, s_str *dest);
 s_str *   buf_read_max (s_buf *buf, s_str *dest);
@@ -147,7 +153,10 @@ sw        buf_write_character_utf8 (s_buf *buf, character c);
 sw        buf_write_character_utf8_size (s_pretty *pretty, character c);
 PROTO_BUF_WRITE(f32);
 PROTO_BUF_WRITE(f64);
+PROTO_BUF_WRITE(f80);
+#if HAVE_FLOAT128
 PROTO_BUF_WRITE(f128);
+#endif
 sw        buf_write_integer (s_buf *buf, const s_integer *src);
 PROTO_BUF_WRITE(s8);
 PROTO_BUF_WRITE(s16);

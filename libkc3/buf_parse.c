@@ -1590,6 +1590,82 @@ sw buf_parse_f64 (s_buf *buf, f64 *dest)
   return r;
 }
 
+sw buf_parse_f80 (s_buf *buf, f80 *dest) {
+  u8 digit;
+  f80 exp;
+  f80 exp_sign = 1;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  f80 sign = 1;
+  f80 tmp = 0;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(F80)")) < 0)
+    goto restore;
+  result += r;
+  if (r > 0) {
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+  }
+  if ((r = buf_read_1(buf, "-")) > 0) {
+    sign = -1;
+    result += r;
+  }
+  if ((r = buf_parse_digit_dec(buf, &digit)) <= 0)
+    goto restore;
+  tmp = digit;
+  result += r;
+  while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+    tmp = tmp * 10 + digit;
+    result += r;
+  }
+  if (r < 0 ||
+      (r = buf_read_1(buf, ".")) <= 0)
+    goto restore;
+  result += r;
+  exp = 10;
+  while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+    result += r;
+    tmp += (f80) digit / exp;
+    exp *= 10;
+  }
+  exp = 0;
+  if ((r = buf_read_1(buf, "e")) > 0) {
+    result += r;
+    if ((r = buf_read_1(buf, "-")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      exp_sign = -1;
+    }
+    else {
+      r = buf_read_1(buf, "+");
+      if (r < 0)
+        goto restore;
+      result += r;
+      while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+        result += r;
+        exp = exp * 10 + digit;
+      }
+    }
+    tmp *= powl(10, exp_sign * exp);
+  }
+  tmp *= sign;
+  *dest = tmp;
+  r = result;
+  goto clean;
+  restore:
+  buf_save_restore_rpos(buf, &save);
+  clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+#if HAVE_FLOAT128
+
 sw buf_parse_f128 (s_buf *buf, f128 *dest) {
   u8 digit;
   f128 exp;
@@ -1663,6 +1739,8 @@ sw buf_parse_f128 (s_buf *buf, f128 *dest) {
   buf_save_clean(buf, &save);
   return r;
 }
+
+#endif
 
 sw buf_parse_fact (s_buf *buf, s_fact *dest)
 {
@@ -4747,6 +4825,18 @@ sw buf_parse_tag_f64 (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_f80 (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_f80(buf, &dest->data.f80)) > 0)
+    dest->type = TAG_F80;
+  return r;
+}
+
+#if HAVE_FLOAT128
+
 sw buf_parse_tag_f128 (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -4756,6 +4846,8 @@ sw buf_parse_tag_f128 (s_buf *buf, s_tag *dest)
     dest->type = TAG_F128;
   return r;
 }
+
+#endif
 
 sw buf_parse_tag_ident (s_buf *buf, s_tag *dest)
 {
@@ -4838,17 +4930,17 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
   const s_sym *type = NULL;
   assert(buf);
   assert(dest);
-  r = buf_parse_tag_f128(buf, dest);
-  if (r > 0)
+#if HAVE_FLOAT128
+  if ((r = buf_parse_tag_f128(buf, dest)) > 0)
     return r;
-  r = buf_parse_tag_f64(buf, dest);
-  if (r > 0)
+#endif
+  if ((r = buf_parse_tag_f80(buf, dest)) > 0)
     return r;
-  r = buf_parse_tag_f32(buf, dest);
-  if (r > 0)
+  if ((r = buf_parse_tag_f64(buf, dest)) > 0)
     return r;
-  r = buf_parse_tag_ratio(buf, dest);
-  if (r > 0)
+  if ((r = buf_parse_tag_f32(buf, dest)) > 0)
+    return r;
+  if ((r = buf_parse_tag_ratio(buf, dest)) > 0)
     return r;
   buf_save_init(buf, &save);
   if ((r = buf_parse_paren_sym(buf, &type)) > 0) {

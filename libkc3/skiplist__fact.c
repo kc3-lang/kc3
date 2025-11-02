@@ -105,13 +105,13 @@ skiplist_height_table_init__fact
 {
   t_skiplist_height *height_table;
   u8 h;
-  f128 w = spacing;
-  f128 end = w;
+  f80 w = spacing;
+  f80 end = w;
   height_table = SKIPLIST_HEIGHT_TABLE__fact(skiplist);
   for (h = 0; h < skiplist->max_height; h++) {
     w *= spacing;
     end += w;
-    if (end > (f128) SKIPLIST_HEIGHT_MAX)
+    if (end > (f80) SKIPLIST_HEIGHT_MAX)
       return NULL;
     height_table[h] = end;
   }

@@ -680,7 +680,10 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
 
 DEF_BUF_PEEK(f32)
 DEF_BUF_PEEK(f64)
+DEF_BUF_PEEK(f80)
+#if HAVE_FLOAT128
 DEF_BUF_PEEK(f128)
+#endif
 DEF_BUF_PEEK(s8)
 DEF_BUF_PEEK(s16)
 DEF_BUF_PEEK(s32)
@@ -846,7 +849,10 @@ sw buf_read_character_utf8 (s_buf *buf, character *p)
 
 DEF_BUF_READ(f32)
 DEF_BUF_READ(f64)
+DEF_BUF_READ(f80)
+#if HAVE_FLOAT128
 DEF_BUF_READ(f128)
+#endif
 
 sw buf_read_integer (s_buf *buf, s_integer *dest)
 {
@@ -1760,7 +1766,10 @@ sw buf_write_character_utf8_size (s_pretty *pretty, character c)
 
 DEF_BUF_WRITE(f32)
 DEF_BUF_WRITE(f64)
+DEF_BUF_WRITE(f80)
+#if HAVE_FLOAT128
 DEF_BUF_WRITE(f128)
+#endif
 DEF_BUF_WRITE(s8)
 DEF_BUF_WRITE(s16)
 DEF_BUF_WRITE(s32)

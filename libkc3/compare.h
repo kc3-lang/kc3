@@ -33,7 +33,10 @@ COMPARE_PROTOTYPE(character);
 s8 compare_complex (s_complex *a, s_complex *b);
 COMPARE_PROTOTYPE(f32);
 COMPARE_PROTOTYPE(f64);
+COMPARE_PROTOTYPE(f80);
+#if HAVE_FLOAT128
 COMPARE_PROTOTYPE(f128);
+#endif
 s8 compare_fact (const s_fact *a, const s_fact *b);
 s8 compare_fact_id (const s_fact *a, const s_fact *b);
 s8 compare_fact_osp (const s_fact *a, const s_fact *b);

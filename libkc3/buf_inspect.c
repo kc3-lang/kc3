@@ -1988,6 +1988,144 @@ sw buf_inspect_f64_size (s_pretty *pretty, f64 x)
   return result;
 }
 
+sw buf_inspect_f80 (s_buf *buf, f80 x)
+{
+  s64 exp;
+  u8 i;
+  u8 j;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  exp = 0.0;
+  if ((r = buf_write_1(buf, "(F80) ")) < 0)
+    return r;
+  result += r;
+  if (x == 0.0) {
+    if ((r = buf_write_1(buf, "0.0")) < 0)
+      return r;
+    result += r;
+    return result;
+  }
+  if (x < 0) {
+    if ((r = buf_write_1(buf, "-")) <= 0)
+      return r;
+    result += r;
+    x = -x;
+  }
+  if (x >= 1.0)
+    while (x >= 10.0) {
+      x /= 10.0;
+      exp++;
+    }
+  else
+    while (x < 1.0) {
+      x *= 10.0;
+      exp--;
+    }
+  i = (u8) x;
+  x -= i;
+  i += '0';
+  if ((r = buf_write_character_utf8(buf, i)) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ".")) <= 0)
+    return r;
+  result += r;
+  j = 20;
+  do {
+    x *= 10;
+    i = (u8) x;
+    x -= i;
+    i += '0';
+    if ((r = buf_write_character_utf8(buf, i)) <= 0)
+      return r;
+    result += r;
+    j--;
+  } while (x > pow(0.1, j) && j);
+  if (exp) {
+    if ((r = buf_write_1(buf, "e")) <= 0)
+      return r;
+    result += r;
+    if (exp > 0) {
+      if ((r = buf_write_1(buf, "+")) <= 0)
+        return r;
+      result += r;
+    }
+    if ((r = buf_inspect_s64_decimal(buf, exp)) <= 0)
+      return r;
+    result += r;
+  }
+  return result;
+}
+
+sw buf_inspect_f80_size (s_pretty *pretty, f80 x)
+{
+  s64 exp;
+  u8 i;
+  u8 j;
+  sw r;
+  sw result = 0;
+  assert(pretty);
+  exp = 0;
+  if ((r = buf_write_1_size(pretty, "(F80) ")) < 0)
+    return r;
+  result += r;
+  if (x == 0.0) {
+    if ((r = buf_write_1_size(pretty, "0.0")) < 0)
+      return r;
+    result += r;
+    return result;
+  }
+  if (x < 0) {
+    if ((r = buf_write_1_size(pretty, "-")) <= 0)
+      return r;
+    result += r;
+    x = -x;
+  }
+  if (x >= 1.0)
+    while (x >= 10.0) {
+      x /= 10.0;
+      exp++;
+    }
+  else
+    while (x < 1.0) {
+      x *= 10.0;
+      exp--;
+    }
+  i = (u8) x;
+  x -= i;
+  i += '0';
+  result += 1;
+  if ((r = buf_write_1_size(pretty, ".")) <= 0)
+    return r;
+  result += r;
+  j = 20;
+  do {
+    x *= 10;
+    i = (u8) x;
+    x -= i;
+    i += '0';
+    result += 1;
+    j--;
+  } while (x > pow(0.1, j) && j);
+  if (exp) {
+    if ((r = buf_write_1_size(pretty, "e")) <= 0)
+      return r;
+    result += r;
+    if (exp > 0) {
+      if ((r = buf_write_1_size(pretty, "+")) <= 0)
+        return r;
+      result += r;
+    }
+    if ((r = buf_inspect_s64_decimal_size(pretty, exp)) <= 0)
+      return r;
+    result += r;
+  }
+  return result;
+}
+
+#if HAVE_FLOAT128
+
 sw buf_inspect_f128 (s_buf *buf, f128 x)
 {
   s64 exp;
@@ -2123,6 +2261,8 @@ sw buf_inspect_f128_size (s_pretty *pretty, f128 x)
   }
   return result;
 }
+
+#endif
 
 sw buf_inspect_fact (s_buf *buf, const s_fact *fact)
 {
@@ -4659,7 +4799,10 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
     return buf_inspect_character(buf, tag->data.character);
   case TAG_F32:     return buf_inspect_f32(buf, tag->data.f32);
   case TAG_F64:     return buf_inspect_f64(buf, tag->data.f64);
+  case TAG_F80:     return buf_inspect_f80(buf, tag->data.f80);
+#if HAVE_FLOAT128
   case TAG_F128:    return buf_inspect_f128(buf, tag->data.f128);
+#endif
   case TAG_FACT:    return buf_inspect_fact(buf, &tag->data.fact);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
@@ -4721,8 +4864,12 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_f32_size(pretty, tag->data.f32);
   case TAG_F64:
     return buf_inspect_f64_size(pretty, tag->data.f64);
+  case TAG_F80:
+    return buf_inspect_f80_size(pretty, tag->data.f80);
+#if HAVE_FLOAT128
   case TAG_F128:
     return buf_inspect_f128_size(pretty, tag->data.f128);
+#endif
   case TAG_FACT:
     return buf_inspect_fact_size(pretty, &tag->data.fact);
   case TAG_IDENT:

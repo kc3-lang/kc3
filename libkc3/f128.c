@@ -12,7 +12,7 @@
  */
 #include "types.h"
 
-#ifdef HAVE_FLOAT128
+#if HAVE_FLOAT128
 
 #include <stdlib.h>
 #include "assert.h"

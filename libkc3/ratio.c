@@ -153,8 +153,12 @@ s_ratio * ratio_init_cast (s_ratio *ratio, p_sym *type,
     return ratio_init_f32(ratio, src->data.f32);
   case TAG_F64:
     return ratio_init_f64(ratio, src->data.f64);
+  case TAG_F80:
+    return ratio_init_f80(ratio, src->data.f80);
+#if HAVE_FLOAT128
   case TAG_F128:
     return ratio_init_f128(ratio, src->data.f128);
+#endif
   case TAG_INTEGER:
     return ratio_init_integer(ratio, &src->data.integer);
   case TAG_RATIO:
@@ -220,6 +224,17 @@ s_ratio * ratio_init_f64 (s_ratio *r, f64 x)
   return r;
 }
 
+s_ratio * ratio_init_f80 (s_ratio *r, f80 x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_f80(&r->numerator, x);
+  integer_init_s32(&r->denominator, 1);
+  return r;
+}
+
+#if HAVE_FLOAT128
+
 s_ratio * ratio_init_f128 (s_ratio *r, f128 x)
 {
   assert(r);
@@ -228,6 +243,8 @@ s_ratio * ratio_init_f128 (s_ratio *r, f128 x)
   integer_init_s32(&r->denominator, 1);
   return r;
 }
+
+#endif
 
 s_ratio * ratio_init_integer (s_ratio *r, const s_integer *src)
 {
@@ -545,6 +562,19 @@ f64 ratio_to_f64 (const s_ratio *r)
   return numerator / denominator;
 }
 
+f80 ratio_to_f80 (const s_ratio *r)
+{
+  f80 numerator;
+  f80 denominator;
+  assert(r);
+  assert(integer_is_positive(&r->denominator));
+  numerator = integer_to_f80(&r->numerator);
+  denominator = integer_to_f80(&r->denominator);
+  return numerator / denominator;
+}
+
+#if HAVE_FLOAT128
+
 f128 ratio_to_f128 (const s_ratio *r)
 {
   f128 numerator;
@@ -555,6 +585,8 @@ f128 ratio_to_f128 (const s_ratio *r)
   denominator = integer_to_f128(&r->denominator);
   return numerator / denominator;
 }
+
+#endif
 
 s8 ratio_to_s8 (const s_ratio *r)
 {

@@ -146,11 +146,11 @@ s_tag * s32_sqrt (const s32 x, s_tag *dest)
     dest->type = TAG_PCOMPLEX;
     dest->data.pcomplex = complex_new();
     tag_init_u8(&dest->data.pcomplex->x, 0);
-    dest->data.pcomplex->y.type = TAG_F128;
-    dest->data.pcomplex->y.data.f128 = sqrtl((long double) -x);
+    dest->data.pcomplex->y.type = TAG_F80;
+    dest->data.pcomplex->y.data.f80 = sqrtl((f80) -x);
     return dest;
   }
-  dest->type = TAG_F128;
-  dest->data.f128 = sqrtl((long double) x);
+  dest->type = TAG_F80;
+  dest->data.f80 = sqrtl((f80) x);
   return dest;
 }

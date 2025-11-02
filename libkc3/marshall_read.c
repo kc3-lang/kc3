@@ -405,8 +405,12 @@ s_marshall_read * marshall_read_data (s_marshall_read *mr, bool heap,
     return marshall_read_f32(mr, heap, data);
   if (type == &g_sym_F64)
     return marshall_read_f64(mr, heap, data);
+  if (type == &g_sym_F80)
+    return marshall_read_f80(mr, heap, data);
+#if HAVE_FLOAT128
   if (type == &g_sym_F128)
     return marshall_read_f128(mr, heap, data);
+#endif
   if (type == &g_sym_Fact)
     return marshall_read_fact(mr, heap, data);
   if (type == &g_sym_Ident)
@@ -674,7 +678,10 @@ sw marshall_read_env_from_file (s_env *env, const s_str *path)
 
 DEF_MARSHALL_READ(f32, "_KC3F32_", f32)
 DEF_MARSHALL_READ(f64, "_KC3F64_", f64)
+DEF_MARSHALL_READ(f80, "_KC3F80_", f80)
+#if HAVE_FLOAT128
 DEF_MARSHALL_READ(f128, "_KC3F128_", f128)
+#endif
 
 s_marshall_read * marshall_read_fact (s_marshall_read *mr,
                                       bool heap,
@@ -2187,8 +2194,12 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     return marshall_read_f32(mr, heap, &dest->data.f32);
   case TAG_F64:
     return marshall_read_f64(mr, heap, &dest->data.f64);
+  case TAG_F80:
+    return marshall_read_f80(mr, heap, &dest->data.f80);
+#if HAVE_FLOAT128
   case TAG_F128:
     return marshall_read_f128(mr, heap, &dest->data.f128);
+#endif
   case TAG_FACT:
     return marshall_read_fact(mr, heap, &dest->data.fact);
   case TAG_IDENT:

@@ -51,7 +51,10 @@ s_marshall * marshall_env_counters (s_marshall *m, bool heap,
                                     const s_env *env);
 PROTO_MARSHALL(f32, f32);
 PROTO_MARSHALL(f64, f64);
+PROTO_MARSHALL(f80, f80);
+#if HAVE_FLOAT128
 PROTO_MARSHALL(f128, f128);
+#endif
 PROTO_MARSHALL(fact, const s_fact *);
 PROTO_MARSHALL(facts, s_facts *);
 PROTO_MARSHALL(fn, const s_fn *);

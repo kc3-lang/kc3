@@ -155,7 +155,9 @@ typedef enum {
   TAG_F32          =  5, // \x05
   TAG_F64          =  6, // \x06
   TAG_F80          =  7, // \x07
+#if HAVE_FLOAT128
   TAG_F128         =  8, // \x08
+#endif
   TAG_FACT         =  9, // \x09
   TAG_INTEGER      = 10, // \x0a
   TAG_RATIO        = 11, // \x0b
@@ -695,7 +697,10 @@ union tag_data {
   character     character;
   f32           f32;
   f64           f64;
+  f80           f80;
+#if HAVE_FLOAT128
   f128          f128;
+#endif
   s_fact        fact;
   s_ident       ident;
   s_integer     integer;

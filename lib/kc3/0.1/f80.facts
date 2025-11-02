@@ -1,0 +1,13 @@
+%{module: KC3.Facts.Dump,
+  version: 1}
+replace {F80, :is_a, :module}
+replace {F80, :symbol, F80.cast}
+replace {F80.cast, :symbol_value, cfn F80 "f80_init_cast" (Result, Sym, Tag)}
+add {F80, :symbol, F80.pi}
+replace {F80.pi, :symbol_value, (F80) 3.1415926535897932384}
+add {F80, :symbol, F80.cos}
+replace {F80.cos, :symbol_value, cfn F80 "cosl" (F80)}
+add {F80, :symbol, F80.sin}
+replace {F80.sin, :symbol_value, cfn F80 "sinl" (F80)}
+add {F80, :symbol, F80.tan}
+replace {F80.tan, :symbol_value, cfn F80 "tanl" (F80)}

@@ -44,7 +44,9 @@ s_timespec * timespec_init_cast (s_timespec *time, p_sym *type,
   switch (src->type) {
   case TAG_F32:  return timespec_init_f32(time, src->data.f32);
   case TAG_F64:  return timespec_init_f64(time, src->data.f64);
+#if HAVE_FLOAT128
   case TAG_F128: return timespec_init_f128(time, src->data.f128);
+#endif
   case TAG_U8:   return timespec_init_u8(time, src->data.u8);
   case TAG_U16:  return timespec_init_u16(time, src->data.u16);
   case TAG_U32:  return timespec_init_u32(time, src->data.u32);
@@ -60,7 +62,10 @@ s_timespec * timespec_init_cast (s_timespec *time, p_sym *type,
 
 DEF_TIMESPEC_INIT_F(f32)
 DEF_TIMESPEC_INIT_F(f64)
+DEF_TIMESPEC_INIT_F(f80)
+#if HAVE_FLOAT128
 DEF_TIMESPEC_INIT_F(f128)
+#endif
 
 DEF_TIMESPEC_INIT_U(u8)
 DEF_TIMESPEC_INIT_U(u16)

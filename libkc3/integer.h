@@ -31,7 +31,10 @@ s_integer * integer_init_cast (s_integer *a, const s_sym * const *type,
 s_integer * integer_init_copy (s_integer *a, const s_integer *src);
 s_integer * integer_init_f32 (s_integer *a, f32 x);
 s_integer * integer_init_f64 (s_integer *a, f64 x);
+s_integer * integer_init_f80 (s_integer *a, f80 x);
+#if HAVE_FLOAT128
 s_integer * integer_init_f128 (s_integer *a, f128 x);
+#endif
 s_integer * integer_init_ratio (s_integer *a, const s_ratio *r);
 s_integer * integer_init_s8 (s_integer *a, s8 x);
 s_integer * integer_init_s16 (s_integer *a, s16 x);
@@ -50,7 +53,10 @@ void        integer_clean (s_integer *i);
 /* Setters */
 s_integer * integer_set_f32 (s_integer *a, f32 x);
 s_integer * integer_set_f64 (s_integer *a, f64 x);
+s_integer * integer_set_f80 (s_integer *a, f80 x);
+#if HAVE_FLOAT128
 s_integer * integer_set_f128 (s_integer *a, f128 x);
+#endif
 s_integer * integer_set_double (s_integer *a, double x);
 s_integer * integer_set_ratio (s_integer *a, const s_ratio *r);
 s_integer * integer_set_s32 (s_integer *a, s32 x);
@@ -104,7 +110,10 @@ bool    integer_needs_cast (const s_integer *x);
 s_tag * integer_reduce (const s_integer *i, s_tag *dest);
 f32     integer_to_f32 (const s_integer *i);
 f64     integer_to_f64 (const s_integer *i);
+f80     integer_to_f80 (const s_integer *i);
+#if HAVE_FLOAT128
 f128    integer_to_f128 (const s_integer *i);
+#endif
 s8      integer_to_s8 (const s_integer *i);
 s16     integer_to_s16 (const s_integer *i);
 s32     integer_to_s32 (const s_integer *i);

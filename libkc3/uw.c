@@ -16,7 +16,7 @@
 #include "buf_parse_uw.h"
 #include <math.h>
 #include <stdlib.h>
-#include "f128.h"
+#include "f80.h"
 #include "hash.h"
 #include "integer.h"
 #include "ratio.h"
@@ -153,8 +153,8 @@ uw * uw_random (uw *u)
 
 uw * uw_random_uniform (uw *u, uw max)
 {
-  f128 x;
-  f128_random(&x);
+  f80 x;
+  f80_random(&x);
   x *= max;
   *u = (uw) x;
   return u;
@@ -173,7 +173,7 @@ uw * uw_random_uniform (uw *u, uw max)
 s_tag * uw_sqrt (const uw x, s_tag *dest)
 {
   assert(dest);
-  dest->type = TAG_F128;
-  dest->data.f128 = sqrtl((long double) x);
+  dest->type = TAG_F80;
+  dest->data.f80 = sqrtl((f80) x);
   return dest;
 }

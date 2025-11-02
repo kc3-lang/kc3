@@ -27,7 +27,10 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_CHARACTER:    *dest = sizeof(character);     return true;
   case TAG_F32:          *dest = sizeof(f32);           return true;
   case TAG_F64:          *dest = sizeof(f64);           return true;
+  case TAG_F80:          *dest = sizeof(f80);           return true;
+#if HAVE_FLOAT128
   case TAG_F128:         *dest = sizeof(f128);          return true;
+#endif
   case TAG_FACT:         *dest = sizeof(s_fact);        return true;
   case TAG_IDENT:        *dest = sizeof(s_ident);       return true;
   case TAG_INTEGER:      *dest = sizeof(s_integer);     return true;
@@ -77,7 +80,10 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_CHARACTER:    *dest = &ffi_type_uint32;     return true;
   case TAG_F32:          *dest = &ffi_type_float;      return true;
   case TAG_F64:          *dest = &ffi_type_double;     return true;
+  case TAG_F80:          *dest = &ffi_type_double;     return true;
+#if HAVE_FLOAT128
   case TAG_F128:         *dest = &ffi_type_longdouble; return true;
+#endif
   case TAG_FACT:         *dest = &ffi_type_pointer;    return true;
   case TAG_IDENT:        *dest = &ffi_type_pointer;    return true;
   case TAG_INTEGER:      *dest = &ffi_type_pointer;    return true;
@@ -129,7 +135,10 @@ const char * tag_type_to_string (e_tag_type tag_type)
   case TAG_CHARACTER:    return "Character";
   case TAG_F32:          return "F32";
   case TAG_F64:          return "F64";
+  case TAG_F80:          return "F80";
+#if HAVE_FLOAT128
   case TAG_F128:         return "F128";
+#endif
   case TAG_FACT:         return "Fact";
   case TAG_IDENT:        return "Ident";
   case TAG_INTEGER:      return "Integer";

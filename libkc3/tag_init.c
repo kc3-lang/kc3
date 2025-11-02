@@ -102,12 +102,12 @@ s_tag * tag_init_f64 (s_tag *tag, f64 f)
   return tag;
 }
 
-s_tag * tag_init_f128 (s_tag *tag, f128 f)
+s_tag * tag_init_f80 (s_tag *tag, f80 f)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_F128;
-  tmp.data.f128 = f;
+  tmp.type = TAG_F80;
+  tmp.data.f80 = f;
   *tag = tmp;
   return tag;
 }
@@ -849,14 +849,14 @@ s_tag * tag_new_f64 (f64 f)
   return tag;
 }
 
-s_tag * tag_new_f128 (f128 f)
+s_tag * tag_new_f80 (f80 f)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
-  tag->type = TAG_F128;
-  tag->data.f128 = f;
+  tag->type = TAG_F80;
+  tag->data.f80 = f;
   return tag;
 }
 
@@ -1746,13 +1746,13 @@ s_tag * tag_f64 (s_tag *tag, f64 f)
   return tag;
 }
 
-s_tag * tag_f128 (s_tag *tag, f128 f)
+s_tag * tag_f80 (s_tag *tag, f80 f)
 {
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  tmp.type = TAG_F128;
-  tmp.data.f128 = f;
+  tmp.type = TAG_F80;
+  tmp.data.f80 = f;
   *tag = tmp;
   return tag;
 }

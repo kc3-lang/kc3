@@ -15,7 +15,8 @@
 
 #include "types.h"
 
-f80 * f80_init_cast (f80 *x, p_sym *type, const s_tag *tag);
+f80 * f80_init_cast (f80 *x, const s_sym * const *type,
+                     const s_tag *tag);
 f80 * f80_init_copy (f80 *x, f80 src);
 f80 * f80_random (f80 *x);
 

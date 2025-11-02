@@ -21,8 +21,11 @@ sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
   switch (src->type) {
     case TAG_F32:  return pdf_buf_write_float(buf, src->data.f32);
     case TAG_F64:  return pdf_buf_write_float(buf, src->data.f64);
+    case TAG_F80:  return pdf_buf_write_float(buf, src->data.f80);
+#if HAVE_FLOAT128
     case TAG_F128: return pdf_buf_write_float(buf, src->data.f128);
-    case TAG_SW:   return pdf_buf_write_integer(buf, src->data.sw);
+#endif
+  case TAG_SW:   return pdf_buf_write_integer(buf, src->data.sw);
     case TAG_S64:  return pdf_buf_write_integer(buf, src->data.s64);
     case TAG_S32:  return pdf_buf_write_integer(buf, src->data.s32);
     case TAG_S16:  return pdf_buf_write_integer(buf, src->data.s16);
