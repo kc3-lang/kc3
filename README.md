@@ -88,6 +88,8 @@ There are now four full applications written in KC3 that we know of :
      - `Counter` module included at init
    - unveil supported on OpenBSD
    - pledge supported on OpenBSD
+   - rename f128 to f80: long double is actually 80 bits precision on
+     x86 and amd64
 
 - libtls
      - basic TLS client and server in test/tls/tls.kc3
