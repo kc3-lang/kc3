@@ -123,10 +123,10 @@ update_build_prog
 build_o
 build_prog
 
-update_config_mk
-update_makefile
-
 if [ "x$SRC_TOP" != "x$BUILD_TOP" ]; then
     echo "-> $BUILD_TOP/test/"
     rsync -a "$SRC_TOP/test/." "$BUILD_TOP/test/"
 fi
+
+update_config_mk
+update_makefile
