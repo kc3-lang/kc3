@@ -105,6 +105,7 @@ HEADERS = \
 	"f128.h" \
 	"f32.h" \
 	"f64.h" \
+	"f80.h" \
 	"fact.h" \
 	"fact_action.h" \
 	"fact_list.h" \
@@ -311,6 +312,7 @@ SOURCES = \
 	"f128.c" \
 	"f32.c" \
 	"f64.c" \
+	"f80.c" \
 	"fact.c" \
 	"fact_action.c" \
 	"fact_list.c" \
@@ -633,6 +635,7 @@ LO_SOURCES = \
 	"f128.c" \
 	"f32.c" \
 	"f64.c" \
+	"f80.c" \
 	"fact.c" \
 	"fact_action.c" \
 	"fact_list.c" \

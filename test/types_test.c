@@ -25,7 +25,7 @@ TEST_CASE(types_sizeof)
 {
   TEST_EQ(sizeof(f32), 4);
   TEST_EQ(sizeof(f64), 8);
-  TEST_EQ(sizeof(f128), 16);
+  TEST_ASSERT(sizeof(f80) == 12 || sizeof(f80) == 16);
   TEST_EQ(sizeof(s8), 1);
   TEST_EQ(sizeof(s16), 2);
   TEST_EQ(sizeof(s32), 4);
@@ -41,5 +41,6 @@ TEST_CASE(types_sizeof)
   TEST_EQ(sizeof(bool), sizeof(u8));
   TEST_EQ(sizeof(u_ptr), sizeof(void *));
   TEST_EQ(sizeof(u_ptr_w), sizeof(void *));
+  TEST_EQ((uw) NULL, 0);
 }
 TEST_CASE_END(types_sizeof)

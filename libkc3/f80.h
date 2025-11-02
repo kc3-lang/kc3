@@ -10,13 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBKC3_F64_H
-#define LIBKC3_F64_H
+#ifndef LIBKC3_F80_H
+#define LIBKC3_F80_H
 
 #include "types.h"
 
-f64 * f64_init_cast (f64 *x, p_sym *type, const s_tag *tag);
-f64 * f64_init_copy (f64 *x, f64 src);
-f64 * f64_random (f64 *x);
+f80 * f80_init_cast (f80 *x, p_sym *type, const s_tag *tag);
+f80 * f80_init_copy (f80 *x, f80 src);
+f80 * f80_random (f80 *x);
 
-#endif /* LIBKC3_F64_H */
+#endif /* LIBKC3_F80_H */

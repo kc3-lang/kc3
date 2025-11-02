@@ -105,7 +105,10 @@ typedef uintptr_t          uw;  // unsigned word
 /* IEEE 754 floating point numbers. */
 typedef float       f32;
 typedef double      f64;
-typedef long double f128;
+typedef long double f80;
+#if HAVE_FLOAT128
+typedef __float128  f128;
+#endif
 
 /* Boolean : true or false. */
 #ifdef __cplusplus
@@ -151,41 +154,42 @@ typedef enum {
   TAG_CHARACTER    =  4, // \x04
   TAG_F32          =  5, // \x05
   TAG_F64          =  6, // \x06
-  TAG_F128         =  7, // \x07
-  TAG_FACT         =  8, // \x08
-  TAG_INTEGER      =  9, // \x09
-  TAG_RATIO        = 10, // \x0a
-  TAG_SW           = 11, // \x0b
-  TAG_S64          = 12, // \x0c
-  TAG_S32          = 13, // \x0d
-  TAG_S16          = 14, // \x0e
-  TAG_S8           = 15, // \x0f
-  TAG_U8           = 16, // \x10
-  TAG_U16          = 17, // \x11
-  TAG_U32          = 18, // \x12
-  TAG_U64          = 19, // \x13
-  TAG_UW           = 20, // \x14
-  TAG_PLIST        = 21, // \x15
-  TAG_MAP          = 22, // \x16
-  TAG_PCALL        = 23, // \x17
-  TAG_PCALLABLE    = 24, // \x18
-  TAG_PCOMPLEX     = 25, // \x19
-  TAG_PCOW         = 26, // \x1a
-  TAG_PFACTS       = 27, // \x1b
-  TAG_POINTER      = 28, // \x1c
-  TAG_PSTRUCT      = 29, // \x1d
-  TAG_PSTRUCT_TYPE = 30, // \x1e
-  TAG_PSYM         = 31, // \x1f
-  TAG_PTAG         = 32, // \x20
-  TAG_PTR          = 33, // \x21
-  TAG_PTR_FREE     = 34, // \x22
-  TAG_PVAR         = 35, // \x23
-  TAG_QUOTE        = 36, // \x24
-  TAG_STR          = 37, // \x25
-  TAG_TIME         = 38, // \x26
-  TAG_TUPLE        = 39, // \x27
-  TAG_UNQUOTE      = 40, // \x28
-  TAG_IDENT        = 41, // \x29
+  TAG_F80          =  7, // \x07
+  TAG_F128         =  8, // \x08
+  TAG_FACT         =  9, // \x09
+  TAG_INTEGER      = 10, // \x0a
+  TAG_RATIO        = 11, // \x0b
+  TAG_SW           = 12, // \x0c
+  TAG_S64          = 13, // \x0d
+  TAG_S32          = 14, // \x0e
+  TAG_S16          = 15, // \x0f
+  TAG_S8           = 16, // \x10
+  TAG_U8           = 17, // \x11
+  TAG_U16          = 18, // \x12
+  TAG_U32          = 19, // \x13
+  TAG_U64          = 20, // \x14
+  TAG_UW           = 21, // \x15
+  TAG_PLIST        = 22, // \x16
+  TAG_MAP          = 23, // \x17
+  TAG_PCALL        = 24, // \x18
+  TAG_PCALLABLE    = 25, // \x19
+  TAG_PCOMPLEX     = 26, // \x1a
+  TAG_PCOW         = 27, // \x1b
+  TAG_PFACTS       = 28, // \x1c
+  TAG_POINTER      = 29, // \x1d
+  TAG_PSTRUCT      = 30, // \x1e
+  TAG_PSTRUCT_TYPE = 31, // \x1f
+  TAG_PSYM         = 32, // \x20
+  TAG_PTAG         = 33, // \x21
+  TAG_PTR          = 34, // \x22
+  TAG_PTR_FREE     = 35, // \x23
+  TAG_PVAR         = 36, // \x24
+  TAG_QUOTE        = 37, // \x25
+  TAG_STR          = 38, // \x26
+  TAG_TIME         = 39, // \x27
+  TAG_TUPLE        = 40, // \x28
+  TAG_UNQUOTE      = 41, // \x29
+  TAG_IDENT        = 42, // \x2a
 } e_tag_type;
 
 /* structs */

@@ -257,6 +257,7 @@ KC3_C_SOURCES = \
 	"gl/gl_vertex.h" \
 	"gl/gl_vtext.c" \
 	"gl/gl_vtext.h" \
+	"gl/mat3.c" \
 	"gl/mat3.h" \
 	"gl/mat4.c" \
 	"gl/mat4.h" \
@@ -562,6 +563,8 @@ KC3_C_SOURCES = \
 	"libkc3/f32.h" \
 	"libkc3/f64.c" \
 	"libkc3/f64.h" \
+	"libkc3/f80.c" \
+	"libkc3/f80.h" \
 	"libkc3/fact.c" \
 	"libkc3/fact.h" \
 	"libkc3/fact_action.c" \
@@ -1541,7 +1544,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/kc3/ops.kc3" \
 	"lib/kc3/0.1/kpkg.dump" \
 	"lib/kc3/0.1/kpkg.kc3" \
-	"lib/kc3/0.1/kpkg/main.kc3" \
 	"lib/kc3/0.1/kpkg/package.kc3" \
 	"lib/kc3/0.1/kpkg/repos/automake.kc3" \
 	"lib/kc3/0.1/kpkg/repos/brotli.kc3" \
@@ -1561,6 +1563,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/kpkg/repos/libxml2.kc3" \
 	"lib/kc3/0.1/kpkg/repos/runj.kc3" \
 	"lib/kc3/0.1/kpkg/repos/zlib.kc3" \
+	"lib/kc3/0.1/kpkg_debug.dump" \
 	"lib/kc3/0.1/kubz.kc3" \
 	"lib/kc3/0.1/list.kc3" \
 	"lib/kc3/0.1/map.facts" \
@@ -1661,7 +1664,7 @@ KC3_TEST_SOURCES = \
 	"test/facts_test_open_file.3.expected.facts" \
 	"test/facts_test_open_file.3.in.facts" \
 	"test/facts_test_save.expected.facts" \
-	"test/marshall_test_to_file.1.expected.kc3m" \
+	"test/marshall_test_to_file.1.dump.expected" \
 	"test/replace_lines.rb" \
 	"test/struct_test.kc3" \
 	"test/test.rb" \
@@ -2066,6 +2069,311 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/static/favicon.ico" \
 	"test/httpd/static/fx" \
 	"test/httpd/static/fx/.keep" \
+	"test/httpd/static/release" \
+	"test/httpd/static/release/.git" \
+	"test/httpd/static/release/.git/FETCH_HEAD" \
+	"test/httpd/static/release/.git/HEAD" \
+	"test/httpd/static/release/.git/ORIG_HEAD" \
+	"test/httpd/static/release/.git/config" \
+	"test/httpd/static/release/.git/description" \
+	"test/httpd/static/release/.git/hooks" \
+	"test/httpd/static/release/.git/hooks/applypatch-msg.sample" \
+	"test/httpd/static/release/.git/hooks/commit-msg.sample" \
+	"test/httpd/static/release/.git/hooks/fsmonitor-watchman.sample" \
+	"test/httpd/static/release/.git/hooks/post-receive-email.sample" \
+	"test/httpd/static/release/.git/hooks/post-update.sample" \
+	"test/httpd/static/release/.git/hooks/pre-applypatch.sample" \
+	"test/httpd/static/release/.git/hooks/pre-commit.sample" \
+	"test/httpd/static/release/.git/hooks/pre-merge-commit.sample" \
+	"test/httpd/static/release/.git/hooks/pre-push.sample" \
+	"test/httpd/static/release/.git/hooks/pre-rebase.sample" \
+	"test/httpd/static/release/.git/hooks/pre-receive.sample" \
+	"test/httpd/static/release/.git/hooks/prepare-commit-msg.sample" \
+	"test/httpd/static/release/.git/hooks/push-to-checkout.sample" \
+	"test/httpd/static/release/.git/hooks/sendemail-validate.sample" \
+	"test/httpd/static/release/.git/hooks/setgitperms.perl" \
+	"test/httpd/static/release/.git/hooks/update.sample" \
+	"test/httpd/static/release/.git/index" \
+	"test/httpd/static/release/.git/info" \
+	"test/httpd/static/release/.git/info/exclude" \
+	"test/httpd/static/release/.git/logs" \
+	"test/httpd/static/release/.git/logs/HEAD" \
+	"test/httpd/static/release/.git/logs/refs" \
+	"test/httpd/static/release/.git/logs/refs/heads" \
+	"test/httpd/static/release/.git/logs/refs/heads/master" \
+	"test/httpd/static/release/.git/logs/refs/remotes" \
+	"test/httpd/static/release/.git/logs/refs/remotes/origin" \
+	"test/httpd/static/release/.git/logs/refs/remotes/origin/HEAD" \
+	"test/httpd/static/release/.git/objects" \
+	"test/httpd/static/release/.git/objects/02" \
+	"test/httpd/static/release/.git/objects/02/8b34a73d81557242f3e220a58f9e1eb74fcd16" \
+	"test/httpd/static/release/.git/objects/04" \
+	"test/httpd/static/release/.git/objects/04/73ecb46f7822b70af22080723af3eb11f0bf74" \
+	"test/httpd/static/release/.git/objects/08" \
+	"test/httpd/static/release/.git/objects/08/928b6eb24c7dcd4d64b5044571441e52e7d5fd" \
+	"test/httpd/static/release/.git/objects/0d" \
+	"test/httpd/static/release/.git/objects/0d/cacdf2ce2956c215d22b843ec4f474e84620ad" \
+	"test/httpd/static/release/.git/objects/13" \
+	"test/httpd/static/release/.git/objects/13/af89d2453b7914028da328daa84b0bd3ab5ebf" \
+	"test/httpd/static/release/.git/objects/13/c06038c3bee85ae60456cd0a3314e5048ce87b" \
+	"test/httpd/static/release/.git/objects/14" \
+	"test/httpd/static/release/.git/objects/14/1bfe92f92d627ab39aedcae5d1c236a6f3df76" \
+	"test/httpd/static/release/.git/objects/1d" \
+	"test/httpd/static/release/.git/objects/1d/280140f8b1af0d2fc3087024c5594a22572acc" \
+	"test/httpd/static/release/.git/objects/23" \
+	"test/httpd/static/release/.git/objects/23/b820595bf5b575b16d9d096fe4fdfe291ef58f" \
+	"test/httpd/static/release/.git/objects/24" \
+	"test/httpd/static/release/.git/objects/24/0ae1b5f7dd84b86ceb27dc7b75f43b3bbcbffa" \
+	"test/httpd/static/release/.git/objects/25" \
+	"test/httpd/static/release/.git/objects/25/03e768f1b48c6664356018b8e2b91bfc925628" \
+	"test/httpd/static/release/.git/objects/25/c82e9584b23af2339c6e7dd35d97b46e5a115b" \
+	"test/httpd/static/release/.git/objects/29" \
+	"test/httpd/static/release/.git/objects/29/25fa6c46fe747bacfae5663d1b4cc913db60e2" \
+	"test/httpd/static/release/.git/objects/29/b5d3c76216d85f06d3e99cf66b30fbb688e0b4" \
+	"test/httpd/static/release/.git/objects/2a" \
+	"test/httpd/static/release/.git/objects/2a/18f16e6974c05a275f8997e9d8261af8f9cdfe" \
+	"test/httpd/static/release/.git/objects/2a/ff0e7284be122e8dfc1902210a51b273ca3053" \
+	"test/httpd/static/release/.git/objects/2f" \
+	"test/httpd/static/release/.git/objects/2f/930b688d8590509ea79cc7728e8eb6acbca262" \
+	"test/httpd/static/release/.git/objects/30" \
+	"test/httpd/static/release/.git/objects/30/7d1c906d7c6a9f1a48b5e80d92c3885db7190d" \
+	"test/httpd/static/release/.git/objects/31" \
+	"test/httpd/static/release/.git/objects/31/eda17a5c2c48022ee4bdeae31566c1a4103cfa" \
+	"test/httpd/static/release/.git/objects/32" \
+	"test/httpd/static/release/.git/objects/32/8cdbe07d5e1e90c64849a49e531f4abc9e5edd" \
+	"test/httpd/static/release/.git/objects/32/a14c5bfc4484931ebbe50ebea31c13210f5479" \
+	"test/httpd/static/release/.git/objects/33" \
+	"test/httpd/static/release/.git/objects/33/38b80f5305b043f5cca4f0d5d29050ffda1108" \
+	"test/httpd/static/release/.git/objects/37" \
+	"test/httpd/static/release/.git/objects/37/4347cbb3ca03deb6259189f448cc52424743d9" \
+	"test/httpd/static/release/.git/objects/3e" \
+	"test/httpd/static/release/.git/objects/3e/7eccbc2a614dc69106bd81228c9e44e98f6369" \
+	"test/httpd/static/release/.git/objects/43" \
+	"test/httpd/static/release/.git/objects/43/1c5aaad414995add980cda4e9f1062d73844e0" \
+	"test/httpd/static/release/.git/objects/43/5ac83f66a830b1a21ae4b806a7487e2daea874" \
+	"test/httpd/static/release/.git/objects/46" \
+	"test/httpd/static/release/.git/objects/46/a2fa22a883d246165b2bd1f56e4c402293f122" \
+	"test/httpd/static/release/.git/objects/48" \
+	"test/httpd/static/release/.git/objects/48/19902feb2351cf7d623e8d9987f6595e7e1a61" \
+	"test/httpd/static/release/.git/objects/48/30d631f8db2877d0f9f06e9312c88449f3ea06" \
+	"test/httpd/static/release/.git/objects/4a" \
+	"test/httpd/static/release/.git/objects/4a/22d32f45cb688b8e916e8a136ba7a58d01b4d5" \
+	"test/httpd/static/release/.git/objects/4c" \
+	"test/httpd/static/release/.git/objects/4c/5ce1af2480cc6bdfc5b2a33689917d473a31e9" \
+	"test/httpd/static/release/.git/objects/4c/c6445277001b939752a83f4416c8558afe1a98" \
+	"test/httpd/static/release/.git/objects/4e" \
+	"test/httpd/static/release/.git/objects/4e/7400e46faeae4e95c212d2d8c66d470d3891b2" \
+	"test/httpd/static/release/.git/objects/4e/826397ddca351c3ea691312c590e3bd55fe2a5" \
+	"test/httpd/static/release/.git/objects/53" \
+	"test/httpd/static/release/.git/objects/53/6c00dfd80ad36905a743f528b54f3961dfae2f" \
+	"test/httpd/static/release/.git/objects/53/9ae67421054edc8fa74016cc5ae55497e24b43" \
+	"test/httpd/static/release/.git/objects/54" \
+	"test/httpd/static/release/.git/objects/54/dd27f3d10d1bd5c6dd12da28fc50f0bcc78e87" \
+	"test/httpd/static/release/.git/objects/55" \
+	"test/httpd/static/release/.git/objects/55/1080135d3106f615fd646bf1ac994c146e99e2" \
+	"test/httpd/static/release/.git/objects/55/8218bc942264c239ea8f7a990e05b537ff3fda" \
+	"test/httpd/static/release/.git/objects/55/dfaf5a81273bb5b4ffb1f006abe73b3404e89f" \
+	"test/httpd/static/release/.git/objects/56" \
+	"test/httpd/static/release/.git/objects/56/50272f1c5647991a01427fae82c230b2e14705" \
+	"test/httpd/static/release/.git/objects/5a" \
+	"test/httpd/static/release/.git/objects/5a/294c74f2a9447de820be64a4b6ef6679e85c1e" \
+	"test/httpd/static/release/.git/objects/5a/2a1d387ac567a51ff4069718d03742d73999a2" \
+	"test/httpd/static/release/.git/objects/5e" \
+	"test/httpd/static/release/.git/objects/5e/e15e29483366260447c99e8aaf575084ee0709" \
+	"test/httpd/static/release/.git/objects/60" \
+	"test/httpd/static/release/.git/objects/60/4cddc7eb8c2827bca6c59f947a6513b89d571e" \
+	"test/httpd/static/release/.git/objects/61" \
+	"test/httpd/static/release/.git/objects/61/bd7b89d0ecb92ab0735be7d2454e21869bb38c" \
+	"test/httpd/static/release/.git/objects/62" \
+	"test/httpd/static/release/.git/objects/62/e7475d5322260d6015cbf70ea2bbccd1d1055c" \
+	"test/httpd/static/release/.git/objects/65" \
+	"test/httpd/static/release/.git/objects/65/2c413100a3eaef2979f8d86bfd9f73c7b06e05" \
+	"test/httpd/static/release/.git/objects/6b" \
+	"test/httpd/static/release/.git/objects/6b/ef132b421351ea218e19ab9cf18df13b8051f4" \
+	"test/httpd/static/release/.git/objects/6d" \
+	"test/httpd/static/release/.git/objects/6d/73faca1e60db254f0b18ef29bb56ce7707098e" \
+	"test/httpd/static/release/.git/objects/6f" \
+	"test/httpd/static/release/.git/objects/6f/da4f23fe9a194db9c8ba78515ae309521febf6" \
+	"test/httpd/static/release/.git/objects/71" \
+	"test/httpd/static/release/.git/objects/71/a2e4398ac4a97667be2e52a20b5c2dbce1fd67" \
+	"test/httpd/static/release/.git/objects/72" \
+	"test/httpd/static/release/.git/objects/72/4c19dfdaef7095c6413c33f0857092b55442e2" \
+	"test/httpd/static/release/.git/objects/74" \
+	"test/httpd/static/release/.git/objects/74/718f06ad8abb25f53e53281b72a4a1a2a66603" \
+	"test/httpd/static/release/.git/objects/74/89246b2e489e99e130c54e1dcf73f1be770356" \
+	"test/httpd/static/release/.git/objects/74/a295a0a32e2b75a694fdf3f00c69aa2fd23378" \
+	"test/httpd/static/release/.git/objects/81" \
+	"test/httpd/static/release/.git/objects/81/d5530bf76cc55ca54a845e90d4b9b214617675" \
+	"test/httpd/static/release/.git/objects/86" \
+	"test/httpd/static/release/.git/objects/86/76ffed69e32195feab4822f432bfb2bd5b4f13" \
+	"test/httpd/static/release/.git/objects/87" \
+	"test/httpd/static/release/.git/objects/87/ab8e4ac954484498b396cbf33f1c06637de79d" \
+	"test/httpd/static/release/.git/objects/8e" \
+	"test/httpd/static/release/.git/objects/8e/2a21b2b06429f98edbd08bcbe011e46e3923ab" \
+	"test/httpd/static/release/.git/objects/8f" \
+	"test/httpd/static/release/.git/objects/8f/4ce6ecd5be517b468c190d8b380dd118d0e7d9" \
+	"test/httpd/static/release/.git/objects/9c" \
+	"test/httpd/static/release/.git/objects/9c/71e37e8b882f5d5c2bc0701dd11159e6a863f6" \
+	"test/httpd/static/release/.git/objects/9e" \
+	"test/httpd/static/release/.git/objects/9e/4785b86a23cee3ac616b974da940b7a1f78c88" \
+	"test/httpd/static/release/.git/objects/9e/a531276441ed6e1623d8618c88f651ccb6af42" \
+	"test/httpd/static/release/.git/objects/9f" \
+	"test/httpd/static/release/.git/objects/9f/78f36687f083d76f88269292746ac0189d816f" \
+	"test/httpd/static/release/.git/objects/a5" \
+	"test/httpd/static/release/.git/objects/a5/1169437980a41c73892647098894de67fc23c2" \
+	"test/httpd/static/release/.git/objects/a5/8bb0265bc4d1fefadb2160aaf1af3b3ff0b042" \
+	"test/httpd/static/release/.git/objects/a6" \
+	"test/httpd/static/release/.git/objects/a6/02d445514e1b995213a3f5930b6b434a4e5509" \
+	"test/httpd/static/release/.git/objects/a8" \
+	"test/httpd/static/release/.git/objects/a8/67566e25881e8fa8e978952c2a0189d055e5d7" \
+	"test/httpd/static/release/.git/objects/ab" \
+	"test/httpd/static/release/.git/objects/ab/3026f8d49009431c3792ba8eb9d57a7eb3f937" \
+	"test/httpd/static/release/.git/objects/ae" \
+	"test/httpd/static/release/.git/objects/ae/3ad3e75bfc3184f69b1fcc778f4f28f4228089" \
+	"test/httpd/static/release/.git/objects/ae/4a85ae7d0d571edde24650e741506d92a0a246" \
+	"test/httpd/static/release/.git/objects/b0" \
+	"test/httpd/static/release/.git/objects/b0/a01ee1a7ed802ed413f26e76552860224f0056" \
+	"test/httpd/static/release/.git/objects/b1" \
+	"test/httpd/static/release/.git/objects/b1/e8268dd0350d990a0c4372717035b592ad4b7e" \
+	"test/httpd/static/release/.git/objects/b2" \
+	"test/httpd/static/release/.git/objects/b2/7dbe315204d8e37679e9f49a31b18715fa6feb" \
+	"test/httpd/static/release/.git/objects/b2/942131f53a7fbe2e0c61d2c40615b6c0bf9dfa" \
+	"test/httpd/static/release/.git/objects/b9" \
+	"test/httpd/static/release/.git/objects/b9/6f33839d49bfe34c0b4c8125c1ab470d02ea7e" \
+	"test/httpd/static/release/.git/objects/bd" \
+	"test/httpd/static/release/.git/objects/bd/6137bd9634eadb1cb40940a6379a14926848f8" \
+	"test/httpd/static/release/.git/objects/bd/ce9ff9eca046f5ed7c984af38e105a078fd510" \
+	"test/httpd/static/release/.git/objects/be" \
+	"test/httpd/static/release/.git/objects/be/3114f4197764762a782d3f389be8ba40204535" \
+	"test/httpd/static/release/.git/objects/c5" \
+	"test/httpd/static/release/.git/objects/c5/97a67d19a702febefe209d4ef3045374456140" \
+	"test/httpd/static/release/.git/objects/c6" \
+	"test/httpd/static/release/.git/objects/c6/4520fa0734422e5b68debe44dc667ac4d6967a" \
+	"test/httpd/static/release/.git/objects/c6/5ce2dabfdada716ef1b318f83a5292234729bb" \
+	"test/httpd/static/release/.git/objects/cc" \
+	"test/httpd/static/release/.git/objects/cc/575639d8affadf9afe9b85789b20b15fa2db7b" \
+	"test/httpd/static/release/.git/objects/ce" \
+	"test/httpd/static/release/.git/objects/ce/d069daea749186045a4ca9f2a752e1923b5040" \
+	"test/httpd/static/release/.git/objects/d1" \
+	"test/httpd/static/release/.git/objects/d1/09d259a8c402530518d80220f686e8a9a244fe" \
+	"test/httpd/static/release/.git/objects/d1/5b334e1f768babb5ebbcd8bd6f5fd97c58cdd6" \
+	"test/httpd/static/release/.git/objects/d1/8a8bc20ec4026ca416cc90ae4b5a23e41510bc" \
+	"test/httpd/static/release/.git/objects/d1/baacf027301c1d0abf17439014fab5fd209770" \
+	"test/httpd/static/release/.git/objects/d4" \
+	"test/httpd/static/release/.git/objects/d4/3957cca265be9acce0438631e21be71c20b9df" \
+	"test/httpd/static/release/.git/objects/d4/e4eb0c05f995ce0da692b5a22ed7c9eee231f6" \
+	"test/httpd/static/release/.git/objects/d5" \
+	"test/httpd/static/release/.git/objects/d5/227b816dbd5624a786557b7d51d20c59b9923b" \
+	"test/httpd/static/release/.git/objects/d5/8a37ee7a3b3b7d96059b7be57eda5e01587c89" \
+	"test/httpd/static/release/.git/objects/d6" \
+	"test/httpd/static/release/.git/objects/d6/3c4261a2783438c08f33a26d4c3c0e40237986" \
+	"test/httpd/static/release/.git/objects/dc" \
+	"test/httpd/static/release/.git/objects/dc/0e643cd53a3b26eb8b783fc603ccf666a7553f" \
+	"test/httpd/static/release/.git/objects/dd" \
+	"test/httpd/static/release/.git/objects/dd/1721e798e5733ab178a31ecf495171050c3b0c" \
+	"test/httpd/static/release/.git/objects/dd/4d6748d99f37083eb3fa957e421c6822658c69" \
+	"test/httpd/static/release/.git/objects/de" \
+	"test/httpd/static/release/.git/objects/de/ab7e32ddd2a61ca18f66d8f643f4ed08b8f7cd" \
+	"test/httpd/static/release/.git/objects/e1" \
+	"test/httpd/static/release/.git/objects/e1/a76a75f1b2da13255b6cd57c0ea8d17f55d115" \
+	"test/httpd/static/release/.git/objects/e4" \
+	"test/httpd/static/release/.git/objects/e4/70ade288ede9f59a5f47576f3fac87cab64667" \
+	"test/httpd/static/release/.git/objects/e4/9310ef7645f092d2f8011345d0c5cffbef415b" \
+	"test/httpd/static/release/.git/objects/e6" \
+	"test/httpd/static/release/.git/objects/e6/9de29bb2d1d6434b8b29ae775ad8c2e48c5391" \
+	"test/httpd/static/release/.git/objects/e8" \
+	"test/httpd/static/release/.git/objects/e8/1074b47787b1dff3fb8ffc2e7be7a0ff3768d7" \
+	"test/httpd/static/release/.git/objects/e9" \
+	"test/httpd/static/release/.git/objects/e9/778259ebdf407691283c8fbcb8bae9a2182fd9" \
+	"test/httpd/static/release/.git/objects/ed" \
+	"test/httpd/static/release/.git/objects/ed/7462950a73925938817ea6d6f539fb7c5554a2" \
+	"test/httpd/static/release/.git/objects/f0" \
+	"test/httpd/static/release/.git/objects/f0/d495d900bf1626f0d13b29ecc14f854cca4b09" \
+	"test/httpd/static/release/.git/objects/f1" \
+	"test/httpd/static/release/.git/objects/f1/be9eeaac313fc449ada2f881e97ed780e7446d" \
+	"test/httpd/static/release/.git/objects/f2" \
+	"test/httpd/static/release/.git/objects/f2/1227a1da288bfebd6c2887321c2f5dc53db68c" \
+	"test/httpd/static/release/.git/objects/f4" \
+	"test/httpd/static/release/.git/objects/f4/5e1de89d364f348e398e13f01f7adf4b96fad6" \
+	"test/httpd/static/release/.git/objects/fc" \
+	"test/httpd/static/release/.git/objects/fc/cb079346880bd7aaa20a12f778cc29889e3885" \
+	"test/httpd/static/release/.git/objects/fe" \
+	"test/httpd/static/release/.git/objects/fe/7911fbd62801b6268db6b7b1919c416a72fb0a" \
+	"test/httpd/static/release/.git/objects/fe/ef8375a11df81447fc8151600b0e43c04df42c" \
+	"test/httpd/static/release/.git/objects/ff" \
+	"test/httpd/static/release/.git/objects/ff/6dbee885506ea4fbd5961679e82c8beee59a18" \
+	"test/httpd/static/release/.git/objects/info" \
+	"test/httpd/static/release/.git/objects/pack" \
+	"test/httpd/static/release/.git/objects/pack/pack-8b233e95c8d0ec86b19110689f502b904ab1bffb.idx" \
+	"test/httpd/static/release/.git/objects/pack/pack-8b233e95c8d0ec86b19110689f502b904ab1bffb.pack" \
+	"test/httpd/static/release/.git/objects/pack/pack-8b233e95c8d0ec86b19110689f502b904ab1bffb.rev" \
+	"test/httpd/static/release/.git/packed-refs" \
+	"test/httpd/static/release/.git/refs" \
+	"test/httpd/static/release/.git/refs/heads" \
+	"test/httpd/static/release/.git/refs/heads/master" \
+	"test/httpd/static/release/.git/refs/remotes" \
+	"test/httpd/static/release/.git/refs/remotes/origin" \
+	"test/httpd/static/release/.git/refs/remotes/origin/HEAD" \
+	"test/httpd/static/release/.git/refs/tags" \
+	"test/httpd/static/release/master" \
+	"test/httpd/static/release/master/OpenBSD-7.7-packages-amd64-kc3-0.1.15.tgz" \
+	"test/httpd/static/release/master/OpenBSD-7.7-port-lang-kc3-0.1.15.tgz" \
+	"test/httpd/static/release/master/SHA256" \
+	"test/httpd/static/release/master/SHA512" \
+	"test/httpd/static/release/master/kc3-0.1.15.tar.gz" \
+	"test/httpd/static/release/master/kc3-0.1.15.win64.zip" \
+	"test/httpd/static/release/v0.1.10" \
+	"test/httpd/static/release/v0.1.10/SHA256" \
+	"test/httpd/static/release/v0.1.10/SHA512" \
+	"test/httpd/static/release/v0.1.10/c3-0.1.10.tar.gz" \
+	"test/httpd/static/release/v0.1.10/c3-0.1.10.win32.zip" \
+	"test/httpd/static/release/v0.1.10/c3-v0.1.10-arm64.dmg" \
+	"test/httpd/static/release/v0.1.10/c3-v0.1.10-x86_64.dmg" \
+	"test/httpd/static/release/v0.1.11" \
+	"test/httpd/static/release/v0.1.11/SHA256" \
+	"test/httpd/static/release/v0.1.11/SHA512" \
+	"test/httpd/static/release/v0.1.11/c3-0.1.11.tar.gz" \
+	"test/httpd/static/release/v0.1.12" \
+	"test/httpd/static/release/v0.1.12/SHA256" \
+	"test/httpd/static/release/v0.1.12/SHA512" \
+	"test/httpd/static/release/v0.1.12/kc3-0.1.12.tar.gz" \
+	"test/httpd/static/release/v0.1.13" \
+	"test/httpd/static/release/v0.1.13/SHA256" \
+	"test/httpd/static/release/v0.1.13/SHA512" \
+	"test/httpd/static/release/v0.1.13/kc3-0.1.13.tar.gz" \
+	"test/httpd/static/release/v0.1.14" \
+	"test/httpd/static/release/v0.1.14/SHA256" \
+	"test/httpd/static/release/v0.1.14/SHA512" \
+	"test/httpd/static/release/v0.1.14/kc3-0.1.14.tar.gz" \
+	"test/httpd/static/release/v0.1.15" \
+	"test/httpd/static/release/v0.1.15/OpenBSD-7.7-packages-amd64-kc3-0.1.15.tgz" \
+	"test/httpd/static/release/v0.1.15/OpenBSD-7.7-port-lang-kc3-0.1.15.tgz" \
+	"test/httpd/static/release/v0.1.15/SHA256" \
+	"test/httpd/static/release/v0.1.15/SHA512" \
+	"test/httpd/static/release/v0.1.15/kc3-0.1.15.tar.gz" \
+	"test/httpd/static/release/v0.1.15/kc3-0.1.15.win64.zip" \
+	"test/httpd/static/release/v0.1.6" \
+	"test/httpd/static/release/v0.1.6/SHA256" \
+	"test/httpd/static/release/v0.1.6/SHA512" \
+	"test/httpd/static/release/v0.1.6/c3-0.1.6.win64.zip" \
+	"test/httpd/static/release/v0.1.7" \
+	"test/httpd/static/release/v0.1.7/SHA256" \
+	"test/httpd/static/release/v0.1.7/SHA512" \
+	"test/httpd/static/release/v0.1.7/c3-0.1.7.tar.gz" \
+	"test/httpd/static/release/v0.1.7/c3-0.1.7.win64.zip" \
+	"test/httpd/static/release/v0.1.8" \
+	"test/httpd/static/release/v0.1.8/SHA256" \
+	"test/httpd/static/release/v0.1.8/SHA512" \
+	"test/httpd/static/release/v0.1.8/c3-0.1.8.tar.gz" \
+	"test/httpd/static/release/v0.1.8/c3-0.1.8.win64.zip" \
+	"test/httpd/static/release/v0.1.9" \
+	"test/httpd/static/release/v0.1.9/SHA256" \
+	"test/httpd/static/release/v0.1.9/SHA512" \
+	"test/httpd/static/release/v0.1.9/c3-0.1.9.tar.gz" \
+	"test/httpd/static/release/v0.1.9/c3-0.1.9.win32.zip" \
+	"test/httpd/static/release/v0.1.9/c3-0.1.9.win64.zip" \
+	"test/httpd/static/release/v0.1.9/c3-v0.1.9-arm64.dmg" \
+	"test/httpd/static/release/v0.1.9/c3-v0.1.9-x86_64.dmg" \
 	"test/httpd/static/test <&%>.html" \
 	"test/httpd/static/test.html" \
 	"test/httpd/static/test.txt" \
@@ -2121,6 +2429,8 @@ KC3_OTHER_SOURCES = \
 	"LICENSE.md" \
 	"Makefile" \
 	"README.md" \
+	"SHARDING.md" \
+	"STONE.md" \
 	"TODO.md" \
 	"config.subr" \
 	"config_common" \

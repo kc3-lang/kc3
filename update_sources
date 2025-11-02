@@ -76,7 +76,7 @@ sources KC3_PLIST_SOURCES "$KC3_PLIST_SOURCES"
 KC3_SH_SOURCES="$(find window -name "[a-z]*.sh" | grep -v sources.sh)"
 sources KC3_SH_SOURCES "$KC3_SH_SOURCES"
 
-KC3_TEST_SOURCES="$(ls test/*.facts test/*.kc3 test/*.kc3m test/*.rb)
+KC3_TEST_SOURCES="$(ls test/*.expected test/*.facts test/*.kc3 test/*.rb)
 test/zero"
 sources KC3_TEST_SOURCES "$KC3_TEST_SOURCES"
 

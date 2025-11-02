@@ -15,9 +15,13 @@
 
 #include "types.h"
 
+#ifdef HAVE_FLOAT128
+
 f128 * f128_init_cast (f128 *x, const s_sym * const *type,
                        const s_tag *tag);
 f128 * f128_init_copy (f128 *x, f128 src);
 f128 * f128_random (f128 *x);
+
+#endif /* HAVE_FLOAT128 */
 
 #endif /* LIBKC3_F128_H */

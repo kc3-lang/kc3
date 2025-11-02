@@ -15,8 +15,7 @@
 
 #include "types.h"
 
-f32 * f32_init_cast (f32 *x, const s_sym * const *type,
-                     const s_tag *tag);
+f32 * f32_init_cast (f32 *x, p_sym *type, const s_tag *tag);
 f32 * f32_init_copy (f32 *x, f32 src);
 
 /* Observers. */

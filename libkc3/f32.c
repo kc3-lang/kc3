@@ -25,8 +25,7 @@ f32 f32_clamp (f32 x, f32 min, f32 max)
   return ((x < min) ? min : ((x > max) ? max : x));
 }
 
-f32 * f32_init_cast (f32 *x, const s_sym * const *type,
-                     const s_tag *tag)
+f32 * f32_init_cast (f32 *x, p_sym *type, const s_tag *tag)
 {
   assert(x);
   assert(type);

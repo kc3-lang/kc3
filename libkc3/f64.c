@@ -20,7 +20,7 @@
 #include "tag_type.h"
 #include "u64.h"
 
-f64 * f64_init_cast (f64 *x, p_sym const *type, const s_tag *tag)
+f64 * f64_init_cast (f64 *x, p_sym *type, const s_tag *tag)
 {
   assert(x);
   assert(type);

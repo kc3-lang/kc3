@@ -45,6 +45,7 @@ SOURCES = \
 	"gl_triangle.c" \
 	"gl_vertex.c" \
 	"gl_vtext.c" \
+	"mat3.c" \
 	"mat4.c" \
 	"vec2.c" \
 	"vec3.c" \
