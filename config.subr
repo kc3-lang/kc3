@@ -183,7 +183,7 @@ build_prog() {
 
 c_o_rule() {
     "$CC" $CPPFLAGS $CFLAGS -M "$SRC_DIR/$1" || {
-        echo "$1" | sed -e 's/^\(.*\)\.c$/\1.o: \1.c/'
+        echo "$1" | sed -e "s,^\(.*\)\.c$,\1.o: $SRC_DIR/\1.c,"
     }
     echo "$1: $2" | sed -e 's/^\(.*\)\.c:/\1.o:/'
 }

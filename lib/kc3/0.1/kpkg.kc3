@@ -540,12 +540,14 @@ endian = '#{endian}'
 
   def cppflags = fn (arch) {
     include_dir = Kpkg.arch_dir(arch, "local/include")
-    "-I#{include_dir}"
+    env = getenv("CPPFLAGS")
+    "#{env} -I#{include_dir}"
   }
 
   def ldflags = fn (arch) {
     lib_dir = Kpkg.arch_dir(arch, "local/lib")
-    "-L#{lib_dir}"
+    env = getenv("LDFLAGS")
+    "#{env} -L#{lib_dir}"
   }
 
   def exec! = fn (cmd) {

@@ -1586,7 +1586,6 @@ s_env * env_globals_init (s_env *env)
 # endif
 #endif
   return env;
-
 }
 
 s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
