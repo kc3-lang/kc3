@@ -1012,10 +1012,13 @@ kubz_debug:
 	window/sdl2/kubz/kubz_debug
 
 lib:
-	rm -rf ${BUILD_TOP}/lib
-	cd ${SRC_TOP} && \
-		find lib -name '*.kc3' -or -name '*.facts' | \
-		pax -rwd ${BUILD_TOP}/
+	if [ "x$SRC_TOP" != "x$BUILD_TOP" ]; then \
+		rm -rf ${BUILD_TOP}/lib && \
+		cd ${SRC_TOP} && \
+		find lib -name '*.kc3' -or \
+			 -name '*.facts' -or \
+			 -name '*.dump' | \
+			pax -rwd ${BUILD_TOP}/; fi
 
 lib_links: lib
 	${MAKE} lib_links_${ARCH}
