@@ -34,9 +34,9 @@ do
   void
 end
 void
-Facts.add_tags(db, (F128) 1.0, (F128) 2.0, (F128) 3.0)
+Facts.add_tags(db, (F80) 1.0, (F80) 2.0, (F80) 3.0)
 true
-Facts.add_tags(db, (F128) 4.0, (F128) 5.0, (F128) 6.0)
+Facts.add_tags(db, (F80) 4.0, (F80) 5.0, (F80) 6.0)
 true
 Facts.with_tags(db, s = ?, p = ?, o = ?, fn (fact) { puts("#{s} #{p} #{o}") ; :ok })
 1.0 2.0 3.0

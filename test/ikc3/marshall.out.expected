@@ -56,10 +56,10 @@ loopback((F64) 0.0)
 {:ok, 64}
 loopback((F64) 1.0)
 {:ok, 64}
-loopback((F128) 0.0)
-{:ok, 73}
-loopback((F128) 1.0)
-{:ok, 73}
+loopback((F80) 0.0)
+{:ok, 72}
+loopback((F80) 1.0)
+{:ok, 72}
 loopback("")
 {:ok, 68}
 loopback("hello")
@@ -132,10 +132,10 @@ loopback((F64) 3.14159265358979)
 {:ok, 64}
 loopback((F64) 4.294967296e+9)
 {:ok, 64}
-loopback((F128) -1.0)
-{:ok, 73}
-loopback((F128) 3.141592653589793237862287655914883)
-{:ok, 73}
+loopback((F80) -1.0)
+{:ok, 72}
+loopback((F80) 3.14159265358979323786)
+{:ok, 72}
 loopback(2/6)
 {:ok, 102}
 loopback(1/3)
