@@ -937,7 +937,8 @@ endian = '#{endian}'
             if Kpkg.arch_local() == arch do
               Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
                           "--prefix=#{prefix}",
-                          "--buildtype=release"])
+                          "--buildtype=release" |
+                         pkg.configure_options])
             else
               cross_file = Kpkg.meson_cross_file_write(arch, cc, cxx)
               Kpkg.exec!(["meson", "setup", build_dir, pkg_src_dir,
