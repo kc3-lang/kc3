@@ -63,7 +63,7 @@
 ## HTTPd
  - [ ] SSL
    - [ ] ajouter le support de tls dans lib/kc3/0.1/httpd.kc3
- - [ ] pledge(2) support via `KC3.pledge()`
+ - [ ] XXX pledge(2) support via `KC3.pledge()`
  - [ ] partial requests
    - HTTP 206 partial content
 
@@ -177,47 +177,48 @@
    - [x] arrow
 
 ## KC3 RPC with RBACL
-  - On peut recuperer du code KC3 du reseau et l'executer a distance,
-    c'est deja quelque-chose, maintenant il nous faut des RBACL : rule-
-    based access control lists pour controler `KC3.require ModuleName`
-    et `KC3.load(file_path)` et on pourra accepter du code qui n'utilise
-    que certains module ou un certain DSL si on ajoute des controles
-    d'accès pour les fonctions et tous les éléments du langage.
+ - XXX
+ - On peut recuperer du code KC3 du reseau et l'executer a distance,
+   c'est deja quelque-chose, maintenant il nous faut des RBACL : rule-
+   based access control lists pour controler `KC3.require ModuleName`
+   et `KC3.load(file_path)` et on pourra accepter du code qui n'utilise
+   que certains module ou un certain DSL si on ajoute des controles
+   d'accès pour les fonctions et tous les éléments du langage.
 
-  - Pour rester generique in-fine il nous faut une fonction qui
-    prend du code source en parametre et nous retourne un booléen,
-    c'est un prédicat de permissions, une _rule_.
+ - Pour rester generique in-fine il nous faut une fonction qui
+   prend du code source en parametre et nous retourne un booléen,
+   c'est un prédicat de permissions, une _rule_.
 
-    - On peut construire cette fonction a partir d'une liste d'acces
-      controlé. La liste se traduit en une fonction avec le module
-      `ACL`, par exemple : `ACL.rule(list_acl) -> callable_rule`.
+   - On peut construire cette fonction a partir d'une liste d'acces
+     controlé. La liste se traduit en une fonction avec le module
+     `ACL`, par exemple : `ACL.rule(list_acl) -> callable_rule`.
 
-    - l'operateur special `defrule ident_name = callable_rule`
-      prend un nom de rule, et une fonction (callable) qui détermine
-      si un code source est valide selon la rule nommée par ce nom.
-      Ces deux élements forment une rule basique qui est ajoutée
-      à la db en graphe de l'environnement pour une application
-      immediate de la rule dans le controle d'acces aux modules et
-      fonctions dans le chargement et l'execution du code source
-      futur. Cela permet un verouillage global de l'interpreteur KC3
-      avec des regles aussi fines que possible.
+   - l'operateur special `defrule ident_name = callable_rule`
+     prend un nom de rule, et une fonction (callable) qui détermine
+     si un code source est valide selon la rule nommée par ce nom.
+     Ces deux élements forment une rule basique qui est ajoutée
+     à la db en graphe de l'environnement pour une application
+     immediate de la rule dans le controle d'acces aux modules et
+     fonctions dans le chargement et l'execution du code source
+     futur. Cela permet un verouillage global de l'interpreteur KC3
+     avec des regles aussi fines que possible.
 
-    - l'operateur special `with_rule callable_rule do ... end` est un
-      état de l'environnement sur la stack qui met en vigeur une rule
-      (callable) arbitraire mais seulement dans le bloc de code passé
-      en parametre (arbitraire lui aussi). Cela permet l'execution
-      de code arbitraire avec une reduction aussi fine que possible des
-      permissions d'execution selon un modele auditable dans le code
-      source de l'application.
+   - l'operateur special `with_rule callable_rule do ... end` est un
+     état de l'environnement sur la stack qui met en vigeur une rule
+     (callable) arbitraire mais seulement dans le bloc de code passé
+     en parametre (arbitraire lui aussi). Cela permet l'execution
+     de code arbitraire avec une reduction aussi fine que possible des
+     permissions d'execution selon un modele auditable dans le code
+     source de l'application.
 
-    - la fonction `rule_get(sym_name) -> callable_rule` prend en
-      parametre un nom de rule globale et retourne la fonction
-      (callable) associée dans la base de données en triplets de
-      l'environnement KC3 en cours.
+   - la fonction `rule_get(sym_name) -> callable_rule` prend en
+     parametre un nom de rule globale et retourne la fonction
+     (callable) associée dans la base de données en triplets de
+     l'environnement KC3 en cours.
 
-    - pour verifier si une rule (callable) permet un certain code
-      source (sous forme de `Tag` KC3) il suffit d'appeler la
-      la rule sur le code et on obtient un booléen `true` ou `false`.
+   - pour verifier si une rule (callable) permet un certain code
+     source (sous forme de `Tag` KC3) il suffit d'appeler la
+     la rule sur le code et on obtient un booléen `true` ou `false`.
 
 ---
 
