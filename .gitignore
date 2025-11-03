@@ -78,6 +78,7 @@ macos/kc3-v*
 /misc/http_request
 /misc/http_response
 /misc/limits
+/misc/test_f80
 /msys2/clang64/kc3-*
 node_modules/
 *.o

@@ -5,9 +5,13 @@ CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
 CFLAGS="$CFLAGS -fPIC"
 CXXFLAGS="$CXXFLAGS -W -Wall -Werror -std=c++11 -pedantic -pipe"
 CXXFLAGS="$CXXFLAGS -pthread -fPIC"
+config_lib compiler_rt -lcompiler_rt 2>/dev/null
+config_ldadd gcc -lgcc 2>/dev/null
 config_asan
 config_gnu
 config_i386
+config_have_f80
+config_have_f128
 config_win32
 config_win64
 pkg_config libbsd-overlay
@@ -18,15 +22,11 @@ config_lib dl -ldl 2>/dev/null
 config_define PREFIX "\"${PREFIX}\""
 config_have_crypt_newhash
 config_have_explicit_bzero
-config_have_f80
-config_have_f128
 config_have_generic_sw_uw
 config_have_pthread
 config_have_stat_mtim
 config_lib m -lm 2>/dev/null
 config_lib pthread -lpthread
-config_lib compiler_rt -lcompiler_rt 2>/dev/null
-config_ldadd gcc -lgcc 2>/dev/null
 if $HAVE_WIN32 || $HAVE_WIN64; then
     LIBS="$LIBS -lws2_32"
 fi
