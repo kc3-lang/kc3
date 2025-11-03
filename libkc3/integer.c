@@ -662,8 +662,8 @@ s_integer * integer_set_f128 (s_integer *a, f128 x)
 {
   sw r;
   assert(a);
-  // FIXME
-  if ((r = mp_set_quad(&a->mp_int, x)) != MP_OKAY) {
+  // TODO: FIXME cast
+  if ((r = mp_set_double(&a->mp_int, (double) x)) != MP_OKAY) {
     err_write_1("integer_set_f128: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_set_f128: mp_set_quad");
