@@ -483,6 +483,7 @@ config_have_f80() {
         echo "HAVE_F80 = true" >> ${CONFIG_MK}
         HAVE_F80=true
     else
+        config_define F80_SIZE 0
         echo "HAVE_F80 = false" >> ${CONFIG_MK}
         HAVE_F80=false
     fi
