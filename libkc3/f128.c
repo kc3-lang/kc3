@@ -62,9 +62,11 @@ f128 * f128_init_cast (f128 *x, const s_sym * const *type,
   case TAG_F64:
     *x = (f128) tag->data.f64;
     return x;
+#ifdef HAVE_F80
   case TAG_F80:
     *x = (f128) tag->data.f80;
     return x;
+#endif
   case TAG_F128:
     *x = tag->data.f128;
     return x;
