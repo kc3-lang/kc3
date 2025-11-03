@@ -853,7 +853,7 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
 #endif
 #if HAVE_F128
   if (sym == &g_sym_F128) {
-    *dest = &ffi_type_float128;
+    *dest = &ffi_type_longdouble;
     return true;
   }
 #endif
