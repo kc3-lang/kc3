@@ -3122,14 +3122,20 @@ sw buf_parse_match (s_buf *buf, p_call *pcall)
     goto restore;
   }
   result += r;
-  if ((r = buf_ignore_spaces(buf)) <= 0)
+  if ((r = buf_ignore_spaces(buf)) <= 0) {
+    pcall_clean(&tmp);
     goto restore;
+  }
   result += r;
-  if ((r = buf_read_1(buf, "do")) <= 0)
+  if ((r = buf_read_1(buf, "do")) <= 0) {
+    pcall_clean(&tmp);
     goto restore;
+  }
   result += r;
-  if ((r = buf_ignore_spaces(buf)) <= 0)
+  if ((r = buf_ignore_spaces(buf)) <= 0) {
+    pcall_clean(&tmp);
     goto restore;
+  }
   result += r;
   while (1) {
     if (! (*keys_tail = list_new(NULL)) ||
