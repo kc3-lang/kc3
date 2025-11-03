@@ -105,7 +105,9 @@ typedef uintptr_t          uw;  // unsigned word
 /* IEEE 754 floating point numbers. */
 typedef float       f32;
 typedef double      f64;
+#if HAVE_F80
 typedef long double f80;
+#endif
 #if HAVE_FLOAT128
 typedef __float128  f128;
 #endif
@@ -154,7 +156,9 @@ typedef enum {
   TAG_CHARACTER    =  4, // \x04
   TAG_F32          =  5, // \x05
   TAG_F64          =  6, // \x06
+#if HAVE_F80
   TAG_F80          =  7, // \x07
+#endif
 #if HAVE_FLOAT128
   TAG_F128         =  8, // \x08
 #endif
@@ -697,7 +701,9 @@ union tag_data {
   character     character;
   f32           f32;
   f64           f64;
+#if HAVE_F80
   f80           f80;
+#endif
 #if HAVE_FLOAT128
   f128          f128;
 #endif

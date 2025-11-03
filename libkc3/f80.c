@@ -10,6 +10,10 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "types.h"
+
+#if HAVE_F80
+
 #include <stdlib.h>
 #include "assert.h"
 #include "f80.h"
@@ -138,3 +142,5 @@ f80 * f80_random (f80 *x)
   *x = u.f80;
   return x;
 }
+
+#endif /* HAVE_F80 */

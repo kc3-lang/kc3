@@ -4799,7 +4799,9 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
     return buf_inspect_character(buf, tag->data.character);
   case TAG_F32:     return buf_inspect_f32(buf, tag->data.f32);
   case TAG_F64:     return buf_inspect_f64(buf, tag->data.f64);
+#if HAVE_F80
   case TAG_F80:     return buf_inspect_f80(buf, tag->data.f80);
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:    return buf_inspect_f128(buf, tag->data.f128);
 #endif
@@ -4864,8 +4866,10 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_f32_size(pretty, tag->data.f32);
   case TAG_F64:
     return buf_inspect_f64_size(pretty, tag->data.f64);
+#if HAVE_F80
   case TAG_F80:
     return buf_inspect_f80_size(pretty, tag->data.f80);
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
     return buf_inspect_f128_size(pretty, tag->data.f128);

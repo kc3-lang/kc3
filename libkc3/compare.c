@@ -713,7 +713,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
       return compare_f32(a->data.f32, complex_to_f32(b->data.pcomplex));
     case TAG_F32: return compare_f32(a->data.f32, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.f32, b->data.f64);
+#if HAVE_F80
     case TAG_F80: return compare_f80((f80) a->data.f32, b->data.f80);
+#endif
 #if HAVE_FLOAT128
     case TAG_F128:
       return compare_f128((f128) a->data.f32, b->data.f128);
@@ -742,7 +744,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
       return compare_f64(a->data.f64, complex_to_f64(b->data.pcomplex));
     case TAG_F32: return compare_f64(a->data.f64, (f64) b->data.f32);
     case TAG_F64: return compare_f64(a->data.f64, b->data.f64);
+#if HAVE_F80
     case TAG_F80: return compare_f80(a->data.f64, b->data.f80);
+#endif
 #if HAVE_FLOAT128
     case TAG_F128:
       return compare_f128((f128) a->data.f64, b->data.f128);
@@ -763,6 +767,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
       break;
     }
     break;
+#if HAVE_F80
   case TAG_F80:
     switch (b->type) {
     case TAG_PCOMPLEX:
@@ -791,6 +796,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
       break;
     }
     break;
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
     switch (b->type) {
@@ -799,7 +805,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                           complex_to_f128(b->data.pcomplex));
     case TAG_F32: return compare_f128(a->data.f128, (f128) b->data.f32);
     case TAG_F64: return compare_f128(a->data.f128, (f128) b->data.f64);
+#if HAVE_F80
     case TAG_F80: return compare_f128(a->data.f128, (f128) b->data.f80);
+#endif
     case TAG_F128:
       return compare_f128(a->data.f128, b->data.f128);
     case TAG_INTEGER:
@@ -826,8 +834,10 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                      (f64) b->data.f32);
     case TAG_F64: return compare_f64(integer_to_f64(&a->data.integer),
                                      b->data.f64);
+#if HAVE_F80
     case TAG_F80: return compare_f80(integer_to_f80(&a->data.integer),
                                      b->data.f80);
+#endif
 #if HAVE_FLOAT128
     case TAG_F128:
       return compare_f128(integer_to_f128(&a->data.integer),
@@ -901,7 +911,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.s8, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.s8, b->data.f64);
+#if HAVE_F80
     case TAG_F80: return compare_f80((f80) a->data.s8, b->data.f80);
+#endif
 #if HAVE_FLOAT128
     case TAG_F128:
       return compare_f128((f128) a->data.s8, b->data.f128);
@@ -984,7 +996,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.s32, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.s32, b->data.f64);
+#if HAVE_F80
     case TAG_F80: return compare_f80((f80) a->data.s32, b->data.f80);
+#endif
 #if HAVE_FLOAT128
     case TAG_F128:
       return compare_f128((f128) a->data.s32, b->data.f128);
@@ -1028,7 +1042,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.s64, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.s64, b->data.f64);
+#if HAVE_F80
     case TAG_F80: return compare_f80((f80) a->data.s64, b->data.f80);
+#endif
 #if HAVE_FLOAT128
     case TAG_F128:
       return compare_f128((f128) a->data.s64, b->data.f128);
@@ -1072,7 +1088,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.sw, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.sw, b->data.f64);
+#if HAVE_F80
     case TAG_F80: return compare_f80((f80) a->data.sw, b->data.f80);
+#endif
 #if HAVE_FLOAT128
     case TAG_F128:
       return compare_f128((f128) a->data.sw, b->data.f128);
@@ -1112,7 +1130,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.u8, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.u8, b->data.f64);
+#if HAVE_F80
     case TAG_F80: return compare_f80((f80) a->data.u8, b->data.f80);
+#endif
 #if HAVE_FLOAT128
     case TAG_F128:
       return compare_f128((f128) a->data.u8, b->data.f128);
@@ -1141,7 +1161,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.u16, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.u16, b->data.f64);
+#if HAVE_F80
     case TAG_F80: return compare_f80((f80) a->data.u16, b->data.f80);
+#endif
 #if HAVE_FLOAT128
     case TAG_F128:
       return compare_f128((f128) a->data.u16, b->data.f128);
@@ -1170,7 +1192,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.u32, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.u32, b->data.f64);
+#if HAVE_F80
     case TAG_F80: return compare_f80((f80) a->data.u32, b->data.f80);
+#endif
 #if HAVE_FLOAT128
     case TAG_F128:
       return compare_f128((f128) a->data.u32, b->data.f128);
@@ -1202,7 +1226,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.u64, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.u64, b->data.f64);
+#if HAVE_F80
     case TAG_F80: return compare_f80((f80) a->data.u64, b->data.f80);
+#endif
 #if HAVE_FLOAT128
     case TAG_F128:
       return compare_f128((f128) a->data.u64, b->data.f128);
@@ -1260,7 +1286,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.uw, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.uw, b->data.f64);
+#if HAVE_F80
     case TAG_F80: return compare_f80((f80) a->data.uw, b->data.f80);
+#endif
 #if HAVE_FLOAT128
     case TAG_F128:
       return compare_f128((f128) a->data.uw, b->data.f128);
@@ -1370,7 +1398,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                               &b->data.unquote);
   case TAG_F32:
   case TAG_F64:
+#if HAVE_F80
   case TAG_F80:
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
 #endif
