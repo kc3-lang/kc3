@@ -69,8 +69,8 @@
          - /MediaBox : taille x et y de la page
 
 ## Windows release
- - [.] install kmx_sort and runj using MSYS2
-   - [.] sort was renamed to kmx_sort
+ - [x] install kmx_sort and runj using MSYS2
+   - [x] sort was renamed to kmx_sort
  - [.] configure
  - [.] build
  - [ ] test
