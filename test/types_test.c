@@ -25,7 +25,9 @@ TEST_CASE(types_sizeof)
 {
   TEST_EQ(sizeof(f32), 4);
   TEST_EQ(sizeof(f64), 8);
+#if HAVE_F80
   TEST_ASSERT(sizeof(f80) == 12 || sizeof(f80) == 16);
+#endif
   TEST_EQ(sizeof(s8), 1);
   TEST_EQ(sizeof(s16), 2);
   TEST_EQ(sizeof(s32), 4);

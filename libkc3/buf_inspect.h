@@ -135,8 +135,10 @@ sw buf_inspect_f32 (s_buf *buf, f32 x);
 sw buf_inspect_f32_size (s_pretty *pretty, f32 x);
 sw buf_inspect_f64 (s_buf *buf, f64 x);
 sw buf_inspect_f64_size (s_pretty *pretty, f64 x);
+#if HAVE_F80
 sw buf_inspect_f80 (s_buf *buf, f80 x);
 sw buf_inspect_f80_size (s_pretty *pretty, f80 x);
+#endif
 #if HAVE_FLOAT128
 sw buf_inspect_f128 (s_buf *buf, f128 x);
 sw buf_inspect_f128_size (s_pretty *pretty, f128 x);

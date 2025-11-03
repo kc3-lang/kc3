@@ -28,7 +28,9 @@ s_timespec * timespec_init_cast (s_timespec *time, p_sym *type,
                                  s_tag *src);
 DEF_TIMESPEC_INIT(f32);
 DEF_TIMESPEC_INIT(f64);
+#if HAVE_F80
 DEF_TIMESPEC_INIT(f80);
+#endif
 #if HAVE_FLOAT128
 DEF_TIMESPEC_INIT(f128);
 #endif

@@ -39,8 +39,10 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.f32 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.f32 + b->data.f64);
+#if HAVE_F80
     case TAG_F80:
       return tag_init_f80(dest, (f80) a->data.f32 + b->data.f80);
+#endif
     case TAG_INTEGER:
       return tag_init_f32(dest, a->data.f32 +
                           integer_to_f32(&a->data.integer));
@@ -83,8 +85,10 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f64(dest, a->data.f64 + (f64) b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.f64 + b->data.f64);
+#if HAVE_F80
     case TAG_F80:
       return tag_init_f80(dest, (f80) a->data.f64 + b->data.f80);
+#endif
     case TAG_INTEGER:
       return tag_init_f64(dest, a->data.f64 +
                           integer_to_f64(&a->data.integer));
@@ -117,6 +121,7 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
     default:
       goto ko;
   }
+#if HAVE_F80
   case TAG_F80:
     switch (b->type) {
     case TAG_PCOMPLEX:
@@ -161,6 +166,7 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
     default:
       goto ko;
   }
+#endif
   case TAG_INTEGER:
     switch (b->type) {
     case TAG_PCOMPLEX:
@@ -179,9 +185,11 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
     case TAG_F64:
       return tag_init_f64(dest, integer_to_f64(&a->data.integer) +
                           b->data.f64);
+#if HAVE_F80
     case TAG_F80:
       return tag_init_f80(dest, integer_to_f80(&a->data.integer) +
                           b->data.f80);
+#endif
     case TAG_INTEGER:
       if (! integer_add(&a->data.integer, &b->data.integer,
                         &tmp))
@@ -238,10 +246,12 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       complex_init_f64(&c, b->data.f64);
       return tag_init_pcomplex(dest, complex_new_add(a->data.pcomplex,
                                                      &c));
+#if HAVE_F80
     case TAG_F80:
       complex_init_f80(&c, b->data.f80);
       return tag_init_pcomplex(dest, complex_new_add(a->data.pcomplex,
                                                      &c));
+#endif
     case TAG_INTEGER:
       if (! complex_init_integer(&c, &b->data.integer))
         return NULL;
@@ -335,12 +345,14 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       ratio_add(&a->data.ratio, &r, &dest->data.ratio);
       ratio_clean(&r);
       return dest;
+#if HAVE_F80
     case TAG_F80:
       ratio_init_f80(&r, b->data.f80);
       dest->type = TAG_RATIO;
       ratio_add(&a->data.ratio, &r, &dest->data.ratio);
       ratio_clean(&r);
       return dest;
+#endif
     case TAG_INTEGER:
       ratio_init_integer(&r, &b->data.integer);
       dest->type = TAG_RATIO;
@@ -426,8 +438,10 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.s8 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.s8 + b->data.f64);
+#if HAVE_F80
     case TAG_F80:
       return tag_init_f80(dest, (f80) a->data.s8 + b->data.f80);
+#endif
     case TAG_INTEGER:
       integer_init_s8(&tmp, a->data.s8);
       goto integer_add_b;
@@ -484,8 +498,10 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.s16 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.s16 + b->data.f64);
+#if HAVE_F80
     case TAG_F80:
       return tag_init_f80(dest, (f80) a->data.s16 + b->data.f80);
+#endif
     case TAG_INTEGER:
       integer_init_s16(&tmp, a->data.s16);
       goto integer_add_b;
@@ -558,8 +574,10 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.s32 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.s32 + b->data.f64);
+#if HAVE_F80
     case TAG_F80:
       return tag_init_f80(dest, (f80) a->data.s32 + b->data.f80);
+#endif
     case TAG_INTEGER:
       integer_init_s32(&tmp, a->data.s32);
       goto integer_add_b;
@@ -616,8 +634,10 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.s64 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.s64 + b->data.f64);
+#if HAVE_F80
     case TAG_F80:
       return tag_init_f80(dest, (f80) a->data.s64 + b->data.f80);
+#endif
     case TAG_INTEGER:
       integer_init_s64(&tmp, a->data.s64);
       goto integer_add_b;
@@ -680,8 +700,10 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.sw + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.sw + b->data.f64);
+#if HAVE_F80
     case TAG_F80:
       return tag_init_f80(dest, (f80) a->data.sw + b->data.f80);
+#endif
     case TAG_INTEGER:
       integer_init_sw(&tmp, a->data.sw);
       goto integer_add_b;
@@ -744,8 +766,10 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.u8 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.u8 + b->data.f64);
+#if HAVE_F80
     case TAG_F80:
       return tag_init_f80(dest, (f80) a->data.u8 + b->data.f80);
+#endif
     case TAG_INTEGER:
       integer_init_u8(&tmp, a->data.u8);
       goto integer_add_b;
@@ -802,8 +826,10 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.u16 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.u16 + b->data.f64);
+#if HAVE_F80
     case TAG_F80:
       return tag_init_f80(dest, (f80) a->data.u16 + b->data.f80);
+#endif
     case TAG_INTEGER:
       integer_init_u16(&tmp, a->data.u16);
       goto integer_add_b;
@@ -860,8 +886,10 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.u32 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.u32 + b->data.f64);
+#if HAVE_F80
     case TAG_F80:
       return tag_init_f80(dest, (f80) a->data.u32 + b->data.f80);
+#endif
     case TAG_INTEGER:
       integer_init_u32(&tmp, a->data.u32);
       goto integer_add_b;
@@ -918,8 +946,10 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.u64 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.u64 + b->data.f64);
+#if HAVE_F80
     case TAG_F80:
       return tag_init_f80(dest, (f80) a->data.u64 + b->data.f80);
+#endif
     case TAG_INTEGER:
       integer_init_u64(&tmp, a->data.u64);
       goto integer_add_b;
@@ -982,8 +1012,10 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, (f32) a->data.uw + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, (f64) a->data.uw + b->data.f64);
+#if HAVE_F80
     case TAG_F80:
       return tag_init_f80(dest, (f80) a->data.uw + b->data.f80);
+#endif
     case TAG_INTEGER:
       integer_init_uw(&tmp, a->data.uw);
       goto integer_add_b;

@@ -598,6 +598,7 @@ TEST_CASE(marshall_tag)
                     "\x5f\x4b\x43\x33\x55\x38\x5f\x06"
                     "\x5f\x4b\x43\x33\x46\x36\x34\x5f"
                     "\x18\x2d\x44\x54\xfb\x21\x09\x40");
+#if HAVE_F80
   MARSHALL_TEST_TAG("(F80) 3.1415926535897932384",
                     "KC3MARSH"
                     "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -608,6 +609,7 @@ TEST_CASE(marshall_tag)
                     "\x5f\x4b\x43\x33\x46\x38\x30\x5f"
                     "\x32\xc2\x68\x21\xa2\xda\x0f\xc9"
                     "\x00\x40\x00\x00\x00\x00\x00\x00");
+#endif
   // Do block
   MARSHALL_TEST_TAG("do\n"
                     "  1\n"

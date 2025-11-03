@@ -116,20 +116,6 @@ s_list * list_init_f64 (s_list *list, f64 f, s_list *next)
   return list;
 }
 
-s_list * list_init_f80 (s_list *list, f80 f, s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_f80(&tmp.tag, f)) {
-    err_puts("list_init_f80: tag_init_f80");
-    assert(! "list_init_f80: tag_init_f80");
-    return NULL;
-  }
-  *list = tmp;
-  return list;
-}
-
 s_list * list_init_ident (s_list *list, const s_ident *ident,
                           s_list *next)
 {
@@ -1114,24 +1100,6 @@ s_list * list_new_f64 (f64 f, s_list *next)
   if (! tag_init_f64(&list->tag, f)) {
     err_puts("list_new_f64: tag_init_f64");
     assert(! "list_new_f64: tag_init_f64");
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_f80 (f80 f, s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list) {
-    err_puts("list_new_f80: list_new");
-    assert(! "list_new_f80: list_new");
-    return NULL;
-  }
-  if (! tag_init_f80(&list->tag, f)) {
-    err_puts("list_new_f80: tag_init_f80");
-    assert(! "list_new_f80: tag_init_f80");
     free(list);
     return NULL;
   }

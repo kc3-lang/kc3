@@ -25,7 +25,9 @@ s_ratio * ratio_init_cast (s_ratio *r, p_sym *type, s_tag *src);
 s_ratio * ratio_init_copy (s_ratio *r, const s_ratio *src);
 s_ratio * ratio_init_f32 (s_ratio *r, f32 src);
 s_ratio * ratio_init_f64 (s_ratio *r, f64 src);
+#if HAVE_F80
 s_ratio * ratio_init_f80 (s_ratio *r, f80 src);
+#endif
 #if HAVE_FLOAT128
 s_ratio * ratio_init_f128 (s_ratio *r, f128 src);
 #endif
@@ -53,7 +55,9 @@ bool    ratio_is_negative (const s_ratio *r);
 bool    ratio_is_zero (const s_ratio *r);
 f32     ratio_to_f32 (const s_ratio *r);
 f64     ratio_to_f64 (const s_ratio *r);
+#if HAVE_F80
 f80     ratio_to_f80 (const s_ratio *r);
+#endif
 #if HAVE_FLOAT128
 f128    ratio_to_f128 (const s_ratio *r);
 #endif

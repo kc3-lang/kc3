@@ -262,7 +262,9 @@ void tag_clean (s_tag *tag)
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
+#if HAVE_F80
   case TAG_F80:
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
 #endif
@@ -498,10 +500,12 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     tag->type = src->type;
     tag->data.f64 = src->data.f64;
     return tag;
+#if HAVE_F80
   case TAG_F80:
     tag->type = src->type;
     tag->data.f80 = src->data.f80;
     return tag;
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
     tag->type = src->type;
@@ -862,7 +866,9 @@ bool tag_is_integer (s_tag *tag)
   case TAG_DO_BLOCK:
   case TAG_F32:
   case TAG_F64:
+#if HAVE_F80
   case TAG_F80:
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
 #endif
@@ -944,7 +950,9 @@ bool tag_is_number (s_tag *tag)
   case TAG_PCOMPLEX:
   case TAG_F32:
   case TAG_F64:
+#if HAVE_F80
   case TAG_F80:
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
 #endif
@@ -982,7 +990,9 @@ bool tag_is_positive_integer (s_tag *tag)
   case TAG_DO_BLOCK:
   case TAG_F32:
   case TAG_F64:
+#if HAVE_F80
   case TAG_F80:
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
 #endif
@@ -1322,12 +1332,14 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     goto invalid_cast;
+#if HAVE_F80
   case TAG_F80:
     if (type == &g_sym_F80) {
       *dest = &tag->data.f80;
       return true;
     }
     goto invalid_cast;
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
     if (type == &g_sym_F128) {
@@ -1619,7 +1631,9 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_DO_BLOCK:     *dest = &tag->data.do_block;     return true;
   case TAG_F32:          *dest = &tag->data.f32;          return true;
   case TAG_F64:          *dest = &tag->data.f64;          return true;
+#if HAVE_F80
   case TAG_F80:          *dest = &tag->data.f80;          return true;
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:         *dest = &tag->data.f128;         return true;
 #endif
@@ -1704,7 +1718,9 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_DO_BLOCK:     *dest = &g_sym_Block;       return dest;
   case TAG_F32:          *dest = &g_sym_F32;         return dest;
   case TAG_F64:          *dest = &g_sym_F64;         return dest;
+#if HAVE_F80
   case TAG_F80:          *dest = &g_sym_F80;         return dest;
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:         *dest = &g_sym_F128;        return dest;
 #endif

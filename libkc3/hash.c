@@ -222,7 +222,9 @@ bool hash_update_cow (t_hash *hash, s_cow *cow)
 
 HASH_UPDATE_DEF(f32)
 HASH_UPDATE_DEF(f64)
+#if HAVE_F80
 HASH_UPDATE_DEF(f80)
+#endif
 #if HAVE_FLOAT128
 HASH_UPDATE_DEF(f128)
 #endif
@@ -545,7 +547,9 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
     return hash_update_character(hash, tag->data.character);
   case TAG_F32:     return hash_update_f32(hash, tag->data.f32);
   case TAG_F64:     return hash_update_f64(hash, tag->data.f64);
+#if HAVE_F80
   case TAG_F80:     return hash_update_f80(hash, tag->data.f80);
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:    return hash_update_f128(hash, tag->data.f128);
 #endif

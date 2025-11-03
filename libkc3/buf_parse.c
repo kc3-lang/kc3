@@ -1590,6 +1590,8 @@ sw buf_parse_f64 (s_buf *buf, f64 *dest)
   return r;
 }
 
+#if HAVE_F80
+
 sw buf_parse_f80 (s_buf *buf, f80 *dest) {
   u8 digit;
   f80 exp;
@@ -1663,6 +1665,8 @@ sw buf_parse_f80 (s_buf *buf, f80 *dest) {
   buf_save_clean(buf, &save);
   return r;
 }
+
+#endif
 
 #if HAVE_FLOAT128
 
@@ -4825,6 +4829,8 @@ sw buf_parse_tag_f64 (s_buf *buf, s_tag *dest)
   return r;
 }
 
+#if HAVE_F80
+
 sw buf_parse_tag_f80 (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -4834,6 +4840,8 @@ sw buf_parse_tag_f80 (s_buf *buf, s_tag *dest)
     dest->type = TAG_F80;
   return r;
 }
+
+#endif
 
 #if HAVE_FLOAT128
 
@@ -4934,8 +4942,10 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
   if ((r = buf_parse_tag_f128(buf, dest)) > 0)
     return r;
 #endif
+#if HAVE_F80
   if ((r = buf_parse_tag_f80(buf, dest)) > 0)
     return r;
+#endif
   if ((r = buf_parse_tag_f64(buf, dest)) > 0)
     return r;
   if ((r = buf_parse_tag_f32(buf, dest)) > 0)

@@ -680,7 +680,9 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
 
 DEF_BUF_PEEK(f32)
 DEF_BUF_PEEK(f64)
+#if HAVE_F80
 DEF_BUF_PEEK(f80)
+#endif
 #if HAVE_FLOAT128
 DEF_BUF_PEEK(f128)
 #endif
@@ -849,7 +851,9 @@ sw buf_read_character_utf8 (s_buf *buf, character *p)
 
 DEF_BUF_READ(f32)
 DEF_BUF_READ(f64)
+#if HAVE_F80
 DEF_BUF_READ(f80)
+#endif
 #if HAVE_FLOAT128
 DEF_BUF_READ(f128)
 #endif
@@ -1766,7 +1770,9 @@ sw buf_write_character_utf8_size (s_pretty *pretty, character c)
 
 DEF_BUF_WRITE(f32)
 DEF_BUF_WRITE(f64)
+#if HAVE_F80
 DEF_BUF_WRITE(f80)
+#endif
 #if HAVE_FLOAT128
 DEF_BUF_WRITE(f128)
 #endif

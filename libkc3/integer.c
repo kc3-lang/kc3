@@ -149,8 +149,10 @@ s_integer * integer_init_cast (s_integer *a, const s_sym * const *type,
     return integer_init_f32(a, tag->data.f32);
   case TAG_F64:
     return integer_init_f64(a, tag->data.f64);
+#if HAVE_F80
   case TAG_F80:
     return integer_init_f80(a, tag->data.f80);
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
     return integer_init_f128(a, tag->data.f128);
@@ -290,12 +292,16 @@ s_integer * integer_init_f64 (s_integer *a, f64 x)
   return integer_set_f64(a, x);
 }
 
+#if HAVE_F80
+
 s_integer * integer_init_f80 (s_integer *a, f80 x)
 {
   assert(a);
   integer_init(a);
   return integer_set_f80(a, x);
 }
+
+#endif
 
 #if HAVE_FLOAT128
 
@@ -632,6 +638,8 @@ s_integer * integer_set_f64 (s_integer *a, f64 x)
   return a;
 }
 
+#if HAVE_F80
+
 s_integer * integer_set_f80 (s_integer *a, f80 x)
 {
   sw r;
@@ -645,6 +653,8 @@ s_integer * integer_set_f80 (s_integer *a, f80 x)
   }
   return a;
 }
+
+#endif
 
 #if HAVE_FLOAT128
 
@@ -785,12 +795,16 @@ f64 integer_to_f64 (const s_integer *i)
   return mp_get_double(&i->mp_int);
 }
 
+#if HAVE_F80
+
 f80 integer_to_f80 (const s_integer *i)
 {
   assert(i);
   // TODO: FIXME
   return mp_get_double(&i->mp_int);
 }
+
+#endif
 
 #if HAVE_FLOAT128
 

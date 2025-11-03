@@ -153,8 +153,10 @@ s_ratio * ratio_init_cast (s_ratio *ratio, p_sym *type,
     return ratio_init_f32(ratio, src->data.f32);
   case TAG_F64:
     return ratio_init_f64(ratio, src->data.f64);
+#if HAVE_F80
   case TAG_F80:
     return ratio_init_f80(ratio, src->data.f80);
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
     return ratio_init_f128(ratio, src->data.f128);
@@ -224,6 +226,8 @@ s_ratio * ratio_init_f64 (s_ratio *r, f64 x)
   return r;
 }
 
+#if HAVE_F80
+
 s_ratio * ratio_init_f80 (s_ratio *r, f80 x)
 {
   assert(r);
@@ -232,6 +236,8 @@ s_ratio * ratio_init_f80 (s_ratio *r, f80 x)
   integer_init_s32(&r->denominator, 1);
   return r;
 }
+
+#endif
 
 #if HAVE_FLOAT128
 
@@ -562,6 +568,8 @@ f64 ratio_to_f64 (const s_ratio *r)
   return numerator / denominator;
 }
 
+#if HAVE_F80
+
 f80 ratio_to_f80 (const s_ratio *r)
 {
   f80 numerator;
@@ -572,6 +580,8 @@ f80 ratio_to_f80 (const s_ratio *r)
   denominator = integer_to_f80(&r->denominator);
   return numerator / denominator;
 }
+
+#endif
 
 #if HAVE_FLOAT128
 

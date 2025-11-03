@@ -512,8 +512,10 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_f32(str, tag->data.f32);
   case TAG_F64:
     return str_init_f64(str, tag->data.f64);
+#if HAVE_F80
   case TAG_F80:
     return str_init_f80(str, tag->data.f80);
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
     return str_init_f128(str, tag->data.f128);
@@ -891,6 +893,8 @@ s_str * str_init_f64 (s_str *str, f64 x)
   return str;
 }
 
+#if HAVE_F80
+
 s_str * str_init_f80 (s_str *str, f80 x)
 {
   char a[80];
@@ -953,6 +957,8 @@ s_str * str_init_f80 (s_str *str, f80 x)
     return NULL;
   return str;
 }
+
+#endif
 
 #if HAVE_FLOAT128
 

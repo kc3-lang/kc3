@@ -30,9 +30,9 @@ do
   db = Facts.database()
   void
 end
-quote Facts.add_tags(db, 1.0, 2.0, 3.0)
-Facts.add_tags(db, 1.0, 2.0, 3.0)
-quote Facts.add_tags(db, 4.0, 5.0, 6.0)
-Facts.add_tags(db, 4.0, 5.0, 6.0)
+quote Facts.add_tags(db, (F64) 1.0, (F64) 2.0, (F64) 3.0)
+Facts.add_tags(db, (F64) 1.0, (F64) 2.0, (F64) 3.0)
+quote Facts.add_tags(db, (F64) 4.0, (F64) 5.0, (F64) 6.0)
+Facts.add_tags(db, (F64) 4.0, (F64) 5.0, (F64) 6.0)
 quote Facts.with_tags(db, s = ?, p = ?, o = ?, fn (fact) { puts("#{s} #{p} #{o}"); :ok })
 Facts.with_tags(db, s = ?, p = ?, o = ?, fn (fact) { puts("#{s} #{p} #{o}"); :ok })

@@ -16,7 +16,10 @@
 #include "buf_parse_u8.h"
 #include <math.h>
 #include <stdlib.h>
+#include "f64.h"
+#if HAVE_F80
 #include "f80.h"
+#endif
 #include "hash.h"
 #include "integer.h"
 #include "ratio.h"
@@ -153,8 +156,13 @@ u8 * u8_random (u8 *u)
 
 u8 * u8_random_uniform (u8 *u, u8 max)
 {
+#if HAVE_F80
   f80 x;
   f80_random(&x);
+#else
+  f64 x;
+  f64_random(&x);
+#endif
   x *= max;
   *u = (u8) x;
   return u;
@@ -173,7 +181,12 @@ u8 * u8_random_uniform (u8 *u, u8 max)
 s_tag * u8_sqrt (const u8 x, s_tag *dest)
 {
   assert(dest);
+#if HAVE_F80
   dest->type = TAG_F80;
   dest->data.f80 = sqrtl((f80) x);
+#else
+  dest->type = TAG_F64;
+  dest->data.f64 = sqrt((f64) x);
+#endif
   return dest;
 }

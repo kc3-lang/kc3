@@ -184,7 +184,9 @@ u8 compare_cow (const s_cow *a, const s_cow *b)
 
 COMPARE_DEF(f32)
 COMPARE_DEF(f64)
+#if HAVE_F80
 COMPARE_DEF(f80)
+#endif
 #if HAVE_FLOAT128
 COMPARE_DEF(f128)
 #endif

@@ -36,7 +36,6 @@
     inspect_ ## type(_Generic(tmp,                                      \
                               f32:  tmp,                                \
                               f64:  tmp,                                \
-                              f80:  tmp,                                \
                               s8:   tmp,                                \
                               s16:  tmp,                                \
                               s32:  tmp,                                \
@@ -290,7 +289,8 @@ TEST_CASE_END(marshall_read_plist)
                          "\x5f\x4b\x43\x33\x46\x36\x34\x5f"
                          "\x00\x00\x00\x00\x00\x00\xF0\x41",
                          "(F64) 4294967296.0");
-  // f128
+#if HAVE_F80
+  // f80
   MARSHALL_READ_TEST_TAG("KC3MARSH"
                          "\x00\x00\x00\x00\x00\x00\x00\x00"
                          "\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -325,6 +325,7 @@ TEST_CASE_END(marshall_read_plist)
                          "\x00",
                          "(F80) 3.1415926535897932384"
                          "28841971");
+#endif
   // str
   /*
   MARSHALL_READ_TEST_TAG("KC3MARSH"

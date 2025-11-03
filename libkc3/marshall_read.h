@@ -64,7 +64,9 @@ s_marshall_read * marshall_read_env_counters (s_marshall_read *mr,
                                               bool heap, s_env *env);
 PROTO_MARSHALL_READ(f32,          f32              );
 PROTO_MARSHALL_READ(f64,          f64              );
+#if HAVE_F80
 PROTO_MARSHALL_READ(f80,          f80              );
+#endif
 #if HAVE_FLOAT128
 PROTO_MARSHALL_READ(f128,         f128             );
 #endif

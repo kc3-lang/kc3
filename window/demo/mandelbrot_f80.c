@@ -10,6 +10,10 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "types.h"
+
+#if HAVE_F80
+
 #include <math.h>
 #include "../../libkc3/kc3.h"
 #include "../../gl/gl.h"
@@ -328,3 +332,5 @@ static u8 mandelbrot_f80_update (s_sequence *seq)
   err_write_1("\n");
   return true;
 }
+
+#endif /* HAVE_F80 */

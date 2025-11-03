@@ -105,7 +105,9 @@ set_get_h__uw
     if (! compare_uw(_Generic(item->data,
                                   f32:  item->data,
                                   f64:  item->data,
+#if HAVE_F80
                                   f80:  item->data,
+#endif
 #if HAVE_FLOAT128
                                   f128: item->data,
 #endif
@@ -255,7 +257,9 @@ set_resize__uw (s_set__uw *set, uw max)
       set_add_h__uw(&n, _Generic(item->data,
                                        f32:  item->data,
                                        f64:  item->data,
+#if HAVE_F80
                                        f80:  item->data,
+#endif
 #if HAVE_FLOAT128
                                        f128: item->data,
 #endif

@@ -66,7 +66,9 @@ PROTO_BUF_PEEK(bool);
 sw        buf_peek_character_utf8 (s_buf *buf, character *p);
 PROTO_BUF_PEEK(f32);
 PROTO_BUF_PEEK(f64);
+#if HAVE_F80
 PROTO_BUF_PEEK(f80);
+#endif
 #if HAVE_FLOAT128
 PROTO_BUF_PEEK(f128);
 #endif
@@ -89,7 +91,9 @@ sw        buf_read_1 (s_buf *buf, const char *p);
 PROTO_BUF_READ(bool);
 PROTO_BUF_READ(f32);
 PROTO_BUF_READ(f64);
+#if HAVE_F80
 PROTO_BUF_READ(f80);
+#endif
 #if HAVE_FLOAT128
 PROTO_BUF_READ(f128);
 #endif
@@ -153,7 +157,9 @@ sw        buf_write_character_utf8 (s_buf *buf, character c);
 sw        buf_write_character_utf8_size (s_pretty *pretty, character c);
 PROTO_BUF_WRITE(f32);
 PROTO_BUF_WRITE(f64);
+#if HAVE_F80
 PROTO_BUF_WRITE(f80);
+#endif
 #if HAVE_FLOAT128
 PROTO_BUF_WRITE(f128);
 #endif

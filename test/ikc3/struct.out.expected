@@ -2,8 +2,8 @@ require GL.Vec2
 GL.Vec2
 require GL.Vec3
 GL.Vec3
-(F80) 0.0
-(F80) 0.0
+(F64) 0.0
+(F64) 0.0
 %GL.Vec3{}
 %GL.Vec3{x: (F32) 0.0,
          y: (F32) 0.0,
@@ -28,7 +28,6 @@ defmodule Test do
              character: '→',
              f32: (F32) 0.0,
              f64: (F64) 0.0,
-             f80: (F80) 0.0,
              integer: (Integer) 0,
              ratio: 0/1,
              sw: (Sw) 0,
@@ -67,7 +66,6 @@ Test
       character: '0',
       f32: (F32) 0.0,
       f64: (F64) 0.0,
-      f80: (F80) 0.0,
       integer: (Integer) 0,
       ratio: 0/1,
       sw: (Sw) 0,

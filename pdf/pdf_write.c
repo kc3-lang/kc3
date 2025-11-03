@@ -21,7 +21,9 @@ sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
   switch (src->type) {
     case TAG_F32:  return pdf_buf_write_float(buf, src->data.f32);
     case TAG_F64:  return pdf_buf_write_float(buf, src->data.f64);
+#if HAVE_F80
     case TAG_F80:  return pdf_buf_write_float(buf, src->data.f80);
+#endif
 #if HAVE_FLOAT128
     case TAG_F128: return pdf_buf_write_float(buf, src->data.f128);
 #endif

@@ -1988,6 +1988,8 @@ sw buf_inspect_f64_size (s_pretty *pretty, f64 x)
   return result;
 }
 
+#if HAVE_F80
+
 sw buf_inspect_f80 (s_buf *buf, f80 x)
 {
   s64 exp;
@@ -2123,6 +2125,8 @@ sw buf_inspect_f80_size (s_pretty *pretty, f80 x)
   }
   return result;
 }
+
+#endif
 
 #if HAVE_FLOAT128
 

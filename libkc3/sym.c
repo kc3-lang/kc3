@@ -593,10 +593,12 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = false;
     return must_clean;
   }
+#if HAVE_F80
   if (sym == &g_sym_F80) {
     *must_clean = false;
     return must_clean;
   }
+#endif
   if (sym == &g_sym_F128) {
     *must_clean = false;
     return must_clean;
@@ -843,10 +845,12 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     *dest = &ffi_type_double;
     return true;
   }
+#if HAVE_F80
   if (sym == &g_sym_F80) {
     *dest = &ffi_type_longdouble;
     return true;
   }
+#endif
 #if HAVE_FLOAT128
   if (sym == &g_sym_F128) {
     *dest = &ffi_type_float128;
@@ -1020,10 +1024,12 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_F64;
     return true;
   }
+#if HAVE_F80
   if (sym == &g_sym_F80) {
     *dest = TAG_F80;
     return true;
   }
+#endif
 #if HAVE_FLOAT128
   if (sym == &g_sym_F128) {
     *dest = TAG_F128;
@@ -1225,10 +1231,12 @@ uw * sym_type_size (const s_sym *type, uw *dest)
     *dest = sizeof(f64);
     return dest;
   }
+#if HAVE_F80
   if (type == &g_sym_F80) {
     *dest = sizeof(f80);
     return dest;
   }
+#endif
 #if HAVE_FLOAT128
   if (type == &g_sym_F128) {
     *dest = sizeof(f128);

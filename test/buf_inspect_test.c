@@ -101,6 +101,8 @@
     test_context(NULL);                                                \
   } while (0)
 
+#if HAVE_F80
+
 #define BUF_INSPECT_TEST_F80(test, expected)                           \
   do {                                                                 \
     char b[80];                                                        \
@@ -119,6 +121,8 @@
     TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);                 \
     test_context(NULL);                                                \
   } while (0)
+
+#endif
 
 #define BUF_INSPECT_TEST_INTEGER(test, expected)                       \
   do {                                                                 \
@@ -210,6 +214,12 @@ TEST_CASE_PROTOTYPE(buf_inspect_bool);
 TEST_CASE_PROTOTYPE(buf_inspect_character);
 TEST_CASE_PROTOTYPE(buf_inspect_f32);
 TEST_CASE_PROTOTYPE(buf_inspect_f64);
+#if HAVE_F80
+TEST_CASE_PROTOTYPE(buf_inspect_f80);
+#endif
+#if HAVE_FLOAT128
+TEST_CASE_PROTOTYPE(buf_inspect_f128);
+#endif
 TEST_CASE_PROTOTYPE(buf_inspect_integer);
 TEST_CASE_PROTOTYPE(buf_inspect_list);
 TEST_CASE_PROTOTYPE(buf_inspect_str);
@@ -224,6 +234,12 @@ void buf_inspect_test (void)
   TEST_CASE_RUN(buf_inspect_character);
   TEST_CASE_RUN(buf_inspect_f32);
   TEST_CASE_RUN(buf_inspect_f64);
+#if HAVE_F80
+  TEST_CASE_RUN(buf_inspect_f80);
+#endif
+#if HAVE_FLOAT128
+  TEST_CASE_RUN(buf_inspect_f128);
+#endif
   TEST_CASE_RUN(buf_inspect_integer);
   TEST_CASE_RUN(buf_inspect_list);
   TEST_CASE_RUN(buf_inspect_str);
@@ -302,6 +318,8 @@ TEST_CASE(buf_inspect_f64)
 }
 TEST_CASE_END(buf_inspect_f64)
 
+#if HAVE_F80
+
 TEST_CASE(buf_inspect_f80)
 {
   BUF_INSPECT_TEST_F80(0.0, "(F80) 0.0");
@@ -315,6 +333,8 @@ TEST_CASE(buf_inspect_f80)
   BUF_INSPECT_TEST_F80(-123456789.0, "(F80) -1.23456789e+8");
 }
 TEST_CASE_END(buf_inspect_f80)
+
+#endif
 
 TEST_CASE(buf_inspect_integer)
 {
@@ -435,7 +455,9 @@ TEST_CASE(buf_inspect_tag)
   BUF_INSPECT_TEST_TAG(tag_character(&tag, '\n'), "'\\n'");
   BUF_INSPECT_TEST_TAG(tag_f32(&tag, 1.0f), "(F32) 1.0");
   BUF_INSPECT_TEST_TAG(tag_f64(&tag, 1.0), "(F64) 1.0");
+#if HAVE_F80
   BUF_INSPECT_TEST_TAG(tag_f80(&tag, 1.0), "(F80) 1.0");
+#endif
   BUF_INSPECT_TEST_TAG(tag_ident_1(&tag, "ident"), "ident");
   BUF_INSPECT_TEST_TAG(tag_integer_1(&tag, "-0x10000000000000000"), "-18446744073709551616");
   BUF_INSPECT_TEST_TAG(tag_integer_1(&tag, "0x10000000000000000"), "18446744073709551616");

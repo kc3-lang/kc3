@@ -282,7 +282,9 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   switch (a->type) {
   case TAG_F32:
   case TAG_F64:
+#if HAVE_F80
   case TAG_F80:
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
 #endif
@@ -302,7 +304,9 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     switch (b->type) {
     case TAG_F32:
     case TAG_F64:
+#if HAVE_F80
     case TAG_F80:
+#endif
 #if HAVE_FLOAT128
     case TAG_F128:
 #endif
@@ -397,7 +401,9 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     return true;
   case TAG_F32:
   case TAG_F64:
+#if HAVE_F80
   case TAG_F80:
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
 #endif

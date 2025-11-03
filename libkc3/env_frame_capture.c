@@ -222,7 +222,9 @@ s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
+#if HAVE_F80
   case TAG_F80:
+#endif
 #if HAVE_FLOAT128
   case TAG_F128:
 #endif

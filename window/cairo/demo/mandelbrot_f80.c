@@ -11,6 +11,9 @@
  * THIS SOFTWARE.
  */
 #include <math.h>
+
+#if HAVE_F80
+
 #include "../../../libkc3/kc3.h"
 #include "../cairo_font.h"
 #include "../cairo_text.h"
@@ -277,3 +280,5 @@ static bool mandelbrot_f80_update (s_sequence *seq)
   cairo_surface_mark_dirty(g_mandelbrot_f80_surface);
   return true;
 }
+
+#endif /* HAVE_F80 */

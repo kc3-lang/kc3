@@ -37,7 +37,9 @@ bool hash_update_complex (t_hash *hash, const s_complex *c);
 bool hash_update_cow (t_hash *hash, s_cow *cow);
 HASH_UPDATE_PROTOTYPE(f32);
 HASH_UPDATE_PROTOTYPE(f64);
+#if HAVE_F80
 HASH_UPDATE_PROTOTYPE(f80);
+#endif
 #if HAVE_FLOAT128
 HASH_UPDATE_PROTOTYPE(f128);
 #endif

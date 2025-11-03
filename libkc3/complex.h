@@ -25,7 +25,9 @@ s_complex * complex_init_cast (s_complex *c, const s_sym * const *type,
 s_complex * complex_init_copy (s_complex *c, s_complex *src);
 s_complex * complex_init_f32 (s_complex *c, f32 src);
 s_complex * complex_init_f64 (s_complex *c, f64 src);
+#if HAVE_F80
 s_complex * complex_init_f80 (s_complex *c, f80 src);
+#endif
 #if HAVE_FLOAT128
 s_complex * complex_init_f128 (s_complex *c, f128 src);
 #endif
@@ -56,7 +58,9 @@ s_complex * complex_sub (s_complex *a, s_complex *b,
                          s_complex *dest);
 f32  complex_to_f32 (s_complex *c);
 f64  complex_to_f64 (s_complex *c);
+#if HAVE_F80
 f80  complex_to_f80 (s_complex *c);
+#endif
 #if HAVE_FLOAT128
 f128 complex_to_f128 (s_complex *c);
 #endif
