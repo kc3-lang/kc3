@@ -24,7 +24,7 @@ void types_test (void)
 
 TEST_CASE(types_sizeof)
 {
-  uw size;
+  uw sym_type_size_tag;
   TEST_EQ(sizeof(f32), 4);
   TEST_EQ(sizeof(f64), 8);
 #if HAVE_F80
@@ -46,7 +46,7 @@ TEST_CASE(types_sizeof)
   TEST_EQ(sizeof(u_ptr), sizeof(void *));
   TEST_EQ(sizeof(u_ptr_w), sizeof(void *));
   TEST_EQ((uw) NULL, 0);
-  TEST_ASSERT(sym_type_size(sym_1("Tag"), &size));
-  TEST_EQ(size, sizeof(s_tag));
+  TEST_ASSERT(sym_type_size(sym_1("Tag"), &sym_type_size_tag));
+  TEST_EQ(sym_type_size_tag, sizeof(s_tag));
 }
 TEST_CASE_END(types_sizeof)
