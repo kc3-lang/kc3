@@ -1505,7 +1505,7 @@ echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}
 
 EXPORT_DYNAMIC="--export-dynamic"
 case "$(uname -s)" in
-    CYGWIN*|MINGW*|MSYS*|Windows)
+    MINGW64*)
         SHARED_FLAGS="-shared"
         SHARED_EXT="dll"
         SHARED_MAJOR="-$VER_MAJOR.$SHARED_EXT"
@@ -1514,8 +1514,8 @@ case "$(uname -s)" in
         LIB_SUFFIX="dll"
         LIB_LINK_SUFFIX="dll"
         IMPLIB="--out-implib \${LIB_BASE}.dll.a"
-        LDADD=""
-        PROG_LDADD="$LDADD"
+        LDADD="-L/clang64/lib -lmingwex -lmsvcrt -lkernel32"
+        PROG_LDADD="/clang64/lib/crt.o /clang64/lib/crtbegin.o $LDADD /clang64/lib/crtend.o"
         ;;
     Darwin)
         SHARED_FLAGS="-dylib -install_name @rpath/\${LIB_BASE}.\${VER_MAJOR}.dylib"
