@@ -40,7 +40,7 @@ HASH_UPDATE_PROTOTYPE(f64);
 #if HAVE_F80
 HASH_UPDATE_PROTOTYPE(f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 HASH_UPDATE_PROTOTYPE(f128);
 #endif
 bool hash_update_fact (t_hash *hash, const s_fact *fact);

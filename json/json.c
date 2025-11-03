@@ -28,7 +28,7 @@ sw json_buf_inspect (s_buf *buf, const s_tag *tag)
 #if HAVE_F80
   case TAG_F80:
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
 #endif
   case TAG_INTEGER:
@@ -190,7 +190,7 @@ sw json_buf_inspect_size (s_pretty *pretty, const s_tag *tag)
 #if HAVE_F80
   case TAG_F80:
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
 #endif
   case TAG_INTEGER:

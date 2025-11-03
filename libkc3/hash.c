@@ -225,7 +225,7 @@ HASH_UPDATE_DEF(f64)
 #if HAVE_F80
 HASH_UPDATE_DEF(f80)
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 HASH_UPDATE_DEF(f128)
 #endif
 
@@ -550,7 +550,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
 #if HAVE_F80
   case TAG_F80:     return hash_update_f80(hash, tag->data.f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:    return hash_update_f128(hash, tag->data.f128);
 #endif
   case TAG_FACT:    return hash_update_fact(hash, &tag->data.fact);

@@ -47,7 +47,7 @@ s_timespec * timespec_init_cast (s_timespec *time, p_sym *type,
 #if HAVE_F80
   case TAG_F80:  return timespec_init_f80(time, src->data.f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128: return timespec_init_f128(time, src->data.f128);
 #endif
   case TAG_U8:   return timespec_init_u8(time, src->data.u8);
@@ -68,7 +68,7 @@ DEF_TIMESPEC_INIT_F(f64)
 #if HAVE_F80
 DEF_TIMESPEC_INIT_F(f80)
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 DEF_TIMESPEC_INIT_F(f128)
 #endif
 

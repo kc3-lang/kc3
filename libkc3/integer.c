@@ -153,7 +153,7 @@ s_integer * integer_init_cast (s_integer *a, const s_sym * const *type,
   case TAG_F80:
     return integer_init_f80(a, tag->data.f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
     return integer_init_f128(a, tag->data.f128);
 #endif
@@ -303,7 +303,7 @@ s_integer * integer_init_f80 (s_integer *a, f80 x)
 
 #endif
 
-#if HAVE_FLOAT128
+#if HAVE_F128
 
 s_integer * integer_init_f128 (s_integer *a, f128 x)
 {
@@ -656,7 +656,7 @@ s_integer * integer_set_f80 (s_integer *a, f80 x)
 
 #endif
 
-#if HAVE_FLOAT128
+#if HAVE_F128
 
 s_integer * integer_set_f128 (s_integer *a, f128 x)
 {
@@ -806,7 +806,7 @@ f80 integer_to_f80 (const s_integer *i)
 
 #endif
 
-#if HAVE_FLOAT128
+#if HAVE_F128
 
 f128 integer_to_f128 (const s_integer *i)
 {

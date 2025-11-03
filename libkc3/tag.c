@@ -265,7 +265,7 @@ void tag_clean (s_tag *tag)
 #if HAVE_F80
   case TAG_F80:
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
 #endif
   case TAG_FACT:
@@ -506,7 +506,7 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     tag->data.f80 = src->data.f80;
     return tag;
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
     tag->type = src->type;
     tag->data.f128 = src->data.f128;
@@ -869,7 +869,7 @@ bool tag_is_integer (s_tag *tag)
 #if HAVE_F80
   case TAG_F80:
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
 #endif
   case TAG_FACT:
@@ -953,7 +953,7 @@ bool tag_is_number (s_tag *tag)
 #if HAVE_F80
   case TAG_F80:
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
 #endif
   case TAG_INTEGER:
@@ -993,7 +993,7 @@ bool tag_is_positive_integer (s_tag *tag)
 #if HAVE_F80
   case TAG_F80:
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
 #endif
   case TAG_FACT:
@@ -1340,7 +1340,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     }
     goto invalid_cast;
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
     if (type == &g_sym_F128) {
       *dest = &tag->data.f128;
@@ -1634,7 +1634,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
 #if HAVE_F80
   case TAG_F80:          *dest = &tag->data.f80;          return true;
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:         *dest = &tag->data.f128;         return true;
 #endif
   case TAG_FACT:         *dest = &tag->data.fact;         return true;
@@ -1721,7 +1721,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
 #if HAVE_F80
   case TAG_F80:          *dest = &g_sym_F80;         return dest;
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:         *dest = &g_sym_F128;        return dest;
 #endif
   case TAG_FACT:         *dest = &g_sym_Fact;        return dest;

@@ -67,7 +67,7 @@ PROTO_MARSHALL_READ(f64,          f64              );
 #if HAVE_F80
 PROTO_MARSHALL_READ(f80,          f80              );
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 PROTO_MARSHALL_READ(f128,         f128             );
 #endif
 PROTO_MARSHALL_READ(fact,         s_fact           );

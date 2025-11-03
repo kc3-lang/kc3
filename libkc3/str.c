@@ -516,7 +516,7 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
   case TAG_F80:
     return str_init_f80(str, tag->data.f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
     return str_init_f128(str, tag->data.f128);
 #endif
@@ -960,7 +960,7 @@ s_str * str_init_f80 (s_str *str, f80 x)
 
 #endif
 
-#if HAVE_FLOAT128
+#if HAVE_F128
 
 s_str * str_init_f128 (s_str *str, f128 x)
 {

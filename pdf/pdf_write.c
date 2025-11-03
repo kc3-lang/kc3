@@ -24,7 +24,7 @@ sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
 #if HAVE_F80
     case TAG_F80:  return pdf_buf_write_float(buf, src->data.f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
     case TAG_F128: return pdf_buf_write_float(buf, src->data.f128);
 #endif
   case TAG_SW:   return pdf_buf_write_integer(buf, src->data.sw);

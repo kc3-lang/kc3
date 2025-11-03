@@ -108,7 +108,7 @@ set_get_h__uw
 #if HAVE_F80
                                   f80:  item->data,
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
                                   f128: item->data,
 #endif
                                   s8:   item->data,
@@ -260,7 +260,7 @@ set_resize__uw (s_set__uw *set, uw max)
 #if HAVE_F80
                                        f80:  item->data,
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
                                        f128: item->data,
 #endif
                                        s8:   item->data,

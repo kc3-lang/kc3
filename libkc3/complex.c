@@ -19,7 +19,7 @@
 #if HAVE_F80
 #include "f80.h"
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 #include "f128.h"
 #endif
 #include "sym.h"
@@ -40,7 +40,7 @@ DEF_COMPLEX_INIT(f64)
 #if HAVE_F80
 DEF_COMPLEX_INIT(f80)
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 DEF_COMPLEX_INIT(f128)
 #endif
 DEF_COMPLEX_INIT(s8)
@@ -141,7 +141,7 @@ s_complex * complex_init_cast (s_complex *c, const s_sym * const *type,
   case TAG_F80:
     return complex_init_f80(c, src->data.f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
     return complex_init_f128(c, src->data.f128);
 #endif
@@ -405,7 +405,7 @@ f80 complex_to_f80 (s_complex *c)
 
 #endif
 
-#if HAVE_FLOAT128
+#if HAVE_F128
 
 f128 complex_to_f128 (s_complex *c)
 {

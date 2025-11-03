@@ -54,7 +54,7 @@ PROTO_MARSHALL(f64, f64);
 #if HAVE_F80
 PROTO_MARSHALL(f80, f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 PROTO_MARSHALL(f128, f128);
 #endif
 PROTO_MARSHALL(fact, const s_fact *);

@@ -28,7 +28,7 @@ s_complex * complex_init_f64 (s_complex *c, f64 src);
 #if HAVE_F80
 s_complex * complex_init_f80 (s_complex *c, f80 src);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 s_complex * complex_init_f128 (s_complex *c, f128 src);
 #endif
 s_complex * complex_init_integer (s_complex *c, const s_integer *src);
@@ -61,7 +61,7 @@ f64  complex_to_f64 (s_complex *c);
 #if HAVE_F80
 f80  complex_to_f80 (s_complex *c);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 f128 complex_to_f128 (s_complex *c);
 #endif
 

@@ -34,7 +34,7 @@ s_integer * integer_init_f64 (s_integer *a, f64 x);
 #if HAVE_F80
 s_integer * integer_init_f80 (s_integer *a, f80 x);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 s_integer * integer_init_f128 (s_integer *a, f128 x);
 #endif
 s_integer * integer_init_ratio (s_integer *a, const s_ratio *r);
@@ -58,7 +58,7 @@ s_integer * integer_set_f64 (s_integer *a, f64 x);
 #if HAVE_F80
 s_integer * integer_set_f80 (s_integer *a, f80 x);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 s_integer * integer_set_f128 (s_integer *a, f128 x);
 #endif
 s_integer * integer_set_double (s_integer *a, double x);
@@ -117,7 +117,7 @@ f64     integer_to_f64 (const s_integer *i);
 #if HAVE_F80
 f80     integer_to_f80 (const s_integer *i);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 f128    integer_to_f128 (const s_integer *i);
 #endif
 s8      integer_to_s8 (const s_integer *i);

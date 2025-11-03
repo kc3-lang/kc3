@@ -2128,7 +2128,7 @@ sw buf_inspect_f80_size (s_pretty *pretty, f80 x)
 
 #endif
 
-#if HAVE_FLOAT128
+#if HAVE_F128
 
 sw buf_inspect_f128 (s_buf *buf, f128 x)
 {
@@ -4806,7 +4806,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
 #if HAVE_F80
   case TAG_F80:     return buf_inspect_f80(buf, tag->data.f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:    return buf_inspect_f128(buf, tag->data.f128);
 #endif
   case TAG_FACT:    return buf_inspect_fact(buf, &tag->data.fact);
@@ -4874,7 +4874,7 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
   case TAG_F80:
     return buf_inspect_f80_size(pretty, tag->data.f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
     return buf_inspect_f128_size(pretty, tag->data.f128);
 #endif

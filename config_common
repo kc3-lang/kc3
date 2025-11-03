@@ -19,10 +19,10 @@ config_define PREFIX "\"${PREFIX}\""
 config_have_crypt_newhash
 config_have_explicit_bzero
 config_have_f80
+config_have_f128
 config_have_generic_sw_uw
 config_have_pthread
 config_have_stat_mtim
-config_have_float128
 config_lib m -lm 2>/dev/null
 config_lib pthread -lpthread
 config_lib compiler_rt -lcompiler_rt 2>/dev/null

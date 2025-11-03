@@ -43,7 +43,7 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
   if (type == &g_sym_F80)
     return buf_inspect_f80(buf, *(f80 *) data);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   if (type == &g_sym_F128)
     return buf_inspect_f128(buf, *(f128 *) data);
 #endif
@@ -152,7 +152,7 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
   if (type == &g_sym_F80)
     return buf_inspect_f80_size(pretty, *(f80 *) data);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   if (type == &g_sym_F128)
     return buf_inspect_f128_size(pretty, *(f128 *) data);
 #endif
@@ -279,7 +279,7 @@ bool data_clean (const s_sym *type, void *data)
     return true;
   }
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   if (type == &g_sym_F128) {
     return true;
   }
@@ -430,7 +430,7 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
   if (type == &g_sym_F80)
     return compare_f80(*(f80 *) a, *(f80 *) b);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   if (type == &g_sym_F128)
     return compare_f128(*(f128 *) a, *(f128 *) b);
 #endif
@@ -545,7 +545,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
   if (type == &g_sym_F80)
     return hash_update_f80(hash, *(f80 *) data);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   if (type == &g_sym_F128)
     return hash_update_f128(hash, *(f128 *) data);
 #endif
@@ -655,7 +655,7 @@ void * data_init_cast (void *data, p_sym *type, s_tag *tag)
   if (t == &g_sym_F80)
     return f80_init_cast(data, type, tag);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   if (t == &g_sym_F128)
     return f128_init_cast(data, type, tag);
 #endif
@@ -761,7 +761,7 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_F80)
     return f80_init_copy(data, *(f80 *) src);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   if (type == &g_sym_F128)
     return f128_init_copy(data, *(f128 *) src);
 #endif

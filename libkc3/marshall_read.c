@@ -409,7 +409,7 @@ s_marshall_read * marshall_read_data (s_marshall_read *mr, bool heap,
   if (type == &g_sym_F80)
     return marshall_read_f80(mr, heap, data);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   if (type == &g_sym_F128)
     return marshall_read_f128(mr, heap, data);
 #endif
@@ -683,7 +683,7 @@ DEF_MARSHALL_READ(f64, "_KC3F64_", f64)
 #if HAVE_F80
 DEF_MARSHALL_READ(f80, "_KC3F80_", f80)
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 DEF_MARSHALL_READ(f128, "_KC3F128_", f128)
 #endif
 
@@ -2202,7 +2202,7 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
   case TAG_F80:
     return marshall_read_f80(mr, heap, &dest->data.f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
     return marshall_read_f128(mr, heap, &dest->data.f128);
 #endif

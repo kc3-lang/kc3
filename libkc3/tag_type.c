@@ -30,7 +30,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
 #if HAVE_F80
   case TAG_F80:          *dest = sizeof(f80);           return true;
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:         *dest = sizeof(f128);          return true;
 #endif
   case TAG_FACT:         *dest = sizeof(s_fact);        return true;
@@ -85,7 +85,7 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
 #if HAVE_F80
   case TAG_F80:          *dest = &ffi_type_double;     return true;
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:         *dest = &ffi_type_longdouble; return true;
 #endif
   case TAG_FACT:         *dest = &ffi_type_pointer;    return true;
@@ -142,7 +142,7 @@ const char * tag_type_to_string (e_tag_type tag_type)
 #if HAVE_F80
   case TAG_F80:          return "F80";
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:         return "F128";
 #endif
   case TAG_FACT:         return "Fact";

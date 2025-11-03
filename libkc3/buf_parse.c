@@ -1668,7 +1668,7 @@ sw buf_parse_f80 (s_buf *buf, f80 *dest) {
 
 #endif
 
-#if HAVE_FLOAT128
+#if HAVE_F128
 
 sw buf_parse_f128 (s_buf *buf, f128 *dest) {
   u8 digit;
@@ -4843,7 +4843,7 @@ sw buf_parse_tag_f80 (s_buf *buf, s_tag *dest)
 
 #endif
 
-#if HAVE_FLOAT128
+#if HAVE_F128
 
 sw buf_parse_tag_f128 (s_buf *buf, s_tag *dest)
 {
@@ -4938,7 +4938,7 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
   const s_sym *type = NULL;
   assert(buf);
   assert(dest);
-#if HAVE_FLOAT128
+#if HAVE_F128
   if ((r = buf_parse_tag_f128(buf, dest)) > 0)
     return r;
 #endif

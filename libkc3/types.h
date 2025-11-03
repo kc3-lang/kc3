@@ -108,7 +108,7 @@ typedef double      f64;
 #if HAVE_F80
 typedef long double f80;
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 typedef __float128  f128;
 #endif
 
@@ -159,7 +159,7 @@ typedef enum {
 #if HAVE_F80
   TAG_F80          =  7, // \x07
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   TAG_F128         =  8, // \x08
 #endif
   TAG_FACT         =  9, // \x09
@@ -704,7 +704,7 @@ union tag_data {
 #if HAVE_F80
   f80           f80;
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   f128          f128;
 #endif
   s_fact        fact;

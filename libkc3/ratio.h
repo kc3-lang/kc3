@@ -28,7 +28,7 @@ s_ratio * ratio_init_f64 (s_ratio *r, f64 src);
 #if HAVE_F80
 s_ratio * ratio_init_f80 (s_ratio *r, f80 src);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 s_ratio * ratio_init_f128 (s_ratio *r, f128 src);
 #endif
 s_ratio * ratio_init_integer (s_ratio *r, const s_integer *src);
@@ -58,7 +58,7 @@ f64     ratio_to_f64 (const s_ratio *r);
 #if HAVE_F80
 f80     ratio_to_f80 (const s_ratio *r);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 f128    ratio_to_f128 (const s_ratio *r);
 #endif
 s8      ratio_to_s8 (const s_ratio *r);

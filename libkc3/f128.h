@@ -15,7 +15,7 @@
 
 #include "types.h"
 
-#if HAVE_FLOAT128
+#if HAVE_F128
 
 f128 * f128_init_cast (f128 *x, const s_sym * const *type,
                        const s_tag *tag);

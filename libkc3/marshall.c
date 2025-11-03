@@ -424,7 +424,7 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
     return m;
   }
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   if (type == &g_sym_F128) {
     if (! marshall_f128(m, heap, *(f128 *) data)) {
       err_puts("marshall_data: marshall_f128");
@@ -804,7 +804,7 @@ DEF_MARSHALL(f64, "_KC3F64_")
 #if HAVE_F80
 DEF_MARSHALL(f80, "_KC3F80_")
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 DEF_MARSHALL(f128, "_KC3F128_")
 #endif
 
@@ -1501,7 +1501,7 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
 #if HAVE_F80
   case TAG_F80:   return marshall_f80(m, heap, tag->data.f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:  return marshall_f128(m, heap, tag->data.f128);
 #endif
   case TAG_FACT:  return marshall_fact(m, heap, &tag->data.fact);

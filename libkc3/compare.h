@@ -36,7 +36,7 @@ COMPARE_PROTOTYPE(f64);
 #if HAVE_F80
 COMPARE_PROTOTYPE(f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 COMPARE_PROTOTYPE(f128);
 #endif
 s8 compare_fact (const s_fact *a, const s_fact *b);

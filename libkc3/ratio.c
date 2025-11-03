@@ -157,7 +157,7 @@ s_ratio * ratio_init_cast (s_ratio *ratio, p_sym *type,
   case TAG_F80:
     return ratio_init_f80(ratio, src->data.f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   case TAG_F128:
     return ratio_init_f128(ratio, src->data.f128);
 #endif
@@ -239,7 +239,7 @@ s_ratio * ratio_init_f80 (s_ratio *r, f80 x)
 
 #endif
 
-#if HAVE_FLOAT128
+#if HAVE_F128
 
 s_ratio * ratio_init_f128 (s_ratio *r, f128 x)
 {
@@ -583,7 +583,7 @@ f80 ratio_to_f80 (const s_ratio *r)
 
 #endif
 
-#if HAVE_FLOAT128
+#if HAVE_F128
 
 f128 ratio_to_f128 (const s_ratio *r)
 {

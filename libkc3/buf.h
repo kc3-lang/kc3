@@ -69,7 +69,7 @@ PROTO_BUF_PEEK(f64);
 #if HAVE_F80
 PROTO_BUF_PEEK(f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 PROTO_BUF_PEEK(f128);
 #endif
 sw        buf_peek_next_character_utf8 (s_buf *buf, character *p);
@@ -94,7 +94,7 @@ PROTO_BUF_READ(f64);
 #if HAVE_F80
 PROTO_BUF_READ(f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 PROTO_BUF_READ(f128);
 #endif
 sw        buf_read_integer (s_buf *buf, s_integer *dest);
@@ -160,7 +160,7 @@ PROTO_BUF_WRITE(f64);
 #if HAVE_F80
 PROTO_BUF_WRITE(f80);
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
 PROTO_BUF_WRITE(f128);
 #endif
 sw        buf_write_integer (s_buf *buf, const s_integer *src);

@@ -851,7 +851,7 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     return true;
   }
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   if (sym == &g_sym_F128) {
     *dest = &ffi_type_float128;
     return true;
@@ -1030,7 +1030,7 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     return true;
   }
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   if (sym == &g_sym_F128) {
     *dest = TAG_F128;
     return true;
@@ -1237,7 +1237,7 @@ uw * sym_type_size (const s_sym *type, uw *dest)
     return dest;
   }
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
   if (type == &g_sym_F128) {
     *dest = sizeof(f128);
     return dest;
