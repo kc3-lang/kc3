@@ -46,7 +46,8 @@ TEST_CASE(types_sizeof)
   TEST_EQ(sizeof(u_ptr), sizeof(void *));
   TEST_EQ(sizeof(u_ptr_w), sizeof(void *));
   TEST_EQ((uw) NULL, 0);
-  TEST_ASSERT(sym_type_size(sym_1("Tag"), &sym_type_size_tag));
+  TEST_EQ(sym_type_size(&g_sym_Tag, &sym_type_size_tag),
+          &sym_type_size_tag);
   TEST_EQ(sym_type_size_tag, sizeof(s_tag));
 }
 TEST_CASE_END(types_sizeof)
