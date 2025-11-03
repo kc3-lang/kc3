@@ -2,12 +2,13 @@
 
 ## Package Debian / Ubuntu / Mint / PopOS
 
- - [ ] modifier le Makefile kc3 pour faire un target release qui
-   crée un chemin `release/v${VER}` et copie `${DIST}` dans ce chemin
-   - release depend de dist
- - [ ] faire un target deb qui génere le package Debian a partir de la
+ - [ ] modifier le Makefile kc3 pour faire un target _release_ qui
+   crée un chemin `release/v${VER}` et copie `${DIST}.tar.gz` dans ce
+   chemin
+   - [ ] release depend de dist
+ - [ ] faire un target _deb_ qui génere le package Debian a partir de la
    release
-   - deb depend de release
+   - [ ] deb depend de release
 
 ## KC3S
 
