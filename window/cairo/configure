@@ -159,16 +159,18 @@ update_config_mk
 update_makefile
 env_reset
 
-config_subdirs demo
+SUBDIRS="demo"
 
 if ${HAVE_COCOA}; then
-    config_subdirs quartz
+    SUBDIRS="$SUBDIRS quartz"
 fi
 
 if ${HAVE_WIN32}; then
-    config_subdirs win32
+    SUBDIRS="$SUBDIRS win32"
 fi
 
 if ${HAVE_XCB}; then
-    config_subdirs xcb
+    SUBDIRS="$SUBDIRS xcb"
 fi
+
+config_subdirs $SUBDIRS

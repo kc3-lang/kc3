@@ -145,4 +145,5 @@ done
 
 update_config_mk
 env_reset
-( cd demo && ./configure; )
+
+config_subdirs demo

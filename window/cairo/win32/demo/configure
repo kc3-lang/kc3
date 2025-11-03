@@ -20,17 +20,9 @@ export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0"
 
 . "${SRC_TOP}/config.subr"
 
-PROG=kc3_window_cairo_win32_demo
-PROG_ASAN=kc3_window_cairo_win32_demo_asan
-PROG_COV=kc3_window_cairo_win32_demo_cov
-PROG_DEBUG=kc3_window_cairo_win32_demo_debug
+config_prog kc3_window_cairo_win32_demo
 
-echo "PROG = $PROG" >> ${CONFIG_MK}
-echo "PROG_ASAN = $PROG_ASAN" >> ${CONFIG_MK}
-echo "PROG_COV = $PROG_COV" >> ${CONFIG_MK}
-echo "PROG_DEBUG = $PROG_DEBUG" >> ${CONFIG_MK}
-
-. ./sources.sh
+. "${SRC_TOP}/sources.sh"
 
 OBJECTS="$(c2ext .main.o "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
