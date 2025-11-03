@@ -6,9 +6,29 @@
    crée un chemin `release/v${VER}` et copie `${DIST}.tar.gz` dans ce
    chemin
    - [ ] release depend de dist
+ - [ ] créer un fichier release/v0.1.16-git/Makefile
+   - [ ] copier [libressl/release/v4.2.0/Makefile](https://git.kmx.io/kc3-lang/libressl/release/_tree/master/v4.2.0/Makefile)
  - [ ] faire un target _deb_ qui génere le package Debian a partir de la
    release
    - [ ] deb depend de release
+
+## PDF
+ - [ ] Primitives de dessin
+   - [ ] texte (couleur, font, size, str)
+   - [ ] rectangle (couleur, x, y, w, h)
+   - [ ] image
+     - [ ] png
+     - [ ] jpeg
+ - Le trailer a une entree /Root qui pointe vers un /Catalog
+   - /Catalog qui detient un /Pages 
+     - le /Pages detient une array /Kids de /Page et le nombre de
+       pages
+       - chaque /Page lie vers son parent, ressources, et content
+         stream, et indique sa taille
+         - /Resources : /Font...
+         - /Contents : stream (avec BT ET etc)
+         - /Parent : lien vers /Pages
+         - /MediaBox : taille x et y de la page
 
 ## KC3S
 
@@ -67,16 +87,6 @@
  - [ ] XXX pledge(2) support via `KC3.pledge()`
  - [ ] partial requests
    - HTTP 206 partial content
-
-## PDF
- - Le trailer a une entree /Root qui pointe vers un /Catalog
-   - /Catalog qui detient un /Pages 
-     - le /Pages  detient une array /Kids de /Page et le nombre de pages
-       - chaque /Page lie vers son parent, ressources, et content stream, et indique sa taille
-         - /Resources : /Font...
-         - /Contents : stream (avec BT ET etc)
-         - /Parent : lien vers /Pages
-         - /MediaBox : taille x et y de la page
 
 ## Windows release
  - [x] install kmx_sort and runj using MSYS2
