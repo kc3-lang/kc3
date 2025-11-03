@@ -320,6 +320,26 @@ s_tag * tag_equal (s_tag *a, s_tag *b, s_tag *dest)
   return dest;
 }
 
+#if HAVE_F80
+
+s_tag * tag_f80 (s_tag *tag, f80 f)
+{
+  tag_clean(tag);
+  return tag_init_f80(tag, f);
+}
+
+#endif
+
+#if HAVE_F128
+
+s_tag * tag_f128 (s_tag *tag, f128 f)
+{
+  tag_clean(tag);
+  return tag_init_f128(tag, f);
+}
+
+#endif
+
 bool * tag_gt (s_tag *a, s_tag *b, bool *dest)
 {
   assert(a);

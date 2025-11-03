@@ -68,6 +68,14 @@ ffi_type       tag_to_ffi_type(const s_tag *tag);
 const s_sym ** tag_type (const s_tag *tag, const s_sym **type);
 const s_sym ** tag_type_var (const s_tag *tag, const s_sym **type);
 
+/* Setters */
+#if HAVE_F80
+s_tag * tag_f80 (s_tag *tag, f80 f);
+#endif
+#if HAVE_F128
+s_tag * tag_f128 (s_tag *tag, f128 f);
+#endif
+
 /* Operators. */
 s_tag *     tag_1 (s_tag *tag, const char *p);
 s_pointer * tag_address (s_tag *tag, s_pointer *dest);
