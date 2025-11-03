@@ -33,6 +33,12 @@ extern s_tag g_tag_last;
 void    tag_clean (s_tag *tag);
 s_tag * tag_init (s_tag *tag);
 s_tag * tag_init_1 (s_tag *tag, const char *p);
+#if HAVE_F80
+s_tag * tag_init_f80 (s_tag *tag, f80 f);
+#endif
+#if HAVE_F128
+s_tag * tag_init_f128 (s_tag *tag, f128 f);
+#endif
 s_tag * tag_init_facts_cast (s_tag *tag, p_sym *type, s_tag *src);
 s_tag * tag_init_from_str (s_tag *tag, const s_str *str);
 s_tag * tag_init_uw_reduce (s_tag *tag, uw src);
