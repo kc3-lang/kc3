@@ -48,6 +48,8 @@ config_gnu
 config_i386
 config_win32
 config_win64
+config_have_f80
+config_have_f128
 pkg_config libbsd-overlay
 pkg_config libevent
 pkg_config libffi
