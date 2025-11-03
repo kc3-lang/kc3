@@ -470,7 +470,7 @@ config_have_f80() {
       echo "  (void) y;"
       echo "  (void) z;"
       echo "  if (sizeof(long double) > sizeof(double)) {"
-      echo '    printf("%zd\\n", sizeof(long double));'
+      printf '%s' '    printf("%zd\n", sizeof(long double));'
       echo "    return 0;"
       echo "  }"
       echo "  return 1;"
