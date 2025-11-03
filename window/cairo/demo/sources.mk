@@ -3,6 +3,7 @@ HEADERS = \
 	"bg_rect.h" \
 	"flies.h" \
 	"lightspeed.h" \
+	"mandelbrot_f64.h" \
 	"mandelbrot_f80.h" \
 	"toasters.h" \
 	"window_cairo_demo.h" \
@@ -11,6 +12,7 @@ SOURCES = \
 	"bg_rect.c" \
 	"flies.c" \
 	"lightspeed.c" \
+	"mandelbrot_f64.c" \
 	"mandelbrot_f80.c" \
 	"toasters.c" \
 	"window_cairo_demo.c" \

@@ -24,7 +24,11 @@
 #include "lightspeed.h"
 #include "toasters.h"
 #include "flies.h"
+#if HAVE_F80
 #include "mandelbrot_f80.h"
+#else
+#include "mandelbrot_f64.h"
+#endif
 
 s_cairo_font g_font_computer_modern = {0};
 s_cairo_font g_font_courier_new = {0};
@@ -115,10 +119,17 @@ bool window_cairo_demo_load (s_window_cairo *window)
     return false;
   sequence_init(window->sequence + 3, 60.0, "04. Flies",
                 flies_load, flies_render, flies_unload, window);
+#if HAVE_F80
   sequence_init(window->sequence + 4, 3600.0, "05. Mandelbrot (f80)",
                 mandelbrot_f80_load, mandelbrot_f80_render,
                 mandelbrot_f80_unload, window);
   window->sequence[4].button = mandelbrot_f80_button;
+#else
+  sequence_init(window->sequence + 4, 3600.0, "05. Mandelbrot (f64)",
+                mandelbrot_f64_load, mandelbrot_f64_render,
+                mandelbrot_f64_unload, window);
+  window->sequence[4].button = mandelbrot_f64_button;
+#endif
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }

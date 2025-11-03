@@ -59,6 +59,8 @@ pkg_config freetype2
 pkg_config glesv2
 pkg_config libffi
 pkg_config libpng
+config_have_f80
+config_have_f128
 if ${HAVE_COCOA}; then
     config_lib OPENGL -framework OpenGL 2>/dev/null
 fi

@@ -24,7 +24,11 @@
 #include "../../../demo/toasters.h"
 #include "../../../demo/flies.h"
 #include "../../../demo/earth.h"
+#if HAVE_F80
 #include "../../../demo/mandelbrot_f80.h"
+#else
+#include "../../../demo/mandelbrot_f64.h"
+#endif
 #include "../../../demo/matrix.h"
 #include "../../../window.h"
 #include "../../window_egl.h"
@@ -224,6 +228,7 @@ bool window_egl_demo_load (s_window_egl *window)
                 earth_render,
                 earth_unload,
                 window);
+#if HAVE_F80
   sequence_init((s_sequence *) window->sequence + 5, 3600.0,
                 "06. Mandelbrot (f80)",
                 mandelbrot_f80_load,
@@ -232,6 +237,16 @@ bool window_egl_demo_load (s_window_egl *window)
                 window);
   window->sequence[5].button =
     (f_sequence_button) mandelbrot_f80_button;
+#else
+  sequence_init((s_sequence *) window->sequence + 5, 3600.0,
+                "06. Mandelbrot (f64)",
+                mandelbrot_f64_load,
+                mandelbrot_f64_render,
+                mandelbrot_f64_unload,
+                window);
+  window->sequence[5].button =
+    (f_sequence_button) mandelbrot_f64_button;
+#endif
   sequence_init((s_sequence *) window->sequence + 6, 3600.0,
                 "07. Matrix",
                 matrix_load,

@@ -1079,6 +1079,8 @@ KC3_C_SOURCES = \
 	"window/cairo/demo/flies.h" \
 	"window/cairo/demo/lightspeed.c" \
 	"window/cairo/demo/lightspeed.h" \
+	"window/cairo/demo/mandelbrot_f64.c" \
+	"window/cairo/demo/mandelbrot_f64.h" \
 	"window/cairo/demo/mandelbrot_f80.c" \
 	"window/cairo/demo/mandelbrot_f80.h" \
 	"window/cairo/demo/toasters.c" \
@@ -1113,6 +1115,8 @@ KC3_C_SOURCES = \
 	"window/demo/flies.h" \
 	"window/demo/lightspeed.c" \
 	"window/demo/lightspeed.h" \
+	"window/demo/mandelbrot_f64.c" \
+	"window/demo/mandelbrot_f64.h" \
 	"window/demo/mandelbrot_f80.c" \
 	"window/demo/mandelbrot_f80.h" \
 	"window/demo/matrix.c" \

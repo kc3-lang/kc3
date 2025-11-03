@@ -5,6 +5,7 @@ HEADERS = \
 	"earth.h" \
 	"flies.h" \
 	"lightspeed.h" \
+	"mandelbrot_f64.h" \
 	"mandelbrot_f80.h" \
 	"matrix.h" \
 	"toasters.h" \
@@ -16,6 +17,7 @@ SOURCES = \
 	"earth.c" \
 	"flies.c" \
 	"lightspeed.c" \
+	"mandelbrot_f64.c" \
 	"mandelbrot_f80.c" \
 	"matrix.c" \
 	"toasters.c" \

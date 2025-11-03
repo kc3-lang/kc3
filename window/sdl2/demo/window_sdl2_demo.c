@@ -20,7 +20,11 @@
 #include "../../demo/toasters.h"
 #include "../../demo/flies.h"
 #include "../../demo/earth.h"
+#if HAVE_F80
 #include "../../demo/mandelbrot_f80.h"
+#else
+#include "../../demo/mandelbrot_f64.h"
+#endif
 #include "../../demo/matrix.h"
 #include "../../window.h"
 #include "../window_sdl2.h"
@@ -221,10 +225,17 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   assert(glGetError() == GL_NO_ERROR);
   sequence_init(window->sequence + 4, 120.0, "05. Earth",
                 earth_load, earth_render, earth_unload, window);
+#if HAVE_F80
   sequence_init(window->sequence + 5, 3600.0, "06. Mandelbrot (f80)",
                 mandelbrot_f80_load, mandelbrot_f80_render,
                 mandelbrot_f80_unload, window);
   window->sequence[5].button = mandelbrot_f80_button;
+#else
+  sequence_init(window->sequence + 5, 3600.0, "06. Mandelbrot (f64)",
+                mandelbrot_f64_load, mandelbrot_f64_render,
+                mandelbrot_f64_unload, window);
+  window->sequence[5].button = mandelbrot_f64_button;
+#endif
   sequence_init(window->sequence + 6, 3600.0, "07. Matrix",
                 matrix_load, matrix_render,
                 matrix_unload, window);
