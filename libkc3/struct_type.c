@@ -57,8 +57,10 @@ uw struct_type_compute_size (uw offset)
     return (offset + 3) / 4 * 4;
 #if defined(__APPLE__) && defined(__aarch64__)
   return (offset + 7) / 8 * 8;
-#else
+#elif HAVE_F128
   return (offset + 15) / 16 * 16;
+#else
+  return (offset + 7) / 8 * 8;
 #endif
 }
 
@@ -334,6 +336,9 @@ uw struct_type_padding (uw offset, uw size)
     if (size >= 8)
       align = 8;
     break;
+  default:
+    err_puts("struct_type_padding: invalid uw size");
+    abort();
   }
   return (offset + (align - 1)) / align * align;
 }
