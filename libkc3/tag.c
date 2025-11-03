@@ -676,6 +676,34 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
   return NULL;
 }
 
+#if HAVE_F80
+
+s_tag * tag_init_f80 (s_tag *tag, f80 f)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_F80;
+  tmp.data.f80 = f;
+  *tag = tmp;
+  return tag;
+}
+
+#endif
+
+#if HAVE_F128
+
+s_tag * tag_init_f128 (s_tag *tag, f128 f)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_F128;
+  tmp.data.f128 = f;
+  *tag = tmp;
+  return tag;
+}
+
+#endif
+
 s_tag * tag_init_from_str (s_tag *tag, const s_str *str)
 {
   s_buf buf;
@@ -699,18 +727,6 @@ s_tag * tag_init_from_str (s_tag *tag, const s_str *str)
   }
   return tag;
 }
-
-/*
-s_tag * tag_init_pvar (s_tag *tag, const s_sym *type)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_PVAR;
-  pvar_init(&tmp.data.pvar, type);
-  *tag = tmp;
-  return tag;
-}
-*/
 
 s_tag * tag_init_uw_reduce (s_tag *tag, uw src)
 {
