@@ -46,6 +46,8 @@ config_asan
 config_cocoa
 config_gnu
 config_i386
+config_have_f80
+config_have_f128
 config_win32
 config_win64
 pkg_config libbsd-overlay
@@ -54,8 +56,6 @@ pkg_config freetype2
 pkg_config glesv2
 pkg_config libffi
 pkg_config libpng
-config_have_f80
-config_have_f128
 config_lib m -lm
 config_lib OPENGL -lopengl32 -lglu32 2>/dev/null
 config_lib OPENMP -fopenmp 2>/dev/null

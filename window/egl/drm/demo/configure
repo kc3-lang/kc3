@@ -46,6 +46,8 @@ config_asan
 config_cocoa
 config_gnu
 config_i386
+config_have_f80
+config_have_f128
 config_win32
 config_win64
 pkg_config libbsd-overlay
@@ -55,8 +57,6 @@ pkg_config glesv2
 pkg_config libdrm
 pkg_config libffi
 pkg_config libpng
-config_have_f80
-config_have_f128
 config_lib m -lm
 if ${HAVE_COCOA}; then
     config_lib OPENGL -framework OpenGL
