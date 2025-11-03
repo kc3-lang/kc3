@@ -55,12 +55,11 @@ uw struct_type_compute_size (uw offset)
 #endif
   if (sizeof(long) == 4 && ! win64)
     return (offset + 3) / 4 * 4;
-#if defined(__APPLE__) && defined(__aarch64__)
+#if defined(__APPLE__) && defined(__aarch64__) || \
+    ! (HAVE_F128 || HAVE_F80)
   return (offset + 7) / 8 * 8;
-#elif HAVE_F128
-  return (offset + 15) / 16 * 16;
 #else
-  return (offset + 7) / 8 * 8;
+  return (offset + 15) / 16 * 16;
 #endif
 }
 
