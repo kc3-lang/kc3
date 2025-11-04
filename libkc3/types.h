@@ -13,6 +13,10 @@
 #ifndef LIBKC3_TYPES_H
 #define LIBKC3_TYPES_H
 
+#if defined(WIN32) || defined(WIN64)
+# include <winsock2.h>
+#endif
+
 #include <ffi.h>
 #include <limits.h>
 #include <setjmp.h>
@@ -60,7 +64,6 @@ extern "C" {
 #endif /* __cplusplus */
 
 #if defined(WIN32) || defined(WIN64)
-# include <winsock2.h>
 # include <sys/stat.h>
 # define lstat(path, buf) _stat(path, buf)
 # define stat _stat

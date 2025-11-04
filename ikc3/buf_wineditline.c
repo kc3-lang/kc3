@@ -10,12 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "../libkc3/kc3.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <readline.h>
-#include "../libkc3/kc3.h"
 
 typedef struct buf_wineditline {
   s_buf       buf;
