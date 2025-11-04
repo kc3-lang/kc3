@@ -801,9 +801,41 @@ sw marshall_env_to_file (const s_env *env, const s_str *path)
 
 DEF_MARSHALL(f32, "_KC3F32_")
 DEF_MARSHALL(f64, "_KC3F64_")
+
 #if HAVE_F80
-DEF_MARSHALL(f80, "_KC3F80_")
+
+s_marshall * marshall_f80 (s_marshall *m, bool heap, f80 src)
+{
+  s_buf *buf;
+  const u8 zero[16] = {0};
+  sw r;
+  sw result = 0;
+  if (! m) {
+    err_puts("marshall_f80: invalid argument");
+    assert(! "marshall_f80: invalid argument");
+    return NULL;
+  }
+  buf = heap ? &m->heap : &m->buf;
+  if ((r = buf_write_1(buf, "_KC3F80_")) <= 0)
+    return NULL;
+  result += r;
+  if ((r = buf_write_f80(buf, src)) <= 0)
+    return NULL;
+  result += r;
+  if (sizeof(f80) < 16) {
+    if ((r = buf_write(buf, zero, 16 - sizeof(f80))) <= 0)
+      return NULL;
+    result += r;
+  }
+  if (heap)
+    m->heap_pos += result;
+  else
+    m->buf_pos += result;
+  return m;
+}
+
 #endif
+
 #if HAVE_F128
 DEF_MARSHALL(f128, "_KC3F128_")
 #endif

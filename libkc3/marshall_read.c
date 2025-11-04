@@ -680,8 +680,37 @@ sw marshall_read_env_from_file (s_env *env, const s_str *path)
 
 DEF_MARSHALL_READ(f32, "_KC3F32_", f32)
 DEF_MARSHALL_READ(f64, "_KC3F64_", f64)
+
 #if HAVE_F80
-DEF_MARSHALL_READ(f80, "_KC3F80_", f80)
+
+s_marshall_read * marshall_read_f80 (s_marshall_read *mr,
+                                     bool heap,
+                                     f80 *dest)
+{
+  s_buf *buf = NULL;
+  f80 tmp;
+  assert(mr);
+  assert(dest);
+  buf = heap ? &mr->heap : &mr->buf;
+  if (buf_read_1(buf, "_KC3F80_") <= 0) {
+    err_puts("marshall_read_f80: buf_read_1 magic");
+    assert(! "marshall_read_f80: buf_read_1 magic");
+    return NULL;
+  }
+  if (buf_read_f80(buf, &tmp) <= 0) {
+    err_puts("marshall_read_f80: buf_read_f80");
+    assert(! "marshall_read_f80: buf_read_f80");
+    return NULL;
+  }
+  if (sizeof(f80) < 16 &&
+      buf_ignore(buf, 16 - sizeof(f80)) <= 0) {
+    err_puts("marshall_read_f80: buf_ignore");
+    assert(! "marshall_read_f80: buf_ignore");
+    return NULL;
+  }
+  *dest = tmp;
+  return mr;
+}
 #endif
 #if HAVE_F128
 DEF_MARSHALL_READ(f128, "_KC3F128_", f128)
