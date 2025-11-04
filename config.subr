@@ -1520,7 +1520,7 @@ case "$(uname -s)" in
         LIB_LINK_SUFFIX="dll"
         IMPLIB="--out-implib \${LIB_BASE}.dll.a"
         LIBGCC=$(${CC} -print-libgcc-file-name)
-        LDADD="-mi386pep $LIBGCC -lmingw_console -lmingwex -lucrtbase -lkernel32 -luser32 -ladvapi32"
+        LDADD="-mi386pep $LIBGCC -lmingw_console -lmingwex -lucrtbase -lkernel32 -luser32 -ladvapi32 -lshell32"
         DLLCRT2="/clang64/lib/dllcrt2.o"
         CRT2="/clang64/lib/crt2.o"
         CRTBEGIN="/clang64/lib/crtbegin.o"

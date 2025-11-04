@@ -59,7 +59,8 @@ distclean::
 gdb_demo: debug
 	${MAKE} -C demo gdb_demo
 
-install:
+install::
+	${MAKE} -C demo install
 
 test: build
 	${MAKE} -C demo test
@@ -67,7 +68,8 @@ test: build
 update_sources:
 	./update_sources
 
-uninstall:
+uninstall::
+	${MAKE} -C demo uninstall
 
 .PHONY: \
 	all \

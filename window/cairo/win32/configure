@@ -41,6 +41,9 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC"
+LDFLAGS="$LDFLAGS -L.."
+LDFLAGS="$LDFLAGS -L../.."
+LDFLAGS="$LDFLAGS -L../../../libkc3"
 config_asan
 config_gnu
 config_i386
@@ -56,19 +59,19 @@ LIBS="$LIBS -lxkbcommon"
 CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
-LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR -L.."
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
 LIBS_ASAN="$LIBS -lkc3_window_cairo_asan $(${CC} -print-file-name=libasan.so)"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LIBGCOV=$(${CC} -print-file-name=libgcov.a)
 LIBGCOV_DIR=$(dirname "$LIBGCOV")
-LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR -L.."
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
 LIBS_COV="$LIBS -lkc3_window_cairo_cov $(${CC} -print-file-name=libgcov.a)"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
-LDFLAGS_DEBUG="$LDFLAGS -L.."
+LDFLAGS_DEBUG="$LDFLAGS"
 LIBS_DEBUG="$LIBS -lkc3_window_cairo_debug"
 
 # Main config
@@ -77,11 +80,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LDFLAGS="$LDFLAGS -L../"
-LDFLAGS="$LDFLAGS -L../../"
-LDFLAGS="$LDFLAGS -L../../../libkc3"
-LIBS_LOCAL="-lkc3_window_cairo -lkc3_window -lkc3"
-LIBS="$LIBS_LOCAL $LIBS"
+LIBS="$LIBS -lkc3_window_cairo -lkc3_window -lkc3"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
@@ -105,43 +104,12 @@ echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
-echo >> ${CONFIG_MK}
-echo "$LIB: $LIBS_LOCAL $OBJECTS" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} ${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o ${LIB}" >> ${CONFIG_MK}
 
-echo >> ${CONFIG_MK}
-echo "$LIB_ASAN: $LIBS_LOCAL_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_ASAN} ${OBJECTS_ASAN} \${LIBS_ASAN} -rpath ${LIBDIR} -o ${LIB_ASAN}" >> ${CONFIG_MK}
+update_build_c
+update_build_lib
 
-echo >> ${CONFIG_MK}
-echo "$LIB_COV: $LIBS_LOCAL_COV $OBJECTS_COV" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_COV} ${OBJECTS_COV} \${LIBS_COV} -rpath ${LIBDIR} -o ${LIB_COV}" >> ${CONFIG_MK}
-
-echo >> ${CONFIG_MK}
-echo "$LIB_DEBUG: $LIBS_LOCAL_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} \${LIBS_DEBUG} -rpath ${LIBDIR} -o ${LIB_DEBUG}" >> ${CONFIG_MK}
-
-for SRC in $SOURCES; do
-    echo >> ${CONFIG_MK}
-    SRC_LO="$(c2ext .main.o "$SRC")"
-    c_ext_rule .main.o "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
-
-    echo >> ${CONFIG_MK}
-    SRC_ASAN_LO="$(c2ext .asan.o "$SRC")"
-    c_ext_rule .asan.o "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_ASAN_LO" >> ${CONFIG_MK}
-
-    echo >> ${CONFIG_MK}
-    SRC_COV_LO="$(c2ext .cov.o "$SRC")"
-    c_ext_rule .cov.o "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
-
-    echo >> ${CONFIG_MK}
-    SRC_DEBUG_LO="$(c2ext .debug.o "$SRC")"
-    c_ext_rule .debug.o "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
-done
+build_o_c
+build_lib
 
 update_config_mk
 env_reset
