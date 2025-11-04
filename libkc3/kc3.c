@@ -95,11 +95,33 @@ static void kc3_system_pipe_exec (s32 pipe_w, char **argv,
                                   p_list *list);
 #endif
 
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64)
+
+static void kc3_wsa_cleanup(void){ WSACleanup(); }
+
+static void kc3_wsa_init_once(void){
+  static int done = 0;
+  if (! done) {
+    WSADATA w;
+    done = 1;
+    if (WSAStartup(MAKEWORD(2,2), &w) != 0) {
+      err_puts("kc3_wsa_init_once: WSAStartup");
+      assert(! "kc3_wsa_init_once: WSAStartup");
+    } else {
+      atexit(kc3_wsa_cleanup);
+    }
+  }
+}
+
+#endif
+
+#if defined(WIN32)
+
 int fork (void)
 {
   return -1;
 }
+
 #endif
 
 s_pointer * kc3_address_of (s_ident *ident, s_pointer *dest)
@@ -725,6 +747,9 @@ s_str * kc3_hostname (s_str *dest)
   size = sysconf(_SC_HOST_NAME_MAX);
   name = calloc(1, size + 1);
 # endif
+#endif
+#if defined(WIN32) || defined(WIN64)
+  kc3_wsa_init_once();
 #endif
   if (gethostname(name, size)) {
     e = errno;

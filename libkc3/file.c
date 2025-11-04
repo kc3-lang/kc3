@@ -336,9 +336,9 @@ bool * file_is_regular (const s_str *path, bool *dest)
   return dest;
 }
 
-#if ! (defined(WIN32) || defined(WIN64))
 bool file_link (const s_str *from, const s_str *to)
 {
+#if ! (defined(WIN32) || defined(WIN64))
   sw e;
   if (link(from->ptr.pchar, to->ptr.pchar)) {
     e = errno;
@@ -352,8 +352,14 @@ bool file_link (const s_str *from, const s_str *to)
     return false;
   }
   return true;
-}
+#else
+  (void) from;
+  (void) to;
+  err_puts("file_link");
+  assert(! "file_link");
+  return false;
 #endif
+}
 
 s_list ** file_list (const s_str *path, s_list **dest)
 {

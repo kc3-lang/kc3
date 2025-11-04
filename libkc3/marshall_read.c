@@ -175,11 +175,17 @@ s_marshall_read * marshall_read_array_data (s_marshall_read *mr,
                                             bool heap,
                                             s_array *dest)
 {
+  (void) mr;
+  (void) heap;
+  (void) dest;
+  return NULL;
+  /*
   for (u8 i = 0; i <= dest->count; i++) {
-    if (marshall_read_uw(mr, heap, &((uw *)dest->data)[i]))
+    if (marshall_read_uw(mr, heap, &((uw *) dest->data)[i]))
       return NULL;
   }
   return mr;
+  */
 }
 
 DEF_MARSHALL_READ(bool, "_KC3BOOL_", bool)
