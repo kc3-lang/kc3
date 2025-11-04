@@ -1,0 +1,192 @@
+#!/bin/sh
+## kc3
+## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+set -e
+
+echo "$0"
+export BUILD_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
+export DIR="window/egl/windows/demo"
+export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")")")"
+
+. "${SRC_TOP}/config.subr"
+
+config_prog kc3_window_egl_windows_demo
+
+. "${SRC_DIR}/sources.sh"
+
+OBJECTS="$(c2ext .main.o "$SOURCES")"
+echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
+
+OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
+echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
+
+if $HAVE_GCOV; then
+    OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
+    echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
+fi
+
+OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
+echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
+
+# Common config for all targets
+CPPFLAGS="$CPPFLAGS -DPIC"
+CFLAGS="$CFLAGS -W -Wall -Werror -Wno-error=unknown-pragmas"
+CFLAGS="$CFLAGS -std=c11 -pedantic -pipe -fPIC"
+config_asan
+config_cocoa
+config_gnu
+config_i386
+config_have_f80
+config_have_f128
+config_win32
+config_win64
+pkg_config libbsd-overlay
+pkg_config libmd
+pkg_config freetype2
+pkg_config glesv2
+pkg_config libffi
+pkg_config libpng
+config_lib m -lm
+config_lib OPENGL -lopengl32 -lglu32 2>/dev/null
+config_lib OPENMP -fopenmp 2>/dev/null
+config_define HAVE_OPENMP "${HAVE_OPENMP}"
+pkg_config egl
+pkg_config xcb
+
+# Asan config
+CPPFLAGS_ASAN="$CPPFLAGS"
+CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
+CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
+LIBASAN=$(${CC} -print-file-name=libasan.so)
+LIBASAN_DIR=$(dirname "$LIBASAN")
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
+LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../../../libkc3"
+LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../../../gl"
+LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../../"
+LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../../demo"
+LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../"
+LDFLAGS_ASAN="$LDFLAGS_ASAN -L../"
+LIBS_ASAN="$LIBS -lkc3_window_egl_windows_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_window_egl_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_window_demo_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_window_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_gl_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
+LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
+
+# Coverage config
+CPPFLAGS_COV="$CPPFLAGS"
+CFLAGS_COV="$CFLAGS -DDEBUG -fprofile-arcs -ftest-coverage"
+LIBGCOV=$(${CC} -print-file-name=libgcov.a)
+LIBGCOV_DIR=$(dirname "$LIBGCOV")
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
+LDFLAGS_COV="$LDFLAGS_COV -L../../../../libkc3"
+LDFLAGS_COV="$LDFLAGS_COV -L../../../../gl"
+LDFLAGS_COV="$LDFLAGS_COV -L../../../"
+LDFLAGS_COV="$LDFLAGS_COV -L../../../demo"
+LDFLAGS_COV="$LDFLAGS_COV -L../../"
+LDFLAGS_COV="$LDFLAGS_COV -L../"
+LIBS_COV="$LIBS -lkc3_window_egl_windows_cov"
+LIBS_COV="$LIBS_COV -lkc3_window_egl_cov"
+LIBS_COV="$LIBS_COV -lkc3_window_demo_cov"
+LIBS_COV="$LIBS_COV -lkc3_window_cov"
+LIBS_COV="$LIBS_COV -lkc3_gl_cov"
+LIBS_COV="$LIBS_COV -lkc3_cov"
+LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
+
+# Debug config
+CPPFLAGS_DEBUG="$CPPFLAGS"
+CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
+LDFLAGS_DEBUG="$LDFLAGS"
+LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../../../libkc3"
+LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../../../gl"
+LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../../"
+LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../../demo"
+LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../"
+LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../"
+LIBS_DEBUG="$LIBS -lkc3_window_egl_windows_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_egl_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_demo_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_gl_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
+
+# Main config
+DEFAULT_CFLAGS="-O2 -fPIC"
+if [ "x$ENV_CFLAGS" = "x" ]; then
+    CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
+fi
+CFLAGS="$CFLAGS -DNDEBUG"
+if [ "$(uname -s)" = "Darwin" ]; then
+    LDFLAGS="$LDFLAGS -rpath @executable_path/../Frameworks"
+else
+    LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
+    LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/libkc3"
+    LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/gl"
+    LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window"
+    LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window/demo"
+    LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window/egl"
+    LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window/egl/windows"
+fi
+LDFLAGS="$LDFLAGS -L../../../../libkc3"
+LDFLAGS="$LDFLAGS -L../../../../gl"
+LDFLAGS="$LDFLAGS -L../../../"
+LDFLAGS="$LDFLAGS -L../../../demo"
+LDFLAGS="$LDFLAGS -L../../"
+LDFLAGS="$LDFLAGS -L../"
+LIBS="$LIBS -lkc3_window_egl_windows"
+LIBS="$LIBS -lkc3_window_egl"
+LIBS="$LIBS -lkc3_window_demo"
+LIBS="$LIBS -lkc3_window"
+LIBS="$LIBS -lkc3_gl"
+LIBS="$LIBS -lkc3"
+
+echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
+echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
+echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
+echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
+echo "LIBS = $LIBS" >> ${CONFIG_MK}
+echo >> ${CONFIG_MK}
+echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
+echo "LDFLAGS_ASAN = $LDFLAGS_ASAN" >> ${CONFIG_MK}
+echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
+echo >> ${CONFIG_MK}
+echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
+echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
+echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
+echo >> ${CONFIG_MK}
+echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
+echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
+echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
+
+update_build
+update_build_prog
+
+build_o
+build_prog
+
+#if [ "x$(uname)" = "xDarwin" ]; then
+#    HAVE_DARWIN=true
+#else
+    HAVE_DARWIN=false
+#fi
+echo "HAVE_DARWIN = $HAVE_DARWIN" >> ${CONFIG_MK}
+
+update_config_mk
+update_makefile
+env_reset
+
+# TODO: configure macos subdir
+if ${HAVE_COCOA}; then
+    config_subdirs macos
+fi

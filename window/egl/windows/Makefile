@@ -60,10 +60,10 @@ gdb_demo: debug
 	${MAKE} -C demo gdb_demo
 
 install::
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/window/egl/xcb
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/window/egl/windows
 	for H in ${HEADERS}; do \
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-		$$H ${prefix}/include/libkc3/window/egl/xcb; done
+		$$H ${prefix}/include/libkc3/window/egl/windows; done
 
 lldb_demo: debug
 

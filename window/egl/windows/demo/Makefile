@@ -12,65 +12,58 @@
 
 all:
 	${MAKE} build
-	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
+	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 include config.mk
 include sources.mk
 
-asan:
-	${MAKE} ${LIB_ASAN}
-	${MAKE} -C demo asan
-
 build:
-	${MAKE} ${LIB}
-	${MAKE} -C demo build
+	${MAKE} ${PROG}
 
-clean::
-	${MAKE} -C demo clean
-
-clean_cov::
-	${MAKE} -C demo clean_cov
+asan:
+	${MAKE} ${PROG_ASAN}
 
 cov:
-	${MAKE} ${LIB_COV}
-	${MAKE} -C demo cov
+	${MAKE} ${PROG_COV}
 
 debug:
-	${MAKE} ${LIB_DEBUG}
-	${MAKE} -C demo debug
+	${MAKE} ${PROG_DEBUG}
 
-demo: build
-	${MAKE} -C demo demo
+demo:
+	${MAKE} ${PROG}
 
-demo_asan: asan
-	${MAKE} -C demo demo_asan
+demo_asan:
+	${MAKE} asan
+	time ./${PROG_ASAN}
 
-demo_cov: cov
-	${MAKE} -C demo demo_cov
+demo_cov:
+	${MAKE} cov
+	time ./${PROG_COV}
 
-demo_debug: debug
-	${MAKE} -C demo demo_debug
+demo_debug:
+	${MAKE} debug
+	time ./${PROG_DEBUG}
 
-distclean::
-	${MAKE} -C demo distclean
+gcovr:
+	gcovr --gcov-executable ${GCOV} --html-details ${PROG}.html
 
 gdb_demo: debug
-	${MAKE} -C demo gdb_demo
+	gdb ${PROG_DEBUG}
 
-install::
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/window/egl/xcb
-	for H in ${HEADERS}; do \
-	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-		$$H ${prefix}/include/libkc3/window/egl/xcb; done
+install:
+	install -m 755 -d ${DESTDIR}${prefix}/bin
+	install -m 755 ${PROG} ${DESTDIR}${prefix}/bin/${PROG}
 
 lldb_demo: debug
-
-test:
+	lldb ${PROG_DEBUG}
 
 update_sources:
 	./update_sources
+
+uninstall:
+	rm -f ${prefix}/bin/${PROG}
 
 .PHONY: \
 	all \
@@ -79,9 +72,11 @@ update_sources:
 	cov \
 	debug \
 	demo \
-	dist \
+	demo_asan \
+	demo_cov \
+	demo_debug \
 	gdb_demo \
 	install \
 	lldb_demo \
-	test \
 	update_sources \
+	uninstall

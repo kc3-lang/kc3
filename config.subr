@@ -761,7 +761,8 @@ config_prog() {
     echo "PROG_ASAN  = ${PROG_ASAN}"  >> ${CONFIG_MK}
     echo "PROG_COV   = ${PROG_COV}"   >> ${CONFIG_MK}
     echo "PROG_DEBUG = ${PROG_DEBUG}" >> ${CONFIG_MK}
-    CPPFLAGS="$CPPFLAGS -DPREFIX=\"\\\"${PREFIX}\\\"\""
+    # CPPFLAGS="$CPPFLAGS -DPREFIX=\"\\\"${PREFIX}\\\"\""
+    CPPFLAGS="$CPPFLAGS -DPREFIX=\\\"${PREFIX}\\\""
 }
 
 config_subdirs() {
@@ -1631,7 +1632,7 @@ esac
 } >> ${CONFIG_MK}
 
 {
-    echo "CLEANFILES = *.a *.gcno *.la .libs *.o *.so *.so.* *.dylib"
+    echo "CLEANFILES = *.a *.dll *.exe *.gcno *.o *.so *.so.* *.dylib"
     echo "CLEANFILES_COV = *.css *.gcda *.html"
     echo "CLEANFILES += \${CLEANFILES_COV}"
     echo "DISTCLEANFILES = .build \${CLEANFILES} config.mk"

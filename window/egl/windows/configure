@@ -1,0 +1,124 @@
+#!/bin/sh
+## kc3
+## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+set -e
+
+echo "$0"
+export BUILD_TOP="$(dirname "$(dirname "$(dirname "$PWD")")")"
+export DIR="window/egl/windows"
+export SRC_TOP="$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")")"
+
+. "${SRC_TOP}/config.subr"
+
+LIB=libkc3_window_egl_windows
+LIB_ASAN=libkc3_window_egl_windows_asan
+LIB_COV=libkc3_window_egl_windows_cov
+LIB_DEBUG=libkc3_window_egl_windows_debug
+
+echo "LIB = $LIB" >> ${CONFIG_MK}
+echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
+echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
+echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
+
+. "${SRC_DIR}/sources.sh"
+
+OBJECTS="$(c2ext .main.o "$SOURCES")"
+echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
+OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
+OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
+OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
+
+# Common config for all targets
+CPPFLAGS="$CPPFLAGS -DPIC"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
+config_asan
+config_gnu
+config_i386
+config_have_f80
+config_have_f128
+config_win32
+config_win64
+config_lib gdi32 -lgdi32
+pkg_config libbsd-overlay
+pkg_config libffi
+pkg_config libmd
+pkg_config freetype2
+pkg_config xkbcommon
+pkg_config egl
+pkg_config glesv2
+LIBS="$LIBS -rpath ${PREFIX}/lib"
+
+echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
+echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
+echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
+
+# Address Sanitizer config
+CPPFLAGS_ASAN="$CPPFLAGS"
+CFLAGS_ASAN="$CFLAGS -O1 -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope"
+LIBASAN=$(${CC} -print-file-name=libasan.so)
+LIBASAN_DIR=$(dirname "$LIBASAN")
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR -L../../../libkc3"
+LIBS_ASAN="$LIBS -lkc3_asan $(${CC} -print-file-name=libasan.so)"
+
+echo "CPPFLAGS_ASAN = $CPPFLAGS_ASAN" >> ${CONFIG_MK}
+echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
+echo "LDFLAGS_ASAN = $LDFLAGS_ASAN" >> ${CONFIG_MK}
+echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
+
+# Coverage config
+CPPFLAGS_COV="$CPPFLAGS"
+CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
+LIBGCOV=$(${CC} -print-file-name=libgcov.a)
+LIBGCOV_DIR=$(dirname "$LIBGCOV")
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR -L../../../libkc3"
+LIBS_COV="$LIBS -lkc3_cov $(${CC} -print-file-name=libgcov.a)"
+
+echo "CPPFLAGS_COV = $CPPFLAGS_COV" >> ${CONFIG_MK}
+echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
+echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
+echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
+
+# Debug config
+CPPFLAGS_DEBUG="$CPPFLAGS"
+CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
+LDFLAGS_DEBUG="$LDFLAGS -L../../../libkc3"
+LIBS_DEBUG="$LIBS -lkc3_debug"
+
+echo "CPPFLAGS_DEBUG = $CPPFLAGS_DEBUG" >> ${CONFIG_MK}
+echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
+echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
+echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
+
+# Main config
+LDFLAGS="$LDFLAGS -L../../../libkc3"
+LDFLAGS="$LDFLAGS -L../../"
+LDFLAGS="$LDFLAGS -L../"
+LIBS_LOCAL="-lkc3 -lkc3_window -lkc3_window_egl"
+LIBS="$LIBS_LOCAL $LIBS"
+
+echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
+echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
+echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
+echo "LIBS = $LIBS" >> ${CONFIG_MK}
+
+update_build_c
+update_build_lib
+
+build_o_c
+build_lib
+
+update_config_mk
+update_makefile
+env_reset
+
+config_subdirs demo
