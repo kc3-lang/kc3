@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../../libkc3/kc3.h"
@@ -21,13 +22,19 @@
 #include "../../demo/flies.h"
 #include "../../demo/earth.h"
 #if HAVE_F80
-#include "../../demo/mandelbrot_f80.h"
+# include "../../demo/mandelbrot_f80.h"
 #else
-#include "../../demo/mandelbrot_f64.h"
+# include "../../demo/mandelbrot_f64.h"
 #endif
 #include "../../demo/matrix.h"
 #include "../../window.h"
 #include "../window_sdl2.h"
+
+#if defined(WIN32) || defined(WIN64)
+# include <windows.h>
+# include <stdio.h>
+# include <fcntl.h>
+#endif
 
 #define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 7
 
@@ -52,12 +59,12 @@ static void window_sdl2_demo_unload (s_window_sdl2 *window);
 int main (int argc, char **argv)
 {
   s_window_sdl2 window;
-  if (FT_Init_FreeType(&g_ft)) {
-    err_puts("main: failed to initialize FreeType");
-    return 1;
-  }
   if (! kc3_init(NULL, &argc, &argv)) {
     err_puts("kc3_init");
+    return 1;
+  }
+  if (FT_Init_FreeType(&g_ft)) {
+    err_puts("main: failed to initialize FreeType");
     return 1;
   }
   window_sdl2_init(&window, 50, 50, 800, 600,

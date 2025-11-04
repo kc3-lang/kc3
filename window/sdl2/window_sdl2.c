@@ -218,7 +218,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
   SDL_Event sdl_event;
   assert(window);
   if (! g_window_sdl2_initialized) {
-    //SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
+    SDL_SetMainReady();
     if (SDL_Init(SDL_INIT_VIDEO)) {
       err_write_1("window_sdl2_run: SDL initialization failed: ");
       err_puts(SDL_GetError());
@@ -236,7 +236,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
                       SDL_GL_CONTEXT_PROFILE_ES);

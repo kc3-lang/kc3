@@ -22,6 +22,8 @@
 # include <windef.h>
 #endif
 
+#define SDL_MAIN_HANDLED
+
 #include <SDL.h>
 #include <png.h>
 #include "../../gl/types.h"

@@ -1510,6 +1510,7 @@ echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}
 EXPORT_DYNAMIC="--export-dynamic"
 case "$(uname -s)" in
     MINGW64*)
+        LDFLAGS="$LDFLAGS -subsystem console"
         EXPORT_DYNAMIC=""
         SHARED_FLAGS="-shared"
         SHARED_EXT="dll"
