@@ -135,8 +135,6 @@ s_marshall * marshall_array (s_marshall *m, bool heap,
   uw item_size;
   assert(m);
   assert(array);
-  if (true)
-    err_puts("marshall_array");
   if (! marshall_psym(m, heap, &array->array_type) ||
       ! marshall_psym(m, heap, &array->element_type) ||
       ! marshall_uw(m, heap, array->dimension_count))
