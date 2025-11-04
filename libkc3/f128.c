@@ -24,25 +24,6 @@
 #include "tag_type.h"
 #include "u64.h"
 
-#if defined(WIN32) || defined(WIN64)
-
-f128 cosq (f128 x)
-{
-  return __builtin_cosq(x);
-}
-
-f128 sinq (f128 x)
-{
-  return __builtin_sinq(x);
-}
-
-f128 tanq (f128 x)
-{
-  return __builtin_tanq(x);
-}
-
-#endif
-
 f128 * f128_init_cast (f128 *x, const s_sym * const *type,
                        const s_tag *tag)
 {

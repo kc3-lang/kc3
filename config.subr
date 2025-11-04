@@ -761,7 +761,7 @@ config_prog() {
     echo "PROG_ASAN  = ${PROG_ASAN}"  >> ${CONFIG_MK}
     echo "PROG_COV   = ${PROG_COV}"   >> ${CONFIG_MK}
     echo "PROG_DEBUG = ${PROG_DEBUG}" >> ${CONFIG_MK}
-    CPPFLAGS="$CPPFLAGS -DPREFIX=\"\\\"${PREFIX}\\\"\""
+    CPPFLAGS="$CPPFLAGS -DPREFIX='\"'${PREFIX}'\"'"
 }
 
 config_subdirs() {
@@ -1510,6 +1510,7 @@ echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}
 EXPORT_DYNAMIC="--export-dynamic"
 case "$(uname -s)" in
     MINGW64*)
+        EXPORT_DYNAMIC=""
         SHARED_FLAGS="-shared"
         SHARED_EXT="dll"
         SHARED_MAJOR="-$VER_MAJOR.$SHARED_EXT"
@@ -1518,8 +1519,14 @@ case "$(uname -s)" in
         LIB_SUFFIX="dll"
         LIB_LINK_SUFFIX="dll"
         IMPLIB="--out-implib \${LIB_BASE}.dll.a"
-        LDADD="-L/clang64/lib -lmingwex -lmsvcrt -lkernel32"
-        PROG_LDADD="/clang64/lib/crt.o /clang64/lib/crtbegin.o $LDADD /clang64/lib/crtend.o"
+        LIBGCC=$(${CC} -print-libgcc-file-name)
+        LDADD="$LIBGCC -lmingw_console -lmingwex -lmsvcrt -lkernel32 -luser32 -ladvapi32"
+        DLLCRT2=$(${CC} -print-file-name=dllcrt2.o)
+        CRT2=$(${CC} -print-file-name=crt2.o)
+        CRTBEGIN=$(${CC} -print-file-name=crtbegin.o)
+        CRTEND=$(${CC} -print-file-name=crtend.o)
+        LIB_LDADD="$DLLCRT2 $CRTBEGIN -e DllMainCRTStartup $LDADD $CRTEND"
+        PROG_LDADD="$CRT2 $CRTBEGIN -e main $LDADD $CRTEND"
         ;;
     Darwin)
         SHARED_FLAGS="-dylib -install_name @rpath/\${LIB_BASE}.\${VER_MAJOR}.dylib"
