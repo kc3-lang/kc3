@@ -55,6 +55,8 @@ OBJCFLAGS="$CFLAGS -W -Wall -Werror"
 config_asan
 config_gnu
 config_i386
+config_have_f80
+config_have_f128
 pkg_config cairo
 pkg_config cairo-fc
 pkg_config cairo-ft

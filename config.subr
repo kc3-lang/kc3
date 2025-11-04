@@ -476,8 +476,8 @@ config_have_f80() {
       echo "  return 1;"
       echo "}"; } > "$OUT_C"
     if ${CC} ${CPPFLAGS} ${CFLAGS} -c "$OUT_C" -o "$OUT_O" &&
-       ${LD} ${LDFLAGS} ${LIBS} "$OUT_O" ${PROG_LDADD} -o "$OUT" && \
-           ./"$OUT" > /dev/null; then
+            ${LD} ${LDFLAGS} "$OUT_O" ${LIBS} ${PROG_LDADD} -o "$OUT" &&
+            ./"$OUT" > /dev/null; then
         config_define HAVE_F80 1
         config_define F80_SIZE $(./"$OUT")
         echo "HAVE_F80 = true" >> ${CONFIG_MK}
@@ -761,8 +761,14 @@ config_prog() {
     echo "PROG_ASAN  = ${PROG_ASAN}"  >> ${CONFIG_MK}
     echo "PROG_COV   = ${PROG_COV}"   >> ${CONFIG_MK}
     echo "PROG_DEBUG = ${PROG_DEBUG}" >> ${CONFIG_MK}
-    # CPPFLAGS="$CPPFLAGS -DPREFIX=\"\\\"${PREFIX}\\\"\""
-    CPPFLAGS="$CPPFLAGS -DPREFIX=\\\"${PREFIX}\\\""
+    case "$(uname -s)" in
+        MINGW64*)
+            CPPFLAGS="$CPPFLAGS -DPREFIX='\"${PREFIX}\"'"
+            ;;
+        *)
+            CPPFLAGS="$CPPFLAGS -DPREFIX=\"\\\"${PREFIX}\\\"\""
+            ;;
+    esac
 }
 
 config_subdirs() {

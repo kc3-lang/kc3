@@ -40,7 +40,7 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
-CFLAGS="$CFLAGS -g3 -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
+CFLAGS="$CFLAGS -g -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
 CFLAGS="$CFLAGS -fPIC"
 LDFLAGS="$LDFLAGS ${EXPORT_DYNAMIC}"
 LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
