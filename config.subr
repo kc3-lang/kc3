@@ -763,7 +763,7 @@ config_prog() {
     echo "PROG_DEBUG = ${PROG_DEBUG}" >> ${CONFIG_MK}
     case "$(uname -s)" in
         MINGW64*)
-            CPPFLAGS="$CPPFLAGS -DPREFIX='\"${PREFIX}\"'"
+            CPPFLAGS="$CPPFLAGS -DPREFIX="'\"'${PREFIX}'\"'
             ;;
         *)
             CPPFLAGS="$CPPFLAGS -DPREFIX=\"\\\"${PREFIX}\\\"\""
