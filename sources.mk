@@ -1692,6 +1692,7 @@ KC3_TEST_SOURCES = \
 	"test/replace_lines.rb" \
 	"test/struct_test.kc3" \
 	"test/test.rb" \
+	"test/test.subr" \
 	"test/test_case_end.rb" \
 	"test/zero" \
 
