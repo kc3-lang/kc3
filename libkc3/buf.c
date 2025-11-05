@@ -862,7 +862,7 @@ sw buf_read_integer (s_buf *buf, s_integer *dest)
 {
   const sw digit_size = 4;
   const sw nail_bits = 4;
-  sw count;
+  u32 count;
   sw r;
   sw result = 0;
   u8 sign;
@@ -873,7 +873,7 @@ sw buf_read_integer (s_buf *buf, s_integer *dest)
   if ((r = buf_read_u8(buf, &sign)) <= 0)
     return r;
   result += r;
-  if ((r = buf_read_u32(buf, (u32 *) &count)) <= 0)
+  if ((r = buf_read_u32(buf, &count)) <= 0)
     return r;
   result += r;
   integer_init(&tmp);
@@ -1891,6 +1891,8 @@ sw buf_write_integer (s_buf *buf, const s_integer *src)
   assert(buf);
   assert(src);
   count = mp_pack_count(&src->mp_int, nail_bits, digit_size);
+  if (count > U32_MAX)
+    ERROR("buf_write_integer: count is too large");
   size = count * digit_size;
   sign = mp_isneg(&src->mp_int) ? 1 : 0;
   if ((r = buf_write_u8(buf, sign)) <= 0)

@@ -111,11 +111,11 @@ loopback(9223372036854775807)
 loopback(18446744073709551615)
 {:ok, 64}
 loopback((Integer) 1024)
-{:ok, 71}
+{:ok, 69}
 loopback(10000000000000000000000000000000000)
-{:ok, 84}
+{:ok, 85}
 loopback(123456789012345678901234567890)
-{:ok, 82}
+{:ok, 81}
 loopback((F32) -1.0)
 {:ok, 60}
 loopback((F32) 3.141592)
@@ -129,11 +129,11 @@ loopback((F64) 3.14159265358979)
 loopback((F64) 4.294967296e+9)
 {:ok, 64}
 loopback(2/6)
-{:ok, 102}
+{:ok, 100}
 loopback(1/3)
-{:ok, 102}
+{:ok, 100}
 loopback(22/7)
-{:ok, 102}
+{:ok, 100}
 loopback(0 +i 1)
 {:ok, 117}
 loopback(-1 +i -2)
