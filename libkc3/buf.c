@@ -903,8 +903,14 @@ sw buf_read_integer (s_buf *buf, s_integer *dest)
     integer_clean(&tmp);
     return -1;
   }
-  if (sign)
-    mp_neg(&tmp.mp_int, &tmp.mp_int);
+  if (sign) {
+    if (mp_neg(&tmp.mp_int, &tmp.mp_int) != MP_OKAY) {
+      err_puts("buf_read_integer: mp_neg failed");
+      assert(! "buf_read_integer: mp_neg failed");
+      integer_clean(&tmp);
+      return -1;
+    }
+  }
   buf->rpos += size;
   result += size;
   *dest = tmp;
@@ -1876,12 +1882,12 @@ sw buf_write_integer (s_buf *buf, const s_integer *src)
 {
   const sw digit_size = 4;
   const sw nail_bits = 4;
-  sw count;
+  uw count;
   sw r;
   sw result = 0;
   u8 sign;
   sw size;
-  sw written;
+  uw written;
   assert(buf);
   assert(src);
   count = mp_pack_count(&src->mp_int, nail_bits, digit_size);
