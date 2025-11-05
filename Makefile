@@ -877,10 +877,12 @@ json_debug:
 
 kc3-${KC3_VERSION}.tar.gz: kc3.index
 	rm -rf kc3-${KC3_VERSION}.old
-	-mv kc3-${KC3_VERSION} kc3-${KC3_VERSION}.old
+	if [ -d kc3-${KC3_VERSION} ]; then \
+		mv kc3-${KC3_VERSION} kc3-${KC3_VERSION}.old; \
+	fi
 	mkdir kc3-${KC3_VERSION}
 	pax -rw < kc3.index kc3-${KC3_VERSION}
-	pax -wz kc3-${KC3_VERSION} > kc3-${KC3_VERSION}.tar.gz
+	pax -w kc3-${KC3_VERSION} | gzip -9 > kc3-${KC3_VERSION}.tar.gz
 
 kc3.index: sources.mk Makefile
 	for F in ${KC3_EXTERNAL_SOURCES}; do echo "$$F"; done > kc3.index.tmp

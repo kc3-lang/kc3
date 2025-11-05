@@ -23,6 +23,7 @@ KC3_DIRS="
  kc3c
  kc3s
  kmsg
+ kpkg
  libkc3
  libtommath
  markdown
@@ -97,7 +98,7 @@ KC3_TEST_HTTPD_SOURCES="$(find test/httpd/app test/httpd/config test/httpd/db -n
 $(ls test/httpd/assets/package*.json)
 $(find test/httpd/assets/js -name '*.js')
 $(find test/httpd/assets/css -name '*.scss')
-$(find test/httpd/static)
+$(find test/httpd/static \( -name release -prune \) -or ! -type d -print)
 $(find test/httpd/pages)
 test/httpd/doc"
 sources KC3_TEST_HTTPD_SOURCES "$KC3_TEST_HTTPD_SOURCES"
