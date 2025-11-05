@@ -60,13 +60,6 @@
     TEST_ASSERT(tag_init_1(&tag_expected, (expected)));                 \
     TEST_EQ(marshall_read_init_1(&mr, (test), sizeof(test) - 1), &mr);  \
     TEST_EQ(marshall_read_tag(&mr, false, &tag), &mr);                  \
-    if (tag.type == TAG_F64) {                                          \
-      u8 *bytes = (u8 *)&tag.data.f64;                                  \
-      printf("Read f64 bytes: %02x %02x %02x %02x %02x %02x %02x %02x\n", \
-             bytes[0], bytes[1], bytes[2], bytes[3],                    \
-             bytes[4], bytes[5], bytes[6], bytes[7]);                   \
-      printf("Read f64 value: %.17g\n", tag.data.f64);                  \
-    }                                                                   \
     TAG_TEST_EQ(&tag, &tag_expected);                                   \
     marshall_read_clean(&mr);                                           \
     tag_clean(&tag);                                                    \

@@ -572,6 +572,12 @@ kc3s/sources.sh
 kc3s/update_sources
 kmsg/Makefile
 kmsg/kmsg.kc3
+kpkg/Makefile
+kpkg/configure
+kpkg/kpkg.c
+kpkg/sources.mk
+kpkg/sources.sh
+kpkg/update_sources
 lib/kc3/0.1/alist.kc3
 lib/kc3/0.1/array.kc3
 lib/kc3/0.1/bin/primes.kc3
