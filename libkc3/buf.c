@@ -860,20 +860,29 @@ DEF_BUF_READ(f128)
 
 sw buf_read_integer (s_buf *buf, s_integer *dest)
 {
+  const sw digit_size = 4;
+  const sw nail_bits = 4;
+  sw count;
   sw r;
   sw result = 0;
-  uw size;
+  u8 sign;
+  sw size;
   s_integer tmp;
   assert(buf);
   assert(dest);
-  if ((r = buf_read_uw(buf, &size)) <= 0)
+  if ((r = buf_read_u8(buf, &sign)) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_read_u32(buf, (u32 *) &count)) <= 0)
     return r;
   result += r;
   integer_init(&tmp);
-  if (size == 0) {
+  if (count == 0) {
     mp_set_u32(&tmp.mp_int, 0);
+    *dest = tmp;
     return result;
   }
+  size = count * digit_size;
   if (buf->rpos + size > buf->wpos) {
     if ((r = buf_refill(buf, size)) < 0) {
       integer_clean(&tmp);
@@ -886,13 +895,16 @@ sw buf_read_integer (s_buf *buf, s_integer *dest)
       return -1;
     }
   }
-  if (mp_from_sbin(&tmp.mp_int, buf->ptr.pu8 + buf->rpos,
-                   size) != MP_OKAY) {
-    err_puts("buf_read_integer: mp_from_sbin");
-    assert(! "buf_read_integer: mp_from_sbin");
+  if (mp_unpack(&tmp.mp_int, count, MP_LSB_FIRST, digit_size,
+                MP_LITTLE_ENDIAN, nail_bits,
+                buf->ptr.pu8 + buf->rpos) != MP_OKAY) {
+    err_puts("buf_read_integer: mp_unpack failed");
+    assert(! "buf_read_integer: mp_unpack failed");
     integer_clean(&tmp);
     return -1;
   }
+  if (sign)
+    mp_neg(&tmp.mp_int, &tmp.mp_int);
   buf->rpos += size;
   result += size;
   *dest = tmp;
@@ -1862,20 +1874,29 @@ DEF_BUF_WRITE(uw)
 
 sw buf_write_integer (s_buf *buf, const s_integer *src)
 {
+  const sw digit_size = 4;
+  const sw nail_bits = 4;
+  sw count;
   sw r;
   sw result = 0;
-  size_t size;
-  size_t written;
+  u8 sign;
+  sw size;
+  sw written;
   assert(buf);
   assert(src);
-  size = mp_sbin_size(&src->mp_int);
-  if ((r = buf_write_uw(buf, size)) <= 0)
+  count = mp_pack_count(&src->mp_int, nail_bits, digit_size);
+  size = count * digit_size;
+  sign = mp_isneg(&src->mp_int) ? 1 : 0;
+  if ((r = buf_write_u8(buf, sign)) <= 0)
     return r;
   result += r;
-  if (size == 0)
+  if ((r = buf_write_u32(buf, count)) <= 0)
+    return r;
+  result += r;
+  if (count == 0)
     return result;
   if (buf->wpos + size > buf->size &&
-      buf_flush(buf) < (sw)size) {
+      buf_flush(buf) < size) {
     return -1;
   }
   if (buf->wpos + size > buf->size) {
@@ -1883,19 +1904,16 @@ sw buf_write_integer (s_buf *buf, const s_integer *src)
     assert(! "buf_write_integer: buffer overflow");
     return -1;
   }
-  if (mp_to_sbin(&src->mp_int, (unsigned char *)(buf->ptr.pu8 + buf->wpos),
-                 size, &written) != MP_OKAY) {
-    err_puts("buf_write_integer: mp_to_sbin failed");
-    assert(! "buf_write_integer: mp_to_sbin failed");
+  if (mp_pack(buf->ptr.pu8 + buf->wpos, count, &written,
+              MP_LSB_FIRST, digit_size, MP_LITTLE_ENDIAN, nail_bits,
+              &src->mp_int) != MP_OKAY) {
+    err_puts("buf_write_integer: mp_pack failed");
+    assert(! "buf_write_integer: mp_pack failed");
     return -1;
   }
-  if (written != size) {
-    err_write_1("buf_write_integer: size mismatch - expected ");
-    err_inspect_uw(size);
-    err_write_1(" bytes, but mp_to_sbin wrote ");
-    err_inspect_uw(written);
-    err_write_1(" bytes\n");
-    assert(! "buf_write_integer: size mismatch between mp_sbin_size and mp_to_sbin");
+  if (written != count) {
+    err_puts("buf_write_integer: mp_pack count mismatch");
+    assert(! "buf_write_integer: mp_pack count mismatch");
     return -1;
   }
   buf->wpos += size;
