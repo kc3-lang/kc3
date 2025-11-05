@@ -42,7 +42,7 @@ PDF.parse_str("999999999999999999")
 PDF.parse_str("-0")
 0
 PDF.parse_str("12345.678")
-(F64) 1.2345678e+4
+(F64) 1.23456779999999e+4
 PDF.parse_str("true")
 true
 PDF.parse_str("false")

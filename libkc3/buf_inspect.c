@@ -1854,17 +1854,18 @@ sw buf_inspect_f32_size (s_pretty *pretty, f32 x)
 
 sw buf_inspect_f64 (s_buf *buf, f64 x)
 {
-  s64 exp;
+  s64 b;
+  s32 exp;
   u8 i;
   u8 j;
   sw r;
   sw result = 0;
   assert(buf);
-  exp = 0.0;
+  exp = 0;
   if ((r = buf_write_1(buf, "(F64) ")) < 0)
     return r;
   result += r;
-  if (x == 0.0f) {
+  if (x == 0.0) {
     if ((r = buf_write_1(buf, "0.0")) < 0)
       return r;
     result += r;
@@ -1876,16 +1877,21 @@ sw buf_inspect_f64 (s_buf *buf, f64 x)
     result += r;
     x = -x;
   }
-  if (x >= 1.0)
-    while (x >= 10.0) {
-      x /= 10.0;
+  if (x >= 1.0) {
+    b = 10;
+    while (x >= b) {
+      b *= 10;
       exp++;
     }
-  else
-    while (x < 1.0) {
-      x *= 10.0;
+  }
+  else {
+    b = 1;
+    while (x * b < 1.0) {
+      b *= 10;
       exp--;
     }
+  }
+  x *= pow(10, -exp);
   i = (u8) x;
   x -= i;
   i += '0';
@@ -1924,17 +1930,18 @@ sw buf_inspect_f64 (s_buf *buf, f64 x)
 
 sw buf_inspect_f64_size (s_pretty *pretty, f64 x)
 {
-  s64 exp;
+  s64 b;
+  s32 exp;
   u8 i;
   u8 j;
   sw r;
   sw result = 0;
   assert(pretty);
-  exp = 0.0;
+  exp = 0;
   if ((r = buf_write_1_size(pretty, "(F64) ")) < 0)
     return r;
   result += r;
-  if (x == 0.0f) {
+  if (x == 0.0) {
     if ((r = buf_write_1_size(pretty, "0.0")) < 0)
       return r;
     result += r;
@@ -1946,20 +1953,27 @@ sw buf_inspect_f64_size (s_pretty *pretty, f64 x)
     result += r;
     x = -x;
   }
-  if (x >= 1.0)
-    while (x >= 10.0) {
-      x /= 10.0;
+  if (x >= 1.0) {
+    b = 10;
+    while (x >= b) {
+      b *= 10;
       exp++;
     }
-  else
-    while (x < 1.0) {
-      x *= 10.0;
+  }
+  else {
+    b = 1;
+    while (x * b < 1.0) {
+      b *= 10;
       exp--;
     }
+  }
+  x *= pow(10, -exp);
   i = (u8) x;
   x -= i;
   i += '0';
-  result += 1;
+  if ((r = buf_write_character_utf8_size(pretty, i)) <= 0)
+    return r;
+  result += r;
   if ((r = buf_write_1_size(pretty, ".")) <= 0)
     return r;
   result += r;
@@ -1969,7 +1983,9 @@ sw buf_inspect_f64_size (s_pretty *pretty, f64 x)
     i = (u8) x;
     x -= i;
     i += '0';
-    result += 1;
+    if ((r = buf_write_character_utf8_size(pretty, i)) <= 0)
+      return r;
+    result += r;
     j--;
   } while (x > pow(0.1, j) && j);
   if (exp) {

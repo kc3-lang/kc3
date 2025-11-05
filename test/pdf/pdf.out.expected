@@ -8361,7 +8361,7 @@ pdf_buf_parse_string: str = "\xFE\xFF\0L\0i\0b\0r\0e\0O\0f\0f\0i\0c\0e\0 \02\05\
 pdf_buf_parse_string: str = "D:20250917203929+02'00'"
 %PDF.File{body: %{{(U32) 0, 65535} => void,
                   {(U32) 1, (U16) 0} => %{Contents: {:indirect_object, (U32) 2, (U16) 0},
-                                          MediaBox: [0, 0, (F64) 5.95303937007874e+2, (F64) 8.41889763779527e+2],
+                                          MediaBox: [0, 0, (F64) 5.95303937007874e+2, (F64) 8.41889763779528e+2],
                                           Parent: {:indirect_object, (U32) 300, (U16) 0},
                                           Resources: {:indirect_object, (U32) 312, (U16) 0},
                                           StructParents: 0,
