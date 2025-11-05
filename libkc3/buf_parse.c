@@ -1517,10 +1517,10 @@ sw buf_parse_f32 (s_buf *buf, f32 *dest)
 
 sw buf_parse_f64 (s_buf *buf, f64 *dest)
 {
+  f64 b;
   u8 digit;
   f64 exp = 0;
   f64 exp_sign = 1;
-  uw i;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -1546,18 +1546,18 @@ sw buf_parse_f64 (s_buf *buf, f64 *dest)
   tmp = digit;
   result += r;
   while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
-    tmp = tmp * 10 + digit;
     result += r;
+    tmp = tmp * 10 + digit;
   }
   if (r < 0 ||
       (r = buf_read_1(buf, ".")) <= 0)
     goto restore;
   result += r;
-  i = 10;
+  b = 0;
   while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
     result += r;
-    tmp += (f64) digit / i;
-    i *= 10;
+    tmp = tmp * 10 + digit;
+    b--;
   }
   if ((r = buf_read_1(buf, "e")) > 0) {
     result += r;
@@ -1572,14 +1572,13 @@ sw buf_parse_f64 (s_buf *buf, f64 *dest)
       if (r < 0)
         goto restore;
       result += r;
-      while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
-        result += r;
-        exp = exp * 10 + digit;
-      }
     }
-    tmp *= pow(10, exp_sign * exp);
+    while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+      result += r;
+      exp = exp * 10 + digit;
+    }
   }
-  tmp *= sign;
+  tmp *= sign * pow(10, b + exp_sign * exp);
   *dest = tmp;
   r = result;
   goto clean;
