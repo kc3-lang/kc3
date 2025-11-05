@@ -1,1 +1,121 @@
-../../../../httpd/page/app/controllers/page_controller.kc3
+## kc3
+## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+require EKC3
+require File
+
+defmodule PageController do
+
+  def page_index = fn {
+    (path) { page_index(path, path, []) }
+    ([], dir, acc) { List.reverse(acc) }
+    ([file | rest], dir, acc) {
+      if (Str.starts_with?(file, ".") ||
+          Str.starts_with?(file, "index.") ||
+          (Str.rindex_character(file, '.') > 0 &&
+           ! Str.ends_with?(file, ".md") &&
+           ! Str.ends_with?(file, ".html"))) do
+        page_index(rest, dir, acc)
+      else
+        path = dir + file
+        url = Str.slice(path, 1, -1)
+        if File.is_directory?(path) do
+          items = page_index(List.sort(File.list(path)), path + "/", acc)
+          page_index(rest, dir, items)
+        else
+          end_ = Str.rindex_character(name, '.')
+          if (end_ > 0) do
+            name = Str.slice(name, 0, end_)
+            end_ = Str.rindex_character(name, '.')
+            if (end_ > 0) do
+              name = Str.slice(name, 0, end_)
+            end
+          end
+          end_ = Str.rindex_character(url, '.')
+          if (end_ > 0) do
+            url = Str.slice(url, 0, end_)
+            end_ = Str.rindex_character(url, '.')
+            if (end_ > 0) do
+              url = Str.slice(url, 0, end_)
+            end
+          end
+          page_index(rest, dir, [url | acc])
+        end
+      end
+    }
+    (path, dir, acc) {
+      if (type(path) == Str) do
+        page_index(List.sort(File.list(path)), dir, acc)
+      end
+    }
+  }
+
+  def show_html = fn (path_html, url, locale) {
+    title = "kc3-lang.org"
+    name = File.name(path_html)
+    slug = Str.slice(name, 0, -9)
+    slug = Str.subst(slug, " ", "-")
+    slug = Str.subst(slug, ".", "-")
+    html = File.read_all(path_html)
+    page = PageView.render_show(html)
+    body = LayoutView.render(slug, title, page, url)
+    %HTTP.Response{body: body}
+  }
+
+  def show_md = fn (path_md, url, locale) {
+    title = "kc3-lang.org"
+    md = File.read_all(path_md)
+    [title | _] = Markdown.titles(md)
+    slug = Str.subst(title, " ", "-")
+    html = Markdown.to_html_str(md)
+    page = PageView.render_show(html)
+    body = LayoutView.render(title, page, url)
+    %HTTP.Response{body: body}
+  }
+
+  def route_locale = fn (url, url_locale, locale) {
+    slash = if Str.ends_with?(url, "/") do "" else "/" end
+    path_html = "./pages#{url}#{slash}index.#{locale}.html"
+    if File.exists?(path_html) do
+      show_html(path_html, url, url_locale)
+    else
+      path_md = "./pages#{url}#{slash}index.#{locale}.md"
+      if File.exists?(path_md) do
+        show_md(path_md, url, url_locale)
+      else
+        path_md = "./pages#{request.url}.#{locale}.md"
+        if File.exists?(path_md) do
+          show_md(path_md, url, url_locale)
+        end
+      end
+    end
+  }
+
+  def route = fn (request) {
+    url = request.url
+    if (request.method == GET ||
+        request.method == HEAD) do
+      locale = if (url[0] == '/' &&
+                   (Str.size(url) == 3 ||
+                    url[3] == '/')) do
+        l = "#{url[1]}#{url[2]}"
+        if List.has?(Config.available_locales, l) do
+          url = Str.slice(url, 3, -1)
+          l
+        end
+      end || "en"
+      route_locale(url, locale, locale) ||
+        route_locale(url, locale, "en")
+    end
+  }
+
+end
