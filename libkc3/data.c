@@ -423,7 +423,7 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
   if (type == &g_sym_Complex)
     return compare_pcomplex(a, b);
   if (type == &g_sym_F32)
-    return compare_f32(*(f64 *) a, *(f64 *) b);
+    return compare_f32(*(f32 *) a, *(f32 *) b);
   if (type == &g_sym_F64)
     return compare_f64(*(f64 *) a, *(f64 *) b);
 #if HAVE_F80
