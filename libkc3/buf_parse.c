@@ -1525,7 +1525,7 @@ sw buf_parse_f64 (s_buf *buf, f64 *dest)
   sw result = 0;
   s_buf_save save;
   f64 sign = 1;
-  f64 tmp = 0;
+  volatile f64 tmp = 0;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
