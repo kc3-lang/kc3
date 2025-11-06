@@ -1929,6 +1929,7 @@ uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
       err_write_1(" > ");
       err_inspect_uw(max_pos);
       err_write_1("\n");
+      err_stacktrace();
       assert(! "str_sw_pos_to_uw: index too large");
       return NULL;
     }
@@ -1943,6 +1944,7 @@ uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
       err_write_1(" < -");
       err_inspect_uw_decimal(max_pos);
       err_write_1("\n");
+      err_stacktrace();
       assert(! "str_sw_pos_to_uw: index too low");
       return NULL;
     }
