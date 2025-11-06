@@ -922,7 +922,11 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     return true;
   }
   if (sym == &g_sym_Sw) {
+#if defined(WIN64)
+    *dest = &ffi_type_sint64;
+#else
     *dest = &ffi_type_slong;
+#endif
     return true;
   }
   if (sym == &g_sym_Tag) {
@@ -954,7 +958,11 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     return true;
   }
   if (sym == &g_sym_Uw) {
+#if defined(WIN64)
+    *dest = &ffi_type_uint64;
+#else
     *dest = &ffi_type_ulong;
+#endif
     return true;
   }
   if (sym == &g_sym_Var) {
