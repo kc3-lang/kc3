@@ -1,5 +1,8 @@
 # KC3 v0.1.16-git
 
+"The first graph-native programming language"
+    -- [Claude-code](claude.ai)
+
 KC3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
 for semantic programming, and programming the semantic web.
