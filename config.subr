@@ -1367,6 +1367,8 @@ export SRC_DIR="${SRC_TOP}/${DIR}"
 echo "SRC_TOP = $SRC_TOP" >> ${CONFIG_MK}
 echo "SRC_DIR = $SRC_DIR" >> ${CONFIG_MK}
 
+LDFLAGS=$(echo "$LDFLAGS" | sed 's/-Wl,//g' | sed 's/,/ /g')
+
 ENV_CPPFLAGS="$CPPFLAGS"
 ENV_CFLAGS="$CFLAGS"
 ENV_CXXFLAGS="$CXXFLAGS"
