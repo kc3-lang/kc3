@@ -135,12 +135,6 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
 LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/libkc3"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/gl"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window/demo"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window/egl"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/window/egl/drm"
 LDFLAGS="$LDFLAGS -L../../../../libkc3"
 LDFLAGS="$LDFLAGS -L../../../../gl"
 LDFLAGS="$LDFLAGS -L../../../"

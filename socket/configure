@@ -42,7 +42,6 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
 LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/libkc3"
 LDFLAGS="$LDFLAGS -L../libkc3"
 config_asan
 config_gnu

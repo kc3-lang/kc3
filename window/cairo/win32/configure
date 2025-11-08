@@ -107,8 +107,6 @@ echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
-
-
 update_build_c
 update_build_lib
 

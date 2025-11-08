@@ -42,9 +42,6 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
 LDFLAGS="$LDFLAGS ${EXPORT_DYNAMIC}"
 LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/libkc3"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/socket"
-LDFLAGS="$LDFLAGS -rpath ${BUILD_TOP}/tls"
 config_asan
 config_gnu
 config_i386
