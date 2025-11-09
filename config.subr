@@ -480,7 +480,7 @@ config_have_f80() {
       echo "}"; } > "$OUT_C"
     if ${CC} ${CPPFLAGS} ${CFLAGS} -c "$OUT_C" -o "$OUT_O" &&
             ${LD} ${LDFLAGS} "$OUT_O" ${LIBS} ${PROG_LDADD} -o "$OUT" &&
-            ./"$OUT" > /dev/null; then
+            ./"$OUT" >/dev/null; then
         config_define HAVE_F80 1
         config_define F80_SIZE $(./"$OUT")
         echo "HAVE_F80 = true" >> ${CONFIG_MK}
