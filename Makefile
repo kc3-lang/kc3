@@ -754,11 +754,12 @@ install:
 	    ${DESTDIR}${libdir}/kc3/0.1/kc3.dump
 	( cd ${SRC_DIR}/lib && \
 	  find kc3 -name '*.facts' -or -name '*.kc3'; ) | \
-	      while read F; do ${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
+	      while read F; do ${INSTALL} -m 0644 "${SRC_DIR}/lib/$$F" \
 		  "${DESTDIR}${libdir}/$$F"; done
 	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3
 	( cd ${SRC_DIR} && find img -type d; ) | while read F; do \
-	    ${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3/"$$F"; done
+	    ${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3/"$$F"; \
+	done
 	( cd ${SRC_DIR} && find img -name '*.png' -or -name '*.jpg'; ) | \
 	    while read F; do ${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
 		      "${DESTDIR}${prefix}/share/kc3/$$F"; done
