@@ -15,7 +15,7 @@ set -e
 
 echo "$0"
 export BUILD_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
-export DIR="window/egl/drm/demo"
+export DIR="window/egl/android/demo"
 export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")")")"
 
 . "${SRC_TOP}/config.subr"
