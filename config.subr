@@ -1610,11 +1610,9 @@ case "$(uname -s)" in
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}.\${VER_PATCH}"
         LIB_LINK_SUFFIX="so"
         LIBGCC=$(${CC} -print-libgcc-file-name)
-        LDADD="$LIBGCC -lc"
-        # Check if this is Android (different CRT files)
         case "$CC_TARGET" in
             *-android*)
-                # Android uses different CRT files
+                LDADD="$LIBGCC"
                 CRTBEGIN_SO=$(${CC} -print-file-name=crtbegin_so.o)
                 CRTEND_SO=$(${CC} -print-file-name=crtend_so.o)
                 CRTBEGIN_DYN=$(${CC} -print-file-name=crtbegin_dynamic.o)
@@ -1623,7 +1621,7 @@ case "$(uname -s)" in
                 PROG_LDADD="$CRTBEGIN_DYN -e _start $LDADD $CRTEND_AND"
                 ;;
             *)
-                # Standard Linux with glibc
+                LDADD="$LIBGCC -lc"
                 CRT1=$(${CC} -print-file-name=crt1.o)
                 CRTI=$(${CC} -print-file-name=crti.o)
                 CRTBEGIN=$(${CC} -print-file-name=crtbegin.o)
