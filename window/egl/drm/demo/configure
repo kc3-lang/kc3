@@ -54,7 +54,6 @@ pkg_config libbsd-overlay
 pkg_config libmd
 pkg_config freetype2
 pkg_config glesv2
-config_lib GLESv2 -lGLESv2
 pkg_config libdrm
 pkg_config libffi
 pkg_config libpng

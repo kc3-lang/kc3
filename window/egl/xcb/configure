@@ -55,7 +55,6 @@ pkg_config xkbcommon
 pkg_config xkbcommon-x11
 pkg_config egl
 pkg_config glesv2
-config_lib GLESv2 -lGLESv2
 config_define PREFIX "\"${PREFIX}\""
 LIBS="$LIBS -lxkbcommon -lxkbcommon-x11"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
