@@ -10,11 +10,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "../../../libkc3/kc3.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <android/looper.h>
-#include <libkc3/kc3.h>
 #include "window_egl_android.h"
 
 static u32  android_keycode_to_kc3 (int32_t android_keycode);
