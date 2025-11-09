@@ -747,8 +747,8 @@ ikc3_gcovr:
 install:
 	${INSTALL} -m 0755 -d ${DESTDIR}${libdir}/kc3
 	${INSTALL} -m 0755 -d ${DESTDIR}${libdir}/kc3/0.1
-	( cd ${SRC_DIR} && find lib/kc3/ -type d; ) | while read F; do \
-	    ${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/"$$F"; done
+	( cd ${SRC_DIR}/lib && find kc3/ -type d; ) | while read F; do \
+	    ${INSTALL} -m 0755 -d ${DESTDIR}${libdir}/"$$F"; done
 	${INSTALL} -m 0644 ${SRC_DIR}/lib/kc3/0.1/kc3.dump \
 	    ${DESTDIR}${libdir}/kc3/0.1/kc3.dump
 	( cd ${SRC_DIR} && \
