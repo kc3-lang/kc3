@@ -223,11 +223,14 @@ c2prog() {
 
 config_android() {
     if [ "x$HAVE_ANDROID" = "x" ]; then
-        if [ -f /system/lib64/libGLESv2.so ]; then
-            HAVE_ANDROID=true
-        else
-            HAVE_ANDROID=false
-        fi
+        case "$CC_TARGET" in
+            *-android*)
+                HAVE_ANDROID=true
+                ;;
+            *)
+                HAVE_ANDROID=false
+                ;;
+        esac
     else
         bool HAVE_ANDROID "$HAVE_ANDROID"
     fi
