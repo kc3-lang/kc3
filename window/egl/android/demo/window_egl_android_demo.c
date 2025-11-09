@@ -18,7 +18,7 @@
 #include "../../../../gl/gl_text.h"
 #include "../../../../gl/mat4.h"
 #include "../../../window.h"
-#include "../../demo/bg_rect.h"
+#include "../../../demo/bg_rect.h"
 #include "../../sequence.h"
 #include "../window_egl_android.h"
 #include "window_egl_android_demo.h"
