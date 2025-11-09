@@ -4,6 +4,5 @@ HEADERS = \
 	"window_egl_android.h" \
 
 SOURCES = \
-	"android_native_app_glue.c" \
 	"window_egl_android.c" \
 

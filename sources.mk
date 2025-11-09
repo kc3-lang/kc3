@@ -1140,7 +1140,7 @@ KC3_C_SOURCES = \
 	"window/demo/toasters.c" \
 	"window/demo/toasters.h" \
 	"window/demo/types.h" \
-	"window/egl/android/android_native_app_glue.c" \
+	"window/egl/android/demo/android_native_app_glue.c" \
 	"window/egl/android/demo/window_egl_android_demo.c" \
 	"window/egl/android/demo/window_egl_android_demo.h" \
 	"window/egl/android/native_app_glue/android_native_app_glue.c" \
