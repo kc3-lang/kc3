@@ -1660,4 +1660,4 @@ esac
 } >> ${CONFIG_MK}
 
 config_no_undefined
-config_define LIBDIR '"'"$LIBDIR"'"'
+config_define LIBDIR "\"\\\"$LIBDIR\\\"\""
