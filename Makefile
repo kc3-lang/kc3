@@ -747,14 +747,15 @@ ikc3_gcovr:
 install:
 	${INSTALL} -m 0755 -d ${DESTDIR}${libdir}/kc3
 	${INSTALL} -m 0755 -d ${DESTDIR}${libdir}/kc3/0.1
-	( cd ${SRC_DIR}/lib && find kc3/ -type d; ) | while read F; do \
+	( cd ${SRC_DIR}/lib && \
+	  find kc3/ -type d; ) | while read F; do \
 	    ${INSTALL} -m 0755 -d ${DESTDIR}${libdir}/"$$F"; done
 	${INSTALL} -m 0644 ${SRC_DIR}/lib/kc3/0.1/kc3.dump \
 	    ${DESTDIR}${libdir}/kc3/0.1/kc3.dump
-	( cd ${SRC_DIR} && \
-	  find lib/kc3 -name '*.facts' -or -name '*.kc3'; ) | \
+	( cd ${SRC_DIR}/lib && \
+	  find kc3 -name '*.facts' -or -name '*.kc3'; ) | \
 	      while read F; do ${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
-		  "${DESTDIR}${prefix}/$$F"; done
+		  "${DESTDIR}${libdir}/$$F"; done
 	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3
 	( cd ${SRC_DIR} && find img -type d; ) | while read F; do \
 	    ${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/share/kc3/"$$F"; done
