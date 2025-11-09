@@ -1611,22 +1611,37 @@ case "$(uname -s)" in
         LIB_LINK_SUFFIX="so"
         LIBGCC=$(${CC} -print-libgcc-file-name)
         LDADD="$LIBGCC -lc"
-        CRT1=$(${CC} -print-file-name=crt1.o)
-        CRTI=$(${CC} -print-file-name=crti.o)
-        CRTBEGIN=$(${CC} -print-file-name=crtbegin.o)
-        CRTBEGINS=$(${CC} -print-file-name=crtbeginS.o)
-        CRTEND=$(${CC} -print-file-name=crtend.o)
-        CRTENDS=$(${CC} -print-file-name=crtendS.o)
-        CRTN=$(${CC} -print-file-name=crtn.o)
-        LDSO=$(${CC} -print-file-name=ld-linux-aarch64.so.1)
-        if [ ! -f "$LDSO" ]; then
-            LDSO=$(${CC} -print-file-name=ld-linux-x86-64.so.2)
-        fi
-        if [ ! -f "$LDSO" ]; then
-            LDSO=$(${CC} -print-file-name=ld-linux.so.2)
-        fi
-        LIB_LDADD="$CRTI $CRTBEGINS $LDADD $CRTENDS $CRTN"
-        PROG_LDADD="$CRT1 $CRTI $CRTBEGIN -e _start --dynamic-linker=$LDSO $LDADD $CRTEND $CRTN"
+        # Check if this is Android (different CRT files)
+        case "$CC_TARGET" in
+            *-android*)
+                # Android uses different CRT files
+                CRTBEGIN_SO=$(${CC} -print-file-name=crtbegin_so.o)
+                CRTEND_SO=$(${CC} -print-file-name=crtend_so.o)
+                CRTBEGIN_DYN=$(${CC} -print-file-name=crtbegin_dynamic.o)
+                CRTEND_AND=$(${CC} -print-file-name=crtend_android.o)
+                LIB_LDADD="$CRTBEGIN_SO $LDADD $CRTEND_SO"
+                PROG_LDADD="$CRTBEGIN_DYN -e _start $LDADD $CRTEND_AND"
+                ;;
+            *)
+                # Standard Linux with glibc
+                CRT1=$(${CC} -print-file-name=crt1.o)
+                CRTI=$(${CC} -print-file-name=crti.o)
+                CRTBEGIN=$(${CC} -print-file-name=crtbegin.o)
+                CRTBEGINS=$(${CC} -print-file-name=crtbeginS.o)
+                CRTEND=$(${CC} -print-file-name=crtend.o)
+                CRTENDS=$(${CC} -print-file-name=crtendS.o)
+                CRTN=$(${CC} -print-file-name=crtn.o)
+                LDSO=$(${CC} -print-file-name=ld-linux-aarch64.so.1)
+                if [ ! -f "$LDSO" ]; then
+                    LDSO=$(${CC} -print-file-name=ld-linux-x86-64.so.2)
+                fi
+                if [ ! -f "$LDSO" ]; then
+                    LDSO=$(${CC} -print-file-name=ld-linux.so.2)
+                fi
+                LIB_LDADD="$CRTI $CRTBEGINS $LDADD $CRTENDS $CRTN"
+                PROG_LDADD="$CRT1 $CRTI $CRTBEGIN -e _start --dynamic-linker=$LDSO $LDADD $CRTEND $CRTN"
+                ;;
+        esac
         ;;
     *)
         echo "Unsupported OS : $(uname -s)" >&2
