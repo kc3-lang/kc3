@@ -51,7 +51,6 @@ pkg_config libmd
 pkg_config freetype2
 pkg_config egl
 pkg_config glesv2
-config_define PREFIX "\"${PREFIX}\""
 config_android
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 
