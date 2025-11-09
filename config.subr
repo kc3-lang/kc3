@@ -1612,7 +1612,8 @@ case "$(uname -s)" in
         LIBGCC=$(${CC} -print-libgcc-file-name)
         case "$CC_TARGET" in
             *-android*)
-                LDADD="$LIBGCC"
+                LIBC=$(${CC} -print-file-name=libc.so)
+                LDADD="$LIBGCC $LIBC"
                 CRTBEGIN_SO=$(${CC} -print-file-name=crtbegin_so.o)
                 CRTEND_SO=$(${CC} -print-file-name=crtend_so.o)
                 CRTBEGIN_DYN=$(${CC} -print-file-name=crtbegin_dynamic.o)
