@@ -10,4 +10,4 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "native_app_glue/android_native_app_glue.c"
+#include "../native_app_glue/android_native_app_glue.c"
