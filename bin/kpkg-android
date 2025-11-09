@@ -5,11 +5,13 @@ set -e
 ARCH="aarch64-linux-android31"
 TOOLCHAIN="/opt/android-sdk/ndk/latest/toolchains/llvm/prebuilt/linux-x86_64"
 
-export  CC="${TOOLCHAIN}/bin/${ARCH}-clang"
-export CXX="${TOOLCHAIN}/bin/${ARCH}-clang++"
-export  LD="${TOOLCHAIN}/bin/ld"
+export      CC="${TOOLCHAIN}/bin/${ARCH}-clang"
+export     CXX="${TOOLCHAIN}/bin/${ARCH}-clang++"
+export      LD="${TOOLCHAIN}/bin/ld"
+export OBJDUMP="${TOOLCHAIN}/bin/llvm-objdump"
 
 export PREFIX="/home/dx/kpkg/arch/${ARCH}/local"
+
 export CPPFLAGS="-I${PREFIX}/include"
 export  LDFLAGS="-L${PREFIX}/lib"
 
