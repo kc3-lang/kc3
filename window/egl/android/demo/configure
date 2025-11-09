@@ -107,10 +107,10 @@ echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
 echo "LIBS = $LIBS" >> ${CONFIG_MK}
 
 update_build_c
-update_build_lib
+update_build_prog
 
 build_o_c
-build_lib
+build_prog
 
 update_config_mk
 update_makefile
