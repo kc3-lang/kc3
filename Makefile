@@ -46,7 +46,7 @@ asan:
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
-	${MAKE} -C kc3s asan
+	${MAKE} -C kpkg asan
 	${MAKE} -C ekc3 asan
 	${MAKE} -C event asan
 	${MAKE} -C json asan
@@ -71,7 +71,7 @@ build:
 	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
-	${MAKE} -C kc3s build
+	${MAKE} -C kpkg build
 	${MAKE} -C ekc3 build
 	${MAKE} -C event build
 	${MAKE} -C json build
@@ -92,7 +92,7 @@ clean::
 	${MAKE} -C tls clean
 	${MAKE} -C ikc3 clean
 	${MAKE} -C kc3s clean
-	${MAKE} -C kc3s clean
+	${MAKE} -C kpkg clean
 	${MAKE} -C ekc3 clean
 	${MAKE} -C event clean
 	${MAKE} -C json clean
@@ -113,7 +113,7 @@ clean_cov::
 	${MAKE} -C tls clean_cov
 	${MAKE} -C ikc3 clean_cov
 	${MAKE} -C kc3s clean_cov
-	${MAKE} -C kc3s clean_cov
+	${MAKE} -C kpkg clean_cov
 	${MAKE} -C ekc3 clean_cov
 	${MAKE} -C event clean_cov
 	${MAKE} -C json clean_cov
@@ -141,7 +141,7 @@ cov:
 	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
-	${MAKE} -C kc3s cov
+	${MAKE} -C kpkg cov
 	${MAKE} -C ekc3 cov
 	${MAKE} -C event cov
 	${MAKE} -C json cov
@@ -162,7 +162,7 @@ debug:
 	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
-	${MAKE} -C kc3s debug
+	${MAKE} -C kpkg debug
 	${MAKE} -C ekc3 debug
 	${MAKE} -C event debug
 	${MAKE} -C json debug
@@ -310,6 +310,7 @@ distclean::
 	${MAKE} -C tls distclean
 	${MAKE} -C ikc3 distclean
 	${MAKE} -C kc3s distclean
+	${MAKE} -C kpkg distclean
 	${MAKE} -C ekc3 distclean
 	${MAKE} -C event distclean
 	${MAKE} -C json distclean
@@ -769,7 +770,7 @@ install:
 	${MAKE} -C tls install
 	${MAKE} -C ikc3 install
 	${MAKE} -C kc3s install
-	${MAKE} -C kc3s install
+	${MAKE} -C kpkg install
 	${MAKE} -C ekc3 install
 	${MAKE} -C event install
 	${MAKE} -C json install
@@ -1764,6 +1765,7 @@ uninstall:
 	${MAKE} -C tls uninstall
 	${MAKE} -C ikc3 uninstall
 	${MAKE} -C kc3s uninstall
+	${MAKE} -C kpkg uninstall
 	${MAKE} -C ekc3 uninstall
 	${MAKE} -C event uninstall
 	${MAKE} -C json uninstall
