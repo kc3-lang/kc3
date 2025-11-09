@@ -41,11 +41,18 @@ gdb: debug
 	if [ -f ${PROG_DEBUG}.core ]; then gdb ${PROG_DEBUG} ${PROG_DEBUG}.core; else gdb ${PROG_DEBUG}; fi
 
 install:
+	mkdir -p ${DESTDIR}${libdir}/kc3/0.1
+	${INSTALL} -m 644 ${BUILD_TOP}/lib/kc3/0.1/kpkg.dump \
+	    ${DESTDIR}${libdir}/kc3/0.1
 	mkdir -p ${DESTDIR}${prefix}/bin
 	${INSTALL} -m 755 ${PROG} ${DESTDIR}${prefix}/bin/${PROG}
 
 lldb_${PROG}: debug
-	if [ -f ${PROG_DEBUG}.core ]; then lldb ${PROG_DEBUG} ${PROG_DEBUG}.core; else lldb ${PROG_DEBUG}; fi
+	if [ -f ${PROG_DEBUG}.core ]; then \
+	    lldb ${PROG_DEBUG} ${PROG_DEBUG}.core; \
+	else \
+	    lldb ${PROG_DEBUG}; \
+	fi
 
 uninstall:
 	rm -f ${prefix}/bin/${PROG}
