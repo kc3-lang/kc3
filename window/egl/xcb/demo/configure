@@ -129,6 +129,12 @@ fi
 CFLAGS="$CFLAGS -DNDEBUG"
 if [ "$(uname -s)" = "Darwin" ]; then
     LDFLAGS="$LDFLAGS -rpath @executable_path/../Frameworks"
+    LDFLAGS="$LDFLAGS -rpath @executable_path/../../../../libkc3"
+    LDFLAGS="$LDFLAGS -rpath @executable_path/../../../../gl"
+    LDFLAGS="$LDFLAGS -rpath @executable_path/../../../"
+    LDFLAGS="$LDFLAGS -rpath @executable_path/../../../demo"
+    LDFLAGS="$LDFLAGS -rpath @executable_path/../../"
+    LDFLAGS="$LDFLAGS -rpath @executable_path/../"
 else
     LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
 fi

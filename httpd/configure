@@ -97,6 +97,12 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
+case "$(uname -s)" in
+    Darwin)
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../libkc3"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../http"
+        ;;
+esac
 LDFLAGS="$LDFLAGS -L../http"
 LDFLAGS="$LDFLAGS -L../libkc3"
 LIBS="$LIBS -lkc3_http"

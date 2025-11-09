@@ -42,6 +42,15 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS="-I${SRC_TOP} $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -Wno-error=unknown-pragmas"
 CFLAGS="$CFLAGS -std=c11 -pedantic -pipe"
+case "$(uname -s)" in
+    Darwin)
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../libkc3"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../gl"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../demo"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../"
+        ;;
+esac
 LDFLAGS="$LDFLAGS -L../../../libkc3"
 LDFLAGS="$LDFLAGS -L../../../gl"
 LDFLAGS="$LDFLAGS -L../../"

@@ -135,6 +135,16 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
 LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
+case "$(uname -s)" in
+    Darwin)
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../../libkc3"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../../gl"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../demo"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../"
+        ;;
+esac
 LDFLAGS="$LDFLAGS -L../../../../libkc3"
 LDFLAGS="$LDFLAGS -L../../../../gl"
 LDFLAGS="$LDFLAGS -L../../../"

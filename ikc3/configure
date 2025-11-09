@@ -30,6 +30,13 @@ CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC -pthread"
 CFLAGS="$CFLAGS -fPIC"
 LDFLAGS="$LDFLAGS ${EXPORT_DYNAMIC}"
 LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
+case "$(uname -s)" in
+    Darwin)
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../libkc3"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../socket"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../tls"
+        ;;
+esac
 LDFLAGS="$LDFLAGS -L../tls"
 LDFLAGS="$LDFLAGS -L../socket"
 LDFLAGS="$LDFLAGS -L../libkc3"
