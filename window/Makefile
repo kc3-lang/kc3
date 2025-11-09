@@ -119,6 +119,7 @@ install::
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/window; done
+	${MAKE} -C demo install
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo install; fi
 	if ${HAVE_EGL}; then ${MAKE} -C egl install; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 install; fi
