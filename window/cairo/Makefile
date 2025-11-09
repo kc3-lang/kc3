@@ -93,6 +93,7 @@ install::
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/window/cairo; done
+	${MAKE} -C demo install
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz install; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 install; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb install; fi
