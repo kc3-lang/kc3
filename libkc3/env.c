@@ -1888,9 +1888,22 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   if (! (env->module_path = alloc(sizeof(s_str))))
     return NULL;
   if (! file_search(&path, &g_sym_x, env->module_path)) {
-    err_puts("env_init: " LIBDIR "/kc3/0.1 not found in module path");
-    assert(! "env_init: " LIBDIR "/kc3/0.1 not found in module path");
-    return NULL;
+    if (! strncmp(LIBDIR, "lib", 3) &&
+        (! LIBDIR[3] ||
+         (LIBDIR[3] == '/' &&
+          ! LIBDIR[4]))) {
+      err_puts("env_init: lib/kc3/0.1 not found in module path");
+      assert(! "env_init: lib/kc3/0.1 not found in module path");
+      return NULL;
+    }
+    str_init_1(&path, NULL, "lib/kc3/0.1/");
+    if (! file_search(&path, &g_sym_x, env->module_path)) {
+      err_puts("env_init: " LIBDIR "/kc3/0.1 and lib/kc3/0.1 not "
+               "found in module path");
+      assert(! "env_init: " LIBDIR "/kc3/0.1 and lib/kc3/0.1 not "
+             "found in module path");
+      return NULL;
+    }
   }
   env->current_defmodule = &g_sym_KC3;
   env->search_modules_default = list_new_psym(&g_sym_KC3, NULL);
