@@ -110,7 +110,9 @@ echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
 echo "LIBS = $LIBS" >> ${CONFIG_MK}
 
 if [ "x$HAVE_DRM" = "x" ]; then
-    if pkg-config gbm && pkg-config libdrm && pkg-config libinput; then
+    if $HAVE_ANDROID; then
+        HAVE_DRM=false
+    elif pkg-config gbm && pkg-config libdrm && pkg-config libinput; then
         HAVE_DRM=true
     else
         HAVE_DRM=false
