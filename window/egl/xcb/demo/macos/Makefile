@@ -95,8 +95,8 @@ lldb_demo: debug
 	lldb ${APP_PROG_DEBUG}
 
 install:
-	install -m 755 -d ${prefix}/bin
-	install -m 755 ${PROG} ${prefix}/bin/${PROG}
+	${INSTALL} -m 755 -d ${DESTDIR}${prefix}/bin
+	${INSTALL} -m 755 ${PROG} ${DESTDIR}${prefix}/bin/${PROG}
 
 .PHONY: \
 	all \
@@ -104,4 +104,5 @@ install:
 	cov \
 	debug \
 	demo \
-	gdb_demo
+	gdb_demo \
+	install
