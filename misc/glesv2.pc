@@ -1,0 +1,11 @@
+prefix=/opt/android-sdk/ndk/latest/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr
+exec_prefix=${prefix}
+libdir=${prefix}/lib/aarch64-linux-android/31
+includedir=${prefix}/include
+
+Name: glesv2
+Description: OpenGL ES 2.0 library for Android
+Version: 2.0
+Requires: egl
+Libs: -L${libdir} -lGLESv2
+Cflags: -I${includedir}
