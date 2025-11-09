@@ -55,6 +55,7 @@ pkg_config libffi
 pkg_config freetype2
 pkg_config egl
 pkg_config glesv2
+config_lib GLESv2 -lGLESv2
 #pkg_config glut
 pkg_config libpng
 pkg_config sdl2

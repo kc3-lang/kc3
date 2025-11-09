@@ -56,6 +56,7 @@ pkg_config freetype2
 pkg_config xkbcommon
 pkg_config egl
 pkg_config glesv2
+config_lib GLESv2 -lGLESv2
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
