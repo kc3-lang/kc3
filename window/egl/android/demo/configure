@@ -13,9 +13,10 @@
 
 set -e
 
-echo "$PWD/configure"
-
-export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
+echo "$0"
+export BUILD_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$PWD")")")")"
+export DIR="window/egl/drm/demo"
+export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")")")"
 
 . "${SRC_TOP}/config.subr"
 
@@ -29,7 +30,7 @@ echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
 echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
 echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 
-. ./sources.sh
+. "${SRC_DIR}/sources.sh"
 
 OBJECTS="$(c2ext .main.o "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
@@ -51,7 +52,6 @@ pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
 pkg_config freetype2
-pkg_config android
 pkg_config egl
 pkg_config glesv2
 config_define PREFIX "\"${PREFIX}\""
