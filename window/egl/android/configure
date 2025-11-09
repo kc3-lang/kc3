@@ -109,6 +109,7 @@ build_o_c
 build_lib
 
 update_config_mk
+update_makefile
 env_reset
 
 config_subdirs demo
