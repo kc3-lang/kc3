@@ -1884,12 +1884,12 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
              (NULL, "../../../../../../", list_new_str_1
               (NULL, "/usr/", list_new_str_1
                (NULL, "/usr/local/", NULL))))))))))));
-  str_init_1(&path, NULL, "lib/kc3/0.1/");
+  str_init_1(&path, NULL, LIBDIR "/kc3/0.1/");
   if (! (env->module_path = alloc(sizeof(s_str))))
     return NULL;
   if (! file_search(&path, &g_sym_x, env->module_path)) {
-    err_puts("env_init: lib/kc3/0.1 not found in module path");
-    assert(! "env_init: lib/kc3/0.1 not found in module path");
+    err_puts("env_init: " LIBDIR "/kc3/0.1 not found in module path");
+    assert(! "env_init: " LIBDIR "/kc3/0.1 not found in module path");
     return NULL;
   }
   env->current_defmodule = &g_sym_KC3;

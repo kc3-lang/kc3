@@ -25,6 +25,20 @@ if [ "x$1" = "x--prefix" ]; then
 fi
 export PREFIX
 
+: ${LIBDIR:=}
+if [ "x$1" = "x--libdir" ]; then
+    LIBDIR="$2"
+    shift 2
+fi
+if [ "x$LIBDIR" = "x" ]; then
+    if [ -d "${PREFIX}/lib64" ]; then
+        LIBDIR="${PREFIX}/lib64"
+    else
+        LIBDIR="${PREFIX}/lib"
+    fi
+fi
+export LIBDIR
+
 . "${SRC_TOP}/config.subr"
 
 require_pkg_config

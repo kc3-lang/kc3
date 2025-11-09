@@ -74,33 +74,33 @@ build_lib_shared() {
         echo
         echo "install::"
         echo "	\${INSTALL} -o \${OWNER} -g \${GROUP} -m 0755 -d \\"
-        echo "	    \${DESTDIR}\${prefix}/lib"
+        echo "	    \${DESTDIR}\${libdir}"
         echo "	\${INSTALL} -o \${OWNER} -g \${GROUP} -m 0644 \\"
-        echo "	    $LIB$SHARED_PATCH \${DESTDIR}\${prefix}/lib"
+        echo "	    $LIB$SHARED_PATCH \${DESTDIR}\${libdir}"
         echo "	ln -sf $LIB$SHARED_PATCH \\"
-        echo "	    \${DESTDIR}\${prefix}/lib/$LIB$SHARED_MINOR"
+        echo "	    \${DESTDIR}\${libdir}/$LIB$SHARED_MINOR"
         echo "	ln -sf $LIB$SHARED_PATCH \\"
-        echo "	    \${DESTDIR}\${prefix}/lib/$LIB$SHARED_MAJOR"
+        echo "	    \${DESTDIR}\${libdir}/$LIB$SHARED_MAJOR"
         echo "	ln -sf $LIB$SHARED_PATCH \\"
-        echo "	    \${DESTDIR}\${prefix}/lib/$LIB.$SHARED_EXT"
+        echo "	    \${DESTDIR}\${libdir}/$LIB.$SHARED_EXT"
         echo "	\${INSTALL} -o \${OWNER} -g \${GROUP} -m 0644 \\"
-        echo "	    $LIB_DEBUG$SHARED_PATCH \${DESTDIR}\${prefix}/lib"
+        echo "	    $LIB_DEBUG$SHARED_PATCH \${DESTDIR}\${libdir}"
         echo "	ln -sf $LIB_DEBUG$SHARED_PATCH \\"
-        echo "	    \${DESTDIR}\${prefix}/lib/$LIB_DEBUG$SHARED_MINOR"
+        echo "	    \${DESTDIR}\${libdir}/$LIB_DEBUG$SHARED_MINOR"
         echo "	ln -sf $LIB_DEBUG$SHARED_PATCH \\"
-        echo "	    \${DESTDIR}\${prefix}/lib/$LIB_DEBUG$SHARED_MAJOR"
+        echo "	    \${DESTDIR}\${libdir}/$LIB_DEBUG$SHARED_MAJOR"
         echo "	ln -sf $LIB_DEBUG$SHARED_PATCH \\"
-        echo "	    \${DESTDIR}\${prefix}/lib/$LIB_DEBUG.$SHARED_EXT"
+        echo "	    \${DESTDIR}\${libdir}/$LIB_DEBUG.$SHARED_EXT"
         echo
         echo "uninstall::"
-        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB$SHARED_PATCH"
-        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB$SHARED_MINOR"
-        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB$SHARED_MAJOR"
-        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB.$SHARED_EXT"
-        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB_DEBUG$SHARED_PATCH"
-        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB_DEBUG$SHARED_MINOR"
-        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB_DEBUG$SHARED_MAJOR"
-        echo "	rm -f \${DESTDIR}\${prefix}/lib/$LIB_DEBUG.$SHARED_EXT"
+        echo "	rm -f \${DESTDIR}\${libdir}/$LIB$SHARED_PATCH"
+        echo "	rm -f \${DESTDIR}\${libdir}/$LIB$SHARED_MINOR"
+        echo "	rm -f \${DESTDIR}\${libdir}/$LIB$SHARED_MAJOR"
+        echo "	rm -f \${DESTDIR}\${libdir}/$LIB.$SHARED_EXT"
+        echo "	rm -f \${DESTDIR}\${libdir}/$LIB_DEBUG$SHARED_PATCH"
+        echo "	rm -f \${DESTDIR}\${libdir}/$LIB_DEBUG$SHARED_MINOR"
+        echo "	rm -f \${DESTDIR}\${libdir}/$LIB_DEBUG$SHARED_MAJOR"
+        echo "	rm -f \${DESTDIR}\${libdir}/$LIB_DEBUG.$SHARED_EXT"
     } >> ${CONFIG_MK}
 }
 
@@ -1515,6 +1515,7 @@ if [ "x$LIBDIR" = "x" ]; then
     LIBDIR="${PREFIX}/lib"
 fi
 echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}
+echo "libdir ?= \${LIBDIR}" >> ${CONFIG_MK}
 
 EXPORT_DYNAMIC="--export-dynamic"
 case "$(uname -s)" in
@@ -1659,3 +1660,4 @@ esac
 } >> ${CONFIG_MK}
 
 config_no_undefined
+config_define LIBDIR '\\"'"$LIBDIR"'\\"'

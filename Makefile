@@ -745,12 +745,12 @@ ikc3_gcovr:
 	${MAKE} gcovr
 
 install:
-	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/lib/kc3
-	${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/lib/kc3/0.1
+	${INSTALL} -m 0755 -d ${DESTDIR}${libdir}/kc3
+	${INSTALL} -m 0755 -d ${DESTDIR}${libdir}/kc3/0.1
 	( cd ${SRC_DIR} && find lib/kc3/ -type d; ) | while read F; do \
 	    ${INSTALL} -m 0755 -d ${DESTDIR}${prefix}/"$$F"; done
 	${INSTALL} -m 0644 ${SRC_DIR}/lib/kc3/0.1/kc3.dump \
-	    ${DESTDIR}${prefix}/lib/kc3/0.1/kc3.dump
+	    ${DESTDIR}${libdir}/kc3/0.1/kc3.dump
 	( cd ${SRC_DIR} && \
 	  find lib/kc3 -name '*.facts' -or -name '*.kc3'; ) | \
 	      while read F; do ${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
@@ -785,63 +785,63 @@ install_lib_links:
 	${MAKE} install_lib_links_${ARCH}
 
 install_lib_links_bsd:
-	ln -sf ../../libekc3.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
-	ln -sf ../../libkc3_event.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/event.so
-	ln -sf ../../libkc3_gtk4.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/gtk4.so
-	ln -sf ../../libkc3_http.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/http.so
-	ln -sf ../../libkc3_json.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/json.so
-	ln -sf ../../libkc3_markdown.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
-	ln -sf ../../libkc3_pdf.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/pdf.so
-	ln -sf ../../libkc3_socket.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
-	ln -sf ../../libkc3_tls.so.0.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
+	ln -sf ../../libekc3.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
+	ln -sf ../../libkc3_event.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/event.so
+	ln -sf ../../libkc3_gtk4.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
+	ln -sf ../../libkc3_http.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/http.so
+	ln -sf ../../libkc3_json.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/json.so
+	ln -sf ../../libkc3_markdown.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/markdown.so
+	ln -sf ../../libkc3_pdf.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/pdf.so
+	ln -sf ../../libkc3_socket.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/socket.so
+	ln -sf ../../libkc3_tls.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/tls.so
 
 install_lib_links_darwin:
-	ln -sf ../../libekc3.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
-	ln -sf ../../libkc3_event.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/event.so
-	ln -sf ../../libkc3_gtk4.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/gtk4.so
-	ln -sf ../../libkc3_http.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/http.so
-	ln -sf ../../libkc3_json.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/json.so
-	ln -sf ../../libkc3_markdown.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
-	ln -sf ../../libkc3_pdf.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/pdf.so
-	ln -sf ../../libkc3_smtp.so.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/smtp.so
-	ln -sf ../../libkc3_socket.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
-	ln -sf ../../libkc3_tls.0.dylib ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
+	ln -sf ../../libekc3.0.dylib ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
+	ln -sf ../../libkc3_event.0.dylib ${DESTDIR}${libdir}/kc3/0.1/event.so
+	ln -sf ../../libkc3_gtk4.0.dylib ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
+	ln -sf ../../libkc3_http.0.dylib ${DESTDIR}${libdir}/kc3/0.1/http.so
+	ln -sf ../../libkc3_json.0.dylib ${DESTDIR}${libdir}/kc3/0.1/json.so
+	ln -sf ../../libkc3_markdown.0.dylib ${DESTDIR}${libdir}/kc3/0.1/markdown.so
+	ln -sf ../../libkc3_pdf.0.dylib ${DESTDIR}${libdir}/kc3/0.1/pdf.so
+	ln -sf ../../libkc3_smtp.so.0.dylib ${DESTDIR}${libdir}/kc3/0.1/smtp.so
+	ln -sf ../../libkc3_socket.0.dylib ${DESTDIR}${libdir}/kc3/0.1/socket.so
+	ln -sf ../../libkc3_tls.0.dylib ${DESTDIR}${libdir}/kc3/0.1/tls.so
 
 install_lib_links_linux:
-	ln -sf ../../libekc3.so ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
-	ln -sf ../../libkc3_event.so ${DESTDIR}${prefix}/lib/kc3/0.1/event.so
-	ln -sf ../../libkc3_gtk4.so ${DESTDIR}${prefix}/lib/kc3/0.1/gtk4.so
-	ln -sf ../../libkc3_http.so ${DESTDIR}${prefix}/lib/kc3/0.1/http.so
-	ln -sf ../../libkc3_json.so ${DESTDIR}${prefix}/lib/kc3/0.1/json.so
-	ln -sf ../../libkc3_markdown.so ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
-	ln -sf ../../libkc3_pdf.so ${DESTDIR}${prefix}/lib/kc3/0.1/pdf.so
-	ln -sf ../../libkc3_smtp.so ${DESTDIR}${prefix}/lib/kc3/0.1/smtp.so
-	ln -sf ../../libkc3_socket.so ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
-	ln -sf ../../libkc3_tls.so ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
+	ln -sf ../../libekc3.so ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
+	ln -sf ../../libkc3_event.so ${DESTDIR}${libdir}/kc3/0.1/event.so
+	ln -sf ../../libkc3_gtk4.so ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
+	ln -sf ../../libkc3_http.so ${DESTDIR}${libdir}/kc3/0.1/http.so
+	ln -sf ../../libkc3_json.so ${DESTDIR}${libdir}/kc3/0.1/json.so
+	ln -sf ../../libkc3_markdown.so ${DESTDIR}${libdir}/kc3/0.1/markdown.so
+	ln -sf ../../libkc3_pdf.so ${DESTDIR}${libdir}/kc3/0.1/pdf.so
+	ln -sf ../../libkc3_smtp.so ${DESTDIR}${libdir}/kc3/0.1/smtp.so
+	ln -sf ../../libkc3_socket.so ${DESTDIR}${libdir}/kc3/0.1/socket.so
+	ln -sf ../../libkc3_tls.so ${DESTDIR}${libdir}/kc3/0.1/tls.so
 
 install_lib_links_openbsd:
-	ln -sf ../../libekc3.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
-	ln -sf ../../libkc3_event.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/event.so
-	ln -sf ../../libkc3_gtk4.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/gtk4.so
-	ln -sf ../../libkc3_http.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/http.so
-	ln -sf ../../libkc3_json.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/json.so
-	ln -sf ../../libkc3_markdown.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
-	ln -sf ../../libkc3_pdf.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/pdf.so
-	ln -sf ../../libkc3_smtp.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/smtp.so
-	ln -sf ../../libkc3_socket.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
-	ln -sf ../../libkc3_tls.so.0.0 ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
+	ln -sf ../../libekc3.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
+	ln -sf ../../libkc3_event.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/event.so
+	ln -sf ../../libkc3_gtk4.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
+	ln -sf ../../libkc3_http.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/http.so
+	ln -sf ../../libkc3_json.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/json.so
+	ln -sf ../../libkc3_markdown.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/markdown.so
+	ln -sf ../../libkc3_pdf.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/pdf.so
+	ln -sf ../../libkc3_smtp.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/smtp.so
+	ln -sf ../../libkc3_socket.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/socket.so
+	ln -sf ../../libkc3_tls.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/tls.so
 
 install_lib_links_windows:
-	ln -sf ../../../bin/libekc3-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/ekc3.so
-	ln -sf ../../../bin/libkc3_event-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/event.so
-	ln -sf ../../../bin/libkc3_gtk4-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/gtk4.so
-	ln -sf ../../../bin/libkc3_http-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/http.so
-	ln -sf ../../../bin/libkc3_json-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/json.so
-	ln -sf ../../../bin/libkc3_markdown-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/markdown.so
-	ln -sf ../../../bin/libkc3_pdf-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/pdf.so
-	ln -sf ../../../bin/libkc3_smtp-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/smtp.so
-	ln -sf ../../../bin/libkc3_socket-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/socket.so
-	ln -sf ../../../bin/libkc3_tls-0.dll ${DESTDIR}${prefix}/lib/kc3/0.1/tls.so
+	ln -sf ../../../bin/libekc3-0.dll ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
+	ln -sf ../../../bin/libkc3_event-0.dll ${DESTDIR}${libdir}/kc3/0.1/event.so
+	ln -sf ../../../bin/libkc3_gtk4-0.dll ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
+	ln -sf ../../../bin/libkc3_http-0.dll ${DESTDIR}${libdir}/kc3/0.1/http.so
+	ln -sf ../../../bin/libkc3_json-0.dll ${DESTDIR}${libdir}/kc3/0.1/json.so
+	ln -sf ../../../bin/libkc3_markdown-0.dll ${DESTDIR}${libdir}/kc3/0.1/markdown.so
+	ln -sf ../../../bin/libkc3_pdf-0.dll ${DESTDIR}${libdir}/kc3/0.1/pdf.so
+	ln -sf ../../../bin/libkc3_smtp-0.dll ${DESTDIR}${libdir}/kc3/0.1/smtp.so
+	ln -sf ../../../bin/libkc3_socket-0.dll ${DESTDIR}${libdir}/kc3/0.1/socket.so
+	ln -sf ../../../bin/libkc3_tls-0.dll ${DESTDIR}${libdir}/kc3/0.1/tls.so
 
 json:
 	${MAKE} -C libtommath build
