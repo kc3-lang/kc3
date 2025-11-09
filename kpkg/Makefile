@@ -42,7 +42,7 @@ gdb: debug
 
 install:
 	mkdir -p ${DESTDIR}${libdir}/kc3/0.1
-	${INSTALL} -m 644 ${BUILD_TOP}/lib/kc3/0.1/kpkg.dump \
+	${INSTALL} -m 644 ${SRC_TOP}/lib/kc3/0.1/kpkg.dump \
 	    ${DESTDIR}${libdir}/kc3/0.1
 	mkdir -p ${DESTDIR}${prefix}/bin
 	${INSTALL} -m 755 ${PROG} ${DESTDIR}${prefix}/bin/${PROG}
