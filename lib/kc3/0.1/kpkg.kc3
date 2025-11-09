@@ -394,8 +394,8 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     checkout-clean       remove checkout files : src/$DIR/$TREE
     clone                git clone into git/$DIR
     clone-clean          remove git repo files: git/$DIR
-  o fetch                git fetch --all in git/$DIR
-  o pull                 git pull in src/$DIR/$TREE
+    fetch                git fetch --all in git/$DIR
+    pull                 git pull in src/$DIR/$TREE
 🐢 #{title}Dependencies commands :#{reset}
     build-dependencies   show build-time dependencies
     dependencies         show dependencies
@@ -406,10 +406,10 @@ Usage: [KPKG_DIR=~/kpkg] #{bold}kpkg#{reset} PKG [OPTION …] COMMAND [ARG …] 
     configure-clean      remove configure-done tag
     build                run parallel build
     clean-build          remove object files
-   #{title}Package commands :#{reset}
+🐢 #{title}Package commands :#{reset}
     fake                 fake installation just before packaging
     package              create manifest, package and checksum
-   #{title}Install commands :#{reset}
+🐢 #{title}Install commands :#{reset}
     install              install package
 🐢 #{title}Misc commands :#{reset}
     clean                remove all files related to $PKG
