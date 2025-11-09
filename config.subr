@@ -1384,7 +1384,7 @@ if [ "x$CC" = "x" ]; then
 fi
 echo "CC = $CC" >> ${CONFIG_MK}
 
-CC_TARGET=$(LC_ALL=C cc -v 2>&1 | grep 'Target: ' | cut -c 9-)
+CC_TARGET=$(LC_ALL=C "$CC" -v 2>&1 | grep 'Target: ' | cut -c 9-)
 echo "CC_TARGET = $CC_TARGET" >> ${CONFIG_MK}
 
 if [ "x$CXX" = "x" ]; then
