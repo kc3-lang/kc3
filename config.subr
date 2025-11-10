@@ -757,9 +757,9 @@ config_objc_lib_have() {
 
 config_prog() {
     PROG="$1"
-    PROG_ASAN="${PROG}_asan"
-    PROG_COV="${PROG}_cov"
-    PROG_DEBUG="${PROG}_debug"
+    PROG_ASAN="$1_asan"
+    PROG_COV="$1_cov"
+    PROG_DEBUG="$1_debug"
     echo "PROG       = ${PROG}"       >> ${CONFIG_MK}
     echo "PROG_ASAN  = ${PROG_ASAN}"  >> ${CONFIG_MK}
     echo "PROG_COV   = ${PROG_COV}"   >> ${CONFIG_MK}

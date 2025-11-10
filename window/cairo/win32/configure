@@ -56,27 +56,40 @@ pkg_config cairo
 pkg_config cairo-win32
 pkg_config libbsd-overlay
 pkg_config libmd
-config_define PREFIX "\"${PREFIX}\""
-LIBS="$LIBS -lxkbcommon"
+LIBS="$LIBS -lxkbcommon -lwinpthread"
 
 # Address Sanitizer config
+CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
-LIBS_ASAN="$LIBS -lkc3_window_cairo_asan $(${CC} -print-file-name=libasan.so)"
+LIBS_ASAN="$LIBS"
+LIBS_ASAN="$LIBS_ASAN -lkc3_window_cairo_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_window_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
+LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 
 # Coverage config
+CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LIBGCOV=$(${CC} -print-file-name=libgcov.a)
 LIBGCOV_DIR=$(dirname "$LIBGCOV")
 LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
-LIBS_COV="$LIBS -lkc3_window_cairo_cov $(${CC} -print-file-name=libgcov.a)"
+LIBS_COV="$LIBS"
+LIBS_COV="$LIBS_COV -lkc3_window_cairo_cov"
+LIBS_COV="$LIBS_COV -lkc3_window_cov"
+LIBS_COV="$LIBS_COV -lkc3_cov"
+LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
 
 # Debug config
+CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_DEBUG="$LIBS -lkc3_window_cairo_debug"
+LIBS_DEBUG="$LIBS"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_cairo_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -pipe"
@@ -84,7 +97,9 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS="$LIBS -lkc3_window_cairo -lkc3_window -lkc3"
+LIBS="$LIBS -lkc3_window_cairo"
+LIBS="$LIBS -lkc3_window"
+LIBS="$LIBS -lkc3"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

@@ -10,10 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#if (defined(WIN32) || defined(WIN64))
+# include <winsock2.h>
+# include <windows.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <xkbcommon/xkbcommon.h>
-#include <windows.h>
 #include <cairo.h>
 #include <cairo-win32.h>
 #include "../../../libkc3/kc3.h"

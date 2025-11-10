@@ -10,9 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "../../../libkc3/types.h"
 #include <windows.h>
 #include <xkbcommon/xkbcommon.h>
-#include "../../../libkc3/types.h"
 
 u32 vk_to_xkbcommon (u32 vk_key)
 {
