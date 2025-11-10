@@ -28,6 +28,8 @@ build_prog_main
 config.mk
 config.sh
 .config_*
+configure.mk
+configure.sh
 *.core
 *.css
 current_test
