@@ -85,6 +85,9 @@ install::
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/window/egl; done
+	if ${HAVE_ANDROID}; then ${MAKE} -C android install; fi
+	if ${HAVE_DRM}; then ${MAKE} -C drm install; fi
+	if ${HAVE_XCB}; then ${MAKE} -C xcb install; fi
 
 lldb_demo: debug
 
