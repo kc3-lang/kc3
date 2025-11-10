@@ -8,9 +8,8 @@
    - [x] release depend de dist
  - [x] créer un fichier release/v0.1.16-git/Makefile
    - [x] copier [libressl/release/v4.2.0/Makefile](https://git.kmx.io/kc3-lang/libressl/release/_tree/master/v4.2.0/Makefile)
- - [ ] faire un target _deb_ qui génere le package Debian a partir de la
+ - [x] faire un target _deb_ qui génere le package Debian a partir de la
    release
-   - [ ] deb depend de release
 
 ## PDF
  - [ ] Primitives de dessin
@@ -67,21 +66,8 @@
 
  - Android studio
    - [ ] Installer Android Studio et le dernier NDK Android.
-     - [x] utiliser sdkmanager pour obtenir le dernier NDK Android.
-       - [x] commande : `sdkmanager --install 'ndk;r29'`
-
- - kpkg build un target android31 pour kc3 avec succes
-   - [ ] integrer le package kpkg kc3 en apk Android
-
-## Kpkg / CI / CD
-
- - site web qui tracke l'etat de taches (job runner)
-   - le job runner a un certain nombre de files d'attente et le
-     serveur web controle l'execution des runners
-   - la file d'attente se remplit avec des noms de package et des
-     identifiants de commit (tree) et en sortie on a les logs, tous
-     les artefacts (fichiers) du build dans le CI et eventuellement
-     la release si on active les builds automatiques
+     - [ ] utiliser sdkmanager pour obtenir le dernier NDK Android.
+       - [ ] commande : `sdkmanager --install 'ndk;r29'`
 
 ## libkc3
 
@@ -165,14 +151,13 @@
 
  - Compiler les packages sous Linux
    - `kpkg PKG clean uninstall install`
-   - [x] freetype
-   - [x] libbsd
-   - [x] libevent
-   - [x] libffi
-   - [x] libmd
-   - [x] libpng
-   - [x] libressl
-   - [x] kc3
+   - [x] freetype/
+   - [x] libbsd/
+   - [x] libevent/
+   - [x] libffi/
+   - [x] libmd/
+   - [x] libpng/
+   - [x] libressl/
 
 ## Cleanup branches git
  - [x] `callable`
