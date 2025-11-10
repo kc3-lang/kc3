@@ -70,6 +70,16 @@
      - [ ] utiliser sdkmanager pour obtenir le dernier NDK Android.
        - [ ] commande : `sdkmanager --install 'ndk;r29'`
 
+## Kpkg / CI / CD
+
+ - site web qui tracke l'etat de taches (job runner)
+   - le job runner a un certain nombre de files d'attente et le
+     serveur web controle l'execution des runners
+   - la file d'attente se remplit avec des noms de package et des
+     identifiants de commit (tree) et en sortie on a les logs, tous
+     les artefacts (fichiers) du build dans le CI et eventuellement
+     la release si on active les builds automatiques
+
 ## libkc3
 
  - [ ] Implementer la fonction `s_tag * tag_init_v_1 (s_tag *, const char *);` :
