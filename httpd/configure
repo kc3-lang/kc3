@@ -28,7 +28,6 @@ config_prog kc3_httpd
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC"
 LDFLAGS="$LDFLAGS ${EXPORT_DYNAMIC}"
-LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 config_i386
@@ -42,6 +41,12 @@ pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
 config_lib pthread -pthread 2>/dev/null
+case "$(uname -s)" in
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+esac
 
 # Sources
 OBJECTS="$(c2ext .main.o "$SOURCES")"

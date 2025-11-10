@@ -127,17 +127,21 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-if [ "$(uname -s)" = "Darwin" ]; then
-    LDFLAGS="$LDFLAGS -rpath @executable_path/../Frameworks"
-    LDFLAGS="$LDFLAGS -rpath @executable_path/../../../../libkc3"
-    LDFLAGS="$LDFLAGS -rpath @executable_path/../../../../gl"
-    LDFLAGS="$LDFLAGS -rpath @executable_path/../../../"
-    LDFLAGS="$LDFLAGS -rpath @executable_path/../../../demo"
-    LDFLAGS="$LDFLAGS -rpath @executable_path/../../"
-    LDFLAGS="$LDFLAGS -rpath @executable_path/../"
-else
-    LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
-fi
+case "$(uname -s)" in
+    MINGW64*)
+    ;;
+    Darwin)
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../Frameworks"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../../libkc3"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../../gl"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../demo"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../../"
+        LDFLAGS="$LDFLAGS -rpath @executable_path/../"
+        ;;
+    *)
+        LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
+esac
 LDFLAGS="$LDFLAGS -L../../../../libkc3"
 LDFLAGS="$LDFLAGS -L../../../../gl"
 LDFLAGS="$LDFLAGS -L../../../"

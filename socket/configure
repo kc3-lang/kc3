@@ -41,7 +41,6 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
-LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
 LDFLAGS="$LDFLAGS -L../libkc3"
 config_asan
 config_gnu
@@ -55,10 +54,15 @@ pkg_config libevent
 pkg_config libffi
 pkg_config libmd
 config_define PREFIX "\"${PREFIX}\""
-LIBS="$LIBS -lm -rpath ${PREFIX}/lib"
 if $HAVE_WIN32; then
     LIBS="$LIBS -lws2_32"
 fi
+case "$(uname -s)" in
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+esac
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"

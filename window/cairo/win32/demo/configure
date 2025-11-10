@@ -22,7 +22,7 @@ export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0"
 
 config_prog kc3_window_cairo_win32_demo
 
-. "${SRC_TOP}/sources.sh"
+. "${SRC_DIR}/sources.sh"
 
 OBJECTS="$(c2ext .main.o "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
@@ -30,10 +30,8 @@ echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 
-if $HAVE_GCOV; then
-    OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
-    echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
-fi
+OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
+echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
 
 OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
@@ -51,7 +49,6 @@ config_win64
 pkg_config libbsd-overlay
 pkg_config cairo
 pkg_config cairo-win32
-LIBS="$LIBS"
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
@@ -136,46 +133,11 @@ echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
-echo >> ${CONFIG_MK}
-echo "$PROG: $LOCAL_LIBS $OBJECTS" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS} \${LDFLAGS} ${OBJECTS} ${LIBS} -o $PROG" >> ${CONFIG_MK}
+update_build
+update_build_prog
 
-echo >> ${CONFIG_MK}
-echo "$PROG_ASAN: $LOCAL_LIBS_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_ASAN} \${LDFLAGS_ASAN} ${OBJECTS_ASAN} ${LIBS_ASAN} -o $PROG_ASAN" >> ${CONFIG_MK}
-
-if $HAVE_GCOV; then
-    echo >> ${CONFIG_MK}
-    echo "$PROG_COV: $LOCAL_LIBS_COV $OBJECTS_COV" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_COV} \${LDFLAGS_COV} ${OBJECTS_COV} ${LIBS_COV} -o $PROG_COV" >> ${CONFIG_MK}
-fi
-
-echo >> ${CONFIG_MK}
-echo "$PROG_DEBUG: $LOCAL_LIBS_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_DEBUG} \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} ${LIBS_DEBUG} -o $PROG_DEBUG" >> ${CONFIG_MK}
-
-for SRC in $SOURCES; do
-    echo >> ${CONFIG_MK}
-    SRC_LO="$(c2ext .main.o "$SRC")"
-    c_ext_rule .main.o "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
-
-    echo >> ${CONFIG_MK}
-    SRC_ASAN_LO="$(c2ext .asan.o "$SRC")"
-    c_ext_rule .asan.o "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_ASAN_LO" >> ${CONFIG_MK}
-
-    if $HAVE_GCOV; then
-        echo >> ${CONFIG_MK}
-        SRC_COV_LO="$(c2ext .cov.o "$SRC")"
-        c_ext_rule .cov.o "$SRC" >> ${CONFIG_MK}
-        echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
-    fi
-
-    echo >> ${CONFIG_MK}
-    SRC_DEBUG_LO="$(c2ext .debug.o "$SRC")"
-    c_ext_rule .debug.o "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
-done
+build_o
+build_prog
 
 update_config_mk
+update_makefile

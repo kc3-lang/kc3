@@ -41,7 +41,6 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
 LDFLAGS="$LDFLAGS ${EXPORT_DYNAMIC}"
-LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 config_i386
@@ -57,6 +56,12 @@ config_lib dl -ldl 2>/dev/null
 config_lib m -lm 2>/dev/null
 pkg_config libtls
 config_lib tls -ltls 2>/dev/null
+case "$(uname -s)" in
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+esac
 
 # Asan config
 CPPFLAGS_ASAN="$CPPFLAGS"

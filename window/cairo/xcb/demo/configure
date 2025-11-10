@@ -41,16 +41,6 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC"
-LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
-case "$(uname -s)" in
-    Darwin)
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../../libkc3"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../../"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../../demo"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../"
-        ;;
-esac
 LDFLAGS="$LDFLAGS -L../../../../libkc3"
 LDFLAGS="$LDFLAGS -L../../../"
 LDFLAGS="$LDFLAGS -L../../"
@@ -66,6 +56,19 @@ pkg_config libffi
 pkg_config libmd
 pkg_config xcb
 pkg_config cairo
+case "$(uname -s)" in
+    Darwin)
+        LIBS="$LIBS -rpath @executable_path/../../../../libkc3"
+        LIBS="$LIBS -rpath @executable_path/../../../"
+        LIBS="$LIBS -rpath @executable_path/../../"
+        LIBS="$LIBS -rpath @executable_path/../../demo"
+        LIBS="$LIBS -rpath @executable_path/../"
+        ;;
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+esac
 
 # Asan config
 CPPFLAGS_ASAN="$CPPFLAGS"

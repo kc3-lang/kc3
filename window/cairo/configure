@@ -34,7 +34,6 @@ echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
 OBJCFLAGS="$CFLAGS -W -Wall -Werror"
-LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 config_i386
@@ -52,6 +51,12 @@ pkg_config cairo-quartz-font
 pkg_config freetype2
 pkg_config xkbcommon
 config_cocoa
+case "$(uname -s)" in
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+esac
 
 . "${SRC_DIR}/sources.sh"
 

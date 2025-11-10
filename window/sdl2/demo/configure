@@ -122,11 +122,16 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-if [ "$(uname -s)" = "Darwin" ]; then
+if [ "x$(uname -s)" = "xDarwin" ]; then
     LDFLAGS="$LDFLAGS -rpath @executable_path/../Frameworks"
 else
-    LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
-    if [ "$(uname -s)" = "OpenBSD" ]; then
+    case "$(uname -s)" in
+        MINGW64*)
+            ;;
+        *)
+            LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
+    esac
+    if [ "x$(uname -s)" = "xOpenBSD" ]; then
         LDFLAGS="$LDFLAGS -rpath /usr/X11R6/lib"
     fi
 fi

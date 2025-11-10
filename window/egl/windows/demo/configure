@@ -62,6 +62,14 @@ config_lib OPENMP -fopenmp 2>/dev/null
 config_define HAVE_OPENMP "${HAVE_OPENMP}"
 pkg_config egl
 pkg_config xcb
+case "$(uname -s)" in
+    Darwin)
+        LIBS="$LIBS -rpath @executable_path/../Frameworks"
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+esac
 
 # Asan config
 CPPFLAGS_ASAN="$CPPFLAGS"
@@ -127,11 +135,6 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-if [ "$(uname -s)" = "Darwin" ]; then
-    LDFLAGS="$LDFLAGS -rpath @executable_path/../Frameworks"
-else
-    LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
-fi
 LDFLAGS="$LDFLAGS -L../../../../libkc3"
 LDFLAGS="$LDFLAGS -L../../../../gl"
 LDFLAGS="$LDFLAGS -L../../../"

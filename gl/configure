@@ -45,7 +45,6 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
-LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
 config_asan
 config_cocoa
 config_gnu
@@ -62,6 +61,12 @@ pkg_config glesv2
 pkg_config libpng
 config_lib m -lm 2>/dev/null
 config_define PREFIX "\"${PREFIX}\""
+case "$(uname -s)" in
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+esac
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"

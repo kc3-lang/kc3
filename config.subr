@@ -766,7 +766,7 @@ config_prog() {
     echo "PROG_DEBUG = ${PROG_DEBUG}" >> ${CONFIG_MK}
     case "$(uname -s)" in
         MINGW64*)
-            CPPFLAGS="$CPPFLAGS -DPREFIX="'\"'${PREFIX}'\"'
+            CPPFLAGS="$CPPFLAGS -DPREFIX="'\"'"${PREFIX}"'\"'
             ;;
         *)
             CPPFLAGS="$CPPFLAGS -DPREFIX=\"\\\"${PREFIX}\\\"\""
@@ -1684,4 +1684,11 @@ esac
 } >> ${CONFIG_MK}
 
 config_no_undefined
-config_define LIBDIR "\"\\\"$LIBDIR\\\"\""
+case "$(uname -s)" in
+    MINGW64*)
+        CPPFLAGS="$CPPFLAGS -DLIBDIR="'\"'"${LIBDIR}"'\"'
+        ;;
+    *)
+        CPPFLAGS="$CPPFLAGS -DLIBDIR=\"\\\"${LIBDIR}\\\"\""
+        ;;
+esac

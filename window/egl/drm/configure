@@ -56,7 +56,12 @@ pkg_config gbm
 pkg_config egl
 pkg_config gl
 config_define PREFIX "\"${PREFIX}\""
-LIBS="$LIBS -rpath ${PREFIX}/lib"
+case "$(uname -s)" in
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+esac
 
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}

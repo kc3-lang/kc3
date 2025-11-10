@@ -57,7 +57,12 @@ config_lib m -lm
 config_openmp
 config_define HAVE_OPENMP "${HAVE_OPENMP}"
 config_define PREFIX "\"${PREFIX}\""
-LIBS="$LIBS -rpath ${PREFIX}/lib"
+case "$(uname -s)" in
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+esac
 
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}

@@ -30,7 +30,12 @@ config_lib pthread -lpthread
 if $HAVE_WIN32 || $HAVE_WIN64; then
     LIBS="$LIBS -lws2_32"
 fi
-LIBS="$LIBS -rpath ${PREFIX}/lib"
+case "$(uname -s)" in
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+esac
 if ! [ -f "${SRC_TOP}/ucd2c/ucd.c" ]; then
     touch "${SRC_TOP}/ucd2c/ucd.c"
 fi

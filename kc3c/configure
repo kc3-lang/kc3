@@ -21,7 +21,7 @@ export SRC_TOP="$(dirname "$PWD")"
 
 config_prog kc3s
 
-. "${SRC_TOP}/sources.sh"
+. "${SRC_DIR}/sources.sh"
 
 OBJECTS="$(c2ext .main.o "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}

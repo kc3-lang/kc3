@@ -57,7 +57,12 @@ pkg_config egl
 pkg_config glesv2
 config_define PREFIX "\"${PREFIX}\""
 LIBS="$LIBS -lxkbcommon -lxkbcommon-x11"
-LIBS="$LIBS -rpath ${PREFIX}/lib"
+case "$(uname -s)" in
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+esac
 
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}

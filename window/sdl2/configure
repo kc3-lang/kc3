@@ -41,7 +41,12 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
-LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
+case "$(uname -s)" in
+    MINGW64*)
+        ;;
+    *)
+        LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
+esac
 config_asan
 config_gnu
 config_i386
