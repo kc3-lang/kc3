@@ -157,6 +157,9 @@ cov:
 	${MAKE} -C window cov
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 cov; fi
 
+deb:
+	${MAKE} -C release/v${VER} deb
+
 debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug

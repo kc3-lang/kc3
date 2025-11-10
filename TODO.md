@@ -5,9 +5,9 @@
  - [x] modifier le Makefile kc3 pour faire un target _release_ qui
    crée un chemin `release/v${VER}` et copie `${DIST}.tar.gz` dans ce
    chemin
-   - [ ] release depend de dist
- - [ ] créer un fichier release/v0.1.16-git/Makefile
-   - [ ] copier [libressl/release/v4.2.0/Makefile](https://git.kmx.io/kc3-lang/libressl/release/_tree/master/v4.2.0/Makefile)
+   - [x] release depend de dist
+ - [x] créer un fichier release/v0.1.16-git/Makefile
+   - [x] copier [libressl/release/v4.2.0/Makefile](https://git.kmx.io/kc3-lang/libressl/release/_tree/master/v4.2.0/Makefile)
  - [ ] faire un target _deb_ qui génere le package Debian a partir de la
    release
    - [ ] deb depend de release

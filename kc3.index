@@ -1938,6 +1938,7 @@ test/tag_test.h
 test/test.c
 test/test.h
 test/test.rb
+test/test.subr
 test/test_case_end.rb
 test/tuple_test.c
 test/types_test.c
@@ -2152,9 +2153,9 @@ window/demo/types.h
 window/demo/update_sources
 window/egl/Makefile
 window/egl/android/Makefile
-window/egl/android/android_native_app_glue.c
 window/egl/android/configure
 window/egl/android/demo/Makefile
+window/egl/android/demo/android_native_app_glue.c
 window/egl/android/demo/configure
 window/egl/android/demo/sources.mk
 window/egl/android/demo/sources.sh
