@@ -2,7 +2,7 @@
 
 ## Package Debian / Ubuntu / Mint / PopOS
 
- - [ ] modifier le Makefile kc3 pour faire un target _release_ qui
+ - [x] modifier le Makefile kc3 pour faire un target _release_ qui
    crée un chemin `release/v${VER}` et copie `${DIST}.tar.gz` dans ce
    chemin
    - [ ] release depend de dist
