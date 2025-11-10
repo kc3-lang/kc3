@@ -70,6 +70,9 @@
      - [x] utiliser sdkmanager pour obtenir le dernier NDK Android.
        - [x] commande : `sdkmanager --install 'ndk;r29'`
 
+ - kpkg build un target android31 pour kc3 avec succes
+   - [ ] integrer le package kpkg kc3 en apk Android
+
 ## Kpkg / CI / CD
 
  - site web qui tracke l'etat de taches (job runner)
