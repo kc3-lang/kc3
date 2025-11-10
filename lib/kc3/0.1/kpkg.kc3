@@ -1100,14 +1100,9 @@ endian = '#{endian}'
         if ! File.is_directory?(file) do
           src = Str.slice(file, Str.size(tmp_dir), -1)
           target = "#{prefix}#{src}"
-          if File.exists?(target) do
-            puts("install: file exists, not copying: #{target}")
-            exit(1)
-          else
-            target_dir = File.dirname(target)
-            File.ensure_directory(target_dir, Kpkg.umask)
-            Kpkg.exec!(["rsync", "-a", file, "#{target_dir}/"])
-          end
+          target_dir = File.dirname(target)
+          File.ensure_directory(target_dir, Kpkg.umask)
+          Kpkg.exec!(["rsync", "-a", file, "#{target_dir}/"])
         end
       })
       Kpkg.exec!(["rm", "-rf", tmp_dir])
