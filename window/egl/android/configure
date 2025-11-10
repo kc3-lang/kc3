@@ -46,12 +46,6 @@ LDFLAGS="$LDFLAGS -L../../../gl"
 LDFLAGS="$LDFLAGS -L../../"
 LDFLAGS="$LDFLAGS -L../"
 LDFLAGS="$LDFLAGS -u ANativeActivity_onCreate"
-LIBS="$LIBS -lkc3"
-LIBS="$LIBS -lkc3_gl"
-LIBS="$LIBS -lkc3_window"
-LIBS="$LIBS -lkc3_window_egl"
-LIBS="$LIBS -llog"
-LIBS="$LIBS -landroid"
 config_asan
 config_gnu
 config_i386
@@ -67,6 +61,12 @@ pkg_config glesv2
 config_define PREFIX "\"${PREFIX}\""
 config_android
 LIBS="$LIBS -rpath ${PREFIX}/lib"
+LIBS="$LIBS -lkc3"
+LIBS="$LIBS -lkc3_gl"
+LIBS="$LIBS -lkc3_window"
+LIBS="$LIBS -lkc3_window_egl"
+LIBS="$LIBS -llog"
+LIBS="$LIBS -landroid"
 
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
