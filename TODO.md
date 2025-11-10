@@ -67,8 +67,8 @@
 
  - Android studio
    - [ ] Installer Android Studio et le dernier NDK Android.
-     - [ ] utiliser sdkmanager pour obtenir le dernier NDK Android.
-       - [ ] commande : `sdkmanager --install 'ndk;r29'`
+     - [x] utiliser sdkmanager pour obtenir le dernier NDK Android.
+       - [x] commande : `sdkmanager --install 'ndk;r29'`
 
 ## Kpkg / CI / CD
 
@@ -162,13 +162,14 @@
 
  - Compiler les packages sous Linux
    - `kpkg PKG clean uninstall install`
-   - [x] freetype/
-   - [x] libbsd/
-   - [x] libevent/
-   - [x] libffi/
-   - [x] libmd/
-   - [x] libpng/
-   - [x] libressl/
+   - [x] freetype
+   - [x] libbsd
+   - [x] libevent
+   - [x] libffi
+   - [x] libmd
+   - [x] libpng
+   - [x] libressl
+   - [x] kc3
 
 ## Cleanup branches git
  - [x] `callable`
