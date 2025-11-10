@@ -35,6 +35,8 @@ all:
 include config.mk
 include sources.mk
 
+DIST = kc3-${VER}
+
 android:
 	cd android/egl/demo && gradle assembleDebug
 
@@ -1313,7 +1315,7 @@ pdf_debug:
 
 release:
 	mkdir -p release/v${VER}
-	cp ${DIST}.taz.gz release/v${VER}
+	cp ${DIST}.tar.gz release/v${VER}
 
 test: build lib_links
 	${MAKE} -C test test
@@ -1791,12 +1793,12 @@ uninstall:
 	asan \
 	assets \
 	build \
-	dump \
 	check \
 	cov \
 	clean \
 	clean_cov \
 	clean_dump \
+	deb \
 	debug \
 	demo \
 	demo_asan \
@@ -1807,6 +1809,7 @@ uninstall:
 	demo_gl_cov \
 	demo_gl_debug \
 	dist \
+	dump \
 	ekc3 \
 	ekc3_asan \
 	ekc3_cov \
@@ -1915,6 +1918,7 @@ uninstall:
 	pdf_asan \
 	pdf_cov \
 	pdf_debug \
+	release \
 	socket \
 	socket_asan \
 	socket_cov \
