@@ -21,6 +21,7 @@ include sources.mk
 
 asan:
 	${MAKE} ${LIB_ASAN}
+	${MAKE} -C demo asan
 
 build:
 	${MAKE} ${LIB}
@@ -28,9 +29,11 @@ build:
 
 cov:
 	${MAKE} ${LIB_COV}
+	${MAKE} -C demo cov
 
 debug:
 	${MAKE} ${LIB_DEBUG}
+	${MAKE} -C demo debug
 
 demo: build
 	${MAKE} -C demo demo
