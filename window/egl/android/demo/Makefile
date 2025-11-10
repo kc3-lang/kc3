@@ -21,63 +21,45 @@ include sources.mk
 
 build:
 	${MAKE} ${PROG}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos build; fi
 
 asan:
 	${MAKE} ${PROG_ASAN}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos asan; fi
-
-clean::
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos clean; fi
-
-clean_cov::
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos clean_cov; fi
 
 cov:
 	${MAKE} ${PROG_COV}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos cov; fi
 
 debug:
 	${MAKE} ${PROG_DEBUG}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos debug; fi
 
 demo:
 	${MAKE} ${PROG}
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo; else time ./${PROG}; fi
 
 demo_asan:
 	${MAKE} asan
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo_asan; else time ./${PROG_ASAN}; fi
 
 demo_cov:
 	${MAKE} cov
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo_cov; else time ./${PROG_COV}; fi
 
 demo_debug:
 	${MAKE} debug
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo_debug; else time ./${PROG_DEBUG}; fi
-
-distclean::
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos distclean; fi
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details ${PROG}.html
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos gcovr; fi
 
 gdb_demo: debug
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos gdb_demo; else gdb ${PROG_DEBUG}; fi
+	gdb ${PROG_DEBUG}
 
-install:
+install::
 	install -m 755 -d ${DESTDIR}${prefix}/bin
 	install -m 755 ${PROG} ${DESTDIR}${prefix}/bin/${PROG}
 
 lldb_demo: debug
-	if ${HAVE_DARWIN}; then ${MAKE} -C macos lldb_demo; else lldb ${PROG_DEBUG}; fi
+	lldb ${PROG_DEBUG}
 
 update_sources:
 	./update_sources
 
-uninstall:
+uninstall::
 	rm -f ${prefix}/bin/${PROG}
 
 .PHONY: \
