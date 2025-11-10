@@ -10,6 +10,10 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+VER		=		0.1.15
+
+DIST	=		kc3-v${VER}
+
 all:
 	${MAKE} gen
 	${MAKE} -C libtommath all
@@ -1305,6 +1309,10 @@ pdf_debug:
 	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C pdf debug
+
+release:
+	mkdir -p release/v${VER}
+	cp ${DIST}.taz.gz release/v${VER}
 
 test: build lib_links
 	${MAKE} -C test test
