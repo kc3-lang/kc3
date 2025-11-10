@@ -85,6 +85,8 @@ build:
 	${MAKE} -C window build
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 build; fi
 
+check: test
+
 clean::
 	${MAKE} -C libtommath clean
 	${MAKE} -C libkc3 clean
@@ -1787,6 +1789,7 @@ uninstall:
 	assets \
 	build \
 	dump \
+	check \
 	cov \
 	clean \
 	clean_cov \
