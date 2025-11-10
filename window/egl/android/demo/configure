@@ -38,8 +38,21 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
+LDFLAGS="$LDFLAGS -L../../../../libkc3"
+LDFLAGS="$LDFLAGS -L../../../../gl"
+LDFLAGS="$LDFLAGS -L../../../"
+LDFLAGS="$LDFLAGS -L../../../demo"
+LDFLAGS="$LDFLAGS -L../../"
+LDFLAGS="$LDFLAGS -L../"
 LDFLAGS="$LDFLAGS -u ANativeActivity_onCreate"
-LIBS="$LIBS -llog -landroid"
+LIBS="$LIBS -lkc3"
+LIBS="$LIBS -lkc3_gl"
+LIBS="$LIBS -lkc3_window"
+LIBS="$LIBS -lkc3_window_demo"
+LIBS="$LIBS -lkc3_window_egl"
+LIBS="$LIBS -lkc3_window_egl_android"
+LIBS="$LIBS -llog"
+LIBS="$LIBS -landroid"
 config_asan
 config_gnu
 config_i386
