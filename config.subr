@@ -93,14 +93,14 @@ build_lib_shared() {
         echo "	    \${DESTDIR}\${libdir}/$LIB_DEBUG.$SHARED_EXT"
         echo
         echo "uninstall::"
-        echo "	rm -f \${DESTDIR}\${libdir}/$LIB$SHARED_PATCH"
-        echo "	rm -f \${DESTDIR}\${libdir}/$LIB$SHARED_MINOR"
-        echo "	rm -f \${DESTDIR}\${libdir}/$LIB$SHARED_MAJOR"
-        echo "	rm -f \${DESTDIR}\${libdir}/$LIB.$SHARED_EXT"
-        echo "	rm -f \${DESTDIR}\${libdir}/$LIB_DEBUG$SHARED_PATCH"
-        echo "	rm -f \${DESTDIR}\${libdir}/$LIB_DEBUG$SHARED_MINOR"
-        echo "	rm -f \${DESTDIR}\${libdir}/$LIB_DEBUG$SHARED_MAJOR"
-        echo "	rm -f \${DESTDIR}\${libdir}/$LIB_DEBUG.$SHARED_EXT"
+        echo "	rm -f \${libdir}/$LIB$SHARED_PATCH"
+        echo "	rm -f \${libdir}/$LIB$SHARED_MINOR"
+        echo "	rm -f \${libdir}/$LIB$SHARED_MAJOR"
+        echo "	rm -f \${libdir}/$LIB.$SHARED_EXT"
+        echo "	rm -f \${libdir}/$LIB_DEBUG$SHARED_PATCH"
+        echo "	rm -f \${libdir}/$LIB_DEBUG$SHARED_MINOR"
+        echo "	rm -f \${libdir}/$LIB_DEBUG$SHARED_MAJOR"
+        echo "	rm -f \${libdir}/$LIB_DEBUG.$SHARED_EXT"
     } >> ${CONFIG_MK}
 }
 
