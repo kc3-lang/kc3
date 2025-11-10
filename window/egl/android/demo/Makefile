@@ -20,47 +20,22 @@ include config.mk
 include sources.mk
 
 build:
-	${MAKE} ${PROG}
+	${MAKE} ${LIB}
 
 asan:
-	${MAKE} ${PROG_ASAN}
+	${MAKE} ${LIB_ASAN}
 
 cov:
-	${MAKE} ${PROG_COV}
+	${MAKE} ${LIB_COV}
 
 debug:
-	${MAKE} ${PROG_DEBUG}
-
-demo:
-	${MAKE} ${PROG}
-
-demo_asan:
-	${MAKE} asan
-
-demo_cov:
-	${MAKE} cov
-
-demo_debug:
-	${MAKE} debug
+	${MAKE} ${LIB_DEBUG}
 
 gcovr:
-	gcovr --gcov-executable ${GCOV} --html-details ${PROG}.html
-
-gdb_demo: debug
-	gdb ${PROG_DEBUG}
-
-install::
-	install -m 755 -d ${DESTDIR}${prefix}/bin
-	install -m 755 ${PROG} ${DESTDIR}${prefix}/bin
-
-lldb_demo: debug
-	lldb ${PROG_DEBUG}
+	gcovr --gcov-executable ${GCOV} --html-details ${LIB}.html
 
 update_sources:
 	./update_sources
-
-uninstall::
-	rm -f ${prefix}/bin/${PROG}
 
 .PHONY: \
 	all \
@@ -68,12 +43,6 @@ uninstall::
 	build \
 	cov \
 	debug \
-	demo \
-	demo_asan \
-	demo_cov \
-	demo_debug \
-	gdb_demo \
 	install \
-	lldb_demo \
 	update_sources \
 	uninstall
