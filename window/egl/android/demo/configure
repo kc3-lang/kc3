@@ -20,7 +20,10 @@ export SRC_TOP="$(dirname "$(dirname "$(dirname "$(dirname "$(cd "$(dirname "$0"
 
 . "${SRC_TOP}/config.subr"
 
-config_prog kc3_window_egl_android_demo
+LIB=kc3_window_egl_android_demo
+LIB_ASAN=kc3_window_egl_android_demo_asan
+LIB_COV=kc3_window_egl_android_demo_cov
+LIB_DEBUG=kc3_window_egl_android_demo_debug
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
@@ -116,10 +119,10 @@ echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
 echo "LIBS = $LIBS" >> ${CONFIG_MK}
 
 update_build_c
-update_build_prog
+update_build_lib
 
 build_o_c
-build_prog
+build_lib
 
 update_config_mk
 update_makefile
