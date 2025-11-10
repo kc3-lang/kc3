@@ -38,6 +38,12 @@ demo: build
 demo_debug: debug
 	${MAKE} -C demo demo_debug
 
+install::
+	${MAKE} -C demo install
+
+uninstall::
+	${MAKE} -C demo uninstall
+
 update_sources:
 	./update_sources
 

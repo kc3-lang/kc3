@@ -51,7 +51,7 @@ gdb_demo: debug
 
 install::
 	install -m 755 -d ${DESTDIR}${prefix}/bin
-	install -m 755 ${PROG} ${DESTDIR}${prefix}/bin/${PROG}
+	install -m 755 ${PROG} ${DESTDIR}${prefix}/bin
 
 lldb_demo: debug
 	lldb ${PROG_DEBUG}
