@@ -40,6 +40,7 @@
   char test_case_ ## name (void)                                       \
   {                                                                    \
     g_test_case_name = # name;                                         \
+    io_write_1("\n " # name " ");
 
 #define TEST_CASE_END(name)                                            \
     test_ok();                                                         \

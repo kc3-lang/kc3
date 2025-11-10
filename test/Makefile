@@ -42,6 +42,8 @@ asan: ${PROG_ASAN}
 
 build: ${PROG}
 
+check: test
+
 cov: ${PROG_COV}
 
 debug: ${PROG_DEBUG}
@@ -302,6 +304,7 @@ test_valgrind: ${PROG}
 
 .PHONY: all \
 	asan \
+	check \
 	cov \
 	debug \
 	gdb_test \
