@@ -1,0 +1,25 @@
+#!/bin/sh
+
+set -e
+
+ARCH="armv7a-linux-androideabi31"
+TOOLCHAIN="/opt/android-sdk/ndk/latest/toolchains/llvm/prebuilt/linux-x86_64"
+
+export      CC="${TOOLCHAIN}/bin/${ARCH}-clang"
+export     CXX="${TOOLCHAIN}/bin/${ARCH}-clang++"
+export      LD="${TOOLCHAIN}/bin/ld"
+export OBJDUMP="${TOOLCHAIN}/bin/llvm-objdump"
+export    GCOV=false
+
+export PREFIX="/home/dx/kpkg/arch/${ARCH}/local"
+
+export CPPFLAGS="-I${PREFIX}/include"
+export  LDFLAGS="-L${PREFIX}/lib"
+export  LDFLAGS="$LDFLAGS -L${TOOLCHAIN}/sysroot/usr/lib/arm-linux-androideabi/31"
+
+export PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig"
+
+
+PKG="$1"; shift
+
+./bin/kpkg "$PKG" --arch ${ARCH} "$@"
