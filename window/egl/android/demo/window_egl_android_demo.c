@@ -49,7 +49,8 @@ window_egl_android_demo_resize (s_window_egl_android *window,
 static void
 window_egl_android_demo_unload (s_window_egl_android *window);
 
-static void extract_assets(struct android_app *app, const char *asset_path, const char *dest_path);
+static void extract_assets(struct android_app *app,
+                           const char *dest_path);
 
 void android_main (struct android_app *app)
 {
@@ -64,7 +65,7 @@ void android_main (struct android_app *app)
   // Extract KC3 modules from assets to internal storage
   snprintf(module_path, sizeof(module_path), "%s", app->activity->internalDataPath);
   LOGI("Extracting KC3 modules from assets to %s", module_path);
-  extract_assets(app, "files", module_path);
+  extract_assets(app, "index.txt", module_path);
   LOGI("Asset extraction complete");
 
   if (FT_Init_FreeType(&g_ft)) {
@@ -260,64 +261,67 @@ window_egl_android_demo_unload (s_window_egl_android *window)
   err_puts("window_egl_android_demo_unload");
 }
 
+static void write_asset (AAsset *asset, const char *dst_file)
+{
+  void *data;
+  char dir[512];
+  s_str dst_str;
+  off_t len;
+  s_tag mode;
+  FILE *out;
+  LOGI("write_asset: %s", dst_file);
+  str_init_1(&dst_str, NULL, dst_file);
+  tag_init_u32(&mode, 0755);
+  if (! file_ensure_parent_directory(&dst_str, &mode)) {
+    LOGE("write_asset: %s: file_dirname", dst_file);
+    abort();
+  }
+  if (! (out = fopen(dst_file, "wb"))) {
+    LOGE("write_asset: %s: ERROR", dst_file);
+    abort();
+  }
+  len = AAsset_getLength(asset);
+  data = AAsset_getBuffer(asset);
+  fwrite(data, 1, len, out);
+  fclose(out);
+  LOGI("write_asset: %s: OK", dst_file);
+}
+
 static void extract_assets (struct android_app *app,
-                            const char *asset_path,
                             const char *dest_path)
 {
   AAsset        *asset;
-  AAssetDir     *asset_dir;
-  AAssetManager *asset_manager = app->activity->assetManager;
-  const void *data;
+  AAssetManager *asset_manager;
   char dst_file[512];
   const char *filename;
-  off_t len;
-  FILE *out;
+  FILE *in;
+  char *index;
+  char   *line = NULL;
+  ssize_t linelen;
+  size_t  linesize = 0;
   char src_file[512];
-  LOGI("extract_assets: %s -> %s", asset_path, dest_path);
+  LOGI("extract_assets: %s", dest_path);
   mkdir(dest_path, 0755);
-  asset_dir = AAssetManager_openDir(asset_manager, asset_path);
-  if (! asset_dir) {
-    LOGE("extract_assets: AAssetManager_openDir: %s", asset_path);
-    return;
+  asset_manager = app->activity->assetManager;
+  asset = AAssetManager_open(asset_manager, "index.txt",
+                             AASSET_MODE_STREAMING);
+  snprintf(dst_file, sizeof(dst_file), "%s/%s", dest_path, "index.txt");
+  write_asset(asset, dst_file);
+  AAsset_close(asset);
+  if (! (in = fopen(dst_file, "rb"))) {
+    LOGE("extract_assets: fopen: %s: ERROR", dst_file);
+    abort();
   }
-  filename = AAssetDir_getNextFileName(asset_dir);
-  if (! filename) {
-    LOGE("extract_assets: AAssetDir_getNextFileName: %s",
-         asset_path);
-    return;
-  }
-  do {
-    if (strlen(asset_path) > 0) {
-      snprintf(src_file, sizeof(src_file), "%s/%s", asset_path,
-               filename);
-    } else {
-      snprintf(src_file, sizeof(src_file), "%s", filename);
-    }
-    snprintf(dst_file, sizeof(dst_file), "%s/%s", dest_path, filename);
-    LOGI("extract_assets:   %s -> %s", src_file, dst_file);
-    asset = AAssetManager_open(asset_manager, src_file,
+  while ((linelen = getline(&line, &linesize, in)) != -1) {
+    if (linelen > 0 && line[linelen - 1] == '\n')
+      line[linelen - 1] = 0;
+    LOGI("extract_assets: '%s'", line);
+    asset = AAssetManager_open(asset_manager, line,
                                AASSET_MODE_STREAMING);
-    if (asset) {
-      len = AAsset_getLength(asset);
-      if (len == 0) {
-        AAsset_close(asset);
-        extract_assets(app, src_file, dst_file);
-      }
-      else {
-        data = AAsset_getBuffer(asset);
-        out = fopen(dst_file, "wb");
-        if (out) {
-          fwrite(data, 1, len, out);
-          fclose(out);
-          LOGI("Extracted: %s", dst_file);
-        } else {
-          LOGE("Failed to write: %s", dst_file);
-        }
-        AAsset_close(asset);
-      }
-    }
-    filename = AAssetDir_getNextFileName(asset_dir);
-  } while (filename);
-  AAssetDir_close(asset_dir);
+    snprintf(dst_file, sizeof(dst_file), "%s/%s", dest_path, line);
+    write_asset(asset, dst_file);
+    AAsset_close(asset);
+  }
+  fclose(in);
   LOGI("extract_assets: done");
 }
