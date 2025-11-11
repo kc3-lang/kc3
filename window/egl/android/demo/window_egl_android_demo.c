@@ -288,6 +288,7 @@ static void extract_assets (struct android_app *app,
       snprintf(src_file, sizeof(src_file), "%s", filename);
     }
     snprintf(dst_file, sizeof(dst_file), "%s/%s", dest_path, filename);
+    LOGI("extract_assets:   %s -> %s", src_file, dst_file);
     asset = AAssetManager_open(asset_manager, src_file,
                                AASSET_MODE_STREAMING);
     if (asset) {
