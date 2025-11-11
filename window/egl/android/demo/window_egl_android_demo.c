@@ -62,9 +62,9 @@ void android_main (struct android_app *app)
   LOGI("android_main starting");
 
   // Extract KC3 modules from assets to internal storage
-  snprintf(module_path, sizeof(module_path), "%s/kc3", app->activity->internalDataPath);
+  snprintf(module_path, sizeof(module_path), "%s", app->activity->internalDataPath);
   LOGI("Extracting KC3 modules to %s", module_path);
-  extract_assets(app, "kc3", module_path);
+  extract_assets(app, "lib", module_path);
 
   if (FT_Init_FreeType(&g_ft)) {
     LOGE("FreeType init failed");
