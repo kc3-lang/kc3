@@ -1884,17 +1884,10 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
              (NULL, "../../../../../../", list_new_str_1
               (NULL, "/usr/", list_new_str_1
                (NULL, "/usr/local/", NULL))))))))))));
-  {
-    const char *kc3_libdir = getenv("KC3_LIBDIR");
-    if (kc3_libdir) {
-      char libdir_path[PATH_MAX];
-      snprintf(libdir_path, sizeof(libdir_path), "%s/kc3/0.1/",
-               kc3_libdir);
-      str_init_1(&path, NULL, libdir_path);
-    }
-    else
-      str_init_1(&path, NULL, LIBDIR "/kc3/0.1/");
-  }
+  const char *kc3_dir = getenv("KC3_DIR");
+  if (kc3_dir)
+    env->path = list_new_str_1(NULL, kc3_dir, env->path);
+  str_init_1(&path, NULL, LIBDIR "/kc3/0.1/");
   if (! (env->module_path = alloc(sizeof(s_str))))
     return NULL;
   if (! file_search(&path, &g_sym_x, env->module_path)) {

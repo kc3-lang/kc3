@@ -58,16 +58,14 @@ void android_main (struct android_app *app)
   char *argv[] = {"kc3_window_egl_android_demo", NULL};
   char **argv_ptr = argv;
   s_window_egl_android window;
-  char module_path[512];
-
+  const char *module_path;
   LOGI("android_main starting");
-  snprintf(module_path, sizeof(module_path), "%s", app->activity->internalDataPath);
+  module_path = app->activity->internalDataPath;
   LOGI("Extracting KC3 modules from assets to %s", module_path);
   extract_assets(app, module_path);
   LOGI("Asset extraction complete");
-  snprintf(module_path, sizeof(module_path), "%s/lib", app->activity->internalDataPath);
-  setenv("KC3_LIBDIR", module_path, 1);
-  LOGI("KC3_LIBDIR=%s", module_path);
+  setenv("KC3_DIR", module_path, 1);
+  LOGI("KC3_DIR=%s", module_path);
   if (FT_Init_FreeType(&g_ft)) {
     LOGE("FreeType init failed");
     return;
