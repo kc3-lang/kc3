@@ -302,7 +302,8 @@ static void extract_assets (struct android_app *app,
       if (len == 0) {
         AAsset_close(asset);
         extract_assets(app, src_file, dst_file);
-      } else {
+      }
+      else {
         data = AAsset_getBuffer(asset);
         out = fopen(dst_file, "wb");
         if (out) {
@@ -316,7 +317,7 @@ static void extract_assets (struct android_app *app,
       }
     }
     filename = AAssetDir_getNextFileName(asset_dir);
-  }
+  } while (filename);
   AAssetDir_close(asset_dir);
   LOGI("extract_assets: done");
 }
