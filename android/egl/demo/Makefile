@@ -17,12 +17,10 @@ JNI_DIR = ${APP_DIR}/src/main/jni
 GRADLE = gradle
 
 # Build variants
-BUILD_TYPE ?= debug
-APK_TYPE := $(shell echo $(BUILD_TYPE) | tr '[:upper:]' '[:lower:]')
 
 # Output APK paths
-DEBUG_APK := $(BUILD_DIR)/outputs/apk/debug/app-debug.apk
-RELEASE_APK := $(BUILD_DIR)/outputs/apk/release/app-release.apk
+DEBUG_APK = ${BUILD_DIR}/outputs/apk/debug/app-debug.apk
+RELEASE_APK = ${BUILD_DIR}/outputs/apk/release/app-release.apk
 
 .PHONY: all clean build debug release install \
         uninstall logcat help
@@ -45,24 +43,24 @@ help:
 
 # Build debug APK
 build:
-	$(GRADLE) assembleDebug
-	@echo "Debug APK built: $(DEBUG_APK)"
+	${GRADLE} assembleDebug
+	@echo "Debug APK built: ${DEBUG_APK}"
 
 debug: build
 
 # Build release APK
 release:
-	$(GRADLE) assembleRelease
-	@echo "Release APK built: $(RELEASE_APK)"
+	${GRADLE} assembleRelease
+	@echo "Release APK built: ${RELEASE_APK}"
 
 # Install debug APK to connected device
 install: build
-	$(GRADLE) installDebug
+	${GRADLE} installDebug
 	@echo "Debug APK installed"
 
 # Install release APK to connected device
 install-release: release
-	adb install -r $(RELEASE_APK)
+	adb install -r ${RELEASE_APK}
 	@echo "Release APK installed"
 
 # Uninstall app from device
@@ -71,13 +69,13 @@ uninstall:
 
 # Clean build artifacts
 clean:
-	$(GRADLE) clean
-	rm -rf $(BUILD_DIR)
+	${GRADLE} clean
+	rm -rf ${BUILD_DIR}
 	rm -rf .gradle
 
 # Show filtered logcat
 logcat:
-	adb logcat | grep -E "(kc3|KC3|EGL|NativeActivity)"
+	adb logcat | grep -E "(kc3|KC3|EGL|NativeActivity|RuntimeError)"
 
 # List connected devices
 devices:
@@ -93,11 +91,11 @@ rebuild: clean build
 
 # Show APK info
 apk-info:
-	@if [ -f $(DEBUG_APK) ]; then \
+	@if [ -f ${DEBUG_APK} ]; then \
 		echo "Debug APK info:"; \
-		aapt dump badging $(DEBUG_APK) | head -20; \
+		aapt dump badging ${DEBUG_APK} | head -20; \
 	fi
-	@if [ -f $(RELEASE_APK) ]; then \
+	@if [ -f ${RELEASE_APK} ]; then \
 		echo "Release APK info:"; \
-		aapt dump badging $(RELEASE_APK) | head -20; \
+		aapt dump badging ${RELEASE_APK} | head -20; \
 	fi
