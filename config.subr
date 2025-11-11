@@ -1619,6 +1619,7 @@ case "$(uname -s)" in
         LIBGCC=$(${CC} -print-libgcc-file-name)
         case "$CC_TARGET" in
             *-android*)
+                SHARED_FLAGS="-shared -soname \${LIB_BASE}.so"
                 LIBC=$(${CC} -print-file-name=libc.so)
                 LIBC_DIR=$(dirname "$LIBC")
                 LDFLAGS="$LDFLAGS -L$LIBC_DIR"
