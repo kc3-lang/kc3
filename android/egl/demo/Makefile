@@ -70,8 +70,9 @@ install-release: release
 
 lib:
 	mkdir -p app/src/main/assets
-	rsync -a --delete ${SRC_TOP}/lib app/src/main/assets/
-	cd app/src/main/assets && find lib -type f > index.txt
+	rsync -a --delete --exclude .git ${SRC_TOP}/lib app/src/main/assets/
+	rsync -a --delete --exclude .git ${SRC_TOP}/fonts app/src/main/assets/
+	cd app/src/main/assets && find lib fonts -type f > index.txt
 
 logcat:
 	adb logcat | grep -iE "(kc3|egl|nativeactivity|runtimeerror)"
