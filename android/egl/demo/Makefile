@@ -21,6 +21,8 @@ RELEASE_APK = ${BUILD_DIR}/outputs/apk/release/app-release.apk
 
 all: debug
 
+include configure.mk
+
 apk-info:
 	@if [ -f ${DEBUG_APK} ]; then \
 		echo "Debug APK info:"; \
