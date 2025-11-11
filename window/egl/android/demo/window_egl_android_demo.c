@@ -277,10 +277,16 @@ static void extract_assets (struct android_app *app,
   mkdir(dest_path, 0755);
   asset_dir = AAssetManager_openDir(asset_manager, asset_path);
   if (! asset_dir) {
-    LOGE("Failed to open asset directory: %s", asset_path);
+    LOGE("extract_assets: AAssetManager_openDir: %s", asset_path);
     return;
   }
-  while ((filename = AAssetDir_getNextFileName(asset_dir)) != NULL) {
+  filename = AAssetDir_getNextFileName(asset_dir);
+  if (! filename) {
+    LOGE("extract_assets: AAssetDir_getNextFileName: %s",
+         asset_path);
+    return;
+  }
+  do {
     if (strlen(asset_path) > 0) {
       snprintf(src_file, sizeof(src_file), "%s/%s", asset_path,
                filename);
@@ -309,6 +315,8 @@ static void extract_assets (struct android_app *app,
         AAsset_close(asset);
       }
     }
+    filename = AAssetDir_getNextFileName(asset_dir);
   }
   AAssetDir_close(asset_dir);
+  LOGI("extract_assets: done");
 }
