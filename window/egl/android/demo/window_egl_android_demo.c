@@ -50,12 +50,13 @@ void android_main (struct android_app *app)
 {
   int argc = 1;
   char *argv[] = {"kc3_window_egl_android_demo", NULL};
+  char **argv_ptr = argv;
   s_window_egl_android window;
   if (FT_Init_FreeType(&g_ft)) {
     err_puts("android_main: failed to initialize FreeType");
     return;
   }
-  if (! kc3_init(NULL, &argc, (char ***) &argv)) {
+  if (! kc3_init(NULL, &argc, &argv_ptr)) {
     err_puts("kc3_init");
     FT_Done_FreeType(g_ft);
     return;
