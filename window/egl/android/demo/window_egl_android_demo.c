@@ -267,6 +267,8 @@ window_egl_android_demo_resize (s_window_egl_android *window,
   err_inspect_u64(h);
   err_write_1("\n");
   glViewport(0, 0, w, h);
+  gl_ortho_resize(&g_ortho, 0, w, 0, h, 0, 1);
+  LOGI("window_egl_android_demo_resize: %lux%lu", w, h);
   return true;
 }
 

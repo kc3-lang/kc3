@@ -90,11 +90,15 @@ void window_egl_android_handle_cmd (p_android_app app, int32_t cmd)
     return;
   case APP_CMD_WINDOW_RESIZED:
     LOGI("APP_CMD_WINDOW_RESIZED");
-    if (window && window->resize) {
+    if (window) {
       int32_t w = ANativeWindow_getWidth(app->window);
       int32_t h = ANativeWindow_getHeight(app->window);
       LOGI("Resizing to %dx%d", w, h);
-      if (! window->resize(window, w, h)) {
+      window->w = w;
+      window->h = h;
+      window->pixel_w = w;
+      window->pixel_h = h;
+      if (window->resize && ! window->resize(window, w, h)) {
         LOGE("window->resize failed");
         abort();
       }
