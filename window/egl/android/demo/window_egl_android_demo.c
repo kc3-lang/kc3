@@ -145,39 +145,62 @@ static bool window_egl_android_demo_load (s_window_egl_android *window)
   f32 point_per_pixel;
   assert(window);
   assert(glGetError() == GL_NO_ERROR);
-  if (! module_load(sym_1("GL.Vertex")) ||
-      ! module_load(sym_1("GL.Triangle")) ||
-      ! module_load(sym_1("GL.Object")))
+  LOGI("window_egl_android_demo_load: loading modules");
+  if (! module_load(sym_1("GL.Vertex"))) {
+    LOGE("window_egl_android_demo_load: module_load GL.Vertex failed");
     return false;
+  }
+  LOGI("window_egl_android_demo_load: GL.Vertex loaded");
+  if (! module_load(sym_1("GL.Triangle"))) {
+    LOGE("window_egl_android_demo_load: module_load GL.Triangle failed");
+    return false;
+  }
+  LOGI("window_egl_android_demo_load: GL.Triangle loaded");
+  if (! module_load(sym_1("GL.Object"))) {
+    LOGE("window_egl_android_demo_load: module_load GL.Object failed");
+    return false;
+  }
+  LOGI("window_egl_android_demo_load: GL.Object loaded");
   point_per_pixel = (f32) window->w / window->pixel_w;
   err_write_1("point_per_pixel: ");
   err_inspect_f32(point_per_pixel);
   err_write_1("\n");
-  if (! gl_ortho_init(&g_ortho))
+  LOGI("window_egl_android_demo_load: gl_ortho_init");
+  if (! gl_ortho_init(&g_ortho)) {
+    LOGE("window_egl_android_demo_load: gl_ortho_init failed");
     return false;
+  }
   gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, 0, 1);
+  LOGI("window_egl_android_demo_load: gl_font_init");
   if (! gl_font_init(&g_font_courier_new,
                      "fonts/Courier New/Courier New.ttf",
                      point_per_pixel)) {
     err_puts("window_egl_android_demo_load: gl_font_init");
+    LOGE("window_egl_android_demo_load: gl_font_init failed");
     return false;
   }
   gl_font_set_size(&g_font_courier_new, 20);
+  LOGI("window_egl_android_demo_load: gl_text_init fps");
   if (! gl_text_init_1(&g_text_fps, &g_font_courier_new, "0.00")) {
     err_puts("window_egl_android_demo_load: gl_text_init g_text_fps");
+    LOGE("window_egl_android_demo_load: gl_text_init g_text_fps failed");
     return false;
   }
+  LOGI("window_egl_android_demo_load: gl_text_init seq_title");
   if (! gl_text_init_1(&g_text_seq_title, &g_font_courier_new, "")) {
     err_puts("window_egl_android_demo_load: gl_text_init"
              " g_text_seq_title");
+    LOGE("window_egl_android_demo_load: gl_text_init g_text_seq_title failed");
     return false;
   }
+  LOGI("window_egl_android_demo_load: sequence_init");
   sequence_init(window->sequence, 8.0,
                 "01. Background rect",
                 bg_rect_load,
                 bg_rect_render,
                 bg_rect_unload, (s_window *) window);
   window_set_sequence_pos((s_window *) window, 0);
+  LOGI("window_egl_android_demo_load: success");
   return true;
 }
 
