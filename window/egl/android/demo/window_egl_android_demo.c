@@ -63,8 +63,8 @@ void android_main (struct android_app *app)
 
   // Extract KC3 modules from assets to internal storage
   snprintf(module_path, sizeof(module_path), "%s", app->activity->internalDataPath);
-  LOGI("Extracting KC3 modules from assets/lib to %s", module_path);
-  extract_assets(app, "lib", module_path);
+  LOGI("Extracting KC3 modules from assets to %s", module_path);
+  extract_assets(app, "files", module_path);
   LOGI("Asset extraction complete");
 
   if (FT_Init_FreeType(&g_ft)) {
@@ -260,43 +260,44 @@ window_egl_android_demo_unload (s_window_egl_android *window)
   err_puts("window_egl_android_demo_unload");
 }
 
-static void extract_assets(struct android_app *app, const char *asset_path,
-                           const char *dest_path)
+static void extract_assets (struct android_app *app,
+                            const char *asset_path,
+                            const char *dest_path)
 {
+  AAsset        *asset;
+  AAssetDir     *asset_dir;
   AAssetManager *asset_manager = app->activity->assetManager;
-  AAssetDir *asset_dir;
-  const char *filename;
-  char src_file[512];
+  const void *data;
   char dst_file[512];
-
+  const char *filename;
+  off_t len;
+  FILE *out;
+  char src_file[512];
   LOGI("extract_assets: %s -> %s", asset_path, dest_path);
-
   mkdir(dest_path, 0755);
-
   asset_dir = AAssetManager_openDir(asset_manager, asset_path);
-  if (!asset_dir) {
+  if (! asset_dir) {
     LOGE("Failed to open asset directory: %s", asset_path);
     return;
   }
-
   while ((filename = AAssetDir_getNextFileName(asset_dir)) != NULL) {
     if (strlen(asset_path) > 0) {
-      snprintf(src_file, sizeof(src_file), "%s/%s", asset_path, filename);
+      snprintf(src_file, sizeof(src_file), "%s/%s", asset_path,
+               filename);
     } else {
       snprintf(src_file, sizeof(src_file), "%s", filename);
     }
     snprintf(dst_file, sizeof(dst_file), "%s/%s", dest_path, filename);
-
-    AAsset *asset = AAssetManager_open(asset_manager, src_file,
-                                       AASSET_MODE_STREAMING);
+    asset = AAssetManager_open(asset_manager, src_file,
+                               AASSET_MODE_STREAMING);
     if (asset) {
-      off_t len = AAsset_getLength(asset);
+      len = AAsset_getLength(asset);
       if (len == 0) {
         AAsset_close(asset);
         extract_assets(app, src_file, dst_file);
       } else {
-        const void *data = AAsset_getBuffer(asset);
-        FILE *out = fopen(dst_file, "wb");
+        data = AAsset_getBuffer(asset);
+        out = fopen(dst_file, "wb");
         if (out) {
           fwrite(data, 1, len, out);
           fclose(out);
@@ -308,6 +309,5 @@ static void extract_assets(struct android_app *app, const char *asset_path,
       }
     }
   }
-
   AAssetDir_close(asset_dir);
 }
