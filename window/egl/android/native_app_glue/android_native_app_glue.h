@@ -21,6 +21,7 @@
 #include <sched.h>
 
 #include <android/configuration.h>
+#include <android/log.h>
 #include <android/looper.h>
 #include <android/native_activity.h>
 
