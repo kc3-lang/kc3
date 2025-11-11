@@ -22,7 +22,7 @@
 
             <!-- Tell NativeActivity the name of our native library -->
             <meta-data android:name="android.app.lib_name"
-                android:value="libkc3_window_egl_android_demo" />
+                android:value="kc3_window_egl_android_demo" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
