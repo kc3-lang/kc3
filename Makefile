@@ -38,7 +38,7 @@ include sources.mk
 DIST = kc3-${VER}
 
 android:
-	cd android/egl/demo && gradle assembleDebug
+	${MAKE} -C android/egl/demo
 
 asan:
 	${MAKE} gen
