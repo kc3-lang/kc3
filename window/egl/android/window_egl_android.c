@@ -162,10 +162,6 @@ bool window_egl_android_run (s_window_egl_android *window)
   window->app->userData = window;
   window->app->onAppCmd = window_egl_android_handle_cmd;
   window->app->onInputEvent = window_egl_android_handle_input;
-  if (window->load && !window->load(window)) {
-    err_puts("window_egl_android_run: load failed");
-    return false;
-  }
   while (1) {
     int timeout = (window->egl_display == EGL_NO_DISPLAY ||
                    window->egl_surface == EGL_NO_SURFACE) ? -1 : 0;
@@ -255,6 +251,10 @@ static bool window_egl_android_setup (s_window_egl_android *window,
   if (!eglMakeCurrent(window->egl_display, window->egl_surface,
                       window->egl_surface, window->egl_context)) {
     err_puts("window_egl_android_setup: eglMakeCurrent");
+    return false;
+  }
+  if (window->load && ! window->load(window)) {
+    err_puts("window_egl_android_setup: window->load");
     return false;
   }
   return true;
