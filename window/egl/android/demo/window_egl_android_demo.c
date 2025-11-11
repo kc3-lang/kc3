@@ -263,7 +263,7 @@ window_egl_android_demo_unload (s_window_egl_android *window)
 
 static void write_asset (AAsset *asset, const char *dst_file)
 {
-  void *data;
+  const void *data;
   char dir[512];
   s_str dst_str;
   off_t len;
