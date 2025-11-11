@@ -163,7 +163,10 @@ bool window_egl_android_run (s_window_egl_android *window)
     return false;
   }
   while (1) {
-    if (ALooper_pollOnce(0, NULL, &events, (void**) &source) >= 0) {
+    int timeout = (window->egl_display == EGL_NO_DISPLAY ||
+                   window->egl_surface == EGL_NO_SURFACE) ? -1 : 0;
+    if (ALooper_pollOnce(timeout, NULL, &events,
+                         (void **) &source) >= 0) {
       if (source != NULL) {
         source->process(window->app, source);
       }
