@@ -270,8 +270,8 @@ static bool window_egl_android_setup (s_window_egl_android *window,
     int32_t w = ANativeWindow_getWidth(native_window);
     int32_t h = ANativeWindow_getHeight(native_window);
     LOGI("Native window size: %dx%d", w, h);
-    window->w = w;
-    window->h = h;
+    window->w = w / 2;
+    window->h = h / 2;
     window->pixel_w = w;
     window->pixel_h = h;
   }
@@ -280,14 +280,17 @@ static bool window_egl_android_setup (s_window_egl_android *window,
     return false;
   }
   LOGI("window->load ok");
-  if (window->resize && ! window->resize(window, window->w, window->h)) {
+  if (window->resize &&
+      ! window->resize(window, window->w, window->h)) {
     LOGE("window->resize failed");
     return false;
   }
   return true;
 }
 
+/*
 bool window_egl_run (s_window_egl *window)
 {
   return window_egl_android_run((s_window_egl_android *) window);
 }
+*/
