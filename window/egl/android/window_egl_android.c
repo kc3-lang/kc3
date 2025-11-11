@@ -14,8 +14,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <android/log.h>
 #include <android/looper.h>
 #include "window_egl_android.h"
+
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "KC3_EGL", __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "KC3_EGL", __VA_ARGS__)
 
 static u32  android_keycode_to_kc3 (int32_t android_keycode);
 static bool window_egl_android_setup (s_window_egl_android *window,
@@ -60,13 +64,16 @@ static u32 android_keycode_to_kc3 (int32_t android_keycode)
 void window_egl_android_handle_cmd (p_android_app app, int32_t cmd)
 {
   s_window_egl_android *window = (s_window_egl_android *) app->userData;
+  LOGI("handle_cmd: cmd=%d", cmd);
   switch (cmd) {
   case APP_CMD_INIT_WINDOW:
+    LOGI("APP_CMD_INIT_WINDOW");
     if (app->window && window) {
       if (! window_egl_android_setup(window, app->window)) {
-        err_puts("window_egl_android_handle_cmd: window_egl_android_setup");
+        LOGE("window_egl_android_setup failed");
         abort();
       }
+      LOGI("Window setup complete");
     }
     return;
   case APP_CMD_TERM_WINDOW:
@@ -85,11 +92,13 @@ void window_egl_android_handle_cmd (p_android_app app, int32_t cmd)
     }
     return;
   case APP_CMD_WINDOW_RESIZED:
+    LOGI("APP_CMD_WINDOW_RESIZED");
     if (window && window->resize) {
       int32_t w = ANativeWindow_getWidth(app->window);
       int32_t h = ANativeWindow_getHeight(app->window);
+      LOGI("Resizing to %dx%d", w, h);
       if (! window->resize(window, w, h)) {
-        err_puts("window_egl_android_handle_cmd: window->resize");
+        LOGE("window->resize failed");
         abort();
       }
     }
@@ -155,13 +164,15 @@ bool window_egl_android_run (s_window_egl_android *window)
   int events;
   struct android_poll_source *source;
   assert(window);
+  LOGI("window_egl_android_run starting");
   if (! window->app) {
-    err_puts("window_egl_android_run: no android_app");
+    LOGE("no android_app");
     return false;
   }
   window->app->userData = window;
   window->app->onAppCmd = window_egl_android_handle_cmd;
   window->app->onInputEvent = window_egl_android_handle_input;
+  LOGI("Entering event loop");
   while (1) {
     int timeout = (window->egl_display == EGL_NO_DISPLAY ||
                    window->egl_surface == EGL_NO_SURFACE) ? -1 : 0;
@@ -210,53 +221,55 @@ static bool window_egl_android_setup (s_window_egl_android *window,
     EGL_NONE
   };
   EGLint num_config;
+  LOGI("window_egl_android_setup starting");
   window->egl_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
   if (window->egl_display == EGL_NO_DISPLAY) {
-    err_puts("window_egl_android_setup: eglGetDisplay");
+    LOGE("eglGetDisplay failed");
     return false;
   }
+  LOGI("eglGetDisplay ok");
   if (! eglInitialize(window->egl_display, &major, &minor)) {
-    err_puts("window_egl_android_setup: eglInitialize");
+    LOGE("eglInitialize failed");
     return false;
   }
-  if (true) {
-    err_write_1("EGL version: ");
-    err_inspect_s32_decimal(major);
-    err_write_1(".");
-    err_inspect_s32_decimal(minor);
-  }
+  LOGI("EGL version: %d.%d", major, minor);
   if (! eglChooseConfig(window->egl_display, config_attribs, &config, 1,
                         &num_config)) {
-    err_puts("window_egl_android_setup: eglChooseConfig");
+    LOGE("eglChooseConfig failed");
     return false;
   }
   if (num_config != 1) {
-    err_puts("window_egl_android_setup: no suitable EGL config");
+    LOGE("no suitable EGL config");
     return false;
   }
+  LOGI("eglChooseConfig ok");
   window->egl_surface = eglCreateWindowSurface(window->egl_display,
                                                config,
                                                (EGLNativeWindowType) native_window,
                                                NULL);
   if (window->egl_surface == EGL_NO_SURFACE) {
-    err_puts("window_egl_android_setup: eglCreateWindowSurface");
+    LOGE("eglCreateWindowSurface failed");
     return false;
   }
+  LOGI("eglCreateWindowSurface ok");
   window->egl_context = eglCreateContext(window->egl_display, config,
                                          EGL_NO_CONTEXT, context_attribs);
   if (window->egl_context == EGL_NO_CONTEXT) {
-    err_puts("window_egl_android_setup: eglCreateContext");
+    LOGE("eglCreateContext failed");
     return false;
   }
+  LOGI("eglCreateContext ok");
   if (!eglMakeCurrent(window->egl_display, window->egl_surface,
                       window->egl_surface, window->egl_context)) {
-    err_puts("window_egl_android_setup: eglMakeCurrent");
+    LOGE("eglMakeCurrent failed");
     return false;
   }
+  LOGI("eglMakeCurrent ok");
   if (window->load && ! window->load(window)) {
-    err_puts("window_egl_android_setup: window->load");
+    LOGE("window->load failed");
     return false;
   }
+  LOGI("window->load ok");
   return true;
 }
 
