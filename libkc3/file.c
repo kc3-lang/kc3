@@ -231,7 +231,7 @@ bool file_ensure_directory (const s_str *path, const s_tag *mode)
   }
   if (! u32_init_cast(&m, &sym_U32, mode))
     return false;
-  if (true) {
+  if (false) {
     io_write_1("file_ensure_directory: MKDIR ");
     io_inspect_str(path);
     io_write_1("\n");
