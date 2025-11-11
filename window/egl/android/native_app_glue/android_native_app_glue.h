@@ -24,6 +24,16 @@
 #include <android/looper.h>
 #include <android/native_activity.h>
 
+#define LOGI(...)                                                      \
+  ((void) __android_log_print(ANDROID_LOG_INFO,                        \
+                              "kc3_window_egl_android",                \
+                              __VA_ARGS__))
+
+#define LOGE(...)                                                      \
+  ((void) __android_log_print(ANDROID_LOG_ERROR,                       \
+                              "kc3_window_egl_android",                \
+                              __VA_ARGS__))
+
 #ifdef __cplusplus
 extern "C" {
 #endif

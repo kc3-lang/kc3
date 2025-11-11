@@ -14,12 +14,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <android/log.h>
 #include <android/looper.h>
+#include "native_app_glue/android_native_app_glue.h"
 #include "window_egl_android.h"
-
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "KC3_EGL", __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "KC3_EGL", __VA_ARGS__)
 
 static u32  android_keycode_to_kc3 (int32_t android_keycode);
 static bool window_egl_android_setup (s_window_egl_android *window,
