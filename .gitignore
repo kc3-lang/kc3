@@ -1,6 +1,7 @@
 *~
 *.a
 android/egl/demo/app/build/
+android/egl/demo/app/src/main/assets/
 android/egl/demo/app/src/main/jni/obj
 bank/
 .build/

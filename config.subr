@@ -1515,7 +1515,14 @@ fi
 echo "BINDIR = $BINDIR" >> ${CONFIG_MK}
 
 if [ "x$LIBDIR" = "x" ]; then
-    LIBDIR="${PREFIX}/lib"
+    case "$CC_TARGET" in
+        *-android*)
+            LIBDIR="/data/data/io.kmx.kc3.demo/files"
+            ;;
+        *)
+            LIBDIR="${PREFIX}/lib"
+            ;;
+    esac
 fi
 echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}
 echo "libdir ?= \${LIBDIR}" >> ${CONFIG_MK}

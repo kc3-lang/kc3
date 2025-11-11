@@ -12,6 +12,8 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <android/asset_manager.h>
 #include "../../../../libkc3/kc3.h"
 #include "../../../../gl/gl_font.h"
 #include "../../../../gl/gl_ortho.h"
@@ -47,13 +49,23 @@ window_egl_android_demo_resize (s_window_egl_android *window,
 static void
 window_egl_android_demo_unload (s_window_egl_android *window);
 
+static void extract_assets(struct android_app *app, const char *asset_path, const char *dest_path);
+
 void android_main (struct android_app *app)
 {
   int argc = 1;
   char *argv[] = {"kc3_window_egl_android_demo", NULL};
   char **argv_ptr = argv;
   s_window_egl_android window;
+  char module_path[512];
+
   LOGI("android_main starting");
+
+  // Extract KC3 modules from assets to internal storage
+  snprintf(module_path, sizeof(module_path), "%s/kc3", app->activity->internalDataPath);
+  LOGI("Extracting KC3 modules to %s", module_path);
+  extract_assets(app, "kc3", module_path);
+
   if (FT_Init_FreeType(&g_ft)) {
     LOGE("FreeType init failed");
     return;
@@ -245,4 +257,56 @@ window_egl_android_demo_unload (s_window_egl_android *window)
   gl_font_clean(&g_font_courier_new);
   gl_ortho_clean(&g_ortho);
   err_puts("window_egl_android_demo_unload");
+}
+
+static void extract_assets(struct android_app *app, const char *asset_path,
+                           const char *dest_path)
+{
+  AAssetManager *asset_manager = app->activity->assetManager;
+  AAssetDir *asset_dir;
+  const char *filename;
+  char src_file[512];
+  char dst_file[512];
+
+  LOGI("extract_assets: %s -> %s", asset_path, dest_path);
+
+  mkdir(dest_path, 0755);
+
+  asset_dir = AAssetManager_openDir(asset_manager, asset_path);
+  if (!asset_dir) {
+    LOGE("Failed to open asset directory: %s", asset_path);
+    return;
+  }
+
+  while ((filename = AAssetDir_getNextFileName(asset_dir)) != NULL) {
+    if (strlen(asset_path) > 0) {
+      snprintf(src_file, sizeof(src_file), "%s/%s", asset_path, filename);
+    } else {
+      snprintf(src_file, sizeof(src_file), "%s", filename);
+    }
+    snprintf(dst_file, sizeof(dst_file), "%s/%s", dest_path, filename);
+
+    AAsset *asset = AAssetManager_open(asset_manager, src_file,
+                                       AASSET_MODE_STREAMING);
+    if (asset) {
+      off_t len = AAsset_getLength(asset);
+      if (len == 0) {
+        AAsset_close(asset);
+        extract_assets(app, src_file, dst_file);
+      } else {
+        const void *data = AAsset_getBuffer(asset);
+        FILE *out = fopen(dst_file, "wb");
+        if (out) {
+          fwrite(data, 1, len, out);
+          fclose(out);
+          LOGI("Extracted: %s", dst_file);
+        } else {
+          LOGE("Failed to write: %s", dst_file);
+        }
+        AAsset_close(asset);
+      }
+    }
+  }
+
+  AAssetDir_close(asset_dir);
 }
