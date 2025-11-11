@@ -69,8 +69,8 @@ install-release: release
 	@echo "Release APK installed"
 
 lib:
-	rsync -a --delete ${SRC_TOP}/lib \
-	    android/egl/demo/app/src/main/assets/
+	mkdir -p app/src/main/assets
+	rsync -a --delete ${SRC_TOP}/lib app/src/main/assets/
 
 logcat:
 	adb logcat | grep -iE "(kc3|egl|nativeactivity|runtimeerror)"
