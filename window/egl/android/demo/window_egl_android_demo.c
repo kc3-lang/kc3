@@ -79,16 +79,6 @@ void android_main (struct android_app *app)
   FT_Done_FreeType(g_ft);
 }
 
-int main (int argc, char **argv)
-{
-  struct android_app app = {0};
-  (void) argc;
-  (void) argv;
-
-  android_main(&app);
-  return 0;
-}
-
 static bool
 window_egl_android_demo_button (s_window_egl_android *window,
                                 u8 button, s64 x, s64 y)

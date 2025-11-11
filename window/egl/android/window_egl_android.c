@@ -64,10 +64,11 @@ void window_egl_android_handle_cmd (p_android_app app, int32_t cmd)
   case APP_CMD_INIT_WINDOW:
     if (app->window && window) {
       if (! window_egl_android_setup(window, app->window)) {
-        err_puts("window_egl_android_handle_cmd: setup failed");
+        err_puts("window_egl_android_handle_cmd: window_egl_android_setup");
+        abort();
       }
     }
-    break;
+    return;
   case APP_CMD_TERM_WINDOW:
     if (window) {
       if (window->egl_display != EGL_NO_DISPLAY) {
@@ -82,16 +83,19 @@ void window_egl_android_handle_cmd (p_android_app app, int32_t cmd)
         eglTerminate(window->egl_display);
       }
     }
-    break;
+    return;
   case APP_CMD_WINDOW_RESIZED:
     if (window && window->resize) {
       int32_t w = ANativeWindow_getWidth(app->window);
       int32_t h = ANativeWindow_getHeight(app->window);
-      window->resize(window, w, h);
+      if (! window->resize(window, w, h)) {
+        err_puts("window_egl_android_handle_cmd: window->resize");
+        abort();
+      }
     }
-    break;
+    return;
   default:
-    break;
+    return;
   }
 }
 
