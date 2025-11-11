@@ -65,7 +65,7 @@ void android_main (struct android_app *app)
   // Extract KC3 modules from assets to internal storage
   snprintf(module_path, sizeof(module_path), "%s", app->activity->internalDataPath);
   LOGI("Extracting KC3 modules from assets to %s", module_path);
-  extract_assets(app, "index.txt", module_path);
+  extract_assets(app, module_path);
   LOGI("Asset extraction complete");
 
   if (FT_Init_FreeType(&g_ft)) {
