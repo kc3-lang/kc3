@@ -21,6 +21,7 @@
 #include "../../../demo/bg_rect.h"
 #include "../../window_egl.h"
 #include "../window_egl_android.h"
+#include "../native_app_glue/android_native_app_glue.h"
 #include "window_egl_android_demo.h"
 
 #define WINDOW_EGL_ANDROID_DEMO_SEQUENCE_COUNT 1
@@ -52,18 +53,22 @@ void android_main (struct android_app *app)
   char *argv[] = {"kc3_window_egl_android_demo", NULL};
   char **argv_ptr = argv;
   s_window_egl_android window;
+  LOGI("android_main starting");
   if (FT_Init_FreeType(&g_ft)) {
-    err_puts("android_main: failed to initialize FreeType");
+    LOGE("FreeType init failed");
     return;
   }
+  LOGI("FreeType initialized");
   if (! kc3_init(NULL, &argc, &argv_ptr)) {
-    err_puts("kc3_init");
+    LOGE("kc3_init failed");
     FT_Done_FreeType(g_ft);
     return;
   }
+  LOGI("KC3 initialized");
   window_egl_android_init(&window, 50, 50, 800, 600,
                           "KC3.Window.EGL.Android demo",
                           WINDOW_EGL_ANDROID_DEMO_SEQUENCE_COUNT);
+  LOGI("Window initialized");
   window.app    = app;
   window.button = window_egl_android_demo_button;
   window.key    = window_egl_android_demo_key;
@@ -71,12 +76,15 @@ void android_main (struct android_app *app)
   window.render = window_egl_android_demo_render;
   window.resize = window_egl_android_demo_resize;
   window.unload = window_egl_android_demo_unload;
+  LOGI("Starting event loop");
   if (! window_egl_android_run(&window)) {
-    err_puts("window_egl_android_run -> false");
+    LOGE("window_egl_android_run returned false");
   }
+  LOGI("Event loop ended");
   window_egl_android_clean(&window);
   kc3_clean(NULL);
   FT_Done_FreeType(g_ft);
+  LOGI("android_main finished");
 }
 
 static bool
