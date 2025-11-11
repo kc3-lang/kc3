@@ -264,7 +264,6 @@ window_egl_android_demo_unload (s_window_egl_android *window)
 static void write_asset (AAsset *asset, const char *dst_file)
 {
   const void *data;
-  char dir[512];
   s_str dst_str;
   off_t len;
   s_tag mode;
@@ -293,13 +292,10 @@ static void extract_assets (struct android_app *app,
   AAsset        *asset;
   AAssetManager *asset_manager;
   char dst_file[512];
-  const char *filename;
   FILE *in;
-  char *index;
   char   *line = NULL;
   ssize_t linelen;
   size_t  linesize = 0;
-  char src_file[512];
   LOGI("extract_assets: %s", dest_path);
   mkdir(dest_path, 0755);
   asset_manager = app->activity->assetManager;
