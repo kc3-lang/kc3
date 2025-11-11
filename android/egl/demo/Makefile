@@ -66,6 +66,10 @@ install-release: release
 	adb install -r ${RELEASE_APK}
 	@echo "Release APK installed"
 
+lib:
+	rsync -a --delete ${SRC_TOP}/lib \
+	    android/egl/demo/app/src/main/assets/
+
 logcat:
 	adb logcat | grep -iE "(kc3|egl|nativeactivity|runtimeerror)"
 
@@ -82,5 +86,5 @@ run: install
 uninstall:
 	adb uninstall io.kmx.kc3.demo || true
 
-.PHONY: all clean build debug release install \
+.PHONY: all clean build debug release install lib \
         uninstall logcat help
