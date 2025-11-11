@@ -59,8 +59,9 @@ void android_main (struct android_app *app)
     return;
   }
   LOGI("FreeType initialized");
+  LOGI("Calling kc3_init with argc=%d, argv_ptr[0]=%s", argc, argv_ptr[0]);
   if (! kc3_init(NULL, &argc, &argv_ptr)) {
-    LOGE("kc3_init failed");
+    LOGE("kc3_init failed - check that KC3 can initialize on Android");
     FT_Done_FreeType(g_ft);
     return;
   }
