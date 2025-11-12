@@ -116,6 +116,7 @@ s32 window_egl_android_handle_input (p_android_app app,
 {
   static float touch_start_x = 0;
   static float touch_start_y = 0;
+  static float pinch_start_dist = 0;
   s_window_egl_android *window = (s_window_egl_android *) app->userData;
   if (! window)
     return 0;
@@ -133,10 +134,54 @@ s32 window_egl_android_handle_input (p_android_app app,
   if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
     int32_t action = AMotionEvent_getAction(event) &
       AMOTION_EVENT_ACTION_MASK;
+    size_t pointer_count = AMotionEvent_getPointerCount(event);
     float x = AMotionEvent_getX(event, 0);
     float y = AMotionEvent_getY(event, 0);
     int32_t screen_w = ANativeWindow_getWidth(app->window);
     int32_t edge_zone = screen_w / 10;
+    if (pointer_count == 2) {
+      float x0 = AMotionEvent_getX(event, 0);
+      float y0 = AMotionEvent_getY(event, 0);
+      float x1 = AMotionEvent_getX(event, 1);
+      float y1 = AMotionEvent_getY(event, 1);
+      float dx = x1 - x0;
+      float dy = y1 - y0;
+      float dist = sqrtf(dx * dx + dy * dy);
+      if (action == AMOTION_EVENT_ACTION_POINTER_DOWN) {
+        pinch_start_dist = dist;
+        LOGI("Pinch start: dist=%.1f", dist);
+      }
+      else if (action == AMOTION_EVENT_ACTION_MOVE) {
+        float scale = dist / pinch_start_dist;
+        if (scale > 1.1) {
+          float cx = (x0 + x1) / 2;
+          float cy = (y0 + y1) / 2;
+          s64 logical_x = (s64) (cx / 2);
+          s64 logical_y = window->h - (s64) (cy / 2);
+          LOGI("Pinch zoom in at (%.1f, %.1f) -> (%lld, %lld)",
+               cx, cy, (long long) logical_x, (long long) logical_y);
+          if (window->button)
+            window->button(window, 4, logical_x, logical_y);
+          pinch_start_dist = dist;
+        }
+        else if (scale < 0.9) {
+          float cx = (x0 + x1) / 2;
+          float cy = (y0 + y1) / 2;
+          s64 logical_x = (s64) (cx / 2);
+          s64 logical_y = window->h - (s64) (cy / 2);
+          LOGI("Pinch zoom out at (%.1f, %.1f) -> (%lld, %lld)",
+               cx, cy, (long long) logical_x, (long long) logical_y);
+          if (window->button &&
+              ! window->button(window, 5, logical_x, logical_y)) {
+            LOGI("window_egl_android_handle_input: window->button"
+                 " -> false");
+            exit(1);
+          }
+          pinch_start_dist = dist;
+        }
+      }
+      return 1;
+    }
     if (action == AMOTION_EVENT_ACTION_DOWN) {
       touch_start_x = x;
       touch_start_y = y;
@@ -167,7 +212,7 @@ s32 window_egl_android_handle_input (p_android_app app,
       if (! is_edge_swipe) {
         u8 button = 1;
         s64 logical_x = (s64) (x / 2);
-        s64 logical_y = (s64) (y / 2);
+        s64 logical_y = window->h - (s64) (y / 2);
         if (window->button && ! window->button(window, button,
                                                logical_x, logical_y)) {
           LOGE("window_egl_android_handle_input: ! window->button");
@@ -175,17 +220,6 @@ s32 window_egl_android_handle_input (p_android_app app,
         }
       }
     }
-    /*
-    else {
-      float dx = x - touch_start_x;
-      float dy = y - touch_start_y;
-      if (window->motion &&
-          ! window->motion(window, x, y)) {
-        LOGE("window_egl_android_handle_input: ! window->motion");
-        exit(1);
-      }
-    }
-    */
   }
   return 0;
 }
