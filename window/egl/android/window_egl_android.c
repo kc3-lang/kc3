@@ -98,7 +98,8 @@ void window_egl_android_handle_cmd (p_android_app app, int32_t cmd)
       window->h = h / 2;
       window->pixel_w = w;
       window->pixel_h = h;
-      if (window->resize && ! window->resize(window, w, h)) {
+      if (window->resize && ! window->resize(window, window->w,
+                                             window->h)) {
         LOGE("window->resize failed");
         abort();
       }

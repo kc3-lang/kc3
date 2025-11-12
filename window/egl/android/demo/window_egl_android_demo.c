@@ -21,17 +21,28 @@
 #include "../../../../gl/mat4.h"
 #include "../../../window.h"
 #include "../../../demo/bg_rect.h"
+#include "../../../demo/lightspeed.h"
+#include "../../../demo/toasters.h"
+#include "../../../demo/flies.h"
+#include "../../../demo/earth.h"
 #include "../../window_egl.h"
 #include "../window_egl_android.h"
 #include "../native_app_glue/android_native_app_glue.h"
 #include "window_egl_android_demo.h"
 
-#define WINDOW_EGL_ANDROID_DEMO_SEQUENCE_COUNT 1
+#define WINDOW_EGL_ANDROID_DEMO_SEQUENCE_COUNT 5
 
-s_gl_font  g_font_courier_new = {0};
-s_gl_ortho g_ortho = {0};
-s_gl_text  g_text_fps = {0};
-s_gl_text  g_text_seq_title = {0};
+s_gl_font   g_font_courier_new = {0};
+s_gl_font   g_font_flies = {0};
+s_gl_lines  g_lines_stars = {0};
+s_gl_ortho  g_ortho = {0};
+s_gl_sprite g_sprite_dead_fly = {0};
+s_gl_sprite g_sprite_earth = {0};
+s_gl_sprite g_sprite_fly = {0};
+s_gl_sprite g_sprite_toast = {0};
+s_gl_sprite g_sprite_toaster = {0};
+s_gl_text   g_text_fps = {0};
+s_gl_text   g_text_seq_title = {0};
 
 static bool
 window_egl_android_demo_button (s_window_egl_android *window,
@@ -159,6 +170,11 @@ static bool window_egl_android_demo_load (s_window_egl_android *window)
     return false;
   }
   LOGI("window_egl_android_demo_load: GL.Object loaded");
+  if (! module_load(sym_1("GL.Sphere"))) {
+    LOGE("window_egl_android_demo_load: module_load GL.Sphere failed");
+    return false;
+  }
+  LOGI("window_egl_android_demo_load: GL.Sphere loaded");
   point_per_pixel = (f32) window->w / window->pixel_w;
   err_write_1("point_per_pixel: ");
   err_inspect_f32(point_per_pixel);
@@ -192,11 +208,47 @@ static bool window_egl_android_demo_load (s_window_egl_android *window)
     return false;
   }
   LOGI("window_egl_android_demo_load: sequence_init");
-  sequence_init(window->sequence, 8.0,
-                "01. Background rect",
-                bg_rect_load,
-                bg_rect_render,
-                bg_rect_unload, (s_window *) window);
+  sequence_init(window->sequence, 8.0, "01. Background rectangles",
+                bg_rect_load, bg_rect_render, bg_rect_unload,
+                (s_window *) window);
+  if (! gl_lines_init(&g_lines_stars) ||
+      ! gl_lines_allocate(&g_lines_stars, LIGHTSPEED_STAR_MAX))
+    return false;
+  sequence_init(window->sequence + 1, 20.0, "02. Lightspeed",
+                lightspeed_load, lightspeed_render,
+                lightspeed_unload, (s_window *) window);
+  if (! gl_sprite_init(&g_sprite_toaster, "img/flaps.256.png",
+                       4, 1, 4, 1))
+    return false;
+  if (! gl_sprite_init(&g_sprite_toast, "img/toast.128.png",
+                       1, 1, 1, 1))
+    return false;
+  sequence_init(window->sequence + 2, 60.0, "03. Toasters",
+                toasters_load, toasters_render, toasters_unload,
+                (s_window *) window);
+  if (! gl_font_init(&g_font_flies,
+                     "fonts/Courier New/Courier New.ttf",
+                     point_per_pixel))
+    return false;
+  if (! gl_sprite_init(&g_sprite_fly, "img/fly-noto.png",
+                       1, 1, 1, point_per_pixel))
+    return false;
+  if (! gl_sprite_init(&g_sprite_dead_fly, "img/fly-dead.png",
+                       1, 1, 1, point_per_pixel))
+    return false;
+  sequence_init(window->sequence + 3, 60.0, "04. Flies",
+                flies_load, flies_render, flies_unload,
+                (s_window *) window);
+  if (! gl_sprite_init(&g_sprite_earth, "img/earth.png",
+                       1, 1, 1, point_per_pixel))
+    return false;
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  assert(glGetError() == GL_NO_ERROR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  assert(glGetError() == GL_NO_ERROR);
+  sequence_init(window->sequence + 4, 120.0, "05. Earth",
+                earth_load, earth_render, earth_unload,
+                (s_window *) window);
   window_set_sequence_pos((s_window *) window, 0);
   LOGI("window_egl_android_demo_load: success");
   return true;

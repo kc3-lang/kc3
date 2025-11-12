@@ -72,7 +72,8 @@ lib:
 	mkdir -p app/src/main/assets
 	rsync -aP --delete --exclude .git ${SRC_TOP}/lib app/src/main/assets/
 	rsync -aP --delete --exclude .git --exclude .travis.yml ${SRC_TOP}/fonts app/src/main/assets/
-	cd app/src/main/assets && find lib fonts \( -name '.*' -prune \) -o -type f -print > index.txt
+	rsync -aP --delete --exclude .git ${SRC_TOP}/img app/src/main/assets/
+	cd app/src/main/assets && find lib fonts img \( -name '.*' -prune \) -o -type f -print > index.txt
 
 logcat:
 	adb logcat | grep -iE "(kc3|egl|nativeactivity|runtimeerror)"
