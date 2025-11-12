@@ -121,13 +121,8 @@ window_egl_android_demo_button (s_window_egl_android *window,
 {
   assert(window);
   (void) window;
-  err_write_1("window_egl_android_demo_button: ");
-  err_inspect_u8(button);
-  err_write_1(" (");
-  err_inspect_s64(x);
-  err_write_1(", ");
-  err_inspect_s64(y);
-  err_puts(")");
+  LOGI("window_egl_android_demo_button: %u (%lld, %lld)",
+       button, (long long) x, (long long) y);
   if (window->seq && window->seq->button &&
       ! window->seq->button((s_sequence *) window->seq, button, x, y))
     return false;
@@ -139,9 +134,7 @@ window_egl_android_demo_key (s_window_egl_android *window,
                              u32 keysym)
 {
   assert(window);
-  err_write_1("window_egl_android_demo_key: ");
-  err_inspect_u32(keysym);
-  err_write_1("\n");
+  LOGI("window_egl_android_demo_key: keysym=0x%x", keysym);
   switch (keysym) {
   case 0xff1b:
     return false;
@@ -336,11 +329,6 @@ window_egl_android_demo_resize (s_window_egl_android *window,
                                 u64 w, u64 h)
 {
   assert(window);
-  err_write_1("window_egl_android_demo_resize: ");
-  err_inspect_u64(w);
-  err_write_1(" x ");
-  err_inspect_u64(h);
-  err_write_1("\n");
   glViewport(0, 0, window->pixel_w, window->pixel_h);
   gl_ortho_resize(&g_ortho, 0, w, 0, h, 0, 1);
   LOGI("window_egl_android_demo_resize: logical=%lux%lu pixel=%lux%lu",
@@ -357,7 +345,7 @@ window_egl_android_demo_unload (s_window_egl_android *window)
   gl_text_clean(&g_text_seq_title);
   gl_font_clean(&g_font_courier_new);
   gl_ortho_clean(&g_ortho);
-  err_puts("window_egl_android_demo_unload");
+  LOGI("window_egl_android_demo_unload");
 }
 
 static void write_asset (AAsset *asset, const char *dst_file)
