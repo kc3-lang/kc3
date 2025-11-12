@@ -13,11 +13,12 @@
     <application
         android:label="KC3 EGL Demo"
         android:icon="@drawable/ic_launcher"
-        android:hasCode="false">
+        android:hasCode="true">
 
-        <activity android:name="android.app.NativeActivity"
+        <activity android:name=".KC3NativeActivity"
             android:label="KC3 EGL Demo"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:exported="true">
 
             <!-- Tell NativeActivity the name of our native library -->
