@@ -120,7 +120,6 @@ window_egl_android_demo_button (s_window_egl_android *window,
                                 u8 button, s64 x, s64 y)
 {
   assert(window);
-  (void) window;
   LOGI("window_egl_android_demo_button: %u (%lld, %lld)",
        button, (long long) x, (long long) y);
   if (window->seq && window->seq->button &&

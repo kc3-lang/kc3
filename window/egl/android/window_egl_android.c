@@ -146,27 +146,30 @@ s32 window_egl_android_handle_input (p_android_app app,
     else if (action == AMOTION_EVENT_ACTION_UP) {
       float dx = x - touch_start_x;
       float dy = y - touch_start_y;
+      float dist = sqrtf(dx * dx + dy * dy);
       bool is_edge_swipe = false;
-      LOGI("Touch up: x=%.1f y=%.1f dx=%.1f dy=%.1f start_x=%.1f",
-           x, y, dx, dy, touch_start_x);
-      if (touch_start_x < edge_zone && dx > 100 &&
+      LOGI("Touch up: x=%.1f y=%.1f dx=%.1f dy=%.1f start_x=%.1f "
+           "dist=%.1f", x, y, dx, dy, touch_start_x, dist);
+      if (dist > 100 && touch_start_x < edge_zone && dx > 100 &&
           fabs(dx) > fabs(dy)) {
-        LOGI("Left edge swipe right -> Right key");
-        if (window->key)
-          window->key(window, 0xff53);
-        is_edge_swipe = true;
-      }
-      else if (touch_start_x > screen_w - edge_zone && dx < -100 &&
-               fabs(dx) > fabs(dy)) {
-        LOGI("Right edge swipe left -> Left key");
+        LOGI("Left edge swipe right -> Left key");
         if (window->key)
           window->key(window, 0xff51);
         is_edge_swipe = true;
       }
+      else if (dist > 100 && touch_start_x > screen_w - edge_zone &&
+               dx < -100 && fabs(dx) > fabs(dy)) {
+        LOGI("Right edge swipe left -> Right key");
+        if (window->key)
+          window->key(window, 0xff53);
+        is_edge_swipe = true;
+      }
       if (! is_edge_swipe) {
         u8 button = 1;
+        s64 logical_x = (s64) (x / 2);
+        s64 logical_y = (s64) (y / 2);
         if (window->button && ! window->button(window, button,
-                                               (s64) x, (s64) y)) {
+                                               logical_x, logical_y)) {
           LOGE("window_egl_android_handle_input: ! window->button");
           exit(1);
         }
