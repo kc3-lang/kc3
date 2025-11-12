@@ -257,9 +257,11 @@ static bool window_egl_android_demo_load (s_window_egl_android *window)
   sequence_init(window->sequence + 4, 120.0, "05. Earth",
                 earth_load, earth_render, earth_unload,
                 (s_window *) window);
-  sequence_init(window->sequence + 5, 3600.0, "06. Mandelbrot (f64)",
+  sequence_init(window->sequence + 5, 3600.0,
+                "06. Mandelbrot (f64)",
                 mandelbrot_f64_load, mandelbrot_f64_render,
                 mandelbrot_f64_unload, (s_window *) window);
+  window->sequence[5].button = mandelbrot_f64_button;
   sequence_init(window->sequence + 6, 60.0, "07. Matrix",
                 matrix_load, matrix_render, matrix_unload,
                 (s_window *) window);
