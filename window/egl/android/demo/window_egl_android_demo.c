@@ -16,7 +16,9 @@
 #include <android/asset_manager.h>
 #include "../../../../libkc3/kc3.h"
 #include "../../../../gl/gl_font.h"
+#include "../../../../gl/gl_lines.h"
 #include "../../../../gl/gl_ortho.h"
+#include "../../../../gl/gl_sprite.h"
 #include "../../../../gl/gl_text.h"
 #include "../../../../gl/mat4.h"
 #include "../../../window.h"
@@ -25,12 +27,14 @@
 #include "../../../demo/toasters.h"
 #include "../../../demo/flies.h"
 #include "../../../demo/earth.h"
+#include "../../../demo/mandelbrot_f64.h"
+#include "../../../demo/matrix.h"
 #include "../../window_egl.h"
 #include "../window_egl_android.h"
 #include "../native_app_glue/android_native_app_glue.h"
 #include "window_egl_android_demo.h"
 
-#define WINDOW_EGL_ANDROID_DEMO_SEQUENCE_COUNT 5
+#define WINDOW_EGL_ANDROID_DEMO_SEQUENCE_COUNT 7
 
 s_gl_font   g_font_courier_new = {0};
 s_gl_font   g_font_flies = {0};
@@ -248,6 +252,12 @@ static bool window_egl_android_demo_load (s_window_egl_android *window)
   assert(glGetError() == GL_NO_ERROR);
   sequence_init(window->sequence + 4, 120.0, "05. Earth",
                 earth_load, earth_render, earth_unload,
+                (s_window *) window);
+  sequence_init(window->sequence + 5, 3600.0, "06. Mandelbrot (f64)",
+                mandelbrot_f64_load, mandelbrot_f64_render,
+                mandelbrot_f64_unload, (s_window *) window);
+  sequence_init(window->sequence + 6, 60.0, "07. Matrix",
+                matrix_load, matrix_render, matrix_unload,
                 (s_window *) window);
   window_set_sequence_pos((s_window *) window, 0);
   LOGI("window_egl_android_demo_load: success");
