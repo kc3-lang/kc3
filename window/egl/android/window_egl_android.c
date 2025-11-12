@@ -94,8 +94,8 @@ void window_egl_android_handle_cmd (p_android_app app, int32_t cmd)
       int32_t w = ANativeWindow_getWidth(app->window);
       int32_t h = ANativeWindow_getHeight(app->window);
       LOGI("Resizing to %dx%d", w, h);
-      window->w = w;
-      window->h = h;
+      window->w = w / 2;
+      window->h = h / 2;
       window->pixel_w = w;
       window->pixel_h = h;
       if (window->resize && ! window->resize(window, w, h)) {
