@@ -136,8 +136,6 @@ window_egl_android_demo_key (s_window_egl_android *window,
   assert(window);
   LOGI("window_egl_android_demo_key: keysym=0x%x", keysym);
   switch (keysym) {
-  case 0xff1b:
-    return false;
   case 0xff51:
     LOGI("Left key -> previous sequence");
     if (! window_set_sequence_pos((s_window *) window,

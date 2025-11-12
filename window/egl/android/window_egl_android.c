@@ -140,11 +140,15 @@ int32_t window_egl_android_handle_input (p_android_app app,
     if (action == AMOTION_EVENT_ACTION_DOWN) {
       touch_start_x = x;
       touch_start_y = y;
+      LOGI("Touch down: x=%.1f y=%.1f screen_w=%d edge_zone=%d",
+           x, y, screen_w, edge_zone);
     }
     else if (action == AMOTION_EVENT_ACTION_UP) {
       float dx = x - touch_start_x;
       float dy = y - touch_start_y;
       bool is_edge_swipe = false;
+      LOGI("Touch up: x=%.1f y=%.1f dx=%.1f dy=%.1f start_x=%.1f",
+           x, y, dx, dy, touch_start_x);
       if (touch_start_x < edge_zone && dx > 100 &&
           fabs(dx) > fabs(dy)) {
         LOGI("Left edge swipe right -> Right key");
