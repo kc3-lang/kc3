@@ -322,15 +322,15 @@ window_egl_android_demo_resize (s_window_egl_android *window,
                                 u64 w, u64 h)
 {
   assert(window);
-  (void) window;
   err_write_1("window_egl_android_demo_resize: ");
   err_inspect_u64(w);
   err_write_1(" x ");
   err_inspect_u64(h);
   err_write_1("\n");
-  glViewport(0, 0, w, h);
+  glViewport(0, 0, window->pixel_w, window->pixel_h);
   gl_ortho_resize(&g_ortho, 0, w, 0, h, 0, 1);
-  LOGI("window_egl_android_demo_resize: %lux%lu", w, h);
+  LOGI("window_egl_android_demo_resize: logical=%lux%lu pixel=%lux%lu",
+       w, h, window->pixel_w, window->pixel_h);
   return true;
 }
 
