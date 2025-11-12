@@ -1428,6 +1428,7 @@ KC3_HTTPD_SOURCES = \
 
 KC3_IMG_SOURCES = \
 	"img/dmg_background.png" \
+	"img/dmg_background.xcf" \
 	"img/earth.jpg" \
 	"img/earth.png" \
 	"img/flaps.256.png" \
@@ -1694,6 +1695,7 @@ KC3_TEST_SOURCES = \
 	"test/test.rb" \
 	"test/test.subr" \
 	"test/test_case_end.rb" \
+	"test/test_runner" \
 	"test/zero" \
 
 KC3_TEST_IKC3_SOURCES = \
