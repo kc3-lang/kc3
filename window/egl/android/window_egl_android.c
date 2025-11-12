@@ -111,8 +111,8 @@ void window_egl_android_handle_cmd (p_android_app app, int32_t cmd)
   }
 }
 
-int32_t window_egl_android_handle_input (p_android_app app,
-                                         AInputEvent *event)
+s32 window_egl_android_handle_input (p_android_app app,
+                                     AInputEvent *event)
 {
   static float touch_start_x = 0;
   static float touch_start_y = 0;
@@ -167,11 +167,22 @@ int32_t window_egl_android_handle_input (p_android_app app,
         u8 button = 1;
         if (window->button && ! window->button(window, button,
                                                (s64) x, (s64) y)) {
-          return 1;
+          LOGE("window_egl_android_handle_input: ! window->button");
+          exit(1);
         }
       }
     }
-    return 1;
+    /*
+    else {
+      float dx = x - touch_start_x;
+      float dy = y - touch_start_y;
+      if (window->motion &&
+          ! window->motion(window, x, y)) {
+        LOGE("window_egl_android_handle_input: ! window->motion");
+        exit(1);
+      }
+    }
+    */
   }
   return 0;
 }
