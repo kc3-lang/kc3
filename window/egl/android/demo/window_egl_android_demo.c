@@ -139,13 +139,27 @@ window_egl_android_demo_key (s_window_egl_android *window,
                              u32 keysym)
 {
   assert(window);
-  (void) window;
   err_write_1("window_egl_android_demo_key: ");
   err_inspect_u32(keysym);
   err_write_1("\n");
   switch (keysym) {
   case 0xff1b:
     return false;
+  case 0xff51:
+    LOGI("Left key -> previous sequence");
+    if (! window_set_sequence_pos((s_window *) window,
+                                  (window->sequence_pos +
+                                   window->sequence_count - 1) %
+                                  window->sequence_count))
+      return false;
+    break;
+  case 0xff53:
+    LOGI("Right key -> next sequence");
+    if (! window_set_sequence_pos((s_window *) window,
+                                  (window->sequence_pos + 1) %
+                                  window->sequence_count))
+      return false;
+    break;
   }
   if (window->seq && window->seq->key &&
       ! window->seq->key((s_sequence *) window->seq, keysym))
