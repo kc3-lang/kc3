@@ -41,6 +41,9 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
 LDFLAGS="$LDFLAGS ${EXPORT_DYNAMIC}"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/tls"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/socket"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
 config_asan
 config_gnu
 config_i386
@@ -62,12 +65,6 @@ case "$(uname -s)" in
         LIBS="$LIBS -rpath @executable_path/../socket"
         LIBS="$LIBS -rpath @executable_path/../tls"
         ;;
-    Linux)
-        LIBS="$LIBS -rpath ${PREFIX}/lib"
-        LIBS="$LIBS -rpath ${BUILD_TOP}/libkc3"
-        LIBS="$LIBS -rpath ${BUILD_TOP}/socket"
-        LIBS="$LIBS -rpath ${BUILD_TOP}/tls"
-        ;;
     MINGW64*)
         ;;
     *)
@@ -81,9 +78,6 @@ CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../tls"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../socket"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../libkc3"
 LIBS_ASAN="$(${CC} -print-file-name=libasan.so)"
 LIBS_ASAN="$LIBS_ASAN $LIBS"
 LIBS_ASAN="$LIBS_ASAN -lkc3_tls_asan"
@@ -96,9 +90,6 @@ CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LIBGCOV=$(${CC} -print-file-name=libgcov.a)
 LIBGCOV_DIR=$(dirname "$LIBGCOV")
 LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
-LDFLAGS_COV="$LDFLAGS_COV -L../tls"
-LDFLAGS_COV="$LDFLAGS_COV -L../socket"
-LDFLAGS_COV="$LDFLAGS_COV -L../libkc3"
 LIBS_COV="$LIBS -lkc3_tls_cov"
 LIBS_COV="$LIBS_COV -lkc3_socket_cov"
 LIBS_COV="$LIBS_COV -lkc3_cov"
@@ -108,9 +99,6 @@ LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"
 LDFLAGS_DEBUG="$LDFLAGS"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../tls"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../socket"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../libkc3"
 LIBS_DEBUG="$LIBS -lkc3_tls_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_socket_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
@@ -121,16 +109,6 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-case "$(uname -s)" in
-    Darwin)
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../libkc3"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../socket"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../tls"
-        ;;
-esac
-LDFLAGS="$LDFLAGS -L../tls"
-LDFLAGS="$LDFLAGS -L../socket"
-LDFLAGS="$LDFLAGS -L../libkc3"
 LIBS="$LIBS -lkc3_tls"
 LIBS="$LIBS -lkc3_socket"
 LIBS="$LIBS -lkc3"
