@@ -491,6 +491,8 @@ ikc3/buf_wineditline.c
 ikc3/buf_wineditline.h
 ikc3/configure
 ikc3/ikc3.c
+ikc3/ikc3_kc3s.c
+ikc3/kc3s.c
 ikc3/linenoise.c
 ikc3/sources.mk
 ikc3/sources.sh
