@@ -50,20 +50,20 @@ static sw  buf_ignore_character (s_buf *buf);
 
 // TODO: use positive return value to increment argc and argv
 // TODO: remove one reference level (*)
-static int    ikc3_arg_client (s_env *env, int *argc, char ***argv);
-static int    ikc3_arg_dump (s_env *env, int *argc, char ***argv);
-static int    ikc3_arg_load (s_env *env, int *argc, char ***argv);
-static int    ikc3_arg_server (s_env *env, int *argc, char ***argv);
-static int    ikc3_arg_tls (s_env *env, int *argc, char ***argv);
-static void   ikc3_buf_editline_close (s_buf *buf);
-static void   ikc3_buf_editline_open_r (s_buf *buf);
-static void   ikc3_client_clean (void);
-static int    ikc3_client_init (void);
-static int    ikc3_client_init_tls (void);
-static sw     ikc3_run (void);
-static void   ikc3_server_clean (s_env *env);
-static int    ikc3_server_init (s_env *env);
-static int    ikc3_server_init_tls (s_env *env);
+static int    arg_client (s_env *env, int *argc, char ***argv);
+static int    arg_dump (s_env *env, int *argc, char ***argv);
+static int    arg_load (s_env *env, int *argc, char ***argv);
+static int    arg_server (s_env *env, int *argc, char ***argv);
+static int    arg_tls (s_env *env, int *argc, char ***argv);
+static void   buf_editline_close (s_buf *buf);
+static void   buf_editline_open_r (s_buf *buf);
+static void   client_clean (void);
+static int    client_init (void);
+static int    client_init_tls (void);
+static sw     run (void);
+static void   server_clean (s_env *env);
+static int    server_init (s_env *env);
+static int    server_init_tls (s_env *env);
 static int    usage (char *argv0);
 
 static sw buf_ignore_character (s_buf *buf)
@@ -83,21 +83,21 @@ static sw buf_ignore_character (s_buf *buf)
   return csize;
 }
 
-static int ikc3_arg_client (s_env *env, int *argc, char ***argv)
+static int arg_client (s_env *env, int *argc, char ***argv)
 {
   if (g_server) {
-    err_puts("ikc3_arg_client: --client and --server are mutually"
+    err_puts("arg_client: --client and --server are mutually"
              " exclusive");
     usage(env->argv[0]);
     return -1;
   }
   if (g_client) {
-    err_puts("ikc3_arg_client: --client can only be set once");
+    err_puts("arg_client: --client can only be set once");
     usage(env->argv[0]);
     return -1;
   }
   if (*argc < 3 || ! (*argv)[0] || ! (*argv)[1] || ! (*argv)[2]) {
-    err_puts("ikc3_arg_client: --client invalid argument");
+    err_puts("arg_client: --client invalid argument");
     usage(env->argv[0]);
     return -1;
   }
@@ -105,8 +105,8 @@ static int ikc3_arg_client (s_env *env, int *argc, char ***argv)
   str_init_1(&g_port, NULL, (*argv)[2]);
   g_client = true;
   if (! env_module_load(env, &g_sym_RPC_Response)) {
-    err_puts("ikc3_arg_client: failed to load RPC.Response module");
-    assert(! "ikc3_arg_client: failed to load RPC.Response module");
+    err_puts("arg_client: failed to load RPC.Response module");
+    assert(! "arg_client: failed to load RPC.Response module");
     return -1;
   }
   *argc -= 3;
@@ -114,11 +114,11 @@ static int ikc3_arg_client (s_env *env, int *argc, char ***argv)
   return 3;
 }
 
-static int ikc3_arg_dump (s_env *env, int *argc, char ***argv)
+static int arg_dump (s_env *env, int *argc, char ***argv)
 {
   s_str path = {0};
   if (*argc < 2 || ! (*argv)[0] || ! (*argv)[1]) {
-    err_puts("ikc3_arg_dump: invalid argument");
+    err_puts("arg_dump: invalid argument");
     usage(env->argv[0]);
     return -1;
   }
@@ -133,7 +133,7 @@ static int ikc3_arg_dump (s_env *env, int *argc, char ***argv)
   return 2;
 }
 
-static int ikc3_arg_load (s_env *env, int *argc, char ***argv)
+static int arg_load (s_env *env, int *argc, char ***argv)
 {
   sw     e = 0;
   FILE *fp = 0;
@@ -144,12 +144,12 @@ static int ikc3_arg_load (s_env *env, int *argc, char ***argv)
   s_str path = {0};
   sw r;
   if (*argc < 2) {
-    err_puts("ikc3_arg_load: --load without an argument");
-    assert(! "ikc3_arg_load: --load without an argument");
+    err_puts("arg_load: --load without an argument");
+    assert(! "arg_load: --load without an argument");
     return -1;
     }
   if (env->trace) {
-    err_write_1("ikc3_arg_load: ");
+    err_write_1("arg_load: ");
     err_write_1((*argv)[1]);
     err_write_1("\n");
   }
@@ -179,7 +179,7 @@ static int ikc3_arg_load (s_env *env, int *argc, char ***argv)
     buf_file_close(env->in);
     return -1;
   }
-  r = ikc3_run();
+  r = run();
   *file_dir = file_dir_save;
   *file_path = file_path_save;
   buf_file_close(env->in);
@@ -191,21 +191,21 @@ static int ikc3_arg_load (s_env *env, int *argc, char ***argv)
   return 0;
 }
 
-static int ikc3_arg_server (s_env *env, int *argc, char ***argv)
+static int arg_server (s_env *env, int *argc, char ***argv)
 {
   if (g_client) {
-    err_puts("ikc3_arg_server: --client and --server are mutually"
+    err_puts("arg_server: --client and --server are mutually"
              " exclusive");
     usage(env->argv[0]);
     return -1;
   }
   if (g_server) {
-    err_puts("ikc3_arg_server: --server can only be set once");
+    err_puts("arg_server: --server can only be set once");
     usage(env->argv[0]);
     return -1;
   }
   if (*argc < 3 || ! (*argv)[0] || ! (*argv)[1] || ! (*argv)[2]) {
-    err_puts("ikc3_arg_server: --server invalid argument");
+    err_puts("arg_server: --server invalid argument");
     usage(env->argv[0]);
     return -1;
   }
@@ -213,13 +213,13 @@ static int ikc3_arg_server (s_env *env, int *argc, char ***argv)
   str_init_1(&g_port, NULL, (*argv)[2]);
   g_server = true;
   if (! env_module_load(env, &g_sym_RPC)) {
-    err_puts("ikc3_arg_client: failed to load RPC module");
-    assert(! "ikc3_arg_client: failed to load RPC module");
+    err_puts("arg_client: failed to load RPC module");
+    assert(! "arg_client: failed to load RPC module");
     return -1;
   }
   if (! env_module_load(env, &g_sym_RPC_Response)) {
-    err_puts("ikc3_arg_client: failed to load RPC.Response module");
-    assert(! "ikc3_arg_client: failed to load RPC.Response module");
+    err_puts("arg_client: failed to load RPC.Response module");
+    assert(! "arg_client: failed to load RPC.Response module");
     return -1;
   }
   *argc -= 3;
@@ -227,11 +227,11 @@ static int ikc3_arg_server (s_env *env, int *argc, char ***argv)
   return 3;
 }
 
-static int ikc3_arg_tls (s_env *env, int *argc, char ***argv)
+static int arg_tls (s_env *env, int *argc, char ***argv)
 {
   (void) env;
   if (g_tls) {
-    err_puts("ikc3_arg_tls: --tls can only be set once");
+    err_puts("arg_tls: --tls can only be set once");
     usage(env->argv[0]);
     return -1;
   }
@@ -241,25 +241,25 @@ static int ikc3_arg_tls (s_env *env, int *argc, char ***argv)
   return 1;
 }
 
-static void ikc3_buf_editline_close (s_buf *buf)
+static void buf_editline_close (s_buf *buf)
 {
 #if HAVE_WINEDITLINE
-  buf_wineditline_close(buf, ".ikc3_history");
+  buf_wineditline_close(buf, ".history");
 #else
-  buf_linenoise_close(buf, ".ikc3_history");
+  buf_linenoise_close(buf, ".history");
 #endif
 }
 
-static void ikc3_buf_editline_open_r (s_buf *buf)
+static void buf_editline_open_r (s_buf *buf)
 {
 #if HAVE_WINEDITLINE
-  buf_wineditline_open_r(buf, "ikc3> ", ".ikc3_history");
+  buf_wineditline_open_r(buf, "ikc3> ", ".history");
 #else
-  buf_linenoise_open_r(buf, "ikc3> ", ".ikc3_history");
+  buf_linenoise_open_r(buf, "ikc3> ", ".history");
 #endif
 }
 
-static void ikc3_client_clean (void)
+static void client_clean (void)
 {
   if (g_tls)
     kc3_tls_client_clean(&g_tls_client);
@@ -267,7 +267,7 @@ static void ikc3_client_clean (void)
     socket_buf_close(&g_socket_buf);
 }
 
-static int ikc3_client_init (void)
+static int client_init (void)
 {
   if (! socket_buf_init_connect(&g_socket_buf, &g_host, &g_port)) {
     err_write_1("ikc3: unable to connect to ");
@@ -287,7 +287,7 @@ static int ikc3_client_init (void)
   return 0;
 }
 
-static int ikc3_client_init_tls (void)
+static int client_init_tls (void)
 {
   p_tls        tls;
   p_tls_config tls_config;
@@ -344,7 +344,7 @@ static int ikc3_client_init_tls (void)
   return 0;
 }
 
-static sw ikc3_run (void)
+static sw run (void)
 {
   s_env *env;
   s_buf *env_err;
@@ -422,8 +422,8 @@ static sw ikc3_run (void)
             ! (response = result.data.pstruct->tag) ||
             response[0].type != TAG_STR ||
             response[1].type != TAG_STR) {
-          err_puts("ikc3_run: invalid RPC response");
-          assert(! "ikc3_run: invalid RPC response");
+          err_puts("run: invalid RPC response");
+          assert(! "run: invalid RPC response");
           tag_clean(&result);
           tag_clean(&input);
           r = 1;
@@ -493,7 +493,7 @@ static sw ikc3_run (void)
   return r;
 }
 
-static void ikc3_server_clean (s_env *env)
+static void server_clean (s_env *env)
 {
   env->in  = g_server_env_in;
   env->out = g_server_env_out;
@@ -506,7 +506,7 @@ static void ikc3_server_clean (s_env *env)
   }
 }
 
-static int ikc3_server_init (s_env *env)
+static int server_init (s_env *env)
 {
   assert(env);
   if (! socket_init_listen(&g_server_socket, &g_host, &g_port)) {
@@ -525,7 +525,7 @@ static int ikc3_server_init (s_env *env)
     io_write_1("\n");
   }
   if (! socket_buf_init_accept(&g_socket_buf, &g_server_socket)) {
-    err_puts("ikc3: ikc3_server_init: socket_buf_init_accept");
+    err_puts("ikc3: server_init: socket_buf_init_accept");
     socket_close(&g_server_socket);
     return 1;
   }
@@ -542,7 +542,7 @@ static int ikc3_server_init (s_env *env)
   return 0;
 }
 
-static int ikc3_server_init_tls (s_env *env)
+static int server_init_tls (s_env *env)
 {
   p_tls        tls = NULL;
   p_tls        tls_tmp = NULL;
@@ -605,8 +605,8 @@ static int ikc3_server_init_tls (s_env *env)
   }
   if (! kc3_tls_server_init_accept(&g_tls_server, &g_server_socket,
                                    &tls)) {
-    err_puts("ikc3_server_init_tls: kc3_tls_server_init_accept");
-    assert(! "ikc3_server_init_tls: kc3_tls_server_init_accept");
+    err_puts("server_init_tls: kc3_tls_server_init_accept");
+    assert(! "server_init_tls: kc3_tls_server_init_accept");
     return 1;
   }
   io_write_1("ikc3: TLS server: client connected: ");
@@ -639,24 +639,24 @@ int main (int argc, char **argv)
   in_original = *env->in;
   while (argc) {
     if (! strcmp("--client", *argv)) {
-      if ((r = ikc3_arg_client(env, &argc, &argv)) < 0)
+      if ((r = arg_client(env, &argc, &argv)) < 0)
         goto clean;
     }
     else if (! strcmp(argv[0], "--dump")) {
-      if ((r = ikc3_arg_dump(env, &argc, &argv)) < 0)
+      if ((r = arg_dump(env, &argc, &argv)) < 0)
         goto clean;
     }
     else if (! strcmp("--load", *argv) ||
              ! strcmp("-l", *argv)) {
-      if ((r = ikc3_arg_load(env, &argc, &argv)) < 0)
+      if ((r = arg_load(env, &argc, &argv)) < 0)
         goto clean;
     }
     else if (! strcmp("--server", *argv)) {
-      if ((r = ikc3_arg_server(env, &argc, &argv)) < 0)
+      if ((r = arg_server(env, &argc, &argv)) < 0)
         goto clean;
     }
     else if (! strcmp("--tls", *argv)) {
-      if ((r = ikc3_arg_tls(env, &argc, &argv)) < 0)
+      if ((r = arg_tls(env, &argc, &argv)) < 0)
         goto clean;
     }
     else if (argc == 1 &&
@@ -680,30 +680,30 @@ int main (int argc, char **argv)
   *env->in = in_original;
   if (g_server) {
     if (g_tls) {
-      if (ikc3_server_init_tls(env))
+      if (server_init_tls(env))
         goto clean;
     }
-    else if (ikc3_server_init(env))
+    else if (server_init(env))
       goto clean;
-    r = ikc3_run();
+    r = run();
     goto clean;
   }
-  ikc3_buf_editline_open_r(env->in);
+  buf_editline_open_r(env->in);
   if (g_client) {
     if (g_tls) {
-      if (ikc3_client_init_tls())
+      if (client_init_tls())
         goto close;
     }
-    else if (ikc3_client_init())
+    else if (client_init())
       goto close;
   }
-  r = ikc3_run();
+  r = run();
   if (g_client)
-    ikc3_client_clean();
+    client_clean();
   else if (g_server)
-    ikc3_server_clean(env);
+    server_clean(env);
  close:
-  ikc3_buf_editline_close(env->in);
+  buf_editline_close(env->in);
  clean:
   *env->in = in_original;
   kc3_clean(NULL);
