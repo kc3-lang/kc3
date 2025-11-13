@@ -5,7 +5,6 @@ HEADERS = \
 
 SOURCES = \
 	"ikc3.c" \
-	"kc3s.c" \
 
 SOURCES_LINENOISE = \
 	"buf_linenoise.c" \
