@@ -29,13 +29,6 @@ CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC -pthread"
 CFLAGS="$CFLAGS -fPIC"
 LDFLAGS="$LDFLAGS ${EXPORT_DYNAMIC}"
-case "$(uname -s)" in
-    Darwin)
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../libkc3"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../socket"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../tls"
-        ;;
-esac
 LDFLAGS="$LDFLAGS -L../tls"
 LDFLAGS="$LDFLAGS -L../socket"
 LDFLAGS="$LDFLAGS -L../libkc3"
@@ -56,6 +49,17 @@ config_lib m -lm 2>/dev/null
 pkg_config wineditline
 LIBS="-ltls $LIBS"
 case "$(uname -s)" in
+    Darwin)
+        LIBS="$LIBS -rpath @executable_path/../libkc3"
+        LIBS="$LIBS -rpath @executable_path/../socket"
+        LIBS="$LIBS -rpath @executable_path/../tls"
+        ;;
+    Linux)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+        LIBS="$LIBS -rpath ../libkc3"
+        LIBS="$LIBS -rpath ../socket"
+        LIBS="$LIBS -rpath ../tls"
+        ;;
     MINGW64*)
         ;;
     *)

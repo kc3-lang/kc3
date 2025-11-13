@@ -57,6 +57,17 @@ config_lib m -lm 2>/dev/null
 pkg_config libtls
 config_lib tls -ltls 2>/dev/null
 case "$(uname -s)" in
+    Darwin)
+        LIBS="$LIBS -rpath @executable_path/../libkc3"
+        LIBS="$LIBS -rpath @executable_path/../socket"
+        LIBS="$LIBS -rpath @executable_path/../tls"
+        ;;
+    Linux)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+        LIBS="$LIBS -rpath ../libkc3"
+        LIBS="$LIBS -rpath ../socket"
+        LIBS="$LIBS -rpath ../tls"
+        ;;
     MINGW64*)
         ;;
     *)
