@@ -1,0 +1,504 @@
+--- kc3s/kc3s.c	Mon Oct 27 15:49:13 2025
++++ ikc3/ikc3.c	Mon Oct 27 13:41:08 2025
+@@ -23,6 +23,12 @@
+ #include "../tls/tls_server.h"
+ #include "../tls/tls_config.h"
+ 
++#if HAVE_WINEDITLINE
++# include "buf_wineditline.h"
++#else
++# include "buf_linenoise.h"
++#endif
++
+ #define BUFSZ 0x10000
+ 
+ static bool         g_client = false;
+@@ -42,18 +48,20 @@
+ 
+ // TODO: use positive return value to increment argc and argv
+ // TODO: remove one reference level (*)
+-static int    kc3s_arg_client (s_env *env, int *argc, char ***argv);
+-static int    kc3s_arg_dump (s_env *env, int *argc, char ***argv);
+-static int    kc3s_arg_load (s_env *env, int *argc, char ***argv);
+-static int    kc3s_arg_server (s_env *env, int *argc, char ***argv);
+-static int    kc3s_arg_tls (s_env *env, int *argc, char ***argv);
+-static void   kc3s_client_clean (void);
+-static int    kc3s_client_init (void);
+-static int    kc3s_client_init_tls (void);
+-static sw     kc3s_run (void);
+-static void   kc3s_server_clean (s_env *env);
+-static int    kc3s_server_init (s_env *env);
+-static int    kc3s_server_init_tls (s_env *env);
++static int    ikc3_arg_client (s_env *env, int *argc, char ***argv);
++static int    ikc3_arg_dump (s_env *env, int *argc, char ***argv);
++static int    ikc3_arg_load (s_env *env, int *argc, char ***argv);
++static int    ikc3_arg_server (s_env *env, int *argc, char ***argv);
++static int    ikc3_arg_tls (s_env *env, int *argc, char ***argv);
++static void   ikc3_buf_editline_close (s_buf *buf);
++static void   ikc3_buf_editline_open_r (s_buf *buf);
++static void   ikc3_client_clean (void);
++static int    ikc3_client_init (void);
++static int    ikc3_client_init_tls (void);
++static sw     ikc3_run (void);
++static void   ikc3_server_clean (s_env *env);
++static int    ikc3_server_init (s_env *env);
++static int    ikc3_server_init_tls (s_env *env);
+ static int    usage (char *argv0);
+ 
+ static sw buf_ignore_character (s_buf *buf)
+@@ -73,21 +81,21 @@
+   return csize;
+ }
+ 
+-static int kc3s_arg_client (s_env *env, int *argc, char ***argv)
++static int ikc3_arg_client (s_env *env, int *argc, char ***argv)
+ {
+   if (g_server) {
+-    err_puts("kc3s_arg_client: --client and --server are mutually"
++    err_puts("ikc3_arg_client: --client and --server are mutually"
+              " exclusive");
+     usage(env->argv[0]);
+     return -1;
+   }
+   if (g_client) {
+-    err_puts("kc3s_arg_client: --client can only be set once");
++    err_puts("ikc3_arg_client: --client can only be set once");
+     usage(env->argv[0]);
+     return -1;
+   }
+   if (*argc < 3 || ! (*argv)[0] || ! (*argv)[1] || ! (*argv)[2]) {
+-    err_puts("kc3s_arg_client: --client invalid argument");
++    err_puts("ikc3_arg_client: --client invalid argument");
+     usage(env->argv[0]);
+     return -1;
+   }
+@@ -95,8 +103,8 @@
+   str_init_1(&g_port, NULL, (*argv)[2]);
+   g_client = true;
+   if (! env_module_load(env, &g_sym_RPC_Response)) {
+-    err_puts("kc3s_arg_client: failed to load RPC.Response module");
+-    assert(! "kc3s_arg_client: failed to load RPC.Response module");
++    err_puts("ikc3_arg_client: failed to load RPC.Response module");
++    assert(! "ikc3_arg_client: failed to load RPC.Response module");
+     return -1;
+   }
+   *argc -= 3;
+@@ -104,11 +112,11 @@
+   return 3;
+ }
+ 
+-static int kc3s_arg_dump (s_env *env, int *argc, char ***argv)
++static int ikc3_arg_dump (s_env *env, int *argc, char ***argv)
+ {
+   s_str path = {0};
+   if (*argc < 2 || ! (*argv)[0] || ! (*argv)[1]) {
+-    err_puts("kc3s_arg_dump: invalid argument");
++    err_puts("ikc3_arg_dump: invalid argument");
+     usage(env->argv[0]);
+     return -1;
+   }
+@@ -123,7 +131,7 @@
+   return 2;
+ }
+ 
+-static int kc3s_arg_load (s_env *env, int *argc, char ***argv)
++static int ikc3_arg_load (s_env *env, int *argc, char ***argv)
+ {
+   sw     e = 0;
+   FILE *fp = 0;
+@@ -134,12 +142,12 @@
+   s_str path = {0};
+   sw r;
+   if (*argc < 2) {
+-    err_puts("kc3s_arg_load: --load without an argument");
+-    assert(! "kc3s_arg_load: --load without an argument");
++    err_puts("ikc3_arg_load: --load without an argument");
++    assert(! "ikc3_arg_load: --load without an argument");
+     return -1;
+     }
+   if (env->trace) {
+-    err_write_1("kc3s_arg_load: ");
++    err_write_1("ikc3_arg_load: ");
+     err_write_1((*argv)[1]);
+     err_write_1("\n");
+   }
+@@ -147,12 +155,12 @@
+   fp = file_open(&path, "rb");
+   if (! fp) {
+     e = errno;
+-    err_write_1("kc3s: ");
++    err_write_1("ikc3: ");
+     err_inspect_str(&path);
+     err_write_1(": ");
+     err_write_1(strerror(e));
+     err_write_1("\n");
+-    assert(! "kc3s: fopen");
++    assert(! "ikc3: fopen");
+     return 1;
+   }
+   str_clean(&path);
+@@ -169,7 +177,7 @@
+     buf_file_close(env->in);
+     return -1;
+   }
+-  r = kc3s_run();
++  r = ikc3_run();
+   *file_dir = file_dir_save;
+   *file_path = file_path_save;
+   buf_file_close(env->in);
+@@ -181,21 +189,21 @@
+   return 0;
+ }
+ 
+-static int kc3s_arg_server (s_env *env, int *argc, char ***argv)
++static int ikc3_arg_server (s_env *env, int *argc, char ***argv)
+ {
+   if (g_client) {
+-    err_puts("kc3s_arg_server: --client and --server are mutually"
++    err_puts("ikc3_arg_server: --client and --server are mutually"
+              " exclusive");
+     usage(env->argv[0]);
+     return -1;
+   }
+   if (g_server) {
+-    err_puts("kc3s_arg_server: --server can only be set once");
++    err_puts("ikc3_arg_server: --server can only be set once");
+     usage(env->argv[0]);
+     return -1;
+   }
+   if (*argc < 3 || ! (*argv)[0] || ! (*argv)[1] || ! (*argv)[2]) {
+-    err_puts("kc3s_arg_server: --server invalid argument");
++    err_puts("ikc3_arg_server: --server invalid argument");
+     usage(env->argv[0]);
+     return -1;
+   }
+@@ -203,13 +211,13 @@
+   str_init_1(&g_port, NULL, (*argv)[2]);
+   g_server = true;
+   if (! env_module_load(env, &g_sym_RPC)) {
+-    err_puts("kc3s_arg_client: failed to load RPC module");
+-    assert(! "kc3s_arg_client: failed to load RPC module");
++    err_puts("ikc3_arg_client: failed to load RPC module");
++    assert(! "ikc3_arg_client: failed to load RPC module");
+     return -1;
+   }
+   if (! env_module_load(env, &g_sym_RPC_Response)) {
+-    err_puts("kc3s_arg_client: failed to load RPC.Response module");
+-    assert(! "kc3s_arg_client: failed to load RPC.Response module");
++    err_puts("ikc3_arg_client: failed to load RPC.Response module");
++    assert(! "ikc3_arg_client: failed to load RPC.Response module");
+     return -1;
+   }
+   *argc -= 3;
+@@ -217,11 +225,11 @@
+   return 3;
+ }
+ 
+-static int kc3s_arg_tls (s_env *env, int *argc, char ***argv)
++static int ikc3_arg_tls (s_env *env, int *argc, char ***argv)
+ {
+   (void) env;
+   if (g_tls) {
+-    err_puts("kc3s_arg_tls: --tls can only be set once");
++    err_puts("ikc3_arg_tls: --tls can only be set once");
+     usage(env->argv[0]);
+     return -1;
+   }
+@@ -231,18 +239,36 @@
+   return 1;
+ }
+ 
+-static void kc3s_client_clean (void)
++static void ikc3_buf_editline_close (s_buf *buf)
+ {
++#if HAVE_WINEDITLINE
++  buf_wineditline_close(buf, ".ikc3_history");
++#else
++  buf_linenoise_close(buf, ".ikc3_history");
++#endif
++}
++
++static void ikc3_buf_editline_open_r (s_buf *buf)
++{
++#if HAVE_WINEDITLINE
++  buf_wineditline_open_r(buf, "ikc3> ", ".ikc3_history");
++#else
++  buf_linenoise_open_r(buf, "ikc3> ", ".ikc3_history");
++#endif
++}
++
++static void ikc3_client_clean (void)
++{
+   if (g_tls)
+     kc3_tls_client_clean(&g_tls_client);
+   else
+     socket_buf_close(&g_socket_buf);
+ }
+ 
+-static int kc3s_client_init (void)
++static int ikc3_client_init (void)
+ {
+   if (! socket_buf_init_connect(&g_socket_buf, &g_host, &g_port)) {
+-    err_write_1("kc3s: unable to connect to ");
++    err_write_1("ikc3: unable to connect to ");
+     err_inspect_str(&g_host);
+     err_write_1(" ");
+     err_inspect_str(&g_port);
+@@ -250,7 +276,7 @@
+     return 1;
+   }
+   if (true) {
+-    io_write_1("kc3s: connected to ");
++    io_write_1("ikc3: connected to ");
+     io_inspect_str(&g_host);
+     io_write_1(" ");
+     io_inspect_str(&g_port);
+@@ -259,7 +285,7 @@
+   return 0;
+ }
+ 
+-static int kc3s_client_init_tls (void)
++static int ikc3_client_init_tls (void)
+ {
+   p_tls        tls;
+   p_tls_config tls_config;
+@@ -305,7 +331,7 @@
+     return 1;
+   }
+   if (true) {
+-    io_write_1("kc3s: connected with TLS ");
++    io_write_1("ikc3: connected with TLS ");
+     io_write_1(tls_conn_version(tls));
+     io_write_1(" to ");
+     io_inspect_str(&g_host);
+@@ -316,7 +342,7 @@
+   return 0;
+ }
+ 
+-static sw kc3s_run (void)
++static sw ikc3_run (void)
+ {
+   s_env *env;
+   s_buf *env_err;
+@@ -394,8 +420,8 @@
+             ! (response = result.data.pstruct->tag) ||
+             response[0].type != TAG_STR ||
+             response[1].type != TAG_STR) {
+-          err_puts("kc3s_run: invalid RPC response");
+-          assert(! "kc3s_run: invalid RPC response");
++          err_puts("ikc3_run: invalid RPC response");
++          assert(! "ikc3_run: invalid RPC response");
+           tag_clean(&result);
+           tag_clean(&input);
+           r = 1;
+@@ -403,7 +429,7 @@
+         }
+         buf_write_str(env->err, &response[0].data.str);
+         buf_write_str(env->out, &response[1].data.str);
+-        // ikc3: buf_inspect_tag(env->out, &response[2]);
++        buf_inspect_tag(env->out, &response[2]);
+       }
+       else if (! eval_tag(&input, &result)) {
+         tag_clean(&input);
+@@ -432,7 +458,7 @@
+         goto next;
+       }
+       tag_clean(&input);
+-      if (g_server) {
++      if (! g_client) {
+         if (buf_inspect_tag(env->out, &result) < 0) {
+           tag_clean(&result);
+           r = 0;
+@@ -448,6 +474,10 @@
+       goto clean;
+     }
+   next:
++    if ((r = buf_write_1(env->out, "\n")) < 0) {
++      r = 1;
++      goto clean;
++    }
+     if ((r = buf_flush(env->out)) < 0) {
+       r = 1;
+       goto clean;
+@@ -461,7 +491,7 @@
+   return r;
+ }
+ 
+-static void kc3s_server_clean (s_env *env)
++static void ikc3_server_clean (s_env *env)
+ {
+   env->in  = g_server_env_in;
+   env->out = g_server_env_out;
+@@ -474,11 +504,11 @@
+   }
+ }
+ 
+-static int kc3s_server_init (s_env *env)
++static int ikc3_server_init (s_env *env)
+ {
+   assert(env);
+   if (! socket_init_listen(&g_server_socket, &g_host, &g_port)) {
+-    err_write_1("kc3s: failed to listen on ");
++    err_write_1("ikc3: failed to listen on ");
+     err_inspect_str(&g_host);
+     err_write_1(" ");
+     err_inspect_str(&g_port);
+@@ -486,19 +516,19 @@
+     return 1;
+   }
+   if (true) {
+-    io_write_1("kc3s: listening on ");
++    io_write_1("ikc3: listening on ");
+     io_inspect_str(&g_host);
+     io_write_1(" ");
+     io_inspect_str(&g_port);
+     io_write_1("\n");
+   }
+   if (! socket_buf_init_accept(&g_socket_buf, &g_server_socket)) {
+-    err_puts("kc3s: kc3s_server_init: socket_buf_init_accept");
++    err_puts("ikc3: ikc3_server_init: socket_buf_init_accept");
+     socket_close(&g_server_socket);
+     return 1;
+   }
+   if (true) {
+-    io_write_1("kc3s: connected to ");
++    io_write_1("ikc3: connected to ");
+     io_inspect_str(&g_socket_buf.addr_str);
+     io_write_1("\n");
+   }
+@@ -510,7 +540,7 @@
+   return 0;
+ }
+ 
+-static int kc3s_server_init_tls (s_env *env)
++static int ikc3_server_init_tls (s_env *env)
+ {
+   p_tls        tls = NULL;
+   p_tls        tls_tmp = NULL;
+@@ -557,7 +587,7 @@
+     return 1;
+   }
+   if (! socket_init_listen(&g_server_socket, &g_host, &g_port)) {
+-    err_write_1("kc3s: TLS server: failed to listen on ");
++    err_write_1("ikc3: TLS server: failed to listen on ");
+     err_inspect_str(&g_host);
+     err_write_1(" ");
+     err_inspect_str(&g_port);
+@@ -565,7 +595,7 @@
+     return 1;
+   }
+   if (true) {
+-    io_write_1("kc3s: TLS server: listening on ");
++    io_write_1("ikc3: TLS server: listening on ");
+     io_inspect_str(&g_host);
+     io_write_1(" ");
+     io_inspect_str(&g_port);
+@@ -573,11 +603,11 @@
+   }
+   if (! kc3_tls_server_init_accept(&g_tls_server, &g_server_socket,
+                                    &tls)) {
+-    err_puts("kc3s_server_init_tls: kc3_tls_server_init_accept");
+-    assert(! "kc3s_server_init_tls: kc3_tls_server_init_accept");
++    err_puts("ikc3_server_init_tls: kc3_tls_server_init_accept");
++    assert(! "ikc3_server_init_tls: kc3_tls_server_init_accept");
+     return 1;
+   }
+-  io_write_1("kc3s: TLS server: client connected: ");
++  io_write_1("ikc3: TLS server: client connected: ");
+   io_inspect_str(&g_tls_server.socket_buf.addr_str);
+   io_write_1(" ");
+   io_inspect_str(&g_port);
+@@ -598,7 +628,7 @@
+   s_buf  in_original = {0};
+   sw r = 0;
+   if (argc < 1)
+-    return usage("kc3s");
++    return usage("ikc3");
+   g_env_argv0_default = PROG;
+   g_env_argv0_dir_default = PREFIX;
+   if (! kc3_init(NULL, &argc, &argv))
+@@ -607,24 +637,24 @@
+   in_original = *env->in;
+   while (argc) {
+     if (! strcmp("--client", *argv)) {
+-      if ((r = kc3s_arg_client(env, &argc, &argv)) < 0)
++      if ((r = ikc3_arg_client(env, &argc, &argv)) < 0)
+         goto clean;
+     }
+     else if (! strcmp(argv[0], "--dump")) {
+-      if ((r = kc3s_arg_dump(env, &argc, &argv)) < 0)
++      if ((r = ikc3_arg_dump(env, &argc, &argv)) < 0)
+         goto clean;
+     }
+     else if (! strcmp("--load", *argv) ||
+              ! strcmp("-l", *argv)) {
+-      if ((r = kc3s_arg_load(env, &argc, &argv)) < 0)
++      if ((r = ikc3_arg_load(env, &argc, &argv)) < 0)
+         goto clean;
+     }
+     else if (! strcmp("--server", *argv)) {
+-      if ((r = kc3s_arg_server(env, &argc, &argv)) < 0)
++      if ((r = ikc3_arg_server(env, &argc, &argv)) < 0)
+         goto clean;
+     }
+     else if (! strcmp("--tls", *argv)) {
+-      if ((r = kc3s_arg_tls(env, &argc, &argv)) < 0)
++      if ((r = ikc3_arg_tls(env, &argc, &argv)) < 0)
+         goto clean;
+     }
+     else if (argc == 1 &&
+@@ -636,42 +666,42 @@
+       break;
+   }
+   if (g_client && g_server) {
+-    err_puts("kc3s: --client and --server is not supported");
++    err_puts("ikc3: --client and --server is not supported");
+     return usage(env->argv[0]);
+   }
+   if (g_tls) {
+     if (! g_client && ! g_server) {
+-      err_puts("kc3s: --tls without --client or --server");
++      err_puts("ikc3: --tls without --client or --server");
+       return usage(env->argv[0]);
+     }
+   }
+   *env->in = in_original;
+   if (g_server) {
+     if (g_tls) {
+-      if (kc3s_server_init_tls(env))
++      if (ikc3_server_init_tls(env))
+         goto clean;
+     }
+-    else if (kc3s_server_init(env))
++    else if (ikc3_server_init(env))
+       goto clean;
+-    r = kc3s_run();
++    r = ikc3_run();
+     goto clean;
+   }
+-  // kc3s_buf_editline_open_r(env->in);
++  ikc3_buf_editline_open_r(env->in);
+   if (g_client) {
+     if (g_tls) {
+-      if (kc3s_client_init_tls())
++      if (ikc3_client_init_tls())
+         goto close;
+     }
+-    else if (kc3s_client_init())
++    else if (ikc3_client_init())
+       goto close;
+   }
+-  r = kc3s_run();
++  r = ikc3_run();
+   if (g_client)
+-    kc3s_client_clean();
++    ikc3_client_clean();
+   else if (g_server)
+-    kc3s_server_clean(env);
++    ikc3_server_clean(env);
+  close:
+-  // kc3s_buf_editline_close(env->in);
++  ikc3_buf_editline_close(env->in);
+  clean:
+   *env->in = in_original;
+   kc3_clean(NULL);
