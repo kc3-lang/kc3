@@ -118,7 +118,8 @@ KC3_TEST_MARKDOWN_SOURCES="$(ls test/markdown/*.expected test/markdown/*.kc3)
 test/markdown_test"
 sources KC3_TEST_MARKDOWN_SOURCES "$KC3_TEST_MARKDOWN_SOURCES"
 
-KC3_TEST_PDF_SOURCES="$(ls test/pdf/*.expected test/pdf/*.kc3)
+KC3_TEST_PDF_SOURCES="$(ls test/pdf/*.expected test/pdf/*.kc3 \
+                           test/pdf/*.pdf)
 test/pdf_test"
 sources KC3_TEST_PDF_SOURCES "$KC3_TEST_PDF_SOURCES"
 
