@@ -56,9 +56,9 @@ case "$(uname -s)" in
         ;;
     Linux)
         LIBS="$LIBS -rpath ${PREFIX}/lib"
-        LIBS="$LIBS -rpath ../libkc3"
-        LIBS="$LIBS -rpath ../socket"
-        LIBS="$LIBS -rpath ../tls"
+        LIBS="$LIBS -rpath ${BUILD_TOP}/libkc3"
+        LIBS="$LIBS -rpath ${BUILD_TOP}/socket"
+        LIBS="$LIBS -rpath ${BUILD_TOP}/tls"
         ;;
     MINGW64*)
         ;;
