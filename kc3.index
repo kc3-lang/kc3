@@ -496,6 +496,7 @@ ikc3/sources.mk
 ikc3/sources.sh
 ikc3/update_sources
 img/dmg_background.png
+img/dmg_background.xcf
 img/earth.jpg
 img/earth.png
 img/flaps.256.png
@@ -1940,6 +1941,7 @@ test/test.h
 test/test.rb
 test/test.subr
 test/test_case_end.rb
+test/test_runner
 test/tuple_test.c
 test/types_test.c
 test/update_sources
