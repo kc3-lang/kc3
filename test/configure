@@ -60,10 +60,15 @@ config_lib dl -ldl 2>/dev/null
 config_lib pthread -lpthread 2>/dev/null
 config_lib m -lm 2>/dev/null
 case "$(uname -s)" in
-    MINGW64*)
-        ;;
     Darwin)
         LIBS="$LIBS -rpath @executable_path/../libkc3"
+        ;;
+    Linux)
+        LIBS="$LIBS -rpath ${PREFIX}/lib"
+        LIBS="$LIBS -rpath ../libkc3"
+        LIBS="$LIBS -rpath ../socket"
+        LIBS="$LIBS -rpath ../tls"
+    MINGW64*)
         ;;
     *)
         LIBS="$LIBS -rpath ${PREFIX}/lib"
