@@ -56,18 +56,16 @@ demo_debug: debug
 distclean::
 	${MAKE} -C demo distclean
 
-dist:
-	mkdir -p ${DIST_DIR}
-	tar czf ${DIST_DIR}/${TARGET}_${VERSION}.tar.gz LICENSE ${DIST_SRC}
-
 gdb_demo: debug
 	${MAKE} -C demo gdb_demo
 
 install::
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/window/egl/xcb
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
+	    ${DESTDIR}${prefix}/include/libkc3/window/egl/xcb
 	for H in ${HEADERS}; do \
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
-		$$H ${prefix}/include/libkc3/window/egl/xcb; done
+		$$H ${DESTDIR}${prefix}/include/libkc3/window/egl/xcb; \
+	done
 
 lldb_demo: debug
 
