@@ -5,7 +5,6 @@ HEADERS = \
 
 SOURCES = \
 	"ikc3.c" \
-	"ikc3_kc3s.c" \
 	"kc3s.c" \
 
 SOURCES_LINENOISE = \
