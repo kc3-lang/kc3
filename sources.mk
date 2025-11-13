@@ -1678,7 +1678,6 @@ KC3_SH_SOURCES = \
 
 KC3_TEST_SOURCES = \
 	"test/buf_parse_test_su.rb" \
-	"test/ekc3_test" \
 	"test/facts_test_dump_file.expected.facts" \
 	"test/facts_test_load_file.facts" \
 	"test/facts_test_log_add.expected.facts" \
@@ -1690,22 +1689,13 @@ KC3_TEST_SOURCES = \
 	"test/facts_test_open_file.3.expected.facts" \
 	"test/facts_test_open_file.3.in.facts" \
 	"test/facts_test_save.expected.facts" \
-	"test/http_test" \
-	"test/ikc3_test" \
-	"test/json_test" \
-	"test/kc3s_test" \
-	"test/libkc3_test" \
-	"test/markdown_test" \
 	"test/marshall_test_to_file.1.dump.expected" \
-	"test/pdf_test" \
 	"test/replace_lines.rb" \
-	"test/socket_test" \
 	"test/struct_test.kc3" \
 	"test/test.rb" \
 	"test/test.subr" \
 	"test/test_case_end.rb" \
 	"test/test_runner" \
-	"test/tls_test" \
 	"test/zero" \
 
 KC3_TEST_IKC3_SOURCES = \
@@ -2145,6 +2135,15 @@ KC3_TEST_PDF_SOURCES = \
 	"test/pdf/stream.out.expected" \
 	"test/pdf/stream.ret.expected" \
 	"test/pdf_test" \
+
+KC3_TEST_TLS_SOURCES = \
+	"test/tls/ca_cert_path.kc3" \
+	"test/tls/ca_cert_path.out.expected" \
+	"test/tls/ca_cert_path.ret.expected" \
+	"test/tls/tls.kc3" \
+	"test/tls/tls.out.expected" \
+	"test/tls/tls.ret.expected" \
+	"test/tls_test" \
 
 KC3_OTHER_SOURCES = \
 	"AUTHORS.md" \

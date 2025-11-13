@@ -1899,7 +1899,6 @@ test/kc3s/comments.kc3
 test/kc3s/comments.out.expected
 test/kc3s/comments.ret.expected
 test/kc3s_test
-test/libkc3_test
 test/libkc3_test.c
 test/list_test.c
 test/markdown/titles.kc3
@@ -1929,7 +1928,6 @@ test/replace_lines.rb
 test/set__fact_test.c
 test/set__tag_test.c
 test/skiplist__fact_test.c
-test/socket_test
 test/sources.mk
 test/sources.sh
 test/str_test.c
@@ -1944,6 +1942,12 @@ test/test.rb
 test/test.subr
 test/test_case_end.rb
 test/test_runner
+test/tls/ca_cert_path.kc3
+test/tls/ca_cert_path.out.expected
+test/tls/ca_cert_path.ret.expected
+test/tls/tls.kc3
+test/tls/tls.out.expected
+test/tls/tls.ret.expected
 test/tls_test
 test/tuple_test.c
 test/types_test.c
