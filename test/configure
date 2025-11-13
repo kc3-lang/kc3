@@ -68,6 +68,7 @@ case "$(uname -s)" in
         LIBS="$LIBS -rpath ../libkc3"
         LIBS="$LIBS -rpath ../socket"
         LIBS="$LIBS -rpath ../tls"
+        ;;
     MINGW64*)
         ;;
     *)
