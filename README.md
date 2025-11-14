@@ -155,9 +155,9 @@ There are now four full applications written in KC3 that we know of :
      - VT backend on Linux and OpenBSD using DRM KMS and GBM
 
  - kpkg - KC3 package manager
-   - written in 3 days in KC3 / C
+   - written in 3 days in KC3 + C
    - Argument parsing as a `while` loop with `with` pattern matching
-     à la Elixir
+     (like Elixir)
    - Added repo definitions for :
      - [freetype](https://git.kmx.io/kc3-lang/freetype)
      - [kc3](https://git.kmx.io/kc3-lang/kc3)
