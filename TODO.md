@@ -54,11 +54,11 @@
    - `LIST_NEW_V(123, "123", true);`
 
 ## HTTPd
+ - [ ] partial requests
+   - HTTP 206 partial content
  - [ ] SSL
    - [ ] ajouter le support de tls dans lib/kc3/0.1/httpd.kc3
  - [ ] XXX pledge(2) support via `KC3.pledge()`
- - [ ] partial requests
-   - HTTP 206 partial content
 
 ## Windows release
  - [x] install kmx_sort and runj using MSYS2
