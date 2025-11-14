@@ -155,12 +155,34 @@ There are now four full applications written in KC3 that we know of :
      - VT backend on Linux and OpenBSD using DRM KMS and GBM
 
  - kpkg - KC3 package manager
-   - Argument parsing as a `while` loop
-   - Added __libmd__, __libbsd__ and __kc3__ repo definitions
+   - written in 3 days in KC3 / C
+   - Argument parsing as a `while` loop with `with` pattern matching
+     à la Elixir
+   - Added repo definitions for :
+     - [freetype](https://git.kmx.io/kc3-lang/freetype)
+     - [kc3](https://git.kmx.io/kc3-lang/kc3)
+     - [libbsd](https://git.kmx.io/kc3-lang/libbsd)
+     - [libevent](https://git.kmx.io/kc3-lang/libevent)
+     - [libffi](https://git.kmx.io/kc3-lang/libffi)
+     - [libmd](https://git.kmx.io/kc3-lang/libmd)
+     - [libpng](https://git.kmx.io/kc3-lang/libpng)
+     - [libressl](https://git.kmx.io/kc3-lang/libressl)
+   - supports cross compilation
+   - used as main platform for compiling kc3 and dependencies for
+     Android
 
  - release engineering
    - compressed dmg with large icons and a nice arrow pointing to
      applications symlink
+     - mac release binaries work from any absolute path and use
+       relative paths to find dynamic libraries
+   - debian package building from sources
+   - gentoo overlay and ebuilds for
+     - kc3
+     - kmx_sort
+     - runj
+
+ - remove unused/merged branches
 
 ## Discord invite
 
