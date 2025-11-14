@@ -60,7 +60,7 @@ pkg_config freetype2
 pkg_config egl
 pkg_config glesv2
 config_android
-LIBS="$LIBS -rpath ${PREFIX}/lib"
+LIBS="$LIBS -rpath ${libdir}"
 LIBS="$LIBS -lkc3"
 LIBS="$LIBS -lkc3_gl"
 LIBS="$LIBS -lkc3_window"

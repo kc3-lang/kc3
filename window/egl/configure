@@ -50,7 +50,7 @@ case "$(uname -s)" in
     MINGW64*)
         ;;
     *)
-        LIBS="$LIBS -rpath ${PREFIX}/lib"
+        LIBS="$LIBS -rpath ${libdir}"
 esac
 
 . "${SRC_DIR}/sources.sh"

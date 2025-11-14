@@ -34,7 +34,7 @@ case "$(uname -s)" in
     MINGW64*)
         ;;
     *)
-        LIBS="$LIBS -rpath ${PREFIX}/lib"
+        LIBS="$LIBS -rpath ${libdir}"
 esac
 if ! [ -f "${SRC_TOP}/ucd2c/ucd.c" ]; then
     touch "${SRC_TOP}/ucd2c/ucd.c"

@@ -140,7 +140,7 @@ case "$(uname -s)" in
         LDFLAGS="$LDFLAGS -rpath @executable_path/../"
         ;;
     *)
-        LDFLAGS="$LDFLAGS -rpath ${PREFIX}/lib"
+        LDFLAGS="$LDFLAGS -rpath ${libdir}"
 esac
 LDFLAGS="$LDFLAGS -L../../../../libkc3"
 LDFLAGS="$LDFLAGS -L../../../../gl"
