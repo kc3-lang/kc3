@@ -162,6 +162,10 @@ cov:
 deb:
 	${MAKE} -C release/v${VER} deb
 
+debian:
+	rsync -a --delete tci50:/var/www/debian/. ./debian/
+	rsync -a --delete ./debian/. debian.kmx.io:/var/www/debian.kmx.io/debian/
+
 debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
@@ -1800,6 +1804,7 @@ uninstall:
 	clean_cov \
 	clean_dump \
 	deb \
+	debian \
 	debug \
 	demo \
 	demo_asan \

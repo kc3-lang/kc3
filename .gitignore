@@ -35,6 +35,7 @@ configure.sh
 *.css
 current_test
 .cxx
+/debian/
 *.dll
 *.dmg
 .DS_Store
