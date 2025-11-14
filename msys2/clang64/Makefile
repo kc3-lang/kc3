@@ -4,10 +4,9 @@ DEST_OLD = ${DEST}.old
 DEST_TMP = ${DEST}.tmp
 DEST_ZIP = ${DEST}.zip
 
-release: ${DEST_ZIP}
+CLEANFILES = ${DEST} ${DEST_TMP} ${DEST_ZIP}
 
-clean:
-	rm -rf ${DEST} ${DEST_TMP} ${DEST_ZIP}
+release: ${DEST_ZIP}
 
 ${DEST}: ${DEST_TMP}
 	rm -rf ${DEST_OLD}
@@ -17,6 +16,11 @@ ${DEST}: ${DEST_TMP}
 ${DEST_TMP}:
 	rm -rf ${DEST_TMP}
 	mkdir -p ${DEST_TMP}/test/ikc3
+	mkdir -p ${DEST_TMP}/test/socket
+	mkdir -p ${DEST_TMP}/test/tls
+	mkdir -p ${DEST_TMP}/test/json
+	mkdir -p ${DEST_TMP}/test/pdf
+	mkdir -p ${DEST_TMP}/test/http
 	cp -a "${SRC_TOP}/README.md" ${DEST_TMP}
 	cp -a /clang64/bin/edit.dll ${DEST_TMP}
 	cp -a /usr/bin/msys-2.0.dll ${DEST_TMP}
@@ -42,8 +46,8 @@ ${DEST_TMP}:
 	cp -a "${SRC_TOP}"/window/sdl2/libkc3_window_sdl2*-0.dll ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/sdl2/demo/kc3_window_sdl2_demo.exe" ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/sdl2/demo/kc3_window_sdl2_demo_debug.exe" ${DEST_TMP}
-	cp -a "${SRC_TOP}/window/sdl2/kubz/kubz.exe" ${DEST_TMP}
-	cp -a "${SRC_TOP}/window/sdl2/kubz/kubz_debug.exe" ${DEST_TMP}
+#	cp -a "${SRC_TOP}/window/sdl2/kubz/kubz.exe" ${DEST_TMP}
+#	cp -a "${SRC_TOP}/window/sdl2/kubz/kubz_debug.exe" ${DEST_TMP}
 	cp -a /clang64/bin/SDL2.dll ${DEST_TMP}
 	cp -a /clang64/bin/libxkbcommon-0.dll ${DEST_TMP}
 	cp -a /clang64/bin/libwinpthread-1.dll ${DEST_TMP}
@@ -74,12 +78,17 @@ ${DEST_TMP}:
 	cp -a "${SRC_TOP}"/kc3s/kc3s*.exe ${DEST_TMP}
 	cp -a "${SRC_TOP}"/ikc3/ikc3*.exe ${DEST_TMP}
 	cp -a "${SRC_TOP}"/test/libkc3*.exe ${DEST_TMP}/test
-	cp -a "${SRC_TOP}"/test/ikc3_test ${DEST_TMP}/test
+	cp -a "${SRC_TOP}"/test/*_test ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/test/*.facts ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/test/*.kc3 ${DEST_TMP}/test
-	cp -a "${SRC_TOP}"/test/*.kc3m ${DEST_TMP}/test
+	cp -a "${SRC_TOP}"/test/*.expected ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/test/zero ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/test/ikc3/*.kc3 "${SRC_TOP}"/test/ikc3/*.expected ${DEST_TMP}/test/ikc3
+	cp -a "${SRC_TOP}"/test/tls/*.kc3 "${SRC_TOP}"/test/tls/*.expected ${DEST_TMP}/test/tls
+	cp -a "${SRC_TOP}"/test/socket/*.kc3 "${SRC_TOP}"/test/socket/*.expected ${DEST_TMP}/test/socket
+	cp -a "${SRC_TOP}"/test/pdf/*.kc3 "${SRC_TOP}"/test/pdf/*.expected ${DEST_TMP}/test/pdf
+	cp -a "${SRC_TOP}"/test/json/*.kc3 "${SRC_TOP}"/test/json/*.expected ${DEST_TMP}/test/json
+	cp -a "${SRC_TOP}"/test/http/*.kc3 "${SRC_TOP}"/test/http/*.expected ${DEST_TMP}/test/http
 
 ${DEST_ZIP}: ${DEST}
 	rm -f ${DEST_ZIP}~
