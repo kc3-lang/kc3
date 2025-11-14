@@ -1,16 +1,5 @@
 # TODO
 
-## Package Debian / Ubuntu / Mint / PopOS
-
- - [x] modifier le Makefile kc3 pour faire un target _release_ qui
-   crée un chemin `release/v${VER}` et copie `${DIST}.tar.gz` dans ce
-   chemin
-   - [x] release depend de dist
- - [x] créer un fichier release/v0.1.16-git/Makefile
-   - [x] copier [libressl/release/v4.2.0/Makefile](https://git.kmx.io/kc3-lang/libressl/release/_tree/master/v4.2.0/Makefile)
- - [x] faire un target _deb_ qui génere le package Debian a partir de la
-   release
-
 ## PDF
  - [ ] Primitives de dessin
    - [ ] texte (couleur, font, size, str)
@@ -53,22 +42,6 @@
      - [ ] `#define KC3_IKC3`
      - [ ] `#include "../ikc3/ikc3_kc3s.c"`
 
-## Kpkg / Android JNI
-
- - Liste des packages JNI :
-   - freetype/
-   - libbsd/
-   - libevent/
-   - libffi/
-   - libmd/
-   - libpng/
-   - libressl/
-
- - Android studio
-   - [ ] Installer Android Studio et le dernier NDK Android.
-     - [ ] utiliser sdkmanager pour obtenir le dernier NDK Android.
-       - [ ] commande : `sdkmanager --install 'ndk;r29'`
-
 ## libkc3
 
  - [ ] Implementer la fonction `s_tag * tag_init_v_1 (s_tag *, const char *);` :
@@ -94,6 +67,76 @@
  - [.] build
  - [ ] test
  - [ ] release
+
+## KC3 RPC with RBACL
+ - XXX
+ - On peut recuperer du code KC3 du reseau et l'executer a distance,
+   c'est deja quelque-chose, maintenant il nous faut des RBACL : rule-
+   based access control lists pour controler `KC3.require ModuleName`
+   et `KC3.load(file_path)` et on pourra accepter du code qui n'utilise
+   que certains module ou un certain DSL si on ajoute des controles
+   d'accès pour les fonctions et tous les éléments du langage.
+
+ - Pour rester generique in-fine il nous faut une fonction qui
+   prend du code source en parametre et nous retourne un booléen,
+   c'est un prédicat de permissions, une _rule_.
+
+   - On peut construire cette fonction a partir d'une liste d'acces
+     controlé. La liste se traduit en une fonction avec le module
+     `ACL`, par exemple : `ACL.rule(list_acl) -> callable_rule`.
+
+   - l'operateur special `defrule ident_name = callable_rule`
+     prend un nom de rule, et une fonction (callable) qui détermine
+     si un code source est valide selon la rule nommée par ce nom.
+     Ces deux élements forment une rule basique qui est ajoutée
+     à la db en graphe de l'environnement pour une application
+     immediate de la rule dans le controle d'acces aux modules et
+     fonctions dans le chargement et l'execution du code source
+     futur. Cela permet un verouillage global de l'interpreteur KC3
+     avec des regles aussi fines que possible.
+
+   - l'operateur special `with_rule callable_rule do ... end` est un
+     état de l'environnement sur la stack qui met en vigeur une rule
+     (callable) arbitraire mais seulement dans le bloc de code passé
+     en parametre (arbitraire lui aussi). Cela permet l'execution
+     de code arbitraire avec une reduction aussi fine que possible des
+     permissions d'execution selon un modele auditable dans le code
+     source de l'application.
+
+   - la fonction `rule_get(sym_name) -> callable_rule` prend en
+     parametre un nom de rule globale et retourne la fonction
+     (callable) associée dans la base de données en triplets de
+     l'environnement KC3 en cours.
+
+   - pour verifier si une rule (callable) permet un certain code
+     source (sous forme de `Tag` KC3) il suffit d'appeler la
+     la rule sur le code et on obtient un booléen `true` ou `false`.
+
+## Package Debian / Ubuntu / Mint / PopOS
+
+ - [x] modifier le Makefile kc3 pour faire un target _release_ qui
+   crée un chemin `release/v${VER}` et copie `${DIST}.tar.gz` dans ce
+   chemin
+   - [x] release depend de dist
+ - [x] créer un fichier release/v0.1.16-git/Makefile
+   - [x] copier [libressl/release/v4.2.0/Makefile](https://git.kmx.io/kc3-lang/libressl/release/_tree/master/v4.2.0/Makefile)
+ - [x] faire un target _deb_ qui génere le package Debian a partir de la
+   release
+
+## Kpkg / Android JNI
+
+ - Liste des packages JNI :
+   - freetype/
+   - libbsd/
+   - libevent/
+   - libffi/
+   - libmd/
+   - libpng/
+   - libressl/
+
+ - Android sans Android studio
+   - [x] utiliser sdkmanager pour obtenir le dernier NDK Android.
+     - [x] commande : `sdkmanager --install 'ndk;r29'`
 
 ## Kpkg / Android JNI
 
@@ -185,50 +228,6 @@
  - [x] dmg target
    - [x] large icons
    - [x] arrow
-
-## KC3 RPC with RBACL
- - XXX
- - On peut recuperer du code KC3 du reseau et l'executer a distance,
-   c'est deja quelque-chose, maintenant il nous faut des RBACL : rule-
-   based access control lists pour controler `KC3.require ModuleName`
-   et `KC3.load(file_path)` et on pourra accepter du code qui n'utilise
-   que certains module ou un certain DSL si on ajoute des controles
-   d'accès pour les fonctions et tous les éléments du langage.
-
- - Pour rester generique in-fine il nous faut une fonction qui
-   prend du code source en parametre et nous retourne un booléen,
-   c'est un prédicat de permissions, une _rule_.
-
-   - On peut construire cette fonction a partir d'une liste d'acces
-     controlé. La liste se traduit en une fonction avec le module
-     `ACL`, par exemple : `ACL.rule(list_acl) -> callable_rule`.
-
-   - l'operateur special `defrule ident_name = callable_rule`
-     prend un nom de rule, et une fonction (callable) qui détermine
-     si un code source est valide selon la rule nommée par ce nom.
-     Ces deux élements forment une rule basique qui est ajoutée
-     à la db en graphe de l'environnement pour une application
-     immediate de la rule dans le controle d'acces aux modules et
-     fonctions dans le chargement et l'execution du code source
-     futur. Cela permet un verouillage global de l'interpreteur KC3
-     avec des regles aussi fines que possible.
-
-   - l'operateur special `with_rule callable_rule do ... end` est un
-     état de l'environnement sur la stack qui met en vigeur une rule
-     (callable) arbitraire mais seulement dans le bloc de code passé
-     en parametre (arbitraire lui aussi). Cela permet l'execution
-     de code arbitraire avec une reduction aussi fine que possible des
-     permissions d'execution selon un modele auditable dans le code
-     source de l'application.
-
-   - la fonction `rule_get(sym_name) -> callable_rule` prend en
-     parametre un nom de rule globale et retourne la fonction
-     (callable) associée dans la base de données en triplets de
-     l'environnement KC3 en cours.
-
-   - pour verifier si une rule (callable) permet un certain code
-     source (sous forme de `Tag` KC3) il suffit d'appeler la
-     la rule sur le code et on obtient un booléen `true` ou `false`.
 
 ---
 
