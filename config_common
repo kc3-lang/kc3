@@ -5,7 +5,6 @@ CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
 CFLAGS="$CFLAGS -fPIC"
 CXXFLAGS="$CXXFLAGS -W -Wall -Werror -std=c++11 -pedantic -pipe"
 CXXFLAGS="$CXXFLAGS -pthread -fPIC"
-config_lib compiler_rt -lcompiler_rt 2>/dev/null
 config_ldadd gcc -lgcc 2>/dev/null
 config_asan
 config_gnu
@@ -34,7 +33,7 @@ case "$(uname -s)" in
     MINGW64*)
         ;;
     *)
-        LIBS="$LIBS -rpath ${libdir}"
+        LIBS="$LIBS -rpath ${LIBDIR}"
 esac
 if ! [ -f "${SRC_TOP}/ucd2c/ucd.c" ]; then
     touch "${SRC_TOP}/ucd2c/ucd.c"
