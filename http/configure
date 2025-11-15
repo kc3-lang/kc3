@@ -55,7 +55,6 @@ pkg_config libbsd-overlay
 pkg_config libevent
 pkg_config libffi
 pkg_config libmd
-config_define PREFIX "\"${PREFIX}\""
 case "$(uname -s)" in
     MINGW64*)
         ;;
@@ -80,7 +79,12 @@ CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LIBGCOV=$(${CC} -print-file-name=libgcov.a)
 LIBGCOV_DIR=$(dirname "$LIBGCOV")
 LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
-LIBS_COV="$LIBS -lkc3_cov $(${CC} -print-file-name=libgcov.a)"
+LIBS_COV="$LIBS -lkc3_cov"
+case "$(uname -s)" in
+    OpenBSD)
+        LIBS_COV="$LIBS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
+        ;;
+esac
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"

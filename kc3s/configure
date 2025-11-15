@@ -98,7 +98,11 @@ LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
 LIBS_COV="$LIBS -lkc3_tls_cov"
 LIBS_COV="$LIBS_COV -lkc3_socket_cov"
 LIBS_COV="$LIBS_COV -lkc3_cov"
-LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
+case "$(uname -s)" in
+    OpenBSD)
+        LIBS_COV="$LIBS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
+        ;;
+esac
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
