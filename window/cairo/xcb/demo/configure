@@ -30,10 +30,13 @@ echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 
-if $HAVE_GCOV; then
-    OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
-    echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
-fi
+OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
+case "$(uname -s)" in
+    OpenBSD)
+        OBJECTS_COV="$OBJECTS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
+        ;;
+esac
+echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
 
 OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
@@ -88,16 +91,12 @@ LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -DDEBUG -fprofile-arcs -ftest-coverage"
-LIBGCOV=$(${CC} -print-file-name=libgcov.a)
-LIBGCOV_DIR=$(dirname "$LIBGCOV")
-LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
-LIBS_COV="$LIBS"
-LIBS_COV="$LIBS_COV -lkc3_window_cairo_xcb_cov"
+LDFLAGS_COV="$LDFLAGS"
+LIBS_COV="$LIBS -lkc3_window_cairo_xcb_cov"
 LIBS_COV="$LIBS_COV -lkc3_window_cairo_demo_cov"
 LIBS_COV="$LIBS_COV -lkc3_window_cairo_cov"
 LIBS_COV="$LIBS_COV -lkc3_window_cov"
 LIBS_COV="$LIBS_COV -lkc3_cov"
-LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
