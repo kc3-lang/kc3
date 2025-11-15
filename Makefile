@@ -1065,6 +1065,17 @@ lib_links_bsd_asan:
 	ln -sf ../../../socket/libkc3_socket_asan.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls_asan.${SHARED_EXT} lib/kc3/0.1/tls.so
 
+lib_links_bsd_cov:
+	ln -sf ../../../ekc3/libekc3_cov.${SHARED_EXT} lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/libkc3_event_cov.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/libkc3_gtk4_cov.${SHARED_EXT} lib/kc3/0.1/gtk4.so
+	ln -sf ../../../http/libkc3_http_cov.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../json/libkc3_json_cov.${SHARED_EXT} lib/kc3/0.1/json.so
+	ln -sf ../../../markdown/libkc3_markdown_cov.${SHARED_EXT} lib/kc3/0.1/markdown.so
+	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../socket/libkc3_socket_cov.${SHARED_EXT} lib/kc3/0.1/socket.so
+	ln -sf ../../../tls/libkc3_tls_cov.${SHARED_EXT} lib/kc3/0.1/tls.so
+
 lib_links_bsd_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event_debug.${SHARED_EXT} lib/kc3/0.1/event.so
