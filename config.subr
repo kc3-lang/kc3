@@ -1588,6 +1588,7 @@ case "$(uname -s)" in
         PROG_LDADD="$PROG_LDADD $LDADD"
         PROG_LDADD="$PROG_LDADD /usr/lib/crtend.o"
         PROG_LDADD="$PROG_LDADD /usr/lib/crtn.o"
+        COV_PROFILE_LIB="$($CC -print-file-name=libclang_rt.profile-x86_64.a)"
         ;;
     NetBSD)
         SHARED_FLAGS="-shared"
