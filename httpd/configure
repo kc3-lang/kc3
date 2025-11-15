@@ -81,11 +81,7 @@ CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS"
 LIBS_COV="$LIBS -lkc3_http_cov"
 LIBS_COV="$LIBS_COV -lkc3_cov"
-case "$(uname -s)" in
-    OpenBSD)
-        LIBS_COV="$LIBS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
-        ;;
-esac
+LIBS_COV="$LIBS_COV $COV_PROFILE_LIB"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"

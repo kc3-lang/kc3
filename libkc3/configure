@@ -36,17 +36,7 @@ OBJECTS="$(c2ext .main.o "$LO_SOURCES") $(cxx2ext .main.o "$SOURCES_CXX")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 OBJECTS_ASAN="$(c2ext .asan.o "$LO_SOURCES") $(cxx2ext .asan.o "$SOURCES_CXX")"
 OBJECTS_COV="$(c2ext .cov.o "$LO_SOURCES") $(cxx2ext .cov.o "$SOURCES_CXX")"
-case "$(uname -s)" in
-    Linux)
-        COV_PROFILE_LIB="$(${CC} -print-file-name=libgcov.a)"
-        if [ -f "$COV_PROFILE_LIB" ]; then
-            OBJECTS_COV="$OBJECTS_COV $COV_PROFILE_LIB"
-        fi
-        ;;
-    OpenBSD)
-        OBJECTS_COV="$OBJECTS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
-        ;;
-esac
+OBJECTS_COV="$OBJECTS_COV $COV_PROFILE_LIB"
 OBJECTS_DEBUG="$(c2ext .debug.o "$LO_SOURCES") $(cxx2ext .debug.o "$SOURCES_CXX")"
 
 . "${SRC_TOP}/config_common"

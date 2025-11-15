@@ -1614,6 +1614,7 @@ case "$(uname -s)" in
         LDADD="-lc"
         LIB_LDADD="/usr/lib/crtbeginS.o $LDADD /usr/lib/crtendS.o"
         PROG_LDADD="/usr/lib/crt0.o /usr/lib/crtbegin.o -e __start --dynamic-linker=/usr/libexec/ld.so $LDADD /usr/lib/crtend.o"
+        COV_PROFILE_LIB="/usr/lib/clang/19/lib/libclang_rt.profile.a"
         ;;
     Linux)
         SHARED_FLAGS="-shared -soname \${LIB_BASE}.so.\${VER_MAJOR}"
@@ -1656,6 +1657,7 @@ case "$(uname -s)" in
                 fi
                 LIB_LDADD="$CRTI $CRTBEGINS $LDADD $CRTENDS $CRTN"
                 PROG_LDADD="$CRT1 $CRTI $CRTBEGIN -e _start --dynamic-linker=$LDSO $LDADD $CRTEND $CRTN"
+                COV_PROFILE_LIB="$(${CC} -print-file-name=libgcov.a)"
                 ;;
         esac
         ;;

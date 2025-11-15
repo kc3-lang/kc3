@@ -83,11 +83,7 @@ OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 
 OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
-case "$(uname -s)" in
-    OpenBSD)
-        OBJECTS_COV="$OBJECTS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
-        ;;
-esac
+OBJECTS_COV="$OBJECTS_COV $COV_PROFILE_LIB"
 echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
 
 OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
