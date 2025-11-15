@@ -41,6 +41,9 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window/cairo"
 config_asan
 config_gnu
 config_i386
@@ -64,9 +67,6 @@ CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../../libkc3"
 LIBS_ASAN="$LIBS -lkc3_window_cairo_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_window_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
@@ -78,9 +78,6 @@ CFLAGS_COV="$CFLAGS -DDEBUG --coverage"
 LIBGCOV=$(${CC} -print-file-name=libgcov.a)
 LIBGCOV_DIR=$(dirname "$LIBGCOV")
 LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
-LDFLAGS_COV="$LDFLAGS_COV -L../"
-LDFLAGS_COV="$LDFLAGS_COV -L../../"
-LDFLAGS_COV="$LDFLAGS_COV -L../../../libkc3"
 LIBS_COV="$LIBS -lkc3_window_cairo_cov"
 LIBS_COV="$LIBS_COV -lkc3_window_cov"
 LIBS_COV="$LIBS_COV -lkc3_cov"
@@ -90,9 +87,6 @@ LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../../libkc3"
 LIBS_DEBUG="$LIBS -lkc3_window_cairo_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
@@ -103,9 +97,6 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LDFLAGS="$LDFLAGS -L../"
-LDFLAGS="$LDFLAGS -L../../"
-LDFLAGS="$LDFLAGS -L../../../libkc3"
 LIBS="$LIBS -lkc3_window_cairo"
 LIBS="$LIBS -lkc3_window"
 LIBS="$LIBS -lkc3"

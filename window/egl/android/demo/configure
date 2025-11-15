@@ -41,12 +41,12 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
-LDFLAGS="$LDFLAGS -L../../../../libkc3"
-LDFLAGS="$LDFLAGS -L../../../../gl"
-LDFLAGS="$LDFLAGS -L../../../"
-LDFLAGS="$LDFLAGS -L../../../demo"
-LDFLAGS="$LDFLAGS -L../../"
-LDFLAGS="$LDFLAGS -L../"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/gl"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window/demo"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window/egl"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window/egl/android"
 LDFLAGS="$LDFLAGS -u ANativeActivity_onCreate"
 config_asan
 config_gnu
@@ -61,12 +61,6 @@ pkg_config egl
 pkg_config glesv2
 config_android
 LIBS="$LIBS -rpath ${libdir}"
-LIBS="$LIBS -lkc3"
-LIBS="$LIBS -lkc3_gl"
-LIBS="$LIBS -lkc3_window"
-LIBS="$LIBS -lkc3_window_demo"
-LIBS="$LIBS -lkc3_window_egl"
-LIBS="$LIBS -lkc3_window_egl_android"
 LIBS="$LIBS -llog"
 LIBS="$LIBS -landroid"
 
@@ -80,7 +74,12 @@ CFLAGS_ASAN="$CFLAGS -O1 -fno-omit-frame-pointer -fsanitize=address -fsanitize-a
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
-LIBS_ASAN="$LIBS"
+LIBS_ASAN="$LIBS -lkc3_window_egl_android_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_window_egl_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_window_demo_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_window_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_gl_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
 LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 
 echo "CPPFLAGS_ASAN = $CPPFLAGS_ASAN" >> ${CONFIG_MK}
@@ -94,7 +93,13 @@ CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
 LIBGCOV=$(${CC} -print-file-name=libgcov.a)
 LIBGCOV_DIR=$(dirname "$LIBGCOV")
 LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
-LIBS_COV="$LIBS $(${CC} -print-file-name=libgcov.a)"
+LIBS_COV="$LIBS -lkc3_window_egl_android_cov"
+LIBS_COV="$LIBS_COV -lkc3_window_egl_cov"
+LIBS_COV="$LIBS_COV -lkc3_window_demo_cov"
+LIBS_COV="$LIBS_COV -lkc3_window_cov"
+LIBS_COV="$LIBS_COV -lkc3_gl_cov"
+LIBS_COV="$LIBS_COV -lkc3_cov"
+LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
 
 echo "CPPFLAGS_COV = $CPPFLAGS_COV" >> ${CONFIG_MK}
 echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
@@ -105,7 +110,12 @@ echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_DEBUG="$LIBS"
+LIBS_DEBUG="$LIBS -lkc3_window_egl_android_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_egl_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_demo_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_gl_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
 
 echo "CPPFLAGS_DEBUG = $CPPFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
@@ -113,6 +123,13 @@ echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 # Main config
+LIBS="$LIBS -lkc3_window_egl_android"
+LIBS="$LIBS -lkc3_window_egl"
+LIBS="$LIBS -lkc3_window_demo"
+LIBS="$LIBS -lkc3_window"
+LIBS="$LIBS -lkc3_gl"
+LIBS="$LIBS -lkc3"
+
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
 echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
 echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}

@@ -41,6 +41,7 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
 config_asan
 config_gnu
 config_i386
@@ -66,7 +67,7 @@ CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
-LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR -L../libkc3"
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
 LIBS_ASAN="$(${CC} -print-file-name=libasan.so)"
 LIBS_ASAN="$LIBS_ASAN $LIBS"
 LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
@@ -76,13 +77,13 @@ CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LIBGCOV=$(${CC} -print-file-name=libgcov.a)
 LIBGCOV_DIR=$(dirname "$LIBGCOV")
-LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR -L../libkc3"
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
 LIBS_COV="$LIBS -lkc3_cov $(${CC} -print-file-name=libgcov.a)"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
-LDFLAGS_DEBUG="$LDFLAGS -L../libkc3"
+LDFLAGS_DEBUG="$LDFLAGS"
 LIBS_DEBUG="$LIBS -lkc3_debug"
 
 # Main config
@@ -91,7 +92,6 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LDFLAGS="$LDFLAGS -L../libkc3"
 LIBS_LOCAL="-lkc3"
 LIBS="$LIBS $LIBS_LOCAL"
 

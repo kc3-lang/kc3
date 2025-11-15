@@ -41,10 +41,10 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
-LDFLAGS="$LDFLAGS -L../../../libkc3"
-LDFLAGS="$LDFLAGS -L../../../gl"
-LDFLAGS="$LDFLAGS -L../../"
-LDFLAGS="$LDFLAGS -L../"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/gl"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window/egl"
 LDFLAGS="$LDFLAGS -u ANativeActivity_onCreate"
 config_asan
 config_gnu
@@ -58,13 +58,8 @@ pkg_config freetype2
 pkg_config android
 pkg_config egl
 pkg_config glesv2
-config_define PREFIX "\"${PREFIX}\""
 config_android
 LIBS="$LIBS -rpath ${libdir}"
-LIBS="$LIBS -lkc3"
-LIBS="$LIBS -lkc3_gl"
-LIBS="$LIBS -lkc3_window"
-LIBS="$LIBS -lkc3_window_egl"
 LIBS="$LIBS -llog"
 LIBS="$LIBS -landroid"
 
@@ -76,7 +71,10 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -O1 -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_ASAN="$LIBS"
+LIBS_ASAN="$LIBS -lkc3_window_egl_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_window_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_gl_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
 
 echo "CPPFLAGS_ASAN = $CPPFLAGS_ASAN" >> ${CONFIG_MK}
 echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
@@ -87,7 +85,11 @@ echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
 LDFLAGS_COV="$LDFLAGS"
-LIBS_COV="$LIBS -lgcov"
+LIBS_COV="$LIBS -lkc3_window_egl_cov"
+LIBS_COV="$LIBS_COV -lkc3_window_cov"
+LIBS_COV="$LIBS_COV -lkc3_gl_cov"
+LIBS_COV="$LIBS_COV -lkc3_cov"
+LIBS_COV="$LIBS_COV -lgcov"
 
 echo "CPPFLAGS_COV = $CPPFLAGS_COV" >> ${CONFIG_MK}
 echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
@@ -98,7 +100,10 @@ echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_DEBUG="$LIBS"
+LIBS_DEBUG="$LIBS -lkc3_window_egl_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_gl_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
 
 echo "CPPFLAGS_DEBUG = $CPPFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
@@ -106,6 +111,11 @@ echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 # Main config
+LIBS="$LIBS -lkc3_window_egl"
+LIBS="$LIBS -lkc3_window"
+LIBS="$LIBS -lkc3_gl"
+LIBS="$LIBS -lkc3"
+
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
 echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
 echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}

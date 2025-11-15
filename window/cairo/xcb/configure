@@ -41,9 +41,9 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
-LDFLAGS="$LDFLAGS -L../../../libkc3"
-LDFLAGS="$LDFLAGS -L../../"
-LDFLAGS="$LDFLAGS -L../"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window/cairo"
 config_asan
 config_gnu
 config_i386

@@ -41,6 +41,7 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
 config_asan
 config_gnu
 config_i386
@@ -70,10 +71,13 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -O1 -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope"
-LIBASAN=$(${CC} -print-file-name=libasan.so)
-LIBASAN_DIR=$(dirname "$LIBASAN")
-LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR -L../../../libkc3"
-LIBS_ASAN="$LIBS -lkc3_asan $(${CC} -print-file-name=libasan.so)"
+LIBASAN="$(${CC} -print-file-name=libasan.so)"
+LIBASAN_DIR="$(dirname "$LIBASAN")"
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
+LIBS_ASAN="$LIBS -lkc3_window_egl_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_window_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
+LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 
 echo "CPPFLAGS_ASAN = $CPPFLAGS_ASAN" >> ${CONFIG_MK}
 echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
@@ -85,8 +89,11 @@ CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
 LIBGCOV=$(${CC} -print-file-name=libgcov.a)
 LIBGCOV_DIR=$(dirname "$LIBGCOV")
-LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR -L../../../libkc3"
-LIBS_COV="$LIBS -lkc3_cov $(${CC} -print-file-name=libgcov.a)"
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR -L${BUILD_TOP}/libkc3"
+LIBS_COV="$LIBS -lkc3_window_egl_cov"
+LIBS_COV="$LIBS_COV -lkc3_window_cov"
+LIBS_COV="$LIBS_COV -lkc3_cov"
+LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
 
 echo "CPPFLAGS_COV = $CPPFLAGS_COV" >> ${CONFIG_MK}
 echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
@@ -96,8 +103,10 @@ echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
-LDFLAGS_DEBUG="$LDFLAGS -L../../../libkc3"
-LIBS_DEBUG="$LIBS -lkc3_debug"
+LDFLAGS_DEBUG="$LDFLAGS -L${BUILD_TOP}/libkc3"
+LIBS_DEBUG="$LIBS -lkc3_window_egl_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
 
 echo "CPPFLAGS_DEBUG = $CPPFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
@@ -105,11 +114,12 @@ echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 # Main config
-LDFLAGS="$LDFLAGS -L../../../libkc3"
-LDFLAGS="$LDFLAGS -L../../"
-LDFLAGS="$LDFLAGS -L../"
-LIBS_LOCAL="-lkc3 -lkc3_window -lkc3_window_egl"
-LIBS="$LIBS_LOCAL $LIBS"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/"
+LIBS="$LIBS -lkc3_window_egl"
+LIBS="$LIBS -lkc3_window"
+LIBS="$LIBS -lkc3"
 
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
 echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}

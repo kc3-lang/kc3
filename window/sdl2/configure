@@ -41,12 +41,9 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
-case "$(uname -s)" in
-    MINGW64*)
-        ;;
-    *)
-        LDFLAGS="$LDFLAGS -rpath ${libdir}"
-esac
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/gl"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window"
 config_asan
 config_gnu
 config_i386
@@ -60,16 +57,17 @@ pkg_config libffi
 pkg_config freetype2
 pkg_config egl
 pkg_config glesv2
-#pkg_config glut
 pkg_config libpng
 pkg_config sdl2
-#if $HAVE_WIN32; then
-#    LIBS="$LIBS -lglu32 -lopengl32"
-#fi
 if [ "x$(uname)" = "xDarwin" ]; then
     LIBS="$LIBS -lobjc"
 fi
-config_define PREFIX "\"${PREFIX}\""
+case "$(uname -s)" in
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${libdir}"
+esac
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"
@@ -77,22 +75,30 @@ CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
-LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR -L../../libkc3 -L../../gl -L.."
-LIBS_ASAN="$LIBS -lkc3_asan -lkc3_gl_asan -lkc3_window_asan $(${CC} -print-file-name=libasan.so)"
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
+LIBS_ASAN="$LIBS -lkc3_window_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_gl_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
+LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -DDEBUG -fprofile-arcs -ftest-coverage"
-LIBGCOV=$(${CC} -print-file-name=libgcov.a)
-LIBGCOV_DIR=$(dirname "$LIBGCOV")
-LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR -L../../libkc3 -L../../gl -L.."
-LIBS_COV="$LIBS -lkc3_cov -lkc3_gl_cov -lkc3_window_cov $(${CC} -print-file-name=libgcov.a)"
+LIBGCOV="$(${CC} -print-file-name=libgcov.a)"
+LIBGCOV_DIR="$(dirname "$LIBGCOV")"
+LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
+LIBS_COV="$LIBS -lkc3_window_cov"
+LIBS_COV="$LIBS_COV -lkc3_gl_cov"
+LIBS_COV="$LIBS_COV -lkc3_cov"
+LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
-LDFLAGS_DEBUG="$LDFLAGS -L../../libkc3 -L../../gl -L.."
-LIBS_DEBUG="$LIBS -lkc3_debug -lkc3_gl_debug -lkc3_window_debug"
+LDFLAGS_DEBUG="$LDFLAGS"
+LIBS_DEBUG="$LIBS -lkc3_window_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_gl_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -fPIC"
@@ -100,13 +106,9 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LDFLAGS="$LDFLAGS -L../../libkc3"
-LDFLAGS="$LDFLAGS -L../../gl"
-LDFLAGS="$LDFLAGS -L../"
-LIBS_LOCAL="-lkc3"
-LIBS_LOCAL="$LIBS_LOCAL -lkc3_gl"
-LIBS_LOCAL="$LIBS_LOCAL -lkc3_window"
-LIBS="$LIBS $LIBS_LOCAL"
+LIBS="$LIBS -lkc3_window"
+LIBS="$LIBS -lkc3_gl"
+LIBS="$LIBS -lkc3"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

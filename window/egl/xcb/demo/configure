@@ -42,6 +42,12 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -Wno-error=unknown-pragmas"
 CFLAGS="$CFLAGS -std=c11 -pedantic -pipe -fPIC"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/gl"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window/demo"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window/egl"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window/egl/xcb"
 config_asan
 config_cocoa
 config_gnu
@@ -62,6 +68,21 @@ config_lib OPENMP -fopenmp 2>/dev/null
 config_define HAVE_OPENMP "${HAVE_OPENMP}"
 pkg_config egl
 pkg_config xcb
+case "$(uname -s)" in
+    MINGW64*)
+        ;;
+    Darwin)
+        LIBS="$LIBS -rpath @executable_path/../Frameworks"
+        LIBS="$LIBS -rpath @executable_path/../../../../libkc3"
+        LIBS="$LIBS -rpath @executable_path/../../../../gl"
+        LIBS="$LIBS -rpath @executable_path/../../../"
+        LIBS="$LIBS -rpath @executable_path/../../../demo"
+        LIBS="$LIBS -rpath @executable_path/../../"
+        LIBS="$LIBS -rpath @executable_path/../"
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${libdir}"
+esac
 
 # Asan config
 CPPFLAGS_ASAN="$CPPFLAGS"
@@ -70,12 +91,6 @@ CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../../../libkc3"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../../../gl"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../../"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../../demo"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../"
 LIBS_ASAN="$LIBS -lkc3_window_egl_xcb_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_window_egl_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_window_demo_asan"
@@ -90,12 +105,6 @@ CFLAGS_COV="$CFLAGS -DDEBUG -fprofile-arcs -ftest-coverage"
 LIBGCOV=$(${CC} -print-file-name=libgcov.a)
 LIBGCOV_DIR=$(dirname "$LIBGCOV")
 LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
-LDFLAGS_COV="$LDFLAGS_COV -L../../../../libkc3"
-LDFLAGS_COV="$LDFLAGS_COV -L../../../../gl"
-LDFLAGS_COV="$LDFLAGS_COV -L../../../"
-LDFLAGS_COV="$LDFLAGS_COV -L../../../demo"
-LDFLAGS_COV="$LDFLAGS_COV -L../../"
-LDFLAGS_COV="$LDFLAGS_COV -L../"
 LIBS_COV="$LIBS -lkc3_window_egl_xcb_cov"
 LIBS_COV="$LIBS_COV -lkc3_window_egl_cov"
 LIBS_COV="$LIBS_COV -lkc3_window_demo_cov"
@@ -108,12 +117,6 @@ LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../../../libkc3"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../../../gl"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../../"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../../demo"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../"
 LIBS_DEBUG="$LIBS -lkc3_window_egl_xcb_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_egl_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_demo_debug"
@@ -127,27 +130,6 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-case "$(uname -s)" in
-    MINGW64*)
-    ;;
-    Darwin)
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../Frameworks"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../../libkc3"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../../gl"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../../../demo"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../../"
-        LDFLAGS="$LDFLAGS -rpath @executable_path/../"
-        ;;
-    *)
-        LDFLAGS="$LDFLAGS -rpath ${libdir}"
-esac
-LDFLAGS="$LDFLAGS -L../../../../libkc3"
-LDFLAGS="$LDFLAGS -L../../../../gl"
-LDFLAGS="$LDFLAGS -L../../../"
-LDFLAGS="$LDFLAGS -L../../../demo"
-LDFLAGS="$LDFLAGS -L../../"
-LDFLAGS="$LDFLAGS -L../"
 LIBS="$LIBS -lkc3_window_egl_xcb"
 LIBS="$LIBS -lkc3_window_egl"
 LIBS="$LIBS -lkc3_window_demo"

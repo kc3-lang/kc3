@@ -42,6 +42,9 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
 CFLAGS="$CFLAGS -Wno-error=unknown-pragmas"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/gl"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window"
 config_asan
 config_gnu
 config_i386
@@ -74,9 +77,6 @@ CFLAGS_ASAN="$CFLAGS -O1 -fno-omit-frame-pointer -fsanitize=address -fsanitize-a
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../libkc3"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../../gl"
-LDFLAGS_ASAN="$LDFLAGS_ASAN -L../"
 LIBS_ASAN="$LIBS -lkc3_gl_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_window_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
@@ -93,9 +93,6 @@ CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
 LIBGCOV=$(${CC} -print-file-name=libgcov.a)
 LIBGCOV_DIR=$(dirname "$LIBGCOV")
 LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
-LDFLAGS_COV="$LDFLAGS_COV -L../../libkc3"
-LDFLAGS_COV="$LDFLAGS_COV -L../../gl"
-LDFLAGS_COV="$LDFLAGS_COV -L../"
 LIBS_COV="$LIBS -lkc3_gl_cov"
 LIBS_COV="$LIBS_COV -lkc3_window_cov"
 LIBS_COV="$LIBS_COV -lkc3_cov"
@@ -110,9 +107,6 @@ echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../libkc3"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../../gl"
-LDFLAGS_DEBUG="$LDFLAGS_DEBUG -L../"
 LIBS_DEBUG="$LIBS -lkc3_gl_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
@@ -123,9 +117,6 @@ echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 # Main config
-LDFLAGS="$LDFLAGS -L../../libkc3"
-LDFLAGS="$LDFLAGS -L../../gl"
-LDFLAGS="$LDFLAGS -L../"
 LIBS="$LIBS -lkc3_gl"
 LIBS="$LIBS -lkc3_window"
 LIBS="$LIBS -lkc3"
