@@ -43,6 +43,7 @@ CFLAGS="$CFLAGS -g -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
 CFLAGS="$CFLAGS -fPIC"
 LDFLAGS="$LDFLAGS ${EXPORT_DYNAMIC}"
 LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
+config_ldadd gcc -lgcc 2>/dev/null
 config_asan
 config_gnu
 config_i386
