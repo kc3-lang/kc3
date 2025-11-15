@@ -47,6 +47,7 @@ fs/fuse/mount_kc3fs
 fs/fuse/mount_kc3fs_asan
 fs/fuse/mount_kc3fs_cov
 fs/fuse/mount_kc3fs_debug
+*.gcda
 *.gcno
 .gradle
 *.html
