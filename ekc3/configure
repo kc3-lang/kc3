@@ -68,7 +68,7 @@ LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
 LIBS_ASAN="$LIBS -lkc3_asan"
-LIBS_ASAN="$(${CC} -print-file-name=libasan.so)"
+LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
