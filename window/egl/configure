@@ -61,13 +61,8 @@ esac
 OBJECTS="$(c2ext .main.o "$SOURCES")"
 OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
 OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
+OBJECTS_COV="$OBJECTS_COV $COV_PROFILE_LIB"
 OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
-
-case "$(uname -s)" in
-    OpenBSD)
-        OBJECTS_COV="$OBJECTS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
-        ;;
-esac
 
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}

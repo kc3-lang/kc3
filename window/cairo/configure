@@ -74,11 +74,7 @@ OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
 if ${HAVE_COCOA}; then
     OBJECTS_COV="$OBJECTS_COV $(objc2ext .cov.o "$OBJC_SOURCES")"
 fi
-case "$(uname -s)" in
-    OpenBSD)
-        OBJECTS_COV="$OBJECTS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
-        ;;
-esac
+OBJECTS_COV="$OBJECTS_COV $COV_PROFILE_LIB"
 OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 if ${HAVE_COCOA}; then
     OBJECTS_DEBUG="$OBJECTS_DEBUG $(objc2ext .debug.o "$OBJC_SOURCES")"

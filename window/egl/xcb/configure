@@ -36,13 +36,8 @@ OBJECTS="$(c2ext .main.o "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
 OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
+OBJECTS_COV="$OBJECTS_COV $COV_PROFILE_LIB"
 OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
-
-case "$(uname -s)" in
-    OpenBSD)
-        OBJECTS_COV="$OBJECTS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
-        ;;
-esac
 
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
