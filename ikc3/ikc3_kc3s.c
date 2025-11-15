@@ -29,6 +29,11 @@
 # else
 #  include "buf_linenoise.h"
 # endif
+# define HISTORY_NAME ".ikc3_history"
+#elif KC3S
+# define HISTORY_NAME ".kc3s_history"
+#else
+# warning "! (IKC3 || KC3S)"
 #endif
 
 #define BUFSZ 0x10000
@@ -244,18 +249,18 @@ static int arg_tls (s_env *env, int *argc, char ***argv)
 static void buf_editline_close (s_buf *buf)
 {
 #if HAVE_WINEDITLINE
-  buf_wineditline_close(buf, ".history");
+  buf_wineditline_close(buf, HISTORY_NAME);
 #else
-  buf_linenoise_close(buf, ".history");
+  buf_linenoise_close(buf, HISTORY_NAME);
 #endif
 }
 
 static void buf_editline_open_r (s_buf *buf)
 {
 #if HAVE_WINEDITLINE
-  buf_wineditline_open_r(buf, "ikc3> ", ".history");
+  buf_wineditline_open_r(buf, "ikc3> ", HISTORY_NAME);
 #else
-  buf_linenoise_open_r(buf, "ikc3> ", ".history");
+  buf_linenoise_open_r(buf, "ikc3> ", HISTORY_NAME);
 #endif
 }
 
