@@ -59,7 +59,7 @@ pkg_config android
 pkg_config egl
 pkg_config glesv2
 config_android
-LIBS="$LIBS -rpath ${libdir}"
+LIBS="$LIBS -rpath ${LIBDIR}"
 LIBS="$LIBS -llog"
 LIBS="$LIBS -landroid"
 

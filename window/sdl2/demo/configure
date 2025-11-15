@@ -80,10 +80,10 @@ case "$(uname -s)" in
     MINGW64*)
         ;;
     OpenBSD)
-        LIBS="$LIBS -rpath ${libdir}"
+        LIBS="$LIBS -rpath ${LIBDIR}"
         LIBS="$LIBS -rpath /usr/X11R6/lib"
     *)
-        LIBS="$LIBS -rpath ${libdir}"
+        LIBS="$LIBS -rpath ${LIBDIR}"
 esac
 
 # Asan config

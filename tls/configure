@@ -49,13 +49,12 @@ pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
 pkg_config libtls
-config_define PREFIX "\"${PREFIX}\""
 LIBS="$LIBS -ltls"
 case "$(uname -s)" in
     MINGW64*)
         ;;
     *)
-        LIBS="$LIBS -rpath ${libdir}"
+        LIBS="$LIBS -rpath ${LIBDIR}"
 esac
 
 # Address Sanitizer config
@@ -90,7 +89,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS="$LIBS -lkc3 -lkc3_socket"
+LIBS="$LIBS -lkc3_socket -lkc3"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

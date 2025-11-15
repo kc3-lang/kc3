@@ -58,7 +58,7 @@ case "$(uname -s)" in
     MINGW64*)
         ;;
     *)
-        LIBS="$LIBS -rpath ${libdir}"
+        LIBS="$LIBS -rpath ${LIBDIR}"
 esac
 
 # Address Sanitizer config

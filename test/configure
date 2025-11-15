@@ -63,7 +63,7 @@ case "$(uname -s)" in
         LIBS="$LIBS -rpath @executable_path/../libkc3"
         ;;
     Linux)
-        LIBS="$LIBS -rpath ${libdir}"
+        LIBS="$LIBS -rpath ${LIBDIR}"
         LIBS="$LIBS -rpath ${BUILD_TOP}/libkc3"
         LIBS="$LIBS -rpath ${BUILD_TOP}/socket"
         LIBS="$LIBS -rpath ${BUILD_TOP}/tls"
@@ -71,7 +71,7 @@ case "$(uname -s)" in
     MINGW64*)
         ;;
     *)
-        LIBS="$LIBS -rpath ${libdir}"
+        LIBS="$LIBS -rpath ${LIBDIR}"
 esac
 
 # Asan config
