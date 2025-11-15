@@ -57,8 +57,16 @@ pkg_config xkbcommon
 pkg_config xkbcommon-x11
 pkg_config cairo
 pkg_config cairo-xcb
-config_define PREFIX "\"${PREFIX}\""
-
+case "$(uname -s)" in
+    Darwin)
+        LIBS="$LIBS -rpath @executable_path/../Frameworks"
+        ;;
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${LIBDIR}"
+        ;;
+esac
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"

@@ -63,8 +63,13 @@ config_define PREFIX "\"${PREFIX}\""
 case "$(uname -s)" in
     MINGW64*)
         ;;
+    OpenBSD)
+        LIBS="$LIBS -rpath ${LIBDIR}"
+        LIBS="$LIBS -rpath /usr/X11R6/lib"
+        ;;
     *)
         LIBS="$LIBS -rpath ${LIBDIR}"
+        ;;
 esac
 
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}

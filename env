@@ -1,3 +1,3 @@
-export LD_LIBRARY_PATH="$PWD/libkc3:$PWD/ekc3:$PWD/http:$PWD/markdown:$PWD/socket:$PWD/tls:$PWD/lib/kc3/0.1:$PWD/window:$PWD/window/egl:$PWD/window/egl/demo:$PWD/window/egl/xcb:$PWD/window/egl/drm:$PWD/window/sdl2:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$PWD/libkc3:$PWD/ekc3:$PWD/http:$PWD/markdown:$PWD/socket:$PWD/tls:$PWD/lib/kc3/0.1:$PWD/window:$PWD/window/demo:$PWD/window/cairo:$PWD/window/cairo/demo:$PWD/window/cairo/xcb:$PWD/window/egl:$PWD/window/egl/demo:$PWD/window/egl/xcb:$PWD/window/egl/drm:$PWD/window/sdl2:$LD_LIBRARY_PATH"
 export DYLD_LIBRARY_PATH="$PWD/libkc3:$PWD/ekc3:$PWD/http:$PWD/markdown:$PWD/socket:$PWD/tls:$PWD/lib/kc3/0.1:$DYLD_LIBRARY_PATH"
 #export MALLOC_OPTIONS=CDFGJU
