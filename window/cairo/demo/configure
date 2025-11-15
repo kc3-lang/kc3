@@ -38,6 +38,12 @@ OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
 OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 
+case "$(uname -s)" in
+    OpenBSD)
+        OBJECTS_COV="$OBJECTS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
+        ;;
+esac
+
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
@@ -75,13 +81,10 @@ LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -DDEBUG --coverage"
-LIBGCOV=$(${CC} -print-file-name=libgcov.a)
-LIBGCOV_DIR=$(dirname "$LIBGCOV")
-LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
+LDFLAGS_COV="$LDFLAGS"
 LIBS_COV="$LIBS -lkc3_window_cairo_cov"
 LIBS_COV="$LIBS_COV -lkc3_window_cov"
 LIBS_COV="$LIBS_COV -lkc3_cov"
-LIBS_COV="$LIBS_COV $(${CC} -print-file-name=libgcov.a)"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"

@@ -36,6 +36,11 @@ OBJECTS="$(c2ext .main.o "$LO_SOURCES") $(cxx2ext .main.o "$SOURCES_CXX")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 OBJECTS_ASAN="$(c2ext .asan.o "$LO_SOURCES") $(cxx2ext .asan.o "$SOURCES_CXX")"
 OBJECTS_COV="$(c2ext .cov.o "$LO_SOURCES") $(cxx2ext .cov.o "$SOURCES_CXX")"
+case "$(uname -s)" in
+    OpenBSD)
+        OBJECTS_COV="$OBJECTS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
+        ;;
+esac
 OBJECTS_DEBUG="$(c2ext .debug.o "$LO_SOURCES") $(cxx2ext .debug.o "$SOURCES_CXX")"
 
 . "${SRC_TOP}/config_common"
@@ -54,15 +59,8 @@ LIBS_ASAN="$LIBS_ASAN $LIBS"
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 CXXFLAGS_COV="$CXXFLAGS -fprofile-arcs -ftest-coverage"
-COV_LIB="$(${CC} -print-file-name=libgcov.a)"
-COV_LIBDIR="$(dirname "$COV_LIB")"
-LDFLAGS_COV="$LDFLAGS -L$COV_LIBDIR"
+LDFLAGS_COV="$LDFLAGS"
 LIBS_COV="$LIBS"
-case "$(uname -s)" in
-    OpenBSD)
-        LIBS_COV="$LIBS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
-        ;;
-esac
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"

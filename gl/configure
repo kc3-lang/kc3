@@ -37,6 +37,12 @@ OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
 OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 
+case "$(uname -s)" in
+    OpenBSD)
+        OBJECTS_COV="$OBJECTS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
+        ;;
+esac
+
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
@@ -83,10 +89,8 @@ LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
-LIBGCOV=$(${CC} -print-file-name=libgcov.a)
-LIBGCOV_DIR=$(dirname "$LIBGCOV")
-LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
-LIBS_COV="$LIBS -lkc3_cov $(${CC} -print-file-name=libgcov.a)"
+LDFLAGS_COV="$LDFLAGS"
+LIBS_COV="$LIBS -lkc3_cov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
@@ -100,8 +104,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS_LOCAL="-lkc3"
-LIBS="$LIBS_LOCAL $LIBS"
+LIBS="$LIBS -lkc3"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

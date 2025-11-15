@@ -74,6 +74,11 @@ OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
 if ${HAVE_COCOA}; then
     OBJECTS_COV="$OBJECTS_COV $(objc2ext .cov.o "$OBJC_SOURCES")"
 fi
+case "$(uname -s)" in
+    OpenBSD)
+        OBJECTS_COV="$OBJECTS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
+        ;;
+esac
 OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
 if ${HAVE_COCOA}; then
     OBJECTS_DEBUG="$OBJECTS_DEBUG $(objc2ext .debug.o "$OBJC_SOURCES")"
@@ -90,21 +95,23 @@ CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
-LIBS_ASAN="$LIBS -lkc3_asan -lkc3_window_asan $(${CC} -print-file-name=libasan.so)"
+LIBS_ASAN="$LIBS -lkc3_window_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
+LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
-LIBGCOV=$(${CC} -print-file-name=libgcov.a)
-LIBGCOV_DIR=$(dirname "$LIBGCOV")
-LDFLAGS_COV="$LDFLAGS -L$LIBGCOV_DIR"
-LIBS_COV="$LIBS -lkc3_cov -lkc3_window_cov $(${CC} -print-file-name=libgcov.a)"
+LDFLAGS_COV="$LDFLAGS"
+LIBS_COV="$LIBS -lkc3_window_cov"
+LIBS_COV="$LIBS_COV -lkc3_cov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_DEBUG="$LIBS -lkc3_debug -lkc3_window_debug"
+LIBS_DEBUG="$LIBS -lkc3_window_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -fPIC"
@@ -112,7 +119,8 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS="$LIBS -lkc3_window -lkc3"
+LIBS="$LIBS -lkc3_window"
+LIBS="$LIBS -lkc3"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
