@@ -37,6 +37,12 @@ echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 OBJECTS_ASAN="$(c2ext .asan.o "$LO_SOURCES") $(cxx2ext .asan.o "$SOURCES_CXX")"
 OBJECTS_COV="$(c2ext .cov.o "$LO_SOURCES") $(cxx2ext .cov.o "$SOURCES_CXX")"
 case "$(uname -s)" in
+    Linux)
+        COV_PROFILE_LIB="$(${CC} -print-file-name=libgcov.a)"
+        if [ -f "$COV_PROFILE_LIB" ]; then
+            OBJECTS_COV="$OBJECTS_COV $COV_PROFILE_LIB"
+        fi
+        ;;
     OpenBSD)
         OBJECTS_COV="$OBJECTS_COV /usr/lib/clang/19/lib/libclang_rt.profile.a"
         ;;
