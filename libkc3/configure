@@ -54,7 +54,7 @@ LIBS_ASAN="$LIBS_ASAN $LIBS"
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 CXXFLAGS_COV="$CXXFLAGS -fprofile-arcs -ftest-coverage"
-LDFLAGS_COV="$LDFLAGS"
+LDFLAGS_COV="$LDFLAGS --coverage"
 LIBS_COV="$LIBS $(${CC} -print-file-name=libgcov.a)"
 
 # Debug config
