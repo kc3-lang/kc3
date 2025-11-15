@@ -193,7 +193,7 @@ static char * sha512_crypt(const char *key, const char *setting,
 
   /* output is $6$rounds=n$salt$hash */
   p = output;
-  p += sprintf(p, "$6$%s%.*s$", rounds, slen, salt);
+  p += snprintf(p, 128, "$6$%s%.*s$", rounds, slen, salt);
   #if 1
   static const u8 perm[][3] = {
     {  0, 21, 42 }, { 22, 43,  1 }, { 44,  2, 23 }, {  3, 24, 45 },
