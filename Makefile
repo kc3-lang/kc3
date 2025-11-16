@@ -163,8 +163,8 @@ deb:
 	${MAKE} -C release/v${VER} deb
 
 debian:
-	rsync -a --delete tci50:/var/www/debian/. ./debian/
-	rsync -a --delete ./debian/. debian.kmx.io:/var/www/debian.kmx.io/debian/
+	rsync -aP --delete tci50:/var/www/debian.kmx.io/. ./debian.kmx.io/
+	rsync -aP --delete ./debian.kmx.io/debian/. debian.kmx.io:/var/www/debian.kmx.io/debian/
 
 debug:
 	${MAKE} -C libtommath debug
