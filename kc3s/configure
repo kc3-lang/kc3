@@ -65,6 +65,12 @@ case "$(uname -s)" in
         LIBS="$LIBS -rpath @executable_path/../socket"
         LIBS="$LIBS -rpath @executable_path/../tls"
         ;;
+    Linux)
+        LIBS="$LIBS -rpath ${LIBDIR}"
+	if [ -d /lib64 ]; then
+            LIBS="$LIBS -rpath /lib64"
+	fi
+	;;
     MINGW64*)
         ;;
     *)

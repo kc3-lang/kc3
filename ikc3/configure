@@ -56,6 +56,12 @@ case "$(uname -s)" in
         ;;
     MINGW64*)
         ;;
+    Linux)
+        LIBS="$LIBS -rpath ${LIBDIR}"
+	if [ -d /lib64 ]; then
+            LIBS="$LIBS -rpath /lib64"
+	fi
+	;;
     *)
         LIBS="$LIBS -rpath ${LIBDIR}"
 esac
