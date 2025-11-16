@@ -40,7 +40,7 @@ KC3_CONFIGURES="$(find $KC3_DIRS -name configure -or -name update_sources -or -n
 sources KC3_CONFIGURES "$KC3_CONFIGURES"
 
 KC3_MAKEFILES="$(find $KC3_DIRS -name Makefile -or -name gen.mk -or -name sources.mk)"
-KC3_MAKEFILES="$(echo "$KC3_MAKEFILES" | grep -v 'libtommath/logs/Makefile')"
+KC3_MAKEFILES="$(echo "$KC3_MAKEFILES" | grep -v -e libtommath/logs/Makefile -e /release/)"
 sources KC3_MAKEFILES "$KC3_MAKEFILES"
 
 KC3_C_SOURCES="$(find $KC3_DIRS -name "[a-z]*.c" -or -name "[a-z]*.h" -or -name "[a-z]*.c.in" -or -name "[a-z]*.h.in")"
