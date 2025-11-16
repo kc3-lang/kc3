@@ -60,12 +60,8 @@ lldb_dump_restore:
 	lldb ${SRC_TOP}/kc3s/kc3s_debug
 
 release:
-	if [ -d static/release ]; then \
-		cd static/release && git pull; \
-	else \
-		if [ -d ../../release ]; then \
-			git clone ../../release/.git static/release; \
-		fi \
+	if [ -d ../../release ]; then \
+		rsync -aP ../../release/* static/release/; \
 	fi
 
 run: assets
