@@ -325,3 +325,36 @@ defspecial_operator defcounter =
 
 def unveil = cfn Void "kc3_unveil" (Str, Str)
 def pledge = cfn Void "kc3_pledge" (Str, Str)
+
+def pow = fn (a, b) {
+  result = 1
+  if b > 0 do
+    while (b > 0) do
+      result = result * a
+      b = b - 1
+    end
+  else
+    while (b < 0) do
+      result = result / a
+      b = b + 1
+    end
+  end
+  result
+}
+  
+def log = fn (n, base) {
+  result = 0
+  x = if n >= 0 do n else - n end
+  if x > 1 do
+    while (x > 1) do
+      x = x / base
+      result = result + 1
+    end
+  else
+    while (x < 1) do
+      x = x * base
+      result = result - 1
+    end
+  end
+  result
+}
