@@ -162,7 +162,7 @@ static int arg_load (s_env *env, int *argc, char ***argv)
   fp = file_open(&path, "rb");
   if (! fp) {
     e = errno;
-    err_write_1("ikc3: ");
+    err_write_1(PROG ": ");
     err_inspect_str(&path);
     err_write_1(": ");
     err_write_1(strerror(e));
@@ -258,9 +258,9 @@ static void buf_editline_close (s_buf *buf)
 static void buf_editline_open_r (s_buf *buf)
 {
 #if HAVE_WINEDITLINE
-  buf_wineditline_open_r(buf, "ikc3> ", HISTORY_NAME);
+  buf_wineditline_open_r(buf, PROG "> ", HISTORY_NAME);
 #else
-  buf_linenoise_open_r(buf, "ikc3> ", HISTORY_NAME);
+  buf_linenoise_open_r(buf, PROG "> ", HISTORY_NAME);
 #endif
 }
 
@@ -275,7 +275,7 @@ static void client_clean (void)
 static int client_init (void)
 {
   if (! socket_buf_init_connect(&g_socket_buf, &g_host, &g_port)) {
-    err_write_1("ikc3: unable to connect to ");
+    err_write_1(PROG ": unable to connect to ");
     err_inspect_str(&g_host);
     err_write_1(" ");
     err_inspect_str(&g_port);
@@ -283,7 +283,7 @@ static int client_init (void)
     return 1;
   }
   if (true) {
-    io_write_1("ikc3: connected to ");
+    io_write_1(PROG ": connected to ");
     io_inspect_str(&g_host);
     io_write_1(" ");
     io_inspect_str(&g_port);
@@ -338,7 +338,7 @@ static int client_init_tls (void)
     return 1;
   }
   if (true) {
-    io_write_1("ikc3: connected with TLS ");
+    io_write_1(PROG ": connected with TLS ");
     io_write_1(tls_conn_version(tls));
     io_write_1(" to ");
     io_inspect_str(&g_host);
@@ -515,7 +515,7 @@ static int server_init (s_env *env)
 {
   assert(env);
   if (! socket_init_listen(&g_server_socket, &g_host, &g_port)) {
-    err_write_1("ikc3: failed to listen on ");
+    err_write_1(PROG ": failed to listen on ");
     err_inspect_str(&g_host);
     err_write_1(" ");
     err_inspect_str(&g_port);
@@ -523,19 +523,19 @@ static int server_init (s_env *env)
     return 1;
   }
   if (true) {
-    io_write_1("ikc3: listening on ");
+    io_write_1(PROG ": listening on ");
     io_inspect_str(&g_host);
     io_write_1(" ");
     io_inspect_str(&g_port);
     io_write_1("\n");
   }
   if (! socket_buf_init_accept(&g_socket_buf, &g_server_socket)) {
-    err_puts("ikc3: server_init: socket_buf_init_accept");
+    err_puts(PROG ": server_init: socket_buf_init_accept");
     socket_close(&g_server_socket);
     return 1;
   }
   if (true) {
-    io_write_1("ikc3: connected to ");
+    io_write_1(PROG ": connected to ");
     io_inspect_str(&g_socket_buf.addr_str);
     io_write_1("\n");
   }
@@ -594,7 +594,7 @@ static int server_init_tls (s_env *env)
     return 1;
   }
   if (! socket_init_listen(&g_server_socket, &g_host, &g_port)) {
-    err_write_1("ikc3: TLS server: failed to listen on ");
+    err_write_1(PROG ": TLS server: failed to listen on ");
     err_inspect_str(&g_host);
     err_write_1(" ");
     err_inspect_str(&g_port);
@@ -602,7 +602,7 @@ static int server_init_tls (s_env *env)
     return 1;
   }
   if (true) {
-    io_write_1("ikc3: TLS server: listening on ");
+    io_write_1(PROG ": TLS server: listening on ");
     io_inspect_str(&g_host);
     io_write_1(" ");
     io_inspect_str(&g_port);
@@ -614,7 +614,7 @@ static int server_init_tls (s_env *env)
     assert(! "server_init_tls: kc3_tls_server_init_accept");
     return 1;
   }
-  io_write_1("ikc3: TLS server: client connected: ");
+  io_write_1(PROG ": TLS server: client connected: ");
   io_inspect_str(&g_tls_server.socket_buf.addr_str);
   io_write_1(" ");
   io_inspect_str(&g_port);
@@ -635,7 +635,7 @@ int main (int argc, char **argv)
   s_buf  in_original = {0};
   sw r = 0;
   if (argc < 1)
-    return usage("ikc3");
+    return usage(PROG);
   g_env_argv0_default = PROG;
   g_env_argv0_dir_default = PREFIX;
   if (! kc3_init(NULL, &argc, &argv))
@@ -673,12 +673,12 @@ int main (int argc, char **argv)
       break;
   }
   if (g_client && g_server) {
-    err_puts("ikc3: --client and --server is not supported");
+    err_puts(PROG ": --client and --server is not supported");
     return usage(env->argv[0]);
   }
   if (g_tls) {
     if (! g_client && ! g_server) {
-      err_puts("ikc3: --tls without --client or --server");
+      err_puts(PROG ": --tls without --client or --server");
       return usage(env->argv[0]);
     }
   }
