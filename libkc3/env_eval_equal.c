@@ -495,8 +495,11 @@ bool env_eval_equal_tuple (s_env *env, bool macro, s_tuple *a,
   assert(b);
   assert(dest);
   if (a->count != b->count) {
-    err_puts("env_eval_equal_tuple: tuple arity mismatch");
-    assert(! "env_eval_equal_tuple: tuple arity mismatch");
+    if (false) {
+       err_puts("env_eval_equal_tuple: tuple arity mismatch");
+       err_stacktrace();
+       assert(! "env_eval_equal_tuple: tuple arity mismatch");
+    }
     return false;
   }
   tuple_init(&tmp, a->count);
@@ -508,6 +511,7 @@ bool env_eval_equal_tuple (s_env *env, bool macro, s_tuple *a,
         err_write_1("env_eval_equal_tuple: tuple tag mismatch index ");
         err_inspect_uw(i);
         err_write_1("\n");
+        err_stacktrace();
         assert(! "env_eval_equal_tuple: tuple tag mismatch");
       }
       tuple_clean(&tmp);
