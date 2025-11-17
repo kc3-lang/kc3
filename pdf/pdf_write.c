@@ -84,6 +84,11 @@ sw pdf_buf_write_dictionnary (s_buf *buf, const s_map *src)
   return result;
 }
 
+sw pdf_buf_write_flat_array (s_buf *buf, const s_array *src)
+{
+  assert(buf);
+}
+
 sw pdf_buf_write_float (s_buf *buf, f32 src)
 {
   assert(buf);
