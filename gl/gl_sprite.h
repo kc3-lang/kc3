@@ -21,6 +21,13 @@ void          gl_sprite_clean (s_gl_sprite *sprite);
 s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
                               uw dim_x, uw dim_y, uw frame_count,
                               f32 point_per_pixel);
+s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
+                                   const char *path,
+                                   uw dim_x, uw dim_y, uw frame_count,
+                                   f32 point_per_pixel);
+s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
+                                  uw dim_x, uw dim_y, uw frame_count,
+                                  f32 point_per_pixel);
 
 /* Observers. */
 GLuint gl_sprite_texture (const s_gl_sprite *sprite, uw frame);
