@@ -1883,7 +1883,9 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
             (NULL, "../../../../../", list_new_str_1
              (NULL, "../../../../../../", list_new_str_1
               (NULL, "/usr/", list_new_str_1
-               (NULL, "/usr/local/", NULL))))))))))));
+               (NULL, "/usr/local/", list_new_str_1
+                (NULL, "/usr/share/kc3", list_new_str_1
+                 (NULL, "/usr/local/share/kc3", NULL))))))))))))));
   const char *kc3_dir = getenv("KC3_DIR");
   if (kc3_dir)
     env->path = list_new_str_1(NULL, kc3_dir, env->path);
