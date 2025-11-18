@@ -75,7 +75,7 @@ struct window_egl {
   s_sequence_egl     *sequence;
   u32                 sequence_count;
   u32                 sequence_pos;
-  s_tag               tag; // TODO: move sequence to tag
+  s_tag               tag;
   const char         *title;
   f_window_egl_unload unload;
   EGLDisplay          egl_display;
