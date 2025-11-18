@@ -1650,7 +1650,10 @@ case "$(uname -s)" in
                 CRTEND=$(${CC} -print-file-name=crtend.o)
                 CRTENDS=$(${CC} -print-file-name=crtendS.o)
                 CRTN=$(${CC} -print-file-name=crtn.o)
-                LDSO=$(${CC} -print-file-name=ld-linux-aarch64.so.1)
+                LDSO=/lib64/ld-linux-x86-64.so.2 # debian
+                if [ ! -f "$LDSO" ]; then
+                    LDSO=$(${CC} -print-file-name=ld-linux-aarch64.so.1)
+                fi
                 if [ ! -f "$LDSO" ]; then
                     LDSO=$(${CC} -print-file-name=ld-linux-x86-64.so.2)
                 fi
