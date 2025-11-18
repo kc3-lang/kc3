@@ -775,6 +775,9 @@ install:
 	( cd ${SRC_DIR} && find img -name '*.png' -or -name '*.jpg'; ) | \
 	    while read F; do ${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
 		      "${DESTDIR}${prefix}/share/kc3/$$F"; done
+	( cd ${SRC_DIR} && find fonts -type f; ) | \
+	    while read F; do ${INSTALL} -m 0644 "${SRC_DIR}/$$F" \
+		      "${DESTDIR}${prefix}/share/kc3/$$F"; done
 	${MAKE} -C libtommath install
 	${MAKE} -C libkc3 install
 	${MAKE} -C socket install
