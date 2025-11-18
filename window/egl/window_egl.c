@@ -112,7 +112,6 @@ bool window_egl_render_default (s_window_egl *window)
   assert(window);
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
-  eglSwapBuffers(window->egl_display, window->egl_surface);
   err_puts("window_egl_render_default");
   return true;
 }
