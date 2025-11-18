@@ -774,6 +774,11 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
   s_buf_save save;
   const s_str *str;
   s_str tmp = {0};
+  if (suffix && suffix[0] == '/') {
+    if (file_access(suffix, mode))
+      return str_init_copy(dest, suffix);
+    return NULL;
+  }      
   env = env_global();
   buf_init(&buf, false, sizeof(buf_s), buf_s);
   if ((r = buf_write_str(&buf, env->argv0_dir)) < 0)
