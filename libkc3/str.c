@@ -1981,3 +1981,29 @@ const s_sym * str_to_sym (const s_str *src)
     sym = sym_new(src);
   return sym;
 }
+
+s_str * str_trim (const s_str *str, s_str *dest)
+{
+  character c;
+  sw r;
+  uw size;
+  uw start = 0;
+  s_str tmp;
+  assert(str);
+  assert(dest);
+  tmp = *str;
+  while ((r = str_read_character_utf8(&tmp, &c)) > 0 &&
+         character_is_space(c))
+    start += r;
+  if (r <= 0)
+    return str_init_empty(dest);
+  size = r;
+  while ((r = str_read_character_utf8(&tmp, &c)) > 0 &&
+         ! character_is_space(c))
+    size += r;
+  if (! str_init_alloc(&tmp, size))
+    return NULL;
+  memcpy(tmp.free.p, str->ptr.pu8 + start, size);
+  *dest = tmp;
+  return dest;
+}

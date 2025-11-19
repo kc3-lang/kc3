@@ -180,6 +180,7 @@ uw *          str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest);
 s_str *       str_to_hex (const s_str *str, s_str *dest);
 s_ident *     str_to_ident (const s_str *str, s_ident *dest);
 const s_sym * str_to_sym (const s_str *str);
+s_str *       str_trim (const s_str *str, s_str *dest);
 
 /* Modifiers */
 sw str_read_u8 (s_str *str, u8 *dest);
