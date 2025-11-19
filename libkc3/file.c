@@ -774,7 +774,7 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
   s_buf_save save;
   const s_str *str;
   s_str tmp = {0};
-  if (suffix && suffix[0] == '/') {
+  if (suffix && suffix->ptr.pchar[0] == '/') {
     if (file_access(suffix, mode))
       return str_init_copy(dest, suffix);
     return NULL;
