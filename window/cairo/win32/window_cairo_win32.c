@@ -58,6 +58,32 @@ LRESULT CALLBACK window_cairo_win32_proc (HWND hwnd, UINT message,
     }
     break;
   case WM_PAINT:
+    if (! surface) {
+      window_hdc = GetDC(hwnd);
+      buffer_hdc = CreateCompatibleDC(window_hdc);
+      buffer_hbitmap = CreateCompatibleBitmap(window_hdc, window->w,
+                                              window->h);
+      SelectObject(buffer_hdc, buffer_hbitmap);
+      surface = cairo_win32_surface_create(buffer_hdc);
+      cr = cairo_create(surface);
+      window->cr = cr;
+    }
+    if (! window->render(window)) {
+      printf("render -> false\n");
+      PostQuitMessage(1);
+    }
+    cairo_surface_flush(surface);
+    hdc = BeginPaint(hwnd, &ps);
+    BitBlt(hdc, 0, 0, window->w, window->h, buffer_hdc, 0, 0, SRCCOPY);
+    EndPaint(hwnd, &ps);
+    break;
+  case WM_SIZE:
+    if (surface) {
+      DeleteObject(buffer_hbitmap);
+      DeleteDC(buffer_hdc);
+      DeleteDC(window_hdc);
+      DeleteDC(hdc);
+    }
     window_hdc = GetDC(hwnd);
     buffer_hdc = CreateCompatibleDC(window_hdc);
     buffer_hbitmap = CreateCompatibleBitmap(window_hdc, window->w,
@@ -66,24 +92,10 @@ LRESULT CALLBACK window_cairo_win32_proc (HWND hwnd, UINT message,
     surface = cairo_win32_surface_create(buffer_hdc);
     cr = cairo_create(surface);
     window->cr = cr;
-    if (! window->render(window)) {
-      printf("render -> false\n");
+    if (! window->resize(window, LOWORD(lParam), HIWORD(lParam))) {
+      err_puts("window_cairo_win32_proc: window->resize");
       PostQuitMessage(1);
     }
-    cairo_surface_flush(surface);
-    cairo_destroy(window->cr);
-    cairo_surface_destroy(surface);
-    hdc = BeginPaint(hwnd, &ps);
-    BitBlt(hdc, 0, 0, window->w, window->h, buffer_hdc, 0, 0, SRCCOPY);
-    EndPaint(hwnd, &ps);
-    DeleteObject(buffer_hbitmap);
-    DeleteDC(buffer_hdc);
-    DeleteDC(window_hdc);
-    DeleteDC(hdc);
-    break;
-  case WM_SIZE:
-    if (! window->resize(window, LOWORD(lParam), HIWORD(lParam)))
-      PostQuitMessage(1);
     window->w = LOWORD(lParam);
     window->h = HIWORD(lParam);
     InvalidateRect(hwnd, NULL, TRUE);

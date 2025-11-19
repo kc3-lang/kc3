@@ -32,18 +32,17 @@ ${DEST_TMP}:
 	cp -a /clang64/bin/libdl.dll ${DEST_TMP}/test
 	cp -a /clang64/bin/libmd-0.dll ${DEST_TMP}
 	cp -a /clang64/bin/libmd-0.dll ${DEST_TMP}/test
-	cp -a "${SRC_TOP}"/libkc3/libkc3*-0.dll ${DEST_TMP}
-	cp -a "${SRC_TOP}"/libkc3/libkc3*-0.dll ${DEST_TMP}/test
-	cp -a "${SRC_TOP}"/window/libkc3_window*-0.dll ${DEST_TMP}
-	cp -a "${SRC_TOP}"/window/cairo/libkc3_window_cairo*-0.dll ${DEST_TMP}
-	cp -a "${SRC_TOP}"/window/cairo/demo/libkc3_window_cairo_demo*-0.dll ${DEST_TMP}
-	cp -a "${SRC_TOP}"/window/cairo/win32/libkc3_window_cairo_win32*-0.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/libkc3/libkc3*.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/libkc3/libkc3*.dll ${DEST_TMP}/test
+	cp -a "${SRC_TOP}"/window/libkc3_window*.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/window/cairo/libkc3_window_cairo*.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/window/cairo/demo/libkc3_window_cairo_demo*.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/window/cairo/win32/libkc3_window_cairo_win32*.dll ${DEST_TMP}
 #	cp -a /clang64/bin/libgcc_s_seh-1.dll ${DEST_TMP}
 	cp -a /clang64/bin/libcairo-2.dll ${DEST_TMP}
-#	cp -a "${SRC_TOP}/window/cairo/win32/libkc3_window_cairo_win32*-0.dll" ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/cairo/win32/demo/kc3_window_cairo_win32_demo.exe" ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/cairo/win32/demo/kc3_window_cairo_win32_demo_debug.exe" ${DEST_TMP}
-	cp -a "${SRC_TOP}"/window/sdl2/libkc3_window_sdl2*-0.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/window/sdl2/libkc3_window_sdl2*.dll ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/sdl2/demo/kc3_window_sdl2_demo.exe" ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/sdl2/demo/kc3_window_sdl2_demo_debug.exe" ${DEST_TMP}
 #	cp -a "${SRC_TOP}/window/sdl2/kubz/kubz.exe" ${DEST_TMP}
