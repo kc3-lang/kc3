@@ -60,8 +60,12 @@ static int    arg_dump (s_env *env, int *argc, char ***argv);
 static int    arg_load (s_env *env, int *argc, char ***argv);
 static int    arg_server (s_env *env, int *argc, char ***argv);
 static int    arg_tls (s_env *env, int *argc, char ***argv);
+
+#if IKC3
 static void   buf_editline_close (s_buf *buf);
 static void   buf_editline_open_r (s_buf *buf);
+#endif
+
 static void   client_clean (void);
 static int    client_init (void);
 static int    client_init_tls (void);
@@ -246,6 +250,8 @@ static int arg_tls (s_env *env, int *argc, char ***argv)
   return 1;
 }
 
+#if IKC3
+
 static void buf_editline_close (s_buf *buf)
 {
 #if HAVE_WINEDITLINE
@@ -263,6 +269,8 @@ static void buf_editline_open_r (s_buf *buf)
   buf_linenoise_open_r(buf, PROG "> ", HISTORY_NAME);
 #endif
 }
+
+#endif /* IKC3 */
 
 static void client_clean (void)
 {
@@ -693,7 +701,9 @@ int main (int argc, char **argv)
     r = run();
     goto clean;
   }
+#if IKC3
   buf_editline_open_r(env->in);
+#endif
   if (g_client) {
     if (g_tls) {
       if (client_init_tls())
@@ -708,7 +718,9 @@ int main (int argc, char **argv)
   else if (g_server)
     server_clean(env);
  close:
+#if IKC3
   buf_editline_close(env->in);
+#endif
  clean:
   *env->in = in_original;
   kc3_clean(NULL);
