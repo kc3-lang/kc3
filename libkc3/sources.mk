@@ -178,6 +178,7 @@ HEADERS = \
 	"set_item__uw.h" \
 	"sh.h" \
 	"sha1.h" \
+	"sha256.h" \
 	"sha512.h" \
 	"sign.h" \
 	"skiplist__fact.h" \
@@ -385,6 +386,7 @@ SOURCES = \
 	"set_item__uw.c" \
 	"sh.c" \
 	"sha1.c" \
+	"sha256.c" \
 	"sha512.c" \
 	"sign.c" \
 	"skiplist__fact.c" \
@@ -705,6 +707,7 @@ LO_SOURCES = \
 	"set_item__uw.c" \
 	"sh.c" \
 	"sha1.c" \
+	"sha256.c" \
 	"sha512.c" \
 	"sign.c" \
 	"skiplist__fact.c" \

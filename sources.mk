@@ -735,6 +735,8 @@ KC3_C_SOURCES = \
 	"libkc3/sh.h" \
 	"libkc3/sha1.c" \
 	"libkc3/sha1.h" \
+	"libkc3/sha256.c" \
+	"libkc3/sha256.h" \
 	"libkc3/sha512.c" \
 	"libkc3/sha512.h" \
 	"libkc3/sign.c" \
@@ -1626,6 +1628,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/set/item/tag.kc3" \
 	"lib/kc3/0.1/set/tag.kc3" \
 	"lib/kc3/0.1/sh.kc3" \
+	"lib/kc3/0.1/sha256.kc3" \
 	"lib/kc3/0.1/smtp.kc3" \
 	"lib/kc3/0.1/socket.kc3" \
 	"lib/kc3/0.1/socket/addr.kc3" \
