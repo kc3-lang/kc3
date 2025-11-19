@@ -1,0 +1,144 @@
+#!/bin/sh
+## kc3
+## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+set -e
+
+echo "$0"
+export BUILD_TOP="$(dirname "$(dirname "$PWD")")"
+export DIR="image/resize"
+export SRC_TOP="$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")"
+
+. "${SRC_TOP}/config.subr"
+
+config_prog kc3_image_resize
+
+. "${SRC_DIR}/sources.sh"
+
+# Common config for all targets
+CPPFLAGS="$CPPFLAGS -DPIC"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC -pthread"
+CFLAGS="$CFLAGS -fPIC"
+LDFLAGS="$LDFLAGS ${EXPORT_DYNAMIC}"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/gl"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/image"
+config_asan
+config_gnu
+config_i386
+config_have_f80
+config_have_f128
+config_win32
+config_win64
+pkg_config libbsd-overlay
+pkg_config libffi
+pkg_config libmd
+config_lib libmd -lmd 2>/dev/null
+config_lib dl -ldl 2>/dev/null
+config_lib m -lm 2>/dev/null
+pkg_config egl
+pkg_config freetype2
+pkg_config glesv2
+case "$(uname -s)" in
+    Darwin)
+        LIBS="$LIBS -rpath @executable_path/../libkc3"
+        LIBS="$LIBS -rpath @executable_path/../gl"
+        LIBS="$LIBS -rpath @executable_path/../image"
+        ;;
+    MINGW64*)
+        ;;
+    *)
+        LIBS="$LIBS -rpath ${LIBDIR}"
+esac
+
+# Sources
+OBJECTS="$(c2ext .main.o "$SOURCES")"
+echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
+
+OBJECTS_ASAN="$(c2ext .asan.o "$SOURCES")"
+echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
+
+OBJECTS_COV="$(c2ext .cov.o "$SOURCES")"
+OBJECTS_COV="$OBJECTS_COV $COV_PROFILE_LIB"
+echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
+
+OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES")"
+echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
+
+# Asan config
+CPPFLAGS_ASAN="$CPPFLAGS"
+CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
+CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
+LIBASAN=$(${CC} -print-file-name=libasan.so)
+LIBASAN_DIR=$(dirname "$LIBASAN")
+LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
+LIBS_ASAN="$(${CC} -print-file-name=libasan.so)"
+LIBS_ASAN="$LIBS_ASAN $LIBS"
+LIBS_ASAN="$LIBS_ASAN -lkc3_image_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_gl_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
+
+# Coverage config
+CPPFLAGS_COV="$CPPFLAGS"
+CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
+LDFLAGS_COV="$LDFLAGS"
+LIBS_COV="$LIBS -lkc3_image_cov"
+LIBS_COV="$LIBS_COV -lkc3_gl_cov"
+LIBS_COV="$LIBS_COV -lkc3_cov"
+
+# Debug config
+CPPFLAGS_DEBUG="$CPPFLAGS"
+CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
+LDFLAGS_DEBUG="$LDFLAGS"
+LIBS_DEBUG="$LIBS -lkc3_image_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_gl_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
+
+# Main config
+DEFAULT_CFLAGS="-O2 -fPIC"
+if [ "x$ENV_CFLAGS" = "x" ]; then
+    CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
+fi
+CFLAGS="$CFLAGS -DNDEBUG"
+LIBS="$LIBS -lkc3_image"
+LIBS="$LIBS -lkc3_gl"
+LIBS="$LIBS -lkc3"
+
+echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
+echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
+echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
+echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
+echo "LIBS = $LIBS" >> ${CONFIG_MK}
+echo >> ${CONFIG_MK}
+echo "CPPFLAGS_ASAN = $CPPFLAGS_ASAN" >> ${CONFIG_MK}
+echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
+echo "LDFLAGS_ASAN = $LDFLAGS_ASAN" >> ${CONFIG_MK}
+echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
+echo >> ${CONFIG_MK}
+echo "CPPFLAGS_COV = $CPPFLAGS_COV" >> ${CONFIG_MK}
+echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
+echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
+echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
+echo >> ${CONFIG_MK}
+echo "CPPFLAGS_DEBUG = $CPPFLAGS_DEBUG" >> ${CONFIG_MK}
+echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
+echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
+echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
+
+update_build_c
+update_build_prog
+
+build_o_c
+build_prog
+
+update_config_mk
+update_makefile

@@ -1,0 +1,209 @@
+/* kc3
+ * Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+ *
+ * Permission is hereby granted to use this software granted the above
+ * copyright notice and this permission paragraph are included in all
+ * copies and substantial portions of this software.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+ * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+ * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+ * THIS SOFTWARE.
+ */
+#include "../libkc3/kc3.h"
+#include "../gl/gl.h"
+#include "image_egl.h"
+#include "image.h"
+
+void image_egl_clean (s_image_egl *image)
+{
+  assert(image);
+  if (image->egl_context != EGL_NO_CONTEXT)
+    eglDestroyContext(image->egl_display, image->egl_context);
+  if (image->egl_surface != EGL_NO_SURFACE)
+    eglDestroySurface(image->egl_display, image->egl_surface);
+  if (image->egl_display != EGL_NO_DISPLAY)
+    eglTerminate(image->egl_display);
+  image_clean(&image->image);
+}
+
+s_image_egl * image_egl_init (s_image_egl *image, uw w, uw h)
+{
+  EGLConfig config;
+  EGLint    config_attribs[] = {
+    EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+    EGL_RED_SIZE, 8,
+    EGL_GREEN_SIZE, 8,
+    EGL_BLUE_SIZE, 8,
+    EGL_ALPHA_SIZE, 8,
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
+    EGL_NONE
+  };
+  EGLint context_attribs[] = {
+    EGL_CONTEXT_MAJOR_VERSION, 3,
+    EGL_CONTEXT_MINOR_VERSION, 0,
+    EGL_NONE
+  };
+  EGLint major;
+  EGLint minor;
+  EGLint num_configs;
+  EGLint pbuffer_attribs[] = {
+    EGL_WIDTH, (EGLint) w,
+    EGL_HEIGHT, (EGLint) h,
+    EGL_NONE
+  };
+  s_image_egl tmp = {0};
+  if (! image_init_alloc(&tmp.image, w, h, 4, 4)) {
+    err_puts("image_egl_init: image_init_alloc");
+    return NULL;
+  }
+  tmp.egl_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+  if (tmp.egl_display == EGL_NO_DISPLAY) {
+    err_puts("image_egl_init: eglGetDisplay");
+    return NULL;
+  }
+  if (! eglInitialize(tmp.egl_display, &major, &minor)) {
+    err_puts("image_egl_init: eglInitialize");
+    return NULL;
+  }
+  if (false) {
+    err_write_1("EGL Version: ");
+    err_inspect_s32_decimal(major);
+    err_write_1(".");
+    err_inspect_s32_decimal(minor);
+    err_write_1("\n");
+  }
+  if (! eglBindAPI(EGL_OPENGL_ES_API)) {
+    EGLint error = eglGetError();
+    err_write_1("image_egl_init: eglBindAPI: 0x");
+    err_inspect_u32_hexadecimal((u32) error);
+    err_write_1("\n");
+    return NULL;
+  }
+  if (! eglChooseConfig(tmp.egl_display, config_attribs,
+                        &config, 1, &num_configs)) {
+    err_puts("image_egl_init: eglChooseConfig");
+    return NULL;
+  }
+  if (num_configs == 0) {
+    err_puts("image_egl_init: no EGL config");
+    return NULL;
+  }
+  tmp.egl_config = config;
+  tmp.egl_surface = eglCreatePbufferSurface
+    (tmp.egl_display, config, pbuffer_attribs);
+  if (tmp.egl_surface == EGL_NO_SURFACE) {
+    EGLint error = eglGetError();
+    err_write_1("image_egl_init: "
+                "eglCreatePbufferSurface: 0x");
+    err_inspect_u32_hexadecimal((u32) error);
+    err_write_1("\n");
+    return NULL;
+  }
+  tmp.egl_context = eglCreateContext(tmp.egl_display,
+                                         config,
+                                         EGL_NO_CONTEXT,
+                                         context_attribs);
+  if (tmp.egl_context == EGL_NO_CONTEXT) {
+    err_puts("image_egl_init: eglCreateContext");
+    return NULL;
+  }
+  if (! eglMakeCurrent(tmp.egl_display, tmp.egl_surface,
+                       tmp.egl_surface, tmp.egl_context)) {
+    err_puts("image_egl_init: eglMakeCurrent");
+    return NULL;
+  }
+  *image = tmp;
+  return image;
+}
+
+void image_egl_read (s_image_egl *image)
+{
+  GLenum format;
+  assert(image);
+  switch (image->image.components) {
+  case 1: format = GL_LUMINANCE; break;
+  case 2: format = GL_LUMINANCE_ALPHA; break;
+  case 3: format = GL_RGB; break;
+  case 4: format = GL_RGBA; break;
+  default:
+    err_write_1("image_egl_read: invalid components: ");
+    err_inspect_u8_decimal(image->image.components);
+    err_write_1("\n");
+    return;
+  }
+  if (image->image.components != image->image.pixel_size) {
+    err_write_1("image_egl_read: invalid pixel size: ");
+    err_inspect_u8_decimal(image->image.pixel_size);
+    err_write_1("\n");
+    return;
+  }
+  glReadPixels(0, 0, image->image.w, image->image.h, format,
+               GL_UNSIGNED_BYTE, image->image.data);
+}
+
+s_image_egl *
+image_egl_resize_to_fill_file (s_image_egl *image, s_str *path)
+{
+  s_gl_sprite sprite;
+  if (! gl_sprite_init(&sprite, path->ptr.pchar, 1, 1, 1, 1))
+    return NULL;
+  if (! image_egl_resize_to_fill_sprite(image, &sprite)) {
+    gl_sprite_clean(&sprite);
+    return NULL;
+  }
+  gl_sprite_clean(&sprite);
+  return image;
+}
+
+s_image_egl *
+image_egl_resize_to_fill_sprite (s_image_egl *image,
+                                 s_gl_sprite *sprite)
+{
+  s_gl_ortho ortho;
+  GLuint texture;
+  f32 img_aspect;
+  f32 sprite_aspect;
+  f32 x, y, w, h;
+  assert(image);
+  assert(sprite);
+  if (! sprite->pix_w || ! sprite->pix_h) {
+    err_puts("image_egl_resize_to_fill_sprite: invalid sprite");
+    return NULL;
+  }
+  texture = gl_sprite_texture(sprite, 0);
+  img_aspect = (f32) image->image.w / (f32) image->image.h;
+  sprite_aspect = (f32) sprite->pix_w / (f32) sprite->pix_h;
+  if (img_aspect > sprite_aspect) {
+    w = (f32) image->image.w;
+    h = w / sprite_aspect;
+    x = 0.0f;
+    y = ((f32) image->image.h - h) / 2.0f;
+  }
+  else {
+    h = (f32) image->image.h;
+    w = h * sprite_aspect;
+    y = 0.0f;
+    x = ((f32) image->image.w - w) / 2.0f;
+  }
+  if (! gl_ortho_init(&ortho)) {
+    err_puts("image_egl_resize_to_fill_sprite: gl_ortho_init");
+    return NULL;
+  }
+  glViewport(0, 0, image->image.w, image->image.h);
+  gl_ortho_resize(&ortho, 0.0f, (f32) image->image.w,
+                  0.0f, (f32) image->image.h, -1.0f, 1.0f);
+  mat4_translate(&ortho.view_matrix, 0, image->image.h, 0);
+  mat4_scale(&ortho.view_matrix, 1, -1, 1);
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+  gl_ortho_render(&ortho);
+  gl_ortho_bind_texture(&ortho, texture);
+  gl_ortho_color(&ortho, 1.0f, 1.0f, 1.0f, 1.0f);
+  gl_ortho_rect(&ortho, x, y, w, h);
+  gl_ortho_render_end(&ortho);
+  glFlush();
+  gl_ortho_clean(&ortho);
+  image_egl_read(image);
+  return image;
+}

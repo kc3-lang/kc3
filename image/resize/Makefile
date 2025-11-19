@@ -19,11 +19,11 @@ all:
 include config.mk
 include sources.mk
 
-build: ikc3
+build: ${PROG}
 
 asan: ${PROG_ASAN}
 
-cov: ikc3_cov
+cov: ${PROG_COV}
 
 debug: ${PROG_DEBUG}
 
