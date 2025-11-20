@@ -444,7 +444,9 @@ static sw run (void)
         }
         buf_write_str(env->err, &response[0].data.str);
         buf_write_str(env->out, &response[1].data.str);
+#if IKC3
         buf_inspect_tag(env->out, &response[2]);
+#endif
       }
       else if (! eval_tag(&input, &result)) {
         tag_clean(&input);
@@ -473,7 +475,11 @@ static sw run (void)
         goto next;
       }
       tag_clean(&input);
+#if IKC3
       if (! g_client) {
+#elif KC3S
+      if (g_server) {
+#endif
         if (buf_inspect_tag(env->out, &result) < 0) {
           tag_clean(&result);
           r = 0;
@@ -489,10 +495,12 @@ static sw run (void)
       goto clean;
     }
   next:
+#if IKC3
     if ((r = buf_write_1(env->out, "\n")) < 0) {
       r = 1;
       goto clean;
     }
+#endif
     if ((r = buf_flush(env->out)) < 0) {
       r = 1;
       goto clean;
