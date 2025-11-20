@@ -352,7 +352,6 @@ KC3_C_SOURCES = \
 	"ikc3/buf_wineditline.h" \
 	"ikc3/ikc3.c" \
 	"ikc3/ikc3_kc3s.c" \
-	"ikc3/kc3s.c" \
 	"ikc3/linenoise.c" \
 	"json/json.c" \
 	"json/json.h" \
