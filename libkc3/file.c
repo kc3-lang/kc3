@@ -246,7 +246,7 @@ bool file_ensure_directory (const s_str *path, const s_tag *mode)
     err_write_1("file_ensure_directory: mkdir: ");
     err_inspect_str(path);
     err_write_1(": ");
-    err_write_1(strerror(e));
+    err_puts(strerror(e));
     return false;
   }
   return true;
