@@ -1889,9 +1889,9 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   const char *kc3_dir = getenv("KC3_DIR");
   if (kc3_dir)
     env->path = list_new_str_1(NULL, kc3_dir, env->path);
-  str_init_1(&path, NULL, LIBDIR "/kc3/0.1/");
   if (! (env->module_path = alloc(sizeof(s_str))))
     return NULL;
+  str_init_1(&path, NULL, "lib/kc3/0.1/");
   if (! file_search(&path, &g_sym_x, env->module_path)) {
     if (! strncmp(LIBDIR, "lib", 3) &&
         (! LIBDIR[3] ||
@@ -1901,7 +1901,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
       assert(! "env_init: lib/kc3/0.1 not found in module path");
       return NULL;
     }
-    str_init_1(&path, NULL, "lib/kc3/0.1/");
+    str_init_1(&path, NULL, LIBDIR "/kc3/0.1/");
     if (! file_search(&path, &g_sym_x, env->module_path)) {
       err_puts("env_init: " LIBDIR "/kc3/0.1 and lib/kc3/0.1 not "
                "found in module path");
