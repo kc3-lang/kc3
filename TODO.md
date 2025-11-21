@@ -20,7 +20,7 @@
 
 ## KC3S
 
- - [ ] Tester si kc3s fonctionne avec les options suivantes :
+ - [.] Tester si kc3s fonctionne avec les options suivantes :
    - [ ] RPC
      - [ ] --server 127.0.0.1 1026
      - [ ] --client 127.0.0.1 1026
@@ -29,18 +29,18 @@
      - [ ] --tls --server 127.0.0.1 1026
      - [ ] --tls --client 127.0.0.1 1026
 
- - [ ] dédupliquer le code entre ikc3 et kc3s
-   - [ ] faire un diff
-   - [ ] ajouter la compilation conditionnelle pour IKC3 et KC3S
-     - [ ] #if KC3_IKC3 / #endif
-     - [ ] #if KC3_KC3S / #endif
-   - [ ] renommer le fichier ikc3/ikc3.c en ikc3_kc3s.c
-   - [ ] créer un fichier ikc3.c avec :
-     - [ ] `#define KC3_IKC3`
-     - [ ] `#include ikc3_kc3s.c`
-   - [ ] remplacer le fichier kc3s/kc3s.c avec :
-     - [ ] `#define KC3_IKC3`
-     - [ ] `#include "../ikc3/ikc3_kc3s.c"`
+ - [x] dédupliquer le code entre ikc3 et kc3s
+   - [x] faire un diff
+   - [x] ajouter la compilation conditionnelle pour IKC3 et KC3S
+     - [x] #if KC3_IKC3 / #endif
+     - [x] #if KC3_KC3S / #endif
+   - [x] renommer le fichier ikc3/ikc3.c en ikc3_kc3s.c
+   - [x] créer un fichier ikc3.c avec :
+     - [x] `#define KC3_IKC3`
+     - [x] `#include ikc3_kc3s.c`
+   - [x] remplacer le fichier kc3s/kc3s.c avec :
+     - [x] `#define KC3_IKC3`
+     - [x] `#include "../ikc3/ikc3_kc3s.c"`
 
 ## libkc3
 
