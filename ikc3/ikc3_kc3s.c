@@ -23,6 +23,10 @@
 #include "../tls/tls_server.h"
 #include "../tls/tls_config.h"
 
+#if KC3S
+# include "../kc3s/buf_readline.h"
+#endif
+
 #if IKC3
 # if HAVE_WINEDITLINE
 #  include "buf_wineditline.h"
@@ -378,11 +382,12 @@ static sw run (void)
   }
   while (1) {
     if ((r = buf_ignore_spaces(env->in)) < 0 ||
-        (r = buf_parse_comments(env->in)) < 0) {
+        (r = buf_parse_comments(env->in)) < 0 ||
+        (r = buf_parse_tag(env->in, &input)) <= 0) {
       r = 0;
       goto clean;
     }
-    if ((r = buf_parse_tag(env->in, &input)) > 0) {
+    if (r > 0) {
       tag_init(&result);
       if (g_client) {
         s_str input_str;
@@ -475,11 +480,7 @@ static sw run (void)
         goto next;
       }
       tag_clean(&input);
-#if IKC3
       if (! g_client) {
-#elif KC3S
-      if (g_server) {
-#endif
         if (buf_inspect_tag(env->out, &result) < 0) {
           tag_clean(&result);
           r = 0;
@@ -711,6 +712,8 @@ int main (int argc, char **argv)
   }
 #if IKC3
   buf_editline_open_r(env->in);
+#elif KC3S
+  buf_readline_open_r(env->in);
 #endif
   if (g_client) {
     if (g_tls) {
@@ -728,6 +731,8 @@ int main (int argc, char **argv)
  close:
 #if IKC3
   buf_editline_close(env->in);
+#elif KC3S
+  buf_readline_close(env->in);
 #endif
  clean:
   *env->in = in_original;

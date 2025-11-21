@@ -17,7 +17,9 @@
 #ifndef BUF_READLINE_H
 #define BUF_READLINE_H
 
+#include "../libkc3/types.h"
+
 void    buf_readline_close (s_buf *buf);
-s_buf * buf_readline_open_r (s_buf *buf, const char *prompt);
+s_buf * buf_readline_open_r (s_buf *buf);
 
 #endif /* BUF_READLINE_H */
