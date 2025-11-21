@@ -480,6 +480,7 @@ static sw run (void)
         goto next;
       }
       tag_clean(&input);
+#if IKC3
       if (! g_client) {
         if (buf_inspect_tag(env->out, &result) < 0) {
           tag_clean(&result);
@@ -488,6 +489,7 @@ static sw run (void)
         }
       }
       tag_clean(&result);
+#endif
     }
     if (r < 0 ||
         (r == 0 &&
