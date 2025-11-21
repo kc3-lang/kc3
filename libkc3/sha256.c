@@ -12,11 +12,8 @@
  */
 #include <sys/types.h>
 
-#ifdef HAVE_SHA2_H
+#if HAVE_SHA2_H
 # include <sha2.h>
-# ifndef SHA256_CTX
-#  define SHA256_CTX SHA2_CTX
-# endif
 #elif HAVE_SHA256_H
 # include <sha256.h>
 #endif
@@ -26,7 +23,11 @@
 
 s_str * sha256_str_to_hex (const s_str *in, s_str *out)
 {
+#if HAVE_SHA256_CTX
   SHA256_CTX context;
+#else
+  SHA2_CTX context;
+#endif
   s_str tmp = {0};
   if (! str_init_alloc(&tmp, SHA256_DIGEST_LENGTH * 2))
     return NULL;
