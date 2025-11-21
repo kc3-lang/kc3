@@ -31,16 +31,16 @@ bool window_cairo_run (s_window_cairo *window)
 LRESULT CALLBACK window_cairo_win32_proc (HWND hwnd, UINT message,
 					  WPARAM wParam, LPARAM lParam)
 {
-  HBITMAP buffer_hbitmap;
-  HDC buffer_hdc;
-  cairo_t *cr;
-  HDC hdc;
+  HBITMAP buffer_hbitmap = NULL;
+  HDC buffer_hdc = NULL;
+  cairo_t *cr = NULL;
+  HDC hdc = NULL;
   u32 keysym;
-  PAINTSTRUCT ps;
-  cairo_surface_t *surface;
+  PAINTSTRUCT ps = {0};
+  cairo_surface_t *surface = NULL;
   u32 vk;
   s_window_cairo *window;
-  HDC window_hdc;
+  HDC window_hdc = NULL;
   window = (s_window_cairo *) GetWindowLongPtr(hwnd, GWLP_USERDATA);
   switch (message) {
   case WM_DESTROY:
