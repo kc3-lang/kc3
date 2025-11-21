@@ -31,7 +31,7 @@ s_str * sha256_str_to_hex (const s_str *in, s_str *out)
   s_str tmp = {0};
   if (! str_init_alloc(&tmp, SHA256_DIGEST_LENGTH * 2))
     return NULL;
-#ifdef HAVE_SHA256_INIT
+#if HAVE_SHA256_INIT
   SHA256_Init(&context);
   SHA256_Update(&context, in->ptr.pu8, in->size);
   SHA256_End(&context, tmp.free.pchar);
