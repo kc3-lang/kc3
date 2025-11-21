@@ -496,8 +496,11 @@ static sw run (void)
           goto clean;
         }
 #endif
-    }
+#if IKC3
       }
+#elif KC3S
+      }
+#endif
       tag_clean(&result);
     }
     if (r < 0 ||
