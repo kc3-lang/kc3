@@ -20,6 +20,7 @@ pkg_config libmd
 if ! pkg-config libmd 2>/dev/null; then
     config_lib libmd -lmd 2>/dev/null
 fi
+config_sha256
 config_lib dl -ldl 2>/dev/null
 config_define PREFIX "\"${PREFIX}\""
 config_have_crypt_newhash
@@ -27,7 +28,6 @@ config_have_explicit_bzero
 config_have_generic_sw_uw
 config_have_pthread
 config_have_stat_mtim
-config_sha256
 config_lib m -lm 2>/dev/null
 config_lib pthread -lpthread
 if $HAVE_WIN32 || $HAVE_WIN64; then
