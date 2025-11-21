@@ -17,7 +17,9 @@ config_win64
 pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
-config_lib libmd -lmd 2>/dev/null
+if ! pkg-config libmd 2>/dev/null; then
+    config_lib libmd -lmd 2>/dev/null
+fi
 config_lib dl -ldl 2>/dev/null
 config_define PREFIX "\"${PREFIX}\""
 config_have_crypt_newhash
