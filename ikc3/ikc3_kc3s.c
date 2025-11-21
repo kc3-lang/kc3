@@ -481,10 +481,11 @@ static sw run (void)
       }
       tag_clean(&input);
 #if IKC3
-      if (! g_client) {
+      if (! g_client)
 #elif KC3S
-      if (g_server) {
+      if (g_server)
 #endif
+      {
         if (buf_inspect_tag(env->out, &result) < 0) {
           tag_clean(&result);
           r = 0;
@@ -496,11 +497,7 @@ static sw run (void)
           goto clean;
         }
 #endif
-#if IKC3
       }
-#elif KC3S
-      }
-#endif
       tag_clean(&result);
     }
     if (r < 0 ||
