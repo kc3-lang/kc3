@@ -792,7 +792,7 @@ config_sha256() {
     echo "# include <sha256.h>" >> "$OUT_C"
     echo "#endif" >> "$OUT_C"
     echo "int main (void) {" >> "$OUT_C"
-    echo "  void *ctx;" >> "$OUT_C"
+    echo "  void *ctx = 0;" >> "$OUT_C"
     echo "  SHA256_Init(ctx);" >> "$OUT_C"
     echo "  return 0;" >> "$OUT_C"
     echo "}" >> "$OUT_C"
