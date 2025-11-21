@@ -20,7 +20,7 @@ sw buf_readline_refill_fgets (s_buf *buf);
 void buf_readline_close (s_buf *buf)
 {
   assert(buf);
-  (void) buf;
+  buf->refill = NULL;
 }
 
 s_buf * buf_readline_open_r (s_buf *buf)
