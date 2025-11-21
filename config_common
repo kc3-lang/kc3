@@ -25,8 +25,10 @@ config_have_explicit_bzero
 config_have_generic_sw_uw
 config_have_pthread
 config_have_stat_mtim
-config_include_have SHA2_H "#include <sha2.h>"
-config_include_have SHA256_H "#include <sha256.h>"
+config_include_have SHA2_H "#include <sys/types.h>
+#include <sha2.h>"
+config_include_have SHA256_H "#include <sys/types.h>
+#include <sha256.h>"
 config_lib m -lm 2>/dev/null
 config_lib pthread -lpthread
 if $HAVE_WIN32 || $HAVE_WIN64; then

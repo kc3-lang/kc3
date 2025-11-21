@@ -599,6 +599,7 @@ config_include_have() {
              "$OUT_C" ${LIBS} -o "$OUT"; then
         eval "HAVE_$NAME=true"
         echo "HAVE_$NAME = true" >> ${CONFIG_MK}
+        config_define "HAVE_$NAME" 1
     else
         eval "HAVE_$NAME=false"
         echo "HAVE_$NAME = false" >> ${CONFIG_MK}

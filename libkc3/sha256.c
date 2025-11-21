@@ -11,23 +11,35 @@
  * THIS SOFTWARE.
  */
 #include <sys/types.h>
+
 #ifdef HAVE_SHA2_H
 # include <sha2.h>
 #elif HAVE_SHA256_H
 # include <sha256.h>
 #endif
+
 #include "sha256.h"
 #include "str.h"
 
 s_str * sha256_str_to_hex (const s_str *in, s_str *out)
 {
+#ifdef HAVE_SHA2_H
   SHA2_CTX context;
+#elif HAVE_SHA256_H
+  SHA256_CTX context;
+#endif
   s_str tmp = {0};
   if (! str_init_alloc(&tmp, SHA256_DIGEST_LENGTH * 2))
     return NULL;
+#ifdef HAVE_SHA2_H
   SHA256Init(&context);
   SHA256Update(&context, in->ptr.pu8, in->size);
   SHA256End(&context, tmp.free.pchar);
+#elif HAVE_SHA256_H
+  SHA256_Init(&context);
+  SHA256_Update(&context, in->ptr.pu8, in->size);
+  SHA256_End(&context, tmp.free.pchar);
+#endif
   *out = tmp;
   return out;
 }
