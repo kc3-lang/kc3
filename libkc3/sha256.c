@@ -11,7 +11,11 @@
  * THIS SOFTWARE.
  */
 #include <sys/types.h>
-#include <sha2.h>
+#ifdef HAVE_SHA2_H
+# include <sha2.h>
+#elif HAVE_SHA256_H
+# include <sha256.h>
+#endif
 #include "sha256.h"
 #include "str.h"
 
