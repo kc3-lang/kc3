@@ -490,6 +490,13 @@ static sw run (void)
           r = 0;
           goto clean;
         }
+#if KC3S
+        if ((r = buf_write_1(env->out, "\n")) < 0) {
+          r = 1;
+          goto clean;
+        }
+#endif
+    }
       }
       tag_clean(&result);
     }
