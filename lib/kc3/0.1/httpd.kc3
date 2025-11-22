@@ -176,10 +176,9 @@ defmodule HTTPd do
   def socket = ?
 
   def server = fn (host, port) {
-    unveil(".", "r")
-    unveil("db/", "rw")
-    unveil("log/", "rw")
-    unveil("upload/", "rw")
+    unveil("./", "r")
+    unveil("db/", "crw")
+    unveil("upload/", "crw")
     unveil("", "")
     HTTPd.socket <- Socket.listen(host, port)
     if HTTPd.socket do
