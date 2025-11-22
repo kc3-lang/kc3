@@ -1559,6 +1559,8 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/http/upload.kc3" \
 	"lib/kc3/0.1/httpd.kc3" \
 	"lib/kc3/0.1/httpd/route.kc3" \
+	"lib/kc3/0.1/image.kc3" \
+	"lib/kc3/0.1/image/egl.kc3" \
 	"lib/kc3/0.1/init.kc3" \
 	"lib/kc3/0.1/inspect.kc3" \
 	"lib/kc3/0.1/integer.facts" \

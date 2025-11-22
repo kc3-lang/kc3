@@ -18,6 +18,8 @@ defmodule Image do
              h: (Uw) 0,
              components: (U8) 0,
              pixel_size: (U8) 0,
-             data: (Ptr)]
+             data: (Ptr) 0]
+
+  dlopen("image.so")
 
 end
