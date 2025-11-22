@@ -1173,7 +1173,8 @@ update_build_lib() {
     echo "export AR=\"${AR}\"" >> ${BUILD_LIB_ASAN}
     echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_ASAN}
     echo >> ${BUILD_LIB_ASAN}
-    echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_LIB_ASAN}
+    echo "{echo $LINK; $LINK;} > \"\$LOG\" 2>&1 ||
+    { echo $LINK; $LINK; }" >> ${BUILD_LIB_ASAN}
     update_and_chmod 755 ${BUILD_LIB_ASAN} build_lib_asan
 
     echo "#!/bin/sh" >> ${BUILD_LIB_COV}
@@ -1196,7 +1197,8 @@ update_build_lib() {
     echo "export AR=\"${AR}\"" >> ${BUILD_LIB_COV}
     echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_COV}
     echo >> ${BUILD_LIB_COV}
-    echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_LIB_COV}
+    echo "{echo $LINK; $LINK;} > \"\$LOG\" 2>&1 ||
+    { echo $LINK; $LINK; }" >> ${BUILD_LIB_COV}
     update_and_chmod 755 ${BUILD_LIB_COV} build_lib_cov
 
     echo "#!/bin/sh" >> ${BUILD_LIB_DEBUG}
@@ -1219,7 +1221,8 @@ update_build_lib() {
     echo "export AR=\"${AR}\"" >> ${BUILD_LIB_DEBUG}
     echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_DEBUG}
     echo >> ${BUILD_LIB_DEBUG}
-    echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_LIB_DEBUG}
+    echo "{echo $LINK; $LINK;} > \"\$LOG\" 2>&1 ||
+    { echo $LINK; $LINK; }" >> ${BUILD_LIB_DEBUG}
     update_and_chmod 755 ${BUILD_LIB_DEBUG} build_lib_debug
 
     echo "#!/bin/sh" >> ${BUILD_LIB_MAIN}
@@ -1242,7 +1245,8 @@ update_build_lib() {
     echo "export AR=\"${AR}\"" >> ${BUILD_LIB_MAIN}
     echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_MAIN}
     echo >> ${BUILD_LIB_MAIN}
-    echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_LIB_MAIN}
+    echo "{echo $LINK; $LINK;} > \"\$LOG\" 2>&1 ||
+    { echo $LINK; $LINK; }" >> ${BUILD_LIB_MAIN}
     update_and_chmod 755 ${BUILD_LIB_MAIN} build_lib_main
 }
 
@@ -1618,7 +1622,6 @@ case "$(uname -s)" in
         LIB_SUFFIX="\${VER_MAJOR}.dylib"
         LIB_LINK_SUFFIX="dylib"
         MACOS_SDK=$(xcrun --show-sdk-path 2>/dev/null || echo "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
-        LDFLAGS="$LDFLAGS -syslibroot ${MACOS_SDK}"
         LDFLAGS="$LDFLAGS -L${MACOS_SDK}/usr/lib"
         LDFLAGS="$LDFLAGS -F${MACOS_SDK}/System/Library/Frameworks"
         LDADD="-lSystem -headerpad_max_install_names"
