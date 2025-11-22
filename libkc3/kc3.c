@@ -1077,6 +1077,7 @@ s_tag * kc3_match (s_tag *tag, s_map *map, s_tag *dest)
 {
   s_env *env;
   uw i;
+  bool silence_errors;
   s_tag tag_eval;
   s_tag tag_tmp;
   assert(tag);
@@ -1088,7 +1089,10 @@ s_tag * kc3_match (s_tag *tag, s_map *map, s_tag *dest)
     return NULL;
   i = 0;
   while (i < map->count) {
+    silence_errors = env->silence_errors;
+    env->silence_errors = true;
     if (tag_equal(&tag_eval, map->key + i, &tag_tmp)) {
+      env->silence_errors = silence_errors;
       tag_clean(&tag_tmp);
       if (map->value[i].type != TAG_DO_BLOCK) {
         err_puts("kc3_match: invalid match: not a Block");
@@ -1099,6 +1103,7 @@ s_tag * kc3_match (s_tag *tag, s_map *map, s_tag *dest)
         return NULL;
       return dest;
     }
+    env->silence_errors = silence_errors;
     i++;
   }
   return tag_init_void(dest);
