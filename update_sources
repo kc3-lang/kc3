@@ -167,6 +167,7 @@ runj -1 /bin/sh <<EOF
 ( cd http       && ./update_sources; )
 ( cd httpd      && ./update_sources; )
 ( cd ikc3       && ./update_sources; )
+( cd image      && ./update_sources; )
 ( cd json       && ./update_sources; )
 ( cd kc3s       && ./update_sources; )
 ( cd kpkg       && ./update_sources; )

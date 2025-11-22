@@ -21,6 +21,7 @@ all:
 	${MAKE} -C kpkg all
 	${MAKE} -C ekc3 all
 	${MAKE} -C event all
+	${MAKE} -C image all
 	${MAKE} -C json all
 	${MAKE} -C markdown all
 	${MAKE} -C pdf all
@@ -51,6 +52,7 @@ asan:
 	${MAKE} -C kpkg asan
 	${MAKE} -C ekc3 asan
 	${MAKE} -C event asan
+	${MAKE} -C image asan
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
 	${MAKE} -C pdf asan
@@ -76,6 +78,7 @@ build:
 	${MAKE} -C kpkg build
 	${MAKE} -C ekc3 build
 	${MAKE} -C event build
+	${MAKE} -C image build
 	${MAKE} -C json build
 	${MAKE} -C markdown build
 	${MAKE} -C pdf build
@@ -99,6 +102,7 @@ clean::
 	${MAKE} -C kpkg clean
 	${MAKE} -C ekc3 clean
 	${MAKE} -C event clean
+	${MAKE} -C image clean
 	${MAKE} -C json clean
 	${MAKE} -C markdown clean
 	${MAKE} -C pdf clean
@@ -120,6 +124,7 @@ clean_cov::
 	${MAKE} -C kpkg clean_cov
 	${MAKE} -C ekc3 clean_cov
 	${MAKE} -C event clean_cov
+	${MAKE} -C image clean_cov
 	${MAKE} -C json clean_cov
 	${MAKE} -C markdown clean_cov
 	${MAKE} -C pdf clean_cov
@@ -148,6 +153,7 @@ cov:
 	${MAKE} -C kpkg cov
 	${MAKE} -C ekc3 cov
 	${MAKE} -C event cov
+	${MAKE} -C image cov
 	${MAKE} -C json cov
 	${MAKE} -C markdown cov
 	${MAKE} -C pdf cov
@@ -176,6 +182,7 @@ debug:
 	${MAKE} -C kpkg debug
 	${MAKE} -C ekc3 debug
 	${MAKE} -C event debug
+	${MAKE} -C image debug
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
 	${MAKE} -C pdf debug
@@ -324,6 +331,7 @@ distclean::
 	${MAKE} -C kpkg distclean
 	${MAKE} -C ekc3 distclean
 	${MAKE} -C event distclean
+	${MAKE} -C image distclean
 	${MAKE} -C json distclean
 	${MAKE} -C markdown distclean
 	${MAKE} -C pdf distclean
@@ -445,6 +453,7 @@ gcovr:
 	${MAKE} -C kc3s gcovr
 	${MAKE} -C ekc3 gcovr
 	${MAKE} -C event gcovr
+	${MAKE} -C image gcovr
 	${MAKE} -C json gcovr
 	${MAKE} -C markdown gcovr
 	${MAKE} -C pdf gcovr
@@ -533,6 +542,7 @@ gdb_test_httpd_asan: lib_links_asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
 	${MAKE} -C event asan
+	${MAKE} -C image asan
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
 	${MAKE} -C pdf asan
@@ -683,6 +693,7 @@ http:
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
 	${MAKE} -C event build
+	${MAKE} -C image build
 	${MAKE} -C json build
 	${MAKE} -C markdown build
 	${MAKE} -C pdf build
@@ -697,6 +708,7 @@ httpd:
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
 	${MAKE} -C event build
+	${MAKE} -C image build
 	${MAKE} -C json build
 	${MAKE} -C markdown build
 	${MAKE} -C pdf build
@@ -712,6 +724,7 @@ httpd_debug:
 	${MAKE} -C kc3s debug
 	${MAKE} -C ekc3 debug
 	${MAKE} -C event debug
+	${MAKE} -C image debug
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
 	${MAKE} -C pdf debug
@@ -756,6 +769,38 @@ ikc3_gcovr:
 	${MAKE} ikc3_test_cov
 	${MAKE} gcovr
 
+image:
+	${MAKE} -C libtommath build
+	${MAKE} -C libkc3 build
+	${MAKE} -C socket build
+	${MAKE} -C tls build
+	${MAKE} -C ikc3 build
+	${MAKE} -C image build
+
+image_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C libkc3 asan
+	${MAKE} -C socket asan
+	${MAKE} -C tls asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C image asan
+
+image_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C libkc3 cov
+	${MAKE} -C socket cov
+	${MAKE} -C tls cov
+	${MAKE} -C ikc3 cov
+	${MAKE} -C image cov
+
+image_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C libkc3 debug
+	${MAKE} -C socket debug
+	${MAKE} -C tls debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C image debug
+
 install:
 	${INSTALL} -m 0755 -d ${DESTDIR}${libdir}/kc3
 	${INSTALL} -m 0755 -d ${DESTDIR}${libdir}/kc3/0.1
@@ -792,6 +837,7 @@ install:
 	${MAKE} -C kpkg install
 	${MAKE} -C ekc3 install
 	${MAKE} -C event install
+	${MAKE} -C image install
 	${MAKE} -C json install
 	${MAKE} -C markdown install
 	${MAKE} -C pdf install
@@ -811,6 +857,7 @@ install_lib_links_bsd:
 	ln -sf ../../libkc3_event.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/event.so
 	ln -sf ../../libkc3_gtk4.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../libkc3_http.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/http.so
+	ln -sf ../../libkc3_image.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/image.so
 	ln -sf ../../libkc3_json.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/json.so
 	ln -sf ../../libkc3_markdown.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_pdf.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/pdf.so
@@ -822,6 +869,7 @@ install_lib_links_darwin:
 	ln -sf ../../libkc3_event.0.dylib ${DESTDIR}${libdir}/kc3/0.1/event.so
 	ln -sf ../../libkc3_gtk4.0.dylib ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../libkc3_http.0.dylib ${DESTDIR}${libdir}/kc3/0.1/http.so
+	ln -sf ../../libkc3_image.0.dylib ${DESTDIR}${libdir}/kc3/0.1/image.so
 	ln -sf ../../libkc3_json.0.dylib ${DESTDIR}${libdir}/kc3/0.1/json.so
 	ln -sf ../../libkc3_markdown.0.dylib ${DESTDIR}${libdir}/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_pdf.0.dylib ${DESTDIR}${libdir}/kc3/0.1/pdf.so
@@ -834,6 +882,7 @@ install_lib_links_linux:
 	ln -sf ../../libkc3_event.so ${DESTDIR}${libdir}/kc3/0.1/event.so
 	ln -sf ../../libkc3_gtk4.so ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../libkc3_http.so ${DESTDIR}${libdir}/kc3/0.1/http.so
+	ln -sf ../../libkc3_image.so ${DESTDIR}${libdir}/kc3/0.1/image.so
 	ln -sf ../../libkc3_json.so ${DESTDIR}${libdir}/kc3/0.1/json.so
 	ln -sf ../../libkc3_markdown.so ${DESTDIR}${libdir}/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_pdf.so ${DESTDIR}${libdir}/kc3/0.1/pdf.so
@@ -846,6 +895,7 @@ install_lib_links_openbsd:
 	ln -sf ../../libkc3_event.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/event.so
 	ln -sf ../../libkc3_gtk4.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../libkc3_http.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/http.so
+	ln -sf ../../libkc3_image.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/image.so
 	ln -sf ../../libkc3_json.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/json.so
 	ln -sf ../../libkc3_markdown.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_pdf.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/pdf.so
@@ -858,6 +908,7 @@ install_lib_links_windows:
 	ln -sf ../../../bin/libkc3_event-0.dll ${DESTDIR}${libdir}/kc3/0.1/event.so
 	ln -sf ../../../bin/libkc3_gtk4-0.dll ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../../bin/libkc3_http-0.dll ${DESTDIR}${libdir}/kc3/0.1/http.so
+	ln -sf ../../../bin/libkc3_image-0.dll ${DESTDIR}${libdir}/kc3/0.1/image.so
 	ln -sf ../../../bin/libkc3_json-0.dll ${DESTDIR}${libdir}/kc3/0.1/json.so
 	ln -sf ../../../bin/libkc3_markdown-0.dll ${DESTDIR}${libdir}/kc3/0.1/markdown.so
 	ln -sf ../../../bin/libkc3_pdf-0.dll ${DESTDIR}${libdir}/kc3/0.1/pdf.so
@@ -925,6 +976,7 @@ kc3.index: sources.mk Makefile
 	for F in ${KC3_TEST_EKC3_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_HTTP_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_HTTPD_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_TEST_IMAGE_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_JSON_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_KC3S_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_MARKDOWN_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
@@ -1056,6 +1108,7 @@ lib_links_bsd:
 	ln -sf ../../../event/libkc3_event.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1067,6 +1120,7 @@ lib_links_bsd_asan:
 	ln -sf ../../../event/libkc3_event_asan.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4_asan.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_asan.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image_asan.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_asan.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_asan.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_asan.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1078,6 +1132,7 @@ lib_links_bsd_cov:
 	ln -sf ../../../event/libkc3_event_cov.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4_cov.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_cov.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image_cov.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_cov.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_cov.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1089,6 +1144,7 @@ lib_links_bsd_debug:
 	ln -sf ../../../event/libkc3_event_debug.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4_debug.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1106,6 +1162,7 @@ lib_links_darwin:
 	ln -sf ../../../event/libkc3_event.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1118,6 +1175,7 @@ lib_links_darwin_debug:
 	ln -sf ../../../event/libkc3_event_debug.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4_debug.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1130,6 +1188,7 @@ lib_links_linux:
 	ln -sf ../../../event/libkc3_event.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1142,6 +1201,7 @@ lib_links_linux_asan:
 	ln -sf ../../../event/libkc3_event_asan.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4_asan.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_asan.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image_asan.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_asan.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_asan.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_asan.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1154,6 +1214,7 @@ lib_links_linux_cov:
 	ln -sf ../../../event/libkc3_event_cov.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4_cov.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_cov.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image_cov.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_cov.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_cov.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1166,6 +1227,7 @@ lib_links_linux_debug:
 	ln -sf ../../../event/libkc3_event_debug.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4_debug.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1178,6 +1240,7 @@ lib_links_openbsd:
 	ln -sf ../../../event/libkc3_event.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1190,6 +1253,7 @@ lib_links_openbsd_cov:
 	ln -sf ../../../event/libkc3_event_cov.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4_cov.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_cov.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image_cov.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_cov.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_cov.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1202,6 +1266,7 @@ lib_links_openbsd_debug:
 	ln -sf ../../../event/libkc3_event_debug.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4_debug.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1214,6 +1279,7 @@ lib_links_clean:
 	rm -f lib/kc3/0.1/event.so
 	rm -f lib/kc3/0.1/gtk4.so
 	rm -f lib/kc3/0.1/http.so
+	rm -f lib/kc3/0.1/image.so
 	rm -f lib/kc3/0.1/json.so
 	rm -f lib/kc3/0.1/markdown.so
 	rm -f lib/kc3/0.1/pdf.so
@@ -1226,6 +1292,7 @@ lib_links_windows:
 	ln -sf ../../../event/libkc3_event.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1238,6 +1305,7 @@ lib_links_windows_debug:
 	ln -sf ../../../event/libkc3_event_debug.${SHARED_EXT} lib/kc3/0.1/event.so
 	ln -sf ../../../gtk4/libkc3_gtk4_debug.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
+	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
@@ -1277,6 +1345,7 @@ lldb_test:
 	${MAKE} -C kpkg debug
 	${MAKE} -C ekc3 debug
 	${MAKE} -C event debug
+	${MAKE} -C image debug
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
 	${MAKE} -C pdf debug
@@ -1414,6 +1483,7 @@ test_http: lib_links
 	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
+	${MAKE} -C image build
 	${MAKE} -C json build
 	${MAKE} -C markdown build
 	${MAKE} -C pdf build
@@ -1428,6 +1498,7 @@ test_http_asan: lib_links_asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
+	${MAKE} -C image asan
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
 	${MAKE} -C pdf asan
@@ -1442,6 +1513,7 @@ test_http_cov: lib_links_cov
 	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
+	${MAKE} -C image cov
 	${MAKE} -C json cov
 	${MAKE} -C markdown cov
 	${MAKE} -C pdf cov
@@ -1456,6 +1528,7 @@ test_http_debug: lib_links_debug
 	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
+	${MAKE} -C image debug
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
 	${MAKE} -C pdf debug
@@ -1471,6 +1544,7 @@ test_httpd: lib_links
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
 	${MAKE} -C event build
+	${MAKE} -C image build
 	${MAKE} -C json build
 	${MAKE} -C markdown build
 	${MAKE} -C pdf build
@@ -1487,6 +1561,7 @@ test_httpd_asan: lib_links_asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
 	${MAKE} -C event asan
+	${MAKE} -C image asan
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
 	${MAKE} -C pdf asan
@@ -1503,6 +1578,7 @@ test_httpd_cov: lib_links_cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C ekc3 cov
 	${MAKE} -C event cov
+	${MAKE} -C image cov
 	${MAKE} -C json cov
 	${MAKE} -C markdown cov
 	${MAKE} -C pdf cov
@@ -1519,6 +1595,7 @@ test_httpd_debug: lib_links_debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C ekc3 debug
 	${MAKE} -C event debug
+	${MAKE} -C image debug
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
 	${MAKE} -C pdf debug
@@ -1557,6 +1634,42 @@ test_ikc3_debug: lib_links_debug
 	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C test test_ikc3_debug
+
+test_image: lib_links
+	${MAKE} -C libtommath build
+	${MAKE} -C libkc3 build
+	${MAKE} -C socket build
+	${MAKE} -C tls build
+	${MAKE} -C ikc3 build
+	${MAKE} -C image build
+	${MAKE} -C test test_image
+
+test_image_asan: lib_links_asan
+	${MAKE} -C libtommath asan
+	${MAKE} -C libkc3 asan
+	${MAKE} -C socket asan
+	${MAKE} -C tls asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C image asan
+	${MAKE} -C test test_image_asan
+
+test_image_cov: lib_links_cov
+	${MAKE} -C libtommath cov
+	${MAKE} -C libkc3 cov
+	${MAKE} -C socket cov
+	${MAKE} -C tls cov
+	${MAKE} -C ikc3 cov
+	${MAKE} -C image cov
+	${MAKE} -C test test_image_cov
+
+test_image_debug: lib_links_debug
+	${MAKE} -C libtommath debug
+	${MAKE} -C libkc3 debug
+	${MAKE} -C socket debug
+	${MAKE} -C tls debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C image debug
+	${MAKE} -C test test_image_debug
 
 test_json: lib_links
 	${MAKE} -C libtommath build
@@ -1815,6 +1928,7 @@ uninstall:
 	${MAKE} -C kpkg uninstall
 	${MAKE} -C ekc3 uninstall
 	${MAKE} -C event uninstall
+	${MAKE} -C image uninstall
 	${MAKE} -C json uninstall
 	${MAKE} -C markdown uninstall
 	${MAKE} -C pdf uninstall
@@ -1878,6 +1992,9 @@ uninstall:
 	gdb_test_ikc3 \
 	gdb_test_ikc3_asan \
 	gdb_test_ikc3_debug \
+	gdb_test_image \
+	gdb_test_image_asan \
+	gdb_test_image_debug \
 	gdb_test_json \
 	gdb_test_json_asan \
 	gdb_test_json_debug \
@@ -1915,6 +2032,10 @@ uninstall:
 	ikc3_asan \
 	ikc3_cov \
 	ikc3_debug \
+	image \
+	image_asan \
+	image_cov \
+	image_debug \
 	install \
 	json \
 	json_asan \
@@ -1981,6 +2102,10 @@ uninstall:
 	test_ikc3_asan \
 	test_ikc3_cov \
 	test_ikc3_debug \
+	test_image \
+	test_image_asan \
+	test_image_cov \
+	test_image_debug \
 	test_json \
 	test_json_asan \
 	test_json_cov \

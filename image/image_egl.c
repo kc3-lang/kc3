@@ -207,3 +207,56 @@ image_egl_resize_to_fill_sprite (s_image_egl *image,
   image_egl_read(image);
   return image;
 }
+
+void kc3_image_egl_delete (s_image_egl **image)
+{
+  assert(image);
+  assert(*image);
+  image_egl_clean(*image);
+  free(*image);
+}
+
+s_image_egl ** kc3_image_egl_new (s_image_egl **image,
+                                  s_tag *w_tag, s_tag *h_tag)
+{
+  uw h = 0;
+  const s_sym *sym_Uw = &g_sym_Uw;
+  s_image_egl *tmp = NULL;
+  uw w = 0;
+  if (! uw_init_cast(&w, &sym_Uw, w_tag))
+    return NULL;
+  if (! uw_init_cast(&h, &sym_Uw, h_tag))
+    return NULL;
+  if (! (tmp = alloc(sizeof(s_image_egl))))
+    return NULL;
+  if (! image_egl_init(tmp, w, h)) {
+    free(tmp);
+    return NULL;
+  }
+  *image = tmp;
+  return image;
+}
+
+s_image_egl ** kc3_image_egl_resize_to_fill_file (s_image_egl **image,
+                                                  s_str *path)
+{
+  if (! image_egl_resize_to_fill_file(*image, path))
+    ERROR("image_egl_resize_to_fill_file");
+  return image;
+}
+
+s_image_egl ** kc3_image_egl_read (s_image_egl **image)
+{
+  image_egl_read(*image);
+  return image;
+}
+
+s_image_egl ** kc3_image_egl_to_png_file (s_image_egl **image,
+                                          s_str *path)
+{
+  if (! image_to_png_file(&(*image)->image, path)) {
+    ERROR("image_to_png_file");
+    return NULL;
+  }
+  return image;
+}
