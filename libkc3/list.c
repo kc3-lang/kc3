@@ -127,6 +127,14 @@ s_list * list_init (s_list *list, s_list *next)
   return list;
 }
 
+s_list * list_init_bool (s_list *list, bool b, s_list *next)
+{
+  assert(list);
+  list_init(list, next);
+  list->tag.data.bool_ = b;
+  return list;
+}
+
 s_list * list_init_tag_copy (s_list *list, s_tag *tag, s_list *next)
 {
   assert(list);
@@ -247,6 +255,15 @@ s_list * list_new_1 (const char *p)
     return NULL;
   }
   return list;
+}
+
+s_list * list_new_bool (bool b, s_list *next)
+{
+  s_list *dest;
+  dest = alloc(sizeof(s_list));
+  if (! dest)
+    return NULL;
+  return list_init_bool(dest, b, next);
 }
 
 /* FIXME: does not work on circular lists */

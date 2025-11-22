@@ -48,6 +48,9 @@ s_list * list_init_pcallable_copy (s_list *list, p_callable *src,
 s_list * list_init_pcomplex (s_list *list, p_complex c, s_list *next);
 s_list * list_init_plist (s_list *list, p_list plist, s_list *next);
 s_list * list_init_plist_1 (s_list *list, const char *p, s_list *next);
+s_list * list_init_pointer (s_list *list, const s_sym *pointer_type,
+                            const s_sym *target_type, void *p,
+                            s_list *next);
 s_list * list_init_pstruct (s_list *list, const s_sym *module,
                             s_list *next);
 s_list * list_init_pstruct_copy (s_list *list, p_struct *src,
@@ -149,6 +152,9 @@ s_list * list_new_pcallable_copy (p_callable *src, s_list *next);
 s_list * list_new_pcomplex (p_complex c, s_list *next);
 s_list * list_new_plist (p_list plist, s_list *next);
 s_list * list_new_plist_1 (const char *p, s_list *next);
+s_list * list_new_pointer (const s_sym *pointer_type,
+                           const s_sym *target_type, void *p,
+                           s_list *next);
 s_list * list_new_pstruct (const s_sym *module, s_list *next);
 s_list * list_new_pstruct_copy (p_struct *src, s_list *next);
 s_list * list_new_pstruct_copy_data (const s_sym *module, void *data,

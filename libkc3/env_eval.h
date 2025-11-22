@@ -22,8 +22,7 @@ bool env_eval_array_tag (s_env *env, const s_array *array,
                          s_tag *dest);
 bool env_eval_do_block (s_env *env, const s_do_block *do_block,
                      s_tag *dest);
-bool env_eval_call (s_env *env, s_call *call,
-                    s_tag *dest);
+bool env_eval_call (s_env *env, s_call *call, s_tag *dest);
 bool env_eval_call_arguments (s_env *env, s_list *args,
                               s_list **dest);
 bool env_eval_call_callable (s_env *env, const s_call *call,

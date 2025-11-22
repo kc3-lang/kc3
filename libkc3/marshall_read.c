@@ -25,6 +25,7 @@
 #include "counter.h"
 #include "do_block.h"
 #include "endian.h"
+#include "env_eval.h"
 #include "fact.h"
 #include "facts.h"
 #include "file.h"
@@ -1712,6 +1713,11 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
                                          bool heap,
                                          s_pointer *dest)
 {
+  s_call call = {0};
+  s_env *env = NULL;
+  s_ident ident = {0};
+  s_tag tag;
+  s_tag tag_1;
   p_sym target_type;
   s_pointer tmp = {0};
   uw u;
@@ -1720,11 +1726,6 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
   if (! marshall_read_psym(mr, heap, &target_type) ||
       ! marshall_read_uw(mr, heap, &u))
     return NULL;
-  if (u) {
-    err_puts("marshall_read_pointer: cannot read non-null pointer");
-    assert(! "marshall_read_pointer: cannot read non-null pointer");
-    return NULL;
-  }
 #if HAVE_PTHREAD
   if (target_type == &g_sym_Mutex &&
       ! (u = (uw) mutex_new())) {
@@ -1733,10 +1734,37 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
     return NULL;
   }
 #endif
-  if (! pointer_init(&tmp, NULL, target_type, (void *) u)) {
-    err_puts("marshall_read_pointer: pointer_init");
-    assert(! "marshall_read_pointer: pointer_init");
-    return NULL;
+  if (u) {
+    if (! pointer_init(&tmp, NULL, target_type, NULL)) {
+      err_puts("marshall_read_pointer: pointer_init");
+      assert(! "marshall_read_pointer: pointer_init");
+      return NULL;
+    }
+    env = env_global();
+    ident.module = target_type;
+    ident.sym = &g_sym_marshall_read;
+    if (! env_ident_get(env, &ident, &tag) ||
+        tag.type != TAG_PCALLABLE) {
+      err_write_1("marshall_read_pointer: Callable not found: ");
+      err_inspect_ident(&ident);
+      err_write_1("\n");
+      return NULL;
+    }
+    call_init(&call);
+    call.ident = ident;
+    call.arguments = list_new_pointer
+      (NULL, &g_sym_MarshallRead, mr, list_new_bool
+       (heap, list_new_pointer(tmp.pointer_type, tmp.target_type,
+                               tmp.ptr.p, NULL)));
+    if (! env_eval_call(env, &call, &tag_1)) {
+      tag_clean(&tag);
+      call_clean(&call);
+      return NULL;
+    }
+    // FIXME
+    tag_clean(&tag_1);
+    tag_clean(&tag);
+    call_clean(&call);
   }
   *dest = tmp;
   return mr;

@@ -18,8 +18,10 @@
 #include "alloc.h"
 #include "buf.h"
 #include "buf_file.h"
+#include "call.h"
 #include "counter.h"
 #include "endian.h"
+#include "env_eval.h"
 #include "facts.h"
 #include "facts_cursor.h"
 #include "facts_with.h"
@@ -179,30 +181,6 @@ s_marshall * marshall_array (s_marshall *m, bool heap,
 }
 
 DEF_MARSHALL(bool, "_KC3BOOL_")
-
-s_marshall * marshall_pointer (s_marshall *m, bool heap,
-                               const s_pointer *pointer)
-{
-  void *p;
-  assert(m);
-  assert(pointer);
-  if (! m || ! pointer)
-    return NULL;
-  p = pointer->ptr.p;
-  if (pointer->target_type == &g_sym_Mutex)
-    p = NULL;
-  if (p) {
-    err_write_1("marshall_pointer: cannot marshall non-null pointer ");
-    err_inspect_sym(pointer->pointer_type);
-    err_write_1("\n");
-    assert(! "marshall_pointer: cannot marshall non-null pointer");
-    return NULL;
-  }
-  if (! marshall_psym(m, heap, &pointer->target_type) ||
-      ! marshall_uw(m, heap, (uw) p))
-    return NULL;
-  return m;
-}
 
 s_marshall * marshall_call (s_marshall *m, bool heap,
                             const s_call *call)
@@ -1279,6 +1257,58 @@ DEF_MARSHALL_P(cow,         "_KC3PCOW_",        p_cow)
 DEF_MARSHALL_P(facts,       "_KC3PFACTS_",      p_facts)
 DEF_MARSHALL_P(frame,       "_KC3PFRAME_",      p_frame)
 DEF_MARSHALL_P(list,        "_KC3PLIST_",       p_list)
+
+s_marshall * marshall_pointer (s_marshall *m, bool heap,
+                               const s_pointer *pointer)
+{
+  s_call call = {0};
+  s_env *env = NULL;
+  s_ident ident = {0};
+  void *p;
+  s_tag tag = {0};
+  s_tag tmp = {0};
+  assert(m);
+  assert(pointer);
+  if (! m || ! pointer)
+    return NULL;
+  if (! marshall_psym(m, heap, &pointer->target_type))
+    return NULL;
+  p = pointer->ptr.p;
+  if (pointer->target_type == &g_sym_Mutex)
+    p = NULL;
+  if (! marshall_uw(m, heap, p ? 1 : 0))
+    return NULL;
+  if (p) {
+    env = env_global();
+    ident.module = pointer->target_type;
+    ident.sym = &g_sym_marshall;
+    if (! env_ident_get(env, &ident, &tag) ||
+        tag.type != TAG_PCALLABLE) {
+      err_write_1("marshall_pointer: Callable not found: ");
+      err_inspect_ident(&ident);
+      err_write_1("\n");
+      return NULL;
+    }
+    call_init(&call);
+    call.ident = ident;
+    call.arguments = list_new_pointer
+      (NULL, &g_sym_Marshall, m, list_new_bool
+       (heap, list_new_pointer
+        (pointer->pointer_type, pointer->target_type, pointer->ptr.p,
+         NULL)));
+    if (! env_eval_call(env, &call, &tmp)) {
+      tag_clean(&tag);
+      call_clean(&call);
+      return NULL;
+    }
+    tag_clean(&tmp);
+    tag_clean(&tag);
+    call_clean(&call);
+    return m;
+  }
+  return m;
+}
+
 DEF_MARSHALL_P(struct,      "_KC3PSTRUCT_",     p_struct)
 DEF_MARSHALL_P(struct_type, "_KC3PSTRUCTTYPE_", p_struct_type)
 DEF_MARSHALL_P(sym,         "_KC3PSYM_",        p_sym)

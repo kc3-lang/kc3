@@ -41,6 +41,8 @@ s_tag * tag_init_pcallable_copy (s_tag *tag, p_callable *src);
 s_tag * tag_init_pcomplex (s_tag *tag, p_complex c);
 s_tag * tag_init_plist (s_tag *tag, p_list plist);
 s_tag * tag_init_plist_1 (s_tag *tag, const char *p);
+s_tag * tag_init_pointer (s_tag *tag, const s_sym *pointer_type,
+                          const s_sym *target_type, void *p);
 s_tag * tag_init_pstruct (s_tag *tag, const s_sym *module);
 s_tag * tag_init_pstruct_copy (s_tag *tag, p_struct *src);
 s_tag * tag_init_pstruct_copy_data (s_tag *tag, const s_sym *module,
@@ -121,6 +123,8 @@ s_tag * tag_new_pcallable_copy (p_callable *src);
 s_tag * tag_new_pcomplex (p_complex c);
 s_tag * tag_new_plist (p_list plist);
 s_tag * tag_new_plist_1 (const char *p);
+s_tag * tag_new_pointer (const s_sym *pointer_type,
+                         const s_sym *target_type, void *p);
 s_tag * tag_new_pstruct (const s_sym *module);
 s_tag * tag_new_pstruct_copy (p_struct *src);
 s_tag * tag_new_pstruct_copy_data (const s_sym *module, void *data);
@@ -197,6 +201,8 @@ s_tag * tag_pcallable_copy (s_tag *tag, p_callable *src);
 s_tag * tag_pcomplex (s_tag *tag, p_complex c);
 s_tag * tag_plist (s_tag *tag, p_list plist);
 s_tag * tag_plist_1 (s_tag *tag, const char *p);
+s_tag * tag_pointer (s_tag *tag, const s_sym *pointer_type,
+                     const s_sym *target_type, void *p);
 s_tag * tag_pstruct (s_tag *tag, const s_sym *module);
 s_tag * tag_pstruct_copy (s_tag *tag, p_struct *src);
 s_tag * tag_pstruct_copy_data (s_tag *tag, const s_sym *module,

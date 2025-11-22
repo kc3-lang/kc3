@@ -1,12 +1,15 @@
 defmodule MarshallRead do
 
-  def delete = cfn Void "kc3_marshall_read_delete" (Ptr)
+  defstruct []
 
-  def new = cfn Ptr "kc3_marshall_read_new" (Result)
+  def delete = cfn Void "kc3_marshall_read_delete" (MarshallRead*)
 
-  def new_str = cfn Ptr "kc3_marshall_read_new_str" (Result, Str)
+  def new = cfn MarshallRead* "kc3_marshall_read_new" (Result)
 
-  def tag = cfn Tag "kc3_marshall_read_tag" (Ptr, Result)
+  def new_str =
+    cfn MarshallRead* "kc3_marshall_read_new_str" (Result, Str)
+
+  def tag = cfn Tag "kc3_marshall_read_tag" (MarshallRead*, Result)
 
   def tag_from_str = cfn Tag "kc3_marshall_read_tag_from_str" (Str,
     Result)

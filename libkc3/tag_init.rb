@@ -344,6 +344,10 @@ class TagInitList
                    [Arg.new("p_list", "plist")]),
        TagInit.new("plist", "1", "TAG_PLIST", :init_mode_init,
                    [Arg.new("const char *", "p")]),
+       TagInit.new("pointer", "TAG_POINTER", :init_mode_init,
+                   [Arg.new("const s_sym *", "pointer_type"),
+                    Arg.new("const s_sym *", "target_type"),
+                    Arg.new("void *", "p")]),
        TagInit.new("pstruct", "TAG_PSTRUCT", :init_mode_init,
                    [Arg.new("const s_sym *", "module")]),
        TagInit.new("pstruct", "copy", "TAG_PSTRUCT", :init_mode_init,
@@ -576,6 +580,7 @@ tag_init_c.content = <<EOF
 #include "pcall.h"
 #include "pcallable.h"
 #include "plist.h"
+#include "pointer.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "psym.h"
@@ -637,6 +642,7 @@ list_init_c.content = <<EOF
 #include "list.h"
 #include "map.h"
 #include "pcallable.h"
+#include "pointer.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "ptr.h"

@@ -11,6 +11,7 @@
 ## THIS SOFTWARE.
 
 require Image
+require Marshall
 
 defmodule Image.EGL do
 
@@ -18,14 +19,17 @@ defmodule Image.EGL do
 
   def delete = cfn Void "kc3_image_egl_delete" (Image.EGL*)
 
+  def marshall =
+    cfn Marshall* "kc3_image_egl_marshall" (Marshall*, Bool, Pointer)
+
   def new = cfn Image.EGL* "kc3_image_egl_new" (Result, Tag, Tag)
+
+  def read = cfn Image.EGL* "kc3_image_egl_read" (Image.EGL*)
 
   def resize_to_fill_file =
     cfn Image.EGL* "kc3_image_egl_resize_to_fill_file" (Result, Str)
 
-  def read = cfn Image.EGL* "kc3_image_egl_read" (Image.EGL*)
-
-  def to_png_file = cfn Image.EGL* "kc3_image_egl_to_png_file"
-    (Image.EGL*, Str)
+  def to_png_file =
+    cfn Image.EGL* "kc3_image_egl_to_png_file" (Image.EGL*, Str)
 
 end

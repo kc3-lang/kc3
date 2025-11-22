@@ -31,6 +31,7 @@
 #include "pcall.h"
 #include "pcallable.h"
 #include "plist.h"
+#include "pointer.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "psym.h"
@@ -271,6 +272,18 @@ s_tag * tag_init_plist_1 (s_tag *tag, const char *p)
   assert(tag);
   tmp.type = TAG_PLIST;
   if (! plist_init_1(&tmp.data.plist, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_pointer (s_tag *tag, const s_sym *pointer_type,
+                          const s_sym *target_type, void *p)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_POINTER;
+  if (! pointer_init(&tmp.data.pointer, pointer_type, target_type, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1048,6 +1061,22 @@ s_tag * tag_new_plist_1 (const char *p)
     return NULL;
   tag->type = TAG_PLIST;
   if (! plist_init_1(&tag->data.plist, p)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_pointer (const s_sym *pointer_type,
+                         const s_sym *target_type, void *p)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_POINTER;
+  if (! pointer_init(&tag->data.pointer, pointer_type, target_type,
+                     p)) {
     free(tag);
     return NULL;
   }
@@ -1909,6 +1938,19 @@ s_tag * tag_plist_1 (s_tag *tag, const char *p)
   tag_clean(tag);
   tmp.type = TAG_PLIST;
   if (! plist_init_1(&tmp.data.plist, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_pointer (s_tag *tag, const s_sym *pointer_type,
+                     const s_sym *target_type, void *p)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_POINTER;
+  if (! pointer_init(&tmp.data.pointer, pointer_type, target_type, p))
     return NULL;
   *tag = tmp;
   return tag;

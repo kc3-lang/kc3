@@ -29,6 +29,7 @@
 #include "list.h"
 #include "map.h"
 #include "pcallable.h"
+#include "pointer.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "ptr.h"
@@ -339,6 +340,22 @@ s_list * list_init_plist_1 (s_list *list, const char *p, s_list *next)
   if (! tag_init_plist_1(&tmp.tag, p)) {
     err_puts("list_init_plist_1: tag_init_plist_1");
     assert(! "list_init_plist_1: tag_init_plist_1");
+    return NULL;
+  }
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_pointer (s_list *list, const s_sym *pointer_type,
+                            const s_sym *target_type, void *p,
+                            s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pointer(&tmp.tag, pointer_type, target_type, p)) {
+    err_puts("list_init_pointer: tag_init_pointer");
+    assert(! "list_init_pointer: tag_init_pointer");
     return NULL;
   }
   *list = tmp;
@@ -1389,6 +1406,26 @@ s_list * list_new_plist_1 (const char *p, s_list *next)
   if (! tag_init_plist_1(&list->tag, p)) {
     err_puts("list_new_plist_1: tag_init_plist_1");
     assert(! "list_new_plist_1: tag_init_plist_1");
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pointer (const s_sym *pointer_type,
+                           const s_sym *target_type, void *p,
+                           s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list) {
+    err_puts("list_new_pointer: list_new");
+    assert(! "list_new_pointer: list_new");
+    return NULL;
+  }
+  if (! tag_init_pointer(&list->tag, pointer_type, target_type, p)) {
+    err_puts("list_new_pointer: tag_init_pointer");
+    assert(! "list_new_pointer: tag_init_pointer");
     free(list);
     return NULL;
   }

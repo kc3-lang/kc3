@@ -216,6 +216,25 @@ void kc3_image_egl_delete (s_image_egl **image)
   free(*image);
 }
 
+s_marshall ** kc3_image_egl_marshall (s_marshall **m, bool heap,
+                                      s_pointer *pointer)
+{
+  s_image_egl *image;
+  assert(m);
+  assert(*m);
+  assert(pointer);
+  assert(pointer->pointer_type);
+  assert(pointer->target_type);
+  if (pointer->pointer_type != sym_1("Image.EGL*") ||
+      pointer->target_type != sym_1("Image.EGL"))
+    return NULL;
+  image = pointer->ptr.p;
+  if (! marshall_uw(*m, heap, image->image.w) ||
+      ! marshall_uw(*m, heap, image->image.h))
+    return NULL;
+  return m;
+}
+
 s_image_egl ** kc3_image_egl_new (s_image_egl **image,
                                   s_tag *w_tag, s_tag *h_tag)
 {
@@ -259,4 +278,28 @@ s_image_egl ** kc3_image_egl_to_png_file (s_image_egl **image,
     return NULL;
   }
   return image;
+}
+
+s_marshall_read ** kc3_image_egl_unmarshall (s_marshall_read **mr,
+                                             bool heap,
+                                             s_pointer *pointer)
+{
+  uw h = 0;
+  s_image_egl *image = NULL;
+  uw w = 0;
+  assert(mr);
+  assert(*mr);
+  assert(pointer);
+  assert(pointer->pointer_type);
+  assert(pointer->target_type);
+  if (pointer->pointer_type != sym_1("Image.EGL*") ||
+      pointer->target_type != sym_1("Image.EGL"))
+    return NULL;
+  if (! marshall_read_uw(*mr, heap, &w) ||
+      ! marshall_read_uw(*m, heap, &h))
+    return NULL;
+  if (! (image = image_egl_new(w, h)))
+    return NULL;
+  pointer->ptr.p = image;
+  return m;
 }
