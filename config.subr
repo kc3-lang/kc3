@@ -1173,7 +1173,7 @@ update_build_lib() {
     echo "export AR=\"${AR}\"" >> ${BUILD_LIB_ASAN}
     echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_ASAN}
     echo >> ${BUILD_LIB_ASAN}
-    echo "{echo $LINK; $LINK; } > \"\$LOG\" 2>&1 ||
+    echo "{ echo $LINK; $LINK; } > \"\$LOG\" 2>&1 ||
     { echo $LINK; $LINK; }" >> ${BUILD_LIB_ASAN}
     update_and_chmod 755 ${BUILD_LIB_ASAN} build_lib_asan
 
@@ -1197,7 +1197,7 @@ update_build_lib() {
     echo "export AR=\"${AR}\"" >> ${BUILD_LIB_COV}
     echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_COV}
     echo >> ${BUILD_LIB_COV}
-    echo "{echo $LINK; $LINK; } > \"\$LOG\" 2>&1 ||
+    echo "{ echo $LINK; $LINK; } > \"\$LOG\" 2>&1 ||
     { echo $LINK; $LINK; }" >> ${BUILD_LIB_COV}
     update_and_chmod 755 ${BUILD_LIB_COV} build_lib_cov
 
@@ -1221,7 +1221,7 @@ update_build_lib() {
     echo "export AR=\"${AR}\"" >> ${BUILD_LIB_DEBUG}
     echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_DEBUG}
     echo >> ${BUILD_LIB_DEBUG}
-    echo "{echo $LINK; $LINK; } > \"\$LOG\" 2>&1 ||
+    echo "{ echo $LINK; $LINK; } > \"\$LOG\" 2>&1 ||
     { echo $LINK; $LINK; }" >> ${BUILD_LIB_DEBUG}
     update_and_chmod 755 ${BUILD_LIB_DEBUG} build_lib_debug
 
@@ -1245,7 +1245,7 @@ update_build_lib() {
     echo "export AR=\"${AR}\"" >> ${BUILD_LIB_MAIN}
     echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_MAIN}
     echo >> ${BUILD_LIB_MAIN}
-    echo "{echo $LINK; $LINK; } > \"\$LOG\" 2>&1 ||
+    echo "{ echo $LINK; $LINK; } > \"\$LOG\" 2>&1 ||
     { echo $LINK; $LINK; }" >> ${BUILD_LIB_MAIN}
     update_and_chmod 755 ${BUILD_LIB_MAIN} build_lib_main
 }
