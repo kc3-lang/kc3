@@ -1618,6 +1618,7 @@ case "$(uname -s)" in
         LIB_SUFFIX="\${VER_MAJOR}.dylib"
         LIB_LINK_SUFFIX="dylib"
         MACOS_SDK=$(xcrun --show-sdk-path 2>/dev/null || echo "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
+        LDFLAGS="$LDFLAGS -syslibroot ${MACOS_SDK}"
         LDFLAGS="$LDFLAGS -L${MACOS_SDK}/usr/lib"
         LDFLAGS="$LDFLAGS -F${MACOS_SDK}/System/Library/Frameworks"
         LDADD="-lSystem -headerpad_max_install_names"
