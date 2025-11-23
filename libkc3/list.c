@@ -131,6 +131,7 @@ s_list * list_init_bool (s_list *list, bool b, s_list *next)
 {
   assert(list);
   list_init(list, next);
+  list->tag.type = TAG_BOOL;
   list->tag.data.bool_ = b;
   return list;
 }

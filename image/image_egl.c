@@ -116,6 +116,17 @@ s_image_egl * image_egl_init (s_image_egl *image, uw w, uw h)
   *image = tmp;
   return image;
 }
+s_image_egl * image_egl_new (uw w, uw h)
+{
+  s_image_egl *image = NULL;
+  if (! (image = alloc(sizeof(s_image_egl))))
+    return NULL;
+  if (! image_egl_init(image, w, h)) {
+    free(image);
+    return NULL;
+  }
+  return image;
+}
 
 void image_egl_read (s_image_egl *image)
 {
@@ -217,22 +228,37 @@ void kc3_image_egl_delete (s_image_egl **image)
 }
 
 s_marshall ** kc3_image_egl_marshall (s_marshall **m, bool heap,
-                                      s_pointer *pointer)
+                                      s_image_egl **image)
 {
-  s_image_egl *image;
   assert(m);
   assert(*m);
-  assert(pointer);
-  assert(pointer->pointer_type);
-  assert(pointer->target_type);
-  if (pointer->pointer_type != sym_1("Image.EGL*") ||
-      pointer->target_type != sym_1("Image.EGL"))
+  assert(image);
+  assert(*image);
+  if (! marshall_uw(*m, heap, (*image)->image.w) ||
+      ! marshall_uw(*m, heap, (*image)->image.h)) {
+    err_puts("kc3_image_egl_marshall: marshall_uw");
     return NULL;
-  image = pointer->ptr.p;
-  if (! marshall_uw(*m, heap, image->image.w) ||
-      ! marshall_uw(*m, heap, image->image.h))
-    return NULL;
+  }
   return m;
+}
+
+s_image_egl ** kc3_image_egl_marshall_read (s_marshall_read **mr,
+                                            bool heap,
+                                            s_image_egl **dest)
+{
+  uw h = 0;
+  s_image_egl *tmp = NULL;
+  uw w = 0;
+  assert(mr);
+  assert(*mr);
+  assert(dest);
+  if (! marshall_read_uw(*mr, heap, &w) ||
+      ! marshall_read_uw(*mr, heap, &h))
+    return NULL;
+  if (! (tmp = image_egl_new(w, h)))
+    return NULL;
+  *dest = tmp;
+  return dest;
 }
 
 s_image_egl ** kc3_image_egl_new (s_image_egl **image,
@@ -278,28 +304,4 @@ s_image_egl ** kc3_image_egl_to_png_file (s_image_egl **image,
     return NULL;
   }
   return image;
-}
-
-s_marshall_read ** kc3_image_egl_unmarshall (s_marshall_read **mr,
-                                             bool heap,
-                                             s_pointer *pointer)
-{
-  uw h = 0;
-  s_image_egl *image = NULL;
-  uw w = 0;
-  assert(mr);
-  assert(*mr);
-  assert(pointer);
-  assert(pointer->pointer_type);
-  assert(pointer->target_type);
-  if (pointer->pointer_type != sym_1("Image.EGL*") ||
-      pointer->target_type != sym_1("Image.EGL"))
-    return NULL;
-  if (! marshall_read_uw(*mr, heap, &w) ||
-      ! marshall_read_uw(*m, heap, &h))
-    return NULL;
-  if (! (image = image_egl_new(w, h)))
-    return NULL;
-  pointer->ptr.p = image;
-  return m;
 }

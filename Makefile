@@ -855,6 +855,7 @@ install_lib_links:
 install_lib_links_bsd:
 	ln -sf ../../libekc3.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
 	ln -sf ../../libkc3_event.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/event.so
+	ln -sf ../../libkc3_gl.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/gl.so
 	ln -sf ../../libkc3_gtk4.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../libkc3_http.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/http.so
 	ln -sf ../../libkc3_image.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/image.so
@@ -867,6 +868,7 @@ install_lib_links_bsd:
 install_lib_links_darwin:
 	ln -sf ../../libekc3.0.dylib ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
 	ln -sf ../../libkc3_event.0.dylib ${DESTDIR}${libdir}/kc3/0.1/event.so
+	ln -sf ../../libkc3_gl.0.dylib ${DESTDIR}${libdir}/kc3/0.1/gl.so
 	ln -sf ../../libkc3_gtk4.0.dylib ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../libkc3_http.0.dylib ${DESTDIR}${libdir}/kc3/0.1/http.so
 	ln -sf ../../libkc3_image.0.dylib ${DESTDIR}${libdir}/kc3/0.1/image.so
@@ -880,6 +882,7 @@ install_lib_links_darwin:
 install_lib_links_linux:
 	ln -sf ../../libekc3.so ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
 	ln -sf ../../libkc3_event.so ${DESTDIR}${libdir}/kc3/0.1/event.so
+	ln -sf ../../libkc3_gl.so ${DESTDIR}${libdir}/kc3/0.1/gl.so
 	ln -sf ../../libkc3_gtk4.so ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../libkc3_http.so ${DESTDIR}${libdir}/kc3/0.1/http.so
 	ln -sf ../../libkc3_image.so ${DESTDIR}${libdir}/kc3/0.1/image.so
@@ -893,6 +896,7 @@ install_lib_links_linux:
 install_lib_links_openbsd:
 	ln -sf ../../libekc3.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
 	ln -sf ../../libkc3_event.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/event.so
+	ln -sf ../../libkc3_gl.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/gl.so
 	ln -sf ../../libkc3_gtk4.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../libkc3_http.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/http.so
 	ln -sf ../../libkc3_image.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/image.so
@@ -906,6 +910,7 @@ install_lib_links_openbsd:
 install_lib_links_windows:
 	ln -sf ../../../bin/libekc3-0.dll ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
 	ln -sf ../../../bin/libkc3_event-0.dll ${DESTDIR}${libdir}/kc3/0.1/event.so
+	ln -sf ../../../bin/libkc3_gl-0.dll ${DESTDIR}${libdir}/kc3/0.1/gl.so
 	ln -sf ../../../bin/libkc3_gtk4-0.dll ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../../bin/libkc3_http-0.dll ${DESTDIR}${libdir}/kc3/0.1/http.so
 	ln -sf ../../../bin/libkc3_image-0.dll ${DESTDIR}${libdir}/kc3/0.1/image.so
@@ -1106,6 +1111,7 @@ lib_links_asan: lib
 lib_links_bsd:
 	ln -sf ../../../ekc3/libekc3.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1118,6 +1124,7 @@ lib_links_bsd:
 lib_links_bsd_asan:
 	ln -sf ../../../ekc3/libekc3_asan.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event_asan.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl_asan.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4_asan.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_asan.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_asan.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1130,6 +1137,7 @@ lib_links_bsd_asan:
 lib_links_bsd_cov:
 	ln -sf ../../../ekc3/libekc3_cov.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event_cov.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl_cov.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4_cov.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_cov.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_cov.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1142,6 +1150,7 @@ lib_links_bsd_cov:
 lib_links_bsd_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event_debug.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl_debug.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4_debug.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1160,6 +1169,7 @@ lib_links_debug: lib
 lib_links_darwin:
 	ln -sf ../../../ekc3/libekc3.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1173,6 +1183,7 @@ lib_links_darwin:
 lib_links_darwin_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event_debug.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl_debug.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4_debug.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1186,6 +1197,7 @@ lib_links_darwin_debug:
 lib_links_linux:
 	ln -sf ../../../ekc3/libekc3.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1199,6 +1211,7 @@ lib_links_linux:
 lib_links_linux_asan:
 	ln -sf ../../../ekc3/libekc3_asan.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event_asan.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl_asan.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4_asan.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_asan.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_asan.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1212,6 +1225,7 @@ lib_links_linux_asan:
 lib_links_linux_cov:
 	ln -sf ../../../ekc3/libekc3_cov.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event_cov.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl_cov.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4_cov.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_cov.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_cov.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1225,6 +1239,7 @@ lib_links_linux_cov:
 lib_links_linux_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event_debug.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl_debug.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4_debug.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1238,6 +1253,7 @@ lib_links_linux_debug:
 lib_links_openbsd:
 	ln -sf ../../../ekc3/libekc3.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1251,6 +1267,7 @@ lib_links_openbsd:
 lib_links_openbsd_cov:
 	ln -sf ../../../ekc3/libekc3_cov.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event_cov.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl_cov.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4_cov.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_cov.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_cov.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1264,6 +1281,7 @@ lib_links_openbsd_cov:
 lib_links_openbsd_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event_debug.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl_debug.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4_debug.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1277,6 +1295,7 @@ lib_links_openbsd_debug:
 lib_links_clean:
 	rm -f lib/kc3/0.1/ekc3.so
 	rm -f lib/kc3/0.1/event.so
+	rm -f lib/kc3/0.1/gl.so
 	rm -f lib/kc3/0.1/gtk4.so
 	rm -f lib/kc3/0.1/http.so
 	rm -f lib/kc3/0.1/image.so
@@ -1290,6 +1309,7 @@ lib_links_clean:
 lib_links_windows:
 	ln -sf ../../../ekc3/libekc3.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1303,6 +1323,7 @@ lib_links_windows:
 lib_links_windows_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/libkc3_event_debug.${SHARED_EXT} lib/kc3/0.1/event.so
+	ln -sf ../../../gl/libkc3_gl_debug.${SHARED_EXT} lib/kc3/0.1/gl.so
 	ln -sf ../../../gtk4/libkc3_gtk4_debug.${SHARED_EXT} lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
@@ -1917,26 +1938,27 @@ tls:
 	${MAKE} -C kc3s build
 
 uninstall:
-	rm -rf ${prefix}/lib/kc3
+	rm -rf ${libdir}/kc3
 	rm -rf ${prefix}/share/kc3
-	${MAKE} -C libtommath uninstall
-	${MAKE} -C libkc3 uninstall
-	${MAKE} -C socket uninstall
-	${MAKE} -C tls uninstall
-	${MAKE} -C ikc3 uninstall
-	${MAKE} -C kc3s uninstall
-	${MAKE} -C kpkg uninstall
 	${MAKE} -C ekc3 uninstall
 	${MAKE} -C event uninstall
+	${MAKE} -C gl uninstall
+	${MAKE} -C gtk4 uninstall
+	${MAKE} -C http uninstall
+	${MAKE} -C httpd uninstall
+	${MAKE} -C ikc3 uninstall
 	${MAKE} -C image uninstall
 	${MAKE} -C json uninstall
+	${MAKE} -C kc3s uninstall
+	${MAKE} -C kpkg uninstall
+	${MAKE} -C libkc3 uninstall
+	${MAKE} -C libtommath uninstall
 	${MAKE} -C markdown uninstall
 	${MAKE} -C pdf uninstall
 	${MAKE} -C smtp uninstall
-	${MAKE} -C http uninstall
-	${MAKE} -C httpd uninstall
+	${MAKE} -C socket uninstall
+	${MAKE} -C tls uninstall
 	${MAKE} -C window uninstall
-	${MAKE} -C gtk4 uninstall
 
 .PHONY: all \
 	android \

@@ -1639,6 +1639,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
   err_write_1(tag_type_to_string(tag->type));
   err_write_1(" to ");
   err_puts(type->str.ptr.pchar);
+  err_stacktrace();
   assert(! "tag_to_ffi_pointer: cannot cast");
   return false;
 }

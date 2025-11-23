@@ -82,6 +82,7 @@
 #include "list.h"
 #include "map.h"
 #include "marshall.h"
+#include "marshall_read.h"
 #include "module.h"
 #include "pcall.h"
 #include "pcallable.h"

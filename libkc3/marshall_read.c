@@ -1719,27 +1719,38 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
   s_tag tag;
   s_tag tag_1;
   p_sym target_type;
+  u64 offset = 0;
+  void *present = NULL;
   s_pointer tmp = {0};
-  uw u;
   assert(mr);
   assert(dest);
-  if (! marshall_read_psym(mr, heap, &target_type) ||
-      ! marshall_read_uw(mr, heap, &u))
-    return NULL;
-#if HAVE_PTHREAD
-  if (target_type == &g_sym_Mutex &&
-      ! (u = (uw) mutex_new())) {
-    err_puts("marshall_read_pointer: Mutex*: mutex_new");
-    assert(! "marshall_read_pointer: Mutex*: mutex_new");
+  if (! marshall_read_1(mr, heap, "_KC3POINTER_")) {
+    err_puts("marshall_read_pointer: marshall_read_1 magic");
+    err_inspect_buf(heap ? &mr->heap : &mr->buf);
+    assert(! "marshall_read_pointer: marshall_read_1 magic");
     return NULL;
   }
-#endif
-  if (u) {
-    if (! pointer_init(&tmp, NULL, target_type, NULL)) {
-      err_puts("marshall_read_pointer: pointer_init");
-      assert(! "marshall_read_pointer: pointer_init");
+  if (! marshall_read_psym(mr, heap, &target_type)) {
+    err_puts("marshall_read_pointer: marshall_read_psym");
+    assert(! "marshall_read_pointer: marshall_read_psym");
+    return NULL;
+  }
+  if (! marshall_read_heap_pointer(mr, heap, &offset, &present)) {
+    err_puts("marshall_read_pointer: marshall_read_heap_pointer");
+    assert(! "marshall_read_pointer: marshall_read_heap_pointer");
+    return NULL;
+  }
+  if (! offset || ! present) {
+    /* TODO: FIXME in lib/kc3/0.1/mutex.kc3 and mutex.c
+#if HAVE_PTHREAD
+    if (target_type == &g_sym_Mutex &&
+        ! (present = mutex_new())) {
+      err_puts("marshall_read_pointer: Mutex*: mutex_new");
+      assert(! "marshall_read_pointer: Mutex*: mutex_new");
       return NULL;
     }
+#endif
+    */
     env = env_global();
     ident.module = target_type;
     ident.sym = &g_sym_marshall_read;
@@ -1754,17 +1765,34 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
     call.ident = ident;
     call.arguments = list_new_pointer
       (NULL, &g_sym_MarshallRead, mr, list_new_bool
-       (heap, list_new_pointer(tmp.pointer_type, tmp.target_type,
-                               tmp.ptr.p, NULL)));
+       (heap, NULL));
     if (! env_eval_call(env, &call, &tag_1)) {
+      err_write_1("marshall_read_pointer: ");
+      err_inspect_call(&call);
+      err_write_1("\n");
       tag_clean(&tag);
       call_clean(&call);
       return NULL;
     }
-    // FIXME
+    if (tag_1.type != TAG_POINTER ||
+        tag_1.data.pointer.target_type != target_type) {
+      err_write_1("marshall_read_pointer: ");
+      err_inspect_ident(&ident);
+      err_write_1("\n");
+      tag_clean(&tag_1);
+      tag_clean(&tag);
+      call_clean(&call);
+      return NULL;
+    }
+    present = tag_1.data.pointer.ptr.p;
     tag_clean(&tag_1);
     tag_clean(&tag);
     call_clean(&call);
+  }
+  if (! pointer_init(&tmp, NULL, target_type, present)) {
+    err_puts("marshall_read_pointer: pointer_init");
+    assert(! "marshall_read_pointer: pointer_init");
+    return NULL;
   }
   *dest = tmp;
   return mr;

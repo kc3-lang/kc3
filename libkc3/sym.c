@@ -64,6 +64,7 @@ const s_sym g_sym_Marshall         = SYM_1("Marshall");
 const s_sym g_sym_MarshallRead     = SYM_1("MarshallRead");
 const s_sym g_sym_Mutex            = SYM_1("Mutex");
 const s_sym g_sym_Pointer          = SYM_1("Pointer");
+const s_sym g_sym_Pointer__star    = SYM_1("Pointer*");
 const s_sym g_sym_Ptag             = SYM_1("Ptag");
 const s_sym g_sym_Ptr              = SYM_1("Ptr");
 const s_sym g_sym_PtrFree          = SYM_1("PtrFree");
@@ -358,6 +359,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_MarshallRead, NULL);
   sym_register(&g_sym_Mutex, NULL);
   sym_register(&g_sym_Pointer, NULL);
+  sym_register(&g_sym_Pointer__star, NULL);
   sym_register(&g_sym_Ptag, NULL);
   sym_register(&g_sym_Ptr, NULL);
   sym_register(&g_sym_PtrFree, NULL);

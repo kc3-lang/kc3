@@ -70,6 +70,33 @@ void mutex_lock (s_mutex *mutex)
   }
 }
 
+s_marshall ** mutex_marshall (s_marshall **m, bool heap,
+                              s_mutex **mutex)
+{
+  assert(m);
+  assert(*m);
+  assert(mutex);
+  assert(*mutex);
+  (void) heap;
+  (void) mutex;
+  return m;
+}
+
+s_mutex ** mutex_marshall_read (s_marshall_read **mr, bool heap,
+                                s_mutex **dest)
+{
+  s_mutex *tmp;
+  assert(mr);
+  assert(*mr);
+  assert(dest);
+  (void) mr;
+  (void) heap;
+  if (! (tmp = mutex_new()))
+    return NULL;
+  *dest = tmp;
+  return dest;
+}
+
 s_mutex * mutex_new (void)
 {
   s_mutex *mutex;

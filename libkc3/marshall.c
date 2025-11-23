@@ -1265,20 +1265,24 @@ s_marshall * marshall_pointer (s_marshall *m, bool heap,
   s_env *env = NULL;
   s_ident ident = {0};
   void *p;
+  bool present;
   s_tag tag = {0};
   s_tag tmp = {0};
   assert(m);
   assert(pointer);
   if (! m || ! pointer)
     return NULL;
+  if (! marshall_1(m, heap, "_KC3POINTER_")) {
+    err_puts("marshall_pointer : marshall_1 magic");
+    assert(! "marshall_pointer : marshall_1 magic");
+    return NULL;
+  }
   if (! marshall_psym(m, heap, &pointer->target_type))
     return NULL;
   p = pointer->ptr.p;
-  if (pointer->target_type == &g_sym_Mutex)
-    p = NULL;
-  if (! marshall_uw(m, heap, p ? 1 : 0))
+  if (! marshall_heap_pointer(m, heap, p, &present))
     return NULL;
-  if (p) {
+  if (p && ! present) {
     env = env_global();
     ident.module = pointer->target_type;
     ident.sym = &g_sym_marshall;
@@ -1293,10 +1297,11 @@ s_marshall * marshall_pointer (s_marshall *m, bool heap,
     call.ident = ident;
     call.arguments = list_new_pointer
       (NULL, &g_sym_Marshall, m, list_new_bool
-       (heap, list_new_pointer
+       (true, list_new_pointer
         (pointer->pointer_type, pointer->target_type, pointer->ptr.p,
          NULL)));
     if (! env_eval_call(env, &call, &tmp)) {
+      err_puts("marshall_pointer: env_eval_call");
       tag_clean(&tag);
       call_clean(&call);
       return NULL;
@@ -1304,7 +1309,6 @@ s_marshall * marshall_pointer (s_marshall *m, bool heap,
     tag_clean(&tmp);
     tag_clean(&tag);
     call_clean(&call);
-    return m;
   }
   return m;
 }
