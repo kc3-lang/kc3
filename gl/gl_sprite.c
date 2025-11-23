@@ -96,14 +96,16 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
   str_init_copy_1(&tmp_path, path);
   if (! file_search(&tmp_path, sym_1("r"), &real_path)) {
     err_write_1("gl_sprite_init: file not found: ");
-    err_puts(path);
+    err_inspect_str(&tmp_path);
+    err_write_1("\n");
     str_clean(&tmp_path);
     return NULL;
   }
   fp = fopen(real_path.ptr.pchar, "rb");
   if (! fp) {
     err_write_1("gl_sprite_init: fopen: ");
-    err_puts(real_path.ptr.pchar);
+    err_inspect_str(&real_path);
+    err_write_1("\n");
     str_clean(&tmp_path);
     str_clean(&real_path);
     return NULL;
@@ -111,7 +113,8 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
   if (fread(header, 1, sizeof(header), fp) !=
       sizeof(header)) {
     err_write_1("gl_sprite_init: fread: ");
-    err_puts(real_path.ptr.pchar);
+    err_inspect_str(&real_path);
+    err_write_1("\n");
     fclose(fp);
     str_clean(&tmp_path);
     str_clean(&real_path);
@@ -157,7 +160,6 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   u8 *jpeg_data;
   uw jpeg_h;
   uw jpeg_pixel_size;
-  u8 **jpeg_row;
   uw jpeg_w;
   u8 *jpeg_buffer;
   u8 *sprite_data;
@@ -255,17 +257,6 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
     str_clean(&tmp.real_path);
     return NULL;
   }
-  jpeg_row = malloc(jpeg_h * sizeof(u8 *));
-  if (! jpeg_row) {
-    err_write_1("gl_sprite_init_jpeg: malloc failed: ");
-    err_puts(tmp.real_path.ptr.pchar);
-    free(jpeg_data);
-    jpeg_destroy_decompress(&jpeg_info);
-    fclose(fp);
-    str_clean(&tmp.path);
-    str_clean(&tmp.real_path);
-    return NULL;
-  }
   i = 0;
   while (jpeg_info.output_scanline < jpeg_info.output_height) {
     jpeg_buffer = jpeg_data +
@@ -273,7 +264,6 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
     jpeg_read_scanlines(&jpeg_info, &jpeg_buffer, 1);
     i++;
   }
-  free(jpeg_buffer);
   jpeg_finish_decompress(&jpeg_info);
   jpeg_destroy_decompress(&jpeg_info);
   fclose(fp);
@@ -287,7 +277,6 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   if (! tmp.texture) {
     err_puts("gl_sprite_init_jpeg: tmp.texture:"
              " failed to allocate memory");
-    free(jpeg_row);
     free(jpeg_data);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
@@ -302,7 +291,6 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
     err_write_1(": glGenTextures: ");
     err_puts(gl_error_string(gl_error));
     free(tmp.texture);
-    free(jpeg_row);
     free(jpeg_data);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
@@ -315,7 +303,6 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
                 " memory: ");
     err_puts(tmp.real_path.ptr.pchar);
     free(tmp.texture);
-    free(jpeg_row);
     free(jpeg_data);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
@@ -327,12 +314,14 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   while (i < tmp.frame_count && y < dim_y) {
     x = 0;
     while (i < tmp.frame_count && x < dim_x) {
-      sprite_data = data + sprite_stride * tmp.pix_h;
+      sprite_data = data + tmp.pix_h * sprite_stride;
       v = 0;
       while (v < tmp.pix_h) {
         sprite_data -= sprite_stride;
         memcpy(sprite_data,
-               jpeg_row[y * tmp.pix_h + v] + x * sprite_stride,
+               jpeg_data +
+               ((y * tmp.pix_h + v) * tmp.total_w + x) *
+               jpeg_pixel_size,
                sprite_stride);
         v++;
       }
@@ -384,7 +373,6 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   tmp.pt_h = tmp.pix_h * point_per_pixel;
   free(data);
   free(jpeg_data);
-  free(jpeg_row);
   *sprite = tmp;
   return sprite;
 }

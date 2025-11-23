@@ -157,9 +157,12 @@ s_image_egl *
 image_egl_resize_to_fill_file (s_image_egl *image, s_str *path)
 {
   s_gl_sprite sprite;
-  if (! gl_sprite_init(&sprite, path->ptr.pchar, 1, 1, 1, 1))
+  if (! gl_sprite_init(&sprite, path->ptr.pchar, 1, 1, 1, 1)) {
+    ERROR("gl_sprite_init");
     return NULL;
+  }
   if (! image_egl_resize_to_fill_sprite(image, &sprite)) {
+    ERROR("image_egl_resize_to_fill_sprite");
     gl_sprite_clean(&sprite);
     return NULL;
   }
@@ -179,7 +182,7 @@ image_egl_resize_to_fill_sprite (s_image_egl *image,
   assert(image);
   assert(sprite);
   if (! sprite->pix_w || ! sprite->pix_h) {
-    err_puts("image_egl_resize_to_fill_sprite: invalid sprite");
+    ERROR("invalid sprite");
     return NULL;
   }
   texture = gl_sprite_texture(sprite, 0);
@@ -198,7 +201,7 @@ image_egl_resize_to_fill_sprite (s_image_egl *image,
     x = ((f32) image->image.w - w) / 2.0f;
   }
   if (! gl_ortho_init(&ortho)) {
-    err_puts("image_egl_resize_to_fill_sprite: gl_ortho_init");
+    ERROR("gl_ortho_init");
     return NULL;
   }
   glViewport(0, 0, image->image.w, image->image.h);

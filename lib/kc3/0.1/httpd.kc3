@@ -177,8 +177,14 @@ defmodule HTTPd do
 
   def server = fn (host, port) {
     unveil("./", "r")
-    unveil("db/", "crw")
-    unveil("upload/", "crw")
+    unveil("./db/", "crw")
+    unveil("./upload/", "crw")
+    List.each(File.list("./upload/"), fn (name) {
+      path = "./upload/#{name}"
+      if File.is_directory?(path) do
+        unveil(path, "crw")
+      end
+    })
     unveil("", "")
     HTTPd.socket <- Socket.listen(host, port)
     if HTTPd.socket do

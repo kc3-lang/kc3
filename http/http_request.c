@@ -319,6 +319,13 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
                      " buf_read_until_str_into_file");
             goto restore;
           }
+          if (true) {
+            err_write_1("http_request_buf_parse: upload ");
+            err_inspect_str(&path.data.str);
+            err_write_1(" (");
+            err_inspect_sw_decimal(size.data.sw);
+            err_write_1(")\n");
+          }
 	  upload.type = TAG_PSTRUCT;
 	  if (! pstruct_init(&upload.data.pstruct, sym_Upload))
 	    goto restore;
