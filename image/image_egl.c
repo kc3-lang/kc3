@@ -27,6 +27,13 @@ void image_egl_clean (s_image_egl *image)
   image_clean(&image->image);
 }
 
+void image_egl_delete (s_image_egl *image)
+{
+  assert(image);
+  image_egl_clean(image);
+  free(image);
+}
+
 s_image_egl * image_egl_init (s_image_egl *image, uw w, uw h)
 {
   EGLConfig config;
@@ -101,21 +108,31 @@ s_image_egl * image_egl_init (s_image_egl *image, uw w, uw h)
     return NULL;
   }
   tmp.egl_context = eglCreateContext(tmp.egl_display,
-                                         config,
-                                         EGL_NO_CONTEXT,
-                                         context_attribs);
+                                     config,
+                                     EGL_NO_CONTEXT,
+                                     context_attribs);
   if (tmp.egl_context == EGL_NO_CONTEXT) {
     err_puts("image_egl_init: eglCreateContext");
     return NULL;
   }
-  if (! eglMakeCurrent(tmp.egl_display, tmp.egl_surface,
-                       tmp.egl_surface, tmp.egl_context)) {
-    err_puts("image_egl_init: eglMakeCurrent");
-    return NULL;
-  }
+  image_egl_make_context_current(&tmp);
   *image = tmp;
   return image;
 }
+
+void image_egl_make_context_current (s_image_egl *image)
+{
+  if (! eglMakeCurrent(image->egl_display, image->egl_surface,
+                       image->egl_surface, image->egl_context)) {
+    EGLint error = eglGetError();
+    err_write_1("image_egl_make_context_current: "
+                "eglMakeCurrent: 0x");
+    err_inspect_s32_hexadecimal(error);
+    err_write_1("\n");
+    assert(! "image_egl_make_context_current: eglMakeCurrent");
+  }
+}
+
 s_image_egl * image_egl_new (uw w, uw h)
 {
   s_image_egl *image = NULL;
@@ -230,6 +247,20 @@ void kc3_image_egl_delete (s_image_egl **image)
   free(*image);
 }
 
+uw * kc3_image_egl_height (s_image_egl **image, uw *dest)
+{
+  assert(image);
+  assert(*image);
+  assert(dest);
+  *dest = (*image)->image.h;
+  return dest;
+}
+
+void kc3_image_egl_make_context_current (s_image_egl **image)
+{
+  image_egl_make_context_current(*image);
+}
+
 s_marshall ** kc3_image_egl_marshall (s_marshall **m, bool heap,
                                       s_image_egl **image)
 {
@@ -307,4 +338,13 @@ s_image_egl ** kc3_image_egl_to_png_file (s_image_egl **image,
     return NULL;
   }
   return image;
+}
+
+uw * kc3_image_egl_width (s_image_egl **image, uw *dest)
+{
+  assert(image);
+  assert(*image);
+  assert(dest);
+  *dest = (*image)->image.w;
+  return dest;
 }

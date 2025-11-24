@@ -10,6 +10,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require GL.Triangle
 require GL.Vertex
 require Image
 require Marshall
@@ -21,6 +22,9 @@ defmodule Image.EGL do
   defstruct [image: %Image{}]
 
   def delete = cfn Void "kc3_image_egl_delete" (Image.EGL*)
+
+  def make_context_current =
+    cfn Void "kc3_image_egl_make_context_current" (Image.EGL*)
 
   def marshall =
     cfn Marshall* "kc3_image_egl_marshall" (Marshall*, Bool, Image.EGL*)
@@ -36,7 +40,11 @@ defmodule Image.EGL do
   def resize_to_fill_file =
     cfn Image.EGL* "kc3_image_egl_resize_to_fill_file" (Image.EGL*, Str)
 
+  def height = cfn Uw "kc3_image_egl_height" (Image.EGL*, Result)
+
   def to_png_file =
     cfn Image.EGL* "kc3_image_egl_to_png_file" (Image.EGL*, Str)
+
+  def width = cfn Uw "kc3_image_egl_width" (Image.EGL*, Result)
 
 end

@@ -151,8 +151,6 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
 {
   u8 *data;
   FILE *fp;
-  GLenum gl_format;
-  GLenum gl_type;
   uw i;
   struct jpeg_decompress_struct jpeg_info;
   struct jpeg_error_mgr jpeg_err;
@@ -166,6 +164,7 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   uw sprite_stride;
   uw x;
   uw y;
+  uw u;
   uw v;
   s_gl_sprite tmp = {0};
   assert(sprite);
@@ -217,26 +216,6 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   jpeg_w = jpeg_info.output_width;
   jpeg_h = jpeg_info.output_height;
   jpeg_components = jpeg_info.output_components;
-  gl_type = GL_UNSIGNED_BYTE;
-  switch (jpeg_components) {
-  case 1:
-    gl_format = GL_LUMINANCE;
-    break;
-  case 3:
-    gl_format = GL_RGB;
-    break;
-  default:
-    err_write_1("gl_sprite_init_jpeg: unsupported component"
-                " count ");
-    err_inspect_u8_decimal(jpeg_components);
-    err_write_1(": ");
-    err_puts(tmp.real_path.ptr.pchar);
-    jpeg_destroy_decompress(&jpeg_info);
-    fclose(fp);
-    str_clean(&tmp.path);
-    str_clean(&tmp.real_path);
-    return NULL;
-  }
   jpeg_pixel_size = jpeg_components;
   if (jpeg_h > SIZE_MAX / (jpeg_w * jpeg_pixel_size)) {
     err_write_1("gl_sprite_init_jpeg: image too large: ");
@@ -273,7 +252,7 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   tmp.dim_y = dim_y;
   tmp.pix_w = tmp.total_w / dim_x;
   tmp.pix_h = tmp.total_h / dim_y;
-  tmp.texture = calloc(tmp.frame_count, sizeof(GLuint));
+  tmp.texture = calloc(tmp.frame_count, sizeof(u8) * 4);
   if (! tmp.texture) {
     err_puts("gl_sprite_init_jpeg: tmp.texture:"
              " failed to allocate memory");
@@ -296,7 +275,7 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
     str_clean(&tmp.real_path);
     return NULL;
   }
-  sprite_stride = tmp.pix_w * jpeg_pixel_size;
+  sprite_stride = tmp.pix_w * 4;
   data = malloc(tmp.pix_h * sprite_stride);
   if (! data) {
     err_write_1("gl_sprite_init_jpeg: failed to allocate"
@@ -318,11 +297,15 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
       v = 0;
       while (v < tmp.pix_h) {
         sprite_data -= sprite_stride;
-        memcpy(sprite_data,
-               jpeg_data +
-               ((y * tmp.pix_h + v) * tmp.total_w + x) *
-               jpeg_pixel_size,
-               sprite_stride);
+        u = 0;
+        while (u < tmp.pix_w) {
+          memcpy(sprite_data + u * 4,
+                 jpeg_data + ((y * tmp.pix_h + v) * jpeg_w +
+                               x * tmp.pix_w + u) * jpeg_pixel_size,
+                 jpeg_pixel_size);
+          sprite_data[u * 4 + 3] = 255;
+          u++;
+        }
         v++;
       }
       glBindTexture(GL_TEXTURE_2D, tmp.texture[i]);
@@ -350,8 +333,8 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
         err_puts(gl_error_string(gl_error));
         return NULL;
       }
-      glTexImage2D(GL_TEXTURE_2D, 0, gl_format, tmp.pix_w,
-                   tmp.pix_h, 0, gl_format, gl_type, data);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tmp.pix_w,
+                   tmp.pix_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       gl_error = glGetError();
       if (gl_error != GL_NO_ERROR) {
         err_write_1("gl_sprite_init_jpeg: ");

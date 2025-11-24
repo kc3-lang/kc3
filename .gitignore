@@ -64,6 +64,10 @@ ikc3/ikc3
 ikc3/ikc3_asan
 ikc3/ikc3_cov
 ikc3/ikc3_debug
+/image/resize/kc3_image_resize
+/image/resize/kc3_image_resize_asan
+/image/resize/kc3_image_resize_cov
+/image/resize/kc3_image_resize_debug
 /kc3-*/
 /kc3-*.tar.gz
 kc3c/kc3c

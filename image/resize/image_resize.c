@@ -45,6 +45,7 @@ int main (int argc, char **argv)
     err_puts(PROG ": image_egl_init");
     return 1;
   }
+  image_egl_make_context_current(&image);
   if (! image_egl_resize_to_fill_file(&image, &input)) {
     err_puts(PROG ": image_egl_resize_to_fill_file");
     image_egl_clean(&image);

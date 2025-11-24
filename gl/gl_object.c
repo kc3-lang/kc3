@@ -49,8 +49,12 @@ s_gl_object * gl_object_init (s_gl_object *object)
   s_gl_object tmp = {0};
   assert(glGetError() == GL_NO_ERROR);
   glGenBuffers(1, &tmp.gl_vbo);
+  if (! tmp.gl_vbo)
+    return NULL;
   assert(glGetError() == GL_NO_ERROR);
   glGenBuffers(1, &tmp.gl_ebo);
+  if (! tmp.gl_ebo)
+    return NULL;
   assert(glGetError() == GL_NO_ERROR);
   *object = tmp;
   return object;
