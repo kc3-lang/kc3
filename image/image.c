@@ -16,6 +16,7 @@
 #include <jpeglib.h>
 #include <png.h>
 #include "image.h"
+#include "image_avir.h"
 
 void image_clean (s_image *image)
 {
@@ -235,6 +236,77 @@ s_image * image_init_png (s_image *image, const s_str *path, FILE *fp)
   free(png_row);
   png_destroy_read_struct(&png_read, &png_info, NULL);
   return image;
+}
+
+s_image * image_resize_to_fill (s_image *src, s_image *dest)
+{
+  f32 dest_aspect;
+  s_image resized = {0};
+  uw resize_h;
+  uw resize_w;
+  f32 src_aspect;
+  sw x;
+  sw y;
+  assert(src);
+  assert(dest);
+  assert(src->data);
+  assert(dest->data);
+  if (! src->w || ! src->h || ! dest->w || ! dest->h) {
+    err_puts("image_resize_to_fill: invalid dimensions");
+    return NULL;
+  }
+  if (src->components != dest->components) {
+    err_puts("image_resize_to_fill: invalid components");
+    return NULL;
+  }
+  if (src->pixel_size != dest->pixel_size) {
+    err_puts("image_resize_to_fill: invalid pixel size");
+    return NULL;
+  }
+  src_aspect = (f32) src->w / (f32) src->h;
+  dest_aspect = (f32) dest->w / (f32) dest->h;
+  if (src_aspect == dest_aspect) {
+    if (! image_avir_resize_8(src, dest)) {
+      err_puts("image_resize_to_fill: 1:1 image_avir_resize_8");
+      return NULL;
+    }
+    return dest;
+  }
+  else if (src_aspect < dest_aspect) {
+    resize_w = dest->w;
+    resize_h = (uw) ((f32) resize_w / src_aspect);
+    x = 0;
+    assert(resize_h >= dest->h);
+    y = (resize_h - dest->h) / 2;
+  }
+  else {
+    resize_h = dest->h;
+    resize_w = (uw) ((f32) resize_h * src_aspect);
+    y = 0;
+    assert(resize_w >= dest->w);
+    x = (resize_w - dest->w) / 2;
+  }
+  if (! image_init_alloc(&resized, resize_w, resize_h, src->components,
+                         src->pixel_size)) {
+    err_puts("image_resize_to_fill: image_init_alloc failed");
+    return NULL;
+  }
+  if (! image_avir_resize_8(src, &resized)) {
+    err_puts("image_resize_to_fill: image_avir_resize_8 failed");
+    image_clean(&resized);
+    return NULL;
+  }
+  // memset(dest->data, 0, dest->h * dest->w * dest->pixel_size);
+  uw v = 0;
+  while (v < dest->h) {
+    memcpy(dest->data + v * dest->w * dest->pixel_size,
+           resized.data + (((v + y) * resize_w + x) *
+                           resized.pixel_size),
+           dest->w * dest->pixel_size);
+    v++;
+  }
+  image_clean(&resized);
+  return dest;
 }
 
 bool image_to_png_file (s_image *image, s_str *path)

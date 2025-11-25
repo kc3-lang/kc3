@@ -50,8 +50,8 @@ int main (int argc, char **argv)
     err_puts(PROG ": image_init_alloc");
     goto clean;
   }
-  if (! image_avir_resize_8(&src, &dest)) {
-    err_puts(PROG ": image_avir_resize_8");
+  if (! image_resize_to_fill(&src, &dest)) {
+    err_puts(PROG ": image_resize_to_fill");
     image_clean(&src);
     image_clean(&dest);
     r = 1;
