@@ -41,10 +41,10 @@ OBJECTS_DEBUG="$(c2ext .debug.o "$SOURCES") $(cxx2ext .debug.o "$CXX_SOURCES")"
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
 CXXFLAGS="$CXXFLAGS -W -Wall -Werror -std=c++11 -pedantic -pipe -fPIC"
-CXXFLAGS="$CXXFLAGS -Wno-error=changes-meaning"
 LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
 LDFLAGS="$LDFLAGS -L${BUILD_TOP}/gl"
 config_asan
+config_cxxflag -Wno-error=changes-meaning
 config_gnu
 config_i386
 config_have_f80
