@@ -22,4 +22,10 @@ defmodule Image do
 
   dlopen("image.so")
 
+  def delete = cfn Void "kc3_image_delete" (Image*)
+
+  # new_alloc (w, h, components, pixel_size)
+  def new_alloc =
+    cfn Image* "kc3_image_new_alloc" (Result, Tag, Tag, Tag, Tag)
+
 end

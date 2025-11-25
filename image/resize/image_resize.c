@@ -40,13 +40,14 @@ int main (int argc, char **argv)
     err_write_1("\n");
     goto clean;
   }
-  if (! image_init_alloc(&dest, w, h, 4, 4)) {
-    err_puts(PROG ": image_init_alloc");
-    goto clean;
-  }
   if (! image_init_file(&src, &input)) {
     err_puts(PROG ": image_init_file");
     image_clean(&dest);
+    goto clean;
+  }
+  if (! image_init_alloc(&dest, w, h, src.components,
+                         src.pixel_size)) {
+    err_puts(PROG ": image_init_alloc");
     goto clean;
   }
   if (! image_avir_resize_8(&src, &dest)) {
