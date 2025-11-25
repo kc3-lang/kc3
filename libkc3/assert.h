@@ -13,10 +13,9 @@
 #ifndef LIBKC3_ASSERT_H
 #define LIBKC3_ASSERT_H
 
+#include <stdlib.h>
 #include "env.h"
 #include "io.h"
-
-void abort (void);
 
 #ifdef DEBUG
 # define assert(test)                                                  \
