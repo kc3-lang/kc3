@@ -43,8 +43,7 @@ CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
 CXXFLAGS="$CXXFLAGS -W -Wall -Werror -std=c++11 -pedantic -pipe -fPIC"
 CXXFLAGS="$CXXFLAGS -Wno-error=changes-meaning"
 LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
-LDFLAGS="$LDFLAGS -L${BUILD_TOP}/socket"
-LDFLAGS="$LDFLAGS -L${BUILD_TOP}/tls"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/gl"
 config_asan
 config_gnu
 config_i386
@@ -77,14 +76,14 @@ LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
 LIBS_ASAN="$(${CC} -print-file-name=libasan.so)"
 LIBS_ASAN="$LIBS_ASAN $LIBS"
-LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_gl_asan -lkc3_asan"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 CXXFLAGS_COV="$CXXFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS"
-LIBS_COV="$LIBS -lkc3_cov"
+LIBS_COV="$LIBS -lkc3_gl_cov -lkc3_cov"
 LIBS_COV="$LIBS_COV $COV_PROFILE_LIB"
 
 # Debug config
@@ -92,7 +91,7 @@ CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 CXXFLAGS_DEBUG="$CXXFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_DEBUG="$LIBS -lkc3_debug"
+LIBS_DEBUG="$LIBS -lkc3_gl_debug -lkc3_debug"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -fPIC"
@@ -105,7 +104,7 @@ if [ "x$ENV_CXXFLAGS" = "x" ]; then
     CXXFLAGS="$CXXFLAGS $DEFAULT_CXXFLAGS"
 fi
 CXXFLAGS="$CXXFLAGS -DNDEBUG"
-LIBS="$LIBS -lkc3"
+LIBS="$LIBS -lkc3_gl -lkc3"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
