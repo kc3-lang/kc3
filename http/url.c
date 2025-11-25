@@ -128,10 +128,20 @@ s_str * url_unescape (const s_str *url, s_str *dest)
         goto clean;
     }
     else if (c == '%') {
-      if ((r = buf_parse_digit_hex(&in, &digit[0])) <= 0)
+      if ((r = buf_parse_digit_hex(&in, &digit[0])) < 0)
         goto ok;
+      if (! r) {
+        buf_write_character_utf8(&out, '%');
+        continue;
+      }
       if ((r = buf_parse_digit_hex(&in, &digit[1])) <= 0)
         goto ok;
+      if (! r) {
+        buf_write_character_utf8(&out, '%');
+        buf_write_character_utf8
+          (&out, g_kc3_base_hexadecimal.ptr.pchar[digit[0]]);
+        continue;
+      }
       u = digit[0] * 16 + digit[1];
       if (buf_write_u8(&out, u) < 0)
         goto clean;
@@ -159,9 +169,18 @@ sw url_unescape_size (const s_str *url)
   buf_init_str_const(&in, url);
   while ((r = buf_read_character_utf8(&in, &c)) > 0) {
     if (c == '%') {
-      if ((r = buf_parse_digit_hex(&in, &digit[0])) <= 0 ||
-          (r = buf_parse_digit_hex(&in, &digit[1])) <= 0)
+      if ((r = buf_parse_digit_hex(&in, &digit[0])) < 0)
         return result;
+      if (! r) {
+        result++;
+        continue;
+      }
+      if ((r = buf_parse_digit_hex(&in, &digit[1])) < 0)
+        return result;
+      if (! r) {
+        result += 2;
+        continue;
+      }
       result++;
     }
     else
@@ -184,8 +203,8 @@ s_tag * url_www_form_decode (const s_str *src, s_tag *dest)
   while (1) {
     if (buf_read_until_1_into_str(&buf, "=", &key) <= 0)
       break;
-    if (buf_read_until_1_into_str(&buf, "&", &value) <= 0 &&
-        buf_read_to_str(&buf, &value) <= 0) {
+    if (buf_read_until_1_into_str(&buf, "&", &value) < 0 &&
+        buf_read_to_str(&buf, &value) < 0) {
       str_clean(&key);
       goto clean;
     }
