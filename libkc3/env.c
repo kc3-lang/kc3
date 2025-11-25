@@ -942,7 +942,7 @@ void env_error_tag (s_env *env, s_tag *tag)
   if (error_handler) {
     tag_init_copy(&error_handler->tag, tag);
     error_handler->stacktrace = list_new_copy_all(env->stacktrace);
-    env_longjmp(env, &error_handler->jmp_buf);
+    env_longjmp(env, &error_handler->jmp);
     /* never reached */
     return;
   }

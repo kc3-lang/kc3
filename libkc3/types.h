@@ -788,7 +788,7 @@ struct counter {
 struct error_handler
 {
   s_list *stacktrace;
-  jmp_buf jmp_buf;
+  jmp_buf jmp;
   s_error_handler *next;
   s_tag tag;
 };
