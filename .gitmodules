@@ -17,3 +17,6 @@
 [submodule "ucd2c"]
 	path = ucd2c
 	url = https://git.kmx.io/kc3-lang/ucd2c.git
+[submodule "image/avir"]
+	path = image/avir
+	url = https://git.kmx.io/kc3-lang/avir.git

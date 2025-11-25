@@ -26,6 +26,9 @@ sources HEADERS "$HEADERS"
 SOURCES="$(ls *.c)"
 sources SOURCES "$SOURCES"
 
+CXX_SOURCES="$(ls *.cxx)"
+sources CXX_SOURCES "$CXX_SOURCES"
+
 update_sources_mk
 update_sources_sh
 

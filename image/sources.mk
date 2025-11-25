@@ -8,3 +8,6 @@ SOURCES = \
 	"image.c" \
 	"image_egl.c" \
 
+CXX_SOURCES = \
+	"image_avir.cxx" \
+
