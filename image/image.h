@@ -24,11 +24,23 @@ s_image * image_init_file (s_image *image, const s_str *path);
 s_image * image_init_jpeg (s_image *image, const s_str *path, FILE *fp);
 s_image * image_init_png (s_image *image, const s_str *path, FILE *fp);
 
+/* Heap allocation functions, call image_delete after use. */
+void      image_delete (s_image *image);
+s_image * image_new_alloc (uw w, uw h, u8 components, u8 pixel_size);
+
 /* Operators. */
 s_image * image_resize_to_fill (s_image *src, s_image *dest);
 
 /* Observers. */
-bool image_to_jpeg_file (s_image *image, s_str *path);
-bool image_to_png_file (s_image *image, s_str *path);
+s_image * image_to_jpeg_file (s_image *image, s_str *path);
+s_image * image_to_png_file (s_image *image, s_str *path);
+
+/* KC3 interface. */
+void       kc3_image_delete (s_image **image);
+s_image ** kc3_image_new_resize_to_fill_file (s_image **image,
+                                              s_tag *tag_w,
+                                              s_tag *tag_h,
+                                              s_str *src_path);
+s_image ** kc3_image_to_png_file (s_image **image, s_str *path);
 
 #endif /* KC3_IMAGE_H */

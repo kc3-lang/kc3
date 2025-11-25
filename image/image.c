@@ -24,6 +24,12 @@ void image_clean (s_image *image)
     free(image->data);
 }
 
+void image_delete (s_image *image)
+{
+  image_clean(image);
+  free(image);
+}
+
 s_image * image_init (s_image *image)
 {
   s_image tmp = {0};
@@ -238,6 +244,18 @@ s_image * image_init_png (s_image *image, const s_str *path, FILE *fp)
   return image;
 }
 
+s_image * image_new_alloc (uw w, uw h, u8 components, u8 pixel_size)
+{
+  s_image *image;
+  if (! (image = alloc(sizeof(s_image))))
+    return NULL;
+  if (! image_init_alloc(image, w, h, components, pixel_size)) {
+    free(image);
+    return NULL;
+  }
+  return image;
+}
+
 s_image * image_resize_to_fill (s_image *src, s_image *dest)
 {
   f32 dest_aspect;
@@ -309,7 +327,7 @@ s_image * image_resize_to_fill (s_image *src, s_image *dest)
   return dest;
 }
 
-bool image_to_png_file (s_image *image, s_str *path)
+s_image * image_to_png_file (s_image *image, s_str *path)
 {
   FILE *fp;
   png_structp png_ptr;
@@ -325,33 +343,33 @@ bool image_to_png_file (s_image *image, s_str *path)
       ! image->data ||
       ! path) {
     ERROR("invalid argument");
-    return false;
+    return NULL;
   }
   fp = fopen(path->ptr.pchar, "wb");
   if (! fp) {
     err_write_1("image_to_png_file: fopen: ");
     err_puts(path->ptr.pchar);
-    return false;
+    return NULL;
   }
   png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
                                     NULL, NULL, NULL);
   if (! png_ptr) {
     err_puts("image_to_png_file: png_create_write_struct");
     fclose(fp);
-    return false;
+    return NULL;
   }
   info_ptr = png_create_info_struct(png_ptr);
   if (! info_ptr) {
     err_puts("image_to_png_file: png_create_info_struct");
     png_destroy_write_struct(&png_ptr, NULL);
     fclose(fp);
-    return false;
+    return NULL;
   }
   if (setjmp(png_jmpbuf(png_ptr))) {
     err_puts("image_to_png_file: png error");
     png_destroy_write_struct(&png_ptr, &info_ptr);
     fclose(fp);
-    return false;
+    return NULL;
   }
   png_init_io(png_ptr, fp);
   switch (image->components) {
@@ -363,7 +381,7 @@ bool image_to_png_file (s_image *image, s_str *path)
     err_puts("image_to_png_file: invalid components");
     png_destroy_write_struct(&png_ptr, &info_ptr);
     fclose(fp);
-    return false;
+    return NULL;
   }
   png_set_IHDR(png_ptr, info_ptr, image->w, image->h, 8,
                color_type, PNG_INTERLACE_NONE,
@@ -375,7 +393,7 @@ bool image_to_png_file (s_image *image, s_str *path)
     err_puts("image_to_png_file: alloc");
     png_destroy_write_struct(&png_ptr, &info_ptr);
     fclose(fp);
-    return false;
+    return NULL;
   }
   for (y = 0; y < image->h; y++)
     row_pointers[y] = (png_byte *) image->data +
@@ -385,5 +403,46 @@ bool image_to_png_file (s_image *image, s_str *path)
   free(row_pointers);
   png_destroy_write_struct(&png_ptr, &info_ptr);
   fclose(fp);
-  return true;
+  return image;
+}
+
+void kc3_image_delete (s_image **image)
+{
+  assert(image);
+  assert(*image);
+  image_delete(*image);
+}
+
+s_image ** kc3_image_new_resize_to_fill_file (s_image **image,
+                                              s_tag *tag_w,
+                                              s_tag *tag_h,
+                                              s_str *src_path)
+{
+  uw h;
+  s_image src;
+  const s_sym *sym_Uw = &g_sym_Uw;
+  s_image *tmp = NULL;
+  uw w;
+  if (! uw_init_cast(&w, &sym_Uw, tag_w))
+    return NULL;
+  if (! uw_init_cast(&h, &sym_Uw, tag_h))
+    return NULL;
+  if (! image_init_file(&src, src_path))
+    return NULL;
+  if (! (tmp = image_new_alloc(w, h, src.components, src.pixel_size)))
+    return NULL;
+  if (! image_resize_to_fill(&src, tmp)) {
+    image_clean(&src);
+    return NULL;
+  }
+  image_clean(&src);
+  *image = tmp;
+  return image;
+}
+
+s_image ** kc3_image_to_png_file (s_image **image, s_str *path)
+{
+  if (! image_to_png_file(*image, path))
+    return NULL;
+  return image;
 }
