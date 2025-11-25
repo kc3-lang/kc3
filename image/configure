@@ -54,10 +54,8 @@ config_win64
 pkg_config libbsd-overlay
 pkg_config libevent
 pkg_config libffi
-pkg_config libmd
-pkg_config egl
-pkg_config freetype2
-pkg_config glesv2
+pkg_config libjpeg
+pkg_config libpng
 case "$(uname -s)" in
     MINGW64*)
         ;;
