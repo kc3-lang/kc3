@@ -366,6 +366,7 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
 {
   u8 *data;
   FILE *fp;
+  GLenum gl_error;
   GLenum gl_format;
   GLint  gl_internal_format;
   GLenum gl_type;
@@ -391,7 +392,13 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
   assert(path);
   assert(dim_x);
   assert(dim_y);
-  assert(glGetError() == GL_NO_ERROR);
+  gl_error = glGetError();
+  if (gl_error != GL_NO_ERROR) {
+    err_write_1("gl_sprite_init_png: ");
+    err_puts(gl_error_string(gl_error));
+    assert(gl_error == GL_NO_ERROR);
+    return NULL;
+  }
   tmp.frame_count = (frame_count > 0) ? frame_count :
     (dim_x * dim_y);
   str_init_copy_1(&tmp.path, path);
@@ -521,7 +528,7 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
   }
   assert(glGetError() == GL_NO_ERROR);
   glGenTextures(tmp.frame_count, tmp.texture);
-  GLenum gl_error = glGetError();
+  gl_error = glGetError();
   if (gl_error != GL_NO_ERROR) {
     err_write_1("gl_sprite_init: ");
     err_inspect_str(&tmp.real_path);

@@ -22,8 +22,6 @@ void image_egl_clean (s_image_egl *image)
     eglDestroyContext(image->egl_display, image->egl_context);
   if (image->egl_surface != EGL_NO_SURFACE)
     eglDestroySurface(image->egl_display, image->egl_surface);
-  if (image->egl_display != EGL_NO_DISPLAY)
-    eglTerminate(image->egl_display);
   image_clean(&image->image);
 }
 
@@ -70,7 +68,10 @@ s_image_egl * image_egl_init (s_image_egl *image, uw w, uw h)
     return NULL;
   }
   if (! eglInitialize(tmp.egl_display, &major, &minor)) {
-    err_puts("image_egl_init: eglInitialize");
+    EGLint error = eglGetError();
+    err_write_1("image_egl_init: eglInitialize: 0x");
+    err_inspect_u32_hexadecimal((u32) error);
+    err_write_1("\n");
     return NULL;
   }
   if (false) {
@@ -115,7 +116,7 @@ s_image_egl * image_egl_init (s_image_egl *image, uw w, uw h)
     err_puts("image_egl_init: eglCreateContext");
     return NULL;
   }
-  image_egl_make_context_current(&tmp);
+  //image_egl_make_context_current(&tmp);
   *image = tmp;
   return image;
 }
@@ -127,7 +128,7 @@ void image_egl_make_context_current (s_image_egl *image)
     EGLint error = eglGetError();
     err_write_1("image_egl_make_context_current: "
                 "eglMakeCurrent: 0x");
-    err_inspect_s32_hexadecimal(error);
+    err_inspect_u32_hexadecimal((u32) error);
     err_write_1("\n");
     assert(! "image_egl_make_context_current: eglMakeCurrent");
   }
@@ -166,6 +167,7 @@ void image_egl_read (s_image_egl *image)
     err_write_1("\n");
     return;
   }
+  glFlush();
   glReadPixels(0, 0, image->image.w, image->image.h, format,
                GL_UNSIGNED_BYTE, image->image.data);
 }
@@ -173,7 +175,15 @@ void image_egl_read (s_image_egl *image)
 s_image_egl *
 image_egl_resize_to_fill_file (s_image_egl *image, s_str *path)
 {
+  GLenum gl_error;
   s_gl_sprite sprite;
+  gl_error = glGetError();
+  if (gl_error != GL_NO_ERROR) {
+    err_write_1("image_egl_resize_to_fill_file: ");
+    err_puts(gl_error_string(gl_error));
+    assert(gl_error == GL_NO_ERROR);
+    return NULL;
+  }
   if (! gl_sprite_init(&sprite, path->ptr.pchar, 1, 1, 1, 1)) {
     ERROR("gl_sprite_init");
     return NULL;
@@ -221,6 +231,7 @@ image_egl_resize_to_fill_sprite (s_image_egl *image,
     ERROR("gl_ortho_init");
     return NULL;
   }
+  glClear(GL_COLOR_BUFFER_BIT);
   glViewport(0, 0, image->image.w, image->image.h);
   gl_ortho_resize(&ortho, 0.0f, (f32) image->image.w,
                   0.0f, (f32) image->image.h, -1.0f, 1.0f);
