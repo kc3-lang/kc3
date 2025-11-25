@@ -69,16 +69,9 @@ There are now four full applications written in KC3 that we know of :
 
  - libkc3
    - dlopen inside lib/ only
-   - Typed pointer example : `(Facts*)` → `p_facts`
    - Generic typed pointers : `(U8*) 0x0`
    - make `kc3_require` and `env_eval_do_block` more careful about error
      handling
-   - securelevel between 0 and 3
-     - API that can only increase securelevel between 0 and 2
-     - 0 → (cfn + system + dlopen + dlsym) + eval + def*
-     - 1 → eval + def*
-     - 2 → eval
-     - 3 → ø (no KC3 eval, C-mode only)
    - MP-safe integer counters : `defcounter name = value`
      - environment hash table for name resolution
      - mp-safe
@@ -93,8 +86,8 @@ There are now four full applications written in KC3 that we know of :
    - rename f128 to f80: long double is actually 80 bits precision on
      x86 and amd64
 
-- libtls
-     - basic TLS client and server in test/tls/tls.kc3
+ - libtls
+   - basic TLS client and server in test/tls/tls.kc3
 
  - ikc3
    - Remote procedure call
