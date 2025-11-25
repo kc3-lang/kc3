@@ -85,14 +85,16 @@ s_marshall ** mutex_marshall (s_marshall **m, bool heap,
 s_mutex ** mutex_marshall_read (s_marshall_read **mr, bool heap,
                                 s_mutex **dest)
 {
-  s_mutex *tmp;
+  s_mutex *tmp = NULL;
   assert(mr);
   assert(*mr);
   assert(dest);
   (void) mr;
   (void) heap;
+#if HAVE_PTHREAD
   if (! (tmp = mutex_new()))
     return NULL;
+#endif
   *dest = tmp;
   return dest;
 }
