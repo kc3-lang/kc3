@@ -52,6 +52,7 @@ config_have_f128
 config_win32
 config_win64
 config_lib STDCXX -lstdc++
+config_lib GCC_S -lgcc_s
 config_lib CXX -lc++
 config_lib MATH -lm
 pkg_config libbsd-overlay
