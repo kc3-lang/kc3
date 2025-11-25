@@ -52,6 +52,7 @@ config_have_f128
 config_win32
 config_win64
 config_lib STDCXX -lstdc++
+config_lib CXX -lc++
 pkg_config libbsd-overlay
 pkg_config libevent
 pkg_config libffi
