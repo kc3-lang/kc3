@@ -13,9 +13,9 @@
 #ifndef LIBKC3_ALLOC_H
 #define LIBKC3_ALLOC_H
 
+#include <stdlib.h>
 #include "types.h"
 
 void * alloc (uw size);
-void   free (void *ptr);
 
 #endif /* LIBKC3_ALLOC_H */
