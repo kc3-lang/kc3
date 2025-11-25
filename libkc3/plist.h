@@ -23,6 +23,9 @@ p_list * plist_init_cast (p_list *plist, const s_sym * const *type,
                           s_tag *tag);
 p_list * plist_init_copy (p_list *plist, p_list *src);
 
+/* Observers. */
+bool *   plist_all (p_list *plist, p_callable *function, bool *dest);
+
 /* Operators. */
 p_list * plist_cast (p_list *plist, const s_sym * const *type,
                      const s_tag *tag);

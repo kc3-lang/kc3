@@ -12,6 +12,8 @@
 
 defmodule List do
 
+  def all? = cfn Bool "plist_all" (List, Callable, Result)
+
   def append = cfn List "plist_init_append" (Result, List, List)
 
   def append_one = cfn List "plist_init_append_one" (Result, List, Tag)

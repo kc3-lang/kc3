@@ -31,6 +31,41 @@
 #include "tuple.h"
 #include "uw.h"
 
+bool * plist_all (p_list *plist, p_callable *function, bool *dest)
+{
+  s_list *arg;
+  bool b;
+  s_list *l;
+  const s_sym *sym_Bool = &g_sym_Bool;
+  s_tag tmp;
+  if (! (arg = list_new(NULL)))
+    return NULL;
+  l = *plist;
+  while (l) {
+    if (! tag_copy(&arg->tag, &l->tag))
+      goto ko;
+    if (! eval_callable_call(*function, arg, &tmp))
+      goto ko;
+    if (! bool_init_cast(&b, &sym_Bool, &tmp))
+      goto ko;
+    tag_void(&tmp);
+    if (! b) {
+      *dest = false;
+      list_delete_all(arg);
+      return dest;
+    }
+    l = list_next(l);
+  }
+  list_delete_all(arg);
+  *dest = true;
+  return dest;
+ ko:
+  tag_clean(&tmp);
+  list_delete_all(arg);
+  return NULL;
+  
+}
+
 void plist_clean (p_list *plist)
 {
   list_delete_all(*plist);

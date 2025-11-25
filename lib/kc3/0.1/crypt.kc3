@@ -25,7 +25,7 @@ defmodule Crypt do
 
   def sha512_hash_password = fn (password) {
     salt = Str.random_base64(16)
-    sha512(password, "$6$rounds=1234567$#{salt}$")
+    sha512(password, "$6$rounds=123456$#{salt}$")
   }
 
 end
