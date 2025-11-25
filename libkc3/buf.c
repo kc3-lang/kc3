@@ -1193,17 +1193,15 @@ sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
   u8 c;
   sw r;
   sw result = 0;
-  s_buf_save save;
 #if HAVE_PTHREAD
   rwlock_w(&buf->rwlock);
   rwlock_w(&dest->rwlock);
 #endif
-  buf_save_init(buf, &save);
   while (1) {
     if ((r = buf_read_str(buf, end)) < 0) {
       if (true)
         err_puts("buf_read_until_str_into_buf: buf_read_str");
-      goto restore;
+      goto clean;
     }
     if (r) {
       result += r;
@@ -1211,21 +1209,20 @@ sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
       goto clean;
     }
     if ((r = buf_read_u8(buf, &c)) <= 0) {
-      if (true)
+      if (true) {
         err_puts("buf_read_until_str_into_buf: buf_read_u8");
-      goto restore;
+        err_inspect_buf(buf);
+      }
+      goto clean;
     }
     if ((r = buf_write_u8(dest, c)) <= 0) {
       if (true)
         err_puts("buf_read_until_str_into_buf: buf_write_u8");
-      goto restore;
+      goto clean;
     }
     result++;
   }
- restore:
-  buf_save_restore_rpos(buf, &save);
  clean:
-  buf_save_clean(buf, &save);
 #if HAVE_PTHREAD
   rwlock_unlock_w(&buf->rwlock);
   rwlock_unlock_w(&dest->rwlock);
