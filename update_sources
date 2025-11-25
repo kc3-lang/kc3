@@ -19,6 +19,7 @@ KC3_DIRS="
  http
  httpd
  ikc3
+ image
  json
  kc3c
  kc3s

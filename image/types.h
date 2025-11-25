@@ -14,11 +14,8 @@
 #define KC3_IMAGE_TYPES_H
 
 #include "../libkc3/types.h"
-#include <EGL/egl.h>
-#include "../gl/types.h"
 
 typedef struct image     s_image;
-typedef struct image_egl s_image_egl;
 
 /* 1 */
 
@@ -28,16 +25,6 @@ struct image {
   u8 components;
   u8 pixel_size;
   void *data;
-};
-
-/* 2 */
-
-struct image_egl {
-  s_image image;
-  EGLConfig  egl_config;
-  EGLContext egl_context;
-  EGLDisplay egl_display;
-  EGLSurface egl_surface;
 };
 
 #endif /* KC3_IMAGE_TYPES_H */

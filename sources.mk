@@ -26,6 +26,12 @@ KC3_CONFIGURES = \
 	"ikc3/configure" \
 	"ikc3/sources.sh" \
 	"ikc3/update_sources" \
+	"image/configure" \
+	"image/resize/configure" \
+	"image/resize/sources.sh" \
+	"image/resize/update_sources" \
+	"image/sources.sh" \
+	"image/update_sources" \
 	"json/configure" \
 	"json/sources.sh" \
 	"json/update_sources" \
@@ -147,6 +153,10 @@ KC3_MAKEFILES = \
 	"httpd/sources.mk" \
 	"ikc3/Makefile" \
 	"ikc3/sources.mk" \
+	"image/Makefile" \
+	"image/resize/Makefile" \
+	"image/resize/sources.mk" \
+	"image/sources.mk" \
 	"json/Makefile" \
 	"json/sources.mk" \
 	"kc3c/Makefile" \
@@ -353,6 +363,16 @@ KC3_C_SOURCES = \
 	"ikc3/ikc3.c" \
 	"ikc3/ikc3_kc3s.c" \
 	"ikc3/linenoise.c" \
+	"image/avir/avir.h" \
+	"image/avir/avir_dil.h" \
+	"image/avir/avir_float4_sse.h" \
+	"image/avir/avir_float8_avx.h" \
+	"image/avir/lancir.h" \
+	"image/image.c" \
+	"image/image.h" \
+	"image/image_avir.h" \
+	"image/resize/image_resize.c" \
+	"image/types.h" \
 	"json/json.c" \
 	"json/json.h" \
 	"kc3c/c3c.c" \
@@ -1183,6 +1203,7 @@ KC3_C_SOURCES = \
 	"window/window.h" \
 
 KC3_CXX_SOURCES = \
+	"image/image_avir.cxx" \
 	"libkc3/std.cxx" \
 	"libkc3/std.hxx" \
 
