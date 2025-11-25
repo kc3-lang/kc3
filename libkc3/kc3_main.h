@@ -159,7 +159,7 @@ s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
                           s_tag *else_, s_tag *dest);
 void    kc3_return (s_tag *value);
 void    kc3_return_from (const s_sym **name, s_tag *value);
-s_tag * kc3_unwind_protect (s_tag *protected, s_tag *cleanup,
+s_tag * kc3_unwind_protect (s_tag *protected_, s_tag *cleanup,
                             s_tag *dest);
 s_tag * kc3_while (s_tag *cond, s_tag *body, s_tag *dest);
 

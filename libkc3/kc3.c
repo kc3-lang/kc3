@@ -1717,10 +1717,10 @@ void kc3_unveil (const s_str *path, const s_str *permissions)
 
 #endif
 
-s_tag * kc3_unwind_protect (s_tag *protected, s_tag *cleanup,
+s_tag * kc3_unwind_protect (s_tag *protected_, s_tag *cleanup,
                             s_tag *dest)
 {
-  return env_unwind_protect(env_global(), protected, cleanup, dest);
+  return env_unwind_protect(env_global(), protected_, cleanup, dest);
 }
 
 s_tag * kc3_while (s_tag *cond, s_tag *body, s_tag *dest)

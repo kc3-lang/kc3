@@ -159,7 +159,7 @@ bool *         env_struct_type_has_spec (s_env *env,
                                          bool *dest);
 bool           env_tag_ident_is_bound (s_env *env,
                                        const s_tag *tag);
-s_tag *        env_unwind_protect (s_env *env, s_tag *protected,
+s_tag *        env_unwind_protect (s_env *env, s_tag *protected_,
                                    s_tag *cleanup,
                                    s_tag *dest);
 void           env_unwind_protect_pop (s_env *env,

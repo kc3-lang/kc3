@@ -3029,7 +3029,7 @@ s_env * env_toplevel_init (s_env *env)
   return env;
 }
 
-s_tag * env_unwind_protect (s_env *env, s_tag *protected,
+s_tag * env_unwind_protect (s_env *env, s_tag *protected_,
                             s_tag *cleanup,
                             s_tag *dest)
 {
@@ -3038,7 +3038,7 @@ s_tag * env_unwind_protect (s_env *env, s_tag *protected,
   s_tag tmp = {0};
   s_unwind_protect up;
   assert(env);
-  assert(protected);
+  assert(protected_);
   env_unwind_protect_push(env, &up);
   if (setjmp(up.buf)) {
     env_unwind_protect_pop(env, &up);
@@ -3046,7 +3046,7 @@ s_tag * env_unwind_protect (s_env *env, s_tag *protected,
     tag_clean(&discard);
     longjmp(*up.jmp, 1);
   }
-  if (! env_eval_tag(env, protected, &tmp)) {
+  if (! env_eval_tag(env, protected_, &tmp)) {
     env_unwind_protect_pop(env, &up);
     env_eval_tag(env, cleanup, &discard);
     tag_clean(&discard);
