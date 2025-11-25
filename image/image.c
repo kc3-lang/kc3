@@ -44,6 +44,63 @@ s_image * image_init_alloc (s_image *image, uw w, uw h, u8 components,
   return image;
 }
 
+s_image * image_init_file (s_image *image, const s_str *path)
+{
+  FILE *fp;
+  u8 header[8];
+  fp = fopen(path->ptr.pchar, "rb");
+  if (! fp) {
+    err_write_1("image_init_file: fopen: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    return NULL;
+  }
+  if (fread(header, 1, sizeof(header), fp) != sizeof(header)) {
+    err_write_1("image_init_file: fread: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    fclose(fp);
+    return NULL;
+  }
+  rewind(fp);
+  if (! png_sig_cmp(header, 0, sizeof(header))) {
+    if (! image_init_png(image, path, fp)) {
+      fclose(fp);
+      return NULL;
+    }
+    fclose(fp);
+    return image;
+  }
+  if (header[0] == 0xff && header[1] == 0xd8) {
+    if (! image_init_jpeg(image, path, fp)) {
+      fclose(fp);
+      return NULL;
+    }
+    fclose(fp);
+    return image;
+  }
+  fclose(fp);
+  err_puts("image_init_file: unsupported file format");
+  assert(! "image_init_file: unsupported file format");
+  return NULL;
+}
+
+s_image * image_init_jpeg (s_image *image, const s_str *path, FILE *fp)
+{
+  (void) image;
+  (void) path;
+  (void) fp;
+  return NULL;
+}
+
+s_image * image_init_png (s_image *image, const s_str *path, FILE *fp)
+{
+  (void) image;
+  (void) path;
+  (void) fp;
+  return NULL;
+}
+
 bool image_to_png_file (s_image *image, s_str *path)
 {
   FILE *fp;

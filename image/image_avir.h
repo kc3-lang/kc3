@@ -15,7 +15,7 @@
 
 #include "types.h"
 
-s_image * image_avir_resize_8 (const s_image *src, uw w, uw h,
-                               s_image *dest);
+/* Operators. */
+s_image * image_avir_resize_8 (s_image *src, s_image *dest);
 
 #endif /* KC3_IMAGE_AVIR_H */

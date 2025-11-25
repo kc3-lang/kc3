@@ -20,6 +20,9 @@ void      image_clean (s_image *image);
 s_image * image_init (s_image *image);
 s_image * image_init_alloc (s_image *image, uw w, uw h, u8 components,
                             u8 pixel_size);
+s_image * image_init_file (s_image *image, const s_str *path);
+s_image * image_init_jpeg (s_image *image, const s_str *path, FILE *fp);
+s_image * image_init_png (s_image *image, const s_str *path, FILE *fp);
 
 /* Observers. */
 bool image_to_jpeg_file (s_image *image, s_str *path);

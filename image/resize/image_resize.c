@@ -12,22 +12,20 @@
  */
 #include "../../libkc3/kc3.h"
 #include <stdio.h>
-#include "../image_egl.h"
 #include "../image.h"
+#include "../image_avir.h"
 
 static int usage (const char *prog);
 
 int main (int argc, char **argv)
 {
+  s_image dest;
   uw h = 0;
-  s_image_egl image;
   s_str input = {0};
   s_str output = {0};
+  s_image src;
   uw w = 0;
   if (! kc3_init(NULL, &argc, &argv))
-    return 1;
-  if (! env_module_ensure_loaded(env_global(), sym_1("GL.Vertex")) ||
-      ! env_module_ensure_loaded(env_global(), sym_1("GL.Triangle")))
     return 1;
   if (argc != 4)
     return usage(PROG);
@@ -41,23 +39,20 @@ int main (int argc, char **argv)
     err_write_1("\n");
     return 1;
   }
-  if (! image_egl_init(&image, w, h)) {
-    err_puts(PROG ": image_egl_init");
+  if (! image_init_alloc(&dest, w, h, 4, 4)) {
+    err_puts(PROG ": image_init_alloc");
     return 1;
   }
-  image_egl_make_context_current(&image);
-  if (! image_egl_resize_to_fill_file(&image, &input)) {
-    err_puts(PROG ": image_egl_resize_to_fill_file");
-    image_egl_clean(&image);
+  if (! image_init_file(&src, &input)) {
+    err_puts(PROG ": image_init_file");
     return 1;
   }
-  image_egl_read(&image);
-  if (! image_to_png_file(&image.image, &output)) {
-    err_puts(PROG ": image_to_png_file");
-    image_egl_clean(&image);
+  if (! image_avir_resize_8(&src, &dest)) {
+    err_puts(PROG ": image_avir_resize_8");
     return 1;
   }
-  image_egl_clean(&image);
+  image_clean(&src);
+  image_clean(&dest);
   kc3_clean(NULL);
   return 0;
 }

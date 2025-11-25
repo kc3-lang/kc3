@@ -20,18 +20,18 @@ extern "C" {
 
 extern "C" {
 
-  s_image * image_avir_resize_8 (const s_image *src,
-                                 uw w, uw h, s_image *dest)
+  s_image * image_avir_resize_8 (s_image *src,
+                                 s_image *dest)
   {
-    s_image tmp;
     avir::CImageResizer<> ir(8);
-    if (! image_init_alloc(&tmp, w, h, src->components,
-                           src->components))
+    if (src->components != dest->components) {
+      err_puts("image_avir_resize_8: invalid components");
       return NULL;
+    }
     ir.resizeImage((u8 *) src->data, src->w, src->h, 0,
-                   (u8 *) tmp.data, w, h, src->components, 0);
-    *dest = tmp;
-    return dest;
+                   (u8 *) dest->data, dest->w, dest->h, src->components,
+                   0);
+    return src;
   }
 
 }
