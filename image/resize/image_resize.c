@@ -23,6 +23,7 @@ int main (int argc, char **argv)
   uw h = 0;
   s_str input = {0};
   s_str output = {0};
+  s32 r = 1;
   s_image src;
   uw w = 0;
   if (! kc3_init(NULL, &argc, &argv))
@@ -37,24 +38,34 @@ int main (int argc, char **argv)
     err_write_1(PROG ": cannot open file for reading: ");
     err_write_str(&input);
     err_write_1("\n");
-    return 1;
+    goto clean;
   }
   if (! image_init_alloc(&dest, w, h, 4, 4)) {
     err_puts(PROG ": image_init_alloc");
-    return 1;
+    goto clean;
   }
   if (! image_init_file(&src, &input)) {
     err_puts(PROG ": image_init_file");
-    return 1;
+    image_clean(&dest);
+    goto clean;
   }
   if (! image_avir_resize_8(&src, &dest)) {
     err_puts(PROG ": image_avir_resize_8");
-    return 1;
+    image_clean(&src);
+    image_clean(&dest);
+    r = 1;
   }
   image_clean(&src);
+  if (! image_to_png_file(&dest, &output)) {
+    err_puts(PROG ": image_to_png_file");
+    image_clean(&dest);
+    goto clean;
+  }
   image_clean(&dest);
+  r = 0;
+ clean:
   kc3_clean(NULL);
-  return 0;
+  return r;
 }
 
 int usage (const char *prog)

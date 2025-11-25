@@ -10,9 +10,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <png.h>
 #include <stdio.h>
+#include <string.h>
 #include "../libkc3/kc3.h"
+#include <jpeglib.h>
+#include <png.h>
 #include "image.h"
 
 void image_clean (s_image *image)
@@ -87,18 +89,152 @@ s_image * image_init_file (s_image *image, const s_str *path)
 
 s_image * image_init_jpeg (s_image *image, const s_str *path, FILE *fp)
 {
-  (void) image;
-  (void) path;
-  (void) fp;
-  return NULL;
+  u8                           *jpeg_buffer;
+  u8                            jpeg_components;
+  struct jpeg_error_mgr         jpeg_err;
+  uw                            jpeg_h;
+  struct jpeg_decompress_struct jpeg_info;
+  uw                            jpeg_pixel_size;
+  uw                            jpeg_w;
+  assert(image);
+  assert(path);
+  assert(fp);
+  jpeg_info.err = jpeg_std_error(&jpeg_err);
+  jpeg_create_decompress(&jpeg_info);
+  jpeg_stdio_src(&jpeg_info, fp);
+  jpeg_read_header(&jpeg_info, TRUE);
+  jpeg_start_decompress(&jpeg_info);
+  jpeg_w = jpeg_info.output_width;
+  jpeg_h = jpeg_info.output_height;
+  jpeg_components = jpeg_info.output_components;
+  jpeg_pixel_size = jpeg_components;
+  if (jpeg_h > SIZE_MAX / (jpeg_w * jpeg_pixel_size)) {
+    err_write_1("image_init_jpeg: image too large: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    jpeg_destroy_decompress(&jpeg_info);
+    return NULL;
+  }
+  if (! image_init_alloc(image, jpeg_w, jpeg_h, jpeg_components,
+                         jpeg_pixel_size)) {
+    err_write_1("image_init_jpeg: image_init_alloc failed: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    jpeg_destroy_decompress(&jpeg_info);
+    return NULL;
+  }
+  while (jpeg_info.output_scanline < jpeg_info.output_height) {
+    jpeg_buffer = image->data +
+      jpeg_info.output_scanline * jpeg_w * jpeg_pixel_size;
+    jpeg_read_scanlines(&jpeg_info, &jpeg_buffer, 1);
+  }
+  jpeg_finish_decompress(&jpeg_info);
+  jpeg_destroy_decompress(&jpeg_info);
+  return image;
 }
 
 s_image * image_init_png (s_image *image, const s_str *path, FILE *fp)
 {
-  (void) image;
-  (void) path;
-  (void) fp;
-  return NULL;
+  uw i;
+  s32 png_bit_depth;
+  s32 png_color_type;
+  u8 png_components;
+  png_bytep png_data;
+  u32 png_h;
+  u8 png_header[8];
+  png_infop png_info;
+  uw png_pixel_size;
+  png_structp png_read;
+  png_bytep *png_row;
+  u32 png_w;
+  assert(image);
+  assert(path);
+  assert(fp);
+  if (fread(png_header, 1, sizeof(png_header), fp) !=
+      sizeof(png_header)) {
+    err_write_1("image_init_png: fread: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    return NULL;
+  }
+  if (png_sig_cmp(png_header, 0, sizeof(png_header))) {
+    err_write_1("image_init_png: not a png: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    return NULL;
+  }
+  png_read = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL,
+                                    NULL, NULL);
+  if (! png_read) {
+    err_write_1("image_init_png: png_create_read_struct: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    return NULL;
+  }
+  png_info = png_create_info_struct(png_read);
+  if (! png_info) {
+    err_write_1("image_init_png: png_create_info_struct: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    png_destroy_read_struct(&png_read, NULL, NULL);
+    return NULL;
+  }
+  if (setjmp(png_jmpbuf(png_read))) {
+    png_destroy_read_struct(&png_read, &png_info, NULL);
+    return NULL;
+  }
+  png_set_sig_bytes(png_read, sizeof(png_header));
+  png_init_io(png_read, fp);
+  png_read_info(png_read, png_info);
+  png_get_IHDR(png_read, png_info, &png_w, &png_h,
+               &png_bit_depth, &png_color_type,
+               NULL, NULL, NULL);
+  if (png_color_type == PNG_COLOR_TYPE_PALETTE)
+    png_set_palette_to_rgb(png_read);
+  switch (png_color_type) {
+  case PNG_COLOR_TYPE_GRAY:       png_components = 1; break;
+  case PNG_COLOR_TYPE_GRAY_ALPHA: png_components = 2; break;
+  case PNG_COLOR_TYPE_RGB:        png_components = 3; break;
+  case PNG_COLOR_TYPE_RGBA:       png_components = 4; break;
+  default:
+    err_write_1("image_init_png: unknown PNG color type ");
+    err_inspect_s32(png_color_type);
+    err_write_1(": ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    png_destroy_read_struct(&png_read, &png_info, NULL);
+    return NULL;
+  }
+  png_pixel_size = (png_bit_depth / 8) * png_components;
+  if (! png_pixel_size)
+    png_error(png_read, "unknown png pixel size");
+  if (png_h > PNG_SIZE_MAX / (png_w * png_pixel_size))
+    png_error(png_read, "image_data buffer would be too large");
+  png_data = png_malloc(png_read, png_h * png_w * png_pixel_size);
+  png_row = png_malloc(png_read, png_h * sizeof(png_bytep));
+  i = 0;
+  while (i < png_h) {
+    png_row[i] = png_data + i * png_w * png_pixel_size;
+    i++;
+  }
+  if (png_bit_depth < 8)
+    png_set_packing(png_read);
+  png_read_image(png_read, png_row);
+  if (! image_init_alloc(image, png_w, png_h, png_components,
+                         png_pixel_size)) {
+    err_write_1("image_init_png: image_init_alloc failed: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    free(png_data);
+    free(png_row);
+    png_destroy_read_struct(&png_read, &png_info, NULL);
+    return NULL;
+  }
+  memcpy(image->data, png_data, png_h * png_w * png_pixel_size);
+  free(png_data);
+  free(png_row);
+  png_destroy_read_struct(&png_read, &png_info, NULL);
+  return image;
 }
 
 bool image_to_png_file (s_image *image, s_str *path)

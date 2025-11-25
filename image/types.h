@@ -24,7 +24,7 @@ struct image {
   uw h;
   u8 components;
   u8 pixel_size;
-  void *data;
+  u8 *data;
 };
 
 #endif /* KC3_IMAGE_TYPES_H */
