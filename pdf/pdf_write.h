@@ -30,12 +30,12 @@ sw   pdf_buf_write_null (s_buf *buf);
 sw   pdf_buf_write_separator(s_buf *buf, bool newline);
 sw   pdf_buf_write_string_hex (s_buf *buf, const s_str *src);
 sw   pdf_buf_write_tag (s_buf *buf, const s_tag *src);
-
 // writes token without separator
 sw   pdf_buf_write_token (s_buf *buf, const char *token);
 // writes token with separator
-sw pdf_buf_write_token_clean(s_buf *buf, const char *pchar,
-                             bool newline);
+sw   pdf_buf_write_token_clean(s_buf *buf, const char *pchar,
+                               bool newline);
+sw   pdf_buf_write_vec2 (s_buf *buf, const s_pdf_vec2 *src);
 //bool pdf_character_is_delimiter (character c);
 
 #endif /* KC3_PDF_WRITE_H */

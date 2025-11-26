@@ -16,26 +16,6 @@
 
 #include "types.h"
 
-enum pdf_line_cap {
-  PDF_LINE_CAP_BUTT   = 0,
-  PDF_LINE_CAP_ROUND  = 1,
-  PDF_LINE_CAP_SQUARE = 2,
-};
-
-enum pdf_line_join {
-  PDF_LINE_JOIN_MITER = 0,
-  PDF_LINE_JOIN_ROUND = 1,
-  PDF_LINE_JOIN_BEVEL = 2,
-};
-
-#define PDF_FILL(even_odd) (((even_odd) << 1) | 1)
-
-enum pdf_fill_mode {
-  PDF_FILL_NONE     = 0,
-  PDF_FILL_NZWR     = PDF_FILL(false),
-  PDF_FILL_EVEN_ODD = PDF_FILL(true)
-};
-
 // q Q
 sw pdf_stream_draw_stack_save(s_buf *buf);
 sw pdf_stream_draw_stack_load(s_buf *buf);
@@ -53,10 +33,20 @@ sw pdf_stream_draw_set_line_dash_pattern(s_buf *buf,
 //                                            f32 tolerance);
 
 // m l c v y h re
-sw pdf_stream_draw_path_begin_at(s_buf *buf, f32 x, f32 y);
-sw pdf_stream_draw_path_move_to(s_buf *buf, f32 x, f32 y);
-sw pdf_stream_draw_path_end_at(s_buf *buf, f32 x, f32 y);
-sw pdf_stream_draw_path_rect(s_buf *buf, s_array *rect);
+sw pdf_stream_draw_path_begin_at(s_buf *buf, s_pdf_vec2 *pos);
+sw pdf_stream_draw_path_move_to(s_buf *buf, s_pdf_vec2 *pos);
+sw pdf_stream_draw_path_curve_to_cubic(s_buf *buf, 
+                                       s_pdf_vec2 *control1, 
+                                       s_pdf_vec2 *control2, 
+                                       s_pdf_vec2 *end);
+sw pdf_stream_draw_path_curve_to_cubic_v(s_buf *buf, 
+                                         s_pdf_vec2 *control2, 
+                                         s_pdf_vec2 *end);
+sw pdf_stream_draw_path_curve_to_cubic_y(s_buf *buf, 
+                                         s_pdf_vec2 *control1, 
+                                         s_pdf_vec2 *end);  
+sw pdf_stream_draw_path_end_at(s_buf *buf, s_pdf_vec2 *pos);
+sw pdf_stream_draw_path_rect(s_buf *buf, s_pdf_rect *rect);
 
 // S s f f* B B* b b* n
 sw pdf_stream_draw_paint(s_buf *buf,

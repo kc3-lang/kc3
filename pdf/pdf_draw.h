@@ -13,4 +13,6 @@
 #ifndef KC3_PDF_DRAW_H
 #define KC3_PDF_DRAW_H
 
+void pdf_draw_nil(void);
+
 #endif /* KC3_PDF_DRAW_H */

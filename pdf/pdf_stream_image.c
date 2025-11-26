@@ -10,3 +10,5 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+
+void pdf_stream_image(void) {}

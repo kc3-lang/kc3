@@ -17,7 +17,7 @@
 
 sw pdf_stream_text_begin (s_buf *buf);
 sw pdf_stream_text_set_font (s_buf *buf, p_sym font, s32 size);
-sw pdf_stream_text_set_pos_xy (s_buf *buf, s32 x, s32 y);
+sw pdf_stream_text_set_pos_xy (s_buf *buf, s_pdf_vec2 *pos);
 sw pdf_stream_text_set_text (s_buf *buf, s_str *text);
 sw pdf_stream_text_set_text_array (s_buf *buf,
                                    const p_list text_array);
