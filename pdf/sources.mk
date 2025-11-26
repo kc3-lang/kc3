@@ -2,9 +2,9 @@
 HEADERS = \
 	"pdf.h" \
 	"pdf_buf_parse.h" \
-	"pdf_draw.h" \
 	"pdf_file.h" \
 	"pdf_name.h" \
+	"pdf_stream.h" \
 	"pdf_stream_color.h" \
 	"pdf_stream_draw.h" \
 	"pdf_stream_image.h" \
@@ -16,9 +16,9 @@ HEADERS = \
 SOURCES = \
 	"pdf.c" \
 	"pdf_buf_parse.c" \
-	"pdf_draw.c" \
 	"pdf_file.c" \
 	"pdf_name.c" \
+	"pdf_stream.c" \
 	"pdf_stream_color.c" \
 	"pdf_stream_draw.c" \
 	"pdf_stream_image.c" \

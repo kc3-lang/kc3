@@ -30,8 +30,7 @@ typedef p_sym_list p_pdf_name_list;
 
 struct pdf_stream {
   s_map dictionnary;
-  u64 offset;
-  u64 length;
+  s_buf buf;
 };
 
 struct pdf_trailer {
