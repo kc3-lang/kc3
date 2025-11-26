@@ -86,7 +86,31 @@ sw pdf_buf_write_dictionnary (s_buf *buf, const s_map *src)
 
 sw pdf_buf_write_flat_array (s_buf *buf, const s_array *src)
 {
+  uw i;
+  sw r;
+  sw result = 0;
+  uw count = 0;
+  f32 *value;
   assert(buf);
+  assert(src);
+  if (src->dimension_count != 1) {
+    err_puts("pdf_buf_write_flat_array: array dimension count != 1");
+    assert(! "pdf_buf_write_flat_array: array dimension count != 1");
+    return -1;
+  }
+  count = src->dimensions[0].count;
+  for (i = 0; i < count; i++) {
+    if ((value = array_data(src, &i)) == NULL)
+      return -1;
+    if ((r = pdf_buf_write_float(buf, *value)) < 0)
+      return r;
+    result += r;
+    if (i < count - 1 &&
+        (r = pdf_buf_write_separator(buf, false)) < 0)
+      return r;
+    result += r;
+  }
+  return result;
 }
 
 sw pdf_buf_write_float (s_buf *buf, f32 src)
@@ -262,4 +286,22 @@ sw pdf_buf_write_token_clean(s_buf *buf, const char *pchar,
     return r;
   }
   return r + pdf_buf_write_separator(buf, newline);
+}
+
+sw pdf_buf_write_vec2 (s_buf *buf, const s_pdf_vec2 *src)
+{
+  assert(buf);
+  assert(vec2);
+  sw r;
+  sw result = 0;
+  if ((r = pdf_buf_write_float(buf, src->x)) < 0)
+    return r;
+  result += r;
+  if ((r = pdf_buf_write_separator(buf, false)) < 0)
+    return r;
+  result += r;
+  if ((r = pdf_buf_write_float(buf, src->y)) < 0)
+    return r;
+  result += r;
+  return result;
 }

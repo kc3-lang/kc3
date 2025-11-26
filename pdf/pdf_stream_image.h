@@ -11,12 +11,11 @@
  * THIS SOFTWARE.
  */
 
-#ifndef KC3_PDF_STREAM_DRAW_H
-#define KC3_PDF_STREAM_DRAW_H
+#ifndef KC3_PDF_STREAM_IMAGE_H
+#define KC3_PDF_STREAM_IMAGE_H
 
 #include "types.h"
 
-sw pdf_stream_draw_save_stack(s_buf *buf);
-sw pdf_stream_draw_load_stack(s_buf *buf);
+void pdf_stream_image(void);
 
-#endif /* KC3_PDF_STREAM_DRAW_H */
+#endif /* KC3_PDF_STREAM_IMAGE_H */

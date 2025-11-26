@@ -45,12 +45,13 @@ sw pdf_stream_text_set_font (s_buf *buf, p_sym font, s32 size)
   return result + pdf_buf_write_token_clean(buf, "Tf", true);
 }
 
-sw pdf_stream_text_set_pos_xy (s_buf *buf, s32 x, s32 y)
+sw pdf_stream_text_set_pos_xy (s_buf *buf, s_pdf_vec2 *pos)
 {
   sw r = 0;
   sw result = 0;
   assert(buf);
-  if ((r = pdf_buf_write_integer(buf, x)) < 0) {
+  assert(pos);
+  if ((r = pdf_buf_write_integer(buf, pos->x)) < 0) {
     return r;
   }
   result += r;
@@ -58,7 +59,7 @@ sw pdf_stream_text_set_pos_xy (s_buf *buf, s32 x, s32 y)
     return r;
   }
   result += r;
-  if ((r = pdf_buf_write_integer(buf, y)) < 0) {
+  if ((r = pdf_buf_write_integer(buf, pos->y)) < 0) {
     return r;
   }
   result += r;
