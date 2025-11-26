@@ -18,7 +18,7 @@
 sw pdf_stream_text_begin (s_pdf_stream *stream)
 {
   assert(buf);
-  return pdf_buf_write_token_clean(&stream->buf, "BT", true);
+  return pdf_buf_write_token_clean(stream->buf, "BT", true);
 }
 
 sw pdf_stream_text_set_font (s_pdf_stream *stream,
@@ -27,23 +27,23 @@ sw pdf_stream_text_set_font (s_pdf_stream *stream,
   sw r = 0;
   sw result = 0;
   assert(buf);
-  if ((r = pdf_buf_write_name(&stream->buf, font)) < 0) {
+  if ((r = pdf_buf_write_name(stream->buf, font)) < 0) {
     return r;
   }
   result += r;
-  if ((r = pdf_buf_write_separator(&stream->buf, false)) < 0) {
+  if ((r = pdf_buf_write_separator(stream->buf, false)) < 0) {
     return r;
   }
   result += r;
-  if ((r = pdf_buf_write_integer(&stream->buf, size)) < 0) {
+  if ((r = pdf_buf_write_integer(stream->buf, size)) < 0) {
     return r;
   }
   result += r;
-  if ((r = pdf_buf_write_separator(&stream->buf, false)) < 0) {
+  if ((r = pdf_buf_write_separator(stream->buf, false)) < 0) {
     return r;
   }
   result += r;
-  return result + pdf_buf_write_token_clean(&stream->buf, "Tf", true);
+  return result + pdf_buf_write_token_clean(stream->buf, "Tf", true);
 }
 
 sw pdf_stream_text_set_pos_xy (s_pdf_stream *stream, s_pdf_vec2 *pos)
@@ -52,23 +52,23 @@ sw pdf_stream_text_set_pos_xy (s_pdf_stream *stream, s_pdf_vec2 *pos)
   sw result = 0;
   assert(buf);
   assert(pos);
-  if ((r = pdf_buf_write_integer(&stream->buf, pos->x)) < 0) {
+  if ((r = pdf_buf_write_integer(stream->buf, pos->x)) < 0) {
     return r;
   }
   result += r;
-  if ((r = pdf_buf_write_separator(&stream->buf, false)) < 0) {
+  if ((r = pdf_buf_write_separator(stream->buf, false)) < 0) {
     return r;
   }
   result += r;
-  if ((r = pdf_buf_write_integer(&stream->buf, pos->y)) < 0) {
+  if ((r = pdf_buf_write_integer(stream->buf, pos->y)) < 0) {
     return r;
   }
   result += r;
-  if ((r = pdf_buf_write_separator(&stream->buf, false)) < 0) {
+  if ((r = pdf_buf_write_separator(stream->buf, false)) < 0) {
     return r;
   }
   result += r;
-  return result + pdf_buf_write_token_clean(&stream->buf, "Td", true);
+  return result + pdf_buf_write_token_clean(stream->buf, "Td", true);
 }
 
 // REVIEW NOTES:
@@ -79,10 +79,10 @@ sw pdf_stream_text_set_text (s_pdf_stream *stream, s_str *text)
 {
   sw r = 0;
   assert(buf);
-  if ((r = pdf_buf_write_string_hex(&stream->buf, text)) < 0) {
+  if ((r = pdf_buf_write_string_hex(stream->buf, text)) < 0) {
     return r;
   }
-  return r + pdf_buf_write_token_clean(&stream->buf, "Tj", true);
+  return r + pdf_buf_write_token_clean(stream->buf, "Tj", true);
 }
 
 // REVIEW NOTES:
@@ -94,14 +94,14 @@ sw pdf_stream_text_set_text_array (s_pdf_stream *stream,
 {
   sw r = 0;
   assert(buf);
-  if ((r = pdf_buf_write_array(&stream->buf, text_array)) < 0) {
+  if ((r = pdf_buf_write_array(stream->buf, text_array)) < 0) {
     return r;
   }
-  return r + pdf_buf_write_token_clean(&stream->buf, "TJ", true);
+  return r + pdf_buf_write_token_clean(stream->buf, "TJ", true);
 }
 
 sw pdf_stream_text_end (s_pdf_stream *stream)
 {
   assert(buf);
-  return pdf_buf_write_token_clean(&stream->buf, "BT", true);
+  return pdf_buf_write_token_clean(stream->buf, "BT", true);
 }

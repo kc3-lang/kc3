@@ -18,10 +18,10 @@ sw pdf_stream_color_set_color(s_pdf_stream *stream,
 {
   sw r;
   sw result = 0;
-  if ((r = pdf_buf_write_flat_array(&stream->buf, color)) < 0)
+  if ((r = pdf_buf_write_flat_array(stream->buf, color)) < 0)
     return r;
   result += r;
-  if ((r = pdf_buf_write_token_clean(&stream->buf,
+  if ((r = pdf_buf_write_token_clean(stream->buf,
                                      sb ? " CS" : " cs", true)) < 0)
     return r;
   result += r;
@@ -33,10 +33,10 @@ sw pdf_stream_color_set_grayscale(s_pdf_stream *stream,
 {
   sw r;
   sw result = 0;
-  if ((r = pdf_buf_write_integer(&stream->buf, (s32)gray_level)) < 0)
+  if ((r = pdf_buf_write_integer(stream->buf, (s32)gray_level)) < 0)
     return r;
   result += r;
-  if ((r = pdf_buf_write_token_clean(&stream->buf,
+  if ((r = pdf_buf_write_token_clean(stream->buf,
                                      sb ? " G" : " g", true)) < 0)
     return r;
   result += r;
@@ -48,10 +48,10 @@ sw pdf_stream_color_set_rgb(s_pdf_stream *stream,
 {
   sw r;
   sw result = 0;
-  if ((r = pdf_buf_write_flat_array(&stream->buf, color)) < 0)
+  if ((r = pdf_buf_write_flat_array(stream->buf, color)) < 0)
     return r;
   result += r;
-  if ((r = pdf_buf_write_token_clean(&stream->buf,
+  if ((r = pdf_buf_write_token_clean(stream->buf,
                                      sb ? " RG" : " rg", true)) < 0)
     return r;
   result += r;
@@ -63,10 +63,10 @@ sw pdf_stream_color_set_cmyk(s_pdf_stream *stream,
 {
   sw r;
   sw result = 0;
-  if ((r = pdf_buf_write_flat_array(&stream->buf, color)) < 0)
+  if ((r = pdf_buf_write_flat_array(stream->buf, color)) < 0)
     return r;
   result += r;
-  if ((r = pdf_buf_write_token_clean(&stream->buf,
+  if ((r = pdf_buf_write_token_clean(stream->buf,
                                      sb ? " K" : " k", true)) < 0)
     return r;
   result += r;
@@ -77,10 +77,10 @@ sw pdf_stream_color_use_shading(s_pdf_stream *stream, p_sym resource)
 {
   sw r;
   sw result = 0;
-  if ((r = pdf_buf_write_name(&stream->buf, resource)) < 0)
+  if ((r = pdf_buf_write_name(stream->buf, resource)) < 0)
     return r;
   result += r;
-  if ((r = pdf_buf_write_token_clean(&stream->buf, " sh", true)) < 0)
+  if ((r = pdf_buf_write_token_clean(stream->buf, " sh", true)) < 0)
     return r;
   result += r;
   return result;

@@ -23,5 +23,5 @@ s_pdf_stream * pdf_stream_init (s_pdf_stream *stream)
 void pdf_stream_clean (s_pdf_stream *stream)
 {
   map_clean(&stream->dictionnary);
-  buf_clean(&stream->buf);
+  buf_clean(stream->buf);
 }
