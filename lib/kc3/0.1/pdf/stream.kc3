@@ -17,6 +17,8 @@ require PDF.Rect
 defmodule PDF.Stream do
 
   defstruct [dictionnary: %{},
+             offset: Uw,
+             length: Uw,
              buf: (Ptr) 0]
 
   dlopen("pdf.so")
