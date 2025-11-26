@@ -17,10 +17,15 @@
 #include "types.h"
 
 // cs sc scn G g RG rg K k
-sw pdf_stream_color_set_color(s_buf *buf, s_array *color, bool sb);
-sw pdf_stream_color_set_grayscale(s_buf *buf, u8 gray_level, bool sb);
-sw pdf_stream_color_set_rgb(s_buf *buf, s_array *color, bool sb);
-sw pdf_stream_color_set_cmyk(s_buf *buf, s_array *color, bool sb);
-sw pdf_stream_color_use_shading(s_buf *buf, p_sym resource);
+sw pdf_stream_color_set_color(s_pdf_stream *stream,
+                              s_array *color, bool sb);
+sw pdf_stream_color_set_grayscale(s_pdf_stream *stream,
+                                  u8 gray_level, bool sb);
+sw pdf_stream_color_set_rgb(s_pdf_stream *stream,
+                            s_array *color, bool sb);
+sw pdf_stream_color_set_cmyk(s_pdf_stream *stream,
+                             s_array *color, bool sb);
+sw pdf_stream_color_use_shading(s_pdf_stream *stream,
+                                p_sym resource);
 
 #endif /* KC3_PDF_STREAM_DRAW_H */

@@ -15,12 +15,13 @@
 
 #include "types.h"
 
-sw pdf_stream_text_begin (s_buf *buf);
-sw pdf_stream_text_set_font (s_buf *buf, p_sym font, s32 size);
-sw pdf_stream_text_set_pos_xy (s_buf *buf, s_pdf_vec2 *pos);
-sw pdf_stream_text_set_text (s_buf *buf, s_str *text);
-sw pdf_stream_text_set_text_array (s_buf *buf,
+sw pdf_stream_text_begin (s_pdf_stream *stream);
+sw pdf_stream_text_set_font (s_pdf_stream *stream,
+                             p_sym font, s32 size);
+sw pdf_stream_text_set_pos_xy (s_pdf_stream *stream, s_pdf_vec2 *pos);
+sw pdf_stream_text_set_text (s_pdf_stream *stream, s_str *text);
+sw pdf_stream_text_set_text_array (s_pdf_stream *stream,
                                    const p_list text_array);
-sw pdf_stream_text_end (s_buf *buf);
+sw pdf_stream_text_end (s_pdf_stream *stream);
 
 #endif /* KC3_PDF_TEXT_H */

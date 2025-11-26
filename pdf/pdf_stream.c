@@ -10,9 +10,18 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef KC3_PDF_DRAW_H
-#define KC3_PDF_DRAW_H
+#include "../libkc3/kc3.h"
+#include "pdf_stream.h"
 
-void pdf_draw_nil(void);
+s_pdf_stream * pdf_stream_init (s_pdf_stream *stream)
+{
+  s_pdf_stream tmp = {0};
+  *stream = tmp;
+  return stream;
+}
 
-#endif /* KC3_PDF_DRAW_H */
+void pdf_stream_clean (s_pdf_stream *stream)
+{
+  map_clean(&stream->dictionnary);
+  buf_clean(&stream->buf);
+}

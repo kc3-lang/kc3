@@ -10,69 +10,77 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "pdf_stream_draw.h"
+#include "pdf_stream_color.h"
 #include "pdf_write.h"
 
-sw pdf_stream_color_set_color(s_buf *buf, s_array *color, bool sb)
+sw pdf_stream_color_set_color(s_pdf_stream *stream,
+                              s_array *color, bool sb)
 {
   sw r;
   sw result = 0;
-  if ((r = pdf_buf_write_flat_array(buf, color)) < 0)
+  if ((r = pdf_buf_write_flat_array(&stream->buf, color)) < 0)
     return r;
   result += r;
-  if ((r = pdf_buf_write_token_clean(buf, sb ? " CS" : " cs", true)) < 0)
+  if ((r = pdf_buf_write_token_clean(&stream->buf,
+                                     sb ? " CS" : " cs", true)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw pdf_stream_color_set_grayscale(s_buf *buf, u8 gray_level, bool sb)
+sw pdf_stream_color_set_grayscale(s_pdf_stream *stream,
+                                  u8 gray_level, bool sb)
 {
   sw r;
   sw result = 0;
-  if ((r = pdf_buf_write_integer(buf, (s32)gray_level)) < 0)
+  if ((r = pdf_buf_write_integer(&stream->buf, (s32)gray_level)) < 0)
     return r;
   result += r;
-  if ((r = pdf_buf_write_token_clean(buf, sb ? " G" : " g", true)) < 0)
+  if ((r = pdf_buf_write_token_clean(&stream->buf,
+                                     sb ? " G" : " g", true)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw pdf_stream_color_set_rgb(s_buf *buf, s_array *color, bool sb)
+sw pdf_stream_color_set_rgb(s_pdf_stream *stream,
+                            s_array *color, bool sb)
 {
   sw r;
   sw result = 0;
-  if ((r = pdf_buf_write_flat_array(buf, color)) < 0)
+  if ((r = pdf_buf_write_flat_array(&stream->buf, color)) < 0)
     return r;
   result += r;
-  if ((r = pdf_buf_write_token_clean(buf, sb ? " RG" : " rg", true)) < 0)
+  if ((r = pdf_buf_write_token_clean(&stream->buf,
+                                     sb ? " RG" : " rg", true)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw pdf_stream_color_set_cmyk(s_buf *buf, s_array *color, bool sb)
+sw pdf_stream_color_set_cmyk(s_pdf_stream *stream,
+                             s_array *color, bool sb)
 {
   sw r;
   sw result = 0;
-  if ((r = pdf_buf_write_flat_array(buf, color)) < 0)
+  if ((r = pdf_buf_write_flat_array(&stream->buf, color)) < 0)
     return r;
   result += r;
-  if ((r = pdf_buf_write_token_clean(buf, sb ? " K" : " k", true)) < 0)
+  if ((r = pdf_buf_write_token_clean(&stream->buf,
+                                     sb ? " K" : " k", true)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw pdf_stream_color_use_shading(s_buf *buf, p_sym resource)
+sw pdf_stream_color_use_shading(s_pdf_stream *stream, p_sym resource)
 {
   sw r;
   sw result = 0;
-  if ((r = pdf_buf_write_name(buf, resource)) < 0)
+  if ((r = pdf_buf_write_name(&stream->buf, resource)) < 0)
     return r;
   result += r;
-  if ((r = pdf_buf_write_token_clean(buf, " sh", true)) < 0)
+  if ((r = pdf_buf_write_token_clean(&stream->buf, " sh", true)) < 0)
     return r;
   result += r;
   return result;
