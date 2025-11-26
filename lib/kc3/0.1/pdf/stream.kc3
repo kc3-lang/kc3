@@ -10,10 +10,11 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require Buf
+
 defmodule PDF.Stream do
 
   defstruct [dictionnary: %{},
-             offset: (S64) 0,
-             length: (S64) 0]
+             buf: %Buf{}]
 
 end
