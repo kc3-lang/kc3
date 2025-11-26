@@ -21,11 +21,6 @@ typedef struct pdf_stream s_pdf_stream;
 typedef struct pdf_trailer s_pdf_trailer;
 typedef struct pdf_rect s_pdf_rect;
 typedef struct pdf_vec2 s_pdf_vec2;
-typedef struct pdf_catalog s_pdf_catalog;
-typedef struct pdf_pages s_pdf_pages;
-typedef struct pdf_page s_pdf_page;
-typedef struct pdf_resources s_pdf_resources;
-typedef struct pdf_font s_pdf_font;
 
 /* Pointer types. */
 typedef p_sym      p_pdf_name;
@@ -43,6 +38,18 @@ struct pdf_trailer {
   s_map dictionnary;
   u64   startxref;
 };
+
+/* 2 */
+
+struct pdf_file {
+  s_map           body;
+  s_str           header;
+  p_pdf_name_list name_list;
+  s_pdf_trailer   trailer;
+  s_map           xref;
+};
+
+/* 3 */
 
 struct pdf_vec2 {
   f32 x;
@@ -74,41 +81,6 @@ enum pdf_fill_mode {
   PDF_FILL_NONE     = 0,
   PDF_FILL_NZWR     = PDF_FILL(false),
   PDF_FILL_EVEN_ODD = PDF_FILL(true)
-};
-
-
-/* 2 */
-
-struct pdf_pages {
-  uw page_count;
-  s_pdf_pages *pages;
-};
-
-struct pdf_catalog {
-  s_pdf_pages pages;
-};
-
-struct pdf_file {
-  s_pdf_catalog   body;
-  s_str           header;
-  p_pdf_name_list name_list;
-  s_pdf_trailer   trailer;
-  s_map           xref;
-};
-
-struct pdf_resources {
-  s_map fonts; // map of name:pdf_font
-};
-
-struct pdf_font {
-  p_sym subtype;
-  p_sym base_font;
-};
-
-struct pdf_page {
-  s_pdf_resources resources;
-  s_pdf_rect page_box;
-  s_tuple content_ref;
 };
 
 #endif /* KC3_PDF_TYPES_H */
