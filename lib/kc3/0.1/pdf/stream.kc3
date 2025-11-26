@@ -15,6 +15,6 @@ require Buf
 defmodule PDF.Stream do
 
   defstruct [dictionnary: %{},
-             buf: %Buf{}]
+             buf: (Ptr) 0]
 
 end
