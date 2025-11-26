@@ -481,7 +481,7 @@ p_list * plist_sort (p_list *plist, p_list *dest)
   l = *plist;
   while (l) {
     t = &tmp;
-    while (*t && compare_tag(&(*t)->tag, &l->tag) <= 0)
+    while (*t && compare_tag(&(*t)->tag, &l->tag) < 0)
       t = &(*t)->next.data.plist;
     if (! (new_ = list_new_tag_copy(&l->tag, *t))) {
       list_delete_all(tmp);

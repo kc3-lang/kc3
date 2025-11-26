@@ -194,7 +194,6 @@ s_tag * url_www_form_decode (const s_str *src, s_tag *dest)
   s_buf buf;
   s_str key = {0};
   s_list *list;
-  sw r;
   s_list **tail;
   s_tag tmp = {0};
   s_str value = {0};
@@ -202,15 +201,18 @@ s_tag * url_www_form_decode (const s_str *src, s_tag *dest)
   list = NULL;
   tail = &list;
   while (1) {
-    if ((r = buf_read_until_1_into_str(&buf, "=", &key) < 0))
+    if (buf_read_until_1_into_str(&buf, "=", &key) < 0)
       break;
-    if ((r = buf_read_until_1_into_str(&buf, "&", &value)) < 0 &&
-        buf_read_to_str(&buf, &value) <= 0) {
+    if (buf_read_until_1_into_str(&buf, "&", &value) < 0 &&
+        buf_read_to_str(&buf, &value) < 0) {
       str_clean(&key);
       goto clean;
     }
-    if (! key.size || ! value.size)
+    if (! key.size || ! value.size) {
+      str_clean(&key);
+      str_clean(&value);
       continue;
+    }
     *tail = list_new_tuple(2, NULL);
     (*tail)->tag.data.tuple.tag[0].type = TAG_STR;
     (*tail)->tag.data.tuple.tag[1].type = TAG_STR;
