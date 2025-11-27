@@ -46,8 +46,12 @@
 
  - [x] Verifier la fonction `p_list list_new_1 (const char *);` :
    - `list_new_1("[123, \"123\", true]");`
- - [ ] Implementer la macro `LIST_NEW_V(...)`
+ - [x] Implementer la macro `LIST_NEW_V(...)`
    - `LIST_NEW_V(123, "123", true);`
+ - [ ] Implémenter la macro `TAG_TYPE(value)` :
+   - `TAG_TYPE(my_var) -> e_tag_type`
+ - [ ] Implémenter la macro `TAG_INIT(value)` :
+   - `TAG_INIT(&tag, my_var) -> determine type -> `
 
 ## HTTPd
  - [ ] partial requests
