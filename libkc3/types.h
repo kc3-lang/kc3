@@ -496,7 +496,7 @@ struct buf {
   bool              read_only;
   sw              (*refill) (s_buf *buf);
   uw                rpos;
-  s_rwlock          rwlock;
+  s_rwlock         *rwlock;
   s_buf_save       *save;
   s64             (*seek) (s_buf *buf, s64 offset, s8 from);
   uw                size;

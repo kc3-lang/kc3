@@ -120,7 +120,7 @@ sw err_puts (const char *x)
   sw result = 0;
   env = env_global();
 #if HAVE_PTHREAD
-  rwlock_w(&env->err->rwlock);
+  rwlock_w(env->err->rwlock);
 #endif
   if ((r = buf_write_1(env->err, x)) < 0)
     goto clean;
@@ -132,7 +132,7 @@ sw err_puts (const char *x)
   r = result;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&env->err->rwlock);
+  rwlock_unlock_w(env->err->rwlock);
 #endif
   return r;
 }
@@ -219,7 +219,7 @@ sw io_puts (const char *x)
   sw result = 0;
   env = env_global();
 #if HAVE_PTHREAD
-  rwlock_w(&env->out->rwlock);
+  rwlock_w(env->out->rwlock);
 #endif
   if ((r = buf_write_1(env->out, x)) < 0)
     goto clean;
@@ -231,7 +231,7 @@ sw io_puts (const char *x)
   r = result;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&env->out->rwlock);
+  rwlock_unlock_w(env->out->rwlock);
 #endif
   return r;
 }
