@@ -22,6 +22,8 @@
 #include "types.h"
 #include "list_init.h"
 
+#define LIST_NEW_V(...) list_new_1("[" #__VA_ARGS__ "]")
+
 /* Stack-allocation functions, call list_clean after use. */
 void      list_clean (s_list *list);
 s_list  * list_init (s_list *list, s_list *next);

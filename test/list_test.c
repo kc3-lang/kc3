@@ -26,12 +26,23 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define LIST_TEST_NEW_V(...)                                           \
+  do {                                                                 \
+    s_list *list_test;                                                 \
+    test_context("LIST_NEW_V("#__VA_ARGS__")");                        \
+    TEST_ASSERT((list_test = LIST_NEW_V(__VA_ARGS__)));                \
+    list_delete_all(list_test);                                        \
+    test_context(NULL);                                                \
+  } while (0)
+
 void list_test (void);
 TEST_CASE_PROTOTYPE(list_new_1);
+TEST_CASE_PROTOTYPE(list_new_v);
 
 void list_test (void)
 {
   TEST_CASE_RUN(list_new_1);
+  TEST_CASE_RUN(list_new_v);
 }
 
 TEST_CASE(list_new_1)
@@ -48,3 +59,18 @@ TEST_CASE(list_new_1)
   LIST_TEST_NEW_1("[A, B, C | D]");
 }
 TEST_CASE_END(list_new_1)
+
+TEST_CASE(list_new_v)
+{
+  TEST_ASSERT(! LIST_NEW_V());
+  LIST_TEST_NEW_V([] | []);
+  LIST_TEST_NEW_V([], [] | []);
+  LIST_TEST_NEW_V([], [], [] | []);
+  LIST_TEST_NEW_V(A);
+  LIST_TEST_NEW_V(A | B);
+  LIST_TEST_NEW_V(A, B);
+  LIST_TEST_NEW_V(A, B | C);
+  LIST_TEST_NEW_V(A, B, C);
+  LIST_TEST_NEW_V(A, B, C | D);
+}
+TEST_CASE_END(list_new_v)
