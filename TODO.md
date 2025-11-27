@@ -20,14 +20,14 @@
 
 ## KC3S
 
- - [.] Tester si kc3s fonctionne avec les options suivantes :
-   - [ ] RPC
-     - [ ] --server 127.0.0.1 1026
-     - [ ] --client 127.0.0.1 1026
-   - [ ] TLS
-     - [ ] --tls
-     - [ ] --tls --server 127.0.0.1 1026
-     - [ ] --tls --client 127.0.0.1 1026
+ - [x] Tester si kc3s fonctionne avec les options suivantes :
+   - [x] RPC
+     - [x] --server 127.0.0.1 1026
+     - [x] --client 127.0.0.1 1026
+   - [x] TLS
+     - [x] --tls
+     - [x] --tls --server 127.0.0.1 1026
+     - [x] --tls --client 127.0.0.1 1026
 
  - [x] dédupliquer le code entre ikc3 et kc3s
    - [x] faire un diff
@@ -44,12 +44,8 @@
 
 ## libkc3
 
- - [ ] Implementer la fonction `s_tag * tag_init_v_1 (s_tag *, const char *);` :
-   - `tag_init_v_1(&tagv[0], "123, \"123\", true");`
- - [ ] Implementer la macro `TAG_INIT_V(tagv, ...)`
-   - `TAG_INIT_V(&tagv[0], 123, "123", true);`
- - [ ] Implementer la fonction `p_list list_new_v_1 (const char *);` :
-   - `list_new_v("123, \"123\", true");`
+ - [x] Verifier la fonction `p_list list_new_1 (const char *);` :
+   - `list_new_1("[123, \"123\", true]");`
  - [ ] Implementer la macro `LIST_NEW_V(...)`
    - `LIST_NEW_V(123, "123", true);`
 
