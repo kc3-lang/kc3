@@ -12,6 +12,8 @@
  */
 #include "assert.h"
 #include "buf.h"
+#include "sym.h"
+#include "uw.h"
 #include "pbuf.h"
 
 void pbuf_clean (p_buf *pbuf)
@@ -20,9 +22,13 @@ void pbuf_clean (p_buf *pbuf)
   buf_delete(*pbuf);
 }
 
-p_buf * pbuf_init_alloc (p_buf *pbuf, uw size)
+p_buf * pbuf_init_alloc (p_buf *pbuf, s_tag *size_tag)
 {
+  uw size;
+  const s_sym *sym_Uw = &g_sym_Uw;
   p_buf tmp = NULL;
+  if (! uw_init_cast(&size, &sym_Uw, size_tag))
+    return NULL;
   if (! (tmp = buf_new_alloc(size)))
     return NULL;
   *pbuf = tmp;

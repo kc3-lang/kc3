@@ -38,7 +38,7 @@
     const sw size = sizeof(type);                                     \
     assert(buf);                                                      \
     assert(dest);                                                     \
-    rwlock_w(&buf->rwlock);                                           \
+    rwlock_w(buf->rwlock);                                            \
     if (buf->rpos > buf->wpos ||                                      \
         buf->wpos > buf->size) {                                      \
       err_puts("buf error");                                          \
@@ -62,7 +62,7 @@
     *dest = *((type *) (buf->ptr.pchar + buf->rpos));                 \
     r = size;                                                         \
   clean:                                                              \
-    rwlock_unlock_w(&buf->rwlock);                                    \
+    rwlock_unlock_w(buf->rwlock);                                     \
     return r;                                                         \
   }
 
@@ -72,13 +72,13 @@
     sw r;                                                             \
     assert(buf);                                                      \
     assert(dest);                                                     \
-    rwlock_w(&buf->rwlock);                                           \
+    rwlock_w(buf->rwlock);                                            \
     r = buf_peek_ ## type(buf, dest);                                 \
     if (r > 0) {                                                      \
       assert(r == sizeof(type));                                      \
       buf->rpos += r;                                                 \
     }                                                                 \
-    rwlock_unlock_w(&buf->rwlock);                                    \
+    rwlock_unlock_w(buf->rwlock);                                     \
     return r;                                                         \
   }
 
@@ -88,7 +88,7 @@
     sw r;                                                             \
     const sw size = sizeof(type);                                     \
     assert(buf);                                                      \
-    rwlock_w(&buf->rwlock);                                           \
+    rwlock_w(buf->rwlock);                                            \
     if (buf->wpos + size > buf->size &&                               \
         buf_flush(buf) < size) {                                      \
       r = -1;                                                         \
@@ -104,7 +104,7 @@
     buf->wpos += size;                                                \
     r = size;                                                         \
   clean:                                                              \
-    rwlock_unlock_w(&buf->rwlock);                                    \
+    rwlock_unlock_w(buf->rwlock);                                     \
     return r;                                                         \
   }
 
@@ -187,7 +187,7 @@ void buf_clean (s_buf *buf)
 {
   assert(buf);
 #if HAVE_PTHREAD
-  rwlock_clean(&buf->rwlock);
+  rwlock_clean(buf->rwlock);
 #endif
   if (buf->free)
     free(buf->ptr.p);
@@ -203,12 +203,12 @@ void buf_delete (s_buf *buf)
 void buf_empty (s_buf *buf)
 {
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   buf->wpos = 0;
   buf->rpos = 0;
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
 }
 
@@ -240,7 +240,7 @@ sw buf_ignore (s_buf *buf, uw size)
   if (size == 0)
     return 0;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   if ((r = buf_refill(buf, size)) < 0) {
     err_puts("buf_ignore: buf_refill");
@@ -276,7 +276,7 @@ sw buf_ignore (s_buf *buf, uw size)
   r = size;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -288,7 +288,7 @@ sw buf_ignore_line (s_buf *buf)
   sw r;
   sw result = 0;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   while ((r = buf_peek_character_utf8(buf, &c)) > 0) {
     csize = r;
@@ -303,7 +303,7 @@ sw buf_ignore_line (s_buf *buf)
   r = result;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return result;
 }
@@ -317,7 +317,7 @@ sw buf_ignore_newline (s_buf *buf)
   s_buf_save save;
   assert(buf);
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   buf_save_init(buf, &save);
   while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
@@ -336,7 +336,7 @@ sw buf_ignore_newline (s_buf *buf)
  clean:
   buf_save_clean(buf, &save);
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -349,7 +349,7 @@ sw buf_ignore_spaces (s_buf *buf)
   sw result = 0;
   assert(buf);
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
          character_is_space(c)) {
@@ -363,7 +363,7 @@ sw buf_ignore_spaces (s_buf *buf)
   r = result;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -376,7 +376,7 @@ sw buf_ignore_spaces_but_newline (s_buf *buf)
   sw result = 0;
   assert(buf);
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
          character_is_space(c) &&
@@ -389,7 +389,7 @@ sw buf_ignore_spaces_but_newline (s_buf *buf)
   r = result;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -403,7 +403,7 @@ s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
   tmp.ptr.pchar = p;
   tmp.size = size;
 #if HAVE_PTHREAD
-  rwlock_init(&tmp.rwlock);
+  rwlock_init(tmp.rwlock);
 #endif
   *buf = tmp;
   return buf;
@@ -418,7 +418,7 @@ s_buf * buf_init_const (s_buf *buf, uw size, const char *p)
   tmp.read_only = true;
   tmp.size = size;
 #if HAVE_PTHREAD
-  rwlock_init(&tmp.rwlock);
+  rwlock_init(tmp.rwlock);
 #endif
   *buf = tmp;
   return buf;
@@ -552,7 +552,7 @@ sw buf_peek_next_character_utf8 (s_buf *buf, character *c)
   assert(buf);
   assert(c);
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   buf_save_init(buf, &save);
   if ((r = buf_read_character_utf8(buf, &tmp)) <= 0)
@@ -568,7 +568,7 @@ sw buf_peek_next_character_utf8 (s_buf *buf, character *c)
  clean:
   buf_save_clean(buf, &save);
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -590,7 +590,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
   const u8 _11110000 = 0xF0;
   const u8 _11111000 = 0xF8;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   if ((r = buf_refill(buf, 1)) < 0)
     goto clean;
@@ -673,7 +673,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
   r = 0;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -701,7 +701,7 @@ sw buf_peek_str (s_buf *buf, const s_str *src)
   if (! src->size)
     return 0;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   if (buf->rpos > buf->wpos) {
     err_puts("buf_peek_str: buf error: rpos > wpos");
@@ -734,7 +734,7 @@ sw buf_peek_str (s_buf *buf, const s_str *src)
   r = src->size;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -748,7 +748,7 @@ sw buf_peek_to_str (s_buf *buf, s_str *dest)
   assert(buf);
   assert(dest);
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   if (buf->rpos > buf->wpos) {
     r = -1;
@@ -768,7 +768,7 @@ sw buf_peek_to_str (s_buf *buf, s_str *dest)
   r = size;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -789,7 +789,7 @@ s_str * buf_read (s_buf *buf, uw size, s_str *dest)
   if (! size)
     return str_init_empty(dest);
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   if (buf->rpos > buf->wpos)
     goto clean;
@@ -810,7 +810,7 @@ s_str * buf_read (s_buf *buf, uw size, s_str *dest)
   result = dest;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return result;
 }
@@ -829,7 +829,7 @@ sw buf_read_character_utf8 (s_buf *buf, character *p)
 {
   sw r;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   r = buf_peek_character_utf8(buf, p);
   if (r > 0) {
@@ -844,7 +844,7 @@ sw buf_read_character_utf8 (s_buf *buf, character *p)
     buf->rpos += r;
   }
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -931,7 +931,7 @@ s_str * buf_read_max (s_buf *buf, s_str *dest)
   s_str tmp = {0};
   assert(buf);
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   if (buf->rpos > buf->wpos)
     goto clean;
@@ -954,7 +954,7 @@ s_str * buf_read_max (s_buf *buf, s_str *dest)
   result = dest;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return result;
 }
@@ -969,13 +969,13 @@ sw buf_read_str (s_buf *buf, const s_str *src)
 {
   sw r;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   r = buf_peek_str(buf, src);
   if (r > 0)
     r = buf_ignore(buf, r);
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -986,7 +986,7 @@ sw buf_read_sym (s_buf *buf, const s_sym *src)
   sw r;
   s_buf_save save;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   buf_save_init(buf, &save);
   r = buf_read_str(buf, &src->str);
@@ -1001,7 +1001,7 @@ sw buf_read_sym (s_buf *buf, const s_sym *src)
  clean:
   buf_save_clean(buf, &save);
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -1014,7 +1014,7 @@ sw buf_read_to_str (s_buf *buf, s_str *dest)
   assert(buf);
   assert(dest);
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   if (buf->rpos > buf->wpos) {
     err_puts("buf_read_to_str: buf->rpos > buf->wpos");
@@ -1050,7 +1050,7 @@ sw buf_read_to_str (s_buf *buf, s_str *dest)
   r = size;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -1101,7 +1101,7 @@ sw buf_read_until_space_into_str (s_buf *buf, s_str *dest)
   s_buf_save save;
   s_buf tmp;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   buf_save_init(buf, &save);
   while (1) {
@@ -1126,7 +1126,7 @@ sw buf_read_until_space_into_str (s_buf *buf, s_str *dest)
  clean:
   buf_save_clean(buf, &save);
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -1142,7 +1142,7 @@ sw buf_read_until_list_into_str (s_buf *buf,
   s_buf_save save;
   s_buf tmp;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   buf_save_init(buf, &save);
   while (1) {
@@ -1182,7 +1182,7 @@ sw buf_read_until_list_into_str (s_buf *buf,
  clean:
   buf_save_clean(buf, &save);
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return result;
 }
@@ -1194,8 +1194,8 @@ sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
   sw r;
   sw result = 0;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
-  rwlock_w(&dest->rwlock);
+  rwlock_w(buf->rwlock);
+  rwlock_w(dest->rwlock);
 #endif
   while (1) {
     if ((r = buf_read_str(buf, end)) < 0) {
@@ -1224,8 +1224,8 @@ sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
   }
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
-  rwlock_unlock_w(&dest->rwlock);
+  rwlock_unlock_w(buf->rwlock);
+  rwlock_unlock_w(dest->rwlock);
 #endif
   return r;
 }
@@ -1274,7 +1274,7 @@ sw buf_read_until_str_into_str (s_buf *buf, const s_str *end,
   s_buf_save save;
   s_buf tmp;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   buf_save_init(buf, &save);
   while (1) {
@@ -1309,7 +1309,7 @@ sw buf_read_until_str_into_str (s_buf *buf, const s_str *end,
  clean:
   buf_save_clean(buf, &save);
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -1324,7 +1324,7 @@ sw buf_read_word_into_str(s_buf *buf, s_str *dest)
   s_buf tmp;
   buf_save_init(buf, &save);
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
          ! character_is_alphanum(c)) {
@@ -1362,7 +1362,7 @@ sw buf_read_word_into_str(s_buf *buf, s_str *dest)
  clean:
   buf_save_clean(buf, &save);
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -1374,7 +1374,7 @@ sw buf_refill (s_buf *buf, sw size)
   sw r;
   assert(buf);
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   r = buf->wpos - buf->rpos;
   if (size < 0) {
@@ -1404,7 +1404,7 @@ sw buf_refill (s_buf *buf, sw size)
   r = buf->wpos - buf->rpos;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -1419,7 +1419,7 @@ sw buf_refill_compact (s_buf *buf)
   if (buf->read_only)
     return 0;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   min_rpos = buf_save_min_rpos(buf);
   if (min_rpos > buf->wpos) {
@@ -1462,7 +1462,7 @@ sw buf_refill_compact (s_buf *buf)
   r = 1;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -1513,7 +1513,7 @@ s_str * buf_slice_to_str (s_buf *buf, uw start, uw end,
   assert(buf);
   assert(dest);
 #if HAVE_PTHREAD
-  rwlock_r(&buf->rwlock);
+  rwlock_r(buf->rwlock);
 #endif
   if (start > buf->wpos) {
     err_puts("buf_slice_to_str: start > wpos");
@@ -1534,7 +1534,7 @@ s_str * buf_slice_to_str (s_buf *buf, uw start, uw end,
   result = str_init_copy(dest, &tmp);
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_r(&buf->rwlock);
+  rwlock_unlock_r(buf->rwlock);
 #endif
   return result;
 }
@@ -1546,7 +1546,7 @@ sw buf_str_to_hex (s_buf *buf, const s_str *src)
   sw size;
   uw i;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   if (src->size == 0) {
     r = 0;
@@ -1566,7 +1566,7 @@ sw buf_str_to_hex (s_buf *buf, const s_str *src)
   r = size;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -1605,7 +1605,7 @@ sw buf_u8_to_hex (s_buf *buf, const u8 *x)
   sw result = 0;
   s_buf_save save;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   buf_save_init(buf, &save);
   digit = *x >> 4;
@@ -1631,7 +1631,7 @@ sw buf_u8_to_hex (s_buf *buf, const u8 *x)
  clean:
   buf_save_clean(buf, &save);
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -1669,7 +1669,7 @@ sw buf_write (s_buf *buf, const void *data, uw len)
   if (! len)
     return 0;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   if (buf->wpos > buf->size) {
     err_puts("buf_write: buf error: wpos > size");
@@ -1696,7 +1696,7 @@ sw buf_write (s_buf *buf, const void *data, uw len)
   r = len;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -1732,7 +1732,7 @@ sw buf_write_character_utf8 (s_buf *buf, character c)
     return csize;
   }
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   if (c == '\n')
     size = csize + buf->pretty.base_column;
@@ -1760,7 +1760,7 @@ sw buf_write_character_utf8 (s_buf *buf, character c)
   r = size;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -1806,7 +1806,7 @@ sw buf_write_str (s_buf *buf, const s_str *src)
   assert(src);
   s = *src;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   while ((r = str_read_character_utf8(&s, &c)) > 0) {
     if ((r = buf_write_character_utf8(buf, c)) < 0)
@@ -1817,7 +1817,7 @@ sw buf_write_str (s_buf *buf, const s_str *src)
   r = result;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -1844,14 +1844,14 @@ sw buf_write_str_without_indent (s_buf *buf, const s_str *src)
   s_pretty_save pretty_save;
   sw r;
 #if HAVE_PTHREAD
-  rwlock_w(&buf->rwlock);
+  rwlock_w(buf->rwlock);
 #endif
   pretty_save_init(&pretty_save, &buf->pretty);
   pretty_indent_at_column(&buf->pretty, 0);
   r = buf_write_str(buf, src);
   pretty_save_clean(&pretty_save, &buf->pretty);
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(buf->rwlock);
 #endif
   return r;
 }
@@ -1934,8 +1934,8 @@ sw buf_xfer (s_buf *dest, s_buf *src, uw size)
   if (size == 0)
     return 0;
 #if HAVE_PTHREAD
-  rwlock_w(&dest->rwlock);
-  rwlock_w(&src->rwlock);
+  rwlock_w(dest->rwlock);
+  rwlock_w(src->rwlock);
 #endif
   assert(src->rpos <= src->wpos);
   assert(dest->rpos <= dest->wpos);
@@ -1959,8 +1959,8 @@ sw buf_xfer (s_buf *dest, s_buf *src, uw size)
   r = size;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&src->rwlock);
-  rwlock_unlock_w(&dest->rwlock);
+  rwlock_unlock_w(src->rwlock);
+  rwlock_unlock_w(dest->rwlock);
 #endif
   return r;
 }
@@ -1972,8 +1972,8 @@ sw buf_xfer_reverse (s_buf *src, s_buf *dest)
   assert(src);
   assert(dest);
 #if HAVE_PTHREAD
-  rwlock_w(&src->rwlock);
-  rwlock_w(&dest->rwlock);
+  rwlock_w(src->rwlock);
+  rwlock_w(dest->rwlock);
 #endif
   size = src->wpos - src->rpos;
   if (dest->wpos + size > dest->size &&
@@ -1988,8 +1988,8 @@ sw buf_xfer_reverse (s_buf *src, s_buf *dest)
   r = size;
  clean:
 #if HAVE_PTHREAD
-  rwlock_unlock_w(&dest->rwlock);
-  rwlock_unlock_w(&src->rwlock);
+  rwlock_unlock_w(dest->rwlock);
+  rwlock_unlock_w(src->rwlock);
 #endif
   return r;
 }

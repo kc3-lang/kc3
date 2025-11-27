@@ -23,7 +23,7 @@ defmodule Buf do
              read_only: false,
              refill: (Ptr) 0,
              rpos: (Uw) 0,
-             rwlock: %Rwlock{},
+             rwlock: (Rwlock*) 0,
              save: (Ptr) 0,
              seek: (Ptr) 0,
              size: (Uw) 0,
@@ -38,7 +38,7 @@ defmodule Buf do
 
   def delete = cfn Void "buf_delete" (Buf)
 
-  def new_alloc = cfn Buf* "pbuf_init_alloc" (Result, Uw)
+  def new_alloc = cfn Buf* "pbuf_init_alloc" (Result, Tag)
 
   def new = fn () { Buf.new_alloc(Buf.default_size) }
 

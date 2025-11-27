@@ -1229,7 +1229,7 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
   tmp.heap.rpos = sizeof(s_marshall_header);
   tmp.heap.wpos = tmp.heap.rpos + tmp.heap_size;
 #if HAVE_PTHREAD
-  rwlock_init(&tmp.heap.rwlock);
+  rwlock_init(tmp.heap.rwlock);
 #endif
   *mr = tmp;
   return mr;
