@@ -30,7 +30,6 @@ CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC -pthread"
 CFLAGS="$CFLAGS -fPIC"
 LDFLAGS="$LDFLAGS ${EXPORT_DYNAMIC}"
 LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
-LDFLAGS="$LDFLAGS -L${BUILD_TOP}/gl"
 LDFLAGS="$LDFLAGS -L${BUILD_TOP}/image"
 config_asan
 config_gnu
@@ -45,13 +44,9 @@ pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
 config_lib m -lm 2>/dev/null
-pkg_config egl
-pkg_config freetype2
-pkg_config glesv2
 case "$(uname -s)" in
     Darwin)
         LIBS="$LIBS -rpath @executable_path/../libkc3"
-        LIBS="$LIBS -rpath @executable_path/../gl"
         LIBS="$LIBS -rpath @executable_path/../image"
         ;;
     MINGW64*)
@@ -84,7 +79,6 @@ LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
 LIBS_ASAN="$(${CC} -print-file-name=libasan.so)"
 LIBS_ASAN="$LIBS_ASAN $LIBS"
 LIBS_ASAN="$LIBS_ASAN -lkc3_image_asan"
-LIBS_ASAN="$LIBS_ASAN -lkc3_gl_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
 
 # Coverage config
@@ -92,7 +86,6 @@ CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS"
 LIBS_COV="$LIBS -lkc3_image_cov"
-LIBS_COV="$LIBS_COV -lkc3_gl_cov"
 LIBS_COV="$LIBS_COV -lkc3_cov"
 
 # Debug config
@@ -100,7 +93,6 @@ CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
 LIBS_DEBUG="$LIBS -lkc3_image_debug"
-LIBS_DEBUG="$LIBS_DEBUG -lkc3_gl_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
 
 # Main config
@@ -110,7 +102,6 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
 LIBS="$LIBS -lkc3_image"
-LIBS="$LIBS -lkc3_gl"
 LIBS="$LIBS -lkc3"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
