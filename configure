@@ -68,6 +68,13 @@ elif uname -s | grep -qi mingw; then
 fi
 echo "ARCH = $ARCH" >> ${CONFIG_MK}
 
+if pkg-config glesv2; then
+    HAVE_GL=true
+else
+    HAVE_GL=false
+fi
+echo "HAVE_GL = $HAVE_GL" >> ${CONFIG_MK}
+
 if pkg-config gtk4; then
     HAVE_GTK4=true
 else
@@ -83,7 +90,6 @@ env_reset
 SUBDIRS="
 ekc3
 event
-gl
 http
 httpd
 ikc3
@@ -99,11 +105,17 @@ smtp
 socket
 test
 tls
-window
 "
 
+if $HAVE_GL; then
+    SUBDIRS="$SUBDIRS
+gl
+window"
+fi
+
 if $HAVE_GTK4; then
-    SUBDIRS="$SUBDIRS gtk4"
+    SUBDIRS="$SUBDIRS
+gtk4"
 fi
 
 config_subdirs $SUBDIRS

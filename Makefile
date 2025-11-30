@@ -29,8 +29,8 @@ all:
 	${MAKE} -C http all
 	${MAKE} -C httpd all
 	${MAKE} -C test all
-	${MAKE} -C gl all
-	${MAKE} -C window all
+	if ${HAVE_GL}; then ${MAKE} -C gl all; fi
+	if ${HAVE_GL}; then ${MAKE} -C window all; fi
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 all; fi
 
 include config.mk
@@ -60,8 +60,8 @@ asan:
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
 	${MAKE} -C test asan
-	${MAKE} -C gl asan
-	${MAKE} -C window asan
+	if ${HAVE_GL}; then ${MAKE} -C gl asan; fi
+	if ${HAVE_GL}; then ${MAKE} -C window asan; fi
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 asan; fi
 
 assets:
@@ -86,8 +86,8 @@ build:
 	${MAKE} -C http build
 	${MAKE} -C httpd build
 	${MAKE} -C test build
-	${MAKE} -C gl build
-	${MAKE} -C window build
+	if ${HAVE_GL}; then ${MAKE} -C gl build; fi
+	if ${HAVE_GL}; then ${MAKE} -C window build; fi
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 build; fi
 
 check: test
@@ -161,8 +161,8 @@ cov:
 	${MAKE} -C http cov
 	${MAKE} -C httpd cov
 	${MAKE} -C test cov
-	${MAKE} -C gl cov
-	${MAKE} -C window cov
+	if ${HAVE_GL}; then ${MAKE} -C gl cov; fi
+	if ${HAVE_GL}; then ${MAKE} -C window cov; fi
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 cov; fi
 
 deb:
@@ -190,8 +190,8 @@ debug:
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
 	${MAKE} -C test debug
-	${MAKE} -C gl debug
-	${MAKE} -C window debug
+	if ${HAVE_GL}; then ${MAKE} -C gl debug; fi
+	if ${HAVE_GL}; then ${MAKE} -C window debug; fi
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 debug; fi
 
 demo: build
@@ -844,8 +844,8 @@ install:
 	${MAKE} -C smtp install
 	${MAKE} -C http install
 	${MAKE} -C httpd install
-	${MAKE} -C gl install
-	${MAKE} -C window install
+	if ${HAVE_GL}; then ${MAKE} -C gl install; fi
+	if ${HAVE_GL}; then ${MAKE} -C window install; fi
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 install; fi
 	${MAKE} install_lib_links
 
