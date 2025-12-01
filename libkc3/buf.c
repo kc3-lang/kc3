@@ -187,7 +187,7 @@ void buf_clean (s_buf *buf)
 {
   assert(buf);
 #if HAVE_PTHREAD
-  rwlock_clean(buf->rwlock);
+  rwlock_delete(buf->rwlock);
 #endif
   if (buf->free)
     free(buf->ptr.p);
@@ -403,7 +403,7 @@ s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
   tmp.ptr.pchar = p;
   tmp.size = size;
 #if HAVE_PTHREAD
-  rwlock_init(tmp.rwlock);
+  tmp.rwlock = rwlock_new();
 #endif
   *buf = tmp;
   return buf;
@@ -418,7 +418,7 @@ s_buf * buf_init_const (s_buf *buf, uw size, const char *p)
   tmp.read_only = true;
   tmp.size = size;
 #if HAVE_PTHREAD
-  rwlock_init(tmp.rwlock);
+  tmp.rwlock = rwlock_new();
 #endif
   *buf = tmp;
   return buf;

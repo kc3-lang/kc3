@@ -3222,7 +3222,6 @@ sw buf_parse_module_name (s_buf *buf, p_sym *dest)
   s_buf_save save;
   s_str str;
   p_sym tmp;
-  s_buf tmp_buf = {0};
   buf_save_init(buf, &save);
   if ((r = buf_parse_module_name_sym_ignore(buf)) <= 0)
     goto clean;
@@ -3265,7 +3264,6 @@ sw buf_parse_module_name (s_buf *buf, p_sym *dest)
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
-  buf_clean(&tmp_buf);
   return r;
 }
 

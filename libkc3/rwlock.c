@@ -12,6 +12,7 @@
  */
 #include <errno.h>
 #include <pthread.h>
+#include "alloc.h"
 #include "assert.h"
 #include "io.h"
 #include "rwlock.h"
@@ -51,6 +52,25 @@ s_rwlock * rwlock_init (s_rwlock *rwlock)
   tmp.thread = 0;
   tmp.ready = true;
   *rwlock = tmp;
+  return rwlock;
+}
+
+void rwlock_delete (s_rwlock *rwlock)
+{
+  assert(rwlock);
+  rwlock_clean(rwlock);
+  free(rwlock);
+}
+
+s_rwlock * rwlock_new (void)
+{
+  s_rwlock *rwlock;
+  if (! (rwlock = alloc(sizeof(s_rwlock))))
+    return NULL;
+  if (! rwlock_init(rwlock)) {
+    free(rwlock);
+    return NULL;
+  }
   return rwlock;
 }
 
