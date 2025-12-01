@@ -41,6 +41,7 @@ s_tag * tag_init_f128 (s_tag *tag, f128 f);
 #endif
 s_tag * tag_init_facts_cast (s_tag *tag, p_sym *type, s_tag *src);
 s_tag * tag_init_from_str (s_tag *tag, const s_str *str);
+s_tag * tag_init_sym_type (s_tag *tag, const s_sym *type);
 s_tag * tag_init_uw_reduce (s_tag *tag, uw src);
 
 /* Heap-allocation functions, call tag_delete after use. */

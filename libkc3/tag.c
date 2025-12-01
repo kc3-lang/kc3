@@ -432,6 +432,49 @@ s_tag * tag_init_bool (s_tag *tag, bool b)
   return tag;
 }
 
+s_tag * tag_init_sym_type (s_tag *tag, const s_sym *type)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  assert(type);
+  if (! sym_to_tag_type(type, &tmp.type)) {
+    err_write_1("tag_init_sym_type: invalid type: ");
+    err_puts(type->str.ptr.pchar);
+    assert(! "tag_init_sym_type: invalid type");
+    return NULL;
+  }
+  switch (tmp.type) {
+  case TAG_POINTER:
+    if (type == &g_sym_Pointer) {
+      if (! pointer_init(&tmp.data.pointer, NULL, NULL, NULL))
+        return NULL;
+    }
+    else
+      if (! pointer_init(&tmp.data.pointer, type, NULL, NULL))
+        return NULL;
+    break;
+  case TAG_PSTRUCT:
+    if (! pstruct_init(&tmp.data.pstruct, type)) {
+      err_write_1("tag_init_sym_type: struct_init: ");
+      err_puts(type->str.ptr.pchar);
+      assert(! "tag_init_sym_type: struct_init");
+      return NULL;
+    }
+    if (! struct_allocate(tmp.data.pstruct)) {
+      err_write_1("tag_init_sym_type: struct_allocate: ");
+      err_puts(type->str.ptr.pchar);
+      assert(! "tag_init_sym_type: struct_allocate");
+      pstruct_clean(&tmp.data.pstruct);
+      return NULL;
+    }
+    break;
+  default:
+    break;
+  }
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_cast (s_tag *tag, const s_sym * const *type,
                        s_tag *src)
 {

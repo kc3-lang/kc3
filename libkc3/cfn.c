@@ -26,8 +26,6 @@
 #include "tag.h"
 #include "tag_type.h"
 
-static s_tag * cfn_tag_init (s_tag *tag, const s_sym *type);
-
 s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
 {
   s_list *a;
@@ -62,7 +60,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     err_write_1("\n");
     return NULL;
   }
-  cfn_tag_init(&tmp, cfn->result_type);
+  tag_init_sym_type(&tmp, cfn->result_type);
   if ((cfn->result_type != &g_sym_Ptr ||
        cfn->arg_result) &&
       cfn->cif.rtype == &ffi_type_pointer) {
@@ -98,7 +96,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       assert(cfn_arg_types->tag.type == TAG_PSYM);
       if (cfn_arg_types->tag.data.psym == &g_sym_Result) {
         assert(cfn->cif.rtype == &ffi_type_pointer);
-        cfn_tag_init(&tmp2, cfn->result_type);
+        tag_init_sym_type(&tmp2, cfn->result_type);
         if (! tag_to_ffi_pointer(&tmp2, cfn->result_type, &p)) {
           err_puts("cfn_apply: tag_to_ffi_pointer 3");
           assert(! "cfn_apply: tag_to_ffi_pointer 3");
@@ -449,47 +447,4 @@ s_cfn * cfn_set_name_if_null (s_cfn *cfn, const s_ident *name)
   if (! cfn->name.sym)
     return cfn_set_name(cfn, name);
   return cfn;
-}
-
-s_tag * cfn_tag_init (s_tag *tag, const s_sym *type)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  assert(type);
-  if (! sym_to_tag_type(type, &tmp.type)) {
-    err_write_1("cfn_tag_init: invalid type: ");
-    err_puts(type->str.ptr.pchar);
-    assert(! "cfn_tag_init: invalid type");
-    return NULL;
-  }
-  switch (tmp.type) {
-  case TAG_POINTER:
-    if (type == &g_sym_Pointer) {
-      if (! pointer_init(&tmp.data.pointer, NULL, NULL, NULL))
-        return NULL;
-    }
-    else
-      if (! pointer_init(&tmp.data.pointer, type, NULL, NULL))
-        return NULL;
-    break;
-  case TAG_PSTRUCT:
-    if (! pstruct_init(&tmp.data.pstruct, type)) {
-      err_write_1("cfn_tag_init: struct_init: ");
-      err_puts(type->str.ptr.pchar);
-      assert(! "cfn_tag_init: struct_init");
-      return NULL;
-    }
-    if (! struct_allocate(tmp.data.pstruct)) {
-      err_write_1("cfn_tag_init: struct_allocate: ");
-      err_puts(type->str.ptr.pchar);
-      assert(! "cfn_tag_init: struct_allocate");
-      pstruct_clean(&tmp.data.pstruct);
-      return NULL;
-    }
-    break;
-  default:
-    break;
-  }
-  *tag = tmp;
-  return tag;
 }
