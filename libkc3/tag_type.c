@@ -19,11 +19,11 @@
 
 #define TAG_TYPE_INT(i)                         \
   ((i > U16_MAX) ? TAG_U32 :                    \
-   (i > U8_MAX) ? TAG_U16 :                     \
-   (i >= 0) ? TAG_U8 :                          \
-   (i >= S8_MIN) ? TAG_S8 :                     \
-   (i >= S16_MIN) ? TAG_S16 :                   \
-   S32_MIN)
+   ((i > U8_MAX) ? TAG_U16 :                    \
+    ((i >= 0) ? TAG_U8 :                        \
+     ((i >= S8_MIN) ? TAG_S8 :                  \
+      ((i >= S16_MIN) ? TAG_S16 :               \
+       TAG_S32)))))
 
 e_tag_type tag_type_int (int i)
 {
