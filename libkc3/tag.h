@@ -22,6 +22,7 @@
 #include <stdarg.h>
 #include "tag_init.h"
 #include "tag_type.h"
+#include "tag_init_wip.h"
 
 #define TAG_FIRST (&g_tag_first)
 #define TAG_LAST (&g_tag_last)
