@@ -162,9 +162,9 @@ sw pdf_stream_draw_path_move_to(s_pdf_stream *stream, s_pdf_vec2 *pos)
   return result;
 }
 
-sw pdf_stream_draw_path_curve_to_cubic(s_pdf_stream *stream, 
-                                       s_pdf_vec2 *control1, 
-                                       s_pdf_vec2 *control2, 
+sw pdf_stream_draw_path_curve_to_cubic(s_pdf_stream *stream,
+                                       s_pdf_vec2 *control1,
+                                       s_pdf_vec2 *control2,
                                        s_pdf_vec2 *end)
 {
   assert(stream);
@@ -191,8 +191,8 @@ sw pdf_stream_draw_path_curve_to_cubic(s_pdf_stream *stream,
   return result;
 }
 
-sw pdf_stream_draw_path_curve_to_cubic_v(s_pdf_stream *stream, 
-                                         s_pdf_vec2 *control2, 
+sw pdf_stream_draw_path_curve_to_cubic_v(s_pdf_stream *stream,
+                                         s_pdf_vec2 *control2,
                                          s_pdf_vec2 *end)
 {
   assert(stream);
@@ -213,8 +213,8 @@ sw pdf_stream_draw_path_curve_to_cubic_v(s_pdf_stream *stream,
   return result;
 }
 
-sw pdf_stream_draw_path_curve_to_cubic_y(s_pdf_stream *stream, 
-                                         s_pdf_vec2 *control1, 
+sw pdf_stream_draw_path_curve_to_cubic_y(s_pdf_stream *stream,
+                                         s_pdf_vec2 *control1,
                                          s_pdf_vec2 *end)
 {
   assert(stream);

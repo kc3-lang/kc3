@@ -39,16 +39,16 @@ sw pdf_stream_draw_set_line_dash_pattern(s_pdf_stream *stream,
 sw pdf_stream_draw_path_begin_at(s_pdf_stream *stream,
                                  s_pdf_vec2 *pos);
 sw pdf_stream_draw_path_move_to(s_pdf_stream *stream, s_pdf_vec2 *pos);
-sw pdf_stream_draw_path_curve_to_cubic(s_pdf_stream *stream, 
-                                       s_pdf_vec2 *control1, 
-                                       s_pdf_vec2 *control2, 
+sw pdf_stream_draw_path_curve_to_cubic(s_pdf_stream *stream,
+                                       s_pdf_vec2 *control1,
+                                       s_pdf_vec2 *control2,
                                        s_pdf_vec2 *end);
-sw pdf_stream_draw_path_curve_to_cubic_v(s_pdf_stream *stream, 
-                                         s_pdf_vec2 *control2, 
+sw pdf_stream_draw_path_curve_to_cubic_v(s_pdf_stream *stream,
+                                         s_pdf_vec2 *control2,
                                          s_pdf_vec2 *end);
-sw pdf_stream_draw_path_curve_to_cubic_y(s_pdf_stream *stream, 
-                                         s_pdf_vec2 *control1, 
-                                         s_pdf_vec2 *end);  
+sw pdf_stream_draw_path_curve_to_cubic_y(s_pdf_stream *stream,
+                                         s_pdf_vec2 *control1,
+                                         s_pdf_vec2 *end);
 sw pdf_stream_draw_path_end_at(s_pdf_stream *stream, s_pdf_vec2 *pos);
 sw pdf_stream_draw_path_rect(s_pdf_stream *stream, s_pdf_rect *rect);
 
