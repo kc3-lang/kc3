@@ -17,16 +17,19 @@
 
 #if HAVE_GENERIC_SW_UW
 # define TAG_TYPE_SW_UW       \
-    bool:      TAG_BOOL,      \
-    character: TAG_CHARACTER, \
     sw:        TAG_SW,        \
     uw:        TAG_UW,
 #else
 # define TAG_TYPE_SW_UW
 #endif
 
-#define TAG_TYPE(value)                                               \
-  _Generic((value),                                                   \
+/* conflicts :
+    bool:      TAG_BOOL,                         \
+    character: TAG_CHARACTER, \
+*/
+
+#define TAG_TYPE(x)                                                   \
+  _Generic((x),                                                       \
            TAG_TYPE_SW_UW                                             \
            s_array*:      TAG_ARRAY,                                  \
            s_do_block*:   TAG_DO_BLOCK,                               \
@@ -39,7 +42,12 @@
            s_integer*:    TAG_INTEGER,                                \
            s_ratio*:      TAG_RATIO,                                  \
            s64:           TAG_S64,                                    \
-           s32:           TAG_S32,                                    \
+           s32: (((s32) x > U16_MAX) ? TAG_U32 :                            \
+                 ((s32) x > U8_MAX) ? TAG_U16 :                             \
+                 ((s32) x >= 0) ? TAG_U8 :                                  \
+                 ((s32) x >= S8_MIN) ? TAG_S8 :                             \
+                 ((s32) x >= S16_MIN) ? TAG_S16 :                           \
+                 S32_MIN),                                            \
            s16:           TAG_S16,                                    \
            s8:            TAG_S8,                                     \
            u8:            TAG_U8,                                     \
@@ -66,7 +74,7 @@
            s_time*:       TAG_TIME,                                   \
            s_tuple*:      TAG_TUPLE,                                  \
            s_unquote*:    TAG_UNQUOTE,                                \
-           default: ERROR("unknown tag type"))
+           default: (err_puts("unknown tag type"), TAG_VOID))
 
 /*
   

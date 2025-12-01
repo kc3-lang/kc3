@@ -17,6 +17,31 @@
 #include "tag_type.h"
 #include "ratio.h"
 
+#define TAG_TYPE_INT(i)                         \
+  ((i > U16_MAX) ? TAG_U32 :                    \
+   (i > U8_MAX) ? TAG_U16 :                     \
+   (i >= 0) ? TAG_U8 :                          \
+   (i >= S8_MIN) ? TAG_S8 :                     \
+   (i >= S16_MIN) ? TAG_S16 :                   \
+   S32_MIN)
+
+e_tag_type tag_type_int (int i)
+{
+  assert(i <= S32_MAX);
+  assert(i >= S32_MIN);
+  if (i > U16_MAX)
+    return TAG_U32;
+  if (i > U8_MAX)
+    return TAG_U16;
+  if (i >= 0)
+    return TAG_U8;
+  if (i >= S8_MIN)
+    return TAG_S8;
+  if (i >= S16_MIN)
+    return TAG_S16;
+  return S32_MIN;
+}
+
 bool tag_type_size (e_tag_type type, uw *dest)
 {
   switch (type) {

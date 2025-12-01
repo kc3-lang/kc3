@@ -21,6 +21,7 @@
 
 #include "types.h"
 
-const char *    tag_type_to_string (e_tag_type type);
+e_tag_type   tag_type_int (int x);
+const char * tag_type_to_string (e_tag_type type);
 
 #endif /* LIBKC3_TAG_TYPE */
