@@ -22,6 +22,10 @@
 void       rwlock_clean (s_rwlock *rwlock);
 s_rwlock * rwlock_init (s_rwlock *rwlock);
 
+/* Heap allocation functions, call rwlock_delete after use. */
+void       rwlock_delete (s_rwlock *rwlock);
+s_rwlock * rwlock_new (void);
+
 /* Operators. */
 s_rwlock * rwlock_r (s_rwlock *rwlock);
 s_rwlock * rwlock_unlock_r (s_rwlock *rwlock);
