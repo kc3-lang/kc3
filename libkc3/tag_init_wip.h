@@ -1,4 +1,6 @@
 
+#include "error.h"
+
 #if HAVE_F80
 # define TAG_TYPE_F80 f80:    TAG_F80,
 #else

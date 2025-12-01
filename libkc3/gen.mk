@@ -87,6 +87,8 @@ GENERATED_FILES = \
 	tag_init.h \
 	u8.c u8.h u16.c u16.h u32.c u32.h u64.c u64.h uw.c uw.h
 
+CLEANFILES += ${GENERATED_FILES}
+
 gen: ${GENERATED_FILES}
 
 list_init.c list_init.h tag_init.c tag_init.h: tag_init.rb ../license.h

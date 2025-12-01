@@ -20,7 +20,6 @@ pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_sha256
 config_lib dl -ldl 2>/dev/null
-config_define PREFIX "\"${PREFIX}\""
 config_have_crypt_newhash
 config_have_explicit_bzero
 config_have_generic_sw_uw
