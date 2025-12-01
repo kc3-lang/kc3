@@ -18,12 +18,14 @@
 sw pdf_stream_draw_stack_save(s_pdf_stream *stream)
 {
   assert(stream);
+  assert(stream->buf);
   return pdf_buf_write_token_clean(stream->buf, "q", true);
 }
 
 sw pdf_stream_draw_stack_load(s_pdf_stream *stream)
 {
   assert(stream);
+  assert(stream->buf);
   return pdf_buf_write_token_clean(stream->buf, "Q", true);
 }
 
@@ -32,6 +34,7 @@ sw pdf_stream_draw_set_transformation_matrix(s_pdf_stream *stream,
                                              s_array *m)
 {
   assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_flat_array(stream->buf, m)) < 0)
@@ -46,6 +49,7 @@ sw pdf_stream_draw_set_transformation_matrix(s_pdf_stream *stream,
 sw pdf_stream_draw_set_line_width(s_pdf_stream *stream, f32 width)
 {
   assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_float(stream->buf, width)) < 0)
@@ -61,6 +65,7 @@ sw pdf_stream_draw_set_line_cap(s_pdf_stream *stream,
                                 enum pdf_line_cap cap)
 {
   assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_integer(stream->buf, (s32)cap)) < 0)
@@ -76,6 +81,7 @@ sw pdf_stream_draw_set_line_join(s_pdf_stream *stream,
                                  enum pdf_line_join join)
 {
   assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_integer(stream->buf, (s32)join)) < 0)
@@ -91,6 +97,7 @@ sw pdf_stream_draw_set_line_miter_limit(s_pdf_stream *stream,
                                         f32 limit)
 {
   assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_float(stream->buf, limit)) < 0)
@@ -107,6 +114,7 @@ sw pdf_stream_draw_set_line_dash_pattern(s_pdf_stream *stream,
                                          s32 phase)
 {
   assert(stream);
+  assert(stream->buf);
   assert(array);
   sw r;
   sw result = 0;
@@ -135,6 +143,7 @@ sw pdf_stream_draw_set_line_dash_pattern(s_pdf_stream *stream,
 sw pdf_stream_draw_path_begin_at(s_pdf_stream *stream, s_pdf_vec2 *pos)
 {
   assert(stream);
+  assert(stream->buf);
   assert(pos);
   sw r;
   sw result = 0;
@@ -150,6 +159,7 @@ sw pdf_stream_draw_path_begin_at(s_pdf_stream *stream, s_pdf_vec2 *pos)
 sw pdf_stream_draw_path_move_to(s_pdf_stream *stream, s_pdf_vec2 *pos)
 {
   assert(stream);
+  assert(stream->buf);
   assert(pos);
   sw r;
   sw result = 0;
@@ -168,6 +178,7 @@ sw pdf_stream_draw_path_curve_to_cubic(s_pdf_stream *stream,
                                        s_pdf_vec2 *end)
 {
   assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_vec2(stream->buf, control1)) < 0)
@@ -196,6 +207,7 @@ sw pdf_stream_draw_path_curve_to_cubic_v(s_pdf_stream *stream,
                                          s_pdf_vec2 *end)
 {
   assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_vec2(stream->buf, control2)) < 0)
@@ -218,6 +230,7 @@ sw pdf_stream_draw_path_curve_to_cubic_y(s_pdf_stream *stream,
                                          s_pdf_vec2 *end)
 {
   assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_vec2(stream->buf, control1)) < 0)
@@ -238,6 +251,7 @@ sw pdf_stream_draw_path_curve_to_cubic_y(s_pdf_stream *stream,
 sw pdf_stream_draw_path_end_at(s_pdf_stream *stream, s_pdf_vec2 *pos)
 {
   assert(stream);
+  assert(stream->buf);
   assert(pos);
   sw r;
   sw result = 0;
@@ -253,6 +267,7 @@ sw pdf_stream_draw_path_end_at(s_pdf_stream *stream, s_pdf_vec2 *pos)
 sw pdf_stream_draw_path_rect(s_pdf_stream *stream, s_pdf_rect *rect)
 {
   assert(stream);
+  assert(stream->buf);
   assert(rect);
   sw r;
   sw result = 0;
@@ -289,10 +304,12 @@ sw pdf_stream_draw_paint(s_pdf_stream *stream,
                          enum pdf_fill_mode fill)
 {
   assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if (fill != PDF_FILL_NONE) {
   assert(stream);
+  assert(stream->buf);
     if ((r = pdf_buf_write_token_clean(stream->buf,
         (fill == PDF_FILL_EVEN_ODD) ? "f*" : "f", true)) < 0)
       return r;
@@ -300,6 +317,7 @@ sw pdf_stream_draw_paint(s_pdf_stream *stream,
   }
   if (stroke) {
   assert(stream);
+  assert(stream->buf);
     if ((r = pdf_buf_write_token_clean(stream->buf, "S", true)) < 0)
       return r;
     result += r;
@@ -312,17 +330,16 @@ sw pdf_stream_draw_paint_close(s_pdf_stream *stream,
                                enum pdf_fill_mode fill)
 {
   assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if (fill != PDF_FILL_NONE) {
-  assert(stream);
     if ((r = pdf_buf_write_token_clean(stream->buf,
         (fill == PDF_FILL_EVEN_ODD) ? "B*" : "B", true)) < 0)
       return r;
     result += r;
   }
   if (stroke) {
-  assert(stream);
     if ((r = pdf_buf_write_token_clean(stream->buf, "b", true)) < 0)
       return r;
     result += r;
@@ -334,6 +351,7 @@ sw pdf_stream_draw_paint_close(s_pdf_stream *stream,
 sw pdf_stream_draw_clip(s_pdf_stream *stream, bool even_odd)
 {
   assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_token_clean(stream->buf,
@@ -347,6 +365,7 @@ sw pdf_stream_draw_clip(s_pdf_stream *stream, bool even_odd)
 sw pdf_stream_external_object(s_pdf_stream *stream, p_sym name)
 {
   assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_name(stream->buf, name)) < 0)

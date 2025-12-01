@@ -17,7 +17,8 @@
 
 sw pdf_stream_text_begin (s_pdf_stream *stream)
 {
-  assert(buf);
+  assert(stream);
+  assert(stream->buf);
   return pdf_buf_write_token_clean(stream->buf, "BT", true);
 }
 
@@ -26,7 +27,8 @@ sw pdf_stream_text_set_font (s_pdf_stream *stream,
 {
   sw r = 0;
   sw result = 0;
-  assert(buf);
+  assert(stream);
+  assert(stream->buf);
   if ((r = pdf_buf_write_name(stream->buf, font)) < 0) {
     return r;
   }
@@ -50,7 +52,8 @@ sw pdf_stream_text_set_pos_xy (s_pdf_stream *stream, s_pdf_vec2 *pos)
 {
   sw r = 0;
   sw result = 0;
-  assert(buf);
+  assert(stream);
+  assert(stream->buf);
   assert(pos);
   if ((r = pdf_buf_write_integer(stream->buf, pos->x)) < 0) {
     return r;
@@ -78,7 +81,8 @@ sw pdf_stream_text_set_pos_xy (s_pdf_stream *stream, s_pdf_vec2 *pos)
 sw pdf_stream_text_set_text (s_pdf_stream *stream, s_str *text)
 {
   sw r = 0;
-  assert(buf);
+  assert(stream);
+  assert(stream->buf);
   if ((r = pdf_buf_write_string_hex(stream->buf, text)) < 0) {
     return r;
   }
@@ -93,7 +97,8 @@ sw pdf_stream_text_set_text_array (s_pdf_stream *stream,
                                    const p_list text_array)
 {
   sw r = 0;
-  assert(buf);
+  assert(stream);
+  assert(stream->buf);
   if ((r = pdf_buf_write_array(stream->buf, text_array)) < 0) {
     return r;
   }
@@ -102,6 +107,7 @@ sw pdf_stream_text_set_text_array (s_pdf_stream *stream,
 
 sw pdf_stream_text_end (s_pdf_stream *stream)
 {
-  assert(buf);
+  assert(stream);
+  assert(stream->buf);
   return pdf_buf_write_token_clean(stream->buf, "BT", true);
 }

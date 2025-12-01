@@ -291,7 +291,7 @@ sw pdf_buf_write_token_clean(s_buf *buf, const char *pchar,
 sw pdf_buf_write_vec2 (s_buf *buf, const s_pdf_vec2 *src)
 {
   assert(buf);
-  assert(vec2);
+  assert(src);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_float(buf, src->x)) < 0)
