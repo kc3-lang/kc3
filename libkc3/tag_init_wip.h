@@ -42,11 +42,11 @@
            s_integer*:    TAG_INTEGER,                                \
            s_ratio*:      TAG_RATIO,                                  \
            s64:           TAG_S64,                                    \
-           s32: (((s32) x > U16_MAX) ? TAG_U32 :                            \
-                 ((s32) x > U8_MAX) ? TAG_U16 :                             \
-                 ((s32) x >= 0) ? TAG_U8 :                                  \
-                 ((s32) x >= S8_MIN) ? TAG_S8 :                             \
-                 ((s32) x >= S16_MIN) ? TAG_S16 :                           \
+           s32: ((x > U16_MAX) ? TAG_U32 :                            \
+                 (x > U8_MAX) ? TAG_U16 :                             \
+                 (x >= 0) ? TAG_U8 :                                  \
+                 (x >= S8_MIN) ? TAG_S8 :                             \
+                 (x >= S16_MIN) ? TAG_S16 :                           \
                  S32_MIN),                                            \
            s16:           TAG_S16,                                    \
            s8:            TAG_S8,                                     \
@@ -70,6 +70,7 @@
            u_ptr_w:       TAG_PTR_FREE,                               \
            p_var:         TAG_PVAR,                                   \
            s_quote*:      TAG_QUOTE,                                  \
+           char*:         TAG_STR,                                    \
            s_str*:        TAG_STR,                                    \
            s_time*:       TAG_TIME,                                   \
            s_tuple*:      TAG_TUPLE,                                  \
