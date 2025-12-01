@@ -13,7 +13,7 @@
 require Facts
 
 defmodule Module do
-  
+
   def list = fn () {
     Facts.collect_with(Facts.env_db(),
       [[ module_name = ?, :is_a, :module ]],

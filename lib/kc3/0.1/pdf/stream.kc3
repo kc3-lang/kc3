@@ -23,8 +23,9 @@ defmodule PDF.Stream do
 
   dlopen("pdf.so")
 
-  def new = cfn PDF.Stream "pdf_stream_init" (Result)
   def clean = cfn Sw "pdf_stream_clean" (PDF.Stream)
+
+  def new = cfn PDF.Stream "pdf_stream_init" (Result)
 
   def stack_save = cfn Sw
     "pdf_stream_draw_stack_save" (PDF.Stream)
@@ -56,7 +57,7 @@ defmodule PDF.Stream do
       PDF.Vec2, PDF.Vec2)
   def path_curve_to_cubic_y = cfn Sw
     "pdf_stream_draw_path_curve_to_cubic_y" (PDF.Stream,
-      PDF.Vec2, PDF.Vec2)  
+      PDF.Vec2, PDF.Vec2)
   def path_end_at = cfn Sw
     "pdf_stream_draw_path_end_at" (PDF.Stream, PDF.Vec2)
   def path_rect = cfn Sw
