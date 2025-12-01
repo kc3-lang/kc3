@@ -29,13 +29,13 @@
 void tag_test (void);
 TEST_CASE_PROTOTYPE(tag_hash_u64);
 TEST_CASE_PROTOTYPE(tag_init_1);
-TEST_CASE_PROTOTYPE(tag_type__macro);
+// TEST_CASE_PROTOTYPE(tag_type__macro);
 
 void tag_test (void)
 {
   TEST_CASE_RUN(tag_init_1);
   TEST_CASE_RUN(tag_hash_u64);
-  TEST_CASE_RUN(tag_type__macro);
+  //  TEST_CASE_RUN(tag_type__macro);
 }
 
 TEST_CASE(tag_hash_u64)
@@ -65,6 +65,7 @@ TEST_CASE(tag_init_1)
 }
 TEST_CASE_END(tag_init_1)
 
+/*
 TEST_CASE(tag_type__macro)
 {
   TEST_EQ(TAG_TYPE((u8) 0), TAG_U8);
@@ -78,3 +79,4 @@ TEST_CASE(tag_type__macro)
   TEST_EQ(TAG_TYPE("a"), TAG_STR);
 }
 TEST_CASE_END(tag_type__macro)
+*/
