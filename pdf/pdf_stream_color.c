@@ -12,10 +12,13 @@
  */
 #include "pdf_stream_color.h"
 #include "pdf_write.h"
+#include <assert.h>
 
 sw pdf_stream_color_set_color(s_pdf_stream *stream,
                               s_array *color, bool sb)
 {
+  assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_flat_array(stream->buf, color)) < 0)
@@ -31,6 +34,8 @@ sw pdf_stream_color_set_color(s_pdf_stream *stream,
 sw pdf_stream_color_set_grayscale(s_pdf_stream *stream,
                                   u8 gray_level, bool sb)
 {
+  assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_integer(stream->buf, (s32)gray_level)) < 0)
@@ -46,6 +51,8 @@ sw pdf_stream_color_set_grayscale(s_pdf_stream *stream,
 sw pdf_stream_color_set_rgb(s_pdf_stream *stream,
                             s_array *color, bool sb)
 {
+  assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_flat_array(stream->buf, color)) < 0)
@@ -61,6 +68,8 @@ sw pdf_stream_color_set_rgb(s_pdf_stream *stream,
 sw pdf_stream_color_set_cmyk(s_pdf_stream *stream,
                              s_array *color, bool sb)
 {
+  assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_flat_array(stream->buf, color)) < 0)
@@ -75,6 +84,8 @@ sw pdf_stream_color_set_cmyk(s_pdf_stream *stream,
 
 sw pdf_stream_color_use_shading(s_pdf_stream *stream, p_sym resource)
 {
+  assert(stream);
+  assert(stream->buf);
   sw r;
   sw result = 0;
   if ((r = pdf_buf_write_name(stream->buf, resource)) < 0)
