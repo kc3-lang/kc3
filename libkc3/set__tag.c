@@ -108,7 +108,7 @@ set_get_h__tag
 #if HAVE_F80
                                   f80:  item->data,
 #endif
-#if HAVE_F128
+#if HAVE_FLOAT128
                                   f128: item->data,
 #endif
                                   s8:   item->data,
@@ -260,7 +260,7 @@ set_resize__tag (s_set__tag *set, uw max)
 #if HAVE_F80
                                        f80:  item->data,
 #endif
-#if HAVE_F128
+#if HAVE_FLOAT128
                                        f128: item->data,
 #endif
                                        s8:   item->data,
