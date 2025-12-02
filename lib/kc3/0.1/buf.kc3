@@ -23,7 +23,7 @@ defmodule Buf do
              read_only: false,
              refill: (Ptr) 0,
              rpos: (Uw) 0,
-             rwlock: (Rwlock*) 0,
+             rwlock: (Ptr) 0,
              save: (Ptr) 0,
              seek: (Ptr) 0,
              size: (Uw) 0,

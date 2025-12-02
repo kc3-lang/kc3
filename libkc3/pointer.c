@@ -21,9 +21,9 @@ s_tag * pointer_deref (const s_pointer *pointer, s_tag *dest)
   s_tag tmp = {0};
   void *tmp_data = NULL;
   assert(pointer);
-  if (! sym_to_tag_type(pointer->target_type, &tmp.type)) {
-    err_puts("pointer_deref: sym_to_tag_type");
-    assert(! "pointer_deref: sym_to_tag_type");
+  if (! tag_init_sym_type(&tmp, pointer->target_type)) {
+    err_puts("pointer_deref: tag_init_sym_type");
+    assert(! "pointer_deref: tag_init_sym_type");
     return NULL;
   }
   if (! tag_to_pointer(&tmp, pointer->target_type, &tmp_data)) {

@@ -17,6 +17,10 @@
 #include "types.h"
 
 /* Stack-allocation compatible functions. */
+s_pdf_stream *pdf_stream_init (s_pdf_stream *stream);
 void pdf_stream_clean (s_pdf_stream *stream);
+
+/* Heap allocation compatible functions. */
+p_pdf_stream *pdf_stream_new (p_pdf_stream *dest);
 
 #endif /* KC3_PDF_STREAM_H */
