@@ -32,7 +32,7 @@ defmodule Buf do
              user_ptr: (Ptr) 0,
              wpos: (Uw) 0]
 
-  def clean = cfn Void "buf_clean" (Buf)
+  # def clean = cfn Void "buf_clean" (Buf)
 
   def default_size = 1024 * 1024
 
