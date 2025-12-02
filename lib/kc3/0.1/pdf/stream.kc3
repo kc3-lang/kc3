@@ -23,8 +23,7 @@ defmodule PDF.Stream do
 
   dlopen("pdf.so")
 
-  # def clean = cfn Sw "pdf_stream_clean" (PDF.Stream)
-
+  def delete = cfn Void "pdf_stream_delete" (PDF.Stream*)
   def new = cfn PDF.Stream* "pdf_stream_new" (Result)
 
 #  def stack_save = cfn Sw
