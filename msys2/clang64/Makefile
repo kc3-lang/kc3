@@ -35,6 +35,10 @@ ${DEST_TMP}:
 	cp -a "${SRC_TOP}"/libkc3/libkc3*.dll ${DEST_TMP}
 	cp -a "${SRC_TOP}"/libkc3/libkc3*.dll ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/gl/libkc3_gl*.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/socket/libkc3_socket*.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/socket/libkc3_socket*.dll ${DEST_TMP}/test
+	cp -a "${SRC_TOP}"/tls/libkc3_tls*.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/tls/libkc3_tls*.dll ${DEST_TMP}/test
 	cp -a "${SRC_TOP}"/window/libkc3_window*.dll ${DEST_TMP}
 	cp -a "${SRC_TOP}"/window/cairo/libkc3_window_cairo*.dll ${DEST_TMP}
 	cp -a "${SRC_TOP}"/window/cairo/demo/libkc3_window_cairo_demo*.dll ${DEST_TMP}
@@ -75,6 +79,14 @@ ${DEST_TMP}:
 	cp -a /clang64/bin/libc++.dll ${DEST_TMP}
 	cp -a /clang64/bin/libffi-8.dll ${DEST_TMP}
 	cp -a /clang64/bin/libffi-8.dll ${DEST_TMP}/test
+	cp -a /clang64/bin/libevent-7.dll ${DEST_TMP}
+	cp -a /clang64/bin/libevent-7.dll ${DEST_TMP}/test
+	cp -a /clang64/bin/libcrypto-57.dll ${DEST_TMP}
+	cp -a /clang64/bin/libcrypto-57.dll ${DEST_TMP}/test
+	cp -a /clang64/bin/libssl-60.dll ${DEST_TMP}
+	cp -a /clang64/bin/libssl-60.dll ${DEST_TMP}/test
+	cp -a /clang64/bin/libtls-33.dll ${DEST_TMP}
+	cp -a /clang64/bin/libtls-33.dll ${DEST_TMP}/test
 	mkdir -p ${DEST_TMP}/fonts
 	cp -RL "${SRC_TOP}"/fonts/Courier\ New ${DEST_TMP}/fonts/
 	cp -RL "${SRC_TOP}"/fonts/Noto\ Sans ${DEST_TMP}/fonts/
