@@ -28,16 +28,28 @@ s_pdf_stream * pdf_stream_init (s_pdf_stream *stream)
   return stream;
 }
 
-p_pdf_stream * pdf_stream_new (p_pdf_stream *dest)
-{
-  p_pdf_stream tmp = alloc(sizeof(s_pdf_stream));
-  pdf_stream_init(tmp);
-  *dest = tmp;
-  return dest;
-}
-
 void pdf_stream_clean (s_pdf_stream *stream)
 {
   map_clean(&stream->dictionnary);
   buf_clean(stream->buf);
+}
+
+p_pdf_stream * pdf_stream_new (p_pdf_stream *dest)
+{
+  p_pdf_stream tmp;
+  if (! (tmp = alloc(sizeof(s_pdf_stream))))
+    return NULL;
+  if (! pdf_stream_init(tmp))
+    return NULL;
+  *dest = tmp;
+  return dest;
+}
+
+void pdf_stream_destroy (p_pdf_stream *stream)
+{
+  if (! stream || ! *stream)
+    return;
+  pdf_stream_clean(*stream);
+  free(*stream);
+  *stream = NULL;
 }
