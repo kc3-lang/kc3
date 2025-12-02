@@ -814,6 +814,7 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
   s_tag name_tag = {0};
   s64 offset;
   s_pdf_stream *pdf_stream;
+  u64           pdf_stream_offset;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -854,11 +855,12 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
     goto ko;
   }
   pdf_stream->dictionnary = map;
-  if (! buf_tell_r(buf, &pdf_stream->offset)) {
+  if (! buf_tell_r(buf, &pdf_stream_offset)) {
     err_puts("pdf_buf_parse_stream: buf_tell_r");
     assert(! "pdf_buf_parse_stream: buf_tell_r");
     goto ko;
   }
+  pdf_stream->offset = pdf_stream_offset;
   name_list = pdf_file ? &pdf_file->name_list : &g_pdf_name_list;
   name_tag.type = TAG_PSYM;
   name_tag.data.psym = pdf_name_1(name_list, "Length");
