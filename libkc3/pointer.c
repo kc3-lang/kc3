@@ -80,6 +80,8 @@ s_pointer * pointer_init_cast (s_pointer *pointer,
       return NULL;
   }
   else {
+    if (tmp.target_type == &g_sym_Ptr)
+      tmp.target_type = sym_pointer_to_target_type(*type);
     tmp.pointer_type = *type;
     if (! sym_is_pointer_type(tmp.pointer_type, tmp.target_type)) {
       err_puts("pointer_init_cast: sym_is_pointer_type");
