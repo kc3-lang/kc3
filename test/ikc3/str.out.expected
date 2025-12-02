@@ -63,7 +63,7 @@ Socket.Buf
 "#{(Uw) 0}"
 "0"
 "#{%Buf{}}"
-"%Buf{flush: (Ptr) 0,\n     free: false,\n     line: (Sw) 0,\n     pretty: %Pretty{base_column: (Uw) 0,\n                     column: (Sw) 0,\n                     disable: false},\n     ptr: (Ptr) 0,\n     read_only: false,\n     refill: (Ptr) 0,\n     rpos: (Uw) 0,\n     rwlock: %Rwlock{rwlock: (Ptr) 0,\n                     count: (Sw) 0,\n                     thread: (Ptr) 0},\n     save: (Ptr) 0,\n     seek: (Ptr) 0,\n     size: (Uw) 0,\n     tell: (Ptr) 0,\n     total_size: (Ptr) 0,\n     user_ptr: (Ptr) 0,\n     wpos: (Uw) 0}"
+"%Buf{flush: (Ptr) 0,\n     free: false,\n     line: (Sw) 0,\n     pretty: %Pretty{base_column: (Uw) 0,\n                     column: (Sw) 0,\n                     disable: false},\n     ptr: (Ptr) 0,\n     read_only: false,\n     refill: (Ptr) 0,\n     rpos: (Uw) 0,\n     rwlock: (Rwlock*) 0,\n     save: (Ptr) 0,\n     seek: (Ptr) 0,\n     size: (Uw) 0,\n     tell: (Ptr) 0,\n     total_size: (Ptr) 0,\n     user_ptr: (Ptr) 0,\n     wpos: (Uw) 0}"
 "#{%BufRW{}}"
 "%BufRW{r: (Ptr) 0,\n       w: (Ptr) 0}"
 "#{(U8[]) {{0, 0},
