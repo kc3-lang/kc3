@@ -11,13 +11,29 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/kc3.h"
+#include "types.h"
+#include <assert.h>
 #include "pdf_stream.h"
 
 s_pdf_stream * pdf_stream_init (s_pdf_stream *stream)
 {
   s_pdf_stream tmp = {0};
+  s_buf *buf;
+  if (! stream)
+    return NULL;
+  if (! (buf = buf_new_alloc(BUF_SIZE)))
+    return NULL;
+  tmp.buf = buf;
   *stream = tmp;
   return stream;
+}
+
+p_pdf_stream * pdf_stream_new (p_pdf_stream *dest)
+{
+  p_pdf_stream tmp = alloc(sizeof(s_pdf_stream));
+  pdf_stream_init(tmp);
+  *dest = tmp;
+  return dest;
 }
 
 void pdf_stream_clean (s_pdf_stream *stream)

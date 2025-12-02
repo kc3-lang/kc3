@@ -17,15 +17,14 @@ require PDF.Rect
 defmodule PDF.Stream do
 
   defstruct [dictionnary: %{},
-             offset: Uw,
-             length: Uw,
+             offset: (Uw) 0,
+             length: (Uw) 0,
              buf: (Ptr) 0]
 
   dlopen("pdf.so")
 
+  def new = cfn PDF.Stream* "pdf_stream_new" (Result)
   def clean = cfn Sw "pdf_stream_clean" (PDF.Stream)
-
-  def new = cfn PDF.Stream "pdf_stream_init" (Result)
 
   def stack_save = cfn Sw
     "pdf_stream_draw_stack_save" (PDF.Stream)

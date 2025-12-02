@@ -22,6 +22,8 @@ typedef struct pdf_trailer s_pdf_trailer;
 typedef struct pdf_rect s_pdf_rect;
 typedef struct pdf_vec2 s_pdf_vec2;
 
+typedef struct pdf_stream *p_pdf_stream;
+
 /* Pointer types. */
 typedef p_sym      p_pdf_name;
 typedef p_sym_list p_pdf_name_list;
