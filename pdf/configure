@@ -52,6 +52,7 @@ config_win64
 pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
+pkg_config freetype2
 config_define PREFIX "\"${PREFIX}\""
 case "$(uname -s)" in
     MINGW64*)
