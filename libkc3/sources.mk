@@ -191,6 +191,7 @@ HEADERS = \
 	"sym.h" \
 	"tag.h" \
 	"tag_init.h" \
+	"tag_init_wip.h" \
 	"tag_type.h" \
 	"time.h" \
 	"timespec.h" \
