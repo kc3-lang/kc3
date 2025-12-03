@@ -269,23 +269,25 @@ sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
   return -1;
 }
 
-// writes token without separators
-sw pdf_buf_write_token(s_buf *buf, const char *pchar)
+sw pdf_buf_write_token (s_buf *buf, const char *pchar)
 {
   assert(buf);
   return buf_write_1(buf, pchar);
 }
 
-// writes token with separator
-sw pdf_buf_write_token_clean(s_buf *buf, const char *pchar,
-                             bool newline)
+sw pdf_buf_write_token_with_separator (s_buf *buf, const char *pchar,
+                                       bool newline)
 {
-  sw r = 0;
+  sw r;
+  sw result = 0;
   assert(buf);
-  if ((r = pdf_buf_write_token(buf, pchar)) < 0) {
+  if ((r = pdf_buf_write_token(buf, pchar)) < 0)
     return r;
-  }
-  return r + pdf_buf_write_separator(buf, newline);
+  result += r;
+  if ((r = pdf_buf_write_separator(buf, newline)) < 0)
+    return r;
+  result += r;
+  return result;
 }
 
 sw pdf_buf_write_vec2 (s_buf *buf, const s_pdf_vec2 *src)
