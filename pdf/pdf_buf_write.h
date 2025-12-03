@@ -10,16 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef KC3_PDF_WRITE_H
-#define KC3_PDF_WRITE_H
+#ifndef KC3_PDF_BUF_WRITE_H
+#define KC3_PDF_BUF_WRITE_H
 
 #include "types.h"
 
-/* Parser functions. */
 sw   pdf_buf_write_array (s_buf *buf, const p_list src);
 sw   pdf_buf_write_bool (s_buf *buf, bool src);
-//sw   pdf_buf_write_comment (s_buf *buf);
-//sw   pdf_buf_write_comments (s_buf *buf);
 sw   pdf_buf_write_dictionnary (s_buf *buf, const s_map *src);
 sw   pdf_buf_write_flat_array (s_buf *buf, const s_array *src);
 sw   pdf_buf_write_float (s_buf *buf, f32 src);
@@ -30,12 +27,10 @@ sw   pdf_buf_write_null (s_buf *buf);
 sw   pdf_buf_write_separator(s_buf *buf, bool newline);
 sw   pdf_buf_write_string_hex (s_buf *buf, const s_str *src);
 sw   pdf_buf_write_tag (s_buf *buf, const s_tag *src);
-// writes token without separator
 sw   pdf_buf_write_token (s_buf *buf, const char *token);
-// writes token with separator
-sw   pdf_buf_write_token_clean(s_buf *buf, const char *pchar,
-                               bool newline);
+sw   pdf_buf_write_token_with_separator (s_buf *buf,
+                                         const char *pchar,
+                                         bool newline);
 sw   pdf_buf_write_vec2 (s_buf *buf, const s_pdf_vec2 *src);
-//bool pdf_character_is_delimiter (character c);
 
 #endif /* KC3_PDF_WRITE_H */
