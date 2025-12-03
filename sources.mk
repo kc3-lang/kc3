@@ -1023,24 +1023,16 @@ KC3_C_SOURCES = \
 	"pdf/pdf.h" \
 	"pdf/pdf_buf_parse.c" \
 	"pdf/pdf_buf_parse.h" \
+	"pdf/pdf_buf_write.c" \
+	"pdf/pdf_buf_write.h" \
 	"pdf/pdf_file.c" \
 	"pdf/pdf_file.h" \
 	"pdf/pdf_name.c" \
 	"pdf/pdf_name.h" \
 	"pdf/pdf_stream.c" \
 	"pdf/pdf_stream.h" \
-	"pdf/pdf_stream_color.c" \
-	"pdf/pdf_stream_color.h" \
-	"pdf/pdf_stream_draw.c" \
-	"pdf/pdf_stream_draw.h" \
-	"pdf/pdf_stream_image.c" \
-	"pdf/pdf_stream_image.h" \
-	"pdf/pdf_stream_text.c" \
-	"pdf/pdf_stream_text.h" \
 	"pdf/pdf_trailer.c" \
 	"pdf/pdf_trailer.h" \
-	"pdf/pdf_write.c" \
-	"pdf/pdf_write.h" \
 	"pdf/types.h" \
 	"smtp/kc3_smtp.c" \
 	"smtp/kc3_smtp.h" \

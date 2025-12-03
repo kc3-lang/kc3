@@ -2,27 +2,19 @@
 HEADERS = \
 	"pdf.h" \
 	"pdf_buf_parse.h" \
+	"pdf_buf_write.h" \
 	"pdf_file.h" \
 	"pdf_name.h" \
 	"pdf_stream.h" \
-	"pdf_stream_color.h" \
-	"pdf_stream_draw.h" \
-	"pdf_stream_image.h" \
-	"pdf_stream_text.h" \
 	"pdf_trailer.h" \
-	"pdf_write.h" \
 	"types.h" \
 
 SOURCES = \
 	"pdf.c" \
 	"pdf_buf_parse.c" \
+	"pdf_buf_write.c" \
 	"pdf_file.c" \
 	"pdf_name.c" \
 	"pdf_stream.c" \
-	"pdf_stream_color.c" \
-	"pdf_stream_draw.c" \
-	"pdf_stream_image.c" \
-	"pdf_stream_text.c" \
 	"pdf_trailer.c" \
-	"pdf_write.c" \
 
