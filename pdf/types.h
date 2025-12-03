@@ -20,11 +20,32 @@ typedef struct pdf_file    s_pdf_file;
 typedef struct pdf_stream  s_pdf_stream;
 typedef struct pdf_trailer s_pdf_trailer;
 typedef struct pdf_rect    s_pdf_rect;
+typedef struct pdf_write   s_pdf_write;
 
 /* Pointer types. */
 typedef p_sym              p_pdf_name;
 typedef p_sym_list         p_pdf_name_list;
 typedef struct pdf_stream *p_pdf_stream;
+
+/* Enums. */
+
+enum pdf_line_cap {
+  PDF_LINE_CAP_BUTT   = 0,
+  PDF_LINE_CAP_ROUND  = 1,
+  PDF_LINE_CAP_SQUARE = 2,
+};
+
+enum pdf_line_join {
+  PDF_LINE_JOIN_MITER = 0,
+  PDF_LINE_JOIN_ROUND = 1,
+  PDF_LINE_JOIN_BEVEL = 2,
+};
+
+enum pdf_fill_mode {
+  PDF_FILL_NONE     = 0,
+  PDF_FILL_NZWR     = 1,
+  PDF_FILL_EVEN_ODD = 3,
+};
 
 /* 1 */
 
@@ -38,6 +59,11 @@ struct pdf_stream {
 struct pdf_trailer {
   s_map dictionnary;
   u64   startxref;
+};
+
+struct pdf_write {
+  s_str path;
+  s_buf *buf;
 };
 
 /* 2 */
@@ -57,26 +83,6 @@ struct pdf_rect {
   f32 y;
   f32 w;
   f32 h;
-};
-
-enum pdf_line_cap {
-  PDF_LINE_CAP_BUTT   = 0,
-  PDF_LINE_CAP_ROUND  = 1,
-  PDF_LINE_CAP_SQUARE = 2,
-};
-
-enum pdf_line_join {
-  PDF_LINE_JOIN_MITER = 0,
-  PDF_LINE_JOIN_ROUND = 1,
-  PDF_LINE_JOIN_BEVEL = 2,
-};
-
-#define PDF_FILL(even_odd) (((even_odd) << 1) | 1)
-
-enum pdf_fill_mode {
-  PDF_FILL_NONE     = 0,
-  PDF_FILL_NZWR     = PDF_FILL(false),
-  PDF_FILL_EVEN_ODD = PDF_FILL(true)
 };
 
 #endif /* KC3_PDF_TYPES_H */

@@ -1019,6 +1019,8 @@ KC3_C_SOURCES = \
 	"markdown/md4c-html.h" \
 	"markdown/md4c.c" \
 	"markdown/md4c.h" \
+	"pdf/kc3_pdf_write.c" \
+	"pdf/kc3_pdf_write.h" \
 	"pdf/pdf.c" \
 	"pdf/pdf.h" \
 	"pdf/pdf_buf_parse.c" \
@@ -1635,6 +1637,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/pdf/stream.kc3" \
 	"lib/kc3/0.1/pdf/trailer.kc3" \
 	"lib/kc3/0.1/pdf/vec2.kc3" \
+	"lib/kc3/0.1/pdf/write.kc3" \
 	"lib/kc3/0.1/pointer.kc3" \
 	"lib/kc3/0.1/pretty.kc3" \
 	"lib/kc3/0.1/pretty_save.kc3" \
@@ -2169,6 +2172,9 @@ KC3_TEST_PDF_SOURCES = \
 	"test/pdf/stream.kc3" \
 	"test/pdf/stream.out.expected" \
 	"test/pdf/stream.ret.expected" \
+	"test/pdf/write.kc3" \
+	"test/pdf/write.out.expected" \
+	"test/pdf/write.ret.expected" \
 	"test/pdf_test" \
 
 KC3_TEST_TLS_SOURCES = \

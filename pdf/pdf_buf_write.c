@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/kc3.h"
-#include "../libkc3/kc3_main.h"
 #include "pdf_buf_write.h"
 
 sw pdf_buf_write_array (s_buf *buf, const p_list src)
