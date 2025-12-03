@@ -20,8 +20,6 @@ typedef struct pdf_file    s_pdf_file;
 typedef struct pdf_stream  s_pdf_stream;
 typedef struct pdf_trailer s_pdf_trailer;
 typedef struct pdf_rect    s_pdf_rect;
-typedef struct pdf_vec2    s_pdf_vec2;
-
 
 /* Pointer types. */
 typedef p_sym              p_pdf_name;
@@ -53,11 +51,6 @@ struct pdf_file {
 };
 
 /* 3 */
-
-struct pdf_vec2 {
-  f32 x;
-  f32 y;
-};
 
 struct pdf_rect {
   f32 x;

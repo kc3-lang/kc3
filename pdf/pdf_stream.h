@@ -14,6 +14,7 @@
 #ifndef KC3_PDF_STREAM_H
 #define KC3_PDF_STREAM_H
 
+#include "../gl/types.h"
 #include "types.h"
 
 /* Stack-allocation compatible functions, call pdf_stream_clean
@@ -47,19 +48,19 @@ sw pdf_stream_draw_paint_close(s_pdf_stream *stream,
                                bool stroke,
                                enum pdf_fill_mode fill);
 sw pdf_stream_draw_path_begin_at(s_pdf_stream *stream,
-                                 s_pdf_vec2 *pos);
+                                 s_vec2 *pos);
 sw pdf_stream_draw_path_curve_to_cubic(s_pdf_stream *stream,
-                                       s_pdf_vec2 *control1,
-                                       s_pdf_vec2 *control2,
-                                       s_pdf_vec2 *end);
+                                       s_vec2 *control1,
+                                       s_vec2 *control2,
+                                       s_vec2 *end);
 sw pdf_stream_draw_path_curve_to_cubic_v(s_pdf_stream *stream,
-                                         s_pdf_vec2 *control2,
-                                         s_pdf_vec2 *end);
+                                         s_vec2 *control2,
+                                         s_vec2 *end);
 sw pdf_stream_draw_path_curve_to_cubic_y(s_pdf_stream *stream,
-                                         s_pdf_vec2 *control1,
-                                         s_pdf_vec2 *end);
-sw pdf_stream_draw_path_end_at(s_pdf_stream *stream, s_pdf_vec2 *pos);
-sw pdf_stream_draw_path_move_to(s_pdf_stream *stream, s_pdf_vec2 *pos);
+                                         s_vec2 *control1,
+                                         s_vec2 *end);
+sw pdf_stream_draw_path_end_at(s_pdf_stream *stream, s_vec2 *pos);
+sw pdf_stream_draw_path_move_to(s_pdf_stream *stream, s_vec2 *pos);
 sw pdf_stream_draw_path_rect(s_pdf_stream *stream, s_pdf_rect *rect);
 sw pdf_stream_draw_set_line_cap(s_pdf_stream *stream,
                                 enum pdf_line_cap cap);
@@ -85,7 +86,7 @@ sw pdf_stream_text_begin (s_pdf_stream *stream);
 sw pdf_stream_text_end (s_pdf_stream *stream);
 sw pdf_stream_text_set_font (s_pdf_stream *stream,
                              p_sym font, s32 size);
-sw pdf_stream_text_set_pos_xy (s_pdf_stream *stream, s_pdf_vec2 *pos);
+sw pdf_stream_text_set_pos_xy (s_pdf_stream *stream, s_vec2 *pos);
 sw pdf_stream_text_set_text (s_pdf_stream *stream, s_str *text);
 sw pdf_stream_text_set_text_array (s_pdf_stream *stream,
                                    const p_list text_array);

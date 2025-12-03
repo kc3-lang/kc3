@@ -168,7 +168,7 @@ sw pdf_buf_write_indirect_start (s_buf *buf, const s_tuple *src)
     return r;
   }
   result += r;
-  return result + pdf_buf_write_token_clean(buf, " obj", true);
+  return result + pdf_buf_write_token_with_separator(buf, " obj", true);
 }
 
 sw pdf_buf_write_indirect_end (s_buf *buf)
@@ -178,7 +178,7 @@ sw pdf_buf_write_indirect_end (s_buf *buf)
   if ((r = pdf_buf_write_separator(buf, true)) < 0) {
     return r;
   }
-  return r + pdf_buf_write_token_clean(buf, "endobj", true);
+  return r + pdf_buf_write_token_with_separator(buf, "endobj", true);
 }
 
 sw pdf_buf_write_integer (s_buf *buf, s32 src)
@@ -290,7 +290,7 @@ sw pdf_buf_write_token_with_separator (s_buf *buf, const char *pchar,
   return result;
 }
 
-sw pdf_buf_write_vec2 (s_buf *buf, const s_pdf_vec2 *src)
+sw pdf_buf_write_vec2 (s_buf *buf, const s_vec2 *src)
 {
   assert(buf);
   assert(src);
