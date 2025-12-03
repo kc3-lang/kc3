@@ -30,8 +30,8 @@ typedef struct pdf_stream *p_pdf_stream;
 
 struct pdf_stream {
   s_map dictionnary;
-  uw offset;
-  uw length;
+  s64 offset;
+  s64 length;
   p_buf buf;
 };
 
