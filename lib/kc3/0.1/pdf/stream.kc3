@@ -11,15 +11,14 @@
 ## THIS SOFTWARE.
 
 require Buf
-require PDF.Vec2
+require GL.Vec2
 require PDF.Rect
 
 defmodule PDF.Stream do
 
   defstruct [dictionnary: %{},
              offset: (S64) 0,
-             length: (S64) 0,
-             buf: (Ptr) 0]
+             length: (S64) 0]
 
   dlopen("pdf.so")
 
@@ -45,20 +44,20 @@ defmodule PDF.Stream do
 #    "pdf_stream_draw_set_line_dash_pattern" (PDF.Stream, U32[], S32)
 
 #  def path_begin_at = cfn Sw
-#    "pdf_stream_draw_path_begin_at" (PDF.Stream, PDF.Vec2)
+#    "pdf_stream_draw_path_begin_at" (PDF.Stream, GL.Vec2)
 #  def path_move_to = cfn Sw
-#    "pdf_stream_draw_path_move_to" (PDF.Stream, PDF.Vec2)
+#    "pdf_stream_draw_path_move_to" (PDF.Stream, GL.Vec2)
 #  def path_curve_to_cubic =
 #    cfn Sw "pdf_stream_draw_path_curve_to_cubic" (PDF.Stream,
-#      PDF.Vec2, PDF.Vec2, PDF.Vec2)
+#      GL.Vec2, GL.Vec2, GL.Vec2)
 #  def path_curve_to_cubic_v = cfn Sw
 #    "pdf_stream_draw_path_curve_to_cubic_v" (PDF.Stream,
-#      PDF.Vec2, PDF.Vec2)
+#      GL.Vec2, GL.Vec2)
 #  def path_curve_to_cubic_y = cfn Sw
 #    "pdf_stream_draw_path_curve_to_cubic_y" (PDF.Stream,
-#      PDF.Vec2, PDF.Vec2)
+#      GL.Vec2, GL.Vec2)
 #  def path_end_at = cfn Sw
-#    "pdf_stream_draw_path_end_at" (PDF.Stream, PDF.Vec2)
+#    "pdf_stream_draw_path_end_at" (PDF.Stream, GL.Vec2)
   def path_rect = cfn Sw
     "pdf_stream_draw_path_rect" (PDF.Stream, PDF.Rect)
 
@@ -89,7 +88,7 @@ defmodule PDF.Stream do
   def text_set_font = cfn Sw
     "pdf_stream_text_set_font" (PDF.Stream, Sym*, S32)
   def text_set_pos_xy = cfn Sw
-    "pdf_stream_text_set_pos_xy" (PDF.Stream, PDF.Vec2)
+    "pdf_stream_text_set_pos_xy" (PDF.Stream, GL.Vec2)
   def text_set_text = cfn Sw
     "pdf_stream_text_set_text" (PDF.Stream, Str)
 #  def text_set_text_array = cfn Sw
