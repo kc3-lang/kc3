@@ -1,0 +1,55 @@
+env_module_ensure_loaded: module not found: PDF.Write
+kc3_require: PDF.Write: env_module_ensure_loaded
+cfn_apply: "kc3_require" [PDF.Write]: 0x0 != 0x7609748a2040
+
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Document, PDF.Write.Document.new_to_file) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Document.new_to_file
+void
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Document, PDF.Write.Document.page) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Document.page
+void
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Document, PDF.Write.Document.image_from_file) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Document.image_from_file
+void
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Document, PDF.Write.Document.font_from_file) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Document.font_from_file
+void
+100
+200
+12
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Page, PDF.Write.Page.set_color_rgb) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Page.set_color_rgb
+
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Page, PDF.Write.Page.text) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Page.text
+
+100
+500
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Page, PDF.Write.Page.image) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Page.image
+
+10
+10
+100
+10
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Page, PDF.Write.Page.set_color_rgb) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Page.set_color_rgb
+
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Page, PDF.Write.Page.rectangle) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Page.rectangle
+
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Document, PDF.Write.Document.write) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Document.write
+
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Image, PDF.Write.Image.delete) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Image.delete
+
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Font, PDF.Write.Font.delete) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Font.delete
+
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Page, PDF.Write.Page.delete) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Page.delete
+
+env_eval_call_resolve: env_module_has_ident(PDF.Write.Document, PDF.Write.Document.delete) -> false
+env_eval_call: env_eval_call_resolve: PDF.Write.Document.delete
+

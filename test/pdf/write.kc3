@@ -27,6 +27,8 @@ h = 10
 PDF.Write.Page.set_color_rgb(page1, 0, 0, 0)
 PDF.Write.Page.rectangle(page1, x, y, w, h)
 
+PDF.Write.Document.add_page(page1)
+
 PDF.Write.Document.write()
 
 PDF.Write.Image.delete(image)
