@@ -20,7 +20,7 @@
 void pdf_stream_clean (s_pdf_stream *stream)
 {
   map_clean(&stream->dictionnary);
-  buf_clean(stream->buf);
+  buf_delete(stream->buf);
 }
 
 sw pdf_stream_color_set_cmyk(s_pdf_stream *stream,
