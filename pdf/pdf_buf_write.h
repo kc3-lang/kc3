@@ -34,4 +34,4 @@ sw   pdf_buf_write_token_with_separator (s_buf *buf,
                                          bool newline);
 sw   pdf_buf_write_vec2 (s_buf *buf, const s_vec2 *src);
 
-#endif /* KC3_PDF_WRITE_H */
+#endif /* KC3_PDF_BUF_WRITE_H */
