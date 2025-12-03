@@ -791,6 +791,7 @@ KC3_C_SOURCES = \
 	"libkc3/tag_div.c" \
 	"libkc3/tag_init.c" \
 	"libkc3/tag_init.h" \
+	"libkc3/tag_init_wip.h" \
 	"libkc3/tag_mod.c" \
 	"libkc3/tag_mul.c" \
 	"libkc3/tag_neg.c" \
@@ -1026,6 +1027,16 @@ KC3_C_SOURCES = \
 	"pdf/pdf_file.h" \
 	"pdf/pdf_name.c" \
 	"pdf/pdf_name.h" \
+	"pdf/pdf_stream.c" \
+	"pdf/pdf_stream.h" \
+	"pdf/pdf_stream_color.c" \
+	"pdf/pdf_stream_color.h" \
+	"pdf/pdf_stream_draw.c" \
+	"pdf/pdf_stream_draw.h" \
+	"pdf/pdf_stream_image.c" \
+	"pdf/pdf_stream_image.h" \
+	"pdf/pdf_stream_text.c" \
+	"pdf/pdf_stream_text.h" \
 	"pdf/pdf_trailer.c" \
 	"pdf/pdf_trailer.h" \
 	"pdf/pdf_write.c" \
@@ -1623,12 +1634,15 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/marshall_read.kc3" \
 	"lib/kc3/0.1/math.kc3" \
 	"lib/kc3/0.1/metric.kc3" \
+	"lib/kc3/0.1/module.kc3" \
 	"lib/kc3/0.1/mutex.kc3" \
 	"lib/kc3/0.1/parse.kc3" \
 	"lib/kc3/0.1/pdf.kc3" \
 	"lib/kc3/0.1/pdf/file.kc3" \
+	"lib/kc3/0.1/pdf/rect.kc3" \
 	"lib/kc3/0.1/pdf/stream.kc3" \
 	"lib/kc3/0.1/pdf/trailer.kc3" \
+	"lib/kc3/0.1/pdf/vec2.kc3" \
 	"lib/kc3/0.1/pointer.kc3" \
 	"lib/kc3/0.1/pretty.kc3" \
 	"lib/kc3/0.1/pretty_save.kc3" \
