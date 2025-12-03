@@ -14,8 +14,8 @@
 #include "../libkc3/kc3_main.h"
 #include "types.h"
 #include <assert.h>
+#include "pdf_buf_write.h"
 #include "pdf_stream.h"
-#include "pdf_write.h"
 
 void pdf_stream_clean (s_pdf_stream *stream)
 {
