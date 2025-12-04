@@ -10,18 +10,10 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-require PDF.Write.Document
-require PDF.Write.Page
+defmodule PDF.Write.Document do
 
-defmodule PDF.Write do
-
-  dlopen("pdf.so")
-
-  def delete = cfn Void "kc3_pdf_write_delete" (PDF.Write*)
-
-  def new_to_file = cfn PDF.Write* "kc3_pdf_write_new_to_file" (Result,
-    Str)
-
-  def new = cfn PDF.Write* "kc3_pdf_write_new" (Result)
+  def new_to_file =
+    cfn PDF.Write.Document* "kc3_pdf_write_document_new_to_file"
+      (Result, Str)
 
 end
