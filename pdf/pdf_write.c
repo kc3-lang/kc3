@@ -10,11 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "../libkc3/kc3.h"
 #include "pdf_write.h"
 
 void pdf_write_clean (s_pdf_write *pdf)
 {
-  str_clean(pdf->path);
+  str_clean(&pdf->path);
   buf_delete(pdf->buf);
 }
 
@@ -23,6 +24,7 @@ s_pdf_write * pdf_write_close (s_pdf_write *pdf)
   assert(pdf);
   assert(pdf->buf);
   buf_file_close(pdf->buf);
+  return pdf;
 }
 
 void pdf_write_delete (s_pdf_write *pdf)
@@ -34,7 +36,7 @@ void pdf_write_delete (s_pdf_write *pdf)
 s_pdf_write * pdf_write_init (s_pdf_write *pdf)
 {
   s_pdf_write tmp = {0};
-  if (! (tmp.buf = buf_new_alloc()))
+  if (! (tmp.buf = buf_new_alloc(BUF_SIZE)))
     return NULL;
   *pdf = tmp;
   return pdf;
@@ -42,10 +44,16 @@ s_pdf_write * pdf_write_init (s_pdf_write *pdf)
 
 s_pdf_write * pdf_write_init_file (s_pdf_write *pdf, s_str *path)
 {
+  FILE *fp = NULL;
   s_pdf_write tmp = {0};
-  if (! (tmp.buf = buf_new_alloc()))
+  if (! (tmp.buf = buf_new_alloc(BUF_SIZE)))
     return NULL;
-  if (! buf_file_open_r(tmp.buf, path)) {
+  if (! (fp = file_open(path, "rb"))) {
+    buf_delete(tmp.buf);
+    return NULL;
+  }
+  if (! buf_file_open_r(tmp.buf, fp)) {
+    fclose(fp);
     buf_delete(tmp.buf);
     return NULL;
   }
@@ -82,4 +90,7 @@ s_str * pdf_write_to_str (s_pdf_write *pdf, s_str *dest)
 {
   assert(pdf);
   assert(dest);
+  if (buf_read_to_str(pdf->buf, dest) <= 0)
+    return NULL;
+  return dest;
 }
