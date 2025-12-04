@@ -1035,6 +1035,8 @@ KC3_C_SOURCES = \
 	"pdf/pdf_stream.h" \
 	"pdf/pdf_trailer.c" \
 	"pdf/pdf_trailer.h" \
+	"pdf/pdf_write.c" \
+	"pdf/pdf_write.h" \
 	"pdf/types.h" \
 	"smtp/kc3_smtp.c" \
 	"smtp/kc3_smtp.h" \
@@ -1638,6 +1640,8 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/pdf/trailer.kc3" \
 	"lib/kc3/0.1/pdf/vec2.kc3" \
 	"lib/kc3/0.1/pdf/write.kc3" \
+	"lib/kc3/0.1/pdf/write/document.kc3" \
+	"lib/kc3/0.1/pdf/write/page.kc3" \
 	"lib/kc3/0.1/pointer.kc3" \
 	"lib/kc3/0.1/pretty.kc3" \
 	"lib/kc3/0.1/pretty_save.kc3" \

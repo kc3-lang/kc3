@@ -8,6 +8,7 @@ HEADERS = \
 	"pdf_name.h" \
 	"pdf_stream.h" \
 	"pdf_trailer.h" \
+	"pdf_write.h" \
 	"types.h" \
 
 SOURCES = \
@@ -19,4 +20,5 @@ SOURCES = \
 	"pdf_name.c" \
 	"pdf_stream.c" \
 	"pdf_trailer.c" \
+	"pdf_write.c" \
 

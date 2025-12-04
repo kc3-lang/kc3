@@ -10,7 +10,6 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-require PDF.Write.Document
 require PDF.Write.Page
 
 defmodule PDF.Write do
@@ -23,5 +22,7 @@ defmodule PDF.Write do
     Str)
 
   def new = cfn PDF.Write* "kc3_pdf_write_new" (Result)
+
+  def to_str = cfn Str "kc3_pdf_write_to_str" (PDF.Write*, Result)
 
 end

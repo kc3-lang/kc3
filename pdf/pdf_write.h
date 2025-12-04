@@ -15,9 +15,21 @@
 
 #include "types.h"
 
-/* Heap allocation functions, call pdf_write_delete after use. */
-void          pdf_write_delete (s_pdf_write *pdf_write);
-s_pdf_write * pdf_write_new_to_file (s_str *path);
+/* Stack-allocation compatible functions, call pdf_write_clean
+   after use. */
+void          pdf_write_clean (s_pdf_write *pdf);
+s_pdf_write * pdf_write_init (s_pdf_write *pdf);
+s_pdf_write * pdf_write_init_file (s_pdf_write *pdf, s_str *path);
+
+/* Heap-allocation functions, call pdf_write_delete after use. */
+void          pdf_write_delete (s_pdf_write *pdf);
 s_pdf_write * pdf_write_new (void);
+s_pdf_write * pdf_write_new_file (s_str *path);
+
+/* Observers. */
+s_str * pdf_write_to_str (s_pdf_write *pdf, s_str *dest);
+
+/* Operators. */
+s_pdf_write * pdf_write_close (s_pdf_write *pdf);
 
 #endif /* KC3_PDF_WRITE_H */
