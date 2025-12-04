@@ -86,6 +86,17 @@ s_pdf_write * pdf_write_new_file (s_str *path)
   return pdf;
 }
 
+s_map * pdf_write_page_init (s_pdf_write *pdf, s_map *dest)
+{
+  s_map tmp = {0};
+  map_init(&tmp, 5);
+  tag_init_sym(tmp.data.map.key, sym_1("Type");
+  tag_init_sym(tmp.data.map.key + 1, sym_1("Parent");
+  tag_init_sym(tmp.data.map.key + 2, sym_1("Resources");
+  tag_init_sym(tmp.data.map.key + 3, sym_1("MediaBox");
+  tag_init_sym(tmp.data.map.key + 4, sym_1("Contents");
+}
+
 s_str * pdf_write_to_str (s_pdf_write *pdf, s_str *dest)
 {
   assert(pdf);
