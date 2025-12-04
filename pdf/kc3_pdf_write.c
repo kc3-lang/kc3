@@ -16,28 +16,36 @@
 #include "jpeglib.h"
 #include <string.h>
 
-void kc3_pdf_write_delete (s_pdf_write **pdf_write)
+void kc3_pdf_write_delete (s_pdf_write **pdf)
 {
-  pdf_write_delete(*pdf_write);
+  pdf_write_delete(*pdf);
 }
 
-s_pdf_write ** kc3_pdf_write_new_to_file (s_pdf_write **pdf_write,
-                                          s_str *path)
-{
-  s_pdf_write *tmp;
-  if (! (tmp = pdf_write_new_to_file(path)))
-    return NULL;
-  *pdf_write = tmp;
-  return pdf_write;
-}
-
-s_pdf_write ** kc3_pdf_write_new (s_pdf_write **pdf_write)
+s_pdf_write ** kc3_pdf_write_new (s_pdf_write **pdf)
 {
   s_pdf_write *tmp;
   if (! (tmp = pdf_write_new()))
     return NULL;
-  *pdf_write = tmp;
-  return pdf_write;
+  *pdf = tmp;
+  return pdf;
+}
+
+s_pdf_write ** kc3_pdf_write_new_file (s_pdf_write **pdf,
+                                       s_str *path)
+{
+  s_pdf_write *tmp;
+  if (! (tmp = pdf_write_new_file(path)))
+    return NULL;
+  *pdf = tmp;
+  return pdf;
+}
+
+s_str * kc3_pdf_write_to_str (s_pdf_write **pdf, s_str *dest)
+{
+  assert(pdf);
+  assert(*pdf);
+  assert(dest);
+  return pdf_write_to_str(*pdf, dest);
 }
 
 void kc3_pdf_jpeg_to_xobject(char *buf, u8 const *data,
