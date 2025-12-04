@@ -10,10 +10,10 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule PDF.Write.Document do
+defmodule PDF.Write.Page do
 
-  def new_to_file =
-    cfn PDF.Write.Document* "kc3_pdf_write_document_new_to_file"
-      (Result, Str)
+  def new =
+    cfn PDF.Write.Page* "kc3_pdf_write_page_new"
+      (Result, PDF.Write*, List)
 
 end
