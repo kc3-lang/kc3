@@ -44,6 +44,7 @@ CXXFLAGS="$CXXFLAGS -W -Wall -Werror -std=c++11 -pedantic -pipe -fPIC"
 LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
 config_asan
 config_cxxflag -Wno-error=changes-meaning
+config_cxxflag -fpermissive
 config_gnu
 config_i386
 config_have_f80
