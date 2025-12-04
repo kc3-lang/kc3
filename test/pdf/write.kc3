@@ -1,24 +1,20 @@
 require PDF.Write
-
-doc = PDF.Write.Document.new_to_file("doc.pdf")
-page1 = PDF.Write.Document.page(doc, A4)
-
+doc = PDF.Write.Document.new_to_file("write.pdf")
+scale = 200
+page1 = PDF.Write.Page.new(doc, [210 * scale, 297 * scale])
 # Assets
 image = PDF.Write.Document.image_from_file(doc, "image.jpeg")
 font = PDF.Write.Document.font_from_file(doc, "Courier New.ttf")
-
 # Texte
 x = 100
 y = 200
 font_size = 12
 PDF.Write.Page.set_color_rgb(page1, 0, 0, 0)
 PDF.Write.Page.text(page1, x, y, font, font_size, "Test 123\nPlop")
-
 # Image
 x = 100
 y = 500
 PDF.Write.Page.image(page1, x, y, image)
-
 # Rectangle
 x = 10
 y = 10
@@ -26,11 +22,10 @@ w = 100
 h = 10
 PDF.Write.Page.set_color_rgb(page1, 0, 0, 0)
 PDF.Write.Page.rectangle(page1, x, y, w, h)
-
+# write
 PDF.Write.Document.add_page(page1)
-
 PDF.Write.Document.write()
-
+# clean
 PDF.Write.Image.delete(image)
 PDF.Write.Font.delete(font)
 PDF.Write.Page.delete(page1)
