@@ -32,43 +32,54 @@ s_pdf_write ** kc3_pdf_write_font_from_file (s_pdf_write **pdf,
 s_pdf_write ** kc3_pdf_write_image_from_file (s_pdf_write **doc,
                                               s_str *path)
 {
-    struct jpeg_decompress_struct cinfo;
-    struct jpeg_error_mgr jerr;
-    FILE *infile = fopen(path->ptr.pchar, "rb");
-    if (infile == NULL) {
-        ERROR("Error opening JPEG file.");
-        return NULL;
-    }
-    cinfo.err = jpeg_std_error(&jerr);
-    jpeg_stdio_src(&cinfo, infile);
-    jpeg_read_header(&cinfo, TRUE);
-
-    int width = cinfo.output_width;
-    int height = cinfo.output_height;
-    int num_components = cinfo.output_components;
-
-    // replace with pdf stream buffer
-    u8 *image_data = alloc(width * height * num_components);
-    //u8 *row_pointer = image_data;
-
-    // TODO : extract offset and copy encoded pixel data
-    /*
-    while (cinfo.output_scanline < cinfo.output_height) {
-        jpeg_read_scanlines(&cinfo, &row_pointer, 1);
-        row_pointer += width * num_components;
-    }
-    */
-    /* TODO:
-    kc3_pdf_xobject_from_image(buffer, image_data,
-                               width, height,
-                               width * height * num_components);
-    */
-    (void)doc;
-    // pdf_write_append(doc, buffer);
-
-    free(image_data);
-    fclose(infile);
-    return doc;
+  FILE *fp;
+  struct jpeg_decompress_struct cinfo;
+  struct jpeg_error_mgr jerr;
+  s_buf *buf;
+  long file_size;
+  u8 *jpeg_data = NULL;
+  size_t bytes_read;
+  u32 object_number;
+  assert(doc);
+  assert(*doc);
+  assert(path);
+  buf = (*doc)->buf;
+  fp = fopen(path->ptr.pchar, "rb");
+  if (! fp) {
+    err_write_1("kc3_pdf_write_image_from_file: "
+                "error opening JPEG file: ");
+    err_puts(path->ptr.pchar);
+    return NULL;
+  }
+  cinfo.err = jpeg_std_error(&jerr);
+  jpeg_create_decompress(&cinfo);
+  jpeg_stdio_src(&cinfo, fp);
+  jpeg_read_header(&cinfo, TRUE);
+  fseek(fp, 0, SEEK_END);
+  file_size = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+  if (! (jpeg_data = alloc(file_size))) {
+    jpeg_destroy_decompress(&cinfo);
+    fclose(fp);
+    return NULL;
+  }
+  bytes_read = fread(jpeg_data, 1, file_size, fp);
+  if (bytes_read != (size_t) file_size) {
+    err_puts("kc3_pdf_write_image_from_file: failed to read JPEG file");
+    free(jpeg_data);
+    jpeg_destroy_decompress(&cinfo);
+    fclose(fp);
+    return NULL;
+  }
+  object_number = pdf_write_object_number_register(*doc);
+  kc3_pdf_write_jpeg_xobject(buf, object_number,
+                             cinfo.image_width, cinfo.image_height,
+                             cinfo.num_components,
+                             jpeg_data, file_size);
+  free(jpeg_data);
+  jpeg_destroy_decompress(&cinfo);
+  fclose(fp);
+  return doc;
 }
 
 s_pdf_write ** kc3_pdf_write_new (s_pdf_write **pdf)
@@ -98,22 +109,63 @@ s_str * kc3_pdf_write_to_str (s_pdf_write **pdf, s_str *dest)
   return pdf_write_to_str(*pdf, dest);
 }
 
-void kc3_pdf_jpeg_to_xobject(char *buf, u8 const *data,
-                             size_t width, size_t height, size_t length)
+sw kc3_pdf_write_jpeg_xobject (s_buf *buf, u32 object_number,
+                               u32 width, u32 height,
+                               u32 num_components,
+                               const u8 *data, uw length)
 {
-    ssize_t nb = sprintf(buf,
-        "<< /Type /XObject\n"
-        "/Subtype /Image\n"
-        "/Width %ld\n"
-        "/Height %ld\n"
-        "/ColorSpace /DeviceRGB\n"
-        "/BitsPerComponent 8\n"
-        "/Filter /DCTDecode\n"
-        "/Length %ld\n"
-        ">>\n",
-        width, height, length);
-    memcpy(buf + nb, (char *)data, length);
-    memcpy(buf + nb + length,
-        "\nEndstream\n"
-        "EndXObject\n", 22);
+  sw r;
+  sw result = 0;
+  const char *colorspace;
+  assert(buf);
+  assert(data);
+  colorspace = (num_components == 1) ? "/DeviceGray" :
+               (num_components == 3) ? "/DeviceRGB" :
+               (num_components == 4) ? "/DeviceCMYK" : "/DeviceRGB";
+  if ((r = buf_inspect_u32(buf, object_number)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " 0 obj\n")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "<<\n/Type /XObject\n"
+                       "/Subtype /Image\n")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "/Width ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u32(buf, width)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n/Height ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u32(buf, height)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n/ColorSpace ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, colorspace)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n/BitsPerComponent 8\n"
+                       "/Filter /DCTDecode\n"
+                       "/Length ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw(buf, length)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n>>\nstream\n")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write(buf, data, length)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\nendstream\nendobj\n")) < 0)
+    return r;
+  result += r;
+  return result;
 }
