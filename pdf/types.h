@@ -28,6 +28,11 @@ typedef p_sym_list         p_pdf_name_list;
 typedef struct pdf_stream *p_pdf_stream;
 
 /* Enums. */
+enum pdf_fill_mode {
+  PDF_FILL_NONE     = 0,
+  PDF_FILL_NZWR     = 1,
+  PDF_FILL_EVEN_ODD = 3,
+};
 
 enum pdf_line_cap {
   PDF_LINE_CAP_BUTT   = 0,
@@ -41,11 +46,10 @@ enum pdf_line_join {
   PDF_LINE_JOIN_BEVEL = 2,
 };
 
-enum pdf_fill_mode {
-  PDF_FILL_NONE     = 0,
-  PDF_FILL_NZWR     = 1,
-  PDF_FILL_EVEN_ODD = 3,
-};
+typedef enum pdf_object_number {
+  PDF_OBJECT_NUMBER_PAGES = 3,
+} e_pdf_object_number;
+
 
 /* 1 */
 
