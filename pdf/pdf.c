@@ -88,13 +88,14 @@ s_tag * pdf_tag_init_xref (s_tag *tag, u32 object_number, u16 generation)
     s_tag tmp;
     assert(tag);
     if (!tag) {
-        ERROR("'tag' is null");
-        return NULL;
+      ERROR("'tag' is null");
+      return NULL;
     }
-    return
-        tag_init_tuple(&tmp, 2) &&
+    if (tag_init_tuple(&tmp, 2) &&
         tag_init_psym(tmp.data.tuple.tag, sym_1("indirect object")) &&
         tag_init_u32(tag + 1, object_number) &&
-        tag_init_u16(tag + 2, generation)
-    ? tag : NULL;
+        tag_init_u16(tag + 2, generation))
+      return tag;
+    ERROR("failed to initialize xref");
+    return NULL;
 }
