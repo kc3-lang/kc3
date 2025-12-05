@@ -50,6 +50,7 @@ typedef enum pdf_object_number {
   PDF_OBJECT_NUMBER_CATALOG   = 1,
   PDF_OBJECT_NUMBER_PAGES     = 2,
   PDF_OBJECT_NUMBER_RESOURCES = 3,
+  PDF_OBJECT_NUMBER_FIRST     = 4,
 } e_pdf_object_number;
 
 
@@ -77,6 +78,7 @@ struct pdf_trailer {
 struct pdf_write {
   s_str path;
   s_buf *buf;
+  u32 object_number;
 };
 
 /* 2 */
