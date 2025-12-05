@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/kc3.h"
+#include "pdf.h"
 #include "pdf_write.h"
 
 void pdf_write_clean (s_pdf_write *pdf)
