@@ -24,6 +24,14 @@ s_pdf_write ** kc3_pdf_write_new (s_pdf_write **pdf);
 s_str * kc3_pdf_write_to_str (s_pdf_write **pdf, s_str *dest);
 
 /* Operators. */
-s_str * kc3_pdf_write_close (s_pdf_write **pdf);
+s_str *        kc3_pdf_write_close (s_pdf_write **pdf);
+s_pdf_write ** kc3_pdf_write_font_from_file (s_pdf_write **pdf,
+                                             s_str *path);
+s_pdf_write ** kc3_pdf_write_image_from_file (s_pdf_write **pdf,
+                                              s_str *path);
+sw             kc3_pdf_write_jpeg_xobject (s_buf *buf, u32 object_number,
+                                           u32 width, u32 height,
+                                           u32 num_components,
+                                           const u8 *data, uw length);
 
 #endif /* KC3_KC3_PDF_WRITE_H */
