@@ -18,7 +18,9 @@ defmodule PDF.Write do
 
   def delete = cfn Void "kc3_pdf_write_delete" (PDF.Write*)
 
-  def new_to_file = cfn PDF.Write* "kc3_pdf_write_new_to_file" (Result,
+  def page = cfn Map "kc3_pdf_write_page" (Result, PDF.Write*, PDF.Rect)
+
+  def new_file = cfn PDF.Write* "kc3_pdf_write_new_file" (Result,
     Str)
 
   def new = cfn PDF.Write* "kc3_pdf_write_new" (Result)
