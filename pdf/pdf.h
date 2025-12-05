@@ -21,4 +21,8 @@ s_tag *       pdf_parse_object_from_str (s_str *str,
                                          s_pdf_file *pdf_file,
                                          s_tag *dest);
 
+/* Stack-allocation compatible functions, call tag_clean after use. */
+s_tag * pdf_tag_init_xref (s_tag *tag, int object_number,
+                           int generation);
+                  
 #endif /* KC3_PDF_H */

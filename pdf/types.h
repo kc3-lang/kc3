@@ -17,9 +17,9 @@
 
 /* Struct types. */
 typedef struct pdf_file    s_pdf_file;
+typedef struct pdf_rect    s_pdf_rect;
 typedef struct pdf_stream  s_pdf_stream;
 typedef struct pdf_trailer s_pdf_trailer;
-typedef struct pdf_rect    s_pdf_rect;
 typedef struct pdf_write   s_pdf_write;
 
 /* Pointer types. */
@@ -47,11 +47,20 @@ enum pdf_line_join {
 };
 
 typedef enum pdf_object_number {
-  PDF_OBJECT_NUMBER_PAGES = 3,
+  PDF_OBJECT_NUMBER_CATALOG   = 1,
+  PDF_OBJECT_NUMBER_PAGES     = 2,
+  PDF_OBJECT_NUMBER_RESOURCES = 3,
 } e_pdf_object_number;
 
 
 /* 1 */
+
+struct pdf_rect {
+  f32 x;
+  f32 y;
+  f32 w;
+  f32 h;
+};
 
 struct pdf_stream {
   s_map dictionnary;
@@ -78,15 +87,6 @@ struct pdf_file {
   p_pdf_name_list name_list;
   s_pdf_trailer   trailer;
   s_map           xref;
-};
-
-/* 3 */
-
-struct pdf_rect {
-  f32 x;
-  f32 y;
-  f32 w;
-  f32 h;
 };
 
 #endif /* KC3_PDF_TYPES_H */
