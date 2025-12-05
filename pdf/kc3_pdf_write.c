@@ -21,6 +21,56 @@ void kc3_pdf_write_delete (s_pdf_write **pdf)
   pdf_write_delete(*pdf);
 }
 
+s_pdf_write ** kc3_pdf_write_font_from_file (s_pdf_write **pdf,
+                                             s_str *path)
+{
+  (void) path;
+  err_puts("kc3_pdf_write_font_from_file: not implemented");
+  return pdf;
+}
+
+s_pdf_write ** kc3_pdf_write_image_from_file (s_pdf_write **doc,
+                                              s_str *path)
+{
+    struct jpeg_decompress_struct cinfo;
+    struct jpeg_error_mgr jerr;
+    FILE *infile = fopen(path->ptr.pchar, "rb");
+    if (infile == NULL) {
+        ERROR("Error opening JPEG file.");
+        return NULL;
+    }
+    cinfo.err = jpeg_std_error(&jerr);
+    jpeg_stdio_src(&cinfo, infile);
+    jpeg_read_header(&cinfo, TRUE);
+
+    int width = cinfo.output_width;
+    int height = cinfo.output_height;
+    int num_components = cinfo.output_components;
+
+    // replace with pdf stream buffer
+    u8 *image_data = alloc(width * height * num_components);
+    //u8 *row_pointer = image_data;
+
+    // TODO : extract offset and copy encoded pixel data
+    /*
+    while (cinfo.output_scanline < cinfo.output_height) {
+        jpeg_read_scanlines(&cinfo, &row_pointer, 1);
+        row_pointer += width * num_components;
+    }
+    */
+    /* TODO:
+    kc3_pdf_xobject_from_image(buffer, image_data,
+                               width, height,
+                               width * height * num_components);
+    */
+    (void)doc;
+    // pdf_write_append(doc, buffer);
+
+    free(image_data);
+    fclose(infile);
+    return doc;
+}
+
 s_pdf_write ** kc3_pdf_write_new (s_pdf_write **pdf)
 {
   s_pdf_write *tmp;
@@ -66,43 +116,4 @@ void kc3_pdf_jpeg_to_xobject(char *buf, u8 const *data,
     memcpy(buf + nb + length,
         "\nEndstream\n"
         "EndXObject\n", 22);
-}
-
-s_pdf_write ** kc3_pdf_write_image_from_file (s_pdf_write **doc, s_str *filepath)
-{
-    struct jpeg_decompress_struct cinfo;
-    struct jpeg_error_mgr jerr;
-    FILE *infile = fopen(filepath->ptr.pchar, "rb");
-    if (infile == NULL) {
-        ERROR("Error opening JPEG file.");
-        return NULL;
-    }
-    cinfo.err = jpeg_std_error(&jerr);
-    jpeg_stdio_src(&cinfo, infile);
-    jpeg_read_header(&cinfo, TRUE);
-
-    int width = cinfo.output_width;
-    int height = cinfo.output_height;
-    int num_components = cinfo.output_components;
-
-    // replace with pdf stream buffer
-    u8 *image_data = alloc(width * height * num_components);
-    u8 *row_pointer = image_data;
-
-    while (cinfo.output_scanline < cinfo.output_height) {
-        jpeg_read_scanlines(&cinfo, &row_pointer, 1);
-        row_pointer += width * num_components;
-    }
-
-    char *buffer = (char *)alloc((width * height * num_components) << 1);
-
-    kc3_pdf_jpeg_to_xobject(buffer, image_data,
-                             width, height, width * height * num_components);
-
-    (void)doc;
-    // pdf_write_append(doc, buffer);
-
-    free(image_data);
-    fclose(infile);
-    return doc;
 }
