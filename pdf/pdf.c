@@ -87,7 +87,7 @@ s_tag * pdf_tag_init_xref (s_tag *tag, u32 object_number, u16 generation)
 {
     s_tag tmp;
     assert(tag);
-    if (!tag) {
+    if (! tag) {
       ERROR("'tag' is null");
       return NULL;
     }
