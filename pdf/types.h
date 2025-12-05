@@ -16,11 +16,14 @@
 #include "../libkc3/types.h"
 
 /* Struct types. */
-typedef struct pdf_file    s_pdf_file;
-typedef struct pdf_rect    s_pdf_rect;
-typedef struct pdf_stream  s_pdf_stream;
-typedef struct pdf_trailer s_pdf_trailer;
-typedef struct pdf_write   s_pdf_write;
+typedef struct pdf_file                 s_pdf_file;
+typedef struct pdf_rect                 s_pdf_rect;
+typedef struct pdf_stream               s_pdf_stream;
+typedef struct pdf_trailer              s_pdf_trailer;
+typedef struct pdf_write                s_pdf_write;
+typedef struct pdf_write_content_stream s_pdf_write_content_stream;
+typedef struct pdf_write_page           s_pdf_write_page;
+typedef struct pdf_write_stream         s_pdf_write_stream;
 
 /* Pointer types. */
 typedef p_sym              p_pdf_name;
@@ -63,11 +66,12 @@ struct pdf_rect {
   f32 h;
 };
 
+
 struct pdf_stream {
-  s_map dictionnary;
-  s64 offset;
-  s64 length;
-  p_buf buf;
+  s_map  dictionnary;
+  s64    offset;
+  s64    length;
+  s_buf *buf;
 };
 
 struct pdf_trailer {
@@ -78,7 +82,12 @@ struct pdf_trailer {
 struct pdf_write {
   s_str path;
   s_buf *buf;
+  u32 next_object_number;
+};
+
+struct pdf_write_stream {
   u32 object_number;
+  s_pdf_stream stream;
 };
 
 /* 2 */
@@ -89,6 +98,16 @@ struct pdf_file {
   p_pdf_name_list name_list;
   s_pdf_trailer   trailer;
   s_map           xref;
+};
+
+struct pdf_write_content_stream {
+  s_pdf_write_stream stream;
+};
+
+struct pdf_write_page {
+  s_map map;
+  u32 object_number;
+  s_pdf_write_content_stream contents;
 };
 
 #endif /* KC3_PDF_TYPES_H */

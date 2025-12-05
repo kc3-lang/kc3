@@ -12,8 +12,4 @@
 
 defmodule PDF.Write.Page do
 
-  def new =
-    cfn PDF.Write.Page* "kc3_pdf_write_page_new"
-      (Result, PDF.Write*, List)
-
 end
