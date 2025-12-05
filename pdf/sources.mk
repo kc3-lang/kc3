@@ -21,4 +21,5 @@ SOURCES = \
 	"pdf_stream.c" \
 	"pdf_trailer.c" \
 	"pdf_write.c" \
+	"pdf_write_page.c" \
 
