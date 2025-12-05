@@ -91,9 +91,14 @@ s_pdf_write * pdf_write_new_file (s_str *path)
 u32 pdf_write_object_number_register (s_pdf_write *pdf)
 {
   u32 object_number;
-  // TODO: pthread
+#if HAVE_PTHREAD
+  mutex_lock(pdf->mutex);
+#endif
   object_number = pdf->next_object_number;
   pdf->next_object_number++;
+#if HAVE_PTHREAD
+  mutex_unlock(pdf->mutex);
+#endif
   return object_number;
 }
 

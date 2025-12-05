@@ -82,6 +82,7 @@ struct pdf_trailer {
 struct pdf_write {
   s_str path;
   s_buf *buf;
+  s_mutex *mutex;
   u32 next_object_number;
 };
 
