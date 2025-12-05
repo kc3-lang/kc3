@@ -3,3 +3,10 @@
 replace {F64, :is_a, :module}
 replace {F64, :symbol, F64.cast}
 replace {F64.cast, :symbol_value, cfn F64 "f64_init_cast" (Result, Sym, Tag)}
+add {F64, :symbol, F64.pi}
+replace {F64.pi, :symbol_value, (F64) 3.141592653589793}
+replace {F64.cos, :symbol_value, cfn F64 "cos" (F64)}
+add {F64, :symbol, F64.sin}
+replace {F64.sin, :symbol_value, cfn F64 "sin" (F64)}
+add {F64, :symbol, F64.tan}
+replace {F64.tan, :symbol_value, cfn F64 "tan" (F64)}

@@ -3,3 +3,9 @@
 replace {F32, :is_a, :module}
 replace {F32, :symbol, F32.cast}
 replace {F32.cast, :symbol_value, cfn F32 "f32_init_cast" (Result, Sym, Tag)}
+replace {F32.pi, :symbol_value, (F32) 3.1415927}
+replace {F32.cos, :symbol_value, cfn F32 "cosf" (F32)}
+add {F32, :symbol, F32.sin}
+replace {F32.sin, :symbol_value, cfn F32 "sinf" (F32)}
+add {F32, :symbol, F32.tan}
+replace {F32.tan, :symbol_value, cfn F32 "tanf" (F32)}
