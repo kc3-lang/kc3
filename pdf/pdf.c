@@ -82,3 +82,19 @@ s_tag * pdf_parse_from_str (s_str *str,
 {
   return pdf_parse_object_from_str(str, NULL, dest);
 }
+
+s_tag * pdf_tag_init_xref (s_tag *tag, u32 object_number, u16 generation)
+{
+    s_tag tmp;
+    assert(tag);
+    if (!tag) {
+        ERROR("'tag' is null");
+        return NULL;
+    }
+    return
+        tag_init_tuple(&tmp, 2) &&
+        tag_init_psym(tmp.data.tuple.tag, sym_1("indirect object")) &&
+        tag_init_u32(tag + 1, object_number) &&
+        tag_init_u16(tag + 2, generation)
+    ? tag : NULL;
+}
