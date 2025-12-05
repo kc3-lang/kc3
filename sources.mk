@@ -1037,6 +1037,7 @@ KC3_C_SOURCES = \
 	"pdf/pdf_trailer.h" \
 	"pdf/pdf_write.c" \
 	"pdf/pdf_write.h" \
+	"pdf/pdf_write_page.c" \
 	"pdf/types.h" \
 	"smtp/kc3_smtp.c" \
 	"smtp/kc3_smtp.h" \

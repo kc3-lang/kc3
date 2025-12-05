@@ -14,7 +14,6 @@
 #include "pdf.h"
 #include "pdf_buf_parse.h"
 #include "pdf_name.h"
-#include <assert.h>
 
 bool pdf_character_is_delimiter (character c)
 {

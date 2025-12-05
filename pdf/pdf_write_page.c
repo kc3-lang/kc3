@@ -1,8 +1,38 @@
+/* kc3
+ * Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+ *
+ * Permission is hereby granted to use this software granted the above
+ * copyright notice and this permission paragraph are included in all
+ * copies and substantial portions of this software.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+ * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+ * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+ * THIS SOFTWARE.
+ */
+#include "../libkc3/kc3.h"
+#include "pdf.h"
+#include "pdf_write.h"
+#include "pdf_write_page.h"
+
+s_pdf_write_page ** kc3_pdf_write_page_new (s_pdf_write_page **page,
+                                            s_pdf_write **pdf,
+                                            s_pdf_rect *box)
+{
+  s_pdf_write_page *tmp;
+  if (! (tmp = alloc(sizeof(s_pdf_write_page))))
+    return NULL;
+  if (! pdf_write_page_init(tmp, *pdf, box)) {
+    free(tmp);
+    return NULL;
+  }
+  *page = tmp;
+  return page;
+}
 
 s_pdf_write_page * pdf_write_page_init (s_pdf_write_page *page,
                                         s_pdf_write *pdf,
-                                        s_pdf_rect *box,
-                                        s_map *dest)
+                                        s_pdf_rect *box)
 {
   u32 content_stream_object_number;
   s_pdf_write_page tmp = {0};
@@ -20,6 +50,6 @@ s_pdf_write_page * pdf_write_page_init (s_pdf_write_page *page,
   tag_init_pstruct_copy_data(tmp.map.value + 3, sym_1("PDF.Rect"), box);
   tag_init_psym(tmp.map.key       + 4, sym_1("Contents"));
   pdf_tag_init_xref(tmp.map.value + 4, content_stream_object_number, 0);
-  *dest = tmp;
-  return dest;
+  *page = tmp;
+  return page;
 }
