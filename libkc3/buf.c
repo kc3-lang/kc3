@@ -1798,6 +1798,7 @@ DEF_BUF_WRITE(s64)
 
 sw buf_write_str (s_buf *buf, const s_str *src)
 {
+  u8 byte;
   character c;
   sw r;
   sw result = 0;
@@ -1808,10 +1809,19 @@ sw buf_write_str (s_buf *buf, const s_str *src)
 #if HAVE_PTHREAD
   rwlock_w(buf->rwlock);
 #endif
-  while ((r = str_read_character_utf8(&s, &c)) > 0) {
-    if ((r = buf_write_character_utf8(buf, c)) < 0)
-      goto clean;
-    result += r;
+  while (1) {
+    if ((r = str_read_character_utf8(&s, &c)) > 0) {
+      if ((r = buf_write_character_utf8(buf, c)) < 0)
+        goto clean;
+      result += r;
+    }
+    else if ((r = str_read_u8(&s, &byte)) > 0) {
+      if ((r = buf_write_u8(buf, byte)) < 0)
+        goto clean;
+      result += r;
+    }
+    else
+      break;
   }
   buf_flush(buf);
   r = result;
@@ -1824,6 +1834,7 @@ sw buf_write_str (s_buf *buf, const s_str *src)
 
 sw buf_write_str_size (s_pretty *pretty, const s_str *src)
 {
+  u8 byte;
   character c;
   sw r;
   sw result = 0;
@@ -1831,12 +1842,20 @@ sw buf_write_str_size (s_pretty *pretty, const s_str *src)
   assert(pretty);
   assert(src);
   s = *src;
-  while ((r = str_read_character_utf8(&s, &c)) > 0) {
-    if ((r = buf_write_character_utf8_size(pretty, c)) < 0)
-      return r;
-    result += r;
+  while (1) {
+    if ((r = str_read_character_utf8(&s, &c)) > 0) {
+      if ((r = buf_write_character_utf8_size(pretty, c)) < 0)
+        goto clean;
+      result += r;
+    }
+    else if ((r = str_read_u8(&s, &byte)) > 0)
+      result += r;
+    else
+      break;
   }
-  return result;
+  r = result;
+ clean:
+  return r;
 }
 
 sw buf_write_str_without_indent (s_buf *buf, const s_str *src)

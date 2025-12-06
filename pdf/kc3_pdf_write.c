@@ -25,6 +25,7 @@ s_pdf_write ** kc3_pdf_write_add_page (s_pdf_write **pdf,
 {
   s_buf *buf;
   s_buf *content_buf;
+  s_list *l;
   s_pdf_write_page *p;
   assert(pdf);
   assert(*pdf);
@@ -32,13 +33,17 @@ s_pdf_write ** kc3_pdf_write_add_page (s_pdf_write **pdf,
   assert(*page);
   buf = (*pdf)->buf;
   p = *page;
-  buf_inspect_u32_decimal(buf, p->object_number);
-  buf_write_1(buf, " 0 obj\n");
+  /* Track page object number. */
+  l = list_new((*pdf)->pages);
+  tag_init_u32(&l->tag, p->object_number);
+  (*pdf)->pages = l;
+  /* Write page object. */
+  pdf_write_indirect_object(*pdf, p->object_number, 0);
   pdf_buf_write_dictionnary(buf, &p->map);
   buf_write_1(buf, "\nendobj\n");
   content_buf = p->contents.stream.stream.buf;
-  buf_inspect_u32_decimal(buf, p->contents.stream.object_number);
-  buf_write_1(buf, " 0 obj\n<< /Length ");
+  pdf_write_indirect_object(*pdf, p->contents.stream.object_number, 0);
+  buf_write_1(buf, "<< /Length ");
   buf_inspect_sw_decimal(buf, (sw) content_buf->wpos);
   buf_write_1(buf, " >>\nstream\n");
   buf_write(buf, content_buf->ptr.pchar, content_buf->wpos);
@@ -116,6 +121,13 @@ u32 kc3_pdf_write_font_from_file (s_pdf_write **pdf, s_str *path)
   FT_Done_Face(ft_face);
   FT_Done_FreeType(ft_library);
   fclose(fp);
+  /* Track font object number. */
+  {
+    s_list *l;
+    l = list_new((*pdf)->fonts);
+    tag_init_u32(&l->tag, font_obj);
+    (*pdf)->fonts = l;
+  }
   return font_obj;
 }
 
@@ -178,6 +190,13 @@ u32 kc3_pdf_write_image_from_file (s_pdf_write **doc,
     return 0;
   }
   fclose(fp);
+  /* Track image object number. */
+  {
+    s_list *l;
+    l = list_new((*doc)->images);
+    tag_init_u32(&l->tag, object_number);
+    (*doc)->images = l;
+  }
   return object_number;
 }
 

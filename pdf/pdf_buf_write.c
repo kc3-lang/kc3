@@ -185,6 +185,17 @@ sw pdf_buf_write_float (s_buf *buf, f32 src)
   return result;
 }
 
+sw pdf_buf_write_header (s_buf *buf)
+{
+  sw r;
+  sw result = 0;
+  s_str str = STR("%PDF-1.4\r%\xe2\xe3\xcf\xd3\n");
+  if ((r = buf_write_str(buf, &str)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
 sw pdf_buf_write_indirect_ref (s_buf *buf, const s_tuple *tuple)
 {
   sw r = 0;
