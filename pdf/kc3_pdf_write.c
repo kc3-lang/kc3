@@ -12,7 +12,9 @@
  */
 #include "../libkc3/kc3.h"
 #include "kc3_pdf_write.h"
+#include "pdf_buf_write.h"
 #include "pdf_write.h"
+#include "pdf_write_page.h"
 #include "jpeglib.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -21,9 +23,26 @@
 s_pdf_write ** kc3_pdf_write_add_page (s_pdf_write **pdf,
                                        s_pdf_write_page **page)
 {
-  (void) pdf;
-  (void) page;
-  err_puts("kc3_pdf_write_add_page: TODO");
+  s_buf *buf;
+  s_buf *content_buf;
+  s_pdf_write_page *p;
+  assert(pdf);
+  assert(*pdf);
+  assert(page);
+  assert(*page);
+  buf = (*pdf)->buf;
+  p = *page;
+  buf_inspect_u32(buf, p->object_number);
+  buf_write_1(buf, " 0 obj\n");
+  pdf_buf_write_dictionnary(buf, &p->map);
+  buf_write_1(buf, "\nendobj\n");
+  content_buf = p->contents.stream.stream.buf;
+  buf_inspect_u32(buf, p->contents.stream.object_number);
+  buf_write_1(buf, " 0 obj\n<< /Length ");
+  buf_inspect_sw(buf, (sw) content_buf->wpos);
+  buf_write_1(buf, " >>\nstream\n");
+  buf_write(buf, content_buf->ptr.pchar, content_buf->wpos);
+  buf_write_1(buf, "endstream\nendobj\n");
   return pdf;
 }
 
