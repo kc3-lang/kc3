@@ -102,7 +102,8 @@ s_pdf_write * pdf_write_indirect_object (s_pdf_write *pdf,
                                          u32 object_number,
                                          u16 generation)
 {
-  
+  u64 offset = 0;
+  buf_tell_w(pdf->buf, &offset);
   buf_inspect_u32_decimal(pdf->buf, object_number);
   buf_write_1(pdf->buf, " ");
   buf_inspect_u16_decimal(pdf->buf, generation);
@@ -126,7 +127,7 @@ s_pdf_write * pdf_write_init_file (s_pdf_write *pdf, s_str *path)
   s_pdf_write tmp = {0};
   if (! (tmp.buf = buf_new_alloc(BUF_SIZE)))
     return NULL;
-  if (! (fp = file_open(path, "rb"))) {
+  if (! (fp = file_open(path, "wb"))) {
     buf_delete(tmp.buf);
     return NULL;
   }
