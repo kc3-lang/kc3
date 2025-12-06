@@ -4,6 +4,7 @@ HEADERS = \
 	"dmat4.h" \
 	"dvec2.h" \
 	"dvec3.h" \
+	"freetype2.h" \
 	"gl.h" \
 	"gl_box.h" \
 	"gl_camera.h" \
@@ -20,6 +21,7 @@ HEADERS = \
 	"gl_triangle.h" \
 	"gl_vertex.h" \
 	"gl_vtext.h" \
+	"gles2.h" \
 	"mat3.h" \
 	"mat4.h" \
 	"types.h" \

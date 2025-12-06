@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/kc3.h"
+#include "gles2.h"
 #include "gl_deprecated.h"
 #include "gl_object.h"
 #include "gl_vertex.h"

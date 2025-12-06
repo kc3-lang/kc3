@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include "../../libkc3/io.h"
 #include "../../libkc3/tag.h"
+#include "../../gl/gl.h"
 #include "../window.h"
 #include "window_egl.h"
 

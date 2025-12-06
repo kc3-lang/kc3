@@ -12,7 +12,7 @@
  */
 #include <math.h>
 #include "../../libkc3/kc3.h"
-#include "../../gl/types.h"
+#include "../../gl/gl.h"
 #include "../window.h"
 #include "bg_rect.h"
 

@@ -63,7 +63,7 @@ int main (int argc, char **argv)
     err_puts("kc3_init");
     return 1;
   }
-  if (FT_Init_FreeType(&g_ft)) {
+  if (FT_Init_FreeType((FT_Library *) &g_ft)) {
     err_puts("main: failed to initialize FreeType");
     return 1;
   }

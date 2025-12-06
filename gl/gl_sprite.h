@@ -30,6 +30,6 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
                                   f32 point_per_pixel);
 
 /* Observers. */
-GLuint gl_sprite_texture (const s_gl_sprite *sprite, uw frame);
+u32 gl_sprite_texture (const s_gl_sprite *sprite, uw frame);
 
 #endif /* GL_SPRITE_H */

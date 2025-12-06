@@ -16,8 +16,8 @@
 #include <xkbcommon/xkbcommon.h>
 #include <EGL/egl.h>
 #include "../../libkc3/kc3.h"
+#include "../../gl/gl.h"
 #include "../window.h"
-#include "../../gl/gl_deprecated.h"
 #include "window_sdl2.h"
 
 #ifdef __APPLE__

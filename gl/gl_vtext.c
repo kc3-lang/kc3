@@ -11,6 +11,8 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/kc3.h"
+#include "freetype2.h"
+#include "gles2.h"
 #include "gl_vtext.h"
 
 void gl_vtext_clean (s_gl_text *text)

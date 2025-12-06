@@ -11,9 +11,10 @@
  * THIS SOFTWARE.
  */
 #define GL_SILENCE_DEPRECATION 1
+#include "gles2.h"
 #include "gl_deprecated.h"
 
-const char * gl_error_string (GLenum error)
+const char * gl_error_string (s32 error)
 {
   switch (error) {
     case GL_NO_ERROR:

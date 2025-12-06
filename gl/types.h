@@ -22,11 +22,6 @@
 # include <windef.h>
 #endif
 
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
 #include "../libkc3/types.h"
 
 #define GL_CAMERA_LIGHT_MAX 16          // keep in sync with shader
@@ -111,7 +106,7 @@ struct dvec4 {
 };
 
 struct gl_font {
-  FT_Face ft_face;
+  void *ft_face;
   s_str path;
   f32 point_size;
   f32 point_per_pixel;
@@ -120,7 +115,7 @@ struct gl_font {
 
 struct gl_lines {
   s_array vertex;
-  GLuint gl_vbo;
+  u32 gl_vbo;
 };
 
 struct mat3 {
@@ -172,7 +167,7 @@ struct gl_sprite {
   f32 pt_w;
   f32 pt_h;
   s_str real_path;
-  GLuint *texture;
+  u32 *texture;
   uw total_w;
   uw total_h;
 };
@@ -184,13 +179,13 @@ struct gl_text {
   f32 pt_w;
   f32 pt_h;
   s_str str;
-  GLuint texture;
+  u32 texture;
 };
 
 struct gl_triangle {
-  GLuint a;
-  GLuint b;
-  GLuint c;
+  u32 a;
+  u32 b;
+  u32 c;
 };
 
 struct rgb {
@@ -287,20 +282,20 @@ struct gl_camera {
   s_mat4 view_matrix;
   s_mat4 model_matrix;
   s_rgb  ambiant_light_color;
-  GLint  light_count;
+  s32  light_count;
   s_vec4 light_pos[GL_CAMERA_LIGHT_MAX];
   s_rgb  light_color[GL_CAMERA_LIGHT_MAX];
-  GLuint gl_projection_matrix_loc;
-  GLuint gl_view_matrix_loc;
-  GLuint gl_model_matrix_loc;
-  GLuint gl_color_loc;
-  GLuint gl_enable_tex2d_loc;
-  GLuint gl_tex2d_loc;
-  GLuint gl_ambiant_light_color_loc;
-  GLuint gl_light_count_loc;
-  GLuint gl_light_pos_loc;
-  GLuint gl_light_color_loc;
-  GLuint gl_shader_program;
+  u32 gl_projection_matrix_loc;
+  u32 gl_view_matrix_loc;
+  u32 gl_model_matrix_loc;
+  u32 gl_color_loc;
+  u32 gl_enable_tex2d_loc;
+  u32 gl_tex2d_loc;
+  u32 gl_ambiant_light_color_loc;
+  u32 gl_light_count_loc;
+  u32 gl_light_pos_loc;
+  u32 gl_light_color_loc;
+  u32 gl_shader_program;
 };
 
 struct gl_ortho {
@@ -314,16 +309,16 @@ struct gl_ortho {
   s_vec3 rotation;
   s_vec3 scale;
   s_mat4 projection_matrix;
-  GLint gl_projection_matrix_loc;
+  s32 gl_projection_matrix_loc;
   s_mat4 view_matrix;
-  GLint gl_view_matrix_loc;
+  s32 gl_view_matrix_loc;
   s_mat4 model_matrix;
-  GLint gl_model_matrix_loc;
-  GLint gl_enable_tex2d_loc;
-  GLint gl_tex2d_loc;
-  GLint gl_color_loc;
-  GLuint gl_shader_program;
-  GLuint gl_dummy_texture;
+  s32 gl_model_matrix_loc;
+  s32 gl_enable_tex2d_loc;
+  s32 gl_tex2d_loc;
+  s32 gl_color_loc;
+  u32 gl_shader_program;
+  u32 gl_dummy_texture;
   s_gl_square square;
 };
 

@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/kc3.h"
+#include "gles2.h"
 #include "gl_lines.h"
 #include "gl_vertex.h"
 

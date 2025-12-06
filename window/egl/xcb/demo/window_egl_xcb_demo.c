@@ -13,12 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../../../libkc3/kc3.h"
-#include "../../../../gl/gl_font.h"
-#include "../../../../gl/gl_lines.h"
-#include "../../../../gl/gl_ortho.h"
-#include "../../../../gl/gl_sprite.h"
-#include "../../../../gl/gl_text.h"
-#include "../../../../gl/mat4.h"
+#include "../../../../gl/gl.h"
 #include "../../../demo/bg_rect.h"
 #include "../../../demo/lightspeed.h"
 #include "../../../demo/toasters.h"
@@ -54,7 +49,7 @@ static void window_egl_demo_unload (s_window_egl *window);
 int main (int argc, char **argv)
 {
   s_window_egl window;
-  if (FT_Init_FreeType(&g_ft)) {
+  if (FT_Init_FreeType((FT_Library *) &g_ft)) {
     err_puts("main: failed to initialize FreeType");
     return 1;
   }

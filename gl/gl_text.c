@@ -11,6 +11,8 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/kc3.h"
+#include "freetype2.h"
+#include "gles2.h"
 #include "gl_text.h"
 
 void gl_text_clean (s_gl_text *text)
@@ -85,7 +87,7 @@ bool gl_text_render_to_texture (s_gl_text *text)
   glBindTexture(GL_TEXTURE_2D, text->texture);
   assert(glGetError() == GL_NO_ERROR);
   font = text->font;
-  face = font->ft_face;
+  face = *(FT_Face *) font->ft_face;
   s = text->str;
   scale_y = face->size->metrics.y_scale / 65536.0;
   max_ascent = (u32) (face->ascender * scale_y) >> 6;

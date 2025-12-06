@@ -251,6 +251,7 @@ KC3_C_SOURCES = \
 	"gl/dvec2.h" \
 	"gl/dvec3.c" \
 	"gl/dvec3.h" \
+	"gl/freetype2.h" \
 	"gl/gl.h" \
 	"gl/gl_box.c" \
 	"gl/gl_box.h" \
@@ -282,6 +283,7 @@ KC3_C_SOURCES = \
 	"gl/gl_vertex.h" \
 	"gl/gl_vtext.c" \
 	"gl/gl_vtext.h" \
+	"gl/gles2.h" \
 	"gl/mat3.c" \
 	"gl/mat3.h" \
 	"gl/mat4.c" \

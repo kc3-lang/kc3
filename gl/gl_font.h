@@ -15,7 +15,7 @@
 
 #include "types.h"
 
-extern FT_Library g_ft;
+extern void *g_ft;
 
 /* Stack-allocation compatible functions, call gl_font_clean
    after use. */

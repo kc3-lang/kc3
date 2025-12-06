@@ -10,11 +10,10 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef C3_GL_DEPRECATED_H
-#define C3_GL_DEPRECATED_H
+#ifndef LIBKC3_GL_FREETYPE2_H
+#define LIBKC3_GL_FREETYPE2_H
 
-#include "types.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
-const char * gl_error_string (s32 error);
-
-#endif /* C3_GL_DEPRECATED_H */
+#endif /* LIBKC3_GL_FREETYPE2_H */

@@ -11,9 +11,11 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/kc3.h"
+#include "freetype2.h"
+#include "gles2.h"
 #include "gl_font.h"
 
-FT_Library g_ft = {0};
+void *g_ft = NULL;
 
 void gl_font_clean (s_gl_font *font)
 {
@@ -37,7 +39,8 @@ s_gl_font * gl_font_init (s_gl_font *font, const char *path,
     return NULL;
   }
   assert(glGetError() == GL_NO_ERROR);
-  if (FT_New_Face(g_ft, tmp.real_path.ptr.pchar, 0, &tmp.ft_face)) {
+  if (FT_New_Face((FT_Library) g_ft, tmp.real_path.ptr.pchar, 0,
+                  (FT_Face *) &tmp.ft_face)) {
     err_write_1("gl_font_init: error loading font: ");
     err_puts(tmp.real_path.ptr.pchar);
     str_clean(&tmp.path);

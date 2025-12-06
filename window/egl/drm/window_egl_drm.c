@@ -17,6 +17,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "../../../libkc3/kc3.h"
+#include "../../../gl/gl.h"
 #include "window_egl_drm.h"
 
 /*

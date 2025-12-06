@@ -106,7 +106,7 @@ struct sdl2_sprite {
   u64 h;
   u64 tex_w;
   u64 tex_h;
-  GLuint *texture;
+  u32 *texture;
 };
 
 #endif /* LIBKC3_WINDOW_SDL2_TYPES_H */

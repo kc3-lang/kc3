@@ -26,7 +26,7 @@ s_gl_camera * gl_camera_new (uw w, uw h);
 
 /* Operators. */
 void          gl_camera_bind_texture (s_gl_camera *camera,
-                                      GLuint texture);
+                                      u32 texture);
 void          gl_camera_render (s_gl_camera *camera);
 void          gl_camera_render_end (s_gl_camera *camera);
 s_gl_camera * gl_camera_set_aspect_ratio (s_gl_camera *camera, uw w,

@@ -17,6 +17,7 @@
 #include <xkbcommon/xkbcommon.h>
 #include <xkbcommon/xkbcommon-x11.h>
 #include "../../../libkc3/kc3.h"
+#include "../../../gl/gl.h"
 #include "window_egl_xcb.h"
 
 #ifndef EGL_PLATFORM_XCB_EXT
