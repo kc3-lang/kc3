@@ -87,7 +87,7 @@ bool gl_text_render_to_texture (s_gl_text *text)
   glBindTexture(GL_TEXTURE_2D, text->texture);
   assert(glGetError() == GL_NO_ERROR);
   font = text->font;
-  face = *(FT_Face *) font->ft_face;
+  face = font->ft_face;
   s = text->str;
   scale_y = face->size->metrics.y_scale / 65536.0;
   max_ascent = (u32) (face->ascender * scale_y) >> 6;
