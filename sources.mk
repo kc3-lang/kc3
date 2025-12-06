@@ -1038,6 +1038,7 @@ KC3_C_SOURCES = \
 	"pdf/pdf_write.c" \
 	"pdf/pdf_write.h" \
 	"pdf/pdf_write_page.c" \
+	"pdf/pdf_write_page.h" \
 	"pdf/types.h" \
 	"smtp/kc3_smtp.c" \
 	"smtp/kc3_smtp.h" \
@@ -1507,6 +1508,7 @@ KC3_IMG_SOURCES = \
 	"img/kmx.logo.text.256.a20.png" \
 	"img/kmx.logo.text.256.a50.png" \
 	"img/kmx.logo.text.256.png" \
+	"img/kmx.logo.text.512.jpg" \
 	"img/mandelbrot_f128_limit.1.png" \
 	"img/mandelbrot_f128_limit.2.png" \
 	"img/mandelbrot_f128_limit.3.png" \

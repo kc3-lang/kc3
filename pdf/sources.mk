@@ -9,6 +9,7 @@ HEADERS = \
 	"pdf_stream.h" \
 	"pdf_trailer.h" \
 	"pdf_write.h" \
+	"pdf_write_page.h" \
 	"types.h" \
 
 SOURCES = \
