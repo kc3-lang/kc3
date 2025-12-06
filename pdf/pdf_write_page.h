@@ -15,10 +15,29 @@
 
 #include "types.h"
 
+/* Heap-allocation functions. */
 s_pdf_write_page ** kc3_pdf_write_page_new (s_pdf_write_page **page,
                                             s_pdf_write **pdf,
                                             s_pdf_rect *box);
 
+/* Operators. */
+s_pdf_write_page **
+kc3_pdf_write_page_image (s_pdf_write_page **page,
+                          f32 x, f32 y, u32 image);
+s_pdf_write_page **
+kc3_pdf_write_page_rectangle (s_pdf_write_page **page,
+                              f32 x, f32 y,
+                              f32 w, f32 h);
+s_pdf_write_page **
+kc3_pdf_write_page_set_color_rgb (s_pdf_write_page **page,
+                                  f32 r, f32 g,
+                                  f32 b);
+s_pdf_write_page **
+kc3_pdf_write_page_text (s_pdf_write_page **page,
+                         f32 x, f32 y, u32 font,
+                         f32 font_size, s_str *text);
+
+/* Initializers. */
 s_pdf_write_page * pdf_write_page_init (s_pdf_write_page *page,
                                         s_pdf_write *pdf,
                                         s_pdf_rect *box);

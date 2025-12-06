@@ -54,11 +54,12 @@ s_pdf_write * pdf_write_init_file (s_pdf_write *pdf, s_str *path)
     buf_delete(tmp.buf);
     return NULL;
   }
-  if (! buf_file_open_r(tmp.buf, fp)) {
+  if (! buf_file_open_w(tmp.buf, fp)) {
     fclose(fp);
     buf_delete(tmp.buf);
     return NULL;
   }
+  tmp.next_object_number = PDF_OBJECT_NUMBER_FIRST;
   *pdf = tmp;
   return pdf;
 }

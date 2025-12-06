@@ -200,6 +200,41 @@ sw pdf_buf_write_null (s_buf *buf)
     return pdf_buf_write_token(buf, "null");
 }
 
+sw pdf_buf_write_rect (s_buf *buf, s_pdf_rect *rect)
+{
+  sw r;
+  sw result = 0;
+  assert(rect);
+  if ((r = buf_write_1(buf, "[")) < 0)
+    return r;
+  result += r;
+  if ((r = pdf_buf_write_float(buf, rect->x)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
+  if ((r = pdf_buf_write_float(buf, rect->y)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
+  if ((r = pdf_buf_write_float(buf, rect->w)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
+  if ((r = pdf_buf_write_float(buf, rect->h)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "]")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
 sw pdf_buf_write_separator(s_buf *buf, bool newline)
 {
   return buf_write_1(buf, newline ? "\n" : " ");

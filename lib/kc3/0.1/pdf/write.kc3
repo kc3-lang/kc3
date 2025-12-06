@@ -16,6 +16,12 @@ defmodule PDF.Write do
 
   def delete = cfn Void "kc3_pdf_write_delete" (PDF.Write*)
 
+  def font_from_file =
+    cfn U32 "kc3_pdf_write_font_from_file" (PDF.Write*, Str)
+
+  def image_from_file =
+    cfn U32 "kc3_pdf_write_image_from_file" (PDF.Write*, Str)
+
   def new_file = cfn PDF.Write* "kc3_pdf_write_new_file" (Result,
     Str)
 
