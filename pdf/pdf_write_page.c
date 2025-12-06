@@ -53,3 +53,54 @@ s_pdf_write_page * pdf_write_page_init (s_pdf_write_page *page,
   *page = tmp;
   return page;
 }
+
+s_pdf_write_page ** kc3_pdf_write_page_image (s_pdf_write_page **page,
+                                              f32 x, f32 y, u32 image)
+{
+  (void) page;
+  (void) x;
+  (void) y;
+  (void) image;
+  err_puts("kc3_pdf_write_page_image: TODO");
+  return page;
+}
+
+s_pdf_write_page ** kc3_pdf_write_page_rectangle (s_pdf_write_page **page,
+                                                  f32 x, f32 y,
+                                                  f32 w, f32 h)
+{
+  (void) page;
+  (void) x;
+  (void) y;
+  (void) w;
+  (void) h;
+  err_puts("kc3_pdf_write_page_rectangle: TODO");
+  return page;
+}
+
+s_pdf_write_page **
+kc3_pdf_write_page_set_color_rgb (s_pdf_write_page **page, f32 r, f32 g,
+                                  f32 b)
+{
+  assert(page);
+  assert(*page);
+  (void) r;
+  (void) g;
+  (void) b;
+  err_puts("kc3_pdf_write_page_set_color_rgb: TODO");
+  return page;
+}
+
+s_pdf_write_page ** kc3_pdf_write_page_text (s_pdf_write_page **page,
+                                             f32 x, f32 y, u32 font,
+                                             f32 font_size, s_str *text)
+{
+  (void) page;
+  (void) x;
+  (void) y;
+  (void) font;
+  (void) font_size;
+  (void) text;
+  err_puts("kc3_pdf_write_page_text: TODO");
+  return page;
+}

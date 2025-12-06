@@ -14,6 +14,8 @@
 #include "kc3_pdf_write.h"
 #include "pdf_write.h"
 #include "jpeglib.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #include <string.h>
 
 void kc3_pdf_write_delete (s_pdf_write **pdf)
@@ -21,65 +23,129 @@ void kc3_pdf_write_delete (s_pdf_write **pdf)
   pdf_write_delete(*pdf);
 }
 
-s_pdf_write ** kc3_pdf_write_font_from_file (s_pdf_write **pdf,
-                                             s_str *path)
+u32 kc3_pdf_write_font_from_file (s_pdf_write **pdf, s_str *path)
 {
-  (void) path;
-  err_puts("kc3_pdf_write_font_from_file: not implemented");
-  return pdf;
+  FT_Library ft_library;
+  FT_Face ft_face;
+  FILE *fp;
+  long file_size;
+  s_buf *buf;
+  u32 font_obj;
+  u32 descriptor_obj;
+  u32 file_obj;
+  s16 ascender;
+  s16 descender;
+  u16 units_per_em;
+  FT_BBox bbox;
+  const char *font_name;
+  assert(pdf);
+  assert(*pdf);
+  assert(path);
+  buf = (*pdf)->buf;
+  if (FT_Init_FreeType(&ft_library)) {
+    err_puts("kc3_pdf_write_font_from_file: FT_Init_FreeType failed");
+    return 0;
+  }
+  if (FT_New_Face(ft_library, path->ptr.pchar, 0, &ft_face)) {
+    err_write_1("kc3_pdf_write_font_from_file: "
+                "error loading font: ");
+    err_puts(path->ptr.pchar);
+    FT_Done_FreeType(ft_library);
+    return 0;
+  }
+  fp = fopen(path->ptr.pchar, "rb");
+  if (! fp) {
+    err_write_1("kc3_pdf_write_font_from_file: "
+                "error opening font file: ");
+    err_puts(path->ptr.pchar);
+    FT_Done_Face(ft_face);
+    FT_Done_FreeType(ft_library);
+    return 0;
+  }
+  fseek(fp, 0, SEEK_END);
+  file_size = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+  font_name = ft_face->family_name ? ft_face->family_name : "Unknown";
+  units_per_em = ft_face->units_per_EM;
+  ascender = ft_face->ascender;
+  descender = ft_face->descender;
+  bbox = ft_face->bbox;
+  font_obj = pdf_write_object_number_register(*pdf);
+  descriptor_obj = pdf_write_object_number_register(*pdf);
+  file_obj = pdf_write_object_number_register(*pdf);
+  kc3_pdf_write_ttf_font(buf, font_obj, descriptor_obj,
+                         font_name);
+  kc3_pdf_write_ttf_descriptor(buf, descriptor_obj, file_obj,
+                               font_name, units_per_em,
+                               ascender, descender, &bbox,
+                               file_size);
+  kc3_pdf_write_ttf_file(buf, file_obj, fp, file_size);
+  FT_Done_Face(ft_face);
+  FT_Done_FreeType(ft_library);
+  fclose(fp);
+  return font_obj;
 }
 
-s_pdf_write ** kc3_pdf_write_image_from_file (s_pdf_write **doc,
-                                              s_str *path)
+u32 kc3_pdf_write_image_from_file (s_pdf_write **doc,
+                                   s_str *path)
 {
   FILE *fp;
   struct jpeg_decompress_struct cinfo;
   struct jpeg_error_mgr jerr;
-  s_buf *buf;
   long file_size;
-  u8 *jpeg_data = NULL;
-  size_t bytes_read;
   u32 object_number;
+  u32 width;
+  u32 height;
+  u32 num_components;
   assert(doc);
   assert(*doc);
   assert(path);
-  buf = (*doc)->buf;
   fp = fopen(path->ptr.pchar, "rb");
   if (! fp) {
     err_write_1("kc3_pdf_write_image_from_file: "
                 "error opening JPEG file: ");
     err_puts(path->ptr.pchar);
-    return NULL;
+    return 0;
   }
+  fseek(fp, 0, SEEK_END);
+  file_size = ftell(fp);
+  if (file_size <= 0) {
+    err_puts("kc3_pdf_write_image_from_file: invalid file size");
+    fclose(fp);
+    return 0;
+  }
+  fseek(fp, 0, SEEK_SET);
   cinfo.err = jpeg_std_error(&jerr);
   jpeg_create_decompress(&cinfo);
   jpeg_stdio_src(&cinfo, fp);
   jpeg_read_header(&cinfo, TRUE);
-  fseek(fp, 0, SEEK_END);
-  file_size = ftell(fp);
-  fseek(fp, 0, SEEK_SET);
-  if (! (jpeg_data = alloc(file_size))) {
-    jpeg_destroy_decompress(&cinfo);
-    fclose(fp);
-    return NULL;
-  }
-  bytes_read = fread(jpeg_data, 1, file_size, fp);
-  if (bytes_read != (size_t) file_size) {
-    err_puts("kc3_pdf_write_image_from_file: failed to read JPEG file");
-    free(jpeg_data);
-    jpeg_destroy_decompress(&cinfo);
-    fclose(fp);
-    return NULL;
-  }
-  object_number = pdf_write_object_number_register(*doc);
-  kc3_pdf_write_jpeg_xobject(buf, object_number,
-                             cinfo.image_width, cinfo.image_height,
-                             cinfo.num_components,
-                             jpeg_data, file_size);
-  free(jpeg_data);
+  width = cinfo.image_width;
+  height = cinfo.image_height;
+  num_components = cinfo.num_components;
   jpeg_destroy_decompress(&cinfo);
+  if (! width || ! height || ! num_components) {
+    err_puts("kc3_pdf_write_image_from_file: "
+             "invalid JPEG dimensions");
+    fclose(fp);
+    return 0;
+  }
+  fseek(fp, 0, SEEK_SET);
+  if (! (object_number = pdf_write_object_number_register(*doc))) {
+    err_puts("kc3_pdf_write_image_from_file:"
+             " pdf_write_object_number_register");
+    fclose(fp);
+    return 0;
+  }
+  if (kc3_pdf_write_jpeg_xobject((*doc)->buf, object_number,
+                                 width, height, num_components,
+                                 fp, file_size) < 0) {
+    err_puts("kc3_pdf_write_image_from_file: "
+             "kc3_pdf_write_jpeg_xobject");
+    fclose(fp);
+    return 0;
+  }
   fclose(fp);
-  return doc;
+  return object_number;
 }
 
 s_pdf_write ** kc3_pdf_write_new (s_pdf_write **pdf)
@@ -112,13 +178,16 @@ s_str * kc3_pdf_write_to_str (s_pdf_write **pdf, s_str *dest)
 sw kc3_pdf_write_jpeg_xobject (s_buf *buf, u32 object_number,
                                u32 width, u32 height,
                                u32 num_components,
-                               const u8 *data, uw length)
+                               FILE *fp, uw length)
 {
+  size_t bytes_read;
+  u8 chunk[BUF_SIZE];
+  uw chunk_size;
+  uw remaining;
   sw r;
   sw result = 0;
   const char *colorspace;
   assert(buf);
-  assert(data);
   colorspace = (num_components == 1) ? "/DeviceGray" :
                (num_components == 3) ? "/DeviceRGB" :
                (num_components == 4) ? "/DeviceCMYK" : "/DeviceRGB";
@@ -161,9 +230,193 @@ sw kc3_pdf_write_jpeg_xobject (s_buf *buf, u32 object_number,
   if ((r = buf_write_1(buf, "\n>>\nstream\n")) < 0)
     return r;
   result += r;
-  if ((r = buf_write(buf, data, length)) < 0)
+  remaining = length;
+  while (remaining > 0) {
+    chunk_size = remaining > sizeof(chunk) ? sizeof(chunk) : remaining;
+    bytes_read = fread(chunk, 1, chunk_size, fp);
+    if (bytes_read != chunk_size) {
+      err_puts("kc3_pdf_write_jpeg_xobject: fread");
+      return -1;
+    }
+    if ((r = buf_flush(buf)) < 0) {
+      err_puts("kc3_pdf_write_jpeg_xobject: buf_flush");
+      return -1;
+    }
+    if ((r = buf_write(buf, chunk, chunk_size)) < 0) {
+      err_puts("kc3_pdf_write_jpeg_xobject: buf_write");
+      return -1;
+    }
+    result += r;
+    remaining -= chunk_size;
+  }
+  if ((r = buf_write_1(buf, "\nendstream\nendobj\n")) < 0)
     return r;
   result += r;
+  return result;
+}
+
+sw kc3_pdf_write_ttf_font (s_buf *buf, u32 font_obj,
+                           u32 descriptor_obj, const char *font_name)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(font_name);
+  if ((r = buf_inspect_u32(buf, font_obj)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " 0 obj\n<<\n/Type /Font\n"
+                       "/Subtype /TrueType\n"
+                       "/BaseFont /")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, font_name)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n/Encoding /WinAnsiEncoding\n"
+                       "/FontDescriptor ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u32(buf, descriptor_obj)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " 0 R\n>>\nendobj\n")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw kc3_pdf_write_ttf_descriptor (s_buf *buf, u32 descriptor_obj,
+                                 u32 file_obj, const char *font_name,
+                                 u16 units_per_em, s16 ascender,
+                                 s16 descender, const FT_BBox *bbox,
+                                 uw file_length)
+{
+  sw r;
+  sw result = 0;
+  s32 scale;
+  assert(buf);
+  assert(font_name);
+  assert(bbox);
+  scale = 1000 / (units_per_em ? units_per_em : 1000);
+  if ((r = buf_inspect_u32(buf, descriptor_obj)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " 0 obj\n<<\n/Type /FontDescriptor\n"
+                       "/FontName /")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, font_name)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n/Flags 32\n/FontBBox [")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_s32(buf, (s32) bbox->xMin * scale)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_s32(buf, (s32) bbox->yMin * scale)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_s32(buf, (s32) bbox->xMax * scale)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_s32(buf, (s32) bbox->yMax * scale)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "]\n/ItalicAngle 0\n/Ascent ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_s32(buf, (s32) ascender * scale)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n/Descent ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_s32(buf, (s32) descender * scale)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n/CapHeight ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_s32(buf, (s32) ascender * scale)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n/StemV 80\n/FontFile2 ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u32(buf, file_obj)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " 0 R\n/Length1 ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw(buf, file_length)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n>>\nendobj\n")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw kc3_pdf_write_ttf_file (s_buf *buf, u32 file_obj,
+                           FILE *fp, uw length)
+{
+  size_t bytes_read;
+  u8 chunk[BUF_SIZE];
+  uw chunk_size;
+  uw remaining;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(fp);
+  if ((r = buf_inspect_u32(buf, file_obj)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " 0 obj\n<<\n/Length ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw(buf, length)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n/Length1 ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw(buf, length)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n>>\nstream\n")) < 0)
+    return r;
+  result += r;
+  remaining = length;
+  while (remaining > 0) {
+    chunk_size = remaining > sizeof(chunk) ? sizeof(chunk) : remaining;
+    bytes_read = fread(chunk, 1, chunk_size, fp);
+    if (bytes_read != chunk_size) {
+      err_puts("kc3_pdf_write_ttf_file: fread");
+      return -1;
+    }
+    if ((r = buf_flush(buf)) < 0) {
+      err_puts("kc3_pdf_write_ttf_file: buf_flush");
+      return -1;
+    }
+    if ((r = buf_write(buf, chunk, chunk_size)) < 0) {
+      err_puts("kc3_pdf_write_ttf_file: buf_write");
+      return -1;
+    }
+    result += r;
+    remaining -= chunk_size;
+  }
   if ((r = buf_write_1(buf, "\nendstream\nendobj\n")) < 0)
     return r;
   result += r;

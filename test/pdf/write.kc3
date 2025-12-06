@@ -1,26 +1,41 @@
+quote require PDF.Write
 require PDF.Write
-write = PDF.Write.new_file("write.pdf")
+quote doc = PDF.Write.new_file("write.pdf")
+doc = PDF.Write.new_file("write.pdf")
 # Assets
-image = PDF.Write.Document.image_from_file(doc, "image.jpeg")
-font = PDF.Write.Document.font_from_file(doc, "Courier New.ttf")
+quote image = PDF.Write.image_from_file(doc, "image.jpeg")
+image = PDF.Write.image_from_file(doc, "image.jpeg")
+quote font = PDF.Write.font_from_file(doc, "font.ttf")
+font = PDF.Write.font_from_file(doc, "font.ttf")
+# A4
+quote a4 = %PDF.Rect{w: (F32) 210, h: (F32) 297}
+a4 = %PDF.Rect{w: (F32) 210, h: (F32) 297}
 # Page 1
-scale = 200
-page1 = PDF.Write.Page.new(doc, [210 * scale, 297 * scale])
+quote page1 = PDF.Write.Page.new(doc, a4)
+page1 = PDF.Write.Page.new(doc, a4)
 # Texte
-x = 100
-y = 200
-font_size = 12
-PDF.Write.Page.set_color_rgb(page1, 0, 0, 0)
+quote x = (F32) 100
+x = (F32) 100
+quote y = (F32) 200
+y = (F32) 200
+quote font_size = (F32) 12
+font_size = (F32) 12
+quote PDF.Write.Page.set_color_rgb(page1, (F32) 0, (F32) 0, (F32) 0)
+PDF.Write.Page.set_color_rgb(page1, (F32) 0, (F32) 0, (F32) 0)
+quote PDF.Write.Page.text(page1, x, y, font, font_size, "Test 123\nPlop")
 PDF.Write.Page.text(page1, x, y, font, font_size, "Test 123\nPlop")
 # Image
-x = 100
-y = 500
+quote x = (F32) 10
+x = (F32) 10
+quote y = (F32) 50
+y = (F32) 50
+quote PDF.Write.Page.image(page1, x, y, image)
 PDF.Write.Page.image(page1, x, y, image)
 # Rectangle
-x = 10
-y = 10
-w = 100
-h = 10
+rect = %PDF.Rect{x: (F32) 10,
+                 y: (F32) 10,
+                 w: (F32) 267,
+                 h: (F32) 10}
 PDF.Write.Page.set_color_rgb(page1, 0, 0, 0)
 PDF.Write.Page.rectangle(page1, x, y, w, h)
 # write

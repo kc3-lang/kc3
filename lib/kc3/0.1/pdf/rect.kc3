@@ -12,9 +12,9 @@
 
 defmodule PDF.Rect do
 
-  defstruct [x: (F32) 0,
-             y: (F32) 0,
-             w: (F32) 0,
-             h: (F32) 0]
+  defstruct [x: (F32) 0.0,
+             y: (F32) 0.0,
+             w: (F32) 0.0,
+             h: (F32) 0.0]
 
 end

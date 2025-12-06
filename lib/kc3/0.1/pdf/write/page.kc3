@@ -10,11 +10,31 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require PDF.Rect
 require PDF.Write
 
 defmodule PDF.Write.Page do
 
-  def new = cfn PDF.Write.Page* "kc3_pdf_write_page_new" (Result,
-    PDF.Write*, PDF.Rect)
+  defstruct []
+
+  def image =
+    cfn PDF.Write.Page* "kc3_pdf_write_page_image" (PDF.Write.Page*,
+      F32, F32, U32)
+
+  def new =
+    cfn PDF.Write.Page* "kc3_pdf_write_page_new" (Result, PDF.Write*,
+      PDF.Rect)
+
+  def rectangle =
+    cfn PDF.Write.Page* "kc3_pdf_write_page_rectangle" (PDF.Write.Page*,
+      F32, F32, F32, F32)
+
+  def set_color_rgb =
+    cfn PDF.Write.Page* "kc3_pdf_write_page_set_color_rgb"
+      (PDF.Write.Page*, F32, F32, F32)
+
+  def text =
+    cfn PDF.Write.Page* "kc3_pdf_write_page_text"
+      (PDF.Write.Page*, F32, F32, U32, F32, Str)
 
 end
