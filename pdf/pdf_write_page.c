@@ -134,7 +134,7 @@ s_pdf_write_page ** kc3_pdf_write_page_text (s_pdf_write_page **page,
   assert(buf);
   buf_write_1(buf, "BT\n");
   buf_write_1(buf, "/F");
-  buf_inspect_u32(buf, font);
+  buf_inspect_u32_decimal(buf, font);
   buf_write_1(buf, " ");
   pdf_buf_write_float(buf, font_size);
   buf_write_1(buf, " Tf\n");

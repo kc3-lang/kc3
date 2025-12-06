@@ -32,14 +32,14 @@ s_pdf_write ** kc3_pdf_write_add_page (s_pdf_write **pdf,
   assert(*page);
   buf = (*pdf)->buf;
   p = *page;
-  buf_inspect_u32(buf, p->object_number);
+  buf_inspect_u32_decimal(buf, p->object_number);
   buf_write_1(buf, " 0 obj\n");
   pdf_buf_write_dictionnary(buf, &p->map);
   buf_write_1(buf, "\nendobj\n");
   content_buf = p->contents.stream.stream.buf;
-  buf_inspect_u32(buf, p->contents.stream.object_number);
+  buf_inspect_u32_decimal(buf, p->contents.stream.object_number);
   buf_write_1(buf, " 0 obj\n<< /Length ");
-  buf_inspect_sw(buf, (sw) content_buf->wpos);
+  buf_inspect_sw_decimal(buf, (sw) content_buf->wpos);
   buf_write_1(buf, " >>\nstream\n");
   buf_write(buf, content_buf->ptr.pchar, content_buf->wpos);
   buf_write_1(buf, "endstream\nendobj\n");
@@ -224,7 +224,7 @@ sw kc3_pdf_write_jpeg_xobject (s_buf *buf, u32 object_number,
   colorspace = (num_components == 1) ? "/DeviceGray" :
                (num_components == 3) ? "/DeviceRGB" :
                (num_components == 4) ? "/DeviceCMYK" : "/DeviceRGB";
-  if ((r = buf_inspect_u32(buf, object_number)) < 0)
+  if ((r = buf_inspect_u32_decimal(buf, object_number)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " 0 obj\n")) < 0)
@@ -237,13 +237,13 @@ sw kc3_pdf_write_jpeg_xobject (s_buf *buf, u32 object_number,
   if ((r = buf_write_1(buf, "/Width ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_u32(buf, width)) < 0)
+  if ((r = buf_inspect_u32_decimal(buf, width)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "\n/Height ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_u32(buf, height)) < 0)
+  if ((r = buf_inspect_u32_decimal(buf, height)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "\n/ColorSpace ")) < 0)
@@ -257,7 +257,7 @@ sw kc3_pdf_write_jpeg_xobject (s_buf *buf, u32 object_number,
                        "/Length ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw(buf, length)) < 0)
+  if ((r = buf_inspect_uw_decimal(buf, length)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "\n>>\nstream\n")) < 0)
@@ -295,7 +295,7 @@ sw kc3_pdf_write_ttf_font (s_buf *buf, u32 font_obj,
   sw result = 0;
   assert(buf);
   assert(font_name);
-  if ((r = buf_inspect_u32(buf, font_obj)) < 0)
+  if ((r = buf_inspect_u32_decimal(buf, font_obj)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " 0 obj\n<<\n/Type /Font\n"
@@ -310,7 +310,7 @@ sw kc3_pdf_write_ttf_font (s_buf *buf, u32 font_obj,
                        "/FontDescriptor ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_u32(buf, descriptor_obj)) < 0)
+  if ((r = buf_inspect_u32_decimal(buf, descriptor_obj)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " 0 R\n>>\nendobj\n")) < 0)
@@ -332,7 +332,7 @@ sw kc3_pdf_write_ttf_descriptor (s_buf *buf, u32 descriptor_obj,
   assert(font_name);
   assert(bbox);
   scale = 1000 / (units_per_em ? units_per_em : 1000);
-  if ((r = buf_inspect_u32(buf, descriptor_obj)) < 0)
+  if ((r = buf_inspect_u32_decimal(buf, descriptor_obj)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " 0 obj\n<<\n/Type /FontDescriptor\n"
@@ -345,55 +345,55 @@ sw kc3_pdf_write_ttf_descriptor (s_buf *buf, u32 descriptor_obj,
   if ((r = buf_write_1(buf, "\n/Flags 32\n/FontBBox [")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_s32(buf, (s32) bbox->xMin * scale)) < 0)
+  if ((r = buf_inspect_s32_decimal(buf, (s32) bbox->xMin * scale)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_s32(buf, (s32) bbox->yMin * scale)) < 0)
+  if ((r = buf_inspect_s32_decimal(buf, (s32) bbox->yMin * scale)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_s32(buf, (s32) bbox->xMax * scale)) < 0)
+  if ((r = buf_inspect_s32_decimal(buf, (s32) bbox->xMax * scale)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_s32(buf, (s32) bbox->yMax * scale)) < 0)
+  if ((r = buf_inspect_s32_decimal(buf, (s32) bbox->yMax * scale)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "]\n/ItalicAngle 0\n/Ascent ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_s32(buf, (s32) ascender * scale)) < 0)
+  if ((r = buf_inspect_s32_decimal(buf, (s32) ascender * scale)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "\n/Descent ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_s32(buf, (s32) descender * scale)) < 0)
+  if ((r = buf_inspect_s32_decimal(buf, (s32) descender * scale)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "\n/CapHeight ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_s32(buf, (s32) ascender * scale)) < 0)
+  if ((r = buf_inspect_s32_decimal(buf, (s32) ascender * scale)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "\n/StemV 80\n/FontFile2 ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_u32(buf, file_obj)) < 0)
+  if ((r = buf_inspect_u32_decimal(buf, file_obj)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " 0 R\n/Length1 ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw(buf, file_length)) < 0)
+  if ((r = buf_inspect_uw_decimal(buf, file_length)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "\n>>\nendobj\n")) < 0)
@@ -413,19 +413,19 @@ sw kc3_pdf_write_ttf_file (s_buf *buf, u32 file_obj,
   sw result = 0;
   assert(buf);
   assert(fp);
-  if ((r = buf_inspect_u32(buf, file_obj)) < 0)
+  if ((r = buf_inspect_u32_decimal(buf, file_obj)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " 0 obj\n<<\n/Length ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw(buf, length)) < 0)
+  if ((r = buf_inspect_uw_decimal(buf, length)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "\n/Length1 ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw(buf, length)) < 0)
+  if ((r = buf_inspect_uw_decimal(buf, length)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "\n>>\nstream\n")) < 0)

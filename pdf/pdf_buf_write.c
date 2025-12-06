@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <math.h>
 #include "../libkc3/kc3.h"
 #include "pdf_buf_write.h"
 
@@ -124,8 +125,64 @@ sw pdf_buf_write_flat_array (s_buf *buf, const s_array *src)
 
 sw pdf_buf_write_float (s_buf *buf, f32 src)
 {
+  u8 d[64] = {0};
+  u8 i;
+  u8 n;
+  sw r;
+  sw result = 0;
+  f32 x;
+  f32 frac;
   assert(buf);
-  return buf_inspect_f32(buf, src);
+  x = src;
+  if (x == 0.0f)
+    return buf_write_1(buf, "0");
+  if (x < 0.0f) {
+    if ((r = buf_write_1(buf, "-")) < 0)
+      return r;
+    result += r;
+    x = -x;
+  }
+  /* Extract integer part. */
+  n = 0;
+  frac = x - floorf(x);
+  x = floorf(x);
+  if (x >= 1.0f) {
+    while (n < sizeof(d) && x >= 1.0f) {
+      d[n] = (u8) fmodf(x, 10.0f);
+      x = floorf(x / 10.0f);
+      n++;
+    }
+    /* Write digits in reverse order. */
+    i = n;
+    while (i > 0) {
+      i--;
+      if ((r = buf_write_u8(buf, d[i] + '0')) < 0)
+        return r;
+      result += r;
+    }
+  }
+  else {
+    if ((r = buf_write_u8(buf, '0')) < 0)
+      return r;
+    result += r;
+  }
+  /* Write fractional part. */
+  if (frac > 0.0f) {
+    if ((r = buf_write_1(buf, ".")) < 0)
+      return r;
+    result += r;
+    i = 0;
+    while (frac > 0.0f && i < 6) {
+      frac = frac * 10.0f;
+      d[0] = (u8) floorf(frac);
+      if ((r = buf_write_u8(buf, d[0] + '0')) < 0)
+        return r;
+      result += r;
+      frac = frac - (f32) d[0];
+      i++;
+    }
+  }
+  return result;
 }
 
 sw pdf_buf_write_indirect_ref (s_buf *buf, const s_tuple *tuple)
@@ -198,7 +255,7 @@ sw pdf_buf_write_indirect_end (s_buf *buf)
 sw pdf_buf_write_integer (s_buf *buf, s32 src)
 {
   assert(buf);
-  return buf_inspect_s32(buf, src);
+  return buf_inspect_s32_decimal(buf, src);
 }
 
 sw pdf_buf_write_name (s_buf *buf, p_pdf_name src)
