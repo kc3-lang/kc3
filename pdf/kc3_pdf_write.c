@@ -18,6 +18,20 @@
 #include FT_FREETYPE_H
 #include <string.h>
 
+s_pdf_write ** kc3_pdf_write_add_page (s_pdf_write **pdf,
+                                       s_pdf_write_page **page)
+{
+  (void) pdf;
+  (void) page;
+  err_puts("kc3_pdf_write_add_page: TODO");
+  return pdf;
+}
+
+void kc3_pdf_write_close (s_pdf_write **pdf)
+{
+  pdf_write_close(*pdf);
+}
+
 void kc3_pdf_write_delete (s_pdf_write **pdf)
 {
   pdf_write_delete(*pdf);

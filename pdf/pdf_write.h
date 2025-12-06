@@ -30,7 +30,7 @@ s_pdf_write * pdf_write_new_file (s_str *path);
 s_str * pdf_write_to_str (s_pdf_write *pdf, s_str *dest);
 
 /* Operators. */
-s_pdf_write * pdf_write_close (s_pdf_write *pdf);
-u32           pdf_write_object_number_register (s_pdf_write *pdf);
+void pdf_write_close (s_pdf_write *pdf);
+u32  pdf_write_object_number_register (s_pdf_write *pdf);
 
 #endif /* KC3_PDF_WRITE_H */

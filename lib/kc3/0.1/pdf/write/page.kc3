@@ -27,7 +27,7 @@ defmodule PDF.Write.Page do
 
   def rectangle =
     cfn PDF.Write.Page* "kc3_pdf_write_page_rectangle" (PDF.Write.Page*,
-      F32, F32, F32, F32)
+      PDF.Rect)
 
   def set_color_rgb =
     cfn PDF.Write.Page* "kc3_pdf_write_page_set_color_rgb"

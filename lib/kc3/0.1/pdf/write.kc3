@@ -14,6 +14,12 @@ defmodule PDF.Write do
 
   dlopen("pdf.so")
 
+  def add_page =
+    cfn PDF.Write* "kc3_pdf_write_add_page" (PDF.Write*,
+      PDF.Write.Page*)
+
+  def close = cfn Void "kc3_pdf_write_close" (PDF.Write*)
+
   def delete = cfn Void "kc3_pdf_write_delete" (PDF.Write*)
 
   def font_from_file =

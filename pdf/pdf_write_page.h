@@ -26,8 +26,7 @@ kc3_pdf_write_page_image (s_pdf_write_page **page,
                           f32 x, f32 y, u32 image);
 s_pdf_write_page **
 kc3_pdf_write_page_rectangle (s_pdf_write_page **page,
-                              f32 x, f32 y,
-                              f32 w, f32 h);
+                              s_pdf_rect *rect);
 s_pdf_write_page **
 kc3_pdf_write_page_set_color_rgb (s_pdf_write_page **page,
                                   f32 r, f32 g,

@@ -66,14 +66,10 @@ s_pdf_write_page ** kc3_pdf_write_page_image (s_pdf_write_page **page,
 }
 
 s_pdf_write_page ** kc3_pdf_write_page_rectangle (s_pdf_write_page **page,
-                                                  f32 x, f32 y,
-                                                  f32 w, f32 h)
+                                                  s_pdf_rect *rect)
 {
   (void) page;
-  (void) x;
-  (void) y;
-  (void) w;
-  (void) h;
+  (void) rect;
   err_puts("kc3_pdf_write_page_rectangle: TODO");
   return page;
 }
