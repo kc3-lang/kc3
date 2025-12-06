@@ -20,12 +20,11 @@ void pdf_write_clean (s_pdf_write *pdf)
   buf_delete(pdf->buf);
 }
 
-s_pdf_write * pdf_write_close (s_pdf_write *pdf)
+void pdf_write_close (s_pdf_write *pdf)
 {
   assert(pdf);
   assert(pdf->buf);
   buf_file_close(pdf->buf);
-  return pdf;
 }
 
 void pdf_write_delete (s_pdf_write *pdf)

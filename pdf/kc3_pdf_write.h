@@ -26,6 +26,8 @@ s_pdf_write ** kc3_pdf_write_new (s_pdf_write **pdf);
 s_str * kc3_pdf_write_to_str (s_pdf_write **pdf, s_str *dest);
 
 /* Operators. */
+s_pdf_write ** kc3_pdf_write_add_page (s_pdf_write **pdf,
+                                       s_pdf_write_page **page);
 void kc3_pdf_write_close (s_pdf_write **pdf);
 u32  kc3_pdf_write_font_from_file (s_pdf_write **pdf, s_str *path);
 u32  kc3_pdf_write_image_from_file (s_pdf_write **pdf, s_str *path);
