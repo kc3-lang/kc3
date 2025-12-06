@@ -61,10 +61,10 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     return NULL;
   }
   tag_init_sym_type(&tmp, cfn->result_type);
-  if ((cfn->result_type != &g_sym_Ptr ||
+  if (((cfn->result_type != &g_sym_Ptr &&
+        ! sym_is_pointer_type(cfn->result_type, NULL)) ||
        cfn->arg_result) &&
       cfn->cif.rtype == &ffi_type_pointer) {
-    /* make result point to result_pointer */
     if (! tag_to_ffi_pointer(&tmp, cfn->result_type,
                              (void **) &result_pointer)) {
       err_puts("cfn_apply: tag_to_ffi_pointer 1");
@@ -74,7 +74,6 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     result = &result_pointer;
   }
   else {
-    /* make result point to tmp value */
     if (! tag_to_ffi_pointer(&tmp, cfn->result_type, &result)) {
       err_puts("cfn_apply: tag_to_ffi_pointer 2");
       assert(! "cfn_apply: tag_to_ffi_pointer 2");
