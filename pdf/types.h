@@ -84,6 +84,10 @@ struct pdf_write {
   s_buf *buf;
   s_mutex *mutex;
   u32 next_object_number;
+  s_list *pages;
+  s_list *fonts;
+  s_list *images;
+  s_map xref;  
 };
 
 struct pdf_write_stream {

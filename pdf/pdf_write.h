@@ -32,5 +32,8 @@ s_str * pdf_write_to_str (s_pdf_write *pdf, s_str *dest);
 /* Operators. */
 void pdf_write_close (s_pdf_write *pdf);
 u32  pdf_write_object_number_register (s_pdf_write *pdf);
-
+s_pdf_write * pdf_write_indirect_object (s_pdf_write *pdf,
+                                         u32 object_number,
+                                         u16 generation);
+ 
 #endif /* KC3_PDF_WRITE_H */
