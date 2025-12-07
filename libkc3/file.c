@@ -748,61 +748,80 @@ s_str * file_read_slice (s_str *path, u64 start, u64 end, s_str *dest)
 
 bool file_rm_rf (const s_str *path)
 {
-  s16 i;
-  DIR           *dir[256];
-  struct dirent *dirent[256];
+  s16 i = 0;
+  DIR           *dir[256] = {0};
+  struct dirent *dirent[256] = {0};
   s32 e;
+  s_str filename;
   s_str p[256] = {0};
-  i = 0;
   p[0] = *path;
   p[0].free.p = NULL;
-  while (i >= 0) {
+  while (1) {
+    if (false) {
+      err_write_1("File.rm_rf: ");
+      err_inspect_str(p + i);
+      err_write_1("\n");
+    }
     if (file_is_directory_1(p[i].ptr.pchar)) {
       if (i > 254) {
         err_puts("file_rm_rf: max subdirs reached (254)");
         return false;
       }
-      if (! dir[i])
-        if (! (dir[i] = opendir(p[i].ptr.pchar))) {
-          e = errno;
-          err_write_1("file_rm_rf: opendir: ");
-          err_write_1(strerror(e));
-          err_write_1(": ");
-          err_write_str(path);
-          return false;
-        }
-      if ((dirent[i] = readdir(dir[i]))) {
-        const s_str filename = STR(dirent[i]->d_name);
-        str_init_concatenate(p + i + 1, p + i, &filename);
+      if (! dir[i] &&
+          ! (dir[i] = opendir(p[i].ptr.pchar))) {
+        e = errno;
+        err_write_1("file_rm_rf: opendir: ");
+        err_write_1(strerror(e));
+        err_write_1(": ");
+        err_write_str(path);
+        return false;
+      }
+    next:
+      do {
+        dirent[i] = readdir(dir[i]);
+      } while (dirent[i] &&
+               (dirent[i]->d_name[0] == '.' &&
+                (dirent[i]->d_name[1] == 0 ||
+                 (dirent[i]->d_name[1] == '.' &&
+                  dirent[i]->d_name[2] == 0))));
+      if (dirent[i]) {
+        str_init_1(&filename, NULL, dirent[i]->d_name);
         i++;
+        p[i].size = p[i - 1].size + 1 + filename.size;
+        p[i].free.p = alloc(p[i].size + 1);
+        p[i].ptr.p = p[i].free.p;
+        memcpy(p[i].free.p, p[i - 1].ptr.p, p[i - 1].size);
+        p[i].free.pchar[p[i - 1].size] = '/';
+        memcpy(p[i].free.pchar + p[i - 1].size + 1, filename.ptr.p,
+               filename.size);
         continue;
       }
       else {
         closedir(dir[i]);
         dir[i] = NULL;
-        rmdir(p[i].ptr.pchar);
+        if (! file_rmdir(p + i))
+          goto clean;
         str_clean(p + i);
+        if (! i)
+          return true;
         i--;
-        continue;
+        goto next;
       }
     }
     if (i > 0) {
       if (! file_unlink(p + i))
         goto clean;
       str_clean(p + i);
-      if ((dirent[i - 1] = readdir(dir[i - 1]))) {
-        const s_str filename = STR(dirent[i]->d_name);
-        str_init_concatenate(p + i, p + i - 1, &filename);
-        continue;
-      }
+      i--;
+      goto next;
     }
     else {
-      if (! file_unlink(p + i))
+      if (! file_unlink(p))
         goto clean;
       str_clean(p);
+      return true;
     }
   }
-  return true;
  clean:
   while (i > 0) {
     if (dir[i])
@@ -830,6 +849,20 @@ bool file_rename (const s_str *from, const s_str *to)
   return true;
 }
 
+bool file_rmdir (const s_str *path)
+{
+  s32 e;
+  if (rmdir(path->ptr.pchar) < 0) {
+    e = errno;
+    err_write_1("file_rmdir: ");
+    err_inspect_str(path);
+    err_write_1(": ");
+    err_puts(strerror(e));
+    return false;
+  }
+  return true;
+}
+    
 s_str * file_search (const s_str *suffix, const s_sym *mode,
                      s_str *dest)
 {

@@ -57,6 +57,7 @@ s64 *         file_open_r (const s_str *path, s64 *dest);
 s64 *         file_open_w (const s_str *path, s64 *dest);
 bool          file_rename (const s_str *src, const s_str *dest);
 bool          file_rm_rf (const s_str *path);
+bool          file_rmdir (const s_str *path);
 struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
                                         struct stat *dest);
 bool          file_unlink (const s_str *path);
