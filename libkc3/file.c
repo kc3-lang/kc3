@@ -746,6 +746,73 @@ s_str * file_read_slice (s_str *path, u64 start, u64 end, s_str *dest)
   return dest;
 }
 
+bool file_rm_rf (const s_str *path)
+{
+  s16 i;
+  DIR           *dir[256];
+  struct dirent *dirent[256];
+  s32 e;
+  s_str p[256] = {0};
+  i = 0;
+  p[0] = *path;
+  p[0].free.p = NULL;
+  while (i >= 0) {
+    if (file_is_directory_1(p[i].ptr.pchar)) {
+      if (i > 254) {
+        err_puts("file_rm_rf: max subdirs reached (254)");
+        return false;
+      }
+      if (! dir[i])
+        if (! (dir[i] = opendir(p[i].ptr.pchar))) {
+          e = errno;
+          err_write_1("file_rm_rf: opendir: ");
+          err_write_1(strerror(e));
+          err_write_1(": ");
+          err_write_str(path);
+          return false;
+        }
+      if ((dirent[i] = readdir(dir[i]))) {
+        const s_str filename = STR(dirent[i]->d_name);
+        str_init_concatenate(p + i + 1, p + i, &filename);
+        i++;
+        continue;
+      }
+      else {
+        closedir(dir[i]);
+        dir[i] = NULL;
+        rmdir(p[i].ptr.pchar);
+        str_clean(p + i);
+        i--;
+        continue;
+      }
+    }
+    if (i > 0) {
+      if (! file_unlink(p + i))
+        goto clean;
+      str_clean(p + i);
+      if ((dirent[i - 1] = readdir(dir[i - 1]))) {
+        const s_str filename = STR(dirent[i]->d_name);
+        str_init_concatenate(p + i, p + i - 1, &filename);
+        continue;
+      }
+    }
+    else {
+      if (! file_unlink(p + i))
+        goto clean;
+      str_clean(p);
+    }
+  }
+  return true;
+ clean:
+  while (i > 0) {
+    if (dir[i])
+      closedir(dir[i]);
+    str_clean(p + i);
+    i--;
+  }
+  return false;
+}
+
 bool file_rename (const s_str *from, const s_str *to)
 {
   sw e;
