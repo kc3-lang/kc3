@@ -32,6 +32,7 @@ int main (int argc, char **argv)
   char  err_buf[64] = {0};
   s64   err_fd = -1;
   s_str err_str = {0};
+  s_str init = STR("./config/init.kc3");
   char  log_buf[64] = {0};
   s64   log_fd = -1;
   s_str log_str = {0};
@@ -160,6 +161,12 @@ int main (int argc, char **argv)
     }
     kc3_clean(NULL);
     return 0;
+  }
+  if (file_access(&init, &g_sym_r)) {
+    if (! env_load(env, &init)) {
+      kc3_clean(NULL);
+      return 1;
+    }
   }
   securelevel(2);
   call_init(&call);
