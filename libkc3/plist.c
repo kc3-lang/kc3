@@ -26,6 +26,7 @@
 #include "plist.h"
 #include "str.h"
 #include "sym.h"
+#include "s8.h"
 #include "sw.h"
 #include "tag.h"
 #include "tuple.h"
@@ -499,13 +500,13 @@ p_list * plist_sort_by (p_list *plist, p_callable *compare,
 {
   s_list *arg1;
   s_list *arg2;
-  bool b;
   s_list *l;
   s_list *new_;
-  const s_sym *sym_Bool = &g_sym_Bool;
+  const s_sym *sym_S8 = &g_sym_S8;
   s_list *tmp;
   p_list *t;
   s_tag tag;
+  s8 x;
   assert(plist);
   assert(dest);
   if (! (arg2 = list_new(NULL)))
@@ -527,12 +528,12 @@ p_list * plist_sort_by (p_list *plist, p_callable *compare,
         goto ko;
       tag_void(&arg1->tag);
       tag_void(&arg2->tag);
-      if (! bool_init_cast(&b, &sym_Bool, &tag)) {
+      if (! s8_init_cast(&x, &sym_S8, &tag)) {
         tag_clean(&tag);
         goto ko;
       }
       tag_clean(&tag);
-      if (! b)
+      if (x >= 0)
         break;
       t = &(*t)->next.data.plist;
     }
