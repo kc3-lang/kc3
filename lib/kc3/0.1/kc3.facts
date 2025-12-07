@@ -18,7 +18,7 @@ replace {KC3.dlopen, :symbol_value, cfn Ptr "kc3_dlopen" (Str, Result)}
 add {KC3, :symbol, KC3.sqrt}
 replace {KC3.sqrt, :symbol_value, cfn Tag "tag_sqrt" (Tag, Result)}
 add {KC3, :symbol, KC3.hash}
-replace {KC3.hash, :symbol_value, cfn Uw "tag_hash_uw" (Tag)}
+replace {KC3.hash, :symbol_value, cfn Uw "tag_hash_uw" (Tag, Result)}
 add {KC3, :symbol, KC3.defmodule}
 replace {KC3.defmodule, :arity, 2}
 replace {KC3.defmodule, :is_a, :special_operator}
