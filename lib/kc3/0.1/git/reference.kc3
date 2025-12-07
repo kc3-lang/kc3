@@ -10,16 +10,13 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Git do
+defmodule Git.Reference do
 
-  dlopen("git.so")
+  defstruct []
 
-  def init = cfn S32 "git_libgit2_init" ()
+  def free = cfn Void "kc3_git_reference_free" (Git.Reference*)
 
-  def shutdown = cfn S32 "git_libgit2_shutdown" ()
+  def lookup = cfn Git.Reference* "kc3_git_reference_lookup" (Result,
+    Git.Repository*, Str)
 
 end
-
-require Git.Branch
-require Git.Reference
-require Git.Repository

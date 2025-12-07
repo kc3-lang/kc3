@@ -10,9 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef KC3_GIT_H
-#define KC3_GIT_H
+#ifndef LIBKC3_GIT_BRANCH_H
+#define LIBKC3_GIT_BRANCH_H
 
-#include "types.h"
+#include "../libkc3/types.h"
+#include <git2.h>
 
-#endif /* KC3_GIT_H */
+s_str * kc3_git_branch_name (s_str *dest, git_reference **ref);
+
+#endif /* LIBKC3_GIT_BRANCH_H */

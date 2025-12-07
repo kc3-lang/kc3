@@ -10,16 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Git do
+defmodule Git.Branch do
 
-  dlopen("git.so")
-
-  def init = cfn S32 "git_libgit2_init" ()
-
-  def shutdown = cfn S32 "git_libgit2_shutdown" ()
+  def name = cfn Str "kc3_git_branch_name" (Result,
+    Git.Reference*)
 
 end
-
-require Git.Branch
-require Git.Reference
-require Git.Repository

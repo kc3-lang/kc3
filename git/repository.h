@@ -13,9 +13,15 @@
 #ifndef LIBKC3_GIT_REPOSITORY_H
 #define LIBKC3_GIT_REPOSITORY_H
 
+/* Heap-allocation functions, call *_free after use. */
+void              kc3_git_repository_free (git_repository **repo);
 git_repository ** kc3_git_repository_init (git_repository **repo,
                                            s_str *path);
 git_repository ** kc3_git_repository_init_bare (git_repository **repo,
+                                                s_str *path);
+git_repository ** kc3_git_repository_open (git_repository **repo,
+                                           s_str *path);
+git_repository ** kc3_git_repository_open_bare (git_repository **repo,
                                                 s_str *path);
 
 #endif /* LIBKC3_GIT_REPOSITORY_H */

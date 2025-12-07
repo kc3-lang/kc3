@@ -14,10 +14,18 @@ defmodule Git.Repository do
 
   defstruct []
 
+  def close = cfn Void "kc3_git_repository_close" (Git.Repository*)
+
   def init = cfn Git.Repository* "kc3_git_repository_init" (Result,
     Str)
 
   def init_bare = cfn Git.Repository* "kc3_git_repository_init_bare"
     (Result, Str)
+
+  def open = cfn Git.Repository* "kc3_git_repository_open" (Result,
+    Str)
+
+  def tag_list = cfn List "kc3_git_repository_tag_list"
+    (Git.Repository*, Result)
 
 end

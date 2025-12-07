@@ -249,6 +249,8 @@ KC3_C_SOURCES = \
 	"fs/OpenBSD/kc3fs.h" \
 	"fs/fuse/mount_kc3fs.c" \
 	"fs/fuse/types.h" \
+	"git/branch.c" \
+	"git/branch.h" \
 	"git/git.h" \
 	"git/kc3_git.h" \
 	"git/repository.c" \
@@ -1563,6 +1565,8 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/file/stat.kc3" \
 	"lib/kc3/0.1/file_stat.kc3" \
 	"lib/kc3/0.1/git.kc3" \
+	"lib/kc3/0.1/git/branch.kc3" \
+	"lib/kc3/0.1/git/reference.kc3" \
 	"lib/kc3/0.1/git/repository.kc3" \
 	"lib/kc3/0.1/gl/box.kc3" \
 	"lib/kc3/0.1/gl/dvec2.kc3" \

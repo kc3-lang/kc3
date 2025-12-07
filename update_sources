@@ -164,6 +164,7 @@ runj -1 /bin/sh <<EOF
 ( cd ekc3       && ./update_sources; )
 ( cd event      && ./update_sources; )
 ( cd fs         && ./update_sources; )
+( cd git        && ./update_sources; )
 ( cd gl         && ./update_sources; )
 ( cd gtk4       && ./update_sources; )
 ( cd http       && ./update_sources; )
