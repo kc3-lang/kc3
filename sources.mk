@@ -11,6 +11,9 @@ KC3_CONFIGURES = \
 	"fs/fuse/sources.sh" \
 	"fs/fuse/update_sources" \
 	"fs/update_sources" \
+	"git/configure" \
+	"git/sources.sh" \
+	"git/update_sources" \
 	"gl/configure" \
 	"gl/sources.sh" \
 	"gl/update_sources" \
@@ -141,6 +144,8 @@ KC3_MAKEFILES = \
 	"fs/Makefile" \
 	"fs/fuse/Makefile" \
 	"fs/fuse/sources.mk" \
+	"git/Makefile" \
+	"git/sources.mk" \
 	"gl/Makefile" \
 	"gl/sources.mk" \
 	"gtk4/Makefile" \
@@ -244,6 +249,10 @@ KC3_C_SOURCES = \
 	"fs/OpenBSD/kc3fs.h" \
 	"fs/fuse/mount_kc3fs.c" \
 	"fs/fuse/types.h" \
+	"git/git.h" \
+	"git/kc3_git.h" \
+	"git/repository.c" \
+	"git/repository.h" \
 	"gl/dmat3.h" \
 	"gl/dmat4.c" \
 	"gl/dmat4.h" \
@@ -1553,6 +1562,8 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/file.kc3" \
 	"lib/kc3/0.1/file/stat.kc3" \
 	"lib/kc3/0.1/file_stat.kc3" \
+	"lib/kc3/0.1/git.kc3" \
+	"lib/kc3/0.1/git/repository.kc3" \
 	"lib/kc3/0.1/gl/box.kc3" \
 	"lib/kc3/0.1/gl/dvec2.kc3" \
 	"lib/kc3/0.1/gl/dvec3.kc3" \
