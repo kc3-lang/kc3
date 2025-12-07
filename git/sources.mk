@@ -2,10 +2,11 @@
 HEADERS = \
 	"branch.h" \
 	"git.h" \
-	"kc3_git.h" \
+	"reference.h" \
 	"repository.h" \
 
 SOURCES = \
 	"branch.c" \
+	"reference.c" \
 	"repository.c" \
 

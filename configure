@@ -90,6 +90,7 @@ env_reset
 SUBDIRS="
 ekc3
 event
+git
 http
 httpd
 ikc3

@@ -252,7 +252,8 @@ KC3_C_SOURCES = \
 	"git/branch.c" \
 	"git/branch.h" \
 	"git/git.h" \
-	"git/kc3_git.h" \
+	"git/reference.c" \
+	"git/reference.h" \
 	"git/repository.c" \
 	"git/repository.h" \
 	"gl/dmat3.h" \

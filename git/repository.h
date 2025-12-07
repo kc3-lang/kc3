@@ -24,4 +24,8 @@ git_repository ** kc3_git_repository_open (git_repository **repo,
 git_repository ** kc3_git_repository_open_bare (git_repository **repo,
                                                 s_str *path);
 
+/* Observers. */
+git_reference ** kc3_git_repository_head (git_repository **repo,
+                                          git_reference **dest);
+
 #endif /* LIBKC3_GIT_REPOSITORY_H */

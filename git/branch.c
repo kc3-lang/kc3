@@ -14,18 +14,33 @@
 #include <git2.h>
 #include "branch.h"
 
+git_reference ** kc3_git_branch_lookup (git_reference **ref,
+                                        git_repository **repo,
+                                        s_str *name)
+{
+  const git_error *e;
+  git_reference *tmp;
+  if (git_branch_lookup(&tmp, *repo, name->ptr.pchar,
+                        GIT_BRANCH_LOCAL)) {
+    e = git_error_last();
+    err_write_1("kc3_git_branch_lookup: ");
+    err_puts(e->message);
+  }
+  *ref = tmp;
+  return ref;
+}
+
 s_str * kc3_git_branch_name (s_str *dest, git_reference **ref)
 {
   const char *a;
   const git_error *e;
+  s_str tmp;
   assert(dest);
   assert(ref);
   assert(*ref);
   if (git_branch_name(&a, *ref)) {
     e = git_error_last();
-    err_write_1("kc3_git_repository_init: ");
-    err_inspect_str(path);
-    err_write_1(": ");
+    err_write_1("kc3_git_branch_name: ");
     err_puts(e->message);
   }
   if (! str_init_1_alloc(&tmp, a))
