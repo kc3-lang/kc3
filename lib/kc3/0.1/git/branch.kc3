@@ -12,6 +12,8 @@
 
 defmodule Git.Branch do
 
+  def list = cfn List "kc3_git_branch_list" (Git.Repository*, Result)
+
   def name = cfn Str "kc3_git_branch_name" (Result,
     Git.Reference*)
 

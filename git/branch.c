@@ -14,6 +14,39 @@
 #include <git2.h>
 #include "branch.h"
 
+p_list * kc3_git_branch_list (git_repository **repo, p_list *dest)
+{
+  const git_error *e;
+  git_branch_iterator *iter;
+  s_list *l;
+  const char *pchar;
+  git_reference *ref;
+  git_branch_t   ref_type;
+  s_list *tmp = NULL;
+  if (git_branch_iterator_new(&iter, *repo, GIT_BRANCH_LOCAL)) {
+    e = git_error_last();
+    err_write_1("kc3_git_branch_list: git_branch_iterator_new: ");
+    err_puts(e->message);
+    return NULL;
+  }
+  while (! git_branch_next(&ref, &ref_type, iter)) {
+    if (git_branch_name(&pchar, ref)) {
+      e = git_error_last();
+      err_write_1("kc3_git_branch_list: git_branch_name: ");
+      err_puts(e->message);
+      list_delete_all(tmp);
+      return NULL;
+    }
+    if (! (l = list_new_str_1_alloc(pchar, tmp))) {
+      list_delete_all(tmp);
+      return NULL;
+    }
+    tmp = l;
+  }
+  *dest = tmp;
+  return dest;
+}
+
 git_reference ** kc3_git_branch_lookup (git_reference **ref,
                                         git_repository **repo,
                                         s_str *name)

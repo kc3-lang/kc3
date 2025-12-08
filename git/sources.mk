@@ -4,9 +4,11 @@ HEADERS = \
 	"git.h" \
 	"reference.h" \
 	"repository.h" \
+	"tag.h" \
 
 SOURCES = \
 	"branch.c" \
 	"reference.c" \
 	"repository.c" \
+	"tag.c" \
 

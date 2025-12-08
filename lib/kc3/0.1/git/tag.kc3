@@ -10,22 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Git.Repository do
+defmodule Git.Tag do
 
-  defstruct []
-
-  def free = cfn Void "kc3_git_repository_free" (Git.Repository*)
-
-  def head = cfn Git.Reference* "kc3_git_repository_head"
+  def list = cfn List "kc3_git_tag_list"
     (Git.Repository*, Result)
-
-  def init = cfn Git.Repository* "kc3_git_repository_init" (Result,
-    Str)
-
-  def init_bare = cfn Git.Repository* "kc3_git_repository_init_bare"
-    (Result, Str)
-
-  def open = cfn Git.Repository* "kc3_git_repository_open" (Result,
-    Str)
 
 end

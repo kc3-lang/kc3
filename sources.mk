@@ -256,6 +256,8 @@ KC3_C_SOURCES = \
 	"git/reference.h" \
 	"git/repository.c" \
 	"git/repository.h" \
+	"git/tag.c" \
+	"git/tag.h" \
 	"gl/dmat3.h" \
 	"gl/dmat4.c" \
 	"gl/dmat4.h" \
@@ -1569,6 +1571,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/git/branch.kc3" \
 	"lib/kc3/0.1/git/reference.kc3" \
 	"lib/kc3/0.1/git/repository.kc3" \
+	"lib/kc3/0.1/git/tag.kc3" \
 	"lib/kc3/0.1/gl/box.kc3" \
 	"lib/kc3/0.1/gl/dvec2.kc3" \
 	"lib/kc3/0.1/gl/dvec3.kc3" \
