@@ -186,10 +186,11 @@ defmodule HTTPd do
       end
     })
     unveil("", "")
-    pledge("stdio rpath wpath cpath inet", "")
+    pledge("stdio rpath wpath cpath inet proc", "")
     HTTPd.socket <- Socket.listen(host, port)
     if HTTPd.socket do
       daemonize()
+      pledge("stdio rpath wpath cpath inet", "")
       IO.puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
       if HTTPd.thread_count > 1 do
