@@ -32,27 +32,27 @@ all:
 
 dt_kc3:
 	rm -rf ${DT_KC3}
-	wget -kmr "http://${DT_KC3}/"
+	wget -qkmr "http://${DT_KC3}/"
 
 dt_www:
 	rm -rf ${DT_WWW}
-	wget -kmr "http://${DT_WWW}/"
+	wget -qkmr "http://${DT_WWW}/"
 
 local_kc3:
 	rm -rf ${LOCAL_KC3}
-	wget -kmr "http://${LOCAL_KC3}/"
+	wget -qkmr "http://${LOCAL_KC3}/"
 
 local_www:
 	rm -rf ${LOCAL_WWW}
-	wget -kmr "http://${LOCAL_WWW}/"
+	wget -qkmr "http://${LOCAL_WWW}/"
 
 prod_kc3:
 	rm -rf ${PROD_KC3}
-	wget -kmr "http://${PROD_KC3}/"
+	wget -qkmr "http://${PROD_KC3}/"
 
 prod_www:
 	rm -rf ${PROD_WWW}
-	wget -kmr "http://${PROD_WWW}/"
+	wget -qkmr "http://${PROD_WWW}/"
 
 .PHONY: \
 	dt_kc3 \
