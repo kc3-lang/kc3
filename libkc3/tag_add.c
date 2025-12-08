@@ -13,12 +13,14 @@
 #include "assert.h"
 #include "complex.h"
 #include "integer.h"
+#include "plist.h"
 #include "ratio.h"
 #include "tag.h"
 
 s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
 {
   s_complex c = {0};
+  p_list list;
   s_tag tag = {0};
   s_integer tmp = {0};
   s_integer tmp2 = {0};
@@ -317,6 +319,17 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       complex_init_uw(&c, b->data.uw);
       return tag_init_pcomplex(dest, complex_new_add(a->data.pcomplex,
                                                      &c));
+    default:
+      break;
+    }
+    break;
+  case TAG_PLIST:
+    switch (b->type) {
+    case TAG_PLIST: {
+      if (! plist_init_append(&list, &a->data.plist, &b->data.plist))
+        return NULL;
+      return tag_init_plist(dest, list);
+    }
     default:
       break;
     }
