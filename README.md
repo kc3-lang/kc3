@@ -147,6 +147,18 @@ There are now four full applications written in KC3 that we know of :
      - XCB backend for X11
      - VT backend on Linux and OpenBSD using DRM KMS and GBM
 
+ - kc3s supports the following command line arguments :
+   - RPC
+     - --server 127.0.0.1 1026
+     - --client 127.0.0.1 1026
+   - TLS
+     - --tls
+     - --tls --server 127.0.0.1 1026
+     - --tls --client 127.0.0.1 1026
+
+   - additionnaly code was deduplicated from ikc3 and kc3s to share the
+     same source file for both binaries
+
  - kpkg - KC3 package manager
    - written in 3 days in KC3 + C
    - Argument parsing as a `while` loop with `with` pattern matching

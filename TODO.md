@@ -18,30 +18,6 @@
          - /Parent : lien vers /Pages
          - /MediaBox : taille x et y de la page
 
-## KC3S
-
- - [x] Tester si kc3s fonctionne avec les options suivantes :
-   - [x] RPC
-     - [x] --server 127.0.0.1 1026
-     - [x] --client 127.0.0.1 1026
-   - [x] TLS
-     - [x] --tls
-     - [x] --tls --server 127.0.0.1 1026
-     - [x] --tls --client 127.0.0.1 1026
-
- - [x] dédupliquer le code entre ikc3 et kc3s
-   - [x] faire un diff
-   - [x] ajouter la compilation conditionnelle pour IKC3 et KC3S
-     - [x] #if KC3_IKC3 / #endif
-     - [x] #if KC3_KC3S / #endif
-   - [x] renommer le fichier ikc3/ikc3.c en ikc3_kc3s.c
-   - [x] créer un fichier ikc3.c avec :
-     - [x] `#define KC3_IKC3`
-     - [x] `#include ikc3_kc3s.c`
-   - [x] remplacer le fichier kc3s/kc3s.c avec :
-     - [x] `#define KC3_IKC3`
-     - [x] `#include "../ikc3/ikc3_kc3s.c"`
-
 ## libkc3
 
  - [x] Verifier la fonction `p_list list_new_1 (const char *);` :
