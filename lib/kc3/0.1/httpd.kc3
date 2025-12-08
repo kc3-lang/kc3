@@ -186,6 +186,7 @@ defmodule HTTPd do
       end
     })
     unveil("", "")
+    pledge("stdio rpath wpath cpath inet", "")
     HTTPd.socket <- Socket.listen(host, port)
     if HTTPd.socket do
       daemonize()
