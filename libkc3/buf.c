@@ -187,7 +187,8 @@ void buf_clean (s_buf *buf)
 {
   assert(buf);
 #if HAVE_PTHREAD
-  rwlock_delete(buf->rwlock);
+  if (buf->rwlock)
+    rwlock_delete(buf->rwlock);
 #endif
   if (buf->free)
     free(buf->ptr.p);
