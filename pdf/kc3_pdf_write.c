@@ -33,11 +33,9 @@ s_pdf_write ** kc3_pdf_write_add_page (s_pdf_write **pdf,
   assert(*page);
   buf = (*pdf)->buf;
   p = *page;
-  /* Track page object number. */
-  l = list_new((*pdf)->pages);
-  tag_init_u32(&l->tag, p->object_number);
+  if (! (l = list_new_u32(p->object_number, (*pdf)->pages)))
+    return NULL;
   (*pdf)->pages = l;
-  /* Write page object. */
   pdf_write_indirect_object(*pdf, p->object_number, 0);
   pdf_buf_write_dictionnary(buf, &p->map);
   buf_write_1(buf, "\nendobj\n");

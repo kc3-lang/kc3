@@ -17,6 +17,14 @@
 #include "pdf_write.h"
 #include "pdf_write_page.h"
 
+void kc3_pdf_write_page_delete (s_pdf_write_page **page)
+{
+  assert(page);
+  assert(*page);
+  pdf_write_page_clean(*page);
+  free(*page);
+}
+
 s_pdf_write_page ** kc3_pdf_write_page_new (s_pdf_write_page **page,
                                             s_pdf_write **pdf,
                                             s_pdf_rect *box)
@@ -28,33 +36,6 @@ s_pdf_write_page ** kc3_pdf_write_page_new (s_pdf_write_page **page,
     free(tmp);
     return NULL;
   }
-  *page = tmp;
-  return page;
-}
-
-s_pdf_write_page * pdf_write_page_init (s_pdf_write_page *page,
-                                        s_pdf_write *pdf,
-                                        s_pdf_rect *box)
-{
-  u32 content_stream_object_number;
-  s_pdf_write_page tmp = {0};
-  if (! map_init(&tmp.map, 5))
-    return NULL;
-  tmp.object_number = pdf_write_object_number_register(pdf);
-  content_stream_object_number = pdf_write_object_number_register(pdf);
-  tmp.contents.stream.object_number = content_stream_object_number;
-  if (! pdf_stream_init(&tmp.contents.stream.stream))
-    return NULL;
-  tag_init_psym(tmp.map.key,   sym_1("Type"));
-  tag_init_psym(tmp.map.value, sym_1("Page"));
-  tag_init_psym(tmp.map.key       + 1, sym_1("Parent"));
-  pdf_tag_init_xref(tmp.map.value + 1, PDF_OBJECT_NUMBER_PAGES, 0);
-  tag_init_psym(tmp.map.key       + 2, sym_1("Resources"));
-  pdf_tag_init_xref(tmp.map.value + 2, PDF_OBJECT_NUMBER_RESOURCES, 0);
-  tag_init_psym(tmp.map.key                + 3, sym_1("MediaBox"));
-  tag_init_pstruct_copy_data(tmp.map.value + 3, sym_1("PDF.Rect"), box);
-  tag_init_psym(tmp.map.key       + 4, sym_1("Contents"));
-  pdf_tag_init_xref(tmp.map.value + 4, content_stream_object_number, 0);
   *page = tmp;
   return page;
 }
@@ -145,5 +126,41 @@ s_pdf_write_page ** kc3_pdf_write_page_text (s_pdf_write_page **page,
   pdf_buf_write_string_hex(buf, text);
   buf_write_1(buf, " Tj\n");
   buf_write_1(buf, "ET\n");
+  return page;
+}
+
+void pdf_write_page_clean (s_pdf_write_page *page)
+{
+  assert(page);
+  pdf_stream_clean(&page->contents.stream.stream);
+  map_clean(&page->map);
+}
+
+s_pdf_write_page * pdf_write_page_init (s_pdf_write_page *page,
+                                        s_pdf_write *pdf,
+                                        s_pdf_rect *box)
+{
+  u32 content_stream_object_number;
+  s_pdf_write_page tmp = {0};
+  if (! map_init(&tmp.map, 5))
+    return NULL;
+  tmp.object_number = pdf_write_object_number_register(pdf);
+  content_stream_object_number = pdf_write_object_number_register(pdf);
+  tmp.contents.stream.object_number = content_stream_object_number;
+  if (! pdf_stream_init(&tmp.contents.stream.stream)) {
+    map_clean(&tmp.map);
+    return NULL;
+  }
+  tag_init_psym(tmp.map.key,   sym_1("Type"));
+  tag_init_psym(tmp.map.value, sym_1("Page"));
+  tag_init_psym(tmp.map.key       + 1, sym_1("Parent"));
+  pdf_tag_init_xref(tmp.map.value + 1, PDF_OBJECT_NUMBER_PAGES, 0);
+  tag_init_psym(tmp.map.key       + 2, sym_1("Resources"));
+  pdf_tag_init_xref(tmp.map.value + 2, PDF_OBJECT_NUMBER_RESOURCES, 0);
+  tag_init_psym(tmp.map.key                + 3, sym_1("MediaBox"));
+  tag_init_pstruct_copy_data(tmp.map.value + 3, sym_1("PDF.Rect"), box);
+  tag_init_psym(tmp.map.key       + 4, sym_1("Contents"));
+  pdf_tag_init_xref(tmp.map.value + 4, content_stream_object_number, 0);
+  *page = tmp;
   return page;
 }

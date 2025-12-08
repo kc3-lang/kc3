@@ -21,6 +21,9 @@ defmodule PDF.Write.Page do
     cfn PDF.Write.Page* "kc3_pdf_write_page_image" (PDF.Write.Page*,
       F32, F32, U32)
 
+  def delete =
+    cfn Void "kc3_pdf_write_page_delete" (PDF.Write.Page*)
+
   def new =
     cfn PDF.Write.Page* "kc3_pdf_write_page_new" (Result, PDF.Write*,
       PDF.Rect)

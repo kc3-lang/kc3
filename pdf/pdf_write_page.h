@@ -15,6 +15,8 @@
 
 #include "types.h"
 
+void pdf_write_page_clean (s_pdf_write_page *page);
+
 /* Heap-allocation functions. */
 s_pdf_write_page ** kc3_pdf_write_page_new (s_pdf_write_page **page,
                                             s_pdf_write **pdf,

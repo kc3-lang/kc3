@@ -48,6 +48,8 @@ PDF.Write.Page.rectangle(page1, rect)
 quote PDF.Write.add_page(doc, page1)
 PDF.Write.add_page(doc, page1)
 # clean
+quote PDF.Write.Page.delete(page1)
+PDF.Write.Page.delete(page1)
 quote PDF.Write.close(doc)
 PDF.Write.close(doc)
 quote PDF.Write.delete(doc)
