@@ -1856,9 +1856,11 @@ s_list ** str_split (const s_str *str, const s_str *separator,
     }
     t = &(*t)->next.data.plist;
   }
+  buf_clean(&buf);
   *dest = tmp;
   return dest;
  clean:
+  buf_clean(&buf);
   list_delete_all(tmp);
   return NULL;
 }

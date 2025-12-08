@@ -131,9 +131,12 @@ u32 * u32_init_copy (u32 *u, u32 src)
 u32 * u32_init_str (u32 *u, const s_str *str)
 {
   s_buf buf;
+  sw r;
   u32 tmp = 0;
   buf_init_str_const(&buf, str);
-  if (buf_parse_u32(&buf, &tmp) <= 0) {
+  r = buf_parse_u32(&buf, &tmp);
+  buf_clean(&buf);
+  if (r <= 0) {
     if (false) {
       err_puts("u32_init_str: buf_parse_u32");
       err_inspect_stacktrace(env_global()->stacktrace);

@@ -121,10 +121,13 @@ s64 * s64_init_copy (s64 *s, s64 src)
 s64 * s64_init_str (s64 *s, const s_str *str)
 {
   s_buf buf;
+  sw r;
   s64 tmp = 0;
   buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
-  if (buf_parse_s64(&buf, &tmp) <= 0) {
+  r = buf_parse_s64(&buf, &tmp);
+  buf_clean(&buf);
+  if (r <= 0) {
     err_puts("s64_init_str: buf_parse_s64");
     assert(! "s64_init_str: buf_parse_s64");
     return NULL;

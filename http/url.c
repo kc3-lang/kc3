@@ -60,11 +60,11 @@ s_str * url_escape (const s_str *src, s_str *dest)
   }
   tag_clean(&escapes_tag);
   if (! buf_to_str(&buf, dest)) {
-    buf_clean(&buf);
     return NULL;
   }
   return dest;
  clean:
+  buf_clean(&buf);
   tag_clean(&escapes_tag);
   return NULL;
 }
@@ -151,9 +151,11 @@ s_str * url_unescape (const s_str *url, s_str *dest)
         goto clean;
   }
  ok:
+  buf_clean(&in);
   buf_to_str(&out, dest);
   return dest;
  clean:
+  buf_clean(&in);
   buf_clean(&out);
   return NULL;
 }
@@ -169,14 +171,18 @@ sw url_unescape_size (const s_str *url)
   buf_init_str_const(&in, url);
   while ((r = buf_read_character_utf8(&in, &c)) > 0) {
     if (c == '%') {
-      if ((r = buf_parse_digit_hex(&in, &digit[0])) < 0)
+      if ((r = buf_parse_digit_hex(&in, &digit[0])) < 0) {
+	buf_clean(&in);
         return result;
+      }
       if (! r) {
         result++;
         continue;
       }
-      if ((r = buf_parse_digit_hex(&in, &digit[1])) < 0)
+      if ((r = buf_parse_digit_hex(&in, &digit[1])) < 0) {
+	buf_clean(&in);
         return result;
+      }
       if (! r) {
         result += 2;
         continue;
@@ -186,6 +192,7 @@ sw url_unescape_size (const s_str *url)
     else
       result += r;
   }
+  buf_clean(&in);
   return result;
 }
 
@@ -232,11 +239,13 @@ s_tag * url_www_form_decode (const s_str *src, s_tag *dest)
     str_clean(&value);
     tail = &(*tail)->next.data.plist;
   }
+  buf_clean(&buf);
   tmp.type = TAG_PLIST;
   tmp.data.plist = list;
   *dest = tmp;
   return dest;
  clean:
+  buf_clean(&buf);
   list_delete_all(list);
   return NULL;
 }

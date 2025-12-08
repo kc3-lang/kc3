@@ -131,9 +131,12 @@ uw * uw_init_copy (uw *u, uw src)
 uw * uw_init_str (uw *u, const s_str *str)
 {
   s_buf buf;
+  sw r;
   uw tmp = 0;
   buf_init_str_const(&buf, str);
-  if (buf_parse_uw(&buf, &tmp) <= 0) {
+  r = buf_parse_uw(&buf, &tmp);
+  buf_clean(&buf);
+  if (r <= 0) {
     if (false) {
       err_puts("uw_init_str: buf_parse_uw");
       err_inspect_stacktrace(env_global()->stacktrace);

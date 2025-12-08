@@ -131,9 +131,12 @@ u8 * u8_init_copy (u8 *u, u8 src)
 u8 * u8_init_str (u8 *u, const s_str *str)
 {
   s_buf buf;
+  sw r;
   u8 tmp = 0;
   buf_init_str_const(&buf, str);
-  if (buf_parse_u8(&buf, &tmp) <= 0) {
+  r = buf_parse_u8(&buf, &tmp);
+  buf_clean(&buf);
+  if (r <= 0) {
     if (false) {
       err_puts("u8_init_str: buf_parse_u8");
       err_inspect_stacktrace(env_global()->stacktrace);

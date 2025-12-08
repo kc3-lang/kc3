@@ -121,10 +121,13 @@ s16 * s16_init_copy (s16 *s, s16 src)
 s16 * s16_init_str (s16 *s, const s_str *str)
 {
   s_buf buf;
+  sw r;
   s16 tmp = 0;
   buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
-  if (buf_parse_s16(&buf, &tmp) <= 0) {
+  r = buf_parse_s16(&buf, &tmp);
+  buf_clean(&buf);
+  if (r <= 0) {
     err_puts("s16_init_str: buf_parse_s16");
     assert(! "s16_init_str: buf_parse_s16");
     return NULL;

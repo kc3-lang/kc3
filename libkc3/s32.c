@@ -121,10 +121,13 @@ s32 * s32_init_copy (s32 *s, s32 src)
 s32 * s32_init_str (s32 *s, const s_str *str)
 {
   s_buf buf;
+  sw r;
   s32 tmp = 0;
   buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
-  if (buf_parse_s32(&buf, &tmp) <= 0) {
+  r = buf_parse_s32(&buf, &tmp);
+  buf_clean(&buf);
+  if (r <= 0) {
     err_puts("s32_init_str: buf_parse_s32");
     assert(! "s32_init_str: buf_parse_s32");
     return NULL;

@@ -1113,8 +1113,10 @@ sw buf_read_until_space_into_str (s_buf *buf, s_str *dest)
       tmp.rpos = save.rpos;
       tmp.wpos = buf->rpos;
       if (buf_read_to_str(&tmp, dest) <= 0) {
+	buf_clean(&tmp);
         goto restore;
       }
+      buf_clean(&tmp);
       r = result;
       goto clean;
     }

@@ -121,10 +121,13 @@ sw * sw_init_copy (sw *s, sw src)
 sw * sw_init_str (sw *s, const s_str *str)
 {
   s_buf buf;
+  sw r;
   sw tmp = 0;
   buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
-  if (buf_parse_sw(&buf, &tmp) <= 0) {
+  r = buf_parse_sw(&buf, &tmp);
+  buf_clean(&buf);
+  if (r <= 0) {
     err_puts("sw_init_str: buf_parse_sw");
     assert(! "sw_init_str: buf_parse_sw");
     return NULL;

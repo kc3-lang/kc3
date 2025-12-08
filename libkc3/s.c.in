@@ -121,10 +121,13 @@ s_bits$ * s_bits$_init_copy (s_bits$ *s, s_bits$ src)
 s_bits$ * s_bits$_init_str (s_bits$ *s, const s_str *str)
 {
   s_buf buf;
+  sw r;
   s_bits$ tmp = 0;
   buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
-  if (buf_parse_s_bits$(&buf, &tmp) <= 0) {
+  r = buf_parse_s_bits$(&buf, &tmp);
+  buf_clean(&buf);
+  if (r <= 0) {
     err_puts("s_bits$_init_str: buf_parse_s_bits$");
     assert(! "s_bits$_init_str: buf_parse_s_bits$");
     return NULL;

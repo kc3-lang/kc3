@@ -121,10 +121,13 @@ s8 * s8_init_copy (s8 *s, s8 src)
 s8 * s8_init_str (s8 *s, const s_str *str)
 {
   s_buf buf;
+  sw r;
   s8 tmp = 0;
   buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
-  if (buf_parse_s8(&buf, &tmp) <= 0) {
+  r = buf_parse_s8(&buf, &tmp);
+  buf_clean(&buf);
+  if (r <= 0) {
     err_puts("s8_init_str: buf_parse_s8");
     assert(! "s8_init_str: buf_parse_s8");
     return NULL;

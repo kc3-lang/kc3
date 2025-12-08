@@ -131,9 +131,12 @@ u64 * u64_init_copy (u64 *u, u64 src)
 u64 * u64_init_str (u64 *u, const s_str *str)
 {
   s_buf buf;
+  sw r;
   u64 tmp = 0;
   buf_init_str_const(&buf, str);
-  if (buf_parse_u64(&buf, &tmp) <= 0) {
+  r = buf_parse_u64(&buf, &tmp);
+  buf_clean(&buf);
+  if (r <= 0) {
     if (false) {
       err_puts("u64_init_str: buf_parse_u64");
       err_inspect_stacktrace(env_global()->stacktrace);
