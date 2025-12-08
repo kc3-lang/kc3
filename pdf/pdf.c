@@ -72,6 +72,7 @@ s_tag * pdf_parse_object_from_str (s_str *str,
   buf_init_str_const(&buf, str);
   if (pdf_buf_parse_object(&buf, pdf_file, &tmp) < 0)
     return NULL;
+  buf_clean(&buf);
   *dest = tmp;
   return dest;
 }

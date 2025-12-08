@@ -19,6 +19,8 @@ void pdf_write_clean (s_pdf_write *pdf)
 {
   str_clean(&pdf->path);
   buf_delete(pdf->buf);
+  list_delete_all(pdf->fonts);
+  list_delete_all(pdf->images);
 }
 
 void pdf_write_close (s_pdf_write *pdf)

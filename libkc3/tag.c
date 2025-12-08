@@ -779,6 +779,7 @@ s_tag * tag_init_from_str (s_tag *tag, const s_str *str)
   buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
   r = buf_parse_tag(&buf, tag);
+  buf_clean(&buf);
   if (r < 0) {
     err_write_1("tag_init_str: invalid tag: ");
     err_inspect_str(str);

@@ -312,6 +312,7 @@ s_tag * embed_parse_template_file (const s_str *path, s_tag *dest)
 s_tag * embed_parse_template_str (const s_str *input, s_tag *dest)
 {
   s_buf buf = {0};
+  s_tag tmp = {0};
   if (! input || ! dest) {
     err_puts("embed_parse_template_str: invalid argument");
     assert(! "embed_parse_template_str: invalid argument");
@@ -322,5 +323,11 @@ s_tag * embed_parse_template_str (const s_str *input, s_tag *dest)
     assert(! "embed_parse_template_str: buf_init_str");
     return NULL;
   }
-  return embed_parse_template(&buf, dest);
+  if (! embed_parse_template(&buf, &tmp)) {
+    buf_clean(&buf);
+    return NULL;
+  }
+  buf_clean(&buf);
+  *dest = tmp;
+  return dest;
 }

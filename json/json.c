@@ -421,8 +421,15 @@ s_tag * json_buf_parse_str (s_buf *buf, s_tag *dest)
 s_tag * json_from_str (const s_str *src, s_tag *dest)
 {
   s_buf buf;
+  s_tag tmp = {0};
   buf_init_str_const(&buf, src);
-  return json_buf_parse(&buf, dest);
+  if (! json_buf_parse(&buf, &tmp)) {
+    buf_clean(&buf);
+    return NULL;
+  }
+  buf_clean(&buf);
+  *dest = tmp;
+  return dest;
 }
 
 s_str * json_to_str (const s_tag *tag, s_str *dest)

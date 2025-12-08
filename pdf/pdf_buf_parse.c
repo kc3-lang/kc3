@@ -653,7 +653,7 @@ sw pdf_buf_parse_name (s_buf *buf, s_pdf_file *pdf_file,
   s_buf_save save = {0};
   s_str str = {0};
   p_pdf_name tmp = NULL;
-  s_buf      tmp_buf;
+  s_buf      tmp_buf = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -719,6 +719,7 @@ sw pdf_buf_parse_name (s_buf *buf, s_pdf_file *pdf_file,
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:
+  buf_clean(&tmp_buf);
   buf_save_clean(buf, &save);
   return r;
 }
@@ -1057,14 +1058,13 @@ sw pdf_buf_parse_string_hex (s_buf *buf, s_str *dest)
     r = -1;
     goto restore;
   }
-  buf_clean(&tmp_buf);
   *dest = tmp;
   r = result;
   goto clean;
  restore:
-  buf_clean(&tmp_buf);
   buf_save_restore_rpos(buf, &save);
  clean:
+  buf_clean(&tmp_buf);
   buf_save_clean(buf, &save);
   return r;
 }
@@ -1156,6 +1156,7 @@ sw pdf_buf_parse_string_paren (s_buf *buf, s_str *dest)
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:
+  buf_clean(&tmp_buf);
   buf_save_clean(buf, &save);
   return r;
 }

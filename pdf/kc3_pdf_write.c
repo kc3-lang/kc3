@@ -63,16 +63,17 @@ void kc3_pdf_write_delete (s_pdf_write **pdf)
 
 u32 kc3_pdf_write_font_from_file (s_pdf_write **pdf, s_str *path)
 {
-  FT_Library ft_library;
-  FT_Face ft_face;
-  FILE *fp;
-  long file_size;
-  s_buf *buf;
-  u32 font_obj;
-  u32 descriptor_obj;
-  u32 file_obj;
   s16 ascender;
+  s_buf *buf;
   s16 descender;
+  u32 descriptor_obj;
+  u32  file_obj;
+  long file_size;
+  u32 font_obj;
+  FILE *fp;
+  FT_Face    ft_face;
+  FT_Library ft_library;
+  s_list *l;
   u16 units_per_em;
   FT_BBox bbox;
   const char *font_name;
@@ -121,13 +122,9 @@ u32 kc3_pdf_write_font_from_file (s_pdf_write **pdf, s_str *path)
   FT_Done_Face(ft_face);
   FT_Done_FreeType(ft_library);
   fclose(fp);
-  /* Track font object number. */
-  {
-    s_list *l;
-    l = list_new((*pdf)->fonts);
-    tag_init_u32(&l->tag, font_obj);
-    (*pdf)->fonts = l;
-  }
+  if (! (l = list_new_u32(font_obj, (*pdf)->fonts)))
+    return 0;
+  (*pdf)->fonts = l;
   return font_obj;
 }
 
