@@ -28,4 +28,7 @@ defmodule Git.Repository do
   def open = cfn Git.Repository* "kc3_git_repository_open" (Result,
     Str)
 
+  def open_bare = cfn Git.Repository* "kc3_git_repository_open_bare"
+    (Result, Str)
+
 end
