@@ -1236,11 +1236,13 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
   if (! str_sw_pos_to_uw(start, src->size, &buf.rpos)) {
     err_puts("str_init_slice: str_sw_pos_to_uw: start");
     assert(! "str_init_slice: str_sw_pos_to_uw: start");
+    buf_clean(&buf);
     return NULL;
   }
   if (! str_sw_pos_to_uw(end, src->size, &buf.wpos)) {
     err_puts("str_init_slice: str_sw_pos_to_uw: end");
     assert(! "str_init_slice: str_sw_pos_to_uw: end");
+    buf_clean(&buf);
     return NULL;
   }
   if (buf.rpos > buf.wpos) {
@@ -1250,13 +1252,16 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
     err_inspect_uw(buf.wpos);
     err_write_1("\n");
     assert(! "str_init_slice: invalid positions");
+    buf_clean(&buf);
     return NULL;
   }
   if (buf_read_to_str(&buf, &tmp) < 0) {
     err_puts("str_init_slice: buf_read_to_str");
     assert(! "str_init_slice: buf_read_to_str");
+    buf_clean(&buf);
     return NULL;
   }
+  buf_clean(&buf);
   *str = tmp;
   return str;
 }
