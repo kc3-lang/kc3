@@ -389,14 +389,17 @@ sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
           src->data.tuple.tag[0].type == TAG_PSYM &&
           src->data.tuple.tag[0].data.psym == sym_1("indirect_object"))
         return pdf_buf_write_indirect_ref(buf, &src->data.tuple);
+      goto invalid_type;
     default:
-      err_write_1("pdf_buf_write_tag: invalid PDF tag type: ");
-      err_puts(tag_type_to_string(src->type));
-      assert(! "pdf_buf_write_tag: invalid PDF tag type");
-      return -1;
+      goto invalid_type;
   }
   err_puts("pdf_buf_write_tag: unknown tag type");
   assert(! "pdf_buf_write_tag: unknown tag type");
+  return -1;
+ invalid_type:
+  err_write_1("pdf_buf_write_tag: invalid PDF tag type: ");
+  err_puts(tag_type_to_string(src->type));
+  assert(! "pdf_buf_write_tag: invalid PDF tag type");
   return -1;
 }
 
