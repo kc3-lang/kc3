@@ -24,6 +24,10 @@ sw pdf_buf_write_float (s_buf *buf, f32 src);
 sw pdf_buf_write_header (s_buf *buf);
 sw pdf_buf_write_indirect_object (s_buf *buf, const s_tuple *src);
 sw pdf_buf_write_integer (s_buf *buf, s32 src);
+sw pdf_buf_write_jpeg_xobject (s_buf *buf, u32 object_number,
+                               u32 width, u32 height,
+                               u32 num_components,
+                               FILE *fp, uw length);
 sw pdf_buf_write_name (s_buf *buf, p_sym src);
 sw pdf_buf_write_null (s_buf *buf);
 sw pdf_buf_write_separator(s_buf *buf, bool newline);

@@ -269,6 +269,86 @@ sw pdf_buf_write_integer (s_buf *buf, s32 src)
   return buf_inspect_s32_decimal(buf, src);
 }
 
+sw pdf_buf_write_jpeg_xobject (s_buf *buf, u32 object_number,
+                               u32 width, u32 height,
+                               u32 num_components,
+                               FILE *fp, uw length)
+{
+  size_t bytes_read;
+  u8 chunk[BUF_SIZE];
+  uw chunk_size;
+  uw remaining;
+  sw r;
+  sw result = 0;
+  const char *colorspace;
+  assert(buf);
+  colorspace = (num_components == 1) ? "/DeviceGray" :
+               (num_components == 3) ? "/DeviceRGB" :
+               (num_components == 4) ? "/DeviceCMYK" : "/DeviceRGB";
+  if ((r = buf_inspect_u32_decimal(buf, object_number)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " 0 obj\n")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "<<\n/Type /XObject\n"
+                       "/Subtype /Image\n")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "/Width ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u32_decimal(buf, width)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n/Height ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u32_decimal(buf, height)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n/ColorSpace ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, colorspace)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n/BitsPerComponent 8\n"
+                       "/Filter /DCTDecode\n"
+                       "/Length ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw_decimal(buf, length)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\n>>\nstream\n")) < 0)
+    return r;
+  result += r;
+  remaining = length;
+  while (remaining > 0) {
+    chunk_size = remaining > sizeof(chunk) ? sizeof(chunk) : remaining;
+    bytes_read = fread(chunk, 1, chunk_size, fp);
+    if (bytes_read != chunk_size) {
+      err_puts("kc3_pdf_write_jpeg_xobject: fread");
+      return -1;
+    }
+    if ((r = buf_flush(buf)) < 0) {
+      err_puts("kc3_pdf_write_jpeg_xobject: buf_flush");
+      return -1;
+    }
+    if ((r = buf_write(buf, chunk, chunk_size)) < 0) {
+      err_puts("kc3_pdf_write_jpeg_xobject: buf_write");
+      return -1;
+    }
+    result += r;
+    remaining -= chunk_size;
+  }
+  if ((r = buf_write_1(buf, "\nendstream\nendobj\n")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
 sw pdf_buf_write_name (s_buf *buf, p_pdf_name src)
 {
   sw r = 0;

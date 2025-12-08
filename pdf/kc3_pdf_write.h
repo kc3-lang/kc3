@@ -31,9 +31,6 @@ s_pdf_write ** kc3_pdf_write_add_page (s_pdf_write **pdf,
 void kc3_pdf_write_close (s_pdf_write **pdf);
 u32  kc3_pdf_write_font_from_file (s_pdf_write **pdf, s_str *path);
 u32  kc3_pdf_write_image_from_file (s_pdf_write **pdf, s_str *path);
-sw   kc3_pdf_write_jpeg_xobject (s_buf *buf, u32 object_number,
-                                 u32 width, u32 height, u32 components,
-                                 FILE *fp, uw length);
 sw   kc3_pdf_write_ttf_font (s_buf *buf, u32 font_obj,
                              u32 descriptor_obj, const char *font_name);
 sw   kc3_pdf_write_ttf_descriptor (s_buf *buf, u32 descriptor_obj,
