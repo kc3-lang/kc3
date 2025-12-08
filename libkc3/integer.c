@@ -258,9 +258,10 @@ s_integer * integer_init_1 (s_integer *i, const char *p)
   s_buf buf;
   assert(i);
   assert(p);
-  // FIXME: error handling
+  // TODO: error handling
   buf_init_1_const(&buf, p);
   buf_parse_integer(&buf, i);
+  buf_clean(&buf);
   return i;
 }
 
@@ -356,8 +357,11 @@ s_integer * integer_init_str (s_integer *i, const s_str *src)
   assert(src);
   if (! buf_init_str_const(&buf, src))
     return NULL;
-  if (buf_parse_integer(&buf, i) <= 0)
+  if (buf_parse_integer(&buf, i) <= 0) {
+    buf_clean(&buf);
     return NULL;
+  }
+  buf_clean(&buf);
   return i;
 }
 

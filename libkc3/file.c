@@ -882,8 +882,10 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
   }      
   env = env_global();
   buf_init(&buf, false, sizeof(buf_s), buf_s);
-  if ((r = buf_write_str(&buf, env->argv0_dir)) < 0)
+  if ((r = buf_write_str(&buf, env->argv0_dir)) < 0) {
+    buf_clean(&buf);
     return NULL;
+  }
   buf_save_init(&buf, &save);
   path = env->path;
   while (path) {
@@ -892,25 +894,27 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
       buf_save_restore_wpos(&buf, &save);
       str = &path->tag.data.str;
       if ((r = buf_write_str(&buf, str)) < 0)
-        return NULL;
+	break;
       if (str->size > 0 &&
           str->ptr.pchar[str->size - 1] != '/' &&
           suffix->size > 0 &&
           suffix->ptr.pchar[0] != '/' &&
           (r = buf_write_1(&buf, "/")) < 0)
-        return NULL;
+	break;
       if ((r = buf_write_str(&buf, suffix)) < 0)
-        return NULL;
+	break;
       buf_read_to_str(&buf, &tmp);
       //io_inspect_str(&tmp);
       if (file_access(&tmp, mode)) {
         *dest = tmp;
+        buf_clean(&buf);
         return dest;
       }
       str_clean(&tmp);
     }
     path = list_next(path);
   }
+  buf_clean(&buf);
   return NULL;
 }
 

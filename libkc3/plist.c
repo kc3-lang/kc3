@@ -196,6 +196,7 @@ p_list * plist_init_1 (p_list *plist, const char *p)
   buf_init_const(&buf, len, p);
   buf.wpos = len;
   r = buf_parse_plist(&buf, &tmp);
+  buf_clean(&buf);
   if (r < 0 || (uw) r != len) {
     err_puts("plist_init_1: invalid list");
     assert(! "plist_init_1: invalid list");

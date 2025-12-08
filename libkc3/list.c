@@ -249,8 +249,11 @@ s_list * list_new_1 (const char *p)
 {
   s_buf buf;
   s_list *list;
+  sw r;
   buf_init_1_const(&buf, p);
-  if (buf_parse_plist(&buf, &list) != (sw) strlen(p)) {
+  r = buf_parse_plist(&buf, &list);
+  buf_clean(&buf);
+  if (r != (sw) strlen(p)) {
     err_puts("list_new_1: invalid list");
     assert(! "list_new_1: invalid list");
     return NULL;

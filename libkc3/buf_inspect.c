@@ -3925,7 +3925,7 @@ sw buf_inspect_str_byte_size (s_pretty *pretty, const u8 *byte)
 sw buf_inspect_str_character (s_buf *buf, character c)
 {
   char b[4];
-  s_buf char_buf;
+  s_buf char_buf = {0};
   int i;
   int j;
   sw r;
@@ -3973,24 +3973,35 @@ sw buf_inspect_str_character (s_buf *buf, character c)
     break;
   default:
     buf_init(&char_buf, false, sizeof(b), b);
-    if ((r = buf_write_character_utf8(&char_buf, c)) <= 0)
+    if ((r = buf_write_character_utf8(&char_buf, c)) <= 0) {
+      buf_clean(&char_buf);
       goto restore;
+    }
     i = r - 1;
     j = 0;
-    if ((r = buf_write_character_utf8(buf, 'x')) != 1)
+    if ((r = buf_write_character_utf8(buf, 'x')) != 1) {
+      buf_clean(&char_buf);
       goto restore;
+    }
     result1 += r;
-    if ((r = buf_u8_to_hex(buf, &char_buf.ptr.pu8[j++])) != 2)
+    if ((r = buf_u8_to_hex(buf, &char_buf.ptr.pu8[j++])) != 2) {
+      buf_clean(&char_buf);
       goto restore;
+    }
     result1 += r;
     while (i--) {
-      if ((r = buf_write_1(buf, "\\x")) != 2)
+      if ((r = buf_write_1(buf, "\\x")) != 2) {
+	buf_clean(&char_buf);
         goto restore;
+      }
       result1 += r;
-      if ((r = buf_u8_to_hex(buf, &char_buf.ptr.pu8[j++])) != 2)
+      if ((r = buf_u8_to_hex(buf, &char_buf.ptr.pu8[j++])) != 2) {
+	buf_clean(&char_buf);
         goto restore;
+      }
       result1 += r;
     }
+    buf_clean(&char_buf);
     r = result1;
   }
   result += r;
@@ -4062,25 +4073,30 @@ sw buf_inspect_str_character_size (s_pretty *pretty, character c)
     if ((r = buf_write_character_utf8(&char_buf, c)) <= 0) {
       err_puts("buf_inspect_str_character_size: buf_write_character_utf8");
       assert(! "buf_inspect_str_character_size: buf_write_character_utf8");
+      buf_clean(&char_buf);
       goto restore;
     }
     i = r - 1;
     if ((r = buf_write_character_utf8_size(pretty, 'x')) != 1) {
       err_puts("buf_inspect_str_character_size: buf_write_character_utf8_size");
       assert(! "buf_inspect_str_character_size: buf_write_character_utf8_size");
+      buf_clean(&char_buf);
       goto restore;
     }
     result1 += r;
     r = 2;
     result1 += r;
     while (i--) {
-      if ((r = buf_write_1_size(pretty, "\\x")) != 2)
+      if ((r = buf_write_1_size(pretty, "\\x")) != 2) {
+        buf_clean(&char_buf);
         goto restore;
+      }
       result1 += r;
       r = 2;
       result1 += r;
     }
     r = result1;
+    buf_clean(&char_buf);
   }
   result += r;
   r = result;

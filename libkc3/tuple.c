@@ -67,6 +67,7 @@ s_tuple * tuple_init_1 (s_tuple *tuple, const char *p)
   buf_init_const(&buf, len, p);
   buf.wpos = len;
   r = buf_parse_tuple(&buf, tuple);
+  buf_clean(&buf);
   if (r < 0 || (uw) r != len) {
     err_write_1("tuple_init_1: invalid tuple: \"");
     err_write_1(p);

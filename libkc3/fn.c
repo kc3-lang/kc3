@@ -74,6 +74,7 @@ s_fn * fn_init_1 (s_fn *fn, const char *p)
   buf_init_const(&buf, len, p);
   buf.wpos = len;
   r = buf_parse_fn(&buf, fn);
+  buf_clean(&buf);
   if (r < 0 || (uw) r != len) {
     err_write_1("fn_init_1: invalid function: \"");
     err_write_1(p);

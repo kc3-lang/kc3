@@ -2146,7 +2146,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
 
 sw buf_parse_ident_sym (s_buf *buf, const s_sym **dest)
 {
-  s_buf buf_tmp;
+  s_buf buf_tmp = {0};
   character c;
   sw csize;
   sw r;
@@ -2193,6 +2193,7 @@ sw buf_parse_ident_sym (s_buf *buf, const s_sym **dest)
       result += csize;
     }
     buf_read_to_str(&buf_tmp, &str);
+    buf_clean(&buf_tmp);
     tmp = str_to_sym(&str);
     str_clean(&str);
     if (! tmp) {
@@ -2205,6 +2206,7 @@ sw buf_parse_ident_sym (s_buf *buf, const s_sym **dest)
   }
   r = 0;
  restore:
+  buf_clean(&buf_tmp);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -4595,7 +4597,7 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
   s_buf_save save;
   s_str str;
   char t[SYM_MAX];
-  s_buf tmp;
+  s_buf tmp = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -4671,6 +4673,7 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:
+  buf_clean(&tmp);
   buf_save_clean(buf, &save);
   return r;
 }
@@ -4683,7 +4686,7 @@ sw buf_parse_sym_str (s_buf *buf, s_str *str)
   sw result = 0;
   s_buf_save save;
   char t[SYM_MAX];
-  s_buf tmp;
+  s_buf tmp = {0};
   buf_save_init(buf, &save);
   buf_init(&tmp, false, sizeof(t), t);
   while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
@@ -4699,6 +4702,7 @@ sw buf_parse_sym_str (s_buf *buf, s_str *str)
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:
+  buf_clean(&tmp);
   buf_save_clean(buf, &save);
   return r;
 }

@@ -44,6 +44,7 @@
     TEST_EQ(buf_inspect_bool_size(&pretty, tmp), strlen(expected));    \
     TEST_EQ(buf_inspect_bool(&buf, tmp), strlen(expected));            \
     TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                     \
+    buf_clean(&buf);						       \
     test_context(NULL);                                                \
   } while (0)
   
@@ -61,6 +62,7 @@
     TEST_EQ(buf_inspect_character(&buf, tmp), strlen(expected));       \
     TEST_EQ(buf.wpos, strlen(expected));                               \
     TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);                 \
+    buf_clean(&buf);						       \
     test_context(NULL);                                                \
   } while (0)
 
@@ -77,8 +79,10 @@
     TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);                 \
     TEST_EQ(buf.wpos, strlen(expected));                               \
     TEST_EQ(buf_inspect_f32_size(&pretty, tmp), strlen(expected));     \
+    buf_clean(&buf);						       \
     buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_f32(&buf, tmp), strlen(expected));             \
+    buf_clean(&buf);						       \
     test_context(NULL);                                                \
   } while (0)
 
@@ -95,9 +99,11 @@
     TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);                 \
     TEST_EQ(buf.wpos, strlen(expected));                               \
     TEST_EQ(buf_inspect_f64_size(&pretty, tmp), strlen(expected));     \
+    buf_clean(&buf);						       \
     buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_f64(&buf, tmp), strlen(expected));             \
     TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);                 \
+    buf_clean(&buf);						       \
     test_context(NULL);                                                \
   } while (0)
 
@@ -116,9 +122,11 @@
     TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);                 \
     TEST_EQ(buf.wpos, strlen(expected));                               \
     TEST_EQ(buf_inspect_f80_size(&pretty, tmp), strlen(expected));     \
+    buf_clean(&buf);						       \
     buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_f80(&buf, tmp), strlen(expected));             \
     TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);                 \
+    buf_clean(&buf);						       \
     test_context(NULL);                                                \
   } while (0)
 
@@ -171,6 +179,7 @@
     TEST_MEMCMP(buf.ptr.p, (expected), buf.wpos);                      \
     TEST_EQ(buf_inspect_str_size(&pretty, &str), sizeof(expected) - 1);\
     TEST_EQ(buf_inspect_str(&buf, &str), sizeof(expected) - 1);        \
+    buf_clean(&buf);						       \
     test_context(NULL);                                                \
   } while (0)
 
@@ -188,6 +197,7 @@
             strlen(expected));                                         \
     TEST_EQ(buf_inspect_str_character(&buf, tmp), strlen(expected));   \
     TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);                 \
+    buf_clean(&buf);						       \
     test_context(NULL);                                                \
   } while (0)
 
@@ -385,6 +395,7 @@ TEST_CASE(buf_inspect_str)
   //   TEST_EQ(buf_inspect_str_size(&pretty, &str), strlen("\"\\0\""));
   //   TEST_EQ(buf_inspect_str(&buf, &str), strlen("\"\\0\""));
   //   TEST_STRNCMP(buf.ptr.p, "\"\\0\"", buf.wpos);
+  //   buf_clean(&buf);
   //   test_context(NULL);
   // }
   BUF_INSPECT_TEST_STR("\x01", "\"\\x01\"");

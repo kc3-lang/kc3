@@ -538,8 +538,10 @@ bool sym_is_pointer_type (p_sym sym, p_sym target_type)
     buf_init_str_const(&buf, &sym->str);
     if (buf_read_str(&buf, &target_type->str) <= 0 ||
         buf_read_1(&buf, "*") <= 0) {
+      buf_clean(&buf);
       return false;
     }
+    buf_clean(&buf);
     return true;
   }
   return sym->str.ptr.pchar[sym->str.size - 1] == '*';

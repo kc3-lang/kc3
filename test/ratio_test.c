@@ -50,6 +50,7 @@
     TEST_EQ(result_num, expected_num);                                 \
     TEST_EQ(result_den, expected_den);                                 \
     ratio_clean(&ratio);                                               \
+    buf_clean(&buf);						       \
     test_context(NULL);                                                \
   } while (0)
 

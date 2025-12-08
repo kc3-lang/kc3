@@ -1292,9 +1292,11 @@ sw buf_read_until_str_into_str (s_buf *buf, const s_str *end,
       if (buf_read_to_str(&tmp, dest) < 0) {
         err_puts("buf_read_until_str_into_str: buf_read_to_str");
         r = -1;
+	buf_clean(&tmp);
         goto restore;
       }
       r = result;
+      buf_clean(&tmp);
       goto clean;
     }
     if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
@@ -1352,8 +1354,10 @@ sw buf_read_word_into_str(s_buf *buf, s_str *dest)
       tmp.wpos = buf->rpos - r1;
       if ((r = buf_read_to_str(&tmp, dest)) <= 0) {
         err_puts("buf_read_word_into_str: buf_read_to_str");
+	buf_clean(&tmp);
         goto restore;
       }
+      buf_clean(&tmp);
       r = result;
       goto clean;
     }
@@ -1596,6 +1600,8 @@ s_str * buf_to_str (s_buf *buf, s_str *str)
   assert(str);
   p_free = buf->free ? buf->ptr.p : NULL;
   result = str_init(str, p_free, buf->size, buf->ptr.p);
+  buf->free = false;
+  buf_clean(buf);
   return result;
 }
 

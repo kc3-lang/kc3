@@ -38,6 +38,7 @@ TEST_CASE(buf_file_open_r_close)
   buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_file_open_r(&buf, fp), &buf);
   buf_file_close(&buf);
+  buf_clean(&buf);
   test_ok();
   fclose(fp);
 }
@@ -60,6 +61,7 @@ TEST_CASE(buf_file_open_r_refill)
     TEST_EQ(b, 0);
   }
   buf_file_close(&buf);
+  buf_clean(&buf);
   fclose(fp);
   test_context(NULL);
 }

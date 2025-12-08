@@ -55,6 +55,7 @@ p_call * pcall_init_1 (p_call *pcall, const char *p)
   buf_init_const(&buf, len, p);
   buf.wpos = len;
   r = buf_parse_pcall(&buf, pcall);
+  buf_clean(&buf);
   if (r < 0 || (uw) r != len) {
     err_write_1("call_init_1: invalid call: ");
     err_write_1(p);

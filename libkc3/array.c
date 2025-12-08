@@ -235,15 +235,18 @@ s_array * array_init_1 (s_array *array, const char *p)
     assert(! "array_init_1: invalid array");
     if (r > 0)
       array_clean(&tmp);
+    buf_clean(&buf);
     return NULL;
   }
   if (! eval_array(&tmp, array)) {
     err_puts("array_init_1: env_eval_array");
     assert(! "array_init_1: env_eval_array");
     array_clean(&tmp);
+    buf_clean(&buf);
     return NULL;
   }
   array_clean(&tmp);
+  buf_clean(&buf);
   return array;
 }
 

@@ -1258,6 +1258,7 @@ TEST_CASE(marshall_to_buf)
   TEST_ASSERT(marshall_init(&m));
   TEST_EQ(marshall_to_buf(&m, &buf), sizeof(s_marshall_header));
   marshall_clean(&m);
+  buf_clean(&buf);
 }
 TEST_CASE_END(marshall_to_buf)
 

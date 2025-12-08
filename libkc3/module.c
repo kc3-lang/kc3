@@ -99,9 +99,11 @@ s_str * module_path (const s_sym *module, const s_str *prefix,
     goto error;
   if (buf_read_to_str(&out, dest) <= 0)
     goto error;
+  buf_clean(&in);
   buf_clean(&out);
   return dest;
  error:
+  buf_clean(&in);
   buf_clean(&out);
   err_puts("module_path: error");
   assert(! "module_path: error");

@@ -601,6 +601,7 @@ s_str * str_init_character (s_str *str, const character src)
     return NULL;
   if (buf_read_to_str(&buf, str) <= 0)
     return NULL;
+  buf_clean(&buf);
   return str;
 }
 
@@ -779,12 +780,12 @@ s_str * str_init_f32 (s_str *str, f32 x)
   exp = 0.0;
   if (x == 0.0) {
     if ((r = buf_write_1(&buf, "0.0")) < 0)
-      return NULL;
+      goto clean;
     goto ok;
   }
   if (x < 0) {
     if ((r = buf_write_1(&buf, "-")) <= 0)
-      return NULL;
+      goto clean;
     x = -x;
   }
   if (x >= 1.0)
@@ -801,9 +802,9 @@ s_str * str_init_f32 (s_str *str, f32 x)
   x -= i;
   i += '0';
   if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-    return NULL;
+    goto clean;
   if ((r = buf_write_1(&buf, ".")) <= 0)
-    return NULL;
+    goto clean;
   j = 6;
   do {
     x *= 10;
@@ -811,23 +812,27 @@ s_str * str_init_f32 (s_str *str, f32 x)
     x -= i;
     i += '0';
     if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-      return NULL;
+      goto clean;
     j--;
   } while (x > pow(0.1, j) && j);
   if (exp) {
     if ((r = buf_write_1(&buf, "e")) <= 0)
-      return NULL;
+      goto clean;
     if (exp > 0) {
       if ((r = buf_write_1(&buf, "+")) <= 0)
-        return NULL;
+        goto clean;
     }
     if ((r = buf_inspect_s64_decimal(&buf, exp)) <= 0)
-      return NULL;
+      goto clean;
   }
  ok:
   if (buf_read_to_str(&buf, str) <= 0)
-    return NULL;
+    goto clean;
+  buf_clean(&buf);
   return str;
+ clean:
+  buf_clean(&buf);
+  return NULL;
 }
 
 s_str * str_init_f64 (s_str *str, f64 x)
@@ -842,12 +847,12 @@ s_str * str_init_f64 (s_str *str, f64 x)
   exp = 0.0;
   if (x == 0.0) {
     if ((r = buf_write_1(&buf, "0.0")) < 0)
-      return NULL;
+      goto clean;
     goto ok;
   }
   if (x < 0) {
     if ((r = buf_write_1(&buf, "-")) <= 0)
-      return NULL;
+      goto clean;
     x = -x;
   }
   if (x >= 1.0)
@@ -864,9 +869,9 @@ s_str * str_init_f64 (s_str *str, f64 x)
   x -= i;
   i += '0';
   if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-    return NULL;
+    goto clean;
   if ((r = buf_write_1(&buf, ".")) <= 0)
-    return NULL;
+    goto clean;
   j = 14;
   do {
     x *= 10;
@@ -874,23 +879,27 @@ s_str * str_init_f64 (s_str *str, f64 x)
     x -= i;
     i += '0';
     if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-      return NULL;
+      goto clean;
     j--;
   } while (x > pow(0.1, j) && j);
   if (exp) {
     if ((r = buf_write_1(&buf, "e")) <= 0)
-      return NULL;
+      goto clean;
     if (exp > 0) {
       if ((r = buf_write_1(&buf, "+")) <= 0)
-        return NULL;
+        goto clean;
     }
     if ((r = buf_inspect_s64_decimal(&buf, exp)) <= 0)
-      return NULL;
+      goto clean;
   }
  ok:
   if (buf_read_to_str(&buf, str) <= 0)
-    return NULL;
+    goto clean;
+  buf_clean(&buf);
   return str;
+ clean:
+  buf_clean(&buf);
+  return NULL;
 }
 
 #if HAVE_F80
@@ -907,12 +916,12 @@ s_str * str_init_f80 (s_str *str, f80 x)
   exp = 0.0;
   if (x == 0.0) {
     if ((r = buf_write_1(&buf, "0.0")) < 0)
-      return NULL;
+      goto clean;
     goto ok;
   }
   if (x < 0) {
     if ((r = buf_write_1(&buf, "-")) <= 0)
-      return NULL;
+      goto clean;
     x = -x;
   }
   if (x >= 1.0)
@@ -929,9 +938,9 @@ s_str * str_init_f80 (s_str *str, f80 x)
   x -= i;
   i += '0';
   if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-    return NULL;
+    goto clean;
   if ((r = buf_write_1(&buf, ".")) <= 0)
-    return NULL;
+    goto clean;
   j = 33;
   do {
     x *= 10;
@@ -939,23 +948,27 @@ s_str * str_init_f80 (s_str *str, f80 x)
     x -= i;
     i += '0';
     if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-      return NULL;
+      goto clean;
     j--;
   } while (x > powl(0.1, j) && j);
   if (exp) {
     if ((r = buf_write_1(&buf, "e")) <= 0)
-      return NULL;
+      goto clean;
     if (exp > 0) {
       if ((r = buf_write_1(&buf, "+")) <= 0)
-        return NULL;
+        goto clean;
     }
     if ((r = buf_inspect_s64_decimal(&buf, exp)) <= 0)
-      return NULL;
+      goto clean;
   }
  ok:
   if (buf_read_to_str(&buf, str) <= 0)
-    return NULL;
+    goto clean;
+  buf_clean(&buf);
   return str;
+ clean:
+  buf_clean(&buf);
+  return NULL;
 }
 
 #endif
@@ -974,12 +987,12 @@ s_str * str_init_f128 (s_str *str, f128 x)
   exp = 0.0;
   if (x == 0.0) {
     if ((r = buf_write_1(&buf, "0.0")) < 0)
-      return NULL;
+      goto clean;
     goto ok;
   }
   if (x < 0) {
     if ((r = buf_write_1(&buf, "-")) <= 0)
-      return NULL;
+      goto clean;
     x = -x;
   }
   if (x >= 1.0)
@@ -996,9 +1009,9 @@ s_str * str_init_f128 (s_str *str, f128 x)
   x -= i;
   i += '0';
   if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-    return NULL;
+    goto clean;
   if ((r = buf_write_1(&buf, ".")) <= 0)
-    return NULL;
+    goto clean;
   j = 33;
   do {
     x *= 10;
@@ -1006,23 +1019,27 @@ s_str * str_init_f128 (s_str *str, f128 x)
     x -= i;
     i += '0';
     if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-      return NULL;
+      goto clean;
     j--;
   } while (x > pow(0.1, j) && j);
   if (exp) {
     if ((r = buf_write_1(&buf, "e")) <= 0)
-      return NULL;
+      goto clean;
     if (exp > 0) {
       if ((r = buf_write_1(&buf, "+")) <= 0)
-        return NULL;
+        goto clean;
     }
     if ((r = buf_inspect_s64_decimal(&buf, exp)) <= 0)
-      return NULL;
+      goto clean;
   }
  ok:
   if (buf_read_to_str(&buf, str) <= 0)
-    return NULL;
+    goto clean;
+  buf_clean(&buf);
   return str;
+ clean:
+  buf_clean(&buf);
+  return NULL;
 }
 
 #endif
@@ -1510,7 +1527,7 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
   s_tag *arg;
   u8 byte;
   character c;
-  s_buf in_buf;
+  s_buf in_buf = {0};
   s_list  *l;
   s_list **tail;
   s_list  *list = NULL;
@@ -1596,10 +1613,12 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
   arg->data.plist = list;
  ok:
   *dest = tmp;
+  buf_clean(&in_buf);
   buf_clean(&out_buf);
   return true;
  restore:
   list_delete_all(list);
+  buf_clean(&in_buf);
   buf_clean(&out_buf);
   return false;
 }
@@ -1796,9 +1815,11 @@ s_list ** str_split_words (const s_str *str, s_list **dest)
     else
       *t = list_delete(*t);
   }
+  buf_clean(&buf);
   *dest = tmp;
   return dest;
  clean:
+  buf_clean(&buf);
   list_delete_all(tmp);
   return NULL;
 }

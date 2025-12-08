@@ -51,6 +51,7 @@ p_struct * pstruct_init_1 (p_struct *s, const char *p)
   buf_init_const(&buf, len, p);
   buf.wpos = len;
   r = buf_parse_pstruct(&buf, &tmp);
+  buf_clean(&buf);
   if (r < 0 || (uw) r != len) {
     err_puts("struct_init_1: invalid struct");
     assert(! "struct_init_1: invalid struct");

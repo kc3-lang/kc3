@@ -338,12 +338,13 @@ sw facts_dump_file (s_facts *facts, const s_str *path)
     err_inspect_str(path);
     err_write_1("\n");
   }
-  buf_init(&buf, false, sizeof(b), b);
   fp = file_open(path, "wb");
   if (fp) {
+    buf_init(&buf, false, sizeof(b), b);
     buf_file_open_w(&buf, fp);
     r = facts_dump(facts, &buf);
     buf_file_close(&buf);
+    buf_clean(&buf);
     fclose(fp);
   }
   if (env->trace) {
@@ -684,13 +685,14 @@ sw facts_load_file (s_facts *facts, const s_str *path)
   sw result;
   assert(facts);
   assert(path);
-  buf_init(&buf, false, sizeof(b), b);
   fp = file_open(path, "rb");
   if (! fp)
     return -1;
+  buf_init(&buf, false, sizeof(b), b);
   buf_file_open_r(&buf, fp);
   result = facts_load(facts, &buf, path);
   buf_file_close(&buf);
+  buf_clean(&buf);
   fclose(fp);
   return result;
 }
@@ -823,20 +825,25 @@ sw facts_open_file (s_facts *facts, const s_str *path)
   s_buf in;
   sw r;
   sw result = 0;
-  buf_init(&in, false, sizeof(i), i);
   fp = fopen(path->ptr.pchar, "rb");
   if (! fp) {
     if (errno == ENOENT)
       return facts_open_file_create(facts, path);
     return -1;
   }
+  buf_init(&in, false, sizeof(i), i);
   buf_file_open_r(&in, fp);
-  if ((r = facts_open_buf(facts, &in, path)) < 0)
+  if ((r = facts_open_buf(facts, &in, path)) < 0) {
+    buf_clean(&in);
     return r;
+  }
   result += r;
   buf_file_close(&in);
-  if (facts_dump_file(facts, path) < 0)
+  buf_clean(&in);
+  if (facts_dump_file(facts, path) < 0) {
+    buf_clean(&in);
     return -1;
+  }
   fp = file_open(path, "ab");
   if (! fp)
     return -1;
@@ -866,6 +873,7 @@ sw facts_open_file_binary (s_facts *facts, const s_str *path)
     return r;
   result += r;
   buf_file_close(&in);
+  buf_clean(&in);
   fp = file_open(path, "ab");
   if (! fp)
     return -1;
@@ -1216,18 +1224,18 @@ sw facts_save_file (s_facts *facts, const s_str *path)
     err_inspect_str(path);
     err_write_1("\n");
   }
-  buf_init(&buf, false, sizeof(b), b);
   if (! (fp = file_open(path, "wb"))) {
     r = -1;
     goto ko;
   }
+  buf_init(&buf, false, sizeof(b), b);
   buf_file_open_w(&buf, fp);
   if ((r = facts_dump(facts, &buf)) < 0)
     goto clean;
   result += r;
   buf_flush(&buf);
-  free(buf.user_ptr);
-  buf.user_ptr = NULL;
+  buf_file_close(&buf);
+  buf_clean(&buf);
   if (! facts->log &&
       ! (facts->log = log_new()))
     goto clean;

@@ -45,6 +45,7 @@ p_var * pvar_init_1 (p_var *pvar, const char *p)
   buf_init_const(&buf, len, p);
   buf.wpos = len;
   r = buf_parse_pvar(&buf, &tmp);
+  buf_clean(&buf);
   if (r < 0 || (uw) r != len) {
     err_puts("pvar_init_1: invalid var");
     assert(! "pvar_init_1: invalid var");

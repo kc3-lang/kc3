@@ -173,6 +173,7 @@ s_map * map_init_1 (s_map *map, const char *p)
   buf_init_const(&buf, len, p);
   buf.wpos = len;
   r = buf_parse_map(&buf, map);
+  buf_clean(&buf);
   if (r < 0 || (uw) r != len) {
     err_write_1("map_init_1: invalid map: \"");
     err_write_1(p);
