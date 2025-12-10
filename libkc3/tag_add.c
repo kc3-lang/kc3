@@ -325,11 +325,12 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
     break;
   case TAG_PLIST:
     switch (b->type) {
-    case TAG_PLIST: {
+    case TAG_PLIST:
       if (! plist_init_append(&list, &a->data.plist, &b->data.plist))
         return NULL;
       return tag_init_plist(dest, list);
-    }
+    case TAG_VOID:
+      return tag_init_copy(dest, a);
     default:
       break;
     }
@@ -1092,6 +1093,13 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
     switch (b->type) {
     case TAG_TIME:
       return tag_init_time_add(dest, &a->data.time, &b->data.time);
+    default:
+      goto ko;
+    }
+  case TAG_VOID:
+    switch (b->type) {
+    case TAG_PLIST:
+      return tag_init_copy(dest, b);
     default:
       goto ko;
     }
