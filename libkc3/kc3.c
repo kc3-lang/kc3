@@ -63,6 +63,7 @@
 #include "pfacts.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
+#include "rwlock.h"
 #include "s32.h"
 #include "securelevel.h"
 #include "str.h"
@@ -1163,23 +1164,33 @@ s_tag * kc3_parse_tag (s_tag *tag, const s_str *src)
 
 sw kc3_puts (const s_tag *tag)
 {
+  s_env *env;
   sw r;
   sw result = 0;
+#if HAVE_PTHREAD
+  env = env_global();
+  rwlock_w(env->out->rwlock);
+#endif
   if (tag->type == TAG_STR) {
     if ((r = io_write_str(&tag->data.str)) < 0)
-      return r;
+      goto clean;
   }
   else {
     if ((r = io_inspect_tag(tag)) < 0)
-      return r;
+      goto clean;
   }
   result += r;
   if ((r = io_write_1("\n")) < 0)
-    return r;
+    goto clean;
   result += r;
   if ((r = io_flush()) < 0)
-    return r;
-  return result;
+    goto clean;
+  r = result;
+ clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(env->out->rwlock);
+#endif
+  return r;
 }
 
 s_tag * kc3_require (p_sym *module, s_tag *dest)
