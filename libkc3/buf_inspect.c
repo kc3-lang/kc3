@@ -2957,14 +2957,8 @@ sw buf_inspect_list (s_buf *buf, const s_list *x)
     switch (i->next.type) {
     case TAG_PLIST:
       if (i->next.data.plist) {
-        if (alist) {
-          if ((r = buf_write_1(buf, ",\n")) < 0)
-            return r;
-        }
-        else {
-          if ((r = buf_write_1(buf, ", ")) < 0)
-            return r;
-        }
+        if ((r = buf_write_1(buf, ",\n")) < 0)
+          return r;
         result += r;
       }
       i = i->next.data.plist;
