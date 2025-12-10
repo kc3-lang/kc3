@@ -279,6 +279,7 @@ s_tag * embed_parse_template_1 (const char *input, s_tag *dest)
 s_tag * embed_parse_template_file (const s_str *path, s_tag *dest)
 {
   s_buf buf = {0};
+  s_env *env;
   FILE *fp = NULL;
   s_tag tmp = {0};
   if (! path || ! dest) {
@@ -286,27 +287,46 @@ s_tag * embed_parse_template_file (const s_str *path, s_tag *dest)
     assert(! "embed_parse_template_file: invalid argument");
     return NULL;
   }
+  env = env_global();
+  if (env && env->trace) {
+    err_write_1("embed_parse_template_file: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+  }
   if (! buf_init_alloc(&buf, BUF_SIZE))
-    return NULL;
+    goto ko;
   if (! (fp = file_open(path, "r"))) {
     buf_clean(&buf);
-    return NULL;
+    goto ko;
   }
   if (! buf_file_open_r(&buf, fp)) {
     fclose(fp);
     buf_clean(&buf);
+    goto ko;
   }
   if (! embed_parse_template(&buf, &tmp)) {
     buf_file_close(&buf);
     fclose(fp);
     buf_clean(&buf);
-    return NULL;
+    goto ko;
   }
   buf_file_close(&buf);
   fclose(fp);
   buf_clean(&buf);
+  if (env && env->trace) {
+    err_write_1("embed_parse_template_file: ");
+    err_inspect_str(path);
+    err_write_1(": OK\n");
+  }
   *dest = tmp;
   return dest;
+ ko:
+  if (env && env->trace) {
+    err_write_1("embed_parse_template_file: ");
+    err_inspect_str(path);
+    err_write_1(": ERROR\n");
+  }
+  return NULL;
 }
 
 s_tag * embed_parse_template_str (const s_str *input, s_tag *dest)
