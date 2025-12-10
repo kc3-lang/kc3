@@ -28,6 +28,7 @@ git_reference ** kc3_git_repository_head (git_repository **repo,
     e = git_error_last();
     err_write_1("kc3_git_repository_head: ");
     err_puts(e->message);
+    return NULL;
   }
   *dest = tmp;
   return dest;
@@ -44,6 +45,7 @@ git_repository ** kc3_git_repository_init (git_repository **repo,
     err_inspect_str(path);
     err_write_1(": ");
     err_puts(e->message);
+    return NULL;
   }
   *repo = tmp;
   return repo;
@@ -60,6 +62,7 @@ git_repository ** kc3_git_repository_init_bare (git_repository **repo,
     err_inspect_str(path);
     err_write_1(": ");
     err_puts(e->message);
+    return NULL;
   }
   *repo = tmp;
   return repo;
@@ -76,6 +79,7 @@ git_repository ** kc3_git_repository_open (git_repository **repo,
     err_inspect_str(path);
     err_write_1(": ");
     err_puts(e->message);
+    return NULL;
   }
   *repo = tmp;
   return repo;
@@ -92,6 +96,7 @@ git_repository ** kc3_git_repository_open_bare (git_repository **repo,
     err_inspect_str(path);
     err_write_1(": ");
     err_puts(e->message);
+    return NULL;
   }
   *repo = tmp;
   return repo;
