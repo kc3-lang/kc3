@@ -651,6 +651,7 @@ s8 compare_struct (const s_struct *a, const s_struct *b)
                      (s8 *) b->data + b->pstruct_type->offset[i]);
     if (r)
       return r;
+    i++;
   }
   return 0;
 }
