@@ -168,8 +168,7 @@ s_tag * plist_find_if (p_list *plist, p_callable *function,
   return dest;
 }
 
-bool * plist_has (const s_list * const *plist, const s_tag *tag,
-                  bool *dest)
+bool * plist_has (p_list *plist, const s_tag *tag, bool *dest)
 {
   const s_list *l;
   l = *plist;
@@ -564,23 +563,20 @@ p_list * plist_tail (p_list *plist)
 
 p_list * plist_unique (p_list *plist, p_list *dest)
 {
-  bool found;
-  s_list *l;
+  s_list *list;
   p_list *tail;
   s_list *tmp = NULL;
   assert(plist);
   assert(dest);
   tail = &tmp;
-  l = *plist;
-  while (l) {
-    if (! plist_has((const s_list * const *) &tmp, &l->tag, &found))
-      goto ko;
-    if (! found) {
-      if (! (*tail = list_new_tag_copy(&l->tag, NULL)))
+  list = *plist;
+  while (list) {
+    if (! list_has(tmp, &list->tag)) {
+      if (! (*tail = list_new_tag_copy(&list->tag, NULL)))
         goto ko;
       tail = &(*tail)->next.data.plist;
     }
-    l = list_next(l);
+    list = list_next(list);
   }
   *dest = tmp;
   return dest;

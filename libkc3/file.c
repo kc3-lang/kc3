@@ -1061,7 +1061,6 @@ s_file_stat * file_stat_init_struct_stat (s_file_stat *dest,
 struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
                                         struct stat *dest)
 {
-  bool b;
   s_tag tag_sym_directory;
   s_tag tag_sym_file;
   struct stat tmp = {0};
@@ -1071,21 +1070,11 @@ struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
   tmp.st_ino = file_stat->st_ino;
   tmp.st_mode = 0;
   tag_init_psym(&tag_sym_file, &g_sym_file);
-  if (! plist_has((const s_list * const *) &file_stat->st_mode,
-                 &tag_sym_file, &b)) {
-    err_puts("file_stat_to_struct_stat: plist_has(:file)");
-    err_puts("file_stat_to_struct_stat: plist_has(:file)");
-  }
-  if (b)
+  if (list_has(file_stat->st_mode, &tag_sym_file))
     tmp.st_mode |= S_IFREG;
   else {
     tag_init_psym(&tag_sym_directory, &g_sym_directory);
-    if (! plist_has((const s_list * const *) &file_stat->st_mode,
-                   &tag_sym_directory, &b)) {
-      err_puts("file_stat_to_struct_stat: plist_has(:directory)");
-      err_puts("file_stat_to_struct_stat: plist_has(:directory)");
-    }
-    if (b)
+    if (list_has(file_stat->st_mode, &tag_sym_directory))
       tmp.st_mode |= S_IFDIR;
   }
   tmp.st_nlink = file_stat->st_nlink;

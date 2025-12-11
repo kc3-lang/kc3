@@ -109,6 +109,19 @@ void list_f_clean (p_list *list)
     l = list_delete(l);
 }
 
+bool list_has (const s_list *list, const s_tag *item)
+{
+  const s_list *l;
+  assert(item);
+  l = list;
+  while (l) {
+    if (! compare_tag(&l->tag, item))
+      return true;
+    l = list_next(l);
+  }
+  return false;
+}
+
 bool * list_has_cycle (s_list *list, bool *dest)
 {
   bool cycle;

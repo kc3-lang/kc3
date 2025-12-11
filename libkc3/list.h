@@ -50,6 +50,7 @@ s_list * list_new_uw_reduce (uw src, s_list *next);
 /* Observers */
 s_tag *   list_at (s_list *list, uw position, s_tag *dest);
 s_tag *   list_access (s_list *list, s_list *key, s_tag *dest);
+bool      list_has (const s_list *list, const s_tag *item);
 bool *    list_has_cycle (s_list *list, bool *dest);
 bool      list_is_alist (const s_list *list);
 bool      list_is_plist (const s_list *list);

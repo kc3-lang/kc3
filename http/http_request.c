@@ -600,7 +600,6 @@ s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
 {
   const s_list *allowed_methods;
   s_tag allowed_methods_tag;
-  bool b;
   s_ident ident;
   s_tag tmp = {0};
   assert(str);
@@ -632,11 +631,7 @@ s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
     return dest;
   }
   tmp.type = TAG_PSYM;
-  if (! plist_has(&allowed_methods, &tmp, &b)) {
-    err_puts("http_request_method_from_str: plist_has");
-    goto clean;
-  }
-  if (! b) {
+  if (! list_has(allowed_methods, &tmp)) {
     tag_init_str(&tmp, NULL, tmp.data.psym->str.size,
                  tmp.data.psym->str.ptr.pchar);
   }
