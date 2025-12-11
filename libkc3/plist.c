@@ -572,7 +572,7 @@ p_list * plist_unique (p_list *plist, p_list *dest)
   list = *plist;
   while (list) {
     if (! list_has(tmp, &list->tag)) {
-      if (! (*tail = list_new_tag_copy(&list->tag, NULL)))
+      if (! ((*tail) = list_new_tag_copy(&list->tag, NULL)))
         goto ko;
       tail = &(*tail)->next.data.plist;
     }

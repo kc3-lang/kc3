@@ -218,6 +218,8 @@ end
 
 def KC3.Op.cast = cfn KC3.Op "pstruct_init_cast" (Result, Sym, Tag)
 
+def compare = cfn S8 "compare_tag" (Tag, Tag)
+
 def match = cfn_macro Tag "kc3_match" (Tag, Map, Result)
 
 def human_size = fn (size) {

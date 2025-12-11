@@ -111,13 +111,13 @@ void list_f_clean (p_list *list)
 
 bool list_has (const s_list *list, const s_tag *item)
 {
-  const s_list *l;
+  const s_list *iter;
   assert(item);
-  l = list;
-  while (l) {
-    if (! compare_tag(&l->tag, item))
+  iter = list;
+  while (iter) {
+    if (! compare_tag(&iter->tag, item))
       return true;
-    l = list_next(l);
+    iter = list_next(iter);
   }
   return false;
 }
