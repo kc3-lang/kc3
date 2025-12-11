@@ -637,6 +637,7 @@ s8 compare_struct (const s_struct *a, const s_struct *b)
     return -1;
   if (! b->data)
     return 1;
+  i = 0;
   while (i < a->pstruct_type->map.count) {
     if (a->pstruct_type->map.value[i].type == TAG_PVAR)
       type = a->pstruct_type->map.value[i].data.pvar->type;
