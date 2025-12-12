@@ -3,4 +3,5 @@ Markdown
 Markdown.titles("Text.\n")
 []
 Markdown.titles("# Title\nText.\n\n## Title 2\n")
-["1. Title", "1.1. Title 2"]
+["1. Title",
+ "1.1. Title 2"]

@@ -62,9 +62,13 @@ loopback("hello")
 {:ok, 73}
 loopback("héllo wörld")
 {:ok, 81}
-loopback([0, 1])
+loopback([0,
+          1])
 {:ok, 200}
-loopback([[2, 3], [4, 5]])
+loopback([[2,
+           3],
+          [4,
+           5]])
 {:ok, 488}
 loopback(%Time{})
 {:ok, 104}
@@ -144,11 +148,18 @@ loopback("test\ntab\there")
 {:ok, 81}
 loopback([])
 {:ok, 66}
-loopback([1, 2, 3, 4, 5])
+loopback([1,
+          2,
+          3,
+          4,
+          5])
 {:ok, 401}
-loopback([true, false, 'A'])
+loopback([true,
+          false,
+          'A'])
 {:ok, 264}
-loopback(["hello", "world"])
+loopback(["hello",
+          "world"])
 {:ok, 234}
 loopback([[[1]]])
 {:ok, 287}
@@ -156,7 +167,8 @@ loopback({1, 2, 3})
 {:ok, 143}
 loopback({true, 'A', "test"})
 {:ok, 154}
-loopback({1, 2, [3, 4]})
+loopback({1, 2, [3,
+                 4]})
 {:ok, 287}
 loopback(do end)
 {:ok, 48}
@@ -220,5 +232,8 @@ loopback(do
   f()
 end)
 {:ok, 56}
-loopback([[A, B], [C, D]])
+loopback([[A,
+           B],
+          [C,
+           D]])
 {:ok, 640}

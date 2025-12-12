@@ -1597,7 +1597,7 @@ sw buf_inspect_cfn_size (s_pretty *pretty, const s_cfn *cfn)
   if ((r = buf_write_1_size(pretty, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_list_size(pretty, cfn->arg_types)) < 0)
+  if ((r = buf_inspect_list_paren_size(pretty, cfn->arg_types)) < 0)
     return r;
   result += r;
   return result;
@@ -2935,7 +2935,6 @@ sw buf_inspect_integer_size (s_pretty *pretty, const s_integer *x)
 
 sw buf_inspect_list (s_buf *buf, const s_list *x)
 {
-  bool alist;
   const s_list *i;
   s_pretty_save pretty_save;
   sw r;
@@ -2944,11 +2943,8 @@ sw buf_inspect_list (s_buf *buf, const s_list *x)
   if ((r = buf_write_1(buf, "[")) <= 0)
     return r;
   result += r;
-  alist = list_is_alist(x);
-  if (alist) {
-    pretty_save_init(&pretty_save, &buf->pretty);
-    pretty_indent_from_column(&buf->pretty, 0);
-  }
+  pretty_save_init(&pretty_save, &buf->pretty);
+  pretty_indent_from_column(&buf->pretty, 0);
   i = x;
   while (i) {
     if ((r = buf_inspect_list_tag(buf, &i->tag)) < 0)
@@ -2973,8 +2969,7 @@ sw buf_inspect_list (s_buf *buf, const s_list *x)
       i = NULL;
     }
   }
-  if (alist)
-    pretty_save_clean(&pretty_save, &buf->pretty);
+  pretty_save_clean(&pretty_save, &buf->pretty);
   if ((r = buf_write_1(buf, "]")) < 0)
     return r;
   result += r;
@@ -3020,9 +3015,47 @@ sw buf_inspect_list_paren (s_buf *buf, const s_list *x)
   return result;
 }
 
+sw buf_inspect_list_paren_size (s_pretty *pretty, const s_list *x)
+{
+  const s_list *i;
+  sw r;
+  sw result = 0;
+  assert(pretty);
+  if ((r = buf_write_1_size(pretty, "(")) <= 0)
+    return r;
+  result++;
+  i = x;
+  while (i) {
+    if ((r = buf_inspect_tag_size(pretty, &i->tag)) < 0)
+      return r;
+    result += r;
+    switch (i->next.type) {
+    case TAG_PLIST:
+      if (i->next.data.plist) {
+        if ((r = buf_write_1_size(pretty, ", ")) < 0)
+          return r;
+        result += r;
+      }
+      i = i->next.data.plist;
+      continue;
+    default:
+      if ((r = buf_write_1_size(pretty, " | ")) < 0)
+        return r;
+      result += r;
+      if ((r = buf_inspect_tag_size(pretty, &i->next)) < 0)
+        return r;
+      result += r;
+      i = NULL;
+    }
+  }
+  if ((r = buf_write_1_size(pretty, ")")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
 sw buf_inspect_list_size (s_pretty *pretty, const s_list *x)
 {
-  bool alist;
   const s_list *i;
   s_pretty_save pretty_save;
   sw r;
@@ -3031,11 +3064,8 @@ sw buf_inspect_list_size (s_pretty *pretty, const s_list *x)
   if ((r = buf_write_1_size(pretty, "[")) <= 0)
     return r;
   result += r;
-  alist = list_is_alist(x);
-  if (alist) {
-    pretty_save_init(&pretty_save, pretty);
-    pretty_indent_from_column(pretty, 0);
-  }
+  pretty_save_init(&pretty_save, pretty);
+  pretty_indent_from_column(pretty, 0);
   i = x;
   while (i) {
     if ((r = buf_inspect_list_tag_size(pretty, &i->tag)) < 0)
@@ -3060,8 +3090,7 @@ sw buf_inspect_list_size (s_pretty *pretty, const s_list *x)
       i = NULL;
     }
   }
-  if (alist)
-    pretty_save_clean(&pretty_save, pretty);
+  pretty_save_clean(&pretty_save, pretty);
   if ((r = buf_write_1_size(pretty, "]")) < 0)
     return r;
   result += r;

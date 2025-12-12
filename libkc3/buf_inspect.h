@@ -172,6 +172,7 @@ sw buf_inspect_list_tag (s_buf *buf, const s_tag *tag);
 sw buf_inspect_list_tag_size (s_pretty *pretty, const s_tag *tag);
 sw buf_inspect_list (s_buf *buf, const s_list *list);
 sw buf_inspect_list_paren (s_buf *buf, const s_list *list);
+sw buf_inspect_list_paren_size (s_pretty *pretty, const s_list *list);
 sw buf_inspect_list_size (s_pretty *pretty, const s_list *list);
 sw buf_inspect_map (s_buf *buf, const s_map *map);
 sw buf_inspect_map_size (s_pretty *pretty, const s_map *map);

@@ -1,4 +1,9 @@
-Facts.with(Facts.env_db(), [[op = ?, :is_a, :op], [op, :op_sym, sym = ?]], fn (fact) { puts("#{inspect(sym)} #{inspect(op)}"); 1 })
+Facts.with(Facts.env_db(), [[op = ?,
+                             :is_a,
+                             :op],
+                            [op,
+                             :op_sym,
+                             sym = ?]], fn (fact) { puts("#{inspect(sym)} #{inspect(op)}"); 1 })
 :"()" :op_1
 :mod :op_10
 :% :op_11
@@ -32,7 +37,9 @@ Facts.with(Facts.env_db(), [[op = ?, :is_a, :op], [op, :op_sym, sym = ?]], fn (f
 :^ :op_8
 :/ :op_9
 1
-Facts.with(Facts.env_db(), [[op = ?, :op_sym, sym = ?]], fn (fact) { puts("#{inspect(sym)} #{inspect(op)}"); 2 })
+Facts.with(Facts.env_db(), [[op = ?,
+                             :op_sym,
+                             sym = ?]], fn (fact) { puts("#{inspect(sym)} #{inspect(op)}"); 2 })
 :! :op_5
 :!= :op_23
 :% :op_11

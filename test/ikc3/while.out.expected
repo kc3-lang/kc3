@@ -93,7 +93,9 @@ do
   end
   result
 end
-[2, 1, 0]
+[2,
+ 1,
+ 0]
 do
   result = []
   i = 0
@@ -103,7 +105,9 @@ do
   end
   result
 end
-[2, 1, 0]
+[2,
+ 1,
+ 0]
 do
   i = 0
   result = []
@@ -116,7 +120,11 @@ do
   end
   result
 end
-[9, 7, 5, 3, 1]
+[9,
+ 7,
+ 5,
+ 3,
+ 1]
 do
   result = []
   i = 0
@@ -132,7 +140,10 @@ do
   end
   result
 end
-[7, 5, 3, 1]
+[7,
+ 5,
+ 3,
+ 1]
 loop 0
 loop 1
 loop 2

@@ -2,10 +2,14 @@ def zero = 0
 zero
 zero
 0
-def one_two_three = [1, 2, 3]
+def one_two_three = [1,
+                     2,
+                     3]
 one_two_three
 one_two_three
-[1, 2, 3]
+[1,
+ 2,
+ 3]
 def double = fn (x) { x * 2 }
 double
 double
@@ -33,7 +37,11 @@ double_tuple(200)
 double_tuple(zero)
 {0, 0}
 double_tuple(one_two_three)
-{[1, 2, 3], [1, 2, 3]}
+{[1,
+  2,
+  3], [1,
+       2,
+       3]}
 def reverse = fn {
   (x) { reverse(x, []) }
   ([], acc) { acc }
@@ -45,9 +53,15 @@ fn {
   (x) { reverse(x, []) }
   ([], acc) { acc }
   ([a | b], acc) { reverse(b, [a | acc]) }
-} [x: [1, 2, 3]]
-reverse([1, 2, 3])
-[3, 2, 1]
+} [x: [1,
+       2,
+       3]]
+reverse([1,
+         2,
+         3])
+[3,
+ 2,
+ 1]
 def reverse = fn {
   (x) { reverse(x, []) }
   ([], acc) { [:reversed | acc] }
@@ -59,9 +73,16 @@ fn {
   (x) { reverse(x, []) }
   ([], acc) { [:reversed | acc] }
   ([a | b], acc) { reverse(b, [a | acc]) }
-} [x: [1, 2, 3]]
-reverse([1, 2, 3])
-[:reversed, 3, 2, 1]
+} [x: [1,
+       2,
+       3]]
+reverse([1,
+         2,
+         3])
+[:reversed,
+ 3,
+ 2,
+ 1]
 def reverse = fn {
   (x) { reverse(x, []) }
   ([], acc) { acc }
@@ -73,6 +94,12 @@ fn {
   (x) { reverse(x, []) }
   ([], acc) { acc }
   ([a | b], acc) { reverse(b, [a | acc]) }
-} [x: [1, 2, 3]]
-reverse([1, 2, 3])
-[3, 2, 1]
+} [x: [1,
+       2,
+       3]]
+reverse([1,
+         2,
+         3])
+[3,
+ 2,
+ 1]

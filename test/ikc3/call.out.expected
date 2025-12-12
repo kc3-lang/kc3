@@ -6,6 +6,8 @@ Test.test()
 Test.test(1)
 Test.test(1, 2)
 Test.test(1, 2, 3)
-first([1, 2])
-first([2, 3])
+first([1,
+       2])
+first([2,
+       3])
 (1 + 2)

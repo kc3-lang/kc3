@@ -369,7 +369,7 @@ TEST_CASE_END(buf_inspect_integer)
 TEST_CASE(buf_inspect_list)
 {
   BUF_INSPECT_TEST_LIST("[]", "[]");
-  BUF_INSPECT_TEST_LIST("[[], []]", "[[], []]");
+  BUF_INSPECT_TEST_LIST("[[], []]", "[[],\n []]");
   BUF_INSPECT_TEST_LIST("[[] | []]", "[[]]");
 }
 TEST_CASE_END(buf_inspect_list)

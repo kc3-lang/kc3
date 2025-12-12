@@ -32,7 +32,9 @@ PDF.parse_str("[ ]")
 PDF.parse_str("<<>>")
 %{}
 PDF.parse_str("[true false null]")
-[true, false, void]
+[true,
+ false,
+ void]
 PDF.parse_str("[[[[/nested]]]]")
 [[[[:nested]]]]
 PDF.parse_str("<< /A << /B << /C /D >> >> >>")

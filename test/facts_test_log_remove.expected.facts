@@ -3,7 +3,10 @@ add {:a, :a, :a}
 add {A, A, A}
 add {a, a, a}
 add {[], [], []}
-add {[[], []], [[], []], [[], []]}
+add {[[],
+      []], [[],
+            []], [[],
+                  []]}
 add {{:a, :b}, {:a, :b}, {:a, :b}}
 add {{{:a, :b}, {:c, :d}}, {{:a, :b}, {:c, :d}}, {{:a, :b}, {:c, :d}}}
 add {{a, b}, {a, b}, {a, b}}
@@ -38,7 +41,10 @@ remove {{{a, b}, {c, d}}, {{a, b}, {c, d}}, {{a, b}, {c, d}}}
 remove {{a, b}, {a, b}, {a, b}}
 remove {{{:a, :b}, {:c, :d}}, {{:a, :b}, {:c, :d}}, {{:a, :b}, {:c, :d}}}
 remove {{:a, :b}, {:a, :b}, {:a, :b}}
-remove {[[], []], [[], []], [[], []]}
+remove {[[],
+         []], [[],
+               []], [[],
+                     []]}
 remove {[], [], []}
 remove {a, a, a}
 remove {A, A, A}

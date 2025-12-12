@@ -14,7 +14,8 @@ PDF.parse_str("3 0 obj << /Length 4 /Filter /FlateDecode >> stream\ntest\nendstr
                                                  offset: (S64) 52,
                                                  length: (S64) 4}}
 PDF.parse_str("4 0 obj << /Length 6 /Filter [/ASCII85Decode /LZWDecode] >> stream\nstream\nendstream\nendobj")
-{:indirect_object, (U32) 4, (U16) 0, %PDF.Stream{dictionnary: %{Filter: [ASCII85Decode, LZWDecode],
+{:indirect_object, (U32) 4, (U16) 0, %PDF.Stream{dictionnary: %{Filter: [ASCII85Decode,
+                                                                         LZWDecode],
                                                                 Length: 6},
                                                  offset: (S64) 67,
                                                  length: (S64) 6}}

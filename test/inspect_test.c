@@ -380,7 +380,7 @@ TEST_CASE(inspect_list)
 {
   INSPECT_TEST_LIST("[]", "[]");
   INSPECT_TEST_LIST("[[] | []]", "[[]]");
-  INSPECT_TEST_LIST("[[], [] | []]", "[[], []]");
+  INSPECT_TEST_LIST("[[], [] | []]", "[[],\n []]");
 }
 TEST_CASE_END(inspect_list)
 

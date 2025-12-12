@@ -79,7 +79,11 @@ Str.size(Str.random_base64(2))
 Str.size(Str.random_base64(64))
 64
 Str.split_words("Viagra, cyal1s cheap#buy#online !!!!")
-["Viagra", "cyal1s", "cheap", "buy", "online"]
+["Viagra",
+ "cyal1s",
+ "cheap",
+ "buy",
+ "online"]
 Str.count_words("Viagra, cyal1s cheap#buy#online !!!!")
 %{"buy" => 1,
   "cheap" => 1,
