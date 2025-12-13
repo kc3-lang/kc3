@@ -87,9 +87,6 @@ GENERATED_FILES = \
 	tag_init.h \
 	u8.c u8.h u16.c u16.h u32.c u32.h u64.c u64.h uw.c uw.h
 
-clean::
-	rm -f ${GENERATED_FILES}
-
 gen: ${GENERATED_FILES}
 
 list_init.c list_init.h tag_init.c tag_init.h: tag_init.rb ../license.h
@@ -693,5 +690,8 @@ set__tag.h: set.h.in gen.mk
 
 set__tag.c: set.c.in gen.mk
 	${SED_TAG} < set.c.in > set__tag.c
+
+clean::
+	rm -f ${GENERATED_FILES}
 
 include sources.mk
