@@ -108,7 +108,7 @@ set_get_h__fact
 #if HAVE_F80
                                   f80:  item->data,
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
                                   f128: item->data,
 #endif
                                   s8:   item->data,
@@ -260,7 +260,7 @@ set_resize__fact (s_set__fact *set, uw max)
 #if HAVE_F80
                                        f80:  item->data,
 #endif
-#if HAVE_FLOAT128
+#if HAVE_F128
                                        f128: item->data,
 #endif
                                        s8:   item->data,
