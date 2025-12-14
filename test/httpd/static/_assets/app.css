@@ -11852,25 +11852,25 @@ textarea.form-control-lg {
 }
 @font-face {
   font-family: "computer_modern";
-  src: url("/static/_fonts/cmunrm-webfont.woff") format("woff");
+  src: url("/_fonts/cmunrm-webfont.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: "computer_modern";
-  src: url("/static/_fonts/cmunbi-webfont.woff") format("woff");
+  src: url("/_fonts/cmunbi-webfont.woff") format("woff");
   font-weight: bold;
   font-style: italic;
 }
 @font-face {
   font-family: "computer_modern";
-  src: url("/static/_fonts/cmunbx-webfont.woff") format("woff");
+  src: url("/_fonts/cmunbx-webfont.woff") format("woff");
   font-weight: bold;
   font-style: normal;
 }
 @font-face {
   font-family: "computer_modern";
-  src: url("/static/_fonts/cmunti-webfont.woff") format("woff");
+  src: url("/_fonts/cmunti-webfont.woff") format("woff");
   font-weight: normal;
   font-style: italic;
 }
