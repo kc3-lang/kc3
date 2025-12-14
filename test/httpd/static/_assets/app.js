@@ -6042,11 +6042,11 @@
             return "script";
           }
         });
-        support.createHTMLDocument = function() {
+        support.createHTMLDocument = (function() {
           var body = document2.implementation.createHTMLDocument("").body;
           body.innerHTML = "<form></form><form></form>";
           return body.childNodes.length === 2;
-        }();
+        })();
         jQuery.parseHTML = function(data, context, keepScripts) {
           if (typeof data !== "string") {
             return [];
