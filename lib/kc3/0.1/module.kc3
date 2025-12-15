@@ -16,8 +16,15 @@ defmodule Module do
 
   def list = fn () {
     Facts.collect_with(Facts.env_db(),
-      [[ module_name = ?, :is_a, :module ]],
+      [[module_name = ?, :is_a, :module]],
       fn (fact) { module_name })
   }
 
+  def symbols = fn (module) {
+    Facts.collect_with(Facts.env_db(),
+      [[module, :is_a, :module],
+       [module, :symbol, sym = ?]],
+      fn (fact) { sym })
+  }
+        
 end
