@@ -81,6 +81,12 @@ defoperator %KC3.Op{sym: :%,
                     associativity: 1,
                     callable: cfn Tag "tag_mod" (Tag, Tag, Result)}
 
+defoperator %KC3.Op{sym: :**,
+                    arity: 2,
+                    precedence: 13,
+                    associativity: 1,
+                    callable: cfn Tag "tag_pow" (Tag, Tag, Result)}
+
 defoperator %KC3.Op{sym: :*,
                     arity: 2,
                     precedence: 13,
@@ -361,3 +367,23 @@ def log = fn (n, base) {
   end
   result
 }
+
+def factorial = fn {
+  (0) { 1 }
+  (1) { 1 }
+  (x) { if (x > 0) do x * factorial(x - 1) end }
+}
+
+def exp = fn (z) {
+  i = 1
+  d = 1
+  s = 1
+  while i < 100 do
+    d = d * z / i
+    s = s + d
+    i = i + 1
+  end
+  s
+}
+
+def i = 0 +i 1

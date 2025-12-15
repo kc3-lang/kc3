@@ -314,6 +314,58 @@ s_complex * complex_new_mul (s_complex *a, s_complex *b)
   return c;
 }
 
+s_complex * complex_pow (s_complex *a, s_complex *b, s_complex *dest)
+{
+  f64 arg_a;
+  f64 ax;
+  f64 ay;
+  f64 bx;
+  f64 by;
+  f64 dest_x;
+  f64 dest_y;
+  f64 imag_part;
+  f64 ln_r;
+  f64 r;
+  f64 real_part;
+  const s_sym *type;
+  assert(a);
+  assert(b);
+  assert(dest);
+  type = &g_sym_F64;
+  f64_init_cast(&ax, &type, &a->x);
+  f64_init_cast(&ay, &type, &a->y);
+  f64_init_cast(&bx, &type, &b->x);
+  f64_init_cast(&by, &type, &b->y);
+  r = sqrt(ax * ax + ay * ay);
+  if (r == 0.0) {
+    tag_init_f64(&dest->x, 0.0);
+    tag_init_f64(&dest->y, 0.0);
+    return dest;
+  }
+  arg_a = atan2(ay, ax);
+  ln_r = log(r);
+  real_part = bx * ln_r - by * arg_a;
+  imag_part = by * ln_r + bx * arg_a;
+  dest_x = exp(real_part) * cos(imag_part);
+  dest_y = exp(real_part) * sin(imag_part);
+  tag_init_f64(&dest->x, dest_x);
+  tag_init_f64(&dest->y, dest_y);
+  return dest;
+}
+
+s_complex * complex_new_pow (s_complex *a, s_complex *b)
+{
+  s_complex *c;
+  c = alloc(sizeof(s_complex));
+  if (! c)
+    return NULL;
+  if (! complex_pow(a, b, c)) {
+    free(c);
+    return NULL;
+  }
+  return c;
+}
+
 s_complex * complex_new_ref (s_complex *c)
 {
   return c;

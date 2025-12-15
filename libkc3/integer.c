@@ -572,6 +572,53 @@ s_integer * integer_expt_u32 (const s_integer *a, u32 b,
   return dest;
 }
 
+s_integer * integer_pow (const s_integer *a, const s_integer *b,
+                         s_integer *dest)
+{
+  sw bit_in_digit;
+  sw digit_index;
+  s_integer g;
+  sw i;
+  sw num_bits;
+  sw r;
+  assert(a);
+  assert(b);
+  assert(dest);
+  if (b->mp_int.sign == MP_NEG) {
+    err_puts("integer_pow: negative exponent not supported");
+    assert(! "integer_pow: negative exponent");
+    return NULL;
+  }
+  integer_init_copy(&g, a);
+  integer_init(dest);
+  mp_set(&dest->mp_int, 1);
+  num_bits = mp_count_bits(&b->mp_int);
+  i = 0;
+  while (i < num_bits) {
+    digit_index = i / MP_DIGIT_BIT;
+    bit_in_digit = i % MP_DIGIT_BIT;
+    if ((b->mp_int.dp[digit_index] >> bit_in_digit) & 1) {
+      if ((r = mp_mul(&dest->mp_int, &g.mp_int, &dest->mp_int)) != MP_OKAY) {
+        err_write_1("integer_pow: ");
+        err_puts(mp_error_to_string(r));
+        integer_clean(&g);
+        assert(! "integer_pow: mp_mul");
+        return NULL;
+      }
+    }
+    if ((r = mp_sqr(&g.mp_int, &g.mp_int)) != MP_OKAY) {
+      err_write_1("integer_pow: ");
+      err_puts(mp_error_to_string(r));
+      integer_clean(&g);
+      assert(! "integer_pow: mp_sqr");
+      return NULL;
+    }
+    i++;
+  }
+  integer_clean(&g);
+  return dest;
+}
+
 s_tag * integer_reduce (const s_integer *i, s_tag *dest)
 {
   static s_integer s8_min = {0};

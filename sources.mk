@@ -811,6 +811,7 @@ KC3_C_SOURCES = \
 	"libkc3/tag_mod.c" \
 	"libkc3/tag_mul.c" \
 	"libkc3/tag_neg.c" \
+	"libkc3/tag_pow.c" \
 	"libkc3/tag_shift_left.c" \
 	"libkc3/tag_shift_right.c" \
 	"libkc3/tag_sqrt.c" \
@@ -1233,22 +1234,39 @@ KC3_CXX_SOURCES = \
 	"libkc3/std.hxx" \
 
 KC3_FONT_SOURCES = \
-	"fonts/Computer Modern/cmunbl-webfont.ttf" \
-	"fonts/Computer Modern/cmunbl.otf" \
-	"fonts/Computer Modern/cmunbx-webfont.ttf" \
-	"fonts/Computer Modern/cmunbx.otf" \
-	"fonts/Computer Modern/cmunbxo-webfont.ttf" \
-	"fonts/Computer Modern/cmunbxo.otf" \
-	"fonts/Computer Modern/cmunrm-webfont.ttf" \
-	"fonts/Computer Modern/cmunrm.otf" \
-	"fonts/Computer Modern/cmunsi-webfont.ttf" \
-	"fonts/Computer Modern/cmunsi.otf" \
-	"fonts/Computer Modern/cmunsl-webfont.ttf" \
-	"fonts/Computer Modern/cmunsl.otf" \
-	"fonts/Computer Modern/cmunss-webfont.ttf" \
-	"fonts/Computer Modern/cmunss.otf" \
-	"fonts/Computer Modern/cmunsx-webfont.ttf" \
-	"fonts/Computer Modern/cmunsx.otf" \
+	"fonts/Computer Modern/ttf/cmunbbx.ttf" \
+	"fonts/Computer Modern/ttf/cmunbi.ttf" \
+	"fonts/Computer Modern/ttf/cmunbl.ttf" \
+	"fonts/Computer Modern/ttf/cmunbmo.ttf" \
+	"fonts/Computer Modern/ttf/cmunbmr.ttf" \
+	"fonts/Computer Modern/ttf/cmunbso.ttf" \
+	"fonts/Computer Modern/ttf/cmunbsr.ttf" \
+	"fonts/Computer Modern/ttf/cmunbtl.ttf" \
+	"fonts/Computer Modern/ttf/cmunbto.ttf" \
+	"fonts/Computer Modern/ttf/cmunbx.ttf" \
+	"fonts/Computer Modern/ttf/cmunbxo.ttf" \
+	"fonts/Computer Modern/ttf/cmunci.ttf" \
+	"fonts/Computer Modern/ttf/cmunit.ttf" \
+	"fonts/Computer Modern/ttf/cmunobi.ttf" \
+	"fonts/Computer Modern/ttf/cmunobx.ttf" \
+	"fonts/Computer Modern/ttf/cmunorm.ttf" \
+	"fonts/Computer Modern/ttf/cmunoti.ttf" \
+	"fonts/Computer Modern/ttf/cmunrb.ttf" \
+	"fonts/Computer Modern/ttf/cmunrm.ttf" \
+	"fonts/Computer Modern/ttf/cmunsi.ttf" \
+	"fonts/Computer Modern/ttf/cmunsl.ttf" \
+	"fonts/Computer Modern/ttf/cmunso.ttf" \
+	"fonts/Computer Modern/ttf/cmunss.ttf" \
+	"fonts/Computer Modern/ttf/cmunssdc.ttf" \
+	"fonts/Computer Modern/ttf/cmunst.ttf" \
+	"fonts/Computer Modern/ttf/cmunsx.ttf" \
+	"fonts/Computer Modern/ttf/cmuntb.ttf" \
+	"fonts/Computer Modern/ttf/cmunti.ttf" \
+	"fonts/Computer Modern/ttf/cmuntt.ttf" \
+	"fonts/Computer Modern/ttf/cmuntx.ttf" \
+	"fonts/Computer Modern/ttf/cmunui.ttf" \
+	"fonts/Computer Modern/ttf/cmunvi.ttf" \
+	"fonts/Computer Modern/ttf/cmunvt.ttf" \
 	"fonts/Courier New/Courier New.ttf" \
 	"fonts/Courier/fonts/OGCourier-Bold.otf" \
 	"fonts/Courier/fonts/OGCourier-Bold.ttf" \
@@ -1619,12 +1637,10 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/io.kc3" \
 	"lib/kc3/0.1/json.kc3" \
 	"lib/kc3/0.1/kc3.1.kc3" \
-	"lib/kc3/0.1/kc3.dump" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/op.kc3" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
 	"lib/kc3/0.1/kc3/ops.kc3" \
-	"lib/kc3/0.1/kpkg.dump" \
 	"lib/kc3/0.1/kpkg.kc3" \
 	"lib/kc3/0.1/kpkg/package.kc3" \
 	"lib/kc3/0.1/kpkg/repos/automake.kc3" \
@@ -2109,7 +2125,35 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/static/_fonts/OpenSans-Regular.ttf" \
 	"test/httpd/static/_fonts/OpenSans-SemiBold.ttf" \
 	"test/httpd/static/_fonts/OpenSans-SemiBoldItalic.ttf" \
-	"test/httpd/static/_fonts/computer_modern.woff" \
+	"test/httpd/static/_fonts/cmunbi-webfont.woff" \
+	"test/httpd/static/_fonts/cmunbl-webfont.woff" \
+	"test/httpd/static/_fonts/cmunbmo-webfont.woff" \
+	"test/httpd/static/_fonts/cmunbmr-webfont.woff" \
+	"test/httpd/static/_fonts/cmunbso-webfont.woff" \
+	"test/httpd/static/_fonts/cmunbsr-webfont.woff" \
+	"test/httpd/static/_fonts/cmunbtl-webfont.woff" \
+	"test/httpd/static/_fonts/cmunbto-webfont.woff" \
+	"test/httpd/static/_fonts/cmunbx-webfont.woff" \
+	"test/httpd/static/_fonts/cmunci-webfont.woff" \
+	"test/httpd/static/_fonts/cmunit-webfont.woff" \
+	"test/httpd/static/_fonts/cmunobi-webfont.woff" \
+	"test/httpd/static/_fonts/cmunobx-webfont.woff" \
+	"test/httpd/static/_fonts/cmunorm-webfont.woff" \
+	"test/httpd/static/_fonts/cmunoti-webfont.woff" \
+	"test/httpd/static/_fonts/cmunrm-webfont.woff" \
+	"test/httpd/static/_fonts/cmunsi-webfont.woff" \
+	"test/httpd/static/_fonts/cmunsl-webfont.woff" \
+	"test/httpd/static/_fonts/cmunso-webfont.woff" \
+	"test/httpd/static/_fonts/cmunss-webfont.woff" \
+	"test/httpd/static/_fonts/cmunssdc-webfont.woff" \
+	"test/httpd/static/_fonts/cmunsx-webfont.woff" \
+	"test/httpd/static/_fonts/cmuntb-webfont.woff" \
+	"test/httpd/static/_fonts/cmunti-webfont.woff" \
+	"test/httpd/static/_fonts/cmuntt-webfont.woff" \
+	"test/httpd/static/_fonts/cmuntx-webfont.woff" \
+	"test/httpd/static/_fonts/cmunui-webfont.woff" \
+	"test/httpd/static/_fonts/cmunvi-webfont.woff" \
+	"test/httpd/static/_fonts/cmunvt-webfont.woff" \
 	"test/httpd/static/_fonts/courier_new.woff" \
 	"test/httpd/static/_fonts/courier_new.woff2" \
 	"test/httpd/static/_fonts/fontawesome-webfont.woff" \
