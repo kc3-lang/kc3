@@ -473,6 +473,8 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
     return compare_sw(*(sw *) a, *(sw *) b);
   if (type == &g_sym_Sym)
     return compare_psym(a, b);
+  if (type == &g_sym_Tag)
+    return compare_tag(a, b);
   if (type == &g_sym_Time)
     return compare_time(a, b);
   if (type == &g_sym_Tuple)
