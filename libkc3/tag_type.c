@@ -71,6 +71,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_POINTER:      *dest = sizeof(s_pointer);     return true;
   case TAG_PSTRUCT:      *dest = sizeof(p_struct);      return true;
   case TAG_PSTRUCT_TYPE: *dest = sizeof(p_struct_type); return true;
+  case TAG_PSYM:         *dest = sizeof(s_sym *);       return true;
   case TAG_PTAG:         *dest = sizeof(p_tag);         return true;
   case TAG_PTR:
   case TAG_PTR_FREE:     *dest = sizeof(void *);        return true;
@@ -83,7 +84,6 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_S64:          *dest = sizeof(s64);           return true;
   case TAG_STR:          *dest = sizeof(s_str);         return true;
   case TAG_SW:           *dest = sizeof(sw);            return true;
-  case TAG_PSYM:         *dest = sizeof(s_sym *);       return true;
   case TAG_TIME:         *dest = sizeof(s_time);        return true;
   case TAG_TUPLE:        *dest = sizeof(s_tuple);       return true;
   case TAG_U8:           *dest = sizeof(u8);            return true;

@@ -1637,10 +1637,12 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/io.kc3" \
 	"lib/kc3/0.1/json.kc3" \
 	"lib/kc3/0.1/kc3.1.kc3" \
+	"lib/kc3/0.1/kc3.dump" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/op.kc3" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
 	"lib/kc3/0.1/kc3/ops.kc3" \
+	"lib/kc3/0.1/kpkg.dump" \
 	"lib/kc3/0.1/kpkg.kc3" \
 	"lib/kc3/0.1/kpkg/package.kc3" \
 	"lib/kc3/0.1/kpkg/repos/automake.kc3" \

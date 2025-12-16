@@ -19,7 +19,7 @@ Le serveur web dépend des éléments suivants :
 
 Le serveur web doit être lancé dans un répertoire contenant les fichiers suivants :
 
-```
+```sh
 ./app/controllers/     # Répertoire des contrôleurs (.kc3)
 ./app/templates/       # Répertoire des templates (.ekc3)
 ./app/views/           # Répertoire des vues (.kc3)
