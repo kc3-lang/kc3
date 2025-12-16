@@ -18,7 +18,7 @@ The web server depends on :
 The web server must be started in a directory containing the following
 files :
 
-```
+```sh
 ./app/controllers/     # controllers directory (.kc3)
 ./app/templates/       # templates directory (.ekc3)
 ./app/views/           # views directory (.kc3)
