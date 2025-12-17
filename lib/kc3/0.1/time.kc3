@@ -12,7 +12,9 @@
 
 defmodule Time do
 
-  defstruct [tv_sec: (Sw) 0, tv_nsec: (Sw) 0, tag: (Ptr) 0]
+  defstruct [tv_sec:  (Sw)  0,
+             tv_nsec: (Sw)  0,
+             tag:     (Ptr) 0]
 
   def diff_to_str = cfn Str "time_diff_to_str" (Time, Result)
 

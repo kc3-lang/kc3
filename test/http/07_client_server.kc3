@@ -24,8 +24,8 @@ client_req = %HTTP.Request{method: GET,
                            headers: []}
 quote HTTP.Request.buf_write(client_req, client.buf_rw.w)
 HTTP.Request.buf_write(client_req, client.buf_rw.w)
-quote req = HTTP.Request.buf_parse(server_client.buf_rw.r)
-req = HTTP.Request.buf_parse(server_client.buf_rw.r)
+quote req = Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
+req = Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
 quote puts(req)
 puts(req)
 quote res = HTTP.Response.buf_write(%HTTP.Response{body: "Hello !"}, server_client.buf_rw.w, true)

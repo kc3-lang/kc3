@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef HTTP_TYPES_H
-#define HTTP_TYPES_H
+#ifndef LIBKC3_HTTP_TYPES_H
+#define LIBKC3_HTTP_TYPES_H
 
 #ifdef WIN32
 # include <winsock2.h>
@@ -40,22 +40,23 @@ struct socket_buf {
 };
 
 struct http_request {
-  s_tag method;
-  s_tag body;
-  s_str url;
-  s_str protocol;
-  s_str client_addr;
+  s_time  time;
+  s_tag   method;
+  s_str   url;
+  s_tag   body;
+  s_str   protocol;
+  s_str   client_addr;
   s_list *headers;
   s_list *cookies;
-  s_map params;
+  s_map   params;
 };
 
 struct http_response {
-  s_str protocol;
-  u16 code;
-  s_str message;
+  s_str   protocol;
+  u16     code;
+  s_str   message;
   s_list *headers;
-  s_tag body;
+  s_tag   body;
 };
 
-#endif /* HTTP_TYPES_H */
+#endif /* LIBKC3_HTTP_TYPES_H */

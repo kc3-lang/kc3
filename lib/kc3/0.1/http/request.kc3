@@ -16,9 +16,10 @@ require List
 
 defmodule HTTP.Request do
 
-  defstruct [method: ?,
-             body: ?,
+  defstruct [time: %Time{},
+             method: ?,
              url: "/",
+             body: ?,
              protocol: "HTTP/1.1",
              client_addr: "",
              headers: [],

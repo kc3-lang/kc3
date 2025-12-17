@@ -91,7 +91,6 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     tag_init_u32(&mode, 0700);
     sym_Upload = sym_1("HTTP.Upload");
   }
-  //buf_save_init(buf, &save);
   if (! http_request_buf_parse_method(buf, &tmp_req.method))
     goto restore;
   if (false) {
@@ -99,6 +98,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     err_inspect_tag(&tmp_req.method);
     err_write_1("\n");
   }
+  time_init_now(&tmp_req.time);
   if (buf_read_until_1_into_str(buf, " ", &url) <= 0 ||
       url.size < 1 ||
       url.ptr.pchar[0] != '/') {

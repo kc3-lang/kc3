@@ -96,7 +96,7 @@ defmodule HTTPd do
         end
         request = Struct.put(request, :client_addr, client_addr)
         user_agent = HTTP.Request.header(request, "User-Agent")
-        IO.puts("--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)}")
+        IO.puts("--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
         if (type(request.method) == Str) do
           response = error_405_page(request)
         else
@@ -114,11 +114,15 @@ defmodule HTTPd do
           "Accept-Ranges", "bytes")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
+        dt = Time.now() - request.time
+        dt_str = Time.diff_to_str(dt)
         IO.puts("#{response.code} #{client_addr} #{request.method}" +
-          " #{request.url} #{inspect(user_agent)}")
+          " #{request.url} #{inspect(user_agent)}" +
+          " #{dt_str}")
         if (response.code >= 400) do
           Err.puts("#{response.code} #{client_addr} #{request.method}" +
-            " #{request.url} #{inspect(user_agent)}")
+            " #{request.url} #{inspect(user_agent)}" +
+            " #{dt_str}")
         end
       else
         Event.del(client_ev)

@@ -16,8 +16,8 @@ quote (server_client = Socket.accept(server)) ; void
 (server_client = Socket.Buf.accept(server)) ; void
 quote Buf.write_str(client.buf_rw.w, "GET / HTTP/1.0\r\n\r\n")
 Buf.write_str(client.buf_rw.w, "GET / HTTP/1.0\r\n\r\n")
-quote req = HTTP.Request.buf_parse(server_client.buf_rw.r)
-req = HTTP.Request.buf_parse(server_client.buf_rw.r)
+quote req = Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
+req = Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
 quote response = %HTTP.Response{body: "Hello, KC3 HTTP test server !"}
 response = %HTTP.Response{body: "Hello, KC3 HTTP test server !"}
 quote HTTP.Response.buf_write(response, server_client.buf_rw.w, true)
@@ -32,8 +32,8 @@ client_req = %HTTP.Request{method: GET,
                            headers: []}
 quote HTTP.Request.buf_write(client_req, client.buf_rw.w)
 HTTP.Request.buf_write(client_req, client.buf_rw.w)
-quote HTTP.Request.buf_parse(server_client.buf_rw.r)
-HTTP.Request.buf_parse(server_client.buf_rw.r)
+quote Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
+Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
 quote HTTP.Response.buf_write(response, server_client.buf_rw.w, true)
 HTTP.Response.buf_write(response, server_client.buf_rw.w, true)
 quote HTTP.Response.buf_parse(client.buf_rw.r, true)

@@ -178,6 +178,7 @@ p_sym   sym_target_to_pointer_type (p_sym target_type);
 bool    sym_to_ffi_type (p_sym sym, ffi_type *result_type,
                          ffi_type **dest);
 bool    sym_to_tag_type (p_sym sym, e_tag_type *dest);
+u8 *    sym_type_alignment (const s_sym *type, u8 *dest);
 bool    sym_type_is_integer (p_sym type);
 uw *    sym_type_size (p_sym type, uw *size);
 

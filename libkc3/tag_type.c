@@ -25,6 +25,63 @@
       ((i >= S16_MIN) ? TAG_S16 :               \
        TAG_S32)))))
 
+u8 * tag_type_alignment (e_tag_type tag_type, u8 *dest)
+{
+  assert(dest);
+  switch (tag_type) {
+  case TAG_ARRAY:                       *dest = 8;          return dest;
+  case TAG_BOOL:                        *dest = 1;          return dest;
+  case TAG_CHARACTER:                   *dest = 4;          return dest;
+  case TAG_DO_BLOCK:                    *dest = 8;          return dest;
+  case TAG_F32:                         *dest = 4;          return dest;
+  case TAG_F64:                         *dest = 8;          return dest;
+#if HAVE_F80
+  case TAG_F80:                         *dest = 8;          return dest;
+#endif
+#if HAVE_F128
+  case TAG_F128:                        *dest = 16;         return dest;
+#endif
+  case TAG_FACT:                        *dest = 8;          return dest;
+  case TAG_IDENT:                       *dest = 8;          return dest;
+  case TAG_INTEGER:                     *dest = 8;          return dest;
+  case TAG_MAP:                         *dest = 8;          return dest;
+  case TAG_PCALL:
+  case TAG_PCALLABLE:
+  case TAG_PCOMPLEX:
+  case TAG_PCOW:
+  case TAG_PFACTS:
+  case TAG_PLIST:
+  case TAG_POINTER:
+  case TAG_PSTRUCT:
+  case TAG_PSTRUCT_TYPE:
+  case TAG_PSYM:
+  case TAG_PTAG:
+  case TAG_PTR:
+  case TAG_PTR_FREE:
+  case TAG_PVAR:                        *dest = 8;          return dest;
+  case TAG_QUOTE:                       *dest = 8;          return dest;
+  case TAG_RATIO:                       *dest = 8;          return dest;
+  case TAG_S8:                          *dest = 1;          return dest;
+  case TAG_S16:                         *dest = 2;          return dest;
+  case TAG_S32:                         *dest = 4;          return dest;
+  case TAG_S64:                         *dest = 8;          return dest;
+  case TAG_STR:                         *dest = 8;          return dest;
+  case TAG_SW:                          *dest = sizeof(sw); return dest;
+  case TAG_TIME:                        *dest = 8;          return dest;
+  case TAG_TUPLE:                       *dest = 8;          return dest;
+  case TAG_U8:                          *dest = 1;          return dest;
+  case TAG_U16:                         *dest = 2;          return dest;
+  case TAG_U32:                         *dest = 4;          return dest;
+  case TAG_U64:                         *dest = 8;          return dest;
+  case TAG_UNQUOTE:                     *dest = 8;          return dest;
+  case TAG_UW:                          *dest = sizeof(uw); return dest;
+  case TAG_VOID:                        *dest = 1;          return dest;
+  }
+  err_write_1("tag_alignment: not implemented: ");
+  err_puts(tag_type_to_string(tag_type));
+  abort();
+}
+
 e_tag_type tag_type_int (int i)
 {
   assert(i <= S32_MAX);

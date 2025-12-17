@@ -54,9 +54,9 @@ void struct_test (void)
   const s_str path = STR("struct_test.kc3");
   env_load(env_global(), &path);
   TEST_CASE_RUN(struct_test_fact_w);
+  TEST_CASE_RUN(struct_test_time);
   TEST_CASE_RUN(struct_test_http_request);
   TEST_CASE_RUN(struct_test_http_response);
-  TEST_CASE_RUN(struct_test_time);
 }
 
 TEST_CASE(struct_test_fact_w)
@@ -71,6 +71,7 @@ TEST_CASE_END(struct_test_fact_w)
 
 TEST_CASE(struct_test_http_request)
 {
+  STRUCT_TEST_OFFSETOF(s_http_request, HTTP.Request, time);
   STRUCT_TEST_OFFSETOF(s_http_request, HTTP.Request, method);
   STRUCT_TEST_OFFSETOF(s_http_request, HTTP.Request, body);
   STRUCT_TEST_OFFSETOF(s_http_request, HTTP.Request, url);
@@ -95,6 +96,7 @@ TEST_CASE(struct_test_time)
 {
   STRUCT_TEST_OFFSETOF(s_time, Time, tv_sec);
   STRUCT_TEST_OFFSETOF(s_time, Time, tv_nsec);
+  STRUCT_TEST_OFFSETOF(s_time, Time, tag);
   STRUCT_TEST_SIZEOF(  s_time, Time);
 }
 TEST_CASE_END(struct_test_time)

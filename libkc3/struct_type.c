@@ -46,8 +46,15 @@ void struct_type_clean (s_struct_type *st)
 #endif
 }
 
-uw struct_type_compute_size (uw offset)
+uw struct_type_compute_size (uw offset, u8 align_max)
 {
+  if (false) {
+    err_write_1("struct_type_compute_size: offset=");
+    err_inspect_uw_decimal(offset);
+    err_write_1(" align_max=");
+    err_inspect_u8_decimal(align_max);
+    err_write_1("\n");
+  }
 #ifdef WIN64
   const bool win64 = true;
 #else
@@ -59,7 +66,7 @@ uw struct_type_compute_size (uw offset)
     ! (HAVE_F128 || (HAVE_F80 && F80_SIZE == 16))
   return (offset + 7) / 8 * 8;
 #else
-  return (offset + 15) / 16 * 16;
+  return (offset + (align_max - 1)) / align_max * align_max;
 #endif
 }
 
@@ -144,6 +151,7 @@ s_struct_type * struct_type_init (s_struct_type *st,
                                   const s_sym *module,
                                   const s_list *spec)
 {
+  u8 align;
   uw count;
   uw i;
   bool must_clean = false;
@@ -161,6 +169,7 @@ s_struct_type * struct_type_init (s_struct_type *st,
     err_write_1("\n");
   }
   count = list_length(spec);
+  tmp.align_max = 1;
   tmp.module = module;
   if (count) {
     if (! map_init(&tmp.map, count))
@@ -198,6 +207,11 @@ s_struct_type * struct_type_init (s_struct_type *st,
       }
       tag_init_copy(tmp.map.key + i,   tuple->tag + 0);
       tag_init_copy(tmp.map.value + i, tuple->tag + 1);
+      if (! tag_alignment(tmp.map.value + i, &align)) {
+        map_clean(&tmp.map);
+        free(tmp.offset);
+        return NULL;
+      }
       tag_type_var(tmp.map.value + i, &type);
       if (! sym_must_clean(type, &must_clean)) {
         map_clean(&tmp.map);
@@ -206,13 +220,13 @@ s_struct_type * struct_type_init (s_struct_type *st,
       }
       if (must_clean)
         tmp.must_clean = true;
-      offset = struct_type_padding(offset, size);
+      offset = struct_type_padding(offset, align, &tmp.align_max);
       tmp.offset[i] = offset;
       offset += size;
       i++;
       s = list_next(s);
     }
-    tmp.size = struct_type_compute_size(offset);
+    tmp.size = struct_type_compute_size(offset, tmp.align_max);
   }
   tmp.ref_count = 1;
 #if HAVE_PTHREAD
@@ -323,27 +337,16 @@ s_struct_type * struct_type_new_ref (s_struct_type *st)
   return st;
 }
 
-uw struct_type_padding (uw offset, uw size)
+uw struct_type_padding (uw offset, u8 align, u8 *max)
 {
-  unsigned int align = 1;
-  switch (sizeof(uw)) {
-  case 4:
-    if (size >= 4)
-      align = 4;
-    break;
-  case 8:
-    if (size >= 8)
-      align = 8;
-    break;
-  default:
-    err_puts("struct_type_padding: invalid uw size");
-    abort();
-  }
+  if (align > *max)
+    *max = align;
   return (offset + (align - 1)) / align * align;
 }
 
 s_struct_type * struct_type_update_map (s_struct_type *st)
 {
+  u8 align;
   uw i;
   bool must_clean;
   uw offset = 0;
@@ -353,23 +356,37 @@ s_struct_type * struct_type_update_map (s_struct_type *st)
   assert(st);
   assert(st->map.count);
   tmp = *st;
+  tmp.align_max = 1;
   if (! (tmp.offset = alloc(tmp.map.count * sizeof(uw))))
     return NULL;
   tmp.must_clean = false;
   i = 0;
   while (i < tmp.map.count) {
+    if (! tag_type_var(tmp.map.value + i, &type)) {
+      free(tmp.offset);
+      return NULL;
+    }
     if (tmp.map.value[i].type == TAG_PVAR) {
-      type = tmp.map.value[i].data.pvar->type;
       if (! sym_type_size(type, &size)) {
         free(tmp.offset);
         return NULL;
       }
+      if (! sym_type_alignment(type, &align)) {
+        free(tmp.offset);
+        return NULL;
+      }
     }
-    else if (! tag_size(tmp.map.value + i, &size)) {
-      free(tmp.offset);
-      return NULL;
+    else {
+      if (! tag_size(tmp.map.value + i, &size)) {
+        free(tmp.offset);
+        return NULL;
+      }
+      if (! tag_alignment(tmp.map.value + i, &align)) {
+        free(tmp.offset);
+        return NULL;
+      }
     }
-    offset = struct_type_padding(offset, size);
+    offset = struct_type_padding(offset, align, &tmp.align_max);
     tmp.offset[i] = offset;
     offset += size;
     tag_type_var(tmp.map.value + i, &type);
@@ -381,7 +398,7 @@ s_struct_type * struct_type_update_map (s_struct_type *st)
       tmp.must_clean = true;
     i++;
   }
-  tmp.size = struct_type_compute_size(offset);
+  tmp.size = struct_type_compute_size(offset, tmp.align_max);
   *st = tmp;
   return st;
 }

@@ -69,6 +69,22 @@ s_tag * tag_1 (s_tag *tag, const char *p)
   return tag_init_1(tag, p);
 }
 
+u8 * tag_alignment (const s_tag *tag, u8 *dest)
+{
+  const s_sym *type;
+  if (! tag_type_var(tag, &type))
+    return NULL;
+  if (sym_is_array_type(type)) {
+    // TODO: 32 bit
+    if (tag->data.array.size >= 16) {
+      *dest = 16;
+      return dest;
+    }
+    type = tag->data.array.element_type;
+  }
+  return sym_type_alignment(type, dest);
+}
+
 s_tag * tag_and (s_tag *a, s_tag *b, s_tag *dest)
 {
   bool p;

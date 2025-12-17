@@ -1188,6 +1188,199 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   return false;
 }
 
+u8 * sym_type_alignment (const s_sym *type, u8 *dest)
+{
+  s_struct_type *st;
+  assert(type);
+  assert(dest);
+  if (type == &g_sym_Array) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Bool) {
+    *dest = 1;
+    return dest;
+  }
+  if (type == &g_sym_Character) {
+    *dest = 4;
+    return dest;
+  }
+  if (type == &g_sym_Block) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_F32) {
+    *dest = 4;
+    return dest;
+  }
+  if (type == &g_sym_F64) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_F80) {
+    *dest = 16; // TODO
+    return dest;
+  }
+  if (type == &g_sym_F128) {
+    *dest = 16;
+    return dest;
+  }
+  if (type == &g_sym_Fact) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Ident) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Integer) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Map) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Call) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Callable) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Complex) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Cow) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Facts) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_List) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Pointer) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Ptr) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_PtrFree) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Struct) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_StructType) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Sym) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Tag) {
+    *dest = 16; // TODO
+    return dest;
+  }
+  if (type == &g_sym_Var) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Quote) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Ratio) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_S8) {
+    *dest = 1;
+    return dest;
+  }
+  if (type == &g_sym_S16) {
+    *dest = 2;
+    return dest;
+  }
+  if (type == &g_sym_S32) {
+    *dest = 4;
+    return dest;
+  }
+  if (type == &g_sym_S64) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Str) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Sw) {
+    *dest = sizeof(sw);
+    return dest;
+  }
+  if (type == &g_sym_Time) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Tuple) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_U8) {
+    *dest = 1;
+    return dest;
+  }
+  if (type == &g_sym_U16) {
+    *dest = 2;
+    return dest;
+  }
+  if (type == &g_sym_U32) {
+    *dest = 4;
+    return dest;
+  }
+  if (type == &g_sym_U64) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Unquote) {
+    *dest = 8;
+    return dest;
+  }
+  if (type == &g_sym_Uw) {
+    *dest = sizeof(uw);
+    return dest;
+  }
+  if (type == &g_sym_Void) {
+    *dest = 1;
+    return dest;
+  }
+  if (sym_is_pointer_type(type, NULL)) {
+    *dest = sizeof(uw);
+    return dest;
+  }
+  if (! pstruct_type_find(type, &st))
+    return NULL;
+  if (st) {
+    *dest = st->align_max;
+    return dest;
+  }
+  err_write_1("sym_type_alignment: not implemented: ");
+  err_inspect_sym(type);
+  err_write_1("\n");
+  abort();
+}
+
 bool sym_type_is_integer (const s_sym *type)
 {
   return (type == &g_sym_Integer ||

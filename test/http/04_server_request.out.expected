@@ -16,10 +16,11 @@ void
 void
 Buf.write_str(client.buf_rw.w, "GET / HTTP/1.0\r\n\r\n")
 (Sw) 18
-req = HTTP.Request.buf_parse(server_client.buf_rw.r)
-%HTTP.Request{method: GET,
-              body: void,
+req = Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
+%HTTP.Request{time: %Time{},
+              method: GET,
               url: "/",
+              body: void,
               protocol: "HTTP/1.0",
               client_addr: "",
               headers: [],
@@ -34,9 +35,10 @@ response = %HTTP.Response{body: "Hello, KC3 HTTP test server !"}
 HTTP.Response.buf_write(response, server_client.buf_rw.w, true)
 (Sw) 93
 client_req = %HTTP.Request{method: GET}
-%HTTP.Request{method: GET,
-              body: ?,
+%HTTP.Request{time: %Time{},
+              method: GET,
               url: "/",
+              body: ?,
               protocol: "HTTP/1.1",
               client_addr: "",
               headers: [],
@@ -44,10 +46,11 @@ client_req = %HTTP.Request{method: GET}
               params: %{}}
 HTTP.Request.buf_write(client_req, client.buf_rw.w)
 (Sw) 18
-HTTP.Request.buf_parse(server_client.buf_rw.r)
-%HTTP.Request{method: GET,
-              body: void,
+Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
+%HTTP.Request{time: %Time{},
+              method: GET,
               url: "/",
+              body: void,
               protocol: "HTTP/1.1",
               client_addr: "",
               headers: [],

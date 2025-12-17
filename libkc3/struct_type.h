@@ -40,7 +40,7 @@ s_struct_type * struct_type_new_copy (s_struct_type *src);
 s_struct_type * struct_type_new_ref (s_struct_type *src);
 
 /* Observers. */
-uw     struct_type_compute_size (uw offset);
+uw     struct_type_compute_size (uw offset, u8 align_max);
 void * struct_type_copy_data (const s_struct_type *st,
                               void *dest,
                               const void *src);
@@ -49,7 +49,7 @@ bool * struct_type_exists (const s_sym *module,
 uw *   struct_type_find_key_index (const s_struct_type *st,
                                    const s_sym *key,
                                    uw *dest);
-uw     struct_type_padding (uw offset, uw size);
+uw     struct_type_padding (uw offset, u8 align, u8 *max);
 
 /* Operators */
 s_struct_type * struct_type_update_map (s_struct_type *st);

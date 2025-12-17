@@ -579,6 +579,7 @@ struct struct_type {
   const s_sym *module;
   s_map map;
   uw *offset;
+  u8 align_max;
   uw size;
   p_callable clean;
   bool must_clean;

@@ -15,9 +15,10 @@ void
 (server_client = Socket.Buf.accept(server)) ; void
 void
 client_req = %HTTP.Request{method: GET}
-%HTTP.Request{method: GET,
-              body: ?,
+%HTTP.Request{time: %Time{},
+              method: GET,
               url: "/",
+              body: ?,
               protocol: "HTTP/1.1",
               client_addr: "",
               headers: [],
@@ -25,25 +26,27 @@ client_req = %HTTP.Request{method: GET}
               params: %{}}
 HTTP.Request.buf_write(client_req, client.buf_rw.w)
 (Sw) 18
-req = HTTP.Request.buf_parse(server_client.buf_rw.r)
-%HTTP.Request{method: GET,
-              body: void,
+req = Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
+%HTTP.Request{time: %Time{},
+              method: GET,
               url: "/",
+              body: void,
               protocol: "HTTP/1.1",
               client_addr: "",
               headers: [],
               cookies: [],
               params: %{}}
 puts(req)
-%HTTP.Request{method: GET,
-              body: void,
+%HTTP.Request{time: %Time{},
+              method: GET,
               url: "/",
+              body: void,
               protocol: "HTTP/1.1",
               client_addr: "",
               headers: [],
               cookies: [],
               params: %{}}
-(Sw) 225
+(Sw) 254
 res = HTTP.Response.buf_write(%HTTP.Response{body: "Hello !"}, server_client.buf_rw.w, true)
 (Sw) 70
 client_response = HTTP.Response.buf_parse(client.buf_rw.r, true)
