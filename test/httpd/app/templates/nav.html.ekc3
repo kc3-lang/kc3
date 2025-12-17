@@ -17,7 +17,7 @@
           <a class="navbar-link<%= if Str.starts_with?(url, "/doc/") || Str.starts_with?(url, "/#{locale}/doc/") do " active" end %>" href="/<%= locale %>/doc/">Documentation</a>
         </li>
         <li class="nav-item">
-          <a class="navbar-link" target="_blank" href="https://git.kmx.io/kc3-lang/kc3">KMXGit</a>
+          <a class="navbar-link" target="_blank" href="https://git.kmx.io/kc3-lang/kc3">git.kmx.io</a>
         </li>
         <li class="nav-item">
           <a class="navbar-link" target="_blank" href="https://codeberg.org/kc3-lang/kc3">Codeberg</a>
