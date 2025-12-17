@@ -127,6 +127,8 @@ void str_delete (s_str *str);
 
 /* Observers */
 s_tag *       str_access (const s_str *str, s_list *key, s_tag *dest);
+u8 *          str_char_u8 (const s_str *str, const s_tag *index,
+                           u8 *dest);
 sw            str_character (const s_str *str, uw position,
                              character *dest);
 character     str_character_escape (character c);

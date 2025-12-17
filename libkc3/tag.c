@@ -1313,9 +1313,7 @@ s_tag * tag_or (s_tag *a, s_tag *b, s_tag *dest)
     assert(! "tag_or: cannot cast to Bool");
     return NULL;
   }
-  if (p)
-    return tag_init_copy(dest, b);
-  return tag_init_bool(dest, false);
+  return tag_init_copy(dest, b);
 }
 
 s_tag * tag_paren (s_tag *tag, s_tag *dest)

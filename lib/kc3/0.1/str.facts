@@ -80,3 +80,5 @@ add {Str, :symbol, Str.position_str}
 replace {Str.position_str, :symbol_value, cfn Sw "str_position_str" (Str, Str)}
 add {Str, :symbol, Str.trim}
 replace {Str.trim, :symbol_value, cfn Str "str_trim" (Str, Result)}
+add {Str, :symbol, Str.char}
+replace {Str.char, :symbol_value, cfn U8 "str_char_u8" (Str, Tag, Result)}

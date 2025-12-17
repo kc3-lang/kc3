@@ -210,9 +210,10 @@ void sha1 (u8 digest[SHA1_DIGEST_LENGTH], const u8 *data, uw len)
 
 #define SHA1_BLOCK_SIZE 64
 
-s_str * sha1_hmac (const s_str *k, const s_str *m, s_str *dest)
+void sha1_hmac (const s_str *k, const s_str *m,
+                u8 dest[SHA1_DIGEST_LENGTH])
 {
-  u8       h[3][SHA1_BLOCK_SIZE] = {0};
+  u8       h[2][SHA1_BLOCK_SIZE] = {0};
   SHA1_CTX h_ctx;
   u8 i;
   s_str k_p;
@@ -246,7 +247,15 @@ s_str * sha1_hmac (const s_str *k, const s_str *m, s_str *dest)
   SHA1Init(&h_ctx);
   SHA1Update(&h_ctx, pad[0], SHA1_BLOCK_SIZE);
   SHA1Update(&h_ctx, h[1], SHA1_DIGEST_LENGTH);
-  SHA1Final(h[2], &h_ctx);
-  return str_init_alloc_copy(dest, SHA1_DIGEST_LENGTH,
-                             (const char *) h[2]);
+  SHA1Final(dest, &h_ctx);
+}
+
+s_str * sha1_hmac_str (const s_str *k, const s_str *m, s_str *dest)
+{
+  s_str tmp;
+  if (! str_init_alloc(&tmp, SHA1_DIGEST_LENGTH))
+    return NULL;
+  sha1_hmac(k, m, tmp.free.pu8);
+  *dest = tmp;
+  return dest;
 }

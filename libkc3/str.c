@@ -42,6 +42,7 @@
 #include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
+#include "u32.h"
 #include "uw.h"
 
 #define DEF_STR_INIT(name, type)                                       \
@@ -213,6 +214,23 @@ u8 * str_byte (const s_str *str, s_tag *key, u8 *dest)
     return NULL;
   }
   *dest = str->ptr.pchar[pos];
+  return dest;
+}
+
+u8 * str_char_u8 (const s_str *str, const s_tag *index, u8 *dest)
+{
+  u32 i;
+  const s_sym *sym_U32 = &g_sym_U32;
+  assert(str);
+  assert(index);
+  assert(dest);
+  if (! u32_init_cast(&i, &sym_U32, index))
+    return NULL;
+  if (i >= str->size) {
+    err_puts("str_char_u8: out of bounds");
+    return NULL;
+  }
+  *dest = str->ptr.pu8[i];
   return dest;
 }
 
