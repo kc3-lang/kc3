@@ -16,6 +16,7 @@
 #include "integer.h"
 #include "ratio.h"
 #include "tag.h"
+#include "time.h"
 
 s_tag * tag_sub (s_tag *a, s_tag *b, s_tag *dest)
 {
@@ -910,6 +911,15 @@ s_tag * tag_sub (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
+    default:
+      goto ko;
+    }
+  case TAG_TIME:
+    switch (b->type) {
+    case TAG_TIME:
+      time_sub(&a->data.time, &b->data.time, &dest->data.time);
+      dest->type = TAG_TIME;
+      return dest;
     default:
       goto ko;
     }
