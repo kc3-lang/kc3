@@ -68,17 +68,31 @@ s_str * time_diff_to_str (const s_time *time, s_str *dest)
   uw months;
   uw seconds;
   uw total_seconds;
+  uw years;
   assert(time);
   assert(dest);
   buf_init_const(&buf, sizeof(a) - 1, a);
-  if (time->tv_sec < 0 || time->tv_nsec < 0 ||
-      time->tv_nsec > 1000 * 1000 * 1000) {
+  if (time->tv_nsec < 0 || time->tv_nsec > 1000 * 1000 * 1000) {
     err_puts("time_diff_to_str: invalid time");
     assert(! "time_diff_to_str: invalid time");
     return NULL;
   }
-  total_seconds = time->tv_sec;
-  milliseconds = time->tv_nsec / (1000 * 1000);
+  if (time->tv_sec >= 0) {
+    total_seconds = time->tv_sec;
+    milliseconds = time->tv_nsec / (1000 * 1000);
+  }
+  else {
+    buf_write_1(&buf, "-");
+    total_seconds = -time->tv_sec;
+    if (time->tv_nsec > 0) {
+      total_seconds--;
+      milliseconds = (1000000000 - time->tv_nsec) / (1000 * 1000);
+    }
+    else
+      milliseconds = time->tv_nsec / (1000 * 1000);
+  }
+  years = total_seconds / TIME_SECONDS_PER_YEAR;
+  total_seconds        %= TIME_SECONDS_PER_YEAR;
   months = total_seconds / TIME_SECONDS_PER_MONTH;
   total_seconds         %= TIME_SECONDS_PER_MONTH;
   days = total_seconds / TIME_SECONDS_PER_DAY;
@@ -87,6 +101,10 @@ s_str * time_diff_to_str (const s_time *time, s_str *dest)
   total_seconds        %= TIME_SECONDS_PER_HOUR;
   minutes = total_seconds / TIME_SECONDS_PER_MINUTE;
   seconds = total_seconds % TIME_SECONDS_PER_MINUTE;
+  if (years) {
+    buf_inspect_uw_decimal(&buf, years);
+    buf_write_1(&buf, "y ");
+  }
   if (months) {
     buf_inspect_uw_decimal_pad(&buf, 2, '0', months);
     buf_write_1(&buf, "mo ");

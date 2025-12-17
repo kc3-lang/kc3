@@ -28,6 +28,7 @@
 #define TIME_SECONDS_PER_HOUR   (60 * 60)
 #define TIME_SECONDS_PER_DAY    (60 * 60 * 24)
 #define TIME_SECONDS_PER_MONTH  (60 * 60 * 24 * 31)
+#define TIME_SECONDS_PER_YEAR   (60 * 60 * 24 * 365)
 
 /* Stack-allocation compatible functions. Call time_clean if
    time_init argument allocate was true. */
