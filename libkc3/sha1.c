@@ -183,3 +183,70 @@ SHA1Final(uint8_t digest[SHA1_DIGEST_LENGTH], SHA1_CTX *context)
 	}
 	memset(context, 0, sizeof(*context));
 }
+
+/* kc3
+ * Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+ *
+ * Permission is hereby granted to use this software granted the above
+ * copyright notice and this permission paragraph are included in all
+ * copies and substantial portions of this software.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+ * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+ * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+ * THIS SOFTWARE.
+ */
+
+#include "assert.h"
+#include "str.h"
+
+void sha1 (u8 digest[SHA1_DIGEST_LENGTH], const u8 *data, uw len)
+{
+  SHA1_CTX context;
+  SHA1Init(&context);
+  SHA1Update(&context, data, len);
+  SHA1Final(digest, &context);
+}
+
+#define SHA1_BLOCK_SIZE 64
+
+s_str * sha1_hmac (const s_str *k, const s_str *m, s_str *dest)
+{
+  u8       h[3][SHA1_BLOCK_SIZE] = {0};
+  SHA1_CTX h_ctx;
+  u8 i;
+  s_str k_p;
+  u8 pad[2][SHA1_BLOCK_SIZE];
+  assert(SHA1_DIGEST_LENGTH <= SHA1_BLOCK_SIZE);
+  if (k->size > SHA1_BLOCK_SIZE) {
+    SHA1Init(&h_ctx);
+    SHA1Update(&h_ctx, k->ptr.pu8, k->size);
+    SHA1Final(h[0], &h_ctx);
+    str_init(&k_p, NULL, SHA1_DIGEST_LENGTH, (const char *) h[0]);
+  }
+  else
+    str_init(&k_p, NULL, k->size, k->ptr.p);
+  memset(pad[0], 0x5c, SHA1_BLOCK_SIZE);
+  memset(pad[1], 0x36, SHA1_BLOCK_SIZE);
+  i = 0;
+  while (i < k_p.size) {
+    pad[0][i] ^= k_p.ptr.pu8[i];
+    pad[1][i] ^= k_p.ptr.pu8[i];
+    i++;
+  }
+  while (i < SHA1_BLOCK_SIZE) {
+    pad[0][i] ^= 0;
+    pad[1][i] ^= 0;
+    i++;
+  }
+  SHA1Init(&h_ctx);
+  SHA1Update(&h_ctx, pad[1], SHA1_BLOCK_SIZE);
+  SHA1Update(&h_ctx, m->ptr.p, m->size);
+  SHA1Final(h[1], &h_ctx);
+  SHA1Init(&h_ctx);
+  SHA1Update(&h_ctx, pad[0], SHA1_BLOCK_SIZE);
+  SHA1Update(&h_ctx, h[1], SHA1_DIGEST_LENGTH);
+  SHA1Final(h[2], &h_ctx);
+  return str_init_alloc_copy(dest, SHA1_DIGEST_LENGTH,
+                             (const char *) h[2]);
+}
