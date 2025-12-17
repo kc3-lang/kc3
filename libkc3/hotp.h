@@ -1,4 +1,4 @@
-o/* kc3
+/* kc3
  * Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
@@ -15,6 +15,7 @@ o/* kc3
 
 #include "types.h"
 
-s_str * hotp_value (const s_str *k, const s_tag *c, s_str *dest);
+void    hotp_value (const s_str *k, u64 c, char dest[7]);
+s_str * hotp_value_str (const s_str *k, const s_tag *c, s_str *dest);
 
 #endif /* LIBKC3_HOTP_H */

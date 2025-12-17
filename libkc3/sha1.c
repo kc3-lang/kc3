@@ -117,7 +117,7 @@ SHA1Transform(uint32_t state[5],
  * SHA1Init - Initialize new context
  */
 void
-SHA1Init(SHA1_CTX *context)
+SHA1Init(s_sha1 *context)
 {
 
 	/* SHA1 initialization constants */
@@ -133,7 +133,7 @@ SHA1Init(SHA1_CTX *context)
  * Run your data through this.
  */
 void
-SHA1Update(SHA1_CTX *context, const uint8_t *data, size_t len)
+SHA1Update(s_sha1 *context, const uint8_t *data, size_t len)
 {
 	size_t i, j;
 
@@ -155,7 +155,7 @@ SHA1Update(SHA1_CTX *context, const uint8_t *data, size_t len)
  * Add padding and return the message digest.
  */
 void
-SHA1Pad(SHA1_CTX *context)
+SHA1Pad(s_sha1 *context)
 {
 	uint8_t finalcount[8];
 	unsigned int i;
@@ -172,7 +172,7 @@ SHA1Pad(SHA1_CTX *context)
 }
 
 void
-SHA1Final(uint8_t digest[SHA1_DIGEST_LENGTH], SHA1_CTX *context)
+SHA1Final(uint8_t digest[SHA1_DIGEST_LENGTH], s_sha1 *context)
 {
 	unsigned int i;
 
@@ -196,13 +196,13 @@ SHA1Final(uint8_t digest[SHA1_DIGEST_LENGTH], SHA1_CTX *context)
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-
 #include "assert.h"
+#include "sha1.h"
 #include "str.h"
 
 void sha1 (u8 digest[SHA1_DIGEST_LENGTH], const u8 *data, uw len)
 {
-  SHA1_CTX context;
+  s_sha1 context;
   SHA1Init(&context);
   SHA1Update(&context, data, len);
   SHA1Final(digest, &context);
@@ -214,7 +214,7 @@ void sha1_hmac (const s_str *k, const s_str *m,
                 u8 dest[SHA1_DIGEST_LENGTH])
 {
   u8       h[2][SHA1_BLOCK_SIZE] = {0};
-  SHA1_CTX h_ctx;
+  s_sha1   h_ctx;
   u8 i;
   s_str k_p;
   u8 pad[2][SHA1_BLOCK_SIZE];

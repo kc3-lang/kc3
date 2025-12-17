@@ -23,7 +23,6 @@
 #include <sys/types.h>
 #include <time.h>
 #include <pthread.h>
-#include "sha1.h"
 
 #define MP_28BIT
 #include "tommath.h"
@@ -68,6 +67,11 @@ extern "C" {
 # define lstat(path, buf) _stat(path, buf)
 # define stat _stat
 #endif
+
+/* SHA1 */
+#define	SHA1_BLOCK_LENGTH         64
+#define	SHA1_DIGEST_LENGTH        20
+#define	SHA1_DIGEST_STRING_LENGTH (SHA1_DIGEST_LENGTH * 2 + 1)
 
 /* Basic integer types. */
 typedef int8_t             s8;
@@ -260,6 +264,7 @@ typedef struct ratio                   s_ratio;
 typedef struct rpc_response            s_rpc_response;
 typedef struct rwlock                  s_rwlock;
 typedef struct sequence                s_sequence;
+typedef struct sha1                    s_sha1;
 typedef struct sha512                  s_sha512;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
@@ -283,11 +288,11 @@ typedef union ptr_w         u_ptr_w;
 typedef union tag_data      u_tag_data;
 
 /* typedefs */
-typedef u32            character;
-typedef s_tag *        t_facts_spec[];
-typedef s64            t_fd;
-typedef SHA1_CTX       t_hash;
-typedef u64            t_skiplist_height;
+typedef u32             character;
+typedef s_tag *         t_facts_spec[];
+typedef s64             t_fd;
+typedef s_sha1          t_hash;
+typedef u64             t_skiplist_height;
 
 /* pointer types */
 typedef s_buf *           p_buf;
@@ -436,6 +441,12 @@ struct rwlock {
   pthread_rwlock_t rwlock;
   sw               count;
   pthread_t        thread;
+};
+
+struct sha1 {
+  uint32_t state[5];
+  uint64_t count;
+  uint8_t buffer[SHA1_BLOCK_LENGTH];
 };
 
 struct sha512 {

@@ -16,6 +16,7 @@
 #include "data.h"
 #include "hash.h"
 #include "list.h"
+#include "sha1.h"
 #include "str.h"
 #include "sym.h"
 #include "tag.h"

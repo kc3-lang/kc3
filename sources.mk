@@ -650,6 +650,8 @@ KC3_C_SOURCES = \
 	"libkc3/frame.h" \
 	"libkc3/hash.c" \
 	"libkc3/hash.h" \
+	"libkc3/hotp.c" \
+	"libkc3/hotp.h" \
 	"libkc3/ht.c" \
 	"libkc3/ht.h" \
 	"libkc3/ident.c" \
@@ -1622,6 +1624,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gtk4/text_view.kc3" \
 	"lib/kc3/0.1/gtk4/widget.kc3" \
 	"lib/kc3/0.1/gtk4/window.kc3" \
+	"lib/kc3/0.1/hotp.kc3" \
 	"lib/kc3/0.1/html.kc3" \
 	"lib/kc3/0.1/http.kc3" \
 	"lib/kc3/0.1/http/request.kc3" \
@@ -1705,6 +1708,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/set/item/tag.kc3" \
 	"lib/kc3/0.1/set/tag.kc3" \
 	"lib/kc3/0.1/sh.kc3" \
+	"lib/kc3/0.1/sha1.kc3" \
 	"lib/kc3/0.1/sha256.kc3" \
 	"lib/kc3/0.1/smtp.kc3" \
 	"lib/kc3/0.1/socket.kc3" \

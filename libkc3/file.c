@@ -925,7 +925,7 @@ u8 * file_sha1 (const s_str *path, u8 *dest)
   sw e;
   t_fd fd = -1;
   sw r;
-  SHA1_CTX sha1;
+  s_sha1 sha1;
   if (! file_open_r(path, &fd))
     return NULL;
   SHA1Init(&sha1);

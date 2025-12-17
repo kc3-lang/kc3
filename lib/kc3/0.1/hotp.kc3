@@ -12,6 +12,6 @@
 
 defmodule HOTP do
 
-  def value = cfn Str "hotp_value" (Str, Tag, Result)
+  def value = cfn Str "hotp_value_str" (Str, Tag, Result)
 
 end

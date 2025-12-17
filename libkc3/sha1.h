@@ -1,45 +1,26 @@
-/*	$OpenBSD: sha1.h,v 1.24 2012/12/05 23:19:57 deraadt Exp $	*/
-
 /*
  * SHA-1 in C
  * By Steve Reid <steve@edmweb.com>
  * 100% Public Domain
  */
+/* kc3
+ * Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+ *
+ * Permission is hereby granted to use this software granted the above
+ * copyright notice and this permission paragraph are included in all
+ * copies and substantial portions of this software.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+ * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+ * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+ * THIS SOFTWARE.
+ */
 
-#ifndef _SHA1_H
-#define _SHA1_H
+#ifndef LIBKC3_SHA1_H
+#define LIBKC3_SHA1_H
 
-#include <sys/types.h>
-
-#include <stdint.h>
-
-#define	SHA1_BLOCK_LENGTH		64
-#define	SHA1_DIGEST_LENGTH		20
-#define	SHA1_DIGEST_STRING_LENGTH	(SHA1_DIGEST_LENGTH * 2 + 1)
-
-typedef struct {
-    uint32_t state[5];
-    uint64_t count;
-    uint8_t buffer[SHA1_BLOCK_LENGTH];
-} SHA1_CTX;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void SHA1Init(SHA1_CTX *);
-void SHA1Pad(SHA1_CTX *);
-void SHA1Transform(uint32_t [5], const uint8_t [SHA1_BLOCK_LENGTH]);
-void SHA1Update(SHA1_CTX *, const uint8_t *, size_t);
-void SHA1Final(uint8_t [SHA1_DIGEST_LENGTH], SHA1_CTX *);
-char *SHA1End(SHA1_CTX *, char *);
-char *SHA1File(const char *, char *);
-char *SHA1FileChunk(const char *, char *, off_t, off_t);
-char *SHA1Data(const uint8_t *, size_t, char *);
-
-#ifdef __cplusplus
-}
-#endif
+#include "endian.h"
+#include "types.h"
 
 #define HTONDIGEST(x) do {                                     \
         x[0] = htonl(x[0]);                                    \
@@ -55,4 +36,21 @@ char *SHA1Data(const uint8_t *, size_t, char *);
         x[3] = ntohl(x[3]);                                    \
         x[4] = ntohl(x[4]); } while (0)
 
-#endif /* _SHA1_H */
+void  SHA1Init(s_sha1 *);
+void  SHA1Pad(s_sha1 *);
+void  SHA1Transform(uint32_t [5], const uint8_t [SHA1_BLOCK_LENGTH]);
+void  SHA1Update(s_sha1 *, const uint8_t *, size_t);
+void  SHA1Final(uint8_t [SHA1_DIGEST_LENGTH], s_sha1 *);
+char *SHA1End(s_sha1 *, char *);
+char *SHA1File(const char *, char *);
+char *SHA1FileChunk(const char *, char *, off_t, off_t);
+char *SHA1Data(const uint8_t *, size_t, char *);
+
+#include "types.h"
+
+/* HMAC functions. */
+void    sha1_hmac (const s_str *k, const s_str *m,
+                   u8 dest[SHA1_DIGEST_LENGTH]);
+s_str * sha1_hmac_str (const s_str *k, const s_str *m, s_str *dest);
+
+#endif /* LIBKC3_SHA1_H */

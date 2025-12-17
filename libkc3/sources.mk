@@ -122,6 +122,7 @@ HEADERS = \
 	"fn_clause.h" \
 	"frame.h" \
 	"hash.h" \
+	"hotp.h" \
 	"ht.h" \
 	"ident.h" \
 	"inspect.h" \
@@ -331,6 +332,7 @@ SOURCES = \
 	"fn_clause.c" \
 	"frame.c" \
 	"hash.c" \
+	"hotp.c" \
 	"ht.c" \
 	"ident.c" \
 	"inspect.c" \
@@ -653,6 +655,7 @@ LO_SOURCES = \
 	"fn_clause.c" \
 	"frame.c" \
 	"hash.c" \
+	"hotp.c" \
 	"ht.c" \
 	"ident.c" \
 	"inspect.c" \
