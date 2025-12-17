@@ -32,6 +32,7 @@ defmodule HTTPd do
 
   def load_app = fn () {
     HTTP.mime_type_load("config/mime.types")
+    load_directory("app/lib/")
     load_directory("app/models/")
     if (File.exists?("config/app.kc3")) do
       load("config/app.kc3")
