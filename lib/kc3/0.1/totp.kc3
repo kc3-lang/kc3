@@ -1,0 +1,36 @@
+## kc3
+## Copyright from 2020 to 2025 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+require Base32
+require HOTP
+
+defmodule TOTP do
+
+  def is_valid? = fn (totp, secret, window) {
+    length = Str.size(totp)
+    if (length == 6) do
+      t = Time.now()
+      counter = (t.tv_sec / 30) - window / 2
+      k = Base32.decode(secret)
+      i = 0
+      while i < window do
+        value = HOTP.value(k, counter + i)
+        if (totp == value) do
+          return true
+        end
+        i = i + 1
+      end
+    end
+    false
+  }
+
+end
