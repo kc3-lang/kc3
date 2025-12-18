@@ -6,6 +6,7 @@ HEADERS = \
 	"arg.h" \
 	"array.h" \
 	"assert.h" \
+	"base32.h" \
 	"binding.h" \
 	"block.h" \
 	"bool.h" \
@@ -217,6 +218,7 @@ SOURCES = \
 	"alloc.c" \
 	"arg.c" \
 	"array.c" \
+	"base32.c" \
 	"binding.c" \
 	"block.c" \
 	"bool.c" \
@@ -540,6 +542,7 @@ LO_SOURCES = \
 	"alloc.c" \
 	"arg.c" \
 	"array.c" \
+	"base32.c" \
 	"binding.c" \
 	"block.c" \
 	"bool.c" \

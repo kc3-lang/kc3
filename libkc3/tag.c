@@ -1717,6 +1717,8 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
     err_write_1(tag_type_to_string(tag->type));
     err_write_1(" to ");
     err_puts(type->str.ptr.pchar);
+    err_stacktrace();
+    err_write_1("\n");
     assert(! "tag_to_pointer: cannot cast");
     return false;
   }

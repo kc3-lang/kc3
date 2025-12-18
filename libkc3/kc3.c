@@ -83,6 +83,8 @@ const s_str g_kc3_base_decimal = STR("0123456789");
 const s_str g_kc3_base_hexadecimal = STR("0123456789abcdef");
 const s_str g_kc3_bases_hexadecimal[2] = {STR("0123456789abcdef"),
                                           STR("0123456789ABCDEF")};
+const s_str g_kc3_base32 = STR("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                               "234567");
 const s_str g_kc3_base64 = STR("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                "abcdefghijklmnopqrstuvwxyz"
                                "0123456789+/");

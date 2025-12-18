@@ -418,6 +418,7 @@ s_buf * buf_init_const (s_buf *buf, uw size, const char *p)
   tmp.ptr.pchar = (char *) p;
   tmp.read_only = true;
   tmp.size = size;
+  tmp.wpos = size;
 #if HAVE_PTHREAD
   tmp.rwlock = rwlock_new();
 #endif

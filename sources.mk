@@ -407,6 +407,8 @@ KC3_C_SOURCES = \
 	"libkc3/array.c" \
 	"libkc3/array.h" \
 	"libkc3/assert.h" \
+	"libkc3/base32.c" \
+	"libkc3/base32.h" \
 	"libkc3/binding.c" \
 	"libkc3/binding.h" \
 	"libkc3/block.c" \
@@ -1560,6 +1562,7 @@ KC3_KMSG_SOURCES = \
 KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/alist.kc3" \
 	"lib/kc3/0.1/array.kc3" \
+	"lib/kc3/0.1/base32.kc3" \
 	"lib/kc3/0.1/bin/primes.kc3" \
 	"lib/kc3/0.1/bool.facts" \
 	"lib/kc3/0.1/buf.kc3" \
