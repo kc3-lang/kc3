@@ -71,12 +71,12 @@ s_str * time_diff_to_str (const s_time *time, s_str *dest)
   uw years;
   assert(time);
   assert(dest);
-  buf_init_const(&buf, sizeof(a) - 1, a);
   if (time->tv_nsec < 0 || time->tv_nsec > 1000 * 1000 * 1000) {
     err_puts("time_diff_to_str: invalid time");
     assert(! "time_diff_to_str: invalid time");
     return NULL;
   }
+  buf_init(&buf, false, sizeof(a) - 1, a);
   if (time->tv_sec >= 0) {
     total_seconds = time->tv_sec;
     milliseconds = time->tv_nsec / (1000 * 1000);
@@ -124,8 +124,10 @@ s_str * time_diff_to_str (const s_time *time, s_str *dest)
   buf_inspect_uw_decimal_pad(&buf, 2, '0', seconds);
   buf_write_1(&buf, ".");
   buf_inspect_uw_decimal_pad(&buf, 3, '0', milliseconds);
-  if (buf_read_to_str(&buf, dest) <= 0)
+  if (buf_read_to_str(&buf, dest) <= 0) {
+    buf_clean(&buf);
     return NULL;
+  }
   return dest;
 }
 
