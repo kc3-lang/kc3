@@ -20,44 +20,38 @@
 
 s_str * base32_decode (s_str *str, s_str *dest)
 {
-  u8 byte = 0;
-  u8 digit;
-  u8 i;
+  u8 buf[8];
+  uw i;
   s_buf in;
+  uw len;
   s_buf out;
   sw r;
-  const u8 radix = 32;
   s_str tmp;
-  if (! buf_init_alloc(&out, (str->size + 7) / 8))
+  if (! buf_init_alloc(&out, str->size * 5 / 8))
     return NULL;
   buf_init_const(&in, str->size, str->ptr.pchar);
-  while ((r = buf_parse_digit(&in, &g_kc3_base32, &digit)) > 0) {
-    if (digit >= radix) {
-      err_write_1("base32_decode: digit greater than or equal to"
-                  " radix: ");
-      err_inspect_u8(digit);
-      assert(! "base32_decode: digit greater than or equal to"
-             " radix");
-      buf_clean(&in);
-      buf_clean(&out);
-      return NULL;
+  while (in.rpos < in.wpos) {
+    len = 0;
+    for (i = 0; i < 8; i++) {
+      buf[i] = 0;
+      if ((r = buf_parse_digit(&in, &g_kc3_base32, &buf[i])) > 0)
+        len++;
+      else
+        buf_read_u8(&in, &buf[i]);
     }
-    if (i == 8) {
-      if (buf_write_u8(&out, byte) <= 0) {
-        err_puts("base32_decode: buf_write_u8");
-        assert(! "base32_decode: buf_write_u8");
-        buf_clean(&in);
-        buf_clean(&out);
-        return NULL;
-      }
-      byte = 0;
-      i = 0;
-    }
-    byte = byte * 32 + digit;
-    i++;
+    if (len > 1)
+      buf_write_u8(&out, (buf[0] << 3) | (buf[1] >> 2));
+    if (len > 3)
+      buf_write_u8(&out, (buf[1] << 6) | (buf[2] << 1) | (buf[3] >> 4));
+    if (len > 4)
+      buf_write_u8(&out, (buf[3] << 4) | (buf[4] >> 1));
+    if (len > 6)
+      buf_write_u8(&out, (buf[4] << 7) | (buf[5] << 2) | (buf[6] >> 3));
+    if (len > 7)
+      buf_write_u8(&out, (buf[6] << 5) | buf[7]);
   }
   buf_clean(&in);
-  if (! buf_to_str(&out, &tmp)) {
+  if (buf_read_to_str(&out, &tmp) < 0) {
     buf_clean(&out);
     return NULL;
   }
