@@ -12,6 +12,7 @@
 
 require Base32
 require HOTP
+require URL
 
 defmodule TOTP do
 
@@ -31,6 +32,13 @@ defmodule TOTP do
       end
     end
     false
+  }
+
+  def uri = fn (issuer, account, secret) {
+    account_uri = URL.escape(account)
+    issuer_uri = URL.escape(issuer)
+    secret_uri = URL.escape(secret)
+    "otpauth://totp/#{issuer_uri}:#{account_uri}?secret=#{secret_uri}&issuer=#{issuer_uri}"
   }
 
 end
