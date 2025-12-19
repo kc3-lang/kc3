@@ -50,6 +50,9 @@ replace {Str.split, :symbol_value,
          cfn List "str_split" (Str, Str, Result)}
 add {Str, :symbol, Str.size}
 replace {Str.size, :symbol_value, cfn Tag "str_size" (Str, Result)}
+add {Str, :symbol, Str.random_base32}
+replace {Str.random_base32, :symbol_value,
+         cfn Str "str_init_random_base32" (Result, Tag)}
 add {Str, :symbol, Str.random_base64}
 replace {Str.random_base64, :symbol_value,
          cfn Str "str_init_random_base64" (Result, Tag)}

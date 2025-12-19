@@ -1180,6 +1180,59 @@ DEF_STR_INIT_PTR(ptr, const u_ptr_w *)
 DEF_STR_INIT_PTR(ptr_free, const u_ptr_w *)
 DEF_STR_INIT_STRUCT(quote)
 
+s_str * str_init_random_base32 (s_str *str, const s_tag *len)
+{
+  const s_sym *type;
+  u8 *random_bytes;
+  sw  random_bytes_len;
+  char *result;
+  sw  result_len;
+  uw i;
+  uw j;
+  type = &g_sym_Uw;
+  if (! sw_init_cast(&result_len, &type, len)) {
+    err_write_1("str_init_random_base32: cannot cast to Uw: ");
+    err_inspect_tag(len);
+    err_write_1("\n");
+    return NULL;
+  }
+  random_bytes_len = (result_len + 7) * 5 / 8;
+  if (! (random_bytes = alloc(random_bytes_len)))
+    return NULL;
+  if (! (result = alloc(result_len + 1))) {
+    free(random_bytes);
+    return NULL;
+  }
+  arc4random_buf(random_bytes, random_bytes_len);
+  i = 0;
+  j = 0;
+  while (j < (uw) result_len && i < (uw) random_bytes_len) {
+    result[j++] = g_kc3_base32.ptr.pchar[(random_bytes[i] >> 3) & 0x1f];
+    if (j >= (uw) result_len) break;
+    result[j++] = g_kc3_base32.ptr.pchar[((random_bytes[i] << 2) |
+                                          (random_bytes[i + 1] >> 6)) & 0x1f];
+    if (j >= (uw) result_len) break;
+    result[j++] = g_kc3_base32.ptr.pchar[(random_bytes[i + 1] >> 1) & 0x1f];
+    if (j >= (uw) result_len) break;
+    result[j++] = g_kc3_base32.ptr.pchar[((random_bytes[i + 1] << 4) |
+                                          (random_bytes[i + 2] >> 4)) & 0x1f];
+    if (j >= (uw) result_len) break;
+    result[j++] = g_kc3_base32.ptr.pchar[((random_bytes[i + 2] << 1) |
+                                          (random_bytes[i + 3] >> 7)) & 0x1f];
+    if (j >= (uw) result_len) break;
+    result[j++] = g_kc3_base32.ptr.pchar[(random_bytes[i + 3] >> 2) & 0x1f];
+    if (j >= (uw) result_len) break;
+    result[j++] = g_kc3_base32.ptr.pchar[((random_bytes[i + 3] << 3) |
+                                          (random_bytes[i + 4] >> 5)) & 0x1f];
+    if (j >= (uw) result_len) break;
+    result[j++] = g_kc3_base32.ptr.pchar[random_bytes[i + 4] & 0x1f];
+    i += 5;
+  }
+  result[result_len] = 0;
+  free(random_bytes);
+  return str_init(str, result, result_len, result);
+}
+
 s_str * str_init_random_base64 (s_str *str, const s_tag *len)
 {
   const s_sym *type;
