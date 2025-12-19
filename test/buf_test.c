@@ -355,6 +355,7 @@ TEST_CASE(buf_peek_s8)
   s_buf buf;
   s8 byte;
   buf_init_const(&buf, sizeof(a), a);
+  buf.wpos = 0;
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf_peek_s8(&buf, &byte), -1);
   TEST_EQ(buf.rpos, 0);
@@ -523,6 +524,7 @@ TEST_CASE(buf_read_s8)
   s_buf buf;
   s8 byte;
   buf_init_const(&buf, sizeof(a), a);
+  buf.wpos = 0;
   TEST_EQ(buf_read_s8(&buf, &byte), -1);
   TEST_EQ(buf_read_s8(&buf, &byte), -1);
   buf.wpos = 1;
