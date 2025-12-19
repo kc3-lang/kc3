@@ -339,6 +339,8 @@ s_struct_type * struct_type_new_ref (s_struct_type *st)
 
 uw struct_type_padding (uw offset, u8 align, u8 *max)
 {
+  if (align < 1)
+    align = 1;
   if (align > *max)
     *max = align;
   return (offset + (align - 1)) / align * align;

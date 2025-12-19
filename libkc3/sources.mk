@@ -7,6 +7,7 @@ HEADERS = \
 	"array.h" \
 	"assert.h" \
 	"base32.h" \
+	"base64.h" \
 	"binding.h" \
 	"block.h" \
 	"bool.h" \
@@ -219,6 +220,7 @@ SOURCES = \
 	"arg.c" \
 	"array.c" \
 	"base32.c" \
+	"base64.c" \
 	"binding.c" \
 	"block.c" \
 	"bool.c" \
@@ -543,6 +545,7 @@ LO_SOURCES = \
 	"arg.c" \
 	"array.c" \
 	"base32.c" \
+	"base64.c" \
 	"binding.c" \
 	"block.c" \
 	"bool.c" \

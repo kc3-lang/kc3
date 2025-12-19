@@ -30,6 +30,7 @@ KC3_DIRS="
  libtommath
  markdown
  pdf
+ qrencode
  smtp
  socket
  test
@@ -178,6 +179,7 @@ runj -1 /bin/sh <<EOF
 ( cd libtommath && ./update_sources; )
 ( cd markdown   && ./update_sources; )
 ( cd pdf        && ./update_sources; )
+( cd qrencode   && ./update_sources; )
 ( cd smtp       && ./update_sources; )
 ( cd socket     && ./update_sources; )
 ( cd test       && ./update_sources; )

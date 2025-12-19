@@ -57,6 +57,9 @@ KC3_CONFIGURES = \
 	"pdf/configure" \
 	"pdf/sources.sh" \
 	"pdf/update_sources" \
+	"qrencode/configure" \
+	"qrencode/sources.sh" \
+	"qrencode/update_sources" \
 	"smtp/configure" \
 	"smtp/sources.sh" \
 	"smtp/update_sources" \
@@ -179,6 +182,8 @@ KC3_MAKEFILES = \
 	"markdown/sources.mk" \
 	"pdf/Makefile" \
 	"pdf/sources.mk" \
+	"qrencode/Makefile" \
+	"qrencode/sources.mk" \
 	"smtp/Makefile" \
 	"smtp/sources.mk" \
 	"socket/Makefile" \
@@ -409,6 +414,8 @@ KC3_C_SOURCES = \
 	"libkc3/assert.h" \
 	"libkc3/base32.c" \
 	"libkc3/base32.h" \
+	"libkc3/base64.c" \
+	"libkc3/base64.h" \
 	"libkc3/binding.c" \
 	"libkc3/binding.h" \
 	"libkc3/block.c" \
@@ -1061,6 +1068,8 @@ KC3_C_SOURCES = \
 	"pdf/pdf_write_page.c" \
 	"pdf/pdf_write_page.h" \
 	"pdf/types.h" \
+	"qrencode/qrencode.c" \
+	"qrencode/qrencode.h" \
 	"smtp/kc3_smtp.c" \
 	"smtp/kc3_smtp.h" \
 	"smtp/smtp.c" \
@@ -1563,6 +1572,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/alist.kc3" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/base32.kc3" \
+	"lib/kc3/0.1/base64.kc3" \
 	"lib/kc3/0.1/bin/primes.kc3" \
 	"lib/kc3/0.1/bool.facts" \
 	"lib/kc3/0.1/buf.kc3" \
@@ -1696,6 +1706,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/prime.kc3" \
 	"lib/kc3/0.1/ptr.facts" \
 	"lib/kc3/0.1/ptr_free.facts" \
+	"lib/kc3/0.1/qrencode.kc3" \
 	"lib/kc3/0.1/ratio.facts" \
 	"lib/kc3/0.1/rpc.kc3" \
 	"lib/kc3/0.1/rpc/response.kc3" \
@@ -1730,6 +1741,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/tls/client.kc3" \
 	"lib/kc3/0.1/tls/config.kc3" \
 	"lib/kc3/0.1/tls/server.kc3" \
+	"lib/kc3/0.1/totp.kc3" \
 	"lib/kc3/0.1/u16.facts" \
 	"lib/kc3/0.1/u32.facts" \
 	"lib/kc3/0.1/u64.facts" \
@@ -2283,6 +2295,7 @@ KC3_OTHER_SOURCES = \
 	"config_common" \
 	"configure" \
 	"env" \
+	"fact.md" \
 	"kc3.index" \
 	"kc3.version" \
 	"libkc3/tag_init.rb" \

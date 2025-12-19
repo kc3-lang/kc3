@@ -34,6 +34,7 @@ s_image * image_resize_to_fill (s_image *src, s_image *dest);
 /* Observers. */
 s_image * image_to_jpeg_file (s_image *image, s_str *path);
 s_image * image_to_png_file (s_image *image, s_str *path);
+s_str *   image_to_png_str (s_image *image, s_str *dest);
 
 /* KC3 interface. */
 void       kc3_image_delete (s_image **image);
@@ -42,5 +43,6 @@ s_image ** kc3_image_new_resize_to_fill_file (s_image **image,
                                               s_tag *tag_h,
                                               s_str *src_path);
 s_image ** kc3_image_to_png_file (s_image **image, s_str *path);
+s_str *    kc3_image_to_png_str (s_image **image, s_str *dest);
 
 #endif /* KC3_IMAGE_H */

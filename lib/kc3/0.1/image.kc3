@@ -33,7 +33,8 @@ defmodule Image do
     cfn Image* "kc3_image_new_resize_to_fill_file" (Result, Tag, Tag,
       Str)
 
-  def to_png_file =
-    cfn Image* "kc3_image_to_png_file" (Image*, Str)
+  def to_png_file = cfn Image* "kc3_image_to_png_file" (Image*, Str)
+
+  def to_png_str = cfn Str "kc3_image_to_png_str" (Image*, Result)
 
 end

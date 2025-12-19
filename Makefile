@@ -26,6 +26,7 @@ all:
 	${MAKE} -C json all
 	${MAKE} -C markdown all
 	${MAKE} -C pdf all
+	${MAKE} -C qrencode all
 	${MAKE} -C smtp all
 	${MAKE} -C http all
 	${MAKE} -C httpd all
@@ -58,6 +59,7 @@ asan:
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
 	${MAKE} -C pdf asan
+	${MAKE} -C qrencode asan
 	${MAKE} -C smtp asan
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
@@ -85,6 +87,7 @@ build:
 	${MAKE} -C json build
 	${MAKE} -C markdown build
 	${MAKE} -C pdf build
+	${MAKE} -C qrencode build
 	${MAKE} -C smtp build
 	${MAKE} -C http build
 	${MAKE} -C httpd build
@@ -110,6 +113,7 @@ clean::
 	${MAKE} -C json clean
 	${MAKE} -C markdown clean
 	${MAKE} -C pdf clean
+	${MAKE} -C qrencode clean
 	${MAKE} -C smtp clean
 	${MAKE} -C http clean
 	${MAKE} -C httpd clean
@@ -133,6 +137,7 @@ clean_cov::
 	${MAKE} -C json clean_cov
 	${MAKE} -C markdown clean_cov
 	${MAKE} -C pdf clean_cov
+	${MAKE} -C qrencode clean_cov
 	${MAKE} -C smtp clean_cov
 	${MAKE} -C http clean_cov
 	${MAKE} -C httpd clean_cov
@@ -163,6 +168,7 @@ cov:
 	${MAKE} -C json cov
 	${MAKE} -C markdown cov
 	${MAKE} -C pdf cov
+	${MAKE} -C qrencode cov
 	${MAKE} -C smtp cov
 	${MAKE} -C http cov
 	${MAKE} -C httpd cov
@@ -193,6 +199,7 @@ debug:
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
 	${MAKE} -C pdf debug
+	${MAKE} -C qrencode debug
 	${MAKE} -C smtp debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
@@ -343,6 +350,7 @@ distclean::
 	${MAKE} -C json distclean
 	${MAKE} -C markdown distclean
 	${MAKE} -C pdf distclean
+	${MAKE} -C qrencode distclean
 	${MAKE} -C smtp distclean
 	${MAKE} -C http distclean
 	${MAKE} -C httpd distclean
@@ -466,6 +474,7 @@ gcovr:
 	${MAKE} -C json gcovr
 	${MAKE} -C markdown gcovr
 	${MAKE} -C pdf gcovr
+	${MAKE} -C qrencode gcovr
 	${MAKE} -C smtp gcovr
 	${MAKE} -C http gcovr
 	${MAKE} -C httpd gcovr
@@ -556,6 +565,7 @@ gdb_test_httpd_asan: lib_links_asan
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
 	${MAKE} -C pdf asan
+	${MAKE} -C qrencode asan
 	${MAKE} -C smtp asan
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
@@ -708,6 +718,7 @@ http:
 	${MAKE} -C json build
 	${MAKE} -C markdown build
 	${MAKE} -C pdf build
+	${MAKE} -C qrencode build
 	${MAKE} -C http build
 
 httpd:
@@ -724,6 +735,7 @@ httpd:
 	${MAKE} -C json build
 	${MAKE} -C markdown build
 	${MAKE} -C pdf build
+	${MAKE} -C qrencode build
 	${MAKE} -C http build
 	${MAKE} -C httpd build
 
@@ -854,6 +866,7 @@ install:
 	${MAKE} -C json install
 	${MAKE} -C markdown install
 	${MAKE} -C pdf install
+	${MAKE} -C qrencode install
 	${MAKE} -C smtp install
 	${MAKE} -C http install
 	${MAKE} -C httpd install
@@ -876,6 +889,7 @@ install_lib_links_bsd:
 	ln -sf ../../libkc3_json.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/json.so
 	ln -sf ../../libkc3_markdown.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_pdf.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/pdf.so
+	ln -sf ../../libkc3_qrencode.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/qrencode.so
 	ln -sf ../../libkc3_socket.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/socket.so
 	ln -sf ../../libkc3_tls.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/tls.so
 
@@ -890,6 +904,7 @@ install_lib_links_darwin:
 	ln -sf ../../libkc3_json.0.dylib ${DESTDIR}${libdir}/kc3/0.1/json.so
 	ln -sf ../../libkc3_markdown.0.dylib ${DESTDIR}${libdir}/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_pdf.0.dylib ${DESTDIR}${libdir}/kc3/0.1/pdf.so
+	ln -sf ../../libkc3_qrencode.0.dylib ${DESTDIR}${libdir}/kc3/0.1/qrencode.so
 	ln -sf ../../libkc3_smtp.so.0.dylib ${DESTDIR}${libdir}/kc3/0.1/smtp.so
 	ln -sf ../../libkc3_socket.0.dylib ${DESTDIR}${libdir}/kc3/0.1/socket.so
 	ln -sf ../../libkc3_tls.0.dylib ${DESTDIR}${libdir}/kc3/0.1/tls.so
@@ -905,6 +920,7 @@ install_lib_links_linux:
 	ln -sf ../../libkc3_json.so ${DESTDIR}${libdir}/kc3/0.1/json.so
 	ln -sf ../../libkc3_markdown.so ${DESTDIR}${libdir}/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_pdf.so ${DESTDIR}${libdir}/kc3/0.1/pdf.so
+	ln -sf ../../libkc3_qrencode.so ${DESTDIR}${libdir}/kc3/0.1/qrencode.so
 	ln -sf ../../libkc3_smtp.so ${DESTDIR}${libdir}/kc3/0.1/smtp.so
 	ln -sf ../../libkc3_socket.so ${DESTDIR}${libdir}/kc3/0.1/socket.so
 	ln -sf ../../libkc3_tls.so ${DESTDIR}${libdir}/kc3/0.1/tls.so
@@ -920,6 +936,7 @@ install_lib_links_openbsd:
 	ln -sf ../../libkc3_json.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/json.so
 	ln -sf ../../libkc3_markdown.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_pdf.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/pdf.so
+	ln -sf ../../libkc3_qrencode.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/qrencode.so
 	ln -sf ../../libkc3_smtp.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/smtp.so
 	ln -sf ../../libkc3_socket.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/socket.so
 	ln -sf ../../libkc3_tls.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/tls.so
@@ -935,6 +952,7 @@ install_lib_links_windows:
 	ln -sf ../../../bin/libkc3_json-0.dll ${DESTDIR}${libdir}/kc3/0.1/json.so
 	ln -sf ../../../bin/libkc3_markdown-0.dll ${DESTDIR}${libdir}/kc3/0.1/markdown.so
 	ln -sf ../../../bin/libkc3_pdf-0.dll ${DESTDIR}${libdir}/kc3/0.1/pdf.so
+	ln -sf ../../../bin/libkc3_qrencode-0.dll ${DESTDIR}${libdir}/kc3/0.1/qrencode.so
 	ln -sf ../../../bin/libkc3_smtp-0.dll ${DESTDIR}${libdir}/kc3/0.1/smtp.so
 	ln -sf ../../../bin/libkc3_socket-0.dll ${DESTDIR}${libdir}/kc3/0.1/socket.so
 	ln -sf ../../../bin/libkc3_tls-0.dll ${DESTDIR}${libdir}/kc3/0.1/tls.so
@@ -1137,6 +1155,7 @@ lib_links_bsd:
 	ln -sf ../../../json/libkc3_json.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../socket/libkc3_socket.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls.${SHARED_EXT} lib/kc3/0.1/tls.so
 
@@ -1151,6 +1170,7 @@ lib_links_bsd_asan:
 	ln -sf ../../../json/libkc3_json_asan.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_asan.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_asan.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode_asan.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../socket/libkc3_socket_asan.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls_asan.${SHARED_EXT} lib/kc3/0.1/tls.so
 
@@ -1165,6 +1185,7 @@ lib_links_bsd_cov:
 	ln -sf ../../../json/libkc3_json_cov.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_cov.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode_cov.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../socket/libkc3_socket_cov.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls_cov.${SHARED_EXT} lib/kc3/0.1/tls.so
 
@@ -1179,6 +1200,7 @@ lib_links_bsd_debug:
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../socket/libkc3_socket_debug.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls_debug.${SHARED_EXT} lib/kc3/0.1/tls.so
 
@@ -1199,6 +1221,7 @@ lib_links_darwin:
 	ln -sf ../../../json/libkc3_json.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/libkc3_socket.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls.${SHARED_EXT} lib/kc3/0.1/tls.so
@@ -1214,6 +1237,7 @@ lib_links_darwin_debug:
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_debug.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/libkc3_socket_debug.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls_debug.${SHARED_EXT} lib/kc3/0.1/tls.so
@@ -1229,6 +1253,7 @@ lib_links_linux:
 	ln -sf ../../../json/libkc3_json.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/libkc3_socket.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls.${SHARED_EXT} lib/kc3/0.1/tls.so
@@ -1244,6 +1269,7 @@ lib_links_linux_asan:
 	ln -sf ../../../json/libkc3_json_asan.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_asan.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_asan.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode_asan.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_asan.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/libkc3_socket_asan.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls_asan.${SHARED_EXT} lib/kc3/0.1/tls.so
@@ -1259,6 +1285,7 @@ lib_links_linux_cov:
 	ln -sf ../../../json/libkc3_json_cov.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_cov.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode_cov.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_cov.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/libkc3_socket_cov.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls_cov.${SHARED_EXT} lib/kc3/0.1/tls.so
@@ -1274,6 +1301,7 @@ lib_links_linux_debug:
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_debug.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/libkc3_socket_debug.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls_debug.${SHARED_EXT} lib/kc3/0.1/tls.so
@@ -1289,6 +1317,7 @@ lib_links_openbsd:
 	ln -sf ../../../json/libkc3_json.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/libkc3_socket.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls.${SHARED_EXT} lib/kc3/0.1/tls.so
@@ -1304,6 +1333,7 @@ lib_links_openbsd_cov:
 	ln -sf ../../../json/libkc3_json_cov.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_cov.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode_cov.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_cov.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/libkc3_socket_cov.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls_cov.${SHARED_EXT} lib/kc3/0.1/tls.so
@@ -1319,6 +1349,7 @@ lib_links_openbsd_debug:
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_debug.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/libkc3_socket_debug.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls_debug.${SHARED_EXT} lib/kc3/0.1/tls.so
@@ -1334,6 +1365,7 @@ lib_links_clean:
 	rm -f lib/kc3/0.1/json.so
 	rm -f lib/kc3/0.1/markdown.so
 	rm -f lib/kc3/0.1/pdf.so
+	rm -f lib/kc3/0.1/qrencode.so
 	rm -f lib/kc3/0.1/smtp.so
 	rm -f lib/kc3/0.1/socket.so
 	rm -f lib/kc3/0.1/tls.so
@@ -1349,6 +1381,7 @@ lib_links_windows:
 	ln -sf ../../../json/libkc3_json.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/libkc3_socket.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls.${SHARED_EXT} lib/kc3/0.1/tls.so
@@ -1364,6 +1397,7 @@ lib_links_windows_debug:
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
+	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_debug.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/libkc3_socket_debug.${SHARED_EXT} lib/kc3/0.1/socket.so
 	ln -sf ../../../tls/libkc3_tls_debug.${SHARED_EXT} lib/kc3/0.1/tls.so
@@ -1405,6 +1439,7 @@ lldb_test:
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
 	${MAKE} -C pdf debug
+	${MAKE} -C qrencode debug
 	${MAKE} -C smtp debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
@@ -1990,6 +2025,7 @@ uninstall:
 	${MAKE} -C libtommath uninstall
 	${MAKE} -C markdown uninstall
 	${MAKE} -C pdf uninstall
+	${MAKE} -C qrencode uninstall
 	${MAKE} -C smtp uninstall
 	${MAKE} -C socket uninstall
 	${MAKE} -C tls uninstall

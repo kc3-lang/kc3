@@ -406,6 +406,95 @@ s_image * image_to_png_file (s_image *image, s_str *path)
   return image;
 }
 
+static void image_png_write_callback (png_structp png_ptr, png_bytep data,
+                                      png_size_t length)
+{
+  s_buf *out;
+  out = (s_buf *) png_get_io_ptr(png_ptr);
+  buf_write(out, data, length);
+}
+
+s_str * image_to_png_str (s_image *image, s_str *dest)
+{
+  png_structp png_ptr;
+  png_infop info_ptr;
+  png_byte color_type;
+  png_byte **row_pointers;
+  s_buf out;
+  s_str tmp;
+  uw y;
+  if (! image ||
+      ! image->w ||
+      ! image->h ||
+      ! image->components ||
+      ! image->pixel_size ||
+      ! image->data ||
+      ! dest) {
+    ERROR("invalid argument");
+    return NULL;
+  }
+  if (! buf_init_alloc(&out, image->w * image->h * image->pixel_size))
+    return NULL;
+  png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
+                                    NULL, NULL, NULL);
+  if (! png_ptr) {
+    err_puts("image_to_png_str: png_create_write_struct");
+    buf_clean(&out);
+    return NULL;
+  }
+  info_ptr = png_create_info_struct(png_ptr);
+  if (! info_ptr) {
+    err_puts("image_to_png_str: png_create_info_struct");
+    png_destroy_write_struct(&png_ptr, NULL);
+    buf_clean(&out);
+    return NULL;
+  }
+  if (setjmp(png_jmpbuf(png_ptr))) {
+    err_puts("image_to_png_str: png error");
+    png_destroy_write_struct(&png_ptr, &info_ptr);
+    buf_clean(&out);
+    return NULL;
+  }
+  png_set_write_fn(png_ptr, &out, image_png_write_callback, NULL);
+  switch (image->components) {
+  case 1: color_type = PNG_COLOR_TYPE_GRAY;       break;
+  case 2: color_type = PNG_COLOR_TYPE_GRAY_ALPHA; break;
+  case 3: color_type = PNG_COLOR_TYPE_RGB;        break;
+  case 4: color_type = PNG_COLOR_TYPE_RGBA;       break;
+  default:
+    err_puts("image_to_png_str: invalid components");
+    png_destroy_write_struct(&png_ptr, &info_ptr);
+    buf_clean(&out);
+    return NULL;
+  }
+  png_set_IHDR(png_ptr, info_ptr, image->w, image->h, 8,
+               color_type, PNG_INTERLACE_NONE,
+               PNG_COMPRESSION_TYPE_DEFAULT,
+               PNG_FILTER_TYPE_DEFAULT);
+  png_write_info(png_ptr, info_ptr);
+  row_pointers = alloc(image->h * sizeof(png_byte *));
+  if (! row_pointers) {
+    err_puts("image_to_png_str: alloc");
+    png_destroy_write_struct(&png_ptr, &info_ptr);
+    buf_clean(&out);
+    return NULL;
+  }
+  for (y = 0; y < image->h; y++)
+    row_pointers[y] = (png_byte *) image->data +
+      y * image->w * image->pixel_size;
+  png_write_image(png_ptr, row_pointers);
+  png_write_end(png_ptr, NULL);
+  free(row_pointers);
+  png_destroy_write_struct(&png_ptr, &info_ptr);
+  if (buf_read_to_str(&out, &tmp) < 0) {
+    buf_clean(&out);
+    return NULL;
+  }
+  buf_clean(&out);
+  *dest = tmp;
+  return dest;
+}
+
 void kc3_image_delete (s_image **image)
 {
   assert(image);
@@ -445,4 +534,9 @@ s_image ** kc3_image_to_png_file (s_image **image, s_str *path)
   if (! image_to_png_file(*image, path))
     return NULL;
   return image;
+}
+
+s_str * kc3_image_to_png_str (s_image **image, s_str *dest)
+{
+  return image_to_png_str(*image, dest);
 }

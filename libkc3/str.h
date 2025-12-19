@@ -46,7 +46,7 @@ s_str * str_init_1_alloc (s_str *str, const char *p);
 s_str * str_init_alloc (s_str *str, uw size);
 s_str * str_init_alloc_copy (s_str *str, uw size, const char *p);
 PROTOTYPE_STR_INIT_STRUCT(array);
-s_str * str_init_base64url (s_str *str, void *data, uw size);
+s_str * str_init_base64url (s_str *str, const void *data, uw size);
 s_str * str_init_cast (s_str *str, const s_sym * const *type,
                        const s_tag *tag);
 s_str * str_init_concatenate (s_str *str, const s_str *a,

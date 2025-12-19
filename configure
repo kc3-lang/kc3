@@ -102,6 +102,7 @@ libkc3
 libtommath
 markdown
 pdf
+qrencode
 smtp
 socket
 test
