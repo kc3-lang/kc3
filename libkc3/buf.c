@@ -682,11 +682,16 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
 
 DEF_BUF_PEEK(f32)
 DEF_BUF_PEEK(f64)
+
 #if HAVE_F80
+
 sw buf_peek_f80 (s_buf *buf, f80 *dest)
 {
   sw r;
-  f80 tmp = 0.0L;
+  union {
+    u8  u[16];
+    f80 f;
+  } tmp = {0};
   assert(buf);
   assert(dest);
   if (buf->rpos + 16 > buf->wpos) {
@@ -695,11 +700,13 @@ sw buf_peek_f80 (s_buf *buf, f80 *dest)
     if (r < 16)
       return -1;
   }
-  memcpy(&tmp, buf->ptr.pu8 + buf->rpos, 10);
-  *dest = tmp;
+  memcpy(tmp.u, buf->ptr.pu8 + buf->rpos, 10);
+  *dest = tmp.f;
   return 16;
 }
+
 #endif
+
 #if HAVE_F128
 DEF_BUF_PEEK(f128)
 #endif
