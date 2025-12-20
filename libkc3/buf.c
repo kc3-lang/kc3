@@ -683,7 +683,22 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
 DEF_BUF_PEEK(f32)
 DEF_BUF_PEEK(f64)
 #if HAVE_F80
-DEF_BUF_PEEK(f80)
+sw buf_peek_f80 (s_buf *buf, f80 *dest)
+{
+  sw r;
+  f80 tmp = 0.0L;
+  assert(buf);
+  assert(dest);
+  if (buf->rpos + 16 > buf->wpos) {
+    if ((r = buf_refill(buf, 16)) < 0)
+      return r;
+    if (r < 16)
+      return -1;
+  }
+  memcpy(&tmp, buf->ptr.pu8 + buf->rpos, 10);
+  *dest = tmp;
+  return 16;
+}
 #endif
 #if HAVE_F128
 DEF_BUF_PEEK(f128)
@@ -853,11 +868,26 @@ sw buf_read_character_utf8 (s_buf *buf, character *p)
 
 DEF_BUF_READ(f32)
 DEF_BUF_READ(f64)
+
 #if HAVE_F80
-DEF_BUF_READ(f80)
+
+sw buf_read_f80 (s_buf *buf, f80 *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  r = buf_peek_f80(buf, dest);
+  if (r > 0)
+    buf->rpos += r;
+  return r;
+}
+
 #endif
+
 #if HAVE_F128
+
 DEF_BUF_READ(f128)
+
 #endif
 
 sw buf_read_integer (s_buf *buf, s_integer *dest)

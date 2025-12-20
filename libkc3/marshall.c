@@ -838,7 +838,7 @@ s_marshall * marshall_f64 (s_marshall *m, bool heap, f64 src)
 s_marshall * marshall_f80 (s_marshall *m, bool heap, f80 src)
 {
   s_buf *buf;
-  const u8 zero[16] = {0};
+  u8 data[16] = {0};
   sw r;
   sw result = 0;
   if (! m) {
@@ -850,14 +850,10 @@ s_marshall * marshall_f80 (s_marshall *m, bool heap, f80 src)
   if ((r = buf_write_1(buf, "_KC3F80_")) <= 0)
     return NULL;
   result += r;
-  if ((r = buf_write_f80(buf, src)) <= 0)
+  memcpy(data, &src, sizeof(f80));
+  if ((r = buf_write(buf, data, 16)) <= 0)
     return NULL;
   result += r;
-  if (sizeof(f80) < 16) {
-    if ((r = buf_write(buf, zero, 16 - sizeof(f80))) <= 0)
-      return NULL;
-    result += r;
-  }
   if (heap)
     m->heap_pos += result;
   else
