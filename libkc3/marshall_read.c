@@ -69,6 +69,7 @@
                                             type *dest)                \
   {                                                                    \
     s_buf *buf = NULL;                                                 \
+    type tmp;                                                          \
     assert(mr);                                                        \
     assert(dest);                                                      \
     buf = heap ? &mr->heap : &mr->buf;                                 \
@@ -77,11 +78,22 @@
       assert(! "marshall_read_"#name": buf_read_1 magic");             \
       return NULL;                                                     \
     }                                                                  \
-    if (buf_read_ ## name (buf, dest) <= 0) {                          \
+    if (buf_read_ ## name (buf, &tmp) <= 0) {                          \
       err_puts("marshall_read_" # name ": buf_read_" # name);          \
       assert(! "marshall_read_" # name ": buf_read_" # name);          \
       return NULL;                                                     \
     }                                                                  \
+    tmp = _Generic(tmp,                                                \
+                   f32: le32toh(tmp),                                  \
+                   f64: le64toh(tmp),                                  \
+                   s16: le16toh(tmp),                                  \
+                   s32: le32toh(tmp),                                  \
+                   s64: le64toh(tmp),                                  \
+                   u16: le16toh(tmp),                                  \
+                   u32: le32toh(tmp),                                  \
+                   u64: le64toh(tmp),                                  \
+                   default: tmp);                                      \
+    *dest = tmp;                                                       \
     return mr;                                                         \
   }
 
