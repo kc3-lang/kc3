@@ -1739,7 +1739,7 @@ s_marshall * marshall_uw (s_marshall *m, bool heap, uw src)
 {
   if (! marshall_1(m, heap, "_KC3UW_"))
     return NULL;
-  if (! marshall_u64(m, heap, src))
+  if (! marshall_u64(m, heap, htole64(src)))
     return NULL;
   return m;
 }

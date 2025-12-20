@@ -2461,6 +2461,7 @@ s_marshall_read * marshall_read_uw (s_marshall_read *mr,
     assert(! "marshall_read_uw: marshall_read_u64");
     return NULL;
   }
+  u = le64toh(u);
   if (u > UW_MAX) {
     err_puts("marshall_read_uw: value out of range");
     assert(! "marshall_read_uw: value out of range");
