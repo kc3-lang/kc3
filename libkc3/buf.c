@@ -59,7 +59,7 @@
       r = -1;                                                         \
       goto clean;                                                     \
     }                                                                 \
-    *dest = *((type *) (buf->ptr.pchar + buf->rpos));                 \
+    memcpy(dest, buf->ptr.pu8 + buf->rpos, size);                     \
     r = size;                                                         \
   clean:                                                              \
     rwlock_unlock_w(buf->rwlock);                                     \
@@ -100,7 +100,7 @@
       r = -1;                                                         \
       goto clean;                                                     \
     }                                                                 \
-    *((type *) (buf->ptr.pu8 + buf->wpos)) = src;                     \
+    memcpy(buf->ptr.pu8 + buf->wpos, &src, size);                     \
     buf->wpos += size;                                                \
     r = size;                                                         \
   clean:                                                              \
@@ -137,7 +137,7 @@
       r = -1;                                                         \
       goto clean;                                                     \
     }                                                                 \
-    *dest = *((type *) (buf->ptr.pchar + buf->rpos));                 \
+    memcpy(dest, buf->ptr.pu8 + buf->rpos, size);                     \
     r = size;                                                         \
   clean:                                                              \
     return r;                                                         \
@@ -174,7 +174,7 @@
       r = -1;                                                         \
       goto clean;                                                     \
     }                                                                 \
-    *((type *) (buf->ptr.pu8 + buf->wpos)) = src;                     \
+    memcpy(buf->ptr.pu8 + buf->wpos, &src, size);                     \
     buf->wpos += size;                                                \
     r = size;                                                         \
   clean:                                                              \
