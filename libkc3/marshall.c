@@ -850,7 +850,7 @@ s_marshall * marshall_f80 (s_marshall *m, bool heap, f80 src)
   if ((r = buf_write_1(buf, "_KC3F80_")) <= 0)
     return NULL;
   result += r;
-  memcpy(data, &src, sizeof(f80));
+  memcpy(data, &src, 10);
   if ((r = buf_write(buf, data, 16)) <= 0)
     return NULL;
   result += r;
