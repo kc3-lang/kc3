@@ -545,6 +545,20 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
   return result;
 }
 
+void http_request_clean (s_http_request *req)
+{
+  assert(req);
+  time_clean(&req->time);
+  tag_clean(&req->method);
+  str_clean(&req->url);
+  tag_clean(&req->body);
+  str_clean(&req->protocol);
+  str_clean(&req->client_addr);
+  list_delete_all(req->headers);
+  list_delete_all(req->cookies);
+  map_clean(&req->params);
+}
+
 s_http_request * http_request_cookie_add (s_http_request *req,
                                           s_str *cookies)
 {

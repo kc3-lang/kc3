@@ -38,6 +38,8 @@ defmodule HTTP.Request do
 
   def buf_write = cfn Sw "http_request_buf_write" (HTTP.Request, Buf)
 
+  def clean = cfn Void "http_request_clean" (HTTP.Request)
+
   def header_find_if = fn ({h_name, h_value}) do
     if ! Compare.str_case_insensitive(header_name, h_name) do
       h_value
