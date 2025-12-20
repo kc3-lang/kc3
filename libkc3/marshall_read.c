@@ -69,7 +69,6 @@
                                             type *dest)                \
   {                                                                    \
     s_buf *buf = NULL;                                                 \
-    type tmp;                                                          \
     assert(mr);                                                        \
     assert(dest);                                                      \
     buf = heap ? &mr->heap : &mr->buf;                                 \
@@ -78,22 +77,34 @@
       assert(! "marshall_read_"#name": buf_read_1 magic");             \
       return NULL;                                                     \
     }                                                                  \
-    if (buf_read_ ## name (buf, &tmp) <= 0) {                          \
+    if (buf_read_ ## name (buf, dest) <= 0) {                          \
       err_puts("marshall_read_" # name ": buf_read_" # name);          \
       assert(! "marshall_read_" # name ": buf_read_" # name);          \
       return NULL;                                                     \
     }                                                                  \
-    tmp = _Generic(tmp,                                                \
-                   f32: le32toh(tmp),                                  \
-                   f64: le64toh(tmp),                                  \
-                   s16: le16toh(tmp),                                  \
-                   s32: le32toh(tmp),                                  \
-                   s64: le64toh(tmp),                                  \
-                   u16: le16toh(tmp),                                  \
-                   u32: le32toh(tmp),                                  \
-                   u64: le64toh(tmp),                                  \
-                   default: tmp);                                      \
-    *dest = tmp;                                                       \
+    return mr;                                                         \
+  }
+
+#define DEF_MARSHALL_READ_LETOH(name, magic, type, bits)               \
+  s_marshall_read * marshall_read_ ## name (s_marshall_read *mr,       \
+                                            bool heap,                 \
+                                            type *dest)                \
+  {                                                                    \
+    s_buf *buf = NULL;                                                 \
+    assert(mr);                                                        \
+    assert(dest);                                                      \
+    buf = heap ? &mr->heap : &mr->buf;                                 \
+    if (buf_read_1(buf, (magic)) <= 0) {                               \
+      err_puts("marshall_read_"#name": buf_read_1 magic");             \
+      assert(! "marshall_read_"#name": buf_read_1 magic");             \
+      return NULL;                                                     \
+    }                                                                  \
+    if (buf_read_ ## name (buf, dest) <= 0) {                          \
+      err_puts("marshall_read_" # name ": buf_read_" # name);          \
+      assert(! "marshall_read_" # name ": buf_read_" # name);          \
+      return NULL;                                                     \
+    }                                                                  \
+    *dest = le ## bits ## toh(*dest);                                  \
     return mr;                                                         \
   }
 
@@ -697,8 +708,8 @@ sw marshall_read_env_from_file (s_env *env, const s_str *path)
   return -1;
 }
 
-DEF_MARSHALL_READ(f32, "_KC3F32_", f32)
-DEF_MARSHALL_READ(f64, "_KC3F64_", f64)
+DEF_MARSHALL_READ_LETOH(f32, "_KC3F32_", f32, 32)
+DEF_MARSHALL_READ_LETOH(f64, "_KC3F64_", f64, 64)
 
 #if HAVE_F80
 
@@ -732,7 +743,7 @@ s_marshall_read * marshall_read_f80 (s_marshall_read *mr,
 }
 #endif
 #if HAVE_F128
-DEF_MARSHALL_READ(f128, "_KC3F128_", f128)
+DEF_MARSHALL_READ_LETOH(f128, "_KC3F128_", f128, 128)
 #endif
 
 s_marshall_read * marshall_read_fact (s_marshall_read *mr,
@@ -2099,9 +2110,9 @@ s_marshall_read * marshall_read_ratio (s_marshall_read *mr,
 }
 
 DEF_MARSHALL_READ(s8, "_KC3S8_", s8)
-DEF_MARSHALL_READ(s16, "_KC3S16_", s16)
-DEF_MARSHALL_READ(s32, "_KC3S32_", s32)
-DEF_MARSHALL_READ(s64, "_KC3S64_", s64)
+DEF_MARSHALL_READ_LETOH(s16, "_KC3S16_", s16, 16)
+DEF_MARSHALL_READ_LETOH(s32, "_KC3S32_", s32, 32)
+DEF_MARSHALL_READ_LETOH(s64, "_KC3S64_", s64, 64)
 
 sw marshall_read_size (const s_marshall_read *mr)
 {
@@ -2454,9 +2465,9 @@ s_marshall_read * marshall_read_unquote (s_marshall_read *mr,
 }
 
 DEF_MARSHALL_READ(u8, "_KC3U8_", u8)
-DEF_MARSHALL_READ(u16, "_KC3U16_", u16)
-DEF_MARSHALL_READ(u32, "_KC3U32_", u32)
-DEF_MARSHALL_READ(u64, "_KC3U64_", u64)
+DEF_MARSHALL_READ_LETOH(u16, "_KC3U16_", u16, 16)
+DEF_MARSHALL_READ_LETOH(u32, "_KC3U32_", u32, 32)
+DEF_MARSHALL_READ_LETOH(u64, "_KC3U64_", u64, 64)
 
 s_marshall_read * marshall_read_uw (s_marshall_read *mr,
                                     bool heap,
