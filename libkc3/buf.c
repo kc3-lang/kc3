@@ -700,7 +700,7 @@ sw buf_peek_f80 (s_buf *buf, f80 *dest)
     if (r < 16)
       return -1;
   }
-  memcpy(tmp.u, buf->ptr.pu8 + buf->rpos, 10);
+  memcpy(tmp.u, buf->ptr.pu8 + buf->rpos, sizeof(f80));
   *dest = tmp.f;
   return 16;
 }
