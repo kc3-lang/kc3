@@ -26,6 +26,10 @@
 # undef htole64
 # undef be64toh
 # undef le64toh
+# undef htobe128
+# undef htole128
+# undef be128toh
+# undef le128toh
 #endif
 
 #ifdef htons
@@ -50,6 +54,10 @@
 #  define htole64(x) (x)
 #  define be64toh(x) BSWAP(64, x)
 #  define le64toh(x) (x)
+#  define htobe128(x) BSWAP(128, x)
+#  define htole128(x) (x)
+#  define be128toh(x) BSWAP(128, x)
+#  define le128toh(x) (x)
 #  if ! (defined(WIN32) || defined(WIN64))
 #   define htons(x)   BSWAP(16, x)
 #   define ntohs(x)   BSWAP(16, x)
@@ -69,6 +77,10 @@
 #  define htole64(x) BSWAP(64, x)
 #  define be64toh(x) (x)
 #  define le64toh(x) BSWAP(64, x)
+#  define htobe128(x) (x)
+#  define htole128(x) BSWAP(128, x)
+#  define be128toh(x) (x)
+#  define le128toh(x) BSWAP(128, x)
 #  if ! (defined(WIN32) || defined(WIN64))
 #   define htons(x)   (x)
 #   define ntohs(x)   (x)
@@ -92,6 +104,10 @@
 # define htole64(x) OSSwapHostToLittleInt64(x)
 # define be64toh(x) OSSwapBigToHostInt64(x)
 # define le64toh(x) OSSwapLittleToHostInt64(x)
+# define htobe128(x) OSSwapHostToBigInt128(x)
+# define htole128(x) OSSwapHostToLittleInt128(x)
+# define be128toh(x) OSSwapBigToHostInt128(x)
+# define le128toh(x) OSSwapLittleToHostInt128(x)
 #endif
 
 #endif /* LIBKC3_ENDIAN_H */
