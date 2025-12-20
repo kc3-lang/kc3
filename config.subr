@@ -1727,7 +1727,8 @@ case "$(uname -s)" in
         LIB_SUFFIX="so.\${VER_MAJOR}.\${VER_MINOR}"
         LIB_LINK_SUFFIX="so"
         LDFLAGS="$LDFLAGS -L/usr/lib --export-dynamic"
-        LDADD="-lc"
+        LIBCOMPILER_RT=$(${CC} -print-libgcc-file-name)
+        LDADD="$LIBCOMPILER_RT -lc"
         LIB_LDADD="/usr/lib/crtbeginS.o $LDADD /usr/lib/crtendS.o"
         PROG_LDADD="/usr/lib/crt0.o /usr/lib/crtbegin.o -e __start --dynamic-linker=/usr/libexec/ld.so $LDADD /usr/lib/crtend.o"
         COV_PROFILE_LIB="/usr/lib/clang/19/lib/libclang_rt.profile.a"
