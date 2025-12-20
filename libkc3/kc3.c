@@ -1166,10 +1166,10 @@ s_tag * kc3_parse_tag (s_tag *tag, const s_str *src)
 
 sw kc3_puts (const s_tag *tag)
 {
-  s_env *env;
   sw r;
   sw result = 0;
 #if HAVE_PTHREAD
+  s_env *env;
   env = env_global();
   rwlock_w(env->out->rwlock);
 #endif
