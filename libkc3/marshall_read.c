@@ -33,6 +33,7 @@
 #include "frame.h"
 #include "hash.h"
 #include "ht.h"
+#include "integer.h"
 #include "kc3_main.h"
 #include "list.h"
 #include "log.h"
@@ -1333,7 +1334,75 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
   return mr;
 }
 
-DEF_MARSHALL_READ(integer, "_KC3INTEGER_", s_integer)
+s_marshall_read * marshall_read_integer (s_marshall_read *mr, bool heap,
+                                         s_integer *dest)
+{
+  const sw digit_size = 4;
+  const sw nail_bits = 4;
+  s_buf *buf;
+  u32 count;
+  u8 sign;
+  sw size;
+  s_integer tmp;
+  assert(mr);
+  assert(dest);
+  buf = heap ? &mr->heap : &mr->buf;
+  if (buf_read_1(buf, "_KC3INTEGER_") <= 0) {
+    err_puts("marshall_read_integer: buf_read_1 magic");
+    assert(! "marshall_read_integer: buf_read_1 magic");
+    return NULL;
+  }
+  if (buf_read_u8(buf, &sign) <= 0) {
+    err_puts("marshall_read_integer: buf_read_u8 sign");
+    assert(! "marshall_read_integer: buf_read_u8 sign");
+    return NULL;
+  }
+  if (buf_read_u32(buf, &count) <= 0) {
+    err_puts("marshall_read_integer: buf_read_u32 count");
+    assert(! "marshall_read_integer: buf_read_u32 count");
+    return NULL;
+  }
+  count = le32toh(count);
+  integer_init(&tmp);
+  if (count == 0) {
+    mp_set_u32(&tmp.mp_int, 0);
+    *dest = tmp;
+    return mr;
+  }
+  size = count * digit_size;
+  if (buf->rpos + size > buf->wpos) {
+    sw r;
+    if ((r = buf_refill(buf, size)) < 0) {
+      integer_clean(&tmp);
+      return NULL;
+    }
+    if (buf->rpos + size > buf->wpos) {
+      err_puts("marshall_read_integer: short read");
+      assert(! "marshall_read_integer: short read");
+      integer_clean(&tmp);
+      return NULL;
+    }
+  }
+  if (mp_unpack(&tmp.mp_int, count, MP_LSB_FIRST, digit_size,
+                MP_LITTLE_ENDIAN, nail_bits,
+                buf->ptr.pu8 + buf->rpos) != MP_OKAY) {
+    err_puts("marshall_read_integer: mp_unpack failed");
+    assert(! "marshall_read_integer: mp_unpack failed");
+    integer_clean(&tmp);
+    return NULL;
+  }
+  if (sign) {
+    if (mp_neg(&tmp.mp_int, &tmp.mp_int) != MP_OKAY) {
+      err_puts("marshall_read_integer: mp_neg failed");
+      assert(! "marshall_read_integer: mp_neg failed");
+      integer_clean(&tmp);
+      return NULL;
+    }
+  }
+  buf->rpos += size;
+  *dest = tmp;
+  return mr;
+}
 
 s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
                                       s_list *dest)

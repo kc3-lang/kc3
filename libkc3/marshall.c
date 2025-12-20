@@ -27,6 +27,7 @@
 #include "facts_with.h"
 #include "file.h"
 #include "ht.h"
+#include "integer.h"
 #include "io.h"
 #include "pstruct_type.h"
 #include "rwlock.h"
@@ -1170,19 +1171,68 @@ s_marshall * marshall_init (s_marshall *m)
 s_marshall * marshall_integer (s_marshall *m, bool heap,
                                const s_integer *i)
 {
+  const sw digit_size = 4;
+  const sw nail_bits = 4;
   s_buf *buf;
+  uw count;
+  u32 count_le;
   sw r;
+  u8 sign;
+  sw size;
+  uw written;
   assert(m);
   assert(i);
   buf = heap ? &m->heap : &m->buf;
   if (! marshall_1(m, heap, "_KC3INTEGER_"))
     return NULL;
-  if ((r = buf_write_integer(buf, i)) <= 0)
+  count = mp_pack_count(&i->mp_int, nail_bits, digit_size);
+  if (count > U32_MAX) {
+    err_puts("marshall_integer: count is too large");
+    assert(! "marshall_integer: count is too large");
+    return NULL;
+  }
+  sign = mp_isneg(&i->mp_int) ? 1 : 0;
+  if ((r = buf_write_u8(buf, sign)) <= 0)
     return NULL;
   if (heap)
     m->heap_pos += r;
   else
     m->buf_pos += r;
+  count_le = htole32((u32) count);
+  if ((r = buf_write_u32(buf, count_le)) <= 0)
+    return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
+  if (count == 0)
+    return m;
+  size = count * digit_size;
+  if (buf->wpos + size > buf->size &&
+      buf_flush(buf) < size)
+    return NULL;
+  if (buf->wpos + size > buf->size) {
+    err_puts("marshall_integer: buffer overflow");
+    assert(! "marshall_integer: buffer overflow");
+    return NULL;
+  }
+  if (mp_pack(buf->ptr.pu8 + buf->wpos, count, &written,
+              MP_LSB_FIRST, digit_size, MP_LITTLE_ENDIAN, nail_bits,
+              &i->mp_int) != MP_OKAY) {
+    err_puts("marshall_integer: mp_pack failed");
+    assert(! "marshall_integer: mp_pack failed");
+    return NULL;
+  }
+  if (written != count) {
+    err_puts("marshall_integer: mp_pack count mismatch");
+    assert(! "marshall_integer: mp_pack count mismatch");
+    return NULL;
+  }
+  buf->wpos += size;
+  if (heap)
+    m->heap_pos += size;
+  else
+    m->buf_pos += size;
   return m;
 }
 
