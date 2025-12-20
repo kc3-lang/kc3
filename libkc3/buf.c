@@ -1837,12 +1837,9 @@ DEF_BUF_WRITE(f64)
 
 sw buf_write_f80 (s_buf *buf, f80 src)
 {
-  union {
-    u8  u[16];
-    f80 f;
-  } tmp = {0};
+  u8 data[16] = {0};
   assert(buf);
-  tmp.f = src;
+  memcpy(data, &src, 10);
   if (buf->wpos + 16 > buf->size &&
       buf_flush(buf) < 16)
     return -1;
@@ -1851,7 +1848,7 @@ sw buf_write_f80 (s_buf *buf, f80 src)
     assert(! "buf_write_f80: buffer overflow");
     return -1;
   }
-  memcpy(buf->ptr.pu8 + buf->wpos, tmp.u, 16);
+  memcpy(buf->ptr.pu8 + buf->wpos, data, 16);
   buf->wpos += 16;
   return 16;
 }
