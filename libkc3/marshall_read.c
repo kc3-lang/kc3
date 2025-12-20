@@ -708,8 +708,53 @@ sw marshall_read_env_from_file (s_env *env, const s_str *path)
   return -1;
 }
 
-DEF_MARSHALL_READ_LETOH(f32, "_KC3F32_", f32, 32)
-DEF_MARSHALL_READ_LETOH(f64, "_KC3F64_", f64, 64)
+s_marshall_read * marshall_read_f32 (s_marshall_read *mr,
+                                     bool heap,
+                                     f32 *dest)
+{
+  s_buf *buf = NULL;
+  union { f32 f; u32 i; } u;
+  assert(mr);
+  assert(dest);
+  buf = heap ? &mr->heap : &mr->buf;
+  if (buf_read_1(buf, "_KC3F32_") <= 0) {
+    err_puts("marshall_read_f32: buf_read_1 magic");
+    assert(! "marshall_read_f32: buf_read_1 magic");
+    return NULL;
+  }
+  if (buf_read_u32(buf, &u.i) <= 0) {
+    err_puts("marshall_read_f32: buf_read_u32");
+    assert(! "marshall_read_f32: buf_read_u32");
+    return NULL;
+  }
+  u.i = le32toh(u.i);
+  *dest = u.f;
+  return mr;
+}
+
+s_marshall_read * marshall_read_f64 (s_marshall_read *mr,
+                                     bool heap,
+                                     f64 *dest)
+{
+  s_buf *buf = NULL;
+  union { f64 f; u64 i; } u;
+  assert(mr);
+  assert(dest);
+  buf = heap ? &mr->heap : &mr->buf;
+  if (buf_read_1(buf, "_KC3F64_") <= 0) {
+    err_puts("marshall_read_f64: buf_read_1 magic");
+    assert(! "marshall_read_f64: buf_read_1 magic");
+    return NULL;
+  }
+  if (buf_read_u64(buf, &u.i) <= 0) {
+    err_puts("marshall_read_f64: buf_read_u64");
+    assert(! "marshall_read_f64: buf_read_u64");
+    return NULL;
+  }
+  u.i = le64toh(u.i);
+  *dest = u.f;
+  return mr;
+}
 
 #if HAVE_F80
 
@@ -743,7 +788,37 @@ s_marshall_read * marshall_read_f80 (s_marshall_read *mr,
 }
 #endif
 #if HAVE_F128
-DEF_MARSHALL_READ_LETOH(f128, "_KC3F128_", f128, 128)
+s_marshall_read * marshall_read_f128 (s_marshall_read *mr,
+                                      bool heap,
+                                      f128 *dest)
+{
+  s_buf *buf = NULL;
+  union { f128 f; u64 i[2]; } u;
+  u64 tmp;
+  assert(mr);
+  assert(dest);
+  buf = heap ? &mr->heap : &mr->buf;
+  if (buf_read_1(buf, "_KC3F128_") <= 0) {
+    err_puts("marshall_read_f128: buf_read_1 magic");
+    assert(! "marshall_read_f128: buf_read_1 magic");
+    return NULL;
+  }
+  if (buf_read_u64(buf, &u.i[0]) <= 0 ||
+      buf_read_u64(buf, &u.i[1]) <= 0) {
+    err_puts("marshall_read_f128: buf_read_u64");
+    assert(! "marshall_read_f128: buf_read_u64");
+    return NULL;
+  }
+#if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
+  u.i[0] = le64toh(u.i[0]);
+  u.i[1] = le64toh(u.i[1]);
+  tmp = u.i[0];
+  u.i[0] = u.i[1];
+  u.i[1] = tmp;
+#endif
+  *dest = u.f;
+  return mr;
+}
 #endif
 
 s_marshall_read * marshall_read_fact (s_marshall_read *mr,

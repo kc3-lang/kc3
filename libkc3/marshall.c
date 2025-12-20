@@ -777,8 +777,61 @@ sw marshall_env_to_file (const s_env *env, const s_str *path)
   return -1;
 }
 
-DEF_MARSHALL(f32, "_KC3F32_")
-DEF_MARSHALL(f64, "_KC3F64_")
+s_marshall * marshall_f32 (s_marshall *m, bool heap, f32 src)
+{
+  s_buf *buf;
+  union { f32 f; u32 i; } u;
+  sw r;
+  if (! m) {
+    err_puts("marshall_f32: invalid argument");
+    assert(! "marshall_f32: invalid argument");
+    return NULL;
+  }
+  buf = heap ? &m->heap : &m->buf;
+  if ((r = buf_write_1(buf, "_KC3F32_")) <= 0)
+    return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
+  u.f = src;
+  u.i = htole32(u.i);
+  if ((r = buf_write_u32(buf, u.i)) <= 0)
+    return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
+  return m;
+}
+
+s_marshall * marshall_f64 (s_marshall *m, bool heap, f64 src)
+{
+  s_buf *buf;
+  union { f64 f; u64 i; } u;
+  sw r;
+  if (! m) {
+    err_puts("marshall_f64: invalid argument");
+    assert(! "marshall_f64: invalid argument");
+    return NULL;
+  }
+  buf = heap ? &m->heap : &m->buf;
+  if ((r = buf_write_1(buf, "_KC3F64_")) <= 0)
+    return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
+  u.f = src;
+  u.i = htole64(u.i);
+  if ((r = buf_write_u64(buf, u.i)) <= 0)
+    return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
+  return m;
+}
 
 #if HAVE_F80
 
@@ -815,7 +868,41 @@ s_marshall * marshall_f80 (s_marshall *m, bool heap, f80 src)
 #endif
 
 #if HAVE_F128
-DEF_MARSHALL(f128, "_KC3F128_")
+s_marshall * marshall_f128 (s_marshall *m, bool heap, f128 src)
+{
+  s_buf *buf;
+  union { f128 f; u64 i[2]; } u;
+  u64 tmp;
+  sw r;
+  if (! m) {
+    err_puts("marshall_f128: invalid argument");
+    assert(! "marshall_f128: invalid argument");
+    return NULL;
+  }
+  buf = heap ? &m->heap : &m->buf;
+  if ((r = buf_write_1(buf, "_KC3F128_")) <= 0)
+    return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
+  u.f = src;
+#if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
+  tmp = u.i[0];
+  u.i[0] = u.i[1];
+  u.i[1] = tmp;
+  u.i[0] = htole64(u.i[0]);
+  u.i[1] = htole64(u.i[1]);
+#endif
+  if ((r = buf_write_u64(buf, u.i[0])) <= 0 ||
+      (r = buf_write_u64(buf, u.i[1])) <= 0)
+    return NULL;
+  if (heap)
+    m->heap_pos += 16;
+  else
+    m->buf_pos += 16;
+  return m;
+}
 #endif
 
 s_marshall * marshall_fact (s_marshall *m, bool heap,
