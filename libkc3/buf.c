@@ -700,7 +700,7 @@ sw buf_peek_f80 (s_buf *buf, f80 *dest)
     if (r < 16)
       return -1;
   }
-  memcpy(tmp.u, buf->ptr.pu8 + buf->rpos, sizeof(f80));
+  memcpy(tmp.u, buf->ptr.pu8 + buf->rpos, 16);
   *dest = tmp.f;
   return 16;
 }
@@ -1832,9 +1832,32 @@ sw buf_write_character_utf8_size (s_pretty *pretty, character c)
 
 DEF_BUF_WRITE(f32)
 DEF_BUF_WRITE(f64)
+
 #if HAVE_F80
-DEF_BUF_WRITE(f80)
+
+sw buf_write_f80 (s_buf *buf, f80 src)
+{
+  union {
+    u8  u[16];
+    f80 f;
+  } tmp = {0};
+  assert(buf);
+  tmp.f = src;
+  if (buf->wpos + 16 > buf->size &&
+      buf_flush(buf) < 16)
+    return -1;
+  if (buf->wpos + 16 > buf->size) {
+    err_puts("buf_write_f80: buffer overflow");
+    assert(! "buf_write_f80: buffer overflow");
+    return -1;
+  }
+  memcpy(buf->ptr.pu8 + buf->wpos, tmp.u, 16);
+  buf->wpos += 16;
+  return 16;
+}
+
 #endif
+
 #if HAVE_F128
 DEF_BUF_WRITE(f128)
 #endif
