@@ -52,6 +52,7 @@ config_have_f80
 config_have_f128
 config_win32
 config_win64
+config_lib PTHREAD -lpthread
 config_lib STDCXX -lstdc++
 config_lib GCC_S -lgcc_s
 config_lib CXX -lc++
