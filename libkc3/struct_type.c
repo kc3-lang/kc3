@@ -62,7 +62,9 @@ uw struct_type_compute_size (uw offset, u8 align_max)
 #endif
   if (sizeof(long) == 4 && ! win64)
     return (offset + 3) / 4 * 4;
-#if defined(__APPLE__) && defined(__aarch64__) || \
+#if defined(__sparc64__) || defined(__sparc__)
+  return (offset + 7) / 8 * 8;
+#elif defined(__APPLE__) && defined(__aarch64__) || \
     ! (HAVE_F128 || (HAVE_F80 && F80_SIZE == 16))
   return (offset + 7) / 8 * 8;
 #else
