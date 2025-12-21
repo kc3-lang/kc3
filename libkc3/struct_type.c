@@ -55,21 +55,7 @@ uw struct_type_compute_size (uw offset, u8 align_max)
     err_inspect_u8_decimal(align_max);
     err_write_1("\n");
   }
-#ifdef WIN64
-  const bool win64 = true;
-#else
-  const bool win64 = false;
-#endif
-  if (sizeof(long) == 4 && ! win64)
-    return (offset + 3) / 4 * 4;
-#if defined(__sparc64__) || defined(__sparc__)
-  return (offset + 7) / 8 * 8;
-#elif defined(__APPLE__) && defined(__aarch64__) || \
-    ! (HAVE_F128 || (HAVE_F80 && F80_SIZE == 16))
-  return (offset + 7) / 8 * 8;
-#else
   return (offset + (align_max - 1)) / align_max * align_max;
-#endif
 }
 
 void * struct_type_copy_data (const s_struct_type *st, void *dest,

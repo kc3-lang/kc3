@@ -1824,9 +1824,3 @@ case "$(uname -s)" in
         CPPFLAGS="$CPPFLAGS -DLIBDIR=\"\\\"${LIBDIR}\\\"\""
         ;;
 esac
-
-case "$(uname -m)" in
-    sparc64)
-        config_define __sparc64__
-        ;;
-esac
