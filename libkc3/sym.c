@@ -1194,7 +1194,7 @@ u8 * sym_type_alignment (const s_sym *type, u8 *dest)
   assert(type);
   assert(dest);
   if (type == &g_sym_Array) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Bool) {
@@ -1206,7 +1206,7 @@ u8 * sym_type_alignment (const s_sym *type, u8 *dest)
     return dest;
   }
   if (type == &g_sym_Block) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_F32) {
@@ -1214,7 +1214,7 @@ u8 * sym_type_alignment (const s_sym *type, u8 *dest)
     return dest;
   }
   if (type == &g_sym_F64) {
-    *dest = 8;
+    *dest = _Alignof(f64);
     return dest;
   }
 #if HAVE_F80
@@ -1230,67 +1230,67 @@ u8 * sym_type_alignment (const s_sym *type, u8 *dest)
   }
 #endif
   if (type == &g_sym_Fact) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Ident) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Integer) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Map) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Call) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Callable) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Complex) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Cow) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Facts) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_List) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Pointer) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Ptr) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_PtrFree) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Struct) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_StructType) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Sym) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Tag) {
@@ -1298,15 +1298,15 @@ u8 * sym_type_alignment (const s_sym *type, u8 *dest)
     return dest;
   }
   if (type == &g_sym_Var) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Quote) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Ratio) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_S8) {
@@ -1322,11 +1322,11 @@ u8 * sym_type_alignment (const s_sym *type, u8 *dest)
     return dest;
   }
   if (type == &g_sym_S64) {
-    *dest = 8;
+    *dest = _Alignof(s64);
     return dest;
   }
   if (type == &g_sym_Str) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Sw) {
@@ -1334,11 +1334,11 @@ u8 * sym_type_alignment (const s_sym *type, u8 *dest)
     return dest;
   }
   if (type == &g_sym_Time) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Tuple) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_U8) {
@@ -1354,11 +1354,11 @@ u8 * sym_type_alignment (const s_sym *type, u8 *dest)
     return dest;
   }
   if (type == &g_sym_U64) {
-    *dest = 8;
+    *dest = _Alignof(u64);
     return dest;
   }
   if (type == &g_sym_Unquote) {
-    *dest = 8;
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Uw) {
