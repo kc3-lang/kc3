@@ -14,7 +14,7 @@ require File.Stat
 
 defmodule File do
 
-  def access? = cfn Bool "kc3_file_access" (Str, Sym)
+  def access? = cfn Bool "kc3_file_access" (Str, Sym, Result)
 
   def close = cfn Void "file_close" (Tag)
 

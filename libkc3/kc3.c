@@ -698,9 +698,10 @@ s_tag * kc3_facts_with_tuple (s_facts *facts, s_tuple *tuple,
                              *callback, dest);
 }
 
-bool kc3_file_access (s_str *path, p_sym *mode)
+bool * kc3_file_access (s_str *path, p_sym *mode, bool *dest)
 {
-  return file_access(path, *mode);
+  *dest = file_access(path, *mode);
+  return dest;
 }
 
 s_tag * kc3_quote_cfn (const s_sym **sym, s_tag *dest)
