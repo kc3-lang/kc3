@@ -37,8 +37,8 @@ s_str * qrencode_encode_png (const s_str *src, const s_tag *size,
     assert(! "qrencode_encode_png: QRcode_encodeData");
     return NULL;
   }
-  if (size_uw < (uw) qrcode->width)
-    size_uw = qrcode->width;
+  if (size_uw < (uw) qrcode->width * 2)
+    size_uw = qrcode->width * 2;
   if (! image_init_alloc(&image, size_uw, size_uw, 1, 1))
     return NULL;
   y = 0;
