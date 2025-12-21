@@ -1013,8 +1013,9 @@ objc2ext() {
 pkg_config() {
     NAME=$(echo $1 | tr '[a-z-]' '[A-Z_]')
     if pkg-config "$1"; then
-	CFLAGS="$CFLAGS $(pkg-config --cflags "$1")"
-	CXXFLAGS="$CXXFLAGS $(pkg-config --cflags "$1")"
+	PKG_CFLAGS="$(pkg-config --cflags "$1" | sed -e 's/-R[^ ]*//g')"
+	CFLAGS="$CFLAGS $PKG_CFLAGS"
+	CXXFLAGS="$CXXFLAGS $PKG_CFLAGS"
 	LIBS="$LIBS $(pkg-config --libs "$1" |
                           sed -e 's/-Wl,//g' -e 's/,/ /g')"
         echo "HAVE_$NAME = true" >> "${CONFIG_MK}"
