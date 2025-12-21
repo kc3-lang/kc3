@@ -1644,7 +1644,7 @@ echo "libdir ?= \${LIBDIR}" >> ${CONFIG_MK}
 STDCXX="$(${CXX} -print-file-name=libstdc++.so)"
 if [ -f "$STDCXX" ]; then
     STDCXX_DIR="$(dirname "$STDCXX")"
-    LDFLAGS="$LDFLAGS -L$STDCXX_DIR"
+    LIBS="$LIBS -L$STDCXX_DIR"
 fi
 
 ## Operating system dependent configuration
