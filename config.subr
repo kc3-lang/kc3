@@ -1019,8 +1019,8 @@ pkg_config() {
 	PKG_CFLAGS="$(pkg-config --cflags "$1" | sed -e 's/-R[^ ]*//g')"
 	CFLAGS="$CFLAGS $PKG_CFLAGS"
 	CXXFLAGS="$CXXFLAGS $PKG_CFLAGS"
-	LIBS="$LIBS $(pkg-config --libs "$1" |
-                          sed -e 's/-Wl,//g' -e 's/,/ /g' -e 's/-R\([^ ]*\)/-rpath \1/g')"
+	LIBS="$(pkg-config --libs "$1" |
+                          sed -e 's/-Wl,//g' -e 's/,/ /g' -e 's/-R\([^ ]*\)/-rpath \1/g') $LIBS"
         echo "HAVE_$NAME = true" >> "${CONFIG_MK}"
         config_define "HAVE_$NAME" 1
     fi
