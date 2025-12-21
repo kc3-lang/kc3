@@ -1365,7 +1365,7 @@ uw * tag_size (const s_tag *tag, uw *dest)
   const s_sym *type;
   uw tmp = 0;
   assert(tag);
-  if (! tag_type(tag, &type) ||
+  if (! tag_type_var(tag, &type) ||
       ! sym_type_size(type, &tmp))
     return NULL;
   *dest = tmp;
