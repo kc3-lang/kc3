@@ -819,6 +819,9 @@ config_prog() {
 }
 
 config_sha256() {
+    # Filter out -R linker flags that break clang
+    CFLAGS="$(echo "$CFLAGS" | sed -e 's/-R[^ ]*//g')"
+    CPPFLAGS="$(echo "$CPPFLAGS" | sed -e 's/-R[^ ]*//g')"
     config_include_have SHA2_H "#include <sys/types.h>
 #include <sha2.h>"
     if ! $HAVE_SHA2_H; then
