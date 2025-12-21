@@ -1217,14 +1217,18 @@ u8 * sym_type_alignment (const s_sym *type, u8 *dest)
     *dest = 8;
     return dest;
   }
+#if HAVE_F80
   if (type == &g_sym_F80) {
-    *dest = 16; // TODO
+    *dest = _Alignof(f80);
     return dest;
   }
+#endif
+#if HAVE_F128
   if (type == &g_sym_F128) {
-    *dest = 16;
+    *dest = _Alignof(f128);
     return dest;
   }
+#endif
   if (type == &g_sym_Fact) {
     *dest = 8;
     return dest;
@@ -1290,7 +1294,7 @@ u8 * sym_type_alignment (const s_sym *type, u8 *dest)
     return dest;
   }
   if (type == &g_sym_Tag) {
-    *dest = 16; // TODO
+    *dest = _Alignof(s_tag);
     return dest;
   }
   if (type == &g_sym_Var) {
