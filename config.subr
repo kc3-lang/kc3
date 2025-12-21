@@ -820,10 +820,10 @@ config_prog() {
 
 config_sha256() {
     config_include_have SHA2_H "#include <sys/types.h>
-#include <sha2.h>" 2>/dev/null
+#include <sha2.h>"
     if ! $HAVE_SHA2_H; then
         config_include_have SHA256_H "#include <sys/types.h>
-#include <sha256.h>" 2>/dev/null
+#include <sha256.h>"
     fi
     OUT_C=".config_have_sha256.c"
     OUT_O=".config_have_sha256.o"
