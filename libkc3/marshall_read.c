@@ -788,14 +788,15 @@ s_marshall_read * marshall_read_f80 (s_marshall_read *mr,
   return mr;
 }
 #endif
+
 #if HAVE_F128
+
 s_marshall_read * marshall_read_f128 (s_marshall_read *mr,
                                       bool heap,
                                       f128 *dest)
 {
   s_buf *buf = NULL;
   union { f128 f; u64 i[2]; } u;
-  u64 tmp;
   assert(mr);
   assert(dest);
   buf = heap ? &mr->heap : &mr->buf;
@@ -820,6 +821,7 @@ s_marshall_read * marshall_read_f128 (s_marshall_read *mr,
   *dest = u.f;
   return mr;
 }
+
 #endif
 
 s_marshall_read * marshall_read_fact (s_marshall_read *mr,
