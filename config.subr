@@ -840,7 +840,7 @@ config_sha256() {
     echo "  return 0;" >> "$OUT_C"
     echo "}" >> "$OUT_C"
     if ${CC} ${CPPFLAGS} ${CFLAGS} \
-             -c "$OUT_C" -o "$OUT_O" 2>/dev/null; then
+             -c "$OUT_C" -o "$OUT_O"; then
         config_define HAVE_SHA256_INIT 1
         HAVE_SHA256_INIT=true
         echo "HAVE_SHA256_INIT = true" >> ${CONFIG_MK}
@@ -861,7 +861,7 @@ config_sha256() {
     echo "  return 0;" >> "$OUT_C"
     echo "}" >> "$OUT_C"
     if ${CC} ${CPPFLAGS} ${CFLAGS} \
-             -c "$OUT_C" -o "$OUT_O" 2>/dev/null; then
+             -c "$OUT_C" -o "$OUT_O"; then
         config_define HAVE_SHA256_CTX 1
         HAVE_SHA256_CTX=true
         echo "HAVE_SHA256_CTX = true" >> ${CONFIG_MK}
