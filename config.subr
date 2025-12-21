@@ -1020,7 +1020,7 @@ pkg_config() {
 	CFLAGS="$CFLAGS $PKG_CFLAGS"
 	CXXFLAGS="$CXXFLAGS $PKG_CFLAGS"
 	LIBS="$LIBS $(pkg-config --libs "$1" |
-                          sed -e 's/-Wl,//g' -e 's/,/ /g' -e 's/-R[^ ]*//g')"
+                          sed -e 's/-Wl,//g' -e 's/,/ /g' -e 's/-R\([^ ]*\)/-rpath \1/g')"
         echo "HAVE_$NAME = true" >> "${CONFIG_MK}"
         config_define "HAVE_$NAME" 1
     fi
