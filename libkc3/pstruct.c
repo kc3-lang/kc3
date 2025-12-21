@@ -139,10 +139,8 @@ p_struct * pstruct_init_put (p_struct *s, s_struct *src,
                              const s_sym *key, s_tag *value)
 {
   p_struct tmp;
-  if (! pstruct_init_with_type(&tmp, src->pstruct_type))
-    return NULL;
-  if (! struct_init_copy(tmp, src)) {
-    err_puts("struct_put: struct_init_copy");
+  if (! (tmp = struct_new_copy(src))) {
+    err_puts("pstruct_init_put: struct_new_copy");
     return NULL;
   }
   if (! struct_set(tmp, key, value)) {
