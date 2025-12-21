@@ -778,12 +778,6 @@ s_marshall_read * marshall_read_f80 (s_marshall_read *mr,
     assert(! "marshall_read_f80: buf_read_f80");
     return NULL;
   }
-  if (sizeof(f80) < 16 &&
-      buf_ignore(buf, 16 - sizeof(f80)) <= 0) {
-    err_puts("marshall_read_f80: buf_ignore");
-    assert(! "marshall_read_f80: buf_ignore");
-    return NULL;
-  }
   *dest = tmp;
   return mr;
 }
