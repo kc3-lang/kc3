@@ -10,11 +10,11 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = http_request http_response limits
+CLEANFILES = http_request http_response limits sizeof_f80
 
 CPPFLAGS += -I/usr/local/include -I.. -W -Wall -Werror
 
-all: fact_w http_request http_response limits
+all: fact_w http_request http_response limits sizeof_f80
 
 build: all
 
@@ -34,6 +34,9 @@ http_response: http_response.c
 
 limits: limits.c
 	libtool --mode=link --tag=CC ${CC} ${CPPFLAGS} -I.. limits.c -L../libkc3 -lkc3 -o limits
+
+sizeof_f80: sizeof_f80.c
+	${CC} ${CPPFLAGS} -I.. sizeof_f80.c -o sizeof_f80
 
 .PHONY: \
 	all \
