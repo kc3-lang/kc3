@@ -3,6 +3,7 @@
 ## v0.1.16 (git master)
 
  - libkc3
+   - dlopen inside lib/ only
    - Generic typed pointers : `(U8*) 0x0`
    - make `kc3_require` and `env_eval_do_block` more careful about error
      handling
@@ -114,7 +115,6 @@
 ## v0.1.15
 
  - libkc3
-   - dlopen inside lib/ only
    - Typed pointer example : `(Facts*)` → `p_facts`
    - securelevel between 0 and 3
      - API that can only increase securelevel between 0 and 2

@@ -200,8 +200,6 @@ to discover how to use KC3 for your own projects.
 
 ## TODO
 
- - libkc3
-   - env_init: find lib dir for /usr/local/lib/kc3/0.1/
  - HTTPd
    - OAuth2 / jwt
    - dynamic router
