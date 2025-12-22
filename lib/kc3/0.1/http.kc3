@@ -18,8 +18,8 @@ defmodule HTTP do
 
   def mime_type = cfn Sym "http_mime_type" (Str, Result)
 
-  def mime_type_def = cfn Bool "http_mime_type_def" (Tag, Sym)
+  def mime_type_def = cfn Bool "http_mime_type_def" (Tag, Sym, Result)
 
-  def mime_type_load = cfn Bool "http_mime_type_load" (Str)
+  def mime_type_load = cfn Bool "http_mime_type_load" (Str, Result)
 
 end

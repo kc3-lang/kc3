@@ -66,6 +66,7 @@ bool http_mime_type_buf_parse (s_buf *buf)
 
 bool http_mime_type_buf_parse_type (s_buf *buf)
 {
+  bool b;
   character c;
   s_tag ext;
   sw r;
@@ -108,7 +109,7 @@ bool http_mime_type_buf_parse_type (s_buf *buf)
     if (r > 0) {
       tag_init_psym(&ext, str_to_sym(&str));
       str_clean(&str);
-      if (! http_mime_type_def(&ext, &type))
+      if (! http_mime_type_def(&ext, &type, &b) || ! b)
         return false;
     }
     if ((r = buf_read_1(buf, ";")) < 0)
@@ -123,7 +124,8 @@ bool http_mime_type_buf_parse_type (s_buf *buf)
   return false;
 }
 
-bool http_mime_type_def (s_tag *ext, const s_sym * const *mime_type)
+bool * http_mime_type_def (s_tag *ext, const s_sym * const *mime_type,
+                           bool *dest)
 {
   s_tag tag_mime_type_sym;
   s_tag tag_mime_type_value;
@@ -133,26 +135,29 @@ bool http_mime_type_def (s_tag *ext, const s_sym * const *mime_type)
   tag_init_psym(&tag_mime_type_value, *mime_type);
   if (! facts_replace_tags(env_global()->facts, ext,
                            &tag_mime_type_sym,
-                           &tag_mime_type_value))
-    return false;
-  return true;
+                           &tag_mime_type_value)) {
+    *dest = false;
+    return dest;
+  }
+  *dest = true;
+  return dest;
 }
 
-bool http_mime_type_load (s_str *path)
+bool * http_mime_type_load (s_str *path, bool *dest)
 {
   s_buf buf;
   FILE *fp;
   fp = file_open(path, "rb");
   if (! fp)
-    return false;
+    goto ko;
   if (! buf_init_alloc(&buf, BUF_SIZE)) {
     fclose(fp);
-    return false;
+    goto ko;
   }
   if (! buf_file_open_r(&buf, fp)) {
     buf_clean(&buf);
     fclose(fp);
-    return false;
+    goto ko;
   }
   if (! http_mime_type_buf_parse(&buf)) {
     err_puts("http_mime_type_load: http_mime_type_buf_parse");
@@ -160,10 +165,14 @@ bool http_mime_type_load (s_str *path)
     buf_file_close(&buf);
     buf_clean(&buf);
     fclose(fp);
-    return false;
+    goto ko;
   }
   buf_file_close(&buf);
   buf_clean(&buf);
   fclose(fp);
-  return true;
+  *dest = true;
+  return dest;
+ ko:
+  *dest = false;
+  return dest;
 }
