@@ -1,6 +1,6 @@
 # KC3
 
-## v0.1.16 (git master)
+## v0.1.16
 
  - libkc3
    - dlopen inside lib/ only
@@ -20,6 +20,8 @@
    - pledge supported on OpenBSD
    - rename f128 to f80: long double is actually 80 bits precision on
      x86 and amd64
+   - followed System-V ABI documentation for struct alignment and
+     padding, works on amd64, arm64, i386 and sparc64.
 
  - libtls
    - basic TLS client and server in test/tls/tls.kc3
