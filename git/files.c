@@ -21,20 +21,37 @@ static p_list * files_push_entry (const git_tree_entry *entry,
 static p_list * files_push_entry (const git_tree_entry *entry,
                                   const char *name, p_list *dest)
 {
-  char hash[64];
+  char hash[128] = {0};
   s_map *map;
   git_filemode_t mode;
+  const git_oid *oid;
   p_list tmp;
   git_object_t type;
   const s_sym *type_sym;
   assert(entry);
   assert(dest);
+  type = git_tree_entry_type(entry);
+  switch (type) {
+  case GIT_OBJECT_COMMIT:
+    type_sym = sym_1("commit");
+    oid = git_tree_entry_id(entry);
+    git_oid_tostr(hash, sizeof(hash) - 1, oid);
+    break;
+  case GIT_OBJECT_TREE:
+    type_sym = sym_1("tree");
+    break;
+  case GIT_OBJECT_BLOB:
+    type_sym = sym_1("blob");
+    break;
+  default:
+    err_write_1("kc3_git: files_push_entry: skipping entry type ");
+    err_inspect_s32(type);
+    err_write_1("\n");
+    return dest;
+  }
+  mode = git_tree_entry_filemode(entry);
   if (! name)
     name = git_tree_entry_name(entry);
-  mode = git_tree_entry_filemode(entry);
-  type = git_tree_entry_type(entry);
-  type_sym = (type == GIT_OBJECT_TREE) ? sym_1("tree") :
-    sym_1("blob");
   if (! (tmp = list_new_map(4, *dest)))
     return NULL;
   map = &tmp->tag.data.map;
