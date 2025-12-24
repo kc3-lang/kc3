@@ -1,6 +1,6 @@
 # KC3
 
-## v0.1.16
+## v0.1.16 🎄 (2025-12)
 
  - libkc3
    - dlopen inside lib/ only

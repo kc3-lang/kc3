@@ -342,14 +342,15 @@ distcheck_root:
 	mkdir distcheck_root
 	cd distcheck_root && tar xzf ../${DIST}.tar.gz
 	cd distcheck_root/${DIST} && ./configure && make -j8 && \
-		make test test_debug
+		. ./env && make test test_debug
 
 distcheck_subdir:
 	rm -rf distcheck_subdir
 	mkdir distcheck_subdir
 	cd distcheck_subdir && tar xzf ../${DIST}.tar.gz
 	cd distcheck_subdir/${DIST} && mkdir build && cd build && \
-		./configure && make -j8 && make test test_debug
+		../configure && make -j8 && . ../env && \
+		make test test_debug
 
 distclean::
 	${MAKE} -C libtommath distclean

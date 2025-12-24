@@ -2050,6 +2050,8 @@ test/pcall_test.c
 test/pdf/edge_cases.kc3
 test/pdf/edge_cases.out.expected
 test/pdf/edge_cases.ret.expected
+test/pdf/font.ttf
+test/pdf/image.jpeg
 test/pdf/pdf.ekc3.pdf
 test/pdf/pdf.kc3
 test/pdf/pdf.out.expected

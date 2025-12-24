@@ -1,4 +1,4 @@
-# KC3 v0.1.16
+# KC3 v0.1.16 🎄
 
 "The first graph-native programming language"
 

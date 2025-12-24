@@ -953,7 +953,9 @@ cpp2prog() {
 }
 
 cxx_o_rule() {
-    echo "$1" | sed -e 's/^\(.*\)\.cxx$/\1.o: \1.cxx/'
+    "$CXX" $CPPFLAGS $CXXFLAGS -M "$SRC_DIR/$1" 2>/dev/null || {
+        echo "$1" | sed -e "s,^\(.*\)\.cxx$,\1.o: $SRC_DIR/\1.cxx,"
+    }
     echo "$1: $2" | sed -e 's/^\(.*\)\.cxx:/\1.o:/'
 }
 

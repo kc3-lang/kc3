@@ -36,6 +36,8 @@ configure.sh
 current_test
 .cxx
 /debian.kmx.io/
+distcheck_root/
+distcheck_subdir/
 *.dll
 *.dmg
 .DS_Store
