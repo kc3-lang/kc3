@@ -85,6 +85,9 @@ There are now four full applications written in KC3 that we know of :
    - pledge supported on OpenBSD
    - rename f128 to f80: long double is actually 80 bits precision on
      x86 and amd64
+   - followed System-V ABI documentation for struct alignment and
+     padding, works on amd64, arm64, i386 and sparc64 (marshalling and
+     unmarshalling is portable across all these architectures)
 
  - libtls
    - basic TLS client and server in test/tls/tls.kc3
@@ -109,7 +112,8 @@ There are now four full applications written in KC3 that we know of :
        - "ikc3: TLS client: connected to HOST PORT TLS-1.3"
    - ship ikc3 as a standalone file that links to the right lib directory
      on MacOS, this way you can open ikc3 using Finder in a Terminal.app
-     and the dynamic libraries will still be found
+     and the dynamic libraries will still be found (require Socket loads
+     the socket library for instance, through dlopen)
 
  - build system
    - use `runj` to parallelize configure and update_sources
@@ -128,11 +132,13 @@ There are now four full applications written in KC3 that we know of :
    - limit acceptor loop using defcounter
    - achieved securelevel(2) after load_app() by moving all
      `def*` into proper modules and using `defcounter`
-   - apply unveil filesystem permissions, works on OpenBSD
+   - apply unveil filesystem access permissions on OpenBSD
      - current dir (./) is read-only and ./log and ./db are read-write
      - using kc3 unveil wrapper that soft fails on other systems
      - on OpenBSD a failed unveil call aborts the program into the
        debugger
+   - apply unrevokable restrictions on future syscalls on OpenBSD using
+     pledge(2)
 
  - window
    - demo
