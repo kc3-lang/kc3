@@ -2287,13 +2287,11 @@ KC3_OTHER_SOURCES = \
 	"AUTHORS.md" \
 	"BUGS.md" \
 	"CHANGELOG.md" \
-	"CLAUDE.md" \
 	"CONTRIBUTING.md" \
 	"LICENSE.md" \
 	"Makefile" \
 	"README.md" \
 	"SHARDING.md" \
-	"STONE.md" \
 	"TODO.md" \
 	"config.subr" \
 	"config_common" \

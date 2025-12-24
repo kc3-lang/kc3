@@ -1,13 +1,11 @@
 AUTHORS.md
 BUGS.md
 CHANGELOG.md
-CLAUDE.md
 CONTRIBUTING.md
 LICENSE.md
 Makefile
 README.md
 SHARDING.md
-STONE.md
 TODO.md
 config.subr
 config_common
@@ -100,22 +98,40 @@ event/event.h
 event/sources.mk
 event/sources.sh
 event/update_sources
-fonts/Computer Modern/cmunbl-webfont.ttf
-fonts/Computer Modern/cmunbl.otf
-fonts/Computer Modern/cmunbx-webfont.ttf
-fonts/Computer Modern/cmunbx.otf
-fonts/Computer Modern/cmunbxo-webfont.ttf
-fonts/Computer Modern/cmunbxo.otf
-fonts/Computer Modern/cmunrm-webfont.ttf
-fonts/Computer Modern/cmunrm.otf
-fonts/Computer Modern/cmunsi-webfont.ttf
-fonts/Computer Modern/cmunsi.otf
-fonts/Computer Modern/cmunsl-webfont.ttf
-fonts/Computer Modern/cmunsl.otf
-fonts/Computer Modern/cmunss-webfont.ttf
-fonts/Computer Modern/cmunss.otf
-fonts/Computer Modern/cmunsx-webfont.ttf
-fonts/Computer Modern/cmunsx.otf
+fact.md
+fonts/Computer Modern/ttf/cmunbbx.ttf
+fonts/Computer Modern/ttf/cmunbi.ttf
+fonts/Computer Modern/ttf/cmunbl.ttf
+fonts/Computer Modern/ttf/cmunbmo.ttf
+fonts/Computer Modern/ttf/cmunbmr.ttf
+fonts/Computer Modern/ttf/cmunbso.ttf
+fonts/Computer Modern/ttf/cmunbsr.ttf
+fonts/Computer Modern/ttf/cmunbtl.ttf
+fonts/Computer Modern/ttf/cmunbto.ttf
+fonts/Computer Modern/ttf/cmunbx.ttf
+fonts/Computer Modern/ttf/cmunbxo.ttf
+fonts/Computer Modern/ttf/cmunci.ttf
+fonts/Computer Modern/ttf/cmunit.ttf
+fonts/Computer Modern/ttf/cmunobi.ttf
+fonts/Computer Modern/ttf/cmunobx.ttf
+fonts/Computer Modern/ttf/cmunorm.ttf
+fonts/Computer Modern/ttf/cmunoti.ttf
+fonts/Computer Modern/ttf/cmunrb.ttf
+fonts/Computer Modern/ttf/cmunrm.ttf
+fonts/Computer Modern/ttf/cmunsi.ttf
+fonts/Computer Modern/ttf/cmunsl.ttf
+fonts/Computer Modern/ttf/cmunso.ttf
+fonts/Computer Modern/ttf/cmunss.ttf
+fonts/Computer Modern/ttf/cmunssdc.ttf
+fonts/Computer Modern/ttf/cmunst.ttf
+fonts/Computer Modern/ttf/cmunsx.ttf
+fonts/Computer Modern/ttf/cmuntb.ttf
+fonts/Computer Modern/ttf/cmunti.ttf
+fonts/Computer Modern/ttf/cmuntt.ttf
+fonts/Computer Modern/ttf/cmuntx.ttf
+fonts/Computer Modern/ttf/cmunui.ttf
+fonts/Computer Modern/ttf/cmunvi.ttf
+fonts/Computer Modern/ttf/cmunvt.ttf
 fonts/Courier New/Courier New.ttf
 fonts/Courier/fonts/OGCourier-Bold.otf
 fonts/Courier/fonts/OGCourier-Bold.ttf
@@ -328,6 +344,24 @@ fs/fuse/sources.sh
 fs/fuse/types.h
 fs/fuse/update_sources
 fs/update_sources
+git/Makefile
+git/branch.c
+git/branch.h
+git/configure
+git/files.c
+git/files.h
+git/git.h
+git/log.c
+git/log.h
+git/reference.c
+git/reference.h
+git/repository.c
+git/repository.h
+git/sources.mk
+git/sources.sh
+git/tag.c
+git/tag.h
+git/update_sources
 gl/Makefile
 gl/configure
 gl/dmat3.h
@@ -337,6 +371,7 @@ gl/dvec2.c
 gl/dvec2.h
 gl/dvec3.c
 gl/dvec3.h
+gl/freetype2.h
 gl/gl.h
 gl/gl_box.c
 gl/gl_box.h
@@ -368,6 +403,7 @@ gl/gl_vertex.c
 gl/gl_vertex.h
 gl/gl_vtext.c
 gl/gl_vtext.h
+gl/gles2.h
 gl/mat3.c
 gl/mat3.h
 gl/mat4.c
@@ -492,11 +528,31 @@ ikc3/buf_wineditline.h
 ikc3/configure
 ikc3/ikc3.c
 ikc3/ikc3_kc3s.c
-ikc3/kc3s.c
 ikc3/linenoise.c
 ikc3/sources.mk
 ikc3/sources.sh
 ikc3/update_sources
+image/Makefile
+image/avir/avir.h
+image/avir/avir_dil.h
+image/avir/avir_float4_sse.h
+image/avir/avir_float8_avx.h
+image/avir/lancir.h
+image/configure
+image/image.c
+image/image.h
+image/image_avir.cxx
+image/image_avir.h
+image/resize/Makefile
+image/resize/configure
+image/resize/image_resize.c
+image/resize/sources.mk
+image/resize/sources.sh
+image/resize/update_sources
+image/sources.mk
+image/sources.sh
+image/types.h
+image/update_sources
 img/dmg_background.png
 img/dmg_background.xcf
 img/earth.jpg
@@ -545,6 +601,7 @@ img/kmx.logo.text.256.a10.png
 img/kmx.logo.text.256.a20.png
 img/kmx.logo.text.256.a50.png
 img/kmx.logo.text.256.png
+img/kmx.logo.text.512.jpg
 img/mandelbrot_f128_limit.1.png
 img/mandelbrot_f128_limit.2.png
 img/mandelbrot_f128_limit.3.png
@@ -583,6 +640,8 @@ kpkg/sources.sh
 kpkg/update_sources
 lib/kc3/0.1/alist.kc3
 lib/kc3/0.1/array.kc3
+lib/kc3/0.1/base32.kc3
+lib/kc3/0.1/base64.kc3
 lib/kc3/0.1/bin/primes.kc3
 lib/kc3/0.1/bool.facts
 lib/kc3/0.1/buf.kc3
@@ -610,6 +669,11 @@ lib/kc3/0.1/fd.kc3
 lib/kc3/0.1/file.kc3
 lib/kc3/0.1/file/stat.kc3
 lib/kc3/0.1/file_stat.kc3
+lib/kc3/0.1/git.kc3
+lib/kc3/0.1/git/branch.kc3
+lib/kc3/0.1/git/reference.kc3
+lib/kc3/0.1/git/repository.kc3
+lib/kc3/0.1/git/tag.kc3
 lib/kc3/0.1/gl/box.kc3
 lib/kc3/0.1/gl/dvec2.kc3
 lib/kc3/0.1/gl/dvec3.kc3
@@ -642,6 +706,7 @@ lib/kc3/0.1/gtk4/text.kc3
 lib/kc3/0.1/gtk4/text_view.kc3
 lib/kc3/0.1/gtk4/widget.kc3
 lib/kc3/0.1/gtk4/window.kc3
+lib/kc3/0.1/hotp.kc3
 lib/kc3/0.1/html.kc3
 lib/kc3/0.1/http.kc3
 lib/kc3/0.1/http/request.kc3
@@ -649,6 +714,8 @@ lib/kc3/0.1/http/response.kc3
 lib/kc3/0.1/http/upload.kc3
 lib/kc3/0.1/httpd.kc3
 lib/kc3/0.1/httpd/route.kc3
+lib/kc3/0.1/image.kc3
+lib/kc3/0.1/image/egl.kc3
 lib/kc3/0.1/init.kc3
 lib/kc3/0.1/inspect.kc3
 lib/kc3/0.1/integer.facts
@@ -690,18 +757,25 @@ lib/kc3/0.1/marshall.kc3
 lib/kc3/0.1/marshall_read.kc3
 lib/kc3/0.1/math.kc3
 lib/kc3/0.1/metric.kc3
+lib/kc3/0.1/module.kc3
 lib/kc3/0.1/mutex.kc3
 lib/kc3/0.1/parse.kc3
 lib/kc3/0.1/pdf.kc3
 lib/kc3/0.1/pdf/file.kc3
+lib/kc3/0.1/pdf/rect.kc3
 lib/kc3/0.1/pdf/stream.kc3
 lib/kc3/0.1/pdf/trailer.kc3
+lib/kc3/0.1/pdf/vec2.kc3
+lib/kc3/0.1/pdf/write.kc3
+lib/kc3/0.1/pdf/write/document.kc3
+lib/kc3/0.1/pdf/write/page.kc3
 lib/kc3/0.1/pointer.kc3
 lib/kc3/0.1/pretty.kc3
 lib/kc3/0.1/pretty_save.kc3
 lib/kc3/0.1/prime.kc3
 lib/kc3/0.1/ptr.facts
 lib/kc3/0.1/ptr_free.facts
+lib/kc3/0.1/qrencode.kc3
 lib/kc3/0.1/ratio.facts
 lib/kc3/0.1/rpc.kc3
 lib/kc3/0.1/rpc/response.kc3
@@ -717,6 +791,8 @@ lib/kc3/0.1/set/item/fact.kc3
 lib/kc3/0.1/set/item/tag.kc3
 lib/kc3/0.1/set/tag.kc3
 lib/kc3/0.1/sh.kc3
+lib/kc3/0.1/sha1.kc3
+lib/kc3/0.1/sha256.kc3
 lib/kc3/0.1/smtp.kc3
 lib/kc3/0.1/socket.kc3
 lib/kc3/0.1/socket/addr.kc3
@@ -734,6 +810,7 @@ lib/kc3/0.1/tls.kc3
 lib/kc3/0.1/tls/client.kc3
 lib/kc3/0.1/tls/config.kc3
 lib/kc3/0.1/tls/server.kc3
+lib/kc3/0.1/totp.kc3
 lib/kc3/0.1/u16.facts
 lib/kc3/0.1/u32.facts
 lib/kc3/0.1/u64.facts
@@ -755,6 +832,10 @@ libkc3/arg.h
 libkc3/array.c
 libkc3/array.h
 libkc3/assert.h
+libkc3/base32.c
+libkc3/base32.h
+libkc3/base64.c
+libkc3/base64.h
 libkc3/binding.c
 libkc3/binding.h
 libkc3/block.c
@@ -1000,6 +1081,8 @@ libkc3/frame.h
 libkc3/gen.mk
 libkc3/hash.c
 libkc3/hash.h
+libkc3/hotp.c
+libkc3/hotp.h
 libkc3/ht.c
 libkc3/ht.h
 libkc3/ident.c
@@ -1120,6 +1203,8 @@ libkc3/sh.c
 libkc3/sh.h
 libkc3/sha1.c
 libkc3/sha1.h
+libkc3/sha256.c
+libkc3/sha256.h
 libkc3/sha512.c
 libkc3/sha512.h
 libkc3/sign.c
@@ -1160,9 +1245,11 @@ libkc3/tag_div.c
 libkc3/tag_init.c
 libkc3/tag_init.h
 libkc3/tag_init.rb
+libkc3/tag_init_wip.h
 libkc3/tag_mod.c
 libkc3/tag_mul.c
 libkc3/tag_neg.c
+libkc3/tag_pow.c
 libkc3/tag_shift_left.c
 libkc3/tag_shift_right.c
 libkc3/tag_sqrt.c
@@ -1410,22 +1497,37 @@ markdown/sources.sh
 markdown/update_sources
 pdf/Makefile
 pdf/configure
+pdf/kc3_pdf_write.c
+pdf/kc3_pdf_write.h
 pdf/pdf.c
 pdf/pdf.h
 pdf/pdf_buf_parse.c
 pdf/pdf_buf_parse.h
+pdf/pdf_buf_write.c
+pdf/pdf_buf_write.h
 pdf/pdf_file.c
 pdf/pdf_file.h
 pdf/pdf_name.c
 pdf/pdf_name.h
+pdf/pdf_stream.c
+pdf/pdf_stream.h
 pdf/pdf_trailer.c
 pdf/pdf_trailer.h
 pdf/pdf_write.c
 pdf/pdf_write.h
+pdf/pdf_write_page.c
+pdf/pdf_write_page.h
 pdf/sources.mk
 pdf/sources.sh
 pdf/types.h
 pdf/update_sources
+qrencode/Makefile
+qrencode/configure
+qrencode/qrencode.c
+qrencode/qrencode.h
+qrencode/sources.mk
+qrencode/sources.sh
+qrencode/update_sources
 smtp/Makefile
 smtp/configure
 smtp/kc3_smtp.c
@@ -1613,7 +1715,35 @@ test/httpd/static/_fonts/OpenSans-LightItalic.ttf
 test/httpd/static/_fonts/OpenSans-Regular.ttf
 test/httpd/static/_fonts/OpenSans-SemiBold.ttf
 test/httpd/static/_fonts/OpenSans-SemiBoldItalic.ttf
-test/httpd/static/_fonts/computer_modern.woff
+test/httpd/static/_fonts/cmunbi-webfont.woff
+test/httpd/static/_fonts/cmunbl-webfont.woff
+test/httpd/static/_fonts/cmunbmo-webfont.woff
+test/httpd/static/_fonts/cmunbmr-webfont.woff
+test/httpd/static/_fonts/cmunbso-webfont.woff
+test/httpd/static/_fonts/cmunbsr-webfont.woff
+test/httpd/static/_fonts/cmunbtl-webfont.woff
+test/httpd/static/_fonts/cmunbto-webfont.woff
+test/httpd/static/_fonts/cmunbx-webfont.woff
+test/httpd/static/_fonts/cmunci-webfont.woff
+test/httpd/static/_fonts/cmunit-webfont.woff
+test/httpd/static/_fonts/cmunobi-webfont.woff
+test/httpd/static/_fonts/cmunobx-webfont.woff
+test/httpd/static/_fonts/cmunorm-webfont.woff
+test/httpd/static/_fonts/cmunoti-webfont.woff
+test/httpd/static/_fonts/cmunrm-webfont.woff
+test/httpd/static/_fonts/cmunsi-webfont.woff
+test/httpd/static/_fonts/cmunsl-webfont.woff
+test/httpd/static/_fonts/cmunso-webfont.woff
+test/httpd/static/_fonts/cmunss-webfont.woff
+test/httpd/static/_fonts/cmunssdc-webfont.woff
+test/httpd/static/_fonts/cmunsx-webfont.woff
+test/httpd/static/_fonts/cmuntb-webfont.woff
+test/httpd/static/_fonts/cmunti-webfont.woff
+test/httpd/static/_fonts/cmuntt-webfont.woff
+test/httpd/static/_fonts/cmuntx-webfont.woff
+test/httpd/static/_fonts/cmunui-webfont.woff
+test/httpd/static/_fonts/cmunvi-webfont.woff
+test/httpd/static/_fonts/cmunvt-webfont.woff
 test/httpd/static/_fonts/courier_new.woff
 test/httpd/static/_fonts/courier_new.woff2
 test/httpd/static/_fonts/fontawesome-webfont.woff
@@ -1926,6 +2056,9 @@ test/pdf/pdf.ret.expected
 test/pdf/stream.kc3
 test/pdf/stream.out.expected
 test/pdf/stream.ret.expected
+test/pdf/write.kc3
+test/pdf/write.out.expected
+test/pdf/write.ret.expected
 test/pdf_test
 test/ratio_test.c
 test/replace_lines.rb
