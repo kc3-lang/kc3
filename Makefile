@@ -335,6 +335,22 @@ dist_dmg:
 dist_msys2_clang64: all
 	${MAKE} -C msys2/clang64
 
+distcheck: distcheck_root distcheck_subdir
+
+distcheck_root:
+	rm -rf distcheck_root
+	mkdir distcheck_root
+	cd distcheck_root && tar xzf ../${DIST}.tar.gz
+	cd distcheck_root/${DIST} && ./configure && make -j8 && \
+		make test test_debug
+
+distcheck_subdir:
+	rm -rf distcheck_subdir
+	mkdir distcheck_subdir
+	cd distcheck_subdir && tar xzf ../${DIST}.tar.gz
+	cd distcheck_subdir/${DIST} && mkdir build && cd build && \
+		./configure && make -j8 && make test test_debug
+
 distclean::
 	${MAKE} -C libtommath distclean
 	${MAKE} -C libkc3 distclean
@@ -2053,6 +2069,9 @@ uninstall:
 	demo_gl_cov \
 	demo_gl_debug \
 	dist \
+	distcheck \
+	distcheck_root \
+	distcheck_subdir \
 	dump \
 	ekc3 \
 	ekc3_asan \

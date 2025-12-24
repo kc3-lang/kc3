@@ -1475,7 +1475,7 @@ SOURCES_MK=".sources.mk.tmp"
 SOURCES_SH=sources.sh
 SOURCES_SH=".sources.sh.tmp"
 
-VER=0.1.16-git
+VER=0.1.16
 echo "VER = $VER" >> ${CONFIG_MK}
 
 echo "BUILD_TOP = $BUILD_TOP" >> ${CONFIG_MK}
