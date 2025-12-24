@@ -34,8 +34,6 @@ static p_list * files_push_entry (const git_tree_entry *entry,
   switch (type) {
   case GIT_OBJECT_COMMIT:
     type_sym = sym_1("commit");
-    oid = git_tree_entry_id(entry);
-    git_oid_tostr(hash, sizeof(hash) - 1, oid);
     break;
   case GIT_OBJECT_TREE:
     type_sym = sym_1("tree");
@@ -49,6 +47,8 @@ static p_list * files_push_entry (const git_tree_entry *entry,
     err_write_1("\n");
     return dest;
   }
+  oid = git_tree_entry_id(entry);
+  git_oid_tostr(hash, sizeof(hash) - 1, oid);
   mode = git_tree_entry_filemode(entry);
   if (! name)
     name = git_tree_entry_name(entry);

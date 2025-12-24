@@ -14,6 +14,9 @@ defmodule Git do
 
   dlopen("git.so")
 
+  def blob = cfn Str "kc3_git_blob_to_str" (Git.Repository*, Str,
+    Result)
+
   def files = cfn List "kc3_git_files" (Git.Repository*, Str, Str,
     Result)
 

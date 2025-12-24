@@ -254,6 +254,8 @@ KC3_C_SOURCES = \
 	"fs/OpenBSD/kc3fs.h" \
 	"fs/fuse/mount_kc3fs.c" \
 	"fs/fuse/types.h" \
+	"git/blob.c" \
+	"git/blob.h" \
 	"git/branch.c" \
 	"git/branch.h" \
 	"git/files.c" \
