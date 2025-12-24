@@ -14,7 +14,13 @@ defmodule Git do
 
   dlopen("git.so")
 
+  def files = cfn List "kc3_git_files" (Git.Repository*, Str, Str,
+    Result)
+
   def init = cfn S32 "git_libgit2_init" ()
+
+  def log = cfn List "kc3_git_log" (Git.Repository*, Str, Str, Tag, Tag,
+    Result)
 
   def shutdown = cfn S32 "git_libgit2_shutdown" ()
 

@@ -256,7 +256,11 @@ KC3_C_SOURCES = \
 	"fs/fuse/types.h" \
 	"git/branch.c" \
 	"git/branch.h" \
+	"git/files.c" \
+	"git/files.h" \
 	"git/git.h" \
+	"git/log.c" \
+	"git/log.h" \
 	"git/reference.c" \
 	"git/reference.h" \
 	"git/repository.c" \
