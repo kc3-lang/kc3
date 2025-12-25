@@ -116,7 +116,7 @@
      - kmx_sort
      - runj
 
- - remove unused/merged branches
+ - removed unused/merged branches
 
 ## v0.1.15
 

@@ -193,7 +193,7 @@ There are now four full applications written in KC3 that we know of :
      - kmx_sort
      - runj
 
- - remove unused/merged branches
+ - removed unused/merged branches
 
 ## Discord invite
 
