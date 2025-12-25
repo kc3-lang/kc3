@@ -17,6 +17,10 @@ if r == 0 do
   server_ctx = TLS.server()
   TLS.configure(server_ctx, server_config)
   server_socket = Socket.listen(hostname(), "57000")
+  if (! server_socket) do
+    err_puts("Socket.listen: #{inspect(server_socket)}")
+    abort()
+  end
   puts("server: listening on egress 57000")
   server_client_tls = TLS.Server.accept(server_socket, server_ctx)
   line = Buf.read_line(server_client_tls.socket_buf.buf_rw.r)
