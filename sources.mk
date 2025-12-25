@@ -397,7 +397,6 @@ KC3_C_SOURCES = \
 	"image/avir/lancir.h" \
 	"image/image.c" \
 	"image/image.h" \
-	"image/image_avir.cxx" \
 	"image/image_avir.h" \
 	"image/resize/image_resize.c" \
 	"image/types.h" \
@@ -804,7 +803,6 @@ KC3_C_SOURCES = \
 	"libkc3/skiplist_node__fact.h" \
 	"libkc3/special_operator.c" \
 	"libkc3/special_operator.h" \
-	"libkc3/std.cxx" \
 	"libkc3/str.c" \
 	"libkc3/str.h" \
 	"libkc3/struct.c" \
