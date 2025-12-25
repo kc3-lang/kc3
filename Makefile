@@ -1530,6 +1530,10 @@ release:
 	mkdir -p release/v${VER}
 	cp ${DIST}.tar.gz release/v${VER}
 
+release_check:
+	cp release/v${VER}/${DIST}.tar.gz ./
+	${MAKE} distcheck
+
 test: build lib_links
 	${MAKE} -C test test
 	if ${HAVE_ASAN}; then ${MAKE} test_asan; fi
