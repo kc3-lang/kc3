@@ -276,7 +276,7 @@ demo_kubz_debug: debug
 
 dist: kc3-${KC3_VERSION}.tar.gz
 
-DIST_DMG = kc3-v${KC3_VERSION}-${MACHINE}
+DIST_DMG = kc3-${KC3_VERSION}-${MACHINE}
 
 dist_dmg:
 	mkdir -p out/dmg

@@ -62,7 +62,7 @@ gdb_demo: debug
 install::
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
 	    ${DESTDIR}${prefix}/include/libkc3/window/egl/xcb
-	for H in ${HEADERS}; do \
+	for H in ${SRC_DIR}/${HEADERS}; do \
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		$$H ${DESTDIR}${prefix}/include/libkc3/window/egl/xcb; \
 	done
