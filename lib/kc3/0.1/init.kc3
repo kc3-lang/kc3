@@ -289,6 +289,7 @@ def maybe_reload_directory = fn (dir) {
   end
 }
 
+def abort = cfn Void "abort" ()
 def dump = cfn Sw "kc3_dump" (Str)
 def exit = cfn Void "kc3_exit" (Tag)
 def exit_subprocess = cfn Void "kc3_exit_subprocess" (Tag)
