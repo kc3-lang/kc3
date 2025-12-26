@@ -15,21 +15,22 @@
 #include <git2.h>
 #include "files.h"
 
-static p_list * files_push_entry (const git_tree_entry *entry,
-                                  const char *name, p_list *dest);
+static s_map * files_set_entry (const git_tree_entry *entry,
+                                const char *name, s_map *map,
+                                uw index);
 
-static p_list * files_push_entry (const git_tree_entry *entry,
-                                  const char *name, p_list *dest)
+static s_map * files_set_entry (const git_tree_entry *entry,
+                                const char *name, s_map *map,
+                                uw index)
 {
   char hash[128] = {0};
-  s_map *map;
   git_filemode_t mode;
   const git_oid *oid;
-  p_list tmp;
+  s_map *sub_map;
   git_object_t type;
   const s_sym *type_sym;
   assert(entry);
-  assert(dest);
+  assert(map);
   type = git_tree_entry_type(entry);
   switch (type) {
   case GIT_OBJECT_COMMIT:
@@ -42,42 +43,42 @@ static p_list * files_push_entry (const git_tree_entry *entry,
     type_sym = sym_1("blob");
     break;
   default:
-    err_write_1("kc3_git: files_push_entry: skipping entry type ");
+    err_write_1("kc3_git: files_set_entry: skipping entry type ");
     err_inspect_s32(type);
     err_write_1("\n");
-    return dest;
+    return map;
   }
   oid = git_tree_entry_id(entry);
   git_oid_tostr(hash, sizeof(hash) - 1, oid);
   mode = git_tree_entry_filemode(entry);
   if (! name)
     name = git_tree_entry_name(entry);
-  if (! (tmp = list_new_map(4, *dest)))
-    return NULL;
-  map = &tmp->tag.data.map;
-  tag_init_psym(map->key + 0, sym_1("name"));
-  tag_init_psym(map->key + 1, sym_1("type"));
-  tag_init_psym(map->key + 2, sym_1("mode"));
-  tag_init_psym(map->key + 3, sym_1("hash"));
-  tag_init_str_1_alloc(map->value + 0, name);
-  tag_init_psym(       map->value + 1, type_sym);
-  tag_init_s32(        map->value + 2, mode);
-  tag_init_str_1_alloc(map->value + 3, hash);
-  *dest = tmp;
-  return dest;
+  tag_init_str_1_alloc(map->key + index, name);
+  tag_init_map(map->value + index, 4);
+  sub_map = &map->value[index].data.map;
+  tag_init_psym(sub_map->key + 0, sym_1("name"));
+  tag_init_psym(sub_map->key + 1, sym_1("type"));
+  tag_init_psym(sub_map->key + 2, sym_1("mode"));
+  tag_init_psym(sub_map->key + 3, sym_1("hash"));
+  tag_init_str_1_alloc(sub_map->value + 0, name);
+  tag_init_psym(       sub_map->value + 1, type_sym);
+  tag_init_s32(        sub_map->value + 2, mode);
+  tag_init_str_1_alloc(sub_map->value + 3, hash);
+  return map;
 }
 
-p_list * kc3_git_files (git_repository **repo, const s_str *branch,
-                        const s_str *path, p_list *dest)
+s_map * kc3_git_files (git_repository **repo, const s_str *branch,
+                       const s_str *path, s_map *dest)
 {
   uw count;
   git_tree_entry *entry = NULL;
+  uw i;
   git_object *obj = NULL;
   uw rev_size;
   char *rev;
   const git_tree_entry *sub_entry;
   git_tree *sub_tree;
-  p_list tmp = NULL;
+  s_map tmp = {0};
   git_tree *tree;
   git_object_t type;
   rev_size = branch->size + 8;
@@ -104,7 +105,13 @@ p_list * kc3_git_files (git_repository **repo, const s_str *branch,
     type = git_tree_entry_type(entry);
     switch (type) {
     case GIT_OBJECT_BLOB:
-      if (! files_push_entry(entry, path->ptr.pchar, &tmp)) {
+      if (! map_init(&tmp, 1)) {
+        git_tree_entry_free(entry);
+        git_object_free(obj);
+        free(rev);
+        return NULL;
+      }
+      if (! files_set_entry(entry, path->ptr.pchar, &tmp, 0)) {
         git_tree_entry_free(entry);
         git_object_free(obj);
         free(rev);
@@ -134,14 +141,22 @@ p_list * kc3_git_files (git_repository **repo, const s_str *branch,
     }
   }
   count = git_tree_entrycount(sub_tree);
-  while (count--) {
-    sub_entry = git_tree_entry_byindex(sub_tree, count);
-    if (! files_push_entry(sub_entry, NULL, &tmp)) {
-        git_tree_entry_free(entry);
-        git_object_free(obj);
-        free(rev);
-        return NULL;
+  if (! map_init(&tmp, count)) {
+    git_tree_entry_free(entry);
+    git_object_free(obj);
+    free(rev);
+    return NULL;
+  }
+  i = 0;
+  while (i < count) {
+    sub_entry = git_tree_entry_byindex(sub_tree, i);
+    if (! files_set_entry(sub_entry, NULL, &tmp, i)) {
+      git_tree_entry_free(entry);
+      git_object_free(obj);
+      free(rev);
+      return NULL;
     }
+    i++;
   }
   if (sub_tree != (git_tree *) obj)
     git_tree_free(sub_tree);

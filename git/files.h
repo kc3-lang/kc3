@@ -16,7 +16,7 @@
 #include "../libkc3/types.h"
 #include <git2.h>
 
-p_list * kc3_git_files (git_repository **repo, const s_str *branch,
-                        const s_str *path, p_list *dest);
+s_map * kc3_git_files (git_repository **repo, const s_str *branch,
+                       const s_str *path, s_map *dest);
 
 #endif /* LIBKC3_GIT_FILES_H */
