@@ -8,6 +8,7 @@ HEADERS = \
 	"mandelbrot_f64.h" \
 	"mandelbrot_f80.h" \
 	"matrix.h" \
+	"player.h" \
 	"toasters.h" \
 	"types.h" \
 
@@ -20,5 +21,6 @@ SOURCES = \
 	"mandelbrot_f64.c" \
 	"mandelbrot_f80.c" \
 	"matrix.c" \
+	"player.c" \
 	"toasters.c" \
 

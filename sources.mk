@@ -313,6 +313,8 @@ KC3_C_SOURCES = \
 	"gl/mat3.h" \
 	"gl/mat4.c" \
 	"gl/mat4.h" \
+	"gl/pt.c" \
+	"gl/pt.h" \
 	"gl/types.h" \
 	"gl/vec2.c" \
 	"gl/vec2.h" \
@@ -1205,6 +1207,8 @@ KC3_C_SOURCES = \
 	"window/demo/mandelbrot_f80.h" \
 	"window/demo/matrix.c" \
 	"window/demo/matrix.h" \
+	"window/demo/player.c" \
+	"window/demo/player.h" \
 	"window/demo/toasters.c" \
 	"window/demo/toasters.h" \
 	"window/demo/types.h" \
