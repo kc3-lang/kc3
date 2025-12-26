@@ -20,23 +20,6 @@ u8 player_load (s_sequence *seq)
 {
   (void) seq;
   return 0;
-  /*
-  s_gl_camera *camera;
-  s_map *map;
-  s_mat4 matrix;
-  s_gl_sphere *sphere;
-  const f32    sphere_radius = 5.0;
-  s_window *window;
-  assert(seq);
-  window = seq->window;
-  assert(window);
-  camera = gl_camera_new(window->w, window->h);
-  if (! camera)
-    return false;
-  if (! tag_map(&seq->tag, 4))
-    return false;
-  return true;
-  */
 }
 
 u8 player_render (s_sequence *seq)
