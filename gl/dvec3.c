@@ -14,7 +14,8 @@
 #include "../libkc3/kc3.h"
 #include "dvec3.h"
 
-s_dvec3 * dvec3_add (s_dvec3 *a, s_dvec3 *b, s_dvec3 *dest)
+s_dvec3 * dvec3_add (const s_dvec3 *a, const s_dvec3 *b,
+                     s_dvec3 *dest)
 {
   s_dvec3 tmp = {0};
   assert(a);
@@ -23,6 +24,18 @@ s_dvec3 * dvec3_add (s_dvec3 *a, s_dvec3 *b, s_dvec3 *dest)
   tmp.x = a->x + b->x;
   tmp.y = a->y + b->y;
   tmp.z = a->z + b->z;
+  *dest = tmp;
+  return dest;
+}
+
+s_dvec3 * dvec3_clamp (const s_dvec3 *a, s_dvec3 *dest)
+{
+  s_dvec3 tmp = {0};
+  assert(a);
+  assert(dest);
+  tmp.x = a->x < 0.0 ? 0.0 : a->x > 1.0 ? 1.0 : a->x;
+  tmp.y = a->y < 0.0 ? 0.0 : a->y > 1.0 ? 1.0 : a->y;
+  tmp.z = a->z < 0.0 ? 0.0 : a->z > 1.0 ? 1.0 : a->z;
   *dest = tmp;
   return dest;
 }
@@ -103,6 +116,20 @@ s_dvec3 * dvec3_init_zero (s_dvec3 *p)
 void dvec3_delete (s_dvec3 *p)
 {
   free(p);
+}
+
+s_dvec3 * dvec3_mul (const s_dvec3 *a, f64 b,
+                     s_dvec3 *dest)
+{
+  s_dvec3 tmp = {0};
+  assert(a);
+  assert(b);
+  assert(dest);
+  tmp.x = a->x * b;
+  tmp.y = a->y * b;
+  tmp.z = a->z * b;
+  *dest = tmp;
+  return dest;
 }
 
 s_dvec3 * dvec3_new (f64 x, f64 y, f64 z)

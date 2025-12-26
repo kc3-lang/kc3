@@ -10,8 +10,6 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-require File
-
 defmodule Image do
 
   defstruct [w: (Uw) 0,
@@ -22,11 +20,12 @@ defmodule Image do
 
   dlopen("image.so")
 
+  def clean = cfn Void "image_clean" (Image)
+
   def delete = cfn Void "kc3_image_delete" (Image*)
 
   # new_alloc (w, h, components, pixel_size)
-  #def new_alloc =
-  #  cfn Image* "kc3_image_new_alloc" (Result, Tag, Tag, Tag, Tag)
+  def alloc = cfn Image "kc3_image_init_alloc" (Result, Tag, Tag, U8, U8)
 
   # resize_to_fill_file(image, path)
   def new_resize_to_fill_file =

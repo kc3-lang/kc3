@@ -132,3 +132,5 @@ build_lib
 
 update_config_mk
 update_makefile
+
+config_subdirs pt

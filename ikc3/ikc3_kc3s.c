@@ -176,10 +176,11 @@ static int arg_load (s_env *env, int *argc, char ***argv)
     err_write_1(strerror(e));
     err_write_1("\n");
     assert(! "ikc3: fopen");
-    return 1;
+    return -1;
   }
   str_clean(&path);
   if (! buf_file_open_r(env->in, fp)) {
+    err_puts(PROG ": buf_file_open_r");
     return -1;
   }
   file_dir = frame_get_w(env->global_frame, &g_sym___DIR__);
@@ -189,6 +190,7 @@ static int arg_load (s_env *env, int *argc, char ***argv)
   tag_init_str_1(file_path, NULL, (*argv)[1]);
   file_dir->type = TAG_STR;
   if (! file_dirname(&file_path->data.str, &file_dir->data.str)) {
+    err_puts(PROG ": file_dirname");
     buf_file_close(env->in);
     return -1;
   }
@@ -197,8 +199,8 @@ static int arg_load (s_env *env, int *argc, char ***argv)
   *file_path = file_path_save;
   buf_file_close(env->in);
   fclose(fp);
-  if (r)
-    return r;
+  if (r < 0)
+    return -1;
   *argc -= 2;
   *argv += 2;
   return 0;

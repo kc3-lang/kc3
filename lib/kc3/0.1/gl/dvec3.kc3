@@ -10,7 +10,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule GL.Dvec3 do
+defmodule GL.DVec3 do
 
   defstruct [x: (F64) 0,
              y: (F64) 0,

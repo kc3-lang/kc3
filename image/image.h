@@ -38,6 +38,8 @@ s_str *   image_to_png_str (s_image *image, s_str *dest);
 
 /* KC3 interface. */
 void       kc3_image_delete (s_image **image);
+s_image ** kc3_image_new_alloc (s_image **image, s_tag *w, s_tag *h,
+                                u8 components, u8 pixel_size);
 s_image ** kc3_image_new_resize_to_fill_file (s_image **image,
                                               s_tag *tag_w,
                                               s_tag *tag_h,

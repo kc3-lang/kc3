@@ -502,6 +502,22 @@ void kc3_image_delete (s_image **image)
   image_delete(*image);
 }
 
+s_image * kc3_image_init_alloc (s_image *image, s_tag *tag_w,
+                                s_tag *tag_h, u8 components,
+                                u8 pixel_size)
+{
+  uw h;
+  s_image tmp = {0};
+  const s_sym *sym_Uw = &g_sym_Uw;
+  uw w;
+  uw_init_cast(&w, &sym_Uw, tag_w);
+  uw_init_cast(&h, &sym_Uw, tag_h);
+  if (! image_init_alloc(&tmp, w, h, components, pixel_size))
+    return NULL;
+  *image = tmp;
+  return image;
+}
+
 s_image ** kc3_image_new_resize_to_fill_file (s_image **image,
                                               s_tag *tag_w,
                                               s_tag *tag_h,

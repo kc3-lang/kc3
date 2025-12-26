@@ -1,0 +1,70 @@
+require GL.PT
+
+scene = [
+  %GL.PT.Sphere{
+    radius: (F64) 100000.0,
+    center: %GL.DVec3{x: (F64) 100001.0, y: (F64) 40.8, z: (F64) 81.6},
+    material: %GL.PT.Material{
+      diffuse: %GL.PT.Reflection{color: %GL.DVec3{x: (F64) 0.75,
+                                                  y: (F64) 0.25,
+                                                  z: (F64) 0.25}}}},
+  %GL.PT.Sphere{
+    radius: (F64) 100000.0,
+    center: %GL.DVec3{x: (F64) 99.0 - (F64) 100000.0, y: (F64) 40.8, z: (F64) 81.6},
+    material: %GL.PT.Material{
+      diffuse: %GL.PT.Reflection{color: %GL.DVec3{x: (F64) 0.25,
+                                                  y: (F64) 0.25,
+                                                  z: (F64) 0.75}}}},
+  %GL.PT.Sphere{
+    radius: (F64) 100000.0,
+    center: %GL.DVec3{x: (F64) 50.0, y: (F64) 40.8, z: (F64) 100000},
+    material: %GL.PT.Material{
+      diffuse: %GL.PT.Reflection{color: %GL.DVec3{x: (F64) 0.75,
+                                                  y: (F64) 0.75,
+                                                  z: (F64) 0.75}}}},
+  %GL.PT.Sphere{
+    radius: (F64) 100000.0,
+    center: %GL.DVec3{x: (F64) 50.0, y: (F64) 40.8, z: (F64) 170.0 - (F64) 100000},
+    material: %GL.PT.Material{
+      diffuse: %GL.PT.Reflection{color: %GL.DVec3{x: (F64) 0.10,
+                                                  y: (F64) 0.05,
+                                                  z: (F64) 0.15}}}},
+  %GL.PT.Sphere{
+    radius: (F64) 100000.0,
+    center: %GL.DVec3{x: (F64) 50.0, y: (F64) 10000.0, z: (F64) 81.6},
+    material: %GL.PT.Material{
+      diffuse: %GL.PT.Reflection{color: %GL.DVec3{x: (F64) 0.75,
+                                                  y: (F64) 0.75,
+                                                  z: (F64) 0.75}}}},
+  %GL.PT.Sphere{
+    radius: (F64) 100000.0,
+    center: %GL.DVec3{x: (F64) 50.0, y: (F64) 81.6 - (F64) 100000.0, z: (F64) 81.6},
+    material: %GL.PT.Material{
+      diffuse: %GL.PT.Reflection{color: %GL.DVec3{x: (F64) 0.75,
+                                                  y: (F64) 0.75,
+                                                  z: (F64) 0.75}}}},
+  %GL.PT.Sphere{
+    radius: (F64) 16.5,
+    center: %GL.DVec3{x: (F64) 27.0, y: (F64) 16.5, z: (F64) 47.0},
+    material: %GL.PT.Material{
+      specular: %GL.PT.Reflection{color: %GL.DVec3{x: (F64) 0.999,
+                                                   y: (F64) 0.999,
+                                                   z: (F64) 0.999}}}},
+  %GL.PT.Sphere{
+    radius: (F64) 16.5,
+    center: %GL.DVec3{x: (F64) 73.0, y: (F64) 16.5, z: (F64) 78.0},
+    material: %GL.PT.Material{
+      refractive: %GL.PT.Reflection{color: %GL.DVec3{x: (F64) 0.999,
+                                                     y: (F64) 0.999,
+                                                     z: (F64) 0.999}}}},
+  %GL.PT.Sphere{
+    radius: (F64) 600.0,
+    center: %GL.DVec3{x: (F64) 50.0, y: (F64) 681.33, z: (F64) 81.6},
+    material: %GL.PT.Material{
+      diffuse: %GL.PT.Reflection{emission: %GL.DVec3{x: (F64) 12.0,
+                                                     y: (F64) 12.0,
+                                                     z: (F64) 12.0}}}}
+]
+
+image = GL.PT.render_image(1024, 768, 1, scene)
+Image.to_png_file(& image, "pt.png")

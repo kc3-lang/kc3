@@ -1626,6 +1626,9 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gl/dvec3.kc3" \
 	"lib/kc3/0.1/gl/marching_cubes.kc3" \
 	"lib/kc3/0.1/gl/object.kc3" \
+	"lib/kc3/0.1/gl/pt.kc3" \
+	"lib/kc3/0.1/gl/pt/material.kc3" \
+	"lib/kc3/0.1/gl/pt/reflection.kc3" \
 	"lib/kc3/0.1/gl/pt/sphere.kc3" \
 	"lib/kc3/0.1/gl/sphere.kc3" \
 	"lib/kc3/0.1/gl/triangle.kc3" \

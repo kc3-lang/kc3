@@ -24,14 +24,6 @@ int main ()
     err_puts("kc3_init");
     return 1;
   }
-  i = 0;
-  while (i < argc) {
-    str_init_1(&path, NULL, argv[i]);
-    if (! env_load(env_gobal(), &path)) {
-      kc3_clean(NULL);
-      return 1;
-    }
-  }
   kc3_clean(NULL);
   return 0;
 }

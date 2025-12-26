@@ -21,15 +21,19 @@ include sources.mk
 
 asan:
 	${MAKE} ${LIB_ASAN}
+	${MAKE} -C pt asan
 
 build:
 	${MAKE} ${LIB}
+	${MAKE} -C pt build
 
 cov:
 	${MAKE} ${LIB_COV}
+	${MAKE} -C pt cov
 
 debug:
 	${MAKE} ${LIB_DEBUG}
+	${MAKE} -C pt debug
 
 install::
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d \
@@ -38,24 +42,14 @@ install::
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		${SRC_DIR}/$$H \
 		${DESTDIR}${prefix}/include/libkc3/gl; done
-
-lldb_demo: debug
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo lldb_demo; fi
-
-lldb_demo_gl: debug
-	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 lldb_demo; fi
-
-test:
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo test; fi
-	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 test; fi
+	${MAKE} -C pt install
 
 update_sources:
 	./update_sources
 
 uninstall::
 	rm -rf ${prefix}/include/libkc3/gl
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo uninstall; fi
-	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 uninstall; fi
+	${MAKE} -C pt uninstall
 
 .PHONY: \
 	all \
@@ -63,19 +57,7 @@ uninstall::
 	build \
 	cov \
 	debug \
-	demo \
-	demo_asan \
-	demo_cov \
-	demo_debug \
-	demo_gl \
-	demo_gl_asan \
-	demo_gl_cov \
-	demo_gl_debug \
-	gdb_demo \
-	gdb_demo_gl \
 	install \
-	lldb_demo \
-	lldb_demo_gl \
 	test \
 	update_sources \
 	uninstall
