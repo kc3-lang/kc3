@@ -24,6 +24,7 @@ HEADERS = \
 	"gles2.h" \
 	"mat3.h" \
 	"mat4.h" \
+	"pt.h" \
 	"types.h" \
 	"vec2.h" \
 	"vec3.h" \
@@ -49,6 +50,7 @@ SOURCES = \
 	"gl_vtext.c" \
 	"mat3.c" \
 	"mat4.c" \
+	"pt.c" \
 	"vec2.c" \
 	"vec3.c" \
 

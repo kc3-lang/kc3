@@ -14,6 +14,19 @@
 #include "../libkc3/kc3.h"
 #include "dvec3.h"
 
+s_dvec3 * dvec3_add (s_dvec3 *a, s_dvec3 *b, s_dvec3 *dest)
+{
+  s_dvec3 tmp = {0};
+  assert(a);
+  assert(b);
+  assert(dest);
+  tmp.x = a->x + b->x;
+  tmp.y = a->y + b->y;
+  tmp.z = a->z + b->z;
+  *dest = tmp;
+  return dest;
+}
+
 s_dvec3 * dvec3_init (s_dvec3 *p, f64 x, f64 y, f64 z)
 {
   assert(p);

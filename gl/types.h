@@ -26,33 +26,37 @@
 
 #define GL_CAMERA_LIGHT_MAX 16          // keep in sync with shader
 
-typedef struct dmat3        s_dmat3;
-typedef struct dmat4        s_dmat4;
-typedef struct dvec2        s_dvec2;
-typedef struct dvec3        s_dvec3;
-typedef struct dvec4        s_dvec4;
-typedef struct gl_box       s_gl_box;
-typedef struct gl_camera    s_gl_camera;
-typedef struct gl_cylinder  s_gl_cylinder;
-typedef struct gl_font      s_gl_font;
-typedef struct gl_light     s_gl_light;
-typedef struct gl_lines     s_gl_lines;
-typedef struct gl_material  s_gl_material;
-typedef struct gl_object    s_gl_object;
-typedef struct gl_ortho     s_gl_ortho;
-typedef struct gl_sphere    s_gl_sphere;
-typedef struct gl_sprite    s_gl_sprite;
-typedef struct gl_square    s_gl_square;
-typedef struct gl_text      s_gl_text;
-typedef struct gl_triangle  s_gl_triangle;
-typedef struct gl_vertex    s_gl_vertex;
-typedef struct mat3         s_mat3;
-typedef struct mat4         s_mat4;
-typedef struct rgb          s_rgb;
-typedef struct rgba         s_rgba;
-typedef struct vec2         s_vec2;
-typedef struct vec3         s_vec3;
-typedef struct vec4         s_vec4;
+typedef struct dmat3         s_dmat3;
+typedef struct dmat4         s_dmat4;
+typedef struct dray          s_dray;
+typedef struct dvec2         s_dvec2;
+typedef struct dvec3         s_dvec3;
+typedef struct dvec4         s_dvec4;
+typedef struct gl_box        s_gl_box;
+typedef struct gl_camera     s_gl_camera;
+typedef struct gl_cylinder   s_gl_cylinder;
+typedef struct gl_font       s_gl_font;
+typedef struct gl_light      s_gl_light;
+typedef struct gl_lines      s_gl_lines;
+typedef struct gl_material   s_gl_material;
+typedef struct gl_object     s_gl_object;
+typedef struct gl_ortho      s_gl_ortho;
+typedef struct gl_sphere     s_gl_sphere;
+typedef struct gl_sprite     s_gl_sprite;
+typedef struct gl_square     s_gl_square;
+typedef struct gl_text       s_gl_text;
+typedef struct gl_triangle   s_gl_triangle;
+typedef struct gl_vertex     s_gl_vertex;
+typedef struct mat3          s_mat3;
+typedef struct mat4          s_mat4;
+typedef struct pt_material   s_pt_material;
+typedef struct pt_reflection s_pt_reflection;
+typedef struct pt_sphere     s_pt_sphere;
+typedef struct rgb           s_rgb;
+typedef struct rgba          s_rgba;
+typedef struct vec2          s_vec2;
+typedef struct vec3          s_vec3;
+typedef struct vec4          s_vec4;
 
 /* 1 */
 
@@ -118,37 +122,6 @@ struct gl_lines {
   u32 gl_vbo;
 };
 
-struct mat3 {
-  f32 xx;
-  f32 yx;
-  f32 zx;
-  f32 xy;
-  f32 yy;
-  f32 zy;
-  f32 xz;
-  f32 yz;
-  f32 zz;
-};
-
-struct mat4 {
-  f32 xx;
-  f32 xy;
-  f32 xz;
-  f32 xt;
-  f32 yx;
-  f32 yy;
-  f32 yz;
-  f32 yt;
-  f32 zx;
-  f32 zy;
-  f32 zz;
-  f32 zt;
-  f32 tx;
-  f32 ty;
-  f32 tz;
-  f32 tt;
-};
-
 struct gl_object {
   s_array vertex;
   s_array triangle;
@@ -186,6 +159,42 @@ struct gl_triangle {
   u32 a;
   u32 b;
   u32 c;
+};
+
+struct mat3 {
+  f32 xx;
+  f32 yx;
+  f32 zx;
+  f32 xy;
+  f32 yy;
+  f32 zy;
+  f32 xz;
+  f32 yz;
+  f32 zz;
+};
+
+struct mat4 {
+  f32 xx;
+  f32 xy;
+  f32 xz;
+  f32 xt;
+  f32 yx;
+  f32 yy;
+  f32 yz;
+  f32 yt;
+  f32 zx;
+  f32 zy;
+  f32 zz;
+  f32 zt;
+  f32 tx;
+  f32 ty;
+  f32 tz;
+  f32 tt;
+};
+
+struct pt_reflection {
+  s_dvec3 emission;
+  s_dvec3 color;
 };
 
 struct rgb {
@@ -268,6 +277,22 @@ struct gl_vertex {
   f32 tex_coord_y;
 };
 
+struct dray {
+  s_dvec3 origin;
+  s_dvec3 direction;
+};
+
+struct pt_material {
+  s_pt_reflection diffuse;
+  s_pt_reflection specular;
+  s_pt_reflection refractive;
+};
+
+struct ray {
+  s_vec3 origin;
+  s_vec3 direction;
+};
+
 /* 3 */
 
 struct gl_camera {
@@ -321,5 +346,9 @@ struct gl_ortho {
   u32 gl_dummy_texture;
   s_gl_square square;
 };
+
+struct pt_sphere {
+  s_pt_material material;
+}
 
 #endif /* LIBKC3_GL_TYPES_H */
