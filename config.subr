@@ -35,7 +35,7 @@ build_lib_shared() {
         COV_DEPS="$LIB_COV: $LIB_COV.$LIB_SUFFIX $LIB_COV.$SHARED_EXT"
         DEBUG_DEPS="$LIB_DEBUG: $LIB_DEBUG.$LIB_SUFFIX $LIB_DEBUG.$SHARED_EXT"
         ASAN_DEPS="$LIB: $LIB.$LIB_SUFFIX $LIB.$SHARED_EXT"
-        if [ "x.$SHARED_EXT" != "x$SHARED_MAJOR" ]; then
+        if [ "x.$LIB_SUFFIX" != "x$SHARED_MAJOR" ]; then
             ASAN_DEPS="$ASAN_DEPS $LIB$SHARED_MAJOR"
             COV_DEPS="$COV_DEPS $LIB_COV$SHARED_MAJOR"
             DEBUG_DEPS="$DEBUG_DEPS $LIB_DEBUG$SHARED_MAJOR"
@@ -1687,9 +1687,9 @@ case "$(uname -s)" in
     Darwin)
         SHARED_FLAGS="-dylib -install_name @rpath/\${LIB_BASE}.$VER_MAJOR.dylib"
         SHARED_EXT="dylib"
-        SHARED_MAJOR=".$VER_MAJOR.$SHARED_EXT"
-        SHARED_MINOR=".$VER_MAJOR.$VER_MINOR.$SHARED_EXT"
-        SHARED_PATCH=".$VER_MAJOR.$VER_MINOR.$VER_PATCH.$SHARED_EXT"
+        SHARED_MAJOR=".$VER_MAJOR.dylib"
+        SHARED_MINOR=".$VER_MAJOR.$VER_MINOR.dylib"
+        SHARED_PATCH=".$VER_MAJOR.$VER_MINOR.$VER_PATCH.dylib"
         LIB_SUFFIX="$VER_MAJOR.dylib"
         LIB_LINK_SUFFIX="dylib"
         MACOS_SDK=$(xcrun --show-sdk-path 2>/dev/null || echo "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
