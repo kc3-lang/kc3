@@ -95,8 +95,10 @@ build_lib_shared() {
         echo "uninstall::"
         echo "	rm -f \${libdir}/$LIB.$LIB_SUFFIX"
         echo "	rm -f \${libdir}/$LIB.$SHARED_EXT"
+        echo "	rm -f \${libdir}/$LIB$SHARED_MAJOR"
         echo "	rm -f \${libdir}/$LIB_DEBUG.$LIB_SUFFIX"
         echo "	rm -f \${libdir}/$LIB_DEBUG.$SHARED_EXT"
+        echo "	rm -f \${libdir}/$LIB_DEBUG$SHARED_MAJOR"
     } >> ${CONFIG_MK}
 }
 
