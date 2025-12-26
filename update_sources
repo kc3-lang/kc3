@@ -79,7 +79,7 @@ sources KC3_OBJC_SOURCES "$KC3_OBJC_SOURCES"
 KC3_PLIST_SOURCES="$(find window -name "[a-z]*.plist")"
 sources KC3_PLIST_SOURCES "$KC3_PLIST_SOURCES"
 
-KC3_SH_SOURCES="$(find window -name "[a-z]*.sh" | grep -v sources.sh)"
+KC3_SH_SOURCES="$(find window -name "[a-z]*.sh" | grep -v -e '.app' -e 'sources.sh')"
 sources KC3_SH_SOURCES "$KC3_SH_SOURCES"
 
 KC3_TEST_SOURCES="$(ls test/*.expected test/*.facts test/*.kc3 \
