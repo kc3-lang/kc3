@@ -22,16 +22,6 @@ cd "${SRC_TOP}/test/${TEST_NAME}" || exit
 if [ $# = 0 ]; then
     if [ "x${TLS_TEST}" = "x" ]; then
         TARGETS="$(ls -1 *.kc3 | sed -e 's/[.]kc3$//')"
-        case "$IKC3" in
-            *_asan)
-                TARGETS="$(echo "${TARGETS}" |
-                                grep -E -v -e '^block$' \
-                                           -e '^unwind_protect$' \
-                                           -e '^while$')"
-                ;;
-            *)
-                ;;
-        esac
     else
         TARGETS="$(echo "${TLS_TEST}" | tr ' ' '\n')"
     fi
