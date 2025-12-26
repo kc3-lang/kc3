@@ -410,6 +410,8 @@ gl/mat3.c
 gl/mat3.h
 gl/mat4.c
 gl/mat4.h
+gl/pt.c
+gl/pt.h
 gl/sources.mk
 gl/sources.sh
 gl/types.h
@@ -2295,6 +2297,8 @@ window/demo/mandelbrot_f80.c
 window/demo/mandelbrot_f80.h
 window/demo/matrix.c
 window/demo/matrix.h
+window/demo/player.c
+window/demo/player.h
 window/demo/sources.mk
 window/demo/sources.sh
 window/demo/toasters.c
