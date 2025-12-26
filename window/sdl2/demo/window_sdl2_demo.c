@@ -10,7 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../../libkc3/kc3.h"

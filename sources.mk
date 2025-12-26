@@ -15,6 +15,9 @@ KC3_CONFIGURES = \
 	"git/sources.sh" \
 	"git/update_sources" \
 	"gl/configure" \
+	"gl/pt/configure" \
+	"gl/pt/sources.sh" \
+	"gl/pt/update_sources" \
 	"gl/sources.sh" \
 	"gl/update_sources" \
 	"gtk4/configure" \
@@ -150,6 +153,8 @@ KC3_MAKEFILES = \
 	"git/Makefile" \
 	"git/sources.mk" \
 	"gl/Makefile" \
+	"gl/pt/Makefile" \
+	"gl/pt/sources.mk" \
 	"gl/sources.mk" \
 	"gtk4/Makefile" \
 	"gtk4/sources.mk" \
@@ -315,6 +320,7 @@ KC3_C_SOURCES = \
 	"gl/mat4.h" \
 	"gl/pt.c" \
 	"gl/pt.h" \
+	"gl/pt/gl_pt.c" \
 	"gl/types.h" \
 	"gl/vec2.c" \
 	"gl/vec2.h" \
@@ -1620,6 +1626,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gl/dvec3.kc3" \
 	"lib/kc3/0.1/gl/marching_cubes.kc3" \
 	"lib/kc3/0.1/gl/object.kc3" \
+	"lib/kc3/0.1/gl/pt/sphere.kc3" \
 	"lib/kc3/0.1/gl/sphere.kc3" \
 	"lib/kc3/0.1/gl/triangle.kc3" \
 	"lib/kc3/0.1/gl/vec2.kc3" \
