@@ -15,12 +15,38 @@
 #include <stdio.h>
 #include "../libkc3/kc3.h"
 #include "../image/image.h"
+#include "dvec3.h"
 #include "pt.h"
 
-void pt (s_image *image, p_list *scene)
+s_image ** pt (s_image **image, p_list *scene)
 {
   assert(image);
   assert(scene);
+  (void) scene;
+  return image;
+}
+
+// returns distance or 0 if miss
+f64 pt_sphere_intersect (const s_pt_sphere *s, const s_dray *r)
+{
+  s_dvec3 rs;
+  f64 t;
+  f64 b;
+  f64 det;
+  f64 eps = 1e-4;
+  dvec3_sub(&s->center, &r->origin, &rs);
+  b = dvec3_dot(&rs, &r->direction);
+  det = b * b - dvec3_dot(&rs, &rs) + s->radius * s->radius;
+  if (det < 0)
+    return 0;
+  det = sqrt(det);
+  t = b - det;
+  if (t > eps)
+    return t;
+  t = b + det;
+  if (t > eps)
+    return t;
+  return 0;
 }
 
 #if 0
@@ -44,12 +70,6 @@ struct Sphere {
   Refl_t refl;      // reflection type (DIFFuse, SPECular, REFRactive)
   Sphere(double rad_, Vec p_, Vec e_, Vec c_, Refl_t refl_):
     rad(rad_), p(p_), e(e_), c(c_), refl(refl_) {}
-  double intersect(const Ray &r) const { // returns distance, 0 if nohit
-    Vec op = p-r.o; // Solve t^2*d.d + 2*t*(o-p).d + (o-p).(o-p)-R^2 = 0
-    double t, eps=1e-4, b=op.dot(r.d), det=b*b-op.dot(op)+rad*rad;
-    if (det<0) return 0; else det=sqrt(det);
-    return (t=b-det)>eps ? t : ((t=b+det)>eps ? t : 0);
-  }
 };
 Sphere spheres[] = {//Scene: radius, position, emission, color, material
   Sphere(1e5, Vec( 1e5+1,40.8,81.6), Vec(),Vec(.75,.25,.25),DIFF),//Left

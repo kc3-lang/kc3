@@ -349,6 +349,8 @@ struct gl_ortho {
 
 struct pt_sphere {
   s_pt_material material;
-}
+  s_dvec3 center;
+  f64 radius;
+};
 
 #endif /* LIBKC3_GL_TYPES_H */

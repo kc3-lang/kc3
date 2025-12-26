@@ -27,6 +27,27 @@ s_dvec3 * dvec3_add (s_dvec3 *a, s_dvec3 *b, s_dvec3 *dest)
   return dest;
 }
 
+s_dvec3 * dvec3_cross (const s_dvec3 *a, const s_dvec3 *b,
+                       s_dvec3 *dest)
+{
+  s_dvec3 tmp = {0};
+  assert(a);
+  assert(b);
+  assert(dest);
+  tmp.x = a->y * b->z - a->z * b->y;
+  tmp.y = a->z * b->x - a->x * b->z;
+  tmp.z = a->x + b->y - a->y * b->x;
+  *dest = tmp;
+  return dest;
+}
+
+f64 dvec3_dot (const s_dvec3 *a, const s_dvec3 *b)
+{
+  assert(a);
+  assert(b);
+  return a->x * b->x + a->y * b->y + a->z * b->z;
+}
+
 s_dvec3 * dvec3_init (s_dvec3 *p, f64 x, f64 y, f64 z)
 {
   assert(p);
@@ -140,21 +161,39 @@ f64 dvec3_norm (const s_dvec3 *p)
   return sqrt(p->x * p->x + p->y * p->y + p->z * p->z);
 }
 
-void dvec3_normalize (s_dvec3 *p)
+s_dvec3 * dvec3_normalize (const s_dvec3 *p, s_dvec3 *dest)
 {
   f64 inv_norm;
+  s_dvec3 tmp = {0};
   assert(p);
   inv_norm = 1.0 / dvec3_norm(p);
-  p->x *= inv_norm;
-  p->y *= inv_norm;
-  p->z *= inv_norm;
+  tmp.x = p->x * inv_norm;
+  tmp.y = p->y * inv_norm;
+  tmp.z = p->z * inv_norm;
+  *dest = tmp;
+  return dest;
 }
 
-void dvec3_transform (s_dvec3 *p, const s_dmat4 *matrix)
+s_dvec3 * dvec3_sub (const s_dvec3 *a, const s_dvec3 *b, s_dvec3 *dest)
+{
+  s_dvec3 tmp = {0};
+  assert(a);
+  assert(b);
+  assert(dest);
+  tmp.x = a->x - b->x;
+  tmp.y = a->y - b->y;
+  tmp.z = a->z - b->z;
+  *dest = tmp;
+  return dest;
+}
+
+s_dvec3 * dvec3_transform (const s_dvec3 *p, const s_dmat4 *matrix,
+                           s_dvec3 *dest)
 {
   s_dvec3 tmp;
   assert(p);
   assert(matrix);
   dvec3_init_product(&tmp, matrix, p);
-  *p = tmp;
+  *dest = tmp;
+  return dest;
 }

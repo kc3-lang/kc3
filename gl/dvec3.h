@@ -32,10 +32,15 @@ s_dvec3 * dvec3_new_product (const s_dmat4 *m,
 s_dvec3 * dvec3_new_zero (void);
 
 /* Operators. */
-void dvec3_normalize (s_dvec3 *p);
-void dvec3_transform (s_dvec3 *p, const s_dmat4 *matrix);
+s_dvec3 * dvec3_cross (const s_dvec3 *a, const s_dvec3 *b,
+                       s_dvec3 *dest);
+s_dvec3 * dvec3_normalize (const s_dvec3 *a, s_dvec3 *dest);
+s_dvec3 * dvec3_sub (const s_dvec3 *a, const s_dvec3 *b, s_dvec3 *dest);
+s_dvec3 * dvec3_transform (const s_dvec3 *p, const s_dmat4 *matrix,
+                           s_dvec3 *dest);
 
 /* Observers. */
+f64 dvec3_dot (const s_dvec3 *a, const s_dvec3 *b);
 f64 dvec3_norm (const s_dvec3 *p);
 
 #endif /* DVEC3_H */
