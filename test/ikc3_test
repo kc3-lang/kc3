@@ -32,6 +32,12 @@ if [ $# = 0 ]; then
             *)
                 ;;
         esac
+	case "$(uname)" in
+	    Darwin)
+		TARGETS="$(echo "$TARGETS" |
+				grep -E -v -e '^thread$')"
+		;;
+	esac
     else
         TARGETS="$(echo "${IKC3_TEST}" | tr ' ' '\n')"
     fi
