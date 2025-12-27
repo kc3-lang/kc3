@@ -76,6 +76,7 @@ const char *g_env_argv0_dir_default = "";
 #include "marshall.h"
 #include "marshall_read.h"
 #include "module.h"
+#include "ncpu.h"
 #include "op.h"
 #include "ops.h"
 #include "pcallable.h"
@@ -1561,30 +1562,7 @@ s_env * env_globals_init (s_env *env)
   if (! (ncpu = frame_binding_new_void(env->read_time_frame,
                                        &g_sym_ncpu)))
     return NULL;
-#if ! HAVE_PTHREAD
-  tag_init_u8(ncpu, 1);
-#else
-# if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-  {
-    s32 mib[2];
-    s32 hw_ncpu;
-    uw len;
-    mib[0] = CTL_HW;
-    mib[1] = HW_NCPU;
-    len = sizeof(hw_ncpu);
-    if (sysctl(mib, 2, &hw_ncpu, &len, NULL, 0) == -1){
-      err_puts("env_globals_init: sysctl(hw.ncpu)");
-      assert(! "env_globals_init: sysctl(hw.ncpu)");
-      return NULL;
-    }
-    tag_init_u8(ncpu, hw_ncpu);
-  }
-# elif defined(HAVE_ANDROID)
-  tag_init_u8(ncpu, sysconf(_SC_NPROCESSORS_ONLN));
-# else
-  tag_init_u8(ncpu, get_nprocs());
-# endif
-#endif
+  ncpu_tag(ncpu);
   return env;
 }
 

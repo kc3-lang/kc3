@@ -140,6 +140,7 @@ HEADERS = \
 	"marshall_read.h" \
 	"module.h" \
 	"mutex.h" \
+	"ncpu.h" \
 	"op.h" \
 	"ops.h" \
 	"pbuf.h" \
@@ -352,6 +353,7 @@ SOURCES = \
 	"marshall_read.c" \
 	"module.c" \
 	"mutex.c" \
+	"ncpu.c" \
 	"op.c" \
 	"ops.c" \
 	"pbuf.c" \
@@ -677,6 +679,7 @@ LO_SOURCES = \
 	"marshall_read.c" \
 	"module.c" \
 	"mutex.c" \
+	"ncpu.c" \
 	"op.c" \
 	"ops.c" \
 	"pbuf.c" \

@@ -6,8 +6,8 @@
 #include "dvec3.h"
 #include "pt.h"
 
-inline const s_tag * pt_intersect (const s_list *scene,
-                                   const s_dray *ray, f64 *dist)
+const s_tag * pt_intersect (const s_list *scene,
+                            const s_dray *ray, f64 *dist)
 {
   f64 d;
   const f64 inf = 1e20;
@@ -128,6 +128,105 @@ s_dvec3 * pt_radiance_sphere (const s_list *scene,
   */
 }
 
+typedef struct pt_thread s_pt_thread;
+
+struct pt_thread {
+  const s_list *scene;
+  u32 samples;
+  uw y;
+  uw y1;
+  uw w;
+  uw h;
+  s_dvec3 *c;
+  s_dray  *cam;
+  const s_dvec3 *cx;
+  const s_dvec3 *cy;
+  s_image *image;
+  pthread_t thread;
+};
+
+void * pt_render_thread (void *arg)
+{
+  s_pt_thread *pt = arg;
+  s_dvec3 *c = pt->c;
+  s_dray *cam = pt->cam;
+  const s_dvec3 *cx = pt->cx;
+  const s_dvec3 *cy = pt->cy;
+  s_dvec3 d;
+  s_dvec3 d_140;
+  s_dvec3 du;
+  s_dvec3 dv;
+  f64     dx;
+  f64     dy;
+  s_image *image = pt->image;
+  s_dvec3 r = {0};
+  s_dvec3 r_rad;
+  f64     r1;
+  f64     r2;
+  f64     random;
+  s_dray  ray;
+  u32 s;
+  u32 samples = pt->samples;
+  const s_list *scene = pt->scene;
+  u8  sx;
+  u8  sy;
+  f64 u;
+  f64 v;
+  const uw w = pt->w;
+  const uw h = pt->h;
+  uw x;
+  uw y = pt->y;
+  const uw y1 = pt->y1;
+  while (y < y1) {
+    fprintf(stderr,"\rRendering (%d spp) %5.2f%%",
+            samples * 4, 100.0 * y / (h - 1));
+    x = 0;
+    while (x < w) {
+      sy = 0;
+      int i = (h - y - 1) * w + x;
+      while (sy < 2) {
+        sx = 0;
+        while (sx < 2) {
+          r = (s_dvec3) {0};
+          s = 0;
+          while (s < samples) {
+            f64_random(&random);
+            r1 = 2 * random;
+            dx = r1 < 1 ? sqrt(r1) - 1 : 1 - sqrt(2 - r1);
+            f64_random(&random);
+            r2 = 2 * random;
+            dy = r2 < 1 ? sqrt(r2)-1: 1-sqrt(2-r2);
+            u = ((sx + 0.5 + dx) / 2.0 + x) / w - 0.5;
+            v = ((sy + 0.5 + dy) / 2.0 + y) / h - 0.5;
+            dvec3_mul(cx, u, &du);
+            dvec3_mul(cy, v, &dv);
+            dvec3_add(&du, &dv, &d);
+            dvec3_add(&d, &cam->direction, &d);
+            dvec3_mul(&d, 140, &d_140);
+            dvec3_add(&cam->origin, &d_140, &ray.origin);
+            dvec3_normalize(&d, &ray.direction);
+            pt_radiance(scene, &ray, 0, &r_rad);
+            dvec3_mul(&r_rad, 1.0 / samples, &r_rad);
+            dvec3_add(&r, &r_rad, &r);
+            s++;
+          }
+          dvec3_clamp(&r, &r);
+          dvec3_mul(&r, 0.25, &r);
+          dvec3_add(c + i, &r, c + i);
+          sx++;
+        }
+        sy++;
+      }
+      image->data[i * 3 + 0] = c[i].x * 255;
+      image->data[i * 3 + 1] = c[i].y * 255;
+      image->data[i * 3 + 2] = c[i].z * 255;
+      x++;
+    }
+    y++;
+  }
+  return 0;
+}
+
 s_image * pt_render_image (s_image *image, const s_tag *tag_w,
                            const s_tag *tag_h, s_tag *tag_samples,
                            p_list *scene)
@@ -136,31 +235,15 @@ s_image * pt_render_image (s_image *image, const s_tag *tag_w,
   s_dray cam;
   s_dvec3 cx;
   s_dvec3 cy;
-  s_dvec3 d;
-  s_dvec3 d_140;
-  s_dvec3 du;
-  s_dvec3 dv;
-  f64 dx;
-  f64 dy;
   uw h;
-  s_dvec3 r = {0};
-  s_dvec3 r_rad;
-  f64 r1;
-  f64 r2;
-  f64 random;
-  s_dray ray;
-  u32 s;
+  u32 i;
+  u32 ncpu;
   u32 samples;
-  u8 sx;
-  u8 sy;
+  s_pt_thread *thread;
   const s_sym *sym_U32 = &g_sym_U32;
   const s_sym *sym_Uw = &g_sym_Uw;
   s_image tmp = {0};
-  f64 u;
-  f64 v;
   uw w;
-  uw x;
-  uw y;
   assert(image);
   assert(scene);
   u32_init_cast(&samples, &sym_U32, tag_samples);
@@ -185,54 +268,30 @@ s_image * pt_render_image (s_image *image, const s_tag *tag_w,
   cy.z *= 0.5135;
   if (! (c = alloc(w * h * sizeof(s_dvec3))))
     return NULL;
-  y = 0;
-#pragma omp parallel for schedule(dynamic, 1) private(r)
-  while (y < h) {
-    fprintf(stderr,"\rRendering (%d spp) %5.2f%%",
-            samples * 4, 100.0 * y / (h - 1));
-    x = 0;
-    while (x < w) {
-      sy = 0;
-      int i = (h - y - 1) * w + x;
-      while (sy < 2) {
-        sx = 0;
-        while (sx < 2) {
-          r = (s_dvec3) {0};
-          s = 0;
-          while (s < samples) {
-            f64_random(&random);
-            r1 = 2 * random;
-            dx = r1 < 1 ? sqrt(r1) - 1 : 1 - sqrt(2 - r1);
-            f64_random(&random);
-            r2 = 2 * random;
-            dy = r2 < 1 ? sqrt(r2)-1: 1-sqrt(2-r2);
-            u = ((sx + 0.5 + dx) / 2.0 + x) / w - 0.5;
-            v = ((sy + 0.5 + dy) / 2.0 + y) / h - 0.5;
-            dvec3_mul(&cx, u, &du);
-            dvec3_mul(&cy, v, &dv);
-            dvec3_add(&du, &dv, &d);
-            dvec3_add(&d, &cam.direction, &d);
-            dvec3_mul(&d, 140, &d_140);
-            dvec3_add(&cam.origin, &d_140, &ray.origin);
-            dvec3_normalize(&d, &ray.direction);
-            pt_radiance(*scene, &ray, 0, &r_rad);
-            dvec3_mul(&r_rad, 1.0 / samples, &r_rad);
-            dvec3_add(&r, &r_rad, &r);
-            s++;
-          }
-          dvec3_clamp(&r, &r);
-          dvec3_mul(&r, 0.25, &r);
-          dvec3_add(c + i, &r, c + i);
-          sx++;
-        }
-        sy++;
-      }
-      tmp.data[i * 3 + 0] = c[i].x * 255;
-      tmp.data[i * 3 + 1] = c[i].y * 255;
-      tmp.data[i * 3 + 2] = c[i].z * 255;
-      x++;
-    }
-    y++;
+  ncpu = ncpu_u32();
+  thread = alloc(ncpu * sizeof(*thread));
+  i = 0;
+  while (i < ncpu) {
+    thread[i].scene = *scene;
+    thread[i].samples = samples;
+    thread[i].w = w;
+    thread[i].cx = &cx;
+    thread[i].cy = &cy;
+    thread[i].c = c;
+    thread[i].cam = &cam;
+    thread[i].image = &tmp;
+    thread[i].y = h * i / ncpu;
+    thread[i].y1 = h * (i + 1) / ncpu;
+    thread[i].h = h;
+    if (pthread_create(&thread[i].thread, NULL, pt_render_thread,
+                       thread + i))
+      return NULL;
+    i++;
+  }
+  i = 0;
+  while (i < ncpu) {
+    pthread_join(thread[i].thread, NULL);
+    i++;
   }
   *image = tmp;
   return image;

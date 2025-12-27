@@ -84,6 +84,7 @@
 #include "marshall.h"
 #include "marshall_read.h"
 #include "module.h"
+#include "ncpu.h"
 #include "pcall.h"
 #include "pcallable.h"
 #include "pcomplex.h"

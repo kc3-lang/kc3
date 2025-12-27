@@ -705,6 +705,8 @@ KC3_C_SOURCES = \
 	"libkc3/module.h" \
 	"libkc3/mutex.c" \
 	"libkc3/mutex.h" \
+	"libkc3/ncpu.c" \
+	"libkc3/ncpu.h" \
 	"libkc3/op.c" \
 	"libkc3/op.h" \
 	"libkc3/ops.c" \
@@ -1622,11 +1624,13 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/git/repository.kc3" \
 	"lib/kc3/0.1/git/tag.kc3" \
 	"lib/kc3/0.1/gl/box.kc3" \
+	"lib/kc3/0.1/gl/dray.kc3" \
 	"lib/kc3/0.1/gl/dvec2.kc3" \
 	"lib/kc3/0.1/gl/dvec3.kc3" \
 	"lib/kc3/0.1/gl/marching_cubes.kc3" \
 	"lib/kc3/0.1/gl/object.kc3" \
 	"lib/kc3/0.1/gl/pt.kc3" \
+	"lib/kc3/0.1/gl/pt/main.kc3" \
 	"lib/kc3/0.1/gl/pt/material.kc3" \
 	"lib/kc3/0.1/gl/pt/reflection.kc3" \
 	"lib/kc3/0.1/gl/pt/sphere.kc3" \
