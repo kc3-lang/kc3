@@ -29,7 +29,7 @@ const s_tag * pt_intersect (const s_list *scene,
 }
 
 s_dvec3 * pt_radiance (const s_list *scene, const s_dray *ray,
-                       u32 depth, s_dvec3 *dest)
+                       u32 depth, u16 *xi, s_dvec3 *dest)
 {
   f64 dist;
   const s_tag *obj;
@@ -39,7 +39,7 @@ s_dvec3 * pt_radiance (const s_list *scene, const s_dray *ray,
   if (obj->type == TAG_PSTRUCT &&
       obj->data.pstruct->pstruct_type->module ==
       sym_1("GL.PT.Sphere")) {
-    return pt_radiance_sphere(scene, ray, depth,
+    return pt_radiance_sphere(scene, ray, depth, xi,
                               obj->data.pstruct->data,
                               dist, dest);
   }
@@ -51,7 +51,7 @@ s_dvec3 * pt_radiance (const s_list *scene, const s_dray *ray,
 
 s_dvec3 * pt_radiance_sphere (const s_list *scene,
                               const s_dray *ray,
-                              u32 depth, s_pt_sphere *obj,
+                              u32 depth, u16 *xi, s_pt_sphere *obj,
                               f64 dist, s_dvec3 *dest)
 {
   s_dvec3 d;
@@ -62,7 +62,6 @@ s_dvec3 * pt_radiance_sphere (const s_list *scene,
   f64 r1;
   f64 r2;
   f64 r2s;
-  f64 random;
   s_dvec3 sub_rad;
   s_dray  sub_ray;
   s_dvec3 u;
@@ -80,16 +79,14 @@ s_dvec3 * pt_radiance_sphere (const s_list *scene,
   f = obj->material.diffuse.color;
   p = f.x > f.y && f.x > f.z ? f.x : f.y > f.z ? f.y : f.z;
   if (++depth > 5) {
-    f64_random(&random);
-    if (random < p)
+    if (erand48(xi) < p)
       dvec3_mul(&f, 1.0 / p, &f);
     else
       return dvec3_init_copy(dest, &obj->material.diffuse.emission);
   }
   //if (obj.refl == DIFF){                  // Ideal DIFFUSE reflection
-  f64_random(&r1);
-  r1 *= 2 * M_PI;
-  f64_random(&r2);
+  r1 = 2 * M_PI * erand48(xi);
+  r2 = erand48(xi);
   r2s = sqrt(r2);
   w = nl;
   if (fabs(w.x) > 0.1)
@@ -107,7 +104,7 @@ s_dvec3 * pt_radiance_sphere (const s_list *scene,
   dvec3_normalize(&d, &d);
   sub_ray.origin = x;
   sub_ray.direction = d;
-  pt_radiance(scene, &sub_ray, depth, &sub_rad);
+  pt_radiance(scene, &sub_ray, depth, xi, &sub_rad);
   f.x *= sub_rad.x;
   f.y *= sub_rad.y;
   f.z *= sub_rad.z;
@@ -143,6 +140,7 @@ struct pt_thread {
   const s_dvec3 *cy;
   s_image *image;
   pthread_t thread;
+  u16 xi[3];
 };
 
 void * pt_render_thread (void *arg)
@@ -158,13 +156,14 @@ void * pt_render_thread (void *arg)
   s_dvec3 dv;
   f64     dx;
   f64     dy;
+  uw i;
   s_image *image = pt->image;
   s_dvec3 r = {0};
   s_dvec3 r_rad;
   f64     r1;
   f64     r2;
-  f64     random;
   s_dray  ray;
+  u16    *xi = pt->xi;
   u32 s;
   u32 samples = pt->samples;
   const s_list *scene = pt->scene;
@@ -183,18 +182,16 @@ void * pt_render_thread (void *arg)
     x = 0;
     while (x < w) {
       sy = 0;
-      int i = (h - y - 1) * w + x;
+      i = (h - y - 1) * w + x;
       while (sy < 2) {
         sx = 0;
         while (sx < 2) {
           r = (s_dvec3) {0};
           s = 0;
           while (s < samples) {
-            f64_random(&random);
-            r1 = 2 * random;
+            r1 = 2 * erand48(xi);
             dx = r1 < 1 ? sqrt(r1) - 1 : 1 - sqrt(2 - r1);
-            f64_random(&random);
-            r2 = 2 * random;
+            r2 = 2 * erand48(xi);
             dy = r2 < 1 ? sqrt(r2)-1: 1-sqrt(2-r2);
             u = ((sx + 0.5 + dx) / 2.0 + x) / w - 0.5;
             v = ((sy + 0.5 + dy) / 2.0 + y) / h - 0.5;
@@ -205,7 +202,7 @@ void * pt_render_thread (void *arg)
             dvec3_mul(&d, 140, &d_140);
             dvec3_add(&cam->origin, &d_140, &ray.origin);
             dvec3_normalize(&d, &ray.direction);
-            pt_radiance(scene, &ray, 0, &r_rad);
+            pt_radiance(scene, &ray, 0, xi, &r_rad);
             dvec3_mul(&r_rad, 1.0 / samples, &r_rad);
             dvec3_add(&r, &r_rad, &r);
             s++;
@@ -283,6 +280,9 @@ s_image * pt_render_image (s_image *image, const s_tag *tag_w,
     thread[i].y = h * i / ncpu;
     thread[i].y1 = h * (i + 1) / ncpu;
     thread[i].h = h;
+    thread[i].xi[0] = random();
+    thread[i].xi[1] = random();
+    thread[i].xi[2] = random();
     if (pthread_create(&thread[i].thread, NULL, pt_render_thread,
                        thread + i))
       return NULL;
