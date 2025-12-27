@@ -6,35 +6,120 @@
 #include "dvec3.h"
 #include "pt.h"
 
+inline const s_tag * pt_intersect (const s_list *scene,
+                                   const s_dray *ray, f64 *dist)
+{
+  f64 d;
+  const f64 inf = 1e20;
+  const s_list *s = scene;
+  f64 t;
+  const s_tag *tmp = NULL;
+  t = inf;
+  while (s) {
+    if ((d = pt_intersect_sphere(scene->tag.data.pstruct->data,
+                                 ray)) &&
+        d < t) {
+      t = d;
+      tmp = &scene->tag;
+    }
+    s = list_next(s);
+  }
+  *dist = t;
+  return tmp;
+}
+
 s_dvec3 * pt_radiance (const s_list *scene, const s_dray *ray,
                        u32 depth, s_dvec3 *dest)
 {
-  (void) scene;
-  (void) ray;
-  (void) depth;
-  (void) dest;
-  return NULL;
-  /*
-  f64 t;                               // distance to intersection
-  int id=0;                               // id of intersected object
-  if (!intersect(r, t, id)) return s_dvec3(); // if miss, return black
-  const Sphere &obj = spheres[id];        // the hit object
-  s_dvec3 x=r.o+r.d*t, n=(x-obj.p).norm(), nl=n.dot(r.d)<0?n:n*-1, f=obj.c;
-  f64 p = f.x>f.y && f.x>f.z ? f.x : f.y>f.z ? f.y : f.z; // max refl
-  if (++depth>5) if (erand48()<p) f=f*(1/p); else return obj.e; //R.R.
-  if (obj.refl == DIFF){                  // Ideal DIFFUSE reflection
-    f64 r1=2*M_PI*erand48(), r2=erand48(), r2s=sqrt(r2);
-    s_dvec3 w=nl, u=((fabs(w.x)>.1?s_dvec3(0,1):s_dvec3(1))%w).norm(), v=w%u;
-    s_dvec3 d = (u*cos(r1)*r2s + v*sin(r1)*r2s + w*sqrt(1-r2)).norm();
-    return obj.e + f.mult(radiance(Ray(x,d),depth));
-  } else if (obj.refl == SPEC)            // Ideal SPECULAR reflection
-    return obj.e + f.mult(radiance(Ray(x,r.d-n*2*n.dot(r.d)),depth));
-  Ray reflRay(x, r.d-n*2*n.dot(r.d));     // Ideal dielectric REFRACTION
+  f64 dist;
+  const s_tag *obj;
+  s_dvec3 tmp = {0};
+  if (! (obj = pt_intersect(scene, ray, &dist)))
+    return dvec3_init_copy(dest, &tmp);
+  if (obj->type == TAG_PSTRUCT &&
+      obj->data.pstruct->pstruct_type->module ==
+      sym_1("GL.PT.Sphere")) {
+    return pt_radiance_sphere(scene, ray, depth,
+                              obj->data.pstruct->data,
+                              dist, dest);
+  }
+  err_write_1("pt_radiance: skipping unknown object type: ");
+  err_inspect_sym(obj->data.pstruct->pstruct_type->module);
+  err_write_1("\n");
+  return dvec3_init_copy(dest, &tmp);
+}
+
+s_dvec3 * pt_radiance_sphere (const s_list *scene,
+                              const s_dray *ray,
+                              u32 depth, s_pt_sphere *obj,
+                              f64 dist, s_dvec3 *dest)
+{
+  s_dvec3 d;
+  s_dvec3 f;
+  s_dvec3 n;
+  s_dvec3 nl;
+  f64 p;
+  f64 r1;
+  f64 r2;
+  f64 r2s;
+  f64 random;
+  s_dvec3 sub_rad;
+  s_dray  sub_ray;
+  s_dvec3 u;
+  s_dvec3 v;
+  s_dvec3 w;
+  s_dvec3 x;
+  dvec3_mul(&ray->direction, dist, &x);
+  dvec3_add(&x, &ray->origin, &x);
+  dvec3_sub(&x, &obj->center, &n);
+  dvec3_normalize(&n, &n);
+  if (dvec3_dot(&n, &ray->direction) < 0)
+    nl = n;
+  else
+    dvec3_mul(&n, -1, &nl);
+  f = obj->material.diffuse.color;
+  p = f.x > f.y && f.x > f.z ? f.x : f.y > f.z ? f.y : f.z;
+  if (++depth > 5) {
+    f64_random(&random);
+    if (random < p)
+      dvec3_mul(&f, 1.0 / p, &f);
+    else
+      return dvec3_init_copy(dest, &obj->material.diffuse.emission);
+  }
+  //if (obj.refl == DIFF){                  // Ideal DIFFUSE reflection
+  f64_random(&r1);
+  r1 *= 2 * M_PI;
+  f64_random(&r2);
+  r2s = sqrt(r2);
+  w = nl;
+  if (fabs(w.x) > 0.1)
+    u = (s_dvec3) {0.0, 1.0, 0.0};
+  else
+    u = (s_dvec3) {1.0, 0.0, 0.0};
+  dvec3_cross(&u, &w, &u);
+  dvec3_normalize(&u, &u);
+  dvec3_cross(&w, &u, &v);
+  dvec3_mul(&u, cos(r1) * r2s, &u);
+  dvec3_mul(&v, sin(r1) * r2s, &v);
+  dvec3_mul(&w, sqrt(1.0 - r2), &w);
+  dvec3_add(&u, &v, &d);
+  dvec3_add(&d, &w, &d);
+  dvec3_normalize(&d, &d);
+  sub_ray.origin = x;
+  sub_ray.direction = d;
+  pt_radiance(scene, &sub_ray, depth, &sub_rad);
+  f.x *= sub_rad.x;
+  f.y *= sub_rad.y;
+  f.z *= sub_rad.z;
+  return dvec3_add(&obj->material.diffuse.emission, &f, dest);
+  /*} else if (obj.refl == SPEC)            // Ideal SPECULAR reflection
+    return obj.e + f.mult(radiance(Ray(x,ray->d-n*2*n.dot(ray->d)),depth));
+  Ray reflRay(x, ray->d-n*2*n.dot(ray->d));     // Ideal dielectric REFRACTION
   bool into = n.dot(nl)>0;                // Ray from outside going in?
-  f64 nc=1, nt=1.5, nnt=into?nc/nt:nt/nc, ddn=r.d.dot(nl), cos2t;
+  f64 nc=1, nt=1.5, nnt=into?nc/nt:nt/nc, ddn=ray->d.dot(nl), cos2t;
   if ((cos2t=1-nnt*nnt*(1-ddn*ddn))<0)    // Total internal reflection
     return obj.e + f.mult(radiance(reflRay,depth));
-  s_dvec3 tdir = (r.d*nnt - n*((into?1:-1)*(ddn*nnt+sqrt(cos2t)))).norm();
+  s_dvec3 tdir = (ray->d*nnt - n*((into?1:-1)*(ddn*nnt+sqrt(cos2t)))).norm();
   f64 a=nt-nc, b=nt+nc, R0=a*a/(b*b), c = 1-(into?-ddn:tdir.dot(n));
   f64 Re=R0+(1-R0)*c*c*c*c*c,Tr=1-Re,P=.25+.5*Re,RP=Re/P,TP=Tr/(1-P);
   return obj.e + f.mult(depth>2 ? (erand48()<P ?   // Russian roulette
@@ -105,7 +190,6 @@ s_image * pt_render_image (s_image *image, const s_tag *tag_w,
     fprintf(stderr,"\rRendering (%d spp) %5.2f%%",
             samples * 4, 100.0 * y / (h - 1));
     x = 0;
-#pragma omp parallel for schedule(dynamic, 1) private(r)
     while (x < w) {
       sy = 0;
       int i = (h - y - 1) * w + x;
@@ -141,6 +225,9 @@ s_image * pt_render_image (s_image *image, const s_tag *tag_w,
         }
         sy++;
       }
+      tmp.data[i * 3 + 0] = c[i].x * 255;
+      tmp.data[i * 3 + 1] = c[i].y * 255;
+      tmp.data[i * 3 + 2] = c[i].z * 255;
       x++;
     }
     y++;
@@ -150,7 +237,7 @@ s_image * pt_render_image (s_image *image, const s_tag *tag_w,
 }
 
 // returns distance or 0 if miss
-f64 pt_sphere_intersect (const s_pt_sphere *s, const s_dray *r)
+f64 pt_intersect_sphere (const s_pt_sphere *s, const s_dray *r)
 {
   s_dvec3 rs;
   f64 t;
