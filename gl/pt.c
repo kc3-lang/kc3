@@ -186,6 +186,7 @@ s_image * pt_render_image (s_image *image, const s_tag *tag_w,
   if (! (c = alloc(w * h * sizeof(s_dvec3))))
     return NULL;
   y = 0;
+#pragma omp parallel for schedule(dynamic, 1) private(r)
   while (y < h) {
     fprintf(stderr,"\rRendering (%d spp) %5.2f%%",
             samples * 4, 100.0 * y / (h - 1));
