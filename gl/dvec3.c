@@ -49,7 +49,7 @@ s_dvec3 * dvec3_cross (const s_dvec3 *a, const s_dvec3 *b,
   assert(dest);
   tmp.x = a->y * b->z - a->z * b->y;
   tmp.y = a->z * b->x - a->x * b->z;
-  tmp.z = a->x + b->y - a->y * b->x;
+  tmp.z = a->x * b->y - a->y * b->x;
   *dest = tmp;
   return dest;
 }

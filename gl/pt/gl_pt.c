@@ -16,12 +16,14 @@
 const char *g_env_argv0_default = PROG;
 const char *g_env_argv0_dir_default = PREFIX;
 
-int main ()
+int main (int argc, char **argv)
 {
-  s32 i;
-  s_str path = {0};
   if (! kc3_init(NULL, &argc, &argv)) {
     err_puts("kc3_init");
+    return 1;
+  }
+  if (! env_module_load(env_global(), sym_1("GL.PT.Main"))) {
+    kc3_clean(NULL);
     return 1;
   }
   kc3_clean(NULL);

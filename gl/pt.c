@@ -16,11 +16,11 @@ inline const s_tag * pt_intersect (const s_list *scene,
   const s_tag *tmp = NULL;
   t = inf;
   while (s) {
-    if ((d = pt_intersect_sphere(scene->tag.data.pstruct->data,
+    if ((d = pt_intersect_sphere(s->tag.data.pstruct->data,
                                  ray)) &&
         d < t) {
       t = d;
-      tmp = &scene->tag;
+      tmp = &s->tag;
     }
     s = list_next(s);
   }
@@ -143,7 +143,7 @@ s_image * pt_render_image (s_image *image, const s_tag *tag_w,
   f64 dx;
   f64 dy;
   uw h;
-  s_dvec3 r;
+  s_dvec3 r = {0};
   s_dvec3 r_rad;
   f64 r1;
   f64 r2;
@@ -196,6 +196,7 @@ s_image * pt_render_image (s_image *image, const s_tag *tag_w,
       while (sy < 2) {
         sx = 0;
         while (sx < 2) {
+          r = (s_dvec3) {0};
           s = 0;
           while (s < samples) {
             f64_random(&random);

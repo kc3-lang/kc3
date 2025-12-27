@@ -15,7 +15,7 @@ set -e
 
 echo "$0"
 export BUILD_TOP="$(dirname "$(dirname "$PWD")")"
-export DIR="window/sdl2/demo"
+export DIR="gl/pt"
 export SRC_TOP="$(dirname "$(dirname "$(cd "$(dirname "$0")" && pwd)")")"
 
 . "${SRC_TOP}/config.subr"
@@ -42,10 +42,6 @@ CPPFLAGS="-I${SRC_TOP} $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -Wno-error=unknown-pragmas"
 CFLAGS="$CFLAGS -std=c11 -pedantic -pipe"
 LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
-LDFLAGS="$LDFLAGS -L${BUILD_TOP}/gl"
-LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window"
-LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window/demo"
-LDFLAGS="$LDFLAGS -L${BUILD_TOP}/window/sdl2"
 config_asan
 config_cocoa
 config_gnu
@@ -65,16 +61,11 @@ fi
 config_lib OPENMP -fopenmp 2>/dev/null
 config_define HAVE_OPENMP "${HAVE_OPENMP}"
 pkg_config sdl2
-pkg_config egl
-pkg_config glesv2
 case "$(uname -s)" in
     Darwin)
         LIBS="$LIBS -rpath @executable_path/../Frameworks"
-        LIBS="$LIBS -rpath @executable_path/../../../libkc3"
-        LIBS="$LIBS -rpath @executable_path/../../../gl"
-        LIBS="$LIBS -rpath @executable_path/../../"
-        LIBS="$LIBS -rpath @executable_path/../../demo"
-        LIBS="$LIBS -rpath @executable_path/../"
+        LIBS="$LIBS -rpath @executable_path/../../libkc3"
+        LIBS="$LIBS -rpath @executable_path/../../gl"
         ;;
     MINGW64*)
         ;;
@@ -94,32 +85,20 @@ CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
-LIBS_ASAN="$LIBS -lkc3_window_sdl2_asan"
-LIBS_ASAN="$LIBS_ASAN -lkc3_window_demo_asan"
-LIBS_ASAN="$LIBS_ASAN -lkc3_window_asan"
-LIBS_ASAN="$LIBS_ASAN -lkc3_gl_asan"
-LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
+LIBS_ASAN="$LIBS -lkc3_asan"
 LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -DDEBUG -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS"
-LIBS_COV="$LIBS -lkc3_window_sdl2_cov"
-LIBS_COV="$LIBS_COV -lkc3_window_demo_cov"
-LIBS_COV="$LIBS_COV -lkc3_window_cov"
-LIBS_COV="$LIBS_COV -lkc3_gl_cov"
-LIBS_COV="$LIBS_COV -lkc3_cov"
+LIBS_COV="$LIBS -lkc3_cov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_DEBUG="$LIBS -lkc3_window_sdl2_debug"
-LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_demo_debug"
-LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_debug"
-LIBS_DEBUG="$LIBS_DEBUG -lkc3_gl_debug"
-LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
+LIBS_DEBUG="$LIBS -lkc3_debug"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -fPIC"
@@ -127,10 +106,6 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS="$LIBS -lkc3_window_sdl2"
-LIBS="$LIBS -lkc3_window_demo"
-LIBS="$LIBS -lkc3_window"
-LIBS="$LIBS -lkc3_gl"
 LIBS="$LIBS -lkc3"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

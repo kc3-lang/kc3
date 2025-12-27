@@ -1,0 +1,36 @@
+require GL.PT
+
+defmodule GL.PT.Main do
+
+  def main = fn (args) {
+    samples = 1
+    w = 800
+    h = 600
+    scene_kc3 = "./scene.kc3"
+    match ^ args do
+      [_, samples_str, w_str, h_str] ->
+        if uw = (Uw) samples_str do samples = ^ uw end
+        if uw = (Uw) w_str do w = ^ uw end
+        if uw = (Uw) h_str do h = ^ uw end
+      [_, samples_str, w_str, h_str, scene_kc3] ->
+        if uw = (Uw) samples_str do samples = ^ uw end
+        if uw = (Uw) w_str do w = ^ uw end
+        if uw = (Uw) h_str do h = ^ uw end
+      [prog | _] ->
+        GL.PT.Main.usage(prog)
+      _ ->
+        GL.PT.Main.usage("kc3_gl_pt")
+    end
+    load(scene_kc3)
+    image = GL.PT.render_image(w, h, samples, scene)
+    Image.to_png_file(& image, "pt.png")
+  }
+
+  def usage = fn (prog) {
+    puts("Usage: #{prog} SAMPLES W H SCENE.KC3")
+    exit(1)
+  }
+
+end
+
+GL.PT.Main.main(args())

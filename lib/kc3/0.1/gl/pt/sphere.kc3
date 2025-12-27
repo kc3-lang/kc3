@@ -20,6 +20,8 @@ defmodule GL.PT.Sphere do
              center: %GL.DVec3{},
              radius: (F64) 0.0]
 
-  def intersect = cfn F64 "pt_sphere_intersect" (GL.PT.Sphere, GL.DRay)
+  dlopen("gl.so")
+
+  def intersect = cfn F64 "pt_intersect_sphere" (GL.PT.Sphere, GL.DRay)
 
 end
