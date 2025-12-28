@@ -177,7 +177,7 @@ void * pt_render_thread (void *arg)
   uw y = pt->y;
   const uw y1 = pt->y1;
   while (y < y1) {
-    fprintf(stderr,"\rRendering (%d spp) %5.2f%%",
+    fprintf(stderr,"Rendering (%d spp) %5.2f%%\n",
             samples * 4, 100.0 * y / (h - 1));
     x = 0;
     while (x < w) {
