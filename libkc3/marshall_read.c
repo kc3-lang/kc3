@@ -1153,7 +1153,7 @@ s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
   if (! tag_init_tuple(&tag, 2))
     return NULL;
   tag_init_u64(tag.data.tuple.tag, offset);
-  tag_init_uw(tag.data.tuple.tag, (uw) p);
+  tag_init_uw(tag.data.tuple.tag + 1, (uw) p);
   if (! ht_add(&mr->ht, &tag)) {
     tag_clean(&tag);
     return NULL;
