@@ -259,15 +259,33 @@ def load_directory = fn (dir) {
     List.each(files, fn (file) {
       if (! Str.starts_with?(file, ".")) do
         path = dir + file
-        if File.is_directory?(path) do
+        b = if File.is_directory?(path) do
           load_directory(path + "/")
         else
           if Str.ends_with?(path, ".kc3") do
             load(path)
+          else
+            true
           end
+        end
+        if (! b) do
+          return_from :load_directory false
         end
       end
     })
+  end
+  true
+}
+
+def load! = fn (dir) {
+  if (! load(dir)) do
+    abort()
+  end
+}
+
+def load_directory! = fn (dir) {
+  if (! load_directory(dir)) do
+    abort()
   end
 }
 

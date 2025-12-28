@@ -32,20 +32,20 @@ defmodule HTTPd do
 
   def load_app = fn () {
     HTTP.mime_type_load("config/mime.types")
-    load_directory("app/lib/")
-    load_directory("app/models/")
+    load_directory!("app/lib/")
+    load_directory!("app/models/")
     if (File.exists?("config/app.kc3")) do
-      load("config/app.kc3")
+      load!("config/app.kc3")
     end
     if (File.exists?("config/db.kc3")) do
-      load("config/db.kc3")
+      load!("config/db.kc3")
     end
     load_directory("app/views/")
     load_directory("app/controllers/")
     if (File.exists?("config/routes.kc3")) do
-      load("config/routes.kc3")
+      load!("config/routes.kc3")
     end
-    load_directory("app/plugs/")
+    load_directory!("app/plugs/")
     securelevel(2)
     IO.puts("HTTPd.load_app: done")
   }
