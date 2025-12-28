@@ -102,6 +102,7 @@ LIBS_ASAN="$LIBS_ASAN -lkc3_window_egl_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_window_demo_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_window_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_gl_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_image_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
 LIBS_ASAN="$LIBS_ASAN $(${CC} -print-file-name=libasan.so)"
 
@@ -113,6 +114,7 @@ LIBS_COV="$LIBS -lkc3_window_egl_drm_cov"
 LIBS_COV="$LIBS_COV -lkc3_window_egl_cov"
 LIBS_COV="$LIBS_COV -lkc3_window_demo_cov"
 LIBS_COV="$LIBS_COV -lkc3_window_cov"
+LIBS_COV="$LIBS_COV -lkc3_image_cov"
 LIBS_COV="$LIBS_COV -lkc3_gl_cov"
 LIBS_COV="$LIBS_COV -lkc3_cov"
 
@@ -125,6 +127,7 @@ LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_egl_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_demo_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_window_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_gl_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_image_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
 
 # Main config
@@ -138,6 +141,7 @@ LIBS="$LIBS -lkc3_window_egl"
 LIBS="$LIBS -lkc3_window_demo"
 LIBS="$LIBS -lkc3_window"
 LIBS="$LIBS -lkc3_gl"
+LIBS="$LIBS -lkc3_image"
 LIBS="$LIBS -lkc3"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
