@@ -52,6 +52,10 @@ fs/fuse/mount_kc3fs_debug
 *.gcda
 *.gcno
 /git.kmx.io/
+gl/pt/kc3_gl_pt
+gl/pt/kc3_gl_pt_asan
+gl/pt/kc3_gl_pt_cov
+gl/pt/kc3_gl_pt_debug
 .gradle
 *.html
 httpd.log

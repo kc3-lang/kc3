@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include "../../libkc3/kc3.h"
-#include "../../gl/gl.h"
 
 const char *g_env_argv0_default = PROG;
 const char *g_env_argv0_dir_default = PREFIX;
