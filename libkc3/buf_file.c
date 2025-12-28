@@ -182,7 +182,7 @@ sw buf_file_open_w_flush (s_buf *buf)
   min_wpos = buf_save_min_wpos(buf);
   size = min_wpos;
   if (size == 0)
-    return buf->size - buf->wpos;
+    return buf->size - buf->wpos; // XXX buf->wpos == 0 though
   buf_file = buf->user_ptr;
   if (fwrite(buf->ptr.p, size, 1, buf_file->fp) != 1) {
     err_puts("buf_file_open_w_flush: fwrite");

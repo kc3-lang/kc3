@@ -367,6 +367,17 @@ void marshall_read_clean (s_marshall_read *mr)
   ht_clean(&mr->ht);
 }
 
+s_marshall_read * marshall_read_reset_chunk (s_marshall_read *mr)
+{
+  assert(mr);
+  mr->heap_offset += mr->heap_size;
+  mr->heap_size = 0;
+  mr->buf_size = 0;
+  buf_empty(&mr->heap);
+  buf_empty(&mr->buf);
+  return mr;
+}
+
 s_marshall_read * marshall_read_complex (s_marshall_read *mr,
                                          bool heap,
                                          s_complex *dest)
@@ -1089,6 +1100,7 @@ s_marshall_read * marshall_read_header (s_marshall_read *mr)
     assert(! "marshall_read_header: invalid magic");
     return NULL;
   }
+  tmp.heap_offset = le64toh(mh.le_heap_offset);
   tmp.heap_count = le64toh(mh.le_heap_count);
   tmp.heap_size = le64toh(mh.le_heap_size);
   tmp.buf_size = le64toh(mh.le_buf_size);
@@ -1118,6 +1130,7 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
   assert(mr);
   assert(offset);
   assert(present);
+  u64 global_offset;
   s_tag key = {0};
   s_tag *ptag = NULL;
   s_tag tag = {0};
@@ -1127,9 +1140,10 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
     *present = NULL;
     return mr;
   }
+  global_offset = mr->heap_offset + *offset;
   if (! tag_init_tuple(&key, 2))
     return NULL;
-  tag_init_u64(key.data.tuple.tag, *offset);
+  tag_init_u64(key.data.tuple.tag, global_offset);
   if (! ht_get(&mr->ht, &key, &ptag)) {
     *present = NULL;
     tag_clean(&key);

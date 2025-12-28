@@ -390,6 +390,7 @@ struct map {
 
 struct marshall_header {
   u64 le_magic;
+  u64 le_heap_offset;
   u64 le_heap_count;
   u64 le_heap_size;
   u64 le_buf_size;
@@ -658,6 +659,7 @@ struct marshall_read {
   uw    buf_size;
   s_buf heap;
   uw    heap_count;
+  uw    heap_offset;
   uw    heap_size;
   s_ht  ht;
 };
@@ -696,6 +698,7 @@ struct marshall {
   sw    buf_pos;
   s_buf heap;
   sw    heap_count;
+  sw    heap_offset;
   sw    heap_pos;
   s_ht  ht;
 };
