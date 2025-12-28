@@ -127,6 +127,7 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   if (c.pcallable)
     pcallable_clean(&c.pcallable);
   if (! env_eval_call_resolve(env, &c)) {
+    err_stacktrace();
     err_write_1("env_eval_call: env_eval_call_resolve: ");
     err_inspect_ident(&c.ident);
     err_write_1("\n");
