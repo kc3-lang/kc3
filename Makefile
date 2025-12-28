@@ -97,6 +97,7 @@ build:
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 build; fi
 
 check: test
+	if ${HAVE_ASAN}; then ${MAKE} test_asan; fi
 
 clean::
 	${MAKE} -C libtommath clean
@@ -1536,7 +1537,6 @@ release_check:
 
 test: build lib_links
 	${MAKE} -C test test
-	if ${HAVE_ASAN}; then ${MAKE} test_asan; fi
 
 test_asan: asan lib_links_asan
 	${MAKE} -C test test_asan
