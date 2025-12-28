@@ -47,6 +47,7 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS="$CPPFLAGS -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -fPIC"
 LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/image"
 config_asan
 config_cocoa
 config_gnu
@@ -63,7 +64,6 @@ pkg_config glesv2
 pkg_config libjpeg
 pkg_config libpng
 config_lib m -lm 2>/dev/null
-config_define PREFIX "\"${PREFIX}\""
 case "$(uname -s)" in
     MINGW64*)
         ;;
@@ -80,19 +80,19 @@ LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
 LIBS_ASAN="$(${CC} -print-file-name=libasan.so)"
 LIBS_ASAN="$LIBS_ASAN $LIBS"
-LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_image_cov -lkc3_asan"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS"
-LIBS_COV="$LIBS -lkc3_cov"
+LIBS_COV="$LIBS -lkc3_image_cov -lkc3_cov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_DEBUG="$LIBS -lkc3_debug"
+LIBS_DEBUG="$LIBS -lkc3_image_debug -lkc3_debug"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -pipe -fPIC"
@@ -100,7 +100,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS="$LIBS -lkc3"
+LIBS="$LIBS -lkc3_image -lkc3"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
