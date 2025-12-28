@@ -49,6 +49,6 @@ TEST_CASE(types_sizeof)
   TEST_EQ(sym_type_size(&g_sym_Tag, &sym_type_size_tag),
           &sym_type_size_tag);
   TEST_EQ(sym_type_size_tag, sizeof(s_tag));
-  TEST_EQ(sizeof(s_marshall_header), 32);
+  TEST_EQ(sizeof(s_marshall_header), 40);
 }
 TEST_CASE_END(types_sizeof)
