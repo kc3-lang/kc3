@@ -724,6 +724,8 @@ sw facts_log_add (s_log *log, const s_fact *fact)
       goto ko;
     result += r;
   }
+  if (log->hook)
+    log->hook(log->hook_context, FACT_ACTION_ADD, fact);
   return result;
  ko:
   err_puts("facts_log_add: error");
@@ -758,6 +760,8 @@ sw facts_log_remove (s_log *log, const s_fact *fact)
       goto ko;
     result += r;
   }
+  if (log->hook)
+    log->hook(log->hook_context, FACT_ACTION_REMOVE, fact);
   return result;
  ko:
   err_puts("facts_log_remove: error");

@@ -641,12 +641,17 @@ struct fn {
   s_frame *frame;
 };
 
+typedef void (*f_log_hook) (void *context, e_fact_action action,
+                            const s_fact *fact);
+
 struct log {
-  s_buf  buf;
-  s_str  path;
-  u64    count;
-  s_buf  binary_buf;
-  s_str  binary_path;
+  s_buf       buf;
+  s_str       path;
+  u64         count;
+  s_buf       binary_buf;
+  s_str       binary_path;
+  f_log_hook  hook;
+  void       *hook_context;
 };
 
 struct ratio {
