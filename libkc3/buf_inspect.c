@@ -3416,9 +3416,30 @@ sw buf_inspect_pcow_size (s_pretty *pretty, p_cow const *pcow)
 
 sw buf_inspect_pfacts (s_buf *buf, const p_facts *x)
 {
+  s_env *env;
   sw r;
   sw result = 0;
-  if ((r = buf_write_1(buf, "(Facts*) 0x")) <= 0)
+  assert(buf);
+  assert(x);
+  env = env_global();
+  assert(env);
+  if ((r = buf_write_1(buf, "(Facts*) ")) <= 0)
+    return r;
+  result += r;
+  if (env->bool_ptr) {
+    if (*x) {
+      if ((r = buf_write_1(buf, "1")) <= 0)
+        return r;
+      result += r;
+    }
+    else {
+      if ((r = buf_write_1(buf, "0")) <= 0)
+        return r;
+      result += r;
+    }
+    return result;
+  }
+  if ((r = buf_write_1(buf, "0x")) <= 0)
     return r;
   result += r;
   if ((r = buf_inspect_uw_hexadecimal(buf, (uw) *x)))
@@ -3429,9 +3450,30 @@ sw buf_inspect_pfacts (s_buf *buf, const p_facts *x)
 
 sw buf_inspect_pfacts_size (s_pretty *pretty, const p_facts *x)
 {
+  s_env *env;
   sw r;
   sw result = 0;
-  if ((r = buf_write_1_size(pretty, "(Facts*) 0x")) <= 0)
+  assert(pretty);
+  assert(x);
+  env = env_global();
+  assert(env);
+  if ((r = buf_write_1_size(pretty, "(Facts*) ")) <= 0)
+    return r;
+  result += r;
+  if (env->bool_ptr) {
+    if (*x) {
+      if ((r = buf_write_1_size(pretty, "1")) <= 0)
+        return r;
+      result += r;
+    }
+    else {
+      if ((r = buf_write_1_size(pretty, "0")) <= 0)
+        return r;
+      result += r;
+    }
+    return result;
+  }
+  if ((r = buf_write_1_size(pretty, "0x")) <= 0)
     return r;
   result += r;
   if ((r = buf_inspect_uw_hexadecimal_size(pretty, (uw) *x)))

@@ -28,6 +28,7 @@
 /* 1 */
 typedef s64                  t_socket;
 typedef struct socket_buf    s_socket_buf;
+typedef struct socket_facts  s_socket_facts;
 typedef struct http_request  s_http_request;
 typedef struct http_response s_http_response;
 
@@ -56,6 +57,11 @@ struct http_response {
   s_str message;
   s_list *headers;
   s_str body;
+};
+
+struct socket_facts {
+  s_socket_buf socket;
+  s_marshall   marshall;
 };
 
 #endif /* HTTP_TYPES_H */

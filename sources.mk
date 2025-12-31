@@ -1097,6 +1097,8 @@ KC3_C_SOURCES = \
 	"socket/socket_addr.h" \
 	"socket/socket_buf.c" \
 	"socket/socket_buf.h" \
+	"socket/socket_facts.c" \
+	"socket/socket_facts.h" \
 	"socket/types.h" \
 	"test/array_test.c" \
 	"test/bool_test.c" \
@@ -1752,6 +1754,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/socket.kc3" \
 	"lib/kc3/0.1/socket/addr.kc3" \
 	"lib/kc3/0.1/socket/buf.kc3" \
+	"lib/kc3/0.1/socket/facts.kc3" \
 	"lib/kc3/0.1/spam/bayes.kc3" \
 	"lib/kc3/0.1/str.facts" \
 	"lib/kc3/0.1/struct.kc3" \

@@ -3,10 +3,12 @@ HEADERS = \
 	"socket.h" \
 	"socket_addr.h" \
 	"socket_buf.h" \
+	"socket_facts.h" \
 	"types.h" \
 
 SOURCES = \
 	"socket.c" \
 	"socket_addr.c" \
 	"socket_buf.c" \
+	"socket_facts.c" \
 

@@ -1,4 +1,3 @@
-#!/bin/sh
 ## kc3
 ## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
 ##
@@ -11,24 +10,14 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-TEST_NAME=socket
+require Facts
 
-TEST_TOP="$(cd "$(dirname "$0")" && pwd)"
+defmodule Socket.Facts do
 
-cd "${TEST_TOP}/${TEST_NAME}" || exit
+  dlopen("socket.so")
 
-. ../test.subr
+  def open = cfn Void "socket_facts_open" (Facts, Str, Str)
 
-if [ $# = 0 ]; then
-    if [ "x${SOCKET_TEST}" = "x" ]; then
-        TARGETS="$(ls -1 *.kc3 | sed -e 's/[.]kc3$//')"
-    else
-        TARGETS="$(echo "${IKC3_TEST}" | tr ' ' '\n')"
-    fi
-else
-    TARGETS="$(echo "$@" | tr ' ' '\n')"
-fi
+  def close = cfn Void "socket_facts_close" (Facts)
 
-: ${KC3S=${TEST_TOP}/../kc3s/kc3s}
-
-test_run "$KC3S" $TARGETS
+end

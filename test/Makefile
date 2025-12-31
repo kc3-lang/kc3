@@ -276,16 +276,16 @@ test_pdf_debug:
 	IKC3=${BUILD_TOP}/ikc3/ikc3_debug time ./pdf_test
 
 test_socket:
-	IKC3=${BUILD_TOP}/ikc3/ikc3 time ./socket_test
+	KC3S=${BUILD_TOP}/kc3s/kc3s time ./socket_test
 
 test_socket_asan:
-	IKC3=${BUILD_TOP}/ikc3/ikc3_asan time ./socket_test
+	KC3S=${BUILD_TOP}/kc3s/kc3s_asan time ./socket_test
 
 test_socket_cov:
-	IKC3=${BUILD_TOP}/ikc3/ikc3_cov time ./socket_test
+	KC3S=${BUILD_TOP}/kc3s/kc3s_cov time ./socket_test
 
 test_socket_debug:
-	IKC3=${BUILD_TOP}/ikc3/ikc3_debug time ./socket_test
+	KC3S=${BUILD_TOP}/kc3s/kc3s_debug time ./socket_test
 
 test_tls:
 	KC3S=${BUILD_TOP}/kc3s/kc3s time ./tls_test

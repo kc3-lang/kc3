@@ -1,0 +1,26 @@
+quote require Socket
+require Socket
+quote require Socket.Buf
+require Socket.Buf
+quote require Socket.Facts
+require Socket.Facts
+quote require Facts
+require Facts
+quote require File
+require File
+quote facts = Facts.database()
+facts = Facts.database()
+quote File.unlink("facts_test.facts")
+File.unlink("facts_test.facts")
+quote Facts.open(facts, "facts_test.facts")
+Facts.open(facts, "facts_test.facts")
+quote server = Socket.listen("localhost", "15001")
+server = Socket.listen("localhost", "15001")
+quote Socket.Facts.open(facts, "localhost", "15001")
+Socket.Facts.open(facts, "localhost", "15001")
+quote server_client = Socket.Buf.accept(server)
+server_client = Socket.Buf.accept(server)
+quote Facts.add_tags(facts, :a, :b, :c)
+Facts.add_tags(facts, :a, :b, :c)
+quote Socket.Facts.close(facts)
+Socket.Facts.close(facts)
