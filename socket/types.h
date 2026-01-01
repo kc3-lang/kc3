@@ -13,6 +13,7 @@
 #ifndef HTTP_TYPES_H
 #define HTTP_TYPES_H
 
+#include <pthread.h>
 #ifdef WIN64
 # include <ws2tcpip.h>
 #else
@@ -26,11 +27,12 @@
 #include "../libkc3/types.h"
 
 /* 1 */
-typedef s64                  t_socket;
-typedef struct socket_buf    s_socket_buf;
-typedef struct socket_facts  s_socket_facts;
-typedef struct http_request  s_http_request;
-typedef struct http_response s_http_response;
+typedef s64                           t_socket;
+typedef struct socket_buf             s_socket_buf;
+typedef struct socket_facts           s_socket_facts;
+typedef struct socket_facts_listener  s_socket_facts_listener;
+typedef struct http_request           s_http_request;
+typedef struct http_response          s_http_response;
 
 /* 2 */
 typedef t_socket *p_socket;
@@ -62,6 +64,14 @@ struct http_response {
 struct socket_facts {
   s_socket_buf socket;
   s_marshall   marshall;
+};
+
+struct socket_facts_listener {
+  s_env          *env;
+  s_facts        *facts;
+  s_socket_buf    client;
+  s_marshall_read marshall_read;
+  pthread_t       thread;
 };
 
 #endif /* HTTP_TYPES_H */

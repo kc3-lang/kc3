@@ -660,13 +660,14 @@ struct ratio {
 };
 
 struct marshall_read {
-  s_buf buf;
-  uw    buf_size;
-  s_buf heap;
-  uw    heap_count;
-  uw    heap_offset;
-  uw    heap_size;
-  s_ht  ht;
+  s_buf *buf;
+  uw     buf_size;
+  s_buf *heap;
+  uw     heap_count;
+  uw     heap_offset;
+  uw     heap_size;
+  s_ht   ht;
+  s_buf *source;
 };
 
 struct sym {

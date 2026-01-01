@@ -12,10 +12,40 @@
  */
 #include "../libkc3/alloc.h"
 #include "../libkc3/assert.h"
+#include "../libkc3/buf.h"
+#include "../libkc3/env.h"
+#include "../libkc3/env_fork.h"
+#include "../libkc3/fact.h"
 #include "../libkc3/facts.h"
+#include "../libkc3/io.h"
 #include "../libkc3/marshall.h"
+#include "../libkc3/marshall_read.h"
+#include "socket.h"
 #include "socket_buf.h"
 #include "socket_facts.h"
+
+bool * kc3_socket_facts_close (s_facts *facts, bool *dest)
+{
+  assert(dest);
+  *dest = socket_facts_close(facts) ? true : false;
+  return dest;
+}
+
+bool * kc3_socket_facts_listen (s_facts *facts, const s_str *host,
+                                const s_str *service, bool *dest)
+{
+  assert(dest);
+  *dest = socket_facts_listen(facts, host, service) ? true : false;
+  return dest;
+}
+
+bool * kc3_socket_facts_open (s_facts *facts, const s_str *host,
+                              const s_str *service, bool *dest)
+{
+  assert(dest);
+  *dest = socket_facts_open(facts, host, service) ? true : false;
+  return dest;
+}
 
 void socket_facts_clean (s_socket_facts *sf)
 {
@@ -24,12 +54,12 @@ void socket_facts_clean (s_socket_facts *sf)
   socket_buf_clean(&sf->socket);
 }
 
-void socket_facts_close (s_facts *facts)
+s_facts * socket_facts_close (s_facts *facts)
 {
   s_socket_facts *sf;
   assert(facts);
   if (! facts->log)
-    return;
+    return facts;
   sf = facts->log->hook_context;
   if (sf) {
     socket_facts_clean(sf);
@@ -37,6 +67,7 @@ void socket_facts_close (s_facts *facts)
     facts->log->hook_context = NULL;
     facts->log->hook = NULL;
   }
+  return facts;
 }
 
 void socket_facts_hook (void *context, e_fact_action action,
@@ -69,22 +100,144 @@ s_socket_facts * socket_facts_init (s_socket_facts *sf,
   return sf;
 }
 
-void socket_facts_open (s_facts *facts, const s_str *host,
-                        const s_str *service)
+s_facts * socket_facts_listen (s_facts *facts, const s_str *host,
+                               const s_str *service)
+{
+  s_socket_facts_listener *listener;
+  t_socket server;
+  assert(facts);
+  assert(host);
+  assert(service);
+  err_write_1("socket_facts_listen: calling socket_init_listen\n");
+  if (! socket_init_listen(&server, host, service)) {
+    err_write_1("socket_facts_listen: socket_init_listen failed\n");
+    return NULL;
+  }
+  err_write_1("socket_facts_listen: socket_init_listen ok, fd = ");
+  err_inspect_s64_decimal(server);
+  err_write_1("\n");
+  listener = alloc(sizeof(s_socket_facts_listener));
+  if (! listener) {
+    socket_close(&server);
+    return NULL;
+  }
+  listener->env = env_fork_new(env_global());
+  if (! listener->env) {
+    socket_close(&server);
+    free(listener);
+    return NULL;
+  }
+  listener->facts = facts;
+  err_write_1("socket_facts_listen: calling socket_buf_init_accept\n");
+  if (! socket_buf_init_accept(&listener->client, &server)) {
+    err_write_1("socket_facts_listen: socket_buf_init_accept failed\n");
+    socket_close(&server);
+    free(listener);
+    return NULL;
+  }
+  err_write_1("socket_facts_listen: socket_buf_init_accept ok\n");
+  socket_close(&server);
+  err_write_1("socket_facts_listen: calling marshall_read_init_buf\n");
+  if (! marshall_read_init_buf(&listener->marshall_read,
+                               listener->client.buf_rw.r)) {
+    err_write_1("socket_facts_listen: marshall_read_init_buf failed\n");
+    socket_buf_clean(&listener->client);
+    free(listener);
+    return NULL;
+  }
+  err_write_1("socket_facts_listen: calling pthread_create\n");
+  if (pthread_create(&listener->thread, NULL,
+                     socket_facts_listen_thread, listener)) {
+    err_write_1("socket_facts_listen: pthread_create failed\n");
+    marshall_read_clean(&listener->marshall_read);
+    socket_buf_clean(&listener->client);
+    free(listener);
+    return NULL;
+  }
+  pthread_detach(listener->thread);
+  err_write_1("socket_facts_listen: success\n");
+  return facts;
+}
+
+void * socket_facts_listen_thread (void *arg)
+{
+  u8 action;
+  bool b;
+  s_fact fact = {0};
+  s_socket_facts_listener *listener;
+  s_marshall_read *mr;
+  listener = arg;
+  env_global_set(listener->env);
+  err_puts("socket_facts_listen_thread: entered");
+  mr = &listener->marshall_read;
+  err_puts("socket_facts_listen_thread: starting loop");
+  while (1) {
+    err_puts("socket_facts_listen_thread: reading header");
+    if (! marshall_read_header(mr)) {
+      err_puts("socket_facts_listen_thread: header read failed");
+      break;
+    }
+    err_write_1("socket_facts_listen_thread: heap_size = ");
+    err_inspect_uw_decimal(mr->heap_size);
+    err_write_1(", buf_size = ");
+    err_inspect_uw_decimal(mr->buf_size);
+    err_write_1("\n");
+    err_puts("socket_facts_listen_thread: calling marshall_read_chunk");
+    if (! marshall_read_chunk(mr)) {
+      err_puts("socket_facts_listen_thread: marshall_read_chunk failed");
+      break;
+    }
+    err_puts("socket_facts_listen_thread: marshall_read_chunk ok");
+    err_puts("socket_facts_listen_thread: calling marshall_read_u8");
+    if (! marshall_read_u8(mr, false, &action)) {
+      err_puts("socket_facts_listen_thread: marshall_read_u8");
+      break;
+    }
+    if (! marshall_read_fact(mr, false, &fact)) {
+      err_puts("socket_facts_listen_thread: marshall_read_fact");
+      break;
+    }
+    switch (action) {
+    case FACT_ACTION_ADD:
+      facts_add_fact(listener->facts, &fact);
+      break;
+    case FACT_ACTION_REMOVE:
+      facts_remove_fact(listener->facts, &fact, &b);
+      break;
+    default:
+      err_write_1("socket_facts_listen_thread: invalid action: ");
+      err_inspect_u8_decimal(action);
+      err_write_1("\n");
+      break;
+    }
+    fact_clean(&fact);
+    marshall_read_reset_chunk(mr);
+  }
+  socket_buf_clean(&listener->client);
+  marshall_read_clean(mr);
+  env_fork_delete(listener->env);
+  free(listener);
+  err_write_1("socket_facts_listen_thread: connection closed");
+  return NULL;
+}
+
+s_facts * socket_facts_open (s_facts *facts, const s_str *host,
+                             const s_str *service)
 {
   s_socket_facts *sf;
   assert(facts);
   assert(host);
   assert(service);
   if (! facts->log)
-    return;
+    return NULL;
   sf = alloc(sizeof(s_socket_facts));
   if (! sf)
-    return;
+    return NULL;
   if (! socket_facts_init(sf, host, service)) {
     free(sf);
-    return;
+    return NULL;
   }
   facts->log->hook = socket_facts_hook;
   facts->log->hook_context = sf;
+  return facts;
 }

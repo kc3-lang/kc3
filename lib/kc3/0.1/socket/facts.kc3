@@ -16,8 +16,10 @@ defmodule Socket.Facts do
 
   dlopen("socket.so")
 
-  def open = cfn Void "socket_facts_open" (Facts, Str, Str)
+  def close = cfn Bool "kc3_socket_facts_close" (Facts, Result)
 
-  def close = cfn Void "socket_facts_close" (Facts)
+  def listen = cfn Bool "kc3_socket_facts_listen" (Facts, Str, Str, Result)
+
+  def open = cfn Bool "kc3_socket_facts_open" (Facts, Str, Str, Result)
 
 end

@@ -1,26 +1,43 @@
-quote require Socket
-require Socket
-quote require Socket.Buf
-require Socket.Buf
-quote require Socket.Facts
-require Socket.Facts
-quote require Facts
 require Facts
-quote require File
 require File
-quote facts = Facts.database()
-facts = Facts.database()
-quote File.unlink("facts_test.facts")
-File.unlink("facts_test.facts")
-quote Facts.open(facts, "facts_test.facts")
-Facts.open(facts, "facts_test.facts")
-quote server = Socket.listen("localhost", "15001")
-server = Socket.listen("localhost", "15001")
-quote Socket.Facts.open(facts, "localhost", "15001")
-Socket.Facts.open(facts, "localhost", "15001")
-quote server_client = Socket.Buf.accept(server)
-server_client = Socket.Buf.accept(server)
-quote Facts.add_tags(facts, :a, :b, :c)
-Facts.add_tags(facts, :a, :b, :c)
-quote Socket.Facts.close(facts)
-Socket.Facts.close(facts)
+require Socket
+require Socket.Buf
+require Socket.Facts
+
+(r = fork()) ; void
+if (r < 0) do
+  exit(1)
+end
+if r == 0 do
+  # Server: receive facts
+  server_facts = Facts.database()
+  puts("server: listening on 15002")
+  if ! Socket.Facts.listen(server_facts, "localhost", "15002") do
+    puts("server: listen failed")
+    exit_subprocess(1)
+  end
+  puts("server: accepted connection, waiting for facts")
+  sleep(2)
+  Facts.with_tags(server_facts, ?, ?, ?, fn (fact) {
+    puts("server: received #{inspect(fact)}")
+  })
+  puts("server: OK")
+  exit_subprocess(0)
+else
+  sleep(1)
+  # Client: send facts
+  client_facts = Facts.database()
+  File.unlink("facts_test.facts")
+  Facts.open(client_facts, "facts_test.facts")
+  puts("client: connecting to 15002")
+  if ! Socket.Facts.open(client_facts, "localhost", "15002") do
+    puts("client: open failed")
+    exit(1)
+  end
+  puts("client: adding fact")
+  Facts.add_tags(client_facts, :a, :b, :c)
+  sleep(10)
+  Socket.Facts.close(client_facts)
+  puts("client: OK")
+end
+0

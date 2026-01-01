@@ -1814,6 +1814,7 @@ sw marshall_to_buf (s_marshall *m, s_buf *out)
     return -1;
   }
   result += r;
+  buf_flush(out);
   marshall_reset_chunk(m);
   return result;
 }
