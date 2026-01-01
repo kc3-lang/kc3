@@ -18,6 +18,7 @@
 #include "../libkc3/fact.h"
 #include "../libkc3/facts.h"
 #include "../libkc3/io.h"
+#include "../libkc3/log.h"
 #include "../libkc3/marshall.h"
 #include "../libkc3/marshall_read.h"
 #include "socket.h"
@@ -60,12 +61,11 @@ s_facts * socket_facts_close (s_facts *facts)
   assert(facts);
   if (! facts->log)
     return facts;
-  sf = facts->log->hook_context;
+  sf = facts->log->hooks ? facts->log->hooks->context : NULL;
   if (sf) {
+    log_hook_remove(facts->log, sf->hook);
     socket_facts_clean(sf);
     free(sf);
-    facts->log->hook_context = NULL;
-    facts->log->hook = NULL;
   }
   return facts;
 }
@@ -240,9 +240,12 @@ void * socket_facts_listen_thread (void *arg)
   err_puts("socket_facts_listen_thread: entered");
   mr = &listener->marshall_read;
   if (listener->facts->log) {
-    listener->facts->log->hook = socket_facts_listener_hook;
-    listener->facts->log->hook_context = listener;
-    err_puts("socket_facts_listen_thread: log hook set up");
+    listener->hook = log_hook_add(listener->facts->log,
+                                  socket_facts_listener_hook, listener);
+    if (listener->hook)
+      err_puts("socket_facts_listen_thread: log hook set up");
+    else
+      err_puts("socket_facts_listen_thread: log_hook_add failed");
   }
   err_puts("socket_facts_listen_thread: starting loop");
   while (1) {
@@ -287,10 +290,8 @@ void * socket_facts_listen_thread (void *arg)
     fact_clean(&fact);
     marshall_read_reset_chunk(mr);
   }
-  if (listener->facts->log) {
-    listener->facts->log->hook = NULL;
-    listener->facts->log->hook_context = NULL;
-  }
+  if (listener->hook)
+    log_hook_remove(listener->facts->log, listener->hook);
   marshall_clean(&listener->marshall);
   socket_buf_clean(&listener->client);
   marshall_read_clean(mr);
@@ -339,7 +340,13 @@ s_facts * socket_facts_open (s_facts *facts, const s_str *host,
     return NULL;
   }
   pthread_detach(sf->thread);
-  facts->log->hook = socket_facts_hook;
-  facts->log->hook_context = sf;
+  sf->hook = log_hook_add(facts->log, socket_facts_hook, sf);
+  if (! sf->hook) {
+    marshall_read_clean(&sf->marshall_read);
+    env_fork_delete(sf->env);
+    socket_facts_clean(sf);
+    free(sf);
+    return NULL;
+  }
   return facts;
 }

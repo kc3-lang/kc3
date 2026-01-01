@@ -247,6 +247,7 @@ typedef struct list                    s_list;
 typedef struct fact_list               s_fact_list;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
+typedef struct log_hook                s_log_hook;
 typedef struct loop_context            s_loop_context;
 typedef struct map                     s_map;
 typedef struct marshall                s_marshall;
@@ -315,6 +316,8 @@ typedef s_var *           p_var;
 
 /* function typedefs */
 typedef sw   (* f_buf_parse_end) (s_buf *buf, bool *dest);
+typedef void (* f_log_hook) (void *context, e_fact_action action,
+                             const s_fact *fact);
 typedef bool (* f_sequence) (s_sequence *seq);
 typedef bool (* f_sequence_button) (s_sequence *seq, u8 button, s64 x,
                                     s64 y);
@@ -641,8 +644,11 @@ struct fn {
   s_frame *frame;
 };
 
-typedef void (*f_log_hook) (void *context, e_fact_action action,
-                            const s_fact *fact);
+struct log_hook {
+  f_log_hook   f;
+  void        *context;
+  s_log_hook  *next;
+};
 
 struct log {
   s_buf       buf;
@@ -650,8 +656,7 @@ struct log {
   u64         count;
   s_buf       binary_buf;
   s_str       binary_path;
-  f_log_hook  hook;
-  void       *hook_context;
+  s_log_hook *hooks;
 };
 
 struct ratio {

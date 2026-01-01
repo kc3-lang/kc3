@@ -28,6 +28,10 @@ void log_close (s_log *log);
 s_log * log_open (s_log *log, FILE *fp, const s_str *path);
 s_log * log_open_binary (s_log *log, FILE *fp, const s_str *path);
 
+/* Hooks. */
+s_log_hook * log_hook_add (s_log *log, f_log_hook f, void *context);
+bool         log_hook_remove (s_log *log, s_log_hook *hook);
+
 /* Misc. */
 s_str * log_path_to_binary_path (const s_str *path, s_str *dest);
 

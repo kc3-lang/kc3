@@ -700,6 +700,7 @@ sw facts_load_file (s_facts *facts, const s_str *path)
 // TODO: if (binary) {
 sw facts_log_add (s_log *log, const s_fact *fact)
 {
+  s_log_hook *hook;
   sw r;
   sw result = 0;
   assert(log);
@@ -724,8 +725,11 @@ sw facts_log_add (s_log *log, const s_fact *fact)
       goto ko;
     result += r;
   }
-  if (log->hook)
-    log->hook(log->hook_context, FACT_ACTION_ADD, fact);
+  hook = log->hooks;
+  while (hook) {
+    hook->f(hook->context, FACT_ACTION_ADD, fact);
+    hook = hook->next;
+  }
   return result;
  ko:
   err_puts("facts_log_add: error");
@@ -736,6 +740,7 @@ sw facts_log_add (s_log *log, const s_fact *fact)
 // TODO: if (binary) {
 sw facts_log_remove (s_log *log, const s_fact *fact)
 {
+  s_log_hook *hook;
   sw r;
   sw result = 0;
   assert(log);
@@ -760,8 +765,11 @@ sw facts_log_remove (s_log *log, const s_fact *fact)
       goto ko;
     result += r;
   }
-  if (log->hook)
-    log->hook(log->hook_context, FACT_ACTION_REMOVE, fact);
+  hook = log->hooks;
+  while (hook) {
+    hook->f(hook->context, FACT_ACTION_REMOVE, fact);
+    hook = hook->next;
+  }
   return result;
  ko:
   err_puts("facts_log_remove: error");

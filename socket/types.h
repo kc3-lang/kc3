@@ -64,6 +64,7 @@ struct http_response {
 struct socket_facts {
   s_env          *env;
   s_facts        *facts;
+  s_log_hook     *hook;
   s_socket_buf    socket;
   s_marshall      marshall;
   s_marshall_read marshall_read;
@@ -73,6 +74,7 @@ struct socket_facts {
 struct socket_facts_listener {
   s_env          *env;
   s_facts        *facts;
+  s_log_hook     *hook;
   s_socket_buf    client;
   s_marshall      marshall;
   s_marshall_read marshall_read;

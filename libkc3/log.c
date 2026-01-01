@@ -111,3 +111,35 @@ s_str * log_path_to_binary_path (const s_str *path, s_str *dest)
   *dest = tmp;
   return dest;
 }
+
+s_log_hook * log_hook_add (s_log *log, f_log_hook f, void *context)
+{
+  s_log_hook *hook;
+  assert(log);
+  assert(f);
+  hook = alloc(sizeof(s_log_hook));
+  if (! hook)
+    return NULL;
+  hook->f = f;
+  hook->context = context;
+  hook->next = log->hooks;
+  log->hooks = hook;
+  return hook;
+}
+
+bool log_hook_remove (s_log *log, s_log_hook *hook)
+{
+  s_log_hook **h;
+  assert(log);
+  assert(hook);
+  h = &log->hooks;
+  while (*h) {
+    if (*h == hook) {
+      *h = hook->next;
+      free(hook);
+      return true;
+    }
+    h = &(*h)->next;
+  }
+  return false;
+}
