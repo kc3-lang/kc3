@@ -82,6 +82,67 @@ void socket_facts_hook (void *context, e_fact_action action,
   marshall_to_buf(&sf->marshall, sf->socket.buf_rw.w);
 }
 
+void socket_facts_listener_hook (void *context, e_fact_action action,
+                                 const s_fact *fact)
+{
+  s_socket_facts_listener *listener;
+  assert(context);
+  assert(fact);
+  listener = context;
+  marshall_u8(&listener->marshall, false, action);
+  marshall_fact(&listener->marshall, false, fact);
+  marshall_to_buf(&listener->marshall, listener->client.buf_rw.w);
+}
+
+void * socket_facts_open_thread (void *arg)
+{
+  u8 action;
+  bool b;
+  s_fact fact = {0};
+  s_marshall_read *mr;
+  s_socket_facts *sf;
+  sf = arg;
+  env_global_set(sf->env);
+  err_puts("socket_facts_open_thread: entered");
+  mr = &sf->marshall_read;
+  err_puts("socket_facts_open_thread: starting loop");
+  while (1) {
+    err_puts("socket_facts_open_thread: reading header");
+    if (! marshall_read_header(mr)) {
+      err_puts("socket_facts_open_thread: header read failed");
+      break;
+    }
+    err_puts("socket_facts_open_thread: calling marshall_read_chunk");
+    if (! marshall_read_chunk(mr)) {
+      err_puts("socket_facts_open_thread: marshall_read_chunk failed");
+      break;
+    }
+    err_puts("socket_facts_open_thread: calling marshall_read_u8");
+    if (! marshall_read_u8(mr, false, &action)) {
+      err_puts("socket_facts_open_thread: marshall_read_u8");
+      break;
+    }
+    if (! marshall_read_fact(mr, false, &fact)) {
+      err_puts("socket_facts_open_thread: marshall_read_fact");
+      break;
+    }
+    switch (action) {
+    case FACT_ACTION_ADD:
+      facts_add_fact(sf->facts, &fact);
+      break;
+    case FACT_ACTION_REMOVE:
+      facts_remove_fact(sf->facts, &fact, &b);
+      break;
+    default:
+      break;
+    }
+    fact_clean(&fact);
+    marshall_read_reset_chunk(mr);
+  }
+  err_puts("socket_facts_open_thread: connection closed");
+  return NULL;
+}
+
 s_socket_facts * socket_facts_init (s_socket_facts *sf,
                                     const s_str *host,
                                     const s_str *service)
@@ -145,10 +206,18 @@ s_facts * socket_facts_listen (s_facts *facts, const s_str *host,
     free(listener);
     return NULL;
   }
+  if (! marshall_init(&listener->marshall)) {
+    err_write_1("socket_facts_listen: marshall_init failed\n");
+    marshall_read_clean(&listener->marshall_read);
+    socket_buf_clean(&listener->client);
+    free(listener);
+    return NULL;
+  }
   err_write_1("socket_facts_listen: calling pthread_create\n");
   if (pthread_create(&listener->thread, NULL,
                      socket_facts_listen_thread, listener)) {
     err_write_1("socket_facts_listen: pthread_create failed\n");
+    marshall_clean(&listener->marshall);
     marshall_read_clean(&listener->marshall_read);
     socket_buf_clean(&listener->client);
     free(listener);
@@ -170,6 +239,11 @@ void * socket_facts_listen_thread (void *arg)
   env_global_set(listener->env);
   err_puts("socket_facts_listen_thread: entered");
   mr = &listener->marshall_read;
+  if (listener->facts->log) {
+    listener->facts->log->hook = socket_facts_listener_hook;
+    listener->facts->log->hook_context = listener;
+    err_puts("socket_facts_listen_thread: log hook set up");
+  }
   err_puts("socket_facts_listen_thread: starting loop");
   while (1) {
     err_puts("socket_facts_listen_thread: reading header");
@@ -213,6 +287,11 @@ void * socket_facts_listen_thread (void *arg)
     fact_clean(&fact);
     marshall_read_reset_chunk(mr);
   }
+  if (listener->facts->log) {
+    listener->facts->log->hook = NULL;
+    listener->facts->log->hook_context = NULL;
+  }
+  marshall_clean(&listener->marshall);
   socket_buf_clean(&listener->client);
   marshall_read_clean(mr);
   env_fork_delete(listener->env);
@@ -237,6 +316,29 @@ s_facts * socket_facts_open (s_facts *facts, const s_str *host,
     free(sf);
     return NULL;
   }
+  sf->facts = facts;
+  sf->env = env_fork_new(env_global());
+  if (! sf->env) {
+    socket_facts_clean(sf);
+    free(sf);
+    return NULL;
+  }
+  if (! marshall_read_init_buf(&sf->marshall_read,
+                               sf->socket.buf_rw.r)) {
+    env_fork_delete(sf->env);
+    socket_facts_clean(sf);
+    free(sf);
+    return NULL;
+  }
+  if (pthread_create(&sf->thread, NULL,
+                     socket_facts_open_thread, sf)) {
+    marshall_read_clean(&sf->marshall_read);
+    env_fork_delete(sf->env);
+    socket_facts_clean(sf);
+    free(sf);
+    return NULL;
+  }
+  pthread_detach(sf->thread);
   facts->log->hook = socket_facts_hook;
   facts->log->hook_context = sf;
   return facts;

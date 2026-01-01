@@ -9,8 +9,10 @@ if (r < 0) do
   exit(1)
 end
 if r == 0 do
-  # Server: receive facts
+  # Server: receive facts and send back
   server_facts = Facts.database()
+  File.unlink("server_test.facts")
+  Facts.open(server_facts, "server_test.facts")
   puts("server: listening on 15002")
   if ! Socket.Facts.listen(server_facts, "localhost", "15002") do
     puts("server: listen failed")
@@ -21,6 +23,9 @@ if r == 0 do
   Facts.with_tags(server_facts, ?, ?, ?, fn (fact) {
     puts("server: received #{inspect(fact)}")
   })
+  puts("server: adding server fact")
+  Facts.add_tags(server_facts, :server, :says, :hello)
+  sleep(1)
   puts("server: OK")
   exit_subprocess(0)
 else
@@ -36,7 +41,11 @@ else
   end
   puts("client: adding fact")
   Facts.add_tags(client_facts, :a, :b, :c)
-  sleep(10)
+  sleep(4)
+  puts("client: checking for server facts")
+  Facts.with_tags(client_facts, ?, ?, ?, fn (fact) {
+    puts("client: has #{inspect(fact)}")
+  })
   Socket.Facts.close(client_facts)
   puts("client: OK")
 end
