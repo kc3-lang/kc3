@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <sys/socket.h>
 #include "../libkc3/alloc.h"
 #include "../libkc3/assert.h"
 #include "../libkc3/buf.h"
@@ -61,6 +62,7 @@ s_facts * socket_facts_close (s_facts *facts)
   s_socket_facts_listener *listener;
   s_log_hook *next;
   s_socket_facts *sf;
+  pthread_t thread;
   assert(facts);
   if (! facts->log)
     return facts;
@@ -71,15 +73,21 @@ s_facts * socket_facts_close (s_facts *facts)
       sf = hook->context;
       sf->running = false;
       sf->hook = NULL;
+      thread = sf->thread;
+      shutdown(sf->socket.sockfd, SHUT_RDWR);
       socket_close(&sf->socket.sockfd);
       log_hook_remove(facts->log, hook);
+      pthread_join(thread, NULL);
     }
     else if (hook->f == socket_facts_listener_hook) {
       listener = hook->context;
       listener->running = false;
       listener->hook = NULL;
+      thread = listener->thread;
+      shutdown(listener->client.sockfd, SHUT_RDWR);
       socket_close(&listener->client.sockfd);
       log_hook_remove(facts->log, hook);
+      pthread_join(thread, NULL);
     }
     hook = next;
   }
@@ -218,7 +226,6 @@ s_facts * socket_facts_accept (s_facts *facts, t_socket *server)
     free(listener);
     return NULL;
   }
-  pthread_detach(listener->thread);
   return facts;
 }
 
@@ -322,7 +329,6 @@ s_facts * socket_facts_open (s_facts *facts, const s_str *host,
     free(sf);
     return NULL;
   }
-  pthread_detach(sf->thread);
   sf->hook = log_hook_add(facts->log, socket_facts_hook, sf);
   if (! sf->hook) {
     marshall_read_clean(&sf->marshall_read);
