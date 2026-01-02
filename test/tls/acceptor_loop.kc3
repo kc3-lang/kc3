@@ -36,7 +36,7 @@ if r == 0 do
     exit_subprocess(1)
   end
   puts("server: acceptor loop started, waiting for clients")
-  sleep(10)
+  sleep(12)
   Facts.with_tags(server_facts, ?, ?, ?, fn (fact) {
     puts("server: received #{inspect(fact)}")
   })
@@ -109,5 +109,6 @@ else
   TLS.free(client2_ctx)
 
   puts("client: OK")
+  wait()
 end
 0

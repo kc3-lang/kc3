@@ -1603,6 +1603,32 @@ s_time * kc3_uptime (s_time *dest)
   return env_uptime(env, dest);
 }
 
+s_tuple * kc3_wait (s_tuple *dest)
+{
+#if defined(WIN32) || defined(WIN64)
+  (void) dest;
+  return NULL;
+#else
+  pid_t pid;
+  s32 status;
+  s_tuple tmp = {0};
+  assert(dest);
+  pid = wait(&status);
+  if (pid < 0)
+    return NULL;
+  if (! tuple_init(&tmp, 2))
+    return NULL;
+  tmp.tag[0].type = TAG_S32;
+  tmp.tag[0].data.s32 = pid;
+  tag_integer_reduce(tmp.tag, tmp.tag);
+  tmp.tag[1].type = TAG_S32;
+  tmp.tag[1].data.s32 = status;
+  tag_integer_reduce(tmp.tag + 1, tmp.tag + 1);
+  *dest = tmp;
+  return dest;
+#endif
+}
+
 s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
 {
   pthread_t t;

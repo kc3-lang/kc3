@@ -63,6 +63,7 @@ p_list * kc3_stacktrace (s_list **dest);
 s_str *  kc3_str (const s_tag *tag, s_str *dest);
 s32      kc3_tag_type (const s_tag *tag);
 s_time * kc3_uptime (s_time *dest);
+s_tuple * kc3_wait (s_tuple *dest);
 
 /* Operators. */
 s_pointer *  kc3_address_of (s_ident *ident, s_pointer *dest);

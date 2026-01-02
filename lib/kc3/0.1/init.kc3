@@ -313,6 +313,7 @@ def exit = cfn Void "kc3_exit" (Tag)
 def exit_subprocess = cfn Void "kc3_exit_subprocess" (Tag)
 def fork = cfn S32 "fork" ()
 def hostname = cfn Str "kc3_hostname" (Result)
+def wait = cfn Tuple "kc3_wait" (Result)
 def securelevel = cfn U8 "securelevel" (U8)
 def sleep = cfn Void "kc3_sleep" (Tag)
 
