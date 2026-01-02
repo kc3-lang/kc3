@@ -70,10 +70,9 @@ s_facts * socket_facts_close (s_facts *facts)
     if (hook->f == socket_facts_hook) {
       sf = hook->context;
       sf->running = false;
+      sf->hook = NULL;
       socket_close(&sf->socket.sockfd);
       log_hook_remove(facts->log, hook);
-      socket_facts_clean(sf);
-      free(sf);
     }
     else if (hook->f == socket_facts_listener_hook) {
       listener = hook->context;
@@ -150,6 +149,12 @@ void * socket_facts_open_thread (void *arg)
     fact_clean(&fact);
     marshall_read_reset_chunk(mr);
   }
+  if (sf->hook)
+    log_hook_remove(sf->facts->log, sf->hook);
+  marshall_read_clean(mr);
+  env_fork_delete(sf->env);
+  socket_facts_clean(sf);
+  free(sf);
   return NULL;
 }
 
