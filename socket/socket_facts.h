@@ -22,16 +22,15 @@ s_socket_facts * socket_facts_init (s_socket_facts *sf,
                                     const s_str *service);
 
 /* KC3 wrappers. */
+bool * kc3_socket_facts_accept (s_facts *facts, t_socket *server,
+                                bool *dest);
 bool * kc3_socket_facts_close (s_facts *facts, bool *dest);
-bool * kc3_socket_facts_listen (s_facts *facts, const s_str *host,
-                                const s_str *service, bool *dest);
 bool * kc3_socket_facts_open (s_facts *facts, const s_str *host,
                               const s_str *service, bool *dest);
 
 /* Facts replication API. */
+s_facts * socket_facts_accept (s_facts *facts, t_socket *server);
 s_facts * socket_facts_close (s_facts *facts);
-s_facts * socket_facts_listen (s_facts *facts, const s_str *host,
-                               const s_str *service);
 void *    socket_facts_listen_thread (void *arg);
 s_facts * socket_facts_open (s_facts *facts, const s_str *host,
                              const s_str *service);

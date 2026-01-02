@@ -16,9 +16,9 @@ defmodule Socket.Facts do
 
   dlopen("socket.so")
 
-  def close = cfn Bool "kc3_socket_facts_close" (Facts, Result)
+  def accept = cfn Bool "kc3_socket_facts_accept" (Facts, Socket, Result)
 
-  def listen = cfn Bool "kc3_socket_facts_listen" (Facts, Str, Str, Result)
+  def close = cfn Bool "kc3_socket_facts_close" (Facts, Result)
 
   def open = cfn Bool "kc3_socket_facts_open" (Facts, Str, Str, Result)
 

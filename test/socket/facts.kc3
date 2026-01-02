@@ -15,10 +15,17 @@ if r == 0 do
   end
   Facts.open(server_facts, "server_test.facts")
   puts("server: listening on 15002")
-  if ! Socket.Facts.listen(server_facts, "localhost", "15002") do
+  server = Socket.listen("localhost", "15002")
+  if server.fd < 0 do
     puts("server: listen failed")
     exit_subprocess(1)
   end
+  puts("server: waiting for connection")
+  if ! Socket.Facts.accept(server_facts, server) do
+    puts("server: accept failed")
+    exit_subprocess(1)
+  end
+  Socket.close(server)
   puts("server: accepted connection, waiting for facts")
   sleep(2)
   Facts.with_tags(server_facts, ?, ?, ?, fn (fact) {

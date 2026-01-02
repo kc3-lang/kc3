@@ -32,11 +32,11 @@ bool * kc3_socket_facts_close (s_facts *facts, bool *dest)
   return dest;
 }
 
-bool * kc3_socket_facts_listen (s_facts *facts, const s_str *host,
-                                const s_str *service, bool *dest)
+bool * kc3_socket_facts_accept (s_facts *facts, t_socket *server,
+                                bool *dest)
 {
   assert(dest);
-  *dest = socket_facts_listen(facts, host, service) ? true : false;
+  *dest = socket_facts_accept(facts, server) ? true : false;
   return dest;
 }
 
@@ -173,46 +173,34 @@ s_socket_facts * socket_facts_init (s_socket_facts *sf,
   return sf;
 }
 
-s_facts * socket_facts_listen (s_facts *facts, const s_str *host,
-                               const s_str *service)
+s_facts * socket_facts_accept (s_facts *facts, t_socket *server)
 {
   s_socket_facts_listener *listener;
-  t_socket server;
   assert(facts);
-  assert(host);
-  assert(service);
-  if (! socket_init_listen(&server, host, service)) {
-    err_puts("socket_facts_listen: socket_init_listen");
-    return NULL;
-  }
+  assert(server);
   listener = alloc(sizeof(s_socket_facts_listener));
-  if (! listener) {
-    socket_close(&server);
+  if (! listener)
     return NULL;
-  }
   listener->env = env_fork_new(env_global());
   if (! listener->env) {
-    socket_close(&server);
     free(listener);
     return NULL;
   }
   listener->facts = facts;
-  if (! socket_buf_init_accept(&listener->client, &server)) {
-    err_puts("socket_facts_listen: socket_buf_init_accept");
-    socket_close(&server);
+  if (! socket_buf_init_accept(&listener->client, server)) {
+    err_puts("socket_facts_accept: socket_buf_init_accept");
     free(listener);
     return NULL;
   }
-  socket_close(&server);
   if (! marshall_read_init_buf(&listener->marshall_read,
                                listener->client.buf_rw.r)) {
-    err_puts("socket_facts_listen: marshall_read_init_buf");
+    err_puts("socket_facts_accept: marshall_read_init_buf");
     socket_buf_clean(&listener->client);
     free(listener);
     return NULL;
   }
   if (! marshall_init(&listener->marshall)) {
-    err_puts("socket_facts_listen: marshall_init");
+    err_puts("socket_facts_accept: marshall_init");
     marshall_read_clean(&listener->marshall_read);
     socket_buf_clean(&listener->client);
     free(listener);
@@ -220,7 +208,7 @@ s_facts * socket_facts_listen (s_facts *facts, const s_str *host,
   }
   if (pthread_create(&listener->thread, NULL,
                      socket_facts_listen_thread, listener)) {
-    err_puts("socket_facts_listen: pthread_create");
+    err_puts("socket_facts_accept: pthread_create");
     marshall_clean(&listener->marshall);
     marshall_read_clean(&listener->marshall_read);
     socket_buf_clean(&listener->client);
