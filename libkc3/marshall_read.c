@@ -109,6 +109,7 @@
     return mr;                                                         \
   }
 
+static void marshall_read_ht_clean (s_marshall_read *mr);
 static s8 marshall_read_ht_compare (const s_tag *a, const s_tag *b);
 static uw marshall_read_ht_hash (const s_tag *tag);
 
@@ -370,7 +371,7 @@ void marshall_read_clean (s_marshall_read *mr)
     free(mr->heap);
   if (mr->buf && mr->buf != mr->source)
     free(mr->buf);
-  ht_clean(&mr->ht);
+  marshall_read_ht_clean(mr);
 }
 
 s_marshall_read * marshall_read_chunk (s_marshall_read *mr)
@@ -1230,6 +1231,13 @@ s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
   }
   tag_clean(&tag);
   return mr;
+}
+
+void marshall_read_ht_clean (s_marshall_read *mr)
+{
+  assert(mr);
+  if (mr->ht.items)
+    ht_clean(&mr->ht);
 }
 
 s8 marshall_read_ht_compare (const s_tag *a, const s_tag *b)
