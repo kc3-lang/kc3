@@ -1162,14 +1162,15 @@ s_marshall_read * marshall_read_header (s_marshall_read *mr)
     assert(! "marshall_read_header: invalid heap count");
     return NULL;
   }
-  if (tmp.heap_count &&
-      ! ht_init(&tmp.ht, &g_sym_Tuple, tmp.heap_count)) {
-    err_puts("marshall_read_header: ht_init");
-    assert(! "marshall_read_header: ht_init");
-    return NULL;
+  if (tmp.heap_count && ! tmp.ht.items) {
+    if (! ht_init(&tmp.ht, &g_sym_Tuple, tmp.heap_count)) {
+      err_puts("marshall_read_header: ht_init");
+      assert(! "marshall_read_header: ht_init");
+      return NULL;
+    }
+    tmp.ht.compare = marshall_read_ht_compare;
+    tmp.ht.hash = marshall_read_ht_hash;
   }
-  tmp.ht.compare = marshall_read_ht_compare;
-  tmp.ht.hash = marshall_read_ht_hash;
   *mr = tmp;
   str_clean(&str);
   return mr;

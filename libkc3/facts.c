@@ -934,10 +934,15 @@ sw facts_open_file_create (s_facts *facts, const s_str *path)
     return -1;
   out = buf_new_alloc(BUF_SIZE);
   buf_file_open_w(out, fp);
-  if ((r = facts_dump(facts, out)) < 0)
+  if ((r = facts_dump(facts, out)) < 0) {
+    buf_file_close(out);
+    buf_delete(out);
     return r;
+  }
   result += r;
   buf_flush(out);
+  buf_file_close(out);
+  buf_delete(out);
   if (! (facts->log = log_new()))
     return -1;
   if (! log_open(facts->log, fp, path)) {
