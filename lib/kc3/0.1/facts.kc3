@@ -41,7 +41,11 @@ defmodule Facts do
     cfn Tag "kc3_facts_collect_with_tags" (Facts, Tag, Tag, Tag,
       Callable, Result)
 
+  def close = cfn Void "facts_close" (Facts)
+
   def database = cfn Facts* "pfacts_init" (Result)
+
+  def delete = cfn Void "facts_delete" (Facts)
 
   def env_db = cfn Facts* "kc3_env_db" (Result)
 

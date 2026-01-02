@@ -36,7 +36,7 @@ if r == 0 do
   sleep(1)
   puts("server: OK")
   Socket.Facts.close(server_facts)
-  Facts.close(server_facts)
+  Facts.delete(server_facts)
   File.unlink("server_test.facts")
   exit_subprocess(0)
 else
@@ -59,7 +59,7 @@ else
     puts("client: has #{inspect(fact)}")
   })
   Socket.Facts.close(client_facts)
-  Facts.close(client_facts)
+  Facts.delete(client_facts)
   File.unlink("client_test.facts")
   puts("client: OK")
 end
