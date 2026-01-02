@@ -1,3 +1,0 @@
-%{module: KC3.Facts.Dump,
-  version: 1}
-add {:a, :b, :c}

@@ -119,11 +119,12 @@ test/facts_test_open_file.3.facts
 test/facts_test_save.facts
 test/ikc3/.ikc3_history
 test/kc3.dump
+test/.*.kc3m
 test/libkc3_test
 test/libkc3_test_asan
 test/libkc3_test_cov
 test/libkc3_test_debug
-test/.*.kc3m
+test/socket/*.facts
 test/wget/*/
 *.tmp
 ucd2c/ucd2c
