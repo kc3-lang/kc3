@@ -17,8 +17,10 @@
 void pfacts_clean (p_facts *pfacts)
 {
   assert(pfacts);
-  if (*pfacts)
+  if (*pfacts) {
     facts_delete(*pfacts);
+    *pfacts = NULL;
+  }
 }
 
 p_facts * pfacts_init (p_facts *pfacts)
