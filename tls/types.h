@@ -19,11 +19,12 @@
 #include "../socket/types.h"
 
 /* Struct types. */
-typedef struct tls_buf             s_tls_buf;
-typedef struct tls_client          s_tls_client;
-typedef struct tls_facts           s_tls_facts;
-typedef struct tls_facts_listener  s_tls_facts_listener;
-typedef struct tls_server          s_tls_server;
+typedef struct tls_buf              s_tls_buf;
+typedef struct tls_client           s_tls_client;
+typedef struct tls_facts            s_tls_facts;
+typedef struct tls_facts_acceptor   s_tls_facts_acceptor;
+typedef struct tls_facts_listener   s_tls_facts_listener;
+typedef struct tls_server           s_tls_server;
 
 /* Pointer types. */
 typedef struct tls        *p_tls;
@@ -55,6 +56,15 @@ struct tls_facts {
   s_tls_client    tls_client;
   s_marshall      marshall;
   s_marshall_read marshall_read;
+  pthread_t       thread;
+};
+
+struct tls_facts_acceptor {
+  p_tls           ctx;
+  s_env          *env;
+  s_facts        *facts;
+  bool            running;
+  t_socket        server;
   pthread_t       thread;
 };
 

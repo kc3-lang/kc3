@@ -1,0 +1,113 @@
+require Facts
+require File
+require Socket
+require TLS
+require TLS.Client
+require TLS.Config
+require TLS.Facts
+require TLS.Server
+
+(r = fork()) ; void
+if (r < 0) do
+  exit(1)
+end
+if r == 0 do
+  TLS.init()
+  server_config = TLS.Config.new()
+  TLS.Config.set_cert_file(server_config, "/etc/ssl/fullchain.pem")
+  TLS.Config.set_key_file(server_config, "/etc/ssl/private/privkey.pem")
+  server_ctx = TLS.server()
+  TLS.configure(server_ctx, server_config)
+  server_facts = Facts.database()
+  if File.exists?("server_acceptor_test.facts") do
+    File.unlink("server_acceptor_test.facts")
+  end
+  Facts.open(server_facts, "server_acceptor_test.facts")
+  puts("server: listening on 15005")
+  server = Socket.listen(hostname(), "15005")
+  if server.fd < 0 do
+    puts("server: listen failed")
+    exit_subprocess(1)
+  end
+  puts("server: starting acceptor loop")
+  acceptor = TLS.Facts.acceptor_loop(server_facts, server, server_ctx)
+  if ! acceptor do
+    puts("server: acceptor_loop failed")
+    exit_subprocess(1)
+  end
+  puts("server: acceptor loop started, waiting for clients")
+  sleep(6)
+  Facts.with_tags(server_facts, ?, ?, ?, fn (fact) {
+    puts("server: received #{inspect(fact)}")
+  })
+  puts("server: OK")
+  TLS.Facts.acceptor_loop_join(acceptor)
+  TLS.Facts.close(server_facts)
+  Facts.delete(server_facts)
+  File.unlink("server_acceptor_test.facts")
+  TLS.Config.free(server_config)
+  TLS.free(server_ctx)
+  exit_subprocess(0)
+else
+  sleep(1)
+  ## Client 1
+  TLS.init()
+  client1_config = TLS.Config.new()
+  TLS.Config.set_ca_file(client1_config, TLS.ca_cert_path())
+  client1_ctx = TLS.client()
+  TLS.configure(client1_ctx, client1_config)
+  client1_facts = Facts.database()
+  if File.exists?("client1_test.facts") do
+    File.unlink("client1_test.facts")
+  end
+  Facts.open(client1_facts, "client1_test.facts")
+  puts("client1: connecting to 15005")
+  if ! TLS.Facts.open(client1_facts, client1_ctx, hostname(), "15005") do
+    puts("client1: open failed")
+    exit(1)
+  end
+  puts("client1: adding fact")
+  Facts.add_tags(client1_facts, :client1, :says, :hello)
+  sleep(1)
+
+  ## Client 2
+  client2_config = TLS.Config.new()
+  TLS.Config.set_ca_file(client2_config, TLS.ca_cert_path())
+  client2_ctx = TLS.client()
+  TLS.configure(client2_ctx, client2_config)
+  client2_facts = Facts.database()
+  if File.exists?("client2_test.facts") do
+    File.unlink("client2_test.facts")
+  end
+  Facts.open(client2_facts, "client2_test.facts")
+  puts("client2: connecting to 15005")
+  if ! TLS.Facts.open(client2_facts, client2_ctx, hostname(), "15005") do
+    puts("client2: open failed")
+    exit(1)
+  end
+  puts("client2: adding fact")
+  Facts.add_tags(client2_facts, :client2, :says, :world)
+  sleep(3)
+
+  ## Check facts on client1
+  puts("client1: checking for facts")
+  Facts.with_tags(client1_facts, ?, ?, ?, fn (fact) {
+    puts("client1: has #{inspect(fact)}")
+  })
+
+  ## Cleanup
+  TLS.Facts.close(client1_facts)
+  Facts.delete(client1_facts)
+  File.unlink("client1_test.facts")
+  TLS.Config.free(client1_config)
+  TLS.free(client1_ctx)
+
+  TLS.Facts.close(client2_facts)
+  Facts.delete(client2_facts)
+  File.unlink("client2_test.facts")
+  TLS.Config.free(client2_config)
+  TLS.free(client2_ctx)
+
+  puts("client: OK")
+end
+0

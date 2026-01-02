@@ -23,6 +23,10 @@ s_tls_facts * tls_facts_init (s_tls_facts *tf, p_tls *ctx,
 /* KC3 wrappers. */
 bool * kc3_tls_facts_accept (s_facts *facts, t_socket *server,
                              p_tls *ctx, bool *dest);
+s_tls_facts_acceptor ** kc3_tls_facts_acceptor_loop (s_facts *facts,
+                             t_socket *server, p_tls *ctx,
+                             s_tls_facts_acceptor **dest);
+void kc3_tls_facts_acceptor_loop_join (s_tls_facts_acceptor **acceptor);
 bool * kc3_tls_facts_close (s_facts *facts, bool *dest);
 bool * kc3_tls_facts_open (s_facts *facts, p_tls *ctx,
                            const s_str *host, const s_str *service,
@@ -31,6 +35,10 @@ bool * kc3_tls_facts_open (s_facts *facts, p_tls *ctx,
 /* Facts replication API. */
 s_facts * tls_facts_accept (s_facts *facts, t_socket *server,
                             p_tls *ctx);
+s_tls_facts_acceptor * tls_facts_acceptor_loop (s_facts *facts,
+                            t_socket *server, p_tls *ctx);
+void      tls_facts_acceptor_loop_join (s_tls_facts_acceptor *acceptor);
+void *    tls_facts_acceptor_loop_thread (void *arg);
 s_facts * tls_facts_close (s_facts *facts);
 void *    tls_facts_listen_thread (void *arg);
 s_facts * tls_facts_open (s_facts *facts, p_tls *ctx,
