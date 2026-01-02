@@ -35,6 +35,7 @@ void socket_buf_clean (s_socket_buf *sb)
   assert(sb);
   buf_rw_fd_close(&sb->buf_rw);
   buf_rw_clean(&sb->buf_rw);
+  str_clean(&sb->addr_str);
   if (sb->addr)
     socket_addr_delete(sb->addr);
 }
@@ -46,6 +47,7 @@ void socket_buf_close (s_socket_buf *sb)
   close(sb->sockfd);
   // XXX ??
   buf_rw_clean(&sb->buf_rw);
+  str_clean(&sb->addr_str);
   if (sb->addr)
     socket_addr_delete(sb->addr);
 }
