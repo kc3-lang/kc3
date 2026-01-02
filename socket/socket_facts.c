@@ -283,9 +283,9 @@ void * socket_facts_listen_thread (void *arg)
   }
   if (listener->hook)
     log_hook_remove(listener->facts->log, listener->hook);
+  marshall_read_clean(mr);
   marshall_clean(&listener->marshall);
   socket_buf_clean(&listener->client);
-  marshall_read_clean(mr);
   env_fork_delete(listener->env);
   free(listener);
   return NULL;
