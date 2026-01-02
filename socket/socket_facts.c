@@ -154,7 +154,7 @@ void * socket_facts_open_thread (void *arg)
     default:
       break;
     }
-    fact_clean(&fact);
+    fact_clean_all(&fact);
     marshall_read_reset_chunk(mr);
   }
   if (sf->hook)
@@ -278,7 +278,7 @@ void * socket_facts_listen_thread (void *arg)
       err_write_1("\n");
       break;
     }
-    fact_clean(&fact);
+    fact_clean_all(&fact);
     marshall_read_reset_chunk(mr);
   }
   if (listener->hook)
