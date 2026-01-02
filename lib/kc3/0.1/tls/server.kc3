@@ -10,7 +10,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-require Socket
+require Socket.Buf
 require TLS
 
 defmodule TLS.Server do

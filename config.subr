@@ -488,6 +488,13 @@ config_have_pthread() {
     fi
 }
 
+config_pthread() {
+    config_have_pthread
+    if $HAVE_PTHREAD; then
+        LIBS="$LIBS -lpthread"
+    fi
+}
+
 config_have_quadmath() {
     OUT_C=".config_have_quadmath.c"
     OUT=".config_have_quadmath"

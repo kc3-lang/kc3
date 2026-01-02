@@ -4,6 +4,7 @@ HEADERS = \
 	"tls_buf.h" \
 	"tls_client.h" \
 	"tls_config.h" \
+	"tls_facts.h" \
 	"tls_server.h" \
 	"types.h" \
 
@@ -12,5 +13,6 @@ SOURCES = \
 	"tls_buf.c" \
 	"tls_client.c" \
 	"tls_config.c" \
+	"tls_facts.c" \
 	"tls_server.c" \
 

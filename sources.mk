@@ -1157,6 +1157,8 @@ KC3_C_SOURCES = \
 	"tls/tls_client.h" \
 	"tls/tls_config.c" \
 	"tls/tls_config.h" \
+	"tls/tls_facts.c" \
+	"tls/tls_facts.h" \
 	"tls/tls_server.c" \
 	"tls/tls_server.h" \
 	"tls/types.h" \

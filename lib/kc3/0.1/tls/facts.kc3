@@ -10,16 +10,17 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-require Socket.Buf
+require Facts
+require TLS
 
-defmodule TLS.Client do
+defmodule TLS.Facts do
 
-  defstruct [socket_buf: %Socket.Buf{},
-             tls_version: ""]
+  dlopen("tls.so")
 
-  def close = cfn Void "kc3_tls_client_clean" (TLS.Client)
+  def accept = cfn Bool "kc3_tls_facts_accept" (Facts, Socket, TLS, Result)
 
-  def connect = cfn TLS.Client "kc3_tls_client_init_connect" (Result,
-    TLS*, Str, Str)
+  def close = cfn Bool "kc3_tls_facts_close" (Facts, Result)
+
+  def open = cfn Bool "kc3_tls_facts_open" (Facts, TLS, Str, Str, Result)
 
 end
