@@ -51,6 +51,7 @@ else
     puts("client: open failed")
     exit(1)
   end
+  sleep(1)
   puts("client: adding fact")
   Facts.add_tags(client_facts, :a, :b, :c)
   sleep(4)

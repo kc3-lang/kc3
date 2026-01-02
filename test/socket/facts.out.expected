@@ -1,8 +1,8 @@
 server: listening on 15002
 server: waiting for connection
 client: connecting to 15002
-client: adding fact
 server: accepted connection, waiting for facts
+client: adding fact
 server: received %FactW{subject: :a,
        predicate: :b,
        object: :c,
