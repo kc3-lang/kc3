@@ -75,11 +75,8 @@ sw tls_buf_open_r_refill (s_buf *buf)
     r = tls_read(tls_buf->ctx, buf->ptr.pchar + buf->wpos, size);
     if (r == TLS_WANT_POLLIN || r == TLS_WANT_POLLOUT)
       continue;
-    if (r < 0) {
-      err_write_1("tls_buf_open_r_refill: tls_read: ");
-      err_puts(tls_error(tls_buf->ctx));
+    if (r < 0)
       return -1;
-    }
     break;
   }
   if (buf->wpos + r > buf->size) {
