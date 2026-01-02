@@ -67,6 +67,7 @@ s_facts * tls_facts_close (s_facts *facts)
   s_log_hook *next;
   s_tls_facts *tf;
   pthread_t thread;
+  s_tls_buf *tls_buf;
   assert(facts);
   if (! facts->log)
     return facts;
@@ -78,6 +79,10 @@ s_facts * tls_facts_close (s_facts *facts)
       tf->running = false;
       tf->hook = NULL;
       thread = tf->thread;
+      buf_flush(tf->tls_client.socket_buf.buf_rw.w);
+      tls_buf = tf->tls_client.socket_buf.buf_rw.r->user_ptr;
+      if (tls_buf && tls_buf->ctx)
+        tls_close(tls_buf->ctx);
       shutdown(tf->tls_client.socket_buf.sockfd, SHUT_RDWR);
       socket_close(&tf->tls_client.socket_buf.sockfd);
       log_hook_remove(facts->log, hook);
@@ -88,6 +93,10 @@ s_facts * tls_facts_close (s_facts *facts)
       listener->running = false;
       listener->hook = NULL;
       thread = listener->thread;
+      buf_flush(listener->tls_server.socket_buf.buf_rw.w);
+      tls_buf = listener->tls_server.socket_buf.buf_rw.r->user_ptr;
+      if (tls_buf && tls_buf->ctx)
+        tls_close(tls_buf->ctx);
       shutdown(listener->tls_server.socket_buf.sockfd, SHUT_RDWR);
       socket_close(&listener->tls_server.socket_buf.sockfd);
       log_hook_remove(facts->log, hook);
