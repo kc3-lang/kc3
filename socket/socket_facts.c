@@ -123,10 +123,8 @@ void * socket_facts_open_thread (void *arg)
   mr = &sf->marshall_read;
   sf->running = true;
   while (sf->running) {
-    if (! marshall_read_header(mr)) {
-      err_puts("socket_facts_open_thread: marshall_read_header");
+    if (! marshall_read_header(mr))
       break;
-    }
     if (! marshall_read_chunk(mr)) {
       err_puts("socket_facts_open_thread: marshall_read_chunk");
       break;
@@ -241,10 +239,8 @@ void * socket_facts_listen_thread (void *arg)
   }
   listener->running = true;
   while (listener->running) {
-    if (! marshall_read_header(mr)) {
-      err_puts("socket_facts_listen_thread: marshall_read_header");
+    if (! marshall_read_header(mr))
       break;
-    }
     if (! marshall_read_chunk(mr)) {
       err_puts("socket_facts_listen_thread: marshall_read_chunk");
       break;

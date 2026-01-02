@@ -1138,11 +1138,8 @@ s_marshall_read * marshall_read_header (s_marshall_read *mr)
   s_marshall_read tmp;
   assert(mr);
   tmp = *mr;
-  if (! buf_read(tmp.buf, sizeof(s_marshall_header), &str)) {
-    err_puts("marshall_read_header: buf_read");
-    assert(! "marshall_read_header: buf_read");
+  if (! buf_read(tmp.buf, sizeof(s_marshall_header), &str))
     return NULL;
-  }
   if (str.size != sizeof(s_marshall_header)) {
     err_puts("marshall_read_header: buf_read !="
              " sizeof(s_marshall_header)");
