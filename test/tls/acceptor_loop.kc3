@@ -36,7 +36,7 @@ if r == 0 do
     exit_subprocess(1)
   end
   puts("server: acceptor loop started, waiting for clients")
-  sleep(6)
+  sleep(10)
   Facts.with_tags(server_facts, ?, ?, ?, fn (fact) {
     puts("server: received #{inspect(fact)}")
   })
@@ -68,7 +68,7 @@ else
   end
   puts("client1: adding fact")
   Facts.add_tags(client1_facts, :client1, :says, :hello)
-  sleep(1)
+  sleep(2)
 
   ## Client 2
   client2_config = TLS.Config.new()
@@ -87,7 +87,7 @@ else
   end
   puts("client2: adding fact")
   Facts.add_tags(client2_facts, :client2, :says, :world)
-  sleep(3)
+  sleep(5)
 
   ## Check facts on client1
   puts("client1: checking for facts")
