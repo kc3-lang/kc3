@@ -9,8 +9,6 @@ server: received %FactW{subject: :a,
        id: (Uw) 0}
 server: adding server fact
 server: OK
-marshall_read_header: buf_read
-socket_facts_open_thread: marshall_read_header
 client: checking for server facts
 client: has %FactW{subject: :a,
        predicate: :b,
