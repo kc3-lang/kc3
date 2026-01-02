@@ -57,15 +57,32 @@ void socket_facts_clean (s_socket_facts *sf)
 
 s_facts * socket_facts_close (s_facts *facts)
 {
+  s_log_hook *hook;
+  s_socket_facts_listener *listener;
+  s_log_hook *next;
   s_socket_facts *sf;
   assert(facts);
   if (! facts->log)
     return facts;
-  sf = facts->log->hooks ? facts->log->hooks->context : NULL;
-  if (sf) {
-    log_hook_remove(facts->log, sf->hook);
-    socket_facts_clean(sf);
-    free(sf);
+  hook = facts->log->hooks;
+  while (hook) {
+    next = hook->next;
+    if (hook->f == socket_facts_hook) {
+      sf = hook->context;
+      sf->running = false;
+      socket_close(&sf->socket.sockfd);
+      log_hook_remove(facts->log, hook);
+      socket_facts_clean(sf);
+      free(sf);
+    }
+    else if (hook->f == socket_facts_listener_hook) {
+      listener = hook->context;
+      listener->running = false;
+      listener->hook = NULL;
+      socket_close(&listener->client.sockfd);
+      log_hook_remove(facts->log, hook);
+    }
+    hook = next;
   }
   return facts;
 }
@@ -104,7 +121,8 @@ void * socket_facts_open_thread (void *arg)
   sf = arg;
   env_global_set(sf->env);
   mr = &sf->marshall_read;
-  while (1) {
+  sf->running = true;
+  while (sf->running) {
     if (! marshall_read_header(mr)) {
       err_puts("socket_facts_open_thread: marshall_read_header");
       break;
@@ -233,7 +251,8 @@ void * socket_facts_listen_thread (void *arg)
     err_puts("socket_facts_listen_thread: log_hook_add");
     return NULL;
   }
-  while (1) {
+  listener->running = true;
+  while (listener->running) {
     if (! marshall_read_header(mr)) {
       err_puts("socket_facts_listen_thread: marshall_read_header");
       break;
@@ -266,7 +285,8 @@ void * socket_facts_listen_thread (void *arg)
     fact_clean(&fact);
     marshall_read_reset_chunk(mr);
   }
-  log_hook_remove(listener->facts->log, listener->hook);
+  if (listener->hook)
+    log_hook_remove(listener->facts->log, listener->hook);
   marshall_clean(&listener->marshall);
   socket_buf_clean(&listener->client);
   marshall_read_clean(mr);

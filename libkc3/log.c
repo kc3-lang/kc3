@@ -20,7 +20,16 @@
 
 void log_clean (s_log *log)
 {
+  s_log_hook *hook;
+  s_log_hook *next;
   assert(log);
+  hook = log->hooks;
+  while (hook) {
+    next = hook->next;
+    free(hook);
+    hook = next;
+  }
+  log->hooks = NULL;
   buf_clean(&log->buf);
   str_clean(&log->path);
   if (log->binary_path.size) {

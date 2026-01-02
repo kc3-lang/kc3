@@ -36,8 +36,10 @@ void *    socket_facts_listen_thread (void *arg);
 s_facts * socket_facts_open (s_facts *facts, const s_str *host,
                              const s_str *service);
 
-/* Log hook for replication. */
+/* Log hooks for replication. */
 void socket_facts_hook (void *context, e_fact_action action,
                         const s_fact *fact);
+void socket_facts_listener_hook (void *context, e_fact_action action,
+                                 const s_fact *fact);
 
 #endif /* LIBKC3_SOCKET_FACTS_H */
