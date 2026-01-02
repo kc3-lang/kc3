@@ -34,10 +34,15 @@ void socket_buf_clean (s_socket_buf *sb)
 {
   assert(sb);
   buf_rw_fd_close(&sb->buf_rw);
-  buf_rw_clean(&sb->buf_rw);
-  sb->buf_rw.r = NULL;
-  sb->buf_rw.w = NULL;
-  str_clean(&sb->addr_str);
+  if (sb->buf_rw.r || sb->buf_rw.w) {
+    buf_rw_clean(&sb->buf_rw);
+    sb->buf_rw.r = NULL;
+    sb->buf_rw.w = NULL;
+  }
+  if (sb->addr_str.free.p) {
+    str_clean(&sb->addr_str);
+    sb->addr_str.free.p = NULL;
+  }
   if (sb->addr) {
     socket_addr_delete(sb->addr);
     sb->addr = NULL;
@@ -52,6 +57,19 @@ void socket_buf_close (s_socket_buf *sb)
     shutdown(sb->sockfd, SHUT_RDWR);
     close(sb->sockfd);
     sb->sockfd = -1;
+  }
+  if (sb->buf_rw.r || sb->buf_rw.w) {
+    buf_rw_clean(&sb->buf_rw);
+    sb->buf_rw.r = NULL;
+    sb->buf_rw.w = NULL;
+  }
+  if (sb->addr_str.free.p) {
+    str_clean(&sb->addr_str);
+    sb->addr_str.free.p = NULL;
+  }
+  if (sb->addr) {
+    socket_addr_delete(sb->addr);
+    sb->addr = NULL;
   }
 }
 
