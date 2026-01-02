@@ -41,11 +41,8 @@ s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
   assert(tls_server);
   assert(ctx);
   assert(*ctx);
-  if (! socket_buf_init_accept(&tmp.socket_buf, socket)) {
-    err_puts("kc3_tls_server_init_accept: socket_buf_init_accept");
-    assert(! "kc3_tls_server_init_accept: socket_buf_init_accept");
+  if (! socket_buf_init_accept(&tmp.socket_buf, socket))
     return NULL;
-  }
   if (false)
     err_puts("kc3_tls_server_init_accept: accept: OK");
   if (tls_accept_socket(*ctx, &tmp_ctx, tmp.socket_buf.sockfd)) {

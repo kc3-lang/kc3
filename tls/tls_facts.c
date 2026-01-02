@@ -237,7 +237,6 @@ s_facts * tls_facts_accept (s_facts *facts, t_socket *server, p_tls *ctx)
   listener->facts = facts;
   listener->ctx = *ctx;
   if (! kc3_tls_server_init_accept(&listener->tls_server, server, ctx)) {
-    err_puts("tls_facts_accept: kc3_tls_server_init_accept");
     env_fork_delete(listener->env);
     free(listener);
     return NULL;

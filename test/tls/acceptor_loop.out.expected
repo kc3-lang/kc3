@@ -24,6 +24,3 @@ server: received %FactW{subject: :client2,
        object: :world,
        id: (Uw) 0}
 server: OK
-socket_buf_init_accept: -1: accept: Software caused connection abort
-kc3_tls_server_init_accept: socket_buf_init_accept
-tls_facts_accept: kc3_tls_server_init_accept
