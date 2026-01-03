@@ -112,6 +112,13 @@ void sha256_hmac (const s_str *k, const s_str *m,
 s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest)
 {
   s_str tmp = {0};
+  err_write_1("sha256_hmac_str: k = ");
+  err_inspect_uw((uw) k);
+  err_write_1(", m = ");
+  err_inspect_uw((uw) m);
+  err_write_1(", dest = ");
+  err_inspect_uw((uw) dest);
+  err_write_1("\n");
   assert(k);
   assert(m);
   assert(dest);
