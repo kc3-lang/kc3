@@ -126,6 +126,9 @@ s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest)
   if (! str_init_alloc(&tmp, SHA256_DIGEST_SIZE))
     return NULL;
   sha256_hmac(k, m, tmp.free.pu8);
+  err_write_1("sha256_hmac_str: before *dest = tmp, dest = ");
+  err_inspect_uw((uw) dest);
+  err_write_1("\n");
   *dest = tmp;
   return dest;
 }
