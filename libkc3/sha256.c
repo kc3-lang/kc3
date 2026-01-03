@@ -145,7 +145,8 @@ s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest)
   }
   err_puts("sha256_hmac_str: calling sha256_hmac");
   sha256_hmac(k, m, tmp.free.pu8);
-  err_puts("sha256_hmac_str: done");
+  err_puts("sha256_hmac_str: assigning to dest");
   *dest = tmp;
+  err_puts("sha256_hmac_str: done");
   return dest;
 }
