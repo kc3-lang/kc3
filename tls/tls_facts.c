@@ -91,7 +91,6 @@ s_facts * tls_facts_close (s_facts *facts)
 {
   s_log_hook *hook;
   s_tls_facts_listener *listener;
-  s_marshall_read *mr;
   s_log_hook *next;
   s_tls_facts *tf;
   pthread_t thread;
@@ -115,12 +114,6 @@ s_facts * tls_facts_close (s_facts *facts)
       socket_close(&tf->tls_client.socket_buf.sockfd);
       log_hook_remove(facts->log, hook);
       pthread_join(thread, NULL);
-      mr = &tf->marshall_read;
-      marshall_read_clean(mr);
-      str_clean(&tf->secret);
-      env_fork_delete(tf->env);
-      tls_facts_clean(tf);
-      free(tf);
     }
     else if (hook->f == tls_facts_listener_hook) {
       listener = hook->context;
@@ -135,13 +128,6 @@ s_facts * tls_facts_close (s_facts *facts)
       socket_close(&listener->tls_server.socket_buf.sockfd);
       log_hook_remove(facts->log, hook);
       pthread_join(thread, NULL);
-      mr = &listener->marshall_read;
-      marshall_read_clean(mr);
-      marshall_clean(&listener->marshall);
-      str_clean(&listener->secret);
-      kc3_tls_server_clean(&listener->tls_server);
-      env_fork_delete(listener->env);
-      free(listener);
     }
     hook = next;
   }
@@ -212,14 +198,13 @@ void * tls_facts_open_thread (void *arg)
     fact_clean_all(&fact);
     marshall_read_reset_chunk(mr);
   }
-  if (tf->hook) {
+  if (tf->hook)
     log_hook_remove(tf->facts->log, tf->hook);
-    marshall_read_clean(mr);
-    str_clean(&tf->secret);
-    env_fork_delete(tf->env);
-    tls_facts_clean(tf);
-    free(tf);
-  }
+  marshall_read_clean(mr);
+  str_clean(&tf->secret);
+  env_fork_delete(tf->env);
+  tls_facts_clean(tf);
+  free(tf);
   return NULL;
 }
 
@@ -444,15 +429,14 @@ void * tls_facts_listen_thread (void *arg)
     fact_clean_all(&fact);
     marshall_read_reset_chunk(mr);
   }
-  if (listener->hook) {
+  if (listener->hook)
     log_hook_remove(listener->facts->log, listener->hook);
-    marshall_read_clean(mr);
-    marshall_clean(&listener->marshall);
-    str_clean(&listener->secret);
-    kc3_tls_server_clean(&listener->tls_server);
-    env_fork_delete(listener->env);
-    free(listener);
-  }
+  marshall_read_clean(mr);
+  marshall_clean(&listener->marshall);
+  str_clean(&listener->secret);
+  kc3_tls_server_clean(&listener->tls_server);
+  env_fork_delete(listener->env);
+  free(listener);
   return NULL;
 }
 
@@ -516,6 +500,10 @@ s_facts * tls_facts_open (s_facts *facts, p_tls *ctx,
   }
   tf->hook = log_hook_add(facts->log, tls_facts_hook, tf);
   if (! tf->hook) {
+    tf->running = false;
+    shutdown(tf->tls_client.socket_buf.sockfd, SHUT_RDWR);
+    socket_close(&tf->tls_client.socket_buf.sockfd);
+    pthread_join(tf->thread, NULL);
     marshall_read_clean(&tf->marshall_read);
     env_fork_delete(tf->env);
     str_clean(&tf->secret);
