@@ -5,6 +5,15 @@ client1: connecting to 15005
 client1: adding fact
 client2: connecting to 15005
 client2: adding fact
+server: received %FactW{subject: :client1,
+       predicate: :says,
+       object: :hello,
+       id: (Uw) 0}
+server: received %FactW{subject: :client2,
+       predicate: :says,
+       object: :world,
+       id: (Uw) 0}
+server: OK
 client1: checking for facts
 client1: has %FactW{subject: :client1,
        predicate: :says,
@@ -15,12 +24,3 @@ client1: has %FactW{subject: :client2,
        object: :world,
        id: (Uw) 0}
 client: OK
-server: received %FactW{subject: :client1,
-       predicate: :says,
-       object: :hello,
-       id: (Uw) 0}
-server: received %FactW{subject: :client2,
-       predicate: :says,
-       object: :world,
-       id: (Uw) 0}
-server: OK
