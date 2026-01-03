@@ -302,8 +302,11 @@ sw str_character_position_last (const s_str *str, character c)
 void str_clean (s_str *str)
 {
   assert(str);
-  if (str->free.p)
+  if (str->free.p) {
+    explicit_bzero(str->free.p, str->size + 1);
     free(str->free.p);
+    str->free.p = NULL;
+  }
 }
 
 void str_delete (s_str *str)
@@ -2112,11 +2115,4 @@ s_str * str_trim (const s_str *str, s_str *dest)
   memcpy(tmp.free.p, str->ptr.pu8 + start, size);
   *dest = tmp;
   return dest;
-}
-
-void str_zero (s_str *str)
-{
-  assert(str);
-  if (str->free.p)
-    explicit_bzero(str->free.p, str->size + 1);
 }
