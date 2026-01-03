@@ -113,8 +113,8 @@ s_facts * tls_facts_close (s_facts *facts)
         tls_close(tls_buf->ctx);
       shutdown(tf->tls_client.socket_buf.sockfd, SHUT_RDWR);
       socket_close(&tf->tls_client.socket_buf.sockfd);
-      log_hook_remove(facts->log, hook);
       pthread_join(thread, NULL);
+      log_hook_remove(facts->log, hook);
     }
     else if (hook->f == tls_facts_listener_hook) {
       listener = hook->context;
@@ -127,8 +127,8 @@ s_facts * tls_facts_close (s_facts *facts)
         tls_close(tls_buf->ctx);
       shutdown(listener->tls_server.socket_buf.sockfd, SHUT_RDWR);
       socket_close(&listener->tls_server.socket_buf.sockfd);
-      log_hook_remove(facts->log, hook);
       pthread_join(thread, NULL);
+      log_hook_remove(facts->log, hook);
     }
     hook = next;
   }
