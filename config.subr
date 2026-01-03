@@ -838,10 +838,10 @@ config_sha256() {
     CFLAGS="$(echo "$CFLAGS" | sed -e 's/-R[^ ]*//g')"
     CPPFLAGS="$(echo "$CPPFLAGS" | sed -e 's/-R[^ ]*//g')"
     config_include_have SHA2_H "#include <sys/types.h>
-#include <sha2.h>"
+#include <sha2.h>" 2>/dev/null
     if ! $HAVE_SHA2_H; then
         config_include_have SHA256_H "#include <sys/types.h>
-#include <sha256.h>"
+#include <sha256.h>" 2>/dev/null
     fi
     OUT_C=".config_have_sha256.c"
     OUT_O=".config_have_sha256.o"
@@ -879,7 +879,7 @@ config_sha256() {
     echo "  return 0;" >> "$OUT_C"
     echo "}" >> "$OUT_C"
     if ${CC} ${CPPFLAGS} ${CFLAGS} \
-             -c "$OUT_C" -o "$OUT_O"; then
+             -c "$OUT_C" -o "$OUT_O" 2>/dev/null; then
         config_define HAVE_SHA256_CTX 1
         HAVE_SHA256_CTX=true
         echo "HAVE_SHA256_CTX = true" >> ${CONFIG_MK}
