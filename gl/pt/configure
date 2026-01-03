@@ -132,17 +132,6 @@ update_build_prog
 build_o
 build_prog
 
-if [ "x$(uname)" = "xDarwin" ]; then
-    HAVE_DARWIN=true
-else
-    HAVE_DARWIN=false
-fi
-echo "HAVE_DARWIN = $HAVE_DARWIN" >> ${CONFIG_MK}
-
 update_config_mk
 update_makefile
 env_reset
-
-if ${HAVE_DARWIN}; then
-    config_subdirs macos
-fi
