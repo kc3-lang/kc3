@@ -1559,7 +1559,7 @@ s_str * str_new_copy (const s_str *src)
   char *a;
   s_str *dest;
   assert(src);
-  a = alloc(src->size);
+  a = alloc(src->size + 1);
   if (! a)
     return NULL;
   memcpy(a, src->ptr.p, src->size);
