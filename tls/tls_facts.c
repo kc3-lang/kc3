@@ -201,6 +201,8 @@ void * tls_facts_open_thread (void *arg)
   if (tf->hook)
     log_hook_remove(tf->facts->log, tf->hook);
   marshall_read_clean(mr);
+  str_zero(&tf->secret);
+  str_clean(&tf->secret);
   env_fork_delete(tf->env);
   tls_facts_clean(tf);
   free(tf);

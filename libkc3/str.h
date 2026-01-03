@@ -189,5 +189,6 @@ s_str *       str_trim (const s_str *str, s_str *dest);
 /* Modifiers */
 sw str_read_u8 (s_str *str, u8 *dest);
 sw str_read_character_utf8 (s_str *str, character *c);
+void str_zero (s_str *str);
 
 #endif /* LIBKC3_STR_H */
