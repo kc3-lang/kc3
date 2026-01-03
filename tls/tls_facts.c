@@ -50,10 +50,11 @@ bool * kc3_tls_facts_accept (s_facts *facts, t_socket *server,
   return dest;
 }
 
-s_tls_facts_acceptor ** kc3_tls_facts_acceptor_loop (s_facts *facts,
-                                    t_socket *server, p_tls *ctx,
-                                    const s_str *secret,
-                                    s_tls_facts_acceptor **dest)
+s_tls_facts_acceptor **
+kc3_tls_facts_acceptor_loop (s_facts *facts,
+                             t_socket *server, p_tls *ctx,
+                             const s_str *secret,
+                             s_tls_facts_acceptor **dest)
 {
   s_tls_facts_acceptor *tmp;
   assert(dest);
