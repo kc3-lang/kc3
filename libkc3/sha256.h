@@ -15,6 +15,14 @@
 
 #include "types.h"
 
+#define SHA256_BLOCK_SIZE   64
+#define SHA256_DIGEST_SIZE  32
+
 s_str * sha256_str_to_hex (const s_str *in, s_str *out);
+
+/* HMAC functions. */
+void    sha256_hmac (const s_str *k, const s_str *m,
+                     u8 dest[SHA256_DIGEST_SIZE]);
+s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest);
 
 #endif /* LIBKC3_SHA256 */

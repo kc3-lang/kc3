@@ -87,6 +87,7 @@ PROTOTYPE_STR_INIT(ptr_free, const u_ptr_w *);
 PROTOTYPE_STR_INIT_STRUCT(quote);
 s_str * str_init_random_base32 (s_str *str, const s_tag *len);
 s_str * str_init_random_base64 (s_str *str, const s_tag *len);
+s_str * str_init_random_base64_uw (s_str *str, uw len);
 PROTOTYPE_STR_INIT_STRUCT(ratio);
 PROTOTYPE_STR_INIT_DIRECT(s8);
 PROTOTYPE_STR_INIT_DIRECT(s16);

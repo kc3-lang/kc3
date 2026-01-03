@@ -53,6 +53,7 @@ struct tls_facts {
   s_facts        *facts;
   s_log_hook     *hook;
   bool            running;
+  s_str           secret;
   s_tls_client    tls_client;
   s_marshall      marshall;
   s_marshall_read marshall_read;
@@ -64,6 +65,7 @@ struct tls_facts_acceptor {
   s_env          *env;
   s_facts        *facts;
   bool            running;
+  s_str           secret;
   t_socket        server;
   pthread_t       thread;
 };
@@ -74,6 +76,7 @@ struct tls_facts_listener {
   s_facts        *facts;
   s_log_hook     *hook;
   bool            running;
+  s_str           secret;
   s_tls_server    tls_server;
   s_marshall      marshall;
   s_marshall_read marshall_read;

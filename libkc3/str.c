@@ -1306,6 +1306,13 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
   return str_init(str, result, result_len, result);
 }
 
+s_str * str_init_random_base64_uw (s_str *str, uw len)
+{
+  s_tag tag;
+  tag_init_uw(&tag, len);
+  return str_init_random_base64(str, &tag);
+}
+
 DEF_STR_INIT_STRUCT(ratio)
 DEF_STR_INIT_INT(s8)
 DEF_STR_INIT_INT(s16)

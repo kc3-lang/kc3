@@ -12,6 +12,8 @@
 
 defmodule SHA256 do
 
+  def hmac = cfn Str "sha256_hmac_str" (Str, Str, Result)
+
   def str_to_hex = cfn Str "sha256_str_to_hex" (Str, Result)
 
 end

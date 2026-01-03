@@ -29,8 +29,9 @@ if r == 0 do
     puts("server: listen failed")
     exit_subprocess(1)
   end
+  secret = "test_shared_secret"
   puts("server: starting acceptor loop")
-  acceptor = TLS.Facts.acceptor_loop(server_facts, server, server_ctx)
+  acceptor = TLS.Facts.acceptor_loop(server_facts, server, server_ctx, secret)
   if ! acceptor do
     puts("server: acceptor_loop failed")
     exit_subprocess(1)
@@ -61,8 +62,9 @@ else
     File.unlink("client1_test.facts")
   end
   Facts.open(client1_facts, "client1_test.facts")
+  secret = "test_shared_secret"
   puts("client1: connecting to 15005")
-  if ! TLS.Facts.open(client1_facts, client1_ctx, hostname(), "15005") do
+  if ! TLS.Facts.open(client1_facts, client1_ctx, hostname(), "15005", secret) do
     puts("client1: open failed")
     exit(1)
   end
@@ -81,7 +83,7 @@ else
   end
   Facts.open(client2_facts, "client2_test.facts")
   puts("client2: connecting to 15005")
-  if ! TLS.Facts.open(client2_facts, client2_ctx, hostname(), "15005") do
+  if ! TLS.Facts.open(client2_facts, client2_ctx, hostname(), "15005", secret) do
     puts("client2: open failed")
     exit(1)
   end

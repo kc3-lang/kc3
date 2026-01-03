@@ -17,16 +17,18 @@ defmodule TLS.Facts do
 
   dlopen("tls.so")
 
-  def accept = cfn Bool "kc3_tls_facts_accept" (Facts, Socket, TLS, Result)
+  def accept = cfn Bool "kc3_tls_facts_accept" (Facts, Socket, TLS, Str,
+    Result)
 
   def acceptor_loop = cfn TLS.Facts.Acceptor*
-    "kc3_tls_facts_acceptor_loop" (Facts, Socket, TLS, Result)
+    "kc3_tls_facts_acceptor_loop" (Facts, Socket, TLS, Str, Result)
 
   def acceptor_loop_join = cfn Void "kc3_tls_facts_acceptor_loop_join"
     (TLS.Facts.Acceptor*)
 
   def close = cfn Bool "kc3_tls_facts_close" (Facts, Result)
 
-  def open = cfn Bool "kc3_tls_facts_open" (Facts, TLS, Str, Str, Result)
+  def open = cfn Bool "kc3_tls_facts_open" (Facts, TLS, Str, Str, Str,
+    Result)
 
 end
