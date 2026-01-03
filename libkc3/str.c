@@ -1542,7 +1542,7 @@ s_str * str_new_cpy (const char *p, uw size)
 {
   char *a;
   s_str *str;
-  a = alloc(size);
+  a = alloc(size + 1);
   if (! a)
     return NULL;
   memcpy(a, p, size);
