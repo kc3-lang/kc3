@@ -46,7 +46,6 @@ if r == 0 do
   TLS.Facts.close(server_facts)
   Facts.delete(server_facts)
   File.unlink("server_acceptor_test.facts")
-  Str.zero(& secret)
   TLS.Config.free(server_config)
   TLS.free(server_ctx)
   exit_subprocess(0)
@@ -111,7 +110,6 @@ else
   TLS.Config.free(client2_config)
   TLS.free(client2_ctx)
 
-  Str.zero(& secret)
   puts("client: OK")
   wait()
 end
