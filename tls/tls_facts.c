@@ -201,7 +201,6 @@ void * tls_facts_open_thread (void *arg)
   if (tf->hook)
     log_hook_remove(tf->facts->log, tf->hook);
   marshall_read_clean(mr);
-  str_zero(&tf->secret);
   str_clean(&tf->secret);
   env_fork_delete(tf->env);
   tls_facts_clean(tf);
@@ -360,7 +359,6 @@ void * tls_facts_acceptor_loop_thread (void *arg)
       break;
     }
   }
-  str_zero(&acceptor->secret);
   str_clean(&acceptor->secret);
   env_fork_delete(acceptor->env);
   free(acceptor);
@@ -423,7 +421,6 @@ void * tls_facts_listen_thread (void *arg)
     log_hook_remove(listener->facts->log, listener->hook);
   marshall_read_clean(mr);
   marshall_clean(&listener->marshall);
-  str_zero(&listener->secret);
   str_clean(&listener->secret);
   kc3_tls_server_clean(&listener->tls_server);
   env_fork_delete(listener->env);
