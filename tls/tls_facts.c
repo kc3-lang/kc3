@@ -171,11 +171,14 @@ bool tls_facts_auth_response (s_buf *w, s_buf *r, const s_str *secret)
     str_clean(&challenge);
     return false;
   }
+  err_puts("tls_facts_auth_response: str_clean challenge");
   str_clean(&challenge);
+  err_puts("tls_facts_auth_response: str_init_base64url");
   if (! str_init_base64url(&hmac_b64, hmac.ptr.p, hmac.size)) {
     str_clean(&hmac);
     return false;
   }
+  err_puts("tls_facts_auth_response: str_clean hmac");
   str_clean(&hmac);
   err_puts("tls_facts_auth_response: sending response");
   if (buf_write_str(w, &hmac_b64) < 0) {
@@ -183,7 +186,9 @@ bool tls_facts_auth_response (s_buf *w, s_buf *r, const s_str *secret)
     str_clean(&hmac_b64);
     return false;
   }
+  err_puts("tls_facts_auth_response: str_clean hmac_b64");
   str_clean(&hmac_b64);
+  err_puts("tls_facts_auth_response: buf_flush");
   if (buf_flush(w) < 0) {
     err_puts("tls_facts_auth_response: buf_flush failed");
     return false;
