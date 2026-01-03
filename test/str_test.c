@@ -146,7 +146,7 @@ TEST_CASE(str_init_copy)
   TEST_STRNCMP(str.ptr.p, "test", len);
   str_clean(&str);
   len = 4;
-  m = malloc(len);
+  m = malloc(len + 1);
   assert(m);
   memcpy(m, "test", len);
   str_init(&test, m, len, m);
@@ -207,7 +207,7 @@ TEST_CASE(str_new_delete)
   TEST_STRNCMP(str->ptr.p, "test", len);
   str_delete(str);
   len = 4;
-  m = malloc(len);
+  m = malloc(len + 1);
   memcpy(m, "test", len);
   TEST_ASSERT((str = str_new(m, len, m)));
   TEST_EQ(str->size, len);
@@ -230,7 +230,7 @@ TEST_CASE(str_new_copy)
   TEST_STRNCMP(str->ptr.p, "test", len);
   str_delete(str);
   len = 4;
-  m = malloc(len);
+  m = malloc(len + 1);
   memcpy(m, "test", len);
   str_init(&test, m, len, m);
   TEST_ASSERT((str = str_new_copy(&test)));
