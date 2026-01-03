@@ -35,13 +35,6 @@
 
 #define TLS_FACTS_CHALLENGE_SIZE 32
 
-bool * kc3_tls_facts_close (s_facts *facts, bool *dest)
-{
-  assert(dest);
-  *dest = tls_facts_close(facts) ? true : false;
-  return dest;
-}
-
 bool * kc3_tls_facts_accept (s_facts *facts, t_socket *server,
                              p_tls *ctx, const s_str *secret, bool *dest)
 {
@@ -72,13 +65,109 @@ void kc3_tls_facts_acceptor_loop_join (s_tls_facts_acceptor **acceptor)
   *acceptor = NULL;
 }
 
-bool * kc3_tls_facts_open (s_facts *facts, p_tls *ctx,
-                           const s_str *host, const s_str *service,
-                           const s_str *secret, bool *dest)
+bool * kc3_tls_facts_close (s_facts *facts, bool *dest)
 {
   assert(dest);
-  *dest = tls_facts_open(facts, ctx, host, service, secret) ? true : false;
+  *dest = tls_facts_close(facts) ? true : false;
   return dest;
+}
+
+bool tls_facts_auth_challenge (s_buf *w, s_buf *r, const s_str *secret)
+{
+  s_str challenge = {0};
+  s_str expected = {0};
+  s_str expected_b64 = {0};
+  s_str response = {0};
+  bool result = false;
+  uw response_len;
+  err_puts("tls_facts_auth_challenge: start");
+  if (! str_init_random_base64_uw(&challenge, TLS_FACTS_CHALLENGE_SIZE)) {
+    err_puts("tls_facts_auth_challenge: str_init_random_base64_uw failed");
+    return false;
+  }
+  err_puts("tls_facts_auth_challenge: sending challenge");
+  if (buf_write_str(w, &challenge) < 0) {
+    err_puts("tls_facts_auth_challenge: buf_write_str failed");
+    str_clean(&challenge);
+    return false;
+  }
+  if (buf_write_u8(w, '\n') < 0) {
+    str_clean(&challenge);
+    return false;
+  }
+  if (buf_flush(w) < 0) {
+    err_puts("tls_facts_auth_challenge: buf_flush failed");
+    str_clean(&challenge);
+    return false;
+  }
+  err_puts("tls_facts_auth_challenge: computing expected hmac");
+  if (! sha256_hmac_str(secret, &challenge, &expected)) {
+    err_puts("tls_facts_auth_challenge: sha256_hmac_str failed");
+    str_clean(&challenge);
+    return false;
+  }
+  str_clean(&challenge);
+  if (! str_init_base64url(&expected_b64, expected.ptr.p, expected.size)) {
+    str_clean(&expected);
+    return false;
+  }
+  str_clean(&expected);
+  response_len = expected_b64.size;
+  err_puts("tls_facts_auth_challenge: waiting for response");
+  if (! buf_read(r, response_len, &response)) {
+    err_puts("tls_facts_auth_challenge: buf_read failed");
+    str_clean(&expected_b64);
+    return false;
+  }
+  err_puts("tls_facts_auth_challenge: comparing response");
+  if (response.size == expected_b64.size &&
+      ! memcmp(response.ptr.p, expected_b64.ptr.p, response.size))
+    result = true;
+  str_clean(&response);
+  str_clean(&expected_b64);
+  if (result)
+    err_puts("tls_facts_auth_challenge: ok");
+  else
+    err_puts("tls_facts_auth_challenge: mismatch");
+  return result;
+}
+
+bool tls_facts_auth_response (s_buf *w, s_buf *r, const s_str *secret)
+{
+  s_str challenge = {0};
+  s_str hmac = {0};
+  s_str hmac_b64 = {0};
+  err_puts("tls_facts_auth_response: start");
+  err_puts("tls_facts_auth_response: waiting for challenge");
+  if (buf_read_until_1_into_str(r, "\n", &challenge) <= 0) {
+    err_puts("tls_facts_auth_response: buf_read_until_1_into_str failed");
+    return false;
+  }
+  err_puts("tls_facts_auth_response: computing hmac");
+  if (! sha256_hmac_str(secret, &challenge, &hmac)) {
+    err_puts("tls_facts_auth_response: sha256_hmac_str failed");
+    str_clean(&challenge);
+    return false;
+  }
+  str_clean(&challenge);
+  if (! str_init_base64url(&hmac_b64, hmac.ptr.p, hmac.size)) {
+    str_clean(&hmac);
+    return false;
+  }
+  str_clean(&hmac);
+  err_puts("tls_facts_auth_response: sending response");
+  if (buf_write_str(w, &hmac_b64) < 0) {
+    err_puts("tls_facts_auth_response: buf_write_str failed");
+    str_clean(&hmac_b64);
+    return false;
+  }
+  str_clean(&hmac_b64);
+  if (buf_flush(w) < 0) {
+    err_puts("tls_facts_auth_response: buf_flush failed");
+    return false;
+  }
+  err_puts("tls_facts_auth_response: ok");
+  return true;
 }
 
 void tls_facts_clean (s_tls_facts *tf)
@@ -86,6 +175,16 @@ void tls_facts_clean (s_tls_facts *tf)
   assert(tf);
   marshall_clean(&tf->marshall);
   kc3_tls_client_clean(&tf->tls_client);
+}
+
+bool * kc3_tls_facts_open (s_facts *facts, p_tls *ctx,
+                           const s_str *host, const s_str *service,
+                           const s_str *secret, bool *dest)
+{
+  assert(dest);
+  *dest = tls_facts_open(facts, ctx, host, service, secret) ? true :
+    false;
+  return dest;
 }
 
 s_facts * tls_facts_close (s_facts *facts)
@@ -566,102 +665,4 @@ s_facts * tls_facts_open (s_facts *facts, p_tls *ctx,
   }
   err_puts("tls_facts_open: ok");
   return facts;
-}
-
-bool tls_facts_auth_challenge (s_buf *w, s_buf *r, const s_str *secret)
-{
-  s_str challenge;
-  s_str expected;
-  s_str expected_b64;
-  s_str response;
-  bool result = false;
-  uw response_len;
-  err_puts("tls_facts_auth_challenge: start");
-  if (! str_init_random_base64_uw(&challenge, TLS_FACTS_CHALLENGE_SIZE)) {
-    err_puts("tls_facts_auth_challenge: str_init_random_base64_uw failed");
-    return false;
-  }
-  err_puts("tls_facts_auth_challenge: sending challenge");
-  if (buf_write_str(w, &challenge) < 0) {
-    err_puts("tls_facts_auth_challenge: buf_write_str failed");
-    str_clean(&challenge);
-    return false;
-  }
-  if (buf_write_u8(w, '\n') < 0) {
-    str_clean(&challenge);
-    return false;
-  }
-  if (buf_flush(w) < 0) {
-    err_puts("tls_facts_auth_challenge: buf_flush failed");
-    str_clean(&challenge);
-    return false;
-  }
-  err_puts("tls_facts_auth_challenge: computing expected hmac");
-  if (! sha256_hmac_str(secret, &challenge, &expected)) {
-    err_puts("tls_facts_auth_challenge: sha256_hmac_str failed");
-    str_clean(&challenge);
-    return false;
-  }
-  str_clean(&challenge);
-  if (! str_init_base64url(&expected_b64, expected.ptr.p, expected.size)) {
-    str_clean(&expected);
-    return false;
-  }
-  str_clean(&expected);
-  response_len = expected_b64.size;
-  err_puts("tls_facts_auth_challenge: waiting for response");
-  if (! buf_read(r, response_len, &response)) {
-    err_puts("tls_facts_auth_challenge: buf_read failed");
-    str_clean(&expected_b64);
-    return false;
-  }
-  err_puts("tls_facts_auth_challenge: comparing response");
-  if (response.size == expected_b64.size &&
-      ! memcmp(response.ptr.p, expected_b64.ptr.p, response.size))
-    result = true;
-  str_clean(&response);
-  str_clean(&expected_b64);
-  if (result)
-    err_puts("tls_facts_auth_challenge: ok");
-  else
-    err_puts("tls_facts_auth_challenge: mismatch");
-  return result;
-}
-
-bool tls_facts_auth_response (s_buf *w, s_buf *r, const s_str *secret)
-{
-  s_str challenge;
-  s_str hmac;
-  s_str hmac_b64;
-  err_puts("tls_facts_auth_response: start");
-  err_puts("tls_facts_auth_response: waiting for challenge");
-  if (buf_read_until_1_into_str(r, "\n", &challenge) <= 0) {
-    err_puts("tls_facts_auth_response: buf_read_until_1_into_str failed");
-    return false;
-  }
-  err_puts("tls_facts_auth_response: computing hmac");
-  if (! sha256_hmac_str(secret, &challenge, &hmac)) {
-    err_puts("tls_facts_auth_response: sha256_hmac_str failed");
-    str_clean(&challenge);
-    return false;
-  }
-  str_clean(&challenge);
-  if (! str_init_base64url(&hmac_b64, hmac.ptr.p, hmac.size)) {
-    str_clean(&hmac);
-    return false;
-  }
-  str_clean(&hmac);
-  err_puts("tls_facts_auth_response: sending response");
-  if (buf_write_str(w, &hmac_b64) < 0) {
-    err_puts("tls_facts_auth_response: buf_write_str failed");
-    str_clean(&hmac_b64);
-    return false;
-  }
-  str_clean(&hmac_b64);
-  if (buf_flush(w) < 0) {
-    err_puts("tls_facts_auth_response: buf_flush failed");
-    return false;
-  }
-  err_puts("tls_facts_auth_response: ok");
-  return true;
 }
