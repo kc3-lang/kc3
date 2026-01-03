@@ -32,6 +32,7 @@
 #include "call.h"
 #include "character.h"
 #include "error.h"
+#include "explicit_bzero.h"
 #include "ident.h"
 #include "inspect.h"
 #include "io.h"
