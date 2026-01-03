@@ -50,7 +50,7 @@ if r == 0 do
   TLS.free(server_ctx)
   exit_subprocess(0)
 else
-  sleep(3)
+  sleep(5)
   ## Client 1
   TLS.init()
   client1_config = TLS.Config.new()
