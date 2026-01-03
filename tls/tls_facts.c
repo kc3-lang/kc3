@@ -111,6 +111,9 @@ bool tls_facts_auth_challenge (s_buf *w, s_buf *r, const s_str *secret)
   err_write_1(", challenge.ptr.p = ");
   err_inspect_ptr(challenge.ptr.p);
   err_write_1("\n");
+  err_write_1("tls_facts_auth_challenge: &expected = ");
+  err_inspect_uw((uw) &expected);
+  err_write_1("\n");
   err_puts("tls_facts_auth_challenge: calling sha256_hmac_str");
   if (! sha256_hmac_str(secret, &challenge, &expected)) {
     err_puts("tls_facts_auth_challenge: sha256_hmac_str failed");
@@ -164,6 +167,9 @@ bool tls_facts_auth_response (s_buf *w, s_buf *r, const s_str *secret)
   err_inspect_uw(challenge.size);
   err_write_1(", challenge.ptr.p = ");
   err_inspect_ptr(challenge.ptr.p);
+  err_write_1("\n");
+  err_write_1("tls_facts_auth_response: &hmac = ");
+  err_inspect_uw((uw) &hmac);
   err_write_1("\n");
   err_puts("tls_facts_auth_response: calling sha256_hmac_str");
   if (! sha256_hmac_str(secret, &challenge, &hmac)) {
