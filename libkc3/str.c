@@ -763,7 +763,7 @@ s_str * str_init_copy_1 (s_str *str, const char *src)
     return NULL;
   tmp.size = len;
   tmp.ptr.p = tmp.free.p;
-  memcpy(tmp.free.p, src, len + 1);
+  memcpy(tmp.free.p, src, len);
   *str = tmp;
   return str;
 }

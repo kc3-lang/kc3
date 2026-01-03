@@ -138,6 +138,9 @@ void sha256_hmac (const s_str *k, const s_str *m,
 s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest)
 {
   s_str tmp = {0};
+  assert(k);
+  assert(m);
+  assert(dest);
   err_puts("sha256_hmac_str: start");
   if (! str_init_alloc(&tmp, SHA256_DIGEST_SIZE)) {
     err_puts("sha256_hmac_str: str_init_alloc failed");
@@ -145,7 +148,9 @@ s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest)
   }
   err_puts("sha256_hmac_str: calling sha256_hmac");
   sha256_hmac(k, m, tmp.free.pu8);
-  err_puts("sha256_hmac_str: assigning to dest");
+  err_write_1("sha256_hmac_str: assigning to dest = ");
+  err_inspect_uw((uw) dest);
+  err_write_1("\n");
   *dest = tmp;
   err_puts("sha256_hmac_str: done");
   return dest;
