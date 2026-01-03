@@ -1769,6 +1769,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/tls.kc3" \
 	"lib/kc3/0.1/tls/client.kc3" \
 	"lib/kc3/0.1/tls/config.kc3" \
+	"lib/kc3/0.1/tls/facts.kc3" \
 	"lib/kc3/0.1/tls/server.kc3" \
 	"lib/kc3/0.1/totp.kc3" \
 	"lib/kc3/0.1/u16.facts" \
@@ -2302,9 +2303,15 @@ KC3_TEST_PDF_SOURCES = \
 	"test/pdf_test" \
 
 KC3_TEST_TLS_SOURCES = \
+	"test/tls/acceptor_loop.kc3" \
+	"test/tls/acceptor_loop.out.expected" \
+	"test/tls/acceptor_loop.ret.expected" \
 	"test/tls/ca_cert_path.kc3" \
 	"test/tls/ca_cert_path.out.expected" \
 	"test/tls/ca_cert_path.ret.expected" \
+	"test/tls/facts.kc3" \
+	"test/tls/facts.out.expected" \
+	"test/tls/facts.ret.expected" \
 	"test/tls/tls.kc3" \
 	"test/tls/tls.out.expected" \
 	"test/tls/tls.ret.expected" \
