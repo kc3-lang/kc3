@@ -1284,6 +1284,11 @@ s_str * kc3_str (const s_tag *tag, s_str *dest)
   }
 }
 
+void kc3_str_zero (s_str **str)
+{
+  str_zero(*str);
+}
+
 s_str * kc3_strerror (sw err_no, s_str *dest)
 {
   const char *s;

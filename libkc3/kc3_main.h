@@ -146,6 +146,7 @@ s_tag *      kc3_parse_tag (s_tag *tag, const s_str *src);
 void         kc3_pledge (const s_str *promises,
                          const s_str *execpromises);
 s_tag *      kc3_require (p_sym *module, s_tag *dest);
+void         kc3_str_zero (s_str **str);
 s_str *      kc3_strerror (sw err_no, s_str *dest);
 s_tag *      kc3_struct_put (s_tag *s, p_sym *key,
                              s_tag *value, s_tag *dest);
