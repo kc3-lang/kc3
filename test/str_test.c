@@ -122,7 +122,7 @@ TEST_CASE(str_init_clean)
   TEST_STRNCMP(stra.ptr.p, "test", len);
   str_clean(&stra);
   len = 4;
-  m = malloc(len);
+  m = malloc(len + 1);
   assert(m);
   memcpy(m, "test", len);
   str_init(&stra, m, len, m);
