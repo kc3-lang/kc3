@@ -310,8 +310,8 @@ void * tls_facts_open_thread (void *arg)
   s_marshall_read *mr;
   s_tls_facts *tf;
   tf = arg;
-  err_puts("tls_facts_open_thread: start");
   env_global_set(tf->env);
+  err_puts("tls_facts_open_thread: start");
   mr = &tf->marshall_read;
   tf->running = true;
   err_puts("tls_facts_open_thread: starting loop");
@@ -536,8 +536,8 @@ void * tls_facts_listen_thread (void *arg)
   s_tls_facts_listener *listener;
   s_marshall_read *mr;
   listener = arg;
-  err_puts("tls_facts_listen_thread: start");
   env_global_set(listener->env);
+  err_puts("tls_facts_listen_thread: start");
   mr = &listener->marshall_read;
   if (! listener->facts->log) {
     err_puts("tls_facts_listen_thread: listener facts log is NULL");

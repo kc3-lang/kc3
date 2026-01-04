@@ -81,7 +81,6 @@ void sha256_hmac (const s_str *k, const s_str *m, u8 *dest)
     pad[1][i] ^= k_p.ptr.pu8[i];
     i++;
   }
-  str_clean(&k_p);
   while (i < SHA256_BLOCK_LENGTH) {
     pad[0][i] ^= 0;
     pad[1][i] ^= 0;
