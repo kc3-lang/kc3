@@ -10,21 +10,26 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBKC3_SHA256
-#define LIBKC3_SHA256
-
-#if HAVE_SHA2_H
-# include <sha2.h>
-#elif HAVE_SHA256_H
-# include <sha256.h>
-#endif
+#ifndef LIBKC3_SHA256_H
+#define LIBKC3_SHA256_H
 
 #include "types.h"
 
+char * sha256_end(s_sha2 *ctx, char *buf);
+void   sha256_init (s_sha2 *ctx);
+void   sha256_transform (u32 state[8],
+                        const u8 block[SHA256_BLOCK_LENGTH]);
+void   sha256_update (s_sha2 *ctx, const u8 *data, uw size)
+  __attribute__((__bounded__(__string__,2,3)));
+void   sha256_pad (s_sha2 *ctx);
+void   sha256_final (u8 digest[SHA256_DIGEST_LENGTH], s_sha2 *ctx)
+  __attribute__((__bounded__(__minbytes__,1,SHA256_DIGEST_LENGTH)));
+
+/* Observers. */
 s_str * sha256_str_to_hex (const s_str *in, s_str *out);
 
 /* HMAC functions. */
 void    sha256_hmac (const s_str *k, const s_str *m, u8 *dest);
 s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest);
 
-#endif /* LIBKC3_SHA256 */
+#endif /* LIBKC3_SHA256_H */

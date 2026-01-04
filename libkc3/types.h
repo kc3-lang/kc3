@@ -266,6 +266,7 @@ typedef struct rpc_response            s_rpc_response;
 typedef struct rwlock                  s_rwlock;
 typedef struct sequence                s_sequence;
 typedef struct sha1                    s_sha1;
+typedef struct sha2                    s_sha2;
 typedef struct sha512                  s_sha512;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
@@ -325,6 +326,22 @@ typedef bool (* f_sequence_key) (s_sequence *seq, u32 keysym);
 
 #define CHARACTER_MAX S32_MAX
 #define SKIPLIST_HEIGHT_MAX U64_MAX
+
+#define SHA224_BLOCK_LENGTH		64
+#define SHA224_DIGEST_LENGTH		28
+#define SHA224_DIGEST_STRING_LENGTH	(SHA224_DIGEST_LENGTH * 2 + 1)
+#define SHA256_BLOCK_LENGTH		64
+#define SHA256_DIGEST_LENGTH		32
+#define SHA256_DIGEST_STRING_LENGTH	(SHA256_DIGEST_LENGTH * 2 + 1)
+#define SHA384_BLOCK_LENGTH		128
+#define SHA384_DIGEST_LENGTH		48
+#define SHA384_DIGEST_STRING_LENGTH	(SHA384_DIGEST_LENGTH * 2 + 1)
+#define SHA512_BLOCK_LENGTH		128
+#define SHA512_DIGEST_LENGTH		64
+#define SHA512_DIGEST_STRING_LENGTH	(SHA512_DIGEST_LENGTH * 2 + 1)
+#define SHA512_256_BLOCK_LENGTH		128
+#define SHA512_256_DIGEST_LENGTH	32
+#define SHA512_256_DIGEST_STRING_LENGTH	(SHA512_256_DIGEST_LENGTH * 2 + 1)
 
 /* 1 */
 
@@ -451,6 +468,15 @@ struct sha1 {
   uint32_t state[5];
   uint64_t count;
   uint8_t buffer[SHA1_BLOCK_LENGTH];
+};
+
+struct sha2 {
+  union {
+    u32 st32[8];
+    u64 st64[8];
+  } state;
+  u64 bitcount[2];
+  u8  buffer[SHA512_BLOCK_LENGTH];
 };
 
 struct sha512 {
