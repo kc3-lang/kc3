@@ -13,16 +13,18 @@
 #ifndef LIBKC3_SHA256
 #define LIBKC3_SHA256
 
-#include "types.h"
+#if HAVE_SHA2_H
+# include <sha2.h>
+#elif HAVE_SHA256_H
+# include <sha256.h>
+#endif
 
-#define SHA256_BLOCK_SIZE   64
-#define SHA256_DIGEST_SIZE  32
+#include "types.h"
 
 s_str * sha256_str_to_hex (const s_str *in, s_str *out);
 
 /* HMAC functions. */
-void    sha256_hmac (const s_str *k, const s_str *m,
-                     u8 dest[SHA256_DIGEST_SIZE]);
+void    sha256_hmac (const s_str *k, const s_str *m, u8 *dest);
 s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest);
 
 #endif /* LIBKC3_SHA256 */

@@ -47,8 +47,7 @@ s_str * sha256_str_to_hex (const s_str *in, s_str *out)
   return out;
 }
 
-void sha256_hmac (const s_str *k, const s_str *m,
-                  u8 dest[SHA256_DIGEST_LENGTH])
+void sha256_hmac (const s_str *k, const s_str *m, u8 *dest)
 {
 #if HAVE_SHA256_CTX
   SHA256_CTX h_ctx;
