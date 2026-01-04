@@ -29,6 +29,7 @@
  */
 #include <string.h>
 #include "assert.h"
+#include "explicit_bzero.h"
 #include "io.h"
 #include "sha256.h"
 #include "str.h"
