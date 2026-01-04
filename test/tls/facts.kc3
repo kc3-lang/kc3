@@ -52,7 +52,7 @@ if r == 0 do
   TLS.free(server_ctx)
   exit_subprocess(0)
 else
-  sleep(5)
+  sleep(1)
   TLS.init()
   client_config = TLS.Config.new()
   TLS.Config.set_ca_file(client_config, TLS.ca_cert_path())

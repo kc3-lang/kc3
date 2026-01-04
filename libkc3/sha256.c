@@ -30,7 +30,6 @@
 #include <string.h>
 #include "assert.h"
 #include "explicit_bzero.h"
-#include "io.h"
 #include "sha256.h"
 #include "str.h"
 
@@ -481,25 +480,12 @@ void sha256_hmac (const s_str *k, const s_str *m, u8 *dest)
 s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest)
 {
   s_str tmp = {0};
-  err_write_1("sha256_hmac_str: k = ");
-  err_inspect_uw((uw) k);
-  err_write_1(", m = ");
-  err_inspect_uw((uw) m);
-  err_write_1(", dest = ");
-  err_inspect_uw((uw) dest);
-  err_write_1("\n");
   assert(k);
   assert(m);
   assert(dest);
   if (! str_init_alloc(&tmp, SHA256_DIGEST_LENGTH))
     return NULL;
-  err_write_1("sha256_hmac_str: before sha256_hmac, dest = ");
-  err_inspect_uw((uw) dest);
-  err_write_1("\n");
   sha256_hmac(k, m, tmp.free.pu8);
-  err_write_1("sha256_hmac_str: after sha256_hmac, dest = ");
-  err_inspect_uw((uw) dest);
-  err_write_1("\n");
   *dest = tmp;
   return dest;
 }

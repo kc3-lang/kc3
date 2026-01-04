@@ -32,8 +32,9 @@ void kc3_tls_client_clean (s_tls_client *tls_client)
 }
 
 s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
-                                            p_tls *ctx, s_str *host,
-                                            s_str *port)
+                                            p_tls *ctx,
+                                            const s_str *host,
+                                            const s_str *port)
 {
   sw r;
   s_tls_client tmp = {0};

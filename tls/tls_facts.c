@@ -21,7 +21,6 @@
 #include "../libkc3/env_fork.h"
 #include "../libkc3/fact.h"
 #include "../libkc3/facts.h"
-#include "../libkc3/io.h"
 #include "../libkc3/log.h"
 #include "../libkc3/marshall.h"
 #include "../libkc3/marshall_read.h"
@@ -80,14 +79,9 @@ bool tls_facts_auth_challenge (s_buf *w, s_buf *r, const s_str *secret)
   s_str response = {0};
   bool result = false;
   uw response_len;
-  err_puts("tls_facts_auth_challenge: start");
-  if (! str_init_random_base64_uw(&challenge, TLS_FACTS_CHALLENGE_SIZE)) {
-    err_puts("tls_facts_auth_challenge: str_init_random_base64_uw failed");
+  if (! str_init_random_base64_uw(&challenge, TLS_FACTS_CHALLENGE_SIZE))
     return false;
-  }
-  err_puts("tls_facts_auth_challenge: sending challenge");
   if (buf_write_str(w, &challenge) < 0) {
-    err_puts("tls_facts_auth_challenge: buf_write_str failed");
     str_clean(&challenge);
     return false;
   }
@@ -96,27 +90,10 @@ bool tls_facts_auth_challenge (s_buf *w, s_buf *r, const s_str *secret)
     return false;
   }
   if (buf_flush(w) < 0) {
-    err_puts("tls_facts_auth_challenge: buf_flush failed");
     str_clean(&challenge);
     return false;
   }
-  err_puts("tls_facts_auth_challenge: computing expected hmac");
-  err_write_1("tls_facts_auth_challenge: secret->size = ");
-  err_inspect_uw(secret->size);
-  err_write_1(", secret->ptr.p = ");
-  err_inspect_ptr(secret->ptr.p);
-  err_write_1("\n");
-  err_write_1("tls_facts_auth_challenge: challenge.size = ");
-  err_inspect_uw(challenge.size);
-  err_write_1(", challenge.ptr.p = ");
-  err_inspect_ptr(challenge.ptr.p);
-  err_write_1("\n");
-  err_write_1("tls_facts_auth_challenge: &expected = ");
-  err_inspect_uw((uw) &expected);
-  err_write_1("\n");
-  err_puts("tls_facts_auth_challenge: calling sha256_hmac_str");
   if (! sha256_hmac_str(secret, &challenge, &expected)) {
-    err_puts("tls_facts_auth_challenge: sha256_hmac_str failed");
     str_clean(&challenge);
     return false;
   }
@@ -127,22 +104,15 @@ bool tls_facts_auth_challenge (s_buf *w, s_buf *r, const s_str *secret)
   }
   str_clean(&expected);
   response_len = expected_b64.size;
-  err_puts("tls_facts_auth_challenge: waiting for response");
   if (! buf_read(r, response_len, &response)) {
-    err_puts("tls_facts_auth_challenge: buf_read failed");
     str_clean(&expected_b64);
     return false;
   }
-  err_puts("tls_facts_auth_challenge: comparing response");
   if (response.size == expected_b64.size &&
       ! memcmp(response.ptr.p, expected_b64.ptr.p, response.size))
     result = true;
   str_clean(&response);
   str_clean(&expected_b64);
-  if (result)
-    err_puts("tls_facts_auth_challenge: ok");
-  else
-    err_puts("tls_facts_auth_challenge: mismatch");
   return result;
 }
 
@@ -151,55 +121,25 @@ bool tls_facts_auth_response (s_buf *w, s_buf *r, const s_str *secret)
   s_str challenge = {0};
   s_str hmac = {0};
   s_str hmac_b64 = {0};
-  err_puts("tls_facts_auth_response: start");
-  err_puts("tls_facts_auth_response: waiting for challenge");
-  if (buf_read_until_1_into_str(r, "\n", &challenge) <= 0) {
-    err_puts("tls_facts_auth_response: buf_read_until_1_into_str failed");
+  if (buf_read_until_1_into_str(r, "\n", &challenge) <= 0)
     return false;
-  }
-  err_puts("tls_facts_auth_response: computing hmac");
-  err_write_1("tls_facts_auth_response: secret->size = ");
-  err_inspect_uw(secret->size);
-  err_write_1(", secret->ptr.p = ");
-  err_inspect_ptr(secret->ptr.p);
-  err_write_1("\n");
-  err_write_1("tls_facts_auth_response: challenge.size = ");
-  err_inspect_uw(challenge.size);
-  err_write_1(", challenge.ptr.p = ");
-  err_inspect_ptr(challenge.ptr.p);
-  err_write_1("\n");
-  err_write_1("tls_facts_auth_response: &hmac = ");
-  err_inspect_uw((uw) &hmac);
-  err_write_1("\n");
-  err_puts("tls_facts_auth_response: calling sha256_hmac_str");
   if (! sha256_hmac_str(secret, &challenge, &hmac)) {
-    err_puts("tls_facts_auth_response: sha256_hmac_str failed");
     str_clean(&challenge);
     return false;
   }
-  err_puts("tls_facts_auth_response: str_clean challenge");
   str_clean(&challenge);
-  err_puts("tls_facts_auth_response: str_init_base64url");
   if (! str_init_base64url(&hmac_b64, hmac.ptr.p, hmac.size)) {
     str_clean(&hmac);
     return false;
   }
-  err_puts("tls_facts_auth_response: str_clean hmac");
   str_clean(&hmac);
-  err_puts("tls_facts_auth_response: sending response");
   if (buf_write_str(w, &hmac_b64) < 0) {
-    err_puts("tls_facts_auth_response: buf_write_str failed");
     str_clean(&hmac_b64);
     return false;
   }
-  err_puts("tls_facts_auth_response: str_clean hmac_b64");
   str_clean(&hmac_b64);
-  err_puts("tls_facts_auth_response: buf_flush");
-  if (buf_flush(w) < 0) {
-    err_puts("tls_facts_auth_response: buf_flush failed");
+  if (buf_flush(w) < 0)
     return false;
-  }
-  err_puts("tls_facts_auth_response: ok");
   return true;
 }
 
@@ -229,16 +169,12 @@ s_facts * tls_facts_close (s_facts *facts)
   pthread_t thread;
   s_tls_buf *tls_buf;
   assert(facts);
-  err_puts("tls_facts_close: start");
-  if (! facts->log) {
-    err_puts("tls_facts_close: no log");
+  if (! facts->log)
     return facts;
-  }
   hook = facts->log->hooks;
   while (hook) {
     next = hook->next;
     if (hook->f == tls_facts_hook) {
-      err_puts("tls_facts_close: closing client hook");
       tf = hook->context;
       tf->running = false;
       tf->hook = NULL;
@@ -249,13 +185,10 @@ s_facts * tls_facts_close (s_facts *facts)
         tls_close(tls_buf->ctx);
       shutdown(tf->tls_client.socket_buf.sockfd, SHUT_RDWR);
       socket_close(&tf->tls_client.socket_buf.sockfd);
-      err_puts("tls_facts_close: joining client thread");
       pthread_join(thread, NULL);
-      err_puts("tls_facts_close: removing client hook");
       log_hook_remove(facts->log, hook);
     }
     else if (hook->f == tls_facts_listener_hook) {
-      err_puts("tls_facts_close: closing listener hook");
       listener = hook->context;
       listener->running = false;
       listener->hook = NULL;
@@ -266,14 +199,11 @@ s_facts * tls_facts_close (s_facts *facts)
         tls_close(tls_buf->ctx);
       shutdown(listener->tls_server.socket_buf.sockfd, SHUT_RDWR);
       socket_close(&listener->tls_server.socket_buf.sockfd);
-      err_puts("tls_facts_close: joining listener thread");
       pthread_join(thread, NULL);
-      err_puts("tls_facts_close: removing listener hook");
       log_hook_remove(facts->log, hook);
     }
     hook = next;
   }
-  err_puts("tls_facts_close: done");
   return facts;
 }
 
@@ -311,32 +241,22 @@ void * tls_facts_open_thread (void *arg)
   s_tls_facts *tf;
   tf = arg;
   env_global_set(tf->env);
-  err_puts("tls_facts_open_thread: start");
   mr = &tf->marshall_read;
   tf->running = true;
-  err_puts("tls_facts_open_thread: starting loop");
   while (tf->running) {
     if (! marshall_read_header(mr))
       break;
-    if (! marshall_read_chunk(mr)) {
-      err_puts("tls_facts_open_thread: marshall_read_chunk");
+    if (! marshall_read_chunk(mr))
       break;
-    }
-    if (! marshall_read_u8(mr, false, &action)) {
-      err_puts("tls_facts_open_thread: marshall_read_u8");
+    if (! marshall_read_u8(mr, false, &action))
       break;
-    }
-    if (! marshall_read_fact(mr, false, &fact)) {
-      err_puts("tls_facts_open_thread: marshall_read_fact");
+    if (! marshall_read_fact(mr, false, &fact))
       break;
-    }
     switch (action) {
     case FACT_ACTION_ADD:
-      err_puts("tls_facts_open_thread: adding fact");
       facts_add_fact(tf->facts, &fact);
       break;
     case FACT_ACTION_REMOVE:
-      err_puts("tls_facts_open_thread: removing fact");
       facts_remove_fact(tf->facts, &fact, &b);
       break;
     default:
@@ -345,13 +265,11 @@ void * tls_facts_open_thread (void *arg)
     fact_clean_all(&fact);
     marshall_read_reset_chunk(mr);
   }
-  err_puts("tls_facts_open_thread: loop ended, cleaning up");
   if (tf->hook)
     log_hook_remove(tf->facts->log, tf->hook);
   marshall_read_clean(mr);
   str_clean(&tf->secret);
   tls_facts_clean(tf);
-  err_puts("tls_facts_open_thread: done");
   env_fork_delete(tf->env);
   free(tf);
   return NULL;
@@ -365,20 +283,13 @@ s_tls_facts * tls_facts_init (s_tls_facts *tf, p_tls *ctx,
   assert(ctx);
   assert(host);
   assert(service);
-  err_puts("tls_facts_init: start");
-  if (! kc3_tls_client_init_connect(&tmp.tls_client, ctx, (s_str *) host,
-                                    (s_str *) service)) {
-    err_puts("tls_facts_init: kc3_tls_client_init_connect failed");
+  if (! kc3_tls_client_init_connect(&tmp.tls_client, ctx, host, service))
     return NULL;
-  }
-  err_puts("tls_facts_init: kc3_tls_client_init_connect ok");
   tmp.ctx = *ctx;
   if (! marshall_init(&tmp.marshall)) {
-    err_puts("tls_facts_init: marshall_init failed");
     kc3_tls_client_clean(&tmp.tls_client);
     return NULL;
   }
-  err_puts("tls_facts_init: ok");
   *tf = tmp;
   return tf;
 }
@@ -391,17 +302,14 @@ s_facts * tls_facts_accept (s_facts *facts, t_socket *server, p_tls *ctx,
   assert(server);
   assert(ctx);
   assert(secret);
-  err_puts("tls_facts_accept: start");
   listener = alloc(sizeof(s_tls_facts_listener));
   if (! listener)
     return NULL;
-  err_puts("tls_facts_accept: alloc ok");
   listener->env = env_fork_new(env_global());
   if (! listener->env) {
     free(listener);
     return NULL;
   }
-  err_puts("tls_facts_accept: env_fork_new ok");
   listener->facts = facts;
   listener->ctx = *ctx;
   if (! str_init_copy(&listener->secret, secret)) {
@@ -409,29 +317,23 @@ s_facts * tls_facts_accept (s_facts *facts, t_socket *server, p_tls *ctx,
     free(listener);
     return NULL;
   }
-  err_puts("tls_facts_accept: str_init_copy ok");
   if (! kc3_tls_server_init_accept(&listener->tls_server, server, ctx)) {
-    err_puts("tls_facts_accept: kc3_tls_server_init_accept failed");
     str_clean(&listener->secret);
     env_fork_delete(listener->env);
     free(listener);
     return NULL;
   }
-  err_puts("tls_facts_accept: kc3_tls_server_init_accept ok");
   if (! tls_facts_auth_challenge(listener->tls_server.socket_buf.buf_rw.w,
                                  listener->tls_server.socket_buf.buf_rw.r,
                                  &listener->secret)) {
-    err_puts("tls_facts_accept: authentication failed");
     str_clean(&listener->secret);
     kc3_tls_server_clean(&listener->tls_server);
     env_fork_delete(listener->env);
     free(listener);
     return NULL;
   }
-  err_puts("tls_facts_accept: auth_challenge ok");
   if (! marshall_read_init_buf(&listener->marshall_read,
                                listener->tls_server.socket_buf.buf_rw.r)) {
-    err_puts("tls_facts_accept: marshall_read_init_buf");
     str_clean(&listener->secret);
     kc3_tls_server_clean(&listener->tls_server);
     env_fork_delete(listener->env);
@@ -439,7 +341,6 @@ s_facts * tls_facts_accept (s_facts *facts, t_socket *server, p_tls *ctx,
     return NULL;
   }
   if (! marshall_init(&listener->marshall)) {
-    err_puts("tls_facts_accept: marshall_init");
     marshall_read_clean(&listener->marshall_read);
     str_clean(&listener->secret);
     kc3_tls_server_clean(&listener->tls_server);
@@ -449,7 +350,6 @@ s_facts * tls_facts_accept (s_facts *facts, t_socket *server, p_tls *ctx,
   }
   if (pthread_create(&listener->thread, NULL,
                      tls_facts_listen_thread, listener)) {
-    err_puts("tls_facts_accept: pthread_create");
     marshall_clean(&listener->marshall);
     marshall_read_clean(&listener->marshall_read);
     str_clean(&listener->secret);
@@ -458,7 +358,6 @@ s_facts * tls_facts_accept (s_facts *facts, t_socket *server, p_tls *ctx,
     free(listener);
     return NULL;
   }
-  err_puts("tls_facts_accept: ok");
   return facts;
 }
 
@@ -493,7 +392,6 @@ s_tls_facts_acceptor * tls_facts_acceptor_loop (s_facts *facts,
   acceptor->running = true;
   if (pthread_create(&acceptor->thread, NULL,
                      tls_facts_acceptor_loop_thread, acceptor)) {
-    err_puts("tls_facts_acceptor_loop: pthread_create");
     str_clean(&acceptor->secret);
     env_fork_delete(acceptor->env);
     free(acceptor);
@@ -537,10 +435,8 @@ void * tls_facts_listen_thread (void *arg)
   s_marshall_read *mr;
   listener = arg;
   env_global_set(listener->env);
-  err_puts("tls_facts_listen_thread: start");
   mr = &listener->marshall_read;
   if (! listener->facts->log) {
-    err_puts("tls_facts_listen_thread: listener facts log is NULL");
     marshall_read_clean(mr);
     marshall_clean(&listener->marshall);
     str_clean(&listener->secret);
@@ -549,11 +445,9 @@ void * tls_facts_listen_thread (void *arg)
     free(listener);
     return NULL;
   }
-  err_puts("tls_facts_listen_thread: adding hook");
   listener->hook = log_hook_add(listener->facts->log,
                                 tls_facts_listener_hook, listener);
   if (! listener->hook) {
-    err_puts("tls_facts_listen_thread: log_hook_add");
     marshall_read_clean(mr);
     marshall_clean(&listener->marshall);
     str_clean(&listener->secret);
@@ -562,49 +456,35 @@ void * tls_facts_listen_thread (void *arg)
     free(listener);
     return NULL;
   }
-  err_puts("tls_facts_listen_thread: hook added, starting loop");
   listener->running = true;
   while (listener->running) {
     if (! marshall_read_header(mr))
       break;
-    if (! marshall_read_chunk(mr)) {
-      err_puts("tls_facts_listen_thread: marshall_read_chunk");
+    if (! marshall_read_chunk(mr))
       break;
-    }
-    if (! marshall_read_u8(mr, false, &action)) {
-      err_puts("tls_facts_listen_thread: marshall_read_u8");
+    if (! marshall_read_u8(mr, false, &action))
       break;
-    }
-    if (! marshall_read_fact(mr, false, &fact)) {
-      err_puts("tls_facts_listen_thread: marshall_read_fact");
+    if (! marshall_read_fact(mr, false, &fact))
       break;
-    }
     switch (action) {
     case FACT_ACTION_ADD:
-      err_puts("tls_facts_listen_thread: adding fact");
       facts_add_fact(listener->facts, &fact);
       break;
     case FACT_ACTION_REMOVE:
-      err_puts("tls_facts_listen_thread: removing fact");
       facts_remove_fact(listener->facts, &fact, &b);
       break;
     default:
-      err_write_1("tls_facts_listen_thread: invalid action: ");
-      err_inspect_u8_decimal(action);
-      err_write_1("\n");
       break;
     }
     fact_clean_all(&fact);
     marshall_read_reset_chunk(mr);
   }
-  err_puts("tls_facts_listen_thread: loop ended, cleaning up");
   if (listener->hook)
     log_hook_remove(listener->facts->log, listener->hook);
   marshall_read_clean(mr);
   marshall_clean(&listener->marshall);
   str_clean(&listener->secret);
   kc3_tls_server_clean(&listener->tls_server);
-  err_puts("tls_facts_listen_thread: done");
   env_fork_delete(listener->env);
   free(listener);
   return NULL;
@@ -620,60 +500,46 @@ s_facts * tls_facts_open (s_facts *facts, p_tls *ctx,
   assert(host);
   assert(service);
   assert(secret);
-  err_puts("tls_facts_open: start");
-  if (! facts->log) {
-    err_puts("tls_facts_open: facts->log is NULL");
+  if (! facts->log)
     return NULL;
-  }
   tf = alloc(sizeof(s_tls_facts));
   if (! tf)
     return NULL;
-  err_puts("tls_facts_open: alloc ok");
   if (! tls_facts_init(tf, ctx, host, service)) {
-    err_puts("tls_facts_open: tls_facts_init failed");
     free(tf);
     return NULL;
   }
-  err_puts("tls_facts_open: tls_facts_init ok");
   tf->facts = facts;
   if (! str_init_copy(&tf->secret, secret)) {
     tls_facts_clean(tf);
     free(tf);
     return NULL;
   }
-  err_puts("tls_facts_open: str_init_copy ok");
   if (! tls_facts_auth_response(tf->tls_client.socket_buf.buf_rw.w,
                                 tf->tls_client.socket_buf.buf_rw.r,
                                 &tf->secret)) {
-    err_puts("tls_facts_open: authentication failed");
     str_clean(&tf->secret);
     tls_facts_clean(tf);
     free(tf);
     return NULL;
   }
-  err_puts("tls_facts_open: auth_response ok");
   tf->env = env_fork_new(env_global());
   if (! tf->env) {
-    err_puts("tls_facts_open: env_fork_new failed");
     str_clean(&tf->secret);
     tls_facts_clean(tf);
     free(tf);
     return NULL;
   }
-  err_puts("tls_facts_open: env_fork_new ok");
   if (! marshall_read_init_buf(&tf->marshall_read,
                                tf->tls_client.socket_buf.buf_rw.r)) {
-    err_puts("tls_facts_open: marshall_read_init_buf failed");
     env_fork_delete(tf->env);
     str_clean(&tf->secret);
     tls_facts_clean(tf);
     free(tf);
     return NULL;
   }
-  err_puts("tls_facts_open: marshall_read_init_buf ok");
   if (pthread_create(&tf->thread, NULL,
                      tls_facts_open_thread, tf)) {
-    err_puts("tls_facts_open: pthread_create failed");
     marshall_read_clean(&tf->marshall_read);
     env_fork_delete(tf->env);
     str_clean(&tf->secret);
@@ -681,10 +547,8 @@ s_facts * tls_facts_open (s_facts *facts, p_tls *ctx,
     free(tf);
     return NULL;
   }
-  err_puts("tls_facts_open: pthread_create ok");
   tf->hook = log_hook_add(facts->log, tls_facts_hook, tf);
   if (! tf->hook) {
-    err_puts("tls_facts_open: log_hook_add failed");
     tf->running = false;
     shutdown(tf->tls_client.socket_buf.sockfd, SHUT_RDWR);
     socket_close(&tf->tls_client.socket_buf.sockfd);
@@ -696,6 +560,5 @@ s_facts * tls_facts_open (s_facts *facts, p_tls *ctx,
     free(tf);
     return NULL;
   }
-  err_puts("tls_facts_open: ok");
   return facts;
 }

@@ -190,8 +190,10 @@ void buf_clean (s_buf *buf)
   if (buf->rwlock)
     rwlock_delete(buf->rwlock);
 #endif
-  if (buf->free)
+  if (buf->free) {
+    explicit_bzero(buf->ptr.p, buf->size);
     free(buf->ptr.p);
+  }
 }
 
 void buf_delete (s_buf *buf)
