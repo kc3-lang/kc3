@@ -39,7 +39,7 @@ if r == 0 do
   puts("server: accepted connection, waiting for facts")
   puts("server: adding server fact")
   Facts.add_tags(server_facts, :server, :says, :hello)
-  sleep(3)
+  sleep(6)
   Facts.with_tags(server_facts, ?, ?, ?, fn (fact) {
     puts("server: received #{inspect(fact)}")
   })
