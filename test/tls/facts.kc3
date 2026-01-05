@@ -37,9 +37,10 @@ if r == 0 do
   end
   Socket.close(server)
   puts("server: accepted connection, waiting for facts")
+  sleep(1)
   puts("server: adding server fact")
   Facts.add_tags(server_facts, :server, :says, :hello)
-  sleep(4)
+  sleep(2)
   Facts.with_tags(server_facts, ?, ?, ?, fn (fact) {
     puts("server: received #{inspect(fact)}")
   })
