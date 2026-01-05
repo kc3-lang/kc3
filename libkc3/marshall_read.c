@@ -367,8 +367,11 @@ void marshall_read_clean (s_marshall_read *mr)
     buf_clean(mr->buf);
   if (mr->buf && mr->heap && mr->buf->ptr.p != mr->heap->ptr.p)
     buf_clean(mr->heap);
-  if (mr->heap && mr->buf != mr->heap)
+  if (mr->heap && mr->buf != mr->heap) {
+    if (mr->heap->rwlock)
+      rwlock_delete(mr->heap->rwlock);
     free(mr->heap);
+  }
   if (mr->buf && mr->buf != mr->source)
     free(mr->buf);
   marshall_read_ht_clean(mr);
