@@ -49,6 +49,7 @@ if r == 0 do
   File.unlink("server_test.facts")
   TLS.Config.free(server_config)
   TLS.free(server_ctx)
+  Str.zero(& secret)
   exit_subprocess(0)
 else
   sleep(1)
@@ -81,6 +82,7 @@ else
   File.unlink("client_test.facts")
   TLS.Config.free(client_config)
   TLS.free(client_ctx)
+  Str.zero(& secret)
   puts("client: OK")
 end
 0

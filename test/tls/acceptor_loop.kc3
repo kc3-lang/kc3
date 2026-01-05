@@ -34,6 +34,7 @@ if r == 0 do
   acceptor = TLS.Facts.acceptor_loop(server_facts, server, server_ctx, secret)
   if ! acceptor do
     puts("server: acceptor_loop failed")
+    Str.zero(& secret)
     exit_subprocess(1)
   end
   puts("server: acceptor loop started, waiting for clients")
@@ -48,6 +49,7 @@ if r == 0 do
   File.unlink("server_acceptor_test.facts")
   TLS.Config.free(server_config)
   TLS.free(server_ctx)
+  Str.zero(& secret)
   exit_subprocess(0)
 else
   sleep(1)
@@ -109,6 +111,8 @@ else
   File.unlink("client2_test.facts")
   TLS.Config.free(client2_config)
   TLS.free(client2_ctx)
+
+  Str.zero(& secret)
 
   puts("client: OK")
   wait()
