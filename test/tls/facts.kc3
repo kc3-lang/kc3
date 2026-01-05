@@ -36,10 +36,11 @@ if r == 0 do
     exit_subprocess(1)
   end
   Socket.close(server)
+  sleep(2)
   puts("server: accepted connection, waiting for facts")
   puts("server: adding server fact")
   Facts.add_tags(server_facts, :server, :says, :hello)
-  sleep(6)
+  sleep(2)
   Facts.with_tags(server_facts, ?, ?, ?, fn (fact) {
     puts("server: received #{inspect(fact)}")
   })
@@ -69,10 +70,10 @@ else
     puts("client: open failed")
     exit(1)
   end
-  sleep(1)
+  sleep(2)
   puts("client: adding fact")
   Facts.add_tags(client_facts, :a, :b, :c)
-  sleep(4)
+  sleep(2)
   puts("client: checking for server facts")
   Facts.with_tags(client_facts, ?, ?, ?, fn (fact) {
     puts("client: has #{inspect(fact)}")
