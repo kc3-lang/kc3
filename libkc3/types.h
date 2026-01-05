@@ -462,6 +462,8 @@ struct rwlock {
   pthread_rwlock_t rwlock;
   sw               count;
   pthread_t        thread;
+  // debug
+  s_rwlock        *self;
 };
 
 struct sha1 {

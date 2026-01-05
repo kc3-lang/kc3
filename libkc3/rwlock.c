@@ -41,17 +41,15 @@ void rwlock_clean (s_rwlock *rwlock)
 
 s_rwlock * rwlock_init (s_rwlock *rwlock)
 {
-  s_rwlock tmp = {0};
   assert(rwlock);
-  if (pthread_rwlock_init(&tmp.rwlock, NULL)) {
+  *rwlock = (s_rwlock) {0};
+  if (pthread_rwlock_init(&rwlock->rwlock, NULL)) {
     err_puts("rwlock_init: pthread_rwlock_init");
     assert(! "rwlock_init: pthread_rwlock_init");
     return NULL;
   }
-  tmp.count = 0;
-  tmp.thread = 0;
-  tmp.ready = true;
-  *rwlock = tmp;
+  rwlock->ready = true;
+  rwlock->self = rwlock;
   return rwlock;
 }
 
@@ -82,7 +80,7 @@ s_rwlock * rwlock_r (s_rwlock *rwlock)
   assert(rwlock);
   assert(rwlock->ready);
   thread = pthread_self();
-  if (rwlock->thread != thread) {
+  if (! pthread_equal(rwlock->thread, thread)) {
     if (false) {
       i = (uw) rwlock;
       err_write_1("rwlock_r: ");
@@ -142,6 +140,10 @@ s_rwlock * rwlock_unlock_w (s_rwlock *rwlock)
   rwlock->count--;
   if (! rwlock->count) {
     rwlock->thread = 0;
+    if (rwlock != rwlock->self) {
+      printf("rwlock_unlock_w: self check\n");
+      assert(! "rwlock_w: self check\n");
+    }
     if (pthread_rwlock_unlock(&rwlock->rwlock)) {
       err_puts("rwlock_unlock_w: pthread_rwlock_unlock");
       assert(! "rwlock_unlock_w: pthread_rwlock_unlock");
@@ -155,11 +157,18 @@ s_rwlock * rwlock_w (s_rwlock *rwlock)
 {
   pthread_t thread;
   assert(rwlock);
-  assert(rwlock->ready);
+  if (! rwlock->ready || ! rwlock->self) {
+    printf("rwlock_w: not initialized\n");
+    assert(! "rwlock_w: not initialized\n");
+  }
   thread = pthread_self();
-  if (rwlock->thread != thread) {
+  if (! pthread_equal(rwlock->thread, thread)) {
+    if (rwlock != rwlock->self) {
+      printf("rwlock_w: self check\n");
+      assert(! "rwlock_w: self check\n");
+    }
     if (pthread_rwlock_wrlock(&rwlock->rwlock)) {
-      err_puts("rwlock_w: pthread_rwlock_wrlock");
+      printf("rwlock_w: pthread_rwlock_wrlock\n");
       assert(! "rwlock_w: pthread_rwlock_wrlock");
       return NULL;
     }

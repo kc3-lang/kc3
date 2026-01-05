@@ -85,13 +85,12 @@ bool call_get (s_call *call)
 
 s_call * call_init (s_call *call)
 {
-  s_call tmp = {0};
   assert(call);
+  *call = (s_call) {0};
+  call->ref_count = 1;
 #if HAVE_PTHREAD
-  mutex_init(&tmp.mutex);
+  mutex_init(&call->mutex);
 #endif
-  tmp.ref_count = 1;
-  *call = tmp;
   return call;
 }
 

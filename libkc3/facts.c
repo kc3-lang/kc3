@@ -427,34 +427,32 @@ s_facts * facts_init (s_facts *facts)
 {
   const u8 max_height = 20;
   const double spacing = 2.7;
-  s_facts tmp = {0};
   assert(facts);
-  set_init__tag(&tmp.tags, 1024);
-  set_init__fact(&tmp.facts, 1024);
+  *facts = (s_facts) {0};
+  set_init__tag(&facts->tags, 1024);
+  set_init__fact(&facts->facts, 1024);
   // id index
-  tmp.index = skiplist_new__fact(max_height, spacing);
-  assert(tmp.index);
-  tmp.index->compare = compare_fact_id;
+  facts->index = skiplist_new__fact(max_height, spacing);
+  assert(facts->index);
+  facts->index->compare = compare_fact_id;
   // spo index
-  tmp.index_spo = skiplist_new__fact(max_height, spacing);
-  assert(tmp.index_spo);
-  tmp.index_spo->compare = compare_fact;
+  facts->index_spo = skiplist_new__fact(max_height, spacing);
+  assert(facts->index_spo);
+  facts->index_spo->compare = compare_fact;
   // pos index
-  tmp.index_pos = skiplist_new__fact(max_height, spacing);
-  assert(tmp.index_pos);
-  tmp.index_pos->compare = compare_fact_pos;
+  facts->index_pos = skiplist_new__fact(max_height, spacing);
+  assert(facts->index_pos);
+  facts->index_pos->compare = compare_fact_pos;
   // osp index
-  tmp.index_osp = skiplist_new__fact(max_height, spacing);
-  assert(tmp.index_osp);
-  tmp.index_osp->compare = compare_fact_osp;
-  
+  facts->index_osp = skiplist_new__fact(max_height, spacing);
+  assert(facts->index_osp);
+  facts->index_osp->compare = compare_fact_osp;
+  facts->next_id = 1;
+  facts->ref_count = 1;
 #if HAVE_PTHREAD
-  rwlock_init(&tmp.rwlock);
-  mutex_init(&tmp.ref_count_mutex);
+  rwlock_init(&facts->rwlock);
+  mutex_init(&facts->ref_count_mutex);
 #endif
-  tmp.next_id = 1;
-  tmp.ref_count = 1;
-  *facts = tmp;
   return facts;
 }
 

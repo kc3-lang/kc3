@@ -278,19 +278,18 @@ void * tls_facts_open_thread (void *arg)
 s_tls_facts * tls_facts_init (s_tls_facts *tf, p_tls *ctx,
                               const s_str *host, const s_str *service)
 {
-  s_tls_facts tmp = {0};
   assert(tf);
   assert(ctx);
   assert(host);
   assert(service);
-  if (! kc3_tls_client_init_connect(&tmp.tls_client, ctx, host, service))
+  *tf = (s_tls_facts) {0};
+  if (! kc3_tls_client_init_connect(&tf->tls_client, ctx, host, service))
     return NULL;
-  tmp.ctx = *ctx;
-  if (! marshall_init(&tmp.marshall)) {
-    kc3_tls_client_clean(&tmp.tls_client);
+  tf->ctx = *ctx;
+  if (! marshall_init(&tf->marshall)) {
+    kc3_tls_client_clean(&tf->tls_client);
     return NULL;
   }
-  *tf = tmp;
   return tf;
 }
 

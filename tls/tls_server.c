@@ -36,16 +36,16 @@ s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
                                            p_tls *ctx)
 {
   sw r;
-  s_tls_server tmp = {0};
-  p_tls        tmp_ctx = NULL;
+  p_tls tmp_ctx = NULL;
   assert(tls_server);
   assert(ctx);
   assert(*ctx);
-  if (! socket_buf_init_accept(&tmp.socket_buf, socket))
+  *tls_server = (s_tls_server) {0};
+  if (! socket_buf_init_accept(&tls_server->socket_buf, socket))
     return NULL;
   if (false)
     err_puts("kc3_tls_server_init_accept: accept: OK");
-  if (tls_accept_socket(*ctx, &tmp_ctx, tmp.socket_buf.sockfd)) {
+  if (tls_accept_socket(*ctx, &tmp_ctx, tls_server->socket_buf.sockfd)) {
     err_write_1("kc3_tls_server_init_accept: tls_accept_socket: ");
     err_puts(tls_error(*ctx));
     assert(! "kc3_tls_server_init_accept: tls_accept_socket");
@@ -53,30 +53,30 @@ s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
   }
   if (false)
     err_puts("kc3_tls_server_init_accept: tls_accept_socket: OK");
-  if (! (tmp.socket_buf.buf_rw.r = buf_new_alloc(BUF_SIZE))) {
+  if (! (tls_server->socket_buf.buf_rw.r = buf_new_alloc(BUF_SIZE))) {
     err_puts("kc3_tls_server_init_accept: buf_new_alloc r");
     assert(! "kc3_tls_server_init_accept: buf_new_alloc r");
     return NULL;
   }
-  if (! (tmp.socket_buf.buf_rw.w = buf_new_alloc(BUF_SIZE))) {
+  if (! (tls_server->socket_buf.buf_rw.w = buf_new_alloc(BUF_SIZE))) {
     err_puts("kc3_tls_server_init_accept: buf_new_alloc w");
     assert(! "kc3_tls_server_init_accept: buf_new_alloc w");
-    buf_delete(tmp.socket_buf.buf_rw.r);
+    buf_delete(tls_server->socket_buf.buf_rw.r);
     return NULL;
   }
-  if (! tls_buf_open_r(tmp.socket_buf.buf_rw.r, tmp_ctx)) {
+  if (! tls_buf_open_r(tls_server->socket_buf.buf_rw.r, tmp_ctx)) {
     err_puts("kc3_tls_server_init_accept: tls_buf_open_r");
     assert(! "kc3_tls_server_init_accept: tls_buf_open_r");
-    buf_delete(tmp.socket_buf.buf_rw.w);
-    buf_delete(tmp.socket_buf.buf_rw.r);
+    buf_delete(tls_server->socket_buf.buf_rw.w);
+    buf_delete(tls_server->socket_buf.buf_rw.r);
     return NULL;
   }
-  if (! tls_buf_open_w(tmp.socket_buf.buf_rw.w, tmp_ctx)) {
+  if (! tls_buf_open_w(tls_server->socket_buf.buf_rw.w, tmp_ctx)) {
     err_puts("kc3_tls_server_init_accept: tls_buf_open_w");
     assert(! "kc3_tls_server_init_accept: tls_buf_open_w");
-    tls_buf_close(tmp.socket_buf.buf_rw.r);
-    buf_delete(tmp.socket_buf.buf_rw.w);
-    buf_delete(tmp.socket_buf.buf_rw.r);
+    tls_buf_close(tls_server->socket_buf.buf_rw.r);
+    buf_delete(tls_server->socket_buf.buf_rw.w);
+    buf_delete(tls_server->socket_buf.buf_rw.r);
     return NULL;
   }
   while ((r = tls_handshake(tmp_ctx)) == TLS_WANT_POLLIN ||
@@ -86,12 +86,11 @@ s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
     err_write_1("kc3_tls_server_init_accept: tls_handshake: ");
     err_puts(tls_error(tmp_ctx));
     assert(! "kc3_tls_server_init_accept: tls_handshake");
-    tls_buf_close(tmp.socket_buf.buf_rw.w);
-    tls_buf_close(tmp.socket_buf.buf_rw.r);
-    buf_delete(tmp.socket_buf.buf_rw.w);
-    buf_delete(tmp.socket_buf.buf_rw.r);
+    tls_buf_close(tls_server->socket_buf.buf_rw.w);
+    tls_buf_close(tls_server->socket_buf.buf_rw.r);
+    buf_delete(tls_server->socket_buf.buf_rw.w);
+    buf_delete(tls_server->socket_buf.buf_rw.r);
     return NULL;
   }
-  *tls_server = tmp;
   return tls_server;
 }

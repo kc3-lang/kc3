@@ -477,14 +477,10 @@ int main (void)
 }
 
 config_have_pthread() {
-    if [ "x$(uname)" = "xDarwin" ]; then
+    if uname -s | grep -qi mingw; then
         config_have PTHREAD false
     else
-	if uname -s | grep -qi mingw; then
-            config_have PTHREAD false
-	else
-            config_have PTHREAD true
-	fi
+        config_have PTHREAD true
     fi
 }
 

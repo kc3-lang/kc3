@@ -182,33 +182,31 @@ uw ops_hash_tag (const s_tag *op_tag)
 
 s_ops * ops_init (s_ops *ops)
 {
-  s_ops tmp = {0};
   assert(ops);
-  if (! ht_init(&tmp.ht, &g_sym_KC3_Op, 256))
+  *ops = (s_ops) {0};
+  if (! ht_init(&ops->ht, &g_sym_KC3_Op, 256))
     return NULL;
-  tmp.ht.compare = ops_compare_tag;
-  tmp.ht.hash = ops_hash_tag;
-  *ops = tmp;
+  ops->ht.compare = ops_compare_tag;
+  ops->ht.hash = ops_hash_tag;
   return ops;
 }
 
 s_ops * ops_init_copy (s_ops *ops, s_ops *src)
 {
   uw i;
-  s_ops tmp = {0};
   assert(ops);
-  if (! ht_init(&tmp.ht, &g_sym_KC3_Op, src->ht.size))
+  *ops = (s_ops) {0};
+  if (! ht_init(&ops->ht, &g_sym_KC3_Op, src->ht.size))
     return NULL;
-  tmp.ht.compare = ops_compare_tag;
-  tmp.ht.hash = ops_hash_tag;
+  ops->ht.compare = ops_compare_tag;
+  ops->ht.hash = ops_hash_tag;
   i = 0;
-  while (i < tmp.ht.size) {
+  while (i < ops->ht.size) {
     if (src->ht.items[i])
-      tmp.ht.items[i] = list_new_copy_all(src->ht.items[i]);
+      ops->ht.items[i] = list_new_copy_all(src->ht.items[i]);
     i++;
   }
-  tmp.ht.count = src->ht.count;
-  *ops = tmp;
+  ops->ht.count = src->ht.count;
   return ops;
 }
 

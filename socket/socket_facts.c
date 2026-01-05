@@ -170,17 +170,16 @@ s_socket_facts * socket_facts_init (s_socket_facts *sf,
                                     const s_str *host,
                                     const s_str *service)
 {
-  s_socket_facts tmp = {0};
   assert(sf);
   assert(host);
   assert(service);
-  if (! socket_buf_init_connect(&tmp.socket, host, service))
+  *sf = (s_socket_facts) {0};
+  if (! socket_buf_init_connect(&sf->socket, host, service))
     return NULL;
-  if (! marshall_init(&tmp.marshall)) {
-    socket_buf_clean(&tmp.socket);
+  if (! marshall_init(&sf->marshall)) {
+    socket_buf_clean(&sf->socket);
     return NULL;
   }
-  *sf = tmp;
   return sf;
 }
 

@@ -1318,7 +1318,7 @@ s_tag * kc3_struct_put (s_tag *s, p_sym *key,
 
 s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
 {
-#ifdef __OpenBSD__
+#if (defined(__OpenBSD__))
   s32 e;
   const s_list *l;
   s32 mib[64];

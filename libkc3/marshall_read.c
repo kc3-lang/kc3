@@ -287,10 +287,10 @@ s_marshall_read * marshall_read_callable (s_marshall_read *mr,
   return NULL;
  ok:
   tmp.ref_count = 1;
-#if HAVE_PTHREAD
-  mutex_init(&tmp.mutex);
-#endif
   *dest = tmp;
+#if HAVE_PTHREAD
+  mutex_init(&dest->mutex);
+#endif
   return mr;
 }
 
@@ -338,10 +338,10 @@ s_marshall_read * marshall_read_cfn (s_marshall_read *mr,
     return NULL;
   }
   tmp.cif_ready = true;
-#if HAVE_PTHREAD
-  mutex_init(&tmp.cif_mutex);
-#endif
   *dest = tmp;
+#if HAVE_PTHREAD
+  mutex_init(&dest->cif_mutex);
+#endif
   return mr;
 }
 
@@ -462,14 +462,14 @@ s_marshall_read *marshall_read_cow (s_marshall_read *mr,
   if (! marshall_read_sym(mr, heap, &tmp.type) ||
       ! marshall_read_list(mr, heap, tmp.list))
         return NULL;
+  tmp.ref_count = 1;
+  *dest = tmp;
 #if HAVE_PTHREAD
-  if (! mutex_init(&tmp.mutex)) {
-    list_clean(tmp.list);
+  if (! mutex_init(&dest->mutex)) {
+    list_clean(dest->list);
     return NULL;
   }
 #endif
-  tmp.ref_count = 1;
-  *dest = tmp;
   return mr;
 }
 
@@ -1163,16 +1163,16 @@ s_marshall_read * marshall_read_header (s_marshall_read *mr)
     assert(! "marshall_read_header: invalid heap count");
     return NULL;
   }
-  if (tmp.heap_count && ! tmp.ht.items) {
-    if (! ht_init(&tmp.ht, &g_sym_Tuple, tmp.heap_count)) {
+  *mr = tmp;
+  if (mr->heap_count && ! mr->ht.items) {
+    if (! ht_init(&mr->ht, &g_sym_Tuple, mr->heap_count)) {
       err_puts("marshall_read_header: ht_init");
       assert(! "marshall_read_header: ht_init");
       return NULL;
     }
-    tmp.ht.compare = marshall_read_ht_compare;
-    tmp.ht.hash = marshall_read_ht_hash;
+    mr->ht.compare = marshall_read_ht_compare;
+    mr->ht.hash = marshall_read_ht_hash;
   }
-  *mr = tmp;
   str_clean(&str);
   return mr;
 }
@@ -1287,41 +1287,39 @@ s_marshall_read * marshall_read_ident (s_marshall_read *mr, bool heap,
 
 s_marshall_read * marshall_read_init (s_marshall_read *mr)
 {
-  s_marshall_read tmp = {0};
   assert(mr);
-  if (! (tmp.heap = alloc(sizeof(s_buf))) ||
-      ! buf_init_alloc(tmp.heap, BUF_SIZE)) {
+  *mr = (s_marshall_read) {0};
+  if (! (mr->heap = alloc(sizeof(s_buf))) ||
+      ! buf_init_alloc(mr->heap, BUF_SIZE)) {
     err_puts("marshall_read_init: heap allocation error");
     assert(! "marshall_read_init: heap allocation error");
     return NULL;
   }
-  if (! (tmp.buf = alloc(sizeof(s_buf))) ||
-      ! buf_init_alloc(tmp.buf, BUF_SIZE)) {
+  if (! (mr->buf = alloc(sizeof(s_buf))) ||
+      ! buf_init_alloc(mr->buf, BUF_SIZE)) {
     err_puts("marshall_read_init: buffer allocation error");
     assert(! "marshall_read_init: buffer allocation error");
-    buf_clean(tmp.heap);
-    free(tmp.heap);
+    buf_clean(mr->heap);
+    free(mr->heap);
     return NULL;
   }
-  *mr = tmp;
   return mr;
 }
 
 s_marshall_read * marshall_read_init_buf (s_marshall_read *mr,
                                           s_buf *buf)
 {
-  s_marshall_read tmp = {0};
   assert(mr);
   assert(buf);
-  if (! (tmp.heap = alloc(sizeof(s_buf))) ||
-      ! buf_init_alloc(tmp.heap, BUF_SIZE)) {
+  *mr = (s_marshall_read) {0};
+  if (! (mr->heap = alloc(sizeof(s_buf))) ||
+      ! buf_init_alloc(mr->heap, BUF_SIZE)) {
     err_puts("marshall_read_init_buf: heap allocation error");
     assert(! "marshall_read_init_buf: heap allocation error");
     return NULL;
   }
-  tmp.buf = buf;
-  tmp.source = buf;
-  *mr = tmp;
+  mr->buf = buf;
+  mr->source = buf;
   return mr;
 }
 
@@ -1344,26 +1342,26 @@ s_marshall_read * marshall_read_init_file (s_marshall_read *mr,
 {
   const char *error_msg = "unknown error";
   FILE *fp;
-  s_marshall_read tmp = {0};
   assert(mr);
   assert(path);
-  if (! marshall_read_init(&tmp))
+  *mr = (s_marshall_read) {0};
+  if (! marshall_read_init(mr))
     return NULL;
   if (! (fp = file_open(path, "rb"))) {
     error_msg = "file_open buf";
     goto ko;
   }
-  if (! buf_file_open_r(tmp.buf, fp)) {
+  if (! buf_file_open_r(mr->buf, fp)) {
     error_msg = "buf_file_open_r buf";
     fclose(fp);
     goto ko;
   }
-  if (! marshall_read_header(&tmp)) {
+  if (! marshall_read_header(mr)) {
     error_msg = "marshall_read_header";
     goto ko_close;
   }
-  if (buf_seek(tmp.buf, sizeof(s_marshall_header) +
-               tmp.heap_size, SEEK_SET) <= 0) {
+  if (buf_seek(mr->buf, sizeof(s_marshall_header) +
+               mr->heap_size, SEEK_SET) <= 0) {
     error_msg = "buf_seek buf";
     goto ko_close;
   }
@@ -1371,76 +1369,74 @@ s_marshall_read * marshall_read_init_file (s_marshall_read *mr,
     error_msg = "file_open heap";
     goto ko_close;
   }
-  if (! buf_file_open_r(tmp.heap, fp)) {
+  if (! buf_file_open_r(mr->heap, fp)) {
     error_msg = "buf_file_open_r heap";
     fclose(fp);
     goto ko_close;
   }
-  if (buf_seek(tmp.heap, sizeof(s_marshall_header), SEEK_SET) <= 0) {
+  if (buf_seek(mr->heap, sizeof(s_marshall_header), SEEK_SET) <= 0) {
     error_msg = "buf_seek heap";
-    buf_file_close(tmp.heap);
+    buf_file_close(mr->heap);
     goto ko_close;
   }
-  *mr = tmp;
   return mr;
  ko_close:
-  buf_file_close(tmp.buf);
+  buf_file_close(mr->buf);
  ko:
   err_write_1("marshall_read_init_file: ");
   err_inspect_str(path);
   err_write_1(": ");
   err_puts(error_msg);
   assert(! "marshall_read_init_file: error");
-  marshall_read_clean(&tmp);
+  marshall_read_clean(mr);
   return NULL;
 }
 
 s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
                                           const s_str *dest)
 {
-  s_marshall_read tmp = {0};
   assert(mr);
-  if (! (tmp.buf = alloc(sizeof(s_buf)))) {
+  *mr = (s_marshall_read) {0};
+  if (! (mr->buf = alloc(sizeof(s_buf)))) {
     err_puts("marshall_read_init_str: buf allocation error");
     assert(! "marshall_read_init_str: buf allocation error");
     return NULL;
   }
-  if (! buf_init_str_copy(tmp.buf, dest)) {
+  if (! buf_init_str_copy(mr->buf, dest)) {
     err_puts("marshall_read_init_str: buf_init_str_copy");
     assert(! "marshall_read_init_str: buf_init_str_copy");
-    free(tmp.buf);
+    free(mr->buf);
     return NULL;
   }
-  if (! marshall_read_header(&tmp)) {
+  if (! marshall_read_header(mr)) {
     err_puts("marshall_read_init_str: marshall_read_header");
     assert(! "marshall_read_init_str: marshall_read_header");
-    buf_clean(tmp.buf);
-    free(tmp.buf);
+    buf_clean(mr->buf);
+    free(mr->buf);
     return NULL;
   }
-  tmp.buf->rpos = sizeof(s_marshall_header) + tmp.heap_size;
-  if (tmp.buf->rpos + tmp.buf_size != tmp.buf->wpos) {
+  mr->buf->rpos = sizeof(s_marshall_header) + mr->heap_size;
+  if (mr->buf->rpos + mr->buf_size != mr->buf->wpos) {
     err_puts("marshall_read_init_str: invalid buffer size");
     assert(! "marshall_read_init_str: invalid buffer size");
-    buf_clean(tmp.buf);
-    free(tmp.buf);
+    buf_clean(mr->buf);
+    free(mr->buf);
     return NULL;
   }
-  if (! (tmp.heap = alloc(sizeof(s_buf)))) {
+  if (! (mr->heap = alloc(sizeof(s_buf)))) {
     err_puts("marshall_read_init_str: heap allocation error");
     assert(! "marshall_read_init_str: heap allocation error");
-    buf_clean(tmp.buf);
-    free(tmp.buf);
+    buf_clean(mr->buf);
+    free(mr->buf);
     return NULL;
   }
-  *tmp.heap = *tmp.buf;
-  tmp.heap->free = false;
-  tmp.heap->rpos = sizeof(s_marshall_header);
-  tmp.heap->wpos = tmp.heap->rpos + tmp.heap_size;
+  *mr->heap = *mr->buf;
+  mr->heap->free = false;
+  mr->heap->rpos = sizeof(s_marshall_header);
+  mr->heap->wpos = mr->heap->rpos + mr->heap_size;
 #if HAVE_PTHREAD
-  rwlock_init(tmp.heap->rwlock);
+  mr->heap->rwlock = rwlock_new();
 #endif
-  *mr = tmp;
   return mr;
 }
 
@@ -2450,11 +2446,13 @@ s_marshall_read * marshall_read_struct (s_marshall_read *mr,
     }
   }
   tmp.ref_count = 1;
-#if HAVE_PTHREAD
-  if (! mutex_init(&tmp.mutex))
-    goto ko;
-#endif
   *dest = tmp;
+#if HAVE_PTHREAD
+  if (! mutex_init(&dest->mutex)) {
+    struct_clean(dest);
+    return NULL;
+  }
+#endif
   return mr;
 ko:
   struct_clean(&tmp);
@@ -2479,13 +2477,13 @@ s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
   if (! marshall_read_pcallable(mr, heap, &tmp.clean))
     return NULL;
   tmp.ref_count = 1;
-#if HAVE_PTHREAD
-  if (! mutex_init(&tmp.mutex))
-    return NULL;
-#endif
   if (tmp.map.count)
     struct_type_update_map(&tmp);
   *dest = tmp;
+#if HAVE_PTHREAD
+  if (! mutex_init(&dest->mutex))
+    return NULL;
+#endif
   return mr;
 }
 
@@ -2762,12 +2760,12 @@ s_marshall_read * marshall_read_var (s_marshall_read *mr,
        ! marshall_read_tag(mr, heap, &tmp.tag)))
     return NULL;
   tmp.ref_count = 1;
+  *dest = tmp;
 #if HAVE_PTHREAD
-  if (! mutex_init(&tmp.mutex)) {
-    var_clean(&tmp);
+  if (! mutex_init(&dest->mutex)) {
+    var_clean(dest);
     return NULL;
   }
 #endif
-  *dest = tmp;
   return mr;
 }

@@ -34,7 +34,7 @@ s_tag * ncpu_tag (s_tag *ncpu)
 #if ! HAVE_PTHREAD
   tag_init_u8(ncpu, 1);
 #else
-# if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+# if defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
   {
     s32 mib[2];
     s32 hw_ncpu;
@@ -64,7 +64,7 @@ u32 ncpu_u32 (void)
 #if ! HAVE_PTHREAD
   return 1;
 #else
-# if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+# if defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
   {
     s32 mib[2];
     s32 hw_ncpu;

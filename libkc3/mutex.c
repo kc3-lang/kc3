@@ -35,15 +35,14 @@ void mutex_delete (s_mutex *mutex)
 
 s_mutex * mutex_init (s_mutex *mutex)
 {
-  s_mutex tmp = {0};
   assert(mutex);
-  if (pthread_mutex_init(&tmp.mutex, NULL)) {
+  *mutex = (s_mutex) {0};
+  if (pthread_mutex_init(&mutex->mutex, NULL)) {
     err_puts("mutex_init: pthread_mutex_init");
     assert(! "mutex_init: pthread_mutex_init");
     abort();
   }
-  tmp.ready = true;
-  *mutex = tmp;
+  mutex->ready = true;
   return mutex;
 }
 

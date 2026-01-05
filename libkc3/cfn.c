@@ -256,24 +256,23 @@ s_cfn * cfn_init (s_cfn *cfn, const s_sym *c_name, s_list *arg_types,
                   const s_sym *result_type)
 {
   sw arity;
-  s_cfn tmp = {0};
   assert(cfn);
   assert(c_name);
   assert(result_type);
-  tmp.c_name = c_name;
-  tmp.arg_types = arg_types;
-  arity = list_length(tmp.arg_types);
+  arity = list_length(arg_types);
   if (arity > 255) {
     err_puts("cfn_init: arity > 255");
     assert(arity <= 255);
     return NULL;
   }
-  tmp.arity = arity;
-  tmp.result_type = result_type;
+  *cfn = (s_cfn) {0};
+  cfn->c_name = c_name;
+  cfn->arg_types = arg_types;
+  cfn->arity = arity;
+  cfn->result_type = result_type;
 #if HAVE_PTHREAD
-  mutex_init(&tmp.cif_mutex);
+  mutex_init(&cfn->cif_mutex);
 #endif
-  *cfn = tmp;
   return cfn;
 }
 
@@ -304,35 +303,34 @@ s_cfn * cfn_init_cast (s_cfn *cfn, const s_sym * const *type,
 
 s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
 {
-  s_cfn tmp = {0};
   assert(src);
   assert(cfn);
-  tmp.c_name = src->c_name;
-  tmp.name = src->name;
-  tmp.arg_result = src->arg_result;
+  *cfn = (s_cfn) {0};
+  cfn->c_name = src->c_name;
+  cfn->name = src->name;
+  cfn->arg_result = src->arg_result;
   if (src->arg_types &&
-      ! (tmp.arg_types = list_new_copy_all(src->arg_types)))
+      ! (cfn->arg_types = list_new_copy_all(src->arg_types)))
     return NULL;
-  tmp.arity = src->arity;
-  tmp.cif = src->cif;
+  cfn->arity = src->arity;
+  cfn->cif = src->cif;
   if (src->arity && src->cif.arg_types) {
-    tmp.cif.arg_types = alloc((src->cif.nargs + 1) *
-                              sizeof(ffi_type *));
-    if (! tmp.cif.arg_types) {
-      list_delete_all(tmp.arg_types);
+    cfn->cif.arg_types = alloc((src->cif.nargs + 1) *
+                               sizeof(ffi_type *));
+    if (! cfn->cif.arg_types) {
+      list_delete_all(cfn->arg_types);
       return NULL;
     }
-    memcpy(tmp.cif.arg_types, src->cif.arg_types,
+    memcpy(cfn->cif.arg_types, src->cif.arg_types,
            (src->cif.nargs + 1) * sizeof(ffi_type *));
   }
-  tmp.result_type = src->result_type;
-  tmp.ptr = src->ptr;
-  tmp.macro = src->macro;
-  tmp.special_operator = src->special_operator;
+  cfn->result_type = src->result_type;
+  cfn->ptr = src->ptr;
+  cfn->macro = src->macro;
+  cfn->special_operator = src->special_operator;
 #if HAVE_PTHREAD
-  mutex_init(&tmp.cif_mutex);
+  mutex_init(&cfn->cif_mutex);
 #endif
-  *cfn = tmp;
   return cfn;
 }
 

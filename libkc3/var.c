@@ -67,7 +67,6 @@ void var_delete (s_var *var)
 
 s_var * var_init (s_var *var, const s_sym *type)
 {
-  s_var tmp = {0};
   assert(var);
   assert(type);
   if (! sym_is_module(type)) {
@@ -77,26 +76,24 @@ s_var * var_init (s_var *var, const s_sym *type)
     assert(! "var_init: invalid type");
     return NULL;
   }
-  tmp.type = type;
+  *var = (s_var) {0};
+  var->type = type;
+  var->ref_count = 1;
 #if HAVE_PTHREAD
-  mutex_init(&tmp.mutex);
+  mutex_init(&var->mutex);
 #endif
-  tmp.ref_count = 1;
-  *var = tmp;
   return var;
 }
 
 s_var * var_init_copy (s_var *var, s_var *src)
 {
-  s_var tmp = {0};
   assert(var);
   assert(src);
-  if (! var_init(&tmp, src->type))
+  if (! var_init(var, src->type))
     return NULL;
-  tmp.bound = src->bound;
-  if (tmp.bound)
-    tag_init_copy(&tmp.tag, &src->tag);
-  *var = tmp;
+  var->bound = src->bound;
+  if (var->bound)
+    tag_init_copy(&var->tag, &src->tag);
   return var;
 }
 

@@ -77,35 +77,34 @@ s_socket_buf * socket_buf_init (s_socket_buf *sb, s64 sockfd,
                                 struct sockaddr *addr,
                                 u32 addr_len)
 {
-  s_socket_buf tmp = {0};
   assert(sb);
   assert(sockfd >= 0);
   assert(addr);
   assert(addr_len);
-  if (! buf_rw_init_alloc(&tmp.buf_rw, BUF_SIZE)) {
+  *sb = (s_socket_buf) {0};
+  if (! buf_rw_init_alloc(&sb->buf_rw, BUF_SIZE)) {
     err_puts("socket_buf_init: buf_rw_init_alloc");
     assert(! "socket_buf_init: buf_rw_init_alloc");
     return NULL;
   }
-  tmp.buf_rw.r->user_ptr = sb;
-  tmp.buf_rw.w->user_ptr = sb;
-  if (! buf_rw_fd_open(&tmp.buf_rw, sockfd)) {
+  sb->buf_rw.r->user_ptr = sb;
+  sb->buf_rw.w->user_ptr = sb;
+  if (! buf_rw_fd_open(&sb->buf_rw, sockfd)) {
     err_puts("socket_buf_init: buf_rw_fd_open");
     assert(! "socket_buf_init: buf_rw_fd_open");
     close(sockfd);
-    buf_rw_clean(&tmp.buf_rw);
+    buf_rw_clean(&sb->buf_rw);
     return NULL;
   }
-  tmp.sockfd = sockfd;
-  tmp.addr = socket_addr_new_copy(addr, addr_len);
-  if (! tmp.addr) {
+  sb->sockfd = sockfd;
+  sb->addr = socket_addr_new_copy(addr, addr_len);
+  if (! sb->addr) {
     err_puts("socket_buf_init: socket_addr_new_copy");
     assert(! "socket_buf_init: socket_addr_new_copy");
     return NULL;
   }
-  socket_addr_to_str(&tmp.addr_str, addr, addr_len);
-  tmp.addr_len = addr_len;
-  *sb = tmp;
+  socket_addr_to_str(&sb->addr_str, addr, addr_len);
+  sb->addr_len = addr_len;
   return sb;
 }
 
@@ -115,7 +114,6 @@ s_socket_buf * socket_buf_init_accept (s_socket_buf *sb, p_socket listening)
   struct sockaddr_storage addr_storage = {0};
   socklen_t               addr_len;
   s64 sockfd;
-  s_socket_buf tmp = {0};
   assert(sb);
   assert(listening);
   addr = (struct sockaddr *) &addr_storage;
@@ -123,13 +121,12 @@ s_socket_buf * socket_buf_init_accept (s_socket_buf *sb, p_socket listening)
   sockfd = accept(*listening, addr, &addr_len);
   if (sockfd < 0)
     return NULL;
-  if (! socket_buf_init(&tmp, sockfd, addr, addr_len)) {
+  if (! socket_buf_init(sb, sockfd, addr, addr_len)) {
     err_puts("socket_buf_init_accept: socket_buf_init");
     assert(! "socket_buf_init_accept: socket_buf_init");
     close(sockfd);
     return NULL;
   }
-  *sb = tmp;
   return sb;
 }
 

@@ -1168,15 +1168,14 @@ s_marshall * marshall_ident (s_marshall *m, bool heap,
 
 s_marshall * marshall_init (s_marshall *m)
 {
-  s_marshall tmp = {0};
-  if (! ht_init(&tmp.ht, &g_sym_Tag, 1024) ||
-    ! buf_init_alloc(&tmp.heap, 128 * 1024 * 1024))
+  *m = (s_marshall) {0};
+  if (! ht_init(&m->ht, &g_sym_Tag, 1024) ||
+    ! buf_init_alloc(&m->heap, 128 * 1024 * 1024))
     return NULL;
-  if (! buf_init_alloc(&tmp.buf, 128 * 1024 * 1024)) {
-    buf_delete(&tmp.heap);
+  if (! buf_init_alloc(&m->buf, 128 * 1024 * 1024)) {
+    buf_delete(&m->heap);
     return NULL;
   }
-  *m = tmp;
   return m;
 }
 

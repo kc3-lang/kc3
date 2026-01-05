@@ -154,22 +154,21 @@ bool ht_has (s_ht *ht, const s_tag *key)
 
 s_ht * ht_init (s_ht *ht, const s_sym *type, uw size)
 {
-  s_ht tmp = {0};
   assert(ht);
   assert(type);
   assert(size);
-  tmp.type = type;
-  tmp.size = size;
-  if (! (tmp.items = alloc(size * sizeof(s_list *))))
+  *ht = (s_ht) {0};
+  ht->type = type;
+  ht->size = size;
+  if (! (ht->items = alloc(size * sizeof(s_list *))))
     return NULL;
-  tmp.compare = compare_tag;
-  tmp.hash = hash_tag;
-  tmp.ref_count = 1;
+  ht->compare = compare_tag;
+  ht->hash = hash_tag;
+  ht->ref_count = 1;
 #if HAVE_PTHREAD
-  rwlock_init(&tmp.rwlock);
-  mutex_init(&tmp.ref_count_mutex);
+  rwlock_init(&ht->rwlock);
+  mutex_init(&ht->ref_count_mutex);
 #endif
-  *ht = tmp;
   return ht;
 }
 

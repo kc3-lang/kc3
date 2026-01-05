@@ -30,32 +30,31 @@ s_facts_with_cursor * facts_with (s_facts *facts,
                                   p_facts_spec spec)
 {
   uw facts_count;
-  s_facts_with_cursor tmp = {0};
   assert(facts);
   assert(cursor);
   assert(spec);
   facts_count = facts_spec_count_facts(spec);
-  tmp.facts = facts;
-  tmp.facts_count = facts_count;
+  *cursor = (s_facts_with_cursor) {0};
+  cursor->facts = facts;
+  cursor->facts_count = facts_count;
   if (facts_count > 0) {
-    tmp.levels = alloc(facts_count *
-                       sizeof(s_facts_with_cursor_level));
-    if (! tmp.levels)
+    cursor->levels = alloc(facts_count *
+                           sizeof(s_facts_with_cursor_level));
+    if (! cursor->levels)
       return NULL;
-    tmp.spec = facts_spec_new_expand(spec);
+    cursor->spec = facts_spec_new_expand(spec);
     if (false) {
       err_write_1("facts_with: spec = ");
       err_inspect_facts_spec(spec);
-      err_write_1("\nfacts_with: tmp.spec = ");
-      err_inspect_facts_spec(tmp.spec);
+      err_write_1("\nfacts_with: cursor->spec = ");
+      err_inspect_facts_spec(cursor->spec);
       err_write_1("\n");
     }
-    /* facts_spec_sort(tmp.spec); */
+    /* facts_spec_sort(cursor->spec); */
   }
 #if HAVE_PTHREAD
-  mutex_init(&tmp.mutex);
+  mutex_init(&cursor->mutex);
 #endif
-  *cursor = tmp;
   return cursor;
 }
 

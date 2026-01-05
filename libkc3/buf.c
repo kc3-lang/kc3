@@ -407,6 +407,8 @@ s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
   tmp.size = size;
 #if HAVE_PTHREAD
   tmp.rwlock = rwlock_new();
+  if (! tmp.rwlock)
+    return NULL;
 #endif
   *buf = tmp;
   return buf;

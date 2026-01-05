@@ -279,8 +279,8 @@ void * struct_get_w (s_struct *s, const s_sym *key)
 s_struct * struct_init (s_struct *s, const s_sym *module)
 {
   p_struct_type st = NULL;
-  s_struct tmp = {0};
   assert(s);
+  *s = (s_struct) {0};
   if (module) {
     if (! pstruct_type_find(module, &st)) {
       err_write_1("struct_init: struct_type_find(");
@@ -296,7 +296,7 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
       assert(! "struct_init: struct_type not found");
       return NULL;
     }
-    if (! pstruct_type_init_copy(&tmp.pstruct_type, &st)) {
+    if (! pstruct_type_init_copy(&s->pstruct_type, &st)) {
       err_write_1("struct_init: pstruct_type_init_copy: ");
       err_inspect_sym(module);
       err_write_1("\n");
@@ -304,11 +304,10 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
       return NULL;
     }
   }
-  tmp.ref_count = 1;
+  s->ref_count = 1;
 #if HAVE_PTHREAD
-  mutex_init(&tmp.mutex);
+  mutex_init(&s->mutex);
 #endif
-  *s = tmp;
   return s;
 }
 
@@ -316,56 +315,55 @@ s_struct * struct_init_copy (s_struct *s, s_struct *src)
 {
   uw i;
   s_tag *key = NULL;
-  s_struct tmp = {0};
   const s_sym *type;
   s_tag *value = NULL;
   assert(s);
   assert(src);
   assert(src->pstruct_type);
-  tmp.ref_count = 1;
-  if (! pstruct_type_init_copy(&tmp.pstruct_type, &src->pstruct_type))
+  *s = (s_struct) {0};
+  s->ref_count = 1;
+  if (! pstruct_type_init_copy(&s->pstruct_type, &src->pstruct_type))
     return NULL;
   if (src->data) {
-    tmp.data = alloc(tmp.pstruct_type->size);
-    if (! tmp.data)
+    s->data = alloc(s->pstruct_type->size);
+    if (! s->data)
       return NULL;
-    tmp.free_data = true;
+    s->free_data = true;
     i = 0;
-    while (i < tmp.pstruct_type->map.count) {
-      key = tmp.pstruct_type->map.key + i;
-      value = tmp.pstruct_type->map.value + i;
+    while (i < s->pstruct_type->map.count) {
+      key = s->pstruct_type->map.key + i;
+      value = s->pstruct_type->map.value + i;
       if (key->data.psym->str.ptr.pchar[0] != '_') {
         if (value->type == TAG_PVAR)
           type = value->data.pvar->type;
         else if (! tag_type(value, &type))
           goto ko;
-        if (! data_init_copy(type, (s8 *) tmp.data +
-                             tmp.pstruct_type->offset[i],
+        if (! data_init_copy(type, (s8 *) s->data +
+                             s->pstruct_type->offset[i],
                              (s8 *) src->data +
-                             tmp.pstruct_type->offset[i]))
+                             s->pstruct_type->offset[i]))
           goto ko;
       }
       i++;
     }
   }
   else if (src->tag) {
-    tmp.tag = alloc(tmp.pstruct_type->map.count * sizeof(s_tag));
-    if (! tmp.tag)
+    s->tag = alloc(s->pstruct_type->map.count * sizeof(s_tag));
+    if (! s->tag)
       return NULL;
     i = 0;
-    while (i < tmp.pstruct_type->map.count) {
-      if (! tag_init_copy(tmp.tag + i, src->tag + i))
+    while (i < s->pstruct_type->map.count) {
+      if (! tag_init_copy(s->tag + i, src->tag + i))
         goto ko;
       i++;
     }
   }
 #if HAVE_PTHREAD
-  mutex_init(&tmp.mutex);
+  mutex_init(&s->mutex);
 #endif
-  *s = tmp;
   return s;
  ko:
-  struct_clean(&tmp);
+  struct_clean(s);
   return NULL;
 }
 
@@ -375,18 +373,17 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
 {
   uw i;
   s_list *k;
-  s_struct tmp = {0};
   s_list *v;
   assert(s);
   assert(module);
   assert(list_length(keys) == list_length(values));
-  if (! struct_init(&tmp, module))
+  if (! struct_init(s, module))
     return NULL;
-  tmp.tag = alloc(tmp.pstruct_type->map.count * sizeof(s_tag));
-  if (! tmp.tag)
+  s->tag = alloc(s->pstruct_type->map.count * sizeof(s_tag));
+  if (! s->tag)
     return NULL;
   i = 0;
-  while (i < tmp.pstruct_type->map.count) {
+  while (i < s->pstruct_type->map.count) {
     k = keys;
     v = values;
     while (k && v) {
@@ -399,8 +396,8 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
       }
       if (k->tag.data.psym->str.ptr.pchar[0] != '_') {
         if (k->tag.data.psym ==
-            tmp.pstruct_type->map.key[i].data.psym) {
-          if (! tag_init_copy(tmp.tag + i, &v->tag))
+            s->pstruct_type->map.key[i].data.psym) {
+          if (! tag_init_copy(s->tag + i, &v->tag))
             goto ko;
           goto next;
         }
@@ -408,15 +405,14 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
       k = list_next(k);
       v = list_next(v);
     }
-    if (! tag_init_copy(tmp.tag + i, tmp.pstruct_type->map.value + i))
+    if (! tag_init_copy(s->tag + i, s->pstruct_type->map.value + i))
       goto ko;
   next:
     i++;
   }
-  *s = tmp;
   return s;
  ko:
-  struct_clean(&tmp);
+  struct_clean(s);
   return NULL;
 }
 
@@ -424,7 +420,6 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
                                   void *data, bool free_data)
 {
   p_struct_type st;
-  s_struct tmp = {0};
   assert(s);
   assert(module);
   if (! pstruct_type_find(module, &st))
@@ -436,29 +431,28 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
     assert(! "struct_init_with_data: struct_type not found");
     return NULL;
   }
-  if (! pstruct_type_init_copy(&tmp.pstruct_type, &st))
+  *s = (s_struct) {0};
+  if (! pstruct_type_init_copy(&s->pstruct_type, &st))
     return NULL;
-  tmp.data = data;
-  tmp.free_data = free_data;
-  tmp.ref_count = 1;
+  s->data = data;
+  s->free_data = free_data;
+  s->ref_count = 1;
 #if HAVE_PTHREAD
-  mutex_init(&tmp.mutex);
+  mutex_init(&s->mutex);
 #endif
-  *s = tmp;
   return s;
 }
 
 s_struct * struct_init_with_type (s_struct *s, s_struct_type *st)
 {
-  s_struct tmp = {0};
   assert(s);
   assert(st);
-  pstruct_type_init_copy(&tmp.pstruct_type, &st);
-  tmp.ref_count = 1;
+  *s = (s_struct) {0};
+  pstruct_type_init_copy(&s->pstruct_type, &st);
+  s->ref_count = 1;
 #if HAVE_PTHREAD
-  mutex_init(&tmp.mutex);
+  mutex_init(&s->mutex);
 #endif
-  *s = tmp;
   return s;
 }
 
