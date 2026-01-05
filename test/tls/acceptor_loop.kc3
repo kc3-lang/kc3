@@ -91,7 +91,7 @@ else
   end
   puts("client2: adding fact")
   Facts.add_tags(client2_facts, :client2, :says, :world)
-  sleep(2)
+  sleep(4)
 
   ## Check facts on client1
   puts("client1: checking for facts")
