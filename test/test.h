@@ -19,7 +19,7 @@
 #include "../libkc3/io.h"
 
 #define TEST_COLOR_KO "\033[0;91m"
-#define TEST_COLOR_OK "\033[0;92m"
+#define TEST_COLOR_OK "\033[0;32m"
 #define TEST_COLOR_RESET "\033[0m"
 
 #define TEST_ASSERT(test)                                              \
