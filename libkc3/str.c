@@ -304,7 +304,6 @@ void str_clean (s_str *str)
 {
   assert(str);
   if (str->free.p) {
-    explicit_bzero(str->free.p, str->size + 1);
     free(str->free.p);
     str->free.p = NULL;
   }
@@ -2116,4 +2115,10 @@ s_str * str_trim (const s_str *str, s_str *dest)
   memcpy(tmp.free.p, str->ptr.pu8 + start, size);
   *dest = tmp;
   return dest;
+}
+
+void str_zero (s_str *str)
+{
+  if (str->free.p)
+    explicit_bzero(str->free.p, str->size + 1);
 }
