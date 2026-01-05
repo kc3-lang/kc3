@@ -73,7 +73,7 @@ else
   sleep(1)
   puts("client: adding fact")
   Facts.add_tags(client_facts, :a, :b, :c)
-  sleep(1)
+  sleep(4)
   puts("client: checking for server facts")
   Facts.with_tags(client_facts, ?, ?, ?, fn (fact) {
     puts("client: has #{inspect(fact)}")
