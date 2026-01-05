@@ -3,12 +3,7 @@ server: waiting for connection
 client: connecting to 15002
 server: accepted connection, waiting for facts
 client: adding fact
-server: received %FactW{subject: :a,
-       predicate: :b,
-       object: :c,
-       id: (Uw) 0}
 server: adding server fact
-server: OK
 client: checking for server facts
 client: has %FactW{subject: :a,
        predicate: :b,
@@ -19,3 +14,12 @@ client: has %FactW{subject: :server,
        object: :hello,
        id: (Uw) 0}
 client: OK
+server: received %FactW{subject: :a,
+       predicate: :b,
+       object: :c,
+       id: (Uw) 0}
+server: received %FactW{subject: :server,
+       predicate: :says,
+       object: :hello,
+       id: (Uw) 0}
+server: OK

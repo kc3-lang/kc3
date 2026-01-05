@@ -28,12 +28,12 @@ if r == 0 do
   Socket.close(server)
   puts("server: accepted connection, waiting for facts")
   sleep(2)
+  puts("server: adding server fact")
+  Facts.add_tags(server_facts, :server, :says, :hello)
+  sleep(4)
   Facts.with_tags(server_facts, ?, ?, ?, fn (fact) {
     puts("server: received #{inspect(fact)}")
   })
-  puts("server: adding server fact")
-  Facts.add_tags(server_facts, :server, :says, :hello)
-  sleep(1)
   puts("server: OK")
   Socket.Facts.close(server_facts)
   Facts.delete(server_facts)
@@ -63,5 +63,6 @@ else
   Facts.delete(client_facts)
   File.unlink("client_test.facts")
   puts("client: OK")
+  wait()
 end
 0
