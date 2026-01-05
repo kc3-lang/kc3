@@ -16,7 +16,6 @@
 TEST_RUNNER="$1"
 TARGET="$2"
 
-printf " %s" "${TARGET}"
 RESULT=test_ok
 ${TEST_RUNNER} --bool-ptr --load ${TARGET}.kc3 --quit > ${TARGET}.out 2>&1
 echo $? > ${TARGET}.ret
@@ -30,10 +29,10 @@ if ! diff -abu ${TARGET}.ret.expected ${TARGET}.ret \
 then
     RESULT=test_ko
 fi
+printf " %s" "${TARGET}"
 if [ "x$RESULT" = "xtest_ok" ]; then
     rm ${TARGET}.diff
     test_ok ${TARGET}
 else
     test_ko ${TARGET}
 fi
-printf "\n"
