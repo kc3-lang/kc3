@@ -1,4 +1,4 @@
-# KC3 v0.1.16 🎄
+# KC3 v0.1.17-git
 
 "The first graph-native programming language"
 
@@ -10,7 +10,7 @@ You can easily convert each KC3 function to a C function. KC3 is both
 a language and a runtime.
 
 This is a development branch, for the latest release see
-[KC3 v0.1.15](https://git.kmx.io/kc3-lang/kc3/_tree/v0.1.15).
+[KC3 v0.1.16](https://git.kmx.io/kc3-lang/kc3/_tree/v0.1.16).
 
 KC3 is currently a programming language project, inspired by C, Elixir
 and Common Lisp. It could be described as C with Elixir modules,
@@ -47,6 +47,7 @@ Supported architectures :
  - aarch64 (arm64, Apple M1, Apple M2)
  - amd64
  - i386
+ - macppc
  - sparc64
 
 To install and test KC3 for yourself, you can follow the
@@ -65,135 +66,30 @@ There are now four full applications written in KC3 that we know of :
    everywhere. We donate to OpenBSD every month because a healthy
    software ecosystem is a funded ecosystem.
 
+Our next project is to make git.kmx.io in KC3 and for that we have
+to implement the missing parts in KC3.
+
+
 ## New in this release
 
  - libkc3
-   - dlopen inside lib/ only
-   - Generic typed pointers : `(U8*) 0x0`
-   - make `kc3_require` and `env_eval_do_block` more careful about error
-     handling
-   - MP-safe integer counters : `defcounter name = value`
-     - environment hash table for name resolution
-     - mp-safe
-     - `Counter.decrease(Ident, Tag)` as a `cfn_macro`, Tag must be a
-       positive integer (non-zero)
-     - `Counter.get(Ident)` as a `cfn_macro`
-     - `Counter.increase(Ident, Tag)` as a `cfn_macro`, Tag must be a
-       positive integer (non-zero)
-     - `Counter` module included at init
-   - unveil supported on OpenBSD
-   - pledge supported on OpenBSD
-   - rename f128 to f80: long double is actually 80 bits precision on
-     x86 and amd64
-   - followed System-V ABI documentation for struct alignment and
-     padding, works on amd64, arm64, i386 and sparc64 (marshalling and
-     unmarshalling is portable across all these architectures)
+   - allow for log hooks (a C function callback with a user pointer)
+     in the facts database
+ 
+ - Socket
+   - `Socket.Facts` allows for bi-directional synchronization of an
+     existing `Facts.database()` over a TCP socket.
+   - `Socket.Facts.accept` accepts connections one by one.
 
- - libtls
-   - basic TLS client and server in test/tls/tls.kc3
-
- - ikc3
-   - Remote procedure call
-     - client : ikc3 --client HOST PORT
-       - opens a prompt on stdin and forwards parsed tags to server
-         using `RPC.request("input")`
-       - reads structured response from server :
-         ```elixir
-         %RPC.Response{out: "plop\n",
-                       err: "warning: message\n",
-                       result: (Sw) 5}
-         ```
-     - server : ikc3 --server HOST PORT
-       - accepts only one connection and exits
-       - works with netcat (no prompt)
-     - TLS with libtls : ikc3 --tls (--client|--server) HOST PORT
-       - "ikc3: TLS server: listening on HOST PORT"
-       - "ikc3: TLS server: client connected: HOST PORT TLS-1.3"
-       - "ikc3: TLS client: connected to HOST PORT TLS-1.3"
-   - ship ikc3 as a standalone file that links to the right lib directory
-     on MacOS, this way you can open ikc3 using Finder in a Terminal.app
-     and the dynamic libraries will still be found (require Socket loads
-     the socket library for instance, through dlopen)
-
- - build system
-   - use `runj` to parallelize configure and update_sources
-   - use `sort` to have a portable sort algorithm that gives consistent
-     results across all operating systems.
-
- - test infrastructure
-   - modular test infrastructure with test/test.subr and
-     test/test_runner
-   - use `runj` to call test_runner in parallel
-   - removed `sleep 2` that slowed each ikc3 test
-   - all test suites run in under 30 seconds now compared to
-     more than 5 minutes before
-
- - HTTPd
-   - limit acceptor loop using defcounter
-   - achieved securelevel(2) after load_app() by moving all
-     `def*` into proper modules and using `defcounter`
-   - apply unveil filesystem access permissions on OpenBSD
-     - current dir (./) is read-only and ./log and ./db are read-write
-     - using kc3 unveil wrapper that soft fails on other systems
-     - on OpenBSD a failed unveil call aborts the program into the
-       debugger
-   - apply unrevokable restrictions on future syscalls on OpenBSD using
-     pledge(2)
-
- - window
-   - demo
-     - unified all OpenGL demos under window/demo
-   - SDL2
-     - OpenGLESv3
-       - Use [Angle](https://github.com/google/angle) GLESv3
-         implementation with Metal backend on MacOS. This provides
-         SDL2 with an EGL/GLESv3 driver on MacOS despite OpenGL support
-         being dropped by Apple.
-   - EGL backend
-     - XCB backend for X11
-     - VT backend on Linux and OpenBSD using DRM KMS and GBM
-
- - kc3s supports the following command line arguments :
-   - RPC
-     - --server 127.0.0.1 1026
-     - --client 127.0.0.1 1026
-   - TLS
-     - --tls
-     - --tls --server 127.0.0.1 1026
-     - --tls --client 127.0.0.1 1026
-
-   - additionnaly code was deduplicated from ikc3 and kc3s to share the
-     same source file for both binaries
-
- - kpkg - KC3 package manager
-   - written in 3 days in KC3 + C
-   - Argument parsing as a `while` loop with `with` pattern matching
-     (like Elixir)
-   - Added repo definitions for :
-     - [freetype](https://git.kmx.io/kc3-lang/freetype)
-     - [kc3](https://git.kmx.io/kc3-lang/kc3)
-     - [libbsd](https://git.kmx.io/kc3-lang/libbsd)
-     - [libevent](https://git.kmx.io/kc3-lang/libevent)
-     - [libffi](https://git.kmx.io/kc3-lang/libffi)
-     - [libmd](https://git.kmx.io/kc3-lang/libmd)
-     - [libpng](https://git.kmx.io/kc3-lang/libpng)
-     - [libressl](https://git.kmx.io/kc3-lang/libressl)
-   - supports cross compilation
-   - used as main platform for compiling kc3 and dependencies for
-     Android
-
- - release engineering
-   - compressed dmg with large icons and a nice arrow pointing to
-     applications symlink
-     - mac release binaries work from any absolute path and use
-       relative paths to find dynamic libraries
-   - debian package building from sources
-   - gentoo overlay and ebuilds for
-     - kc3
-     - kmx_sort
-     - runj
-
- - removed unused/merged branches
+ - TLS
+   - TLS.Facts allows for bi-directional synchronization of an existing
+     `Facts.database()` over a TLS encrypted connection after a
+     successful HMAC-SHA256 shared secret authentication
+     challenge/response.
+   - `TLS.Facts.accept` accepts connections one by one.
+   - `TLS.Facts.acceptor_loop` starts a thread and calls `accept()`
+     in a loop.
+   - `TLS.Facts.acceptor_loop_join()` stops the acceptor loop cleanly.
 
 ## Discord invite
 
