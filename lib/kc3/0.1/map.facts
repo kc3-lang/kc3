@@ -11,3 +11,5 @@ replace {Map.to_list, :symbol_value, fn (%{} = map) {
 }}
 add {Map, :symbol, Map.put}
 replace {Map.put, :symbol_value, cfn Map "map_put" (Map, Tag, Tag, Result)}
+add {Map, :symbol, Map.keys}
+replace {Map.keys, :symbol_value, cfn List "map_keys" (Map, Result)}

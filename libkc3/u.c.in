@@ -22,6 +22,7 @@
 #endif
 #include "hash.h"
 #include "integer.h"
+#include "kc3_main.h"
 #include "ratio.h"
 #include "sym.h"
 #include "str.h"
@@ -136,6 +137,26 @@ u_bits$ * u_bits$_init_str (u_bits$ *u, const s_str *str)
   buf_init_str_const(&buf, str);
   r = buf_parse_u_bits$(&buf, &tmp);
   buf_clean(&buf);
+  if (r <= 0) {
+    if (false) {
+      err_puts("u_bits$_init_str: buf_parse_u_bits$");
+      err_inspect_stacktrace(env_global()->stacktrace);
+      err_write_1("\n");
+      assert(! "u_bits$_init_str: buf_parse_u_bits$");
+    }
+    return NULL;
+  }
+  *u = tmp;
+  return u;
+}
+
+u_bits$ * u_bits$_init_str_hexadecimal (u_bits$ *u, const s_str *str)
+{
+  s_buf buf;
+  sw r;
+  u_bits$ tmp = 0;
+  buf_init_str_const(&buf, str);
+  r = buf_parse_u_bits$_base(&buf, g_kc3_bases_hexadecimal, &tmp);
   if (r <= 0) {
     if (false) {
       err_puts("u_bits$_init_str: buf_parse_u_bits$");

@@ -575,6 +575,17 @@ s_tag * tag_init_str_1_alloc (s_tag *tag, const char *p)
   return tag;
 }
 
+s_tag * tag_init_str_alloc (s_tag *tag, uw size)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_STR;
+  if (! str_init_alloc(&tmp.data.str, size))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_str_alloc_copy (s_tag *tag, uw size, const char *p)
 {
   s_tag tmp = {0};
@@ -1434,6 +1445,20 @@ s_tag * tag_new_str_1_alloc (const char *p)
   return tag;
 }
 
+s_tag * tag_new_str_alloc (uw size)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_STR;
+  if (! str_init_alloc(&tag->data.str, size)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
 s_tag * tag_new_str_alloc_copy (uw size, const char *p)
 {
   s_tag *tag;
@@ -2262,6 +2287,18 @@ s_tag * tag_str_1_alloc (s_tag *tag, const char *p)
   tag_clean(tag);
   tmp.type = TAG_STR;
   if (! str_init_1_alloc(&tmp.data.str, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_str_alloc (s_tag *tag, uw size)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_STR;
+  if (! str_init_alloc(&tmp.data.str, size))
     return NULL;
   *tag = tmp;
   return tag;

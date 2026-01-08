@@ -24,6 +24,7 @@ u64 * u64_init_cast
 
 u64 * u64_init_copy (u64 *u, u64 src);
 u64 * u64_init_str (u64 *u, const s_str *str);
+u64 * u64_init_str_hexadecimal (u64 *u, const s_str *str);
 
 uw *      u64_hash_uw (u64 u, uw *dest);
 u64 * u64_random (u64 *u);

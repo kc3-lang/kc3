@@ -648,40 +648,41 @@ s_str * str_init_concatenate (s_str *str, const s_str *a,
 
 s_str * str_init_concatenate_list (s_str *str, const s_list *list)
 {
-  const s_list *l;
+  const s_list *li;
   char *p;
-  s_list *str_list = NULL;
+  s_list *str_list;
   const s_sym *sym_Str = &g_sym_Str;
   s_list **tail;
   s_str tmp = {0};
-  l = list;
+  li = list;
+  str_list = NULL;
   tail = &str_list;
-  while (l) {
-    if (! (*tail = list_new_str_cast(&sym_Str, &l->tag, NULL))) {
+  while (li) {
+    if (! (*tail = list_new_str_cast(&sym_Str, &li->tag, NULL))) {
       list_delete_all(str_list);
       return NULL;
     }
     tmp.size += (*tail)->tag.data.str.size;
     tail = &(*tail)->next.data.plist;
-    l = list_next(l);
+    li = list_next(li);
   }
   if (! str_init_alloc(&tmp, tmp.size)) {
     list_delete_all(str_list);
     return NULL;
   }
   p = tmp.free.pchar;
-  l = str_list;
-  while (l) {
-    if (p + l->tag.data.str.size > tmp.free.pchar + tmp.size) {
+  li = str_list;
+  while (li) {
+    if (p + li->tag.data.str.size > tmp.free.pchar + tmp.size) {
       err_puts("str_init_concatenate_list: buffer overflow");
       assert(! "str_init_concatenate_list: buffer overflow");
       str_clean(&tmp);
       list_delete_all(str_list);
       return NULL;
     }
-    memcpy(p, l->tag.data.str.ptr.p, l->tag.data.str.size);
-    p += l->tag.data.str.size;
-    l = list_next(l);
+    memcpy(p, li->tag.data.str.ptr.p, li->tag.data.str.size);
+    p += li->tag.data.str.size;
+    li = list_next(li);
   }
   list_delete_all(str_list);
   *str = tmp;

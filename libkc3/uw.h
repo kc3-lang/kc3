@@ -24,6 +24,7 @@ uw * uw_init_cast
 
 uw * uw_init_copy (uw *u, uw src);
 uw * uw_init_str (uw *u, const s_str *str);
+uw * uw_init_str_hexadecimal (uw *u, const s_str *str);
 
 uw *      uw_hash_uw (uw u, uw *dest);
 uw * uw_random (uw *u);

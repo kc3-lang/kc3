@@ -24,6 +24,7 @@ u_bits$ * u_bits$_init_cast
 
 u_bits$ * u_bits$_init_copy (u_bits$ *u, u_bits$ src);
 u_bits$ * u_bits$_init_str (u_bits$ *u, const s_str *str);
+u_bits$ * u_bits$_init_str_hexadecimal (u_bits$ *u, const s_str *str);
 
 uw *      u_bits$_hash_uw (u_bits$ u, uw *dest);
 u_bits$ * u_bits$_random (u_bits$ *u);

@@ -189,12 +189,10 @@ uw counter_ht_hash (const s_tag *x)
 
 s_ht * counter_ht_init (s_ht *ht)
 {
-  s_ht tmp = {0};
-  if (! ht_init(&tmp, &g_sym_Ident, 1024))
+  if (! ht_init(ht, &g_sym_Ident, 1024))
     return NULL;
-  tmp.compare = counter_ht_compare;
-  tmp.hash = counter_ht_hash;
-  *ht = tmp;
+  ht->compare = counter_ht_compare;
+  ht->hash = counter_ht_hash;
   return ht;
 }
 

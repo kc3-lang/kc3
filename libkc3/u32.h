@@ -24,6 +24,7 @@ u32 * u32_init_cast
 
 u32 * u32_init_copy (u32 *u, u32 src);
 u32 * u32_init_str (u32 *u, const s_str *str);
+u32 * u32_init_str_hexadecimal (u32 *u, const s_str *str);
 
 uw *      u32_hash_uw (u32 u, uw *dest);
 u32 * u32_random (u32 *u);

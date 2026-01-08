@@ -40,8 +40,8 @@ defmodule HTTPd do
     if (File.exists?("config/db.kc3")) do
       load!("config/db.kc3")
     end
-    load_directory("app/views/")
-    load_directory("app/controllers/")
+    load_directory!("app/views/")
+    load_directory!("app/controllers/")
     if (File.exists?("config/routes.kc3")) do
       load!("config/routes.kc3")
     end

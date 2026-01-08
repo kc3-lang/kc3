@@ -19,14 +19,21 @@
 s_http_response * http_response_buf_parse (s_http_response *response,
                                            s_buf *buf, bool parse_body)
 {
-  sw    content_length = -1;
-  s_str content_length_str = {0};
+  uw      chunk_size = 0;
+  s_str   chunk_size_str = {0};
+  const s_str chunked_str = STR("chunked");
+  p_list  chunks = NULL;
+  p_list *chunks_tail;
+  sw          content_length = -1;
+  const s_str content_length_str = STR("content-length");
   s_tag *key = NULL;
   s_list **l = NULL;
   sw r = 0;
   s_buf_save save;
   s_str str;
   s_http_response tmp = {0};
+  const s_str *transfer_encoding = NULL;
+  const s_str  transfer_encoding_str = STR("transfer-encoding");
   s_tuple *tuple = NULL;
   s_tag *value = NULL;
   assert(response);
@@ -44,7 +51,6 @@ s_http_response * http_response_buf_parse (s_http_response *response,
     goto restore;
   if (buf_read_until_1_into_str(buf, "\r\n", &tmp.message) <= 0)
     goto restore;
-  str_init_1(&content_length_str, NULL, "content-length");
   l = &tmp.headers;
   while (1) {
     if ((r = buf_read_1(buf, "\r\n")) < 0)
@@ -69,20 +75,57 @@ s_http_response * http_response_buf_parse (s_http_response *response,
       goto restore;
     if (! compare_str(&content_length_str, &str))
       sw_init_str(&content_length, &value->data.str);
+    else if (! compare_str(&transfer_encoding_str, &str))
+      transfer_encoding = &value->data.str;
     str_clean(&str);
     l = &(*l)->next.data.plist;
   }
   if (! parse_body)
     goto ok;
+  tmp.body.type = TAG_STR;
+  if (transfer_encoding && ! compare_str(transfer_encoding, &chunked_str)) {
+    chunks = NULL;
+    chunks_tail = &chunks;
+    while (1) {
+      if (buf_read_until_1_into_str(buf, "\r\n", &chunk_size_str) <= 0) {
+        err_puts("http_response_buf_parse: chunk_size_str");
+        goto ko;
+      }
+      if (! uw_init_str_hexadecimal(&chunk_size, &chunk_size_str)) {
+        err_puts("http_response_buf_parse: uw_init_str_hex");
+        goto ko;
+      }
+      if (! chunk_size) {
+        if (buf_read_1(buf, "\r\n") <= 0)
+          goto ko;
+        if (! str_init_concatenate_list(&tmp.body.data.str, chunks))
+          goto ko;
+        list_delete_all(chunks);
+        goto ok;
+      }
+      if (! (*chunks_tail = list_new_str_alloc(chunk_size, NULL)))
+        goto ko;
+      if (! buf_read(buf, chunk_size, &(*chunks_tail)->tag.data.str)) {
+        err_puts("http_response_buf_parse: buf_read");
+        goto ko;
+      }
+      if (buf_read_1(buf, "\r\n") <= 0)
+        goto ko;
+      chunks_tail = &(*chunks_tail)->next.data.plist;
+    }
+  }
   if (content_length < 0)
     goto restore;
-  tmp.body.type = TAG_STR;
-  if (! buf_read(buf, content_length, &tmp.body.data.str))
+  if (! buf_read(buf, content_length, &tmp.body.data.str)) {
+    err_puts("http_response_buf_parse: buf_read");
     goto restore;
+  }
  ok:
   buf_save_clean(buf, &save);
   *response = tmp;
   return response;
+ ko:
+  list_delete_all(chunks);
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:

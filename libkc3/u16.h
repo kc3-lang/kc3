@@ -24,6 +24,7 @@ u16 * u16_init_cast
 
 u16 * u16_init_copy (u16 *u, u16 src);
 u16 * u16_init_str (u16 *u, const s_str *str);
+u16 * u16_init_str_hexadecimal (u16 *u, const s_str *str);
 
 uw *      u16_hash_uw (u16 u, uw *dest);
 u16 * u16_random (u16 *u);

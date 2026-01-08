@@ -411,6 +411,8 @@ class TagInitList
                     Arg.new("const char *", "p")]),
        TagInit.new("str", "1_alloc", "TAG_STR", :init_mode_init,
                    [Arg.new("const char *", "p")]),
+       TagInit.new("str", "alloc", "TAG_STR", :init_mode_init,
+                   [Arg.new("uw", "size")]),
        TagInit.new("str", "alloc_copy", "TAG_STR", :init_mode_init,
                    [Arg.new("uw", "size"),
                     Arg.new("const char *", "p")]),

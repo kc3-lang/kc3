@@ -73,6 +73,7 @@ s_tag * tag_init_s64 (s_tag *tag, s64 i);
 s_tag * tag_init_str (s_tag *tag, char *p_free, uw size, const char *p);
 s_tag * tag_init_str_1 (s_tag *tag, char *p_free, const char *p);
 s_tag * tag_init_str_1_alloc (s_tag *tag, const char *p);
+s_tag * tag_init_str_alloc (s_tag *tag, uw size);
 s_tag * tag_init_str_alloc_copy (s_tag *tag, uw size, const char *p);
 s_tag * tag_init_str_cast (s_tag *tag, p_sym *type, const s_tag *src);
 s_tag * tag_init_str_concatenate (s_tag *tag, const s_str *a,
@@ -153,6 +154,7 @@ s_tag * tag_new_s64 (s64 i);
 s_tag * tag_new_str (char *p_free, uw size, const char *p);
 s_tag * tag_new_str_1 (char *p_free, const char *p);
 s_tag * tag_new_str_1_alloc (const char *p);
+s_tag * tag_new_str_alloc (uw size);
 s_tag * tag_new_str_alloc_copy (uw size, const char *p);
 s_tag * tag_new_str_cast (p_sym *type, const s_tag *src);
 s_tag * tag_new_str_concatenate (const s_str *a, const s_str *b);
@@ -233,6 +235,7 @@ s_tag * tag_s64 (s_tag *tag, s64 i);
 s_tag * tag_str (s_tag *tag, char *p_free, uw size, const char *p);
 s_tag * tag_str_1 (s_tag *tag, char *p_free, const char *p);
 s_tag * tag_str_1_alloc (s_tag *tag, const char *p);
+s_tag * tag_str_alloc (s_tag *tag, uw size);
 s_tag * tag_str_alloc_copy (s_tag *tag, uw size, const char *p);
 s_tag * tag_str_cast (s_tag *tag, p_sym *type, const s_tag *src);
 s_tag * tag_str_concatenate (s_tag *tag, const s_str *a,

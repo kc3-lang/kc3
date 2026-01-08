@@ -24,6 +24,7 @@ u8 * u8_init_cast
 
 u8 * u8_init_copy (u8 *u, u8 src);
 u8 * u8_init_str (u8 *u, const s_str *str);
+u8 * u8_init_str_hexadecimal (u8 *u, const s_str *str);
 
 uw *      u8_hash_uw (u8 u, uw *dest);
 u8 * u8_random (u8 *u);

@@ -740,6 +740,20 @@ s_list * list_init_str_1_alloc (s_list *list, const char *p,
   return list;
 }
 
+s_list * list_init_str_alloc (s_list *list, uw size, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_str_alloc(&tmp.tag, size)) {
+    err_puts("list_init_str_alloc: tag_init_str_alloc");
+    assert(! "list_init_str_alloc: tag_init_str_alloc");
+    return NULL;
+  }
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_str_alloc_copy (s_list *list, uw size,
                                    const char *p, s_list *next)
 {
@@ -1900,6 +1914,24 @@ s_list * list_new_str_1_alloc (const char *p, s_list *next)
   if (! tag_init_str_1_alloc(&list->tag, p)) {
     err_puts("list_new_str_1_alloc: tag_init_str_1_alloc");
     assert(! "list_new_str_1_alloc: tag_init_str_1_alloc");
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_str_alloc (uw size, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list) {
+    err_puts("list_new_str_alloc: list_new");
+    assert(! "list_new_str_alloc: list_new");
+    return NULL;
+  }
+  if (! tag_init_str_alloc(&list->tag, size)) {
+    err_puts("list_new_str_alloc: tag_init_str_alloc");
+    assert(! "list_new_str_alloc: tag_init_str_alloc");
     free(list);
     return NULL;
   }

@@ -1,0 +1,140 @@
+## kc3
+## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+require HTTP.Request
+require HTTP.Response
+require JSON
+require Time
+require TLS
+require TLS.Client
+require TLS.Config
+
+defmodule HTTPS.Client do
+
+  defstruct [tls_config: (TLS.Config*) 0,
+             tls_context: (TLS*) 0,
+             tls_client: %TLS.Client{},
+             state: :void]
+
+end
+
+defmodule HTTPS.Client do
+
+  def close = fn (client) {
+    TLS.Client.close(client.tls_client)
+    TLS.free(client.tls_context)
+    TLS.Config.free(client.tls_config)
+  }
+
+  def connect = fn {
+  (host) {
+    HTTPS.Client.connect(host, "443")
+  }
+  (host, port) {
+    puts("HTTPS.Client.connect #{inspect(host)} #{inspect(port)}")
+    tls_config = TLS.Config.new()
+    TLS.Config.set_ca_file(tls_config, TLS.ca_cert_path())
+    tls_context = TLS.client()
+    TLS.configure(tls_context, tls_config)
+    tls_client = TLS.Client.connect(tls_context, host, port)
+    %HTTPS.Client{tls_config: tls_config,
+                  tls_context: tls_context,
+                  tls_client: tls_client,
+                  state: :connected}
+  }
+  }
+
+  def get = fn {
+  (url) {
+    url_rest = [""]
+    client = match Str.split(url, "/") do
+      [scheme, "", host_port | url_rest] ->
+        if Str.to_lower(scheme) == "https:" do
+          match Str.split(host_port, ":") do
+            [host, port] ->
+              HTTPS.Client.connect(host, port)
+            [host] ->
+              HTTPS.Client.connect(host, "443")
+          end
+        end
+    end
+    if client do
+      request_url = List.join(["" | url_rest], "/")
+      result = HTTPS.Client.get(client, request_url)
+      HTTPS.Client.close(client)
+      result
+    end
+  }
+  (client, url) {
+    if type(client) == HTTPS.Client &&
+       client.state == :connected do
+      req = %HTTP.Request{
+        time: Time.now(),
+        method: GET,
+        url: url,
+        headers: [{"Connection", "keep-alive"}]
+      }
+      HTTP.Request.buf_write(req, client.tls_client.socket_buf.buf_rw.w)
+      response = HTTP.Response.buf_parse(client.tls_client.socket_buf.buf_rw.r, true)
+      HTTPS.Client.response(response)
+    end
+  }
+  }
+
+  def post = fn {
+  (url, body) {
+    url_rest = [""]
+    client = match Str.split(url, "/") do
+      [scheme, "", host_port | url_rest] ->
+        puts(" scheme=#{inspect(scheme)} host_port=#{inspect(host_port)} url_rest=#{url_rest}")
+        if Str.to_lower(scheme) == "https" do
+          match Str.split(host_port, ":") do
+            [host, port] ->
+              HTTPS.Client.connect(host, port)
+            [host] ->
+              HTTPS.Client.connect(host, "443")
+          end
+        end
+    end
+    if client do
+      request_url = Str.join(["" | rest], "/")
+      result = HTTPS.Client.post(client, request_url, body)
+      HTTPS.Client.close(client)
+      result
+    end
+  }
+  (client, url, body) {
+    if type(client) == HTTPS.Client &&
+       client.state == :connected do
+      req = %HTTP.Request{
+        time: Time.now(),
+        method: POST,
+        url: url,
+        body: body
+      }
+      HTTP.Request.buf_write(req, client.tls_client.socket_buf.buf_rw.w)
+      response = HTTP.Response.buf_parse(client.tls_client.socket_buf.buf_rw.r)
+      HTTPS.Client.response(response)
+    end
+  }
+  }
+
+  def response = fn (response) {
+    puts(response)
+    headers = response.headers
+    if response && headers["Content-Type"] == "text/json" do
+      JSON.parse(response.body)
+    end
+  }
+
+end
+

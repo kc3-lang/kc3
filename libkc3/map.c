@@ -277,6 +277,27 @@ s_map * map_init_from_lists (s_map *map, s_list *keys,
   return NULL;
 }
 
+p_list * map_keys (const s_map *map, p_list *dest)
+{
+  uw i;
+  p_list tmp = NULL;
+  p_list *tail;
+  assert(map);
+  assert(dest);
+  tail = &tmp;
+  i = 0;
+  while (i < map->count) {
+    if (! (*tail = list_new_tag_copy(map->key + i, NULL))) {
+      list_delete_all(tmp);
+      return NULL;
+    }
+    tail = &(*tail)->next.data.plist;
+    i++;
+  }
+  *dest = tmp;
+  return dest;
+}
+
 s_list ** map_map (const s_map *map, s_callable *callable,
                    s_list **result)
 {

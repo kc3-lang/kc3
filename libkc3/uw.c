@@ -22,6 +22,7 @@
 #endif
 #include "hash.h"
 #include "integer.h"
+#include "kc3_main.h"
 #include "ratio.h"
 #include "sym.h"
 #include "str.h"
@@ -136,6 +137,26 @@ uw * uw_init_str (uw *u, const s_str *str)
   buf_init_str_const(&buf, str);
   r = buf_parse_uw(&buf, &tmp);
   buf_clean(&buf);
+  if (r <= 0) {
+    if (false) {
+      err_puts("uw_init_str: buf_parse_uw");
+      err_inspect_stacktrace(env_global()->stacktrace);
+      err_write_1("\n");
+      assert(! "uw_init_str: buf_parse_uw");
+    }
+    return NULL;
+  }
+  *u = tmp;
+  return u;
+}
+
+uw * uw_init_str_hexadecimal (uw *u, const s_str *str)
+{
+  s_buf buf;
+  sw r;
+  uw tmp = 0;
+  buf_init_str_const(&buf, str);
+  r = buf_parse_uw_base(&buf, g_kc3_bases_hexadecimal, &tmp);
   if (r <= 0) {
     if (false) {
       err_puts("uw_init_str: buf_parse_uw");
