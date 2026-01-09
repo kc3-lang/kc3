@@ -91,6 +91,12 @@ to implement the missing parts in KC3.
      in a loop.
    - `TLS.Facts.acceptor_loop_join()` stops the acceptor loop cleanly.
 
+ - JSON
+   - fixed parser
+     - boolean `true` or `false` → Bool
+     - map `{"key", "value"}` → Map `%{"key" => "value"}`
+     - array `[1, 2, 3]` → List `[1, 2, 3]`
+
  - HTTPS
    - `HTTPS.Client` with libtls and automatic or manual connection
      - GET method
