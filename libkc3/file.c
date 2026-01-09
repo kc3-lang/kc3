@@ -474,10 +474,12 @@ s_time * file_mtime (const s_str *path, s_time *dest)
   assert(dest);
   if (stat(path->ptr.pchar, &sb)) {
     e = errno;
-    err_write_1("file_mtime: ");
-    err_write_1(strerror(e));
-    err_write_1(": ");
-    err_puts(path->ptr.pchar);
+    if (e != ENOENT) {
+      err_write_1("file_mtime: ");
+      err_write_1(strerror(e));
+      err_write_1(": ");
+      err_puts(path->ptr.pchar);
+    }
     return NULL;
   }
 #if HAVE_STAT_MTIM

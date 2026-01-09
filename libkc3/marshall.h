@@ -110,6 +110,8 @@ s_marshall * marshall_void (s_marshall *m, bool heap);
 
 /* Export. */
 sw      marshall_env_to_file (const s_env *env, const s_str *path);
+sw      marshall_kc3c_file (p_list dlopen_list, p_list tags,
+                            const s_str *path);
 sw      marshall_to_buf (s_marshall *m, s_buf *buf);
 s_str * marshall_to_str (s_marshall *m, s_str *dest);
 sw      marshall_to_file (s_marshall *m, const s_str *path);

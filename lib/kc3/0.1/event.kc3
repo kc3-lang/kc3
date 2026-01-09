@@ -10,9 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Event do
+dlopen("event.so")
 
-  dlopen("event.so")
+defmodule Event do
 
   def add = cfn S32 "kc3_event_add" (Ptr, Time)
 

@@ -789,6 +789,23 @@ sw marshall_env_to_file (const s_env *env, const s_str *path)
   return -1;
 }
 
+sw marshall_kc3c_file (p_list dlopen_list, p_list tags, const s_str *path)
+{
+  s_marshall m = {0};
+  sw result = -1;
+  if (! marshall_init(&m))
+    return -1;
+  if (! marshall_plist(&m, false, &dlopen_list) ||
+      ! marshall_plist(&m, false, &tags) ||
+      (result = marshall_to_file(&m, path)) <= 0)
+    goto ko;
+  marshall_clean(&m);
+  return result;
+ ko:
+  marshall_clean(&m);
+  return -1;
+}
+
 s_marshall * marshall_f32 (s_marshall *m, bool heap, f32 src)
 {
   s_buf *buf;

@@ -779,6 +779,43 @@ sw marshall_read_env_from_file (s_env *env, const s_str *path)
   return -1;
 }
 
+sw marshall_read_kc3c_file (p_list *dlopen_list, p_list *tags,
+                            const s_str *path)
+{
+  s_marshall_read mr = {0};
+  sw result = -1;
+  if (! dlopen_list || ! tags || ! path || ! path->size) {
+    err_puts("marshall_read_kc3c_file: invalid argument");
+    assert(! "marshall_read_kc3c_file: invalid argument");
+    return -1;
+  }
+  if (! marshall_read_init_file(&mr, path)) {
+    err_puts("marshall_read_kc3c_file: marshall_read_init_file");
+    assert(! "marshall_read_kc3c_file: marshall_read_init_file");
+    return -1;
+  }
+  if ((result = marshall_read_size(&mr)) <= 0) {
+    err_puts("marshall_read_kc3c_file: marshall_read_size");
+    assert(! "marshall_read_kc3c_file: marshall_read_size");
+    goto clean;
+  }
+  if (! marshall_read_plist(&mr, false, dlopen_list)) {
+    err_puts("marshall_read_kc3c_file: marshall_read_plist dlopen");
+    assert(! "marshall_read_kc3c_file: marshall_read_plist dlopen");
+    goto clean;
+  }
+  if (! marshall_read_plist(&mr, false, tags)) {
+    err_puts("marshall_read_kc3c_file: marshall_read_plist tags");
+    assert(! "marshall_read_kc3c_file: marshall_read_plist tags");
+    goto clean;
+  }
+  marshall_read_clean(&mr);
+  return result;
+ clean:
+  marshall_read_clean(&mr);
+  return -1;
+}
+
 s_marshall_read * marshall_read_f32 (s_marshall_read *mr,
                                      bool heap,
                                      f32 *dest)

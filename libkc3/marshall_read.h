@@ -126,7 +126,9 @@ PROTO_MARSHALL_READ(unquote,      s_unquote        );
 PROTO_MARSHALL_READ(uw,           uw               );
 PROTO_MARSHALL_READ(var,          s_var            );
 
-/* Env. */
+/* File level reading. */
 sw marshall_read_env_from_file (s_env *env, const s_str *path);
+sw marshall_read_kc3c_file (p_list *dlopen_list, p_list *tags,
+                            const s_str *path);
 
 #endif /* LIBKC3_MARSHALL_READ_H */

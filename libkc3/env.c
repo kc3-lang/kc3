@@ -2063,28 +2063,37 @@ s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
 bool env_load (s_env *env, const s_str *path)
 {
   s_buf buf;
+  bool buf_opened = false;
+  s_str cache_path = {0};
+  s_time cache_mtime = {0};
+  const s_str cache_suffix = STR("c");
+  p_list dlopen_list = NULL;
+  p_list dlopen_list_save = NULL;
+  void *dlopen_tmp = NULL;
   s_tag *file_dir;
   s_tag  file_dir_save;
   s_tag *file_path;
   s_tag  file_path_save;
+  s_list **last;
+  s_list **last_dlopen;
+  p_list list = NULL;
+  p_list new_dlopens = NULL;
   s_tag load_time = {0};
   s_tag now = {0};
   sw r;
+  s_time src_mtime = {0};
   s_tag tag = {0};
+  s_list *tmp_list;
   s_tag tmp = {0};
+  bool use_cache = false;
   assert(env);
   assert(path);
-  if (env->trace) {
-    err_write_1("env_load: ");
-    err_inspect_str(path);
-    err_write_1("\n");
-    //err_stacktrace();
-  }
-  if (! buf_init_alloc(&buf, BUF_SIZE))
+  if (! str_init_concatenate(&cache_path, path, &cache_suffix))
     return false;
-  if (! buf_getc_open_r(&buf, path)) {
-    buf_clean(&buf);
-    return false;
+  if (file_mtime(path, &src_mtime) &&
+      file_mtime(&cache_path, &cache_mtime) &&
+      compare_time(&cache_mtime, &src_mtime) > 0) {
+    use_cache = true;
   }
   file_dir = frame_get_w(env->global_frame, &g_sym___DIR__);
   file_dir_save = *file_dir;
@@ -2093,40 +2102,110 @@ bool env_load (s_env *env, const s_str *path)
   if (! file_dirname(path, &file_dir->data.str))
     goto ko;
   tag_init_str(file_path, NULL, path->size, path->ptr.pchar);
-  if (false) {
-    err_write_1("env_load: __DIR__ = ");
-    err_inspect_tag(file_dir);
-    err_write_1("\n");
-  }
-  if (false) {
-    err_write_1("env_load: __FILE__ = ");
-    err_inspect_tag(file_path);
-    err_write_1("\n");
-  }
-  while (1) {
-    if ((r = buf_parse_comments(&buf)) < 0)
-      break;
-    if ((r = buf_ignore_spaces(&buf)) < 0)
-      break;
-    if ((r = buf_parse_tag(&buf, &tag)) < 0)
-      break;
-    if (! r)
-      continue;
-    if (! env_eval_tag(env, &tag, &tmp)) {
-      err_write_1("env_load: env_eval_tag: ");
-      err_inspect_tag(&tag);
+  if (use_cache) {
+    if (env->trace) {
+      err_write_1("env_load: ");
+      err_inspect_str(&cache_path);
       err_write_1("\n");
-      tag_clean(&tag);
+    }
+    if (marshall_read_kc3c_file(&dlopen_list, &list, &cache_path) <= 0) {
+      use_cache = false;
+      if (env->trace)
+        err_puts("env_load: cache load failed, falling back to parse");
+    }
+  }
+  if (use_cache) {
+    tmp_list = dlopen_list;
+    while (tmp_list) {
+      if (tmp_list->tag.type != TAG_STR ||
+          ! env_dlopen(env, &tmp_list->tag.data.str, &dlopen_tmp))
+        goto ko;
+      tmp_list = list_next(tmp_list);
+    }
+    list_delete_all(dlopen_list);
+    dlopen_list = NULL;
+    tmp_list = list;
+    while (tmp_list) {
+      if (! env_eval_tag(env, &tmp_list->tag, &tmp)) {
+        err_write_1("env_load: env_eval_tag: ");
+        err_inspect_tag(&tmp_list->tag);
+        err_write_1("\n");
+        goto ko;
+      }
+      tag_clean(&tmp);
+      tmp_list = list_next(tmp_list);
+    }
+    list_delete_all(list);
+    list = NULL;
+  }
+  else {
+    if (env->trace) {
+      err_write_1("env_load: ");
+      err_inspect_str(path);
+      err_write_1("\n");
+    }
+    if (! buf_init_alloc(&buf, BUF_SIZE))
+      goto ko;
+    if (! buf_getc_open_r(&buf, path)) {
+      buf_clean(&buf);
       goto ko;
     }
-    tag_clean(&tmp);
-    tag_clean(&tag);
+    buf_opened = true;
+    dlopen_list_save = env->dlopen_list;
+    last = &list;
+    while (1) {
+      if ((r = buf_parse_comments(&buf)) < 0)
+        break;
+      if ((r = buf_ignore_spaces(&buf)) < 0)
+        break;
+      if ((r = buf_parse_tag(&buf, &tag)) < 0)
+        break;
+      if (! r)
+        continue;
+      if (! env_eval_tag(env, &tag, &tmp)) {
+        err_write_1("env_load: env_eval_tag: ");
+        err_inspect_tag(&tag);
+        err_write_1("\n");
+        tag_clean(&tag);
+        goto ko;
+      }
+      tag_clean(&tmp);
+      *last = list_new(NULL);
+      if (! *last) {
+        tag_clean(&tag);
+        goto ko;
+      }
+      (*last)->tag = tag;
+      tag = (s_tag) {0};
+      last = &(*last)->next.data.plist;
+    }
+    buf_getc_close(&buf);
+    buf_clean(&buf);
+    buf_opened = false;
+    last_dlopen = &new_dlopens;
+    tmp_list = env->dlopen_list;
+    while (tmp_list != dlopen_list_save) {
+      *last_dlopen = list_new_str_copy(&tmp_list->tag.data.str, NULL);
+      if (! *last_dlopen)
+        goto ko;
+      last_dlopen = &(*last_dlopen)->next.data.plist;
+      tmp_list = list_next(tmp_list);
+    }
+    if (env->trace) {
+      err_write_1("env_load: writing ");
+      err_inspect_str(&cache_path);
+      err_write_1("\n");
+    }
+    marshall_kc3c_file(new_dlopens, list, &cache_path);
+    list_delete_all(new_dlopens);
+    new_dlopens = NULL;
+    list_delete_all(list);
+    list = NULL;
   }
   tag_clean(file_dir);
   *file_dir = file_dir_save;
   *file_path = file_path_save;
-  buf_getc_close(&buf);
-  buf_clean(&buf);
+  str_clean(&cache_path);
   tag = (s_tag) {0};
   tag.type = TAG_STR;
   tag.data.str = *path;
@@ -2143,11 +2222,20 @@ bool env_load (s_env *env, const s_str *path)
   err_write_1("env_load: ");
   err_inspect_str(path);
   err_puts(": KO");
+  if (dlopen_list)
+    list_delete_all(dlopen_list);
+  if (new_dlopens)
+    list_delete_all(new_dlopens);
+  if (list)
+    list_delete_all(list);
   tag_clean(file_dir);
   *file_dir = file_dir_save;
   *file_path = file_path_save;
-  buf_getc_close(&buf);
-  buf_clean(&buf);
+  if (buf_opened) {
+    buf_getc_close(&buf);
+    buf_clean(&buf);
+  }
+  str_clean(&cache_path);
   return false;
 }
 

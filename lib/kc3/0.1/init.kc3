@@ -256,7 +256,7 @@ def human_size = fn (size) {
 def load_directory = fn (dir) {
   if File.exists?(dir) && File.is_directory?(dir) do
     files = List.sort(File.list(dir))
-    List.each(files, fn (file) {
+    List.each(files, load_file = fn (file) {
       if (! Str.starts_with?(file, ".")) do
         path = dir + file
         b = if File.is_directory?(path) do
