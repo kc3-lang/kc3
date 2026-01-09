@@ -18,6 +18,7 @@
 #include "buf_parse_sw.h"
 #include "complex.h"
 #include "integer.h"
+#include "kc3_main.h"
 #include "ratio.h"
 #include "sw.h"
 #include "str.h"
@@ -126,6 +127,32 @@ sw * sw_init_str (sw *s, const s_str *str)
   buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
   r = buf_parse_sw(&buf, &tmp);
+  buf_clean(&buf);
+  if (r <= 0) {
+    err_puts("sw_init_str: buf_parse_sw");
+    assert(! "sw_init_str: buf_parse_sw");
+    return NULL;
+  }
+  *s = tmp;
+  return s;
+}
+
+sw * sw_init_str_decimal  (sw *s, const s_str *str)
+{
+  s_buf buf;
+  bool negative = false;
+  sw r;
+  sw tmp = 0;
+  buf_init_const(&buf, str->size, str->ptr.pchar);
+  buf.wpos = str->size;
+  if ((r = buf_read_1(&buf, "-")) > 0)
+    negative = true;
+  if (r < 0) {
+    err_puts("sw_init_str: buf_read_1 sign");
+    assert(! "sw_init_str: buf_read_1 sign");
+    return NULL;
+  }
+  r = buf_parse_sw_base(&buf, &g_kc3_base_decimal, negative, &tmp);
   buf_clean(&buf);
   if (r <= 0) {
     err_puts("sw_init_str: buf_parse_sw");

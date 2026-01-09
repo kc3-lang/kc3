@@ -192,12 +192,14 @@ defmodule HTTPd do
         end
       })
     end
+    unveil("/etc/resolv.conf", "r")
+    unveil("/etc/ssl", "r")
     unveil("", "")
-    pledge("stdio rpath wpath cpath fattr inet proc", "")
+    pledge("stdio rpath wpath cpath fattr inet dns proc", "")
     HTTPd.socket <- Socket.listen(host, port)
     if HTTPd.socket do
       daemonize()
-      pledge("stdio rpath wpath cpath fattr inet", "")
+      pledge("stdio rpath wpath cpath fattr inet dns", "")
       IO.puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
       if HTTPd.thread_count > 1 do

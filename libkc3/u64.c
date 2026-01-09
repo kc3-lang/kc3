@@ -157,6 +157,7 @@ u64 * u64_init_str_hexadecimal (u64 *u, const s_str *str)
   u64 tmp = 0;
   buf_init_str_const(&buf, str);
   r = buf_parse_u64_base(&buf, g_kc3_bases_hexadecimal, &tmp);
+  buf_clean(&buf);
   if (r <= 0) {
     if (false) {
       err_puts("u64_init_str: buf_parse_u64");

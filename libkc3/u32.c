@@ -157,6 +157,7 @@ u32 * u32_init_str_hexadecimal (u32 *u, const s_str *str)
   u32 tmp = 0;
   buf_init_str_const(&buf, str);
   r = buf_parse_u32_base(&buf, g_kc3_bases_hexadecimal, &tmp);
+  buf_clean(&buf);
   if (r <= 0) {
     if (false) {
       err_puts("u32_init_str: buf_parse_u32");

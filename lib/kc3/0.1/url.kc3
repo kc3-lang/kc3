@@ -31,6 +31,11 @@ defmodule URL do
 
   def escapes = "%+#<>'\\\""
 
+  def encode_form = fn (map) {
+    List.join(Map.map_to_list(map, fn (key, value) {
+      "#{URL.escape(key)}=#{URL.escape(value)}" }), "&")
+  }
+
   def unescape = cfn Str "url_unescape" (Str, Result)
 
 end

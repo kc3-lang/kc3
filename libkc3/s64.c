@@ -18,6 +18,7 @@
 #include "buf_parse_s64.h"
 #include "complex.h"
 #include "integer.h"
+#include "kc3_main.h"
 #include "ratio.h"
 #include "s64.h"
 #include "str.h"
@@ -126,6 +127,32 @@ s64 * s64_init_str (s64 *s, const s_str *str)
   buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
   r = buf_parse_s64(&buf, &tmp);
+  buf_clean(&buf);
+  if (r <= 0) {
+    err_puts("s64_init_str: buf_parse_s64");
+    assert(! "s64_init_str: buf_parse_s64");
+    return NULL;
+  }
+  *s = tmp;
+  return s;
+}
+
+s64 * s64_init_str_decimal  (s64 *s, const s_str *str)
+{
+  s_buf buf;
+  bool negative = false;
+  sw r;
+  s64 tmp = 0;
+  buf_init_const(&buf, str->size, str->ptr.pchar);
+  buf.wpos = str->size;
+  if ((r = buf_read_1(&buf, "-")) > 0)
+    negative = true;
+  if (r < 0) {
+    err_puts("s64_init_str: buf_read_1 sign");
+    assert(! "s64_init_str: buf_read_1 sign");
+    return NULL;
+  }
+  r = buf_parse_s64_base(&buf, &g_kc3_base_decimal, negative, &tmp);
   buf_clean(&buf);
   if (r <= 0) {
     err_puts("s64_init_str: buf_parse_s64");

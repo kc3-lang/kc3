@@ -28,6 +28,7 @@ sw      json_buf_inspect_void (s_buf *buf);
 sw      json_buf_inspect_void_size (s_pretty *pretty);
 s_tag * json_buf_parse (s_buf *buf, s_tag *dest);
 s_tag * json_buf_parse_bool (s_buf *buf, s_tag *dest);
+s_tag * json_buf_parse_list (s_buf *buf, s_tag *dest);
 s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest);
 s_tag * json_buf_parse_null (s_buf *buf, s_tag *dest);
 s_tag * json_buf_parse_number (s_buf *buf, s_tag *dest);

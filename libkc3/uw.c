@@ -157,6 +157,7 @@ uw * uw_init_str_hexadecimal (uw *u, const s_str *str)
   uw tmp = 0;
   buf_init_str_const(&buf, str);
   r = buf_parse_uw_base(&buf, g_kc3_bases_hexadecimal, &tmp);
+  buf_clean(&buf);
   if (r <= 0) {
     if (false) {
       err_puts("uw_init_str: buf_parse_uw");

@@ -298,8 +298,8 @@ p_list * map_keys (const s_map *map, p_list *dest)
   return dest;
 }
 
-s_list ** map_map (const s_map *map, s_callable *callable,
-                   s_list **result)
+p_list * map_map_to_list (const s_map *map, s_callable *callable,
+                           s_list **result)
 {
   s_list *args = NULL;
   uw i = 0;

@@ -54,6 +54,8 @@ s_str *  kc3_hostname (s_str *dest);
 s_buf ** kc3_in_buf (s_buf **dest);
 void     kc3_license (void);
 s_tag *  kc3_list_length (const s_list **list, s_tag *dest);
+p_list * kc3_map_map_to_list (s_map *map, p_callable *callable,
+                              p_list *dest);
 p_sym *  kc3_module (const s_sym **dest);
 uw *     kc3_offsetof (p_sym *module,
                        p_sym *field, uw *dest);

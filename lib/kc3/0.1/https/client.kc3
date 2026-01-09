@@ -92,11 +92,11 @@ defmodule HTTPS.Client do
 
   def post = fn {
   (url, body) {
+    puts("HTTPS.Client.post #{inspect(url)} #{body}")
     url_rest = [""]
     client = match Str.split(url, "/") do
       [scheme, "", host_port | url_rest] ->
-        puts(" scheme=#{inspect(scheme)} host_port=#{inspect(host_port)} url_rest=#{url_rest}")
-        if Str.to_lower(scheme) == "https" do
+        if Str.to_lower(scheme) == "https:" do
           match Str.split(host_port, ":") do
             [host, port] ->
               HTTPS.Client.connect(host, port)
@@ -106,33 +106,44 @@ defmodule HTTPS.Client do
         end
     end
     if client do
-      request_url = Str.join(["" | rest], "/")
+      request_url = List.join(["" | url_rest], "/")
       result = HTTPS.Client.post(client, request_url, body)
       HTTPS.Client.close(client)
       result
     end
   }
   (client, url, body) {
+    puts("HTTPS.Client.post client=#{client} #{inspect(url)} #{body}")
     if type(client) == HTTPS.Client &&
-       client.state == :connected do
+        client.state == :connected do
+      body = URL.encode_form(body)
       req = %HTTP.Request{
         time: Time.now(),
         method: POST,
         url: url,
+        headers: [{"Connection", "keep-alive"},
+                  {"Content-Length", (Str) Str.size(body)},
+                  {"Content-Type", "application/x-www-form-urlencoded"}],
         body: body
       }
-      HTTP.Request.buf_write(req, client.tls_client.socket_buf.buf_rw.w)
-      response = HTTP.Response.buf_parse(client.tls_client.socket_buf.buf_rw.r)
-      HTTPS.Client.response(response)
+      if HTTP.Request.buf_write(req,
+           client.tls_client.socket_buf.buf_rw.w) > 0 do
+        response = HTTP.Response.buf_parse(client.tls_client.socket_buf.buf_rw.r, true)
+        HTTPS.Client.response(response)
+      end
     end
   }
   }
 
   def response = fn (response) {
     puts(response)
-    headers = response.headers
-    if response && headers["Content-Type"] == "text/json" do
-      JSON.parse(response.body)
+    if response do
+      headers = response.headers
+      if headers["Content-Type"] == "application/json" ||
+           Str.starts_with?(headers["Content-Type"],
+             "application/json;") do
+        JSON.from_str(response.body)
+      end
     end
   }
 

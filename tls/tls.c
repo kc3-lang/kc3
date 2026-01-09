@@ -18,6 +18,8 @@
 # include <unistd.h>
 # include <stdlib.h>
 #endif
+#include <errno.h>
+#include <string.h>
 #include <tls.h>
 #include "../libkc3/kc3.h"
 #include "tls.h"
@@ -77,8 +79,20 @@ s_str * kc3_tls_ca_cert_path (s_str *dest)
   if (ssl_cert_file && access(ssl_cert_file, R_OK) == 0)
     return str_init_1_alloc(dest, ssl_cert_file);
   default_path = tls_default_ca_cert_file();
-  if (default_path && access(default_path, R_OK) == 0)
+  if (default_path) {
+    if (access(default_path, R_OK)) {
+      s_str default_path_str = {0};
+      sw e = errno;
+      str_init_1(&default_path_str, NULL, default_path);
+      err_write_1("kc3_tls_ca_cert_path: ");
+      err_inspect_str(&default_path_str);
+      err_write_1(": access: ");
+      err_puts(strerror(e));
+      goto search;
+    }
     return str_init_1_alloc(dest, default_path);
+  }
+ search:
   i = 0;
   while (i < sizeof(paths) / sizeof(*paths)) {
     if (access(paths[i].ptr.pchar, R_OK) == 0) {

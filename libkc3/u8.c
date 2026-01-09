@@ -157,6 +157,7 @@ u8 * u8_init_str_hexadecimal (u8 *u, const s_str *str)
   u8 tmp = 0;
   buf_init_str_const(&buf, str);
   r = buf_parse_u8_base(&buf, g_kc3_bases_hexadecimal, &tmp);
+  buf_clean(&buf);
   if (r <= 0) {
     if (false) {
       err_puts("u8_init_str: buf_parse_u8");

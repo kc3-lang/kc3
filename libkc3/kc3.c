@@ -976,6 +976,18 @@ bool kc3_load (const s_str *path)
   return env_load(env_global(), path);
 }
 
+p_list * kc3_map_map_to_list (s_map *map, p_callable *callable,
+                              p_list *dest)
+{
+  assert(map);
+  assert(callable);
+  assert(*callable);
+  assert(dest);
+  if (! map_map_to_list(map, *callable, dest))
+    return NULL;
+  return dest;
+}
+
 void kc3_marshall_delete (p_marshall *m)
 {
   marshall_delete(*m);

@@ -16,6 +16,12 @@ defmodule TLS.Config do
 
   def error = cfn Str "kc3_tls_config_error" (TLS.Config*, Result)
 
+  #def marshall = cfn Marshall* "kc3_tls_config_marshall" (Marshall*, Bool,
+  #  TLS.Config*)
+
+  #def marshall_read = cfn TLS.Config* "kc3_tls_config_marshall_read" (MarshallRead*,
+  #  Bool, Result)
+
   def new = cfn TLS.Config* "kc3_tls_config_new" (Result)
 
   def set_ca_file = cfn TLS.Config* "kc3_tls_config_set_ca_file" (TLS.Config*,

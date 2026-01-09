@@ -45,6 +45,8 @@ const s_sym ** map_get_var_type (const s_map *map, const s_tag *key,
                                  const s_sym **dest);
 uw *           map_index (const s_map *map, const s_tag *key, uw *dest);
 p_list *       map_keys (const s_map *map, p_list *dest);
+p_list *       map_map_to_list (const s_map *map, s_callable *callable,
+                                p_list *dest);
 s_map *        map_put (s_map *map, s_tag *key,
                         s_tag *value, s_map *dest);
 /*

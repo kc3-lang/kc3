@@ -444,6 +444,9 @@ s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
 
 sw http_request_buf_write (s_http_request *req, s_buf *buf)
 {
+  s_str body = {0};
+  sw          content_length = -1;
+  const s_str content_length_str = STR("Content-Length");
   s_tag *key;
   s_list *list;
   const s_str *method;
@@ -482,6 +485,16 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
     err_puts("http_request_buf_write: invalid headers: not an AList");
     return -1;
   }
+  switch (req->body.type) {
+  case TAG_STR:
+    str_init(&body, NULL, req->body.data.str.size,
+             req->body.data.str.ptr.pchar);
+    break;
+  default:
+    err_write_1("http_request_buf_write: unsupported body type: ");
+    err_puts(tag_type_to_string(req->body.type));
+    return -1;
+  }
   if ((r = buf_write_str(buf, method)) < 0)
     return r;
   result += r;
@@ -509,11 +522,17 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
       if ((r = buf_write_str(buf, &key->data.str)) <= 0)
         return r;
       result += r;
+      if (! compare_str_case_insensitive(&content_length_str,
+                                         &key->data.str))
+        sw_init_str_decimal(&content_length, &value->data.str);
       break;
     case TAG_PSYM:
       if ((r = buf_write_str(buf, &key->data.psym->str)) <= 0)
         return r;
       result += r;
+      if (! compare_str_case_insensitive(&content_length_str,
+                                         &key->data.psym->str))
+        sw_init_str_decimal(&content_length, &value->data.str);
       break;
     default:
       err_write_1("http_request_buf_write: invalid header key: ");
@@ -539,9 +558,28 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
     result += r;
     list = list_next(list);
   }
+  if (content_length < 0) {
+    content_length = body.size;
+    if ((r = buf_write_str(buf, &content_length_str)) <= 0)
+      return r;
+    result += r;
+    if ((r = buf_write_uw(buf, content_length)) <= 0)
+      return r;
+  }
+  if (content_length > body.size) {
+    err_puts("http_request_buf_write: content-length > body size");
+    assert(! "http_request_buf_write: content-length > body size");
+    return -1;
+  }
   if ((r = buf_write_1(buf, "\r\n")) <= 0)
     return r;
   result += r;
+  if (content_length > 0) {
+    if ((r = buf_write(buf, body.ptr.p, content_length)) <= 0)
+      return r;
+    result += r;
+  }
+  str_clean(&body);
   return result;
 }
 

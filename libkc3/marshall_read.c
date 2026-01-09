@@ -2015,17 +2015,7 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
     assert(! "marshall_read_pointer: marshall_read_heap_pointer");
     return NULL;
   }
-  if (! offset || ! present) {
-    /* TODO: FIXME in lib/kc3/0.1/mutex.kc3 and mutex.c
-#if HAVE_PTHREAD
-    if (target_type == &g_sym_Mutex &&
-        ! (present = mutex_new())) {
-      err_puts("marshall_read_pointer: Mutex*: mutex_new");
-      assert(! "marshall_read_pointer: Mutex*: mutex_new");
-      return NULL;
-    }
-#endif
-    */
+  if (offset && ! present) {
     env = env_global();
     ident.module = target_type;
     ident.sym = &g_sym_marshall_read;

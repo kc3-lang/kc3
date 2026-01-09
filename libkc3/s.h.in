@@ -16,13 +16,19 @@
 
 #include "types.h"
 
+/* Casts. */
 s_bits$ * s_bits$_init_1 (s_bits$ *s, const char *p);
 s_bits$ * s_bits$_init_cast
 (s_bits$ *s, const s_sym * const *type, const s_tag *tag);
 s_bits$ * s_bits$_init_copy (s_bits$ *s, s_bits$ src);
 s_bits$ * s_bits$_init_str (s_bits$ *s, const s_str *str);
+s_bits$ * s_bits$_init_str_decimal (s_bits$ *s, const s_str *str);
+
+/* Observers. */
+s_tag *   s_bits$_sqrt (const s_bits$ x, s_tag *dest);
+
+/* Operators. */
 s_bits$ * s_bits$_random (s_bits$ *s);
 u_bits$ * s_bits$_random_uniform (s_bits$ *s, s_bits$ min, s_bits$ max);
-s_tag *   s_bits$_sqrt (const s_bits$ x, s_tag *dest);
 
 #endif /* LIBKC3_S_BITS$_H */

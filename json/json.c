@@ -281,32 +281,25 @@ s_tag * json_buf_parse (s_buf *buf, s_tag *dest)
   if ((r = buf_peek_character_utf8(buf, &c)) < 0)
     return NULL;
   switch (c) {
-    case '{':
-      return json_buf_parse_map(buf, dest);
-    case '"':
-      return json_buf_parse_str(buf, dest);
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
-    case '-':
-      return json_buf_parse_number(buf, dest);
-      break;
-    case 't':
-    case 'f':
-      return json_buf_parse_bool(buf, dest);
-      break;
-    case 'n':
-      return json_buf_parse_null(buf, dest);
-      break;
-    default:
-      return NULL;
+  case '[':
+    return json_buf_parse_list(buf, dest);
+  case '{':
+    return json_buf_parse_map(buf, dest);
+  case '"':
+    return json_buf_parse_str(buf, dest);
+  case '0': case '1': case '2': case '3': case '4': case '5':
+  case '6': case '7': case '8': case '9': case '-':
+    return json_buf_parse_number(buf, dest);
+    break;
+  case 't':
+  case 'f':
+    return json_buf_parse_bool(buf, dest);
+    break;
+  case 'n':
+    return json_buf_parse_null(buf, dest);
+    break;
+  default:
+    return NULL;
   }
   return NULL;
 }
@@ -314,9 +307,56 @@ s_tag * json_buf_parse (s_buf *buf, s_tag *dest)
 s_tag * json_buf_parse_bool (s_buf *buf, s_tag *dest)
 {
   sw r;
-  if ((r = buf_parse_tag_bool(buf, dest)) <= 0)
-    return NULL;
-  return dest;
+  if ((r = buf_read_1(buf, "false")) > 0)
+    return tag_init_bool(dest, false);
+  if ((r = buf_read_1(buf, "true")) > 0)
+    return tag_init_bool(dest, true);
+  return NULL;
+}
+
+s_tag * json_buf_parse_list (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  s_buf_save save;
+  p_list *tail;
+  p_list tmp = NULL;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "[")) <= 0)
+    goto clean;
+  tail = &tmp;
+  while (1) {
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    if ((r = buf_read_1(buf, "]")) < 0)
+      goto restore;
+    if (r > 0)
+      break;
+    if (! (*tail = list_new(NULL)))
+      goto restore;
+    if (! json_buf_parse(buf, &(*tail)->tag))
+      goto restore;
+    tail = &(*tail)->next.data.plist;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    if ((r = buf_read_1(buf, "]")) < 0)
+      goto restore;
+    if (r > 0)
+      break;
+    if ((r = buf_read_1(buf, ",")) < 0)
+      goto restore;
+    if (! r)
+      goto restore;
+  }
+  buf_save_clean(buf, &save);
+  return tag_init_plist(dest, tmp);
+ restore:
+  err_puts("json_buf_parse_list: invalid list");
+  assert(! "json_buf_parse_list: invalid list");
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  list_delete_all(tmp);
+  buf_save_clean(buf, &save);
+  return NULL;
 }
 
 s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest)
@@ -361,14 +401,29 @@ s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest)
     if (! json_buf_parse(buf, &(*v)->tag))
       goto restore;
     v = &(*v)->next.data.plist;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    if ((r = buf_read_1(buf, ",")) < 0)
+      goto restore;
+    if (! r) {
+      if ((r = buf_read_1(buf, "}")) < 0)
+        goto restore;
+      if (r > 0)
+        break;
+    }
   }
-  if (! tag_init_map_from_lists(dest, keys, values))
+  if (! tag_init_map_from_lists(dest, keys, values)) {
+    err_puts("json_buf_parse_map: tag_init_map_from_lists");
     goto restore;
+  }
   list_delete_all(keys);
   list_delete_all(values);
   buf_save_clean(buf, &save);
   return dest;
  restore:
+  err_puts("json_buf_parse_map: invalid map");
+  err_inspect_buf(buf);
+  assert(! "json_buf_parse_map: invalid map");
   buf_save_restore_rpos(buf, &save);
  clean:
   list_delete_all(keys);
@@ -424,6 +479,7 @@ s_tag * json_from_str (const s_str *src, s_tag *dest)
   s_tag tmp = {0};
   buf_init_str_const(&buf, src);
   if (! json_buf_parse(&buf, &tmp)) {
+    err_puts("json_from_str: json_buf_parse");
     buf_clean(&buf);
     return NULL;
   }

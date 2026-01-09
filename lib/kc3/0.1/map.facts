@@ -3,11 +3,11 @@
 add {Map, :is_a, :module}
 add {Map, :symbol, Map.cast}
 replace {Map.cast, :symbol_value, cfn Map "map_init_cast" (Tag, Result)}
-add {Map, :symbol, Map.map}
-replace {Map.map, :symbol_value, cfn List "map_map" (Map, Fn, Result)}
+add {Map, :symbol, Map.map_to_list}
+replace {Map.map_to_list, :symbol_value, cfn List "kc3_map_map_to_list" (Map, Callable, Result)}
 add {Map, :symbol, Map.to_list}
 replace {Map.to_list, :symbol_value, fn (%{} = map) {
-  Map.map(map, fn (k, v) { {k, v} })
+  Map.map_to_list(map, fn (k, v) { {k, v} })
 }}
 add {Map, :symbol, Map.put}
 replace {Map.put, :symbol_value, cfn Map "map_put" (Map, Tag, Tag, Result)}

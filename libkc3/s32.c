@@ -18,6 +18,7 @@
 #include "buf_parse_s32.h"
 #include "complex.h"
 #include "integer.h"
+#include "kc3_main.h"
 #include "ratio.h"
 #include "s32.h"
 #include "str.h"
@@ -126,6 +127,32 @@ s32 * s32_init_str (s32 *s, const s_str *str)
   buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
   r = buf_parse_s32(&buf, &tmp);
+  buf_clean(&buf);
+  if (r <= 0) {
+    err_puts("s32_init_str: buf_parse_s32");
+    assert(! "s32_init_str: buf_parse_s32");
+    return NULL;
+  }
+  *s = tmp;
+  return s;
+}
+
+s32 * s32_init_str_decimal  (s32 *s, const s_str *str)
+{
+  s_buf buf;
+  bool negative = false;
+  sw r;
+  s32 tmp = 0;
+  buf_init_const(&buf, str->size, str->ptr.pchar);
+  buf.wpos = str->size;
+  if ((r = buf_read_1(&buf, "-")) > 0)
+    negative = true;
+  if (r < 0) {
+    err_puts("s32_init_str: buf_read_1 sign");
+    assert(! "s32_init_str: buf_read_1 sign");
+    return NULL;
+  }
+  r = buf_parse_s32_base(&buf, &g_kc3_base_decimal, negative, &tmp);
   buf_clean(&buf);
   if (r <= 0) {
     err_puts("s32_init_str: buf_parse_s32");

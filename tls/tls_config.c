@@ -13,6 +13,7 @@
 #include <tls.h>
 #include "../libkc3/kc3.h"
 #include "tls.h"
+#include "tls_config.h"
 
 s_str * kc3_tls_config_error (p_tls_config *config, s_str *dest)
 {
@@ -27,6 +28,24 @@ void kc3_tls_config_free (p_tls_config *config)
   assert(config);
   assert(*config);
   tls_config_free(*config);
+}
+
+s_marshall ** kc3_tls_config_marshall (s_marshall **m, bool heap,
+                                       p_tls_config *tls_config)
+{
+  (void) heap;
+  if (*tls_config)
+    err_puts("kc3_tls_config_marshall: tls_config");
+  return m;
+}
+
+p_tls_config * kc3_tls_config_marshall_read (s_marshall_read **mr,
+                                              bool heap,
+                                              p_tls_config *dest)
+{
+  (void) mr;
+  (void) heap;
+  return kc3_tls_config_new(dest);
 }
 
 p_tls_config * kc3_tls_config_new (p_tls_config *dest)

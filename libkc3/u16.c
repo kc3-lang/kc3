@@ -157,6 +157,7 @@ u16 * u16_init_str_hexadecimal (u16 *u, const s_str *str)
   u16 tmp = 0;
   buf_init_str_const(&buf, str);
   r = buf_parse_u16_base(&buf, g_kc3_bases_hexadecimal, &tmp);
+  buf_clean(&buf);
   if (r <= 0) {
     if (false) {
       err_puts("u16_init_str: buf_parse_u16");

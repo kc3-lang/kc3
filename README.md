@@ -91,6 +91,12 @@ to implement the missing parts in KC3.
      in a loop.
    - `TLS.Facts.acceptor_loop_join()` stops the acceptor loop cleanly.
 
+ - HTTPS
+   - `HTTPS.Client` with libtls and automatic or manual connection
+     - GET method
+     - [WIP] POST method
+     - [WIP] JSON response
+
 ## Discord invite
 
 [Join us on kmx.io Discord server !](https://discord.gg/A4MWkpUDsG)
