@@ -10,9 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Markdown do
+dlopen("markdown.so")
 
-  dlopen("markdown.so")
+defmodule Markdown do
 
   def titles = cfn List "markdown_titles" (Str, Result)
 
