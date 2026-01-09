@@ -40,7 +40,6 @@ defmodule HTTPS.Client do
     HTTPS.Client.connect(host, "443")
   }
   (host, port) {
-    puts("HTTPS.Client.connect #{inspect(host)} #{inspect(port)}")
     tls_config = TLS.Config.new()
     TLS.Config.set_ca_file(tls_config, TLS.ca_cert_path())
     tls_context = TLS.client()
@@ -92,7 +91,6 @@ defmodule HTTPS.Client do
 
   def post = fn {
   (url, body) {
-    puts("HTTPS.Client.post #{inspect(url)} #{body}")
     url_rest = [""]
     client = match Str.split(url, "/") do
       [scheme, "", host_port | url_rest] ->
@@ -113,7 +111,6 @@ defmodule HTTPS.Client do
     end
   }
   (client, url, body) {
-    puts("HTTPS.Client.post client=#{client} #{inspect(url)} #{body}")
     if type(client) == HTTPS.Client &&
         client.state == :connected do
       body = URL.encode_form(body)
@@ -136,7 +133,6 @@ defmodule HTTPS.Client do
   }
 
   def response = fn (response) {
-    puts(response)
     if response do
       headers = response.headers
       if headers["Content-Type"] == "application/json" ||
