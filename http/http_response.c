@@ -389,6 +389,8 @@ sw http_response_buf_write (const s_http_response *response,
       return -1;
     }
   }
+  if ((r = buf_flush(buf)) < 0)
+    return r;
   return result;
 }
 

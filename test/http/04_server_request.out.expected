@@ -45,7 +45,7 @@ client_req = %HTTP.Request{method: GET}
               cookies: [],
               params: %{}}
 HTTP.Request.buf_write(client_req, client.buf_rw.w)
-(Sw) 18
+(Sw) 37
 Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
 %HTTP.Request{time: %Time{},
               method: GET,
@@ -53,7 +53,7 @@ Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
               body: void,
               protocol: "HTTP/1.1",
               client_addr: "",
-              headers: [],
+              headers: [{"Content-Length", (Uw) 0}],
               cookies: [],
               params: %{}}
 HTTP.Response.buf_write(response, server_client.buf_rw.w, true)

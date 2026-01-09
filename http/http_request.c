@@ -486,6 +486,10 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
     return -1;
   }
   switch (req->body.type) {
+  case TAG_PVAR:
+  case TAG_VOID:
+    str_init_empty(&body);
+    break;
   case TAG_STR:
     str_init(&body, NULL, req->body.data.str.size,
              req->body.data.str.ptr.pchar);
@@ -563,8 +567,16 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
     if ((r = buf_write_str(buf, &content_length_str)) <= 0)
       return r;
     result += r;
-    if ((r = buf_write_uw(buf, content_length)) <= 0)
+    if ((r = buf_write_1(buf, ": ")) <= 0)
       return r;
+    result += r;
+    if ((r = buf_inspect_uw_base(buf, &g_kc3_base_decimal,
+                                 content_length)) <= 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, "\r\n")) <= 0)
+      return r;
+    result += r;
   }
   if (content_length > body.size) {
     err_puts("http_request_buf_write: content-length > body size");
@@ -579,6 +591,8 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
       return r;
     result += r;
   }
+  if ((r = buf_flush(buf)) < 0)
+    return r;
   str_clean(&body);
   return result;
 }
