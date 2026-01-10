@@ -11,7 +11,11 @@
 ## THIS SOFTWARE.
 
 all:
-	find . -name '[a-z]*.kc3' -print0 | xargs -0 -n 1 kc3s --load
+	find . -name '[^.]*.kc3' | while read SRC; do \
+		echo "echo '$$SRC' && kc3s --load '$$SRC' --quit"; \
+	done | runj 1 /bin/sh
 
 clean:
 	find . -name '*.kc3c' -print0 | xargs -0 rm
+
+.PHONY: all clean

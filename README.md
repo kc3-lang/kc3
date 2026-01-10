@@ -76,7 +76,8 @@ to implement the missing parts in KC3.
    - allow for log hooks (a C function callback with a user pointer)
      in the facts database
    - incremental compilation with cached parser results in
-     `.kc3c` files, like Python does. Gives **5x faster loading times**.
+     `.kc3c` files, like Python does. Gives **5x faster loading times**
+     for all `.kc3` files. `env_load` automatically handles this.
 
  - Socket
    - `Socket.Facts` allows for bi-directional synchronization of an

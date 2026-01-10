@@ -12,10 +12,16 @@
 
 require Socket.Buf
 
+dlopen("tls.so")
+
 defmodule TLS.Client do
 
   defstruct [socket_buf: %Socket.Buf{},
              tls_version: ""]
+
+end
+
+defmodule TLS.Client do
 
   def close = cfn Void "kc3_tls_client_clean" (TLS.Client)
 

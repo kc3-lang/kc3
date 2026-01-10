@@ -20,6 +20,10 @@ defmodule Image do
              pixel_size: (U8) 0,
              data: (Ptr) 0]
 
+end
+
+defmodule Image do
+
   def clean = cfn Void "image_clean" (Image)
 
   def delete = cfn Void "kc3_image_delete" (Image*)

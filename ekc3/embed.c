@@ -329,6 +329,13 @@ s_tag * embed_parse_template_file (const s_str *path, s_tag *dest)
   return NULL;
 }
 
+s_tag * embed_parse_template_file_or_abort (const s_str *path, s_tag *dest)
+{
+  if (! embed_parse_template_file(path, dest))
+    abort();
+  return dest;
+}
+
 s_tag * embed_parse_template_str (const s_str *input, s_tag *dest)
 {
   s_buf buf = {0};

@@ -92,12 +92,15 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
     return NULL;
   }
   tree = (git_tree *) obj;
-  if (! path->ptr.pchar[0] ||
-      ! strcmp(path->ptr.pchar, "."))
+  if (! path->size ||
+      (path->size == 1 &&
+       path->ptr.pchar[0] == '.'))
     sub_tree = tree;
   else {
     if (git_tree_entry_bypath(&entry, tree, path->ptr.pchar)) {
-      err_puts("kc3_git_files: git_tree_entry_bypath");
+      err_write_1("kc3_git_files: git_tree_entry_bypath: ");
+      err_inspect_str(path);
+      err_write_1("\n");
       git_object_free(obj);
       free(rev);
       return NULL;

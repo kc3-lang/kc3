@@ -262,7 +262,7 @@ s_map * map_init_from_lists (s_map *map, s_list *keys,
   v = values;
   while (i < len) {
     if (! tag_init_copy(tmp.key + i, &k->tag) ||
-        ! tag_init_copy(tmp.value + i, &v->tag))
+        ! tag_init_copy(tmp.value + i, &v->tag)) 
       goto ko;
     k = list_next(k);
     v = list_next(v);
@@ -299,7 +299,7 @@ p_list * map_keys (const s_map *map, p_list *dest)
 }
 
 p_list * map_map_to_list (const s_map *map, s_callable *callable,
-                           s_list **result)
+                          s_list **result)
 {
   s_list *args = NULL;
   uw i = 0;

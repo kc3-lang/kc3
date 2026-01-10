@@ -23,7 +23,10 @@ defmodule EKC3 do
     cfn Tag "embed_parse_template_str" (Str, Result)
 
   def parse_file =
-    cfn Tag "embed_parse_template_file" (Str, Result)
+    cfn Tag "embed_parse_template_file_or_abort" (Str, Result)
+
+  def parse_file! =
+    cfn Tag "embed_parse_template_file_or_abort" (Str, Result)
 
   def render = fn (ekc3_render_template) do
     ekc3_render_template()

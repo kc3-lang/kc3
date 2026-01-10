@@ -33,4 +33,8 @@ defmodule GL.PT.Main do
 
 end
 
-GL.PT.Main.main(args())
+match a = args() do
+  [prog | rest] ->
+    if (Str.starts_with?(File.basename(prog), "kc3s"))
+      void
+    GL.PT.Main.main(a)

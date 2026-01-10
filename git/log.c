@@ -65,6 +65,7 @@ p_list * kc3_git_log (git_repository **repo,
   s_git_log_options opt = {0};
   int parents = 0;
   char path_pchar[PATH_MAX + 1] = {0};
+  char *path_pchar_p = path_pchar;
   int printed = 0;
   git_pathspec *ps = NULL;
   s_git_log_state s = {0};
@@ -95,7 +96,7 @@ p_list * kc3_git_log (git_repository **repo,
       return NULL;
     }
     memcpy(path_pchar, path->ptr.pchar, path->size);
-    diffopts.pathspec.strings = (char **) &path_pchar;
+    diffopts.pathspec.strings = &path_pchar_p;
     diffopts.pathspec.count = 1;
     git_pathspec_new(&ps, &diffopts.pathspec);
   }
