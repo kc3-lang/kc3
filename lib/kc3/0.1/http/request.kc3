@@ -14,6 +14,8 @@ require Buf
 require Compare
 require List
 
+dlopen("http.so")
+
 defmodule HTTP.Request do
 
   defstruct [time: %Time{},
@@ -25,8 +27,6 @@ defmodule HTTP.Request do
              headers: [],
              cookies: [],
              params: %{}]
-
-  dlopen("http.so")
 
   def allowed_methods = [DELETE,
                          GET,

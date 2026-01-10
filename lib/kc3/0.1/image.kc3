@@ -10,6 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+dlopen("image.so")
+
 defmodule Image do
 
   defstruct [w: (Uw) 0,
@@ -17,8 +19,6 @@ defmodule Image do
              components: (U8) 0,
              pixel_size: (U8) 0,
              data: (Ptr) 0]
-
-  dlopen("image.so")
 
   def clean = cfn Void "image_clean" (Image)
 

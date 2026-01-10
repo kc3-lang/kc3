@@ -10,6 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+dlopen("pdf.so")
+
 require PDF.Trailer
 
 defmodule PDF.File do
@@ -19,8 +21,6 @@ defmodule PDF.File do
              name_list: (Ptr) 0,
              trailer: %PDF.Trailer{},
              xref: %{}]
-
-  dlopen("pdf.so")
 
   def clean = cfn Void "pdf_file_clean" (PDF.File)
 

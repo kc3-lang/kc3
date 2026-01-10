@@ -36,7 +36,9 @@ s_dvec3 * dvec3_add (const s_dvec3 *a, const s_dvec3 *b, s_dvec3 *dest);
 s_dvec3 * dvec3_clamp (const s_dvec3 *a, s_dvec3 *dest);
 s_dvec3 * dvec3_cross (const s_dvec3 *a, const s_dvec3 *b,
                        s_dvec3 *dest);
-s_dvec3 * dvec3_mul (const s_dvec3 *a, f64 b, s_dvec3 *dest);
+s_dvec3 * dvec3_mul_f64 (const s_dvec3 *a, f64 b, s_dvec3 *dest);
+s_dvec3 * dvec3_mul_dvec3 (const s_dvec3 *a, const s_dvec3 *b,
+                           s_dvec3 *dest);
 s_dvec3 * dvec3_normalize (const s_dvec3 *a, s_dvec3 *dest);
 s_dvec3 * dvec3_sub (const s_dvec3 *a, const s_dvec3 *b, s_dvec3 *dest);
 s_dvec3 * dvec3_transform (const s_dvec3 *p, const s_dmat4 *matrix,

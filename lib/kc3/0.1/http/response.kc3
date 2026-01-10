@@ -10,6 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+dlopen("http.so")
+
 require Buf
 
 defmodule HTTP.Response do
@@ -19,8 +21,6 @@ defmodule HTTP.Response do
              message: "",
              headers: [{"Content-Type", "text/html"}],
              body: ?]
-
-  dlopen("http.so")
 
   def default_messages = [{(U16) 200, "OK"},
                           {(U16) 404, "Not Found"},

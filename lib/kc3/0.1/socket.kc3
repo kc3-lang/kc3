@@ -10,11 +10,11 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+dlopen("socket.so")
+
 defmodule Socket do
 
   defstruct [fd: (S64) -1]
-
-  dlopen("socket.so")
 
   def accept = cfn Socket "socket_init_accept" (Result, Socket)
 

@@ -55,36 +55,42 @@ s_dvec3 * pt_radiance_sphere (const s_list *scene,
                               f64 dist, s_dvec3 *dest)
 {
   s_dvec3 d;
+  s_dvec3 diffuse;
   s_dvec3 f;
   s_dvec3 n;
   s_dvec3 nl;
+  s_dvec3 n2;
   f64 p;
   f64 r1;
   f64 r2;
   f64 r2s;
+  s_dvec3 specular;
   s_dvec3 sub_rad;
   s_dray  sub_ray;
   s_dvec3 u;
   s_dvec3 v;
   s_dvec3 w;
   s_dvec3 x;
-  dvec3_mul(&ray->direction, dist, &x);
+  dvec3_mul_f64(&ray->direction, dist, &x);
   dvec3_add(&x, &ray->origin, &x);
   dvec3_sub(&x, &obj->center, &n);
   dvec3_normalize(&n, &n);
   if (dvec3_dot(&n, &ray->direction) < 0)
     nl = n;
   else
-    dvec3_mul(&n, -1, &nl);
+    dvec3_mul_f64(&n, -1, &nl);
   f = obj->material.diffuse.color;
-  p = f.x > f.y && f.x > f.z ? f.x : f.y > f.z ? f.y : f.z;
+  p = f.x > f.y && f.x > f.z ?
+    f.x :
+    f.y > f.z ? f.y : f.z;
   if (++depth > 5) {
     if (erand48(xi) < p)
-      dvec3_mul(&f, 1.0 / p, &f);
+      dvec3_mul_f64(&f, 1.0 / p, &f);
     else
       return dvec3_init_copy(dest, &obj->material.diffuse.emission);
   }
   //if (obj.refl == DIFF){                  // Ideal DIFFUSE reflection
+  diffuse = f;
   r1 = 2 * M_PI * erand48(xi);
   r2 = erand48(xi);
   r2s = sqrt(r2);
@@ -96,21 +102,29 @@ s_dvec3 * pt_radiance_sphere (const s_list *scene,
   dvec3_cross(&u, &w, &u);
   dvec3_normalize(&u, &u);
   dvec3_cross(&w, &u, &v);
-  dvec3_mul(&u, cos(r1) * r2s, &u);
-  dvec3_mul(&v, sin(r1) * r2s, &v);
-  dvec3_mul(&w, sqrt(1.0 - r2), &w);
+  dvec3_mul_f64(&u, cos(r1) * r2s, &u);
+  dvec3_mul_f64(&v, sin(r1) * r2s, &v);
+  dvec3_mul_f64(&w, sqrt(1.0 - r2), &w);
   dvec3_add(&u, &v, &d);
   dvec3_add(&d, &w, &d);
   dvec3_normalize(&d, &d);
   sub_ray.origin = x;
   sub_ray.direction = d;
   pt_radiance(scene, &sub_ray, depth, xi, &sub_rad);
-  f.x *= sub_rad.x;
-  f.y *= sub_rad.y;
-  f.z *= sub_rad.z;
-  return dvec3_add(&obj->material.diffuse.emission, &f, dest);
+  diffuse.x *= sub_rad.x;
+  diffuse.y *= sub_rad.y;
+  diffuse.z *= sub_rad.z;
+  dvec3_add(&obj->material.diffuse.emission, &diffuse, &diffuse);
   /*} else if (obj.refl == SPEC)            // Ideal SPECULAR reflection
-    return obj.e + f.mult(radiance(Ray(x,ray->d-n*2*n.dot(ray->d)),depth));
+    return obj.e + f.mult(radiance(Ray(x,ray->d-n*2*n.dot(ray->d)),depth));*/
+  specular = f;
+  sub_ray.origin = x;
+  dvec3_mul_f64(&n, 2 * dvec3_dot(&n, &ray->direction), &n2);
+  dvec3_sub(&ray->direction, &n2 , &sub_ray.direction);
+  pt_radiance(scene, &sub_ray, depth, xi, &sub_rad);
+  dvec3_mul_dvec3(&specular, &sub_rad, &specular);
+  return dvec3_add(&diffuse, &specular, dest);
+  /*
   Ray reflRay(x, ray->d-n*2*n.dot(ray->d));     // Ideal dielectric REFRACTION
   bool into = n.dot(nl)>0;                // Ray from outside going in?
   f64 nc=1, nt=1.5, nnt=into?nc/nt:nt/nc, ddn=ray->d.dot(nl), cos2t;
@@ -195,20 +209,20 @@ void * pt_render_thread (void *arg)
             dy = r2 < 1 ? sqrt(r2)-1: 1-sqrt(2-r2);
             u = ((sx + 0.5 + dx) / 2.0 + x) / w - 0.5;
             v = ((sy + 0.5 + dy) / 2.0 + y) / h - 0.5;
-            dvec3_mul(cx, u, &du);
-            dvec3_mul(cy, v, &dv);
+            dvec3_mul_f64(cx, u, &du);
+            dvec3_mul_f64(cy, v, &dv);
             dvec3_add(&du, &dv, &d);
             dvec3_add(&d, &cam->direction, &d);
-            dvec3_mul(&d, 140, &d_140);
+            dvec3_mul_f64(&d, 140, &d_140);
             dvec3_add(&cam->origin, &d_140, &ray.origin);
             dvec3_normalize(&d, &ray.direction);
             pt_radiance(scene, &ray, 0, xi, &r_rad);
-            dvec3_mul(&r_rad, 1.0 / samples, &r_rad);
+            dvec3_mul_f64(&r_rad, 1.0 / samples, &r_rad);
             dvec3_add(&r, &r_rad, &r);
             s++;
           }
           dvec3_clamp(&r, &r);
-          dvec3_mul(&r, 0.25, &r);
+          dvec3_mul_f64(&r, 0.25, &r);
           dvec3_add(c + i, &r, c + i);
           sx++;
         }

@@ -12,9 +12,9 @@
 
 require Image
 
-defmodule GL.PT do
+dlopen("gl.so")
 
-  dlopen("gl.so")
+defmodule GL.PT do
 
   def render_image = cfn Image "pt_render_image" (Result, Tag, Tag, Tag,
     List)

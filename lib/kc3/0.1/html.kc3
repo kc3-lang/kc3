@@ -10,9 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule HTML do
+dlopen("ekc3.so")
 
-  dlopen("ekc3.so")
+defmodule HTML do
 
   def escape = cfn Str "html_escape" (Tag, Result)
 

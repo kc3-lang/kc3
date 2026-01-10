@@ -12,8 +12,6 @@
 
 defmodule Gtk4.Window do
 
-  dlopen("gtk4.so")
-
   def delete = cfn Void "kc3_gtk4_window_destroy" (Ptr)
   
   # Call delete after use.

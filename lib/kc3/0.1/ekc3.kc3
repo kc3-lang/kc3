@@ -13,9 +13,9 @@
 require Buf
 require HTML
 
-defmodule EKC3 do
+dlopen("ekc3.so")
 
-  dlopen("ekc3.so")
+defmodule EKC3 do
 
   def load = cfn Tag "embed_parse_template_file" (Str, Result)
 

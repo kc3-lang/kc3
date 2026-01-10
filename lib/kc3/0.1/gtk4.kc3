@@ -10,9 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Gtk4 do
+dlopen("gtk4.so")
 
-  dlopen("gtk4.so")
+defmodule Gtk4 do
 
   # Call this function before using any other GTK functions in your GUI
   # applications.

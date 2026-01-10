@@ -10,11 +10,11 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+dlopen("http.so")
+
 require HTTP.Upload
 
 defmodule HTTP do
-
-  dlopen("http.so")
 
   def mime_type = cfn Sym "http_mime_type" (Str, Result)
 

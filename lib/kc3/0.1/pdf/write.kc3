@@ -10,9 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule PDF.Write do
+dlopen("pdf.so")
 
-  dlopen("pdf.so")
+defmodule PDF.Write do
 
   def add_page =
     cfn PDF.Write* "kc3_pdf_write_add_page" (PDF.Write*,

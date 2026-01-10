@@ -118,8 +118,8 @@ void dvec3_delete (s_dvec3 *p)
   free(p);
 }
 
-s_dvec3 * dvec3_mul (const s_dvec3 *a, f64 b,
-                     s_dvec3 *dest)
+s_dvec3 * dvec3_mul_f64 (const s_dvec3 *a, f64 b,
+                         s_dvec3 *dest)
 {
   s_dvec3 tmp = {0};
   assert(a);
@@ -128,6 +128,20 @@ s_dvec3 * dvec3_mul (const s_dvec3 *a, f64 b,
   tmp.x = a->x * b;
   tmp.y = a->y * b;
   tmp.z = a->z * b;
+  *dest = tmp;
+  return dest;
+}
+
+s_dvec3 * dvec3_mul_dvec3 (const s_dvec3 *a, const s_dvec3 *b,
+                           s_dvec3 *dest)
+{
+  s_dvec3 tmp = {0};
+  assert(a);
+  assert(b);
+  assert(dest);
+  tmp.x = a->x * b->x;
+  tmp.y = a->y * b->y;
+  tmp.z = a->z * b->z;
   *dest = tmp;
   return dest;
 }

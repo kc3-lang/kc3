@@ -12,6 +12,9 @@
 
 require Buf
 require GL.Vec2
+
+dlopen("pdf.so")
+
 require PDF.Rect
 
 defmodule PDF.Stream do
@@ -19,8 +22,6 @@ defmodule PDF.Stream do
   defstruct [dictionnary: %{},
              offset: (S64) 0,
              length: (S64) 0]
-
-  dlopen("pdf.so")
 
   def delete = cfn Void "pdf_stream_delete" (PDF.Stream*)
   def new = cfn PDF.Stream* "pdf_stream_new" (Result)

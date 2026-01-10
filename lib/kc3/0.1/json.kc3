@@ -12,9 +12,9 @@
 
 require Buf
 
-defmodule JSON do
+dlopen("json.so")
 
-  dlopen("json.so")
+defmodule JSON do
 
   def buf_inspect = cfn Sw "json_buf_inspect" (Buf, Tag)
 

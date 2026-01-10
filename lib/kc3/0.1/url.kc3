@@ -10,9 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule URL do
+dlopen("http.so")
 
-  dlopen("http.so")
+defmodule URL do
 
   def eat = fn {
     ([], _) { "/" }

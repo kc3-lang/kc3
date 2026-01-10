@@ -12,8 +12,6 @@
 
 defmodule Gtk4.File do
 
-  dlopen("gtk4.so")
-
   def new_for_uri = cfn Ptr "kc3_gtk4_file_new_for_uri" (Result, Str)
 
 end

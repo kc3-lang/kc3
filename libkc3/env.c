@@ -788,8 +788,10 @@ const s_sym * env_defstruct (s_env *env, s_list *spec)
 
 void ** env_dlopen (s_env *env, const s_str *so_path, void **dest)
 {
-  s_str path = {0};
+  s_list *iter;
   s_list *list = NULL;
+  s_str path = {0};
+  s_tag tag = {0};
   void *tmp = NULL;
   assert(env);
   assert(so_path);
@@ -797,6 +799,17 @@ void ** env_dlopen (s_env *env, const s_str *so_path, void **dest)
   if (securelevel(0) > 0) {
     err_puts("env_dlopen: cannot dlopen with securelevel > 0");
     abort();
+  }
+  tag.type = TAG_STR;
+  tag.data.str = *so_path;
+  iter = env->dlopen_list;
+  while (iter) {
+    if (iter->tag.type == TAG_STR &&
+        ! compare_str(so_path, &iter->tag.data.str)) {
+      *dest = NULL;
+      goto add_to_list;
+    }
+    iter = list_next(iter);
   }
   if (! str_init_concatenate(&path, env->module_path, so_path))
     return NULL;
@@ -815,12 +828,14 @@ void ** env_dlopen (s_env *env, const s_str *so_path, void **dest)
     return NULL;
   }
   str_clean(&path);
+  *dest = tmp;
+ add_to_list:
   if (! (list = list_new_str_copy(so_path, env->dlopen_list))) {
-    dlclose(tmp);
+    if (tmp)
+      dlclose(tmp);
     return NULL;
   }
   env->dlopen_list = list;
-  *dest = tmp;
   return dest;
 }
 

@@ -10,9 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Git do
+dlopen("git.so")
 
-  dlopen("git.so")
+defmodule Git do
 
   def blob = cfn Str "kc3_git_blob_to_str" (Git.Repository*, Str,
     Result)

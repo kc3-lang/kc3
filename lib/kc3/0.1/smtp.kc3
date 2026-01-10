@@ -10,9 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule SMTP do
+dlopen("smtp.so")
 
-  dlopen("smtp.so")
+defmodule SMTP do
 
   # address_add(smtp, address_type, address, name)
   def address_add = cfn Bool "kc3_smtp_address_add" (Ptr, Sym, Str, Str)

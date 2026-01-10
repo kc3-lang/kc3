@@ -15,8 +15,6 @@ require TLS
 
 defmodule TLS.Facts do
 
-  dlopen("tls.so")
-
   def accept = cfn Bool "kc3_tls_facts_accept" (Facts, Socket, TLS, Str,
     Result)
 

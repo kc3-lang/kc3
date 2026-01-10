@@ -10,12 +10,12 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+dlopen("pdf.so")
+
 require PDF.File
 require PDF.Stream
 
 defmodule PDF do
-
-  dlopen("pdf.so")
 
   # Call after all PDF objects have been cleaned.
   def name_list_delete_all = cfn Void "kc3_pdf_name_list_delete_all" ()

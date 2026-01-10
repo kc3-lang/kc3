@@ -12,9 +12,9 @@
 
 require Facts
 
-defmodule Socket.Facts do
+dlopen("socket.so")
 
-  dlopen("socket.so")
+defmodule Socket.Facts do
 
   def accept = cfn Bool "kc3_socket_facts_accept" (Facts, Socket, Result)
 

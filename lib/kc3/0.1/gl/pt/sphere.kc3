@@ -14,13 +14,13 @@ require GL.PT.Material
 require GL.DRay
 require GL.DVec3
 
+dlopen("gl.so")
+
 defmodule GL.PT.Sphere do
 
   defstruct [material: %GL.PT.Material{},
              center: %GL.DVec3{},
              radius: (F64) 0.0]
-
-  dlopen("gl.so")
 
   def intersect = cfn F64 "pt_intersect_sphere" (GL.PT.Sphere, GL.DRay)
 

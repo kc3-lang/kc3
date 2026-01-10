@@ -12,8 +12,6 @@
 
 defmodule Gtk4.Paned do
 
-  dlopen("gtk4.so")
-
   # new(:horizontal)
   # new(:vertical)
   def new = cfn Ptr "kc3_gtk4_paned_new" (Result, Sym)

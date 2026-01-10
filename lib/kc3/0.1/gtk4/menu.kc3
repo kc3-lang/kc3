@@ -12,8 +12,6 @@
 
 defmodule Gtk4.Menu do
 
-  dlopen("gtk4.so")
-
   def new = cfn Ptr "kc3_gtk4_menu_new" (Result)
 
   def append_item = cfn Void "kc3_gtk4_menu_append_item" (Ptr, Ptr)

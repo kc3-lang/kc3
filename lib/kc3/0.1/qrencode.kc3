@@ -10,9 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule QREncode do
+dlopen("qrencode.so")
 
-  dlopen("qrencode.so")
+defmodule QREncode do
 
   def encode_png = cfn Str "qrencode_encode_png" (Str, Tag, Result)
 

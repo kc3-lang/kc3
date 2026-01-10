@@ -10,15 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Gtk4.Widget do
+all:
+	find . -name '[a-z]*.kc3' -print0 | xargs -0 -n 1 kc3s --load
 
-  def set_halign = cfn Ptr "kc3_gtk4_widget_set_halign" (Ptr, Sym)
-
-  def set_hexpand = cfn Void "kc3_gtk4_widget_set_hexpand" (Ptr, Bool)
-  
-  def set_size_request = cfn Ptr "kc3_gtk4_widget_set_size_request"
-    (Ptr, Tag, Tag)
-
-  def set_vexpand = cfn Void "kc3_gtk4_widget_set_vexpand" (Ptr, Bool)
-
-end
+clean:
+	find . -name '*.kc3c' -print0 | xargs -0 rm
