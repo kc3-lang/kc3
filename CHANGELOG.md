@@ -1,5 +1,9 @@
 # KC3
 
+## v0.1.17-git
+
+ - see README.md
+
 ## v0.1.16 🎄 (2025-12)
 
  - libkc3

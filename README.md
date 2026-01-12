@@ -73,6 +73,9 @@ to implement the missing parts in KC3.
 ## New in this release
 
  - libkc3
+   - copying temporary variables for `pthread_mutex` and `pthread_rwlock`
+     would cause undefined behaviour as per POSIX, this fixes pthread on
+     macOS
    - allow for log hooks (a C function callback with a user pointer)
      in the facts database
    - incremental compilation with cached parser results in
@@ -103,8 +106,8 @@ to implement the missing parts in KC3.
  - HTTPS
    - `HTTPS.Client` with libtls and automatic or manual connection
      - GET method
-     - [WIP] POST method
-     - [WIP] JSON response
+     - POST method
+     - JSON response
 
 ## Discord invite
 
