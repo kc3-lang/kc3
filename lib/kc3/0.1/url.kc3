@@ -14,6 +14,27 @@ dlopen("http.so")
 
 defmodule URL do
 
+  def decode_query_string = fn (url) {
+    pos = Str.position_str(url, "?")
+    q = if pos >= 0 do
+      Str.slice(url, pos + 1, -1)
+    else
+      ""
+    end
+    parts = Str.split(q, "&")
+    map = %{}
+    while parts != [] do
+      [part | parts] = ^ parts
+      pos = Str.position_str(part, "=")
+      if pos >= 0 do
+        key = Str.slice(part, 0, pos)
+        value = Str.slice(part, pos + 1, -1)
+        map = Map.put(map, key, value)
+      end
+    end
+    map
+  }
+
   def eat = fn {
     ([], _) { "/" }
     (url, 0) {
