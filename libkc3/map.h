@@ -37,6 +37,7 @@ s_map * map_sort (s_map *map);
 s_tag *        map_access (const s_map *map, s_list *key,
                            s_tag *value);
 s_map *        map_cast (const s_tag *tag, s_map *map);
+s_tag *        map_count (const s_map *map, s_tag *dest);
 s_tag *        map_get (const s_map *map, const s_tag *key,
                         s_tag *dest);
 const s_sym ** map_get_type (const s_map *map, const s_tag *key,

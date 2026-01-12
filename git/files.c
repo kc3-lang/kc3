@@ -98,12 +98,11 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
     sub_tree = tree;
   else {
     if (git_tree_entry_bypath(&entry, tree, path->ptr.pchar)) {
-      err_write_1("kc3_git_files: git_tree_entry_bypath: ");
-      err_inspect_str(path);
-      err_write_1("\n");
       git_object_free(obj);
       free(rev);
-      return NULL;
+      map_init(&tmp, 0);
+      *dest = tmp;
+      return dest;
     }
     type = git_tree_entry_type(entry);
     switch (type) {

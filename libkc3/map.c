@@ -53,19 +53,6 @@ s_tag * map_access (const s_map *map, s_list *key,
   return r;
 }
 
-s_map * map_init_cast (s_map *map, p_sym *type, s_tag *tag)
-{
-  assert(tag);
-  (void) type;
-  if (tag->type == TAG_MAP)
-    return map_init_copy(map, &tag->data.map);
-  err_write_1("map_init_cast: cannot cast ");
-  err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Map");
-  assert(! "map_init_cast: cannot cast to Map");
-  return NULL;
-}
-
 void map_clean (s_map *map)
 {
   uw i = 0;
@@ -77,6 +64,13 @@ void map_clean (s_map *map)
   }
   free(map->key);
   free(map->value);
+}
+
+s_tag * map_count (const s_map *map, s_tag *dest)
+{
+  s_tag tmp;
+  tag_init_uw(&tmp, map->count);
+  return tag_integer_reduce(&tmp, dest);
 }
 
 void map_delete (s_map *map)
@@ -186,6 +180,19 @@ s_map * map_init_1 (s_map *map, const char *p)
     return NULL;
   }
   return map;
+}
+
+s_map * map_init_cast (s_map *map, p_sym *type, s_tag *tag)
+{
+  assert(tag);
+  (void) type;
+  if (tag->type == TAG_MAP)
+    return map_init_copy(map, &tag->data.map);
+  err_write_1("map_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Map");
+  assert(! "map_init_cast: cannot cast to Map");
+  return NULL;
 }
 
 s_map * map_init_copy (s_map *map, s_map *src)
