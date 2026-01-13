@@ -14,6 +14,6 @@ defmodule Character do
 
   def cast = cfn Character "character_init_cast" (Result, Sym, Tag)
 
-  def is_space = cfn Bool "character_is_space" (Character)
+  def is_space? = cfn Bool "character_is_space" (Character)
 
 end

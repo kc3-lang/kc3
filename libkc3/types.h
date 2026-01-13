@@ -398,6 +398,7 @@ struct fact_list {
 
 struct ht_iterator {
   s_ht *ht;
+  bool next;
   uw position;
   s_list *items;
 };
