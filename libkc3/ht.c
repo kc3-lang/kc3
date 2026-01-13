@@ -202,13 +202,14 @@ s_tag ** ht_iterator_next (s_ht_iterator *i, s_tag **dest)
     if ((i->items = i->ht->items[i->position]))
       goto ok;
   }
-  if (i->items)
-    i->items = list_next(i->items);
+  else
+    if (i->items)
+      i->items = list_next(i->items);
   while (i->position < i->ht->size - 1 && ! i->items) {
     i->position++;
     i->items = i->ht->items[i->position];
   }
-  if (i->position >= i->ht->size || ! i->items) {
+  if (! i->items && i->position >= i->ht->size) {
     err_write_1("ht_iterator_next: reached end (position=");
     err_inspect_uw_decimal(i->position);
     err_write_1(", size=");

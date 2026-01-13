@@ -130,6 +130,7 @@ s_tag *        env_kc3_defcounter (s_env *env, s_call *call,
 s_tag *        env_let (s_env *env, s_tag *vars, s_tag *tag,
                         s_tag *dest);
 bool           env_load (s_env *env, const s_str *path);
+sw             env_load_kc3c (s_env *env, const s_str *path);
 void           env_loop_context_pop (s_env *env, s_loop_context *lc);
 void           env_loop_context_push (s_env *env, s_loop_context *lc);
 bool           env_maybe_reload (s_env *env, const s_str *path);

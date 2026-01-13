@@ -729,6 +729,7 @@ s_marshall * marshall_env_counters (s_marshall *m, bool heap,
 {
   s_counter *counter = NULL;
   s_ht_iterator ht_iter = {0};
+  uw i;
   s_tag *item = NULL;
   if (! m || ! env || ! env->counter_ht || ! env->counter_ht->size) {
     err_puts("marshall_env_counters: invalid argument");
@@ -744,7 +745,13 @@ s_marshall * marshall_env_counters (s_marshall *m, bool heap,
     return m;
   if (! ht_iterator_init(&ht_iter, env->counter_ht))
     return NULL;
-  while (ht_iterator_next(&ht_iter, &item)) {
+  i = 0;
+  while (i < env->counter_ht->count) {
+    if (! ht_iterator_next(&ht_iter, &item)) {
+      err_puts("marshall_env_counters: ht_iterator_next");
+      assert(! "marshall_env_counters: ht_iterator_next");
+      return NULL;
+    }
     if (item->type != TAG_PSTRUCT ||
         ! item->data.pstruct ||
         ! item->data.pstruct->pstruct_type ||
@@ -769,6 +776,7 @@ s_marshall * marshall_env_counters (s_marshall *m, bool heap,
       assert(! "marshall_env_counters: marshall_tag");
       return NULL;
     }
+    i++;
   }
   return m;
 }
@@ -791,13 +799,33 @@ sw marshall_env_to_file (const s_env *env, const s_str *path)
 
 sw marshall_kc3c_file (p_list dlopen_list, p_list tags, const s_str *path)
 {
+  p_list list;
   s_marshall m = {0};
   sw result = -1;
   if (! marshall_init(&m))
     return -1;
-  if (! marshall_plist(&m, false, &dlopen_list) ||
-      ! marshall_plist(&m, false, &tags) ||
-      (result = marshall_to_file(&m, path)) <= 0)
+  if (! marshall_uw(&m, false, list_length(dlopen_list)))
+    goto ko;
+  list = dlopen_list;
+  while (list) {
+    if (list->tag.type != TAG_STR) {
+      err_puts("marshall_kc3c_file: invalid dlopen_list");
+      assert(! "marshall_kc3c_file: invalid dlopen_list");
+      goto ko;
+    }
+    if (! marshall_str(&m, false, &list->tag.data.str))
+      goto ko;
+    list = list_next(list);
+  }
+  if (! marshall_uw(&m, false, list_length(tags)))
+    goto ko;
+  list = tags;
+  while (list) {
+    if (! marshall_tag(&m, false, &list->tag))
+      goto ko;
+    list = list_next(list);
+  }
+  if ((result = marshall_to_file(&m, path)) <= 0)
     goto ko;
   marshall_clean(&m);
   return result;

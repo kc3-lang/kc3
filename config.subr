@@ -1761,12 +1761,14 @@ esac
     echo "DISTCLEANFILES = .build \${CLEANFILES} config.mk"
     echo
     echo "clean::"
+    echo "	find . -name '*.kc3c' -print0 | xargs -0 rm"
     echo "	rm -rf \${CLEANFILES}"
     echo
     echo "clean_cov::"
     echo "	rm -rf \${CLEANFILES_COV}"
     echo
     echo "distclean::"
+    echo "	find . -name '*.kc3c' -print0 | xargs -0 rm"
     echo "	rm -rf \${DISTCLEANFILES}"
     echo
     echo ".PHONY: clean clean_cov distclean"

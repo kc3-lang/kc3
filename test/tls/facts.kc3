@@ -1,6 +1,7 @@
 require Facts
 require File
 require Socket
+require Socket.Buf
 require TLS
 require TLS.Client
 require TLS.Config

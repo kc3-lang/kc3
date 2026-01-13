@@ -2082,9 +2082,7 @@ bool env_load (s_env *env, const s_str *path)
   s_str cache_path = {0};
   s_time cache_mtime = {0};
   const s_str cache_suffix = STR("c");
-  p_list dlopen_list = NULL;
   p_list dlopen_list_save = NULL;
-  void *dlopen_tmp = NULL;
   s_tag *file_dir;
   s_tag  file_dir_save;
   s_tag *file_path;
@@ -2098,8 +2096,8 @@ bool env_load (s_env *env, const s_str *path)
   sw r;
   s_time src_mtime = {0};
   s_tag tag = {0};
-  s_list *tmp_list;
   s_tag tmp = {0};
+  p_list tmp_list = NULL;
   bool use_cache = false;
   assert(env);
   assert(path);
@@ -2123,37 +2121,13 @@ bool env_load (s_env *env, const s_str *path)
       err_inspect_str(&cache_path);
       err_write_1("\n");
     }
-    if (marshall_read_kc3c_file(&dlopen_list, &list, &cache_path) <= 0) {
+    if (env_load_kc3c(env, &cache_path) <= 0) {
       use_cache = false;
       if (env->trace)
         err_puts("env_load: cache load failed, falling back to parse");
     }
   }
-  if (use_cache) {
-    tmp_list = dlopen_list;
-    while (tmp_list) {
-      if (tmp_list->tag.type != TAG_STR ||
-          ! env_dlopen(env, &tmp_list->tag.data.str, &dlopen_tmp))
-        goto ko;
-      tmp_list = list_next(tmp_list);
-    }
-    list_delete_all(dlopen_list);
-    dlopen_list = NULL;
-    tmp_list = list;
-    while (tmp_list) {
-      if (! env_eval_tag(env, &tmp_list->tag, &tmp)) {
-        err_write_1("env_load: env_eval_tag: ");
-        err_inspect_tag(&tmp_list->tag);
-        err_write_1("\n");
-        goto ko;
-      }
-      tag_clean(&tmp);
-      tmp_list = list_next(tmp_list);
-    }
-    list_delete_all(list);
-    list = NULL;
-  }
-  else {
+  if (! use_cache) {
     if (env->trace) {
       err_write_1("env_load: ");
       err_inspect_str(path);
@@ -2237,8 +2211,6 @@ bool env_load (s_env *env, const s_str *path)
   err_write_1("env_load: ");
   err_inspect_str(path);
   err_puts(": KO");
-  if (dlopen_list)
-    list_delete_all(dlopen_list);
   if (new_dlopens)
     list_delete_all(new_dlopens);
   if (list)
@@ -2252,6 +2224,75 @@ bool env_load (s_env *env, const s_str *path)
   }
   str_clean(&cache_path);
   return false;
+}
+
+sw env_load_kc3c (s_env *env, const s_str *path)
+{
+  uw count = 0;
+  s_str dlopen_str = {0};
+  void *dlopen_tmp = NULL;
+  uw i;
+  s_marshall_read mr = {0};
+  sw result = -1;
+  s_tag tag = {0};
+  s_tag tmp = {0};
+  if (! path || ! path->size) {
+    err_puts("env_load_kc3c: invalid argument");
+    assert(! "env_load_kc3c: invalid argument");
+    return -1;
+  }
+  if (! marshall_read_init_file(&mr, path)) {
+    err_puts("env_load_kc3c: marshall_read_init_file");
+    assert(! "env_load_kc3c: marshall_read_init_file");
+    return -1;
+  }
+  if ((result = marshall_read_size(&mr)) <= 0) {
+    err_puts("env_load_kc3c: marshall_read_size");
+    assert(! "env_load_kc3c: marshall_read_size");
+    goto clean;
+  }
+  if (! marshall_read_uw(&mr, false, &count)) {
+    err_puts("env_load_kc3c: marshall_read_uw 1");
+    assert(! "env_load_kc3c: marshall_read_uw 1");
+    goto clean;
+  }
+  i = 0;
+  while (i < count) {
+    if (! marshall_read_str(&mr, false, &dlopen_str)) {
+      err_puts("env_load_kc3c: marshall_read_str");
+      assert(! "env_load_kc3c: marshall_read_str");
+      goto clean;
+    }
+    if (! env_dlopen(env, &dlopen_str, &dlopen_tmp))
+      goto clean;
+    i++;
+  }
+  if (! marshall_read_uw(&mr, false, &count)) {
+    err_puts("env_load_kc3c: marshall_read_uw 2");
+    assert(! "env_load_kc3c: marshall_read_uw 2");
+    goto clean;
+  }
+  i = 0;
+  while (i < count) {
+    if (! marshall_read_tag(&mr, false, &tag)) {
+      err_puts("env_load_kc3c: marshall_read_tag");
+      assert(! "env_load_kc3c: marshall_read_tag");
+      goto clean;
+    }
+    if (! env_eval_tag(env, &tag, &tmp)) {
+      err_puts("env_load_kc3c: env_eval_tag");
+      assert(! "env_load_kc3c: env_eval_tag");
+      goto clean;
+    }
+    tag_clean(&tmp);
+    tag_clean(&tag);
+    i++;
+  }
+  marshall_read_clean(&mr);
+  return result;
+ clean:
+  marshall_read_clean(&mr);
+  return -1;
 }
 
 void env_loop_context_pop (s_env *env, s_loop_context *lc)
