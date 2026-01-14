@@ -128,6 +128,7 @@ extern const s_sym g_sym_op_pin;
 extern const s_sym g_sym_op_precedence;
 extern const s_sym g_sym_op_sym;
 extern const s_sym g_sym_persist;
+extern const s_sym g_sym_profile;
 extern const s_sym g_sym_r;
 extern const s_sym g_sym_read;
 extern const s_sym g_sym_request;

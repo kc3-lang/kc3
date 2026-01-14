@@ -43,10 +43,6 @@ bool ht_add_hash (s_ht *ht, s_tag *tag, uw hash)
   item = ht->items + hash % ht->size;
   while (*item && (c = ht->compare(&(*item)->tag, tag)) < 0)
     item = &(*item)->next.data.plist;
-  if (*item && ! c) {
-    *item = list_delete(*item);
-    ht->count--;
-  }
   if (! (item_new = list_new_tag_copy(tag, *item))) {
     err_puts("ht_add_hash: ht_item_new");
     assert(! "ht_add_hash: ht_item_new");
@@ -54,6 +50,10 @@ bool ht_add_hash (s_ht *ht, s_tag *tag, uw hash)
     rwlock_unlock_w(&ht->rwlock);
 #endif
     return false;
+  }
+  if (*item && ! c) {
+    *item = list_delete(*item);
+    ht->count--;
   }
   *item = item_new;
   ht->count++;

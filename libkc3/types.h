@@ -259,6 +259,8 @@ typedef struct ops                     s_ops;
 typedef struct pointer                 s_pointer;
 typedef struct pretty                  s_pretty;
 typedef struct pretty_save             s_pretty_save;
+typedef struct profile                 s_profile;
+typedef struct profile_item            s_profile_item;
 typedef struct queue                   s_queue;
 typedef struct quote                   s_quote;
 typedef struct ratio                   s_ratio;

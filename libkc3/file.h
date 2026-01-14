@@ -31,6 +31,7 @@ s_file_stat * file_stat_init_struct_stat (s_file_stat *dest,
 
 /* Observers */
 bool          file_access (const s_str *path, const s_sym *mode);
+s_str *       file_basename (const s_str *path, s_str *dest);
 sw            file_copy (const char *from, const char *to);
 s_str *       file_dirname (const s_str *path, s_str *dest);
 bool *        file_exists (const s_str *path, bool *dest);

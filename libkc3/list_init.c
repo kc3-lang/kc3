@@ -903,6 +903,50 @@ s_list * list_init_sw (s_list *list, sw i, s_list *next)
   return list;
 }
 
+s_list * list_init_time_add (s_list *list, const s_time *a,
+                             const s_time *b, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_time_add(&tmp.tag, a, b)) {
+    err_puts("list_init_time_add: tag_init_time_add");
+    assert(! "list_init_time_add: tag_init_time_add");
+    return NULL;
+  }
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_time_copy (s_list *list, const s_time *src,
+                              s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_time_copy(&tmp.tag, src)) {
+    err_puts("list_init_time_copy: tag_init_time_copy");
+    assert(! "list_init_time_copy: tag_init_time_copy");
+    return NULL;
+  }
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_time_now (s_list *list, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_time_now(&tmp.tag)) {
+    err_puts("list_init_time_now: tag_init_time_now");
+    assert(! "list_init_time_now: tag_init_time_now");
+    return NULL;
+  }
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_tuple (s_list *list, uw count, s_list *next)
 {
   s_list tmp = {0};
@@ -926,35 +970,6 @@ s_list * list_init_tuple_2 (s_list *list, s_tag *a, s_tag *b,
   if (! tag_init_tuple_2(&tmp.tag, a, b)) {
     err_puts("list_init_tuple_2: tag_init_tuple_2");
     assert(! "list_init_tuple_2: tag_init_tuple_2");
-    return NULL;
-  }
-  *list = tmp;
-  return list;
-}
-
-s_list * list_init_time_add (s_list *list, const s_time *a,
-                             const s_time *b, s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_time_add(&tmp.tag, a, b)) {
-    err_puts("list_init_time_add: tag_init_time_add");
-    assert(! "list_init_time_add: tag_init_time_add");
-    return NULL;
-  }
-  *list = tmp;
-  return list;
-}
-
-s_list * list_init_time_now (s_list *list, s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_time_now(&tmp.tag)) {
-    err_puts("list_init_time_now: tag_init_time_now");
-    assert(! "list_init_time_now: tag_init_time_now");
     return NULL;
   }
   *list = tmp;
@@ -2119,6 +2134,61 @@ s_list * list_new_sw (sw i, s_list *next)
   return list;
 }
 
+s_list * list_new_time_add (const s_time *a, const s_time *b,
+                            s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list) {
+    err_puts("list_new_time_add: list_new");
+    assert(! "list_new_time_add: list_new");
+    return NULL;
+  }
+  if (! tag_init_time_add(&list->tag, a, b)) {
+    err_puts("list_new_time_add: tag_init_time_add");
+    assert(! "list_new_time_add: tag_init_time_add");
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_time_copy (const s_time *src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list) {
+    err_puts("list_new_time_copy: list_new");
+    assert(! "list_new_time_copy: list_new");
+    return NULL;
+  }
+  if (! tag_init_time_copy(&list->tag, src)) {
+    err_puts("list_new_time_copy: tag_init_time_copy");
+    assert(! "list_new_time_copy: tag_init_time_copy");
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_time_now (s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list) {
+    err_puts("list_new_time_now: list_new");
+    assert(! "list_new_time_now: list_new");
+    return NULL;
+  }
+  if (! tag_init_time_now(&list->tag)) {
+    err_puts("list_new_time_now: tag_init_time_now");
+    assert(! "list_new_time_now: tag_init_time_now");
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
 s_list * list_new_tuple (uw count, s_list *next)
 {
   s_list *list;
@@ -2149,43 +2219,6 @@ s_list * list_new_tuple_2 (s_tag *a, s_tag *b, s_list *next)
   if (! tag_init_tuple_2(&list->tag, a, b)) {
     err_puts("list_new_tuple_2: tag_init_tuple_2");
     assert(! "list_new_tuple_2: tag_init_tuple_2");
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_time_add (const s_time *a, const s_time *b,
-                            s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list) {
-    err_puts("list_new_time_add: list_new");
-    assert(! "list_new_time_add: list_new");
-    return NULL;
-  }
-  if (! tag_init_time_add(&list->tag, a, b)) {
-    err_puts("list_new_time_add: tag_init_time_add");
-    assert(! "list_new_time_add: tag_init_time_add");
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_time_now (s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list) {
-    err_puts("list_new_time_now: list_new");
-    assert(! "list_new_time_now: list_new");
-    return NULL;
-  }
-  if (! tag_init_time_now(&list->tag)) {
-    err_puts("list_new_time_now: tag_init_time_now");
-    assert(! "list_new_time_now: tag_init_time_now");
     free(list);
     return NULL;
   }

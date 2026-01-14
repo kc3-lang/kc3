@@ -79,6 +79,18 @@ bool file_access (const s_str *path, const s_sym *mode)
   return r;
 }
 
+s_str * file_basename (const s_str *path, s_str *dest)
+{
+  sw dirsep_pos;
+  assert(path);
+  assert(dest);
+  if (path->size == 1 && path->ptr.pchar[0] == '/')
+    return str_init_empty(dest);
+  if ((dirsep_pos = str_rindex_character(path, '/', 0, -2)) < 0)
+    return str_init_copy(dest, path);
+  return str_init_slice(dest, path, dirsep_pos + 1, -1);
+}
+
 void file_close (const s_tag *tag)
 {
   s_buf_rw *buf_rw;

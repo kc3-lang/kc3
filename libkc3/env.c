@@ -387,6 +387,9 @@ void env_clean (s_env *env)
   assert(env->facts->ref_count == 1);
   if (env == env_global())
     env_cleaning(true);
+#if LIBKC3_PROFILE
+  profile_clean();
+#endif
   facts_delete(env->facts);
   env->facts = NULL;
   ops_delete(env->ops);
@@ -1864,6 +1867,9 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     return NULL;
   buf_file_open_w(env->err, stderr);
   env->facts = facts_new();
+#if LIBKC3_PROFILE
+  profile_init();
+#endif
   env->path = list_new_str_1
     (NULL, "./", list_new_str_1
      (NULL, "./share/kc3/", list_new_str_1

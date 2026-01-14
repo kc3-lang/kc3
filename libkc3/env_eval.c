@@ -28,6 +28,7 @@
 #include "env_eval_equal.h"
 #include "env_eval_quote.h"
 #include "fn.h"
+#include "facts.h"
 #include "frame.h"
 #include "ident.h"
 #include "list.h"
@@ -203,9 +204,21 @@ bool env_eval_call_arguments (s_env *env, s_list *args,
   return true;
 }
 
-bool env_eval_call_callable (s_env *env, const s_call *call,
+bool env_eval_call_callable (s_env *env, s_call *call,
                              s_tag *dest)
 {
+#if LIBKC3_PROFILE
+  s_tag profile_dt = {0};
+  s_tag profile_end = {0};
+  s_tag profile_predicate = {0};
+  s_tag profile_start = {0};
+  s_tag profile_subject = {0};
+#endif
+  bool result;
+#if LIBKC3_PROFILE
+  if (g_profile_facts)
+    tag_init_time_now(&profile_start);
+#endif
   if (securelevel(0) > 2) {
     err_puts("env_eval_call_callable: cannot eval with"
              " securelevel > 2");
@@ -213,19 +226,37 @@ bool env_eval_call_callable (s_env *env, const s_call *call,
   }
   switch (call->pcallable->type) {
   case CALLABLE_CFN:
-    return env_eval_call_cfn_args(env, &call->pcallable->data.cfn,
-                                  call->arguments, dest);
+    result = env_eval_call_cfn_args(env, &call->pcallable->data.cfn,
+                                    call->arguments, dest);
+    goto profile;
   case CALLABLE_FN:
-    return env_eval_call_fn_args(env, &call->pcallable->data.fn,
-                                 call->arguments, dest);
+    result = env_eval_call_fn_args(env, &call->pcallable->data.fn,
+                                   call->arguments, dest);
+    goto profile;
   case CALLABLE_VOID:
     err_puts("env_eval_call_callable: CALLABLE_VOID");
     assert(! "env_eval_call_callable: CALLABLE_VOID");
-    return false;
+    result = false;
+    goto profile;
   }
   err_puts("env_eval_call_callable: unknown callable type");
   assert(! "env_eval_call_callable: unknown callable type");
-  return false;
+  result = false;
+ profile:
+#if LIBKC3_PROFILE
+  if (g_profile_facts) {
+    tag_init_time_copy(&profile_subject, &profile_start.data.time);
+    tag_init_pcallable_copy(&profile_predicate, &call->pcallable);
+    tag_init_time_now(&profile_end);
+    profile_dt.type = TAG_TIME;
+    time_sub(&profile_end.data.time, &profile_start.data.time,
+             &profile_dt.data.time);
+    facts_add_tags(g_profile_facts, &profile_subject,
+                   &profile_predicate, &profile_dt);
+    tag_clean(&profile_predicate);
+  }
+#endif
+  return result;
 }
 
 bool env_eval_call_callable_args (s_env *env,

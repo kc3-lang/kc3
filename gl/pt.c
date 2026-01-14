@@ -55,88 +55,165 @@ s_dvec3 * pt_radiance_sphere (const s_list *scene,
                               f64 dist, s_dvec3 *dest)
 {
   s_dvec3 d;
-  s_dvec3 diffuse;
   s_dvec3 f;
   s_dvec3 n;
   s_dvec3 nl;
   s_dvec3 n2;
   f64 p;
+  f64 p_diff;
+  f64 p_spec;
+  f64 p_refr;
   f64 r1;
   f64 r2;
   f64 r2s;
-  s_dvec3 specular;
+  f64 roulette;
+  s_dvec3 result;
   s_dvec3 sub_rad;
   s_dray  sub_ray;
   s_dvec3 u;
   s_dvec3 v;
   s_dvec3 w;
   s_dvec3 x;
+  // Compute hit point
   dvec3_mul_f64(&ray->direction, dist, &x);
   dvec3_add(&x, &ray->origin, &x);
+  // Compute normal
   dvec3_sub(&x, &obj->center, &n);
   dvec3_normalize(&n, &n);
   if (dvec3_dot(&n, &ray->direction) < 0)
     nl = n;
   else
     dvec3_mul_f64(&n, -1, &nl);
-  f = obj->material.diffuse.color;
-  p = f.x > f.y && f.x > f.z ?
-    f.x :
-    f.y > f.z ? f.y : f.z;
+  // Compute material weights for Russian roulette
+  p_diff = fmax(obj->material.diffuse.color.x,
+                fmax(obj->material.diffuse.color.y,
+                     obj->material.diffuse.color.z));
+  p_spec = fmax(obj->material.specular.color.x,
+                fmax(obj->material.specular.color.y,
+                     obj->material.specular.color.z));
+  p_refr = fmax(obj->material.refractive.color.x,
+                fmax(obj->material.refractive.color.y,
+                     obj->material.refractive.color.z));
+  // Normalize probabilities
+  p = p_diff + p_spec + p_refr;
+  if (p < 1e-9)
+    return dvec3_init_copy(dest, &obj->material.diffuse.emission);
+  p_diff /= p;
+  p_spec /= p;
+  p_refr /= p;
+  // Russian roulette for path termination at depth > 5
   if (++depth > 5) {
-    if (erand48(xi) < p)
-      dvec3_mul_f64(&f, 1.0 / p, &f);
+    if (depth < 128 && erand48(xi) < p)
+      ;  // continue
     else
       return dvec3_init_copy(dest, &obj->material.diffuse.emission);
   }
-  //if (obj.refl == DIFF){                  // Ideal DIFFUSE reflection
-  diffuse = f;
-  r1 = 2 * M_PI * erand48(xi);
-  r2 = erand48(xi);
-  r2s = sqrt(r2);
-  w = nl;
-  if (fabs(w.x) > 0.1)
-    u = (s_dvec3) {0.0, 1.0, 0.0};
-  else
-    u = (s_dvec3) {1.0, 0.0, 0.0};
-  dvec3_cross(&u, &w, &u);
-  dvec3_normalize(&u, &u);
-  dvec3_cross(&w, &u, &v);
-  dvec3_mul_f64(&u, cos(r1) * r2s, &u);
-  dvec3_mul_f64(&v, sin(r1) * r2s, &v);
-  dvec3_mul_f64(&w, sqrt(1.0 - r2), &w);
-  dvec3_add(&u, &v, &d);
-  dvec3_add(&d, &w, &d);
-  dvec3_normalize(&d, &d);
+  // Russian roulette to choose ONE reflection type
+  roulette = erand48(xi);
   sub_ray.origin = x;
-  sub_ray.direction = d;
-  pt_radiance(scene, &sub_ray, depth, xi, &sub_rad);
-  diffuse.x *= sub_rad.x;
-  diffuse.y *= sub_rad.y;
-  diffuse.z *= sub_rad.z;
-  dvec3_add(&obj->material.diffuse.emission, &diffuse, &diffuse);
-  /*} else if (obj.refl == SPEC)            // Ideal SPECULAR reflection
-    return obj.e + f.mult(radiance(Ray(x,ray->d-n*2*n.dot(ray->d)),depth));*/
-  specular = f;
-  sub_ray.origin = x;
-  dvec3_mul_f64(&n, 2 * dvec3_dot(&n, &ray->direction), &n2);
-  dvec3_sub(&ray->direction, &n2 , &sub_ray.direction);
-  pt_radiance(scene, &sub_ray, depth, xi, &sub_rad);
-  dvec3_mul_dvec3(&specular, &sub_rad, &specular);
-  return dvec3_add(&diffuse, &specular, dest);
-  /*
-  Ray reflRay(x, ray->d-n*2*n.dot(ray->d));     // Ideal dielectric REFRACTION
-  bool into = n.dot(nl)>0;                // Ray from outside going in?
-  f64 nc=1, nt=1.5, nnt=into?nc/nt:nt/nc, ddn=ray->d.dot(nl), cos2t;
-  if ((cos2t=1-nnt*nnt*(1-ddn*ddn))<0)    // Total internal reflection
-    return obj.e + f.mult(radiance(reflRay,depth));
-  s_dvec3 tdir = (ray->d*nnt - n*((into?1:-1)*(ddn*nnt+sqrt(cos2t)))).norm();
-  f64 a=nt-nc, b=nt+nc, R0=a*a/(b*b), c = 1-(into?-ddn:tdir.dot(n));
-  f64 Re=R0+(1-R0)*c*c*c*c*c,Tr=1-Re,P=.25+.5*Re,RP=Re/P,TP=Tr/(1-P);
-  return obj.e + f.mult(depth>2 ? (erand48()<P ?   // Russian roulette
-    radiance(reflRay,depth)*RP:radiance(Ray(x,tdir),depth)*TP) :
-    radiance(reflRay,depth)*Re+radiance(Ray(x,tdir),depth)*Tr);
-  */
+  if (roulette < p_diff) {
+    // DIFFUSE reflection
+    f = obj->material.diffuse.color;
+    dvec3_mul_f64(&f, 1.0 / p_diff, &f);  // weight by inverse probability
+    r1 = 2 * M_PI * erand48(xi);
+    r2 = erand48(xi);
+    r2s = sqrt(r2);
+    w = nl;
+    if (fabs(w.x) > 0.1)
+      u = (s_dvec3) {0.0, 1.0, 0.0};
+    else
+      u = (s_dvec3) {1.0, 0.0, 0.0};
+    dvec3_cross(&u, &w, &u);
+    dvec3_normalize(&u, &u);
+    dvec3_cross(&w, &u, &v);
+    dvec3_mul_f64(&u, cos(r1) * r2s, &u);
+    dvec3_mul_f64(&v, sin(r1) * r2s, &v);
+    dvec3_mul_f64(&w, sqrt(1.0 - r2), &w);
+    dvec3_add(&u, &v, &d);
+    dvec3_add(&d, &w, &d);
+    dvec3_normalize(&d, &d);
+    sub_ray.direction = d;
+    pt_radiance(scene, &sub_ray, depth, xi, &sub_rad);
+    dvec3_mul_dvec3(&f, &sub_rad, &result);
+    return dvec3_add(&obj->material.diffuse.emission, &result, dest);
+  }
+  else if (roulette < p_diff + p_spec) {
+    // SPECULAR reflection
+    f = obj->material.specular.color;
+    dvec3_mul_f64(&f, 1.0 / p_spec, &f);  // weight by inverse probability
+    dvec3_mul_f64(&n, 2 * dvec3_dot(&n, &ray->direction), &n2);
+    dvec3_sub(&ray->direction, &n2, &sub_ray.direction);
+    pt_radiance(scene, &sub_ray, depth, xi, &sub_rad);
+    dvec3_mul_dvec3(&f, &sub_rad, &result);
+    return dvec3_add(&obj->material.specular.emission, &result, dest);
+  }
+  else {
+    // REFRACTIVE (glass)
+    f64 nc = 1.0;
+    f64 nt = 1.5;
+    bool into = dvec3_dot(&n, &nl) > 0;
+    f64 nnt = into ? nc / nt : nt / nc;
+    f64 ddn = dvec3_dot(&ray->direction, &nl);
+    f64 cos2t = 1 - nnt * nnt * (1 - ddn * ddn);
+    f = obj->material.refractive.color;
+    dvec3_mul_f64(&f, 1.0 / p_refr, &f);  // weight by inverse probability
+    if (cos2t < 0) {
+      // Total internal reflection
+      dvec3_mul_f64(&n, 2 * dvec3_dot(&n, &ray->direction), &n2);
+      dvec3_sub(&ray->direction, &n2, &sub_ray.direction);
+      pt_radiance(scene, &sub_ray, depth, xi, &sub_rad);
+      dvec3_mul_dvec3(&f, &sub_rad, &result);
+      return dvec3_add(&obj->material.refractive.emission, &result, dest);
+    }
+    // Compute refracted direction
+    s_dvec3 tdir;
+    s_dvec3 tmp1, tmp2;
+    dvec3_mul_f64(&ray->direction, nnt, &tmp1);
+    dvec3_mul_f64(&n, (into ? 1 : -1) * (ddn * nnt + sqrt(cos2t)), &tmp2);
+    dvec3_sub(&tmp1, &tmp2, &tdir);
+    dvec3_normalize(&tdir, &tdir);
+    // Fresnel reflectance
+    f64 a = nt - nc;
+    f64 b = nt + nc;
+    f64 R0 = (a * a) / (b * b);
+    f64 c = 1 - (into ? -ddn : dvec3_dot(&tdir, &n));
+    f64 Re = R0 + (1 - R0) * c * c * c * c * c;
+    f64 Tr = 1 - Re;
+    f64 P_refl = 0.25 + 0.5 * Re;
+    // Russian roulette between reflection and refraction
+    if (depth > 2) {
+      if (erand48(xi) < P_refl) {
+        // Reflect
+        dvec3_mul_f64(&f, Re / P_refl, &f);
+        dvec3_mul_f64(&n, 2 * dvec3_dot(&n, &ray->direction), &n2);
+        dvec3_sub(&ray->direction, &n2, &sub_ray.direction);
+      }
+      else {
+        // Refract
+        dvec3_mul_f64(&f, Tr / (1 - P_refl), &f);
+        sub_ray.direction = tdir;
+      }
+      pt_radiance(scene, &sub_ray, depth, xi, &sub_rad);
+      dvec3_mul_dvec3(&f, &sub_rad, &result);
+      return dvec3_add(&obj->material.refractive.emission, &result, dest);
+    }
+    else {
+      // At low depth, compute both paths
+      s_dvec3 refl_rad, refr_rad;
+      s_dray refl_ray;
+      refl_ray.origin = x;
+      dvec3_mul_f64(&n, 2 * dvec3_dot(&n, &ray->direction), &n2);
+      dvec3_sub(&ray->direction, &n2, &refl_ray.direction);
+      pt_radiance(scene, &refl_ray, depth, xi, &refl_rad);
+      sub_ray.direction = tdir;
+      pt_radiance(scene, &sub_ray, depth, xi, &refr_rad);
+      dvec3_mul_f64(&refl_rad, Re, &refl_rad);
+      dvec3_mul_f64(&refr_rad, Tr, &refr_rad);
+      dvec3_add(&refl_rad, &refr_rad, &sub_rad);
+      dvec3_mul_dvec3(&f, &sub_rad, &result);
+      return dvec3_add(&obj->material.refractive.emission, &result, dest);
+    }
+  }
 }
 
 typedef struct pt_thread s_pt_thread;

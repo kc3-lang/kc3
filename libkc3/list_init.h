@@ -111,13 +111,15 @@ s_list * list_init_str_inspect_buf (s_list *list, const s_buf *src,
 s_list * list_init_str_inspect_str (s_list *list, const s_str *src,
                                     s_list *next);
 s_list * list_init_sw (s_list *list, sw i, s_list *next);
-s_list * list_init_tuple (s_list *list, uw count, s_list *next);
-s_list * list_init_tuple_2 (s_list *list, s_tag *a, s_tag *b,
-                            s_list *next);
 s_list * list_init_time (s_list *list, s_list *next);
 s_list * list_init_time_add (s_list *list, const s_time *a,
                              const s_time *b, s_list *next);
+s_list * list_init_time_copy (s_list *list, const s_time *src,
+                              s_list *next);
 s_list * list_init_time_now (s_list *list, s_list *next);
+s_list * list_init_tuple (s_list *list, uw count, s_list *next);
+s_list * list_init_tuple_2 (s_list *list, s_tag *a, s_tag *b,
+                            s_list *next);
 s_list * list_init_u8 (s_list *list, u8 i, s_list *next);
 s_list * list_init_u16 (s_list *list, u16 i, s_list *next);
 s_list * list_init_u32 (s_list *list, u32 i, s_list *next);
@@ -201,12 +203,13 @@ s_list * list_new_str_empty (s_list *next);
 s_list * list_new_str_inspect_buf (const s_buf *src, s_list *next);
 s_list * list_new_str_inspect_str (const s_str *src, s_list *next);
 s_list * list_new_sw (sw i, s_list *next);
-s_list * list_new_tuple (uw count, s_list *next);
-s_list * list_new_tuple_2 (s_tag *a, s_tag *b, s_list *next);
 s_list * list_new_time (s_list *next);
 s_list * list_new_time_add (const s_time *a, const s_time *b,
                             s_list *next);
+s_list * list_new_time_copy (const s_time *src, s_list *next);
 s_list * list_new_time_now (s_list *next);
+s_list * list_new_tuple (uw count, s_list *next);
+s_list * list_new_tuple_2 (s_tag *a, s_tag *b, s_list *next);
 s_list * list_new_u8 (u8 i, s_list *next);
 s_list * list_new_u16 (u16 i, s_list *next);
 s_list * list_new_u32 (u32 i, s_list *next);

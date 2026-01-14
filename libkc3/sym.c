@@ -125,6 +125,7 @@ const s_sym g_sym_op_pin           = SYM_1("op_pin");
 const s_sym g_sym_op_precedence    = SYM_1("op_precedence");
 const s_sym g_sym_op_sym           = SYM_1("op_sym");
 const s_sym g_sym_persist          = SYM_1("persist");
+const s_sym g_sym_profile          = SYM_1("profile");
 const s_sym g_sym_r                = SYM_1("r");
 const s_sym g_sym_read             = SYM_1("read");
 const s_sym g_sym_request          = SYM_1("request");
@@ -420,6 +421,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_op_precedence, NULL);
   sym_register(&g_sym_op_sym, NULL);
   sym_register(&g_sym_persist, NULL);
+  sym_register(&g_sym_profile, NULL);
   sym_register(&g_sym_r, NULL);
   sym_register(&g_sym_read, NULL);
   sym_register(&g_sym_request, NULL);

@@ -42,6 +42,8 @@ KC3_CONFIGURES = \
 	"json/sources.sh" \
 	"json/update_sources" \
 	"kc3c/configure" \
+	"kc3c/sources.sh" \
+	"kc3c/update_sources" \
 	"kc3s/configure" \
 	"kc3s/sources.sh" \
 	"kc3s/update_sources" \
@@ -173,6 +175,7 @@ KC3_MAKEFILES = \
 	"json/Makefile" \
 	"json/sources.mk" \
 	"kc3c/Makefile" \
+	"kc3c/sources.mk" \
 	"kc3s/Makefile" \
 	"kc3s/sources.mk" \
 	"kmsg/Makefile" \
@@ -411,6 +414,7 @@ KC3_C_SOURCES = \
 	"json/json.c" \
 	"json/json.h" \
 	"kc3c/c3c.c" \
+	"kc3c/kc3c.c" \
 	"kc3s/buf_readline.c" \
 	"kc3s/buf_readline.h" \
 	"kc3s/kc3s.c" \
@@ -1668,11 +1672,14 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/hotp.kc3" \
 	"lib/kc3/0.1/html.kc3" \
 	"lib/kc3/0.1/http.kc3" \
+	"lib/kc3/0.1/http/api.kc3" \
 	"lib/kc3/0.1/http/request.kc3" \
 	"lib/kc3/0.1/http/response.kc3" \
 	"lib/kc3/0.1/http/upload.kc3" \
 	"lib/kc3/0.1/httpd.kc3" \
 	"lib/kc3/0.1/httpd/route.kc3" \
+	"lib/kc3/0.1/https.kc3" \
+	"lib/kc3/0.1/https/client.kc3" \
 	"lib/kc3/0.1/image.kc3" \
 	"lib/kc3/0.1/image/egl.kc3" \
 	"lib/kc3/0.1/init.kc3" \
