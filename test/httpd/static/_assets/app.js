@@ -7294,7 +7294,7 @@
       };
       var escape = escapeHTML;
       var inherit = inherit$1;
-      var NO_MATCH = /* @__PURE__ */ Symbol("nomatch");
+      var NO_MATCH = Symbol("nomatch");
       var MAX_KEYWORD_HITS = 7;
       var HLJS = function(hljs) {
         const languages = /* @__PURE__ */ Object.create(null);
