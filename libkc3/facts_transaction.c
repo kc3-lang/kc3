@@ -27,20 +27,21 @@ s_facts_transaction * facts_transaction_clean
   return transaction->next;
 }
 
-void facts_transaction_end (s_facts *facts,
-			    s_facts_transaction *transaction)
+s_facts * facts_transaction_end (s_facts *facts,
+                                 s_facts_transaction *transaction)
 {
   assert(facts);
   assert(transaction);
   if (facts->transaction != transaction) {
     err_puts("facts_transaction_end: transaction mismatch");
     assert(! "facts_transaction_end: transaction mismatch");
-    abort();
+    return NULL;
   }
   facts->transaction = facts_transaction_clean(transaction);
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
 #endif
+  return facts;
 }
 
 bool facts_transaction_find (s_facts *facts,
@@ -116,16 +117,21 @@ s_facts * facts_transaction_rollback
   return NULL;
 }
 
-void facts_transaction_start (s_facts *facts,
-                              s_facts_transaction *transaction)
+s_facts * facts_transaction_start (s_facts *facts,
+                                   s_facts_transaction *transaction)
 {
   assert(facts);
   assert(transaction);
 #if HAVE_PTHREAD
   if (! rwlock_w(&facts->rwlock))
-    return;
+    return NULL;
 #endif
+  if (! facts_next_id(facts, &transaction->id)) {
+    rwlock_unlock_w(&facts->rwlock);
+    return NULL;
+  }
   transaction->log = NULL;
   transaction->next = facts->transaction;
   facts->transaction = transaction;
+  return facts;
 }

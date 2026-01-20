@@ -101,12 +101,10 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
 #endif
     return &item->data;
   }
-  tmp.id = facts->next_id;
-  if (facts->next_id == UW_MAX) {
-    err_puts("facts_add_fact: facts serial id exhausted");
-    assert(! "facts_add_fact: facts serial id exhausted");
+  if (facts->transaction)
+    tmp.id = facts->transaction->id;
+  else if (! facts_next_id(facts, &tmp.id))
     goto ko;
-  }
   item = set_add__fact(&facts->facts, &tmp);
   if (! item) {
     err_puts("facts_add_fact: set_add__fact");
@@ -155,7 +153,6 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
-  facts->next_id++;
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
 #endif
@@ -703,7 +700,10 @@ sw facts_log_add (s_log *log, const s_fact *fact)
   sw result = 0;
   assert(log);
   assert(fact);
-  if ((r = buf_write_1(&log->buf, "add ")) < 0)
+  if ((r = buf_inspect_uw_decimal(&log->buf, fact->id)) < 0)
+    goto ko;
+  result += r;
+  if ((r = buf_write_1(&log->buf, " add ")) < 0)
     goto ko;
   result += r;
   if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
@@ -713,7 +713,10 @@ sw facts_log_add (s_log *log, const s_fact *fact)
     goto ko;
   result += r;
   if (log->binary_path.size) {
-    if ((r = buf_write_1(&log->binary_buf, "add ")) < 0)
+    if ((r = buf_inspect_uw_decimal(&log->binary_buf, fact->id)) < 0)
+      goto ko;
+    result += r;
+    if ((r = buf_write_1(&log->binary_buf, " add ")) < 0)
       goto ko;
     result += r;
     if ((r = buf_inspect_fact(&log->binary_buf, fact)) < 0)
@@ -743,7 +746,10 @@ sw facts_log_remove (s_log *log, const s_fact *fact)
   sw result = 0;
   assert(log);
   assert(fact);
-  if ((r = buf_write_1(&log->buf, "remove ")) < 0)
+  if ((r = buf_inspect_uw_decimal(&log->buf, fact->id)) < 0)
+    goto ko;
+  result += r;
+  if ((r = buf_write_1(&log->buf, " remove ")) < 0)
     goto ko;
   result += r;
   if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
@@ -753,7 +759,10 @@ sw facts_log_remove (s_log *log, const s_fact *fact)
     goto ko;
   result += r;
   if (log->binary_path.size) {
-    if ((r = buf_write_1(&log->binary_buf, "remove ")) < 0)
+    if ((r = buf_inspect_uw_decimal(&log->binary_buf, fact->id)) < 0)
+      goto ko;
+    result += r;
+    if ((r = buf_write_1(&log->binary_buf, " remove ")) < 0)
       goto ko;
     result += r;
     if ((r = buf_inspect_fact(&log->binary_buf, fact)) < 0)
@@ -813,6 +822,19 @@ s_facts * facts_new_ref (s_facts *src)
   mutex_unlock(&src->ref_count_mutex);
 #endif
   return src;
+}
+
+uw * facts_next_id (s_facts *facts, uw *dest)
+{
+  assert(facts);
+  assert(dest);
+  if (facts->next_id == UW_MAX) {
+    err_puts("facts_next_id: id exhausted");
+    assert(! "facts_next_id: id exhausted");
+    return NULL;
+  }
+  *dest = facts->next_id++;
+  return dest;
 }
 
 sw facts_open_buf (s_facts *facts, s_buf *buf, const s_str *path)

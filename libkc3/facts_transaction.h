@@ -23,11 +23,11 @@ s_facts_transaction * facts_transaction_init
 (s_facts_transaction *transaction);
 
 /* Operators. */
-void      facts_transaction_end
+s_facts * facts_transaction_end
 (s_facts *facts, s_facts_transaction *transaction);
 s_facts * facts_transaction_rollback
 (s_facts *facts, const s_facts_transaction *transaction);
-void      facts_transaction_start
+s_facts * facts_transaction_start
 (s_facts *facts, s_facts_transaction *transaction);
 
 #endif /* LIBKC3_FACTS_TRANSACTION_H */

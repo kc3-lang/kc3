@@ -228,6 +228,7 @@ typedef struct fact                    s_fact;
 typedef struct fact_action             s_fact_action;
 typedef struct fact_w                  s_fact_w;
 typedef struct facts                   s_facts;
+typedef struct facts_log_item          s_facts_log_item;
 typedef struct facts_transaction       s_facts_transaction;
 typedef struct facts_cursor            s_facts_cursor;
 typedef struct facts_spec_cursor       s_facts_spec_cursor;
@@ -377,6 +378,7 @@ struct fact {
 };
 
 struct facts_transaction {
+  uw id;
   s_fact_action *log;
   s_facts_transaction *next;
 };
@@ -396,6 +398,14 @@ struct frame {
 struct fact_list {
   s_fact *fact;
   s_fact_list *next;
+};
+
+struct facts_log_item {
+  uw id;
+  e_fact_action action;
+  s_tag *subject;
+  s_tag *predicate;
+  s_tag *object;
 };
 
 struct ht_iterator {
