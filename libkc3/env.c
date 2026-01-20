@@ -1467,7 +1467,11 @@ s_tag * env_facts_with_transaction (s_env *env, s_tag *facts_arg,
     return NULL;
   }
   tag_clean(&facts_tag);
-  facts_transaction_start(facts, &transaction);
+  if (! facts_transaction_start(facts, &transaction)) {
+    facts_transaction_clean(&transaction);
+    pfacts_clean(&facts);
+    return NULL;
+  }
   env_unwind_protect_push(env, &unwind_protect);
   if (setjmp(unwind_protect.buf)) {
     env_unwind_protect_pop(env, &unwind_protect);
@@ -2568,7 +2572,8 @@ bool env_module_load (s_env *env, const s_sym *module)
     return false;
   if (b)
     return true;
-  facts_transaction_start(env->facts, &transaction);
+  if (! facts_transaction_start(env->facts, &transaction))
+    return false;
   if (! env_module_is_loading_set(env, module, true))
     goto rollback;
   if (module_path(module, env->module_path, KC3_EXT, &path) &&

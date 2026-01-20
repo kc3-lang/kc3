@@ -101,9 +101,7 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
 #endif
     return &item->data;
   }
-  if (facts->transaction)
-    tmp.id = facts->transaction->id;
-  else if (! facts_next_id(facts, &tmp.id))
+  if (! facts_next_id(facts, &tmp.id))
     goto ko;
   item = set_add__fact(&facts->facts, &tmp);
   if (! item) {
@@ -143,7 +141,7 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
     goto ko;
   }
   if (facts->log &&
-      ! facts_log_add(facts->log, &tmp)) {
+      ! facts_log_add(facts->log, tmp.id, &tmp)) {
     err_puts("facts_add_fact: facts_log_add");
     assert(! "facts_add_fact: facts_log_add");
     skiplist_remove__fact(facts->index, f);
@@ -296,7 +294,10 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   if (! facts_cursor_next(&cursor, &fact))
     goto clean;
   while (fact) {
-    if ((r = buf_write_1(buf, "add ")) < 0)
+    if ((r = buf_inspect_uw_decimal(buf, fact->id)) < 0)
+      goto clean;
+    result += r;
+    if ((r = buf_write_1(buf, " add ")) < 0)
       goto clean;
     result += r;
     if ((r = buf_inspect_fact(buf, fact)) < 0)
@@ -458,6 +459,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   s_fact   eval_fact;
   s_fact_w eval_fact_w;
   s_fact_w fact_w;
+  uw id;
   sw r;
   bool replace;
   sw result = 0;
@@ -481,6 +483,15 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   rwlock_w(&facts->rwlock);
 #endif
   while (1) {
+    id = 0;
+    if ((r = buf_parse_uw(buf, &id)) < 0)
+      break;
+    if (r) {
+      result += r;
+      if ((r = buf_read_1(buf, " ")) <= 0)
+        break;
+      result += r;
+    }
     if ((r = buf_read_1(buf, "replace ")) < 0)
       break;
     if (r)
@@ -693,14 +704,14 @@ sw facts_load_file (s_facts *facts, const s_str *path)
 }
 
 // TODO: if (binary) {
-sw facts_log_add (s_log *log, const s_fact *fact)
+sw facts_log_add (s_log *log, uw id, const s_fact *fact)
 {
   s_log_hook *hook;
   sw r;
   sw result = 0;
   assert(log);
   assert(fact);
-  if ((r = buf_inspect_uw_decimal(&log->buf, fact->id)) < 0)
+  if ((r = buf_inspect_uw_decimal(&log->buf, id)) < 0)
     goto ko;
   result += r;
   if ((r = buf_write_1(&log->buf, " add ")) < 0)
@@ -713,7 +724,7 @@ sw facts_log_add (s_log *log, const s_fact *fact)
     goto ko;
   result += r;
   if (log->binary_path.size) {
-    if ((r = buf_inspect_uw_decimal(&log->binary_buf, fact->id)) < 0)
+    if ((r = buf_inspect_uw_decimal(&log->binary_buf, id)) < 0)
       goto ko;
     result += r;
     if ((r = buf_write_1(&log->binary_buf, " add ")) < 0)
@@ -739,14 +750,14 @@ sw facts_log_add (s_log *log, const s_fact *fact)
 }
 
 // TODO: if (binary) {
-sw facts_log_remove (s_log *log, const s_fact *fact)
+sw facts_log_remove (s_log *log, uw id, const s_fact *fact)
 {
   s_log_hook *hook;
   sw r;
   sw result = 0;
   assert(log);
   assert(fact);
-  if ((r = buf_inspect_uw_decimal(&log->buf, fact->id)) < 0)
+  if ((r = buf_inspect_uw_decimal(&log->buf, id)) < 0)
     goto ko;
   result += r;
   if ((r = buf_write_1(&log->buf, " remove ")) < 0)
@@ -759,7 +770,7 @@ sw facts_log_remove (s_log *log, const s_fact *fact)
     goto ko;
   result += r;
   if (log->binary_path.size) {
-    if ((r = buf_inspect_uw_decimal(&log->binary_buf, fact->id)) < 0)
+    if ((r = buf_inspect_uw_decimal(&log->binary_buf, id)) < 0)
       goto ko;
     result += r;
     if ((r = buf_write_1(&log->binary_buf, " remove ")) < 0)
@@ -828,6 +839,10 @@ uw * facts_next_id (s_facts *facts, uw *dest)
 {
   assert(facts);
   assert(dest);
+  if (facts->transaction) {
+    *dest = facts->transaction->id;
+    return dest;
+  }
   if (facts->next_id == UW_MAX) {
     err_puts("facts_next_id: id exhausted");
     assert(! "facts_next_id: id exhausted");
@@ -979,15 +994,25 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
   bool b;
   s_fact_w fact_w;
   s_fact fact;
+  uw id;
   sw r;
   sw result = 0;
   assert(facts);
   assert(buf);
   while (1) {
+    id = 0;
+    if ((r = buf_parse_uw(buf, &id)) < 0)
+      break;
+    if (r) {
+      result += r;
+      if ((r = buf_read_1(buf, " ")) <= 0)
+        break;
+      result += r;
+    }
     if ((r = buf_read_1(buf, "add ")) < 0)
       break;
-    result += r;
     if (r) {
+      result += r;
       if ((r = buf_parse_fact_w(buf, &fact_w)) <= 0)
         break;
       result += r;
@@ -995,6 +1020,8 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
         return -1;
       if (! facts_add_fact(facts, &fact))
         return -1;
+      if (id >= facts->next_id)
+        facts->next_id = id + 1;
       goto ok;
     }
     if ((r = buf_read_1(buf, "remove ")) <= 0)
@@ -1007,6 +1034,8 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
       return -1;
     if (! facts_remove_fact(facts, &fact, &b))
       return -1;
+    if (id >= facts->next_id)
+      facts->next_id = id + 1;
   ok:
     fact_w_clean(&fact_w);
     if ((r = buf_read_1(buf, "\n")) <= 0)
@@ -1083,6 +1112,7 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
 {
   s_fact f;
   s_fact *found;
+  uw id;
   assert(facts);
   assert(fact);
   if (! env_cleaning(false) &&
@@ -1109,8 +1139,15 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
       err_inspect_fact(found);
       err_write_1("\n");
     }
-    if (facts->log)
-      facts_log_remove(facts->log, found);
+    if (facts->log) {
+      if (! facts_next_id(facts, &id)) {
+#if HAVE_PTHREAD
+        rwlock_unlock_w(&facts->rwlock);
+#endif
+        return NULL;
+      }
+      facts_log_remove(facts->log, id, found);
+    }
     skiplist_remove__fact(facts->index, found);
     skiplist_remove__fact(facts->index_spo, found);
     skiplist_remove__fact(facts->index_pos, found);

@@ -70,7 +70,7 @@ s_fact ** facts_find_fact_by_tags (s_facts *facts,
                                    s_fact **dest);
 s_tag **  facts_find_tag (s_facts *facts, const s_tag *tag,
                           s_tag **dest);
-sw        facts_log_add (s_log *log, const s_fact *fact);
-sw        facts_log_remove (s_log *log, const s_fact *fact);
+sw        facts_log_add (s_log *log, uw id, const s_fact *fact);
+sw        facts_log_remove (s_log *log, uw id, const s_fact *fact);
 
 #endif /* LIBKC3_FACTS_H */
