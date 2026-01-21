@@ -42,6 +42,7 @@ s_fact * fact_test_init_1 (s_fact *fact, const char *tag)
 {
   assert(fact);
   fact->subject = fact->predicate = fact->object = tag_new_1(tag);
+  fact->id = 0;
   return fact;
 }
 

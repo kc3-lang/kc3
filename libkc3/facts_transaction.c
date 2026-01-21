@@ -126,10 +126,12 @@ s_facts * facts_transaction_start (s_facts *facts,
   if (! rwlock_w(&facts->rwlock))
     return NULL;
 #endif
-  if (! facts_next_id(facts, &transaction->id)) {
-    rwlock_unlock_w(&facts->rwlock);
+  if (facts->next_id == UW_MAX) {
+    err_puts("facts_next_id: id exhausted");
+    assert(! "facts_next_id: id exhausted");
     return NULL;
   }
+  transaction->id = facts->next_id++;
   transaction->log = NULL;
   transaction->next = facts->transaction;
   facts->transaction = transaction;

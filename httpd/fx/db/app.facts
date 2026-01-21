@@ -1,20 +1,20 @@
 %{module: KC3.Facts.Dump,
   version: 1}
-add {"fx/", "tag", "software"}
-add {"fx/home/.../X/pb/(Please Cum Inside Me 1-19)/", "tag", "r"}
-add {"fx/home/.../X/pb/(Please Cum Inside Me 1-19)/", "tag", "s"}
-add {"fx/home/.../X/pb/110% Natural 1-19/", "tag", "a"}
-add {"fx/home/.../X/pb/A2M ", "tag", "scene"}
-add {"fx/home/.../X/pb/A2M #10/", "tag", "scene"}
-add {"fx/home/.../X/pb/ASIAN PERSUASION 2_(20070612)_{CRITICAL X}/", "tag", "r"}
-add {"fx/http/", "salut", "labrass"}
-add {"fx/http/config.h", "123", "456"}
-add {"fx/img/", "hello", "paul"}
-add {"fx/img/flaps.256.png", "is_a", "animation"}
-add {"fx/img/flaps.256.png", "is_a", "motion picture"}
-add {"fx/img/flaps.256.png", "is_missing", "toast"}
-add {"fx/img/flaps.256.png", "tag", "animation"}
-add {"fx/img/toast.128.png", "salut", "raphael"}
-add {"fx/img/toast.128.png", "tag", "picture"}
-add {"fx/img/toast.128.png", "tag", "toast"}
-add {"fx/img/toast.128.png", "why_toast", "because_it_works"}
+1 add {"fx/", "tag", "software"}
+2 add {"fx/home/.../X/pb/(Please Cum Inside Me 1-19)/", "tag", "r"}
+3 add {"fx/home/.../X/pb/(Please Cum Inside Me 1-19)/", "tag", "s"}
+4 add {"fx/home/.../X/pb/110% Natural 1-19/", "tag", "a"}
+5 add {"fx/home/.../X/pb/A2M ", "tag", "scene"}
+6 add {"fx/home/.../X/pb/A2M #10/", "tag", "scene"}
+7 add {"fx/home/.../X/pb/ASIAN PERSUASION 2_(20070612)_{CRITICAL X}/", "tag", "r"}
+8 add {"fx/http/", "salut", "labrass"}
+9 add {"fx/http/config.h", "123", "456"}
+10 add {"fx/img/", "hello", "paul"}
+11 add {"fx/img/flaps.256.png", "is_a", "animation"}
+12 add {"fx/img/flaps.256.png", "is_a", "motion picture"}
+13 add {"fx/img/flaps.256.png", "is_missing", "toast"}
+14 add {"fx/img/flaps.256.png", "tag", "animation"}
+15 add {"fx/img/toast.128.png", "salut", "raphael"}
+16 add {"fx/img/toast.128.png", "tag", "picture"}
+17 add {"fx/img/toast.128.png", "tag", "toast"}
+18 add {"fx/img/toast.128.png", "why_toast", "because_it_works"}
