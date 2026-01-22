@@ -653,6 +653,8 @@ KC3_C_SOURCES = \
 	"libkc3/fact_list.h" \
 	"libkc3/facts.c" \
 	"libkc3/facts.h" \
+	"libkc3/facts_connection.c" \
+	"libkc3/facts_connection.h" \
 	"libkc3/facts_cursor.c" \
 	"libkc3/facts_cursor.h" \
 	"libkc3/facts_spec.c" \
@@ -1900,6 +1902,7 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/facts.kc3" \
 	"test/ikc3/facts.out.expected" \
 	"test/ikc3/facts.ret.expected" \
+	"test/ikc3/facts_connection.kc3" \
 	"test/ikc3/facts_with.kc3" \
 	"test/ikc3/facts_with.out.expected" \
 	"test/ikc3/facts_with.ret.expected" \

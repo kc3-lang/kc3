@@ -1,6 +1,7 @@
-server: listening on 15002
-server: waiting for connection
-client: connecting to 15002
+server: adding pre-existing fact
+server: listening on 15003
+server: listen OK, waiting for connection
+client: connecting to 15003
 server: accepted connection, waiting for facts
 client: adding fact
 server: adding server fact
@@ -8,18 +9,26 @@ client: checking for server facts
 client: has %FactW{subject: :a,
        predicate: :b,
        object: :c,
+       id: (Uw) 2}
+client: has %FactW{subject: :pre,
+       predicate: :existing,
+       object: :fact,
        id: (Uw) 1}
 client: has %FactW{subject: :server,
        predicate: :says,
        object: :hello,
-       id: (Uw) 2}
+       id: (Uw) 3}
 client: OK
 server: received %FactW{subject: :a,
        predicate: :b,
        object: :c,
+       id: (Uw) 2}
+server: received %FactW{subject: :pre,
+       predicate: :existing,
+       object: :fact,
        id: (Uw) 1}
 server: received %FactW{subject: :server,
        predicate: :says,
        object: :hello,
-       id: (Uw) 2}
+       id: (Uw) 3}
 server: OK

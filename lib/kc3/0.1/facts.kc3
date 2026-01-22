@@ -24,9 +24,13 @@ defmodule Facts do
              index_pos: (Ptr) 0,
              index_osp: (Ptr) 0,
              log: (Ptr) 0,
+             connections: (Ptr) 0,
              next_id: (Uw) 0,
+             priority: (U8) 0,
              rwlock: %Rwlock{},
-             transaction: (Ptr) 0]
+             transaction: (Ptr) 0,
+             ref_count: (Sw) 0,
+             ref_count_mutex: %Mutex{}]
 
   # returns true if fact was added or is already present
   def add_tags =
@@ -42,6 +46,18 @@ defmodule Facts do
       Callable, Result)
 
   def close = cfn Void "facts_close" (Facts)
+
+  def close_all = cfn Void "kc3_facts_close_all" (Facts)
+
+  def connect = cfn Bool "kc3_facts_connect" (Facts, Str, Str, Result)
+
+  def accept = cfn Bool "kc3_facts_accept" (Facts, Socket, Result)
+
+  def acceptor_loop =
+    cfn Facts.Acceptor* "kc3_facts_acceptor_loop" (Facts, Socket, Result)
+
+  def acceptor_loop_join =
+    cfn Void "kc3_facts_acceptor_loop_join" (Facts.Acceptor*)
 
   def database = cfn Facts* "pfacts_init" (Result)
 
@@ -60,6 +76,9 @@ defmodule Facts do
 
   def open =
     cfn Sw "facts_open_file" (Facts, Str)
+
+  def set_priority =
+    cfn Facts "facts_set_priority" (Facts, U8)
 
   # returns true if fact was removed or is already absent
   def remove_tags =

@@ -1,0 +1,54 @@
+require Facts
+require File
+require Socket
+
+(r = fork()) ; void
+if (r < 0) do
+  exit(1)
+end
+if r == 0 do
+  server_facts = Facts.database()
+  puts("server: listening on 15004")
+  server = Socket.listen("localhost", "15004")
+  if server.fd < 0 do
+    puts("server: listen failed")
+    exit_subprocess(1)
+  end
+  puts("server: starting acceptor loop")
+  acceptor = Facts.acceptor_loop(server_facts, server)
+  if ! acceptor do
+    puts("server: acceptor_loop failed")
+    exit_subprocess(1)
+  end
+  puts("server: acceptor loop started, waiting for client")
+  sleep(4)
+  Facts.with_tags(server_facts, ?, ?, ?, fn (fact) {
+    puts("server: received #{inspect(fact)}")
+  })
+  puts("server: OK")
+  Facts.acceptor_loop_join(acceptor)
+  Facts.close_all(server_facts)
+  Facts.delete(server_facts)
+  exit_subprocess(0)
+else
+  sleep(1)
+  client_facts = Facts.database()
+  Facts.set_priority(client_facts, (U8) 1)
+  puts("client: connecting to 15004")
+  if ! Facts.connect(client_facts, "localhost", "15004") do
+    puts("client: connect failed")
+    exit(1)
+  end
+  puts("client: adding fact")
+  Facts.add_tags(client_facts, :a, :b, :c)
+  sleep(4)
+  puts("client: checking for facts")
+  Facts.with_tags(client_facts, ?, ?, ?, fn (fact) {
+    puts("client: has #{inspect(fact)}")
+  })
+  Facts.close_all(client_facts)
+  Facts.delete(client_facts)
+  puts("client: OK")
+  wait()
+end
+0

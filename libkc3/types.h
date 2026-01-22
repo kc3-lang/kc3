@@ -228,10 +228,13 @@ typedef struct fact                    s_fact;
 typedef struct fact_action             s_fact_action;
 typedef struct fact_w                  s_fact_w;
 typedef struct facts                   s_facts;
-typedef struct facts_log_item          s_facts_log_item;
-typedef struct facts_transaction       s_facts_transaction;
+typedef struct facts_acceptor          s_facts_acceptor;
+typedef struct facts_connection        s_facts_connection;
 typedef struct facts_cursor            s_facts_cursor;
+typedef struct facts_log_item          s_facts_log_item;
+typedef struct facts_remove_log        s_facts_remove_log;
 typedef struct facts_spec_cursor       s_facts_spec_cursor;
+typedef struct facts_transaction       s_facts_transaction;
 typedef struct facts_with_cursor       s_facts_with_cursor;
 typedef struct facts_with_cursor_level s_facts_with_cursor_level;
 typedef struct file_stat               s_file_stat;
@@ -280,6 +283,7 @@ typedef struct tag                     s_tag;
 typedef struct tag_type_list           s_tag_type_list;
 typedef struct time                    s_time;
 typedef struct timespec                s_timespec;
+typedef struct tls_buf                 s_tls_buf;
 typedef struct tuple                   s_tuple;
 typedef struct type                    s_type;
 typedef struct unquote                 s_unquote;
@@ -312,11 +316,13 @@ typedef s_list *          p_list;
 typedef s_marshall *      p_marshall;
 typedef s_marshall_read * p_marshall_read;
 typedef s_struct *        p_struct;
-typedef s_struct_type *   p_struct_type;
-typedef const s_sym *     p_sym;
-typedef s_sym_list *      p_sym_list;
-typedef s_tag *           p_tag;
-typedef s_var *           p_var;
+typedef s_struct_type *    p_struct_type;
+typedef const s_sym *      p_sym;
+typedef s_sym_list *       p_sym_list;
+typedef s_tag *            p_tag;
+typedef struct tls *       p_tls;
+typedef struct tls_config *p_tls_config;
+typedef s_var *            p_var;
 
 /* function typedefs */
 typedef sw   (* f_buf_parse_end) (s_buf *buf, bool *dest);
@@ -398,6 +404,14 @@ struct frame {
 struct fact_list {
   s_fact *fact;
   s_fact_list *next;
+};
+
+struct facts_acceptor {
+  s_facts   *facts;
+  p_tls      tls;
+  bool       running;
+  s64        server;
+  pthread_t  thread;
 };
 
 struct facts_log_item {
@@ -871,7 +885,26 @@ struct fact_w {
   s_tag subject;
   s_tag predicate;
   s_tag object;
-  uw id; /* serial id */
+  uw id;
+};
+
+struct facts_connection {
+  s_facts            *facts;
+  s_buf_rw            buf_rw;
+  s_str               addr;
+  s64                 sockfd;
+  p_tls               tls;
+  s_marshall          marshall;
+  s_marshall_read     marshall_read;
+  bool                is_master;
+  bool                running;
+  pthread_t           thread;
+  s_facts_connection *next;
+};
+
+struct facts_remove_log {
+  s_fact_w               fact;
+  s_facts_remove_log    *next;
 };
 
 struct list {
@@ -991,7 +1024,10 @@ struct facts {
   s_skiplist__fact    *index_pos;
   s_skiplist__fact    *index_osp;
   s_log               *log;
+  s_facts_connection  *connections;
+  s_facts_remove_log  *remove_log;
   uw                   next_id;
+  u8                   priority;
   s_rwlock             rwlock;
   s_facts_transaction *transaction;
   sw                   ref_count;

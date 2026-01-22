@@ -112,6 +112,7 @@ HEADERS = \
 	"fact_action.h" \
 	"fact_list.h" \
 	"facts.h" \
+	"facts_connection.h" \
 	"facts_cursor.h" \
 	"facts_spec.h" \
 	"facts_spec_cursor.h" \
@@ -325,6 +326,7 @@ SOURCES = \
 	"fact_action.c" \
 	"fact_list.c" \
 	"facts.c" \
+	"facts_connection.c" \
 	"facts_cursor.c" \
 	"facts_spec.c" \
 	"facts_spec_cursor.c" \
@@ -651,6 +653,7 @@ LO_SOURCES = \
 	"fact_action.c" \
 	"fact_list.c" \
 	"facts.c" \
+	"facts_connection.c" \
 	"facts_cursor.c" \
 	"facts_spec.c" \
 	"facts_spec_cursor.c" \

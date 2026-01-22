@@ -22,6 +22,7 @@
 #include "env.h"
 #include "fact.h"
 #include "facts.h"
+#include "facts_connection.h"
 #include "facts_cursor.h"
 #include "facts_transaction.h"
 #include "facts_with.h"
@@ -49,9 +50,6 @@ static sw facts_open_log (s_facts *facts, s_buf *buf);
 
 s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
 {
-  s_fact tmp = {0};
-  s_fact *f = NULL;
-  s_set_item__fact *item;
   assert(facts);
   assert(fact);
   if (securelevel(0) > 1 &&
@@ -60,14 +58,29 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
              " securelevel > 1");
     abort();
   }
+  if (facts_get_master(facts)) {
+    if (! facts_send_to_master_add(facts, fact))
+      return NULL;
+    return fact;
+  }
+  return facts_add_fact_local(facts, fact);
+}
+
+s_fact * facts_add_fact_id (s_facts *facts, s_fact *fact)
+{
+  s_fact tmp = {0};
+  s_fact *f = NULL;
+  s_set_item__fact *item;
+  assert(facts);
+  assert(fact);
 #if HAVE_PTHREAD
   if (! rwlock_w(&facts->rwlock))
     return NULL;
 #endif
   tmp.subject = facts_ref_tag(facts, fact->subject);
   if (! tmp.subject) {
-    err_puts("facts_add_fact: facts_ref_tag subject");
-    assert(! "facts_add_fact: facts_ref_tag subject");
+    err_puts("facts_add_fact_id: facts_ref_tag subject");
+    assert(! "facts_add_fact_id: facts_ref_tag subject");
 #if HAVE_PTHREAD
     rwlock_unlock_w(&facts->rwlock);
 #endif
@@ -75,8 +88,8 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
   }
   tmp.predicate = facts_ref_tag(facts, fact->predicate);
   if (! tmp.predicate) {
-    err_puts("facts_add_fact: facts_ref_tag predicate");
-    assert(! "facts_add_fact: facts_ref_tag predicate");
+    err_puts("facts_add_fact_id: facts_ref_tag predicate");
+    assert(! "facts_add_fact_id: facts_ref_tag predicate");
     facts_unref_tag(facts, tmp.subject);
 #if HAVE_PTHREAD
     rwlock_unlock_w(&facts->rwlock);
@@ -85,8 +98,121 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
   }
   tmp.object = facts_ref_tag(facts, fact->object);
   if (! tmp.object) {
-    err_puts("facts_add_fact: facts_ref_tag object");
-    assert(! "facts_add_fact: facts_ref_tag object");
+    err_puts("facts_add_fact_id: facts_ref_tag object");
+    assert(! "facts_add_fact_id: facts_ref_tag object");
+    facts_unref_tag(facts, tmp.subject);
+    facts_unref_tag(facts, tmp.predicate);
+#if HAVE_PTHREAD
+    rwlock_unlock_w(&facts->rwlock);
+#endif
+    return NULL;
+  }
+  tmp.id = 0;
+  if ((item = set_get__fact(&facts->facts, &tmp))) {
+#if HAVE_PTHREAD
+    rwlock_unlock_w(&facts->rwlock);
+#endif
+    return &item->data;
+  }
+  tmp.id = fact->id;
+  if (tmp.id >= facts->next_id)
+    facts->next_id = tmp.id + 1;
+  item = set_add__fact(&facts->facts, &tmp);
+  if (! item) {
+    err_puts("facts_add_fact_id: set_add__fact");
+    assert(! "facts_add_fact_id: set_add__fact");
+    goto ko;
+  }
+  f = &item->data;
+  if (! skiplist_insert__fact(facts->index, f)) {
+    err_puts("facts_add_fact_id: skiplist_insert__fact index");
+    assert(! "facts_add_fact_id: skiplist_insert__fact index");
+    set_remove__fact(&facts->facts, f);
+    goto ko;
+  }
+  if (! skiplist_insert__fact(facts->index_spo, f)) {
+    err_puts("facts_add_fact_id: skiplist_insert__fact spo");
+    assert(! "facts_add_fact_id: skiplist_insert__fact spo");
+    skiplist_remove__fact(facts->index, f);
+    set_remove__fact(&facts->facts, f);
+    goto ko;
+  }
+  if (! skiplist_insert__fact(facts->index_pos, f)) {
+    err_puts("facts_add_fact_id: skiplist_insert__fact pos");
+    assert(! "facts_add_fact_id: skiplist_insert__fact pos");
+    skiplist_remove__fact(facts->index, f);
+    skiplist_remove__fact(facts->index_spo, f);
+    set_remove__fact(&facts->facts, f);
+    goto ko;
+  }
+  if (! skiplist_insert__fact(facts->index_osp, f)) {
+    err_puts("facts_add_fact_id: skiplist_insert__fact osp");
+    assert(! "facts_add_fact_id: skiplist_insert__fact osp");
+    skiplist_remove__fact(facts->index, f);
+    skiplist_remove__fact(facts->index_spo, f);
+    skiplist_remove__fact(facts->index_pos, f);
+    set_remove__fact(&facts->facts, f);
+    goto ko;
+  }
+  if (facts->log &&
+      ! facts_log_add(facts->log, tmp.id, &tmp)) {
+    err_puts("facts_add_fact_id: facts_log_add");
+    assert(! "facts_add_fact_id: facts_log_add");
+    skiplist_remove__fact(facts->index, f);
+    skiplist_remove__fact(facts->index_spo, f);
+    skiplist_remove__fact(facts->index_pos, f);
+    skiplist_remove__fact(facts->index_osp, f);
+    set_remove__fact(&facts->facts, f);
+    goto ko;
+  }
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&facts->rwlock);
+#endif
+  return f;
+ ko:
+  facts_unref_tag(facts, tmp.subject);
+  facts_unref_tag(facts, tmp.predicate);
+  facts_unref_tag(facts, tmp.object);
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&facts->rwlock);
+#endif
+  return NULL;
+}
+
+s_fact * facts_add_fact_local (s_facts *facts, s_fact *fact)
+{
+  s_fact tmp = {0};
+  s_fact *f = NULL;
+  s_set_item__fact *item;
+  assert(facts);
+  assert(fact);
+#if HAVE_PTHREAD
+  if (! rwlock_w(&facts->rwlock))
+    return NULL;
+#endif
+  tmp.subject = facts_ref_tag(facts, fact->subject);
+  if (! tmp.subject) {
+    err_puts("facts_add_fact_local: facts_ref_tag subject");
+    assert(! "facts_add_fact_local: facts_ref_tag subject");
+#if HAVE_PTHREAD
+    rwlock_unlock_w(&facts->rwlock);
+#endif
+    return NULL;
+  }
+  tmp.predicate = facts_ref_tag(facts, fact->predicate);
+  if (! tmp.predicate) {
+    err_puts("facts_add_fact_local: facts_ref_tag predicate");
+    assert(! "facts_add_fact_local: facts_ref_tag predicate");
+    facts_unref_tag(facts, tmp.subject);
+#if HAVE_PTHREAD
+    rwlock_unlock_w(&facts->rwlock);
+#endif
+    return NULL;
+  }
+  tmp.object = facts_ref_tag(facts, fact->object);
+  if (! tmp.object) {
+    err_puts("facts_add_fact_local: facts_ref_tag object");
+    assert(! "facts_add_fact_local: facts_ref_tag object");
     facts_unref_tag(facts, tmp.subject);
     facts_unref_tag(facts, tmp.predicate);
 #if HAVE_PTHREAD
@@ -105,35 +231,35 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
     goto ko;
   item = set_add__fact(&facts->facts, &tmp);
   if (! item) {
-    err_puts("facts_add_fact: set_add__fact");
-    assert(! "facts_add_fact: set_add__fact");
+    err_puts("facts_add_fact_local: set_add__fact");
+    assert(! "facts_add_fact_local: set_add__fact");
     goto ko;
   }
   f = &item->data;
   if (! skiplist_insert__fact(facts->index, f)) {
-    err_puts("facts_add_fact: skiplist_insert__fact index");
-    assert(! "facts_add_fact: skiplist_insert__fact index");
+    err_puts("facts_add_fact_local: skiplist_insert__fact index");
+    assert(! "facts_add_fact_local: skiplist_insert__fact index");
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
   if (! skiplist_insert__fact(facts->index_spo, f)) {
-    err_puts("facts_add_fact: skiplist_insert__fact spo");
-    assert(! "facts_add_fact: skiplist_insert__fact spo");
+    err_puts("facts_add_fact_local: skiplist_insert__fact spo");
+    assert(! "facts_add_fact_local: skiplist_insert__fact spo");
     skiplist_remove__fact(facts->index, f);
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
   if (! skiplist_insert__fact(facts->index_pos, f)) {
-    err_puts("facts_add_fact: skiplist_insert__fact pos");
-    assert(! "facts_add_fact: skiplist_insert__fact pos");
+    err_puts("facts_add_fact_local: skiplist_insert__fact pos");
+    assert(! "facts_add_fact_local: skiplist_insert__fact pos");
     skiplist_remove__fact(facts->index, f);
     skiplist_remove__fact(facts->index_spo, f);
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
   if (! skiplist_insert__fact(facts->index_osp, f)) {
-    err_puts("facts_add_fact: skiplist_insert__fact osp");
-    assert(! "facts_add_fact: skiplist_insert__fact osp");
+    err_puts("facts_add_fact_local: skiplist_insert__fact osp");
+    assert(! "facts_add_fact_local: skiplist_insert__fact osp");
     skiplist_remove__fact(facts->index, f);
     skiplist_remove__fact(facts->index_spo, f);
     skiplist_remove__fact(facts->index_pos, f);
@@ -142,8 +268,8 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
   }
   if (facts->log &&
       ! facts_log_add(facts->log, tmp.id, &tmp)) {
-    err_puts("facts_add_fact: facts_log_add");
-    assert(! "facts_add_fact: facts_log_add");
+    err_puts("facts_add_fact_local: facts_log_add");
+    assert(! "facts_add_fact_local: facts_log_add");
     skiplist_remove__fact(facts->index, f);
     skiplist_remove__fact(facts->index_spo, f);
     skiplist_remove__fact(facts->index_pos, f);
@@ -151,14 +277,11 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
+  if (facts->connections)
+    facts_broadcast_add(facts, &tmp);
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
 #endif
-  if (false) {
-    err_write_1("facts_add_fact: ");
-    err_inspect_fact(f);
-    err_write_1(": OK\n");
-  }
   return f;
  ko:
   facts_unref_tag(facts, tmp.subject);
@@ -186,6 +309,8 @@ s_fact * facts_add_tags (s_facts *facts, s_tag *subject,
 
 void facts_clean (s_facts *facts)
 {
+  if (facts->connections)
+    facts_connections_close_all(facts);
   if (facts->log)
     facts_close(facts);
   facts_remove_all(facts);
@@ -1062,6 +1187,13 @@ s_tag * facts_ref_tag (s_facts *facts, s_tag *tag)
   return &item->data;
 }
 
+s_facts * facts_set_priority (s_facts *facts, u8 priority)
+{
+  assert(facts);
+  facts->priority = priority;
+  return facts;
+}
+
 s_facts * facts_remove_all (s_facts *facts)
 {
   bool b;
@@ -1110,9 +1242,6 @@ s_facts * facts_remove_all (s_facts *facts)
 bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
                           bool *dest)
 {
-  s_fact f;
-  s_fact *found;
-  uw id;
   assert(facts);
   assert(fact);
   if (! env_cleaning(false) &&
@@ -1122,12 +1251,30 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
              " securelevel > 1 unless cleaning global env");
     abort();
   }
+  if (facts_get_master(facts)) {
+    if (! facts_send_to_master_remove(facts, fact))
+      return NULL;
+    *dest = true;
+    return dest;
+  }
+  return facts_remove_fact_local(facts, fact, dest);
+}
+
+bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
+                                bool *dest)
+{
+  s_fact f;
+  s_fact *found;
+  uw id;
+  s_facts_remove_log *log_entry;
+  assert(facts);
+  assert(fact);
 #if HAVE_PTHREAD
   rwlock_w(&facts->rwlock);
 #endif
   if (! facts_find_fact(facts, fact, &found)) {
-    err_puts("facts_remove_fact: facts_find_fact");
-    assert(! "facts_remove_fact: facts_find_fact");
+    err_puts("facts_remove_fact_local: facts_find_fact");
+    assert(! "facts_remove_fact_local: facts_find_fact");
 #if HAVE_PTHREAD
     rwlock_unlock_w(&facts->rwlock);
 #endif
@@ -1135,7 +1282,7 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
   }
   if (found) {
     if (false) {
-      err_write_1("facts_remove_fact: ");
+      err_write_1("facts_remove_fact_local: ");
       err_inspect_fact(found);
       err_write_1("\n");
     }
@@ -1147,6 +1294,15 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
         return NULL;
       }
       facts_log_remove(facts->log, id, found);
+    }
+    if (facts->connections)
+      facts_broadcast_remove(facts, found);
+    /* Add to remove log for sync */
+    log_entry = alloc(sizeof(s_facts_remove_log));
+    if (log_entry) {
+      fact_w_init_fact(&log_entry->fact, found);
+      log_entry->next = facts->remove_log;
+      facts->remove_log = log_entry;
     }
     skiplist_remove__fact(facts->index, found);
     skiplist_remove__fact(facts->index_spo, found);

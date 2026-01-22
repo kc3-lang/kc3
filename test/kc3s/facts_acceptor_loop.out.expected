@@ -1,0 +1,16 @@
+server: listening on 15004
+server: starting acceptor loop
+server: acceptor loop started, waiting for client
+client: connecting to 15004
+client: adding fact
+server: received %FactW{subject: :a,
+       predicate: :b,
+       object: :c,
+       id: (Uw) 1}
+server: OK
+client: checking for facts
+client: has %FactW{subject: :a,
+       predicate: :b,
+       object: :c,
+       id: (Uw) 1}
+client: OK

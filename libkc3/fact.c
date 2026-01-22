@@ -177,6 +177,7 @@ s_fact_w * fact_w_init_fact (s_fact_w *fact, s_fact *src)
     tag_clean(&tmp.subject);
     return NULL;
   }
+  tmp.id = src->id;
   *fact = tmp;
   return fact;
 }

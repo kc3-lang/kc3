@@ -1,0 +1,59 @@
+require Facts
+require File
+require Socket
+
+(r = fork()) ; void
+if (r < 0) do
+  exit(1)
+end
+if r == 0 do
+  server_facts = Facts.database()
+  puts("server: adding pre-existing fact")
+  Facts.add_tags(server_facts, :pre, :existing, :fact)
+  puts("server: listening on 15003")
+  server = Socket.listen("localhost", "15003")
+  if server.fd < 0 do
+    puts("server: listen failed")
+    exit_subprocess(1)
+  end
+  puts("server: listen OK, waiting for connection")
+  if ! Facts.accept(server_facts, server) do
+    puts("server: accept failed")
+    exit_subprocess(1)
+  end
+  Socket.close(server)
+  puts("server: accepted connection, waiting for facts")
+  sleep(2)
+  puts("server: adding server fact")
+  Facts.add_tags(server_facts, :server, :says, :hello)
+  sleep(4)
+  Facts.with_tags(server_facts, ?, ?, ?, fn (fact) {
+    puts("server: received #{inspect(fact)}")
+  })
+  puts("server: OK")
+  Facts.close_all(server_facts)
+  Facts.delete(server_facts)
+  exit_subprocess(0)
+else
+  sleep(2)
+  client_facts = Facts.database()
+  Facts.set_priority(client_facts, (U8) 1)
+  puts("client: connecting to 15003")
+  if ! Facts.connect(client_facts, "localhost", "15003") do
+    puts("client: connect failed")
+    exit(1)
+  end
+  sleep(1)
+  puts("client: adding fact")
+  Facts.add_tags(client_facts, :a, :b, :c)
+  sleep(4)
+  puts("client: checking for server facts")
+  Facts.with_tags(client_facts, ?, ?, ?, fn (fact) {
+    puts("client: has #{inspect(fact)}")
+  })
+  Facts.close_all(client_facts)
+  Facts.delete(client_facts)
+  puts("client: OK")
+  wait()
+end
+0

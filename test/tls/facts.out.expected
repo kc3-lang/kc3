@@ -7,19 +7,19 @@ client: adding fact
 server: received %FactW{subject: :a,
        predicate: :b,
        object: :c,
-       id: (Uw) 0}
+       id: (Uw) 2}
 server: received %FactW{subject: :server,
        predicate: :says,
        object: :hello,
-       id: (Uw) 0}
+       id: (Uw) 1}
 server: OK
 client: checking for server facts
 client: has %FactW{subject: :a,
        predicate: :b,
        object: :c,
-       id: (Uw) 0}
+       id: (Uw) 2}
 client: has %FactW{subject: :server,
        predicate: :says,
        object: :hello,
-       id: (Uw) 0}
+       id: (Uw) 1}
 client: OK

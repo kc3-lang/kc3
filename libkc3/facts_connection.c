@@ -1,0 +1,581 @@
+/* kc3
+ * Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+ *
+ * Permission is hereby granted to use this software granted the above
+ * copyright notice and this permission paragraph are included in all
+ * copies and substantial portions of this software.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+ * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+ * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+ * THIS SOFTWARE.
+ */
+#include <arpa/inet.h>
+#include <errno.h>
+#include <netdb.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <tls.h>
+#include <unistd.h>
+#include "alloc.h"
+#include "assert.h"
+#include "buf.h"
+#include "buf_rw.h"
+#include "compare.h"
+#include "fact.h"
+#include "facts.h"
+#include "facts_connection.h"
+#include "facts_cursor.h"
+#include "io.h"
+#include "marshall.h"
+#include "marshall_read.h"
+#include "rwlock.h"
+#include "str.h"
+#include "tag.h"
+
+static s_facts_connection * facts_connection_find_addr (s_facts *facts,
+                                                        const s_str *addr);
+static s_str * facts_connection_get_addr (s64 sockfd, s_str *dest);
+static bool facts_connection_sync (s_facts_connection *conn,
+                                   uw remote_next_id);
+
+s_facts_connection * facts_accept (s_facts *facts, s64 server_fd)
+{
+  s64 client_fd;
+  assert(facts);
+  client_fd = accept(server_fd, NULL, NULL);
+  if (client_fd < 0) {
+    err_write_1("facts_accept: accept: ");
+    err_puts(strerror(errno));
+    return NULL;
+  }
+  return facts_connection_add(facts, client_fd);
+}
+
+s_facts_acceptor * facts_acceptor_loop (s_facts *facts, s64 server)
+{
+  s_facts_acceptor *acceptor;
+  assert(facts);
+  acceptor = alloc(sizeof(s_facts_acceptor));
+  if (! acceptor)
+    return NULL;
+  acceptor->facts = facts;
+  acceptor->server = server;
+  acceptor->running = true;
+  if (pthread_create(&acceptor->thread, NULL,
+                     facts_acceptor_loop_thread, acceptor)) {
+    err_puts("facts_acceptor_loop: pthread_create");
+    free(acceptor);
+    return NULL;
+  }
+  return acceptor;
+}
+
+void facts_acceptor_loop_join (s_facts_acceptor *acceptor)
+{
+  assert(acceptor);
+  acceptor->running = false;
+  shutdown(acceptor->server, SHUT_RDWR);
+  close(acceptor->server);
+  pthread_join(acceptor->thread, NULL);
+  free(acceptor);
+}
+
+void * facts_acceptor_loop_thread (void *arg)
+{
+  s_facts_acceptor *acceptor;
+  acceptor = arg;
+  while (acceptor->running) {
+    if (! facts_accept(acceptor->facts, acceptor->server))
+      break;
+  }
+  return NULL;
+}
+
+bool facts_broadcast_add (s_facts *facts, const s_fact *fact)
+{
+  s_facts_connection *conn;
+  assert(facts);
+  assert(fact);
+  conn = facts->connections;
+  while (conn) {
+    if (conn->running && conn->is_master) {
+      marshall_u8(&conn->marshall, false, FACT_ACTION_ADD);
+      marshall_fact(&conn->marshall, false, fact);
+      marshall_to_buf(&conn->marshall, conn->buf_rw.w);
+    }
+    conn = conn->next;
+  }
+  return true;
+}
+
+bool facts_broadcast_remove (s_facts *facts, const s_fact *fact)
+{
+  s_facts_connection *conn;
+  assert(facts);
+  assert(fact);
+  conn = facts->connections;
+  while (conn) {
+    if (conn->running && conn->is_master) {
+      marshall_u8(&conn->marshall, false, FACT_ACTION_REMOVE);
+      marshall_fact(&conn->marshall, false, fact);
+      marshall_to_buf(&conn->marshall, conn->buf_rw.w);
+    }
+    conn = conn->next;
+  }
+  return true;
+}
+
+s_facts_connection * facts_connect (s_facts *facts,
+                                    const s_str *host,
+                                    const s_str *service)
+{
+  struct addrinfo  hints = {0};
+  struct addrinfo *res;
+  struct addrinfo *res0;
+  s64              sockfd;
+  assert(facts);
+  assert(host);
+  assert(service);
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = SOCK_STREAM;
+  if (getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0)) {
+    err_write_1("facts_connect: getaddrinfo: ");
+    err_write_1(host->ptr.pchar);
+    err_write_1(":");
+    err_write_1(service->ptr.pchar);
+    err_write_1(": ");
+    err_puts(strerror(errno));
+    return NULL;
+  }
+  sockfd = -1;
+  res = res0;
+  while (res) {
+    sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    if (sockfd < 0) {
+      res = res->ai_next;
+      continue;
+    }
+    if (connect(sockfd, res->ai_addr, res->ai_addrlen) < 0) {
+      close(sockfd);
+      sockfd = -1;
+      res = res->ai_next;
+      continue;
+    }
+    break;
+  }
+  freeaddrinfo(res0);
+  if (sockfd < 0) {
+    err_write_1("facts_connect: connect: ");
+    err_write_1(host->ptr.pchar);
+    err_write_1(":");
+    err_write_1(service->ptr.pchar);
+    err_write_1(": ");
+    err_puts(strerror(errno));
+    return NULL;
+  }
+  return facts_connection_add(facts, sockfd);
+}
+
+s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd)
+{
+  s_str addr;
+  s_facts_connection *conn;
+  uw remote_next_id;
+  u8 remote_priority;
+  assert(facts);
+  if (! facts_connection_get_addr(sockfd, &addr)) {
+    err_puts("facts_connection_add: facts_connection_get_addr");
+    close(sockfd);
+    return NULL;
+  }
+  if (facts_connection_find_addr(facts, &addr)) {
+    err_puts("facts_connection_add: duplicate connection");
+    str_clean(&addr);
+    close(sockfd);
+    return NULL;
+  }
+  conn = facts_connection_new(facts, sockfd);
+  if (! conn) {
+    str_clean(&addr);
+    return NULL;
+  }
+  conn->addr = addr;
+  marshall_u8(&conn->marshall, false, facts->priority);
+  marshall_uw(&conn->marshall, false, facts->next_id);
+  marshall_to_buf(&conn->marshall, conn->buf_rw.w);
+  if (! marshall_read_header(&conn->marshall_read)) {
+    err_puts("facts_connection_add: marshall_read_header");
+    facts_connection_delete(conn);
+    return NULL;
+  }
+  if (! marshall_read_chunk(&conn->marshall_read)) {
+    err_puts("facts_connection_add: marshall_read_chunk");
+    facts_connection_delete(conn);
+    return NULL;
+  }
+  if (! marshall_read_u8(&conn->marshall_read, false, &remote_priority)) {
+    err_puts("facts_connection_add: marshall_read_u8");
+    facts_connection_delete(conn);
+    return NULL;
+  }
+  if (! marshall_read_uw(&conn->marshall_read, false, &remote_next_id)) {
+    err_puts("facts_connection_add: marshall_read_uw");
+    facts_connection_delete(conn);
+    return NULL;
+  }
+  marshall_read_reset_chunk(&conn->marshall_read);
+  if (facts->priority == remote_priority) {
+    err_puts("facts_connection_add: equal priority");
+    facts_connection_delete(conn);
+    return NULL;
+  }
+  conn->is_master = (facts->priority < remote_priority);
+  if (conn->is_master && ! facts_connection_sync(conn, remote_next_id)) {
+    err_puts("facts_connection_add: facts_connection_sync");
+    facts_connection_delete(conn);
+    return NULL;
+  }
+  conn->next = facts->connections;
+  facts->connections = conn;
+  conn->running = true;
+  if (pthread_create(&conn->thread, NULL, facts_connection_thread, conn)) {
+    err_puts("facts_connection_add: pthread_create");
+    facts->connections = conn->next;
+    facts_connection_delete(conn);
+    return NULL;
+  }
+  return conn;
+}
+
+void facts_connection_clean (s_facts_connection *conn)
+{
+  assert(conn);
+  str_clean(&conn->addr);
+  marshall_clean(&conn->marshall);
+  marshall_read_clean(&conn->marshall_read);
+  buf_rw_clean(&conn->buf_rw);
+  if (conn->sockfd >= 0)
+    close(conn->sockfd);
+}
+
+void facts_connection_delete (s_facts_connection *conn)
+{
+  if (conn) {
+    facts_connection_clean(conn);
+    free(conn);
+  }
+}
+
+static s_facts_connection * facts_connection_find_addr (s_facts *facts,
+                                                        const s_str *addr)
+{
+  s_facts_connection *conn;
+  assert(facts);
+  assert(addr);
+  conn = facts->connections;
+  while (conn) {
+    if (! compare_str(&conn->addr, addr))
+      return conn;
+    conn = conn->next;
+  }
+  return NULL;
+}
+
+static s_str * facts_connection_get_addr (s64 sockfd, s_str *dest)
+{
+  char buf[INET6_ADDRSTRLEN];
+  struct sockaddr_storage addr;
+  socklen_t len;
+  void *src;
+  len = sizeof(addr);
+  if (getpeername(sockfd, (struct sockaddr *) &addr, &len) < 0)
+    return NULL;
+  if (addr.ss_family == AF_INET)
+    src = &((struct sockaddr_in *) &addr)->sin_addr;
+  else if (addr.ss_family == AF_INET6)
+    src = &((struct sockaddr_in6 *) &addr)->sin6_addr;
+  else
+    return NULL;
+  if (! inet_ntop(addr.ss_family, src, buf, sizeof(buf)))
+    return NULL;
+  return str_init_1(dest, NULL, buf);
+}
+
+s_facts_connection * facts_connection_init (s_facts_connection *conn,
+                                            s_facts *facts,
+                                            s64 sockfd)
+{
+  assert(conn);
+  assert(facts);
+  *conn = (s_facts_connection) {0};
+  conn->facts = facts;
+  conn->sockfd = sockfd;
+  if (! buf_rw_init_alloc(&conn->buf_rw, 65536)) {
+    err_puts("facts_connection_init: buf_rw_init_alloc");
+    return NULL;
+  }
+  buf_fd_open_r(conn->buf_rw.r, sockfd);
+  buf_fd_open_w(conn->buf_rw.w, sockfd);
+  if (! marshall_init(&conn->marshall)) {
+    err_puts("facts_connection_init: marshall_init");
+    buf_rw_clean(&conn->buf_rw);
+    return NULL;
+  }
+  if (! marshall_read_init_buf(&conn->marshall_read, conn->buf_rw.r)) {
+    err_puts("facts_connection_init: marshall_read_init_buf");
+    marshall_clean(&conn->marshall);
+    buf_rw_clean(&conn->buf_rw);
+    return NULL;
+  }
+  return conn;
+}
+
+s_facts_connection * facts_connection_new (s_facts *facts, s64 sockfd)
+{
+  s_facts_connection *conn;
+  conn = alloc(sizeof(s_facts_connection));
+  if (! conn)
+    return NULL;
+  if (! facts_connection_init(conn, facts, sockfd)) {
+    free(conn);
+    return NULL;
+  }
+  return conn;
+}
+
+bool facts_connection_remove (s_facts *facts, s_facts_connection *conn)
+{
+  s_facts_connection **c;
+  pthread_t thread;
+  assert(facts);
+  assert(conn);
+  c = &facts->connections;
+  while (*c) {
+    if (*c == conn) {
+      *c = conn->next;
+      conn->running = false;
+      thread = conn->thread;
+      shutdown(conn->sockfd, SHUT_RDWR);
+      pthread_join(thread, NULL);
+      facts_connection_delete(conn);
+      return true;
+    }
+    c = &(*c)->next;
+  }
+  return false;
+}
+
+static bool facts_connection_sync (s_facts_connection *conn,
+                                   uw remote_next_id)
+{
+  s_facts_cursor cursor;
+  s_fact *fact;
+  s_facts *facts;
+  s_facts_remove_log *log;
+  s_fact remove_fact;
+  bool result = false;
+  s_fact start = {0};
+  assert(conn);
+  facts = conn->facts;
+#if HAVE_PTHREAD
+  if (! rwlock_r(&facts->rwlock))
+    return false;
+#endif
+  if (facts->next_id <= remote_next_id) {
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&facts->rwlock);
+#endif
+    return true;
+  }
+  start.subject = TAG_FIRST;
+  start.predicate = TAG_FIRST;
+  start.object = TAG_FIRST;
+  start.id = remote_next_id;
+  facts_cursor_init(facts, &cursor, facts->index, &start, NULL);
+  while (facts_cursor_next(&cursor, &fact) && fact) {
+    if (! marshall_u8(&conn->marshall, false, FACT_ACTION_ADD))
+      goto clean;
+    if (! marshall_fact(&conn->marshall, false, fact))
+      goto clean;
+    if (! marshall_to_buf(&conn->marshall, conn->buf_rw.w))
+      goto clean;
+  }
+  log = facts->remove_log;
+  while (log) {
+    if (log->fact.id >= remote_next_id) {
+      remove_fact.subject = &log->fact.subject;
+      remove_fact.predicate = &log->fact.predicate;
+      remove_fact.object = &log->fact.object;
+      remove_fact.id = log->fact.id;
+      if (! marshall_u8(&conn->marshall, false, FACT_ACTION_REMOVE))
+        goto clean;
+      if (! marshall_fact(&conn->marshall, false, &remove_fact))
+        goto clean;
+      if (! marshall_to_buf(&conn->marshall, conn->buf_rw.w))
+        goto clean;
+    }
+    log = log->next;
+  }
+  result = true;
+ clean:
+  facts_cursor_clean(&cursor);
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
+  return result;
+}
+
+void * facts_connection_thread (void *arg)
+{
+  u8 action;
+  bool b;
+  s_facts_connection *conn;
+  s_fact fact = {0};
+  s_marshall_read *mr;
+  conn = arg;
+  mr = &conn->marshall_read;
+  while (conn->running) {
+    if (! marshall_read_header(mr))
+      break;
+    if (! marshall_read_chunk(mr)) {
+      err_puts("facts_connection_thread: marshall_read_chunk");
+      break;
+    }
+    if (! marshall_read_u8(mr, false, &action)) {
+      err_puts("facts_connection_thread: marshall_read_u8");
+      break;
+    }
+    if (! marshall_read_fact(mr, false, &fact)) {
+      err_puts("facts_connection_thread: marshall_read_fact");
+      break;
+    }
+    switch (action) {
+    case FACT_ACTION_ADD:
+      if (conn->is_master)
+        facts_add_fact_local(conn->facts, &fact);
+      else
+        facts_add_fact_id(conn->facts, &fact);
+      break;
+    case FACT_ACTION_REMOVE:
+      facts_remove_fact_local(conn->facts, &fact, &b);
+      break;
+    default:
+      err_write_1("facts_connection_thread: invalid action: ");
+      err_inspect_u8_decimal(action);
+      err_write_1("\n");
+      break;
+    }
+    fact_clean_all(&fact);
+    marshall_read_reset_chunk(mr);
+  }
+  conn->running = false;
+  return NULL;
+}
+
+void facts_connections_close_all (s_facts *facts)
+{
+  s_facts_connection *conn;
+  s_facts_connection *next;
+  pthread_t thread;
+  assert(facts);
+  conn = facts->connections;
+  while (conn) {
+    next = conn->next;
+    conn->running = false;
+    thread = conn->thread;
+    shutdown(conn->sockfd, SHUT_RDWR);
+    pthread_join(thread, NULL);
+    facts_connection_delete(conn);
+    conn = next;
+  }
+  facts->connections = NULL;
+}
+
+s_facts_connection * facts_get_master (s_facts *facts)
+{
+  s_facts_connection *conn;
+  assert(facts);
+  conn = facts->connections;
+  while (conn) {
+    if (conn->running && ! conn->is_master)
+      return conn;
+    conn = conn->next;
+  }
+  return NULL;
+}
+
+bool facts_send_to_master_add (s_facts *facts, const s_fact *fact)
+{
+  s_facts_connection *master;
+  assert(facts);
+  assert(fact);
+  master = facts_get_master(facts);
+  if (! master)
+    return false;
+  marshall_u8(&master->marshall, false, FACT_ACTION_ADD);
+  marshall_fact(&master->marshall, false, fact);
+  marshall_to_buf(&master->marshall, master->buf_rw.w);
+  return true;
+}
+
+bool facts_send_to_master_remove (s_facts *facts, const s_fact *fact)
+{
+  s_facts_connection *master;
+  assert(facts);
+  assert(fact);
+  master = facts_get_master(facts);
+  if (! master)
+    return false;
+  marshall_u8(&master->marshall, false, FACT_ACTION_REMOVE);
+  marshall_fact(&master->marshall, false, fact);
+  marshall_to_buf(&master->marshall, master->buf_rw.w);
+  return true;
+}
+
+void kc3_facts_close_all (s_facts *facts)
+{
+  assert(facts);
+  facts_connections_close_all(facts);
+}
+
+bool * kc3_facts_accept (s_facts *facts, s64 *server_fd, bool *dest)
+{
+  assert(facts);
+  assert(server_fd);
+  assert(dest);
+  *dest = facts_accept(facts, *server_fd) ? true : false;
+  return dest;
+}
+
+s_facts_acceptor ** kc3_facts_acceptor_loop (s_facts *facts, s64 *server,
+                                             s_facts_acceptor **dest)
+{
+  s_facts_acceptor *tmp;
+  assert(facts);
+  assert(server);
+  assert(dest);
+  tmp = facts_acceptor_loop(facts, *server);
+  if (! tmp)
+    return NULL;
+  *dest = tmp;
+  return dest;
+}
+
+void kc3_facts_acceptor_loop_join (s_facts_acceptor **acceptor)
+{
+  assert(acceptor);
+  facts_acceptor_loop_join(*acceptor);
+  *acceptor = NULL;
+}
+
+bool * kc3_facts_connect (s_facts *facts, const s_str *host,
+                          const s_str *service, bool *dest)
+{
+  assert(facts);
+  assert(host);
+  assert(service);
+  assert(dest);
+  *dest = facts_connect(facts, host, service) ? true : false;
+  return dest;
+}

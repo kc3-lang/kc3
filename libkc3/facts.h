@@ -32,6 +32,8 @@ void     facts_delete (s_facts *facts);
 
 /* Modifiers */
 s_fact *  facts_add_fact (s_facts *facts, s_fact *fact);
+s_fact *  facts_add_fact_id (s_facts *facts, s_fact *fact);
+s_fact *  facts_add_fact_local (s_facts *facts, s_fact *fact);
 uw *      facts_next_id (s_facts *facts, uw *dest);
 s_fact *  facts_add_tags (s_facts *facts, s_tag *subject,
                           s_tag *predicate, s_tag *object);
@@ -44,8 +46,11 @@ sw        facts_open_file_binary (s_facts *facts, const s_str *path);
 sw        facts_open_file_binary_create (s_facts *facts,
                                          const s_str *path);
 s_tag *   facts_ref_tag (s_facts *facts, s_tag *tag);
+s_facts * facts_set_priority (s_facts *facts, u8 priority);
 bool *    facts_remove_fact (s_facts *facts, const s_fact *fact,
                              bool *dest);
+bool *    facts_remove_fact_local (s_facts *facts, const s_fact *fact,
+                                   bool *dest);
 bool *    facts_remove_fact_tags (s_facts *facts,
                                   s_tag *subject,
                                   s_tag *predicate,
