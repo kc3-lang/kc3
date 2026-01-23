@@ -68,15 +68,9 @@ KC3_CONFIGURES = \
 	"smtp/configure" \
 	"smtp/sources.sh" \
 	"smtp/update_sources" \
-	"socket/configure" \
-	"socket/sources.sh" \
-	"socket/update_sources" \
 	"test/configure" \
 	"test/sources.sh" \
 	"test/update_sources" \
-	"tls/configure" \
-	"tls/sources.sh" \
-	"tls/update_sources" \
 	"ucd2c/configure" \
 	"window/cairo/configure" \
 	"window/cairo/demo/configure" \
@@ -194,15 +188,11 @@ KC3_MAKEFILES = \
 	"qrencode/sources.mk" \
 	"smtp/Makefile" \
 	"smtp/sources.mk" \
-	"socket/Makefile" \
-	"socket/sources.mk" \
 	"test/Makefile" \
 	"test/httpd/Makefile" \
 	"test/httpd/assets/Makefile" \
 	"test/sources.mk" \
 	"test/wget/Makefile" \
-	"tls/Makefile" \
-	"tls/sources.mk" \
 	"ucd2c/Makefile" \
 	"window/Makefile" \
 	"window/cairo/Makefile" \
@@ -817,6 +807,12 @@ KC3_C_SOURCES = \
 	"libkc3/skiplist_node.h.in" \
 	"libkc3/skiplist_node__fact.c" \
 	"libkc3/skiplist_node__fact.h" \
+	"libkc3/socket.c" \
+	"libkc3/socket.h" \
+	"libkc3/socket_addr.c" \
+	"libkc3/socket_addr.h" \
+	"libkc3/socket_buf.c" \
+	"libkc3/socket_buf.h" \
 	"libkc3/special_operator.c" \
 	"libkc3/special_operator.h" \
 	"libkc3/str.c" \
@@ -855,6 +851,16 @@ KC3_C_SOURCES = \
 	"libkc3/time.h" \
 	"libkc3/timespec.c" \
 	"libkc3/timespec.h" \
+	"libkc3/tls.c" \
+	"libkc3/tls.h" \
+	"libkc3/tls_buf.c" \
+	"libkc3/tls_buf.h" \
+	"libkc3/tls_client.c" \
+	"libkc3/tls_client.h" \
+	"libkc3/tls_config.c" \
+	"libkc3/tls_config.h" \
+	"libkc3/tls_server.c" \
+	"libkc3/tls_server.h" \
 	"libkc3/to_lisp.c" \
 	"libkc3/to_lisp.h" \
 	"libkc3/tommath.h" \
@@ -1097,15 +1103,6 @@ KC3_C_SOURCES = \
 	"smtp/smtp.c" \
 	"smtp/smtp.h" \
 	"smtp/types.h" \
-	"socket/socket.c" \
-	"socket/socket.h" \
-	"socket/socket_addr.c" \
-	"socket/socket_addr.h" \
-	"socket/socket_buf.c" \
-	"socket/socket_buf.h" \
-	"socket/socket_facts.c" \
-	"socket/socket_facts.h" \
-	"socket/types.h" \
 	"test/array_test.c" \
 	"test/bool_test.c" \
 	"test/buf_file_test.c" \
@@ -1155,19 +1152,6 @@ KC3_C_SOURCES = \
 	"test/test.h" \
 	"test/tuple_test.c" \
 	"test/types_test.c" \
-	"tls/tls.c" \
-	"tls/tls.h" \
-	"tls/tls_buf.c" \
-	"tls/tls_buf.h" \
-	"tls/tls_client.c" \
-	"tls/tls_client.h" \
-	"tls/tls_config.c" \
-	"tls/tls_config.h" \
-	"tls/tls_facts.c" \
-	"tls/tls_facts.h" \
-	"tls/tls_server.c" \
-	"tls/tls_server.h" \
-	"tls/types.h" \
 	"ucd2c/ucd.c" \
 	"ucd2c/ucd.h" \
 	"ucd2c/ucd2c.c" \
@@ -1623,6 +1607,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/fact.kc3" \
 	"lib/kc3/0.1/fact_w.kc3" \
 	"lib/kc3/0.1/facts.kc3" \
+	"lib/kc3/0.1/facts/acceptor.kc3" \
 	"lib/kc3/0.1/facts/cursor.kc3" \
 	"lib/kc3/0.1/fd.kc3" \
 	"lib/kc3/0.1/file.kc3" \
@@ -1902,7 +1887,6 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/facts.kc3" \
 	"test/ikc3/facts.out.expected" \
 	"test/ikc3/facts.ret.expected" \
-	"test/ikc3/facts_connection.kc3" \
 	"test/ikc3/facts_with.kc3" \
 	"test/ikc3/facts_with.out.expected" \
 	"test/ikc3/facts_with.ret.expected" \
@@ -2282,6 +2266,12 @@ KC3_TEST_KC3S_SOURCES = \
 	"test/kc3s/comments.kc3" \
 	"test/kc3s/comments.out.expected" \
 	"test/kc3s/comments.ret.expected" \
+	"test/kc3s/facts_acceptor_loop.kc3" \
+	"test/kc3s/facts_acceptor_loop.out.expected" \
+	"test/kc3s/facts_acceptor_loop.ret.expected" \
+	"test/kc3s/facts_connection.kc3" \
+	"test/kc3s/facts_connection.out.expected" \
+	"test/kc3s/facts_connection.ret.expected" \
 	"test/kc3s_test" \
 
 KC3_TEST_MARKDOWN_SOURCES = \
@@ -2331,6 +2321,7 @@ KC3_OTHER_SOURCES = \
 	"AUTHORS.md" \
 	"BUGS.md" \
 	"CHANGELOG.md" \
+	"CLAUDE.md" \
 	"CONTRIBUTING.md" \
 	"LICENSE.md" \
 	"Makefile" \

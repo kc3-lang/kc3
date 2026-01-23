@@ -188,6 +188,9 @@ HEADERS = \
 	"sign.h" \
 	"skiplist__fact.h" \
 	"skiplist_node__fact.h" \
+	"socket.h" \
+	"socket_addr.h" \
+	"socket_buf.h" \
 	"special_operator.h" \
 	"str.h" \
 	"struct.h" \
@@ -200,6 +203,11 @@ HEADERS = \
 	"tag_type.h" \
 	"time.h" \
 	"timespec.h" \
+	"tls.h" \
+	"tls_buf.h" \
+	"tls_client.h" \
+	"tls_config.h" \
+	"tls_server.h" \
 	"to_lisp.h" \
 	"tommath.h" \
 	"tuple.h" \
@@ -402,6 +410,9 @@ SOURCES = \
 	"sign.c" \
 	"skiplist__fact.c" \
 	"skiplist_node__fact.c" \
+	"socket.c" \
+	"socket_addr.c" \
+	"socket_buf.c" \
 	"special_operator.c" \
 	"str.c" \
 	"struct.c" \
@@ -428,6 +439,11 @@ SOURCES = \
 	"tag_type.c" \
 	"time.c" \
 	"timespec.c" \
+	"tls.c" \
+	"tls_buf.c" \
+	"tls_client.c" \
+	"tls_config.c" \
+	"tls_server.c" \
 	"to_lisp.c" \
 	"tuple.c" \
 	"u16.c" \
@@ -729,6 +745,9 @@ LO_SOURCES = \
 	"sign.c" \
 	"skiplist__fact.c" \
 	"skiplist_node__fact.c" \
+	"socket.c" \
+	"socket_addr.c" \
+	"socket_buf.c" \
 	"special_operator.c" \
 	"str.c" \
 	"struct.c" \
@@ -755,6 +774,11 @@ LO_SOURCES = \
 	"tag_type.c" \
 	"time.c" \
 	"timespec.c" \
+	"tls.c" \
+	"tls_buf.c" \
+	"tls_client.c" \
+	"tls_config.c" \
+	"tls_server.c" \
 	"to_lisp.c" \
 	"tuple.c" \
 	"u16.c" \

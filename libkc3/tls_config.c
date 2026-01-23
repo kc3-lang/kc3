@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <tls.h>
-#include "../libkc3/kc3.h"
+#include "kc3.h"
 #include "tls.h"
 #include "tls_config.h"
 

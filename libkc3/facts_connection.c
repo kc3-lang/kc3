@@ -32,6 +32,7 @@
 #include "rwlock.h"
 #include "str.h"
 #include "tag.h"
+#include "tls_buf.h"
 
 static s_facts_connection * facts_connection_find_addr (s_facts *facts,
                                                         const s_str *addr);
@@ -39,28 +40,40 @@ static s_str * facts_connection_get_addr (s64 sockfd, s_str *dest);
 static bool facts_connection_sync (s_facts_connection *conn,
                                    uw remote_next_id);
 
-s_facts_connection * facts_accept (s_facts *facts, s64 server_fd)
+s_facts_connection * facts_accept (s_facts *facts, s64 server_fd,
+                                    p_tls server_tls)
 {
   s64 client_fd;
+  p_tls client_tls;
   assert(facts);
+  assert(server_tls);
   client_fd = accept(server_fd, NULL, NULL);
   if (client_fd < 0) {
     err_write_1("facts_accept: accept: ");
     err_puts(strerror(errno));
     return NULL;
   }
-  return facts_connection_add(facts, client_fd);
+  if (tls_accept_socket(server_tls, &client_tls, client_fd) < 0) {
+    err_write_1("facts_accept: tls_accept_socket: ");
+    err_puts(tls_error(server_tls));
+    close(client_fd);
+    return NULL;
+  }
+  return facts_connection_add(facts, client_fd, client_tls);
 }
 
-s_facts_acceptor * facts_acceptor_loop (s_facts *facts, s64 server)
+s_facts_acceptor * facts_acceptor_loop (s_facts *facts, s64 server,
+                                         p_tls tls)
 {
   s_facts_acceptor *acceptor;
   assert(facts);
+  assert(tls);
   acceptor = alloc(sizeof(s_facts_acceptor));
   if (! acceptor)
     return NULL;
   acceptor->facts = facts;
   acceptor->server = server;
+  acceptor->tls = tls;
   acceptor->running = true;
   if (pthread_create(&acceptor->thread, NULL,
                      facts_acceptor_loop_thread, acceptor)) {
@@ -86,7 +99,7 @@ void * facts_acceptor_loop_thread (void *arg)
   s_facts_acceptor *acceptor;
   acceptor = arg;
   while (acceptor->running) {
-    if (! facts_accept(acceptor->facts, acceptor->server))
+    if (! facts_accept(acceptor->facts, acceptor->server, acceptor->tls))
       break;
   }
   return NULL;
@@ -128,15 +141,18 @@ bool facts_broadcast_remove (s_facts *facts, const s_fact *fact)
 
 s_facts_connection * facts_connect (s_facts *facts,
                                     const s_str *host,
-                                    const s_str *service)
+                                    const s_str *service,
+                                    p_tls_config config)
 {
   struct addrinfo  hints = {0};
   struct addrinfo *res;
   struct addrinfo *res0;
   s64              sockfd;
+  p_tls            tls;
   assert(facts);
   assert(host);
   assert(service);
+  assert(config);
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
   if (getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0)) {
@@ -174,28 +190,61 @@ s_facts_connection * facts_connect (s_facts *facts,
     err_puts(strerror(errno));
     return NULL;
   }
-  return facts_connection_add(facts, sockfd);
+  tls = tls_client();
+  if (! tls) {
+    err_puts("facts_connect: tls_client");
+    close(sockfd);
+    return NULL;
+  }
+  if (tls_configure(tls, config) < 0) {
+    err_write_1("facts_connect: tls_configure: ");
+    err_puts(tls_error(tls));
+    tls_free(tls);
+    close(sockfd);
+    return NULL;
+  }
+  if (tls_connect_socket(tls, sockfd, host->ptr.pchar) < 0) {
+    err_write_1("facts_connect: tls_connect_socket: ");
+    err_puts(tls_error(tls));
+    tls_free(tls);
+    close(sockfd);
+    return NULL;
+  }
+  if (tls_handshake(tls) < 0) {
+    err_write_1("facts_connect: tls_handshake: ");
+    err_puts(tls_error(tls));
+    tls_free(tls);
+    close(sockfd);
+    return NULL;
+  }
+  return facts_connection_add(facts, sockfd, tls);
 }
 
-s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd)
+s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
+                                            p_tls tls)
 {
   s_str addr;
   s_facts_connection *conn;
   uw remote_next_id;
   u8 remote_priority;
   assert(facts);
+  assert(tls);
   if (! facts_connection_get_addr(sockfd, &addr)) {
     err_puts("facts_connection_add: facts_connection_get_addr");
+    tls_close(tls);
+    tls_free(tls);
     close(sockfd);
     return NULL;
   }
   if (facts_connection_find_addr(facts, &addr)) {
     err_puts("facts_connection_add: duplicate connection");
     str_clean(&addr);
+    tls_close(tls);
+    tls_free(tls);
     close(sockfd);
     return NULL;
   }
-  conn = facts_connection_new(facts, sockfd);
+  conn = facts_connection_new(facts, sockfd, tls);
   if (! conn) {
     str_clean(&addr);
     return NULL;
@@ -254,7 +303,13 @@ void facts_connection_clean (s_facts_connection *conn)
   str_clean(&conn->addr);
   marshall_clean(&conn->marshall);
   marshall_read_clean(&conn->marshall_read);
+  tls_buf_close(conn->buf_rw.r);
+  tls_buf_close(conn->buf_rw.w);
   buf_rw_clean(&conn->buf_rw);
+  if (conn->tls) {
+    tls_close(conn->tls);
+    tls_free(conn->tls);
+  }
   if (conn->sockfd >= 0)
     close(conn->sockfd);
 }
@@ -304,19 +359,22 @@ static s_str * facts_connection_get_addr (s64 sockfd, s_str *dest)
 
 s_facts_connection * facts_connection_init (s_facts_connection *conn,
                                             s_facts *facts,
-                                            s64 sockfd)
+                                            s64 sockfd,
+                                            p_tls tls)
 {
   assert(conn);
   assert(facts);
+  assert(tls);
   *conn = (s_facts_connection) {0};
   conn->facts = facts;
   conn->sockfd = sockfd;
+  conn->tls = tls;
   if (! buf_rw_init_alloc(&conn->buf_rw, 65536)) {
     err_puts("facts_connection_init: buf_rw_init_alloc");
     return NULL;
   }
-  buf_fd_open_r(conn->buf_rw.r, sockfd);
-  buf_fd_open_w(conn->buf_rw.w, sockfd);
+  tls_buf_open_r(conn->buf_rw.r, tls);
+  tls_buf_open_w(conn->buf_rw.w, tls);
   if (! marshall_init(&conn->marshall)) {
     err_puts("facts_connection_init: marshall_init");
     buf_rw_clean(&conn->buf_rw);
@@ -331,13 +389,14 @@ s_facts_connection * facts_connection_init (s_facts_connection *conn,
   return conn;
 }
 
-s_facts_connection * facts_connection_new (s_facts *facts, s64 sockfd)
+s_facts_connection * facts_connection_new (s_facts *facts, s64 sockfd,
+                                            p_tls tls)
 {
   s_facts_connection *conn;
   conn = alloc(sizeof(s_facts_connection));
   if (! conn)
     return NULL;
-  if (! facts_connection_init(conn, facts, sockfd)) {
+  if (! facts_connection_init(conn, facts, sockfd, tls)) {
     free(conn);
     return NULL;
   }
@@ -539,23 +598,27 @@ void kc3_facts_close_all (s_facts *facts)
   facts_connections_close_all(facts);
 }
 
-bool * kc3_facts_accept (s_facts *facts, s64 *server_fd, bool *dest)
+bool * kc3_facts_accept (s_facts *facts, s64 *server_fd, p_tls *tls,
+                          bool *dest)
 {
   assert(facts);
   assert(server_fd);
+  assert(tls);
   assert(dest);
-  *dest = facts_accept(facts, *server_fd) ? true : false;
+  *dest = facts_accept(facts, *server_fd, *tls) ? true : false;
   return dest;
 }
 
 s_facts_acceptor ** kc3_facts_acceptor_loop (s_facts *facts, s64 *server,
-                                             s_facts_acceptor **dest)
+                                              p_tls *tls,
+                                              s_facts_acceptor **dest)
 {
   s_facts_acceptor *tmp;
   assert(facts);
   assert(server);
+  assert(tls);
   assert(dest);
-  tmp = facts_acceptor_loop(facts, *server);
+  tmp = facts_acceptor_loop(facts, *server, *tls);
   if (! tmp)
     return NULL;
   *dest = tmp;
@@ -570,12 +633,14 @@ void kc3_facts_acceptor_loop_join (s_facts_acceptor **acceptor)
 }
 
 bool * kc3_facts_connect (s_facts *facts, const s_str *host,
-                          const s_str *service, bool *dest)
+                          const s_str *service, p_tls_config *config,
+                          bool *dest)
 {
   assert(facts);
   assert(host);
   assert(service);
+  assert(config);
   assert(dest);
-  *dest = facts_connect(facts, host, service) ? true : false;
+  *dest = facts_connect(facts, host, service, *config) ? true : false;
   return dest;
 }

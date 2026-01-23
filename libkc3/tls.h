@@ -10,12 +10,10 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef KC3_TLS_H
-#define KC3_TLS_H
+#ifndef LIBKC3_TLS_H
+#define LIBKC3_TLS_H
 
 #include <tls.h>
-#include "../libkc3/types.h"
-#include "../socket/types.h"
 #include "types.h"
 
 /* Library functions. */
@@ -36,4 +34,4 @@ p_tls * kc3_tls_configure (p_tls *ctx, p_tls_config *cfg, p_tls *dest);
 /* Operating system helpers. */
 s_str * kc3_tls_ca_cert_path (s_str *dest);
 
-#endif /* KC3_TLS_H */
+#endif /* LIBKC3_TLS_H */

@@ -32,9 +32,7 @@ KC3_DIRS="
  pdf
  qrencode
  smtp
- socket
  test
- tls
  ucd2c
  window
 "
@@ -182,8 +180,6 @@ runj -1 /bin/sh <<EOF
 ( cd pdf        && ./update_sources; )
 ( cd qrencode   && ./update_sources; )
 ( cd smtp       && ./update_sources; )
-( cd socket     && ./update_sources; )
 ( cd test       && ./update_sources; )
-( cd tls        && ./update_sources; )
 ( cd window     && ./update_sources; )
 EOF

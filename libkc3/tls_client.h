@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef KC3_TLS_CLIENT_H
-#define KC3_TLS_CLIENT_H
+#ifndef LIBKC3_TLS_CLIENT_H
+#define LIBKC3_TLS_CLIENT_H
 
 #include "types.h"
 
@@ -23,4 +23,4 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
                                             const s_str *host,
                                             const s_str *port);
 
-#endif /* KC3_TLS_CLIENT_H */
+#endif /* LIBKC3_TLS_CLIENT_H */

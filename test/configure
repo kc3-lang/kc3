@@ -67,8 +67,6 @@ case "$(uname -s)" in
     Linux)
         LIBS="$LIBS -rpath ${LIBDIR}"
         LIBS="$LIBS -rpath ${BUILD_TOP}/libkc3"
-        LIBS="$LIBS -rpath ${BUILD_TOP}/socket"
-        LIBS="$LIBS -rpath ${BUILD_TOP}/tls"
         ;;
     MINGW64*)
         ;;

@@ -14,8 +14,6 @@ all:
 	${MAKE} gen
 	${MAKE} -C libtommath all
 	${MAKE} -C libkc3 all
-	${MAKE} -C socket all
-	${MAKE} -C tls all
 	${MAKE} -C ikc3 all
 	${MAKE} -C kc3s all
 	${MAKE} -C kpkg all
@@ -47,7 +45,6 @@ asan:
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -406,7 +403,6 @@ ekc3:
 ekc3_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -442,7 +438,6 @@ event:
 event_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -533,7 +528,6 @@ gdb_ikc3: lib_links_debug
 gdb_ikc3_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 gdb_ikc3_asan
 
@@ -572,7 +566,6 @@ gdb_test_httpd: debug lib_links_debug
 gdb_test_httpd_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -600,7 +593,6 @@ gdb_test_ikc3: lib_links_debug
 gdb_test_ikc3_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C test gdb_test_ikc3_asan
@@ -617,7 +609,6 @@ gdb_test_json: lib_links_debug
 gdb_test_json_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C json asan
@@ -635,7 +626,6 @@ gdb_test_markdown: lib_links_debug
 gdb_test_markdown_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C markdown asan
@@ -653,7 +643,6 @@ gdb_test_pdf: lib_links_debug
 gdb_test_pdf_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C pdf asan
@@ -670,7 +659,6 @@ gdb_test_tls: lib_links_debug
 gdb_test_tls_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C test gdb_test_tls_asan
@@ -694,7 +682,6 @@ gtk4_asan:
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -783,7 +770,6 @@ ikc3:
 ikc3_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 
@@ -822,7 +808,6 @@ image:
 image_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C image asan
@@ -986,7 +971,6 @@ json:
 json_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C json asan
@@ -1081,7 +1065,6 @@ kmsg_asan:
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -1111,7 +1094,6 @@ kpkg:
 kpkg_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -1474,7 +1456,6 @@ markdown:
 markdown_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C markdown asan
@@ -1506,7 +1487,6 @@ pdf:
 pdf_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C pdf asan
@@ -1553,7 +1533,6 @@ test_ekc3: ekc3 lib_links
 test_ekc3_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -1606,7 +1585,6 @@ test_http: lib_links
 test_http_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -1667,7 +1645,6 @@ test_httpd: lib_links
 test_httpd_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -1726,7 +1703,6 @@ test_ikc3: lib_links
 test_ikc3_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C test test_ikc3_asan
@@ -1759,7 +1735,6 @@ test_image: lib_links
 test_image_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C image asan
@@ -1795,7 +1770,6 @@ test_json: lib_links
 test_json_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C json asan
@@ -1888,7 +1862,6 @@ test_markdown: lib_links
 test_markdown_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C markdown asan
@@ -1924,7 +1897,6 @@ test_pdf: lib_links
 test_pdf_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C pdf asan
@@ -1960,7 +1932,6 @@ test_socket: lib_links
 test_socket_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -1996,7 +1967,6 @@ test_tls: lib_links
 test_tls_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C socket asan
 	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan

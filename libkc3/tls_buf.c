@@ -13,11 +13,11 @@
 #include <string.h>
 #include <unistd.h>
 #include <tls.h>
-#include "../libkc3/alloc.h"
-#include "../libkc3/buf.h"
-#include "../libkc3/buf_save.h"
-#include "../libkc3/io.h"
-#include "../libkc3/assert.h"
+#include "alloc.h"
+#include "buf.h"
+#include "buf_save.h"
+#include "io.h"
+#include "assert.h"
 #include "tls_buf.h"
 
 sw tls_buf_open_r_refill (s_buf *buf);

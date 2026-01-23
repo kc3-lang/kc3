@@ -15,6 +15,9 @@
 
 #if defined(WIN32) || defined(WIN64)
 # include <winsock2.h>
+# include <ws2tcpip.h>
+#else
+# include <sys/socket.h>
 #endif
 
 #include <ffi.h>
@@ -274,6 +277,7 @@ typedef struct sequence                s_sequence;
 typedef struct sha1                    s_sha1;
 typedef struct sha2                    s_sha2;
 typedef struct sha512                  s_sha512;
+typedef struct socket_buf              s_socket_buf;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
 typedef struct struct_type             s_struct_type;
@@ -284,6 +288,8 @@ typedef struct tag_type_list           s_tag_type_list;
 typedef struct time                    s_time;
 typedef struct timespec                s_timespec;
 typedef struct tls_buf                 s_tls_buf;
+typedef struct tls_client              s_tls_client;
+typedef struct tls_server              s_tls_server;
 typedef struct tuple                   s_tuple;
 typedef struct type                    s_type;
 typedef struct unquote                 s_unquote;
@@ -302,6 +308,7 @@ typedef s_tag *         t_facts_spec[];
 typedef s64             t_fd;
 typedef s_sha1          t_hash;
 typedef u64             t_skiplist_height;
+typedef s64             t_socket;
 
 /* pointer types */
 typedef s_buf *           p_buf;
@@ -319,6 +326,7 @@ typedef s_struct *        p_struct;
 typedef s_struct_type *    p_struct_type;
 typedef const s_sym *      p_sym;
 typedef s_sym_list *       p_sym_list;
+typedef t_socket *         p_socket;
 typedef s_tag *            p_tag;
 typedef struct tls *       p_tls;
 typedef struct tls_config *p_tls_config;
@@ -540,6 +548,10 @@ struct time {
   s_tag *tag;
 };
 
+struct tls_buf {
+  p_tls ctx;
+};
+
 struct tuple {
   uw count;
   s_tag *tag;
@@ -664,6 +676,14 @@ struct buf_rw {
   s_buf *w;
 };
 
+struct socket_buf {
+  struct sockaddr *addr;
+  u32              addr_len;
+  s_str            addr_str;
+  s64              sockfd;
+  s_buf_rw         buf_rw;
+};
+
 struct call {
   s_ident ident;
   s_list *arguments;
@@ -767,6 +787,16 @@ struct marshall {
   sw    heap_offset;
   sw    heap_pos;
   s_ht  ht;
+};
+
+struct tls_client {
+  s_socket_buf socket_buf;
+  s_str        tls_version;
+};
+
+struct tls_server {
+  s_socket_buf socket_buf;
+  s_str        tls_version;
 };
 
 /* 5 */

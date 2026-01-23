@@ -12,9 +12,9 @@
  */
 #include <unistd.h>
 #include <tls.h>
-#include "../libkc3/kc3.h"
-#include "../socket/socket.h"
-#include "../socket/socket_buf.h"
+#include "kc3.h"
+#include "socket.h"
+#include "socket_buf.h"
 #include "tls_buf.h"
 #include "tls_server.h"
 

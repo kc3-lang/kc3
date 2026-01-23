@@ -15,13 +15,13 @@
 #include <string.h>
 #include <tls.h>
 #include "../libkc3/kc3.h"
-#include "../socket/socket.h"
-#include "../socket/socket_addr.h"
-#include "../socket/socket_buf.h"
-#include "../tls/tls.h"
-#include "../tls/tls_client.h"
-#include "../tls/tls_server.h"
-#include "../tls/tls_config.h"
+#include "../libkc3/socket.h"
+#include "../libkc3/socket_addr.h"
+#include "../libkc3/socket_buf.h"
+#include "../libkc3/tls.h"
+#include "../libkc3/tls_client.h"
+#include "../libkc3/tls_server.h"
+#include "../libkc3/tls_config.h"
 
 #if KC3S
 # include "../kc3s/buf_readline.h"

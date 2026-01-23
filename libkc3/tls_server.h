@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef KC3_TLS_SERVER_H
-#define KC3_TLS_SERVER_H
+#ifndef LIBKC3_TLS_SERVER_H
+#define LIBKC3_TLS_SERVER_H
 
 #include "types.h"
 
@@ -31,4 +31,4 @@ p_tls_server * kc3_tls_server_new_accept (p_tls_server *pserver,
                                           p_tls *ctx);
 */
 
-#endif /* KC3_TLS_SERVER_H */
+#endif /* LIBKC3_TLS_SERVER_H */

@@ -21,7 +21,7 @@
 #include <errno.h>
 #include <string.h>
 #include <tls.h>
-#include "../libkc3/kc3.h"
+#include "kc3.h"
 #include "tls.h"
 
 p_tls * kc3_tls_accept_socket (p_tls *ctx, p_tls *dest_client_ctx,

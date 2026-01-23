@@ -18,7 +18,7 @@
 
 /* TLS buf open functions, call tls_buf_close after use. */
 void    tls_buf_close(s_buf *buf);
-s_buf * tls_buf_open_r(s_buf *buf, struct tls *ctx);
-s_buf * tls_buf_open_w(s_buf *buf, struct tls *ctx);
+s_buf * tls_buf_open_r(s_buf *buf, p_tls ctx);
+s_buf * tls_buf_open_w(s_buf *buf, p_tls ctx);
 
 #endif // ! LIBKC3_TLS_BUF_H
