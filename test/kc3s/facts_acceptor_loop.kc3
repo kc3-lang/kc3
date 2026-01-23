@@ -17,23 +17,24 @@ if r == 0 do
   TLS.configure(server_tls, server_config)
   server_facts = Facts.database()
   puts("server: listening on 15004")
-  server = Socket.listen("localhost", "15004")
+  server = Socket.listen(hostname(), "15004")
   if server.fd < 0 do
     puts("server: listen failed")
     exit_subprocess(1)
   end
   puts("server: starting acceptor loop")
-  acceptor = Facts.acceptor_loop(server_facts, server.fd, server_tls)
+  acceptor = Facts.acceptor_loop(server_facts, server, server_tls)
   if ! acceptor do
     puts("server: acceptor_loop failed")
     exit_subprocess(1)
   end
   puts("server: acceptor loop started, waiting for client")
-  sleep(4)
+  sleep(2)
   Facts.with_tags(server_facts, ?, ?, ?, fn (fact) {
     puts("server: received #{inspect(fact)}")
   })
   puts("server: OK")
+  sleep(2)
   Facts.acceptor_loop_join(acceptor)
   Facts.close_all(server_facts)
   Facts.delete(server_facts)
@@ -48,13 +49,13 @@ else
   client_facts = Facts.database()
   Facts.set_priority(client_facts, (U8) 1)
   puts("client: connecting to 15004")
-  if ! Facts.connect(client_facts, "localhost", "15004", client_config) do
+  if ! Facts.connect(client_facts, hostname(), "15004", client_config) do
     puts("client: connect failed")
     exit(1)
   end
   puts("client: adding fact")
   Facts.add_tags(client_facts, :a, :b, :c)
-  sleep(4)
+  sleep(2)
   puts("client: checking for facts")
   Facts.with_tags(client_facts, ?, ?, ?, fn (fact) {
     puts("client: has #{inspect(fact)}")

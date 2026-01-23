@@ -415,6 +415,7 @@ struct fact_list {
 };
 
 struct facts_acceptor {
+  s_env     *env;
   s_facts   *facts;
   p_tls      tls;
   bool       running;
@@ -919,6 +920,7 @@ struct fact_w {
 };
 
 struct facts_connection {
+  s_env              *env;
   s_facts            *facts;
   s_buf_rw            buf_rw;
   s_str               addr;

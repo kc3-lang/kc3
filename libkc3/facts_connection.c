@@ -13,6 +13,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netdb.h>
+#include <signal.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <tls.h>
@@ -22,6 +23,8 @@
 #include "buf.h"
 #include "buf_rw.h"
 #include "compare.h"
+#include "env.h"
+#include "env_fork.h"
 #include "fact.h"
 #include "facts.h"
 #include "facts_connection.h"
@@ -48,11 +51,8 @@ s_facts_connection * facts_accept (s_facts *facts, s64 server_fd,
   assert(facts);
   assert(server_tls);
   client_fd = accept(server_fd, NULL, NULL);
-  if (client_fd < 0) {
-    err_write_1("facts_accept: accept: ");
-    err_puts(strerror(errno));
+  if (client_fd < 0)
     return NULL;
-  }
   if (tls_accept_socket(server_tls, &client_tls, client_fd) < 0) {
     err_write_1("facts_accept: tls_accept_socket: ");
     err_puts(tls_error(server_tls));
@@ -71,6 +71,12 @@ s_facts_acceptor * facts_acceptor_loop (s_facts *facts, s64 server,
   acceptor = alloc(sizeof(s_facts_acceptor));
   if (! acceptor)
     return NULL;
+  acceptor->env = env_fork_new(env_global());
+  if (! acceptor->env) {
+    err_puts("facts_acceptor_loop: env_fork_new");
+    free(acceptor);
+    return NULL;
+  }
   acceptor->facts = facts;
   acceptor->server = server;
   acceptor->tls = tls;
@@ -78,6 +84,7 @@ s_facts_acceptor * facts_acceptor_loop (s_facts *facts, s64 server,
   if (pthread_create(&acceptor->thread, NULL,
                      facts_acceptor_loop_thread, acceptor)) {
     err_puts("facts_acceptor_loop: pthread_create");
+    env_fork_delete(acceptor->env);
     free(acceptor);
     return NULL;
   }
@@ -87,10 +94,12 @@ s_facts_acceptor * facts_acceptor_loop (s_facts *facts, s64 server,
 void facts_acceptor_loop_join (s_facts_acceptor *acceptor)
 {
   assert(acceptor);
+  signal(SIGPIPE, SIG_IGN);
   acceptor->running = false;
   shutdown(acceptor->server, SHUT_RDWR);
-  close(acceptor->server);
   pthread_join(acceptor->thread, NULL);
+  close(acceptor->server);
+  env_fork_delete(acceptor->env);
   free(acceptor);
 }
 
@@ -98,6 +107,7 @@ void * facts_acceptor_loop_thread (void *arg)
 {
   s_facts_acceptor *acceptor;
   acceptor = arg;
+  env_global_set(acceptor->env);
   while (acceptor->running) {
     if (! facts_accept(acceptor->facts, acceptor->server, acceptor->tls))
       break;
@@ -285,12 +295,20 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
     facts_connection_delete(conn);
     return NULL;
   }
+  conn->env = env_fork_new(env_global());
+  if (! conn->env) {
+    err_puts("facts_connection_add: env_fork_new");
+    facts_connection_delete(conn);
+    return NULL;
+  }
   conn->next = facts->connections;
   facts->connections = conn;
   conn->running = true;
   if (pthread_create(&conn->thread, NULL, facts_connection_thread, conn)) {
     err_puts("facts_connection_add: pthread_create");
     facts->connections = conn->next;
+    env_fork_delete(conn->env);
+    conn->env = NULL;
     facts_connection_delete(conn);
     return NULL;
   }
@@ -300,16 +318,20 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
 void facts_connection_clean (s_facts_connection *conn)
 {
   assert(conn);
+  if (conn->env) {
+    env_fork_delete(conn->env);
+    conn->env = NULL;
+  }
   str_clean(&conn->addr);
   marshall_clean(&conn->marshall);
   marshall_read_clean(&conn->marshall_read);
-  tls_buf_close(conn->buf_rw.r);
   tls_buf_close(conn->buf_rw.w);
-  buf_rw_clean(&conn->buf_rw);
+  tls_buf_close(conn->buf_rw.r);
   if (conn->tls) {
     tls_close(conn->tls);
     tls_free(conn->tls);
   }
+  buf_rw_clean(&conn->buf_rw);
   if (conn->sockfd >= 0)
     close(conn->sockfd);
 }
@@ -409,13 +431,14 @@ bool facts_connection_remove (s_facts *facts, s_facts_connection *conn)
   pthread_t thread;
   assert(facts);
   assert(conn);
+  signal(SIGPIPE, SIG_IGN);
   c = &facts->connections;
   while (*c) {
     if (*c == conn) {
       *c = conn->next;
       conn->running = false;
-      thread = conn->thread;
       shutdown(conn->sockfd, SHUT_RDWR);
+      thread = conn->thread;
       pthread_join(thread, NULL);
       facts_connection_delete(conn);
       return true;
@@ -493,6 +516,7 @@ void * facts_connection_thread (void *arg)
   s_fact fact = {0};
   s_marshall_read *mr;
   conn = arg;
+  env_global_set(conn->env);
   mr = &conn->marshall_read;
   while (conn->running) {
     if (! marshall_read_header(mr))
@@ -538,12 +562,13 @@ void facts_connections_close_all (s_facts *facts)
   s_facts_connection *next;
   pthread_t thread;
   assert(facts);
+  signal(SIGPIPE, SIG_IGN);
   conn = facts->connections;
   while (conn) {
     next = conn->next;
     conn->running = false;
-    thread = conn->thread;
     shutdown(conn->sockfd, SHUT_RDWR);
+    thread = conn->thread;
     pthread_join(thread, NULL);
     facts_connection_delete(conn);
     conn = next;
@@ -598,7 +623,7 @@ void kc3_facts_close_all (s_facts *facts)
   facts_connections_close_all(facts);
 }
 
-bool * kc3_facts_accept (s_facts *facts, s64 *server_fd, p_tls *tls,
+bool * kc3_facts_accept (s_facts *facts, p_socket server_fd, p_tls *tls,
                           bool *dest)
 {
   assert(facts);
@@ -609,7 +634,7 @@ bool * kc3_facts_accept (s_facts *facts, s64 *server_fd, p_tls *tls,
   return dest;
 }
 
-s_facts_acceptor ** kc3_facts_acceptor_loop (s_facts *facts, s64 *server,
+s_facts_acceptor ** kc3_facts_acceptor_loop (s_facts *facts, p_socket server,
                                               p_tls *tls,
                                               s_facts_acceptor **dest)
 {

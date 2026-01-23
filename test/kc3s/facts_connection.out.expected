@@ -18,7 +18,6 @@ client: has %FactW{subject: :server,
        predicate: :says,
        object: :hello,
        id: (Uw) 3}
-client: OK
 server: received %FactW{subject: :a,
        predicate: :b,
        object: :c,
@@ -32,3 +31,4 @@ server: received %FactW{subject: :server,
        object: :hello,
        id: (Uw) 3}
 server: OK
+client: OK

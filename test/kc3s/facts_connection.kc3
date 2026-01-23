@@ -19,13 +19,13 @@ if r == 0 do
   puts("server: adding pre-existing fact")
   Facts.add_tags(server_facts, :pre, :existing, :fact)
   puts("server: listening on 15003")
-  server = Socket.listen("localhost", "15003")
+  server = Socket.listen(hostname(), "15003")
   if server.fd < 0 do
     puts("server: listen failed")
     exit_subprocess(1)
   end
   puts("server: listen OK, waiting for connection")
-  if ! Facts.accept(server_facts, server.fd, server_tls) do
+  if ! Facts.accept(server_facts, server, server_tls) do
     puts("server: accept failed")
     exit_subprocess(1)
   end
@@ -39,6 +39,7 @@ if r == 0 do
     puts("server: received #{inspect(fact)}")
   })
   puts("server: OK")
+  sleep(2)
   Facts.close_all(server_facts)
   Facts.delete(server_facts)
   TLS.Config.free(server_config)
@@ -52,7 +53,7 @@ else
   client_facts = Facts.database()
   Facts.set_priority(client_facts, (U8) 1)
   puts("client: connecting to 15003")
-  if ! Facts.connect(client_facts, "localhost", "15003", client_config) do
+  if ! Facts.connect(client_facts, hostname(), "15003", client_config) do
     puts("client: connect failed")
     exit(1)
   end
@@ -64,6 +65,7 @@ else
   Facts.with_tags(client_facts, ?, ?, ?, fn (fact) {
     puts("client: has #{inspect(fact)}")
   })
+  sleep(2)
   Facts.close_all(client_facts)
   Facts.delete(client_facts)
   TLS.Config.free(client_config)
