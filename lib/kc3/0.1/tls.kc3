@@ -12,8 +12,6 @@
 
 require Socket
 
-# dlopen("tls.so") # not needed, link directly to libkc3_tls.la
-
 require TLS.Config
 
 defmodule TLS do

@@ -1,12 +1,20 @@
 require Facts
 require File
 require Socket
+require TLS
+require TLS.Config
 
 (r = fork()) ; void
 if (r < 0) do
   exit(1)
 end
 if r == 0 do
+  TLS.init()
+  server_config = TLS.Config.new()
+  TLS.Config.set_cert_file(server_config, "/etc/ssl/fullchain.pem")
+  TLS.Config.set_key_file(server_config, "/etc/ssl/private/privkey.pem")
+  server_tls = TLS.server()
+  TLS.configure(server_tls, server_config)
   server_facts = Facts.database()
   puts("server: adding pre-existing fact")
   Facts.add_tags(server_facts, :pre, :existing, :fact)
@@ -17,7 +25,7 @@ if r == 0 do
     exit_subprocess(1)
   end
   puts("server: listen OK, waiting for connection")
-  if ! Facts.accept(server_facts, server) do
+  if ! Facts.accept(server_facts, server.fd, server_tls) do
     puts("server: accept failed")
     exit_subprocess(1)
   end
@@ -33,13 +41,18 @@ if r == 0 do
   puts("server: OK")
   Facts.close_all(server_facts)
   Facts.delete(server_facts)
+  TLS.Config.free(server_config)
+  TLS.free(server_tls)
   exit_subprocess(0)
 else
   sleep(2)
+  TLS.init()
+  client_config = TLS.Config.new()
+  TLS.Config.set_ca_file(client_config, TLS.ca_cert_path())
   client_facts = Facts.database()
   Facts.set_priority(client_facts, (U8) 1)
   puts("client: connecting to 15003")
-  if ! Facts.connect(client_facts, "localhost", "15003") do
+  if ! Facts.connect(client_facts, "localhost", "15003", client_config) do
     puts("client: connect failed")
     exit(1)
   end
@@ -53,6 +66,7 @@ else
   })
   Facts.close_all(client_facts)
   Facts.delete(client_facts)
+  TLS.Config.free(client_config)
   puts("client: OK")
   wait()
 end

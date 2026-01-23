@@ -12,8 +12,6 @@
 
 require Socket.Buf
 
-dlopen("tls.so")
-
 defmodule TLS.Client do
 
   defstruct [socket_buf: %Socket.Buf{},

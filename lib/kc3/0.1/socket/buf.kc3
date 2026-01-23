@@ -13,8 +13,6 @@
 require BufRW
 require Socket
 
-dlopen("socket.so")
-
 defmodule Socket.Buf do
 
   defstruct [addr: (Ptr) 0,

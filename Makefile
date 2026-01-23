@@ -45,7 +45,6 @@ asan:
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C kpkg asan
@@ -72,8 +71,6 @@ build:
 	${MAKE} gen
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C kpkg build
@@ -99,8 +96,6 @@ check: test
 clean::
 	${MAKE} -C libtommath clean
 	${MAKE} -C libkc3 clean
-	${MAKE} -C socket clean
-	${MAKE} -C tls clean
 	${MAKE} -C ikc3 clean
 	${MAKE} -C kc3s clean
 	${MAKE} -C kpkg clean
@@ -123,8 +118,6 @@ clean::
 clean_cov::
 	${MAKE} -C libtommath clean_cov
 	${MAKE} -C libkc3 clean_cov
-	${MAKE} -C socket clean_cov
-	${MAKE} -C tls clean_cov
 	${MAKE} -C ikc3 clean_cov
 	${MAKE} -C kc3s clean_cov
 	${MAKE} -C kpkg clean_cov
@@ -150,12 +143,13 @@ clean_dump:
 	rm -f test/httpd/kc3.dump
 	rm -f httpd/fx/kc3.dump
 
+clean_kc3c:
+	find . -name '*.kc3c' -print0 | xargs -0 rm -f
+
 cov:
 	${MAKE} gen
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C kpkg cov
@@ -185,8 +179,6 @@ debian:
 debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C kpkg debug
@@ -353,8 +345,6 @@ distcheck_subdir:
 distclean::
 	${MAKE} -C libtommath distclean
 	${MAKE} -C libkc3 distclean
-	${MAKE} -C socket distclean
-	${MAKE} -C tls distclean
 	${MAKE} -C ikc3 distclean
 	${MAKE} -C kc3s distclean
 	${MAKE} -C kpkg distclean
@@ -394,8 +384,6 @@ dump_fx:
 ekc3:
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
@@ -403,7 +391,6 @@ ekc3:
 ekc3_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
@@ -411,8 +398,6 @@ ekc3_asan:
 ekc3_cov:
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C ekc3 cov
@@ -420,8 +405,6 @@ ekc3_cov:
 ekc3_debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C ekc3 debug
@@ -429,8 +412,6 @@ ekc3_debug:
 event:
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C event build
@@ -438,7 +419,6 @@ event:
 event_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C event asan
@@ -446,8 +426,6 @@ event_asan:
 event_cov:
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C event cov
@@ -455,8 +433,6 @@ event_cov:
 event_debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C event debug
@@ -475,8 +451,6 @@ fx_debug:
 
 gcovr:
 	${MAKE} -C libkc3 gcovr
-	${MAKE} -C socket gcovr
-	${MAKE} -C tls gcovr
 	${MAKE} -C ikc3 gcovr
 	${MAKE} -C kc3s gcovr
 	${MAKE} -C kc3s gcovr
@@ -521,22 +495,17 @@ gdb_fx_asan: httpd_asan lib_links_asan
 gdb_ikc3: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 gdb_ikc3
 
 gdb_ikc3_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 gdb_ikc3_asan
 
 gdb_kmsg: lib_links_debug
 	${MAKE} gen
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C gtk4 debug
@@ -566,7 +535,6 @@ gdb_test_httpd: debug lib_links_debug
 gdb_test_httpd_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
@@ -585,23 +553,18 @@ gdb_test_httpd_asan: lib_links_asan
 gdb_test_ikc3: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C test gdb_test_ikc3
 
 gdb_test_ikc3_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C test gdb_test_ikc3_asan
 
 gdb_test_json: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C json debug
 	${MAKE} -C test gdb_test_json
@@ -609,7 +572,6 @@ gdb_test_json: lib_links_debug
 gdb_test_json_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C json asan
 	${MAKE} -C test gdb_test_json_asan
@@ -617,8 +579,6 @@ gdb_test_json_asan: lib_links_asan
 gdb_test_markdown: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C markdown debug
 	${MAKE} -C test gdb_test_markdown
@@ -626,7 +586,6 @@ gdb_test_markdown: lib_links_debug
 gdb_test_markdown_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C markdown asan
 	${MAKE} -C test gdb_test_markdown_asan
@@ -634,8 +593,6 @@ gdb_test_markdown_asan: lib_links_asan
 gdb_test_pdf: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C pdf debug
 	${MAKE} -C test gdb_test_pdf
@@ -643,25 +600,17 @@ gdb_test_pdf: lib_links_debug
 gdb_test_pdf_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C pdf asan
 	${MAKE} -C test gdb_test_pdf_asan
 
-gdb_test_tls: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
-	${MAKE} -C test gdb_test_tls
 
-gdb_test_tls_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
-	${MAKE} -C test gdb_test_tls_asan
 
 gen:
 	${MAKE} -C libkc3 gen
@@ -671,8 +620,6 @@ gtk4:
 	${MAKE} gen
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C gtk4 build
@@ -682,7 +629,6 @@ gtk4_asan:
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C gtk4 asan
@@ -692,8 +638,6 @@ gtk4_cov:
 	${MAKE} gen
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C gtk4 cov
@@ -703,8 +647,6 @@ gtk4_debug:
 	${MAKE} gen
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C gtk4 debug
@@ -712,8 +654,6 @@ gtk4_debug:
 http:
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
@@ -729,8 +669,6 @@ http:
 httpd:
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
@@ -747,8 +685,6 @@ httpd:
 httpd_debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C ekc3 debug
@@ -763,35 +699,26 @@ httpd_debug:
 ikc3:
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 
 ikc3_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 
 ikc3_cov:
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 
 ikc3_debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 
 ikc3_gcovr:
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} clean_cov
 	${MAKE} ikc3_test_cov
@@ -800,31 +727,24 @@ ikc3_gcovr:
 image:
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C image build
 
 image_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C image asan
 
 image_cov:
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C image cov
 
 image_debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C image debug
 
@@ -857,8 +777,6 @@ install:
 		      "${DESTDIR}${prefix}/share/kc3/$$F"; done
 	${MAKE} -C libtommath install
 	${MAKE} -C libkc3 install
-	${MAKE} -C socket install
-	${MAKE} -C tls install
 	${MAKE} -C ikc3 install
 	${MAKE} -C kc3s install
 	${MAKE} -C kpkg install
@@ -893,8 +811,6 @@ install_lib_links_bsd:
 	ln -sf ../../libkc3_markdown.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_pdf.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/pdf.so
 	ln -sf ../../libkc3_qrencode.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/qrencode.so
-	ln -sf ../../libkc3_socket.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/socket.so
-	ln -sf ../../libkc3_tls.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/tls.so
 
 install_lib_links_darwin:
 	ln -sf ../../libekc3.0.dylib ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
@@ -909,8 +825,6 @@ install_lib_links_darwin:
 	ln -sf ../../libkc3_pdf.0.dylib ${DESTDIR}${libdir}/kc3/0.1/pdf.so
 	ln -sf ../../libkc3_qrencode.0.dylib ${DESTDIR}${libdir}/kc3/0.1/qrencode.so
 	ln -sf ../../libkc3_smtp.so.0.dylib ${DESTDIR}${libdir}/kc3/0.1/smtp.so
-	ln -sf ../../libkc3_socket.0.dylib ${DESTDIR}${libdir}/kc3/0.1/socket.so
-	ln -sf ../../libkc3_tls.0.dylib ${DESTDIR}${libdir}/kc3/0.1/tls.so
 
 install_lib_links_linux:
 	ln -sf ../../libekc3.so ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
@@ -925,8 +839,6 @@ install_lib_links_linux:
 	ln -sf ../../libkc3_pdf.so ${DESTDIR}${libdir}/kc3/0.1/pdf.so
 	ln -sf ../../libkc3_qrencode.so ${DESTDIR}${libdir}/kc3/0.1/qrencode.so
 	ln -sf ../../libkc3_smtp.so ${DESTDIR}${libdir}/kc3/0.1/smtp.so
-	ln -sf ../../libkc3_socket.so ${DESTDIR}${libdir}/kc3/0.1/socket.so
-	ln -sf ../../libkc3_tls.so ${DESTDIR}${libdir}/kc3/0.1/tls.so
 
 install_lib_links_openbsd:
 	ln -sf ../../libekc3.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
@@ -941,8 +853,6 @@ install_lib_links_openbsd:
 	ln -sf ../../libkc3_pdf.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/pdf.so
 	ln -sf ../../libkc3_qrencode.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/qrencode.so
 	ln -sf ../../libkc3_smtp.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/smtp.so
-	ln -sf ../../libkc3_socket.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/socket.so
-	ln -sf ../../libkc3_tls.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/tls.so
 
 install_lib_links_windows:
 	ln -sf ../../../bin/libekc3-0.dll ${DESTDIR}${libdir}/kc3/0.1/ekc3.so
@@ -957,37 +867,28 @@ install_lib_links_windows:
 	ln -sf ../../../bin/libkc3_pdf-0.dll ${DESTDIR}${libdir}/kc3/0.1/pdf.so
 	ln -sf ../../../bin/libkc3_qrencode-0.dll ${DESTDIR}${libdir}/kc3/0.1/qrencode.so
 	ln -sf ../../../bin/libkc3_smtp-0.dll ${DESTDIR}${libdir}/kc3/0.1/smtp.so
-	ln -sf ../../../bin/libkc3_socket-0.dll ${DESTDIR}${libdir}/kc3/0.1/socket.so
-	ln -sf ../../../bin/libkc3_tls-0.dll ${DESTDIR}${libdir}/kc3/0.1/tls.so
 
 json:
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C json build
 
 json_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C json asan
 
 json_cov:
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C json cov
 
 json_debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C json debug
 
@@ -1054,8 +955,6 @@ kmsg:
 	${MAKE} gen
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C gtk4 build
@@ -1065,7 +964,6 @@ kmsg_asan:
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C gtk4 asan
@@ -1075,8 +973,6 @@ kmsg_debug:
 	${MAKE} gen
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C gtk4 debug
@@ -1085,8 +981,6 @@ kmsg_debug:
 kpkg:
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C kpkg build
@@ -1094,7 +988,6 @@ kpkg:
 kpkg_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C kpkg asan
@@ -1102,8 +995,6 @@ kpkg_asan:
 kpkg_cov:
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C kpkg cov
@@ -1111,8 +1002,6 @@ kpkg_cov:
 kpkg_debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C kpkg debug
@@ -1156,8 +1045,6 @@ lib_links_bsd:
 	ln -sf ../../../markdown/libkc3_markdown.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
-	ln -sf ../../../socket/libkc3_socket.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_bsd_asan:
 	ln -sf ../../../ekc3/libekc3_asan.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1171,8 +1058,6 @@ lib_links_bsd_asan:
 	ln -sf ../../../markdown/libkc3_markdown_asan.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_asan.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_asan.${SHARED_EXT} lib/kc3/0.1/qrencode.so
-	ln -sf ../../../socket/libkc3_socket_asan.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls_asan.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_bsd_cov:
 	ln -sf ../../../ekc3/libekc3_cov.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1186,8 +1071,6 @@ lib_links_bsd_cov:
 	ln -sf ../../../markdown/libkc3_markdown_cov.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_cov.${SHARED_EXT} lib/kc3/0.1/qrencode.so
-	ln -sf ../../../socket/libkc3_socket_cov.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls_cov.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_bsd_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1201,8 +1084,6 @@ lib_links_bsd_debug:
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
-	ln -sf ../../../socket/libkc3_socket_debug.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls_debug.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_cov: lib
 	${MAKE} lib_links_${ARCH}_cov
@@ -1223,8 +1104,6 @@ lib_links_darwin:
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp.${SHARED_EXT} lib/kc3/0.1/smtp.so
-	ln -sf ../../../socket/libkc3_socket.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_darwin_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1239,8 +1118,6 @@ lib_links_darwin_debug:
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_debug.${SHARED_EXT} lib/kc3/0.1/smtp.so
-	ln -sf ../../../socket/libkc3_socket_debug.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls_debug.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_linux:
 	ln -sf ../../../ekc3/libekc3.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1255,8 +1132,6 @@ lib_links_linux:
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp.${SHARED_EXT} lib/kc3/0.1/smtp.so
-	ln -sf ../../../socket/libkc3_socket.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_linux_asan:
 	ln -sf ../../../ekc3/libekc3_asan.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1271,8 +1146,6 @@ lib_links_linux_asan:
 	ln -sf ../../../pdf/libkc3_pdf_asan.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_asan.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_asan.${SHARED_EXT} lib/kc3/0.1/smtp.so
-	ln -sf ../../../socket/libkc3_socket_asan.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls_asan.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_linux_cov:
 	ln -sf ../../../ekc3/libekc3_cov.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1287,8 +1160,6 @@ lib_links_linux_cov:
 	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_cov.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_cov.${SHARED_EXT} lib/kc3/0.1/smtp.so
-	ln -sf ../../../socket/libkc3_socket_cov.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls_cov.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_linux_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1303,8 +1174,6 @@ lib_links_linux_debug:
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_debug.${SHARED_EXT} lib/kc3/0.1/smtp.so
-	ln -sf ../../../socket/libkc3_socket_debug.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls_debug.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_openbsd:
 	ln -sf ../../../ekc3/libekc3.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1319,8 +1188,6 @@ lib_links_openbsd:
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp.${SHARED_EXT} lib/kc3/0.1/smtp.so
-	ln -sf ../../../socket/libkc3_socket.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_openbsd_cov:
 	ln -sf ../../../ekc3/libekc3_cov.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1335,8 +1202,6 @@ lib_links_openbsd_cov:
 	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_cov.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_cov.${SHARED_EXT} lib/kc3/0.1/smtp.so
-	ln -sf ../../../socket/libkc3_socket_cov.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls_cov.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_openbsd_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1351,8 +1216,6 @@ lib_links_openbsd_debug:
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_debug.${SHARED_EXT} lib/kc3/0.1/smtp.so
-	ln -sf ../../../socket/libkc3_socket_debug.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls_debug.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_clean:
 	rm -f lib/kc3/0.1/ekc3.so
@@ -1367,8 +1230,6 @@ lib_links_clean:
 	rm -f lib/kc3/0.1/pdf.so
 	rm -f lib/kc3/0.1/qrencode.so
 	rm -f lib/kc3/0.1/smtp.so
-	rm -f lib/kc3/0.1/socket.so
-	rm -f lib/kc3/0.1/tls.so
 
 lib_links_windows:
 	ln -sf ../../../ekc3/libekc3.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1383,8 +1244,6 @@ lib_links_windows:
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp.${SHARED_EXT} lib/kc3/0.1/smtp.so
-	ln -sf ../../../socket/libkc3_socket.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 lib_links_windows_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1399,8 +1258,6 @@ lib_links_windows_debug:
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_debug.${SHARED_EXT} lib/kc3/0.1/smtp.so
-	ln -sf ../../../socket/libkc3_socket_debug.${SHARED_EXT} lib/kc3/0.1/socket.so
-	ln -sf ../../../tls/libkc3_tls_debug.${SHARED_EXT} lib/kc3/0.1/tls.so
 
 libkc3_gcovr:
 	${MAKE} clean_cov
@@ -1427,8 +1284,6 @@ lldb_ikc3:
 lldb_test:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C kpkg debug
@@ -1448,62 +1303,48 @@ lldb_test:
 markdown:
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C markdown build
 
 markdown_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C markdown asan
 
 markdown_cov:
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C markdown cov
 
 markdown_debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C markdown debug
 
 pdf:
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C pdf build
 
 pdf_asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C pdf asan
 
 pdf_cov:
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C pdf cov
 
 pdf_debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C pdf debug
 
@@ -1533,7 +1374,6 @@ test_ekc3: ekc3 lib_links
 test_ekc3_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
@@ -1542,8 +1382,6 @@ test_ekc3_asan: lib_links_asan
 test_ekc3_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C ekc3 cov
@@ -1552,8 +1390,6 @@ test_ekc3_cov: lib_links_cov
 test_ekc3_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C ekc3 debug
@@ -1564,14 +1400,11 @@ test_gcovr: lib_links_cov
 	${MAKE} test_libkc3_cov
 	${MAKE} test_ikc3_cov
 	${MAKE} test_ekc3_cov
-	${MAKE} test_tls_cov
 	${MAKE} gcovr
 
 test_http: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C image build
@@ -1585,7 +1418,6 @@ test_http: lib_links
 test_http_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C image asan
@@ -1599,8 +1431,6 @@ test_http_asan: lib_links_asan
 test_http_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C image cov
@@ -1614,8 +1444,6 @@ test_http_cov: lib_links_cov
 test_http_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C image debug
@@ -1628,8 +1456,6 @@ test_http_debug: lib_links_debug
 test_httpd: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
@@ -1645,7 +1471,6 @@ test_httpd: lib_links
 test_httpd_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
@@ -1661,8 +1486,6 @@ test_httpd_asan: lib_links_asan
 test_httpd_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C ekc3 cov
@@ -1678,8 +1501,6 @@ test_httpd_cov: lib_links_cov
 test_httpd_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C ekc3 debug
@@ -1695,39 +1516,30 @@ test_httpd_debug: lib_links_debug
 test_ikc3: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C test test_ikc3
 
 test_ikc3_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C test test_ikc3_asan
 
 test_ikc3_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C test test_ikc3_cov
 
 test_ikc3_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C test test_ikc3_debug
 
 test_image: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C image build
 	${MAKE} -C test test_image
@@ -1735,7 +1547,6 @@ test_image: lib_links
 test_image_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C image asan
 	${MAKE} -C test test_image_asan
@@ -1743,8 +1554,6 @@ test_image_asan: lib_links_asan
 test_image_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C image cov
 	${MAKE} -C test test_image_cov
@@ -1752,8 +1561,6 @@ test_image_cov: lib_links_cov
 test_image_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C image debug
 	${MAKE} -C test test_image_debug
@@ -1761,8 +1568,6 @@ test_image_debug: lib_links_debug
 test_json: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C json build
 	${MAKE} -C test test_json
@@ -1770,7 +1575,6 @@ test_json: lib_links
 test_json_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C json asan
 	${MAKE} -C test test_json_asan
@@ -1778,8 +1582,6 @@ test_json_asan: lib_links_asan
 test_json_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C json cov
 	${MAKE} -C test test_json_cov
@@ -1787,8 +1589,6 @@ test_json_cov: lib_links_cov
 test_json_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C json debug
 	${MAKE} -C test test_json_debug
@@ -1853,8 +1653,6 @@ test_libkc3_debug: lib_links_debug
 test_markdown: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C markdown build
 	${MAKE} -C test test_markdown
@@ -1862,7 +1660,6 @@ test_markdown: lib_links
 test_markdown_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C markdown asan
 	${MAKE} -C test test_markdown_asan
@@ -1870,8 +1667,6 @@ test_markdown_asan: lib_links_asan
 test_markdown_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C markdown cov
 	${MAKE} -C test test_markdown_cov
@@ -1879,8 +1674,6 @@ test_markdown_cov: lib_links_cov
 test_markdown_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C markdown debug
 	${MAKE} -C test test_markdown_debug
@@ -1888,8 +1681,6 @@ test_markdown_debug: lib_links_debug
 test_pdf: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C pdf build
 	${MAKE} -C test test_pdf
@@ -1897,7 +1688,6 @@ test_pdf: lib_links
 test_pdf_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C pdf asan
 	${MAKE} -C test test_pdf_asan
@@ -1905,8 +1695,6 @@ test_pdf_asan: lib_links_asan
 test_pdf_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C pdf cov
 	${MAKE} -C test test_pdf_cov
@@ -1914,8 +1702,6 @@ test_pdf_cov: lib_links_cov
 test_pdf_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C pdf debug
 	${MAKE} -C test test_pdf_debug
@@ -1923,8 +1709,6 @@ test_pdf_debug: lib_links_debug
 test_socket: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C test test_socket
@@ -1932,7 +1716,6 @@ test_socket: lib_links
 test_socket_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C test test_socket_asan
@@ -1940,8 +1723,6 @@ test_socket_asan: lib_links_asan
 test_socket_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C test test_socket_cov
@@ -1949,8 +1730,6 @@ test_socket_cov: lib_links_cov
 test_socket_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C test test_socket_debug
@@ -1958,8 +1737,6 @@ test_socket_debug: lib_links_debug
 test_tls: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C test test_tls
@@ -1967,7 +1744,6 @@ test_tls: lib_links
 test_tls_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
-	${MAKE} -C tls asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C test test_tls_asan
@@ -1975,8 +1751,6 @@ test_tls_asan: lib_links_asan
 test_tls_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
-	${MAKE} -C socket cov
-	${MAKE} -C tls cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C test test_tls_cov
@@ -1984,19 +1758,9 @@ test_tls_cov: lib_links_cov
 test_tls_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
-	${MAKE} -C socket debug
-	${MAKE} -C tls debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C test test_tls_debug
-
-tls:
-	${MAKE} -C libtommath build
-	${MAKE} -C libkc3 build
-	${MAKE} -C socket build
-	${MAKE} -C tls build
-	${MAKE} -C ikc3 build
-	${MAKE} -C kc3s build
 
 uninstall:
 	rm -rf ${libdir}/kc3
@@ -2018,8 +1782,6 @@ uninstall:
 	${MAKE} -C pdf uninstall
 	${MAKE} -C qrencode uninstall
 	${MAKE} -C smtp uninstall
-	${MAKE} -C socket uninstall
-	${MAKE} -C tls uninstall
 	${MAKE} -C window uninstall
 
 .PHONY: all \
@@ -2097,12 +1859,6 @@ uninstall:
 	gdb_test_pdf \
 	gdb_test_pdf_asan \
 	gdb_test_pdf_debug \
-	gdb_test_socket \
-	gdb_test_socket_asan \
-	gdb_test_socket_debug \
-	gdb_test_tls \
-	gdb_test_tls_asan \
-	gdb_test_tls_debug \
 	gtk4 \
 	gtk4_asan \
 	gtk4_cov \
@@ -2164,10 +1920,6 @@ uninstall:
 	pdf_cov \
 	pdf_debug \
 	release \
-	socket \
-	socket_asan \
-	socket_cov \
-	socket_debug \
 	test \
 	test_asan \
 	test_cov \
@@ -2221,5 +1973,4 @@ uninstall:
 	test_tls_asan \
 	test_tls_cov \
 	test_tls_debug \
-	tls \
 	uninstall
