@@ -506,6 +506,8 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
     assert(! "env_def_clean: module clean method must be a Callable");
     return NULL;
   }
+  if (st->clean)
+    pcallable_clean(&st->clean);
   if (! pcallable_init_copy(&st->clean, &clean->data.pcallable)) {
     err_write_1("env_def_clean: module ");
     err_inspect_sym(module);
