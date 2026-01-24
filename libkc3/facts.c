@@ -1305,11 +1305,14 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
       }
       facts_log_remove(facts->log, id, found);
     }
-    if (facts->connections)
+    if (facts->connections) {
       facts_broadcast_remove(facts, found);
-    /* Add to remove log for sync */
-    log_entry = alloc(sizeof(s_facts_remove_log));
-    if (log_entry) {
+      log_entry = alloc(sizeof(s_facts_remove_log));
+      if (! log_entry) {
+        err_puts("facts_remove_fact_local: alloc log_entry");
+        assert(! "facts_remove_fact_local: alloc log_entry");
+        return NULL;
+      }
       fact_w_init_fact(&log_entry->fact, found);
       log_entry->next = facts->remove_log;
       facts->remove_log = log_entry;
