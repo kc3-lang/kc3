@@ -578,7 +578,7 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
       return r;
     result += r;
   }
-  if (content_length > body.size) {
+  if ((uw) content_length > body.size) {
     err_puts("http_request_buf_write: content-length > body size");
     assert(! "http_request_buf_write: content-length > body size");
     return -1;
