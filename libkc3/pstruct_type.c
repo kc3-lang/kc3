@@ -89,6 +89,8 @@ p_struct_type * pstruct_type_init_clean (p_struct_type *st,
     free(tmp);
     return NULL;
   }
+  if (tmp->clean)
+    pcallable_clean(&tmp->clean);
   if (! pcallable_init_copy(&tmp->clean, &clean)) {
     struct_type_delete(tmp);
     return NULL;
