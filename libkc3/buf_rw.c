@@ -18,8 +18,10 @@
 void buf_rw_clean (s_buf_rw *buf_rw)
 {
   assert(buf_rw);
-  buf_delete(buf_rw->w);
-  buf_delete(buf_rw->r);
+  if (buf_rw->w)
+    buf_delete(buf_rw->w);
+  if (buf_rw->r)
+    buf_delete(buf_rw->r);
 }
 
 void buf_rw_fd_close (s_buf_rw *buf_rw)
