@@ -109,6 +109,9 @@ s_fact * facts_add_fact_id (s_facts *facts, s_fact *fact)
   }
   tmp.id = 0;
   if ((item = set_get__fact(&facts->facts, &tmp))) {
+    facts_unref_tag(facts, tmp.subject);
+    facts_unref_tag(facts, tmp.predicate);
+    facts_unref_tag(facts, tmp.object);
 #if HAVE_PTHREAD
     rwlock_unlock_w(&facts->rwlock);
 #endif
@@ -222,6 +225,9 @@ s_fact * facts_add_fact_local (s_facts *facts, s_fact *fact)
   }
   tmp.id = 0;
   if ((item = set_get__fact(&facts->facts, &tmp))) {
+    facts_unref_tag(facts, tmp.subject);
+    facts_unref_tag(facts, tmp.predicate);
+    facts_unref_tag(facts, tmp.object);
 #if HAVE_PTHREAD
     rwlock_unlock_w(&facts->rwlock);
 #endif
