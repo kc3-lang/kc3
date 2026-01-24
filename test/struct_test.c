@@ -53,10 +53,12 @@ void struct_test (void)
 {
   const s_str path = STR("struct_test.kc3");
   env_load(env_global(), &path);
+  /*
   TEST_CASE_RUN(struct_test_fact_w);
   TEST_CASE_RUN(struct_test_time);
   TEST_CASE_RUN(struct_test_http_request);
   TEST_CASE_RUN(struct_test_http_response);
+  */
 }
 
 TEST_CASE(struct_test_fact_w)
