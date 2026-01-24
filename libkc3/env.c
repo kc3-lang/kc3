@@ -794,7 +794,6 @@ void ** env_dlopen (s_env *env, const s_str *so_path, void **dest)
   s_list *iter;
   s_list *list = NULL;
   s_str path = {0};
-  s_tag tag = {0};
   void *tmp = NULL;
   assert(env);
   assert(so_path);
@@ -803,8 +802,6 @@ void ** env_dlopen (s_env *env, const s_str *so_path, void **dest)
     err_puts("env_dlopen: cannot dlopen with securelevel > 0");
     abort();
   }
-  tag.type = TAG_STR;
-  tag.data.str = *so_path;
   iter = env->dlopen_list;
   while (iter) {
     if (iter->tag.type == TAG_STR &&
