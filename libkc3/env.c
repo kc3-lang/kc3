@@ -2270,8 +2270,11 @@ sw env_load_kc3c (s_env *env, const s_str *path)
       assert(! "env_load_kc3c: marshall_read_str");
       goto clean;
     }
-    if (! env_dlopen(env, &dlopen_str, &dlopen_tmp))
+    if (! env_dlopen(env, &dlopen_str, &dlopen_tmp)) {
+      str_clean(&dlopen_str);
       goto clean;
+    }
+    str_clean(&dlopen_str);
     i++;
   }
   if (! marshall_read_uw(&mr, false, &count)) {
