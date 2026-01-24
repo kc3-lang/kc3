@@ -309,11 +309,21 @@ s_fact * facts_add_tags (s_facts *facts, s_tag *subject,
 
 void facts_clean (s_facts *facts)
 {
+  s_facts_remove_log *log;
+  s_facts_remove_log *next;
   if (facts->connections)
     facts_connections_close_all(facts);
   if (facts->log)
     facts_close(facts);
   facts_remove_all(facts);
+  log = facts->remove_log;
+  while (log) {
+    next = log->next;
+    fact_w_clean(&log->fact);
+    free(log);
+    log = next;
+  }
+  facts->remove_log = NULL;
   skiplist_delete__fact(facts->index);
   skiplist_delete__fact(facts->index_osp);
   skiplist_delete__fact(facts->index_pos);
