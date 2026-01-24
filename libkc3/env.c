@@ -2294,6 +2294,7 @@ sw env_load_kc3c (s_env *env, const s_str *path)
     if (! env_eval_tag(env, &tag, &tmp)) {
       err_puts("env_load_kc3c: env_eval_tag");
       assert(! "env_load_kc3c: env_eval_tag");
+      tag_clean(&tag);
       goto clean;
     }
     tag_clean(&tmp);
