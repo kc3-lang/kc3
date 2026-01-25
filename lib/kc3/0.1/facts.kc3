@@ -26,8 +26,10 @@ defmodule Facts do
              index_osp: (Ptr) 0,
              log: (Ptr) 0,
              connections: (Ptr) 0,
+             remove_log: (Ptr) 0,
              next_id: (Uw) 0,
              priority: (U8) 0,
+             secret: "",
              rwlock: %Rwlock{},
              transaction: (Ptr) 0,
              ref_count: (Sw) 0,
@@ -81,6 +83,9 @@ defmodule Facts do
 
   def set_priority =
     cfn Facts "facts_set_priority" (Facts, U8)
+
+  def set_secret =
+    cfn Facts "facts_set_secret" (Facts, Str)
 
   # returns true if fact was removed or is already absent
   def remove_tags =

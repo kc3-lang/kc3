@@ -15,8 +15,13 @@
 
 #include "types.h"
 
-void sha512_init (s_sha512 *s);
-void sha512_sum (s_sha512 *s, u8 *md);
-void sha512_update (s_sha512 *s, const void *m, u64 len);
+#define SHA512_BLOCK_LENGTH  128
+#define SHA512_DIGEST_LENGTH 64
+
+void    sha512_init (s_sha512 *s);
+void    sha512_sum (s_sha512 *s, u8 *md);
+void    sha512_update (s_sha512 *s, const void *m, u64 len);
+void    sha512_hmac (const s_str *k, const s_str *m, u8 *dest);
+s_str * sha512_hmac_str (const s_str *k, const s_str *m, s_str *dest);
 
 #endif /* LIBKC3_SHA512_H */

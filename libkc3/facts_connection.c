@@ -15,6 +15,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <signal.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <tls.h>
@@ -34,15 +35,96 @@
 #include "marshall.h"
 #include "marshall_read.h"
 #include "rwlock.h"
+#include "sha512.h"
 #include "str.h"
 #include "tag.h"
 #include "tls_buf.h"
 
+#define FACTS_CONNECTION_AUTH_CHALLENGE_SIZE 32
+
+static bool                 facts_connection_auth (s_facts_connection *conn,
+                                                   bool is_server);
 static s_facts_connection * facts_connection_find_addr (s_facts *facts,
                                                         const s_str *addr);
 static s_str * facts_connection_get_addr (s64 sockfd, s_str *dest);
 static bool facts_connection_sync (s_facts_connection *conn,
                                    uw remote_next_id);
+
+static bool facts_connection_auth (s_facts_connection *conn, bool is_server)
+{
+  u8 challenge[FACTS_CONNECTION_AUTH_CHALLENGE_SIZE];
+  s_str challenge_str;
+  u8 expected_hmac[SHA512_DIGEST_LENGTH];
+  u8 received_hmac[SHA512_DIGEST_LENGTH];
+  s_facts *facts;
+  uw i;
+  s_marshall *m;
+  s_marshall_read *mr;
+  assert(conn);
+  facts = conn->facts;
+  if (! facts->secret.size)
+    return true;
+  m = &conn->marshall;
+  mr = &conn->marshall_read;
+  if (is_server) {
+    arc4random_buf(challenge, FACTS_CONNECTION_AUTH_CHALLENGE_SIZE);
+    i = 0;
+    while (i < FACTS_CONNECTION_AUTH_CHALLENGE_SIZE) {
+      if (! marshall_u8(m, false, challenge[i]))
+        return false;
+      i++;
+    }
+    if (! marshall_to_buf(m, conn->buf_rw.w))
+      return false;
+    if (! marshall_read_header(mr))
+      return false;
+    if (! marshall_read_chunk(mr))
+      return false;
+    i = 0;
+    while (i < SHA512_DIGEST_LENGTH) {
+      if (! marshall_read_u8(mr, false, &received_hmac[i]))
+        return false;
+      i++;
+    }
+    marshall_read_reset_chunk(mr);
+    str_init(&challenge_str, NULL, FACTS_CONNECTION_AUTH_CHALLENGE_SIZE,
+             (const char *) challenge);
+    sha512_hmac(&facts->secret, &challenge_str, expected_hmac);
+    i = 0;
+    while (i < SHA512_DIGEST_LENGTH) {
+      if (received_hmac[i] != expected_hmac[i]) {
+        err_puts("facts_connection_auth: HMAC verification failed");
+        return false;
+      }
+      i++;
+    }
+  }
+  else {
+    if (! marshall_read_header(mr))
+      return false;
+    if (! marshall_read_chunk(mr))
+      return false;
+    i = 0;
+    while (i < FACTS_CONNECTION_AUTH_CHALLENGE_SIZE) {
+      if (! marshall_read_u8(mr, false, &challenge[i]))
+        return false;
+      i++;
+    }
+    marshall_read_reset_chunk(mr);
+    str_init(&challenge_str, NULL, FACTS_CONNECTION_AUTH_CHALLENGE_SIZE,
+             (const char *) challenge);
+    sha512_hmac(&facts->secret, &challenge_str, expected_hmac);
+    i = 0;
+    while (i < SHA512_DIGEST_LENGTH) {
+      if (! marshall_u8(m, false, expected_hmac[i]))
+        return false;
+      i++;
+    }
+    if (! marshall_to_buf(m, conn->buf_rw.w))
+      return false;
+  }
+  return true;
+}
 
 s_facts_connection * facts_accept (s_facts *facts, s64 server_fd,
                                     p_tls server_tls)
@@ -60,7 +142,7 @@ s_facts_connection * facts_accept (s_facts *facts, s64 server_fd,
     close(client_fd);
     return NULL;
   }
-  return facts_connection_add(facts, client_fd, client_tls);
+  return facts_connection_add(facts, client_fd, client_tls, true);
 }
 
 s_facts_acceptor * facts_acceptor_loop (s_facts *facts, s64 server,
@@ -228,11 +310,11 @@ s_facts_connection * facts_connect (s_facts *facts,
     close(sockfd);
     return NULL;
   }
-  return facts_connection_add(facts, sockfd, tls);
+  return facts_connection_add(facts, sockfd, tls, false);
 }
 
 s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
-                                            p_tls tls)
+                                            p_tls tls, bool is_server)
 {
   s_str addr;
   s_facts_connection *conn;
@@ -261,6 +343,11 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
     return NULL;
   }
   conn->addr = addr;
+  if (! facts_connection_auth(conn, is_server)) {
+    err_puts("facts_connection_add: facts_connection_auth");
+    facts_connection_delete(conn);
+    return NULL;
+  }
   marshall_u8(&conn->marshall, false, facts->priority);
   marshall_uw(&conn->marshall, false, facts->next_id);
   marshall_to_buf(&conn->marshall, conn->buf_rw.w);

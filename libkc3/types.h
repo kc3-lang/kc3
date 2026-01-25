@@ -1060,6 +1060,7 @@ struct facts {
   s_facts_remove_log  *remove_log;
   uw                   next_id;
   u8                   priority;
+  s_str                secret;
   s_rwlock             rwlock;
   s_facts_transaction *transaction;
   sw                   ref_count;

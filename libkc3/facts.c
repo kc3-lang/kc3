@@ -336,6 +336,8 @@ void facts_clean (s_facts *facts)
   skiplist_delete__fact(facts->index_spo);
   set_clean__fact(&facts->facts);
   set_clean__tag(&facts->tags);
+  str_zero(&facts->secret);
+  str_clean(&facts->secret);
 #if HAVE_PTHREAD
   rwlock_clean(&facts->rwlock);
   mutex_clean(&facts->ref_count_mutex);
@@ -1207,6 +1209,17 @@ s_facts * facts_set_priority (s_facts *facts, u8 priority)
 {
   assert(facts);
   facts->priority = priority;
+  return facts;
+}
+
+s_facts * facts_set_secret (s_facts *facts, const s_str *secret)
+{
+  assert(facts);
+  assert(secret);
+  str_zero(&facts->secret);
+  str_clean(&facts->secret);
+  if (! str_init_copy(&facts->secret, secret))
+    return NULL;
   return facts;
 }
 

@@ -9,8 +9,10 @@
  * on error "*" is returned.
  */
 #include <string.h>
+#include "assert.h"
 #include "explicit_bzero.h"
 #include "sha512.h"
+#include "str.h"
 
 /* public domain sha512 implementation based on fips180-3 */
 /* >=2^64 bits messages are not supported (about 2000 peta bytes) */
@@ -210,4 +212,56 @@ void sha512_update (s_sha512 *s, const void *m, u64 len)
     p += 128;
   }
   memcpy(s->buf, p, len);
+}
+
+void sha512_hmac (const s_str *k, const s_str *m, u8 *dest)
+{
+  s_sha512 h_ctx;
+  u8       h[2][SHA512_DIGEST_LENGTH] = {0};
+  u8       i;
+  s_str    k_p = {0};
+  u8       pad[2][SHA512_BLOCK_LENGTH];
+  assert(SHA512_DIGEST_LENGTH <= SHA512_BLOCK_LENGTH);
+  if (k->size > SHA512_BLOCK_LENGTH) {
+    sha512_init(&h_ctx);
+    sha512_update(&h_ctx, k->ptr.pu8, k->size);
+    sha512_sum(&h_ctx, h[0]);
+    str_init(&k_p, NULL, SHA512_DIGEST_LENGTH, (const char *) h[0]);
+  }
+  else
+    str_init(&k_p, NULL, k->size, k->ptr.p);
+  memset(pad[0], 0x5c, SHA512_BLOCK_LENGTH);
+  memset(pad[1], 0x36, SHA512_BLOCK_LENGTH);
+  i = 0;
+  while (i < k_p.size) {
+    pad[0][i] ^= k_p.ptr.pu8[i];
+    pad[1][i] ^= k_p.ptr.pu8[i];
+    i++;
+  }
+  while (i < SHA512_BLOCK_LENGTH) {
+    pad[0][i] ^= 0;
+    pad[1][i] ^= 0;
+    i++;
+  }
+  sha512_init(&h_ctx);
+  sha512_update(&h_ctx, pad[1], SHA512_BLOCK_LENGTH);
+  sha512_update(&h_ctx, m->ptr.p, m->size);
+  sha512_sum(&h_ctx, h[1]);
+  sha512_init(&h_ctx);
+  sha512_update(&h_ctx, pad[0], SHA512_BLOCK_LENGTH);
+  sha512_update(&h_ctx, h[1], SHA512_DIGEST_LENGTH);
+  sha512_sum(&h_ctx, dest);
+}
+
+s_str * sha512_hmac_str (const s_str *k, const s_str *m, s_str *dest)
+{
+  s_str tmp = {0};
+  assert(k);
+  assert(m);
+  assert(dest);
+  if (! str_init_alloc(&tmp, SHA512_DIGEST_LENGTH))
+    return NULL;
+  sha512_hmac(k, m, tmp.free.pu8);
+  *dest = tmp;
+  return dest;
 }

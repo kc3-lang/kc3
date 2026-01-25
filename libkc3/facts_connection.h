@@ -39,7 +39,7 @@ s_facts_connection * facts_connect (s_facts *facts,
                                     const s_str *service,
                                     p_tls_config config);
 s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
-                                            p_tls tls);
+                                            p_tls tls, bool is_server);
 bool                 facts_connection_remove (s_facts *facts,
                                               s_facts_connection *conn);
 void                 facts_connections_close_all (s_facts *facts);
