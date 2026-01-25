@@ -62,8 +62,6 @@ static bool facts_connection_auth (s_facts_connection *conn, bool is_server)
   s_marshall_read *mr;
   assert(conn);
   facts = conn->facts;
-  if (! facts->secret.size)
-    return true;
   m = &conn->marshall;
   mr = &conn->marshall_read;
   if (is_server) {
