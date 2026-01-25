@@ -773,6 +773,18 @@ s_str * kc3_hostname (s_str *dest)
 #endif
 }
 
+s_ident * kc3_ident_init (s_ident *ident, p_sym *module, p_sym *sym)
+{
+  s_ident tmp = {0};
+  assert(ident);
+  assert(module);
+  assert(sym);
+  tmp.module = *module;
+  tmp.sym = *sym;
+  *ident = tmp;
+  return ident;
+}
+
 s_tag * kc3_identity (s_tag *tag, s_tag *dest)
 {
   return tag_init_copy(dest, tag);

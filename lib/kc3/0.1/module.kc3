@@ -11,8 +11,16 @@
 ## THIS SOFTWARE.
 
 require Facts
+require Ident
 
 defmodule Module do
+
+  def has_symbol? = fn (module, symbol) {
+    Facts.first_with(Facts.env_db(),
+      [[module, :is_a, :module],
+       [module, :symbol, Ident.init(module, symbol)]],
+      fn (fact) { true })
+  }
 
   def list = fn () {
     Facts.collect_with(Facts.env_db(),

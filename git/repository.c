@@ -92,7 +92,7 @@ git_repository ** kc3_git_repository_open_bare (git_repository **repo,
   git_repository *tmp;
   if (git_repository_open_bare(&tmp, path->ptr.pchar)) {
     e = git_error_last();
-    err_write_1("kc3_git_repository_open: ");
+    err_write_1("kc3_git_repository_open_bare: ");
     err_inspect_str(path);
     err_write_1(": ");
     err_puts(e->message);

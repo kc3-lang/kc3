@@ -47,6 +47,9 @@ defmodule HTTPd do
       load!("config/routes.kc3")
     end
     load_directory!("app/plugs/")
+    if (File.exists?("config/unveil.kc3")) do
+      load!("config/unveil.kc3")
+    end
     securelevel(2)
     IO.puts("HTTPd.load_app: done")
   }
@@ -195,6 +198,9 @@ defmodule HTTPd do
     end
     unveil("/etc/resolv.conf", "r")
     unveil("/etc/ssl", "r")
+    if Module.has_symbol?(Config, :unveil) do
+      Config.unveil()
+    end
     unveil("", "")
     pledge("stdio rpath wpath cpath fattr inet dns proc", "")
     HTTPd.socket <- Socket.listen(host, port)

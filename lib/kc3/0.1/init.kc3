@@ -322,6 +322,7 @@ require Call
 require Character
 require F32
 require F64
+require Ident
 require List
 require Map
 require Module
