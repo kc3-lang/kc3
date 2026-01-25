@@ -42,6 +42,8 @@ defmodule Buf do
 
   def new = fn () { Buf.new_alloc(Buf.default_size) }
 
+  def new_popen = cfn Buf* "pbuf_init_popen" (Result, Str, Str)
+
   def inspect = cfn Sw "buf_inspect_tag" (Buf, Tag)
 
   def parse_tag = cfn Tag "kc3_buf_parse_tag" (Buf, Result)

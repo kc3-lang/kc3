@@ -34,3 +34,13 @@ p_buf * pbuf_init_alloc (p_buf *pbuf, s_tag *size_tag)
   *pbuf = tmp;
   return pbuf;
 }
+
+p_buf * pbuf_init_popen (p_buf *buf, const s_str *cmd,
+                         const s_str *mode)
+{
+  p_buf tmp = NULL;
+  if (! (tmp = buf_new_popen(cmd, mode)))
+    return NULL;
+  *buf = tmp;
+  return buf;
+}

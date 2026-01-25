@@ -26,6 +26,8 @@ p_buf * pbuf_init_const (p_buf *buf, uw size, const char *p);
 p_buf * pbuf_init_1 (p_buf *buf, bool p_free, char *p);
 p_buf * pbuf_init_1_const (p_buf *buf, const char *p);
 p_buf * pbuf_init_alloc (p_buf *buf, s_tag *size);
+p_buf * pbuf_init_popen (p_buf *buf, const s_str *cmd,
+                         const s_str *mode);
 p_buf * pbuf_init_str (p_buf *buf, bool free, s_str *p);
 p_buf * pbuf_init_str_const (p_buf *buf, const s_str *p);
 p_buf * pbuf_init_str_copy (p_buf *buf, const s_str *str);

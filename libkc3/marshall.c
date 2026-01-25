@@ -1873,7 +1873,7 @@ sw marshall_to_file (s_marshall *m, const s_str *path)
   assert(path);
   if (! buf_init_alloc(&out, 257 * 1024 * 1024))
     return -1;
-  if (! (fp = file_open(path, "wb")) ||
+  if (! (fp = file_open(path, "wbx")) ||
       ! buf_file_open_w(&out, fp) ||
       (r = marshall_to_buf(m, &out)) <= 0) {
     buf_clean(&out);

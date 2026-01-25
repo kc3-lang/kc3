@@ -17,6 +17,7 @@
 #include "assert.h"
 #include "buf.h"
 #include "buf_fd.h"
+#include "buf_file.h"
 #include "buf_save.h"
 #include "character.h"
 #include "error.h"
@@ -484,6 +485,39 @@ s_buf * buf_init_alloc (s_buf *buf, uw size)
   return buf_init(buf, true, size, p);
 }
 
+s_buf * buf_init_popen (s_buf *buf, const s_str *cmd,
+                        const s_str *mode)
+{
+  FILE *fp;
+  s_buf tmp = {0};
+  if (! buf_init_alloc(&tmp, BUF_SIZE))
+    return NULL;
+  if (! (fp = popen(cmd->ptr.pchar, mode->ptr.pchar))) {
+    buf_clean(&tmp);
+    return NULL;
+  }
+  if (mode->ptr.pchar[0] == 'w') {
+    if (! buf_file_open_w(&tmp, fp)) {
+      buf_clean(&tmp);
+      return NULL;
+    }
+  }
+  else if (mode->ptr.pchar[0] == 'r') {
+    if (! buf_file_open_r(&tmp, fp)) {
+      buf_clean(&tmp);
+      return NULL;
+    }
+  }
+  else {
+    err_puts("buf_init_popen: invalid mode");
+    assert(! "buf_init_popen: invalid mode");
+    buf_clean(&tmp);
+    return NULL;
+  }
+  *buf = tmp;
+  return buf;
+}
+
 s_buf * buf_init_str (s_buf *buf, bool p_free, s_str *p)
 {
   s_buf tmp = {0};
@@ -535,6 +569,18 @@ s_buf * buf_new_alloc (uw size)
   if (! buf)
     return NULL;
   if (! buf_init_alloc(buf, size)) {
+    free(buf);
+    return NULL;
+  }
+  return buf;
+}
+
+s_buf * buf_new_popen (const s_str *cmd, const s_str *mode)
+{
+  s_buf *buf;
+  if (! (buf = alloc(sizeof(s_buf))))
+    return NULL;
+  if (! buf_init_popen(buf, cmd, mode)) {
     free(buf);
     return NULL;
   }

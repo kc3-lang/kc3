@@ -41,6 +41,8 @@ s_buf * buf_init_const (s_buf *buf, uw size, const char *p);
 s_buf * buf_init_1 (s_buf *buf, bool p_free, char *p);
 s_buf * buf_init_1_const (s_buf *buf, const char *p);
 s_buf * buf_init_alloc (s_buf *buf, uw size);
+s_buf * buf_init_popen (s_buf *buf, const s_str *cmd,
+                        const s_str *mode);
 s_buf * buf_init_str (s_buf *buf, bool free, s_str *p);
 s_buf * buf_init_str_const (s_buf *buf, const s_str *p);
 s_buf * buf_init_str_copy (s_buf *buf, const s_str *str);
@@ -50,6 +52,7 @@ void    buf_delete (s_buf *buf);
 s_buf * buf_new (bool free, uw size, char *p);
 s_buf * buf_new_1 (bool free, uw size, char *p);
 s_buf * buf_new_alloc (uw bytes);
+s_buf * buf_new_popen (const s_str *cmd, const s_str *mode);
 s_buf * buf_new_str (s_str *str);
 
 /* Operators. */

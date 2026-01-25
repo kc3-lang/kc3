@@ -109,8 +109,11 @@ defmodule HTTPd do
           response = route_and_render_request(request)
         end
         clean_request_uploads(request.body)
-        response = HTTP.Response.set_header(response,
-          "Connection", "Keep-Alive")
+        connection = HTTP.Request.header(request, "Connection")
+        if connection != "close" do
+          response = HTTP.Response.set_header(response,
+            "Connection", "Keep-Alive")
+        end
         response = HTTP.Response.set_header(response,
           "Keep-Alive", "timeout=5, max=1000")
         response = HTTP.Response.set_header(response,
@@ -128,6 +131,10 @@ defmodule HTTPd do
           Err.puts("#{response.code} #{client_addr} #{request.method}" +
             " #{request.url} #{inspect(user_agent)}" +
             " #{dt_str}")
+        end
+        if connection = "close" do
+          Event.del(client_ev)
+          File.close(socket)
         end
       else
         Event.del(client_ev)
