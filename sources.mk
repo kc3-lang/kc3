@@ -1255,8 +1255,6 @@ KC3_C_SOURCES = \
 
 KC3_CXX_SOURCES = \
 	"image/image_avir.cxx" \
-	"libkc3/std.cxx" \
-	"libkc3/std.hxx" \
 
 KC3_FONT_SOURCES = \
 	"fonts/Computer Modern/ttf/cmunbbx.ttf" \
@@ -1667,6 +1665,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/httpd/route.kc3" \
 	"lib/kc3/0.1/https.kc3" \
 	"lib/kc3/0.1/https/client.kc3" \
+	"lib/kc3/0.1/ident.kc3" \
 	"lib/kc3/0.1/image.kc3" \
 	"lib/kc3/0.1/image/egl.kc3" \
 	"lib/kc3/0.1/init.kc3" \
@@ -2272,6 +2271,9 @@ KC3_TEST_KC3S_SOURCES = \
 	"test/kc3s/facts_connection.kc3" \
 	"test/kc3s/facts_connection.out.expected" \
 	"test/kc3s/facts_connection.ret.expected" \
+	"test/kc3s/facts_secret.kc3" \
+	"test/kc3s/facts_secret.out.expected" \
+	"test/kc3s/facts_secret.ret.expected" \
 	"test/kc3s_test" \
 
 KC3_TEST_MARKDOWN_SOURCES = \
@@ -2326,7 +2328,6 @@ KC3_OTHER_SOURCES = \
 	"LICENSE.md" \
 	"Makefile" \
 	"README.md" \
-	"SHARDING.md" \
 	"TODO.md" \
 	"config.subr" \
 	"config_common" \
