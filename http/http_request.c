@@ -142,12 +142,17 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       err_puts("http_request_buf_parse: invalid header");
       goto restore;
     }
-    if (line.size == 0)
+    if (line.size == 0) {
+      str_clean(&line);
       break;
+    }
     *tail = list_new(NULL);
     (*tail)->tag.type = TAG_STR;
-    if (! http_header_split(&line, &(*tail)->tag))
+    if (! http_header_split(&line, &(*tail)->tag)) {
+      str_clean(&line);
       goto restore;
+    }
+    str_clean(&line);
     key   = &(*tail)->tag.data.tuple.tag[0].data.str;
     value = &(*tail)->tag.data.tuple.tag[1].data.str;
     if (! compare_str_case_insensitive(&content_length_str, key)) {
@@ -207,12 +212,17 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
                      " header");
             goto restore;
           }
-          if (line.size == 0)
+          if (line.size == 0) {
+            str_clean(&line);
             break;
+          }
           *tail = list_new(NULL);
           (*tail)->tag.type = TAG_STR;
-          if (! http_header_split(&line, &(*tail)->tag))
+          if (! http_header_split(&line, &(*tail)->tag)) {
+            str_clean(&line);
             goto restore;
+          }
+          str_clean(&line);
           if ((*tail)->tag.type != TAG_TUPLE) {
             err_puts("http_request_buf_parse: http_header_split did not"
                      " return a Tuple");
