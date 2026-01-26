@@ -12,6 +12,8 @@
  */
 #include <errno.h>
 #include <stdlib.h>
+#include <tls.h>
+#include <unistd.h>
 #include "alloc.h"
 #include "assert.h"
 #include "buf.h"
@@ -20,6 +22,7 @@
 #include "buf_parse.h"
 #include "compare.h"
 #include "env.h"
+#include "env_fork.h"
 #include "fact.h"
 #include "facts.h"
 #include "facts_connection.h"
@@ -48,6 +51,78 @@ static int facts_compare_pfact_id_reverse (const void *a,
 static sw facts_open_file_create (s_facts *facts, const s_str *path);
 static sw facts_open_log (s_facts *facts, s_buf *buf);
 
+s_facts_connection * facts_accept (s_facts *facts, s64 server_fd,
+                                   p_tls server_tls)
+{
+  s64 client_fd;
+  p_tls client_tls;
+  assert(facts);
+  assert(server_tls);
+  client_fd = accept(server_fd, NULL, NULL);
+  if (client_fd < 0)
+    return NULL;
+  if (tls_accept_socket(server_tls, &client_tls, client_fd) < 0) {
+    err_write_1("facts_accept: tls_accept_socket: ");
+    err_puts(tls_error(server_tls));
+    close(client_fd);
+    return NULL;
+  }
+  return facts_connection_add(facts, client_fd, client_tls, true);
+}
+
+s_facts_acceptor * facts_acceptor_loop (s_facts *facts, s64 server,
+                                         p_tls tls)
+{
+  s_facts_acceptor *acceptor;
+  assert(facts);
+  assert(tls);
+  acceptor = alloc(sizeof(s_facts_acceptor));
+  if (! acceptor)
+    return NULL;
+  acceptor->env = env_fork_new(env_global());
+  if (! acceptor->env) {
+    err_puts("facts_acceptor_loop: env_fork_new");
+    free(acceptor);
+    return NULL;
+  }
+  acceptor->facts = facts;
+  acceptor->server = server;
+  acceptor->tls = tls;
+  acceptor->running = true;
+  if (pthread_create(&acceptor->thread, NULL,
+                     facts_acceptor_loop_thread, acceptor)) {
+    err_puts("facts_acceptor_loop: pthread_create");
+    env_fork_delete(acceptor->env);
+    free(acceptor);
+    return NULL;
+  }
+  return acceptor;
+}
+
+void facts_acceptor_loop_join (s_facts_acceptor *acceptor)
+{
+  assert(acceptor);
+  signal(SIGPIPE, SIG_IGN);
+  acceptor->running = false;
+  shutdown(acceptor->server, SHUT_RDWR);
+  pthread_join(acceptor->thread, NULL);
+  close(acceptor->server);
+  env_fork_delete(acceptor->env);
+  free(acceptor);
+}
+
+void * facts_acceptor_loop_thread (void *arg)
+{
+  s_facts_acceptor *acceptor;
+  acceptor = arg;
+  env_global_set(acceptor->env);
+  while (acceptor->running) {
+    if (! facts_accept(acceptor->facts, acceptor->server, acceptor->tls))
+      break;
+  }
+  return NULL;
+}
+
 s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
 {
   assert(facts);
@@ -58,7 +133,7 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
              " securelevel > 1");
     abort();
   }
-  if (facts_get_master(facts)) {
+  if (facts_connection_get_master(facts)) {
     if (! facts_send_to_master_add(facts, fact))
       return NULL;
     return fact;
@@ -317,6 +392,7 @@ void facts_clean (s_facts *facts)
 {
   s_facts_remove_log *log;
   s_facts_remove_log *next;
+  str_zero(&facts->secret);
   if (facts->connections)
     facts_connections_close_all(facts);
   if (facts->log)
@@ -336,7 +412,6 @@ void facts_clean (s_facts *facts)
   skiplist_delete__fact(facts->index_spo);
   set_clean__fact(&facts->facts);
   set_clean__tag(&facts->tags);
-  str_zero(&facts->secret);
   str_clean(&facts->secret);
 #if HAVE_PTHREAD
   rwlock_clean(&facts->rwlock);
@@ -1280,7 +1355,7 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
              " securelevel > 1 unless cleaning global env");
     abort();
   }
-  if (facts_get_master(facts)) {
+  if (facts_connection_get_master(facts)) {
     if (! facts_send_to_master_remove(facts, fact))
       return NULL;
     *dest = true;
@@ -1518,6 +1593,34 @@ sw facts_save_file (s_facts *facts, const s_str *path)
     err_puts(": ERROR");
   }
   return r;
+}
+
+bool facts_send_to_master_add (s_facts *facts, const s_fact *fact)
+{
+  s_facts_connection *master;
+  assert(facts);
+  assert(fact);
+  master = facts_connection_get_master(facts);
+  if (! master)
+    return false;
+  marshall_u8(&master->marshall, false, FACT_ACTION_ADD);
+  marshall_fact(&master->marshall, false, fact);
+  marshall_to_buf(&master->marshall, master->buf_rw.w);
+  return true;
+}
+
+bool facts_send_to_master_remove (s_facts *facts, const s_fact *fact)
+{
+  s_facts_connection *master;
+  assert(facts);
+  assert(fact);
+  master = facts_connection_get_master(facts);
+  if (! master)
+    return false;
+  marshall_u8(&master->marshall, false, FACT_ACTION_REMOVE);
+  marshall_fact(&master->marshall, false, fact);
+  marshall_to_buf(&master->marshall, master->buf_rw.w);
+  return true;
 }
 
 bool facts_unref_tag (s_facts *facts, const s_tag *tag)

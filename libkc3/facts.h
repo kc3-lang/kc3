@@ -79,4 +79,8 @@ s_tag **  facts_find_tag (s_facts *facts, const s_tag *tag,
 sw        facts_log_add (s_log *log, uw id, const s_fact *fact);
 sw        facts_log_remove (s_log *log, uw id, const s_fact *fact);
 
+/* Network. */
+bool facts_send_to_master_add (s_facts *facts, const s_fact *fact);
+bool facts_send_to_master_remove (s_facts *facts, const s_fact *fact);
+
 #endif /* LIBKC3_FACTS_H */

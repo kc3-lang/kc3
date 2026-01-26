@@ -61,11 +61,6 @@ bool facts_broadcast_add (s_facts *facts, const s_fact *fact);
 bool facts_broadcast_remove (s_facts *facts, const s_fact *fact);
 
 /* Send to master. */
-s_facts_connection * facts_get_master (s_facts *facts);
-bool facts_send_to_master_add (s_facts *facts, const s_fact *fact);
-bool facts_send_to_master_remove (s_facts *facts, const s_fact *fact);
-
-/* Receive thread. */
-void * facts_connection_thread (void *arg);
+s_facts_connection * facts_connection_get_master (s_facts *facts);
 
 #endif /* LIBKC3_FACTS_CONNECTION_H */
