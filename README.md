@@ -88,7 +88,9 @@ to implement the missing parts in KC3.
    - Facts.connect/accept allows for bi-directional synchronization of
      an existing `Facts.database()` over a TLS encrypted connection
      after a successful HMAC-SHA256 shared secret authentication
-     challenge/response.
+     challenge/response. Master/replica negociation is based on a
+     priority negociation : each node sends its priority and the
+     lower priority is the master while the others are replicas.
    - `Facts.accept` accepts connections one by one.
    - `Facts.acceptor_loop` starts a thread that calls `accept()`
      in a loop.
@@ -101,7 +103,8 @@ to implement the missing parts in KC3.
      - array `[1, 2, 3]` → List `[1, 2, 3]`
 
  - HTTPd
-   - allow for configuration of unveil paths in `config/unveil.kc3`
+   - allow for configuration of OpenBSD's `unveil(2)` in
+     `config/unveil.kc3`
 
  - HTTPS
    - `HTTPS.Client` with libtls and automatic or manual connection
