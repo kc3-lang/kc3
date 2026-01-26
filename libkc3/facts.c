@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <errno.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <tls.h>
 #include <unistd.h>
