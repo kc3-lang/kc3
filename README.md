@@ -84,26 +84,24 @@ to implement the missing parts in KC3.
    - fixed a bug in `ht_iterator_next` where the iterator would not
      go through the first collision list
 
- - Socket
-   - `Socket.Facts` allows for bi-directional synchronization of an
-     existing `Facts.database()` over a TCP socket.
-   - `Socket.Facts.accept` accepts connections one by one.
-
- - TLS
-   - TLS.Facts allows for bi-directional synchronization of an existing
-     `Facts.database()` over a TLS encrypted connection after a
-     successful HMAC-SHA256 shared secret authentication
+ - Facts
+   - Facts.connect/accept allows for bi-directional synchronization of
+     an existing `Facts.database()` over a TLS encrypted connection
+     after a successful HMAC-SHA256 shared secret authentication
      challenge/response.
-   - `TLS.Facts.accept` accepts connections one by one.
-   - `TLS.Facts.acceptor_loop` starts a thread and calls `accept()`
+   - `Facts.accept` accepts connections one by one.
+   - `Facts.acceptor_loop` starts a thread that calls `accept()`
      in a loop.
-   - `TLS.Facts.acceptor_loop_join()` stops the acceptor loop cleanly.
+   - `Facts.acceptor_loop_join()` stops the acceptor loop cleanly.
 
  - JSON
    - fixed parser
      - boolean `true` or `false` → Bool
      - map `{"key", "value"}` → Map `%{"key" => "value"}`
      - array `[1, 2, 3]` → List `[1, 2, 3]`
+
+ - HTTPd
+   - allow for configuration of unveil paths in `config/unveil.kc3`
 
  - HTTPS
    - `HTTPS.Client` with libtls and automatic or manual connection

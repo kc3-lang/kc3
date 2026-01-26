@@ -2,7 +2,42 @@
 
 ## v0.1.17-git
 
- - see README.md
+ - libkc3
+   - copying temporary variables for `pthread_mutex` and `pthread_rwlock`
+     would cause undefined behaviour as per POSIX, this fixes pthread on
+     macOS
+   - allow for log hooks (a C function callback with a user pointer)
+     in the facts database
+   - incremental compilation with cached parser results in
+     `.kc3c` files, like Python does. Gives **5x faster loading times**
+     for all `.kc3` files. `env_load` automatically handles this.
+   - fixed a bug in `ht_iterator_next` where the iterator would not
+     go through the first collision list
+
+ - Facts
+   - Facts.connect/accept allows for bi-directional synchronization of
+     an existing `Facts.database()` over a TLS encrypted connection
+     after a successful HMAC-SHA256 shared secret authentication
+     challenge/response.
+   - `Facts.accept` accepts connections one by one.
+   - `Facts.acceptor_loop` starts a thread that calls `accept()`
+     in a loop.
+   - `Facts.acceptor_loop_join()` stops the acceptor loop cleanly.
+
+ - JSON
+   - fixed parser
+     - boolean `true` or `false` → Bool
+     - map `{"key", "value"}` → Map `%{"key" => "value"}`
+     - array `[1, 2, 3]` → List `[1, 2, 3]`
+
+ - HTTPd
+   - allow for configuration of unveil paths in `config/unveil.kc3`
+
+ - HTTPS
+   - `HTTPS.Client` with libtls and automatic or manual connection
+     - GET method
+     - POST method
+     - JSON response
 
 ## v0.1.16 🎄 (2025-12)
 
