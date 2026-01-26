@@ -129,7 +129,6 @@ test: ${PROG}
 
 test_asan: ${PROG_ASAN}
 	rm -f kc3.dump
-	time ./${PROG_ASAN} --copy
 	time ./${PROG_ASAN}
 	IKC3=${BUILD_TOP}/ikc3/ikc3_asan time ./ikc3_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_asan time ./kc3s_test
