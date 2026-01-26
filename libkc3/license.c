@@ -1,5 +1,5 @@
 /* kc3
- * Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+ * Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -13,7 +13,7 @@
 #include "kc3_main.h"
 
 const char *g_kc3_license = "kc3\n"
- "Copyright from 2022 to 2025 kmx.io <contact@kmx.io>\n"
+ "Copyright from 2022 to 2026 kmx.io <contact@kmx.io>\n"
  "\n"
  "Permission is hereby granted to use this software granted the above\n"
  "copyright notice and this permission paragraph are included in all\n"

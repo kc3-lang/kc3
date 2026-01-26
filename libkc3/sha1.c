@@ -185,7 +185,7 @@ SHA1Final(uint8_t digest[SHA1_DIGEST_LENGTH], s_sha1 *context)
 }
 
 /* kc3
- * Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+ * Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
