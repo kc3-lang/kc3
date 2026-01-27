@@ -92,8 +92,6 @@ s_facts_acceptor **  kc3_facts_acceptor_loop (s_facts *facts,
                                              p_socket server,
                                              p_tls *tls,
                                              s_facts_acceptor **dest);
-void                 kc3_facts_acceptor_loop_join
-(s_facts_acceptor **acceptor);
 s_facts *            kc3_facts_connect (s_facts *facts,
                                         const s_str *host,
                                         const s_str *service,

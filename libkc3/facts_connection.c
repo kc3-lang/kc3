@@ -354,7 +354,8 @@ bool facts_connection_remove (s_facts *facts, s_facts_connection *conn)
       conn->running = false;
       shutdown(conn->sockfd, SHUT_RDWR);
       thread = conn->thread;
-      pthread_join(thread, NULL);
+      if (thread)
+        pthread_join(thread, NULL);
       facts_connection_delete(conn);
       return true;
     }
@@ -492,7 +493,8 @@ void facts_connections_close_all (s_facts *facts)
     conn->running = false;
     shutdown(conn->sockfd, SHUT_RDWR);
     thread = conn->thread;
-    pthread_join(thread, NULL);
+    if (thread)
+      pthread_join(thread, NULL);
     facts_connection_delete(conn);
     conn = next;
   }
