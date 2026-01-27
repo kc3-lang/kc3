@@ -117,16 +117,17 @@ void facts_acceptor_loop_join (s_facts_acceptor *acceptor)
   acceptor->running = false;
   acceptor->facts->shutting_down = true;
   addr_len = sizeof(addr);
-  if (getsockname(acceptor->server, (struct sockaddr *) &addr,
-                  &addr_len) == 0) {
-    fd = socket(addr.ss_family, SOCK_STREAM, 0);
-    if (fd >= 0) {
-      connect(fd, (struct sockaddr *) &addr, addr_len);
-      close(fd);
+  if (acceptor->thread) {
+    if (getsockname(acceptor->server, (struct sockaddr *) &addr,
+                    &addr_len) == 0) {
+      fd = socket(addr.ss_family, SOCK_STREAM, 0);
+      if (fd >= 0) {
+        connect(fd, (struct sockaddr *) &addr, addr_len);
+        close(fd);
+      }
     }
-  }
-  if (acceptor->thread)
     pthread_join(acceptor->thread, NULL);
+  }
   if (acceptor->server >= 0)
     close(acceptor->server);
   if (acceptor->env)
