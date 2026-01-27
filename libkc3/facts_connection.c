@@ -394,7 +394,7 @@ static s_str * facts_connection_get_addr (s64 sockfd, s_str *dest)
     return NULL;
   if (! inet_ntop(addr.ss_family, src, buf, sizeof(buf)))
     return NULL;
-  return str_init_1(dest, NULL, buf);
+  return str_init_1_alloc(dest, buf);
 }
 
 s_facts_connection * facts_connection_get_master (s_facts *facts)
