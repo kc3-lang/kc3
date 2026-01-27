@@ -24,7 +24,7 @@ asan:
 	${MAKE} libkc3_asan
 
 build:
-	${MAKE} libkc3_build
+	${MAKE} libkc3
 
 cov:
 	${MAKE} libkc3_cov
