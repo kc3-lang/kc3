@@ -127,8 +127,10 @@ void facts_acceptor_loop_join (s_facts_acceptor *acceptor)
   }
   if (acceptor->thread)
     pthread_join(acceptor->thread, NULL);
-  close(acceptor->server);
-  env_fork_delete(acceptor->env);
+  if (acceptor->server >= 0)
+    close(acceptor->server);
+  if (acceptor->env)
+    env_fork_delete(acceptor->env);
   free(acceptor);
 }
 
