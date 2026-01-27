@@ -76,7 +76,6 @@ LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
 LIBS_ASAN="$(${CC} -print-file-name=libasan.so)"
 LIBS_ASAN="$LIBS_ASAN $LIBS"
 LIBS_ASAN="$LIBS_ASAN -lkc3_http_asan"
-LIBS_ASAN="$LIBS_ASAN -lkc3_tls_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
 
 # Coverage config
@@ -84,7 +83,6 @@ CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS"
 LIBS_COV="$LIBS -lkc3_http_cov"
-LIBS_COV="$LIBS_COV -lkc3_tls_cov"
 LIBS_COV="$LIBS_COV -lkc3_cov"
 LIBS_COV="$LIBS_COV $COV_PROFILE_LIB"
 
@@ -93,7 +91,6 @@ CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
 LIBS_DEBUG="$LIBS -lkc3_http_debug"
-LIBS_DEBUG="$LIBS_DEBUG -lkc3_tls_debug"
 LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
 
 # Main config
@@ -109,7 +106,6 @@ case "$(uname -s)" in
         ;;
 esac
 LIBS="$LIBS -lkc3_http"
-LIBS="$LIBS -lkc3_tls"
 LIBS="$LIBS -lkc3"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
