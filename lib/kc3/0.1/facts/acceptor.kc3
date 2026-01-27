@@ -12,7 +12,9 @@
 
 defmodule Facts.Acceptor do
 
-  defstruct [facts: (Ptr) 0,
+  defstruct [env: (Ptr) 0,
+             facts: (Ptr) 0,
+             tls: (Ptr) 0,
              running: false,
              server: (S64) 0,
              thread: (Uw) 0]
