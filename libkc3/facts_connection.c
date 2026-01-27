@@ -311,8 +311,6 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
     facts_connection_delete(conn);
     return NULL;
   }
-  if (conn->is_master)
-    facts->server_count++;
   conn->env = env_fork_new(env_global());
   if (! conn->env) {
     err_puts("facts_connection_add: env_fork_new");
@@ -615,24 +613,24 @@ void facts_connections_close_all (s_facts *facts)
   facts->connections = NULL;
 }
 
-void kc3_facts_close_all (s_facts *facts)
+void kc3_facts_close_all (s_facts **facts)
 {
   assert(facts);
-  facts_connections_close_all(facts);
+  facts_connections_close_all(*facts);
 }
 
-bool * kc3_facts_accept (s_facts *facts, p_socket server_fd, p_tls *tls,
+bool * kc3_facts_accept (s_facts **facts, p_socket server_fd, p_tls *tls,
                           bool *dest)
 {
   assert(facts);
   assert(server_fd);
   assert(tls);
   assert(dest);
-  *dest = facts_accept(facts, *server_fd, *tls) ? true : false;
+  *dest = facts_accept(*facts, *server_fd, *tls) ? true : false;
   return dest;
 }
 
-s_facts_acceptor ** kc3_facts_acceptor_loop (s_facts *facts, p_socket server,
+s_facts_acceptor ** kc3_facts_acceptor_loop (s_facts **facts, p_socket server,
                                               p_tls *tls,
                                               s_facts_acceptor **dest)
 {
@@ -641,7 +639,7 @@ s_facts_acceptor ** kc3_facts_acceptor_loop (s_facts *facts, p_socket server,
   assert(server);
   assert(tls);
   assert(dest);
-  tmp = facts_acceptor_loop(facts, *server, *tls);
+  tmp = facts_acceptor_loop(*facts, *server, *tls);
   if (! tmp)
     return NULL;
   *dest = tmp;
@@ -655,7 +653,7 @@ void kc3_facts_acceptor_loop_join (s_facts_acceptor **acceptor)
   *acceptor = NULL;
 }
 
-bool * kc3_facts_connect (s_facts *facts, const s_str *host,
+bool * kc3_facts_connect (s_facts **facts, const s_str *host,
                           const s_str *service, p_tls_config *config,
                           bool *dest)
 {
@@ -664,6 +662,6 @@ bool * kc3_facts_connect (s_facts *facts, const s_str *host,
   assert(service);
   assert(config);
   assert(dest);
-  *dest = facts_connect(facts, host, service, *config) ? true : false;
+  *dest = facts_connect(*facts, host, service, *config) ? true : false;
   return dest;
 }

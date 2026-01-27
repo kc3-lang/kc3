@@ -112,6 +112,12 @@ bool *       kc3_facts_replace_tags (s_facts *facts,
                                      s_tag *predicate,
                                      s_tag *object,
                                      bool *dest);
+s_facts **   kc3_facts_set_priority (s_facts **facts, u8 priority,
+                                     s_facts **dest);
+s_facts **   kc3_facts_set_secret (s_facts **facts, const s_str *secret,
+                                   s_facts **dest);
+s_facts **   kc3_facts_set_server_count (s_facts **facts, uw server_count,
+                                         s_facts **dest);
 s_tag *      kc3_facts_with (s_facts *facts, s_list **spec,
                              p_callable *callback, s_tag *dest);
 s_tag *      kc3_facts_with_macro (s_tag *facts_tag, s_tag *spec_tag,

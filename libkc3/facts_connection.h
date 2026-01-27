@@ -45,14 +45,14 @@ bool                 facts_connection_remove (s_facts *facts,
 void                 facts_connections_close_all (s_facts *facts);
 
 /* KC3 wrappers. */
-bool *               kc3_facts_accept (s_facts *facts, p_socket server_fd,
+bool *               kc3_facts_accept (s_facts **facts, p_socket server_fd,
                                         p_tls *tls, bool *dest);
-s_facts_acceptor **  kc3_facts_acceptor_loop (s_facts *facts, p_socket server,
+s_facts_acceptor **  kc3_facts_acceptor_loop (s_facts **facts, p_socket server,
                                                p_tls *tls,
                                                s_facts_acceptor **dest);
 void                 kc3_facts_acceptor_loop_join (s_facts_acceptor **acceptor);
-void                 kc3_facts_close_all (s_facts *facts);
-bool *               kc3_facts_connect (s_facts *facts, const s_str *host,
+void                 kc3_facts_close_all (s_facts **facts);
+bool *               kc3_facts_connect (s_facts **facts, const s_str *host,
                                          const s_str *service,
                                          p_tls_config *config, bool *dest);
 

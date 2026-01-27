@@ -1300,6 +1300,13 @@ s_facts * facts_set_priority (s_facts *facts, u8 priority)
   return facts;
 }
 
+s_facts * facts_set_server_count (s_facts *facts, uw server_count)
+{
+  assert(facts);
+  facts->server_count = server_count;
+  return facts;
+}
+
 s_facts * facts_set_secret (s_facts *facts, const s_str *secret)
 {
   assert(facts);
