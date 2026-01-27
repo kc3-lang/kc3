@@ -31,39 +31,63 @@ s_facts * facts_new_ref (s_facts *src);
 void     facts_delete (s_facts *facts);
 
 /* Modifiers */
-s_fact *  facts_add_fact (s_facts *facts, s_fact *fact);
-s_fact *  facts_add_fact_id (s_facts *facts, s_fact *fact);
-s_fact *  facts_add_fact_local (s_facts *facts, s_fact *fact);
-uw *      facts_next_id (s_facts *facts, uw *dest);
-s_fact *  facts_add_tags (s_facts *facts, s_tag *subject,
-                          s_tag *predicate, s_tag *object);
-void      facts_close (s_facts *facts);
-sw        facts_load (s_facts *facts, s_buf *buf,
-                      const s_str *path);
-sw        facts_load_file (s_facts *facts, const s_str *path);
-sw        facts_open_file (s_facts *facts, const s_str *path);
-sw        facts_open_file_binary (s_facts *facts, const s_str *path);
-sw        facts_open_file_binary_create (s_facts *facts,
-                                         const s_str *path);
-s_tag *   facts_ref_tag (s_facts *facts, s_tag *tag);
-s_facts * facts_set_priority (s_facts *facts, u8 priority);
-s_facts * facts_set_secret (s_facts *facts, const s_str *secret);
-s_facts * facts_set_server_count (s_facts *facts, uw server_count);
-bool *    facts_remove_fact (s_facts *facts, const s_fact *fact,
-                             bool *dest);
-bool *    facts_remove_fact_local (s_facts *facts, const s_fact *fact,
-                                   bool *dest);
-bool *    facts_remove_fact_tags (s_facts *facts,
-                                  s_tag *subject,
-                                  s_tag *predicate,
-                                  s_tag *object,
-                                  bool *dest);
-s_facts * facts_remove_all (s_facts *facts);
-s_fact *  facts_replace_fact (s_facts *facts, s_fact *fact);
-s_fact *  facts_replace_tags (s_facts *facts, s_tag *subject,
-                              s_tag *predicate, s_tag *object);
-sw        facts_save_file (s_facts *facts, const s_str *path);
-bool      facts_unref_tag (s_facts *facts, const s_tag *tag);
+s_facts_connection * facts_accept (s_facts *facts, s64 server_fd,
+                                   p_tls server_tls);
+s_facts_acceptor *   facts_acceptor_loop (s_facts *facts, s64 server,
+                                          p_tls tls);
+void                 facts_acceptor_loop_join
+(s_facts_acceptor *acceptor);
+s_fact *             facts_add_fact (s_facts *facts, s_fact *fact);
+s_fact *             facts_add_fact_id (s_facts *facts, s_fact *fact);
+s_fact *             facts_add_fact_local (s_facts *facts,
+                                           s_fact *fact);
+s_fact *             facts_add_tags (s_facts *facts, s_tag *subject,
+                                     s_tag *predicate, s_tag *object);
+s_facts *            facts_broadcast_add (s_facts *facts,
+                                          const s_fact *fact);
+s_facts *            facts_broadcast_remove (s_facts *facts,
+                                             const s_fact *fact);
+void                 facts_close (s_facts *facts);
+s_facts_connection * facts_connect (s_facts *facts,
+                                    const s_str *host,
+                                    const s_str *service,
+                                    p_tls_config config);
+sw                   facts_load (s_facts *facts, s_buf *buf,
+                                 const s_str *path);
+sw                   facts_load_file (s_facts *facts,
+                                      const s_str *path);
+uw *                 facts_next_id (s_facts *facts, uw *dest);
+sw                   facts_open_file (s_facts *facts,
+                                      const s_str *path);
+sw                   facts_open_file_binary (s_facts *facts,
+                                             const s_str *path);
+sw                   facts_open_file_binary_create (s_facts *facts,
+                                                    const s_str *path);
+s_tag *              facts_ref_tag (s_facts *facts, s_tag *tag);
+bool *               facts_remove_fact (s_facts *facts,
+                                        const s_fact *fact,
+                                        bool *dest);
+bool *               facts_remove_fact_local (s_facts *facts,
+                                              const s_fact *fact,
+                                              bool *dest);
+bool *               facts_remove_fact_tags (s_facts *facts,
+                                             s_tag *subject,
+                                             s_tag *predicate,
+                                             s_tag *object,
+                                             bool *dest);
+s_facts *            facts_remove_all (s_facts *facts);
+s_fact *             facts_replace_fact (s_facts *facts, s_fact *fact);
+s_fact *             facts_replace_tags (s_facts *facts, s_tag *subject,
+                                         s_tag *predicate,
+                                         s_tag *object);
+sw                   facts_save_file (s_facts *facts,
+                                      const s_str *path);
+s_facts *            facts_set_priority (s_facts *facts, u8 priority);
+s_facts *            facts_set_secret (s_facts *facts,
+                                       const s_str *secret);
+s_facts *            facts_set_server_count (s_facts *facts,
+                                             uw server_count);
+bool                 facts_unref_tag (s_facts *facts, const s_tag *tag);
 
 /* Observers */
 sw        facts_dump (s_facts *facts, s_buf *buf);

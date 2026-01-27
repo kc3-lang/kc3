@@ -45,11 +45,12 @@
 static bool    facts_connection_auth (s_facts_connection *conn,
                                       bool is_server);
 static s_facts_connection *
-facts_connection_find_by_addr (s_facts *facts, const s_str *addr);
+               facts_connection_find_by_addr (s_facts *facts,
+                                              const s_str *addr);
 static s_str * facts_connection_get_addr (s64 sockfd, s_str *dest);
 static bool    facts_connection_sync (s_facts_connection *conn,
                                       uw remote_next_id);
-void *         facts_connection_thread (void *arg);
+static void *  facts_connection_thread (void *arg);
 
 static bool facts_connection_auth (s_facts_connection *conn, bool is_server)
 {
@@ -123,121 +124,6 @@ static bool facts_connection_auth (s_facts_connection *conn, bool is_server)
       return false;
   }
   return true;
-}
-
-bool facts_broadcast_add (s_facts *facts, const s_fact *fact)
-{
-  s_facts_connection *conn;
-  assert(facts);
-  assert(fact);
-  conn = facts->connections;
-  while (conn) {
-    if (conn->running && conn->is_master) {
-      marshall_u8(&conn->marshall, false, FACT_ACTION_ADD);
-      marshall_fact(&conn->marshall, false, fact);
-      marshall_to_buf(&conn->marshall, conn->buf_rw.w);
-    }
-    conn = conn->next;
-  }
-  return true;
-}
-
-bool facts_broadcast_remove (s_facts *facts, const s_fact *fact)
-{
-  s_facts_connection *conn;
-  assert(facts);
-  assert(fact);
-  conn = facts->connections;
-  while (conn) {
-    if (conn->running && conn->is_master) {
-      marshall_u8(&conn->marshall, false, FACT_ACTION_REMOVE);
-      marshall_fact(&conn->marshall, false, fact);
-      marshall_to_buf(&conn->marshall, conn->buf_rw.w);
-    }
-    conn = conn->next;
-  }
-  return true;
-}
-
-s_facts_connection * facts_connect (s_facts *facts,
-                                    const s_str *host,
-                                    const s_str *service,
-                                    p_tls_config config)
-{
-  struct addrinfo  hints = {0};
-  struct addrinfo *res;
-  struct addrinfo *res0;
-  s64              sockfd;
-  p_tls            tls;
-  assert(facts);
-  assert(host);
-  assert(service);
-  assert(config);
-  hints.ai_family = AF_UNSPEC;
-  hints.ai_socktype = SOCK_STREAM;
-  if (getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0)) {
-    err_write_1("facts_connect: getaddrinfo: ");
-    err_write_1(host->ptr.pchar);
-    err_write_1(":");
-    err_write_1(service->ptr.pchar);
-    err_write_1(": ");
-    err_puts(strerror(errno));
-    return NULL;
-  }
-  sockfd = -1;
-  res = res0;
-  while (res) {
-    sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    if (sockfd < 0) {
-      res = res->ai_next;
-      continue;
-    }
-    if (connect(sockfd, res->ai_addr, res->ai_addrlen) < 0) {
-      close(sockfd);
-      sockfd = -1;
-      res = res->ai_next;
-      continue;
-    }
-    break;
-  }
-  freeaddrinfo(res0);
-  if (sockfd < 0) {
-    err_write_1("facts_connect: connect: ");
-    err_write_1(host->ptr.pchar);
-    err_write_1(":");
-    err_write_1(service->ptr.pchar);
-    err_write_1(": ");
-    err_puts(strerror(errno));
-    return NULL;
-  }
-  tls = tls_client();
-  if (! tls) {
-    err_puts("facts_connect: tls_client");
-    close(sockfd);
-    return NULL;
-  }
-  if (tls_configure(tls, config) < 0) {
-    err_write_1("facts_connect: tls_configure: ");
-    err_puts(tls_error(tls));
-    tls_free(tls);
-    close(sockfd);
-    return NULL;
-  }
-  if (tls_connect_socket(tls, sockfd, host->ptr.pchar) < 0) {
-    err_write_1("facts_connect: tls_connect_socket: ");
-    err_puts(tls_error(tls));
-    tls_free(tls);
-    close(sockfd);
-    return NULL;
-  }
-  if (tls_handshake(tls) < 0) {
-    err_write_1("facts_connect: tls_handshake: ");
-    err_puts(tls_error(tls));
-    tls_free(tls);
-    close(sockfd);
-    return NULL;
-  }
-  return facts_connection_add(facts, sockfd, tls, false);
 }
 
 s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
@@ -545,7 +431,7 @@ static bool facts_connection_sync (s_facts_connection *conn,
   return result;
 }
 
-void * facts_connection_thread (void *arg)
+static void * facts_connection_thread (void *arg)
 {
   u8 action;
   bool b;
@@ -611,57 +497,4 @@ void facts_connections_close_all (s_facts *facts)
     conn = next;
   }
   facts->connections = NULL;
-}
-
-void kc3_facts_close_all (s_facts **facts)
-{
-  assert(facts);
-  facts_connections_close_all(*facts);
-}
-
-bool * kc3_facts_accept (s_facts **facts, p_socket server_fd, p_tls *tls,
-                          bool *dest)
-{
-  assert(facts);
-  assert(server_fd);
-  assert(tls);
-  assert(dest);
-  *dest = facts_accept(*facts, *server_fd, *tls) ? true : false;
-  return dest;
-}
-
-s_facts_acceptor ** kc3_facts_acceptor_loop (s_facts **facts, p_socket server,
-                                              p_tls *tls,
-                                              s_facts_acceptor **dest)
-{
-  s_facts_acceptor *tmp;
-  assert(facts);
-  assert(server);
-  assert(tls);
-  assert(dest);
-  tmp = facts_acceptor_loop(*facts, *server, *tls);
-  if (! tmp)
-    return NULL;
-  *dest = tmp;
-  return dest;
-}
-
-void kc3_facts_acceptor_loop_join (s_facts_acceptor **acceptor)
-{
-  assert(acceptor);
-  facts_acceptor_loop_join(*acceptor);
-  *acceptor = NULL;
-}
-
-bool * kc3_facts_connect (s_facts **facts, const s_str *host,
-                          const s_str *service, p_tls_config *config,
-                          bool *dest)
-{
-  assert(facts);
-  assert(host);
-  assert(service);
-  assert(config);
-  assert(dest);
-  *dest = facts_connect(*facts, host, service, *config) ? true : false;
-  return dest;
 }

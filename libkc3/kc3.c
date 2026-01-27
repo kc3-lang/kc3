@@ -575,6 +575,33 @@ s_tag * kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr)
   return tag_init_pstruct_with_data(tag, &g_sym_Fact, ptr->p, false);
 }
 
+s_facts_connection * kc3_facts_accept (s_facts *facts,
+                                       p_socket server_fd,
+                                       p_tls *tls)
+{
+  assert(facts);
+  assert(server_fd);
+  assert(tls);
+  return facts_accept(facts, *server_fd, *tls);
+}
+
+s_facts_acceptor ** kc3_facts_acceptor_loop (s_facts *facts,
+                                             p_socket server,
+                                             p_tls *tls,
+                                             s_facts_acceptor **dest)
+{
+  s_facts_acceptor *tmp;
+  assert(facts);
+  assert(server);
+  assert(tls);
+  assert(dest);
+  tmp = facts_acceptor_loop(facts, *server, *tls);
+  if (! tmp)
+    return NULL;
+  *dest = tmp;
+  return dest;
+}
+
 bool * kc3_facts_add_tags (s_facts *facts, s_tag *subject,
                            s_tag *predicate,
                            s_tag *object,
@@ -604,6 +631,16 @@ s_tag * kc3_facts_collect_with_tags (s_facts *facts,
   return env_facts_collect_with_tags(env_global(), facts, subject,
                                      predicate, object, *callback,
                                      dest);
+}
+
+s_facts * kc3_facts_connect (s_facts *facts, const s_str *host,
+                              const s_str *service, p_tls_config *config)
+{
+  assert(facts);
+  assert(host);
+  assert(service);
+  assert(config);
+  return facts_connect(facts, host, service, *config) ? facts : NULL;
 }
 
 s_tag * kc3_facts_first_with (s_facts *facts, s_list **spec,
@@ -653,31 +690,19 @@ bool * kc3_facts_replace_tags (s_facts *facts,
   return dest;
 }
 
-s_facts ** kc3_facts_set_priority (s_facts **facts, u8 priority,
-                                   s_facts **dest)
+s_facts * kc3_facts_set_priority (s_facts *facts, u8 priority)
 {
-  if (! facts_set_priority(*facts, priority))
-    return NULL;
-  *dest = *facts;
-  return dest;
+  return facts_set_priority(facts, priority);
 }
 
-s_facts ** kc3_facts_set_secret (s_facts **facts, const s_str *secret,
-                                 s_facts **dest)
+s_facts * kc3_facts_set_secret (s_facts *facts, const s_str *secret)
 {
-  if (! facts_set_secret(*facts, secret))
-    return NULL;
-  *dest = *facts;
-  return dest;
+  return facts_set_secret(facts, secret);
 }
 
-s_facts ** kc3_facts_set_server_count (s_facts **facts, uw server_count,
-                                       s_facts **dest)
+s_facts * kc3_facts_set_server_count (s_facts *facts, uw server_count)
 {
-  if (! facts_set_server_count(*facts, server_count))
-    return NULL;
-  *dest = *facts;
-  return dest;
+  return facts_set_server_count(facts, server_count);
 }
 
 s_tag * kc3_facts_with (s_facts *facts, s_list **spec,

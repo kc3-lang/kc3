@@ -52,18 +52,17 @@ defmodule Facts do
 
   def close = cfn Void "facts_close" (Facts)
 
-  def close_all = cfn Void "kc3_facts_close_all" (Facts*)
+  def close_all = cfn Void "facts_connections_close_all" (Facts)
 
-  def connect = cfn Bool "kc3_facts_connect" (Facts*, Str, Str, TLS.Config,
-    Result)
+  def connect = cfn Facts "kc3_facts_connect" (Facts, Str, Str, TLS.Config)
 
-  def accept = cfn Bool "kc3_facts_accept" (Facts*, Socket, TLS, Result)
+  def accept = cfn Facts "kc3_facts_accept" (Facts, Socket, TLS)
 
   def acceptor_loop =
-    cfn Facts.Acceptor* "kc3_facts_acceptor_loop" (Facts*, Socket, TLS, Result)
+    cfn Facts.Acceptor* "kc3_facts_acceptor_loop" (Facts, Socket, TLS, Result)
 
   def acceptor_loop_join =
-    cfn Void "kc3_facts_acceptor_loop_join" (Facts.Acceptor*)
+    cfn Void "facts_acceptor_loop_join" (Facts.Acceptor)
 
   def database = cfn Facts* "pfacts_init" (Result)
 
@@ -84,13 +83,13 @@ defmodule Facts do
     cfn Sw "facts_open_file" (Facts, Str)
 
   def set_priority =
-    cfn Facts* "kc3_facts_set_priority" (Facts*, U8, Result)
+    cfn Facts "kc3_facts_set_priority" (Facts, U8)
 
   def set_secret =
-    cfn Facts* "kc3_facts_set_secret" (Facts*, Str, Result)
+    cfn Facts "kc3_facts_set_secret" (Facts, Str)
 
   def set_server_count =
-    cfn Facts* "kc3_facts_set_server_count" (Facts*, Uw, Result)
+    cfn Facts "kc3_facts_set_server_count" (Facts, Uw)
 
   # returns true if fact was removed or is already absent
   def remove_tags =
