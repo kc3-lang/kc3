@@ -21,16 +21,16 @@ include config.mk
 include sources.mk
 
 asan:
-	${MAKE} libkc3_asan
+	${MAKE} ${LIB_ASAN}
 
 build:
-	${MAKE} libkc3
+	${MAKE} ${LIB}
 
 cov:
-	${MAKE} libkc3_cov
+	${MAKE} ${LIB_COV}
 
 debug:
-	${MAKE} libkc3_debug
+	${MAKE} ${LIB_DEBUG}
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details libkc3.html
