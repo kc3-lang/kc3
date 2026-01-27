@@ -102,10 +102,22 @@ s_facts_acceptor * facts_acceptor_loop (s_facts *facts, s64 server,
 
 void facts_acceptor_loop_join (s_facts_acceptor *acceptor)
 {
+  struct sockaddr_storage addr;
+  socklen_t addr_len;
+  s64 fd;
   assert(acceptor);
   signal(SIGPIPE, SIG_IGN);
   acceptor->running = false;
-  shutdown(acceptor->server, SHUT_RDWR);
+  acceptor->facts->shutting_down = true;
+  addr_len = sizeof(addr);
+  if (getsockname(acceptor->server, (struct sockaddr *) &addr,
+                  &addr_len) == 0) {
+    fd = socket(addr.ss_family, SOCK_STREAM, 0);
+    if (fd >= 0) {
+      connect(fd, (struct sockaddr *) &addr, addr_len);
+      close(fd);
+    }
+  }
   pthread_join(acceptor->thread, NULL);
   close(acceptor->server);
   env_fork_delete(acceptor->env);
@@ -1409,6 +1421,8 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
         return NULL;
       }
       fact_w_init_fact(&log_entry->fact, found);
+      log_entry->sync_count = 0;
+      log_entry->target_count = facts->server_count;
       log_entry->next = facts->remove_log;
       facts->remove_log = log_entry;
     }

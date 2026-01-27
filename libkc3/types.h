@@ -936,6 +936,8 @@ struct facts_connection {
 
 struct facts_remove_log {
   s_fact_w               fact;
+  uw                     sync_count;
+  uw                     target_count;
   s_facts_remove_log    *next;
 };
 
@@ -1062,6 +1064,8 @@ struct facts {
   u8                   priority;
   s_str                secret;
   s_rwlock             rwlock;
+  uw                   server_count;
+  bool                 shutting_down;
   s_facts_transaction *transaction;
   sw                   ref_count;
   s_mutex              ref_count_mutex;

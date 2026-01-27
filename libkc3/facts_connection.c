@@ -257,7 +257,8 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
     return NULL;
   }
   if (facts_connection_find_by_addr(facts, &addr)) {
-    err_puts("facts_connection_add: duplicate connection");
+    if (! facts->shutting_down)
+      err_puts("facts_connection_add: duplicate connection");
     str_clean(&addr);
     tls_close(tls);
     tls_free(tls);
@@ -310,6 +311,8 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
     facts_connection_delete(conn);
     return NULL;
   }
+  if (conn->is_master)
+    facts->server_count++;
   conn->env = env_fork_new(env_global());
   if (! conn->env) {
     err_puts("facts_connection_add: env_fork_new");
@@ -482,7 +485,8 @@ static bool facts_connection_sync (s_facts_connection *conn,
   s_facts_cursor cursor;
   s_fact *fact;
   s_facts *facts;
-  s_facts_remove_log *log;
+  s_facts_remove_log **log;
+  s_facts_remove_log *tmp;
   s_fact remove_fact;
   bool result = false;
   s_fact start = {0};
@@ -511,21 +515,28 @@ static bool facts_connection_sync (s_facts_connection *conn,
     if (! marshall_to_buf(&conn->marshall, conn->buf_rw.w))
       goto clean;
   }
-  log = facts->remove_log;
-  while (log) {
-    if (log->fact.id >= remote_next_id) {
-      remove_fact.subject = &log->fact.subject;
-      remove_fact.predicate = &log->fact.predicate;
-      remove_fact.object = &log->fact.object;
-      remove_fact.id = log->fact.id;
+  log = &facts->remove_log;
+  while (*log) {
+    if ((*log)->fact.id >= remote_next_id) {
+      remove_fact.subject = &(*log)->fact.subject;
+      remove_fact.predicate = &(*log)->fact.predicate;
+      remove_fact.object = &(*log)->fact.object;
+      remove_fact.id = (*log)->fact.id;
       if (! marshall_u8(&conn->marshall, false, FACT_ACTION_REMOVE))
         goto clean;
       if (! marshall_fact(&conn->marshall, false, &remove_fact))
         goto clean;
       if (! marshall_to_buf(&conn->marshall, conn->buf_rw.w))
         goto clean;
+      if (++(*log)->sync_count >= (*log)->target_count) {
+        tmp = *log;
+        *log = tmp->next;
+        fact_w_clean(&tmp->fact);
+        free(tmp);
+        continue;
+      }
     }
-    log = log->next;
+    log = &(*log)->next;
   }
   result = true;
  clean:

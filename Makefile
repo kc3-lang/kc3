@@ -11,6 +11,7 @@
 ## THIS SOFTWARE.
 
 all:
+	${MAKE} .configure.stamp
 	${MAKE} gen
 	${MAKE} -C libtommath all
 	${MAKE} -C libkc3 all
@@ -33,6 +34,10 @@ all:
 	if ${HAVE_GL}; then ${MAKE} -C window all; fi
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 all; fi
 
+.configure.stamp: sources.mk configure
+	./configure
+	touch .configure.stamp
+
 include config.mk
 include sources.mk
 
@@ -42,6 +47,7 @@ android:
 	${MAKE} -C android/egl/demo
 
 asan:
+	${MAKE} .configure.stamp
 	${MAKE} gen
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
@@ -68,6 +74,7 @@ assets:
 	make -C test/httpd/assets
 
 build:
+	${MAKE} .configure.stamp
 	${MAKE} gen
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
@@ -147,6 +154,7 @@ clean_kc3c:
 	find . -name '*.kc3c' -print0 | xargs -0 rm -f
 
 cov:
+	${MAKE} .configure.stamp
 	${MAKE} gen
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
@@ -177,6 +185,7 @@ debian:
 	rsync -aP --delete ./debian.kmx.io/debian/. debian.kmx.io:/var/www/debian.kmx.io/debian/
 
 debug:
+	${MAKE} .configure.stamp
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug

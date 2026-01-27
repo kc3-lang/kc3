@@ -31,6 +31,7 @@ defmodule Facts do
              priority: (U8) 0,
              secret: "",
              rwlock: %Rwlock{},
+             server_count: (Uw) 0,
              transaction: (Ptr) 0,
              ref_count: (Sw) 0,
              ref_count_mutex: %Mutex{}]
