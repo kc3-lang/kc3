@@ -25,12 +25,15 @@ git_reference ** kc3_git_repository_head (git_repository **repo,
   const git_error *e;
   git_reference *tmp = NULL;
   if (git_repository_head(&tmp, *repo)) {
-    e = git_error_last();
-    err_write_1("kc3_git_repository_head: ");
-    err_puts(e->message);
-    return NULL;
+    if (true) {
+      e = git_error_last();
+      err_write_1("kc3_git_repository_head: ");
+      err_puts(e->message);
+    }
+    *dest = tmp;
   }
-  *dest = tmp;
+  else
+    *dest = NULL;
   return dest;
 }
 
