@@ -35,14 +35,19 @@ p_list * kc3_git_branch_list (git_repository **repo, p_list *dest)
       err_write_1("kc3_git_branch_list: git_branch_name: ");
       err_puts(e->message);
       list_delete_all(tmp);
+      git_reference_free(ref);
+      git_branch_iterator_free(iter);
       return NULL;
     }
     if (! (l = list_new_str_1_alloc(pchar, tmp))) {
       list_delete_all(tmp);
+      git_branch_iterator_free(iter);
       return NULL;
     }
     tmp = l;
+    git_reference_free(ref);
   }
+  git_branch_iterator_free(iter);
   *dest = tmp;
   return dest;
 }
