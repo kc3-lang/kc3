@@ -130,8 +130,6 @@ void facts_acceptor_loop_join (s_facts_acceptor *acceptor)
   }
   if (acceptor->server >= 0)
     close(acceptor->server);
-  if (acceptor->env)
-    env_fork_delete(acceptor->env);
   free(acceptor);
 }
 
@@ -144,6 +142,8 @@ static void * facts_acceptor_loop_thread (void *arg)
     if (! facts_accept(acceptor->facts, acceptor->server, acceptor->tls))
       break;
   }
+  env_fork_delete(acceptor->env);
+  acceptor->env = NULL;
   return NULL;
 }
 
