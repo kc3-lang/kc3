@@ -549,6 +549,21 @@ void kc3_exit_subprocess (s_tag *code)
   _exit((int) code_u8);
 }
 
+s64 * kc3_fork (s64 *dest)
+{
+  s32 e;
+  pid_t result;
+  result = fork();
+  if (result < 0) {
+    e = errno;
+    err_write_1("kc3_fork: fork: ");
+    err_puts(strerror(e));
+    return NULL;
+  }
+  *dest = result;
+  return dest;
+}
+
 s_tag * kc3_fact_object (s_fact *fact, s_tag *dest)
 {
   if (! fact->object)
