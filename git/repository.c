@@ -25,7 +25,7 @@ git_reference ** kc3_git_repository_head (git_repository **repo,
   const git_error *e;
   git_reference *tmp = NULL;
   if (git_repository_head(&tmp, *repo)) {
-    if (true) {
+    if (false) {
       e = git_error_last();
       err_write_1("kc3_git_repository_head: ");
       err_puts(e->message);
