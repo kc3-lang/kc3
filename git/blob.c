@@ -46,6 +46,7 @@ s_str * kc3_git_blob_to_str (git_repository **repo, const s_str *hash,
   if (! str_init_alloc(&tmp, size))
     return NULL;
   memcpy(tmp.free.p, raw, size);
+  git_blob_free(blob);
   *dest = tmp;
   return dest;
 }
