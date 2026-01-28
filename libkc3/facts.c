@@ -113,6 +113,7 @@ void facts_acceptor_loop_join (s_facts_acceptor *acceptor)
   socklen_t addr_len;
   s64 fd;
   assert(acceptor);
+  assert(acceptor->running);
   signal(SIGPIPE, SIG_IGN);
   acceptor->running = false;
   acceptor->facts->shutting_down = true;
@@ -130,7 +131,6 @@ void facts_acceptor_loop_join (s_facts_acceptor *acceptor)
   }
   if (acceptor->server >= 0)
     close(acceptor->server);
-  free(acceptor);
 }
 
 static void * facts_acceptor_loop_thread (void *arg)
