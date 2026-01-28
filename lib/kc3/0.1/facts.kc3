@@ -10,6 +10,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require Facts.Acceptor
 require FactW
 require Mutex
 require Rwlock
