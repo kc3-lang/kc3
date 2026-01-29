@@ -29,11 +29,13 @@ p_list * kc3_git_tag_list (git_repository **repo, p_list *dest)
   while (i < sa.count) {
     if (! (l = list_new_str_1_alloc(sa.strings[i], tmp))) {
       list_delete_all(tmp);
+      git_strarray_free(&sa);
       return NULL;
     }
     tmp = l;
     i++;
   }
+  git_strarray_free(&sa);
   *dest = tmp;
   return dest;
 }
