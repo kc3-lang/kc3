@@ -41,6 +41,7 @@ p_list * kc3_git_branch_list (git_repository **repo, p_list *dest)
     }
     if (! (l = list_new_str_1_alloc(pchar, tmp))) {
       list_delete_all(tmp);
+      git_reference_free(ref);
       git_branch_iterator_free(iter);
       return NULL;
     }

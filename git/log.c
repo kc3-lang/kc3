@@ -135,8 +135,10 @@ p_list * kc3_git_log (git_repository **repo,
       if (unmatched > 0)
         continue;
     }
-    if (count++ < opt.skip)
+    if (count++ < opt.skip) {
+      git_commit_free(commit);
       continue;
+    }
     if (opt.limit != -1 && printed++ >= opt.limit) {
       git_commit_free(commit);
       break;
@@ -146,7 +148,7 @@ p_list * kc3_git_log (git_repository **repo,
       git_commit_free(commit);
       return NULL;
     }
-    // TODO
+    git_commit_free(commit);
   }
   *dest = tmp;
   return dest;

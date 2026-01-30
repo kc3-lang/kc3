@@ -36,15 +36,20 @@ s_str * kc3_git_blob_to_str (git_repository **repo, const s_str *hash,
     return NULL;
   }
   size = git_blob_rawsize(blob);
-  if (! size)
+  if (! size) {
+    git_blob_free(blob);
     return str_init_empty(dest);
+  }
   raw = git_blob_rawcontent(blob);
   if (! raw) {
     err_puts("kc3_git_blob_to_str: git_blob_rawcontent");
+    git_blob_free(blob);
     return NULL;
   }
-  if (! str_init_alloc(&tmp, size))
+  if (! str_init_alloc(&tmp, size)) {
+    git_blob_free(blob);
     return NULL;
+  }
   memcpy(tmp.free.p, raw, size);
   git_blob_free(blob);
   *dest = tmp;
