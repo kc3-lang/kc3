@@ -87,7 +87,7 @@ defmodule HTTPd do
   }
 
   def http_client = fn (socket, events, client_ev, client) do
-    close = true
+    close = false
     ok = false
     unwind_protect(do
       if List.has?(events, :read) do
@@ -112,10 +112,13 @@ defmodule HTTPd do
           end
           clean_request_uploads(request.body)
           connection = HTTP.Request.header(request, "Connection")
-          if connection != "close" do
-            close = false
+          if connection == "close" do
+            close = true
             response = HTTP.Response.set_header(response,
-              "Connection", "Keep-Alive")
+              "Connection", "close")
+          else
+            response = HTTP.Response.set_header(response,
+              "Connection", "keep-alive")
           end
           response = HTTP.Response.set_header(response,
             "Keep-Alive", "timeout=5, max=1000")
@@ -125,6 +128,9 @@ defmodule HTTPd do
             "Accept-Ranges", "bytes")
           r = HTTP.Response.buf_write(response, client.buf_rw.w,
             request.method != HEAD)
+          if (r > 0) do
+            ok = true
+          end
           dt = Time.now() - request.time
           dt_str = Time.diff_to_str(dt)
           IO.puts("#{response.code} #{client_addr} #{request.method}" +
@@ -136,12 +142,10 @@ defmodule HTTPd do
               " #{dt_str}")
           end
         end
-        ok = true
         result
       end
     end, do
-      if (close || (! ok) ||
-          Counter.get(HTTPd.concurrent_requests) >= HTTPd.concurrent_requests_max) do
+      if (close || ! ok)
         Counter.decrease(HTTPd.concurrent_requests, 1)
         Event.del(client_ev)
         Socket.Buf.close(client)
