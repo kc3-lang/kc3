@@ -89,9 +89,9 @@ defmodule HTTPd do
   def http_client = fn (socket, events, client_ev, client) do
     close = true
     ok = false
+    Counter.increase(HTTPd.concurrent_requests, 1)
     unwind_protect(do
       if List.has?(events, :read) do
-        Counter.increase(HTTPd.concurrent_requests, 1)
         unwind_protect(do
           request = void
           request = HTTP.Request.buf_parse(client.buf_rw.r)
