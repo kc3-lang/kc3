@@ -804,6 +804,7 @@ install:
 	if ${HAVE_GL}; then ${MAKE} -C window install; fi
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 install; fi
 	${MAKE} install_lib_links
+	${MAKE} -C lib install
 
 install_lib_links:
 	${MAKE} install_lib_links_${ARCH}

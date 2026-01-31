@@ -15,10 +15,12 @@ all:
 		echo "echo '$$SRC' && kc3s --load '$$SRC' --quit"; \
 	done | runj 1 /bin/sh
 
+include ../config.mk
+
 clean:
 	find . -name '*.kc3c' -print0 | xargs -0 rm
 
 install:
-	find kc3 -name '*.kc3c' | cpio -pad /usr/local/lib
+	find kc3 -name '*.kc3c' | cpio -pad ${DESTDIR}${prefix}/lib
 
 .PHONY: all clean
