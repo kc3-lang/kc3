@@ -140,7 +140,8 @@ defmodule HTTPd do
         result
       end
     end, do
-      if close || ! ok do
+      if (close || ! ok ||
+          Counter.get(HTTPd.concurrent_requests) >= concurrent_requests_max) do
         Event.del(client_ev)
         Socket.Buf.close(client)
         Socket.close(socket)
