@@ -91,9 +91,8 @@ defmodule HTTPd do
     ok = false
     unwind_protect(do
       if List.has?(events, :read) do
-       request = void
         request = HTTP.Request.buf_parse(client.buf_rw.r)
-        result = if request do
+        if request do
           client_addr = if client.addr_str != "127.0.0.1" do
             client.addr_str
           else
@@ -142,7 +141,6 @@ defmodule HTTPd do
               " #{dt_str}")
           end
         end
-        result
       end
     end, do
       if (close || ! ok) do
