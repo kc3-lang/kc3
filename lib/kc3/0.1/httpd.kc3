@@ -148,6 +148,7 @@ defmodule HTTPd do
       if close || ! ok do
         Event.del(client_ev)
         Socket.Buf.close(client)
+        Socket.close(socket)
       end
     end)
   end
