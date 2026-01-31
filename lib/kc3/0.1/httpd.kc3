@@ -88,8 +88,8 @@ defmodule HTTPd do
 
   def http_client = fn (socket, events, client_ev, client) do
     close = false
-    ok = false
     unwind_protect(do
+      Err.puts("HTTPd.http_client: events=#{events}")
       if List.has?(events, :read) do
         request = HTTP.Request.buf_parse(client.buf_rw.r)
         if request do
@@ -127,8 +127,8 @@ defmodule HTTPd do
             "Accept-Ranges", "bytes")
           r = HTTP.Response.buf_write(response, client.buf_rw.w,
             request.method != HEAD)
-          if (r > 0) do
-            ok = true
+          if (r <= 0) do
+            close = true
           end
           dt = Time.now() - request.time
           dt_str = Time.diff_to_str(dt)
@@ -143,11 +143,11 @@ defmodule HTTPd do
         end
       end
     end, do
-      if (close || ! ok) do
-        Counter.decrease(HTTPd.concurrent_requests, 1)
+      if List.has?(events, :timeout) || close do
         Event.del(client_ev)
         Socket.Buf.close(client)
         File.close(socket)
+        Counter.decrease(HTTPd.concurrent_requests, 1)
       end
     end)
   end
@@ -157,11 +157,11 @@ defmodule HTTPd do
   def acceptor = fn (server_socket, events, acceptor_ev, void) do
     if List.has?(events, :read) &&
        Counter.get(HTTPd.concurrent_requests) < HTTPd.concurrent_requests_max do
-      Counter.increase(HTTPd.concurrent_requests, 1)
       client = Socket.Buf.accept(%Socket{fd: server_socket})
       client_ev = Event.new(event_base, client.sockfd, [:read, :persist],
         http_client, client)
       r = Event.add(client_ev, timeout)
+      Counter.increase(HTTPd.concurrent_requests, 1)
     end
   end
 
