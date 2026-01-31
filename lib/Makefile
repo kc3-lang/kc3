@@ -10,17 +10,18 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+PREFIX = /usr/local
+prefix ?= ${PREFIX}
+
 all:
 	find . -name '[^.]*.kc3' | while read SRC; do \
 		echo "echo '$$SRC' && kc3s --load '$$SRC' --quit"; \
 	done | runj 1 /bin/sh
 
-include ../config.mk
-
 clean:
 	find . -name '*.kc3c' -print0 | xargs -0 rm
 
-install:
+install::
 	find kc3 -name '*.kc3c' | cpio -pad ${DESTDIR}${prefix}/lib
 
 .PHONY: all clean
