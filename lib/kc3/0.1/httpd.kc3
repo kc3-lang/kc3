@@ -158,11 +158,19 @@ defmodule HTTPd do
   def acceptor = fn (server_socket, events, acceptor_ev, void) do
     if List.has?(events, :read) &&
        Counter.get(HTTPd.concurrent_requests) < HTTPd.concurrent_requests_max do
-      client = Socket.Buf.accept(%Socket{fd: server_socket})
-      client_ev = Event.new(event_base, client.sockfd, [:read, :persist, :timeout],
-        http_client, client)
-      r = Event.add(client_ev, timeout)
+      ok = false
       Counter.increase(HTTPd.concurrent_requests, 1)
+      unwind_protect(do
+        client = Socket.Buf.accept(%Socket{fd: server_socket})
+        client_ev = Event.new(event_base, client.sockfd, [:read, :persist, :timeout],
+          http_client, client)
+        Event.add(client_ev, timeout)
+        ok = true
+      end, do
+        if ! ok do
+          Counter.decrease(HTTPd.concurrent_requests, 1)
+        end
+      end)
     end
   end
 
