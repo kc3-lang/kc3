@@ -145,7 +145,7 @@ defmodule HTTPd do
         result
       end
     end, do
-      if (close || ! ok)
+      if (close || ! ok) do
         Counter.decrease(HTTPd.concurrent_requests, 1)
         Event.del(client_ev)
         Socket.Buf.close(client)
