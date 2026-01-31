@@ -18,4 +18,7 @@ all:
 clean:
 	find . -name '*.kc3c' -print0 | xargs -0 rm
 
+install:
+	find kc3 -name '*.kc3c' | cpio -pad /usr/local/lib
+
 .PHONY: all clean
