@@ -1546,7 +1546,7 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
       }
       facts_log_remove(facts->log, id, found);
     }
-    if (facts->connections) {
+    if (facts->server_count) {
       facts_broadcast_remove(facts, found);
       log_entry = alloc(sizeof(s_facts_remove_log));
       if (! log_entry) {
