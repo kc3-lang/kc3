@@ -112,7 +112,7 @@ defmodule HTTPd do
           end
           clean_request_uploads(request.body)
           connection = HTTP.Request.header(request, "Connection")
-          if connection == "close" do
+          if connection == "close" || Counter.get(HTTPd.concurrent_requests) >= HTTPd.concurrent_requests_max do
             close = true
             response = HTTP.Response.set_header(response,
               "Connection", "close")
