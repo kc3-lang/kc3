@@ -15,10 +15,18 @@ defmodule Mutex do
   defstruct [mutex: (Uw) 0,
              ready: false]
 
+  def clean = cfn Void "mutex_clean" (Mutex)
+
+  def init = cfn Mutex "mutex_init" (Result)
+
+  def lock = cfn Void "mutex_lock" (Mutex)
+
   def marshall = cfn Marshall* "mutex_marshall" (Marshall*, Bool,
     Mutex*)
 
   def marshall_read = cfn Mutex* "mutex_marshall_read" (MarshallRead*,
     Bool, Result)
+
+  def unlock = cfn Void "mutex_unlock" (Mutex)
 
 end

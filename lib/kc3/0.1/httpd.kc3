@@ -207,12 +207,19 @@ defmodule HTTPd do
   def time_zero = %Time{}
 
   def server_thread = fn () {
-    r = Event.dispatch(HTTPd.event_base)
-    if r do
-      e = errno()
-      IO.puts("KC3 HTTPd: event dispatch error: #{strerror(e)}")
+    run = true
+    while run do
+      Event.loopbreak(HTTPd.event_base)
+      r = Event.loop(HTTPd.event_base)
+      if r do
+        IO.puts("KC3 HTTPd: r=#{inspect(r)}")
+      end
+      if r && (e = errno()) do
+        IO.puts("HTTPd.server_thread: Event.loop: #{strerror(e)}")
+        run = false
+      end
     end
-    Socket.close(socket)
+    Socket.close(HTTPd.socket)
   }
 
   def server_thread_new = fn (x) {
@@ -243,24 +250,27 @@ defmodule HTTPd do
     end
     unveil("", "")
     pledge("stdio rpath wpath cpath fattr inet dns proc", "")
-    Event.lib_init()
     HTTPd.socket <- Socket.listen(host, port)
-    if HTTPd.socket &&
-       (HTTPd.event_base <- Event.base_new()) do
-      acceptor_ev = Event.new(HTTPd.event_base, socket.fd, [:read, :persist],
-        HTTPd.acceptor, void)
-      r = Event.add(acceptor_ev, HTTPd.time_zero)
+    if HTTPd.socket do
       daemonize()
       pledge("stdio rpath wpath cpath fattr inet dns", "")
       IO.puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
-      if HTTPd.thread_count > 1 do
-        threads = List.map(List.count(HTTPd.thread_count - 1),
-          HTTPd.server_thread_new)
-        HTTPd.server_thread()
-        List.map(threads, Thread.delete)
+      if (HTTPd.event_base <- Event.base_new()) do
+        acceptor_ev = Event.new(HTTPd.event_base, socket.fd, [:read, :persist],
+          HTTPd.acceptor, void)
+        r = Event.add(acceptor_ev, HTTPd.time_zero)
+        if HTTPd.thread_count > 1 do
+          threads = List.map(List.count(HTTPd.thread_count - 1),
+            HTTPd.server_thread_new)
+          HTTPd.server_thread()
+          List.map(threads, Thread.delete)
+        else
+          HTTPd.server_thread()
+        end
       else
-        HTTPd.server_thread()
+        Err.puts("KC3 HTTPd: Event.base_new")
+        -1
       end
       0
     else

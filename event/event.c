@@ -112,6 +112,21 @@ s32 kc3_event_base_dispatch (struct event_base **eb)
   return event_base_dispatch(*eb);
 }
 
+s32 kc3_event_base_loop (struct event_base **eb)
+{
+  return event_base_loop(*eb, 0);
+}
+
+s32 kc3_event_base_loopbreak (struct event_base **eb)
+{
+  return event_base_loopbreak(*eb);
+}
+
+s32 kc3_event_base_loopexit (struct event_base **eb)
+{
+  return event_base_loopexit(*eb, NULL);
+}
+
 struct event_base * kc3_event_base_new (void)
 {
   return event_base_new();

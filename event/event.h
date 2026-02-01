@@ -28,6 +28,9 @@ struct event *      kc3_event_new (struct event_base **event_base,
                                    s_tag *arg);
 
 /* Operators. */
-s32  kc3_event_add (struct event **ev, s_time *time);
+s32 kc3_event_add (struct event **ev, s_time *time);
+s32 kc3_event_base_loop (struct event_base **eb);
+s32 kc3_event_base_loopbreak (struct event_base **eb);
+s32 kc3_event_base_loopexit (struct event_base **eb);
 
 #endif /* KC3_EVENT_H */

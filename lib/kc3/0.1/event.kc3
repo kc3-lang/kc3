@@ -25,6 +25,12 @@ defmodule Event do
 
   def lib_init = cfn Void "libkc3_event_init" ()
 
+  def loop = cfn S32 "kc3_event_base_loop" (Ptr)
+
+  def loopbreak = cfn S32 "kc3_event_base_loopbreak" (Ptr)
+
+  def loopexit = cfn S32 "kc3_event_base_loopexit" (Ptr)
+
   def new = cfn Ptr "kc3_event_new" (Ptr, S64, List, Callable, Tag)
 
   def version = cfn Str "kc3_event_version" (Result)
