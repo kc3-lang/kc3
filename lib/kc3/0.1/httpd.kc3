@@ -165,11 +165,17 @@ defmodule HTTPd do
     client = void
     unwind_protect(do
       puts("HTTPd.acceptor: server_socket=#{inspect(server_socket)}")
-      if (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
-         KQueue.add(HTTPd.kq_fd, client.sockfd,
-           {:client, client}) == 0 &&
-         KQueue.add(HTTPd.kq_fd, server_socket, :acceptor) == 0 do
-        ok = true
+      if (client = Socket.Buf.accept(%Socket{fd: server_socket})) do
+        Mutex.lock(HTTPd.kq_mutex)
+        unwind_protect(do
+          if KQueue.add(HTTPd.kq_fd, client.sockfd, {:client, client}) == 0 &&
+             KQueue.add(HTTPd.kq_fd, server_socket, :acceptor) == 0 do
+            puts("HTTPd.acceptor: ok")
+            ok = true
+          end
+        end, do
+          Mutex.unlock(HTTPd.kq_mutex)
+        end)
       end
     end, do
       if ! ok && client do
@@ -193,10 +199,9 @@ defmodule HTTPd do
   def server_thread = fn () {
     run = true
     while run do
-      puts("HTTPd.server_thread: loop")
       Mutex.lock(HTTPd.kq_mutex)
       r = unwind_protect(do
-        KQueue.poll(HTTPd.kq_fd, void)
+        KQueue.poll(HTTPd.kq_fd, %Time{})
       end, do
         Mutex.unlock(HTTPd.kq_mutex)
       end)
@@ -207,6 +212,8 @@ defmodule HTTPd do
         {sockfd, {:client, client}} ->
           Err.puts("HTTPd.server_thread: client")
           HTTPd.http_client(sockfd, client)
+        void ->
+          sleep(%Time{tv_nsec: 1000})
         x ->
           Err.puts("HTTPd.server_thread: unknown: #{inspect(x)}")
           void
