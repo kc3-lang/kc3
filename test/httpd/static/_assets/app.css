@@ -32114,14 +32114,16 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  font-family: computer_modern;
-  font-size: 1.3em;
 }
 body div.container {
   margin: 0;
   padding: 0;
   width: 100%;
   max-width: 100%;
+}
+body {
+  font-family: computer_modern;
+  font-size: 1.3em;
 }
 
 input {
@@ -32181,15 +32183,15 @@ pre.wrap {
   text-decoration: underline;
 }
 
+.doc-logo > span, .doc-logo-lg > span, .doc-logo-light > span, .doc-logo-light-lg > span {
+  display: inline-block;
+  margin: 0 0.3em;
+}
 .doc-logo, .doc-logo-lg, .doc-logo-light, .doc-logo-light-lg {
   display: inline-block;
   padding: 0.1em 0.5rem 0 0;
   margin: 0;
   color: #e9ecef;
-}
-.doc-logo > span, .doc-logo-lg > span, .doc-logo-light > span, .doc-logo-light-lg > span {
-  display: inline-block;
-  margin: 0 0.3em;
 }
 
 .doc-logo:hover, .doc-logo-lg:hover {
