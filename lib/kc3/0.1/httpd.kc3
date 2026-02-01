@@ -92,7 +92,6 @@ defmodule HTTPd do
     close = false
     error = true
     unwind_protect(do
-      Err.puts("HTTPd.http_client")
       request = HTTP.Request.buf_parse(client.buf_rw.r)
       if request do
         client_addr = if client.addr_str != "127.0.0.1" do
@@ -164,13 +163,11 @@ defmodule HTTPd do
     ok = false
     client = void
     unwind_protect(do
-      puts("HTTPd.acceptor: server_socket=#{inspect(server_socket)}")
       if (client = Socket.Buf.accept(%Socket{fd: server_socket})) do
         Mutex.lock(HTTPd.kq_mutex)
         unwind_protect(do
           if KQueue.add(HTTPd.kq_fd, client.sockfd, {:client, client}) == 0 &&
              KQueue.add(HTTPd.kq_fd, server_socket, :acceptor) == 0 do
-            puts("HTTPd.acceptor: ok")
             ok = true
           end
         end, do
@@ -207,10 +204,8 @@ defmodule HTTPd do
       end)
       match r do
         {sockfd, :acceptor} ->
-          Err.puts("HTTPd.server_thread: acceptor")
           HTTPd.acceptor(sockfd)
         {sockfd, {:client, client}} ->
-          Err.puts("HTTPd.server_thread: client")
           HTTPd.http_client(sockfd, client)
         void ->
           sleep(%Time{tv_nsec: 10000000})
