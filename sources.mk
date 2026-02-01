@@ -50,6 +50,9 @@ KC3_CONFIGURES = \
 	"kpkg/configure" \
 	"kpkg/sources.sh" \
 	"kpkg/update_sources" \
+	"kqueue/configure" \
+	"kqueue/sources.sh" \
+	"kqueue/update_sources" \
 	"libkc3/configure" \
 	"libkc3/sources.sh" \
 	"libkc3/update_sources" \
@@ -175,6 +178,8 @@ KC3_MAKEFILES = \
 	"kmsg/Makefile" \
 	"kpkg/Makefile" \
 	"kpkg/sources.mk" \
+	"kqueue/Makefile" \
+	"kqueue/sources.mk" \
 	"libkc3/Makefile" \
 	"libkc3/gen.mk" \
 	"libkc3/sources.mk" \
@@ -409,6 +414,8 @@ KC3_C_SOURCES = \
 	"kc3s/buf_readline.h" \
 	"kc3s/kc3s.c" \
 	"kpkg/kpkg.c" \
+	"kqueue/kqueue.c" \
+	"kqueue/kqueue.h" \
 	"libkc3/abs.c" \
 	"libkc3/abs.h" \
 	"libkc3/alist.c" \
@@ -1701,6 +1708,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/kpkg/repos/runj.kc3" \
 	"lib/kc3/0.1/kpkg/repos/zlib.kc3" \
 	"lib/kc3/0.1/kpkg_debug.dump" \
+	"lib/kc3/0.1/kqueue.kc3" \
 	"lib/kc3/0.1/kubz.kc3" \
 	"lib/kc3/0.1/list.kc3" \
 	"lib/kc3/0.1/map.facts" \
@@ -2305,15 +2313,9 @@ KC3_TEST_PDF_SOURCES = \
 	"test/pdf_test" \
 
 KC3_TEST_TLS_SOURCES = \
-	"test/tls/acceptor_loop.kc3" \
-	"test/tls/acceptor_loop.out.expected" \
-	"test/tls/acceptor_loop.ret.expected" \
 	"test/tls/ca_cert_path.kc3" \
 	"test/tls/ca_cert_path.out.expected" \
 	"test/tls/ca_cert_path.ret.expected" \
-	"test/tls/facts.kc3" \
-	"test/tls/facts.out.expected" \
-	"test/tls/facts.ret.expected" \
 	"test/tls/tls.kc3" \
 	"test/tls/tls.out.expected" \
 	"test/tls/tls.ret.expected" \

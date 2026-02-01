@@ -107,6 +107,11 @@ smtp
 test
 "
 
+if [ "x$ARCH" = "xopenbsd" ]; then
+    SUBDIRS="$SUBDIRS
+kqueue"
+fi
+
 if $HAVE_GL; then
     SUBDIRS="$SUBDIRS
 gl

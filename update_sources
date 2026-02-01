@@ -26,6 +26,7 @@ KC3_DIRS="
  kc3s
  kmsg
  kpkg
+ kqueue
  libkc3
  libtommath
  markdown
