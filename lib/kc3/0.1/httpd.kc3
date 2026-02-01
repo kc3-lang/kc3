@@ -213,7 +213,7 @@ defmodule HTTPd do
           Err.puts("HTTPd.server_thread: client")
           HTTPd.http_client(sockfd, client)
         void ->
-          sleep(%Time{tv_nsec: 1000})
+          sleep(%Time{tv_nsec: 1000000})
         x ->
           Err.puts("HTTPd.server_thread: unknown: #{inspect(x)}")
           void
