@@ -32,11 +32,11 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details libkc3_web.html
 
 install::
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/include/libkc3/event
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${DESTDIR}${prefix}/include/libkc3/kqueue
 	for H in ${HEADERS}; do \
 	    ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 \
 		${SRC_DIR}/$$H \
-		${DESTDIR}${prefix}/include/libkc3/event; done
+		${DESTDIR}${prefix}/include/libkc3/kqueue; done
 
 test:
 
