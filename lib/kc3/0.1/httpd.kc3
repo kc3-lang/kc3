@@ -165,7 +165,8 @@ defmodule HTTPd do
       puts("HTTPd.acceptor: server_socket=#{inspect(server_socket)}")
       if (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
          KQueue.add(HTTPd.kq_fd, client.sockfd,
-           {:client, client}) == 0 do
+           {:client, client}) == 0 &&
+         KQueue.add(HTTPd.kq_fd, server_socket, :acceptor) == 0 do
         ok = true
       end
     end, do
