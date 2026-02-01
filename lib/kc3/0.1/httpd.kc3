@@ -166,10 +166,8 @@ defmodule HTTPd do
       if (client = Socket.Buf.accept(%Socket{fd: server_socket})) do
         Mutex.lock(HTTPd.kq_mutex)
         unwind_protect(do
-          if KQueue.add(HTTPd.kq_fd, client.sockfd, {:client, client}) == 0 &&
-             KQueue.add(HTTPd.kq_fd, server_socket, :acceptor) == 0 do
-            ok = true
-          end
+          KQueue.add(HTTPd.kq_fd, server_socket, :acceptor)
+          ok = KQueue.add(HTTPd.kq_fd, client.sockfd, {:client, client}) == 0
         end, do
           Mutex.unlock(HTTPd.kq_mutex)
         end)
@@ -190,8 +188,6 @@ defmodule HTTPd do
       end
     end
   }
-
-  def time_zero = %Time{}
 
   def server_thread = fn () {
     run = true
