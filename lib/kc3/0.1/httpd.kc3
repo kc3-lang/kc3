@@ -90,7 +90,7 @@ defmodule HTTPd do
 
   def http_client = fn (socket, client) do
     close = false
-    error = false
+    error = true
     unwind_protect(do
       Err.puts("HTTPd.http_client")
       request = HTTP.Request.buf_parse(client.buf_rw.r)
@@ -133,6 +133,8 @@ defmodule HTTPd do
           KQueue.add(HTTPd.kq_fd, client.sockfd,
             {:client, client}) != 0 do
           error = true
+        else
+          error = false
         end
         dt = Time.now() - request.time
         dt_str = Time.diff_to_str(dt)
