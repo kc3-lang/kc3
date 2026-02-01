@@ -800,6 +800,7 @@ install:
 	${MAKE} -C git install
 	${MAKE} -C image install
 	${MAKE} -C json install
+	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue install; fi
 	${MAKE} -C markdown install
 	${MAKE} -C pdf install
 	${MAKE} -C qrencode install
