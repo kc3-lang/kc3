@@ -23,6 +23,7 @@ all:
 	${MAKE} -C git all
 	${MAKE} -C image all
 	${MAKE} -C json all
+	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue; fi
 	${MAKE} -C markdown all
 	${MAKE} -C pdf all
 	${MAKE} -C qrencode all
@@ -86,6 +87,7 @@ build:
 	${MAKE} -C git build
 	${MAKE} -C image build
 	${MAKE} -C json build
+	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue build; fi
 	${MAKE} -C markdown build
 	${MAKE} -C pdf build
 	${MAKE} -C qrencode build
@@ -111,6 +113,7 @@ clean::
 	${MAKE} -C git clean
 	${MAKE} -C image clean
 	${MAKE} -C json clean
+	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue clean; fi
 	${MAKE} -C markdown clean
 	${MAKE} -C pdf clean
 	${MAKE} -C qrencode clean
@@ -133,6 +136,7 @@ clean_cov::
 	${MAKE} -C git clean_cov
 	${MAKE} -C image clean_cov
 	${MAKE} -C json clean_cov
+	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue clean_cov; fi
 	${MAKE} -C markdown clean_cov
 	${MAKE} -C pdf clean_cov
 	${MAKE} -C qrencode clean_cov
@@ -166,6 +170,7 @@ cov:
 	${MAKE} -C git cov
 	${MAKE} -C image cov
 	${MAKE} -C json cov
+	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue cov; fi
 	${MAKE} -C markdown cov
 	${MAKE} -C pdf cov
 	${MAKE} -C qrencode cov
@@ -196,6 +201,7 @@ debug:
 	${MAKE} -C git debug
 	${MAKE} -C image debug
 	${MAKE} -C json debug
+	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue debug; fi
 	${MAKE} -C markdown debug
 	${MAKE} -C pdf debug
 	${MAKE} -C qrencode debug
@@ -818,6 +824,7 @@ install_lib_links_bsd:
 	ln -sf ../../libkc3_http.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/http.so
 	ln -sf ../../libkc3_image.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/image.so
 	ln -sf ../../libkc3_json.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/json.so
+	ln -sf ../../libkc3_kqueue.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/kqueue.so
 	ln -sf ../../libkc3_markdown.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_pdf.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/pdf.so
 	ln -sf ../../libkc3_qrencode.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/qrencode.so
@@ -859,6 +866,7 @@ install_lib_links_openbsd:
 	ln -sf ../../libkc3_http.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/http.so
 	ln -sf ../../libkc3_image.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/image.so
 	ln -sf ../../libkc3_json.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/json.so
+	ln -sf ../../libkc3_kqueue.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/kqueue.so
 	ln -sf ../../libkc3_markdown.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/markdown.so
 	ln -sf ../../libkc3_pdf.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/pdf.so
 	ln -sf ../../libkc3_qrencode.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/qrencode.so
@@ -1052,6 +1060,7 @@ lib_links_bsd:
 	ln -sf ../../../http/libkc3_http.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json.${SHARED_EXT} lib/kc3/0.1/json.so
+	ln -sf ../../../kqueue/libkc3_kqueue.${SHARED_EXT} lib/kc3/0.1/kqueue.so
 	ln -sf ../../../markdown/libkc3_markdown.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
@@ -1065,6 +1074,7 @@ lib_links_bsd_asan:
 	ln -sf ../../../http/libkc3_http_asan.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_asan.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_asan.${SHARED_EXT} lib/kc3/0.1/json.so
+	ln -sf ../../../kqueue/libkc3_kqueue_asan.${SHARED_EXT} lib/kc3/0.1/kqueue.so
 	ln -sf ../../../markdown/libkc3_markdown_asan.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_asan.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_asan.${SHARED_EXT} lib/kc3/0.1/qrencode.so
@@ -1078,6 +1088,7 @@ lib_links_bsd_cov:
 	ln -sf ../../../http/libkc3_http_cov.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_cov.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_cov.${SHARED_EXT} lib/kc3/0.1/json.so
+	ln -sf ../../../kqueue/libkc3_kqueue_cov.${SHARED_EXT} lib/kc3/0.1/kqueue.so
 	ln -sf ../../../markdown/libkc3_markdown_cov.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_cov.${SHARED_EXT} lib/kc3/0.1/qrencode.so
@@ -1091,6 +1102,7 @@ lib_links_bsd_debug:
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
+	ln -sf ../../../kqueue/libkc3_kqueue_debug.${SHARED_EXT} lib/kc3/0.1/kqueue.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
@@ -1194,6 +1206,7 @@ lib_links_openbsd:
 	ln -sf ../../../http/libkc3_http.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json.${SHARED_EXT} lib/kc3/0.1/json.so
+	ln -sf ../../../kqueue/libkc3_kqueue.${SHARED_EXT} lib/kc3/0.1/kqueue.so
 	ln -sf ../../../markdown/libkc3_markdown.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
@@ -1208,6 +1221,7 @@ lib_links_openbsd_cov:
 	ln -sf ../../../http/libkc3_http_cov.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_cov.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_cov.${SHARED_EXT} lib/kc3/0.1/json.so
+	ln -sf ../../../kqueue/libkc3_kqueue_cov.${SHARED_EXT} lib/kc3/0.1/kqueue.so
 	ln -sf ../../../markdown/libkc3_markdown_cov.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_cov.${SHARED_EXT} lib/kc3/0.1/qrencode.so
@@ -1222,6 +1236,7 @@ lib_links_openbsd_debug:
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
+	ln -sf ../../../kqueue/libkc3_kqueue_debug.${SHARED_EXT} lib/kc3/0.1/kqueue.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
@@ -1236,6 +1251,7 @@ lib_links_clean:
 	rm -f lib/kc3/0.1/http.so
 	rm -f lib/kc3/0.1/image.so
 	rm -f lib/kc3/0.1/json.so
+	rm -f lib/kc3/0.1/kqueue.so
 	rm -f lib/kc3/0.1/markdown.so
 	rm -f lib/kc3/0.1/pdf.so
 	rm -f lib/kc3/0.1/qrencode.so
