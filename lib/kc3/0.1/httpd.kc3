@@ -120,9 +120,9 @@ defmodule HTTPd do
         else
           response = HTTP.Response.set_header(response,
             "Connection", "keep-alive")
+          response = HTTP.Response.set_header(response,
+            "Keep-Alive", "timeout=5, max=10")
         end
-        response = HTTP.Response.set_header(response,
-          "Keep-Alive", "timeout=5, max=100")
         response = HTTP.Response.set_header(response,
           "Server", "kc3_httpd")
         response = HTTP.Response.set_header(response,
@@ -183,8 +183,7 @@ defmodule HTTPd do
   }
 
   def server_thread = fn () {
-    run = true
-    while run do
+    while true do
       Mutex.lock(HTTPd.kq_mutex)
       r = unwind_protect(do
         KQueue.poll(HTTPd.kq_fd, %Time{})

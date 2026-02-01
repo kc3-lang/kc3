@@ -3270,7 +3270,7 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
     if (setjmp(loop_context.continue_buf))
       continue;
     if (! env_eval_tag(env, body, &tmp))
-      goto ko;
+      continue;
   }
   ok:
   env_unwind_protect_pop(env, &loop_context.up);
