@@ -16,7 +16,7 @@ defmodule Event do
 
   def add = cfn S32 "kc3_event_add" (Ptr, Time)
 
-  def del = cfn S32 "kc3_event_del" (Ptr)
+  def free = cfn Void "kc3_event_free" (Ptr)
 
   def dispatch = cfn S32 "kc3_event_base_dispatch" (Ptr)
 

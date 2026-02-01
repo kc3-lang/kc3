@@ -25,9 +25,9 @@ s32 kc3_event_add (struct event **ev, s_time *time)
   return event_add(*ev, &tv);
 }
 
-s32 kc3_event_del (struct event **ev)
+void kc3_event_free (struct event **ev)
 {
-  return event_del(*ev);
+  event_free(*ev);
 }
 
 /* kc3_event_callback
