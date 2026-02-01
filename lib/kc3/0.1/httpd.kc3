@@ -86,68 +86,67 @@ defmodule HTTPd do
     end
   }
 
+  clients = %{}
+
   def http_client = fn (socket, client) do
     close = false
     error = false
-    max = 100
     unwind_protect(do
       Err.puts("HTTPd.http_client")
-      while max > 0 && ! close && ! error do
-        request = HTTP.Request.buf_parse(client.buf_rw.r)
-        if request do
-          close = max == 1
-          client_addr = if client.addr_str != "127.0.0.1" do
-            client.addr_str
-          else
-            headers = request.headers
-            real_ip = headers["X-Real-IP"]
-            if (real_ip) do real_ip else client.addr_str end
-          end
-          request = Struct.put(request, :client_addr, client_addr)
-          user_agent = HTTP.Request.header(request, "User-Agent")
-          IO.puts("--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
-          if (type(request.method) == Str) do
-            response = error_405_page(request)
-          else
-            request = plug_request(request)
-            response = route_and_render_request(request)
-          end
-          clean_request_uploads(request.body)
-          connection = HTTP.Request.header(request, "Connection") || ""
-          if Compare.str_case_insensitive(connection, "close") == 0 do
-            close = true
-            response = HTTP.Response.set_header(response,
-              "Connection", "close")
-          else
-            response = HTTP.Response.set_header(response,
-              "Connection", "keep-alive")
-          end
+      request = HTTP.Request.buf_parse(client.buf_rw.r)
+      if request do
+        client_addr = if client.addr_str != "127.0.0.1" do
+          client.addr_str
+        else
+          headers = request.headers
+          real_ip = headers["X-Real-IP"]
+          if (real_ip) do real_ip else client.addr_str end
+        end
+        request = Struct.put(request, :client_addr, client_addr)
+        user_agent = HTTP.Request.header(request, "User-Agent")
+        IO.puts("--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
+        if (type(request.method) == Str) do
+          response = error_405_page(request)
+        else
+          request = plug_request(request)
+          response = route_and_render_request(request)
+        end
+        clean_request_uploads(request.body)
+        connection = HTTP.Request.header(request, "Connection") || ""
+        if Compare.str_case_insensitive(connection, "close") == 0 do
+          close = true
           response = HTTP.Response.set_header(response,
-            "Keep-Alive", "timeout=5, max=#{max}")
+            "Connection", "close")
+        else
           response = HTTP.Response.set_header(response,
-            "Server", "kc3_httpd")
-          response = HTTP.Response.set_header(response,
-            "Accept-Ranges", "bytes")
-          r = HTTP.Response.buf_write(response, client.buf_rw.w,
-            request.method != HEAD)
-          if (r <= 0) do
-            error = true
-          end
-          dt = Time.now() - request.time
-          dt_str = Time.diff_to_str(dt)
-          IO.puts("#{response.code} #{client_addr} #{request.method}" +
+            "Connection", "keep-alive")
+        end
+        response = HTTP.Response.set_header(response,
+          "Keep-Alive", "timeout=5, max=100")
+        response = HTTP.Response.set_header(response,
+          "Server", "kc3_httpd")
+        response = HTTP.Response.set_header(response,
+          "Accept-Ranges", "bytes")
+        r = HTTP.Response.buf_write(response, client.buf_rw.w,
+          request.method != HEAD)
+        if r <= 0 ||
+          KQueue.add(HTTPd.kq_fd, client.sockfd,
+            {:client, client}) != 0 do
+          error = true
+        end
+        dt = Time.now() - request.time
+        dt_str = Time.diff_to_str(dt)
+        IO.puts("#{response.code} #{client_addr} #{request.method}" +
+          " #{request.url} #{inspect(user_agent)}" +
+          " #{dt_str}")
+        if (response.code >= 400) do
+          Err.puts("#{response.code} #{client_addr} #{request.method}" +
             " #{request.url} #{inspect(user_agent)}" +
             " #{dt_str}")
-          if (response.code >= 400) do
-            Err.puts("#{response.code} #{client_addr} #{request.method}" +
-              " #{request.url} #{inspect(user_agent)}" +
-                " #{dt_str}")
-          end
-          max = max - 1
         end
       end
     end, do
-      if error || close || List.has?(events, :timeout) do
+      if error || close do
         if error do
           Err.puts("HTTPd.http_client: error")
         end
@@ -166,7 +165,7 @@ defmodule HTTPd do
       puts("HTTPd.acceptor: server_socket=#{inspect(server_socket)}")
       if (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
          KQueue.add(HTTPd.kq_fd, client.sockfd,
-           {:http_client, client}) == 0 do
+           {:client, client}) == 0 do
         ok = true
       end
     end, do

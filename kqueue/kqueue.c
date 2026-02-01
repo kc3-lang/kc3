@@ -39,7 +39,7 @@ s64 kc3_kqueue_add (s64 kqfd, s64 fd, s_tag *udata)
   s32 r;
   event.ident = fd;
   event.filter = EVFILT_READ;
-  event.flags = EV_ADD | EV_CLEAR;
+  event.flags = EV_ADD | EV_ONESHOT;
   event.data = SOMAXCONN;
   event.udata = tag_new_copy(udata);
   if ((r = kevent(kqfd, &event, 1, NULL, 0, NULL)) < 0) {
@@ -81,8 +81,7 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
   if (r > 0) {
     if (! tag_init_tuple(dest, 2) ||
         ! tag_init_s64(dest->data.tuple.tag, event.ident) ||
-        ! tag_init_copy(dest->data.tuple.tag + 1,
-                        (s_tag *) event.udata))
+        ! tag_init_copy(dest->data.tuple.tag + 1, event.udata))
       return NULL;
     return dest;
   }
