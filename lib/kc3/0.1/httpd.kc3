@@ -90,10 +90,11 @@ defmodule HTTPd do
 
   def http_client = fn (socket, client) do
     close = false
-    error = true
+    error = false
     unwind_protect(do
       request = HTTP.Request.buf_parse(client.buf_rw.r)
       if request do
+        error = true
         client_addr = if client.addr_str != "127.0.0.1" do
           client.addr_str
         else
@@ -128,13 +129,8 @@ defmodule HTTPd do
           "Accept-Ranges", "bytes")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
-        if r <= 0 ||
-          KQueue.add(HTTPd.kq_fd, client.sockfd,
-            {:client, client}) != 0 do
-          error = true
-        else
-          error = false
-        end
+        error = ((r <= 0) || (KQueue.add(HTTPd.kq_fd, client.sockfd,
+                               {:client, client}) != 0))
         dt = Time.now() - request.time
         dt_str = Time.diff_to_str(dt)
         IO.puts("#{response.code} #{client_addr} #{request.method}" +
@@ -148,9 +144,6 @@ defmodule HTTPd do
       end
     end, do
       if error || close do
-        if error do
-          Err.puts("HTTPd.http_client: error")
-        end
         Socket.Buf.close(client)
         File.close(socket)
       end
