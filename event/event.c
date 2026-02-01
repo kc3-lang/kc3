@@ -134,6 +134,8 @@ struct event * kc3_event_new (struct event_base **event_base, s64 fd,
       events_s16 |= EV_WRITE;
     else if (e->tag.data.psym == &g_sym_persist)
       events_s16 |= EV_PERSIST;
+    else if (e->tag.data.psym == &g_sym_timeout)
+      events_s16 |= EV_TIMEOUT;
     else
       goto invalid_event_list;
     e = list_next(e);
