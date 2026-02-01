@@ -15,6 +15,9 @@
 
 #include "../libkc3/types.h"
 
+/* Library initialization. */
+void libkc3_event_init (void);
+
 /* Heap-allocation functions, call *_delete after use. */
 struct event_base * kc3_event_base_new (void);
 void                kc3_event_delete (struct event *ev);

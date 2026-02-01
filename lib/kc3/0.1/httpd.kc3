@@ -31,6 +31,8 @@ defmodule HTTPd do
 
   def concurrent_requests_max = ncpu * 32
 
+  def event_base = ?
+
   def load_app = fn () {
     HTTP.mime_type_load("config/mime.types")
     load_directory!("app/lib/")
@@ -165,7 +167,7 @@ defmodule HTTPd do
 
   def timeout = %Time{tv_sec: 5}
 
-  def acceptor = fn (server_socket, events, acceptor_ev, event_base) do
+  def acceptor = fn (server_socket, events, acceptor_ev, void) do
     if List.has?(events, :read) do
       ok = false
       client = void
@@ -173,7 +175,7 @@ defmodule HTTPd do
       Counter.increase(HTTPd.concurrent_requests, 1)
       unwind_protect(do
         if (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
-           (client_ev = Event.new(event_base, client.sockfd,
+           (client_ev = Event.new(HTTPd.event_base, client.sockfd,
              [:read, :persist, :timeout], http_client, client)) do
           Event.add(client_ev, timeout)
           ok = true
@@ -205,17 +207,12 @@ defmodule HTTPd do
   def time_zero = %Time{}
 
   def server_thread = fn () {
-    if event_base = Event.base_new() do
-      acceptor_ev = Event.new(event_base, socket.fd, [:read, :persist],
-        HTTPd.acceptor, event_base)
-      r = Event.add(acceptor_ev, HTTPd.time_zero)
-      r = Event.dispatch(event_base)
-      if r do
-        e = errno()
-        IO.puts("KC3 HTTPd: event dispatch error: #{strerror(e)}")
-      end
-      Socket.close(socket)
+    r = Event.dispatch(HTTPd.event_base)
+    if r do
+      e = errno()
+      IO.puts("KC3 HTTPd: event dispatch error: #{strerror(e)}")
     end
+    Socket.close(socket)
   }
 
   def server_thread_new = fn (x) {
@@ -246,8 +243,13 @@ defmodule HTTPd do
     end
     unveil("", "")
     pledge("stdio rpath wpath cpath fattr inet dns proc", "")
+    Event.lib_init()
     HTTPd.socket <- Socket.listen(host, port)
-    if HTTPd.socket do
+    if HTTPd.socket &&
+       (HTTPd.event_base <- Event.base_new()) do
+      acceptor_ev = Event.new(HTTPd.event_base, socket.fd, [:read, :persist],
+        HTTPd.acceptor, void)
+      r = Event.add(acceptor_ev, HTTPd.time_zero)
       daemonize()
       pledge("stdio rpath wpath cpath fattr inet dns", "")
       IO.puts("KC3 HTTPd: listening on #{host}:#{port}")

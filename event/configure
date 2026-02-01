@@ -51,6 +51,7 @@ config_win32
 config_win64
 pkg_config libbsd-overlay
 pkg_config libevent
+pkg_config libevent_pthreads
 pkg_config libffi
 pkg_config libmd
 config_define PREFIX "\"${PREFIX}\""

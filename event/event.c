@@ -10,7 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <pthread.h>
 #include <event2/event.h>
+#include <event2/thread.h>
 #include "../libkc3/kc3.h"
 #include <signal.h>
 #include "event.h"
@@ -162,4 +164,9 @@ struct event * kc3_event_new (struct event_base **event_base, s64 fd,
 s_str * kc3_event_version (s_str *dest)
 {
   return str_init_1(dest, NULL, event_get_version());
+}
+
+void libkc3_event_init (void)
+{
+  evthread_use_pthreads();
 }

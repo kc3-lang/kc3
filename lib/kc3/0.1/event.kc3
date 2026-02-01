@@ -16,12 +16,14 @@ defmodule Event do
 
   def add = cfn S32 "kc3_event_add" (Ptr, Time)
 
-  def free = cfn Void "kc3_event_free" (Ptr)
+  # base_new() returns a (struct event_base *)
+  def base_new = cfn Ptr "event_base_new" ()
 
   def dispatch = cfn S32 "kc3_event_base_dispatch" (Ptr)
 
-  # base_new() returns a (struct event_base *)
-  def base_new = cfn Ptr "event_base_new" ()
+  def free = cfn Void "kc3_event_free" (Ptr)
+
+  def lib_init = cfn Void "libkc3_event_init" ()
 
   def new = cfn Ptr "kc3_event_new" (Ptr, S64, List, Callable, Tag)
 
