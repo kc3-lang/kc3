@@ -60,6 +60,7 @@
 #include "map.h"
 #include "marshall.h"
 #include "marshall_read.h"
+#include "mutex.h"
 #include "pfacts.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
@@ -1218,6 +1219,30 @@ bool * kc3_must_clean (p_sym *sym, bool *dest)
 {
   assert(sym);
   return sym_must_clean(*sym, dest);
+}
+
+void kc3_mutex_delete (s_mutex **mutex)
+{
+  mutex_delete(*mutex);
+}
+
+void kc3_mutex_lock (s_mutex **mutex)
+{
+  mutex_lock(*mutex);
+}
+
+s_mutex ** kc3_mutex_new (s_mutex **dest)
+{
+  s_mutex *tmp;
+  if (! (tmp = mutex_new()))
+    return NULL;
+  *dest = tmp;
+  return dest;
+}
+
+void kc3_mutex_unlock (s_mutex **mutex)
+{
+  mutex_unlock(*mutex);
 }
 
 uw * kc3_offsetof (p_sym *module,

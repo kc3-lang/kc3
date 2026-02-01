@@ -174,6 +174,10 @@ s_str *              kc3_marshall_tag_to_str (const s_tag *tag,
                                               s_str *dest);
 s_str *              kc3_marshall_to_str (p_marshall *m, s_str *dest);
 bool                 kc3_maybe_reload (const s_str *path);
+void                 kc3_mutex_delete (s_mutex **mutex);
+void                 kc3_mutex_lock (s_mutex **mutex);
+s_mutex **           kc3_mutex_new (s_mutex **dest);
+void                 kc3_mutex_unlock (s_mutex **mutex);
 s_tag *              kc3_or (s_tag *a, s_tag *b, s_tag *dest);
 s_tag *              kc3_parse_tag (s_tag *tag, const s_str *src);
 void                 kc3_pledge (const s_str *promises,

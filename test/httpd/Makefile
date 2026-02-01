@@ -12,22 +12,22 @@
 
 SRC_TOP = ../..
 
-main: assets doc release
+main: doc release
 	${SRC_TOP}/httpd/kc3_httpd --trace -d 127.0.0.1 15004
 
 assets:
 	${MAKE} -C assets
 
-asan: assets doc release
+asan: doc release
 	${SRC_TOP}/httpd/kc3_httpd_asan --trace -d 127.0.0.1 15004
 
 clean_dump:
 	rm -f kc3.dump db/*.bin.facts
 
-cov: assets doc release
+cov: doc release
 	${SRC_TOP}/httpd/kc3_httpd_cov --trace -d 127.0.0.1 15004
 
-debug: assets doc release
+debug: doc release
 	${SRC_TOP}/httpd/kc3_httpd_debug --trace -d 127.0.0.1 15004
 
 doc:
@@ -41,7 +41,7 @@ dump_debug: clean_dump
 	${SRC_TOP}/httpd/kc3_httpd_debug --trace -d
 	time ${SRC_TOP}/kc3s/kc3s_debug --trace --quit
 
-gdb: assets doc release
+gdb: doc release
 	if [ -f kc3_httpd_debug.core ]; then gdb ${SRC_TOP}/httpd/kc3_httpd_debug kc3_httpd_debug.core; else gdb ${SRC_TOP}/httpd/kc3_httpd_debug; fi
 
 gdb_dump: clean_dump
@@ -50,7 +50,7 @@ gdb_dump: clean_dump
 gdb_dump_restore:
 	gdb ${SRC_TOP}/kc3s/kc3s_debug
 
-ikc3: assets
+ikc3:
 	${SRC_TOP}/ikc3/ikc3 127.0.0.1 15004
 
 lldb_dump: clean_dump
@@ -64,7 +64,7 @@ release:
 		rsync -aP ../../release/* static/release/; \
 	fi
 
-run: assets
+run:
 	${SRC_TOP}/httpd/kc3_httpd -C ${SRC_TOP}/test/httpd 127.0.0.1 15004
 
 test: vegeta_local

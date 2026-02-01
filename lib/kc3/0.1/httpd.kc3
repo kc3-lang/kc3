@@ -19,6 +19,7 @@ require HTTP
 require HTTP.Request
 require HTTP.Response
 require HTTPd.Route
+require KQueue
 require Socket
 require Socket.Buf
 require Str
@@ -27,11 +28,8 @@ require URL
 
 defmodule HTTPd do
 
-  defcounter concurrent_requests = 0
-
-  def concurrent_requests_max = ncpu * 32
-
-  def event_base = ?
+  def kq_fd = ?
+  def kq_mutex = Mutex.new()
 
   def load_app = fn () {
     HTTP.mime_type_load("config/mime.types")
@@ -88,66 +86,64 @@ defmodule HTTPd do
     end
   }
 
-  def http_client = fn (socket, events, client_ev, client) do
+  def http_client = fn (socket, client) do
     close = false
     error = false
     max = 100
     unwind_protect(do
-      Err.puts("HTTPd.http_client: events=#{events}")
-      if List.has?(events, :read) do
-        while max > 0 && ! close && ! error do
-          request = HTTP.Request.buf_parse(client.buf_rw.r)
-          if request do
-            close = max == 1
-            client_addr = if client.addr_str != "127.0.0.1" do
-              client.addr_str
-            else
-              headers = request.headers
-              real_ip = headers["X-Real-IP"]
-              if (real_ip) do real_ip else client.addr_str end
-            end
-            request = Struct.put(request, :client_addr, client_addr)
-            user_agent = HTTP.Request.header(request, "User-Agent")
-            IO.puts("--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
-            if (type(request.method) == Str) do
-              response = error_405_page(request)
-            else
-              request = plug_request(request)
-              response = route_and_render_request(request)
-            end
-            clean_request_uploads(request.body)
-            connection = HTTP.Request.header(request, "Connection") || ""
-            if Compare.str_case_insensitive(connection, "close") == 0 do
-              close = true
-              response = HTTP.Response.set_header(response,
-                "Connection", "close")
-            else
-              response = HTTP.Response.set_header(response,
-                "Connection", "keep-alive")
-            end
-            response = HTTP.Response.set_header(response,
-              "Keep-Alive", "timeout=5, max=#{max}")
-            response = HTTP.Response.set_header(response,
-              "Server", "kc3_httpd")
-            response = HTTP.Response.set_header(response,
-              "Accept-Ranges", "bytes")
-            r = HTTP.Response.buf_write(response, client.buf_rw.w,
-              request.method != HEAD)
-            if (r <= 0) do
-              error = true
-            end
-            dt = Time.now() - request.time
-            dt_str = Time.diff_to_str(dt)
-            IO.puts("#{response.code} #{client_addr} #{request.method}" +
-              " #{request.url} #{inspect(user_agent)}" +
-              " #{dt_str}")
-            if (response.code >= 400) do
-              Err.puts("#{response.code} #{client_addr} #{request.method}" +
-                " #{request.url} #{inspect(user_agent)}" +
-                " #{dt_str}")
-            end
-            max = max - 1
+      Err.puts("HTTPd.http_client")
+      while max > 0 && ! close && ! error do
+        request = HTTP.Request.buf_parse(client.buf_rw.r)
+        if request do
+          close = max == 1
+          client_addr = if client.addr_str != "127.0.0.1" do
+            client.addr_str
+          else
+            headers = request.headers
+            real_ip = headers["X-Real-IP"]
+            if (real_ip) do real_ip else client.addr_str end
           end
+          request = Struct.put(request, :client_addr, client_addr)
+          user_agent = HTTP.Request.header(request, "User-Agent")
+          IO.puts("--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
+          if (type(request.method) == Str) do
+            response = error_405_page(request)
+          else
+            request = plug_request(request)
+            response = route_and_render_request(request)
+          end
+          clean_request_uploads(request.body)
+          connection = HTTP.Request.header(request, "Connection") || ""
+          if Compare.str_case_insensitive(connection, "close") == 0 do
+            close = true
+            response = HTTP.Response.set_header(response,
+              "Connection", "close")
+          else
+            response = HTTP.Response.set_header(response,
+              "Connection", "keep-alive")
+          end
+          response = HTTP.Response.set_header(response,
+            "Keep-Alive", "timeout=5, max=#{max}")
+          response = HTTP.Response.set_header(response,
+            "Server", "kc3_httpd")
+          response = HTTP.Response.set_header(response,
+            "Accept-Ranges", "bytes")
+          r = HTTP.Response.buf_write(response, client.buf_rw.w,
+            request.method != HEAD)
+          if (r <= 0) do
+            error = true
+          end
+          dt = Time.now() - request.time
+          dt_str = Time.diff_to_str(dt)
+          IO.puts("#{response.code} #{client_addr} #{request.method}" +
+            " #{request.url} #{inspect(user_agent)}" +
+            " #{dt_str}")
+          if (response.code >= 400) do
+            Err.puts("#{response.code} #{client_addr} #{request.method}" +
+              " #{request.url} #{inspect(user_agent)}" +
+                " #{dt_str}")
+          end
+          max = max - 1
         end
       end
     end, do
@@ -155,45 +151,31 @@ defmodule HTTPd do
         if error do
           Err.puts("HTTPd.http_client: error")
         end
-        Event.free(client_ev)
         Socket.Buf.close(client)
         File.close(socket)
-        Counter.decrease(HTTPd.concurrent_requests, 1)
-        concurrent_requests = Counter.get(HTTPd.concurrent_requests)
-        Err.puts("HTTPd.http_client: concurrent_requests=#{concurrent_requests} count=#{100 - max}")
       end
     end)
   end
 
   def timeout = %Time{tv_sec: 5}
 
-  def acceptor = fn (server_socket, events, acceptor_ev, void) do
-    if List.has?(events, :read) do
-      ok = false
-      client = void
-      client_ev = void
-      Counter.increase(HTTPd.concurrent_requests, 1)
-      unwind_protect(do
-        if (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
-           (client_ev = Event.new(HTTPd.event_base, client.sockfd,
-             [:read, :persist, :timeout], http_client, client)) do
-          Event.add(client_ev, timeout)
-          ok = true
-        end
-      end, do
-        if ! ok do
-          if client_ev do Event.free(client_ev) end
-          if client do
-            Socket.Buf.close(client)
-            File.close(client.sockfd)
-          end
-          Counter.decrease(HTTPd.concurrent_requests, 1)
-          concurrent_requests = Counter.get(HTTPd.concurrent_requests)
-          Err.puts("HTTPd.acceptor: concurrent_requests=#{concurrent_requests}")
-        end
-      end)
-    end
-  end
+  def acceptor = fn (server_socket) {
+    ok = false
+    client = void
+    unwind_protect(do
+      puts("HTTPd.acceptor: server_socket=#{inspect(server_socket)}")
+      if (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
+         KQueue.add(HTTPd.kq_fd, client.sockfd,
+           {:http_client, client}) == 0 do
+        ok = true
+      end
+    end, do
+      if ! ok && client do
+        Socket.Buf.close(client)
+        File.close(client.sockfd)
+      end
+    end)
+  }
 
   def daemonize = fn () {
     if KC3.daemonize do
@@ -209,17 +191,25 @@ defmodule HTTPd do
   def server_thread = fn () {
     run = true
     while run do
-      Event.loopbreak(HTTPd.event_base)
-      r = Event.loop(HTTPd.event_base)
-      if r do
-        IO.puts("KC3 HTTPd: r=#{inspect(r)}")
-      end
-      if r && (e = errno()) do
-        IO.puts("HTTPd.server_thread: Event.loop: #{strerror(e)}")
-        run = false
+      puts("HTTPd.server_thread: loop")
+      Mutex.lock(HTTPd.kq_mutex)
+      r = unwind_protect(do
+        KQueue.poll(HTTPd.kq_fd, void)
+      end, do
+        Mutex.unlock(HTTPd.kq_mutex)
+      end)
+      match r do
+        {sockfd, :acceptor} ->
+          Err.puts("HTTPd.server_thread: acceptor")
+          HTTPd.acceptor(sockfd)
+        {sockfd, {:client, client}} ->
+          Err.puts("HTTPd.server_thread: client")
+          HTTPd.http_client(sockfd, client)
+        x ->
+          Err.puts("HTTPd.server_thread: unknown: #{inspect(x)}")
+          void
       end
     end
-    Socket.close(HTTPd.socket)
   }
 
   def server_thread_new = fn (x) {
@@ -250,16 +240,13 @@ defmodule HTTPd do
     end
     unveil("", "")
     pledge("stdio rpath wpath cpath fattr inet dns proc", "")
-    HTTPd.socket <- Socket.listen(host, port)
-    if HTTPd.socket do
+    if HTTPd.socket <- Socket.listen(host, port) do
       daemonize()
       pledge("stdio rpath wpath cpath fattr inet dns", "")
       IO.puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
-      if (HTTPd.event_base <- Event.base_new()) do
-        acceptor_ev = Event.new(HTTPd.event_base, socket.fd, [:read, :persist],
-          HTTPd.acceptor, void)
-        r = Event.add(acceptor_ev, HTTPd.time_zero)
+      if (HTTPd.kq_fd <- KQueue.kqueue()) > 0 do
+        KQueue.add(HTTPd.kq_fd, socket.fd, :acceptor)
         if HTTPd.thread_count > 1 do
           threads = List.map(List.count(HTTPd.thread_count - 1),
             HTTPd.server_thread_new)
@@ -268,11 +255,11 @@ defmodule HTTPd do
         else
           HTTPd.server_thread()
         end
+        0
       else
-        Err.puts("KC3 HTTPd: Event.base_new")
+        Err.puts("KC3 HTTPd: KQueue.kqueue")
         -1
       end
-      0
     else
       Err.puts("KC3 HTTPd: cannot listen on #{host}:#{port}")
       -1

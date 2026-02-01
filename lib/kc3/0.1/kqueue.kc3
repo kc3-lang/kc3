@@ -10,23 +10,14 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Mutex do
+dlopen("kqueue.so")
 
-  defstruct [mutex: (Uw) 0,
-             ready: false]
+defmodule KQueue do
 
-  def delete = cfn Void "kc3_mutex_delete" (Mutex*)
+  def add = cfn S64 "kc3_kqueue_add" (S64, S64, Tag)
 
-  def lock = cfn Void "kc3_mutex_lock" (Mutex*)
+  def kqueue = cfn S64 "kc3_kqueue" ()
 
-  def marshall = cfn Marshall* "mutex_marshall" (Marshall*, Bool,
-    Mutex*)
-
-  def marshall_read = cfn Mutex* "mutex_marshall_read" (MarshallRead*,
-    Bool, Result)
-
-  def new = cfn Mutex* "kc3_mutex_new" (Result)
-
-  def unlock = cfn Void "kc3_mutex_unlock" (Mutex*)
+  def poll = cfn Tag "kc3_kqueue_poll" (S64, Tag, Result)
 
 end
