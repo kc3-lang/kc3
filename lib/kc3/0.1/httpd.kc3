@@ -92,10 +92,11 @@ defmodule HTTPd do
     unwind_protect(do
       Err.puts("HTTPd.http_client: events=#{events}")
       if List.has?(events, :read) do
-        while ! close && ! error do
+        max = 100
+        while max > 0 && ! close && ! error do
           request = HTTP.Request.buf_parse(client.buf_rw.r)
           if request do
-            close = false
+            close = max == 1
             client_addr = if client.addr_str != "127.0.0.1" do
               client.addr_str
             else
@@ -123,7 +124,7 @@ defmodule HTTPd do
                 "Connection", "keep-alive")
             end
             response = HTTP.Response.set_header(response,
-              "Keep-Alive", "timeout=5, max=1000")
+              "Keep-Alive", "timeout=5, max=#{max}")
             response = HTTP.Response.set_header(response,
               "Server", "kc3_httpd")
             response = HTTP.Response.set_header(response,
@@ -143,6 +144,7 @@ defmodule HTTPd do
                 " #{request.url} #{inspect(user_agent)}" +
                 " #{dt_str}")
             end
+            max = max - 1
           end
         end
       end
@@ -170,11 +172,12 @@ defmodule HTTPd do
       client_ev = void
       Counter.increase(HTTPd.concurrent_requests, 1)
       unwind_protect(do
-        client = Socket.Buf.accept(%Socket{fd: server_socket})
-        client_ev = Event.new(event_base, client.sockfd,
-          [:read, :persist, :timeout], http_client, client)
-        Event.add(client_ev, timeout)
-        ok = true
+        if (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
+           (client_ev = Event.new(event_base, client.sockfd,
+             [:read, :persist, :timeout], http_client, client)) do
+          Event.add(client_ev, timeout)
+          ok = true
+        end
       end, do
         if ! ok do
           if client_ev do Event.free(client_ev) end
@@ -204,8 +207,8 @@ defmodule HTTPd do
   def server_thread = fn () {
     if event_base = Event.base_new() do
       acceptor_ev = Event.new(event_base, socket.fd, [:read, :persist],
-        acceptor, event_base)
-      r = Event.add(acceptor_ev, time_zero)
+        HTTPd.acceptor, event_base)
+      r = Event.add(acceptor_ev, HTTPd.time_zero)
       r = Event.dispatch(event_base)
       if r do
         e = errno()
