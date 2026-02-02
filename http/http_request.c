@@ -67,8 +67,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   static const s_str urlencoded =
     STR("application/x-www-form-urlencoded");
   s_str *value;
-  assert(req);
-  assert(buf);
+  if (! req || ! buf)
+    return NULL;
   env = env_global();
   if (method_key.type == TAG_VOID) { // init static variables
     tag_init_str_1(&method_key, NULL, "_method");
