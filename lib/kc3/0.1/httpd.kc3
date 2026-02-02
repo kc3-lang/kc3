@@ -169,14 +169,9 @@ defmodule HTTPd do
         puts("HTTPd.acceptor: connections=#{count}")
         Mutex.lock(HTTPd.kq_mutex)
         unwind_protect(do
-          KQueue.add(HTTPd.kq_fd, server_socket, :acceptor)
-          ok = KQueue.add(HTTPd.kq_fd, client.sockfd, {:client, client}) == 0
+          ok = (KQueue.add(HTTPd.kq_fd, server_socket, :acceptor) == 0 &&
+                KQueue.add(HTTPd.kq_fd, client.sockfd, {:client, client}) == 0)
         end, do
-          if ! ok do
-            Counter.decrease(HTTPd.connections, 1)
-            count = Counter.get(HTTPd.connections)
-            puts("acceptor: connections=#{count}")
-          end
           Mutex.unlock(HTTPd.kq_mutex)
         end)
       end
