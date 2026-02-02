@@ -31,6 +31,9 @@ defmodule HTTPd do
   def kq_fd = ?
   def kq_mutex = Mutex.new()
 
+  defcounter HTTPd.connections = 0
+  def connections_max = ncpu * 16
+
   def load_app = fn () {
     HTTP.mime_type_load("config/mime.types")
     load_directory!("app/lib/")
@@ -146,6 +149,9 @@ defmodule HTTPd do
       if error || close do
         Socket.Buf.close(client)
         File.close(socket)
+        Counter.decrease(HTTPd.connections, 1)
+        count = Counter.get(HTTPd.connections)
+        puts("HTTPd.http_client: connections=#{count}")
       end
     end)
   end
@@ -156,12 +162,21 @@ defmodule HTTPd do
     ok = false
     client = void
     unwind_protect(do
-      if (client = Socket.Buf.accept(%Socket{fd: server_socket})) do
+      if (Counter.get(HTTPd.connections) < HTTPd.connections_max) &&
+         (client = Socket.Buf.accept(%Socket{fd: server_socket})) do
+        Counter.increase(HTTPd.connections, 1)
+        count = Counter.get(HTTPd.connections)
+        puts("HTTPd.acceptor: connections=#{count}")
         Mutex.lock(HTTPd.kq_mutex)
         unwind_protect(do
           KQueue.add(HTTPd.kq_fd, server_socket, :acceptor)
           ok = KQueue.add(HTTPd.kq_fd, client.sockfd, {:client, client}) == 0
         end, do
+          if ! ok do
+            Counter.decrease(HTTPd.connections, 1)
+            count = Counter.get(HTTPd.connections)
+            puts("acceptor: connections=#{count}")
+          end
           Mutex.unlock(HTTPd.kq_mutex)
         end)
       end
