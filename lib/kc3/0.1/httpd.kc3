@@ -201,14 +201,27 @@ defmodule HTTPd do
         Mutex.unlock(HTTPd.kq_mutex)
       end)
       match r do
-        {sockfd, :acceptor} ->
-          HTTPd.acceptor(sockfd)
-        {sockfd, {:client, client}} ->
-          HTTPd.http_client(sockfd, client)
+        {sockfd, close?, :acceptor} ->
+          if (close?) do
+            File.close(sockfd)
+          else
+            HTTPd.acceptor(sockfd)
+          end
+        {sockfd, close?, {:client, client}} ->
+          if (close?) do
+            Socket.Buf.close(client)
+            File.close(sockfd)
+            Counter.decrease(HTTPd.connections, 1)
+            count = Counter.get(HTTPd.connections)
+            puts("HTTPd.server_thread: connections=#{count}")
+          else
+            HTTPd.http_client(sockfd, client)
+          end
         void ->
           sleep(%Time{tv_nsec: 10000000})
         x ->
-          Err.puts("HTTPd.server_thread: unknown: #{inspect(x)}")
+          Err.puts("HTTPd.server_thread: unknown poll value:" +
+            " #{inspect(x)}")
           void
       end
     end

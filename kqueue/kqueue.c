@@ -79,9 +79,11 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
     return tag_init_void(dest);
   }
   if (r > 0) {
-    if (! tag_init_tuple(dest, 2) ||
+    if (! tag_init_tuple(dest, 3) ||
         ! tag_init_s64(dest->data.tuple.tag, event.ident) ||
-        ! tag_init_copy(dest->data.tuple.tag + 1, event.udata))
+        ! tag_init_bool(dest->data.tuple.tag + 1, !! (event.flags &
+                                                      EV_EOF)) ||
+        ! tag_init_copy(dest->data.tuple.tag + 2, event.udata))
       return NULL;
     return dest;
   }
