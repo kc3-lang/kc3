@@ -732,6 +732,7 @@ struct log {
   u64         count;
   s_buf       binary_buf;
   s_str       binary_path;
+  s_marshall *marshall;
   s_log_hook *hooks;
 };
 
@@ -747,6 +748,7 @@ struct marshall_read {
   uw     heap_count;
   uw     heap_offset;
   uw     heap_size;
+  s64    heap_start;
   s_ht   ht;
   s_buf *source;
 };

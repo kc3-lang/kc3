@@ -356,45 +356,18 @@ s_marshall_read * marshall_read_character (s_marshall_read *mr,
   return buf_read_character_utf8(buf, dest) < 0 ? NULL : mr;
 }
 
-void marshall_read_clean (s_marshall_read *mr)
-{
-  assert(mr);
-  if (mr->buf && mr->heap && mr->buf->user_ptr != mr->heap->user_ptr)
-    buf_file_close(mr->heap);
-  if (mr->buf && mr->buf != mr->source)
-    buf_file_close(mr->buf);
-  if (mr->buf && mr->buf != mr->source)
-    buf_clean(mr->buf);
-  if (mr->buf && mr->heap && mr->buf->ptr.p != mr->heap->ptr.p)
-    buf_clean(mr->heap);
-  if (mr->heap && mr->heap->ptr.p == mr->buf->ptr.p)
-    rwlock_delete(mr->heap->rwlock);
-  if (mr->heap && mr->buf != mr->heap)
-    free(mr->heap);
-  if (mr->buf && mr->buf != mr->source)
-    free(mr->buf);
-  marshall_read_ht_clean(mr);
-}
-
 s_marshall_read * marshall_read_chunk (s_marshall_read *mr)
 {
   s_buf *buf;
-  u8 zeros[sizeof(s_marshall_header)] = {0};
   assert(mr);
+  mr->heap_start = -((s64) sizeof(s_marshall_header));
   if (mr->heap_size) {
-    if (buf_write(mr->heap, zeros, sizeof(s_marshall_header)) !=
-        (sw) sizeof(s_marshall_header)) {
-      err_puts("marshall_read_chunk: buf_write zeros");
-      assert(! "marshall_read_chunk: buf_write zeros");
-      return NULL;
-    }
     if (buf_xfer(mr->heap, mr->buf, mr->heap_size) !=
         (sw) mr->heap_size) {
       err_puts("marshall_read_chunk: buf_xfer heap");
       assert(! "marshall_read_chunk: buf_xfer heap");
       return NULL;
     }
-    mr->heap->rpos = sizeof(s_marshall_header);
   }
   if (mr->buf_size) {
     buf = alloc(sizeof(s_buf));
@@ -422,7 +395,7 @@ s_marshall_read * marshall_read_chunk (s_marshall_read *mr)
   return mr;
 }
 
-s_marshall_read * marshall_read_reset_chunk (s_marshall_read *mr)
+s_marshall_read * marshall_read_chunk_reset (s_marshall_read *mr)
 {
   assert(mr);
   mr->heap_offset += mr->heap_size;
@@ -435,6 +408,42 @@ s_marshall_read * marshall_read_reset_chunk (s_marshall_read *mr)
     mr->buf = mr->source;
   }
   return mr;
+}
+
+s_marshall_read * marshall_read_chunk_file (s_marshall_read *mr)
+{
+  u64 pos;
+  assert(mr);
+  if (! marshall_read_header(mr))
+    return NULL;
+  if (! buf_tell_r(mr->buf, &pos))
+    return NULL;
+  mr->heap_start = (s64) pos - (s64) sizeof(s_marshall_header);
+  if (buf_seek(mr->heap, pos, SEEK_SET) <= 0)
+    return NULL;
+  if (buf_seek(mr->buf, pos + mr->heap_size, SEEK_SET) <= 0)
+    return NULL;
+  return mr;
+}
+
+void marshall_read_clean (s_marshall_read *mr)
+{
+  assert(mr);
+  if (mr->buf && mr->heap && mr->buf->user_ptr != mr->heap->user_ptr)
+    buf_file_close(mr->heap);
+  if (mr->buf && mr->buf != mr->source)
+    buf_file_close(mr->buf);
+  if (mr->buf && mr->buf != mr->source)
+    buf_clean(mr->buf);
+  if (mr->buf && mr->heap && mr->buf->ptr.p != mr->heap->ptr.p)
+    buf_clean(mr->heap);
+  if (mr->heap && mr->heap->ptr.p == mr->buf->ptr.p)
+    rwlock_delete(mr->heap->rwlock);
+  if (mr->heap && mr->buf != mr->heap)
+    free(mr->heap);
+  if (mr->buf && mr->buf != mr->source)
+    free(mr->buf);
+  marshall_read_ht_clean(mr);
 }
 
 s_marshall_read * marshall_read_complex (s_marshall_read *mr,
@@ -1006,7 +1015,7 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
       err_inspect_str(&binary_path);
       err_write_1("\n");
     }
-    if (! facts_open_file_binary(facts, &binary_path)) {
+    if (facts_open_file_binary(facts, &binary_path) < 0) {
       err_write_1("marshall_read_facts: facts_open_file_binary: ");
       err_inspect_str(&binary_path);
       err_write_1(": ERROR\n");
@@ -1358,6 +1367,7 @@ s_marshall_read * marshall_read_init_file (s_marshall_read *mr,
     fclose(fp);
     goto ko;
   }
+  mr->source = mr->buf;
   if (! marshall_read_header(mr)) {
     error_msg = "marshall_read_header";
     goto ko_close;
@@ -1381,6 +1391,7 @@ s_marshall_read * marshall_read_init_file (s_marshall_read *mr,
     buf_file_close(mr->heap);
     goto ko_close;
   }
+  mr->heap_start = 0;
   return mr;
  ko_close:
   buf_file_close(mr->buf);
@@ -1699,7 +1710,7 @@ s_marshall_read * marshall_read_pcall (s_marshall_read *mr,
     }
     return mr;
   }
-  if (buf_seek(mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
+  if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0) {
     err_puts("marshall_read_pcall: buf_seek");
     assert(! "marshall_read_pcall: buf_seek");
     return NULL;
@@ -1757,7 +1768,7 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
     }
     return mr;
   }
-  if (buf_seek(mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
+  if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0) {
     err_puts("marshall_read_pcallable: buf_seek");
     assert(! "marshall_read_pcallable: buf_seek");
     return NULL;
@@ -1812,7 +1823,7 @@ s_marshall_read * marshall_read_pcomplex (s_marshall_read *mr,
     }
     return mr;
   }
-  if (buf_seek(mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+  if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
       ! (tmp = alloc(sizeof(s_complex))))
     return NULL;
   if (! marshall_read_complex(mr, true, tmp) ||
@@ -1868,7 +1879,7 @@ s_marshall_read * marshall_read_pfacts (s_marshall_read *mr,
     }
     return mr;
   }
-  if (buf_seek(mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
+  if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0) {
     err_puts("marshall_read_pfacts: buf_seek");
     assert(! "marshall_read_pfacts: buf_seek");
     return NULL;
@@ -1924,7 +1935,7 @@ s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
     }
     return mr;
   }
-  if (buf_seek(mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+  if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
       ! (tmp = alloc(sizeof(s_frame))))
     return NULL;
   if (! marshall_read_frame(mr, true, tmp)) {
@@ -1969,7 +1980,7 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
     }
     return mr;
   }
-  if (buf_seek(mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+  if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
       ! (tmp = alloc(sizeof(s_list))))
     return NULL;
   if (! marshall_read_list(mr, true, tmp)) {
@@ -2092,7 +2103,7 @@ s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,
     }
     return mr;
   }
-  if (buf_seek(mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+  if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
       ! (tmp = alloc(sizeof(s_struct))))
     return NULL;
   if (! marshall_read_struct(mr, true, tmp)) {
@@ -2133,7 +2144,7 @@ s_marshall_read * marshall_read_pstruct_type (s_marshall_read *mr,
     pstruct_type_init_copy(dest, &present);
     return mr;
   }
-  if (buf_seek(mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+  if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
       ! (tmp = alloc(sizeof(s_struct_type))))
     return NULL;
   if (! marshall_read_struct_type(mr, true, tmp)) {
@@ -2168,7 +2179,7 @@ s_marshall_read * marshall_read_psym (s_marshall_read *mr,
     *dest = present;
     return mr;
   }
-  if (buf_seek(mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
+  if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0) {
     err_puts("marshall_read_psym: buf_seek failed");
     return NULL;
   }
@@ -2205,7 +2216,7 @@ s_marshall_read * marshall_read_ptag (s_marshall_read *mr,
     *dest = present;
     return mr;
   }
-  if (buf_seek(mr->heap, (s64) offset, SEEK_SET) != (s64) offset) {
+  if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0) {
     err_puts("marshall_read_ptag: buf_seek");
     assert(! "marshall_read_ptag: buf_seek");
     return NULL;
@@ -2295,7 +2306,7 @@ s_marshall_read * marshall_read_pvar (s_marshall_read *mr,
     }
     return mr;
   }
-  if (buf_seek(mr->heap, (s64) offset, SEEK_SET) != (s64) offset ||
+  if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
       ! (tmp = alloc(sizeof(s_var))))
     return NULL;
   if (! marshall_read_var(mr, true, tmp) ||

@@ -86,7 +86,7 @@ static bool facts_connection_auth (s_facts_connection *conn, bool is_server)
         return false;
       i++;
     }
-    marshall_read_reset_chunk(mr);
+    marshall_read_chunk_reset(mr);
     str_init(&challenge_str, NULL, FACTS_CONNECTION_AUTH_CHALLENGE_SIZE,
              (const char *) challenge);
     sha512_hmac(&facts->secret, &challenge_str, expected_hmac);
@@ -110,7 +110,7 @@ static bool facts_connection_auth (s_facts_connection *conn, bool is_server)
         return false;
       i++;
     }
-    marshall_read_reset_chunk(mr);
+    marshall_read_chunk_reset(mr);
     str_init(&challenge_str, NULL, FACTS_CONNECTION_AUTH_CHALLENGE_SIZE,
              (const char *) challenge);
     sha512_hmac(&facts->secret, &challenge_str, expected_hmac);
@@ -185,7 +185,7 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
     facts_connection_delete(conn);
     return NULL;
   }
-  marshall_read_reset_chunk(&conn->marshall_read);
+  marshall_read_chunk_reset(&conn->marshall_read);
   if (facts->priority == remote_priority) {
     err_puts("facts_connection_add: equal priority");
     facts_connection_delete(conn);
@@ -474,7 +474,7 @@ static void * facts_connection_thread (void *arg)
       break;
     }
     fact_clean_all(&fact);
-    marshall_read_reset_chunk(mr);
+    marshall_read_chunk_reset(mr);
   }
   conn->running = false;
   return NULL;

@@ -144,7 +144,7 @@ u64 * buf_file_open_r_tell (s_buf *buf, u64 *dest)
     assert(! "buf_file_open_r_tell: ftello");
     return NULL;
   }
-  *dest = tmp + buf->rpos;
+  *dest = tmp - buf->wpos + buf->rpos;
   return dest;
 }
 

@@ -1061,7 +1061,6 @@ sw facts_load_file (s_facts *facts, const s_str *path)
   return result;
 }
 
-// TODO: if (binary) {
 sw facts_log_add (s_log *log, uw id, const s_fact *fact)
 {
   s_log_hook *hook;
@@ -1069,29 +1068,25 @@ sw facts_log_add (s_log *log, uw id, const s_fact *fact)
   sw result = 0;
   assert(log);
   assert(fact);
-  if ((r = buf_inspect_uw_decimal(&log->buf, id)) < 0)
-    goto ko;
-  result += r;
-  if ((r = buf_write_1(&log->buf, " add ")) < 0)
-    goto ko;
-  result += r;
-  if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
-    goto ko;
-  result += r;
-  if ((r = buf_write_1(&log->buf, "\n")) < 0)
-    goto ko;
-  result += r;
-  if (log->binary_path.size) {
-    if ((r = buf_inspect_uw_decimal(&log->binary_buf, id)) < 0)
+  if (log->marshall) {
+    marshall_uw(log->marshall, false, id);
+    marshall_u8(log->marshall, false, FACT_ACTION_ADD);
+    marshall_fact(log->marshall, false, fact);
+    if ((r = marshall_to_buf(log->marshall, &log->binary_buf)) < 0)
       goto ko;
     result += r;
-    if ((r = buf_write_1(&log->binary_buf, " add ")) < 0)
+  }
+  else {
+    if ((r = buf_inspect_uw_decimal(&log->buf, id)) < 0)
       goto ko;
     result += r;
-    if ((r = buf_inspect_fact(&log->binary_buf, fact)) < 0)
+    if ((r = buf_write_1(&log->buf, " add ")) < 0)
       goto ko;
     result += r;
-    if ((r = buf_write_1(&log->binary_buf, "\n")) < 0)
+    if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
+      goto ko;
+    result += r;
+    if ((r = buf_write_1(&log->buf, "\n")) < 0)
       goto ko;
     result += r;
   }
@@ -1107,7 +1102,6 @@ sw facts_log_add (s_log *log, uw id, const s_fact *fact)
   return r;
 }
 
-// TODO: if (binary) {
 sw facts_log_remove (s_log *log, uw id, const s_fact *fact)
 {
   s_log_hook *hook;
@@ -1115,29 +1109,25 @@ sw facts_log_remove (s_log *log, uw id, const s_fact *fact)
   sw result = 0;
   assert(log);
   assert(fact);
-  if ((r = buf_inspect_uw_decimal(&log->buf, id)) < 0)
-    goto ko;
-  result += r;
-  if ((r = buf_write_1(&log->buf, " remove ")) < 0)
-    goto ko;
-  result += r;
-  if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
-    goto ko;
-  result += r;
-  if ((r = buf_write_1(&log->buf, "\n")) < 0)
-    goto ko;
-  result += r;
-  if (log->binary_path.size) {
-    if ((r = buf_inspect_uw_decimal(&log->binary_buf, id)) < 0)
+  if (log->marshall) {
+    marshall_uw(log->marshall, false, id);
+    marshall_u8(log->marshall, false, FACT_ACTION_REMOVE);
+    marshall_fact(log->marshall, false, fact);
+    if ((r = marshall_to_buf(log->marshall, &log->binary_buf)) < 0)
       goto ko;
     result += r;
-    if ((r = buf_write_1(&log->binary_buf, " remove ")) < 0)
+  }
+  else {
+    if ((r = buf_inspect_uw_decimal(&log->buf, id)) < 0)
       goto ko;
     result += r;
-    if ((r = buf_inspect_fact(&log->binary_buf, fact)) < 0)
+    if ((r = buf_write_1(&log->buf, " remove ")) < 0)
       goto ko;
     result += r;
-    if ((r = buf_write_1(&log->binary_buf, "\n")) < 0)
+    if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
+      goto ko;
+    result += r;
+    if ((r = buf_write_1(&log->buf, "\n")) < 0)
       goto ko;
     result += r;
   }
@@ -1261,24 +1251,168 @@ sw facts_open_file (s_facts *facts, const s_str *path)
 
 sw facts_open_file_binary (s_facts *facts, const s_str *path)
 {
+  u8 action;
+  s_fact fact;
+  u8 first_byte;
   FILE *fp;
-  char i[BUF_SIZE];
+  uw i;
+  uw id;
+  char in_buf[BUF_SIZE];
   s_buf in;
+  s_log *log_save;
+  s_marshall_read mr = {0};
   sw r;
+  bool removed = false;
   sw result = 0;
-  buf_init(&in, false, sizeof(i), i);
+  err_write_1("facts_open_file_binary: ");
+  err_inspect_str(path);
+  err_write_1("\n");
   fp = fopen(path->ptr.pchar, "rb");
   if (! fp) {
     if (errno == ENOENT)
       return facts_open_file_binary_create(facts, path);
     return -1;
   }
-  buf_file_open_r(&in, fp);
-  if ((r = facts_open_buf(facts, &in, path)) < 0)
-    return r;
-  result += r;
-  buf_file_close(&in);
-  buf_clean(&in);
+  if (fread(&first_byte, 1, 1, fp) != 1) {
+    fclose(fp);
+    return facts_open_file_binary_create(facts, path);
+  }
+  fclose(fp);
+  log_save = facts->log;
+  facts->log = NULL;
+  if (first_byte == '%') {
+    fp = fopen(path->ptr.pchar, "rb");
+    if (! fp) {
+      facts->log = log_save;
+      return -1;
+    }
+    buf_init(&in, false, sizeof(in_buf), in_buf);
+    buf_file_open_r(&in, fp);
+    if ((r = facts_load(facts, &in, path)) <= 0) {
+      buf_file_close(&in);
+      buf_clean(&in);
+      facts->log = log_save;
+      return r;
+    }
+    result = r;
+    buf_file_close(&in);
+    buf_clean(&in);
+  }
+  else {
+    err_write_1("facts_open_file_binary: binary format\n");
+    if (! marshall_read_init_file(&mr, path)) {
+      facts->log = log_save;
+      return -1;
+    }
+    i = 0;
+    while (1) {
+      while ((r = buf_peek_1(mr.buf, "KC3MARSH")) == 0) {
+        if (buf_peek_1(mr.buf, "_KC3UW_") <= 0)
+          goto end_binary;
+        if (! marshall_read_uw(&mr, false, &id)) {
+          err_write_1("facts_open_file_binary: invalid id #");
+          err_inspect_uw_decimal(i);
+          err_write_1(": ");
+          err_inspect_str(path);
+          err_write_1("\n");
+          assert(! "facts_open_file_binary: invalid id");
+          marshall_read_clean(&mr);
+          facts->log = log_save;
+          return -1;
+        }
+        if (! marshall_read_u8(&mr, false, &action)) {
+          err_write_1("facts_open_file_binary: invalid action #");
+          err_inspect_uw_decimal(i);
+          err_write_1(": ");
+          err_inspect_str(path);
+          err_write_1("\n");
+          assert(! "facts_open_file_binary: invalid action");
+          marshall_read_clean(&mr);
+          facts->log = log_save;
+          return -1;
+        }
+        if (! marshall_read_fact(&mr, false, &fact)) {
+          err_write_1("facts_open_file_binary: invalid fact #");
+          err_inspect_uw_decimal(i);
+          err_write_1(": ");
+          err_inspect_str(path);
+          err_write_1("\n");
+          assert(! "facts_open_file_binary: invalid fact");
+          marshall_read_clean(&mr);
+          facts->log = log_save;
+          return -1;
+        }
+        err_write_1("facts_open_file_binary: #");
+        err_inspect_uw_decimal(i);
+        err_write_1(" id=");
+        err_inspect_uw_decimal(id);
+        err_write_1(" action=");
+        err_inspect_u8_decimal(action);
+        err_write_1(" ");
+        err_inspect_fact(&fact);
+        err_write_1("\n");
+        switch (action) {
+        case FACT_ACTION_ADD:
+          if (! facts_add_fact(facts, &fact)) {
+            err_write_1("facts_open_file_binary: facts_add_fact #");
+            err_inspect_uw_decimal(i);
+            err_write_1(": ");
+            err_inspect_str(path);
+            err_write_1("\n");
+            assert(! "facts_open_file_binary: facts_add_fact");
+            fact_clean_all(&fact);
+            marshall_read_clean(&mr);
+            facts->log = log_save;
+            return -1;
+          }
+          fact_clean_all(&fact);
+          break;
+        case FACT_ACTION_REMOVE:
+          if (! facts_remove_fact(facts, &fact, &removed) || ! removed) {
+            err_write_1("facts_open_file_binary: facts_remove_fact #");
+            err_inspect_uw_decimal(i);
+            err_write_1(": ");
+            err_inspect_str(path);
+            err_write_1("\n");
+            assert(! "facts_open_file_binary: facts_remove_fact");
+            fact_clean_all(&fact);
+            marshall_read_clean(&mr);
+            facts->log = log_save;
+            return -1;
+          }
+          fact_clean_all(&fact);
+          break;
+        default:
+          err_puts("facts_open_file_binary: invalid fact action");
+          marshall_read_clean(&mr);
+          facts->log = log_save;
+          return -1;
+        }
+        i++;
+      }
+      if (r > 0) {
+        err_write_1("facts_open_file_binary: next chunk\n");
+        result += marshall_read_size(&mr);
+        if (! marshall_read_chunk_file(&mr)) {
+          err_write_1("facts_open_file_binary: marshall_read_chunk_file: ");
+          err_inspect_str(path);
+          err_write_1("\n");
+          assert(! "facts_open_file_binary: marshall_read_chunk_file");
+          marshall_read_clean(&mr);
+          facts->log = log_save;
+          return -1;
+        }
+        continue;
+      }
+      break;
+    }
+  end_binary:
+    err_write_1("facts_open_file_binary: replayed ");
+    err_inspect_uw_decimal(i);
+    err_write_1(" facts\n");
+    marshall_read_clean(&mr);
+  }
+  facts->log = log_save;
   fp = file_open(path, "ab");
   if (! fp)
     return -1;
@@ -1311,9 +1445,7 @@ sw facts_open_file_binary_create (s_facts *facts, const s_str *path)
     fclose(fp);
     return -1;
   }
-  return buf_write_1(&facts->log->binary_buf,
-                     "%{module: KC3.Facts.Dump,\n"
-                     "  version: 1}\n");
+  return 0;
 }
 
 sw facts_open_file_create (s_facts *facts, const s_str *path)

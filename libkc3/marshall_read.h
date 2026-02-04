@@ -29,7 +29,8 @@ s_marshall_read * marshall_read_init_1 (s_marshall_read *mr,
                                         const char *p, uw size);
 s_marshall_read * marshall_read_header (s_marshall_read *mr);
 s_marshall_read * marshall_read_chunk (s_marshall_read *mr);
-s_marshall_read * marshall_read_reset_chunk (s_marshall_read *mr);
+s_marshall_read * marshall_read_chunk_file (s_marshall_read *mr);
+s_marshall_read * marshall_read_chunk_reset (s_marshall_read *mr);
 s_marshall_read * marshall_read_init_buf (s_marshall_read *mr,
                                           s_buf *buf);
 s_marshall_read * marshall_read_init_file (s_marshall_read *mr,
