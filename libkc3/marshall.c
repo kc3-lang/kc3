@@ -1062,7 +1062,7 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
       assert(! "marshall_facts: marshall_str log path");
       return NULL;
     }
-    if (! marshall_str(m, heap, &facts->log->binary_path)) {
+    if (! marshall_str(m, heap, &facts->log->after_dump_path)) {
       err_puts("marshall_facts: marshall_str log binary path");
       assert(! "marshall_facts: marshall_str log binary path");
       return NULL;

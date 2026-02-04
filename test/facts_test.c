@@ -32,6 +32,7 @@ TEST_CASE_PROTOTYPE(facts_new_delete);
 TEST_CASE_PROTOTYPE(facts_open_file);
 TEST_CASE_PROTOTYPE(facts_remove);
 TEST_CASE_PROTOTYPE(facts_save);
+TEST_CASE_PROTOTYPE(facts_save_binary);
 
 void facts_test (void)
 {
@@ -45,6 +46,7 @@ void facts_test (void)
   TEST_CASE_RUN(facts_dump_file);
   TEST_CASE_RUN(facts_load);
   TEST_CASE_RUN(facts_save);
+  TEST_CASE_RUN(facts_save_binary);
   TEST_CASE_RUN(facts_open_file);
 }
 
@@ -674,3 +676,54 @@ TEST_CASE(facts_save)
   facts_clean(&facts);
 }
 TEST_CASE_END(facts_save)
+
+TEST_CASE(facts_save_binary)
+{
+  uw i = 0;
+  char *p[24] = {
+    "\"a\"",
+    ":a",
+    "A",
+    "a",
+    "[]",
+    "[[], []]",
+    "{:a, :b}",
+    "{{:a, :b}, {:c, :d}}",
+    "{{a, b}, {c, d}}",
+    "0",
+    "1",
+    "10",
+    "0x100",
+    "0x10000",
+    "0x100000000",
+    "0x10000000000000000",
+    "-1",
+    "-10",
+    "-0x100",
+    "-0x10000",
+    "-0x100000000",
+    "-0x10000000000000000",
+    NULL
+  };
+  const s_str path = STR("facts_test_save_binary.facts");
+  s_fact fact[24];
+  s_facts facts;
+  facts_init(&facts);
+  while (p[i]) {
+    fact_test_init_1(fact + i, p[i]);
+    facts_add_fact(&facts, fact + i);
+    i++;
+  }
+  facts_save_binary_file(&facts, &path);
+  test_file_compare(path.ptr.pchar,
+                    "facts_test_save_binary.expected.facts");
+  if (g_test_last_ok)
+    unlink("facts_test_save_binary.facts");
+  i = 0;
+  while (p[i]) {
+    fact_test_clean_1(fact + i);
+    i++;
+  }
+  facts_clean(&facts);
+}
+TEST_CASE_END(facts_save_binary)

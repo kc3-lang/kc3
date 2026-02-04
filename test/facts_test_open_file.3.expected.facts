@@ -1,5 +1,3 @@
-%{module: KC3.Facts.Dump,
-  version: 1}
 47 add {"a", "a", "a"}
 48 add {:a, :a, :a}
 49 add {A, A, A}

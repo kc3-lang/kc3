@@ -1011,15 +1011,15 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
       }
     }
     if (env->trace) {
-      err_write_1("marshall_read_facts: facts_open_file_binary: ");
+      err_write_1("marshall_read_facts: facts_open_file_after_dump: ");
       err_inspect_str(&binary_path);
       err_write_1("\n");
     }
-    if (facts_open_file_binary(facts, &binary_path) < 0) {
-      err_write_1("marshall_read_facts: facts_open_file_binary: ");
+    if (facts_open_file_after_dump(facts, &binary_path) < 0) {
+      err_write_1("marshall_read_facts: facts_open_file_after_dump: ");
       err_inspect_str(&binary_path);
       err_write_1(": ERROR\n");
-      assert(! "marshall_read_facts: facts_open_file_binary");
+      assert(! "marshall_read_facts: facts_open_file_after_dump");
       str_clean(&binary_path);
       str_clean(&path);
       return NULL;
@@ -1029,11 +1029,11 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
       err_inspect_str(&binary_path);
       err_write_1(": OK\n");
     }
-    if (! facts_save_file(facts, &path)) {
-      err_write_1("marshall_read_facts: facts_save_file: ");
+    if (facts_save_binary_file(facts, &path) < 0) {
+      err_write_1("marshall_read_facts: facts_save_binary_file: ");
       err_inspect_str(&path);
       err_write_1("\n");
-      assert(! "marshall_read_facts: facts_save_file");
+      assert(! "marshall_read_facts: facts_save_binary_file");
       str_clean(&binary_path);
       str_clean(&path);
       return NULL;

@@ -33,18 +33,20 @@ void log_clean (s_log *log)
   log->hooks = NULL;
   buf_clean(&log->buf);
   str_clean(&log->path);
-  if (log->marshall) {
-    buf_clean(&log->binary_buf);
-    str_clean(&log->binary_path);
+  if (log->marshall)
     marshall_delete(log->marshall);
+  if (log->after_dump_marshall) {
+    buf_clean(&log->after_dump_buf);
+    str_clean(&log->after_dump_path);
+    marshall_delete(log->after_dump_marshall);
   }
 }
 
 void log_close (s_log *log)
 {
   buf_file_close(&log->buf);
-  if (log->marshall)
-    buf_file_close(&log->binary_buf);
+  if (log->after_dump_marshall)
+    buf_file_close(&log->after_dump_buf);
 }
 
 void log_delete (s_log *log)
@@ -78,18 +80,15 @@ s_log * log_new (void)
 
 s_log * log_open (s_log *log, FILE *fp, const s_str *path)
 {
-  s_log tmp = {0};
   assert(log);
   assert(fp);
   assert(path);
-  tmp = *log;
-  if (! buf_file_open_w(&tmp.buf, fp))
+  if (! buf_file_open_w(&log->buf, fp))
     return NULL;
-  if (! str_init_copy(&tmp.path, path)) {
-    buf_file_close(&tmp.buf);
+  if (! str_init_copy(&log->path, path)) {
+    buf_file_close(&log->buf);
     return NULL;
   }
-  *log = tmp;
   return log;
 }
 
@@ -98,21 +97,40 @@ s_log * log_open_binary (s_log *log, FILE *fp, const s_str *path)
   assert(log);
   assert(fp);
   assert(path);
-  if (! buf_init_alloc(&log->binary_buf, BUF_SIZE))
+  if (! buf_file_open_w(&log->buf, fp))
     return NULL;
-  if (! buf_file_open_w(&log->binary_buf, fp)) {
-    buf_clean(&log->binary_buf);
-    return NULL;
-  }
-  if (! str_init_copy(&log->binary_path, path)) {
-    buf_file_close(&log->binary_buf);
-    buf_clean(&log->binary_buf);
+  if (! str_init_copy(&log->path, path)) {
+    buf_file_close(&log->buf);
     return NULL;
   }
   if (! (log->marshall = marshall_new())) {
-    str_clean(&log->binary_path);
-    buf_file_close(&log->binary_buf);
-    buf_clean(&log->binary_buf);
+    str_clean(&log->path);
+    buf_file_close(&log->buf);
+    return NULL;
+  }
+  return log;
+}
+
+s_log * log_open_after_dump (s_log *log, FILE *fp, const s_str *path)
+{
+  assert(log);
+  assert(fp);
+  assert(path);
+  if (! buf_init_alloc(&log->after_dump_buf, BUF_SIZE))
+    return NULL;
+  if (! buf_file_open_w(&log->after_dump_buf, fp)) {
+    buf_clean(&log->after_dump_buf);
+    return NULL;
+  }
+  if (! str_init_copy(&log->after_dump_path, path)) {
+    buf_file_close(&log->after_dump_buf);
+    buf_clean(&log->after_dump_buf);
+    return NULL;
+  }
+  if (! (log->after_dump_marshall = marshall_new())) {
+    str_clean(&log->after_dump_path);
+    buf_file_close(&log->after_dump_buf);
+    buf_clean(&log->after_dump_buf);
     return NULL;
   }
   return log;

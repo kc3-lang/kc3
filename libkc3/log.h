@@ -26,6 +26,7 @@ s_log * log_new (void);
 /* Operators. */
 void log_close (s_log *log);
 s_log * log_open (s_log *log, FILE *fp, const s_str *path);
+s_log * log_open_after_dump (s_log *log, FILE *fp, const s_str *path);
 s_log * log_open_binary (s_log *log, FILE *fp, const s_str *path);
 
 /* Hooks. */

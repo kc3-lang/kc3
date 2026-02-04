@@ -727,13 +727,14 @@ struct log_hook {
 };
 
 struct log {
+  s_buf       after_dump_buf;
+  s_marshall *after_dump_marshall;
+  s_str       after_dump_path;
   s_buf       buf;
-  s_str       path;
   u64         count;
-  s_buf       binary_buf;
-  s_str       binary_path;
-  s_marshall *marshall;
   s_log_hook *hooks;
+  s_marshall *marshall;
+  s_str       path;
 };
 
 struct ratio {
