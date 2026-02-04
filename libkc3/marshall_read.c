@@ -1196,7 +1196,7 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
   assert(mr);
   assert(offset);
   assert(present);
-  u64 global_offset;
+  s64 global_offset;
   s_tag key = {0};
   s_tag *ptag = NULL;
   s_tag tag = {0};
@@ -1206,10 +1206,13 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
     *present = NULL;
     return mr;
   }
-  global_offset = mr->heap_offset + *offset;
+  if (mr->heap_start <= 0)
+    global_offset = (s64) mr->heap_offset + (s64) *offset;
+  else
+    global_offset = mr->heap_start + (s64) *offset;
   if (! tag_init_tuple(&key, 2))
     return NULL;
-  tag_init_u64(key.data.tuple.tag, global_offset);
+  tag_init_s64(key.data.tuple.tag, global_offset);
   if (! ht_get(&mr->ht, &key, &ptag)) {
     *present = NULL;
     tag_clean(&key);
@@ -1229,12 +1232,15 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
 s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
                                         u64 offset, const void *p)
 {
-  u64 global_offset;
+  s64 global_offset;
   s_tag tag = {0};
-  global_offset = mr->heap_offset + offset;
+  if (mr->heap_start <= 0)
+    global_offset = (s64) mr->heap_offset + (s64) offset;
+  else
+    global_offset = mr->heap_start + (s64) offset;
   if (! tag_init_tuple(&tag, 2))
     return NULL;
-  tag_init_u64(tag.data.tuple.tag, global_offset);
+  tag_init_s64(tag.data.tuple.tag, global_offset);
   tag_init_uw(tag.data.tuple.tag + 1, (uw) p);
   if (! ht_add(&mr->ht, &tag)) {
     tag_clean(&tag);
