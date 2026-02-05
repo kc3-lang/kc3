@@ -160,7 +160,7 @@ s_array *            kc3_list_to_array (s_list **list,
                                         s_array *dest);
 bool                 kc3_load (const s_str *path);
 void                 kc3_marshall_delete (p_marshall *m);
-p_marshall *         kc3_marshall_new (p_marshall *m);
+p_marshall *         kc3_marshall_new (p_marshall *m, uw buf_size);
 void                 kc3_marshall_read_delete (p_marshall_read *mr);
 p_marshall_read *    kc3_marshall_read_new (p_marshall_read *mr);
 p_marshall_read *    kc3_marshall_read_new_str (p_marshall_read *mr,

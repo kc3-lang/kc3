@@ -26,7 +26,7 @@
     s_str test_str = {0};                                       \
     test_context("marshall_" # type "(&m, " # test ") -> "      \
                  # expected);                                   \
-    TEST_ASSERT(marshall_init(&m));                             \
+    TEST_ASSERT(marshall_init(&m, BUF_SIZE));                    \
     TEST_ASSERT(marshall_ ## type (&m, false, (type) (test)));  \
     TEST_ASSERT(marshall_to_str(&m, &test_str));                \
     TEST_STR_HEX_EQ(test_str, expected_str);                    \
@@ -42,7 +42,7 @@
     s_str str_test = {0};                                               \
     s_str str_result = {0};                                             \
     test_context("marshall_str(&m, " # test ") -> " # expected);        \
-    TEST_EQ(marshall_init(&m), &m);                                     \
+    TEST_EQ(marshall_init(&m, BUF_SIZE), &m);                            \
     TEST_EQ(str_init(&str_test, NULL, sizeof(test) - 1, (test)),        \
             &str_test);                                                 \
     TEST_EQ(marshall_str(&m, false, &str_test), &m);                    \
@@ -62,7 +62,7 @@
     s_str test_str = {0};                                       \
     test_context("marshall_tag(" # test ") -> " # expected);    \
     TEST_ASSERT(tag_init_1(&tag, test));                        \
-    TEST_EQ(marshall_init(&m), &m);                             \
+    TEST_EQ(marshall_init(&m, BUF_SIZE), &m);                   \
     TEST_EQ(marshall_tag(&m, false, &tag), &m);                 \
     TEST_ASSERT(marshall_to_str(&m, &test_str));                \
     TEST_STR_HEX_EQ(test_str, expected_str);                    \
@@ -197,7 +197,7 @@ TEST_CASE(marshall_plist)
                              "\x00\x00\x00\x00\x00\x00\x5f\x4b"
                              "\x43\x33\x50\x4c\x49\x53\x54\x5f"
                              "\x28\x00\x00\x00\x00\x00\x00\x00");
-  TEST_ASSERT(marshall_init(&m));
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
   list_test = list_new_1("[0, 1]");
   TEST_ASSERT(list_test);
   TEST_ASSERT(marshall_plist(&m, false, &list_test));
@@ -257,7 +257,7 @@ TEST_CASE(marshall_plist_twice)
                              "\x00\x00\x00\x00\x00\x00\x5f\x4b"
                              "\x43\x33\x50\x4c\x49\x53\x54\x5f"
                              "\xae\x00\x00\x00\x00\x00\x00\x00");
-  TEST_ASSERT(marshall_init(&m));
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
   list_test = list_new_1("[0, 1]");
   TEST_ASSERT(list_test);
   TEST_ASSERT(marshall_plist(&m, false, &list_test));
@@ -277,7 +277,7 @@ TEST_CASE(marshall_fact)
   s_str str = {0};
   const s_str expected = STR("");
 
-  TEST_ASSERT(marshall_init(&m));
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
   fact_init_1(&fact, "{1, 2, 3}");
   TEST_ASSERT(marshall_fact(&m, false, &fact));
   marshall_to_str(&m, &str);
@@ -1314,7 +1314,7 @@ TEST_CASE(marshall_to_buf)
   s_buf buf = {0};
   s_marshall m = {0};
   buf_init(&buf, false, sizeof(b), b);
-  TEST_ASSERT(marshall_init(&m));
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
   TEST_EQ(marshall_to_buf(&m, &buf), sizeof(s_marshall_header));
   marshall_clean(&m);
   buf_clean(&buf);
@@ -1327,7 +1327,7 @@ TEST_CASE(marshall_to_file)
   s_marshall m = {0};
   const s_str path = STR(".marshall_test_to_file.1.dump");
   test_context("marshall_to_file(\".marshall_test_to_file.1.dump\")");
-  TEST_ASSERT(marshall_init(&m));
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
   TEST_ASSERT(marshall_u32(&m, false, value));
   TEST_EQ(marshall_to_file(&m, &path),
           sizeof(s_marshall_header) + 8 + sizeof(u32));
@@ -1346,7 +1346,7 @@ TEST_CASE(marshall_to_str)
   s_marshall m = {0};
   s_str str = {0};
   s_str expected = {0};
-  TEST_ASSERT(marshall_init(&m));
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
   TEST_ASSERT(marshall_u32(&m, false, value));
   TEST_EQ(marshall_to_str(&m, &str), &str);
   marshall_clean(&m);

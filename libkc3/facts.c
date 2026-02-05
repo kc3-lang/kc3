@@ -706,7 +706,7 @@ sw facts_dump_file (s_facts *facts, const s_str *path)
   if (env->trace) {
     err_write_1("facts_dump_file: ");
     err_inspect_str(path);
-    err_write_1(r > 0 ? ": OK\n" : ": ERROR\n");
+    err_write_1(r >= 0 ? ": OK\n" : ": ERROR\n");
   }
   return r;
 }
@@ -726,7 +726,7 @@ sw facts_dump_binary (s_facts *facts, s_buf *buf)
   tag_init_pvar(&subject, &g_sym_Tag);
   tag_init_pvar(&predicate, &g_sym_Tag);
   tag_init_pvar(&object, &g_sym_Tag);
-  if (! marshall_init(&m))
+  if (! marshall_init(&m, BUF_SIZE))
     return -1;
 #if HAVE_PTHREAD
   rwlock_r(&facts->rwlock);
@@ -785,7 +785,7 @@ sw facts_dump_binary_file (s_facts *facts, const s_str *path)
   if (env->trace) {
     err_write_1("facts_dump_binary_file: ");
     err_inspect_str(path);
-    err_write_1(r > 0 ? ": OK\n" : ": ERROR\n");
+    err_write_1(r >= 0 ? ": OK\n" : ": ERROR\n");
   }
   return r;
 }

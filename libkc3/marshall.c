@@ -785,7 +785,7 @@ sw marshall_env_to_file (const s_env *env, const s_str *path)
 {
   s_marshall m = {0};
   sw result = -1;
-  if (! marshall_init(&m))
+  if (! marshall_init(&m, 128 * 1024 * 1024))
     return -1;
   if (! marshall_env(&m, false, env) ||
       (result = marshall_to_file(&m, path)) <= 0)
@@ -802,7 +802,7 @@ sw marshall_kc3c_file (p_list dlopen_list, p_list tags, const s_str *path)
   p_list list;
   s_marshall m = {0};
   sw result = -1;
-  if (! marshall_init(&m))
+  if (! marshall_init(&m, 128 * 1024 * 1024))
     return -1;
   if (! marshall_uw(&m, false, list_length(dlopen_list)))
     goto ko;
@@ -1211,13 +1211,13 @@ s_marshall * marshall_ident (s_marshall *m, bool heap,
   return m;
 }
 
-s_marshall * marshall_init (s_marshall *m)
+s_marshall * marshall_init (s_marshall *m, uw buf_size)
 {
   *m = (s_marshall) {0};
   if (! ht_init(&m->ht, &g_sym_Tag, 1024) ||
-    ! buf_init_alloc(&m->heap, 128 * 1024 * 1024))
+    ! buf_init_alloc(&m->heap, buf_size))
     return NULL;
-  if (! buf_init_alloc(&m->buf, 128 * 1024 * 1024)) {
+  if (! buf_init_alloc(&m->buf, buf_size)) {
     buf_delete(&m->heap);
     return NULL;
   }
@@ -1321,12 +1321,12 @@ s_marshall * marshall_map (s_marshall *m, bool heap, const s_map *map)
   return m;
 }
 
-s_marshall * marshall_new (void)
+s_marshall * marshall_new (uw buf_size)
 {
   s_marshall *m;
   if (! (m = alloc(sizeof(s_marshall))))
     return NULL;
-  if (! marshall_init(m)) {
+  if (! marshall_init(m, buf_size)) {
     free(m);
     return NULL;
   }

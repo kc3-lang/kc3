@@ -103,7 +103,7 @@ s_log * log_open_binary (s_log *log, FILE *fp, const s_str *path)
     buf_file_close(&log->buf);
     return NULL;
   }
-  if (! (log->marshall = marshall_new())) {
+  if (! (log->marshall = marshall_new(BUF_SIZE))) {
     str_clean(&log->path);
     buf_file_close(&log->buf);
     return NULL;
@@ -127,7 +127,7 @@ s_log * log_open_after_dump (s_log *log, FILE *fp, const s_str *path)
     buf_clean(&log->after_dump_buf);
     return NULL;
   }
-  if (! (log->after_dump_marshall = marshall_new())) {
+  if (! (log->after_dump_marshall = marshall_new(BUF_SIZE))) {
     str_clean(&log->after_dump_path);
     buf_file_close(&log->after_dump_buf);
     buf_clean(&log->after_dump_buf);

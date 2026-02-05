@@ -1073,10 +1073,10 @@ void kc3_marshall_delete (p_marshall *m)
   marshall_delete(*m);
 }
 
-p_marshall * kc3_marshall_new (p_marshall *m)
+p_marshall * kc3_marshall_new (p_marshall *m, uw buf_size)
 {
   assert(m);
-  *m = marshall_new();
+  *m = marshall_new(buf_size);
   return m;
 }
 
@@ -1142,7 +1142,7 @@ s_str * kc3_marshall_tag_to_str (const s_tag *tag, s_str *dest)
   s_str tmp = {0};
   assert(tag);
   assert(dest);
-  if (! marshall_init(&m)) {
+  if (! marshall_init(&m, 128 * 1024 * 1024)) {
     err_puts("kc3_marshall_tag_to_str: marshall_init");
     assert(! "kc3_marshall_tag_to_str: marshall_init");
     return NULL;

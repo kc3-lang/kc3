@@ -312,7 +312,7 @@ s_facts_connection * facts_connection_init (s_facts_connection *conn,
   }
   tls_buf_open_r(conn->buf_rw.r, tls);
   tls_buf_open_w(conn->buf_rw.w, tls);
-  if (! marshall_init(&conn->marshall)) {
+  if (! marshall_init(&conn->marshall, BUF_SIZE)) {
     err_puts("facts_connection_init: marshall_init");
     buf_rw_clean(&conn->buf_rw);
     return NULL;

@@ -24,12 +24,12 @@
 /* Stack-allocation compatible functions, call marshall_clean
    after use. */
 void         marshall_clean (s_marshall *m);
-s_marshall * marshall_init (s_marshall *m);
+s_marshall * marshall_init (s_marshall *m, uw buf_size);
 s_marshall * marshall_reset_chunk (s_marshall *m);
 
 /* Heap-allocation functions, call marshall_delete after use. */
 void         marshall_delete (s_marshall *m);
-s_marshall * marshall_new (void);
+s_marshall * marshall_new (uw buf_size);
 
 /* Observers. */
 sw marshall_size (const s_marshall *m);
