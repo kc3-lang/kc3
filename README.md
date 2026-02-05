@@ -1,10 +1,12 @@
 # KC3 v0.1.17-git
 
-"The first graph-native programming language"
+"The first graph-native programming language."
 
 KC3 is a programming language with meta-programmation and a graph
-database embedded into the language. It aims to be the language
-for semantic programming, and programming the semantic web.
+database embedded into the language. The graph database allows for
+all definitions in the language and can define special operators
+in KC3 or in C. With a graph database at its core it aims to be the
+language for semantic programming, and programming the semantic web.
 
 You can easily convert each KC3 function to a C function. KC3 is both
 a language and a runtime.
@@ -25,6 +27,8 @@ Components :
  - There are several C libraries which are installed in `lib/kc3/0.1`
    using the `make lib_links` command.
  - There is a web server in httpd : `kc3_httpd`.
+ - DRM, X11 and Wayland backends are implemented in `window/`
+ - GTK+4 bindings are in progress, you can find them in `gtk4/`.
 
 All binaries can be compiled for four targets :
  - __main__ : speed optimizations from GCC/Clang -O2 and
@@ -55,7 +59,7 @@ To install and test KC3 for yourself, you can follow the
 
 ## Users
 
-There are now four full applications written in KC3 that we know of :
+There are now five full applications written in KC3 that we know of :
  - The KC3 Cairo demo which you can run with `make demo`
  - The KC3 SDL2 OpenGL demo which you can run with `make demo_gl`
  - The [KC3 website](https://kc3-lang.org/) which you can launch
@@ -65,10 +69,8 @@ There are now four full applications written in KC3 that we know of :
    source and is hosted on kmx.io servers in France using OpenBSD
    everywhere. We donate to OpenBSD every month because a healthy
    software ecosystem is a funded ecosystem.
-
-Our next project is to make git.kmx.io in KC3 and for that we have
-to implement the missing parts in KC3.
-
+ - The [kmx.io git forge](https://git.kmx.io/) is also self-hosted
+   in KC3 on OpenBSD.
 
 ## New in this release
 
