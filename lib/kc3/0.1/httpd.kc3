@@ -202,12 +202,10 @@ defmodule HTTPd do
         Mutex.unlock(HTTPd.kq_mutex)
       end)
       match r do
-        {sockfd, close?, :acceptor} ->
-          if (close?) do
-            File.close(sockfd)
-          else
-            HTTPd.acceptor(sockfd)
-          end
+        {sockfd, :read, :acceptor} ->
+          HTTPd.acceptor(sockfd)
+      {sockfd, :eof, :acceptor} ->
+          File.close(sockfd)
         {sockfd, :eof, {:client, client}} ->
           Socket.Buf.close(client)
           File.close(sockfd)
