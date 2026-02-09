@@ -84,12 +84,12 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
     if (! tag_init_tuple(dest, 3) ||
         ! tag_init_s64(dest->data.tuple.tag, event.ident) ||
         ! tag_init_bool(dest->data.tuple.tag + 1, !! (event.flags &
-                                                      EV_EOF)) ||
-        ! tag_init_copy(dest->data.tuple.tag + 2, udata)) {
+                                                      EV_EOF))) {
       tag_delete(udata);
       return NULL;
     }
-    tag_delete(udata);
+    dest->data.tuple.tag[2] = *udata;
+    free(udata);
     return dest;
   }
   return tag_init_void(dest);
