@@ -148,9 +148,11 @@ defmodule HTTPd do
       if error || close do
         Socket.Buf.close(client)
         File.close(socket)
-        Counter.decrease(HTTPd.connections, 1)
-        count = Counter.get(HTTPd.connections)
-        puts("HTTPd.http_client: connections=#{count}")
+        if ! close do
+          Counter.decrease(HTTPd.connections, 1)
+          count = Counter.get(HTTPd.connections)
+          puts("HTTPd.http_client: connections=#{count}")
+        end
       end
     end)
   end
