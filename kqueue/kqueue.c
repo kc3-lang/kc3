@@ -46,6 +46,7 @@ s64 kc3_kqueue_add (s64 kqfd, s64 fd, s_tag *udata)
     e = errno;
     err_write_1("kc3_kqueue: kevent: ");
     err_puts(strerror(e));
+    tag_delete(event.udata);
     assert(! "kc3_kqueue: kevent");
   }
   return r;
@@ -79,12 +80,16 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
     return tag_init_void(dest);
   }
   if (r > 0) {
+    s_tag *udata = event.udata;
     if (! tag_init_tuple(dest, 3) ||
         ! tag_init_s64(dest->data.tuple.tag, event.ident) ||
         ! tag_init_bool(dest->data.tuple.tag + 1, !! (event.flags &
                                                       EV_EOF)) ||
-        ! tag_init_copy(dest->data.tuple.tag + 2, event.udata))
+        ! tag_init_copy(dest->data.tuple.tag + 2, udata)) {
+      tag_delete(udata);
       return NULL;
+    }
+    tag_delete(udata);
     return dest;
   }
   return tag_init_void(dest);
