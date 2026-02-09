@@ -93,11 +93,10 @@ defmodule HTTPd do
 
   def http_client = fn (socket, client) do
     close = false
-    error = false
+    error = true
     unwind_protect(do
       request = HTTP.Request.buf_parse(client.buf_rw.r)
       if request do
-        error = true
         client_addr = if client.addr_str != "127.0.0.1" do
           client.addr_str
         else
