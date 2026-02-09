@@ -85,6 +85,8 @@ There are now five full applications written in KC3 that we know of :
      for all `.kc3` files. `env_load` automatically handles this.
    - fixed a bug in `ht_iterator_next` where the iterator would not
      go through the first collision list
+   - database logging now supports and defaults to binary format
+     (marshall + marshall_read)
 
  - Facts
    - Facts.connect/accept allows for bi-directional synchronization of
