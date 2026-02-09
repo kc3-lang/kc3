@@ -202,24 +202,21 @@ defmodule HTTPd do
         Mutex.unlock(HTTPd.kq_mutex)
       end)
       match r do
+        {sockfd, :eof, :acceptor} ->
+          File.close(sockfd)
         {sockfd, :read, :acceptor} ->
           HTTPd.acceptor(sockfd)
-      {sockfd, :eof, :acceptor} ->
-          File.close(sockfd)
         {sockfd, :eof, {:client, client}} ->
           Socket.Buf.close(client)
           File.close(sockfd)
           Counter.decrease(HTTPd.connections, 1)
           count = Counter.get(HTTPd.connections)
-          puts("HTTPd.server_thread: eof: connections=#{count}")
+          puts("HTTPd.server_thread: connections=#{count}")
         {sockfd, :read, {:client, client}} ->
           HTTPd.http_client(sockfd, client)
         {sockfd, :timer, {:client, client}} ->
           Socket.Buf.close(client)
           File.close(sockfd)
-          Counter.decrease(HTTPd.connections, 1)
-          count = Counter.get(HTTPd.connections)
-          puts("HTTPd.server_thread: timeout: connections=#{count}")
         void ->
           sleep(%Time{tv_nsec: 10000000})
         x ->
