@@ -27,8 +27,10 @@ void buf_rw_clean (s_buf_rw *buf_rw)
 void buf_rw_fd_close (s_buf_rw *buf_rw)
 {
   assert(buf_rw);
-  buf_fd_close(buf_rw->r);
-  buf_fd_close(buf_rw->w);
+  if (buf_rw->r)
+    buf_fd_close(buf_rw->r);
+  if (buf_rw->w)
+    buf_fd_close(buf_rw->w);
 }
 
 s_buf_rw * buf_rw_fd_open (s_buf_rw *buf_rw, s32 fd)
