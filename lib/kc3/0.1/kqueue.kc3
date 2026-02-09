@@ -14,7 +14,7 @@ dlopen("kqueue.so")
 
 defmodule KQueue do
 
-  def add = cfn S64 "kc3_kqueue_add" (S64, S64, Tag)
+  def add = cfn S64 "kc3_kqueue_add" (S64, S64, Tag, Tag)
 
   def kqueue = cfn S64 "kc3_kqueue" ()
 

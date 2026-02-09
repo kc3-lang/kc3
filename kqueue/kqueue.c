@@ -16,6 +16,7 @@
 #include <sys/event.h>
 #include <sys/time.h>
 #include "../libkc3/assert.h"
+#include "../libkc3/sym.h"
 #include "../libkc3/tag.h"
 #include "kqueue.h"
 
@@ -32,22 +33,38 @@ s64 kc3_kqueue (void)
   return r;
 }
 
-s64 kc3_kqueue_add (s64 kqfd, s64 fd, s_tag *udata)
+s64 kc3_kqueue_add (s64 kqfd, s64 fd, s_tag *timeout, s_tag *udata)
 {
   s32 e;
-  struct kevent event = {0};
+  struct kevent events[2];
+  s32 nevents = 1;
   s32 r;
-  event.ident = fd;
-  event.filter = EVFILT_READ;
-  event.flags = EV_ADD | EV_ONESHOT;
-  event.data = SOMAXCONN;
-  event.udata = tag_new_copy(udata);
-  if ((r = kevent(kqfd, &event, 1, NULL, 0, NULL)) < 0) {
+  s_tag *udata_copy;
+  udata_copy = tag_new_copy(udata);
+  memset(events, 0, sizeof(events));
+  events[0].ident = fd;
+  events[0].filter = EVFILT_READ;
+  events[0].flags = EV_ADD | EV_ONESHOT;
+  events[0].data = SOMAXCONN;
+  events[0].udata = udata_copy;
+  if (timeout && timeout->type == TAG_TIME) {
+    s_time *t = &timeout->data.time;
+    s64 timeout_ms = t->tv_sec * 1000 + t->tv_nsec / 1000000;
+    events[1].ident = fd;
+    events[1].filter = EVFILT_TIMER;
+    events[1].flags = EV_ADD | EV_ONESHOT;
+    events[1].data = timeout_ms;
+    events[1].udata = tag_new_copy(udata);
+    nevents = 2;
+  }
+  if ((r = kevent(kqfd, events, nevents, NULL, 0, NULL)) < 0) {
     e = errno;
-    err_write_1("kc3_kqueue: kevent: ");
+    err_write_1("kc3_kqueue_add: kevent: ");
     err_puts(strerror(e));
-    tag_delete(event.udata);
-    assert(! "kc3_kqueue: kevent");
+    tag_delete(udata_copy);
+    if (nevents == 2)
+      tag_delete(events[1].udata);
+    assert(! "kc3_kqueue_add: kevent");
   }
   return r;
 }
@@ -81,10 +98,16 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
   }
   if (r > 0) {
     s_tag *udata = event.udata;
+    const s_sym *event_type;
+    if (event.filter == EVFILT_TIMER)
+      event_type = &g_sym_timer;
+    else if (event.flags & EV_EOF)
+      event_type = &g_sym_eof;
+    else
+      event_type = &g_sym_read;
     if (! tag_init_tuple(dest, 3) ||
         ! tag_init_s64(dest->data.tuple.tag, event.ident) ||
-        ! tag_init_bool(dest->data.tuple.tag + 1, !! (event.flags &
-                                                      EV_EOF))) {
+        ! tag_init_psym(dest->data.tuple.tag + 1, event_type)) {
       tag_delete(udata);
       return NULL;
     }

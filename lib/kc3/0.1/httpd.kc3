@@ -132,7 +132,7 @@ defmodule HTTPd do
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
         error = ((r <= 0) || (KQueue.add(HTTPd.kq_fd, client.sockfd,
-                               {:client, client}) != 0))
+                               HTTPd.timeout, {:client, client}) != 0))
         dt = Time.now() - request.time
         dt_str = Time.diff_to_str(dt)
         IO.puts("#{response.code} #{client_addr} #{request.method}" +
@@ -170,8 +170,8 @@ defmodule HTTPd do
         puts("HTTPd.acceptor: connections=#{count}")
         Mutex.lock(HTTPd.kq_mutex)
         unwind_protect(do
-          ok = (KQueue.add(HTTPd.kq_fd, server_socket, :acceptor) == 0 &&
-                KQueue.add(HTTPd.kq_fd, client.sockfd, {:client, client}) == 0)
+          ok = (KQueue.add(HTTPd.kq_fd, server_socket, void, :acceptor) == 0 &&
+                KQueue.add(HTTPd.kq_fd, client.sockfd, HTTPd.timeout, {:client, client}) == 0)
         end, do
           Mutex.unlock(HTTPd.kq_mutex)
         end)
@@ -208,16 +208,20 @@ defmodule HTTPd do
           else
             HTTPd.acceptor(sockfd)
           end
-        {sockfd, close?, {:client, client}} ->
-          if (close?) do
-            Socket.Buf.close(client)
-            File.close(sockfd)
-            Counter.decrease(HTTPd.connections, 1)
-            count = Counter.get(HTTPd.connections)
-            puts("HTTPd.server_thread: connections=#{count}")
-          else
-            HTTPd.http_client(sockfd, client)
-          end
+        {sockfd, :eof, {:client, client}} ->
+          Socket.Buf.close(client)
+          File.close(sockfd)
+          Counter.decrease(HTTPd.connections, 1)
+          count = Counter.get(HTTPd.connections)
+          puts("HTTPd.server_thread: eof: connections=#{count}")
+        {sockfd, :read, {:client, client}} ->
+          HTTPd.http_client(sockfd, client)
+        {sockfd, :timer, {:client, client}} ->
+          Socket.Buf.close(client)
+          File.close(sockfd)
+          Counter.decrease(HTTPd.connections, 1)
+          count = Counter.get(HTTPd.connections)
+          puts("HTTPd.server_thread: timeout: connections=#{count}")
         void ->
           sleep(%Time{tv_nsec: 10000000})
         x ->
@@ -262,7 +266,7 @@ defmodule HTTPd do
       IO.puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
       if (HTTPd.kq_fd <- KQueue.kqueue()) > 0 do
-        KQueue.add(HTTPd.kq_fd, socket.fd, :acceptor)
+        KQueue.add(HTTPd.kq_fd, socket.fd, void, :acceptor)
         if HTTPd.thread_count > 1 do
           threads = List.map(List.count(HTTPd.thread_count - 1),
             HTTPd.server_thread_new)
