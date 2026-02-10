@@ -48,6 +48,10 @@ void socket_buf_clean (s_socket_buf *sb)
     socket_addr_delete(sb->addr);
     sb->addr = NULL;
   }
+  if (sb->closed_mutex) {
+    mutex_delete(sb->closed_mutex);
+    sb->closed_mutex = NULL;
+  }
 }
 
 void socket_buf_close (s_socket_buf *sb)
@@ -71,10 +75,6 @@ void socket_buf_close (s_socket_buf *sb)
   if (sb->addr) {
     socket_addr_delete(sb->addr);
     sb->addr = NULL;
-  }
-  if (sb->closed_mutex) {
-    mutex_delete(sb->closed_mutex);
-    sb->closed_mutex = NULL;
   }
 }
 
