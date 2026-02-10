@@ -677,16 +677,6 @@ struct buf_rw {
   s_buf *w;
 };
 
-struct socket_buf {
-  struct sockaddr *addr;
-  u32              addr_len;
-  s_str            addr_str;
-  s_buf_rw         buf_rw;
-  bool             closed;
-  s_mutex         *closed_mutex;
-  s64              sockfd;
-};
-
 struct call {
   s_ident ident;
   s_list *arguments;
@@ -793,16 +783,6 @@ struct marshall {
   sw    heap_offset;
   sw    heap_pos;
   s_ht  ht;
-};
-
-struct tls_client {
-  s_socket_buf socket_buf;
-  s_str        tls_version;
-};
-
-struct tls_server {
-  s_socket_buf socket_buf;
-  s_str        tls_version;
 };
 
 /* 5 */
@@ -1044,6 +1024,17 @@ TYPEDEF_SKIPLIST_NODE(fact, s_fact *);
 
 TYPEDEF_SKIPLIST(fact, s_fact *);
 
+struct socket_buf {
+  struct sockaddr *addr;
+  u32              addr_len;
+  s_str            addr_str;
+  s_buf_rw         buf_rw;
+  bool             closed;
+  s_mutex         *closed_mutex;
+  s64              sockfd;
+  s_tag            tag;
+};
+
 struct var {
   bool    bound;
   s_mutex mutex;
@@ -1086,6 +1077,16 @@ struct facts_cursor {
   p_var pvar_predicate;
   p_var pvar_object;
   pthread_mutex_t mutex;
+};
+
+struct tls_client {
+  s_socket_buf socket_buf;
+  s_str        tls_version;
+};
+
+struct tls_server {
+  s_socket_buf socket_buf;
+  s_str        tls_version;
 };
 
 /* 9 */

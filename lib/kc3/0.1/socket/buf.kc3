@@ -21,7 +21,8 @@ defmodule Socket.Buf do
              buf_rw: %BufRW{},
              closed: false,
              closed_mutex: (Ptr) 0,
-             sockfd: (S64) -1]
+             sockfd: (S64) -1,
+             tag: ?]
 
   def accept = cfn Socket.Buf "socket_buf_init_accept" (Result, Socket)
 
@@ -30,5 +31,7 @@ defmodule Socket.Buf do
   def can_close? = cfn Bool "socket_buf_can_close" (Socket.Buf)
 
   def connect = cfn Socket.Buf "socket_buf_init_connect" (Result, Str, Str)
+
+  def set_tag = cfn Bool "socket_buf_set_tag" (Socket.Buf, Tag)
 
 end

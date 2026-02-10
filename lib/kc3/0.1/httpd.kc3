@@ -134,7 +134,7 @@ defmodule HTTPd do
         Mutex.lock(HTTPd.kq_mutex)
         kq_ok = unwind_protect(do
           KQueue.add(HTTPd.kq_fd, client.sockfd,
-                     HTTPd.timeout, {:client, client}) == 0
+                     HTTPd.timeout, & client.tag) == 0
         end, do
           Mutex.unlock(HTTPd.kq_mutex)
         end)
@@ -168,7 +168,8 @@ defmodule HTTPd do
     client = void
     unwind_protect(do
       if (Counter.get(HTTPd.connections) < HTTPd.connections_max) &&
-         (client = Socket.Buf.accept(%Socket{fd: server_socket})) do
+         (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
+         Socket.Buf.set_tag(client, {:client, client}) do
         Counter.increase(HTTPd.connections, 1)
         count = Counter.get(HTTPd.connections)
         puts("HTTPd.acceptor: connections=#{count}")
@@ -177,7 +178,7 @@ defmodule HTTPd do
           ok = (KQueue.add(HTTPd.kq_fd, server_socket, void,
                            :acceptor) == 0 &&
                 KQueue.add(HTTPd.kq_fd, client.sockfd, HTTPd.timeout,
-                           {:client, client}) == 0)
+                           & client.tag) == 0)
         end, do
           Mutex.unlock(HTTPd.kq_mutex)
         end)

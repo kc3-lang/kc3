@@ -27,5 +27,6 @@ s_socket_buf * socket_buf_init_accept (s_socket_buf *sb,
 s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
                                         const s_str *host,
                                         const s_str *service);
+bool           socket_buf_set_tag (s_socket_buf *sb, s_tag *tag);
 
 #endif /* LIBKC3_SOCKET_BUF_H */

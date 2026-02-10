@@ -52,6 +52,7 @@ void socket_buf_clean (s_socket_buf *sb)
     mutex_delete(sb->closed_mutex);
     sb->closed_mutex = NULL;
   }
+  tag_clean(&sb->tag);
 }
 
 void socket_buf_close (s_socket_buf *sb)
@@ -97,6 +98,16 @@ bool socket_buf_can_close (s_socket_buf *sb)
   }
   mutex_unlock(sb->closed_mutex);
   return result;
+}
+
+bool socket_buf_set_tag (s_socket_buf *sb, s_tag *tag)
+{
+  assert(sb);
+  assert(tag);
+  tag_clean(&sb->tag);
+  if (! tag_init_copy(&sb->tag, tag))
+    return false;
+  return true;
 }
 
 s_socket_buf * socket_buf_init (s_socket_buf *sb, s64 sockfd,
