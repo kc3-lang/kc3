@@ -151,14 +151,14 @@ defmodule HTTPd do
         end
       end
     end, do
-      if error || close do
+      if (error || close) && Socket.Buf.can_close?(client) do
+        KQueue.delete(HTTPd.kq_fd, socket, :timer)
+        KQueue.delete(HTTPd.kq_fd, socket, :read)
         Socket.Buf.close(client)
         File.close(socket)
-        if ! close do
-          Counter.decrease(HTTPd.connections, 1)
-          count = Counter.get(HTTPd.connections)
-          puts("HTTPd.http_client: connections=#{count}")
-        end
+        Counter.decrease(HTTPd.connections, 1)
+        count = Counter.get(HTTPd.connections)
+        puts("HTTPd.http_client: connections=#{count}")
       end
     end)
   end
