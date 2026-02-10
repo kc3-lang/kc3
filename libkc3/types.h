@@ -736,6 +736,7 @@ struct ratio {
 
 struct marshall_read {
   s_buf *buf;
+  bool   buf_owned;
   uw     buf_size;
   s_buf *heap;
   uw     heap_count;

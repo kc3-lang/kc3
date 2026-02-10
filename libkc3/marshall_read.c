@@ -406,6 +406,7 @@ s_marshall_read * marshall_read_chunk_reset (s_marshall_read *mr)
     buf_clean(mr->buf);
     free(mr->buf);
     mr->buf = mr->source;
+    mr->buf_owned = false;
   }
   return mr;
 }
@@ -441,7 +442,7 @@ void marshall_read_clean (s_marshall_read *mr)
     rwlock_delete(mr->heap->rwlock);
   if (mr->heap && mr->buf != mr->heap)
     free(mr->heap);
-  if (mr->buf && mr->buf != mr->source)
+  if (mr->buf && mr->buf_owned)
     free(mr->buf);
   marshall_read_ht_clean(mr);
 }
@@ -1320,6 +1321,7 @@ s_marshall_read * marshall_read_init (s_marshall_read *mr)
     free(mr->heap);
     return NULL;
   }
+  mr->buf_owned = true;
   return mr;
 }
 
