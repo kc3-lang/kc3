@@ -39,25 +39,30 @@ s64 kc3_kqueue_add (s64 kqfd, s64 fd, s_tag *timeout, s_tag *udata)
   struct kevent events[2];
   s32 nevents = 1;
   s32 r;
-  void *udata_ptr;
+  void *udata_ptr_read;
+  void *udata_ptr_timer;
   memset(events, 0, sizeof(events));
   if (udata)
-    udata_ptr = tag_new_copy(udata);
+    udata_ptr_read = tag_new_copy(udata);
   else
-    udata_ptr = NULL;
+    udata_ptr_read = NULL;
   events[0].ident = fd;
   events[0].filter = EVFILT_READ;
   events[0].flags = EV_ADD | EV_ONESHOT;
   events[0].data = SOMAXCONN;
-  events[0].udata = udata_ptr;
+  events[0].udata = udata_ptr_read;
   if (timeout && timeout->type == TAG_TIME) {
     s_time *t = &timeout->data.time;
     s64 timeout_ms = t->tv_sec * 1000 + t->tv_nsec / 1000000;
+    if (udata)
+      udata_ptr_timer = tag_new_copy(udata);
+    else
+      udata_ptr_timer = NULL;
     events[1].ident = fd;
     events[1].filter = EVFILT_TIMER;
     events[1].flags = EV_ADD | EV_ONESHOT;
     events[1].data = timeout_ms;
-    events[1].udata = udata_ptr;
+    events[1].udata = udata_ptr_timer;
     nevents = 2;
   }
   if ((r = kevent(kqfd, events, nevents, NULL, 0, NULL)) < 0) {
@@ -136,14 +141,18 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
       return NULL;
     if (udata->type == TAG_POINTER) {
       target = udata->data.pointer.ptr.p;
-      if (! tag_init_copy(dest->data.tuple.tag + 2, target))
+      if (! tag_init_copy(dest->data.tuple.tag + 2, target)) {
+        tag_delete(udata);
         return NULL;
+      }
     }
     else {
-      if (! tag_init_copy(dest->data.tuple.tag + 2, udata))
+      if (! tag_init_copy(dest->data.tuple.tag + 2, udata)) {
+        tag_delete(udata);
         return NULL;
-      tag_delete(udata);
+      }
     }
+    tag_delete(udata);
     return dest;
   }
   return tag_init_void(dest);
