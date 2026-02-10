@@ -134,7 +134,7 @@ defmodule HTTPd do
         Mutex.lock(HTTPd.kq_mutex)
         kq_ok = unwind_protect(do
           KQueue.add(HTTPd.kq_fd, client.sockfd,
-                     HTTPd.timeout, & client.tag) == 0
+                     HTTPd.timeout, Socket.Buf.tag(client)) == 0
         end, do
           Mutex.unlock(HTTPd.kq_mutex)
         end)
@@ -178,7 +178,7 @@ defmodule HTTPd do
           ok = (KQueue.add(HTTPd.kq_fd, server_socket, void,
                            :acceptor) == 0 &&
                 KQueue.add(HTTPd.kq_fd, client.sockfd, HTTPd.timeout,
-                           & client.tag) == 0)
+                           Socket.Buf.tag(client)) == 0)
         end, do
           Mutex.unlock(HTTPd.kq_mutex)
         end)

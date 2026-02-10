@@ -34,4 +34,6 @@ defmodule Socket.Buf do
 
   def set_tag = cfn Bool "socket_buf_set_tag" (Socket.Buf, Tag)
 
+  def tag = cfn Pointer "socket_buf_tag" (Socket.Buf, Result)
+
 end
