@@ -131,8 +131,14 @@ defmodule HTTPd do
           "Accept-Ranges", "bytes")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
-        error = ((r <= 0) || (KQueue.add(HTTPd.kq_fd, client.sockfd,
-                               HTTPd.timeout, {:client, client}) != 0))
+        Mutex.lock(HTTPd.kq_mutex)
+        kq_ok = unwind_protect(do
+          KQueue.add(HTTPd.kq_fd, client.sockfd,
+                     HTTPd.timeout, {:client, client}) == 0
+        end, do
+          Mutex.unlock(HTTPd.kq_mutex)
+        end)
+        error = ((r <= 0) || (! kq_ok))
         dt = Time.now() - request.time
         dt_str = Time.diff_to_str(dt)
         IO.puts("#{response.code} #{client_addr} #{request.method}" +
