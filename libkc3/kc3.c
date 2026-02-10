@@ -62,6 +62,7 @@
 #include "marshall_read.h"
 #include "mutex.h"
 #include "pfacts.h"
+#include "pointer.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "rwlock.h"
@@ -1709,6 +1710,32 @@ static void kc3_system_pipe_exec (s32 pipe_w, char **argv,
 }
 
 #endif
+
+s_pointer * kc3_tag_to_pointer (s_tag *tag, s_pointer *dest)
+{
+  s_env *env;
+  s_tag *resolved = NULL;
+  env = env_global();
+  assert(tag);
+  assert(dest);
+  assert(env);
+  if (tag->type != TAG_IDENT) {
+    err_puts("kc3_tag_to_pointer: expected ident");
+    assert(! "kc3_tag_to_pointer: expected ident");
+    return NULL;
+  }
+  if (! tag->data.ident.module)
+    resolved = env_frames_get(env, tag->data.ident.sym);
+  if (! resolved &&
+      ! (resolved = env_ident_get_address(env, &tag->data.ident))) {
+    err_write_1("kc3_tag_to_pointer: undeclared ident ");
+    err_inspect_ident(&tag->data.ident);
+    err_write_1("\n");
+    assert(! "kc3_tag_to_pointer: undeclared ident");
+    return NULL;
+  }
+  return pointer_init_tag(dest, resolved);
+}
 
 s32 kc3_tag_type (const s_tag *tag)
 {

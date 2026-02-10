@@ -69,6 +69,7 @@ s_tuple * kc3_wait (s_tuple *dest);
 
 /* Operators. */
 s_pointer *          kc3_address_of (s_tag *tag, s_pointer *dest);
+s_pointer *          kc3_tag_to_pointer (s_tag *tag, s_pointer *dest);
 s_tag *              kc3_access (s_tag *tag, s_list **addr,
                                  s_tag *dest);
 s_tag *              kc3_and (s_tag *a, s_tag *b, s_tag *dest);

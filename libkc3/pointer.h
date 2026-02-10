@@ -23,6 +23,7 @@ s_pointer * pointer_init_cast (s_pointer *pointer,
                                s_tag *tag);
 s_pointer * pointer_init_copy (s_pointer *pointer,
                                const s_pointer *src);
+s_pointer * pointer_init_tag (s_pointer *pointer, const s_tag *tag);
 
 /* Heap-allocation functions, call pointer_delete after use. */
 void        pointer_delete (s_pointer *pointer);

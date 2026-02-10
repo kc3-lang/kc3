@@ -45,6 +45,7 @@
 #include "cfn.h"
 #include "character.h"
 #include "compare.h"
+#include "counter.h"
 #include "data.h"
 #include "do_block.h"
 #include "endian.h"

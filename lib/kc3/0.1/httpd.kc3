@@ -28,6 +28,7 @@ require URL
 
 defmodule HTTPd do
 
+  def acceptor_sym = :acceptor
   def kq_fd = ?
   def kq_mutex = Mutex.new()
 
@@ -176,7 +177,7 @@ defmodule HTTPd do
         Mutex.lock(HTTPd.kq_mutex)
         unwind_protect(do
           ok = (KQueue.add(HTTPd.kq_fd, server_socket, void,
-                           :acceptor) == 0 &&
+                           tag_to_pointer(HTTPd.acceptor_sym)) == 0 &&
                 KQueue.add(HTTPd.kq_fd, client.sockfd, HTTPd.timeout,
                            Socket.Buf.tag(client)) == 0)
         end, do
@@ -280,7 +281,7 @@ defmodule HTTPd do
       IO.puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
       if (HTTPd.kq_fd <- KQueue.kqueue()) > 0 do
-        KQueue.add(HTTPd.kq_fd, socket.fd, void, :acceptor)
+        KQueue.add(HTTPd.kq_fd, socket.fd, void, tag_to_pointer(HTTPd.acceptor_sym))
         if HTTPd.thread_count > 1 do
           threads = List.map(List.count(HTTPd.thread_count - 1),
             HTTPd.server_thread_new)

@@ -14,4 +14,6 @@ defmodule Pointer do
 
   def cast = cfn Pointer "pointer_init_cast" (Result, Sym, Tag)
 
+  def tag = cfn Pointer "pointer_init_tag" (Result, Tag)
+
 end

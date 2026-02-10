@@ -106,3 +106,15 @@ s_pointer * pointer_init_copy (s_pointer *pointer,
   *pointer = *src;
   return pointer;
 }
+
+s_pointer * pointer_init_tag (s_pointer *pointer, const s_tag *tag)
+{
+  s_pointer tmp = {0};
+  assert(pointer);
+  assert(tag);
+  tmp.target_type = &g_sym_Tag;
+  tmp.pointer_type = &g_sym_Tag__star;
+  tmp.ptr.p = (void *) tag;
+  *pointer = tmp;
+  return pointer;
+}

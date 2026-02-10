@@ -21,6 +21,25 @@
 const char *g_env_argv0_default = PROG;
 const char *g_env_argv0_dir_default = PREFIX;
 
+static void httpd_sigint (int s);
+
+static void httpd_sigint (int s)
+{
+  s_counter *counter = NULL;
+  s_ident ident = {0};
+  s_tag tag = {0};
+  (void) s;
+  ident.module = sym_1("HTTPd");
+  ident.sym = sym_1("server_thread_stop");
+  if (! counter_find(&ident, &counter)) {
+    err_puts("httpd_sigint: counter_find: HTTPd.server_thread_stop");
+    assert(! "httpd_sigint: counter_find: HTTPd.server_thread_stop");
+    abort();
+  }
+  tag_init_u8(&tag, 1);
+  counter_increase(counter, &tag, &tag);
+}
+
 int main (int argc, char **argv)
 {
   bool    daemonize = true;
@@ -128,8 +147,14 @@ int main (int argc, char **argv)
   io_puts("KC3 HTTPd loading, please wait...");
 #if ! (defined(WIN32) || defined(WIN64))
   if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
-    err_puts("http_event_base_new: signal");
-    assert(! "http_event_base_new: signal");
+    err_puts("http_event_base_new: signal: SIGPIPE");
+    assert(! "http_event_base_new: signal: SIGPIPE");
+    kc3_clean(NULL);
+    return 1;
+  }
+  if (signal(SIGINT, httpd_sigint) == SIG_ERR) {
+    err_puts("http_event_base_new: signal: SIGINT");
+    assert(! "http_event_base_new: signal: SIGINT");
     kc3_clean(NULL);
     return 1;
   }

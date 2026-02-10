@@ -32,7 +32,7 @@ void counter_clean (s_counter *counter)
 }
 
 s_tag * counter_decrease (s_counter *counter, s_tag *positive,
-                           s_tag *dest)
+                          s_tag *dest)
 {
   s_tag tmp = {0};
   assert(counter);
