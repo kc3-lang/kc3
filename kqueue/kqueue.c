@@ -42,13 +42,9 @@ s64 kc3_kqueue_add (s64 kqfd, s64 fd, s_tag *timeout, s_tag *udata)
   void *udata_ptr;
   memset(events, 0, sizeof(events));
   if (udata && udata->type == TAG_POINTER)
-    udata_ptr = tag_new_pointer(udata->data.pointer.pointer_type,
-                                udata->data.pointer.target_type,
-                                udata->data.pointer.ptr.p);
-  else if (udata)
-    udata_ptr = tag_new_copy(udata);
+    udata_ptr = udata->data.pointer.ptr.p;
   else
-    udata_ptr = NULL;
+    udata_ptr = udata;
   events[0].ident = fd;
   events[0].filter = EVFILT_READ;
   events[0].flags = EV_ADD | EV_ONESHOT;
@@ -137,20 +133,8 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
         ! tag_init_s64(dest->data.tuple.tag, event.ident) ||
         ! tag_init_psym(dest->data.tuple.tag + 1, event_type))
       return NULL;
-    if (udata->type == TAG_POINTER) {
-      s_tag *target = udata->data.pointer.ptr.p;
-      if (! tag_init_copy(dest->data.tuple.tag + 2, target)) {
-        tag_delete(udata);
-        return NULL;
-      }
-    }
-    else {
-      if (! tag_init_copy(dest->data.tuple.tag + 2, udata)) {
-        tag_delete(udata);
-        return NULL;
-      }
-    }
-    tag_delete(udata);
+    if (! tag_init_copy(dest->data.tuple.tag + 2, udata))
+      return NULL;
     return dest;
   }
   return tag_init_void(dest);
