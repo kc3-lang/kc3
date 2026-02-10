@@ -34,6 +34,8 @@ defmodule HTTPd do
   defcounter HTTPd.connections = 0
   def connections_max = ncpu * 16
 
+  def timeout = %Time{tv_sec: 5}
+
   def load_app = fn () {
     HTTP.mime_type_load("config/mime.types")
     load_directory!("app/lib/")
@@ -88,8 +90,6 @@ defmodule HTTPd do
       })
     end
   }
-
-  clients = %{}
 
   def http_client = fn (socket, client) do
     close = false
@@ -157,8 +157,6 @@ defmodule HTTPd do
     end)
   end
 
-  def timeout = %Time{tv_sec: 5}
-
   def acceptor = fn (server_socket) {
     ok = false
     client = void
@@ -170,8 +168,10 @@ defmodule HTTPd do
         puts("HTTPd.acceptor: connections=#{count}")
         Mutex.lock(HTTPd.kq_mutex)
         unwind_protect(do
-          ok = (KQueue.add(HTTPd.kq_fd, server_socket, void, :acceptor) == 0 &&
-                KQueue.add(HTTPd.kq_fd, client.sockfd, HTTPd.timeout, {:client, client}) == 0)
+          ok = (KQueue.add(HTTPd.kq_fd, server_socket, void,
+                           :acceptor) == 0 &&
+                KQueue.add(HTTPd.kq_fd, client.sockfd, HTTPd.timeout,
+                           {:client, client}) == 0)
         end, do
           Mutex.unlock(HTTPd.kq_mutex)
         end)
@@ -193,9 +193,10 @@ defmodule HTTPd do
     end
   }
 
+  defcounter server_thread_stop = 0
+
   def server_thread = fn () {
-    run = true
-    while run do
+    while ! Counter.get(HTTPd.server_thread_stop) do
       Mutex.lock(HTTPd.kq_mutex)
       r = unwind_protect(do
         KQueue.poll(HTTPd.kq_fd, %Time{})
@@ -205,7 +206,7 @@ defmodule HTTPd do
       match r do
         {sockfd, :eof, :acceptor} ->
           File.close(sockfd)
-          run = false
+          Counter.increment(HTTPd.server_thread_stop, 1)
         {sockfd, :read, :acceptor} ->
           HTTPd.acceptor(sockfd)
         {sockfd, :eof, {:client, client}} ->
