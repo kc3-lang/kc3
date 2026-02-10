@@ -69,6 +69,39 @@ s64 kc3_kqueue_add (s64 kqfd, s64 fd, s_tag *timeout, s_tag *udata)
   return r;
 }
 
+s64 kc3_kqueue_delete (s64 kqfd, s64 fd, s_tag *filter)
+{
+  s32 e;
+  struct kevent event = {0};
+  s32 r;
+  event.ident = fd;
+  event.flags = EV_DELETE;
+  if (filter && filter->type == TAG_PSYM) {
+    if (filter->data.psym == &g_sym_read)
+      event.filter = EVFILT_READ;
+    else if (filter->data.psym == &g_sym_timer)
+      event.filter = EVFILT_TIMER;
+    else {
+      err_write_1("kc3_kqueue_delete: invalid filter: ");
+      err_inspect_sym(filter->data.psym);
+      err_write_1("\n");
+      return -1;
+    }
+  }
+  else {
+    err_puts("kc3_kqueue_delete: filter must be a symbol");
+    return -1;
+  }
+  if ((r = kevent(kqfd, &event, 1, NULL, 0, NULL)) < 0) {
+    e = errno;
+    if (e != ENOENT) {
+      err_write_1("kc3_kqueue_delete: kevent: ");
+      err_puts(strerror(e));
+    }
+  }
+  return r;
+}
+
 s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
 {
   s32 e;

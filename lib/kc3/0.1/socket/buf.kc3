@@ -18,12 +18,16 @@ defmodule Socket.Buf do
   defstruct [addr: (Ptr) 0,
              addr_len: (U32) 0,
              addr_str: "",
-             sockfd: (S64) -1,
-             buf_rw: %BufRW{}]
+             buf_rw: %BufRW{},
+             closed: false,
+             closed_mutex: (Ptr) 0,
+             sockfd: (S64) -1]
 
   def accept = cfn Socket.Buf "socket_buf_init_accept" (Result, Socket)
 
   def close = cfn Void "socket_buf_close" (Socket.Buf)
+
+  def can_close? = cfn Bool "socket_buf_can_close" (Socket.Buf)
 
   def connect = cfn Socket.Buf "socket_buf_init_connect" (Result, Str, Str)
 

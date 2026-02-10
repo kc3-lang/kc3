@@ -681,8 +681,10 @@ struct socket_buf {
   struct sockaddr *addr;
   u32              addr_len;
   s_str            addr_str;
-  s64              sockfd;
   s_buf_rw         buf_rw;
+  bool             closed;
+  s_mutex         *closed_mutex;
+  s64              sockfd;
 };
 
 struct call {

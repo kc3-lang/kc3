@@ -26,6 +26,7 @@
 
 #include <unistd.h>
 #include "kc3.h"
+#include "mutex.h"
 #include "socket.h"
 #include "socket_addr.h"
 #include "socket_buf.h"
@@ -71,6 +72,31 @@ void socket_buf_close (s_socket_buf *sb)
     socket_addr_delete(sb->addr);
     sb->addr = NULL;
   }
+  if (sb->closed_mutex) {
+    mutex_delete(sb->closed_mutex);
+    sb->closed_mutex = NULL;
+  }
+}
+
+bool socket_buf_can_close (s_socket_buf *sb)
+{
+  bool result;
+  assert(sb);
+  if (! sb->closed_mutex) {
+    err_puts("socket_buf_can_close: closed_mutex is NULL");
+    assert(! "socket_buf_can_close: closed_mutex is NULL");
+    return false;
+  }
+  mutex_lock(sb->closed_mutex);
+  if (sb->closed) {
+    result = false;
+  }
+  else {
+    sb->closed = true;
+    result = true;
+  }
+  mutex_unlock(sb->closed_mutex);
+  return result;
 }
 
 s_socket_buf * socket_buf_init (s_socket_buf *sb, s64 sockfd,
@@ -89,6 +115,13 @@ s_socket_buf * socket_buf_init (s_socket_buf *sb, s64 sockfd,
   }
   sb->buf_rw.r->user_ptr = sb;
   sb->buf_rw.w->user_ptr = sb;
+  sb->closed_mutex = mutex_new();
+  if (! sb->closed_mutex) {
+    err_puts("socket_buf_init: mutex_new");
+    buf_rw_clean(&sb->buf_rw);
+    return NULL;
+  }
+  sb->closed = false;
   if (! buf_rw_fd_open(&sb->buf_rw, sockfd)) {
     err_puts("socket_buf_init: buf_rw_fd_open");
     assert(! "socket_buf_init: buf_rw_fd_open");

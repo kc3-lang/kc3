@@ -16,6 +16,8 @@ defmodule KQueue do
 
   def add = cfn S64 "kc3_kqueue_add" (S64, S64, Tag, Tag)
 
+  def delete = cfn S64 "kc3_kqueue_delete" (S64, S64, Tag)
+
   def kqueue = cfn S64 "kc3_kqueue" ()
 
   def poll = cfn Tag "kc3_kqueue_poll" (S64, Tag, Result)
