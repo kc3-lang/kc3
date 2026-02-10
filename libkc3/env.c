@@ -26,6 +26,7 @@
 
 #include <dlfcn.h>
 #include <unistd.h>
+#include "address_of.h"
 #include "alloc.h"
 
 const char *g_env_argv0_default = "";
@@ -112,24 +113,34 @@ static char * realpath (const char *path, char *resolved_path);
 #endif
 
 // Special operator.
-s_pointer * env_address_of (s_env *env, s_ident *ident, s_pointer *dest)
+s_pointer * env_address_of (s_env *env, s_tag *tag, s_pointer *dest)
 {
-  s_tag *tag = NULL;
+  s_tag *resolved = NULL;
   s_pointer tmp = {0};
   assert(env);
-  assert(ident);
+  assert(tag);
   assert(dest);
-  if (! ident->module)
-    tag = env_frames_get(env, ident->sym);
-  if (! tag &&
-      ! (tag = env_ident_get_address(env, ident))) {
-    err_write_1("env_address_of: undeclared ident ");
-    err_inspect_ident(ident);
-    err_write_1("\n");
-    assert(! "env_address_of: undeclared ident");
+  switch (tag->type) {
+  case TAG_IDENT:
+    if (! tag->data.ident.module)
+      resolved = env_frames_get(env, tag->data.ident.sym);
+    if (! resolved &&
+        ! (resolved = env_ident_get_address(env, &tag->data.ident))) {
+      err_write_1("env_address_of: undeclared ident ");
+      err_inspect_ident(&tag->data.ident);
+      err_write_1("\n");
+      assert(! "env_address_of: undeclared ident");
+      return NULL;
+    }
+    break;
+  case TAG_PCALL:
+    return env_address_of_call(env, tag->data.pcall, dest);
+  default:
+    err_puts("env_address_of: invalid tag type for address_of");
+    assert(! "env_address_of: invalid tag type for address_of");
     return NULL;
   }
-  if (! tag_type(tag, &tmp.target_type)) {
+  if (! tag_type(resolved, &tmp.target_type)) {
     err_puts("env_address_of: invalid tag type");
     assert(! "env_address_of: invalid tag type");
     return NULL;
@@ -140,12 +151,61 @@ s_pointer * env_address_of (s_env *env, s_ident *ident, s_pointer *dest)
     assert(! "env_address_of: sym_target_to_pointer_type");
     return NULL;
   }
-  if (! tag_to_pointer(tag, tmp.target_type, &tmp.ptr.p)) {
+  if (! tag_to_pointer(resolved, tmp.target_type, &tmp.ptr.p)) {
     err_puts("env_address_of: tag_to_pointer");
     assert(! "env_address_of: tag_to_pointer");
     return NULL;
   }
   *dest = tmp;
+  return dest;
+}
+
+s_pointer * env_address_of_call (s_env *env, s_call *call,
+                                 s_pointer *dest)
+{
+  s_tag  evaluated = {0};
+  s_tag *key;
+  s_tag *first;
+  assert(env);
+  assert(call);
+  if ((call->ident.module && call->ident.module != &g_sym_KC3) ||
+      call->ident.sym != &g_sym_access) {
+    err_puts("env_address_of_call: expected KC3.access");
+    assert(! "env_address_of_call: expected KC3.access");
+    return NULL;
+  }
+  if (! call->arguments || ! list_next(call->arguments)) {
+    err_puts("env_address_of_call: missing arguments");
+    assert(! "env_address_of_call: missing arguments");
+    return NULL;
+  }
+  first = &call->arguments->tag;
+  key = &list_next(call->arguments)->tag;
+  if (! env_eval_tag(env, first, &evaluated)) {
+    err_puts("env_address_of_call: env_eval_tag");
+    assert(! "env_address_of_call: env_eval_tag");
+    return NULL;
+  }
+  if (evaluated.type != TAG_PSTRUCT) {
+    err_puts("env_address_of_call: not a struct");
+    assert(! "env_address_of_call: not a struct");
+    tag_clean(&evaluated);
+    return NULL;
+  }
+  if (key->type != TAG_PLIST ||
+      key->data.plist->next.data.plist) {
+    err_puts("env_address_of_call: expected [Sym]");
+    assert(! "env_address_of_call: expected [Sym]");
+    tag_clean(&evaluated);
+    return NULL;
+  }
+  key = &key->data.plist->tag;
+  if (! address_of_struct(evaluated.data.pstruct, key->data.psym,
+                          dest)) {
+    tag_clean(&evaluated);
+    return NULL;
+  }
+  tag_clean(&evaluated);
   return dest;
 }
 

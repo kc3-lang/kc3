@@ -52,7 +52,7 @@ defoperator %KC3.Op{sym: :&,
                     arity: 1,
                     precedence: 14,
                     associativity: 2,
-                    callable: cfn_macro Pointer "kc3_address_of" (Ident,
+                    callable: cfn_macro Pointer "kc3_address_of" (Tag,
                       Result)}
 
 # TODO: add test to check if s_pointer Pointer to ffi_pointer is ok

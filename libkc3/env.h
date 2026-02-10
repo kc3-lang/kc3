@@ -34,8 +34,10 @@ void    env_delete (s_env *env);
 s_env * env_new (int *argc, char ***argv);
 
 /* Observers. */
-s_pointer *     env_address_of (s_env *env, s_ident *ident,
+s_pointer *     env_address_of (s_env *env, s_tag *tag,
                                 s_pointer *dest);
+s_pointer *     env_address_of_call (s_env *env, s_call *call,
+                                     s_pointer *dest);
 s_list **       env_args (s_env *env, s_list **dest);
 bool            env_cleaning (bool enable);
 sw              env_dump (const s_env *env, const s_str *path);

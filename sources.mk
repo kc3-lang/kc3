@@ -418,6 +418,8 @@ KC3_C_SOURCES = \
 	"kqueue/kqueue.h" \
 	"libkc3/abs.c" \
 	"libkc3/abs.h" \
+	"libkc3/address_of.c" \
+	"libkc3/address_of.h" \
 	"libkc3/alist.c" \
 	"libkc3/alist.h" \
 	"libkc3/alloc.c" \
@@ -1821,6 +1823,7 @@ KC3_TEST_SOURCES = \
 	"test/facts_test_open_file.3.expected.facts" \
 	"test/facts_test_open_file.3.in.facts" \
 	"test/facts_test_save.expected.facts" \
+	"test/facts_test_save_binary.expected.facts" \
 	"test/marshall_test_to_file.1.dump.expected" \
 	"test/replace_lines.rb" \
 	"test/struct_test.kc3" \
