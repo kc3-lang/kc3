@@ -71,7 +71,7 @@ Socket.Buf
            {0, 0}}}"
 "(U8[]) {{0, 0},\n        {0, 0},\n        {0, 0}}"
 "#{%Socket.Buf{}}"
-"%Socket.Buf{addr: (Ptr) 0,\n            addr_len: (U32) 0,\n            addr_str: \"\",\n            sockfd: (S64) -1,\n            buf_rw: %BufRW{r: (Ptr) 0,\n                           w: (Ptr) 0}}"
+"%Socket.Buf{addr: (Ptr) 0,\n            addr_len: (U32) 0,\n            addr_str: \"\",\n            buf_rw: %BufRW{r: (Ptr) 0,\n                           w: (Ptr) 0},\n            closed: false,\n            closed_mutex: (Ptr) 0,\n            sockfd: (S64) -1,\n            tag: ?}"
 Str.size(Str.random_base64(1))
 1
 Str.size(Str.random_base64(2))
