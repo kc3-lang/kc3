@@ -143,15 +143,14 @@ s_counter * counter_init (s_counter *counter, s_tag *value)
     return NULL;
   }
   *counter = (s_counter) {0};
-  if (! tag_init_copy(&tmp.count, value))
+  if (! tag_init_copy(&counter->count, value))
     return NULL;
 #if HAVE_PTHREAD
-  if (! (tmp.mutex = mutex_new())) {
-    tag_clean(&tmp.count);
+  if (! (counter->mutex = mutex_new())) {
+    tag_clean(&counter->count);
     return NULL;
   }
 #endif
-  *counter = tmp;
   return counter;
 }
 
