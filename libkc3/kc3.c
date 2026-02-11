@@ -313,6 +313,29 @@ void kc3_continue (void)
   abort();
 }
 
+s_tag * kc3_counter_decrease (s_counter **counter, s_tag *positive,
+                              s_tag *dest)
+{
+  assert(counter);
+  assert(dest);
+  return counter_decrease(*counter, positive, dest);
+}
+
+s_tag * kc3_counter_get (s_counter **counter, s_tag *dest)
+{
+  assert(counter);
+  assert(dest);
+  return counter_get(*counter, dest);
+}
+
+s_tag * kc3_counter_increase (s_counter **counter, s_tag *positive,
+                              s_tag *dest)
+{
+  assert(counter);
+  assert(dest);
+  return counter_increase(*counter, positive, dest);
+}
+
 s_counter ** kc3_counter_new (s_counter **dest, s_tag *value)
 {
   s_counter *counter;

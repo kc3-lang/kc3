@@ -19,13 +19,11 @@ defmodule Counter do
   defstruct [mutex: (Mutex*) 0,
              count: ?]
 
-  def decrease = cfn Tag "counter_decrease" (Counter, Tag, Result)
+  def decrease = cfn Tag "kc3_counter_decrease" (Counter*, Tag, Result)
 
-  def get = cfn Tag "counter_get" (Counter, Result)
+  def get = cfn Tag "kc3_counter_get" (Counter*, Result)
 
-  def increase = cfn Tag "counter_increase" (Counter, Tag, Result)
-
-  def init = cfn Counter "counter_init" (Result, Tag)
+  def increase = cfn Tag "kc3_counter_increase" (Counter*, Tag, Result)
 
   def marshall = cfn Marshall* "counter_marshall" (Marshall*, Bool, Counter*)
 
