@@ -1863,10 +1863,25 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
       log_entry->next = facts->remove_log;
       facts->remove_log = log_entry;
     }
-    skiplist_remove__fact(facts->index, found);
-    skiplist_remove__fact(facts->index_spo, found);
-    skiplist_remove__fact(facts->index_pos, found);
-    skiplist_remove__fact(facts->index_osp, found);
+    if (! skiplist_remove__fact(facts->index, found)) {
+      err_puts("facts_remove_fact_local: skiplist_remove index");
+      assert(! "facts_remove_fact_local: skiplist_remove index");
+    }
+    if (! skiplist_remove__fact(facts->index_spo, found)) {
+      err_puts("facts_remove_fact_local: skiplist_remove index_spo");
+      assert(! "facts_remove_fact_local: skiplist_remove index_spo");
+    }
+    if (! skiplist_remove__fact(facts->index_pos, found)) {
+      err_puts("facts_remove_fact_local: skiplist_remove index_pos");
+      err_write_1("  fact: ");
+      err_inspect_fact(found);
+      err_write_1("\n");
+      assert(! "facts_remove_fact_local: skiplist_remove index_pos");
+    }
+    if (! skiplist_remove__fact(facts->index_osp, found)) {
+      err_puts("facts_remove_fact_local: skiplist_remove index_osp");
+      assert(! "facts_remove_fact_local: skiplist_remove index_osp");
+    }
     f = *found;
     set_remove__fact(&facts->facts, found);
     facts_unref_tag(facts, f.subject);

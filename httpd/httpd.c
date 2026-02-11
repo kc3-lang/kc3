@@ -25,19 +25,24 @@ static void httpd_signal (int s);
 
 static void httpd_signal (int s)
 {
-  s_counter *counter = NULL;
-  s_ident ident = {0};
-  s_tag tag = {0};
+  s_tag counter = {0};
+  s_ident httpd_server_thread_stop = {0};
+  s_tag one = {0};
+  s_tag tmp = {0};
   (void) s;
-  ident.module = sym_1("HTTPd");
-  ident.sym = sym_1("server_thread_stop");
-  if (! counter_find(&ident, &counter)) {
-    err_puts("httpd_sigint: counter_find: HTTPd.server_thread_stop");
-    assert(! "httpd_sigint: counter_find: HTTPd.server_thread_stop");
+  tag_init_u8(&one, 1);
+  httpd_server_thread_stop.module = sym_1("HTTPd");
+  httpd_server_thread_stop.sym = sym_1("server_thread_stop");
+  if (! ident_get(&httpd_server_thread_stop, &counter) ||
+      counter.type != TAG_POINTER ||
+      counter.data.pointer.target_type != &g_sym_Counter ||
+      ! counter.data.pointer.ptr.p) {
+    err_puts("httpd_sigint: ident_get: HTTPd.server_thread_stop");
+    assert(! "httpd_sigint: ident_get: HTTPd.server_thread_stop");
     abort();
   }
-  tag_init_u8(&tag, 1);
-  counter_increase(counter, &tag, &tag);
+  counter_increase(counter.data.pointer.ptr.p, &one, &tmp);
+  tag_clean(&tmp);
 }
 
 int main (int argc, char **argv)

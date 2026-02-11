@@ -440,10 +440,6 @@ void env_clean (s_env *env)
   str_clean(&env->restore_path);
   str_clean(&env->dump_path);
   list_delete_all(env->dlopen_list);
-  env_globals_clean(env);
-  env_toplevel_clean(env);
-  error_handler_delete_all(env->error_handler);
-  env->error_handler = NULL;
   assert(env->facts->ref_count == 1);
   if (env == env_global())
     env_cleaning(true);
@@ -452,6 +448,10 @@ void env_clean (s_env *env)
 #endif
   facts_delete(env->facts);
   env->facts = NULL;
+  env_globals_clean(env);
+  env_toplevel_clean(env);
+  error_handler_delete_all(env->error_handler);
+  env->error_handler = NULL;
   ops_delete(env->ops);
   env->ops = NULL;
   env_args_clean(env);

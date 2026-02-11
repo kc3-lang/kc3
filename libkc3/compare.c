@@ -200,11 +200,11 @@ s8 compare_fact (const s_fact *a, const s_fact *b)
     return -1;
   if (!b)
     return 1;
-  if ((r = compare_tag_deref(a->subject, b->subject)))
+  if ((r = compare_tag(a->subject, b->subject)))
     return r;
-  if ((r = compare_tag_deref(a->predicate, b->predicate)))
+  if ((r = compare_tag(a->predicate, b->predicate)))
     return r;
-  r = compare_tag_deref(a->object, b->object);
+  r = compare_tag(a->object, b->object);
   return r;
 }
 
@@ -221,11 +221,11 @@ s8 compare_fact_id (const s_fact *a, const s_fact *b)
     return -1;
   if (a->id > b->id)
     return 1;
-  if ((r = compare_tag_deref(a->subject, b->subject)))
+  if ((r = compare_tag(a->subject, b->subject)))
     return r;
-  if ((r = compare_tag_deref(a->predicate, b->predicate)))
+  if ((r = compare_tag(a->predicate, b->predicate)))
     return r;
-  r = compare_tag_deref(a->object, b->object);
+  r = compare_tag(a->object, b->object);
   return r;
 }
 
@@ -279,11 +279,11 @@ s8 compare_fact_pos (const s_fact *a, const s_fact *b)
     return -1;
   if (!b)
     return 1;
-  if ((r = compare_tag_deref(a->predicate, b->predicate)))
+  if ((r = compare_tag(a->predicate, b->predicate)))
     return r;
-  if ((r = compare_tag_deref(a->object, b->object)))
+  if ((r = compare_tag(a->object, b->object)))
     return r;
-  r = compare_tag_deref(a->subject, b->subject);
+  r = compare_tag(a->subject, b->subject);
   return r;
 }
 
@@ -296,11 +296,11 @@ s8 compare_fact_osp (const s_fact *a, const s_fact *b)
     return -1;
   if (!b)
     return 1;
-  if ((r = compare_tag_deref(a->object, b->object)))
+  if ((r = compare_tag(a->object, b->object)))
     return r;
-  if ((r = compare_tag_deref(a->subject, b->subject)))
+  if ((r = compare_tag(a->subject, b->subject)))
     return r;
-  r = compare_tag_deref(a->predicate, b->predicate);
+  r = compare_tag(a->predicate, b->predicate);
   return r;
 }
 
@@ -709,10 +709,6 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
       a == TAG_LAST ||
       b == TAG_FIRST)
     return 1;
-  if (a->type == TAG_PVAR && a->data.pvar->bound)
-    a = &a->data.pvar->tag;
-  if (b->type == TAG_PVAR && b->data.pvar->bound)
-    b = &b->data.pvar->tag;
   switch (a->type) {
   case TAG_PCOMPLEX:
     switch (b->type) {
@@ -787,7 +783,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_PCOMPLEX:
       return compare_f80(a->data.f80,
-                          complex_to_f80(b->data.pcomplex));
+                         complex_to_f80(b->data.pcomplex));
     case TAG_F32: return compare_f80(a->data.f80, (f80) b->data.f32);
     case TAG_F64: return compare_f80(a->data.f80, (f80) b->data.f64);
     case TAG_F80: return compare_f80(a->data.f80, b->data.f80);
@@ -910,6 +906,14 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
       r = compare_integer(&a->data.integer, &tmp);
       integer_clean(&tmp);
       return r;
+    default:
+      break;
+    }
+    break;
+  case TAG_PVAR:
+    switch (b->type) {
+    case TAG_PVAR:
+      return compare_var(a->data.pvar, b->data.pvar);
     default:
       break;
     }
@@ -1748,23 +1752,6 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
   assert(! "compare_tag: not a number");
   abort();
   return 0;
-}
-     
-s8 compare_tag_deref (const s_tag *a, const s_tag *b)
-{
-  const s_tag *a_deref;
-  const s_tag *b_deref;
-  a_deref = a;
-  if (a_deref &&
-      a_deref->type == TAG_PVAR &&
-      a_deref->data.pvar->bound)
-    a_deref = &a_deref->data.pvar->tag;
-  b_deref = b;
-  if (b_deref &&
-      b_deref->type == TAG_PVAR &&
-      b_deref->data.pvar->bound)
-    b_deref = &b_deref->data.pvar->tag;
-  return compare_tag(a_deref, b_deref);
 }
 
 s8 compare_time (const s_time *a, const s_time *b)
