@@ -10,18 +10,28 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require Marshall
+require MarshallRead
 require Mutex
 
 defmodule Counter do
 
-  defstruct []
+  defstruct [mutex: (Mutex*) 0,
+             count: ?]
 
-  def decrease = cfn_macro Tag "kc3_counter_decrease" (Ident, Tag,
-    Result)
+  def decrease = cfn Tag "counter_decrease" (Counter, Tag, Result)
 
-  def get = cfn_macro Tag "kc3_counter_get" (Ident, Result)
+  def get = cfn Tag "counter_get" (Counter, Result)
 
-  def increase = cfn_macro Tag "kc3_counter_increase" (Ident, Tag,
-    Result)
+  def increase = cfn Tag "counter_increase" (Counter, Tag, Result)
+
+  def init = cfn Counter "counter_init" (Result, Tag)
+
+  def marshall = cfn Marshall* "counter_marshall" (Marshall*, Bool, Counter*)
+
+  def marshall_read = cfn Counter* "counter_marshall_read" (MarshallRead*,
+    Bool, Result)
+
+  def new = cfn Counter* "kc3_counter_new" (Result, Tag)
 
 end

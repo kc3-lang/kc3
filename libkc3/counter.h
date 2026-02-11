@@ -24,33 +24,23 @@
 /* Stack-allocation compatible functions, call counter_clean
    after use. */
 void        counter_clean (s_counter *c);
-s_counter * counter_init (s_counter *c, s_ident *ident, s_tag *value);
+s_counter * counter_init (s_counter *c, s_tag *value);
 
 /* Heap-allocation functions, call counter_delete after use. */
 void        counter_delete (s_counter *c);
-s_counter * counter_new (s_ident *ident, s_tag *value);
+s_counter * counter_new (s_tag *value);
+
+/* Observers. */
+s_tag *       counter_get (s_counter *c, s_tag *dest);
+s_marshall ** counter_marshall (s_marshall **m, bool heap,
+                                s_counter **mutex);
 
 /* Operators. */
-s_tag * counter_decrease (s_counter *c, s_tag *positive,
-                          s_tag *dest);
-s_tag * counter_get (s_counter *c, s_tag *dest);
-s_tag * counter_increase (s_counter *c, s_tag *positive,
-                          s_tag *dest);
-
-/* Hash table of counters. */
-/*   Stack-allocation compatible functions, call counter_ht_clean
-     after use. */
-void   counter_ht_clean (s_ht *ht);
-s_ht * counter_ht_init (s_ht *ht);
-
-/*   Heap-allocation functions, call counter_ht_delete after use. */
-void   counter_ht_delete (s_ht *ht);
-s_ht * counter_ht_new (void);
-s_ht * counter_ht_new_ref (s_ht *ht);
-
-/*   Operators. */
-s_counter ** counter_find (const s_ident *ident, s_counter **dest);
-s_counter ** counter_ht_find (s_ht *ht, const s_ident *ident,
-                              s_counter **dest);
+s_tag *      counter_decrease (s_counter *c, s_tag *positive,
+                               s_tag *dest);
+s_tag *      counter_increase (s_counter *c, s_tag *positive,
+                               s_tag *dest);
+s_counter ** counter_marshall_read (s_marshall_read **mr, bool heap,
+                                    s_counter **dest);
 
 #endif /* LIBKC3_COUNTER_H */

@@ -350,10 +350,6 @@ require Facts
 require IO
 require Err
 
-require Counter
-defspecial_operator defcounter =
-  cfn Tag "kc3_defcounter" (Call, Result)
-
 def unveil = cfn Void "kc3_unveil" (Str, Str)
 def pledge = cfn Void "kc3_pledge" (Str, Str)
 

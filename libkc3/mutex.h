@@ -31,9 +31,15 @@ s_mutex * mutex_init (s_mutex *mutex);
 void      mutex_delete (s_mutex *mutex);
 s_mutex * mutex_new (void);
 
+/* Observers. */
+s_marshall ** mutex_marshall (s_marshall **m, bool heap,
+                              s_mutex **mutex);
+
 /* Operators. */
-void mutex_lock (s_mutex *mutex);
-void mutex_unlock (s_mutex *mutex);
+void       mutex_lock (s_mutex *mutex);
+s_mutex ** mutex_marshall_read (s_marshall_read **mr, bool heap,
+                                s_mutex **dest);
+void       mutex_unlock (s_mutex *mutex);
 
 #endif /* HAVE_PTHREAD */
 

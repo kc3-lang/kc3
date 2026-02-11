@@ -878,7 +878,6 @@ struct complex {
 };
 
 struct counter {
-  s_ident ident;
   s_mutex *mutex;
   s_tag count;
 };

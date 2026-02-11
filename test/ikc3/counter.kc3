@@ -1,0 +1,18 @@
+quote require Counter
+require Counter
+quote a = Counter.new(0)
+a = Counter.new(0)
+quote Counter.get(a)
+Counter.get(a)
+quote Counter.increase(a, 1)
+Counter.increase(a, 1)
+quote Counter.get(a)
+Counter.get(a)
+quote Counter.increase(a, 10)
+Counter.increase(a, 10)
+quote Counter.get(a)
+Counter.get(a)
+quote Counter.decrease(a, 5)
+Counter.decrease(a, 5)
+quote Counter.get(a)
+Counter.get(a)

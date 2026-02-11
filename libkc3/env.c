@@ -454,10 +454,6 @@ void env_clean (s_env *env)
   env->facts = NULL;
   ops_delete(env->ops);
   env->ops = NULL;
-  if (env == env_global()) {
-    counter_ht_delete(env->counter_ht);
-    env->counter_ht = NULL;
-  }
   env_args_clean(env);
   str_delete(env->module_path);
   env->module_path = NULL;
@@ -588,61 +584,6 @@ void env_default_set (s_env *env)
   assert(env);
   g_kc3_env_default = env;
   g_kc3_env_global = env;
-}
-
-s_tag * env_defcounter (s_env *env, s_ident *name, s_tag *value,
-                        s_tag *dest)
-{
-  s_counter *counter = NULL;
-  s_tag      counter_tag = {0};
-  s_ident ident;
-  ident = *name;
-  if (! tag_is_integer(value)) {
-    err_puts("env_defcounter: value is not an integer");
-    assert(! "env_defcounter: value is not an integer");
-    return NULL;
-  }
-  if (! ident.module)
-    ident.module = env->current_defmodule;
-  if (! (counter = counter_new(&ident, value)))
-    return NULL;
-  if (! tag_init_pstruct_with_data(&counter_tag, &g_sym_Counter,
-                                   counter, true)) {
-    counter_delete(counter);
-    return NULL;
-  }
-#if HAVE_PTHREAD
-  rwlock_w(&env->counter_ht->rwlock);
-#endif
-  if (ht_has(env->counter_ht, &counter_tag)) {
-    err_puts("env_defcounter: counter is already defined");
-    assert(! "env_defcounter: counter is already defined");
-    goto clean;
-  }
-  if (! ht_add(env->counter_ht, &counter_tag)) {
-    err_puts("env_defcounter: ht_add");
-    assert(! "env_defcounter: ht_add");
-    tag_clean(&counter_tag);
-    return NULL;
-  }
-#if HAVE_PTHREAD
-  rwlock_unlock_w(&env->counter_ht->rwlock);
-#endif
-  tag_clean(&counter_tag);
-  if (false) {
-    err_write_1("env_defcounter: ");
-    err_inspect_ident(&ident);
-    err_write_1(" = ");
-    err_inspect_tag(value);
-    err_write_1("\n");
-  }
-  return tag_init_copy(dest, value);
- clean:
-#if HAVE_PTHREAD
-  rwlock_unlock_w(&env->counter_ht->rwlock);
-#endif
-  tag_clean(&counter_tag);
-  return NULL;
 }
 
 // FIXME: transaction ?
@@ -1976,10 +1917,6 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   env->search_modules_default = list_new_psym(&g_sym_KC3, NULL);
   env->search_modules = env->search_modules_default;
   if (! (env->ops = ops_new())) {
-    env_clean(env);
-    return NULL;
-  }
-  if (! (env->counter_ht = counter_ht_new())) {
     env_clean(env);
     return NULL;
   }

@@ -17,6 +17,8 @@
 #include "ht.h"
 #include "ident.h"
 #include "io.h"
+#include "marshall.h"
+#include "marshall_read.h"
 #include "mutex.h"
 #include "sym.h"
 #include "tag.h"
@@ -76,16 +78,6 @@ void counter_delete (s_counter *counter)
   free(counter);
 }
 
-s_counter ** counter_find (const s_ident *ident, s_counter **dest)
-{
-  s_env *env;
-  assert(ident);
-  assert(dest);
-  env = env_global();
-  assert(env);
-  return counter_ht_find(env->counter_ht, ident, dest);
-}
-
 s_tag * counter_get (s_counter *counter, s_tag *dest)
 {
   s_tag *result;
@@ -101,115 +93,8 @@ s_tag * counter_get (s_counter *counter, s_tag *dest)
   return result;
 }
 
-void counter_ht_clean (s_ht *ht)
-{
-  ht_clean(ht);
-}
-
-s8 counter_ht_compare (const s_tag *a, const s_tag *b)
-{
-  s_counter *counter_a;
-  s_counter *counter_b;
-  if (! a ||
-      a->type != TAG_PSTRUCT ||
-      ! a->data.pstruct ||
-      ! a->data.pstruct->pstruct_type ||
-      a->data.pstruct->pstruct_type->module != &g_sym_Counter ||
-      ! (counter_a = a->data.pstruct->data) ||
-      ! b ||
-      b->type != TAG_PSTRUCT ||
-      ! b->data.pstruct ||
-      ! b->data.pstruct->pstruct_type ||
-      b->data.pstruct->pstruct_type->module != &g_sym_Counter ||
-      ! (counter_b = b->data.pstruct->data)) {
-    err_puts("counter_ht_compare: invalid argument");
-    assert(! "counter_ht_compare: invalid argument");
-    abort();
-  }
-  return compare_ident(&counter_a->ident, &counter_b->ident);
-}
-
-void counter_ht_delete (s_ht *ht)
-{
-  assert(ht);
-  ht_delete(ht);
-}
-
-s_counter ** counter_ht_find (s_ht *ht, const s_ident *ident,
-                              s_counter **dest)
-{
-  s_counter key = {0};
-  s_tag     key_tag = {0};
-  s_tag *value_tag = NULL;
-  key.ident = *ident;
-  if (! key.ident.module)
-    key.ident.module = env_global()->current_defmodule;
-  if (! key.ident.module)
-    return NULL;
-  if (! tag_init_pstruct_with_data(&key_tag, &g_sym_Counter, &key,
-                                   false))
-    return NULL;
-  if (! ht_get(ht, &key_tag, &value_tag))
-    return NULL;
-  if (value_tag->type != TAG_PSTRUCT ||
-      ! value_tag->data.pstruct ||
-      ! value_tag->data.pstruct->pstruct_type ||
-      value_tag->data.pstruct->pstruct_type->module != &g_sym_Counter ||
-      ! value_tag->data.pstruct->data) {
-    err_puts("counter_ht_find: ht_get: invalid value");
-    assert(! "counter_ht_find: ht_get: invalid value");
-    return NULL;
-  }
-  *dest = value_tag->data.pstruct->data;
-  return dest;
-}
-
-uw counter_ht_hash (const s_tag *x)
-{
-  s_counter *counter;
-  uw hash;
-  if (! x ||
-      x->type != TAG_PSTRUCT ||
-      ! x->data.pstruct ||
-      ! x->data.pstruct->pstruct_type ||
-      x->data.pstruct->pstruct_type->module != &g_sym_Counter ||
-      ! (counter = x->data.pstruct->data)) {
-    err_puts("counter_ht_hash: invalid argument");
-    assert(! "counter_ht_hash: invalid argument");
-    abort();
-  }
-  ident_hash_uw(&counter->ident, &hash);
-  if (false) {
-    err_write_1("counter_ht_hash: ");
-    err_inspect_uw_hexadecimal(hash);
-    err_write_1("\n");
-  }
-  return hash;
-}
-
-s_ht * counter_ht_init (s_ht *ht)
-{
-  if (! ht_init(ht, &g_sym_Ident, 1024))
-    return NULL;
-  ht->compare = counter_ht_compare;
-  ht->hash = counter_ht_hash;
-  return ht;
-}
-
-s_ht * counter_ht_new (void)
-{
-  s_ht *ht;
-  if (! (ht = alloc(sizeof(s_ht))))
-    return NULL;
-  if (! counter_ht_init(ht)) {
-    free(ht);
-    return NULL;
-  }
-  return ht;
-}
-
 s_tag * counter_increase (s_counter *counter, s_tag *positive,
-                           s_tag *dest)
+                          s_tag *dest)
 {
   s_tag tmp = {0};
   assert(counter);
@@ -248,21 +133,16 @@ s_tag * counter_increase (s_counter *counter, s_tag *positive,
   return NULL;
 }
 
-s_counter * counter_init (s_counter *counter, s_ident *ident,
-                          s_tag *value)
+s_counter * counter_init (s_counter *counter, s_tag *value)
 {
-  s_counter tmp = {0};
   assert(counter);
-  assert(ident);
-  assert(ident->module);
-  assert(ident->sym);
   assert(value);
   if (! tag_is_integer(value)) {
     err_puts("counter_init: value is not an integer");
     assert(! "counter_init: value is not an integer");
     return NULL;
   }
-  tmp.ident = *ident;
+  *counter = (s_counter) {0};
   if (! tag_init_copy(&tmp.count, value))
     return NULL;
 #if HAVE_PTHREAD
@@ -275,16 +155,49 @@ s_counter * counter_init (s_counter *counter, s_ident *ident,
   return counter;
 }
 
-s_counter * counter_new (s_ident *ident, s_tag *value)
+s_marshall ** counter_marshall (s_marshall **m, bool heap,
+                                s_counter **counter)
+{
+  assert(m);
+  assert(*m);
+  assert(counter);
+  assert(*counter);
+  if (! tag_is_integer(&(*counter)->count)) {
+    err_puts("counter_marshall: count is not an integer");
+    assert(! "counter_marshall: count is not an integer");
+    return NULL;
+  }
+  if (! marshall_tag(*m, heap, &(*counter)->count))
+    return NULL;
+  return m;
+}
+
+s_counter ** counter_marshall_read (s_marshall_read **mr, bool heap,
+                                    s_counter **dest)
+{
+  s_tag count = {0};
+  s_counter *tmp = NULL;
+  assert(mr);
+  assert(*mr);
+  assert(dest);
+  if (! marshall_read_tag(*mr, heap, &count))
+    return NULL;
+  if (! (tmp = counter_new(&count))) {
+    tag_clean(&count);
+    return NULL;
+  }
+  tag_clean(&count);
+  *dest = tmp;
+  return dest;
+}
+
+s_counter * counter_new (s_tag *value)
 {
   s_counter *counter = NULL;
-  assert(ident);
-  assert(ident->module);
-  assert(ident->sym);
   assert(value);
   if (! (counter = alloc(sizeof(s_counter))))
     return NULL;
-  if (! counter_init(counter, ident, value)) {
+  if (! counter_init(counter, value)) {
     free(counter);
     return NULL;
   }

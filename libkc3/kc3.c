@@ -313,68 +313,15 @@ void kc3_continue (void)
   abort();
 }
 
-s_tag * kc3_counter_decrease (const s_ident *name,
-                              s_tag *positive,
-                              s_tag *dest)
+s_counter ** kc3_counter_new (s_counter **dest, s_tag *value)
 {
   s_counter *counter;
-  s_tag positive_eval;
-  s_tag tmp = {0};
-  if (! counter_find(name, &counter)) {
-    err_puts("kc3_counter_decrease: counter_find");
-    assert(! "kc3_counter_decrease: counter_find");
+  assert(dest);
+  assert(value);
+  counter = counter_new(value);
+  if (! counter)
     return NULL;
-  }
-  if (! eval_tag(positive, &positive_eval)) {
-    err_puts("kc3_counter_decrease: counter_find");
-    assert(! "kc3_counter_decrease: counter_find");
-    return NULL;
-  }
-  if (! counter_decrease(counter, &positive_eval, &tmp)) {
-    err_puts("kc3_counter_decrease: counter_decrease");
-    assert(! "kc3_counter_decrease: counter_decrease");
-    return NULL;
-  }
-  tag_clean(&positive_eval);
-  *dest = tmp;
-  return dest;
-}
-
-s_tag * kc3_counter_get (const s_ident *name, s_tag *dest)
-{
-  s_counter *counter;
-  if (! counter_find(name, &counter)) {
-    err_puts("kc3_counter_get: counter_find");
-    assert(! "kc3_counter_get: counter_find");
-    return NULL;
-  }
-  return counter_get(counter, dest);
-}
-
-s_tag * kc3_counter_increase (const s_ident *name,
-                               s_tag *positive,
-                               s_tag *dest)
-{
-  s_counter *counter;
-  s_tag positive_eval;
-  s_tag tmp = {0};
-  if (! counter_find(name, &counter)) {
-    err_puts("kc3_counter_increase: counter_find");
-    assert(! "kc3_counter_increase: counter_find");
-    return NULL;
-  }
-  if (! eval_tag(positive, &positive_eval)) {
-    err_puts("kc3_counter_increase: counter_find");
-    assert(! "kc3_counter_increase: counter_find");
-    return NULL;
-  }
-  if (! counter_increase(counter, &positive_eval, &tmp)) {
-    err_puts("kc3_counter_increase: counter_increase");
-    assert(! "kc3_counter_increase: counter_increase");
-    return NULL;
-  }
-  tag_clean(&positive_eval);
-  *dest = tmp;
+  *dest = counter;
   return dest;
 }
 
