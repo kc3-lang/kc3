@@ -591,6 +591,9 @@ gdb_test_json_asan: lib_links_asan
 	${MAKE} -C json asan
 	${MAKE} -C test gdb_test_json_asan
 
+gdb_test_kc3s: debug lib_links_debug
+	${MAKE} -C test gdb_test_kc3s
+
 gdb_test_markdown: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
@@ -626,6 +629,9 @@ gdb_test_pdf_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
+
+gdb_test_tls: debug lib_links_debug
+	${MAKE} -C test gdb_test_tls
 
 gen:
 	${MAKE} -C libkc3 gen

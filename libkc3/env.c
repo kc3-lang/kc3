@@ -382,6 +382,7 @@ bool env_call_get (s_env *env, s_call *call)
   if (! facts_cursor_next(&cursor, &fact)) {
     err_puts("env_call_get: facts_cursor_next");
     assert(! "env_call_get: facts_cursor_next");
+    facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return false;
   }
@@ -389,18 +390,23 @@ bool env_call_get (s_env *env, s_call *call)
     err_write_1("env_call_get: ");
     err_inspect_ident(&call->ident);
     err_puts(" :symbol_value not found");
+    facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return false;
   }
   if (! pcallable_init_copy(&call->pcallable,
-                            &tag_pvar.data.pvar->tag.data.pcallable))
+                            &tag_pvar.data.pvar->tag.data.pcallable)) {
+    facts_cursor_clean(&cursor);
+    tag_clean(&tag_pvar);
     return false;
+  }
   tag_clean(&tag_pvar);
   callable_set_name_if_null(call->pcallable, &call->ident);
   if (! facts_find_fact_by_tags(env->facts, &tag_ident, &tag_is_a,
                                 &tag_special_operator, &found)) {
     err_puts("env_call_get: facts_find_fact_by_tags 4");
     assert(! "env_call_get: facts_find_fact_by_tags 4");
+    facts_cursor_clean(&cursor);
     return false;
   }
   if (found) {
@@ -1117,6 +1123,7 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
     l = &(*l)->next.data.plist;
   }
  ok:
+  facts_cursor_clean(&cursor);
   list_delete_all(arguments);
   tmp.type = TAG_PLIST;
   tmp.data.plist = list;
@@ -1223,8 +1230,10 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   }
   if (! facts_cursor_next(&cursor, &fact))
     goto clean;
-  if (! fact)
+  if (! fact) {
+    facts_cursor_clean(&cursor);
     goto ok;
+  }
   if (! fact_w_init_fact(fact_w, fact)) {
     facts_cursor_clean(&cursor);
     goto clean;
@@ -1408,9 +1417,8 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
   while (1) {
     if (! facts_cursor_next(&cursor, &fact))
       goto clean;
-    if (! fact) {
+    if (! fact)
       goto ok;
-    }
     tag_void(&tmp);
     if (! fact_w_init_fact(fact_w, fact)) {
       facts_cursor_clean(&cursor);
@@ -1643,8 +1651,10 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
     tag_clean(&tag_pvar);
     return NULL;
   }
-  if (! fact)
+  if (! fact) {
+    tag_clean(&tag_pvar);
     return NULL;
+  }
   if (! tag_init_copy(&tmp, &tag_pvar.data.pvar->tag)) {
     facts_with_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
@@ -1653,10 +1663,13 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
   facts_with_cursor_clean(&cursor);
   tag_clean(&tag_pvar);
   if (! facts_with(env->facts, &cursor, (t_facts_spec) {
-        &tag_ident, &tag_is_a, &tag_special_operator, NULL, NULL}))
+        &tag_ident, &tag_is_a, &tag_special_operator, NULL, NULL})) {
+    tag_clean(&tmp);
     return NULL;
+  }
   if (! facts_with_cursor_next(&cursor, &fact)) {
     facts_with_cursor_clean(&cursor);
+    tag_clean(&tmp);
     return NULL;
   }
   if (fact) {
@@ -1672,6 +1685,7 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
         err_puts("env_ident_get: CALLABLE_VOID");
         assert(! "env_ident_get: CALLABLE_VOID");
         facts_with_cursor_clean(&cursor);
+        tag_clean(&tmp);
         return NULL;
       }
     }
@@ -1735,8 +1749,10 @@ s_tag * env_ident_get_address (s_env *env, const s_ident *ident)
     tag_clean(&tag_pvar);
     return NULL;
   }
-  if (! fact)
+  if (! fact) {
+    tag_clean(&tag_pvar);
     return NULL;
+  }
   tmp = fact->object;
   facts_cursor_clean(&cursor);
   tag_clean(&tag_pvar);
@@ -2350,6 +2366,7 @@ bool env_maybe_reload (s_env *env, const s_str *path)
     return false;
   }
   if (! facts_cursor_next(&cursor, &fact)) {
+    facts_cursor_clean(&cursor);
     tag_clean(&load_time);
     return false;
   }
@@ -2358,6 +2375,7 @@ bool env_maybe_reload (s_env *env, const s_str *path)
     err_inspect_str(path);
     err_write_1("\n");
     assert(! "env_maybe_reload: no load time");
+    facts_cursor_clean(&cursor);
     tag_clean(&load_time);
     return false;
   }
@@ -2489,6 +2507,7 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
   if (! facts_with_cursor_next(&cursor, &fact)) {
     err_puts("env_module_has_ident: facts_with_cursor_next");
     assert(! "env_module_has_ident: facts_with_cursor_next");
+    facts_with_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return NULL;
   }
@@ -2880,6 +2899,7 @@ s8 env_special_operator_arity (s_env *env, const s_ident *ident)
     return -1;
   }
   if (! facts_cursor_next(&cursor, &fact)) {
+    facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return -1;
   }
@@ -2932,6 +2952,7 @@ bool * env_struct_type_exists (s_env *env, const s_sym *module,
     return NULL;
   }
   if (! facts_cursor_next(&cursor, &fact)) {
+    facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return NULL;
   }
@@ -2977,6 +2998,7 @@ p_struct_type * env_pstruct_type_find (s_env *env,
   if (! facts_cursor_next(&cursor, &found)) {
     err_puts("env_pstruct_type_find: facts_with_cursor_next");
     assert(! "env_pstruct_type_find: facts_with_cursor_next");
+    facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return NULL;
   }
@@ -3019,6 +3041,7 @@ p_callable env_struct_type_get_clean (s_env *env, const s_sym *module)
   facts_with(env->facts, &cursor, (t_facts_spec) {
       &tag_module, &clean, &tag_pvar, NULL, NULL });
   if (! facts_with_cursor_next(&cursor, &found)) {
+    facts_with_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return NULL;
   }
@@ -3129,6 +3152,7 @@ bool * env_struct_type_has_spec (s_env *env, const s_sym *module,
     return NULL;
   }
   if (! facts_cursor_next(&cursor, &fact)) {
+    facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return NULL;
   }

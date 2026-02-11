@@ -43,6 +43,7 @@ s8 compare_fact (const s_fact *a, const s_fact *b);
 s8 compare_fact_id (const s_fact *a, const s_fact *b);
 s8 compare_fact_osp (const s_fact *a, const s_fact *b);
 s8 compare_fact_pos (const s_fact *a, const s_fact *b);
+s8 compare_fact_spo (const s_fact *a, const s_fact *b);
 s8 compare_fact_unbound_var_count (const s_fact *a,
                                    const s_fact *b);
 s8 compare_fn (const s_fn *a, const s_fn *b);
@@ -73,7 +74,6 @@ s8 compare_struct (const s_struct *a, const s_struct *b);
 s8 compare_struct_type (const s_struct_type *a, const s_struct_type *b);
 s8 compare_sym (const s_sym *a, const s_sym *b);
 s8 compare_tag (const s_tag *a, const s_tag *b);
-s8 compare_tag_deref (const s_tag *a, const s_tag *b);
 s8 compare_time (const s_time *a, const s_time *b);
 s8 compare_tuple (const s_tuple *a, const s_tuple *b);
 COMPARE_PROTOTYPE(u8);

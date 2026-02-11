@@ -95,7 +95,8 @@ bool                 facts_unref_tag (s_facts *facts, const s_tag *tag);
 sw        facts_dump (s_facts *facts, s_buf *buf);
 sw        facts_dump_binary (s_facts *facts, s_buf *buf);
 sw        facts_dump_file (s_facts *facts, const s_str *path);
-sw        facts_dump_binary_file (s_facts *facts, const s_str *path);
+sw        facts_dump_binary_file (s_facts *facts,
+                                  const s_str *path);
 s_fact ** facts_find_fact (s_facts *facts, const s_fact *fact,
                            s_fact **dest);
 s_fact ** facts_find_fact_by_tags (s_facts *facts,

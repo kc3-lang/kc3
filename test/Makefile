@@ -86,6 +86,9 @@ gdb_test_json:
 gdb_test_json_asan:
 	cd json && ${GDB} ../../ikc3/ikc3_asan
 
+gdb_test_kc3s:
+	cd kc3s && ${GDB} ../../ikc3/ikc3_debug
+
 gdb_test_markdown:
 	cd markdown && ${GDB} ../../ikc3/ikc3_debug
 

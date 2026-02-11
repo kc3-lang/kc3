@@ -14,6 +14,7 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "env.h"
+#include "facts.h"
 #include "facts_cursor.h"
 #include "facts_spec.h"
 #include "facts_with.h"

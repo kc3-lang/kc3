@@ -669,6 +669,7 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   }
   r = result;
  clean:
+  facts_cursor_clean(&cursor);
   tag_clean(&subject);
   tag_clean(&predicate);
   tag_clean(&object);
@@ -747,6 +748,7 @@ sw facts_dump_binary (s_facts *facts, s_buf *buf)
   }
   r = result;
  clean:
+  facts_cursor_clean(&cursor);
   tag_clean(&subject);
   tag_clean(&predicate);
   tag_clean(&object);
@@ -873,7 +875,7 @@ s_facts * facts_init (s_facts *facts)
   // spo index
   facts->index_spo = skiplist_new__fact(max_height, spacing);
   assert(facts->index_spo);
-  facts->index_spo->compare = compare_fact;
+  facts->index_spo->compare = compare_fact_spo;
   // pos index
   facts->index_pos = skiplist_new__fact(max_height, spacing);
   assert(facts->index_pos);
@@ -1964,6 +1966,7 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
 #endif
     err_puts("facts_replace_tags: facts_cursor_next 1");
     assert(! "facts_replace_tags: facts_cursor_next 1");
+    facts_cursor_clean(&cursor);
     goto clean;
   }
   while (fact) {
@@ -1976,10 +1979,12 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
 #endif
       err_puts("facts_replace_tags: facts_cursor_next 2");
       assert(! "facts_replace_tags: facts_cursor_next 2");
+      facts_cursor_clean(&cursor);
       list_delete_all(list);
       goto clean;
     }
   }
+  facts_cursor_clean(&cursor);
   facts_transaction_start(facts, &transaction);  
   while (list) {
     if (! facts_remove_fact(facts, &list->tag.data.fact, &b)) {

@@ -334,6 +334,7 @@ typedef s_var *            p_var;
 
 /* function typedefs */
 typedef sw   (* f_buf_parse_end) (s_buf *buf, bool *dest);
+typedef s8   (* f_compare_fact) (const s_fact *a, const s_fact *b);
 typedef void (* f_log_hook) (void *context, e_fact_action action,
                              const s_fact *fact);
 typedef bool (* f_sequence) (s_sequence *seq);
