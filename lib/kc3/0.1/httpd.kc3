@@ -159,8 +159,8 @@ defmodule HTTPd do
         KQueue.delete(HTTPd.kq_fd, socket, :read)
         Socket.Buf.close(client)
         File.close(socket)
-        Counter.decrease(* HTTPd.connections, 1)
-        count = Counter.get(* HTTPd.connections)
+        Counter.decrease(HTTPd.connections, 1)
+        count = Counter.get(HTTPd.connections)
         puts("HTTPd.http_client: connections=#{count}")
       end
     end)
@@ -170,11 +170,11 @@ defmodule HTTPd do
     ok = false
     client = void
     unwind_protect(do
-      if (Counter.get(* HTTPd.connections) < HTTPd.connections_max) &&
+      if (Counter.get(HTTPd.connections) < HTTPd.connections_max) &&
          (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
          Socket.Buf.set_tag(client, {:client, client}) do
-        Counter.increase(* HTTPd.connections, 1)
-        count = Counter.get(* HTTPd.connections)
+        Counter.increase(HTTPd.connections, 1)
+        count = Counter.get(HTTPd.connections)
         puts("HTTPd.acceptor: connections=#{count}")
         Mutex.lock(HTTPd.kq_mutex)
         unwind_protect(do
@@ -206,7 +206,7 @@ defmodule HTTPd do
   def server_thread_stop = Counter.new(0)
 
   def server_thread = fn () {
-    while ! Counter.get(* HTTPd.server_thread_stop) do
+    while ! Counter.get(HTTPd.server_thread_stop) do
       Mutex.lock(HTTPd.kq_mutex)
       r = unwind_protect(do
         KQueue.poll(HTTPd.kq_fd, %Time{})
@@ -216,7 +216,7 @@ defmodule HTTPd do
       match r do
         {sockfd, :eof, :acceptor} ->
           File.close(sockfd)
-          Counter.increment(* HTTPd.server_thread_stop, 1)
+          Counter.increment(HTTPd.server_thread_stop, 1)
         {sockfd, :read, :acceptor} ->
           HTTPd.acceptor(sockfd)
         {sockfd, :eof, {:client, client}} ->
@@ -224,8 +224,8 @@ defmodule HTTPd do
             KQueue.delete(HTTPd.kq_fd, sockfd, :timer)
             Socket.Buf.close(client)
             File.close(sockfd)
-            Counter.decrease(* HTTPd.connections, 1)
-            count = Counter.get(* HTTPd.connections)
+            Counter.decrease(HTTPd.connections, 1)
+            count = Counter.get(HTTPd.connections)
             puts("HTTPd.server_thread: eof: connections=#{count}")
           end
         {sockfd, :read, {:client, client}} ->
@@ -235,8 +235,8 @@ defmodule HTTPd do
             KQueue.delete(HTTPd.kq_fd, sockfd, :read)
             Socket.Buf.close(client)
             File.close(sockfd)
-            Counter.decrease(* HTTPd.connections, 1)
-            count = Counter.get(* HTTPd.connections)
+            Counter.decrease(HTTPd.connections, 1)
+            count = Counter.get(HTTPd.connections)
             puts("HTTPd.server_thread: timeout: connections=#{count}")
           end
         void ->

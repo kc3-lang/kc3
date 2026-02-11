@@ -1,10 +1,18 @@
+require Counter
+Counter
 a = Counter.new(0)
-env_eval_call_resolve: env_module_has_ident(Counter, Counter.new) -> false
-Stacktrace:
-0: :tag_equal(a, Counter.new(0))
-env_eval_call: env_eval_call_resolve: Counter.new
-void
+(Counter*) 1
 Counter.get(a)
-ikc3:/home/dx/c/thodg/kc3-lang/kc3/libkc3/libkc3.so: undefined symbol 'counter_ht_find'
-ld.so: ikc3: lazy binding failed!
-Killed 
+0
+Counter.increase(a, 1)
+1
+Counter.get(a)
+1
+Counter.increase(a, 10)
+11
+Counter.get(a)
+11
+Counter.decrease(a, 5)
+6
+Counter.get(a)
+6
