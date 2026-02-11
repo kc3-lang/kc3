@@ -67,7 +67,14 @@ release:
 run:
 	${SRC_TOP}/httpd/kc3_httpd -C ${SRC_TOP}/test/httpd 127.0.0.1 15004
 
-test: vegeta_local
+test:
+	KC3_HTTPD=${SRC_TOP}/httpd/kc3_httpd ./test/run
+
+test_asan:
+	KC3_HTTPD=${SRC_TOP}/httpd/kc3_httpd_asan ./test/run
+
+test_debug:
+	KC3_HTTPD=${SRC_TOP}/httpd/kc3_httpd_debug ./test/run
 
 VEGETA_RATES = 10 20
 

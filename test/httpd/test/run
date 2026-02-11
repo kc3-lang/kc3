@@ -1,0 +1,116 @@
+#!/bin/sh
+## kc3
+## Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+TEST_DIR="$(cd "$(dirname "$0")" && pwd)"
+HTTPD_DIR="$(cd "${TEST_DIR}/.." && pwd)"
+SRC_TOP="$(cd "${TEST_DIR}/../../.." && pwd)"
+
+. "${SRC_TOP}/test/test.subr"
+
+: ${KC3_HTTPD:=${SRC_TOP}/httpd/kc3_httpd}
+HOST="127.0.0.1"
+PORT="15100"
+URL="http://${HOST}:${PORT}"
+
+cleanup() {
+    if [ -n "$HTTPD_PID" ]; then
+        kill $HTTPD_PID 2>/dev/null
+        wait $HTTPD_PID 2>/dev/null
+    fi
+}
+
+trap cleanup EXIT
+
+test_http_status() {
+    TEST_NAME="$1"
+    METHOD="$2"
+    URL_PATH="$3"
+    EXPECTED_STATUS="$4"
+
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X "$METHOD" "${URL}${URL_PATH}" 2>/dev/null)
+    if [ "x$STATUS" = "x$EXPECTED_STATUS" ]; then
+        test_ok "$TEST_NAME"
+    else
+        test_ko "$TEST_NAME"
+    fi
+}
+
+test_http_body_contains() {
+    TEST_NAME="$1"
+    METHOD="$2"
+    URL_PATH="$3"
+    EXPECTED_CONTENT="$4"
+
+    BODY=$(curl -s -X "$METHOD" "${URL}${URL_PATH}" 2>/dev/null)
+    if echo "$BODY" | grep -q "$EXPECTED_CONTENT"; then
+        test_ok "$TEST_NAME"
+    else
+        test_ko "$TEST_NAME"
+    fi
+}
+
+test_http_header() {
+    TEST_NAME="$1"
+    METHOD="$2"
+    URL_PATH="$3"
+    HEADER_NAME="$4"
+    EXPECTED_VALUE="$5"
+
+    HEADER=$(curl -s -I -X "$METHOD" "${URL}${URL_PATH}" 2>/dev/null | grep -i "^${HEADER_NAME}:" | tr -d '\r')
+    if echo "$HEADER" | grep -qi "$EXPECTED_VALUE"; then
+        test_ok "$TEST_NAME"
+    else
+        test_ko "$TEST_NAME"
+    fi
+}
+
+cd "$HTTPD_DIR"
+
+rm -f .test .test_ok .test_ko
+touch .test .test_ok .test_ko
+
+$KC3_HTTPD --trace -d "$HOST" "$PORT" > kc3_httpd.log 2>&1 &
+HTTPD_PID=$!
+
+sleep 1
+
+if ! kill -0 "$HTTPD_PID" 2>/dev/null; then
+    echo "Failed to start httpd"
+    exit 1
+fi
+
+test_http_status "200 GET /" GET "/" 200
+test_http_status "404 GET /nonexistent" GET "/nonexistent" 404
+test_http_status "200 HEAD /" HEAD "/" 200
+test_http_header "Server: header" GET "/" "Server" "kc3_httpd"
+test_http_header "Connection: keep-alive" GET "/" "Connection" "keep-alive"
+test_http_body_contains "GET / contains html" GET "/" "<html"
+test_http_body_contains "404 page contains Not Found" GET "/nonexistent" "Not Found"
+
+echo
+echo
+
+TEST_COUNT=$(wc -l < .test | tr -d ' ')
+TEST_OK=$(wc -l < .test_ok | tr -d ' ')
+TEST_KO=$(wc -l < .test_ko | tr -d ' ')
+
+printf "Total %d tests. " "$TEST_COUNT"
+printf "%s" "${TEST_COLOR_OK}OK ${TEST_OK}${TEST_COLOR_RESET}. "
+echo "${TEST_COLOR_KO}KO ${TEST_KO}${TEST_COLOR_RESET}."
+
+cleanup
+
+if [ "$TEST_KO" = "0" ]; then
+    exit 0
+fi
+exit 1

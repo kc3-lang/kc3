@@ -21,9 +21,9 @@
 const char *g_env_argv0_default = PROG;
 const char *g_env_argv0_dir_default = PREFIX;
 
-static void httpd_sigint (int s);
+static void httpd_signal (int s);
 
-static void httpd_sigint (int s)
+static void httpd_signal (int s)
 {
   s_counter *counter = NULL;
   s_ident ident = {0};
@@ -152,9 +152,15 @@ int main (int argc, char **argv)
     kc3_clean(NULL);
     return 1;
   }
-  if (signal(SIGINT, httpd_sigint) == SIG_ERR) {
+  if (signal(SIGINT, httpd_signal) == SIG_ERR) {
     err_puts("http_event_base_new: signal: SIGINT");
     assert(! "http_event_base_new: signal: SIGINT");
+    kc3_clean(NULL);
+    return 1;
+  }
+  if (signal(SIGTERM, httpd_signal) == SIG_ERR) {
+    err_puts("http_event_base_new: signal: SIGTERM");
+    assert(! "http_event_base_new: signal: SIGTERM");
     kc3_clean(NULL);
     return 1;
   }
