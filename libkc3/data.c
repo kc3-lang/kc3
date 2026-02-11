@@ -390,6 +390,8 @@ bool data_clean (const s_sym *type, void *data)
   if (type == &g_sym_Pointer ||
       sym_is_pointer_type(type, NULL))
     return true;
+  if (env_cleaning(false))
+    return true;
   if (! pstruct_type_find(type, &st))
     return false;
   if (st) {

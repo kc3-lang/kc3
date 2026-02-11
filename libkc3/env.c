@@ -2974,15 +2974,6 @@ p_struct_type * env_pstruct_type_find (s_env *env,
   const s_sym *type;
   assert(env);
   assert(module);
-  /* too slow
-  if (! env_module_maybe_reload(env, module)) {
-    err_write_1("env_pstruct_type_find: env_module_maybe_reload(");
-    err_inspect_sym(module);
-    err_puts(")");
-    assert(! "env_pstruct_type_find: env_module_maybe_reload");
-    return NULL;
-  }
-  */
   tag_init_psym(&tag_module, module);
   tag_init_psym(&tag_struct_type, &g_sym_struct_type);
   tag_init_pvar(&tag_pvar, &g_sym_StructType);

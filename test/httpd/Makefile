@@ -77,7 +77,8 @@ test_debug:
 	KC3_HTTPD=${SRC_TOP}/httpd/kc3_httpd_debug ./test/run
 
 test_omalloc:
-	KC3_HTTPD="env MALLOC_OPTIONS=S4 ktrace -tu ${SRC_TOP}/httpd/kc3_httpd_debug" ./test/run
+	KC3_HTTPD="env MALLOC_OPTIONS=S4 ktrace -tus ${SRC_TOP}/httpd/kc3_httpd_debug" ./test/run
+	kdump
 	kdump -u malloc
 
 VEGETA_RATES = 10 20

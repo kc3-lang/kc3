@@ -30,6 +30,8 @@ static void httpd_signal (int s)
   s_tag one = {0};
   s_tag tmp = {0};
   (void) s;
+  if (env_cleaning(false))
+    return;
   tag_init_u8(&one, 1);
   httpd_server_thread_stop.module = sym_1("HTTPd");
   httpd_server_thread_stop.sym = sym_1("server_thread_stop");
