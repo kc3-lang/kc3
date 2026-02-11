@@ -432,9 +432,9 @@ void marshall_read_clean (s_marshall_read *mr)
   assert(mr);
   if (mr->buf && mr->heap && mr->buf->user_ptr != mr->heap->user_ptr)
     buf_file_close(mr->heap);
-  if (mr->buf && mr->buf != mr->source)
+  if (mr->buf && mr->buf_owned)
     buf_file_close(mr->buf);
-  if (mr->buf && mr->buf != mr->source)
+  if (mr->buf && mr->buf_owned)
     buf_clean(mr->buf);
   if (mr->buf && mr->heap && mr->buf->ptr.p != mr->heap->ptr.p)
     buf_clean(mr->heap);
