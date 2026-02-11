@@ -1458,6 +1458,7 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
 #if HAVE_PTHREAD
   mr->heap->rwlock = rwlock_new();
 #endif
+  mr->buf_owned = true;
   return mr;
 }
 
