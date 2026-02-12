@@ -86,6 +86,11 @@ void socket_buf_close (s_socket_buf *sb)
     socket_addr_delete(sb->addr);
     sb->addr = NULL;
   }
+  if (sb->closed_mutex) {
+    mutex_delete(sb->closed_mutex);
+    sb->closed_mutex = NULL;
+  }
+  tag_clean(&sb->tag);
 }
 
 bool socket_buf_can_close (s_socket_buf *sb)
@@ -182,6 +187,7 @@ s_socket_buf * socket_buf_init (s_socket_buf *sb, s64 sockfd,
   }
   socket_addr_to_str(&sb->addr_str, addr, addr_len);
   sb->addr_len = addr_len;
+  tag_init_void(&sb->tag);
   return sb;
 }
 
