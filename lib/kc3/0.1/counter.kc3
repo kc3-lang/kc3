@@ -21,6 +21,8 @@ defmodule Counter do
 
   def decrease = cfn Tag "kc3_counter_decrease" (Counter*, Tag, Result)
 
+  def delete = cfn Void "kc3_counter_delete" (Counter*)
+
   def get = cfn Tag "kc3_counter_get" (Counter*, Result)
 
   def increase = cfn Tag "kc3_counter_increase" (Counter*, Tag, Result)

@@ -190,7 +190,7 @@ skiplist_pred__fact
   node = skiplist->head;
   while (level--) {
     n = node;
-    while (n && skiplist->compare(n->fact, fact) < 0) {
+    while (n && skiplist->compare(fact, n->fact) > 0) {
       node = n;
       n = SKIPLIST_NODE_NEXT__fact(node, level);
     }
@@ -237,18 +237,7 @@ skiplist_remove__fact
   next = SKIPLIST_NODE_NEXT__fact(pred, 0);
   assert(next);
   next = SKIPLIST_NODE_NEXT__fact(next, 0);
-  if (!next || (fact != next->fact && skiplist->compare(fact, next->fact) != 0)) {
-    if (false) {
-      err_write_1("skiplist_remove__fact: not found\n");
-      err_write_1("  fact: ");
-      err_inspect_fact(fact);
-      err_write_1("\n  next: ");
-      if (next)
-        err_inspect_fact(next->fact);
-      else
-        err_write_1("NULL");
-      err_write_1("\n");
-    }
+  if (!next || skiplist->compare(fact, next->fact) != 0) {
     skiplist_node_delete__fact(pred);
     return false;
   }

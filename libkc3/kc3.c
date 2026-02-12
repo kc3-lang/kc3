@@ -348,6 +348,11 @@ s_counter ** kc3_counter_new (s_counter **dest, s_tag *value)
   return dest;
 }
 
+void kc3_counter_delete (s_counter **counter)
+{
+  counter_delete(*counter);
+}
+
 s_tag * kc3_def (p_call *pcall, s_tag *dest)
 {
   if (securelevel(0) > 1) {

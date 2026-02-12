@@ -37,6 +37,8 @@ defmodule HTTPd do
   def kq_fd = ?
   def kq_mutex = Mutex.new()
 
+  def server_thread_stop = Counter.new(0)
+
   def timeout = %Time{tv_sec: 20}
 
   def load_app = fn () {
@@ -45,6 +47,9 @@ defmodule HTTPd do
     load_directory!("app/models/")
     if (File.exists?("config/app.kc3")) do
       load!("config/app.kc3")
+    end
+    if (File.exists?("config/at_exit.kc3")) do
+      load!("config/at_exit.kc3")
     end
     if (File.exists?("config/db.kc3")) do
       load!("config/db.kc3")
@@ -203,8 +208,6 @@ defmodule HTTPd do
     end
   }
 
-  def server_thread_stop = Counter.new(0)
-
   def server_thread = fn () {
     while ! Counter.get(HTTPd.server_thread_stop) do
       Mutex.lock(HTTPd.kq_mutex)
@@ -291,6 +294,14 @@ defmodule HTTPd do
           List.map(threads, Thread.delete)
         else
           HTTPd.server_thread()
+        end
+        Counter.delete(HTTPd.connections)
+        Counter.delete(HTTPd.server_thread_stop)
+        File.close(HTTPd.kq_fd)
+        Mutex.delete(HTTPd.kq_mutex)
+        Socket.close(HTTPd.socket)
+        if Module.has_symbol?(Config, :at_exit) do
+          Config.at_exit()
         end
         0
       else

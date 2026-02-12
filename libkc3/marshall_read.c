@@ -984,6 +984,7 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
       str_clean(&path);
       return NULL;
     }
+    str_clean(&binary_path);
     str_clean(&path);
   }
   return mr;

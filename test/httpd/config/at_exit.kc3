@@ -12,8 +12,9 @@
 
 defmodule Config do
 
-  def db = Facts.database()
-
-  Facts.open(db, "db/app.facts")
+  def at_exit = fn () {
+    Facts.close(Config.db)
+    Facts.delete(Config.db)
+  }
 
 end
