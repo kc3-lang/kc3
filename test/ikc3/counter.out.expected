@@ -16,3 +16,5 @@ Counter.decrease(a, 5)
 6
 Counter.get(a)
 6
+Counter.delete(a)
+void
