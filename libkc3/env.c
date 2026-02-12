@@ -2025,26 +2025,6 @@ s_tag * env_kc3_def (s_env *env, const s_call *call, s_tag *dest)
   return dest;
 }
 
-s_tag * env_kc3_defcounter (s_env *env, s_call *call, s_tag *dest)
-{
-  s_ident *ident;
-  s_tag *value;
-  assert(env);
-  assert(call);
-  assert(dest);
-  if ((call->ident.module &&
-       call->ident.module != &g_sym_KC3) ||
-      call->ident.sym != &g_sym__equal ||
-      call->arguments->tag.type != TAG_IDENT) {
-    err_puts("env_kc3_defcounter: expected Ident = value");
-    assert(! "env_kc3_defcounter: expected Ident = value");
-    return NULL;
-  }
-  ident = &call->arguments->tag.data.ident;
-  value = &list_next(call->arguments)->tag;
-  return env_defcounter(env, ident, value, dest);
-}
-
 s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
                  s_tag *dest)
 {
