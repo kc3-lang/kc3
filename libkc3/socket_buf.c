@@ -55,6 +55,15 @@ void socket_buf_clean (s_socket_buf *sb)
   tag_clean(&sb->tag);
 }
 
+void socket_buf_delete (s_socket_buf **sb)
+{
+  assert(sb);
+  assert(*sb);
+  socket_buf_clean(*sb);
+  free(*sb);
+  *sb = NULL;
+}
+
 void socket_buf_close (s_socket_buf *sb)
 {
   assert(sb);

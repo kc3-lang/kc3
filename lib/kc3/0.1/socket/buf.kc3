@@ -30,6 +30,10 @@ defmodule Socket.Buf do
 
   def can_close? = cfn Bool "socket_buf_can_close" (Socket.Buf)
 
+  def clean = cfn Void "socket_buf_clean" (Socket.Buf)
+
+  def delete = cfn Void "socket_buf_delete" (Socket.Buf*)
+
   def connect = cfn Socket.Buf "socket_buf_init_connect" (Result, Str, Str)
 
   def set_tag = cfn Bool "socket_buf_set_tag" (Socket.Buf, Tag)
