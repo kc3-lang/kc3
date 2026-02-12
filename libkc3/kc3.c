@@ -1783,6 +1783,7 @@ u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
                      tag)) {
     err_puts("kc3_thread_new: pthread_create");
     assert(! "kc3_thread_new: pthread_create");
+    env_fork_delete(tag->data.tuple.tag[2].data.ptr.p);
     tag_delete(tag);
     return NULL;
   }
@@ -1808,23 +1809,26 @@ void * kc3_thread_start (void *arg)
              " tuple arity mismatch"));
     return NULL;
   }
-  if (tag->data.tuple.tag[1].type != TAG_PCALLABLE) {
-    fprintf(stderr, "kc3_thread_start: invalid argument:"
-	    " not a Callable (Fn or Cfn)\n");
-    assert(!("kc3_thread_start: invalid argument:"
-             " not a Callable (Fn or Cfn)"));
-    return NULL;
-  }
   if (tag->data.tuple.tag[2].type != TAG_PTR) {
     fprintf(stderr, "kc3_thread_start: invalid argument: not a Ptr\n");
     assert(! "kc3_thread_start: invalid argument: not a Ptr");
     return NULL;
   }
-  start = tag->data.tuple.tag[1].data.pcallable;
   env = tag->data.tuple.tag[2].data.ptr.p;
-  env_global_set(env);
-  if (! eval_callable_call(start, NULL, tag->data.tuple.tag))
+  if (tag->data.tuple.tag[1].type != TAG_PCALLABLE) {
+    fprintf(stderr, "kc3_thread_start: invalid argument:"
+	    " not a Callable (Fn or Cfn)\n");
+    assert(!("kc3_thread_start: invalid argument:"
+             " not a Callable (Fn or Cfn)"));
+    env_fork_delete(env);
     return NULL;
+  }
+  start = tag->data.tuple.tag[1].data.pcallable;
+  env_global_set(env);
+  if (! eval_callable_call(start, NULL, tag->data.tuple.tag)) {
+    env_fork_delete(env);
+    return NULL;
+  }
   env_fork_delete(env);
   return tag;
 }
