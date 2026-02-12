@@ -109,6 +109,8 @@ There are now five full applications written in KC3 that we know of :
  - HTTPd
    - allow for configuration of OpenBSD's `unveil(2)` in
      `config/unveil.kc3`
+   - allow for graceful shutdown using either SIGTERM or SIGINT
+   - plugged memory leaks
 
  - HTTPS
    - `HTTPS.Client` with libtls and automatic or manual connection

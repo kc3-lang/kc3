@@ -128,6 +128,7 @@ s_str * time_diff_to_str (const s_time *time, s_str *dest)
     buf_clean(&buf);
     return NULL;
   }
+  buf_clean(&buf);
   return dest;
 }
 

@@ -82,7 +82,7 @@ touch .test .test_ok .test_ko
 $KC3_HTTPD --trace -d "$HOST" "$PORT" > kc3_httpd.log 2>&1 &
 HTTPD_PID=$!
 
-sleep 5
+sleep 15
 
 if ! kill -0 "$HTTPD_PID" 2>/dev/null; then
     echo "Failed to start httpd"
@@ -96,6 +96,7 @@ test_http_header "Server: header" GET "/" "Server" "kc3_httpd"
 test_http_header "Connection: keep-alive" GET "/" "Connection" "keep-alive"
 test_http_body_contains "GET / contains html" GET "/" "<html"
 test_http_body_contains "404 page contains Not Found" GET "/nonexistent" "Not Found"
+sleep 10
 
 echo
 echo

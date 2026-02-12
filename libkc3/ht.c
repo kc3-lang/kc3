@@ -75,6 +75,7 @@ void ht_clean (s_ht *ht)
   free(ht->items);
 #if HAVE_PTHREAD
   rwlock_clean(&ht->rwlock);
+  mutex_clean(&ht->ref_count_mutex);
 #endif
 }
 
