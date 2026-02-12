@@ -80,6 +80,7 @@ s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
 #endif
       return dest;
     }
+    facts_cursor_clean(&level->cursor);
     free(level->spec);
     level->spec = NULL;
     cursor->level--;
@@ -121,6 +122,7 @@ s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
       cursor->level++;
       continue;
     }
+    facts_cursor_clean(&level->cursor);
     free(level->spec);
     level->spec = NULL;
     if (! cursor->level)

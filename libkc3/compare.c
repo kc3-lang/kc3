@@ -275,9 +275,9 @@ s8 compare_fact_pos (const s_fact *a, const s_fact *b)
   s8 r;
   if (a == b)
     return 0;
-  if (!a)
+  if (! a)
     return -1;
-  if (!b)
+  if (! b)
     return 1;
   if ((r = compare_tag(a->predicate, b->predicate)))
     return r;
@@ -292,9 +292,9 @@ s8 compare_fact_osp (const s_fact *a, const s_fact *b)
   s8 r;
   if (a == b)
     return 0;
-  if (!a)
+  if (! a)
     return -1;
-  if (!b)
+  if (! b)
     return 1;
   if ((r = compare_tag(a->object, b->object)))
     return r;
@@ -309,9 +309,9 @@ s8 compare_fact_spo (const s_fact *a, const s_fact *b)
   s8 r;
   if (a == b)
     return 0;
-  if (!a)
+  if (! a)
     return -1;
-  if (!b)
+  if (! b)
     return 1;
   if ((r = compare_tag(a->subject, b->subject)))
     return r;
@@ -726,14 +726,6 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
       a == TAG_LAST ||
       b == TAG_FIRST)
     return 1;
-  if (a &&
-      a->type == TAG_PVAR &&
-      a->data.pvar->bound)
-    a = &a->data.pvar->tag;
-  if (b &&
-      b->type == TAG_PVAR &&
-      b->data.pvar->bound)
-    b = &b->data.pvar->tag;
   switch (a->type) {
   case TAG_PCOMPLEX:
     switch (b->type) {
@@ -1467,6 +1459,23 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   assert(! "compare_tag: invalid tag type");
   abort();
   return 0;
+}
+
+s8 compare_tag_deref (const s_tag *a, const s_tag *b)
+{
+  const s_tag *a_deref;
+  const s_tag *b_deref;
+  a_deref = a;
+  while (a_deref &&
+         a_deref->type == TAG_PVAR &&
+         a_deref->data.pvar->bound)
+    a_deref = &a_deref->data.pvar->tag;
+  b_deref = b;
+  while (b_deref &&
+         b_deref->type == TAG_PVAR &&
+         b_deref->data.pvar->bound)
+    b_deref = &b_deref->data.pvar->tag;
+  return compare_tag(a_deref, b_deref);
 }
 
 s8 compare_tag_number (const s_tag *a, const s_tag *b)

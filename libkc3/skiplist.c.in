@@ -190,7 +190,7 @@ skiplist_pred___NAME$
   node = skiplist->head;
   while (level--) {
     n = node;
-    while (n && skiplist->compare(_NAME$, n->_NAME$) > 0) {
+    while (n && skiplist->compare(n->_NAME$, _NAME$) < 0) {
       node = n;
       n = SKIPLIST_NODE_NEXT___NAME$(node, level);
     }

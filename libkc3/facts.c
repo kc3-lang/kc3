@@ -1868,10 +1868,25 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
     if (! skiplist_remove__fact(facts->index, found)) {
       err_puts("facts_remove_fact_local: skiplist_remove index");
       assert(! "facts_remove_fact_local: skiplist_remove index");
+#if HAVE_PTHREAD
+      rwlock_unlock_w(&facts->rwlock);
+#endif
+      return NULL;
+    }
+    if (false) {
+      if (found->object->type == TAG_PVAR) {
+        err_write_1("facts_remove_fact_local: pvar refcount before spo: ");
+        err_inspect_sw(found->object->data.pvar->ref_count);
+        err_write_1("\n");
+      }
     }
     if (! skiplist_remove__fact(facts->index_spo, found)) {
       err_puts("facts_remove_fact_local: skiplist_remove index_spo");
       assert(! "facts_remove_fact_local: skiplist_remove index_spo");
+#if HAVE_PTHREAD
+      rwlock_unlock_w(&facts->rwlock);
+#endif
+      return NULL;
     }
     if (! skiplist_remove__fact(facts->index_pos, found)) {
       err_puts("facts_remove_fact_local: skiplist_remove index_pos");
@@ -1879,10 +1894,18 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
       err_inspect_fact(found);
       err_write_1("\n");
       assert(! "facts_remove_fact_local: skiplist_remove index_pos");
+#if HAVE_PTHREAD
+      rwlock_unlock_w(&facts->rwlock);
+#endif
+      return NULL;
     }
     if (! skiplist_remove__fact(facts->index_osp, found)) {
       err_puts("facts_remove_fact_local: skiplist_remove index_osp");
       assert(! "facts_remove_fact_local: skiplist_remove index_osp");
+#if HAVE_PTHREAD
+      rwlock_unlock_w(&facts->rwlock);
+#endif
+      return NULL;
     }
     f = *found;
     set_remove__fact(&facts->facts, found);

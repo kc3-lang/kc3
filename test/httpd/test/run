@@ -82,7 +82,7 @@ touch .test .test_ok .test_ko
 $KC3_HTTPD --trace -d "$HOST" "$PORT" > kc3_httpd.log 2>&1 &
 HTTPD_PID=$!
 
-sleep 1
+sleep 5
 
 if ! kill -0 "$HTTPD_PID" 2>/dev/null; then
     echo "Failed to start httpd"

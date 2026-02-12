@@ -46,9 +46,21 @@ p_facts_spec facts_spec_new_expand (p_facts_spec spec)
     n = new;
     facts_spec_cursor_init(&cursor, spec);
     while (facts_spec_cursor_next(&cursor, &fact)) {
-      *n++ = (s_tag *) fact.subject;
-      *n++ = (s_tag *) fact.predicate;
-      *n++ = (s_tag *) fact.object;
+      *n = (s_tag *) fact.subject;
+      while ((*n)->type == TAG_PVAR &&
+             (*n)->data.pvar->bound)
+        *n = &(*n)->data.pvar->tag;
+      n++;
+      *n = (s_tag *) fact.predicate;
+      while ((*n)->type == TAG_PVAR &&
+             (*n)->data.pvar->bound)
+        *n = &(*n)->data.pvar->tag;
+      n++;
+      *n = (s_tag *) fact.object;
+      while ((*n)->type == TAG_PVAR &&
+             (*n)->data.pvar->bound)
+        *n = &(*n)->data.pvar->tag;
+      n++;
       *n++ = NULL;
     }
     *n = NULL;

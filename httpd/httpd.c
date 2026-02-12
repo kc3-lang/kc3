@@ -21,34 +21,22 @@
 const char *g_env_argv0_default = PROG;
 const char *g_env_argv0_dir_default = PREFIX;
 
+static s_counter *g_httpd_server_thread_stop = NULL;
+
 static void httpd_signal (int s);
 
 static void httpd_signal (int s)
 {
-  s_tag counter = {0};
-  s_ident httpd_server_thread_stop = {0};
-  s_tag one = {0};
-  s_tag tmp = {0};
   (void) s;
-  if (env_cleaning(false))
-    return;
-  tag_init_u8(&one, 1);
-  httpd_server_thread_stop.module = sym_1("HTTPd");
-  httpd_server_thread_stop.sym = sym_1("server_thread_stop");
-  if (! ident_get(&httpd_server_thread_stop, &counter) ||
-      counter.type != TAG_POINTER ||
-      counter.data.pointer.target_type != &g_sym_Counter ||
-      ! counter.data.pointer.ptr.p) {
-    err_puts("httpd_sigint: ident_get: HTTPd.server_thread_stop");
-    assert(! "httpd_sigint: ident_get: HTTPd.server_thread_stop");
-    abort();
+  if (g_httpd_server_thread_stop) {
+    g_httpd_server_thread_stop->count.type = TAG_U8;
+    g_httpd_server_thread_stop->count.data.u8 = 1;
   }
-  counter_increase(counter.data.pointer.ptr.p, &one, &tmp);
-  tag_clean(&tmp);
 }
 
 int main (int argc, char **argv)
 {
+  s_call call = {0};
   bool    daemonize = true;
   s_ident daemonize_ident;
   s_tag   daemonize_value;
@@ -62,10 +50,10 @@ int main (int argc, char **argv)
   char  log_buf[64] = {0};
   s64   log_fd = -1;
   s_str log_str = {0};
-  s_call call = {0};
   const s_sym *module = NULL;
   char *p;
   s32 r = 1;
+  s_ident server_thread_stop = {0};
   s32 skip = 0;
   time_t t;
   s_tag tmp = {0};
@@ -207,6 +195,16 @@ int main (int argc, char **argv)
     }
   }
   securelevel(2);
+  server_thread_stop.module = sym_1("HTTPd");
+  server_thread_stop.sym = sym_1("server_thread_stop");
+  if (! ident_get(&server_thread_stop, &tmp) ||
+      tmp.type != TAG_POINTER ||
+      tmp.data.pointer.target_type != &g_sym_Counter ||
+      ! (g_httpd_server_thread_stop = tmp.data.pointer.ptr.p)) {
+    err_puts("httpd_sigint: ident_get: HTTPd.server_thread_stop");
+    assert(! "httpd_sigint: ident_get: HTTPd.server_thread_stop");
+    abort();
+  }
   call_init(&call);
   call.ident.module = module;
   call.ident.sym = sym_1("main");

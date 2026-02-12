@@ -109,20 +109,26 @@ s_facts_cursor * facts_with_1_2 (s_facts *facts,
   start.subject   = pvar_subject   ? TAG_FIRST : subject;
   start.predicate = pvar_predicate ? TAG_FIRST : predicate;
   start.object    = pvar_object    ? TAG_FIRST : object;
-  if (start.subject->type == TAG_PVAR)
+  while (start.subject->type == TAG_PVAR &&
+         start.subject->data.pvar->bound)
     start.subject = &start.subject->data.pvar->tag;
-  if (start.predicate->type == TAG_PVAR)
+  while (start.predicate->type == TAG_PVAR &&
+         start.predicate->data.pvar->bound)
     start.predicate = &start.predicate->data.pvar->tag;
-  if (start.object->type == TAG_PVAR)
+  while (start.object->type == TAG_PVAR &&
+         start.object->data.pvar->bound)
     start.object = &start.object->data.pvar->tag;
   end.subject   = pvar_subject   ? TAG_LAST : subject;
   end.predicate = pvar_predicate ? TAG_LAST : predicate;
   end.object    = pvar_object    ? TAG_LAST : object;
-  if (end.subject->type == TAG_PVAR)
+  while (end.subject->type == TAG_PVAR &&
+         end.subject->data.pvar->bound)
     end.subject = &end.subject->data.pvar->tag;
-  if (end.predicate->type == TAG_PVAR)
+  while (end.predicate->type == TAG_PVAR &&
+         end.predicate->data.pvar->bound)
     end.predicate = &end.predicate->data.pvar->tag;
-  if (end.object->type == TAG_PVAR)
+  while (end.object->type == TAG_PVAR &&
+         end.object->data.pvar->bound)
     end.object = &end.object->data.pvar->tag;
   if (! pvar_subject && pvar_object)
     tree = facts->index_spo;

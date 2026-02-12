@@ -63,11 +63,14 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
   skiplist_node_delete__fact(pred);
   if (start) {
     tmp.start = *start;
-    if (tmp.start.subject->type == TAG_PVAR)
+    while (tmp.start.subject->type == TAG_PVAR &&
+           tmp.start.subject->data.pvar->bound)
       tmp.start.subject = &tmp.start.subject->data.pvar->tag;
-    if (tmp.start.predicate->type == TAG_PVAR)
+    while (tmp.start.predicate->type == TAG_PVAR &&
+           tmp.start.predicate->data.pvar->bound)
       tmp.start.predicate = &tmp.start.predicate->data.pvar->tag;
-    if (tmp.start.object->type == TAG_PVAR)
+    while (tmp.start.object->type == TAG_PVAR &&
+           tmp.start.object->data.pvar->bound)
       tmp.start.object = &tmp.start.object->data.pvar->tag;
   }
   else {
@@ -78,11 +81,14 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
   }
   if (end) {
     tmp.end = *end;
-    if (tmp.end.subject->type == TAG_PVAR)
+    while (tmp.end.subject->type == TAG_PVAR &&
+           tmp.end.subject->data.pvar->bound)
       tmp.end.subject = &tmp.end.subject->data.pvar->tag;
-    if (tmp.end.predicate->type == TAG_PVAR)
+    while (tmp.end.predicate->type == TAG_PVAR &&
+           tmp.end.predicate->data.pvar->bound)
       tmp.end.predicate = &tmp.end.predicate->data.pvar->tag;
-    if (tmp.end.object->type == TAG_PVAR)
+    while (tmp.end.object->type == TAG_PVAR &&
+           tmp.end.object->data.pvar->bound)
       tmp.end.object = &tmp.end.object->data.pvar->tag;
   }
   else {

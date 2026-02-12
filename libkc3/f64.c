@@ -38,6 +38,16 @@ f64 * f64_init_cast (f64 *x, p_sym *type, const s_tag *tag)
   case TAG_F64:
     *x = tag->data.f64;
     return x;
+#if HAVE_F80
+  case TAG_F80:
+    *x = tag->data.f80;
+    return x;
+#endif
+#if HAVE_F128
+  case TAG_F128:
+    *x = tag->data.f128;
+    return x;
+#endif
   case TAG_INTEGER:
     *x = integer_to_f64(&tag->data.integer);
     return x;
