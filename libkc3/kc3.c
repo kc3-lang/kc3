@@ -321,6 +321,11 @@ s_tag * kc3_counter_decrease (s_counter **counter, s_tag *positive,
   return counter_decrease(*counter, positive, dest);
 }
 
+void kc3_counter_delete (s_counter **counter)
+{
+  counter_delete(*counter);
+}
+
 s_tag * kc3_counter_get (s_counter **counter, s_tag *dest)
 {
   assert(counter);
@@ -348,11 +353,6 @@ s_counter ** kc3_counter_new (s_counter **dest, s_tag *value)
   return dest;
 }
 
-void kc3_counter_delete (s_counter **counter)
-{
-  counter_delete(*counter);
-}
-
 s_tag * kc3_def (p_call *pcall, s_tag *dest)
 {
   if (securelevel(0) > 1) {
@@ -361,19 +361,6 @@ s_tag * kc3_def (p_call *pcall, s_tag *dest)
     abort();
   }
   return env_kc3_def(env_global(), *pcall, dest);
-}
-
-s_tag * kc3_defcounter (p_call *pcall, s_tag *dest)
-{
-  assert(pcall);
-  assert(*pcall);
-  assert(dest);
-  if (securelevel(0) > 1) {
-    err_stacktrace();
-    err_puts("kc3_def: cannot use defcounter with securelevel > 1");
-    abort();
-  }
-  return env_kc3_defcounter(env_global(), *pcall, dest);
 }
 
 s_tag * kc3_defmodule (p_sym const *name, const s_do_block *do_block,
