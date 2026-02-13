@@ -99,7 +99,7 @@ void struct_type_delete (s_struct_type *st)
       assert(! "struct_type_delete: invalid reference count");
       abort();
     }
-    if (--st->ref_count) {
+    if (! env_cleaning(false) && --st->ref_count) {
 #if HAVE_PTHREAD
       mutex_unlock(&st->mutex);
 #endif

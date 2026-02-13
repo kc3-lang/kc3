@@ -23,6 +23,20 @@
 
 #define MP_IS_ZERO(a) ((a)->used == 0)
 
+extern bool       g_integer_init;
+extern s_integer  g_integer_s8_min;
+extern s_integer  g_integer_s16_min;
+extern s_integer  g_integer_s32_min;
+extern s_integer  g_integer_s64_min;
+extern s_integer  g_integer_u8_max;
+extern s_integer  g_integer_u16_max;
+extern s_integer  g_integer_u32_max;
+extern s_integer  g_integer_u64_max;
+extern s_integer  g_integer_zero;
+
+void kc3_integer_clean (void);
+void kc3_integer_init (void);
+
 /* Stack allocation compatible functions */
 s_integer * integer_init (s_integer *i);
 s_integer * integer_init_1 (s_integer *i, const char *p);

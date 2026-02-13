@@ -831,49 +831,27 @@ s_tag * tag_integer_reduce (s_tag *tag, s_tag *dest)
 {
   s_integer *i;
   s_integer j;
-  static bool static_init = false;
-  static s_integer s8_min = {0};
-  static s_integer s16_min = {0};
-  static s_integer s32_min = {0};
-  static s_integer s64_min = {0};
-  static s_integer u8_max = {0};
-  static s_integer u16_max = {0};
-  static s_integer u32_max = {0};
-  static s_integer u64_max = {0};
-  static s_integer zero = {0};
   assert(tag);
-  if (! static_init) {
-    static_init = true;
-    integer_init_s8(&s8_min, S8_MIN);
-    integer_init_s16(&s16_min, S16_MIN);
-    integer_init_s32(&s32_min, S32_MIN);
-    integer_init_s64(&s64_min, S64_MIN);
-    integer_init_u8(&u8_max, U8_MAX);
-    integer_init_u16(&u16_max, U16_MAX);
-    integer_init_u32(&u32_max, U32_MAX);
-    integer_init_u64(&u64_max, U64_MAX);
-    integer_init_u8(&zero, 0);
-  }
   switch (tag->type) {
   case TAG_INTEGER:
     i = &tag->data.integer;
-    if (compare_integer(i, &u64_max) > 0)
+    if (compare_integer(i, &g_integer_u64_max) > 0)
       return tag_init_copy(dest, tag);
-    if (compare_integer(i, &u32_max) > 0)
+    if (compare_integer(i, &g_integer_u32_max) > 0)
       return tag_init_u64(dest, integer_to_u64(i));
-    if (compare_integer(i, &u16_max) > 0)
+    if (compare_integer(i, &g_integer_u16_max) > 0)
       return tag_init_u32(dest, integer_to_u32(i));
-    if (compare_integer(i, &u8_max) > 0)
+    if (compare_integer(i, &g_integer_u8_max) > 0)
       return tag_init_u16(dest, integer_to_u16(i));
-    if (compare_integer(i, &zero) >= 0)
+    if (compare_integer(i, &g_integer_zero) >= 0)
       return tag_init_u8(dest, integer_to_u8(i));
-    if (compare_integer(i, &s8_min) >= 0)
+    if (compare_integer(i, &g_integer_s8_min) >= 0)
       return tag_init_s8(dest, integer_to_s8(i));
-    if (compare_integer(i, &s16_min) >= 0)
+    if (compare_integer(i, &g_integer_s16_min) >= 0)
       return tag_init_s16(dest, integer_to_s16(i));
-    if (compare_integer(i, &s32_min) >= 0)
+    if (compare_integer(i, &g_integer_s32_min) >= 0)
       return tag_init_s32(dest, integer_to_s32(i));
-    if (compare_integer(i, &s64_min) >= 0)
+    if (compare_integer(i, &g_integer_s64_min) >= 0)
       return tag_init_s64(dest, integer_to_s64(i));
     return tag_init_copy(dest, tag);
   case TAG_S8:

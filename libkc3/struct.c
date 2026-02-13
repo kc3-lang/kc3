@@ -189,7 +189,7 @@ void struct_delete (s_struct *s)
 #endif
       return;
     }
-    if (--s->ref_count) {
+    if (! env_cleaning(false) && --s->ref_count) {
 #if HAVE_PTHREAD
       mutex_unlock(&s->mutex);
 #endif

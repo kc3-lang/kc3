@@ -473,8 +473,10 @@ void env_clean (s_env *env)
     else
       g_kc3_env_global = g_kc3_env_default;
   }
-  if (g_kc3_env_default == env)
+  if (g_kc3_env_default == env) {
     sym_delete_all();
+    kc3_integer_clean();
+  }
   buf_file_close(env->in);
   buf_delete(env->in);
   env->in = NULL;
@@ -1885,6 +1887,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   if (! env_args_init(env, argc, argv))
     return NULL;
   sym_init_g_sym();
+  kc3_integer_init();
   if (! env_toplevel_init(env))
     return NULL;
   if (! env_globals_init(env))

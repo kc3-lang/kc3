@@ -22,6 +22,17 @@
 #include "tag_type.h"
 #include "ratio.h"
 
+bool       g_integer_init = false;
+s_integer  g_integer_s8_min = {0};
+s_integer  g_integer_s16_min = {0};
+s_integer  g_integer_s32_min = {0};
+s_integer  g_integer_s64_min = {0};
+s_integer  g_integer_u8_max = {0};
+s_integer  g_integer_u16_max = {0};
+s_integer  g_integer_u32_max = {0};
+s_integer  g_integer_u64_max = {0};
+s_integer  g_integer_zero = {0};
+
 s_integer * integer_abs (const s_integer *a, s_integer *dest)
 {
   sw r;
@@ -621,43 +632,23 @@ s_integer * integer_pow (const s_integer *a, const s_integer *b,
 
 s_tag * integer_reduce (const s_integer *i, s_tag *dest)
 {
-  static s_integer s8_min = {0};
-  static s_integer s16_min = {0};
-  static s_integer s32_min = {0};
-  static s_integer s64_min = {0};
-  static s_integer u8_max = {0};
-  static s_integer u16_max = {0};
-  static s_integer u32_max = {0};
-  static s_integer u64_max = {0};
-  static s_integer zero = {0};
-  if (s8_min.mp_int.sign != MP_NEG) {
-    integer_init_s8(&s8_min, S8_MIN);
-    integer_init_s16(&s16_min, S16_MIN);
-    integer_init_s32(&s32_min, S32_MIN);
-    integer_init_s64(&s64_min, S64_MIN);
-    integer_init_u8(&u8_max, U8_MAX);
-    integer_init_u16(&u16_max, U16_MAX);
-    integer_init_u32(&u32_max, U32_MAX);
-    integer_init_u64(&u64_max, U64_MAX);
-    integer_init_u8(&zero, 0);
-  }
-  if (compare_integer(i, &u64_max) > 0)
+  if (compare_integer(i, &g_integer_u64_max) > 0)
     return tag_init_integer_copy(dest, i);
-  if (compare_integer(i, &u32_max) > 0)
+  if (compare_integer(i, &g_integer_u32_max) > 0)
     return tag_init_u64(dest, integer_to_u64(i));
-  if (compare_integer(i, &u16_max) > 0)
+  if (compare_integer(i, &g_integer_u16_max) > 0)
     return tag_init_u32(dest, integer_to_u32(i));
-  if (compare_integer(i, &u8_max) > 0)
+  if (compare_integer(i, &g_integer_u8_max) > 0)
     return tag_init_u16(dest, integer_to_u16(i));
-  if (compare_integer(i, &zero) >= 0)
+  if (compare_integer(i, &g_integer_zero) >= 0)
     return tag_init_u8(dest, integer_to_u8(i));
-  if (compare_integer(i, &s8_min) >= 0)
+  if (compare_integer(i, &g_integer_s8_min) >= 0)
     return tag_init_s8(dest, integer_to_s8(i));
-  if (compare_integer(i, &s16_min) >= 0)
+  if (compare_integer(i, &g_integer_s16_min) >= 0)
     return tag_init_s16(dest, integer_to_s16(i));
-  if (compare_integer(i, &s32_min) >= 0)
+  if (compare_integer(i, &g_integer_s32_min) >= 0)
     return tag_init_s32(dest, integer_to_s32(i));
-  if (compare_integer(i, &s64_min) >= 0)
+  if (compare_integer(i, &g_integer_s64_min) >= 0)
     return tag_init_s64(dest, integer_to_s64(i));
   return tag_init_integer_copy(dest, i);
 }
@@ -926,4 +917,36 @@ uw integer_to_uw (const s_integer *i)
 {
   assert(i);
   return (uw) mp_get_u64(&i->mp_int);
+}
+
+void kc3_integer_clean (void)
+{
+  if (g_integer_init) {
+    integer_clean(&g_integer_s8_min);
+    integer_clean(&g_integer_s16_min);
+    integer_clean(&g_integer_s32_min);
+    integer_clean(&g_integer_s64_min);
+    integer_clean(&g_integer_u8_max);
+    integer_clean(&g_integer_u16_max);
+    integer_clean(&g_integer_u32_max);
+    integer_clean(&g_integer_u64_max);
+    integer_clean(&g_integer_zero);
+    g_integer_init = false;
+  }
+}
+
+void kc3_integer_init (void)
+{
+  if (! g_integer_init) {
+    g_integer_init = true;
+    integer_init_s8(&g_integer_s8_min, S8_MIN);
+    integer_init_s16(&g_integer_s16_min, S16_MIN);
+    integer_init_s32(&g_integer_s32_min, S32_MIN);
+    integer_init_s64(&g_integer_s64_min, S64_MIN);
+    integer_init_u8(&g_integer_u8_max, U8_MAX);
+    integer_init_u16(&g_integer_u16_max, U16_MAX);
+    integer_init_u32(&g_integer_u32_max, U32_MAX);
+    integer_init_u64(&g_integer_u64_max, U64_MAX);
+    integer_init_u8(&g_integer_zero, 0);
+  }
 }

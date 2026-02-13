@@ -1396,9 +1396,11 @@ s_str * str_init_subst (s_str *str, const s_str *src,
   }
   if ((r = buf_xfer(&out, &in, in.wpos - in.rpos)) < 0)
     goto clean;
+  buf_clean(&in);
   buf_to_str(&out, str);
   return str;
  clean:
+  buf_clean(&in);
   buf_clean(&out);
   return NULL;
 }
@@ -1418,11 +1420,14 @@ sw str_init_subst_size (const s_str *src, const s_str *search,
     if (buf_read_str(&in, search) > 0)
       result += replace->size;
     else {
-      if ((r = buf_read_character_utf8(&in, &c)) < 0)
+      if ((r = buf_read_character_utf8(&in, &c)) < 0) {
+        buf_clean(&in);
         return -1;
+      }
       result += r;
     }
   }
+  buf_clean(&in);
   return result;
 }
 
@@ -1969,9 +1974,11 @@ s_list ** str_split_list (const s_str *str,
     }
     t = &(*t)->next.data.plist;
   }
+  buf_clean(&buf);
   *dest = tmp;
   return dest;
  clean:
+  buf_clean(&buf);
   list_delete_all(tmp);
   return NULL;
 }

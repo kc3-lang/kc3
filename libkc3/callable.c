@@ -51,7 +51,7 @@ void callable_delete (s_callable *callable)
       assert(! "callable_delete: invalid ref count");
       goto clean;
     }
-    if (--callable->ref_count > 0)
+    if (! env_cleaning(false) && --callable->ref_count > 0)
       goto clean;
   }
   switch (callable->type) {

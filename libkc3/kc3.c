@@ -1239,8 +1239,10 @@ s_tag * kc3_parse_tag (s_tag *tag, const s_str *src)
     err_inspect_u32_decimal(src->size);
     err_write_1("\n");
     assert(! "kc3_parse_tag: invalid tag");
+    buf_clean(&buf);
     return NULL;
   }
+  buf_clean(&buf);
   return tag;
 }
 

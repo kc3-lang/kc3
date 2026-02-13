@@ -3933,7 +3933,7 @@ sw buf_parse_pstruct (s_buf *buf, p_struct *dest)
   if (! (tmp = struct_new(NULL)))
     return -1;
   if ((r = buf_parse_struct(buf, tmp)) <= 0) {
-    free(tmp);
+    struct_delete(tmp);
     return r;
   }
   *dest = tmp;
