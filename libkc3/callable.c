@@ -17,6 +17,7 @@
 #include "cfn.h"
 #include "env.h"
 #include "fn.h"
+#include "list.h"
 #include "mutex.h"
 #include "tag.h"
 
@@ -38,7 +39,23 @@ s8 callable_arity (const s_callable *callable)
 
 void callable_delete (s_callable *callable)
 {
+  s_list *l;
+  p_list *prev;
   assert(callable);
+  if (env_cleaning(false)) {
+    l = env_global()->freelist;
+    while (l) {
+      if (l->tag.type == TAG_PCALLABLE &&
+          l->tag.data.pcallable == callable)
+        break;
+      l = list_next(l);
+    }
+    if (! l) {
+      l = list_new_callable(callable, env_global()->freelist);
+      if (l)
+        env_global()->freelist = l;
+    }
+  }
 #if HAVE_PTHREAD
   if (callable->mutex.ready)
     mutex_lock(&callable->mutex);
@@ -51,7 +68,7 @@ void callable_delete (s_callable *callable)
       assert(! "callable_delete: invalid ref count");
       goto clean;
     }
-    if (! env_cleaning(false) && --callable->ref_count > 0)
+    if (--callable->ref_count > 0)
       goto clean;
   }
   switch (callable->type) {
@@ -65,6 +82,19 @@ void callable_delete (s_callable *callable)
     mutex_clean(&callable->mutex);
   }
 #endif
+  if (env_cleaning(false)) {
+    prev = &env_global()->freelist;
+    while (*prev) {
+      if ((*prev)->tag.type == TAG_PCALLABLE &&
+          (*prev)->tag.data.pcallable == callable) {
+        l = *prev;
+        *prev = list_next(l);
+        free(l);
+        break;
+      }
+      prev = &(*prev)->next.data.plist;
+    }
+  }
   free(callable);
   return;
  clean:

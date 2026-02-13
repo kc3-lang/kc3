@@ -313,6 +313,16 @@ s_list * list_new_copy_all (s_list *src)
   return NULL;
 }
 
+s_list * list_new_callable (s_callable *callable, s_list *next)
+{
+  s_list *dest;
+  if (! (dest = list_new(next)))
+    return NULL;
+  dest->tag.type = TAG_PCALLABLE;
+  dest->tag.data.pcallable = callable;
+  return dest;
+}
+
 s_list * list_new_list (s_list *x, s_list *next)
 {
   s_list *dest;
@@ -340,6 +350,26 @@ s_list * list_new_tag_copy (s_tag *x, s_list *next)
     free(dest);
     return NULL;
   }
+  return dest;
+}
+
+s_list * list_new_struct (s_struct *s, s_list *next)
+{
+  s_list *dest;
+  if (! (dest = list_new(next)))
+    return NULL;
+  dest->tag.type = TAG_PSTRUCT;
+  dest->tag.data.pstruct = s;
+  return dest;
+}
+
+s_list * list_new_struct_type (s_struct_type *st, s_list *next)
+{
+  s_list *dest;
+  if (! (dest = list_new(next)))
+    return NULL;
+  dest->tag.type = TAG_PSTRUCT_TYPE;
+  dest->tag.data.pstruct_type = st;
   return dest;
 }
 

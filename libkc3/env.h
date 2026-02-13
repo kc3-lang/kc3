@@ -44,6 +44,7 @@ sw              env_dump (const s_env *env, const s_str *path);
 sw              env_dump_restore (s_env *env, const s_str *path);
 bool            env_dump_restore_path_resolve (s_env *env);
 s_tag *         env_frames_get (s_env *env, const s_sym *name);
+void            env_freelist_clean (s_env *env);
 s_tag *         env_ident_get_address (s_env *env, const s_ident *ident);
 s_ident *       env_ident_resolve_module (s_env *env,
                                           const s_ident *ident,

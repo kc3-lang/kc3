@@ -77,6 +77,7 @@ const char *g_env_argv0_dir_default = "";
 #include "marshall.h"
 #include "marshall_read.h"
 #include "module.h"
+#include "mutex.h"
 #include "ncpu.h"
 #include "op.h"
 #include "ops.h"
@@ -486,6 +487,7 @@ void env_clean (s_env *env)
   buf_file_close(env->err);
   buf_delete(env->err);
   env->err = NULL;
+  env_freelist_clean(env);
   if (g_kc3_env_default == env) {
     free(g_kc3_env_default);
     g_kc3_env_default = NULL;
@@ -498,6 +500,45 @@ bool env_cleaning (bool enable)
   if (enable)
     cleaning = true;
   return cleaning;
+}
+
+void env_freelist_clean (s_env *env)
+{
+  s_list *l;
+  while (env->freelist) {
+    l = env->freelist;
+    env->freelist = list_next(l);
+    switch (l->tag.type) {
+    case TAG_PCALLABLE:
+      switch (l->tag.data.pcallable->type) {
+      case CALLABLE_CFN:
+        cfn_clean(&l->tag.data.pcallable->data.cfn);
+        break;
+      case CALLABLE_FN:
+        fn_clean(&l->tag.data.pcallable->data.fn);
+        break;
+      case CALLABLE_VOID:
+        break;
+      }
+#if HAVE_PTHREAD
+      if (l->tag.data.pcallable->mutex.ready)
+        mutex_clean(&l->tag.data.pcallable->mutex);
+#endif
+      free(l->tag.data.pcallable);
+      break;
+    case TAG_PSTRUCT:
+      struct_clean(l->tag.data.pstruct);
+      free(l->tag.data.pstruct);
+      break;
+    case TAG_PSTRUCT_TYPE:
+      struct_type_clean(l->tag.data.pstruct_type);
+      free(l->tag.data.pstruct_type);
+      break;
+    default:
+      break;
+    }
+    free(l);
+  }
 }
 
 bool env_def (s_env *env, const s_ident *ident, s_tag *value)

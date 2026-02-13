@@ -174,7 +174,23 @@ void struct_clean (s_struct *s)
 
 void struct_delete (s_struct *s)
 {
+  s_list *l;
+  p_list *prev;
   assert(s);
+  if (env_cleaning(false)) {
+    l = env_global()->freelist;
+    while (l) {
+      if (l->tag.type == TAG_PSTRUCT &&
+          l->tag.data.pstruct == s)
+        break;
+      l = list_next(l);
+    }
+    if (! l) {
+      l = list_new_struct(s, env_global()->freelist);
+      if (l)
+        env_global()->freelist = l;
+    }
+  }
   if (env_global()->pass_by_copy)
     assert(s->ref_count == 1);
   else {
@@ -189,7 +205,7 @@ void struct_delete (s_struct *s)
 #endif
       return;
     }
-    if (! env_cleaning(false) && --s->ref_count) {
+    if (--s->ref_count) {
 #if HAVE_PTHREAD
       mutex_unlock(&s->mutex);
 #endif
@@ -200,6 +216,19 @@ void struct_delete (s_struct *s)
 #endif
   }
   struct_clean(s);
+  if (env_cleaning(false)) {
+    prev = &env_global()->freelist;
+    while (*prev) {
+      if ((*prev)->tag.type == TAG_PSTRUCT &&
+          (*prev)->tag.data.pstruct == s) {
+        l = *prev;
+        *prev = list_next(l);
+        free(l);
+        break;
+      }
+      prev = &(*prev)->next.data.plist;
+    }
+  }
   free(s);
 }
 

@@ -87,7 +87,23 @@ void * struct_type_copy_data (const s_struct_type *st, void *dest,
 
 void struct_type_delete (s_struct_type *st)
 {
+  s_list *l;
+  p_list *prev;
   assert(st);
+  if (env_cleaning(false)) {
+    l = env_global()->freelist;
+    while (l) {
+      if (l->tag.type == TAG_PSTRUCT_TYPE &&
+          l->tag.data.pstruct_type == st)
+        break;
+      l = list_next(l);
+    }
+    if (! l) {
+      l = list_new_struct_type(st, env_global()->freelist);
+      if (l)
+        env_global()->freelist = l;
+    }
+  }
   if (env_global()->pass_by_copy)
     assert(st->ref_count == 1);
   else {
@@ -99,7 +115,7 @@ void struct_type_delete (s_struct_type *st)
       assert(! "struct_type_delete: invalid reference count");
       abort();
     }
-    if (! env_cleaning(false) && --st->ref_count) {
+    if (--st->ref_count) {
 #if HAVE_PTHREAD
       mutex_unlock(&st->mutex);
 #endif
@@ -110,6 +126,19 @@ void struct_type_delete (s_struct_type *st)
 #endif
   }
   struct_type_clean(st);
+  if (env_cleaning(false)) {
+    prev = &env_global()->freelist;
+    while (*prev) {
+      if ((*prev)->tag.type == TAG_PSTRUCT_TYPE &&
+          (*prev)->tag.data.pstruct_type == st) {
+        l = *prev;
+        *prev = list_next(l);
+        free(l);
+        break;
+      }
+      prev = &(*prev)->next.data.plist;
+    }
+  }
   free(st);
 }
 

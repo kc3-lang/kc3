@@ -1109,6 +1109,7 @@ struct env {
   s_error_handler  *error_handler;
   s_facts          *facts;
   s_frame          *frame;
+  p_list            freelist;
   s_frame          *global_frame;
   s_buf            *in;
   bool              loaded;
