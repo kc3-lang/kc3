@@ -43,10 +43,8 @@ s64 kc3_kqueue_add (s64 kqfd, s64 fd, s_tag *timeout, s_tag *udata)
   memset(events, 0, sizeof(events));
   if (udata && udata->type == TAG_POINTER)
     udata_ptr = udata->data.pointer.ptr.p;
-  else if (udata)
-    udata_ptr = tag_new_copy(udata);
   else
-    udata_ptr = NULL;
+    udata_ptr = udata;
   events[0].ident = fd;
   events[0].filter = EVFILT_READ;
   events[0].flags = EV_ADD | EV_ONESHOT;
@@ -137,7 +135,6 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
       return NULL;
     if (! tag_init_copy(dest->data.tuple.tag + 2, udata))
       return NULL;
-    tag_delete(udata);
     return dest;
   }
   return tag_init_void(dest);
