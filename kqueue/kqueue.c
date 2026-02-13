@@ -137,6 +137,7 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
       return NULL;
     if (! tag_init_copy(dest->data.tuple.tag + 2, udata))
       return NULL;
+    tag_delete(udata);
     return dest;
   }
   return tag_init_void(dest);
