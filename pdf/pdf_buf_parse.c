@@ -579,14 +579,16 @@ sw pdf_buf_parse_indirect_object (s_buf *buf,
   *dest = tmp;
   return result;
  restore:
-  tuple_delete(tmp);
+  if (tmp)
+    tuple_delete(tmp);
   tag_clean(&object_number);
   tag_clean(&generation_number);
   buf_save_restore_rpos(buf, &save);
   buf_save_clean(buf, &save);
   return r;
  ko:
-  tuple_delete(tmp);
+  if (tmp)
+    tuple_delete(tmp);
   tag_clean(&object_number);
   tag_clean(&generation_number);
   return r;
