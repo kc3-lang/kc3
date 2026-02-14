@@ -67,8 +67,8 @@ s_tag * alist_get (s_list *alist, s_tag *key, s_tag *dest)
   assert(dest);
   l = alist;
   while (l) {
-    if (! compare_tag(&l->tag.data.tuple.tag[0], key))
-      return tag_init_copy(dest, l->tag.data.tuple.tag + 1);
+    if (! compare_tag(&l->tag.data.ptuple->tag[0], key))
+      return tag_init_copy(dest, l->tag.data.ptuple->tag + 1);
     l = list_next(l);
   }
   return NULL;

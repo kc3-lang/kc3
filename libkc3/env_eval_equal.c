@@ -367,10 +367,10 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     dest->type = TAG_TIME;
     return env_eval_equal_time(env, macro, &a->data.time,
                                &b->data.time, &dest->data.time);
-  case TAG_TUPLE:
-    dest->type = TAG_TUPLE;
-    return env_eval_equal_tuple(env, macro, &a->data.tuple,
-                                &b->data.tuple, &dest->data.tuple);
+  case TAG_PTUPLE:
+    dest->type = TAG_PTUPLE;
+    return env_eval_equal_ptuple(env, macro, &a->data.ptuple,
+                                 &b->data.ptuple, &dest->data.ptuple);
   case TAG_ARRAY:
   case TAG_DO_BLOCK:
   case TAG_BOOL:
@@ -485,36 +485,44 @@ bool env_eval_equal_time (s_env *env, bool macro, s_time *a,
 }
 
 // TODO: unwind_protect
-bool env_eval_equal_tuple (s_env *env, bool macro, s_tuple *a,
-                           s_tuple *b, s_tuple *dest)
+bool env_eval_equal_ptuple (s_env *env, bool macro, p_tuple *a,
+                            p_tuple *b, p_tuple *dest)
 {
   uw i;
-  s_tuple tmp = {0};
+  p_tuple tmp;
   assert(env);
   assert(a);
   assert(b);
   assert(dest);
-  if (a->count != b->count) {
+  if (*a == *b) {
+    *dest = tuple_new_ref(*a);
+    return *dest ? true : false;
+  }
+  if (! *a || ! *b)
+    return false;
+  if ((*a)->count != (*b)->count) {
     if (false) {
-       err_puts("env_eval_equal_tuple: tuple arity mismatch");
+       err_puts("env_eval_equal_ptuple: tuple arity mismatch");
        err_stacktrace();
-       assert(! "env_eval_equal_tuple: tuple arity mismatch");
+       assert(! "env_eval_equal_ptuple: tuple arity mismatch");
     }
     return false;
   }
-  tuple_init(&tmp, a->count);
+  tmp = tuple_new((*a)->count);
+  if (! tmp)
+    return false;
   i = 0;
-  while (i < a->count) {
-    if (! env_eval_equal_tag(env, macro, a->tag + i, b->tag + i,
-                             tmp.tag + i)) {
+  while (i < (*a)->count) {
+    if (! env_eval_equal_tag(env, macro, (*a)->tag + i, (*b)->tag + i,
+                             tmp->tag + i)) {
       if (false) {
-        err_write_1("env_eval_equal_tuple: tuple tag mismatch index ");
+        err_write_1("env_eval_equal_ptuple: tuple tag mismatch index ");
         err_inspect_uw(i);
         err_write_1("\n");
         err_stacktrace();
-        assert(! "env_eval_equal_tuple: tuple tag mismatch");
+        assert(! "env_eval_equal_ptuple: tuple tag mismatch");
       }
-      tuple_clean(&tmp);
+      tuple_delete(tmp);
       return false;
     }
     i++;

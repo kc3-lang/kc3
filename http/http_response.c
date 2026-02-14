@@ -57,10 +57,10 @@ s_http_response * http_response_buf_parse (s_http_response *response,
       goto restore;
     if (r > 0)
       break;
-    *l = list_new_tuple(2, NULL);
+    *l = list_new_ptuple(2, NULL);
     if (! *l)
       goto restore;
-    tuple = &(*l)->tag.data.tuple;
+    tuple = (*l)->tag.data.ptuple;
     key = tuple->tag;
     value = tuple->tag + 1;
     key->type = TAG_STR;
@@ -225,12 +225,12 @@ sw http_response_buf_write (const s_http_response *response,
   str_init_1(&content_length_str, NULL, "Content-Length");
   l = response->headers;
   while (l) {
-    if (l->tag.type != TAG_TUPLE ||
-        l->tag.data.tuple.count != 2) {
+    if (l->tag.type != TAG_PTUPLE ||
+        l->tag.data.ptuple->count != 2) {
       err_puts("http_response_buf_write: invalid header: not a Tuple");
       return -1;
     }
-    key = l->tag.data.tuple.tag;
+    key = l->tag.data.ptuple->tag;
     value = key + 1;
     if (key->type != TAG_STR || value->type != TAG_STR) {
       err_puts("http_response_buf_write: invalid header: not a Str");
@@ -410,17 +410,17 @@ s_tag * http_response_find_header (const s_http_response *res,
   assert(key);
   h = res->headers;
   while (h) {
-    if (h->tag.type != TAG_TUPLE ||
-        h->tag.data.tuple.count != 2 ||
-        h->tag.data.tuple.tag->type != TAG_STR) {
+    if (h->tag.type != TAG_PTUPLE ||
+        h->tag.data.ptuple->count != 2 ||
+        h->tag.data.ptuple->tag->type != TAG_STR) {
       err_write_1("http_response_find_header: invalid header: ");
       err_inspect_tag(&h->tag);
       err_write_1("\n");
       return NULL;
     }
-    if (! compare_str_case_insensitive(&h->tag.data.tuple.tag->data.str,
+    if (! compare_str_case_insensitive(&h->tag.data.ptuple->tag->data.str,
                                        key))
-      return h->tag.data.tuple.tag + 1;
+      return h->tag.data.ptuple->tag + 1;
     h = list_next(h);
   }
   return NULL;
@@ -460,10 +460,10 @@ s_http_response * http_response_set_header (s_http_response *res,
     tag_init_str_copy(header, value);
   }
   else {
-    if (! (tmp.headers = list_new_tuple(2, tmp.headers)))
+    if (! (tmp.headers = list_new_ptuple(2, tmp.headers)))
       goto clean;
-    tag_init_str_copy(tmp.headers->tag.data.tuple.tag, key);
-    tag_init_str_copy(tmp.headers->tag.data.tuple.tag + 1, value);
+    tag_init_str_copy(tmp.headers->tag.data.ptuple->tag, key);
+    tag_init_str_copy(tmp.headers->tag.data.ptuple->tag + 1, value);
   }
   *dest = tmp;
   return dest;

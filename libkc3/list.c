@@ -27,7 +27,6 @@
 #include "sym.h"
 #include "sw.h"
 #include "tag.h"
-#include "tuple.h"
 #include "uw.h"
 
 s_tag * list_access (s_list *list, s_list *key, s_tag *dest)
@@ -164,8 +163,8 @@ bool list_is_alist (const s_list *list)
   const s_list *l;
   l = list;
   while (l) {
-    if (l->tag.type != TAG_TUPLE ||
-        l->tag.data.tuple.count != 2)
+    if (l->tag.type != TAG_PTUPLE ||
+        l->tag.data.ptuple->count != 2)
       return false;
     l = list_next(l);
   }
@@ -179,9 +178,9 @@ bool list_is_plist (const s_list *list)
     return false;
   l = list;
   while (l) {
-    if (l->tag.type != TAG_TUPLE ||
-        l->tag.data.tuple.count != 2 ||
-        l->tag.data.tuple.tag[0].type != TAG_PSYM)
+    if (l->tag.type != TAG_PTUPLE ||
+        l->tag.data.ptuple->count != 2 ||
+        l->tag.data.ptuple->tag[0].type != TAG_PSYM)
       return false;
     l = list_next(l);
   }

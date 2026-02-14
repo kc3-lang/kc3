@@ -584,9 +584,9 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
     return m;
   }
   if (type == &g_sym_Tuple) {
-    if (! marshall_tuple(m, heap, data)) {
-      err_puts("marshall_data: marshall_tuple");
-      assert(! "marshall_data: marshall_tuple");
+    if (! marshall_ptuple(m, heap, data)) {
+      err_puts("marshall_data: marshall_ptuple");
+      assert(! "marshall_data: marshall_ptuple");
       return NULL;
     }
     return m;
@@ -1092,38 +1092,38 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
   assert(m);
   if (! p)
     return marshall_offset(m, heap, 0);
-  tag_init_tuple(&key, 2);
-  key.data.tuple.tag[0].type = TAG_U64;
-  key.data.tuple.tag[0].data.u64 = (u64) p;
+  tag_init_ptuple(&key, 2);
+  key.data.ptuple->tag[0].type = TAG_U64;
+  key.data.ptuple->tag[0].data.u64 = (u64) p;
   if (ht_get(&m->ht, &key, &ptag)) {
     *present = true;
     goto ok;
   }
   *present = false;
-  tag_init_tuple(&tag, 2);
-  tag.data.tuple.tag[0].data.u64 = (u64) p;
-  tag.data.tuple.tag[0].type = TAG_U64;
-  tag.data.tuple.tag[1].data.u64 =
+  tag_init_ptuple(&tag, 2);
+  tag.data.ptuple->tag[0].data.u64 = (u64) p;
+  tag.data.ptuple->tag[0].type = TAG_U64;
+  tag.data.ptuple->tag[1].data.u64 =
     sizeof(s_marshall_header) +
     m->heap_offset +
     m->heap_pos +
     (heap ? sizeof(u64) : 0);
-  tag.data.tuple.tag[1].type = TAG_U64;
+  tag.data.ptuple->tag[1].type = TAG_U64;
   if (! ht_add(&m->ht, &tag))
     goto ko;
   m->heap_count++;
   ptag = &tag;
  ok:
-  if (ptag->type != TAG_TUPLE ||
-      ptag->data.tuple.count != 2 ||
-      ptag->data.tuple.tag[1].type != TAG_U64) {
+  if (ptag->type != TAG_PTUPLE ||
+      ptag->data.ptuple->count != 2 ||
+      ptag->data.ptuple->tag[1].type != TAG_U64) {
     err_puts("marshall_heap_pointer: invalid offset in hash table");
     err_inspect_tag(&tag);
     err_write_1("\n");
     assert(! "marshall_heap_pointer: invalid offset in hash table");
     goto ko;
   }
-  offset = ptag->data.tuple.tag[1].data.u64;
+  offset = ptag->data.ptuple->tag[1].data.u64;
   if (! marshall_offset(m, heap, offset - m->heap_offset))
     goto ko;
   tag_clean(&key);
@@ -1731,7 +1731,7 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   case TAG_STR:   return marshall_str(m, heap, &tag->data.str);
   case TAG_SW:    return marshall_sw(m, heap, tag->data.sw);
   case TAG_TIME:  return marshall_time(m, heap, &tag->data.time);
-  case TAG_TUPLE: return marshall_tuple(m, heap, &tag->data.tuple);
+  case TAG_PTUPLE: return marshall_ptuple(m, heap, &tag->data.ptuple);
   case TAG_U8:    return marshall_u8(m, heap, tag->data.u8);
   case TAG_U16:   return marshall_u16(m, heap, tag->data.u16);
   case TAG_U32:   return marshall_u32(m, heap, tag->data.u32);
@@ -1855,6 +1855,35 @@ s_marshall * marshall_tuple (s_marshall *m, bool heap,
     if (! marshall_tag(m, heap, tuple->tag + i))
       return NULL;
     i++;
+  }
+  return m;
+}
+
+s_marshall * marshall_ptuple (s_marshall *m, bool heap,
+                              const p_tuple *data)
+{
+  bool present = false;
+  assert(m);
+  if (! m || ! data) {
+    err_puts("marshall_ptuple: invalid argument");
+    assert(! "marshall_ptuple: invalid argument");
+    return NULL;
+  }
+  if (! marshall_1(m, heap, "_KC3PTUPLE_")) {
+    err_puts("marshall_ptuple: marshall_1 magic");
+    assert(! "marshall_ptuple: marshall_1 magic");
+    return NULL;
+  }
+  if (! marshall_heap_pointer(m, heap, *data, &present)) {
+    err_puts("marshall_ptuple: marshall_heap_pointer");
+    assert(! "marshall_ptuple: marshall_heap_pointer");
+    return NULL;
+  }
+  if (! present && *data &&
+      ! marshall_tuple(m, true, *data)) {
+    err_puts("marshall_ptuple: marshall_tuple");
+    assert(! "marshall_ptuple: marshall_tuple");
+    return NULL;
   }
   return m;
 }

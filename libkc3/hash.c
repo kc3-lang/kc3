@@ -587,7 +587,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_SW:      return hash_update_sw(hash, tag->data.sw);
   case TAG_STR:     return hash_update_str(hash, &tag->data.str);
   case TAG_TIME:    return hash_update_time(hash, &tag->data.time);
-  case TAG_TUPLE:   return hash_update_tuple(hash, &tag->data.tuple);
+  case TAG_PTUPLE:  return hash_update_tuple(hash, tag->data.ptuple);
   case TAG_U8:      return hash_update_u8(hash, tag->data.u8);
   case TAG_U16:     return hash_update_u16(hash, tag->data.u16);
   case TAG_U32:     return hash_update_u32(hash, tag->data.u32);

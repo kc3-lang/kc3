@@ -46,6 +46,7 @@
 #include "pstruct_type.h"
 #include "ptr.h"
 #include "ptr_free.h"
+#include "ptuple.h"
 #include "pvar.h"
 #include "quote.h"
 #include "ratio.h"
@@ -56,7 +57,6 @@
 #include "tag.h"
 #include "tag_type.h"
 #include "time.h"
-#include "tuple.h"
 #include "unquote.h"
 #include "var.h"
 
@@ -267,12 +267,12 @@ void tag_clean (s_tag *tag)
   case TAG_PSTRUCT_TYPE:
     pstruct_type_clean(&tag->data.pstruct_type);               break;
   case TAG_PTR_FREE:    ptr_free_clean(&tag->data.ptr);        break;
+  case TAG_PTUPLE:      ptuple_clean(&tag->data.ptuple);       break;
   case TAG_PVAR:        pvar_clean(&tag->data.pvar);           break;
   case TAG_QUOTE:       quote_clean(&tag->data.quote);         break;
   case TAG_RATIO:       ratio_clean(&tag->data.ratio);         break;
   case TAG_STR:         str_clean(&tag->data.str);             break;
   case TAG_TIME:        time_clean(&tag->data.time);           break;
-  case TAG_TUPLE:       tuple_clean(&tag->data.tuple);         break;
   case TAG_UNQUOTE:     unquote_clean(&tag->data.unquote);     break;
   case TAG_BOOL:
   case TAG_CHARACTER:
@@ -674,6 +674,11 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     tag->type = src->type;
     tag->data.ptr_free = src->data.ptr_free;
     return tag;
+  case TAG_PTUPLE:
+    tag->type = src->type;
+    if (! ptuple_init_copy(&tag->data.ptuple, &src->data.ptuple))
+      return NULL;
+    return tag;
   case TAG_PVAR:
     tag->type = src->type;
     pvar_init_copy(&tag->data.pvar, &src->data.pvar);
@@ -716,11 +721,6 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
   case TAG_TIME:
     tag->type = src->type;
     if (! time_init_copy(&tag->data.time, &src->data.time))
-      return NULL;
-    return tag;
-  case TAG_TUPLE:
-    tag->type = src->type;
-    if (! tuple_init_copy(&tag->data.tuple, &src->data.tuple))
       return NULL;
     return tag;
   case TAG_U8:
@@ -961,12 +961,12 @@ bool tag_is_integer (s_tag *tag)
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
+  case TAG_PTUPLE:
   case TAG_PVAR:
   case TAG_QUOTE:
   case TAG_RATIO:
   case TAG_STR:
   case TAG_TIME:
-  case TAG_TUPLE:
   case TAG_UNQUOTE:
   case TAG_IDENT:
     return false;
@@ -1014,11 +1014,11 @@ bool tag_is_number (s_tag *tag)
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
+  case TAG_PTUPLE:
   case TAG_PVAR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_TIME:
-  case TAG_TUPLE:
   case TAG_UNQUOTE:
   case TAG_IDENT:
     return false;
@@ -1085,12 +1085,12 @@ bool tag_is_positive_integer (s_tag *tag)
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
+  case TAG_PTUPLE:
   case TAG_PVAR:
   case TAG_QUOTE:
   case TAG_RATIO:
   case TAG_STR:
   case TAG_TIME:
-  case TAG_TUPLE:
   case TAG_UNQUOTE:
   case TAG_IDENT:
     return false;
@@ -1555,6 +1555,12 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     }
     *dest = tag->data.ptr.p;
     return true;
+  case TAG_PTUPLE:
+    if (type == &g_sym_Tuple) {
+      *dest = tag->data.ptuple;
+      return true;
+    }
+    goto invalid_cast;
   case TAG_PVAR:
     if (type == &g_sym_Var) {
       *dest = &tag->data.pvar;
@@ -1616,12 +1622,6 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_TIME:
     if (type == &g_sym_Time) {
       *dest = &tag->data.time;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_TUPLE:
-    if (type == &g_sym_Tuple) {
-      *dest = &tag->data.tuple;
       return true;
     }
     goto invalid_cast;
@@ -1745,6 +1745,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_PTAG:         *dest = &tag->data.ptag;         return true;
   case TAG_PTR:          *dest = &tag->data.ptr.p;        return true;
   case TAG_PTR_FREE:     *dest = &tag->data.ptr_free.p;   return true;
+  case TAG_PTUPLE:       *dest = tag->data.ptuple;        return true;
   case TAG_PVAR:         *dest = tag->data.pvar;          return true;
   case TAG_QUOTE:        *dest = &tag->data.quote;        return true;
   case TAG_RATIO:        *dest = &tag->data.ratio;        return true;
@@ -1755,7 +1756,6 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_S8:           *dest = &tag->data.s8;           return true;
   case TAG_STR:          *dest = &tag->data.str;          return true;
   case TAG_TIME:         *dest = &tag->data.time;         return true;
-  case TAG_TUPLE:        *dest = &tag->data.tuple;        return true;
   case TAG_U8:           *dest = &tag->data.u8;           return true;
   case TAG_U16:          *dest = &tag->data.u16;          return true;
   case TAG_U32:          *dest = &tag->data.u32;          return true;
@@ -1819,6 +1819,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_PTAG:         *dest = &g_sym_Ptag;        return dest;
   case TAG_PTR:          *dest = &g_sym_Ptr;         return dest;
   case TAG_PTR_FREE:     *dest = &g_sym_PtrFree;     return dest;
+  case TAG_PTUPLE:       *dest = &g_sym_Tuple;       return dest;
   case TAG_PVAR:         *dest = &g_sym_Var;         return dest;
   case TAG_QUOTE:        *dest = &g_sym_Quote;       return dest;
   case TAG_RATIO:        *dest = &g_sym_Ratio;       return dest;
@@ -1829,7 +1830,6 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_STR:          *dest = &g_sym_Str;         return dest;
   case TAG_SW:           *dest = &g_sym_Sw;          return dest;
   case TAG_TIME:         *dest = &g_sym_Time;        return dest;
-  case TAG_TUPLE:        *dest = &g_sym_Tuple;       return dest;
   case TAG_U8:           *dest = &g_sym_U8;          return dest;
   case TAG_U16:          *dest = &g_sym_U16;         return dest;
   case TAG_U32:          *dest = &g_sym_U32;         return dest;

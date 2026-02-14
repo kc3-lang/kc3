@@ -220,17 +220,17 @@ s_tag * url_www_form_decode (const s_str *src, s_tag *dest)
       str_clean(&value);
       continue;
     }
-    *tail = list_new_tuple(2, NULL);
-    (*tail)->tag.data.tuple.tag[0].type = TAG_STR;
-    (*tail)->tag.data.tuple.tag[1].type = TAG_STR;
+    *tail = list_new_ptuple(2, NULL);
+    (*tail)->tag.data.ptuple->tag[0].type = TAG_STR;
+    (*tail)->tag.data.ptuple->tag[1].type = TAG_STR;
     if (! url_unescape(&key,
-                       &(*tail)->tag.data.tuple.tag[0].data.str)) {
+                       &(*tail)->tag.data.ptuple->tag[0].data.str)) {
       str_clean(&key);
       str_clean(&value);
       goto clean;
     }
     if (! url_unescape(&value,
-                       &(*tail)->tag.data.tuple.tag[1].data.str)) {
+                       &(*tail)->tag.data.ptuple->tag[1].data.str)) {
       str_clean(&key);
       str_clean(&value);
       goto clean;

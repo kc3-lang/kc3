@@ -34,8 +34,8 @@ bool env_eval_equal_tag (s_env *env, bool macro,
 bool env_eval_equal_time (s_env *env, bool macro,
                           s_time *a, s_time *b,
                           s_time *dest);
-bool env_eval_equal_tuple (s_env *env, bool macro,
-                           s_tuple *a, s_tuple *b,
-                           s_tuple *dest);
+bool env_eval_equal_ptuple (s_env *env, bool macro,
+                            p_tuple *a, p_tuple *b,
+                            p_tuple *dest);
 
 #endif /* LIBKC3_ENV_EVAL_EQUAL_H */

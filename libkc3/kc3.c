@@ -1536,7 +1536,7 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
 #endif
 }
 
-s_tuple * kc3_system (p_list *list, s_tuple *dest)
+p_tuple * kc3_system (p_list *list, p_tuple *dest)
 {
 #if defined(WIN32) || defined(WIN64)
   (void) list;
@@ -1550,10 +1550,10 @@ s_tuple * kc3_system (p_list *list, s_tuple *dest)
   sw len;
   pid_t pid;
   s32 pipe_fd[2];
-  s_tuple *r = NULL;
+  p_tuple *r = NULL;
   s32 status;
   const s_str *str;
-  s_tuple tmp = {0};
+  p_tuple tuple = NULL;
   s_str tmp_str = {0};
   assert(list);
   assert(dest);
@@ -1618,14 +1618,14 @@ s_tuple * kc3_system (p_list *list, s_tuple *dest)
     str_clean(&tmp_str);
     goto clean;
   }
-  if (! tuple_init(&tmp, 2))
+  if (! (tuple = tuple_new(2)))
     goto clean;
-  tmp.tag[0].type = TAG_S32;
-  tmp.tag[0].data.s32 = status;
-  tag_integer_reduce(tmp.tag, tmp.tag);
-  tmp.tag[1].type = TAG_STR;
-  tmp.tag[1].data.str = tmp_str;
-  *dest = tmp;
+  tuple->tag[0].type = TAG_S32;
+  tuple->tag[0].data.s32 = status;
+  tag_integer_reduce(tuple->tag, tuple->tag);
+  tuple->tag[1].type = TAG_STR;
+  tuple->tag[1].data.str = tmp_str;
+  *dest = tuple;
   r = dest;
  clean:
   while (a >= argv) {
@@ -1688,10 +1688,12 @@ s_pointer * kc3_tag_to_pointer (s_tag *tag, s_pointer *dest)
     assert(! "kc3_tag_to_pointer: expected ident");
     return NULL;
   }
-  if (! tag->data.ident.module)
+  if (! tag->data.ident.module) {
     resolved = env_frames_get(env, tag->data.ident.sym);
-  if (! resolved &&
-      ! (resolved = env_ident_get_address(env, &tag->data.ident))) {
+    if (resolved)
+      return pointer_init_tag(dest, resolved);
+  }
+  if (! (resolved = env_ident_get_address(env, &tag->data.ident))) {
     err_write_1("kc3_tag_to_pointer: undeclared ident ");
     err_inspect_ident(&tag->data.ident);
     err_write_1("\n");
@@ -1715,7 +1717,7 @@ s_time * kc3_uptime (s_time *dest)
   return env_uptime(env, dest);
 }
 
-s_tuple * kc3_wait (s_tuple *dest)
+p_tuple * kc3_wait (p_tuple *dest)
 {
 #if defined(WIN32) || defined(WIN64)
   (void) dest;
@@ -1723,20 +1725,20 @@ s_tuple * kc3_wait (s_tuple *dest)
 #else
   pid_t pid;
   s32 status;
-  s_tuple tmp = {0};
+  p_tuple tuple;
   assert(dest);
   pid = wait(&status);
   if (pid < 0)
     return NULL;
-  if (! tuple_init(&tmp, 2))
+  if (! (tuple = tuple_new(2)))
     return NULL;
-  tmp.tag[0].type = TAG_S32;
-  tmp.tag[0].data.s32 = pid;
-  tag_integer_reduce(tmp.tag, tmp.tag);
-  tmp.tag[1].type = TAG_S32;
-  tmp.tag[1].data.s32 = status;
-  tag_integer_reduce(tmp.tag + 1, tmp.tag + 1);
-  *dest = tmp;
+  tuple->tag[0].type = TAG_S32;
+  tuple->tag[0].data.s32 = pid;
+  tag_integer_reduce(tuple->tag, tuple->tag);
+  tuple->tag[1].type = TAG_S32;
+  tuple->tag[1].data.s32 = status;
+  tag_integer_reduce(tuple->tag + 1, tuple->tag + 1);
+  *dest = tuple;
   return dest;
 #endif
 }
@@ -1751,14 +1753,14 @@ s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
     assert(! "kc3_thread_delete: pthread_join");
     return NULL;
   }
-  if (tag->type != TAG_TUPLE ||
-      tag->data.tuple.count != 3) {
+  if (tag->type != TAG_PTUPLE ||
+      tag->data.ptuple->count != 3) {
     err_puts("kc3_thread_delete: invalid value");
     assert(! "kc3_thread_delete: invalid value");
     tag_delete(tag);
     return NULL;
   }
-  if (! tag_init_copy(dest, tag->data.tuple.tag)) {
+  if (! tag_init_copy(dest, tag->data.ptuple->tag)) {
     tag_delete(tag);
     return NULL;
   }
@@ -1769,14 +1771,14 @@ s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
 u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
 {
   s_tag *tag;
-  if (! (tag = tag_new_tuple(3)))
+  if (! (tag = tag_new_ptuple(3)))
     return NULL;
-  if (! tag_init_pcallable_copy(tag->data.tuple.tag + 1, start)) {
+  if (! tag_init_pcallable_copy(tag->data.ptuple->tag + 1, start)) {
     tag_delete(tag);
     return NULL;
   }
-  tag->data.tuple.tag[2].type = TAG_PTR;
-  if (! (tag->data.tuple.tag[2].data.ptr.p =
+  tag->data.ptuple->tag[2].type = TAG_PTR;
+  if (! (tag->data.ptuple->tag[2].data.ptr.p =
          env_fork_new(env_global()))) {
     tag_delete(tag);
     return NULL;
@@ -1785,7 +1787,7 @@ u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
                      tag)) {
     err_puts("kc3_thread_new: pthread_create");
     assert(! "kc3_thread_new: pthread_create");
-    env_fork_delete(tag->data.tuple.tag[2].data.ptr.p);
+    env_fork_delete(tag->data.ptuple->tag[2].data.ptr.p);
     tag_delete(tag);
     return NULL;
   }
@@ -1798,26 +1800,26 @@ void * kc3_thread_start (void *arg)
   s_tag *tag;
   s_callable *start;
   tag = arg;
-  if (tag->type != TAG_TUPLE) {
+  if (tag->type != TAG_PTUPLE) {
     fprintf(stderr,
             "kc3_thread_start: invalid argument: not a tuple\n");
     assert(! "kc3_thread_start: invalid argument: not a tuple");
     return NULL;
   }
-  if (tag->data.tuple.count != 3) {
+  if (tag->data.ptuple->count != 3) {
     fprintf(stderr, "kc3_thread_start: invalid argument:"
 	    " tuple arity mismatch\n");
     assert(!("kc3_thread_start: invalid argument:"
              " tuple arity mismatch"));
     return NULL;
   }
-  if (tag->data.tuple.tag[2].type != TAG_PTR) {
+  if (tag->data.ptuple->tag[2].type != TAG_PTR) {
     fprintf(stderr, "kc3_thread_start: invalid argument: not a Ptr\n");
     assert(! "kc3_thread_start: invalid argument: not a Ptr");
     return NULL;
   }
-  env = tag->data.tuple.tag[2].data.ptr.p;
-  if (tag->data.tuple.tag[1].type != TAG_PCALLABLE) {
+  env = tag->data.ptuple->tag[2].data.ptr.p;
+  if (tag->data.ptuple->tag[1].type != TAG_PCALLABLE) {
     fprintf(stderr, "kc3_thread_start: invalid argument:"
 	    " not a Callable (Fn or Cfn)\n");
     assert(!("kc3_thread_start: invalid argument:"
@@ -1825,9 +1827,9 @@ void * kc3_thread_start (void *arg)
     env_fork_delete(env);
     return NULL;
   }
-  start = tag->data.tuple.tag[1].data.pcallable;
+  start = tag->data.ptuple->tag[1].data.pcallable;
   env_global_set(env);
-  if (! eval_callable_call(start, NULL, tag->data.tuple.tag)) {
+  if (! eval_callable_call(start, NULL, tag->data.ptuple->tag)) {
     env_fork_delete(env);
     return NULL;
   }

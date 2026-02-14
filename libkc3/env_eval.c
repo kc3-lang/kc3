@@ -1110,8 +1110,8 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_quote(env, &tag->data.quote, dest);
   case TAG_TIME:
     return env_eval_time(env, &tag->data.time, dest);
-  case TAG_TUPLE:
-    return env_eval_tuple(env, &tag->data.tuple, dest);
+  case TAG_PTUPLE:
+    return env_eval_tuple(env, tag->data.ptuple, dest);
   case TAG_BOOL:
   case TAG_CHARACTER:
   case TAG_F32:
@@ -1201,7 +1201,7 @@ bool env_eval_time (s_env *env, const s_time *time, s_tag *dest)
 bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
 {
   uw i = 0;
-  s_tuple tmp = {0};
+  p_tuple tmp;
   assert(env);
   assert(tuple);
   assert(dest);
@@ -1209,14 +1209,18 @@ bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
     err_puts("env_eval_tuple: cannot eval with securelevel > 2");
     abort();
   }
-  tuple_init(&tmp, tuple->count);
+  tmp = tuple_new(tuple->count);
+  if (! tmp)
+    return false;
   while (i < tuple->count) {
-    if (! env_eval_tag(env, tuple->tag + i, tmp.tag + i))
+    if (! env_eval_tag(env, tuple->tag + i, tmp->tag + i)) {
+      tuple_delete(tmp);
       return false;
+    }
     i++;
   }
-  dest->type = TAG_TUPLE;
-  dest->data.tuple = tmp;
+  dest->type = TAG_PTUPLE;
+  dest->data.ptuple = tmp;
   return true;
 }
 

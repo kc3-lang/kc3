@@ -99,6 +99,7 @@
 #include "ptag.h"
 #include "ptr.h"
 #include "ptr_free.h"
+#include "ptuple.h"
 #include "pvar.h"
 #include "quote.h"
 #include "ratio.h"

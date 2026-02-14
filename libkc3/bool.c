@@ -99,7 +99,7 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_STR:
   case TAG_PSYM:
   case TAG_TIME:
-  case TAG_TUPLE:
+  case TAG_PTUPLE:
   case TAG_UNQUOTE:
     *b = true;
     return b;

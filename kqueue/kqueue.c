@@ -129,11 +129,11 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
       event_type = &g_sym_eof;
     else
       event_type = &g_sym_read;
-    if (! tag_init_tuple(dest, 3) ||
-        ! tag_init_s64(dest->data.tuple.tag, event.ident) ||
-        ! tag_init_psym(dest->data.tuple.tag + 1, event_type))
+    if (! tag_init_ptuple(dest, 3) ||
+        ! tag_init_s64(dest->data.ptuple->tag, event.ident) ||
+        ! tag_init_psym(dest->data.ptuple->tag + 1, event_type))
       return NULL;
-    if (! tag_init_copy(dest->data.tuple.tag + 2, udata))
+    if (! tag_init_copy(dest->data.ptuple->tag + 2, udata))
       return NULL;
     return dest;
   }

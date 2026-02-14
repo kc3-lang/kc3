@@ -100,10 +100,13 @@ PROTO_MARSHALL_READ(plist,        p_list           );
 PROTO_MARSHALL_READ(pointer,      s_pointer        );
 PROTO_MARSHALL_READ(pstruct,      p_struct         );
 PROTO_MARSHALL_READ(pstruct_type, p_struct_type    );
+PROTO_MARSHALL_READ(psym,         p_sym            );
 PROTO_MARSHALL_READ(ptag,         p_tag            );
 PROTO_MARSHALL_READ(ptr,          u_ptr_w          );
 PROTO_MARSHALL_READ(ptr_free,     u_ptr_w          );
-PROTO_MARSHALL_READ(psym,         p_sym            );
+s_marshall_read * marshall_read_ptuple (s_marshall_read *mr,
+                                        bool heap,
+                                        p_tuple *dest);
 PROTO_MARSHALL_READ(pvar,         p_var            );
 PROTO_MARSHALL_READ(quote,        s_quote          );
 PROTO_MARSHALL_READ(ratio,        s_ratio          );

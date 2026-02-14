@@ -581,8 +581,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_sw(str, tag->data.sw);
   case TAG_TIME:
     return str_init_time(str, &tag->data.time);
-  case TAG_TUPLE:
-    return str_init_tuple(str, &tag->data.tuple);
+  case TAG_PTUPLE:
+    return str_init_tuple(str, tag->data.ptuple);
   case TAG_U8:
     return str_init_u8(str, tag->data.u8);
   case TAG_U16:

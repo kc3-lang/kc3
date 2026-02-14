@@ -30,7 +30,7 @@ sw   pdf_buf_parse_file_header (s_buf *buf, s_str *dest);
 sw   pdf_buf_parse_float (s_buf *buf, f64 *dest);
 sw   pdf_buf_parse_indirect_object (s_buf *buf,
                                     s_pdf_file *pdf_file,
-                                    s_tuple *dest);
+                                    p_tuple *dest);
 sw   pdf_buf_parse_integer (s_buf *buf, s_tag *dest);
 sw   pdf_buf_parse_name (s_buf *buf, s_pdf_file *pdf_file,
                          p_pdf_name *dest);

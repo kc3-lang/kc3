@@ -37,6 +37,7 @@
 #include "psym.h"
 #include "ptr.h"
 #include "ptr_free.h"
+#include "ptuple.h"
 #include "pvar.h"
 #include "quote.h"
 #include "ratio.h"
@@ -46,7 +47,6 @@
 #include "tag.h"
 #include "tag_init.h"
 #include "time.h"
-#include "tuple.h"
 #include "unquote.h"
 #include "var.h"
 
@@ -729,23 +729,23 @@ s_tag * tag_init_time_now (s_tag *tag)
   return tag;
 }
 
-s_tag * tag_init_tuple (s_tag *tag, uw count)
+s_tag * tag_init_ptuple (s_tag *tag, uw count)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_TUPLE;
-  if (! tuple_init(&tmp.data.tuple, count))
+  tmp.type = TAG_PTUPLE;
+  if (! ptuple_init(&tmp.data.ptuple, count))
     return NULL;
   *tag = tmp;
   return tag;
 }
 
-s_tag * tag_init_tuple_2 (s_tag *tag, s_tag *a, s_tag *b)
+s_tag * tag_init_ptuple_2 (s_tag *tag, s_tag *a, s_tag *b)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_TUPLE;
-  if (! tuple_init_2(&tmp.data.tuple, a, b))
+  tmp.type = TAG_PTUPLE;
+  if (! ptuple_init_2(&tmp.data.ptuple, a, b))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1649,28 +1649,28 @@ s_tag * tag_new_time_now (void)
   return tag;
 }
 
-s_tag * tag_new_tuple (uw count)
+s_tag * tag_new_ptuple (uw count)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
-  tag->type = TAG_TUPLE;
-  if (! tuple_init(&tag->data.tuple, count)) {
+  tag->type = TAG_PTUPLE;
+  if (! ptuple_init(&tag->data.ptuple, count)) {
     free(tag);
     return NULL;
   }
   return tag;
 }
 
-s_tag * tag_new_tuple_2 (s_tag *a, s_tag *b)
+s_tag * tag_new_ptuple_2 (s_tag *a, s_tag *b)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
-  tag->type = TAG_TUPLE;
-  if (! tuple_init_2(&tag->data.tuple, a, b)) {
+  tag->type = TAG_PTUPLE;
+  if (! ptuple_init_2(&tag->data.ptuple, a, b)) {
     free(tag);
     return NULL;
   }
@@ -2484,25 +2484,25 @@ s_tag * tag_time_now (s_tag *tag)
   return tag;
 }
 
-s_tag * tag_tuple (s_tag *tag, uw count)
+s_tag * tag_ptuple (s_tag *tag, uw count)
 {
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  tmp.type = TAG_TUPLE;
-  if (! tuple_init(&tmp.data.tuple, count))
+  tmp.type = TAG_PTUPLE;
+  if (! ptuple_init(&tmp.data.ptuple, count))
     return NULL;
   *tag = tmp;
   return tag;
 }
 
-s_tag * tag_tuple_2 (s_tag *tag, s_tag *a, s_tag *b)
+s_tag * tag_ptuple_2 (s_tag *tag, s_tag *a, s_tag *b)
 {
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  tmp.type = TAG_TUPLE;
-  if (! tuple_init_2(&tmp.data.tuple, a, b))
+  tmp.type = TAG_PTUPLE;
+  if (! ptuple_init_2(&tmp.data.ptuple, a, b))
     return NULL;
   *tag = tmp;
   return tag;

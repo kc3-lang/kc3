@@ -16,7 +16,10 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
+#include "env.h"
 #include "io.h"
+#include "mutex.h"
+#include "ptuple.h"
 #include "sym.h"
 #include "tuple.h"
 #include "tag.h"
@@ -35,6 +38,31 @@ void tuple_clean (s_tuple *tuple)
 
 void tuple_delete (s_tuple *tuple)
 {
+  assert(tuple);
+  if (env_global()->pass_by_copy)
+    assert(tuple->ref_count == 1);
+  else {
+#if HAVE_PTHREAD
+    mutex_lock(&tuple->mutex);
+#endif
+    if (tuple->ref_count <= 0) {
+      err_puts("tuple_delete: invalid reference count");
+      assert(! "tuple_delete: invalid reference count");
+#if HAVE_PTHREAD
+      mutex_unlock(&tuple->mutex);
+#endif
+      return;
+    }
+    if (--tuple->ref_count) {
+#if HAVE_PTHREAD
+      mutex_unlock(&tuple->mutex);
+#endif
+      return;
+    }
+#if HAVE_PTHREAD
+    mutex_unlock(&tuple->mutex);
+#endif
+  }
   tuple_clean(tuple);
   free(tuple);
 }
@@ -42,17 +70,19 @@ void tuple_delete (s_tuple *tuple)
 s_tuple * tuple_init (s_tuple *tuple, uw count)
 {
   uw i;
-  s_tuple tmp = {0};
   assert(tuple);
   assert(2 <= count);
-  tmp.count = count;
-  tmp.tag = alloc(count * sizeof(s_tag));
-  if (! tmp.tag)
+  tuple->count = count;
+  tuple->tag = alloc(count * sizeof(s_tag));
+  if (! tuple->tag)
     return NULL;
   i = count;
   while (i--)
-    tag_init_void(tmp.tag + i);
-  *tuple = tmp;
+    tag_init_void(tuple->tag + i);
+  tuple->ref_count = 1;
+#if HAVE_PTHREAD
+  mutex_init(&tuple->mutex);
+#endif
   return tuple;
 }
 
@@ -94,8 +124,8 @@ s_tuple * tuple_init_cast (s_tuple *tuple, const s_sym * const *type,
                            s_tag *tag)
 {
   switch (tag->type) {
-  case TAG_TUPLE:
-    return tuple_init_copy(tuple, &tag->data.tuple);
+  case TAG_PTUPLE:
+    return tuple_init_copy(tuple, tag->data.ptuple);
   default:
     break;
   }
@@ -122,6 +152,38 @@ s_tuple * tuple_init_copy (s_tuple *tuple, s_tuple *src)
     tag_init_copy(tuple->tag + i, src->tag + i);
     i++;
   }
+  return tuple;
+}
+
+s_tuple * tuple_new_copy (s_tuple *src)
+{
+  s_tuple *tuple;
+  assert(src);
+  tuple = alloc(sizeof(s_tuple));
+  if (! tuple)
+    return NULL;
+  if (! tuple_init_copy(tuple, src)) {
+    free(tuple);
+    return NULL;
+  }
+  return tuple;
+}
+
+s_tuple * tuple_new_ref (s_tuple *tuple)
+{
+  assert(tuple);
+#if HAVE_PTHREAD
+  mutex_lock(&tuple->mutex);
+#endif
+  if (tuple->ref_count <= 0) {
+    err_puts("tuple_new_ref: invalid reference count");
+    assert(! "tuple_new_ref: invalid reference count");
+    return NULL;
+  }
+  tuple->ref_count++;
+#if HAVE_PTHREAD
+  mutex_unlock(&tuple->mutex);
+#endif
   return tuple;
 }
 

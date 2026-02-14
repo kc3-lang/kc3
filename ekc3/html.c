@@ -71,7 +71,7 @@ s_str * html_escape (s_tag *src, s_str *dest)
     replace = NULL;
     e = escape;
     while (e) {
-      reserved = e->tag.data.tuple.tag;
+      reserved = e->tag.data.ptuple->tag;
       if (reserved->type != TAG_STR) {
         err_puts("html_escape: HTML.escapes: reserved that is"
                  " not a Str");
@@ -81,7 +81,7 @@ s_str * html_escape (s_tag *src, s_str *dest)
         goto ko;
       }
       if (! compare_tag(reserved, &tag)) {
-        replace = e->tag.data.tuple.tag + 1;
+        replace = e->tag.data.ptuple->tag + 1;
         if (replace->type != TAG_STR) {
           err_puts("html_escape: HTML.escapes: replacement that is"
                    " not a Str");

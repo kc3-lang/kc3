@@ -60,6 +60,7 @@
 #include "sym.h"
 #include "tag.h"
 #include "time.h"
+#include "tuple.h"
 #include "types.h"
 #include "var.h"
 
@@ -1157,21 +1158,21 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
     global_offset = (s64) mr->heap_offset + (s64) *offset;
   else
     global_offset = mr->heap_start + (s64) *offset;
-  if (! tag_init_tuple(&key, 2))
+  if (! tag_init_ptuple(&key, 2))
     return NULL;
-  tag_init_s64(key.data.tuple.tag, global_offset);
+  tag_init_s64(key.data.ptuple->tag, global_offset);
   if (! ht_get(&mr->ht, &key, &ptag)) {
     *present = NULL;
     tag_clean(&key);
     return mr;
   }
   tag_clean(&key);
-  if (ptag->type != TAG_TUPLE ||
-      ptag->data.tuple.tag[1].type != TAG_UW) {
+  if (ptag->type != TAG_PTUPLE ||
+      ptag->data.ptuple->tag[1].type != TAG_UW) {
     err_puts("marshall_read_heap_pointer: invalid tag in ht");
     assert(! "marshall_read_heap_pointer: invalid tag in ht");
   }
-  *present = (void *) ptag->data.tuple.tag[1].data.uw;
+  *present = (void *) ptag->data.ptuple->tag[1].data.uw;
   tag_clean(&tag);
   return mr;
 }
@@ -1185,10 +1186,10 @@ s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
     global_offset = (s64) mr->heap_offset + (s64) offset;
   else
     global_offset = mr->heap_start + (s64) offset;
-  if (! tag_init_tuple(&tag, 2))
+  if (! tag_init_ptuple(&tag, 2))
     return NULL;
-  tag_init_s64(tag.data.tuple.tag, global_offset);
-  tag_init_uw(tag.data.tuple.tag + 1, (uw) p);
+  tag_init_s64(tag.data.ptuple->tag, global_offset);
+  tag_init_uw(tag.data.ptuple->tag + 1, (uw) p);
   if (! ht_add(&mr->ht, &tag)) {
     tag_clean(&tag);
     return NULL;
@@ -1208,26 +1209,26 @@ s8 marshall_read_ht_compare (const s_tag *a, const s_tag *b)
 {
   assert(a);
   assert(b);
-  assert(a->type == TAG_TUPLE);
-  assert(b->type == TAG_TUPLE);
+  assert(a->type == TAG_PTUPLE);
+  assert(b->type == TAG_PTUPLE);
   if (a->type < b->type)
     return -1;
   if (a->type > b->type)
     return 1;
-  if (a->type != TAG_TUPLE)
+  if (a->type != TAG_PTUPLE)
     return COMPARE_ERROR;
-  return compare_tag(a->data.tuple.tag, b->data.tuple.tag);
+  return compare_tag(a->data.ptuple->tag, b->data.ptuple->tag);
 }
 
 uw  marshall_read_ht_hash (const s_tag *tag)
 {
   t_hash h;
   assert(tag);
-  assert(tag->type == TAG_TUPLE);
-  if (tag->type != TAG_TUPLE)
+  assert(tag->type == TAG_PTUPLE);
+  if (tag->type != TAG_PTUPLE)
     abort();
   hash_init(&h);
-  hash_update_tag(&h, tag->data.tuple.tag);
+  hash_update_tag(&h, tag->data.ptuple->tag);
   return hash_to_uw(&h);
 }
 
@@ -2583,8 +2584,8 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     return marshall_read_sw(mr, heap, &dest->data.sw);
   case TAG_TIME:
     return marshall_read_time(mr, heap, &dest->data.time);
-  case TAG_TUPLE:
-    return marshall_read_tuple(mr, heap, &dest->data.tuple);
+  case TAG_PTUPLE:
+    return marshall_read_ptuple(mr, heap, &dest->data.ptuple);
   case TAG_U8:
     return marshall_read_u8(mr, heap, &dest->data.u8);
   case TAG_U16:
@@ -2639,26 +2640,72 @@ s_marshall_read * marshall_read_tuple (s_marshall_read *mr,
                                       bool heap,
                                       s_tuple *dest)
 {
-    s_tuple tmp = {0};
+    uw count;
     uw i = 0;
     assert(mr);
     assert(dest);
-    if (! marshall_read_uw(mr, heap, &tmp.count))
+    if (! marshall_read_uw(mr, heap, &count))
       return NULL;
-    tmp.tag = alloc(sizeof(s_tag) * tmp.count);
-    if (! tmp.tag)
+    if (! tuple_init(dest, count))
       return NULL;
-    while (i < tmp.count) {
-      if (! marshall_read_tag(mr, heap, &tmp.tag[i])) {
+    while (i < count) {
+      if (! marshall_read_tag(mr, heap, dest->tag + i)) {
         err_puts("marshall_read_tuple: read_tag error");
         assert(! "marshall_read_tuple: read_tag error");
-        free(tmp.tag);
+        tuple_clean(dest);
         return NULL;
       }
       i++;
     }
-    *dest = tmp;
     return mr;
+}
+
+s_marshall_read * marshall_read_ptuple (s_marshall_read *mr,
+                                        bool heap,
+                                        p_tuple *dest)
+{
+  s_buf *buf;
+  u64 offset = 0;
+  p_tuple present = NULL;
+  p_tuple tuple = NULL;
+  assert(mr);
+  assert(dest);
+  buf = heap ? mr->heap : mr->buf;
+  if (buf_read_1(buf, "_KC3PTUPLE_") > 0) {
+    if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                     (void **) &present))
+      return NULL;
+    if (! offset) {
+      *dest = NULL;
+      return mr;
+    }
+    if (present) {
+      *dest = tuple_new_ref(present);
+      return mr;
+    }
+    if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
+        ! (tuple = alloc(sizeof(s_tuple))))
+      return NULL;
+    if (! marshall_read_tuple(mr, true, tuple)) {
+      free(tuple);
+      return NULL;
+    }
+    if (! marshall_read_ht_add(mr, offset, tuple)) {
+      tuple_delete(tuple);
+      return NULL;
+    }
+    *dest = tuple;
+    return mr;
+  }
+  tuple = alloc(sizeof(s_tuple));
+  if (! tuple)
+    return NULL;
+  if (! marshall_read_tuple(mr, heap, tuple)) {
+    free(tuple);
+    return NULL;
+  }
+  *dest = tuple;
+  return mr;
 }
 
 s_marshall_read * marshall_read_unquote (s_marshall_read *mr,

@@ -25,15 +25,15 @@ s_tag * http_header_split (s_str *header, s_tag *dest)
     err_puts("http_header_split: missing separator");
     return NULL;
   }
-  tag_init_tuple(&tmp, 2);
-  key = tmp.data.tuple.tag;
+  tag_init_ptuple(&tmp, 2);
+  key = tmp.data.ptuple->tag;
   key->type = TAG_STR;
   if (! str_init_slice(&key->data.str, header, 0, sep)) {
     err_puts("http_header_split: str_init_slice 1");
     assert(! "http_header_split: str_init_slice 1");
     return NULL;
   }
-  value = tmp.data.tuple.tag + 1;
+  value = tmp.data.ptuple->tag + 1;
   value->type = TAG_STR;
   if (! str_init_slice(&value->data.str, header, sep + 2, -1)) {
     err_puts("http_header_split: str_init_slice 2");

@@ -34,6 +34,7 @@
 #include "pstruct_type.h"
 #include "ptr.h"
 #include "ptr_free.h"
+#include "ptuple.h"
 #include "pvar.h"
 #include "quote.h"
 #include "ratio.h"
@@ -42,7 +43,6 @@
 #include "tag.h"
 #include "list_init.h"
 #include "time.h"
-#include "tuple.h"
 
 s_list * list_init_array (s_list *list, const s_sym *type,
                           uw dimension, const uw *dimensions,
@@ -947,29 +947,29 @@ s_list * list_init_time_now (s_list *list, s_list *next)
   return list;
 }
 
-s_list * list_init_tuple (s_list *list, uw count, s_list *next)
+s_list * list_init_ptuple (s_list *list, uw count, s_list *next)
 {
   s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
-  if (! tag_init_tuple(&tmp.tag, count)) {
-    err_puts("list_init_tuple: tag_init_tuple");
-    assert(! "list_init_tuple: tag_init_tuple");
+  if (! tag_init_ptuple(&tmp.tag, count)) {
+    err_puts("list_init_ptuple: tag_init_ptuple");
+    assert(! "list_init_ptuple: tag_init_ptuple");
     return NULL;
   }
   *list = tmp;
   return list;
 }
 
-s_list * list_init_tuple_2 (s_list *list, s_tag *a, s_tag *b,
-                            s_list *next)
+s_list * list_init_ptuple_2 (s_list *list, s_tag *a, s_tag *b,
+                             s_list *next)
 {
   s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
-  if (! tag_init_tuple_2(&tmp.tag, a, b)) {
-    err_puts("list_init_tuple_2: tag_init_tuple_2");
-    assert(! "list_init_tuple_2: tag_init_tuple_2");
+  if (! tag_init_ptuple_2(&tmp.tag, a, b)) {
+    err_puts("list_init_ptuple_2: tag_init_ptuple_2");
+    assert(! "list_init_ptuple_2: tag_init_ptuple_2");
     return NULL;
   }
   *list = tmp;
@@ -2189,36 +2189,36 @@ s_list * list_new_time_now (s_list *next)
   return list;
 }
 
-s_list * list_new_tuple (uw count, s_list *next)
+s_list * list_new_ptuple (uw count, s_list *next)
 {
   s_list *list;
   list = list_new(next);
   if (! list) {
-    err_puts("list_new_tuple: list_new");
-    assert(! "list_new_tuple: list_new");
+    err_puts("list_new_ptuple: list_new");
+    assert(! "list_new_ptuple: list_new");
     return NULL;
   }
-  if (! tag_init_tuple(&list->tag, count)) {
-    err_puts("list_new_tuple: tag_init_tuple");
-    assert(! "list_new_tuple: tag_init_tuple");
+  if (! tag_init_ptuple(&list->tag, count)) {
+    err_puts("list_new_ptuple: tag_init_ptuple");
+    assert(! "list_new_ptuple: tag_init_ptuple");
     free(list);
     return NULL;
   }
   return list;
 }
 
-s_list * list_new_tuple_2 (s_tag *a, s_tag *b, s_list *next)
+s_list * list_new_ptuple_2 (s_tag *a, s_tag *b, s_list *next)
 {
   s_list *list;
   list = list_new(next);
   if (! list) {
-    err_puts("list_new_tuple_2: list_new");
-    assert(! "list_new_tuple_2: list_new");
+    err_puts("list_new_ptuple_2: list_new");
+    assert(! "list_new_ptuple_2: list_new");
     return NULL;
   }
-  if (! tag_init_tuple_2(&list->tag, a, b)) {
-    err_puts("list_new_tuple_2: tag_init_tuple_2");
-    assert(! "list_new_tuple_2: tag_init_tuple_2");
+  if (! tag_init_ptuple_2(&list->tag, a, b)) {
+    err_puts("list_new_ptuple_2: tag_init_ptuple_2");
+    assert(! "list_new_ptuple_2: tag_init_ptuple_2");
     free(list);
     return NULL;
   }

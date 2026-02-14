@@ -50,24 +50,24 @@ static void kc3_event_callback (int fd, short events, void *tag_tuple)
   s_tag *tag;
   s_tag tmp;
   tag = tag_tuple;
-  if (tag->type != TAG_TUPLE) {
+  if (tag->type != TAG_PTUPLE) {
     err_puts("kc3_event_callback: invalid arg: not a Tuple");
     assert(! "kc3_event_callback: invalid arg: not a Tuple");
     abort();
   }
-  if (tag->data.tuple.count != 3) {
+  if (tag->data.ptuple->count != 3) {
     err_puts("kc3_event_callback: invalid arg: tuple size != 3");
     assert(! "kc3_event_callback: invalid arg: tuple size != 3");
     abort();
   }
-  if (tag->data.tuple.tag[0].type != TAG_PCALLABLE) {
+  if (tag->data.ptuple->tag[0].type != TAG_PCALLABLE) {
     err_puts("kc3_event_callback: invalid arg: not a Callable"
              " (Cfn or Fn)");
     assert(!("kc3_event_callback: invalid arg: not a Callable"
              " (Cfn or Fn)"));
     abort();
   }
-  if (! (callable = tag->data.tuple.tag[0].data.pcallable)) {
+  if (! (callable = tag->data.ptuple->tag[0].data.pcallable)) {
     err_puts("kc3_event_callback: invalid arg: ! callable");
     assert(! "kc3_event_callback: invalid arg: ! callable");
     abort();
@@ -77,13 +77,13 @@ static void kc3_event_callback (int fd, short events, void *tag_tuple)
     assert(! "kc3_event_callback: invalid arg: CALLABLE_VOID");
     abort();
   }
-  if (tag->data.tuple.tag[1].type != TAG_PTR) {
+  if (tag->data.ptuple->tag[1].type != TAG_PTR) {
     err_puts("kc3_event_callback: invalid arg 2: not a Ptr");
     assert(! "kc3_event_callback: invalid arg 2: not a Ptr");
     abort();
   }
-  ev = tag->data.tuple.tag[1].data.ptr.p;
-  arg = tag->data.tuple.tag + 2;
+  ev = tag->data.ptuple->tag[1].data.ptr.p;
+  arg = tag->data.ptuple->tag + 2;
   events_list = NULL;
   if (events & EV_PERSIST)
     events_list = list_new_psym(&g_sym_persist, events_list);
@@ -157,7 +157,7 @@ struct event * kc3_event_new (struct event_base **event_base, s64 fd,
       goto invalid_event_list;
     e = list_next(e);
   }
-  tag = tag_new_tuple(3);
+  tag = tag_new_ptuple(3);
   ev = event_new(*event_base, fd, events_s16, kc3_event_callback, tag);
   if (! ev) {
     tag_delete(tag);
@@ -165,9 +165,9 @@ struct event * kc3_event_new (struct event_base **event_base, s64 fd,
     assert(! "kc3_event_new: event_new");
     return NULL;
   }
-  tag_init_pcallable_copy(tag->data.tuple.tag, callback);
-  tag_init_copy(tag->data.tuple.tag + 2, arg);
-  tag_init_ptr(tag->data.tuple.tag + 1, ev);
+  tag_init_pcallable_copy(tag->data.ptuple->tag, callback);
+  tag_init_copy(tag->data.ptuple->tag + 2, arg);
+  tag_init_ptr(tag->data.ptuple->tag + 1, ev);
   return ev;
  invalid_event_list:
   err_write_1("kc3_event_new: invalid event list: ");

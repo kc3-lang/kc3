@@ -49,9 +49,9 @@ sw pdf_buf_parse_object (s_buf *buf, s_pdf_file *pdf_file,
     goto ok;
   result += r;
   if ((r = pdf_buf_parse_indirect_object(buf, pdf_file,
-                                         &tmp.data.tuple)) > 0) {
+                                         &tmp.data.ptuple)) > 0) {
     result += r;
-    tmp.type = TAG_TUPLE;
+    tmp.type = TAG_PTUPLE;
     goto ok;
   }
   if ((r = pdf_buf_parse_bool(buf, &tmp.data.bool_)) > 0) {
@@ -315,11 +315,11 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_pdf_file *pdf_file)
 {
   uw i;
   s_map tmp = {0};
-  s_tuple tmp_tuple = {0};
+  p_tuple tmp_tuple = NULL;
   s64 offset;
   sw r;
   sw result = 0;
-  s_tuple *tuple = NULL;
+  p_tuple tuple = NULL;
   assert(buf);
   assert(pdf_file);
   if (! map_init(&tmp, pdf_file->xref.count)) {
@@ -357,38 +357,38 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_pdf_file *pdf_file)
                                              &tmp_tuple)) <= 0) {
         err_write_1("pdf_buf_parse_file_body: failed to parse indirect"
                     " object ");
-        err_inspect_u32_decimal(tmp.key[i].data.tuple.tag[0].data.u32);
+        err_inspect_u32_decimal(tmp.key[i].data.ptuple->tag[0].data.u32);
         err_write_1(" ");
-        err_inspect_u16_decimal(tmp.key[i].data.tuple.tag[1].data.u16);
+        err_inspect_u16_decimal(tmp.key[i].data.ptuple->tag[1].data.u16);
         err_write_1(" at offset ");
         err_inspect_s64_decimal(offset);
         err_write_1(" , r = ");
         err_inspect_sw_decimal(r);
         err_write_1("\n");
         err_inspect_buf(buf);
-        if (! tag_init_tuple(tmp.value + i, 2) ||
-            ! (tuple = &tmp.value[i].data.tuple) ||
+        if (! tag_init_ptuple(tmp.value + i, 2) ||
+            ! (tuple = tmp.value[i].data.ptuple) ||
             ! tag_init_psym(tuple->tag, &g_sym_error) ||
             ! tag_init_str_inspect_buf(tuple->tag + 1, buf))
           goto clean;
       }
       else {
         result += r;
-        if (tmp_tuple.count != 4) {
+        if (tmp_tuple->count != 4) {
           err_puts("pdf_buf_parse_file_body:"
                    " pdf_buf_parse_indirect_object count != 4)");
           assert(!("pdf_buf_parse_file_body:"
                    " pdf_buf_parse_indirect_object count != 4)"));
-          tuple_clean(&tmp_tuple);
+          tuple_delete(tmp_tuple);
           goto clean;
         }
-        if (! tag_init_copy(tmp.value + i, tmp_tuple.tag + 3)) {
+        if (! tag_init_copy(tmp.value + i, tmp_tuple->tag + 3)) {
           err_puts("pdf_buf_parse_file_body: tag_init_copy value");
           assert(! "pdf_buf_parse_file_body: tag_init_copy value");
-          tuple_clean(&tmp_tuple);
-          goto clean; 
+          tuple_delete(tmp_tuple);
+          goto clean;
         }
-        tuple_clean(&tmp_tuple);
+        tuple_delete(tmp_tuple);
       }
     }
     i++;
@@ -508,7 +508,7 @@ sw pdf_buf_parse_float (s_buf *buf, f64 *dest)
 
 sw pdf_buf_parse_indirect_object (s_buf *buf,
                                   s_pdf_file *pdf_file,
-                                  s_tuple *dest)
+                                  p_tuple *dest)
 {
   s_tag generation_number = {0};
   s_tag object_number = {0};
@@ -518,7 +518,7 @@ sw pdf_buf_parse_indirect_object (s_buf *buf,
   p_sym sym_indirect_object = sym_1("indirect_object");
   p_sym sym_U16 = &g_sym_U16;
   p_sym sym_U32 = &g_sym_U32;
-  s_tuple tmp = {0};
+  p_tuple tmp = NULL;
   buf_save_init(buf, &save);
   if ((r = pdf_buf_parse_integer(buf, &object_number)) <= 0)
     goto restore;
@@ -531,14 +531,14 @@ sw pdf_buf_parse_indirect_object (s_buf *buf,
   if (r) {
     result += r;
     buf_save_clean(buf, &save);
-    if (! tuple_init(&tmp, 4)) {
+    if (! (tmp = tuple_new(4))) {
       r = -1;
       goto ko;
     }
-    if ((r = pdf_buf_parse_stream(buf, pdf_file, tmp.tag + 3)) < 0)
+    if ((r = pdf_buf_parse_stream(buf, pdf_file, tmp->tag + 3)) < 0)
       goto ko;
     if (! r &&
-        (r = pdf_buf_parse_object(buf, pdf_file, tmp.tag + 3)) <= 0)
+        (r = pdf_buf_parse_object(buf, pdf_file, tmp->tag + 3)) <= 0)
       goto ko;
     result += r;
     goto ok;
@@ -548,7 +548,7 @@ sw pdf_buf_parse_indirect_object (s_buf *buf,
   if (r) {
     result += r;
     buf_save_clean(buf, &save);
-    if (! tuple_init(&tmp, 3)) {
+    if (! (tmp = tuple_new(3))) {
       r = -1;
       goto ko;
     }
@@ -556,17 +556,17 @@ sw pdf_buf_parse_indirect_object (s_buf *buf,
   }
   goto restore;
  ok:
-  tag_init_psym(tmp.tag, sym_indirect_object);
-  tmp.tag[1].type = TAG_U32;
-  if (! u32_init_cast(&tmp.tag[1].data.u32, &sym_U32, &object_number)) {
+  tag_init_psym(tmp->tag, sym_indirect_object);
+  tmp->tag[1].type = TAG_U32;
+  if (! u32_init_cast(&tmp->tag[1].data.u32, &sym_U32, &object_number)) {
     err_puts("pdf_buf_parse_indirect_object: invalid object number");
     assert(! "pdf_buf_parse_indirect_object: invalid object number");
     r = -1;
     goto ko;
   }
   tag_void(&object_number);
-  tmp.tag[2].type = TAG_U16;
-  if (! u16_init_cast(&tmp.tag[2].data.u16, &sym_U16,
+  tmp->tag[2].type = TAG_U16;
+  if (! u16_init_cast(&tmp->tag[2].data.u16, &sym_U16,
                       &generation_number)) {
     err_puts("pdf_buf_parse_indirect_object: invalid generation"
              " number");
@@ -579,14 +579,14 @@ sw pdf_buf_parse_indirect_object (s_buf *buf,
   *dest = tmp;
   return result;
  restore:
-  tuple_clean(&tmp);
+  tuple_delete(tmp);
   tag_clean(&object_number);
   tag_clean(&generation_number);
   buf_save_restore_rpos(buf, &save);
   buf_save_clean(buf, &save);
   return r;
  ko:
-  tuple_clean(&tmp);
+  tuple_delete(tmp);
   tag_clean(&object_number);
   tag_clean(&generation_number);
   return r;
@@ -866,10 +866,10 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
   name_tag.type = TAG_PSYM;
   name_tag.data.psym = pdf_name_1(name_list, "Length");
   if (map_get(&pdf_stream->dictionnary, &name_tag, &size_tag)) {
-    if (size_tag.type == TAG_TUPLE &&
-        size_tag.data.tuple.count == 3 &&
-        size_tag.data.tuple.tag[0].type == TAG_PSYM &&
-        size_tag.data.tuple.tag[0].data.psym == sym_1("indirect_object")) {
+    if (size_tag.type == TAG_PTUPLE &&
+        size_tag.data.ptuple->count == 3 &&
+        size_tag.data.ptuple->tag[0].type == TAG_PSYM &&
+        size_tag.data.ptuple->tag[0].data.psym == sym_1("indirect_object")) {
       if (! pdf_file_get_indirect_object(pdf_file, &size_tag, &size_tmp)) {
         err_puts("pdf_buf_parse_stream: pdf_file_get_indirect_object");
         assert(! "pdf_buf_parse_stream: pdf_file_get_indirect_object");
@@ -1332,7 +1332,7 @@ sw pdf_buf_parse_xref (s_buf *buf, s_map *dest)
         goto error;
       }
       result_inner += r + r1 + r2 + r3 + r4 + r5;
-      if (! (*keys_tail = list_new_tuple(2, NULL)))
+      if (! (*keys_tail = list_new_ptuple(2, NULL)))
         goto error;
       if (c == 'f')
         *values_tail = list_new(NULL);
@@ -1343,8 +1343,8 @@ sw pdf_buf_parse_xref (s_buf *buf, s_map *dest)
         assert(! "pdf_buf_parse_xref: expected 'n' or 'f'");
         goto error;
       }
-      tag_init_u32((*keys_tail)->tag.data.tuple.tag, object_number);
-      tag_init_u16((*keys_tail)->tag.data.tuple.tag + 1, generation_number);
+      tag_init_u32((*keys_tail)->tag.data.ptuple->tag, object_number);
+      tag_init_u16((*keys_tail)->tag.data.ptuple->tag + 1, generation_number);
       keys_tail = &(*keys_tail)->next.data.plist;
       values_tail = &(*values_tail)->next.data.plist;
       i++;

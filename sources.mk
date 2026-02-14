@@ -748,6 +748,8 @@ KC3_C_SOURCES = \
 	"libkc3/ptr.h" \
 	"libkc3/ptr_free.c" \
 	"libkc3/ptr_free.h" \
+	"libkc3/ptuple.c" \
+	"libkc3/ptuple.h" \
 	"libkc3/pvar.c" \
 	"libkc3/pvar.h" \
 	"libkc3/queue.c" \
@@ -845,7 +847,6 @@ KC3_C_SOURCES = \
 	"libkc3/tag_div.c" \
 	"libkc3/tag_init.c" \
 	"libkc3/tag_init.h" \
-	"libkc3/tag_init_wip.h" \
 	"libkc3/tag_mod.c" \
 	"libkc3/tag_mul.c" \
 	"libkc3/tag_neg.c" \
@@ -1872,6 +1873,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/complex.kc3" \
 	"test/ikc3/complex.out.expected" \
 	"test/ikc3/complex.ret.expected" \
+	"test/ikc3/counter.kc3" \
+	"test/ikc3/counter.out.expected" \
+	"test/ikc3/counter.ret.expected" \
 	"test/ikc3/cow.kc3" \
 	"test/ikc3/cow.out.expected" \
 	"test/ikc3/cow.ret.expected" \
@@ -2148,6 +2152,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/assets/package-lock.json" \
 	"test/httpd/assets/package.json" \
 	"test/httpd/config/app.kc3" \
+	"test/httpd/config/at_exit.kc3" \
 	"test/httpd/config/db.kc3" \
 	"test/httpd/config/mime.types" \
 	"test/httpd/config/routes.kc3" \

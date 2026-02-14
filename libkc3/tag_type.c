@@ -68,7 +68,7 @@ u8 * tag_type_alignment (e_tag_type tag_type, u8 *dest)
   case TAG_STR:                         *dest = 8;          return dest;
   case TAG_SW:                          *dest = sizeof(sw); return dest;
   case TAG_TIME:                        *dest = 8;          return dest;
-  case TAG_TUPLE:                       *dest = 8;          return dest;
+  case TAG_PTUPLE:                      *dest = 8;          return dest;
   case TAG_U8:                          *dest = 1;          return dest;
   case TAG_U16:                         *dest = 2;          return dest;
   case TAG_U32:                         *dest = 4;          return dest;
@@ -142,7 +142,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_STR:          *dest = sizeof(s_str);         return true;
   case TAG_SW:           *dest = sizeof(sw);            return true;
   case TAG_TIME:         *dest = sizeof(s_time);        return true;
-  case TAG_TUPLE:        *dest = sizeof(s_tuple);       return true;
+  case TAG_PTUPLE:       *dest = sizeof(p_tuple);       return true;
   case TAG_U8:           *dest = sizeof(u8);            return true;
   case TAG_U16:          *dest = sizeof(u16);           return true;
   case TAG_U32:          *dest = sizeof(u32);           return true;
@@ -197,7 +197,7 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_STR:          *dest = &ffi_type_pointer;    return true;
   case TAG_PSYM:         *dest = &ffi_type_pointer;    return true;
   case TAG_TIME :        *dest = &ffi_type_pointer;    return true;
-  case TAG_TUPLE:        *dest = &ffi_type_pointer;    return true;
+  case TAG_PTUPLE:       *dest = &ffi_type_pointer;    return true;
   case TAG_U8:           *dest = &ffi_type_uint8;      return true;
   case TAG_U16:          *dest = &ffi_type_uint16;     return true;
   case TAG_U32:          *dest = &ffi_type_uint32;     return true;
@@ -254,7 +254,7 @@ const char * tag_type_to_string (e_tag_type tag_type)
   case TAG_SW:           return "Sw";
   case TAG_PSYM:          return "Sym";
   case TAG_TIME:         return "Time";
-  case TAG_TUPLE:        return "Tuple";
+  case TAG_PTUPLE:       return "Tuple";
   case TAG_U8:           return "U8";
   case TAG_U16:          return "U16";
   case TAG_U32:          return "U32";

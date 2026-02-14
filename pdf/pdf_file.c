@@ -39,12 +39,12 @@ s_tag * pdf_file_get_indirect_object (s_pdf_file *pdf_file,
   uw i;
   if (! pdf_file)
     return tag_init_void(dest);
-  if (ref->type != TAG_TUPLE ||
-      ref->data.tuple.count != 3 ||
-      ref->data.tuple.tag[0].type != TAG_PSYM ||
-      ref->data.tuple.tag[0].data.psym != sym_1("indirect_object") ||
-      ref->data.tuple.tag[1].type != TAG_U32 ||
-      ref->data.tuple.tag[2].type != TAG_U16) {
+  if (ref->type != TAG_PTUPLE ||
+      ref->data.ptuple->count != 3 ||
+      ref->data.ptuple->tag[0].type != TAG_PSYM ||
+      ref->data.ptuple->tag[0].data.psym != sym_1("indirect_object") ||
+      ref->data.ptuple->tag[1].type != TAG_U32 ||
+      ref->data.ptuple->tag[2].type != TAG_U16) {
     err_puts("pdf_file_get_indirect_object: invalid indirect object"
              " reference:");
     err_inspect_tag(ref);
@@ -52,21 +52,21 @@ s_tag * pdf_file_get_indirect_object (s_pdf_file *pdf_file,
              " reference"));
     return NULL;
   }
-  object_number = ref->data.tuple.tag[1].data.u32;
-  generation_number = ref->data.tuple.tag[2].data.u16;
+  object_number = ref->data.ptuple->tag[1].data.u32;
+  generation_number = ref->data.ptuple->tag[2].data.u16;
   i = 0;
   while (i < pdf_file->body.count) {
-    if (pdf_file->body.key[i].type != TAG_TUPLE ||
-        pdf_file->body.key[i].data.tuple.count != 2 ||
-        pdf_file->body.key[i].data.tuple.tag[0].type != TAG_U32 ||
-        pdf_file->body.key[i].data.tuple.tag[1].type != TAG_U16) {
+    if (pdf_file->body.key[i].type != TAG_PTUPLE ||
+        pdf_file->body.key[i].data.ptuple->count != 2 ||
+        pdf_file->body.key[i].data.ptuple->tag[0].type != TAG_U32 ||
+        pdf_file->body.key[i].data.ptuple->tag[1].type != TAG_U16) {
       err_puts("pdf_file_get_indirect_object: invalid pdf file body");
       assert(! "pdf_file_get_indirect_object: invalid pdf file body");
       return NULL;
     }
-    if (pdf_file->body.key[i].data.tuple.tag[0].data.u32 ==
+    if (pdf_file->body.key[i].data.ptuple->tag[0].data.u32 ==
         object_number &&
-        pdf_file->body.key[i].data.tuple.tag[1].data.u16 ==
+        pdf_file->body.key[i].data.ptuple->tag[1].data.u16 ==
         generation_number)
       return tag_init_copy(dest, pdf_file->body.value + i);
     i++;

@@ -709,7 +709,7 @@ void * data_init_cast (void *data, p_sym *type, s_tag *tag)
   if (t == &g_sym_Time)
     return time_init_cast(data, type, tag);
   if (t == &g_sym_Tuple)
-    return tuple_init_cast(data, type, tag);
+    return ptuple_init_cast(data, type, tag);
   if (t == &g_sym_U8)
     return u8_init_cast(data, type, tag);
   if (t == &g_sym_U16)

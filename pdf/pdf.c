@@ -88,11 +88,11 @@ s_tag * pdf_tag_init_xref (s_tag *tag, u32 object_number,
 {
   s_tag tmp;
   assert(tag);
-  if (! tag_init_tuple(&tmp, 3))
+  if (! tag_init_ptuple(&tmp, 3))
     return NULL;
-  tag_init_psym(tmp.data.tuple.tag, sym_1("indirect_object"));
-  tag_init_u32(tmp.data.tuple.tag + 1, object_number);
-  tag_init_u16(tmp.data.tuple.tag + 2, generation);
+  tag_init_psym(tmp.data.ptuple->tag, sym_1("indirect_object"));
+  tag_init_u32(tmp.data.ptuple->tag + 1, object_number);
+  tag_init_u16(tmp.data.ptuple->tag + 2, generation);
   *tag = tmp;
   return tag;
 }

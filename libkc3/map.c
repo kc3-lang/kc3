@@ -233,8 +233,8 @@ s_map * map_init_from_alist (s_map *map, s_list *alist)
   map_init(&tmp, len);
   a = alist;
   while (i < len) {
-    if (! tag_init_copy(tmp.key + i, a->tag.data.tuple.tag) ||
-        ! tag_init_copy(tmp.value + i, a->tag.data.tuple.tag + 1))
+    if (! tag_init_copy(tmp.key + i, a->tag.data.ptuple->tag) ||
+        ! tag_init_copy(tmp.value + i, a->tag.data.ptuple->tag + 1))
       goto ko;
     a = list_next(a);
     i++;
@@ -433,14 +433,14 @@ s_map * map_put_list (const s_map *map, const s_list *alist,
   map_init_copy(&tmp, map);
   i = alist;
   while (i) {
-    assert(i->tag.type == TAG_TUPLE && i->tag.data.tuple.count == 2);
-    if (i->tag.type != TAG_TUPLE || i->tag.data.tuple.count != 2) {
+    assert(i->tag.type == TAG_PTUPLE && i->tag.data.ptuple->count == 2);
+    if (i->tag.type != TAG_PTUPLE || i->tag.data.ptuple->count != 2) {
       err_puts("map_put_list: not an associative list");
       assert(! "map_put_list: not an associative list");
       goto ko;
     }
-    if (! map_set(&tmp, i->tag.data.tuple.tag,
-                  i->tag.data.tuple.tag + 1))
+    if (! map_set(&tmp, i->tag.data.ptuple->tag,
+                  i->tag.data.ptuple->tag + 1))
       goto ko;
     i = list_next(i);
   }

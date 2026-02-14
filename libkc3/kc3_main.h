@@ -65,7 +65,7 @@ p_list * kc3_stacktrace (s_list **dest);
 s_str *  kc3_str (const s_tag *tag, s_str *dest);
 s32      kc3_tag_type (const s_tag *tag);
 s_time * kc3_uptime (s_time *dest);
-s_tuple * kc3_wait (s_tuple *dest);
+p_tuple * kc3_wait (p_tuple *dest);
 
 /* Operators. */
 s_pointer *          kc3_address_of (s_tag *tag, s_pointer *dest);
@@ -195,7 +195,7 @@ s_tag *              kc3_require (p_sym *module, s_tag *dest);
 s_str *              kc3_strerror (sw err_no, s_str *dest);
 s_tag *              kc3_struct_put (s_tag *s, p_sym *key,
                                      s_tag *value, s_tag *dest);
-s_tuple *            kc3_system (p_list *list, s_tuple *dest);
+p_tuple *            kc3_system (p_list *list, p_tuple *dest);
 s_tag *              kc3_thread_delete (u_ptr_w *thread, s_tag *dest);
 u_ptr_w *            kc3_thread_new (u_ptr_w *dest, p_callable *start);
 void *               kc3_thread_start (void *arg);

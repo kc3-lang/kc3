@@ -161,6 +161,7 @@ HEADERS = \
 	"ptag.h" \
 	"ptr.h" \
 	"ptr_free.h" \
+	"ptuple.h" \
 	"pvar.h" \
 	"queue.h" \
 	"quote.h" \
@@ -200,7 +201,6 @@ HEADERS = \
 	"sym.h" \
 	"tag.h" \
 	"tag_init.h" \
-	"tag_init_wip.h" \
 	"tag_type.h" \
 	"time.h" \
 	"timespec.h" \
@@ -384,6 +384,7 @@ SOURCES = \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \
+	"ptuple.c" \
 	"pvar.c" \
 	"queue.c" \
 	"quote.c" \
@@ -720,6 +721,7 @@ LO_SOURCES = \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \
+	"ptuple.c" \
 	"pvar.c" \
 	"queue.c" \
 	"quote.c" \

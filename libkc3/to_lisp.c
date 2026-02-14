@@ -30,8 +30,8 @@ s_tag * to_lisp (s_tag *tag, s_tag *dest)
     return to_lisp_call(tag->data.pcall, dest);
   case TAG_PLIST:
     return to_lisp_list(tag->data.plist, dest);
-  case TAG_TUPLE:
-    return to_lisp_tuple(&tag->data.tuple, dest);
+  case TAG_PTUPLE:
+    return to_lisp_tuple(tag->data.ptuple, dest);
   default:
     return tag_init_copy(dest, tag);
   }
@@ -80,11 +80,11 @@ s_tag * to_lisp_tuple (s_tuple *tuple, s_tag *dest)
 {
   uw i;
   s_tag tmp = {0};
-  if (! tag_init_tuple(&tmp, tuple->count))
+  if (! tag_init_ptuple(&tmp, tuple->count))
     return NULL;
   i = 0;
   while (i < tuple->count) {
-    if (! to_lisp(tuple->tag + i, tmp.data.tuple.tag + i))
+    if (! to_lisp(tuple->tag + i, tmp.data.ptuple->tag + i))
       goto ko;
     i++;
   }

@@ -203,7 +203,7 @@ typedef enum {
   TAG_QUOTE        = 37, // \x25
   TAG_STR          = 38, // \x26
   TAG_TIME         = 39, // \x27
-  TAG_TUPLE        = 40, // \x28
+  TAG_PTUPLE       = 40, // \x28
   TAG_UNQUOTE      = 41, // \x29
   TAG_IDENT        = 42, // \x2a
 } e_tag_type;
@@ -330,6 +330,7 @@ typedef t_socket *         p_socket;
 typedef s_tag *            p_tag;
 typedef struct tls *       p_tls;
 typedef struct tls_config *p_tls_config;
+typedef s_tuple *          p_tuple;
 typedef s_var *            p_var;
 
 /* function typedefs */
@@ -557,6 +558,8 @@ struct tls_buf {
 struct tuple {
   uw count;
   s_tag *tag;
+  s_mutex mutex;
+  sw ref_count;
 };
 
 struct unquote {
@@ -836,7 +839,7 @@ union tag_data {
   s64           s64;
   sw            sw;
   s_time        time;
-  s_tuple       tuple;
+  p_tuple       ptuple;
   u8            u8;
   u16           u16;
   u32           u32;

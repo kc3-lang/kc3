@@ -464,11 +464,11 @@ sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
       err_write_1("\n");
       assert(! "pdf_buf_write_tag: unsupported struct type");
       return -1;
-    case TAG_TUPLE:
-      if (src->data.tuple.count == 3 &&
-          src->data.tuple.tag[0].type == TAG_PSYM &&
-          src->data.tuple.tag[0].data.psym == sym_1("indirect_object"))
-        return pdf_buf_write_indirect_ref(buf, &src->data.tuple);
+    case TAG_PTUPLE:
+      if (src->data.ptuple->count == 3 &&
+          src->data.ptuple->tag[0].type == TAG_PSYM &&
+          src->data.ptuple->tag[0].data.psym == sym_1("indirect_object"))
+        return pdf_buf_write_indirect_ref(buf, src->data.ptuple);
       goto invalid_type;
     default:
       goto invalid_type;

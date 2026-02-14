@@ -1776,9 +1776,6 @@ s_tag * env_ident_get_address (s_env *env, const s_ident *ident)
       return NULL;
     }
   }
-  // too slow, use require
-  // if (! env_module_ensure_loaded(env, module))
-  //   return NULL;
   tag_init_ident(&tag_ident, ident);
   tag_init_psym(  &tag_is_a, &g_sym_is_a);
   tag_init_psym(  &tag_macro, &g_sym_macro);

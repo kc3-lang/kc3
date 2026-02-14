@@ -44,6 +44,7 @@
 #include "pcall.h"
 #include "pcallable.h"
 #include "pointer.h"
+#include "ptuple.h"
 #include "pvar.h"
 #include "ratio.h"
 #include "securelevel.h"
@@ -1977,8 +1978,8 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
   l = frame_list;
   while (l) {
     if (! frame_binding_new(tmp.frame,
-                            l->tag.data.tuple.tag[0].data.psym,
-                            l->tag.data.tuple.tag + 1))
+                            l->tag.data.ptuple->tag[0].data.psym,
+                            l->tag.data.ptuple->tag + 1))
       goto restore;
     l = list_next(l);
   }
@@ -2856,7 +2857,7 @@ sw buf_parse_list_tag (s_buf *buf, s_tag *dest)
       goto tag;
     }
     result += r;
-    if (! tag_init_tuple(&tmp, 2)) {
+    if (! tag_init_ptuple(&tmp, 2)) {
       str_clean(&str);
       tag_clean(&value);
       return -2;
@@ -2864,8 +2865,8 @@ sw buf_parse_list_tag (s_buf *buf, s_tag *dest)
     key.type = TAG_PSYM;
     key.data.psym = str_to_sym(&str);
     str_clean(&str);
-    tmp.data.tuple.tag[0] = key;
-    tmp.data.tuple.tag[1] = value;
+    tmp.data.ptuple->tag[0] = key;
+    tmp.data.ptuple->tag[1] = value;
     goto ok;
   }
  tag:
@@ -3937,6 +3938,21 @@ sw buf_parse_pstruct (s_buf *buf, p_struct *dest)
     return r;
   }
   *dest = tmp;
+  return r;
+}
+
+sw buf_parse_ptuple (s_buf *buf, p_tuple *dest)
+{
+  sw r;
+  p_tuple tuple;
+  tuple = alloc(sizeof(s_tuple));
+  if (! tuple)
+    return -1;
+  if ((r = buf_parse_tuple(buf, tuple)) <= 0) {
+    free(tuple);
+    return r;
+  }
+  *dest = tuple;
   return r;
 }
 
@@ -5487,8 +5503,8 @@ sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_tuple(buf, &dest->data.tuple)) > 0)
-    dest->type = TAG_TUPLE;
+  if ((r = buf_parse_ptuple(buf, &dest->data.ptuple)) > 0)
+    dest->type = TAG_PTUPLE;
   return r;
 }
 
@@ -5760,7 +5776,6 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_tuple tmp;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -5798,16 +5813,15 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *dest)
 	r = 0;
 	goto restore;
       }
-      tuple_init(&tmp, i);
+      tuple_init(dest, i);
       j = list;
       k = 0;
       while (i--) {
-	tmp.tag[k] = j->tag;
+	dest->tag[k] = j->tag;
 	tag_init_void(&j->tag);
 	j = list_next(j);
         k++;
       }
-      *dest = tmp;
       r = result;
       goto clean;
     }

@@ -3104,10 +3104,10 @@ sw buf_inspect_list_tag (s_buf *buf, const s_tag *tag)
   const s_sym *sym;
   assert(buf);
   assert(tag);
-  if (tag->type == TAG_TUPLE &&
-      tag->data.tuple.count == 2 &&
-      tag->data.tuple.tag[0].type == TAG_PSYM) {
-    sym = tag->data.tuple.tag[0].data.psym;
+  if (tag->type == TAG_PTUPLE &&
+      tag->data.ptuple->count == 2 &&
+      tag->data.ptuple->tag[0].type == TAG_PSYM) {
+    sym = tag->data.ptuple->tag[0].data.psym;
     if (sym_has_reserved_characters(sym)) {
       if ((r = buf_inspect_str(buf, &sym->str)) < 0)
         return r;
@@ -3119,7 +3119,7 @@ sw buf_inspect_list_tag (s_buf *buf, const s_tag *tag)
     if ((r = buf_write_1(buf, ": ")) < 0)
       return r;
     result += r;
-    if ((r = buf_inspect_tag(buf, tag->data.tuple.tag + 1)) < 0)
+    if ((r = buf_inspect_tag(buf, tag->data.ptuple->tag + 1)) < 0)
       return r;
     result += r;
     return result;
@@ -3133,10 +3133,10 @@ sw buf_inspect_list_tag_size (s_pretty *pretty, const s_tag *tag)
   sw result = 0;
   const s_sym *sym;
   assert(tag);
-  if (tag->type == TAG_TUPLE &&
-      tag->data.tuple.count == 2 &&
-      tag->data.tuple.tag[0].type == TAG_PSYM) {
-    sym = tag->data.tuple.tag[0].data.psym;
+  if (tag->type == TAG_PTUPLE &&
+      tag->data.ptuple->count == 2 &&
+      tag->data.ptuple->tag[0].type == TAG_PSYM) {
+    sym = tag->data.ptuple->tag[0].data.psym;
     if (sym_has_reserved_characters(sym)) {
       if ((r = buf_inspect_str_size(pretty, &sym->str)) < 0)
         return r;
@@ -3147,7 +3147,7 @@ sw buf_inspect_list_tag_size (s_pretty *pretty, const s_tag *tag)
     if ((r = buf_write_1_size(pretty, ": ")) < 0)
       return r;
     result += r;
-    if ((r = buf_inspect_tag_size(pretty, tag->data.tuple.tag + 1)) < 0)
+    if ((r = buf_inspect_tag_size(pretty, tag->data.ptuple->tag + 1)) < 0)
       return r;
     result += r;
     return result;
@@ -4931,7 +4931,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_SW:      return buf_inspect_sw(buf, tag->data.sw);
   case TAG_STR:     return buf_inspect_str(buf, &tag->data.str);
   case TAG_TIME:    return buf_inspect_time(buf, &tag->data.time);
-  case TAG_TUPLE:   return buf_inspect_tuple(buf, &tag->data.tuple);
+  case TAG_PTUPLE:   return buf_inspect_tuple(buf, tag->data.ptuple);
   case TAG_U8:      return buf_inspect_u8(buf, tag->data.u8);
   case TAG_U16:     return buf_inspect_u16(buf, tag->data.u16);
   case TAG_U32:     return buf_inspect_u32(buf, tag->data.u32);
@@ -5023,8 +5023,8 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_sw_size(pretty, tag->data.sw);
   case TAG_TIME:
     return buf_inspect_time_size(pretty, &tag->data.time);
-  case TAG_TUPLE:
-    return buf_inspect_tuple_size(pretty, &tag->data.tuple);
+  case TAG_PTUPLE:
+    return buf_inspect_tuple_size(pretty, tag->data.ptuple);
   case TAG_U8:
     return buf_inspect_u8_size(pretty, tag->data.u8);
   case TAG_U16:

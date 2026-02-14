@@ -208,8 +208,8 @@ s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
     return env_frame_capture_var(env, frame, tag->data.pvar);
   case TAG_QUOTE:
     return env_frame_capture_quote(env, frame, &tag->data.quote);
-  case TAG_TUPLE:
-    return env_frame_capture_tuple(env, frame, &tag->data.tuple);
+  case TAG_PTUPLE:
+    return env_frame_capture_tuple(env, frame, tag->data.ptuple);
   case TAG_UNQUOTE:
     return env_frame_capture_unquote(env, frame, &tag->data.unquote);
   case TAG_IDENT:

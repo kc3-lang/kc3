@@ -80,10 +80,12 @@ PROTO_MARSHALL(plist, const p_list *);
 PROTO_MARSHALL(pointer, const s_pointer *);
 PROTO_MARSHALL(pstruct, const p_struct *);
 PROTO_MARSHALL(pstruct_type, const p_struct_type *);
+PROTO_MARSHALL(psym, const p_sym *);
 PROTO_MARSHALL(ptag, const p_tag *);
 PROTO_MARSHALL(ptr, void *);
 PROTO_MARSHALL(ptr_free, void *);
-PROTO_MARSHALL(psym, const p_sym *);
+s_marshall * marshall_ptuple (s_marshall *m, bool heap,
+                              const p_tuple *data);
 PROTO_MARSHALL(pvar, const p_var *);
 PROTO_MARSHALL(quote, const s_quote *);
 PROTO_MARSHALL(ratio, const s_ratio *);

@@ -330,8 +330,8 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_quote_quote(env, &tag->data.quote, dest);
   case TAG_TIME:
     return env_eval_quote_time(env, &tag->data.time, dest);
-  case TAG_TUPLE:
-    return env_eval_quote_tuple(env, &tag->data.tuple, dest);
+  case TAG_PTUPLE:
+    return env_eval_quote_tuple(env, tag->data.ptuple, dest);
   case TAG_UNQUOTE:
     return env_eval_quote_unquote(env, &tag->data.unquote, dest);
   case TAG_VOID:
@@ -415,21 +415,23 @@ bool env_eval_quote_time (s_env *env, s_time *time, s_tag *dest)
 bool env_eval_quote_tuple (s_env *env, s_tuple *tuple, s_tag *dest)
 {
   uw i = 0;
-  s_tuple tmp = {0};
+  p_tuple tmp;
   assert(env);
   assert(tuple);
   assert(dest);
-  tuple_init(&tmp, tuple->count);
+  tmp = tuple_new(tuple->count);
+  if (! tmp)
+    return false;
   while (i < tuple->count) {
-    if (! env_eval_quote_tag(env, tuple->tag + i, tmp.tag + i))
+    if (! env_eval_quote_tag(env, tuple->tag + i, tmp->tag + i))
       goto ko;
     i++;
   }
-  dest->type = TAG_TUPLE;
-  dest->data.tuple = tmp;
+  dest->type = TAG_PTUPLE;
+  dest->data.ptuple = tmp;
   return true;
  ko:
-  tuple_clean(&tmp);
+  tuple_delete(tmp);
   return false;
 }
 

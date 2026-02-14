@@ -72,13 +72,13 @@ u8 lightspeed_load (s_sequence *seq)
   assert(seq);
   window = seq->window;
   assert(window);
-  tag_tuple(&seq->tag, LIGHTSPEED_STAR_MAX);
+  tag_ptuple(&seq->tag, LIGHTSPEED_STAR_MAX);
   star_count = window->w * window->h * LIGHTSPEED_STAR_PROBABILITY;
   if (star_count > LIGHTSPEED_STAR_MAX)
     star_count = LIGHTSPEED_STAR_MAX;
   i = 0;
   while (i < star_count) {
-    star_init(seq->tag.data.tuple.tag + i);
+    star_init(seq->tag.data.ptuple->tag + i);
     i++;
   }
   return true;
@@ -108,7 +108,7 @@ u8 lightspeed_render (s_sequence *seq)
   v = g_lines_stars.vertex.data;
   i = 0;
   while (i < star_count) {
-    star_render(seq->tag.data.tuple.tag + i, seq, v);
+    star_render(seq->tag.data.ptuple->tag + i, seq, v);
     v += 2;
     i++;
   }

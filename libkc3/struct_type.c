@@ -201,14 +201,14 @@ s_struct_type * struct_type_init (s_struct_type *st,
     i = 0;
     s = spec;
     while (s) {
-      if (s->tag.type != TAG_TUPLE || s->tag.data.tuple.count != 2) {
+      if (s->tag.type != TAG_PTUPLE || s->tag.data.ptuple->count != 2) {
         err_puts("struct_type_init: invalid spec");
         assert(! "struct_type_init: invalid spec");
         map_clean(&st->map);
         free(st->offset);
         return NULL;
       }
-      tuple = &s->tag.data.tuple;
+      tuple = s->tag.data.ptuple;
       if (tuple->tag[1].type == TAG_PVAR) {
         type = tuple->tag[1].data.pvar->type;
         if (! sym_type_size(type, &size)) {

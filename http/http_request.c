@@ -153,13 +153,13 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       goto restore;
     }
     str_clean(&line);
-    key   = &(*tail)->tag.data.tuple.tag[0].data.str;
-    value = &(*tail)->tag.data.tuple.tag[1].data.str;
+    key   = &(*tail)->tag.data.ptuple->tag[0].data.str;
+    value = &(*tail)->tag.data.ptuple->tag[1].data.str;
     if (! compare_str_case_insensitive(&content_length_str, key)) {
       if (! uw_init_str(&content_length_uw, value))
         goto restore;
-      tag_clean((*tail)->tag.data.tuple.tag + 1);
-      tag_init_uw((*tail)->tag.data.tuple.tag + 1, content_length_uw);
+      tag_clean((*tail)->tag.data.ptuple->tag + 1);
+      tag_init_uw((*tail)->tag.data.ptuple->tag + 1, content_length_uw);
     }
     else if (! compare_str_case_insensitive(&content_type_str, key))
       content_type = value;
@@ -223,13 +223,13 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             goto restore;
           }
           str_clean(&line);
-          if ((*tail)->tag.type != TAG_TUPLE) {
+          if ((*tail)->tag.type != TAG_PTUPLE) {
             err_puts("http_request_buf_parse: http_header_split did not"
                      " return a Tuple");
             goto restore;
           }
-          key   = &(*tail)->tag.data.tuple.tag[0].data.str;
-          value = &(*tail)->tag.data.tuple.tag[1].data.str;
+          key   = &(*tail)->tag.data.ptuple->tag[0].data.str;
+          value = &(*tail)->tag.data.ptuple->tag[1].data.str;
           if (! compare_str_case_insensitive
               (key, &content_disposition_str)) {
             buf_init_str_const(&header_buf, value);
@@ -351,8 +351,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 			   &path))
 	    goto restore;
           tmp_req.body.data.plist =
-            list_new_tuple_2(&multipart_name, &upload,
-                             tmp_req.body.data.plist);	  
+            list_new_ptuple_2(&multipart_name, &upload,
+                              tmp_req.body.data.plist);	  
         }
         else { // if (filename.data.str.size)
           if (buf_read_until_str_into_str(buf, &boundary_newline,
@@ -364,8 +364,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           multipart_value_tag.type = TAG_STR;
           multipart_value_tag.data.str = multipart_value;
           tmp_req.body.data.plist =
-            list_new_tuple_2(&multipart_name, &multipart_value_tag,
-                             tmp_req.body.data.plist);
+            list_new_ptuple_2(&multipart_name, &multipart_value_tag,
+                              tmp_req.body.data.plist);
         } // else if (filename.data.str.size)
         list_delete_all(multipart_headers);
         if ((r = buf_read_str(buf, &dash)) < 0) {
@@ -529,8 +529,8 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
   result += r;
   list = req->headers;
   while (list) {
-    key = list->tag.data.tuple.tag;
-    value = list->tag.data.tuple.tag + 1;
+    key = list->tag.data.ptuple->tag;
+    value = list->tag.data.ptuple->tag + 1;
     switch (key->type) {
     case TAG_STR:
       if ((r = buf_write_str(buf, &key->data.str)) <= 0)
@@ -642,12 +642,12 @@ s_http_request * http_request_cookie_add (s_http_request *req,
     }
     if ((eq_pos = str_position_1(&s->tag.data.str, "=")) < 0)
       goto next;
-    if (! (*tail = list_new_tuple(2, NULL))) {
-      err_puts("http_request_cookie_add: list_new_tuple");
-      assert(! "http_request_cookie_add: list_new_tuple");
+    if (! (*tail = list_new_ptuple(2, NULL))) {
+      err_puts("http_request_cookie_add: list_new_ptuple");
+      assert(! "http_request_cookie_add: list_new_ptuple");
       goto ko;
     }
-    tuple = &(*tail)->tag.data.tuple;
+    tuple = (*tail)->tag.data.ptuple;
     tuple->tag[0].type = TAG_STR;
     tuple->tag[1].type = TAG_STR;
     if (! str_init_slice(&tuple->tag[0].data.str, &s->tag.data.str,

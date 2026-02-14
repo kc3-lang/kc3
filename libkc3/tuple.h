@@ -34,6 +34,8 @@ void      tuple_clean (s_tuple *tuple);
 /* Constructors, call tuple_delete after use */
 s_tuple * tuple_new (uw count);
 s_tuple * tuple_new_1 (const char *p);
+s_tuple * tuple_new_copy (s_tuple *src);
+s_tuple * tuple_new_ref (s_tuple *tuple);
 
 /* Destructor */
 void tuple_delete (s_tuple *tuple);

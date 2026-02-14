@@ -442,9 +442,9 @@ class TagInitList
        TagInit.new("time", "copy", "TAG_TIME", :init_mode_init,
                    [Arg.new("const s_time *", "src")]),
        TagInit.new("time", "now", "TAG_TIME", :init_mode_init, []),
-       TagInit.new("tuple", "TAG_TUPLE", :init_mode_init,
+       TagInit.new("ptuple", "TAG_PTUPLE", :init_mode_init,
                    [Arg.new("uw", "count")]),
-       TagInit.new("tuple", "2", "TAG_TUPLE", :init_mode_init,
+       TagInit.new("ptuple", "2", "TAG_PTUPLE", :init_mode_init,
                    [Arg.new("s_tag *", "a"),
                     Arg.new("s_tag *", "b")]),
        TagInit.new("u8", "TAG_U8", :init_mode_direct,
@@ -590,6 +590,7 @@ tag_init_c.content = <<EOF
 #include "psym.h"
 #include "ptr.h"
 #include "ptr_free.h"
+#include "ptuple.h"
 #include "pvar.h"
 #include "quote.h"
 #include "ratio.h"
@@ -599,7 +600,6 @@ tag_init_c.content = <<EOF
 #include "tag.h"
 #include "tag_init.h"
 #include "time.h"
-#include "tuple.h"
 #include "unquote.h"
 #include "var.h"
 #{inits.def_tag_init.c_word_wrap}
@@ -651,6 +651,7 @@ list_init_c.content = <<EOF
 #include "pstruct_type.h"
 #include "ptr.h"
 #include "ptr_free.h"
+#include "ptuple.h"
 #include "pvar.h"
 #include "quote.h"
 #include "ratio.h"
@@ -659,7 +660,6 @@ list_init_c.content = <<EOF
 #include "tag.h"
 #include "list_init.h"
 #include "time.h"
-#include "tuple.h"
 #{inits.def_list_init.c_word_wrap}
 #{inits.def_list_new.c_word_wrap}
 EOF
