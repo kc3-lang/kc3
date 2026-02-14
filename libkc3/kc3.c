@@ -712,20 +712,20 @@ s_tag * kc3_facts_with_transaction (s_tag *facts_arg, s_tag *tag_arg,
                                     dest);
 }
 
-s_tag * kc3_facts_with_tuple (s_facts *facts, s_tuple *tuple,
+s_tag * kc3_facts_with_tuple (s_facts *facts, p_tuple *tuple,
                               p_callable *callback, s_tag *dest)
 {
   assert(facts);
   assert(tuple);
   assert(callback);
   assert(dest);
-  if (tuple->count < 3) {
+  if ((*tuple)->count < 3) {
     err_puts("kc3_facts_with_tuple: tuple count < 3");
     assert(! "kc3_facts_with_tuple: tuple count < 3");
     return NULL;
   }
-  return env_facts_with_tags(env_global(), facts, tuple->tag,
-                             tuple->tag + 1, tuple->tag + 2,
+  return env_facts_with_tags(env_global(), facts, (*tuple)->tag,
+                             (*tuple)->tag + 1, (*tuple)->tag + 2,
                              *callback, dest);
 }
 

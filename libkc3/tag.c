@@ -1557,7 +1557,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     return true;
   case TAG_PTUPLE:
     if (type == &g_sym_Tuple) {
-      *dest = tag->data.ptuple;
+      *dest = &tag->data.ptuple;
       return true;
     }
     goto invalid_cast;
@@ -1745,7 +1745,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_PTAG:         *dest = &tag->data.ptag;         return true;
   case TAG_PTR:          *dest = &tag->data.ptr.p;        return true;
   case TAG_PTR_FREE:     *dest = &tag->data.ptr_free.p;   return true;
-  case TAG_PTUPLE:       *dest = tag->data.ptuple;        return true;
+  case TAG_PTUPLE:       *dest = &tag->data.ptuple;       return true;
   case TAG_PVAR:         *dest = tag->data.pvar;          return true;
   case TAG_QUOTE:        *dest = &tag->data.quote;        return true;
   case TAG_RATIO:        *dest = &tag->data.ratio;        return true;

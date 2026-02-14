@@ -628,8 +628,8 @@ bool hash_update_tuple (t_hash *hash, const s_tuple *tuple)
 {
   uw i = 0;
   char type[] = "tuple";
-  assert(tuple);
   assert(hash);
+  assert(tuple);
   if (! hash_update(hash, type, sizeof(type)) ||
       ! hash_update(hash, &tuple->count, sizeof(tuple->count)))
     return false;
@@ -639,6 +639,18 @@ bool hash_update_tuple (t_hash *hash, const s_tuple *tuple)
     i++;
   }
   return true;
+}
+
+bool hash_update_ptuple (t_hash *hash, const p_tuple *tuple)
+{
+  char type[] = "ptuple";
+  assert(hash);
+  assert(tuple);
+  if (! hash_update(hash, type, sizeof(type)))
+    return false;
+  if (! tuple || ! *tuple)
+    return hash_update_u64(hash, 0);
+  return hash_update_tuple(hash, *tuple);
 }
 
 HASH_UPDATE_DEF(u8)

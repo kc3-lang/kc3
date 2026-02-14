@@ -23,7 +23,11 @@
 
 void ptuple_clean (p_tuple *tuple)
 {
-  bool nullify = (*tuple)->ref_count == 1;
+  bool nullify;
+  assert(tuple);
+  if (! *tuple)
+    return;
+  nullify = (*tuple)->ref_count == 1;
   tuple_delete(*tuple);
   if (nullify)
     *tuple = NULL;

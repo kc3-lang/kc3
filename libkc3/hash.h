@@ -58,6 +58,7 @@ bool hash_update_psym (t_hash *hash, p_sym const *psym);
 bool hash_update_ptag (t_hash *hash, const p_tag *ptag);
 bool hash_update_ptr (t_hash *hash, const u_ptr_w *ptr);
 bool hash_update_ptr_free (t_hash *hash, const u_ptr_w *ptr_free);
+bool hash_update_ptuple (t_hash *hash, const p_tuple *tuple);
 bool hash_update_quote (t_hash *hash, const s_quote *quote);
 bool hash_update_ratio (t_hash *hash, const s_ratio *ratio);
 HASH_UPDATE_PROTOTYPE(s8);

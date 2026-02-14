@@ -90,7 +90,7 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
   if (type == &g_sym_Time)
     return buf_inspect_time(buf, data);
   if (type == &g_sym_Tuple)
-    return buf_inspect_tuple(buf, data);
+    return buf_inspect_tuple(buf, *(p_tuple *) data);
   if (type == &g_sym_U8)
     return buf_inspect_u8(buf, *(u8 *) data);
   if (type == &g_sym_U16)
@@ -200,7 +200,7 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
   if (type == &g_sym_Time)
     return buf_inspect_time_size(pretty, data);
   if (type == &g_sym_Tuple)
-    return buf_inspect_tuple_size(pretty, data);
+    return buf_inspect_tuple_size(pretty, *(p_tuple *) data);
   if (type == &g_sym_U8)
     return buf_inspect_u8_size(pretty, *(u8 *) data);
   if (type == &g_sym_U16)
@@ -362,7 +362,7 @@ bool data_clean (const s_sym *type, void *data)
     return true;
   }
   if (type == &g_sym_Tuple) {
-    tuple_clean(data);
+    ptuple_clean(data);
     return true;
   }
   if (type == &g_sym_U8) {
@@ -483,7 +483,7 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
   if (type == &g_sym_Time)
     return compare_time(a, b);
   if (type == &g_sym_Tuple)
-    return compare_tuple(a, b);
+    return compare_ptuple(a, b);
   if (type == &g_sym_U8)
     return compare_u8(*(u8 *) a, *(u8 *) b);
   if (type == &g_sym_U16)
@@ -599,7 +599,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
   if (type == &g_sym_Time)
     return hash_update_time(hash, data);
   if (type == &g_sym_Tuple)
-    return hash_update_tuple(hash, data);
+    return hash_update_ptuple(hash, data);
   if (type == &g_sym_U8)
     return hash_update_u8(hash, *(u8 *) data);
   if (type == &g_sym_U16)
@@ -815,7 +815,7 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_Time)
     return time_init_copy(data, src);
   if (type == &g_sym_Tuple)
-    return tuple_init_copy(data, src);
+    return ptuple_init_copy(data, src);
   if (type == &g_sym_U8)
     return u8_init_copy(data, *(u8 *) src);
   if (type == &g_sym_U16)

@@ -61,6 +61,7 @@ s8 compare_pointer (const s_pointer *a, const s_pointer *b);
 s8 compare_psym (const p_sym *a, const p_sym *b);
 s8 compare_ptag (const p_tag a, const p_tag b);
 s8 compare_ptr (const void *a, const void *b);
+s8 compare_ptuple (const p_tuple *a, const p_tuple *b);
 s8 compare_quote (const s_quote *a, const s_quote *b);
 s8 compare_ratio (const s_ratio *a, const s_ratio *b);
 COMPARE_PROTOTYPE(s8);

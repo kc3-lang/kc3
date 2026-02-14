@@ -1843,6 +1843,10 @@ s8 compare_tuple (const s_tuple *a, const s_tuple *b)
   assert(b);
   if (a == b)
     return 0;
+  if (! a)
+    return -1;
+  if (! b)
+    return 1;
   if (a->count < b->count)
     return -1;
   if (a->count > b->count)
@@ -1853,6 +1857,17 @@ s8 compare_tuple (const s_tuple *a, const s_tuple *b)
     i++;
   }
   return 0;
+}
+
+s8 compare_ptuple (const p_tuple *a, const p_tuple *b)
+{
+  if (a == b)
+    return 0;
+  if (! a)
+    return -1;
+  if (! b)
+    return 1;
+  return compare_tuple(*a, *b);
 }
 
 COMPARE_DEF(u8)

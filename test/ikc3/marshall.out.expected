@@ -164,12 +164,12 @@ loopback(["hello",
 loopback([[[1]]])
 {:ok, 295}
 loopback({1, 2, 3})
-{:ok, 151}
+{:ok, 170}
 loopback({true, 'A', "test"})
-{:ok, 162}
+{:ok, 181}
 loopback({1, 2, [3,
                  4]})
-{:ok, 295}
+{:ok, 314}
 loopback(do end)
 {:ok, 56}
 loopback(Module)
