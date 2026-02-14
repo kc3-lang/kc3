@@ -14,7 +14,11 @@ defmodule Tag do
 
   def cast = cfn Tag "tag_init_cast" (Result, Sym, Tag)
 
+  def delete = cfn Void "kc3_tag_delete" (Tag*)
+
   def from_str = cfn Tag "tag_init_from_str" (Result, Str)
+
+  def new_copy = cfn Tag* "kc3_tag_new_copy" (Result, Tag)
 
   def type = cfn S32 "kc3_tag_type" (Tag)
 

@@ -1675,6 +1675,20 @@ static void kc3_system_pipe_exec (s32 pipe_w, char **argv,
 
 #endif
 
+void kc3_tag_delete (s_tag **tag)
+{
+  tag_delete(*tag);
+}
+
+s_tag ** kc3_tag_new_copy (s_tag **tag, s_tag *src)
+{
+  s_tag *tmp;
+  if (! (tmp = tag_new_copy(src)))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_pointer * kc3_tag_to_pointer (s_tag *tag, s_pointer *dest)
 {
   s_env *env;
