@@ -64,6 +64,24 @@ void socket_buf_delete (s_socket_buf **sb)
   *sb = NULL;
 }
 
+bool socket_buf_can_close (s_socket_buf *sb)
+{
+  bool result;
+  assert(sb);
+  if (! sb->closed_mutex)
+    return false;
+  mutex_lock(sb->closed_mutex);
+  if (sb->closed) {
+    result = false;
+  }
+  else {
+    sb->closed = true;
+    result = true;
+  }
+  mutex_unlock(sb->closed_mutex);
+  return result;
+}
+
 void socket_buf_close (s_socket_buf *sb)
 {
   assert(sb);
@@ -91,24 +109,6 @@ void socket_buf_close (s_socket_buf *sb)
     sb->closed_mutex = NULL;
   }
   tag_clean(&sb->tag);
-}
-
-bool socket_buf_can_close (s_socket_buf *sb)
-{
-  bool result;
-  assert(sb);
-  if (! sb->closed_mutex)
-    return false;
-  mutex_lock(sb->closed_mutex);
-  if (sb->closed) {
-    result = false;
-  }
-  else {
-    sb->closed = true;
-    result = true;
-  }
-  mutex_unlock(sb->closed_mutex);
-  return result;
 }
 
 bool socket_buf_set_tag (s_socket_buf *sb, s_tag *tag)
