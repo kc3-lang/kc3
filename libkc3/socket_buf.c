@@ -97,11 +97,8 @@ bool socket_buf_can_close (s_socket_buf *sb)
 {
   bool result;
   assert(sb);
-  if (! sb->closed_mutex) {
-    err_puts("socket_buf_can_close: closed_mutex is NULL");
-    assert(! "socket_buf_can_close: closed_mutex is NULL");
+  if (! sb->closed_mutex)
     return false;
-  }
   mutex_lock(sb->closed_mutex);
   if (sb->closed) {
     result = false;
