@@ -108,7 +108,6 @@ void socket_buf_close (s_socket_buf *sb)
     mutex_delete(sb->closed_mutex);
     sb->closed_mutex = NULL;
   }
-  tag_clean(&sb->tag);
 }
 
 bool socket_buf_set_tag (s_socket_buf *sb, s_tag *tag)
