@@ -550,8 +550,8 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
 {
   assert(tag);
   assert(src);
-  if (src->type == TAG_PVAR &&
-      src->data.pvar->bound)
+  while (src->type == TAG_PVAR &&
+         src->data.pvar->bound)
     src = &src->data.pvar->tag;
   switch (src->type) {
   case TAG_ARRAY:

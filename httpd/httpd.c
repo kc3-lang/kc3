@@ -27,11 +27,12 @@ static void httpd_signal (int s);
 
 static void httpd_signal (int s)
 {
-  (void) s;
   if (g_httpd_server_thread_stop) {
     g_httpd_server_thread_stop->count.type = TAG_U8;
     g_httpd_server_thread_stop->count.data.u8 = 1;
   }
+  else
+    exit(s);
 }
 
 int main (int argc, char **argv)
