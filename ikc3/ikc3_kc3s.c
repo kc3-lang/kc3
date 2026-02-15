@@ -413,7 +413,7 @@ static sw run (void)
         args->tag.data.str = input_str;
         rpc_tag.data.pcall->arguments = args;
 
-        buf_rw = g_tls ? &g_tls_client.socket_buf.buf_rw :
+        buf_rw = g_tls ? &g_tls_client.socket_buf->buf_rw :
           &g_socket_buf.buf_rw;
         if (buf_inspect_tag(buf_rw->w, &rpc_tag) <= 0 ||
             buf_write_1(buf_rw->w, "\n") <= 0 ||
@@ -645,7 +645,7 @@ static int server_init_tls (s_env *env)
     return 1;
   }
   io_write_1(PROG ": TLS server: client connected: ");
-  io_inspect_str(&g_tls_server.socket_buf.addr_str);
+  io_inspect_str(&g_tls_server.socket_buf->addr_str);
   io_write_1(" ");
   io_inspect_str(&g_port);
   io_write_1(" ");
@@ -654,8 +654,8 @@ static int server_init_tls (s_env *env)
   g_server_env_in = env->in;
   g_server_env_out = env->out;
   g_server_env_err = env->err;
-  env->in = g_tls_server.socket_buf.buf_rw.r;
-  env->out = g_tls_server.socket_buf.buf_rw.w;
+  env->in = g_tls_server.socket_buf->buf_rw.r;
+  env->out = g_tls_server.socket_buf->buf_rw.w;
   return 0;
 }
 

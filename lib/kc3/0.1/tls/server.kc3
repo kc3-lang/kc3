@@ -15,7 +15,7 @@ require TLS
 
 defmodule TLS.Server do
 
-  defstruct [socket_buf: %Socket.Buf{},
+  defstruct [socket_buf: (Socket.Buf*) 0,
              tls_version: ""]
 
   def accept = cfn TLS.Server "kc3_tls_server_init_accept" (Result,

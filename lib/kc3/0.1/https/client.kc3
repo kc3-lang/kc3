@@ -22,7 +22,7 @@ defmodule HTTPS.Client do
 
   defstruct [tls_config: (TLS.Config*) 0,
              tls_context: (TLS*) 0,
-             tls_client: %TLS.Client{},
+             tls_client: (TLS.Client*) 0,
              state: :void]
 
 end

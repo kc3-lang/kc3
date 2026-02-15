@@ -1084,13 +1084,13 @@ struct facts_cursor {
 };
 
 struct tls_client {
-  s_socket_buf socket_buf;
-  s_str        tls_version;
+  s_socket_buf *socket_buf;
+  s_str         tls_version;
 };
 
 struct tls_server {
-  s_socket_buf socket_buf;
-  s_str        tls_version;
+  s_socket_buf *socket_buf;
+  s_str         tls_version;
 };
 
 /* 9 */

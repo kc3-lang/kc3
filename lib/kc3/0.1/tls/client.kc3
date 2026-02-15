@@ -14,7 +14,7 @@ require Socket.Buf
 
 defmodule TLS.Client do
 
-  defstruct [socket_buf: %Socket.Buf{},
+  defstruct [socket_buf: (Socket.Buf*) 0,
              tls_version: ""]
 
 end
