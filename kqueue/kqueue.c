@@ -121,13 +121,15 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
   }
   if (r > 0) {
     udata = event.udata;
-    err_write_1("kc3_kqueue_poll: udata=");
-    err_inspect_uw_hexadecimal((uw) udata);
-    if (udata) {
-      err_write_1(" type=");
-      err_inspect_u8((u8) udata->type);
+    if (false) {
+      err_write_1("kc3_kqueue_poll: udata=");
+      err_inspect_uw_hexadecimal((uw) udata);
+      if (udata) {
+        err_write_1(" type=");
+        err_inspect_u8((u8) udata->type);
+      }
+      err_write_1("\n");
     }
-    err_write_1("\n");
     if (event.filter == EVFILT_TIMER)
       event_type = &g_sym_timer;
     else if (event.flags & EV_EOF)

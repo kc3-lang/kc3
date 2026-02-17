@@ -1685,15 +1685,17 @@ void kc3_tag_delete (s_tag **tag)
 s_tag ** kc3_tag_new_copy (s_tag **tag, s_tag *src)
 {
   s_tag *tmp;
-  err_write_1("kc3_tag_new_copy: tag=");
-  err_inspect_uw_hexadecimal((uw) tag);
-  err_write_1(" src=");
-  err_inspect_uw_hexadecimal((uw) src);
-  err_write_1("\n");
-  if (src) {
-    err_write_1("  src->type=");
-    err_inspect_u8((u8) src->type);
+  if (false) {
+    err_write_1("kc3_tag_new_copy: tag=");
+    err_inspect_uw_hexadecimal((uw) tag);
+    err_write_1(" src=");
+    err_inspect_uw_hexadecimal((uw) src);
     err_write_1("\n");
+    if (src) {
+      err_write_1("  src->type=");
+      err_inspect_u8((u8) src->type);
+      err_write_1("\n");
+    }
   }
   if (! (tmp = tag_new_copy(src)))
     return NULL;
