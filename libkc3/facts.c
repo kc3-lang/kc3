@@ -1524,15 +1524,17 @@ sw facts_open_file_after_dump (s_facts *facts, const s_str *path)
           facts->log = log_save;
           return -1;
         }
-        err_write_1("facts_open_file_after_dump: #");
-        err_inspect_uw_decimal(i);
-        err_write_1(" id=");
-        err_inspect_uw_decimal(id);
-        err_write_1(" action=");
-        err_inspect_u8_decimal(action);
-        err_write_1(" ");
-        err_inspect_fact(&fact);
-        err_write_1("\n");
+        if (false) {
+          err_write_1("facts_open_file_after_dump: #");
+          err_inspect_uw_decimal(i);
+          err_write_1(" id=");
+          err_inspect_uw_decimal(id);
+          err_write_1(" action=");
+          err_inspect_u8_decimal(action);
+          err_write_1(" ");
+          err_inspect_fact(&fact);
+          err_write_1("\n");
+        }
         switch (action) {
         case FACT_ACTION_ADD:
           if (! facts_add_fact(facts, &fact)) {
@@ -1573,7 +1575,8 @@ sw facts_open_file_after_dump (s_facts *facts, const s_str *path)
         i++;
       }
       if (r > 0) {
-        err_write_1("facts_open_file_after_dump: next chunk\n");
+        if (false)
+          err_write_1("facts_open_file_after_dump: next chunk\n");
         result += marshall_read_size(&mr);
         if (! marshall_read_chunk_file(&mr)) {
           err_write_1("facts_open_file_after_dump: marshall_read_chunk_file: ");
