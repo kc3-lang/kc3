@@ -308,6 +308,7 @@ defmodule HTTPd do
         File.close(HTTPd.kq_fd)
         Mutex.delete(HTTPd.kq_mutex)
         Socket.close(HTTPd.socket)
+        Tag.delete(HTTPd.acceptor_tag)
         if Module.has_symbol?(Config, :at_exit) do
           Config.at_exit()
         end

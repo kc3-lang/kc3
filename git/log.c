@@ -104,6 +104,8 @@ p_list * kc3_git_log (git_repository **repo,
   while (! git_revwalk_next(&oid, s.walker)) {
     if (git_commit_lookup(&commit, s.repo, &oid)) {
       err_puts("kc3_git_log: git_commit_lookup");
+      git_pathspec_free(ps);
+      git_revwalk_free(s.walker);
       return NULL;
     }
     parents = git_commit_parentcount(commit);
@@ -117,6 +119,8 @@ p_list * kc3_git_log (git_repository **repo,
         if (git_commit_tree(&tree, commit)) {
           err_puts("kc3_git_log: git_commit_tree");
           git_commit_free(commit);
+          git_pathspec_free(ps);
+          git_revwalk_free(s.walker);
           return NULL;
         }
         if (git_pathspec_match_tree(NULL, tree,
@@ -146,10 +150,14 @@ p_list * kc3_git_log (git_repository **repo,
     if (! (tail = log_push_commit(tail, commit))) {
       err_puts("kc3_git_log: log_push_commit");
       git_commit_free(commit);
+      git_pathspec_free(ps);
+      git_revwalk_free(s.walker);
       return NULL;
     }
     git_commit_free(commit);
   }
+  git_pathspec_free(ps);
+  git_revwalk_free(s.walker);
   *dest = tmp;
   return dest;
 }
