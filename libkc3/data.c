@@ -57,8 +57,6 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
     return buf_inspect_plist(buf, data);
   if (type == &g_sym_Map)
     return buf_inspect_map(buf, data);
-  if (type == &g_sym_Ptag)
-    return buf_inspect_ptag(buf, data);
   if (type == &g_sym_Ptr)
     return buf_inspect_ptr(buf, data);
   if (type == &g_sym_PtrFree)
@@ -105,9 +103,15 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
     return buf_inspect_var(buf, data);
   if (type == &g_sym_Void)
     return buf_inspect_void(buf, data);
-  if (type == &g_sym_Pointer ||
-      sym_is_pointer_type(type, NULL))
+  if (type == &g_sym_Pointer)
     return buf_inspect_pointer(buf, data);
+  if (sym_is_pointer_type(type, NULL)) {
+    s_pointer p = {0};
+    p.ptr.p = *(void **) data;
+    p.target_type = sym_pointer_to_target_type(type);
+    p.pointer_type = type;
+    return buf_inspect_pointer(buf, &p);
+  }
   if (! pstruct_type_find(type, &st))
     return -1;
   if (st) {
@@ -166,8 +170,6 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
     return buf_inspect_plist_size(pretty, data);
   if (type == &g_sym_Map)
     return buf_inspect_map_size(pretty, data);
-  if (type == &g_sym_Ptag)
-    return buf_inspect_ptag_size(pretty, data);
   if (type == &g_sym_Ptr)
     return buf_inspect_ptr_size(pretty, data);
   if (type == &g_sym_PtrFree)
@@ -215,9 +217,15 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
     return buf_inspect_var_size(pretty, data);
   if (type == &g_sym_Void)
     return buf_inspect_void_size(pretty, data);
-  if (type == &g_sym_Pointer ||
-      sym_is_pointer_type(type, NULL))
+  if (type == &g_sym_Pointer)
     return buf_inspect_pointer_size(pretty, data);
+  if (sym_is_pointer_type(type, NULL)) {
+    s_pointer p = {0};
+    p.ptr.p = *(void **) data;
+    p.target_type = sym_pointer_to_target_type(type);
+    p.pointer_type = type;
+    return buf_inspect_pointer_size(pretty, &p);
+  }
   if (! pstruct_type_find(type, &st))
     return -1;
   if (st) {
@@ -303,9 +311,6 @@ bool data_clean (const s_sym *type, void *data)
   }
   if (type == &g_sym_Map) {
     map_clean(data);
-    return true;
-  }
-  if (type == &g_sym_Ptag) {
     return true;
   }
   if (type == &g_sym_Ptr) {
@@ -449,8 +454,6 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
     return compare_plist(a, b);
   if (type == &g_sym_Map)
     return compare_map(a, b);
-  if (type == &g_sym_Ptag)
-    return compare_ptag((const p_tag) a, (const p_tag) b);
   if (type == &g_sym_Ptr)
     return compare_ptr(a, b);
   if (type == &g_sym_PtrFree)
@@ -498,9 +501,15 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
     return compare_var(a, b);
   if (type == &g_sym_Void)
     return 0;
-  if (type == &g_sym_Pointer ||
-      sym_is_pointer_type(type, NULL))
+  if (type == &g_sym_Pointer)
     return compare_pointer(a, b);
+  if (sym_is_pointer_type(type, NULL)) {
+    s_pointer pa = {0};
+    s_pointer pb = {0};
+    pa.ptr.p = *(void **) a;
+    pb.ptr.p = *(void **) b;
+    return compare_pointer(&pa, &pb);
+  }
   if (env_global()->loaded) {
     if (! pstruct_type_find(type, &st))
       return COMPARE_ERROR;
@@ -566,8 +575,6 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
     return hash_update_plist(hash, data);
   if (type == &g_sym_Map)
     return hash_update_map(hash, data);
-  if (type == &g_sym_Ptag)
-    return hash_update_ptag(hash, data);
   if (type == &g_sym_Ptr)
     return hash_update_ptr(hash, data);
   if (type == &g_sym_PtrFree)
@@ -614,9 +621,15 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
     return hash_update_var(hash, data);
   if (type == &g_sym_Void)
     return hash_update_void(hash);
-  if (type == &g_sym_Pointer ||
-      sym_is_pointer_type(type, NULL))
+  if (type == &g_sym_Pointer)
     return hash_update_pointer(hash, data);
+  if (sym_is_pointer_type(type, NULL)) {
+    s_pointer p = {0};
+    p.ptr.p = *(void **) data;
+    p.target_type = sym_pointer_to_target_type(type);
+    p.pointer_type = type;
+    return hash_update_pointer(hash, &p);
+  }
   if (! pstruct_type_find(type, &st))
     return false;
   if (st) {
@@ -676,8 +689,6 @@ void * data_init_cast (void *data, p_sym *type, s_tag *tag)
     return plist_init_cast(data, type, tag);
   if (t == &g_sym_Map)
     return map_init_cast(data, type, tag);
-  if (t == &g_sym_Ptag)
-    return ptag_init_cast(data, type, tag);
   if (t == &g_sym_Ptr)
     return ptr_init_cast(data, type, tag);
   if (t == &g_sym_PtrFree)
@@ -724,9 +735,15 @@ void * data_init_cast (void *data, p_sym *type, s_tag *tag)
     return pvar_init_cast(data, type, tag);
   if (t == &g_sym_Void)
     return data;
-  if (t == &g_sym_Pointer ||
-      sym_is_pointer_type(t, NULL))
+  if (t == &g_sym_Pointer)
     return pointer_init_cast(data, type, tag);
+  if (sym_is_pointer_type(t, NULL)) {
+    s_pointer p = {0};
+    if (! pointer_init_cast(&p, type, tag))
+      return NULL;
+    *(void **) data = p.ptr.p;
+    return data;
+  }
   if (! pstruct_type_find(t, &st))
     return NULL;
   if (st)
@@ -782,8 +799,6 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
     return plist_init_copy(data, src);
   if (type == &g_sym_Map)
     return map_init_copy(data, src);
-  if (type == &g_sym_Ptag)
-    return ptag_init_copy(data, src);
   if (type == &g_sym_Ptr)
     return ptr_init_copy(data, src);
   if (type == &g_sym_PtrFree)
@@ -830,9 +845,12 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
     return tag_init_copy(data, src);
   if (type == &g_sym_Void)
     return data;
-  if (type == &g_sym_Pointer ||
-      sym_is_pointer_type(type, NULL))
+  if (type == &g_sym_Pointer)
     return pointer_init_copy(data, src);
+  if (sym_is_pointer_type(type, NULL)) {
+    *(void **) data = *(void **) src;
+    return data;
+  }
   if (! pstruct_type_find(type, &st))
     return NULL;
   if (st)

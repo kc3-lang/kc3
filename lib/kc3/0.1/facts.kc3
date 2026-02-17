@@ -58,10 +58,10 @@ defmodule Facts do
   def connect = cfn Facts "kc3_facts_connect" (Facts, Str, Str,
     TLS.Config)
 
-  def accept = cfn Facts "kc3_facts_accept" (Facts, Socket, TLS)
+  def accept = cfn Facts "kc3_facts_accept" (Facts, Socket, TLS*)
 
   def acceptor_loop =
-    cfn Facts.Acceptor "kc3_facts_acceptor_loop" (Facts, Socket, TLS,
+    cfn Facts.Acceptor "kc3_facts_acceptor_loop" (Facts, Socket, TLS*,
       Result)
 
   def acceptor_loop_join =

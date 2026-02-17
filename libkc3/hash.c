@@ -573,7 +573,6 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_PSTRUCT_TYPE:
     return hash_update_struct_type(hash, tag->data.pstruct_type);
   case TAG_PSYM:    return hash_update_psym(hash, &tag->data.psym);
-  case TAG_PTAG:    return hash_update_ptag(hash, &tag->data.ptag);
   case TAG_PTR:     return hash_update_ptr(hash, &tag->data.ptr);
   case TAG_PTR_FREE:
     return hash_update_ptr_free(hash, &tag->data.ptr_free);

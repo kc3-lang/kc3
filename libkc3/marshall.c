@@ -463,14 +463,6 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
     }
     return m;
   }
-  if (type == &g_sym_Ptag) {
-    if (! marshall_ptag(m, heap, data)) {
-      err_puts("marshall_data: marshall_ptag");
-      assert(! "marshall_data: marshall_ptag");
-      return NULL;
-    }
-    return m;
-  }
   if (type == &g_sym_Ptr) {
     if (! marshall_ptr(m, heap, *(void **) data)) {
       err_puts("marshall_data: marshall_ptr");
@@ -483,6 +475,18 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
     if (! marshall_ptr_free(m, heap, *(void **) data)) {
       err_puts("marshall_data: marshall_ptr_free");
       assert(! "marshall_data: marshall_ptr_free");
+      return NULL;
+    }
+    return m;
+  }
+  if (sym_is_pointer_type(type, NULL)) {
+    s_pointer p = {0};
+    p.ptr.p = *(void **) data;
+    p.target_type = sym_pointer_to_target_type(type);
+    p.pointer_type = type;
+    if (! marshall_pointer(m, heap, &p)) {
+      err_puts("marshall_data: marshall_pointer (typed pointer)");
+      assert(! "marshall_data: marshall_pointer (typed pointer)");
       return NULL;
     }
     return m;
@@ -1717,7 +1721,6 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   case TAG_PSTRUCT_TYPE:
     return marshall_pstruct_type(m, heap, &tag->data.pstruct_type);
   case TAG_PSYM:  return marshall_psym(m, heap, &tag->data.psym);
-  case TAG_PTAG:  return marshall_ptag(m, heap, &tag->data.ptag);
   case TAG_PTR:   return marshall_ptr(m, heap, tag->data.ptr.p);
   case TAG_PTR_FREE:
     return marshall_ptr_free(m, heap, tag->data.ptr_free.p);

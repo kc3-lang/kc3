@@ -1,4 +1,10 @@
+quote require Buf
+require Buf
 quote require BufRW
 require BufRW
 quote %BufRW{}
 %BufRW{}
+do
+  buf_rw = BufRW.init_alloc((Uw) 1024)
+  {buf_rw.r.size, buf_rw.w.size}
+end

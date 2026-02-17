@@ -197,6 +197,10 @@ s_tag *              kc3_struct_put (s_tag *s, p_sym *key,
                                      s_tag *value, s_tag *dest);
 p_tuple *            kc3_system (p_list *list, p_tuple *dest);
 void                 kc3_tag_delete (s_tag **tag);
+s_marshall **        kc3_tag_marshall (s_marshall **m, bool heap,
+                                       s_tag **tag);
+s_tag **             kc3_tag_marshall_read (s_marshall_read **mr, bool heap,
+                                            s_tag **dest);
 s_tag **             kc3_tag_new_copy (s_tag **tag, s_tag *src);
 s_tag *              kc3_thread_delete (u_ptr_w *thread, s_tag *dest);
 u_ptr_w *            kc3_thread_new (u_ptr_w *dest, p_callable *start);

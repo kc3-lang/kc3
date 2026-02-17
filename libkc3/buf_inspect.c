@@ -4917,7 +4917,6 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_PSTRUCT_TYPE:
     return buf_inspect_struct_type(buf, tag->data.pstruct_type);
   case TAG_PSYM:    return buf_inspect_sym(buf, tag->data.psym);
-  case TAG_PTAG:    return buf_inspect_ptag(buf, &tag->data.ptag);
   case TAG_PTR:     return buf_inspect_ptr(buf, &tag->data.ptr);
   case TAG_PTR_FREE:
     return buf_inspect_ptr_free(buf, &tag->data.ptr_free);
@@ -4995,8 +4994,6 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_struct_type_size(pretty, tag->data.pstruct_type);
   case TAG_PSYM:
     return buf_inspect_sym_size(pretty, tag->data.psym);
-  case TAG_PTAG:
-    return buf_inspect_ptag_size(pretty, &tag->data.ptag);
   case TAG_POINTER:
     return buf_inspect_pointer_size(pretty, &tag->data.pointer);
   case TAG_PTR:

@@ -196,7 +196,6 @@ typedef enum {
   TAG_PSTRUCT      = 30, // \x1e
   TAG_PSTRUCT_TYPE = 31, // \x1f
   TAG_PSYM         = 32, // \x20
-  TAG_PTAG         = 33, // \x21
   TAG_PTR          = 34, // \x22
   TAG_PTR_FREE     = 35, // \x23
   TAG_PVAR         = 36, // \x24
@@ -826,7 +825,6 @@ union tag_data {
   p_struct      pstruct;
   p_struct_type pstruct_type;
   p_sym         psym;
-  p_tag         ptag;
   u_ptr_w       ptr;
   u_ptr_w       ptr_free;
   p_var         pvar;
@@ -1036,7 +1034,7 @@ struct socket_buf {
   bool             closed;
   s_mutex         *closed_mutex;
   s64              sockfd;
-  s_tag            tag;
+  s_tag           *ptag;
 };
 
 struct var {

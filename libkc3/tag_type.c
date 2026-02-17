@@ -55,7 +55,6 @@ u8 * tag_type_alignment (e_tag_type tag_type, u8 *dest)
   case TAG_PSTRUCT:
   case TAG_PSTRUCT_TYPE:
   case TAG_PSYM:
-  case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
   case TAG_PVAR:                        *dest = 8;          return dest;
@@ -129,7 +128,6 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_PSTRUCT:      *dest = sizeof(p_struct);      return true;
   case TAG_PSTRUCT_TYPE: *dest = sizeof(p_struct_type); return true;
   case TAG_PSYM:         *dest = sizeof(s_sym *);       return true;
-  case TAG_PTAG:         *dest = sizeof(p_tag);         return true;
   case TAG_PTR:
   case TAG_PTR_FREE:     *dest = sizeof(void *);        return true;
   case TAG_PVAR:         *dest = sizeof(p_var);         return true;
@@ -183,7 +181,6 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_PLIST:        *dest = &ffi_type_pointer;    return true;
   case TAG_PSTRUCT:      *dest = &ffi_type_pointer;    return true;
   case TAG_PSTRUCT_TYPE: *dest = &ffi_type_pointer;    return true;
-  case TAG_PTAG:         *dest = &ffi_type_pointer;    return true;
   case TAG_PTR:          *dest = &ffi_type_pointer;    return true;
   case TAG_PTR_FREE:     *dest = &ffi_type_pointer;    return true;
   case TAG_PVAR:         *dest = &ffi_type_pointer;    return true;
@@ -240,7 +237,6 @@ const char * tag_type_to_string (e_tag_type tag_type)
   case TAG_POINTER:      return "Pointer";
   case TAG_PSTRUCT:      return "Struct";
   case TAG_PSTRUCT_TYPE: return "StructType";
-  case TAG_PTAG:         return "Ptag";
   case TAG_PTR:          return "Ptr";
   case TAG_PTR_FREE:     return "PtrFree";
   case TAG_PVAR:         return "Var";

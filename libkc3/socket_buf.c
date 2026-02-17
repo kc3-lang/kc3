@@ -52,7 +52,6 @@ void socket_buf_clean (s_socket_buf *sb)
     mutex_delete(sb->closed_mutex);
     sb->closed_mutex = NULL;
   }
-  tag_clean(&sb->tag);
 }
 
 void socket_buf_delete (s_socket_buf **sb)
@@ -114,16 +113,7 @@ bool socket_buf_set_tag (s_socket_buf *sb, s_tag *tag)
 {
   assert(sb);
   assert(tag);
-  if (false) {
-    err_write_1("socket_buf_set_tag: sb=");
-    err_inspect_uw((uw) sb);
-    err_write_1(" &sb->tag=");
-    err_inspect_uw((uw) &sb->tag);
-    err_write_1("\n");
-  }
-  tag_clean(&sb->tag);
-  if (! tag_init_copy(&sb->tag, tag))
-    return false;
+  sb->ptag = tag;
   return true;
 }
 
@@ -131,16 +121,9 @@ s_pointer * socket_buf_tag (s_socket_buf *sb, s_pointer *dest)
 {
   assert(sb);
   assert(dest);
-  if (false) {
-    err_write_1("socket_buf_tag: sb=");
-    err_inspect_uw((uw) sb);
-    err_write_1(" &sb->tag=");
-    err_inspect_uw((uw) &sb->tag);
-    err_write_1("\n");
-  }
   dest->target_type = &g_sym_Tag;
   dest->pointer_type = sym_target_to_pointer_type(&g_sym_Tag);
-  dest->ptr.p = &sb->tag;
+  dest->ptr.p = sb->ptag;
   return dest;
 }
 
@@ -183,7 +166,7 @@ s_socket_buf * socket_buf_init (s_socket_buf *sb, s64 sockfd,
   }
   socket_addr_to_str(&sb->addr_str, addr, addr_len);
   sb->addr_len = addr_len;
-  tag_init_void(&sb->tag);
+  sb->ptag = NULL;
   return sb;
 }
 

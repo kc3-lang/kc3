@@ -202,8 +202,6 @@ s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
     return env_frame_capture_call(env, frame, tag->data.pcall);
   case TAG_PLIST:
     return env_frame_capture_list(env, frame, tag->data.plist);
-  case TAG_PTAG:
-    return env_frame_capture_tag(env, frame, tag->data.ptag);
   case TAG_PVAR:
     return env_frame_capture_var(env, frame, tag->data.pvar);
   case TAG_QUOTE:

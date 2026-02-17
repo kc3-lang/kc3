@@ -29,9 +29,7 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   assert(type);
   assert(tag);
   while (1) {
-    if (tag->type == TAG_PTAG && tag->data.ptag)
-      tag = tag->data.ptag;
-    else if (tag->type == TAG_PVAR && tag->data.pvar->bound)
+    if (tag->type == TAG_PVAR && tag->data.pvar->bound)
       tag = &tag->data.pvar->tag;
     else
       break;
@@ -103,7 +101,6 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_UNQUOTE:
     *b = true;
     return b;
-  case TAG_PTAG:
   case TAG_VOID:
     *b = false;
     return b;

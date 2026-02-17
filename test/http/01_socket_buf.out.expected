@@ -4,12 +4,12 @@ a = %Socket.Buf{}
 %Socket.Buf{addr: (Ptr) 0,
             addr_len: (U32) 0,
             addr_str: "",
-            buf_rw: %BufRW{r: (Ptr) 0,
-                           w: (Ptr) 0},
+            buf_rw: %BufRW{r: (Buf*) 0,
+                           w: (Buf*) 0},
             closed: false,
             closed_mutex: (Ptr) 0,
             sockfd: (S64) -1,
-            tag: ?}
+            ptag: (Tag*) 0}
 a.buf_rw
-%BufRW{r: (Ptr) 0,
-       w: (Ptr) 0}
+%BufRW{r: (Buf*) 0,
+       w: (Buf*) 0}

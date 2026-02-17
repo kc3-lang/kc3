@@ -742,8 +742,6 @@ KC3_C_SOURCES = \
 	"libkc3/pstruct_type.h" \
 	"libkc3/psym.c" \
 	"libkc3/psym.h" \
-	"libkc3/ptag.c" \
-	"libkc3/ptag.h" \
 	"libkc3/ptr.c" \
 	"libkc3/ptr.h" \
 	"libkc3/ptr_free.c" \

@@ -13,8 +13,32 @@
 #include "assert.h"
 #include "data.h"
 #include "pointer.h"
+#include "pstruct_type.h"
+#include "struct.h"
 #include "sym.h"
 #include "tag.h"
+
+s_tag * pointer_access (const s_pointer *pointer, s_list *key,
+                        s_tag *dest)
+{
+  s_tag *r;
+  s_struct s = {0};
+  p_struct_type st;
+  assert(pointer);
+  assert(key);
+  assert(dest);
+  if (! pointer->ptr.p)
+    return tag_init_void(dest);
+  if (! pstruct_type_find(pointer->target_type, &st) || ! st) {
+    err_puts("pointer_access: pstruct_type_find");
+    assert(! "pointer_access: pstruct_type_find");
+    return NULL;
+  }
+  s.pstruct_type = st;
+  s.data = pointer->ptr.p;
+  r = struct_access(&s, key, dest);
+  return r;
+}
 
 s_tag * pointer_deref (const s_pointer *pointer, s_tag *dest)
 {

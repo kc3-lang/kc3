@@ -158,6 +158,8 @@ s_tag * kc3_access (s_tag *tag, s_list **key,
       return list_access(tag->data.plist, *key, dest);
   case TAG_MAP:
     return map_access(&tag->data.map, *key, dest);
+  case TAG_POINTER:
+    return pointer_access(&tag->data.pointer, *key, dest);
   case TAG_PSTRUCT:
     return struct_access(tag->data.pstruct, *key, dest);
   case TAG_STR:
@@ -1683,6 +1685,16 @@ void kc3_tag_delete (s_tag **tag)
 s_tag ** kc3_tag_new_copy (s_tag **tag, s_tag *src)
 {
   s_tag *tmp;
+  err_write_1("kc3_tag_new_copy: tag=");
+  err_inspect_uw_hexadecimal((uw) tag);
+  err_write_1(" src=");
+  err_inspect_uw_hexadecimal((uw) src);
+  err_write_1("\n");
+  if (src) {
+    err_write_1("  src->type=");
+    err_inspect_u8((u8) src->type);
+    err_write_1("\n");
+  }
   if (! (tmp = tag_new_copy(src)))
     return NULL;
   *tag = tmp;
@@ -1715,6 +1727,34 @@ s_pointer * kc3_tag_to_pointer (s_tag *tag, s_pointer *dest)
     return NULL;
   }
   return pointer_init_tag(dest, resolved);
+}
+
+s_marshall ** kc3_tag_marshall (s_marshall **m, bool heap, s_tag **tag)
+{
+  assert(m);
+  assert(*m);
+  assert(tag);
+  assert(*tag);
+  if (! marshall_tag(*m, heap, *tag))
+    return NULL;
+  return m;
+}
+
+s_tag ** kc3_tag_marshall_read (s_marshall_read **mr, bool heap,
+                                s_tag **dest)
+{
+  s_tag *tmp = NULL;
+  assert(mr);
+  assert(*mr);
+  assert(dest);
+  if (! (tmp = tag_new()))
+    return NULL;
+  if (! marshall_read_tag(*mr, heap, tmp)) {
+    tag_delete(tmp);
+    return NULL;
+  }
+  *dest = tmp;
+  return dest;
 }
 
 s32 kc3_tag_type (const s_tag *tag)

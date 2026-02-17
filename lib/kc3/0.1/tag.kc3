@@ -16,6 +16,11 @@ defmodule Tag do
 
   def delete = cfn Void "kc3_tag_delete" (Tag*)
 
+  def marshall = cfn Marshall* "kc3_tag_marshall" (Marshall*, Bool, Tag*)
+
+  def marshall_read = cfn Tag* "kc3_tag_marshall_read" (MarshallRead*,
+    Bool, Result)
+
   def from_str = cfn Tag "tag_init_from_str" (Result, Str)
 
   def new_copy = cfn Tag* "kc3_tag_new_copy" (Result, Tag)

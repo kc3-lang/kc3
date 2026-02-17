@@ -29,7 +29,7 @@ require URL
 
 defmodule HTTPd do
 
-  def acceptor_sym = :acceptor
+  def acceptor_tag = Tag.new_copy(:acceptor)
 
   def connections = Counter.new(0)
   def connections_max = ncpu * 64
@@ -142,7 +142,7 @@ defmodule HTTPd do
         Mutex.lock(HTTPd.kq_mutex)
         kq_ok = unwind_protect(do
           KQueue.add(HTTPd.kq_fd, client.sockfd,
-                     HTTPd.timeout, Socket.Buf.tag(client)) == 0
+                     HTTPd.timeout, client.ptag) == 0
         end, do
           Mutex.unlock(HTTPd.kq_mutex)
         end)
@@ -162,6 +162,7 @@ defmodule HTTPd do
       if (error || close) && Socket.Buf.can_close?(client) do
         KQueue.delete(HTTPd.kq_fd, socket, :timer)
         KQueue.delete(HTTPd.kq_fd, socket, :read)
+        Tag.delete(client.ptag)
         Socket.Buf.close(client)
         File.close(socket)
         Counter.decrease(HTTPd.connections, 1)
@@ -174,25 +175,30 @@ defmodule HTTPd do
   def acceptor = fn (server_socket) {
     ok = false
     client = void
+    client_tag = void
     unwind_protect(do
       if (Counter.get(HTTPd.connections) < HTTPd.connections_max) &&
          (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
-         Socket.Buf.set_tag(client, {:client, client}) do
+         (client_tag = Tag.new_copy({:client, client})) &&
+         Socket.Buf.set_tag(client, client_tag) do
         Counter.increase(HTTPd.connections, 1)
         count = Counter.get(HTTPd.connections)
         puts("HTTPd.acceptor: connections=#{count}")
         Mutex.lock(HTTPd.kq_mutex)
         unwind_protect(do
           ok = (KQueue.add(HTTPd.kq_fd, server_socket, void,
-                           tag_to_pointer(HTTPd.acceptor_sym)) == 0 &&
+                           HTTPd.acceptor_tag) == 0 &&
                 KQueue.add(HTTPd.kq_fd, client.sockfd, HTTPd.timeout,
-                           Socket.Buf.tag(client)) == 0)
+                           client.ptag) == 0)
         end, do
           Mutex.unlock(HTTPd.kq_mutex)
         end)
       end
     end, do
       if ((! ok) && client) do
+        if client_tag do
+          Tag.delete(client_tag)
+        end
         Socket.Buf.close(client)
         File.close(client.sockfd)
       end
@@ -225,6 +231,7 @@ defmodule HTTPd do
         {sockfd, :eof, {:client, client}} ->
           if Socket.Buf.can_close?(client) do
             KQueue.delete(HTTPd.kq_fd, sockfd, :timer)
+            Tag.delete(client.ptag)
             Socket.Buf.close(client)
             File.close(sockfd)
             Counter.decrease(HTTPd.connections, 1)
@@ -236,6 +243,7 @@ defmodule HTTPd do
         {sockfd, :timer, {:client, client}} ->
           if Socket.Buf.can_close?(client) do
             KQueue.delete(HTTPd.kq_fd, sockfd, :read)
+            Tag.delete(client.ptag)
             Socket.Buf.close(client)
             File.close(sockfd)
             Counter.decrease(HTTPd.connections, 1)
@@ -286,7 +294,7 @@ defmodule HTTPd do
       IO.puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
       if (HTTPd.kq_fd <- KQueue.kqueue()) > 0 do
-        KQueue.add(HTTPd.kq_fd, socket.fd, void, tag_to_pointer(HTTPd.acceptor_sym))
+        KQueue.add(HTTPd.kq_fd, socket.fd, void, HTTPd.acceptor_tag)
         if HTTPd.thread_count > 1 do
           threads = List.map(List.count(HTTPd.thread_count - 1),
             HTTPd.server_thread_new)

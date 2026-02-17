@@ -1128,7 +1128,6 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_POINTER:
   case TAG_PSTRUCT_TYPE:
   case TAG_PSYM:
-  case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
   case TAG_RATIO:

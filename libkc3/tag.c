@@ -288,7 +288,6 @@ void tag_clean (s_tag *tag)
   case TAG_IDENT:
   case TAG_POINTER:
   case TAG_PSYM:
-  case TAG_PTAG:
   case TAG_PTR:
   case TAG_S8:
   case TAG_S16:
@@ -662,10 +661,6 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     tag->type = src->type;
     tag->data.psym = src->data.psym;
     return tag;
-  case TAG_PTAG:
-    tag->type = src->type;
-    tag->data.ptag = src->data.ptag;
-    return tag;
   case TAG_PTR:
     tag->type = src->type;
     tag->data.ptr = src->data.ptr;
@@ -751,7 +746,10 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
   case TAG_VOID:
     return tag_init_void(tag);
   }
-  err_puts("tag_init_copy: invalid tag type");
+  err_write_1("tag_init_copy: invalid tag type: ");
+  err_inspect_u8((u8) src->type);
+  err_write_1("\n");
+  err_stacktrace();
   assert(! "tag_init_copy: invalid tag type");
   return NULL;
 }
@@ -958,7 +956,6 @@ bool tag_is_integer (s_tag *tag)
   case TAG_PSTRUCT:
   case TAG_PSTRUCT_TYPE:
   case TAG_PSYM:
-  case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
   case TAG_PTUPLE:
@@ -1011,7 +1008,6 @@ bool tag_is_number (s_tag *tag)
   case TAG_PSTRUCT:
   case TAG_PSTRUCT_TYPE:
   case TAG_PSYM:
-  case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
   case TAG_PTUPLE:
@@ -1082,7 +1078,6 @@ bool tag_is_positive_integer (s_tag *tag)
   case TAG_PSTRUCT:
   case TAG_PSTRUCT_TYPE:
   case TAG_PSYM:
-  case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
   case TAG_PTUPLE:
@@ -1496,8 +1491,15 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       *dest = &tag->data.pointer;
       return true;
     }
-    *dest = &tag->data.pointer.ptr.p;
-    return true;
+    if (type == tag->data.pointer.pointer_type) {
+      *dest = &tag->data.pointer;
+      return true;
+    }
+    if (type == tag->data.pointer.target_type) {
+      *dest = tag->data.pointer.ptr.p;
+      return true;
+    }
+    goto invalid_cast;
   case TAG_PSTRUCT:
     if (type == &g_sym_Struct) {
       *dest = tag->data.pstruct;
@@ -1531,12 +1533,6 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     }
     if (type == &g_sym_Char__star) {
       *dest = (void *) tag->data.psym->str.ptr.pchar;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_PTAG:
-    if (type == &g_sym_Ptag) {
-      *dest = (void *) tag->data.ptag;
       return true;
     }
     goto invalid_cast;
@@ -1742,7 +1738,6 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
     goto invalid_cast;
   case TAG_PSTRUCT_TYPE: *dest = &tag->data.pstruct_type; return true;
   case TAG_PSYM:         *dest = &tag->data.psym;         return true;
-  case TAG_PTAG:         *dest = &tag->data.ptag;         return true;
   case TAG_PTR:          *dest = &tag->data.ptr.p;        return true;
   case TAG_PTR_FREE:     *dest = &tag->data.ptr_free.p;   return true;
   case TAG_PTUPLE:       *dest = &tag->data.ptuple;       return true;
@@ -1816,7 +1811,6 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
     *dest = tag->data.pstruct->pstruct_type->module; return dest;
   case TAG_PSTRUCT_TYPE: *dest = &g_sym_StructType;  return dest;
   case TAG_PSYM:         *dest = &g_sym_Sym;         return dest;
-  case TAG_PTAG:         *dest = &g_sym_Ptag;        return dest;
   case TAG_PTR:          *dest = &g_sym_Ptr;         return dest;
   case TAG_PTR_FREE:     *dest = &g_sym_PtrFree;     return dest;
   case TAG_PTUPLE:       *dest = &g_sym_Tuple;       return dest;

@@ -534,12 +534,17 @@ s_marshall_read * marshall_read_data (s_marshall_read *mr, bool heap,
     return marshall_read_plist(mr, heap, data);
   if (type == &g_sym_Map)
     return marshall_read_map(mr, heap, data);
-  if (type == &g_sym_Ptag)
-    return marshall_read_ptag(mr, heap, data);
   if (type == &g_sym_Ptr)
     return marshall_read_ptr(mr, heap, data);
   if (type == &g_sym_PtrFree)
     return marshall_read_ptr_free(mr, heap, data);
+  if (sym_is_pointer_type(type, NULL)) {
+    s_pointer p = {0};
+    if (! marshall_read_pointer(mr, heap, &p))
+      return NULL;
+    *(void **) data = p.ptr.p;
+    return mr;
+  }
   if (type == &g_sym_Quote)
     return marshall_read_quote(mr, heap, data);
   if (type == &g_sym_S8)
@@ -2560,8 +2565,6 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
                                       &dest->data.pstruct_type);
   case TAG_PSYM:
     return marshall_read_psym(mr, heap, &dest->data.psym);
-  case TAG_PTAG:
-    return marshall_read_ptag(mr, heap, &dest->data.ptag);
   case TAG_PTR:
     return marshall_read_ptr(mr, heap, &dest->data.ptr);
   case TAG_PTR_FREE:

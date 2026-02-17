@@ -31,6 +31,8 @@ s_pointer * pointer_new (void *p);
 s_pointer * pointer_new_copy (const s_pointer *src);
 
 /* Observers. */
+s_tag * pointer_access (const s_pointer *pointer, s_list *key,
+                        s_tag *dest);
 s_tag * pointer_deref (const s_pointer *pointer, s_tag *dest);
 
 #endif /* LIBKC3_POINTER_H */

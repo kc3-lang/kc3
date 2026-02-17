@@ -65,7 +65,6 @@ const s_sym g_sym_MarshallRead     = SYM_1("MarshallRead");
 const s_sym g_sym_Mutex            = SYM_1("Mutex");
 const s_sym g_sym_Pointer          = SYM_1("Pointer");
 const s_sym g_sym_Pointer__star    = SYM_1("Pointer*");
-const s_sym g_sym_Ptag             = SYM_1("Ptag");
 const s_sym g_sym_Ptr              = SYM_1("Ptr");
 const s_sym g_sym_PtrFree          = SYM_1("PtrFree");
 const s_sym g_sym_Quote            = SYM_1("Quote");
@@ -364,7 +363,6 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_Mutex, NULL);
   sym_register(&g_sym_Pointer, NULL);
   sym_register(&g_sym_Pointer__star, NULL);
-  sym_register(&g_sym_Ptag, NULL);
   sym_register(&g_sym_Ptr, NULL);
   sym_register(&g_sym_PtrFree, NULL);
   sym_register(&g_sym_Quote, NULL);
@@ -1082,10 +1080,6 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_MAP;
     return true;
   }
-  if (sym == &g_sym_Ptag) {
-    *dest = TAG_PTAG;
-    return true;
-  }
   if (sym == &g_sym_Ptr) {
     *dest = TAG_PTR;
     return true;
@@ -1494,13 +1488,12 @@ uw * sym_type_size (const s_sym *type, uw *dest)
     *dest = sizeof(s_map);
     return dest;
   }
-  if (type == &g_sym_Pointer ||
-      sym_is_pointer_type(type, NULL)) {
+  if (type == &g_sym_Pointer) {
     *dest = sizeof(s_pointer);
     return dest;
   }
-  if (type == &g_sym_Ptag) {
-    *dest = sizeof(p_tag);
+  if (sym_is_pointer_type(type, NULL)) {
+    *dest = sizeof(void *);
     return dest;
   }
   if (type == &g_sym_Ptr) {

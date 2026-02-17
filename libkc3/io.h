@@ -69,6 +69,7 @@ PROTOTYPES_ERR_IO_INSPECT(integer_hexadecimal, const s_integer *);
 PROTOTYPES_ERR_IO_INSPECT(list,                const s_list *);
 PROTOTYPES_ERR_IO_INSPECT(map,                 const s_map *);
 PROTOTYPES_ERR_IO_INSPECT(plist,               p_list *);
+PROTOTYPES_ERR_IO_INSPECT(pointer,             const s_pointer *);
 PROTOTYPES_ERR_IO_INSPECT(psym,                p_sym const *);
 PROTOTYPES_ERR_IO_INSPECT(ptr,                 const u_ptr_w *);
 PROTOTYPES_ERR_IO_INSPECT(quote,               const s_quote *);

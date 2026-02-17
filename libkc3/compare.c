@@ -1416,7 +1416,6 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                b->data.pstruct_type);
   case TAG_PSYM:       return compare_str(&a->data.psym->str,
                                           &b->data.psym->str);
-  case TAG_PTAG:       return compare_ptag(a->data.ptag, b->data.ptag);
   case TAG_PTR:        return compare_ptr(a->data.ptr.p, b->data.ptr.p);
   case TAG_PTR_FREE:   return compare_ptr(a->data.ptr_free.p,
                                           b->data.ptr_free.p);

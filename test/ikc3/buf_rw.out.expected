@@ -1,5 +1,8 @@
+require Buf
+Buf
 require BufRW
 BufRW
 %BufRW{}
-%BufRW{r: (Ptr) 0,
-       w: (Ptr) 0}
+%BufRW{r: (Buf*) 0,
+       w: (Buf*) 0}
+{(Uw) 1024, (Uw) 1024}

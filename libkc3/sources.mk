@@ -158,7 +158,6 @@ HEADERS = \
 	"pstruct.h" \
 	"pstruct_type.h" \
 	"psym.h" \
-	"ptag.h" \
 	"ptr.h" \
 	"ptr_free.h" \
 	"ptuple.h" \
@@ -381,7 +380,6 @@ SOURCES = \
 	"pstruct.c" \
 	"pstruct_type.c" \
 	"psym.c" \
-	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \
 	"ptuple.c" \
@@ -718,7 +716,6 @@ LO_SOURCES = \
 	"pstruct.c" \
 	"pstruct_type.c" \
 	"psym.c" \
-	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \
 	"ptuple.c" \

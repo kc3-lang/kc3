@@ -96,7 +96,6 @@
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "psym.h"
-#include "ptag.h"
 #include "ptr.h"
 #include "ptr_free.h"
 #include "ptuple.h"

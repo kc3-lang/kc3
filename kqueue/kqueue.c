@@ -33,23 +33,20 @@ s64 kc3_kqueue (void)
   return r;
 }
 
-s64 kc3_kqueue_add (s64 kqfd, s64 fd, s_tag *timeout, s_tag *udata)
+s64 kc3_kqueue_add (s64 kqfd, s64 fd, s_tag *timeout, s_tag **udata)
 {
   s32 e;
   struct kevent events[2];
   s32 nevents = 1;
   s32 r;
-  void *udata_ptr;
+  void *stored_udata;
   memset(events, 0, sizeof(events));
-  if (udata && udata->type == TAG_POINTER)
-    udata_ptr = udata->data.pointer.ptr.p;
-  else
-    udata_ptr = udata;
+  stored_udata = udata ? *udata : NULL;
   events[0].ident = fd;
   events[0].filter = EVFILT_READ;
   events[0].flags = EV_ADD | EV_ONESHOT;
   events[0].data = SOMAXCONN;
-  events[0].udata = udata_ptr;
+  events[0].udata = stored_udata;
   if (timeout && timeout->type == TAG_TIME) {
     s_time *t = &timeout->data.time;
     s64 timeout_ms = t->tv_sec * 1000 + t->tv_nsec / 1000000;
@@ -57,7 +54,7 @@ s64 kc3_kqueue_add (s64 kqfd, s64 fd, s_tag *timeout, s_tag *udata)
     events[1].filter = EVFILT_TIMER;
     events[1].flags = EV_ADD | EV_ONESHOT;
     events[1].data = timeout_ms;
-    events[1].udata = udata_ptr;
+    events[1].udata = stored_udata;
     nevents = 2;
   }
   if ((r = kevent(kqfd, events, nevents, NULL, 0, NULL)) < 0) {
@@ -97,9 +94,11 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
 {
   s32 e;
   struct kevent event = {0};
+  const s_sym *event_type;
   s_timespec *p = NULL;
   s32 r;
   s_timespec timespec = {0};
+  s_tag *udata;
   if (timeout && timeout->type != TAG_VOID) {
     switch (timeout->type) {
     case TAG_TIME:
@@ -121,8 +120,14 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
     return tag_init_void(dest);
   }
   if (r > 0) {
-    s_tag *udata = event.udata;
-    const s_sym *event_type;
+    udata = event.udata;
+    err_write_1("kc3_kqueue_poll: udata=");
+    err_inspect_uw_hexadecimal((uw) udata);
+    if (udata) {
+      err_write_1(" type=");
+      err_inspect_u8((u8) udata->type);
+    }
+    err_write_1("\n");
     if (event.filter == EVFILT_TIMER)
       event_type = &g_sym_timer;
     else if (event.flags & EV_EOF)
@@ -133,8 +138,12 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
         ! tag_init_s64(dest->data.ptuple->tag, event.ident) ||
         ! tag_init_psym(dest->data.ptuple->tag + 1, event_type))
       return NULL;
-    if (! tag_init_copy(dest->data.ptuple->tag + 2, udata))
-      return NULL;
+    if (udata) {
+      if (! tag_init_copy(dest->data.ptuple->tag + 2, udata))
+        return NULL;
+    }
+    else
+      tag_init_void(dest->data.ptuple->tag + 2);
     return dest;
   }
   return tag_init_void(dest);

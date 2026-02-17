@@ -77,13 +77,20 @@ s_tag * struct_access_sym (s_struct *s, const s_sym *key, s_tag *dest)
   s_tag tmp = {0};
   void *tmp_data;
   if (! struct_get_var_type(s, key, &type))
-    return NULL;    
+    return NULL;
   data = struct_get_w(s, key);
   if (! data)
     return NULL;
   if (type != &g_sym_Tag) {
     if (! sym_to_tag_type(type, &tmp.type))
       return NULL;
+    if (sym_is_pointer_type(type, NULL)) {
+      tmp.data.pointer.ptr.p = *(void **) data;
+      tmp.data.pointer.target_type = sym_pointer_to_target_type(type);
+      tmp.data.pointer.pointer_type = type;
+      *dest = tmp;
+      return dest;
+    }
     if (type != &g_sym_Time) {
       if (! pstruct_type_find(type, &st))
         return NULL;

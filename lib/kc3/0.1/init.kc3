@@ -336,6 +336,7 @@ require Str
 require Struct
 require Sw
 require Sym
+require Tag
 require U8
 require U16
 require U32

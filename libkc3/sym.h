@@ -68,7 +68,6 @@ extern const s_sym g_sym_MarshallRead;
 extern const s_sym g_sym_Mutex;
 extern const s_sym g_sym_Pointer;
 extern const s_sym g_sym_Pointer__star;
-extern const s_sym g_sym_Ptag;
 extern const s_sym g_sym_Ptr;
 extern const s_sym g_sym_PtrFree;
 extern const s_sym g_sym_Quote;
