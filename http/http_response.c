@@ -161,7 +161,8 @@ sw http_response_buf_write (const s_http_response *response,
   s_tag *value = NULL;
   sw w = 0;
   assert(response);
-  assert(buf);
+  if (! buf)
+    return -1;
   if (! response->protocol.size)
     str_init_1(&protocol, NULL, "HTTP/1.1");
   else
