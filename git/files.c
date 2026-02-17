@@ -144,6 +144,8 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
   }
   count = git_tree_entrycount(sub_tree);
   if (! map_init(&tmp, count)) {
+    if (sub_tree != (git_tree *) obj)
+      git_tree_free(sub_tree);
     git_tree_entry_free(entry);
     git_object_free(obj);
     free(rev);
@@ -153,6 +155,9 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
   while (i < count) {
     sub_entry = git_tree_entry_byindex(sub_tree, i);
     if (! files_set_entry(sub_entry, NULL, &tmp, i)) {
+      map_clean(&tmp);
+      if (sub_tree != (git_tree *) obj)
+        git_tree_free(sub_tree);
       git_tree_entry_free(entry);
       git_object_free(obj);
       free(rev);

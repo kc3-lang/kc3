@@ -155,6 +155,7 @@ s_socket_buf * socket_buf_init (s_socket_buf *sb, s64 sockfd,
     assert(! "socket_buf_init: buf_rw_fd_open");
     close(sockfd);
     buf_rw_clean(&sb->buf_rw);
+    mutex_delete(sb->closed_mutex);
     return NULL;
   }
   sb->sockfd = sockfd;
@@ -162,6 +163,9 @@ s_socket_buf * socket_buf_init (s_socket_buf *sb, s64 sockfd,
   if (! sb->addr) {
     err_puts("socket_buf_init: socket_addr_new_copy");
     assert(! "socket_buf_init: socket_addr_new_copy");
+    buf_rw_fd_close(&sb->buf_rw);
+    buf_rw_clean(&sb->buf_rw);
+    mutex_delete(sb->closed_mutex);
     return NULL;
   }
   socket_addr_to_str(&sb->addr_str, addr, addr_len);

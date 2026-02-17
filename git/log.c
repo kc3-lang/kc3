@@ -110,8 +110,10 @@ p_list * kc3_git_log (git_repository **repo,
     }
     parents = git_commit_parentcount(commit);
     if (parents < opt.min_parents ||
-        (opt.max_parents > 0 && parents > opt.max_parents))
+        (opt.max_parents > 0 && parents > opt.max_parents)) {
+      git_commit_free(commit);
       continue;
+    }
     if (diffopts.pathspec.count > 0) {
       int unmatched = parents;
       if (parents == 0) {
@@ -136,8 +138,10 @@ p_list * kc3_git_log (git_repository **repo,
             unmatched--;
         }
       }
-      if (unmatched > 0)
+      if (unmatched > 0) {
+        git_commit_free(commit);
         continue;
+      }
     }
     if (count++ < opt.skip) {
       git_commit_free(commit);
@@ -228,8 +232,10 @@ static int log_add_revision (s_git_log_state *s,
         res = -3;
         goto error;
       }
+      git_object_free(revs.to);
       if (git_object_lookup(&revs.to, s->repo, &base,
                             GIT_OBJECT_COMMIT)) {
+        revs.to = NULL;
         res = -4;
         goto error;
       }
@@ -312,8 +318,10 @@ static p_list * log_push_commit (p_list *log_tail,
       git_oid_tostr(buf, sizeof(buf),
                     git_commit_parent_id(commit, i));
       parents = list_new(parents);
-      if (! tag_init_str_1_alloc(&parents->tag, buf))
+      if (! tag_init_str_1_alloc(&parents->tag, buf)) {
+        list_delete_all(parents);
         goto ko;
+      }
     }
   }
   tag_init_plist(map->value + 3, parents);
@@ -322,6 +330,11 @@ static p_list * log_push_commit (p_list *log_tail,
                  sig->when.offset * 60);
     tag_init_str_1_alloc(map->value + 2, sig->name);
     tag_init_str_1_alloc(map->value + 0, sig->email);
+  }
+  else {
+    tag_init_void(map->value + 0);
+    tag_init_void(map->value + 2);
+    tag_init_void(map->value + 5);
   }
   *log_tail = tmp;
   return &(*log_tail)->next.data.plist;

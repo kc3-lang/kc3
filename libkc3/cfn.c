@@ -69,6 +69,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
                              (void **) &result_pointer)) {
       err_puts("cfn_apply: tag_to_ffi_pointer 1");
       assert(! "cfn_apply: tag_to_ffi_pointer 1");
+      tag_clean(&tmp);
       return NULL;
     }
     result = &result_pointer;
@@ -77,15 +78,19 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     if (! tag_to_ffi_pointer(&tmp, cfn->result_type, &result)) {
       err_puts("cfn_apply: tag_to_ffi_pointer 2");
       assert(! "cfn_apply: tag_to_ffi_pointer 2");
+      tag_clean(&tmp);
       return NULL;
     }
   }
   if (cfn->arity) {
     arg_pointers = alloc((cfn->arity + 1) * sizeof(void *));
-    if (! arg_pointers)
+    if (! arg_pointers) {
+      tag_clean(&tmp);
       return NULL;
+    }
     arg_values = alloc((cfn->arity + 1) * sizeof(void *));
     if (! arg_values) {
+      tag_clean(&tmp);
       free(arg_pointers);
       return NULL;
     }
@@ -189,6 +194,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   free(arg_values);
   return dest_v;
  ko:
+  tag_clean(&tmp);
+  tag_clean(&tmp2);
   free(arg_pointers);
   free(arg_values);
   return NULL;
