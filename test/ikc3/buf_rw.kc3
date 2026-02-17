@@ -6,5 +6,8 @@ quote %BufRW{}
 %BufRW{}
 do
   buf_rw = BufRW.init_alloc((Uw) 1024)
-  {buf_rw.r.size, buf_rw.w.size}
+  r = {buf_rw.r.size, buf_rw.w.size}
+  Buf.delete(buf_rw.r)
+  Buf.delete(buf_rw.w)
+  r
 end
