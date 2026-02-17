@@ -109,11 +109,11 @@ void socket_buf_close (s_socket_buf *sb)
   }
 }
 
-bool socket_buf_set_tag (s_socket_buf *sb, s_tag *tag)
+bool socket_buf_set_tag (s_socket_buf *sb, s_tag **tag)
 {
   assert(sb);
   assert(tag);
-  sb->ptag = tag;
+  sb->ptag = *tag;
   return true;
 }
 
