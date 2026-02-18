@@ -31,6 +31,8 @@ defmodule HTTPd do
 
   def acceptor_tag = Tag.new_copy(:acceptor)
 
+  def concurrent_requests = Counter.new(0)
+
   def connections = Counter.new(0)
   def connections_max = ncpu * 64
 
@@ -104,6 +106,7 @@ defmodule HTTPd do
   def http_client = fn (socket, client) do
     close = false
     error = true
+    Counter.increase(HTTPd.concurrent_requests, 1)
     unwind_protect(do
       request = HTTP.Request.buf_parse(client.buf_rw.r)
       if request do
@@ -162,6 +165,7 @@ defmodule HTTPd do
         end
       end
     end, do
+      Counter.decrease(HTTPd.concurrent_requests, 1)
       if (error || close) && Socket.Buf.can_close?(client) do
         KQueue.delete(HTTPd.kq_fd, socket, :timer)
         KQueue.delete(HTTPd.kq_fd, socket, :read)
