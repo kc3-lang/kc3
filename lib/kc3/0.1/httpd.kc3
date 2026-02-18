@@ -219,47 +219,49 @@ defmodule HTTPd do
 
   def server_thread = fn () {
     while ! Counter.get(HTTPd.server_thread_stop) do
-      Mutex.lock(HTTPd.kq_mutex)
-      r = unwind_protect(do
-        KQueue.poll(HTTPd.kq_fd, %Time{})
-      end, do
-        Mutex.unlock(HTTPd.kq_mutex)
+      ignore_errors(do
+        Mutex.lock(HTTPd.kq_mutex)
+        r = unwind_protect(do
+          KQueue.poll(HTTPd.kq_fd, %Time{})
+        end, do
+          Mutex.unlock(HTTPd.kq_mutex)
+        end)
+        match r do
+          {sockfd, :eof, :acceptor} ->
+            File.close(sockfd)
+            Counter.increment(HTTPd.server_thread_stop, 1)
+          {sockfd, :read, :acceptor} ->
+            HTTPd.acceptor(sockfd)
+          {sockfd, :eof, {:client, client}} ->
+            if Socket.Buf.can_close?(client) do
+              KQueue.delete(HTTPd.kq_fd, sockfd, :timer)
+              Tag.delete(client.ptag)
+              Socket.Buf.close(client)
+              File.close(sockfd)
+              Counter.decrease(HTTPd.connections, 1)
+              count = Counter.get(HTTPd.connections)
+              puts("HTTPd.server_thread: eof: connections=#{count}")
+            end
+          {sockfd, :read, {:client, client}} ->
+            HTTPd.http_client(sockfd, client)
+          {sockfd, :timer, {:client, client}} ->
+            if Socket.Buf.can_close?(client) do
+              KQueue.delete(HTTPd.kq_fd, sockfd, :read)
+              Tag.delete(client.ptag)
+              Socket.Buf.close(client)
+              File.close(sockfd)
+              Counter.decrease(HTTPd.connections, 1)
+              count = Counter.get(HTTPd.connections)
+              puts("HTTPd.server_thread: timeout: connections=#{count}")
+            end
+          void ->
+            sleep(%Time{tv_nsec: 10000000})
+          x ->
+            Err.puts("HTTPd.server_thread: unknown poll value:" +
+              " #{inspect(x)}")
+            void
+        end
       end)
-      match r do
-        {sockfd, :eof, :acceptor} ->
-          File.close(sockfd)
-          Counter.increment(HTTPd.server_thread_stop, 1)
-        {sockfd, :read, :acceptor} ->
-          HTTPd.acceptor(sockfd)
-        {sockfd, :eof, {:client, client}} ->
-          if Socket.Buf.can_close?(client) do
-            KQueue.delete(HTTPd.kq_fd, sockfd, :timer)
-            Tag.delete(client.ptag)
-            Socket.Buf.close(client)
-            File.close(sockfd)
-            Counter.decrease(HTTPd.connections, 1)
-            count = Counter.get(HTTPd.connections)
-            puts("HTTPd.server_thread: eof: connections=#{count}")
-          end
-        {sockfd, :read, {:client, client}} ->
-          HTTPd.http_client(sockfd, client)
-        {sockfd, :timer, {:client, client}} ->
-          if Socket.Buf.can_close?(client) do
-            KQueue.delete(HTTPd.kq_fd, sockfd, :read)
-            Tag.delete(client.ptag)
-            Socket.Buf.close(client)
-            File.close(sockfd)
-            Counter.decrease(HTTPd.connections, 1)
-            count = Counter.get(HTTPd.connections)
-            puts("HTTPd.server_thread: timeout: connections=#{count}")
-          end
-        void ->
-          sleep(%Time{tv_nsec: 10000000})
-        x ->
-          Err.puts("HTTPd.server_thread: unknown poll value:" +
-            " #{inspect(x)}")
-          void
-      end
     end
   }
 

@@ -406,3 +406,5 @@ def exp = fn (z) {
 }
 
 def i = 0 +i 1
+
+def ignore_errors = cfn_macro Tag "kc3_ignore_errors" (Tag, Result)

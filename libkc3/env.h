@@ -126,6 +126,7 @@ bool *         env_ident_is_special_operator (s_env *env,
                                               bool *dest);
 s_tag *        env_if_then_else (s_env *env, s_tag *cond, s_tag *then,
                                  s_tag *else_, s_tag *dest);
+s_tag *        env_ignore_errors (s_env *env, s_tag *src, s_tag *dest);
 s_tag *        env_kc3_def (s_env *env, const s_call *call,
                             s_tag *dest);
 s_tag *        env_kc3_defcounter (s_env *env, s_call *call,

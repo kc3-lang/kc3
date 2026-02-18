@@ -161,6 +161,7 @@ s_tag *              kc3_facts_with_transaction (s_tag *facts_arg,
                                                  s_tag *tag_arg,
                                                  s_tag *dest);
 s_tag *              kc3_identity (s_tag *tag, s_tag *dest);
+s_tag *              kc3_ignore_errors (s_tag *src, s_tag *dest);
 s_tag *              kc3_integer_reduce (s_tag *tag, s_tag *dest);
 bool                 kc3_killpg (sw process_group, p_sym *signal);
 s_tag *              kc3_let (s_tag *vars, s_tag *tag, s_tag *dest);

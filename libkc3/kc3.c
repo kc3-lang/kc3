@@ -830,6 +830,11 @@ s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
   return env_if_then_else(env_global(), cond, then, else_, dest);
 }
 
+s_tag * kc3_ignore_errors (s_tag *src, s_tag *dest)
+{
+  return env_ignore_errors(env_global(), src, dest);
+}
+
 s_buf ** kc3_in_buf (s_buf **dest)
 {
   s_env *env;

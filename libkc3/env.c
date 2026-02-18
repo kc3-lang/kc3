@@ -1910,6 +1910,16 @@ s_tag * env_if_then_else (s_env *env, s_tag *cond, s_tag *then,
   return dest;
 }
 
+s_tag * env_ignore_errors (s_env *env, s_tag *src, s_tag *dest)
+{
+  assert(env);
+  assert(src);
+  assert(dest);
+  if (! env_eval_tag(env, src, dest))
+    tag_init_void(dest);
+  return dest;
+}
+
 s_env * env_init (s_env *env, int *argc, char ***argv)
 {
   s_str path;
