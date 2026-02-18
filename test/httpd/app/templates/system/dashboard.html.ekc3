@@ -9,5 +9,7 @@
     <p>KC3 environment running time : <b><%= uptime_str %></b></p>
 
     <p>Requests : <b><%= requests %></b></p>
+
+    <p>Threads : <b><%= threads %></b></p>
   </div>
 </div>
