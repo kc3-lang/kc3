@@ -10,7 +10,7 @@
 
     <p>Requests : <b><%= httpd_stats.requests %></b></p>
 
-    <p>Concurrent requests : <b><%= httpd_stats.concurrent_requests %></b></p>
+    <p>Connections : <b><%= httpd_stats.connections %></b></p>
 
     <p>Threads : <b><%= httpd_stats.threads %></b></p>
   </div>
