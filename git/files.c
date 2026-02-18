@@ -87,9 +87,10 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
   memcpy(rev, branch->ptr.p, branch->size);
   memcpy(rev + branch->size, "^{tree}", 7);
   if (git_revparse_single(&obj, *repo, rev)) {
-    err_puts("kc3_git_files: git_revparse_single");
     free(rev);
-    return NULL;
+    map_init(&tmp, 0);
+    *dest = tmp;
+    return dest;
   }
   tree = (git_tree *) obj;
   if (! path->size ||
