@@ -7,5 +7,7 @@
     <p>KC3 securelevel : <b><%= securelevel_str %></b></p>
 
     <p>KC3 environment running time : <b><%= uptime_str %></b></p>
+
+    <p>Requests : <b><%= requests %></b></p>
   </div>
 </div>

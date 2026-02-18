@@ -20,7 +20,7 @@ defmodule SystemView do
   def template_layout =
     EKC3.load("app/templates/system/layout.html.ekc3")
   
-  def render_dashboard = fn (securelevel_str, uptime_str) {
+  def render_dashboard = fn (securelevel_str, uptime_str, requests) {
     EKC3.render(SystemView.template_dashboard)
   }
   

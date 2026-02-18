@@ -19,7 +19,8 @@ defmodule SystemController do
     title = "System dashboard"
     securelevel_str = "#{securelevel(0)}"
     uptime_str = Time.diff_to_str(Time.uptime())
-    page = SystemView.render_dashboard(securelevel_str, uptime_str)
+    requests = Counter.get(HTTPd.requests)
+    page = SystemView.render_dashboard(securelevel_str, uptime_str, requests)
     body = SystemView.render_layout(slug, title, page, url)
     %HTTP.Response{body: body}
   }

@@ -37,6 +37,8 @@ defmodule HTTPd do
   def kq_fd = ?
   def kq_mutex = Mutex.new()
 
+  def requests = Counter.new(0)
+
   def server_thread_stop = Counter.new(0)
 
   def timeout = %Time{tv_sec: 20}
@@ -105,6 +107,7 @@ defmodule HTTPd do
     unwind_protect(do
       request = HTTP.Request.buf_parse(client.buf_rw.r)
       if request do
+        Counter.increase(HTTPd.requests, 1)
         client_addr = if client.addr_str != "127.0.0.1" do
           client.addr_str
         else
