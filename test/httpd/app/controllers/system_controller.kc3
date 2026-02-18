@@ -19,10 +19,10 @@ defmodule SystemController do
     title = "System dashboard"
     securelevel_str = "#{securelevel(0)}"
     uptime_str = Time.diff_to_str(Time.uptime())
-    requests = Counter.get(HTTPd.requests)
-    threads = ^ HTTPd.thread_count
-    page = SystemView.render_dashboard(securelevel_str, uptime_str, requests,
-      threads)
+    httpd_stats = %{requests: Counter.get(HTTPd.requests),
+                     concurrent_requests: Counter.get(HTTPd.concurrent_requests),
+                     threads: ^ HTTPd.thread_count}
+    page = SystemView.render_dashboard(securelevel_str, uptime_str, httpd_stats)
     body = SystemView.render_layout(slug, title, page, url)
     %HTTP.Response{body: body}
   }

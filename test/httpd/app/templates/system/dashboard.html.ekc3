@@ -8,8 +8,10 @@
 
     <p>KC3 environment running time : <b><%= uptime_str %></b></p>
 
-    <p>Requests : <b><%= requests %></b></p>
+    <p>Requests : <b><%= httpd_stats.requests %></b></p>
 
-    <p>Threads : <b><%= threads %></b></p>
+    <p>Concurrent requests : <b><%= httpd_stats.concurrent_requests %></b></p>
+
+    <p>Threads : <b><%= httpd_stats.threads %></b></p>
   </div>
 </div>
