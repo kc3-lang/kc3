@@ -56,7 +56,7 @@ defmodule Facts do
   def close_all = cfn Void "facts_connections_close_all" (Facts)
 
   def connect = cfn Facts "kc3_facts_connect" (Facts, Str, Str,
-    TLS.Config)
+    TLS.Config*)
 
   def accept = cfn Facts "kc3_facts_accept" (Facts, Socket, TLS*)
 
