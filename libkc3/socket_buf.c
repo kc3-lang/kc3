@@ -103,10 +103,6 @@ void socket_buf_close (s_socket_buf *sb)
     socket_addr_delete(sb->addr);
     sb->addr = NULL;
   }
-  if (sb->closed_mutex) {
-    mutex_delete(sb->closed_mutex);
-    sb->closed_mutex = NULL;
-  }
 }
 
 bool socket_buf_set_tag (s_socket_buf *sb, s_tag **tag)

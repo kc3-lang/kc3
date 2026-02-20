@@ -43,6 +43,11 @@ defmodule HTTPd do
 
   def server_thread_stop = Counter.new(0)
 
+  def socket = ?
+
+  #def thread_count = 1
+  def thread_count = ncpu
+
   def timeout = %Time{tv_sec: 20}
 
   def load_app = fn () {
@@ -272,11 +277,6 @@ defmodule HTTPd do
   def server_thread_new = fn (x) {
     Thread.new(HTTPd.server_thread)
   }
-
-  #def thread_count = 1
-  def thread_count = ncpu
-
-  def socket = ?
 
   def server = fn (host, port) {
     unveil("./", "r")
