@@ -22,7 +22,7 @@ defmodule SystemController do
     httpd_stats = %{requests: Counter.get(HTTPd.requests),
                      concurrent_requests: Counter.get(HTTPd.concurrent_requests),
                      connections: Counter.get(HTTPd.connections),
-                     threads: ^ HTTPd.thread_count}
+                     threads: HTTPd.thread_count()}
     page = SystemView.render_dashboard(securelevel_str, uptime_str, httpd_stats)
     body = SystemView.render_layout(slug, title, page, url)
     %HTTP.Response{body: body}
