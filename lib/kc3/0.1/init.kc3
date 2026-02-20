@@ -313,10 +313,13 @@ def exit = cfn Void "kc3_exit" (Tag)
 def exit_subprocess = cfn Void "kc3_exit_subprocess" (Tag)
 def fork = cfn S64 "kc3_fork" (Result)
 def hostname = cfn Str "kc3_hostname" (Result)
-def tag_to_pointer = cfn_macro Pointer "kc3_tag_to_pointer" (Tag, Result)
-def wait = cfn Tuple "kc3_wait" (Result)
+def ncpu = cfn Tag "ncpu_tag" (Result)
+def pledge = cfn Void "kc3_pledge" (Str, Str)
 def securelevel = cfn U8 "securelevel" (U8)
 def sleep = cfn Void "kc3_sleep" (Tag)
+def tag_to_pointer = cfn_macro Pointer "kc3_tag_to_pointer" (Tag, Result)
+def unveil = cfn Void "kc3_unveil" (Str, Str)
+def wait = cfn Tuple "kc3_wait" (Result)
 
 require Bool
 require Call
@@ -351,24 +354,27 @@ require Facts
 require IO
 require Err
 
-def unveil = cfn Void "kc3_unveil" (Str, Str)
-def pledge = cfn Void "kc3_pledge" (Str, Str)
-
-def pow = fn (a, b) {
-  result = 1
-  if b > 0 do
-    while (b > 0) do
-      result = result * a
-      b = b - 1
-    end
-  else
-    while (b < 0) do
-      result = result / a
-      b = b + 1
-    end
+def exp = fn (z) {
+  i = 1
+  d = 1
+  s = 1
+  while i < 100 do
+    d = d * z / i
+    s = s + d
+    i = i + 1
   end
-  result
+  s
 }
+
+def factorial = fn {
+  (0) { 1 }
+  (1) { 1 }
+  (x) { if (x > 0) do x * factorial(x - 1) end }
+}
+
+def i = 0 +i 1
+
+def ignore_errors = cfn_macro Tag "kc3_ignore_errors" (Tag, Result)
   
 def log = fn (n, base) {
   result = 0
@@ -387,24 +393,18 @@ def log = fn (n, base) {
   result
 }
 
-def factorial = fn {
-  (0) { 1 }
-  (1) { 1 }
-  (x) { if (x > 0) do x * factorial(x - 1) end }
-}
-
-def exp = fn (z) {
-  i = 1
-  d = 1
-  s = 1
-  while i < 100 do
-    d = d * z / i
-    s = s + d
-    i = i + 1
+def pow = fn (a, b) {
+  result = 1
+  if b > 0 do
+    while (b > 0) do
+      result = result * a
+      b = b - 1
+    end
+  else
+    while (b < 0) do
+      result = result / a
+      b = b + 1
+    end
   end
-  s
+  result
 }
-
-def i = 0 +i 1
-
-def ignore_errors = cfn_macro Tag "kc3_ignore_errors" (Tag, Result)

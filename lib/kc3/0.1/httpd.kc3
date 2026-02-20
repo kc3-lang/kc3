@@ -34,7 +34,7 @@ defmodule HTTPd do
   def concurrent_requests = Counter.new(0)
 
   def connections = Counter.new(0)
-  def connections_max = ncpu * 64
+  def connections_max = ncpu() * 64
 
   def kq_fd = ?
   def kq_mutex = Mutex.new()
@@ -46,7 +46,7 @@ defmodule HTTPd do
   def socket = ?
 
   #def thread_count = 1
-  def thread_count = ncpu
+  def thread_count = ncpu()
 
   def timeout = %Time{tv_sec: 20}
 
