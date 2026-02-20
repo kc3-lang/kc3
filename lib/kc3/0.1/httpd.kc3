@@ -35,7 +35,7 @@ defmodule HTTPd do
 
   def connections = Counter.new(0)
 
-  def connections_max = fn () { ncpu() * 64 }
+  def connections_max = fn () { ncpu() * 16 }
 
   def kq_fd = ?
 
@@ -45,9 +45,9 @@ defmodule HTTPd do
 
   def socket = ?
 
-  def thread_count = fn () { ncpu() }
+  def thread_count = fn () { ncpu() * 2 }
 
-  def timeout = %Time{tv_sec: 20}
+  def timeout = %Time{tv_sec: 5}
 
   def load_app = fn () {
     HTTP.mime_type_load("config/mime.types")
