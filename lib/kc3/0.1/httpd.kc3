@@ -37,7 +37,6 @@ defmodule HTTPd do
   def connections_max = ncpu() * 64
 
   def kq_fd = ?
-  def kq_mutex = Mutex.new()
 
   def requests = Counter.new(0)
 
@@ -150,13 +149,8 @@ defmodule HTTPd do
           "Accept-Ranges", "bytes")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
-        Mutex.lock(HTTPd.kq_mutex)
-        kq_ok = unwind_protect(do
-          KQueue.add(HTTPd.kq_fd, client.sockfd,
-                     HTTPd.timeout, client.ptag) == 0
-        end, do
-          Mutex.unlock(HTTPd.kq_mutex)
-        end)
+        kq_ok = KQueue.add(HTTPd.kq_fd, client.sockfd,
+                           HTTPd.timeout, client.ptag) == 0
         error = ((r <= 0) || (! kq_ok))
         dt = Time.now() - request.time
         dt_str = Time.diff_to_str(dt)
@@ -196,15 +190,10 @@ defmodule HTTPd do
         Counter.increase(HTTPd.connections, 1)
         count = Counter.get(HTTPd.connections)
         puts("HTTPd.acceptor: connections=#{count}")
-        Mutex.lock(HTTPd.kq_mutex)
-        unwind_protect(do
-          ok = (KQueue.add(HTTPd.kq_fd, server_socket, void,
-                           HTTPd.acceptor_tag) == 0 &&
-                KQueue.add(HTTPd.kq_fd, client.sockfd, HTTPd.timeout,
-                           client.ptag) == 0)
-        end, do
-          Mutex.unlock(HTTPd.kq_mutex)
-        end)
+        ok = (KQueue.add(HTTPd.kq_fd, server_socket, void,
+                         HTTPd.acceptor_tag) == 0 &&
+              KQueue.add(HTTPd.kq_fd, client.sockfd, HTTPd.timeout,
+                         client.ptag) == 0)
       end
     end, do
       if ((! ok) && client) do
@@ -229,12 +218,7 @@ defmodule HTTPd do
   def server_thread = fn () {
     while ! Counter.get(HTTPd.server_thread_stop) do
       ignore_errors(do
-        Mutex.lock(HTTPd.kq_mutex)
-        r = unwind_protect(do
-          KQueue.poll(HTTPd.kq_fd, %Time{})
-        end, do
-          Mutex.unlock(HTTPd.kq_mutex)
-        end)
+        r = KQueue.poll(HTTPd.kq_fd, %Time{tv_sec: 1})
         match r do
           {sockfd, :eof, :acceptor} ->
             File.close(sockfd)
@@ -264,7 +248,7 @@ defmodule HTTPd do
               puts("HTTPd.server_thread: timeout: connections=#{count}")
             end
           void ->
-            sleep(%Time{tv_nsec: 10000000})
+            void
           x ->
             Err.puts("HTTPd.server_thread: unknown poll value:" +
               " #{inspect(x)}")
@@ -315,7 +299,6 @@ defmodule HTTPd do
         Counter.delete(HTTPd.connections)
         Counter.delete(HTTPd.server_thread_stop)
         File.close(HTTPd.kq_fd)
-        Mutex.delete(HTTPd.kq_mutex)
         Socket.close(HTTPd.socket)
         Tag.delete(HTTPd.acceptor_tag)
         if Module.has_symbol?(Config, :at_exit) do
