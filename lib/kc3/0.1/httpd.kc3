@@ -34,7 +34,8 @@ defmodule HTTPd do
   def concurrent_requests = Counter.new(0)
 
   def connections = Counter.new(0)
-  def connections_max = ncpu() * 64
+
+  def connections_max = fn () { ncpu() * 64 }
 
   def kq_fd = ?
 
@@ -44,8 +45,7 @@ defmodule HTTPd do
 
   def socket = ?
 
-  #def thread_count = 1
-  def thread_count = ncpu()
+  def thread_count = fn () { ncpu() }
 
   def timeout = %Time{tv_sec: 20}
 
@@ -183,7 +183,7 @@ defmodule HTTPd do
     client = void
     client_tag = void
     unwind_protect(do
-      if (Counter.get(HTTPd.connections) < HTTPd.connections_max) &&
+      if (Counter.get(HTTPd.connections) < HTTPd.connections_max()) &&
          (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
          (client_tag = Tag.new_copy({:client, client})) &&
          Socket.Buf.set_tag(client, client_tag) do
@@ -288,8 +288,8 @@ defmodule HTTPd do
       clean_all_uploads()
       if (HTTPd.kq_fd <- KQueue.kqueue()) > 0 do
         KQueue.add(HTTPd.kq_fd, socket.fd, void, HTTPd.acceptor_tag)
-        if HTTPd.thread_count > 1 do
-          threads = List.map(List.count(HTTPd.thread_count - 1),
+        if HTTPd.thread_count() > 1 do
+          threads = List.map(List.count(HTTPd.thread_count() - 1),
             HTTPd.server_thread_new)
           HTTPd.server_thread()
           List.map(threads, Thread.delete)
