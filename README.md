@@ -1,15 +1,20 @@
 # KC3 v0.1.17-git
 
-"The first graph-native programming language."
+A programming language providing and relying on facts-db.
 
 KC3 is a programming language with meta-programmation and a graph
 database embedded into the language. The graph database allows for
 all definitions in the language and can define special operators
 in KC3 or in C. With a graph database at its core it aims to be the
 language for semantic programming, and programming the semantic web.
+It's really easy to devise a data scheme that will persist and
+iterate in any order and call KC3 or C functions on it.
+
+For now there is no object abstraction nor reasoning on facts.
+Every operation on the database is controlled by C code in the end.
 
 You can easily convert each KC3 function to a C function. KC3 is both
-a language and a runtime.
+a language and a runtime with powerful, scaling data structures.
 
 This is a development branch, for the latest release see
 [KC3 v0.1.16](https://git.kmx.io/kc3-lang/kc3/_tree/v0.1.16).
@@ -109,8 +114,9 @@ There are now five full applications written in KC3 that we know of :
  - HTTPd
    - allow for configuration of OpenBSD's `unveil(2)` in
      `config/unveil.kc3`
+   - dropped `libevent2` support in favor of `kqueue(2)`.
    - allow for graceful shutdown using either SIGTERM or SIGINT
-   - plugged memory leaks
+   - plugged memory leaks using otto malloc
 
  - HTTPS
    - `HTTPS.Client` with libtls and automatic or manual connection
@@ -118,7 +124,19 @@ There are now five full applications written in KC3 that we know of :
      - POST method
      - JSON response
 
-## Discord invite
+## Contact
+
+Please contact us for support on the following channels.
+
+### Mailing lists
+
+Send a mail to <kc3-lang+subscribe@lists.mail.kmx.io> to join the
+<kc3-lang@lists.mail.kmx.io> mailing-list.
+
+This is a public list with a public archive. The mailing list archive is
+available at <https://lists.mail.kmx.io/kc3-lang/threads.html>.
+
+### Discord invite
 
 [Join us on kmx.io Discord server !](https://discord.gg/A4MWkpUDsG)
 
