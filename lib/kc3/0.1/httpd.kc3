@@ -12,7 +12,6 @@
 
 require Buf
 require Counter
-require Event
 require Facts
 require File
 require HTML

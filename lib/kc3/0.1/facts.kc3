@@ -38,6 +38,15 @@ defmodule Facts do
              ref_count: (Sw) 0,
              ref_count_mutex: %Mutex{}]
 
+  def accept = cfn Facts "kc3_facts_accept" (Facts, Socket, TLS*)
+
+  def acceptor_loop =
+    cfn Facts.Acceptor "kc3_facts_acceptor_loop" (Facts, Socket, TLS*,
+      Result)
+
+  def acceptor_loop_join =
+    cfn Void "facts_acceptor_loop_join" (Facts.Acceptor)
+
   # returns true if fact was added or is already present
   def add_tags =
     cfn Bool "kc3_facts_add_tags" (Facts, Tag, Tag, Tag, Result)
@@ -58,18 +67,11 @@ defmodule Facts do
   def connect = cfn Facts "kc3_facts_connect" (Facts, Str, Str,
     TLS.Config*)
 
-  def accept = cfn Facts "kc3_facts_accept" (Facts, Socket, TLS*)
-
-  def acceptor_loop =
-    cfn Facts.Acceptor "kc3_facts_acceptor_loop" (Facts, Socket, TLS*,
-      Result)
-
-  def acceptor_loop_join =
-    cfn Void "facts_acceptor_loop_join" (Facts.Acceptor)
-
   def database = cfn Facts* "pfacts_init" (Result)
 
   def delete = cfn Void "pfacts_clean" (Facts*)
+
+  def dump_binary_file = cfn Sw "facts_dump_binary_file" (Facts, Str)
 
   def env_db = cfn Facts* "kc3_env_db" (Result)
 
