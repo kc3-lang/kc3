@@ -140,6 +140,7 @@ HEADERS = \
 	"map.h" \
 	"marshall.h" \
 	"marshall_read.h" \
+	"memleak.h" \
 	"module.h" \
 	"mutex.h" \
 	"ncpu.h" \
@@ -362,6 +363,7 @@ SOURCES = \
 	"map.c" \
 	"marshall.c" \
 	"marshall_read.c" \
+	"memleak.c" \
 	"module.c" \
 	"mutex.c" \
 	"ncpu.c" \
@@ -698,6 +700,7 @@ LO_SOURCES = \
 	"map.c" \
 	"marshall.c" \
 	"marshall_read.c" \
+	"memleak.c" \
 	"module.c" \
 	"mutex.c" \
 	"ncpu.c" \

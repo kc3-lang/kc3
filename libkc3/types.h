@@ -259,6 +259,7 @@ typedef struct map                     s_map;
 typedef struct marshall                s_marshall;
 typedef struct marshall_header         s_marshall_header;
 typedef struct marshall_read           s_marshall_read;
+typedef struct memleak                 s_memleak;
 typedef struct mutex                   s_mutex;
 typedef struct op                      s_op;
 typedef struct ops                     s_ops;
@@ -452,6 +453,13 @@ struct marshall_header {
   u64 le_heap_size;
   u64 le_buf_size;
 } __attribute((packed));
+
+struct memleak {
+  void       *ptr;
+  uw          size;
+  s_list     *stacktrace;
+  s_memleak  *next;
+};
 
 struct mutex {
   pthread_mutex_t mutex;

@@ -706,6 +706,8 @@ KC3_C_SOURCES = \
 	"libkc3/marshall.h" \
 	"libkc3/marshall_read.c" \
 	"libkc3/marshall_read.h" \
+	"libkc3/memleak.c" \
+	"libkc3/memleak.h" \
 	"libkc3/module.c" \
 	"libkc3/module.h" \
 	"libkc3/mutex.c" \
