@@ -980,6 +980,7 @@ void env_error_f (s_env *env, const char *fmt, ...)
   str_init_vf(&tag.data.str, fmt, ap);
   va_end(ap);
   env_error_tag(env, &tag);
+  tag_clean(&tag);
 }
 
 void env_error_handler_pop (s_env *env, s_error_handler *eh)
@@ -2653,6 +2654,7 @@ bool env_module_load (s_env *env, const s_sym *module)
       goto rollback;
     }
     if (! file_access(&path, &g_sym_r)) {
+      str_clean(&path);
       goto rollback;
     }
     tag_init_time_now(&tag_time);
