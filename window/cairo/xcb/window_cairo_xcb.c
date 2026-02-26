@@ -101,10 +101,10 @@ bool window_cairo_xcb_event (s_window_cairo *window,
   default:
     printf("event type %d\n", event->response_type & ~0x80);
   }
-  free(event);
+  alloc_free(event);
   return true;
  ko:
-  free(event);
+  alloc_free(event);
   return false;
 }
 

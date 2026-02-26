@@ -28,13 +28,13 @@ void do_block_clean (s_do_block *do_block)
   i = do_block->count;
   while (i--)
     tag_clean(do_block->tag + i);
-  free(do_block->tag);
+  alloc_free(do_block->tag);
 }
 
 void do_block_delete (s_do_block *do_block)
 {
   do_block_clean(do_block);
-  free(do_block);
+  alloc_free(do_block);
 }
 
 s_do_block * do_block_init (s_do_block *do_block, uw count)
@@ -141,7 +141,7 @@ s_do_block * do_block_new (uw count)
   if (! do_block)
     return NULL;
   if (! do_block_init(do_block, count)) {
-    free(do_block);
+    alloc_free(do_block);
     return NULL;
   }
   return do_block;
@@ -154,7 +154,7 @@ s_do_block * do_block_new_1 (const char *p)
   if (! do_block)
     return NULL;
   if (! do_block_init_1(do_block, p)) {
-    free(do_block);
+    alloc_free(do_block);
     return NULL;
   }
   return do_block;

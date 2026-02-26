@@ -51,7 +51,7 @@ void fn_clean (s_fn *fn)
 void fn_delete (s_fn *fn)
 {
   fn_clean(fn);
-  free(fn);
+  alloc_free(fn);
 }
 
 s_fn * fn_init (s_fn *fn, const s_sym *module)
@@ -151,7 +151,7 @@ s_fn * fn_new_copy (const s_fn *src)
   if (! fn)
     return NULL;
   if (! fn_init_copy(fn, src)) {
-    free(fn);
+    alloc_free(fn);
     return NULL;
   }
   return fn;

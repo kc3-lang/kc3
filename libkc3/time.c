@@ -53,7 +53,7 @@ void time_clean (s_time *time)
   if (time->tag) {
     tag_clean(time->tag);
     tag_clean(time->tag + 1);
-    free(time->tag);
+    alloc_free(time->tag);
   }
 }
 
@@ -185,12 +185,12 @@ s_time * time_init_copy (s_time *time, const s_time *src)
     if (! time_allocate(&tmp))
       return NULL;
     if (! tag_init_copy(tmp.tag, src->tag)) {
-      free(tmp.tag);
+      alloc_free(tmp.tag);
       return NULL;
     }
     if (! tag_init_copy(tmp.tag + 1, src->tag + 1)) {
       tag_clean(tmp.tag);
-      free(tmp.tag);
+      alloc_free(tmp.tag);
       return NULL;
     }
   }

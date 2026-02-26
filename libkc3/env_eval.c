@@ -790,12 +790,12 @@ bool env_eval_complex (s_env *env, s_complex *c, s_tag *dest)
   if (! tmp)
     return false;
   if (! env_eval_tag(env, &c->x, &tmp->x)) {
-    free(tmp);
+    alloc_free(tmp);
     return false;
   }
   if (! env_eval_tag(env, &c->y, &tmp->y)) {
     tag_clean(&tmp->x);
-    free(tmp);
+    alloc_free(tmp);
     return false;
   }
   dest->type = TAG_PCOMPLEX;
@@ -967,7 +967,7 @@ bool env_eval_pcow (s_env *env, p_cow *pcow, p_cow *dest)
     return false;
   if (! env_eval_tag(env, cow_read_only(cow),
                      cow_read_write(tmp))) {
-    free(tmp);
+    alloc_free(tmp);
     return false;
   }
   cow_freeze(tmp);

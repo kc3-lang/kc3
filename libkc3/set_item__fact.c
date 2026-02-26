@@ -24,7 +24,7 @@ set_item_new__fact (s_fact * data, uw hash, s_set_item__fact *next)
   if (! item)
     return NULL;
   if (! fact_init_copy(&item->data, data)) {
-    free(item);
+    alloc_free(item);
     return NULL;
   }
   item->hash = hash;
@@ -37,7 +37,7 @@ void set_item_delete__fact (s_set_item__fact *x)
 {
   assert(x);
   fact_clean(&x->data);
-  free(x);
+  alloc_free(x);
 }
 
 void set_item_delete_all__fact (s_set_item__fact *x)

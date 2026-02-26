@@ -173,7 +173,7 @@ bool gl_text_render_to_texture (s_gl_text *text)
   assert(glGetError() == GL_NO_ERROR);
   glGenerateMipmap(GL_TEXTURE_2D);
   assert(glGetError() == GL_NO_ERROR);
-  free(data);
+  alloc_free(data);
   glBindTexture(GL_TEXTURE_2D, 0);
   text->pix_w = data_w;
   text->pix_h = data_h;

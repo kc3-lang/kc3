@@ -21,13 +21,13 @@
 void image_clean (s_image *image)
 {
   if (image && image->data)
-    free(image->data);
+    alloc_free(image->data);
 }
 
 void image_delete (s_image *image)
 {
   image_clean(image);
-  free(image);
+  alloc_free(image);
 }
 
 s_image * image_init (s_image *image)
@@ -232,14 +232,14 @@ s_image * image_init_png (s_image *image, const s_str *path, FILE *fp)
     err_write_1("image_init_png: image_init_alloc failed: ");
     err_inspect_str(path);
     err_write_1("\n");
-    free(png_data);
-    free(png_row);
+    alloc_free(png_data);
+    alloc_free(png_row);
     png_destroy_read_struct(&png_read, &png_info, NULL);
     return NULL;
   }
   memcpy(image->data, png_data, png_h * png_w * png_pixel_size);
-  free(png_data);
-  free(png_row);
+  alloc_free(png_data);
+  alloc_free(png_row);
   png_destroy_read_struct(&png_read, &png_info, NULL);
   return image;
 }
@@ -250,7 +250,7 @@ s_image * image_new_alloc (uw w, uw h, u8 components, u8 pixel_size)
   if (! (image = alloc(sizeof(s_image))))
     return NULL;
   if (! image_init_alloc(image, w, h, components, pixel_size)) {
-    free(image);
+    alloc_free(image);
     return NULL;
   }
   return image;
@@ -400,7 +400,7 @@ s_image * image_to_png_file (s_image *image, s_str *path)
       y * image->w * image->pixel_size;
   png_write_image(png_ptr, row_pointers);
   png_write_end(png_ptr, NULL);
-  free(row_pointers);
+  alloc_free(row_pointers);
   png_destroy_write_struct(&png_ptr, &info_ptr);
   fclose(fp);
   return image;
@@ -484,7 +484,7 @@ s_str * image_to_png_str (s_image *image, s_str *dest)
       y * image->w * image->pixel_size;
   png_write_image(png_ptr, row_pointers);
   png_write_end(png_ptr, NULL);
-  free(row_pointers);
+  alloc_free(row_pointers);
   png_destroy_write_struct(&png_ptr, &info_ptr);
   if (buf_read_to_str(&out, &tmp) < 0) {
     buf_clean(&out);

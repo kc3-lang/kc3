@@ -31,7 +31,7 @@ s_fn_clause * fn_clause_delete (s_fn_clause *fn_clause)
   assert(fn_clause);
   next = fn_clause->next;
   fn_clause_clean(fn_clause);
-  free(fn_clause);
+  alloc_free(fn_clause);
   return next;
 }
 

@@ -76,7 +76,7 @@ void complex_delete (s_complex *c)
 {
   assert(c);
   complex_clean(c);
-  free(c);
+  alloc_free(c);
 }
 
 s_complex * complex_div (s_complex *a, s_complex *b,
@@ -240,7 +240,7 @@ s_complex * complex_new (void)
   if (! c)
     return NULL;
   if (! complex_init(c)) {
-    free(c);
+    alloc_free(c);
     return NULL;
   }
   return c;
@@ -253,7 +253,7 @@ s_complex * complex_new_add (s_complex *a, s_complex *b)
   if (! c)
     return NULL;
   if (! complex_add(a, b, c)) {
-    free(c);
+    alloc_free(c);
     return NULL;
   }
   return c;
@@ -268,7 +268,7 @@ s_complex * complex_new_cast (const s_sym * const *type,
   if (! c)
     return NULL;
   if (! complex_init_cast(c, type, src)) {
-    free(c);
+    alloc_free(c);
     return NULL;
   }
   return c;
@@ -282,7 +282,7 @@ s_complex * complex_new_copy (s_complex *src)
   if (! c)
     return NULL;
   if (! complex_init_copy(c, src)) {
-    free(c);
+    alloc_free(c);
     return NULL;
   }
   return c;
@@ -295,7 +295,7 @@ s_complex * complex_new_div (s_complex *a, s_complex *b)
   if (! c)
     return NULL;
   if (! complex_div(a, b, c)) {
-    free(c);
+    alloc_free(c);
     return NULL;
   }
   return c;
@@ -308,7 +308,7 @@ s_complex * complex_new_mul (s_complex *a, s_complex *b)
   if (! c)
     return NULL;
   if (! complex_mul(a, b, c)) {
-    free(c);
+    alloc_free(c);
     return NULL;
   }
   return c;
@@ -360,7 +360,7 @@ s_complex * complex_new_pow (s_complex *a, s_complex *b)
   if (! c)
     return NULL;
   if (! complex_pow(a, b, c)) {
-    free(c);
+    alloc_free(c);
     return NULL;
   }
   return c;
@@ -378,7 +378,7 @@ s_complex * complex_new_sub (s_complex *a, s_complex *b)
   if (! c)
     return NULL;
   if (! complex_sub(a, b, c)) {
-    free(c);
+    alloc_free(c);
     return NULL;
   }
   return c;

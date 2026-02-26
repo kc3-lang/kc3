@@ -112,7 +112,7 @@ void pdf_stream_delete (p_pdf_stream *stream)
   if (! stream || ! *stream)
     return;
   pdf_stream_clean(*stream);
-  free(*stream);
+  alloc_free(*stream);
   *stream = NULL;
 }
 

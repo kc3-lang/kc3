@@ -25,7 +25,7 @@ void gl_box_delete (s_gl_box *box)
 {
   assert(box);
   gl_box_clean(box);
-  free(box);
+  alloc_free(box);
 }
 
 s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
@@ -197,7 +197,7 @@ s_gl_box * gl_box_new (u32 seg_u, u32 seg_v, u32 seg_w)
     return NULL;
   }
   if (! gl_box_init(box, seg_u, seg_v, seg_w)) {
-    free(box);
+    alloc_free(box);
     return NULL;
   }
   return box;

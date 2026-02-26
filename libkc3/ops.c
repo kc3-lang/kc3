@@ -134,7 +134,7 @@ void ops_delete (s_ops *ops)
 {
   assert(ops);
   ops_clean(ops);
-  free(ops);
+  alloc_free(ops);
 }
 
 s_tag * ops_get_tag (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
@@ -216,7 +216,7 @@ s_ops * ops_new (void)
   if (! (ops = alloc(sizeof(s_ops))))
     return NULL;
   if (! ops_init(ops)) {
-    free(ops);
+    alloc_free(ops);
     return NULL;
   }
   return ops;
@@ -228,7 +228,7 @@ s_ops * ops_new_copy (s_ops *src)
   if (! (ops = alloc(sizeof(s_ops))))
     return NULL;
   if (! ops_init_copy(ops, src)) {
-    free(ops);
+    alloc_free(ops);
     return NULL;
   }
   return ops;

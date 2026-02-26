@@ -64,7 +64,7 @@ void pdf_name_list_delete_all (p_pdf_name_list *name_list)
   while (list) {
     next = list->next;
     sym_delete(list->free_sym);
-    free(list);
+    alloc_free(list);
     list = next;
   }
   *name_list = NULL;
@@ -78,7 +78,7 @@ p_pdf_name pdf_name_new (p_pdf_name_list *name_list,
   if (! (sym = alloc(sizeof(s_sym))))
     return NULL;
   if (! (tmp = alloc(sizeof(s_sym_list)))) {
-    free(sym);
+    alloc_free(sym);
     return NULL;
   }
   str_init_copy(&sym->str, str);

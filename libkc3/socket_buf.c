@@ -59,7 +59,7 @@ void socket_buf_delete (s_socket_buf **sb)
   assert(sb);
   assert(*sb);
   socket_buf_clean(*sb);
-  free(*sb);
+  alloc_free(*sb);
   *sb = NULL;
 }
 

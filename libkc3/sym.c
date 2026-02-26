@@ -226,7 +226,7 @@ bool sym_character_is_reserved (character c)
 void sym_delete (s_sym *sym)
 {
   str_clean(&sym->str);
-  free(sym);
+  alloc_free(sym);
 }
   
 void sym_delete_all (void)
@@ -242,7 +242,7 @@ void sym_delete_all (void)
     sym_list = sym_list->next;
     if (tmp->free_sym)
       sym_delete(tmp->free_sym);
-    free(tmp);
+    alloc_free(tmp);
   }
 }
 
@@ -753,13 +753,13 @@ const s_sym * sym_new (const s_str *src)
   if (! sym)
     return NULL;
   if (! str_init_copy(&sym->str, src)) {
-    free(sym);
+    alloc_free(sym);
     return NULL;
   }
   tmp = sym_list_new(sym, sym, g_sym_list);
   if (! tmp) {
     str_clean(&sym->str);
-    free(sym);
+    alloc_free(sym);
     return NULL;
   }
   g_sym_list = tmp;

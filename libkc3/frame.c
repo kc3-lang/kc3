@@ -126,7 +126,7 @@ s_frame * frame_delete (s_frame *frame)
   s_frame *next = NULL;
   if (frame) {
     next = frame_clean(frame);
-    free(frame);
+    alloc_free(frame);
   }
   return next;
 }
@@ -203,7 +203,7 @@ s_frame * frame_new (s_frame *next)
   if (! frame)
     return NULL;
   if (! frame_init(frame, next)) {
-    free(frame);
+    alloc_free(frame);
     return NULL;
   }
   return frame;

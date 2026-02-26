@@ -20,14 +20,14 @@
 void ptr_free_clean (u_ptr_w *ptr_free)
 {
   assert(ptr_free);
-  free(ptr_free->p);
+  alloc_free(ptr_free->p);
 }
 
 void ptr_free_delete (u_ptr_w *ptr_free)
 {
   assert(ptr_free);
   ptr_free_clean(ptr_free);
-  free(ptr_free);
+  alloc_free(ptr_free);
 }
 
 u_ptr_w * ptr_free_init (u_ptr_w *ptr_free, void *p)
@@ -95,7 +95,7 @@ u_ptr_w * ptr_free_new (void *p)
   if (! ptr_free)
     return NULL;
   if (! ptr_free_init(ptr_free, p)) {
-    free(ptr_free);
+    alloc_free(ptr_free);
     return NULL;
   }
   return ptr_free;
@@ -109,7 +109,7 @@ u_ptr_w * ptr_free_new_copy (const u_ptr_w *src)
   if (! ptr_free)
     return NULL;
   if (! ptr_free_init_copy(ptr_free, src)) {
-    free(ptr_free);
+    alloc_free(ptr_free);
     return NULL;
   }
   return ptr_free;

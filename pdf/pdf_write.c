@@ -98,7 +98,7 @@ void pdf_write_close (s_pdf_write *pdf)
 void pdf_write_delete (s_pdf_write *pdf)
 {
   pdf_write_clean(pdf);
-  free(pdf);
+  alloc_free(pdf);
 }
 
 s_pdf_write * pdf_write_indirect_object (s_pdf_write *pdf,
@@ -150,7 +150,7 @@ s_pdf_write * pdf_write_new (void)
   if (! (pdf = alloc(sizeof(s_pdf_write))))
     return NULL;
   if (! pdf_write_init(pdf)) {
-    free(pdf);
+    alloc_free(pdf);
     return NULL;
   }
   return pdf;
@@ -163,11 +163,11 @@ s_pdf_write * pdf_write_new_file (s_str *path)
   if (! (pdf = alloc(sizeof(s_pdf_write))))
     return NULL;
   if (! pdf_write_init_file(pdf, path)) {
-    free(pdf);
+    alloc_free(pdf);
     return NULL;
   }
   if (! pdf_buf_write_header(pdf->buf)) {
-    free(pdf);
+    alloc_free(pdf);
     return NULL;
   }
   return pdf;

@@ -77,7 +77,7 @@ skiplist_delete__fact
 {
   assert(skiplist);
   skiplist_clean__fact(skiplist);
-  free(skiplist);
+  alloc_free(skiplist);
 }
 
 s_skiplist_node__fact *
@@ -167,7 +167,7 @@ skiplist_new__fact
   if (! skiplist)
     return NULL;
   if (! skiplist_init__fact(skiplist, max_height, spacing)) {
-    free(skiplist);
+    alloc_free(skiplist);
     return NULL;
   }
   return skiplist;

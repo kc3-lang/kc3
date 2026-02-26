@@ -77,7 +77,7 @@ set_clean__uw (s_set__uw *set)
   for (i = 0; i < set->max; i++) {
     set_item_delete_all__uw(set->items[i]);
   }
-  free(set->items);
+  alloc_free(set->items);
 }
 
 s_set_item__uw *

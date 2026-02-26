@@ -390,14 +390,14 @@ bool env_eval_quote_time (s_env *env, s_time *time, s_tag *dest)
     if (! env_eval_quote_tag(env, time->tag, tmp.tag)) {
       err_puts("env_eval_quote_time: env_eval_quote_tag: tv_sec");
       assert(! "env_eval_quote_time: env_eval_quote_tag: tv_sec");
-      free(tmp.tag);
+      alloc_free(tmp.tag);
       return false;
     }
     if (! env_eval_quote_tag(env, time->tag + 1, tmp.tag + 1)) {
       err_puts("env_eval_quote_time: env_eval_quote_tag: tv_nsec");
       assert(! "env_eval_quote_time: env_eval_quote_tag: tv_nsec");
       tag_clean(tmp.tag);
-      free(tmp.tag);
+      alloc_free(tmp.tag);
       return false;
     }
   }

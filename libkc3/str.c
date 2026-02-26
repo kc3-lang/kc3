@@ -304,7 +304,7 @@ void str_clean (s_str *str)
 {
   assert(str);
   if (str->free.p) {
-    free(str->free.p);
+    alloc_free(str->free.p);
     str->free.p = NULL;
   }
 }
@@ -312,7 +312,7 @@ void str_clean (s_str *str)
 void str_delete (s_str *str)
 {
   str_clean(str);
-  free(str);
+  alloc_free(str);
 }
 
 bool * str_ends_with (const s_str *str, const s_str *end, bool *dest)
@@ -1093,11 +1093,11 @@ s_str * str_init_ftime (s_str *str, s_time *time, const s_str *format)
   }
   if (! str_init_1_alloc(&tmp, buf))
     goto clean;
-  free(buf);
+  alloc_free(buf);
   *str = tmp;
   return str;
  clean:
-  free(buf);
+  alloc_free(buf);
   return NULL;
 }
 
@@ -1204,7 +1204,7 @@ s_str * str_init_random_base32 (s_str *str, const s_tag *len)
   if (! (random_bytes = alloc(random_bytes_len)))
     return NULL;
   if (! (result = alloc(result_len + 1))) {
-    free(random_bytes);
+    alloc_free(random_bytes);
     return NULL;
   }
   arc4random_buf(random_bytes, random_bytes_len);
@@ -1233,7 +1233,7 @@ s_str * str_init_random_base32 (s_str *str, const s_tag *len)
     i += 5;
   }
   result[result_len] = 0;
-  free(random_bytes);
+  alloc_free(random_bytes);
   return str_init(str, result, result_len, result);
 }
 
@@ -1264,7 +1264,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
   if (! (random_bytes = alloc(random_bytes_len)))
     return NULL;
   if (! (result = alloc(result_len + 1))) {
-    free(random_bytes);
+    alloc_free(random_bytes);
     return NULL;
   }
   arc4random_buf(random_bytes, random_bytes_len);
@@ -1306,7 +1306,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
       k++;
     }
   }
-  free(random_bytes);
+  alloc_free(random_bytes);
   return str_init(str, result, result_len, result);
 }
 
@@ -1538,7 +1538,7 @@ s_str * str_new_1_alloc (const char *p)
   if (! str)
     return NULL;
   if (! str_init_1_alloc(str, p)) {
-    free(str);
+    alloc_free(str);
     return NULL;
   }
   return str;
@@ -1554,7 +1554,7 @@ s_str * str_new_cpy (const char *p, uw size)
   memcpy(a, p, size);
   str = str_new(a, size, a);
   if (! str) {
-    free(a);
+    alloc_free(a);
     return NULL;
   }
   return str;
@@ -1571,7 +1571,7 @@ s_str * str_new_copy (const s_str *src)
   memcpy(a, src->ptr.p, src->size);
   dest = str_new(a, src->size, a);
   if (! dest) {
-    free(a);
+    alloc_free(a);
     return NULL;
   }
   return dest;

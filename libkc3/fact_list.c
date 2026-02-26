@@ -19,7 +19,7 @@ s_fact_list * fact_list_delete (s_fact_list *fl)
   s_fact_list *next;
   assert(fl);
   next = fl->next;
-  free(fl);
+  alloc_free(fl);
   return next;
 }
 
@@ -48,7 +48,7 @@ s_fact_list * fact_list_new (s_fact *fact, s_fact_list *next)
   if (! fl)
     return NULL;
   if (! fact_list_init(fl, fact, next)) {
-    free(fl);
+    alloc_free(fl);
     return NULL;
   }
   return fl;

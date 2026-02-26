@@ -39,7 +39,7 @@ void cow_delete (s_cow *cow)
   if (--cow->ref_count)
     return;
   cow_clean(cow);
-  free(cow);
+  alloc_free(cow);
 }
 
 s_cow * cow_freeze (s_cow *cow)
@@ -174,7 +174,7 @@ s_cow * cow_new (const s_sym *type)
   if (! cow)
     return NULL;
   if (! cow_init(cow, type)) {
-    free(cow);
+    alloc_free(cow);
     return NULL;
   }
   return cow;
@@ -187,7 +187,7 @@ s_cow * cow_new_1 (const char *utf8)
   if (! cow)
     return NULL;
   if (! cow_init_1(cow, utf8)) {
-    free(cow);
+    alloc_free(cow);
     return NULL;
   }
   return cow;
@@ -200,7 +200,7 @@ s_cow * cow_new_cast (p_sym *type, s_tag *tag)
   if (! cow)
     return NULL;
   if (! cow_init_cast(cow, type, tag)) {
-    free(cow);
+    alloc_free(cow);
     return NULL;
   }
   return cow;
@@ -213,7 +213,7 @@ s_cow * cow_new_copy (s_cow *src)
   if (! cow)
     return NULL;
   if (! cow_init_copy(cow, src)) {
-    free(cow);
+    alloc_free(cow);
     return NULL;
   }
   return cow;
@@ -238,7 +238,7 @@ s_cow * cow_new_tag_copy (const s_sym *type, s_tag *src)
   if (! cow)
     return NULL;
   if (! cow_init_tag_copy(cow, type, src)) {
-    free(cow);
+    alloc_free(cow);
     return NULL;
   }
   return cow;

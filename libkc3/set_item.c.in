@@ -24,7 +24,7 @@ set_item_new___NAME$ (_TYPE$ data, uw hash, s_set_item___NAME$ *next)
   if (! item)
     return NULL;
   if (! _NAME$_init_copy(&item->data, data)) {
-    free(item);
+    alloc_free(item);
     return NULL;
   }
   item->hash = hash;
@@ -37,7 +37,7 @@ void set_item_delete___NAME$ (s_set_item___NAME$ *x)
 {
   assert(x);
   _NAME$_clean(&x->data);
-  free(x);
+  alloc_free(x);
 }
 
 void set_item_delete_all___NAME$ (s_set_item___NAME$ *x)

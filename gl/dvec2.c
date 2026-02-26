@@ -52,7 +52,7 @@ s_dvec2 * dvec2_init_zero (s_dvec2 *p)
 
 void dvec2_delete (s_dvec2 *p)
 {
-  free(p);
+  alloc_free(p);
 }
 
 s_dvec2 * dvec2_new (f64 x, f64 y)

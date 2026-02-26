@@ -125,7 +125,7 @@ s_dmat4 * dmat4_init_zero (s_dmat4 *m)
 
 void dmat4_delete (s_dmat4 *m)
 {
-  free(m);
+  alloc_free(m);
 }
 
 s_dmat4 * dmat4_new_copy (const s_dmat4 *src)

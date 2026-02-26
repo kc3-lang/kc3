@@ -52,7 +52,7 @@ s_vec2 * vec2_init_zero (s_vec2 *p)
 
 void vec2_delete (s_vec2 *p)
 {
-  free(p);
+  alloc_free(p);
 }
 
 s_vec2 * vec2_new (f32 x, f32 y)

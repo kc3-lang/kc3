@@ -216,7 +216,7 @@ bool window_egl_xcb_run (s_window_egl *window)
   xcb_change_property(conn, XCB_PROP_MODE_REPLACE, xcb_window,
                       (*protocols_reply).atom, 4, 32, 1,
                       &(*delete_reply).atom);
-  free(protocols_reply);
+  alloc_free(protocols_reply);
   xcb_change_property(conn, XCB_PROP_MODE_REPLACE, xcb_window,
                       XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8,
                       strlen(window->title), window->title);
@@ -257,10 +257,10 @@ bool window_egl_xcb_run (s_window_egl *window)
     while ((event = xcb_poll_for_event(conn))) {
       if (! window_egl_xcb_event(window, conn, screen, xcb_window,
                                  delete_reply, event, xkb_state)) {
-        free(event);
+        alloc_free(event);
         goto done;
       }
-      free(event);
+      alloc_free(event);
     }
     if (! window->render(window))
       break;
@@ -271,7 +271,7 @@ done:
   xkb_state_unref(xkb_state);
   xkb_keymap_unref(xkb_keymap);
   xkb_context_unref(xkb_context);
-  free(delete_reply);
+  alloc_free(delete_reply);
   xcb_disconnect(conn);
   return true;
  ko_conn:

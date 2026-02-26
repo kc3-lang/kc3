@@ -35,7 +35,7 @@ void tuple_clean (s_tuple *tuple)
     i = tuple->count;
     while (i--)
       tag_clean(tuple->tag + i);
-    free(tuple->tag);
+    alloc_free(tuple->tag);
   }
 }
 
@@ -67,7 +67,7 @@ void tuple_delete (s_tuple *tuple)
 #endif
   }
   tuple_clean(tuple);
-  free(tuple);
+  alloc_free(tuple);
 }
 
 s_tuple * tuple_init (s_tuple *tuple, uw count)
@@ -166,7 +166,7 @@ s_tuple * tuple_new_copy (s_tuple *src)
   if (! tuple)
     return NULL;
   if (! tuple_init_copy(tuple, src)) {
-    free(tuple);
+    alloc_free(tuple);
     return NULL;
   }
   return tuple;
@@ -197,7 +197,7 @@ s_tuple * tuple_new (uw count)
   if (! tuple)
     return NULL;
   if (! tuple_init(tuple, count)) {
-    free(tuple);
+    alloc_free(tuple);
     return NULL;
   }
   return tuple;
@@ -210,7 +210,7 @@ s_tuple * tuple_new_1 (const char *p)
   if (! tuple)
     return NULL;
   if (! tuple_init_1(tuple, p)) {
-    free(tuple);
+    alloc_free(tuple);
     return NULL;
   }
   return tuple;

@@ -379,7 +379,7 @@ s_marshall_read * marshall_read_chunk (s_marshall_read *mr)
     if (! buf_init_alloc(buf, mr->buf_size)) {
       err_puts("marshall_read_chunk: buf_init_alloc");
       assert(! "marshall_read_chunk: buf_init_alloc");
-      free(buf);
+      alloc_free(buf);
       return NULL;
     }
     if (buf_xfer(buf, mr->buf, mr->buf_size) !=
@@ -387,7 +387,7 @@ s_marshall_read * marshall_read_chunk (s_marshall_read *mr)
       err_puts("marshall_read_chunk: buf_xfer buf");
       assert(! "marshall_read_chunk: buf_xfer buf");
       buf_clean(buf);
-      free(buf);
+      alloc_free(buf);
       return NULL;
     }
     mr->buf = buf;
@@ -404,7 +404,7 @@ s_marshall_read * marshall_read_chunk_reset (s_marshall_read *mr)
   buf_empty(mr->heap);
   if (mr->source && mr->buf != mr->source) {
     buf_clean(mr->buf);
-    free(mr->buf);
+    alloc_free(mr->buf);
     mr->buf = mr->source;
     mr->buf_owned = false;
   }
@@ -441,9 +441,9 @@ void marshall_read_clean (s_marshall_read *mr)
   if (mr->heap && mr->heap->ptr.p == mr->buf->ptr.p)
     rwlock_delete(mr->heap->rwlock);
   if (mr->heap && mr->buf != mr->heap)
-    free(mr->heap);
+    alloc_free(mr->heap);
   if (mr->buf && mr->buf_owned)
-    free(mr->buf);
+    alloc_free(mr->buf);
   marshall_read_ht_clean(mr);
 }
 
@@ -599,7 +599,7 @@ void marshall_read_delete (s_marshall_read *mr)
 {
   assert(mr);
   marshall_read_clean(mr);
-  free(mr);
+  alloc_free(mr);
 }
 
 s_marshall_read * marshall_read_dimensions (s_marshall_read *mr,
@@ -1270,7 +1270,7 @@ s_marshall_read * marshall_read_init (s_marshall_read *mr)
     err_puts("marshall_read_init: buffer allocation error");
     assert(! "marshall_read_init: buffer allocation error");
     buf_clean(mr->heap);
-    free(mr->heap);
+    alloc_free(mr->heap);
     return NULL;
   }
   mr->buf_owned = true;
@@ -1378,14 +1378,14 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
   if (! buf_init_str_copy(mr->buf, dest)) {
     err_puts("marshall_read_init_str: buf_init_str_copy");
     assert(! "marshall_read_init_str: buf_init_str_copy");
-    free(mr->buf);
+    alloc_free(mr->buf);
     return NULL;
   }
   if (! marshall_read_header(mr)) {
     err_puts("marshall_read_init_str: marshall_read_header");
     assert(! "marshall_read_init_str: marshall_read_header");
     buf_clean(mr->buf);
-    free(mr->buf);
+    alloc_free(mr->buf);
     return NULL;
   }
   mr->buf->rpos = sizeof(s_marshall_header) + mr->heap_size;
@@ -1393,14 +1393,14 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
     err_puts("marshall_read_init_str: invalid buffer size");
     assert(! "marshall_read_init_str: invalid buffer size");
     buf_clean(mr->buf);
-    free(mr->buf);
+    alloc_free(mr->buf);
     return NULL;
   }
   if (! (mr->heap = alloc(sizeof(s_buf)))) {
     err_puts("marshall_read_init_str: heap allocation error");
     assert(! "marshall_read_init_str: heap allocation error");
     buf_clean(mr->buf);
-    free(mr->buf);
+    alloc_free(mr->buf);
     return NULL;
   }
   *mr->heap = *mr->buf;
@@ -1541,7 +1541,7 @@ s_marshall_read * marshall_read_new (void)
   if (! (mr = alloc(sizeof(s_marshall_read))))
     return NULL;
   if (! marshall_read_init(mr)) {
-    free(mr);
+    alloc_free(mr);
     return NULL;
   }
   return mr;
@@ -1553,7 +1553,7 @@ s_marshall_read * marshall_read_new_str (const s_str *input)
   if (! (mr = alloc(sizeof(s_marshall_read))))
     return NULL;
   if (! marshall_read_init_str(mr, input)) {
-    free(mr);
+    alloc_free(mr);
     return NULL;
   }
   return mr;
@@ -1684,7 +1684,7 @@ s_marshall_read * marshall_read_pcall (s_marshall_read *mr,
   if (! marshall_read_call(mr, true, tmp)) {
     err_puts("marshall_read_pcall: marshall_read_call");
     assert(! "marshall_read_pcall: marshall_read_call");
-    free(tmp);
+    alloc_free(tmp);
     return NULL;
   }
   if (! marshall_read_ht_add(mr, offset, tmp)) {
@@ -1742,7 +1742,7 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
   if (! marshall_read_callable(mr, true, tmp)) {
     err_puts("marshall_read_pcallable: marshall_read_callable");
     assert(! "marshall_read_pcallable: marshall_read_callable");
-    free(tmp);
+    alloc_free(tmp);
     return NULL;
   }
   if (! marshall_read_ht_add(mr, offset, tmp)) {
@@ -1900,7 +1900,7 @@ s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
       ! (tmp = alloc(sizeof(s_frame))))
     return NULL;
   if (! marshall_read_frame(mr, true, tmp)) {
-    free(tmp);
+    alloc_free(tmp);
     return NULL;
   }
   if (! marshall_read_ht_add(mr, offset, tmp)) {
@@ -1945,7 +1945,7 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
       ! (tmp = alloc(sizeof(s_list))))
     return NULL;
   if (! marshall_read_list(mr, true, tmp)) {
-    free(tmp);
+    alloc_free(tmp);
     return NULL;
   }
   if (! marshall_read_ht_add(mr, offset, tmp)) {
@@ -2068,7 +2068,7 @@ s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,
       ! (tmp = alloc(sizeof(s_struct))))
     return NULL;
   if (! marshall_read_struct(mr, true, tmp)) {
-    free(tmp);
+    alloc_free(tmp);
     return NULL;
   }
   if (! marshall_read_ht_add(mr, offset, tmp)) {
@@ -2187,7 +2187,7 @@ s_marshall_read * marshall_read_ptag (s_marshall_read *mr,
   if (! marshall_read_tag(mr, true, tmp)) {
     err_puts("marshall_read_ptag: marshall_read_tag");
     assert(! "marshall_read_ptag: marshall_read_tag");
-    free(tmp);
+    alloc_free(tmp);
     return NULL;
   }
   if (! marshall_read_ht_add(mr, offset, tmp)) {
@@ -2294,7 +2294,7 @@ s_marshall_read * marshall_read_quote (s_marshall_read *mr,
   if (! (tmp.tag = alloc(sizeof(s_tag))))
     return NULL;
   if (! marshall_read_tag(mr, heap, tmp.tag)) {
-    free(tmp.tag);
+    alloc_free(tmp.tag);
     return NULL;
   }
   *dest = tmp;
@@ -2690,7 +2690,7 @@ s_marshall_read * marshall_read_ptuple (s_marshall_read *mr,
         ! (tuple = alloc(sizeof(s_tuple))))
       return NULL;
     if (! marshall_read_tuple(mr, true, tuple)) {
-      free(tuple);
+      alloc_free(tuple);
       return NULL;
     }
     if (! marshall_read_ht_add(mr, offset, tuple)) {
@@ -2704,7 +2704,7 @@ s_marshall_read * marshall_read_ptuple (s_marshall_read *mr,
   if (! tuple)
     return NULL;
   if (! marshall_read_tuple(mr, heap, tuple)) {
-    free(tuple);
+    alloc_free(tuple);
     return NULL;
   }
   *dest = tuple;

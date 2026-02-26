@@ -72,7 +72,7 @@ void ht_clean (s_ht *ht)
       ht->items[i] = list_delete(ht->items[i]);
     i++;
   }
-  free(ht->items);
+  alloc_free(ht->items);
 #if HAVE_PTHREAD
   rwlock_clean(&ht->rwlock);
   mutex_clean(&ht->ref_count_mutex);
@@ -101,7 +101,7 @@ void ht_delete (s_ht *ht)
   mutex_unlock(&ht->ref_count_mutex);
 #endif
   ht_clean(ht);
-  free(ht);
+  alloc_free(ht);
 }
 
 s_tag ** ht_get (s_ht *ht, s_tag *key, s_tag **dest)

@@ -43,7 +43,7 @@ s_str * socket_addr_to_str(s_str *str, const struct sockaddr *addr,
 void socket_addr_delete (struct sockaddr *sa)
 {
   assert(sa);
-  free(sa);
+  alloc_free(sa);
 }
 
 struct sockaddr * socket_addr_new (u32 len)

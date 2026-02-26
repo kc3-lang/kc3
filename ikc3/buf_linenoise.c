@@ -35,7 +35,7 @@ void buf_linenoise_close (s_buf *buf, const char *history_path)
     linenoiseHistorySave(history_path);
   buf->refill = NULL;
   buf_clean(&buf_linenoise->buf);
-  free(buf->user_ptr);
+  alloc_free(buf->user_ptr);
   buf->user_ptr = NULL;
   if (isatty(STDIN_FILENO))
     puts("");
@@ -106,7 +106,7 @@ sw buf_linenoise_refill_linenoise (s_buf *buf)
   buf_linenoise_len = buf_linenoise->buf.wpos - buf_linenoise->buf.rpos;
   if (buf_linenoise_len == 0) {
     if (buf_linenoise->buf.free)
-      free(buf_linenoise->buf.ptr.p);
+      alloc_free(buf_linenoise->buf.ptr.p);
     if (! (buf_linenoise->buf.ptr.p = linenoise(buf_linenoise->prompt))) {
       buf_linenoise->eof = true;
       buf_linenoise->buf.rpos =

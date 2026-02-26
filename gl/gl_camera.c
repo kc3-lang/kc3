@@ -119,7 +119,7 @@ void gl_camera_clean (s_gl_camera *camera)
 void gl_camera_delete (s_gl_camera *camera)
 {
   gl_camera_clean(camera);
-  free(camera);
+  alloc_free(camera);
 }
 
 s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
@@ -233,7 +233,7 @@ s_gl_camera * gl_camera_new (uw w, uw h)
     return NULL;
   }
   if (! gl_camera_init(camera, w, h)) {
-    free(camera);
+    alloc_free(camera);
     return NULL;
   }
   return camera;

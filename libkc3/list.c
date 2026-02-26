@@ -88,7 +88,7 @@ s_list * list_delete (s_list *list)
   if (list) {
     next = list_next(list);
     list_clean(list);
-    free(list);
+    alloc_free(list);
   }
   return next;
 }
@@ -327,7 +327,7 @@ s_list * list_new_list (s_list *x, s_list *next)
   s_list *dest;
   if ((dest = list_new(next))) {
     if (! tag_init_plist(&dest->tag, x)) {
-      free(dest);
+      alloc_free(dest);
       return NULL;
     }
   }
@@ -346,7 +346,7 @@ s_list * list_new_tag_copy (s_tag *x, s_list *next)
   if (! dest)
     return NULL;
   if (! tag_init_copy(&dest->tag, x)) {
-    free(dest);
+    alloc_free(dest);
     return NULL;
   }
   return dest;
@@ -379,7 +379,7 @@ s_list * list_new_uw_reduce (uw src, s_list *next)
   if (! dest)
     return NULL;
   if (! tag_init_uw_reduce(&dest->tag, src)) {
-    free(dest);
+    alloc_free(dest);
     return NULL;
   }
   return dest;
@@ -423,7 +423,7 @@ s_array * list_to_array (s_list *list, const s_sym *array_type,
     tmp.size = len * size;
     tmp.free_data = alloc(len * size);
     if (! tmp.free_data) {
-      free(tmp.dimensions);
+      alloc_free(tmp.dimensions);
       return NULL;
     }
     data = tmp.data = tmp.free_data;
@@ -445,7 +445,7 @@ s_array * list_to_array (s_list *list, const s_sym *array_type,
       data_clean(tmp.element_type, data);
     }
   }
-  free(tmp.data);
-  free(tmp.dimensions);
+  alloc_free(tmp.data);
+  alloc_free(tmp.dimensions);
   return NULL;
 }

@@ -185,10 +185,10 @@ s_facts_with_cursor * facts_with_list (s_facts *facts,
   }
   if (! facts_with(facts, cursor, facts_spec))
     goto ko;
-  free(facts_spec);
+  alloc_free(facts_spec);
   return cursor;
  ko:
-  free(facts_spec);
+  alloc_free(facts_spec);
   return NULL;
 }
 

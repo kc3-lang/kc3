@@ -57,7 +57,7 @@ void rwlock_delete (s_rwlock *rwlock)
 {
   assert(rwlock);
   rwlock_clean(rwlock);
-  free(rwlock);
+  alloc_free(rwlock);
 }
 
 s_rwlock * rwlock_new (void)
@@ -66,7 +66,7 @@ s_rwlock * rwlock_new (void)
   if (! (rwlock = alloc(sizeof(s_rwlock))))
     return NULL;
   if (! rwlock_init(rwlock)) {
-    free(rwlock);
+    alloc_free(rwlock);
     return NULL;
   }
   return rwlock;

@@ -26,7 +26,7 @@ void gl_sprite_clean (s_gl_sprite *sprite)
   str_clean(&sprite->path);
   str_clean(&sprite->real_path);
   glDeleteTextures(sprite->frame_count, sprite->texture);
-  free(sprite->texture);
+  alloc_free(sprite->texture);
 }
 
 static bool png_info_to_gl_info (s32 png_color_type,
@@ -258,7 +258,7 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   if (! tmp.texture) {
     err_puts("gl_sprite_init_jpeg: tmp.texture:"
              " failed to allocate memory");
-    free(jpeg_data);
+    alloc_free(jpeg_data);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
     return NULL;
@@ -271,8 +271,8 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
     err_inspect_str(&tmp.real_path);
     err_write_1(": glGenTextures: ");
     err_puts(gl_error_string(gl_error));
-    free(tmp.texture);
-    free(jpeg_data);
+    alloc_free(tmp.texture);
+    alloc_free(jpeg_data);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
     return NULL;
@@ -283,8 +283,8 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
     err_write_1("gl_sprite_init_jpeg: failed to allocate"
                 " memory: ");
     err_puts(tmp.real_path.ptr.pchar);
-    free(tmp.texture);
-    free(jpeg_data);
+    alloc_free(tmp.texture);
+    alloc_free(jpeg_data);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
     return NULL;
@@ -356,8 +356,8 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   assert(glGetError() == GL_NO_ERROR);
   tmp.pt_w = tmp.pix_w * point_per_pixel;
   tmp.pt_h = tmp.pix_h * point_per_pixel;
-  free(data);
-  free(jpeg_data);
+  alloc_free(data);
+  alloc_free(jpeg_data);
   *sprite = tmp;
   return sprite;
 }
@@ -536,7 +536,7 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
     err_inspect_str(&tmp.real_path);
     err_write_1(": glGenTextures: ");
     err_puts(gl_error_string(gl_error));
-    free(tmp.texture);
+    alloc_free(tmp.texture);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
     return NULL;
@@ -546,7 +546,7 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
   if (! data) {
     err_write_1("gl_sprite_init: failed to allocate memory: ");
     err_puts(tmp.real_path.ptr.pchar);
-    free(tmp.texture);
+    alloc_free(tmp.texture);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
     return NULL;
@@ -611,9 +611,9 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
   assert(glGetError() == GL_NO_ERROR);
   tmp.pt_w = tmp.pix_w * point_per_pixel;
   tmp.pt_h = tmp.pix_h * point_per_pixel;
-  free(data);
-  free(png_data);
-  free(png_row);
+  alloc_free(data);
+  alloc_free(png_data);
+  alloc_free(png_row);
   *sprite = tmp;  
   return sprite;
 }

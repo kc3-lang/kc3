@@ -67,7 +67,7 @@ s_vec3 * vec3_interpolate (const s_vec3 *a, const s_vec3 *b, f32 t,
 
 void vec3_delete (s_vec3 *p)
 {
-  free(p);
+  alloc_free(p);
 }
 
 s_vec3 * vec3_new (f32 x, f32 y, f32 z)

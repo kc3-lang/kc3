@@ -37,7 +37,7 @@ void buf_file_close (s_buf *buf)
   buf_flush(buf);
   buf->flush = NULL;
   buf->refill = NULL;
-  free(buf->user_ptr);
+  alloc_free(buf->user_ptr);
   buf->user_ptr = NULL;
 }
 

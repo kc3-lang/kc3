@@ -193,7 +193,7 @@ void buf_clean (s_buf *buf)
 #endif
   if (buf->free) {
     //explicit_bzero(buf->ptr.p, buf->size);
-    free(buf->ptr.p);
+    alloc_free(buf->ptr.p);
   }
 }
 
@@ -201,7 +201,7 @@ void buf_delete (s_buf *buf)
 {
   assert(buf);
   buf_clean(buf);
-  free(buf);
+  alloc_free(buf);
 }
 
 void buf_empty (s_buf *buf)
@@ -569,7 +569,7 @@ s_buf * buf_new_alloc (uw size)
   if (! buf)
     return NULL;
   if (! buf_init_alloc(buf, size)) {
-    free(buf);
+    alloc_free(buf);
     return NULL;
   }
   return buf;
@@ -581,7 +581,7 @@ s_buf * buf_new_popen (const s_str *cmd, const s_str *mode)
   if (! (buf = alloc(sizeof(s_buf))))
     return NULL;
   if (! buf_init_popen(buf, cmd, mode)) {
-    free(buf);
+    alloc_free(buf);
     return NULL;
   }
   return buf;

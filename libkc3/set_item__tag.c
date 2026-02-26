@@ -24,7 +24,7 @@ set_item_new__tag (s_tag * data, uw hash, s_set_item__tag *next)
   if (! item)
     return NULL;
   if (! tag_init_copy(&item->data, data)) {
-    free(item);
+    alloc_free(item);
     return NULL;
   }
   item->hash = hash;
@@ -37,7 +37,7 @@ void set_item_delete__tag (s_set_item__tag *x)
 {
   assert(x);
   tag_clean(&x->data);
-  free(x);
+  alloc_free(x);
 }
 
 void set_item_delete_all__tag (s_set_item__tag *x)

@@ -26,7 +26,7 @@ s_error_handler * error_handler_delete (s_error_handler *error_handler)
   assert(error_handler);
   next = error_handler->next;
   error_handler_clean(error_handler);
-  free(error_handler);
+  alloc_free(error_handler);
   return next;
 }
 

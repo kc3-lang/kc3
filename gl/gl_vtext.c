@@ -25,7 +25,7 @@ void gl_vtext_clean (s_gl_text *text)
 void gl_vtext_delete (s_gl_text *text)
 {
   gl_vtext_clean(text);
-  free(text);
+  alloc_free(text);
 }
 
 s_gl_text * gl_vtext_init (s_gl_text *text, const s_gl_font *font)
@@ -69,7 +69,7 @@ s_gl_text * gl_vtext_new (const s_gl_font *font)
     return NULL;
   }
   if (! gl_vtext_init(text, font)) {
-    free(text);
+    alloc_free(text);
     return NULL;
   }
   return text;
@@ -85,7 +85,7 @@ s_gl_text * gl_vtext_new_1 (const s_gl_font *font, const char *p)
     return NULL;
   }
   if (! gl_vtext_init_1(text, font, p)) {
-    free(text);
+    alloc_free(text);
     return NULL;
   }
   return text;
@@ -101,7 +101,7 @@ s_gl_text * gl_vtext_new_str (const s_gl_font *font, const s_str *str)
     return NULL;
   }
   if (! gl_vtext_init_str(text, font, str)) {
-    free(text);
+    alloc_free(text);
     return NULL;
   }
   return text;
@@ -199,7 +199,7 @@ bool gl_vtext_render_to_texture (s_gl_text *text)
   assert(glGetError() == GL_NO_ERROR);
   glGenerateMipmap(GL_TEXTURE_2D);
   assert(glGetError() == GL_NO_ERROR);
-  free(data);
+  alloc_free(data);
   glBindTexture(GL_TEXTURE_2D, 0);
   text->pix_w = data_w;
   text->pix_h = data_h;
@@ -290,7 +290,7 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, u32 len)
              " failed to allocate memory (data)");
     assert(! "gl_vtext_render_to_texture_random:"
              " failed to allocate memory (data)");
-    free(glyphs);
+    alloc_free(glyphs);
     return false;
   }
   x = 0;
@@ -322,13 +322,13 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, u32 len)
     }
     y += line_height;
   }
-  free(glyphs);
+  alloc_free(glyphs);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data_w, data_h, 0, GL_RGBA,
                GL_UNSIGNED_BYTE, data);
   assert(glGetError() == GL_NO_ERROR);
   glGenerateMipmap(GL_TEXTURE_2D);
   assert(glGetError() == GL_NO_ERROR);
-  free(data);
+  alloc_free(data);
   glBindTexture(GL_TEXTURE_2D, 0);
   text->pix_w = data_w;
   text->pix_h = data_h;

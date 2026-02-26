@@ -23,7 +23,7 @@ s_binding * binding_delete (s_binding *binding)
   assert(binding);
   tag_clean(&binding->value);
   next = binding->next;
-  free(binding);
+  alloc_free(binding);
   return next;
 }
 
@@ -90,7 +90,7 @@ s_binding * binding_new (const s_sym *name, s_binding *next)
   if (! binding)
     return NULL;
   if (! binding_init(binding, name, next)) {
-    free(binding);
+    alloc_free(binding);
     return NULL;
   }
   return binding;

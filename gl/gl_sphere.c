@@ -25,7 +25,7 @@ void gl_sphere_delete (s_gl_sphere *sphere)
 {
   assert(sphere);
   gl_sphere_clean(sphere);
-  free(sphere);
+  alloc_free(sphere);
 }
 
 s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, u32 seg_u, u32 seg_v)
@@ -102,7 +102,7 @@ s_gl_sphere * gl_sphere_new (u32 segments_u, u32 segments_v)
     return NULL;
   }
   if (! gl_sphere_init(sphere, segments_u, segments_v)) {
-    free(sphere);
+    alloc_free(sphere);
     return NULL;
   }
   return sphere;

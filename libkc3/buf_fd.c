@@ -41,7 +41,7 @@ void buf_fd_close (s_buf *buf)
   buf->flush = NULL;
   buf->refill = NULL;
   buf->tell = NULL;
-  free(buf->user_ptr);
+  alloc_free(buf->user_ptr);
   buf->user_ptr = NULL;
 }
 

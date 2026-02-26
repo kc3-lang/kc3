@@ -77,7 +77,7 @@ set_clean___NAME$ (s_set___NAME$ *set)
   for (i = 0; i < set->max; i++) {
     set_item_delete_all___NAME$(set->items[i]);
   }
-  free(set->items);
+  alloc_free(set->items);
 }
 
 s_set_item___NAME$ *

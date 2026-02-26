@@ -665,7 +665,7 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
 void marshall_delete (s_marshall *m)
 {
   marshall_clean(m);
-  free(m);
+  alloc_free(m);
 }
 
 s_marshall * marshall_do_block (s_marshall *m, bool heap,
@@ -1268,7 +1268,7 @@ s_marshall * marshall_new (uw buf_size)
   if (! (m = alloc(sizeof(s_marshall))))
     return NULL;
   if (! marshall_init(m, buf_size)) {
-    free(m);
+    alloc_free(m);
     return NULL;
   }
   return m;

@@ -546,7 +546,7 @@ s_integer * integer_new (void)
   if (! a)
     return NULL;
   if (! integer_init(a)) {
-    free(a);
+    alloc_free(a);
     return NULL;
   }
   return a;
@@ -560,7 +560,7 @@ s_integer * integer_new_copy (const s_integer *src)
   if (! a)
     return NULL;
   if (! integer_init_copy(a, src)) {
-    free(a);
+    alloc_free(a);
     return NULL;
   }
   return a;

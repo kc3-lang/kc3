@@ -107,7 +107,7 @@ sw buf_inspect_array_data (s_buf *buf, const s_array *array)
     return -1;
   r = buf_inspect_array_data_rec(buf, array, (const u8 **) &data,
                                  (const s_tag **) &tag, address, 0);
-  free(address);
+  alloc_free(address);
   return r;
 }
 
@@ -192,7 +192,7 @@ sw buf_inspect_array_data_size (s_pretty *pretty, const s_array *array)
                                       (const s_tag **) &tag,
                                       address, 0);
   g_buf_inspect_type = buf_inspect_type_save;
-  free(address);
+  alloc_free(address);
   return r;
 }
 

@@ -83,7 +83,7 @@ sw buf_inspect_u8_base (s_buf *buf, const s_str *base, u8 x)
  restore:
   buf_save_restore_wpos(buf, &save);
  clean:
-  free(c);
+  alloc_free(c);
   buf_save_clean(buf, &save);
   return r;
 }
@@ -145,7 +145,7 @@ sw buf_inspect_u8_base_size (s_pretty *pretty, const s_str *base,
   goto clean;
  restore:
  clean:
-  free(c);
+  alloc_free(c);
   return r;
 }
 

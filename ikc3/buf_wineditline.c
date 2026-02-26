@@ -32,7 +32,7 @@ void buf_wineditline_close (s_buf *buf, const char *history_path)
   if (history_path)
     write_history(history_path);
   buf->refill = NULL;
-  free(buf->user_ptr);
+  alloc_free(buf->user_ptr);
   buf->user_ptr = NULL;
   if (isatty(STDIN_FILENO))
     puts("");
@@ -111,7 +111,7 @@ sw buf_wineditline_refill_wineditline (s_buf *buf)
     buf_wineditline->buf.wpos - buf_wineditline->buf.rpos;
   if (buf_wineditline_len == 0) {
     if (buf_wineditline->buf.free)
-      free(buf_wineditline->buf.ptr.p);
+      alloc_free(buf_wineditline->buf.ptr.p);
     if (! (buf_wineditline->buf.ptr.p =
            readline(buf_wineditline->prompt))) {
       buf_wineditline->eof = true;

@@ -75,7 +75,7 @@ void counter_delete (s_counter *counter)
 {
   assert(counter);
   counter_clean(counter);
-  free(counter);
+  alloc_free(counter);
 }
 
 s_tag * counter_get (s_counter *counter, s_tag *dest)
@@ -197,7 +197,7 @@ s_counter * counter_new (s_tag *value)
   if (! (counter = alloc(sizeof(s_counter))))
     return NULL;
   if (! counter_init(counter, value)) {
-    free(counter);
+    alloc_free(counter);
     return NULL;
   }
   return counter;

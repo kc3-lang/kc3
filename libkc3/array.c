@@ -56,7 +56,7 @@ void array_clean (s_array *a)
   bool must_clean;
   uw size;
   assert(a);
-  free(a->dimensions);
+  alloc_free(a->dimensions);
   if (a->data &&
       sym_must_clean(a->element_type, &must_clean) &&
       must_clean &&
@@ -71,14 +71,14 @@ void array_clean (s_array *a)
     }
   }
   if (a->free_data)
-    free(a->free_data);
+    alloc_free(a->free_data);
   if (a->tags) {
     i = 0;
     while (i < a->count) {
       tag_clean(a->tags + i);
       i++;
     }
-    free(a->tags);
+    alloc_free(a->tags);
   }
 }
 
@@ -159,7 +159,7 @@ s_array * array_free (s_array *a)
 {
   a->data = NULL;
   if (a->free_data) {
-    free(a->free_data);
+    alloc_free(a->free_data);
     a->free_data = NULL;
   }
   return a;
@@ -196,13 +196,13 @@ s_array * array_init (s_array *a, const s_sym *array_type,
     }
     i--;
     if (! sym_type_size(tmp.element_type, &item_size)) {
-      free(tmp.dimensions);
+      alloc_free(tmp.dimensions);
       return NULL;
     }
     if (! item_size) {
       err_puts("array_init: zero item size");
       assert(! "array_init: zero item size");
-      free(tmp.dimensions);
+      alloc_free(tmp.dimensions);
       return NULL;
     }
     tmp.dimensions[i].item_size = item_size;
@@ -294,7 +294,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
     if (src->data) {
       tmp.data = tmp.free_data = alloc(tmp.size);
       if (! tmp.data) {
-        free(tmp.dimensions);
+        alloc_free(tmp.dimensions);
         return NULL;
       }
       data_tmp = tmp.data;
@@ -312,7 +312,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
     else if (src->tags) {
       tmp.tags = alloc(src->count * sizeof(s_tag));
       if (! tmp.tags) {
-        free(tmp.dimensions);
+        alloc_free(tmp.dimensions);
         return NULL;
       }
       i = 0;
@@ -334,8 +334,8 @@ s_array * array_init_copy (s_array *a, const s_array *src)
       data_clean(src->element_type, data_tmp);
     }
   }
-  free(tmp.data);
-  free(tmp.dimensions);
+  alloc_free(tmp.data);
+  alloc_free(tmp.dimensions);
   return NULL;
  ko_tags:
   if (i)

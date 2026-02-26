@@ -242,7 +242,7 @@ void facts_connection_delete (s_facts_connection *conn)
 {
   if (conn) {
     facts_connection_clean(conn);
-    free(conn);
+    alloc_free(conn);
   }
 }
 
@@ -334,7 +334,7 @@ s_facts_connection * facts_connection_new (s_facts *facts, s64 sockfd,
   if (! conn)
     return NULL;
   if (! facts_connection_init(conn, facts, sockfd, tls)) {
-    free(conn);
+    alloc_free(conn);
     return NULL;
   }
   return conn;
@@ -417,7 +417,7 @@ static bool facts_connection_sync (s_facts_connection *conn,
         tmp = *log;
         *log = tmp->next;
         fact_w_clean(&tmp->fact);
-        free(tmp);
+        alloc_free(tmp);
         continue;
       }
     }

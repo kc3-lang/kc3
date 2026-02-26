@@ -62,8 +62,8 @@ void map_clean (s_map *map)
     tag_clean(map->value + i);
     i++;
   }
-  free(map->key);
-  free(map->value);
+  alloc_free(map->key);
+  alloc_free(map->value);
 }
 
 s_tag * map_count (const s_map *map, s_tag *dest)
@@ -77,7 +77,7 @@ void map_delete (s_map *map)
 {
   assert(map);
   map_clean(map);
-  free(map);
+  alloc_free(map);
 }
 
 s_tag * map_get (const s_map *map, const s_tag *key, s_tag *value)
@@ -148,7 +148,7 @@ s_map * map_init (s_map *map, uw count)
       return NULL;
     tmp.value = alloc(count * sizeof(s_tag));
     if (! tmp.value) {
-      free(tmp.key);
+      alloc_free(tmp.key);
       return NULL;
     }
   }
@@ -341,7 +341,7 @@ s_map * map_new (uw count)
   if (! map)
     return NULL;
   if (! map_init(map, count)) {
-    free(map);
+    alloc_free(map);
     return NULL;
   }
   return map;
@@ -354,7 +354,7 @@ s_map * map_new_1 (const char *p)
   if (! map)
     return NULL;
   if (! map_init_1(map, p)) {
-    free(map);
+    alloc_free(map);
     return NULL;
   }
   return map;
@@ -367,7 +367,7 @@ s_map * map_new_from_lists (s_list *keys, s_list *values)
   if (! map)
     return NULL;
   if (! map_init_from_lists(map, keys, values)) {
-    free(map);
+    alloc_free(map);
     return NULL;
   }
   return map;

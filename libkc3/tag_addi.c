@@ -31,14 +31,14 @@ s_tag * tag_addi (s_tag *a, s_tag *b, s_tag *dest)
   if (! complex_init_cast(&ca, &type, a)) {
     err_puts("tag_addi: complex_init_cast a");
     assert(! "tag_addi: complex_init_cast a");
-    free(c);
+    alloc_free(c);
     return NULL;
   }
   if (! complex_init_cast(&cb, &type, b)) {
     err_puts("tag_addi: complex_init_cast b");
     assert(! "tag_addi: complex_init_cast b");
     complex_clean(&ca);
-    free(c);
+    alloc_free(c);
     return NULL;
   }
   if (! tag_sub(&ca.x, &cb.y, &c->x)) {
@@ -46,7 +46,7 @@ s_tag * tag_addi (s_tag *a, s_tag *b, s_tag *dest)
     assert(! "tag_addi: tag_sub");
     complex_clean(&cb);
     complex_clean(&ca);
-    free(c);
+    alloc_free(c);
     return NULL;
   }
   if (! tag_add(&ca.y, &cb.x, &c->y)) {
@@ -55,7 +55,7 @@ s_tag * tag_addi (s_tag *a, s_tag *b, s_tag *dest)
     tag_clean(&c->x);
     complex_clean(&cb);
     complex_clean(&ca);
-    free(c);
+    alloc_free(c);
     return NULL;
   }
   complex_clean(&cb);

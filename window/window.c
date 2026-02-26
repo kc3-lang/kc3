@@ -64,7 +64,7 @@ void window_clean (s_window *window)
     sequence_clean(window->sequence + i);
     i++;
   }
-  free(window->sequence);
+  alloc_free(window->sequence);
   tag_clean(&window->tag);
   window->unload(window);
 }

@@ -62,7 +62,7 @@ sw mat3_buf_inspect (s_buf *buf, const s_mat3 *matrix)
 
 void mat3_delete (s_mat3 *m)
 {
-  free(m);
+  alloc_free(m);
 }
 
 s_mat3 * mat3_init_copy (s_mat3 *m, const s_mat3 *src)

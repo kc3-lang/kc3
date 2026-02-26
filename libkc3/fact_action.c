@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <stdlib.h>
+#include "alloc.h"
 #include "fact_action.h"
 
 void fact_action_delete_all (s_fact_action *action)
@@ -18,7 +18,7 @@ void fact_action_delete_all (s_fact_action *action)
   s_fact_action *next;
   while (action) {
     next = action->next;
-    free(action);
+    alloc_free(action);
     action = next;
   }
 }

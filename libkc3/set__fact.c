@@ -77,7 +77,7 @@ set_clean__fact (s_set__fact *set)
   for (i = 0; i < set->max; i++) {
     set_item_delete_all__fact(set->items[i]);
   }
-  free(set->items);
+  alloc_free(set->items);
 }
 
 s_set_item__fact *

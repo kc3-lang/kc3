@@ -75,7 +75,7 @@ p_call * pcall_init_call_cast (p_call *pcall, const s_sym *type)
   if (! (tmp = alloc(sizeof(s_call))))
     return NULL;
   if (! call_init_call_cast(tmp, type)) {
-    free(tmp);
+    alloc_free(tmp);
     return NULL;
   }
   *pcall = tmp;

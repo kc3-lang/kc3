@@ -90,7 +90,7 @@ s_facts_acceptor * facts_acceptor_loop (s_facts *facts, s64 server,
   acceptor->env = env_fork_new(env_global());
   if (! acceptor->env) {
     err_puts("facts_acceptor_loop: env_fork_new");
-    free(acceptor);
+    alloc_free(acceptor);
     return NULL;
   }
   acceptor->facts = facts;
@@ -101,7 +101,7 @@ s_facts_acceptor * facts_acceptor_loop (s_facts *facts, s64 server,
                      facts_acceptor_loop_thread, acceptor)) {
     err_puts("facts_acceptor_loop: pthread_create");
     env_fork_delete(acceptor->env);
-    free(acceptor);
+    alloc_free(acceptor);
     return NULL;
   }
   return acceptor;
@@ -461,7 +461,7 @@ void facts_clean (s_facts *facts)
   while (log) {
     next = log->next;
     fact_w_clean(&log->fact);
-    free(log);
+    alloc_free(log);
     log = next;
   }
   facts->remove_log = NULL;
@@ -622,7 +622,7 @@ void facts_delete (s_facts *facts)
   mutex_unlock(&facts->ref_count_mutex);
 #endif
   facts_clean(facts);
-  free(facts);
+  alloc_free(facts);
 }
 
 sw facts_dump (s_facts *facts, s_buf *buf)
@@ -1231,7 +1231,7 @@ s_facts * facts_new (void)
   if (! facts)
     return NULL;
   if (! facts_init(facts)) {
-    free(facts);
+    alloc_free(facts);
     return NULL;
   }
   return facts;
@@ -1789,12 +1789,12 @@ s_facts * facts_remove_all (s_facts *facts)
   while (j < i) {
     if (! facts_remove_fact(facts, f[j], &b) ||
         ! b) {
-      free(f);
+      alloc_free(f);
       return NULL;
     }
     j++;
   }
-  free(f);
+  alloc_free(f);
   return facts;
 }
 

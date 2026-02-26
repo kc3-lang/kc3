@@ -26,7 +26,7 @@ void gl_square_delete (s_gl_square *square)
 {
   assert(square);
   gl_square_clean(square);
-  free(square);
+  alloc_free(square);
 }
 
 s_gl_square * gl_square_init (s_gl_square *square, u32 seg_u, u32 seg_v)
@@ -96,7 +96,7 @@ s_gl_square * gl_square_new (u32 segments_u, u32 segments_v)
     return NULL;
   }
   if (! gl_square_init(square, segments_u, segments_v)) {
-    free(square);
+    alloc_free(square);
     return NULL;
   }
   return square;

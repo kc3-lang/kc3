@@ -801,7 +801,7 @@ s_str * kc3_hostname (s_str *dest)
 #else
 # if defined(__FreeBSD__)
   result = str_init_1_alloc(dest, name);
-  free(name);
+  alloc_free(name);
   return result;
 # endif
 #endif
@@ -1651,10 +1651,10 @@ p_tuple * kc3_system (p_list *list, p_tuple *dest)
   r = dest;
  clean:
   while (a >= argv) {
-    free(*a);
+    alloc_free(*a);
     a--;
   }
-  free(argv);
+  alloc_free(argv);
   return r;
 #endif
 }

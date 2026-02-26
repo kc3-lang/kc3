@@ -19,7 +19,7 @@ s_arg * arg_delete (s_arg *arg)
   s_arg *next = NULL;
   if (arg) {
     next = arg->next;
-    free(arg);
+    alloc_free(arg);
   }
   return next;
 }
@@ -54,7 +54,7 @@ s_arg * arg_new (void)
   if (! arg)
     return NULL;
   if (! arg_init(arg)) {
-    free(arg);
+    alloc_free(arg);
     return NULL;
   }
   return arg;

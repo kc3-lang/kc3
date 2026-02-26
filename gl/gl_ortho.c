@@ -110,7 +110,7 @@ void gl_ortho_color (s_gl_ortho *ortho, f32 r, f32 g, f32 b, f32 a)
 void gl_ortho_delete (s_gl_ortho *ortho)
 {
   gl_ortho_clean(ortho);
-  free(ortho);
+  alloc_free(ortho);
 }
 
 s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
@@ -222,7 +222,7 @@ s_gl_ortho * gl_ortho_new (void)
     return NULL;
   }
   if (! gl_ortho_init(ortho)) {
-    free(ortho);
+    alloc_free(ortho);
     return NULL;
   }
   return ortho;

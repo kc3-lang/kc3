@@ -29,7 +29,7 @@ void sdl2_sprite_clean (s_sdl2_sprite *sprite)
   str_clean(&sprite->path);
   str_clean(&sprite->real_path);
   glDeleteTextures(sprite->frame_count, sprite->texture);
-  free(sprite->texture);
+  alloc_free(sprite->texture);
 }
 
 static bool png_info_to_gl_info (s32 png_color_type,
@@ -256,7 +256,7 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
     err_inspect_str(&sprite->real_path);
     err_write_1(": glGenTextures: ");
     err_puts((const s8 *) gluErrorString(gl_error));
-    free(sprite->texture);
+    alloc_free(sprite->texture);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;
@@ -266,7 +266,7 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   if (! data) {
     err_write_1("sdl2_sprite_init: failed to allocate memory: ");
     err_puts(sprite->real_path.ptr.ps8);
-    free(sprite->texture);
+    alloc_free(sprite->texture);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;
@@ -329,9 +329,9 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
     y++;
   }
   glBindTexture(GL_TEXTURE_2D, 0);
-  free(data);
-  free(png_data);
-  free(png_row);
+  alloc_free(data);
+  alloc_free(png_data);
+  alloc_free(png_row);
   return sprite;
 }
 

@@ -34,7 +34,7 @@ void env_fork_delete (s_env *env)
 {
   assert(env);
   env_fork_clean(env);
-  free(env);
+  alloc_free(env);
 }
 
 s_env * env_fork_init (s_env *env, s_env *src)
@@ -82,7 +82,7 @@ s_env * env_fork_new (s_env *src)
   if (! (env = alloc(sizeof(s_env))))
     return NULL;
   if (! env_fork_init(env, src)) {
-    free(env);
+    alloc_free(env);
     return NULL;
   }
   return env;

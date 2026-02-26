@@ -45,7 +45,7 @@ void
 skiplist_node_delete___NAME$
 (s_skiplist_node___NAME$ *node)
 {
-  free(node);
+  alloc_free(node);
 }
 
 void

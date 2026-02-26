@@ -86,7 +86,7 @@ p_struct_type * pstruct_type_init_clean (p_struct_type *st,
   if (! (tmp = alloc(sizeof(s_struct_type))))
     return NULL;
   if (! struct_type_init_copy(tmp, src)) {
-    free(tmp);
+    alloc_free(tmp);
     return NULL;
   }
   if (tmp->clean)

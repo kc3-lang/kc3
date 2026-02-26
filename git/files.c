@@ -87,7 +87,7 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
   memcpy(rev, branch->ptr.p, branch->size);
   memcpy(rev + branch->size, "^{tree}", 7);
   if (git_revparse_single(&obj, *repo, rev)) {
-    free(rev);
+    alloc_free(rev);
     map_init(&tmp, 0);
     *dest = tmp;
     return dest;
@@ -100,7 +100,7 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
   else {
     if (git_tree_entry_bypath(&entry, tree, path->ptr.pchar)) {
       git_object_free(obj);
-      free(rev);
+      alloc_free(rev);
       map_init(&tmp, 0);
       *dest = tmp;
       return dest;
@@ -112,18 +112,18 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
       if (! map_init(&tmp, 1)) {
         git_tree_entry_free(entry);
         git_object_free(obj);
-        free(rev);
+        alloc_free(rev);
         return NULL;
       }
       if (! files_set_entry(entry, path->ptr.pchar, &tmp, 0)) {
         git_tree_entry_free(entry);
         git_object_free(obj);
-        free(rev);
+        alloc_free(rev);
         return NULL;
       }
       git_tree_entry_free(entry);
       git_object_free(obj);
-      free(rev);
+      alloc_free(rev);
       *dest = tmp;
       return dest;
     case GIT_OBJECT_TREE:
@@ -132,7 +132,7 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
         err_puts("kc3_git_files: git_tree_lookup");
         git_tree_entry_free(entry);
         git_object_free(obj);
-        free(rev);
+        alloc_free(rev);
         return NULL;
       }
       break;
@@ -140,7 +140,7 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
       err_puts("kc3_git_files: git_tree_entry_type: unknown type");
       git_tree_entry_free(entry);
       git_object_free(obj);
-      free(rev);
+      alloc_free(rev);
       return NULL;
     }
   }
@@ -150,7 +150,7 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
       git_tree_free(sub_tree);
     git_tree_entry_free(entry);
     git_object_free(obj);
-    free(rev);
+    alloc_free(rev);
     return NULL;
   }
   i = 0;
@@ -162,7 +162,7 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
         git_tree_free(sub_tree);
       git_tree_entry_free(entry);
       git_object_free(obj);
-      free(rev);
+      alloc_free(rev);
       return NULL;
     }
     i++;
@@ -171,7 +171,7 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
     git_tree_free(sub_tree);
   git_tree_entry_free(entry);
   git_object_free(obj);
-  free(rev);
+  alloc_free(rev);
   *dest = tmp;
   return dest;
 

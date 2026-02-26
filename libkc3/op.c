@@ -28,7 +28,7 @@ void op_delete (s_op *op)
 {
   assert(op);
   op_clean(op);
-  free(op);
+  alloc_free(op);
 }
 
 s_op * op_init (s_op *op)
@@ -58,7 +58,7 @@ s_op * op_new (void)
   if (! op)
     return NULL;
   if (! op_init(op)) {
-    free(op);
+    alloc_free(op);
     return NULL;
   }
   return op;
@@ -71,7 +71,7 @@ s_op * op_new_copy (s_op *src)
   if (! op)
     return NULL;
   if (! op_init_copy(op, src)) {
-    free(op);
+    alloc_free(op);
     return NULL;
   }
   return op;

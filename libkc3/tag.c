@@ -313,7 +313,7 @@ s_tag * tag_copy (s_tag *tag, s_tag *src)
 void tag_delete (s_tag *tag)
 {
   tag_clean(tag);
-  free(tag);
+  alloc_free(tag);
 }
 
 bool * tag_eq (s_tag *a, s_tag *b, bool *dest)
@@ -1217,7 +1217,7 @@ s_tag * tag_new_1 (const char *p)
   if (! dest)
     return NULL;
   if (! tag_init_1(dest, p)) {
-    free(dest);
+    alloc_free(dest);
     return NULL;
   }
   return dest;
@@ -1230,7 +1230,7 @@ s_tag * tag_new_copy (s_tag *src)
   if (! dest)
     return NULL;
   if (! tag_init_copy(dest, src)) {
-    free(dest);
+    alloc_free(dest);
     return NULL;
   }
   return dest;

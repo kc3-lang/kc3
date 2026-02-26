@@ -29,7 +29,7 @@ static void free_saved_state (struct android_app* android_app)
 {
   pthread_mutex_lock(&android_app->mutex);
   if (android_app->savedState != NULL) {
-    free(android_app->savedState);
+    alloc_free(android_app->savedState);
     android_app->savedState = NULL;
     android_app->savedStateSize = 0;
   }
@@ -324,7 +324,7 @@ static void android_app_free (struct android_app *android_app)
   close(android_app->msgwrite);
   pthread_cond_destroy(&android_app->cond);
   pthread_mutex_destroy(&android_app->mutex);
-  free(android_app);
+  alloc_free(android_app);
 }
 
 static struct android_app *ToApp (ANativeActivity *activity)

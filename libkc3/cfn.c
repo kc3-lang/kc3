@@ -91,7 +91,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     arg_values = alloc((cfn->arity + 1) * sizeof(void *));
     if (! arg_values) {
       tag_clean(&tmp);
-      free(arg_pointers);
+      alloc_free(arg_pointers);
       return NULL;
     }
     cfn_arg_types = cfn->arg_types;
@@ -162,8 +162,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       env_unwind_protect_pop(env, &unwind_protect);
       assert(env->stacktrace == trace);
       env->stacktrace = list_delete(trace);
-      free(arg_pointers);
-      free(arg_values);
+      alloc_free(arg_pointers);
+      alloc_free(arg_values);
       longjmp(*unwind_protect.jmp, 1);
       abort();
     }
@@ -197,14 +197,14 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     assert(! "cfn_apply: NULL function pointer");
     tag_init_void(dest);
   }
-  free(arg_pointers);
-  free(arg_values);
+  alloc_free(arg_pointers);
+  alloc_free(arg_values);
   return dest_v;
  ko:
   tag_clean(&tmp);
   tag_clean(&tmp2);
-  free(arg_pointers);
-  free(arg_values);
+  alloc_free(arg_pointers);
+  alloc_free(arg_values);
   return NULL;
 }
 
@@ -225,7 +225,7 @@ void cfn_clean (s_cfn *cfn)
   assert(cfn);
   list_delete_all(cfn->arg_types);
   if (cfn->cif.nargs)
-    free(cfn->cif.arg_types);
+    alloc_free(cfn->cif.arg_types);
 #if HAVE_PTHREAD
   mutex_clean(&cfn->cif_mutex);
 #endif
@@ -235,7 +235,7 @@ void cfn_delete (s_cfn *cfn)
 {
   assert(cfn);
   cfn_clean(cfn);
-  free(cfn);
+  alloc_free(cfn);
 }
 
 bool cfn_eval (s_cfn *cfn)
@@ -407,12 +407,12 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
         err_write_1("cfn_prep_cif: invalid type: ");
         err_puts(tag_type_to_string(a->tag.type));
         assert(! "cfn_prep_cif: invalid type");
-        free(arg_ffi_type);
+        alloc_free(arg_ffi_type);
         goto clean;
       }
       if (! sym_to_ffi_type(a->tag.data.psym, result_ffi_type,
                             arg_ffi_type + i)) {
-        free(arg_ffi_type);
+        alloc_free(arg_ffi_type);
         goto clean;
       }
       if (a->tag.data.psym == &g_sym_Result) {

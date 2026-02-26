@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "alloc.h"
 #include "assert.h"
 #include "buf.h"
 #include "buf_inspect.h"
@@ -28,13 +29,13 @@ void facts_with_cursor_clean (s_facts_with_cursor *cursor)
   if (cursor->facts_count) {
     while (i < cursor->facts_count) {
       if (cursor->levels[i].spec) {
-        free(cursor->levels[i].spec);
+        alloc_free(cursor->levels[i].spec);
         facts_cursor_clean(&cursor->levels[i].cursor);
       }
       i++;
     }
-    free(cursor->levels);
-    free(cursor->spec);
+    alloc_free(cursor->levels);
+    alloc_free(cursor->spec);
 #if HAVE_PTHREAD
     mutex_clean(&cursor->mutex);
 #endif
@@ -81,7 +82,7 @@ s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
       return dest;
     }
     facts_cursor_clean(&level->cursor);
-    free(level->spec);
+    alloc_free(level->spec);
     level->spec = NULL;
     cursor->level--;
     if (! cursor->level)
@@ -123,7 +124,7 @@ s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
       continue;
     }
     facts_cursor_clean(&level->cursor);
-    free(level->spec);
+    alloc_free(level->spec);
     level->spec = NULL;
     if (! cursor->level)
       goto not_found;
@@ -136,8 +137,8 @@ s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
   return dest;
  not_found:
   cursor->facts_count = 0;
-  free(cursor->levels);
-  free(cursor->spec);
+  alloc_free(cursor->levels);
+  alloc_free(cursor->spec);
 #if HAVE_PTHREAD
   mutex_unlock(&cursor->mutex);
   mutex_clean(&cursor->mutex);

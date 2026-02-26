@@ -27,7 +27,7 @@ void log_clean (s_log *log)
   hook = log->hooks;
   while (hook) {
     next = hook->next;
-    free(hook);
+    alloc_free(hook);
     hook = next;
   }
   log->hooks = NULL;
@@ -53,7 +53,7 @@ void log_delete (s_log *log)
 {
   assert(log);
   log_clean(log);
-  free(log);
+  alloc_free(log);
 }
 
 s_log * log_init (s_log *log)
@@ -72,7 +72,7 @@ s_log * log_new (void)
   if (! log)
     return NULL;
   if (! log_init(log)) {
-    free(log);
+    alloc_free(log);
     return NULL;
   }
   return log;
@@ -170,7 +170,7 @@ bool log_hook_remove (s_log *log, s_log_hook *hook)
   while (*h) {
     if (*h == hook) {
       *h = hook->next;
-      free(hook);
+      alloc_free(hook);
       return true;
     }
     h = &(*h)->next;

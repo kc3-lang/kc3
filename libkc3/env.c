@@ -490,7 +490,7 @@ void env_clean (s_env *env)
   env->err = NULL;
   env_freelist_clean(env);
   if (g_kc3_env_default == env) {
-    free(g_kc3_env_default);
+    alloc_free(g_kc3_env_default);
     g_kc3_env_default = NULL;
   }
 }
@@ -525,20 +525,20 @@ void env_freelist_clean (s_env *env)
       if (l->tag.data.pcallable->mutex.ready)
         mutex_clean(&l->tag.data.pcallable->mutex);
 #endif
-      free(l->tag.data.pcallable);
+      alloc_free(l->tag.data.pcallable);
       break;
     case TAG_PSTRUCT:
       struct_clean(l->tag.data.pstruct);
-      free(l->tag.data.pstruct);
+      alloc_free(l->tag.data.pstruct);
       break;
     case TAG_PSTRUCT_TYPE:
       struct_type_clean(l->tag.data.pstruct_type);
-      free(l->tag.data.pstruct_type);
+      alloc_free(l->tag.data.pstruct_type);
       break;
     default:
       break;
     }
-    free(l);
+    alloc_free(l);
   }
 }
 
@@ -3352,7 +3352,7 @@ char * realpath(const char *path, char *resolved_path) {
   }
   result = _fullpath(resolved_path, path, PATH_MAX);
   if (! result && resolved_path) {
-    free(resolved_path);
+    alloc_free(resolved_path);
   }
   return result;
 }

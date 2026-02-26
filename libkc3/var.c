@@ -62,7 +62,7 @@ void var_delete (s_var *var)
   mutex_unlock(&var->mutex);
 #endif
   var_clean(var);
-  free(var);
+  alloc_free(var);
 }
 
 s_var * var_init (s_var *var, const s_sym *type)
@@ -112,7 +112,7 @@ s_var * var_new (const s_sym *type)
   if (! (tmp = alloc(sizeof(s_var))))
     return NULL;
   if (! var_init(tmp, type)) {
-    free(tmp);
+    alloc_free(tmp);
     return NULL;
   }
   return tmp;
@@ -125,7 +125,7 @@ s_var * var_new_copy (s_var *src)
   if (! (tmp = alloc(sizeof(s_var))))
     return NULL;
   if (! var_init_copy(tmp, src)) {
-    free(tmp);
+    alloc_free(tmp);
     return NULL;
   }
   return tmp;

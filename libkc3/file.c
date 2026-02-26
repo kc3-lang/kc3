@@ -680,7 +680,7 @@ s_str * file_read_max (const s_str *path, uw max, s_str *dest)
     err_write_1(": ");
     err_inspect_str(path);
     err_write_1("\n");
-    free(buf);
+    alloc_free(buf);
     close(fd);
     return NULL;
   }
@@ -689,11 +689,11 @@ s_str * file_read_max (const s_str *path, uw max, s_str *dest)
   if (! str_init_alloc_copy(&tmp, size, buf)) {
     err_puts("file_read_max: str_init_alloc_copy");
     assert(! "file_read_max: str_init_alloc_copy");
-    free(buf);
+    alloc_free(buf);
     close(fd);
     return NULL;
   }
-  free(buf);
+  alloc_free(buf);
   *dest = tmp;
   return dest;
 }
@@ -744,7 +744,7 @@ s_str * file_read_slice (s_str *path, u64 start, u64 end, s_str *dest)
     if ((r = read(fd, p, remaining)) <= 0) {
       err_puts("file_read_slice: read");
       assert(! "file_read_slice: read");
-      free(p);
+      alloc_free(p);
       close(fd);
       return NULL;
     }

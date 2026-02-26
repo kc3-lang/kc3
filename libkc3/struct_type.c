@@ -38,7 +38,7 @@ void struct_type_clean (s_struct_type *st)
     abort();
   }
   map_clean(&st->map);
-  free(st->offset);
+  alloc_free(st->offset);
   if (st->clean)
     callable_delete(st->clean);
 #if HAVE_PTHREAD
@@ -133,13 +133,13 @@ void struct_type_delete (s_struct_type *st)
           (*prev)->tag.data.pstruct_type == st) {
         l = *prev;
         *prev = list_next(l);
-        free(l);
+        alloc_free(l);
         break;
       }
       prev = &(*prev)->next.data.plist;
     }
   }
-  free(st);
+  alloc_free(st);
 }
 
 bool * struct_type_exists (const s_sym *module, bool *dest)
@@ -205,7 +205,7 @@ s_struct_type * struct_type_init (s_struct_type *st,
         err_puts("struct_type_init: invalid spec");
         assert(! "struct_type_init: invalid spec");
         map_clean(&st->map);
-        free(st->offset);
+        alloc_free(st->offset);
         return NULL;
       }
       tuple = s->tag.data.ptuple;
@@ -213,26 +213,26 @@ s_struct_type * struct_type_init (s_struct_type *st,
         type = tuple->tag[1].data.pvar->type;
         if (! sym_type_size(type, &size)) {
           map_clean(&st->map);
-          free(st->offset);
+          alloc_free(st->offset);
           return NULL;
         }
       }
       else if (! tag_size(tuple->tag + 1, &size)) {
         map_clean(&st->map);
-        free(st->offset);
+        alloc_free(st->offset);
         return NULL;
       }
       tag_init_copy(st->map.key + i,   tuple->tag + 0);
       tag_init_copy(st->map.value + i, tuple->tag + 1);
       if (! tag_alignment(st->map.value + i, &align)) {
         map_clean(&st->map);
-        free(st->offset);
+        alloc_free(st->offset);
         return NULL;
       }
       tag_type_var(st->map.value + i, &type);
       if (! sym_must_clean(type, &must_clean)) {
         map_clean(&st->map);
-        free(st->offset);
+        alloc_free(st->offset);
         return NULL;
       }
       if (must_clean)
@@ -311,7 +311,7 @@ s_struct_type * struct_type_new (const s_sym *module,
   if (! st)
     return NULL;
   if (! struct_type_init(st, module, spec)) {
-    free(st);
+    alloc_free(st);
     return NULL;
   }
   return st;
@@ -325,7 +325,7 @@ s_struct_type * struct_type_new_copy (s_struct_type *src)
   if (! st)
     return NULL;
   if (! struct_type_init_copy(st, src)) {
-    free(st);
+    alloc_free(st);
     return NULL;
   }
   return st;
@@ -380,26 +380,26 @@ s_struct_type * struct_type_update_map (s_struct_type *st)
   i = 0;
   while (i < tmp.map.count) {
     if (! tag_type_var(tmp.map.value + i, &type)) {
-      free(tmp.offset);
+      alloc_free(tmp.offset);
       return NULL;
     }
     if (tmp.map.value[i].type == TAG_PVAR) {
       if (! sym_type_size(type, &size)) {
-        free(tmp.offset);
+        alloc_free(tmp.offset);
         return NULL;
       }
       if (! sym_type_alignment(type, &align)) {
-        free(tmp.offset);
+        alloc_free(tmp.offset);
         return NULL;
       }
     }
     else {
       if (! tag_size(tmp.map.value + i, &size)) {
-        free(tmp.offset);
+        alloc_free(tmp.offset);
         return NULL;
       }
       if (! tag_alignment(tmp.map.value + i, &align)) {
-        free(tmp.offset);
+        alloc_free(tmp.offset);
         return NULL;
       }
     }
@@ -408,7 +408,7 @@ s_struct_type * struct_type_update_map (s_struct_type *st)
     offset += size;
     tag_type_var(tmp.map.value + i, &type);
     if (! sym_must_clean(type, &must_clean)) {
-      free(tmp.offset);
+      alloc_free(tmp.offset);
       return NULL;
     }
     if (must_clean)

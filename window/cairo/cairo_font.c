@@ -21,7 +21,7 @@ void kc3_window_cairo_font_clean (void)
 {
   if (g_cairo_font_ft) {
     FT_Done_FreeType(*g_cairo_font_ft);
-    free(g_cairo_font_ft);
+    alloc_free(g_cairo_font_ft);
   }
 }
 
@@ -35,7 +35,7 @@ void * cairo_font_ft (void)
     }
     if (FT_Init_FreeType(g_cairo_font_ft)) {
       err_puts("cairo_font_ft: error initializing FreeType");
-      free(g_cairo_font_ft);
+      alloc_free(g_cairo_font_ft);
       g_cairo_font_ft = NULL;
       return NULL;
     }

@@ -24,7 +24,7 @@ set_item_new__uw (uw data, uw hash, s_set_item__uw *next)
   if (! item)
     return NULL;
   if (! uw_init_copy(&item->data, data)) {
-    free(item);
+    alloc_free(item);
     return NULL;
   }
   item->hash = hash;
@@ -37,7 +37,7 @@ void set_item_delete__uw (s_set_item__uw *x)
 {
   assert(x);
   uw_clean(&x->data);
-  free(x);
+  alloc_free(x);
 }
 
 void set_item_delete_all__uw (s_set_item__uw *x)

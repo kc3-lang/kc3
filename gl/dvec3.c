@@ -115,7 +115,7 @@ s_dvec3 * dvec3_init_zero (s_dvec3 *p)
 
 void dvec3_delete (s_dvec3 *p)
 {
-  free(p);
+  alloc_free(p);
 }
 
 s_dvec3 * dvec3_mul_f64 (const s_dvec3 *a, f64 b,

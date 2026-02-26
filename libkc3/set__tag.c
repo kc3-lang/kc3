@@ -77,7 +77,7 @@ set_clean__tag (s_set__tag *set)
   for (i = 0; i < set->max; i++) {
     set_item_delete_all__tag(set->items[i]);
   }
-  free(set->items);
+  alloc_free(set->items);
 }
 
 s_set_item__tag *

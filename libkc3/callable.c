@@ -89,13 +89,13 @@ void callable_delete (s_callable *callable)
           (*prev)->tag.data.pcallable == callable) {
         l = *prev;
         *prev = list_next(l);
-        free(l);
+        alloc_free(l);
         break;
       }
       prev = &(*prev)->next.data.plist;
     }
   }
-  free(callable);
+  alloc_free(callable);
   return;
  clean:
 #if HAVE_PTHREAD

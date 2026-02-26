@@ -35,10 +35,10 @@ void cairo_sprite_clean (s_cairo_sprite *sprite)
   while (i < sprite->frame_count) {
     data = cairo_image_surface_get_data(sprite->surface[i]);
     cairo_surface_destroy(sprite->surface[i]);
-    free(data);
+    alloc_free(data);
     i++;
   }
-  free(sprite->surface);
+  alloc_free(sprite->surface);
 }
 
 s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,

@@ -28,7 +28,7 @@ void kc3_tls_server_clean (s_tls_server *tls_server)
   tls_buf_close(tls_server->socket_buf->buf_rw.w);
   buf_rw_clean(&tls_server->socket_buf->buf_rw);
   close(tls_server->socket_buf->sockfd);
-  free(tls_server->socket_buf);
+  alloc_free(tls_server->socket_buf);
 }
 
 s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
@@ -45,7 +45,7 @@ s_tls_server * kc3_tls_server_init_accept (s_tls_server *tls_server,
   if (! tls_server->socket_buf)
     return NULL;
   if (! socket_buf_init_accept(tls_server->socket_buf, socket)) {
-    free(tls_server->socket_buf);
+    alloc_free(tls_server->socket_buf);
     return NULL;
   }
   if (false)

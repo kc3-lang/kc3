@@ -22,7 +22,7 @@ void kc3_pdf_write_page_delete (s_pdf_write_page **page)
   assert(page);
   assert(*page);
   pdf_write_page_clean(*page);
-  free(*page);
+  alloc_free(*page);
 }
 
 s_pdf_write_page ** kc3_pdf_write_page_new (s_pdf_write_page **page,
@@ -33,7 +33,7 @@ s_pdf_write_page ** kc3_pdf_write_page_new (s_pdf_write_page **page,
   if (! (tmp = alloc(sizeof(s_pdf_write_page))))
     return NULL;
   if (! pdf_write_page_init(tmp, *pdf, box)) {
-    free(tmp);
+    alloc_free(tmp);
     return NULL;
   }
   *page = tmp;

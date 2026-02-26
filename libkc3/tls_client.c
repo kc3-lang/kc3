@@ -27,7 +27,7 @@ void kc3_tls_client_clean (s_tls_client *tls_client)
   tls_buf_close(tls_client->socket_buf->buf_rw.w);
   buf_rw_clean(&tls_client->socket_buf->buf_rw);
   close(tls_client->socket_buf->sockfd);
-  free(tls_client->socket_buf);
+  alloc_free(tls_client->socket_buf);
 }
 
 s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
@@ -46,7 +46,7 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
   if (! tls_client->socket_buf)
     return NULL;
   if (! socket_init_connect(&tls_client->socket_buf->sockfd, host, port)) {
-    free(tls_client->socket_buf);
+    alloc_free(tls_client->socket_buf);
     err_puts("kc3_tls_client_init_connect: socket_init_connect");
     assert(! "kc3_tls_client_init_connect: socket_init_connect");
     return NULL;

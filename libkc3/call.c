@@ -75,7 +75,7 @@ void call_delete (s_call *call)
   mutex_unlock(&call->mutex);
 #endif
   call_clean(call);
-  free(call);
+  alloc_free(call);
 }
 
 bool call_get (s_call *call)
@@ -174,7 +174,7 @@ s_call * call_new (void)
   if (! (call = alloc(sizeof(s_call))))
     return NULL;
   if (! call_init(call)) {
-    free(call);
+    alloc_free(call);
     return NULL;
   }
   return call;
@@ -186,7 +186,7 @@ s_call * call_new_copy (s_call *src)
   if (! (call = alloc(sizeof(s_call))))
     return NULL;
   if (! call_init_copy(call, src)) {
-    free(call);
+    alloc_free(call);
     return NULL;
   }
   return call;

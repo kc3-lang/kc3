@@ -166,7 +166,7 @@ void struct_clean (s_struct *s)
       }
     }
     if (s->free_data)
-      free(s->data);
+      alloc_free(s->data);
   }
   if (s->tag) {
     i = 0;
@@ -174,7 +174,7 @@ void struct_clean (s_struct *s)
       tag_clean(s->tag + i);
       i++;
     }
-    free(s->tag);
+    alloc_free(s->tag);
   }
   struct_type_delete(s->pstruct_type);
 }
@@ -230,13 +230,13 @@ void struct_delete (s_struct *s)
           (*prev)->tag.data.pstruct == s) {
         l = *prev;
         *prev = list_next(l);
-        free(l);
+        alloc_free(l);
         break;
       }
       prev = &(*prev)->next.data.plist;
     }
   }
-  free(s);
+  alloc_free(s);
 }
 
 uw * struct_find_key_index (const s_struct *s, const s_sym *key,
@@ -499,7 +499,7 @@ s_struct * struct_new (const s_sym *module)
   if (! s)
     return NULL;
   if (! struct_init(s, module)) {
-    free(s);
+    alloc_free(s);
     return NULL;
   }
   return s;
@@ -513,7 +513,7 @@ s_struct * struct_new_copy (s_struct *src)
   if (! s)
     return NULL;
   if (! struct_init_copy(s, src)) {
-    free(s);
+    alloc_free(s);
     return NULL;
   }
   return s;
@@ -547,7 +547,7 @@ s_struct * struct_new_with_data (const s_sym *module, void *data,
   if (! s)
     return NULL;
   if (! struct_init_with_data(s, module, data, free_data)) {
-    free(s);
+    alloc_free(s);
     return NULL;
   }
   return s;
@@ -561,7 +561,7 @@ s_struct * struct_new_with_type (s_struct_type *st)
   if (! s)
     return NULL;
   if (! struct_init_with_type(s, st)) {
-    free(s);
+    alloc_free(s);
     return NULL;
   }
   return s;

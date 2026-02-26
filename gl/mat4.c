@@ -62,7 +62,7 @@ sw mat4_buf_inspect (s_buf *buf, const s_mat4 *matrix)
 
 void mat4_delete (s_mat4 *m)
 {
-  free(m);
+  alloc_free(m);
 }
 
 s_mat4 * mat4_init_copy (s_mat4 *m, const s_mat4 *src)

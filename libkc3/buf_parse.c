@@ -135,7 +135,7 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
   tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
   tmp.tags = alloc(tmp.count * sizeof(s_tag));
   if (! tmp.tags) {
-    free(address);
+    alloc_free(address);
     return -1;
   }
   tag = tmp.tags;
@@ -149,9 +149,9 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
   *dest = tmp;
   goto clean;
  restore:
-  free(tmp.tags);
+  alloc_free(tmp.tags);
  clean:
-  free(address);
+  alloc_free(address);
   return r;
 }
 
@@ -324,7 +324,7 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
   }
   *dest = tmp;
  clean:
-  free(address);
+  alloc_free(address);
   return r;
 }
 
@@ -3819,7 +3819,7 @@ sw buf_parse_pcomplex (s_buf *buf, s_complex **c)
   s_complex *tmp;
   tmp = complex_new();
   if ((r = buf_parse_complex(buf, tmp)) <= 0) {
-    free(tmp);
+    alloc_free(tmp);
     return r;
   }
   *c = tmp;
@@ -3833,7 +3833,7 @@ sw buf_parse_pcow (s_buf *buf, s_cow **c)
   s_cow *tmp;
   tmp = alloc(sizeof(s_cow));
   if ((r = buf_parse_cow(buf, tmp)) <= 0) {
-    free(tmp);
+    alloc_free(tmp);
     return r;
   }
   *c = tmp;
@@ -3949,7 +3949,7 @@ sw buf_parse_ptuple (s_buf *buf, p_tuple *dest)
   if (! tuple)
     return -1;
   if ((r = buf_parse_tuple(buf, tuple)) <= 0) {
-    free(tuple);
+    alloc_free(tuple);
     return r;
   }
   *dest = tuple;
@@ -4108,7 +4108,7 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
     err_inspect_buf(buf);
     err_write_1("\n");
     assert(! "buf_parse_quote: buf_parse_tag");
-    free(quote.tag);
+    alloc_free(quote.tag);
     goto restore;
   }
   result += r;
@@ -5905,7 +5905,7 @@ sw buf_parse_unquote (s_buf *buf, s_unquote *dest)
     goto restore;
   }
   if ((r = buf_parse_tag(buf, unquote.tag)) <= 0) {
-    free(unquote.tag);
+    alloc_free(unquote.tag);
     goto restore;
   }
   result += r;

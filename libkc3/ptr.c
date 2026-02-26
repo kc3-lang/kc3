@@ -20,7 +20,7 @@
 void ptr_delete (u_ptr_w *ptr)
 {
   assert(ptr);
-  free(ptr);
+  alloc_free(ptr);
 }
 
 u_ptr_w * ptr_init (u_ptr_w *ptr, void *p)
@@ -89,7 +89,7 @@ u_ptr_w * ptr_new (void *p)
   if (! ptr)
     return NULL;
   if (! ptr_init(ptr, p)) {
-    free(ptr);
+    alloc_free(ptr);
     return NULL;
   }
   return ptr;
@@ -103,7 +103,7 @@ u_ptr_w * ptr_new_copy (const u_ptr_w *src)
   if (! ptr)
     return NULL;
   if (! ptr_init_copy(ptr, src)) {
-    free(ptr);
+    alloc_free(ptr);
     return NULL;
   }
   return ptr;

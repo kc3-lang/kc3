@@ -30,7 +30,7 @@ void mutex_delete (s_mutex *mutex)
 {
   assert(mutex);
   mutex_clean(mutex);
-  free(mutex);
+  alloc_free(mutex);
 }
 
 s_mutex * mutex_init (s_mutex *mutex)
@@ -104,7 +104,7 @@ s_mutex * mutex_new (void)
   if (! (mutex = alloc(sizeof(s_mutex))))
     return NULL;
   if (! mutex_init(mutex)) {
-    free(mutex);
+    alloc_free(mutex);
     return NULL;
   }
   return mutex;

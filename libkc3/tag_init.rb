@@ -627,6 +627,7 @@ tag_init_h.commit
 list_init_c = FileUpdate.new("list_init.c")
 list_init_c.content = <<EOF
 #{$license}
+#include "alloc.h"
 #include "assert.h"
 #include <string.h>
 #include "array.h"
