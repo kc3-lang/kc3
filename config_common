@@ -28,6 +28,7 @@ config_have_pthread
 config_have_stat_mtim
 config_lib m -lm 2>/dev/null
 config_lib pthread -lpthread
+config_lib execinfo -lexecinfo
 if $HAVE_WIN32 || $HAVE_WIN64; then
     LIBS="$LIBS -lws2_32"
 fi

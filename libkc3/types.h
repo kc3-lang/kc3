@@ -457,7 +457,9 @@ struct marshall_header {
 struct memleak {
   void       *ptr;
   uw          size;
-  s_list     *stacktrace;
+  char      **backtrace;
+  uw          backtrace_len;
+  char       *env_stacktrace;
   s_memleak  *next;
 };
 

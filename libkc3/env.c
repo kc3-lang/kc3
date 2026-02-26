@@ -77,6 +77,7 @@ const char *g_env_argv0_dir_default = "";
 #include "map.h"
 #include "marshall.h"
 #include "marshall_read.h"
+#include "memleak.h"
 #include "module.h"
 #include "mutex.h"
 #include "ncpu.h"
@@ -492,6 +493,11 @@ void env_clean (s_env *env)
   if (g_kc3_env_default == env) {
     alloc_free(g_kc3_env_default);
     g_kc3_env_default = NULL;
+    if (g_memleak_enabled) {
+      memleak_report();
+      g_memleak_enabled = false;
+      memleak_remove_all();
+    }
   }
 }
 
@@ -1929,6 +1935,8 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   env->parent_env = g_kc3_env_global;
   g_kc3_env_global = env;
   *env = (s_env) {0};
+  if (getenv("KC3_MEMLEAK"))
+    g_memleak_enabled = true;
   if (! env_args_init(env, argc, argv))
     return NULL;
   sym_init_g_sym();

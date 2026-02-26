@@ -19,6 +19,7 @@ extern s_memleak *g_memleak;
 extern bool       g_memleak_enabled;
 
 void memleak_add (void *ptr, uw size, s_list *stacktrace);
+void memleak_remove_all (void);
 void memleak_remove (void *ptr);
 void memleak_report (void);
 

@@ -34,7 +34,7 @@ defmodule HTTPd do
 
   def connections = Counter.new(0)
 
-  def connections_max = fn () { ncpu() * 16 }
+  def connections_max = fn () { ncpu() * 4 }
 
   def kq_fd = ?
 

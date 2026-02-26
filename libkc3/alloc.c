@@ -17,6 +17,8 @@
 #include "memleak.h"
 #include <stdlib.h>
 
+static bool g_alloc_memleak_lock = false;
+
 void * alloc (uw size)
 {
   void *a;
@@ -33,10 +35,12 @@ void * alloc (uw size)
     assert(! "alloc: failed to allocate memory");
     return NULL;
   }
-  if (g_memleak_enabled) {
+  if (g_memleak_enabled && ! g_alloc_memleak_lock) {
+    g_alloc_memleak_lock = true;
     env = env_global();
     stacktrace = env ? list_new_copy_all(env->stacktrace) : NULL;
     memleak_add(a, size, stacktrace);
+    g_alloc_memleak_lock = false;
   }
   return a;
 }
@@ -44,8 +48,11 @@ void * alloc (uw size)
 void alloc_free (void *ptr)
 {
   if (ptr) {
-    if (g_memleak_enabled)
+    if (g_memleak_enabled && ! g_alloc_memleak_lock) {
+      g_alloc_memleak_lock = true;
       memleak_remove(ptr);
+      g_alloc_memleak_lock = false;
+    }
     free(ptr);
   }
 }
