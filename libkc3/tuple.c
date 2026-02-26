@@ -28,6 +28,9 @@ void tuple_clean (s_tuple *tuple)
 {
   uw i;
   assert(tuple);
+#if HAVE_PTHREAD
+  mutex_clean(&tuple->mutex);
+#endif
   if (tuple->tag) {
     i = tuple->count;
     while (i--)
