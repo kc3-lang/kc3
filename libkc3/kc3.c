@@ -48,6 +48,7 @@
 #include "counter.h"
 #include "env.h"
 #include "env_eval.h"
+#include "env_eval_equal.h"
 #include "env_fork.h"
 #include "eval.h"
 #include "fact.h"
@@ -1157,7 +1158,8 @@ s_tag * kc3_match (s_tag *tag, s_map *map, s_tag *dest)
   while (i < map->count) {
     silence_errors = env->silence_errors;
     env->silence_errors = true;
-    if (env_eval_equal_tag(env, &tag_eval, map->key + i, &tag_tmp)) {
+    if (env_eval_equal_tag(env, false, &tag_eval, map->key + i,
+                           &tag_tmp)) {
       env->silence_errors = silence_errors;
       tag_clean(&tag_eval);
       tag_clean(&tag_tmp);

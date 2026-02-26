@@ -53,6 +53,7 @@ const char *g_env_argv0_dir_default = "";
 #include "data.h"
 #include "env.h"
 #include "env_eval.h"
+#include "env_eval_equal.h"
 #include "env_frame_capture.h"
 #include "error.h"
 #include "error_handler.h"

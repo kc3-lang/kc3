@@ -289,7 +289,8 @@ bool env_eval_call_callable_args (s_env *env,
 bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
                              s_tag *dest)
 {
-  s_list * volatile args = NULL;
+  s_list * volatile args_clean = NULL;
+  s_list *args = NULL;
   s_list *args_final = NULL;
   s_tag tag;
   s_unwind_protect unwind_protect;
@@ -310,10 +311,11 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
       args_final = args;
     }
   }
+  args_clean = args;
   env_unwind_protect_push(env, &unwind_protect);
   if (setjmp(unwind_protect.buf)) {
     env_unwind_protect_pop(env, &unwind_protect);
-    list_delete_all(args);
+    list_delete_all(args_clean);
     longjmp(*unwind_protect.jmp, 1);
   }
   if (! cfn_apply(cfn, args_final, &tag)) {
