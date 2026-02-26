@@ -1146,7 +1146,8 @@ s_tag * kc3_match (s_tag *tag, s_map *map, s_tag *dest)
   uw i;
   bool silence_errors;
   s_tag tag_eval;
-  s_tag tag_tmp;
+  s_tag tag_tmp = {0};
+  s_unwind_protect unwind_protect;
   assert(tag);
   assert(map);
   assert(dest);
@@ -1154,6 +1155,13 @@ s_tag * kc3_match (s_tag *tag, s_map *map, s_tag *dest)
   assert(env);
   if (! env_eval_tag(env, tag, &tag_eval))
     return NULL;
+  env_unwind_protect_push(env, &unwind_protect);
+  if (setjmp(unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    tag_clean(&tag_tmp);
+    tag_clean(&tag_eval);
+    longjmp(*unwind_protect.jmp, 1);
+  }
   i = 0;
   while (i < map->count) {
     silence_errors = env->silence_errors;
@@ -1161,6 +1169,7 @@ s_tag * kc3_match (s_tag *tag, s_map *map, s_tag *dest)
     if (env_eval_equal_tag(env, false, &tag_eval, map->key + i,
                            &tag_tmp)) {
       env->silence_errors = silence_errors;
+      env_unwind_protect_pop(env, &unwind_protect);
       tag_clean(&tag_eval);
       tag_clean(&tag_tmp);
       if (map->value[i].type != TAG_DO_BLOCK) {
@@ -1176,6 +1185,7 @@ s_tag * kc3_match (s_tag *tag, s_map *map, s_tag *dest)
     env->silence_errors = silence_errors;
     i++;
   }
+  env_unwind_protect_pop(env, &unwind_protect);
   tag_clean(&tag_eval);
   return tag_init_void(dest);
 }

@@ -170,7 +170,6 @@ bool env_eval_equal_map (s_env *env, bool macro, s_map *a,
   return true;
 }
 
-// TODO: unwind_protect
 bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
                          s_tag *b, s_tag *dest)
 {
@@ -257,23 +256,41 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   }
   if (! macro &&
       a->type == TAG_PCALL) {
+    s_unwind_protect unwind_protect;
     if (! env_eval_tag(env, a, &tmp_a))
       return false;
+    env_unwind_protect_push(env, &unwind_protect);
+    if (setjmp(unwind_protect.buf)) {
+      env_unwind_protect_pop(env, &unwind_protect);
+      tag_clean(&tmp_a);
+      longjmp(*unwind_protect.jmp, 1);
+    }
     if (! env_eval_equal_tag(env, macro, &tmp_a, b, dest)) {
+      env_unwind_protect_pop(env, &unwind_protect);
       tag_clean(&tmp_a);
       return false;
     }
+    env_unwind_protect_pop(env, &unwind_protect);
     tag_clean(&tmp_a);
     return true;
   }
   if (! macro &&
       b->type == TAG_PCALL) {
+    s_unwind_protect unwind_protect;
     if (! env_eval_tag(env, b, &tmp_b))
       return false;
+    env_unwind_protect_push(env, &unwind_protect);
+    if (setjmp(unwind_protect.buf)) {
+      env_unwind_protect_pop(env, &unwind_protect);
+      tag_clean(&tmp_b);
+      longjmp(*unwind_protect.jmp, 1);
+    }
     if (! env_eval_equal_tag(env, macro, a, &tmp_b, dest)) {
+      env_unwind_protect_pop(env, &unwind_protect);
       tag_clean(&tmp_b);
       return false;
     }
+    env_unwind_protect_pop(env, &unwind_protect);
     tag_clean(&tmp_b);
     return true;
   }
