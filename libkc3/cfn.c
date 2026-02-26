@@ -144,11 +144,18 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     }
   }
   if (cfn->ptr.f) {
+    s_list *args_copy;
+    s_list *trace_plist;
     if (! (trace = list_new(env->stacktrace)))
       goto ko;
-    tag_init_plist(&trace->tag, list_new_psym
-                   (cfn->c_name, list_new_copy_all
-                    (args)));
+    args_copy = list_new_copy_all(args);
+    trace_plist = list_new_psym(cfn->c_name, args_copy);
+    if (! trace_plist) {
+      list_delete_all(args_copy);
+      list_delete(trace);
+      goto ko;
+    }
+    tag_init_plist(&trace->tag, trace_plist);
     env->stacktrace = trace;
     env_unwind_protect_push(env, &unwind_protect);
     if (setjmp(unwind_protect.buf)) {

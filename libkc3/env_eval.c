@@ -286,14 +286,13 @@ bool env_eval_call_callable_args (s_env *env,
   return false;
 }
 
-// TODO: unwind_protect
 bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
                              s_tag *dest)
 {
-  s_list *args = NULL;
+  s_list * volatile args = NULL;
   s_list *args_final = NULL;
-  //s_frame frame;
   s_tag tag;
+  s_unwind_protect unwind_protect;
   assert(env);
   assert(cfn);
   assert(dest);
@@ -302,28 +301,29 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
              " securelevel > 2");
     abort();
   }
-  //if (! frame_init(&frame, env->frame))
-  //  return false;
-  //env->frame = &frame;
   if (arguments) {
     if (cfn->macro || cfn->special_operator)
       args_final = arguments;
     else {
-      if (! env_eval_call_arguments(env, arguments, &args)) {
-        //env->frame = frame_clean(&frame);
+      if (! env_eval_call_arguments(env, arguments, &args))
         return false;
-      }
       args_final = args;
     }
   }
-  if (! cfn_apply(cfn, args_final, &tag)) {
+  env_unwind_protect_push(env, &unwind_protect);
+  if (setjmp(unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &unwind_protect);
     list_delete_all(args);
-    //env->frame = frame_clean(&frame);
+    longjmp(*unwind_protect.jmp, 1);
+  }
+  if (! cfn_apply(cfn, args_final, &tag)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    list_delete_all(args);
     return false;
   }
+  env_unwind_protect_pop(env, &unwind_protect);
   *dest = tag;
   list_delete_all(args);
-  //env->frame = frame_clean(&frame);
   return true;
 }
 
@@ -506,9 +506,25 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     frame_clean(&frame);
     return false;
   }
-  tag_init_plist(&trace->tag, list_new_ident
-                 (&fn->name, list_new_copy_all
-                  (args)));
+  {
+    s_list *args_copy;
+    s_list *trace_plist;
+    args_copy = list_new_copy_all(args);
+    trace_plist = list_new_ident(&fn->name, args_copy);
+    if (! trace_plist) {
+      list_delete_all(args_copy);
+      list_delete(trace);
+      list_delete_all(args);
+      list_delete_all(tmp);
+      list_delete_all(env->search_modules);
+      env->search_modules = search_modules;
+      assert(env->frame == &frame);
+      env->frame = env_frame;
+      frame_clean(&frame);
+      return false;
+    }
+    tag_init_plist(&trace->tag, trace_plist);
+  }
   env->stacktrace = trace;
   if (! block_init(&jump.block, fn->name.sym)) {
     env->stacktrace = list_delete(env->stacktrace);
