@@ -108,6 +108,7 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
     type = git_tree_entry_type(entry);
     switch (type) {
     case GIT_OBJECT_BLOB:
+    case GIT_OBJECT_COMMIT:
       if (! map_init(&tmp, 1)) {
         git_tree_entry_free(entry);
         git_object_free(obj);
