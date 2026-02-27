@@ -63,7 +63,7 @@ class TagInit
     @args_proto = "void" if @args_proto == ""
 
     @name_suffix = "#{name}#{@suffix}"
-end
+  end
 
   def tag_proto
     "s_tag * tag_#{name_suffix} (s_tag *tag#{comma_args_proto});"
@@ -129,11 +129,11 @@ EOF
     when :init_mode_none
       ""
     when :init_mode_init
-      "  if (! #{name}_init#{suffix}(#{name == "list" ? "" : "&"}tmp.data.#{data_name}#{comma_args}))
+      "  if (! #{name}_init#{suffix}(#{name == "list" ? "" : "&"}tmp.data.td_#{data_name}#{comma_args}))
     return NULL;
 "
     when :init_mode_direct
-      "  tmp.data.#{name} = #{first_arg_deref};
+      "  tmp.data.td_#{name} = #{first_arg_deref};
 "
     when :init_mode_buf_parse
       "  s_buf buf;
@@ -142,7 +142,7 @@ EOF
   len = strlen(p);
   if (! buf_init(&buf, false, len, p))
     return NULL;
-  if ((r = buf_parse_#{name}(&buf, &tmp.data.#{data_name}) < 0)
+  if ((r = buf_parse_#{name}(&buf, &tmp.data.td_#{data_name}) < 0)
     return NULL;
   else if (r != len) {
     #{name}_clean(&tmp);
@@ -173,13 +173,13 @@ EOF
     when :init_mode_none
       ""
     when :init_mode_init
-      "  if (! #{name}_init#{suffix}(#{name == "list" ? "" : "&"}tag->data.#{data_name}#{comma_args})) {
+      "  if (! #{name}_init#{suffix}(#{name == "list" ? "" : "&"}tag->data.td_#{data_name}#{comma_args})) {
     free(tag);
     return NULL;
   }
 "
     when :init_mode_direct
-      "  tag->data.#{data_name} = #{first_arg_deref};
+      "  tag->data.td_#{data_name} = #{first_arg_deref};
 "
     when :init_mode_buf_parse
       "  s_buf buf;
@@ -188,7 +188,7 @@ EOF
   len = strlen(p);
   if (! buf_init(&buf, false, len, p))
     return NULL;
-  if ((r = buf_parse_#{name}(&buf, &tmp.data.#{data_name}) < 0)
+  if ((r = buf_parse_#{name}(&buf, &tmp.data.td_#{data_name}) < 0)
     return NULL;
   else if (r != len) {
     #{name}_clean(&tmp);

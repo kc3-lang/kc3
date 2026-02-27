@@ -106,17 +106,17 @@ sw buf_linenoise_refill_linenoise (s_buf *buf)
   buf_linenoise_len = buf_linenoise->buf.wpos - buf_linenoise->buf.rpos;
   if (buf_linenoise_len == 0) {
     if (buf_linenoise->buf.free)
-      alloc_free(buf_linenoise->buf.ptr.p);
-    if (! (buf_linenoise->buf.ptr.p = linenoise(buf_linenoise->prompt))) {
+      alloc_free(buf_linenoise->buf.ptr.p_pvoid);
+    if (! (buf_linenoise->buf.ptr.p_pvoid = linenoise(buf_linenoise->prompt))) {
       buf_linenoise->eof = true;
       buf_linenoise->buf.rpos =
         buf_linenoise->buf.wpos =
         buf_linenoise->buf.size = 0;
       return -1;
     }
-    linenoiseHistoryAdd(buf_linenoise->buf.ptr.p);
-    buf_linenoise_len = strlen(buf_linenoise->buf.ptr.p);
-    buf_linenoise->buf.ptr.pchar[buf_linenoise_len++] = '\n';
+    linenoiseHistoryAdd(buf_linenoise->buf.ptr.p_pvoid);
+    buf_linenoise_len = strlen(buf_linenoise->buf.ptr.p_pvoid);
+    buf_linenoise->buf.ptr.p_pchar[buf_linenoise_len++] = '\n';
     buf_linenoise->buf.size = buf_linenoise->buf.wpos = buf_linenoise_len;
     buf_linenoise->buf.rpos = 0;
   }

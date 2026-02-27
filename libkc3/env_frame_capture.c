@@ -191,31 +191,31 @@ s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
   assert(tag);
   switch (tag->type) {
   case TAG_ARRAY:
-    return env_frame_capture_array(env, frame, &tag->data.array);
+    return env_frame_capture_array(env, frame, &tag->data.td_array);
   case TAG_DO_BLOCK:
-    return env_frame_capture_do_block(env, frame, &tag->data.do_block);
+    return env_frame_capture_do_block(env, frame, &tag->data.td_do_block);
   case TAG_FACT:
-    return env_frame_capture_fact(env, frame, &tag->data.fact);
+    return env_frame_capture_fact(env, frame, &tag->data.td_fact);
   case TAG_MAP:
-    return env_frame_capture_map(env, frame, &tag->data.map);
+    return env_frame_capture_map(env, frame, &tag->data.td_map);
   case TAG_PCALL:
-    return env_frame_capture_call(env, frame, tag->data.pcall);
+    return env_frame_capture_call(env, frame, tag->data.td_pcall);
   case TAG_PLIST:
-    return env_frame_capture_list(env, frame, tag->data.plist);
+    return env_frame_capture_list(env, frame, tag->data.td_plist);
   case TAG_PVAR:
-    return env_frame_capture_var(env, frame, tag->data.pvar);
+    return env_frame_capture_var(env, frame, tag->data.td_pvar);
   case TAG_QUOTE:
-    return env_frame_capture_quote(env, frame, &tag->data.quote);
+    return env_frame_capture_quote(env, frame, &tag->data.td_quote);
   case TAG_PTUPLE:
-    return env_frame_capture_tuple(env, frame, tag->data.ptuple);
+    return env_frame_capture_tuple(env, frame, tag->data.td_ptuple);
   case TAG_UNQUOTE:
-    return env_frame_capture_unquote(env, frame, &tag->data.unquote);
+    return env_frame_capture_unquote(env, frame, &tag->data.td_unquote);
   case TAG_IDENT:
-    return env_frame_capture_ident(env, frame, &tag->data.ident);
+    return env_frame_capture_ident(env, frame, &tag->data.td_ident);
   case TAG_PCALLABLE:
-    return env_frame_capture_callable(env, frame, tag->data.pcallable);
+    return env_frame_capture_callable(env, frame, tag->data.td_pcallable);
   case TAG_PSTRUCT:
-    return env_frame_capture_struct(env, frame, tag->data.pstruct);
+    return env_frame_capture_struct(env, frame, tag->data.td_pstruct);
   case TAG_BOOL:
   case TAG_CHARACTER:
   case TAG_F32:

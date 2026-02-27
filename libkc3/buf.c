@@ -60,7 +60,7 @@
       r = -1;                                                         \
       goto clean;                                                     \
     }                                                                 \
-    memcpy(dest, buf->ptr.pu8 + buf->rpos, size);                     \
+    memcpy(dest, buf->ptr.p_pu8 + buf->rpos, size);                     \
     r = size;                                                         \
   clean:                                                              \
     rwlock_unlock_w(buf->rwlock);                                     \
@@ -101,7 +101,7 @@
       r = -1;                                                         \
       goto clean;                                                     \
     }                                                                 \
-    memcpy(buf->ptr.pu8 + buf->wpos, &src, size);                     \
+    memcpy(buf->ptr.p_pu8 + buf->wpos, &src, size);                     \
     buf->wpos += size;                                                \
     r = size;                                                         \
   clean:                                                              \
@@ -138,7 +138,7 @@
       r = -1;                                                         \
       goto clean;                                                     \
     }                                                                 \
-    memcpy(dest, buf->ptr.pu8 + buf->rpos, size);                     \
+    memcpy(dest, buf->ptr.p_pu8 + buf->rpos, size);                     \
     r = size;                                                         \
   clean:                                                              \
     return r;                                                         \
@@ -175,7 +175,7 @@
       r = -1;                                                         \
       goto clean;                                                     \
     }                                                                 \
-    memcpy(buf->ptr.pu8 + buf->wpos, &src, size);                     \
+    memcpy(buf->ptr.p_pu8 + buf->wpos, &src, size);                     \
     buf->wpos += size;                                                \
     r = size;                                                         \
   clean:                                                              \
@@ -192,8 +192,8 @@ void buf_clean (s_buf *buf)
     rwlock_delete(buf->rwlock);
 #endif
   if (buf->free) {
-    //explicit_bzero(buf->ptr.p, buf->size);
-    alloc_free(buf->ptr.p);
+    //explicit_bzero(buf->ptr.p_pvoid, buf->size);
+    alloc_free(buf->ptr.p_pvoid);
   }
 }
 
@@ -404,7 +404,7 @@ s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
  assert(buf);
   tmp.free = p_free;
   tmp.line = 1;
-  tmp.ptr.pchar = p;
+  tmp.ptr.p_pchar = p;
   tmp.size = size;
 #if HAVE_PTHREAD
   tmp.rwlock = rwlock_new();
@@ -420,7 +420,7 @@ s_buf * buf_init_const (s_buf *buf, uw size, const char *p)
   s_buf tmp = {0};
   assert(buf);
   tmp.line = 1;
-  tmp.ptr.pchar = (char *) p;
+  tmp.ptr.p_pchar = (char *) p;
   tmp.read_only = true;
   tmp.size = size;
   tmp.wpos = size;
@@ -467,7 +467,7 @@ s_buf * buf_init_1_copy (s_buf *buf, const char *p)
   size = strlen(p);
   if (! buf_init_alloc(&tmp, size))
     return NULL;
-  memcpy(tmp.ptr.p, p, size);
+  memcpy(tmp.ptr.p_pvoid, p, size);
   tmp.wpos = size;
   *buf = tmp;
   return buf;
@@ -492,17 +492,17 @@ s_buf * buf_init_popen (s_buf *buf, const s_str *cmd,
   s_buf tmp = {0};
   if (! buf_init_alloc(&tmp, BUF_SIZE))
     return NULL;
-  if (! (fp = popen(cmd->ptr.pchar, mode->ptr.pchar))) {
+  if (! (fp = popen(cmd->ptr.p_pchar, mode->ptr.p_pchar))) {
     buf_clean(&tmp);
     return NULL;
   }
-  if (mode->ptr.pchar[0] == 'w') {
+  if (mode->ptr.p_pchar[0] == 'w') {
     if (! buf_file_open_w(&tmp, fp)) {
       buf_clean(&tmp);
       return NULL;
     }
   }
-  else if (mode->ptr.pchar[0] == 'r') {
+  else if (mode->ptr.p_pchar[0] == 'r') {
     if (! buf_file_open_r(&tmp, fp)) {
       buf_clean(&tmp);
       return NULL;
@@ -523,7 +523,7 @@ s_buf * buf_init_str (s_buf *buf, bool p_free, s_str *p)
   s_buf tmp = {0};
   assert(buf);
   assert(p);
-  buf_init(&tmp, p_free, p->size, (char *) p->ptr.pchar);
+  buf_init(&tmp, p_free, p->size, (char *) p->ptr.p_pchar);
   tmp.wpos = p->size;
   *buf = tmp;
   return buf;
@@ -534,7 +534,7 @@ s_buf * buf_init_str_const (s_buf *buf, const s_str *p)
   s_buf tmp = {0};
   assert(buf);
   assert(p);
-  buf_init_const(&tmp, p->size, p->ptr.pchar);
+  buf_init_const(&tmp, p->size, p->ptr.p_pchar);
   tmp.wpos = p->size;
   *buf = tmp;
   return buf;
@@ -546,7 +546,7 @@ s_buf * buf_init_str_copy (s_buf *buf, const s_str *str)
   assert(buf);
   assert(str);
   buf_init_alloc(&tmp, str->size);
-  memcpy(tmp.ptr.p, str->ptr.p, str->size);
+  memcpy(tmp.ptr.p_pvoid, str->ptr.p_pvoid, str->size);
   tmp.wpos = str->size;
   *buf = tmp;
   return buf;
@@ -650,7 +650,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
     r = -1;
     goto clean;
   }
-  b = buf->ptr.pu8 + buf->rpos;
+  b = buf->ptr.p_pu8 + buf->rpos;
   if ((b[0] & _10000000) == 0) {
     *c = b[0];
     r = 1;
@@ -750,7 +750,7 @@ sw buf_peek_f80 (s_buf *buf, f80 *dest)
     if (r < 16)
       return -1;
   }
-  memcpy(tmp.u, buf->ptr.pu8 + buf->rpos, 16);
+  memcpy(tmp.u, buf->ptr.p_pu8 + buf->rpos, 16);
   *dest = tmp.f;
   return 16;
 }
@@ -791,7 +791,7 @@ sw buf_peek_str (s_buf *buf, const s_str *src)
   }
   size = buf->wpos - buf->rpos;
   if ((uw) size < src->size) {
-    if (memcmp(buf->ptr.pchar + buf->rpos, src->ptr.p, size)) {
+    if (memcmp(buf->ptr.p_pchar + buf->rpos, src->ptr.p_pvoid, size)) {
       r = 0;
       goto clean;
     }
@@ -801,7 +801,7 @@ sw buf_peek_str (s_buf *buf, const s_str *src)
     r = 0;
     goto clean;
   }
-  if (memcmp(buf->ptr.pchar + buf->rpos, src->ptr.p, src->size)) {
+  if (memcmp(buf->ptr.p_pchar + buf->rpos, src->ptr.p_pvoid, src->size)) {
     r = 0;
     goto clean;
   }
@@ -838,7 +838,7 @@ sw buf_peek_to_str (s_buf *buf, s_str *dest)
     r = 0;
     goto clean;
   }
-  str_init_alloc_copy(dest, size, buf->ptr.pchar + buf->rpos);
+  str_init_alloc_copy(dest, size, buf->ptr.p_pchar + buf->rpos);
   r = size;
  clean:
 #if HAVE_PTHREAD
@@ -878,7 +878,7 @@ s_str * buf_read (s_buf *buf, uw size, s_str *dest)
   if (! p)
     goto clean;
   str_init(&tmp, p, size, p);
-  memcpy(p, buf->ptr.ps8 + buf->rpos, size);
+  memcpy(p, buf->ptr.p_ps8 + buf->rpos, size);
   buf->rpos += size;
   *dest = tmp;
   result = dest;
@@ -967,7 +967,7 @@ sw buf_read_integer (s_buf *buf, s_integer *dest)
   result += r;
   integer_init(&tmp);
   if (count == 0) {
-    mp_set_u32(&tmp.mp_int, 0);
+    mp_set_u32(&tmp.in_int, 0);
     *dest = tmp;
     return result;
   }
@@ -984,16 +984,16 @@ sw buf_read_integer (s_buf *buf, s_integer *dest)
       return -1;
     }
   }
-  if (mp_unpack(&tmp.mp_int, count, MP_LSB_FIRST, digit_size,
+  if (mp_unpack(&tmp.in_int, count, MP_LSB_FIRST, digit_size,
                 MP_LITTLE_ENDIAN, nail_bits,
-                buf->ptr.pu8 + buf->rpos) != MP_OKAY) {
+                buf->ptr.p_pu8 + buf->rpos) != MP_OKAY) {
     err_puts("buf_read_integer: mp_unpack failed");
     assert(! "buf_read_integer: mp_unpack failed");
     integer_clean(&tmp);
     return -1;
   }
   if (sign) {
-    if (mp_neg(&tmp.mp_int, &tmp.mp_int) != MP_OKAY) {
+    if (mp_neg(&tmp.in_int, &tmp.in_int) != MP_OKAY) {
       err_puts("buf_read_integer: mp_neg failed");
       assert(! "buf_read_integer: mp_neg failed");
       integer_clean(&tmp);
@@ -1037,7 +1037,7 @@ s_str * buf_read_max (s_buf *buf, s_str *dest)
   if (! p)
     goto clean;
   str_init(&tmp, p, size, p);
-  memcpy(p, buf->ptr.ps8 + buf->rpos, size);
+  memcpy(p, buf->ptr.p_ps8 + buf->rpos, size);
   buf->rpos += size;
   *dest = tmp;
   result = dest;
@@ -1123,7 +1123,7 @@ sw buf_read_to_str (s_buf *buf, s_str *dest)
     r = 0;
     goto clean;
   }
-  if (! str_init_alloc_copy(&tmp, size, buf->ptr.pchar + buf->rpos)) {
+  if (! str_init_alloc_copy(&tmp, size, buf->ptr.p_pchar + buf->rpos)) {
     err_puts("buf_read_to_str: str_init_alloc_copy");
     assert(! "buf_read_to_str: str_init_alloc_copy");
     r = -1;
@@ -1197,7 +1197,7 @@ sw buf_read_until_space_into_str (s_buf *buf, s_str *dest)
     if ((r = buf_peek_character_utf8(buf, &c)) < 0)
       goto restore;
     if (r && character_is_space(c)) {
-      buf_init(&tmp, false, buf->size, buf->ptr.pchar);
+      buf_init(&tmp, false, buf->size, buf->ptr.p_pchar);
       tmp.rpos = save.rpos;
       tmp.wpos = buf->rpos;
       if (buf_read_to_str(&tmp, dest) <= 0) {
@@ -1238,20 +1238,20 @@ sw buf_read_until_list_into_str (s_buf *buf,
   buf_save_init(buf, &save);
   while (1) {
     e = *end;
-    if (e->tag.type != TAG_STR || ! e->tag.data.str.size) {
+    if (e->tag.type != TAG_STR || ! e->tag.data.td_str.size) {
       err_puts("buf_read_until_list_into_str: invalid end List of Str");
       assert(! "buf_read_until_list_into_str: invalid end List of Str");
     }
     while (e) {
-      if ((r = buf_read_str(buf, &e->tag.data.str)) < 0) {
+      if ((r = buf_read_str(buf, &e->tag.data.td_str)) < 0) {
         if (false)
           err_puts("buf_read_until_list_into_str: buf_read_str");
         goto restore;
       }
       if (r) {
-        buf_init(&tmp, false, buf->size, buf->ptr.pchar);
+        buf_init(&tmp, false, buf->size, buf->ptr.p_pchar);
         tmp.rpos = save.rpos;
-        tmp.wpos = buf->rpos - e->tag.data.str.size;
+        tmp.wpos = buf->rpos - e->tag.data.td_str.size;
         if (buf_read_to_str(&tmp, dest) <= 0) {
           err_puts("buf_read_until_list_into_str: buf_read_to_str");
           goto restore;
@@ -1376,7 +1376,7 @@ sw buf_read_until_str_into_str (s_buf *buf, const s_str *end,
     }
     if (r) {
       result += r;
-      buf_init(&tmp, false, buf->size, buf->ptr.pchar);
+      buf_init(&tmp, false, buf->size, buf->ptr.p_pchar);
       tmp.rpos = save.rpos;
       tmp.wpos = buf->rpos - end->size;
       if (buf_read_to_str(&tmp, dest) < 0) {
@@ -1439,7 +1439,7 @@ sw buf_read_word_into_str(s_buf *buf, s_str *dest)
         result += r;
         r1 += r;
       }
-      buf_init(&tmp, false, buf->size, buf->ptr.pchar);
+      buf_init(&tmp, false, buf->size, buf->ptr.p_pchar);
       tmp.rpos = save.rpos;
       tmp.wpos = buf->rpos - r1;
       if ((r = buf_read_to_str(&tmp, dest)) <= 0) {
@@ -1541,8 +1541,8 @@ sw buf_refill_compact (s_buf *buf)
     else {
       size = buf->wpos - min_rpos;
       assert(size < buf->size);
-      memmove(buf->ptr.p,
-              buf->ptr.pchar + min_rpos,
+      memmove(buf->ptr.p_pvoid,
+              buf->ptr.p_pchar + min_rpos,
               size);
       buf->rpos -= min_rpos;
       save = buf->save;
@@ -1625,7 +1625,7 @@ s_str * buf_slice_to_str (s_buf *buf, uw start, uw end,
     assert(! "buf_slice_to_str: end > wpos");
     goto clean;
   }
-  str_init(&tmp, NULL, end - start, buf->ptr.pchar + start);
+  str_init(&tmp, NULL, end - start, buf->ptr.p_pchar + start);
   result = str_init_copy(dest, &tmp);
  clean:
 #if HAVE_PTHREAD
@@ -1653,7 +1653,7 @@ sw buf_str_to_hex (s_buf *buf, const s_str *src)
     r = -1;
     goto clean;
   }
-  b = src->ptr.pu8;
+  b = src->ptr.p_pu8;
   i = 0;
   while (i++ < src->size)
     if ((r = buf_u8_to_hex(buf, b++)) <= 0)
@@ -1688,8 +1688,8 @@ s_str * buf_to_str (s_buf *buf, s_str *str)
   s_str *result = NULL;
   assert(buf);
   assert(str);
-  p_free = buf->free ? buf->ptr.p : NULL;
-  result = str_init(str, p_free, buf->size, buf->ptr.p);
+  p_free = buf->free ? buf->ptr.p_pvoid : NULL;
+  result = str_init(str, p_free, buf->size, buf->ptr.p_pvoid);
   buf->free = false;
   buf_clean(buf);
   return result;
@@ -1787,7 +1787,7 @@ sw buf_write (s_buf *buf, const void *data, uw len)
     r = -1;
     goto clean;
   }
-  memcpy(buf->ptr.ps8 + buf->wpos, data, len);
+  memcpy(buf->ptr.p_ps8 + buf->wpos, data, len);
   buf->wpos += len;
   buf_flush(buf);
   r = len;
@@ -1845,9 +1845,9 @@ sw buf_write_character_utf8 (s_buf *buf, character c)
     r = -1;
     goto clean;
   }
-  character_utf8(c, buf->ptr.pchar + buf->wpos);
+  character_utf8(c, buf->ptr.p_pchar + buf->wpos);
   if (c == '\n') {
-    memset(buf->ptr.pchar + buf->wpos + csize, ' ',
+    memset(buf->ptr.p_pchar + buf->wpos + csize, ' ',
            buf->pretty.base_column);
     buf->pretty.column = buf->pretty.base_column;
   }
@@ -1898,7 +1898,7 @@ sw buf_write_f80 (s_buf *buf, f80 src)
     assert(! "buf_write_f80: buffer overflow");
     return -1;
   }
-  memcpy(buf->ptr.pu8 + buf->wpos, data, 16);
+  memcpy(buf->ptr.p_pu8 + buf->wpos, data, 16);
   buf->wpos += 16;
   return 16;
 }
@@ -2023,11 +2023,11 @@ sw buf_write_integer (s_buf *buf, const s_integer *src)
   uw written;
   assert(buf);
   assert(src);
-  count = mp_pack_count(&src->mp_int, nail_bits, digit_size);
+  count = mp_pack_count(&src->in_int, nail_bits, digit_size);
   if (count > U32_MAX)
     ERROR("buf_write_integer: count is too large");
   size = count * digit_size;
-  sign = mp_isneg(&src->mp_int) ? 1 : 0;
+  sign = mp_isneg(&src->in_int) ? 1 : 0;
   if ((r = buf_write_u8(buf, sign)) <= 0)
     return r;
   result += r;
@@ -2045,9 +2045,9 @@ sw buf_write_integer (s_buf *buf, const s_integer *src)
     assert(! "buf_write_integer: buffer overflow");
     return -1;
   }
-  if (mp_pack(buf->ptr.pu8 + buf->wpos, count, &written,
+  if (mp_pack(buf->ptr.p_pu8 + buf->wpos, count, &written,
               MP_LSB_FIRST, digit_size, MP_LITTLE_ENDIAN, nail_bits,
-              &src->mp_int) != MP_OKAY) {
+              &src->in_int) != MP_OKAY) {
     err_puts("buf_write_integer: mp_pack failed");
     assert(! "buf_write_integer: mp_pack failed");
     return -1;
@@ -2089,7 +2089,7 @@ sw buf_xfer (s_buf *dest, s_buf *src, uw size)
     r = -1;
     goto clean;
   }
-  memcpy(dest->ptr.ps8 + dest->wpos, src->ptr.ps8 + src->rpos, size);
+  memcpy(dest->ptr.p_ps8 + dest->wpos, src->ptr.p_ps8 + src->rpos, size);
   src->rpos += size;
   dest->wpos += size;
   r = size;
@@ -2118,7 +2118,7 @@ sw buf_xfer_reverse (s_buf *src, s_buf *dest)
     goto clean;
   }
   for (sw i = 0; i < size; i++)
-    dest->ptr.ps8[dest->wpos + i] = src->ptr.ps8[src->wpos - 1 - i];
+    dest->ptr.p_ps8[dest->wpos + i] = src->ptr.p_ps8[src->wpos - 1 - i];
   src->rpos += size;
   dest->wpos += size;
   r = size;

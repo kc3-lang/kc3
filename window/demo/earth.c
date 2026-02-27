@@ -45,7 +45,7 @@ u8 earth_load (s_sequence *seq)
   gl_object_update(&sphere->object);
   if (! tag_map(&seq->tag, 4))
     return false;
-  map = &seq->tag.data.map;
+  map = &seq->tag.data.td_map;
   tag_init_psym(             map->key   + 0, sym_1("camera"));
   tag_init_ptr_free(         map->value + 0, camera);
   tag_init_psym(             map->key   + 1,
@@ -72,11 +72,11 @@ u8 earth_render (s_sequence *seq)
   window = seq->window;
   assert(window);
   if (! seq || seq->tag.type != TAG_MAP ||
-      seq->tag.data.map.count != 4) {
+      seq->tag.data.td_map.count != 4) {
     err_puts("earth_render: invalid seq->tag");
     return false;
   }
-  map = &seq->tag.data.map;
+  map = &seq->tag.data.td_map;
   if (map->value[0].type != TAG_PTR_FREE ||
       map->value[1].type != TAG_F64 ||
       map->value[2].type != TAG_F64 ||
@@ -84,10 +84,10 @@ u8 earth_render (s_sequence *seq)
     err_puts("earth_render: invalid map");
     return false;
   }
-  camera             =  map->value[0].data.ptr_free.p;
-  camera_rot_x_speed = &map->value[1].data.f64;
-  earth_rot_z_speed  = &map->value[2].data.f64;
-  sphere             =  map->value[3].data.pstruct->data;
+  camera             =  map->value[0].data.td_ptr_free.p_pvoid;
+  camera_rot_x_speed = &map->value[1].data.td_f64;
+  earth_rot_z_speed  = &map->value[2].data.td_f64;
+  sphere             =  map->value[3].data.td_pstruct->data;
   gl_camera_set_aspect_ratio(camera, window->w, window->h);
   camera->light_count = 1;
   camera->light_pos[0] = (s_vec4) { -20.0f, 0.0f, 0.0f, 0.0f };

@@ -128,7 +128,7 @@ s_tuple * tuple_init_cast (s_tuple *tuple, const s_sym * const *type,
 {
   switch (tag->type) {
   case TAG_PTUPLE:
-    return tuple_init_copy(tuple, tag->data.ptuple);
+    return tuple_init_copy(tuple, tag->data.td_ptuple);
   default:
     break;
   }

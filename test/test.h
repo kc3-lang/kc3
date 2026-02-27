@@ -196,14 +196,14 @@
     bool  TEST_STR_EQ_ko = false;                                      \
     s_str TEST_STR_EQ_test_str = (test);                               \
     s_str TEST_STR_EQ_expected_str = (expected);                       \
-    u32 i = 0;                                                          \
+    u32 i = 0;                                                         \
     if (TEST_STR_EQ_test_str.size !=                                   \
         TEST_STR_EQ_expected_str.size)                                 \
       TEST_STR_EQ_ko = true;                                           \
     else {                                                             \
       while (i < TEST_STR_EQ_test_str.size) {                          \
-        if (TEST_STR_EQ_test_str.ptr.pchar[i] !=                       \
-            TEST_STR_EQ_expected_str.ptr.pchar[i]) {                   \
+        if (TEST_STR_EQ_test_str.ptr.p_pchar[i] !=                     \
+            TEST_STR_EQ_expected_str.ptr.p_pchar[i]) {                 \
           TEST_STR_EQ_ko = true;                                       \
           break;                                                       \
         }                                                              \
@@ -232,14 +232,14 @@
     bool  TEST_STR_HEX_EQ_ko = false;                                  \
     s_str TEST_STR_HEX_EQ_test_str = (test);                           \
     s_str TEST_STR_HEX_EQ_expected_str = (expected);                   \
-    u32 i = 0;                                                          \
+    u32 i = 0;                                                         \
     if (TEST_STR_HEX_EQ_test_str.size !=                               \
         TEST_STR_HEX_EQ_expected_str.size)                             \
       TEST_STR_HEX_EQ_ko = true;                                       \
     else {                                                             \
       while (i < TEST_STR_HEX_EQ_test_str.size) {                      \
-        if (TEST_STR_HEX_EQ_test_str.ptr.pchar[i] !=                   \
-            TEST_STR_HEX_EQ_expected_str.ptr.pchar[i]) {               \
+        if (TEST_STR_HEX_EQ_test_str.ptr.p_pchar[i] !=                 \
+            TEST_STR_HEX_EQ_expected_str.ptr.p_pchar[i]) {             \
           TEST_STR_HEX_EQ_ko = true;                                   \
           break;                                                       \
         }                                                              \

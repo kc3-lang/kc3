@@ -16,7 +16,7 @@ const s_tag * pt_intersect (const s_list *scene,
   const s_tag *tmp = NULL;
   t = inf;
   while (s) {
-    if ((d = pt_intersect_sphere(s->tag.data.pstruct->data,
+    if ((d = pt_intersect_sphere(s->tag.data.td_pstruct->data,
                                  ray)) &&
         d < t) {
       t = d;
@@ -37,14 +37,14 @@ s_dvec3 * pt_radiance (const s_list *scene, const s_dray *ray,
   if (! (obj = pt_intersect(scene, ray, &dist)))
     return dvec3_init_copy(dest, &tmp);
   if (obj->type == TAG_PSTRUCT &&
-      obj->data.pstruct->pstruct_type->module ==
+      obj->data.td_pstruct->pstruct_type->module ==
       sym_1("GL.PT.Sphere")) {
     return pt_radiance_sphere(scene, ray, depth, xi,
-                              obj->data.pstruct->data,
+                              obj->data.td_pstruct->data,
                               dist, dest);
   }
   err_write_1("pt_radiance: skipping unknown object type: ");
-  err_inspect_sym(obj->data.pstruct->pstruct_type->module);
+  err_inspect_sym(obj->data.td_pstruct->pstruct_type->module);
   err_write_1("\n");
   return dvec3_init_copy(dest, &tmp);
 }

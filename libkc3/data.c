@@ -107,7 +107,7 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
     return buf_inspect_pointer(buf, data);
   if (sym_is_pointer_type(type, NULL)) {
     s_pointer p = {0};
-    p.ptr.p = *(void **) data;
+    p.ptr.p_pvoid = *(void **) data;
     p.target_type = sym_pointer_to_target_type(type);
     p.pointer_type = type;
     return buf_inspect_pointer(buf, &p);
@@ -221,7 +221,7 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
     return buf_inspect_pointer_size(pretty, data);
   if (sym_is_pointer_type(type, NULL)) {
     s_pointer p = {0};
-    p.ptr.p = *(void **) data;
+    p.ptr.p_pvoid = *(void **) data;
     p.target_type = sym_pointer_to_target_type(type);
     p.pointer_type = type;
     return buf_inspect_pointer_size(pretty, &p);
@@ -506,8 +506,8 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
   if (sym_is_pointer_type(type, NULL)) {
     s_pointer pa = {0};
     s_pointer pb = {0};
-    pa.ptr.p = *(void **) a;
-    pb.ptr.p = *(void **) b;
+    pa.ptr.p_pvoid = *(void **) a;
+    pb.ptr.p_pvoid = *(void **) b;
     return compare_pointer(&pa, &pb);
   }
   if (env_global()->loaded) {
@@ -625,7 +625,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash,
     return hash_update_pointer(hash, data);
   if (sym_is_pointer_type(type, NULL)) {
     s_pointer p = {0};
-    p.ptr.p = *(void **) data;
+    p.ptr.p_pvoid = *(void **) data;
     p.target_type = sym_pointer_to_target_type(type);
     p.pointer_type = type;
     return hash_update_pointer(hash, &p);
@@ -741,7 +741,7 @@ void * data_init_cast (void *data, p_sym *type, s_tag *tag)
     s_pointer p = {0};
     if (! pointer_init_cast(&p, type, tag))
       return NULL;
-    *(void **) data = p.ptr.p;
+    *(void **) data = p.ptr.p_pvoid;
     return data;
   }
   if (! pstruct_type_find(t, &st))

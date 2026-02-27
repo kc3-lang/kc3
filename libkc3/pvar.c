@@ -64,17 +64,17 @@ p_var * pvar_init_cast (p_var *pvar, const s_sym * const *type,
   assert(src);
   if (*type == &g_sym_Var) {
     switch (src->type) {
-    case TAG_PTR: tmp = src->data.ptr.p;              break;
-    case TAG_S8:  tmp = (p_var) (uw) src->data.s8;  break;
-    case TAG_S16: tmp = (p_var) (uw) src->data.s16; break;
-    case TAG_S32: tmp = (p_var) (uw) src->data.s32; break;
-    case TAG_S64: tmp = (p_var) (uw) src->data.s64; break;
-    case TAG_SW:  tmp = (p_var) (uw) src->data.sw;  break;
-    case TAG_U8:  tmp = (p_var) (uw) src->data.u8;  break;
-    case TAG_U16: tmp = (p_var) (uw) src->data.u16; break;
-    case TAG_U32: tmp = (p_var) (uw) src->data.u32; break;
-    case TAG_U64: tmp = (p_var) (uw) src->data.u64; break;
-    case TAG_UW:  tmp = (p_var) src->data.uw;       break;
+    case TAG_PTR: tmp = src->data.td_ptr.p_pvoid;      break;
+    case TAG_S8:  tmp = (p_var) (uw) src->data.td_s8;  break;
+    case TAG_S16: tmp = (p_var) (uw) src->data.td_s16; break;
+    case TAG_S32: tmp = (p_var) (uw) src->data.td_s32; break;
+    case TAG_S64: tmp = (p_var) (uw) src->data.td_s64; break;
+    case TAG_SW:  tmp = (p_var) (uw) src->data.td_sw;  break;
+    case TAG_U8:  tmp = (p_var) (uw) src->data.td_u8;  break;
+    case TAG_U16: tmp = (p_var) (uw) src->data.td_u16; break;
+    case TAG_U32: tmp = (p_var) (uw) src->data.td_u32; break;
+    case TAG_U64: tmp = (p_var) (uw) src->data.td_u64; break;
+    case TAG_UW:  tmp = (p_var) src->data.td_uw;       break;
     default: goto invalid_cast;
     }
     *pvar = tmp;

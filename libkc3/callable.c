@@ -46,7 +46,7 @@ void callable_delete (s_callable *callable)
     l = env_global()->freelist;
     while (l) {
       if (l->tag.type == TAG_PCALLABLE &&
-          l->tag.data.pcallable == callable)
+          l->tag.data.td_pcallable == callable)
         break;
       l = list_next(l);
     }
@@ -86,13 +86,13 @@ void callable_delete (s_callable *callable)
     prev = &env_global()->freelist;
     while (*prev) {
       if ((*prev)->tag.type == TAG_PCALLABLE &&
-          (*prev)->tag.data.pcallable == callable) {
+          (*prev)->tag.data.td_pcallable == callable) {
         l = *prev;
         *prev = list_next(l);
         alloc_free(l);
         break;
       }
-      prev = &(*prev)->next.data.plist;
+      prev = &(*prev)->next.data.td_plist;
     }
   }
   alloc_free(callable);

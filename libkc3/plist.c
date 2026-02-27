@@ -120,7 +120,7 @@ p_list * plist_filter (p_list *plist, p_callable *function,
     if (! bool_init_cast(&b, &sym_Bool, &(*tail)->tag))
       goto ko;
     if (b)
-      tail = &(*tail)->next.data.plist;
+      tail = &(*tail)->next.data.td_plist;
     else
       *tail = list_delete(*tail);
     l = list_next(l);
@@ -228,14 +228,14 @@ p_list * plist_init_append (p_list *plist, p_list *a, p_list *b)
   while (src) {
     if (! (*tail = list_new_tag_copy(&src->tag, NULL)))
       return NULL;
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
     src = list_next(src);
   }
   src = *b;
   while (src) {
     if (! (*tail = list_new_tag_copy(&src->tag, NULL)))
       return NULL;
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
     src = list_next(src);
   }
   *plist = tmp;
@@ -252,11 +252,11 @@ p_list * plist_init_append_one (p_list *plist, p_list *a, s_tag *b)
   list = *a;
   while (list) {
     *tail = list_new_tag_copy(&list->tag, NULL);
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
     list = list_next(list);
   }
   *tail = list_new_tag_copy(b, NULL);
-  tail = &(*tail)->next.data.plist;
+  tail = &(*tail)->next.data.td_plist;
   *plist = tmp;
   return plist;
 }
@@ -269,7 +269,7 @@ p_list * plist_init_cast (p_list *plist, const s_sym * const *type,
   assert(tag);
   switch (tag->type) {
   case TAG_PLIST:
-    return plist_init_copy(plist, &tag->data.plist);
+    return plist_init_copy(plist, &tag->data.td_plist);
   default:
     break;
   }
@@ -320,7 +320,7 @@ p_list * plist_init_count (p_list *plist, s_tag *number)
       list_delete_all(tmp);
       return NULL;
     }
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
   }
   *plist = tmp;
   return plist;
@@ -336,11 +336,11 @@ s_str * plist_join (p_list *plist, s_str *sep, s_str *dest)
   while (i) {
     if (! (*tail = list_new_tag_copy(&i->tag, NULL)))
       goto ko;
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
     if (list_next(i)) {
       if (! (*tail = list_new_str_copy(sep, NULL)))
         goto ko;
-      tail = &(*tail)->next.data.plist;
+      tail = &(*tail)->next.data.td_plist;
     }
     i = list_next(i);
   }
@@ -390,7 +390,7 @@ p_list * plist_map (p_list *plist, p_callable *function,
     *tail = list_new(NULL);
     if (! eval_callable_call(*function, arg, &(*tail)->tag))
       goto ko;
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
     l = list_next(l);
   }
   list_delete_all(arg);
@@ -413,7 +413,7 @@ p_list * plist_remove_void (p_list *plist)
     if ((*l)->tag.type == TAG_VOID)
       *l = list_delete(*l);
     else if ((*l)->next.type == TAG_PLIST)
-      l = &(*l)->next.data.plist;
+      l = &(*l)->next.data.td_plist;
     else
       break;
   }
@@ -461,7 +461,7 @@ p_list * plist_slice (p_list *plist, s_tag *start_tag, s_tag *end_tag,
   while (l && i < end) {
     if (i >= start) {
       *tail = list_new_tag_copy(&l->tag, NULL);
-      tail = &(*tail)->next.data.plist;
+      tail = &(*tail)->next.data.td_plist;
     }
     i++;
     l = list_next(l);
@@ -483,7 +483,7 @@ p_list * plist_sort (p_list *plist, p_list *dest)
   while (l) {
     t = &tmp;
     while (*t && compare_tag(&(*t)->tag, &l->tag) < 0)
-      t = &(*t)->next.data.plist;
+      t = &(*t)->next.data.td_plist;
     if (! (new_ = list_new_tag_copy(&l->tag, *t))) {
       list_delete_all(tmp);
       return NULL;
@@ -535,7 +535,7 @@ p_list * plist_sort_by (p_list *plist, p_callable *compare,
       tag_clean(&tag);
       if (x >= 0)
         break;
-      t = &(*t)->next.data.plist;
+      t = &(*t)->next.data.td_plist;
     }
     if (! (new_ = list_new_tag_copy(&l->tag, *t)))
       goto ko;
@@ -556,7 +556,7 @@ p_list * plist_tail (p_list *plist)
   p_list *tail;
   tail = plist;
   while (tail && *tail) {
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
   }
   return tail;
 }
@@ -574,7 +574,7 @@ p_list * plist_unique (p_list *plist, p_list *dest)
     if (! list_has(tmp, &list->tag)) {
       if (! ((*tail) = list_new_tag_copy(&list->tag, NULL)))
         goto ko;
-      tail = &(*tail)->next.data.plist;
+      tail = &(*tail)->next.data.td_plist;
     }
     list = list_next(list);
   }

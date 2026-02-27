@@ -169,7 +169,7 @@ s_tag * buf_parse_tag_uw (s_buf *buf, s_tag *dest)
 {
   s_tag tmp = {0};
   tmp.type = TAG_UW;
-  if (buf_parse_uw(buf, &tmp.data.uw) <= 0)
+  if (buf_parse_uw(buf, &tmp.data.td_uw) <= 0)
     return NULL;
   *dest = tmp;
   return dest;
@@ -180,7 +180,7 @@ s_tag * buf_parse_tag_uw_base (s_buf *buf, const s_str *base,
 {
   s_tag tmp = {0};
   tmp.type = TAG_UW;
-  if (buf_parse_uw_base(buf, base, &tmp.data.uw) <= 0)
+  if (buf_parse_uw_base(buf, base, &tmp.data.td_uw) <= 0)
     return NULL;
   *dest = tmp;
   return dest;

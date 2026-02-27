@@ -189,7 +189,7 @@ static int arg_load (s_env *env, int *argc, char ***argv)
   file_path_save = *file_path;
   tag_init_str_1(file_path, NULL, (*argv)[1]);
   file_dir->type = TAG_STR;
-  if (! file_dirname(&file_path->data.str, &file_dir->data.str)) {
+  if (! file_dirname(&file_path->data.td_str, &file_dir->data.td_str)) {
     err_puts(PROG ": file_dirname");
     buf_file_close(env->in);
     return -1;
@@ -395,8 +395,8 @@ static sw run (void)
         s_str input_str;
         s_list *args;
         tag_init_pcall(&rpc_tag);
-        rpc_tag.data.pcall->ident.module = &g_sym_RPC;
-        rpc_tag.data.pcall->ident.sym = &g_sym_request;
+        rpc_tag.data.td_pcall->ident.module = &g_sym_RPC;
+        rpc_tag.data.td_pcall->ident.sym = &g_sym_request;
         if (! inspect_tag(&input, &input_str)) {
           tag_clean(&input);
           r = 1;
@@ -410,8 +410,8 @@ static sw run (void)
           goto clean;
         }
         args->tag.type = TAG_STR;
-        args->tag.data.str = input_str;
-        rpc_tag.data.pcall->arguments = args;
+        args->tag.data.td_str = input_str;
+        rpc_tag.data.td_pcall->arguments = args;
 
         buf_rw = g_tls ? &g_tls_client.socket_buf->buf_rw :
           &g_socket_buf.buf_rw;
@@ -436,10 +436,10 @@ static sw run (void)
           goto clean;
         }
         if (result.type != TAG_PSTRUCT ||
-            ! result.data.pstruct ||
-            result.data.pstruct->pstruct_type->module !=
+            ! result.data.td_pstruct ||
+            result.data.td_pstruct->pstruct_type->module !=
             &g_sym_RPC_Response ||
-            ! (response = result.data.pstruct->tag) ||
+            ! (response = result.data.td_pstruct->tag) ||
             response[0].type != TAG_STR ||
             response[1].type != TAG_STR) {
           err_puts("run: invalid RPC response");
@@ -449,8 +449,8 @@ static sw run (void)
           r = 1;
           goto clean;
         }
-        buf_write_str(env->err, &response[0].data.str);
-        buf_write_str(env->out, &response[1].data.str);
+        buf_write_str(env->err, &response[0].data.td_str);
+        buf_write_str(env->out, &response[1].data.td_str);
 #if IKC3
         buf_inspect_tag(env->out, &response[2]);
 #endif

@@ -26,8 +26,8 @@ GtkApplication ** kc3_gtk4_application_new (GtkApplication **dest,
 {
   GtkApplication *tmp;
   assert(name);
-  g_set_application_name(name->ptr.pchar);
-  if (! (tmp = gtk_application_new(id->ptr.pchar,
+  g_set_application_name(name->ptr.p_pchar);
+  if (! (tmp = gtk_application_new(id->ptr.p_pchar,
                                    G_APPLICATION_DEFAULT_FLAGS)))
     return NULL;
   *dest = tmp;
@@ -45,9 +45,9 @@ void kc3_gtk4_application_set_accel_for_action (GtkApplication **app,
                                                 const s_str *accel)
 {
   gtk_application_set_accels_for_action(GTK_APPLICATION(*app),
-                                        action->ptr.pchar,
+                                        action->ptr.p_pchar,
                                         (const char *[]) {
-                                          accel->ptr.pchar,
+                                          accel->ptr.p_pchar,
                                           NULL
                                         });
 }

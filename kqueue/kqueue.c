@@ -48,7 +48,7 @@ s64 kc3_kqueue_add (s64 kqfd, s64 fd, s_tag *timeout, s_tag **udata)
   events[0].data = SOMAXCONN;
   events[0].udata = stored_udata;
   if (timeout && timeout->type == TAG_TIME) {
-    s_time *t = &timeout->data.time;
+    s_time *t = &timeout->data.td_time;
     s64 timeout_ms = t->tv_sec * 1000 + t->tv_nsec / 1000000;
     events[1].ident = fd;
     events[1].filter = EVFILT_TIMER;
@@ -72,13 +72,13 @@ s64 kc3_kqueue_delete (s64 kqfd, s64 fd, s_tag *filter)
   event.ident = fd;
   event.flags = EV_DELETE;
   if (filter && filter->type == TAG_PSYM) {
-    if (filter->data.psym == &g_sym_read)
+    if (filter->data.td_psym == &g_sym_read)
       event.filter = EVFILT_READ;
-    else if (filter->data.psym == &g_sym_timer)
+    else if (filter->data.td_psym == &g_sym_timer)
       event.filter = EVFILT_TIMER;
     else {
       err_write_1("kc3_kqueue_delete: invalid filter: ");
-      err_inspect_sym(filter->data.psym);
+      err_inspect_sym(filter->data.td_psym);
       err_write_1("\n");
       return -1;
     }
@@ -102,8 +102,8 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
   if (timeout && timeout->type != TAG_VOID) {
     switch (timeout->type) {
     case TAG_TIME:
-      timespec.tv_sec = timeout->data.time.tv_sec;
-      timespec.tv_nsec = timeout->data.time.tv_nsec;
+      timespec.tv_sec = timeout->data.td_time.tv_sec;
+      timespec.tv_nsec = timeout->data.td_time.tv_nsec;
       p = &timespec;
       break;
     default:
@@ -138,19 +138,19 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
       event_type = &g_sym_read;
     if (! tag_init_ptuple(dest, 3))
       return NULL;
-    if (! tag_init_s64(dest->data.ptuple->tag, event.ident) ||
-        ! tag_init_psym(dest->data.ptuple->tag + 1, event_type)) {
+    if (! tag_init_s64(dest->data.td_ptuple->tag, event.ident) ||
+        ! tag_init_psym(dest->data.td_ptuple->tag + 1, event_type)) {
       tag_clean(dest);
       return NULL;
     }
     if (udata) {
-      if (! tag_init_copy(dest->data.ptuple->tag + 2, udata)) {
+      if (! tag_init_copy(dest->data.td_ptuple->tag + 2, udata)) {
         tag_clean(dest);
         return NULL;
       }
     }
     else
-      tag_init_void(dest->data.ptuple->tag + 2);
+      tag_init_void(dest->data.td_ptuple->tag + 2);
     return dest;
   }
   return tag_init_void(dest);

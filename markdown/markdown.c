@@ -36,7 +36,7 @@ s_str * markdown_to_html_str (const s_str *markdown, s_str *dest)
   assert(dest);
   list = NULL;
   l = &list;
-  md_html(markdown->ptr.pchar, markdown->size,
+  md_html(markdown->ptr.p_pchar, markdown->size,
           markdown_to_html_str_callback,
           &l, 0, 0);
   if (! str_init_concatenate_list(&tmp, list)) {
@@ -58,7 +58,7 @@ void markdown_to_html_str_callback (const MD_CHAR *p, MD_SIZE size,
     assert(! "markdown_to_html_str_callback: list_new_str_cpy");
     return;
   }
-  l = &(*l)->next.data.plist;
+  l = &(*l)->next.data.td_plist;
   *(s_list ***) data = l;
 }
 
@@ -91,10 +91,10 @@ s_list ** markdown_titles (const s_str *markdown, s_list **dest)
   parser.enter_span = markdown_titles_enter_span;
   parser.leave_span = markdown_titles_leave_span;
   parser.text = markdown_titles_text;
-  md_parse(markdown->ptr.pchar, markdown->size,
+  md_parse(markdown->ptr.p_pchar, markdown->size,
            &parser, &tuple);
-  *dest = tuple_list->data.plist;
-  tuple_list->data.plist = NULL;
+  *dest = tuple_list->data.td_plist;
+  tuple_list->data.td_plist = NULL;
   tuple_clean(&tuple);
   return dest;
 }
@@ -163,22 +163,22 @@ s32 markdown_titles_leave_block (MD_BLOCKTYPE type, void *detail,
                " is not a U8"));
       return -1;
     }
-    tuple_count_level->data.u8++;
+    tuple_count_level->data.td_u8++;
     if (tuple_last->type != TAG_U8) {
       err_puts("markdown_titles_leave_block: tuple_last is not a U8");
       assert(! "markdown_titles_leave_block: tuple_last is not a U8");
       return -1;
     }
-    tuple_last->data.u8 = level;
+    tuple_last->data.td_u8 = level;
     str_list = NULL;
     str_list_tail = &str_list;
     i = 0;
     while (i <= level) {
       *str_list_tail = list_new_str_cast(&sym_Str, tuple_count + i,
                                          NULL);
-      str_list_tail = &(*str_list_tail)->next.data.plist;
+      str_list_tail = &(*str_list_tail)->next.data.td_plist;
       *str_list_tail = list_new_str_1(NULL, ".", NULL);
-      str_list_tail = &(*str_list_tail)->next.data.plist;
+      str_list_tail = &(*str_list_tail)->next.data.td_plist;
       i++;
     }
     while (i < 6) {
@@ -186,15 +186,15 @@ s32 markdown_titles_leave_block (MD_BLOCKTYPE type, void *detail,
       i++;
     }
     *str_list_tail = list_new_str_1(NULL, " ", NULL);
-    str_list_tail = &(*str_list_tail)->next.data.plist;
+    str_list_tail = &(*str_list_tail)->next.data.td_plist;
     if (tuple_str->type != TAG_STR) {
       err_puts("markdown_titles_leave_block: tuple_str is not a Str");
       assert(! "markdown_titles_leave_block: tuple_str is not a Str");
       return -1;
     }
-    *str_list_tail = list_new_str_copy(&tuple_str->data.str, NULL);
-    str_list_tail = &(*str_list_tail)->next.data.plist;
-    tuple_list_tail = plist_tail(&tuple_list->data.plist);
+    *str_list_tail = list_new_str_copy(&tuple_str->data.td_str, NULL);
+    str_list_tail = &(*str_list_tail)->next.data.td_plist;
+    tuple_list_tail = plist_tail(&tuple_list->data.td_plist);
     *tuple_list_tail = list_new(NULL);
     if (! tag_init_str_concatenate_list(&(*tuple_list_tail)->tag,
                                         str_list))

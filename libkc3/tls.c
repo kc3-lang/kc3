@@ -95,7 +95,7 @@ s_str * kc3_tls_ca_cert_path (s_str *dest)
  search:
   i = 0;
   while (i < sizeof(paths) / sizeof(*paths)) {
-    if (access(paths[i].ptr.pchar, R_OK) == 0) {
+    if (access(paths[i].ptr.p_pchar, R_OK) == 0) {
       *dest = paths[i];
       return dest;
     }
@@ -146,7 +146,7 @@ p_tls * kc3_tls_connect_socket (p_tls *ctx, p_socket sockfd,
   assert(sockfd);
   assert(hostname);
   assert(dest);
-  if (tls_connect_socket(*ctx, *sockfd, hostname->ptr.pchar)) {
+  if (tls_connect_socket(*ctx, *sockfd, hostname->ptr.p_pchar)) {
     err_write_1("kc3_tls_connect_socket: tls_connect_socket: ");
     err_puts(tls_error(*ctx));
     assert(! "kc3_tls_connect_socket: tls_connect_socket");

@@ -34,7 +34,7 @@ s_str * url_escape (const s_str *src, s_str *dest)
     assert(! "url_escape: URL.escapes is not a Str");
     return NULL;
   }
-  escapes = &escapes_tag.data.str;
+  escapes = &escapes_tag.data.td_str;
   if ((size = url_escape_size(src)) < 0)
     return NULL;
   if (! size)
@@ -89,7 +89,7 @@ sw url_escape_size (const s_str *src)
     assert(! "url_escape_size: URL.escapes is not a Str");
     return -1;
   }
-  escapes = &escapes_tag.data.str;
+  escapes = &escapes_tag.data.td_str;
   s = *src;
   while ((r = str_read_character_utf8(&s, &c)) > 0) {
     /* if (c == ' ')
@@ -139,7 +139,7 @@ s_str * url_unescape (const s_str *url, s_str *dest)
       if (! r) {
         buf_write_character_utf8(&out, '%');
         buf_write_character_utf8
-          (&out, g_kc3_base_hexadecimal.ptr.pchar[digit[0]]);
+          (&out, g_kc3_base_hexadecimal.ptr.p_pchar[digit[0]]);
         continue;
       }
       u = digit[0] * 16 + digit[1];
@@ -221,27 +221,27 @@ s_tag * url_www_form_decode (const s_str *src, s_tag *dest)
       continue;
     }
     *tail = list_new_ptuple(2, NULL);
-    (*tail)->tag.data.ptuple->tag[0].type = TAG_STR;
-    (*tail)->tag.data.ptuple->tag[1].type = TAG_STR;
-    if (! url_unescape(&key,
-                       &(*tail)->tag.data.ptuple->tag[0].data.str)) {
+    (*tail)->tag.data.td_ptuple->tag[0].type = TAG_STR;
+    (*tail)->tag.data.td_ptuple->tag[1].type = TAG_STR;
+    if (! url_unescape
+        (&key, &(*tail)->tag.data.td_ptuple->tag[0].data.td_str)) {
       str_clean(&key);
       str_clean(&value);
       goto clean;
     }
-    if (! url_unescape(&value,
-                       &(*tail)->tag.data.ptuple->tag[1].data.str)) {
+    if (! url_unescape
+        (&value, &(*tail)->tag.data.td_ptuple->tag[1].data.td_str)) {
       str_clean(&key);
       str_clean(&value);
       goto clean;
     }
     str_clean(&key);
     str_clean(&value);
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
   }
   buf_clean(&buf);
   tmp.type = TAG_PLIST;
-  tmp.data.plist = list;
+  tmp.data.td_plist = list;
   *dest = tmp;
   return dest;
  clean:

@@ -101,7 +101,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   time_init_now(&tmp_req.time);
   if (buf_read_until_1_into_str(buf, " ", &url) <= 0 ||
       url.size < 1 ||
-      url.ptr.pchar[0] != '/') {
+      url.ptr.p_pchar[0] != '/') {
     err_puts("http_request_buf_parse: invalid URL");
     goto restore;
   }
@@ -120,7 +120,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     goto restore;
   }
   str_clean(&url);
-  url_unescape(&query_split->tag.data.str, &tmp_req.url);
+  url_unescape(&query_split->tag.data.td_str, &tmp_req.url);
   list_delete_all(query_split);
   if (false) {
     err_write_1("http_request_buf_parse: url: ");
@@ -153,19 +153,19 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       goto restore;
     }
     str_clean(&line);
-    key   = &(*tail)->tag.data.ptuple->tag[0].data.str;
-    value = &(*tail)->tag.data.ptuple->tag[1].data.str;
+    key   = &(*tail)->tag.data.td_ptuple->tag[0].data.td_str;
+    value = &(*tail)->tag.data.td_ptuple->tag[1].data.td_str;
     if (! compare_str_case_insensitive(&content_length_str, key)) {
       if (! uw_init_str(&content_length_uw, value))
         goto restore;
-      tag_clean((*tail)->tag.data.ptuple->tag + 1);
-      tag_init_uw((*tail)->tag.data.ptuple->tag + 1, content_length_uw);
+      tag_clean((*tail)->tag.data.td_ptuple->tag + 1);
+      tag_init_uw((*tail)->tag.data.td_ptuple->tag + 1, content_length_uw);
     }
     else if (! compare_str_case_insensitive(&content_type_str, key))
       content_type = value;
     else if (! compare_str_case_insensitive(&cookie_str, key))
       http_request_cookie_add(&tmp_req, value);
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
   }
   if (content_type && content_length_uw) {
     if (false) {
@@ -228,8 +228,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
                      " return a Tuple");
             goto restore;
           }
-          key   = &(*tail)->tag.data.ptuple->tag[0].data.str;
-          value = &(*tail)->tag.data.ptuple->tag[1].data.str;
+          key   = &(*tail)->tag.data.td_ptuple->tag[0].data.td_str;
+          value = &(*tail)->tag.data.td_ptuple->tag[1].data.td_str;
           if (! compare_str_case_insensitive
               (key, &content_disposition_str)) {
             buf_init_str_const(&header_buf, value);
@@ -240,7 +240,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             }
             multipart_name.type = TAG_STR;
             if (buf_read_until_1_into_str(&header_buf, "\"",
-                                          &multipart_name.data.str)
+                                          &multipart_name.data.td_str)
                 <= 0) {
               err_puts("http_request_buf_parse: invalid name");
               goto restore;
@@ -249,8 +249,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             tag_init_str_empty(&filename);
             if (buf_read_1(&header_buf, "; filename=\"") > 0) {
               if (buf_read_until_1_into_str(&header_buf, "\"",
-                                            &filename.data.str) <= 0 ||
-                  str_character_position(&filename.data.str, '/')
+                                            &filename.data.td_str) <= 0 ||
+                  str_character_position(&filename.data.td_str, '/')
                   >= 0) {
                 err_puts("http_request_buf_parse: invalid filename");
                 goto restore;
@@ -262,25 +262,25 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
               goto restore;
             }
           } // if (! compare_str_case_insensitive(key, &content_disposition_str))
-          tail = &(*tail)->next.data.plist;
+          tail = &(*tail)->next.data.td_plist;
         }
         if (false) {
           err_write_1("http_request_buf_parse: multipart headers = ");
           err_inspect_list(multipart_headers);
           err_write_1("\n");
           err_write_1("http_request_buf_parse: multipart name = ");
-          err_inspect_str(&multipart_name.data.str);
+          err_inspect_str(&multipart_name.data.td_str);
           err_write_1("\n");
           err_write_1("http_request_buf_parse: filename = ");
-          err_inspect_str(&filename.data.str);
+          err_inspect_str(&filename.data.td_str);
           err_write_1("\n");
         }
-        if (filename.data.str.size) {
+        if (filename.data.td_str.size) {
           if (! buf_init_alloc(&path_buf, 4096)) {
             err_puts("http_request_buf_parse: buf_init_alloc(path_buf)");
             goto restore;
           }
-          if (buf_write_str(&path_buf, &prefix.data.str) <= 0) {
+          if (buf_write_str(&path_buf, &prefix.data.td_str) <= 0) {
             err_puts("http_request_buf_parse:"
                      " buf_write_str(path_buf, prefix)");
             goto restore;
@@ -301,13 +301,13 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
                      " buf_write_1(path_buf, \"_\")");
             goto restore;
           }
-          if (buf_write_str(&path_buf, &filename.data.str) <= 0) {
+          if (buf_write_str(&path_buf, &filename.data.td_str) <= 0) {
             err_puts("http_request_buf_parse:"
                      " buf_write_str(path_buf, filename)");
             goto restore;
           }
 	  path.type = TAG_STR;
-          if (buf_read_to_str(&path_buf, &path.data.str) <= 0) {
+          if (buf_read_to_str(&path_buf, &path.data.td_str) <= 0) {
             err_puts("http_request_buf_parse:"
                      " buf_read_to_str(path_buf, path)");
             goto restore;
@@ -315,46 +315,46 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           buf_clean(&path_buf);
           if (false) {
             err_write_1("http_request_buf_parse: path = ");
-            err_inspect_str(&path.data.str);
+            err_inspect_str(&path.data.td_str);
             err_write_1("\n");
           }
-          if (! file_ensure_parent_directory(&path.data.str, &mode)) {
+          if (! file_ensure_parent_directory(&path.data.td_str, &mode)) {
 	    err_puts("http_request_buf_parse,file_ensure_directory");
             goto restore;
 	  }
 	  size.type = TAG_SW;
-          if ((size.data.sw = buf_read_until_str_into_file
-	       (buf, &boundary_newline, &path.data.str)) < 0) {
+          if ((size.data.td_sw = buf_read_until_str_into_file
+	       (buf, &boundary_newline, &path.data.td_str)) < 0) {
             err_puts("http_request_buf_parse:"
                      " buf_read_until_str_into_file");
             goto restore;
           }
           if (true) {
             err_write_1("http_request_buf_parse: upload ");
-            err_inspect_str(&path.data.str);
+            err_inspect_str(&path.data.td_str);
             err_write_1(" (");
-            err_inspect_sw_decimal(size.data.sw);
+            err_inspect_sw_decimal(size.data.td_sw);
             err_write_1(")\n");
           }
 	  upload.type = TAG_PSTRUCT;
-	  if (! pstruct_init(&upload.data.pstruct, sym_Upload))
+	  if (! pstruct_init(&upload.data.td_pstruct, sym_Upload))
 	    goto restore;
-	  if (! struct_allocate(upload.data.pstruct))
+	  if (! struct_allocate(upload.data.td_pstruct))
 	    goto restore;
-	  if (! struct_set(upload.data.pstruct, sym_1("filename"),
+	  if (! struct_set(upload.data.td_pstruct, sym_1("filename"),
 			   &filename))
 	    goto restore;
-	  if (! struct_set(upload.data.pstruct, sym_1("size"),
+	  if (! struct_set(upload.data.td_pstruct, sym_1("size"),
 			   &size))
 	    goto restore;
-	  if (! struct_set(upload.data.pstruct, sym_1("tmp_path"),
+	  if (! struct_set(upload.data.td_pstruct, sym_1("tmp_path"),
 			   &path))
 	    goto restore;
-          tmp_req.body.data.plist =
+          tmp_req.body.data.td_plist =
             list_new_ptuple_2(&multipart_name, &upload,
-                              tmp_req.body.data.plist);	  
+                              tmp_req.body.data.td_plist);	  
         }
-        else { // if (filename.data.str.size)
+        else { // if (filename.data.td_str.size)
           if (buf_read_until_str_into_str(buf, &boundary_newline,
                                           &multipart_value) <= 0) {
             err_puts("http_request_buf_parse: failed to parse"
@@ -362,11 +362,11 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             goto restore;
           }
           multipart_value_tag.type = TAG_STR;
-          multipart_value_tag.data.str = multipart_value;
-          tmp_req.body.data.plist =
+          multipart_value_tag.data.td_str = multipart_value;
+          tmp_req.body.data.td_plist =
             list_new_ptuple_2(&multipart_name, &multipart_value_tag,
-                              tmp_req.body.data.plist);
-        } // else if (filename.data.str.size)
+                              tmp_req.body.data.td_plist);
+        } // else if (filename.data.td_str.size)
         list_delete_all(multipart_headers);
         if ((r = buf_read_str(buf, &dash)) < 0) {
           err_puts("http_request_buf_parse: buf_read_str(buf, dash)");
@@ -383,7 +383,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     else if (! compare_str_case_insensitive(content_type,
                                             &urlencoded)) {
       tmp_req.body.type = TAG_STR;
-      body_str = &tmp_req.body.data.str;
+      body_str = &tmp_req.body.data.td_str;
       if (! buf_read(buf, content_length_uw, body_str))
         goto restore;
       if (false) {
@@ -397,9 +397,9 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         err_inspect_tag(&body);
         err_write_1("\n");
       }
-      if (alist_get(body.data.plist,
+      if (alist_get(body.data.td_plist,
                     &method_key, &method_value)) {
-        http_request_method_from_str(&method_value.data.str,
+        http_request_method_from_str(&method_value.data.td_str,
                                      &tmp_req.method);
         tag_clean(&method_value);
       }
@@ -409,15 +409,15 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   }
   if (! tag_init_pstruct(&tmp, sym_1("HTTP.Request")))
     goto restore;
-  if (! struct_allocate(tmp.data.pstruct)) {
+  if (! struct_allocate(tmp.data.td_pstruct)) {
     tag_void(&tmp);
     goto restore;
   }
-  *((s_http_request *) tmp.data.pstruct->data) = tmp_req;
+  *((s_http_request *) tmp.data.td_pstruct->data) = tmp_req;
   goto clean;
  restore:
   list_delete_all(multipart_headers);
-  if (boundary_tmp.ptr.pchar != boundary.ptr.pchar)
+  if (boundary_tmp.ptr.p_pchar != boundary.ptr.p_pchar)
     str_clean(&boundary_tmp);
   str_clean(&boundary);
   //buf_save_restore_rpos(buf, &save);
@@ -469,10 +469,10 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
   assert(buf);
   switch (req->method.type) {
   case TAG_PSYM:
-    method = &req->method.data.psym->str;
+    method = &req->method.data.td_psym->str;
     break;
   case TAG_STR:
-    method = &req->method.data.str;
+    method = &req->method.data.td_str;
     break;
   default:
     err_puts("http_request_buf_write: invalid method");
@@ -501,8 +501,8 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
     str_init_empty(&body);
     break;
   case TAG_STR:
-    str_init(&body, NULL, req->body.data.str.size,
-             req->body.data.str.ptr.pchar);
+    str_init(&body, NULL, req->body.data.td_str.size,
+             req->body.data.td_str.ptr.p_pchar);
     break;
   default:
     err_write_1("http_request_buf_write: unsupported body type: ");
@@ -529,24 +529,24 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
   result += r;
   list = req->headers;
   while (list) {
-    key = list->tag.data.ptuple->tag;
-    value = list->tag.data.ptuple->tag + 1;
+    key = list->tag.data.td_ptuple->tag;
+    value = list->tag.data.td_ptuple->tag + 1;
     switch (key->type) {
     case TAG_STR:
-      if ((r = buf_write_str(buf, &key->data.str)) <= 0)
+      if ((r = buf_write_str(buf, &key->data.td_str)) <= 0)
         return r;
       result += r;
       if (! compare_str_case_insensitive(&content_length_str,
-                                         &key->data.str))
-        sw_init_str_decimal(&content_length, &value->data.str);
+                                         &key->data.td_str))
+        sw_init_str_decimal(&content_length, &value->data.td_str);
       break;
     case TAG_PSYM:
-      if ((r = buf_write_str(buf, &key->data.psym->str)) <= 0)
+      if ((r = buf_write_str(buf, &key->data.td_psym->str)) <= 0)
         return r;
       result += r;
       if (! compare_str_case_insensitive(&content_length_str,
-                                         &key->data.psym->str))
-        sw_init_str_decimal(&content_length, &value->data.str);
+                                         &key->data.td_psym->str))
+        sw_init_str_decimal(&content_length, &value->data.td_str);
       break;
     default:
       err_write_1("http_request_buf_write: invalid header key: ");
@@ -597,7 +597,7 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
     return r;
   result += r;
   if (content_length > 0) {
-    if ((r = buf_write(buf, body.ptr.p, content_length)) <= 0)
+    if ((r = buf_write(buf, body.ptr.p_pvoid, content_length)) <= 0)
       return r;
     result += r;
   }
@@ -640,23 +640,23 @@ s_http_request * http_request_cookie_add (s_http_request *req,
       assert(! "http_request_cookie_add: not a Str");
       goto ko;
     }
-    if ((eq_pos = str_position_1(&s->tag.data.str, "=")) < 0)
+    if ((eq_pos = str_position_1(&s->tag.data.td_str, "=")) < 0)
       goto next;
     if (! (*tail = list_new_ptuple(2, NULL))) {
       err_puts("http_request_cookie_add: list_new_ptuple");
       assert(! "http_request_cookie_add: list_new_ptuple");
       goto ko;
     }
-    tuple = (*tail)->tag.data.ptuple;
+    tuple = (*tail)->tag.data.td_ptuple;
     tuple->tag[0].type = TAG_STR;
     tuple->tag[1].type = TAG_STR;
-    if (! str_init_slice(&tuple->tag[0].data.str, &s->tag.data.str,
+    if (! str_init_slice(&tuple->tag[0].data.td_str, &s->tag.data.td_str,
                          0, eq_pos)) {
       err_puts("http_request_cookie_add: str_init_slice 1");
       assert(! "http_request_cookie_add: str_init_slice 1");
       goto ko;
     }
-    if (! str_init_slice(&tuple->tag[1].data.str, &s->tag.data.str,
+    if (! str_init_slice(&tuple->tag[1].data.td_str, &s->tag.data.td_str,
                          eq_pos + 1, -1)) {
       err_puts("http_request_cookie_add: str_init_slice 2");
       assert(! "http_request_cookie_add: str_init_slice 2");
@@ -689,18 +689,18 @@ s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
     return NULL;
   }
   if (allowed_methods_tag.type != TAG_PLIST ||
-      ! allowed_methods_tag.data.plist ||
-      allowed_methods_tag.data.plist->tag.type != TAG_PSYM) {
+      ! allowed_methods_tag.data.td_plist ||
+      allowed_methods_tag.data.td_plist->tag.type != TAG_PSYM) {
     err_puts("http_request_method_from_str: invalid"
              " HTTP.Request.allowed_methods");
     assert(!("http_request_method_from_str: invalid"
              " HTTP.Request.allowed_methods"));
     goto clean;
   }
-  allowed_methods = allowed_methods_tag.data.plist;
-  if (! (tmp.data.psym = sym_find(str))) {
+  allowed_methods = allowed_methods_tag.data.td_plist;
+  if (! (tmp.data.td_psym = sym_find(str))) {
     tmp.type = TAG_STR;
-    if (! str_init_copy(&tmp.data.str, str))
+    if (! str_init_copy(&tmp.data.td_str, str))
       goto clean;
     tag_clean(&allowed_methods_tag);
     *dest = tmp;
@@ -708,8 +708,8 @@ s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
   }
   tmp.type = TAG_PSYM;
   if (! list_has(allowed_methods, &tmp)) {
-    tag_init_str(&tmp, NULL, tmp.data.psym->str.size,
-                 tmp.data.psym->str.ptr.pchar);
+    tag_init_str(&tmp, NULL, tmp.data.td_psym->str.size,
+                 tmp.data.td_psym->str.ptr.p_pchar);
   }
   tag_clean(&allowed_methods_tag);
   *dest = tmp;

@@ -144,7 +144,7 @@ s_list * list_init_bool (s_list *list, bool b, s_list *next)
   assert(list);
   list_init(list, next);
   list->tag.type = TAG_BOOL;
-  list->tag.data.bool_ = b;
+  list->tag.data.td_bool_ = b;
   return list;
 }
 
@@ -164,7 +164,7 @@ bool list_is_alist (const s_list *list)
   l = list;
   while (l) {
     if (l->tag.type != TAG_PTUPLE ||
-        l->tag.data.ptuple->count != 2)
+        l->tag.data.td_ptuple->count != 2)
       return false;
     l = list_next(l);
   }
@@ -179,8 +179,8 @@ bool list_is_plist (const s_list *list)
   l = list;
   while (l) {
     if (l->tag.type != TAG_PTUPLE ||
-        l->tag.data.ptuple->count != 2 ||
-        l->tag.data.ptuple->tag[0].type != TAG_PSYM)
+        l->tag.data.td_ptuple->count != 2 ||
+        l->tag.data.td_ptuple->tag[0].type != TAG_PSYM)
       return false;
     l = list_next(l);
   }
@@ -243,7 +243,7 @@ s_list * list_next (const s_list *list)
   if (! list)
     return NULL;
   switch (list->next.type) {
-  case TAG_PLIST: return list->next.data.plist;
+  case TAG_PLIST: return list->next.data.td_plist;
   default: return NULL;
   }
 }
@@ -298,7 +298,7 @@ s_list * list_new_copy_all (s_list *src)
       goto ko;
     if ((next = list_next(s))) {
       s = next;
-      i = &(*i)->next.data.plist;
+      i = &(*i)->next.data.td_plist;
     }
     else {
       if (! tag_init_copy(&(*i)->next, &s->next))
@@ -318,7 +318,7 @@ s_list * list_new_callable (s_callable *callable, s_list *next)
   if (! (dest = list_new(next)))
     return NULL;
   dest->tag.type = TAG_PCALLABLE;
-  dest->tag.data.pcallable = callable;
+  dest->tag.data.td_pcallable = callable;
   return dest;
 }
 
@@ -358,7 +358,7 @@ s_list * list_new_struct (s_struct *s, s_list *next)
   if (! (dest = list_new(next)))
     return NULL;
   dest->tag.type = TAG_PSTRUCT;
-  dest->tag.data.pstruct = s;
+  dest->tag.data.td_pstruct = s;
   return dest;
 }
 
@@ -368,7 +368,7 @@ s_list * list_new_struct_type (s_struct_type *st, s_list *next)
   if (! (dest = list_new(next)))
     return NULL;
   dest->tag.type = TAG_PSTRUCT_TYPE;
-  dest->tag.data.pstruct_type = st;
+  dest->tag.data.td_pstruct_type = st;
   return dest;
 }
 

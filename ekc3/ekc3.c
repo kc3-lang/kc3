@@ -209,7 +209,7 @@ s_tag * ekc3_parse_template_str (const s_str *input, s_tag *dest)
     assert(! "ekc3_parse_template_str: invalid arguments");
     return NULL;
   }
-  if (! buf_init_const(&input_buf, input->size, input->ptr.pchar)) {
+  if (! buf_init_const(&input_buf, input->size, input->ptr.p_pchar)) {
     err_puts("ekc3_parse_template_str: buf_init_const");
     assert(! "ekc3_parse_template_str: buf_init_const");
     return NULL;
@@ -693,7 +693,7 @@ s_str * ekc3_render_file_to_str (const s_str *path, s_str *dest)
   s_str *result;
   env = env_global();
   buf_init(&in, false, BUF_SIZE, in_data);
-  fp = file_open(path->ptr.pchar, "rb");
+  fp = file_open(path->ptr.p_pchar, "rb");
   if (! fp)
     return NULL;
   if (! buf_file_open_r(&in, fp)) {

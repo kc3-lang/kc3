@@ -48,7 +48,7 @@ s_str * base64_decode (s_str *str, s_str *dest)
   u8 c;
   if (! buf_init_alloc(&out, str->size * 3 / 4 + 3))
     return NULL;
-  buf_init_const(&in, str->size, str->ptr.pchar);
+  buf_init_const(&in, str->size, str->ptr.p_pchar);
   while (in.rpos < in.wpos) {
     len = 0;
     for (i = 0; i < 4; i++) {
@@ -94,8 +94,8 @@ s_str * base64_encode (s_str *str, s_str *dest)
   dest_size = ((str->size + 2) / 3) * 4;
   if (! str_init_alloc(&tmp, dest_size))
     return NULL;
-  d = tmp.free.pchar;
-  buf_init_const(&in, str->size, str->ptr.pchar);
+  d = tmp.free.p_pchar;
+  buf_init_const(&in, str->size, str->ptr.p_pchar);
   i = 0;
   while (in.rpos < in.wpos) {
     len = in.wpos - in.rpos;

@@ -50,7 +50,7 @@ p_struct_type * pstruct_type_init_cast (p_struct_type *st,
   switch (tag->type) {
   case TAG_PSTRUCT_TYPE:
     if (*type == &g_sym_StructType)
-      return pstruct_type_init_copy(st, &tag->data.pstruct_type);
+      return pstruct_type_init_copy(st, &tag->data.td_pstruct_type);
   default:
     break;
   }

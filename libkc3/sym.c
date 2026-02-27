@@ -262,8 +262,8 @@ const s_sym * sym_find (const s_str *str)
 s_tag * sym_find_to_tag (const s_str *src, s_tag *dest)
 {
   s_tag tmp = {0};
-  tmp.data.psym = sym_find(src);
-  if (tmp.data.psym)
+  tmp.data.td_psym = sym_find(src);
+  if (tmp.data.td_psym)
     tmp.type = TAG_PSYM;
   *dest = tmp;
   return dest;
@@ -274,7 +274,7 @@ bool sym_has_ident_reserved_characters (const s_sym *sym)
   character c;
   sw r;
   s_str stra;
-  str_init(&stra, NULL, sym->str.size, sym->str.ptr.p);
+  str_init(&stra, NULL, sym->str.size, sym->str.ptr.p_pvoid);
   if ((r = str_read_character_utf8(&stra, &c)) > 0) {
     if (ident_first_character_is_reserved(c))
       return true;
@@ -294,7 +294,7 @@ bool sym_has_reserved_characters (const s_sym *sym)
   bool is_array_type;
   sw r;
   s_str stra;
-  str_init(&stra, NULL, sym->str.size, sym->str.ptr.p);
+  str_init(&stra, NULL, sym->str.size, sym->str.ptr.p_pvoid);
   is_array_type = sym_is_array_type(sym);
   while (1) {
     if ((r = str_read_character_utf8(&stra, &c)) <= 0)
@@ -550,7 +550,7 @@ bool sym_is_pointer_type (p_sym sym, p_sym target_type)
     buf_clean(&buf);
     return true;
   }
-  return sym->str.ptr.pchar[sym->str.size - 1] == '*';
+  return sym->str.ptr.p_pchar[sym->str.size - 1] == '*';
 }
 
 s_sym_list * sym_list_new (const s_sym *sym, s_sym *free_sym,
@@ -771,7 +771,7 @@ p_sym sym_pointer_to_target_type (p_sym pointer_type)
   s_str str;
   assert(sym_is_pointer_type(pointer_type, NULL));
   str_init(&str, NULL, pointer_type->str.size - 1,
-           pointer_type->str.ptr.pchar);
+           pointer_type->str.ptr.p_pchar);
   return str_to_sym(&str);
 }
 
@@ -787,15 +787,15 @@ p_sym sym_target_to_pointer_type (p_sym target_type)
   p_sym tmp;
   if (! target_type ||
       ! target_type->str.size ||
-      ! target_type->str.ptr.p ||
-      ! character_is_uppercase(target_type->str.ptr.pchar[0])) {
+      ! target_type->str.ptr.p_pvoid ||
+      ! character_is_uppercase(target_type->str.ptr.p_pchar[0])) {
     err_puts("sym_target_to_pointer_type: invalid target type");
     return NULL;
   }
   size = target_type->str.size;
   str_init_alloc(&str, size + 1);
-  memcpy(str.free.p, target_type->str.ptr.p, size);
-  str.free.pchar[size] = '*';
+  memcpy(str.free.p_pvoid, target_type->str.ptr.p_pvoid, size);
+  str.free.p_pchar[size] = '*';
   tmp = str_to_sym(&str);
   str_clean(&str);
   return tmp;

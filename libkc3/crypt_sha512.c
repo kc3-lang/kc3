@@ -48,7 +48,7 @@ s_str * crypt_sha512 (const s_str *key, const s_str *setting,
   assert(key);
   assert(setting);
   assert(dest);
-  p = sha512_crypt(key->ptr.pchar, setting->ptr.pchar, outbuf);
+  p = sha512_crypt(key->ptr.p_pchar, setting->ptr.p_pchar, outbuf);
   q = sha512_crypt(testkey, testsetting, testbuf);
   if (p != outbuf) {
     err_puts("crypt_sha512: sha512_crypt p");

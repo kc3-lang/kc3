@@ -50,7 +50,7 @@ s_tag * struct_access (s_struct *s, s_list *key, s_tag *dest)
     assert(! "struct_access: key is not a Sym");
     return NULL;
   }
-  if (! struct_access_sym(s, first->data.psym, &tag)) {
+  if (! struct_access_sym(s, first->data.td_psym, &tag)) {
     err_write_1("struct_access: struct_access_sym(");
     err_inspect_struct(s);
     err_write_1(", ");
@@ -85,9 +85,9 @@ s_tag * struct_access_sym (s_struct *s, const s_sym *key, s_tag *dest)
     if (! sym_to_tag_type(type, &tmp.type))
       return NULL;
     if (sym_is_pointer_type(type, NULL)) {
-      tmp.data.pointer.ptr.p = *(void **) data;
-      tmp.data.pointer.target_type = sym_pointer_to_target_type(type);
-      tmp.data.pointer.pointer_type = type;
+      tmp.data.td_pointer.ptr.p_pvoid = *(void **) data;
+      tmp.data.td_pointer.target_type = sym_pointer_to_target_type(type);
+      tmp.data.td_pointer.pointer_type = type;
       *dest = tmp;
       return dest;
     }
@@ -96,7 +96,7 @@ s_tag * struct_access_sym (s_struct *s, const s_sym *key, s_tag *dest)
         return NULL;
       if (st) {
         tag_init_pstruct_with_type(&tmp, st);
-        if (! struct_allocate(tmp.data.pstruct))
+        if (! struct_allocate(tmp.data.td_pstruct))
           return NULL;
       }
     }
@@ -188,7 +188,7 @@ void struct_delete (s_struct *s)
     l = env_global()->freelist;
     while (l) {
       if (l->tag.type == TAG_PSTRUCT &&
-          l->tag.data.pstruct == s)
+          l->tag.data.td_pstruct == s)
         break;
       l = list_next(l);
     }
@@ -227,13 +227,13 @@ void struct_delete (s_struct *s)
     prev = &env_global()->freelist;
     while (*prev) {
       if ((*prev)->tag.type == TAG_PSTRUCT &&
-          (*prev)->tag.data.pstruct == s) {
+          (*prev)->tag.data.td_pstruct == s) {
         l = *prev;
         *prev = list_next(l);
         alloc_free(l);
         break;
       }
-      prev = &(*prev)->next.data.plist;
+      prev = &(*prev)->next.data.td_plist;
     }
   }
   alloc_free(s);
@@ -369,9 +369,9 @@ s_struct * struct_init_copy (s_struct *s, s_struct *src)
     while (i < s->pstruct_type->map.count) {
       key = s->pstruct_type->map.key + i;
       value = s->pstruct_type->map.value + i;
-      if (key->data.psym->str.ptr.pchar[0] != '_') {
+      if (key->data.td_psym->str.ptr.p_pchar[0] != '_') {
         if (value->type == TAG_PVAR)
-          type = value->data.pvar->type;
+          type = value->data.td_pvar->type;
         else if (! tag_type(value, &type))
           goto ko;
         if (! data_init_copy(type, (s8 *) s->data +
@@ -430,9 +430,9 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
         assert(! "struct_init_from_lists: key that is not a symbol");
         goto ko;
       }
-      if (k->tag.data.psym->str.ptr.pchar[0] != '_') {
-        if (k->tag.data.psym ==
-            s->pstruct_type->map.key[i].data.psym) {
+      if (k->tag.data.td_psym->str.ptr.p_pchar[0] != '_') {
+        if (k->tag.data.td_psym ==
+            s->pstruct_type->map.key[i].data.td_psym) {
           if (! tag_init_copy(s->tag + i, &v->tag))
             goto ko;
           goto next;
@@ -603,11 +603,11 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
       assert(! "struct_set: struct type map key is not a Sym");
       return NULL;
     }
-    if (s->pstruct_type->map.key[i].data.psym == key) {
-      if (s->pstruct_type->map.key[i].data.psym->str.ptr.pchar[0] ==
-          '_') {
+    if (s->pstruct_type->map.key[i].data.td_psym == key) {
+      if (s->pstruct_type->map.key[i].data.td_psym->str.ptr.p_pchar[0]
+          == '_') {
         err_write_1("struct_set: cannot set read only member ");
-        err_inspect_sym(s->pstruct_type->map.key[i].data.psym);
+        err_inspect_sym(s->pstruct_type->map.key[i].data.td_psym);
         err_write_1("\n");
         assert(! "struct_set: cannot set read only member");
         return NULL;
@@ -618,7 +618,7 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
         return NULL;
       }
       if (type_sym == &g_sym_Var)
-        type_sym = s->pstruct_type->map.value[i].data.pvar->type;
+        type_sym = s->pstruct_type->map.value[i].data.td_pvar->type;
       data = (s8 *) s->data + s->pstruct_type->offset[i];
       if (! tag_to_pointer(value, type_sym, &data_src)) {
         err_puts("struct_set: tag_to_const_pointer");

@@ -21,7 +21,7 @@ const s_sym ** http_mime_type (const s_str *ext, const s_sym **dest)
   s_tag tag_ext = {0};
   s_tag tag_mime_type_sym;
   s_tag tag_mime_type_value;
-  if ((tag_ext.data.psym = sym_find(ext)))
+  if ((tag_ext.data.td_psym = sym_find(ext)))
     tag_ext.type = TAG_PSYM;
   tag_init_psym(&tag_mime_type_sym, sym_1("mime_type"));
   tag_init_pvar(&tag_mime_type_value, &g_sym_Sym);
@@ -31,9 +31,9 @@ const s_sym ** http_mime_type (const s_str *ext, const s_sym **dest)
     goto default_mime_type;
   if (! facts_cursor_next(&cursor, &fact) ||
       ! fact ||
-      ! tag_mime_type_value.data.pvar->tag.data.psym)
+      ! tag_mime_type_value.data.td_pvar->tag.data.td_psym)
     goto default_mime_type;
-  *dest = tag_mime_type_value.data.pvar->tag.data.psym;
+  *dest = tag_mime_type_value.data.td_pvar->tag.data.td_psym;
   return dest;
  default_mime_type:
   *dest = default_mime_type;
@@ -89,7 +89,7 @@ bool http_mime_type_buf_parse_type (s_buf *buf)
       if ((r = buf_peek_character_utf8(buf, &c)) < 0)
         goto restore;
       if (r && (character_is_space(c) || c == ';')) {
-        buf_init(&tmp, false, buf->size, buf->ptr.pchar);
+        buf_init(&tmp, false, buf->size, buf->ptr.p_pchar);
         tmp.rpos = save.rpos;
         tmp.wpos = buf->rpos;
         if (buf_read_to_str(&tmp, &str) <= 0) {

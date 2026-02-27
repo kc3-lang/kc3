@@ -27,7 +27,7 @@ s_tag * pointer_access (const s_pointer *pointer, s_list *key,
   assert(pointer);
   assert(key);
   assert(dest);
-  if (! pointer->ptr.p)
+  if (! pointer->ptr.p_pvoid)
     return tag_init_void(dest);
   if (! pstruct_type_find(pointer->target_type, &st) || ! st) {
     err_puts("pointer_access: pstruct_type_find");
@@ -35,7 +35,7 @@ s_tag * pointer_access (const s_pointer *pointer, s_list *key,
     return NULL;
   }
   s.pstruct_type = st;
-  s.data = pointer->ptr.p;
+  s.data = pointer->ptr.p_pvoid;
   r = struct_access(&s, key, dest);
   return r;
 }
@@ -56,7 +56,7 @@ s_tag * pointer_deref (const s_pointer *pointer, s_tag *dest)
     return NULL;
   }
   if (! data_init_copy(pointer->target_type, tmp_data,
-                       pointer->ptr.p)) {
+                       pointer->ptr.p_pvoid)) {
     err_puts("pointer_deref: data_init_copy");
     assert(! "pointer_deref: data_init_copy");
     return NULL;
@@ -79,7 +79,7 @@ s_pointer * pointer_init (s_pointer *pointer,
     target_type = sym_pointer_to_target_type(pointer_type);
   tmp.pointer_type = pointer_type;
   tmp.target_type = target_type;
-  tmp.ptr.p = p;
+  tmp.ptr.p_pvoid = p;
   *pointer = tmp;
   return pointer;
 }
@@ -113,7 +113,7 @@ s_pointer * pointer_init_cast (s_pointer *pointer,
       return NULL;
     }
   }
-  if (! tag_to_pointer(tag, tmp.target_type, &tmp.ptr.p)) {
+  if (! tag_to_pointer(tag, tmp.target_type, &tmp.ptr.p_pvoid)) {
     err_puts("pointer_init_cast: tag_to_pointer");
     assert(! "pointer_init_cast: tag_to_pointer");
     return NULL;
@@ -138,7 +138,7 @@ s_pointer * pointer_init_tag (s_pointer *pointer, const s_tag *tag)
   assert(tag);
   tmp.target_type = &g_sym_Tag;
   tmp.pointer_type = &g_sym_Tag__star;
-  tmp.ptr.p = (void *) tag;
+  tmp.ptr.p_pvoid = (void *) tag;
   *pointer = tmp;
   return pointer;
 }

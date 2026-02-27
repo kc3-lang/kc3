@@ -20,7 +20,7 @@ void kc3_gtk4_menu_append_item (GMenu **menu, GMenuItem **item)
 void kc3_gtk4_menu_append_section (GMenu **menu, const s_str *title,
                                    GMenuModel **section)
 {
-  g_menu_append_section(*menu, title->ptr.pchar, *section);
+  g_menu_append_section(*menu, title->ptr.p_pchar, *section);
 }
 
 GMenu ** kc3_gtk4_menu_new (GMenu **dest)

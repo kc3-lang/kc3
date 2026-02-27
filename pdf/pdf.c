@@ -90,9 +90,9 @@ s_tag * pdf_tag_init_xref (s_tag *tag, u32 object_number,
   assert(tag);
   if (! tag_init_ptuple(&tmp, 3))
     return NULL;
-  tag_init_psym(tmp.data.ptuple->tag, sym_1("indirect_object"));
-  tag_init_u32(tmp.data.ptuple->tag + 1, object_number);
-  tag_init_u16(tmp.data.ptuple->tag + 2, generation);
+  tag_init_psym(tmp.data.td_ptuple->tag, sym_1("indirect_object"));
+  tag_init_u32(tmp.data.td_ptuple->tag + 1, object_number);
+  tag_init_u16(tmp.data.td_ptuple->tag + 2, generation);
   *tag = tmp;
   return tag;
 }

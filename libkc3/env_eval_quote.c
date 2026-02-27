@@ -87,7 +87,7 @@ bool env_eval_quote_array (s_env *env, s_array *array,
     i++;
   }
   dest->type = TAG_ARRAY;
-  dest->data.array = tmp;
+  dest->data.td_array = tmp;
   return true;
  ko:
   array_clean(&tmp);
@@ -110,7 +110,7 @@ bool env_eval_quote_do_block (s_env *env, s_do_block *do_block,
     i++;
   }
   dest->type = TAG_DO_BLOCK;
-  dest->data.do_block = tmp;
+  dest->data.td_do_block = tmp;
   return true;
  ko:
   do_block_clean(&tmp);
@@ -136,16 +136,16 @@ bool env_eval_quote_call (s_env *env, s_call *call, s_tag *dest)
     *tmp_arg_last = list_new(NULL);
     if (! env_eval_quote_tag(env, &arg->tag, &(*tmp_arg_last)->tag))
       goto ko;
-    tmp_arg_last = &(*tmp_arg_last)->next.data.plist;
+    tmp_arg_last = &(*tmp_arg_last)->next.data.td_plist;
     arg = list_next(arg);
   }
   if (call->pcallable &&
       ! pcallable_init_copy(&tmp.pcallable, &call->pcallable))
     goto ko;
   dest->type = TAG_PCALL;
-  if (! (dest->data.pcall = alloc(sizeof(s_call))))
+  if (! (dest->data.td_pcall = alloc(sizeof(s_call))))
     goto ko;
-  *dest->data.pcall = tmp;
+  *dest->data.td_pcall = tmp;
   return true;
  ko:
   call_clean(&tmp);
@@ -161,12 +161,12 @@ bool env_eval_quote_complex (s_env *env, s_complex *c,
   assert(c);
   assert(dest);
   tmp.type = TAG_PCOMPLEX;
-  tmp.data.pcomplex = complex_new();
-  if (! tmp.data.pcomplex)
+  tmp.data.td_pcomplex = complex_new();
+  if (! tmp.data.td_pcomplex)
     return false;
-  if (! env_eval_quote_tag(env, &c->x, &tmp.data.pcomplex->x) ||
-      ! env_eval_quote_tag(env, &c->y, &tmp.data.pcomplex->y)) {
-    complex_delete(tmp.data.pcomplex);
+  if (! env_eval_quote_tag(env, &c->x, &tmp.data.td_pcomplex->x) ||
+      ! env_eval_quote_tag(env, &c->y, &tmp.data.td_pcomplex->y)) {
+    complex_delete(tmp.data.td_pcomplex);
     return false;
   }
   *dest = tmp;
@@ -182,15 +182,15 @@ bool env_eval_quote_cow (s_env *env, s_cow *cow,
   assert(cow);
   assert(dest);
   tmp.type = TAG_PCOW;
-  tmp.data.pcow = cow_new(cow->type);
-  if (! tmp.data.pcow)
+  tmp.data.td_pcow = cow_new(cow->type);
+  if (! tmp.data.td_pcow)
     return false;
   if (! env_eval_quote_tag(env, cow_read_only(cow),
-                           cow_read_write(tmp.data.pcow))) {
-    cow_delete(tmp.data.pcow);
+                           cow_read_write(tmp.data.td_pcow))) {
+    cow_delete(tmp.data.td_pcow);
     return false;
   }
-  cow_freeze(tmp.data.pcow);
+  cow_freeze(tmp.data.td_pcow);
   *dest = tmp;
   return true;
 }
@@ -213,11 +213,11 @@ bool env_eval_quote_list (s_env *env, s_list *list, s_tag *dest)
     if (! next)
       if (! env_eval_quote_tag(env, &list->next, &(*tail)->next))
         goto ko;
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
     list = next;
   }
   dest->type = TAG_PLIST;
-  dest->data.plist = tmp;
+  dest->data.td_plist = tmp;
   return true;
  ko:
   list_delete_all(tmp);
@@ -241,7 +241,7 @@ bool env_eval_quote_map (s_env *env, s_map *map, s_tag *dest)
     i++;
   }
   dest->type = TAG_MAP;
-  dest->data.map = tmp;
+  dest->data.td_map = tmp;
   return true;
  ko:
   map_clean(&tmp);
@@ -265,7 +265,7 @@ bool env_eval_quote_quote (s_env *env, s_quote *quote, s_tag *dest)
   if (! r)
     return false;
   dest->type = TAG_QUOTE;
-  dest->data.quote = tmp;
+  dest->data.td_quote = tmp;
   return true;
 }
 
@@ -280,20 +280,20 @@ bool env_eval_quote_struct (s_env *env, s_struct *s, s_tag *dest)
   assert(dest);
   tmp.type = TAG_PSTRUCT;
   if (s->data || ! s->tag) {
-    if (! pstruct_init_copy(&tmp.data.pstruct, &s))
+    if (! pstruct_init_copy(&tmp.data.td_pstruct, &s))
       return false;
     *dest = tmp;
     return true;
   }
-  pstruct_init_with_type(&tmp.data.pstruct, s->pstruct_type);
-  st = tmp.data.pstruct->pstruct_type;
-  tmp.data.pstruct->tag = alloc(st->map.count * sizeof(s_tag));
-  if (! tmp.data.pstruct->tag)
+  pstruct_init_with_type(&tmp.data.td_pstruct, s->pstruct_type);
+  st = tmp.data.td_pstruct->pstruct_type;
+  tmp.data.td_pstruct->tag = alloc(st->map.count * sizeof(s_tag));
+  if (! tmp.data.td_pstruct->tag)
     return false;
   i = 0;
   while (i < st->map.count) {
     if (! env_eval_quote_tag(env, s->tag + i,
-                             tmp.data.pstruct->tag + i))
+                             tmp.data.td_pstruct->tag + i))
       goto ko;
     i++;
   }
@@ -311,29 +311,29 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
   assert(dest);
   switch (tag->type) {
   case TAG_ARRAY:
-    return env_eval_quote_array(env, &tag->data.array, dest);
+    return env_eval_quote_array(env, &tag->data.td_array, dest);
   case TAG_DO_BLOCK:
-    return env_eval_quote_do_block(env, &tag->data.do_block, dest);
+    return env_eval_quote_do_block(env, &tag->data.td_do_block, dest);
   case TAG_MAP:
-    return env_eval_quote_map(env, &tag->data.map, dest);
+    return env_eval_quote_map(env, &tag->data.td_map, dest);
   case TAG_PCALL:
-    return env_eval_quote_call(env, tag->data.pcall, dest);
+    return env_eval_quote_call(env, tag->data.td_pcall, dest);
   case TAG_PCOMPLEX:
-    return env_eval_quote_complex(env, tag->data.pcomplex, dest);
+    return env_eval_quote_complex(env, tag->data.td_pcomplex, dest);
   case TAG_PCOW:
-    return env_eval_quote_cow(env, tag->data.pcow, dest);
+    return env_eval_quote_cow(env, tag->data.td_pcow, dest);
   case TAG_PLIST:
-    return env_eval_quote_list(env, tag->data.plist, dest);
+    return env_eval_quote_list(env, tag->data.td_plist, dest);
   case TAG_PSTRUCT:
-    return env_eval_quote_struct(env, tag->data.pstruct, dest);
+    return env_eval_quote_struct(env, tag->data.td_pstruct, dest);
   case TAG_QUOTE:
-    return env_eval_quote_quote(env, &tag->data.quote, dest);
+    return env_eval_quote_quote(env, &tag->data.td_quote, dest);
   case TAG_TIME:
-    return env_eval_quote_time(env, &tag->data.time, dest);
+    return env_eval_quote_time(env, &tag->data.td_time, dest);
   case TAG_PTUPLE:
-    return env_eval_quote_tuple(env, tag->data.ptuple, dest);
+    return env_eval_quote_tuple(env, tag->data.td_ptuple, dest);
   case TAG_UNQUOTE:
-    return env_eval_quote_unquote(env, &tag->data.unquote, dest);
+    return env_eval_quote_unquote(env, &tag->data.td_unquote, dest);
   case TAG_VOID:
   case TAG_BOOL:
   case TAG_CHARACTER:
@@ -407,7 +407,7 @@ bool env_eval_quote_time (s_env *env, s_time *time, s_tag *dest)
     tmp.tag = NULL;
   }
   dest->type = TAG_TIME;
-  dest->data.time = tmp;
+  dest->data.td_time = tmp;
   return true;
 }
 
@@ -427,7 +427,7 @@ bool env_eval_quote_tuple (s_env *env, s_tuple *tuple, s_tag *dest)
     i++;
   }
   dest->type = TAG_PTUPLE;
-  dest->data.ptuple = tmp;
+  dest->data.td_ptuple = tmp;
   return true;
  ko:
   tuple_delete(tmp);

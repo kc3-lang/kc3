@@ -502,11 +502,11 @@ s_facts_connection * facts_connect (s_facts *facts,
   assert(config);
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
-  if (getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0)) {
+  if (getaddrinfo(host->ptr.p_pchar, service->ptr.p_pchar, &hints, &res0)) {
     err_write_1("facts_connect: getaddrinfo: ");
-    err_write_1(host->ptr.pchar);
+    err_write_1(host->ptr.p_pchar);
     err_write_1(":");
-    err_write_1(service->ptr.pchar);
+    err_write_1(service->ptr.p_pchar);
     err_write_1(": ");
     err_puts(strerror(errno));
     return NULL;
@@ -530,9 +530,9 @@ s_facts_connection * facts_connect (s_facts *facts,
   freeaddrinfo(res0);
   if (sockfd < 0) {
     err_write_1("facts_connect: connect: ");
-    err_write_1(host->ptr.pchar);
+    err_write_1(host->ptr.p_pchar);
     err_write_1(":");
-    err_write_1(service->ptr.pchar);
+    err_write_1(service->ptr.p_pchar);
     err_write_1(": ");
     err_puts(strerror(errno));
     return NULL;
@@ -550,7 +550,7 @@ s_facts_connection * facts_connect (s_facts *facts,
     close(sockfd);
     return NULL;
   }
-  if (tls_connect_socket(tls, sockfd, host->ptr.pchar) < 0) {
+  if (tls_connect_socket(tls, sockfd, host->ptr.p_pchar) < 0) {
     err_write_1("facts_connect: tls_connect_socket: ");
     err_puts(tls_error(tls));
     tls_free(tls);
@@ -647,8 +647,8 @@ sw facts_dump (s_facts *facts, s_buf *buf)
 #if HAVE_PTHREAD
   rwlock_r(&facts->rwlock);
 #endif
-  facts_with_0_id(facts, &cursor, subject.data.pvar, predicate.data.pvar,
-                  object.data.pvar);
+  facts_with_0_id(facts, &cursor, subject.data.td_pvar, predicate.data.td_pvar,
+                  object.data.td_pvar);
   if (! facts_cursor_next(&cursor, &fact))
     goto clean;
   while (fact) {
@@ -732,8 +732,8 @@ sw facts_dump_binary (s_facts *facts, s_buf *buf)
 #if HAVE_PTHREAD
   rwlock_r(&facts->rwlock);
 #endif
-  facts_with_0_id(facts, &cursor, subject.data.pvar, predicate.data.pvar,
-                  object.data.pvar);
+  facts_with_0_id(facts, &cursor, subject.data.td_pvar, predicate.data.td_pvar,
+                  object.data.td_pvar);
   if (! facts_cursor_next(&cursor, &fact))
     goto clean;
   while (fact) {
@@ -913,7 +913,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
                       "%{module: KC3.Facts.Dump,\n"
                       "  version: 1}\n")) <= 0) {
     err_write_1("facts_load: invalid or missing header: ");
-    err_puts(path->ptr.pchar);
+    err_puts(path->ptr.p_pchar);
     assert(! "facts_load: invalid or missing header");
     return -1;
   }
@@ -945,7 +945,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       err_write_1("facts_load: invalid fact line ");
       err_inspect_sw_decimal(buf->line);
       err_write_1(": ");
-      err_puts(path->ptr.pchar);
+      err_puts(path->ptr.p_pchar);
       err_inspect_buf(buf);
       err_write_1("\n");
       assert(! "facts_load: invalid fact");
@@ -957,7 +957,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       err_write_1("facts_load: missing newline line ");
       err_inspect_sw_decimal(buf->line);
       err_write_1(": ");
-      err_puts(path->ptr.pchar);
+      err_puts(path->ptr.p_pchar);
       err_inspect_buf(buf);
       assert(! "facts_load: missing newline");
       goto ko;
@@ -968,7 +968,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       err_write_1("facts_load: failed to eval fact line ");
       err_inspect_sw_decimal(buf->line);
       err_write_1(": ");
-      err_puts(path->ptr.pchar);
+      err_puts(path->ptr.p_pchar);
       err_inspect_buf(buf);
       assert(! "facts_load: invalid fact");
       goto ko;
@@ -979,7 +979,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       err_write_1("facts_load: failed to eval fact line ");
       err_inspect_sw_decimal(buf->line);
       err_write_1(": ");
-      err_puts(path->ptr.pchar);
+      err_puts(path->ptr.p_pchar);
       err_inspect_buf(buf);
       assert(! "facts_load: invalid fact");
       goto ko;
@@ -991,7 +991,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
 	err_write_1("facts_load: failed to replace fact line ");
 	err_inspect_sw_decimal(buf->line);
 	err_write_1(": ");
-	err_puts(path->ptr.pchar);
+	err_puts(path->ptr.p_pchar);
 	assert(! "facts_load: failed to replace fact");
 	goto ko;
       }
@@ -1003,7 +1003,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
 	err_write_1("facts_load: failed to add fact line ");
 	err_inspect_sw_decimal(buf->line);
 	err_write_1(": ");
-	err_puts(path->ptr.pchar);
+	err_puts(path->ptr.p_pchar);
 	assert(! "facts_load: failed to add fact");
 	goto ko;
       }
@@ -1308,7 +1308,7 @@ sw facts_open_file (s_facts *facts, const s_str *path)
   sw r;
   bool removed = false;
   sw result = 0;
-  fp = fopen(path->ptr.pchar, "rb");
+  fp = fopen(path->ptr.p_pchar, "rb");
   if (! fp) {
     if (errno == ENOENT)
       return facts_open_file_create(facts, path);
@@ -1320,7 +1320,7 @@ sw facts_open_file (s_facts *facts, const s_str *path)
   }
   fclose(fp);
   if (first_byte == '%') {
-    fp = fopen(path->ptr.pchar, "rb");
+    fp = fopen(path->ptr.p_pchar, "rb");
     if (! fp)
       return -1;
     buf_init(&in, false, sizeof(in_buf), in_buf);
@@ -1449,7 +1449,7 @@ sw facts_open_file_after_dump (s_facts *facts, const s_str *path)
   err_write_1("facts_open_file_after_dump: ");
   err_inspect_str(path);
   err_write_1("\n");
-  fp = fopen(path->ptr.pchar, "rb");
+  fp = fopen(path->ptr.p_pchar, "rb");
   if (! fp) {
     if (errno == ENOENT)
       return facts_open_file_after_dump_create(facts, path);
@@ -1463,7 +1463,7 @@ sw facts_open_file_after_dump (s_facts *facts, const s_str *path)
   log_save = facts->log;
   facts->log = NULL;
   if (first_byte == '%') {
-    fp = fopen(path->ptr.pchar, "rb");
+    fp = fopen(path->ptr.p_pchar, "rb");
     if (! fp) {
       facts->log = log_save;
       return -1;
@@ -1879,7 +1879,7 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
     if (false) {
       if (found->object->type == TAG_PVAR) {
         err_write_1("facts_remove_fact_local: pvar refcount before spo: ");
-        err_inspect_sw(found->object->data.pvar->ref_count);
+        err_inspect_sw(found->object->data.td_pvar->ref_count);
         err_write_1("\n");
       }
     }
@@ -1998,7 +1998,7 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   while (fact) {
     list = list_new(list);
     list->tag.type = TAG_FACT;
-    list->tag.data.fact = *fact;
+    list->tag.data.td_fact = *fact;
     if (! facts_cursor_next(&cursor, &fact)) {
 #if HAVE_PTHREAD
       rwlock_unlock_w(&facts->rwlock);
@@ -2013,7 +2013,7 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   facts_cursor_clean(&cursor);
   facts_transaction_start(facts, &transaction);  
   while (list) {
-    if (! facts_remove_fact(facts, &list->tag.data.fact, &b)) {
+    if (! facts_remove_fact(facts, &list->tag.data.td_fact, &b)) {
       err_puts("facts_replace_tags: facts_remove_fact");
       assert(! "facts_replace_tags: facts_remove_fact");
       goto rollback;

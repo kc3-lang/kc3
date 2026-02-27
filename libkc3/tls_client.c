@@ -45,13 +45,15 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
   tls_client->socket_buf = alloc(sizeof(s_socket_buf));
   if (! tls_client->socket_buf)
     return NULL;
-  if (! socket_init_connect(&tls_client->socket_buf->sockfd, host, port)) {
+  if (! socket_init_connect(&tls_client->socket_buf->sockfd, host,
+                            port)) {
     alloc_free(tls_client->socket_buf);
     err_puts("kc3_tls_client_init_connect: socket_init_connect");
     assert(! "kc3_tls_client_init_connect: socket_init_connect");
     return NULL;
   }
-  if (tls_connect_socket(*ctx, tls_client->socket_buf->sockfd, host->ptr.pchar)) {
+  if (tls_connect_socket(*ctx, tls_client->socket_buf->sockfd,
+                         host->ptr.p_pchar)) {
     err_write_1("kc3_tls_client_init_connect: tls_connect_socket: ");
     err_puts(tls_error(*ctx));
     assert(! "kc3_tls_client_init_connect: tls_connect_socket");

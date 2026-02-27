@@ -40,20 +40,20 @@ character * character_init_cast (character *c, p_sym const *type,
   assert(type);
   assert(tag);
   switch (tag->type) {
-  case TAG_CHARACTER: t = tag->data.character;                goto ok;
-  case TAG_F32:       t = (character) tag->data.f32;          goto ok;
-  case TAG_F64:       t = (character) tag->data.f64;          goto ok;
-  case TAG_INTEGER:   t = integer_to_u32(&tag->data.integer); goto ok;
-  case TAG_S8:        t = (character) tag->data.s8;           goto ok;
-  case TAG_S16:       t = (character) tag->data.s16;          goto ok;
-  case TAG_S32:       t = (character) tag->data.s32;          goto ok;
-  case TAG_S64:       t = (character) tag->data.s64;          goto ok;
-  case TAG_SW:        t = (character) tag->data.sw;           goto ok;
-  case TAG_U8:        t = (character) tag->data.u8;           goto ok;
-  case TAG_U16:       t = (character) tag->data.u16;          goto ok;
-  case TAG_U32:       t = (character) tag->data.u32;          goto ok;
-  case TAG_U64:       t = (character) tag->data.u64;          goto ok;
-  case TAG_UW:        t = (character) tag->data.uw;           goto ok;
+  case TAG_CHARACTER:t = tag->data.td_character;                goto ok;
+  case TAG_F32:      t = (character) tag->data.td_f32;          goto ok;
+  case TAG_F64:      t = (character) tag->data.td_f64;          goto ok;
+  case TAG_INTEGER:  t = integer_to_u32(&tag->data.td_integer); goto ok;
+  case TAG_S8:       t = (character) tag->data.td_s8;           goto ok;
+  case TAG_S16:      t = (character) tag->data.td_s16;          goto ok;
+  case TAG_S32:      t = (character) tag->data.td_s32;          goto ok;
+  case TAG_S64:      t = (character) tag->data.td_s64;          goto ok;
+  case TAG_SW:       t = (character) tag->data.td_sw;           goto ok;
+  case TAG_U8:       t = (character) tag->data.td_u8;           goto ok;
+  case TAG_U16:      t = (character) tag->data.td_u16;          goto ok;
+  case TAG_U32:      t = (character) tag->data.td_u32;          goto ok;
+  case TAG_U64:      t = (character) tag->data.td_u64;          goto ok;
+  case TAG_UW:       t = (character) tag->data.td_uw;           goto ok;
   default: break;
   }
   err_write_1("character_cast: cannot cast ");

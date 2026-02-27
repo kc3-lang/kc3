@@ -185,7 +185,7 @@ s_tag * buf_parse_tag_s16 (s_buf *buf, s_tag *dest)
 {
   s_tag tmp = {0};
   tmp.type = TAG_S16;
-  if (buf_parse_s16(buf, &tmp.data.s16) <= 0)
+  if (buf_parse_s16(buf, &tmp.data.td_s16) <= 0)
     return NULL;
   *dest = tmp;
   return dest;
@@ -197,7 +197,7 @@ s_tag * buf_parse_tag_s16_base (s_buf *buf, const s_str *base,
   s_tag tmp = {0};
   tmp.type = TAG_S16;
   if (buf_parse_s16_base(buf, base, negative,
-                             &tmp.data.s16) <= 0)
+                             &tmp.data.td_s16) <= 0)
     return NULL;
   *dest = tmp;
   return dest;

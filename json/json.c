@@ -20,9 +20,9 @@ sw json_buf_inspect (s_buf *buf, const s_tag *tag)
   assert(tag);
   switch (tag->type) {
   case TAG_MAP:
-    return json_buf_inspect_map(buf, &tag->data.map);
+    return json_buf_inspect_map(buf, &tag->data.td_map);
   case TAG_STR:
-    return buf_inspect_str(buf, &tag->data.str);
+    return buf_inspect_str(buf, &tag->data.td_str);
   case TAG_F32:
   case TAG_F64:
 #if HAVE_F80
@@ -44,7 +44,7 @@ sw json_buf_inspect (s_buf *buf, const s_tag *tag)
   case TAG_UW:
     return json_buf_inspect_tag_number(buf, tag);
   case TAG_BOOL:
-    return buf_inspect_bool(buf, tag->data.bool_);
+    return buf_inspect_bool(buf, tag->data.td_bool_);
   case TAG_VOID:
     return json_buf_inspect_void(buf);
   default:
@@ -75,12 +75,12 @@ sw json_buf_inspect_map (s_buf *buf, const s_map *map)
   while (i < map->count) {
     switch (map->key[i].type) {
     case TAG_STR:
-      if ((r = buf_inspect_str(buf, &map->key[i].data.str)) < 0)
+      if ((r = buf_inspect_str(buf, &map->key[i].data.td_str)) < 0)
         return r;
       result += r;
       break;
     case TAG_PSYM:
-      if ((r = buf_inspect_str(buf, &map->key[i].data.psym->str)) < 0)
+      if ((r = buf_inspect_str(buf, &map->key[i].data.td_psym->str)) < 0)
         return r;
       result += r;
       break;
@@ -134,13 +134,13 @@ sw json_buf_inspect_map_size (s_pretty *pretty, const s_map *map)
   while (i < map->count) {
     switch (map->key[i].type) {
     case TAG_STR:
-      if ((r = buf_inspect_str_size(pretty, &map->key[i].data.str)) < 0)
+      if ((r = buf_inspect_str_size(pretty, &map->key[i].data.td_str)) < 0)
         return r;
       result += r;
       break;
     case TAG_PSYM:
       if ((r = buf_inspect_str_size(pretty,
-                                    &map->key[i].data.psym->str)) < 0)
+                                    &map->key[i].data.td_psym->str)) < 0)
         return r;
       result += r;
       break;
@@ -182,9 +182,9 @@ sw json_buf_inspect_size (s_pretty *pretty, const s_tag *tag)
   assert(tag);
   switch (tag->type) {
   case TAG_MAP:
-    return json_buf_inspect_map_size(pretty, &tag->data.map);
+    return json_buf_inspect_map_size(pretty, &tag->data.td_map);
   case TAG_STR:
-    return buf_inspect_str_size(pretty, &tag->data.str);
+    return buf_inspect_str_size(pretty, &tag->data.td_str);
   case TAG_F32:
   case TAG_F64:
 #if HAVE_F80
@@ -206,7 +206,7 @@ sw json_buf_inspect_size (s_pretty *pretty, const s_tag *tag)
   case TAG_UW:
     return json_buf_inspect_tag_number_size(pretty, tag);
   case TAG_BOOL:
-    return buf_inspect_bool_size(pretty, tag->data.bool_);
+    return buf_inspect_bool_size(pretty, tag->data.td_bool_);
   case TAG_VOID:
     return json_buf_inspect_void_size(pretty);
   default:
@@ -335,7 +335,7 @@ s_tag * json_buf_parse_list (s_buf *buf, s_tag *dest)
       goto restore;
     if (! json_buf_parse(buf, &(*tail)->tag))
       goto restore;
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     if ((r = buf_read_1(buf, "]")) < 0)
@@ -388,7 +388,7 @@ s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest)
       goto restore;
     if ((r = buf_parse_tag_str(buf, &(*k)->tag)) <= 0)
       goto restore;
-    k = &(*k)->next.data.plist;
+    k = &(*k)->next.data.td_plist;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     if ((r = buf_read_1(buf, ":")) <= 0)
@@ -400,7 +400,7 @@ s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest)
       goto restore;
     if (! json_buf_parse(buf, &(*v)->tag))
       goto restore;
-    v = &(*v)->next.data.plist;
+    v = &(*v)->next.data.td_plist;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     if ((r = buf_read_1(buf, ",")) < 0)

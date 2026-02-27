@@ -21,7 +21,7 @@
   do {                                                                 \
     TEST_ASSERT((sym = sym_1(test)));                                  \
     TEST_EQ(sym->str.size, strlen(test));                              \
-    TEST_EQ(strncmp((test), sym->str.ptr.p, strlen(test)), 0);         \
+    TEST_EQ(strncmp((test), sym->str.ptr.p_pvoid, strlen(test)), 0);   \
     TEST_EQ(sym_1(test), sym_1(test));                                 \
   } while (0)
 

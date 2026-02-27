@@ -45,7 +45,7 @@ void pdf_write_close (s_pdf_write *pdf)
   buf_write_1(buf, "2 0 obj\n<< /Type /Pages /Kids [");
   l = pdf->pages;
   while (l) {
-    buf_inspect_u32_decimal(buf, l->tag.data.u32);
+    buf_inspect_u32_decimal(buf, l->tag.data.td_u32);
     buf_write_1(buf, " 0 R");
     l = list_next(l);
     if (l)
@@ -64,7 +64,7 @@ void pdf_write_close (s_pdf_write *pdf)
       buf_write_1(buf, " /F");
       buf_inspect_uw_decimal(buf, i);
       buf_write_1(buf, " ");
-      buf_inspect_u32_decimal(buf, l->tag.data.u32);
+      buf_inspect_u32_decimal(buf, l->tag.data.td_u32);
       buf_write_1(buf, " 0 R");
       l = list_next(l);
       i++;
@@ -79,7 +79,7 @@ void pdf_write_close (s_pdf_write *pdf)
       buf_write_1(buf, " /Im");
       buf_inspect_uw_decimal(buf, i);
       buf_write_1(buf, " ");
-      buf_inspect_u32_decimal(buf, l->tag.data.u32);
+      buf_inspect_u32_decimal(buf, l->tag.data.td_u32);
       buf_write_1(buf, " 0 R");
       l = list_next(l);
       i++;

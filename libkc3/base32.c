@@ -29,7 +29,7 @@ s_str * base32_decode (s_str *str, s_str *dest)
   s_str tmp;
   if (! buf_init_alloc(&out, str->size * 5 / 8))
     return NULL;
-  buf_init_const(&in, str->size, str->ptr.pchar);
+  buf_init_const(&in, str->size, str->ptr.p_pchar);
   while (in.rpos < in.wpos) {
     len = 0;
     for (i = 0; i < 8; i++) {
@@ -71,7 +71,7 @@ s_str * base32_encode (s_str *str, s_str *dest)
   s_str tmp;
   if (! buf_init_alloc(&out, (str->size + 4) / 5 * 8))
     return NULL;
-  buf_init_const(&in, str->size, str->ptr.pchar);
+  buf_init_const(&in, str->size, str->ptr.p_pchar);
   while (in.rpos < in.wpos) {
     len = in.wpos - in.rpos;
     if (len > 5)
@@ -86,14 +86,14 @@ s_str * base32_encode (s_str *str, s_str *dest)
       i++;
     }
     digit = (buf[0] >> 3) & 0x1f;
-    buf_write_u8(&out, g_kc3_base32.ptr.pchar[digit]);
+    buf_write_u8(&out, g_kc3_base32.ptr.p_pchar[digit]);
     digit = ((buf[0] << 2) | (buf[1] >> 6)) & 0x1f;
-    buf_write_u8(&out, g_kc3_base32.ptr.pchar[digit]);
+    buf_write_u8(&out, g_kc3_base32.ptr.p_pchar[digit]);
     if (len > 1) {
       digit = (buf[1] >> 1) & 0x1f;
-      buf_write_u8(&out, g_kc3_base32.ptr.pchar[digit]);
+      buf_write_u8(&out, g_kc3_base32.ptr.p_pchar[digit]);
       digit = ((buf[1] << 4) | (buf[2] >> 4)) & 0x1f;
-      buf_write_u8(&out, g_kc3_base32.ptr.pchar[digit]);
+      buf_write_u8(&out, g_kc3_base32.ptr.p_pchar[digit]);
     }
     else {
       buf_write_u8(&out, '=');
@@ -101,15 +101,15 @@ s_str * base32_encode (s_str *str, s_str *dest)
     }
     if (len > 2) {
       digit = ((buf[2] << 1) | (buf[3] >> 7)) & 0x1f;
-      buf_write_u8(&out, g_kc3_base32.ptr.pchar[digit]);
+      buf_write_u8(&out, g_kc3_base32.ptr.p_pchar[digit]);
     }
     else
       buf_write_u8(&out, '=');
     if (len > 3) {
       digit = (buf[3] >> 2) & 0x1f;
-      buf_write_u8(&out, g_kc3_base32.ptr.pchar[digit]);
+      buf_write_u8(&out, g_kc3_base32.ptr.p_pchar[digit]);
       digit = ((buf[3] << 3) | (buf[4] >> 5)) & 0x1f;
-      buf_write_u8(&out, g_kc3_base32.ptr.pchar[digit]);
+      buf_write_u8(&out, g_kc3_base32.ptr.p_pchar[digit]);
     }
     else {
       buf_write_u8(&out, '=');
@@ -117,7 +117,7 @@ s_str * base32_encode (s_str *str, s_str *dest)
     }
     if (len > 4) {
       digit = buf[4] & 0x1f;
-      buf_write_u8(&out, g_kc3_base32.ptr.pchar[digit]);
+      buf_write_u8(&out, g_kc3_base32.ptr.p_pchar[digit]);
     }
     else
       buf_write_u8(&out, '=');

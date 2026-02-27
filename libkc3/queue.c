@@ -42,8 +42,8 @@ s_tag * queue_enqueue (s_queue *queue)
     queue->tail = list;
   }
   else {
-    queue->tail->next.data.plist = list;
-    queue->tail = queue->tail->next.data.plist;
+    queue->tail->next.data.td_plist = list;
+    queue->tail = queue->tail->next.data.td_plist;
   }
   queue->count++;
   return &queue->tail->tag;

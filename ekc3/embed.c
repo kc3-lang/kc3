@@ -37,7 +37,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
     buf_clean(&token_buf);
     return NULL;
   }
-  tail = &(*tail)->next.data.plist;
+  tail = &(*tail)->next.data.td_plist;
   if (! buf_init_alloc(&token_buf, BUF_SIZE)) {
     err_puts("embed_parse_template: buf_init_alloc failed");
     return NULL;
@@ -77,7 +77,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
             buf_clean(&token_buf);
             return NULL;
           }
-          tail = &(*tail)->next.data.plist;
+          tail = &(*tail)->next.data.td_plist;
           if (buf_read_to_str(&token_buf, &str) <= 0) {
             list_delete_all(template);
             buf_clean(&token_buf);
@@ -90,7 +90,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
             return NULL;
           }
           str_clean(&str);
-          tail = &(*tail)->next.data.plist;
+          tail = &(*tail)->next.data.td_plist;
           buf_empty(&token_buf);
         }
         if (c == '=') {
@@ -152,19 +152,19 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
               buf_clean(&token_buf);
               return NULL;
             }
-            tail = &(*tail)->next.data.plist;
+            tail = &(*tail)->next.data.td_plist;
             if (buf_read_to_str(&token_buf, &str) <= 0) {
               list_delete_all(template);
               buf_clean(&token_buf);
               return NULL;
             }
-            if (! (*tail = list_new_str(str.free.pchar, str.size,
-                                        str.ptr.pchar, NULL))) {
+            if (! (*tail = list_new_str(str.free.p_pchar, str.size,
+                                        str.ptr.p_pchar, NULL))) {
               list_delete_all(template);
               buf_clean(&token_buf);
               return NULL;
             }
-            tail = &(*tail)->next.data.plist;
+            tail = &(*tail)->next.data.td_plist;
             buf_empty(&token_buf);
             switch (state) {
             case EMBED_STATE_SILENT:      p = "\n    \"\"\n  end";
@@ -183,7 +183,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
                 buf_clean(&token_buf);
                 return NULL;
               }
-              tail = &(*tail)->next.data.plist;
+              tail = &(*tail)->next.data.td_plist;
             }
           }
           level++;
@@ -211,7 +211,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
         buf_clean(&token_buf);
         return NULL;
       }
-      tail = &(*tail)->next.data.plist;
+      tail = &(*tail)->next.data.td_plist;
       break;
     case EMBED_STATE_SILENT:
     case EMBED_STATE_VERBOSE:
@@ -238,14 +238,14 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
       return NULL;
     }
     str_clean(&str);
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
   }
   buf_clean(&token_buf);
   if (! (*tail = list_new_str_1(NULL, " ])\nend", NULL))) {
     list_delete_all(template);
     return NULL;
   }
-  tail = &(*tail)->next.data.plist;
+  tail = &(*tail)->next.data.td_plist;
   if (! str_init_concatenate_list(&str, template)) {
     list_delete_all(template);
     return NULL;
@@ -254,7 +254,7 @@ s_tag * embed_parse_template (s_buf *input, s_tag *dest)
   if (! tag_init_from_str(&tmp, &str)) {
     tmp = (s_tag) {0};
     tmp.type = TAG_STR;
-    tmp.data.str = str;
+    tmp.data.td_str = str;
   }
   else
     str_clean(&str);

@@ -196,7 +196,7 @@ s_tag * str_access (const s_str *str, s_list *key, s_tag *dest)
     return tag_init_void(dest);
   }
   dest->type = TAG_CHARACTER;
-  dest->data.character = tmp;
+  dest->data.td_character = tmp;
   return dest;
 }
 
@@ -214,7 +214,7 @@ u8 * str_byte (const s_str *str, s_tag *key, u8 *dest)
     assert(! "str_byte: invalid offset (buffer overflow)");
     return NULL;
   }
-  *dest = str->ptr.pchar[pos];
+  *dest = str->ptr.p_pchar[pos];
   return dest;
 }
 
@@ -231,7 +231,7 @@ u8 * str_char_u8 (const s_str *str, const s_tag *index, u8 *dest)
     err_puts("str_char_u8: out of bounds");
     return NULL;
   }
-  *dest = str->ptr.pu8[i];
+  *dest = str->ptr.p_pu8[i];
   return dest;
 }
 
@@ -303,9 +303,9 @@ sw str_character_position_last (const s_str *str, character c)
 void str_clean (s_str *str)
 {
   assert(str);
-  if (str->free.p) {
-    alloc_free(str->free.p);
-    str->free.p = NULL;
+  if (str->free.p_pvoid) {
+    alloc_free(str->free.p_pvoid);
+    str->free.p_pvoid = NULL;
   }
 }
 
@@ -329,7 +329,7 @@ bool * str_ends_with (const s_str *str, const s_str *end, bool *dest)
     return dest;
   }
   i = str->size - end->size;
-  *dest = ! memcmp(str->ptr.pchar + i, end->ptr.p, end->size);
+  *dest = ! memcmp(str->ptr.p_pchar + i, end->ptr.p_pvoid, end->size);
   return dest;
 }
 
@@ -345,7 +345,7 @@ bool * str_has_characters (const s_str *src, const s_str *chars,
   character c;
   sw r;
   s_str str;
-  str_init(&str, NULL, src->size, src->ptr.p);
+  str_init(&str, NULL, src->size, src->ptr.p_pvoid);
   while (str.size > 0) {
     if ((r = str_read_character_utf8(&str, &c)) < 0)
       return NULL;
@@ -365,7 +365,7 @@ bool * str_has_reserved_characters (const s_str *src, bool *dest)
   character c;
   sw r;
   s_str str;
-  str_init(&str, NULL, src->size, src->ptr.p);
+  str_init(&str, NULL, src->size, src->ptr.p_pvoid);
   if (str.size) {
     while (str.size > 0) {
       if ((r = str_read_character_utf8(&str, &c)) <= 0) {
@@ -391,7 +391,7 @@ bool * str_has_str (const s_str *src, const s_str *search, bool *dest)
       *dest = false;
       return dest;
     }
-    if (! memcmp(src->ptr.pchar + offset, search->ptr.pchar,
+    if (! memcmp(src->ptr.p_pchar + offset, search->ptr.p_pchar,
                  search->size)) {
       *dest = true;
       return dest;
@@ -405,9 +405,9 @@ s_str * str_init (s_str *str, char *free, uw size, const char *p)
 {
   s_str tmp = {0};
   assert(str);
-  tmp.free.p = free;
+  tmp.free.p_pvoid = free;
   tmp.size = size;
-  tmp.ptr.p = p;
+  tmp.ptr.p_pvoid = p;
   *str = tmp;
   return str;
 }
@@ -416,9 +416,9 @@ s_str * str_init_1 (s_str *str, char *free, const char *p)
 {
   s_str tmp = {0};
   assert(str);
-  tmp.free.p = free;
+  tmp.free.p_pvoid = free;
   tmp.size = strlen(p);
-  tmp.ptr.p = p;
+  tmp.ptr.p_pvoid = p;
   *str = tmp;
   return str;
 }
@@ -429,12 +429,12 @@ s_str * str_init_1_alloc (s_str *str, const char *p)
   s_str tmp = {0};
   assert(str);
   size = strlen(p);
-  tmp.free.p = alloc(size + 1);
-  if (! tmp.free.p)
+  tmp.free.p_pvoid = alloc(size + 1);
+  if (! tmp.free.p_pvoid)
     return NULL;
   tmp.size = size;
-  tmp.ptr.p = tmp.free.p;
-  memcpy(tmp.free.p, p, size);
+  tmp.ptr.p_pvoid = tmp.free.p_pvoid;
+  memcpy(tmp.free.p_pvoid, p, size);
   *str = tmp;
   return str;
 }
@@ -443,11 +443,11 @@ s_str * str_init_alloc (s_str *str, uw size)
 {
   s_str tmp = {0};
   assert(str);
-  tmp.free.p = alloc(size + 1);
-  if (! tmp.free.p)
+  tmp.free.p_pvoid = alloc(size + 1);
+  if (! tmp.free.p_pvoid)
     return NULL;
   tmp.size = size;
-  tmp.ptr.p = tmp.free.p;
+  tmp.ptr.p_pvoid = tmp.free.p_pvoid;
   *str = tmp;
   return str;
 }
@@ -456,12 +456,12 @@ s_str * str_init_alloc_copy (s_str *str, uw size, const char *p)
 {
   s_str tmp = {0};
   assert(str);
-  tmp.free.p = alloc(size + 1);
-  if (! tmp.free.p)
+  tmp.free.p_pvoid = alloc(size + 1);
+  if (! tmp.free.p_pvoid)
     return NULL;
   tmp.size = size;
-  tmp.ptr.p = tmp.free.p;
-  memcpy(tmp.free.p, p, size);
+  tmp.ptr.p_pvoid = tmp.free.p_pvoid;
+  memcpy(tmp.free.p_pvoid, p, size);
   *str = tmp;
   return str;
 }
@@ -470,7 +470,7 @@ DEF_STR_INIT_STRUCT(array)
 
 s_str * str_init_base64url (s_str *str, const void *data, uw size)
 {
-  const char *base = g_kc3_base64url.ptr.pchar;
+  const char *base = g_kc3_base64url.ptr.p_pchar;
   char *dest;
   uw    dest_size;
   uw i;
@@ -500,10 +500,10 @@ s_str * str_init_base64url (s_str *str, const void *data, uw size)
     n = src[i] << 16;
     if (i + 1 < size)
       n |= src[i + 1] << 8;
-    dest[j++] = g_kc3_base64url.ptr.pchar[(n >> 18) & 63];
-    dest[j++] = g_kc3_base64url.ptr.pchar[(n >> 12) & 63];
+    dest[j++] = g_kc3_base64url.ptr.p_pchar[(n >> 18) & 63];
+    dest[j++] = g_kc3_base64url.ptr.p_pchar[(n >> 12) & 63];
     if (i + 1 < size)
-      dest[j++] = g_kc3_base64url.ptr.pchar[(n >> 6) & 63];
+      dest[j++] = g_kc3_base64url.ptr.p_pchar[(n >> 6) & 63];
   }
   dest[j] = 0;
   return str_init(str, dest, j, dest);
@@ -520,79 +520,79 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
   assert(type);
   assert(tag);
   if (tag->type == TAG_PVAR &&
-      tag->data.pvar->bound)
-    tag = &tag->data.pvar->tag;
+      tag->data.td_pvar->bound)
+    tag = &tag->data.td_pvar->tag;
   switch (tag->type) {
   case TAG_ARRAY:
-    return str_init_array(str, &tag->data.array);
+    return str_init_array(str, &tag->data.td_array);
   case TAG_BOOL:
-    return str_init_bool(str, tag->data.bool_);
+    return str_init_bool(str, tag->data.td_bool_);
   case TAG_CHARACTER:
-    return str_init_character(str, tag->data.character);
+    return str_init_character(str, tag->data.td_character);
   case TAG_F32:
-    return str_init_f32(str, tag->data.f32);
+    return str_init_f32(str, tag->data.td_f32);
   case TAG_F64:
-    return str_init_f64(str, tag->data.f64);
+    return str_init_f64(str, tag->data.td_f64);
 #if HAVE_F80
   case TAG_F80:
-    return str_init_f80(str, tag->data.f80);
+    return str_init_f80(str, tag->data.td_f80);
 #endif
 #if HAVE_F128
   case TAG_F128:
-    return str_init_f128(str, tag->data.f128);
+    return str_init_f128(str, tag->data.td_f128);
 #endif
   case TAG_IDENT:
-    return str_init_ident(str, &tag->data.ident);
+    return str_init_ident(str, &tag->data.td_ident);
   case TAG_INTEGER:
-    return str_init_integer(str, &tag->data.integer);
+    return str_init_integer(str, &tag->data.td_integer);
   case TAG_PLIST:
-    return str_init_list(str, tag->data.plist);
+    return str_init_list(str, tag->data.td_plist);
   case TAG_MAP:
-    return str_init_map(str, &tag->data.map);
+    return str_init_map(str, &tag->data.td_map);
   case TAG_PCALL:
-    return str_init_call(str, tag->data.pcall);
+    return str_init_call(str, tag->data.td_pcall);
   case TAG_PCALLABLE:
-    return str_init_callable(str, tag->data.pcallable);
+    return str_init_callable(str, tag->data.td_pcallable);
   case TAG_PSTRUCT:
-    return str_init_struct(str, tag->data.pstruct);
+    return str_init_struct(str, tag->data.td_pstruct);
   case TAG_PTR:
-    return str_init_ptr(str, &tag->data.ptr);
+    return str_init_ptr(str, &tag->data.td_ptr);
   case TAG_PTR_FREE:
-    return str_init_ptr_free(str, &tag->data.ptr_free);
+    return str_init_ptr_free(str, &tag->data.td_ptr_free);
   case TAG_PVAR:
-    return str_init_var(str, tag->data.pvar);
+    return str_init_var(str, tag->data.td_pvar);
   case TAG_QUOTE:
-    return str_init_quote(str, &tag->data.quote);
+    return str_init_quote(str, &tag->data.td_quote);
   case TAG_RATIO:
-    return str_init_ratio(str, &tag->data.ratio);
+    return str_init_ratio(str, &tag->data.td_ratio);
   case TAG_S8:
-    return str_init_s8(str, tag->data.s8);
+    return str_init_s8(str, tag->data.td_s8);
   case TAG_S16:
-    return str_init_s16(str, tag->data.s16);
+    return str_init_s16(str, tag->data.td_s16);
   case TAG_S32:
-    return str_init_s32(str, tag->data.s32);
+    return str_init_s32(str, tag->data.td_s32);
   case TAG_S64:
-    return str_init_s64(str, tag->data.s64);
+    return str_init_s64(str, tag->data.td_s64);
   case TAG_STR:
-    return str_init_copy(str, &tag->data.str);
+    return str_init_copy(str, &tag->data.td_str);
   case TAG_PSYM:
-    return str_init_copy(str, &tag->data.psym->str);
+    return str_init_copy(str, &tag->data.td_psym->str);
   case TAG_SW:
-    return str_init_sw(str, tag->data.sw);
+    return str_init_sw(str, tag->data.td_sw);
   case TAG_TIME:
-    return str_init_time(str, &tag->data.time);
+    return str_init_time(str, &tag->data.td_time);
   case TAG_PTUPLE:
-    return str_init_tuple(str, tag->data.ptuple);
+    return str_init_tuple(str, tag->data.td_ptuple);
   case TAG_U8:
-    return str_init_u8(str, tag->data.u8);
+    return str_init_u8(str, tag->data.td_u8);
   case TAG_U16:
-    return str_init_u16(str, tag->data.u16);
+    return str_init_u16(str, tag->data.td_u16);
   case TAG_U32:
-    return str_init_u32(str, tag->data.u32);
+    return str_init_u32(str, tag->data.td_u32);
   case TAG_U64:
-    return str_init_u64(str, tag->data.u64);
+    return str_init_u64(str, tag->data.td_u64);
   case TAG_UW:
-    return str_init_uw(str, tag->data.uw);
+    return str_init_uw(str, tag->data.td_uw);
   case TAG_VOID:
     return str_init_empty(str);
   default:
@@ -634,14 +634,14 @@ s_str * str_init_concatenate (s_str *str, const s_str *a,
   assert(a);
   assert(b);
   tmp.size = a->size + b->size;
-  tmp.free.p = alloc(tmp.size + 1);
-  if (! tmp.free.p)
+  tmp.free.p_pvoid = alloc(tmp.size + 1);
+  if (! tmp.free.p_pvoid)
     return NULL;
-  tmp.ptr.p = tmp.free.p;
+  tmp.ptr.p_pvoid = tmp.free.p_pvoid;
   if (a->size)
-    memcpy(tmp.free.ps8, a->ptr.p, a->size);
+    memcpy(tmp.free.p_ps8, a->ptr.p_pvoid, a->size);
   if (b->size)
-    memcpy(tmp.free.ps8 + a->size, b->ptr.p, b->size);
+    memcpy(tmp.free.p_ps8 + a->size, b->ptr.p_pvoid, b->size);
   *str = tmp;
   return str;
 }
@@ -662,26 +662,26 @@ s_str * str_init_concatenate_list (s_str *str, const s_list *list)
       list_delete_all(str_list);
       return NULL;
     }
-    tmp.size += (*tail)->tag.data.str.size;
-    tail = &(*tail)->next.data.plist;
+    tmp.size += (*tail)->tag.data.td_str.size;
+    tail = &(*tail)->next.data.td_plist;
     li = list_next(li);
   }
   if (! str_init_alloc(&tmp, tmp.size)) {
     list_delete_all(str_list);
     return NULL;
   }
-  p = tmp.free.pchar;
+  p = tmp.free.p_pchar;
   li = str_list;
   while (li) {
-    if (p + li->tag.data.str.size > tmp.free.pchar + tmp.size) {
+    if (p + li->tag.data.td_str.size > tmp.free.p_pchar + tmp.size) {
       err_puts("str_init_concatenate_list: buffer overflow");
       assert(! "str_init_concatenate_list: buffer overflow");
       str_clean(&tmp);
       list_delete_all(str_list);
       return NULL;
     }
-    memcpy(p, li->tag.data.str.ptr.p, li->tag.data.str.size);
-    p += li->tag.data.str.size;
+    memcpy(p, li->tag.data.td_str.ptr.p_pvoid, li->tag.data.td_str.size);
+    p += li->tag.data.td_str.size;
     li = list_next(li);
   }
   list_delete_all(str_list);
@@ -714,10 +714,10 @@ s_str * str_init_concatenate_v (s_str *str, uw count, const s_str **src)
     tmp.size += src[i]->size;
     i++;
   }
-  tmp.free.p = alloc(tmp.size + 1);
-  if (! tmp.free.p)
+  tmp.free.p_pvoid = alloc(tmp.size + 1);
+  if (! tmp.free.p_pvoid)
     return NULL;
-  tmp.ptr.p = tmp.free.p;
+  tmp.ptr.p_pvoid = tmp.free.p_pvoid;
   i = 0;
   while (i < count) {
     size = src[i]->size;
@@ -727,7 +727,7 @@ s_str * str_init_concatenate_v (s_str *str, uw count, const s_str **src)
         assert(! "str_init_concatenate_v: buffer overflow");
         return NULL;
       }
-      memcpy(tmp.free.ps8 + pos, src[i]->ptr.p, size);
+      memcpy(tmp.free.p_ps8 + pos, src[i]->ptr.p_pvoid, size);
       pos += size;
     }
     i++;
@@ -741,12 +741,12 @@ s_str * str_init_copy (s_str *str, const s_str *src)
   s_str tmp = {0};
   assert(str);
   assert(src);
-  tmp.free.p = alloc(src->size + 1);
-  if (! tmp.free.p)
+  tmp.free.p_pvoid = alloc(src->size + 1);
+  if (! tmp.free.p_pvoid)
     return NULL;
   tmp.size = src->size;
-  tmp.ptr.p = tmp.free.p;
-  memcpy(tmp.free.p, src->ptr.p, tmp.size);
+  tmp.ptr.p_pvoid = tmp.free.p_pvoid;
+  memcpy(tmp.free.p_pvoid, src->ptr.p_pvoid, tmp.size);
   *str = tmp;
   return str;
 }
@@ -758,12 +758,12 @@ s_str * str_init_copy_1 (s_str *str, const char *src)
   assert(str);
   assert(src);
   len = strlen(src);
-  tmp.free.p = alloc(len + 1);
-  if (! tmp.free.p)
+  tmp.free.p_pvoid = alloc(len + 1);
+  if (! tmp.free.p_pvoid)
     return NULL;
   tmp.size = len;
-  tmp.ptr.p = tmp.free.p;
-  memcpy(tmp.free.p, src, len);
+  tmp.ptr.p_pvoid = tmp.free.p_pvoid;
+  memcpy(tmp.free.p_pvoid, src, len);
   *str = tmp;
   return str;
 }
@@ -1085,7 +1085,7 @@ s_str * str_init_ftime (s_str *str, s_time *time, const s_str *format)
   size = format->size * 32;
   if (! (buf = alloc(size)))
     return NULL;
-  r = strftime(buf, size, format->ptr.pchar, utc);
+  r = strftime(buf, size, format->ptr.p_pchar, utc);
   if ((! r) || (r == (sw) size)) {
     err_puts("str_init_ftime: strftime");
     assert(! "str_init_ftime: strftime");
@@ -1167,10 +1167,10 @@ s_str * str_init_mul (s_str *str, const s_str *src, uw count)
   }
   if (! str_init_alloc(&tmp, tmp.size))
     return NULL;
-  pchar = tmp.free.pchar;
+  pchar = tmp.free.p_pchar;
   i = 0;
   while (i < count) {
-    memcpy(pchar, src->ptr.p, src->size);
+    memcpy(pchar, src->ptr.p_pvoid, src->size);
     pchar += src->size;
     i++;
   }
@@ -1211,25 +1211,25 @@ s_str * str_init_random_base32 (s_str *str, const s_tag *len)
   i = 0;
   j = 0;
   while (j < (uw) result_len && i < (uw) random_bytes_len) {
-    result[j++] = g_kc3_base32.ptr.pchar[(random_bytes[i] >> 3) & 0x1f];
+    result[j++] = g_kc3_base32.ptr.p_pchar[(random_bytes[i] >> 3) & 0x1f];
     if (j >= (uw) result_len) break;
-    result[j++] = g_kc3_base32.ptr.pchar[((random_bytes[i] << 2) |
+    result[j++] = g_kc3_base32.ptr.p_pchar[((random_bytes[i] << 2) |
                                           (random_bytes[i + 1] >> 6)) & 0x1f];
     if (j >= (uw) result_len) break;
-    result[j++] = g_kc3_base32.ptr.pchar[(random_bytes[i + 1] >> 1) & 0x1f];
+    result[j++] = g_kc3_base32.ptr.p_pchar[(random_bytes[i + 1] >> 1) & 0x1f];
     if (j >= (uw) result_len) break;
-    result[j++] = g_kc3_base32.ptr.pchar[((random_bytes[i + 1] << 4) |
+    result[j++] = g_kc3_base32.ptr.p_pchar[((random_bytes[i + 1] << 4) |
                                           (random_bytes[i + 2] >> 4)) & 0x1f];
     if (j >= (uw) result_len) break;
-    result[j++] = g_kc3_base32.ptr.pchar[((random_bytes[i + 2] << 1) |
+    result[j++] = g_kc3_base32.ptr.p_pchar[((random_bytes[i + 2] << 1) |
                                           (random_bytes[i + 3] >> 7)) & 0x1f];
     if (j >= (uw) result_len) break;
-    result[j++] = g_kc3_base32.ptr.pchar[(random_bytes[i + 3] >> 2) & 0x1f];
+    result[j++] = g_kc3_base32.ptr.p_pchar[(random_bytes[i + 3] >> 2) & 0x1f];
     if (j >= (uw) result_len) break;
-    result[j++] = g_kc3_base32.ptr.pchar[((random_bytes[i + 3] << 3) |
+    result[j++] = g_kc3_base32.ptr.p_pchar[((random_bytes[i + 3] << 3) |
                                           (random_bytes[i + 4] >> 5)) & 0x1f];
     if (j >= (uw) result_len) break;
-    result[j++] = g_kc3_base32.ptr.pchar[random_bytes[i + 4] & 0x1f];
+    result[j++] = g_kc3_base32.ptr.p_pchar[random_bytes[i + 4] & 0x1f];
     i += 5;
   }
   result[result_len] = 0;
@@ -1278,7 +1278,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
     k = 0;
     while (k < 4 &&
            j < (uw) result_len) {
-      result[j] = g_kc3_base64url.ptr.pchar[u % 64];
+      result[j] = g_kc3_base64url.ptr.p_pchar[u % 64];
       u /= 64;
       j++;
       k++;
@@ -1290,7 +1290,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
          random_bytes[i + 1]);
     k = 0;
     while (j < (uw) result_len) {
-      result[j] = g_kc3_base64url.ptr.pchar[u % 64];
+      result[j] = g_kc3_base64url.ptr.p_pchar[u % 64];
       u /= 64;
       j++;
       k++;
@@ -1300,7 +1300,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
     u = random_bytes[i];
     k = 0;
     while (j < (uw) result_len) {
-      result[j] = g_kc3_base64url.ptr.pchar[u % 64];
+      result[j] = g_kc3_base64url.ptr.p_pchar[u % 64];
       u /= 64;
       j++;
       k++;
@@ -1331,7 +1331,7 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
   s_str tmp = {0};
   assert(str);
   assert(src);
-  buf_init_const(&buf, src->size, src->ptr.pchar);
+  buf_init_const(&buf, src->size, src->ptr.p_pchar);
   if (! str_sw_pos_to_uw(start, src->size, &buf.rpos)) {
     err_puts("str_init_slice: str_sw_pos_to_uw: start");
     assert(! "str_init_slice: str_sw_pos_to_uw: start");
@@ -1568,7 +1568,7 @@ s_str * str_new_copy (const s_str *src)
   a = alloc(src->size + 1);
   if (! a)
     return NULL;
-  memcpy(a, src->ptr.p, src->size);
+  memcpy(a, src->ptr.p_pvoid, src->size);
   dest = str_new(a, src->size, a);
   if (! dest) {
     alloc_free(a);
@@ -1634,15 +1634,15 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
       if (out_buf.wpos > 0) {
         *tail = list_new(NULL);
         (*tail)->tag.type = TAG_STR;
-        buf_read_to_str(&out_buf, &(*tail)->tag.data.str);
-        tail = &(*tail)->next.data.plist;
+        buf_read_to_str(&out_buf, &(*tail)->tag.data.td_str);
+        tail = &(*tail)->next.data.td_plist;
         out_buf.rpos = out_buf.wpos = 0;
       }
       *tail = list_new(NULL);
       r = buf_parse_tag(&in_buf, &(*tail)->tag);
       if (r <= 0)
         goto restore;
-      tail = &(*tail)->next.data.plist;
+      tail = &(*tail)->next.data.td_plist;
       r = buf_ignore_spaces(&in_buf);
       if (r < 0)
         goto restore;
@@ -1665,7 +1665,7 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
   if (out_buf.wpos > 0) {
     *tail = list_new(NULL);
     (*tail)->tag.type = TAG_STR;
-    buf_read_to_str(&out_buf, &(*tail)->tag.data.str);
+    buf_read_to_str(&out_buf, &(*tail)->tag.data.td_str);
   }
   if (! list) {
     tag_init_str_empty(&tmp);
@@ -1679,25 +1679,25 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
     goto ok;
   }
   tag_init_pcall(&tmp);
-  ident_init(&tmp.data.pcall->ident, &g_sym_KC3, &g_sym_str);
-  tmp.data.pcall->arguments = list_new(NULL);
+  ident_init(&tmp.data.td_pcall->ident, &g_sym_KC3, &g_sym_str);
+  tmp.data.td_pcall->arguments = list_new(NULL);
   l = list;
   while (l) {
     if (l->tag.type == TAG_STR ||
         (l->tag.type == TAG_PCALL &&
-         l->tag.data.pcall->ident.module == &g_sym_Str &&
-         l->tag.data.pcall->ident.sym == &g_sym_cast))
+         l->tag.data.td_pcall->ident.module == &g_sym_Str &&
+         l->tag.data.td_pcall->ident.sym == &g_sym_cast))
       goto next;
     tag_init_pcall_call_cast(&tag, &g_sym_Str);
-    arg = &list_next(tag.data.pcall->arguments)->tag;
+    arg = &list_next(tag.data.td_pcall->arguments)->tag;
     *arg = l->tag;
     l->tag = tag;
   next:
     l = list_next(l);
   }
-  arg = &tmp.data.pcall->arguments->tag;
+  arg = &tmp.data.td_pcall->arguments->tag;
   arg->type = TAG_PLIST;
-  arg->data.plist = list;
+  arg->data.td_plist = list;
  ok:
   *dest = tmp;
   buf_clean(&in_buf);
@@ -1726,7 +1726,7 @@ sw str_peek_character_utf8 (const s_str *str, character *c)
   const u8 _11111000 = 0xF8;
   if (str->size <= 0)
     return -1;
-  b = str->ptr.pu8;
+  b = str->ptr.p_pu8;
   if ((b[0] & _10000000) == 0) {
     *c = *b;
     return 1;
@@ -1790,7 +1790,7 @@ sw str_position_1 (const s_str *str, const char *token)
   while (1) {
     if (s.size < len)
       return -1;
-    if (! memcmp(s.ptr.pchar, token, len))
+    if (! memcmp(s.ptr.p_pchar, token, len))
       return result;
     if ((r = str_read_character_utf8(&s, &c)) < 0)
       return -1;
@@ -1811,7 +1811,7 @@ sw str_position_str (const s_str *str, const s_str *token)
   while (1) {
     if (s.size < token->size)
       return -1;
-    if (! memcmp(s.ptr.pchar, token->ptr.pchar, token->size))
+    if (! memcmp(s.ptr.p_pchar, token->ptr.p_pchar, token->size))
       return result;
     if ((r = str_read_character_utf8(&s, &c)) < 0)
       return -1;
@@ -1825,8 +1825,8 @@ sw str_read_u8 (s_str *str, u8 *c)
   if (str->size <= 0)
     return 0;
   str->size--;
-  *c = *str->ptr.pu8;
-  str->ptr.pu8++;
+  *c = *str->ptr.p_pu8;
+  str->ptr.p_pu8++;
   return 1;
 }
 
@@ -1839,7 +1839,7 @@ sw str_read_character_utf8 (s_str *str, character *c)
   if (size <= 0)
     return size;
   str->size -= size;
-  str->ptr.p = str->ptr.pchar + size;
+  str->ptr.p_pvoid = str->ptr.p_pchar + size;
   return size;
 }
 
@@ -1889,7 +1889,7 @@ s_list ** str_split_words (const s_str *str, s_list **dest)
   while (1) {
     *t = list_new(NULL);
     (*t)->tag.type = TAG_STR;
-    t_str = &(*t)->tag.data.str;
+    t_str = &(*t)->tag.data.td_str;
     if (buf_read_word_into_str(&buf, t_str) <= 0) {
       if (buf_read_to_str(&buf, t_str) < 0)
         goto clean;
@@ -1898,7 +1898,7 @@ s_list ** str_split_words (const s_str *str, s_list **dest)
       break;
     }
     if (t_str->size)
-      t = &(*t)->next.data.plist;
+      t = &(*t)->next.data.td_plist;
     else
       *t = list_delete(*t);
   }
@@ -1932,7 +1932,7 @@ s_list ** str_split (const s_str *str, const s_str *separator,
   while (1) {
     *t = list_new(NULL);
     (*t)->tag.type = TAG_STR;
-    t_str = &(*t)->tag.data.str;
+    t_str = &(*t)->tag.data.td_str;
     if (buf_read_until_str_into_str(&buf, sep, t_str) < 0) {
       if (buf_read_to_str(&buf, t_str) < 0) {
         err_puts("str_split: buf_read_to_str");
@@ -1941,7 +1941,7 @@ s_list ** str_split (const s_str *str, const s_str *separator,
       }
       break;
     }
-    t = &(*t)->next.data.plist;
+    t = &(*t)->next.data.td_plist;
   }
   buf_clean(&buf);
   *dest = tmp;
@@ -1966,13 +1966,13 @@ s_list ** str_split_list (const s_str *str,
   while (1) {
     *t = list_new(NULL);
     (*t)->tag.type = TAG_STR;
-    t_str = &(*t)->tag.data.str;
+    t_str = &(*t)->tag.data.td_str;
     if (buf_read_until_list_into_str(&buf, sep, t_str) <= 0) {
       if (buf_read_to_str(&buf, t_str) <= 0)
         goto clean;
       break;
     }
-    t = &(*t)->next.data.plist;
+    t = &(*t)->next.data.td_plist;
   }
   buf_clean(&buf);
   *dest = tmp;
@@ -1996,7 +1996,7 @@ bool * str_starts_with (const s_str *str, const s_str *start,
     *dest = false;
     return dest;
   }
-  *dest = ! memcmp(str->ptr.p, start->ptr.p, start->size);
+  *dest = ! memcmp(str->ptr.p_pvoid, start->ptr.p_pvoid, start->size);
   return dest;
 }
 
@@ -2120,13 +2120,13 @@ s_str * str_trim (const s_str *str, s_str *dest)
     size += r;
   if (! str_init_alloc(&tmp, size))
     return NULL;
-  memcpy(tmp.free.p, str->ptr.pu8 + start, size);
+  memcpy(tmp.free.p_pvoid, str->ptr.p_pu8 + start, size);
   *dest = tmp;
   return dest;
 }
 
 void str_zero (s_str *str)
 {
-  if (str->free.p)
-    explicit_bzero(str->free.p, str->size + 1);
+  if (str->free.p_pvoid)
+    explicit_bzero(str->free.p_pvoid, str->size + 1);
 }

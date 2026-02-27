@@ -27,11 +27,11 @@ s_tag * to_lisp (s_tag *tag, s_tag *dest)
   assert(dest);
   switch (tag->type) {
   case TAG_PCALL:
-    return to_lisp_call(tag->data.pcall, dest);
+    return to_lisp_call(tag->data.td_pcall, dest);
   case TAG_PLIST:
-    return to_lisp_list(tag->data.plist, dest);
+    return to_lisp_list(tag->data.td_plist, dest);
   case TAG_PTUPLE:
-    return to_lisp_tuple(tag->data.ptuple, dest);
+    return to_lisp_tuple(tag->data.td_ptuple, dest);
   default:
     return tag_init_copy(dest, tag);
   }
@@ -48,7 +48,7 @@ s_tag * to_lisp_call (s_call *call, s_tag *dest)
     assert(! "to_lisp_call: arguments.type != TAG_PLIST");
     return NULL;
   }
-  if (! (list = list_new_ident(&call->ident, arguments.data.plist))) {
+  if (! (list = list_new_ident(&call->ident, arguments.data.td_plist))) {
     tag_clean(&arguments);
     return NULL;
   }
@@ -67,7 +67,7 @@ s_tag * to_lisp_list (p_list list, s_tag *dest)
     *tail = list_new(NULL);
     if (! to_lisp(&list_i->tag, &(*tail)->tag))
       goto ko;
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
     list_i = list_next(list_i);
   }
   return tag_init_plist(dest, tmp);
@@ -84,7 +84,7 @@ s_tag * to_lisp_tuple (s_tuple *tuple, s_tag *dest)
     return NULL;
   i = 0;
   while (i < tuple->count) {
-    if (! to_lisp(tuple->tag + i, tmp.data.ptuple->tag + i))
+    if (! to_lisp(tuple->tag + i, tmp.data.td_ptuple->tag + i))
       goto ko;
     i++;
   }

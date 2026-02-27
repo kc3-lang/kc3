@@ -55,7 +55,7 @@ static s_map * files_set_entry (const git_tree_entry *entry,
     name = git_tree_entry_name(entry);
   tag_init_str_1_alloc(map->key + index, name);
   tag_init_map(map->value + index, 4);
-  sub_map = &map->value[index].data.map;
+  sub_map = &map->value[index].data.td_map;
   tag_init_psym(sub_map->key + 0, sym_1("name"));
   tag_init_psym(sub_map->key + 1, sym_1("type"));
   tag_init_psym(sub_map->key + 2, sym_1("mode"));
@@ -84,7 +84,7 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
   rev_size = branch->size + 8;
   if (! (rev = alloc(rev_size)))
     return NULL;
-  memcpy(rev, branch->ptr.p, branch->size);
+  memcpy(rev, branch->ptr.p_pvoid, branch->size);
   memcpy(rev + branch->size, "^{tree}", 7);
   if (git_revparse_single(&obj, *repo, rev)) {
     alloc_free(rev);
@@ -95,10 +95,10 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
   tree = (git_tree *) obj;
   if (! path->size ||
       (path->size == 1 &&
-       path->ptr.pchar[0] == '.'))
+       path->ptr.p_pchar[0] == '.'))
     sub_tree = tree;
   else {
-    if (git_tree_entry_bypath(&entry, tree, path->ptr.pchar)) {
+    if (git_tree_entry_bypath(&entry, tree, path->ptr.p_pchar)) {
       git_object_free(obj);
       alloc_free(rev);
       map_init(&tmp, 0);
@@ -115,7 +115,7 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
         alloc_free(rev);
         return NULL;
       }
-      if (! files_set_entry(entry, path->ptr.pchar, &tmp, 0)) {
+      if (! files_set_entry(entry, path->ptr.p_pchar, &tmp, 0)) {
         git_tree_entry_free(entry);
         git_object_free(obj);
         alloc_free(rev);

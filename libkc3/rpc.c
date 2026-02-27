@@ -57,7 +57,7 @@ s_tag * rpc_request (const s_str *input, s_tag *dest)
     tag_clean(&input_tag);
     return NULL;
   }
-  if (! struct_allocate(tmp.data.pstruct)) {
+  if (! struct_allocate(tmp.data.td_pstruct)) {
     env->err = env_err;
     env->out = env_out;
     err_puts("rpc_request: struct_allocate");
@@ -66,7 +66,7 @@ s_tag * rpc_request (const s_str *input, s_tag *dest)
     tag_clean(&input_tag);
     return NULL;
   }
-  response = tmp.data.pstruct->data;
+  response = tmp.data.td_pstruct->data;
   eval_tag(&input_tag, &response->result);
   if (buf_read_to_str(&err_buf, &response->err) < 0 ||
       buf_read_to_str(&out_buf, &response->out) < 0) {

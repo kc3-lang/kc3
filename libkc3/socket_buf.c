@@ -40,9 +40,9 @@ void socket_buf_clean (s_socket_buf *sb)
     sb->buf_rw.r = NULL;
     sb->buf_rw.w = NULL;
   }
-  if (sb->addr_str.free.p) {
+  if (sb->addr_str.free.p_pvoid) {
     str_clean(&sb->addr_str);
-    sb->addr_str.free.p = NULL;
+    sb->addr_str.free.p_pvoid = NULL;
   }
   if (sb->addr) {
     socket_addr_delete(sb->addr);
@@ -95,9 +95,9 @@ void socket_buf_close (s_socket_buf *sb)
     sb->buf_rw.r = NULL;
     sb->buf_rw.w = NULL;
   }
-  if (sb->addr_str.free.p) {
+  if (sb->addr_str.free.p_pvoid) {
     str_clean(&sb->addr_str);
-    sb->addr_str.free.p = NULL;
+    sb->addr_str.free.p_pvoid = NULL;
   }
   if (sb->addr) {
     socket_addr_delete(sb->addr);
@@ -119,7 +119,7 @@ s_pointer * socket_buf_tag (s_socket_buf *sb, s_pointer *dest)
   assert(dest);
   dest->target_type = &g_sym_Tag;
   dest->pointer_type = sym_target_to_pointer_type(&g_sym_Tag);
-  dest->ptr.p = sb->ptag;
+  dest->ptr.p_pvoid = sb->ptag;
   return dest;
 }
 
@@ -212,12 +212,12 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
   assert(service);
   if (! libsocket_init())
     return NULL;
-  e = getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0);
+  e = getaddrinfo(host->ptr.p_pchar, service->ptr.p_pchar, &hints, &res0);
   if (e) {
     err_write_1("socket_buf_init_connect(");
-    err_write_1(host->ptr.pchar);
+    err_write_1(host->ptr.p_pchar);
     err_write_1(", ");
-    err_write_1(service->ptr.pchar);
+    err_write_1(service->ptr.p_pchar);
     err_write_1("): getaddrinfo: ");
     err_inspect_s32_decimal(e);
     err_write_1(" ");
@@ -256,9 +256,9 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
   }
   if (sockfd < 0) {
     err_write_1("socket_buf_init_connect(");
-    err_write_1(host->ptr.pchar);
+    err_write_1(host->ptr.p_pchar);
     err_write_1(", ");
-    err_write_1(service->ptr.pchar);
+    err_write_1(service->ptr.p_pchar);
     err_write_1("): ");
     if (res_last) {
       if (res_last->ai_family == AF_INET) {

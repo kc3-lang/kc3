@@ -261,7 +261,7 @@ s_marshall * marshall_cfn (s_marshall *m, bool heap, const s_cfn *cfn)
       assert(! "marshall_cfn: invalid arg type");
       return NULL;
     }
-    if (! marshall_psym(m, heap, &arg_type->tag.data.psym))
+    if (! marshall_psym(m, heap, &arg_type->tag.data.td_psym))
       return NULL;
     arg_type = list_next(arg_type);
   }
@@ -481,7 +481,7 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
   }
   if (sym_is_pointer_type(type, NULL)) {
     s_pointer p = {0};
-    p.ptr.p = *(void **) data;
+    p.ptr.p_pvoid = *(void **) data;
     p.target_type = sym_pointer_to_target_type(type);
     p.pointer_type = type;
     if (! marshall_pointer(m, heap, &p)) {
@@ -754,7 +754,7 @@ sw marshall_kc3c_file (p_list dlopen_list, p_list tags, const s_str *path)
       assert(! "marshall_kc3c_file: invalid dlopen_list");
       goto ko;
     }
-    if (! marshall_str(&m, false, &list->tag.data.str))
+    if (! marshall_str(&m, false, &list->tag.data.td_str))
       goto ko;
     list = list_next(list);
   }
@@ -940,8 +940,8 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
     tag_init_pvar(&subject,   &g_sym_Tag);
     tag_init_pvar(&predicate, &g_sym_Tag);
     tag_init_pvar(&object,    &g_sym_Tag);
-    if (! facts_with_0_id(facts, &cursor, subject.data.pvar,
-                          predicate.data.pvar, object.data.pvar)) {
+    if (! facts_with_0_id(facts, &cursor, subject.data.td_pvar,
+                          predicate.data.td_pvar, object.data.td_pvar)) {
       err_puts("marshall_facts: facts_with_0_id");
       assert(! "marshall_facts: facts_with_0_id");
       goto ko;
@@ -1097,37 +1097,37 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
   if (! p)
     return marshall_offset(m, heap, 0);
   tag_init_ptuple(&key, 2);
-  key.data.ptuple->tag[0].type = TAG_U64;
-  key.data.ptuple->tag[0].data.u64 = (u64) p;
+  key.data.td_ptuple->tag[0].type = TAG_U64;
+  key.data.td_ptuple->tag[0].data.td_u64 = (u64) p;
   if (ht_get(&m->ht, &key, &ptag)) {
     *present = true;
     goto ok;
   }
   *present = false;
   tag_init_ptuple(&tag, 2);
-  tag.data.ptuple->tag[0].data.u64 = (u64) p;
-  tag.data.ptuple->tag[0].type = TAG_U64;
-  tag.data.ptuple->tag[1].data.u64 =
+  tag.data.td_ptuple->tag[0].data.td_u64 = (u64) p;
+  tag.data.td_ptuple->tag[0].type = TAG_U64;
+  tag.data.td_ptuple->tag[1].data.td_u64 =
     sizeof(s_marshall_header) +
     m->heap_offset +
     m->heap_pos +
     (heap ? sizeof(u64) : 0);
-  tag.data.ptuple->tag[1].type = TAG_U64;
+  tag.data.td_ptuple->tag[1].type = TAG_U64;
   if (! ht_add(&m->ht, &tag))
     goto ko;
   m->heap_count++;
   ptag = &tag;
  ok:
   if (ptag->type != TAG_PTUPLE ||
-      ptag->data.ptuple->count != 2 ||
-      ptag->data.ptuple->tag[1].type != TAG_U64) {
+      ptag->data.td_ptuple->count != 2 ||
+      ptag->data.td_ptuple->tag[1].type != TAG_U64) {
     err_puts("marshall_heap_pointer: invalid offset in hash table");
     err_inspect_tag(&tag);
     err_write_1("\n");
     assert(! "marshall_heap_pointer: invalid offset in hash table");
     goto ko;
   }
-  offset = ptag->data.ptuple->tag[1].data.u64;
+  offset = ptag->data.td_ptuple->tag[1].data.td_u64;
   if (! marshall_offset(m, heap, offset - m->heap_offset))
     goto ko;
   tag_clean(&key);
@@ -1182,13 +1182,13 @@ s_marshall * marshall_integer (s_marshall *m, bool heap,
   buf = heap ? &m->heap : &m->buf;
   if (! marshall_1(m, heap, "_KC3INTEGER_"))
     return NULL;
-  count = mp_pack_count(&i->mp_int, nail_bits, digit_size);
+  count = mp_pack_count(&i->in_int, nail_bits, digit_size);
   if (count > U32_MAX) {
     err_puts("marshall_integer: count is too large");
     assert(! "marshall_integer: count is too large");
     return NULL;
   }
-  sign = mp_isneg(&i->mp_int) ? 1 : 0;
+  sign = mp_isneg(&i->in_int) ? 1 : 0;
   if ((r = buf_write_u8(buf, sign)) <= 0)
     return NULL;
   if (heap)
@@ -1213,9 +1213,9 @@ s_marshall * marshall_integer (s_marshall *m, bool heap,
     assert(! "marshall_integer: buffer overflow");
     return NULL;
   }
-  if (mp_pack(buf->ptr.pu8 + buf->wpos, count, &written,
+  if (mp_pack(buf->ptr.p_pu8 + buf->wpos, count, &written,
               MP_LSB_FIRST, digit_size, MP_LITTLE_ENDIAN, nail_bits,
-              &i->mp_int) != MP_OKAY) {
+              &i->in_int) != MP_OKAY) {
     err_puts("marshall_integer: mp_pack failed");
     assert(! "marshall_integer: mp_pack failed");
     return NULL;
@@ -1354,9 +1354,9 @@ s_marshall * marshall_ops (s_marshall *m, bool heap, s_ops *ops)
         goto ko;
       }
       if (op_tag->type != TAG_PSTRUCT ||
-          ! op_tag->data.pstruct ||
-          op_tag->data.pstruct->pstruct_type->module != &g_sym_KC3_Op ||
-          ! (op = op_tag->data.pstruct->data)) {
+          ! op_tag->data.td_pstruct ||
+          op_tag->data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op ||
+          ! (op = op_tag->data.td_pstruct->data)) {
         err_puts("marshall_ops: invalid op");
         assert(! "marshall_ops: invalid op");
         goto ko;
@@ -1409,7 +1409,7 @@ s_marshall * marshall_pointer (s_marshall *m, bool heap,
   }
   if (! marshall_psym(m, heap, &pointer->target_type))
     return NULL;
-  p = pointer->ptr.p;
+  p = pointer->ptr.p_pvoid;
   if (! marshall_heap_pointer(m, heap, p, &present))
     return NULL;
   if (p && ! present) {
@@ -1428,7 +1428,7 @@ s_marshall * marshall_pointer (s_marshall *m, bool heap,
     call.arguments = list_new_pointer
       (NULL, &g_sym_Marshall, m, list_new_bool
        (true, list_new_pointer
-        (pointer->pointer_type, pointer->target_type, pointer->ptr.p,
+        (pointer->pointer_type, pointer->target_type, pointer->ptr.p_pvoid,
          NULL)));
     if (! env_eval_call(env, &call, &tmp)) {
       err_puts("marshall_pointer: env_eval_call");
@@ -1538,7 +1538,7 @@ s_marshall * marshall_str (s_marshall *m, bool heap, const s_str *src)
   if (! src->size)
     return m;
   buf = heap ? &m->heap : &m->buf;
-  if ((r = buf_write(buf, src->ptr.pchar, src->size)) <= 0) {
+  if ((r = buf_write(buf, src->ptr.p_pchar, src->size)) <= 0) {
     err_puts("marshall_str: buf_write");
     assert(! "marshall_str: buf_write");
     return NULL;
@@ -1686,62 +1686,62 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   }
   switch (tag->type) {
   case TAG_VOID: return m;
-  case TAG_ARRAY: return marshall_array(m, heap, &tag->data.array);
-  case TAG_BOOL:  return marshall_bool(m, heap, tag->data.bool_);
+  case TAG_ARRAY: return marshall_array(m, heap, &tag->data.td_array);
+  case TAG_BOOL:  return marshall_bool(m, heap, tag->data.td_bool_);
   case TAG_CHARACTER:
-    return marshall_character(m, heap, tag->data.character);
+    return marshall_character(m, heap, tag->data.td_character);
   case TAG_DO_BLOCK:
-    return marshall_do_block(m, heap, &tag->data.do_block);
-  case TAG_F32:   return marshall_f32(m, heap, tag->data.f32);
-  case TAG_F64:   return marshall_f64(m, heap, tag->data.f64);
+    return marshall_do_block(m, heap, &tag->data.td_do_block);
+  case TAG_F32:   return marshall_f32(m, heap, tag->data.td_f32);
+  case TAG_F64:   return marshall_f64(m, heap, tag->data.td_f64);
 #if HAVE_F80
-  case TAG_F80:   return marshall_f80(m, heap, tag->data.f80);
+  case TAG_F80:   return marshall_f80(m, heap, tag->data.td_f80);
 #endif
 #if HAVE_F128
-  case TAG_F128:  return marshall_f128(m, heap, tag->data.f128);
+  case TAG_F128:  return marshall_f128(m, heap, tag->data.td_f128);
 #endif
-  case TAG_FACT:  return marshall_fact(m, heap, &tag->data.fact);
-  case TAG_IDENT: return marshall_ident(m, heap, &tag->data.ident);
+  case TAG_FACT:  return marshall_fact(m, heap, &tag->data.td_fact);
+  case TAG_IDENT: return marshall_ident(m, heap, &tag->data.td_ident);
   case TAG_INTEGER:
-    return marshall_integer(m, heap, &tag->data.integer);
-  case TAG_MAP:   return marshall_map(m, heap, &tag->data.map);
-  case TAG_PCALL: return marshall_pcall(m, heap, &tag->data.pcall);
+    return marshall_integer(m, heap, &tag->data.td_integer);
+  case TAG_MAP:   return marshall_map(m, heap, &tag->data.td_map);
+  case TAG_PCALL: return marshall_pcall(m, heap, &tag->data.td_pcall);
   case TAG_PCALLABLE:
-    return marshall_pcallable(m, heap, &tag->data.pcallable);
+    return marshall_pcallable(m, heap, &tag->data.td_pcallable);
   case TAG_PCOMPLEX:
-    return marshall_pcomplex(m, heap, &tag->data.pcomplex);
-  case TAG_PCOW:  return marshall_pcow(m, heap, &tag->data.pcow);
+    return marshall_pcomplex(m, heap, &tag->data.td_pcomplex);
+  case TAG_PCOW:  return marshall_pcow(m, heap, &tag->data.td_pcow);
   case TAG_PFACTS:
-    return marshall_pfacts(m, heap, &tag->data.pfacts);
-  case TAG_PLIST: return marshall_plist(m, heap, &tag->data.plist);
+    return marshall_pfacts(m, heap, &tag->data.td_pfacts);
+  case TAG_PLIST: return marshall_plist(m, heap, &tag->data.td_plist);
   case TAG_POINTER:
-    return marshall_pointer(m, heap, &tag->data.pointer);
+    return marshall_pointer(m, heap, &tag->data.td_pointer);
   case TAG_PSTRUCT:
-    return marshall_pstruct(m, heap, &tag->data.pstruct);
+    return marshall_pstruct(m, heap, &tag->data.td_pstruct);
   case TAG_PSTRUCT_TYPE:
-    return marshall_pstruct_type(m, heap, &tag->data.pstruct_type);
-  case TAG_PSYM:  return marshall_psym(m, heap, &tag->data.psym);
-  case TAG_PTR:   return marshall_ptr(m, heap, tag->data.ptr.p);
+    return marshall_pstruct_type(m, heap, &tag->data.td_pstruct_type);
+  case TAG_PSYM:  return marshall_psym(m, heap, &tag->data.td_psym);
+  case TAG_PTR:   return marshall_ptr(m, heap, tag->data.td_ptr.p_pvoid);
   case TAG_PTR_FREE:
-    return marshall_ptr_free(m, heap, tag->data.ptr_free.p);
-  case TAG_PVAR:  return marshall_pvar(m, heap, &tag->data.pvar);
-  case TAG_QUOTE: return marshall_quote(m, heap, &tag->data.quote);
-  case TAG_RATIO: return marshall_ratio(m, heap, &tag->data.ratio);
-  case TAG_S8:    return marshall_s8(m, heap, tag->data.s8);
-  case TAG_S16:   return marshall_s16(m, heap, tag->data.s16);
-  case TAG_S32:   return marshall_s32(m, heap, tag->data.s32);
-  case TAG_S64:   return marshall_s64(m, heap, tag->data.s64);
-  case TAG_STR:   return marshall_str(m, heap, &tag->data.str);
-  case TAG_SW:    return marshall_sw(m, heap, tag->data.sw);
-  case TAG_TIME:  return marshall_time(m, heap, &tag->data.time);
-  case TAG_PTUPLE: return marshall_ptuple(m, heap, &tag->data.ptuple);
-  case TAG_U8:    return marshall_u8(m, heap, tag->data.u8);
-  case TAG_U16:   return marshall_u16(m, heap, tag->data.u16);
-  case TAG_U32:   return marshall_u32(m, heap, tag->data.u32);
-  case TAG_U64:   return marshall_u64(m, heap, tag->data.u64);
+    return marshall_ptr_free(m, heap, tag->data.td_ptr_free.p_pvoid);
+  case TAG_PVAR:  return marshall_pvar(m, heap, &tag->data.td_pvar);
+  case TAG_QUOTE: return marshall_quote(m, heap, &tag->data.td_quote);
+  case TAG_RATIO: return marshall_ratio(m, heap, &tag->data.td_ratio);
+  case TAG_S8:    return marshall_s8(m, heap, tag->data.td_s8);
+  case TAG_S16:   return marshall_s16(m, heap, tag->data.td_s16);
+  case TAG_S32:   return marshall_s32(m, heap, tag->data.td_s32);
+  case TAG_S64:   return marshall_s64(m, heap, tag->data.td_s64);
+  case TAG_STR:   return marshall_str(m, heap, &tag->data.td_str);
+  case TAG_SW:    return marshall_sw(m, heap, tag->data.td_sw);
+  case TAG_TIME:  return marshall_time(m, heap, &tag->data.td_time);
+  case TAG_PTUPLE: return marshall_ptuple(m, heap, &tag->data.td_ptuple);
+  case TAG_U8:    return marshall_u8(m, heap, tag->data.td_u8);
+  case TAG_U16:   return marshall_u16(m, heap, tag->data.td_u16);
+  case TAG_U32:   return marshall_u32(m, heap, tag->data.td_u32);
+  case TAG_U64:   return marshall_u64(m, heap, tag->data.td_u64);
   case TAG_UNQUOTE:
-    return marshall_unquote(m, heap, &tag->data.unquote);
-  case TAG_UW:    return marshall_uw(m, heap, tag->data.uw);
+    return marshall_unquote(m, heap, &tag->data.td_unquote);
+  case TAG_UW:    return marshall_uw(m, heap, tag->data.td_uw);
   }
   err_write_1("marshall_tag: unknown tag type : ");
   err_inspect_u8_decimal(type);

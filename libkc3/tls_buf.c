@@ -72,7 +72,7 @@ sw tls_buf_open_r_refill (s_buf *buf)
   size = buf->size - buf->wpos;
   tls_buf = buf->user_ptr;
   while (1) {
-    r = tls_read(tls_buf->ctx, buf->ptr.pchar + buf->wpos, size);
+    r = tls_read(tls_buf->ctx, buf->ptr.p_pchar + buf->wpos, size);
     if (r == TLS_WANT_POLLIN || r == TLS_WANT_POLLOUT)
       continue;
     if (r < 0)
@@ -129,7 +129,7 @@ sw tls_buf_open_w_flush (s_buf *buf)
   tls_buf = buf->user_ptr;
   bytes = 0;
   while (bytes < size) {
-    w = tls_write(tls_buf->ctx, buf->ptr.pchar + bytes,
+    w = tls_write(tls_buf->ctx, buf->ptr.p_pchar + bytes,
                   size - bytes);
     if (w == TLS_WANT_POLLIN || w == TLS_WANT_POLLOUT)
       continue;

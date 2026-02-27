@@ -246,7 +246,7 @@ s_frame * frame_replace (s_frame *frame, const s_sym *sym,
   if (result) {
     tag_clean(result);
     if (value->type == TAG_PVAR) {
-      tag_init_pvar_copy(result, &value->data.pvar);
+      tag_init_pvar_copy(result, &value->data.td_pvar);
     }
     else {
       if (! tag_init_copy(result, value)) {

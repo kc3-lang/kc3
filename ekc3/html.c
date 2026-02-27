@@ -51,7 +51,7 @@ s_str * html_escape (s_tag *src, s_str *dest)
     str_clean(&str);
     return NULL;
   }
-  escape = escape_tag.data.plist;
+  escape = escape_tag.data.td_plist;
   if (! buf_init_alloc(&buf, str.size * 8)) {
     err_puts("html_escape: buf_init_alloc");
     assert(! "html_escape: buf_init_alloc");
@@ -60,10 +60,10 @@ s_str * html_escape (s_tag *src, s_str *dest)
     return NULL;
   }
   tag.type = TAG_STR;
-  tag.data.str = (s_str) {0};
+  tag.data.td_str = (s_str) {0};
   s = str;
   while (str_read_character_utf8(&s, &c) > 0) {
-    if (! str_init_character(&tag.data.str, c)) {
+    if (! str_init_character(&tag.data.td_str, c)) {
       err_puts("html_escape: invalid character");
       assert(! "html_escape: invalid character");
       goto ko;
@@ -71,32 +71,32 @@ s_str * html_escape (s_tag *src, s_str *dest)
     replace = NULL;
     e = escape;
     while (e) {
-      reserved = e->tag.data.ptuple->tag;
+      reserved = e->tag.data.td_ptuple->tag;
       if (reserved->type != TAG_STR) {
         err_puts("html_escape: HTML.escapes: reserved that is"
                  " not a Str");
         assert(!("html_escape: HTML.escapes: reserved that is"
                  " not a Str"));
-        str_clean(&tag.data.str);
+        str_clean(&tag.data.td_str);
         goto ko;
       }
       if (! compare_tag(reserved, &tag)) {
-        replace = e->tag.data.ptuple->tag + 1;
+        replace = e->tag.data.td_ptuple->tag + 1;
         if (replace->type != TAG_STR) {
           err_puts("html_escape: HTML.escapes: replacement that is"
                    " not a Str");
           assert(!("html_escape: HTML.escapes: replacement that is"
                    " not a Str"));
-          str_clean(&tag.data.str);
+          str_clean(&tag.data.td_str);
           goto ko;
         }
         break;
       }
       e = list_next(e);
     }
-    str_clean(&tag.data.str);
+    str_clean(&tag.data.td_str);
     if (replace) {
-      if (buf_write_str(&buf, &replace->data.str) <= 0) {
+      if (buf_write_str(&buf, &replace->data.td_str) <= 0) {
         err_puts("html_escape: buf_write_str");
         assert(! "html_escape: buf_write_str");
         goto ko;

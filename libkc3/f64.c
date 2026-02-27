@@ -27,59 +27,59 @@ f64 * f64_init_cast (f64 *x, p_sym *type, const s_tag *tag)
   assert(tag);
   switch (tag->type) {
   case TAG_BOOL:
-    *x = tag->data.bool_ ? 1.0 : 0.0;
+    *x = tag->data.td_bool_ ? 1.0 : 0.0;
     return x;
   case TAG_CHARACTER:
-    *x = (f64) tag->data.character;
+    *x = (f64) tag->data.td_character;
     return x;
   case TAG_F32:
-    *x = (f64) tag->data.f32;
+    *x = (f64) tag->data.td_f32;
     return x;
   case TAG_F64:
-    *x = tag->data.f64;
+    *x = tag->data.td_f64;
     return x;
 #if HAVE_F80
   case TAG_F80:
-    *x = tag->data.f80;
+    *x = tag->data.td_f80;
     return x;
 #endif
 #if HAVE_F128
   case TAG_F128:
-    *x = tag->data.f128;
+    *x = tag->data.td_f128;
     return x;
 #endif
   case TAG_INTEGER:
-    *x = integer_to_f64(&tag->data.integer);
+    *x = integer_to_f64(&tag->data.td_integer);
     return x;
   case TAG_SW:
-    *x = (f64) tag->data.sw;
+    *x = (f64) tag->data.td_sw;
     return x;
   case TAG_S64:
-    *x = (f64) tag->data.s64;
+    *x = (f64) tag->data.td_s64;
     return x;
   case TAG_S32:
-    *x = (f64) tag->data.s32;
+    *x = (f64) tag->data.td_s32;
     return x;
   case TAG_S16:
-    *x = (f64) tag->data.s16;
+    *x = (f64) tag->data.td_s16;
     return x;
   case TAG_S8:
-    *x = (f64) tag->data.s8;
+    *x = (f64) tag->data.td_s8;
     return x;
   case TAG_U8:
-    *x = (f64) tag->data.u8;
+    *x = (f64) tag->data.td_u8;
     return x;
   case TAG_U16:
-    *x = (f64) tag->data.u16;
+    *x = (f64) tag->data.td_u16;
     return x;
   case TAG_U32:
-    *x = (f64) tag->data.u32;
+    *x = (f64) tag->data.td_u32;
     return x;
   case TAG_U64:
-    *x = (f64) tag->data.u64;
+    *x = (f64) tag->data.td_u64;
     return x;
   case TAG_UW:
-    *x = (f64) tag->data.uw;
+    *x = (f64) tag->data.td_uw;
     return x;
   default:
     break;

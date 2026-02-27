@@ -130,7 +130,7 @@ TEST_CASE_END(marshall_read_bool)
     "\x00\x00\x00";
   TEST_EQ(marshall_read_init_1(&mr, test_str, sizeof(test_str) - 1),
           &mr);
-  TEST_EQ(marshall_read_plist(&mr, false, &test_tag.data.plist), &mr);
+  TEST_EQ(marshall_read_plist(&mr, false, &test_tag.data.td_plist), &mr);
   test_tag.type = TAG_PLIST;
   tag_init_plist_1(&expected, "[0, 1]");
   TAG_TEST_EQ(&test_tag, &expected);

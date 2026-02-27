@@ -21,28 +21,28 @@ s_tag * tag_bnot (s_tag *tag, s_tag *result)
   switch (tag->type) {
   case TAG_INTEGER:
     result->type = TAG_INTEGER;
-    integer_bnot(&tag->data.integer, &result->data.integer);
+    integer_bnot(&tag->data.td_integer, &result->data.td_integer);
     return result;
   case TAG_SW:
-    return tag_init_sw(result, ~tag->data.sw);
+    return tag_init_sw(result, ~tag->data.td_sw);
   case TAG_S64:
-    return tag_init_s64(result, ~tag->data.s64);
+    return tag_init_s64(result, ~tag->data.td_s64);
   case TAG_S32:
-    return tag_init_s32(result, ~tag->data.s32);
+    return tag_init_s32(result, ~tag->data.td_s32);
   case TAG_S16:
-    return tag_init_s16(result, ~tag->data.s16);
+    return tag_init_s16(result, ~tag->data.td_s16);
   case TAG_S8:
-    return tag_init_s8(result, ~tag->data.s8);
+    return tag_init_s8(result, ~tag->data.td_s8);
   case TAG_U8:
-    return tag_init_u8(result, ~tag->data.u8);
+    return tag_init_u8(result, ~tag->data.td_u8);
   case TAG_U16:
-    return tag_init_u16(result, ~tag->data.u16);
+    return tag_init_u16(result, ~tag->data.td_u16);
   case TAG_U32:
-    return tag_init_u32(result, ~tag->data.u32);
+    return tag_init_u32(result, ~tag->data.td_u32);
   case TAG_U64:
-    return tag_init_u64(result, ~tag->data.u64);
+    return tag_init_u64(result, ~tag->data.td_u64);
   case TAG_UW:
-    return tag_init_uw(result, ~tag->data.uw);
+    return tag_init_uw(result, ~tag->data.td_uw);
   default:
     err_write_1("tag_bnot: invalid tag type: ");
     err_puts(tag_type_to_string(tag->type));

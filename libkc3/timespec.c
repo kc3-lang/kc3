@@ -42,20 +42,20 @@ s_timespec * timespec_init_cast (s_timespec *time, p_sym *type,
   assert(src);
   (void) type;
   switch (src->type) {
-  case TAG_F32:  return timespec_init_f32(time, src->data.f32);
-  case TAG_F64:  return timespec_init_f64(time, src->data.f64);
+  case TAG_F32:  return timespec_init_f32(time, src->data.td_f32);
+  case TAG_F64:  return timespec_init_f64(time, src->data.td_f64);
 #if HAVE_F80
-  case TAG_F80:  return timespec_init_f80(time, src->data.f80);
+  case TAG_F80:  return timespec_init_f80(time, src->data.td_f80);
 #endif
 #if HAVE_F128
-  case TAG_F128: return timespec_init_f128(time, src->data.f128);
+  case TAG_F128: return timespec_init_f128(time, src->data.td_f128);
 #endif
-  case TAG_TIME: return timespec_init_time(time, &src->data.time);
-  case TAG_U8:   return timespec_init_u8(time, src->data.u8);
-  case TAG_U16:  return timespec_init_u16(time, src->data.u16);
-  case TAG_U32:  return timespec_init_u32(time, src->data.u32);
-  case TAG_U64:  return timespec_init_u64(time, src->data.u64);
-  case TAG_UW:   return timespec_init_uw(time, src->data.uw);
+  case TAG_TIME: return timespec_init_time(time, &src->data.td_time);
+  case TAG_U8:   return timespec_init_u8(time, src->data.td_u8);
+  case TAG_U16:  return timespec_init_u16(time, src->data.td_u16);
+  case TAG_U32:  return timespec_init_u32(time, src->data.td_u32);
+  case TAG_U64:  return timespec_init_u64(time, src->data.td_u64);
+  case TAG_UW:   return timespec_init_uw(time, src->data.td_uw);
   default:
     break;
   }

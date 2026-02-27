@@ -49,11 +49,11 @@ p_sym * psym_init_anon (p_sym *sym, const s_str *prefix)
   const s_str underscore = {{NULL}, 1, {"_"}};
   list = list_new(list_new(list_new(NULL)));
   list_next(list_next(list))->tag.type = TAG_STR;
-  serial_str = &list_next(list_next(list))->tag.data.str;
+  serial_str = &list_next(list_next(list))->tag.data.td_str;
   list_next(list)->tag.type = TAG_STR;
-  list_next(list)->tag.data.str = underscore;
+  list_next(list)->tag.data.td_str = underscore;
   list->tag.type = TAG_STR;
-  str_init_copy(&list->tag.data.str, prefix);
+  str_init_copy(&list->tag.data.td_str, prefix);
   while (1) {
     psym_anon_serial(&serial);
     str_clean(serial_str);
@@ -85,9 +85,9 @@ p_sym * psym_init_cast (p_sym *sym, const s_sym * const *type,
   assert(tag);
   switch (tag->type) {
   case TAG_PSYM:
-    return psym_init_copy(sym, &tag->data.psym);
+    return psym_init_copy(sym, &tag->data.td_psym);
   case TAG_STR:
-    return psym_init_str(sym, &tag->data.str);
+    return psym_init_str(sym, &tag->data.td_str);
   default:
     break;
   }

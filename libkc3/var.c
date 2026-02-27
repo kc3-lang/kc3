@@ -196,7 +196,7 @@ s_var * var_set (s_var *var, s_tag *value)
   var->bound = true;
   if (var->name.sym &&
       var->tag.type == TAG_PCALLABLE) {
-    callable_set_name_if_null(var->tag.data.pcallable,
+    callable_set_name_if_null(var->tag.data.td_pcallable,
                               &var->name);
   }
   if (false) {

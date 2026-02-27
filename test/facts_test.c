@@ -665,7 +665,7 @@ TEST_CASE(facts_save)
     i++;
   }
   facts_save_file(&facts, &path);
-  test_file_compare(path.ptr.pchar, "facts_test_save.expected.facts");
+  test_file_compare(path.ptr.p_pchar, "facts_test_save.expected.facts");
   if (g_test_last_ok)
     unlink("facts_test_save.facts");
   i = 0;
@@ -715,7 +715,7 @@ TEST_CASE(facts_save_binary)
     i++;
   }
   facts_save_binary_file(&facts, &path);
-  test_file_compare(path.ptr.pchar,
+  test_file_compare(path.ptr.p_pchar,
                     "facts_test_save_binary.expected.facts");
   if (g_test_last_ok)
     unlink("facts_test_save_binary.facts");

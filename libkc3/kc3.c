@@ -148,25 +148,25 @@ s_tag * kc3_access (s_tag *tag, s_list **key,
   assert(dest);
   switch (tag->type) {
   case TAG_ARRAY:
-    return array_access(&tag->data.array, *key, dest);
+    return array_access(&tag->data.td_array, *key, dest);
   case TAG_PLIST:
-    if (list_is_alist(tag->data.plist)) {
-      if (! alist_access(tag->data.plist, *key, dest))
-        return list_access(tag->data.plist, *key, dest);
+    if (list_is_alist(tag->data.td_plist)) {
+      if (! alist_access(tag->data.td_plist, *key, dest))
+        return list_access(tag->data.td_plist, *key, dest);
       return dest;
     }
     else
-      return list_access(tag->data.plist, *key, dest);
+      return list_access(tag->data.td_plist, *key, dest);
   case TAG_MAP:
-    return map_access(&tag->data.map, *key, dest);
+    return map_access(&tag->data.td_map, *key, dest);
   case TAG_POINTER:
-    return pointer_access(&tag->data.pointer, *key, dest);
+    return pointer_access(&tag->data.td_pointer, *key, dest);
   case TAG_PSTRUCT:
-    return struct_access(tag->data.pstruct, *key, dest);
+    return struct_access(tag->data.td_pstruct, *key, dest);
   case TAG_STR:
-    return str_access(&tag->data.str, *key, dest);
+    return str_access(&tag->data.td_str, *key, dest);
   case TAG_TIME:
-    return time_access(&tag->data.time, *key, dest);
+    return time_access(&tag->data.td_time, *key, dest);
   case TAG_VOID:
     return tag_init_void(dest);
   default:
@@ -226,7 +226,7 @@ s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest)
   env = env_global();
   switch (name->type) {
   case TAG_PSYM:
-    name_sym = name->data.psym;
+    name_sym = name->data.td_psym;
   case TAG_VOID:
     break;
   default:
@@ -389,15 +389,15 @@ s_tag * kc3_defoperator (s_tag *tag_op, s_tag *dest)
     abort();
   }
   if (! tag_op || tag_op->type != TAG_PSTRUCT ||
-      tag_op->data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
+      tag_op->data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op) {
     err_puts("kc3_defoperator: not a %KC3.Op{}");
     assert(! "kc3_defoperator: not a %KC3.Op{}");
     return NULL;
   }
   env = env_global();
   tmp.type = TAG_PSTRUCT;
-  if (! env_eval_struct(env, tag_op->data.pstruct,
-                        &tmp.data.pstruct)) {
+  if (! env_eval_struct(env, tag_op->data.td_pstruct,
+                        &tmp.data.td_pstruct)) {
     err_puts("kc3_defoperator: env_eval_struct");
     assert(! "kc3_defoperator: env_eval_struct");
     return NULL;
@@ -444,7 +444,7 @@ s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
   if (tag.type != TAG_PLIST)
     return NULL;
   tmp.type = TAG_PSYM;
-  tmp.data.psym = env_defstruct(env_global(), tag.data.plist);
+  tmp.data.td_psym = env_defstruct(env_global(), tag.data.td_plist);
   *dest = tmp;
   tag_clean(&tag);
   return dest;
@@ -554,7 +554,7 @@ s_tag * kc3_fact_subject (s_fact *fact, s_tag *dest)
 
 s_tag * kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr)
 {
-  return tag_init_pstruct_with_data(tag, &g_sym_Fact, ptr->p, false);
+  return tag_init_pstruct_with_data(tag, &g_sym_Fact, ptr->p_pvoid, false);
 }
 
 s_facts_connection * kc3_facts_accept (s_facts *facts,
@@ -749,7 +749,7 @@ s_tag * kc3_getenv (const s_str *name, s_tag *dest)
   char *p;
   assert(name);
   assert(dest);
-  p = getenv(name->ptr.pchar);
+  p = getenv(name->ptr.p_pchar);
   if (! p)
     return tag_init_void(dest);
   return tag_init_str_1(dest, NULL, p);
@@ -983,7 +983,7 @@ void kc3_pledge (const s_str *promises, const s_str *execpromises)
   s32 e;
   assert(promises);
   assert(execpromises);
-  if (pledge(promises->ptr.pchar, execpromises->ptr.pchar)) {
+  if (pledge(promises->ptr.p_pchar, execpromises->ptr.p_pchar)) {
     e = errno;
     err_write_1("kc3_pledge: ");
     err_inspect_str(promises);
@@ -1177,7 +1177,7 @@ s_tag * kc3_match (s_tag *tag, s_map *map, s_tag *dest)
         assert(! "kc3_match: invalid match: not a Block");
         return NULL;
       }
-      if (! env_eval_do_block(env, &map->value[i].data.do_block, dest))
+      if (! env_eval_do_block(env, &map->value[i].data.td_do_block, dest))
         return NULL;
       return dest;
     }
@@ -1278,7 +1278,7 @@ sw kc3_puts (const s_tag *tag)
   rwlock_w(env->out->rwlock);
 #endif
   if (tag->type == TAG_STR) {
-    if ((r = io_write_str(&tag->data.str)) < 0)
+    if ((r = io_write_str(&tag->data.td_str)) < 0)
       goto clean;
   }
   else {
@@ -1379,9 +1379,9 @@ s_str * kc3_str (const s_tag *tag, s_str *dest)
   const s_sym *sym = &g_sym_Str;
   switch (tag->type) {
   case TAG_PLIST:
-    return str_init_concatenate_list(dest, tag->data.plist);
+    return str_init_concatenate_list(dest, tag->data.td_plist);
   case TAG_STR:
-    return str_init_copy(dest, &tag->data.str);
+    return str_init_copy(dest, &tag->data.td_str);
   default:
     return str_init_cast(dest, &sym, tag);
   }
@@ -1412,10 +1412,10 @@ s_tag * kc3_struct_put (s_tag *s, p_sym *key,
     assert(! "kc3_struct_put: not a struct");
     return NULL;
   }
-  if (! pstruct_init_put(&tmp, s->data.pstruct, *key, value))
+  if (! pstruct_init_put(&tmp, s->data.td_pstruct, *key, value))
     return NULL;
   dest->type = TAG_PSTRUCT;
-  dest->data.pstruct = tmp;
+  dest->data.td_pstruct = tmp;
   return dest;
 }
 
@@ -1434,26 +1434,26 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
     err_puts("kc3_sysctl: argument is not a Sym list");
     assert(! "kc3_sysctl: argument is not a Sym list");
   }
-  if (l->tag.data.psym == sym_1("ddb")) {
+  if (l->tag.data.td_psym == sym_1("ddb")) {
     mib[mib_len] = CTL_DDB;
     mib_len++;
     l = list_next(l);
   }
-  else if (l->tag.data.psym == sym_1("debug")) {
+  else if (l->tag.data.td_psym == sym_1("debug")) {
     mib[mib_len] = CTL_DEBUG;
     mib_len++;
     l = list_next(l);
   }
 #ifdef CTL_FS
-  else if (l->tag.data.psym == sym_1("fs")) {
+  else if (l->tag.data.td_psym == sym_1("fs")) {
     mib[mib_len] = CTL_FS;
     mib_len++;
     if ((l = list_next(l))) {
-      if (l->tag.data.psym == sym_1("posix")) {
+      if (l->tag.data.td_psym == sym_1("posix")) {
         mib[mib_len] = FS_POSIX;
         mib_len++;
         if ((l = list_next(l))) {
-          if (l->tag.data.psym == sym_1("setuid")) {
+          if (l->tag.data.td_psym == sym_1("setuid")) {
             mib[mib_len] = FS_POSIX;
             mib_len++;
             if (! (l = list_next(l)))
@@ -1464,38 +1464,38 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
     }
   }
 #endif
-  else if (l->tag.data.psym == sym_1("hw")) {
+  else if (l->tag.data.td_psym == sym_1("hw")) {
     mib[mib_len] = CTL_HW;
     mib_len++;
     if ((l = list_next(l))) {
-      if (l->tag.data.psym == sym_1("ncpu")) {
+      if (l->tag.data.td_psym == sym_1("ncpu")) {
         mib[mib_len] = HW_NCPU;
         mib_len++;
         if (! (l = list_next(l)))
           tmp.type = TAG_S32;
       }
-      else if (l->tag.data.psym == sym_1("ncpufound")) {
+      else if (l->tag.data.td_psym == sym_1("ncpufound")) {
         mib[mib_len] = HW_NCPUFOUND;
         mib_len++;
         l = list_next(l);
         if (! l)
           tmp.type = TAG_S32;
       }
-      else if (l->tag.data.psym == sym_1("ncpuonline")) {
+      else if (l->tag.data.td_psym == sym_1("ncpuonline")) {
         mib[mib_len] = HW_NCPUONLINE;
         mib_len++;
         l = list_next(l);
         if (! l)
           tmp.type = TAG_S32;
       }
-      else if (l->tag.data.psym == sym_1("pagesize")) {
+      else if (l->tag.data.td_psym == sym_1("pagesize")) {
         mib[mib_len] = HW_PAGESIZE;
         mib_len++;
         l = list_next(l);
         if (! l)
           tmp.type = TAG_S32;
       }
-      else if (l->tag.data.psym == sym_1("physmem64")) {
+      else if (l->tag.data.td_psym == sym_1("physmem64")) {
         mib[mib_len] = HW_PHYSMEM64;
         mib_len++;
         l = list_next(l);
@@ -1504,27 +1504,27 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
       }
     }
   }
-  else if (l->tag.data.psym == sym_1("kern")) {
+  else if (l->tag.data.td_psym == sym_1("kern")) {
     mib[mib_len] = CTL_KERN;
     mib_len++;
     l = list_next(l);
   }
-  else if (l->tag.data.psym == sym_1("machdep")) {
+  else if (l->tag.data.td_psym == sym_1("machdep")) {
     mib[mib_len] = CTL_MACHDEP;
     mib_len++;
     l = list_next(l);
   }
-  else if (l->tag.data.psym == sym_1("net")) {
+  else if (l->tag.data.td_psym == sym_1("net")) {
     mib[mib_len] = CTL_NET;
     mib_len++;
     l = list_next(l);
   }
-  else if (l->tag.data.psym == sym_1("vfs")) {
+  else if (l->tag.data.td_psym == sym_1("vfs")) {
     mib[mib_len] = CTL_VFS;
     mib_len++;
     l = list_next(l);
   }
-  else if (l->tag.data.psym == sym_1("vm")) {
+  else if (l->tag.data.td_psym == sym_1("vm")) {
     mib[mib_len] = CTL_VM;
     mib_len++;
     l = list_next(l);
@@ -1532,7 +1532,7 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
   if (! tmp.type) {
     err_write_1("kc3_sysctl: invalid argument: ");
     if (l)
-      err_inspect_sym(l->tag.data.psym);
+      err_inspect_sym(l->tag.data.td_psym);
     else
       err_inspect_list(*list);
     err_write_1("\n");
@@ -1599,10 +1599,10 @@ p_tuple * kc3_system (p_list *list, p_tuple *dest)
       assert(! "kc3_system: argument that is not a Str");
       goto clean;
     }
-    str = &l->tag.data.str;
+    str = &l->tag.data.td_str;
     if (! (*a = alloc(str->size + 1)))
       goto clean;
-    memcpy(*a, str->ptr.pchar, str->size);
+    memcpy(*a, str->ptr.p_pchar, str->size);
     a++;
     l = list_next(l);
   }
@@ -1643,10 +1643,10 @@ p_tuple * kc3_system (p_list *list, p_tuple *dest)
   if (! (tuple = tuple_new(2)))
     goto clean;
   tuple->tag[0].type = TAG_S32;
-  tuple->tag[0].data.s32 = status;
+  tuple->tag[0].data.td_s32 = status;
   tag_integer_reduce(tuple->tag, tuple->tag);
   tuple->tag[1].type = TAG_STR;
-  tuple->tag[1].data.str = tmp_str;
+  tuple->tag[1].data.td_str = tmp_str;
   *dest = tuple;
   r = dest;
  clean:
@@ -1736,14 +1736,14 @@ s_pointer * kc3_tag_to_pointer (s_tag *tag, s_pointer *dest)
     assert(! "kc3_tag_to_pointer: expected ident");
     return NULL;
   }
-  if (! tag->data.ident.module) {
-    resolved = env_frames_get(env, tag->data.ident.sym);
+  if (! tag->data.td_ident.module) {
+    resolved = env_frames_get(env, tag->data.td_ident.sym);
     if (resolved)
       return pointer_init_tag(dest, resolved);
   }
-  if (! (resolved = env_ident_get_address(env, &tag->data.ident))) {
+  if (! (resolved = env_ident_get_address(env, &tag->data.td_ident))) {
     err_write_1("kc3_tag_to_pointer: undeclared ident ");
-    err_inspect_ident(&tag->data.ident);
+    err_inspect_ident(&tag->data.td_ident);
     err_write_1("\n");
     assert(! "kc3_tag_to_pointer: undeclared ident");
     return NULL;
@@ -1809,10 +1809,10 @@ p_tuple * kc3_wait (p_tuple *dest)
   if (! (tuple = tuple_new(2)))
     return NULL;
   tuple->tag[0].type = TAG_S32;
-  tuple->tag[0].data.s32 = pid;
+  tuple->tag[0].data.td_s32 = pid;
   tag_integer_reduce(tuple->tag, tuple->tag);
   tuple->tag[1].type = TAG_S32;
-  tuple->tag[1].data.s32 = status;
+  tuple->tag[1].data.td_s32 = status;
   tag_integer_reduce(tuple->tag + 1, tuple->tag + 1);
   *dest = tuple;
   return dest;
@@ -1823,20 +1823,20 @@ s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
 {
   pthread_t t;
   s_tag *tag;
-  t = (pthread_t) thread->p;
+  t = (pthread_t) thread->p_pvoid;
   if (pthread_join(t, (void **) &tag)) {
     err_puts("kc3_thread_delete: pthread_join");
     assert(! "kc3_thread_delete: pthread_join");
     return NULL;
   }
   if (tag->type != TAG_PTUPLE ||
-      tag->data.ptuple->count != 3) {
+      tag->data.td_ptuple->count != 3) {
     err_puts("kc3_thread_delete: invalid value");
     assert(! "kc3_thread_delete: invalid value");
     tag_delete(tag);
     return NULL;
   }
-  if (! tag_init_copy(dest, tag->data.ptuple->tag)) {
+  if (! tag_init_copy(dest, tag->data.td_ptuple->tag)) {
     tag_delete(tag);
     return NULL;
   }
@@ -1849,21 +1849,21 @@ u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
   s_tag *tag;
   if (! (tag = tag_new_ptuple(3)))
     return NULL;
-  if (! tag_init_pcallable_copy(tag->data.ptuple->tag + 1, start)) {
+  if (! tag_init_pcallable_copy(tag->data.td_ptuple->tag + 1, start)) {
     tag_delete(tag);
     return NULL;
   }
-  tag->data.ptuple->tag[2].type = TAG_PTR;
-  if (! (tag->data.ptuple->tag[2].data.ptr.p =
+  tag->data.td_ptuple->tag[2].type = TAG_PTR;
+  if (! (tag->data.td_ptuple->tag[2].data.td_ptr.p_pvoid =
          env_fork_new(env_global()))) {
     tag_delete(tag);
     return NULL;
   }
-  if (pthread_create((pthread_t *) &dest->p, NULL, kc3_thread_start,
+  if (pthread_create((pthread_t *) &dest->p_pvoid, NULL, kc3_thread_start,
                      tag)) {
     err_puts("kc3_thread_new: pthread_create");
     assert(! "kc3_thread_new: pthread_create");
-    env_fork_delete(tag->data.ptuple->tag[2].data.ptr.p);
+    env_fork_delete(tag->data.td_ptuple->tag[2].data.td_ptr.p_pvoid);
     tag_delete(tag);
     return NULL;
   }
@@ -1882,20 +1882,20 @@ void * kc3_thread_start (void *arg)
     assert(! "kc3_thread_start: invalid argument: not a tuple");
     return NULL;
   }
-  if (tag->data.ptuple->count != 3) {
+  if (tag->data.td_ptuple->count != 3) {
     fprintf(stderr, "kc3_thread_start: invalid argument:"
 	    " tuple arity mismatch\n");
     assert(!("kc3_thread_start: invalid argument:"
              " tuple arity mismatch"));
     return NULL;
   }
-  if (tag->data.ptuple->tag[2].type != TAG_PTR) {
+  if (tag->data.td_ptuple->tag[2].type != TAG_PTR) {
     fprintf(stderr, "kc3_thread_start: invalid argument: not a Ptr\n");
     assert(! "kc3_thread_start: invalid argument: not a Ptr");
     return NULL;
   }
-  env = tag->data.ptuple->tag[2].data.ptr.p;
-  if (tag->data.ptuple->tag[1].type != TAG_PCALLABLE) {
+  env = tag->data.td_ptuple->tag[2].data.td_ptr.p_pvoid;
+  if (tag->data.td_ptuple->tag[1].type != TAG_PCALLABLE) {
     fprintf(stderr, "kc3_thread_start: invalid argument:"
 	    " not a Callable (Fn or Cfn)\n");
     assert(!("kc3_thread_start: invalid argument:"
@@ -1903,9 +1903,9 @@ void * kc3_thread_start (void *arg)
     env_fork_delete(env);
     return NULL;
   }
-  start = tag->data.ptuple->tag[1].data.pcallable;
+  start = tag->data.td_ptuple->tag[1].data.td_pcallable;
   env_global_set(env);
-  if (! eval_callable_call(start, NULL, tag->data.ptuple->tag)) {
+  if (! eval_callable_call(start, NULL, tag->data.td_ptuple->tag)) {
     env_fork_delete(env);
     return NULL;
   }
@@ -1923,9 +1923,9 @@ void kc3_unveil (const s_str *path, const s_str *permissions)
   assert(path);
   assert(permissions);
   if (path && path->size)
-    unveil_path = path->ptr.pchar;
+    unveil_path = path->ptr.p_pchar;
   if (permissions && permissions->size)
-    unveil_permissions = permissions->ptr.pchar;
+    unveil_permissions = permissions->ptr.p_pchar;
   if (unveil(unveil_path, unveil_permissions)) {
     e = errno;
     err_write_1("kc3_unveil: ");

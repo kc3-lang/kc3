@@ -125,19 +125,19 @@ s_pointer * env_address_of (s_env *env, s_tag *tag, s_pointer *dest)
   assert(dest);
   switch (tag->type) {
   case TAG_IDENT:
-    if (! tag->data.ident.module)
-      resolved = env_frames_get(env, tag->data.ident.sym);
+    if (! tag->data.td_ident.module)
+      resolved = env_frames_get(env, tag->data.td_ident.sym);
     if (! resolved &&
-        ! (resolved = env_ident_get_address(env, &tag->data.ident))) {
+        ! (resolved = env_ident_get_address(env, &tag->data.td_ident))) {
       err_write_1("env_address_of: undeclared ident ");
-      err_inspect_ident(&tag->data.ident);
+      err_inspect_ident(&tag->data.td_ident);
       err_write_1("\n");
       assert(! "env_address_of: undeclared ident");
       return NULL;
     }
     break;
   case TAG_PCALL:
-    return env_address_of_call(env, tag->data.pcall, dest);
+    return env_address_of_call(env, tag->data.td_pcall, dest);
   default:
     err_puts("env_address_of: invalid tag type for address_of");
     assert(! "env_address_of: invalid tag type for address_of");
@@ -154,7 +154,7 @@ s_pointer * env_address_of (s_env *env, s_tag *tag, s_pointer *dest)
     assert(! "env_address_of: sym_target_to_pointer_type");
     return NULL;
   }
-  if (! tag_to_pointer(resolved, tmp.target_type, &tmp.ptr.p)) {
+  if (! tag_to_pointer(resolved, tmp.target_type, &tmp.ptr.p_pvoid)) {
     err_puts("env_address_of: tag_to_pointer");
     assert(! "env_address_of: tag_to_pointer");
     return NULL;
@@ -196,14 +196,14 @@ s_pointer * env_address_of_call (s_env *env, s_call *call,
     return NULL;
   }
   if (key->type != TAG_PLIST ||
-      key->data.plist->next.data.plist) {
+      key->data.td_plist->next.data.td_plist) {
     err_puts("env_address_of_call: expected [Sym]");
     assert(! "env_address_of_call: expected [Sym]");
     tag_clean(&evaluated);
     return NULL;
   }
-  key = &key->data.plist->tag;
-  if (! address_of_struct(evaluated.data.pstruct, key->data.psym,
+  key = &key->data.td_plist->tag;
+  if (! address_of_struct(evaluated.data.td_pstruct, key->data.td_psym,
                           dest)) {
     tag_clean(&evaluated);
     return NULL;
@@ -367,9 +367,9 @@ bool env_call_get (s_env *env, s_call *call)
     }
     if (! fact) {
       err_write_1("env_call_get: symbol ");
-      err_write_1(call->ident.sym->str.ptr.pchar);
+      err_write_1(call->ident.sym->str.ptr.p_pchar);
       err_write_1(" not found in module ");
-      err_write_1(call->ident.module->str.ptr.pchar);
+      err_write_1(call->ident.module->str.ptr.p_pchar);
       err_write_1("\n");
       return false;
     }
@@ -398,7 +398,7 @@ bool env_call_get (s_env *env, s_call *call)
     return false;
   }
   if (! pcallable_init_copy(&call->pcallable,
-                            &tag_pvar.data.pvar->tag.data.pcallable)) {
+                            &tag_pvar.data.td_pvar->tag.data.td_pcallable)) {
     facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return false;
@@ -517,29 +517,29 @@ void env_freelist_clean (s_env *env)
     env->freelist = list_next(l);
     switch (l->tag.type) {
     case TAG_PCALLABLE:
-      switch (l->tag.data.pcallable->type) {
+      switch (l->tag.data.td_pcallable->type) {
       case CALLABLE_CFN:
-        cfn_clean(&l->tag.data.pcallable->data.cfn);
+        cfn_clean(&l->tag.data.td_pcallable->data.cfn);
         break;
       case CALLABLE_FN:
-        fn_clean(&l->tag.data.pcallable->data.fn);
+        fn_clean(&l->tag.data.td_pcallable->data.fn);
         break;
       case CALLABLE_VOID:
         break;
       }
 #if HAVE_PTHREAD
-      if (l->tag.data.pcallable->mutex.ready)
-        mutex_clean(&l->tag.data.pcallable->mutex);
+      if (l->tag.data.td_pcallable->mutex.ready)
+        mutex_clean(&l->tag.data.td_pcallable->mutex);
 #endif
-      alloc_free(l->tag.data.pcallable);
+      alloc_free(l->tag.data.td_pcallable);
       break;
     case TAG_PSTRUCT:
-      struct_clean(l->tag.data.pstruct);
-      alloc_free(l->tag.data.pstruct);
+      struct_clean(l->tag.data.td_pstruct);
+      alloc_free(l->tag.data.td_pstruct);
       break;
     case TAG_PSTRUCT_TYPE:
-      struct_type_clean(l->tag.data.pstruct_type);
-      alloc_free(l->tag.data.pstruct_type);
+      struct_type_clean(l->tag.data.td_pstruct_type);
+      alloc_free(l->tag.data.td_pstruct_type);
       break;
     default:
       break;
@@ -563,12 +563,12 @@ bool env_def (s_env *env, const s_ident *ident, s_tag *value)
     abort();
   }
   tag_ident.type = TAG_IDENT;
-  tag_ident.data.ident.sym = ident->sym;
+  tag_ident.data.td_ident.sym = ident->sym;
   if (ident->module)
-    tag_ident.data.ident.module = ident->module;
+    tag_ident.data.td_ident.module = ident->module;
   else
-    tag_ident.data.ident.module = env->current_defmodule;
-  tag_init_psym(&tag_module, tag_ident.data.ident.module);
+    tag_ident.data.td_ident.module = env->current_defmodule;
+  tag_init_psym(&tag_module, tag_ident.data.td_ident.module);
   tag_init_psym(&tag_symbol, &g_sym_symbol);
   if (! facts_add_tags(env->facts, &tag_module, &tag_symbol,
                        &tag_ident)) {
@@ -583,8 +583,8 @@ bool env_def (s_env *env, const s_ident *ident, s_tag *value)
     assert(! "env_def: facts_replace_tags");
     return false;
   }
-  if (tag_ident.data.ident.module == env->current_defmodule &&
-      tag_ident.data.ident.sym == &g_sym_clean &&
+  if (tag_ident.data.td_ident.module == env->current_defmodule &&
+      tag_ident.data.td_ident.sym == &g_sym_clean &&
       ! env_def_clean(env, env->current_defmodule, value)) {
     err_puts("env_def: env_def_clean");
     assert(! "env_def: env_def_clean");
@@ -620,7 +620,7 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
   }
   if (st->clean)
     pcallable_clean(&st->clean);
-  if (! pcallable_init_copy(&st->clean, &clean->data.pcallable)) {
+  if (! pcallable_init_copy(&st->clean, &clean->data.td_pcallable)) {
     err_write_1("env_def_clean: module ");
     err_inspect_sym(module);
     err_write_1(": pcallable_init_copy");
@@ -714,12 +714,12 @@ bool env_defoperator (s_env *env, s_tag *tag_op)
   }
   if (! tag_op ||
       tag_op->type != TAG_PSTRUCT ||
-      ! tag_op->data.pstruct ||
-      tag_op->data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
+      ! tag_op->data.td_pstruct ||
+      tag_op->data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op) {
     err_puts("env_defoperator: invalid operator, expected %KC3.Op{}");
     assert(! "env_defoperator: invalid operator, expected %KC3.Op{}");
   }
-  op = tag_op->data.pstruct->data;
+  op = tag_op->data.td_pstruct->data;
   if (! ops_add_tag(env->ops, tag_op))
     return false;
   tag_init_psym_anon(&tag_id, &g_sym_op.str);
@@ -760,7 +760,7 @@ s_tag * env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest)
     err_puts("env_defspecial_operator: expected Call");
     return NULL;
   }
-  call = tag->data.pcall;
+  call = tag->data.td_pcall;
   if (call->ident.sym != &g_sym__equal ||
       ! call->arguments ||
       ! (second = list_next(call->arguments)) ||
@@ -770,8 +770,8 @@ s_tag * env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest)
     return NULL;
   }
   tag_init_copy(&ident_tag, &call->arguments->tag);
-  if (! ident_tag.data.ident.module)
-    ident_tag.data.ident.module = env->current_defmodule;
+  if (! ident_tag.data.td_ident.module)
+    ident_tag.data.td_ident.module = env->current_defmodule;
   if (! env_eval_tag(env, &second->tag, &callable_tag)) {
     tag_clean(&callable_tag);
     return NULL;
@@ -784,16 +784,16 @@ s_tag * env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest)
     tag_clean(&callable_tag);
     return NULL;
   }
-  arity = callable_arity(callable_tag.data.pcallable);
-  if (callable_tag.data.pcallable->type == CALLABLE_CFN &&
-      callable_tag.data.pcallable->data.cfn.result_type)
+  arity = callable_arity(callable_tag.data.td_pcallable);
+  if (callable_tag.data.td_pcallable->type == CALLABLE_CFN &&
+      callable_tag.data.td_pcallable->data.cfn.result_type)
     arity--;
   if (arity < 0) {
     err_puts("env_defspecial_operator: invalid arity");
     tag_clean(&callable_tag);
     return NULL;
   }
-  tag_init_psym(&tag_module, ident_tag.data.ident.module);
+  tag_init_psym(&tag_module, ident_tag.data.td_ident.module);
   tag_init_psym(&tag_is_a, &g_sym_is_a);
   tag_init_psym(&tag_special_operator, &g_sym_special_operator);
   tag_init_psym(&tag_sym_arity, &g_sym_arity);
@@ -815,7 +815,7 @@ s_tag * env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest)
     tag_clean(&callable_tag);
     return NULL;
   }
-  callable_set_special(callable_tag.data.pcallable, true);
+  callable_set_special(callable_tag.data.td_pcallable, true);
   if (! facts_add_tags(env->facts, &ident_tag, &tag_symbol_value, 
                        &callable_tag)) {
     tag_clean(&callable_tag);
@@ -864,7 +864,7 @@ void ** env_dlopen (s_env *env, const s_str *so_path, void **dest)
   iter = env->dlopen_list;
   while (iter) {
     if (iter->tag.type == TAG_STR &&
-        ! compare_str(so_path, &iter->tag.data.str)) {
+        ! compare_str(so_path, &iter->tag.data.td_str)) {
       *dest = NULL;
       goto add_to_list;
     }
@@ -877,7 +877,7 @@ void ** env_dlopen (s_env *env, const s_str *so_path, void **dest)
     err_inspect_str(&path);
     err_write_1("\n");
   }
-  if (! (tmp = dlopen(path.ptr.pchar, RTLD_LAZY | RTLD_GLOBAL))) {
+  if (! (tmp = dlopen(path.ptr.p_pchar, RTLD_LAZY | RTLD_GLOBAL))) {
     err_write_1("kc3_dlopen: ");
     err_inspect_str(&path);
     err_write_1(": dlopen: ");
@@ -984,7 +984,7 @@ void env_error_f (s_env *env, const char *fmt, ...)
   assert(fmt);
   va_start(ap, fmt);
   tag.type = TAG_STR;
-  str_init_vf(&tag.data.str, fmt, ap);
+  str_init_vf(&tag.data.td_str, fmt, ap);
   va_end(ap);
   env_error_tag(env, &tag);
   tag_clean(&tag);
@@ -1085,11 +1085,11 @@ s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
   assert(dest);
   if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(arguments->tag.data.pstruct)) {
+  if (! struct_allocate(arguments->tag.data.td_pstruct)) {
     list_delete_all(arguments);
     return NULL;
   }
-  fact_w = arguments->tag.data.pstruct->data;
+  fact_w = arguments->tag.data.td_pstruct->data;
   if (! facts_with_list(facts, &cursor, *spec)) {
     list_delete_all(arguments);
     return NULL;
@@ -1109,12 +1109,12 @@ s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
       goto clean;
     fact_w_clean(fact_w);
     fact_w_init(fact_w);
-    l = &(*l)->next.data.plist;
+    l = &(*l)->next.data.td_plist;
   }
  ok:
   list_delete_all(arguments);
   tmp.type = TAG_PLIST;
-  tmp.data.plist = list;
+  tmp.data.td_plist = list;
   if (false) {
     err_write_1("env_facts_collect_with: ");
     err_inspect_tag(&tmp);
@@ -1146,11 +1146,11 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
   s_tag tmp = {0};
   if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(arguments->tag.data.pstruct)) {
+  if (! struct_allocate(arguments->tag.data.td_pstruct)) {
     list_delete_all(arguments);
     return NULL;
   }
-  fact_w = arguments->tag.data.pstruct->data;
+  fact_w = arguments->tag.data.td_pstruct->data;
   if (! facts_with_tags(facts, &cursor, subject, predicate, object)) {
     list_delete_all(arguments);
     return NULL;
@@ -1171,13 +1171,13 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
       goto clean;
     fact_w_clean(fact_w);
     fact_w_init(fact_w);
-    l = &(*l)->next.data.plist;
+    l = &(*l)->next.data.td_plist;
   }
  ok:
   facts_cursor_clean(&cursor);
   list_delete_all(arguments);
   tmp.type = TAG_PLIST;
-  tmp.data.plist = list;
+  tmp.data.td_plist = list;
   *dest = tmp;
   return dest;
  clean:
@@ -1205,11 +1205,11 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
   assert(dest_v);
   if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(arguments->tag.data.pstruct)) {
+  if (! struct_allocate(arguments->tag.data.td_pstruct)) {
     list_delete_all(arguments);
     return NULL;
   }
-  fact_w = arguments->tag.data.pstruct->data;
+  fact_w = arguments->tag.data.td_pstruct->data;
   if (! facts_with_list(facts, &cursor, *spec)) {
     list_delete_all(arguments);
     return NULL;
@@ -1272,11 +1272,11 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   assert(dest_v);
   if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(arguments->tag.data.pstruct)) {
+  if (! struct_allocate(arguments->tag.data.td_pstruct)) {
     list_delete_all(arguments);
     return NULL;
   }
-  fact_w = arguments->tag.data.pstruct->data;
+  fact_w = arguments->tag.data.td_pstruct->data;
   if (! facts_with_tags(facts, &cursor, subject, predicate, object)) {
     list_delete_all(arguments);
     return NULL;
@@ -1329,11 +1329,11 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   s_unwind_protect unwind_protect;
   if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(arguments->tag.data.pstruct)) {
+  if (! struct_allocate(arguments->tag.data.td_pstruct)) {
     list_delete_all(arguments);
     return NULL;
   }
-  fact_w = arguments->tag.data.pstruct->data;
+  fact_w = arguments->tag.data.td_pstruct->data;
   if (! facts_with_list(facts, &cursor, *spec)) {
     list_delete_all(arguments);
     return NULL;
@@ -1411,7 +1411,7 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag,
     tag_clean(&spec_eval);
     return NULL;
   }
-  spec = spec_eval.data.plist;
+  spec = spec_eval.data.td_plist;
   if (! facts_with_list(facts, &cursor, spec)) {
     tag_clean(&spec_eval);
     return NULL;
@@ -1465,11 +1465,11 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
   s_unwind_protect unwind_protect;
   if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(arguments->tag.data.pstruct)) {
+  if (! struct_allocate(arguments->tag.data.td_pstruct)) {
     list_delete_all(arguments);
     return NULL;
   }
-  fact_w = arguments->tag.data.pstruct->data;
+  fact_w = arguments->tag.data.td_pstruct->data;
   if (! facts_with_tags(facts, &cursor, subject, predicate, object)) {
     list_delete_all(arguments);
     return NULL;
@@ -1645,7 +1645,7 @@ s_env * env_globals_init (s_env *env)
                                             &g_sym___FILE__)))
     return NULL;
   file_dir->type = TAG_STR;
-  if (! file_pwd(&file_dir->data.str))
+  if (! file_pwd(&file_dir->data.td_str))
     return NULL;
   if (! tag_init_str_1(file_path, NULL, "stdin"))
     return NULL;
@@ -1680,9 +1680,6 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
       return NULL;
     }
   }
-  // too slow, use require
-  // if (! env_module_ensure_loaded(env, module))
-  //   return NULL;
   tag_init_ident(&tag_ident, ident);
   tag_init_psym(  &tag_is_a, &g_sym_is_a);
   tag_init_psym(  &tag_macro, &g_sym_macro);
@@ -1713,7 +1710,7 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
     tag_clean(&tag_pvar);
     return NULL;
   }
-  if (! tag_init_copy(&tmp, &tag_pvar.data.pvar->tag)) {
+  if (! tag_init_copy(&tmp, &tag_pvar.data.td_pvar->tag)) {
     facts_with_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return NULL;
@@ -1732,12 +1729,12 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
   }
   if (fact) {
     if (tmp.type == TAG_PCALLABLE) {
-      switch (tmp.data.pcallable->type) {
+      switch (tmp.data.td_pcallable->type) {
       case CALLABLE_CFN:
-        tmp.data.pcallable->data.cfn.special_operator = true;
+        tmp.data.td_pcallable->data.cfn.special_operator = true;
         break;
       case CALLABLE_FN:
-        tmp.data.pcallable->data.fn.special_operator = true;
+        tmp.data.td_pcallable->data.fn.special_operator = true;
         break;
       case CALLABLE_VOID:
         err_puts("env_ident_get: CALLABLE_VOID");
@@ -1825,7 +1822,7 @@ bool * env_ident_is_special_operator (s_env *env,
   assert(env);
   assert(ident);
   tag_ident.type = TAG_IDENT;
-  if (! env_ident_resolve_module(env, ident, &tag_ident.data.ident)) {
+  if (! env_ident_resolve_module(env, ident, &tag_ident.data.td_ident)) {
     err_puts("env_ident_is_special_operator: env_ident_resolve_module");
     assert(! "env_ident_is_special_operator: env_ident_resolve_module");
     return NULL;
@@ -1894,7 +1891,7 @@ s_tag * env_if_then_else (s_env *env, s_tag *cond, s_tag *then,
   }
   env->silence_errors = silence_errors;
   if (cond_eval.type == TAG_BOOL)
-    cond_bool = cond_eval.data.bool_;
+    cond_bool = cond_eval.data.td_bool_;
   else {
     type = &g_sym_Bool;
     if (! bool_init_cast(&cond_bool, &type, &cond_eval)) {
@@ -2057,13 +2054,13 @@ s_tag * env_kc3_def (s_env *env, const s_call *call, s_tag *dest)
     assert(! "env_kc3_def: invalid assignment: expected Ident = value");
     return NULL;
   }
-  ident = &call->arguments->tag.data.ident;
+  ident = &call->arguments->tag.data.td_ident;
   tag_ident.type = TAG_IDENT;
-  tag_ident.data.ident.sym = ident->sym;
+  tag_ident.data.td_ident.sym = ident->sym;
   if (ident->module)
-    tag_ident.data.ident.module = ident->module;
+    tag_ident.data.td_ident.module = ident->module;
   else
-    tag_ident.data.ident.module = env->current_defmodule;
+    tag_ident.data.td_ident.module = env->current_defmodule;
   if (! env_eval_tag(env, &list_next(call->arguments)->tag,
                      &tag_value)) {
     err_puts("env_kc3_def: env_eval_tag");
@@ -2077,7 +2074,7 @@ s_tag * env_kc3_def (s_env *env, const s_call *call, s_tag *dest)
     return NULL;
   }
   tag_clean(&tag_value);
-  tag_init_ident(dest, &tag_ident.data.ident);
+  tag_init_ident(dest, &tag_ident.data.td_ident);
   return dest;
 }
 
@@ -2101,7 +2098,7 @@ s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
   }
   switch(tmp.type) {
   case TAG_MAP:
-    map = &tmp.data.map;
+    map = &tmp.data.td_map;
     break;
   default:
     tag_clean(&tmp);
@@ -2126,7 +2123,7 @@ s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
       return NULL;
     }
     if (! frame_binding_new(&frame,
-                            map->key[i].data.psym,
+                            map->key[i].data.td_psym,
                             map->value + i)) {
       tag_clean(&tmp);
       env->frame = frame_clean(&frame);
@@ -2182,9 +2179,9 @@ bool env_load (s_env *env, const s_str *path)
   file_dir_save = *file_dir;
   file_path = frame_get_w(env->global_frame, &g_sym___FILE__);
   file_path_save = *file_path;
-  if (! file_dirname(path, &file_dir->data.str))
+  if (! file_dirname(path, &file_dir->data.td_str))
     goto ko;
-  tag_init_str(file_path, NULL, path->size, path->ptr.pchar);
+  tag_init_str(file_path, NULL, path->size, path->ptr.p_pchar);
   if (use_cache) {
     if (env->trace) {
       err_write_1("env_load: ");
@@ -2236,7 +2233,7 @@ bool env_load (s_env *env, const s_str *path)
       }
       (*last)->tag = tag;
       tag = (s_tag) {0};
-      last = &(*last)->next.data.plist;
+      last = &(*last)->next.data.td_plist;
     }
     buf_getc_close(&buf);
     buf_clean(&buf);
@@ -2244,10 +2241,10 @@ bool env_load (s_env *env, const s_str *path)
     last_dlopen = &new_dlopens;
     tmp_list = env->dlopen_list;
     while (tmp_list != dlopen_list_save) {
-      *last_dlopen = list_new_str_copy(&tmp_list->tag.data.str, NULL);
+      *last_dlopen = list_new_str_copy(&tmp_list->tag.data.td_str, NULL);
       if (! *last_dlopen)
         goto ko;
-      last_dlopen = &(*last_dlopen)->next.data.plist;
+      last_dlopen = &(*last_dlopen)->next.data.td_plist;
       tmp_list = list_next(tmp_list);
     }
     if (env->trace) {
@@ -2267,7 +2264,7 @@ bool env_load (s_env *env, const s_str *path)
   str_clean(&cache_path);
   tag = (s_tag) {0};
   tag.type = TAG_STR;
-  tag.data.str = *path;
+  tag.data.td_str = *path;
   tag_init_time_now(&now);
   tag_init_psym(&load_time, &g_sym_load_time);
   facts_replace_tags(env->facts, &tag, &load_time, &now);
@@ -2405,7 +2402,7 @@ bool env_maybe_reload (s_env *env, const s_str *path)
   s_tag path_tag = {0};
   bool r;
   path_tag.type = TAG_STR;
-  path_tag.data.str = *path;
+  path_tag.data.td_str = *path;
   tag_init_psym(&load_time_sym, &g_sym_load_time);
   tag_init_pvar(&load_time, &g_sym_Time);
   if (! facts_with_tags(env->facts, &cursor, &path_tag, &load_time_sym,
@@ -2427,15 +2424,15 @@ bool env_maybe_reload (s_env *env, const s_str *path)
     tag_clean(&load_time);
     return false;
   }
-  if (load_time.data.pvar->tag.type != TAG_TIME)
+  if (load_time.data.td_pvar->tag.type != TAG_TIME)
     abort();
   mtime.type = TAG_TIME;
-  if (! file_mtime(path, &mtime.data.time)) {
+  if (! file_mtime(path, &mtime.data.td_time)) {
     facts_cursor_clean(&cursor);
     return false;
   }
   r = true;
-  if (compare_tag(&load_time.data.pvar->tag, &mtime) == COMPARE_LT)
+  if (compare_tag(&load_time.data.td_pvar->tag, &mtime) == COMPARE_LT)
     r = env_load(env, path);
   facts_cursor_clean(&cursor);
   tag_clean(&load_time);
@@ -2492,7 +2489,7 @@ bool env_module_ensure_loaded (s_env *env, const s_sym *module)
   if (! fact) {
     if (! env_module_load(env, module)) {
       err_write_1("env_module_ensure_loaded: module not found: ");
-      err_puts(module->str.ptr.pchar);
+      err_puts(module->str.ptr.p_pchar);
       assert(! "env_module_ensure_loaded: module not found");
       return false;
     }
@@ -2658,7 +2655,7 @@ bool env_module_load (s_env *env, const s_sym *module)
     str_clean(&path);
     if (! module_path(module, env->module_path, FACTS_EXT, &path)) {
       err_write_1("env_module_load: ");
-      err_write_1(module->str.ptr.pchar);
+      err_write_1(module->str.ptr.p_pchar);
       err_puts(": module_path");
       goto rollback;
     }
@@ -2669,7 +2666,7 @@ bool env_module_load (s_env *env, const s_sym *module)
     tag_init_time_now(&tag_time);
     if (facts_load_file(env->facts, &path) < 0) {
       err_write_1("env_module_load: ");
-      err_write_1(module->str.ptr.pchar);
+      err_write_1(module->str.ptr.p_pchar);
       err_puts(": facts_load_file");
       str_clean(&path);
       tag_clean(&tag_time);
@@ -2742,7 +2739,7 @@ const s_time ** env_module_load_time (s_env *env, const s_sym *module,
     tag_clean(&tag_time_pvar);
     return NULL;
   }
-  *dest = &fact->object->data.time;
+  *dest = &fact->object->data.td_time;
   facts_with_cursor_clean(&cursor);
   tag_clean(&tag_time_pvar);
   return dest;
@@ -2882,14 +2879,14 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
   }
   while (search_module) {
     if (search_module->tag.type != TAG_PSYM ||
-        ! search_module->tag.data.psym) {
+        ! search_module->tag.data.td_psym) {
       err_write_1("env_sym_search_modules: ");
       err_inspect_sym(sym);
       err_puts(": invalid env->search_modules");
       assert(! "env_sym_search_modules: invalid env->search_modules");
       return false;
     }
-    module = search_module->tag.data.psym;
+    module = search_module->tag.data.td_psym;
     if (! env_module_has_symbol(env, module, sym, &b)) {
       err_puts("env_sym_search_modules: env_module_has_symbol");
       assert(! "env_sym_search_modules: env_module_has_symbol");
@@ -2939,7 +2936,7 @@ s8 env_special_operator_arity (s_env *env, const s_ident *ident)
   assert(env);
   assert(ident);
   tag_ident.type = TAG_IDENT;
-  env_ident_resolve_module(env, ident, &tag_ident.data.ident);
+  env_ident_resolve_module(env, ident, &tag_ident.data.td_ident);
   tag_init_psym(&tag_arity, &g_sym_arity);
   tag_init_pvar(&tag_pvar, &g_sym_U8);
   if (! facts_with_tags(env->facts, &cursor,
@@ -2953,17 +2950,17 @@ s8 env_special_operator_arity (s_env *env, const s_ident *ident)
     return -1;
   }
   if (fact) {
-    if (tag_pvar.data.pvar->tag.type != TAG_U8 ||
-        tag_pvar.data.pvar->tag.data.u8 > S8_MAX) {
+    if (tag_pvar.data.td_pvar->tag.type != TAG_U8 ||
+        tag_pvar.data.td_pvar->tag.data.td_u8 > S8_MAX) {
       err_write_1("env_special_operator_arity: "
                   "invalid arity for special operator ");
-      err_inspect_ident(&tag_ident.data.ident);
+      err_inspect_ident(&tag_ident.data.td_ident);
       err_write_1("\n");
       facts_cursor_clean(&cursor);
       tag_clean(&tag_pvar);
       return -1;
     }
-    arity = (s8) tag_pvar.data.pvar->tag.data.u8;
+    arity = (s8) tag_pvar.data.td_pvar->tag.data.td_u8;
     facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return arity;
@@ -2972,7 +2969,7 @@ s8 env_special_operator_arity (s_env *env, const s_ident *ident)
   tag_clean(&tag_pvar);
   err_write_1("env_special_operator_arity: "
               "arity not found for special operator ");
-  err_inspect_ident(&tag_ident.data.ident);
+  err_inspect_ident(&tag_ident.data.td_ident);
   err_write_1("\n");
   return -1;
 }
@@ -3060,7 +3057,7 @@ p_struct_type * env_pstruct_type_find (s_env *env,
     tag_clean(&tag_pvar);
     return NULL;
   }
-  *dest = found->object->data.pstruct_type;
+  *dest = found->object->data.td_pstruct_type;
   facts_cursor_clean(&cursor);
   tag_clean(&tag_pvar);
   return dest;
@@ -3102,18 +3099,18 @@ p_callable env_struct_type_get_clean (s_env *env, const s_sym *module)
     tag_clean(&tag_pvar);
     return NULL;
   }
-  if (callable_arity(found->object->data.pcallable) != 1) {
+  if (callable_arity(found->object->data.td_pcallable) != 1) {
     err_write_1("env_struct_type_get_clean: ");
     err_inspect_sym(module);
     err_write_1(": clean arity is ");
-    err_inspect_u8(callable_arity(found->object->data.pcallable));
+    err_inspect_u8(callable_arity(found->object->data.td_pcallable));
     err_write_1(", it should be 1.\n");
     assert(! "env_struct_type_get_clean: invalid arity");
     facts_with_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return NULL;
   }
-  if (! pcallable_init_copy(&tmp, &found->object->data.pcallable)) {
+  if (! pcallable_init_copy(&tmp, &found->object->data.td_pcallable)) {
     err_write_1("env_struct_type_get_clean: ");
     err_inspect_sym(module);
     err_puts(": pcallable_init_copy");
@@ -3160,15 +3157,15 @@ s_list ** env_struct_type_get_spec (s_env *env,
     return NULL;
   }
   if (tmp.type != TAG_PLIST ||
-      ! list_is_plist(tmp.data.plist)) {
+      ! list_is_plist(tmp.data.td_plist)) {
     err_write_1("env_struct_type_get_spec: module ");
-    err_write_1(module->str.ptr.pchar);
+    err_write_1(module->str.ptr.p_pchar);
     err_puts(" has a defstruct that is not a property list");
     tag_clean(&tmp);
     tag_clean(&tag_pvar);
     return NULL;
   }
-  *dest = tmp.data.plist;
+  *dest = tmp.data.td_plist;
   tag_clean(&tag_pvar);
   return dest;
 }
@@ -3208,8 +3205,8 @@ bool env_tag_ident_is_bound (s_env *env, const s_tag *tag)
   assert(tag);
   assert(tag->type == TAG_IDENT);
   return tag->type == TAG_IDENT &&
-    (env_frames_get(env, tag->data.ident.sym) ||
-     env_ident_get(env, &tag->data.ident, &tmp));
+    (env_frames_get(env, tag->data.td_ident.sym) ||
+     env_ident_get(env, &tag->data.td_ident, &tmp));
 }
 
 void env_toplevel_clean (s_env *env)
@@ -3324,7 +3321,7 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
       goto ko;
     if (cond_bool.type != TAG_BOOL)
       goto ko;
-    if (! cond_bool.data.bool_)
+    if (! cond_bool.data.td_bool_)
       break;
     tag_clean(&tmp);
     tag_init(&tmp);

@@ -86,7 +86,7 @@ s_do_block * do_block_init_cast (s_do_block *do_block, p_sym *type,
   (void) type;
   switch (tag->type) {
   case TAG_DO_BLOCK:
-    return do_block_init_copy(do_block, &tag->data.do_block);
+    return do_block_init_copy(do_block, &tag->data.td_do_block);
   default:
     break;
   }

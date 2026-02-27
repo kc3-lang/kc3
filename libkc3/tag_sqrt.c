@@ -28,18 +28,18 @@
 s_tag * tag_sqrt (s_tag *tag, s_tag *dest)
 {
   switch (tag->type) {
-  case TAG_INTEGER: return integer_sqrt(&tag->data.integer, dest);
-  case TAG_RATIO:   return ratio_sqrt(&tag->data.ratio, dest);
-  case TAG_SW:      return sw_sqrt(tag->data.sw, dest);
-  case TAG_S64:     return s64_sqrt(tag->data.s64, dest);
-  case TAG_S32:     return s32_sqrt(tag->data.s32, dest);
-  case TAG_S16:     return s16_sqrt(tag->data.s16, dest);
-  case TAG_S8:      return s8_sqrt(tag->data.s8, dest);
-  case TAG_U8:      return u8_sqrt(tag->data.u8, dest);
-  case TAG_U16:     return u16_sqrt(tag->data.u16, dest);
-  case TAG_U32:     return u32_sqrt(tag->data.u32, dest);
-  case TAG_U64:     return u64_sqrt(tag->data.u64, dest);
-  case TAG_UW:      return uw_sqrt(tag->data.uw, dest);
+  case TAG_INTEGER: return integer_sqrt(&tag->data.td_integer, dest);
+  case TAG_RATIO:   return ratio_sqrt(&tag->data.td_ratio, dest);
+  case TAG_SW:      return sw_sqrt(tag->data.td_sw, dest);
+  case TAG_S64:     return s64_sqrt(tag->data.td_s64, dest);
+  case TAG_S32:     return s32_sqrt(tag->data.td_s32, dest);
+  case TAG_S16:     return s16_sqrt(tag->data.td_s16, dest);
+  case TAG_S8:      return s8_sqrt(tag->data.td_s8, dest);
+  case TAG_U8:      return u8_sqrt(tag->data.td_u8, dest);
+  case TAG_U16:     return u16_sqrt(tag->data.td_u16, dest);
+  case TAG_U32:     return u32_sqrt(tag->data.td_u32, dest);
+  case TAG_U64:     return u64_sqrt(tag->data.td_u64, dest);
+  case TAG_UW:      return uw_sqrt(tag->data.td_uw, dest);
   default:
     break;
   }

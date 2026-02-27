@@ -25,7 +25,7 @@ git_reference ** kc3_git_reference_lookup (git_reference **ref,
 {
   const git_error *e;
   git_reference *tmp;
-  if (git_reference_lookup(&tmp, *repo, name->ptr.pchar)) {
+  if (git_reference_lookup(&tmp, *repo, name->ptr.p_pchar)) {
     e = git_error_last();
     err_write_1("kc3_git_reference_lookup: ");
     err_puts(e->message);

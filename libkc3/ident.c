@@ -94,7 +94,7 @@ s_ident * ident_init_cast (s_ident *ident, const s_sym * const *type,
 {
   switch (tag->type) {
   case TAG_IDENT:
-    *ident = tag->data.ident;
+    *ident = tag->data.td_ident;
     return ident;
   default:
     break;

@@ -48,18 +48,18 @@ p_facts_spec facts_spec_new_expand (p_facts_spec spec)
     while (facts_spec_cursor_next(&cursor, &fact)) {
       *n = (s_tag *) fact.subject;
       while ((*n)->type == TAG_PVAR &&
-             (*n)->data.pvar->bound)
-        *n = &(*n)->data.pvar->tag;
+             (*n)->data.td_pvar->bound)
+        *n = &(*n)->data.td_pvar->tag;
       n++;
       *n = (s_tag *) fact.predicate;
       while ((*n)->type == TAG_PVAR &&
-             (*n)->data.pvar->bound)
-        *n = &(*n)->data.pvar->tag;
+             (*n)->data.td_pvar->bound)
+        *n = &(*n)->data.td_pvar->tag;
       n++;
       *n = (s_tag *) fact.object;
       while ((*n)->type == TAG_PVAR &&
-             (*n)->data.pvar->bound)
-        *n = &(*n)->data.pvar->tag;
+             (*n)->data.td_pvar->bound)
+        *n = &(*n)->data.td_pvar->tag;
       n++;
       *n++ = NULL;
     }
@@ -87,7 +87,7 @@ p_facts_spec facts_spec_new_list (s_list *spec)
       assert(! "facts_spec_new_list: invalid spec: not a List of List");
       return NULL;
     }
-    t = s->tag.data.plist;
+    t = s->tag.data.td_plist;
     if ((c = list_length(t)) < 3) {
       err_puts("facts_spec_new_list: invalid spec: list length < 3");
       assert(! "facts_spec_new_list: invalid spec: list length < 3");
@@ -109,7 +109,7 @@ p_facts_spec facts_spec_new_list (s_list *spec)
   n = new;
   s = spec;
   while (s) {
-    t = s->tag.data.plist;
+    t = s->tag.data.td_plist;
     while (t) {
       *n++ = &t->tag;
       t = list_next(t);

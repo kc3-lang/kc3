@@ -98,7 +98,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     a = args;
     while (cfn_arg_types) {
       assert(cfn_arg_types->tag.type == TAG_PSYM);
-      if (cfn_arg_types->tag.data.psym == &g_sym_Result) {
+      if (cfn_arg_types->tag.data.td_psym == &g_sym_Result) {
         assert(cfn->cif.rtype == &ffi_type_pointer);
         tag_init_sym_type(&tmp2, cfn->result_type);
         if (! tag_to_ffi_pointer(&tmp2, cfn->result_type, &p)) {
@@ -113,7 +113,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       else {
         if (cfn->cif.arg_types[i] == &ffi_type_pointer) {
           if (! tag_to_ffi_pointer(&a->tag,
-                                   cfn_arg_types->tag.data.psym,
+                                   cfn_arg_types->tag.data.td_psym,
                                    &p)) {
             err_puts("cfn_apply: tag_to_ffi_pointer 4");
             err_stacktrace();
@@ -125,7 +125,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
         }
         else {
           if (! tag_to_ffi_pointer(&a->tag,
-                                   cfn_arg_types->tag.data.psym,
+                                   cfn_arg_types->tag.data.td_psym,
                                    &p)) {
             err_write_1("cfn_apply: ");
             err_inspect_str(&cfn->c_name->str);
@@ -143,7 +143,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       i++;
     }
   }
-  if (cfn->ptr.f) {
+  if (cfn->ptr.p_f) {
     s_list *args_copy;
     s_list *trace_plist;
     if (! (trace = list_new(env->stacktrace)))
@@ -167,7 +167,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       longjmp(*unwind_protect.jmp, 1);
       abort();
     }
-    ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);
+    ffi_call(&cfn->cif, cfn->ptr.p_f, result, arg_values);
     env_unwind_protect_pop(env, &unwind_protect);
     if (cfn->arg_result) {
       if (result_pointer != arg_pointer_result) {
@@ -297,7 +297,7 @@ s_cfn * cfn_init_cast (s_cfn *cfn, const s_sym * const *type,
   (void) type;
   switch (tag->type) {
   case TAG_CFN:
-    return cfn_init_copy(cfn, &tag->data.cfn);
+    return cfn_init_copy(cfn, &tag->data.td_cfn);
   default:
     break;
   }
@@ -356,9 +356,9 @@ s_cfn * cfn_link (s_cfn *cfn)
              " securelevel > 0");
     abort();
   }
-  if (! (cfn->ptr.p = dlsym(RTLD_DEFAULT, cfn->c_name->str.ptr.pchar))) {
+  if (! (cfn->ptr.p_pvoid = dlsym(RTLD_DEFAULT, cfn->c_name->str.ptr.p_pchar))) {
     err_write_1("cfn_link: ");
-    err_write_1(cfn->c_name->str.ptr.pchar);
+    err_write_1(cfn->c_name->str.ptr.p_pchar);
     err_write_1(": ");
     err_puts(dlerror());
     assert(! "cfn_link: dlsym failed");
@@ -410,12 +410,12 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
         alloc_free(arg_ffi_type);
         goto clean;
       }
-      if (! sym_to_ffi_type(a->tag.data.psym, result_ffi_type,
+      if (! sym_to_ffi_type(a->tag.data.td_psym, result_ffi_type,
                             arg_ffi_type + i)) {
         alloc_free(arg_ffi_type);
         goto clean;
       }
-      if (a->tag.data.psym == &g_sym_Result) {
+      if (a->tag.data.td_psym == &g_sym_Result) {
         cfn->arg_result = true;
         arg_ffi_type[i] = &ffi_type_pointer;
         result_ffi_type = &ffi_type_pointer;

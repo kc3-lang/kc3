@@ -74,5 +74,5 @@ void kc3_gtk4_text_view_set_text (GtkTextView **text_view,
     assert(! "kc3_gtk4_text_view_set_text: gtk_text_view_get_buffer");
     return;
   }
-  gtk_text_buffer_set_text(buffer, text->ptr.pchar, text->size);
+  gtk_text_buffer_set_text(buffer, text->ptr.p_pchar, text->size);
 }

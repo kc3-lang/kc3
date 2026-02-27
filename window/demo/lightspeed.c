@@ -24,15 +24,15 @@ static void star_init (s_tag *star)
   f64 y;
   f64_random(&x);
   f64_random(&y);
-  if (star->type != TAG_MAP || star->data.map.count != 3) {
+  if (star->type != TAG_MAP || star->data.td_map.count != 3) {
     tag_map(star, 3);
-    tag_init_psym(star->data.map.key + 0, sym_1("speed"));
-    tag_init_psym(star->data.map.key + 1, sym_1("x"));
-    tag_init_psym(star->data.map.key + 2, sym_1("y"));
+    tag_init_psym(star->data.td_map.key + 0, sym_1("speed"));
+    tag_init_psym(star->data.td_map.key + 1, sym_1("x"));
+    tag_init_psym(star->data.td_map.key + 2, sym_1("y"));
   }
-  tag_init_f64(star->data.map.value + 0, 0.0);
-  tag_init_f64(star->data.map.value + 1, 2.0 * x - 1.0);
-  tag_init_f64(star->data.map.value + 2, 2.0 * y - 1.0);
+  tag_init_f64(star->data.td_map.value + 0, 0.0);
+  tag_init_f64(star->data.td_map.value + 1, 2.0 * x - 1.0);
+  tag_init_f64(star->data.td_map.value + 2, 2.0 * y - 1.0);
 }
 
 static void star_render (s_tag *star, s_sequence *seq,
@@ -42,11 +42,11 @@ static void star_render (s_tag *star, s_sequence *seq,
   f64 *speed;
   f64 *x;
   f64 *y;
-  if (star->type != TAG_MAP || star->data.map.count < 3)
+  if (star->type != TAG_MAP || star->data.td_map.count < 3)
     star_init(star);
-  speed = &star->data.map.value[0].data.f64;
-  x = &star->data.map.value[1].data.f64;
-  y = &star->data.map.value[2].data.f64;
+  speed = &star->data.td_map.value[0].data.td_f64;
+  x = &star->data.td_map.value[1].data.td_f64;
+  y = &star->data.td_map.value[2].data.td_f64;
   v[0].pos_x = *x;
   v[0].pos_y = *y;
   v[0].pos_z = 0.0;
@@ -78,7 +78,7 @@ u8 lightspeed_load (s_sequence *seq)
     star_count = LIGHTSPEED_STAR_MAX;
   i = 0;
   while (i < star_count) {
-    star_init(seq->tag.data.ptuple->tag + i);
+    star_init(seq->tag.data.td_ptuple->tag + i);
     i++;
   }
   return true;
@@ -108,7 +108,7 @@ u8 lightspeed_render (s_sequence *seq)
   v = g_lines_stars.vertex.data;
   i = 0;
   while (i < star_count) {
-    star_render(seq->tag.data.ptuple->tag + i, seq, v);
+    star_render(seq->tag.data.td_ptuple->tag + i, seq, v);
     v += 2;
     i++;
   }

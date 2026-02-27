@@ -38,7 +38,7 @@
     test_context("inspect_array(" # test ") -> " # expected);          \
     TEST_EQ(array_init_1(&tmp, (test)), &tmp);                         \
     TEST_EQ(inspect_array(&tmp, &str), &str);                          \
-    TEST_STRNCMP(str.ptr.p, (expected), str.size);                     \
+    TEST_STRNCMP(str.ptr.p_pvoid, (expected), str.size);                     \
     array_clean(&tmp);                                                 \
     str_clean(&str);						       \
   } while(0)
@@ -51,7 +51,7 @@
     tmp = (test);                                                      \
     TEST_EQ(inspect_bool(tmp, &str), &str);                           \
     TEST_EQ(str.size, strlen(expected));                               \
-    TEST_STRNCMP(str.ptr.p, (expected), str.size);                     \
+    TEST_STRNCMP(str.ptr.p_pvoid, (expected), str.size);                     \
     str_clean(&str);						       \
     test_context(NULL);                                                \
   } while (0)
@@ -62,7 +62,7 @@
     s_str result;                                                      \
     TEST_EQ(pcall_init_1(&pcall, (test)), &pcall);                     \
     TEST_EQ(inspect_call(pcall, &result), &result);                    \
-    TEST_STRNCMP(result.ptr.p, (test), result.size);                   \
+    TEST_STRNCMP(result.ptr.p_pvoid, (test), result.size);                   \
     TEST_EQ(result.size, strlen(test));                                \
     pcall_clean(&pcall);                                               \
     str_clean(&result);						       \
@@ -74,7 +74,7 @@
     TEST_EQ(inspect_fact(test, &str), &str);                           \
     TEST_EQ(str.size, strlen(expected));                               \
     if (g_test_last_ok)						       \
-      TEST_STRNCMP(str.ptr.p, (expected), str.size);		       \
+      TEST_STRNCMP(str.ptr.p_pvoid, (expected), str.size);		       \
     str_clean(&str);						       \
   } while (0)
 
@@ -87,7 +87,7 @@
     test_context("inspect_ident(" #test ") -> " #result);              \
     ident_init_1(&ident, (test));                                      \
     TEST_EQ(inspect_ident(&ident, &str), &str);                        \
-    TEST_STRNCMP(str.ptr.p, (result), str.size);                       \
+    TEST_STRNCMP(str.ptr.p_pvoid, (result), str.size);                       \
     str_clean(&str);                                                   \
     test_context(NULL);                                                \
   } while (0)
@@ -99,7 +99,7 @@
     test_context("inspect_list(" # test ") -> " # expected);           \
     list_test = list_new_1(test);                                      \
     TEST_EQ(inspect_list(list_test, &str_result), &str_result);        \
-    TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
+    TEST_STRNCMP(str_result.ptr.p_pvoid, (expected), str_result.size);       \
     str_clean(&str_result);                                            \
     list_delete_all(list_test);                                        \
     test_context(NULL);                                                \
@@ -112,7 +112,7 @@
     test_context("inspect_var(" # test ") -> " # expected);            \
     TEST_EQ(pvar_init_1(&pvar_test, (test)), &pvar_test);              \
     TEST_EQ(inspect_var(pvar_test, &str_result), &str_result);        \
-    TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
+    TEST_STRNCMP(str_result.ptr.p_pvoid, (expected), str_result.size);       \
     TEST_EQ(str_result.size, strlen(expected));                        \
     str_clean(&str_result);                                            \
     pvar_clean(&pvar_test);                                            \
@@ -128,7 +128,7 @@
   test_context("inspect_ratio(" # test_num "/" # test_den              \
                ") -> " # expected);                                    \
   TEST_EQ(inspect_ratio(&ratio, &result), &result);                    \
-  TEST_STRNCMP(result.ptr.p, expected, result.size);                   \
+  TEST_STRNCMP(result.ptr.p_pvoid, expected, result.size);                   \
   ratio_clean(&ratio);                                                 \
   str_clean(&result);                                                  \
   test_context(NULL);                                                  \
@@ -140,7 +140,7 @@
     assert(test);                                                      \
     test_context("inspect_str(" # test ") -> " # expected);            \
     TEST_EQ(inspect_str((test), &result), &result);                    \
-    TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
+    TEST_STRNCMP(result.ptr.p_pvoid, (expected), result.size);               \
     str_clean(&result);                                                \
     test_context(NULL);                                                \
   } while (0)
@@ -152,7 +152,7 @@
     str_init_1(&str, NULL, (test));                                    \
     test_context("inspect_str(" # test ") -> " # expected);            \
     TEST_EQ(inspect_str(&str, &result), &result);                      \
-    TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
+    TEST_STRNCMP(result.ptr.p_pvoid, (expected), result.size);               \
     str_clean(&result);                                                \
     test_context(NULL);                                                \
   } while (0)
@@ -166,7 +166,7 @@
     test_context("inspect_struct(" # test ") -> " # expected);         \
     TEST_EQ(pstruct_init_1(&struct_test, (test)), &struct_test);       \
     TEST_EQ(inspect_struct(struct_test, &result), &result);            \
-    TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
+    TEST_STRNCMP(result.ptr.p_pvoid, (expected), result.size);               \
     TEST_EQ(buf_inspect_struct_size(&pretty, struct_test),             \
             strlen(expected));                                         \
     str_clean(&result);                                                \
@@ -184,7 +184,7 @@
     test_context("inspect_sym(" # test ") -> " # result);              \
     sym = sym_1(test);                                                 \
     TEST_EQ(inspect_sym(sym, &str), &str);                             \
-    TEST_STRNCMP(str.ptr.p, (result), str.size);                       \
+    TEST_STRNCMP(str.ptr.p_pvoid, (result), str.size);                       \
     str_clean(&str);                                                   \
     test_context(NULL);                                                \
   } while (0)
@@ -197,7 +197,7 @@
     tag_init_1(&tag_test, (test));                                     \
     TEST_EQ(inspect_tag(&tag_test, &str_result), &str_result);         \
     tag_clean(&tag_test);                                              \
-    TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
+    TEST_STRNCMP(str_result.ptr.p_pvoid, (expected), str_result.size);       \
     TEST_EQ(str_result.size, strlen(expected));                        \
     str_clean(&str_result);                                            \
     test_context(NULL);                                                \
@@ -212,7 +212,7 @@
     TEST_EQ(inspect_tuple(&tuple_test, &str_result), &str_result);     \
     tuple_clean(&tuple_test);                                          \
     TEST_EQ(str_result.size, strlen(expected));                        \
-    TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
+    TEST_STRNCMP(str_result.ptr.p_pvoid, (expected), str_result.size);       \
     str_clean(&str_result);                                            \
     test_context(NULL);                                                \
   } while (0)

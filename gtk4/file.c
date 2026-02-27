@@ -16,7 +16,7 @@ GFile ** kc3_gtk4_file_new_for_uri (GFile **dest,
                                     const s_str *uri)
 {
   GFile *tmp;
-  if (! (tmp = g_file_new_for_uri(uri->ptr.pchar)))
+  if (! (tmp = g_file_new_for_uri(uri->ptr.p_pchar)))
     return NULL;
   *dest = tmp;
   return dest;

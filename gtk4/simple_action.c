@@ -70,7 +70,7 @@ GSimpleAction ** kc3_gtk4_simple_action_new (GSimpleAction **dest,
   GSimpleAction *tmp;
   if (! (cb = alloc(sizeof(s_action_callback))))
     return NULL;
-  if (! (tmp = g_simple_action_new(name->ptr.pchar, NULL)))
+  if (! (tmp = g_simple_action_new(name->ptr.p_pchar, NULL)))
     return NULL;
   cb->action = tmp;
   cb->next = g_action_callbacks;

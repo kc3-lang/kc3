@@ -132,43 +132,43 @@ s_complex * complex_init_cast (s_complex *c, const s_sym * const *type,
   assert(src);
   switch (src->type) {
   case TAG_PCOMPLEX:
-    return complex_init_copy(c, src->data.pcomplex);
+    return complex_init_copy(c, src->data.td_pcomplex);
   case TAG_F32:
-    return complex_init_f32(c, src->data.f32);
+    return complex_init_f32(c, src->data.td_f32);
   case TAG_F64:
-    return complex_init_f64(c, src->data.f64);
+    return complex_init_f64(c, src->data.td_f64);
 #if HAVE_F80
   case TAG_F80:
-    return complex_init_f80(c, src->data.f80);
+    return complex_init_f80(c, src->data.td_f80);
 #endif
 #if HAVE_F128
   case TAG_F128:
-    return complex_init_f128(c, src->data.f128);
+    return complex_init_f128(c, src->data.td_f128);
 #endif
   case TAG_INTEGER:
-    return complex_init_integer(c, &src->data.integer);
+    return complex_init_integer(c, &src->data.td_integer);
   case TAG_RATIO:
-    return complex_init_ratio(c, &src->data.ratio);
+    return complex_init_ratio(c, &src->data.td_ratio);
   case TAG_SW:
-    return complex_init_sw(c, src->data.sw);
+    return complex_init_sw(c, src->data.td_sw);
   case TAG_S64:
-    return complex_init_s64(c, src->data.s64);
+    return complex_init_s64(c, src->data.td_s64);
   case TAG_S32:
-    return complex_init_s32(c, src->data.s32);
+    return complex_init_s32(c, src->data.td_s32);
   case TAG_S16:
-    return complex_init_s16(c, src->data.s16);
+    return complex_init_s16(c, src->data.td_s16);
   case TAG_S8:
-    return complex_init_s8(c, src->data.s8);
+    return complex_init_s8(c, src->data.td_s8);
   case TAG_U8:
-    return complex_init_u8(c, src->data.u8);
+    return complex_init_u8(c, src->data.td_u8);
   case TAG_U16:
-    return complex_init_u16(c, src->data.u16);
+    return complex_init_u16(c, src->data.td_u16);
   case TAG_U32:
-    return complex_init_u32(c, src->data.u32);
+    return complex_init_u32(c, src->data.td_u32);
   case TAG_U64:
-    return complex_init_u64(c, src->data.u64);
+    return complex_init_u64(c, src->data.td_u64);
   case TAG_UW:
-    return complex_init_uw(c, src->data.uw);
+    return complex_init_uw(c, src->data.td_uw);
   default:
     break;
   }

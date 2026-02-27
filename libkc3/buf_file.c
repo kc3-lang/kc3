@@ -98,7 +98,7 @@ sw buf_file_open_r_refill (s_buf *buf)
     return -1;
   }
   size = buf->size - buf->wpos;
-  r = fread(buf->ptr.pchar + buf->wpos, 1, size,
+  r = fread(buf->ptr.p_pchar + buf->wpos, 1, size,
             ((s_buf_file *) (buf->user_ptr))->fp);
   if (buf->wpos + r > buf->size) {
     err_puts("buf_file_open_r_refill: buffer overflow");
@@ -184,7 +184,7 @@ sw buf_file_open_w_flush (s_buf *buf)
   if (size == 0)
     return buf->size - buf->wpos;
   buf_file = buf->user_ptr;
-  if (fwrite(buf->ptr.p, size, 1, buf_file->fp) != 1) {
+  if (fwrite(buf->ptr.p_pvoid, size, 1, buf_file->fp) != 1) {
     err_puts("buf_file_open_w_flush: fwrite");
     return -1;
   }

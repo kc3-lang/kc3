@@ -35,8 +35,8 @@
              "Expected %s got %s.%s\n",                                \
              TEST_COLOR_KO,                                            \
              __FILE__, __LINE__, __func__,                             \
-             str_test.ptr.pchar, str_expected.ptr.pchar,               \
-             str_expected.ptr.pchar, str_test.ptr.pchar,               \
+             str_test.ptr.p_pchar, str_expected.ptr.p_pchar,           \
+             str_expected.ptr.p_pchar, str_test.ptr.p_pchar,           \
              TEST_COLOR_RESET);                                        \
       str_clean(&str_expected);                                        \
       str_clean(&str_test);                                            \

@@ -29,58 +29,58 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   assert(type);
   assert(tag);
   while (1) {
-    if (tag->type == TAG_PVAR && tag->data.pvar->bound)
-      tag = &tag->data.pvar->tag;
+    if (tag->type == TAG_PVAR && tag->data.td_pvar->bound)
+      tag = &tag->data.td_pvar->tag;
     else
       break;
   }
   switch (tag->type) {
   case TAG_BOOL:
-    *b = tag->data.bool_ ? true : false;
+    *b = tag->data.td_bool_ ? true : false;
     return b;
   case TAG_CHARACTER:
-    *b = tag->data.character ? true : false;
+    *b = tag->data.td_character ? true : false;
     return b;
   case TAG_F32:
-    *b = tag->data.f32 != 0.0;
+    *b = tag->data.td_f32 != 0.0;
     return b;
   case TAG_F64:
-    *b = tag->data.f64 != 0.0;
+    *b = tag->data.td_f64 != 0.0;
     return b;
 #if HAVE_F80
   case TAG_F80:
-    *b = tag->data.f80 != 0.0;
+    *b = tag->data.td_f80 != 0.0;
     return b;
 #endif
 #if HAVE_F128
   case TAG_F128:
-    *b = tag->data.f128 != 0.0;
+    *b = tag->data.td_f128 != 0.0;
     return b;
 #endif
   case TAG_INTEGER:
-    *b = ! integer_is_zero(&tag->data.integer);
+    *b = ! integer_is_zero(&tag->data.td_integer);
     return b;
   case TAG_PCOMPLEX:
-    *b = ! complex_is_zero(tag->data.pcomplex);
+    *b = ! complex_is_zero(tag->data.td_pcomplex);
     return b;
   case TAG_PCOW:
-    return bool_init_cast(b, type, cow_read_only(tag->data.pcow));
-  case TAG_PTR:       *b = tag->data.ptr.p != 0;               return b;
-  case TAG_POINTER:   *b = tag->data.pointer.ptr.p != 0;       return b;
-  case TAG_PTR_FREE:  *b = tag->data.ptr_free.p != 0;          return b;
+    return bool_init_cast(b, type, cow_read_only(tag->data.td_pcow));
+  case TAG_PTR:       *b = tag->data.td_ptr.p_pvoid != 0;            return b;
+  case TAG_POINTER:   *b = tag->data.td_pointer.ptr.p_pvoid != 0;    return b;
+  case TAG_PTR_FREE:  *b = tag->data.td_ptr_free.p_pvoid != 0;       return b;
   case TAG_RATIO:
-    *b = ! ratio_is_zero(&tag->data.ratio);
+    *b = ! ratio_is_zero(&tag->data.td_ratio);
     return b;
-  case TAG_S8:        *b = tag->data.s8 != 0;                  return b;
-  case TAG_S16:       *b = tag->data.s16 != 0;                 return b;
-  case TAG_S32:       *b = tag->data.s32 != 0;                 return b;
-  case TAG_S64:       *b = tag->data.s64 != 0;                 return b;
-  case TAG_SW:        *b = tag->data.sw != 0;                  return b;
-  case TAG_U8:        *b = tag->data.u8 != 0;                  return b;
-  case TAG_U16:       *b = tag->data.u16 != 0;                 return b;
-  case TAG_U32:       *b = tag->data.u32 != 0;                 return b;
-  case TAG_U64:       *b = tag->data.u64 != 0;                 return b;
-  case TAG_UW:        *b = tag->data.uw != 0;                  return b;
+  case TAG_S8:        *b = tag->data.td_s8 != 0;               return b;
+  case TAG_S16:       *b = tag->data.td_s16 != 0;              return b;
+  case TAG_S32:       *b = tag->data.td_s32 != 0;              return b;
+  case TAG_S64:       *b = tag->data.td_s64 != 0;              return b;
+  case TAG_SW:        *b = tag->data.td_sw != 0;               return b;
+  case TAG_U8:        *b = tag->data.td_u8 != 0;               return b;
+  case TAG_U16:       *b = tag->data.td_u16 != 0;              return b;
+  case TAG_U32:       *b = tag->data.td_u32 != 0;              return b;
+  case TAG_U64:       *b = tag->data.td_u64 != 0;              return b;
+  case TAG_UW:        *b = tag->data.td_uw != 0;               return b;
   case TAG_ARRAY:
   case TAG_DO_BLOCK:
   case TAG_FACT:

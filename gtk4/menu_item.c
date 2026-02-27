@@ -17,8 +17,8 @@ GMenuItem ** kc3_gtk4_menu_item_new (GMenuItem **dest,
 				     const s_str *detailed_action)
 {
   GMenuItem * tmp;
-  if (! (tmp = g_menu_item_new(label->ptr.pchar,
-			       detailed_action->ptr.pchar)))
+  if (! (tmp = g_menu_item_new(label->ptr.p_pchar,
+			       detailed_action->ptr.p_pchar)))
     return NULL;
   *dest = tmp;
   return dest;

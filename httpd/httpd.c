@@ -29,7 +29,7 @@ static void httpd_signal (int s)
 {
   if (g_httpd_server_thread_stop) {
     g_httpd_server_thread_stop->count.type = TAG_U8;
-    g_httpd_server_thread_stop->count.data.u8 = 1;
+    g_httpd_server_thread_stop->count.data.td_u8 = 1;
   }
   else
     exit(s);
@@ -200,8 +200,9 @@ int main (int argc, char **argv)
   server_thread_stop.sym = sym_1("server_thread_stop");
   if (! ident_get(&server_thread_stop, &tmp) ||
       tmp.type != TAG_POINTER ||
-      tmp.data.pointer.target_type != &g_sym_Counter ||
-      ! (g_httpd_server_thread_stop = tmp.data.pointer.ptr.p)) {
+      tmp.data.td_pointer.target_type != &g_sym_Counter ||
+      ! (g_httpd_server_thread_stop =
+         tmp.data.td_pointer.ptr.p_pvoid)) {
     err_puts("httpd_sigint: ident_get: HTTPd.server_thread_stop");
     assert(! "httpd_sigint: ident_get: HTTPd.server_thread_stop");
     abort();
@@ -224,7 +225,7 @@ int main (int argc, char **argv)
   }
   switch (tmp.type) {
   case TAG_U8:
-    r = tmp.data.u8;
+    r = tmp.data.td_u8;
     break;
   default:
     err_write_1("invalid return type from main: ");

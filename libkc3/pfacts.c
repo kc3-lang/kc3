@@ -41,7 +41,7 @@ p_facts * pfacts_init_cast (p_facts *pfacts, const p_sym *type,
   assert(src);
   switch (src->type) {
   case TAG_PFACTS:
-    return pfacts_init_copy(pfacts, &src->data.pfacts);
+    return pfacts_init_copy(pfacts, &src->data.td_pfacts);
   default:
     err_write_1("pfacts_init_cast: cannot cast to ");
     err_inspect_sym(*type);

@@ -20,7 +20,7 @@
 void ptr_free_clean (u_ptr_w *ptr_free)
 {
   assert(ptr_free);
-  alloc_free(ptr_free->p);
+  alloc_free(ptr_free->p_pvoid);
 }
 
 void ptr_free_delete (u_ptr_w *ptr_free)
@@ -34,7 +34,7 @@ u_ptr_w * ptr_free_init (u_ptr_w *ptr_free, void *p)
 {
   u_ptr_w tmp = {0};
   assert(ptr_free);
-  tmp.p = p;
+  tmp.p_pvoid = p;
   *ptr_free = tmp;
   return ptr_free;
 }
@@ -47,23 +47,53 @@ u_ptr_w * ptr_free_init_cast (u_ptr_w *p,
   assert(type);
   assert(tag);
   switch (tag->type) {
-  case TAG_F32: p->p = (void *) ((uw) tag->data.f32);  return p;
-  case TAG_F64: p->p = (void *) ((uw) tag->data.f64);  return p;
+  case TAG_F32:
+    p->p_pvoid = (void *) ((uw) tag->data.td_f32);
+    return p;
+  case TAG_F64:
+    p->p_pvoid = (void *) ((uw) tag->data.td_f64);
+    return p;
   case TAG_INTEGER:
-    p->p = (void *) integer_to_uw(&tag->data.integer); return p;
-  case TAG_PTR: p->p = tag->data.ptr.p;                return p;
-  case TAG_PTR_FREE: p->p = tag->data.ptr_free.p;      return p;
-  case TAG_S8:  p->p = (void *) ((uw) tag->data.s8);   return p;
-  case TAG_S16: p->p = (void *) ((uw) tag->data.s16);  return p;
-  case TAG_S32: p->p = (void *) ((uw) tag->data.s32);  return p;
-  case TAG_S64: p->p = (void *) ((uw) tag->data.s64);  return p;
-  case TAG_SW:  p->p = (void *) ((uw) tag->data.sw);   return p;
-  case TAG_U8:  p->p = (void *) ((uw) tag->data.u8);   return p;
-  case TAG_U16: p->p = (void *) ((uw) tag->data.u16);  return p;
-  case TAG_U32: p->p = (void *) ((uw) tag->data.u32);  return p;
-  case TAG_U64: p->p = (void *) ((uw) tag->data.u64);  return p;
-  case TAG_UW:  p->p = (void *) ((uw) tag->data.uw);   return p;
-  default: break;
+    p->p_pvoid = (void *) integer_to_uw(&tag->data.td_integer);
+    return p;
+  case TAG_PTR:
+    p->p_pvoid = tag->data.td_ptr.p_pvoid;
+    return p;
+  case TAG_PTR_FREE:
+    p->p_pvoid = tag->data.td_ptr_free.p_pvoid;
+    return p;
+  case TAG_S8:
+    p->p_pvoid = (void *) ((uw) tag->data.td_s8);
+    return p;
+  case TAG_S16:
+    p->p_pvoid = (void *) ((uw) tag->data.td_s16);
+    return p;
+  case TAG_S32:
+    p->p_pvoid = (void *) ((uw) tag->data.td_s32);
+    return p;
+  case TAG_S64:
+    p->p_pvoid = (void *) ((uw) tag->data.td_s64);
+    return p;
+  case TAG_SW:
+    p->p_pvoid = (void *) ((uw) tag->data.td_sw);
+    return p;
+  case TAG_U8:
+    p->p_pvoid = (void *) ((uw) tag->data.td_u8);
+    return p;
+  case TAG_U16:
+    p->p_pvoid = (void *) ((uw) tag->data.td_u16);
+    return p;
+  case TAG_U32:
+    p->p_pvoid = (void *) ((uw) tag->data.td_u32);
+    return p;
+  case TAG_U64:
+    p->p_pvoid = (void *) ((uw) tag->data.td_u64);
+    return p;
+  case TAG_UW:
+    p->p_pvoid = (void *) ((uw) tag->data.td_uw);
+    return p;
+  default:
+    break;
   }
   err_write_1("ptr_free_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));

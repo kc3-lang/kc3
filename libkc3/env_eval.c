@@ -108,7 +108,7 @@ bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
   if (! env_eval_array(env, array, &tmp))
     return false;
   dest->type = TAG_ARRAY;
-  dest->data.array = tmp;
+  dest->data.td_array = tmp;
   return true;
 }
 
@@ -197,7 +197,7 @@ bool env_eval_call_arguments (s_env *env, s_list *args,
       return false;
     }
     env_unwind_protect_pop(env, &up);
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
     a = list_next(a);
   }
   *dest = tmp;
@@ -245,12 +245,12 @@ bool env_eval_call_callable (s_env *env, s_call *call,
  profile:
 #if LIBKC3_PROFILE
   if (g_profile_facts) {
-    tag_init_time_copy(&profile_subject, &profile_start.data.time);
+    tag_init_time_copy(&profile_subject, &profile_start.data.td_time);
     tag_init_pcallable_copy(&profile_predicate, &call->pcallable);
     tag_init_time_now(&profile_end);
     profile_dt.type = TAG_TIME;
-    time_sub(&profile_end.data.time, &profile_start.data.time,
-             &profile_dt.data.time);
+    time_sub(&profile_end.data.td_time, &profile_start.data.td_time,
+             &profile_dt.data.td_time);
     facts_add_tags(g_profile_facts, &profile_subject,
                    &profile_predicate, &profile_dt);
     tag_clean(&profile_predicate);
@@ -289,9 +289,8 @@ bool env_eval_call_callable_args (s_env *env,
 bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
                              s_tag *dest)
 {
-  s_list * volatile args_clean = NULL;
   s_list *args = NULL;
-  s_list *args_final = NULL;
+  s_list * volatile args_volatile = NULL;
   s_tag tag;
   s_unwind_protect unwind_protect;
   assert(env);
@@ -302,23 +301,20 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
              " securelevel > 2");
     abort();
   }
-  if (arguments) {
-    if (cfn->macro || cfn->special_operator)
-      args_final = arguments;
-    else {
-      if (! env_eval_call_arguments(env, arguments, &args))
-        return false;
-      args_final = args;
-    }
+  if (arguments && ! (cfn->macro || cfn->special_operator)) {
+    if (! env_eval_call_arguments(env, arguments, &args))
+      return false;
   }
-  args_clean = args;
+  args_volatile = args;
   env_unwind_protect_push(env, &unwind_protect);
   if (setjmp(unwind_protect.buf)) {
     env_unwind_protect_pop(env, &unwind_protect);
-    list_delete_all(args_clean);
+    list_delete_all(args_volatile);
     longjmp(*unwind_protect.jmp, 1);
+    return false;
   }
-  if (! cfn_apply(cfn, args_final, &tag)) {
+  if (! cfn_apply(cfn, (cfn->macro || cfn->special_operator) ?
+                  arguments : args_volatile, &tag)) {
     env_unwind_protect_pop(env, &unwind_protect);
     list_delete_all(args);
     return false;
@@ -635,10 +631,10 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   tmp = *call;
   if (tmp.ident.module == NULL &&
       (value = env_frames_get(env, tmp.ident.sym))) {
-    if (value->type == TAG_PVAR && value->data.pvar->bound)
-      value = &value->data.pvar->tag;
+    if (value->type == TAG_PVAR && value->data.td_pvar->bound)
+      value = &value->data.td_pvar->tag;
     if (value->type == TAG_PCALLABLE) {
-      if (! pcallable_init_copy(&tmp.pcallable, &value->data.pcallable))
+      if (! pcallable_init_copy(&tmp.pcallable, &value->data.td_pcallable))
         return false;
       *call = tmp;
       return true;
@@ -662,7 +658,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   if (arity >= 1 && arity <= 2) {
     ops = global_env->ops;
     if (ops_get_tag(ops, tmp.ident.sym, arity, &op_tag)) {
-      op = op_tag.data.pstruct->data;
+      op = op_tag.data.td_pstruct->data;
       if (! pcallable_init_copy(&tmp.pcallable, &op->pcallable))
         return false;
       callable_set_special(tmp.pcallable, op->special);
@@ -767,7 +763,7 @@ bool env_eval_callable (s_env *env, s_callable *callable,
   goto ko;
  ok:
   dest->type = TAG_PCALLABLE;
-  dest->data.pcallable = tmp;
+  dest->data.td_pcallable = tmp;
   return true;
  ko:
   if (tmp)
@@ -799,7 +795,7 @@ bool env_eval_complex (s_env *env, s_complex *c, s_tag *dest)
     return false;
   }
   dest->type = TAG_PCOMPLEX;
-  dest->data.pcomplex = tmp;
+  dest->data.td_pcomplex = tmp;
   return true;
 }
 
@@ -909,11 +905,11 @@ bool env_eval_list (s_env *env, s_list *list, s_tag *dest)
     if (! next)
       if (! env_eval_tag(env, &list->next, &(*tail)->next))
         goto ko;
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
     list = next;
   }
   dest->type = TAG_PLIST;
-  dest->data.plist = tmp;
+  dest->data.td_plist = tmp;
   return true;
  ko:
   list_delete_all(tmp);
@@ -942,7 +938,7 @@ bool env_eval_map (s_env *env, s_map *map, s_tag *dest)
   }
   map_sort(&tmp);
   dest->type = TAG_MAP;
-  dest->data.map = tmp;
+  dest->data.td_map = tmp;
   return true;
  ko:
   map_clean(&tmp);
@@ -985,7 +981,7 @@ bool env_eval_pcow_tag (s_env *env, p_cow *cow, s_tag *dest)
     err_puts("env_eval_pcow_tag: cannot eval with securelevel > 2");
     abort();
   }
-  if (! env_eval_pcow(env, cow, &tmp.data.pcow))
+  if (! env_eval_pcow(env, cow, &tmp.data.td_pcow))
     return false;
   tmp.type = TAG_PCOW;
   *dest = tmp;
@@ -1027,9 +1023,9 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
       assert(! "env_eval_struct: struct type key is not a Sym");
       goto ko;
     }
-    if (key->data.psym->str.ptr.pchar[0] != '_') {
+    if (key->data.td_psym->str.ptr.p_pchar[0] != '_') {
       if (tmp->pstruct_type->map.value[i].type == TAG_PVAR) {
-        type = tmp->pstruct_type->map.value[i].data.pvar->type;
+        type = tmp->pstruct_type->map.value[i].data.td_pvar->type;
       }
       else if (! tag_type(tmp->pstruct_type->map.value + i, &type))
         goto ko;
@@ -1065,7 +1061,7 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
   err_write_1("env_eval_struct: invalid type ");
   err_write_1(tag_type_to_string(tag.type));
   err_write_1(" for key ");
-  err_write_1(tmp->pstruct_type->map.key[i].data.psym->str.ptr.pchar);
+  err_write_1(tmp->pstruct_type->map.key[i].data.td_psym->str.ptr.p_pchar);
   err_write_1(", expected ");
   err_puts(tag_type_to_string(tmp->pstruct_type->map.value[i].type));
   tag_clean(&tag);
@@ -1083,7 +1079,7 @@ bool env_eval_struct_tag (s_env *env, s_struct *s, s_tag *dest)
     err_puts("env_eval_struct_tag: cannot eval with securelevel > 2");
     abort();
   }
-  if (! env_eval_struct(env, s, &dest->data.pstruct))
+  if (! env_eval_struct(env, s, &dest->data.td_pstruct))
     return false;
   dest->type = TAG_PSTRUCT;
   return true;
@@ -1103,33 +1099,33 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
     tag_init_void(dest);
     return true;
   case TAG_ARRAY:
-    return env_eval_array_tag(env, &tag->data.array, dest);
+    return env_eval_array_tag(env, &tag->data.td_array, dest);
   case TAG_DO_BLOCK:
-    return env_eval_do_block(env, &tag->data.do_block, dest);
+    return env_eval_do_block(env, &tag->data.td_do_block, dest);
   case TAG_IDENT:
-    return env_eval_ident(env, &tag->data.ident, dest);
+    return env_eval_ident(env, &tag->data.td_ident, dest);
   case TAG_MAP:
-    return env_eval_map(env, &tag->data.map, dest);
+    return env_eval_map(env, &tag->data.td_map, dest);
   case TAG_PCALL:
-    return env_eval_call(env, tag->data.pcall, dest);
+    return env_eval_call(env, tag->data.td_pcall, dest);
   case TAG_PCALLABLE:
-    return env_eval_callable(env, tag->data.pcallable, dest);
+    return env_eval_callable(env, tag->data.td_pcallable, dest);
   case TAG_PCOMPLEX:
-    return env_eval_complex(env, tag->data.pcomplex, dest);
+    return env_eval_complex(env, tag->data.td_pcomplex, dest);
   case TAG_PCOW:
-    return env_eval_pcow_tag(env, &tag->data.pcow, dest);
+    return env_eval_pcow_tag(env, &tag->data.td_pcow, dest);
   case TAG_PLIST:
-    return env_eval_list(env, tag->data.plist, dest);
+    return env_eval_list(env, tag->data.td_plist, dest);
   case TAG_PSTRUCT:
-    return env_eval_struct_tag(env, tag->data.pstruct, dest);
+    return env_eval_struct_tag(env, tag->data.td_pstruct, dest);
   case TAG_PVAR:
-    return env_eval_var(env, tag->data.pvar, dest);
+    return env_eval_var(env, tag->data.td_pvar, dest);
   case TAG_QUOTE:
-    return env_eval_quote(env, &tag->data.quote, dest);
+    return env_eval_quote(env, &tag->data.td_quote, dest);
   case TAG_TIME:
-    return env_eval_time(env, &tag->data.time, dest);
+    return env_eval_time(env, &tag->data.td_time, dest);
   case TAG_PTUPLE:
-    return env_eval_tuple(env, tag->data.ptuple, dest);
+    return env_eval_tuple(env, tag->data.td_ptuple, dest);
   case TAG_BOOL:
   case TAG_CHARACTER:
   case TAG_F32:
@@ -1187,7 +1183,7 @@ bool env_eval_time (s_env *env, const s_time *time, s_tag *dest)
       tag_clean(tag);
       return false;
     }
-    if (! sw_init_cast(&tmp.data.time.tv_sec, &sym_Sw, tag)) {
+    if (! sw_init_cast(&tmp.data.td_time.tv_sec, &sym_Sw, tag)) {
       err_write_1("env_eval_time: tv_sec is not a Sw: ");
       err_inspect_tag(tag);
       err_write_1("\n");
@@ -1196,7 +1192,7 @@ bool env_eval_time (s_env *env, const s_time *time, s_tag *dest)
       tag_clean(tag);
       return false;
     }
-    if (! sw_init_cast(&tmp.data.time.tv_nsec, &sym_Sw, tag + 1)) {
+    if (! sw_init_cast(&tmp.data.td_time.tv_nsec, &sym_Sw, tag + 1)) {
       err_write_1("env_eval_time: tv_nsec is not a Sw: ");
       err_inspect_tag(tag + 1);
       err_write_1("\n");
@@ -1207,8 +1203,8 @@ bool env_eval_time (s_env *env, const s_time *time, s_tag *dest)
     }
   }
   else {
-    tmp.data.time.tv_sec = time->tv_sec;
-    tmp.data.time.tv_nsec = time->tv_nsec;
+    tmp.data.td_time.tv_sec = time->tv_sec;
+    tmp.data.td_time.tv_nsec = time->tv_nsec;
   }
   *dest = tmp;
   return true;
@@ -1237,7 +1233,7 @@ bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
     i++;
   }
   dest->type = TAG_PTUPLE;
-  dest->data.ptuple = tmp;
+  dest->data.td_ptuple = tmp;
   return true;
 }
 
@@ -1257,7 +1253,7 @@ bool env_eval_var (s_env *env, s_var *var, s_tag *dest)
     return true;
   }
   tmp.type = TAG_PVAR;
-  tmp.data.pvar = var_new_copy(var);
+  tmp.data.td_pvar = var_new_copy(var);
   *dest = tmp;
   return true;
 }

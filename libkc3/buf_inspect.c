@@ -525,7 +525,7 @@ sw buf_inspect_buf (s_buf *buf, const s_buf *src)
   s_str str = {0};
   pos = (src->rpos < BUF_INSPECT_BUF_SIZE) ? 0 :
     src->rpos - BUF_INSPECT_BUF_SIZE;
-  str.ptr.pchar = src->ptr.pchar + pos;
+  str.ptr.p_pchar = src->ptr.p_pchar + pos;
   str.size = src->rpos - pos;
   if ((r = buf_inspect_str(buf, &str)) <= 0)
     return r;
@@ -535,7 +535,7 @@ sw buf_inspect_buf (s_buf *buf, const s_buf *src)
   result += r;
   size = src->wpos - src->rpos;
   size = (size < BUF_INSPECT_BUF_SIZE) ? size : BUF_INSPECT_BUF_SIZE;
-  str.ptr.pchar = src->ptr.pchar + src->rpos;
+  str.ptr.p_pchar = src->ptr.p_pchar + src->rpos;
   str.size = size;
   if ((r = buf_inspect_str(buf, &str)) <= 0)
     return r;
@@ -555,7 +555,7 @@ sw buf_inspect_buf_size (s_pretty *pretty, const s_buf *src)
   s_str str = {0};
   pos = (src->rpos < BUF_INSPECT_BUF_SIZE) ? 0 :
     src->rpos - BUF_INSPECT_BUF_SIZE;
-  str.ptr.pchar = src->ptr.pchar + pos;
+  str.ptr.p_pchar = src->ptr.p_pchar + pos;
   str.size = src->rpos - pos;
   if ((r = buf_inspect_str_size(pretty, &str)) <= 0)
     return r;
@@ -565,7 +565,7 @@ sw buf_inspect_buf_size (s_pretty *pretty, const s_buf *src)
   result += r;
   size = src->wpos - src->rpos;
   size = (size < BUF_INSPECT_BUF_SIZE) ? size : BUF_INSPECT_BUF_SIZE;
-  str.ptr.pchar = src->ptr.pchar + src->rpos;
+  str.ptr.p_pchar = src->ptr.p_pchar + src->rpos;
   str.size = size;
   if ((r = buf_inspect_str_size(pretty, &str)) <= 0)
     return r;
@@ -606,15 +606,15 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
     ops = env_global()->ops;
     if (ops_get_tag(ops, call->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
-          ! op_tag.data.pstruct ||
-          op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
+          ! op_tag.data.td_pstruct ||
+          op_tag.data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op) {
         err_puts("buf_inspect_call: ops_get did not return a valid"
                  " %KC3.Op{}");
         assert(!("buf_inspect_call: ops_get did not return a valid"
                  " %KC3.Op{}"));
         return -1;
       }
-      op = op_tag.data.pstruct->data;
+      op = op_tag.data.td_pstruct->data;
       if (op->sym == &g_sym__brackets) {
         tag_clean(&op_tag);
         return buf_inspect_call_brackets(buf, call);
@@ -663,14 +663,14 @@ sw buf_inspect_call_access (s_buf *buf, const s_call *call)
   key = list_next(args);
   if (key->tag.type != TAG_PLIST)
     goto invalid_key;
-  key = key->tag.data.plist;
+  key = key->tag.data.td_plist;
   while (key) {
     if (key->tag.type != TAG_PSYM)
       goto invalid_key;
     if ((r = buf_write_1(buf, ".")) < 0)
       return r;
     result += r;
-    if ((r = buf_inspect_ident_sym(buf, key->tag.data.psym)) < 0)
+    if ((r = buf_inspect_ident_sym(buf, key->tag.data.td_psym)) < 0)
       return r;
     result += r;
     key = list_next(key);
@@ -692,14 +692,14 @@ sw buf_inspect_call_access_size (s_pretty *pretty, const s_call *call)
   s_tag *tag_sym;
   assert(call);
   args = call->arguments;
-  tag_sym = &args->next.data.plist->tag;
+  tag_sym = &args->next.data.td_plist->tag;
   if ((r = buf_inspect_tag_size(pretty, &args->tag)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1_size(pretty, ".")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_ident_sym_size(pretty, tag_sym->data.psym)) < 0)
+  if ((r = buf_inspect_ident_sym_size(pretty, tag_sym->data.td_psym)) < 0)
     return r;
   result += r;
   return result;
@@ -765,7 +765,7 @@ sw buf_inspect_call_brackets (s_buf *buf, const s_call *call)
   assert(next);
   assert(! list_next(next));
   assert(next->tag.type == TAG_PLIST);
-  key = next->tag.data.plist;
+  key = next->tag.data.td_plist;
   tag = &call->arguments->tag;
   if ((r = buf_inspect_tag(buf, tag)) < 0)
     return r;
@@ -799,7 +799,7 @@ sw buf_inspect_call_brackets_size (s_pretty *pretty, const s_call *call)
   assert(next);
   assert(! list_next(next));
   assert(next->tag.type == TAG_ARRAY);
-  address = &next->tag.data.array;
+  address = &next->tag.data.td_array;
   assert(address->dimension_count == 1);
   array = &call->arguments->tag;
   if ((r = buf_inspect_tag_size(pretty, array)) < 0)
@@ -849,11 +849,11 @@ sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call)
     result += r;
     pretty_indent(&buf->pretty, PRETTY_INDENT);
     i = 0;
-    while (i < then->data.do_block.count) {
+    while (i < then->data.td_do_block.count) {
       if ((r = buf_write_1(buf, "\n")) < 0)
         return r;
       result += r;
-      if ((r = buf_inspect_tag(buf, then->data.do_block.tag + i)) < 0)
+      if ((r = buf_inspect_tag(buf, then->data.td_do_block.tag + i)) < 0)
         return r;
       i++;
     }
@@ -872,7 +872,7 @@ sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call)
     pretty_indent(&buf->pretty, PRETTY_INDENT);
     if (then->type == TAG_DO_BLOCK) {
       if ((r = buf_inspect_do_block_inner(buf,
-                                          &else_->data.do_block)) < 0)
+                                          &else_->data.td_do_block)) < 0)
         return r;
     }
     else
@@ -916,12 +916,12 @@ sw buf_inspect_call_if_then_else_size (s_pretty *pretty,
     result += r;
     pretty_indent(pretty, PRETTY_INDENT);
     i = 0;
-    while (i < then->data.do_block.count) {
+    while (i < then->data.td_do_block.count) {
       if ((r = buf_write_1_size(pretty, "\n")) < 0)
         return r;
       result += r;
       if ((r = buf_inspect_tag_size(pretty,
-                                    then->data.do_block.tag + i)) < 0)
+                                    then->data.td_do_block.tag + i)) < 0)
         return r;
       i++;
     }
@@ -941,7 +941,7 @@ sw buf_inspect_call_if_then_else_size (s_pretty *pretty,
     pretty_save_init(&pretty_save, pretty);
     if (then->type == TAG_DO_BLOCK) {
       if ((r = buf_inspect_do_block_inner_size(pretty,
-                                            &else_->data.do_block)) < 0)
+                                            &else_->data.td_do_block)) < 0)
         return r;
     }
     else
@@ -974,18 +974,18 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call,
   paren = false;
   ops = env_global()->ops;
   if (left->type == TAG_PCALL) {
-    arity = call_arity(left->data.pcall);
-    if (ops_get_tag(ops, left->data.pcall->ident.sym, arity, &op_tag)) {
+    arity = call_arity(left->data.td_pcall);
+    if (ops_get_tag(ops, left->data.td_pcall->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
-          ! op_tag.data.pstruct ||
-          op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
+          ! op_tag.data.td_pstruct ||
+          op_tag.data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op) {
         err_puts("buf_inspect_call_op: left: ops_get did not return"
                  " a valid %KC3.Op{}");
         assert(!("buf_inspect_call_op: left: ops_get did not return"
                  " a valid %KC3.Op{}"));
         return -1;
       }
-      op = op_tag.data.pstruct->data;
+      op = op_tag.data.td_pstruct->data;
       if (op->precedence < op_precedence) {
         paren = true;
         if ((r = buf_write_1(buf, "(")) < 0) {
@@ -1016,11 +1016,11 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call,
   result += r;
   paren = false;
   if (right->type == TAG_PCALL) {
-    arity = call_arity(right->data.pcall);
-    if (ops_get_tag(ops, right->data.pcall->ident.sym, arity, &op_tag)) {
+    arity = call_arity(right->data.td_pcall);
+    if (ops_get_tag(ops, right->data.td_pcall->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
-          ! op_tag.data.pstruct ||
-          op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
+          ! op_tag.data.td_pstruct ||
+          op_tag.data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op) {
         err_puts("buf_inspect_call_op: right: ops_get did not return"
                  " a valid %KC3.Op{}");
         assert(!("buf_inspect_call_op: right: ops_get did not return"
@@ -1028,7 +1028,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call,
         tag_clean(&op_tag);
         return -1;
       }
-      op = op_tag.data.pstruct->data;
+      op = op_tag.data.td_pstruct->data;
       if (op->precedence < op_precedence) {
         paren = true;
         if ((r = buf_write_1(buf, "(")) < 0) {
@@ -1069,11 +1069,11 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
   paren = false;
   ops = env_global()->ops;
   if (left->type == TAG_PCALL) {
-    arity = call_arity(left->data.pcall);
-    if (ops_get_tag(ops, left->data.pcall->ident.sym, arity, &op_tag)) {
+    arity = call_arity(left->data.td_pcall);
+    if (ops_get_tag(ops, left->data.td_pcall->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
-          ! op_tag.data.pstruct ||
-          op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
+          ! op_tag.data.td_pstruct ||
+          op_tag.data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op) {
         err_puts("buf_inspect_call_op_size: left: ops_get did not"
                  " return a valid %KC3.Op{}");
         assert(!("buf_inspect_call_op_size: left: ops_get did not"
@@ -1081,7 +1081,7 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
         tag_clean(&op_tag);
         return -1;
       }
-      op = op_tag.data.pstruct->data;
+      op = op_tag.data.td_pstruct->data;
       if (op->precedence < op_precedence) {
         paren = true;
         if ((r = buf_write_1_size(pretty, "(")) < 0) {
@@ -1112,11 +1112,11 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
   result += r;
   paren = false;
   if (right->type == TAG_PCALL) {
-    arity = call_arity(right->data.pcall);
-    if (ops_get_tag(ops, right->data.pcall->ident.sym, arity, &op_tag)) {
+    arity = call_arity(right->data.td_pcall);
+    if (ops_get_tag(ops, right->data.td_pcall->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
-          ! op_tag.data.pstruct ||
-          op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
+          ! op_tag.data.td_pstruct ||
+          op_tag.data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op) {
         err_puts("buf_inspect_call_op: right: ops_get did not return"
                  " a valid %KC3.Op{}");
         assert(!("buf_inspect_call_op: right: ops_get did not return"
@@ -1124,7 +1124,7 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
         tag_clean(&op_tag);
         return -1;
       }
-      op = op_tag.data.pstruct->data;
+      op = op_tag.data.td_pstruct->data;
       if (op->precedence < op_precedence) {
         paren = true;
         if ((r = buf_write_1_size(pretty, "(")) < 0) {
@@ -1161,15 +1161,15 @@ sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
   if (! ops_get_tag(ops, call->ident.sym, 1, &op_tag))
     return -1;
   if (op_tag.type != TAG_PSTRUCT ||
-      ! op_tag.data.pstruct ||
-      op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
+      ! op_tag.data.td_pstruct ||
+      op_tag.data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op) {
     err_puts("buf_inspect_call_op: right: ops_get did not return"
              " a valid %KC3.Op{}");
     assert(!("buf_inspect_call_op: right: ops_get did not return"
              " a valid %KC3.Op{}"));
     return -1;
   }
-  op = op_tag.data.pstruct->data;
+  op = op_tag.data.td_pstruct->data;
   if (op->sym == &g_sym__paren) {
     tag_clean(&op_tag);
     return buf_inspect_call_paren(buf, call);
@@ -1201,15 +1201,15 @@ sw buf_inspect_call_op_unary_size (s_pretty *pretty, const s_call *call)
   if (! ops_get_tag(ops, call->ident.sym, 1, &op_tag))
     return -1;
   if (op_tag.type != TAG_PSTRUCT ||
-      ! op_tag.data.pstruct ||
-      op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
+      ! op_tag.data.td_pstruct ||
+      op_tag.data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op) {
     err_puts("buf_inspect_call_op: right: ops_get did not return"
              " a valid %KC3.Op{}");
     assert(!("buf_inspect_call_op: right: ops_get did not return"
              " a valid %KC3.Op{}"));
     return -1;
   }
-  op = op_tag.data.pstruct->data;
+  op = op_tag.data.td_pstruct->data;
   if (op->sym == &g_sym__paren) {
     tag_clean(&op_tag);
     return buf_inspect_call_paren_size(pretty, call);
@@ -1293,15 +1293,15 @@ sw buf_inspect_call_size (s_pretty *pretty, const s_call *call)
     ops = env_global()->ops;
     if (ops_get_tag(ops, call->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
-          ! op_tag.data.pstruct ||
-          op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
+          ! op_tag.data.td_pstruct ||
+          op_tag.data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op) {
         err_puts("buf_inspect_call_size: ops_get did not return a valid"
                  " %KC3.Op{}");
         assert(!("buf_inspect_call_size: ops_get did not return a valid"
                  " %KC3.Op{}"));
         return -1;
       }
-      op = op_tag.data.pstruct->data;
+      op = op_tag.data.td_pstruct->data;
       if (op->sym == &g_sym__brackets) {
         tag_clean(&op_tag);
         return buf_inspect_call_brackets_size(pretty, call);
@@ -1421,7 +1421,7 @@ sw buf_inspect_call_str (s_buf *buf, const s_call *call)
     assert(! "buf_inspect_call_str: invalid call");
     return -1;
   }
-  return buf_inspect_str_eval(buf, call->arguments->tag.data.plist);
+  return buf_inspect_str_eval(buf, call->arguments->tag.data.td_plist);
 }
 
 sw buf_inspect_call_str_size (s_pretty *pretty, const s_call *call)
@@ -1436,7 +1436,7 @@ sw buf_inspect_call_str_size (s_pretty *pretty, const s_call *call)
     return -1;
   }
   return buf_inspect_str_eval_size(pretty,
-                                   call->arguments->tag.data.plist);
+                                   call->arguments->tag.data.td_plist);
 }
 
 sw buf_inspect_callable (s_buf *buf, const s_callable *callable)
@@ -2441,13 +2441,13 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
         goto clean;
       result += r;
       if (binding->value.type == TAG_PVAR &&
-          binding->value.data.pvar->bound) {
-        tag = &binding->value.data.pvar->tag;
+          binding->value.data.td_pvar->bound) {
+        tag = &binding->value.data.td_pvar->tag;
         if (tag->type == TAG_PCALLABLE &&
-            tag->data.pcallable->type == CALLABLE_FN &&
-            tag->data.pcallable->data.fn.name.module ==
+            tag->data.td_pcallable->type == CALLABLE_FN &&
+            tag->data.td_pcallable->data.fn.name.module ==
             fn->name.module &&
-            tag->data.pcallable->data.fn.name.sym ==
+            tag->data.td_pcallable->data.fn.name.sym ==
             fn->name.sym) {
           if ((r = buf_inspect_ident(buf, &fn->name)) <= 0)
             goto clean;
@@ -2621,13 +2621,13 @@ sw buf_inspect_fn_size (s_pretty *pretty, const s_fn *fn)
         return r;
       result += r;
       if (binding->value.type == TAG_PVAR &&
-          binding->value.data.pvar->bound) {
-        tag = &binding->value.data.pvar->tag;
+          binding->value.data.td_pvar->bound) {
+        tag = &binding->value.data.td_pvar->tag;
         if (tag->type == TAG_PCALLABLE &&
-            tag->data.pcallable->type == CALLABLE_FN &&
-            tag->data.pcallable->data.fn.name.module ==
+            tag->data.td_pcallable->type == CALLABLE_FN &&
+            tag->data.td_pcallable->data.fn.name.module ==
             fn->name.module &&
-            tag->data.pcallable->data.fn.name.sym ==
+            tag->data.td_pcallable->data.fn.name.sym ==
             fn->name.sym) {
           if ((r = buf_inspect_ident_size(pretty, &fn->name)) <= 0)
             return r;
@@ -2803,12 +2803,12 @@ sw buf_inspect_integer_decimal (s_buf *buf, const s_integer *x)
   sw result = 0;
   s32 size = 0;
   mp_int t;
-  if (MP_IS_ZERO(&x->mp_int))
+  if (MP_IS_ZERO(&x->in_int))
     return buf_write_1(buf, "0");
-  if (mp_radix_size(&x->mp_int, radix, &size) != MP_OKAY)
+  if (mp_radix_size(&x->in_int, radix, &size) != MP_OKAY)
     return -1;
   maxlen = size;
-  if (mp_init_copy(&t, &x->mp_int) != MP_OKAY)
+  if (mp_init_copy(&t, &x->in_int) != MP_OKAY)
     return -1;
   if (t.sign == MP_NEG) {
     t.sign = MP_ZPOS;
@@ -2846,9 +2846,9 @@ sw buf_inspect_integer_decimal_size (s_pretty *pretty,
   const mp_digit radix = 10;
   sw result = 0;
   mp_int t;
-  if (MP_IS_ZERO(&x->mp_int))
+  if (MP_IS_ZERO(&x->in_int))
     return buf_write_1_size(pretty, "0");
-  if (mp_init_copy(&t, &x->mp_int) != MP_OKAY)
+  if (mp_init_copy(&t, &x->in_int) != MP_OKAY)
     return -1;
   if (t.sign == MP_NEG) {
     t.sign = MP_ZPOS;
@@ -2883,12 +2883,12 @@ sw buf_inspect_integer_hexadecimal (s_buf *buf, const s_integer *x)
   const mp_digit radix = 16;
   s32 size = 0;
   mp_int t;
-  if (MP_IS_ZERO(&x->mp_int))
+  if (MP_IS_ZERO(&x->in_int))
     return buf_write_character_utf8(buf, '0');
-  if (mp_radix_size(&x->mp_int, radix, &size) != MP_OKAY)
+  if (mp_radix_size(&x->in_int, radix, &size) != MP_OKAY)
     return -1;
   maxlen = size;
-  if (mp_init_copy(&t, &x->mp_int) != MP_OKAY)
+  if (mp_init_copy(&t, &x->in_int) != MP_OKAY)
     return -1;
   if (t.sign == MP_NEG) {
     t.sign = MP_ZPOS;
@@ -2952,12 +2952,12 @@ sw buf_inspect_list (s_buf *buf, const s_list *x)
     result += r;
     switch (i->next.type) {
     case TAG_PLIST:
-      if (i->next.data.plist) {
+      if (i->next.data.td_plist) {
         if ((r = buf_write_1(buf, ",\n")) < 0)
           return r;
         result += r;
       }
-      i = i->next.data.plist;
+      i = i->next.data.td_plist;
       continue;
     default:
       if ((r = buf_write_1(buf, " | ")) < 0)
@@ -2992,12 +2992,12 @@ sw buf_inspect_list_paren (s_buf *buf, const s_list *x)
     result += r;
     switch (i->next.type) {
     case TAG_PLIST:
-      if (i->next.data.plist) {
+      if (i->next.data.td_plist) {
         if ((r = buf_write_1(buf, ", ")) < 0)
           return r;
         result += r;
       }
-      i = i->next.data.plist;
+      i = i->next.data.td_plist;
       continue;
     default:
       if ((r = buf_write_1(buf, " | ")) < 0)
@@ -3031,12 +3031,12 @@ sw buf_inspect_list_paren_size (s_pretty *pretty, const s_list *x)
     result += r;
     switch (i->next.type) {
     case TAG_PLIST:
-      if (i->next.data.plist) {
+      if (i->next.data.td_plist) {
         if ((r = buf_write_1_size(pretty, ", ")) < 0)
           return r;
         result += r;
       }
-      i = i->next.data.plist;
+      i = i->next.data.td_plist;
       continue;
     default:
       if ((r = buf_write_1_size(pretty, " | ")) < 0)
@@ -3073,12 +3073,12 @@ sw buf_inspect_list_size (s_pretty *pretty, const s_list *x)
     result += r;
     switch (i->next.type) {
     case TAG_PLIST:
-      if (i->next.data.plist) {
+      if (i->next.data.td_plist) {
         if ((r = buf_write_1_size(pretty, ",\n")) < 0)
           return r;
         result += r;
       }
-      i = i->next.data.plist;
+      i = i->next.data.td_plist;
       continue;
     default:
       if ((r = buf_write_1_size(pretty, " | ")) < 0)
@@ -3105,9 +3105,9 @@ sw buf_inspect_list_tag (s_buf *buf, const s_tag *tag)
   assert(buf);
   assert(tag);
   if (tag->type == TAG_PTUPLE &&
-      tag->data.ptuple->count == 2 &&
-      tag->data.ptuple->tag[0].type == TAG_PSYM) {
-    sym = tag->data.ptuple->tag[0].data.psym;
+      tag->data.td_ptuple->count == 2 &&
+      tag->data.td_ptuple->tag[0].type == TAG_PSYM) {
+    sym = tag->data.td_ptuple->tag[0].data.td_psym;
     if (sym_has_reserved_characters(sym)) {
       if ((r = buf_inspect_str(buf, &sym->str)) < 0)
         return r;
@@ -3119,7 +3119,7 @@ sw buf_inspect_list_tag (s_buf *buf, const s_tag *tag)
     if ((r = buf_write_1(buf, ": ")) < 0)
       return r;
     result += r;
-    if ((r = buf_inspect_tag(buf, tag->data.ptuple->tag + 1)) < 0)
+    if ((r = buf_inspect_tag(buf, tag->data.td_ptuple->tag + 1)) < 0)
       return r;
     result += r;
     return result;
@@ -3134,9 +3134,9 @@ sw buf_inspect_list_tag_size (s_pretty *pretty, const s_tag *tag)
   const s_sym *sym;
   assert(tag);
   if (tag->type == TAG_PTUPLE &&
-      tag->data.ptuple->count == 2 &&
-      tag->data.ptuple->tag[0].type == TAG_PSYM) {
-    sym = tag->data.ptuple->tag[0].data.psym;
+      tag->data.td_ptuple->count == 2 &&
+      tag->data.td_ptuple->tag[0].type == TAG_PSYM) {
+    sym = tag->data.td_ptuple->tag[0].data.td_psym;
     if (sym_has_reserved_characters(sym)) {
       if ((r = buf_inspect_str_size(pretty, &sym->str)) < 0)
         return r;
@@ -3147,7 +3147,7 @@ sw buf_inspect_list_tag_size (s_pretty *pretty, const s_tag *tag)
     if ((r = buf_write_1_size(pretty, ": ")) < 0)
       return r;
     result += r;
-    if ((r = buf_inspect_tag_size(pretty, tag->data.ptuple->tag + 1)) < 0)
+    if ((r = buf_inspect_tag_size(pretty, tag->data.td_ptuple->tag + 1)) < 0)
       return r;
     result += r;
     return result;
@@ -3172,12 +3172,12 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
   while (i < map->count) {
     k = map->key + i;
     if (k->type == TAG_PSYM) {
-      if (sym_has_reserved_characters(k->data.psym)) {
-        if ((r = buf_inspect_str(buf, &k->data.psym->str)) < 0)
+      if (sym_has_reserved_characters(k->data.td_psym)) {
+        if ((r = buf_inspect_str(buf, &k->data.td_psym->str)) < 0)
           return r;
       }
       else
-        if ((r = buf_write_str(buf, &k->data.psym->str)) < 0)
+        if ((r = buf_write_str(buf, &k->data.td_psym->str)) < 0)
           return r;
       result += r;
       if ((r = buf_write_1(buf, ": ")) < 0)
@@ -3225,12 +3225,12 @@ sw buf_inspect_map_size (s_pretty *pretty, const s_map *map)
   while (i < map->count) {
     k = map->key + i;
     if (k->type == TAG_PSYM) {
-      if (sym_has_reserved_characters(k->data.psym)) {
-        if ((r = buf_inspect_str_size(pretty, &k->data.psym->str)) < 0)
+      if (sym_has_reserved_characters(k->data.td_psym)) {
+        if ((r = buf_inspect_str_size(pretty, &k->data.td_psym->str)) < 0)
           return r;
       }
       else
-        if ((r = buf_write_str_size(pretty, &k->data.psym->str)) < 0)
+        if ((r = buf_write_str_size(pretty, &k->data.td_psym->str)) < 0)
           return r;
       result += r;
       if ((r = buf_write_1_size(pretty, ": ")) < 0)
@@ -3286,7 +3286,7 @@ sw buf_inspect_match (s_buf *buf, const s_call *match)
     assert(! "buf_inspect_match: invalid match: not a Map");
     return -1;
   }
-  map = &arg->tag.data.map;
+  map = &arg->tag.data.td_map;
   pretty_save_init(&pretty_save, &buf->pretty);
   pretty_indent_from_column(&buf->pretty, 0);
   if ((r = buf_write_1(buf, "match ")) < 0)
@@ -3313,7 +3313,7 @@ sw buf_inspect_match (s_buf *buf, const s_call *match)
       assert(! "buf_inspect_match: invalid match: not a Block");
       return -1;
     }
-    do_block = &map->value[i].data.do_block;
+    do_block = &map->value[i].data.td_do_block;
     j = 0;
     while (j < do_block->count) {
       if ((r = buf_inspect_tag(buf, do_block->tag + j)) < 0)
@@ -3545,7 +3545,7 @@ sw buf_inspect_pointer (s_buf *buf, const s_pointer *pointer)
     return r;
   result += r;
   if (env->bool_ptr) {
-    if (pointer->ptr.uw) {
+    if (pointer->ptr.p_uw) {
       if ((r = buf_write_1(buf, " 1")) < 0)
         return r;
       result += r;
@@ -3560,7 +3560,7 @@ sw buf_inspect_pointer (s_buf *buf, const s_pointer *pointer)
   if ((r = buf_write_1(buf, " 0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal(buf, pointer->ptr.uw)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal(buf, pointer->ptr.p_uw)) < 0)
     return r;
   result += r;
   return result;
@@ -3580,7 +3580,7 @@ sw buf_inspect_pointer_size (s_pretty *pretty, const s_pointer *pointer)
     return r;
   result += r;
   if (env->bool_ptr) {
-    if (pointer->ptr.uw) {
+    if (pointer->ptr.p_uw) {
       if ((r = buf_write_1_size(pretty, " 1")) < 0)
         return r;
       result += r;
@@ -3596,7 +3596,7 @@ sw buf_inspect_pointer_size (s_pretty *pretty, const s_pointer *pointer)
     return r;
   result += r;
   if ((r = buf_inspect_uw_hexadecimal_size(pretty,
-                                           pointer->ptr.uw)) < 0)
+                                           pointer->ptr.p_uw)) < 0)
     return r;
   result += r;
   return result;
@@ -3649,7 +3649,7 @@ sw buf_inspect_ptr (s_buf *buf, const u_ptr_w *ptr)
   env = env_global();
   assert(env);
   if (env->bool_ptr) {
-    if (ptr->uw) {
+    if (ptr->p_uw) {
       if ((r = buf_write_1(buf, "(Ptr) 1")) < 0)
         return r;
       result += r;
@@ -3664,7 +3664,7 @@ sw buf_inspect_ptr (s_buf *buf, const u_ptr_w *ptr)
   if ((r = buf_write_1(buf, "(Ptr) 0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal(buf, ptr->uw)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal(buf, ptr->p_uw)) < 0)
     return r;
   result += r;
   return result;
@@ -3680,7 +3680,7 @@ sw buf_inspect_ptr_free (s_buf *buf, const u_ptr_w *ptr_free)
   env = env_global();
   assert(env);
   if (env->bool_ptr) {
-    if (ptr_free->uw) {
+    if (ptr_free->p_uw) {
       if ((r = buf_write_1(buf, "(PtrFree) 1")) < 0)
         return r;
       result += r;
@@ -3695,7 +3695,7 @@ sw buf_inspect_ptr_free (s_buf *buf, const u_ptr_w *ptr_free)
   if ((r = buf_write_1(buf, "(PtrFree) 0x")) < 0)
     return r;
   result += r;
-  r = buf_inspect_uw_hexadecimal(buf, ptr_free->uw);
+  r = buf_inspect_uw_hexadecimal(buf, ptr_free->p_uw);
   if (r < 0)
     return r;
   result += r;
@@ -3710,7 +3710,7 @@ sw buf_inspect_ptr_free_size (s_pretty *pretty, const u_ptr_w *ptr)
   env = env_global();
   assert(env);
   if (env->bool_ptr) {
-    if (ptr->uw) {
+    if (ptr->p_uw) {
       if ((r = buf_write_1_size(pretty, "(PtrFree) 1")) < 0)
         return r;
       result += r;
@@ -3725,7 +3725,7 @@ sw buf_inspect_ptr_free_size (s_pretty *pretty, const u_ptr_w *ptr)
   if ((r = buf_write_1_size(pretty, "(PtrFree) 0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal_size(pretty, ptr->uw)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal_size(pretty, ptr->p_uw)) < 0)
     return r;
   result += r;
   return result;
@@ -3739,7 +3739,7 @@ sw buf_inspect_ptr_size (s_pretty *pretty, const u_ptr_w *ptr)
   env = env_global();
   assert(env);
   if (env->bool_ptr) {
-    if (ptr->uw) {
+    if (ptr->p_uw) {
       if ((r = buf_write_1_size(pretty, "(Ptr) 1")) < 0)
         return r;
       result += r;
@@ -3754,7 +3754,7 @@ sw buf_inspect_ptr_size (s_pretty *pretty, const u_ptr_w *ptr)
   if ((r = buf_write_1_size(pretty, "(Ptr) 0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal_size(pretty, ptr->uw)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal_size(pretty, ptr->p_uw)) < 0)
     return r;
   result += r;
   return result;
@@ -3877,13 +3877,13 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
       goto clean;
     result += r;
     if (trace[i]->type == TAG_PLIST) {
-      if ((r = buf_inspect_tag(buf, &trace[i]->data.plist->tag)) < 0)
+      if ((r = buf_inspect_tag(buf, &trace[i]->data.td_plist->tag)) < 0)
         goto clean;
       result += r;
       if ((r = buf_write_1(buf, "(")) < 0)
         goto clean;
       result += r;
-      arg = list_next(trace[i]->data.plist);
+      arg = list_next(trace[i]->data.td_plist);
       while (arg) {
         if ((r = buf_inspect_tag(buf, &arg->tag)) < 0)
           goto clean;
@@ -4043,7 +4043,7 @@ sw buf_inspect_str_character (s_buf *buf, character c)
       goto restore;
     }
     result1 += r;
-    if ((r = buf_u8_to_hex(buf, &char_buf.ptr.pu8[j++])) != 2) {
+    if ((r = buf_u8_to_hex(buf, &char_buf.ptr.p_pu8[j++])) != 2) {
       buf_clean(&char_buf);
       goto restore;
     }
@@ -4054,7 +4054,7 @@ sw buf_inspect_str_character (s_buf *buf, character c)
         goto restore;
       }
       result1 += r;
-      if ((r = buf_u8_to_hex(buf, &char_buf.ptr.pu8[j++])) != 2) {
+      if ((r = buf_u8_to_hex(buf, &char_buf.ptr.p_pu8[j++])) != 2) {
 	buf_clean(&char_buf);
         goto restore;
       }
@@ -4179,7 +4179,7 @@ sw buf_inspect_str_eval (s_buf *buf, const s_list *list)
   l = list;
   while (l) {
     if (l->tag.type == TAG_STR) {
-      if ((r = buf_inspect_str_reserved(buf, &l->tag.data.str,
+      if ((r = buf_inspect_str_reserved(buf, &l->tag.data.td_str,
                                         false)) <= 0)
         return r;
       result += r;
@@ -4190,7 +4190,7 @@ sw buf_inspect_str_eval (s_buf *buf, const s_list *list)
       result += r;
       tag = &l->tag;
       if (tag_is_cast(tag, &g_sym_Str))
-        tag = &list_next(tag->data.pcall->arguments)->tag;
+        tag = &list_next(tag->data.td_pcall->arguments)->tag;
       if ((r = buf_inspect_tag(buf, tag)) <= 0)
         return r;
       result += r;
@@ -4218,7 +4218,7 @@ sw buf_inspect_str_eval_size (s_pretty *pretty, const s_list *list)
   l = list;
   while (l) {
     if (l->tag.type == TAG_STR) {
-      if ((r = buf_inspect_str_reserved_size(pretty, &l->tag.data.str,
+      if ((r = buf_inspect_str_reserved_size(pretty, &l->tag.data.td_str,
                                              false)) <= 0)
         return r;
       result += r;
@@ -4229,7 +4229,7 @@ sw buf_inspect_str_eval_size (s_pretty *pretty, const s_list *list)
       result += r;
       tag = &l->tag;
       if (tag_is_cast(tag, &g_sym_Str))
-        tag = &list_next(tag->data.pcall->arguments)->tag;
+        tag = &list_next(tag->data.td_pcall->arguments)->tag;
       if ((r = buf_inspect_tag_size(pretty, tag)) <= 0)
         return r;
       result += r;
@@ -4262,7 +4262,7 @@ sw buf_inspect_str_hex (s_buf *buf, const s_str *str)
       goto clean;
     result += r;
     if ((r = buf_inspect_u8_hexadecimal_pad(buf, 2, '0',
-                                            str->ptr.pu8[i])) != 2)
+                                            str->ptr.p_pu8[i])) != 2)
       goto clean;
     result += r;
     i++;
@@ -4516,14 +4516,14 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
           r = -1;
           goto clean;
         }
-        if (sym_has_reserved_characters(k->data.psym)) {
-          if ((r = buf_inspect_str(buf, &k->data.psym->str)) < 0) {
+        if (sym_has_reserved_characters(k->data.td_psym)) {
+          if ((r = buf_inspect_str(buf, &k->data.td_psym->str)) < 0) {
             assert(! "buf_inspect_struct: buf_inspect_str: k");
             goto clean;
           }
         }
         else {
-          r = buf_write_str_without_indent(buf, &k->data.psym->str);
+          r = buf_write_str_without_indent(buf, &k->data.td_psym->str);
           if (r < 0) {
             assert(! "buf_inspect_struct: "
                      "buf_write_str_without_ident: k");
@@ -4643,16 +4643,16 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
           r = -1;
           goto clean;
         }
-        if (sym_has_reserved_characters(k->data.psym)) {
+        if (sym_has_reserved_characters(k->data.td_psym)) {
           if ((r = buf_inspect_str_size(pretty,
-                                        &k->data.psym->str)) < 0) {
+                                        &k->data.td_psym->str)) < 0) {
             assert(! "buf_inspect_struct_size: buf_inspect_str: k");
             goto clean;
           }
         }
         else
           if ((r = buf_write_str_without_indent_size
-               (pretty, &k->data.psym->str)) < 0) {
+               (pretty, &k->data.td_psym->str)) < 0) {
             assert(! "buf_inspect_struct_size: "
                      "buf_write_str_without_ident: k");
             goto clean;
@@ -4663,7 +4663,7 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
         result += r;
         if (s->data) {
           if (s->pstruct_type->map.value[i].type == TAG_PVAR)
-            type = s->pstruct_type->map.value[i].data.pvar->type;
+            type = s->pstruct_type->map.value[i].data.td_pvar->type;
           else if (! tag_type(s->pstruct_type->map.value + i, &type)) {
             assert(! "buf_inspect_struct_size: tag_type");
             goto clean;
@@ -4886,57 +4886,57 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   if (! tag)
     return buf_write_1(buf, "NULL");
   switch (tag->type) {
-  case TAG_ARRAY:   return buf_inspect_array(buf, &tag->data.array);
+  case TAG_ARRAY:   return buf_inspect_array(buf, &tag->data.td_array);
   case TAG_DO_BLOCK:
-    return buf_inspect_do_block(buf, &tag->data.do_block);
-  case TAG_BOOL:    return buf_inspect_bool(buf, tag->data.bool_);
+    return buf_inspect_do_block(buf, &tag->data.td_do_block);
+  case TAG_BOOL:    return buf_inspect_bool(buf, tag->data.td_bool_);
   case TAG_CHARACTER:
-    return buf_inspect_character(buf, tag->data.character);
-  case TAG_F32:     return buf_inspect_f32(buf, tag->data.f32);
-  case TAG_F64:     return buf_inspect_f64(buf, tag->data.f64);
+    return buf_inspect_character(buf, tag->data.td_character);
+  case TAG_F32:     return buf_inspect_f32(buf, tag->data.td_f32);
+  case TAG_F64:     return buf_inspect_f64(buf, tag->data.td_f64);
 #if HAVE_F80
-  case TAG_F80:     return buf_inspect_f80(buf, tag->data.f80);
+  case TAG_F80:     return buf_inspect_f80(buf, tag->data.td_f80);
 #endif
 #if HAVE_F128
-  case TAG_F128:    return buf_inspect_f128(buf, tag->data.f128);
+  case TAG_F128:    return buf_inspect_f128(buf, tag->data.td_f128);
 #endif
-  case TAG_FACT:    return buf_inspect_fact(buf, &tag->data.fact);
-  case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
-  case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
-  case TAG_MAP:     return buf_inspect_map(buf, &tag->data.map);
-  case TAG_PCALL:   return buf_inspect_call(buf, tag->data.pcall);
+  case TAG_FACT:    return buf_inspect_fact(buf, &tag->data.td_fact);
+  case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.td_ident);
+  case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.td_integer);
+  case TAG_MAP:     return buf_inspect_map(buf, &tag->data.td_map);
+  case TAG_PCALL:   return buf_inspect_call(buf, tag->data.td_pcall);
   case TAG_PCALLABLE:
-    return buf_inspect_callable(buf, tag->data.pcallable);
+    return buf_inspect_callable(buf, tag->data.td_pcallable);
   case TAG_PCOMPLEX:
-    return buf_inspect_complex(buf, tag->data.pcomplex);
-  case TAG_PCOW:    return buf_inspect_cow(buf, tag->data.pcow);
-  case TAG_PFACTS:  return buf_inspect_pfacts(buf, &tag->data.pfacts);
-  case TAG_PLIST:   return buf_inspect_list(buf, tag->data.plist);
-  case TAG_POINTER: return buf_inspect_pointer(buf, &tag->data.pointer);
-  case TAG_PSTRUCT: return buf_inspect_struct(buf, tag->data.pstruct);
+    return buf_inspect_complex(buf, tag->data.td_pcomplex);
+  case TAG_PCOW:    return buf_inspect_cow(buf, tag->data.td_pcow);
+  case TAG_PFACTS:  return buf_inspect_pfacts(buf, &tag->data.td_pfacts);
+  case TAG_PLIST:   return buf_inspect_list(buf, tag->data.td_plist);
+  case TAG_POINTER: return buf_inspect_pointer(buf, &tag->data.td_pointer);
+  case TAG_PSTRUCT: return buf_inspect_struct(buf, tag->data.td_pstruct);
   case TAG_PSTRUCT_TYPE:
-    return buf_inspect_struct_type(buf, tag->data.pstruct_type);
-  case TAG_PSYM:    return buf_inspect_sym(buf, tag->data.psym);
-  case TAG_PTR:     return buf_inspect_ptr(buf, &tag->data.ptr);
+    return buf_inspect_struct_type(buf, tag->data.td_pstruct_type);
+  case TAG_PSYM:    return buf_inspect_sym(buf, tag->data.td_psym);
+  case TAG_PTR:     return buf_inspect_ptr(buf, &tag->data.td_ptr);
   case TAG_PTR_FREE:
-    return buf_inspect_ptr_free(buf, &tag->data.ptr_free);
-  case TAG_PVAR:    return buf_inspect_var(buf, tag->data.pvar);
-  case TAG_QUOTE:   return buf_inspect_quote(buf, &tag->data.quote);
-  case TAG_RATIO:   return buf_inspect_ratio(buf, &tag->data.ratio);
-  case TAG_S8:      return buf_inspect_s8(buf, tag->data.s8);
-  case TAG_S16:     return buf_inspect_s16(buf, tag->data.s16);
-  case TAG_S32:     return buf_inspect_s32(buf, tag->data.s32);
-  case TAG_S64:     return buf_inspect_s64(buf, tag->data.s64);
-  case TAG_SW:      return buf_inspect_sw(buf, tag->data.sw);
-  case TAG_STR:     return buf_inspect_str(buf, &tag->data.str);
-  case TAG_TIME:    return buf_inspect_time(buf, &tag->data.time);
-  case TAG_PTUPLE:   return buf_inspect_tuple(buf, tag->data.ptuple);
-  case TAG_U8:      return buf_inspect_u8(buf, tag->data.u8);
-  case TAG_U16:     return buf_inspect_u16(buf, tag->data.u16);
-  case TAG_U32:     return buf_inspect_u32(buf, tag->data.u32);
-  case TAG_U64:     return buf_inspect_u64(buf, tag->data.u64);
-  case TAG_UNQUOTE: return buf_inspect_unquote(buf, &tag->data.unquote);
-  case TAG_UW:      return buf_inspect_uw(buf, tag->data.uw);
+    return buf_inspect_ptr_free(buf, &tag->data.td_ptr_free);
+  case TAG_PVAR:    return buf_inspect_var(buf, tag->data.td_pvar);
+  case TAG_QUOTE:   return buf_inspect_quote(buf, &tag->data.td_quote);
+  case TAG_RATIO:   return buf_inspect_ratio(buf, &tag->data.td_ratio);
+  case TAG_S8:      return buf_inspect_s8(buf, tag->data.td_s8);
+  case TAG_S16:     return buf_inspect_s16(buf, tag->data.td_s16);
+  case TAG_S32:     return buf_inspect_s32(buf, tag->data.td_s32);
+  case TAG_S64:     return buf_inspect_s64(buf, tag->data.td_s64);
+  case TAG_SW:      return buf_inspect_sw(buf, tag->data.td_sw);
+  case TAG_STR:     return buf_inspect_str(buf, &tag->data.td_str);
+  case TAG_TIME:    return buf_inspect_time(buf, &tag->data.td_time);
+  case TAG_PTUPLE:   return buf_inspect_tuple(buf, tag->data.td_ptuple);
+  case TAG_U8:      return buf_inspect_u8(buf, tag->data.td_u8);
+  case TAG_U16:     return buf_inspect_u16(buf, tag->data.td_u16);
+  case TAG_U32:     return buf_inspect_u32(buf, tag->data.td_u32);
+  case TAG_U64:     return buf_inspect_u64(buf, tag->data.td_u64);
+  case TAG_UNQUOTE: return buf_inspect_unquote(buf, &tag->data.td_unquote);
+  case TAG_UW:      return buf_inspect_uw(buf, tag->data.td_uw);
   case TAG_VOID:    return buf_inspect_void(buf, NULL);
   }
   err_puts("buf_inspect_tag: unknown tag_type");
@@ -4949,91 +4949,91 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
   assert(tag);
   switch(tag->type) {
   case TAG_ARRAY:
-    return buf_inspect_array_size(pretty, &tag->data.array);
+    return buf_inspect_array_size(pretty, &tag->data.td_array);
   case TAG_DO_BLOCK:
-    return buf_inspect_do_block_size(pretty, &tag->data.do_block);
+    return buf_inspect_do_block_size(pretty, &tag->data.td_do_block);
   case TAG_BOOL:
-    return buf_inspect_bool_size(pretty, tag->data.bool_);
+    return buf_inspect_bool_size(pretty, tag->data.td_bool_);
   case TAG_CHARACTER:
-    return buf_inspect_character_size(pretty, tag->data.character);
+    return buf_inspect_character_size(pretty, tag->data.td_character);
   case TAG_F32:
-    return buf_inspect_f32_size(pretty, tag->data.f32);
+    return buf_inspect_f32_size(pretty, tag->data.td_f32);
   case TAG_F64:
-    return buf_inspect_f64_size(pretty, tag->data.f64);
+    return buf_inspect_f64_size(pretty, tag->data.td_f64);
 #if HAVE_F80
   case TAG_F80:
-    return buf_inspect_f80_size(pretty, tag->data.f80);
+    return buf_inspect_f80_size(pretty, tag->data.td_f80);
 #endif
 #if HAVE_F128
   case TAG_F128:
-    return buf_inspect_f128_size(pretty, tag->data.f128);
+    return buf_inspect_f128_size(pretty, tag->data.td_f128);
 #endif
   case TAG_FACT:
-    return buf_inspect_fact_size(pretty, &tag->data.fact);
+    return buf_inspect_fact_size(pretty, &tag->data.td_fact);
   case TAG_IDENT:
-    return buf_inspect_ident_size(pretty, &tag->data.ident);
+    return buf_inspect_ident_size(pretty, &tag->data.td_ident);
   case TAG_INTEGER:
-    return buf_inspect_integer_size(pretty, &tag->data.integer);
+    return buf_inspect_integer_size(pretty, &tag->data.td_integer);
   case TAG_MAP:
-    return buf_inspect_map_size(pretty, &tag->data.map);
+    return buf_inspect_map_size(pretty, &tag->data.td_map);
   case TAG_PCALL:
-    return buf_inspect_call_size(pretty, tag->data.pcall);
+    return buf_inspect_call_size(pretty, tag->data.td_pcall);
   case TAG_PCALLABLE:
-    return buf_inspect_callable_size(pretty, tag->data.pcallable);
+    return buf_inspect_callable_size(pretty, tag->data.td_pcallable);
   case TAG_PCOMPLEX:
-    return buf_inspect_complex_size(pretty, tag->data.pcomplex);
+    return buf_inspect_complex_size(pretty, tag->data.td_pcomplex);
   case TAG_PCOW:
-    return buf_inspect_cow_size(pretty, tag->data.pcow);
+    return buf_inspect_cow_size(pretty, tag->data.td_pcow);
   case TAG_PFACTS:
-    return buf_inspect_pfacts_size(pretty, &tag->data.pfacts);
+    return buf_inspect_pfacts_size(pretty, &tag->data.td_pfacts);
   case TAG_PLIST:
-    return buf_inspect_list_size(pretty, tag->data.plist);
+    return buf_inspect_list_size(pretty, tag->data.td_plist);
   case TAG_PSTRUCT:
-    return buf_inspect_struct_size(pretty, tag->data.pstruct);
+    return buf_inspect_struct_size(pretty, tag->data.td_pstruct);
   case TAG_PSTRUCT_TYPE:
-    return buf_inspect_struct_type_size(pretty, tag->data.pstruct_type);
+    return buf_inspect_struct_type_size(pretty, tag->data.td_pstruct_type);
   case TAG_PSYM:
-    return buf_inspect_sym_size(pretty, tag->data.psym);
+    return buf_inspect_sym_size(pretty, tag->data.td_psym);
   case TAG_POINTER:
-    return buf_inspect_pointer_size(pretty, &tag->data.pointer);
+    return buf_inspect_pointer_size(pretty, &tag->data.td_pointer);
   case TAG_PTR:
-    return buf_inspect_ptr_size(pretty, &tag->data.ptr);
+    return buf_inspect_ptr_size(pretty, &tag->data.td_ptr);
   case TAG_PTR_FREE:
-    return buf_inspect_ptr_free_size(pretty, &tag->data.ptr_free);
+    return buf_inspect_ptr_free_size(pretty, &tag->data.td_ptr_free);
   case TAG_PVAR:
-    return buf_inspect_var_size(pretty, tag->data.pvar);
+    return buf_inspect_var_size(pretty, tag->data.td_pvar);
   case TAG_QUOTE:
-    return buf_inspect_quote_size(pretty, &tag->data.quote);
+    return buf_inspect_quote_size(pretty, &tag->data.td_quote);
   case TAG_RATIO:
-    return buf_inspect_ratio_size(pretty, &tag->data.ratio);
+    return buf_inspect_ratio_size(pretty, &tag->data.td_ratio);
   case TAG_S8:
-    return buf_inspect_s8_size(pretty, tag->data.s8);
+    return buf_inspect_s8_size(pretty, tag->data.td_s8);
   case TAG_S16:
-    return buf_inspect_s16_size(pretty, tag->data.s16);
+    return buf_inspect_s16_size(pretty, tag->data.td_s16);
   case TAG_S32:
-    return buf_inspect_s32_size(pretty, tag->data.s32);
+    return buf_inspect_s32_size(pretty, tag->data.td_s32);
   case TAG_S64:
-    return buf_inspect_s64_size(pretty, tag->data.s64);
+    return buf_inspect_s64_size(pretty, tag->data.td_s64);
   case TAG_STR:
-    return buf_inspect_str_size(pretty, &tag->data.str);
+    return buf_inspect_str_size(pretty, &tag->data.td_str);
   case TAG_SW:
-    return buf_inspect_sw_size(pretty, tag->data.sw);
+    return buf_inspect_sw_size(pretty, tag->data.td_sw);
   case TAG_TIME:
-    return buf_inspect_time_size(pretty, &tag->data.time);
+    return buf_inspect_time_size(pretty, &tag->data.td_time);
   case TAG_PTUPLE:
-    return buf_inspect_tuple_size(pretty, tag->data.ptuple);
+    return buf_inspect_tuple_size(pretty, tag->data.td_ptuple);
   case TAG_U8:
-    return buf_inspect_u8_size(pretty, tag->data.u8);
+    return buf_inspect_u8_size(pretty, tag->data.td_u8);
   case TAG_U16:
-    return buf_inspect_u16_size(pretty, tag->data.u16);
+    return buf_inspect_u16_size(pretty, tag->data.td_u16);
   case TAG_U32:
-    return buf_inspect_u32_size(pretty, tag->data.u32);
+    return buf_inspect_u32_size(pretty, tag->data.td_u32);
   case TAG_U64:
-    return buf_inspect_u64_size(pretty, tag->data.u64);
+    return buf_inspect_u64_size(pretty, tag->data.td_u64);
   case TAG_UNQUOTE:
-    return buf_inspect_unquote_size(pretty, &tag->data.unquote);
+    return buf_inspect_unquote_size(pretty, &tag->data.td_unquote);
   case TAG_UW:
-    return buf_inspect_uw_size(pretty, tag->data.uw);
+    return buf_inspect_uw_size(pretty, tag->data.td_uw);
   case TAG_VOID:
     return buf_inspect_void_size(pretty, NULL);
   }
@@ -5070,7 +5070,7 @@ sw buf_inspect_time (s_buf *buf, const s_time *time)
     return r;
   result += r;
   if ((sec = time->tag ?
-       time->tag->type != TAG_SW || time->tag->data.sw :
+       time->tag->type != TAG_SW || time->tag->data.td_sw :
        time->tv_sec)) {
     if ((r = buf_write_1(buf, "tv_sec: ")) < 0)
       return r;
@@ -5086,7 +5086,7 @@ sw buf_inspect_time (s_buf *buf, const s_time *time)
     result += r;
   }
   if (time->tag ?
-      time->tag[1].type != TAG_SW || time->tag[1].data.sw :
+      time->tag[1].type != TAG_SW || time->tag[1].data.td_sw :
       time->tv_nsec) {
     if (sec) {
       if ((r = buf_write_1(buf, ", ")) < 0)
@@ -5121,7 +5121,7 @@ sw buf_inspect_time_size (s_pretty *pretty, const s_time *time)
     return r;
   result += r;
   if ((sec = time->tag ?
-       time->tag->type != TAG_SW || time->tag->data.sw :
+       time->tag->type != TAG_SW || time->tag->data.td_sw :
        time->tv_sec)) {
     if ((r = buf_write_1_size(pretty, "tv_sec: ")) < 0)
       return r;
@@ -5137,7 +5137,7 @@ sw buf_inspect_time_size (s_pretty *pretty, const s_time *time)
     result += r;
   }
   if (time->tag ?
-      time->tag[1].type != TAG_SW || time->tag[1].data.sw :
+      time->tag[1].type != TAG_SW || time->tag[1].data.td_sw :
       time->tv_nsec) {
     if (sec) {
       if ((r = buf_write_1_size(pretty, ", ")) < 0)

@@ -81,7 +81,7 @@ s_fact * fact_init_cast (s_fact *fact, const s_sym * const *type,
   assert(tag);
   switch (tag->type) {
   case TAG_FACT:
-    return fact_init_copy(fact, &tag->data.fact);
+    return fact_init_copy(fact, &tag->data.td_fact);
   default:
     break;
   }
@@ -146,7 +146,7 @@ s_fact_w * fact_w_init_cast (s_fact_w *fact, const s_sym * const *type,
   assert(tag);
   switch (tag->type) {
   case TAG_FACT:
-    return fact_w_init_fact(fact, &tag->data.fact);
+    return fact_w_init_fact(fact, &tag->data.td_fact);
   default:
     break;
   }

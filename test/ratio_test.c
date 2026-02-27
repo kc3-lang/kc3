@@ -29,7 +29,7 @@
     test_context("ratio_init_1(" # test ") -> " # expected);           \
     TEST_EQ(ratio_init_1(&ratio, (test)), &ratio);                     \
     TEST_ASSERT(str_init_ratio(&str, &ratio));                         \
-    TEST_STRNCMP(str.ptr.pchar, (expected), str.size);                 \
+    TEST_STRNCMP(str.ptr.p_pchar, (expected), str.size);                 \
     str_clean(&str);                                                   \
     ratio_clean(&ratio);                                               \
     test_context(NULL);                                                \

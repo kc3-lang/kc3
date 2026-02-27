@@ -306,11 +306,11 @@ bool hash_update_integer (t_hash *hash, const s_integer *i)
   const char type[] = "integer";
   assert(hash);
   assert(i);
-  digit = i->mp_int.dp;
+  digit = i->in_int.dp;
   if (! hash_update(hash, type, sizeof(type)) ||
-      ! hash_update(hash, &i->mp_int.used, sizeof(i->mp_int.used)))
+      ! hash_update(hash, &i->in_int.used, sizeof(i->in_int.used)))
     return false;
-  while (j < i->mp_int.used) {
+  while (j < i->in_int.used) {
     if (! hash_update(hash, digit, sizeof(*digit)))
       return false;
     digit++;
@@ -388,7 +388,7 @@ bool hash_update_pointer (t_hash *hash, const s_pointer *pointer)
   assert(pointer);
   if (! hash_update(hash, type, strlen(type)) ||
       ! hash_update_sym(hash, pointer->target_type) ||
-      ! hash_update(hash, &pointer->ptr.p, sizeof(void *)))
+      ! hash_update(hash, &pointer->ptr.p_pvoid, sizeof(void *)))
       return false;
     return true;
 }
@@ -413,7 +413,7 @@ bool hash_update_ptr (t_hash *hash, const u_ptr_w *ptr)
   const char type[] = "ptr";
   if (! hash_update(hash, type, strlen(type)))
     return false;
-  return hash_update(hash, &ptr->p, sizeof(void *));
+  return hash_update(hash, &ptr->p_pvoid, sizeof(void *));
 }
 
 bool hash_update_ptr_free (t_hash *hash, const u_ptr_w *ptr_free)
@@ -421,7 +421,7 @@ bool hash_update_ptr_free (t_hash *hash, const u_ptr_w *ptr_free)
   const char type[] = "ptr_free";
   if (! hash_update(hash, type, strlen(type)))
     return false;
-  return hash_update(hash, &ptr_free->p, sizeof(void *));
+  return hash_update(hash, &ptr_free->p_pvoid, sizeof(void *));
 }
 
 bool hash_update_quote (t_hash *hash, const s_quote *x)
@@ -459,7 +459,7 @@ bool hash_update_str (t_hash *hash, const s_str *str)
       ! hash_update(hash, &str->size, sizeof(str->size)))
     return false;
   if (str->size &&
-      ! hash_update(hash, str->ptr.p, str->size))
+      ! hash_update(hash, str->ptr.p_pvoid, str->size))
     return false;
   return true;
 }
@@ -481,7 +481,7 @@ bool hash_update_struct (t_hash *hash, const s_struct *s)
     if (! hash_update_tag(hash, s->pstruct_type->map.key + i))
       return false;
     if (s->pstruct_type->map.value[i].type == TAG_PVAR)
-      sym = s->pstruct_type->map.value[i].data.pvar->type;
+      sym = s->pstruct_type->map.value[i].data.td_pvar->type;
     else if (! tag_type(s->pstruct_type->map.value + i, &sym))
       return false;
     if (s->data) {
@@ -540,60 +540,60 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   if (! hash_update_u8(hash, tag_type))
     return false;
   switch (tag->type) {
-  case TAG_ARRAY:   return hash_update_array(hash, &tag->data.array);
+  case TAG_ARRAY:   return hash_update_array(hash, &tag->data.td_array);
   case TAG_DO_BLOCK:
-    return hash_update_do_block(hash, &tag->data.do_block);
-  case TAG_BOOL:    return hash_update_bool(hash, tag->data.bool_);
+    return hash_update_do_block(hash, &tag->data.td_do_block);
+  case TAG_BOOL:    return hash_update_bool(hash, tag->data.td_bool_);
   case TAG_CHARACTER:
-    return hash_update_character(hash, tag->data.character);
-  case TAG_F32:     return hash_update_f32(hash, tag->data.f32);
-  case TAG_F64:     return hash_update_f64(hash, tag->data.f64);
+    return hash_update_character(hash, tag->data.td_character);
+  case TAG_F32:     return hash_update_f32(hash, tag->data.td_f32);
+  case TAG_F64:     return hash_update_f64(hash, tag->data.td_f64);
 #if HAVE_F80
-  case TAG_F80:     return hash_update_f80(hash, tag->data.f80);
+  case TAG_F80:     return hash_update_f80(hash, tag->data.td_f80);
 #endif
 #if HAVE_F128
-  case TAG_F128:    return hash_update_f128(hash, tag->data.f128);
+  case TAG_F128:    return hash_update_f128(hash, tag->data.td_f128);
 #endif
-  case TAG_FACT:    return hash_update_fact(hash, &tag->data.fact);
-  case TAG_IDENT:   return hash_update_ident(hash, &tag->data.ident);
+  case TAG_FACT:    return hash_update_fact(hash, &tag->data.td_fact);
+  case TAG_IDENT:   return hash_update_ident(hash, &tag->data.td_ident);
   case TAG_INTEGER:
-    return hash_update_integer(hash, &tag->data.integer);
-  case TAG_MAP:     return hash_update_map(hash, &tag->data.map);
-  case TAG_PCALL:   return hash_update_call(hash, tag->data.pcall);
+    return hash_update_integer(hash, &tag->data.td_integer);
+  case TAG_MAP:     return hash_update_map(hash, &tag->data.td_map);
+  case TAG_PCALL:   return hash_update_call(hash, tag->data.td_pcall);
   case TAG_PCALLABLE:
-    return hash_update_callable(hash, tag->data.pcallable);
+    return hash_update_callable(hash, tag->data.td_pcallable);
   case TAG_PCOMPLEX:
-    return hash_update_complex(hash, tag->data.pcomplex);
-  case TAG_PCOW:    return hash_update_cow(hash, tag->data.pcow);
-  case TAG_PFACTS:  return hash_update_pfacts(hash, tag->data.pfacts);
-  case TAG_PLIST:   return hash_update_list(hash, tag->data.plist);
+    return hash_update_complex(hash, tag->data.td_pcomplex);
+  case TAG_PCOW:    return hash_update_cow(hash, tag->data.td_pcow);
+  case TAG_PFACTS:  return hash_update_pfacts(hash, tag->data.td_pfacts);
+  case TAG_PLIST:   return hash_update_list(hash, tag->data.td_plist);
   case TAG_POINTER:
-    return hash_update_pointer(hash, &tag->data.pointer);
-  case TAG_PSTRUCT: return hash_update_struct(hash, tag->data.pstruct);
+    return hash_update_pointer(hash, &tag->data.td_pointer);
+  case TAG_PSTRUCT: return hash_update_struct(hash, tag->data.td_pstruct);
   case TAG_PSTRUCT_TYPE:
-    return hash_update_struct_type(hash, tag->data.pstruct_type);
-  case TAG_PSYM:    return hash_update_psym(hash, &tag->data.psym);
-  case TAG_PTR:     return hash_update_ptr(hash, &tag->data.ptr);
+    return hash_update_struct_type(hash, tag->data.td_pstruct_type);
+  case TAG_PSYM:    return hash_update_psym(hash, &tag->data.td_psym);
+  case TAG_PTR:     return hash_update_ptr(hash, &tag->data.td_ptr);
   case TAG_PTR_FREE:
-    return hash_update_ptr_free(hash, &tag->data.ptr_free);
-  case TAG_PVAR:    return hash_update_var(hash, tag->data.pvar);
-  case TAG_QUOTE:   return hash_update_quote(hash, &tag->data.quote);
-  case TAG_RATIO:   return hash_update_ratio(hash, &tag->data.ratio);
-  case TAG_S8:      return hash_update_s8(hash, tag->data.s8);
-  case TAG_S16:     return hash_update_s16(hash, tag->data.s16);
-  case TAG_S32:     return hash_update_s32(hash, tag->data.s32);
-  case TAG_S64:     return hash_update_s64(hash, tag->data.s64);
-  case TAG_SW:      return hash_update_sw(hash, tag->data.sw);
-  case TAG_STR:     return hash_update_str(hash, &tag->data.str);
-  case TAG_TIME:    return hash_update_time(hash, &tag->data.time);
-  case TAG_PTUPLE:  return hash_update_tuple(hash, tag->data.ptuple);
-  case TAG_U8:      return hash_update_u8(hash, tag->data.u8);
-  case TAG_U16:     return hash_update_u16(hash, tag->data.u16);
-  case TAG_U32:     return hash_update_u32(hash, tag->data.u32);
-  case TAG_U64:     return hash_update_u64(hash, tag->data.u64);
+    return hash_update_ptr_free(hash, &tag->data.td_ptr_free);
+  case TAG_PVAR:    return hash_update_var(hash, tag->data.td_pvar);
+  case TAG_QUOTE:   return hash_update_quote(hash, &tag->data.td_quote);
+  case TAG_RATIO:   return hash_update_ratio(hash, &tag->data.td_ratio);
+  case TAG_S8:      return hash_update_s8(hash, tag->data.td_s8);
+  case TAG_S16:     return hash_update_s16(hash, tag->data.td_s16);
+  case TAG_S32:     return hash_update_s32(hash, tag->data.td_s32);
+  case TAG_S64:     return hash_update_s64(hash, tag->data.td_s64);
+  case TAG_SW:      return hash_update_sw(hash, tag->data.td_sw);
+  case TAG_STR:     return hash_update_str(hash, &tag->data.td_str);
+  case TAG_TIME:    return hash_update_time(hash, &tag->data.td_time);
+  case TAG_PTUPLE:  return hash_update_tuple(hash, tag->data.td_ptuple);
+  case TAG_U8:      return hash_update_u8(hash, tag->data.td_u8);
+  case TAG_U16:     return hash_update_u16(hash, tag->data.td_u16);
+  case TAG_U32:     return hash_update_u32(hash, tag->data.td_u32);
+  case TAG_U64:     return hash_update_u64(hash, tag->data.td_u64);
   case TAG_UNQUOTE:
-    return hash_update_unquote(hash, &tag->data.unquote);
-  case TAG_UW:      return hash_update_uw(hash, tag->data.uw);
+    return hash_update_unquote(hash, &tag->data.td_unquote);
+  case TAG_UW:      return hash_update_uw(hash, tag->data.td_uw);
   case TAG_VOID:    return hash_update_void(hash);
   }
   err_puts("hash_update_tag: unknown tag type");

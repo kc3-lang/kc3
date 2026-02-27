@@ -27,69 +27,69 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_F32:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f32(dest, fmodf(a->data.f32, b->data.f32));
+      return tag_init_f32(dest, fmodf(a->data.td_f32, b->data.td_f32));
     case TAG_F64:
-      return tag_init_f64(dest, fmod((f64) a->data.f32, b->data.f64));
+      return tag_init_f64(dest, fmod((f64) a->data.td_f32, b->data.td_f64));
 #if HAVE_F80
     case TAG_F80:
-      return tag_init_f80(dest, fmodl((f80) a->data.f32,
-                                       b->data.f80));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_f32,
+                                       b->data.td_f80));
 #endif
     case TAG_INTEGER:
 #if HAVE_F80
       return tag_init_f80
-        (dest, fmodl((f80) a->data.f32,
-                     integer_to_f80(&b->data.integer)));
+        (dest, fmodl((f80) a->data.td_f32,
+                     integer_to_f80(&b->data.td_integer)));
 #else
       return tag_init_f64
-        (dest, fmod((f64) a->data.f32,
-                    integer_to_f64(&b->data.integer)));
+        (dest, fmod((f64) a->data.td_f32,
+                    integer_to_f64(&b->data.td_integer)));
 #endif
     case TAG_S8:
-      return tag_init_f32(dest, fmodf(a->data.f32, (f32) b->data.s8));
+      return tag_init_f32(dest, fmodf(a->data.td_f32, (f32) b->data.td_s8));
     case TAG_S16:
-      return tag_init_f32(dest, fmodf(a->data.f32, (f32) b->data.s16));
+      return tag_init_f32(dest, fmodf(a->data.td_f32, (f32) b->data.td_s16));
     case TAG_S32:
-      return tag_init_f64(dest, fmod((f64) a->data.f32,
-                                     (f64) b->data.s32));
+      return tag_init_f64(dest, fmod((f64) a->data.td_f32,
+                                     (f64) b->data.td_s32));
     case TAG_S64:
 #if HAVE_F80
-      return tag_init_f80(dest, fmodl((f80) a->data.f32,
-                                       (f80) b->data.s64));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_f32,
+                                       (f80) b->data.td_s64));
 #else
-      return tag_init_f64(dest, fmod((f64) a->data.f32,
-                                     (f64) b->data.s64));
+      return tag_init_f64(dest, fmod((f64) a->data.td_f32,
+                                     (f64) b->data.td_s64));
 #endif
     case TAG_SW:
 #if HAVE_F80
-      return tag_init_f80(dest, fmodl((f80) a->data.f32,
-                                       (f80) b->data.sw));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_f32,
+                                       (f80) b->data.td_sw));
 #else
-      return tag_init_f64(dest, fmod((f64) a->data.f32,
-                                     (f64) b->data.sw));
+      return tag_init_f64(dest, fmod((f64) a->data.td_f32,
+                                     (f64) b->data.td_sw));
 #endif
     case TAG_U8:
-      return tag_init_f32(dest, fmodf(a->data.f32, (f32) b->data.u8));
+      return tag_init_f32(dest, fmodf(a->data.td_f32, (f32) b->data.td_u8));
     case TAG_U16:
-      return tag_init_f32(dest, fmodf(a->data.f32, (f32) b->data.u16));
+      return tag_init_f32(dest, fmodf(a->data.td_f32, (f32) b->data.td_u16));
     case TAG_U32:
-      return tag_init_f64(dest, fmod((f64) a->data.f32,
-                                     (f64) b->data.u32));
+      return tag_init_f64(dest, fmod((f64) a->data.td_f32,
+                                     (f64) b->data.td_u32));
     case TAG_U64:
 #if HAVE_F80
-      return tag_init_f80(dest, fmodl((f80) a->data.f32,
-                                       (f80) b->data.u64));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_f32,
+                                       (f80) b->data.td_u64));
 #else
-      return tag_init_f64(dest, fmod((f64) a->data.f32,
-                                     (f64) b->data.u64));
+      return tag_init_f64(dest, fmod((f64) a->data.td_f32,
+                                     (f64) b->data.td_u64));
 #endif
     case TAG_UW:
 #if HAVE_F80
-      return tag_init_f80(dest, fmodl((f80) a->data.f32,
-                                       (f80) b->data.uw));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_f32,
+                                       (f80) b->data.td_uw));
 #else
-      return tag_init_f64(dest, fmod((f64) a->data.f32,
-                                     (f64) b->data.uw));
+      return tag_init_f64(dest, fmod((f64) a->data.td_f32,
+                                     (f64) b->data.td_uw));
 #endif
     default:
       goto ko;
@@ -97,59 +97,59 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_F64:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.f32));
+      return tag_init_f64(dest, fmod(a->data.td_f64, (f64) b->data.td_f32));
     case TAG_F64:
-      return tag_init_f64(dest, fmod(a->data.f64, b->data.f64));
+      return tag_init_f64(dest, fmod(a->data.td_f64, b->data.td_f64));
 #if HAVE_F80
     case TAG_F80:
-      return tag_init_f80(dest, fmodl((f80) a->data.f64,
-                                       b->data.f80));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_f64,
+                                       b->data.td_f80));
 #endif
     case TAG_INTEGER:
 #if HAVE_F80
       return tag_init_f80
-        (dest, fmodl((f80) a->data.f64, integer_to_f80(&b->data.integer)));
+        (dest, fmodl((f80) a->data.td_f64, integer_to_f80(&b->data.td_integer)));
 #else
       return tag_init_f64
-        (dest, fmod(a->data.f64, integer_to_f64(&b->data.integer)));
+        (dest, fmod(a->data.td_f64, integer_to_f64(&b->data.td_integer)));
 #endif
     case TAG_S8:
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.s8));
+      return tag_init_f64(dest, fmod(a->data.td_f64, (f64) b->data.td_s8));
     case TAG_S16:
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.s16));
+      return tag_init_f64(dest, fmod(a->data.td_f64, (f64) b->data.td_s16));
     case TAG_S32:
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.s32));
+      return tag_init_f64(dest, fmod(a->data.td_f64, (f64) b->data.td_s32));
     case TAG_S64:
 #if HAVE_F80
-      return tag_init_f80(dest, fmodl((f80) a->data.f64,
-                                       (f80) b->data.s64));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_f64,
+                                       (f80) b->data.td_s64));
 #else
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.s64));
+      return tag_init_f64(dest, fmod(a->data.td_f64, (f64) b->data.td_s64));
 #endif
     case TAG_SW:
 #if HAVE_F80
-      return tag_init_f80(dest, fmodl((f80) a->data.f64, (f80) b->data.sw));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_f64, (f80) b->data.td_sw));
 #else
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.sw));
+      return tag_init_f64(dest, fmod(a->data.td_f64, (f64) b->data.td_sw));
 #endif
     case TAG_U8:
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.u8));
+      return tag_init_f64(dest, fmod(a->data.td_f64, (f64) b->data.td_u8));
     case TAG_U16:
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.u16));
+      return tag_init_f64(dest, fmod(a->data.td_f64, (f64) b->data.td_u16));
     case TAG_U32:
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.u32));
+      return tag_init_f64(dest, fmod(a->data.td_f64, (f64) b->data.td_u32));
     case TAG_U64:
 #if HAVE_F80
-      return tag_init_f80(dest, fmodl((f80) a->data.f64,
-                                       (f80) b->data.u64));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_f64,
+                                       (f80) b->data.td_u64));
 #else
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.u64));
+      return tag_init_f64(dest, fmod(a->data.td_f64, (f64) b->data.td_u64));
 #endif
     case TAG_UW:
 #if HAVE_F80
-      return tag_init_f80(dest, fmodl((f80) a->data.f64, (f80) b->data.uw));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_f64, (f80) b->data.td_uw));
 #else
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.uw));
+      return tag_init_f64(dest, fmod(a->data.td_f64, (f64) b->data.td_uw));
 #endif
     default:
       goto ko;
@@ -159,46 +159,46 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_F80:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f80(dest, fmodl(a->data.f80,
-                                       (f80) b->data.f32));
+      return tag_init_f80(dest, fmodl(a->data.td_f80,
+                                       (f80) b->data.td_f32));
     case TAG_F64:
-      return tag_init_f80(dest, fmodl(a->data.f80,
-                                       (f80) b->data.f64));
+      return tag_init_f80(dest, fmodl(a->data.td_f80,
+                                       (f80) b->data.td_f64));
     case TAG_F80:
-      return tag_init_f80(dest, fmodl(a->data.f80, b->data.f80));
+      return tag_init_f80(dest, fmodl(a->data.td_f80, b->data.td_f80));
     case TAG_INTEGER:
       return tag_init_f80
-        (dest, fmodl(a->data.f80, integer_to_f80(&b->data.integer)));
+        (dest, fmodl(a->data.td_f80, integer_to_f80(&b->data.td_integer)));
     case TAG_S8:
-      return tag_init_f80(dest, fmodl(a->data.f80,
-                                       (f80) b->data.s8));
+      return tag_init_f80(dest, fmodl(a->data.td_f80,
+                                       (f80) b->data.td_s8));
     case TAG_S16:
-      return tag_init_f80(dest, fmodl(a->data.f80,
-                                       (f80) b->data.s16));
+      return tag_init_f80(dest, fmodl(a->data.td_f80,
+                                       (f80) b->data.td_s16));
     case TAG_S32:
-      return tag_init_f80(dest, fmodl(a->data.f80,
-                                       (f80) b->data.s32));
+      return tag_init_f80(dest, fmodl(a->data.td_f80,
+                                       (f80) b->data.td_s32));
     case TAG_S64:
-      return tag_init_f80(dest, fmodl(a->data.f80,
-                                       (f80) b->data.s64));
+      return tag_init_f80(dest, fmodl(a->data.td_f80,
+                                       (f80) b->data.td_s64));
     case TAG_SW:
-      return tag_init_f80(dest, fmodl(a->data.f80,
-                                       (f80) b->data.sw));
+      return tag_init_f80(dest, fmodl(a->data.td_f80,
+                                       (f80) b->data.td_sw));
     case TAG_U8:
-      return tag_init_f80(dest, fmodl(a->data.f80,
-                                       (f80) b->data.u8));
+      return tag_init_f80(dest, fmodl(a->data.td_f80,
+                                       (f80) b->data.td_u8));
     case TAG_U16:
-      return tag_init_f80(dest, fmodl(a->data.f80,
-                                       (f80) b->data.u16));
+      return tag_init_f80(dest, fmodl(a->data.td_f80,
+                                       (f80) b->data.td_u16));
     case TAG_U32:
-      return tag_init_f80(dest, fmodl(a->data.f80,
-                                       (f80) b->data.u32));
+      return tag_init_f80(dest, fmodl(a->data.td_f80,
+                                       (f80) b->data.td_u32));
     case TAG_U64:
-      return tag_init_f80(dest, fmodl(a->data.f80,
-                                       (f80) b->data.u64));
+      return tag_init_f80(dest, fmodl(a->data.td_f80,
+                                       (f80) b->data.td_u64));
     case TAG_UW:
-      return tag_init_f80(dest, fmodl(a->data.f80,
-                                       (f80) b->data.uw));
+      return tag_init_f80(dest, fmodl(a->data.td_f80,
+                                       (f80) b->data.td_uw));
     default:
       goto ko;
     }
@@ -207,87 +207,87 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_INTEGER:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f64(dest, fmod(integer_to_f64(&a->data.integer),
-                                     (f64) b->data.f32));
+      return tag_init_f64(dest, fmod(integer_to_f64(&a->data.td_integer),
+                                     (f64) b->data.td_f32));
     case TAG_F64:
-      return tag_init_f64(dest, fmod(integer_to_f64(&a->data.integer),
-                                     b->data.f64));
+      return tag_init_f64(dest, fmod(integer_to_f64(&a->data.td_integer),
+                                     b->data.td_f64));
 #if HAVE_F80
     case TAG_F80:
       return tag_init_f80
-        (dest, fmodl(integer_to_f80(&a->data.integer), b->data.f80));
+        (dest, fmodl(integer_to_f80(&a->data.td_integer), b->data.td_f80));
 #endif
     case TAG_INTEGER:
       tag.type = TAG_INTEGER;
-      integer_mod(&a->data.integer, &b->data.integer,
-                  &tag.data.integer);
+      integer_mod(&a->data.td_integer, &b->data.td_integer,
+                  &tag.data.td_integer);
       goto integer_reduce;
     case TAG_S8:
-      integer_init_s8(&tmp, b->data.s8);
-      integer_mod(&a->data.integer, &tmp, &tmp2);
+      integer_init_s8(&tmp, b->data.td_s8);
+      integer_mod(&a->data.td_integer, &tmp, &tmp2);
       tag_init_s8(&tag, integer_to_s8(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S16:
-      integer_init_s16(&tmp, b->data.s16);
-      integer_mod(&a->data.integer, &tmp, &tmp2);
+      integer_init_s16(&tmp, b->data.td_s16);
+      integer_mod(&a->data.td_integer, &tmp, &tmp2);
       tag_init_s16(&tag, integer_to_s16(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S32:
-      integer_init_s32(&tmp, b->data.s32);
-      integer_mod(&a->data.integer, &tmp, &tmp2);
+      integer_init_s32(&tmp, b->data.td_s32);
+      integer_mod(&a->data.td_integer, &tmp, &tmp2);
       tag_init_s32(&tag, integer_to_s32(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S64:
-      integer_init_s64(&tmp, b->data.s64);
-      integer_mod(&a->data.integer, &tmp, &tmp2);
+      integer_init_s64(&tmp, b->data.td_s64);
+      integer_mod(&a->data.td_integer, &tmp, &tmp2);
       tag_init_s64(&tag, integer_to_s64(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_SW:
-      integer_init_sw(&tmp, b->data.sw);
-      integer_mod(&a->data.integer, &tmp, &tmp2);
+      integer_init_sw(&tmp, b->data.td_sw);
+      integer_mod(&a->data.td_integer, &tmp, &tmp2);
       tag_init_sw(&tag, integer_to_sw(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
      case TAG_U8:
-      integer_init_u8(&tmp, b->data.u8);
-      integer_mod(&a->data.integer, &tmp, &tmp2);
+      integer_init_u8(&tmp, b->data.td_u8);
+      integer_mod(&a->data.td_integer, &tmp, &tmp2);
       tag_init_u8(&tag, integer_to_u8(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_U16:
-      integer_init_u16(&tmp, b->data.u16);
-      integer_mod(&a->data.integer, &tmp, &tmp2);
+      integer_init_u16(&tmp, b->data.td_u16);
+      integer_mod(&a->data.td_integer, &tmp, &tmp2);
       tag_init_u16(&tag, integer_to_u16(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_U32:
-      integer_init_u32(&tmp, b->data.u32);
-      integer_mod(&a->data.integer, &tmp, &tmp2);
+      integer_init_u32(&tmp, b->data.td_u32);
+      integer_mod(&a->data.td_integer, &tmp, &tmp2);
       tag_init_u32(&tag, integer_to_u32(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_U64:
-      integer_init_u64(&tmp, b->data.u64);
-      integer_mod(&a->data.integer, &tmp, &tmp2);
+      integer_init_u64(&tmp, b->data.td_u64);
+      integer_mod(&a->data.td_integer, &tmp, &tmp2);
       tag_init_u64(&tag, integer_to_u64(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_UW:
-      integer_init_uw(&tmp, b->data.uw);
-      integer_mod(&a->data.integer, &tmp, &tmp2);
+      integer_init_uw(&tmp, b->data.td_uw);
+      integer_mod(&a->data.td_integer, &tmp, &tmp2);
       tag_init_uw(&tag, integer_to_uw(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
@@ -298,69 +298,69 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_S8:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f32(dest, fmodf((f32) a->data.s8, b->data.f32));
+      return tag_init_f32(dest, fmodf((f32) a->data.td_s8, b->data.td_f32));
     case TAG_F64:
-      return tag_init_f64(dest, fmod((f64) a->data.s8, b->data.f64));
+      return tag_init_f64(dest, fmod((f64) a->data.td_s8, b->data.td_f64));
 #if HAVE_F80
     case TAG_F80:
-      return tag_init_f80(dest, fmodl((f80) a->data.s8,
-                                       b->data.f80));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_s8,
+                                       b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_s8(&tmp, a->data.s8);
+      integer_init_s8(&tmp, a->data.td_s8);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &tag.data.integer);
+      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8:
-      tag_init_s8(&tag, a->data.s8 % b->data.s8);
+      tag_init_s8(&tag, a->data.td_s8 % b->data.td_s8);
       goto integer_reduce;
     case TAG_S16:
-      tag_init_s8(&tag, a->data.s8 % b->data.s16);
+      tag_init_s8(&tag, a->data.td_s8 % b->data.td_s16);
       goto integer_reduce;
     case TAG_S32:
-      tag_init_s8(&tag, a->data.s8 % b->data.s32);
+      tag_init_s8(&tag, a->data.td_s8 % b->data.td_s32);
       goto integer_reduce;
     case TAG_S64:
-      tag_init_s8(&tag, a->data.s8 % b->data.s64);
+      tag_init_s8(&tag, a->data.td_s8 % b->data.td_s64);
       goto integer_reduce;
     case TAG_SW:
-      tag_init_s8(&tag, a->data.s8 % b->data.sw);
+      tag_init_s8(&tag, a->data.td_s8 % b->data.td_sw);
       goto integer_reduce;
     case TAG_U8: {
-      s16 i = a->data.s8 % (s16) b->data.u8;
+      s16 i = a->data.td_s8 % (s16) b->data.td_u8;
       if (i < 0)
-        i += b->data.u8;
+        i += b->data.td_u8;
       tag_init_u8(&tag, i);
       goto integer_reduce;
     }
     case TAG_U16: {
-      s32 i = a->data.s8 % (s32) b->data.u16;
+      s32 i = a->data.td_s8 % (s32) b->data.td_u16;
       if (i < 0)
-        i += b->data.u16;
+        i += b->data.td_u16;
       tag_init_u16(&tag, i);
       goto integer_reduce;
     }
     case TAG_U32: {
-      s64 i = a->data.s8 % (s64) b->data.u32;
+      s64 i = a->data.td_s8 % (s64) b->data.td_u32;
       if (i < 0)
-        i += b->data.u32;
+        i += b->data.td_u32;
       tag_init_u32(&tag, i);
       goto integer_reduce;
     }
     case TAG_U64:
-      integer_init_s8(&tmp, a->data.s8);
-      integer_init_u64(&tmp2, b->data.u64);
+      integer_init_s8(&tmp, a->data.td_s8);
+      integer_init_u64(&tmp2, b->data.td_u64);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_UW:
-      integer_init_s8(&tmp, a->data.s8);
-      integer_init_uw(&tmp2, b->data.uw);
+      integer_init_s8(&tmp, a->data.td_s8);
+      integer_init_uw(&tmp2, b->data.td_uw);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -370,69 +370,69 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_S16:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f32(dest, fmodf((f32) a->data.s16, b->data.f32));
+      return tag_init_f32(dest, fmodf((f32) a->data.td_s16, b->data.td_f32));
     case TAG_F64:
-      return tag_init_f64(dest, fmod((f64) a->data.s16, b->data.f64));
+      return tag_init_f64(dest, fmod((f64) a->data.td_s16, b->data.td_f64));
 #if HAVE_F80
     case TAG_F80:
-      return tag_init_f80(dest, fmodl((f80) a->data.s16,
-                                       b->data.f80));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_s16,
+                                       b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_s16(&tmp, a->data.s16);
+      integer_init_s16(&tmp, a->data.td_s16);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &tag.data.integer);
+      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8:
-      tag_init_s8(&tag, a->data.s16 % b->data.s8);
+      tag_init_s8(&tag, a->data.td_s16 % b->data.td_s8);
       goto integer_reduce;
     case TAG_S16:
-      tag_init_s16(&tag, a->data.s16 % b->data.s16);
+      tag_init_s16(&tag, a->data.td_s16 % b->data.td_s16);
       goto integer_reduce;
     case TAG_S32:
-      tag_init_s16(&tag, a->data.s16 % b->data.s32);
+      tag_init_s16(&tag, a->data.td_s16 % b->data.td_s32);
       goto integer_reduce;
     case TAG_S64:
-      tag_init_s16(&tag, a->data.s16 % b->data.s64);
+      tag_init_s16(&tag, a->data.td_s16 % b->data.td_s64);
       goto integer_reduce;
     case TAG_SW:
-      tag_init_s16(&tag, a->data.s16 % b->data.sw);
+      tag_init_s16(&tag, a->data.td_s16 % b->data.td_sw);
       goto integer_reduce;
     case TAG_U8: {
-      s16 i = a->data.s16 % (s16) b->data.u8;
+      s16 i = a->data.td_s16 % (s16) b->data.td_u8;
       if (i < 0)
-        i += b->data.u8;
+        i += b->data.td_u8;
       tag_init_u8(&tag, i);
       goto integer_reduce;
     }
     case TAG_U16: {
-      s32 i = a->data.s16 % (s32) b->data.u16;
+      s32 i = a->data.td_s16 % (s32) b->data.td_u16;
       if (i < 0)
-        i += b->data.u16;
+        i += b->data.td_u16;
       tag_init_u16(&tag, i);
       goto integer_reduce;
     }
     case TAG_U32: {
-      s64 i = a->data.s16 % (s64) b->data.u32;
+      s64 i = a->data.td_s16 % (s64) b->data.td_u32;
       if (i < 0)
-        i += b->data.u32;
+        i += b->data.td_u32;
       tag_init_u32(&tag, i);
       goto integer_reduce;
     }
     case TAG_U64:
-      integer_init_s16(&tmp, a->data.s16);
-      integer_init_u64(&tmp2, b->data.u64);
+      integer_init_s16(&tmp, a->data.td_s16);
+      integer_init_u64(&tmp2, b->data.td_u64);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_UW:
-      integer_init_s16(&tmp, a->data.s16);
-      integer_init_uw(&tmp2, b->data.uw);
+      integer_init_s16(&tmp, a->data.td_s16);
+      integer_init_uw(&tmp2, b->data.td_uw);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -442,69 +442,69 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_S32:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f64(dest, fmod((f64) a->data.s32, b->data.f32));
+      return tag_init_f64(dest, fmod((f64) a->data.td_s32, b->data.td_f32));
     case TAG_F64:
-      return tag_init_f64(dest, fmod((f64) a->data.s32, b->data.f64));
+      return tag_init_f64(dest, fmod((f64) a->data.td_s32, b->data.td_f64));
 #if HAVE_F80
     case TAG_F80:
-      return tag_init_f80(dest, fmodl((f80) a->data.s32,
-                                       b->data.f80));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_s32,
+                                       b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_s32(&tmp, a->data.s32);
+      integer_init_s32(&tmp, a->data.td_s32);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &tag.data.integer);
+      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8:
-      tag_init_s8(&tag, a->data.s32 % b->data.s8);
+      tag_init_s8(&tag, a->data.td_s32 % b->data.td_s8);
       goto integer_reduce;
     case TAG_S16:
-      tag_init_s16(&tag, a->data.s32 % b->data.s16);
+      tag_init_s16(&tag, a->data.td_s32 % b->data.td_s16);
       goto integer_reduce;
     case TAG_S32:
-      tag_init_s32(&tag, a->data.s32 % b->data.s32);
+      tag_init_s32(&tag, a->data.td_s32 % b->data.td_s32);
       goto integer_reduce;
     case TAG_S64:
-      tag_init_s64(&tag, a->data.s32 % b->data.s64);
+      tag_init_s64(&tag, a->data.td_s32 % b->data.td_s64);
       goto integer_reduce;
     case TAG_SW:
-      tag_init_sw(&tag, a->data.s32 % b->data.sw);
+      tag_init_sw(&tag, a->data.td_s32 % b->data.td_sw);
       goto integer_reduce;
     case TAG_U8: {
-      s16 i = a->data.s32 % (s16) b->data.u8;
+      s16 i = a->data.td_s32 % (s16) b->data.td_u8;
       if (i < 0)
-        i += b->data.u8;
+        i += b->data.td_u8;
       tag_init_u8(&tag, i);
       goto integer_reduce;
     }
     case TAG_U16: {
-      s32 i = a->data.s32 % (s32) b->data.u16;
+      s32 i = a->data.td_s32 % (s32) b->data.td_u16;
       if (i < 0)
-        i += b->data.u16;
+        i += b->data.td_u16;
       tag_init_u16(&tag, i);
       goto integer_reduce;
     }
     case TAG_U32: {
-      s64 i = a->data.s32 % (s64) b->data.u32;
+      s64 i = a->data.td_s32 % (s64) b->data.td_u32;
       if (i < 0)
-        i += b->data.u32;
+        i += b->data.td_u32;
       tag_init_u32(&tag, i);
       goto integer_reduce;
     }
     case TAG_U64:
-      integer_init_s32(&tmp, a->data.s32);
-      integer_init_u64(&tmp2, b->data.u64);
+      integer_init_s32(&tmp, a->data.td_s32);
+      integer_init_u64(&tmp2, b->data.td_u64);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_UW:
-      integer_init_s32(&tmp, a->data.s32);
-      integer_init_uw(&tmp2, b->data.uw);
+      integer_init_s32(&tmp, a->data.td_s32);
+      integer_init_uw(&tmp2, b->data.td_uw);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -514,69 +514,69 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_S64:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f64(dest, fmod((f64) a->data.s64, b->data.f32));
+      return tag_init_f64(dest, fmod((f64) a->data.td_s64, b->data.td_f32));
     case TAG_F64:
-      return tag_init_f64(dest, fmod((f64) a->data.s64, b->data.f64));
+      return tag_init_f64(dest, fmod((f64) a->data.td_s64, b->data.td_f64));
 #if HAVE_F80
     case TAG_F80:
-      return tag_init_f80(dest, fmodl((f80) a->data.s64,
-                                       b->data.f80));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_s64,
+                                       b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_s64(&tmp, a->data.s64);
+      integer_init_s64(&tmp, a->data.td_s64);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &tag.data.integer);
+      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8:
-      tag_init_s8(&tag, a->data.s64 % b->data.s8);
+      tag_init_s8(&tag, a->data.td_s64 % b->data.td_s8);
       goto integer_reduce;
     case TAG_S16:
-      tag_init_s16(&tag, a->data.s64 % b->data.s16);
+      tag_init_s16(&tag, a->data.td_s64 % b->data.td_s16);
       goto integer_reduce;
     case TAG_S32:
-      tag_init_s32(&tag, a->data.s64 % b->data.s32);
+      tag_init_s32(&tag, a->data.td_s64 % b->data.td_s32);
       goto integer_reduce;
     case TAG_S64:
-      tag_init_s64(&tag, a->data.s64 % b->data.s64);
+      tag_init_s64(&tag, a->data.td_s64 % b->data.td_s64);
       goto integer_reduce;
     case TAG_SW:
-      tag_init_sw(&tag, a->data.s64 % b->data.sw);
+      tag_init_sw(&tag, a->data.td_s64 % b->data.td_sw);
       goto integer_reduce;
     case TAG_U8: {
-      s16 i = a->data.s64 % b->data.u8;
+      s16 i = a->data.td_s64 % b->data.td_u8;
       if (i < 0)
-        i += b->data.u8;
+        i += b->data.td_u8;
       tag_init_u8(&tag, i);
       goto integer_reduce;
     }
     case TAG_U16: {
-      s32 i = a->data.s64 % b->data.u16;
+      s32 i = a->data.td_s64 % b->data.td_u16;
       if (i < 0)
-        i += b->data.u16;
+        i += b->data.td_u16;
       tag_init_u16(&tag, i);
       goto integer_reduce;
     }
     case TAG_U32: {
-      s64 i = a->data.s64 % b->data.u32;
+      s64 i = a->data.td_s64 % b->data.td_u32;
       if (i < 0)
-        i += b->data.u32;
+        i += b->data.td_u32;
       tag_init_u32(&tag, i);
       goto integer_reduce;
     }
     case TAG_U64:
-      integer_init_s64(&tmp, a->data.s64);
-      integer_init_u64(&tmp2, b->data.u64);
+      integer_init_s64(&tmp, a->data.td_s64);
+      integer_init_u64(&tmp2, b->data.td_u64);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_UW:
-      integer_init_s64(&tmp, a->data.s64);
-      integer_init_uw(&tmp2, b->data.uw);
+      integer_init_s64(&tmp, a->data.td_s64);
+      integer_init_uw(&tmp2, b->data.td_uw);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -586,70 +586,70 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_SW:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f64(dest, fmod((f64) a->data.sw, b->data.f32));
+      return tag_init_f64(dest, fmod((f64) a->data.td_sw, b->data.td_f32));
     case TAG_F64:
-      return tag_init_f64(dest, fmod((f64) a->data.sw, b->data.f64));
+      return tag_init_f64(dest, fmod((f64) a->data.td_sw, b->data.td_f64));
 #if HAVE_F80
     case TAG_F80:
-      return tag_init_f80(dest, fmodl((f80) a->data.sw,
-                                       b->data.f80));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_sw,
+                                       b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_sw(&tmp, a->data.sw);
-      integer_mod(&tmp, &b->data.integer, &tmp2);
+      integer_init_sw(&tmp, a->data.td_sw);
+      integer_mod(&tmp, &b->data.td_integer, &tmp2);
       tag_init_sw(&tag, integer_to_sw(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S8:
-      tag_init_s8(&tag, a->data.sw % b->data.s8);
+      tag_init_s8(&tag, a->data.td_sw % b->data.td_s8);
       goto integer_reduce;
     case TAG_S16:
-      tag_init_s16(&tag, a->data.sw % b->data.s16);
+      tag_init_s16(&tag, a->data.td_sw % b->data.td_s16);
       goto integer_reduce;
     case TAG_S32:
-      tag_init_s32(&tag, a->data.sw % b->data.s32);
+      tag_init_s32(&tag, a->data.td_sw % b->data.td_s32);
       goto integer_reduce;
     case TAG_S64:
-      tag_init_sw(&tag, a->data.sw % b->data.s64);
+      tag_init_sw(&tag, a->data.td_sw % b->data.td_s64);
       goto integer_reduce;
     case TAG_SW:
-      tag_init_sw(&tag, a->data.sw % b->data.sw);
+      tag_init_sw(&tag, a->data.td_sw % b->data.td_sw);
       goto integer_reduce;
     case TAG_U8: {
-      s16 i = a->data.sw % b->data.u8;
+      s16 i = a->data.td_sw % b->data.td_u8;
       if (i < 0)
-        i += b->data.u8;
+        i += b->data.td_u8;
       tag_init_u8(&tag, i);
       goto integer_reduce;
     }
     case TAG_U16: {
-      s32 i = a->data.sw % b->data.u16;
+      s32 i = a->data.td_sw % b->data.td_u16;
       if (i < 0)
-        i += b->data.u16;
+        i += b->data.td_u16;
       tag_init_u16(&tag, i);
       goto integer_reduce;
     }
     case TAG_U32: {
-      s64 i = a->data.sw % b->data.u32;
+      s64 i = a->data.td_sw % b->data.td_u32;
       if (i < 0)
-        i += b->data.u32;
+        i += b->data.td_u32;
       tag_init_u32(&tag, i);
       goto integer_reduce;
     }
     case TAG_U64:
-      integer_init_sw(&tmp, a->data.sw);
-      integer_init_u64(&tmp2, b->data.u64);
+      integer_init_sw(&tmp, a->data.td_sw);
+      integer_init_u64(&tmp2, b->data.td_u64);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_UW:
-      integer_init_sw(&tmp, a->data.sw);
-      integer_init_uw(&tmp2, b->data.uw);
+      integer_init_sw(&tmp, a->data.td_sw);
+      integer_init_uw(&tmp2, b->data.td_uw);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -659,71 +659,71 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_U8:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f32(dest, fmodf((f32) a->data.u8, b->data.f32));
+      return tag_init_f32(dest, fmodf((f32) a->data.td_u8, b->data.td_f32));
     case TAG_F64:
-      return tag_init_f64(dest, fmod((f64) a->data.u8, b->data.f64));
+      return tag_init_f64(dest, fmod((f64) a->data.td_u8, b->data.td_f64));
 #if HAVE_F80
     case TAG_F80:
-      return tag_init_f80(dest, fmodl((f80) a->data.u8,
-                                       b->data.f80));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_u8,
+                                       b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_u8(&tmp, a->data.u8);
+      integer_init_u8(&tmp, a->data.td_u8);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &tag.data.integer);
+      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8: {
-      s16 i = a->data.u8 % b->data.s8;
-      if (b->data.s8 < 0 && i > 0)
-        i += b->data.s8;
+      s16 i = a->data.td_u8 % b->data.td_s8;
+      if (b->data.td_s8 < 0 && i > 0)
+        i += b->data.td_s8;
       tag_init_s8(&tag, i);
       goto integer_reduce;
     }
     case TAG_S16: {
-      s32 i = a->data.u8 % b->data.s16;
-      if (b->data.s16 < 0 && i > 0)
-        i += b->data.s16;
+      s32 i = a->data.td_u8 % b->data.td_s16;
+      if (b->data.td_s16 < 0 && i > 0)
+        i += b->data.td_s16;
       tag_init_s16(&tag, i);
       goto integer_reduce;
     }
     case TAG_S32: {
-      s64 i = a->data.u8 % b->data.s32;
-      if (b->data.s32 < 0 && i > 0)
-        i += b->data.s32;
+      s64 i = a->data.td_u8 % b->data.td_s32;
+      if (b->data.td_s32 < 0 && i > 0)
+        i += b->data.td_s32;
       tag_init_s32(&tag, i);
       goto integer_reduce;
     }
     case TAG_S64:
-      integer_init_u8(&tmp, a->data.u8);
-      integer_init_s64(&tmp2, b->data.s64);
+      integer_init_u8(&tmp, a->data.td_u8);
+      integer_init_s64(&tmp2, b->data.td_s64);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_SW:
-      integer_init_u8(&tmp, a->data.u8);
-      integer_init_sw(&tmp2, b->data.sw);
+      integer_init_u8(&tmp, a->data.td_u8);
+      integer_init_sw(&tmp2, b->data.td_sw);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_U8:
-      tag_init_u8(&tag, a->data.u8 % b->data.u8);
+      tag_init_u8(&tag, a->data.td_u8 % b->data.td_u8);
       goto integer_reduce;
     case TAG_U16:
-      tag_init_u8(&tag, a->data.u8 % b->data.u16);
+      tag_init_u8(&tag, a->data.td_u8 % b->data.td_u16);
       goto integer_reduce;
     case TAG_U32:
-      tag_init_u8(&tag, a->data.u8 % b->data.u32);
+      tag_init_u8(&tag, a->data.td_u8 % b->data.td_u32);
       goto integer_reduce;
     case TAG_U64:
-      tag_init_u8(&tag, a->data.u8 % b->data.u64);
+      tag_init_u8(&tag, a->data.td_u8 % b->data.td_u64);
       goto integer_reduce;
     case TAG_UW:
-      tag_init_u8(&tag, a->data.u8 % b->data.uw);
+      tag_init_u8(&tag, a->data.td_u8 % b->data.td_uw);
       goto integer_reduce;
     default:
       goto ko;
@@ -731,71 +731,71 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_U16:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f32(dest, fmodf((f32) a->data.u16, b->data.f32));
+      return tag_init_f32(dest, fmodf((f32) a->data.td_u16, b->data.td_f32));
     case TAG_F64:
-      return tag_init_f64(dest, fmod((f64) a->data.u16, b->data.f64));
+      return tag_init_f64(dest, fmod((f64) a->data.td_u16, b->data.td_f64));
 #if HAVE_F80
     case TAG_F80:
-      return tag_init_f80(dest, fmodl((f80) a->data.u16,
-                                       b->data.f80));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_u16,
+                                       b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_u16(&tmp, a->data.u16);
+      integer_init_u16(&tmp, a->data.td_u16);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &tag.data.integer);
+      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8: {
-      s16 i = a->data.u16 % b->data.s8;
-      if (b->data.s8 < 0 && i > 0)
-        i += b->data.s8;
+      s16 i = a->data.td_u16 % b->data.td_s8;
+      if (b->data.td_s8 < 0 && i > 0)
+        i += b->data.td_s8;
       tag_init_s8(&tag, i);
       goto integer_reduce;
     }
     case TAG_S16: {
-      s32 i = a->data.u16 % b->data.s16;
-      if (b->data.s16 < 0 && i > 0)
-        i += b->data.s16;
+      s32 i = a->data.td_u16 % b->data.td_s16;
+      if (b->data.td_s16 < 0 && i > 0)
+        i += b->data.td_s16;
       tag_init_s16(&tag, i);
       goto integer_reduce;
     }
     case TAG_S32: {
-      s64 i = a->data.u16 % b->data.s32;
-      if (b->data.s32 < 0 && i > 0)
-        i += b->data.s32;
+      s64 i = a->data.td_u16 % b->data.td_s32;
+      if (b->data.td_s32 < 0 && i > 0)
+        i += b->data.td_s32;
       tag_init_s32(&tag, i);
       goto integer_reduce;
     }
     case TAG_S64:
-      integer_init_u16(&tmp, a->data.u16);
-      integer_init_s64(&tmp2, b->data.s64);
+      integer_init_u16(&tmp, a->data.td_u16);
+      integer_init_s64(&tmp2, b->data.td_s64);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_SW:
-      integer_init_u16(&tmp, a->data.u16);
-      integer_init_sw(&tmp2, b->data.sw);
+      integer_init_u16(&tmp, a->data.td_u16);
+      integer_init_sw(&tmp2, b->data.td_sw);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_U8:
-      tag_init_u8(&tag, a->data.u16 % b->data.u8);
+      tag_init_u8(&tag, a->data.td_u16 % b->data.td_u8);
       goto integer_reduce;
     case TAG_U16:
-      tag_init_u16(&tag, a->data.u16 % b->data.u16);
+      tag_init_u16(&tag, a->data.td_u16 % b->data.td_u16);
       goto integer_reduce;
     case TAG_U32:
-      tag_init_u16(&tag, a->data.u16 % b->data.u32);
+      tag_init_u16(&tag, a->data.td_u16 % b->data.td_u32);
       goto integer_reduce;
     case TAG_U64:
-      tag_init_u16(&tag, a->data.u16 % b->data.u64);
+      tag_init_u16(&tag, a->data.td_u16 % b->data.td_u64);
       goto integer_reduce;
     case TAG_UW:
-      tag_init_u16(&tag, a->data.u16 % b->data.uw);
+      tag_init_u16(&tag, a->data.td_u16 % b->data.td_uw);
       goto integer_reduce;
     default:
       goto ko;
@@ -803,71 +803,71 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_U32:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f64(dest, fmod((f64) a->data.u32, b->data.f32));
+      return tag_init_f64(dest, fmod((f64) a->data.td_u32, b->data.td_f32));
     case TAG_F64:
-      return tag_init_f64(dest, fmod((f64) a->data.u32, b->data.f64));
+      return tag_init_f64(dest, fmod((f64) a->data.td_u32, b->data.td_f64));
 #if HAVE_F80
     case TAG_F80:
-      return tag_init_f80(dest, fmodl((f80) a->data.u32,
-                                       b->data.f80));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_u32,
+                                       b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_u32(&tmp, a->data.u32);
+      integer_init_u32(&tmp, a->data.td_u32);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &tag.data.integer);
+      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8: {
-      s64 i = a->data.u32 % (s64) b->data.s8;
-      if (b->data.s8 < 0 && i > 0)
-        i += b->data.s8;
+      s64 i = a->data.td_u32 % (s64) b->data.td_s8;
+      if (b->data.td_s8 < 0 && i > 0)
+        i += b->data.td_s8;
       tag_init_s8(&tag, i);
       goto integer_reduce;
     }
     case TAG_S16: {
-      s64 i = a->data.u32 % (s64) b->data.s16;
-      if (b->data.s16 < 0 && i > 0)
-        i += b->data.s16;
+      s64 i = a->data.td_u32 % (s64) b->data.td_s16;
+      if (b->data.td_s16 < 0 && i > 0)
+        i += b->data.td_s16;
       tag_init_s16(&tag, i);
       goto integer_reduce;
     }
     case TAG_S32: {
-      s64 i = a->data.u32 % (s64) b->data.s32;
-      if (b->data.s32 < 0 && i > 0)
-        i += b->data.s32;
+      s64 i = a->data.td_u32 % (s64) b->data.td_s32;
+      if (b->data.td_s32 < 0 && i > 0)
+        i += b->data.td_s32;
       tag_init_s32(&tag, i);
       goto integer_reduce;
     }
     case TAG_S64:
-      integer_init_u32(&tmp, a->data.u32);
-      integer_init_s64(&tmp2, b->data.s64);
+      integer_init_u32(&tmp, a->data.td_u32);
+      integer_init_s64(&tmp2, b->data.td_s64);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_SW:
-      integer_init_u32(&tmp, a->data.u32);
-      integer_init_sw(&tmp2, b->data.sw);
+      integer_init_u32(&tmp, a->data.td_u32);
+      integer_init_sw(&tmp2, b->data.td_sw);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_U8:
-      tag_init_u8(&tag, a->data.u32 % b->data.u8);
+      tag_init_u8(&tag, a->data.td_u32 % b->data.td_u8);
       goto integer_reduce;
     case TAG_U16:
-      tag_init_u16(&tag, a->data.u32 % b->data.u16);
+      tag_init_u16(&tag, a->data.td_u32 % b->data.td_u16);
       goto integer_reduce;
     case TAG_U32:
-      tag_init_u32(&tag, a->data.u32 % b->data.u32);
+      tag_init_u32(&tag, a->data.td_u32 % b->data.td_u32);
       goto integer_reduce;
     case TAG_U64:
-      tag_init_u32(&tag, a->data.u32 % b->data.u64);
+      tag_init_u32(&tag, a->data.td_u32 % b->data.td_u64);
       goto integer_reduce;
     case TAG_UW:
-      tag_init_u32(&tag, a->data.u32 % b->data.uw);
+      tag_init_u32(&tag, a->data.td_u32 % b->data.td_uw);
       goto integer_reduce;
     default:
       goto ko;
@@ -875,74 +875,74 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_U64:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f64(dest, fmod((f64) a->data.u64, b->data.f32));
+      return tag_init_f64(dest, fmod((f64) a->data.td_u64, b->data.td_f32));
     case TAG_F64:
-      return tag_init_f64(dest, fmod((f64) a->data.u64, b->data.f64));
+      return tag_init_f64(dest, fmod((f64) a->data.td_u64, b->data.td_f64));
 #if HAVE_F80
     case TAG_F80:
-      return tag_init_f80(dest, fmodl((f80) a->data.u64,
-                                       b->data.f80));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_u64,
+                                       b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_u64(&tmp, a->data.u64);
+      integer_init_u64(&tmp, a->data.td_u64);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &tag.data.integer);
+      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8:
-      integer_init_u64(&tmp, a->data.u64);
-      integer_init_s8(&tmp2, b->data.s8);
+      integer_init_u64(&tmp, a->data.td_u64);
+      integer_init_s8(&tmp2, b->data.td_s8);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S16:
-      integer_init_u64(&tmp, a->data.u64);
-      integer_init_s16(&tmp2, b->data.s16);
+      integer_init_u64(&tmp, a->data.td_u64);
+      integer_init_s16(&tmp2, b->data.td_s16);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S32:
-      integer_init_u64(&tmp, a->data.u64);
-      integer_init_s32(&tmp2, b->data.s32);
+      integer_init_u64(&tmp, a->data.td_u64);
+      integer_init_s32(&tmp2, b->data.td_s32);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S64:
-      integer_init_u64(&tmp, a->data.u64);
-      integer_init_s64(&tmp2, b->data.s64);
+      integer_init_u64(&tmp, a->data.td_u64);
+      integer_init_s64(&tmp2, b->data.td_s64);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_SW:
-      integer_init_u64(&tmp, a->data.u64);
-      integer_init_sw(&tmp2, b->data.sw);
+      integer_init_u64(&tmp, a->data.td_u64);
+      integer_init_sw(&tmp2, b->data.td_sw);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_U8:
-      tag_init_u8(&tag, a->data.u64 % b->data.u8);
+      tag_init_u8(&tag, a->data.td_u64 % b->data.td_u8);
       goto integer_reduce;
     case TAG_U16:
-      tag_init_u16(&tag, a->data.u64 % b->data.u16);
+      tag_init_u16(&tag, a->data.td_u64 % b->data.td_u16);
       goto integer_reduce;
     case TAG_U32:
-      tag_init_u32(&tag, a->data.u64 % b->data.u32);
+      tag_init_u32(&tag, a->data.td_u64 % b->data.td_u32);
       goto integer_reduce;
     case TAG_U64:
-      tag_init_u64(&tag, a->data.u64 % b->data.u64);
+      tag_init_u64(&tag, a->data.td_u64 % b->data.td_u64);
       goto integer_reduce;
     case TAG_UW:
-      tag_init_uw(&tag, a->data.u64 % b->data.uw);
+      tag_init_uw(&tag, a->data.td_u64 % b->data.td_uw);
       goto integer_reduce;
     default:
       goto ko;
@@ -950,73 +950,73 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_UW:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f64(dest, fmod((f64) a->data.uw, b->data.f32));
+      return tag_init_f64(dest, fmod((f64) a->data.td_uw, b->data.td_f32));
     case TAG_F64:
-      return tag_init_f64(dest, fmod((f64) a->data.uw, b->data.f64));
+      return tag_init_f64(dest, fmod((f64) a->data.td_uw, b->data.td_f64));
 #if HAVE_F80
     case TAG_F80:
-      return tag_init_f80(dest, fmodl((f80) a->data.uw, b->data.f80));
+      return tag_init_f80(dest, fmodl((f80) a->data.td_uw, b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_uw(&tmp, a->data.uw);
+      integer_init_uw(&tmp, a->data.td_uw);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &tag.data.integer);
+      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8:
-      integer_init_uw(&tmp, a->data.uw);
-      integer_init_s8(&tmp2, b->data.s8);
+      integer_init_uw(&tmp, a->data.td_uw);
+      integer_init_s8(&tmp2, b->data.td_s8);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S16:
-      integer_init_uw(&tmp, a->data.uw);
-      integer_init_s16(&tmp2, b->data.s16);
+      integer_init_uw(&tmp, a->data.td_uw);
+      integer_init_s16(&tmp2, b->data.td_s16);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S32:
-      integer_init_uw(&tmp, a->data.uw);
-      integer_init_s32(&tmp2, b->data.s32);
+      integer_init_uw(&tmp, a->data.td_uw);
+      integer_init_s32(&tmp2, b->data.td_s32);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S64:
-      integer_init_uw(&tmp, a->data.uw);
-      integer_init_s64(&tmp2, b->data.s64);
+      integer_init_uw(&tmp, a->data.td_uw);
+      integer_init_s64(&tmp2, b->data.td_s64);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_SW:
-      integer_init_uw(&tmp, a->data.uw);
-      integer_init_sw(&tmp2, b->data.sw);
+      integer_init_uw(&tmp, a->data.td_uw);
+      integer_init_sw(&tmp2, b->data.td_sw);
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.integer);
+      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_U8:
-      tag_init_u8(&tag, a->data.uw % b->data.u8);
+      tag_init_u8(&tag, a->data.td_uw % b->data.td_u8);
       goto integer_reduce;
     case TAG_U16:
-      tag_init_u16(&tag, a->data.uw % b->data.u16);
+      tag_init_u16(&tag, a->data.td_uw % b->data.td_u16);
       goto integer_reduce;
     case TAG_U32:
-      tag_init_u32(&tag, a->data.uw % b->data.u32);
+      tag_init_u32(&tag, a->data.td_uw % b->data.td_u32);
       goto integer_reduce;
     case TAG_U64:
-      tag_init_uw(&tag, a->data.uw % b->data.u64);
+      tag_init_uw(&tag, a->data.td_uw % b->data.td_u64);
       goto integer_reduce;
     case TAG_UW:
-      tag_init_uw(&tag, a->data.uw % b->data.uw);
+      tag_init_uw(&tag, a->data.td_uw % b->data.td_uw);
       goto integer_reduce;
     default:
       goto ko;

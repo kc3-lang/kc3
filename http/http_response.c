@@ -60,25 +60,25 @@ s_http_response * http_response_buf_parse (s_http_response *response,
     *l = list_new_ptuple(2, NULL);
     if (! *l)
       goto restore;
-    tuple = (*l)->tag.data.ptuple;
+    tuple = (*l)->tag.data.td_ptuple;
     key = tuple->tag;
     value = tuple->tag + 1;
     key->type = TAG_STR;
-    if (buf_read_until_1_into_str(buf, ":", &key->data.str) <= 0)
+    if (buf_read_until_1_into_str(buf, ":", &key->data.td_str) <= 0)
       goto restore;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     value->type = TAG_STR;
-    if (buf_read_until_1_into_str(buf, "\r\n", &value->data.str) <= 0)
+    if (buf_read_until_1_into_str(buf, "\r\n", &value->data.td_str) <= 0)
       goto restore;
-    if (! str_init_to_lower(&str, &key->data.str))
+    if (! str_init_to_lower(&str, &key->data.td_str))
       goto restore;
     if (! compare_str(&content_length_str, &str))
-      sw_init_str(&content_length, &value->data.str);
+      sw_init_str(&content_length, &value->data.td_str);
     else if (! compare_str(&transfer_encoding_str, &str))
-      transfer_encoding = &value->data.str;
+      transfer_encoding = &value->data.td_str;
     str_clean(&str);
-    l = &(*l)->next.data.plist;
+    l = &(*l)->next.data.td_plist;
   }
   if (! parse_body)
     goto ok;
@@ -98,25 +98,25 @@ s_http_response * http_response_buf_parse (s_http_response *response,
       if (! chunk_size) {
         if (buf_read_1(buf, "\r\n") <= 0)
           goto ko;
-        if (! str_init_concatenate_list(&tmp.body.data.str, chunks))
+        if (! str_init_concatenate_list(&tmp.body.data.td_str, chunks))
           goto ko;
         list_delete_all(chunks);
         goto ok;
       }
       if (! (*chunks_tail = list_new_str_alloc(chunk_size, NULL)))
         goto ko;
-      if (! buf_read(buf, chunk_size, &(*chunks_tail)->tag.data.str)) {
+      if (! buf_read(buf, chunk_size, &(*chunks_tail)->tag.data.td_str)) {
         err_puts("http_response_buf_parse: buf_read");
         goto ko;
       }
       if (buf_read_1(buf, "\r\n") <= 0)
         goto ko;
-      chunks_tail = &(*chunks_tail)->next.data.plist;
+      chunks_tail = &(*chunks_tail)->next.data.td_plist;
     }
   }
   if (content_length < 0)
     goto restore;
-  if (! buf_read(buf, content_length, &tmp.body.data.str)) {
+  if (! buf_read(buf, content_length, &tmp.body.data.td_str)) {
     err_puts("http_response_buf_parse: buf_read");
     goto restore;
   }
@@ -174,14 +174,14 @@ sw http_response_buf_write (const s_http_response *response,
     return r;
   result += r;
   tag_code.type = TAG_U16;
-  tag_code.data.u16 = response->code;
-  if (! tag_code.data.u16)
-    tag_code.data.u16 = 200;
-  if (tag_code.data.u16 < 100 || tag_code.data.u16 > 999) {
+  tag_code.data.td_u16 = response->code;
+  if (! tag_code.data.td_u16)
+    tag_code.data.td_u16 = 200;
+  if (tag_code.data.td_u16 < 100 || tag_code.data.td_u16 > 999) {
     err_puts("http_response_buf_write: invalid response code");
     return -1;
   }
-  if ((r = buf_inspect_u16_decimal(buf, tag_code.data.u16)) < 0)
+  if ((r = buf_inspect_u16_decimal(buf, tag_code.data.td_u16)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
@@ -196,7 +196,7 @@ sw http_response_buf_write (const s_http_response *response,
       tag_clean(&default_messages);
       return -1;
     }
-    if (alist_get(default_messages.data.plist,
+    if (alist_get(default_messages.data.td_plist,
                   &tag_code, &tag_message)) {
       if (tag_message.type != TAG_STR) {
         err_puts("http_response_buf_write: invalid default message:"
@@ -209,10 +209,10 @@ sw http_response_buf_write (const s_http_response *response,
   }
   else {
     tag_message.type = TAG_STR;
-    tag_message.data.str = response->message;
-    tag_message.data.str.free.p = NULL;
+    tag_message.data.td_str = response->message;
+    tag_message.data.td_str.free.p_pvoid = NULL;
   }
-  if ((r = buf_write_str(buf, &tag_message.data.str)) < 0) {
+  if ((r = buf_write_str(buf, &tag_message.data.td_str)) < 0) {
     tag_clean(&tag_message);
     tag_clean(&default_messages);
     return r;
@@ -227,25 +227,25 @@ sw http_response_buf_write (const s_http_response *response,
   l = response->headers;
   while (l) {
     if (l->tag.type != TAG_PTUPLE ||
-        l->tag.data.ptuple->count != 2) {
+        l->tag.data.td_ptuple->count != 2) {
       err_puts("http_response_buf_write: invalid header: not a Tuple");
       return -1;
     }
-    key = l->tag.data.ptuple->tag;
+    key = l->tag.data.td_ptuple->tag;
     value = key + 1;
     if (key->type != TAG_STR || value->type != TAG_STR) {
       err_puts("http_response_buf_write: invalid header: not a Str");
       return -1;
     }
-    if (! compare_str(&content_length_str, &key->data.str))
-      sw_init_str(&content_length, &value->data.str);
-    if ((r = buf_write_str(buf, &key->data.str)) < 0)
+    if (! compare_str(&content_length_str, &key->data.td_str))
+      sw_init_str(&content_length, &value->data.td_str);
+    if ((r = buf_write_str(buf, &key->data.td_str)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, ": ")) < 0)
       return r;
     result += r;
-    if ((r = buf_write_str(buf, &value->data.str)) < 0)
+    if ((r = buf_write_str(buf, &value->data.td_str)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, "\r\n")) < 0)
@@ -261,7 +261,7 @@ sw http_response_buf_write (const s_http_response *response,
     if ((r = buf_write_1(buf, ": ")) < 0)
       return r;
     result += r;
-    r = buf_inspect_u32_decimal(buf, response->body.data.str.size);
+    r = buf_inspect_u32_decimal(buf, response->body.data.td_str.size);
     if (r < 0)
       return r;
     result += r;
@@ -276,18 +276,18 @@ sw http_response_buf_write (const s_http_response *response,
     if (! tag_type(&response->body, &type))
       return -1;
     if (type == &g_sym_Str) {
-      if ((r = buf_write_str(buf, &response->body.data.str)) < 0)
+      if ((r = buf_write_str(buf, &response->body.data.td_str)) < 0)
         return r;
       result += r;
     }
     else if (type == &g_sym_Buf) {
-      in = response->body.data.pstruct->data;
+      in = response->body.data.td_pstruct->data;
       while (buf_refill(in, in->size) > 0) {
         err_inspect_buf(in);
         if (buf_read_to_str(in, &str) <= 0)
           return -1;
         err_inspect_str(&str);
-        if ((r = buf_write(buf, str.ptr.pchar, str.size)) <= 0)
+        if ((r = buf_write(buf, str.ptr.p_pchar, str.size)) <= 0)
           return r;
         result += r;
         str_clean(&str);
@@ -295,9 +295,9 @@ sw http_response_buf_write (const s_http_response *response,
     }
     else if (type == &g_sym_S32) {
       buf_init_alloc(&tmp, BUF_SIZE);
-      fd = response->body.data.s32;
+      fd = response->body.data.td_s32;
       while (1) {
-        if ((r = read(fd, tmp.ptr.p, tmp.size)) < 0) {
+        if ((r = read(fd, tmp.ptr.p_pvoid, tmp.size)) < 0) {
           e = errno;
           err_write_1("http_response_buf_write: ");
           err_inspect_s32(fd);
@@ -310,7 +310,7 @@ sw http_response_buf_write (const s_http_response *response,
         tmp.rpos = 0;
         tmp.wpos = r;
         while (tmp.rpos < (uw) r) {
-          if ((w = buf_write(buf, tmp.ptr.ps8 + tmp.rpos,
+          if ((w = buf_write(buf, tmp.ptr.p_ps8 + tmp.rpos,
                              r - tmp.rpos)) <= 0)
             return w;
           result += w;
@@ -320,17 +320,17 @@ sw http_response_buf_write (const s_http_response *response,
       close(fd);
     }
     else if (type == &g_sym_Map &&
-             (map = &response->body.data.map) &&
+             (map = &response->body.data.td_map) &&
              map->count == 3 &&
-             map->key[1].data.psym == sym_1("fd") &&
+             map->key[1].data.td_psym == sym_1("fd") &&
              map->value[1].type == TAG_S32 &&
-             map->key[2].data.psym == sym_1("start") &&
+             map->key[2].data.td_psym == sym_1("start") &&
              map->value[2].type == TAG_SW &&
-             map->key[0].data.psym == sym_1("end_") &&
+             map->key[0].data.td_psym == sym_1("end_") &&
              map->value[0].type == TAG_SW) {
-      fd    = map->value[1].data.s32;
-      start = map->value[2].data.sw;
-      end   = map->value[0].data.sw;
+      fd    = map->value[1].data.td_s32;
+      start = map->value[2].data.td_sw;
+      end   = map->value[0].data.td_sw;
       if (start < 0)
         start = content_length + start + 1;
       if (end < 0)
@@ -359,7 +359,7 @@ sw http_response_buf_write (const s_http_response *response,
           s = tmp.size;
           if (size < s)
             s = size;
-          if ((r = read(fd, tmp.ptr.p, s)) < 0) {
+          if ((r = read(fd, tmp.ptr.p_pvoid, s)) < 0) {
             e = errno;
             err_write_1("http_response_buf_write: read ");
             err_inspect_s32(fd);
@@ -373,7 +373,7 @@ sw http_response_buf_write (const s_http_response *response,
           tmp.rpos = 0;
           tmp.wpos = r;
           while (tmp.rpos < (uw) r) {
-            if ((w = buf_write(buf, tmp.ptr.ps8 + tmp.rpos,
+            if ((w = buf_write(buf, tmp.ptr.p_ps8 + tmp.rpos,
                                r - tmp.rpos)) <= 0)
               return w;
             result += w;
@@ -412,16 +412,16 @@ s_tag * http_response_find_header (const s_http_response *res,
   h = res->headers;
   while (h) {
     if (h->tag.type != TAG_PTUPLE ||
-        h->tag.data.ptuple->count != 2 ||
-        h->tag.data.ptuple->tag->type != TAG_STR) {
+        h->tag.data.td_ptuple->count != 2 ||
+        h->tag.data.td_ptuple->tag->type != TAG_STR) {
       err_write_1("http_response_find_header: invalid header: ");
       err_inspect_tag(&h->tag);
       err_write_1("\n");
       return NULL;
     }
-    if (! compare_str_case_insensitive(&h->tag.data.ptuple->tag->data.str,
+    if (! compare_str_case_insensitive(&h->tag.data.td_ptuple->tag->data.td_str,
                                        key))
-      return h->tag.data.ptuple->tag + 1;
+      return h->tag.data.td_ptuple->tag + 1;
     h = list_next(h);
   }
   return NULL;
@@ -463,8 +463,8 @@ s_http_response * http_response_set_header (s_http_response *res,
   else {
     if (! (tmp.headers = list_new_ptuple(2, tmp.headers)))
       goto clean;
-    tag_init_str_copy(tmp.headers->tag.data.ptuple->tag, key);
-    tag_init_str_copy(tmp.headers->tag.data.ptuple->tag + 1, value);
+    tag_init_str_copy(tmp.headers->tag.data.td_ptuple->tag, key);
+    tag_init_str_copy(tmp.headers->tag.data.td_ptuple->tag + 1, value);
   }
   *dest = tmp;
   return dest;

@@ -259,7 +259,7 @@ s_array * array_init_cast (s_array *array, const s_sym * const *type,
   (void) type;
   switch (tag->type) {
   case TAG_ARRAY:
-    return array_init_copy(array, &tag->data.array);
+    return array_init_copy(array, &tag->data.td_array);
   case TAG_VOID:
     return array_init_void(array);
   default:

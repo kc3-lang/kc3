@@ -18,7 +18,7 @@ GtkWidget ** kc3_gtk4_label_new (GtkWidget **dest, s_str *str)
   GtkWidget *tmp;
   assert(dest);
   assert(str);
-  if (! (tmp = gtk_label_new(str->ptr.pchar)))
+  if (! (tmp = gtk_label_new(str->ptr.p_pchar)))
     return NULL;
   *dest = tmp;
   return dest;

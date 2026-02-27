@@ -221,18 +221,18 @@ void sha1_hmac (const s_str *k, const s_str *m,
   assert(SHA1_DIGEST_LENGTH <= SHA1_BLOCK_SIZE);
   if (k->size > SHA1_BLOCK_SIZE) {
     SHA1Init(&h_ctx);
-    SHA1Update(&h_ctx, k->ptr.pu8, k->size);
+    SHA1Update(&h_ctx, k->ptr.p_pu8, k->size);
     SHA1Final(h[0], &h_ctx);
     str_init(&k_p, NULL, SHA1_DIGEST_LENGTH, (const char *) h[0]);
   }
   else
-    str_init(&k_p, NULL, k->size, k->ptr.p);
+    str_init(&k_p, NULL, k->size, k->ptr.p_pvoid);
   memset(pad[0], 0x5c, SHA1_BLOCK_SIZE);
   memset(pad[1], 0x36, SHA1_BLOCK_SIZE);
   i = 0;
   while (i < k_p.size) {
-    pad[0][i] ^= k_p.ptr.pu8[i];
-    pad[1][i] ^= k_p.ptr.pu8[i];
+    pad[0][i] ^= k_p.ptr.p_pu8[i];
+    pad[1][i] ^= k_p.ptr.p_pu8[i];
     i++;
   }
   while (i < SHA1_BLOCK_SIZE) {
@@ -242,7 +242,7 @@ void sha1_hmac (const s_str *k, const s_str *m,
   }
   SHA1Init(&h_ctx);
   SHA1Update(&h_ctx, pad[1], SHA1_BLOCK_SIZE);
-  SHA1Update(&h_ctx, m->ptr.p, m->size);
+  SHA1Update(&h_ctx, m->ptr.p_pvoid, m->size);
   SHA1Final(h[1], &h_ctx);
   SHA1Init(&h_ctx);
   SHA1Update(&h_ctx, pad[0], SHA1_BLOCK_SIZE);
@@ -255,7 +255,7 @@ s_str * sha1_hmac_str (const s_str *k, const s_str *m, s_str *dest)
   s_str tmp;
   if (! str_init_alloc(&tmp, SHA1_DIGEST_LENGTH))
     return NULL;
-  sha1_hmac(k, m, tmp.free.pu8);
+  sha1_hmac(k, m, tmp.free.p_pu8);
   *dest = tmp;
   return dest;
 }

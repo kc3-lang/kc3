@@ -62,7 +62,7 @@ s_str * hotp_value_str (const s_str *k, const s_tag *c, s_str *dest)
     return NULL;
   if (! str_init_alloc(&tmp, 6))
     return NULL;
-  hotp_value(k, c_u64, tmp.free.pchar);
+  hotp_value(k, c_u64, tmp.free.p_pchar);
   *dest = tmp;
   return dest;
 }

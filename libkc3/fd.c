@@ -57,7 +57,7 @@ s_str * fd_read_until_eof (s64 fd, s_str *dest)
   list = NULL;
   l = &list;
   while (1) {
-    if ((r = read(fd, buf.ptr.pchar, buf.size)) < 0) {
+    if ((r = read(fd, buf.ptr.p_pchar, buf.size)) < 0) {
       e = errno;
       err_write_1("fd_read_until_eof: read: ");
       err_puts(strerror(e));
@@ -69,10 +69,10 @@ s_str * fd_read_until_eof (s64 fd, s_str *dest)
     buf.rpos = 0;
     buf.wpos = r;
     *l = list_new(NULL);
-    if (buf_read_to_str(&buf, &(*l)->tag.data.str) <= 0)
+    if (buf_read_to_str(&buf, &(*l)->tag.data.td_str) <= 0)
       goto clean;
     (*l)->tag.type = TAG_STR;
-    l = &(*l)->next.data.plist;
+    l = &(*l)->next.data.td_plist;
   }
   if (! str_init_concatenate_list(&tmp, list))
     goto clean;

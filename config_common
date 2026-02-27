@@ -2,7 +2,7 @@
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -I${SRC_TOP} -DPIC"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
-CFLAGS="$CFLAGS -fPIC"
+CFLAGS="$CFLAGS -fPIC -fno-omit-frame-pointer"
 CXXFLAGS="$CXXFLAGS -W -Wall -Werror -std=c++11 -pedantic -pipe"
 CXXFLAGS="$CXXFLAGS -pthread -fPIC"
 config_lib compiler_rt -lcompiler_rt 2>/dev/null

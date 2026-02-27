@@ -42,7 +42,7 @@ bool ht_add_hash (s_ht *ht, s_tag *tag, uw hash)
 #endif
   item = ht->items + hash % ht->size;
   while (*item && (c = ht->compare(&(*item)->tag, tag)) < 0)
-    item = &(*item)->next.data.plist;
+    item = &(*item)->next.data.td_plist;
   if (! (item_new = list_new_tag_copy(tag, *item))) {
     err_puts("ht_add_hash: ht_item_new");
     assert(! "ht_add_hash: ht_item_new");

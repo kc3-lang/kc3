@@ -29,7 +29,7 @@ s_str * qrencode_encode_png (const s_str *src, const s_tag *size,
   uw y;
   if (! uw_init_cast(&size_uw, &sym_Uw, size))
     return NULL;
-  if (! (qrcode = QRcode_encodeString(src->ptr.pchar, 0,
+  if (! (qrcode = QRcode_encodeString(src->ptr.p_pchar, 0,
                                       QR_ECLEVEL_H,
                                       QR_MODE_8,
                                       1))) {

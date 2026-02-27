@@ -21,7 +21,7 @@ GtkEntryBuffer ** kc3_gtk4_entry_buffer_new (const s_str *value,
                                              GtkEntryBuffer **dest)
 {
   GtkEntryBuffer *tmp;
-  if (! (tmp = gtk_entry_buffer_new(value->ptr.pchar, -1)))
+  if (! (tmp = gtk_entry_buffer_new(value->ptr.p_pchar, -1)))
     return NULL;
   *dest = tmp;
   return dest;
@@ -30,5 +30,5 @@ GtkEntryBuffer ** kc3_gtk4_entry_buffer_new (const s_str *value,
 void kc3_gtk4_entry_buffer_set_text (GtkEntryBuffer **eb,
                                      const s_str *text)
 {
-  gtk_entry_buffer_set_text(GTK_ENTRY_BUFFER(*eb), text->ptr.pchar, -1);
+  gtk_entry_buffer_set_text(GTK_ENTRY_BUFFER(*eb), text->ptr.p_pchar, -1);
 }

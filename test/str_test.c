@@ -25,7 +25,7 @@
     test_ = (test);                                                    \
     TEST_EQ(str_to_hex(test_, &str), &str);                            \
     TEST_EQ(str.size, strlen(expected));                               \
-    TEST_STRNCMP(str.ptr.p, (expected), str.size);                     \
+    TEST_STRNCMP(str.ptr.p_pvoid, (expected), str.size);                     \
     str_clean(&str);                                                   \
     str_delete(test_);                                                 \
     test_context(NULL);                                                \
@@ -119,7 +119,7 @@ TEST_CASE(str_init_clean)
   len = 4;
   str_init(&stra, NULL, len, "test");
   TEST_EQ(stra.size, len);
-  TEST_STRNCMP(stra.ptr.p, "test", len);
+  TEST_STRNCMP(stra.ptr.p_pvoid, "test", len);
   str_clean(&stra);
   len = 4;
   m = malloc(len + 1);
@@ -127,7 +127,7 @@ TEST_CASE(str_init_clean)
   memcpy(m, "test", len);
   str_init(&stra, m, len, m);
   TEST_EQ(stra.size, len);
-  TEST_STRNCMP(stra.ptr.p, "test", len);
+  TEST_STRNCMP(stra.ptr.p_pvoid, "test", len);
   str_clean(&stra);
 }
 TEST_CASE_END(str_init_clean)
@@ -143,7 +143,7 @@ TEST_CASE(str_init_copy)
   str_init_copy(&str, &test);
   str_clean(&test);
   TEST_EQ(str.size, len);
-  TEST_STRNCMP(str.ptr.p, "test", len);
+  TEST_STRNCMP(str.ptr.p_pvoid, "test", len);
   str_clean(&str);
   len = 4;
   m = malloc(len + 1);
@@ -153,7 +153,7 @@ TEST_CASE(str_init_copy)
   str_init_copy(&str, &test);
   str_clean(&test);
   TEST_EQ(str.size, len);
-  TEST_STRNCMP(str.ptr.p, "test", len);
+  TEST_STRNCMP(str.ptr.p_pvoid, "test", len);
   str_clean(&str);
 }
 TEST_CASE_END(str_init_copy)
@@ -166,7 +166,7 @@ TEST_CASE(str_init_copy_1)
   len = 4;
   str_init_copy_1(&str, "test");
   TEST_EQ(str.size, len);
-  TEST_STRNCMP(str.ptr.p, "test", len);
+  TEST_STRNCMP(str.ptr.p_pvoid, "test", len);
   str_clean(&str);
   len = 4;
   m = malloc(len + 1);
@@ -175,7 +175,7 @@ TEST_CASE(str_init_copy_1)
   str_init_copy_1(&str, m);
   free(m);
   TEST_EQ(str.size, len);
-  TEST_STRNCMP(str.ptr.p, "test", len);
+  TEST_STRNCMP(str.ptr.p_pvoid, "test", len);
   str_clean(&str);
 }
 TEST_CASE_END(str_init_copy_1)
@@ -204,14 +204,14 @@ TEST_CASE(str_new_delete)
   len = 4;
   TEST_ASSERT((str = str_new(NULL, len, "test")));
   TEST_EQ(str->size, len);
-  TEST_STRNCMP(str->ptr.p, "test", len);
+  TEST_STRNCMP(str->ptr.p_pvoid, "test", len);
   str_delete(str);
   len = 4;
   m = malloc(len + 1);
   memcpy(m, "test", len);
   TEST_ASSERT((str = str_new(m, len, m)));
   TEST_EQ(str->size, len);
-  TEST_STRNCMP(str->ptr.p, "test", len);
+  TEST_STRNCMP(str->ptr.p_pvoid, "test", len);
   str_delete(str);
 }
 TEST_CASE_END(str_new_delete)
@@ -227,7 +227,7 @@ TEST_CASE(str_new_copy)
   TEST_ASSERT((str = str_new_copy(&test)));
   str_clean(&test);
   TEST_EQ(str->size, len);
-  TEST_STRNCMP(str->ptr.p, "test", len);
+  TEST_STRNCMP(str->ptr.p_pvoid, "test", len);
   str_delete(str);
   len = 4;
   m = malloc(len + 1);
@@ -236,7 +236,7 @@ TEST_CASE(str_new_copy)
   TEST_ASSERT((str = str_new_copy(&test)));
   str_clean(&test);
   TEST_EQ(str->size, len);
-  TEST_STRNCMP(str->ptr.p, "test", len);
+  TEST_STRNCMP(str->ptr.p_pvoid, "test", len);
   str_delete(str);
 }
 TEST_CASE_END(str_new_copy)
@@ -245,10 +245,10 @@ TEST_CASE(str_new_f)
 {
   s_str *str;
   TEST_ASSERT((str = str_new_f("test%d", 42)));
-  TEST_STRNCMP(str->ptr.p, "test42", str->size);
+  TEST_STRNCMP(str->ptr.p_pvoid, "test42", str->size);
   str_delete(str);
   TEST_ASSERT((str = str_new_f("test%lld", (long long) 42)));
-  TEST_STRNCMP(str->ptr.p, "test42", str->size);
+  TEST_STRNCMP(str->ptr.p_pvoid, "test42", str->size);
   str_delete(str);
 }
 TEST_CASE_END(str_new_f)

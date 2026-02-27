@@ -187,7 +187,7 @@ s_map * map_init_cast (s_map *map, p_sym *type, s_tag *tag)
   assert(tag);
   (void) type;
   if (tag->type == TAG_MAP)
-    return map_init_copy(map, &tag->data.map);
+    return map_init_copy(map, &tag->data.td_map);
   err_write_1("map_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
   err_puts(" to Map");
@@ -233,8 +233,8 @@ s_map * map_init_from_alist (s_map *map, s_list *alist)
   map_init(&tmp, len);
   a = alist;
   while (i < len) {
-    if (! tag_init_copy(tmp.key + i, a->tag.data.ptuple->tag) ||
-        ! tag_init_copy(tmp.value + i, a->tag.data.ptuple->tag + 1))
+    if (! tag_init_copy(tmp.key + i, a->tag.data.td_ptuple->tag) ||
+        ! tag_init_copy(tmp.value + i, a->tag.data.td_ptuple->tag + 1))
       goto ko;
     a = list_next(a);
     i++;
@@ -298,7 +298,7 @@ p_list * map_keys (const s_map *map, p_list *dest)
       list_delete_all(tmp);
       return NULL;
     }
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
     i++;
   }
   *dest = tmp;
@@ -326,7 +326,7 @@ p_list * map_map_to_list (const s_map *map, s_callable *callable,
       list_delete_all(tmp);
       return NULL;
     }
-    t = &(*t)->next.data.plist;
+    t = &(*t)->next.data.td_plist;
     list_delete_all(args);
     i++;
   }
@@ -433,14 +433,14 @@ s_map * map_put_list (const s_map *map, const s_list *alist,
   map_init_copy(&tmp, map);
   i = alist;
   while (i) {
-    assert(i->tag.type == TAG_PTUPLE && i->tag.data.ptuple->count == 2);
-    if (i->tag.type != TAG_PTUPLE || i->tag.data.ptuple->count != 2) {
+    assert(i->tag.type == TAG_PTUPLE && i->tag.data.td_ptuple->count == 2);
+    if (i->tag.type != TAG_PTUPLE || i->tag.data.td_ptuple->count != 2) {
       err_puts("map_put_list: not an associative list");
       assert(! "map_put_list: not an associative list");
       goto ko;
     }
-    if (! map_set(&tmp, i->tag.data.ptuple->tag,
-                  i->tag.data.ptuple->tag + 1))
+    if (! map_set(&tmp, i->tag.data.td_ptuple->tag,
+                  i->tag.data.td_ptuple->tag + 1))
       goto ko;
     i = list_next(i);
   }

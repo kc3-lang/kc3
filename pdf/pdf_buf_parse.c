@@ -49,12 +49,12 @@ sw pdf_buf_parse_object (s_buf *buf, s_pdf_file *pdf_file,
     goto ok;
   result += r;
   if ((r = pdf_buf_parse_indirect_object(buf, pdf_file,
-                                         &tmp.data.ptuple)) > 0) {
+                                         &tmp.data.td_ptuple)) > 0) {
     result += r;
     tmp.type = TAG_PTUPLE;
     goto ok;
   }
-  if ((r = pdf_buf_parse_bool(buf, &tmp.data.bool_)) > 0) {
+  if ((r = pdf_buf_parse_bool(buf, &tmp.data.td_bool_)) > 0) {
     result += r;
     tmp.type = TAG_BOOL;
     goto ok;
@@ -68,7 +68,7 @@ sw pdf_buf_parse_object (s_buf *buf, s_pdf_file *pdf_file,
     goto ok;
   }
   if ((r = pdf_buf_parse_dictionnary(buf, pdf_file,
-                                     &tmp.data.map)) > 0) {
+                                     &tmp.data.td_map)) > 0) {
     result += r;
     tmp.type = TAG_MAP;
     goto ok;
@@ -77,12 +77,12 @@ sw pdf_buf_parse_object (s_buf *buf, s_pdf_file *pdf_file,
     result += r;
     goto ok;
   }
-  if ((r = pdf_buf_parse_name(buf, pdf_file, &tmp.data.psym)) > 0) {
+  if ((r = pdf_buf_parse_name(buf, pdf_file, &tmp.data.td_psym)) > 0) {
     tmp.type = TAG_PSYM;
     result += r;
     goto ok;
   }
-  if ((r = pdf_buf_parse_array(buf, pdf_file, &tmp.data.plist)) > 0) {
+  if ((r = pdf_buf_parse_array(buf, pdf_file, &tmp.data.td_plist)) > 0) {
     tmp.type = TAG_PLIST;
     result += r;
     goto ok;
@@ -128,7 +128,7 @@ sw pdf_buf_parse_array (s_buf *buf, s_pdf_file *pdf_file,
     if ((r = pdf_buf_parse_object(buf, pdf_file, &(*tail)->tag)) <= 0)
       goto restore;
     result += r;
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
   }
   *dest = tmp;
   r = result;
@@ -249,8 +249,8 @@ sw pdf_buf_parse_dictionnary (s_buf *buf, s_pdf_file *pdf_file,
     if ((r = pdf_buf_parse_object(buf, pdf_file, &(*values_tail)->tag)) <= 0)
       goto clean;
     result += r;
-    keys_tail = &(*keys_tail)->next.data.plist;
-    values_tail = &(*values_tail)->next.data.plist;
+    keys_tail = &(*keys_tail)->next.data.td_plist;
+    values_tail = &(*values_tail)->next.data.td_plist;
   }
  ok:
   if (! map_init_from_lists(&tmp, keys, values)) {
@@ -342,7 +342,7 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_pdf_file *pdf_file)
       goto clean;
     }
     if (pdf_file->xref.value[i].type == TAG_U64) {
-      offset = pdf_file->xref.value[i].data.u64;
+      offset = pdf_file->xref.value[i].data.td_u64;
       if (false) {
         err_write_1("pdf_buf_parse_file_body: offset=");
         err_inspect_s64_decimal(offset);
@@ -357,9 +357,9 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_pdf_file *pdf_file)
                                              &tmp_tuple)) <= 0) {
         err_write_1("pdf_buf_parse_file_body: failed to parse indirect"
                     " object ");
-        err_inspect_u32_decimal(tmp.key[i].data.ptuple->tag[0].data.u32);
+        err_inspect_u32_decimal(tmp.key[i].data.td_ptuple->tag[0].data.td_u32);
         err_write_1(" ");
-        err_inspect_u16_decimal(tmp.key[i].data.ptuple->tag[1].data.u16);
+        err_inspect_u16_decimal(tmp.key[i].data.td_ptuple->tag[1].data.td_u16);
         err_write_1(" at offset ");
         err_inspect_s64_decimal(offset);
         err_write_1(" , r = ");
@@ -367,7 +367,7 @@ sw pdf_buf_parse_file_body (s_buf *buf, s_pdf_file *pdf_file)
         err_write_1("\n");
         err_inspect_buf(buf);
         if (! tag_init_ptuple(tmp.value + i, 2) ||
-            ! (tuple = tmp.value[i].data.ptuple) ||
+            ! (tuple = tmp.value[i].data.td_ptuple) ||
             ! tag_init_psym(tuple->tag, &g_sym_error) ||
             ! tag_init_str_inspect_buf(tuple->tag + 1, buf))
           goto clean;
@@ -429,7 +429,7 @@ sw pdf_buf_parse_file_header (s_buf *buf, s_str *dest)
     goto restore;
   }
   result += r;
-  if (! str_init_alloc_copy(&tmp, result, buf->ptr.pchar + save.rpos)) {
+  if (! str_init_alloc_copy(&tmp, result, buf->ptr.p_pchar + save.rpos)) {
     r = -1;
     goto clean;
   }
@@ -558,7 +558,7 @@ sw pdf_buf_parse_indirect_object (s_buf *buf,
  ok:
   tag_init_psym(tmp->tag, sym_indirect_object);
   tmp->tag[1].type = TAG_U32;
-  if (! u32_init_cast(&tmp->tag[1].data.u32, &sym_U32, &object_number)) {
+  if (! u32_init_cast(&tmp->tag[1].data.td_u32, &sym_U32, &object_number)) {
     err_puts("pdf_buf_parse_indirect_object: invalid object number");
     assert(! "pdf_buf_parse_indirect_object: invalid object number");
     r = -1;
@@ -566,7 +566,7 @@ sw pdf_buf_parse_indirect_object (s_buf *buf,
   }
   tag_void(&object_number);
   tmp->tag[2].type = TAG_U16;
-  if (! u16_init_cast(&tmp->tag[2].data.u16, &sym_U16,
+  if (! u16_init_cast(&tmp->tag[2].data.td_u16, &sym_U16,
                       &generation_number)) {
     err_puts("pdf_buf_parse_indirect_object: invalid generation"
              " number");
@@ -615,23 +615,23 @@ sw pdf_buf_parse_integer (s_buf *buf, s_tag *dest)
   }
   result += r;
   if ((r = buf_parse_integer_decimal(buf, negative,
-                                     &tmp.data.integer)) <= 0)
+                                     &tmp.data.td_integer)) <= 0)
     goto restore;
   result += r;
   if ((r = pdf_buf_parse_object_end(buf, &end)) > 0)
     result += r;
   if (! end) {
-    integer_clean(&tmp.data.integer);
+    integer_clean(&tmp.data.td_integer);
     r = -1;
     goto restore;
   }
   tmp.type = TAG_INTEGER;
   if (! tag_integer_reduce(&tmp, dest)) {
-    integer_clean(&tmp.data.integer);
+    integer_clean(&tmp.data.td_integer);
     r = -1;
     goto clean;
   }
-  integer_clean(&tmp.data.integer);
+  integer_clean(&tmp.data.td_integer);
   r = result;
   goto clean;
  restore:
@@ -742,7 +742,7 @@ sw pdf_buf_parse_number (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = pdf_buf_parse_integer(buf, &tmp)) > 0)
     goto ok;
-  if ((r = pdf_buf_parse_float(buf, &tmp.data.f64)) > 0) {
+  if ((r = pdf_buf_parse_float(buf, &tmp.data.td_f64)) > 0) {
     tmp.type = TAG_F64;
     goto ok;
   }
@@ -850,8 +850,8 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
   result += r;
   buf_save_clean(buf, &save);
   if (! tag_init_pstruct(&tmp, sym_PDF_Stream) ||
-      ! struct_allocate(tmp.data.pstruct) ||
-      ! (pdf_stream = tmp.data.pstruct->data)) {
+      ! struct_allocate(tmp.data.td_pstruct) ||
+      ! (pdf_stream = tmp.data.td_pstruct->data)) {
     err_puts("pdf_buf_parse_stream: failed to init pstruct");
     assert(! "pdf_buf_parse_stream: failed to init pstruct");
     map_clean(&map);
@@ -866,12 +866,12 @@ sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
   pdf_stream->offset = pdf_stream_offset;
   name_list = pdf_file ? &pdf_file->name_list : &g_pdf_name_list;
   name_tag.type = TAG_PSYM;
-  name_tag.data.psym = pdf_name_1(name_list, "Length");
+  name_tag.data.td_psym = pdf_name_1(name_list, "Length");
   if (map_get(&pdf_stream->dictionnary, &name_tag, &size_tag)) {
     if (size_tag.type == TAG_PTUPLE &&
-        size_tag.data.ptuple->count == 3 &&
-        size_tag.data.ptuple->tag[0].type == TAG_PSYM &&
-        size_tag.data.ptuple->tag[0].data.psym == sym_1("indirect_object")) {
+        size_tag.data.td_ptuple->count == 3 &&
+        size_tag.data.td_ptuple->tag[0].type == TAG_PSYM &&
+        size_tag.data.td_ptuple->tag[0].data.td_psym == sym_1("indirect_object")) {
       if (! pdf_file_get_indirect_object(pdf_file, &size_tag, &size_tmp)) {
         err_puts("pdf_buf_parse_stream: pdf_file_get_indirect_object");
         assert(! "pdf_buf_parse_stream: pdf_file_get_indirect_object");
@@ -988,7 +988,7 @@ sw pdf_buf_parse_string (s_buf *buf, s_tag *dest)
     *dest = tmp;
   } else {
     tmp.type = TAG_STR;
-    tmp.data.str = str;
+    tmp.data.td_str = str;
     *dest = tmp;
   }
   return result;
@@ -1345,10 +1345,10 @@ sw pdf_buf_parse_xref (s_buf *buf, s_map *dest)
         assert(! "pdf_buf_parse_xref: expected 'n' or 'f'");
         goto error;
       }
-      tag_init_u32((*keys_tail)->tag.data.ptuple->tag, object_number);
-      tag_init_u16((*keys_tail)->tag.data.ptuple->tag + 1, generation_number);
-      keys_tail = &(*keys_tail)->next.data.plist;
-      values_tail = &(*values_tail)->next.data.plist;
+      tag_init_u32((*keys_tail)->tag.data.td_ptuple->tag, object_number);
+      tag_init_u16((*keys_tail)->tag.data.td_ptuple->tag + 1, generation_number);
+      keys_tail = &(*keys_tail)->next.data.td_plist;
+      values_tail = &(*values_tail)->next.data.td_plist;
       i++;
       object_number++;
     }

@@ -15,15 +15,23 @@
 
 #include "types.h"
 
+#ifdef __clang__
+# define BOUNDED_STRING(a, b) __attribute__((__bounded__(__string__, a, b)))
+# define BOUNDED_MINBYTES(a, b) __attribute__((__bounded__(__minbytes__, a, b)))
+#else
+# define BOUNDED_STRING(a, b)
+# define BOUNDED_MINBYTES(a, b)
+#endif
+
 char * sha256_end(s_sha2 *ctx, char *buf);
 void   sha256_init (s_sha2 *ctx);
 void   sha256_transform (u32 state[8],
                         const u8 block[SHA256_BLOCK_LENGTH]);
 void   sha256_update (s_sha2 *ctx, const u8 *data, uw size)
-  __attribute__((__bounded__(__string__,2,3)));
+  BOUNDED_STRING(2, 3);
 void   sha256_pad (s_sha2 *ctx);
 void   sha256_final (u8 digest[SHA256_DIGEST_LENGTH], s_sha2 *ctx)
-  __attribute__((__bounded__(__minbytes__,1,SHA256_DIGEST_LENGTH)));
+  BOUNDED_MINBYTES(1, SHA256_DIGEST_LENGTH);
 
 /* Observers. */
 s_str * sha256_str_to_hex (const s_str *in, s_str *out);

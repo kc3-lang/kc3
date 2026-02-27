@@ -69,14 +69,14 @@ bool ops_add_tag (s_ops *ops, s_tag *op_tag)
   assert(op_tag);
   if (! op_tag ||
       op_tag->type != TAG_PSTRUCT ||
-      ! op_tag->data.pstruct ||
-      op_tag->data.pstruct->pstruct_type->module != &g_sym_KC3_Op ||
-      ! op_tag->data.pstruct->data) {
+      ! op_tag->data.td_pstruct ||
+      op_tag->data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op ||
+      ! op_tag->data.td_pstruct->data) {
     err_puts("ops_add_tag: invalid op");
     assert(! "ops_add_tag: invalid op");
     return false;
   }
-  op = op_tag->data.pstruct->data;
+  op = op_tag->data.td_pstruct->data;
   if (! op ||
       ! op->sym ||
       ! op->arity ||
@@ -111,19 +111,19 @@ s8 ops_compare_tag (const s_tag *a, const s_tag *b)
   if (! b)
     return 1;
   if (a->type != TAG_PSTRUCT ||
-      a->data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
+      a->data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op) {
     err_puts("ops_compare_tag: argument a is not a %KC3.Op{}");
     assert(! "ops_compare_tag: argument a is not a %KC3.Op{}");
     abort();
   }
   if (b->type != TAG_PSTRUCT ||
-      b->data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
+      b->data.td_pstruct->pstruct_type->module != &g_sym_KC3_Op) {
     err_puts("ops_compare_tag: argument b is not a %KC3.Op{}");
     assert(! "ops_compare_tag: argument b is not a %KC3.Op{}");
     abort();
   }
-  op_a = a->data.pstruct->data;
-  op_b = b->data.pstruct->data;
+  op_a = a->data.td_pstruct->data;
+  op_b = b->data.td_pstruct->data;
   r = compare_sym(op_a->sym, op_b->sym);
   if (! r)
     r = compare_u8(op_a->arity, op_b->arity);
@@ -147,7 +147,7 @@ s_tag * ops_get_tag (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
   if (! env_global()->loaded || ! sym || ! arity)
     return NULL;
   op_tag.type = TAG_PSTRUCT;
-  op_tag.data.pstruct = &op_struct;
+  op_tag.data.td_pstruct = &op_struct;
   op_struct.data = &op;
   if (! pstruct_type_find(&g_sym_KC3_Op, &op_struct.pstruct_type))
     return NULL;
@@ -167,11 +167,11 @@ uw ops_hash_tag (const s_tag *op_tag)
   s_op *op;
   assert(op_tag);
   assert(op_tag->type == TAG_PSTRUCT);
-  assert(op_tag->data.pstruct);
-  assert(op_tag->data.pstruct->pstruct_type);
-  assert(op_tag->data.pstruct->pstruct_type->module == &g_sym_KC3_Op);
-  assert(op_tag->data.pstruct->data);
-  op = op_tag->data.pstruct->data;
+  assert(op_tag->data.td_pstruct);
+  assert(op_tag->data.td_pstruct->pstruct_type);
+  assert(op_tag->data.td_pstruct->pstruct_type->module == &g_sym_KC3_Op);
+  assert(op_tag->data.td_pstruct->data);
+  op = op_tag->data.td_pstruct->data;
   hash_init(&hash);
   hash_update_sym(&hash, op->sym);
   hash_update_u8(&hash, op->arity);

@@ -27,7 +27,7 @@ s_str * kc3_git_blob_to_str (git_repository **repo, const s_str *hash,
   assert(*repo);
   assert(hash);
   assert(dest);
-  if (git_oid_fromstr(&oid, hash->ptr.pchar)) {
+  if (git_oid_fromstr(&oid, hash->ptr.p_pchar)) {
     err_puts("kc3_git_blob_to_str: invalid hash");
     return NULL;
   }
@@ -50,7 +50,7 @@ s_str * kc3_git_blob_to_str (git_repository **repo, const s_str *hash,
     git_blob_free(blob);
     return NULL;
   }
-  memcpy(tmp.free.p, raw, size);
+  memcpy(tmp.free.p_pvoid, raw, size);
   git_blob_free(blob);
   *dest = tmp;
   return dest;

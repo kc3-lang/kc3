@@ -42,7 +42,7 @@ git_repository ** kc3_git_repository_init (git_repository **repo,
 {
   const git_error *e;
   git_repository *tmp;
-  if (git_repository_init(&tmp, path->ptr.pchar, false)) {
+  if (git_repository_init(&tmp, path->ptr.p_pchar, false)) {
     e = git_error_last();
     err_write_1("kc3_git_repository_init: ");
     err_inspect_str(path);
@@ -59,7 +59,7 @@ git_repository ** kc3_git_repository_init_bare (git_repository **repo,
 {
   const git_error *e;
   git_repository *tmp;
-  if (git_repository_init(&tmp, path->ptr.pchar, true)) {
+  if (git_repository_init(&tmp, path->ptr.p_pchar, true)) {
     e = git_error_last();
     err_write_1("kc3_git_repository_init_bare: ");
     err_inspect_str(path);
@@ -76,7 +76,7 @@ git_repository ** kc3_git_repository_open (git_repository **repo,
 {
   const git_error *e;
   git_repository *tmp;
-  if (git_repository_open(&tmp, path->ptr.pchar)) {
+  if (git_repository_open(&tmp, path->ptr.p_pchar)) {
     e = git_error_last();
     err_write_1("kc3_git_repository_open: ");
     err_inspect_str(path);
@@ -93,7 +93,7 @@ git_repository ** kc3_git_repository_open_bare (git_repository **repo,
 {
   const git_error *e;
   git_repository *tmp;
-  if (git_repository_open_bare(&tmp, path->ptr.pchar)) {
+  if (git_repository_open_bare(&tmp, path->ptr.p_pchar)) {
     e = git_error_last();
     err_write_1("kc3_git_repository_open_bare: ");
     err_inspect_str(path);

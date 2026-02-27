@@ -474,7 +474,7 @@ sw buf_parse_do_block_inner (s_buf *buf, bool short_form,
         goto restore;
       }
       (*i)->tag = tag;
-      i = &(*i)->next.data.plist;
+      i = &(*i)->next.data.td_plist;
     }
     if ((r = buf_parse_comments(buf)) < 0) {
       err_puts("buf_parse_do_block_inner: buf_parse_comments 1");
@@ -660,7 +660,7 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
       goto restore;
     if (r > 0) {
       result += r;
-      args = &(*args)->next.data.plist;
+      args = &(*args)->next.data.td_plist;
       if ((r = buf_parse_comments(buf)) < 0)
         goto restore;
       result += r;
@@ -741,7 +741,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     err_inspect_tag(&next_op_tag);
     err_write_1("\n");
   }
-  next_op = next_op_tag.data.pstruct->data;
+  next_op = next_op_tag.data.td_pstruct->data;
   while (r > 0 && next_op->precedence >= min_precedence) {
     tag_clean(&next_op_tag);
     next_op_tag = (s_tag) {0};
@@ -752,18 +752,18 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       r = 0;
       goto restore;
     }
-    next_op = next_op_tag.data.pstruct->data;
+    next_op = next_op_tag.data.td_pstruct->data;
     if (merge_left) {
       call_init_op(&tmp3);
       tmp3.ident.module = NULL;
       tmp3.ident.sym = op->sym;
       tmp3.arguments->tag = *left;
       list_next(tmp3.arguments)->tag = *right;
-      if (! (left->data.pcall = alloc(sizeof(s_call)))) {
+      if (! (left->data.td_pcall = alloc(sizeof(s_call)))) {
         r = -1;
         goto restore;
       }
-      *left->data.pcall = tmp3;
+      *left->data.td_pcall = tmp3;
       left->type = TAG_PCALL;
       *right = (s_tag) {0};
     }
@@ -775,7 +775,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       r = -1;
       goto restore;
     }
-    op = op_tag.data.pstruct->data;
+    op = op_tag.data.td_pstruct->data;
     tmp.ident.module = NULL;
     tmp.ident.sym = op->sym;
     if ((r = buf_ignore_spaces(buf)) < 0)
@@ -800,7 +800,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     if (! ops_get_tag(ops, next_ident.sym, 2, &next_op_tag) &&
         ! ops_get_tag(ops, next_ident.sym, 1, &next_op_tag))
       break;
-    next_op = next_op_tag.data.pstruct->data;
+    next_op = next_op_tag.data.td_pstruct->data;
     while ((next_op->arity == 2 &&
             next_op->precedence > op->precedence) ||
            (next_op->associativity == OP_ASSOCIATIVITY_RIGHT &&
@@ -815,11 +815,11 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       }
       result += r;
       *right = (s_tag) {0};
-      if (! (right->data.pcall = alloc(sizeof(s_call)))) {
+      if (! (right->data.td_pcall = alloc(sizeof(s_call)))) {
         r = -1;
         goto restore;
       }
-      *right->data.pcall = tmp2;
+      *right->data.td_pcall = tmp2;
       right->type = TAG_PCALL;
       buf_save_update(buf, &save);
       if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
@@ -834,7 +834,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       r = buf_peek_ident(buf, &next_ident);
       if (r <= 0 || ! (ops_get_tag(ops, next_ident.sym, 2, &next_op_tag)))
         goto ok;
-      next_op = next_op_tag.data.pstruct->data;
+      next_op = next_op_tag.data.td_pstruct->data;
     }
   }
  ok:
@@ -1322,7 +1322,7 @@ sw buf_parse_do_block_inner (s_buf *buf, f_buf_parse_end f_end,
         goto restore;
       }
       (*i)->tag = tag;
-      i = &(*i)->next.data.plist;
+      i = &(*i)->next.data.td_plist;
     }
     if ((r = buf_parse_comments(buf)) < 0) {
       err_puts("buf_parse_do_block_inner: buf_parse_comments 1");
@@ -1978,8 +1978,8 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
   l = frame_list;
   while (l) {
     if (! frame_binding_new(tmp.frame,
-                            l->tag.data.ptuple->tag[0].data.psym,
-                            l->tag.data.ptuple->tag + 1))
+                            l->tag.data.td_ptuple->tag[0].data.td_psym,
+                            l->tag.data.td_ptuple->tag + 1))
       goto restore;
     l = list_next(l);
   }
@@ -2057,7 +2057,7 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
     result += r;
     *tail = list_new(NULL);
     (*tail)->tag = tag;
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto clean;
     result += r;
@@ -2291,7 +2291,7 @@ sw buf_parse_if_then (s_buf *buf, s_tag *dest, bool *has_else)
       *has_else = true;
       goto ok;
     }
-    i = &(*i)->next.data.plist;
+    i = &(*i)->next.data.td_plist;
   }
   r = 0;
  restore:
@@ -2317,7 +2317,7 @@ sw buf_parse_if_then (s_buf *buf, s_tag *dest, bool *has_else)
     l++;
   }
   dest->type = TAG_DO_BLOCK;
-  dest->data.do_block = tmp;
+  dest->data.td_do_block = tmp;
   r = result;
   goto clean;
 
@@ -2439,13 +2439,13 @@ sw buf_parse_integer_unsigned_bin (s_buf *buf, s_integer *dest)
     goto clean;
   result += r;
   integer_init_zero(dest);
-  if (mp_add_d(&dest->mp_int, digit, &dest->mp_int) != MP_OKAY)
+  if (mp_add_d(&dest->in_int, digit, &dest->in_int) != MP_OKAY)
     goto error;
   while ((r = buf_read_1(buf, "_")) >= 0 &&
          (r = buf_parse_digit_bin(buf, &digit)) > 0) {
     result += r;
-    if (mp_mul_d(&dest->mp_int, radix, &dest->mp_int) != MP_OKAY ||
-        mp_add_d(&dest->mp_int, digit, &dest->mp_int) != MP_OKAY)
+    if (mp_mul_d(&dest->in_int, radix, &dest->in_int) != MP_OKAY ||
+        mp_add_d(&dest->in_int, digit, &dest->in_int) != MP_OKAY)
       goto error;
   }
   if (result > 0)
@@ -2479,8 +2479,8 @@ sw buf_parse_integer_unsigned_dec (s_buf *buf, s_integer *dest)
          (result += r,
           (r = buf_parse_digit_dec(buf, &digit)) > 0)) {
     result += r;
-    if (mp_mul_d(&tmp.mp_int, radix, &tmp2.mp_int) != MP_OKAY ||
-        mp_add_d(&tmp2.mp_int, digit, &tmp.mp_int) != MP_OKAY)
+    if (mp_mul_d(&tmp.in_int, radix, &tmp2.in_int) != MP_OKAY ||
+        mp_add_d(&tmp2.in_int, digit, &tmp.in_int) != MP_OKAY)
       goto error;
     integer_clean(&tmp2);
   }
@@ -2508,13 +2508,13 @@ sw buf_parse_integer_unsigned_hex (s_buf *buf, s_integer *dest)
     goto clean;
   result += r;
   integer_init_zero(dest);
-  if (mp_add_d(&dest->mp_int, digit, &dest->mp_int) != MP_OKAY)
+  if (mp_add_d(&dest->in_int, digit, &dest->in_int) != MP_OKAY)
     goto error;
   while ((r = buf_read_1(buf, "_")) >= 0 &&
          (r = buf_parse_digit_hex(buf, &digit)) > 0) {
     result += r;
-    if (mp_mul_d(&dest->mp_int, radix, &dest->mp_int) != MP_OKAY ||
-        mp_add_d(&dest->mp_int, digit, &dest->mp_int) != MP_OKAY)
+    if (mp_mul_d(&dest->in_int, radix, &dest->in_int) != MP_OKAY ||
+        mp_add_d(&dest->in_int, digit, &dest->in_int) != MP_OKAY)
       goto error;
   }
   if (result > 0)
@@ -2541,13 +2541,13 @@ sw buf_parse_integer_unsigned_oct (s_buf *buf, s_integer *dest)
     goto clean;
   result += r;
   integer_init_zero(dest);
-  if (mp_add_d(&dest->mp_int, digit, &dest->mp_int) != MP_OKAY)
+  if (mp_add_d(&dest->in_int, digit, &dest->in_int) != MP_OKAY)
     goto error;
   while ((r = buf_read_1(buf, "_")) >= 0 &&
          (r = buf_parse_digit_oct(buf, &digit)) > 0) {
     result += r;
-    if (mp_mul_d(&dest->mp_int, radix, &dest->mp_int) != MP_OKAY ||
-        mp_add_d(&dest->mp_int, digit, &dest->mp_int) != MP_OKAY)
+    if (mp_mul_d(&dest->in_int, radix, &dest->in_int) != MP_OKAY ||
+        mp_add_d(&dest->in_int, digit, &dest->in_int) != MP_OKAY)
       goto error;
   }
   if (result > 0)
@@ -2642,7 +2642,7 @@ sw buf_parse_plist (s_buf *buf, p_list *plist)
     }
     if (r > 0) {
       result += r;
-      i = &(*i)->next.data.plist;
+      i = &(*i)->next.data.td_plist;
       if ((r = buf_parse_comments(buf)) < 0) {
         err_puts("buf_parse_list: buf_parse_comments 3");
         assert(! "buf_parse_list: buf_parse_comments 3");
@@ -2780,7 +2780,7 @@ sw buf_parse_plist_paren (s_buf *buf, p_list *dest)
       if ((r = buf_ignore_spaces(buf)) < 0)
         goto restore;
       result += r;
-      tail = &(*tail)->next.data.plist;
+      tail = &(*tail)->next.data.td_plist;
       continue;
     }
     if ((r = buf_read_1(buf, "|")) <= 0)
@@ -2863,10 +2863,10 @@ sw buf_parse_list_tag (s_buf *buf, s_tag *dest)
       return -2;
     }
     key.type = TAG_PSYM;
-    key.data.psym = str_to_sym(&str);
+    key.data.td_psym = str_to_sym(&str);
     str_clean(&str);
-    tmp.data.ptuple->tag[0] = key;
-    tmp.data.ptuple->tag[1] = value;
+    tmp.data.td_ptuple->tag[0] = key;
+    tmp.data.td_ptuple->tag[1] = value;
     goto ok;
   }
  tag:
@@ -2924,7 +2924,7 @@ sw buf_parse_map (s_buf *buf, s_map *dest)
     if ((r = buf_parse_map_key(buf, &(*keys_end)->tag)) <= 0)
       goto restore;
     result += r;
-    keys_end = &(*keys_end)->next.data.plist;
+    keys_end = &(*keys_end)->next.data.td_plist;
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
     result += r;
@@ -2935,7 +2935,7 @@ sw buf_parse_map (s_buf *buf, s_map *dest)
     if ((r = buf_parse_tag(buf, &(*values_end)->tag)) <= 0)
       goto restore;
     result += r;
-    values_end = &(*values_end)->next.data.plist;
+    values_end = &(*values_end)->next.data.td_plist;
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
     result += r;
@@ -3003,7 +3003,7 @@ sw buf_parse_map_key_str (s_buf *buf, s_tag *dest)
     if (r > 0) {
       result += r;
       dest->type = TAG_PSYM;
-      dest->data.psym = str_to_sym(&str);
+      dest->data.td_psym = str_to_sym(&str);
       str_clean(&str);
       goto ok;
     }
@@ -3017,7 +3017,7 @@ sw buf_parse_map_key_str (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
     dest->type = TAG_STR;
-    dest->data.str = str;
+    dest->data.td_str = str;
     goto ok;
   }
  ok:
@@ -3047,7 +3047,7 @@ sw buf_parse_map_key_sym (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
     dest->type = TAG_PSYM;
-    dest->data.psym = str_to_sym(&str);
+    dest->data.td_psym = str_to_sym(&str);
     str_clean(&str);
   }
   r = result;
@@ -3151,24 +3151,24 @@ sw buf_parse_match (s_buf *buf, p_call *pcall)
         (r = buf_ignore_spaces(buf)) < 0 ||
         ! (result += r) ||
         ! (*values_tail = list_new(NULL)) ||
-        ! (do_block = &(*values_tail)->tag.data.do_block) ||
+        ! (do_block = &(*values_tail)->tag.data.td_do_block) ||
         (r = buf_parse_do_block_inner(buf, buf_parse_match_end,
                                       do_block)) <= 0)
       goto ko;
     result += r;
     (*values_tail)->tag.type = TAG_DO_BLOCK;
-    keys_tail = &(*keys_tail)->next.data.plist;
-    values_tail = &(*values_tail)->next.data.plist;
+    keys_tail = &(*keys_tail)->next.data.td_plist;
+    values_tail = &(*values_tail)->next.data.td_plist;
     if (buf->rpos > 3 &&
-        buf->ptr.pchar[buf->rpos - 3] == 'e' &&
-        buf->ptr.pchar[buf->rpos - 2] == 'n' &&
-        buf->ptr.pchar[buf->rpos - 1] == 'd')
+        buf->ptr.p_pchar[buf->rpos - 3] == 'e' &&
+        buf->ptr.p_pchar[buf->rpos - 2] == 'n' &&
+        buf->ptr.p_pchar[buf->rpos - 1] == 'd')
       break;
   }
   if (! map_init_from_lists(&map, keys, values))
     goto ko;
   arg->tag.type = TAG_MAP;
-  arg->tag.data.map = map;
+  arg->tag.data.td_map = map;
   *pcall = tmp;
   r = result;
   goto clean;
@@ -3253,7 +3253,7 @@ sw buf_parse_module_name (s_buf *buf, p_sym *dest)
     r = -1;
     goto restore;
   }
-  memcpy(str.free.p, buf->ptr.pchar + save.rpos, str.size);
+  memcpy(str.free.p_pvoid, buf->ptr.p_pchar + save.rpos, str.size);
   tmp = str_to_sym(&str);
   str_clean(&str);
   if (! tmp) {
@@ -3351,7 +3351,7 @@ sw buf_parse_paren_sym (s_buf *buf, const s_sym **dest)
       buf_write_1(&tmp_buf, "]");
     }
     buf_write_u8(&tmp_buf, 0);
-    tmp = sym_1(tmp_buf.ptr.pchar);
+    tmp = sym_1(tmp_buf.ptr.p_pchar);
   }
   if ((r = buf_read_1(buf, ")")) <= 0)
     goto restore;
@@ -3428,7 +3428,7 @@ sw buf_parse_pcall_access (s_buf *buf, p_call *dest)
     result += r;
     *k = list_new(NULL);
     r = buf_parse_tag_ident_sym(buf, &(*k)->tag);
-    k = &(*k)->next.data.plist;
+    k = &(*k)->next.data.td_plist;
     if (r <= 0)
       goto restore;
     result += r;
@@ -3438,7 +3438,7 @@ sw buf_parse_pcall_access (s_buf *buf, p_call *dest)
       break;
   }
   list_next(tmp.arguments)->tag.type = TAG_PLIST;
-  list_next(tmp.arguments)->tag.data.plist = key;
+  list_next(tmp.arguments)->tag.data.td_plist = key;
   if (! (*dest = alloc(sizeof(s_call)))) {
     r = -1;
     goto restore;
@@ -3487,7 +3487,7 @@ sw buf_parse_pcall_brackets (s_buf *buf, p_call *dest)
     if ((r = buf_parse_tag(buf, &(*addr_last)->tag)) <= 0)
       goto restore;
     result += r;
-    addr_last = &(*addr_last)->next.data.plist;
+    addr_last = &(*addr_last)->next.data.td_plist;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
@@ -3502,7 +3502,7 @@ sw buf_parse_pcall_brackets (s_buf *buf, p_call *dest)
   tmp.ident.module = &g_sym_KC3;
   tmp.ident.sym = &g_sym__brackets;
   arg_addr->type = TAG_PLIST;
-  arg_addr->data.plist = addr;
+  arg_addr->data.td_plist = addr;
   if (! (*dest = alloc(sizeof(s_call)))) {
     r = -1;
     goto restore;
@@ -3599,13 +3599,13 @@ sw buf_parse_pcall_if (s_buf *buf, p_call *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  args_last = &(*args_last)->next.data.plist;
+  args_last = &(*args_last)->next.data.td_plist;
   *args_last = list_new(NULL);
   then = &(*args_last)->tag;
   if ((r = buf_parse_if_then(buf, then, &has_else)) < 0)
     goto restore;
   result += r;
-  args_last = &(*args_last)->next.data.plist;
+  args_last = &(*args_last)->next.data.td_plist;
   *args_last = list_new(NULL);
   else_ = &(*args_last)->tag;
   if (has_else) {
@@ -3616,9 +3616,9 @@ sw buf_parse_pcall_if (s_buf *buf, p_call *dest)
       goto restore;
     result += r;
     else_->type = TAG_DO_BLOCK;
-    else_->data.do_block = (s_do_block) {0};
+    else_->data.td_do_block = (s_do_block) {0};
     if ((r = buf_parse_do_block_inner(buf, buf_parse_do_block_inner_end,
-                                      &else_->data.do_block)) <= 0)
+                                      &else_->data.td_do_block)) <= 0)
       goto restore;
     result += r;
   }
@@ -3988,7 +3988,7 @@ sw buf_parse_ptr (s_buf *buf, u_ptr_w *dest)
     assert("buf_parse_ptr: non-null Ptr");
   }
   integer_clean(&i);
-  dest->p = NULL;
+  dest->p_pvoid = NULL;
   r = result;
   goto clean;
  restore:
@@ -4019,7 +4019,7 @@ sw buf_parse_ptr_free (s_buf *buf, u_ptr_w *dest)
     goto restore;
   }
   integer_clean(&i);
-  dest->p = NULL;
+  dest->p_pvoid = NULL;
   r = result;
   goto clean;
  restore:
@@ -4227,7 +4227,7 @@ sw buf_parse_special_operator (s_buf *buf, p_call *dest)
       goto restore;
     }
     result += r;
-    args_last = &(*args_last)->next.data.plist;
+    args_last = &(*args_last)->next.data.td_plist;
     i++;
   }
   if (! (*dest = alloc(sizeof(s_call)))) {
@@ -4257,17 +4257,17 @@ sw buf_parse_static_tag (s_buf *buf, s_tag *tag)
   if ((r = buf_parse_tag(buf, &tmp)) <= 0)
     return r;
   if (tmp.type == TAG_PCALL &&
-      (! tmp.data.pcall->ident.module ||
-       tmp.data.pcall->ident.module == &g_sym_KC3) &&
-      tmp.data.pcall->ident.sym == &g_sym_str &&
-      tmp.data.pcall->arguments &&
-      tmp.data.pcall->arguments->tag.type == TAG_PLIST) {
+      (! tmp.data.td_pcall->ident.module ||
+       tmp.data.td_pcall->ident.module == &g_sym_KC3) &&
+      tmp.data.td_pcall->ident.sym == &g_sym_str &&
+      tmp.data.td_pcall->arguments &&
+      tmp.data.td_pcall->arguments->tag.type == TAG_PLIST) {
     tag_void(&tmp);
     buf_save_restore_rpos(buf, &save);
     if ((r = buf_parse_str(buf, &str)) <= 0)
       goto clean;
     tmp.type = TAG_STR;
-    tmp.data.str = str;
+    tmp.data.td_str = str;
   }
   *tag = tmp;
  clean:
@@ -4550,7 +4550,7 @@ sw buf_parse_struct (s_buf *buf, s_struct *dest)
     if ((r = buf_parse_map_key(buf, &(*keys_end)->tag)) <= 0)
       goto restore;
     result += r;
-    keys_end = &(*keys_end)->next.data.plist;
+    keys_end = &(*keys_end)->next.data.td_plist;
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
     result += r;
@@ -4561,7 +4561,7 @@ sw buf_parse_struct (s_buf *buf, s_struct *dest)
     if ((r = buf_parse_tag(buf, &(*values_end)->tag)) <= 0)
       goto restore;
     result += r;
-    values_end = &(*values_end)->next.data.plist;
+    values_end = &(*values_end)->next.data.td_plist;
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
     result += r;
@@ -4777,7 +4777,7 @@ sw buf_parse_tag_array (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_array(buf, &dest->data.array)) > 0)
+  if ((r = buf_parse_array(buf, &dest->data.td_array)) > 0)
     dest->type = TAG_ARRAY;
   return r;
 }
@@ -4787,7 +4787,7 @@ sw buf_parse_tag_do_block (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_do_block(buf, &dest->data.do_block)) > 0)
+  if ((r = buf_parse_do_block(buf, &dest->data.td_do_block)) > 0)
     dest->type = TAG_DO_BLOCK;
   return r;
 }
@@ -4797,7 +4797,7 @@ sw buf_parse_tag_bool (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_bool(buf, &dest->data.bool_)) > 0)
+  if ((r = buf_parse_bool(buf, &dest->data.td_bool_)) > 0)
     dest->type = TAG_BOOL;
   return r;
 }
@@ -4807,7 +4807,7 @@ sw buf_parse_tag_character (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_character(buf, &dest->data.character)) > 0)
+  if ((r = buf_parse_character(buf, &dest->data.td_character)) > 0)
     dest->type = TAG_CHARACTER;
   return r;
 }
@@ -4817,7 +4817,7 @@ sw buf_parse_tag_complex (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pcomplex(buf, &dest->data.pcomplex)) > 0)
+  if ((r = buf_parse_pcomplex(buf, &dest->data.td_pcomplex)) > 0)
     dest->type = TAG_PCOMPLEX;
   return r;
 }
@@ -4827,7 +4827,7 @@ sw buf_parse_tag_cow (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pcow(buf, &dest->data.pcow)) > 0)
+  if ((r = buf_parse_pcow(buf, &dest->data.td_pcow)) > 0)
     dest->type = TAG_PCOW;
   return r;
 }
@@ -4837,7 +4837,7 @@ sw buf_parse_tag_f32 (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_f32(buf, &dest->data.f32)) > 0)
+  if ((r = buf_parse_f32(buf, &dest->data.td_f32)) > 0)
     dest->type = TAG_F32;
   return r;
 }
@@ -4847,7 +4847,7 @@ sw buf_parse_tag_f64 (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_f64(buf, &dest->data.f64)) > 0)
+  if ((r = buf_parse_f64(buf, &dest->data.td_f64)) > 0)
     dest->type = TAG_F64;
   return r;
 }
@@ -4859,7 +4859,7 @@ sw buf_parse_tag_f80 (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_f80(buf, &dest->data.f80)) > 0)
+  if ((r = buf_parse_f80(buf, &dest->data.td_f80)) > 0)
     dest->type = TAG_F80;
   return r;
 }
@@ -4873,7 +4873,7 @@ sw buf_parse_tag_f128 (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_f128(buf, &dest->data.f128)) > 0)
+  if ((r = buf_parse_f128(buf, &dest->data.td_f128)) > 0)
     dest->type = TAG_F128;
   return r;
 }
@@ -4888,11 +4888,11 @@ sw buf_parse_tag_ident (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   env = env_global();
-  r = buf_parse_ident_cast(buf, &dest->data.ident);
+  r = buf_parse_ident_cast(buf, &dest->data.td_ident);
   if (r > 0) {
-    if (! dest->data.ident.module &&
+    if (! dest->data.td_ident.module &&
         (tag = frame_get_w(env->read_time_frame,
-                           dest->data.ident.sym)))
+                           dest->data.td_ident.sym)))
       tag_init_copy(dest, tag);
     else
       dest->type = TAG_IDENT;
@@ -4905,7 +4905,7 @@ sw buf_parse_tag_ident_sym (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_ident_sym(buf, &dest->data.psym)) > 0)
+  if ((r = buf_parse_ident_sym(buf, &dest->data.td_psym)) > 0)
     dest->type = TAG_PSYM;
   return r;
 }
@@ -4915,7 +4915,7 @@ sw buf_parse_tag_integer (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_integer(buf, &dest->data.integer)) > 0)
+  if ((r = buf_parse_integer(buf, &dest->data.td_integer)) > 0)
     dest->type = TAG_INTEGER;
   return r;
 }
@@ -4925,7 +4925,7 @@ sw buf_parse_tag_map (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_map(buf, &dest->data.map)) > 0)
+  if ((r = buf_parse_map(buf, &dest->data.td_map)) > 0)
     dest->type = TAG_MAP;
   return r;
 }
@@ -4935,7 +4935,7 @@ sw buf_parse_tag_match (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_match(buf, &dest->data.pcall)) > 0)
+  if ((r = buf_parse_match(buf, &dest->data.td_pcall)) > 0)
     dest->type = TAG_PCALL;
   return r;
 }
@@ -4945,7 +4945,7 @@ sw buf_parse_tag_module_name (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_module_name(buf, &dest->data.psym)) > 0)
+  if ((r = buf_parse_module_name(buf, &dest->data.td_psym)) > 0)
     dest->type = TAG_PSYM;
   return r;
 }
@@ -5021,7 +5021,7 @@ sw buf_parse_tag_pcall (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pcall(buf, &dest->data.pcall)) > 0)
+  if ((r = buf_parse_pcall(buf, &dest->data.td_pcall)) > 0)
     dest->type = TAG_PCALL;
   return r;
 }
@@ -5031,7 +5031,7 @@ sw buf_parse_tag_pcall_access (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pcall_access(buf, &dest->data.pcall)) > 0)
+  if ((r = buf_parse_pcall_access(buf, &dest->data.td_pcall)) > 0)
     dest->type = TAG_PCALL;
   return r;
 }
@@ -5041,7 +5041,7 @@ sw buf_parse_tag_pcall_brackets (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pcall_brackets(buf, &dest->data.pcall)) > 0)
+  if ((r = buf_parse_pcall_brackets(buf, &dest->data.td_pcall)) > 0)
     dest->type = TAG_PCALL;
   return r;
 }
@@ -5051,7 +5051,7 @@ sw buf_parse_tag_pcall_cast (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pcall_cast(buf, &dest->data.pcall)) > 0)
+  if ((r = buf_parse_pcall_cast(buf, &dest->data.td_pcall)) > 0)
     dest->type = TAG_PCALL;
   return r;
 }
@@ -5061,7 +5061,7 @@ sw buf_parse_tag_pcall_if (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pcall_if(buf, &dest->data.pcall)) > 0)
+  if ((r = buf_parse_pcall_if(buf, &dest->data.td_pcall)) > 0)
     dest->type = TAG_PCALL;
   return r;
 }
@@ -5071,7 +5071,7 @@ sw buf_parse_tag_pcall_op (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pcall_op(buf, &dest->data.pcall)) > 0)
+  if ((r = buf_parse_pcall_op(buf, &dest->data.td_pcall)) > 0)
     dest->type = TAG_PCALL;
   return r;
 }
@@ -5081,7 +5081,7 @@ sw buf_parse_tag_pcall_paren (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pcall_paren(buf, &dest->data.pcall)) > 0)
+  if ((r = buf_parse_pcall_paren(buf, &dest->data.td_pcall)) > 0)
     dest->type = TAG_PCALL;
   return r;
 }
@@ -5091,7 +5091,7 @@ sw buf_parse_tag_pcall_op_unary (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pcall_op_unary(buf, &dest->data.pcall)) > 0)
+  if ((r = buf_parse_pcall_op_unary(buf, &dest->data.td_pcall)) > 0)
     dest->type = TAG_PCALL;
   return r;
 }
@@ -5101,7 +5101,7 @@ sw buf_parse_tag_pcallable (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pcallable(buf, &dest->data.pcallable)) > 0)
+  if ((r = buf_parse_pcallable(buf, &dest->data.td_pcallable)) > 0)
     dest->type = TAG_PCALLABLE;
   return r;
 }
@@ -5111,7 +5111,7 @@ sw buf_parse_tag_plist (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_plist(buf, &dest->data.plist)) > 0)
+  if ((r = buf_parse_plist(buf, &dest->data.td_plist)) > 0)
     dest->type = TAG_PLIST;
   return r;
 }
@@ -5121,7 +5121,7 @@ sw buf_parse_tag_pointer (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pointer(buf, &dest->data.pointer)) > 0)
+  if ((r = buf_parse_pointer(buf, &dest->data.td_pointer)) > 0)
     dest->type = TAG_POINTER;
   return r;
 }
@@ -5406,7 +5406,7 @@ sw buf_parse_tag_pstruct (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pstruct(buf, &dest->data.pstruct)) > 0)
+  if ((r = buf_parse_pstruct(buf, &dest->data.td_pstruct)) > 0)
     dest->type = TAG_PSTRUCT;
   return r;
 }
@@ -5416,7 +5416,7 @@ sw buf_parse_tag_ptr (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_ptr(buf, &dest->data.ptr)) > 0)
+  if ((r = buf_parse_ptr(buf, &dest->data.td_ptr)) > 0)
     dest->type = TAG_PTR;
   return r;
 }
@@ -5426,7 +5426,7 @@ sw buf_parse_tag_ptr_free (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_ptr_free(buf, &dest->data.ptr_free)) > 0)
+  if ((r = buf_parse_ptr_free(buf, &dest->data.td_ptr_free)) > 0)
     dest->type = TAG_PTR_FREE;
   return r;
 }
@@ -5436,7 +5436,7 @@ sw buf_parse_tag_pvar (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pvar(buf, &dest->data.pvar)) > 0)
+  if ((r = buf_parse_pvar(buf, &dest->data.td_pvar)) > 0)
     dest->type = TAG_PVAR;
   return r;
 }
@@ -5446,7 +5446,7 @@ sw buf_parse_tag_quote (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_quote(buf, &dest->data.quote)) > 0)
+  if ((r = buf_parse_quote(buf, &dest->data.td_quote)) > 0)
     dest->type = TAG_QUOTE;
   return r;
 }
@@ -5456,7 +5456,7 @@ sw buf_parse_tag_ratio (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_ratio(buf, &dest->data.ratio)) > 0)
+  if ((r = buf_parse_ratio(buf, &dest->data.td_ratio)) > 0)
     dest->type = TAG_RATIO;
   return r;
 }
@@ -5466,7 +5466,7 @@ sw buf_parse_tag_special_operator (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_special_operator(buf, &dest->data.pcall)) > 0)
+  if ((r = buf_parse_special_operator(buf, &dest->data.td_pcall)) > 0)
     dest->type = TAG_PCALL;
   return r;
 }
@@ -5483,7 +5483,7 @@ sw buf_parse_tag_sym (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_sym(buf, &dest->data.psym)) > 0)
+  if ((r = buf_parse_sym(buf, &dest->data.td_psym)) > 0)
     dest->type = TAG_PSYM;
   return r;
 }
@@ -5493,7 +5493,7 @@ sw buf_parse_tag_time (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_time(buf, &dest->data.time)) > 0)
+  if ((r = buf_parse_time(buf, &dest->data.td_time)) > 0)
     dest->type = TAG_TIME;
   return r;
 }
@@ -5503,7 +5503,7 @@ sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_ptuple(buf, &dest->data.ptuple)) > 0)
+  if ((r = buf_parse_ptuple(buf, &dest->data.td_ptuple)) > 0)
     dest->type = TAG_PTUPLE;
   return r;
 }
@@ -5513,7 +5513,7 @@ sw buf_parse_tag_unquote (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_unquote(buf, &dest->data.unquote)) > 0)
+  if ((r = buf_parse_unquote(buf, &dest->data.td_unquote)) > 0)
     dest->type = TAG_UNQUOTE;
   return r;
 }
@@ -5828,7 +5828,7 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *dest)
     if ((r = buf_read_1(buf, ",")) <= 0)
       goto restore;
     result += r;
-    i = &(*i)->next.data.plist;
+    i = &(*i)->next.data.td_plist;
   }
   r = -1;
  restore:

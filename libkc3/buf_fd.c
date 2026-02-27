@@ -81,7 +81,7 @@ sw buf_fd_open_r_refill (s_buf *buf)
   }
   size = buf->size - buf->wpos;
   fd = ((s_buf_fd *) (buf->user_ptr))->fd;
-  //r = read(fd, buf->ptr.pchar + buf->wpos, size);
+  //r = read(fd, buf->ptr.p_pchar + buf->wpos, size);
 #if defined(WIN32) || defined(WIN64)
   WSAIoctl(fd, FIONREAD, NULL, 0, &avail, sizeof(avail), NULL, NULL,
            NULL);
@@ -101,7 +101,7 @@ sw buf_fd_open_r_refill (s_buf *buf)
     avail = 1;
   if ((uw) avail > size)
     avail = size;
-  r = read(fd, buf->ptr.pchar + buf->wpos, avail);
+  r = read(fd, buf->ptr.p_pchar + buf->wpos, avail);
   if (r < 0)
     return r;
   if (buf->wpos + r > buf->size) {
@@ -194,9 +194,9 @@ sw buf_fd_open_w_flush (s_buf *buf)
   bytes = 0;
   while (bytes < size) {
     // XXX TODO: #ifdef WIN32 || WIN64
-    if ((w = send(buf_fd->fd, buf->ptr.pchar + bytes,
+    if ((w = send(buf_fd->fd, buf->ptr.p_pchar + bytes,
                   size - bytes, MSG_NOSIGNAL)) < 0) {
-      if ((w = write(buf_fd->fd, buf->ptr.pchar + bytes,
+      if ((w = write(buf_fd->fd, buf->ptr.p_pchar + bytes,
                      size - bytes)) < 0) {
         e = errno;
         err_write_1("buf_fd_open_w_flush: write: ");

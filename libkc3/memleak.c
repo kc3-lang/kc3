@@ -37,6 +37,8 @@ void memleak_add (void *ptr, uw size, s_list *stacktrace)
   m->ptr = ptr;
   m->size = size;
   len = backtrace(addrlist, MEMLEAK_BACKTRACE_LEN);
+  fprintf(stderr, "DEBUG memleak_add: backtrace returned %lu frames\n",
+          (unsigned long) len);
   m->backtrace = backtrace_symbols(addrlist, len);
   m->backtrace_len = len;
   buf_init(&buf, false, BUF_SIZE, a);
@@ -44,7 +46,7 @@ void memleak_add (void *ptr, uw size, s_list *stacktrace)
     abort();
   if (! (m->env_stacktrace = calloc(1, buf.wpos + 1)))
     abort();
-  memcpy(m->env_stacktrace, buf.ptr.pchar, buf.wpos);
+  memcpy(m->env_stacktrace, buf.ptr.p_pchar, buf.wpos);
   m->next = g_memleak;
   g_memleak = m;
   buf_clean(&buf);
@@ -93,14 +95,21 @@ void memleak_report (void)
   if (m) {
     fprintf(stderr, "Leak report:\n");
     while (m) {
-      fprintf(stderr, "\n0x%lx %lu bytes ----------------\n%s\n",
-              (unsigned long) m->ptr, (unsigned long) m->size,
-              m->env_stacktrace);
-      i = 0;
-      while (i < m->backtrace_len) {
-        fprintf(stderr, "%s\n", m->backtrace[i]);
-        i++;
+      fprintf(stderr, "\n0x%lx %lu bytes ----------------\n",
+              (unsigned long) m->ptr, (unsigned long) m->size);
+      if (m->env_stacktrace && m->env_stacktrace[0])
+        fprintf(stderr, "%s\n", m->env_stacktrace);
+      fprintf(stderr, "C backtrace (%lu frames):\n",
+              (unsigned long) m->backtrace_len);
+      if (m->backtrace) {
+        i = 0;
+        while (i < m->backtrace_len) {
+          fprintf(stderr, "  %s\n", m->backtrace[i]);
+          i++;
+        }
       }
+      else
+        fprintf(stderr, "  (null)\n");
       count++;
       total += m->size;
       m = m->next;

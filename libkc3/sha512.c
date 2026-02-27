@@ -224,18 +224,18 @@ void sha512_hmac (const s_str *k, const s_str *m, u8 *dest)
   assert(SHA512_DIGEST_LENGTH <= SHA512_BLOCK_LENGTH);
   if (k->size > SHA512_BLOCK_LENGTH) {
     sha512_init(&h_ctx);
-    sha512_update(&h_ctx, k->ptr.pu8, k->size);
+    sha512_update(&h_ctx, k->ptr.p_pu8, k->size);
     sha512_sum(&h_ctx, h[0]);
     str_init(&k_p, NULL, SHA512_DIGEST_LENGTH, (const char *) h[0]);
   }
   else
-    str_init(&k_p, NULL, k->size, k->ptr.p);
+    str_init(&k_p, NULL, k->size, k->ptr.p_pvoid);
   memset(pad[0], 0x5c, SHA512_BLOCK_LENGTH);
   memset(pad[1], 0x36, SHA512_BLOCK_LENGTH);
   i = 0;
   while (i < k_p.size) {
-    pad[0][i] ^= k_p.ptr.pu8[i];
-    pad[1][i] ^= k_p.ptr.pu8[i];
+    pad[0][i] ^= k_p.ptr.p_pu8[i];
+    pad[1][i] ^= k_p.ptr.p_pu8[i];
     i++;
   }
   while (i < SHA512_BLOCK_LENGTH) {
@@ -245,7 +245,7 @@ void sha512_hmac (const s_str *k, const s_str *m, u8 *dest)
   }
   sha512_init(&h_ctx);
   sha512_update(&h_ctx, pad[1], SHA512_BLOCK_LENGTH);
-  sha512_update(&h_ctx, m->ptr.p, m->size);
+  sha512_update(&h_ctx, m->ptr.p_pvoid, m->size);
   sha512_sum(&h_ctx, h[1]);
   sha512_init(&h_ctx);
   sha512_update(&h_ctx, pad[0], SHA512_BLOCK_LENGTH);
@@ -261,7 +261,7 @@ s_str * sha512_hmac_str (const s_str *k, const s_str *m, s_str *dest)
   assert(dest);
   if (! str_init_alloc(&tmp, SHA512_DIGEST_LENGTH))
     return NULL;
-  sha512_hmac(k, m, tmp.free.pu8);
+  sha512_hmac(k, m, tmp.free.p_pu8);
   *dest = tmp;
   return dest;
 }

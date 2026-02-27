@@ -479,19 +479,19 @@ struct pretty_save {
 };
 
 union ptr_ {
-  const void *p;
-  const char *pchar;
-  const s8   *ps8;
-  const u8   *pu8;
-  uw          uw;
+  const void *p_pvoid;
+  const char *p_pchar;
+  const s8   *p_ps8;
+  const u8   *p_pu8;
+  uw          p_uw;
 };
 
 union ptr_w {
-  void *p;
-  char *pchar;
-  s8   *ps8;
-  u8   *pu8;
-  uw    uw;
+  void *p_pvoid;
+  char *p_pchar;
+  s8   *p_ps8;
+  u8   *p_pu8;
+  uw    p_uw;
 };
 
 struct queue {
@@ -649,7 +649,7 @@ struct ident {
 };
 
 struct integer {
-  mp_int mp_int;
+  mp_int in_int;
 };
 
 struct loop_context {
@@ -704,8 +704,8 @@ struct cfn {
   p_sym c_name;
   s_ident name;
   union {
-    void (*f) (void);
-    void *p;
+    void (*p_f) (void);
+    void *p_pvoid;
   } ptr;
   u8 arity;
   const s_sym *result_type;
@@ -809,51 +809,51 @@ struct callable {
 };
 
 union tag_data {
-  s_array       array;
-  s_do_block    do_block;
-  bool          bool_;
-  character     character;
-  f32           f32;
-  f64           f64;
+  s_array       td_array;
+  s_do_block    td_do_block;
+  bool          td_bool_;
+  character     td_character;
+  f32           td_f32;
+  f64           td_f64;
 #if HAVE_F80
-  f80           f80;
+  f80           td_f80;
 #endif
 #if HAVE_F128
-  f128          f128;
+  f128          td_f128;
 #endif
-  s_fact        fact;
-  s_ident       ident;
-  s_integer     integer;
-  s_map         map;
-  p_complex     pcomplex;
-  p_cow         pcow;
-  p_call        pcall;
-  p_callable    pcallable;
-  p_facts       pfacts;
-  p_list        plist;
-  s_pointer     pointer;
-  p_struct      pstruct;
-  p_struct_type pstruct_type;
-  p_sym         psym;
-  u_ptr_w       ptr;
-  u_ptr_w       ptr_free;
-  p_var         pvar;
-  s_quote       quote;
-  s_ratio       ratio;
-  s_str         str;
-  s8            s8;
-  s16           s16;
-  s32           s32;
-  s64           s64;
-  sw            sw;
-  s_time        time;
-  p_tuple       ptuple;
-  u8            u8;
-  u16           u16;
-  u32           u32;
-  u64           u64;
-  s_unquote     unquote;
-  uw            uw;
+  s_fact        td_fact;
+  s_ident       td_ident;
+  s_integer     td_integer;
+  s_map         td_map;
+  p_complex     td_pcomplex;
+  p_cow         td_pcow;
+  p_call        td_pcall;
+  p_callable    td_pcallable;
+  p_facts       td_pfacts;
+  p_list        td_plist;
+  s_pointer     td_pointer;
+  p_struct      td_pstruct;
+  p_struct_type td_pstruct_type;
+  p_sym         td_psym;
+  u_ptr_w       td_ptr;
+  u_ptr_w       td_ptr_free;
+  p_var         td_pvar;
+  s_quote       td_quote;
+  s_ratio       td_ratio;
+  s_str         td_str;
+  s8            td_s8;
+  s16           td_s16;
+  s32           td_s32;
+  s64           td_s64;
+  sw            td_sw;
+  s_time        td_time;
+  p_tuple       td_ptuple;
+  u8            td_u8;
+  u16           td_u16;
+  u32           td_u32;
+  u64           td_u64;
+  s_unquote     td_unquote;
+  uw            td_uw;
 };
 
 /* 6 */

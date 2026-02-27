@@ -22,52 +22,52 @@ s_tag * tag_neg (s_tag *src, s_tag *dest)
   switch (src->type) {
   case TAG_INTEGER:
     tag.type = TAG_INTEGER;
-    integer_neg(&src->data.integer, &tag.data.integer);
+    integer_neg(&src->data.td_integer, &tag.data.td_integer);
     goto integer_reduce;
   case TAG_RATIO:
     dest->type = TAG_RATIO;
-    ratio_neg(&src->data.ratio, &dest->data.ratio);
+    ratio_neg(&src->data.td_ratio, &dest->data.td_ratio);
     return dest;
   case TAG_SW:
-    integer_init_sw(&tmp, src->data.sw);
+    integer_init_sw(&tmp, src->data.td_sw);
     tag.type = TAG_INTEGER;
-    integer_neg(&tmp, &tag.data.integer);
+    integer_neg(&tmp, &tag.data.td_integer);
     integer_clean(&tmp);
     goto integer_reduce;
   case TAG_S64:
-    integer_init_s64(&tmp, src->data.s64);
+    integer_init_s64(&tmp, src->data.td_s64);
     tag.type = TAG_INTEGER;
-    integer_neg(&tmp, &tag.data.integer);
+    integer_neg(&tmp, &tag.data.td_integer);
     integer_clean(&tmp);
     goto integer_reduce;
   case TAG_S32:
-    tag_init_s64(&tag, - (s64) src->data.s32);
+    tag_init_s64(&tag, - (s64) src->data.td_s32);
     goto integer_reduce;
   case TAG_S16:
-    tag_init_s32(&tag, - (s32) src->data.s16);
+    tag_init_s32(&tag, - (s32) src->data.td_s16);
     goto integer_reduce;
   case TAG_S8:
-    tag_init_s16(&tag, - (s16) src->data.s8);
+    tag_init_s16(&tag, - (s16) src->data.td_s8);
     goto integer_reduce;
   case TAG_U8:
-    tag_init_s16(&tag, - (s16) src->data.u8);
+    tag_init_s16(&tag, - (s16) src->data.td_u8);
     goto integer_reduce;
   case TAG_U16:
-    tag_init_s32(&tag, - (s32) src->data.u16);
+    tag_init_s32(&tag, - (s32) src->data.td_u16);
     goto integer_reduce;
   case TAG_U32:
-    tag_init_s64(&tag, - (s64) src->data.u32);
+    tag_init_s64(&tag, - (s64) src->data.td_u32);
     goto integer_reduce;
   case TAG_U64:
-    integer_init_u64(&tmp, src->data.u64);
+    integer_init_u64(&tmp, src->data.td_u64);
     tag.type = TAG_INTEGER;
-    integer_neg(&tmp, &tag.data.integer);
+    integer_neg(&tmp, &tag.data.td_integer);
     integer_clean(&tmp);
     goto integer_reduce;
   case TAG_UW:
-    integer_init_uw(&tmp, src->data.uw);
+    integer_init_uw(&tmp, src->data.td_uw);
     tag.type = TAG_INTEGER;
-    integer_neg(&tmp, &tag.data.integer);
+    integer_neg(&tmp, &tag.data.td_integer);
     integer_clean(&tmp);
     goto integer_reduce;
   default:

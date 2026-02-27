@@ -33,9 +33,9 @@ s_tag * time_access (s_time *time, s_list *key, s_tag *dest)
   k = &key->tag;
   if (k->type != TAG_PSYM)
     return NULL;
-  if (k->data.psym == &g_sym_tv_sec)
+  if (k->data.td_psym == &g_sym_tv_sec)
     return tag_init_uw(dest, time->tv_sec);
-  if (k->data.psym == &g_sym_tv_nsec)
+  if (k->data.td_psym == &g_sym_tv_nsec)
     return tag_init_uw(dest, time->tv_nsec);
   return NULL;
 }
@@ -170,7 +170,7 @@ s_time * time_init_cast (s_time *time, const s_sym * const *type,
   assert(src);
   (void) type;
   if (src->type == TAG_TIME)
-    return time_init_copy(time, &src->data.time);
+    return time_init_copy(time, &src->data.td_time);
   err_puts("time_init_cast: cannot cast to Time");
   assert(! "time_init_cast: cannot cast to Time");
   return NULL;
@@ -213,7 +213,7 @@ s_time * time_init_str (s_time *time, const s_str *src)
 {
   struct tm t = {0};
   s_time tmp = {0};
-  sscanf(src->ptr.pchar, "%d-%d-%d %d:%d:%d",
+  sscanf(src->ptr.p_pchar, "%d-%d-%d %d:%d:%d",
          &t.tm_year, &t.tm_mon, &t.tm_mday,
          &t.tm_hour, &t.tm_min, &t.tm_sec);
   t.tm_year -= 1900;

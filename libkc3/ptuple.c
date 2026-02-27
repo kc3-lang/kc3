@@ -69,7 +69,7 @@ p_tuple * ptuple_init_cast (p_tuple *tuple, const s_sym * const *type,
   assert(tag);
   switch (tag->type) {
   case TAG_PTUPLE:
-    return ptuple_init_copy(tuple, &tag->data.ptuple);
+    return ptuple_init_copy(tuple, &tag->data.td_ptuple);
   default:
     break;
   }

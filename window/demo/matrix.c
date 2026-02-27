@@ -24,15 +24,15 @@ static s_gl_sprite g_matrix_shade = {0};
 static f64         g_matrix_time;
 
 void matrix_column_clean (s_tag *tag);
-u8 matrix_column_init (s_sequence *seq, s_tag *tag);
-u8 matrix_column_render (s_sequence *seq, s_tag *tag);
+u8   matrix_column_init (s_sequence *seq, s_tag *tag);
+u8   matrix_column_render (s_sequence *seq, s_tag *tag);
 void matrix_screen_clean (s_tag *tag);
-u8 matrix_screen_init (s_tag *tag);
-u8 matrix_screen_render (s_sequence *seq, s_tag *tag);
+u8   matrix_screen_init (s_tag *tag);
+u8   matrix_screen_render (s_sequence *seq, s_tag *tag);
 void matrix_text_clean (s_tag *tag);
-u8 matrix_text_init (s_tag *tag, f32 y);
-u8 matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py);
-u8 matrix_update (s_sequence *seq);
+u8   matrix_text_init (s_tag *tag, f32 y);
+u8   matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py);
+u8   matrix_update (s_sequence *seq);
 
 void matrix_column_clean (s_tag *tag)
 {
@@ -42,7 +42,7 @@ void matrix_column_clean (s_tag *tag)
     assert(! "matrix_column_clean: invalid tag");
     return;
   }
-  list = tag->data.plist;
+  list = tag->data.td_plist;
   while (list) {
     matrix_text_clean(&list->tag);
     list = list_next(list);
@@ -82,8 +82,8 @@ u8 matrix_column_render (s_sequence *seq, s_tag *tag)
     assert(! "matrix_column_render: invalid tag");
     return false;
   }
-  list = &tag->data.plist;
-  y = (*list)->tag.data.map.value[2].data.f32;
+  list = &tag->data.td_plist;
+  y = (*list)->tag.data.td_map.value[2].data.td_f32;
   if (y < window->h) {
     *list = list_new(*list);
     if (! matrix_text_init(&(*list)->tag, window->h))
@@ -97,7 +97,7 @@ u8 matrix_column_render (s_sequence *seq, s_tag *tag)
       *list = list_delete(*list);
     }
     else
-      list = &(*list)->next.data.plist;
+      list = &(*list)->next.data.td_plist;
   }
   return true;
 }
@@ -148,7 +148,7 @@ void matrix_screen_clean (s_tag *tag)
     assert(! "matrix_screen_clean: invalid tag");
     return;
   }
-  list = tag->data.plist;
+  list = tag->data.td_plist;
   while (list) {
     matrix_column_clean(&list->tag);
     list = list_next(list);
@@ -178,7 +178,7 @@ u8 matrix_screen_render (s_sequence *seq, s_tag *tag)
     return false;
   }
   x = 0;
-  l = &tag->data.plist;
+  l = &tag->data.td_plist;
   while (*l) {
     if (x > window->w) {
       matrix_column_clean(&(*l)->tag);
@@ -186,7 +186,7 @@ u8 matrix_screen_render (s_sequence *seq, s_tag *tag)
     }
     else {
       x += MATRIX_FONT_SIZE;
-      l = &(*l)->next.data.plist;
+      l = &(*l)->next.data.td_plist;
     }
   }
   while (x < window->w) {
@@ -194,10 +194,10 @@ u8 matrix_screen_render (s_sequence *seq, s_tag *tag)
     if (! matrix_column_init(seq, &(*l)->tag))
       return false;
     x += MATRIX_FONT_SIZE;
-    l = &(*l)->next.data.plist;
+    l = &(*l)->next.data.td_plist;
   }
   matrix = g_ortho.model_matrix; {
-    list = tag->data.plist;
+    list = tag->data.td_plist;
     while (list) {
       if (! matrix_column_render(seq, &list->tag))
         return false;
@@ -231,7 +231,7 @@ u8 matrix_text_init (s_tag *tag, f32 y)
     gl_vtext_delete(text);
     return false;
   }
-  map = &tag->data.map;
+  map = &tag->data.td_map;
   tag_init_psym(map->key   + 0, sym_1("spacing"));
   tag_init_f32( map->value + 0, spacing);
   tag_init_psym(map->key   + 1, sym_1("text"));
@@ -251,22 +251,22 @@ u8 matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py)
   assert(glGetError() == GL_NO_ERROR);
   assert(tag);
   assert(tag->type == TAG_MAP);
-  map = &tag->data.map;
+  map = &tag->data.td_map;
   assert(map->count == 3);
   /*
   assert(      map->key[0].type == TAG_PSYM);
-  assert(      map->key[0].data.psym == sym_1("spacing"));
+  assert(      map->key[0].data.td_psym == sym_1("spacing"));
   assert(    map->value[0].type == TAG_F32);
-  spacing = &map->value[0].data.f32;
+  spacing = &map->value[0].data.td_f32;
   */
   assert(  map->key[1].type == TAG_PSYM);
-  assert(  map->key[1].data.psym == sym_1("text"));
+  assert(  map->key[1].data.td_psym == sym_1("text"));
   assert(map->value[1].type == TAG_PTR);
-  text = map->value[1].data.ptr.p;
+  text = map->value[1].data.td_ptr.p_pvoid;
   assert(  map->key[2].type == TAG_PSYM);
-  assert(  map->key[2].data.psym == sym_1("y"));
+  assert(  map->key[2].data.td_psym == sym_1("y"));
   assert(map->value[2].type == TAG_F32);
-  y =   &map->value[2].data.f32;
+  y =   &map->value[2].data.td_f32;
   if (seq->t - g_matrix_time > MATRIX_TIME)
     *y -= MATRIX_FONT_SIZE;
   matrix = g_ortho.model_matrix; {
@@ -302,12 +302,12 @@ void matrix_text_clean (s_tag *tag)
   s_map *map;
   s_gl_text *text;
   if (! (tag->type == TAG_MAP &&
-         (map = &tag->data.map) &&
+         (map = &tag->data.td_map) &&
          map->count == 3 &&
          map->key[1].type == TAG_PSYM &&
-         map->key[1].data.psym == sym_1("text") &&
+         map->key[1].data.td_psym == sym_1("text") &&
          map->value[1].type == TAG_PTR &&
-         (text = map->value[1].data.ptr.p))) {
+         (text = map->value[1].data.td_ptr.p_pvoid))) {
     err_puts("matrix_text_clean: invalid tag");
     assert(! "matrix_text_clean: invalid tag");
     return;

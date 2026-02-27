@@ -31,7 +31,7 @@ void kc3_gtk4_signal_callback (GObject *object, s_tuple *tuple)
     assert(! "kc3_gtk4_signal_callback: invalid tuple");
     abort();
   }
-  callable = tuple->tag->data.pcallable;
+  callable = tuple->tag->data.td_pcallable;
   if (! callable ||
       callable->type == CALLABLE_VOID) {
     err_puts("kc3_gtk4_signal_callback: invalid callable");
@@ -71,7 +71,7 @@ void kc3_gtk4_signal_connect (GObject **object,
     abort();
   }
   tuple->tag->type = TAG_PCALLABLE;
-  if (! pcallable_init_copy(&tuple->tag->data.pcallable, callback)) {
+  if (! pcallable_init_copy(&tuple->tag->data.td_pcallable, callback)) {
     err_puts("kc3_gtk4_signal_connect: pcallable_init_copy");
     assert(! "kc3_gtk4_signal_connect: pcallable_init_copy");
     abort();
@@ -81,6 +81,6 @@ void kc3_gtk4_signal_connect (GObject **object,
     assert(! "kc3_gtk4_signal_connect: tag_init_copy");
     abort();
   }
-  g_signal_connect(*object, detailed_signal->ptr.pchar,
+  g_signal_connect(*object, detailed_signal->ptr.p_pchar,
                    G_CALLBACK(kc3_gtk4_signal_callback), tuple);
 }

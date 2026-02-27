@@ -89,7 +89,7 @@ p_call * pcall_init_cast (p_call *pcall, p_sym *type, s_tag *tag)
   assert(tag);
   switch (tag->type) {
   case TAG_PCALL:
-    return pcall_init_copy(pcall, &tag->data.pcall);
+    return pcall_init_copy(pcall, &tag->data.td_pcall);
   default:
     break;
   }

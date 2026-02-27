@@ -30,7 +30,7 @@ s_unquote * unquote_init_cast (s_unquote *unquote, s_tag *tag)
 {
   switch (tag->type) {
   case TAG_UNQUOTE:
-    return unquote_init_copy(unquote, &tag->data.unquote);
+    return unquote_init_copy(unquote, &tag->data.td_unquote);
   default:
     break;
   }

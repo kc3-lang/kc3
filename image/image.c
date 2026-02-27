@@ -57,7 +57,7 @@ s_image * image_init_file (s_image *image, const s_str *path)
 {
   FILE *fp;
   u8 header[8];
-  fp = fopen(path->ptr.pchar, "rb");
+  fp = fopen(path->ptr.p_pchar, "rb");
   if (! fp) {
     err_write_1("image_init_file: fopen: ");
     err_inspect_str(path);
@@ -345,10 +345,10 @@ s_image * image_to_png_file (s_image *image, s_str *path)
     ERROR("invalid argument");
     return NULL;
   }
-  fp = fopen(path->ptr.pchar, "wb");
+  fp = fopen(path->ptr.p_pchar, "wb");
   if (! fp) {
     err_write_1("image_to_png_file: fopen: ");
-    err_puts(path->ptr.pchar);
+    err_puts(path->ptr.p_pchar);
     return NULL;
   }
   png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,

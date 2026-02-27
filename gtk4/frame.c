@@ -23,7 +23,7 @@ GtkWidget ** kc3_gtk4_frame_new (GtkWidget **dest, const s_str *label)
 {
   const char *l;
   GtkWidget *tmp;
-  l = (label && label->size) ? label->ptr.pchar : NULL;
+  l = (label && label->size) ? label->ptr.p_pchar : NULL;
   if (! (tmp = gtk_frame_new(l))) {
     err_puts("kc3_gtk4_frame_new: error");
     assert(! "kc3_gtk4_frame_new: error");

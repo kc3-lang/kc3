@@ -53,54 +53,54 @@ uw * uw_init_cast
   (void) type;
   switch (tag->type) {
   case TAG_BOOL:
-    *u = tag->data.bool_ ? 1 : 0;
+    *u = tag->data.td_bool_ ? 1 : 0;
     return u;
   case TAG_CHARACTER:
-    *u = (uw) tag->data.character;
+    *u = (uw) tag->data.td_character;
     return u;
   case TAG_F32:
-    *u = (uw) tag->data.f32;
+    *u = (uw) tag->data.td_f32;
     return u;
   case TAG_F64:
-    *u = (uw) tag->data.f64;
+    *u = (uw) tag->data.td_f64;
     return u;
   case TAG_INTEGER:
-    *u = integer_to_uw(&tag->data.integer);
+    *u = integer_to_uw(&tag->data.td_integer);
     return u;
   case TAG_RATIO:
-    *u = ratio_to_uw(&tag->data.ratio);
+    *u = ratio_to_uw(&tag->data.td_ratio);
     return u;
   case TAG_S8:
-    *u = (uw) tag->data.s8;
+    *u = (uw) tag->data.td_s8;
     return u;
   case TAG_S16:
-    *u = (uw) tag->data.s16;
+    *u = (uw) tag->data.td_s16;
     return u;
   case TAG_S32:
-    *u = (uw) tag->data.s32;
+    *u = (uw) tag->data.td_s32;
     return u;
   case TAG_S64:
-    *u = (uw) tag->data.s64;
+    *u = (uw) tag->data.td_s64;
     return u;
   case TAG_STR:
-    return uw_init_str(u, &tag->data.str);
+    return uw_init_str(u, &tag->data.td_str);
   case TAG_SW:
-    *u = (uw) tag->data.sw;
+    *u = (uw) tag->data.td_sw;
     return u;
   case TAG_U8:
-    *u = (uw) tag->data.u8;
+    *u = (uw) tag->data.td_u8;
     return u;
   case TAG_U16:
-    *u = (uw) tag->data.u16;
+    *u = (uw) tag->data.td_u16;
     return u;
   case TAG_U32:
-    *u = (uw) tag->data.u32;
+    *u = (uw) tag->data.td_u32;
     return u;
   case TAG_U64:
-    *u = (uw) tag->data.u64;
+    *u = (uw) tag->data.td_u64;
     return u;
   case TAG_UW:
-    *u = (uw) tag->data.uw;
+    *u = (uw) tag->data.td_uw;
     return u;
   case TAG_VOID:
     *u = 0;
@@ -208,10 +208,10 @@ s_tag * uw_sqrt (const uw x, s_tag *dest)
   assert(dest);
 #if HAVE_F80
   dest->type = TAG_F80;
-  dest->data.f80 = sqrtl((f80) x);
+  dest->data.td_f80 = sqrtl((f80) x);
 #else
   dest->type = TAG_F64;
-  dest->data.f64 = sqrt((f64) x);
+  dest->data.td_f64 = sqrt((f64) x);
 #endif
   return dest;
 }

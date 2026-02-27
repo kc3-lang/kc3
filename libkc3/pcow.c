@@ -28,7 +28,7 @@ s_tag * pcow_assign (p_cow *cow, s_tag *value, s_tag *dest)
     return NULL;
   }
   dest->type = TAG_PCOW;
-  dest->data.pcow = *cow;
+  dest->data.td_pcow = *cow;
   return dest;
 }
 

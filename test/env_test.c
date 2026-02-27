@@ -89,7 +89,7 @@ TEST_CASE(env_eval_call)
   call.arguments = list_new_1("[1, 2]");
   TEST_ASSERT(env_eval_call(&env, &call, &result));
   TEST_EQ(result.type, TAG_U8);
-  TEST_EQ(result.data.u8, 3);
+  TEST_EQ(result.data.td_u8, 3);
   call_clean(&call);
   tag_clean(&result);
   env_clean(&env);
@@ -111,7 +111,7 @@ TEST_CASE(env_eval_equal_tag)
                                  tag_init_1(&x, "x"),
                                  tag_init_1(&y, "1"),
                                  &z));
-  TEST_ASSERT(frame_get(&frame, x.data.ident.sym));
+  TEST_ASSERT(frame_get(&frame, x.data.td_ident.sym));
   TEST_EQ(compare_tag(&z, &y), 0);
   tag_clean(&z);
   env.frame = frame_clean(&frame);

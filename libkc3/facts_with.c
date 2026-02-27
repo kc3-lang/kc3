@@ -110,26 +110,26 @@ s_facts_cursor * facts_with_1_2 (s_facts *facts,
   start.predicate = pvar_predicate ? TAG_FIRST : predicate;
   start.object    = pvar_object    ? TAG_FIRST : object;
   while (start.subject->type == TAG_PVAR &&
-         start.subject->data.pvar->bound)
-    start.subject = &start.subject->data.pvar->tag;
+         start.subject->data.td_pvar->bound)
+    start.subject = &start.subject->data.td_pvar->tag;
   while (start.predicate->type == TAG_PVAR &&
-         start.predicate->data.pvar->bound)
-    start.predicate = &start.predicate->data.pvar->tag;
+         start.predicate->data.td_pvar->bound)
+    start.predicate = &start.predicate->data.td_pvar->tag;
   while (start.object->type == TAG_PVAR &&
-         start.object->data.pvar->bound)
-    start.object = &start.object->data.pvar->tag;
+         start.object->data.td_pvar->bound)
+    start.object = &start.object->data.td_pvar->tag;
   end.subject   = pvar_subject   ? TAG_LAST : subject;
   end.predicate = pvar_predicate ? TAG_LAST : predicate;
   end.object    = pvar_object    ? TAG_LAST : object;
   while (end.subject->type == TAG_PVAR &&
-         end.subject->data.pvar->bound)
-    end.subject = &end.subject->data.pvar->tag;
+         end.subject->data.td_pvar->bound)
+    end.subject = &end.subject->data.td_pvar->tag;
   while (end.predicate->type == TAG_PVAR &&
-         end.predicate->data.pvar->bound)
-    end.predicate = &end.predicate->data.pvar->tag;
+         end.predicate->data.td_pvar->bound)
+    end.predicate = &end.predicate->data.td_pvar->tag;
   while (end.object->type == TAG_PVAR &&
-         end.object->data.pvar->bound)
-    end.object = &end.object->data.pvar->tag;
+         end.object->data.td_pvar->bound)
+    end.object = &end.object->data.td_pvar->tag;
   if (! pvar_subject && pvar_object)
     tree = facts->index_spo;
   else if (! pvar_predicate)
@@ -210,15 +210,15 @@ s_facts_cursor * facts_with_tags (s_facts *facts,
   if (! tag_is_unbound_var(subject, &unbound))
     return NULL;
   if (unbound)
-    pvar_subject = subject->data.pvar;
+    pvar_subject = subject->data.td_pvar;
   if (! tag_is_unbound_var(predicate, &unbound))
     return NULL;
   if (unbound)
-    pvar_predicate = predicate->data.pvar;
+    pvar_predicate = predicate->data.td_pvar;
   if (! tag_is_unbound_var(object, &unbound))
     return NULL;
   if (unbound)
-    pvar_object = object->data.pvar;
+    pvar_object = object->data.td_pvar;
   if (pvar_subject && pvar_predicate && pvar_object)
     return facts_with_0(facts, cursor, pvar_subject, pvar_predicate,
                         pvar_object);

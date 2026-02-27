@@ -35,7 +35,7 @@ s_quote * quote_init_cast (s_quote *quote, const s_sym * const *type,
   assert(tag);
   switch (tag->type) {
   case TAG_QUOTE:
-    return quote_init_copy(quote, &tag->data.quote);
+    return quote_init_copy(quote, &tag->data.td_quote);
   default:
     break;
   }

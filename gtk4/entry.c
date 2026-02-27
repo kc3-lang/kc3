@@ -49,5 +49,5 @@ void kc3_gtk4_entry_set_text (GtkEntry **entry, s_str *text)
     assert(! "kc3_gtk4_entry_set_text: gtk_entry_get_buffer");
     return;
   }
-  gtk_entry_buffer_set_text(buffer, text->ptr.pchar, text->size);
+  gtk_entry_buffer_set_text(buffer, text->ptr.p_pchar, text->size);
 }

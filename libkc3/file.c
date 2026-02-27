@@ -66,7 +66,7 @@ bool file_access (const s_str *path, const s_sym *mode)
     err_write_1("file_access: ");
     err_inspect_str(path);
   }
-  r = ! access(path->ptr.pchar, m);
+  r = ! access(path->ptr.p_pchar, m);
   if (false) {
     if (r)
       err_puts(": OK");
@@ -84,7 +84,7 @@ s_str * file_basename (const s_str *path, s_str *dest)
   sw dirsep_pos;
   assert(path);
   assert(dest);
-  if (path->size == 1 && path->ptr.pchar[0] == '/')
+  if (path->size == 1 && path->ptr.p_pchar[0] == '/')
     return str_init_empty(dest);
   if ((dirsep_pos = str_rindex_character(path, '/', 0, -2)) < 0)
     return str_init_copy(dest, path);
@@ -99,12 +99,12 @@ void file_close (const s_tag *tag)
   if (! tag_type(tag, &type))
     return;
   if (type == &g_sym_Buf) {
-    fp = buf_file_fp(tag->data.pstruct->data);
-    buf_file_close(tag->data.pstruct->data);
+    fp = buf_file_fp(tag->data.td_pstruct->data);
+    buf_file_close(tag->data.td_pstruct->data);
     fclose(fp);
   }
   else if (type == &g_sym_BufRW) {
-    buf_rw = tag->data.pstruct->data;
+    buf_rw = tag->data.td_pstruct->data;
     fp = buf_file_fp(buf_rw->r);
     buf_file_close(buf_rw->r);
     fclose(fp);
@@ -113,21 +113,21 @@ void file_close (const s_tag *tag)
     fclose(fp);
   }
   else if (type == &g_sym_S8)
-    close(tag->data.s8);
+    close(tag->data.td_s8);
   else if (type == &g_sym_S16)
-    close(tag->data.s16);
+    close(tag->data.td_s16);
   else if (type == &g_sym_S32)
-    close(tag->data.s32);
+    close(tag->data.td_s32);
   else if (type == &g_sym_S64)
-    close(tag->data.s64);
+    close(tag->data.td_s64);
   else if (type == &g_sym_U8)
-    close(tag->data.u8);
+    close(tag->data.td_u8);
   else if (type == &g_sym_U16)
-    close(tag->data.u16);
+    close(tag->data.td_u16);
   else if (type == &g_sym_U32)
-    close(tag->data.u32);
+    close(tag->data.td_u32);
   else if (type == &g_sym_U64)
-    close(tag->data.u64);
+    close(tag->data.td_u64);
   else {
     err_write_1("file_close: unknown tag type: ");
     err_inspect_sym(type);
@@ -197,7 +197,7 @@ s_str * file_dirname (const s_str *path, s_str *dest)
   sw dirsep_pos;
   assert(path);
   assert(dest);
-  if (path->size == 1 && path->ptr.pchar[0] == '/')
+  if (path->size == 1 && path->ptr.p_pchar[0] == '/')
     return NULL;
   if ((dirsep_pos = str_rindex_character(path, '/', 0, -2)) < 0) {
     return str_init(dest, NULL, 0, "");
@@ -249,9 +249,9 @@ bool file_ensure_directory (const s_str *path, const s_tag *mode)
     io_write_1("\n");
   }
 #if defined(WIN32) || defined(WIN64)
-  r = mkdir(path->ptr.pchar);
+  r = mkdir(path->ptr.p_pchar);
 #else
-  r = mkdir(path->ptr.pchar, m);
+  r = mkdir(path->ptr.p_pchar, m);
 #endif
   if (r) {
     e = errno;
@@ -280,7 +280,7 @@ bool * file_exists (const s_str *path, bool *dest)
   struct stat sb;
   assert(path);
   assert(dest);
-  *dest = ! lstat(path->ptr.pchar, &sb);
+  *dest = ! lstat(path->ptr.p_pchar, &sb);
   return dest;
 }
 
@@ -299,7 +299,7 @@ bool * file_is_directory (const s_str *path, bool *dest)
   s32 e;
   struct stat sb;
   assert(path);
-  if (stat(path->ptr.pchar, &sb)) {
+  if (stat(path->ptr.p_pchar, &sb)) {
     e = errno;
     if (e == ENOENT) {
       *dest = false;
@@ -308,7 +308,7 @@ bool * file_is_directory (const s_str *path, bool *dest)
     err_write_1("file_is_directory: ");
     err_write_1(strerror(e));
     err_write_1(": ");
-    err_puts(path->ptr.pchar);
+    err_puts(path->ptr.p_pchar);
     return NULL;
   }
   *dest = S_ISDIR(sb.st_mode) ? true : false;
@@ -332,7 +332,7 @@ bool * file_is_regular (const s_str *path, bool *dest)
   s32 e;
   struct stat sb;
   assert(path);
-  if (lstat(path->ptr.pchar, &sb)) {
+  if (lstat(path->ptr.p_pchar, &sb)) {
     e = errno;
     if (e == ENOENT) {
       *dest = false;
@@ -341,7 +341,7 @@ bool * file_is_regular (const s_str *path, bool *dest)
     err_write_1("file_is_regular: ");
     err_write_1(strerror(e));
     err_write_1(": ");
-    err_puts(path->ptr.pchar);
+    err_puts(path->ptr.p_pchar);
     return NULL;
   }
   *dest = S_ISREG(sb.st_mode) ? true : false;
@@ -352,7 +352,7 @@ bool file_link (const s_str *from, const s_str *to)
 {
 #if ! (defined(WIN32) || defined(WIN64))
   sw e;
-  if (link(from->ptr.pchar, to->ptr.pchar)) {
+  if (link(from->ptr.p_pchar, to->ptr.p_pchar)) {
     e = errno;
     err_write_1("file_link: link: ");
     err_inspect_str(from);
@@ -380,7 +380,7 @@ s_list ** file_list (const s_str *path, s_list **dest)
   s32 e;
   s_list **tail;
   s_list *tmp = NULL;
-  dir = opendir(path->ptr.pchar);
+  dir = opendir(path->ptr.p_pchar);
   if (! dir) {
     e = errno;
     err_write_1("file_list: opendir: ");
@@ -397,7 +397,7 @@ s_list ** file_list (const s_str *path, s_list **dest)
       closedir(dir);
       return NULL;
     }
-    tail = &(*tail)->next.data.plist;
+    tail = &(*tail)->next.data.td_plist;
   }
   closedir(dir);
   *dest = tmp;
@@ -418,23 +418,23 @@ s_list ** file_list_recursive (const s_str *path, s_list **dest)
   s_list **tmp_tail;
   tmp = NULL;
   tmp_tail = &tmp;
-  if (! (in = list_new_str(NULL, path->size, path->ptr.p, NULL)))
+  if (! (in = list_new_str(NULL, path->size, path->ptr.p_pvoid, NULL)))
     return NULL;
-  in_tail = &in->next.data.plist;
+  in_tail = &in->next.data.td_plist;
   while (in) {
     if (in->tag.type != TAG_STR) {
       ERROR("not an Str");
       return NULL;
     }
-    if (in->tag.data.str.size >= PATH_MAX - 2) {
+    if (in->tag.data.td_str.size >= PATH_MAX - 2) {
       ERROR("path is longer than PATH_MAX 1");
       return NULL;
     }
-    memcpy(b, in->tag.data.str.ptr.pchar, in->tag.data.str.size);
-    b_pos = in->tag.data.str.size;
+    memcpy(b, in->tag.data.td_str.ptr.p_pchar, in->tag.data.td_str.size);
+    b_pos = in->tag.data.td_str.size;
     b[b_pos++] = '/';
     b[b_pos] = 0;
-    dir = opendir(in->tag.data.str.ptr.pchar);
+    dir = opendir(in->tag.data.td_str.ptr.p_pchar);
     if (! dir) {
       e = errno;
       err_write_1("file_list_recursive: opendir: ");
@@ -456,12 +456,12 @@ s_list ** file_list_recursive (const s_str *path, s_list **dest)
       if (file_is_directory_1(b)) {
         if (! (*in_tail = list_new_str_1_alloc(b, NULL)))
           goto ko;
-        in_tail = &(*in_tail)->next.data.plist;
+        in_tail = &(*in_tail)->next.data.td_plist;
       }
       else {
         if (! (*tmp_tail = list_new_str_1_alloc(b, NULL)))
           goto ko;
-        tmp_tail = &(*tmp_tail)->next.data.plist;
+        tmp_tail = &(*tmp_tail)->next.data.td_plist;
       }
     }
     closedir(dir);
@@ -484,13 +484,13 @@ s_time * file_mtime (const s_str *path, s_time *dest)
   s_time tmp = {0};
   assert(path);
   assert(dest);
-  if (stat(path->ptr.pchar, &sb)) {
+  if (stat(path->ptr.p_pchar, &sb)) {
     e = errno;
     if (e != ENOENT) {
       err_write_1("file_mtime: ");
       err_write_1(strerror(e));
       err_write_1(": ");
-      err_puts(path->ptr.pchar);
+      err_puts(path->ptr.p_pchar);
     }
     return NULL;
   }
@@ -526,7 +526,7 @@ FILE * file_open (const s_str *path, const char *mode)
 {
   s32 e;
   FILE *fp;
-  fp = fopen(path->ptr.pchar, mode);
+  fp = fopen(path->ptr.p_pchar, mode);
   if (! fp) {
     e = errno;
     err_write_1("file_open: ");
@@ -546,7 +546,7 @@ t_fd * file_open_r (const s_str *path, t_fd *dest)
   t_fd fd;
   assert(path);
   assert(dest);
-  if ((fd = open(path->ptr.pchar, O_RDONLY | O_BINARY)) < 0) {
+  if ((fd = open(path->ptr.p_pchar, O_RDONLY | O_BINARY)) < 0) {
     e = errno;
     err_write_1("file_open_r: ");
     err_inspect_str(path);
@@ -565,7 +565,7 @@ t_fd * file_open_w (const s_str *path, t_fd *dest)
   static const mode_t mode = 0666;
   assert(path);
   assert(dest);
-  if ((fd = open(path->ptr.pchar,
+  if ((fd = open(path->ptr.p_pchar,
                  O_CREAT |
                  O_TRUNC |
                  O_WRONLY |
@@ -604,7 +604,7 @@ s_str * file_read_all (const s_str *path, s_str *dest)
   sw pos = 0;
   sw r;
   struct stat sb;
-  if (stat(path->ptr.pchar, &sb)) {
+  if (stat(path->ptr.p_pchar, &sb)) {
     e = errno;
     err_write_1("file_read_all: stat: ");
     err_write_1(strerror(e));
@@ -613,7 +613,7 @@ s_str * file_read_all (const s_str *path, s_str *dest)
     err_write_1("\n");
     return NULL;
   }
-  fd = open(path->ptr.pchar, O_RDONLY | O_BINARY);
+  fd = open(path->ptr.p_pchar, O_RDONLY | O_BINARY);
   if (fd < 0) {
     e = errno;
     err_write_1("file_read_all: open: ");
@@ -657,7 +657,7 @@ s_str * file_read_max (const s_str *path, uw max, s_str *dest)
   sw r;
   uw size;
   s_str tmp;
-  fd = open(path->ptr.pchar, O_RDONLY | O_BINARY);
+  fd = open(path->ptr.p_pchar, O_RDONLY | O_BINARY);
   if (fd < 0) {
     e = errno;
     err_write_1("file_read_max: open: ");
@@ -769,20 +769,20 @@ bool file_rm_rf (const s_str *path)
   s_str filename;
   s_str p[256] = {0};
   p[0] = *path;
-  p[0].free.p = NULL;
+  p[0].free.p_pvoid = NULL;
   while (1) {
     if (false) {
       err_write_1("File.rm_rf: ");
       err_inspect_str(p + i);
       err_write_1("\n");
     }
-    if (file_is_directory_1(p[i].ptr.pchar)) {
+    if (file_is_directory_1(p[i].ptr.p_pchar)) {
       if (i > 254) {
         err_puts("file_rm_rf: max subdirs reached (254)");
         return false;
       }
       if (! dir[i] &&
-          ! (dir[i] = opendir(p[i].ptr.pchar))) {
+          ! (dir[i] = opendir(p[i].ptr.p_pchar))) {
         e = errno;
         err_write_1("file_rm_rf: opendir: ");
         err_write_1(strerror(e));
@@ -802,11 +802,11 @@ bool file_rm_rf (const s_str *path)
         str_init_1(&filename, NULL, dirent[i]->d_name);
         i++;
         p[i].size = p[i - 1].size + 1 + filename.size;
-        p[i].free.p = alloc(p[i].size + 1);
-        p[i].ptr.p = p[i].free.p;
-        memcpy(p[i].free.p, p[i - 1].ptr.p, p[i - 1].size);
-        p[i].free.pchar[p[i - 1].size] = '/';
-        memcpy(p[i].free.pchar + p[i - 1].size + 1, filename.ptr.p,
+        p[i].free.p_pvoid = alloc(p[i].size + 1);
+        p[i].ptr.p_pvoid = p[i].free.p_pvoid;
+        memcpy(p[i].free.p_pvoid, p[i - 1].ptr.p_pvoid, p[i - 1].size);
+        p[i].free.p_pchar[p[i - 1].size] = '/';
+        memcpy(p[i].free.p_pchar + p[i - 1].size + 1, filename.ptr.p_pvoid,
                filename.size);
         continue;
       }
@@ -849,7 +849,7 @@ bool file_rm_rf (const s_str *path)
 bool file_rename (const s_str *from, const s_str *to)
 {
   sw e;
-  if (rename(from->ptr.pchar, to->ptr.pchar)) {
+  if (rename(from->ptr.p_pchar, to->ptr.p_pchar)) {
     e = errno;
     err_write_1("file_rename: rename: ");
     err_inspect_str(from);
@@ -866,7 +866,7 @@ bool file_rename (const s_str *from, const s_str *to)
 bool file_rmdir (const s_str *path)
 {
   s32 e;
-  if (rmdir(path->ptr.pchar) < 0) {
+  if (rmdir(path->ptr.p_pchar) < 0) {
     e = errno;
     err_write_1("file_rmdir: ");
     err_inspect_str(path);
@@ -888,8 +888,8 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
   s_buf_save save;
   const s_str *str;
   s_str tmp = {0};
-  if (suffix && (suffix->ptr.pchar[0] == '.' ||
-                 suffix->ptr.pchar[0] == '/')) {
+  if (suffix && (suffix->ptr.p_pchar[0] == '.' ||
+                 suffix->ptr.p_pchar[0] == '/')) {
     if (file_access(suffix, mode))
       return str_init_copy(dest, suffix);
     return NULL;
@@ -906,13 +906,13 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
     if (path->tag.type == TAG_STR) {
       buf_save_restore_rpos(&buf, &save);
       buf_save_restore_wpos(&buf, &save);
-      str = &path->tag.data.str;
+      str = &path->tag.data.td_str;
       if ((r = buf_write_str(&buf, str)) < 0)
 	break;
       if (str->size > 0 &&
-          str->ptr.pchar[str->size - 1] != '/' &&
+          str->ptr.p_pchar[str->size - 1] != '/' &&
           suffix->size > 0 &&
-          suffix->ptr.pchar[0] != '/' &&
+          suffix->ptr.p_pchar[0] != '/' &&
           (r = buf_write_1(&buf, "/")) < 0)
 	break;
       if ((r = buf_write_str(&buf, suffix)) < 0)
@@ -1012,12 +1012,12 @@ s_file_stat * file_stat (const s_str *path, s_file_stat *dest)
   struct stat sb;
   assert(path);
   assert(dest);
-  if (stat(path->ptr.pchar, &sb)) {
+  if (stat(path->ptr.p_pchar, &sb)) {
     e = errno;
     err_write_1("file_stat: ");
     err_write_1(strerror(e));
     err_write_1(": ");
-    err_puts(path->ptr.pchar);
+    err_puts(path->ptr.p_pchar);
     return NULL;
   }
   return file_stat_init_struct_stat(dest, &sb);
@@ -1128,7 +1128,7 @@ struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
 bool file_unlink (const s_str *path)
 {
   sw e;
-  if (unlink(path->ptr.pchar)) {
+  if (unlink(path->ptr.p_pchar)) {
     e = errno;
     err_write_1("file_unlink: unlink: ");
     err_inspect_str(path);
@@ -1147,7 +1147,7 @@ bool file_write (const s_str *path, const s_str *data)
   static const mode_t mode = 0666;
   u32 pos = 0;
   sw w;
-  fd = open(path->ptr.pchar, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY,
+  fd = open(path->ptr.p_pchar, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY,
 	    mode);
   if (fd < 0) {
     e = errno;
@@ -1159,7 +1159,7 @@ bool file_write (const s_str *path, const s_str *data)
     return false;
   }
   while (pos < data->size) {
-    if ((w = write(fd, data->ptr.pchar, data->size - pos)) <= 0) {
+    if ((w = write(fd, data->ptr.p_pchar, data->size - pos)) <= 0) {
       if (w < 0)
         e = errno;
       err_write_1("file_write: write: ");
@@ -1185,7 +1185,7 @@ sw file_write_str (const s_str *path, const s_str *str)
   if (! file_open_w(path, &fd))
     return -1;
   while (result < str->size) {
-    if ((r = write(fd, str->ptr.pchar + result,
+    if ((r = write(fd, str->ptr.p_pchar + result,
                    str->size - result)) <= 0)
       goto clean;
     result += r;

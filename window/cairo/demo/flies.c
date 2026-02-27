@@ -43,9 +43,9 @@ static void fly_init (s_map *map)
   s_array *board;
   uw *in;
   f64 *t;
-  board = &map->value[0].data.array;
-  in    = &map->value[1].data.uw;
-  t     = &map->value[3].data.f64;
+  board = &map->value[0].data.td_array;
+  in    = &map->value[1].data.td_uw;
+  t     = &map->value[3].data.td_f64;
   array_data_set(board, address, (void *) &g_board_item_fly);
   *t = 0.0;
   (*in)++;
@@ -59,7 +59,7 @@ bool flies_load (s_sequence *seq)
   uw j;
   s_map *map;
   tag_map(&seq->tag, 4);
-  map = &seq->tag.data.map;
+  map = &seq->tag.data.td_map;
   tag_init_psym(  map->key  + 0, sym_1("board"));
   tag_init_array(map->value + 0, sym_1("U8[]"),
                  2, (uw[]) {BOARD_SIZE, BOARD_SIZE});
@@ -69,7 +69,7 @@ bool flies_load (s_sequence *seq)
   tag_init_uw(   map->value + 2, 0);
   tag_init_psym(   map->key + 3, sym_1("t"));
   tag_init_uw(   map->value + 3, 0);
-  board = &map->value[0].data.array;
+  board = &map->value[0].data.td_array;
   array_allocate(board);
   i = 0;
   while (i < BOARD_SIZE) {
@@ -165,16 +165,16 @@ bool flies_render (s_sequence *seq)
   cairo_fill(cr);
   /* io_inspect(&seq->tag); */
   if (seq->tag.type == TAG_MAP) {
-    map = &seq->tag.data.map;
+    map = &seq->tag.data.td_map;
     if (map->count == 4 &&
         map->value[0].type == TAG_ARRAY &&
         map->value[1].type == TAG_UW &&
         map->value[2].type == TAG_UW &&
         map->value[3].type == TAG_UW) {
-      board    = &map->value[0].data.array;
-      fly_in   = &map->value[1].data.uw;
-      fly_out  = &map->value[2].data.uw;
-      fly_time = &map->value[3].data.uw;
+      board    = &map->value[0].data.td_array;
+      fly_in   = &map->value[1].data.td_uw;
+      fly_out  = &map->value[2].data.td_uw;
+      fly_time = &map->value[3].data.td_uw;
       board_item_h = (f64) (window->h - 60) / (BOARD_SIZE + 1);
       board_item_w = board_item_h * g_xy_ratio;
       board_w = board_item_w * BOARD_SIZE;
@@ -192,18 +192,18 @@ bool flies_render (s_sequence *seq)
       buf_write_1(&buf, "In ");
       buf_inspect_uw_decimal(&buf, *fly_in);
       buf_write_u8(&buf, 0);
-      cairo_text_extents(cr, buf.ptr.pchar, &te);
+      cairo_text_extents(cr, buf.ptr.p_pchar, &te);
       y = board_h + board_item_h + te.height + te.y_bearing;
       x = board_x;
       cairo_move_to(cr, x, y);
-      cairo_show_text(cr, buf.ptr.pchar);
+      cairo_show_text(cr, buf.ptr.p_pchar);
       buf_init(&buf, false, sizeof(a), a);
       buf_write_1(&buf, "Out ");
       buf_inspect_uw_decimal(&buf, *fly_out);
       buf_write_u8(&buf, 0);
       x = board_x + board_item_w * (BOARD_SIZE / 2 + 1);
       cairo_move_to(cr, x, y);
-      cairo_show_text(cr, buf.ptr.pchar);
+      cairo_show_text(cr, buf.ptr.p_pchar);
       address[1] = 0;
       while (address[1] < BOARD_SIZE) {
         y = board_item_h * address[1];

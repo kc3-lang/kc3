@@ -44,7 +44,7 @@ s_pdf_write ** kc3_pdf_write_add_page (s_pdf_write **pdf,
   buf_write_1(buf, "<< /Length ");
   buf_inspect_sw_decimal(buf, (sw) content_buf->wpos);
   buf_write_1(buf, " >>\nstream\n");
-  buf_write(buf, content_buf->ptr.pchar, content_buf->wpos);
+  buf_write(buf, content_buf->ptr.p_pchar, content_buf->wpos);
   buf_write_1(buf, "endstream\nendobj\n");
   return pdf;
 }
@@ -83,18 +83,18 @@ u32 kc3_pdf_write_font_from_file (s_pdf_write **pdf, s_str *path)
     err_puts("kc3_pdf_write_font_from_file: FT_Init_FreeType failed");
     return 0;
   }
-  if (FT_New_Face(ft_library, path->ptr.pchar, 0, &ft_face)) {
+  if (FT_New_Face(ft_library, path->ptr.p_pchar, 0, &ft_face)) {
     err_write_1("kc3_pdf_write_font_from_file: "
                 "error loading font: ");
-    err_puts(path->ptr.pchar);
+    err_puts(path->ptr.p_pchar);
     FT_Done_FreeType(ft_library);
     return 0;
   }
-  fp = fopen(path->ptr.pchar, "rb");
+  fp = fopen(path->ptr.p_pchar, "rb");
   if (! fp) {
     err_write_1("kc3_pdf_write_font_from_file: "
                 "error opening font file: ");
-    err_puts(path->ptr.pchar);
+    err_puts(path->ptr.p_pchar);
     FT_Done_Face(ft_face);
     FT_Done_FreeType(ft_library);
     return 0;
@@ -140,11 +140,11 @@ u32 kc3_pdf_write_image_from_file (s_pdf_write **doc,
   assert(doc);
   assert(*doc);
   assert(path);
-  fp = fopen(path->ptr.pchar, "rb");
+  fp = fopen(path->ptr.p_pchar, "rb");
   if (! fp) {
     err_write_1("kc3_pdf_write_image_from_file: "
                 "error opening JPEG file: ");
-    err_puts(path->ptr.pchar);
+    err_puts(path->ptr.p_pchar);
     return 0;
   }
   fseek(fp, 0, SEEK_END);

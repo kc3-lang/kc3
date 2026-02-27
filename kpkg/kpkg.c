@@ -45,7 +45,7 @@ int main (int argc, char **argv)
   }
   switch (tmp.type) {
   case TAG_U8:
-    r = tmp.data.u8;
+    r = tmp.data.td_u8;
     break;
   default:
     err_write_1("invalid return type from main: ");

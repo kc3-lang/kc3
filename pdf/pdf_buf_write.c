@@ -67,7 +67,7 @@ sw pdf_buf_write_dictionnary (s_buf *buf, const s_map *src)
       assert(! "pdf_buf_write_dictionary: key is not a Sym");
       return -1;
     }
-    if ((r = pdf_buf_write_name(buf, src->key[i].data.psym)) < 0)
+    if ((r = pdf_buf_write_name(buf, src->key[i].data.td_psym)) < 0)
       return r;
     result += r;
     if ((r = pdf_buf_write_separator(buf, false)) < 0)
@@ -75,7 +75,7 @@ sw pdf_buf_write_dictionnary (s_buf *buf, const s_map *src)
     result += r;
     if ((r = pdf_buf_write_tag(buf, &src->value[i])) < 0) {
       err_write_1("pdf_buf_write_dictionnary: pdf_buf_write_tag: key ");
-      err_inspect_sym(src->key[i].data.psym);
+      err_inspect_sym(src->key[i].data.td_psym);
       err_write_1(", value ");
       err_inspect_tag(&src->value[i]);
       err_write_1("\n");
@@ -204,7 +204,7 @@ sw pdf_buf_write_indirect_ref (s_buf *buf, const s_tuple *tuple)
   assert(tuple);
   if (tuple->count != 3 ||
       tuple->tag[0].type != TAG_PSYM ||
-      tuple->tag[0].data.psym != sym_1("indirect_object")) {
+      tuple->tag[0].data.td_psym != sym_1("indirect_object")) {
     err_puts("pdf_buf_write_indirect_object: invalid Tuple");
     assert(! "pdf_buf_write_indirect_object: invalid Tuple");
     return -1;
@@ -410,7 +410,7 @@ sw pdf_buf_write_string_hex (s_buf *buf, const s_str *str)
   sw r = 0;
   sw result = 0;
   s_buf read_buf = {0};
-  const char *base = g_kc3_base_hexadecimal.ptr.pchar;
+  const char *base = g_kc3_base_hexadecimal.ptr.p_pchar;
   buf_init_str_const(&read_buf, str);
   if ((r = pdf_buf_write_token(buf, "<")) < 0)
     goto cleanup;
@@ -435,40 +435,40 @@ sw pdf_buf_write_tag (s_buf *buf, const s_tag *src)
   assert(buf);
   assert(src);
   switch (src->type) {
-    case TAG_F32:  return pdf_buf_write_float(buf, src->data.f32);
-    case TAG_F64:  return pdf_buf_write_float(buf, src->data.f64);
-    case TAG_SW:   return pdf_buf_write_integer(buf, src->data.sw);
-    case TAG_S64:  return pdf_buf_write_integer(buf, src->data.s64);
-    case TAG_S32:  return pdf_buf_write_integer(buf, src->data.s32);
-    case TAG_S16:  return pdf_buf_write_integer(buf, src->data.s16);
-    case TAG_S8:   return pdf_buf_write_integer(buf, src->data.s8);
-    case TAG_U8:   return pdf_buf_write_integer(buf, src->data.u8);
-    case TAG_U16:  return pdf_buf_write_integer(buf, src->data.u16);
-    case TAG_U32:  return pdf_buf_write_integer(buf, src->data.u32);
-    case TAG_U64:  return pdf_buf_write_integer(buf, src->data.u64);
-    case TAG_UW:   return pdf_buf_write_integer(buf, src->data.uw);
+    case TAG_F32:  return pdf_buf_write_float(buf, src->data.td_f32);
+    case TAG_F64:  return pdf_buf_write_float(buf, src->data.td_f64);
+    case TAG_SW:   return pdf_buf_write_integer(buf, src->data.td_sw);
+    case TAG_S64:  return pdf_buf_write_integer(buf, src->data.td_s64);
+    case TAG_S32:  return pdf_buf_write_integer(buf, src->data.td_s32);
+    case TAG_S16:  return pdf_buf_write_integer(buf, src->data.td_s16);
+    case TAG_S8:   return pdf_buf_write_integer(buf, src->data.td_s8);
+    case TAG_U8:   return pdf_buf_write_integer(buf, src->data.td_u8);
+    case TAG_U16:  return pdf_buf_write_integer(buf, src->data.td_u16);
+    case TAG_U32:  return pdf_buf_write_integer(buf, src->data.td_u32);
+    case TAG_U64:  return pdf_buf_write_integer(buf, src->data.td_u64);
+    case TAG_UW:   return pdf_buf_write_integer(buf, src->data.td_uw);
     case TAG_INTEGER:
-      return buf_inspect_integer(buf, &src->data.integer);
+      return buf_inspect_integer(buf, &src->data.td_integer);
     case TAG_MAP:
-      return pdf_buf_write_dictionnary(buf, &src->data.map);
-    case TAG_STR:  return pdf_buf_write_string_hex(buf, &src->data.str);
+      return pdf_buf_write_dictionnary(buf, &src->data.td_map);
+    case TAG_STR:  return pdf_buf_write_string_hex(buf, &src->data.td_str);
     case TAG_PLIST:
-      return pdf_buf_write_array(buf, src->data.plist);
-    case TAG_PSYM: return pdf_buf_write_name(buf, src->data.psym);
+      return pdf_buf_write_array(buf, src->data.td_plist);
+    case TAG_PSYM: return pdf_buf_write_name(buf, src->data.td_psym);
     case TAG_PSTRUCT:
-      if (src->data.pstruct->pstruct_type->module == sym_1("PDF.Rect"))
+      if (src->data.td_pstruct->pstruct_type->module == sym_1("PDF.Rect"))
         return pdf_buf_write_rect(buf,
-          (s_pdf_rect *) src->data.pstruct->data);
+          (s_pdf_rect *) src->data.td_pstruct->data);
       err_write_1("pdf_buf_write_tag: unsupported struct type: ");
-      err_inspect_sym(src->data.pstruct->pstruct_type->module);
+      err_inspect_sym(src->data.td_pstruct->pstruct_type->module);
       err_write_1("\n");
       assert(! "pdf_buf_write_tag: unsupported struct type");
       return -1;
     case TAG_PTUPLE:
-      if (src->data.ptuple->count == 3 &&
-          src->data.ptuple->tag[0].type == TAG_PSYM &&
-          src->data.ptuple->tag[0].data.psym == sym_1("indirect_object"))
-        return pdf_buf_write_indirect_ref(buf, src->data.ptuple);
+      if (src->data.td_ptuple->count == 3 &&
+          src->data.td_ptuple->tag[0].type == TAG_PSYM &&
+          src->data.td_ptuple->tag[0].data.td_psym == sym_1("indirect_object"))
+        return pdf_buf_write_indirect_ref(buf, src->data.td_ptuple);
       goto invalid_type;
     default:
       goto invalid_type;

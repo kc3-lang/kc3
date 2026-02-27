@@ -36,7 +36,7 @@
     test_context(# test " -> " # expected);                            \
     TEST_EQ(test, len);                                                \
     TEST_EQ(buf.wpos, pos + len);                                      \
-    TEST_STRNCMP(buf.ptr.pchar + pos, expected, len);                  \
+    TEST_STRNCMP(buf.ptr.p_pchar + pos, expected, len);                  \
   } while (0)
 
 #define BUF_TEST_IGNORE(test, count, expected)                         \
@@ -260,7 +260,7 @@ TEST_CASE(buf_init_clean)
   len = 4;
   buf_init(&buf, false, len, a);
   TEST_EQ(buf.size, len);
-  TEST_EQ(strncmp(buf.ptr.p, "test", len), 0);
+  TEST_EQ(strncmp(buf.ptr.p_pvoid, "test", len), 0);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 0);
   BUF_TEST_CLEAN(buf);
@@ -269,7 +269,7 @@ TEST_CASE(buf_init_clean)
   memcpy(m, "test", len);
   buf_init(&buf, true, len, m);
   TEST_EQ(buf.size, len);
-  TEST_EQ(strncmp(buf.ptr.p, "test", len), 0);
+  TEST_EQ(strncmp(buf.ptr.p_pvoid, "test", len), 0);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 0);
   BUF_TEST_CLEAN(buf);
@@ -285,7 +285,7 @@ TEST_CASE(buf_new_delete)
   len = 4;
   TEST_ASSERT((buf = buf_new(false, len, a)));
   TEST_EQ(buf->size, len);
-  TEST_EQ(strncmp(buf->ptr.p, "test", len), 0);
+  TEST_EQ(strncmp(buf->ptr.p_pvoid, "test", len), 0);
   TEST_EQ(buf->rpos, 0);
   TEST_EQ(buf->wpos, 0);
   BUF_TEST_DELETE(buf);
@@ -294,7 +294,7 @@ TEST_CASE(buf_new_delete)
   memcpy(m, "test", len);
   TEST_ASSERT((buf = buf_new(true, len, m)));
   TEST_EQ(buf->size, len);
-  TEST_EQ(strncmp(buf->ptr.p, "test", len), 0);
+  TEST_EQ(strncmp(buf->ptr.p_pvoid, "test", len), 0);
   TEST_EQ(buf->rpos, 0);
   TEST_EQ(buf->wpos, 0);
   BUF_TEST_DELETE(buf);
@@ -795,19 +795,19 @@ TEST_CASE(buf_write_s8)
   TEST_EQ(buf_write_s8(&buf, 0x00), 1);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 1);
-  TEST_EQ(buf.ptr.ps8[0], 0x00);
+  TEST_EQ(buf.ptr.p_ps8[0], 0x00);
   TEST_EQ(buf_write_s8(&buf, 0x01), 1);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 2);
-  TEST_EQ(buf.ptr.ps8[1], 0x01);
+  TEST_EQ(buf.ptr.p_ps8[1], 0x01);
   TEST_EQ(buf_write_s8(&buf, -2), 1);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 3);
-  TEST_EQ(buf.ptr.ps8[2], -2);
+  TEST_EQ(buf.ptr.p_ps8[2], -2);
   TEST_EQ(buf_write_s8(&buf, -1), 1);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 4);
-  TEST_EQ(buf.ptr.ps8[3], -1);
+  TEST_EQ(buf.ptr.p_ps8[3], -1);
   buf_clean(&buf);
 }
 TEST_CASE_END(buf_write_s8)
@@ -820,19 +820,19 @@ TEST_CASE(buf_write_s16)
   TEST_EQ(buf_write_s16(&buf, 0x0000), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 2);
-  TEST_EQ(*((s16 *) buf.ptr.ps8), 0x0000);
+  TEST_EQ(*((s16 *) buf.ptr.p_ps8), 0x0000);
   TEST_EQ(buf_write_s16(&buf, 0x0001), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 4);
-  TEST_EQ(*((s16 *) (buf.ptr.ps8 + 2)), 0x0001);
+  TEST_EQ(*((s16 *) (buf.ptr.p_ps8 + 2)), 0x0001);
   TEST_EQ(buf_write_s16(&buf, -2), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 6);
-  TEST_EQ(*((s16 *) (buf.ptr.ps8 + 4)), -2);
+  TEST_EQ(*((s16 *) (buf.ptr.p_ps8 + 4)), -2);
   TEST_EQ(buf_write_s16(&buf, -1), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 8);
-  TEST_EQ(*((s16 *) (buf.ptr.ps8 + 6)), -1);
+  TEST_EQ(*((s16 *) (buf.ptr.p_ps8 + 6)), -1);
   buf_clean(&buf);
 }
 TEST_CASE_END(buf_write_s16)
@@ -845,19 +845,19 @@ TEST_CASE(buf_write_s32)
   TEST_EQ(buf_write_s32(&buf, 0x00000000), 4);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 4);
-  TEST_EQ(*((s32 *) buf.ptr.ps8), 0x00000000);
+  TEST_EQ(*((s32 *) buf.ptr.p_ps8), 0x00000000);
   TEST_EQ(buf_write_s32(&buf, 0x00000001), 4);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 8);
-  TEST_EQ(*((s32 *) (buf.ptr.ps8 + 4)), 0x00000001);
+  TEST_EQ(*((s32 *) (buf.ptr.p_ps8 + 4)), 0x00000001);
   TEST_EQ(buf_write_s32(&buf, -2), 4);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 12);
-  TEST_EQ(*((s32 *) (buf.ptr.ps8 + 8)), -2);
+  TEST_EQ(*((s32 *) (buf.ptr.p_ps8 + 8)), -2);
   TEST_EQ(buf_write_s32(&buf, -1), 4);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 16);
-  TEST_EQ(*((s32 *) (buf.ptr.ps8 + 12)), -1);
+  TEST_EQ(*((s32 *) (buf.ptr.p_ps8 + 12)), -1);
   buf_clean(&buf);
 }
 TEST_CASE_END(buf_write_s32)
@@ -870,19 +870,19 @@ TEST_CASE(buf_write_s64)
   TEST_EQ(buf_write_s64(&buf, 0x0000000000000000), 8);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 8);
-  TEST_EQ(*((s64 *) buf.ptr.ps8), 0x0000000000000000);
+  TEST_EQ(*((s64 *) buf.ptr.p_ps8), 0x0000000000000000);
   TEST_EQ(buf_write_s64(&buf, 0x0000000000000001), 8);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 16);
-  TEST_EQ(*((s64 *) (buf.ptr.ps8 + 8)), 0x0000000000000001);
+  TEST_EQ(*((s64 *) (buf.ptr.p_ps8 + 8)), 0x0000000000000001);
   TEST_EQ(buf_write_s64(&buf, -2), 8);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 24);
-  TEST_EQ(*((s64 *) (buf.ptr.ps8 + 16)), -2);
+  TEST_EQ(*((s64 *) (buf.ptr.p_ps8 + 16)), -2);
   TEST_EQ(buf_write_s64(&buf, -1), 8);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 32);
-  TEST_EQ(*((s64 *) (buf.ptr.ps8 + 24)), -1);
+  TEST_EQ(*((s64 *) (buf.ptr.p_ps8 + 24)), -1);
   buf_clean(&buf);
 }
 TEST_CASE_END(buf_write_s64)
@@ -895,19 +895,19 @@ TEST_CASE(buf_write_u8)
   TEST_EQ(buf_write_u8(&buf, 0x00), 1);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 1);
-  TEST_EQ(buf.ptr.pu8[0], 0x00);
+  TEST_EQ(buf.ptr.p_pu8[0], 0x00);
   TEST_EQ(buf_write_u8(&buf, 0x01), 1);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 2);
-  TEST_EQ(buf.ptr.pu8[1], 0x01);
+  TEST_EQ(buf.ptr.p_pu8[1], 0x01);
   TEST_EQ(buf_write_u8(&buf, 0xFE), 1);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 3);
-  TEST_EQ(buf.ptr.pu8[2], 0xFE);
+  TEST_EQ(buf.ptr.p_pu8[2], 0xFE);
   TEST_EQ(buf_write_u8(&buf, 0xFF), 1);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 4);
-  TEST_EQ(buf.ptr.pu8[3], 0xFF);
+  TEST_EQ(buf.ptr.p_pu8[3], 0xFF);
   buf_clean(&buf);
 }
 TEST_CASE_END(buf_write_u8)
@@ -920,19 +920,19 @@ TEST_CASE(buf_write_u16)
   TEST_EQ(buf_write_u16(&buf, 0x0000), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 2);
-  TEST_EQ(*((u16 *) buf.ptr.pu8), 0x0000);
+  TEST_EQ(*((u16 *) buf.ptr.p_pu8), 0x0000);
   TEST_EQ(buf_write_u16(&buf, 0x0001), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 4);
-  TEST_EQ(*((u16 *) (buf.ptr.pu8 + 2)), 0x0001);
+  TEST_EQ(*((u16 *) (buf.ptr.p_pu8 + 2)), 0x0001);
   TEST_EQ(buf_write_u16(&buf, 0xFF00), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 6);
-  TEST_EQ(*((u16 *) (buf.ptr.pu8 + 4)), 0xFF00);
+  TEST_EQ(*((u16 *) (buf.ptr.p_pu8 + 4)), 0xFF00);
   TEST_EQ(buf_write_u16(&buf, 0xFFFF), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 8);
-  TEST_EQ(*((u16 *) (buf.ptr.pu8 + 6)), 0xFFFF);
+  TEST_EQ(*((u16 *) (buf.ptr.p_pu8 + 6)), 0xFFFF);
   buf_clean(&buf);
 }
 TEST_CASE_END(buf_write_u16)
@@ -945,19 +945,19 @@ TEST_CASE(buf_write_u32)
   TEST_EQ(buf_write_u32(&buf, 0x00000000), 4);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 4);
-  TEST_EQ(*((u32 *) buf.ptr.pu8), 0x00000000);
+  TEST_EQ(*((u32 *) buf.ptr.p_pu8), 0x00000000);
   TEST_EQ(buf_write_u32(&buf, 0x00000001), 4);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 8);
-  TEST_EQ(*((u32 *) (buf.ptr.pu8 + 4)), 0x00000001);
+  TEST_EQ(*((u32 *) (buf.ptr.p_pu8 + 4)), 0x00000001);
   TEST_EQ(buf_write_u32(&buf, 0xFFFF0000), 4);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 12);
-  TEST_EQ(*((u32 *) (buf.ptr.pu8 + 8)), 0xFFFF0000);
+  TEST_EQ(*((u32 *) (buf.ptr.p_pu8 + 8)), 0xFFFF0000);
   TEST_EQ(buf_write_u32(&buf, 0xFFFFFFFF), 4);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 16);
-  TEST_EQ(*((u32 *) (buf.ptr.pu8 + 12)), 0xFFFFFFFF);
+  TEST_EQ(*((u32 *) (buf.ptr.p_pu8 + 12)), 0xFFFFFFFF);
   buf_clean(&buf);
 }
 TEST_CASE_END(buf_write_u32)
@@ -970,19 +970,19 @@ TEST_CASE(buf_write_u64)
   TEST_EQ(buf_write_u64(&buf, 0x0000000000000000), 8);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 8);
-  TEST_EQ(*((u64 *) buf.ptr.pu8), 0x0000000000000000);
+  TEST_EQ(*((u64 *) buf.ptr.p_pu8), 0x0000000000000000);
   TEST_EQ(buf_write_u64(&buf, 0x0000000000000001), 8);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 16);
-  TEST_EQ(*((u64 *) (buf.ptr.pu8 + 8)), 0x0000000000000001);
+  TEST_EQ(*((u64 *) (buf.ptr.p_pu8 + 8)), 0x0000000000000001);
   TEST_EQ(buf_write_u64(&buf, 0xFFFFFFFF00000000), 8);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 24);
-  TEST_EQ(*((u64 *) (buf.ptr.pu8 + 16)), 0xFFFFFFFF00000000);
+  TEST_EQ(*((u64 *) (buf.ptr.p_pu8 + 16)), 0xFFFFFFFF00000000);
   TEST_EQ(buf_write_u64(&buf, 0xFFFFFFFFFFFFFFFF), 8);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 32);
-  TEST_EQ(*((u64 *) (buf.ptr.pu8 + 24)), 0xFFFFFFFFFFFFFFFF);
+  TEST_EQ(*((u64 *) (buf.ptr.p_pu8 + 24)), 0xFFFFFFFFFFFFFFFF);
   buf_clean(&buf);
 }
 TEST_CASE_END(buf_write_u64)

@@ -39,7 +39,7 @@ s_integer * integer_abs (const s_integer *a, s_integer *dest)
   assert(a);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_abs(&a->mp_int, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_abs(&a->in_int, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_abs: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_abs: mp_abs");
@@ -56,7 +56,7 @@ s_integer * integer_add (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   integer_init(dest);
-  if ((r = mp_add(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_add(&a->in_int, &b->in_int, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_add: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_add: mp_add");
@@ -73,7 +73,7 @@ s_integer * integer_band (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_and(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_and(&a->in_int, &b->in_int, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_band: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_band: mp_and");
@@ -87,7 +87,7 @@ uw integer_bits (const s_integer *i)
   uw bits;
   if (integer_is_zero(i))
     return 1;
-  bits = mp_count_bits(&i->mp_int);
+  bits = mp_count_bits(&i->in_int);
   if (integer_is_negative(i))
     bits++;
   return bits;
@@ -99,7 +99,7 @@ s_integer * integer_bnot (const s_integer *a, s_integer *dest)
   assert(a);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_complement(&a->mp_int, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_complement(&a->in_int, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_bnot: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_bnot: mp_complement");
@@ -116,7 +116,7 @@ s_integer * integer_bor (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_or(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_or(&a->in_int, &b->in_int, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_bor: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_bor: mp_or");
@@ -133,7 +133,7 @@ s_integer * integer_bxor (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_xor(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_xor(&a->in_int, &b->in_int, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_bxor: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_bxor: mp_xor");
@@ -153,47 +153,47 @@ s_integer * integer_init_cast (s_integer *a, const s_sym * const *type,
   (void) type;
   switch (tag->type) {
   case TAG_BOOL:
-    return integer_init_u8(a, tag->data.bool_ ? 1 : 0);
+    return integer_init_u8(a, tag->data.td_bool_ ? 1 : 0);
   case TAG_CHARACTER:
-    return integer_init_u32(a, tag->data.character);
+    return integer_init_u32(a, tag->data.td_character);
   case TAG_F32:
-    return integer_init_f32(a, tag->data.f32);
+    return integer_init_f32(a, tag->data.td_f32);
   case TAG_F64:
-    return integer_init_f64(a, tag->data.f64);
+    return integer_init_f64(a, tag->data.td_f64);
 #if HAVE_F80
   case TAG_F80:
-    return integer_init_f80(a, tag->data.f80);
+    return integer_init_f80(a, tag->data.td_f80);
 #endif
 #if HAVE_F128
   case TAG_F128:
-    return integer_init_f128(a, tag->data.f128);
+    return integer_init_f128(a, tag->data.td_f128);
 #endif
   case TAG_INTEGER:
-    return integer_init_copy(a, &tag->data.integer);
+    return integer_init_copy(a, &tag->data.td_integer);
   case TAG_RATIO:
-    return integer_init_ratio(a, &tag->data.ratio);
+    return integer_init_ratio(a, &tag->data.td_ratio);
   case TAG_S8:
-    return integer_init_s8(a, tag->data.s8);
+    return integer_init_s8(a, tag->data.td_s8);
   case TAG_S16:
-    return integer_init_s16(a, tag->data.s16);
+    return integer_init_s16(a, tag->data.td_s16);
   case TAG_S32:
-    return integer_init_s32(a, tag->data.s32);
+    return integer_init_s32(a, tag->data.td_s32);
   case TAG_S64:
-    return integer_init_s64(a, tag->data.s64);
+    return integer_init_s64(a, tag->data.td_s64);
   case TAG_STR:
-    return integer_init_str(a, &tag->data.str);
+    return integer_init_str(a, &tag->data.td_str);
   case TAG_SW:
-    return integer_init_sw(a, tag->data.sw);
+    return integer_init_sw(a, tag->data.td_sw);
   case TAG_U8:
-    return integer_init_u8(a, tag->data.u8);
+    return integer_init_u8(a, tag->data.td_u8);
   case TAG_U16:
-    return integer_init_u16(a, tag->data.u16);
+    return integer_init_u16(a, tag->data.td_u16);
   case TAG_U32:
-    return integer_init_u32(a, tag->data.u32);
+    return integer_init_u32(a, tag->data.td_u32);
   case TAG_U64:
-    return integer_init_u64(a, tag->data.u64);
+    return integer_init_u64(a, tag->data.td_u64);
   case TAG_UW:
-    return integer_init_uw(a, tag->data.uw);
+    return integer_init_uw(a, tag->data.td_uw);
   default:
     break;
   }
@@ -213,7 +213,7 @@ s_integer * integer_init_cast (s_integer *a, const s_sym * const *type,
 void integer_clean (s_integer *a)
 {
   assert(a);
-  mp_clear(&a->mp_int);
+  mp_clear(&a->in_int);
 }
 
 s_integer * integer_div (const s_integer *a, const s_integer *b,
@@ -224,7 +224,7 @@ s_integer * integer_div (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  r = mp_div(&a->mp_int, &b->mp_int, &dest->mp_int, NULL);
+  r = mp_div(&a->in_int, &b->in_int, &dest->in_int, NULL);
   if (r != MP_OKAY) {
     err_write_1("integer_div: ");
     err_puts(mp_error_to_string(r));
@@ -242,7 +242,7 @@ s_integer * integer_gcd (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_gcd(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_gcd(&a->in_int, &b->in_int, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_gcd: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_gcd: mp_gcd");
@@ -255,7 +255,7 @@ s_integer * integer_init (s_integer *dest)
 {
   sw r;
   assert(dest);
-  if ((r = mp_init(&dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_init(&dest->in_int)) != MP_OKAY) {
     err_write_1("integer_init: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_init: mp_init");
@@ -281,7 +281,7 @@ s_integer * integer_init_copy (s_integer *a, const s_integer *src)
   sw r;
   assert(src);
   assert(a);
-  if ((r = mp_init_copy(&a->mp_int, &src->mp_int)) != MP_OKAY) {
+  if ((r = mp_init_copy(&a->in_int, &src->in_int)) != MP_OKAY) {
     err_write_1("integer_init_copy: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_init_copy: mp_init_copy");
@@ -422,26 +422,26 @@ s_integer * integer_init_zero (s_integer *dest)
 {
   assert(dest);
   integer_init(dest);
-  mp_zero(&dest->mp_int);
+  mp_zero(&dest->in_int);
   return dest;
 }
 
 bool integer_is_negative (const s_integer *i)
 {
   assert(i);
-  return i->mp_int.sign == MP_NEG;
+  return i->in_int.sign == MP_NEG;
 }
 
 bool integer_is_positive (const s_integer *i)
 {
   assert(i);
-  return i->mp_int.used && i->mp_int.sign != MP_NEG;
+  return i->in_int.used && i->in_int.sign != MP_NEG;
 }
 
 bool integer_is_zero (const s_integer *i)
 {
   assert(i);
-  return ! i->mp_int.used;
+  return ! i->in_int.used;
 }
 
 s_integer * integer_lcm (const s_integer *a, const s_integer *b,
@@ -452,7 +452,7 @@ s_integer * integer_lcm (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_lcm(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_lcm(&a->in_int, &b->in_int, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_lcm: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_lcm: mp_lcm");
@@ -467,7 +467,7 @@ s_integer * integer_lshift (const s_integer *a, sw b, s_integer *dest)
   assert(a);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_mul_2d(&a->mp_int, b, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_mul_2d(&a->in_int, b, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_lshift: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_lshift: mp_mul_2d");
@@ -484,7 +484,7 @@ s_integer * integer_mod (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_mod(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_mod(&a->in_int, &b->in_int, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_mod: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_mod: mp_mod");
@@ -501,7 +501,7 @@ s_integer * integer_mul (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_mul(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_mul(&a->in_int, &b->in_int, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_mul: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_mul: mp_mul");
@@ -530,7 +530,7 @@ s_integer * integer_neg (const s_integer *a, s_integer *dest)
   assert(a);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_neg(&a->mp_int, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_neg(&a->in_int, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_neg: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_neg: mp_neg");
@@ -574,7 +574,7 @@ s_integer * integer_expt_u32 (const s_integer *a, u32 b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_expt_u32(&a->mp_int, b, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_expt_u32(&a->in_int, b, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_expt_u32: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_expt_u32: mp_expt_u32");
@@ -595,21 +595,21 @@ s_integer * integer_pow (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   assert(dest);
-  if (b->mp_int.sign == MP_NEG) {
+  if (b->in_int.sign == MP_NEG) {
     err_puts("integer_pow: negative exponent not supported");
     assert(! "integer_pow: negative exponent");
     return NULL;
   }
   integer_init_copy(&g, a);
   integer_init(dest);
-  mp_set(&dest->mp_int, 1);
-  num_bits = mp_count_bits(&b->mp_int);
+  mp_set(&dest->in_int, 1);
+  num_bits = mp_count_bits(&b->in_int);
   i = 0;
   while (i < num_bits) {
     digit_index = i / MP_DIGIT_BIT;
     bit_in_digit = i % MP_DIGIT_BIT;
-    if ((b->mp_int.dp[digit_index] >> bit_in_digit) & 1) {
-      if ((r = mp_mul(&dest->mp_int, &g.mp_int, &dest->mp_int)) != MP_OKAY) {
+    if ((b->in_int.dp[digit_index] >> bit_in_digit) & 1) {
+      if ((r = mp_mul(&dest->in_int, &g.in_int, &dest->in_int)) != MP_OKAY) {
         err_write_1("integer_pow: ");
         err_puts(mp_error_to_string(r));
         integer_clean(&g);
@@ -617,7 +617,7 @@ s_integer * integer_pow (const s_integer *a, const s_integer *b,
         return NULL;
       }
     }
-    if ((r = mp_sqr(&g.mp_int, &g.mp_int)) != MP_OKAY) {
+    if ((r = mp_sqr(&g.in_int, &g.in_int)) != MP_OKAY) {
       err_write_1("integer_pow: ");
       err_puts(mp_error_to_string(r));
       integer_clean(&g);
@@ -658,7 +658,7 @@ s_integer * integer_set_f32 (s_integer *a, f32 x)
   sw r;
   assert(a);
   // FIXME
-  if ((r = mp_set_double(&a->mp_int, x)) != MP_OKAY) {
+  if ((r = mp_set_double(&a->in_int, x)) != MP_OKAY) {
     err_write_1("integer_set_f32: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_set_f32: mp_set_double");
@@ -671,7 +671,7 @@ s_integer * integer_set_f64 (s_integer *a, f64 x)
 {
   sw r;
   assert(a);
-  if ((r = mp_set_double(&a->mp_int, x)) != MP_OKAY) {
+  if ((r = mp_set_double(&a->in_int, x)) != MP_OKAY) {
     err_write_1("integer_set_f64: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_set_f64: mp_set_double");
@@ -687,7 +687,7 @@ s_integer * integer_set_f80 (s_integer *a, f80 x)
   sw r;
   assert(a);
   // TODO: FIXME
-  if ((r = mp_set_double(&a->mp_int, (double) x)) != MP_OKAY) {
+  if ((r = mp_set_double(&a->in_int, (double) x)) != MP_OKAY) {
     err_write_1("integer_set_f80: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_set_f80: mp_set_long_double");
@@ -705,7 +705,7 @@ s_integer * integer_set_f128 (s_integer *a, f128 x)
   sw r;
   assert(a);
   // TODO: FIXME cast
-  if ((r = mp_set_double(&a->mp_int, (double) x)) != MP_OKAY) {
+  if ((r = mp_set_double(&a->in_int, (double) x)) != MP_OKAY) {
     err_write_1("integer_set_f128: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_set_f128: mp_set_quad");
@@ -719,14 +719,14 @@ s_integer * integer_set_f128 (s_integer *a, f128 x)
 s_integer * integer_set_s32 (s_integer *a, s32 x)
 {
   assert(a);
-  mp_set_i32(&a->mp_int, x);
+  mp_set_i32(&a->in_int, x);
   return a;
 }
 
 s_integer * integer_set_s64 (s_integer *a, s64 x)
 {
   assert(a);
-  mp_set_i64(&a->mp_int, x);
+  mp_set_i64(&a->in_int, x);
   return a;
 }
 
@@ -740,28 +740,28 @@ s_integer * integer_set_ratio (s_integer *a, const s_ratio *r)
 s_integer * integer_set_sw (s_integer *a, sw x)
 {
   assert(a);
-  mp_set_i64(&a->mp_int, x);
+  mp_set_i64(&a->in_int, x);
   return a;
 }
 
 s_integer * integer_set_u32 (s_integer *a, u32 x)
 {
   assert(a);
-  mp_set_u32(&a->mp_int, x);
+  mp_set_u32(&a->in_int, x);
   return a;
 }
 
 s_integer * integer_set_u64 (s_integer *a, u64 x)
 {
   assert(a);
-  mp_set_u64(&a->mp_int, x);
+  mp_set_u64(&a->in_int, x);
   return a;
 }
 
 s_integer * integer_set_uw (s_integer *a, uw x)
 {
   assert(a);
-  mp_set_ul(&a->mp_int, x);
+  mp_set_ul(&a->in_int, x);
   return a;
 }
 
@@ -777,9 +777,9 @@ s_tag * integer_sqrt (const s_integer *a, s_tag *dest)
     return NULL;
   }
   dest->type = TAG_INTEGER;
-  integer_init(&dest->data.integer);
-  if ((r = mp_sqrt(&a->mp_int,
-                   &dest->data.integer.mp_int)) != MP_OKAY) {
+  integer_init(&dest->data.td_integer);
+  if ((r = mp_sqrt(&a->in_int,
+                   &dest->data.td_integer.in_int)) != MP_OKAY) {
     err_write_1("integer_sqrt: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_sqrt: mp_sqrt");
@@ -799,7 +799,7 @@ s_integer * integer_sqrt_positive (const s_integer *a, s_integer *dest)
     return NULL;
   }
   integer_init(dest);
-  if ((r = mp_sqrt(&a->mp_int, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_sqrt(&a->in_int, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_sqrt_positive: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_sqrt_positive: mp_sqrt");
@@ -816,7 +816,7 @@ s_integer * integer_sub (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   integer_init(dest);
-  if ((r = mp_sub(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+  if ((r = mp_sub(&a->in_int, &b->in_int, &dest->in_int)) != MP_OKAY) {
     err_write_1("integer_sub: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_sub: mp_sub");
@@ -828,13 +828,13 @@ s_integer * integer_sub (const s_integer *a, const s_integer *b,
 f32 integer_to_f32 (const s_integer *i)
 {
   assert(i);
-  return (f32) mp_get_double(&i->mp_int);
+  return (f32) mp_get_double(&i->in_int);
 }
 
 f64 integer_to_f64 (const s_integer *i)
 {
   assert(i);
-  return mp_get_double(&i->mp_int);
+  return mp_get_double(&i->in_int);
 }
 
 #if HAVE_F80
@@ -843,7 +843,7 @@ f80 integer_to_f80 (const s_integer *i)
 {
   assert(i);
   // TODO: FIXME
-  return mp_get_double(&i->mp_int);
+  return mp_get_double(&i->in_int);
 }
 
 #endif
@@ -854,7 +854,7 @@ f128 integer_to_f128 (const s_integer *i)
 {
   assert(i);
   // FIXME
-  return mp_get_double(&i->mp_int);
+  return mp_get_double(&i->in_int);
 }
 
 #endif
@@ -862,61 +862,61 @@ f128 integer_to_f128 (const s_integer *i)
 s8 integer_to_s8 (const s_integer *i)
 {
   assert(i);
-  return (s8) mp_get_i32(&i->mp_int);
+  return (s8) mp_get_i32(&i->in_int);
 }
 
 s16 integer_to_s16 (const s_integer *i)
 {
   assert(i);
-  return (s16) mp_get_i32(&i->mp_int);
+  return (s16) mp_get_i32(&i->in_int);
 }
 
 s32 integer_to_s32 (const s_integer *i)
 {
   assert(i);
-  return mp_get_i32(&i->mp_int);
+  return mp_get_i32(&i->in_int);
 }
 
 s64 integer_to_s64 (const s_integer *i)
 {
   assert(i);
-  return mp_get_i64(&i->mp_int);
+  return mp_get_i64(&i->in_int);
 }
 
 sw integer_to_sw (const s_integer *i)
 {
   assert(i);
-  return (sw) mp_get_i64(&i->mp_int);
+  return (sw) mp_get_i64(&i->in_int);
 }
 
 u8 integer_to_u8 (const s_integer *i)
 {
   assert(i);
-  return (u8) mp_get_u32(&i->mp_int);
+  return (u8) mp_get_u32(&i->in_int);
 }
 
 u16 integer_to_u16 (const s_integer *i)
 {
   assert(i);
-  return (u16) mp_get_u32(&i->mp_int);
+  return (u16) mp_get_u32(&i->in_int);
 }
 
 u32 integer_to_u32 (const s_integer *i)
 {
   assert(i);
-  return mp_get_u32(&i->mp_int);
+  return mp_get_u32(&i->in_int);
 }
 
 u64 integer_to_u64 (const s_integer *i)
 {
   assert(i);
-  return mp_get_u64(&i->mp_int);
+  return mp_get_u64(&i->in_int);
 }
 
 uw integer_to_uw (const s_integer *i)
 {
   assert(i);
-  return (uw) mp_get_u64(&i->mp_int);
+  return (uw) mp_get_u64(&i->in_int);
 }
 
 void kc3_integer_clean (void)

@@ -432,8 +432,8 @@ s_str * sha256_str_to_hex (const s_str *in, s_str *out)
   if (! str_init_alloc(&tmp, SHA256_DIGEST_LENGTH * 2))
     return NULL;
   sha256_init(&context);
-  sha256_update(&context, in->ptr.pu8, in->size);
-  sha256_end(&context, tmp.free.pchar);
+  sha256_update(&context, in->ptr.p_pu8, in->size);
+  sha256_end(&context, tmp.free.p_pchar);
   *out = tmp;
   return out;
 }
@@ -448,18 +448,18 @@ void sha256_hmac (const s_str *k, const s_str *m, u8 *dest)
   assert(SHA256_DIGEST_LENGTH <= SHA256_BLOCK_LENGTH);
   if (k->size > SHA256_BLOCK_LENGTH) {
     sha256_init(&h_ctx);
-    sha256_update(&h_ctx, k->ptr.pu8, k->size);
+    sha256_update(&h_ctx, k->ptr.p_pu8, k->size);
     sha256_final(h[0], &h_ctx);
     str_init(&k_p, NULL, SHA256_DIGEST_LENGTH, (const char *) h[0]);
   }
   else
-    str_init(&k_p, NULL, k->size, k->ptr.p);
+    str_init(&k_p, NULL, k->size, k->ptr.p_pvoid);
   memset(pad[0], 0x5c, SHA256_BLOCK_LENGTH);
   memset(pad[1], 0x36, SHA256_BLOCK_LENGTH);
   i = 0;
   while (i < k_p.size) {
-    pad[0][i] ^= k_p.ptr.pu8[i];
-    pad[1][i] ^= k_p.ptr.pu8[i];
+    pad[0][i] ^= k_p.ptr.p_pu8[i];
+    pad[1][i] ^= k_p.ptr.p_pu8[i];
     i++;
   }
   while (i < SHA256_BLOCK_LENGTH) {
@@ -469,7 +469,7 @@ void sha256_hmac (const s_str *k, const s_str *m, u8 *dest)
   }
   sha256_init(&h_ctx);
   sha256_update(&h_ctx, pad[1], SHA256_BLOCK_LENGTH);
-  sha256_update(&h_ctx, m->ptr.p, m->size);
+  sha256_update(&h_ctx, m->ptr.p_pvoid, m->size);
   sha256_final(h[1], &h_ctx);
   sha256_init(&h_ctx);
   sha256_update(&h_ctx, pad[0], SHA256_BLOCK_LENGTH);
@@ -485,7 +485,7 @@ s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest)
   assert(dest);
   if (! str_init_alloc(&tmp, SHA256_DIGEST_LENGTH))
     return NULL;
-  sha256_hmac(k, m, tmp.free.pu8);
+  sha256_hmac(k, m, tmp.free.p_pu8);
   *dest = tmp;
   return dest;
 }

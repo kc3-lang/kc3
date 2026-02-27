@@ -101,12 +101,12 @@ p_socket socket_init_connect (p_socket s, const s_str *host,
   assert(host);
   if (! libsocket_init())
     return NULL;
-  e = getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0);
+  e = getaddrinfo(host->ptr.p_pchar, service->ptr.p_pchar, &hints, &res0);
   if (e) {
     err_write_1("socket_init_connect(");
-    err_write_1(host->ptr.pchar);
+    err_write_1(host->ptr.p_pchar);
     err_write_1(", ");
-    err_write_1(service->ptr.pchar);
+    err_write_1(service->ptr.p_pchar);
     err_write_1("): getaddrinfo: ");
     err_inspect_s32_decimal(e);
     err_write_1(" ");
@@ -156,12 +156,12 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
   assert(host);
   if (! libsocket_init())
     return NULL;
-  e = getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0);
+  e = getaddrinfo(host->ptr.p_pchar, service->ptr.p_pchar, &hints, &res0);
   if (e) {
     err_write_1("socket_init_listen(");
-    err_write_1(host->ptr.pchar);
+    err_write_1(host->ptr.p_pchar);
     err_write_1(", ");
-    err_write_1(service->ptr.pchar);
+    err_write_1(service->ptr.p_pchar);
     err_write_1("): getaddrinfo: ");
     err_inspect_s32_decimal(e);
     err_write_1(" ");

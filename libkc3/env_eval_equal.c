@@ -113,7 +113,7 @@ bool env_eval_equal_list (s_env *env, bool macro, s_list *a,
     a = a_next;
     b = b_next;
     if (dest)
-      t = &(*t)->next.data.plist;
+      t = &(*t)->next.data.td_plist;
   }
  ok:
   *dest = tmp;
@@ -177,6 +177,8 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   bool is_unbound_b;
   bool is_var_a = false;
   bool is_var_b = false;
+  s_tag * volatile tag_a = a;
+  s_tag * volatile tag_b = b;
   s_tag tmp_a;
   s_tag tmp_b;
   s_tag *var_a = NULL;
@@ -187,77 +189,77 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   assert(dest);
   tag_init_void(&tmp_a);
   tag_init_void(&tmp_b);
-  if (a->type == TAG_PVAR) {
-    var_a = &a->data.pvar->tag;
-    if (a->data.pvar->bound) {
-      while (a->data.pvar->bound) {
-        a = var_a;
-        var_a = &a->data.pvar->tag;
+  if (tag_a->type == TAG_PVAR) {
+    var_a = &tag_a->data.td_pvar->tag;
+    if (tag_a->data.td_pvar->bound) {
+      while (tag_a->data.td_pvar->bound) {
+        tag_a = var_a;
+        var_a = &tag_a->data.td_pvar->tag;
       }
     }
     else
       is_var_a = true;
   }
-  if (b->type == TAG_PVAR) {
-    var_b = &b->data.pvar->tag;
-    if (b->data.pvar->bound) {
-      while (b->data.pvar->bound) {
-        b = var_b;
-        var_b = &b->data.pvar->tag;
+  if (tag_b->type == TAG_PVAR) {
+    var_b = &tag_b->data.td_pvar->tag;
+    if (tag_b->data.td_pvar->bound) {
+      while (tag_b->data.td_pvar->bound) {
+        tag_b = var_b;
+        var_b = &tag_b->data.td_pvar->tag;
       }
     }
     else
       is_var_b = true;
   }
-  is_unbound_a = a->type == TAG_IDENT;
-  is_unbound_b = ! macro && (b->type == TAG_IDENT);
+  is_unbound_a = tag_a->type == TAG_IDENT;
+  is_unbound_b = ! macro && (tag_b->type == TAG_IDENT);
   if (is_unbound_a && is_unbound_b) {
     err_write_1("env_eval_equal_tag: unbound equal on both sides: ");
-    err_inspect_ident(&a->data.ident);
+    err_inspect_ident(&tag_a->data.td_ident);
     err_write_1(" = ");
-    err_inspect_ident(&b->data.ident);
+    err_inspect_ident(&tag_b->data.td_ident);
     err_write_1(".\nTo match an existing variable please use the"
                 " pin operator, e.g.: ");
-    err_inspect_ident(&a->data.ident);
+    err_inspect_ident(&tag_a->data.td_ident);
     err_write_1(" = ^ ");
-    err_inspect_ident(&b->data.ident);
+    err_inspect_ident(&tag_b->data.td_ident);
     err_write_1("\n");
     return false;
   }
   if (is_unbound_a || is_var_a) {
     if (macro)
-      tag_init_copy(dest, b);
+      tag_init_copy(dest, tag_b);
     else
-      env_eval_tag(env, b, dest);
+      env_eval_tag(env, tag_b, dest);
     if (is_var_a) {
-      if (! var_set(a->data.pvar, dest))
+      if (! var_set(tag_a->data.td_pvar, dest))
         return false;
     }
     else {
-      if (! frame_replace(env->frame, a->data.ident.sym, dest))
+      if (! frame_replace(env->frame, tag_a->data.td_ident.sym, dest))
         return false;
     }
     return true;
   }
   if (is_unbound_b || is_var_b) {
     if (macro)
-      tag_init_copy(dest, a);
+      tag_init_copy(dest, tag_a);
     else
-      env_eval_tag(env, a, dest);
+      env_eval_tag(env, tag_a, dest);
     if (is_var_b) {
-      if (! var_set(b->data.pvar, dest))
+      if (! var_set(tag_b->data.td_pvar, dest))
         return false;
     }
     else {
-      if (! frame_replace(env->frame, b->data.ident.sym, dest))
+      if (! frame_replace(env->frame, tag_b->data.td_ident.sym, dest))
         return false;
     }
     return true;
   }
   if (! macro &&
-      a->type == TAG_PCALL) {
+      tag_a->type == TAG_PCALL) {
     s_unwind_protect unwind_protect;
-    if (! env_eval_tag(env, a, &tmp_a))
+    if (! env_eval_tag(env, tag_a, &tmp_a))
       return false;
     env_unwind_protect_push(env, &unwind_protect);
     if (setjmp(unwind_protect.buf)) {
@@ -265,7 +267,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
       tag_clean(&tmp_a);
       longjmp(*unwind_protect.jmp, 1);
     }
-    if (! env_eval_equal_tag(env, macro, &tmp_a, b, dest)) {
+    if (! env_eval_equal_tag(env, macro, &tmp_a, tag_b, dest)) {
       env_unwind_protect_pop(env, &unwind_protect);
       tag_clean(&tmp_a);
       return false;
@@ -275,9 +277,9 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     return true;
   }
   if (! macro &&
-      b->type == TAG_PCALL) {
+      tag_b->type == TAG_PCALL) {
     s_unwind_protect unwind_protect;
-    if (! env_eval_tag(env, b, &tmp_b))
+    if (! env_eval_tag(env, tag_b, &tmp_b))
       return false;
     env_unwind_protect_push(env, &unwind_protect);
     if (setjmp(unwind_protect.buf)) {
@@ -285,7 +287,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
       tag_clean(&tmp_b);
       longjmp(*unwind_protect.jmp, 1);
     }
-    if (! env_eval_equal_tag(env, macro, a, &tmp_b, dest)) {
+    if (! env_eval_equal_tag(env, macro, tag_a, &tmp_b, dest)) {
       env_unwind_protect_pop(env, &unwind_protect);
       tag_clean(&tmp_b);
       return false;
@@ -294,9 +296,9 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     tag_clean(&tmp_b);
     return true;
   }
-  a = tag_resolve_cow(a);
-  b = tag_resolve_cow(b);
-  switch (a->type) {
+  tag_a = tag_resolve_cow(tag_a);
+  tag_b = tag_resolve_cow(tag_b);
+  switch (tag_a->type) {
   case TAG_F32:
   case TAG_F64:
 #if HAVE_F80
@@ -318,7 +320,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   case TAG_U32:
   case TAG_U64:
   case TAG_UW:
-    switch (b->type) {
+    switch (tag_b->type) {
     case TAG_F32:
     case TAG_F64:
 #if HAVE_F80
@@ -340,10 +342,10 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     case TAG_U32:
     case TAG_U64:
     case TAG_UW:
-      if (compare_tag(a, b)) {
+      if (compare_tag(tag_a, tag_b)) {
         return false;
       }
-      tag_init_copy(dest, a);
+      tag_init_copy(dest, tag_a);
       return true;
     default:
       break;
@@ -351,43 +353,43 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   default:
     break;
   }
-  if (a->type != b->type) {
+  if (tag_a->type != tag_b->type) {
     if (! env->silence_errors) {
       err_write_1("env_eval_equal_tag: type mismatch: ");
-      err_inspect_tag(a);
+      err_inspect_tag(tag_a);
       err_write_1(" != ");
-      err_inspect_tag(b);
+      err_inspect_tag(tag_b);
       err_write_1("\n");
       err_stacktrace();
     }
     return false;
   }
-  switch (a->type) {
+  switch (tag_a->type) {
   case TAG_VOID:
     tag_init_void(dest);
     return true;
   case TAG_MAP:
     dest->type = TAG_MAP;
-    return env_eval_equal_map(env, macro, &a->data.map, &b->data.map,
-                              &dest->data.map);
+    return env_eval_equal_map(env, macro, &tag_a->data.td_map, &tag_b->data.td_map,
+                              &dest->data.td_map);
   case TAG_PLIST:
     tag_init_plist(dest, NULL);
-    return env_eval_equal_list(env, macro, a->data.plist, b->data.plist,
-                               &dest->data.plist);
+    return env_eval_equal_list(env, macro, tag_a->data.td_plist, tag_b->data.td_plist,
+                               &dest->data.td_plist);
   /*
   case TAG_PSTRUCT:
     dest->type = TAG_PSTRUCT;
-    return env_eval_equal_struct(env, macro, a->data.pstruct,
-                                 b->data.pstruct, &dest->data.pstruct);
+    return env_eval_equal_struct(env, macro, tag_a->data.td_pstruct,
+                                 tag_b->data.td_pstruct, &dest->data.td_pstruct);
   */
   case TAG_TIME:
     dest->type = TAG_TIME;
-    return env_eval_equal_time(env, macro, &a->data.time,
-                               &b->data.time, &dest->data.time);
+    return env_eval_equal_time(env, macro, &tag_a->data.td_time,
+                               &tag_b->data.td_time, &dest->data.td_time);
   case TAG_PTUPLE:
     dest->type = TAG_PTUPLE;
-    return env_eval_equal_ptuple(env, macro, &a->data.ptuple,
-                                 &b->data.ptuple, &dest->data.ptuple);
+    return env_eval_equal_ptuple(env, macro, &tag_a->data.td_ptuple,
+                                 &tag_b->data.td_ptuple, &dest->data.td_ptuple);
   case TAG_ARRAY:
   case TAG_DO_BLOCK:
   case TAG_BOOL:
@@ -406,14 +408,14 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   case TAG_PVAR:
   case TAG_QUOTE:
   case TAG_STR:
-    if (compare_tag(a, b)) {
+    if (compare_tag(tag_a, tag_b)) {
       if (false) {
         err_puts("env_eval_equal_tag: value mismatch");
         err_stacktrace();
       }
       return false;
     }
-    tag_init_copy(dest, a);
+    tag_init_copy(dest, tag_a);
     return true;
   case TAG_F32:
   case TAG_F64:
@@ -464,16 +466,16 @@ bool env_eval_equal_time (s_env *env, bool macro, s_time *a,
   if (! (a2 = a->tag)) {
     a2 = a_tag;
     a2[0].type = TAG_SW;
-    a2[0].data.sw = a->tv_sec;
+    a2[0].data.td_sw = a->tv_sec;
     a2[1].type = TAG_SW;
-    a2[1].data.sw = a->tv_nsec;
+    a2[1].data.td_sw = a->tv_nsec;
   }
   if (! (b2 = b->tag)) {
     b2 = b_tag;
     b2[0].type = TAG_SW;
-    b2[0].data.sw = b->tv_sec;
+    b2[0].data.td_sw = b->tv_sec;
     b2[1].type = TAG_SW;
-    b2[1].data.sw = b->tv_nsec;
+    b2[1].data.td_sw = b->tv_nsec;
   }
   if (! env_eval_equal_tag(env, macro, a2, b2, tmp_tag)) {
     return false;

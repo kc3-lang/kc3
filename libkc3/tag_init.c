@@ -56,7 +56,7 @@ s_tag * tag_init_array (s_tag *tag, const s_sym *type, uw dimension,
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_ARRAY;
-  if (! array_init(&tmp.data.array, type, dimension, dimensions))
+  if (! array_init(&tmp.data.td_array, type, dimension, dimensions))
     return NULL;
   *tag = tmp;
   return tag;
@@ -67,7 +67,7 @@ s_tag * tag_init_array_copy (s_tag *tag, const s_array *a)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_ARRAY;
-  if (! array_init_copy(&tmp.data.array, a))
+  if (! array_init_copy(&tmp.data.td_array, a))
     return NULL;
   *tag = tmp;
   return tag;
@@ -78,7 +78,7 @@ s_tag * tag_init_character (s_tag *tag, character c)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_CHARACTER;
-  tmp.data.character = c;
+  tmp.data.td_character = c;
   *tag = tmp;
   return tag;
 }
@@ -88,7 +88,7 @@ s_tag * tag_init_f32 (s_tag *tag, f32 f)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_F32;
-  tmp.data.f32 = f;
+  tmp.data.td_f32 = f;
   *tag = tmp;
   return tag;
 }
@@ -98,7 +98,7 @@ s_tag * tag_init_f64 (s_tag *tag, f64 f)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_F64;
-  tmp.data.f64 = f;
+  tmp.data.td_f64 = f;
   *tag = tmp;
   return tag;
 }
@@ -108,7 +108,7 @@ s_tag * tag_init_ident (s_tag *tag, const s_ident *ident)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_IDENT;
-  tmp.data.ident = *ident;
+  tmp.data.td_ident = *ident;
   *tag = tmp;
   return tag;
 }
@@ -118,7 +118,7 @@ s_tag * tag_init_ident_1 (s_tag *tag, const char *p)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_IDENT;
-  if (! ident_init_1(&tmp.data.ident, p))
+  if (! ident_init_1(&tmp.data.td_ident, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -129,7 +129,7 @@ s_tag * tag_init_integer_1 (s_tag *tag, const char *p)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_INTEGER;
-  if (! integer_init_1(&tmp.data.integer, p))
+  if (! integer_init_1(&tmp.data.td_integer, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -140,7 +140,7 @@ s_tag * tag_init_integer_copy (s_tag *tag, const s_integer *i)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_INTEGER;
-  if (! integer_init_copy(&tmp.data.integer, i))
+  if (! integer_init_copy(&tmp.data.td_integer, i))
     return NULL;
   *tag = tmp;
   return tag;
@@ -151,7 +151,7 @@ s_tag * tag_init_integer_zero (s_tag *tag)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_INTEGER;
-  if (! integer_init_zero(&tmp.data.integer))
+  if (! integer_init_zero(&tmp.data.td_integer))
     return NULL;
   *tag = tmp;
   return tag;
@@ -162,7 +162,7 @@ s_tag * tag_init_map (s_tag *tag, uw count)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_MAP;
-  if (! map_init(&tmp.data.map, count))
+  if (! map_init(&tmp.data.td_map, count))
     return NULL;
   *tag = tmp;
   return tag;
@@ -173,7 +173,7 @@ s_tag * tag_init_map_1 (s_tag *tag, const char *p)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_MAP;
-  if (! map_init_1(&tmp.data.map, p))
+  if (! map_init_1(&tmp.data.td_map, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -185,7 +185,7 @@ s_tag * tag_init_map_from_lists (s_tag *tag, s_list *keys,
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_MAP;
-  if (! map_init_from_lists(&tmp.data.map, keys, values))
+  if (! map_init_from_lists(&tmp.data.td_map, keys, values))
     return NULL;
   *tag = tmp;
   return tag;
@@ -196,7 +196,7 @@ s_tag * tag_init_pcall (s_tag *tag)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PCALL;
-  if (! pcall_init(&tmp.data.pcall))
+  if (! pcall_init(&tmp.data.td_pcall))
     return NULL;
   *tag = tmp;
   return tag;
@@ -207,7 +207,7 @@ s_tag * tag_init_pcall_call_cast (s_tag *tag, const s_sym *type)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PCALL;
-  if (! pcall_init_call_cast(&tmp.data.pcall, type))
+  if (! pcall_init_call_cast(&tmp.data.td_pcall, type))
     return NULL;
   *tag = tmp;
   return tag;
@@ -218,7 +218,7 @@ s_tag * tag_init_pcall_copy (s_tag *tag, p_call *src)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PCALL;
-  if (! pcall_init_copy(&tmp.data.pcall, src))
+  if (! pcall_init_copy(&tmp.data.td_pcall, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -229,7 +229,7 @@ s_tag * tag_init_pcallable (s_tag *tag)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PCALLABLE;
-  if (! pcallable_init(&tmp.data.pcallable))
+  if (! pcallable_init(&tmp.data.td_pcallable))
     return NULL;
   *tag = tmp;
   return tag;
@@ -240,7 +240,7 @@ s_tag * tag_init_pcallable_copy (s_tag *tag, p_callable *src)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PCALLABLE;
-  if (! pcallable_init_copy(&tmp.data.pcallable, src))
+  if (! pcallable_init_copy(&tmp.data.td_pcallable, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -251,7 +251,7 @@ s_tag * tag_init_pcomplex (s_tag *tag, p_complex c)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PCOMPLEX;
-  tmp.data.pcomplex = c;
+  tmp.data.td_pcomplex = c;
   *tag = tmp;
   return tag;
 }
@@ -261,7 +261,7 @@ s_tag * tag_init_plist (s_tag *tag, p_list plist)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PLIST;
-  tmp.data.plist = plist;
+  tmp.data.td_plist = plist;
   *tag = tmp;
   return tag;
 }
@@ -271,7 +271,7 @@ s_tag * tag_init_plist_1 (s_tag *tag, const char *p)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PLIST;
-  if (! plist_init_1(&tmp.data.plist, p))
+  if (! plist_init_1(&tmp.data.td_plist, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -283,7 +283,8 @@ s_tag * tag_init_pointer (s_tag *tag, const s_sym *pointer_type,
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_POINTER;
-  if (! pointer_init(&tmp.data.pointer, pointer_type, target_type, p))
+  if (! pointer_init(&tmp.data.td_pointer, pointer_type, target_type,
+                     p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -294,7 +295,7 @@ s_tag * tag_init_pstruct (s_tag *tag, const s_sym *module)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PSTRUCT;
-  if (! pstruct_init(&tmp.data.pstruct, module))
+  if (! pstruct_init(&tmp.data.td_pstruct, module))
     return NULL;
   *tag = tmp;
   return tag;
@@ -305,7 +306,7 @@ s_tag * tag_init_pstruct_copy (s_tag *tag, p_struct *src)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PSTRUCT;
-  if (! pstruct_init_copy(&tmp.data.pstruct, src))
+  if (! pstruct_init_copy(&tmp.data.td_pstruct, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -317,7 +318,7 @@ s_tag * tag_init_pstruct_copy_data (s_tag *tag, const s_sym *module,
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PSTRUCT;
-  if (! pstruct_init_copy_data(&tmp.data.pstruct, module, data))
+  if (! pstruct_init_copy_data(&tmp.data.td_pstruct, module, data))
     return NULL;
   *tag = tmp;
   return tag;
@@ -329,7 +330,7 @@ s_tag * tag_init_pstruct_with_data (s_tag *tag, const s_sym *module,
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PSTRUCT;
-  if (! pstruct_init_with_data(&tmp.data.pstruct, module, data,
+  if (! pstruct_init_with_data(&tmp.data.td_pstruct, module, data,
                                free_data))
     return NULL;
   *tag = tmp;
@@ -341,7 +342,7 @@ s_tag * tag_init_pstruct_with_type (s_tag *tag, s_struct_type *st)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PSTRUCT;
-  if (! pstruct_init_with_type(&tmp.data.pstruct, st))
+  if (! pstruct_init_with_type(&tmp.data.td_pstruct, st))
     return NULL;
   *tag = tmp;
   return tag;
@@ -353,7 +354,7 @@ s_tag * tag_init_pstruct_type (s_tag *tag, const s_sym *module,
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PSTRUCT_TYPE;
-  if (! pstruct_type_init(&tmp.data.pstruct_type, module, spec))
+  if (! pstruct_type_init(&tmp.data.td_pstruct_type, module, spec))
     return NULL;
   *tag = tmp;
   return tag;
@@ -365,7 +366,7 @@ s_tag * tag_init_pstruct_type_clean (s_tag *tag, s_struct_type *st,
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PSTRUCT_TYPE;
-  if (! pstruct_type_init_clean(&tmp.data.pstruct_type, st, clean))
+  if (! pstruct_type_init_clean(&tmp.data.td_pstruct_type, st, clean))
     return NULL;
   *tag = tmp;
   return tag;
@@ -376,7 +377,7 @@ s_tag * tag_init_psym (s_tag *tag, const s_sym *sym)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PSYM;
-  tmp.data.psym = sym;
+  tmp.data.td_psym = sym;
   *tag = tmp;
   return tag;
 }
@@ -386,7 +387,7 @@ s_tag * tag_init_psym_anon (s_tag *tag, const s_str *src)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PSYM;
-  if (! psym_init_anon(&tmp.data.psym, src))
+  if (! psym_init_anon(&tmp.data.td_psym, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -397,7 +398,7 @@ s_tag * tag_init_ptr (s_tag *tag, void *p)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PTR;
-  if (! ptr_init(&tmp.data.ptr, p))
+  if (! ptr_init(&tmp.data.td_ptr, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -408,7 +409,7 @@ s_tag * tag_init_ptr_free (s_tag *tag, void *p)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PTR_FREE;
-  if (! ptr_free_init(&tmp.data.ptr_free, p))
+  if (! ptr_free_init(&tmp.data.td_ptr_free, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -419,7 +420,7 @@ s_tag * tag_init_pvar (s_tag *tag, const s_sym *type)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PVAR;
-  if (! pvar_init(&tmp.data.pvar, type))
+  if (! pvar_init(&tmp.data.td_pvar, type))
     return NULL;
   *tag = tmp;
   return tag;
@@ -430,7 +431,7 @@ s_tag * tag_init_pvar_copy (s_tag *tag, p_var *src)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PVAR;
-  if (! pvar_init_copy(&tmp.data.pvar, src))
+  if (! pvar_init_copy(&tmp.data.td_pvar, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -441,7 +442,7 @@ s_tag * tag_init_quote (s_tag *tag, s_tag *src)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_QUOTE;
-  if (! quote_init(&tmp.data.quote, src))
+  if (! quote_init(&tmp.data.td_quote, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -452,7 +453,7 @@ s_tag * tag_init_quote_copy (s_tag *tag, s_quote *quote)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_QUOTE;
-  if (! quote_init_copy(&tmp.data.quote, quote))
+  if (! quote_init_copy(&tmp.data.td_quote, quote))
     return NULL;
   *tag = tmp;
   return tag;
@@ -463,7 +464,7 @@ s_tag * tag_init_ratio_1 (s_tag *tag, const char *p)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_RATIO;
-  if (! ratio_init_1(&tmp.data.ratio, p))
+  if (! ratio_init_1(&tmp.data.td_ratio, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -474,7 +475,7 @@ s_tag * tag_init_ratio (s_tag *tag)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_RATIO;
-  if (! ratio_init(&tmp.data.ratio))
+  if (! ratio_init(&tmp.data.td_ratio))
     return NULL;
   *tag = tmp;
   return tag;
@@ -485,7 +486,7 @@ s_tag * tag_init_ratio_copy (s_tag *tag, s_ratio *r)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_RATIO;
-  if (! ratio_init_copy(&tmp.data.ratio, r))
+  if (! ratio_init_copy(&tmp.data.td_ratio, r))
     return NULL;
   *tag = tmp;
   return tag;
@@ -496,7 +497,7 @@ s_tag * tag_init_ratio_zero (s_tag *tag)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_RATIO;
-  if (! ratio_init_zero(&tmp.data.ratio))
+  if (! ratio_init_zero(&tmp.data.td_ratio))
     return NULL;
   *tag = tmp;
   return tag;
@@ -507,7 +508,7 @@ s_tag * tag_init_s8 (s_tag *tag, s8 i)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_S8;
-  tmp.data.s8 = i;
+  tmp.data.td_s8 = i;
   *tag = tmp;
   return tag;
 }
@@ -517,7 +518,7 @@ s_tag * tag_init_s16 (s_tag *tag, s16 i)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_S16;
-  tmp.data.s16 = i;
+  tmp.data.td_s16 = i;
   *tag = tmp;
   return tag;
 }
@@ -527,7 +528,7 @@ s_tag * tag_init_s32 (s_tag *tag, s32 i)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_S32;
-  tmp.data.s32 = i;
+  tmp.data.td_s32 = i;
   *tag = tmp;
   return tag;
 }
@@ -537,7 +538,7 @@ s_tag * tag_init_s64 (s_tag *tag, s64 i)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_S64;
-  tmp.data.s64 = i;
+  tmp.data.td_s64 = i;
   *tag = tmp;
   return tag;
 }
@@ -547,7 +548,7 @@ s_tag * tag_init_str (s_tag *tag, char *p_free, uw size, const char *p)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init(&tmp.data.str, p_free, size, p))
+  if (! str_init(&tmp.data.td_str, p_free, size, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -558,7 +559,7 @@ s_tag * tag_init_str_1 (s_tag *tag, char *p_free, const char *p)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init_1(&tmp.data.str, p_free, p))
+  if (! str_init_1(&tmp.data.td_str, p_free, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -569,7 +570,7 @@ s_tag * tag_init_str_1_alloc (s_tag *tag, const char *p)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init_1_alloc(&tmp.data.str, p))
+  if (! str_init_1_alloc(&tmp.data.td_str, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -580,7 +581,7 @@ s_tag * tag_init_str_alloc (s_tag *tag, uw size)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init_alloc(&tmp.data.str, size))
+  if (! str_init_alloc(&tmp.data.td_str, size))
     return NULL;
   *tag = tmp;
   return tag;
@@ -591,7 +592,7 @@ s_tag * tag_init_str_alloc_copy (s_tag *tag, uw size, const char *p)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init_alloc_copy(&tmp.data.str, size, p))
+  if (! str_init_alloc_copy(&tmp.data.td_str, size, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -602,7 +603,7 @@ s_tag * tag_init_str_cast (s_tag *tag, p_sym *type, const s_tag *src)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init_cast(&tmp.data.str, type, src))
+  if (! str_init_cast(&tmp.data.td_str, type, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -614,7 +615,7 @@ s_tag * tag_init_str_concatenate (s_tag *tag, const s_str *a,
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init_concatenate(&tmp.data.str, a, b))
+  if (! str_init_concatenate(&tmp.data.td_str, a, b))
     return NULL;
   *tag = tmp;
   return tag;
@@ -625,7 +626,7 @@ s_tag * tag_init_str_concatenate_list (s_tag *tag, const s_list *src)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init_concatenate_list(&tmp.data.str, src))
+  if (! str_init_concatenate_list(&tmp.data.td_str, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -636,7 +637,7 @@ s_tag * tag_init_str_concatenate_plist (s_tag *tag, p_list *src)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init_concatenate_plist(&tmp.data.str, src))
+  if (! str_init_concatenate_plist(&tmp.data.td_str, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -647,7 +648,7 @@ s_tag * tag_init_str_copy (s_tag *tag, const s_str *src)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init_copy(&tmp.data.str, src))
+  if (! str_init_copy(&tmp.data.td_str, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -658,7 +659,7 @@ s_tag * tag_init_str_empty (s_tag *tag)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init_empty(&tmp.data.str))
+  if (! str_init_empty(&tmp.data.td_str))
     return NULL;
   *tag = tmp;
   return tag;
@@ -669,7 +670,7 @@ s_tag * tag_init_str_inspect_buf (s_tag *tag, const s_buf *src)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init_inspect_buf(&tmp.data.str, src))
+  if (! str_init_inspect_buf(&tmp.data.td_str, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -680,7 +681,7 @@ s_tag * tag_init_str_inspect_str (s_tag *tag, const s_str *src)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init_inspect_str(&tmp.data.str, src))
+  if (! str_init_inspect_str(&tmp.data.td_str, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -691,7 +692,7 @@ s_tag * tag_init_sw (s_tag *tag, sw i)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_SW;
-  tmp.data.sw = i;
+  tmp.data.td_sw = i;
   *tag = tmp;
   return tag;
 }
@@ -701,7 +702,7 @@ s_tag * tag_init_time_add (s_tag *tag, const s_time *a, const s_time *b)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_TIME;
-  if (! time_init_add(&tmp.data.time, a, b))
+  if (! time_init_add(&tmp.data.td_time, a, b))
     return NULL;
   *tag = tmp;
   return tag;
@@ -712,7 +713,7 @@ s_tag * tag_init_time_copy (s_tag *tag, const s_time *src)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_TIME;
-  if (! time_init_copy(&tmp.data.time, src))
+  if (! time_init_copy(&tmp.data.td_time, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -723,7 +724,7 @@ s_tag * tag_init_time_now (s_tag *tag)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_TIME;
-  if (! time_init_now(&tmp.data.time))
+  if (! time_init_now(&tmp.data.td_time))
     return NULL;
   *tag = tmp;
   return tag;
@@ -734,7 +735,7 @@ s_tag * tag_init_ptuple (s_tag *tag, uw count)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PTUPLE;
-  if (! ptuple_init(&tmp.data.ptuple, count))
+  if (! ptuple_init(&tmp.data.td_ptuple, count))
     return NULL;
   *tag = tmp;
   return tag;
@@ -745,7 +746,7 @@ s_tag * tag_init_ptuple_2 (s_tag *tag, s_tag *a, s_tag *b)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PTUPLE;
-  if (! ptuple_init_2(&tmp.data.ptuple, a, b))
+  if (! ptuple_init_2(&tmp.data.td_ptuple, a, b))
     return NULL;
   *tag = tmp;
   return tag;
@@ -756,7 +757,7 @@ s_tag * tag_init_u8 (s_tag *tag, u8 i)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_U8;
-  tmp.data.u8 = i;
+  tmp.data.td_u8 = i;
   *tag = tmp;
   return tag;
 }
@@ -766,7 +767,7 @@ s_tag * tag_init_u16 (s_tag *tag, u16 i)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_U16;
-  tmp.data.u16 = i;
+  tmp.data.td_u16 = i;
   *tag = tmp;
   return tag;
 }
@@ -776,7 +777,7 @@ s_tag * tag_init_u32 (s_tag *tag, u32 i)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_U32;
-  tmp.data.u32 = i;
+  tmp.data.td_u32 = i;
   *tag = tmp;
   return tag;
 }
@@ -786,7 +787,7 @@ s_tag * tag_init_u64 (s_tag *tag, u64 i)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_U64;
-  tmp.data.u64 = i;
+  tmp.data.td_u64 = i;
   *tag = tmp;
   return tag;
 }
@@ -796,7 +797,7 @@ s_tag * tag_init_unquote_copy (s_tag *tag, s_unquote *unquote)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_UNQUOTE;
-  if (! unquote_init_copy(&tmp.data.unquote, unquote))
+  if (! unquote_init_copy(&tmp.data.td_unquote, unquote))
     return NULL;
   *tag = tmp;
   return tag;
@@ -807,7 +808,7 @@ s_tag * tag_init_uw (s_tag *tag, uw i)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_UW;
-  tmp.data.uw = i;
+  tmp.data.td_uw = i;
   *tag = tmp;
   return tag;
 }
@@ -820,7 +821,7 @@ s_tag * tag_new_array (const s_sym *type, uw dimension,
   if (! tag)
     return NULL;
   tag->type = TAG_ARRAY;
-  if (! array_init(&tag->data.array, type, dimension, dimensions)) {
+  if (! array_init(&tag->data.td_array, type, dimension, dimensions)) {
     free(tag);
     return NULL;
   }
@@ -834,7 +835,7 @@ s_tag * tag_new_array_copy (const s_array *a)
   if (! tag)
     return NULL;
   tag->type = TAG_ARRAY;
-  if (! array_init_copy(&tag->data.array, a)) {
+  if (! array_init_copy(&tag->data.td_array, a)) {
     free(tag);
     return NULL;
   }
@@ -848,7 +849,7 @@ s_tag * tag_new_character (character c)
   if (! tag)
     return NULL;
   tag->type = TAG_CHARACTER;
-  tag->data.character = c;
+  tag->data.td_character = c;
   return tag;
 }
 
@@ -859,7 +860,7 @@ s_tag * tag_new_f32 (f32 f)
   if (! tag)
     return NULL;
   tag->type = TAG_F32;
-  tag->data.f32 = f;
+  tag->data.td_f32 = f;
   return tag;
 }
 
@@ -870,7 +871,7 @@ s_tag * tag_new_f64 (f64 f)
   if (! tag)
     return NULL;
   tag->type = TAG_F64;
-  tag->data.f64 = f;
+  tag->data.td_f64 = f;
   return tag;
 }
 
@@ -881,7 +882,7 @@ s_tag * tag_new_ident (const s_ident *ident)
   if (! tag)
     return NULL;
   tag->type = TAG_IDENT;
-  tag->data.ident = *ident;
+  tag->data.td_ident = *ident;
   return tag;
 }
 
@@ -892,7 +893,7 @@ s_tag * tag_new_ident_1 (const char *p)
   if (! tag)
     return NULL;
   tag->type = TAG_IDENT;
-  if (! ident_init_1(&tag->data.ident, p)) {
+  if (! ident_init_1(&tag->data.td_ident, p)) {
     free(tag);
     return NULL;
   }
@@ -906,7 +907,7 @@ s_tag * tag_new_integer_1 (const char *p)
   if (! tag)
     return NULL;
   tag->type = TAG_INTEGER;
-  if (! integer_init_1(&tag->data.integer, p)) {
+  if (! integer_init_1(&tag->data.td_integer, p)) {
     free(tag);
     return NULL;
   }
@@ -920,7 +921,7 @@ s_tag * tag_new_integer_copy (const s_integer *i)
   if (! tag)
     return NULL;
   tag->type = TAG_INTEGER;
-  if (! integer_init_copy(&tag->data.integer, i)) {
+  if (! integer_init_copy(&tag->data.td_integer, i)) {
     free(tag);
     return NULL;
   }
@@ -934,7 +935,7 @@ s_tag * tag_new_integer_zero (void)
   if (! tag)
     return NULL;
   tag->type = TAG_INTEGER;
-  if (! integer_init_zero(&tag->data.integer)) {
+  if (! integer_init_zero(&tag->data.td_integer)) {
     free(tag);
     return NULL;
   }
@@ -948,7 +949,7 @@ s_tag * tag_new_map (uw count)
   if (! tag)
     return NULL;
   tag->type = TAG_MAP;
-  if (! map_init(&tag->data.map, count)) {
+  if (! map_init(&tag->data.td_map, count)) {
     free(tag);
     return NULL;
   }
@@ -962,7 +963,7 @@ s_tag * tag_new_map_1 (const char *p)
   if (! tag)
     return NULL;
   tag->type = TAG_MAP;
-  if (! map_init_1(&tag->data.map, p)) {
+  if (! map_init_1(&tag->data.td_map, p)) {
     free(tag);
     return NULL;
   }
@@ -976,7 +977,7 @@ s_tag * tag_new_map_from_lists (s_list *keys, s_list *values)
   if (! tag)
     return NULL;
   tag->type = TAG_MAP;
-  if (! map_init_from_lists(&tag->data.map, keys, values)) {
+  if (! map_init_from_lists(&tag->data.td_map, keys, values)) {
     free(tag);
     return NULL;
   }
@@ -990,7 +991,7 @@ s_tag * tag_new_pcall (void)
   if (! tag)
     return NULL;
   tag->type = TAG_PCALL;
-  if (! pcall_init(&tag->data.pcall)) {
+  if (! pcall_init(&tag->data.td_pcall)) {
     free(tag);
     return NULL;
   }
@@ -1004,7 +1005,7 @@ s_tag * tag_new_pcall_call_cast (const s_sym *type)
   if (! tag)
     return NULL;
   tag->type = TAG_PCALL;
-  if (! pcall_init_call_cast(&tag->data.pcall, type)) {
+  if (! pcall_init_call_cast(&tag->data.td_pcall, type)) {
     free(tag);
     return NULL;
   }
@@ -1018,7 +1019,7 @@ s_tag * tag_new_pcall_copy (p_call *src)
   if (! tag)
     return NULL;
   tag->type = TAG_PCALL;
-  if (! pcall_init_copy(&tag->data.pcall, src)) {
+  if (! pcall_init_copy(&tag->data.td_pcall, src)) {
     free(tag);
     return NULL;
   }
@@ -1032,7 +1033,7 @@ s_tag * tag_new_pcallable (void)
   if (! tag)
     return NULL;
   tag->type = TAG_PCALLABLE;
-  if (! pcallable_init(&tag->data.pcallable)) {
+  if (! pcallable_init(&tag->data.td_pcallable)) {
     free(tag);
     return NULL;
   }
@@ -1046,7 +1047,7 @@ s_tag * tag_new_pcallable_copy (p_callable *src)
   if (! tag)
     return NULL;
   tag->type = TAG_PCALLABLE;
-  if (! pcallable_init_copy(&tag->data.pcallable, src)) {
+  if (! pcallable_init_copy(&tag->data.td_pcallable, src)) {
     free(tag);
     return NULL;
   }
@@ -1060,7 +1061,7 @@ s_tag * tag_new_pcomplex (p_complex c)
   if (! tag)
     return NULL;
   tag->type = TAG_PCOMPLEX;
-  tag->data.pcomplex = c;
+  tag->data.td_pcomplex = c;
   return tag;
 }
 
@@ -1071,7 +1072,7 @@ s_tag * tag_new_plist (p_list plist)
   if (! tag)
     return NULL;
   tag->type = TAG_PLIST;
-  tag->data.plist = plist;
+  tag->data.td_plist = plist;
   return tag;
 }
 
@@ -1082,7 +1083,7 @@ s_tag * tag_new_plist_1 (const char *p)
   if (! tag)
     return NULL;
   tag->type = TAG_PLIST;
-  if (! plist_init_1(&tag->data.plist, p)) {
+  if (! plist_init_1(&tag->data.td_plist, p)) {
     free(tag);
     return NULL;
   }
@@ -1097,7 +1098,7 @@ s_tag * tag_new_pointer (const s_sym *pointer_type,
   if (! tag)
     return NULL;
   tag->type = TAG_POINTER;
-  if (! pointer_init(&tag->data.pointer, pointer_type, target_type,
+  if (! pointer_init(&tag->data.td_pointer, pointer_type, target_type,
                      p)) {
     free(tag);
     return NULL;
@@ -1112,7 +1113,7 @@ s_tag * tag_new_pstruct (const s_sym *module)
   if (! tag)
     return NULL;
   tag->type = TAG_PSTRUCT;
-  if (! pstruct_init(&tag->data.pstruct, module)) {
+  if (! pstruct_init(&tag->data.td_pstruct, module)) {
     free(tag);
     return NULL;
   }
@@ -1126,7 +1127,7 @@ s_tag * tag_new_pstruct_copy (p_struct *src)
   if (! tag)
     return NULL;
   tag->type = TAG_PSTRUCT;
-  if (! pstruct_init_copy(&tag->data.pstruct, src)) {
+  if (! pstruct_init_copy(&tag->data.td_pstruct, src)) {
     free(tag);
     return NULL;
   }
@@ -1140,7 +1141,7 @@ s_tag * tag_new_pstruct_copy_data (const s_sym *module, void *data)
   if (! tag)
     return NULL;
   tag->type = TAG_PSTRUCT;
-  if (! pstruct_init_copy_data(&tag->data.pstruct, module, data)) {
+  if (! pstruct_init_copy_data(&tag->data.td_pstruct, module, data)) {
     free(tag);
     return NULL;
   }
@@ -1155,7 +1156,7 @@ s_tag * tag_new_pstruct_with_data (const s_sym *module, void *data,
   if (! tag)
     return NULL;
   tag->type = TAG_PSTRUCT;
-  if (! pstruct_init_with_data(&tag->data.pstruct, module, data,
+  if (! pstruct_init_with_data(&tag->data.td_pstruct, module, data,
                                free_data)) {
     free(tag);
     return NULL;
@@ -1170,7 +1171,7 @@ s_tag * tag_new_pstruct_with_type (s_struct_type *st)
   if (! tag)
     return NULL;
   tag->type = TAG_PSTRUCT;
-  if (! pstruct_init_with_type(&tag->data.pstruct, st)) {
+  if (! pstruct_init_with_type(&tag->data.td_pstruct, st)) {
     free(tag);
     return NULL;
   }
@@ -1184,7 +1185,7 @@ s_tag * tag_new_pstruct_type (const s_sym *module, s_list *spec)
   if (! tag)
     return NULL;
   tag->type = TAG_PSTRUCT_TYPE;
-  if (! pstruct_type_init(&tag->data.pstruct_type, module, spec)) {
+  if (! pstruct_type_init(&tag->data.td_pstruct_type, module, spec)) {
     free(tag);
     return NULL;
   }
@@ -1198,7 +1199,8 @@ s_tag * tag_new_pstruct_type_clean (s_struct_type *st, p_callable clean)
   if (! tag)
     return NULL;
   tag->type = TAG_PSTRUCT_TYPE;
-  if (! pstruct_type_init_clean(&tag->data.pstruct_type, st, clean)) {
+  if (! pstruct_type_init_clean(&tag->data.td_pstruct_type, st,
+                                clean)) {
     free(tag);
     return NULL;
   }
@@ -1212,7 +1214,7 @@ s_tag * tag_new_psym (const s_sym *sym)
   if (! tag)
     return NULL;
   tag->type = TAG_PSYM;
-  tag->data.psym = sym;
+  tag->data.td_psym = sym;
   return tag;
 }
 
@@ -1223,7 +1225,7 @@ s_tag * tag_new_psym_anon (const s_str *src)
   if (! tag)
     return NULL;
   tag->type = TAG_PSYM;
-  if (! psym_init_anon(&tag->data.psym, src)) {
+  if (! psym_init_anon(&tag->data.td_psym, src)) {
     free(tag);
     return NULL;
   }
@@ -1237,7 +1239,7 @@ s_tag * tag_new_ptr (void *p)
   if (! tag)
     return NULL;
   tag->type = TAG_PTR;
-  if (! ptr_init(&tag->data.ptr, p)) {
+  if (! ptr_init(&tag->data.td_ptr, p)) {
     free(tag);
     return NULL;
   }
@@ -1251,7 +1253,7 @@ s_tag * tag_new_ptr_free (void *p)
   if (! tag)
     return NULL;
   tag->type = TAG_PTR_FREE;
-  if (! ptr_free_init(&tag->data.ptr_free, p)) {
+  if (! ptr_free_init(&tag->data.td_ptr_free, p)) {
     free(tag);
     return NULL;
   }
@@ -1265,7 +1267,7 @@ s_tag * tag_new_pvar (const s_sym *type)
   if (! tag)
     return NULL;
   tag->type = TAG_PVAR;
-  if (! pvar_init(&tag->data.pvar, type)) {
+  if (! pvar_init(&tag->data.td_pvar, type)) {
     free(tag);
     return NULL;
   }
@@ -1279,7 +1281,7 @@ s_tag * tag_new_pvar_copy (p_var *src)
   if (! tag)
     return NULL;
   tag->type = TAG_PVAR;
-  if (! pvar_init_copy(&tag->data.pvar, src)) {
+  if (! pvar_init_copy(&tag->data.td_pvar, src)) {
     free(tag);
     return NULL;
   }
@@ -1293,7 +1295,7 @@ s_tag * tag_new_quote (s_tag *src)
   if (! tag)
     return NULL;
   tag->type = TAG_QUOTE;
-  if (! quote_init(&tag->data.quote, src)) {
+  if (! quote_init(&tag->data.td_quote, src)) {
     free(tag);
     return NULL;
   }
@@ -1307,7 +1309,7 @@ s_tag * tag_new_quote_copy (s_quote *quote)
   if (! tag)
     return NULL;
   tag->type = TAG_QUOTE;
-  if (! quote_init_copy(&tag->data.quote, quote)) {
+  if (! quote_init_copy(&tag->data.td_quote, quote)) {
     free(tag);
     return NULL;
   }
@@ -1321,7 +1323,7 @@ s_tag * tag_new_ratio_1 (const char *p)
   if (! tag)
     return NULL;
   tag->type = TAG_RATIO;
-  if (! ratio_init_1(&tag->data.ratio, p)) {
+  if (! ratio_init_1(&tag->data.td_ratio, p)) {
     free(tag);
     return NULL;
   }
@@ -1335,7 +1337,7 @@ s_tag * tag_new_ratio (void)
   if (! tag)
     return NULL;
   tag->type = TAG_RATIO;
-  if (! ratio_init(&tag->data.ratio)) {
+  if (! ratio_init(&tag->data.td_ratio)) {
     free(tag);
     return NULL;
   }
@@ -1349,7 +1351,7 @@ s_tag * tag_new_ratio_copy (s_ratio *r)
   if (! tag)
     return NULL;
   tag->type = TAG_RATIO;
-  if (! ratio_init_copy(&tag->data.ratio, r)) {
+  if (! ratio_init_copy(&tag->data.td_ratio, r)) {
     free(tag);
     return NULL;
   }
@@ -1363,7 +1365,7 @@ s_tag * tag_new_ratio_zero (void)
   if (! tag)
     return NULL;
   tag->type = TAG_RATIO;
-  if (! ratio_init_zero(&tag->data.ratio)) {
+  if (! ratio_init_zero(&tag->data.td_ratio)) {
     free(tag);
     return NULL;
   }
@@ -1377,7 +1379,7 @@ s_tag * tag_new_s8 (s8 i)
   if (! tag)
     return NULL;
   tag->type = TAG_S8;
-  tag->data.s8 = i;
+  tag->data.td_s8 = i;
   return tag;
 }
 
@@ -1388,7 +1390,7 @@ s_tag * tag_new_s16 (s16 i)
   if (! tag)
     return NULL;
   tag->type = TAG_S16;
-  tag->data.s16 = i;
+  tag->data.td_s16 = i;
   return tag;
 }
 
@@ -1399,7 +1401,7 @@ s_tag * tag_new_s32 (s32 i)
   if (! tag)
     return NULL;
   tag->type = TAG_S32;
-  tag->data.s32 = i;
+  tag->data.td_s32 = i;
   return tag;
 }
 
@@ -1410,7 +1412,7 @@ s_tag * tag_new_s64 (s64 i)
   if (! tag)
     return NULL;
   tag->type = TAG_S64;
-  tag->data.s64 = i;
+  tag->data.td_s64 = i;
   return tag;
 }
 
@@ -1421,7 +1423,7 @@ s_tag * tag_new_str (char *p_free, uw size, const char *p)
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init(&tag->data.str, p_free, size, p)) {
+  if (! str_init(&tag->data.td_str, p_free, size, p)) {
     free(tag);
     return NULL;
   }
@@ -1435,7 +1437,7 @@ s_tag * tag_new_str_1 (char *p_free, const char *p)
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init_1(&tag->data.str, p_free, p)) {
+  if (! str_init_1(&tag->data.td_str, p_free, p)) {
     free(tag);
     return NULL;
   }
@@ -1449,7 +1451,7 @@ s_tag * tag_new_str_1_alloc (const char *p)
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init_1_alloc(&tag->data.str, p)) {
+  if (! str_init_1_alloc(&tag->data.td_str, p)) {
     free(tag);
     return NULL;
   }
@@ -1463,7 +1465,7 @@ s_tag * tag_new_str_alloc (uw size)
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init_alloc(&tag->data.str, size)) {
+  if (! str_init_alloc(&tag->data.td_str, size)) {
     free(tag);
     return NULL;
   }
@@ -1477,7 +1479,7 @@ s_tag * tag_new_str_alloc_copy (uw size, const char *p)
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init_alloc_copy(&tag->data.str, size, p)) {
+  if (! str_init_alloc_copy(&tag->data.td_str, size, p)) {
     free(tag);
     return NULL;
   }
@@ -1491,7 +1493,7 @@ s_tag * tag_new_str_cast (p_sym *type, const s_tag *src)
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init_cast(&tag->data.str, type, src)) {
+  if (! str_init_cast(&tag->data.td_str, type, src)) {
     free(tag);
     return NULL;
   }
@@ -1505,7 +1507,7 @@ s_tag * tag_new_str_concatenate (const s_str *a, const s_str *b)
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init_concatenate(&tag->data.str, a, b)) {
+  if (! str_init_concatenate(&tag->data.td_str, a, b)) {
     free(tag);
     return NULL;
   }
@@ -1519,7 +1521,7 @@ s_tag * tag_new_str_concatenate_list (const s_list *src)
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init_concatenate_list(&tag->data.str, src)) {
+  if (! str_init_concatenate_list(&tag->data.td_str, src)) {
     free(tag);
     return NULL;
   }
@@ -1533,7 +1535,7 @@ s_tag * tag_new_str_concatenate_plist (p_list *src)
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init_concatenate_plist(&tag->data.str, src)) {
+  if (! str_init_concatenate_plist(&tag->data.td_str, src)) {
     free(tag);
     return NULL;
   }
@@ -1547,7 +1549,7 @@ s_tag * tag_new_str_copy (const s_str *src)
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init_copy(&tag->data.str, src)) {
+  if (! str_init_copy(&tag->data.td_str, src)) {
     free(tag);
     return NULL;
   }
@@ -1561,7 +1563,7 @@ s_tag * tag_new_str_empty (void)
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init_empty(&tag->data.str)) {
+  if (! str_init_empty(&tag->data.td_str)) {
     free(tag);
     return NULL;
   }
@@ -1575,7 +1577,7 @@ s_tag * tag_new_str_inspect_buf (const s_buf *src)
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init_inspect_buf(&tag->data.str, src)) {
+  if (! str_init_inspect_buf(&tag->data.td_str, src)) {
     free(tag);
     return NULL;
   }
@@ -1589,7 +1591,7 @@ s_tag * tag_new_str_inspect_str (const s_str *src)
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init_inspect_str(&tag->data.str, src)) {
+  if (! str_init_inspect_str(&tag->data.td_str, src)) {
     free(tag);
     return NULL;
   }
@@ -1603,7 +1605,7 @@ s_tag * tag_new_sw (sw i)
   if (! tag)
     return NULL;
   tag->type = TAG_SW;
-  tag->data.sw = i;
+  tag->data.td_sw = i;
   return tag;
 }
 
@@ -1614,7 +1616,7 @@ s_tag * tag_new_time_add (const s_time *a, const s_time *b)
   if (! tag)
     return NULL;
   tag->type = TAG_TIME;
-  if (! time_init_add(&tag->data.time, a, b)) {
+  if (! time_init_add(&tag->data.td_time, a, b)) {
     free(tag);
     return NULL;
   }
@@ -1628,7 +1630,7 @@ s_tag * tag_new_time_copy (const s_time *src)
   if (! tag)
     return NULL;
   tag->type = TAG_TIME;
-  if (! time_init_copy(&tag->data.time, src)) {
+  if (! time_init_copy(&tag->data.td_time, src)) {
     free(tag);
     return NULL;
   }
@@ -1642,7 +1644,7 @@ s_tag * tag_new_time_now (void)
   if (! tag)
     return NULL;
   tag->type = TAG_TIME;
-  if (! time_init_now(&tag->data.time)) {
+  if (! time_init_now(&tag->data.td_time)) {
     free(tag);
     return NULL;
   }
@@ -1656,7 +1658,7 @@ s_tag * tag_new_ptuple (uw count)
   if (! tag)
     return NULL;
   tag->type = TAG_PTUPLE;
-  if (! ptuple_init(&tag->data.ptuple, count)) {
+  if (! ptuple_init(&tag->data.td_ptuple, count)) {
     free(tag);
     return NULL;
   }
@@ -1670,7 +1672,7 @@ s_tag * tag_new_ptuple_2 (s_tag *a, s_tag *b)
   if (! tag)
     return NULL;
   tag->type = TAG_PTUPLE;
-  if (! ptuple_init_2(&tag->data.ptuple, a, b)) {
+  if (! ptuple_init_2(&tag->data.td_ptuple, a, b)) {
     free(tag);
     return NULL;
   }
@@ -1684,7 +1686,7 @@ s_tag * tag_new_u8 (u8 i)
   if (! tag)
     return NULL;
   tag->type = TAG_U8;
-  tag->data.u8 = i;
+  tag->data.td_u8 = i;
   return tag;
 }
 
@@ -1695,7 +1697,7 @@ s_tag * tag_new_u16 (u16 i)
   if (! tag)
     return NULL;
   tag->type = TAG_U16;
-  tag->data.u16 = i;
+  tag->data.td_u16 = i;
   return tag;
 }
 
@@ -1706,7 +1708,7 @@ s_tag * tag_new_u32 (u32 i)
   if (! tag)
     return NULL;
   tag->type = TAG_U32;
-  tag->data.u32 = i;
+  tag->data.td_u32 = i;
   return tag;
 }
 
@@ -1717,7 +1719,7 @@ s_tag * tag_new_u64 (u64 i)
   if (! tag)
     return NULL;
   tag->type = TAG_U64;
-  tag->data.u64 = i;
+  tag->data.td_u64 = i;
   return tag;
 }
 
@@ -1728,7 +1730,7 @@ s_tag * tag_new_unquote_copy (s_unquote *unquote)
   if (! tag)
     return NULL;
   tag->type = TAG_UNQUOTE;
-  if (! unquote_init_copy(&tag->data.unquote, unquote)) {
+  if (! unquote_init_copy(&tag->data.td_unquote, unquote)) {
     free(tag);
     return NULL;
   }
@@ -1742,7 +1744,7 @@ s_tag * tag_new_uw (uw i)
   if (! tag)
     return NULL;
   tag->type = TAG_UW;
-  tag->data.uw = i;
+  tag->data.td_uw = i;
   return tag;
 }
 
@@ -1753,7 +1755,7 @@ s_tag * tag_array (s_tag *tag, const s_sym *type, uw dimension,
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_ARRAY;
-  if (! array_init(&tmp.data.array, type, dimension, dimensions))
+  if (! array_init(&tmp.data.td_array, type, dimension, dimensions))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1765,7 +1767,7 @@ s_tag * tag_array_copy (s_tag *tag, const s_array *a)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_ARRAY;
-  if (! array_init_copy(&tmp.data.array, a))
+  if (! array_init_copy(&tmp.data.td_array, a))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1777,7 +1779,7 @@ s_tag * tag_character (s_tag *tag, character c)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_CHARACTER;
-  tmp.data.character = c;
+  tmp.data.td_character = c;
   *tag = tmp;
   return tag;
 }
@@ -1788,7 +1790,7 @@ s_tag * tag_f32 (s_tag *tag, f32 f)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_F32;
-  tmp.data.f32 = f;
+  tmp.data.td_f32 = f;
   *tag = tmp;
   return tag;
 }
@@ -1799,7 +1801,7 @@ s_tag * tag_f64 (s_tag *tag, f64 f)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_F64;
-  tmp.data.f64 = f;
+  tmp.data.td_f64 = f;
   *tag = tmp;
   return tag;
 }
@@ -1810,7 +1812,7 @@ s_tag * tag_ident (s_tag *tag, const s_ident *ident)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_IDENT;
-  tmp.data.ident = *ident;
+  tmp.data.td_ident = *ident;
   *tag = tmp;
   return tag;
 }
@@ -1821,7 +1823,7 @@ s_tag * tag_ident_1 (s_tag *tag, const char *p)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_IDENT;
-  if (! ident_init_1(&tmp.data.ident, p))
+  if (! ident_init_1(&tmp.data.td_ident, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1833,7 +1835,7 @@ s_tag * tag_integer_1 (s_tag *tag, const char *p)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_INTEGER;
-  if (! integer_init_1(&tmp.data.integer, p))
+  if (! integer_init_1(&tmp.data.td_integer, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1845,7 +1847,7 @@ s_tag * tag_integer_copy (s_tag *tag, const s_integer *i)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_INTEGER;
-  if (! integer_init_copy(&tmp.data.integer, i))
+  if (! integer_init_copy(&tmp.data.td_integer, i))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1857,7 +1859,7 @@ s_tag * tag_integer_zero (s_tag *tag)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_INTEGER;
-  if (! integer_init_zero(&tmp.data.integer))
+  if (! integer_init_zero(&tmp.data.td_integer))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1869,7 +1871,7 @@ s_tag * tag_map (s_tag *tag, uw count)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_MAP;
-  if (! map_init(&tmp.data.map, count))
+  if (! map_init(&tmp.data.td_map, count))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1881,7 +1883,7 @@ s_tag * tag_map_1 (s_tag *tag, const char *p)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_MAP;
-  if (! map_init_1(&tmp.data.map, p))
+  if (! map_init_1(&tmp.data.td_map, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1893,7 +1895,7 @@ s_tag * tag_map_from_lists (s_tag *tag, s_list *keys, s_list *values)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_MAP;
-  if (! map_init_from_lists(&tmp.data.map, keys, values))
+  if (! map_init_from_lists(&tmp.data.td_map, keys, values))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1905,7 +1907,7 @@ s_tag * tag_pcall (s_tag *tag)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PCALL;
-  if (! pcall_init(&tmp.data.pcall))
+  if (! pcall_init(&tmp.data.td_pcall))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1917,7 +1919,7 @@ s_tag * tag_pcall_call_cast (s_tag *tag, const s_sym *type)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PCALL;
-  if (! pcall_init_call_cast(&tmp.data.pcall, type))
+  if (! pcall_init_call_cast(&tmp.data.td_pcall, type))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1929,7 +1931,7 @@ s_tag * tag_pcall_copy (s_tag *tag, p_call *src)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PCALL;
-  if (! pcall_init_copy(&tmp.data.pcall, src))
+  if (! pcall_init_copy(&tmp.data.td_pcall, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1941,7 +1943,7 @@ s_tag * tag_pcallable (s_tag *tag)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PCALLABLE;
-  if (! pcallable_init(&tmp.data.pcallable))
+  if (! pcallable_init(&tmp.data.td_pcallable))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1953,7 +1955,7 @@ s_tag * tag_pcallable_copy (s_tag *tag, p_callable *src)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PCALLABLE;
-  if (! pcallable_init_copy(&tmp.data.pcallable, src))
+  if (! pcallable_init_copy(&tmp.data.td_pcallable, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1965,7 +1967,7 @@ s_tag * tag_pcomplex (s_tag *tag, p_complex c)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PCOMPLEX;
-  tmp.data.pcomplex = c;
+  tmp.data.td_pcomplex = c;
   *tag = tmp;
   return tag;
 }
@@ -1976,7 +1978,7 @@ s_tag * tag_plist (s_tag *tag, p_list plist)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PLIST;
-  tmp.data.plist = plist;
+  tmp.data.td_plist = plist;
   *tag = tmp;
   return tag;
 }
@@ -1987,7 +1989,7 @@ s_tag * tag_plist_1 (s_tag *tag, const char *p)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PLIST;
-  if (! plist_init_1(&tmp.data.plist, p))
+  if (! plist_init_1(&tmp.data.td_plist, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2000,7 +2002,8 @@ s_tag * tag_pointer (s_tag *tag, const s_sym *pointer_type,
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_POINTER;
-  if (! pointer_init(&tmp.data.pointer, pointer_type, target_type, p))
+  if (! pointer_init(&tmp.data.td_pointer, pointer_type, target_type,
+                     p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2012,7 +2015,7 @@ s_tag * tag_pstruct (s_tag *tag, const s_sym *module)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PSTRUCT;
-  if (! pstruct_init(&tmp.data.pstruct, module))
+  if (! pstruct_init(&tmp.data.td_pstruct, module))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2024,7 +2027,7 @@ s_tag * tag_pstruct_copy (s_tag *tag, p_struct *src)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PSTRUCT;
-  if (! pstruct_init_copy(&tmp.data.pstruct, src))
+  if (! pstruct_init_copy(&tmp.data.td_pstruct, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2037,7 +2040,7 @@ s_tag * tag_pstruct_copy_data (s_tag *tag, const s_sym *module,
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PSTRUCT;
-  if (! pstruct_init_copy_data(&tmp.data.pstruct, module, data))
+  if (! pstruct_init_copy_data(&tmp.data.td_pstruct, module, data))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2050,7 +2053,7 @@ s_tag * tag_pstruct_with_data (s_tag *tag, const s_sym *module,
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PSTRUCT;
-  if (! pstruct_init_with_data(&tmp.data.pstruct, module, data,
+  if (! pstruct_init_with_data(&tmp.data.td_pstruct, module, data,
                                free_data))
     return NULL;
   *tag = tmp;
@@ -2063,7 +2066,7 @@ s_tag * tag_pstruct_with_type (s_tag *tag, s_struct_type *st)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PSTRUCT;
-  if (! pstruct_init_with_type(&tmp.data.pstruct, st))
+  if (! pstruct_init_with_type(&tmp.data.td_pstruct, st))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2075,7 +2078,7 @@ s_tag * tag_pstruct_type (s_tag *tag, const s_sym *module, s_list *spec)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PSTRUCT_TYPE;
-  if (! pstruct_type_init(&tmp.data.pstruct_type, module, spec))
+  if (! pstruct_type_init(&tmp.data.td_pstruct_type, module, spec))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2088,7 +2091,7 @@ s_tag * tag_pstruct_type_clean (s_tag *tag, s_struct_type *st,
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PSTRUCT_TYPE;
-  if (! pstruct_type_init_clean(&tmp.data.pstruct_type, st, clean))
+  if (! pstruct_type_init_clean(&tmp.data.td_pstruct_type, st, clean))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2100,7 +2103,7 @@ s_tag * tag_psym (s_tag *tag, const s_sym *sym)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PSYM;
-  tmp.data.psym = sym;
+  tmp.data.td_psym = sym;
   *tag = tmp;
   return tag;
 }
@@ -2111,7 +2114,7 @@ s_tag * tag_psym_anon (s_tag *tag, const s_str *src)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PSYM;
-  if (! psym_init_anon(&tmp.data.psym, src))
+  if (! psym_init_anon(&tmp.data.td_psym, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2123,7 +2126,7 @@ s_tag * tag_ptr (s_tag *tag, void *p)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PTR;
-  if (! ptr_init(&tmp.data.ptr, p))
+  if (! ptr_init(&tmp.data.td_ptr, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2135,7 +2138,7 @@ s_tag * tag_ptr_free (s_tag *tag, void *p)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PTR_FREE;
-  if (! ptr_free_init(&tmp.data.ptr_free, p))
+  if (! ptr_free_init(&tmp.data.td_ptr_free, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2147,7 +2150,7 @@ s_tag * tag_pvar (s_tag *tag, const s_sym *type)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PVAR;
-  if (! pvar_init(&tmp.data.pvar, type))
+  if (! pvar_init(&tmp.data.td_pvar, type))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2159,7 +2162,7 @@ s_tag * tag_pvar_copy (s_tag *tag, p_var *src)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PVAR;
-  if (! pvar_init_copy(&tmp.data.pvar, src))
+  if (! pvar_init_copy(&tmp.data.td_pvar, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2171,7 +2174,7 @@ s_tag * tag_quote (s_tag *tag, s_tag *src)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_QUOTE;
-  if (! quote_init(&tmp.data.quote, src))
+  if (! quote_init(&tmp.data.td_quote, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2183,7 +2186,7 @@ s_tag * tag_quote_copy (s_tag *tag, s_quote *quote)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_QUOTE;
-  if (! quote_init_copy(&tmp.data.quote, quote))
+  if (! quote_init_copy(&tmp.data.td_quote, quote))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2195,7 +2198,7 @@ s_tag * tag_ratio_1 (s_tag *tag, const char *p)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_RATIO;
-  if (! ratio_init_1(&tmp.data.ratio, p))
+  if (! ratio_init_1(&tmp.data.td_ratio, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2207,7 +2210,7 @@ s_tag * tag_ratio (s_tag *tag)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_RATIO;
-  if (! ratio_init(&tmp.data.ratio))
+  if (! ratio_init(&tmp.data.td_ratio))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2219,7 +2222,7 @@ s_tag * tag_ratio_copy (s_tag *tag, s_ratio *r)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_RATIO;
-  if (! ratio_init_copy(&tmp.data.ratio, r))
+  if (! ratio_init_copy(&tmp.data.td_ratio, r))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2231,7 +2234,7 @@ s_tag * tag_ratio_zero (s_tag *tag)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_RATIO;
-  if (! ratio_init_zero(&tmp.data.ratio))
+  if (! ratio_init_zero(&tmp.data.td_ratio))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2243,7 +2246,7 @@ s_tag * tag_s8 (s_tag *tag, s8 i)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_S8;
-  tmp.data.s8 = i;
+  tmp.data.td_s8 = i;
   *tag = tmp;
   return tag;
 }
@@ -2254,7 +2257,7 @@ s_tag * tag_s16 (s_tag *tag, s16 i)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_S16;
-  tmp.data.s16 = i;
+  tmp.data.td_s16 = i;
   *tag = tmp;
   return tag;
 }
@@ -2265,7 +2268,7 @@ s_tag * tag_s32 (s_tag *tag, s32 i)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_S32;
-  tmp.data.s32 = i;
+  tmp.data.td_s32 = i;
   *tag = tmp;
   return tag;
 }
@@ -2276,7 +2279,7 @@ s_tag * tag_s64 (s_tag *tag, s64 i)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_S64;
-  tmp.data.s64 = i;
+  tmp.data.td_s64 = i;
   *tag = tmp;
   return tag;
 }
@@ -2287,7 +2290,7 @@ s_tag * tag_str (s_tag *tag, char *p_free, uw size, const char *p)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init(&tmp.data.str, p_free, size, p))
+  if (! str_init(&tmp.data.td_str, p_free, size, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2299,7 +2302,7 @@ s_tag * tag_str_1 (s_tag *tag, char *p_free, const char *p)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init_1(&tmp.data.str, p_free, p))
+  if (! str_init_1(&tmp.data.td_str, p_free, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2311,7 +2314,7 @@ s_tag * tag_str_1_alloc (s_tag *tag, const char *p)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init_1_alloc(&tmp.data.str, p))
+  if (! str_init_1_alloc(&tmp.data.td_str, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2323,7 +2326,7 @@ s_tag * tag_str_alloc (s_tag *tag, uw size)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init_alloc(&tmp.data.str, size))
+  if (! str_init_alloc(&tmp.data.td_str, size))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2335,7 +2338,7 @@ s_tag * tag_str_alloc_copy (s_tag *tag, uw size, const char *p)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init_alloc_copy(&tmp.data.str, size, p))
+  if (! str_init_alloc_copy(&tmp.data.td_str, size, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2347,7 +2350,7 @@ s_tag * tag_str_cast (s_tag *tag, p_sym *type, const s_tag *src)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init_cast(&tmp.data.str, type, src))
+  if (! str_init_cast(&tmp.data.td_str, type, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2359,7 +2362,7 @@ s_tag * tag_str_concatenate (s_tag *tag, const s_str *a, const s_str *b)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init_concatenate(&tmp.data.str, a, b))
+  if (! str_init_concatenate(&tmp.data.td_str, a, b))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2371,7 +2374,7 @@ s_tag * tag_str_concatenate_list (s_tag *tag, const s_list *src)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init_concatenate_list(&tmp.data.str, src))
+  if (! str_init_concatenate_list(&tmp.data.td_str, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2383,7 +2386,7 @@ s_tag * tag_str_concatenate_plist (s_tag *tag, p_list *src)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init_concatenate_plist(&tmp.data.str, src))
+  if (! str_init_concatenate_plist(&tmp.data.td_str, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2395,7 +2398,7 @@ s_tag * tag_str_copy (s_tag *tag, const s_str *src)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init_copy(&tmp.data.str, src))
+  if (! str_init_copy(&tmp.data.td_str, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2407,7 +2410,7 @@ s_tag * tag_str_empty (s_tag *tag)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init_empty(&tmp.data.str))
+  if (! str_init_empty(&tmp.data.td_str))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2419,7 +2422,7 @@ s_tag * tag_str_inspect_buf (s_tag *tag, const s_buf *src)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init_inspect_buf(&tmp.data.str, src))
+  if (! str_init_inspect_buf(&tmp.data.td_str, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2431,7 +2434,7 @@ s_tag * tag_str_inspect_str (s_tag *tag, const s_str *src)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init_inspect_str(&tmp.data.str, src))
+  if (! str_init_inspect_str(&tmp.data.td_str, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2443,7 +2446,7 @@ s_tag * tag_sw (s_tag *tag, sw i)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_SW;
-  tmp.data.sw = i;
+  tmp.data.td_sw = i;
   *tag = tmp;
   return tag;
 }
@@ -2454,7 +2457,7 @@ s_tag * tag_time_add (s_tag *tag, const s_time *a, const s_time *b)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_TIME;
-  if (! time_init_add(&tmp.data.time, a, b))
+  if (! time_init_add(&tmp.data.td_time, a, b))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2466,7 +2469,7 @@ s_tag * tag_time_copy (s_tag *tag, const s_time *src)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_TIME;
-  if (! time_init_copy(&tmp.data.time, src))
+  if (! time_init_copy(&tmp.data.td_time, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2478,7 +2481,7 @@ s_tag * tag_time_now (s_tag *tag)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_TIME;
-  if (! time_init_now(&tmp.data.time))
+  if (! time_init_now(&tmp.data.td_time))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2490,7 +2493,7 @@ s_tag * tag_ptuple (s_tag *tag, uw count)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PTUPLE;
-  if (! ptuple_init(&tmp.data.ptuple, count))
+  if (! ptuple_init(&tmp.data.td_ptuple, count))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2502,7 +2505,7 @@ s_tag * tag_ptuple_2 (s_tag *tag, s_tag *a, s_tag *b)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PTUPLE;
-  if (! ptuple_init_2(&tmp.data.ptuple, a, b))
+  if (! ptuple_init_2(&tmp.data.td_ptuple, a, b))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2514,7 +2517,7 @@ s_tag * tag_u8 (s_tag *tag, u8 i)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_U8;
-  tmp.data.u8 = i;
+  tmp.data.td_u8 = i;
   *tag = tmp;
   return tag;
 }
@@ -2525,7 +2528,7 @@ s_tag * tag_u16 (s_tag *tag, u16 i)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_U16;
-  tmp.data.u16 = i;
+  tmp.data.td_u16 = i;
   *tag = tmp;
   return tag;
 }
@@ -2536,7 +2539,7 @@ s_tag * tag_u32 (s_tag *tag, u32 i)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_U32;
-  tmp.data.u32 = i;
+  tmp.data.td_u32 = i;
   *tag = tmp;
   return tag;
 }
@@ -2547,7 +2550,7 @@ s_tag * tag_u64 (s_tag *tag, u64 i)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_U64;
-  tmp.data.u64 = i;
+  tmp.data.td_u64 = i;
   *tag = tmp;
   return tag;
 }
@@ -2558,7 +2561,7 @@ s_tag * tag_unquote_copy (s_tag *tag, s_unquote *unquote)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_UNQUOTE;
-  if (! unquote_init_copy(&tmp.data.unquote, unquote))
+  if (! unquote_init_copy(&tmp.data.td_unquote, unquote))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2570,7 +2573,7 @@ s_tag * tag_uw (s_tag *tag, uw i)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_UW;
-  tmp.data.uw = i;
+  tmp.data.td_uw = i;
   *tag = tmp;
   return tag;
 }

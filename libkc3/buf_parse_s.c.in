@@ -185,7 +185,7 @@ s_tag * buf_parse_tag_s_bits$ (s_buf *buf, s_tag *dest)
 {
   s_tag tmp = {0};
   tmp.type = TAG_S_BITS$;
-  if (buf_parse_s_bits$(buf, &tmp.data.s_bits$) <= 0)
+  if (buf_parse_s_bits$(buf, &tmp.data.td_s_bits$) <= 0)
     return NULL;
   *dest = tmp;
   return dest;
@@ -197,7 +197,7 @@ s_tag * buf_parse_tag_s_bits$_base (s_buf *buf, const s_str *base,
   s_tag tmp = {0};
   tmp.type = TAG_S_BITS$;
   if (buf_parse_s_bits$_base(buf, base, negative,
-                             &tmp.data.s_bits$) <= 0)
+                             &tmp.data.td_s_bits$) <= 0)
     return NULL;
   *dest = tmp;
   return dest;

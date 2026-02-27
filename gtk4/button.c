@@ -25,7 +25,7 @@ GtkWidget ** kc3_gtk4_button_new_with_label (GtkWidget **dest,
                                              s_str *label)
 {
   GtkWidget * tmp;
-  if (! (tmp = gtk_button_new_with_label(label->ptr.pchar)))
+  if (! (tmp = gtk_button_new_with_label(label->ptr.p_pchar)))
     return NULL;
   *dest = tmp;
   return dest;

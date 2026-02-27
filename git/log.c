@@ -79,7 +79,7 @@ p_list * kc3_git_log (git_repository **repo,
   }
   s.repo = *repo;
   s.sorting = GIT_SORT_TIME;
-  if (log_add_revision(&s, branch_name->ptr.pchar)) {
+  if (log_add_revision(&s, branch_name->ptr.p_pchar)) {
     err_write_1("kc3_git_log: branch not found: ");
     err_inspect_str(branch_name);
     err_write_1("\n");
@@ -95,7 +95,7 @@ p_list * kc3_git_log (git_repository **repo,
       err_puts("kc3_git_log: path->size > PATH_MAX");
       return NULL;
     }
-    memcpy(path_pchar, path->ptr.pchar, path->size);
+    memcpy(path_pchar, path->ptr.p_pchar, path->size);
     diffopts.pathspec.strings = &path_pchar_p;
     diffopts.pathspec.count = 1;
     git_pathspec_new(&ps, &diffopts.pathspec);
@@ -302,7 +302,7 @@ static p_list * log_push_commit (p_list *log_tail,
   p_list tmp;
   if (! (tmp = list_new_map(6, NULL)))
     return NULL;
-  map = &tmp->tag.data.map;
+  map = &tmp->tag.data.td_map;
   tag_init_psym(map->key + 0, sym_1("author_email"));
   tag_init_psym(map->key + 1, sym_1("message"));
   tag_init_psym(map->key + 2, sym_1("author_name"));
@@ -337,7 +337,7 @@ static p_list * log_push_commit (p_list *log_tail,
     tag_init_void(map->value + 5);
   }
   *log_tail = tmp;
-  return &(*log_tail)->next.data.plist;
+  return &(*log_tail)->next.data.td_plist;
  ko:
   list_delete_all(tmp);
   return NULL;

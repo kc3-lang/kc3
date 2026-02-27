@@ -39,54 +39,54 @@ s32 * s32_init_cast
   (void) type;
   switch (tag->type) {
   case TAG_BOOL:
-    *s = tag->data.bool_ ? 1 : 0;
+    *s = tag->data.td_bool_ ? 1 : 0;
     return s;
   case TAG_CHARACTER:
-    *s = (s32) tag->data.character;
+    *s = (s32) tag->data.td_character;
     return s;
   case TAG_F32:
-    *s = (s32) tag->data.f32;
+    *s = (s32) tag->data.td_f32;
     return s;
   case TAG_F64:
-    *s = (s32) tag->data.f64;
+    *s = (s32) tag->data.td_f64;
     return s;
   case TAG_INTEGER:
-    *s = integer_to_s32(&tag->data.integer);
+    *s = integer_to_s32(&tag->data.td_integer);
     return s;
   case TAG_RATIO:
-    *s = ratio_to_s32(&tag->data.ratio);
+    *s = ratio_to_s32(&tag->data.td_ratio);
     return s;
   case TAG_SW:
-    *s = (s32) tag->data.sw;
+    *s = (s32) tag->data.td_sw;
     return s;
   case TAG_S64:
-    *s = (s32) tag->data.s64;
+    *s = (s32) tag->data.td_s64;
     return s;
   case TAG_S32:
-    *s = (s32) tag->data.s32;
+    *s = (s32) tag->data.td_s32;
     return s;
   case TAG_S16:
-    *s = (s32) tag->data.s16;
+    *s = (s32) tag->data.td_s16;
     return s;
   case TAG_S8:
-    *s = (s32) tag->data.s8;
+    *s = (s32) tag->data.td_s8;
     return s;
   case TAG_STR:
-    return s32_init_str(s, &tag->data.str);
+    return s32_init_str(s, &tag->data.td_str);
   case TAG_U8:
-    *s = (s32) tag->data.u8;
+    *s = (s32) tag->data.td_u8;
     return s;
   case TAG_U16:
-    *s = (s32) tag->data.u16;
+    *s = (s32) tag->data.td_u16;
     return s;
   case TAG_U32:
-    *s = (s32) tag->data.u32;
+    *s = (s32) tag->data.td_u32;
     return s;
   case TAG_U64:
-    *s = (s32) tag->data.u64;
+    *s = (s32) tag->data.td_u64;
     return s;
   case TAG_UW:
-    *s = (s32) tag->data.uw;
+    *s = (s32) tag->data.td_uw;
     return s;
   case TAG_VOID:
     *s = 0;
@@ -124,7 +124,7 @@ s32 * s32_init_str (s32 *s, const s_str *str)
   s_buf buf;
   sw r;
   s32 tmp = 0;
-  buf_init_const(&buf, str->size, str->ptr.pchar);
+  buf_init_const(&buf, str->size, str->ptr.p_pchar);
   buf.wpos = str->size;
   r = buf_parse_s32(&buf, &tmp);
   buf_clean(&buf);
@@ -143,7 +143,7 @@ s32 * s32_init_str_decimal  (s32 *s, const s_str *str)
   bool negative = false;
   sw r;
   s32 tmp = 0;
-  buf_init_const(&buf, str->size, str->ptr.pchar);
+  buf_init_const(&buf, str->size, str->ptr.p_pchar);
   buf.wpos = str->size;
   if ((r = buf_read_1(&buf, "-")) > 0)
     negative = true;
@@ -174,23 +174,23 @@ s_tag * s32_sqrt (const s32 x, s_tag *dest)
   assert(dest);
   if (x < 0) {
     dest->type = TAG_PCOMPLEX;
-    dest->data.pcomplex = complex_new();
-    tag_init_u8(&dest->data.pcomplex->x, 0);
+    dest->data.td_pcomplex = complex_new();
+    tag_init_u8(&dest->data.td_pcomplex->x, 0);
 #if HAVE_F80
-    dest->data.pcomplex->y.type = TAG_F80;
-    dest->data.pcomplex->y.data.f80 = sqrtl((f80) -x);
+    dest->data.td_pcomplex->y.type = TAG_F80;
+    dest->data.td_pcomplex->y.data.td_f80 = sqrtl((f80) -x);
 #else
-    dest->data.pcomplex->y.type = TAG_F64;
-    dest->data.pcomplex->y.data.f64 = sqrt((f64) -x);
+    dest->data.td_pcomplex->y.type = TAG_F64;
+    dest->data.td_pcomplex->y.data.td_f64 = sqrt((f64) -x);
 #endif
     return dest;
   }
 #if HAVE_F80
   dest->type = TAG_F80;
-  dest->data.f80 = sqrtl((f80) x);
+  dest->data.td_f80 = sqrtl((f80) x);
 #else
   dest->type = TAG_F64;
-  dest->data.f64 = sqrt((f64) x);
+  dest->data.td_f64 = sqrt((f64) x);
 #endif  
   return dest;
 }

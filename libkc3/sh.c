@@ -49,7 +49,7 @@ s_str * sh_escape (const s_str *src, s_str *dest)
   s = *src;
   while (str_read_character_utf8(&s, &s_c) > 0) {
     allowed = false;
-    t = tag.data.str;
+    t = tag.data.td_str;
     while (str_read_character_utf8(&t, &t_c) > 0) {
       if (s_c == t_c) {
         allowed = true;
@@ -79,7 +79,7 @@ s_str * sh_escape (const s_str *src, s_str *dest)
     goto ko;
   s = *src;
   while (str_read_character_utf8(&s, &s_c) > 0) {
-    t = tag.data.str;
+    t = tag.data.td_str;
     while (str_read_character_utf8(&t, &t_c) > 0) {
       if (s_c == t_c) {
         if (buf_write_1(&buf, "\\") <= 0)

@@ -72,7 +72,7 @@ void * struct_type_copy_data (const s_struct_type *st, void *dest,
   count = st->map.count;
   while (i < count) {
     if (st->map.value[i].type == TAG_PVAR)
-      type = st->map.value[i].data.pvar->type;
+      type = st->map.value[i].data.td_pvar->type;
     else
       if (! tag_type(st->map.value + i, &type))
         return NULL;
@@ -94,7 +94,7 @@ void struct_type_delete (s_struct_type *st)
     l = env_global()->freelist;
     while (l) {
       if (l->tag.type == TAG_PSTRUCT_TYPE &&
-          l->tag.data.pstruct_type == st)
+          l->tag.data.td_pstruct_type == st)
         break;
       l = list_next(l);
     }
@@ -130,13 +130,13 @@ void struct_type_delete (s_struct_type *st)
     prev = &env_global()->freelist;
     while (*prev) {
       if ((*prev)->tag.type == TAG_PSTRUCT_TYPE &&
-          (*prev)->tag.data.pstruct_type == st) {
+          (*prev)->tag.data.td_pstruct_type == st) {
         l = *prev;
         *prev = list_next(l);
         alloc_free(l);
         break;
       }
-      prev = &(*prev)->next.data.plist;
+      prev = &(*prev)->next.data.td_plist;
     }
   }
   alloc_free(st);
@@ -155,7 +155,7 @@ uw * struct_type_find_key_index (const s_struct_type *st,
   assert(key);
   while (i < st->map.count) {
     assert(st->map.key[i].type == TAG_PSYM);
-    if (st->map.key[i].data.psym == key) {
+    if (st->map.key[i].data.td_psym == key) {
       *dest = i;
       return dest;
     }
@@ -201,16 +201,16 @@ s_struct_type * struct_type_init (s_struct_type *st,
     i = 0;
     s = spec;
     while (s) {
-      if (s->tag.type != TAG_PTUPLE || s->tag.data.ptuple->count != 2) {
+      if (s->tag.type != TAG_PTUPLE || s->tag.data.td_ptuple->count != 2) {
         err_puts("struct_type_init: invalid spec");
         assert(! "struct_type_init: invalid spec");
         map_clean(&st->map);
         alloc_free(st->offset);
         return NULL;
       }
-      tuple = s->tag.data.ptuple;
+      tuple = s->tag.data.td_ptuple;
       if (tuple->tag[1].type == TAG_PVAR) {
-        type = tuple->tag[1].data.pvar->type;
+        type = tuple->tag[1].data.td_pvar->type;
         if (! sym_type_size(type, &size)) {
           map_clean(&st->map);
           alloc_free(st->offset);

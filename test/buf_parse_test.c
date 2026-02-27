@@ -179,7 +179,7 @@
     if (g_test_last_ok)                                                \
       TEST_EQ(dest.sym->str.size, strlen(expected));                   \
     if (g_test_last_ok)                                                \
-      TEST_STRNCMP(dest.sym->str.ptr.p, (expected),                    \
+      TEST_STRNCMP(dest.sym->str.ptr.p_pvoid, (expected),                    \
                    dest.sym->str.size);                                \
     buf_clean(&buf);						       \
     test_context(NULL);                                                \
@@ -542,7 +542,7 @@
     buf_init_1_const(&buf, (test));                                   \
     TEST_EQ(buf_parse_str(&buf, &dest), strlen(test));                 \
     TEST_EQ(dest.size, strlen(expected));                              \
-    TEST_STRNCMP(dest.ptr.p, (expected), dest.size);                   \
+    TEST_STRNCMP(dest.ptr.p_pvoid, (expected), dest.size);                   \
     str_clean(&dest);                                                  \
     buf_clean(&buf);						       \
     test_context(NULL);                                                \
@@ -582,7 +582,7 @@
     if (g_test_last_ok)                                                \
       TEST_EQ(dest.size, n);                                           \
     if (g_test_last_ok)                                                \
-      TEST_EQ(memcmp(dest.ptr.p, expected, n), 0);                     \
+      TEST_EQ(memcmp(dest.ptr.p_pvoid, expected, n), 0);                     \
     str_clean(&dest);						       \
     buf_clean(&buf);						       \
     test_context(NULL);                                                \
@@ -635,7 +635,7 @@
     if (g_test_last_ok)                                                \
       TEST_EQ(dest->str.size, strlen(expected));                       \
     if (g_test_last_ok)                                                \
-      TEST_STRNCMP(dest->str.ptr.p, (expected), dest->str.size);       \
+      TEST_STRNCMP(dest->str.ptr.p_pvoid, (expected), dest->str.size);       \
     buf_clean(&buf);						       \
     test_context(NULL);                                                \
   } while (0)

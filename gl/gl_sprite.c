@@ -103,7 +103,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
     str_clean(&tmp_path);
     return NULL;
   }
-  fp = fopen(real_path.ptr.pchar, "rb");
+  fp = fopen(real_path.ptr.p_pchar, "rb");
   if (! fp) {
     err_write_1("gl_sprite_init: fopen: ");
     err_inspect_str(&real_path);
@@ -183,10 +183,10 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
     str_clean(&tmp.path);
     return NULL;
   }
-  fp = fopen(tmp.real_path.ptr.pchar, "rb");
+  fp = fopen(tmp.real_path.ptr.p_pchar, "rb");
   if (! fp) {
     err_write_1("gl_sprite_init_jpeg: fopen: ");
-    err_puts(tmp.real_path.ptr.pchar);
+    err_puts(tmp.real_path.ptr.p_pchar);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
     return NULL;
@@ -195,7 +195,7 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   if (fread(jpeg_header, 1, sizeof(jpeg_header), fp) !=
       sizeof(jpeg_header)) {
     err_write_1("gl_sprite_init_jpeg: fread: ");
-    err_puts(tmp.real_path.ptr.pchar);
+    err_puts(tmp.real_path.ptr.p_pchar);
     fclose(fp);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
@@ -203,7 +203,7 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   }
   if (jpeg_header[0] != 0xFF || jpeg_header[1] != 0xD8) {
     err_write_1("gl_sprite_init_jpeg: not a jpeg: ");
-    err_puts(tmp.real_path.ptr.pchar);
+    err_puts(tmp.real_path.ptr.p_pchar);
     fclose(fp);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
@@ -221,7 +221,7 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   jpeg_pixel_size = jpeg_components;
   if (jpeg_h > SIZE_MAX / (jpeg_w * jpeg_pixel_size)) {
     err_write_1("gl_sprite_init_jpeg: image too large: ");
-    err_puts(tmp.real_path.ptr.pchar);
+    err_puts(tmp.real_path.ptr.p_pchar);
     jpeg_destroy_decompress(&jpeg_info);
     fclose(fp);
     str_clean(&tmp.path);
@@ -231,7 +231,7 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   jpeg_data = malloc(jpeg_h * jpeg_w * jpeg_pixel_size);
   if (! jpeg_data) {
     err_write_1("gl_sprite_init_jpeg: malloc failed: ");
-    err_puts(tmp.real_path.ptr.pchar);
+    err_puts(tmp.real_path.ptr.p_pchar);
     jpeg_destroy_decompress(&jpeg_info);
     fclose(fp);
     str_clean(&tmp.path);
@@ -282,7 +282,7 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   if (! data) {
     err_write_1("gl_sprite_init_jpeg: failed to allocate"
                 " memory: ");
-    err_puts(tmp.real_path.ptr.pchar);
+    err_puts(tmp.real_path.ptr.p_pchar);
     alloc_free(tmp.texture);
     alloc_free(jpeg_data);
     str_clean(&tmp.path);
@@ -410,10 +410,10 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
     str_clean(&tmp.path);
     return NULL;
   }
-  fp = fopen(tmp.real_path.ptr.pchar, "rb");
+  fp = fopen(tmp.real_path.ptr.p_pchar, "rb");
   if (! fp) {
     err_write_1("gl_sprite_init: fopen: ");
-    err_puts(tmp.real_path.ptr.pchar);
+    err_puts(tmp.real_path.ptr.p_pchar);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
     return NULL;
@@ -421,7 +421,7 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
   if (fread(png_header, 1, sizeof(png_header), fp) !=
       sizeof(png_header)) {
     err_write_1("gl_sprite_init: fread: ");
-    err_puts(tmp.real_path.ptr.pchar);
+    err_puts(tmp.real_path.ptr.p_pchar);
     fclose(fp);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
@@ -429,7 +429,7 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
   }
   if (png_sig_cmp(png_header, 0, sizeof(png_header))) {
     err_write_1("gl_sprite_init: not a png: ");
-    err_puts(tmp.real_path.ptr.pchar);
+    err_puts(tmp.real_path.ptr.p_pchar);
     fclose(fp);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
@@ -439,7 +439,7 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
 				    NULL);
   if (! png_read) {
     err_write_1("gl_sprite_init: png_create_read_struct: ");
-    err_puts(tmp.real_path.ptr.pchar);
+    err_puts(tmp.real_path.ptr.p_pchar);
     fclose(fp);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
@@ -448,7 +448,7 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
   png_info = png_create_info_struct(png_read);
   if (! png_info) {
     err_write_1("gl_sprite_init: png_create_info_struct: ");
-    err_puts(tmp.real_path.ptr.pchar);
+    err_puts(tmp.real_path.ptr.p_pchar);
     png_destroy_read_struct(&png_read, NULL, NULL);
     fclose(fp);
     str_clean(&tmp.path);
@@ -481,15 +481,15 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
       err_write_1("gl_sprite_init: unknown PNG color type ");
       err_inspect_s32(png_color_type);
       err_write_1(": ");
-      err_puts(tmp.real_path.ptr.pchar);
+      err_puts(tmp.real_path.ptr.p_pchar);
     }
     if (! gl_internal_format) {
       err_write_1("gl_sprite_init: unknown OpenGL internal format: ");
-      err_puts(tmp.real_path.ptr.pchar);
+      err_puts(tmp.real_path.ptr.p_pchar);
     }
     if (! gl_type) {
       err_write_1("gl_sprite_init: unknown OpenGL type: ");
-      err_puts(tmp.real_path.ptr.pchar);
+      err_puts(tmp.real_path.ptr.p_pchar);
     }
     png_destroy_read_struct(&png_read, &png_info, NULL);
     fclose(fp);
@@ -545,7 +545,7 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
   data = malloc(tmp.pix_h * sprite_stride);
   if (! data) {
     err_write_1("gl_sprite_init: failed to allocate memory: ");
-    err_puts(tmp.real_path.ptr.pchar);
+    err_puts(tmp.real_path.ptr.p_pchar);
     alloc_free(tmp.texture);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);

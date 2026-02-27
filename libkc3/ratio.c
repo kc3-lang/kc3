@@ -151,41 +151,41 @@ s_ratio * ratio_init_cast (s_ratio *ratio, p_sym *type,
   (void) type;
   switch (src->type) {
   case TAG_F32:
-    return ratio_init_f32(ratio, src->data.f32);
+    return ratio_init_f32(ratio, src->data.td_f32);
   case TAG_F64:
-    return ratio_init_f64(ratio, src->data.f64);
+    return ratio_init_f64(ratio, src->data.td_f64);
 #if HAVE_F80
   case TAG_F80:
-    return ratio_init_f80(ratio, src->data.f80);
+    return ratio_init_f80(ratio, src->data.td_f80);
 #endif
 #if HAVE_F128
   case TAG_F128:
-    return ratio_init_f128(ratio, src->data.f128);
+    return ratio_init_f128(ratio, src->data.td_f128);
 #endif
   case TAG_INTEGER:
-    return ratio_init_integer(ratio, &src->data.integer);
+    return ratio_init_integer(ratio, &src->data.td_integer);
   case TAG_RATIO:
-    return ratio_init_copy(ratio, &src->data.ratio);
+    return ratio_init_copy(ratio, &src->data.td_ratio);
   case TAG_SW:
-    return ratio_init_sw(ratio, src->data.sw);
+    return ratio_init_sw(ratio, src->data.td_sw);
   case TAG_S64:
-    return ratio_init_s64(ratio, src->data.s64);
+    return ratio_init_s64(ratio, src->data.td_s64);
   case TAG_S32:
-    return ratio_init_s32(ratio, src->data.s32);
+    return ratio_init_s32(ratio, src->data.td_s32);
   case TAG_S16:
-    return ratio_init_s16(ratio, src->data.s16);
+    return ratio_init_s16(ratio, src->data.td_s16);
   case TAG_S8:
-    return ratio_init_s8(ratio, src->data.s8);
+    return ratio_init_s8(ratio, src->data.td_s8);
   case TAG_U8:
-    return ratio_init_u8(ratio, src->data.u8);
+    return ratio_init_u8(ratio, src->data.td_u8);
   case TAG_U16:
-    return ratio_init_u16(ratio, src->data.u16);
+    return ratio_init_u16(ratio, src->data.td_u16);
   case TAG_U32:
-    return ratio_init_u32(ratio, src->data.u32);
+    return ratio_init_u32(ratio, src->data.td_u32);
   case TAG_U64:
-    return ratio_init_u64(ratio, src->data.u64);
+    return ratio_init_u64(ratio, src->data.td_u64);
   case TAG_UW:
-    return ratio_init_uw(ratio, src->data.uw);
+    return ratio_init_uw(ratio, src->data.td_uw);
   default:
     break;
   }
@@ -502,7 +502,7 @@ s_tag * ratio_sqrt (const s_ratio *r, s_tag *dest)
     return NULL;
   }
   dest->type = TAG_RATIO;
-  dest->data.ratio = tmp;
+  dest->data.td_ratio = tmp;
   return dest;
 }
 

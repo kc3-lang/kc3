@@ -64,14 +64,14 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
   if (start) {
     tmp.start = *start;
     while (tmp.start.subject->type == TAG_PVAR &&
-           tmp.start.subject->data.pvar->bound)
-      tmp.start.subject = &tmp.start.subject->data.pvar->tag;
+           tmp.start.subject->data.td_pvar->bound)
+      tmp.start.subject = &tmp.start.subject->data.td_pvar->tag;
     while (tmp.start.predicate->type == TAG_PVAR &&
-           tmp.start.predicate->data.pvar->bound)
-      tmp.start.predicate = &tmp.start.predicate->data.pvar->tag;
+           tmp.start.predicate->data.td_pvar->bound)
+      tmp.start.predicate = &tmp.start.predicate->data.td_pvar->tag;
     while (tmp.start.object->type == TAG_PVAR &&
-           tmp.start.object->data.pvar->bound)
-      tmp.start.object = &tmp.start.object->data.pvar->tag;
+           tmp.start.object->data.td_pvar->bound)
+      tmp.start.object = &tmp.start.object->data.td_pvar->tag;
   }
   else {
     tmp.start.subject   = TAG_FIRST;
@@ -82,14 +82,14 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
   if (end) {
     tmp.end = *end;
     while (tmp.end.subject->type == TAG_PVAR &&
-           tmp.end.subject->data.pvar->bound)
-      tmp.end.subject = &tmp.end.subject->data.pvar->tag;
+           tmp.end.subject->data.td_pvar->bound)
+      tmp.end.subject = &tmp.end.subject->data.td_pvar->tag;
     while (tmp.end.predicate->type == TAG_PVAR &&
-           tmp.end.predicate->data.pvar->bound)
-      tmp.end.predicate = &tmp.end.predicate->data.pvar->tag;
+           tmp.end.predicate->data.td_pvar->bound)
+      tmp.end.predicate = &tmp.end.predicate->data.td_pvar->tag;
     while (tmp.end.object->type == TAG_PVAR &&
-           tmp.end.object->data.pvar->bound)
-      tmp.end.object = &tmp.end.object->data.pvar->tag;
+           tmp.end.object->data.td_pvar->bound)
+      tmp.end.object = &tmp.end.object->data.td_pvar->tag;
   }
   else {
     tmp.end.subject   = TAG_LAST;
