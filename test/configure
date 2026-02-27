@@ -97,7 +97,7 @@ LDFLAGS_DEBUG="$LDFLAGS"
 LIBS_DEBUG="$LIBS -lkc3_debug"
 
 # Main config
-DEFAULT_CFLAGS="-Os -pipe -fPIC"
+DEFAULT_CFLAGS="-O2 -pipe -fPIC"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
