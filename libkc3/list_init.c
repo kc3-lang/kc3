@@ -1075,7 +1075,7 @@ s_list * list_new_array (const s_sym *type, uw dimension,
   if (! tag_init_array(&list->tag, type, dimension, dimensions)) {
     err_puts("list_new_array: tag_init_array");
     assert(! "list_new_array: tag_init_array");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1093,7 +1093,7 @@ s_list * list_new_array_copy (const s_array *a, s_list *next)
   if (! tag_init_array_copy(&list->tag, a)) {
     err_puts("list_new_array_copy: tag_init_array_copy");
     assert(! "list_new_array_copy: tag_init_array_copy");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1111,7 +1111,7 @@ s_list * list_new_character (character c, s_list *next)
   if (! tag_init_character(&list->tag, c)) {
     err_puts("list_new_character: tag_init_character");
     assert(! "list_new_character: tag_init_character");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1129,7 +1129,7 @@ s_list * list_new_f32 (f32 f, s_list *next)
   if (! tag_init_f32(&list->tag, f)) {
     err_puts("list_new_f32: tag_init_f32");
     assert(! "list_new_f32: tag_init_f32");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1147,7 +1147,7 @@ s_list * list_new_f64 (f64 f, s_list *next)
   if (! tag_init_f64(&list->tag, f)) {
     err_puts("list_new_f64: tag_init_f64");
     assert(! "list_new_f64: tag_init_f64");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1165,7 +1165,7 @@ s_list * list_new_ident (const s_ident *ident, s_list *next)
   if (! tag_init_ident(&list->tag, ident)) {
     err_puts("list_new_ident: tag_init_ident");
     assert(! "list_new_ident: tag_init_ident");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1183,7 +1183,7 @@ s_list * list_new_ident_1 (const char *p, s_list *next)
   if (! tag_init_ident_1(&list->tag, p)) {
     err_puts("list_new_ident_1: tag_init_ident_1");
     assert(! "list_new_ident_1: tag_init_ident_1");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1201,7 +1201,7 @@ s_list * list_new_integer_1 (const char *p, s_list *next)
   if (! tag_init_integer_1(&list->tag, p)) {
     err_puts("list_new_integer_1: tag_init_integer_1");
     assert(! "list_new_integer_1: tag_init_integer_1");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1219,7 +1219,7 @@ s_list * list_new_integer_copy (const s_integer *i, s_list *next)
   if (! tag_init_integer_copy(&list->tag, i)) {
     err_puts("list_new_integer_copy: tag_init_integer_copy");
     assert(! "list_new_integer_copy: tag_init_integer_copy");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1237,7 +1237,7 @@ s_list * list_new_integer_zero (s_list *next)
   if (! tag_init_integer_zero(&list->tag)) {
     err_puts("list_new_integer_zero: tag_init_integer_zero");
     assert(! "list_new_integer_zero: tag_init_integer_zero");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1255,7 +1255,7 @@ s_list * list_new_map (uw count, s_list *next)
   if (! tag_init_map(&list->tag, count)) {
     err_puts("list_new_map: tag_init_map");
     assert(! "list_new_map: tag_init_map");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1273,7 +1273,7 @@ s_list * list_new_map_1 (const char *p, s_list *next)
   if (! tag_init_map_1(&list->tag, p)) {
     err_puts("list_new_map_1: tag_init_map_1");
     assert(! "list_new_map_1: tag_init_map_1");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1292,7 +1292,7 @@ s_list * list_new_map_from_lists (s_list *keys, s_list *values,
   if (! tag_init_map_from_lists(&list->tag, keys, values)) {
     err_puts("list_new_map_from_lists: tag_init_map_from_lists");
     assert(! "list_new_map_from_lists: tag_init_map_from_lists");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1310,7 +1310,7 @@ s_list * list_new_pcall (s_list *next)
   if (! tag_init_pcall(&list->tag)) {
     err_puts("list_new_pcall: tag_init_pcall");
     assert(! "list_new_pcall: tag_init_pcall");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1328,7 +1328,7 @@ s_list * list_new_pcall_call_cast (const s_sym *type, s_list *next)
   if (! tag_init_pcall_call_cast(&list->tag, type)) {
     err_puts("list_new_pcall_call_cast: tag_init_pcall_call_cast");
     assert(! "list_new_pcall_call_cast: tag_init_pcall_call_cast");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1346,7 +1346,7 @@ s_list * list_new_pcall_copy (p_call *src, s_list *next)
   if (! tag_init_pcall_copy(&list->tag, src)) {
     err_puts("list_new_pcall_copy: tag_init_pcall_copy");
     assert(! "list_new_pcall_copy: tag_init_pcall_copy");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1364,7 +1364,7 @@ s_list * list_new_pcallable (s_list *next)
   if (! tag_init_pcallable(&list->tag)) {
     err_puts("list_new_pcallable: tag_init_pcallable");
     assert(! "list_new_pcallable: tag_init_pcallable");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1382,7 +1382,7 @@ s_list * list_new_pcallable_copy (p_callable *src, s_list *next)
   if (! tag_init_pcallable_copy(&list->tag, src)) {
     err_puts("list_new_pcallable_copy: tag_init_pcallable_copy");
     assert(! "list_new_pcallable_copy: tag_init_pcallable_copy");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1400,7 +1400,7 @@ s_list * list_new_pcomplex (p_complex c, s_list *next)
   if (! tag_init_pcomplex(&list->tag, c)) {
     err_puts("list_new_pcomplex: tag_init_pcomplex");
     assert(! "list_new_pcomplex: tag_init_pcomplex");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1418,7 +1418,7 @@ s_list * list_new_plist (p_list plist, s_list *next)
   if (! tag_init_plist(&list->tag, plist)) {
     err_puts("list_new_plist: tag_init_plist");
     assert(! "list_new_plist: tag_init_plist");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1436,7 +1436,7 @@ s_list * list_new_plist_1 (const char *p, s_list *next)
   if (! tag_init_plist_1(&list->tag, p)) {
     err_puts("list_new_plist_1: tag_init_plist_1");
     assert(! "list_new_plist_1: tag_init_plist_1");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1456,7 +1456,7 @@ s_list * list_new_pointer (const s_sym *pointer_type,
   if (! tag_init_pointer(&list->tag, pointer_type, target_type, p)) {
     err_puts("list_new_pointer: tag_init_pointer");
     assert(! "list_new_pointer: tag_init_pointer");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1474,7 +1474,7 @@ s_list * list_new_pstruct (const s_sym *module, s_list *next)
   if (! tag_init_pstruct(&list->tag, module)) {
     err_puts("list_new_pstruct: tag_init_pstruct");
     assert(! "list_new_pstruct: tag_init_pstruct");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1492,7 +1492,7 @@ s_list * list_new_pstruct_copy (p_struct *src, s_list *next)
   if (! tag_init_pstruct_copy(&list->tag, src)) {
     err_puts("list_new_pstruct_copy: tag_init_pstruct_copy");
     assert(! "list_new_pstruct_copy: tag_init_pstruct_copy");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1511,7 +1511,7 @@ s_list * list_new_pstruct_copy_data (const s_sym *module, void *data,
   if (! tag_init_pstruct_copy_data(&list->tag, module, data)) {
     err_puts("list_new_pstruct_copy_data: tag_init_pstruct_copy_data");
     assert(! "list_new_pstruct_copy_data: tag_init_pstruct_copy_data");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1531,7 +1531,7 @@ s_list * list_new_pstruct_with_data (const s_sym *module, void *data,
                                    free_data)) {
     err_puts("list_new_pstruct_with_data: tag_init_pstruct_with_data");
     assert(! "list_new_pstruct_with_data: tag_init_pstruct_with_data");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1549,7 +1549,7 @@ s_list * list_new_pstruct_with_type (s_struct_type *st, s_list *next)
   if (! tag_init_pstruct_with_type(&list->tag, st)) {
     err_puts("list_new_pstruct_with_type: tag_init_pstruct_with_type");
     assert(! "list_new_pstruct_with_type: tag_init_pstruct_with_type");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1568,7 +1568,7 @@ s_list * list_new_pstruct_type (const s_sym *module, s_list *spec,
   if (! tag_init_pstruct_type(&list->tag, module, spec)) {
     err_puts("list_new_pstruct_type: tag_init_pstruct_type");
     assert(! "list_new_pstruct_type: tag_init_pstruct_type");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1587,7 +1587,7 @@ s_list * list_new_pstruct_type_clean (s_struct_type *st,
   if (! tag_init_pstruct_type_clean(&list->tag, st, clean)) {
     err_puts("list_new_pstruct_type_clean: tag_init_pstruct_type_clean");
     assert(! "list_new_pstruct_type_clean: tag_init_pstruct_type_clean");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1605,7 +1605,7 @@ s_list * list_new_psym (const s_sym *sym, s_list *next)
   if (! tag_init_psym(&list->tag, sym)) {
     err_puts("list_new_psym: tag_init_psym");
     assert(! "list_new_psym: tag_init_psym");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1623,7 +1623,7 @@ s_list * list_new_psym_anon (const s_str *src, s_list *next)
   if (! tag_init_psym_anon(&list->tag, src)) {
     err_puts("list_new_psym_anon: tag_init_psym_anon");
     assert(! "list_new_psym_anon: tag_init_psym_anon");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1641,7 +1641,7 @@ s_list * list_new_ptr (void *p, s_list *next)
   if (! tag_init_ptr(&list->tag, p)) {
     err_puts("list_new_ptr: tag_init_ptr");
     assert(! "list_new_ptr: tag_init_ptr");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1659,7 +1659,7 @@ s_list * list_new_ptr_free (void *p, s_list *next)
   if (! tag_init_ptr_free(&list->tag, p)) {
     err_puts("list_new_ptr_free: tag_init_ptr_free");
     assert(! "list_new_ptr_free: tag_init_ptr_free");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1677,7 +1677,7 @@ s_list * list_new_pvar (const s_sym *type, s_list *next)
   if (! tag_init_pvar(&list->tag, type)) {
     err_puts("list_new_pvar: tag_init_pvar");
     assert(! "list_new_pvar: tag_init_pvar");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1695,7 +1695,7 @@ s_list * list_new_pvar_copy (p_var *src, s_list *next)
   if (! tag_init_pvar_copy(&list->tag, src)) {
     err_puts("list_new_pvar_copy: tag_init_pvar_copy");
     assert(! "list_new_pvar_copy: tag_init_pvar_copy");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1713,7 +1713,7 @@ s_list * list_new_quote (s_tag *src, s_list *next)
   if (! tag_init_quote(&list->tag, src)) {
     err_puts("list_new_quote: tag_init_quote");
     assert(! "list_new_quote: tag_init_quote");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1731,7 +1731,7 @@ s_list * list_new_quote_copy (s_quote *quote, s_list *next)
   if (! tag_init_quote_copy(&list->tag, quote)) {
     err_puts("list_new_quote_copy: tag_init_quote_copy");
     assert(! "list_new_quote_copy: tag_init_quote_copy");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1749,7 +1749,7 @@ s_list * list_new_ratio_1 (const char *p, s_list *next)
   if (! tag_init_ratio_1(&list->tag, p)) {
     err_puts("list_new_ratio_1: tag_init_ratio_1");
     assert(! "list_new_ratio_1: tag_init_ratio_1");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1767,7 +1767,7 @@ s_list * list_new_ratio (s_list *next)
   if (! tag_init_ratio(&list->tag)) {
     err_puts("list_new_ratio: tag_init_ratio");
     assert(! "list_new_ratio: tag_init_ratio");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1785,7 +1785,7 @@ s_list * list_new_ratio_copy (s_ratio *r, s_list *next)
   if (! tag_init_ratio_copy(&list->tag, r)) {
     err_puts("list_new_ratio_copy: tag_init_ratio_copy");
     assert(! "list_new_ratio_copy: tag_init_ratio_copy");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1803,7 +1803,7 @@ s_list * list_new_ratio_zero (s_list *next)
   if (! tag_init_ratio_zero(&list->tag)) {
     err_puts("list_new_ratio_zero: tag_init_ratio_zero");
     assert(! "list_new_ratio_zero: tag_init_ratio_zero");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1821,7 +1821,7 @@ s_list * list_new_s8 (s8 i, s_list *next)
   if (! tag_init_s8(&list->tag, i)) {
     err_puts("list_new_s8: tag_init_s8");
     assert(! "list_new_s8: tag_init_s8");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1839,7 +1839,7 @@ s_list * list_new_s16 (s16 i, s_list *next)
   if (! tag_init_s16(&list->tag, i)) {
     err_puts("list_new_s16: tag_init_s16");
     assert(! "list_new_s16: tag_init_s16");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1857,7 +1857,7 @@ s_list * list_new_s32 (s32 i, s_list *next)
   if (! tag_init_s32(&list->tag, i)) {
     err_puts("list_new_s32: tag_init_s32");
     assert(! "list_new_s32: tag_init_s32");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1875,7 +1875,7 @@ s_list * list_new_s64 (s64 i, s_list *next)
   if (! tag_init_s64(&list->tag, i)) {
     err_puts("list_new_s64: tag_init_s64");
     assert(! "list_new_s64: tag_init_s64");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1894,7 +1894,7 @@ s_list * list_new_str (char *p_free, uw size, const char *p,
   if (! tag_init_str(&list->tag, p_free, size, p)) {
     err_puts("list_new_str: tag_init_str");
     assert(! "list_new_str: tag_init_str");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1912,7 +1912,7 @@ s_list * list_new_str_1 (char *p_free, const char *p, s_list *next)
   if (! tag_init_str_1(&list->tag, p_free, p)) {
     err_puts("list_new_str_1: tag_init_str_1");
     assert(! "list_new_str_1: tag_init_str_1");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1930,7 +1930,7 @@ s_list * list_new_str_1_alloc (const char *p, s_list *next)
   if (! tag_init_str_1_alloc(&list->tag, p)) {
     err_puts("list_new_str_1_alloc: tag_init_str_1_alloc");
     assert(! "list_new_str_1_alloc: tag_init_str_1_alloc");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1948,7 +1948,7 @@ s_list * list_new_str_alloc (uw size, s_list *next)
   if (! tag_init_str_alloc(&list->tag, size)) {
     err_puts("list_new_str_alloc: tag_init_str_alloc");
     assert(! "list_new_str_alloc: tag_init_str_alloc");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1966,7 +1966,7 @@ s_list * list_new_str_alloc_copy (uw size, const char *p, s_list *next)
   if (! tag_init_str_alloc_copy(&list->tag, size, p)) {
     err_puts("list_new_str_alloc_copy: tag_init_str_alloc_copy");
     assert(! "list_new_str_alloc_copy: tag_init_str_alloc_copy");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -1984,7 +1984,7 @@ s_list * list_new_str_cast (p_sym *type, const s_tag *src, s_list *next)
   if (! tag_init_str_cast(&list->tag, type, src)) {
     err_puts("list_new_str_cast: tag_init_str_cast");
     assert(! "list_new_str_cast: tag_init_str_cast");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2003,7 +2003,7 @@ s_list * list_new_str_concatenate (const s_str *a, const s_str *b,
   if (! tag_init_str_concatenate(&list->tag, a, b)) {
     err_puts("list_new_str_concatenate: tag_init_str_concatenate");
     assert(! "list_new_str_concatenate: tag_init_str_concatenate");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2021,7 +2021,7 @@ s_list * list_new_str_concatenate_list (const s_list *src, s_list *next)
   if (! tag_init_str_concatenate_list(&list->tag, src)) {
     err_puts("list_new_str_concatenate_list: tag_init_str_concatenate_list");
     assert(! "list_new_str_concatenate_list: tag_init_str_concatenate_list");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2039,7 +2039,7 @@ s_list * list_new_str_concatenate_plist (p_list *src, s_list *next)
   if (! tag_init_str_concatenate_plist(&list->tag, src)) {
     err_puts("list_new_str_concatenate_plist: tag_init_str_concatenate_plist");
     assert(! "list_new_str_concatenate_plist: tag_init_str_concatenate_plist");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2057,7 +2057,7 @@ s_list * list_new_str_copy (const s_str *src, s_list *next)
   if (! tag_init_str_copy(&list->tag, src)) {
     err_puts("list_new_str_copy: tag_init_str_copy");
     assert(! "list_new_str_copy: tag_init_str_copy");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2075,7 +2075,7 @@ s_list * list_new_str_empty (s_list *next)
   if (! tag_init_str_empty(&list->tag)) {
     err_puts("list_new_str_empty: tag_init_str_empty");
     assert(! "list_new_str_empty: tag_init_str_empty");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2093,7 +2093,7 @@ s_list * list_new_str_inspect_buf (const s_buf *src, s_list *next)
   if (! tag_init_str_inspect_buf(&list->tag, src)) {
     err_puts("list_new_str_inspect_buf: tag_init_str_inspect_buf");
     assert(! "list_new_str_inspect_buf: tag_init_str_inspect_buf");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2111,7 +2111,7 @@ s_list * list_new_str_inspect_str (const s_str *src, s_list *next)
   if (! tag_init_str_inspect_str(&list->tag, src)) {
     err_puts("list_new_str_inspect_str: tag_init_str_inspect_str");
     assert(! "list_new_str_inspect_str: tag_init_str_inspect_str");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2129,7 +2129,7 @@ s_list * list_new_sw (sw i, s_list *next)
   if (! tag_init_sw(&list->tag, i)) {
     err_puts("list_new_sw: tag_init_sw");
     assert(! "list_new_sw: tag_init_sw");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2148,7 +2148,7 @@ s_list * list_new_time_add (const s_time *a, const s_time *b,
   if (! tag_init_time_add(&list->tag, a, b)) {
     err_puts("list_new_time_add: tag_init_time_add");
     assert(! "list_new_time_add: tag_init_time_add");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2166,7 +2166,7 @@ s_list * list_new_time_copy (const s_time *src, s_list *next)
   if (! tag_init_time_copy(&list->tag, src)) {
     err_puts("list_new_time_copy: tag_init_time_copy");
     assert(! "list_new_time_copy: tag_init_time_copy");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2184,7 +2184,7 @@ s_list * list_new_time_now (s_list *next)
   if (! tag_init_time_now(&list->tag)) {
     err_puts("list_new_time_now: tag_init_time_now");
     assert(! "list_new_time_now: tag_init_time_now");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2202,7 +2202,7 @@ s_list * list_new_ptuple (uw count, s_list *next)
   if (! tag_init_ptuple(&list->tag, count)) {
     err_puts("list_new_ptuple: tag_init_ptuple");
     assert(! "list_new_ptuple: tag_init_ptuple");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2220,7 +2220,7 @@ s_list * list_new_ptuple_2 (s_tag *a, s_tag *b, s_list *next)
   if (! tag_init_ptuple_2(&list->tag, a, b)) {
     err_puts("list_new_ptuple_2: tag_init_ptuple_2");
     assert(! "list_new_ptuple_2: tag_init_ptuple_2");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2238,7 +2238,7 @@ s_list * list_new_u8 (u8 i, s_list *next)
   if (! tag_init_u8(&list->tag, i)) {
     err_puts("list_new_u8: tag_init_u8");
     assert(! "list_new_u8: tag_init_u8");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2256,7 +2256,7 @@ s_list * list_new_u16 (u16 i, s_list *next)
   if (! tag_init_u16(&list->tag, i)) {
     err_puts("list_new_u16: tag_init_u16");
     assert(! "list_new_u16: tag_init_u16");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2274,7 +2274,7 @@ s_list * list_new_u32 (u32 i, s_list *next)
   if (! tag_init_u32(&list->tag, i)) {
     err_puts("list_new_u32: tag_init_u32");
     assert(! "list_new_u32: tag_init_u32");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2292,7 +2292,7 @@ s_list * list_new_u64 (u64 i, s_list *next)
   if (! tag_init_u64(&list->tag, i)) {
     err_puts("list_new_u64: tag_init_u64");
     assert(! "list_new_u64: tag_init_u64");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2310,7 +2310,7 @@ s_list * list_new_unquote_copy (s_unquote *unquote, s_list *next)
   if (! tag_init_unquote_copy(&list->tag, unquote)) {
     err_puts("list_new_unquote_copy: tag_init_unquote_copy");
     assert(! "list_new_unquote_copy: tag_init_unquote_copy");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
@@ -2328,7 +2328,7 @@ s_list * list_new_uw (uw i, s_list *next)
   if (! tag_init_uw(&list->tag, i)) {
     err_puts("list_new_uw: tag_init_uw");
     assert(! "list_new_uw: tag_init_uw");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;

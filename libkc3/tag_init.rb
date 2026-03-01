@@ -174,7 +174,7 @@ EOF
       ""
     when :init_mode_init
       "  if (! #{name}_init#{suffix}(#{name == "list" ? "" : "&"}tag->data.td_#{data_name}#{comma_args})) {
-    free(tag);
+    alloc_free(tag);
     return NULL;
   }
 "
@@ -237,7 +237,7 @@ EOF
   if (! tag_init_#{name_suffix}(&list->tag#{comma_args})) {
     err_puts("list_new_#{name_suffix}: tag_init_#{name_suffix}");
     assert(! "list_new_#{name_suffix}: tag_init_#{name_suffix}");
-    free(list);
+    alloc_free(list);
     return NULL;
   }
   return list;
