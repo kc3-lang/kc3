@@ -27,20 +27,13 @@ bool       g_memleak_enabled = false;
 void memleak_add (void *ptr, uw size, s_list *stacktrace)
 {
   char a[BUF_SIZE];
-  void *addrlist[MEMLEAK_BACKTRACE_LEN];
   s_buf buf = {0};
-  uw len;
   s_memleak *m;
   sw r;
   if (! (m = calloc(1, sizeof(s_memleak))))
     abort();
   m->ptr = ptr;
   m->size = size;
-  len = backtrace(addrlist, MEMLEAK_BACKTRACE_LEN);
-  fprintf(stderr, "DEBUG memleak_add: backtrace returned %lu frames\n",
-          (unsigned long) len);
-  m->backtrace = backtrace_symbols(addrlist, len);
-  m->backtrace_len = len;
   buf_init(&buf, false, BUF_SIZE, a);
   if ((r = buf_inspect_stacktrace(&buf, stacktrace)) < 0)
     abort();

@@ -441,10 +441,18 @@ s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
     return NULL;
   if (! env_eval_list(env_global(), *spec, &tag))
     return NULL;
-  if (tag.type != TAG_PLIST)
+  if (tag.type != TAG_PLIST) {
+    err_puts("kc3_defstruct: not a List");
+    assert(! "kc3_defstruct: not a List");
+    tag_clean(&tag);
     return NULL;
+  }
   tmp.type = TAG_PSYM;
-  tmp.data.td_psym = env_defstruct(env_global(), tag.data.td_plist);
+  if (! (tmp.data.td_psym =
+         env_defstruct(env_global(), tag.data.td_plist))) {
+    tag_clean(&tag);
+    return NULL;
+  }
   *dest = tmp;
   tag_clean(&tag);
   return dest;

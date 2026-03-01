@@ -10,7 +10,6 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-require FactW
 require HTTP.Request
 require HTTP.Response
 require Time
