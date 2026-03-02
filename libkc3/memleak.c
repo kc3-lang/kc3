@@ -29,7 +29,17 @@ void memleak_add (void *ptr, uw size, s_list *stacktrace)
   char a[BUF_SIZE];
   s_buf buf = {0};
   s_memleak *m;
+  s_memleak *check;
   sw r;
+  check = g_memleak;
+  while (check) {
+    if (check->ptr == ptr) {
+      fprintf(stderr, "memleak_add: duplicate pointer: %p (size %lu, prev size %lu)\n",
+              ptr, (unsigned long) size, (unsigned long) check->size);
+      return;
+    }
+    check = check->next;
+  }
   if (! (m = calloc(1, sizeof(s_memleak))))
     abort();
   m->ptr = ptr;
@@ -61,6 +71,7 @@ void memleak_remove (void *ptr)
     }
     m = &(*m)->next;
   }
+  fprintf(stderr, "memleak_remove: pointer not found: %p\n", ptr);
 }
 
 void memleak_remove_all (void)
