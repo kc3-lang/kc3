@@ -4,14 +4,12 @@
     width: 100%;
     background: url('/_images/iris-kc3-004.jpeg');
     background-size: 100%;
-
     div.container {
         margin: 0;
         padding: 0;
         width: 100%;
         max-width: 100%;
     }
-
     h1 {
         position: relative;
         display: block;
@@ -23,7 +21,6 @@
         background-size: 100%;
         background-position-y: 30%;
     }
-
     .kc3-1 {
         position: relative;
         display: block;
@@ -33,14 +30,18 @@
         height: 0;
         border-radius: 1rem;
         background: #fff;
-        font-size: 1.5vw;
-
+        font-size: 1.3vw;
+        a.btn {
+            font-size: 1.3vw;
+        }
+        p, ul {
+            margin-bottom: 1vw;
+        }
         & > div {
             margin: 0;
             padding: 3vw;
         }
     }
-
     div.pixels-5-15 {
         div.container {
             margin: 0 auto;
