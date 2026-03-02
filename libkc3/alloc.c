@@ -38,7 +38,7 @@ void * alloc (uw size)
   if (g_memleak_enabled && ! g_alloc_memleak_lock) {
     g_alloc_memleak_lock = true;
     env = env_global();
-    stacktrace = env ? list_new_copy_all(env->stacktrace) : NULL;
+    stacktrace = env ? env->stacktrace : NULL;
     memleak_add(a, size, stacktrace);
     g_alloc_memleak_lock = false;
   }
