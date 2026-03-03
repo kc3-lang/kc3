@@ -791,7 +791,7 @@ s_str * kc3_hostname (s_str *dest)
   s_str *result;
   size_t size;
   size = sysconf(_SC_HOST_NAME_MAX);
-  name = calloc(1, size + 1);
+  name = alloc(size + 1);
 # endif
 #endif
 #if defined(WIN32) || defined(WIN64)

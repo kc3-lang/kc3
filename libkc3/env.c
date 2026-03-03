@@ -1923,6 +1923,8 @@ s_tag * env_ignore_errors (s_env *env, s_tag *src, s_tag *dest)
 s_env * env_init (s_env *env, int *argc, char ***argv)
 {
   s_str path;
+  if (getenv("KC3_MEMLEAK"))
+    memleak_init();
   if (! env)
     env = g_kc3_env_default;
   if (! env)
@@ -1932,8 +1934,6 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   env->parent_env = g_kc3_env_global;
   g_kc3_env_global = env;
   *env = (s_env) {0};
-  if (getenv("KC3_MEMLEAK"))
-    g_memleak_enabled = true;
   if (! env_args_init(env, argc, argv))
     return NULL;
   sym_init_g_sym();
@@ -3352,7 +3352,7 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
 char * realpath(const char *path, char *resolved_path) {
   char *result;
   if (resolved_path == NULL) {
-    resolved_path = malloc(PATH_MAX);
+    resolved_path = alloc(PATH_MAX);
     if (!resolved_path) return NULL;
   }
   result = _fullpath(resolved_path, path, PATH_MAX);

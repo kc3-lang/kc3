@@ -17,7 +17,7 @@
 #include "memleak.h"
 #include <stdlib.h>
 
-static bool g_alloc_memleak_lock = false;
+static thread_local bool g_alloc_memleak_lock = false;
 
 void * alloc (uw size)
 {

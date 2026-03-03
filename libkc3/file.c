@@ -590,7 +590,7 @@ s_str * file_pwd (s_str *dest)
   if (! getcwd(buf, sizeof(buf)))
     return NULL;
   size = strlen(buf);
-  pchar = calloc(1, size + 1);
+  pchar = alloc(size + 1);
   memcpy(pchar, buf, size);
   str_init(dest, pchar, size, pchar);
   return dest;

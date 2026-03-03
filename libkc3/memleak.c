@@ -18,11 +18,14 @@
 #include "buf_inspect.h"
 #include "list.h"
 #include "memleak.h"
+#include "mutex.h"
 
 #define MEMLEAK_BACKTRACE_LEN 1024
 
-s_memleak *g_memleak = NULL;
-bool       g_memleak_enabled = false;
+s_memleak      *g_memleak = NULL;
+bool            g_memleak_enabled = false;
+static s_mutex  g_memleak_mutex = {0};
+static bool     g_memleak_mutex_init = false;
 
 void memleak_add (void *ptr, uw size, s_list *stacktrace)
 {
@@ -31,11 +34,13 @@ void memleak_add (void *ptr, uw size, s_list *stacktrace)
   s_memleak *m;
   s_memleak *check;
   sw r;
+  mutex_lock(&g_memleak_mutex);
   check = g_memleak;
   while (check) {
     if (check->ptr == ptr) {
       fprintf(stderr, "memleak_add: duplicate pointer: %p (size %lu, prev size %lu)\n",
               ptr, (unsigned long) size, (unsigned long) check->size);
+      mutex_unlock(&g_memleak_mutex);
       return;
     }
     check = check->next;
@@ -53,12 +58,14 @@ void memleak_add (void *ptr, uw size, s_list *stacktrace)
   m->next = g_memleak;
   g_memleak = m;
   buf_clean(&buf);
+  mutex_unlock(&g_memleak_mutex);
 }
 
 void memleak_remove (void *ptr)
 {
   s_memleak **m;
   s_memleak *tmp;
+  mutex_lock(&g_memleak_mutex);
   m = &g_memleak;
   while (*m) {
     if ((*m)->ptr == ptr) {
@@ -67,17 +74,20 @@ void memleak_remove (void *ptr)
       free(tmp->backtrace);
       free(tmp->env_stacktrace);
       free(tmp);
+      mutex_unlock(&g_memleak_mutex);
       return;
     }
     m = &(*m)->next;
   }
   fprintf(stderr, "memleak_remove: pointer not found: %p\n", ptr);
+  mutex_unlock(&g_memleak_mutex);
 }
 
 void memleak_remove_all (void)
 {
   s_memleak *m;
   s_memleak *next;
+  mutex_lock(&g_memleak_mutex);
   m = g_memleak;
   while (m) {
     next = m->next;
@@ -87,6 +97,16 @@ void memleak_remove_all (void)
     m = next;
   }
   g_memleak = NULL;
+  mutex_unlock(&g_memleak_mutex);
+}
+
+void memleak_init (void)
+{
+  if (g_memleak_mutex_init)
+    return;
+  mutex_init(&g_memleak_mutex);
+  g_memleak_mutex_init = true;
+  g_memleak_enabled = true;
 }
 
 void memleak_report (void)
