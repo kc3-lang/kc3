@@ -3854,11 +3854,12 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
     count = depth;
   if (! count)
     return 0;
-  if (! (trace = alloc(count * sizeof(s_tag *))))
+  if (! (trace = calloc(count, sizeof(s_tag *))))
     return -1;
   pretty_save_init(&pretty_save, &buf->pretty);
   pretty_indent_at_column(&buf->pretty, 0);
   if ((r = buf_write_1(buf, "Stacktrace:\n")) < 0) {
+    free(trace);
     pretty_save_clean(&pretty_save, &buf->pretty);
     return r;
   }
@@ -3907,6 +3908,7 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
   }
   r = result;
  clean:
+  free(trace);
   list_delete_all(reverse);
   pretty_save_clean(&pretty_save, &buf->pretty);
   return r;

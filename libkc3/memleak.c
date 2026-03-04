@@ -49,7 +49,9 @@ void memleak_add (void *ptr, uw size, s_list *stacktrace)
     abort();
   m->ptr = ptr;
   m->size = size;
-  buf_init(&buf, false, BUF_SIZE, a);
+  buf.line = 1;
+  buf.ptr.p_pchar = a;
+  buf.size = BUF_SIZE;
   if ((r = buf_inspect_stacktrace(&buf, stacktrace)) < 0)
     abort();
   if (! (m->env_stacktrace = calloc(1, buf.wpos + 1)))
@@ -57,7 +59,6 @@ void memleak_add (void *ptr, uw size, s_list *stacktrace)
   memcpy(m->env_stacktrace, buf.ptr.p_pchar, buf.wpos);
   m->next = g_memleak;
   g_memleak = m;
-  buf_clean(&buf);
   mutex_unlock(&g_memleak_mutex);
 }
 
