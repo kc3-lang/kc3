@@ -15,6 +15,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../libkc3/alloc.h"
 #include "../libkc3/buf.h"
 #include "../libkc3/str.h"
 #include "test.h"
@@ -36,7 +37,7 @@
     test_context(# test " -> " # expected);                            \
     TEST_EQ(test, len);                                                \
     TEST_EQ(buf.wpos, pos + len);                                      \
-    TEST_STRNCMP(buf.ptr.p_pchar + pos, expected, len);                  \
+    TEST_STRNCMP(buf.ptr.p_pchar + pos, expected, len);                \
   } while (0)
 
 #define BUF_TEST_IGNORE(test, count, expected)                         \
@@ -265,7 +266,7 @@ TEST_CASE(buf_init_clean)
   TEST_EQ(buf.wpos, 0);
   BUF_TEST_CLEAN(buf);
   len = 4;
-  m = malloc(len);
+  m = alloc(len);
   memcpy(m, "test", len);
   buf_init(&buf, true, len, m);
   TEST_EQ(buf.size, len);
@@ -290,7 +291,7 @@ TEST_CASE(buf_new_delete)
   TEST_EQ(buf->wpos, 0);
   BUF_TEST_DELETE(buf);
   len = 4;
-  m = malloc(len);
+  m = alloc(len);
   memcpy(m, "test", len);
   TEST_ASSERT((buf = buf_new(true, len, m)));
   TEST_EQ(buf->size, len);
