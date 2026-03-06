@@ -3877,7 +3877,7 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
     if ((r = buf_write_1(buf, ": ")) < 0)
       goto clean;
     result += r;
-    if (trace[i]->type == TAG_PLIST) {
+    if (trace[i]->type == TAG_PLIST && trace[i]->data.td_plist) {
       if ((r = buf_inspect_tag(buf, &trace[i]->data.td_plist->tag)) < 0)
         goto clean;
       result += r;

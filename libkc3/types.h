@@ -461,6 +461,8 @@ struct memleak {
   uw          backtrace_len;
   char       *env_stacktrace;
   s_memleak  *next;
+  s_memleak  *prev;
+  s_memleak  *hash_next;
 };
 
 struct mutex {
