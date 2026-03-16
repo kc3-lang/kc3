@@ -26,6 +26,8 @@ defmodule Socket.Buf do
 
   def accept = cfn Socket.Buf "socket_buf_init_accept" (Result, Socket)
 
+  def clean = cfn Void "socket_buf_clean" (Socket.Buf)
+
   def close = cfn Void "socket_buf_close" (Socket.Buf)
 
   def can_close? = cfn Bool "socket_buf_can_close" (Socket.Buf)

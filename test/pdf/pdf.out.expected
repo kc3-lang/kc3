@@ -57,12 +57,13 @@ PDF.parse_str("<< /Length 3 >>\n")
 PDF.parse_str("1 0 obj << /Length 3 >> stream\n123\nendstream\n")
 {:indirect_object, (U32) 1, (U16) 0, %PDF.Stream{dictionnary: %{Length: 3},
                                                  offset: (S64) 31,
-                                                 length: (S64) 3}}
+                                                 length: (S64) 3,
+                                                 buf: (Ptr) 0}}
 PDF.parse_str("<</Size 333187>>\n")
 %{Size: 333187}
 PDF.name_list_delete_all()
 void
-file = PDF.parse_file("pdf.pdf")
+file1 = PDF.parse_file("pdf.pdf")
 pdf_buf_parse_string: str = "/Helv 0 Tf 0 g "
 pdf_buf_parse_string: str = "/Helv 0 Tf 0 g "
 pdf_buf_parse_string: str = "/A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P/Q/R/S/T/U/V/W/X/Y/Z/a/asterisk/b/bracketleft/bracketright/c/colon/comma/d/e/eacute/eight/f/five/four/g/h/hyphen/i/j/k/l/m/n/nine/numbersign/o/one/p/parenleft/parenright/percent/period/q/quotedbl/quotedblleft/quotedblright/\rquoteright/quotesingle/r/s/seven/six/slash/space/t/three/two/u/underscore/v/w/x/y/z/zero"
@@ -3509,7 +3510,8 @@ pdf_buf_parse_string: str = "Numbers"
                                                                   Length: 5879,
                                                                   Subtype: Type1C},
                                                    offset: (S64) 192041,
-                                                   length: (S64) 5879},
+                                                   length: (S64) 5879,
+                                                   buf: (Ptr) 0},
                   {333196, (U16) 0} => %{Ascent: 716,
                                          CapHeight: 678,
                                          CharSet: "/A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P/Q/R/S/T/U/V/W/X/Y/Z/a/asterisk/b/bracketleft/bracketright/c/colon/comma/d/e/eacute/eight/f/five/four/g/h/hyphen/i/j/k/l/m/n/nine/numbersign/o/one/p/parenleft/parenright/percent/period/q/quotedbl/quotedblleft/quotedblright/\rquoteright/quotesingle/r/s/seven/six/slash/space/t/three/two/u/underscore/v/w/x/y/z/zero",
@@ -3529,7 +3531,8 @@ pdf_buf_parse_string: str = "Numbers"
                   {333197, (U16) 0} => %PDF.Stream{dictionnary: %{Filter: FlateDecode,
                                                                   Length: 306},
                                                    offset: (S64) 198572,
-                                                   length: (S64) 306},
+                                                   length: (S64) 306,
+                                                   buf: (Ptr) 0},
                   {333198, (U16) 0} => %{Differences: [32,
                                                        :space,
                                                        34,
@@ -3628,7 +3631,8 @@ pdf_buf_parse_string: str = "Numbers"
                   {333199, (U16) 0} => %PDF.Stream{dictionnary: %{Filter: FlateDecode,
                                                                   Length: 422},
                                                    offset: (S64) 199384,
-                                                   length: (S64) 422},
+                                                   length: (S64) 422,
+                                                   buf: (Ptr) 0},
                   {333200, (U16) 0} => %{BaseFont: EDJOKN+MinionPro-Bold,
                                          Encoding: {:indirect_object, 333204, (U16) 0},
                                          FirstChar: 32,
@@ -3784,7 +3788,8 @@ pdf_buf_parse_string: str = "Numbers"
                                                                   Length: 5979,
                                                                   Subtype: Type1C},
                                                    offset: (S64) 200647,
-                                                   length: (S64) 5979},
+                                                   length: (S64) 5979,
+                                                   buf: (Ptr) 0},
                   {333202, (U16) 0} => %{Ascent: 707,
                                          CapHeight: 679,
                                          CharSet: "/space/A/d/o/b/e/registered/P/r/t/a/l/D/c/u/m/n/F/V/s/i/one/period/seven/T/H/I/S/U/B/L/C/O/N/E/R/M/comma/Y/J/G/W/hyphen/K/parenleft/X/parenright/bullet/quotedblright/four/zero/five/six/nine/eight/two/three",
@@ -3803,7 +3808,8 @@ pdf_buf_parse_string: str = "Numbers"
                   {333203, (U16) 0} => %PDF.Stream{dictionnary: %{Filter: FlateDecode,
                                                                   Length: 318},
                                                    offset: (S64) 207120,
-                                                   length: (S64) 318},
+                                                   length: (S64) 318,
+                                                   buf: (Ptr) 0},
                   {333204, (U16) 0} => %{Differences: [32,
                                                        :space,
                                                        40,
@@ -8023,7 +8029,8 @@ pdf_buf_parse_string: str = "Numbers"
                                                                       2,
                                                                       1]},
                                                    offset: (S64) 186455,
-                                                   length: (S64) 3663},
+                                                   length: (S64) 3663,
+                                                   buf: (Ptr) 0},
                   {334003, (U16) 0} => %PDF.Stream{dictionnary: %{C: 253409,
                                                                   E: 253393,
                                                                   Filter: FlateDecode,
@@ -8033,7 +8040,8 @@ pdf_buf_parse_string: str = "Numbers"
                                                                   S: 172953,
                                                                   V: 253371},
                                                    offset: (S64) 17111,
-                                                   length: (S64) 169179}},
+                                                   length: (S64) 169179,
+                                                   buf: (Ptr) 0}},
           header: "%PDF-1.4",
           name_list: (Ptr) 1,
           trailer: %PDF.Trailer{dictionnary: %{Size: 333187},
@@ -8855,7 +8863,7 @@ pdf_buf_parse_string: str = "Numbers"
                   {334001, (U16) 0} => (U64) 308464,
                   {334002, (U16) 0} => (U64) 186309,
                   {334003, (U16) 0} => (U64) 17000}}
-file = PDF.parse_file("pdf.ekc3.pdf")
+file2 = PDF.parse_file("pdf.ekc3.pdf")
 pdf_buf_parse_string: str = "\xFF)\xCCh-p\x92t\xA4>H\xCBS\xE2\xB1\xD8"
 pdf_buf_parse_string: str = "\xFF)\xCCh-p\x92t\xA4>H\xCBS\xE2\xB1\xD8"
 pdf_buf_parse_string: str = "\xFE\xFF\0S\0h\0e\0e\0t\01"
@@ -8881,7 +8889,8 @@ pdf_buf_parse_string: str = "D:20250917203929+02'00'"
                   {(U32) 2, (U16) 0} => %PDF.Stream{dictionnary: %{Filter: FlateDecode,
                                                                    Length: {:indirect_object, (U32) 3, (U16) 0}},
                                                     offset: (S64) 71,
-                                                    length: (S64) 0},
+                                                    length: (S64) 0,
+                                                    buf: (Ptr) 0},
                   {(U32) 3, (U16) 0} => 1331,
                   {(U32) 4, (U16) 0} => %{K: [{:indirect_object, (U32) 5, (U16) 0}],
                                           P: {:indirect_object, (U32) 316, (U16) 0},
@@ -10444,7 +10453,8 @@ pdf_buf_parse_string: str = "D:20250917203929+02'00'"
                                                                      Type: XObject,
                                                                      Width: 400},
                                                       offset: (S64) 1585,
-                                                      length: (S64) 8725},
+                                                      length: (S64) 8725,
+                                                      buf: (Ptr) 0},
                   {(U32) 300, (U16) 0} => %{Count: 1,
                                             Kids: [{:indirect_object, (U32) 1, (U16) 0}],
                                             Resources: {:indirect_object, (U32) 312, (U16) 0},
@@ -10453,7 +10463,8 @@ pdf_buf_parse_string: str = "D:20250917203929+02'00'"
                                                                      Length: {:indirect_object, (U32) 302, (U16) 0},
                                                                      Length1: 15332},
                                                       offset: (S64) 10399,
-                                                      length: (S64) 0},
+                                                      length: (S64) 0,
+                                                      buf: (Ptr) 0},
                   {(U32) 302, (U16) 0} => 9395,
                   {(U32) 303, (U16) 0} => %{Ascent: 905,
                                             CapHeight: 979,
@@ -10471,7 +10482,8 @@ pdf_buf_parse_string: str = "D:20250917203929+02'00'"
                   {(U32) 304, (U16) 0} => %PDF.Stream{dictionnary: %{Filter: FlateDecode,
                                                                      Length: 384},
                                                       offset: (S64) 20086,
-                                                      length: (S64) 384},
+                                                      length: (S64) 384,
+                                                      buf: (Ptr) 0},
                   {(U32) 305, (U16) 0} => %{BaseFont: BAAAAA+LiberationSans,
                                             FirstChar: 0,
                                             FontDescriptor: {:indirect_object, (U32) 303, (U16) 0},
@@ -10520,7 +10532,8 @@ pdf_buf_parse_string: str = "D:20250917203929+02'00'"
                                                                      Length: {:indirect_object, (U32) 307, (U16) 0},
                                                                      Length1: 12064},
                                                       offset: (S64) 20866,
-                                                      length: (S64) 0},
+                                                      length: (S64) 0,
+                                                      buf: (Ptr) 0},
                   {(U32) 307, (U16) 0} => 7613,
                   {(U32) 308, (U16) 0} => %{Ascent: 905,
                                             CapHeight: 1033,
@@ -10538,7 +10551,8 @@ pdf_buf_parse_string: str = "D:20250917203929+02'00'"
                   {(U32) 309, (U16) 0} => %PDF.Stream{dictionnary: %{Filter: FlateDecode,
                                                                      Length: 334},
                                                       offset: (S64) 28778,
-                                                      length: (S64) 334},
+                                                      length: (S64) 334,
+                                                      buf: (Ptr) 0},
                   {(U32) 310, (U16) 0} => %{BaseFont: CAAAAA+LiberationSans-Bold,
                                             FirstChar: 0,
                                             FontDescriptor: {:indirect_object, (U32) 308, (U16) 0},
@@ -10595,7 +10609,8 @@ pdf_buf_parse_string: str = "D:20250917203929+02'00'"
                                                                      Subtype: XML,
                                                                      Type: Metadata},
                                                       offset: (S64) 29929,
-                                                      length: (S64) 4973},
+                                                      length: (S64) 4973,
+                                                      buf: (Ptr) 0},
                   {(U32) 316, (U16) 0} => %{K: [{:indirect_object, (U32) 4, (U16) 0}],
                                             ParentTree: {:indirect_object, (U32) 317, (U16) 0},
                                             RoleMap: %{Workbook: Document,

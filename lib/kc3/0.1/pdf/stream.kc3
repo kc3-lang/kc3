@@ -21,8 +21,10 @@ defmodule PDF.Stream do
 
   defstruct [dictionnary: %{},
              offset: (S64) 0,
-             length: (S64) 0]
+             length: (S64) 0,
+             buf: (Ptr) 0]
 
+  def clean = cfn Void "pdf_stream_clean" (PDF.Stream)
   def delete = cfn Void "pdf_stream_delete" (PDF.Stream*)
   def new = cfn PDF.Stream* "pdf_stream_new" (Result)
 

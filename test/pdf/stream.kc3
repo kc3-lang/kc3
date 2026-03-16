@@ -20,3 +20,5 @@ quote PDF.parse_str("9 0 obj << /Length 8 >> stream\n\x01\x02\x03\x04test\nendst
 PDF.parse_str("9 0 obj << /Length 8 >> stream\n\x01\x02\x03\x04test\nendstream\nendobj")
 quote PDF.parse_str("10 0 obj << /Length 4 /Resources << /Font << /F1 11 0 R >> >> >> stream\ntext\nendstream\nendobj")
 PDF.parse_str("10 0 obj << /Length 4 /Resources << /Font << /F1 11 0 R >> >> >> stream\ntext\nendstream\nendobj")
+quote PDF.name_list_delete_all()
+PDF.name_list_delete_all()

@@ -116,7 +116,7 @@ void memleak_remove (void *ptr)
     }
     h = &(*h)->hash_next;
   }
-  if (false)
+  if (true)
     fprintf(stderr, "memleak_remove: pointer not found: %p\n", ptr);
   mutex_unlock(&g_memleak_mutex);
 }

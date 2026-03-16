@@ -148,14 +148,16 @@ defmodule HTTPd do
           "Accept-Ranges", "bytes")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
-        kq_ok = KQueue.add(HTTPd.kq_fd, client.sockfd,
-                           HTTPd.timeout, client.ptag) == 0
-        error = ((r <= 0) || (! kq_ok))
         dt = Time.now() - request.time
         dt_str = Time.diff_to_str(dt)
         IO.puts("#{response.code} #{client_addr} #{request.method}" +
           " #{request.url} #{inspect(user_agent)}" +
           " #{dt_str}")
+        if (! close) do
+          kq_ok = KQueue.add(HTTPd.kq_fd, client.sockfd,
+                             HTTPd.timeout, client.ptag) == 0
+        end
+        error = ((r <= 0) || ((! close) && (! kq_ok)))
         if (response.code >= 400) do
           Err.puts("#{response.code} #{client_addr} #{request.method}" +
             " #{request.url} #{inspect(user_agent)}" +

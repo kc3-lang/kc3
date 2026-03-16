@@ -495,7 +495,6 @@ void env_clean (s_env *env)
     g_kc3_env_default = NULL;
     if (g_memleak_enabled) {
       memleak_report();
-      g_memleak_enabled = false;
       memleak_remove_all();
     }
   }

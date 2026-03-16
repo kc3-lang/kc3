@@ -65,4 +65,7 @@ PDF.parse_str("333195 0 obj<</Subtype/Type1C/Length 3/Filter/FlateDecode>>stream
                                                                Length: 3,
                                                                Subtype: Type1C},
                                                 offset: (S64) 67,
-                                                length: (S64) 3}}
+                                                length: (S64) 3,
+                                                buf: (Ptr) 0}}
+PDF.name_list_delete_all()
+void
