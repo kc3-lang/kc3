@@ -53,6 +53,7 @@ static s_epoll_entry * entry_alloc (s64 fd)
     return existing;
   while (i < EPOLL_MAX_ENTRIES) {
     if (! g_entries[i].active) {
+      memset(&g_entries[i], 0, sizeof(s_epoll_entry));
       g_entries[i].fd = fd;
       g_entries[i].active = true;
       return &g_entries[i];
@@ -68,6 +69,8 @@ static void entry_free (s64 fd)
   if (e) {
     e->active = false;
     e->has_timeout = false;
+    e->udata = NULL;
+    e->fd = -1;
   }
 }
 
