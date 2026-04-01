@@ -24,6 +24,7 @@ all:
 	${MAKE} -C image all
 	${MAKE} -C json all
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue; fi
+	if [ "x${ARCH}" = "xlinux" ]; then ${MAKE} -C epoll; fi
 	${MAKE} -C markdown all
 	${MAKE} -C pdf all
 	${MAKE} -C qrencode all
@@ -88,6 +89,7 @@ build:
 	${MAKE} -C image build
 	${MAKE} -C json build
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue build; fi
+	if [ "x${ARCH}" = "xlinux" ]; then ${MAKE} -C epoll; fi
 	${MAKE} -C markdown build
 	${MAKE} -C pdf build
 	${MAKE} -C qrencode build
@@ -114,6 +116,7 @@ clean::
 	${MAKE} -C image clean
 	${MAKE} -C json clean
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue clean; fi
+	if [ "x${ARCH}" = "xlinux" ]; then ${MAKE} -C epoll clean; fi
 	${MAKE} -C markdown clean
 	${MAKE} -C pdf clean
 	${MAKE} -C qrencode clean
@@ -137,6 +140,7 @@ clean_cov::
 	${MAKE} -C image clean_cov
 	${MAKE} -C json clean_cov
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue clean_cov; fi
+	if [ "x${ARCH}" = "xlinux" ]; then ${MAKE} -C epoll clean_cov; fi
 	${MAKE} -C markdown clean_cov
 	${MAKE} -C pdf clean_cov
 	${MAKE} -C qrencode clean_cov
@@ -171,6 +175,7 @@ cov:
 	${MAKE} -C image cov
 	${MAKE} -C json cov
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue cov; fi
+	if [ "x${ARCH}" = "xlinux" ]; then ${MAKE} -C epoll cov; fi
 	${MAKE} -C markdown cov
 	${MAKE} -C pdf cov
 	${MAKE} -C qrencode cov
@@ -202,6 +207,7 @@ debug:
 	${MAKE} -C image debug
 	${MAKE} -C json debug
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue debug; fi
+	if [ "x${ARCH}" = "xlinux" ]; then ${MAKE} -C epoll debug; fi
 	${MAKE} -C markdown debug
 	${MAKE} -C pdf debug
 	${MAKE} -C qrencode debug
@@ -807,6 +813,7 @@ install:
 	${MAKE} -C image install
 	${MAKE} -C json install
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue install; fi
+	if [ "x${ARCH}" = "xlinux" ]; then ${MAKE} -C epoll install; fi
 	${MAKE} -C markdown install
 	${MAKE} -C pdf install
 	${MAKE} -C qrencode install
@@ -1161,6 +1168,7 @@ lib_links_linux:
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp.${SHARED_EXT} lib/kc3/0.1/smtp.so
+	ln -sf ../../../epoll/libkc3_epoll.${SHARED_EXT} lib/kc3/0.1/epoll.so
 
 lib_links_linux_asan:
 	ln -sf ../../../ekc3/libekc3_asan.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1175,6 +1183,7 @@ lib_links_linux_asan:
 	ln -sf ../../../pdf/libkc3_pdf_asan.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_asan.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_asan.${SHARED_EXT} lib/kc3/0.1/smtp.so
+	ln -sf ../../../epoll/libkc3_epoll_asan.${SHARED_EXT} lib/kc3/0.1/epoll.so
 
 lib_links_linux_cov:
 	ln -sf ../../../ekc3/libekc3_cov.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1189,6 +1198,7 @@ lib_links_linux_cov:
 	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_cov.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_cov.${SHARED_EXT} lib/kc3/0.1/smtp.so
+	ln -sf ../../../epoll/libkc3_epoll_cov.${SHARED_EXT} lib/kc3/0.1/epoll.so
 
 lib_links_linux_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1203,6 +1213,7 @@ lib_links_linux_debug:
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_debug.${SHARED_EXT} lib/kc3/0.1/smtp.so
+	ln -sf ../../../epoll/libkc3_epoll_debug.${SHARED_EXT} lib/kc3/0.1/epoll.so
 
 lib_links_openbsd:
 	ln -sf ../../../ekc3/libekc3.${SHARED_EXT} lib/kc3/0.1/ekc3.so
