@@ -140,11 +140,12 @@ s64 kc3_epoll_add (s64 epfd, s64 fd, s_tag *timeout, s_tag **udata)
   else {
     entry->has_timeout = false;
   }
-  pthread_mutex_unlock(&g_entries_mutex);
   if (epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &ev) < 0) {
     if (errno == ENOENT) {
       if (epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev) < 0) {
         e = errno;
+        entry_free(fd);
+        pthread_mutex_unlock(&g_entries_mutex);
         err_write_1("kc3_epoll_add: epoll_ctl ADD: ");
         err_puts(strerror(e));
         assert(! "kc3_epoll_add: epoll_ctl ADD");
@@ -153,12 +154,15 @@ s64 kc3_epoll_add (s64 epfd, s64 fd, s_tag *timeout, s_tag **udata)
     }
     else {
       e = errno;
+      entry_free(fd);
+      pthread_mutex_unlock(&g_entries_mutex);
       err_write_1("kc3_epoll_add: epoll_ctl MOD: ");
       err_puts(strerror(e));
       assert(! "kc3_epoll_add: epoll_ctl MOD");
       return -1;
     }
   }
+  pthread_mutex_unlock(&g_entries_mutex);
   return 0;
 }
 
