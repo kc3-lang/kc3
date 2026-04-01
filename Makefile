@@ -1266,6 +1266,7 @@ lib_links_openbsd_debug:
 
 lib_links_clean:
 	rm -f lib/kc3/0.1/ekc3.so
+	rm -f lib/kc3/0.1/epoll.so
 	rm -f lib/kc3/0.1/event.so
 	rm -f lib/kc3/0.1/git.so
 	rm -f lib/kc3/0.1/gl.so
