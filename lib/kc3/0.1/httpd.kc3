@@ -19,7 +19,7 @@ require HTTP
 require HTTP.Request
 require HTTP.Response
 require HTTPd.Route
-require KQueue
+require EPoll
 require Socket
 require Socket.Buf
 require Str
@@ -36,7 +36,7 @@ defmodule HTTPd do
 
   def connections_max = fn () { ncpu() * 4 }
 
-  def kq_fd = ?
+  def ep_fd = ?
 
   def requests = Counter.new(0)
 
@@ -154,7 +154,7 @@ defmodule HTTPd do
           " #{request.url} #{inspect(user_agent)}" +
           " #{dt_str}")
         if (! close) do
-          kq_ok = KQueue.add(HTTPd.kq_fd, client.sockfd,
+          kq_ok = EPoll.add(HTTPd.ep_fd, client.sockfd,
                              HTTPd.timeout, client.ptag) == 0
         end
         error = ((r <= 0) || ((! close) && (! kq_ok)))
@@ -167,8 +167,8 @@ defmodule HTTPd do
     end, do
       Counter.decrease(HTTPd.concurrent_requests, 1)
       if (error || close) && Socket.Buf.can_close?(client) do
-        KQueue.delete(HTTPd.kq_fd, socket, :timer)
-        KQueue.delete(HTTPd.kq_fd, socket, :read)
+        EPoll.delete(HTTPd.ep_fd, socket, :timer)
+        EPoll.delete(HTTPd.ep_fd, socket, :read)
         Tag.delete(client.ptag)
         Socket.Buf.close(client)
         File.close(socket)
@@ -191,9 +191,9 @@ defmodule HTTPd do
         Counter.increase(HTTPd.connections, 1)
         count = Counter.get(HTTPd.connections)
         puts("HTTPd.acceptor: connections=#{count}")
-        ok = (KQueue.add(HTTPd.kq_fd, server_socket, void,
+        ok = (EPoll.add(HTTPd.ep_fd, server_socket, void,
                          HTTPd.acceptor_tag) == 0 &&
-              KQueue.add(HTTPd.kq_fd, client.sockfd, HTTPd.timeout,
+              EPoll.add(HTTPd.ep_fd, client.sockfd, HTTPd.timeout,
                          client.ptag) == 0)
       end
     end, do
@@ -219,7 +219,7 @@ defmodule HTTPd do
   def server_thread = fn () {
     while ! Counter.get(HTTPd.server_thread_stop) do
       ignore_errors(do
-        r = KQueue.poll(HTTPd.kq_fd, %Time{tv_sec: 1})
+        r = EPoll.poll(HTTPd.ep_fd, %Time{tv_sec: 1})
         match r do
           {sockfd, :eof, :acceptor} ->
             File.close(sockfd)
@@ -228,7 +228,7 @@ defmodule HTTPd do
             HTTPd.acceptor(sockfd)
           {sockfd, :eof, {:client, client}} ->
             if Socket.Buf.can_close?(client) do
-              KQueue.delete(HTTPd.kq_fd, sockfd, :timer)
+              EPoll.delete(HTTPd.ep_fd, sockfd, :timer)
               Tag.delete(client.ptag)
               Socket.Buf.close(client)
               File.close(sockfd)
@@ -240,7 +240,7 @@ defmodule HTTPd do
             HTTPd.http_client(sockfd, client)
           {sockfd, :timer, {:client, client}} ->
             if Socket.Buf.can_close?(client) do
-              KQueue.delete(HTTPd.kq_fd, sockfd, :read)
+              EPoll.delete(HTTPd.ep_fd, sockfd, :read)
               Tag.delete(client.ptag)
               Socket.Buf.close(client)
               File.close(sockfd)
@@ -287,8 +287,8 @@ defmodule HTTPd do
       pledge("stdio rpath wpath cpath fattr inet dns", "")
       IO.puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
-      if (HTTPd.kq_fd <- KQueue.kqueue()) > 0 do
-        KQueue.add(HTTPd.kq_fd, socket.fd, void, HTTPd.acceptor_tag)
+      if (HTTPd.ep_fd <- EPoll.epoll()) > 0 do
+        EPoll.add(HTTPd.ep_fd, socket.fd, void, HTTPd.acceptor_tag)
         if HTTPd.thread_count() > 1 do
           threads = List.map(List.count(HTTPd.thread_count() - 1),
             HTTPd.server_thread_new)
@@ -299,7 +299,7 @@ defmodule HTTPd do
         end
         Counter.delete(HTTPd.connections)
         Counter.delete(HTTPd.server_thread_stop)
-        File.close(HTTPd.kq_fd)
+        File.close(HTTPd.ep_fd)
         Socket.close(HTTPd.socket)
         Tag.delete(HTTPd.acceptor_tag)
         if Module.has_symbol?(Config, :at_exit) do
@@ -307,7 +307,7 @@ defmodule HTTPd do
         end
         0
       else
-        Err.puts("KC3 HTTPd: KQueue.kqueue")
+        Err.puts("KC3 HTTPd: EPoll.epoll")
         -1
       end
     else
