@@ -71,6 +71,8 @@ asan:
 	if ${HAVE_GL}; then ${MAKE} -C gl asan; fi
 	if ${HAVE_GL}; then ${MAKE} -C window asan; fi
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 asan; fi
+	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue asan; fi
+	if [ "x${ARCH}" = "xlinux" ]; then ${MAKE} -C epoll asan; fi
 
 assets:
 	make -C test/httpd/assets
@@ -89,7 +91,7 @@ build:
 	${MAKE} -C image build
 	${MAKE} -C json build
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue build; fi
-	if [ "x${ARCH}" = "xlinux" ]; then ${MAKE} -C epoll; fi
+	if [ "x${ARCH}" = "xlinux" ]; then ${MAKE} -C epoll build; fi
 	${MAKE} -C markdown build
 	${MAKE} -C pdf build
 	${MAKE} -C qrencode build
@@ -384,6 +386,8 @@ distclean::
 	${MAKE} -C gl distclean
 	${MAKE} -C window distclean
 	${MAKE} -C gtk4 distclean
+	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue distclean; fi
+	if [ "x${ARCH}" = "xlinux" ]; then ${MAKE} -C epoll distclean; fi
 
 dump:
 	${MAKE} clean_dump
