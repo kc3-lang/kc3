@@ -92,7 +92,9 @@ s64 kc3_epoll (void)
 {
   s32 e;
   s32 r;
+  pthread_mutex_lock(&g_entries_mutex);
   memset(g_entries, 0, sizeof(g_entries));
+  pthread_mutex_unlock(&g_entries_mutex);
   if ((r = epoll_create1(EPOLL_CLOEXEC)) < 0) {
     e = errno;
     err_write_1("kc3_epoll: epoll_create1: ");
