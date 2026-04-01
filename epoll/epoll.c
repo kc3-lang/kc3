@@ -204,14 +204,49 @@ s_tag * kc3_epoll_poll (s64 epfd, s_tag *timeout, s_tag *dest)
   struct epoll_event event = {0};
   const s_sym *event_type;
   s_epoll_entry *entry;
+  s64 expired_fd;
   uw i;
   s32 r;
-  s32 timeout_ms = 1000;
+  s32 timeout_ms = -1;
   s_tag *udata;
   if (timeout && timeout->type == TAG_TIME) {
     s_time *t = &timeout->data.td_time;
     timeout_ms = t->tv_sec * 1000 + t->tv_nsec / 1000000;
   }
+  pthread_mutex_lock(&g_entries_mutex);
+  i = 0;
+  while (i < EPOLL_MAX_ENTRIES) {
+    if (g_entries[i].active && g_entries[i].has_timeout &&
+        timespec_expired(&g_entries[i].deadline)) {
+      expired_fd = g_entries[i].fd;
+      udata = g_entries[i].udata;
+      g_entries[i].has_timeout = false;
+      if (! tag_init_ptuple(dest, 3)) {
+        pthread_mutex_unlock(&g_entries_mutex);
+        return NULL;
+      }
+      if (! tag_init_s64(dest->data.td_ptuple->tag, expired_fd) ||
+          ! tag_init_psym(dest->data.td_ptuple->tag + 1,
+                          &g_sym_timer)) {
+        pthread_mutex_unlock(&g_entries_mutex);
+        tag_clean(dest);
+        return NULL;
+      }
+      if (udata) {
+        if (! tag_init_copy(dest->data.td_ptuple->tag + 2, udata)) {
+          pthread_mutex_unlock(&g_entries_mutex);
+          tag_clean(dest);
+          return NULL;
+        }
+      }
+      else
+        tag_init_void(dest->data.td_ptuple->tag + 2);
+      pthread_mutex_unlock(&g_entries_mutex);
+      return dest;
+    }
+    i++;
+  }
+  pthread_mutex_unlock(&g_entries_mutex);
   r = epoll_wait(epfd, &event, 1, timeout_ms);
   if (r < 0) {
     e = errno;
@@ -226,57 +261,33 @@ s_tag * kc3_epoll_poll (s64 epfd, s_tag *timeout, s_tag *dest)
     pthread_mutex_lock(&g_entries_mutex);
     entry = entry_find(event.data.fd);
     udata = entry ? entry->udata : NULL;
-    pthread_mutex_unlock(&g_entries_mutex);
+    if (entry)
+      entry->has_timeout = false;
     if (event.events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR))
       event_type = &g_sym_eof;
     else
       event_type = &g_sym_read;
-    if (! tag_init_ptuple(dest, 3))
+    if (! tag_init_ptuple(dest, 3)) {
+      pthread_mutex_unlock(&g_entries_mutex);
       return NULL;
+    }
     if (! tag_init_s64(dest->data.td_ptuple->tag, event.data.fd) ||
         ! tag_init_psym(dest->data.td_ptuple->tag + 1, event_type)) {
+      pthread_mutex_unlock(&g_entries_mutex);
       tag_clean(dest);
       return NULL;
     }
     if (udata) {
       if (! tag_init_copy(dest->data.td_ptuple->tag + 2, udata)) {
+        pthread_mutex_unlock(&g_entries_mutex);
         tag_clean(dest);
         return NULL;
       }
     }
     else
       tag_init_void(dest->data.td_ptuple->tag + 2);
+    pthread_mutex_unlock(&g_entries_mutex);
     return dest;
   }
-  pthread_mutex_lock(&g_entries_mutex);
-  i = 0;
-  while (i < EPOLL_MAX_ENTRIES) {
-    if (g_entries[i].active && g_entries[i].has_timeout &&
-        timespec_expired(&g_entries[i].deadline)) {
-      s64 fd = g_entries[i].fd;
-      udata = g_entries[i].udata;
-      g_entries[i].has_timeout = false;
-      pthread_mutex_unlock(&g_entries_mutex);
-      if (! tag_init_ptuple(dest, 3))
-        return NULL;
-      if (! tag_init_s64(dest->data.td_ptuple->tag, fd) ||
-          ! tag_init_psym(dest->data.td_ptuple->tag + 1,
-                          &g_sym_timer)) {
-        tag_clean(dest);
-        return NULL;
-      }
-      if (udata) {
-        if (! tag_init_copy(dest->data.td_ptuple->tag + 2, udata)) {
-          tag_clean(dest);
-          return NULL;
-        }
-      }
-      else
-        tag_init_void(dest->data.td_ptuple->tag + 2);
-      return dest;
-    }
-    i++;
-  }
-  pthread_mutex_unlock(&g_entries_mutex);
   return tag_init_void(dest);
 }
