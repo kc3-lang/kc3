@@ -1860,6 +1860,9 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
       if (! log_entry) {
         err_puts("facts_remove_fact_local: alloc log_entry");
         assert(! "facts_remove_fact_local: alloc log_entry");
+#if HAVE_PTHREAD
+        rwlock_unlock_w(&facts->rwlock);
+#endif
         return NULL;
       }
       fact_w_init_fact(&log_entry->fact, found);
