@@ -5,6 +5,8 @@
 
 set -e
 
+export ASAN_OPTIONS="detect_odr_violation=0"
+
 SRC_TOP="../.."
 VEGETA="${VEGETA:-/home/tokyovania/Downloads/vegeta_12.13.0_linux_amd64/vegeta}"
 HOST="127.0.0.1"
@@ -37,7 +39,9 @@ rsync -a --delete ../../doc ./
 if [ -d ../../release ]; then
     rsync -aP ../../release/* static/release/ 2>/dev/null || true
 fi
-. "${SRC_TOP}/env"
+SRC_TOP_ABS="$(cd "${SRC_TOP}" && pwd)"
+(cd "${SRC_TOP_ABS}" && . ./env && export LD_LIBRARY_PATH) > /dev/null 2>&1
+export LD_LIBRARY_PATH="${SRC_TOP_ABS}/libkc3:${SRC_TOP_ABS}/epoll:${SRC_TOP_ABS}/ekc3:${SRC_TOP_ABS}/http:${SRC_TOP_ABS}/markdown:${SRC_TOP_ABS}/socket:${SRC_TOP_ABS}/tls:${SRC_TOP_ABS}/gl:${SRC_TOP_ABS}/image:${SRC_TOP_ABS}/window:${SRC_TOP_ABS}/window/demo:${SRC_TOP_ABS}/window/cairo:${SRC_TOP_ABS}/window/cairo/demo:${SRC_TOP_ABS}/window/cairo/xcb:${SRC_TOP_ABS}/window/egl:${SRC_TOP_ABS}/window/egl/demo:${SRC_TOP_ABS}/window/egl/xcb:${SRC_TOP_ABS}/window/egl/drm:${SRC_TOP_ABS}/window/sdl2:${LD_LIBRARY_PATH}"
 "$HTTPD_ASAN" --trace -d "$HOST" "$PORT" 2>&1 | tee dump_asan.log
 echo "Dump created."
 
@@ -65,7 +69,7 @@ echo ""
 echo "[4/6] Running vegeta load tests..."
 echo "" > "$VEGETA_RESULTS"
 
-for RATE in 10 50 100 200; do
+for RATE in 10 50 100 200 500 1000; do
     DURATION="10s"
     echo "--- Rate: ${RATE} req/s for ${DURATION} ---"
     "$VEGETA" attack \

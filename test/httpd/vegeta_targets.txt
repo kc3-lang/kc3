@@ -1,3 +1,2 @@
 GET http://127.0.0.1:15004/
-GET http://127.0.0.1:15004/static/favicon.ico
 GET http://127.0.0.1:15004/doc/

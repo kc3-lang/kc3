@@ -21,8 +21,8 @@
 #include "../libkc3/tag.h"
 #include "epoll.h"
 
-#define EPOLL_MAX_ENTRIES 4096
-
+#define EPOLL_MAX_ENTRIES 4096 //TODO check si possible de mettre 1
+//todo : voir si deplacable
 typedef struct epoll_entry {
   s64      fd;
   void    *udata;
@@ -146,11 +146,18 @@ s64 kc3_epoll_add (s64 epfd, s64 fd, s_tag *timeout, s_tag **udata)
         e = errno;
         entry_free(fd);
         pthread_mutex_unlock(&g_entries_mutex);
-        err_write_1("kc3_epoll_add: epoll_ctl ADD: ");
-        err_puts(strerror(e));
-        assert(! "kc3_epoll_add: epoll_ctl ADD");
+        if (e != EBADF) {
+          err_write_1("kc3_epoll_add: epoll_ctl ADD: ");
+          err_puts(strerror(e));
+          assert(! "kc3_epoll_add: epoll_ctl ADD");
+        }
         return -1;
       }
+    }
+    else if (errno == EBADF) {
+      entry_free(fd);
+      pthread_mutex_unlock(&g_entries_mutex);
+      return -1;
     }
     else {
       e = errno;
