@@ -14,12 +14,12 @@ dlopen("epoll.so")
 
 defmodule EPoll do
 
-  def add = cfn S64 "kc3_epoll_add" (S64, S64, Tag, Tag*)
+  def add = cfn S64 "kc3_epoll_add" (Ptr, S64, Tag, Tag*)
 
-  def delete = cfn S64 "kc3_epoll_delete" (S64, S64, Tag)
+  def delete = cfn S64 "kc3_epoll_delete" (Ptr, S64, Tag)
 
-  def epoll = cfn S64 "kc3_epoll" ()
+  def epoll = cfn Ptr "kc3_epoll" ()
 
-  def poll = cfn Tag "kc3_epoll_poll" (S64, Tag, Result)
+  def poll = cfn Tag "kc3_epoll_poll" (Ptr, Tag, Result)
 
 end
