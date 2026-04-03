@@ -287,7 +287,7 @@ defmodule HTTPd do
       pledge("stdio rpath wpath cpath fattr inet dns", "")
       IO.puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
-      if (HTTPd.ep_fd <- EPoll.epoll()) > 0 do
+      if HTTPd.ep_fd <- EPoll.epoll() do
         EPoll.add(HTTPd.ep_fd, socket.fd, void, HTTPd.acceptor_tag)
         if HTTPd.thread_count() > 1 do
           threads = List.map(List.count(HTTPd.thread_count() - 1),
@@ -299,7 +299,7 @@ defmodule HTTPd do
         end
         Counter.delete(HTTPd.connections)
         Counter.delete(HTTPd.server_thread_stop)
-        File.close(HTTPd.ep_fd)
+        EPoll.delete(HTTPd.ep_fd, 0, void)
         Socket.close(HTTPd.socket)
         Tag.delete(HTTPd.acceptor_tag)
         if Module.has_symbol?(Config, :at_exit) do
