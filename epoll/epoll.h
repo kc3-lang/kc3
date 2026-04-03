@@ -15,9 +15,26 @@
 
 #include "../libkc3/types.h"
 
-s64     kc3_epoll (void);
-s64     kc3_epoll_add (s64 epfd, s64 fd, s_tag *timeout, s_tag **udata);
-s64     kc3_epoll_delete (s64 epfd, s64 fd, s_tag *filter);
-s_tag * kc3_epoll_poll (s64 epfd, s_tag *timeout, s_tag *dest);
+typedef struct epoll_entry {
+  s64                  fd;
+  void                *udata;
+  struct timespec      deadline;
+  bool                 has_timeout;
+  struct epoll_entry  *next;
+  struct epoll_entry  *timer_next;
+} s_epoll_entry;
+
+typedef struct epoll {
+  s64              epfd;
+  s_epoll_entry   *entries;
+  s_epoll_entry   *timers;
+  s_mutex          entries_mutex;
+} s_epoll;
+
+s_epoll * kc3_epoll (void);
+s64       kc3_epoll_add (s_epoll **epoll, s64 fd, s_tag *timeout,
+                         s_tag **udata);
+s64       kc3_epoll_delete (s_epoll **epoll, s64 fd, s_tag *filter);
+s_tag *   kc3_epoll_poll (s_epoll **epoll, s_tag *timeout, s_tag *dest);
 
 #endif /* KC3_EPOLL_H */

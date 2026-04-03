@@ -11,68 +11,16 @@
  * THIS SOFTWARE.
  */
 #include <errno.h>
-#include <pthread.h>
 #include <string.h>
 #include <sys/epoll.h>
 #include <time.h>
 #include <unistd.h>
+#include "../libkc3/alloc.h"
 #include "../libkc3/assert.h"
+#include "../libkc3/mutex.h"
 #include "../libkc3/sym.h"
 #include "../libkc3/tag.h"
 #include "epoll.h"
-
-#define EPOLL_MAX_ENTRIES 4096 //TODO check si possible de mettre 1
-//todo : voir si deplacable
-typedef struct epoll_entry {
-  s64      fd;
-  void    *udata;
-  struct timespec deadline;
-  bool     active;
-  bool     has_timeout;
-} s_epoll_entry;
-
-static s_epoll_entry g_entries[EPOLL_MAX_ENTRIES];
-static pthread_mutex_t g_entries_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-static s_epoll_entry * entry_find (s64 fd)
-{
-  uw i = 0;
-  while (i < EPOLL_MAX_ENTRIES) {
-    if (g_entries[i].active && g_entries[i].fd == fd)
-      return &g_entries[i];
-    i++;
-  }
-  return NULL;
-}
-
-static s_epoll_entry * entry_alloc (s64 fd)
-{
-  uw i = 0;
-  s_epoll_entry *existing = entry_find(fd);
-  if (existing)
-    return existing;
-  while (i < EPOLL_MAX_ENTRIES) {
-    if (! g_entries[i].active) {
-      memset(&g_entries[i], 0, sizeof(s_epoll_entry));
-      g_entries[i].fd = fd;
-      g_entries[i].active = true;
-      return &g_entries[i];
-    }
-    i++;
-  }
-  return NULL;
-}
-
-static void entry_free (s64 fd)
-{
-  s_epoll_entry *e = entry_find(fd);
-  if (e) {
-    e->active = false;
-    e->has_timeout = false;
-    e->udata = NULL;
-    e->fd = -1;
-  }
-}
 
 static void timespec_now (struct timespec *ts)
 {
@@ -91,38 +39,130 @@ static bool timespec_expired (const struct timespec *deadline)
   return false;
 }
 
-s64 kc3_epoll (void)
+static bool timespec_lt (const struct timespec *a,
+                         const struct timespec *b)
+{
+  if (a->tv_sec < b->tv_sec)
+    return true;
+  if (a->tv_sec == b->tv_sec && a->tv_nsec < b->tv_nsec)
+    return true;
+  return false;
+}
+
+static s_epoll_entry * entry_new (s_epoll *epoll, s64 fd)
+{
+  s_epoll_entry *entry;
+  if (! (entry = alloc(sizeof(s_epoll_entry))))
+    return NULL;
+  memset(entry, 0, sizeof(s_epoll_entry));
+  entry->fd = fd;
+  entry->next = epoll->entries;
+  epoll->entries = entry;
+  return entry;
+}
+
+static s_epoll_entry * entry_find (s_epoll *epoll, s64 fd)
+{
+  s_epoll_entry *e;
+  e = epoll->entries;
+  while (e) {
+    if (e->fd == fd)
+      return e;
+    e = e->next;
+  }
+  return NULL;
+}
+
+static void timer_insert (s_epoll *epoll, s_epoll_entry *entry)
+{
+  s_epoll_entry **p;
+  p = &epoll->timers;
+  while (*p && timespec_lt(&(*p)->deadline, &entry->deadline))
+    p = &(*p)->timer_next;
+  entry->timer_next = *p;
+  *p = entry;
+}
+
+static void timer_remove (s_epoll *epoll, s_epoll_entry *entry)
+{
+  s_epoll_entry **p;
+  p = &epoll->timers;
+  while (*p) {
+    if (*p == entry) {
+      *p = entry->timer_next;
+      entry->timer_next = NULL;
+      return;
+    }
+    p = &(*p)->timer_next;
+  }
+}
+
+static void entry_free (s_epoll *epoll, s_epoll_entry *entry)
+{
+  s_epoll_entry **p;
+  if (entry->has_timeout)
+    timer_remove(epoll, entry);
+  p = &epoll->entries;
+  while (*p) {
+    if (*p == entry) {
+      *p = entry->next;
+      break;
+    }
+    p = &(*p)->next;
+  }
+  alloc_free(entry);
+}
+
+s_epoll * kc3_epoll (void)
 {
   s32 e;
-  s32 r;
-  pthread_mutex_lock(&g_entries_mutex);
-  memset(g_entries, 0, sizeof(g_entries));
-  pthread_mutex_unlock(&g_entries_mutex);
-  if ((r = epoll_create1(EPOLL_CLOEXEC)) < 0) {
+  s_epoll *epoll;
+  if (! (epoll = alloc(sizeof(s_epoll))))
+    return NULL;
+  epoll->entries = NULL;
+  epoll->timers = NULL;
+  if (! mutex_init(&epoll->entries_mutex)) {
+    alloc_free(epoll);
+    return NULL;
+  }
+  if ((epoll->epfd = epoll_create1(EPOLL_CLOEXEC)) < 0) {
     e = errno;
     err_write_1("kc3_epoll: epoll_create1: ");
     err_puts(strerror(e));
     assert(! "kc3_epoll: epoll_create1");
+    mutex_clean(&epoll->entries_mutex);
+    alloc_free(epoll);
+    return NULL;
   }
-  return r;
+  return epoll;
 }
 
-s64 kc3_epoll_add (s64 epfd, s64 fd, s_tag *timeout, s_tag **udata)
+s64 kc3_epoll_add (s_epoll **epoll_ptr, s64 fd, s_tag *timeout,
+                   s_tag **udata)
 {
   s32 e;
-  struct epoll_event ev = {0};
+  s_epoll *epoll;
   s_epoll_entry *entry;
+  struct epoll_event ev = {0};
   void *stored_udata;
-  stored_udata = udata ? *udata : NULL;
-  ev.events = EPOLLIN | EPOLLONESHOT | EPOLLRDHUP;
-  ev.data.fd = fd;
-  pthread_mutex_lock(&g_entries_mutex);
-  entry = entry_alloc(fd);
-  if (! entry) {
-    pthread_mutex_unlock(&g_entries_mutex);
-    err_puts("kc3_epoll_add: max entries reached");
-    assert(! "kc3_epoll_add: max entries reached");
+  if (! epoll_ptr || ! *epoll_ptr)
     return -1;
+  epoll = *epoll_ptr;
+  stored_udata = udata ? *udata : NULL;
+  mutex_lock(&epoll->entries_mutex);
+  entry = entry_find(epoll, fd);
+  if (! entry) {
+    entry = entry_new(epoll, fd);
+    if (! entry) {
+      mutex_unlock(&epoll->entries_mutex);
+      err_puts("kc3_epoll_add: entry_new");
+      assert(! "kc3_epoll_add: entry_new");
+      return -1;
+    }
+  }
+  else if (entry->has_timeout) {
+    timer_remove(epoll, entry);
+    entry->has_timeout = false;
   }
   entry->udata = stored_udata;
   if (timeout && timeout->type == TAG_TIME) {
@@ -136,16 +176,19 @@ s64 kc3_epoll_add (s64 epfd, s64 fd, s_tag *timeout, s_tag **udata)
       entry->deadline.tv_nsec -= 1000000000L;
     }
     entry->has_timeout = true;
+    timer_insert(epoll, entry);
   }
   else {
     entry->has_timeout = false;
   }
-  if (epoll_ctl(epfd, EPOLL_CTL_MOD, fd, &ev) < 0) {
+  ev.events = EPOLLIN | EPOLLONESHOT | EPOLLRDHUP;
+  ev.data.ptr = entry;
+  if (epoll_ctl(epoll->epfd, EPOLL_CTL_MOD, fd, &ev) < 0) {
     if (errno == ENOENT) {
-      if (epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &ev) < 0) {
+      if (epoll_ctl(epoll->epfd, EPOLL_CTL_ADD, fd, &ev) < 0) {
         e = errno;
-        entry_free(fd);
-        pthread_mutex_unlock(&g_entries_mutex);
+        entry_free(epoll, entry);
+        mutex_unlock(&epoll->entries_mutex);
         if (e != EBADF) {
           err_write_1("kc3_epoll_add: epoll_ctl ADD: ");
           err_puts(strerror(e));
@@ -155,41 +198,63 @@ s64 kc3_epoll_add (s64 epfd, s64 fd, s_tag *timeout, s_tag **udata)
       }
     }
     else if (errno == EBADF) {
-      entry_free(fd);
-      pthread_mutex_unlock(&g_entries_mutex);
+      entry_free(epoll, entry);
+      mutex_unlock(&epoll->entries_mutex);
       return -1;
     }
     else {
       e = errno;
-      entry_free(fd);
-      pthread_mutex_unlock(&g_entries_mutex);
+      entry_free(epoll, entry);
+      mutex_unlock(&epoll->entries_mutex);
       err_write_1("kc3_epoll_add: epoll_ctl MOD: ");
       err_puts(strerror(e));
       assert(! "kc3_epoll_add: epoll_ctl MOD");
       return -1;
     }
   }
-  pthread_mutex_unlock(&g_entries_mutex);
+  mutex_unlock(&epoll->entries_mutex);
   return 0;
 }
 
-s64 kc3_epoll_delete (s64 epfd, s64 fd, s_tag *filter)
+s64 kc3_epoll_delete (s_epoll **epoll_ptr, s64 fd, s_tag *filter)
 {
+  s_epoll *epoll;
   s_epoll_entry *entry;
-  if (filter && filter->type == TAG_PSYM) {
+  s_epoll_entry *next;
+  if (! epoll_ptr || ! *epoll_ptr)
+    return -1;
+  epoll = *epoll_ptr;
+  if (! filter || filter->type == TAG_VOID) {
+    entry = epoll->entries;
+    while (entry) {
+      next = entry->next;
+      alloc_free(entry);
+      entry = next;
+    }
+    close(epoll->epfd);
+    mutex_clean(&epoll->entries_mutex);
+    alloc_free(epoll);
+    *epoll_ptr = NULL;
+    return 0;
+  }
+  if (filter->type == TAG_PSYM) {
     if (filter->data.td_psym == &g_sym_timer) {
-      pthread_mutex_lock(&g_entries_mutex);
-      entry = entry_find(fd);
-      if (entry)
+      mutex_lock(&epoll->entries_mutex);
+      entry = entry_find(epoll, fd);
+      if (entry && entry->has_timeout) {
+        timer_remove(epoll, entry);
         entry->has_timeout = false;
-      pthread_mutex_unlock(&g_entries_mutex);
+      }
+      mutex_unlock(&epoll->entries_mutex);
       return 0;
     }
     else if (filter->data.td_psym == &g_sym_read) {
-      epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL);
-      pthread_mutex_lock(&g_entries_mutex);
-      entry_free(fd);
-      pthread_mutex_unlock(&g_entries_mutex);
+      epoll_ctl(epoll->epfd, EPOLL_CTL_DEL, fd, NULL);
+      mutex_lock(&epoll->entries_mutex);
+      entry = entry_find(epoll, fd);
+      if (entry)
+        entry_free(epoll, entry);
+      mutex_unlock(&epoll->entries_mutex);
       return 0;
     }
     else {
@@ -205,56 +270,66 @@ s64 kc3_epoll_delete (s64 epfd, s64 fd, s_tag *filter)
   }
 }
 
-s_tag * kc3_epoll_poll (s64 epfd, s_tag *timeout, s_tag *dest)
+s_tag * kc3_epoll_poll (s_epoll **epoll_ptr, s_tag *timeout, s_tag *dest)
 {
   s32 e;
+  s_epoll *epoll;
   struct epoll_event event = {0};
   const s_sym *event_type;
   s_epoll_entry *entry;
-  s64 expired_fd;
-  uw i;
   s32 r;
   s32 timeout_ms = -1;
   s_tag *udata;
+  if (! epoll_ptr || ! *epoll_ptr)
+    return NULL;
+  epoll = *epoll_ptr;
   if (timeout && timeout->type == TAG_TIME) {
     s_time *t = &timeout->data.td_time;
     timeout_ms = t->tv_sec * 1000 + t->tv_nsec / 1000000;
   }
-  pthread_mutex_lock(&g_entries_mutex);
-  i = 0;
-  while (i < EPOLL_MAX_ENTRIES) {
-    if (g_entries[i].active && g_entries[i].has_timeout &&
-        timespec_expired(&g_entries[i].deadline)) {
-      expired_fd = g_entries[i].fd;
-      udata = g_entries[i].udata;
-      g_entries[i].has_timeout = false;
-      if (! tag_init_ptuple(dest, 3)) {
-        pthread_mutex_unlock(&g_entries_mutex);
-        return NULL;
-      }
-      if (! tag_init_s64(dest->data.td_ptuple->tag, expired_fd) ||
-          ! tag_init_psym(dest->data.td_ptuple->tag + 1,
-                          &g_sym_timer)) {
-        pthread_mutex_unlock(&g_entries_mutex);
+  mutex_lock(&epoll->entries_mutex);
+  if (epoll->timers && timespec_expired(&epoll->timers->deadline)) {
+    entry = epoll->timers;
+    epoll->timers = entry->timer_next;
+    entry->timer_next = NULL;
+    entry->has_timeout = false;
+    udata = entry->udata;
+    if (! tag_init_ptuple(dest, 3)) {
+      mutex_unlock(&epoll->entries_mutex);
+      return NULL;
+    }
+    if (! tag_init_s64(dest->data.td_ptuple->tag, entry->fd) ||
+        ! tag_init_psym(dest->data.td_ptuple->tag + 1,
+                        &g_sym_timer)) {
+      mutex_unlock(&epoll->entries_mutex);
+      tag_clean(dest);
+      return NULL;
+    }
+    if (udata) {
+      if (! tag_init_copy(dest->data.td_ptuple->tag + 2, udata)) {
+        mutex_unlock(&epoll->entries_mutex);
         tag_clean(dest);
         return NULL;
       }
-      if (udata) {
-        if (! tag_init_copy(dest->data.td_ptuple->tag + 2, udata)) {
-          pthread_mutex_unlock(&g_entries_mutex);
-          tag_clean(dest);
-          return NULL;
-        }
-      }
-      else
-        tag_init_void(dest->data.td_ptuple->tag + 2);
-      pthread_mutex_unlock(&g_entries_mutex);
-      return dest;
     }
-    i++;
+    else
+      tag_init_void(dest->data.td_ptuple->tag + 2);
+    mutex_unlock(&epoll->entries_mutex);
+    return dest;
   }
-  pthread_mutex_unlock(&g_entries_mutex);
-  r = epoll_wait(epfd, &event, 1, timeout_ms);
+  if (epoll->timers) {
+    struct timespec now;
+    s32 timer_ms;
+    timespec_now(&now);
+    timer_ms = (epoll->timers->deadline.tv_sec - now.tv_sec) * 1000 +
+               (epoll->timers->deadline.tv_nsec - now.tv_nsec) / 1000000;
+    if (timer_ms < 0)
+      timer_ms = 0;
+    if (timeout_ms < 0 || timer_ms < timeout_ms)
+      timeout_ms = timer_ms;
+  }
+  mutex_unlock(&epoll->entries_mutex);
+  r = epoll_wait(epoll->epfd, &event, 1, timeout_ms);
   if (r < 0) {
     e = errno;
     if (e == EINTR)
@@ -265,35 +340,39 @@ s_tag * kc3_epoll_poll (s64 epfd, s_tag *timeout, s_tag *dest)
     return tag_init_void(dest);
   }
   if (r > 0) {
-    pthread_mutex_lock(&g_entries_mutex);
-    entry = entry_find(event.data.fd);
-    udata = entry ? entry->udata : NULL;
-    if (entry)
+    entry = event.data.ptr;
+    if (! entry)
+      return tag_init_void(dest);
+    mutex_lock(&epoll->entries_mutex);
+    udata = entry->udata;
+    if (entry->has_timeout) {
+      timer_remove(epoll, entry);
       entry->has_timeout = false;
+    }
     if (event.events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR))
       event_type = &g_sym_eof;
     else
       event_type = &g_sym_read;
     if (! tag_init_ptuple(dest, 3)) {
-      pthread_mutex_unlock(&g_entries_mutex);
+      mutex_unlock(&epoll->entries_mutex);
       return NULL;
     }
-    if (! tag_init_s64(dest->data.td_ptuple->tag, event.data.fd) ||
+    if (! tag_init_s64(dest->data.td_ptuple->tag, entry->fd) ||
         ! tag_init_psym(dest->data.td_ptuple->tag + 1, event_type)) {
-      pthread_mutex_unlock(&g_entries_mutex);
+      mutex_unlock(&epoll->entries_mutex);
       tag_clean(dest);
       return NULL;
     }
     if (udata) {
       if (! tag_init_copy(dest->data.td_ptuple->tag + 2, udata)) {
-        pthread_mutex_unlock(&g_entries_mutex);
+        mutex_unlock(&epoll->entries_mutex);
         tag_clean(dest);
         return NULL;
       }
     }
     else
       tag_init_void(dest->data.td_ptuple->tag + 2);
-    pthread_mutex_unlock(&g_entries_mutex);
+    mutex_unlock(&epoll->entries_mutex);
     return dest;
   }
   return tag_init_void(dest);
