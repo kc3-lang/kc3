@@ -55,21 +55,10 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
   s_facts_cursor tmp = {0};
   assert(cursor);
   assert(index);
-  tmp.index = index;
-  tmp.facts = facts;
-#if HAVE_PTHREAD
-  if (! facts_cursor_lock_init(&tmp)) {
-    facts_cursor_clean(&tmp);
-    return NULL;
-  }
-#endif
   pred = skiplist_pred__fact(index, start);
-  if (! pred) {
-#if HAVE_PTHREAD
-    facts_cursor_lock_clean(&tmp);
-#endif
+  if (! pred)
     return NULL;
-  }
+  tmp.index = index;
   tmp.node = SKIPLIST_NODE_NEXT__fact(pred, 0);
   skiplist_node_delete__fact(pred);
   if (start) {
@@ -108,6 +97,13 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
     tmp.end.object    = TAG_LAST;
     tmp.end.id        = (uw) -1;
   }
+  tmp.facts = facts;
+#if HAVE_PTHREAD
+  if (! facts_cursor_lock_init(&tmp)) {
+    facts_cursor_clean(&tmp);
+    return NULL;
+  }
+#endif
   *cursor = tmp;
   return cursor;
 }
@@ -122,6 +118,7 @@ s_facts_cursor * facts_cursor_lock (s_facts_cursor *cursor)
     assert(! "facts_cursor_lock: pthread_mutex_lock");
     return NULL;
   }
+  rwlock_r(&cursor->facts->rwlock);
   return cursor;
 }
 
@@ -151,6 +148,7 @@ s_facts_cursor * facts_cursor_lock_init (s_facts_cursor *cursor)
 s_facts_cursor * facts_cursor_lock_unlock (s_facts_cursor *cursor)
 {
   assert(cursor);
+  rwlock_unlock_r(&cursor->facts->rwlock);
   if (pthread_mutex_unlock(&cursor->mutex)) {
     err_puts("facts_cursor_lock_unlock: pthread_mutex_unlock");
     assert(! "facts_cursor_lock_unlock: pthread_mutex_unlock");

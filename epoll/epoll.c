@@ -344,7 +344,7 @@ s_tag * kc3_epoll_poll (s_epoll **epoll_ptr, s_tag *timeout, s_tag *dest)
     if (! entry)
       return tag_init_void(dest);
     mutex_lock(&epoll->entries_mutex);
-    udata = entry->udata;
+    udata = entry ? entry->udata : NULL;
     if (entry->has_timeout) {
       timer_remove(epoll, entry);
       entry->has_timeout = false;
