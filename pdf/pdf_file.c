@@ -24,13 +24,11 @@ s_pdf_file * pdf_file_init (s_pdf_file *pdf_file)
 
 void pdf_file_clean (s_pdf_file *pdf_file)
 {
-  fprintf(stderr, "pdf_file_clean: %p, name_list=%p\n", (void *)pdf_file, (void *)pdf_file->name_list);
   pdf_trailer_clean(&pdf_file->trailer);
   str_clean(&pdf_file->header);
   map_clean(&pdf_file->body);
   map_clean(&pdf_file->xref);
   pdf_name_list_delete_all(&pdf_file->name_list);
-  fprintf(stderr, "pdf_file_clean done\n");
 }
 
 s_tag * pdf_file_get_indirect_object (s_pdf_file *pdf_file,
