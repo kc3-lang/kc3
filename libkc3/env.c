@@ -1089,8 +1089,17 @@ s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
     return NULL;
   }
   fact_w = arguments->tag.data.td_pstruct->data;
+#if HAVE_PTHREAD
+  if (! rwlock_r(&facts->rwlock)) {
+    list_delete_all(arguments);
+    return NULL;
+  }
+#endif
   if (! facts_with_list(facts, &cursor, *spec)) {
     list_delete_all(arguments);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&facts->rwlock);
+#endif
     return NULL;
   }
   list = NULL;
@@ -1111,6 +1120,9 @@ s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
     l = &(*l)->next.data.td_plist;
   }
  ok:
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
   list_delete_all(arguments);
   tmp.type = TAG_PLIST;
   tmp.data.td_plist = list;
@@ -1122,6 +1134,9 @@ s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
   *dest = tmp;
   return dest;
  clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
   facts_with_cursor_clean(&cursor);
   tag_clean(&tmp);
   list_delete_all(arguments);
@@ -1150,8 +1165,17 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
     return NULL;
   }
   fact_w = arguments->tag.data.td_pstruct->data;
+#if HAVE_PTHREAD
+  if (! rwlock_r(&facts->rwlock)) {
+    list_delete_all(arguments);
+    return NULL;
+  }
+#endif
   if (! facts_with_tags(facts, &cursor, subject, predicate, object)) {
     list_delete_all(arguments);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&facts->rwlock);
+#endif
     return NULL;
   }
   list = NULL;
@@ -1173,6 +1197,9 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
     l = &(*l)->next.data.td_plist;
   }
  ok:
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
   facts_cursor_clean(&cursor);
   list_delete_all(arguments);
   tmp.type = TAG_PLIST;
@@ -1180,6 +1207,9 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
   *dest = tmp;
   return dest;
  clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
   facts_cursor_clean(&cursor);
   list_delete_all(list);
   list_delete_all(arguments);
@@ -1365,8 +1395,17 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
     return NULL;
   }
   fact_w = arguments->tag.data.td_pstruct->data;
+#if HAVE_PTHREAD
+  if (! rwlock_r(&facts->rwlock)) {
+    list_delete_all(arguments);
+    return NULL;
+  }
+#endif
   if (! facts_with_list(facts, &cursor, *spec)) {
     list_delete_all(arguments);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&facts->rwlock);
+#endif
     return NULL;
   }
   env_unwind_protect_push(env, &unwind_protect);
@@ -1374,6 +1413,9 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
     env_unwind_protect_pop(env, &unwind_protect);
     list_delete_all(arguments);
     facts_with_cursor_clean(&cursor);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&facts->rwlock);
+#endif
     longjmp(*unwind_protect.jmp, 1);
   }
   while (1) {
@@ -1392,6 +1434,9 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
     fact_w_init(fact_w);
   }
  ok:
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
   list_delete_all(arguments);
   *dest_v = tmp;
   return dest_v;
@@ -1399,6 +1444,9 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   err_puts("env_facts_with: error");
   assert(! "env_facts_with: error");
   env_unwind_protect_pop(env, &unwind_protect);
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
   tag_clean(&tmp);
   list_delete_all(arguments);
   facts_with_cursor_clean(&cursor);
@@ -1501,8 +1549,17 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
     return NULL;
   }
   fact_w = arguments->tag.data.td_pstruct->data;
+#if HAVE_PTHREAD
+  if (! rwlock_r(&facts->rwlock)) {
+    list_delete_all(arguments);
+    return NULL;
+  }
+#endif
   if (! facts_with_tags(facts, &cursor, subject, predicate, object)) {
     list_delete_all(arguments);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&facts->rwlock);
+#endif
     return NULL;
   }
   while (1) {
@@ -1524,6 +1581,9 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
       env_unwind_protect_pop(env, &unwind_protect);
       facts_cursor_clean(&cursor);
       list_delete_all(arguments);
+#if HAVE_PTHREAD
+      rwlock_unlock_r(&facts->rwlock);
+#endif
       longjmp(*unwind_protect.jmp, 1);
     }
     if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
@@ -1536,10 +1596,16 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
     fact_w_init(fact_w);
   }
  ok:
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
   list_delete_all(arguments);
   *dest_v = tmp;
   return dest_v;
  clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
   tag_clean(&tmp);
   list_delete_all(arguments);
   return NULL;

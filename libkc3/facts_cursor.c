@@ -128,7 +128,6 @@ s_facts_cursor * facts_cursor_lock (s_facts_cursor *cursor)
 s_facts_cursor * facts_cursor_lock_clean (s_facts_cursor *cursor)
 {
   assert(cursor);
-  rwlock_unlock_r(&cursor->facts->rwlock);
   if (pthread_mutex_destroy(&cursor->mutex)) {
     err_puts("facts_cursor_lock_clean: pthread_mutex_destroy");
     assert(! "facts_cursor_lock_clean: pthread_mutex_destroy");
@@ -146,7 +145,6 @@ s_facts_cursor * facts_cursor_lock_init (s_facts_cursor *cursor)
     abort();
     return NULL;
   }
-  rwlock_r(&cursor->facts->rwlock);
   return cursor;
 }
 
