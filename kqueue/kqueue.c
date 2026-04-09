@@ -114,6 +114,8 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
   }
   if ((r = kevent(kqfd, NULL, 0, &event, 1, p)) < 0) {
     e = errno;
+    if (e == EINTR)
+      return tag_init_void(dest);
     err_write_1("kc3_kqueue: kevent: ");
     err_puts(strerror(e));
     assert(! "kc3_kqueue_poll: kevent");

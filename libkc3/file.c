@@ -596,6 +596,74 @@ s_str * file_pwd (s_str *dest)
   return dest;
 }
 
+s_str * file_relative (const s_str *path, s_str *dest)
+{
+  s_buf buf;
+  uw common_len;
+  uw i;
+  uw parent_count;
+  const char *path_p;
+  char *pchar;
+  s_str pwd = {0};
+  uw pwd_len;
+  uw size;
+  assert(path);
+  assert(dest);
+  if (! path->size || path->ptr.p_pchar[0] != '/')
+    return str_init_copy(dest, path);
+  if (! file_pwd(&pwd))
+    return str_init_copy(dest, path);
+  path_p = path->ptr.p_pchar;
+  pwd_len = pwd.size;
+  common_len = 0;
+  i = 0;
+  while (i < pwd_len && i < path->size && pwd.ptr.p_pchar[i] == path_p[i]) {
+    if (path_p[i] == '/')
+      common_len = i + 1;
+    i++;
+  }
+  if (i == pwd_len && i < path->size && path_p[i] == '/')
+    common_len = i + 1;
+  if (i == pwd_len && i == path->size) {
+    str_clean(&pwd);
+    return str_init_1(dest, NULL, ".");
+  }
+  parent_count = 0;
+  i = common_len;
+  while (i < pwd_len) {
+    if (pwd.ptr.p_pchar[i] == '/')
+      parent_count++;
+    i++;
+  }
+  if (common_len < pwd_len)
+    parent_count++;
+  size = parent_count * 3 + (path->size - common_len);
+  if (size == 0) {
+    str_clean(&pwd);
+    return str_init_1(dest, NULL, ".");
+  }
+  pchar = alloc(size + 1);
+  if (! pchar) {
+    str_clean(&pwd);
+    return NULL;
+  }
+  buf_init(&buf, false, size + 1, pchar);
+  i = 0;
+  while (i < parent_count) {
+    buf_write_1(&buf, "../");
+    i++;
+  }
+  if (common_len < path->size)
+    buf_write(&buf, path_p + common_len, path->size - common_len);
+  if (buf.wpos > 0 && pchar[buf.wpos - 1] == '/') {
+    buf.wpos--;
+    size--;
+  }
+  pchar[buf.wpos] = 0;
+  str_clean(&pwd);
+  return str_init(dest, pchar, size, pchar);
+}
+
 s_str * file_read_all (const s_str *path, s_str *dest)
 {
   char *buf;

@@ -53,6 +53,7 @@ bool          file_ensure_parent_directory (const s_str *path,
                                             const s_tag *mode);
 bool          file_link (const s_str *from, const s_str *to);
 s_str *       file_pwd (s_str *dest);
+s_str *       file_relative (const s_str *path, s_str *dest);
 FILE *        file_open (const s_str *path, const char *mode);
 s64 *         file_open_r (const s_str *path, s64 *dest);
 s64 *         file_open_w (const s_str *path, s64 *dest);

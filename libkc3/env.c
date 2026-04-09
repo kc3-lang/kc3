@@ -2359,12 +2359,18 @@ bool env_load (s_env *env, const s_str *path)
   *file_dir = file_dir_save;
   *file_path = file_path_save;
   str_clean(&cache_path);
-  tag = (s_tag) {0};
-  tag.type = TAG_STR;
-  tag.data.td_str = *path;
-  tag_init_time_now(&now);
-  tag_init_psym(&load_time, &g_sym_load_time);
-  facts_replace_tags(env->facts, &tag, &load_time, &now);
+  {
+    s_str relative_path = {0};
+    if (! file_relative(path, &relative_path))
+      goto ko;
+    tag = (s_tag) {0};
+    tag.type = TAG_STR;
+    tag.data.td_str = relative_path;
+    tag_init_time_now(&now);
+    tag_init_psym(&load_time, &g_sym_load_time);
+    facts_replace_tags(env->facts, &tag, &load_time, &now);
+    str_clean(&relative_path);
+  }
   if (env->trace) {
     err_write_1("env_load: ");
     err_inspect_str(path);
