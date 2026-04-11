@@ -23,4 +23,10 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
                                             const s_str *host,
                                             const s_str *port);
 
+/* Heap-allocation functions. */
+s_tls_client ** kc3_tls_client_new_connect (s_tls_client **tls_client,
+                                            p_tls *ctx,
+                                            const s_str *host,
+                                            const s_str *port);
+
 #endif /* LIBKC3_TLS_CLIENT_H */

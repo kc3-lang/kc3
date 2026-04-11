@@ -100,3 +100,21 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
   }
   return tls_client;
 }
+
+s_tls_client ** kc3_tls_client_new_connect (s_tls_client **tls_client,
+                                            p_tls *ctx,
+                                            const s_str *host,
+                                            const s_str *port)
+{
+  s_tls_client *tmp;
+  assert(tls_client);
+  tmp = alloc(sizeof(s_tls_client));
+  if (! tmp)
+    return NULL;
+  if (! kc3_tls_client_init_connect(tmp, ctx, host, port)) {
+    alloc_free(tmp);
+    return NULL;
+  }
+  *tls_client = tmp;
+  return tls_client;
+}
