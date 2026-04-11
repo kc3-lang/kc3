@@ -2504,18 +2504,23 @@ bool env_maybe_reload (s_env *env, const s_str *path)
   s_tag mtime = {0};
   s_tag path_tag = {0};
   bool r;
+  s_str relative_path = {0};
+  if (! file_relative(path, &relative_path))
+    return false;
   path_tag.type = TAG_STR;
-  path_tag.data.td_str = *path;
+  path_tag.data.td_str = relative_path;
   tag_init_psym(&load_time_sym, &g_sym_load_time);
   tag_init_pvar(&load_time, &g_sym_Time);
   if (! facts_with_tags(env->facts, &cursor, &path_tag, &load_time_sym,
                         &load_time)) {
     tag_clean(&load_time);
+    str_clean(&relative_path);
     return false;
   }
   if (! facts_cursor_next(&cursor, &fact)) {
     facts_cursor_clean(&cursor);
     tag_clean(&load_time);
+    str_clean(&relative_path);
     return false;
   }
   if (! fact) {
@@ -2525,6 +2530,7 @@ bool env_maybe_reload (s_env *env, const s_str *path)
     assert(! "env_maybe_reload: no load time");
     facts_cursor_clean(&cursor);
     tag_clean(&load_time);
+    str_clean(&relative_path);
     return false;
   }
   if (load_time.data.td_pvar->tag.type != TAG_TIME)
@@ -2532,6 +2538,7 @@ bool env_maybe_reload (s_env *env, const s_str *path)
   mtime.type = TAG_TIME;
   if (! file_mtime(path, &mtime.data.td_time)) {
     facts_cursor_clean(&cursor);
+    str_clean(&relative_path);
     return false;
   }
   r = true;
@@ -2539,6 +2546,7 @@ bool env_maybe_reload (s_env *env, const s_str *path)
     r = env_load(env, path);
   facts_cursor_clean(&cursor);
   tag_clean(&load_time);
+  str_clean(&relative_path);
   return r;
 }
 
