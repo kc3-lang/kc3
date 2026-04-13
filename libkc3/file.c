@@ -661,6 +661,7 @@ s_str * file_relative (const s_str *path, s_str *dest)
   }
   pchar[buf.wpos] = 0;
   str_clean(&pwd);
+  buf_clean(&buf);
   return str_init(dest, pchar, size, pchar);
 }
 
