@@ -101,6 +101,14 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
   return tls_client;
 }
 
+void kc3_tls_client_delete (s_tls_client **tls_client)
+{
+  assert(tls_client);
+  assert(*tls_client);
+  kc3_tls_client_clean(*tls_client);
+  alloc_free(*tls_client);
+}
+
 s_tls_client ** kc3_tls_client_new_connect (s_tls_client **tls_client,
                                             p_tls *ctx,
                                             const s_str *host,

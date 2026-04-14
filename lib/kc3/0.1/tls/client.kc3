@@ -21,7 +21,7 @@ end
 
 defmodule TLS.Client do
 
-  def close = cfn Void "kc3_tls_client_clean" (TLS.Client)
+  def close = cfn Void "kc3_tls_client_delete" (TLS.Client*)
 
   def connect = cfn TLS.Client* "kc3_tls_client_new_connect" (Result,
     TLS*, Str, Str)
