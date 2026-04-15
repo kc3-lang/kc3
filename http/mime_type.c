@@ -27,15 +27,19 @@ const s_sym ** http_mime_type (const s_str *ext, const s_sym **dest)
   tag_init_pvar(&tag_mime_type_value, &g_sym_Sym);
   default_mime_type = sym_1("application/octet-stream");
   if (! facts_with_tags(env_global()->facts, &cursor, &tag_ext,
-                        &tag_mime_type_sym, &tag_mime_type_value))
+			&tag_mime_type_sym, &tag_mime_type_value))
     goto default_mime_type;
   if (! facts_cursor_next(&cursor, &fact) ||
-      ! fact ||
+              ! fact ||
       ! tag_mime_type_value.data.td_pvar->tag.data.td_psym)
     goto default_mime_type;
   *dest = tag_mime_type_value.data.td_pvar->tag.data.td_psym;
+  facts_cursor_clean(&cursor);
+  tag_clean(&tag_mime_type_value);
   return dest;
  default_mime_type:
+  facts_cursor_clean(&cursor);
+  tag_clean(&tag_mime_type_value);
   *dest = default_mime_type;
   return dest;
 }
