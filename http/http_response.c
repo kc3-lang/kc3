@@ -297,26 +297,30 @@ sw http_response_buf_write (const s_http_response *response,
       buf_init_alloc(&tmp, BUF_SIZE);
       fd = response->body.data.td_s32;
       while (1) {
-        if ((r = read(fd, tmp.ptr.p_pvoid, tmp.size)) < 0) {
-          e = errno;
-          err_write_1("http_response_buf_write: ");
-          err_inspect_s32(fd);
-          err_write_1(": ");
-          err_puts(strerror(e));
-          return r;
-        }
-        if (! r)
-          break;
-        tmp.rpos = 0;
-        tmp.wpos = r;
-        while (tmp.rpos < (uw) r) {
-          if ((w = buf_write(buf, tmp.ptr.p_ps8 + tmp.rpos,
-                             r - tmp.rpos)) <= 0)
-            return w;
-          result += w;
-          tmp.rpos += w;
-        }
+	if ((r = read(fd, tmp.ptr.p_pvoid, tmp.size)) < 0) {
+	  e = errno;
+	  err_write_1("http_response_buf_write: ");
+	  err_inspect_s32(fd);
+	  err_write_1(": ");
+	  err_puts(strerror(e));
+	  buf_clean(&tmp);
+	  return r;
+	}
+	if (! r)
+	  break;
+	tmp.rpos = 0;
+	tmp.wpos = r;
+	while (tmp.rpos < (uw) r) {
+	  if ((w = buf_write(buf, tmp.ptr.p_ps8 + tmp.rpos,
+			     r - tmp.rpos)) <= 0) {
+	    buf_clean(&tmp);
+	    return w;
+	  }
+	  result += w;
+	  tmp.rpos += w;
+	}
       }
+      buf_clean(&tmp);
       close(fd);
     }
     else if (type == &g_sym_Map &&
@@ -354,32 +358,36 @@ sw http_response_buf_write (const s_http_response *response,
         return -1;
       }
       if (size) {
-        buf_init_alloc(&tmp, BUF_SIZE);
-        while (1) {
-          s = tmp.size;
-          if (size < s)
-            s = size;
-          if ((r = read(fd, tmp.ptr.p_pvoid, s)) < 0) {
-            e = errno;
-            err_write_1("http_response_buf_write: read ");
-            err_inspect_s32(fd);
-            err_write_1(": ");
-            err_puts(strerror(e));
-            return r;
-          }
-          if (! r)
-            break;
-          size -= r;
-          tmp.rpos = 0;
-          tmp.wpos = r;
-          while (tmp.rpos < (uw) r) {
-            if ((w = buf_write(buf, tmp.ptr.p_ps8 + tmp.rpos,
-                               r - tmp.rpos)) <= 0)
-              return w;
-            result += w;
-            tmp.rpos += w;
-          }
-        }
+	buf_init_alloc(&tmp, BUF_SIZE);
+	while (1) {
+	  s = tmp.size;
+	  if (size < s)
+	    s = size;
+	  if ((r = read(fd, tmp.ptr.p_pvoid, s)) < 0) {
+	    e = errno;
+	    err_write_1("http_response_buf_write: read ");
+	    err_inspect_s32(fd);
+	    err_write_1(": ");
+	    err_puts(strerror(e));
+	    buf_clean(&tmp);
+	    return r;
+	  }
+	  if (! r)
+	    break;
+	  size -= r;
+	  tmp.rpos = 0;
+	  tmp.wpos = r;
+	  while (tmp.rpos < (uw) r) {
+	    if ((w = buf_write(buf, tmp.ptr.p_ps8 + tmp.rpos,
+			       r - tmp.rpos)) <= 0) {
+	      buf_clean(&tmp);
+	      return w;
+	    }
+	    result += w;
+	    tmp.rpos += w;
+	  }
+	}
+	buf_clean(&tmp);
       }
       close(fd);
     }
