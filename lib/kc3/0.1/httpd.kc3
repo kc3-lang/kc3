@@ -297,9 +297,11 @@ defmodule HTTPd do
         else
           HTTPd.server_thread()
         end
+	Counter.delete(HTTPd.concurrent_requests) 
         Counter.delete(HTTPd.connections)
+	Counter.delete(HTTPd.requests)
         Counter.delete(HTTPd.server_thread_stop)
-        EPoll.delete(HTTPd.ep_fd, 0, void)
+        EPoll.delete(HTTPd.ep_fd, (S64) 0, void)
         Socket.close(HTTPd.socket)
         Tag.delete(HTTPd.acceptor_tag)
         if Module.has_symbol?(Config, :at_exit) do
