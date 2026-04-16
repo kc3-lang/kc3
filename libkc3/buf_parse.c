@@ -3169,6 +3169,8 @@ sw buf_parse_match (s_buf *buf, p_call *pcall)
     goto ko;
   arg->tag.type = TAG_MAP;
   arg->tag.data.td_map = map;
+  list_delete_all(keys);
+  list_delete_all(values);
   *pcall = tmp;
   r = result;
   goto clean;
