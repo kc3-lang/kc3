@@ -28,6 +28,7 @@ s_counter * counter_init (s_counter *c, s_tag *value);
 
 /* Heap-allocation functions, call counter_delete after use. */
 void        counter_delete (s_counter *c);
+void        counter_delete_all (void);
 s_counter * counter_new (s_tag *value);
 
 /* Observers. */

@@ -20,8 +20,14 @@
 #include "marshall.h"
 #include "marshall_read.h"
 #include "mutex.h"
+#include <pthread.h>
 #include "sym.h"
 #include "tag.h"
+
+static s_counter *g_counters = NULL;
+#if HAVE_PTHREAD
+static pthread_mutex_t g_counters_mutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
 
 void counter_clean (s_counter *counter)
 {
@@ -73,9 +79,38 @@ s_tag * counter_decrease (s_counter *counter, s_tag *positive,
 
 void counter_delete (s_counter *counter)
 {
+  s_counter **link;
   assert(counter);
+    #if HAVE_PTHREAD
+  pthread_mutex_lock(&g_counters_mutex);
+    #endif
+  link = &g_counters;
+  while (*link && *link != counter)
+    link = &(*link)->next_global;
+  if (*link == counter)
+    *link = counter->next_global;
+    #if HAVE_PTHREAD
+  pthread_mutex_unlock(&g_counters_mutex);
+    #endif
   counter_clean(counter);
   alloc_free(counter);
+}
+
+void counter_delete_all (void)
+{
+  s_counter *next;
+    #if HAVE_PTHREAD
+  pthread_mutex_lock(&g_counters_mutex);
+    #endif
+  while (g_counters) {
+    next = g_counters->next_global;
+    counter_clean(g_counters);
+    alloc_free(g_counters);
+    g_counters = next;
+  }
+    #if HAVE_PTHREAD
+  pthread_mutex_unlock(&g_counters_mutex);
+    #endif
 }
 
 s_tag * counter_get (s_counter *counter, s_tag *dest)
@@ -200,5 +235,13 @@ s_counter * counter_new (s_tag *value)
     alloc_free(counter);
     return NULL;
   }
+    #if HAVE_PTHREAD
+  pthread_mutex_lock(&g_counters_mutex);
+    #endif
+  counter->next_global = g_counters;
+  g_counters = counter;
+    #if HAVE_PTHREAD
+  pthread_mutex_unlock(&g_counters_mutex);
+    #endif
   return counter;
 }
