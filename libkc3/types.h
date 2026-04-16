@@ -894,6 +894,7 @@ struct complex {
 struct counter {
   s_mutex *mutex;
   s_tag count;
+  s_counter *next_global;
 };
 
 struct error_handler
