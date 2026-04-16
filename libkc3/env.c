@@ -29,8 +29,8 @@
 #include "address_of.h"
 #include "alloc.h"
 
-__attribute__((weak)) const char *g_env_argv0_default = "";
-__attribute__((weak)) const char *g_env_argv0_dir_default = "";
+const char *g_env_argv0_default = "";
+const char *g_env_argv0_dir_default = "";
 
 #include "array.h"
 #include "assert.h"
