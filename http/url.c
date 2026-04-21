@@ -32,13 +32,18 @@ s_str * url_escape (const s_str *src, s_str *dest)
   if (escapes_tag.type != TAG_STR) {
     err_puts("url_escape: URL.escapes is not a Str");
     assert(! "url_escape: URL.escapes is not a Str");
+    tag_clean(&escapes_tag);
     return NULL;
   }
   escapes = &escapes_tag.data.td_str;
-  if ((size = url_escape_size(src)) < 0)
+  if ((size = url_escape_size(src)) < 0) {
+    tag_clean(&escapes_tag);
     return NULL;
-  if (! size)
+  }
+  if (! size) {
+    tag_clean(&escapes_tag);
     return str_init_empty(dest);
+  }
   if (! buf_init_alloc(&buf, size))
     return NULL;
   s = *src;
@@ -82,11 +87,13 @@ sw url_escape_size (const s_str *src)
   if (! ident_get(&ident, &escapes_tag)) {
     err_puts("url_escape_size: missing URL.escapes");
     assert(! "url_escape_size: missing URL.escapes");
+    tag_clean(&escapes_tag);
     return -1;
   }
   if (escapes_tag.type != TAG_STR) {
     err_puts("url_escape_size: URL.escapes is not a Str");
     assert(! "url_escape_size: URL.escapes is not a Str");
+    tag_clean(&escapes_tag);
     return -1;
   }
   escapes = &escapes_tag.data.td_str;
