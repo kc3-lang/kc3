@@ -1,0 +1,37 @@
+require EventPoll
+require Socket
+require Tag
+
+ep = EventPoll.new()
+if ! ep do
+  puts("EventPoll.new: FAIL")
+  exit(1)
+end
+
+server = Socket.listen("localhost", "15099")
+if server.fd < 0 do
+  puts("Socket.listen: FAIL")
+  exit(1)
+end
+
+udata = Tag.new_copy(:ready)
+
+r = EventPoll.add(ep, server.fd, void, udata)
+if r == 0 do
+  puts("EventPoll.add: OK")
+else
+  puts("EventPoll.add: FAIL #{r}")
+  exit(1)
+end
+
+r = EventPoll.delete(ep, server.fd, :read)
+if r == 0 do
+  puts("EventPoll.delete entry: OK")
+else
+  puts("EventPoll.delete entry: FAIL #{r}")
+end
+
+Tag.delete(udata)
+Socket.close(server)
+EventPoll.delete(ep, (S64) 0, void)
+0
