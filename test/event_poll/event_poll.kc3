@@ -1,0 +1,18 @@
+require EventPoll
+
+ep = EventPoll.new()
+if ep do
+  puts("EventPoll.new: OK")
+else
+  puts("EventPoll.new: FAIL")
+  exit(1)
+end
+
+r = EventPoll.delete(ep, (S64) 0, void)
+if r == 0 do
+  puts("EventPoll.delete sentinel: OK")
+else
+  puts("EventPoll.delete sentinel: FAIL #{r}")
+  exit(1)
+end
+0

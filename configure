@@ -54,6 +54,9 @@ echo "KC3_VERSION=$KC3_VERSION" >> ${CONFIG_SH}
 config_asan
 echo "HAVE_ASAN = ${HAVE_ASAN}" >> ${CONFIG_MK}
 
+config_have_kqueue
+echo "HAVE_KQUEUE = ${HAVE_KQUEUE}" >> ${CONFIG_MK}
+
 ARCH="unknown"
 if uname | grep -iq openbsd; then
     ARCH=openbsd
@@ -90,6 +93,7 @@ env_reset
 SUBDIRS="
 ekc3
 event
+event_poll
 git
 http
 httpd

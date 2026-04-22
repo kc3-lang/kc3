@@ -122,6 +122,7 @@ test: ${PROG}
 	time ./${PROG}
 	IKC3=${BUILD_TOP}/ikc3/ikc3 time ./ikc3_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s time ./kc3s_test
+	KC3S=${BUILD_TOP}/kc3s/kc3s time ./event_poll_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s time ./socket_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s time ./tls_test
 	IKC3=${BUILD_TOP}/ikc3/ikc3 time ./pdf_test
@@ -135,6 +136,7 @@ test_asan: ${PROG_ASAN}
 	time ./${PROG_ASAN}
 	IKC3=${BUILD_TOP}/ikc3/ikc3_asan time ./ikc3_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_asan time ./kc3s_test
+	KC3S=${BUILD_TOP}/kc3s/kc3s_asan time ./event_poll_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_asan time ./socket_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_asan time ./tls_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_asan time ./ekc3_test
@@ -148,6 +150,7 @@ test_cov:
 	time ./libkc3_test_cov
 	IKC3=${BUILD_TOP}/ikc3/ikc3_cov time ./ikc3_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_cov time ./kc3s_test
+	KC3S=${BUILD_TOP}/kc3s/kc3s_cov time ./event_poll_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_cov time ./socket_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_cov time ./tls_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_cov time ./ekc3_test
@@ -161,6 +164,7 @@ test_debug: libkc3_test_debug
 	time ./libkc3_test_debug
 	IKC3=${BUILD_TOP}/ikc3/ikc3_debug time ./ikc3_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_debug time ./kc3s_test
+	KC3S=${BUILD_TOP}/kc3s/kc3s_debug time ./event_poll_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_debug time ./socket_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_debug time ./tls_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_debug time ./ekc3_test
@@ -282,15 +286,19 @@ test_pdf_debug:
 	IKC3=${BUILD_TOP}/ikc3/ikc3_debug time ./pdf_test
 
 test_socket:
+	KC3S=${BUILD_TOP}/kc3s/kc3s time ./event_poll_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s time ./socket_test
 
 test_socket_asan:
+	KC3S=${BUILD_TOP}/kc3s/kc3s_asan time ./event_poll_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_asan time ./socket_test
 
 test_socket_cov:
+	KC3S=${BUILD_TOP}/kc3s/kc3s_cov time ./event_poll_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_cov time ./socket_test
 
 test_socket_debug:
+	KC3S=${BUILD_TOP}/kc3s/kc3s_debug time ./event_poll_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_debug time ./socket_test
 
 test_tls:
