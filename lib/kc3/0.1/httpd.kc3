@@ -19,7 +19,7 @@ require HTTP
 require HTTP.Request
 require HTTP.Response
 require HTTPd.Route
-require EPoll
+require EventPoll
 require Socket
 require Socket.Buf
 require Str
@@ -154,7 +154,7 @@ defmodule HTTPd do
           " #{request.url} #{inspect(user_agent)}" +
           " #{dt_str}")
         if (! close) do
-          kq_ok = EPoll.add(HTTPd.ep_fd, client.sockfd,
+          kq_ok = EventPoll.add(HTTPd.ep_fd, client.sockfd,
                              HTTPd.timeout, client.ptag) == 0
         end
         error = ((r <= 0) || ((! close) && (! kq_ok)))
@@ -167,8 +167,8 @@ defmodule HTTPd do
     end, do
       Counter.decrease(HTTPd.concurrent_requests, 1)
       if (error || close) && Socket.Buf.can_close?(client) do
-        EPoll.delete(HTTPd.ep_fd, socket, :timer)
-        EPoll.delete(HTTPd.ep_fd, socket, :read)
+        EventPoll.delete(HTTPd.ep_fd, socket, :timer)
+        EventPoll.delete(HTTPd.ep_fd, socket, :read)
         Tag.delete(client.ptag)
         Socket.Buf.close(client)
         File.close(socket)
@@ -191,9 +191,9 @@ defmodule HTTPd do
         Counter.increase(HTTPd.connections, 1)
         count = Counter.get(HTTPd.connections)
         puts("HTTPd.acceptor: connections=#{count}")
-        ok = (EPoll.add(HTTPd.ep_fd, server_socket, void,
+        ok = (EventPoll.add(HTTPd.ep_fd, server_socket, void,
                          HTTPd.acceptor_tag) == 0 &&
-              EPoll.add(HTTPd.ep_fd, client.sockfd, HTTPd.timeout,
+              EventPoll.add(HTTPd.ep_fd, client.sockfd, HTTPd.timeout,
                          client.ptag) == 0)
       end
     end, do
@@ -219,7 +219,7 @@ defmodule HTTPd do
   def server_thread = fn () {
     while ! Counter.get(HTTPd.server_thread_stop) do
       ignore_errors(do
-        r = EPoll.poll(HTTPd.ep_fd, %Time{tv_sec: 1})
+        r = EventPoll.poll(HTTPd.ep_fd, %Time{tv_sec: 1})
         match r do
           {sockfd, :eof, :acceptor} ->
             File.close(sockfd)
@@ -228,7 +228,7 @@ defmodule HTTPd do
             HTTPd.acceptor(sockfd)
           {sockfd, :eof, {:client, client}} ->
             if Socket.Buf.can_close?(client) do
-              EPoll.delete(HTTPd.ep_fd, sockfd, :timer)
+              EventPoll.delete(HTTPd.ep_fd, sockfd, :timer)
               Tag.delete(client.ptag)
               Socket.Buf.close(client)
               File.close(sockfd)
@@ -240,7 +240,7 @@ defmodule HTTPd do
             HTTPd.http_client(sockfd, client)
           {sockfd, :timer, {:client, client}} ->
             if Socket.Buf.can_close?(client) do
-              EPoll.delete(HTTPd.ep_fd, sockfd, :read)
+              EventPoll.delete(HTTPd.ep_fd, sockfd, :read)
               Tag.delete(client.ptag)
               Socket.Buf.close(client)
               File.close(sockfd)
@@ -287,8 +287,8 @@ defmodule HTTPd do
       pledge("stdio rpath wpath cpath fattr inet dns", "")
       IO.puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
-      if HTTPd.ep_fd <- EPoll.epoll() do
-        EPoll.add(HTTPd.ep_fd, socket.fd, void, HTTPd.acceptor_tag)
+      if HTTPd.ep_fd <- EventPoll.new() do
+        EventPoll.add(HTTPd.ep_fd, socket.fd, void, HTTPd.acceptor_tag)
         if HTTPd.thread_count() > 1 do
           threads = List.map(List.count(HTTPd.thread_count() - 1),
             HTTPd.server_thread_new)
@@ -297,11 +297,14 @@ defmodule HTTPd do
         else
           HTTPd.server_thread()
         end
-	Counter.delete(HTTPd.concurrent_requests) 
+        Counter.delete(HTTPd.concurrent_requests)
         Counter.delete(HTTPd.connections)
-	Counter.delete(HTTPd.requests)
+        Counter.delete(HTTPd.requests)
         Counter.delete(HTTPd.server_thread_stop)
-        EPoll.delete(HTTPd.ep_fd, (S64) 0, void)
+        # TODO: le cast (S64) 0 est un workaround -- kc3 type le litteral 0
+        # en U8 et tag_to_ffi_pointer refuse U8 -> S64. Cleaner fix dans
+        # le parser kc3 pour inferer le type depuis la signature du binding.
+        EventPoll.delete(HTTPd.ep_fd, (S64) 0, void)
         Socket.close(HTTPd.socket)
         Tag.delete(HTTPd.acceptor_tag)
         if Module.has_symbol?(Config, :at_exit) do
@@ -309,7 +312,7 @@ defmodule HTTPd do
         end
         0
       else
-        Err.puts("KC3 HTTPd: EPoll.epoll")
+        Err.puts("KC3 HTTPd: EventPoll.new")
         -1
       end
     else

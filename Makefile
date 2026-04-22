@@ -20,6 +20,7 @@ all:
 	${MAKE} -C kpkg all
 	${MAKE} -C ekc3 all
 	${MAKE} -C event all
+	${MAKE} -C event_poll all
 	${MAKE} -C git all
 	${MAKE} -C image all
 	${MAKE} -C json all
@@ -58,6 +59,7 @@ asan:
 	${MAKE} -C kpkg asan
 	${MAKE} -C ekc3 asan
 	${MAKE} -C event asan
+	${MAKE} -C event_poll asan
 	${MAKE} -C git asan
 	${MAKE} -C image asan
 	${MAKE} -C json asan
@@ -87,6 +89,7 @@ build:
 	${MAKE} -C kpkg build
 	${MAKE} -C ekc3 build
 	${MAKE} -C event build
+	${MAKE} -C event_poll build
 	${MAKE} -C git build
 	${MAKE} -C image build
 	${MAKE} -C json build
@@ -114,6 +117,7 @@ clean::
 	${MAKE} -C kpkg clean
 	${MAKE} -C ekc3 clean
 	${MAKE} -C event clean
+	${MAKE} -C event_poll clean
 	${MAKE} -C git clean
 	${MAKE} -C image clean
 	${MAKE} -C json clean
@@ -138,6 +142,7 @@ clean_cov::
 	${MAKE} -C kpkg clean_cov
 	${MAKE} -C ekc3 clean_cov
 	${MAKE} -C event clean_cov
+	${MAKE} -C event_poll clean_cov
 	${MAKE} -C git clean_cov
 	${MAKE} -C image clean_cov
 	${MAKE} -C json clean_cov
@@ -173,6 +178,7 @@ cov:
 	${MAKE} -C kpkg cov
 	${MAKE} -C ekc3 cov
 	${MAKE} -C event cov
+	${MAKE} -C event_poll cov
 	${MAKE} -C git cov
 	${MAKE} -C image cov
 	${MAKE} -C json cov
@@ -205,6 +211,7 @@ debug:
 	${MAKE} -C kpkg debug
 	${MAKE} -C ekc3 debug
 	${MAKE} -C event debug
+	${MAKE} -C event_poll debug
 	${MAKE} -C git debug
 	${MAKE} -C image debug
 	${MAKE} -C json debug
@@ -373,6 +380,7 @@ distclean::
 	${MAKE} -C kpkg distclean
 	${MAKE} -C ekc3 distclean
 	${MAKE} -C event distclean
+	${MAKE} -C event_poll distclean
 	${MAKE} -C git distclean
 	${MAKE} -C image distclean
 	${MAKE} -C json distclean
@@ -564,6 +572,7 @@ gdb_test_httpd_asan: lib_links_asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
 	${MAKE} -C event asan
+	${MAKE} -C event_poll asan
 	${MAKE} -C git asan
 	${MAKE} -C image asan
 	${MAKE} -C json asan
@@ -1173,6 +1182,7 @@ lib_links_linux:
 	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../epoll/libkc3_epoll.${SHARED_EXT} lib/kc3/0.1/epoll.so
+	ln -sf ../../../event_poll/libkc3_event_poll.${SHARED_EXT} lib/kc3/0.1/event_poll.so
 
 lib_links_linux_asan:
 	ln -sf ../../../ekc3/libekc3_asan.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1188,6 +1198,7 @@ lib_links_linux_asan:
 	ln -sf ../../../qrencode/libkc3_qrencode_asan.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_asan.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../epoll/libkc3_epoll_asan.${SHARED_EXT} lib/kc3/0.1/epoll.so
+	ln -sf ../../../event_poll/libkc3_event_poll_asan.${SHARED_EXT} lib/kc3/0.1/event_poll.so
 
 lib_links_linux_cov:
 	ln -sf ../../../ekc3/libekc3_cov.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1203,6 +1214,7 @@ lib_links_linux_cov:
 	ln -sf ../../../qrencode/libkc3_qrencode_cov.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_cov.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../epoll/libkc3_epoll_cov.${SHARED_EXT} lib/kc3/0.1/epoll.so
+	ln -sf ../../../event_poll/libkc3_event_poll_cov.${SHARED_EXT} lib/kc3/0.1/event_poll.so
 
 lib_links_linux_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1218,6 +1230,7 @@ lib_links_linux_debug:
 	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_debug.${SHARED_EXT} lib/kc3/0.1/smtp.so
 	ln -sf ../../../epoll/libkc3_epoll_debug.${SHARED_EXT} lib/kc3/0.1/epoll.so
+	ln -sf ../../../event_poll/libkc3_event_poll_debug.${SHARED_EXT} lib/kc3/0.1/event_poll.so
 
 lib_links_openbsd:
 	ln -sf ../../../ekc3/libekc3.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1268,6 +1281,7 @@ lib_links_clean:
 	rm -f lib/kc3/0.1/ekc3.so
 	rm -f lib/kc3/0.1/epoll.so
 	rm -f lib/kc3/0.1/event.so
+	rm -f lib/kc3/0.1/event_poll.so
 	rm -f lib/kc3/0.1/git.so
 	rm -f lib/kc3/0.1/gl.so
 	rm -f lib/kc3/0.1/gtk4.so
