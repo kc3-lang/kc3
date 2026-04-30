@@ -1774,12 +1774,15 @@ sw buf_write (s_buf *buf, const void *data, uw len)
     r = -1;
     goto clean;
   }
-  if (buf->wpos + len > buf->size &&
-      (r = buf_flush(buf)) < (sw) len) {
-    err_puts("buf_write: buffer is too small");
-    assert(! "buf_write: buffer is too small");
-    r = -1;
-    goto clean;
+  if (buf->wpos + len > buf->size) {
+    if ((r = buf_flush(buf)) < 0)
+      goto clean;
+    if (buf->wpos + len > buf->size) {
+      err_puts("buf_write: buffer is too small");
+      assert(! "buf_write: buffer is too small");
+      r = -1;
+      goto clean;
+    }
   }
   if (buf->wpos + len > buf->size) {
     err_puts("buf_write: buffer overflow");
