@@ -171,18 +171,28 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     env_unwind_protect_pop(env, &unwind_protect);
     if (cfn->arg_result) {
       if (result_pointer != arg_pointer_result) {
-        err_write_1("cfn_apply: ");
-        err_inspect_str(&cfn->c_name->str);
-        err_write_1(" ");
-        err_inspect_list(args);
-        err_write_1(": ");
-        err_inspect_c_pointer(result_pointer);
-        err_write_1(" != ");
-        err_inspect_c_pointer(arg_pointer_result);
-        err_write_1("\n");
+        if (result_pointer) {
+          err_write_1("cfn_apply: ");
+          err_inspect_str(&cfn->c_name->str);
+          err_write_1(" ");
+          err_inspect_list(args);
+          err_write_1(": ");
+          err_inspect_c_pointer(result_pointer);
+          err_write_1(" != ");
+          err_inspect_c_pointer(arg_pointer_result);
+          err_write_1("\n");
+          assert(env->stacktrace == trace);
+          env->stacktrace = list_delete(trace);
+          goto ko;
+        }
+        tag_init_void(dest_v);
+        tag_clean(&tmp2);
+        tag_clean(&tmp);
         assert(env->stacktrace == trace);
         env->stacktrace = list_delete(trace);
-        goto ko;
+        alloc_free(arg_pointers);
+        alloc_free(arg_values);
+        return dest_v;
       }
       tag_clean(&tmp);
       *dest_v = tmp2;
