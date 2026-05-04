@@ -1482,17 +1482,20 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag,
   if (! env_eval_tag(env, spec_tag, &spec_eval)) {
     err_puts("env_facts_with_macro: env_eval_tag spec");
     assert(! "env_facts_with_macro: env_eval_tag spec");
+    pfacts_clean(&facts);
     return NULL;
   }
   if (spec_eval.type != TAG_PLIST) {
     err_puts("env_facts_with_macro: spec is not a List");
     assert(! "env_facts_with_macro: spec is not a List");
     tag_clean(&spec_eval);
+    pfacts_clean(&facts);
     return NULL;
   }
   spec = spec_eval.data.td_plist;
   if (! facts_with_list(facts, &cursor, spec)) {
     tag_clean(&spec_eval);
+    pfacts_clean(&facts);
     return NULL;
   }
   while (1) {
@@ -1509,6 +1512,7 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag,
       tag_clean(&tmp);
       tag_clean(&spec_eval);
       facts_with_cursor_clean(&cursor);
+      pfacts_clean(&facts);
       longjmp(*unwind_protect.jmp, 1);
     }
     if (! env_eval_tag(env, tag, &tmp)) {
@@ -1519,6 +1523,7 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag,
   }
  ok:
   tag_clean(&spec_eval);
+  pfacts_clean(&facts);
   *dest_v = tmp;
   return dest_v;
  clean:
@@ -1527,6 +1532,7 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag,
   tag_clean(&spec_eval);
   facts_with_cursor_clean(&cursor);
   tag_clean(&tmp);
+  pfacts_clean(&facts);
   return NULL;
 }
 
