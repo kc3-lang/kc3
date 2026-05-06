@@ -18,9 +18,6 @@
 #include <unistd.h>
 #include "../libkc3/kc3.h"
 
-const char *g_env_argv0_default = PROG;
-const char *g_env_argv0_dir_default = PREFIX;
-
 static s_counter *g_httpd_server_thread_stop = NULL;
 
 static void httpd_signal (int s);
@@ -59,6 +56,8 @@ int main (int argc, char **argv)
   time_t t;
   s_tag tmp = {0};
   const struct tm *utc = NULL;
+  g_env_argv0_default = PROG;
+  g_env_argv0_dir_default = PREFIX;
   kc3_init(NULL, &argc, &argv);
   env = env_global();
   while (argc > 0 && argv[0] && argv[0][0] == '-') {
