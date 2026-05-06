@@ -227,10 +227,14 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     return false;
   }
   if (is_unbound_a || is_var_a) {
-    if (macro)
-      tag_init_copy(dest, tag_b);
-    else
-      env_eval_tag(env, tag_b, dest);
+    if (macro) {
+      if (! tag_init_copy(dest, tag_b))
+        return false;
+    }
+    else {
+      if (! env_eval_tag(env, tag_b, dest))
+        return false;
+    }
     if (is_var_a) {
       if (! var_set(tag_a->data.td_pvar, dest))
         return false;
@@ -242,10 +246,14 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     return true;
   }
   if (is_unbound_b || is_var_b) {
-    if (macro)
-      tag_init_copy(dest, tag_a);
-    else
-      env_eval_tag(env, tag_a, dest);
+    if (macro) {
+      if (! tag_init_copy(dest, tag_a))
+        return false;
+    }
+    else {
+      if (! env_eval_tag(env, tag_a, dest))
+        return false;
+    }
     if (is_var_b) {
       if (! var_set(tag_b->data.td_pvar, dest))
         return false;
