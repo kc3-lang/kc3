@@ -244,7 +244,7 @@ s64 kc3_event_poll_add (void **handle, s64 fd, s_tag *timeout,
       entry->has_timeout = false;
     }
     ev.events = EPOLLIN | EPOLLONESHOT | EPOLLRDHUP;
-    ev.data.ptr = entry;
+    ev.data.fd = (s32) fd;
     if (epoll_ctl(ep->epfd, EPOLL_CTL_MOD, fd, &ev) < 0) {
       if (errno == ENOENT) {
         if (epoll_ctl(ep->epfd, EPOLL_CTL_ADD, fd, &ev) < 0) {
@@ -490,11 +490,13 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
       return tag_init_void(dest);
     }
     if (r > 0) {
-      entry = event.data.ptr;
-      if (! entry)
-        return tag_init_void(dest);
       mutex_lock(&ep->entries_mutex);
-      udata = entry ? entry->udata : NULL;
+      entry = entry_find(ep, (s64) event.data.fd);
+      if (! entry) {
+        mutex_unlock(&ep->entries_mutex);
+        return tag_init_void(dest);
+      }
+      udata = entry->udata;
       if (entry->has_timeout) {
         timer_remove(ep, entry);
         entry->has_timeout = false;
