@@ -147,8 +147,10 @@ skiplist_insert__fact
   pred = skiplist_pred__fact(skiplist, fact);
   next = SKIPLIST_NODE_NEXT__fact(pred, 0);
   next = SKIPLIST_NODE_NEXT__fact(next, 0);
-  if (next && skiplist->compare(fact, next->fact) == 0)
+  if (next && skiplist->compare(fact, next->fact) == 0) {
+    skiplist_node_delete__fact(pred);
     return next;
+  }
   height = skiplist_random_height__fact(skiplist);
   node = skiplist_node_new__fact(fact, height);
   skiplist_node_insert__fact(node, pred);

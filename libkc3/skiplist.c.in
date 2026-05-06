@@ -147,8 +147,10 @@ skiplist_insert___NAME$
   pred = skiplist_pred___NAME$(skiplist, _NAME$);
   next = SKIPLIST_NODE_NEXT___NAME$(pred, 0);
   next = SKIPLIST_NODE_NEXT___NAME$(next, 0);
-  if (next && skiplist->compare(_NAME$, next->_NAME$) == 0)
+  if (next && skiplist->compare(_NAME$, next->_NAME$) == 0) {
+    skiplist_node_delete___NAME$(pred);
     return next;
+  }
   height = skiplist_random_height___NAME$(skiplist);
   node = skiplist_node_new___NAME$(_NAME$, height);
   skiplist_node_insert___NAME$(node, pred);
