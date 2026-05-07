@@ -1129,7 +1129,6 @@ lib_links_bsd_debug:
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
-	ln -sf ../../../kqueue/libkc3_kqueue_debug.${SHARED_EXT} lib/kc3/0.1/kqueue.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
@@ -1246,6 +1245,7 @@ lib_links_openbsd:
 	ln -sf ../../../pdf/libkc3_pdf.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp.${SHARED_EXT} lib/kc3/0.1/smtp.so
+	ln -sf ../../../event_poll/libkc3_event_poll.${SHARED_EXT} lib/kc3/0.1/event_poll.so
 
 lib_links_openbsd_cov:
 	ln -sf ../../../ekc3/libekc3_cov.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1261,6 +1261,7 @@ lib_links_openbsd_cov:
 	ln -sf ../../../pdf/libkc3_pdf_cov.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_cov.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_cov.${SHARED_EXT} lib/kc3/0.1/smtp.so
+	ln -sf ../../../event_poll/libkc3_event_poll_cov.${SHARED_EXT} lib/kc3/0.1/event_poll.so
 
 lib_links_openbsd_debug:
 	ln -sf ../../../ekc3/libekc3_debug.${SHARED_EXT} lib/kc3/0.1/ekc3.so
@@ -1271,11 +1272,11 @@ lib_links_openbsd_debug:
 	ln -sf ../../../http/libkc3_http_debug.${SHARED_EXT} lib/kc3/0.1/http.so
 	ln -sf ../../../image/libkc3_image_debug.${SHARED_EXT} lib/kc3/0.1/image.so
 	ln -sf ../../../json/libkc3_json_debug.${SHARED_EXT} lib/kc3/0.1/json.so
-	ln -sf ../../../kqueue/libkc3_kqueue_debug.${SHARED_EXT} lib/kc3/0.1/kqueue.so
 	ln -sf ../../../markdown/libkc3_markdown_debug.${SHARED_EXT} lib/kc3/0.1/markdown.so
 	ln -sf ../../../pdf/libkc3_pdf_debug.${SHARED_EXT} lib/kc3/0.1/pdf.so
 	ln -sf ../../../qrencode/libkc3_qrencode_debug.${SHARED_EXT} lib/kc3/0.1/qrencode.so
 	ln -sf ../../../smtp/libkc3_smtp_debug.${SHARED_EXT} lib/kc3/0.1/smtp.so
+	ln -sf ../../../event_poll/libkc3_event_poll_debug.${SHARED_EXT} lib/kc3/0.1/event_poll.so
 
 lib_links_clean:
 	rm -f lib/kc3/0.1/ekc3.so
