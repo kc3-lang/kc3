@@ -1155,22 +1155,13 @@ sw facts_log_add (s_log *log, uw id, const s_fact *fact)
     marshall_fact(log->after_dump_marshall, false, fact);
     if ((r = marshall_to_buf(log->after_dump_marshall, &log->after_dump_buf)) < 0)
       goto ko;
-    result += r;
   }
-  else {
-    if ((r = buf_inspect_uw_decimal(&log->buf, id)) < 0)
-      goto ko;
-    result += r;
-    if ((r = buf_write_1(&log->buf, " add ")) < 0)
-      goto ko;
-    result += r;
-    if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
-      goto ko;
-    result += r;
-    if ((r = buf_write_1(&log->buf, "\n")) < 0)
-      goto ko;
-    result += r;
-  }
+  marshall_uw(log->marshall, false, id);
+  marshall_u8(log->marshall, false, FACT_ACTION_ADD);
+  marshall_fact(log->marshall, false, fact);
+  if ((r = marshall_to_buf(log->marshall, &log->buf)) < 0)
+    goto ko;
+  result += r;
   hook = log->hooks;
   while (hook) {
     hook->f(hook->context, FACT_ACTION_ADD, fact);
@@ -1196,22 +1187,13 @@ sw facts_log_remove (s_log *log, uw id, const s_fact *fact)
     marshall_fact(log->after_dump_marshall, false, fact);
     if ((r = marshall_to_buf(log->after_dump_marshall, &log->after_dump_buf)) < 0)
       goto ko;
-    result += r;
   }
-  else {
-    if ((r = buf_inspect_uw_decimal(&log->buf, id)) < 0)
-      goto ko;
-    result += r;
-    if ((r = buf_write_1(&log->buf, " remove ")) < 0)
-      goto ko;
-    result += r;
-    if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
-      goto ko;
-    result += r;
-    if ((r = buf_write_1(&log->buf, "\n")) < 0)
-      goto ko;
-    result += r;
-  }
+  marshall_uw(log->marshall, false, id);
+  marshall_u8(log->marshall, false, FACT_ACTION_REMOVE);
+  marshall_fact(log->marshall, false, fact);
+  if ((r = marshall_to_buf(log->marshall, &log->buf)) < 0)
+    goto ko;
+  result += r;
   hook = log->hooks;
   while (hook) {
     hook->f(hook->context, FACT_ACTION_REMOVE, fact);
