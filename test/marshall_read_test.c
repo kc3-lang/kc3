@@ -81,6 +81,7 @@ TEST_CASE_PROTOTYPE(marshall_read_s32);
 TEST_CASE_PROTOTYPE(marshall_read_s64);
 TEST_CASE_PROTOTYPE(marshall_read_sw);
 TEST_CASE_PROTOTYPE(marshall_read_tag);
+TEST_CASE_PROTOTYPE(marshall_read_unquote);
 TEST_CASE_PROTOTYPE(marshall_read_u8);
 TEST_CASE_PROTOTYPE(marshall_read_u16);
 TEST_CASE_PROTOTYPE(marshall_read_u32);
@@ -91,6 +92,7 @@ void marshall_read_test (void)
 {
   TEST_CASE_RUN(marshall_read_bool);
   TEST_CASE_RUN(marshall_read_tag);
+  TEST_CASE_RUN(marshall_read_unquote);
 }
 
 TEST_CASE(marshall_read_bool)
@@ -643,3 +645,27 @@ TEST_CASE_END(marshall_read_plist)
 
 }
 TEST_CASE_END(marshall_read_tag)
+
+TEST_CASE(marshall_read_unquote)
+{
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  s_str str = {0};
+  s_tag tag = {0};
+  s_tag tag_read = {0};
+  test_context("marshall_read unquote(123) roundtrip");
+  TEST_ASSERT(tag_init_1(&tag, "unquote 123"));
+  TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+  TEST_EQ(marshall_tag(&m, false, &tag), &m);
+  TEST_ASSERT(marshall_to_str(&m, &str));
+  TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+  TEST_EQ(marshall_read_tag(&mr, false, &tag_read), &mr);
+  TAG_TEST_EQ(&tag_read, &tag);
+  marshall_clean(&m);
+  marshall_read_clean(&mr);
+  str_clean(&str);
+  tag_clean(&tag);
+  tag_clean(&tag_read);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_unquote)
