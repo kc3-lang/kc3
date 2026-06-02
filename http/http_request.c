@@ -416,6 +416,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   *((s_http_request *) tmp.data.td_pstruct->data) = tmp_req;
   goto clean;
  restore:
+  http_request_clean(&tmp_req);
   list_delete_all(multipart_headers);
   if (boundary_tmp.ptr.p_pchar != boundary.ptr.p_pchar)
     str_clean(&boundary_tmp);

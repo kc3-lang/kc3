@@ -18,6 +18,7 @@
 s_tag *          http_request_buf_parse (s_tag *req, s_buf *buf);
 s_tag *          http_request_buf_parse_method (s_buf *buf,
                                                 s_tag *dest);
+void             http_request_clean (s_http_request *req);
 s_http_request * http_request_cookie_add (s_http_request *req,
                                           s_str *cookies);
 s_tag *          http_request_method_from_str (const s_str *str,
