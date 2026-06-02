@@ -1607,7 +1607,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/deserialize.kc3" \
 	"lib/kc3/0.1/ekc3.kc3" \
 	"lib/kc3/0.1/env.kc3" \
-	"lib/kc3/0.1/epoll.kc3" \
 	"lib/kc3/0.1/err.kc3" \
 	"lib/kc3/0.1/event.kc3" \
 	"lib/kc3/0.1/event_poll.kc3" \
