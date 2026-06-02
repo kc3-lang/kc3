@@ -229,6 +229,7 @@ defmodule HTTPd do
           {sockfd, :eof, {:client, client}} ->
             if Socket.Buf.can_close?(client) do
               EventPoll.delete(HTTPd.ep_fd, sockfd, :timer)
+              EventPoll.delete(HTTPd.ep_fd, sockfd, :read)
               Tag.delete(client.ptag)
               Socket.Buf.close(client)
               File.close(sockfd)
