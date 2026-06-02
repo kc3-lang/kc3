@@ -2717,9 +2717,12 @@ s_marshall_read * marshall_read_unquote (s_marshall_read *mr,
 {
     s_unquote tmp = {0};
     assert(mr);
-    assert(mr);
-    if (! marshall_read_tag(mr, heap, tmp.tag))
+    if (! (tmp.tag = alloc(sizeof(s_tag))))
       return NULL;
+    if (! marshall_read_tag(mr, heap, tmp.tag)) {
+      alloc_free(tmp.tag);
+      return NULL;
+    }
     *dest = tmp;
     return mr;
 }
