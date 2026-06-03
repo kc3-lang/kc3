@@ -404,6 +404,13 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
         event_type = &g_sym_eof;
       else
         event_type = &g_sym_read;
+      if (event.filter == EVFILT_READ) {
+        struct kevent timer_event = {0};
+        timer_event.ident = event.ident;
+        timer_event.filter = EVFILT_TIMER;
+        timer_event.flags = EV_DELETE;
+        kevent(kqfd, &timer_event, 1, NULL, 0, NULL);
+      }
       if (! tag_init_ptuple(dest, 3))
         return NULL;
       if (! tag_init_s64(dest->data.td_ptuple->tag, event.ident) ||
