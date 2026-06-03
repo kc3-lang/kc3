@@ -1817,6 +1817,7 @@ KC3_TEST_SOURCES = \
 	"test/facts_test_dump_file.expected.facts" \
 	"test/facts_test_load_file.facts" \
 	"test/facts_test_log_add.expected.facts" \
+	"test/facts_test_log_add.facts" \
 	"test/facts_test_log_remove.expected.facts" \
 	"test/facts_test_open_file.1.expected.facts" \
 	"test/facts_test_open_file.1.in.facts" \
