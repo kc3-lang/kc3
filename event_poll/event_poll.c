@@ -20,11 +20,13 @@
 #include "../libkc3/sym.h"
 #include "../libkc3/tag.h"
 
-#if defined(HAVE_KQUEUE)
+#if HAVE_KQUEUE
 # include <sys/types.h>
 # include <sys/event.h>
 # include <sys/time.h>
-#elif defined(HAVE_EPOLL)
+#elif HAVE_EPOLL
+#include "../libkc3/compare.h"
+#include "../libkc3/timespec.h"
 # include <sys/epoll.h>
 # include <time.h>
 #else
@@ -33,34 +35,7 @@
 
 #include "event_poll.h"
 
-#if defined(HAVE_EPOLL) && ! defined(HAVE_KQUEUE)
-
-static void timespec_now (struct timespec *ts)
-{
-  clock_gettime(CLOCK_MONOTONIC, ts);
-}
-
-static bool timespec_expired (const struct timespec *deadline)
-{
-  struct timespec now;
-  timespec_now(&now);
-  if (now.tv_sec > deadline->tv_sec)
-    return true;
-  if (now.tv_sec == deadline->tv_sec &&
-      now.tv_nsec >= deadline->tv_nsec)
-    return true;
-  return false;
-}
-
-static bool timespec_lt (const struct timespec *a,
-                         const struct timespec *b)
-{
-  if (a->tv_sec < b->tv_sec)
-    return true;
-  if (a->tv_sec == b->tv_sec && a->tv_nsec < b->tv_nsec)
-    return true;
-  return false;
-}
+#if HAVE_EPOLL && ! HAVE_KQUEUE
 
 static s_event_poll_entry * entry_new (s_event_poll *ep, s64 fd)
 {
@@ -90,7 +65,7 @@ static void timer_insert (s_event_poll *ep, s_event_poll_entry *entry)
 {
   s_event_poll_entry **p;
   p = &ep->timers;
-  while (*p && timespec_lt(&(*p)->deadline, &entry->deadline))
+  while (*p && compare_timespec(&(*p)->deadline, &entry->deadline) < 0)
     p = &(*p)->timer_next;
   entry->timer_next = *p;
   *p = entry;
@@ -130,7 +105,7 @@ static void entry_free (s_event_poll *ep, s_event_poll_entry *entry)
 
 void * kc3_event_poll_new (void)
 {
-#if defined(HAVE_KQUEUE)
+#if HAVE_KQUEUE
   s32 e;
   s64 kqfd;
   if ((kqfd = kqueue()) < 0) {
@@ -141,7 +116,7 @@ void * kc3_event_poll_new (void)
     return NULL;
   }
   return (void *)(intptr_t) kqfd;
-#elif defined(HAVE_EPOLL)
+#elif HAVE_EPOLL
   s32 e;
   s_event_poll *ep;
   if (! (ep = alloc(sizeof(s_event_poll))))
@@ -170,7 +145,7 @@ s64 kc3_event_poll_add (void **handle, s64 fd, s_tag *timeout,
 {
   if (! handle || ! *handle)
     return -1;
-#if defined(HAVE_KQUEUE)
+#if HAVE_KQUEUE
   {
     s64 kqfd = (s64)(intptr_t)(*handle);
     s32 e;
@@ -203,7 +178,7 @@ s64 kc3_event_poll_add (void **handle, s64 fd, s_tag *timeout,
     }
     return r;
   }
-#elif defined(HAVE_EPOLL)
+#elif HAVE_EPOLL
   {
     s_event_poll *ep = *(s_event_poll **) handle;
     s32 e;
@@ -230,7 +205,7 @@ s64 kc3_event_poll_add (void **handle, s64 fd, s_tag *timeout,
     if (timeout && timeout->type == TAG_TIME) {
       s_time *t = &timeout->data.td_time;
       struct timespec now;
-      timespec_now(&now);
+      timespec_init_monotonic(&now);
       entry->deadline.tv_sec = now.tv_sec + t->tv_sec;
       entry->deadline.tv_nsec = now.tv_nsec + t->tv_nsec;
       if (entry->deadline.tv_nsec >= 1000000000L) {
@@ -284,7 +259,7 @@ s64 kc3_event_poll_delete (void **handle, s64 fd, s_tag *filter)
 {
   if (! handle || ! *handle)
     return -1;
-#if defined(HAVE_KQUEUE)
+#if HAVE_KQUEUE
   {
     s64 kqfd = (s64)(intptr_t)(*handle);
     if (! filter || filter->type == TAG_VOID) {
@@ -311,7 +286,7 @@ s64 kc3_event_poll_delete (void **handle, s64 fd, s_tag *filter)
     err_puts("kc3_event_poll_delete: filter must be a symbol");
     return -1;
   }
-#elif defined(HAVE_EPOLL)
+#elif HAVE_EPOLL
   {
     s_event_poll *ep = *(s_event_poll **) handle;
     s_event_poll_entry *entry;
@@ -364,9 +339,9 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
 {
   if (! handle || ! *handle)
     return NULL;
-#if defined(HAVE_KQUEUE)
+#if HAVE_KQUEUE
   {
-    s64 kqfd = (s64)(intptr_t)(*handle);
+    s64 kqfd;
     s32 e;
     struct kevent event = {0};
     const s_sym *event_type;
@@ -374,6 +349,7 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
     s32 r;
     s_timespec timespec = {0};
     s_tag *udata;
+    kqfd = (s64)(intptr_t) *handle;
     if (timeout && timeout->type != TAG_VOID) {
       switch (timeout->type) {
       case TAG_TIME:
@@ -430,7 +406,7 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
     }
     return tag_init_void(dest);
   }
-#elif defined(HAVE_EPOLL)
+#elif HAVE_EPOLL
   {
     s_event_poll *ep = *(s_event_poll **) handle;
     s32 e;
@@ -445,7 +421,7 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
       timeout_ms = t->tv_sec * 1000 + t->tv_nsec / 1000000;
     }
     mutex_lock(&ep->entries_mutex);
-    if (ep->timers && timespec_expired(&ep->timers->deadline)) {
+    if (ep->timers && timespec_timeout_expired(&ep->timers->deadline)) {
       entry = ep->timers;
       ep->timers = entry->timer_next;
       entry->timer_next = NULL;
@@ -477,7 +453,7 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
     if (ep->timers) {
       struct timespec now;
       s32 timer_ms;
-      timespec_now(&now);
+      timespec_init_monotonic(&now);
       timer_ms = (ep->timers->deadline.tv_sec - now.tv_sec) * 1000 +
                  (ep->timers->deadline.tv_nsec - now.tv_nsec) / 1000000;
       if (timer_ms < 0)

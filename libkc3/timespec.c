@@ -73,12 +73,18 @@ DEF_TIMESPEC_INIT_F(f80)
 DEF_TIMESPEC_INIT_F(f128)
 #endif
 
-s_timespec * timespec_init_time(s_timespec *time, s_time *src)
+s_timespec * timespec_init_monotonic (s_timespec *timespec)
 {
-  *time = (s_timespec) {0};
-  time->tv_sec = src->tv_sec;
-  time->tv_nsec = src->tv_nsec;
-  return time;
+  clock_gettime(CLOCK_MONOTONIC, timespec);
+  return timespec;
+}
+
+s_timespec * timespec_init_time(s_timespec *timespec, s_time *src)
+{
+  *timespec = (s_timespec) {0};
+  timespec->tv_sec = src->tv_sec;
+  timespec->tv_nsec = src->tv_nsec;
+  return timespec;
 }
 
 DEF_TIMESPEC_INIT_U(u8)
@@ -98,6 +104,15 @@ s_timespec * timespec_sub (const s_timespec *a, const s_timespec *b,
     dest->tv_nsec = a->tv_nsec - b->tv_nsec;
   }
   return dest;
+}
+
+bool timespec_timeout_expired (const s_timespec *deadline)
+{
+  s_timespec now;
+  timespec_init_monotonic(&now);
+  return (now.tv_sec > deadline->tv_sec ||
+          (now.tv_sec == deadline->tv_sec &&
+           now.tv_nsec >= deadline->tv_nsec));
 }
 
 f64 * timespec_to_f64 (const s_timespec *time, f64 *dest)

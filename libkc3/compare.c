@@ -1835,6 +1835,26 @@ s8 compare_time (const s_time *a, const s_time *b)
   return 0;
 }
 
+s8 compare_timespec (const s_timespec *a,
+                     const s_timespec *b)
+{
+  if (a == b)
+    return 0;
+  if (! a)
+    return -1;
+  if (! b)
+    return 1;
+  if (a->tv_sec < b->tv_sec)
+    return -1;
+  if (a->tv_sec > b->tv_sec)
+    return 1;
+  if (a->tv_nsec < b->tv_nsec)
+    return -1;
+  if (a->tv_nsec > b->tv_nsec)
+    return 1;
+  return 0;
+}
+
 s8 compare_tuple (const s_tuple *a, const s_tuple *b)
 {
   uw i = 0;
