@@ -25,8 +25,8 @@
 # include <sys/event.h>
 # include <sys/time.h>
 #elif HAVE_EPOLL
-#include "../libkc3/compare.h"
-#include "../libkc3/timespec.h"
+# include "../libkc3/compare.h"
+# include "../libkc3/timespec.h"
 # include <sys/epoll.h>
 # include <time.h>
 #else
