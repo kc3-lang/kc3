@@ -34,12 +34,16 @@ DEF_TIMESPEC_INIT(f80);
 #if HAVE_F128
 DEF_TIMESPEC_INIT(f128);
 #endif
-s_timespec * timespec_init_time(s_timespec *time, s_time *src);
+s_timespec * timespec_init_monotonic(s_timespec *timespec);
+s_timespec * timespec_init_time(s_timespec *timespec, s_time *src);
 DEF_TIMESPEC_INIT(u8);
 DEF_TIMESPEC_INIT(u16);
 DEF_TIMESPEC_INIT(u32);
 DEF_TIMESPEC_INIT(u64);
 DEF_TIMESPEC_INIT(uw);
+
+/* Observers. */
+bool timespec_timeout_expired (const s_timespec *deadline);
 
 /* Operators. */
 s_timespec * timespec_sub (const s_timespec *a, const s_timespec *b,
