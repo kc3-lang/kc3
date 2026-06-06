@@ -192,9 +192,12 @@ defmodule HTTPd do
         count = Counter.get(HTTPd.connections)
         puts("HTTPd.acceptor: connections=#{count}")
         ok = (EventPoll.add(HTTPd.ep_fd, server_socket, void,
-                         HTTPd.acceptor_tag) == 0 &&
+                HTTPd.acceptor_tag) == 0 &&
               EventPoll.add(HTTPd.ep_fd, client.sockfd, HTTPd.timeout,
-                         client.ptag) == 0)
+                client.ptag) == 0)
+      else
+        EventPoll.add(HTTPd.ep_fd, server_socket, void,
+          HTTPd.acceptor_tag)
       end
     end, do
       if ((! ok) && client) do
