@@ -1148,6 +1148,7 @@ sw facts_log_add (s_log *log, uw id, const s_fact *fact)
   sw r;
   sw result = 0;
   assert(log);
+  assert(log->marshall);
   assert(fact);
   if (log->after_dump_marshall) {
     marshall_uw(log->after_dump_marshall, false, id);
@@ -1181,6 +1182,7 @@ sw facts_log_remove (s_log *log, uw id, const s_fact *fact)
   sw result = 0;
   assert(log);
   assert(fact);
+  assert(log->marshall);
   if (log->after_dump_marshall) {
     marshall_uw(log->after_dump_marshall, false, id);
     marshall_u8(log->after_dump_marshall, false, FACT_ACTION_REMOVE);
@@ -1916,6 +1918,13 @@ bool * facts_remove_fact_tags (s_facts *facts, s_tag *subject,
                                bool *dest)
 {
   s_fact fact;
+  s_facts_cursor cursor;
+  s_fact *found;
+  s_list *list = NULL;
+  s_facts_transaction transaction;
+  bool unbound;
+  bool has_wildcard = false;
+  bool b;
   assert(facts);
   assert(subject);
   assert(predicate);
@@ -1927,10 +1936,66 @@ bool * facts_remove_fact_tags (s_facts *facts, s_tag *subject,
              " with securelevel > 1");
     abort();
   }
-  fact.subject = subject;
-  fact.predicate = predicate;
-  fact.object = object;
-  return facts_remove_fact(facts, &fact, dest);
+  if (! tag_is_unbound_var(subject, &unbound))
+    return NULL;
+  if (unbound)
+    has_wildcard = true;
+  if (! tag_is_unbound_var(predicate, &unbound))
+    return NULL;
+  if (unbound)
+    has_wildcard = true;
+  if (! tag_is_unbound_var(object, &unbound))
+    return NULL;
+  if (unbound)
+    has_wildcard = true;
+  if (! has_wildcard) {
+    fact.subject = subject;
+    fact.predicate = predicate;
+    fact.object = object;
+    return facts_remove_fact(facts, &fact, dest);
+  }
+#if HAVE_PTHREAD
+  if (! rwlock_w(&facts->rwlock))
+    return NULL;
+#endif
+  if (! facts_with_tags(facts, &cursor, subject, predicate, object))
+    goto error_unlock;
+  if (! facts_cursor_next(&cursor, &found)) {
+    facts_cursor_clean(&cursor);
+    goto error_unlock;
+  }
+  while (found) {
+    list = list_new(list);
+    list->tag.type = TAG_FACT;
+    list->tag.data.td_fact = *found;
+    if (! facts_cursor_next(&cursor, &found)) {
+      facts_cursor_clean(&cursor);
+      list_delete_all(list);
+      goto error_unlock;
+    }
+  }
+  facts_cursor_clean(&cursor);
+  facts_transaction_start(facts, &transaction);
+  while (list) {
+    if (! facts_remove_fact(facts, &list->tag.data.td_fact, &b)) {
+      list_delete_all(list);
+      facts_transaction_rollback(facts, &transaction);
+      goto error_unlock;
+    }
+    list = list_delete(list);
+  }
+  facts_transaction_end(facts, &transaction);
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&facts->rwlock);
+#endif
+  *dest = true;
+  return dest;
+ error_unlock:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&facts->rwlock);
+#endif
+  err_puts("facts_remove_fact_tags: cursor path failed");
+  return NULL;
 }
 
 s_fact * facts_replace_fact (s_facts *facts, s_fact *fact)
