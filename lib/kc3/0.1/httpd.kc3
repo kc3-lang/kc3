@@ -171,7 +171,6 @@ defmodule HTTPd do
         EventPoll.delete(HTTPd.ep_fd, socket, :read)
         Tag.delete(client.ptag)
         Socket.Buf.close(client)
-        File.close(socket)
         Counter.decrease(HTTPd.connections, 1)
         count = Counter.get(HTTPd.connections)
         puts("HTTPd.http_client: connections=#{count}")
@@ -183,12 +182,14 @@ defmodule HTTPd do
     ok = false
     client = void
     client_tag = void
+    incremented = false
     unwind_protect(do
       if (Counter.get(HTTPd.connections) < HTTPd.connections_max()) &&
          (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
          (client_tag = Tag.new_copy({:client, client})) &&
          Socket.Buf.set_tag(client, client_tag) do
         Counter.increase(HTTPd.connections, 1)
+        incremented = true
         count = Counter.get(HTTPd.connections)
         puts("HTTPd.acceptor: connections=#{count}")
         ok = (EventPoll.add(HTTPd.ep_fd, server_socket, void,
@@ -205,7 +206,9 @@ defmodule HTTPd do
           Tag.delete(client_tag)
         end
         Socket.Buf.close(client)
-        File.close(client.sockfd)
+        if incremented do
+          Counter.decrease(HTTPd.connections, 1)
+        end
       end
     end)
   }
@@ -235,7 +238,6 @@ defmodule HTTPd do
               EventPoll.delete(HTTPd.ep_fd, sockfd, :read)
               Tag.delete(client.ptag)
               Socket.Buf.close(client)
-              File.close(sockfd)
               Counter.decrease(HTTPd.connections, 1)
               count = Counter.get(HTTPd.connections)
               puts("HTTPd.server_thread: eof: connections=#{count}")
@@ -247,7 +249,6 @@ defmodule HTTPd do
               EventPoll.delete(HTTPd.ep_fd, sockfd, :read)
               Tag.delete(client.ptag)
               Socket.Buf.close(client)
-              File.close(sockfd)
               Counter.decrease(HTTPd.connections, 1)
               count = Counter.get(HTTPd.connections)
               puts("HTTPd.server_thread: timeout: connections=#{count}")
