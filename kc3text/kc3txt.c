@@ -31,6 +31,8 @@ static void render(s_buf *out, uw id, u8 action, s_fact *fact) {
 int main (int argc, char **argv)
 {
     char b[BUF_SIZE];
+    char real_argv0[4096];
+    char *resolved_argv0 = argv[0];
     uw id;
     u8 action;
     s_fact fact;
@@ -38,17 +40,51 @@ int main (int argc, char **argv)
     s_buf out;
     s_env env;
     int e_argc = 1;
-    char *e_argv_data[] = { argv[0], NULL };
-    char **e_argv = e_argv_data;
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <path>\n", argv[0]);
         return 1;
     }
+    if (realpath(argv[0], real_argv0))
+        resolved_argv0 = real_argv0;
+    char *e_argv_data[] = { resolved_argv0, NULL };
+    char **e_argv = e_argv_data;
     {
         const char *fp = argv[1];
         size_t flen = strlen(fp);
         if (flen >= 5 && ! strcmp(fp + flen - 5, ".dump")) {
-            char  *d_argv_data[] = { argv[0], "--restore", argv[1], NULL };
+            const char *slash = strrchr(fp, '/');
+            char dump_dir[1024] = ".";
+            const char *dump_name = fp;
+            if (slash) {
+                size_t len = slash - fp;
+                if (len >= sizeof(dump_dir)) len = sizeof(dump_dir) - 1;
+                memcpy(dump_dir, fp, len);
+                dump_dir[len] = '\0';
+                dump_name = slash + 1;
+            }
+            const char *restore_path = fp;
+            {
+                char db_path[1100];
+                snprintf(db_path, sizeof(db_path), "%s/db", dump_dir);
+                if (access(db_path, F_OK) == 0) {
+                    char log_path[2200];
+                    snprintf(log_path, sizeof(log_path), "%s/app.facts.bin.facts", db_path);
+                    if (access(log_path, F_OK) != 0) {
+                        fprintf(stderr, "%s: dump references %s which does not exist\n",
+                                argv[0], log_path);
+                        fprintf(stderr, "  the restore would create it (write side-effect).\n");
+                        fprintf(stderr, "  kc3cat refuses to write. either prepare the log\n");
+                        fprintf(stderr, "  manually, or use a tool that accepts writes.\n");
+                        return 1;
+                    }
+                    if (slash && chdir(dump_dir) != 0) {
+                        fprintf(stderr, "%s: cannot chdir to %s\n", argv[0], dump_dir);
+                        return 1;
+                    }
+                    restore_path = dump_name;
+                }
+            }
+            char  *d_argv_data[] = { resolved_argv0, "--restore", (char *)restore_path, NULL };
             int    d_argc = 3;
             char **d_argv = d_argv_data;
             if (! env_init(&env, &d_argc, &d_argv)) {
