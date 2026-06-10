@@ -124,7 +124,18 @@ sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
   pretty_save_init(&pretty_save, &buf->pretty);
   pretty_indent_from_column(&buf->pretty, 0);
   address[dimension] = 0;
-  while (1) {
+  while (address[dimension] < array->dimensions[dimension].count) {
+    if (address[dimension] > 0) {
+      if (dimension == array->dimension_count - 1) {
+        if ((r = buf_write_1(buf, ", ")) <= 0)
+          goto clean;
+      }
+      else {
+        if ((r = buf_write_1(buf, ",\n")) <= 0)
+          goto clean;
+      }
+      result += r;
+    }
     if (dimension == array->dimension_count - 1) {
       if (*data) {
         if ((r = data_buf_inspect(buf, array->element_type,
@@ -147,17 +158,6 @@ sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
       result += r;
     }
     address[dimension]++;
-    if (address[dimension] == array->dimensions[dimension].count)
-      break;
-    if (dimension == array->dimension_count - 1) {
-      if ((r = buf_write_1(buf, ", ")) <= 0)
-        goto clean;
-    }
-    else {
-      if ((r = buf_write_1(buf, ",\n")) <= 0)
-        goto clean;
-    }
-    result += r;
   }
   pretty_save_clean(&pretty_save, &buf->pretty);
   if ((r = buf_write_1(buf, "}")) <= 0)
@@ -211,7 +211,18 @@ sw buf_inspect_array_data_size_rec (s_pretty *pretty,
   pretty_save_init(&pretty_save, pretty);
   pretty_indent_from_column(pretty, 0);
   address[dimension] = 0;
-  while (1) {
+  while (address[dimension] < array->dimensions[dimension].count) {
+    if (address[dimension] > 0) {
+      if (dimension == array->dimension_count - 1) {
+        if ((r = buf_write_1_size(pretty, ", ")) < 0)
+          goto clean;
+      }
+      else {
+        if ((r = buf_write_1_size(pretty, ",\n")) < 0)
+          goto clean;
+      }
+      result += r;
+    }
     if (dimension == array->dimension_count - 1) {
       if (*data) {
         if ((r = data_buf_inspect_size(pretty, array->element_type,
@@ -235,17 +246,6 @@ sw buf_inspect_array_data_size_rec (s_pretty *pretty,
       result += r;
     }
     address[dimension]++;
-    if (address[dimension] == array->dimensions[dimension].count)
-      break;
-    if (dimension == array->dimension_count - 1) {
-      if ((r = buf_write_1_size(pretty, ", ")) < 0)
-        goto clean;
-    }
-    else {
-      if ((r = buf_write_1_size(pretty, ",\n")) < 0)
-        goto clean;
-    }
-    result += r;
   }
   pretty_save_clean(&pretty_save, pretty);
   if ((r = buf_write_1_size(pretty, "}")) < 0)

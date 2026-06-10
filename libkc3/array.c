@@ -178,12 +178,6 @@ s_array * array_init (s_array *a, const s_sym *array_type,
   tmp.array_type = array_type;
   tmp.element_type = sym_array_type(array_type);
   if (dimension_count) {
-#ifdef DEBUG
-    while (i < dimension_count) {
-      assert(dimensions[i]);
-      i++;
-    }
-#endif
     tmp.dimension_count = dimension_count;
     tmp.dimensions = alloc(dimension_count * sizeof(s_array_dimension));
     if (! tmp.dimensions)
