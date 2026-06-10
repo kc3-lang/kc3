@@ -319,7 +319,7 @@ TEST_CASE(facts_log_add)
   fp = fopen("facts_test_log_add.facts", "wb");
   facts_init(&facts);
   facts.log = log_new();
-  log_open(facts.log, fp, &path);
+  log_open_binary(facts.log, fp, &path);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);
@@ -372,7 +372,7 @@ TEST_CASE(facts_log_remove)
   fp = fopen("facts_test_log_remove.facts", "wb");
   facts_init(&facts);
   facts.log = log_new();
-  log_open(facts.log, fp, &path);
+  log_open_binary(facts.log, fp, &path);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);
