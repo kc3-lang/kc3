@@ -47,7 +47,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_tag              multipart_value_tag = {0};
   const s_str newline = {{NULL}, 2, {"\r\n"}};
   s_tag path = {0};
-  s_buf path_buf;
+  s_buf path_buf = {0};
   s_str path_random;
   static s_tag   prefix = {0};
   static s_ident prefix_ident;
@@ -261,6 +261,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
                        " disposition header");
               goto restore;
             }
+            buf_clean(&header_buf);
+            header_buf = (s_buf) {0};
           } // if (! compare_str_case_insensitive(key, &content_disposition_str))
           tail = &(*tail)->next.data.td_plist;
         }
@@ -313,6 +315,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             goto restore;
           }
           buf_clean(&path_buf);
+          path_buf = (s_buf) {0};
           if (false) {
             err_write_1("http_request_buf_parse: path = ");
             err_inspect_str(&path.data.td_str);
@@ -353,6 +356,10 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           tmp_req.body.data.td_plist =
             list_new_ptuple_2(&multipart_name, &upload,
                               tmp_req.body.data.td_plist);	  
+          tag_clean(&upload);
+          upload = (s_tag) {0};
+          tag_clean(&path);
+          path = (s_tag) {0};
         }
         else { // if (filename.data.td_str.size)
           if (buf_read_until_str_into_str(buf, &boundary_newline,
@@ -366,8 +373,13 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           tmp_req.body.data.td_plist =
             list_new_ptuple_2(&multipart_name, &multipart_value_tag,
                               tmp_req.body.data.td_plist);
+          str_clean(&multipart_value);
+          multipart_value = (s_str) {0};
         } // else if (filename.data.td_str.size)
+        tag_clean(&multipart_name);
+        multipart_name = (s_tag) {0};
         list_delete_all(multipart_headers);
+        multipart_headers = NULL;
         if ((r = buf_read_str(buf, &dash)) < 0) {
           err_puts("http_request_buf_parse: buf_read_str(buf, dash)");
           goto restore;
@@ -420,10 +432,18 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   list_delete_all(multipart_headers);
   if (boundary_tmp.ptr.p_pchar != boundary.ptr.p_pchar)
     str_clean(&boundary_tmp);
-  str_clean(&boundary);
+  str_clean(&multipart_value);
+  tag_clean(&multipart_name);
+  tag_clean(&upload);
+  tag_clean(&path);
+  buf_clean(&path_buf);
+  buf_clean(&header_buf);
   //buf_save_restore_rpos(buf, &save);
  clean:
   //buf_save_clean(buf, &save);
+  str_clean(&boundary_newline);
+  str_clean(&boundary);
+  tag_clean(&filename);
   *req = tmp;
   return req;
 }
