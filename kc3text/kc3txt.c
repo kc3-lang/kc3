@@ -113,6 +113,26 @@ int main (int argc, char **argv)
             return 0;
         }
     }
+    {
+        FILE *peek = fopen(argv[1], "rb");
+        if (peek) {
+            int first = fgetc(peek);
+            fclose(peek);
+            if (first == '%') {
+                FILE *fp = fopen(argv[1], "rb");
+                if (! fp) {
+                    fprintf(stderr, "%s: cannot open %s\n", argv[0], argv[1]);
+                    return 1;
+                }
+                char tbuf[BUF_SIZE];
+                size_t n;
+                while ((n = fread(tbuf, 1, sizeof(tbuf), fp)) > 0)
+                    fwrite(tbuf, 1, n, stdout);
+                fclose(fp);
+                return 0;
+            }
+        }
+    }
     if (! env_init(&env, &e_argc, &e_argv)) {
         fprintf(stderr, "%s: env_init failed\n", argv[0]);
         return 1;
