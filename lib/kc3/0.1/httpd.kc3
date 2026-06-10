@@ -344,33 +344,6 @@ defmodule HTTPd do
                    body: ""}
   }
 
-  def debug_page = fn (request) {
-    body = "<html>
-  <head>
-    <title>KC3 HTTPd</title>
-    <style>
-      pre {
-        white-space: pre-wrap; /* CSS3 */
-        white-space: -moz-pre-wrap; /* Mozilla */
-        white-space: -pre-wrap; /* Opera 4-6 */
-        white-space: -o-pre-wrap; /* Opera 7 */
-        word-wrap: break-word; /* Internet Explorer 5.5+ */
-      }
-    </style>
-  </head>
-  <body>
-    <h1>KC3 HTTPd</h1>
-    <p>
-      Hello from #{__FILE__}
-    </p>
-    <h2>Request</h2>
-    <pre><code>#{request}</code></pre>
-  </body>
-</html>
-"
-    %HTTP.Response{body: body}
-  }
-
   def error_400_page = fn (request) {
     body = """
 <html>
