@@ -36,6 +36,8 @@ defmodule HTTP.Request do
 
   def buf_parse = cfn Tag "http_request_buf_parse" (Result, Buf)
 
+  def buf_parse_with_timeout = cfn Tag "http_request_buf_parse_with_timeout" (Result, Buf, S64, Sw)
+
   def buf_write = cfn Sw "http_request_buf_write" (HTTP.Request, Buf)
 
   def clean = cfn Void "http_request_clean" (HTTP.Request)

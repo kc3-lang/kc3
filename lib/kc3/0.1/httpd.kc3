@@ -111,7 +111,7 @@ defmodule HTTPd do
     error = true
     Counter.increase(HTTPd.concurrent_requests, 1)
     unwind_protect(do
-      request = HTTP.Request.buf_parse(client.buf_rw.r)
+      request = HTTP.Request.buf_parse_with_timeout(client.buf_rw.r, (S64) 5, (Sw) 3)
       if request do
         Counter.increase(HTTPd.requests, 1)
         client_addr = if client.addr_str != "127.0.0.1" do

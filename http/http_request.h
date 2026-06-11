@@ -16,6 +16,10 @@
 #include "types.h"
 
 s_tag *          http_request_buf_parse (s_tag *req, s_buf *buf);
+s_tag *          http_request_buf_parse_with_timeout (s_tag *req,
+                                             s_buf *buf,
+                                             s64 timeout_sec,
+                                             sw max_retries);
 s_tag *          http_request_buf_parse_method (s_buf *buf,
                                                 s_tag *dest);
 void             http_request_clean (s_http_request *req);

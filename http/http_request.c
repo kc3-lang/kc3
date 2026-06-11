@@ -11,6 +11,11 @@
  * THIS SOFTWARE.
  */
 #include <string.h>
+#if !defined(WIN32) && !defined(WIN64)
+# include <sys/time.h>
+# include <sys/socket.h>
+#endif
+#include "../libkc3/buf_fd.h"
 #include "../libkc3/kc3.h"
 #include "http.h"
 #include "http_request.h"
@@ -446,6 +451,38 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   tag_clean(&filename);
   *req = tmp;
   return req;
+}
+
+s_tag * http_request_buf_parse_with_timeout (s_tag *req, s_buf *buf,
+                                             s64 timeout_sec,
+                                             sw max_retries)
+{
+#if !defined(WIN32) && !defined(WIN64)
+  s_buf_fd *buf_fd;
+  s_tag *result;
+  sw retries;
+  struct timeval tv;
+  retries = max_retries > 0 ? max_retries : 1;
+  if (buf->refill && buf->user_ptr) {
+    buf_fd = (s_buf_fd *) buf->user_ptr;
+    tv.tv_sec = timeout_sec;
+    tv.tv_usec = 0;
+    setsockopt(buf_fd->fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+  }
+  while (retries--) {
+    result = http_request_buf_parse(req, buf);
+    if (result && result->type != TAG_VOID)
+      break;
+  }
+  if (buf->refill && buf->user_ptr) {
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
+    setsockopt(buf_fd->fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+  }
+  return result;
+#else
+  return http_request_buf_parse(req, buf);
+#endif
 }
 
 s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
