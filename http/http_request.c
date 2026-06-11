@@ -13,9 +13,9 @@
 #include <string.h>
 #if !defined(WIN32) && !defined(WIN64)
 # include <sys/time.h>
-# include <sys/socket.h>
 #endif
 #include "../libkc3/buf_fd.h"
+#include "../libkc3/buf_save.h"
 #include "../libkc3/kc3.h"
 #include "http.h"
 #include "http_request.h"
@@ -461,19 +461,25 @@ s_tag * http_request_buf_parse_with_timeout (s_tag *req, s_buf *buf,
   s_buf_fd *buf_fd;
   s_tag *result;
   sw retries;
+  s_buf_save save;
   struct timeval tv;
   retries = max_retries > 0 ? max_retries : 1;
+  if (timeout_sec <= 0)
+    timeout_sec = 1;
   if (buf->refill && buf->user_ptr) {
     buf_fd = (s_buf_fd *) buf->user_ptr;
     tv.tv_sec = timeout_sec;
     tv.tv_usec = 0;
     setsockopt(buf_fd->fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
   }
+  buf_save_init(buf, &save);
   while (retries--) {
     result = http_request_buf_parse(req, buf);
     if (result && result->type != TAG_VOID)
       break;
+    buf_save_restore_rpos(buf, &save);
   }
+  buf_save_clean(buf, &save);
   if (buf->refill && buf->user_ptr) {
     tv.tv_sec = 0;
     tv.tv_usec = 0;
