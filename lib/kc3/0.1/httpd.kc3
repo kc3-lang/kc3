@@ -435,7 +435,7 @@ defmodule HTTPd do
   }
 
   def parse_range = fn {
-    (false, max) { { (Sw) 0, (Sw) max } }
+    (false, max) { { (Sw) 0, (Sw) max - 1 } }
     (range, max) {
       if Str.starts_with?(range, "bytes=") do
         range = Str.slice(range, 6, -1)
@@ -445,14 +445,14 @@ defmodule HTTPd do
           end_ = if end_ != "" do
             (Sw) end_
           else
-            (Sw) max
+            (Sw) max - 1
           end
           { start, end_ }
         else
-          { (Sw) 0, (Sw) max }
+          { (Sw) 0, (Sw) max - 1 }
         end
       else
-        { (Sw) 0, (Sw) max }
+        { (Sw) 0, (Sw) max - 1 }
       end
     }
   }

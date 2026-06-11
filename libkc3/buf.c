@@ -1762,6 +1762,8 @@ sw buf_vf (s_buf *buf, const char *fmt, va_list ap)
 sw buf_write (s_buf *buf, const void *data, uw len)
 {
   sw r;
+  uw s;
+  sw w;
   assert(buf);
   if (! len)
     return 0;
@@ -1774,15 +1776,21 @@ sw buf_write (s_buf *buf, const void *data, uw len)
     r = -1;
     goto clean;
   }
-  if (buf->wpos + len > buf->size) {
-    if ((r = buf_flush(buf)) < 0)
-      goto clean;
-    if (buf->wpos + len > buf->size) {
-      err_puts("buf_write: buffer is too small");
-      assert(! "buf_write: buffer is too small");
-      r = -1;
-      goto clean;
+  if ((r = buf_flush(buf)) < 0)
+    goto clean;
+  if (len > buf->size) {
+    w = 0;
+    while ((s = len - w) > 0) {
+      if (s > buf->size)
+        s = buf->size;
+      memcpy(buf->ptr.p_ps8, (s8 *) data + w, s);
+      buf->wpos = s;
+      if ((r = buf_flush(buf)) < 0)
+        goto clean;
+      w += s;
     }
+    r = len;
+    goto clean;
   }
   if (buf->wpos + len > buf->size) {
     err_puts("buf_write: buffer overflow");

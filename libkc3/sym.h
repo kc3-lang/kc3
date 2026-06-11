@@ -119,6 +119,7 @@ extern const s_sym g_sym_macro;
 extern const s_sym g_sym_marshall;
 extern const s_sym g_sym_marshall_read;
 extern const s_sym g_sym_match;
+extern const s_sym g_sym_mmap;
 extern const s_sym g_sym_module;
 extern const s_sym g_sym_ncpu;
 extern const s_sym g_sym_op;

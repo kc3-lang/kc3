@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/mman.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -29,6 +30,7 @@
 #include "io.h"
 #include "list.h"
 #include "plist.h"
+#include "ptuple.h"
 #include "sha1.h"
 #include "sha512.h"
 #include "str.h"
@@ -475,6 +477,34 @@ s_list ** file_list_recursive (const s_str *path, s_list **dest)
   list_delete_all(in);
   closedir(dir);
   return NULL;
+}
+
+p_tuple * file_mmap (s64 fd, uw start, uw end, p_tuple *dest)
+{
+  void *m;
+  uw size;
+  s_tuple *tuple;
+  assert(fd >= 0);
+  assert(start >= 0);
+  assert(end > start);
+  assert(dest);
+  if (end <= start) {
+    err_stacktrace();
+    err_puts("file_mmap: invalid range");
+    return NULL;
+  }
+  size = end - start;
+  m = mmap(NULL, size, PROT_READ, 0, fd, start);
+  if (m == MAP_FAILED)
+    return NULL;
+  if (! ptuple_init(&tuple, 4))
+    return NULL;
+  tag_init_psym(tuple->tag, &g_sym_mmap);
+  tag_init_s64( tuple->tag + 1, fd);
+  tag_init_uw(  tuple->tag + 2, size);
+  tag_init_ptr( tuple->tag + 3, m);
+  *dest = tuple;
+  return dest;
 }
 
 s_time * file_mtime (const s_str *path, s_time *dest)

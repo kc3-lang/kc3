@@ -260,6 +260,7 @@ typedef struct marshall                s_marshall;
 typedef struct marshall_header         s_marshall_header;
 typedef struct marshall_read           s_marshall_read;
 typedef struct memleak                 s_memleak;
+typedef struct mmap                    s_mmap;
 typedef struct mutex                   s_mutex;
 typedef struct op                      s_op;
 typedef struct ops                     s_ops;

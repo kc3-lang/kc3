@@ -116,6 +116,7 @@ const s_sym g_sym_macro            = SYM_1("macro");
 const s_sym g_sym_marshall         = SYM_1("marshall");
 const s_sym g_sym_marshall_read    = SYM_1("marshall_read");
 const s_sym g_sym_match            = SYM_1("match");
+const s_sym g_sym_mmap             = SYM_1("mmap");
 const s_sym g_sym_module           = SYM_1("module");
 const s_sym g_sym_ncpu             = SYM_1("ncpu");
 const s_sym g_sym_op               = SYM_1("op");

@@ -10,9 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule HTTPd.Route do
+require Str
 
-  require Str
+defmodule HTTPd.Route do
 
   defstruct [path: "/",
              controller: ?]
@@ -66,15 +66,17 @@ defmodule HTTPd.Route do
         stat = File.stat(path)
         last_modified = Str.ftime(stat.st_mtim, "%a, %d %b %G %T %Z")
         range = HTTP.Request.header(request, "Range")
-        {range_start, range_end} = parse_range(range, stat.st_size)
+        {range_start, range_last} = parse_range(range, stat.st_size)
         headers = [{"Content-Disposition", "inline"},
                    {"Content-Type", (Str) mime},
                    {"Content-Length", (Str) stat.st_size},
-                   {"Content-Range", "bytes=#{range_start}-#{range_end}"},
+                   {"Content-Range",
+                    "bytes=#{range_start}-#{range_last}"},
                    {"Last-Modified", last_modified}]
-        fd = File.open_r(path)
-        body = %{fd: fd, start: range_start, end_: range_end}
-        %HTTP.Response{body: body, headers: headers}
+        %HTTP.Response{body: File.mmap(File.open_r(path),
+                                       (Uw) range_start,
+                                       (Uw) (range_last + 1)),
+                       headers: headers}
       end
     }
     static_route = HTTPd.fn (request) {

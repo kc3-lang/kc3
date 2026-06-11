@@ -12,6 +12,7 @@
  */
 #include <errno.h>
 #include <string.h>
+#include <sys/mman.h>
 #include <unistd.h>
 #include "../libkc3/kc3.h"
 #include "http_response.h"
@@ -139,31 +140,26 @@ sw http_response_buf_write (const s_http_response *response,
   sw    content_length = -1;
   s_str content_length_str = {0};
   s_tag default_messages = {0};
-  s32 e;
-  sw end;
   t_fd fd;
   s_ident ident = {0};
   s_buf *in;
   s_tag *key = NULL;
   const s_list *l = NULL;
-  const s_map *map;
   s_str protocol = {0};
+  void *ptr;
   sw r = 0;
   sw result = 0;
-  sw s;
-  sw size;
-  sw start;
+  uw size;
   s_str str;
   s_tag tag_code = {0};
   s_tag tag_message = {0};
-  s_buf tmp;
+  s_tuple *tuple;
   const s_sym *type;
   s_tag *value = NULL;
-  sw w = 0;
   assert(response);
   if (! buf)
     return -1;
-  if (! response->protocol.size)
+  if (response->protocol.size <= 0)
     str_init_1(&protocol, NULL, "HTTP/1.1");
   else
     protocol = response->protocol;
@@ -280,6 +276,23 @@ sw http_response_buf_write (const s_http_response *response,
         return r;
       result += r;
     }
+    else if (type == &g_sym_Tuple &&
+             (tuple = response->body.data.td_ptuple) &&
+             tuple->count == 4 &&
+             tuple->tag[0].type == TAG_PSYM &&
+             tuple->tag[0].data.td_psym == &g_sym_mmap &&
+             tuple->tag[1].type == TAG_S64 &&
+             (fd = tuple->tag[1].data.td_s64) >= 0 &&
+             tuple->tag[2].type == TAG_UW &&
+             (size = tuple->tag[2].data.td_uw) > 0 &&
+             tuple->tag[3].type == TAG_PTR &&
+             (ptr = tuple->tag[3].data.td_ptr.p_pvoid) != NULL) {
+      if ((r = buf_write(buf, ptr, size)) < 0)
+        return r;
+      result += r;
+      munmap(ptr, size);
+      close(fd);
+    }
     else if (type == &g_sym_Buf) {
       in = response->body.data.td_pstruct->data;
       while (buf_refill(in, in->size) > 0) {
@@ -292,104 +305,6 @@ sw http_response_buf_write (const s_http_response *response,
         result += r;
         str_clean(&str);
       }
-    }
-    else if (type == &g_sym_S32) {
-      buf_init_alloc(&tmp, BUF_SIZE);
-      fd = response->body.data.td_s32;
-      while (1) {
-	if ((r = read(fd, tmp.ptr.p_pvoid, tmp.size)) < 0) {
-	  e = errno;
-	  err_write_1("http_response_buf_write: ");
-	  err_inspect_s32(fd);
-	  err_write_1(": ");
-	  err_puts(strerror(e));
-	  buf_clean(&tmp);
-	  return r;
-	}
-	if (! r)
-	  break;
-	tmp.rpos = 0;
-	tmp.wpos = r;
-	while (tmp.rpos < (uw) r) {
-	  if ((w = buf_write(buf, tmp.ptr.p_ps8 + tmp.rpos,
-			     r - tmp.rpos)) <= 0) {
-	    buf_clean(&tmp);
-	    return w;
-	  }
-	  result += w;
-	  tmp.rpos += w;
-	}
-      }
-      buf_clean(&tmp);
-      close(fd);
-    }
-    else if (type == &g_sym_Map &&
-             (map = &response->body.data.td_map) &&
-             map->count == 3 &&
-             map->key[1].data.td_psym == sym_1("fd") &&
-             map->value[1].type == TAG_S32 &&
-             map->key[2].data.td_psym == sym_1("start") &&
-             map->value[2].type == TAG_SW &&
-             map->key[0].data.td_psym == sym_1("end_") &&
-             map->value[0].type == TAG_SW) {
-      fd    = map->value[1].data.td_s32;
-      start = map->value[2].data.td_sw;
-      end   = map->value[0].data.td_sw;
-      if (start < 0)
-        start = content_length + start + 1;
-      if (end < 0)
-        end = content_length + end + 1;
-      if (content_length < 0 ||
-          start > end ||
-          start > content_length) {
-        err_puts("http_response_buf_write:"
-                 " 416 Requested Range Not Satisfiable");
-        assert(!("http_response_buf_write:"
-                 " 416 Requested Range Not Satisfiable"));
-        return -1;
-      }
-      size = end - start;
-      if (lseek(fd, start, SEEK_SET) < 0) {
-        e = errno;
-        err_write_1("http_response_buf_write: lseek ");
-        err_inspect_s32(fd);
-        err_write_1(": ");
-        err_puts(strerror(e));
-        return -1;
-      }
-      if (size) {
-	buf_init_alloc(&tmp, BUF_SIZE);
-	while (1) {
-	  s = tmp.size;
-	  if (size < s)
-	    s = size;
-	  if ((r = read(fd, tmp.ptr.p_pvoid, s)) < 0) {
-	    e = errno;
-	    err_write_1("http_response_buf_write: read ");
-	    err_inspect_s32(fd);
-	    err_write_1(": ");
-	    err_puts(strerror(e));
-	    buf_clean(&tmp);
-	    return r;
-	  }
-	  if (! r)
-	    break;
-	  size -= r;
-	  tmp.rpos = 0;
-	  tmp.wpos = r;
-	  while (tmp.rpos < (uw) r) {
-	    if ((w = buf_write(buf, tmp.ptr.p_ps8 + tmp.rpos,
-			       r - tmp.rpos)) <= 0) {
-	      buf_clean(&tmp);
-	      return w;
-	    }
-	    result += w;
-	    tmp.rpos += w;
-	  }
-	}
-	buf_clean(&tmp);
-      }
-      close(fd);
     }
     else {
       err_write_1("http_response_buf_write: unknown body type: ");
