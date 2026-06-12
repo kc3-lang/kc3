@@ -1776,15 +1776,19 @@ sw buf_write (s_buf *buf, const void *data, uw len)
     r = -1;
     goto clean;
   }
-  if ((r = buf_flush(buf)) < 0)
-    goto clean;
   if (len > buf->size) {
+    if ((r = buf_flush(buf)) < 0)
+      goto clean;
+    if (buf->wpos > 0) {
+      r = -1;
+      goto clean;
+    }
     w = 0;
     while ((s = len - w) > 0) {
       if (s > buf->size)
         s = buf->size;
       memcpy(buf->ptr.p_ps8, (s8 *) data + w, s);
-      buf->wpos = s;
+      buf->wpos += s;
       if ((r = buf_flush(buf)) < 0)
         goto clean;
       w += s;
