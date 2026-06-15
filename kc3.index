@@ -98,6 +98,13 @@ event/event.h
 event/sources.mk
 event/sources.sh
 event/update_sources
+event_poll/Makefile
+event_poll/configure
+event_poll/event_poll.c
+event_poll/event_poll.h
+event_poll/sources.mk
+event_poll/sources.sh
+event_poll/update_sources
 fact.md
 fonts/Computer Modern/ttf/cmunbbx.ttf
 fonts/Computer Modern/ttf/cmunbi.ttf
@@ -679,6 +686,7 @@ lib/kc3/0.1/ekc3.kc3
 lib/kc3/0.1/env.kc3
 lib/kc3/0.1/err.kc3
 lib/kc3/0.1/event.kc3
+lib/kc3/0.1/event_poll.kc3
 lib/kc3/0.1/f32.facts
 lib/kc3/0.1/f64.facts
 lib/kc3/0.1/f80.facts
@@ -1650,12 +1658,16 @@ test/facts_test.c
 test/facts_test_dump_file.expected.facts
 test/facts_test_load_file.facts
 test/facts_test_log_add.expected.facts
+test/facts_test_log_add.facts
 test/facts_test_log_remove.expected.facts
+test/facts_test_log_remove.facts
 test/facts_test_open_file.1.expected.facts
+test/facts_test_open_file.1.facts
 test/facts_test_open_file.1.in.facts
 test/facts_test_open_file.2.expected.facts
 test/facts_test_open_file.2.in.facts
 test/facts_test_open_file.3.expected.facts
+test/facts_test_open_file.3.facts
 test/facts_test_open_file.3.in.facts
 test/facts_test_save.expected.facts
 test/facts_test_save_binary.expected.facts

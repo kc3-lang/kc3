@@ -6,6 +6,9 @@ KC3_CONFIGURES = \
 	"event/configure" \
 	"event/sources.sh" \
 	"event/update_sources" \
+	"event_poll/configure" \
+	"event_poll/sources.sh" \
+	"event_poll/update_sources" \
 	"fs/configure" \
 	"fs/fuse/configure" \
 	"fs/fuse/sources.sh" \
@@ -146,6 +149,8 @@ KC3_MAKEFILES = \
 	"ekc3/sources.mk" \
 	"event/Makefile" \
 	"event/sources.mk" \
+	"event_poll/Makefile" \
+	"event_poll/sources.mk" \
 	"fs/Makefile" \
 	"fs/fuse/Makefile" \
 	"fs/fuse/sources.mk" \
@@ -254,6 +259,8 @@ KC3_C_SOURCES = \
 	"ekc3/types.h" \
 	"event/event.c" \
 	"event/event.h" \
+	"event_poll/event_poll.c" \
+	"event_poll/event_poll.h" \
 	"fs/OpenBSD/kc3fs.h" \
 	"fs/fuse/mount_kc3fs.c" \
 	"fs/fuse/types.h" \
@@ -1819,11 +1826,14 @@ KC3_TEST_SOURCES = \
 	"test/facts_test_log_add.expected.facts" \
 	"test/facts_test_log_add.facts" \
 	"test/facts_test_log_remove.expected.facts" \
+	"test/facts_test_log_remove.facts" \
 	"test/facts_test_open_file.1.expected.facts" \
+	"test/facts_test_open_file.1.facts" \
 	"test/facts_test_open_file.1.in.facts" \
 	"test/facts_test_open_file.2.expected.facts" \
 	"test/facts_test_open_file.2.in.facts" \
 	"test/facts_test_open_file.3.expected.facts" \
+	"test/facts_test_open_file.3.facts" \
 	"test/facts_test_open_file.3.in.facts" \
 	"test/facts_test_save.expected.facts" \
 	"test/facts_test_save_binary.expected.facts" \
