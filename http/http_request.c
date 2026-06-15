@@ -458,7 +458,7 @@ s_tag * http_request_buf_parse_with_timeout (s_tag *req, s_buf *buf,
                                              sw max_retries)
 {
 #if !defined(WIN32) && !defined(WIN64)
-  s_buf_fd *buf_fd;
+  s_buf_fd *buf_fd = NULL;
   s_tag *result;
   sw retries;
   s_buf_save save;
@@ -480,7 +480,7 @@ s_tag * http_request_buf_parse_with_timeout (s_tag *req, s_buf *buf,
     buf_save_restore_rpos(buf, &save);
   }
   buf_save_clean(buf, &save);
-  if (buf->refill && buf->user_ptr) {
+  if (buf_fd && buf->refill && buf->user_ptr) {
     tv.tv_sec = 0;
     tv.tv_usec = 0;
     setsockopt(buf_fd->fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));

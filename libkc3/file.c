@@ -485,7 +485,6 @@ p_tuple * file_mmap (s64 fd, uw start, uw end, p_tuple *dest)
   uw size;
   s_tuple *tuple;
   assert(fd >= 0);
-  assert(start >= 0);
   assert(end > start);
   assert(dest);
   if (end <= start) {
