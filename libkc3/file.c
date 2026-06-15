@@ -494,7 +494,7 @@ p_tuple * file_mmap (s64 fd, uw start, uw end, p_tuple *dest)
     return NULL;
   }
   size = end - start;
-  m = mmap(NULL, size, PROT_READ, 0, fd, start);
+  m = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, start);
   if (m == MAP_FAILED)
     return NULL;
   if (! ptuple_init(&tuple, 4))
