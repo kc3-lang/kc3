@@ -123,7 +123,9 @@ defmodule HTTPd do
         end
         request = Struct.put(request, :client_addr, client_addr)
         user_agent = HTTP.Request.header(request, "User-Agent")
-        IO.puts("--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
+        msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}"
+        IO.puts(msg)
+        Err.puts(msg)
         if (type(request.method) == Str) do
           response = error_405_page(request)
         else
@@ -150,18 +152,17 @@ defmodule HTTPd do
           request.method != HEAD)
         dt = Time.now() - request.time
         dt_str = Time.diff_to_str(dt)
-        IO.puts("#{response.code} #{client_addr} #{request.method}" +
-          " #{request.url} #{inspect(user_agent)}" +
-          " #{dt_str}")
+        msg = "#{response.code} #{client_addr} #{request.method}" +
+              " #{request.url} #{inspect(user_agent)}" +
+              " #{dt_str}"
+        IO.puts(msg)
         if (! close) do
           kq_ok = EventPoll.add(HTTPd.ep_fd, client.sockfd,
                              HTTPd.timeout, client.ptag) == 0
         end
         error = ((r <= 0) || ((! close) && (! kq_ok)))
         if (response.code >= 400) do
-          Err.puts("#{response.code} #{client_addr} #{request.method}" +
-            " #{request.url} #{inspect(user_agent)}" +
-            " #{dt_str}")
+          Err.puts(msg)
         end
       end
     end, do
