@@ -375,11 +375,20 @@ bool env_call_get (s_env *env, s_call *call)
     }
   }
   tag_init_pvar( &tag_pvar, &g_sym_Callable);
+#if HAVE_PTHREAD
+  if (! rwlock_r(&env->facts->rwlock)) {
+    tag_clean(&tag_pvar);
+    return false;
+  }
+#endif
   if (! facts_with_tags (env->facts, &cursor, &tag_ident,
                          &tag_symbol_value, &tag_pvar)) {
     err_puts("env_call_get: facts_with_tags");
     assert(! "env_call_get: facts_with_tags");
     tag_clean(&tag_pvar);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&env->facts->rwlock);
+#endif
     return false;
   }
   if (! facts_cursor_next(&cursor, &fact)) {
@@ -387,6 +396,9 @@ bool env_call_get (s_env *env, s_call *call)
     assert(! "env_call_get: facts_cursor_next");
     facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&env->facts->rwlock);
+#endif
     return false;
   }
   if (! fact) {
@@ -395,12 +407,18 @@ bool env_call_get (s_env *env, s_call *call)
     err_puts(" :symbol_value not found");
     facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&env->facts->rwlock);
+#endif
     return false;
   }
   if (! pcallable_init_copy(&call->pcallable,
                             &tag_pvar.data.td_pvar->tag.data.td_pcallable)) {
     facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&env->facts->rwlock);
+#endif
     return false;
   }
   tag_clean(&tag_pvar);
@@ -410,6 +428,9 @@ bool env_call_get (s_env *env, s_call *call)
     err_puts("env_call_get: facts_find_fact_by_tags 4");
     assert(! "env_call_get: facts_find_fact_by_tags 4");
     facts_cursor_clean(&cursor);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&env->facts->rwlock);
+#endif
     return false;
   }
   if (found) {
@@ -427,6 +448,9 @@ bool env_call_get (s_env *env, s_call *call)
     }
   }
   facts_cursor_clean(&cursor);
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&env->facts->rwlock);
+#endif
   return true;
 }
 
@@ -3159,6 +3183,12 @@ p_struct_type * env_pstruct_type_find (s_env *env,
   tag_init_psym(&tag_module, module);
   tag_init_psym(&tag_struct_type, &g_sym_struct_type);
   tag_init_pvar(&tag_pvar, &g_sym_StructType);
+#if HAVE_PTHREAD
+  if (! rwlock_r(&env->facts->rwlock)) {
+    tag_clean(&tag_pvar);
+    return NULL;
+  }
+#endif
   if (! facts_with_tags(env->facts, &cursor,
                         &tag_module, &tag_struct_type, &tag_pvar)) {
     err_write_1("env_pstruct_type_find: facts_with_tags(");
@@ -3166,6 +3196,9 @@ p_struct_type * env_pstruct_type_find (s_env *env,
     err_puts(", :struct_type, ?)");
     assert(! "env_pstruct_type_find: facts_with");
     tag_clean(&tag_pvar);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&env->facts->rwlock);
+#endif
     return NULL;
   }
   if (! facts_cursor_next(&cursor, &found)) {
@@ -3173,11 +3206,17 @@ p_struct_type * env_pstruct_type_find (s_env *env,
     assert(! "env_pstruct_type_find: facts_with_cursor_next");
     facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&env->facts->rwlock);
+#endif
     return NULL;
   }
   if (! found) {
     facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&env->facts->rwlock);
+#endif
     *dest = NULL;
     return dest;
   }
@@ -3191,11 +3230,17 @@ p_struct_type * env_pstruct_type_find (s_env *env,
     assert(! "env_pstruct_type_find: invalid struct_type");
     facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&env->facts->rwlock);
+#endif
     return NULL;
   }
   *dest = found->object->data.td_pstruct_type;
   facts_cursor_clean(&cursor);
   tag_clean(&tag_pvar);
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&env->facts->rwlock);
+#endif
   return dest;
 }
 
