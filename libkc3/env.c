@@ -1493,9 +1493,19 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag,
     return NULL;
   }
   spec = spec_eval.data.td_plist;
+#if HAVE_PTHREAD
+  if (! rwlock_r(&facts->rwlock)) {
+    tag_clean(&spec_eval);
+    pfacts_clean(&facts);
+    return NULL;
+  }
+#endif
   if (! facts_with_list(facts, &cursor, spec)) {
     tag_clean(&spec_eval);
     pfacts_clean(&facts);
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&facts->rwlock);
+#endif
     return NULL;
   }
   while (1) {
@@ -1513,6 +1523,9 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag,
       tag_clean(&spec_eval);
       facts_with_cursor_clean(&cursor);
       pfacts_clean(&facts);
+#if HAVE_PTHREAD
+      rwlock_unlock_r(&facts->rwlock);
+#endif
       longjmp(*unwind_protect.jmp, 1);
     }
     if (! env_eval_tag(env, tag, &tmp)) {
@@ -1522,6 +1535,9 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag,
     env_unwind_protect_pop(env, &unwind_protect);
   }
  ok:
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
   tag_clean(&spec_eval);
   pfacts_clean(&facts);
   *dest_v = tmp;
@@ -1529,6 +1545,9 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag,
  clean:
   err_puts("env_facts_with_macro: error");
   assert(! "env_facts_with_macro: error");
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
   tag_clean(&spec_eval);
   facts_with_cursor_clean(&cursor);
   tag_clean(&tmp);
