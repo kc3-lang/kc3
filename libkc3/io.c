@@ -27,16 +27,25 @@
 #include "rwlock.h"
 #include "tag_type.h"
 
+#if HAVE_PTHREAD
+# define IO_LOCK_W(buf)   rwlock_w((buf)->rwlock)
+# define IO_UNLOCK_W(buf) rwlock_unlock_w((buf)->rwlock)
+#else
+# define IO_LOCK_W(buf)
+# define IO_UNLOCK_W(buf)
+#endif
+
 #define DEF_ERR_INSPECT(name, type)                                    \
   sw err_inspect_ ## name (type x)                                     \
   {                                                                    \
     s_env *env;                                                        \
     sw r;                                                              \
     env = env_global();                                                \
+    IO_LOCK_W(env->err);                                               \
     r = buf_inspect_ ## name(env->err, x);                             \
-    if (r < 0)                                                         \
-      return r;                                                        \
-    buf_flush(env->err);                                               \
+    if (r >= 0)                                                        \
+      buf_flush(env->err);                                             \
+    IO_UNLOCK_W(env->err);                                             \
     return r;                                                          \
   }
 
@@ -46,10 +55,11 @@
     s_env *env;                                                        \
     sw r;                                                              \
     env = env_global();                                                \
+    IO_LOCK_W(env->out);                                               \
     r = buf_inspect_ ## name(env->out, x);                             \
-    if (r < 0)                                                         \
-      return r;                                                        \
-    buf_flush(env->out);                                               \
+    if (r >= 0)                                                        \
+      buf_flush(env->out);                                             \
+    IO_UNLOCK_W(env->out);                                             \
     return r;                                                          \
   }
 
@@ -142,8 +152,10 @@ sw err_write (const void *x, uw len)
   s_env *env;
   sw r;
   env = env_global();
+  IO_LOCK_W(env->err);
   if ((r = buf_write(env->err, x, len)) > 0)
     buf_flush(env->err);
+  IO_UNLOCK_W(env->err);
   return r;
 }
 
@@ -152,8 +164,10 @@ sw err_write_1 (const char *x)
   s_env *env;
   sw r;
   env = env_global();
+  IO_LOCK_W(env->err);
   if ((r = buf_write_1(env->err, x)) > 0)
     buf_flush(env->err);
+  IO_UNLOCK_W(env->err);
   return r;
 }
 
@@ -162,8 +176,10 @@ sw err_write_str (const s_str *x)
   s_env *env;
   sw r;
   env = env_global();
+  IO_LOCK_W(env->err);
   if ((r = buf_write_str(env->err, x)) > 0)
     buf_flush(env->err);
+  IO_UNLOCK_W(env->err);
   return r;
 }
 
@@ -172,8 +188,10 @@ sw err_write_u8 (u8 x)
   s_env *env;
   sw r;
   env = env_global();
+  IO_LOCK_W(env->err);
   if ((r = buf_write_u8(env->err, x)) > 0)
     buf_flush(env->err);
+  IO_UNLOCK_W(env->err);
   return r;
 }
 
@@ -190,14 +208,18 @@ sw io_inspect (const s_tag *x)
   sw r;
   sw result = 0;
   env = env_global();
+  IO_LOCK_W(env->out);
   if ((r = buf_inspect_tag(env->out, x)) < 0)
-    return r;
+    goto clean;
   result += r;
   if ((r = buf_write_u8(env->out, '\n')) < 0)
-    return r;
+    goto clean;
   result += r;
   buf_flush(env->out);
-  return result;
+  r = result;
+ clean:
+  IO_UNLOCK_W(env->out);
+  return r;
 }
 
 sw io_inspect_tag_type (e_tag_type type)
@@ -241,8 +263,10 @@ sw io_write (const void *x, uw len)
   s_env *env;
   sw r;
   env = env_global();
+  IO_LOCK_W(env->out);
   if ((r = buf_write(env->out, x, len)) > 0)
     buf_flush(env->out);
+  IO_UNLOCK_W(env->out);
   return r;
 }
 
@@ -251,8 +275,10 @@ sw io_write_1 (const char *x)
   s_env *env;
   sw r;
   env = env_global();
+  IO_LOCK_W(env->out);
   if ((r = buf_write_1(env->out, x)) > 0)
     buf_flush(env->out);
+  IO_UNLOCK_W(env->out);
   return r;
 }
 
@@ -261,8 +287,10 @@ sw io_write_str (const s_str *x)
   s_env *env;
   sw r;
   env = env_global();
+  IO_LOCK_W(env->out);
   if ((r = buf_write_str(env->out, x)) > 0)
     buf_flush(env->out);
+  IO_UNLOCK_W(env->out);
   return r;
 }
 
@@ -271,8 +299,10 @@ sw io_write_u8 (u8 x)
   s_env *env;
   sw r;
   env = env_global();
+  IO_LOCK_W(env->out);
   if ((r = buf_write_u8(env->out, x)) > 0)
     buf_flush(env->out);
+  IO_UNLOCK_W(env->out);
   return r;
 }
 
