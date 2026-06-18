@@ -20,6 +20,8 @@
 #endif
 
 #include <errno.h>
+#include <poll.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include "alloc.h"
@@ -193,19 +195,32 @@ sw buf_fd_open_w_flush (s_buf *buf)
   buf_fd = buf->user_ptr;
   bytes = 0;
   while (bytes < size) {
-    // XXX TODO: #ifdef WIN32 || WIN64
-    if ((w = send(buf_fd->fd, buf->ptr.p_pchar + bytes,
-                  size - bytes, MSG_NOSIGNAL)) < 0) {
-      if ((w = write(buf_fd->fd, buf->ptr.p_pchar + bytes,
-                     size - bytes)) < 0) {
-        e = errno;
-        err_write_1("buf_fd_open_w_flush: write: ");
-        err_puts(strerror(e));
-        return -1;
+    w = send(buf_fd->fd, buf->ptr.p_pchar + bytes,
+             size - bytes, MSG_NOSIGNAL);
+    if (w < 0)
+      w = write(buf_fd->fd, buf->ptr.p_pchar + bytes,
+                size - bytes);
+    if (w < 0) {
+      if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        struct pollfd pfd;
+        pfd.fd = buf_fd->fd;
+        pfd.events = POLLOUT;
+        if (poll(&pfd, 1, 10000) <= 0) {
+          err_puts("buf_fd_open_w_flush: poll timeout");
+          return -1;
+        }
+        continue;
       }
+      e = errno;
+      err_write_1("buf_fd_open_w_flush: write: ");
+      err_puts(strerror(e));
+      return -1;
     }
     bytes += w;
   }
+  if (buf->wpos > (uw) size)
+    memmove(buf->ptr.p_pvoid, buf->ptr.p_pchar + size,
+            buf->wpos - size);
   buf->wpos -= size;
   save = buf->save;
   while (save) {
