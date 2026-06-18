@@ -134,6 +134,8 @@ void test_init (char *argv0, int *argc, char ***argv)
 
 void test_ko (void)
 {
+  if (env_global() != env_default())
+    env_clean(env_global());
   g_test_assert_count++;
   g_test_assert_ko++;
   g_test_count++;

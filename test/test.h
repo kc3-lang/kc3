@@ -16,6 +16,7 @@
 #include <float.h>
 #include <stdio.h>
 #include "../libkc3/buf.h"
+#include "../libkc3/env.h"
 #include "../libkc3/io.h"
 
 #define TEST_COLOR_KO "\033[0;91m"
@@ -51,7 +52,10 @@
   char test_case_ ## name (void)
 
 #define TEST_CASE_RUN(name)                                            \
-  test_case_ ## name()
+  do {                                                                 \
+    test_case_ ## name();                                              \
+    env_default_set(env_default());                                    \
+  } while (0)
 
 #define TEST_EQ(test, expected)                                        \
   do {                                                                 \
