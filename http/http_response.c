@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <errno.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -249,21 +250,33 @@ sw http_response_buf_write (const s_http_response *response,
     result += r;
     l = list_next(l);
   }
-  if (content_length < 0 &&
-      response->body.type == TAG_STR) {
-    if ((r = buf_write_str(buf, &content_length_str)) < 0)
-      return r;
-    result += r;
-    if ((r = buf_write_1(buf, ": ")) < 0)
-      return r;
-    result += r;
-    r = buf_inspect_u32_decimal(buf, response->body.data.td_str.size);
-    if (r < 0)
-      return r;
-    result += r;
-    if ((r = buf_write_1(buf, "\r\n")) < 0)
-      return r;
-    result += r;
+  if (content_length < 0) {
+    uw body_size = 0;
+    if (response->body.type == TAG_STR)
+      body_size = response->body.data.td_str.size;
+    else if (response->body.type == TAG_PTUPLE &&
+             response->body.data.td_ptuple &&
+             response->body.data.td_ptuple->count == 4 &&
+             response->body.data.td_ptuple->tag[0].type == TAG_PSYM &&
+             response->body.data.td_ptuple->tag[0].data.td_psym ==
+               &g_sym_mmap &&
+             response->body.data.td_ptuple->tag[2].type == TAG_UW)
+      body_size = response->body.data.td_ptuple->tag[2].data.td_uw;
+    if (body_size) {
+      if ((r = buf_write_str(buf, &content_length_str)) < 0)
+        return r;
+      result += r;
+      if ((r = buf_write_1(buf, ": ")) < 0)
+        return r;
+      result += r;
+      r = buf_inspect_uw_decimal(buf, body_size);
+      if (r < 0)
+        return r;
+      result += r;
+      if ((r = buf_write_1(buf, "\r\n")) < 0)
+        return r;
+      result += r;
+    }
   }
   if ((r = buf_write_1(buf, "\r\n")) < 0)
     return r;
@@ -272,7 +285,9 @@ sw http_response_buf_write (const s_http_response *response,
     if (! tag_type(&response->body, &type))
       return -1;
     if (type == &g_sym_Str) {
-      if ((r = buf_write_str(buf, &response->body.data.td_str)) < 0)
+      if ((r = buf_write(buf,
+                         response->body.data.td_str.ptr.p_pchar,
+                         response->body.data.td_str.size)) < 0)
         return r;
       result += r;
     }
@@ -296,10 +311,8 @@ sw http_response_buf_write (const s_http_response *response,
     else if (type == &g_sym_Buf) {
       in = response->body.data.td_pstruct->data;
       while (buf_refill(in, in->size) > 0) {
-        err_inspect_buf(in);
         if (buf_read_to_str(in, &str) <= 0)
           return -1;
-        err_inspect_str(&str);
         if ((r = buf_write(buf, str.ptr.p_pchar, str.size)) <= 0)
           return r;
         result += r;

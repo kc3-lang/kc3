@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include "alloc.h"
@@ -1797,14 +1798,25 @@ sw buf_write (s_buf *buf, const void *data, uw len)
     goto clean;
   }
   if (buf->wpos + len > buf->size) {
-    err_puts("buf_write: buffer overflow");
-    assert(! "buf_write: buffer overflow");
-    r = -1;
-    goto clean;
+    if ((r = buf_flush(buf)) < 0)
+      goto clean;
+    if (buf->wpos + len > buf->size) {
+      w = 0;
+      while ((s = len - w) > 0) {
+        if (s > buf->size - buf->wpos)
+          s = buf->size - buf->wpos;
+        memcpy(buf->ptr.p_ps8 + buf->wpos, (s8 *) data + w, s);
+        buf->wpos += s;
+        if ((r = buf_flush(buf)) < 0)
+          goto clean;
+        w += s;
+      }
+      r = len;
+      goto clean;
+    }
   }
   memcpy(buf->ptr.p_ps8 + buf->wpos, data, len);
   buf->wpos += len;
-  buf_flush(buf);
   r = len;
  clean:
 #if HAVE_PTHREAD
@@ -1937,6 +1949,9 @@ sw buf_write_str (s_buf *buf, const s_str *src)
   s_str s;
   assert(buf);
   assert(src);
+  if (src->size > 1024)
+    fprintf(stderr, "DEBUG buf_write_str: size=%lu (UTF-8 re-encoding!)\n",
+            (unsigned long) src->size);
   s = *src;
 #if HAVE_PTHREAD
   rwlock_w(buf->rwlock);
