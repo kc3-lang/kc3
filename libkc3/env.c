@@ -2077,9 +2077,8 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     env = g_kc3_env_default = alloc(sizeof(s_env));
   if (! env)
     return NULL;
-  env->parent_env = g_kc3_env_global;
-  g_kc3_env_global = env;
   *env = (s_env) {0};
+  env_global_set(env);
   if (! env_args_init(env, argc, argv))
     return NULL;
   sym_init_g_sym();
