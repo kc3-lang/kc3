@@ -115,10 +115,13 @@ There are now five full applications written in KC3 that we know of :
    - allow for configuration of OpenBSD's `unveil(2)` in
      `config/unveil.kc3`
    - dropped `libevent2` support in favor of `kqueue(2)`
+   - add support for Linux and BSD with `event_poll`
    - allow for graceful shutdown using either SIGTERM or SIGINT
-   - plugged memory leaks using otto malloc
+   - fixed memory leaks using otto malloc
    - added support for `epoll(7)` on Linux
-   - plugged last memory leaks using ASAn
+   - fixed memory leaks using ASAn
+   - fixed double socket close leading to corruption
+   - fixed race conditions in error handling
 
  - HTTPS
    - `HTTPS.Client` with libtls and automatic or manual connection
