@@ -44,7 +44,7 @@ defmodule HTTPd do
 
   def socket = ?
 
-  def thread_count = fn () { (Uw) (ncpu() * 1.5) }
+  def thread_count = fn () { (U16) (ncpu() * 1.5) }
 
   def timeout = %Time{tv_sec: 5}
 
