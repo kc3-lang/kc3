@@ -64,6 +64,11 @@ u32 * u32_init_cast
   case TAG_F64:
     *u = (u32) tag->data.td_f64;
     return u;
+#if HAVE_F80
+  case TAG_F80:
+    *u = (u32) tag->data.td_f80;
+    return u;
+#endif
   case TAG_INTEGER:
     *u = integer_to_u32(&tag->data.td_integer);
     return u;
