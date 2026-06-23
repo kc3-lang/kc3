@@ -132,7 +132,9 @@ defmodule HTTPd do
         IO.puts(msg)
         Err.puts(msg)
         response = void
-        bot? = Str.has_str?(Str.to_lower(user_agent), "bot")
+        user_agent_lower = Str.to_lower(user_agent)
+        bot? = Str.has_str?(user_agent_lower, "bot") ||
+               Str.has_str?(user_agent_lower, "spider")
         if bot? do
           if Counter.get(HTTPd.bots) >= HTTPd.bots_max do
             response = error_429_page(request)
@@ -149,7 +151,7 @@ defmodule HTTPd do
           end
           clean_request_uploads(request.body)
           connection = HTTP.Request.header(request, "Connection") || ""
-          if Compare.str_case_insensitive(connection, "close") == 0 do
+          if bot? || Compare.str_case_insensitive(connection, "close") == 0 do
             close = true
             response = HTTP.Response.set_header(response,
               "Connection", "close")
@@ -157,7 +159,7 @@ defmodule HTTPd do
             response = HTTP.Response.set_header(response,
               "Connection", "keep-alive")
             response = HTTP.Response.set_header(response,
-              "Keep-Alive", "timeout=5, max=10")
+              "Keep-Alive", "timeout=20, max=10")
           end
         end
         response = HTTP.Response.set_header(response,
