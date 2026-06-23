@@ -133,7 +133,9 @@ defmodule HTTPd do
         Err.puts(msg)
         response = void
         user_agent_lower = Str.to_lower(user_agent)
-        bot? = Str.has_str?(user_agent_lower, "bot") ||
+        bot? = Str.has_str?(user_agent_lower, "agent") ||
+               Str.has_str?(user_agent_lower, "bot") ||
+               Str.has_str?(user_agent_lower, "crawler") ||
                Str.has_str?(user_agent_lower, "spider")
         if bot? do
           if Counter.get(HTTPd.bots) >= HTTPd.bots_max do
