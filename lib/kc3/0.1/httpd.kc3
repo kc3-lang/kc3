@@ -30,6 +30,10 @@ defmodule HTTPd do
 
   def acceptor_tag = Tag.new_copy(:acceptor)
 
+  def bots = Counter.new(0)
+
+  def bots_max = fn () { ncpu() / 2 }
+
   def concurrent_requests = Counter.new(0)
 
   def connections = Counter.new(0)
@@ -44,9 +48,9 @@ defmodule HTTPd do
 
   def socket = ?
 
-  def thread_count = fn () { (U16) (ncpu() * 1.5) }
+  def thread_count = fn () { ncpu() }
 
-  def timeout = %Time{tv_sec: 5}
+  def timeout = %Time{tv_sec: 20}
 
   def load_app = fn () {
     HTTP.mime_type_load("config/mime.types")
@@ -107,6 +111,7 @@ defmodule HTTPd do
   }
 
   def http_client = fn (socket, client) do
+    bot? = false
     close = false
     error = true
     Counter.increase(HTTPd.concurrent_requests, 1)
@@ -126,23 +131,34 @@ defmodule HTTPd do
         msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}"
         IO.puts(msg)
         Err.puts(msg)
-        if (type(request.method) == Str) do
-          response = error_405_page(request)
-        else
-          request = plug_request(request)
-          response = route_and_render_request(request)
+        response = void
+        bot? = Str.has_str?(Str.to_lower(user_agent), "bot")
+        if bot? do
+          if Counter.get(HTTPd.bots) >= HTTPd.bots_max do
+            response = error_429_page(request)
+          else
+            Counter.increase(HTTPd.bots, 1)
+          end
         end
-        clean_request_uploads(request.body)
-        connection = HTTP.Request.header(request, "Connection") || ""
-        if Compare.str_case_insensitive(connection, "close") == 0 do
-          close = true
-          response = HTTP.Response.set_header(response,
-            "Connection", "close")
-        else
-          response = HTTP.Response.set_header(response,
-            "Connection", "keep-alive")
-          response = HTTP.Response.set_header(response,
-            "Keep-Alive", "timeout=5, max=10")
+        if ! response do
+          if (type(request.method) == Str) do
+            response = error_405_page(request)
+          else
+            request = plug_request(request)
+            response = route_and_render_request(request)
+          end
+          clean_request_uploads(request.body)
+          connection = HTTP.Request.header(request, "Connection") || ""
+          if Compare.str_case_insensitive(connection, "close") == 0 do
+            close = true
+            response = HTTP.Response.set_header(response,
+              "Connection", "close")
+          else
+            response = HTTP.Response.set_header(response,
+              "Connection", "keep-alive")
+            response = HTTP.Response.set_header(response,
+              "Keep-Alive", "timeout=5, max=10")
+          end
         end
         response = HTTP.Response.set_header(response,
           "Server", "kc3_httpd")
@@ -150,6 +166,9 @@ defmodule HTTPd do
           "Accept-Ranges", "bytes")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
+        if bot? do
+          Counter.decrease(HTTPd.bots, 1)
+        end
         dt = Time.now() - request.time
         dt_str = Time.diff_to_str(dt)
         msg = "#{response.code} #{client_addr} #{request.method}" +
@@ -394,6 +413,23 @@ defmodule HTTPd do
 </html>
 """
     %HTTP.Response{code: 405, body: body}
+  }
+
+  def error_429_page = fn (request) {
+    body = """
+<html>
+  <head>
+    <title>429 Too many requests</title>
+  </head>
+  <body>
+    <h1>429 Too many requests</h1>
+    <p>
+      The server has enabled rate-limiting.
+    </p>
+  </body>
+</html>
+"""
+    %HTTP.Response{code: 429, body: body}
   }
 
   def plugs = []
