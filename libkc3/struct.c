@@ -136,13 +136,12 @@ void struct_clean (s_struct *s)
   s_tag result = {0};
   const s_sym *type;
   assert(s);
-  assert(s->pstruct_type);
   env = env_global();
   assert(env);
 #if HAVE_PTHREAD
   mutex_clean(&s->mutex);
 #endif
-  if (s->data) {
+  if (s->pstruct_type && s->data) {
     if (s->pstruct_type->clean) {
       list_init_ptr(&args, s->data, NULL);
       if (! env_eval_call_callable_args(env, s->pstruct_type->clean,
@@ -168,7 +167,7 @@ void struct_clean (s_struct *s)
     if (s->free_data)
       alloc_free(s->data);
   }
-  if (s->tag) {
+  if (s->pstruct_type && s->tag) {
     i = 0;
     while (i < s->pstruct_type->map.count) {
       tag_clean(s->tag + i);
@@ -176,7 +175,8 @@ void struct_clean (s_struct *s)
     }
     alloc_free(s->tag);
   }
-  struct_type_delete(s->pstruct_type);
+  if (s->pstruct_type)
+    struct_type_delete(s->pstruct_type);
 }
 
 void struct_delete (s_struct *s)
