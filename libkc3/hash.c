@@ -118,6 +118,7 @@ bool hash_update_array (t_hash *hash, const s_array *a)
       if (! data_hash_update(a->element_type, hash, data))
         return false;
       data += size;
+      i++;
     }
   }
   else if (a->tags) {
