@@ -229,6 +229,7 @@ s_map * map_init_from_alist (s_map *map, s_list *alist)
     err_inspect_list(alist);
     err_write_1("\n");
     assert(! "map_init_from_alist: not an alist");
+    return NULL;
   }
   map_init(&tmp, len);
   a = alist;
