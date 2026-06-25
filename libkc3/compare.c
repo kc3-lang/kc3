@@ -974,14 +974,14 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     case TAG_U64:
       integer_init_s8(&tmp, a->data.td_s8);
       integer_init_u64(&tmp2, b->data.td_u64);
-      r = compare_integer(&tmp, &b->data.td_integer);
+      r = compare_integer(&tmp, &tmp2);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return r;
     case TAG_UW:
       integer_init_s8(&tmp, a->data.td_s8);
       integer_init_u64(&tmp2, (u64) b->data.td_uw);
-      r = compare_integer(&tmp, &b->data.td_integer);
+      r = compare_integer(&tmp, &tmp2);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return r;
@@ -1013,14 +1013,14 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     case TAG_U64:
       integer_init_s16(&tmp, a->data.td_s16);
       integer_init_u64(&tmp2, b->data.td_u64);
-      r = compare_integer(&tmp, &b->data.td_integer);
+      r = compare_integer(&tmp, &tmp2);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return r;
     case TAG_UW:
       integer_init_s16(&tmp, a->data.td_s16);
       integer_init_u64(&tmp2, (u64) b->data.td_uw);
-      r = compare_integer(&tmp, &b->data.td_integer);
+      r = compare_integer(&tmp, &tmp2);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return r;
@@ -1059,14 +1059,14 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     case TAG_U64:
       integer_init_s32(&tmp, a->data.td_s32);
       integer_init_u64(&tmp2, b->data.td_u64);
-      r = compare_integer(&tmp, &b->data.td_integer);
+      r = compare_integer(&tmp, &tmp2);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return r;
     case TAG_UW:
       integer_init_s32(&tmp, a->data.td_s32);
       integer_init_u64(&tmp2, (u64) b->data.td_uw);
-      r = compare_integer(&tmp, &b->data.td_integer);
+      r = compare_integer(&tmp, &tmp2);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return r;
