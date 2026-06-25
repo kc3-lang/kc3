@@ -164,6 +164,11 @@ defmodule HTTPd do
               "Keep-Alive", "timeout=20, max=10")
           end
         end
+        params = request.params
+        if params[:cache_control] do
+          response = HTTP.Response.set_header(response,
+            "Cache-Control", params.cache_control)
+        end
         response = HTTP.Response.set_header(response,
           "Server", "kc3_httpd")
         response = HTTP.Response.set_header(response,
