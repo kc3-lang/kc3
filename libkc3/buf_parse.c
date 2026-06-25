@@ -810,6 +810,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       if ((r = buf_parse_call_op_rec
            (buf, &tmp2, (next_op->precedence > op->precedence) ?
             op->precedence + 1 : op->precedence)) <= 0) {
+        tmp2.arguments->tag = (s_tag) {0};
         call_clean(&tmp2);
         goto ok;
       }
