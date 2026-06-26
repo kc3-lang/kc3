@@ -131,7 +131,7 @@ defmodule HTTPd do
         msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}"
         IO.puts(msg)
         Err.puts(msg)
-        response = void
+        response = false
         user_agent_lower = Str.to_lower(user_agent)
         bot? = Str.has_str?(user_agent_lower, "agent") ||
                Str.has_str?(user_agent_lower, "bot") ||
