@@ -216,7 +216,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f80(dest, a->data.td_f80 / b->data.td_f80);
     case TAG_INTEGER:
       return tag_init_f80(dest, a->data.td_f80 /
-                           integer_to_f80(&a->data.td_integer));
+                           integer_to_f80(&b->data.td_integer));
     case TAG_RATIO:
       ratio_init_f80(&r, a->data.td_f80);
       dest->type = TAG_RATIO;

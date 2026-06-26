@@ -47,7 +47,7 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
 #endif
     case TAG_INTEGER:
       return tag_init_f32(dest, a->data.td_f32 +
-                          integer_to_f32(&a->data.td_integer));
+                          integer_to_f32(&b->data.td_integer));
     case TAG_RATIO:
       ratio_init_f32(&r, a->data.td_f32);
       dest->type = TAG_RATIO;
@@ -93,7 +93,7 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
 #endif
     case TAG_INTEGER:
       return tag_init_f64(dest, a->data.td_f64 +
-                          integer_to_f64(&a->data.td_integer));
+                          integer_to_f64(&b->data.td_integer));
     case TAG_RATIO:
       ratio_init_f64(&r, a->data.td_f64);
       dest->type = TAG_RATIO;
@@ -138,7 +138,7 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f80(dest, a->data.td_f80 + b->data.td_f80);
     case TAG_INTEGER:
       return tag_init_f80(dest, a->data.td_f80 +
-                          integer_to_f80(&a->data.td_integer));
+                          integer_to_f80(&b->data.td_integer));
     case TAG_RATIO:
       ratio_init_f80(&r, a->data.td_f80);
       dest->type = TAG_RATIO;
