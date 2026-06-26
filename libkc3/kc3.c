@@ -1886,6 +1886,10 @@ s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
     assert(! "kc3_thread_delete: pthread_join");
     return NULL;
   }
+  if (! tag) {
+    err_puts("kc3_thread_delete: thread body errored");
+    return NULL;
+  }
   if (tag->type != TAG_PTUPLE ||
       tag->data.td_ptuple->count != 3) {
     err_puts("kc3_thread_delete: invalid value");
@@ -1964,7 +1968,7 @@ void * kc3_thread_start (void *arg)
   env_global_set(env);
   if (! eval_callable_call(start, NULL, tag->data.td_ptuple->tag)) {
     env_fork_delete(env);
-    return NULL;
+    return tag;
   }
   env_fork_delete(env);
   return tag;
