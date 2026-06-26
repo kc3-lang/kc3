@@ -8880,7 +8880,7 @@ pdf_buf_parse_string: str = "D:20250917203929+02'00'"
                                           MediaBox: [0,
                                                      0,
                                                      (F64) 5.95303937007874e+2,
-                                                     (F64) 8.41889763779528e+2],
+                                                     (F64) 8.41889763779527e+2],
                                           Parent: {:indirect_object, (U32) 300, (U16) 0},
                                           Resources: {:indirect_object, (U32) 312, (U16) 0},
                                           StructParents: 0,
