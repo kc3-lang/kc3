@@ -1649,10 +1649,10 @@ sw buf_parse_f80 (s_buf *buf, f80 *dest) {
       if (r < 0)
         goto restore;
       result += r;
-      while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
-        result += r;
-        exp = exp * 10 + digit;
-      }
+    }
+    while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+      result += r;
+      exp = exp * 10 + digit;
     }
     tmp *= powl(10, exp_sign * exp);
   }
@@ -1727,10 +1727,10 @@ sw buf_parse_f128 (s_buf *buf, f128 *dest) {
       if (r < 0)
         goto restore;
       result += r;
-      while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
-        result += r;
-        exp = exp * 10 + digit;
-      }
+    }
+    while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+      result += r;
+      exp = exp * 10 + digit;
     }
     tmp *= powl(10, exp_sign * exp);
   }
