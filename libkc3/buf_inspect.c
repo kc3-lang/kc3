@@ -1854,7 +1854,6 @@ sw buf_inspect_f32_size (s_pretty *pretty, f32 x)
 
 sw buf_inspect_f64 (s_buf *buf, f64 x)
 {
-  s64 b;
   s32 exp;
   u8 i;
   u8 j;
@@ -1877,21 +1876,16 @@ sw buf_inspect_f64 (s_buf *buf, f64 x)
     result += r;
     x = -x;
   }
-  if (x >= 1.0) {
-    b = 10;
-    while (x >= b) {
-      b *= 10;
+  if (x >= 1.0)
+    while (x >= 10.0) {
+      x /= 10.0;
       exp++;
     }
-  }
-  else {
-    b = 1;
-    while (x * b < 1.0) {
-      b *= 10;
+  else
+    while (x < 1.0) {
+      x *= 10.0;
       exp--;
     }
-  }
-  x *= pow(10, -exp);
   i = (u8) x;
   x -= i;
   i += '0';
@@ -1930,7 +1924,6 @@ sw buf_inspect_f64 (s_buf *buf, f64 x)
 
 sw buf_inspect_f64_size (s_pretty *pretty, f64 x)
 {
-  s64 b;
   s32 exp;
   u8 i;
   u8 j;
@@ -1953,21 +1946,16 @@ sw buf_inspect_f64_size (s_pretty *pretty, f64 x)
     result += r;
     x = -x;
   }
-  if (x >= 1.0) {
-    b = 10;
-    while (x >= b) {
-      b *= 10;
+  if (x >= 1.0)
+    while (x >= 10.0) {
+      x /= 10.0;
       exp++;
     }
-  }
-  else {
-    b = 1;
-    while (x * b < 1.0) {
-      b *= 10;
+  else
+    while (x < 1.0) {
+      x *= 10.0;
       exp--;
     }
-  }
-  x *= pow(10, -exp);
   i = (u8) x;
   x -= i;
   i += '0';
