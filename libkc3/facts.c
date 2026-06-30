@@ -1163,6 +1163,15 @@ sw facts_log_add (s_log *log, uw id, const s_fact *fact)
   if ((r = marshall_to_buf(log->marshall, &log->buf)) < 0)
     goto ko;
   result += r;
+  if (! marshall_reset_record(log->marshall)) {
+    r = -1;
+    goto ko;
+  }
+  if (log->after_dump_marshall &&
+      ! marshall_reset_record(log->after_dump_marshall)) {
+    r = -1;
+    goto ko;
+  }
   hook = log->hooks;
   while (hook) {
     hook->f(hook->context, FACT_ACTION_ADD, fact);
@@ -1196,6 +1205,15 @@ sw facts_log_remove (s_log *log, uw id, const s_fact *fact)
   if ((r = marshall_to_buf(log->marshall, &log->buf)) < 0)
     goto ko;
   result += r;
+  if (! marshall_reset_record(log->marshall)) {
+    r = -1;
+    goto ko;
+  }
+  if (log->after_dump_marshall &&
+      ! marshall_reset_record(log->after_dump_marshall)) {
+    r = -1;
+    goto ko;
+  }
   hook = log->hooks;
   while (hook) {
     hook->f(hook->context, FACT_ACTION_REMOVE, fact);

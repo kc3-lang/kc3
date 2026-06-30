@@ -303,6 +303,21 @@ s_marshall * marshall_reset_chunk (s_marshall *m)
   return m;
 }
 
+s_marshall * marshall_reset_record (s_marshall *m)
+{
+  assert(m);
+  m->heap_offset = 0;
+  m->heap_pos = 0;
+  m->heap_count = 0;
+  m->buf_pos = 0;
+  buf_empty(&m->heap);
+  buf_empty(&m->buf);
+  ht_clean(&m->ht);
+  if (! ht_init(&m->ht, &g_sym_Tag, 1024))
+    return NULL;
+  return m;
+}
+
 s_marshall * marshall_complex (s_marshall *m, bool heap,
                                const s_complex *c)
 {
