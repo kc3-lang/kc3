@@ -339,7 +339,7 @@ void http_response_clean (s_http_response *res)
   tag_clean(&res->body);
 }
 
-s_tag * http_response_find_header (const s_http_response *res,
+s_tag * http_response_header_find (const s_http_response *res,
                                    const s_str *key)
 {
   s_list *h;
@@ -350,7 +350,7 @@ s_tag * http_response_find_header (const s_http_response *res,
     if (h->tag.type != TAG_PTUPLE ||
         h->tag.data.td_ptuple->count != 2 ||
         h->tag.data.td_ptuple->tag->type != TAG_STR) {
-      err_write_1("http_response_find_header: invalid header: ");
+      err_write_1("http_response_header_find: invalid header: ");
       err_inspect_tag(&h->tag);
       err_write_1("\n");
       return NULL;
@@ -360,6 +360,59 @@ s_tag * http_response_find_header (const s_http_response *res,
       return h->tag.data.td_ptuple->tag + 1;
     h = list_next(h);
   }
+  return NULL;
+}
+
+p_tag * http_response_header_get (const s_http_response *res,
+                                  const s_str *key,
+                                  p_tag *result)
+{
+  s_list *h;
+  assert(res);
+  assert(key);
+  h = res->headers;
+  while (h) {
+    if (h->tag.type != TAG_PTUPLE ||
+        h->tag.data.td_ptuple->count != 2 ||
+        h->tag.data.td_ptuple->tag->type != TAG_STR) {
+      err_write_1("http_response_header_get: invalid header: ");
+      err_inspect_tag(&h->tag);
+      err_write_1("\n");
+      return NULL;
+    }
+    if (! compare_str_case_insensitive(&h->tag.data.td_ptuple->tag->data.td_str,
+                                       key)) {
+      *result = h->tag.data.td_ptuple->tag + 1;
+      return result;
+    }
+    h = list_next(h);
+  }
+  return NULL;
+}
+
+s_http_response * http_response_header_set (s_http_response *res,
+                                            const s_str *key,
+                                            const s_str *value,
+                                            s_http_response *dest)
+{
+  s_tag *header;
+  s_http_response tmp = {0};
+  if (! http_response_init_copy(&tmp, res))
+    return NULL;
+  if ((header = http_response_header_find(&tmp, key))) {
+    tag_clean(header);
+    tag_init_str_copy(header, value);
+  }
+  else {
+    if (! (tmp.headers = list_new_ptuple(2, tmp.headers)))
+      goto clean;
+    tag_init_str_copy(tmp.headers->tag.data.td_ptuple->tag, key);
+    tag_init_str_copy(tmp.headers->tag.data.td_ptuple->tag + 1, value);
+  }
+  *dest = tmp;
+  return dest;
+ clean:
+  http_response_clean(&tmp);
   return NULL;
 }
 
@@ -378,32 +431,6 @@ s_http_response * http_response_init_copy (s_http_response *res,
     goto clean;
   *res = tmp;
   return res;
- clean:
-  http_response_clean(&tmp);
-  return NULL;
-}
-
-s_http_response * http_response_set_header (s_http_response *res,
-                                            const s_str *key,
-                                            const s_str *value,
-                                            s_http_response *dest)
-{
-  s_tag *header;
-  s_http_response tmp = {0};
-  if (! http_response_init_copy(&tmp, res))
-    return NULL;
-  if ((header = http_response_find_header(&tmp, key))) {
-    tag_clean(header);
-    tag_init_str_copy(header, value);
-  }
-  else {
-    if (! (tmp.headers = list_new_ptuple(2, tmp.headers)))
-      goto clean;
-    tag_init_str_copy(tmp.headers->tag.data.td_ptuple->tag, key);
-    tag_init_str_copy(tmp.headers->tag.data.td_ptuple->tag + 1, value);
-  }
-  *dest = tmp;
-  return dest;
  clean:
   http_response_clean(&tmp);
   return NULL;

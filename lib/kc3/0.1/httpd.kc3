@@ -32,7 +32,7 @@ defmodule HTTPd do
 
   def bots = Counter.new(0)
 
-  def bots_max = fn () { ncpu() / 2 }
+  def bots_max = fn () { ncpu() / 4 }
 
   def concurrent_requests = Counter.new(0)
 
@@ -156,23 +156,23 @@ defmodule HTTPd do
           connection = HTTP.Request.header(request, "Connection") || ""
           if bot? || Compare.str_case_insensitive(connection, "close") == 0 do
             close = true
-            response = HTTP.Response.set_header(response,
+            response = HTTP.Response.header_set(response,
               "Connection", "close")
           else
-            response = HTTP.Response.set_header(response,
+            response = HTTP.Response.header_set(response,
               "Connection", "keep-alive")
-            response = HTTP.Response.set_header(response,
+            response = HTTP.Response.header_set(response,
               "Keep-Alive", "timeout=20, max=10")
           end
         end
         params = request.params
         if params[:cache_control] do
-          response = HTTP.Response.set_header(response,
+          response = HTTP.Response.header_set(response,
             "Cache-Control", params.cache_control)
         end
-        response = HTTP.Response.set_header(response,
+        response = HTTP.Response.header_set(response,
           "Server", "kc3_httpd")
-        response = HTTP.Response.set_header(response,
+        response = HTTP.Response.header_set(response,
           "Accept-Ranges", "bytes")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)

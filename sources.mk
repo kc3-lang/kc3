@@ -23,9 +23,6 @@ KC3_CONFIGURES = \
 	"gl/pt/update_sources" \
 	"gl/sources.sh" \
 	"gl/update_sources" \
-	"gtk4/configure" \
-	"gtk4/sources.sh" \
-	"gtk4/update_sources" \
 	"http/configure" \
 	"http/sources.sh" \
 	"http/update_sources" \
@@ -160,8 +157,6 @@ KC3_MAKEFILES = \
 	"gl/pt/Makefile" \
 	"gl/pt/sources.mk" \
 	"gl/sources.mk" \
-	"gtk4/Makefile" \
-	"gtk4/sources.mk" \
 	"http/Makefile" \
 	"http/sources.mk" \
 	"httpd/Makefile" \
@@ -331,58 +326,6 @@ KC3_C_SOURCES = \
 	"gl/vec2.h" \
 	"gl/vec3.c" \
 	"gl/vec3.h" \
-	"gtk4/action_map.c" \
-	"gtk4/action_map.h" \
-	"gtk4/application.c" \
-	"gtk4/application.h" \
-	"gtk4/application_window.c" \
-	"gtk4/application_window.h" \
-	"gtk4/box.c" \
-	"gtk4/box.h" \
-	"gtk4/button.c" \
-	"gtk4/button.h" \
-	"gtk4/entry.c" \
-	"gtk4/entry.h" \
-	"gtk4/entry_buffer.c" \
-	"gtk4/entry_buffer.h" \
-	"gtk4/file.c" \
-	"gtk4/file.h" \
-	"gtk4/frame.c" \
-	"gtk4/frame.h" \
-	"gtk4/gsk_gl_renderer.c" \
-	"gtk4/gsk_gl_renderer.h" \
-	"gtk4/gsk_renderer.c" \
-	"gtk4/gsk_renderer.h" \
-	"gtk4/kc3_glib.c" \
-	"gtk4/kc3_glib.h" \
-	"gtk4/kc3_gtk4.h" \
-	"gtk4/label.c" \
-	"gtk4/label.h" \
-	"gtk4/list_box.c" \
-	"gtk4/list_box.h" \
-	"gtk4/menu.c" \
-	"gtk4/menu.h" \
-	"gtk4/menu_item.c" \
-	"gtk4/menu_item.h" \
-	"gtk4/object.c" \
-	"gtk4/object.h" \
-	"gtk4/paned.c" \
-	"gtk4/paned.h" \
-	"gtk4/scrolled_window.c" \
-	"gtk4/scrolled_window.h" \
-	"gtk4/signal.c" \
-	"gtk4/signal.h" \
-	"gtk4/simple_action.c" \
-	"gtk4/simple_action.h" \
-	"gtk4/text.c" \
-	"gtk4/text.h" \
-	"gtk4/text_view.c" \
-	"gtk4/text_view.h" \
-	"gtk4/types.h" \
-	"gtk4/widget.c" \
-	"gtk4/widget.h" \
-	"gtk4/window.c" \
-	"gtk4/window.h" \
 	"http/http.c" \
 	"http/http.h" \
 	"http/http_request.c" \

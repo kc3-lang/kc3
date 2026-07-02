@@ -17,7 +17,6 @@ KC3_DIRS="
  fs
  git
  gl
- gtk4
  http
  httpd
  ikc3
@@ -169,7 +168,6 @@ runj -1 /bin/sh <<EOF
 ( cd fs         && ./update_sources; )
 ( cd git        && ./update_sources; )
 ( cd gl         && ./update_sources; )
-( cd gtk4       && ./update_sources; )
 ( cd http       && ./update_sources; )
 ( cd httpd      && ./update_sources; )
 ( cd ikc3       && ./update_sources; )
