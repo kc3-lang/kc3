@@ -105,6 +105,7 @@ static void kc3_event_callback (int fd, short events, void *tag_tuple)
     abort();
   }
   tag_clean(&tmp);
+  list_delete_all(arguments);
 }
 
 s32 kc3_event_base_dispatch (struct event_base **eb)
