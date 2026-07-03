@@ -736,6 +736,40 @@ s_http_request * http_request_cookie_add (s_http_request *req,
   return NULL;
 }
 
+s_tag * http_request_header_find (const s_http_request *req,
+                                  const s_str *key)
+{
+  s_list *h;
+  assert(req);
+  assert(key);
+  h = req->headers;
+  while (h) {
+    if (h->tag.type != TAG_PTUPLE ||
+        h->tag.data.td_ptuple->count != 2 ||
+        h->tag.data.td_ptuple->tag->type != TAG_STR) {
+      err_write_1("http_request_header_find: invalid header: ");
+      err_inspect_tag(&h->tag);
+      err_write_1("\n");
+      return NULL;
+    }
+    if (! compare_str_case_insensitive(&h->tag.data.td_ptuple->tag->data.td_str,
+                                       key))
+      return h->tag.data.td_ptuple->tag + 1;
+    h = list_next(h);
+  }
+  return NULL;
+}
+
+s_tag * http_request_header_get (const s_http_request *req,
+                                 const s_str *key,
+                                 s_tag *dest)
+{
+  s_tag *found;
+  if (! (found = http_request_header_find(req, key)))
+    return NULL;
+  return tag_init_copy(dest, found);
+}
+
 s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
 {
   const s_list *allowed_methods;
