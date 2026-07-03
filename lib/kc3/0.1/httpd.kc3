@@ -127,7 +127,7 @@ defmodule HTTPd do
           if (real_ip) do real_ip else client.addr_str end
         end
         request = Struct.put(request, :client_addr, client_addr)
-        user_agent = HTTP.Request.header(request, "User-Agent")
+        user_agent = HTTP.Request.header_get(request, "User-Agent")
         msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}"
         IO.puts(msg)
         Err.puts(msg)
@@ -153,7 +153,7 @@ defmodule HTTPd do
             response = route_and_render_request(request)
           end
           clean_request_uploads(request.body)
-          connection = HTTP.Request.header(request, "Connection") || ""
+          connection = HTTP.Request.header_get(request, "Connection") || ""
           if bot? || Compare.str_case_insensitive(connection, "close") == 0 do
             close = true
             response = HTTP.Response.header_set(response,

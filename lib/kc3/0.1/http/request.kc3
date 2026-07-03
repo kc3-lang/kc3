@@ -48,6 +48,8 @@ defmodule HTTP.Request do
     end
   end
 
+  def header_get = cfn Tag "http_response_header_get" (HTTP.Request, Str, Result)
+
   def header = fn (request, header_name) {
     List.find_if(request.headers, HTTP.Request.header_find_if)
   }
