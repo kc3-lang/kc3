@@ -154,7 +154,7 @@ defmodule HTTPd do
           end
           clean_request_uploads(request.body)
           connection = HTTP.Request.header_get(request, "Connection") || ""
-          if bot? || Compare.str_case_insensitive(connection, "close") == 0 do
+          if Compare.str_case_insensitive(connection, "close") == 0 do
             close = true
             response = HTTP.Response.header_set(response,
               "Connection", "close")
