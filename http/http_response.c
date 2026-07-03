@@ -363,31 +363,14 @@ s_tag * http_response_header_find (const s_http_response *res,
   return NULL;
 }
 
-p_tag * http_response_header_get (const s_http_response *res,
+s_tag * http_response_header_get (const s_http_response *res,
                                   const s_str *key,
-                                  p_tag *result)
+                                  s_tag *dest)
 {
-  s_list *h;
-  assert(res);
-  assert(key);
-  h = res->headers;
-  while (h) {
-    if (h->tag.type != TAG_PTUPLE ||
-        h->tag.data.td_ptuple->count != 2 ||
-        h->tag.data.td_ptuple->tag->type != TAG_STR) {
-      err_write_1("http_response_header_get: invalid header: ");
-      err_inspect_tag(&h->tag);
-      err_write_1("\n");
-      return NULL;
-    }
-    if (! compare_str_case_insensitive(&h->tag.data.td_ptuple->tag->data.td_str,
-                                       key)) {
-      *result = h->tag.data.td_ptuple->tag + 1;
-      return result;
-    }
-    h = list_next(h);
-  }
-  return NULL;
+  s_tag *found;
+  if (! (found = http_response_header_find(res, key)))
+    return NULL;
+  return tag_init_copy(dest, found);
 }
 
 s_http_response * http_response_header_set (s_http_response *res,
