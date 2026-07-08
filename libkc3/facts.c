@@ -1332,11 +1332,13 @@ sw facts_open_file (s_facts *facts, const s_str *path)
     if ((r = facts_open_buf(facts, &in, path)) < 0) {
       buf_file_close(&in);
       buf_clean(&in);
+      fclose(fp);
       return r;
     }
     result = r;
     buf_file_close(&in);
     buf_clean(&in);
+    fclose(fp);
   }
   else {
     if (! marshall_read_init_file(&mr, path))
