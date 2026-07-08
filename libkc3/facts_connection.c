@@ -91,12 +91,14 @@ static bool facts_connection_auth (s_facts_connection *conn, bool is_server)
              (const char *) challenge);
     sha512_hmac(&facts->secret, &challenge_str, expected_hmac);
     i = 0;
+    u8 diff = 0;
     while (i < SHA512_DIGEST_LENGTH) {
-      if (received_hmac[i] != expected_hmac[i]) {
-        err_puts("facts_connection_auth: HMAC verification failed");
-        return false;
-      }
+      diff |= (received_hmac[i] ^ expected_hmac[i]);
       i++;
+    }
+    if (diff != 0) {
+      err_puts("facts_connection_auth: HMAC verification failed");
+      return false;
     }
   }
   else {
