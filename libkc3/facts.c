@@ -1423,11 +1423,14 @@ sw facts_open_file (s_facts *facts, const s_str *path)
   if (! fp)
     return -1;
   assert(! facts->log);
-  if (! (facts->log = log_new()))
+  if (! (facts->log = log_new())) {
+    fclose(fp);
     return -1;
+  }
   if (! log_open_binary(facts->log, fp, path)) {
     log_delete(facts->log);
     facts->log = NULL;
+    fclose(fp);
     return -1;
   }
   return result;
@@ -1603,15 +1606,24 @@ sw facts_open_file_after_dump (s_facts *facts, const s_str *path)
   fp = file_open(path, "ab");
   if (! fp)
     return -1;
-  if (! facts->log &&
-      ! (facts->log = log_new())) {
-    err_puts("facts_open_file_after_dump: log_new");
-    assert(! "facts_open_file_after_dump: log_new");
-    return -1;
+  bool log_created = false;
+  if (! facts->log) {
+    if (! (facts->log = log_new())) {
+      err_puts("facts_open_file_after_dump: log_new");
+      assert(! "facts_open_file_after_dump: log_new");
+      fclose(fp);
+      return -1;
+    }
+    log_created = true;
   }
   if (! log_open_after_dump(facts->log, fp, path)) {
     err_puts("facts_open_file_after_dump: log_open_after_dump");
     assert(! "facts_open_file_after_dump: log_open_after_dump");
+    if (log_created) {
+      log_delete(facts->log);
+      facts->log = NULL;
+    }
+    fclose(fp);
     return -1;
   }
   return result;
