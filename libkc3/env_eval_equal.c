@@ -236,12 +236,18 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
         return false;
     }
     if (is_var_a) {
-      if (! var_set(tag_a->data.td_pvar, dest))
+      if (! var_set(tag_a->data.td_pvar, dest)) {
+        tag_clean(dest);
+        tag_init_void(dest);
         return false;
+      }
     }
     else {
-      if (! frame_replace(env->frame, tag_a->data.td_ident.sym, dest))
+      if (! frame_replace(env->frame, tag_a->data.td_ident.sym, dest)) {
+        tag_clean(dest);
+        tag_init_void(dest);
         return false;
+      }
     }
     return true;
   }
@@ -255,12 +261,18 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
         return false;
     }
     if (is_var_b) {
-      if (! var_set(tag_b->data.td_pvar, dest))
+      if (! var_set(tag_b->data.td_pvar, dest)) {
+        tag_clean(dest);
+        tag_init_void(dest);
         return false;
+      }
     }
     else {
-      if (! frame_replace(env->frame, tag_b->data.td_ident.sym, dest))
+      if (! frame_replace(env->frame, tag_b->data.td_ident.sym, dest)) {
+        tag_clean(dest);
+        tag_init_void(dest);
         return false;
+      }
     }
     return true;
   }
@@ -377,9 +389,11 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     tag_init_void(dest);
     return true;
   case TAG_MAP:
+    if (! env_eval_equal_map(env, macro, &tag_a->data.td_map, &tag_b->data.td_map,
+                              &dest->data.td_map))
+      return false;
     dest->type = TAG_MAP;
-    return env_eval_equal_map(env, macro, &tag_a->data.td_map, &tag_b->data.td_map,
-                              &dest->data.td_map);
+    return true;
   case TAG_PLIST:
     tag_init_plist(dest, NULL);
     return env_eval_equal_list(env, macro, tag_a->data.td_plist, tag_b->data.td_plist,
@@ -391,13 +405,17 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
                                  tag_b->data.td_pstruct, &dest->data.td_pstruct);
   */
   case TAG_TIME:
+    if (! env_eval_equal_time(env, macro, &tag_a->data.td_time,
+                               &tag_b->data.td_time, &dest->data.td_time))
+      return false;
     dest->type = TAG_TIME;
-    return env_eval_equal_time(env, macro, &tag_a->data.td_time,
-                               &tag_b->data.td_time, &dest->data.td_time);
+    return true;
   case TAG_PTUPLE:
+    if (! env_eval_equal_ptuple(env, macro, &tag_a->data.td_ptuple,
+                                 &tag_b->data.td_ptuple, &dest->data.td_ptuple))
+      return false;
     dest->type = TAG_PTUPLE;
-    return env_eval_equal_ptuple(env, macro, &tag_a->data.td_ptuple,
-                                 &tag_b->data.td_ptuple, &dest->data.td_ptuple);
+    return true;
   case TAG_ARRAY:
   case TAG_DO_BLOCK:
   case TAG_BOOL:
