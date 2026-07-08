@@ -95,6 +95,7 @@ TEST_CASE_PROTOTYPE(marshall_plist);
 TEST_CASE_PROTOTYPE(marshall_plist_twice);
 TEST_CASE_PROTOTYPE(marshall_str);
 TEST_CASE_PROTOTYPE(marshall_tag);
+TEST_CASE_PROTOTYPE(marshall_reset_ht);
 
 void marshall_test (void)
 {
@@ -119,6 +120,7 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_plist_twice);
   TEST_CASE_RUN(marshall_str);
   TEST_CASE_RUN(marshall_tag);
+  TEST_CASE_RUN(marshall_reset_ht);
 }
 
 TEST_CASE(marshall_bool)
@@ -1464,3 +1466,32 @@ TEST_CASE(marshall_uw)
                 "\x04\x00\x00\x00\x00\x00\x00");
 }
 TEST_CASE_END(marshall_uw)
+
+TEST_CASE(marshall_reset_ht)
+{
+  char b[65536] = {0};
+  uw i = 0;
+  s_list *lists[32] = {0};
+  s_marshall m = {0};
+  s_buf out = {0};
+  buf_init(&out, false, sizeof(b), b);
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+  while (i < 32) {
+    lists[i] = list_new_1("[0, 1]");
+    TEST_ASSERT(lists[i]);
+    TEST_ASSERT(marshall_plist(&m, false, &lists[i]));
+    TEST_ASSERT(marshall_to_buf(&m, &out) > 0);
+    marshall_reset_ht(&m);
+    buf_empty(&out);
+    i++;
+  }
+  TEST_EQ(m.ht.count, 0);
+  i = 0;
+  while (i < 32) {
+    list_delete_all(lists[i]);
+    i++;
+  }
+  marshall_clean(&m);
+  buf_clean(&out);
+}
+TEST_CASE_END(marshall_reset_ht)
