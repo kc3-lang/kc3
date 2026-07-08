@@ -1,4 +1,4 @@
-#!/bin/sh
+  #!/bin/sh
 ## kc3
 ## Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
 ##
@@ -80,7 +80,7 @@ LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
 LIBS_ASAN="$(${CC} -print-file-name=libasan.so)"
 LIBS_ASAN="$LIBS_ASAN $LIBS"
-LIBS_ASAN="$LIBS_ASAN -lkc3_image_cov -lkc3_asan"
+LIBS_ASAN="$LIBS_ASAN -lkc3_image_asan -lkc3_asan"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
