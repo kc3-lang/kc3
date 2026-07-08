@@ -312,9 +312,15 @@ s_marshall * marshall_reset_record (s_marshall *m)
   m->buf_pos = 0;
   buf_empty(&m->heap);
   buf_empty(&m->buf);
-  ht_clean(&m->ht);
-  if (! ht_init(&m->ht, &g_sym_Tag, 1024))
-    return NULL;
+  ht_empty(&m->ht);
+  return m;
+}
+
+s_marshall * marshall_reset_ht (s_marshall *m)
+{
+  assert(m);
+  m->heap_count = 0;
+  ht_empty(&m->ht);
   return m;
 }
 

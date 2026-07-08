@@ -79,6 +79,24 @@ void ht_clean (s_ht *ht)
 #endif
 }
 
+void ht_empty (s_ht *ht)
+{
+  uw i = 0;
+  assert(ht);
+#if HAVE_PTHREAD
+  rwlock_w(&ht->rwlock);
+#endif
+  while (i < ht->size) {
+    while (ht->items[i])
+      ht->items[i] = list_delete(ht->items[i]);
+    i++;
+  }
+  ht->count = 0;
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&ht->rwlock);
+#endif
+}
+
 void ht_delete (s_ht *ht)
 {
   assert(ht);

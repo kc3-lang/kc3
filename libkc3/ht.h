@@ -19,6 +19,7 @@
 
 /* Stack-allocation compatible functions, call ht_clean after use. */
 void   ht_clean (s_ht *ht);
+void   ht_empty (s_ht *ht);
 s_ht * ht_init (s_ht *ht, const s_sym *type, uw size);
 
 /* Heap-allocation functions, call ht_delete after use. */

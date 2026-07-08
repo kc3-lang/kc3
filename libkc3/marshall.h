@@ -26,6 +26,7 @@
 void         marshall_clean (s_marshall *m);
 s_marshall * marshall_init (s_marshall *m, uw buf_size);
 s_marshall * marshall_reset_chunk (s_marshall *m);
+s_marshall * marshall_reset_ht (s_marshall *m);
 s_marshall * marshall_reset_record (s_marshall *m);
 
 /* Heap-allocation functions, call marshall_delete after use. */

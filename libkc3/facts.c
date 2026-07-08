@@ -424,6 +424,7 @@ s_facts * facts_broadcast_add (s_facts *facts, const s_fact *fact)
       marshall_u8(&conn->marshall, false, FACT_ACTION_ADD);
       marshall_fact(&conn->marshall, false, fact);
       marshall_to_buf(&conn->marshall, conn->buf_rw.w);
+      marshall_reset_ht(&conn->marshall);
     }
     conn = conn->next;
   }
@@ -441,6 +442,7 @@ s_facts * facts_broadcast_remove (s_facts *facts, const s_fact *fact)
       marshall_u8(&conn->marshall, false, FACT_ACTION_REMOVE);
       marshall_fact(&conn->marshall, false, fact);
       marshall_to_buf(&conn->marshall, conn->buf_rw.w);
+      marshall_reset_ht(&conn->marshall);
     }
     conn = conn->next;
   }
@@ -2223,6 +2225,7 @@ bool facts_send_to_master_add (s_facts *facts, const s_fact *fact)
   marshall_u8(&master->marshall, false, FACT_ACTION_ADD);
   marshall_fact(&master->marshall, false, fact);
   marshall_to_buf(&master->marshall, master->buf_rw.w);
+  marshall_reset_ht(&master->marshall);
   return true;
 }
 
@@ -2237,6 +2240,7 @@ bool facts_send_to_master_remove (s_facts *facts, const s_fact *fact)
   marshall_u8(&master->marshall, false, FACT_ACTION_REMOVE);
   marshall_fact(&master->marshall, false, fact);
   marshall_to_buf(&master->marshall, master->buf_rw.w);
+  marshall_reset_ht(&master->marshall);
   return true;
 }
 

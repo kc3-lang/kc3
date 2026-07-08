@@ -31,6 +31,7 @@
 #include "facts.h"
 #include "facts_connection.h"
 #include "facts_cursor.h"
+#include "ht.h"
 #include "io.h"
 #include "marshall.h"
 #include "marshall_read.h"
@@ -167,6 +168,7 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
   marshall_u8(&conn->marshall, false, facts->priority);
   marshall_uw(&conn->marshall, false, facts->next_id);
   marshall_to_buf(&conn->marshall, conn->buf_rw.w);
+  marshall_reset_ht(&conn->marshall);
   if (! marshall_read_header(&conn->marshall_read)) {
     err_puts("facts_connection_add: marshall_read_header");
     facts_connection_delete(conn);
@@ -401,6 +403,7 @@ static bool facts_connection_sync (s_facts_connection *conn,
       goto clean;
     if (! marshall_to_buf(&conn->marshall, conn->buf_rw.w))
       goto clean;
+    marshall_reset_ht(&conn->marshall);
   }
   log = &facts->remove_log;
   while (*log) {
@@ -415,6 +418,7 @@ static bool facts_connection_sync (s_facts_connection *conn,
         goto clean;
       if (! marshall_to_buf(&conn->marshall, conn->buf_rw.w))
         goto clean;
+      marshall_reset_ht(&conn->marshall);
       if (++(*log)->sync_count >= (*log)->target_count) {
         tmp = *log;
         *log = tmp->next;
@@ -477,6 +481,8 @@ static void * facts_connection_thread (void *arg)
     }
     fact_clean_all(&fact);
     marshall_read_chunk_reset(mr);
+    if (mr->ht.items)
+      ht_empty(&mr->ht);
   }
   conn->running = false;
   return NULL;
