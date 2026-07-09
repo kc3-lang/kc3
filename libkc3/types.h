@@ -44,8 +44,8 @@ extern "C" {
 # undef true
 #endif
 
-#ifndef thread_local
-# if __STDC_VERSION__ >= 201112 && !defined __STDC_NO_THREADS__
+#if ! defined thread_local && __STDC_VERSION__ < 202311
+# if __STDC_VERSION__ >= 201112 && ! defined __STDC_NO_THREADS__
 #  define thread_local _Thread_local
 # elif defined _WIN32 && (defined _MSC_VER || \
                           defined __ICL ||    \
@@ -123,22 +123,22 @@ typedef __float128  f128;
 #endif
 
 /* Boolean : true or false. */
-#ifdef __cplusplus
+#if defined __cplusplus || __STDC_VERSION__ >= 202311
 typedef u8 BOOL;
-#else
+#else 
 typedef u8 bool;
 #endif
 
 /* enums */
 
-#ifndef __cplusplus
+#if ! defined __cplusplus && __STDC_VERSION__ < 202311
 
 typedef enum {
   false = 0,
   true = 1
 } e_bool;
 
-#endif /* __cplusplus */
+#endif
 
 typedef enum {
   CALLABLE_VOID = 0,
