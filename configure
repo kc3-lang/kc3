@@ -122,4 +122,9 @@ gl
 window"
 fi
 
+if $HAVE_GTK4; then
+    SUBDIRS="$SUBDIRS
+gtk4"
+fi
+
 config_subdirs $SUBDIRS
