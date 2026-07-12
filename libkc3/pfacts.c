@@ -60,8 +60,12 @@ p_facts * pfacts_init_copy (p_facts *pfacts, p_facts *src)
   assert(pfacts);
   assert(src);
   assert(*src);
-  if (! (tmp = facts_new_ref(*src)))
-    return NULL;
-  *pfacts = tmp;
+  if (*src) {
+    if (! (tmp = facts_new_ref(*src)))
+      return NULL;
+    *pfacts = tmp;
+  }
+  else
+    *pfacts = NULL;
   return pfacts;
 }
