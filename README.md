@@ -122,6 +122,7 @@ There are now five full applications written in KC3 that we know of :
    - fixed memory leaks using ASAn
    - fixed double socket close leading to corruption
    - fixed race conditions in error handling
+   - added rate limiting for bots
 
  - HTTPS
    - `HTTPS.Client` with libtls and automatic or manual connection
