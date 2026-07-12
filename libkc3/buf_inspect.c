@@ -3427,12 +3427,19 @@ sw buf_inspect_pfacts (s_buf *buf, const p_facts *x)
     }
     return result;
   }
-  if ((r = buf_write_1(buf, "0x")) <= 0)
-    return r;
-  result += r;
-  if ((r = buf_inspect_uw_hexadecimal(buf, (uw) *x)))
-    return r;
-  result += r;
+  if (*x) {
+    if ((r = buf_write_1(buf, "0x")) <= 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_uw_hexadecimal(buf, (uw) *x)))
+      return r;
+    result += r;
+  }
+  else {
+    if ((r = buf_write_1(buf, "0")) <= 0)
+      return r;
+    result += r;
+  }
   return result;
 }
 
