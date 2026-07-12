@@ -1686,8 +1686,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   }
   if (! sym_to_tag_type(type, &tag_type))
     return false;
-  if (tag->type != tag_type && ! (tag->type == TAG_POINTER &&
-                                  sym_is_pointer_type(type, NULL))) {
+  if (tag->type != tag_type) {
     err_write_1("tag_to_pointer: cannot cast ");
     err_write_1(tag_type_to_string(tag->type));
     err_write_1(" to ");

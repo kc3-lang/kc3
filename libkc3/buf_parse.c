@@ -43,6 +43,7 @@
 #include "ops.h"
 #include "pcall.h"
 #include "pcallable.h"
+#include "pfacts.h"
 #include "pointer.h"
 #include "ptuple.h"
 #include "pvar.h"
@@ -3843,6 +3844,18 @@ sw buf_parse_pcow (s_buf *buf, s_cow **c)
   return r;
 }
 
+sw buf_parse_pfacts (s_buf *buf, p_facts *dest)
+{
+  sw r;
+  p_facts tmp = NULL;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_read_1(buf, "(Facts*) 0")) <= 0)
+    return r;
+  *dest = tmp;
+  return r;
+}
+
 sw buf_parse_pointer (s_buf *buf, s_pointer *dest)
 {
   sw r;
@@ -5109,6 +5122,16 @@ sw buf_parse_tag_pcallable (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_pfacts (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pfacts(buf, &dest->data.td_pfacts)) > 0)
+    dest->type = TAG_PFACTS;
+  return r;
+}
+
 sw buf_parse_tag_plist (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -5267,6 +5290,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
         (r = buf_parse_tag_cow(buf, dest)) ||
         (r = buf_parse_tag_number(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)) ||
+        (r = buf_parse_tag_pfacts(buf, dest)) ||
         (r = buf_parse_tag_pointer(buf, dest)) ||
         (r = buf_parse_tag_ptr(buf, dest)) ||
         (r = buf_parse_tag_ptr_free(buf, dest)) ||
