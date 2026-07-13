@@ -1,12 +1,16 @@
+/* kc3
+ * Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
+ *
+ * Permission is hereby granted to use this software granted the above
+ * copyright notice and this permission paragraph are included in all
+ * copies and substantial portions of this software.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+ * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+ * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+ * THIS SOFTWARE.
+ */
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <errno.h>
-
 
 #include "../libkc3/types.h"
 #include "../libkc3/fact.h"
@@ -19,188 +23,207 @@
 #include "../libkc3/env.h"
 #include "../libkc3/facts.h"
 
-static void render(s_buf *out, uw id, u8 action, s_fact *fact) {
-
-    buf_inspect_uw(out, id);
-    buf_write_1(out, action == FACT_ACTION_ADD ? " ADD " :
-                     action == FACT_ACTION_REMOVE ? " REMOVE " : " REPLACE ");
-    buf_inspect_fact(out, fact);
-    buf_write_1(out, "\n");
+sw kc3txt_buf_inspect_log (s_buf *out, uw id, u8 action, s_fact *fact)
+{
+  static const char *action_str[] = {" ADD ", " REMOVE ", " REPLACE "};
+  sw r;
+  sw result;
+  assert(out);
+  if ((r = buf_inspect_uw(out, id)) <= 0)
+    return r;
+  result += r;
+  if (action >= 3) {
+    err_puts("kc3txt_buf_inspect_log: unknown action");
+    return -1;
+  }
+  if ((r = buf_write_1(out, action_str[action])) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_fact(out, fact)) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(out, "\n")) <= 0)
+    return r;
+  result += r;
+  return result;
 }
 
 int main (int argc, char **argv)
 {
-    char b[BUF_SIZE];
-    char real_argv0[4096];
-    char *resolved_argv0 = argv[0];
-    uw id;
-    u8 action;
-    s_fact fact;
-    s_str path;
-    s_buf out;
-    s_env env;
-    int e_argc = 1;
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <path>\n", argv[0]);
+  char b[BUF_SIZE];
+  char real_argv0[4096];
+  char *resolved_argv0 = argv[0];
+  uw id;
+  u8 action;
+  s_fact fact;
+  s_str path;
+  s_buf out;
+  s_env env;
+  int e_argc = 1;
+  if (argc != 2) {
+    fprintf(stderr, "Usage: %s <path>\n", argv[0]);
+    return 1;
+  }
+  if (realpath(argv[0], real_argv0))
+    resolved_argv0 = real_argv0;
+  char *e_argv_data[] = { resolved_argv0, NULL };
+  char **e_argv = e_argv_data;
+  {
+    const char *fp = argv[1];
+    size_t flen = strlen(fp);
+    if (flen >= 5 && ! strncmp(fp + flen - 5, ".dump", 5)) {
+      const char *slash = strrchr(fp, '/');
+      char dump_dir[1024] = ".";
+      const char *dump_name = fp;
+      if (slash) {
+        size_t len = slash - fp;
+        if (len >= sizeof(dump_dir)) len = sizeof(dump_dir) - 1;
+        memcpy(dump_dir, fp, len);
+        dump_dir[len] = 0;
+        dump_name = slash + 1;
+      }
+      const char *restore_path = fp;
+      {
+        char db_path[1100];
+        snprintf(db_path, sizeof(db_path), "%s/db", dump_dir);
+        if (access(db_path, F_OK) == 0) {
+          char log_path[2200];
+          snprintf(log_path, sizeof(log_path), "%s/app.facts.bin.facts", db_path);
+          if (access(log_path, F_OK) != 0) {
+            fprintf(stderr, "%s: dump references %s which does not exist\n",
+                    argv[0], log_path);
+            fprintf(stderr, "  the restore would create it (write side-effect).\n");
+            fprintf(stderr, "  kc3cat refuses to write. either prepare the log\n");
+            fprintf(stderr, "  manually, or use a tool that accepts writes.\n");
+            return 1;
+          }
+          if (slash && chdir(dump_dir) != 0) {
+            fprintf(stderr, "%s: cannot chdir to %s\n", argv[0], dump_dir);
+            return 1;
+          }
+          restore_path = dump_name;
+        }
+      }
+      char  *d_argv_data[] = { resolved_argv0, "--restore", (char *)restore_path, NULL };
+      int    d_argc = 3;
+      char **d_argv = d_argv_data;
+      if (! env_init(&env, &d_argc, &d_argv)) {
+        fprintf(stderr, "%s: cannot restore env dump: %s\n", argv[0], argv[1]);
         return 1;
+      }
+      buf_init(&out, false, sizeof(b), b);
+      buf_file_open_w(&out, stdout);
+      facts_dump(env.facts, &out);
+      buf_flush(&out);
+      buf_file_close(&out);
+      buf_clean(&out);
+      env_clean(&env);
+      return 0;
     }
-    if (realpath(argv[0], real_argv0))
-        resolved_argv0 = real_argv0;
-    char *e_argv_data[] = { resolved_argv0, NULL };
-    char **e_argv = e_argv_data;
-    {
-        const char *fp = argv[1];
-        size_t flen = strlen(fp);
-        if (flen >= 5 && ! strcmp(fp + flen - 5, ".dump")) {
-            const char *slash = strrchr(fp, '/');
-            char dump_dir[1024] = ".";
-            const char *dump_name = fp;
-            if (slash) {
-                size_t len = slash - fp;
-                if (len >= sizeof(dump_dir)) len = sizeof(dump_dir) - 1;
-                memcpy(dump_dir, fp, len);
-                dump_dir[len] = '\0';
-                dump_name = slash + 1;
-            }
-            const char *restore_path = fp;
-            {
-                char db_path[1100];
-                snprintf(db_path, sizeof(db_path), "%s/db", dump_dir);
-                if (access(db_path, F_OK) == 0) {
-                    char log_path[2200];
-                    snprintf(log_path, sizeof(log_path), "%s/app.facts.bin.facts", db_path);
-                    if (access(log_path, F_OK) != 0) {
-                        fprintf(stderr, "%s: dump references %s which does not exist\n",
-                                argv[0], log_path);
-                        fprintf(stderr, "  the restore would create it (write side-effect).\n");
-                        fprintf(stderr, "  kc3cat refuses to write. either prepare the log\n");
-                        fprintf(stderr, "  manually, or use a tool that accepts writes.\n");
-                        return 1;
-                    }
-                    if (slash && chdir(dump_dir) != 0) {
-                        fprintf(stderr, "%s: cannot chdir to %s\n", argv[0], dump_dir);
-                        return 1;
-                    }
-                    restore_path = dump_name;
-                }
-            }
-            char  *d_argv_data[] = { resolved_argv0, "--restore", (char *)restore_path, NULL };
-            int    d_argc = 3;
-            char **d_argv = d_argv_data;
-            if (! env_init(&env, &d_argc, &d_argv)) {
-                fprintf(stderr, "%s: cannot restore env dump: %s\n", argv[0], argv[1]);
-                return 1;
-            }
-            buf_init(&out, false, sizeof(b), b);
-            buf_file_open_w(&out, stdout);
-            facts_dump(env.facts, &out);
-            buf_flush(&out);
-            buf_file_close(&out);
-            buf_clean(&out);
-            env_clean(&env);
-            return 0;
-        }
-        if (flen >= 5 && ! strcmp(fp + flen - 5, ".kc3c")) {
-            s_marshall_read kmr = {0};
-            uw n;
-            uw i;
-            if (! env_init(&env, &e_argc, &e_argv)) {
-                fprintf(stderr, "%s: env_init failed\n", argv[0]);
-                return 1;
-            }
-            str_init_1(&path, NULL, argv[1]);
-            if (! marshall_read_init_file(&kmr, &path)) {
-                fprintf(stderr, "%s: cannot open %s\n", argv[0], argv[1]);
-                str_clean(&path);
-                env_clean(&env);
-                return 1;
-            }
-            marshall_read_size(&kmr);
-            buf_init(&out, false, sizeof(b), b);
-            buf_file_open_w(&out, stdout);
-            if (! marshall_read_uw(&kmr, false, &n)) goto kc3c_done;
-            i = 0;
-            while (i < n) {
-                s_str s = {0};
-                if (! marshall_read_str(&kmr, false, &s)) goto kc3c_done;
-                buf_write_1(&out, "dlopen ");
-                buf_inspect_str(&out, &s);
-                buf_write_1(&out, "\n");
-                str_clean(&s);
-                i++;
-            }
-            if (! marshall_read_uw(&kmr, false, &n)) goto kc3c_done;
-            i = 0;
-            while (i < n) {
-                s_tag t = {0};
-                if (! marshall_read_tag(&kmr, false, &t)) goto kc3c_done;
-                buf_inspect_tag(&out, &t);
-                buf_write_1(&out, "\n");
-                tag_clean(&t);
-                i++;
-            }
-        kc3c_done:
-            buf_flush(&out);
-            buf_file_close(&out);
-            buf_clean(&out);
-            marshall_read_clean(&kmr);
-            str_clean(&path);
-            env_clean(&env);
-            return 0;
-        }
-    }
-    {
-        FILE *peek = fopen(argv[1], "rb");
-        if (peek) {
-            int first = fgetc(peek);
-            fclose(peek);
-            if (first == '%') {
-                FILE *fp = fopen(argv[1], "rb");
-                if (! fp) {
-                    fprintf(stderr, "%s: cannot open %s\n", argv[0], argv[1]);
-                    return 1;
-                }
-                char tbuf[BUF_SIZE];
-                size_t n;
-                while ((n = fread(tbuf, 1, sizeof(tbuf), fp)) > 0)
-                    fwrite(tbuf, 1, n, stdout);
-                fclose(fp);
-                return 0;
-            }
-        }
-    }
-    if (! env_init(&env, &e_argc, &e_argv)) {
+    if (flen >= 5 && ! strcmp(fp + flen - 5, ".kc3c")) {
+      s_marshall_read kmr = {0};
+      uw n;
+      uw i;
+      if (! env_init(&env, &e_argc, &e_argv)) {
         fprintf(stderr, "%s: env_init failed\n", argv[0]);
         return 1;
-    }
-    str_init_1(&path, NULL, argv[1]);
-    s_marshall_read mr = {0};
-    sw r;
-    if ( ! marshall_read_init_file(&mr, &path)) {
-        fprintf(stderr, "Failed to open file: %s\n", argv[1]);
+      }
+      str_init_1(&path, NULL, argv[1]);
+      if (! marshall_read_init_file(&kmr, &path)) {
+        fprintf(stderr, "%s: cannot open %s\n", argv[0], argv[1]);
         str_clean(&path);
+        env_clean(&env);
         return 1;
-    };
-    buf_init(&out, false, sizeof(b), b);
-    buf_file_open_w(&out, stdout);
-    while (1) {
-        while ((r = buf_peek_1(mr.buf, "KC3MARSH")) == 0) {
-            if (buf_peek_1(mr.buf, "_KC3UW_") <= 0) goto done;
-            if (! marshall_read_uw(&mr, false, &id) ||
-            ! marshall_read_u8(&mr, false, &action) ||
-            ! marshall_read_fact(&mr, false, &fact))
-                goto done;
-            render(&out, id, action, &fact);
-            fact_clean_all(&fact);
-        }
-        if (r > 0) { marshall_read_chunk_file(&mr); continue;}
-        break;
+      }
+      marshall_read_size(&kmr);
+      buf_init(&out, false, sizeof(b), b);
+      buf_file_open_w(&out, stdout);
+      if (! marshall_read_uw(&kmr, false, &n)) goto kc3c_done;
+      i = 0;
+      while (i < n) {
+        s_str s = {0};
+        if (! marshall_read_str(&kmr, false, &s)) goto kc3c_done;
+        buf_write_1(&out, "dlopen ");
+        buf_inspect_str(&out, &s);
+        buf_write_1(&out, "\n");
+        str_clean(&s);
+        i++;
+      }
+      if (! marshall_read_uw(&kmr, false, &n)) goto kc3c_done;
+      i = 0;
+      while (i < n) {
+        s_tag t = {0};
+        if (! marshall_read_tag(&kmr, false, &t)) goto kc3c_done;
+        buf_inspect_tag(&out, &t);
+        buf_write_1(&out, "\n");
+        tag_clean(&t);
+        i++;
+      }
+    kc3c_done:
+      buf_flush(&out);
+      buf_file_close(&out);
+      buf_clean(&out);
+      marshall_read_clean(&kmr);
+      str_clean(&path);
+      env_clean(&env);
+      return 0;
     }
-    done:
-    buf_flush(&out);
-    buf_file_close(&out);
-    marshall_read_clean(&mr);
+  }
+  {
+    FILE *peek = fopen(argv[1], "rb");
+    if (peek) {
+      int first = fgetc(peek);
+      fclose(peek);
+      if (first == '%') {
+        FILE *fp = fopen(argv[1], "rb");
+        if (! fp) {
+          fprintf(stderr, "%s: cannot open %s\n", argv[0], argv[1]);
+          return 1;
+        }
+        char tbuf[BUF_SIZE];
+        size_t n;
+        while ((n = fread(tbuf, 1, sizeof(tbuf), fp)) > 0)
+          fwrite(tbuf, 1, n, stdout);
+        fclose(fp);
+        return 0;
+      }
+    }
+  }
+  if (! env_init(&env, &e_argc, &e_argv)) {
+    fprintf(stderr, "%s: env_init failed\n", argv[0]);
+    return 1;
+  }
+  str_init_1(&path, NULL, argv[1]);
+  s_marshall_read mr = {0};
+  sw r;
+  if ( ! marshall_read_init_file(&mr, &path)) {
+    fprintf(stderr, "Failed to open file: %s\n", argv[1]);
     str_clean(&path);
-    env_clean(&env);
-    return 0;
+    return 1;
+  };
+  buf_init(&out, false, sizeof(b), b);
+  buf_file_open_w(&out, stdout);
+  while (1) {
+    while ((r = buf_peek_1(mr.buf, "KC3MARSH")) == 0) {
+      if (buf_peek_1(mr.buf, "_KC3UW_") <= 0) goto done;
+      if (! marshall_read_uw(&mr, false, &id) ||
+          ! marshall_read_u8(&mr, false, &action) ||
+          ! marshall_read_fact(&mr, false, &fact))
+        goto done;
+      render(&out, id, action, &fact);
+      fact_clean_all(&fact);
+    }
+    if (r > 0) {
+      marshall_read_chunk_file(&mr);
+      continue;
+    }
+    break;
+  }
+ done:
+  buf_flush(&out);
+  buf_file_close(&out);
+  marshall_read_clean(&mr);
+  str_clean(&path);
+  env_clean(&env);
+  return 0;
 }
