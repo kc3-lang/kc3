@@ -50,6 +50,8 @@ KC3_CONFIGURES = \
 	"kc3s/configure" \
 	"kc3s/sources.sh" \
 	"kc3s/update_sources" \
+	"kc3txt/sources.sh" \
+	"kc3txt/update_sources" \
 	"kpkg/configure" \
 	"kpkg/sources.sh" \
 	"kpkg/update_sources" \
@@ -180,6 +182,7 @@ KC3_MAKEFILES = \
 	"kc3c/sources.mk" \
 	"kc3s/Makefile" \
 	"kc3s/sources.mk" \
+	"kc3txt/sources.mk" \
 	"kmsg/Makefile" \
 	"kpkg/Makefile" \
 	"kpkg/sources.mk" \
@@ -420,6 +423,7 @@ KC3_C_SOURCES = \
 	"kc3s/buf_readline.c" \
 	"kc3s/buf_readline.h" \
 	"kc3s/kc3s.c" \
+	"kc3txt/kc3txt.c" \
 	"kpkg/kpkg.c" \
 	"kqueue/kqueue.c" \
 	"kqueue/kqueue.h" \

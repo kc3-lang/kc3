@@ -25,6 +25,7 @@ KC3_DIRS="
  json
  kc3c
  kc3s
+ kc3txt
  kmsg
  kpkg
  kqueue
@@ -176,6 +177,7 @@ runj -1 /bin/sh <<EOF
 ( cd image      && ./update_sources; )
 ( cd json       && ./update_sources; )
 ( cd kc3s       && ./update_sources; )
+( cd kc3txt     && ./update_sources; )
 ( cd kpkg       && ./update_sources; )
 ( cd libkc3     && ./update_sources; )
 ( cd libtommath && ./update_sources; )
