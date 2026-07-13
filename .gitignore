@@ -85,6 +85,10 @@ kc3s/kc3s
 kc3s/kc3s_asan
 kc3s/kc3s_cov
 kc3s/kc3s_debug
+kc3txt/kc3txt
+kc3txt/kc3txt_asan
+kc3txt/kc3txt_cov
+kc3txt/kc3txt_debug
 kpkg/kpkg
 kpkg/kpkg_asan
 kpkg/kpkg_cov

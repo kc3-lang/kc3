@@ -11,23 +11,15 @@
  * THIS SOFTWARE.
  */
 #include <stdio.h>
-
-#include "../libkc3/types.h"
-#include "../libkc3/fact.h"
-#include "../libkc3/tag.h"
-#include "../libkc3/buf_inspect.h"
-#include "../libkc3/buf.h"
-#include "../libkc3/buf_file.h"
-#include "../libkc3/str.h"
-#include "../libkc3/marshall_read.h"
-#include "../libkc3/env.h"
-#include "../libkc3/facts.h"
+#include <string.h>
+#include <unistd.h>
+#include "../libkc3/kc3.h"
 
 sw kc3txt_buf_inspect_log (s_buf *out, uw id, u8 action, s_fact *fact)
 {
   static const char *action_str[] = {" ADD ", " REMOVE ", " REPLACE "};
   sw r;
-  sw result;
+  sw result = 0;
   assert(out);
   if ((r = buf_inspect_uw(out, id)) <= 0)
     return r;
@@ -210,7 +202,7 @@ int main (int argc, char **argv)
           ! marshall_read_u8(&mr, false, &action) ||
           ! marshall_read_fact(&mr, false, &fact))
         goto done;
-      render(&out, id, action, &fact);
+      kc3txt_buf_inspect_log(&out, id, action, &fact);
       fact_clean_all(&fact);
     }
     if (r > 0) {
