@@ -14,11 +14,8 @@ defmodule Metric do
 
   require Facts
   require Integer
-  require Mutex
   require Str
   require URL
-
-  def mutex = Mutex.new()
 
   def normalize = fn (key) {
     key = URL.unescape(key)
@@ -42,11 +39,11 @@ defmodule Metric do
 
   def hit = fn (key) {
     key = normalize(key)
-    Mutex.lock(Metric.mutex)
-    count = Metric.get(key) + 1
-    Facts.replace_tags(Config.db, key, :metric_hits, count)
-    Mutex.unlock(Metric.mutex)
-    count
+    Facts.with_transaction(Config.db, do
+      count = Metric.get(key) + 1
+      Facts.replace_tags(Config.db, key, :metric_hits, count)
+      count
+    end)
   }
 
 end
