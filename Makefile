@@ -17,6 +17,7 @@ all:
 	${MAKE} -C libkc3 all
 	${MAKE} -C ikc3 all
 	${MAKE} -C kc3s all
+	${MAKE} -C kc3txt all
 	${MAKE} -C kpkg all
 	${MAKE} -C ekc3 all
 	${MAKE} -C event all
@@ -55,6 +56,7 @@ asan:
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
+	${MAKE} -C kc3txt asan
 	${MAKE} -C kpkg asan
 	${MAKE} -C ekc3 asan
 	${MAKE} -C event asan
@@ -84,6 +86,7 @@ build:
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
+	${MAKE} -C kc3txt build
 	${MAKE} -C kpkg build
 	${MAKE} -C ekc3 build
 	${MAKE} -C event build
@@ -111,6 +114,7 @@ clean::
 	${MAKE} -C libkc3 clean
 	${MAKE} -C ikc3 clean
 	${MAKE} -C kc3s clean
+	${MAKE} -C kc3txt build
 	${MAKE} -C kpkg clean
 	${MAKE} -C ekc3 clean
 	${MAKE} -C event clean
@@ -135,6 +139,7 @@ clean_cov::
 	${MAKE} -C libkc3 clean_cov
 	${MAKE} -C ikc3 clean_cov
 	${MAKE} -C kc3s clean_cov
+	${MAKE} -C kc3txt clean_cov
 	${MAKE} -C kpkg clean_cov
 	${MAKE} -C ekc3 clean_cov
 	${MAKE} -C event clean_cov

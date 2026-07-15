@@ -21,7 +21,7 @@ sw kc3txt_buf_inspect_log (s_buf *out, uw id, u8 action, s_fact *fact)
   sw r;
   sw result = 0;
   assert(out);
-  if ((r = buf_inspect_uw(out, id)) <= 0)
+  if ((r = buf_inspect_uw_decimal(out, id)) <= 0)
     return r;
   result += r;
   if (action >= 3) {
