@@ -10,12 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Metric do
+require URL
 
-  require Facts
-  require Integer
-  require Str
-  require URL
+defmodule Metric do
 
   def normalize = fn (key) {
     key = URL.unescape(key)
@@ -28,6 +25,10 @@ defmodule Metric do
 
   def get = fn (key) {
     key = normalize(key)
+    Metric.get_normalized(key)
+  }
+
+  def get_normalized = fn (key) {
     count = Facts.first_with_tags(Config.db, key, :metric_hits, count = ?,
       fn (x) { count })
     if is_integer?(count) do
@@ -40,7 +41,7 @@ defmodule Metric do
   def hit = fn (key) {
     key = normalize(key)
     Facts.with_transaction(Config.db, do
-      count = Metric.get(key) + 1
+      count = Metric.get_normalized(key) + 1
       Facts.replace_tags(Config.db, key, :metric_hits, count)
       count
     end)
