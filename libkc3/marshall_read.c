@@ -536,6 +536,8 @@ s_marshall_read * marshall_read_data (s_marshall_read *mr, bool heap,
     return marshall_read_map(mr, heap, data);
   if (type == &g_sym_Ptr)
     return marshall_read_ptr(mr, heap, data);
+  if (type == &g_sym_Facts_star)
+    return marshall_read_pfacts(mr, heap, data);
   if (type == &g_sym_PtrFree)
     return marshall_read_ptr_free(mr, heap, data);
   if (sym_is_pointer_type(type, NULL)) {
@@ -2395,9 +2397,15 @@ s_marshall_read * marshall_read_struct (s_marshall_read *mr,
     goto ko;
   }
   if (has_data) {
-    if (! (tmp.data = alloc(tmp.pstruct_type->size)))
-      goto ko;
-    tmp.free_data = true;
+    if (dest->data) {
+      tmp.data = dest->data;
+      tmp.free_data = false;
+    }
+    else {
+      if (! (tmp.data = alloc(tmp.pstruct_type->size)))
+        goto ko;
+      tmp.free_data = true;
+    }
     i = 0;
     while (i < tmp.pstruct_type->map.count) {
       offset = tmp.pstruct_type->offset[i];

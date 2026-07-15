@@ -486,6 +486,14 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
     }
     return m;
   }
+  if (type == &g_sym_Facts_star) {
+    if (! marshall_pfacts(m, heap, data)) {
+      err_puts("marshall_data: marshall_pfacts");
+      assert("marshall_data: marshall_pfacts");
+      return NULL;
+    }
+    return m;
+  }
   if (type == &g_sym_PtrFree) {
     if (! marshall_ptr_free(m, heap, *(void **) data)) {
       err_puts("marshall_data: marshall_ptr_free");
