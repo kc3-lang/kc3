@@ -310,9 +310,9 @@ s_str * kc3_buf_read_to_str (s_buf *buf, s_str *dest)
 
 void kc3_clean (s_env *env)
 {
-  env_clean(env);
-  counter_delete_all();
   kc3_tag_delete_all();
+  counter_delete_all();
+  env_clean(env);
 }
 
 void kc3_continue (void)
