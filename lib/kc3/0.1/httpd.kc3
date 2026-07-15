@@ -259,7 +259,7 @@ defmodule HTTPd do
         match r do
           {sockfd, :eof, :acceptor} ->
             File.close(sockfd)
-            Counter.increment(HTTPd.server_thread_stop, 1)
+            Counter.increase(HTTPd.server_thread_stop, 1)
           {sockfd, :read, :acceptor} ->
             HTTPd.acceptor(sockfd)
           {sockfd, :eof, {:client, client}} ->
