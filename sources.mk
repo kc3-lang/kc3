@@ -50,6 +50,7 @@ KC3_CONFIGURES = \
 	"kc3s/configure" \
 	"kc3s/sources.sh" \
 	"kc3s/update_sources" \
+	"kc3txt/configure" \
 	"kc3txt/sources.sh" \
 	"kc3txt/update_sources" \
 	"kpkg/configure" \
@@ -182,6 +183,7 @@ KC3_MAKEFILES = \
 	"kc3c/sources.mk" \
 	"kc3s/Makefile" \
 	"kc3s/sources.mk" \
+	"kc3txt/Makefile" \
 	"kc3txt/sources.mk" \
 	"kmsg/Makefile" \
 	"kpkg/Makefile" \
