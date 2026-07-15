@@ -22,6 +22,7 @@
 #include "list.h"
 #include "map.h"
 #include "mutex.h"
+#include "pfacts.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "struct.h"
@@ -84,6 +85,12 @@ s_tag * struct_access_sym (s_struct *s, const s_sym *key, s_tag *dest)
   if (type != &g_sym_Tag) {
     if (! sym_to_tag_type(type, &tmp.type))
       return NULL;
+    if (tmp.type == TAG_PFACTS) {
+      if (! pfacts_init_copy(&tmp.data.td_pfacts, (p_facts *) data))
+        return NULL;
+      *dest = tmp;
+      return dest;
+    }
     if (sym_is_pointer_type(type, NULL)) {
       tmp.data.td_pointer.ptr.p_pvoid = *(void **) data;
       tmp.data.td_pointer.target_type = sym_pointer_to_target_type(type);
