@@ -252,17 +252,22 @@ sw http_response_buf_write (const s_http_response *response,
   }
   if (content_length < 0) {
     uw body_size = 0;
-    if (response->body.type == TAG_STR)
+    bool body_size_known = false;
+    if (response->body.type == TAG_STR) {
       body_size = response->body.data.td_str.size;
+      body_size_known = true;
+    }
     else if (response->body.type == TAG_PTUPLE &&
              response->body.data.td_ptuple &&
              response->body.data.td_ptuple->count == 4 &&
              response->body.data.td_ptuple->tag[0].type == TAG_PSYM &&
              response->body.data.td_ptuple->tag[0].data.td_psym ==
                &g_sym_mmap &&
-             response->body.data.td_ptuple->tag[2].type == TAG_UW)
+             response->body.data.td_ptuple->tag[2].type == TAG_UW) {
       body_size = response->body.data.td_ptuple->tag[2].data.td_uw;
-    if (body_size) {
+      body_size_known = true;
+    }
+    if (body_size_known) {
       if ((r = buf_write_str(buf, &content_length_str)) < 0)
         return r;
       result += r;
