@@ -21,6 +21,8 @@
 #include "http_request.h"
 #include "url.h"
 
+#define HTTP_REQUEST_CONTENT_LENGTH_MAX (64 * 1024 * 1024)
+
 s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 {
   bool b;
@@ -162,6 +164,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     value = &(*tail)->tag.data.td_ptuple->tag[1].data.td_str;
     if (! compare_str_case_insensitive(&content_length_str, key)) {
       if (! uw_init_str(&content_length_uw, value))
+        goto restore;
+      if (content_length_uw > HTTP_REQUEST_CONTENT_LENGTH_MAX)
         goto restore;
       tag_clean((*tail)->tag.data.td_ptuple->tag + 1);
       tag_init_uw((*tail)->tag.data.td_ptuple->tag + 1, content_length_uw);

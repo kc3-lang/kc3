@@ -31,6 +31,7 @@ s_tag * http_header_split (s_str *header, s_tag *dest)
   if (! str_init_slice(&key->data.td_str, header, 0, sep)) {
     err_puts("http_header_split: str_init_slice 1");
     assert(! "http_header_split: str_init_slice 1");
+    tag_clean(&tmp);
     return NULL;
   }
   value = tmp.data.td_ptuple->tag + 1;
@@ -38,6 +39,7 @@ s_tag * http_header_split (s_str *header, s_tag *dest)
   if (! str_init_slice(&value->data.td_str, header, sep + 2, -1)) {
     err_puts("http_header_split: str_init_slice 2");
     assert(! "http_header_split: str_init_slice 2");
+    tag_clean(&tmp);
     return NULL;
   }
   *dest = tmp;

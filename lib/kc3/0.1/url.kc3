@@ -50,7 +50,7 @@ defmodule URL do
 
   def escape = cfn Str "url_escape" (Str, Result)
 
-  def escapes = "%+#<>'\\\""
+  def escapes = "%+#<>'\\\" \n\r\t"
 
   def encode_form = fn (map) {
     List.join(Map.map_to_list(map, fn (key, value) {

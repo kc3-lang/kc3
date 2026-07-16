@@ -38,13 +38,13 @@ defmodule HTTPd.Route do
       body = """
 <html>
   <head>
-    <title>Index of #{prefix}#{url}</title>
+    <title>Index of #{HTML.escape(prefix)}#{HTML.escape(url)}</title>
     <style type="text/css">
       ul { font-family: monospace; }
     </style>
   </head>
   <body>
-    <h1>Index of #{prefix}#{url}</h1>
+    <h1>Index of #{HTML.escape(prefix)}#{HTML.escape(url)}</h1>
     <ul>
       #{str(List.map(files, file_li))}
     </ul>
@@ -71,9 +71,10 @@ defmodule HTTPd.Route do
                    {"Content-Type", (Str) mime},
                    {"Content-Length", (Str) stat.st_size},
                    {"Content-Range",
-                    "bytes=#{range_start}-#{range_last}"},
+                    "bytes #{range_start}-#{range_last}/#{stat.st_size}"},
                    {"Last-Modified", last_modified}]
-        %HTTP.Response{body: File.mmap(File.open_r(path),
+        %HTTP.Response{code: 206,
+                       body: File.mmap(File.open_r(path),
                                        (Uw) range_start,
                                        (Uw) (range_last + 1)),
                        headers: headers}

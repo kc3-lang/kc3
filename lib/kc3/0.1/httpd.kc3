@@ -33,19 +33,16 @@ defmodule HTTPd do
   def bots = Counter.new(0)
 
   def bots_max = fn () {
-    i = ncpu() / 4
-    if i == 0 do
-      1
-    else
-      i
-    end
+    (ncpu() / 4) || 1
   }
 
   def concurrent_requests = Counter.new(0)
 
   def connections = Counter.new(0)
 
-  def connections_max = fn () { ncpu() * 1024 }
+  def connections_max = fn () {
+    HTTPd.thread_count() * 1024
+  }
 
   def ep_fd = ?
 
@@ -55,7 +52,9 @@ defmodule HTTPd do
 
   def socket = ?
 
-  def thread_count = fn () { ncpu() }
+  def thread_count = fn () {
+    ncpu() / 2 + 2
+  }
 
   def timeout = %Time{tv_sec: 20}
 
@@ -147,8 +146,7 @@ defmodule HTTPd do
                Str.has_str?(user_agent_lower, "crawler") ||
                Str.has_str?(user_agent_lower, "spider")
         if bot? do
-          Counter.increase(HTTPd.bots, 1)
-          if Counter.get(HTTPd.bots) >= HTTPd.bots_max() do
+          if Counter.increase(HTTPd.bots, 1) >= HTTPd.bots_max() do
             response = error_429_page(request)
           end
         end
@@ -506,12 +504,24 @@ defmodule HTTPd do
           else
             (Sw) max - 1
           end
-          { start, end_ }
+          if start < end_ do
+            {start, end_}
+          else
+            {:error, "start > end"}
+          end
         else
-          { (Sw) 0, (Sw) max - 1 }
+          if max >= 1 do
+            {(Sw) 0, (Sw) max - 1}
+          else
+            {:error, "max < 1"}
+          end
         end
       else
-        { (Sw) 0, (Sw) max - 1 }
+        if max >= 1 do
+          { (Sw) 0, (Sw) max - 1 }
+        else
+          {:error, "max < 1"}
+        end
       end
     }
   }
