@@ -274,7 +274,7 @@ defmodule HTTPd do
               Socket.Buf.close(client)
               Counter.decrease(HTTPd.connections, 1)
               count = Counter.get(HTTPd.connections)
-              bots_count = Counter.get(HTTPd.bots_count)
+              bots_count = Counter.get(HTTPd.bots)
               puts("HTTPd.server_thread: eof: connections=#{count} bots=#{bots_count}")
             end
           {sockfd, :read, {:client, client}} ->
