@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include "kc3.h"
+#include "pfacts.h"
 
 sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
 {
@@ -296,6 +297,10 @@ bool data_clean (const s_sym *type, void *data)
   }
 #endif
   if (type == &g_sym_Fact) {
+    return true;
+  }
+  if (type == &g_sym_Facts_star) {
+    pfacts_clean(data);
     return true;
   }
   if (type == &g_sym_Ident) {
@@ -791,6 +796,8 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
 #endif
   if (type == &g_sym_Fact)
     return fact_init_copy(data, src);
+  if (type == &g_sym_Facts_star)
+    return pfacts_init_copy(data, src);
   if (type == &g_sym_Ident)
     return ident_init_copy(data, src);
   if (type == &g_sym_Integer)
