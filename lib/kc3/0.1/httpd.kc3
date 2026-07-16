@@ -114,6 +114,7 @@ defmodule HTTPd do
     bot? = false
     close = false
     error = true
+    request = void
     Counter.increase(HTTPd.concurrent_requests, 1)
     unwind_protect(do
       request = HTTP.Request.buf_parse_with_timeout(client.buf_rw.r, (S64) 5, (Sw) 3)
@@ -139,10 +140,11 @@ defmodule HTTPd do
                Str.has_str?(user_agent_lower, "crawler") ||
                Str.has_str?(user_agent_lower, "spider")
         if bot? do
+          Counter.increase(HTTPd.bots, 1)
+          params = Map.put(request.params, :bot?, true)
+          request = Struct.put(request, :params, params)
           if Counter.get(HTTPd.bots) >= HTTPd.bots_max do
             response = error_429_page(request)
-          else
-            Counter.increase(HTTPd.bots, 1)
           end
         end
         if ! response do
@@ -176,9 +178,6 @@ defmodule HTTPd do
           "Accept-Ranges", "bytes")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
-        if bot? do
-          Counter.decrease(HTTPd.bots, 1)
-        end
         dt = Time.now() - request.time
         dt_str = Time.diff_to_str(dt)
         msg = "#{response.code} #{client_addr} #{request.method}" +
@@ -203,7 +202,12 @@ defmodule HTTPd do
         Socket.Buf.close(client)
         Counter.decrease(HTTPd.connections, 1)
         count = Counter.get(HTTPd.connections)
-        puts("HTTPd.http_client: connections=#{count}")
+        params = request.params
+        if request && params[:bot?] do
+          Counter.decrease(HTTPd.bots, 1)
+        end
+        bots = Counter.get(HTTPd.bots)
+        puts("HTTPd.http_client: connections=#{count} bots=#{bots}")
       end
     end)
   end
