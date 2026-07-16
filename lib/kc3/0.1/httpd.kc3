@@ -205,8 +205,8 @@ defmodule HTTPd do
         Socket.Buf.close(client)
         Counter.decrease(HTTPd.connections, 1)
         count = Counter.get(HTTPd.connections)
-        bots = Counter.get(HTTPd.bots)
-        puts("HTTPd.http_client: connections=#{count} bots=#{bots}")
+        bots_count = Counter.get(HTTPd.bots)
+        puts("HTTPd.http_client: connections=#{count} bots=#{bots_count}")
       end
     end)
   end
@@ -224,8 +224,8 @@ defmodule HTTPd do
         Counter.increase(HTTPd.connections, 1)
         incremented = true
         count = Counter.get(HTTPd.connections)
-        bots = Counter.get(HTTPd.bots)
-        puts("HTTPd.acceptor: connections=#{count} bots=#{bots}")
+        bots_count = Counter.get(HTTPd.bots)
+        puts("HTTPd.acceptor: connections=#{count} bots=#{bots_count}")
         ok = (EventPoll.add(HTTPd.ep_fd, server_socket, void,
                 HTTPd.acceptor_tag) == 0 &&
               EventPoll.add(HTTPd.ep_fd, client.sockfd, HTTPd.timeout,
@@ -274,8 +274,8 @@ defmodule HTTPd do
               Socket.Buf.close(client)
               Counter.decrease(HTTPd.connections, 1)
               count = Counter.get(HTTPd.connections)
-              bots = Counter.get(HTTPd.bots)
-              puts("HTTPd.server_thread: eof: connections=#{count} bots=#{bots}")
+              bots_count = Counter.get(HTTPd.bots_count)
+              puts("HTTPd.server_thread: eof: connections=#{count} bots=#{bots_count}")
             end
           {sockfd, :read, {:client, client}} ->
             HTTPd.http_client(sockfd, client)
@@ -286,8 +286,8 @@ defmodule HTTPd do
               Socket.Buf.close(client)
               Counter.decrease(HTTPd.connections, 1)
               count = Counter.get(HTTPd.connections)
-              bots = Counter.get(HTTPd.bots)
-              puts("HTTPd.server_thread: timeout: connections=#{count} bots=#{bots}")
+              bots_count = Counter.get(HTTPd.bots)
+              puts("HTTPd.server_thread: timeout: connections=#{count} bots=#{bots_count}")
             end
           void ->
             void
