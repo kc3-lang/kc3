@@ -26,6 +26,8 @@
 #include "socket.h"
 #include "socket_buf.h"
 
+#define KC3_SOCKET_LISTEN_BACKLOG 10
+
 #if (defined(WIN32) || defined(WIN64))
 static bool g_socket_init = false;
 #endif
@@ -190,7 +192,7 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
       error_reason = "socket_init_listen: bind: ";
       goto next;
     }
-    if (listen(sockfd, SOMAXCONN) < 0) {
+    if (listen(sockfd, KC3_SOCKET_LISTEN_BACKLOG) < 0) {
       e = errno;
       error_reason = "socket_init_listen: listen: ";
       goto next;
