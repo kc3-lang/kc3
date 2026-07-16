@@ -148,8 +148,6 @@ defmodule HTTPd do
                Str.has_str?(user_agent_lower, "spider")
         if bot? do
           Counter.increase(HTTPd.bots, 1)
-          params = Map.put(request.params, :bot?, true)
-          request = Struct.put(request, :params, params)
           if Counter.get(HTTPd.bots) >= HTTPd.bots_max() do
             response = error_429_page(request)
           end
@@ -345,6 +343,7 @@ defmodule HTTPd do
         else
           HTTPd.server_thread()
         end
+        Counter.delete(HTTPd.bots)
         Counter.delete(HTTPd.concurrent_requests)
         Counter.delete(HTTPd.connections)
         Counter.delete(HTTPd.requests)
