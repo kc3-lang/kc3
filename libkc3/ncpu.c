@@ -67,22 +67,26 @@ u32 ncpu_u32 (void)
 # if defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
   {
     s32 mib[2];
-    s32 hw_ncpuonline;
+    s32 hw_ncpu;
     uw len;
     mib[0] = CTL_HW;
+#  ifdef HW_NCPUONLINE
     mib[1] = HW_NCPUONLINE;
-    len = sizeof(hw_ncpuonline);
-    if (sysctl(mib, 2, &hw_ncpuonline, &len, NULL, 0) == -1){
+#  else
+    mib[1] = HW_NCPU;
+# endif
+    len = sizeof(hw_ncpu);
+    if (sysctl(mib, 2, &hw_ncpu, &len, NULL, 0) == -1){
       err_puts("ncpu_u32: sysctl: hw.ncpuonline");
       assert(! "ncpu_u32: sysctl: hw.ncpuonline");
       return 1;
     }
-    if (hw_ncpuonline <= 0) {
+    if (hw_ncpu <= 0) {
       err_puts("ncpu_u32: sysctl: hw.ncpuonline <= 0");
       assert(! "ncpu_u32: sysctl: hw.ncpuonline <= 0");
       return 1;
     }
-    return hw_ncpuonline;
+    return hw_ncpu;
   }
 # elif defined(HAVE_ANDROID)
   return sysconf(_SC_NPROCESSORS_ONLN);
