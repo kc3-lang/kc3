@@ -152,18 +152,18 @@ defmodule HTTPd do
             request = plug_request(request)
             response = route_and_render_request(request)
           end
-          clean_request_uploads(request.body)
-          connection = HTTP.Request.header_get(request, "Connection") || ""
-          if Compare.str_case_insensitive(connection, "close") == 0 do
-            close = true
-            response = HTTP.Response.header_set(response,
-              "Connection", "close")
-          else
-            response = HTTP.Response.header_set(response,
-              "Connection", "keep-alive")
-            response = HTTP.Response.header_set(response,
-              "Keep-Alive", "timeout=20, max=10")
-          end
+        end
+        clean_request_uploads(request.body)
+        connection = HTTP.Request.header_get(request, "Connection") || ""
+        if Compare.str_case_insensitive(connection, "close") == 0 do
+          close = true
+          response = HTTP.Response.header_set(response,
+            "Connection", "close")
+        else
+          response = HTTP.Response.header_set(response,
+            "Connection", "keep-alive")
+          response = HTTP.Response.header_set(response,
+            "Keep-Alive", "timeout=20, max=10")
         end
         params = request.params
         if params[:cache_control] do
