@@ -37,17 +37,17 @@ s_tag * ncpu_tag (s_tag *ncpu)
 # if defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
   {
     s32 mib[2];
-    s32 hw_ncpu;
+    s32 hw_ncpuonline;
     uw len;
     mib[0] = CTL_HW;
-    mib[1] = HW_NCPU;
-    len = sizeof(hw_ncpu);
-    if (sysctl(mib, 2, &hw_ncpu, &len, NULL, 0) == -1){
-      err_puts("env_globals_init: sysctl(hw.ncpu)");
-      assert(! "env_globals_init: sysctl(hw.ncpu)");
+    mib[1] = HW_NCPUONLINE;
+    len = sizeof(hw_ncpuonline);
+    if (sysctl(mib, 2, &hw_ncpuonline, &len, NULL, 0) == -1){
+      err_puts("env_globals_init: sysctl(hw.ncpuonline)");
+      assert(! "env_globals_init: sysctl(hw.ncpuonline)");
       return NULL;
     }
-    tag_init_s32(ncpu, hw_ncpu);
+    tag_init_s32(ncpu, hw_ncpuonline);
     tag_integer_reduce(ncpu, ncpu);
   }
 # elif defined(HAVE_ANDROID)
@@ -67,22 +67,22 @@ u32 ncpu_u32 (void)
 # if defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
   {
     s32 mib[2];
-    s32 hw_ncpu;
+    s32 hw_ncpuonline;
     uw len;
     mib[0] = CTL_HW;
-    mib[1] = HW_NCPU;
-    len = sizeof(hw_ncpu);
-    if (sysctl(mib, 2, &hw_ncpu, &len, NULL, 0) == -1){
-      err_puts("ncpu_u32: sysctl: hw.ncpu");
-      assert(! "ncpu_u32: sysctl: hw.ncpu");
+    mib[1] = HW_NCPUONLINE;
+    len = sizeof(hw_ncpuonline);
+    if (sysctl(mib, 2, &hw_ncpuonline, &len, NULL, 0) == -1){
+      err_puts("ncpu_u32: sysctl: hw.ncpuonline");
+      assert(! "ncpu_u32: sysctl: hw.ncpuonline");
       return 1;
     }
-    if (hw_ncpu <= 0) {
-      err_puts("ncpu_u32: sysctl: hw.ncpu <= 0");
-      assert(! "ncpu_u32: sysctl: hw.ncpu <= 0");
+    if (hw_ncpuonline <= 0) {
+      err_puts("ncpu_u32: sysctl: hw.ncpuonline <= 0");
+      assert(! "ncpu_u32: sysctl: hw.ncpuonline <= 0");
       return 1;
     }
-    return hw_ncpu;
+    return hw_ncpuonline;
   }
 # elif defined(HAVE_ANDROID)
   return sysconf(_SC_NPROCESSORS_ONLN);
