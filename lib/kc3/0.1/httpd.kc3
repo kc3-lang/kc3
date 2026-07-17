@@ -504,10 +504,14 @@ defmodule HTTPd do
           else
             (Sw) max - 1
           end
-          if start <= end_ do
-            {start, end_}
-          else
+          if start > end_ do
             {:error, "start > end"}
+          else
+            if end_ >= max do
+              {:error, "end >= max"}
+            else
+              {start, end_}
+            end
           end
         else
           if max >= 1 do

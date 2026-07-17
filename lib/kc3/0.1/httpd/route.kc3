@@ -84,7 +84,8 @@ defmodule HTTPd.Route do
             if (range_start != 0) || (range_last + 1 != stat.st_size) do
               headers = [{"Content-Disposition", "inline"},
                          {"Content-Type", (Str) mime},
-                         {"Content-Length", (Str) stat.st_size},
+                         {"Content-Length",
+                          (Str) (range_last - range_start + 1)},
                          {"Content-Range",
                           "bytes #{range_start}-#{range_last}/#{stat.st_size}"},
                          {"Last-Modified", last_modified}]
@@ -99,7 +100,8 @@ defmodule HTTPd.Route do
                          {"Content-Length", (Str) stat.st_size},
                          {"Last-Modified", last_modified}]
               %HTTP.Response{code: (U16) 200,
-                             body: File.mmap(File.open_r(path), (Uw) 0, (Uw) stat.st_size),
+                             body: File.mmap(File.open_r(path), (Uw) 0,
+                                             (Uw) stat.st_size),
                              headers: headers}
             end
         end

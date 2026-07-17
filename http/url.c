@@ -141,7 +141,7 @@ s_str * url_unescape (const s_str *url, s_str *dest)
         buf_write_character_utf8(&out, '%');
         continue;
       }
-      if ((r = buf_parse_digit_hex(&in, &digit[1])) <= 0)
+      if ((r = buf_parse_digit_hex(&in, &digit[1])) < 0)
         goto ok;
       if (! r) {
         buf_write_character_utf8(&out, '%');
