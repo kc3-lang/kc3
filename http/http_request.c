@@ -58,7 +58,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_str path_random;
   static s_tag   prefix = {0};
   static s_ident prefix_ident;
-  s_list *           query_split;
+  s_list *           query_split = NULL;
   static const s_str query_separator = STR("?");
   sw r;
   static s_tag   random_len = {0};
@@ -70,7 +70,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_tag tmp = {0};
   s_http_request tmp_req = {0};
   s_tag upload = {0};
-  s_str       url;
+  s_str       url = {0};
   static const s_str urlencoded =
     STR("application/x-www-form-urlencoded");
   s_str *value;
@@ -127,8 +127,10 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     goto restore;
   }
   str_clean(&url);
+  url = (s_str) {0};
   url_unescape(&query_split->tag.data.td_str, &tmp_req.url);
   list_delete_all(query_split);
+  query_split = NULL;
   if (false) {
     err_write_1("http_request_buf_parse: url: ");
     err_inspect_str(&tmp_req.url);
@@ -439,6 +441,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
  restore:
   http_request_clean(&tmp_req);
   list_delete_all(multipart_headers);
+  list_delete_all(query_split);
+  str_clean(&url);
   if (boundary_tmp.ptr.p_pchar != boundary.ptr.p_pchar)
     str_clean(&boundary_tmp);
   str_clean(&multipart_value);
