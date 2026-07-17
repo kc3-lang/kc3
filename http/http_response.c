@@ -335,6 +335,21 @@ sw http_response_buf_write (const s_http_response *response,
       return -1;
     }
   }
+  if (! send_body &&
+      response->body.type == TAG_PTUPLE &&
+      (tuple = response->body.data.td_ptuple) &&
+      tuple->count == 4 &&
+      tuple->tag[0].type == TAG_PSYM &&
+      tuple->tag[0].data.td_psym == &g_sym_mmap &&
+      tuple->tag[1].type == TAG_S64 &&
+      (fd = tuple->tag[1].data.td_s64) >= 0 &&
+      tuple->tag[2].type == TAG_UW &&
+      (size = tuple->tag[2].data.td_uw) > 0 &&
+      tuple->tag[3].type == TAG_PTR &&
+      (ptr = tuple->tag[3].data.td_ptr.p_pvoid) != NULL) {
+    munmap(ptr, size);
+    close(fd);
+  }
   if ((r = buf_flush(buf)) < 0)
     return r;
   return result;
