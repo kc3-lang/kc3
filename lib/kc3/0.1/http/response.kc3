@@ -26,6 +26,7 @@ defmodule HTTP.Response do
                           {(U16) 206, "Partial Content"},
                           {(U16) 404, "Not Found"},
                           {(U16) 405, "Method Not Allowed"},
+                          {(U16) 416, "Range Not Satisfiable"},
                           {(U16) 500, "Internal Server Error"}]
 
   # buf_parse(buf_w, parse_body) => response
