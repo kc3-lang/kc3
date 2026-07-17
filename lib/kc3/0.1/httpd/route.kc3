@@ -69,9 +69,15 @@ defmodule HTTPd.Route do
         match parse_range(range, stat.st_size) do
           {:error, e} ->
             headers = [{"Content-Type", "text/plain"}]
-            %HTTP.Response{code: (U16) 416,
-                           message: "Range Not Satisfiable",
-                           body: "Error 416 Range Not Satisfiable",
+            %HTTP.Response{code: 416,
+                           body: """<html>
+  <head>
+    <title>Error 416</title>
+  </head>
+  <body>
+    <h1>Error 416 Range Not Satisfiable</h1>
+  </body>
+</html>""",
                            headers: headers}
             
           {range_start, range_last} ->

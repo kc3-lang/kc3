@@ -504,7 +504,7 @@ defmodule HTTPd do
           else
             (Sw) max - 1
           end
-          if start < end_ do
+          if start <= end_ do
             {start, end_}
           else
             {:error, "start > end"}
