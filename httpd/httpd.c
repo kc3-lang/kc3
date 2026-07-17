@@ -25,14 +25,8 @@ static void httpd_signal (int s);
 static void httpd_signal (int s)
 {
   if (g_httpd_server_thread_stop) {
-#if HAVE_PTHREAD
-    mutex_lock(g_httpd_server_thread_stop->mutex);
-#endif
     g_httpd_server_thread_stop->count.type = TAG_U8;
     g_httpd_server_thread_stop->count.data.td_u8 = 1;
-#if HAVE_PTHREAD
-    mutex_unlock(g_httpd_server_thread_stop->mutex);
-#endif
   }
   else
     _exit(s);
