@@ -1290,6 +1290,10 @@ sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
   rwlock_w(dest->rwlock);
 #endif
   while (1) {
+    if (buf_refill(buf, end->size) < end->size) {
+      r = -1;
+      goto clean;
+    }
     if ((r = buf_read_str(buf, end)) < 0) {
       if (true)
         err_puts("buf_read_until_str_into_buf: buf_read_str");
@@ -1307,6 +1311,8 @@ sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
       }
       goto clean;
     }
+    if ((r = buf_flush(dest) <= 0))
+      goto clean;
     if ((r = buf_write_u8(dest, c)) <= 0) {
       if (true)
         err_puts("buf_read_until_str_into_buf: buf_write_u8");
