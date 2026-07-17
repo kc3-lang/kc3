@@ -78,7 +78,7 @@ int main (int argc, char **argv)
         if (chdir(argv[skip])) {
           e = errno;
           err_write_1("kc3_httpd: chdir: ");
-          err_write_1(argv[1]);
+          err_write_1(argv[skip]);
           err_write_1(": ");
           err_puts(strerror(e));
           assert(! "kc3_httpd: chdir");

@@ -287,11 +287,13 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
     err_write_1(" ");
     err_puts(strerror(e));
     assert(! "socket_buf_init_connect");
+    freeaddrinfo(res0);
     return NULL;
   }
   if (! socket_buf_init(&tmp, sockfd, res->ai_addr, res->ai_addrlen)) {
     err_puts("socket_buf_init_connect: socket_buf_init");
     assert(! "socket_buf_init_connect: socket_buf_init");
+    freeaddrinfo(res0);
     return NULL;
   }
   freeaddrinfo(res0);
