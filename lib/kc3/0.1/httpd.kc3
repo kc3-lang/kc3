@@ -71,6 +71,9 @@ defmodule HTTPd do
     if (File.exists?("config/db.kc3")) do
       load!("config/db.kc3")
     end
+    if (File.exists?("config/secret.kc3")) do
+      load!("config/secret.kc3")
+    end
     load_directory!("app/views/")
     load_directory!("app/controllers/")
     if (File.exists?("config/routes.kc3")) do
