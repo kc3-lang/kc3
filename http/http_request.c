@@ -512,8 +512,10 @@ s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
       err_puts("http_request_buf_parse_method: buf_read_until_1_into_str");
     goto restore;
   }
-  if (! http_request_method_from_str(&str, &tmp))
+  if (! http_request_method_from_str(&str, &tmp)) {
+    str_clean(&str);
     goto restore;
+  }
   str_clean(&str);
   //buf_save_clean(buf, &save);
   *dest = tmp;

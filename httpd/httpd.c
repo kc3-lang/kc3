@@ -181,7 +181,7 @@ int main (int argc, char **argv)
     tag_clean(&tmp);
     if (! env_dump(env, &dump_path)) {
       err_puts("kc3_httpd: env_dump");
-      assert("kc3_httpd: env_dump");
+      assert(! "kc3_httpd: env_dump");
       kc3_clean(NULL);
       return 1;
     }

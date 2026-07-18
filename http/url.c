@@ -65,6 +65,7 @@ s_str * url_escape (const s_str *src, s_str *dest)
   }
   tag_clean(&escapes_tag);
   if (! buf_to_str(&buf, dest)) {
+    buf_clean(&buf);
     return NULL;
   }
   return dest;

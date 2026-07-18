@@ -492,7 +492,13 @@ defmodule HTTPd do
   }
 
   def parse_range = fn {
-    (false, max) { { (Sw) 0, (Sw) max - 1 } }
+    (false, max) {
+      if max > 0 do
+        {(Sw) 0, (Sw) max - 1}
+      else
+        {:error, "parse_range: max is too low"}
+      end
+    }
     (range, max) {
       if Str.starts_with?(range, "bytes=") do
         range = Str.slice(range, 6, -1)
@@ -505,10 +511,10 @@ defmodule HTTPd do
             (Sw) max - 1
           end
           if start > end_ do
-            {:error, "start > end"}
+            {:error, "parse_range: start > end"}
           else
             if end_ >= max do
-              {:error, "end >= max"}
+              {:error, "parse_range: end >= max"}
             else
               {start, end_}
             end
@@ -517,14 +523,14 @@ defmodule HTTPd do
           if max >= 1 do
             {(Sw) 0, (Sw) max - 1}
           else
-            {:error, "max < 1"}
+            {:error, "parse_range: max < 1"}
           end
         end
       else
         if max >= 1 do
           { (Sw) 0, (Sw) max - 1 }
         else
-          {:error, "max < 1"}
+          {:error, "parse_range: max < 1"}
         end
       end
     }

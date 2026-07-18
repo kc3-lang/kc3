@@ -342,13 +342,14 @@ sw http_response_buf_write (const s_http_response *response,
       tuple->tag[0].type == TAG_PSYM &&
       tuple->tag[0].data.td_psym == &g_sym_mmap &&
       tuple->tag[1].type == TAG_S64 &&
-      (fd = tuple->tag[1].data.td_s64) >= 0 &&
       tuple->tag[2].type == TAG_UW &&
-      (size = tuple->tag[2].data.td_uw) > 0 &&
-      tuple->tag[3].type == TAG_PTR &&
-      (ptr = tuple->tag[3].data.td_ptr.p_pvoid) != NULL) {
+      tuple->tag[3].type == TAG_PTR) {
+    fd = tuple->tag[1].data.td_s64;
+    size = tuple->tag[2].data.td_uw;
+    ptr = tuple->tag[3].data.td_ptr.p_pvoid;
     munmap(ptr, size);
-    close(fd);
+    if (fd >= 0)
+      close(fd);
   }
   if ((r = buf_flush(buf)) < 0)
     return r;

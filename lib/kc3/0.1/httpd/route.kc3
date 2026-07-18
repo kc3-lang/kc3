@@ -68,7 +68,7 @@ defmodule HTTPd.Route do
         range = HTTP.Request.header(request, "Range")
         match parse_range(range, stat.st_size) do
           {:error, e} ->
-            headers = [{"Content-Type", "text/plain"}]
+            headers = [{"Content-Type", "text/html"}]
             %HTTP.Response{code: 416,
                            body: """<html>
   <head>
