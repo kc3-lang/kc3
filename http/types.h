@@ -28,6 +28,7 @@ struct http_request {
   s_list *headers;
   s_list *cookies;
   s_map   params;
+  s_str   log_msg;
 };
 
 struct http_response {

@@ -138,9 +138,6 @@ defmodule HTTPd do
         end
         request = Struct.put(request, :client_addr, client_addr)
         user_agent = HTTP.Request.header_get(request, "User-Agent")
-        msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}"
-        IO.puts(msg)
-        Err.puts(msg)
         response = false
         user_agent_lower = Str.to_lower(user_agent || "")
         bot? = (user_agent_lower == "") ||
@@ -150,14 +147,23 @@ defmodule HTTPd do
                Str.has_str?(user_agent_lower, "spider")
         if bot? do
           if Counter.increase(HTTPd.bots, 1) >= HTTPd.bots_max() do
+            msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}"
+            IO.puts(msg)
+            Err.puts(msg)
             response = error_429_page(request)
           end
         end
         if ! response do
           if (type(request.method) == Str) do
+            msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}"
+            IO.puts(msg)
+            Err.puts(msg)
             response = error_405_page(request)
           else
             request = plug_request(request)
+            msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}#{request.log_msg}"
+            IO.puts(msg)
+            Err.puts(msg)
             response = route_and_render_request(request)
           end
         end
@@ -188,7 +194,7 @@ defmodule HTTPd do
         dt_str = Time.diff_to_str(dt)
         msg = "#{response.code} #{client_addr} #{request.method}" +
               " #{request.url} #{inspect(user_agent)}" +
-              " #{dt_str}"
+              " #{dt_str}#{request.log_msg}"
         IO.puts(msg)
         if (! close) do
           kq_ok = EventPoll.add(HTTPd.ep_fd, client.sockfd,

@@ -26,7 +26,8 @@ defmodule HTTP.Request do
              client_addr: "",
              headers: [],
              cookies: [],
-             params: %{}]
+             params: %{},
+             log_msg: ""]
 
   def allowed_methods = [DELETE,
                          GET,
