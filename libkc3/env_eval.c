@@ -153,8 +153,9 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   if (env->stacktrace_depth > 256) {
     err_puts("env_eval_call: stacktrace depth > 256");
     err_stacktrace();
-    assert(! "env_eval_call: stacktrace depth > 256");
-    abort();
+    env_unwind_protect_pop(env, &up);
+    result = false;
+    goto clean;
   }
   env->stacktrace_depth++;
   result = env_eval_call_callable(env, &c, dest);
