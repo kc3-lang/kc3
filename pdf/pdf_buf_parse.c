@@ -730,7 +730,7 @@ sw pdf_buf_parse_null (s_buf *buf, s_tag *dest)
 {
   sw r;
   if ((r = pdf_buf_parse_token(buf, "null")) > 0)
-    tag_init_void(dest);
+  tag_init(dest);
   return r;
 }
 

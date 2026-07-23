@@ -366,11 +366,11 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
     if ((r = kevent(kqfd, NULL, 0, &event, 1, p)) < 0) {
       e = errno;
       if (e == EINTR)
-        return tag_init_void(dest);
+        return tag_init(dest);
       err_write_1("kc3_event_poll_poll: kevent: ");
       err_puts(strerror(e));
       assert(! "kc3_event_poll_poll: kevent");
-      return tag_init_void(dest);
+      return tag_init(dest);
     }
     if (r > 0) {
       udata = event.udata;
@@ -401,10 +401,10 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
         }
       }
       else
-        tag_init_void(dest->data.td_ptuple->tag + 2);
+        tag_init(dest->data.td_ptuple->tag + 2);
       return dest;
     }
-    return tag_init_void(dest);
+    return tag_init(dest);
   }
 #elif HAVE_EPOLL
   {
@@ -446,7 +446,7 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
         }
       }
       else
-        tag_init_void(dest->data.td_ptuple->tag + 2);
+        tag_init(dest->data.td_ptuple->tag + 2);
       mutex_unlock(&ep->entries_mutex);
       return dest;
     }
@@ -466,18 +466,18 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
     if (r < 0) {
       e = errno;
       if (e == EINTR)
-        return tag_init_void(dest);
+        return tag_init(dest);
       err_write_1("kc3_event_poll_poll: epoll_wait: ");
       err_puts(strerror(e));
       assert(! "kc3_event_poll_poll: epoll_wait");
-      return tag_init_void(dest);
+      return tag_init(dest);
     }
     if (r > 0) {
       mutex_lock(&ep->entries_mutex);
       entry = entry_find(ep, (s64) event.data.fd);
       if (! entry) {
         mutex_unlock(&ep->entries_mutex);
-        return tag_init_void(dest);
+        return tag_init(dest);
       }
       udata = entry->udata;
       if (entry->has_timeout) {
@@ -506,11 +506,11 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
         }
       }
       else
-        tag_init_void(dest->data.td_ptuple->tag + 2);
+        tag_init(dest->data.td_ptuple->tag + 2);
       mutex_unlock(&ep->entries_mutex);
       return dest;
     }
-    return tag_init_void(dest);
+    return tag_init(dest);
   }
 #endif
 }

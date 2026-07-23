@@ -110,8 +110,6 @@
   }
 
 static void marshall_read_ht_clean (s_marshall_read *mr);
-static s8 marshall_read_ht_compare (const s_tag *a, const s_tag *b);
-static uw marshall_read_ht_hash (const s_tag *tag);
 
 s_marshall_read * marshall_read_1 (s_marshall_read *mr, bool heap,
                                    const char *p)
@@ -928,6 +926,12 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
       assert(! "marshall_read_facts: marshall_read_fact");
       return NULL;
     }
+    if (! tag_new_ref(fact.subject) ||
+        ! tag_new_ref(fact.predicate) ||
+        ! tag_new_ref(fact.object)) {
+      fact_clean_all(&fact);
+      return NULL;
+    }
     if (! facts_add_fact(facts, &fact)) {
       fact_clean_all(&fact);
       return NULL;
@@ -1136,8 +1140,8 @@ s_marshall_read * marshall_read_header (s_marshall_read *mr)
       assert(! "marshall_read_header: ht_init");
       return NULL;
     }
-    mr->ht.compare = marshall_read_ht_compare;
-    mr->ht.hash = marshall_read_ht_hash;
+    mr->ht.compare = marshall_ht_compare;
+    mr->ht.hash = marshall_ht_hash;
   }
   str_clean(&str);
   return mr;
@@ -1210,33 +1214,6 @@ void marshall_read_ht_clean (s_marshall_read *mr)
   assert(mr);
   if (mr->ht.items)
     ht_clean(&mr->ht);
-}
-
-s8 marshall_read_ht_compare (const s_tag *a, const s_tag *b)
-{
-  assert(a);
-  assert(b);
-  assert(a->type == TAG_PTUPLE);
-  assert(b->type == TAG_PTUPLE);
-  if (a->type < b->type)
-    return -1;
-  if (a->type > b->type)
-    return 1;
-  if (a->type != TAG_PTUPLE)
-    return COMPARE_ERROR;
-  return compare_tag(a->data.td_ptuple->tag, b->data.td_ptuple->tag);
-}
-
-uw  marshall_read_ht_hash (const s_tag *tag)
-{
-  t_hash h;
-  assert(tag);
-  assert(tag->type == TAG_PTUPLE);
-  if (tag->type != TAG_PTUPLE)
-    abort();
-  hash_init(&h);
-  hash_update_tag(&h, tag->data.td_ptuple->tag);
-  return hash_to_uw(&h);
 }
 
 s_marshall_read * marshall_read_ident (s_marshall_read *mr, bool heap,
@@ -2192,6 +2169,8 @@ s_marshall_read * marshall_read_ptag (s_marshall_read *mr,
     alloc_free(tmp);
     return NULL;
   }
+  tmp->ref_count = 1;
+  mutex_init(&tmp->ref_count_mutex);
   if (! marshall_read_ht_add(mr, offset, tmp)) {
     tag_delete(tmp);
     return NULL;
@@ -2299,6 +2278,8 @@ s_marshall_read * marshall_read_quote (s_marshall_read *mr,
     alloc_free(tmp.tag);
     return NULL;
   }
+  tmp.tag->ref_count = 1;
+  mutex_init(&tmp.tag->ref_count_mutex);
   *dest = tmp;
   return mr;
 }
@@ -2731,6 +2712,8 @@ s_marshall_read * marshall_read_unquote (s_marshall_read *mr,
       alloc_free(tmp.tag);
       return NULL;
     }
+    tmp.tag->ref_count = 1;
+    mutex_init(&tmp.tag->ref_count_mutex);
     *dest = tmp;
     return mr;
 }

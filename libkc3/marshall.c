@@ -297,8 +297,7 @@ void marshall_clean (s_marshall *m)
 s_marshall * marshall_reset_chunk (s_marshall *m)
 {
   assert(m);
-  m->heap_offset += sizeof(s_marshall_header) + m->heap_pos +
-    m->buf_pos;
+  m->heap_offset += m->heap_pos;
   m->heap_pos = 0;
   m->buf_pos = 0;
   buf_empty(&m->heap);
@@ -1482,12 +1481,6 @@ s_marshall * marshall_pointer (s_marshall *m, bool heap,
       err_write_1("marshall_pointer: Callable not found: ");
       err_inspect_ident(&ident);
       err_write_1("\n");
-      return NULL;
-    }
-    if (! marshall_1(m, true, "_KC3PDATA_")) {
-      err_puts("marshall_pointer: marshall_1 data magic");
-      assert(! "marshall_pointer: marshall_1 data magic");
-      tag_clean(&tag);
       return NULL;
     }
     call_init(&call);

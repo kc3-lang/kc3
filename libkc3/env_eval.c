@@ -813,7 +813,7 @@ bool env_eval_do_block (s_env *env, const s_do_block *do_block,
     abort();
   }
   if (! do_block->count) {
-    tag_init_void(dest);
+    tag_init(dest);
     return true;
   }
   // TODO unwind protect
@@ -1097,7 +1097,7 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
   }
   switch (tag->type) {
   case TAG_VOID:
-    tag_init_void(dest);
+    tag_init(dest);
     return true;
   case TAG_ARRAY:
     return env_eval_array_tag(env, &tag->data.td_array, dest);

@@ -83,7 +83,7 @@ s_window * window_init (s_window *window,
   tmp.sequence = calloc(sequence_count, sizeof(s_sequence));
   tmp.sequence_count = sequence_count;
   tmp.sequence_pos = 0;
-  tag_init_void(&tmp.tag);
+  tag_init(&tmp.tag);
   tmp.title = title ? title : "KC3.Window";
   *window = tmp;
   return window;

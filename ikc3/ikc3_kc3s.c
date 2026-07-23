@@ -464,7 +464,7 @@ static sw run (void)
             goto clean;
           }
           str_init_empty(&response.out);
-          tag_init_void(&response.result);
+          tag_init(&response.result);
           if (! tag_init_pstruct_copy_data(&result, &g_sym_RPC_Response,
                                            &response)) {
             str_clean(&response.err);

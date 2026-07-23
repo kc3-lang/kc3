@@ -35,7 +35,7 @@ s_tag * frame_binding_new_void (s_frame *frame, const s_sym *name)
   if (! b)
     return NULL;
   frame->bindings = b;
-  return tag_init_void(&b->value);
+  return tag_init(&b->value);
 }
 
 s_frame * frame_binding_new (s_frame *frame, const s_sym *name,

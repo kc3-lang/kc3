@@ -193,7 +193,7 @@ s_tag * str_access (const s_str *str, s_list *key, s_tag *dest)
       str_character(str, pos, &tmp) <= 0) {
     err_puts("str_access: invalid key");
     err_stacktrace();
-    return tag_init_void(dest);
+    return tag_init(dest);
   }
   dest->type = TAG_CHARACTER;
   dest->data.td_character = tmp;
@@ -1674,7 +1674,7 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
   if (list->tag.type == TAG_STR &&
       ! list_next(list)) {
     tmp = list->tag;
-    tag_init_void(&list->tag);
+    tag_init(&list->tag);
     list_delete_all(list);
     goto ok;
   }
@@ -1699,7 +1699,8 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
   arg->type = TAG_PLIST;
   arg->data.td_plist = list;
  ok:
-  *dest = tmp;
+  dest->type = tmp.type;
+  dest->data = tmp.data;
   buf_clean(&in_buf);
   buf_clean(&out_buf);
   return true;

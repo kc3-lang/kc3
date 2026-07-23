@@ -41,9 +41,9 @@ s_tag * list_access (s_list *list, s_list *key, s_tag *dest)
   assert(dest);
   key_first = &key->tag;
   if (! tag_is_number(key_first))
-    return tag_init_void(dest);
+    return tag_init(dest);
   if (! uw_init_cast(&i, &sym_Uw, key_first))
-    return tag_init_void(dest);
+    return tag_init(dest);
   key_next = list_next(key);
   if (! key_next)
     return list_at(list, i, dest);
@@ -134,7 +134,7 @@ bool * list_has_cycle (s_list *list, bool *dest)
 s_list * list_init (s_list *list, s_list *next)
 {
   assert(list);
-  tag_init_void(&list->tag);
+  tag_init(&list->tag);
   tag_init_plist(&list->next, next);
   return list;
 }

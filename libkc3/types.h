@@ -863,6 +863,8 @@ union tag_data {
 
 struct tag {
   e_tag_type type;
+  sw         ref_count;
+  s_mutex    ref_count_mutex;
   u_tag_data data;
 };
 

@@ -35,6 +35,7 @@
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "mutex.h"
 #include "pcall.h"
 #include "pcallable.h"
 #include "pcomplex.h"
@@ -312,6 +313,28 @@ s_tag * tag_copy (s_tag *tag, s_tag *src)
 
 void tag_delete (s_tag *tag)
 {
+  assert(tag);
+#if HAVE_PTHREAD
+  mutex_lock(&tag->ref_count_mutex);
+#endif
+  if (tag->ref_count <= 0) {
+    err_puts("tag_delete: invalid reference count");
+    assert(! "tag_delete: invalid reference count");
+#if HAVE_PTHREAD
+    mutex_unlock(&tag->ref_count_mutex);
+#endif
+    return;
+  }
+  if (--tag->ref_count) {
+#if HAVE_PTHREAD
+    mutex_unlock(&tag->ref_count_mutex);
+#endif
+    return;
+  }
+#if HAVE_PTHREAD
+  mutex_unlock(&tag->ref_count_mutex);
+  mutex_clean(&tag->ref_count_mutex);
+#endif
   tag_clean(tag);
   alloc_free(tag);
 }
@@ -408,6 +431,10 @@ bool tag_ident_is_bound (const s_tag *tag)
 s_tag * tag_init (s_tag *tag)
 {
   *tag = (s_tag) {0};
+  tag->ref_count = 1;
+#if HAVE_PTHREAD
+  mutex_init(&tag->ref_count_mutex);
+#endif
   return tag;
 }
 
@@ -417,7 +444,7 @@ s_tag * tag_init_1 (s_tag *tag, const char *p)
   uw len;
   sw r;
   assert(tag);
-  tag_init_void(tag);
+  tag_init(tag);
   if (! p)
     return tag;
   len = strlen(p);
@@ -444,7 +471,8 @@ s_tag * tag_init_bool (s_tag *tag, bool b)
   s_tag tmp = {0};
   tmp.type = TAG_BOOL;
   tmp.data.td_bool_ = b;
-  *tag = tmp;
+  tag->type = tmp.type;
+  tag->data = tmp.data;
   return tag;
 }
 
@@ -487,7 +515,8 @@ s_tag * tag_init_sym_type (s_tag *tag, const s_sym *type)
   default:
     break;
   }
-  *tag = tmp;
+  tag->type = tmp.type;
+  tag->data = tmp.data;
   return tag;
 }
 
@@ -526,12 +555,12 @@ s_tag * tag_init_cast_struct (s_tag *tag, const s_sym * const *type,
   switch (src->type) {
   case TAG_PTR:
     if (! src->data.td_ptr.p_pvoid)
-      return tag_init_void(tag);
+      return tag_init(tag);
     return tag_init_pstruct_with_data(tag, *type, src->data.td_ptr.p_pvoid,
                                       false);
   case TAG_PTR_FREE:
     if (! src->data.td_ptr_free.p_pvoid)
-      return tag_init_void(tag);
+      return tag_init(tag);
     return tag_init_pstruct_with_data(tag, *type, src->data.td_ptr_free.p_pvoid,
                                       false);
   case TAG_PSTRUCT:
@@ -744,7 +773,7 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     tag->data.td_uw = src->data.td_uw;
     return tag;
   case TAG_VOID:
-    return tag_init_void(tag);
+    return tag_init(tag);
   }
   err_write_1("tag_init_copy: invalid tag type: ");
   err_inspect_u8((u8) src->type);
@@ -762,7 +791,8 @@ s_tag * tag_init_f80 (s_tag *tag, f80 f)
   assert(tag);
   tmp.type = TAG_F80;
   tmp.data.td_f80 = f;
-  *tag = tmp;
+  tag->type = tmp.type;
+  tag->data = tmp.data;
   return tag;
 }
 
@@ -776,7 +806,8 @@ s_tag * tag_init_f128 (s_tag *tag, f128 f)
   assert(tag);
   tmp.type = TAG_F128;
   tmp.data.td_f128 = f;
-  *tag = tmp;
+  tag->type = tmp.type;
+  tag->data = tmp.data;
   return tag;
 }
 
@@ -787,7 +818,7 @@ s_tag * tag_init_from_str (s_tag *tag, const s_str *str)
   s_buf buf;
   sw r;
   assert(tag);
-  tag_init_void(tag);
+  tag_init(tag);
   if (! str->size)
     return tag;
   buf_init_const(&buf, str->size, str->ptr.p_pchar);
@@ -816,13 +847,6 @@ s_tag * tag_init_uw_reduce (s_tag *tag, uw src)
   if (src >= U8_MAX)
     return tag_init_u16(tag, src);
   return tag_init_u8(tag, src);
-}
-
-s_tag * tag_init_void (s_tag *tag)
-{
-  assert(tag);
-  explicit_bzero(tag, sizeof(s_tag));
-  return tag;
 }
 
 s_tag * tag_integer_reduce (s_tag *tag, s_tag *dest)
@@ -1179,7 +1203,8 @@ s_tag * tag_list_1 (s_tag *tag, const char *p)
   tag_clean(tag);
   tmp.type = TAG_PLIST;
   tmp.data.td_plist = list_new_1(p);
-  *tag = tmp;
+  tag->type = tmp.type;
+  tag->data = tmp.data;
   return tag;
 }
 
@@ -1207,6 +1232,8 @@ s_tag * tag_new (void)
   dest = alloc(sizeof(s_tag));
   if (! dest)
     return NULL;
+  dest->ref_count = 1;
+  mutex_init(&dest->ref_count_mutex);
   return dest;
 }
 
@@ -1220,6 +1247,8 @@ s_tag * tag_new_1 (const char *p)
     alloc_free(dest);
     return NULL;
   }
+  dest->ref_count = 1;
+  mutex_init(&dest->ref_count_mutex);
   return dest;
 }
 
@@ -1233,7 +1262,27 @@ s_tag * tag_new_copy (s_tag *src)
     alloc_free(dest);
     return NULL;
   }
+  dest->ref_count = 1;
+  mutex_init(&dest->ref_count_mutex);
   return dest;
+}
+
+s_tag * tag_new_ref (s_tag *src)
+{
+  assert(src);
+#if HAVE_PTHREAD
+  mutex_lock(&src->ref_count_mutex);
+#endif
+  if (src->ref_count <= 0) {
+    err_puts("tag_new_ref: invalid reference count");
+    assert(! "tag_new_ref: invalid reference count");
+    abort();
+  }
+  src->ref_count++;
+#if HAVE_PTHREAD
+  mutex_unlock(&src->ref_count_mutex);
+#endif
+  return src;
 }
 
 bool * tag_not (s_tag *tag, bool *dest)
@@ -1852,7 +1901,7 @@ s_tag * tag_void (s_tag *tag)
 {
   assert(tag);
   tag_clean(tag);
-  *tag = (s_tag) {0};
+  tag_init(tag);
   return tag;
 }
 

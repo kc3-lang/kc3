@@ -48,6 +48,8 @@ s_tag * tag_init_uw_reduce (s_tag *tag, uw src);
 void    tag_delete (s_tag *tag);
 s_tag * tag_new (void);
 s_tag * tag_new_1 (const char *p);
+s_tag * tag_new_copy (s_tag *src);
+s_tag * tag_new_ref (s_tag *src);
 
 /* Observers */
 u8 *           tag_alignment (const s_tag *tag, u8 *dest);
@@ -77,6 +79,7 @@ s_tag * tag_f80 (s_tag *tag, f80 f);
 #if HAVE_F128
 s_tag * tag_f128 (s_tag *tag, f128 f);
 #endif
+s_tag * tag_void (s_tag *tag);
 
 /* Operators. */
 s_tag *     tag_1 (s_tag *tag, const char *p);

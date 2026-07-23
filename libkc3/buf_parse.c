@@ -564,7 +564,7 @@ sw buf_parse_do_block_inner (s_buf *buf, bool short_form,
   l = 0;
   while (l < j) {
     tmp.tag[l] = k->tag;
-    tag_init_void(&k->tag);
+    tag_init(&k->tag);
     k = list_next(k);
     l++;
   }
@@ -1403,7 +1403,7 @@ sw buf_parse_do_block_inner (s_buf *buf, f_buf_parse_end f_end,
   l = 0;
   while (l < j) {
     tmp.tag[l] = k->tag;
-    tag_init_void(&k->tag);
+    tag_init(&k->tag);
     k = list_next(k);
     l++;
   }
@@ -2314,7 +2314,7 @@ sw buf_parse_if_then (s_buf *buf, s_tag *dest, bool *has_else)
   l = 0;
   while (l < j) {
     tmp.tag[l] = k->tag;
-    tag_init_void(&k->tag);
+    tag_init(&k->tag);
     k = list_next(k);
     l++;
   }
@@ -2885,7 +2885,8 @@ sw buf_parse_list_tag (s_buf *buf, s_tag *dest)
   }
   result += r;
  ok:
-  *dest = tmp;
+  dest->type = tmp.type;
+  dest->data = tmp.data;
   r = result;
   goto clean;
  clean:
@@ -4285,7 +4286,8 @@ sw buf_parse_static_tag (s_buf *buf, s_tag *tag)
     tmp.type = TAG_STR;
     tmp.data.td_str = str;
   }
-  *tag = tmp;
+  tag->type = tmp.type;
+  tag->data = tmp.data;
  clean:
   buf_save_clean(buf, &save);
   return r;
@@ -5021,7 +5023,8 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
     tag_integer_reduce(&i, &tmp);
     tag_clean(&i);
   }
-  *dest = tmp;
+  dest->type = tmp.type;
+  dest->data = tmp.data;
   r = result;
   goto clean;
  restore:
@@ -5845,7 +5848,7 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *dest)
       k = 0;
       while (i--) {
 	dest->tag[k] = j->tag;
-	tag_init_void(&j->tag);
+	tag_init(&j->tag);
 	j = list_next(j);
         k++;
       }

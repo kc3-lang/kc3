@@ -28,7 +28,7 @@ s_tag * pointer_access (const s_pointer *pointer, s_list *key,
   assert(key);
   assert(dest);
   if (! pointer->ptr.p_pvoid)
-    return tag_init_void(dest);
+    return tag_init(dest);
   if (! pstruct_type_find(pointer->target_type, &st) || ! st) {
     err_puts("pointer_access: pstruct_type_find");
     assert(! "pointer_access: pstruct_type_find");

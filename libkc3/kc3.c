@@ -180,7 +180,7 @@ s_tag * kc3_access (s_tag *tag, s_list **key,
   case TAG_TIME:
     return time_access(&tag->data.td_time, *key, dest);
   case TAG_VOID:
-    return tag_init_void(dest);
+    return tag_init(dest);
   default:
     break;
   }
@@ -192,7 +192,7 @@ s_tag * kc3_access (s_tag *tag, s_list **key,
     err_write_1("\n");
     return NULL;
   }
-  return tag_init_void(dest);
+  return tag_init(dest);
 }
 
 s_tag * kc3_and (s_tag *a, s_tag *b, s_tag *dest)
@@ -556,21 +556,21 @@ s64 * kc3_fork (s64 *dest)
 s_tag * kc3_fact_object (s_fact *fact, s_tag *dest)
 {
   if (! fact->object)
-    return tag_init_void(dest);
+    return tag_init(dest);
   return tag_init_copy(dest, fact->object);
 }
 
 s_tag * kc3_fact_predicate (s_fact *fact, s_tag *dest)
 {
   if (! fact->predicate)
-    return tag_init_void(dest);
+    return tag_init(dest);
   return tag_init_copy(dest, fact->predicate);
 }
 
 s_tag * kc3_fact_subject (s_fact *fact, s_tag *dest)
 {
   if (! fact->subject)
-    return tag_init_void(dest);
+    return tag_init(dest);
   return tag_init_copy(dest, fact->subject);
 }
 
@@ -773,7 +773,7 @@ s_tag * kc3_getenv (const s_str *name, s_tag *dest)
   assert(dest);
   p = getenv(name->ptr.p_pchar);
   if (! p)
-    return tag_init_void(dest);
+    return tag_init(dest);
   return tag_init_str_1(dest, NULL, p);
 }
 
@@ -1209,7 +1209,7 @@ s_tag * kc3_match (s_tag *tag, s_map *map, s_tag *dest)
   }
   env_unwind_protect_pop(env, &unwind_protect);
   tag_clean(&tag_eval);
-  return tag_init_void(dest);
+  return tag_init(dest);
 }
 
 bool kc3_maybe_reload (const s_str *path)

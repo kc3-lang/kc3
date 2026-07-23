@@ -29,7 +29,7 @@ s_sequence * sequence_init (s_sequence *seq, f64 duration,
   tmp.dt = 0.0;
   tmp.t = 0.0;
   tmp.duration = duration;
-  tag_init_void(&tmp.tag);
+  tag_init(&tmp.tag);
   tmp.title = title;
   tmp.load = load;
   tmp.render = render;

@@ -149,10 +149,10 @@ s_tag * plist_find_if (p_list *plist, p_callable *function,
   while (list) {
     arg->tag = list->tag;
     if (! eval_callable_call(*function, arg, &tmp)) {
-      tag_init_void(&arg->tag);
+      tag_init(&arg->tag);
       break;
     }
-    tag_init_void(&arg->tag);
+    tag_init(&arg->tag);
     if (! bool_init_cast(&b, &sym_Bool, &tmp)) {
       tag_bool(&tmp, false);
       break;

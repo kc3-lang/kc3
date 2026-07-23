@@ -201,9 +201,9 @@ loopback((U8) ?)
 loopback(?)
 {:ok, 245}
 loopback(fn (x) { x * 2 })
-{:ok, 809}
+{:ok, 749}
 loopback(fn (a, b) { a + b })
-{:ok, 1006}
+{:ok, 917}
 loopback(List.reverse([]))
 {:ok, 74}
 loopback(a = 1)
@@ -217,9 +217,9 @@ loopback(do
 end)
 {:ok, 64}
 loopback(cfn Tag "tag_add" (Tag, Tag, Result))
-{:ok, 467}
+{:ok, 405}
 loopback(%KC3.Op{sym: :-})
-{:ok, 1616}
+{:ok, 1227}
 loopback((U8[]) {})
 {:ok, 175}
 loopback((U8[]) {0, 1, 2, 254, 255})

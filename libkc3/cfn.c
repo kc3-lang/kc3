@@ -185,7 +185,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
           env->stacktrace = list_delete(trace);
           goto ko;
         }
-        tag_init_void(dest_v);
+        tag_init(dest_v);
         tag_clean(&tmp2);
         tag_clean(&tmp);
         assert(env->stacktrace == trace);
@@ -205,7 +205,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   else {
     err_puts("cfn_apply: NULL function pointer");
     assert(! "cfn_apply: NULL function pointer");
-    tag_init_void(dest);
+    tag_init(dest);
   }
   alloc_free(arg_pointers);
   alloc_free(arg_values);

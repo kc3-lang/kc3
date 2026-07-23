@@ -115,11 +115,11 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
   if ((r = kevent(kqfd, NULL, 0, &event, 1, p)) < 0) {
     e = errno;
     if (e == EINTR)
-      return tag_init_void(dest);
+      return tag_init(dest);
     err_write_1("kc3_kqueue: kevent: ");
     err_puts(strerror(e));
     assert(! "kc3_kqueue_poll: kevent");
-    return tag_init_void(dest);
+    return tag_init(dest);
   }
   if (r > 0) {
     udata = event.udata;
@@ -152,8 +152,8 @@ s_tag * kc3_kqueue_poll (s64 kqfd, s_tag *timeout, s_tag *dest)
       }
     }
     else
-      tag_init_void(dest->data.td_ptuple->tag + 2);
+      tag_init(dest->data.td_ptuple->tag + 2);
     return dest;
   }
-  return tag_init_void(dest);
+  return tag_init(dest);
 }

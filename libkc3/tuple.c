@@ -81,7 +81,7 @@ s_tuple * tuple_init (s_tuple *tuple, uw count)
     return NULL;
   i = count;
   while (i--)
-    tag_init_void(tuple->tag + i);
+    tag_init(tuple->tag + i);
   tuple->ref_count = 1;
 #if HAVE_PTHREAD
   mutex_init(&tuple->mutex);

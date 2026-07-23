@@ -127,7 +127,6 @@ s_list * list_init_u64 (s_list *list, u64 i, s_list *next);
 s_list * list_init_unquote_copy (s_list *list, s_unquote *unquote,
                                  s_list *next);
 s_list * list_init_uw (s_list *list, uw i, s_list *next);
-s_list * list_init_void (s_list *list, s_list *next);
 
 /* Heap-allocation functions, call list_delete after use. */
 s_list * list_new_array (const s_sym *type, uw dimension,
@@ -216,6 +215,5 @@ s_list * list_new_u32 (u32 i, s_list *next);
 s_list * list_new_u64 (u64 i, s_list *next);
 s_list * list_new_unquote_copy (s_unquote *unquote, s_list *next);
 s_list * list_new_uw (uw i, s_list *next);
-s_list * list_new_void (s_list *next);
 
 #endif /* LIBKC3_LIST_INIT_H */

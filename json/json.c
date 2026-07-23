@@ -447,7 +447,7 @@ s_tag * json_buf_parse_null (s_buf *buf, s_tag *dest)
     r = 0;
     goto restore;
   }
-  tag_init_void(dest);
+  tag_init(dest);
   buf_save_clean(buf, &save);
   return dest;
  restore:

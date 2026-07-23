@@ -38,7 +38,7 @@ s_tag * pdf_file_get_indirect_object (s_pdf_file *pdf_file,
   u16 generation_number;
   uw i;
   if (! pdf_file)
-    return tag_init_void(dest);
+    return tag_init(dest);
   if (ref->type != TAG_PTUPLE ||
       ref->data.td_ptuple->count != 3 ||
       ref->data.td_ptuple->tag[0].type != TAG_PSYM ||
@@ -71,5 +71,5 @@ s_tag * pdf_file_get_indirect_object (s_pdf_file *pdf_file,
       return tag_init_copy(dest, pdf_file->body.value + i);
     i++;
   }
-  return tag_init_void(dest);
+  return tag_init(dest);
 }

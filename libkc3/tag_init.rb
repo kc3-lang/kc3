@@ -105,7 +105,8 @@ class TagInit
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  #{tag_type ? "tmp.type = #{tag_type};\n" : ""}#{def_tag_init_init}  *tag = tmp;
+  #{tag_type ? "tmp.type = #{tag_type};\n" : ""}#{def_tag_init_init}  tag->type = tmp.type;
+  tag->data = tmp.data;
   return tag;
 }
 EOF
@@ -118,7 +119,8 @@ EOF
 {
   s_tag tmp = {0};
   assert(tag);
-  #{tag_type ? "tmp.type = #{tag_type};\n" : ""}#{def_tag_init_init}  *tag = tmp;
+  #{tag_type ? "tmp.type = #{tag_type};\n" : ""}#{def_tag_init_init}  tag->type = tmp.type;
+  tag->data = tmp.data;
   return tag;
 }
 EOF
@@ -163,7 +165,9 @@ EOF
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
-  #{tag_type ? "tag->type = #{tag_type};\n" : ""}#{def_tag_new_init}  return tag;
+  #{tag_type ? "tag->type = #{tag_type};\n" : ""}#{def_tag_new_init}  tag->ref_count = 1;
+  mutex_init(&tag->ref_count_mutex);
+  return tag;
 }
 EOF
   end
@@ -458,8 +462,7 @@ class TagInitList
        TagInit.new("unquote", "copy", "TAG_UNQUOTE", :init_mode_init,
                    [Arg.new("s_unquote *", "unquote")]),
        TagInit.new("uw", "TAG_UW", :init_mode_direct,
-                   [Arg.new("uw", "i")]),
-       TagInitProto.new("void", "TAG_VOID", :init_mode_none, [])])
+                   [Arg.new("uw", "i")])])
   end
 
   def initialize(items)
@@ -581,6 +584,7 @@ tag_init_c.content = <<EOF
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "mutex.h"
 #include "pcall.h"
 #include "pcallable.h"
 #include "plist.h"

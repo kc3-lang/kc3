@@ -169,7 +169,8 @@ bool env_eval_quote_complex (s_env *env, s_complex *c,
     complex_delete(tmp.data.td_pcomplex);
     return false;
   }
-  *dest = tmp;
+  dest->type = tmp.type;
+  dest->data = tmp.data;
   return true;
 }
 
@@ -191,7 +192,8 @@ bool env_eval_quote_cow (s_env *env, s_cow *cow,
     return false;
   }
   cow_freeze(tmp.data.td_pcow);
-  *dest = tmp;
+  dest->type = tmp.type;
+  dest->data = tmp.data;
   return true;
 }
 
@@ -282,7 +284,8 @@ bool env_eval_quote_struct (s_env *env, s_struct *s, s_tag *dest)
   if (s->data || ! s->tag) {
     if (! pstruct_init_copy(&tmp.data.td_pstruct, &s))
       return false;
-    *dest = tmp;
+    dest->type = tmp.type;
+    dest->data = tmp.data;
     return true;
   }
   pstruct_init_with_type(&tmp.data.td_pstruct, s->pstruct_type);
@@ -297,7 +300,8 @@ bool env_eval_quote_struct (s_env *env, s_struct *s, s_tag *dest)
       goto ko;
     i++;
   }
-  *dest = tmp;
+  dest->type = tmp.type;
+  dest->data = tmp.data;
   return true;
  ko:
   return false;
@@ -462,6 +466,7 @@ bool env_eval_quote_unquote (s_env *env, s_unquote *unquote,
     tag_clean(&tmp);
     return false;
   }
-  *dest = tmp;
+  dest->type = tmp.type;
+  dest->data = tmp.data;
   return true;
 }

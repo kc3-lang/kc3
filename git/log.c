@@ -332,9 +332,9 @@ static p_list * log_push_commit (p_list *log_tail,
     tag_init_str_1_alloc(map->value + 0, sig->email);
   }
   else {
-    tag_init_void(map->value + 0);
-    tag_init_void(map->value + 2);
-    tag_init_void(map->value + 5);
+    tag_init(map->value + 0);
+    tag_init(map->value + 2);
+    tag_init(map->value + 5);
   }
   *log_tail = tmp;
   return &(*log_tail)->next.data.td_plist;

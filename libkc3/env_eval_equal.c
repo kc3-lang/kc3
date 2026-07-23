@@ -187,8 +187,8 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   assert(a);
   assert(b);
   assert(dest);
-  tag_init_void(&tmp_a);
-  tag_init_void(&tmp_b);
+  tag_init(&tmp_a);
+  tag_init(&tmp_b);
   if (tag_a->type == TAG_PVAR) {
     var_a = &tag_a->data.td_pvar->tag;
     if (tag_a->data.td_pvar->bound) {
@@ -238,14 +238,14 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     if (is_var_a) {
       if (! var_set(tag_a->data.td_pvar, dest)) {
         tag_clean(dest);
-        tag_init_void(dest);
+        tag_init(dest);
         return false;
       }
     }
     else {
       if (! frame_replace(env->frame, tag_a->data.td_ident.sym, dest)) {
         tag_clean(dest);
-        tag_init_void(dest);
+        tag_init(dest);
         return false;
       }
     }
@@ -263,14 +263,14 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     if (is_var_b) {
       if (! var_set(tag_b->data.td_pvar, dest)) {
         tag_clean(dest);
-        tag_init_void(dest);
+        tag_init(dest);
         return false;
       }
     }
     else {
       if (! frame_replace(env->frame, tag_b->data.td_ident.sym, dest)) {
         tag_clean(dest);
-        tag_init_void(dest);
+        tag_init(dest);
         return false;
       }
     }
@@ -386,7 +386,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   }
   switch (tag_a->type) {
   case TAG_VOID:
-    tag_init_void(dest);
+    tag_init(dest);
     return true;
   case TAG_MAP:
     if (! env_eval_equal_map(env, macro, &tag_a->data.td_map, &tag_b->data.td_map,

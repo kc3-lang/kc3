@@ -76,7 +76,7 @@ s_binding * binding_init (s_binding *binding, const s_sym *name,
 {
   s_binding tmp = {0};
   assert(binding);
-  tag_init_void(&tmp.value);
+  tag_init(&tmp.value);
   tmp.name = name;
   tmp.next = next;
   *binding = tmp;

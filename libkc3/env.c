@@ -1027,7 +1027,7 @@ void env_error_handler_pop (s_env *env, s_error_handler *eh)
 
 void env_error_handler_push (s_env *env, s_error_handler *eh)
 {
-  tag_init_void(&eh->tag);
+  tag_init(&eh->tag);
   eh->next = env->error_handler;
   env->error_handler = eh;
 }
@@ -2062,7 +2062,7 @@ s_tag * env_ignore_errors (s_env *env, s_tag *src, s_tag *dest)
   assert(src);
   assert(dest);
   if (! env_eval_tag(env, src, dest))
-    tag_init_void(dest);
+    tag_init(dest);
   return dest;
 }
 
