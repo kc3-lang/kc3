@@ -24,7 +24,9 @@
 #include "facts.h"
 #include "facts_cursor.h"
 #include "facts_with.h"
+#include "compare.h"
 #include "file.h"
+#include "hash.h"
 #include "ht.h"
 #include "integer.h"
 #include "io.h"
@@ -295,7 +297,8 @@ void marshall_clean (s_marshall *m)
 s_marshall * marshall_reset_chunk (s_marshall *m)
 {
   assert(m);
-  m->heap_offset += m->heap_pos;
+  m->heap_offset += sizeof(s_marshall_header) + m->heap_pos +
+    m->buf_pos;
   m->heap_pos = 0;
   m->buf_pos = 0;
   buf_empty(&m->heap);
@@ -1168,6 +1171,33 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
   return NULL;
 }
 
+s8 marshall_ht_compare (const s_tag *a, const s_tag *b)
+{
+  assert(a);
+  assert(b);
+  assert(a->type == TAG_PTUPLE);
+  assert(b->type == TAG_PTUPLE);
+  if (a->type < b->type)
+    return -1;
+  if (a->type > b->type)
+    return 1;
+  if (a->type != TAG_PTUPLE)
+    return COMPARE_ERROR;
+  return compare_tag(a->data.td_ptuple->tag, b->data.td_ptuple->tag);
+}
+
+uw marshall_ht_hash (const s_tag *tag)
+{
+  t_hash h;
+  assert(tag);
+  assert(tag->type == TAG_PTUPLE);
+  if (tag->type != TAG_PTUPLE)
+    abort();
+  hash_init(&h);
+  hash_update_tag(&h, tag->data.td_ptuple->tag);
+  return hash_to_uw(&h);
+}
+
 s_marshall * marshall_ident (s_marshall *m, bool heap,
                              const s_ident *ident)
 {
@@ -1187,6 +1217,8 @@ s_marshall * marshall_init (s_marshall *m, uw buf_size)
   if (! ht_init(&m->ht, &g_sym_Tag, 1024) ||
     ! buf_init_alloc(&m->heap, buf_size))
     return NULL;
+  m->ht.compare = marshall_ht_compare;
+  m->ht.hash = marshall_ht_hash;
   if (! buf_init_alloc(&m->buf, buf_size)) {
     buf_delete(&m->heap);
     return NULL;
@@ -1450,6 +1482,12 @@ s_marshall * marshall_pointer (s_marshall *m, bool heap,
       err_write_1("marshall_pointer: Callable not found: ");
       err_inspect_ident(&ident);
       err_write_1("\n");
+      return NULL;
+    }
+    if (! marshall_1(m, true, "_KC3PDATA_")) {
+      err_puts("marshall_pointer: marshall_1 data magic");
+      assert(! "marshall_pointer: marshall_1 data magic");
+      tag_clean(&tag);
       return NULL;
     }
     call_init(&call);

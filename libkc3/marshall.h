@@ -120,4 +120,6 @@ sw      marshall_to_buf (s_marshall *m, s_buf *buf);
 s_str * marshall_to_str (s_marshall *m, s_str *dest);
 sw      marshall_to_file (s_marshall *m, const s_str *path);
 
+s8 marshall_ht_compare (const s_tag *a, const s_tag *b);
+uw marshall_ht_hash (const s_tag *tag);
 #endif /* LIBKC3_MARSHALL_H */
