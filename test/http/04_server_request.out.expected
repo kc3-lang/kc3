@@ -25,7 +25,8 @@ req = Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
               client_addr: "",
               headers: [],
               cookies: [],
-              params: %{}}
+              params: %{},
+              log_msg: ""}
 response = %HTTP.Response{body: "Hello, KC3 HTTP test server !"}
 %HTTP.Response{protocol: "HTTP/1.1",
                code: (U16) 200,
@@ -43,7 +44,8 @@ client_req = %HTTP.Request{method: GET}
               client_addr: "",
               headers: [],
               cookies: [],
-              params: %{}}
+              params: %{},
+              log_msg: ""}
 HTTP.Request.buf_write(client_req, client.buf_rw.w)
 (Sw) 37
 Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
@@ -55,7 +57,8 @@ Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
               client_addr: "",
               headers: [{"Content-Length", (Uw) 0}],
               cookies: [],
-              params: %{}}
+              params: %{},
+              log_msg: ""}
 HTTP.Response.buf_write(response, server_client.buf_rw.w, true)
 (Sw) 93
 HTTP.Response.buf_parse(client.buf_rw.r, true)

@@ -23,7 +23,8 @@ client_req = %HTTP.Request{method: GET}
               client_addr: "",
               headers: [],
               cookies: [],
-              params: %{}}
+              params: %{},
+              log_msg: ""}
 HTTP.Request.buf_write(client_req, client.buf_rw.w)
 (Sw) 37
 req = Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
@@ -35,7 +36,8 @@ req = Struct.put(HTTP.Request.buf_parse(server_client.buf_rw.r), :time, %Time{})
               client_addr: "",
               headers: [{"Content-Length", (Uw) 0}],
               cookies: [],
-              params: %{}}
+              params: %{},
+              log_msg: ""}
 puts(req)
 %HTTP.Request{time: %Time{},
               method: GET,
@@ -45,8 +47,9 @@ puts(req)
               client_addr: "",
               headers: [{"Content-Length", (Uw) 0}],
               cookies: [],
-              params: %{}}
-(Sw) 280
+              params: %{},
+              log_msg: ""}
+(Sw) 307
 res = HTTP.Response.buf_write(%HTTP.Response{body: "Hello !"}, server_client.buf_rw.w, true)
 (Sw) 70
 client_response = HTTP.Response.buf_parse(client.buf_rw.r, true)
