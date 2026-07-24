@@ -591,7 +591,7 @@ endian = '#{endian}'
 
   ## Log output
 
-  defcounter indent_level = 0
+  def indent_level = Counter.new(0)
 
   def indent = fn (level) {
     if level > 0 do

@@ -513,7 +513,7 @@ void env_clean (s_env *env)
   buf_file_close(env->err);
   buf_delete(env->err);
   env->err = NULL;
-  env_freelist_clean(env);
+  //env_freelist_clean(env);
   if (g_kc3_env_default == env) {
     alloc_free(g_kc3_env_default);
     g_kc3_env_default = NULL;
@@ -532,6 +532,7 @@ bool env_cleaning (bool enable)
   return cleaning;
 }
 
+/*
 void env_freelist_clean (s_env *env)
 {
   s_list *l;
@@ -570,6 +571,7 @@ void env_freelist_clean (s_env *env)
     alloc_free(l);
   }
 }
+*/
 
 bool env_def (s_env *env, const s_ident *ident, s_tag *value)
 {

@@ -114,7 +114,7 @@ clean::
 	${MAKE} -C libkc3 clean
 	${MAKE} -C ikc3 clean
 	${MAKE} -C kc3s clean
-	${MAKE} -C kc3txt build
+	${MAKE} -C kc3txt clean
 	${MAKE} -C kpkg clean
 	${MAKE} -C ekc3 clean
 	${MAKE} -C event clean
@@ -396,9 +396,15 @@ distclean::
 
 dump:
 	${MAKE} clean_dump
+	@echo "KC3 dump"
 	kc3s/kc3s --trace --dump lib/kc3/0.1/kc3.dump --quit
+	@echo "KC3 restore"
+	kc3s/kc3s --trace --quit
+	@echo "KC3 Kpkg"
 	${MAKE} -C kpkg dump
+	@echo "KC3 HTTPd"
 	${MAKE} -C test/httpd dump
+	@echo "KC3 fx"
 	${MAKE} -C httpd/fx dump
 
 dump_debug:
