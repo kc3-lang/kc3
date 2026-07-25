@@ -92,6 +92,7 @@ There are now five full applications written in KC3 that we know of :
      go through the first collision list
    - database logging now supports and defaults to binary format
      (marshall + marshall_read)
+   - fixed marshall + marshall_read hash table usage
 
  - Facts
    - Facts.connect/accept allows for bi-directional synchronization of
