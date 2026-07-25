@@ -30,6 +30,7 @@ TEST_CASE_PROTOTYPE(facts_log_add);
 TEST_CASE_PROTOTYPE(facts_log_remove);
 TEST_CASE_PROTOTYPE(facts_new_delete);
 TEST_CASE_PROTOTYPE(facts_open_file);
+TEST_CASE_PROTOTYPE(facts_open_file_binary_round_trip);
 TEST_CASE_PROTOTYPE(facts_remove);
 TEST_CASE_PROTOTYPE(facts_save);
 TEST_CASE_PROTOTYPE(facts_save_binary);
@@ -48,6 +49,7 @@ void facts_test (void)
   TEST_CASE_RUN(facts_save);
   TEST_CASE_RUN(facts_save_binary);
   TEST_CASE_RUN(facts_open_file);
+  TEST_CASE_RUN(facts_open_file_binary_round_trip);
 }
 
 TEST_CASE(facts_add)
@@ -570,6 +572,32 @@ TEST_CASE(facts_open_file)
     unlink("facts_test_open_file.3.facts");
 }
 TEST_CASE_END(facts_open_file)
+
+TEST_CASE(facts_open_file_binary_round_trip)
+{
+  s_facts facts;
+  s_str path;
+  if (file_copy("facts_test_open_file.2.in.facts",
+                "facts_test_open_file_binary_round_trip.facts")) {
+    fprintf(stderr, "%s:%i: %s: file_copy\n", __FILE__, __LINE__,
+            __func__);
+    exit(1);
+  }
+  str_init_1(&path, NULL,
+             "facts_test_open_file_binary_round_trip.facts");
+  facts_init(&facts);
+  TEST_EQ(facts_open_file(&facts, &path), 1890);
+  TEST_EQ(facts_count(&facts), 46);
+  facts_close(&facts);
+  facts_clean(&facts);
+  facts_init(&facts);
+  TEST_EQ(facts_open_file(&facts, &path), 46);
+  TEST_EQ(facts_count(&facts), 46);
+  facts_close(&facts);
+  facts_clean(&facts);
+  unlink("facts_test_open_file_binary_round_trip.facts");
+}
+TEST_CASE_END(facts_open_file_binary_round_trip)
 
 TEST_CASE(facts_remove)
 {

@@ -52,6 +52,7 @@
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "psym.h"
+#include "ptag.h"
 #include "pvar.h"
 #include "rwlock.h"
 #include "str.h"
@@ -926,12 +927,6 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
       assert(! "marshall_read_facts: marshall_read_fact");
       return NULL;
     }
-    if (! tag_new_ref(fact.subject) ||
-        ! tag_new_ref(fact.predicate) ||
-        ! tag_new_ref(fact.object)) {
-      fact_clean_all(&fact);
-      return NULL;
-    }
     if (! facts_add_fact(facts, &fact)) {
       fact_clean_all(&fact);
       return NULL;
@@ -1158,7 +1153,6 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
   s64 global_offset;
   s_tag key = {0};
   s_tag *ptag = NULL;
-  s_tag tag = {0};
   if (! marshall_read_offset(mr, heap, offset))
     return NULL;
   if (! *offset) {
@@ -1184,7 +1178,6 @@ s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
     assert(! "marshall_read_heap_pointer: invalid tag in ht");
   }
   *present = (void *) ptag->data.td_ptuple->tag[1].data.td_uw;
-  tag_clean(&tag);
   return mr;
 }
 
@@ -2152,8 +2145,13 @@ s_marshall_read * marshall_read_ptag (s_marshall_read *mr,
   if (! marshall_read_heap_pointer(mr, heap, &offset,
                                    (void **) &present))
     return NULL;
-  if (present || ! offset) {
-    *dest = present;
+  if (! offset) {
+    *dest = NULL;
+    return mr;
+  }
+  if (present) {
+    if (! ptag_init_copy(dest, &present))
+      return NULL;
     return mr;
   }
   if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0) {
@@ -2169,13 +2167,14 @@ s_marshall_read * marshall_read_ptag (s_marshall_read *mr,
     alloc_free(tmp);
     return NULL;
   }
-  tmp->ref_count = 1;
-  mutex_init(&tmp->ref_count_mutex);
   if (! marshall_read_ht_add(mr, offset, tmp)) {
     tag_delete(tmp);
     return NULL;
   }
-  *dest = tmp;
+  if (! ptag_init_copy(dest, &tmp)) {
+    tag_delete(tmp);
+    return NULL;
+  }
   return mr;
 }
 
@@ -2501,7 +2500,25 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     assert(! "marshall_read_tag: marshall_read_u8 type");
     return NULL;
   }
+  dest->ref_count = 1;
+#if HAVE_PTHREAD
+  mutex_init(&dest->ref_count_mutex);
+#endif
   dest->type = type;
+  if (! marshall_read_tag_data(mr, heap, dest)) {
+#if HAVE_PTHREAD
+    mutex_clean(&dest->ref_count_mutex);
+#endif
+    return NULL;
+  }
+  return mr;
+}
+
+s_marshall_read * marshall_read_tag_data (s_marshall_read *mr,
+                                          bool heap, s_tag *dest)
+{
+  assert(mr);
+  assert(dest);
   switch (dest->type) {
   case TAG_VOID:
     return mr;
@@ -2594,7 +2611,7 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     return marshall_read_pvar(mr, heap, &dest->data.td_pvar);
   }
   err_write_1("marshall_read_tag: unknown tag type: ");
-  err_inspect_u8_decimal(type);
+  err_inspect_u8_decimal(dest->type);
   err_write_1("\n");
   assert(! "marshall_read_tag: unknown tag type");
   return NULL;

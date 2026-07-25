@@ -120,6 +120,8 @@ PROTO_MARSHALL_READ(sym,          p_sym            );
 PROTO_MARSHALL_READ(str,          s_str            );
 PROTO_MARSHALL_READ(sw,           sw               );
 PROTO_MARSHALL_READ(tag,          s_tag            );
+s_marshall_read * marshall_read_tag_data (s_marshall_read *mr,
+                                          bool heap, s_tag *dest);
 PROTO_MARSHALL_READ(tuple,        s_tuple          );
 PROTO_MARSHALL_READ(time,         s_time           );
 PROTO_MARSHALL_READ(u8,           u8               );

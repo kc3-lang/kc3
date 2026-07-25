@@ -299,9 +299,11 @@ s_marshall * marshall_reset_chunk (s_marshall *m)
   assert(m);
   m->heap_offset += m->heap_pos;
   m->heap_pos = 0;
+  m->heap_count = 0;
   m->buf_pos = 0;
   buf_empty(&m->heap);
   buf_empty(&m->buf);
+  ht_empty(&m->ht);
   return m;
 }
 
@@ -1123,7 +1125,7 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
   s_tag key = {0};
   s_tag *ptag = NULL;
   s_tag tag = {0};
-  u64 offset;
+  s64 offset;
   assert(m);
   if (! p)
     return marshall_offset(m, heap, 0);
@@ -1158,7 +1160,8 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
     assert(! "marshall_heap_pointer: invalid offset in hash table");
     goto ko;
   }
-  offset = ptag->data.td_ptuple->tag[1].data.td_u64;
+  offset = ptag->data.td_ptuple->tag[1].data.td_s64;
+  assert(offset > m->heap_offset);
   if (! marshall_offset(m, heap, offset - m->heap_offset))
     goto ko;
   tag_clean(&key);
