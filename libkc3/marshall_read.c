@@ -2284,8 +2284,6 @@ s_marshall_read * marshall_read_quote (s_marshall_read *mr,
     alloc_free(tmp.tag);
     return NULL;
   }
-  tmp.tag->ref_count = 1;
-  mutex_init(&tmp.tag->ref_count_mutex);
   *dest = tmp;
   return mr;
 }
@@ -2736,8 +2734,6 @@ s_marshall_read * marshall_read_unquote (s_marshall_read *mr,
       alloc_free(tmp.tag);
       return NULL;
     }
-    tmp.tag->ref_count = 1;
-    mutex_init(&tmp.tag->ref_count_mutex);
     *dest = tmp;
     return mr;
 }
