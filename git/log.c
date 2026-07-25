@@ -83,22 +83,32 @@ p_list * kc3_git_log (git_repository **repo,
     err_write_1("kc3_git_log: branch not found: ");
     err_inspect_str(branch_name);
     err_write_1("\n");
+    git_revwalk_free(s.walker);
     return NULL;
   }
   opt.max_parents = -1;
-  if (! s32_init_cast(&opt.skip, &sym_S32, skip) || opt.skip < 0)
+  if (! s32_init_cast(&opt.skip, &sym_S32, skip) || opt.skip < 0) {
+    git_revwalk_free(s.walker);
     return NULL;
-  if (! s32_init_cast(&opt.limit, &sym_S32, limit) || opt.limit < 0)
+  }
+  if (! s32_init_cast(&opt.limit, &sym_S32, limit) || opt.limit < 0) {
+    git_revwalk_free(s.walker);
     return NULL;
+  }
   if (path->size) {
     if (path->size > PATH_MAX) {
       err_puts("kc3_git_log: path->size > PATH_MAX");
+      git_revwalk_free(s.walker);
       return NULL;
     }
     memcpy(path_pchar, path->ptr.p_pchar, path->size);
     diffopts.pathspec.strings = &path_pchar_p;
     diffopts.pathspec.count = 1;
-    git_pathspec_new(&ps, &diffopts.pathspec);
+    if (git_pathspec_new(&ps, &diffopts.pathspec)) {
+      err_puts("kc3_git_log: git_pathspec_new");
+      git_revwalk_free(s.walker);
+      return NULL;
+    }
   }
   tail = &tmp;
   while (! git_revwalk_next(&oid, s.walker)) {
@@ -106,6 +116,7 @@ p_list * kc3_git_log (git_repository **repo,
       err_puts("kc3_git_log: git_commit_lookup");
       git_pathspec_free(ps);
       git_revwalk_free(s.walker);
+      list_delete_all(tmp);
       return NULL;
     }
     parents = git_commit_parentcount(commit);
@@ -123,6 +134,7 @@ p_list * kc3_git_log (git_repository **repo,
           git_commit_free(commit);
           git_pathspec_free(ps);
           git_revwalk_free(s.walker);
+          list_delete_all(tmp);
           return NULL;
         }
         if (git_pathspec_match_tree(NULL, tree,
@@ -156,6 +168,7 @@ p_list * kc3_git_log (git_repository **repo,
       git_commit_free(commit);
       git_pathspec_free(ps);
       git_revwalk_free(s.walker);
+      list_delete_all(tmp);
       return NULL;
     }
     git_commit_free(commit);

@@ -690,6 +690,7 @@ void http_request_clean (s_http_request *req)
   tag_clean(&req->body);
   str_clean(&req->protocol);
   str_clean(&req->client_addr);
+  str_clean(&req->log_msg);
   list_delete_all(req->headers);
   list_delete_all(req->cookies);
   map_clean(&req->params);
