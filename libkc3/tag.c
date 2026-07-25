@@ -1247,8 +1247,6 @@ s_tag * tag_new_1 (const char *p)
     alloc_free(dest);
     return NULL;
   }
-  dest->ref_count = 1;
-  mutex_init(&dest->ref_count_mutex);
   return dest;
 }
 
