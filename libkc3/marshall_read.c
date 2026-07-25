@@ -1207,6 +1207,10 @@ void marshall_read_ht_clean (s_marshall_read *mr)
   assert(mr);
   if (mr->ht.items)
     ht_clean(&mr->ht);
+  while (mr->ht_ptag_list) {
+    ptag_clean((p_tag *) &mr->ht_ptag_list->tag.data.td_ptr.p_pvoid);
+    mr->ht_ptag_list = list_delete(mr->ht_ptag_list);
+  }
 }
 
 s_marshall_read * marshall_read_ident (s_marshall_read *mr, bool heap,
@@ -2132,6 +2136,7 @@ s_marshall_read * marshall_read_ptag (s_marshall_read *mr,
                                       bool heap,
                                       p_tag *dest)
 {
+  p_list list = NULL;
   u64 offset = 0;
   p_tag present = NULL;
   p_tag tmp = NULL;
@@ -2167,14 +2172,16 @@ s_marshall_read * marshall_read_ptag (s_marshall_read *mr,
     alloc_free(tmp);
     return NULL;
   }
+  if (! (list = list_new_ptr(tag_new_ref(tmp), mr->ht_ptag_list))) {
+    tag_delete(tmp);
+    return NULL;
+  }
+  mr->ht_ptag_list = list;
   if (! marshall_read_ht_add(mr, offset, tmp)) {
     tag_delete(tmp);
     return NULL;
   }
-  if (! ptag_init_copy(dest, &tmp)) {
-    tag_delete(tmp);
-    return NULL;
-  }
+  *dest = tmp;
   return mr;
 }
 

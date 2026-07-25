@@ -1161,8 +1161,8 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
     goto ko;
   }
   offset = ptag->data.td_ptuple->tag[1].data.td_s64;
-  assert(offset > m->heap_offset);
-  if (! marshall_offset(m, heap, offset - m->heap_offset))
+  if (offset - m->heap_offset <= 0 ||
+      ! marshall_offset(m, heap, offset - m->heap_offset))
     goto ko;
   tag_clean(&key);
   tag_clean(&tag);

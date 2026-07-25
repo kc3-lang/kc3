@@ -760,6 +760,7 @@ struct marshall_read {
   uw     heap_size;
   s64    heap_start;
   s_ht   ht;
+  p_list ht_ptag_list;
   s_buf *source;
 };
 
