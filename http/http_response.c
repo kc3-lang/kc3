@@ -89,6 +89,8 @@ s_http_response * http_response_buf_parse (s_http_response *response,
     chunks = NULL;
     chunks_tail = &chunks;
     while (1) {
+      str_clean(&chunk_size_str);
+      chunk_size_str = (s_str) {0};
       if (buf_read_until_1_into_str(buf, "\r\n", &chunk_size_str) <= 0) {
         err_puts("http_response_buf_parse: chunk_size_str");
         goto ko;
@@ -100,6 +102,7 @@ s_http_response * http_response_buf_parse (s_http_response *response,
       if (! chunk_size) {
         if (buf_read_1(buf, "\r\n") <= 0)
           goto ko;
+        str_clean(&chunk_size_str);
         if (! str_init_concatenate_list(&tmp.body.data.td_str, chunks))
           goto ko;
         list_delete_all(chunks);
@@ -129,6 +132,8 @@ s_http_response * http_response_buf_parse (s_http_response *response,
  ko:
   list_delete_all(chunks);
  restore:
+  str_clean(&chunk_size_str);
+  http_response_clean(&tmp);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -310,11 +315,15 @@ sw http_response_buf_write (const s_http_response *response,
         if (size && ptr && (r = buf_write(buf, ptr, size)) < 0) {
           munmap(ptr, size);
           close(fd);
+          tuple->tag[3].data.td_ptr.p_pvoid = NULL;
+          tuple->tag[1].data.td_s64 = -1;
           return r;
         }
         result += r;
         munmap(ptr, size);
         close(fd);
+        tuple->tag[3].data.td_ptr.p_pvoid = NULL;
+        tuple->tag[1].data.td_s64 = -1;
       }
     }
     else if (type == &g_sym_Buf) {
@@ -347,9 +356,12 @@ sw http_response_buf_write (const s_http_response *response,
     fd = tuple->tag[1].data.td_s64;
     size = tuple->tag[2].data.td_uw;
     ptr = tuple->tag[3].data.td_ptr.p_pvoid;
-    munmap(ptr, size);
+    if (ptr)
+      munmap(ptr, size);
     if (fd >= 0)
       close(fd);
+    tuple->tag[3].data.td_ptr.p_pvoid = NULL;
+    tuple->tag[1].data.td_s64 = -1;
   }
   if ((r = buf_flush(buf)) < 0)
     return r;
