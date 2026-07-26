@@ -18,6 +18,32 @@
 #include "../libkc3/kc3.h"
 #include "http_response.h"
 
+static void http_response_mmap_clean (s_http_response *response)
+{
+  t_fd fd;
+  void *ptr;
+  uw size;
+  s_tuple *tuple;
+  if (response->body.type != TAG_PTUPLE ||
+      ! (tuple = response->body.data.td_ptuple) ||
+      tuple->count != 4 ||
+      tuple->tag[0].type != TAG_PSYM ||
+      tuple->tag[0].data.td_psym != &g_sym_mmap ||
+      tuple->tag[1].type != TAG_S64 ||
+      tuple->tag[2].type != TAG_UW ||
+      tuple->tag[3].type != TAG_PTR)
+    return;
+  fd = tuple->tag[1].data.td_s64;
+  size = tuple->tag[2].data.td_uw;
+  ptr = tuple->tag[3].data.td_ptr.p_pvoid;
+  if (ptr)
+    munmap(ptr, size);
+  if (fd >= 0)
+    close(fd);
+  tuple->tag[3].data.td_ptr.p_pvoid = NULL;
+  tuple->tag[1].data.td_s64 = -1;
+}
+
 s_http_response * http_response_buf_parse (s_http_response *response,
                                            s_buf *buf, bool parse_body)
 {
@@ -331,8 +357,10 @@ sw http_response_buf_write (const s_http_response *response,
       while (buf_refill(in, in->size) > 0) {
         if (buf_read_to_str(in, &str) <= 0)
           return -1;
-        if ((r = buf_write(buf, str.ptr.p_pchar, str.size)) <= 0)
+        if ((r = buf_write(buf, str.ptr.p_pchar, str.size)) <= 0) {
+          str_clean(&str);
           return r;
+        }
         result += r;
         str_clean(&str);
       }
@@ -373,6 +401,7 @@ void http_response_clean (s_http_response *res)
   str_clean(&res->protocol);
   str_clean(&res->message);
   list_delete_all(res->headers);
+  http_response_mmap_clean(res);
   tag_clean(&res->body);
 }
 

@@ -490,14 +490,20 @@ p_tuple * file_mmap (s64 fd, uw start, uw end, p_tuple *dest)
   if (end <= start) {
     err_stacktrace();
     err_puts("file_mmap: invalid range");
+    close(fd);
     return NULL;
   }
   size = end - start;
   m = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, start);
-  if (m == MAP_FAILED)
+  if (m == MAP_FAILED) {
+    close(fd);
     return NULL;
-  if (! ptuple_init(&tuple, 4))
+  }
+  if (! ptuple_init(&tuple, 4)) {
+    munmap(m, size);
+    close(fd);
     return NULL;
+  }
   tag_init_psym(tuple->tag, &g_sym_mmap);
   tag_init_s64( tuple->tag + 1, fd);
   tag_init_uw(  tuple->tag + 2, size);

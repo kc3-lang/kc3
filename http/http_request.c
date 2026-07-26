@@ -26,8 +26,8 @@
 
 static s_tag          g_method_key = {0};
 static s_tag          g_mode = {0};
-static s_tag          g_prefix = {0};
-static s_tag          g_random_len = {0};
+static const s_tag   *g_prefix = NULL;
+static const s_tag   *g_random_len = NULL;
 static const s_sym   *g_sym_Upload = NULL;
 static bool           g_statics_ok = false;
 static pthread_once_t g_statics_once = PTHREAD_ONCE_INIT;
@@ -36,24 +36,27 @@ static void http_request_statics_init (void)
 {
   s_env *env;
   s_ident ident;
+  const s_tag *value;
   env = env_global();
   tag_init_str_1(&g_method_key, NULL, "_method");
   ident.module = sym_1("HTTP.Upload");
   ident.sym = sym_1("tmp_filename_prefix");
-  if (! env_ident_get(env, &ident, &g_prefix) ||
-      g_prefix.type != TAG_STR) {
+  if (! (value = env_ident_get_address(env, &ident)) ||
+      value->type != TAG_STR) {
     err_puts("http_request_buf_parse: invalid"
              " HTTP.Upload.tmp_filename_prefix");
     return;
   }
+  g_prefix = value;
   ident.module = sym_1("HTTP.Upload");
   ident.sym = sym_1("tmp_filename_random_length");
-  if (! env_ident_get(env, &ident, &g_random_len) ||
-      g_random_len.type != TAG_U8) {
+  if (! (value = env_ident_get_address(env, &ident)) ||
+      value->type != TAG_U8) {
     err_puts("http_request_buf_parse: invalid"
              " HTTP.Upload.tmp_filename_random_length");
     return;
   }
+  g_random_len = value;
   tag_init_u32(&g_mode, 0700);
   g_sym_Upload = sym_1("HTTP.Upload");
   g_statics_ok = true;
@@ -308,12 +311,12 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             err_puts("http_request_buf_parse: buf_init_alloc(path_buf)");
             goto restore;
           }
-          if (buf_write_str(&path_buf, &g_prefix.data.td_str) <= 0) {
+          if (buf_write_str(&path_buf, &g_prefix->data.td_str) <= 0) {
             err_puts("http_request_buf_parse:"
                      " buf_write_str(path_buf, prefix)");
             goto restore;
           }
-          if (! str_init_random_base64(&path_random, &g_random_len)) {
+          if (! str_init_random_base64(&path_random, g_random_len)) {
             err_puts("http_request_buf_parse: str_init_random_base64");
             goto restore;
           }
