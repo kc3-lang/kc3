@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <pthread.h>
 #include <string.h>
 #if !defined(WIN32) && !defined(WIN64)
 # include <sys/time.h>
@@ -22,6 +23,41 @@
 #include "url.h"
 
 #define HTTP_REQUEST_CONTENT_LENGTH_MAX (64 * 1024 * 1024)
+
+static s_tag          g_method_key = {0};
+static s_tag          g_mode = {0};
+static s_tag          g_prefix = {0};
+static s_tag          g_random_len = {0};
+static const s_sym   *g_sym_Upload = NULL;
+static bool           g_statics_ok = false;
+static pthread_once_t g_statics_once = PTHREAD_ONCE_INIT;
+
+static void http_request_statics_init (void)
+{
+  s_env *env;
+  s_ident ident;
+  env = env_global();
+  tag_init_str_1(&g_method_key, NULL, "_method");
+  ident.module = sym_1("HTTP.Upload");
+  ident.sym = sym_1("tmp_filename_prefix");
+  if (! env_ident_get(env, &ident, &g_prefix) ||
+      g_prefix.type != TAG_STR) {
+    err_puts("http_request_buf_parse: invalid"
+             " HTTP.Upload.tmp_filename_prefix");
+    return;
+  }
+  ident.module = sym_1("HTTP.Upload");
+  ident.sym = sym_1("tmp_filename_random_length");
+  if (! env_ident_get(env, &ident, &g_random_len) ||
+      g_random_len.type != TAG_U8) {
+    err_puts("http_request_buf_parse: invalid"
+             " HTTP.Upload.tmp_filename_random_length");
+    return;
+  }
+  tag_init_u32(&g_mode, 0700);
+  g_sym_Upload = sym_1("HTTP.Upload");
+  g_statics_ok = true;
+}
 
 s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 {
@@ -38,14 +74,11 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   const s_str content_type_str = STR("Content-Type");
   const s_str cookie_str = STR("Cookie");
   const s_str dash = STR("--");
-  s_env *env;
   s_tag filename = {0};
   s_buf header_buf = {0};
   s_str *key;
   s_str line;
-  static s_tag method_key = {0};
   s_tag method_value = {0};
-  static s_tag mode = {0};
   static const s_str multipart_form_data =
     STR("multipart/form-data; boundary=");
   s_list            *multipart_headers = NULL;
@@ -56,16 +89,11 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_tag path = {0};
   s_buf path_buf = {0};
   s_str path_random;
-  static s_tag   prefix = {0};
-  static s_ident prefix_ident;
   s_list *           query_split = NULL;
   static const s_str query_separator = STR("?");
   sw r;
-  static s_tag   random_len = {0};
-  static s_ident random_len_ident;
   //s_buf_save save;
   s_tag size;
-  static const s_sym *sym_Upload;
   s_list **tail;
   s_tag tmp = {0};
   s_http_request tmp_req = {0};
@@ -76,28 +104,9 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_str *value;
   if (! req || ! buf)
     return NULL;
-  env = env_global();
-  if (method_key.type == TAG_VOID) { // init static variables
-    tag_init_str_1(&method_key, NULL, "_method");
-    prefix_ident.module = sym_1("HTTP.Upload");
-    prefix_ident.sym = sym_1("tmp_filename_prefix");
-    if (! env_ident_get(env, &prefix_ident, &prefix) ||
-        prefix.type != TAG_STR) {
-      err_puts("http_request_buf_parse: invalid"
-               " HTTP.Upload.tmp_filename_prefix");
-      goto restore;
-    }
-    random_len_ident.module = sym_1("HTTP.Upload");
-    random_len_ident.sym = sym_1("tmp_filename_random_length");
-    if (! env_ident_get(env, &random_len_ident, &random_len) ||
-        random_len.type != TAG_U8) {
-      err_puts("http_request_buf_parse: invalid"
-               " HTTP.Upload.tmp_filename_random_length");
-      goto restore;
-    }
-    tag_init_u32(&mode, 0700);
-    sym_Upload = sym_1("HTTP.Upload");
-  }
+  pthread_once(&g_statics_once, http_request_statics_init);
+  if (! g_statics_ok)
+    goto restore;
   if (! http_request_buf_parse_method(buf, &tmp_req.method))
     goto restore;
   if (false) {
@@ -293,12 +302,12 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             err_puts("http_request_buf_parse: buf_init_alloc(path_buf)");
             goto restore;
           }
-          if (buf_write_str(&path_buf, &prefix.data.td_str) <= 0) {
+          if (buf_write_str(&path_buf, &g_prefix.data.td_str) <= 0) {
             err_puts("http_request_buf_parse:"
                      " buf_write_str(path_buf, prefix)");
             goto restore;
           }
-          if (! str_init_random_base64(&path_random, &random_len)) {
+          if (! str_init_random_base64(&path_random, &g_random_len)) {
             err_puts("http_request_buf_parse: str_init_random_base64");
             goto restore;
           }
@@ -332,7 +341,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             err_inspect_str(&path.data.td_str);
             err_write_1("\n");
           }
-          if (! file_ensure_parent_directory(&path.data.td_str, &mode)) {
+          if (! file_ensure_parent_directory(&path.data.td_str, &g_mode)) {
 	    err_puts("http_request_buf_parse,file_ensure_directory");
             goto restore;
 	  }
@@ -351,7 +360,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             err_write_1(")\n");
           }
 	  upload.type = TAG_PSTRUCT;
-	  if (! pstruct_init(&upload.data.td_pstruct, sym_Upload))
+	  if (! pstruct_init(&upload.data.td_pstruct, g_sym_Upload))
 	    goto restore;
 	  if (! struct_allocate(upload.data.td_pstruct))
 	    goto restore;
@@ -421,7 +430,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         err_write_1("\n");
       }
       if (alist_get(body.data.td_plist,
-                    &method_key, &method_value)) {
+                    &g_method_key, &method_value)) {
         http_request_method_from_str(&method_value.data.td_str,
                                      &tmp_req.method);
         tag_clean(&method_value);
