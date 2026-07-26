@@ -433,7 +433,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   if (! tag_init_pstruct(&tmp, sym_1("HTTP.Request")))
     goto restore;
   if (! struct_allocate(tmp.data.td_pstruct)) {
-    tag_void(&tmp);
+    tag_clean(&tmp);
+    tmp = (s_tag) {0};
     goto restore;
   }
   *((s_http_request *) tmp.data.td_pstruct->data) = tmp_req;
@@ -584,22 +585,22 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
     return -1;
   }
   if ((r = buf_write_str(buf, method)) < 0)
-    return r;
+    goto ko;
   result += r;
   if ((r = buf_write_1(buf, " ")) <= 0)
-    return r;
+    goto ko;
   result += r;
   if ((r = buf_write_str(buf, &req->url)) <= 0)
-    return r;
+    goto ko;
   result += r;
   if ((r = buf_write_1(buf, " ")) <= 0)
-    return r;
+    goto ko;
   result += r;
   if ((r = buf_write_str(buf, &req->protocol)) < 0)
-    return r;
+    goto ko;
   result += r;
   if ((r = buf_write_1(buf, "\r\n")) < 0)
-    return r;
+    goto ko;
   result += r;
   list = req->headers;
   while (list) {
@@ -608,7 +609,7 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
     switch (key->type) {
     case TAG_STR:
       if ((r = buf_write_str(buf, &key->data.td_str)) <= 0)
-        return r;
+        goto ko;
       result += r;
       if (! compare_str_case_insensitive(&content_length_str,
                                          &key->data.td_str))
@@ -616,7 +617,7 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
       break;
     case TAG_PSYM:
       if ((r = buf_write_str(buf, &key->data.td_psym->str)) <= 0)
-        return r;
+        goto ko;
       result += r;
       if (! compare_str_case_insensitive(&content_length_str,
                                          &key->data.td_psym->str))
@@ -625,60 +626,66 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
     default:
       err_write_1("http_request_buf_write: invalid header key: ");
       err_inspect_tag(key);
-      return -1;
+      r = -1;
+      goto ko;
     }
     if ((r = buf_write_1(buf, ": ")) <= 0)
-      return r;
+      goto ko;
     result += r;
     if (! str_init_cast(&str, &type, value)) {
       err_write_1("http_request_buf_write: invalid header value: ");
       err_inspect_tag(value);
-      return -1;
+      r = -1;
+      goto ko;
     }
     if ((r = buf_write_str(buf, &str)) <= 0) {
       str_clean(&str);
-      return r;
+      goto ko;
     }
     result += r;
     str_clean(&str);
     if ((r = buf_write_1(buf, "\r\n")) <= 0)
-      return r;
+      goto ko;
     result += r;
     list = list_next(list);
   }
   if (content_length < 0) {
     content_length = body.size;
     if ((r = buf_write_str(buf, &content_length_str)) <= 0)
-      return r;
+      goto ko;
     result += r;
     if ((r = buf_write_1(buf, ": ")) <= 0)
-      return r;
+      goto ko;
     result += r;
     if ((r = buf_inspect_uw_base(buf, &g_kc3_base_decimal,
                                  content_length)) <= 0)
-      return r;
+      goto ko;
     result += r;
     if ((r = buf_write_1(buf, "\r\n")) <= 0)
-      return r;
+      goto ko;
     result += r;
   }
   if ((uw) content_length > body.size) {
     err_puts("http_request_buf_write: content-length > body size");
     assert(! "http_request_buf_write: content-length > body size");
-    return -1;
+    r = -1;
+    goto ko;
   }
   if ((r = buf_write_1(buf, "\r\n")) <= 0)
-    return r;
+    goto ko;
   result += r;
   if (content_length > 0) {
     if ((r = buf_write(buf, body.ptr.p_pvoid, content_length)) <= 0)
-      return r;
+      goto ko;
     result += r;
   }
   if ((r = buf_flush(buf)) < 0)
-    return r;
+    goto ko;
   str_clean(&body);
   return result;
+ ko:
+  str_clean(&body);
+  return r;
 }
 
 void http_request_clean (s_http_request *req)
