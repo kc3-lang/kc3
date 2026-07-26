@@ -140,7 +140,10 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   }
   str_clean(&url);
   url = (s_str) {0};
-  url_unescape(&query_split->tag.data.td_str, &tmp_req.url);
+  if (! url_unescape(&query_split->tag.data.td_str, &tmp_req.url)) {
+    err_puts("http_request_buf_parse: url_unescape");
+    goto restore;
+  }
   list_delete_all(query_split);
   query_split = NULL;
   if (false) {
@@ -382,9 +385,16 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 	  if (! struct_set(upload.data.td_pstruct, sym_1("tmp_path"),
 			   &path))
 	    goto restore;
-          tmp_req.body.data.td_plist =
-            list_new_ptuple_2(&multipart_name, &upload,
-                              tmp_req.body.data.td_plist);	  
+          {
+            s_list *new_body;
+            new_body = list_new_ptuple_2(&multipart_name, &upload,
+                                         tmp_req.body.data.td_plist);
+            if (! new_body) {
+              err_puts("http_request_buf_parse: list_new_ptuple_2");
+              goto restore;
+            }
+            tmp_req.body.data.td_plist = new_body;
+          }
           tag_clean(&upload);
           upload = (s_tag) {0};
           tag_clean(&path);
@@ -399,9 +409,17 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           }
           multipart_value_tag.type = TAG_STR;
           multipart_value_tag.data.td_str = multipart_value;
-          tmp_req.body.data.td_plist =
-            list_new_ptuple_2(&multipart_name, &multipart_value_tag,
-                              tmp_req.body.data.td_plist);
+          {
+            s_list *new_body;
+            new_body = list_new_ptuple_2(&multipart_name,
+                                         &multipart_value_tag,
+                                         tmp_req.body.data.td_plist);
+            if (! new_body) {
+              err_puts("http_request_buf_parse: list_new_ptuple_2");
+              goto restore;
+            }
+            tmp_req.body.data.td_plist = new_body;
+          }
           str_clean(&multipart_value);
           multipart_value = (s_str) {0};
         } // else if (filename.data.td_str.size)
@@ -440,6 +458,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       }
       if (alist_get(body.data.td_plist,
                     &g_method_key, &method_value)) {
+        tag_clean(&tmp_req.method);
         http_request_method_from_str(&method_value.data.td_str,
                                      &tmp_req.method);
         tag_clean(&method_value);
