@@ -164,7 +164,10 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       str_clean(&line);
       break;
     }
-    *tail = list_new(NULL);
+    if (! (*tail = list_new(NULL))) {
+      str_clean(&line);
+      goto restore;
+    }
     (*tail)->tag.type = TAG_STR;
     if (! http_header_split(&line, &(*tail)->tag)) {
       str_clean(&line);
@@ -236,7 +239,10 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             str_clean(&line);
             break;
           }
-          *tail = list_new(NULL);
+          if (! (*tail = list_new(NULL))) {
+            str_clean(&line);
+            goto restore;
+          }
           (*tail)->tag.type = TAG_STR;
           if (! http_header_split(&line, &(*tail)->tag)) {
             str_clean(&line);
@@ -753,6 +759,7 @@ s_http_request * http_request_cookie_add (s_http_request *req,
       assert(! "http_request_cookie_add: str_init_slice 2");
       goto ko;
     }
+    tail = &(*tail)->next.data.td_plist;
   next:
     s = list_next(s);
   }
