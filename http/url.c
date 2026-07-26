@@ -160,7 +160,10 @@ s_str * url_unescape (const s_str *url, s_str *dest)
   }
  ok:
   buf_clean(&in);
-  buf_to_str(&out, dest);
+  if (! buf_to_str(&out, dest)) {
+    buf_clean(&out);
+    return NULL;
+  }
   return dest;
  clean:
   buf_clean(&in);
@@ -228,7 +231,11 @@ s_tag * url_www_form_decode (const s_str *src, s_tag *dest)
       str_clean(&value);
       continue;
     }
-    *tail = list_new_ptuple(2, NULL);
+    if (! (*tail = list_new_ptuple(2, NULL))) {
+      str_clean(&key);
+      str_clean(&value);
+      goto clean;
+    }
     (*tail)->tag.data.td_ptuple->tag[0].type = TAG_STR;
     (*tail)->tag.data.td_ptuple->tag[1].type = TAG_STR;
     if (! url_unescape
