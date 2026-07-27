@@ -144,15 +144,16 @@ s_tag * plist_find_if (p_list *plist, p_callable *function,
   s_tag tmp = {0};
   if (! (arg = list_new(NULL)))
     return NULL;
+  tag_clean(&arg->tag);
   tag_init_bool(&tmp, false);
   list = *plist;
   while (list) {
     arg->tag = list->tag;
     if (! eval_callable_call(*function, arg, &tmp)) {
-      tag_init(&arg->tag);
+      arg->tag = (s_tag) {0};
       break;
     }
-    tag_init(&arg->tag);
+    arg->tag = (s_tag) {0};
     if (! bool_init_cast(&b, &sym_Bool, &tmp)) {
       tag_bool(&tmp, false);
       break;
