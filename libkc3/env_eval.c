@@ -294,7 +294,8 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
 {
   s_list *args = NULL;
   uw volatile args_count = 0;
-  volatile s_list args_storage[256] = {0};
+  uw args_max = cfn->arity - (cfn->arg_result ? 1 : 0);
+  volatile s_list args_storage[args_max ? args_max : 1];
   s_list *argument;
   uw i;
   s_tag tag = {0};
@@ -302,6 +303,11 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
   assert(env);
   assert(cfn);
   assert(dest);
+  i = 0;
+  while (i < (args_max ? args_max : 1)) {
+    args_storage[i] = (s_list) {0};
+    i++;
+  }
   if (securelevel(0) > 2) {
     err_puts("env_eval_call_cfn_args: cannot eval with"
              " securelevel > 2");
@@ -319,7 +325,7 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
   if (arguments && ! (cfn->macro || cfn->special_operator)) {
     argument = arguments;
     while (argument) {
-      assert(args_count < 256);
+      assert(args_count < args_max);
       if (args_count)
         tag_init_plist((s_tag *) &args_storage[args_count - 1].next,
                        (s_list *) &args_storage[args_count]);

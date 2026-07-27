@@ -31,9 +31,9 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   s_list *a;
   void ** volatile arg_pointer_result = NULL;
   void ** volatile arg_pointers = NULL;
-  void *arg_pointers_storage[256] = {0};
+  void *arg_pointers_storage[cfn->arity ? cfn->arity : 1];
   void ** volatile arg_values = NULL;
-  void *arg_values_storage[256] = {0};
+  void *arg_values_storage[cfn->arity ? cfn->arity : 1];
   s_tag * volatile dest_v = dest;
   void **result_pointer = NULL;
   u8 arity;
