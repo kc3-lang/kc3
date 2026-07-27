@@ -121,6 +121,8 @@ s_fn * fn_init_copy (s_fn *fn, const s_fn *src)
   assert(src);
   tmp.module = src->module;
   tmp.clauses = fn_clause_new_copy(src->clauses);
+  if (src->clauses && ! tmp.clauses)
+    return NULL;
   tmp.macro = src->macro;
   tmp.special_operator = src->special_operator;
   if (src->frame &&

@@ -66,12 +66,19 @@ s_fn_clause * fn_clause_new_copy (s_fn_clause *src)
   s_fn_clause **tail = NULL;
   tail = &tmp;
   while (src) {
-    *tail = fn_clause_new(NULL);
+    if (! (*tail = fn_clause_new(NULL)))
+      goto ko;
     (*tail)->arity = src->arity;
-    (*tail)->pattern = list_new_copy_all(src->pattern);
-    do_block_init_copy(&(*tail)->algo, &src->algo);
+    if (src->pattern &&
+        ! ((*tail)->pattern = list_new_copy_all(src->pattern)))
+      goto ko;
+    if (! do_block_init_copy(&(*tail)->algo, &src->algo))
+      goto ko;
     tail = &(*tail)->next;
     src = src->next;
   }
   return tmp;
+ ko:
+  fn_clause_delete_all(tmp);
+  return NULL;
 }

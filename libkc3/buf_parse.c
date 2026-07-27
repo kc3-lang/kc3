@@ -5716,12 +5716,10 @@ sw buf_parse_time_as_sw (s_buf *buf, s_time *dest)
     }
     break;
   }
-  *cow = tmp;
-  r = result;
-  goto clean;
+  r = -1;
  restore:
   buf_save_restore_rpos(buf, &save);
-  cow_clean(&tmp);
+  time_clean(&tmp);
  clean:
   buf_save_clean(buf, &save);
   return r;

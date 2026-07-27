@@ -865,10 +865,8 @@ s_str * buf_read (s_buf *buf, uw size, s_str *dest)
   s_str *result = NULL;
   s_str tmp = {0};
   assert(buf);
-  if (! size) {
-    result = str_init_empty(dest);
-    goto clean;
-  }
+  if (! size)
+    return str_init_empty(dest);
 #if HAVE_PTHREAD
   rwlock_w(buf->rwlock);
 #endif
@@ -1034,8 +1032,10 @@ s_str * buf_read_max (s_buf *buf, s_str *dest)
   if ((r = buf_refill(buf, buf->size)) < 0)
     goto clean;
   size = r;
-  if (! size)
-    return str_init_empty(dest);
+  if (! size) {
+    result = str_init_empty(dest);
+    goto clean;
+  }
   if (buf->rpos + size > buf->wpos) {
     assert(! "buffer overflow");
     goto clean;

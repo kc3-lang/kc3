@@ -797,7 +797,6 @@ s_str * file_read_max (const s_str *path, uw max, s_str *dest)
     err_puts("file_read_max: str_init_alloc_copy");
     assert(! "file_read_max: str_init_alloc_copy");
     alloc_free(buf);
-    close(fd);
     return NULL;
   }
   alloc_free(buf);

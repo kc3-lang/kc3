@@ -202,8 +202,13 @@ s_ops * ops_init_copy (s_ops *ops, s_ops *src)
   ops->ht.hash = ops_hash_tag;
   i = 0;
   while (i < ops->ht.size) {
-    if (src->ht.items[i])
+    if (src->ht.items[i]) {
       ops->ht.items[i] = list_new_copy_all(src->ht.items[i]);
+      if (! ops->ht.items[i]) {
+        ht_clean(&ops->ht);
+        return NULL;
+      }
+    }
     i++;
   }
   ops->ht.count = src->ht.count;

@@ -56,8 +56,10 @@ s_frame * frame_binding_new (s_frame *frame, const s_sym *name,
   }
   ident.module = env_global()->current_defmodule;
   ident.sym = name;
-  if (! tag_set_name_if_null(tag, &ident))
+  if (! tag_set_name_if_null(tag, &ident)) {
+    frame_binding_delete(frame, name);
     return NULL;
+  }
   return frame;
 }
 
@@ -218,7 +220,8 @@ s_frame * frame_new_copy (const s_frame *src)
   f = &frame;
   s = src;
   while (s) {
-    *f = frame_new(NULL);
+    if (! (*f = frame_new(NULL)))
+      goto clean;
     if (s->bindings &&
         ! ((*f)->bindings = binding_new_copy(s->bindings)))
       goto clean;

@@ -161,14 +161,12 @@ bool ht_has (s_ht *ht, const s_tag *key)
   rwlock_r(&ht->rwlock);
 #endif
   item = ht->items[hash % ht->size];
-  while (item && (c = ht->compare(&item->tag, key)) < 0) {
-    if ((item = list_next(item)) && ! c)
-      return true;
-  }
+  while (item && (c = ht->compare(&item->tag, key)) < 0)
+    item = list_next(item);
 #if HAVE_PTHREAD
   rwlock_unlock_r(&ht->rwlock);
 #endif
-  return false;
+  return item && ! c;
 }
 
 s_ht * ht_init (s_ht *ht, const s_sym *type, uw size)

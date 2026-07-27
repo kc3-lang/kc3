@@ -12,13 +12,20 @@
  */
 #include "assert.h"
 #include "buf.h"
+#include "buf_file.h"
 #include "sym.h"
 #include "uw.h"
 #include "pbuf.h"
 
 void pbuf_clean (p_buf *pbuf)
 {
+  FILE *fp;
   assert(pbuf);
+  if ((*pbuf)->user_ptr) {
+    fp = buf_file_fp(*pbuf);
+    buf_file_close(*pbuf);
+    pclose(fp);
+  }
   buf_delete(*pbuf);
 }
 

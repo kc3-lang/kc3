@@ -157,6 +157,10 @@ s_call * call_init_op_unary (s_call *call)
   assert(call);
   call_init(call);
   call->arguments = list_new(NULL);
+  if (! call->arguments) {
+    call_clean(call);
+    return NULL;
+  }
   return call;
 }
 
