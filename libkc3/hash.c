@@ -225,7 +225,13 @@ bool hash_update_cow (t_hash *hash, s_cow *cow)
 HASH_UPDATE_DEF(f32)
 HASH_UPDATE_DEF(f64)
 #if HAVE_F80
-HASH_UPDATE_DEF(f80)
+bool hash_update_f80 (t_hash *hash, f80 x)
+{
+  const char t[] = "f80";
+  assert(hash);
+  return hash_update(hash, t, sizeof(t)) &&
+    hash_update(hash, &x, 10);
+}
 #endif
 #if HAVE_F128
 HASH_UPDATE_DEF(f128)
