@@ -187,8 +187,6 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   assert(a);
   assert(b);
   assert(dest);
-  tag_init(&tmp_a);
-  tag_init(&tmp_b);
   if (tag_a->type == TAG_PVAR) {
     var_a = &tag_a->data.td_pvar->tag;
     if (tag_a->data.td_pvar->bound) {
