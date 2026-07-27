@@ -37,6 +37,8 @@ defmodule HTTP.Response do
   def buf_write = cfn Sw "http_response_buf_write" (HTTP.Response, Buf,
     Bool)
 
+  def clean = cfn Void "http_response_clean" (HTTP.Response)
+
   def header_get = cfn Tag "http_response_header_get"
     (HTTP.Response, Str, Result)
 
