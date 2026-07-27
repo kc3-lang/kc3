@@ -36,10 +36,10 @@ void facts_with_cursor_clean (s_facts_with_cursor *cursor)
     }
     alloc_free(cursor->levels);
     alloc_free(cursor->spec);
-#if HAVE_PTHREAD
-    mutex_clean(&cursor->mutex);
-#endif
   }
+#if HAVE_PTHREAD
+  mutex_clean(&cursor->mutex);
+#endif
 }
 
 s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,

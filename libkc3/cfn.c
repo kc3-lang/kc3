@@ -31,7 +31,9 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   s_list *a;
   void ** volatile arg_pointer_result = NULL;
   void ** volatile arg_pointers = NULL;
+  void *arg_pointers_storage[256] = {0};
   void ** volatile arg_values = NULL;
+  void *arg_values_storage[256] = {0};
   s_tag * volatile dest_v = dest;
   void **result_pointer = NULL;
   u8 arity;
@@ -41,9 +43,11 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   sw num_args;
   void *p;
   void *result = NULL;
+  s_list * volatile stacktrace;
   s_tag tmp = {0};
   s_tag tmp2 = {0};
-  s_list * volatile trace;
+  s_list trace = {0};
+  s_list trace_plist = {0};
   s_unwind_protect unwind_protect;
   assert(cfn);
   assert(cfn->arity == cfn->cif.nargs);
@@ -83,17 +87,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     }
   }
   if (cfn->arity) {
-    arg_pointers = alloc((cfn->arity + 1) * sizeof(void *));
-    if (! arg_pointers) {
-      tag_clean(&tmp);
-      return NULL;
-    }
-    arg_values = alloc((cfn->arity + 1) * sizeof(void *));
-    if (! arg_values) {
-      tag_clean(&tmp);
-      alloc_free(arg_pointers);
-      return NULL;
-    }
+    arg_pointers = arg_pointers_storage;
+    arg_values = arg_values_storage;
     cfn_arg_types = cfn->arg_types;
     a = args;
     while (cfn_arg_types) {
@@ -144,26 +139,17 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     }
   }
   if (cfn->ptr.p_f) {
-    s_list *args_copy;
-    s_list *trace_plist;
-    if (! (trace = list_new(env->stacktrace)))
-      goto ko;
-    args_copy = list_new_copy_all(args);
-    trace_plist = list_new_psym(cfn->c_name, args_copy);
-    if (! trace_plist) {
-      list_delete_all(args_copy);
-      list_delete(trace);
-      goto ko;
-    }
-    tag_init_plist(&trace->tag, trace_plist);
-    env->stacktrace = trace;
+    stacktrace = env->stacktrace;
+    tag_init_plist(&trace.tag, &trace_plist);
+    tag_init_plist(&trace.next, stacktrace);
+    tag_init_psym(&trace_plist.tag, cfn->c_name);
+    tag_init_plist(&trace_plist.next, args);
+    env->stacktrace = &trace;
     env_unwind_protect_push(env, &unwind_protect);
     if (setjmp(unwind_protect.buf)) {
       env_unwind_protect_pop(env, &unwind_protect);
-      assert(env->stacktrace == trace);
-      env->stacktrace = list_delete(trace);
-      alloc_free(arg_pointers);
-      alloc_free(arg_values);
+      assert(env->stacktrace == &trace);
+      env->stacktrace = stacktrace;
       longjmp(*unwind_protect.jmp, 1);
       abort();
     }
@@ -181,17 +167,15 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
           err_write_1(" != ");
           err_inspect_c_pointer(arg_pointer_result);
           err_write_1("\n");
-          assert(env->stacktrace == trace);
-          env->stacktrace = list_delete(trace);
+          assert(env->stacktrace == &trace);
+          env->stacktrace = stacktrace;
           goto ko;
         }
         tag_init(dest_v);
         tag_clean(&tmp2);
         tag_clean(&tmp);
-        assert(env->stacktrace == trace);
-        env->stacktrace = list_delete(trace);
-        alloc_free(arg_pointers);
-        alloc_free(arg_values);
+        assert(env->stacktrace == &trace);
+        env->stacktrace = stacktrace;
         return dest_v;
       }
       tag_clean(&tmp);
@@ -199,22 +183,18 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     }
     else
       *dest_v = tmp;
-    assert(env->stacktrace == trace);
-    env->stacktrace = list_delete(trace);
+    assert(env->stacktrace == &trace);
+    env->stacktrace = stacktrace;
   }
   else {
     err_puts("cfn_apply: NULL function pointer");
     assert(! "cfn_apply: NULL function pointer");
     tag_init(dest);
   }
-  alloc_free(arg_pointers);
-  alloc_free(arg_values);
   return dest_v;
  ko:
   tag_clean(&tmp);
   tag_clean(&tmp2);
-  alloc_free(arg_pointers);
-  alloc_free(arg_values);
   return NULL;
 }
 

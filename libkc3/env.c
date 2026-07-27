@@ -3531,7 +3531,7 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
     if (! cond_bool.data.td_bool_)
       break;
     tag_clean(&tmp);
-    tag_init(&tmp);
+    tmp = (s_tag) {0};
     if (setjmp(loop_context.continue_buf))
       continue;
     if (! env_eval_tag(env, body, &tmp))
