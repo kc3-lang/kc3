@@ -80,18 +80,6 @@
 #include "u8.h"
 #include "uw.h"
 
-typedef struct kc3_tag_node {
-  s_tag *tag;
-  struct kc3_tag_node *next;
-} s_kc3_tag_node;
-
-static s_kc3_tag_node *g_kc3_tags = NULL;
-#if HAVE_PTHREAD
-static pthread_mutex_t g_kc3_tags_mutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
-
-static void kc3_tag_delete_all (void);
-
 const s_str g_kc3_base_binary = STR("01");
 const s_str g_kc3_base_octal = STR("01234567");
 const s_str g_kc3_base_decimal = STR("0123456789");
@@ -310,7 +298,6 @@ s_str * kc3_buf_read_to_str (s_buf *buf, s_str *dest)
 
 void kc3_clean (s_env *env)
 {
-  kc3_tag_delete_all();
   counter_delete_all();
   env_clean(env);
 }
@@ -1721,60 +1708,16 @@ static void kc3_system_pipe_exec (s32 pipe_w, char **argv,
 
 void kc3_tag_delete (s_tag **tag)
 {
-  s_kc3_tag_node **link;
-  s_kc3_tag_node *to_free;
-    #if HAVE_PTHREAD
-  pthread_mutex_lock(&g_kc3_tags_mutex);
-    #endif
-  link = &g_kc3_tags;
-  while (*link && (*link)->tag != *tag)
-    link = &(*link)->next;
-  if (*link) {
-    to_free = *link;
-    *link = (*link)->next;
-    alloc_free(to_free);
-  }
-    #if HAVE_PTHREAD
-  pthread_mutex_unlock(&g_kc3_tags_mutex);
-    #endif
+  if (! tag || ! *tag)
+    return;
   tag_delete(*tag);
-}
-
-void kc3_tag_delete_all (void)
-{
-  s_kc3_tag_node *next;
-    #if HAVE_PTHREAD
-  pthread_mutex_lock(&g_kc3_tags_mutex);
-    #endif
-  while (g_kc3_tags) {
-    next = g_kc3_tags->next;
-    tag_delete(g_kc3_tags->tag);
-    alloc_free(g_kc3_tags);
-    g_kc3_tags = next;
-  }
-    #if HAVE_PTHREAD
-  pthread_mutex_unlock(&g_kc3_tags_mutex);
-    #endif
 }
 
 s_tag ** kc3_tag_new_copy (s_tag **tag, s_tag *src)
 {
   s_tag *tmp;
-  s_kc3_tag_node *node;
   if (! (tmp = tag_new_copy(src)))
     return NULL;
-  node = alloc(sizeof(s_kc3_tag_node));
-  if (node) {
-    node->tag = tmp;
-      #if HAVE_PTHREAD
-    pthread_mutex_lock(&g_kc3_tags_mutex);
-      #endif
-    node->next = g_kc3_tags;
-    g_kc3_tags = node;
-      #if HAVE_PTHREAD
-    pthread_mutex_unlock(&g_kc3_tags_mutex);
-      #endif
-  }
   *tag = tmp;
   return tag;
 }
