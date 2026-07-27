@@ -2289,6 +2289,22 @@ s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
 }
 
 // TODO: unwind_protect
+static void env_tag_move (s_tag *dest, s_tag *src)
+{
+  tag_clean(dest);
+#if HAVE_PTHREAD
+  mutex_clean(&src->ref_count_mutex);
+#endif
+  dest->type = src->type;
+  dest->data = src->data;
+  dest->ref_count = src->ref_count;
+#if HAVE_PTHREAD
+  if (dest->ref_count)
+    mutex_init(&dest->ref_count_mutex);
+#endif
+  *src = (s_tag) {0};
+}
+
 bool env_load (s_env *env, const s_str *path)
 {
   s_buf buf;
@@ -2323,9 +2339,12 @@ bool env_load (s_env *env, const s_str *path)
     use_cache = true;
   }
   file_dir = frame_get_w(env->global_frame, &g_sym___DIR__);
-  file_dir_save = *file_dir;
+  env_tag_move(&file_dir_save, file_dir);
+  tag_init(file_dir);
+  file_dir->type = TAG_STR;
   file_path = frame_get_w(env->global_frame, &g_sym___FILE__);
-  file_path_save = *file_path;
+  env_tag_move(&file_path_save, file_path);
+  tag_init(file_path);
   if (! file_dirname(path, &file_dir->data.td_str))
     goto ko;
   tag_init_str(file_path, NULL, path->size, path->ptr.p_pchar);
@@ -2378,8 +2397,7 @@ bool env_load (s_env *env, const s_str *path)
         tag_clean(&tag);
         goto ko;
       }
-      (*last)->tag = tag;
-      tag = (s_tag) {0};
+      env_tag_move(&(*last)->tag, &tag);
       last = &(*last)->next.data.td_plist;
     }
     buf_getc_close(&buf);
@@ -2405,9 +2423,8 @@ bool env_load (s_env *env, const s_str *path)
     list_delete_all(list);
     list = NULL;
   }
-  tag_clean(file_dir);
-  *file_dir = file_dir_save;
-  *file_path = file_path_save;
+  env_tag_move(file_dir, &file_dir_save);
+  env_tag_move(file_path, &file_path_save);
   str_clean(&cache_path);
   {
     s_str relative_path = {0};
@@ -2435,9 +2452,8 @@ bool env_load (s_env *env, const s_str *path)
     list_delete_all(new_dlopens);
   if (list)
     list_delete_all(list);
-  tag_clean(file_dir);
-  *file_dir = file_dir_save;
-  *file_path = file_path_save;
+  env_tag_move(file_dir, &file_dir_save);
+  env_tag_move(file_path, &file_path_save);
   if (buf_opened) {
     buf_getc_close(&buf);
     buf_clean(&buf);
