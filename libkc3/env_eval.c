@@ -125,9 +125,8 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
     err_puts("env_eval_call: cannot eval with securelevel > 2");
     abort();
   }
-  call_init_copy(&c, call);
-  if (c.pcallable)
-    pcallable_clean(&c.pcallable);
+  c.ident = call->ident;
+  c.arguments = call->arguments;
   if (! env_eval_call_resolve(env, &c)) {
     err_stacktrace();
     err_write_1("env_eval_call: env_eval_call_resolve: ");
@@ -146,6 +145,7 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   env_unwind_protect_push(env, &up);
   if (setjmp(up.buf)) {
     env_unwind_protect_pop(env, &up);
+    c.arguments = NULL;
     call_clean(&c);
     env->stacktrace_depth--;
     longjmp(*up.jmp, 1);
@@ -163,6 +163,7 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   env->stacktrace_depth--;
   env_unwind_protect_pop(env, &up);
  clean:
+  c.arguments = NULL;
   call_clean(&c);
   return result;
 }
@@ -292,7 +293,10 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
                              s_tag *dest)
 {
   s_list *args = NULL;
-  s_list * volatile args_volatile = NULL;
+  uw volatile args_count = 0;
+  volatile s_list args_storage[256] = {0};
+  s_list *argument;
+  uw i;
   s_tag tag = {0};
   s_unwind_protect unwind_protect;
   assert(env);
@@ -303,28 +307,46 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
              " securelevel > 2");
     abort();
   }
-  if (arguments && ! (cfn->macro || cfn->special_operator)) {
-    if (! env_eval_call_arguments(env, arguments, &args))
-      return false;
-  }
-  args_volatile = args;
   env_unwind_protect_push(env, &unwind_protect);
   if (setjmp(unwind_protect.buf)) {
     env_unwind_protect_pop(env, &unwind_protect);
-    list_delete_all(args_volatile);
+    i = 0;
+    while (i < args_count)
+      tag_clean((s_tag *) &args_storage[i++].tag);
     longjmp(*unwind_protect.jmp, 1);
     return false;
   }
-  if (! cfn_apply(cfn, (cfn->macro || cfn->special_operator) ?
-                  arguments : args_volatile, &tag)) {
-    env_unwind_protect_pop(env, &unwind_protect);
-    list_delete_all(args);
-    return false;
+  if (arguments && ! (cfn->macro || cfn->special_operator)) {
+    argument = arguments;
+    while (argument) {
+      assert(args_count < 256);
+      if (args_count)
+        tag_init_plist((s_tag *) &args_storage[args_count - 1].next,
+                       (s_list *) &args_storage[args_count]);
+      args_count++;
+      if (! env_eval_tag(env, &argument->tag,
+                         (s_tag *) &args_storage[args_count - 1].tag))
+        goto ko;
+      argument = list_next(argument);
+    }
+    if (args_count)
+      args = (s_list *) args_storage;
   }
+  if (! cfn_apply(cfn, (cfn->macro || cfn->special_operator) ?
+                  arguments : args, &tag))
+    goto ko;
   env_unwind_protect_pop(env, &unwind_protect);
   *dest = tag;
-  list_delete_all(args);
+  i = 0;
+  while (i < args_count)
+    tag_clean((s_tag *) &args_storage[i++].tag);
   return true;
+ ko:
+  env_unwind_protect_pop(env, &unwind_protect);
+  i = 0;
+  while (i < args_count)
+    tag_clean((s_tag *) &args_storage[i++].tag);
+  return false;
 }
 
 bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)

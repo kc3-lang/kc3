@@ -3510,8 +3510,10 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
   assert(body);
   assert(dest_v);
   call_init_call_cast(&cond_cast, &g_sym_Bool);
-  if (! tag_init_copy(&list_next(cond_cast.arguments)->tag, cond))
-    goto ko;
+  if (! tag_init_copy(&list_next(cond_cast.arguments)->tag, cond)) {
+    call_clean(&cond_cast);
+    return NULL;
+  }
   env_loop_context_push(env, &loop_context);
   env_unwind_protect_push(env, &loop_context.up);
   if (setjmp(loop_context.up.buf)) {
@@ -3521,10 +3523,12 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
     call_clean(&cond_cast);
     longjmp(*loop_context.up.jmp, 1);
   }
+  if (! env_eval_call_resolve(env, &cond_cast))
+    goto ko;
   if (setjmp(loop_context.break_buf))
     goto ok;
   while (1) {
-    if (! env_eval_call(env, &cond_cast, &cond_bool))
+    if (! env_eval_call_callable(env, &cond_cast, &cond_bool))
       goto ko;
     if (cond_bool.type != TAG_BOOL)
       goto ko;

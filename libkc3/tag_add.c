@@ -1076,6 +1076,9 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       integer_init_u64(&tmp2, b->data.td_u64);
       goto integer_add_a_b;
     case TAG_UW:
+      if (b->data.td_uw <= UW_MAX - a->data.td_uw)
+        return tag_init_uw_reduce(dest, a->data.td_uw +
+                                 b->data.td_uw);
       integer_init_uw(&tmp, a->data.td_uw);
       integer_init_uw(&tmp2, b->data.td_uw);
       goto integer_add_a_b;

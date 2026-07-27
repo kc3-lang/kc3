@@ -141,6 +141,7 @@ s_tag * ops_get_tag (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
 {
   s_op     op = {0};
   s_struct op_struct = {0};
+  s_struct_type op_struct_type = {0};
   s_tag    op_tag = {0};
   s_tag *ptag;
   assert(ops);
@@ -149,10 +150,8 @@ s_tag * ops_get_tag (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
   op_tag.type = TAG_PSTRUCT;
   op_tag.data.td_pstruct = &op_struct;
   op_struct.data = &op;
-  if (! pstruct_type_find(&g_sym_KC3_Op, &op_struct.pstruct_type))
-    return NULL;
-  if (! op_struct.pstruct_type)
-    return NULL;
+  op_struct.pstruct_type = &op_struct_type;
+  op_struct_type.module = &g_sym_KC3_Op;
   op.sym = sym;
   op.arity = arity;
   if (! ht_get(&ops->ht, &op_tag, &ptag))
