@@ -102,9 +102,13 @@ s_do_block * do_block_init_copy (s_do_block *do_block, s_do_block *src)
   uw i = 0;
   assert(src);
   assert(do_block);
-  do_block_init(do_block, src->count);
+  if (! do_block_init(do_block, src->count))
+    return NULL;
   while (i < src->count) {
-    tag_init_copy(do_block->tag + i, src->tag + i);
+    if (! tag_init_copy(do_block->tag + i, src->tag + i)) {
+      do_block_clean(do_block);
+      return NULL;
+    }
     i++;
   }
   do_block->short_form = src->short_form;
@@ -122,11 +126,14 @@ s_do_block * do_block_init_from_list (s_do_block *do_block,
   assert(list);
   l = *list;
   len = list_length(l);
-  do_block_init(&tmp, len);
+  if (! do_block_init(&tmp, len))
+    return NULL;
   i = 0;
   while (l) {
-    if (! tag_init_copy(tmp.tag + i, &l->tag))
+    if (! tag_init_copy(tmp.tag + i, &l->tag)) {
+      do_block_clean(&tmp);
       return NULL;
+    }
     i++;
     l = list_next(l);
   }

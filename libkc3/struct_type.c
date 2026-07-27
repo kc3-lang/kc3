@@ -266,14 +266,13 @@ s_struct_type * struct_type_init_copy (s_struct_type *st,
     return NULL;
   }
   if (! map_init_copy(&st->map, &src->map))
-    return NULL;
+    goto ko;
   st->module = src->module;
   st->must_clean = src->must_clean;
   if (st->map.count) {
     st->offset = alloc(st->map.count * sizeof(uw));
     if (! st->offset) {
-      map_clean(&st->map);
-      return NULL;
+      goto ko;
     }
     memcpy(st->offset, src->offset, st->map.count * sizeof(uw));
   }
@@ -283,6 +282,9 @@ s_struct_type * struct_type_init_copy (s_struct_type *st,
   mutex_init(&st->mutex);
 #endif
   return st;
+ ko:
+  struct_type_clean(st);
+  return NULL;
 }
 
 s_struct_type * struct_type_init_from_env (s_struct_type *st,
@@ -296,8 +298,10 @@ s_struct_type * struct_type_init_from_env (s_struct_type *st,
   if (! env_struct_type_get_spec(env, module, &spec) ||
       ! spec)
     return NULL;
-  if (! struct_type_init(st, module, spec))
+  if (! struct_type_init(st, module, spec)) {
+    list_delete_all(spec);
     return NULL;
+  }
   list_delete_all(spec);
   return st;
 }

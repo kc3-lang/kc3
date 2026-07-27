@@ -383,7 +383,10 @@ s_cfn * cfn_new_copy (const s_cfn *src)
   cfn = alloc(sizeof(s_cfn));
   if (! cfn)
     return NULL;
-  cfn_init_copy(cfn, src);
+  if (! cfn_init_copy(cfn, src)) {
+    alloc_free(cfn);
+    return NULL;
+  }
   return cfn;
 }
 
@@ -417,12 +420,10 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
         err_write_1("cfn_prep_cif: invalid type: ");
         err_puts(tag_type_to_string(a->tag.type));
         assert(! "cfn_prep_cif: invalid type");
-        alloc_free(arg_ffi_type);
         goto clean;
       }
       if (! sym_to_ffi_type(a->tag.data.td_psym, result_ffi_type,
                             arg_ffi_type + i)) {
-        alloc_free(arg_ffi_type);
         goto clean;
       }
       if (a->tag.data.td_psym == &g_sym_Result) {
@@ -454,6 +455,8 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
   cfn->cif_ready = true;
   result = cfn;
  clean:
+  if (! result)
+    alloc_free(arg_ffi_type);
   return result;
 }
 

@@ -151,6 +151,10 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
   *dest = tmp;
   goto clean;
  restore:
+  while (tag > tmp.tags) {
+    tag--;
+    tag_clean(tag);
+  }
   alloc_free(tmp.tags);
  clean:
   alloc_free(address);
@@ -1090,7 +1094,7 @@ sw buf_parse_complex (s_buf *buf, s_complex *c)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_complex tmp;
+  s_complex tmp = {0};
   assert(buf);
   assert(c);
   buf_save_init(buf, &save);
@@ -1115,6 +1119,8 @@ sw buf_parse_complex (s_buf *buf, s_complex *c)
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:
+  if (r <= 0)
+    complex_clean(&tmp);
   buf_save_clean(buf, &save);
   return r;
 }
@@ -3856,6 +3862,8 @@ sw buf_parse_pcomplex (s_buf *buf, s_complex **c)
   sw r;
   s_complex *tmp;
   tmp = complex_new();
+  if (! tmp)
+    return -1;
   if ((r = buf_parse_complex(buf, tmp)) <= 0) {
     alloc_free(tmp);
     return r;
@@ -3870,6 +3878,8 @@ sw buf_parse_pcow (s_buf *buf, s_cow **c)
   sw r;
   s_cow *tmp;
   tmp = alloc(sizeof(s_cow));
+  if (! tmp)
+    return -1;
   if ((r = buf_parse_cow(buf, tmp)) <= 0) {
     alloc_free(tmp);
     return r;
@@ -5706,10 +5716,12 @@ sw buf_parse_time_as_sw (s_buf *buf, s_time *dest)
     }
     break;
   }
-  r = -1;
+  *cow = tmp;
+  r = result;
+  goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
-  time_clean(&tmp);
+  cow_clean(&tmp);
  clean:
   buf_save_clean(buf, &save);
   return r;
@@ -5854,7 +5866,10 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *dest)
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
-    *i = list_new(NULL);
+    if (! (*i = list_new(NULL))) {
+      r = -1;
+      goto restore;
+    }
     if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
       goto restore;
     result += r;
@@ -5876,7 +5891,10 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *dest)
 	r = 0;
 	goto restore;
       }
-      tuple_init(dest, i);
+      if (! tuple_init(dest, i)) {
+        r = -1;
+        goto restore;
+      }
       j = list;
       k = 0;
       while (i--) {

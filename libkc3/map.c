@@ -231,7 +231,8 @@ s_map * map_init_from_alist (s_map *map, s_list *alist)
     assert(! "map_init_from_alist: not an alist");
     return NULL;
   }
-  map_init(&tmp, len);
+  if (! map_init(&tmp, len))
+    return NULL;
   a = alist;
   while (i < len) {
     if (! tag_init_copy(tmp.key + i, a->tag.data.td_ptuple->tag) ||
@@ -265,7 +266,8 @@ s_map * map_init_from_lists (s_map *map, s_list *keys,
              " keys and values length do not match");
     return NULL;
   }
-  map_init(&tmp, len);
+  if (! map_init(&tmp, len))
+    return NULL;
   k = keys;
   v = values;
   while (i < len) {
@@ -310,6 +312,7 @@ p_list * map_map_to_list (const s_map *map, s_callable *callable,
                           s_list **result)
 {
   s_list *args = NULL;
+  s_list *args_next;
   uw i = 0;
   s_list **t = NULL;
   s_list *tmp = NULL;
@@ -319,20 +322,25 @@ p_list * map_map_to_list (const s_map *map, s_callable *callable,
   t = &tmp;
   *t = NULL;
   while (i < map->count) {
-    args = list_new_tag_copy(map->key + i,
-                             list_new_tag_copy(map->value + i, NULL));
-    *t = list_new(NULL);
-    if (! eval_callable_call(callable, args, &(*t)->tag)) {
-      list_delete_all(args);
-      list_delete_all(tmp);
-      return NULL;
-    }
+    if (! (args = list_new_tag_copy(map->value + i, NULL)))
+      goto ko;
+    if (! (args_next = list_new_tag_copy(map->key + i, args)))
+      goto ko;
+    args = args_next;
+    if (! (*t = list_new(NULL)))
+      goto ko;
+    if (! eval_callable_call(callable, args, &(*t)->tag))
+      goto ko;
     t = &(*t)->next.data.td_plist;
     list_delete_all(args);
     i++;
   }
   *result = tmp;
   return result;
+ ko:
+  list_delete_all(args);
+  list_delete_all(tmp);
+  return NULL;
 }
 
 s_map * map_new (uw count)

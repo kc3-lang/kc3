@@ -157,6 +157,9 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
   conn = facts_connection_new(facts, sockfd, tls);
   if (! conn) {
     str_clean(&addr);
+    tls_close(tls);
+    tls_free(tls);
+    close(sockfd);
     return NULL;
   }
   conn->addr = addr;

@@ -135,6 +135,10 @@ p_socket socket_init_connect (p_socket s, const s_str *host,
     *s = sockfd;
     return s;
   next:
+    if (sockfd >= 0) {
+      close(sockfd);
+      sockfd = -1;
+    }
     res = res->ai_next;
   }
   freeaddrinfo(res0);
@@ -201,6 +205,10 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
     *s = sockfd;
     return s;
   next:
+    if (sockfd >= 0) {
+      close(sockfd);
+      sockfd = -1;
+    }
     res = res->ai_next;
   }
   freeaddrinfo(res0);

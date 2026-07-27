@@ -323,7 +323,8 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   if (i &&
       sym_must_clean(src->element_type, &must_clean) &&
       must_clean) {
-    while (--i) {
+    while (i) {
+      i--;
       data_tmp -= item_size;
       data_clean(src->element_type, data_tmp);
     }
@@ -332,9 +333,11 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   alloc_free(tmp.dimensions);
   return NULL;
  ko_tags:
-  if (i)
-    while (--i)
-      tag_clean(tmp.tags + i);
+  while (i) {
+    i--;
+    tag_clean(tmp.tags + i);
+  }
+  alloc_free(tmp.tags);
   return NULL;
 }
 

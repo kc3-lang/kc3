@@ -133,7 +133,8 @@ bool env_eval_quote_call (s_env *env, s_call *call, s_tag *dest)
   tmp_arg_last = &tmp.arguments;
   arg = call->arguments;
   while (arg) {
-    *tmp_arg_last = list_new(NULL);
+    if (! (*tmp_arg_last = list_new(NULL)))
+      goto ko;
     if (! env_eval_quote_tag(env, &arg->tag, &(*tmp_arg_last)->tag))
       goto ko;
     tmp_arg_last = &(*tmp_arg_last)->next.data.td_plist;
@@ -288,11 +289,14 @@ bool env_eval_quote_struct (s_env *env, s_struct *s, s_tag *dest)
     dest->data = tmp.data;
     return true;
   }
-  pstruct_init_with_type(&tmp.data.td_pstruct, s->pstruct_type);
+  if (! pstruct_init_with_type(&tmp.data.td_pstruct, s->pstruct_type))
+    return false;
   st = tmp.data.td_pstruct->pstruct_type;
   tmp.data.td_pstruct->tag = alloc(st->map.count * sizeof(s_tag));
-  if (! tmp.data.td_pstruct->tag)
+  if (! tmp.data.td_pstruct->tag) {
+    tag_clean(&tmp);
     return false;
+  }
   i = 0;
   while (i < st->map.count) {
     if (! env_eval_quote_tag(env, s->tag + i,
@@ -304,6 +308,7 @@ bool env_eval_quote_struct (s_env *env, s_struct *s, s_tag *dest)
   dest->data = tmp.data;
   return true;
  ko:
+  tag_clean(&tmp);
   return false;
 }
 

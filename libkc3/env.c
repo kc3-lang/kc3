@@ -277,9 +277,18 @@ s_env * env_args_init (s_env *env, int *argc, char ***argv)
       env->argv0 = str_new_1(NULL, env->argv[0]);
     if (! env->argv0)
       return NULL;
-    if (! (env->argv0_dir = alloc(sizeof(s_str))))
+    if (! (env->argv0_dir = alloc(sizeof(s_str)))) {
+      str_delete(env->argv0);
+      env->argv0 = NULL;
       return NULL;
-    file_dirname(env->argv0, env->argv0_dir);
+    }
+    if (! file_dirname(env->argv0, env->argv0_dir)) {
+      str_delete(env->argv0_dir);
+      str_delete(env->argv0);
+      env->argv0_dir = NULL;
+      env->argv0 = NULL;
+      return NULL;
+    }
     while (*argc > 0 && *argc != argc_prev) {
       argc_prev = *argc;
       if (**argv && ! strcmp(**argv, "--trace")) {

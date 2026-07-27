@@ -54,6 +54,7 @@
 #include "psym.h"
 #include "ptag.h"
 #include "pvar.h"
+#include "ratio.h"
 #include "rwlock.h"
 #include "str.h"
 #include "struct.h"
@@ -156,44 +157,56 @@ s_marshall_read * marshall_read_array (s_marshall_read *mr,
   }
   tmp.dimensions = alloc(sizeof(s_array_dimension) *
                          tmp.dimension_count);
+  if (! tmp.dimensions)
+    return NULL;
   i = 0;
   while (i < tmp.dimension_count) {
     if (! marshall_read_uw(mr, heap, &tmp.dimensions[i].count) ||
         ! marshall_read_uw(mr, heap, &tmp.dimensions[i].item_size))
-      return NULL;
+      goto ko;
     i++;
   }
   if (! marshall_read_uw(mr, heap, &tmp.count) ||
       ! marshall_read_uw(mr, heap, &tmp.size) ||
       ! marshall_read_bool(mr, heap, &has_data))
-    return NULL;
+    goto ko;
   if (has_data) {
-    array_allocate(&tmp);
+    if (! array_allocate(&tmp))
+      goto ko;
     data = tmp.data;
     item_size = tmp.dimensions[tmp.dimension_count - 1].item_size;
     i = 0;
     while (i < tmp.count) {
-      if (! marshall_read_data(mr, heap, tmp.element_type, data))
-        return NULL;
+      if (! marshall_read_data(mr, heap, tmp.element_type, data)) {
+        tmp.count = i + 1;
+        goto ko;
+      }
       data = (u8 *) data + item_size;
       i++;
     }
   }
   else {
     if (! marshall_read_bool(mr, heap, &has_tags))
-      return NULL;
+      goto ko;
     if (has_tags) {
       tmp.tags = alloc(sizeof(s_tag) * tmp.count);
+      if (! tmp.tags)
+        goto ko;
       i = 0;
       while (i < tmp.count) {
-        if (! marshall_read_tag(mr, heap, tmp.tags + i))
-          return NULL;
+        if (! marshall_read_tag(mr, heap, tmp.tags + i)) {
+          tmp.count = i + 1;
+          goto ko;
+        }
         i++;
       }
     }
   }
   *dest = tmp;
   return mr;
+ ko:
+  array_clean(&tmp);
+  return NULL;
 }
 
 s_marshall_read * marshall_read_array_data (s_marshall_read *mr,
@@ -428,7 +441,15 @@ s_marshall_read * marshall_read_chunk_file (s_marshall_read *mr)
 
 void marshall_read_clean (s_marshall_read *mr)
 {
+  FILE *buf_fp = NULL;
+  FILE *heap_fp = NULL;
   assert(mr);
+  if (mr->source && mr->buf_owned) {
+    if (mr->buf && mr->buf->user_ptr)
+      buf_fp = buf_file_fp(mr->buf);
+    if (mr->heap && mr->heap->user_ptr)
+      heap_fp = buf_file_fp(mr->heap);
+  }
   if (mr->buf && mr->heap && mr->buf->user_ptr != mr->heap->user_ptr)
     buf_file_close(mr->heap);
   if (mr->buf && mr->buf_owned)
@@ -443,6 +464,10 @@ void marshall_read_clean (s_marshall_read *mr)
     alloc_free(mr->heap);
   if (mr->buf && mr->buf_owned)
     alloc_free(mr->buf);
+  if (heap_fp)
+    fclose(heap_fp);
+  if (buf_fp && buf_fp != heap_fp)
+    fclose(buf_fp);
   marshall_read_ht_clean(mr);
 }
 
@@ -1235,16 +1260,25 @@ s_marshall_read * marshall_read_init (s_marshall_read *mr)
 {
   assert(mr);
   *mr = (s_marshall_read) {0};
-  if (! (mr->heap = alloc(sizeof(s_buf))) ||
-      ! buf_init_alloc(mr->heap, BUF_SIZE)) {
+  if (! (mr->heap = alloc(sizeof(s_buf)))) {
     err_puts("marshall_read_init: heap allocation error");
     assert(! "marshall_read_init: heap allocation error");
     return NULL;
   }
-  if (! (mr->buf = alloc(sizeof(s_buf))) ||
-      ! buf_init_alloc(mr->buf, BUF_SIZE)) {
+  if (! buf_init_alloc(mr->heap, BUF_SIZE)) {
+    alloc_free(mr->heap);
+    mr->heap = NULL;
+    return NULL;
+  }
+  if (! (mr->buf = alloc(sizeof(s_buf)))) {
     err_puts("marshall_read_init: buffer allocation error");
     assert(! "marshall_read_init: buffer allocation error");
+    buf_clean(mr->heap);
+    alloc_free(mr->heap);
+    return NULL;
+  }
+  if (! buf_init_alloc(mr->buf, BUF_SIZE)) {
+    alloc_free(mr->buf);
     buf_clean(mr->heap);
     alloc_free(mr->heap);
     return NULL;
@@ -1259,10 +1293,14 @@ s_marshall_read * marshall_read_init_buf (s_marshall_read *mr,
   assert(mr);
   assert(buf);
   *mr = (s_marshall_read) {0};
-  if (! (mr->heap = alloc(sizeof(s_buf))) ||
-      ! buf_init_alloc(mr->heap, BUF_SIZE)) {
+  if (! (mr->heap = alloc(sizeof(s_buf)))) {
     err_puts("marshall_read_init_buf: heap allocation error");
     assert(! "marshall_read_init_buf: heap allocation error");
+    return NULL;
+  }
+  if (! buf_init_alloc(mr->heap, BUF_SIZE)) {
+    alloc_free(mr->heap);
+    mr->heap = NULL;
     return NULL;
   }
   mr->buf = buf;
@@ -1324,13 +1362,11 @@ s_marshall_read * marshall_read_init_file (s_marshall_read *mr,
   }
   if (buf_seek(mr->heap, sizeof(s_marshall_header), SEEK_SET) <= 0) {
     error_msg = "buf_seek heap";
-    buf_file_close(mr->heap);
     goto ko_close;
   }
   mr->heap_start = 0;
   return mr;
  ko_close:
-  buf_file_close(mr->buf);
  ko:
   err_write_1("marshall_read_init_file: ");
   err_inspect_str(path);
@@ -1385,6 +1421,14 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
   mr->heap->wpos = mr->heap->rpos + mr->heap_size;
 #if HAVE_PTHREAD
   mr->heap->rwlock = rwlock_new();
+  if (! mr->heap->rwlock) {
+    alloc_free(mr->heap);
+    buf_clean(mr->buf);
+    alloc_free(mr->buf);
+    mr->heap = NULL;
+    mr->buf = NULL;
+    return NULL;
+  }
 #endif
   mr->buf_owned = true;
   return mr;
@@ -2280,6 +2324,7 @@ s_marshall_read * marshall_read_quote (s_marshall_read *mr,
   if (! (tmp.tag = alloc(sizeof(s_tag))))
     return NULL;
   if (! marshall_read_tag(mr, heap, tmp.tag)) {
+    tag_clean(tmp.tag);
     alloc_free(tmp.tag);
     return NULL;
   }
@@ -2303,8 +2348,10 @@ s_marshall_read * marshall_read_ratio (s_marshall_read *mr,
     return NULL;
   }
   if (! marshall_read_integer(mr, heap, &tmp.numerator) ||
-      ! marshall_read_integer(mr, heap, &tmp.denominator))
+      ! marshall_read_integer(mr, heap, &tmp.denominator)) {
+    ratio_clean(&tmp);
     return NULL;
+  }
   *dest = tmp;
   return mr;
 }
@@ -2431,16 +2478,22 @@ s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
       ! marshall_read_map(mr, heap, &tmp.map))
     return NULL;
   if (! marshall_read_pcallable(mr, heap, &tmp.clean))
-    return NULL;
+    goto ko;
   tmp.ref_count = 1;
   if (tmp.map.count)
     struct_type_update_map(&tmp);
   *dest = tmp;
 #if HAVE_PTHREAD
   if (! mutex_init(&dest->mutex))
-    return NULL;
+    goto ko_dest;
 #endif
   return mr;
+ ko_dest:
+  struct_type_clean(dest);
+  return NULL;
+ ko:
+  struct_type_clean(&tmp);
+  return NULL;
 }
 
 s_marshall_read * marshall_read_sw (s_marshall_read *mr,
@@ -2730,6 +2783,7 @@ s_marshall_read * marshall_read_unquote (s_marshall_read *mr,
     if (! (tmp.tag = alloc(sizeof(s_tag))))
       return NULL;
     if (! marshall_read_tag(mr, heap, tmp.tag)) {
+      tag_clean(tmp.tag);
       alloc_free(tmp.tag);
       return NULL;
     }

@@ -150,9 +150,13 @@ s_tuple * tuple_init_copy (s_tuple *tuple, s_tuple *src)
   uw i = 0;
   assert(src);
   assert(tuple);
-  tuple_init(tuple, src->count);
+  if (! tuple_init(tuple, src->count))
+    return NULL;
   while (i < src->count) {
-    tag_init_copy(tuple->tag + i, src->tag + i);
+    if (! tag_init_copy(tuple->tag + i, src->tag + i)) {
+      tuple_clean(tuple);
+      return NULL;
+    }
     i++;
   }
   return tuple;

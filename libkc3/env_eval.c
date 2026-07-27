@@ -61,14 +61,15 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
     err_puts("env_eval_array: cannot eval with securelevel > 2");
     abort();
   }
-  array_init_copy(&tmp, array);
+  if (! array_init_copy(&tmp, array))
+    return false;
   if (tmp.dimension_count) {
     item_size = tmp.dimensions[tmp.dimension_count - 1].item_size;
     if (! tmp.data && tmp.tags) {
       tmp.free_data = alloc(tmp.dimensions[0].count *
                             tmp.dimensions[0].item_size);
       if (! tmp.free_data)
-        return false;
+        goto ko;
       tmp.data = tmp.free_data;
       data = tmp.data;
       tag = tmp.tags;

@@ -103,15 +103,21 @@ s_tag * struct_access_sym (s_struct *s, const s_sym *key, s_tag *dest)
         return NULL;
       if (st) {
         tag_init_pstruct_with_type(&tmp, st);
-        if (! struct_allocate(tmp.data.td_pstruct))
+        if (! struct_allocate(tmp.data.td_pstruct)) {
+          tag_clean(&tmp);
           return NULL;
+        }
       }
     }
   }
-  if (! tag_to_pointer(&tmp, type, &tmp_data))
+  if (! tag_to_pointer(&tmp, type, &tmp_data)) {
+    tag_clean(&tmp);
     return NULL;
-  if (! data_init_copy(type, tmp_data, data))
+  }
+  if (! data_init_copy(type, tmp_data, data)) {
+    tag_clean(&tmp);
     return NULL;
+  }
   *dest = tmp;
   return dest;
 }
@@ -370,7 +376,7 @@ s_struct * struct_init_copy (s_struct *s, s_struct *src)
   if (src->data) {
     s->data = alloc(s->pstruct_type->size);
     if (! s->data)
-      return NULL;
+      goto ko;
     s->free_data = true;
     i = 0;
     while (i < s->pstruct_type->map.count) {
@@ -393,7 +399,7 @@ s_struct * struct_init_copy (s_struct *s, s_struct *src)
   else if (src->tag) {
     s->tag = alloc(s->pstruct_type->map.count * sizeof(s_tag));
     if (! s->tag)
-      return NULL;
+      goto ko;
     i = 0;
     while (i < s->pstruct_type->map.count) {
       if (! tag_init_copy(s->tag + i, src->tag + i))
@@ -424,7 +430,7 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
     return NULL;
   s->tag = alloc(s->pstruct_type->map.count * sizeof(s_tag));
   if (! s->tag)
-    return NULL;
+    goto ko;
   i = 0;
   while (i < s->pstruct_type->map.count) {
     k = keys;
@@ -491,7 +497,8 @@ s_struct * struct_init_with_type (s_struct *s, s_struct_type *st)
   assert(s);
   assert(st);
   *s = (s_struct) {0};
-  pstruct_type_init_copy(&s->pstruct_type, &st);
+  if (! pstruct_type_init_copy(&s->pstruct_type, &st))
+    return NULL;
   s->ref_count = 1;
 #if HAVE_PTHREAD
   mutex_init(&s->mutex);

@@ -410,7 +410,7 @@ s_list ** file_list_recursive (const s_str *path, s_list **dest)
 {
   char b[PATH_MAX];
   u32  b_pos = 0;
-  DIR           *dir;
+  DIR           *dir = NULL;
   struct dirent *dirent;
   s32 e;
   s_list  *in;
@@ -426,11 +426,11 @@ s_list ** file_list_recursive (const s_str *path, s_list **dest)
   while (in) {
     if (in->tag.type != TAG_STR) {
       ERROR("not an Str");
-      return NULL;
+      goto ko;
     }
     if (in->tag.data.td_str.size >= PATH_MAX - 2) {
       ERROR("path is longer than PATH_MAX 1");
-      return NULL;
+      goto ko;
     }
     memcpy(b, in->tag.data.td_str.ptr.p_pchar, in->tag.data.td_str.size);
     b_pos = in->tag.data.td_str.size;
@@ -475,7 +475,8 @@ s_list ** file_list_recursive (const s_str *path, s_list **dest)
  ko:
   list_delete_all(tmp);
   list_delete_all(in);
-  closedir(dir);
+  if (dir)
+    closedir(dir);
   return NULL;
 }
 
