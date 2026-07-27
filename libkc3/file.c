@@ -744,6 +744,8 @@ s_str * file_read_all (const s_str *path, s_str *dest)
       }
       err_inspect_str(path);
       err_write_1("\n");
+      alloc_free(buf);
+      close(fd);
       return NULL;
     }
     pos += r;
@@ -861,6 +863,7 @@ s_str * file_read_slice (s_str *path, u64 start, u64 end, s_str *dest)
     abort();
   }
   *dest = tmp;
+  close(fd);
   return dest;
 }
 
@@ -883,7 +886,7 @@ bool file_rm_rf (const s_str *path)
     if (file_is_directory_1(p[i].ptr.p_pchar)) {
       if (i > 254) {
         err_puts("file_rm_rf: max subdirs reached (254)");
-        return false;
+        goto clean;
       }
       if (! dir[i] &&
           ! (dir[i] = opendir(p[i].ptr.p_pchar))) {
@@ -892,7 +895,7 @@ bool file_rm_rf (const s_str *path)
         err_write_1(strerror(e));
         err_write_1(": ");
         err_write_str(path);
-        return false;
+        goto clean;
       }
     next:
       do {
@@ -941,10 +944,11 @@ bool file_rm_rf (const s_str *path)
     }
   }
  clean:
-  while (i > 0) {
+  while (i >= 0) {
     if (dir[i])
       closedir(dir[i]);
-    str_clean(p + i);
+    if (i > 0)
+      str_clean(p + i);
     i--;
   }
   return false;
@@ -1273,6 +1277,7 @@ bool file_write (const s_str *path, const s_str *data)
       }
       err_inspect_str(path);
       err_write_1("\n");
+      close(fd);
       return false;
     }
     pos += w;

@@ -1482,12 +1482,14 @@ sw facts_open_file_after_dump (s_facts *facts, const s_str *path)
     if ((r = facts_load(facts, &in, path)) <= 0) {
       buf_file_close(&in);
       buf_clean(&in);
+      fclose(fp);
       facts->log = log_save;
       return r;
     }
     result = r;
     buf_file_close(&in);
     buf_clean(&in);
+    fclose(fp);
   }
   else {
     err_write_1("facts_open_file_after_dump: binary format\n");
@@ -1663,10 +1665,14 @@ sw facts_open_file_create (s_facts *facts, const s_str *path)
   if (! fp)
     return -1;
   if (! (facts->log = log_new()))
+  {
+    fclose(fp);
     return -1;
+  }
   if (! log_open_binary(facts->log, fp, path)) {
     log_delete(facts->log);
     facts->log = NULL;
+    fclose(fp);
     return -1;
   }
   return result;
