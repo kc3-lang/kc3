@@ -684,9 +684,9 @@ s_str * ekc3_render_file_to_str (const s_str *path, s_str *dest)
 {
   s_env *env;
   s_tag *file_dir;
-  s_tag  file_dir_save;
+  s_tag  file_dir_save = {0};
   s_tag *file_path;
-  s_tag  file_path_save;
+  s_tag  file_path_save = {0};
   FILE *fp;
   s_buf in;
   char  in_data[BUF_SIZE];

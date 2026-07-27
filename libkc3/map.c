@@ -28,7 +28,7 @@ s_tag * map_access (const s_map *map, s_list *key,
   s_tag *first;
   s_list *next;
   s_tag *r;
-  s_tag tag;
+  s_tag tag = {0};
   assert(map);
   assert(key);
   assert(dest);
@@ -68,7 +68,7 @@ void map_clean (s_map *map)
 
 s_tag * map_count (const s_map *map, s_tag *dest)
 {
-  s_tag tmp;
+  s_tag tmp = {0};
   tag_init_uw(&tmp, map->count);
   return tag_integer_reduce(&tmp, dest);
 }
@@ -378,7 +378,7 @@ s_map * map_new_from_lists (s_list *keys, s_list *values)
 s_map * map_put (s_map *map, s_tag *key,
                  s_tag *value, s_map *dest)
 {
-  s_map tmp;
+  s_map tmp = {0};
   uw i;
   uw j;
   if (map_index(map, key, &i)) {
@@ -458,8 +458,8 @@ s_map * map_sort (s_map *map)
 {
   uw i;
   uw j;
-  s_tag k;
-  s_tag v;
+  s_tag k = {0};
+  s_tag v = {0};
   i = map->count;
   while (i > 0) {
     i--;

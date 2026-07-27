@@ -65,7 +65,7 @@ static void http_request_statics_init (void)
 s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 {
   bool b;
-  s_tag  body;
+  s_tag  body = {0};
   s_str *body_str;
   s_str boundary = {0};
   s_str boundary_newline = {0};
@@ -96,7 +96,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   static const s_str query_separator = STR("?");
   sw r;
   //s_buf_save save;
-  s_tag size;
+  s_tag size = {0};
   s_list **tail;
   s_tag tmp = {0};
   s_http_request tmp_req = {0};
@@ -829,7 +829,7 @@ s_tag * http_request_header_get (const s_http_request *req,
 s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
 {
   const s_list *allowed_methods;
-  s_tag allowed_methods_tag;
+  s_tag allowed_methods_tag = {0};
   s_ident ident;
   s_tag tmp = {0};
   assert(str);

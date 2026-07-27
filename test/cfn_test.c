@@ -47,7 +47,7 @@ bool cfn_test_not (bool a)
 TEST_CASE(cfn_apply)
 {
   s_list *args;
-  s_tag result;
+  s_tag result = {0};
   s_cfn a;
   cfn_init(&a, sym_1("cfn_test_not"),
            list_new_1("(:bool)"),

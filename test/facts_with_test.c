@@ -35,11 +35,11 @@ TEST_CASE(facts_with_)
   s_fact fact;
   s_facts facts;
   sw i = 0;
-  s_tag object;
+  s_tag object = {0};
   const char *p[9] = { "A", "B", "C", "D", "E", "F", "G", "H", NULL };
-  s_tag predicate;
-  s_tag subject;
-  s_tag tag[8];
+  s_tag predicate = {0};
+  s_tag subject = {0};
+  s_tag tag[8] = {0};
   while (p[i]) {
     tag_init_1(tag + i, p[i]);
     i++;
@@ -251,11 +251,11 @@ TEST_CASE(facts_with_tags)
   s_fact fact;
   s_facts facts;
   sw i = 0;
-  s_tag object;
+  s_tag object = {0};
   const char *p[9] = { "A", "B", "C", "D", "E", "F", "G", "H", NULL };
-  s_tag predicate;
-  s_tag subject;
-  s_tag tag[8];
+  s_tag predicate = {0};
+  s_tag subject = {0};
+  s_tag tag[8] = {0};
   while (p[i]) {
     tag_init_1(tag + i, p[i]);
     i++;

@@ -1463,21 +1463,20 @@ s_marshall_read * marshall_read_integer (s_marshall_read *mr, bool heap,
 s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
                                       s_list *dest)
 {
-  s_list tmp = {0};
   assert(mr);
   assert(dest);
+  *dest = (s_list) {0};
   if (! marshall_read_1(mr, heap, "_KC3LIST_")) {
     err_puts("marshall_read_list: marshall_read_1 magic");
     assert(! "marshall_read_list: marshall_read_1 magic");
     return NULL;
   }
-  if (! marshall_read_tag(mr, heap, &tmp.tag))
+  if (! marshall_read_tag(mr, heap, &dest->tag))
     return NULL;
-  if (! marshall_read_tag(mr, heap, &tmp.next)) {
-    tag_clean(&tmp.tag);
+  if (! marshall_read_tag(mr, heap, &dest->next)) {
+    tag_clean(&dest->tag);
     return NULL;
   }
-  *dest = tmp;
   return mr;
 }
 
@@ -1939,8 +1938,8 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
   s_call call = {0};
   s_env *env = NULL;
   s_ident ident = {0};
-  s_tag tag;
-  s_tag tag_1;
+  s_tag tag = {0};
+  s_tag tag_1 = {0};
   p_sym target_type;
   u64 offset = 0;
   void *present = NULL;

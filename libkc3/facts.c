@@ -631,11 +631,11 @@ sw facts_dump (s_facts *facts, s_buf *buf)
 {
   s_facts_cursor cursor;
   s_fact *fact;
-  s_tag object;
-  s_tag predicate;
+  s_tag object = {0};
+  s_tag predicate = {0};
   sw r;
   sw result = 0;
-  s_tag subject;
+  s_tag subject = {0};
   assert(facts);
   assert(buf);
   tag_init_pvar(&subject, &g_sym_Tag);
@@ -719,11 +719,11 @@ sw facts_dump_binary (s_facts *facts, s_buf *buf)
   s_facts_cursor cursor;
   s_fact *fact;
   s_marshall m = {0};
-  s_tag object;
-  s_tag predicate;
+  s_tag object = {0};
+  s_tag predicate = {0};
   sw r = 0;
   sw result = 0;
-  s_tag subject;
+  s_tag subject = {0};
   assert(facts);
   assert(buf);
   tag_init_pvar(&subject, &g_sym_Tag);
@@ -2049,7 +2049,7 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   s_fact *fact;
   s_list *list = NULL;
   s_facts_transaction transaction;
-  s_tag pvar;
+  s_tag pvar = {0};
   assert(facts);
   assert(subject);
   assert(predicate);

@@ -86,7 +86,7 @@ s_tag * pdf_parse_from_str (s_str *str,
 s_tag * pdf_tag_init_xref (s_tag *tag, u32 object_number,
                            u16 generation)
 {
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(tag);
   if (! tag_init_ptuple(&tmp, 3))
     return NULL;

@@ -37,7 +37,7 @@ int main (int argc, char **argv)
   s_call call = {0};
   bool    daemonize = true;
   s_ident daemonize_ident;
-  s_tag   daemonize_value;
+  s_tag   daemonize_value = {0};
   const s_str dump_path = STR("kc3.dump");
   s32 e;
   s_env *env;

@@ -29,7 +29,7 @@ s_tag * rpc_request (const s_str *input, s_tag *dest)
   char  err_buf_data[BUF_SIZE];
   s_buf out_buf;
   char  out_buf_data[BUF_SIZE];
-  s_tag input_tag;
+  s_tag input_tag = {0};
   s_rpc_response *response;
   s_tag tmp = {0};
   assert(input);

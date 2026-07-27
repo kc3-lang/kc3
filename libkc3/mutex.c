@@ -18,11 +18,13 @@
 void mutex_clean (s_mutex *mutex)
 {
   assert(mutex);
-  if (mutex->ready &&
-      pthread_mutex_destroy(&mutex->mutex)) {
-    err_puts("mutex_clean: pthread_mutex_destroy");
-    assert(! "mutex_clean: pthread_mutex_destroy");
-    abort();
+  if (mutex->ready) {
+    if (pthread_mutex_destroy(&mutex->mutex)) {
+      err_puts("mutex_clean: pthread_mutex_destroy");
+      assert(! "mutex_clean: pthread_mutex_destroy");
+      abort();
+    }
+    mutex->ready = false;
   }
 }
 

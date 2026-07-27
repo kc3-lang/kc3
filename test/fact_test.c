@@ -58,7 +58,7 @@ s_fact * fact_test_init_3 (s_fact *fact, const char *subject,
 
 TEST_CASE(fact_init)
 {
-  s_tag sym[3];
+  s_tag sym[3] = {0};
   s_fact fact;
   tag_init_psym(sym, sym_1("A"));
   tag_init_psym(sym + 1, sym_1("B"));

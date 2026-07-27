@@ -191,7 +191,7 @@
 
 #define INSPECT_TEST_TAG(test, expected)                               \
   do {                                                                 \
-    s_tag tag_test;                                                    \
+    s_tag tag_test = {0};                                                    \
     s_str str_result;                                                  \
     test_context("inspect_tag(" # test ") -> " # expected);            \
     tag_init_1(&tag_test, (test));                                     \
@@ -205,7 +205,7 @@
 
 #define INSPECT_TEST_TUPLE(test, expected)                             \
   do {                                                                 \
-    s_tuple tuple_test;                                                \
+    s_tuple tuple_test = {0};                                                \
     s_str str_result;                                                  \
     test_context("inspect_tuple(" # test ") -> " # expected);          \
     tuple_init_1(&tuple_test, (test));                                 \
@@ -327,7 +327,7 @@ TEST_CASE_END(inspect_call)
 
 TEST_CASE(inspect_fact)
 {
-  s_tag tag[3];
+  s_tag tag[3] = {0};
   s_fact fact;
   tag_init_1(tag, "A");
   tag_init_1(tag + 1, "B");

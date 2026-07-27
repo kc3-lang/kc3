@@ -1179,8 +1179,8 @@ s_file_stat * file_stat_init_struct_stat (s_file_stat *dest,
 struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
                                         struct stat *dest)
 {
-  s_tag tag_sym_directory;
-  s_tag tag_sym_file;
+  s_tag tag_sym_directory = {0};
+  s_tag tag_sym_file = {0};
   struct stat tmp = {0};
   assert(file_stat);
   assert(dest);

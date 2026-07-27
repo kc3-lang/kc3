@@ -48,7 +48,7 @@ static void kc3_event_callback (int fd, short events, void *tag_tuple)
   struct event *ev;
   s_list       *events_list;
   s_tag *tag;
-  s_tag tmp;
+  s_tag tmp = {0};
   tag = tag_tuple;
   if (tag->type != TAG_PTUPLE) {
     err_puts("kc3_event_callback: invalid arg: not a Tuple");

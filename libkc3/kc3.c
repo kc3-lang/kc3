@@ -429,7 +429,7 @@ s_tag * kc3_defspecial_operator (s_tag *tag, s_tag *dest)
 
 s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
 {
-  s_tag tag;
+  s_tag tag = {0};
   s_tag tmp = {0};
   assert(spec);
   if (securelevel(0) > 1) {
@@ -1154,7 +1154,7 @@ s_tag * kc3_match (s_tag *tag, s_map *map, s_tag *dest)
   s_env *env;
   uw i;
   bool silence_errors;
-  s_tag tag_eval;
+  s_tag tag_eval = {0};
   s_tag tag_tmp = {0};
   s_unwind_protect unwind_protect;
   assert(tag);

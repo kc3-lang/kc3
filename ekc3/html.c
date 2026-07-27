@@ -20,13 +20,13 @@ s_str * html_escape (s_tag *src, s_str *dest)
   const s_list *e;
   const s_list *escape;
   s_ident       escape_ident;
-  s_tag         escape_tag;
+  s_tag         escape_tag = {0};
   s_tag *replace;
   s_tag *reserved;
   s_str s;
   s_str str = {0};
   p_sym sym_Str = &g_sym_Str;
-  s_tag tag;
+  s_tag tag = {0};
   assert(src);
   assert(dest);
   if (! str_init_cast(&str, &sym_Str, src)) {

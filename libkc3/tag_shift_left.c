@@ -19,7 +19,7 @@ s_tag * tag_shift_left (s_tag *a, s_tag *b, s_tag *result)
 {
   s_integer tmp = {0};
   s_integer tmp2 = {0};
-  s_tag tmp_a;
+  s_tag tmp_a = {0};
   switch (a->type) {
   case TAG_BOOL:
     tmp_a.data.td_bool_ = a->data.td_bool_ ? 1 : 0;

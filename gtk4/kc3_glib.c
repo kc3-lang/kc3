@@ -37,7 +37,7 @@ static void kc3_g_signal_callback (GObject *object,
                                    s_callable *callback)
 {
   s_list *arguments;
-  s_tag tag;
+  s_tag tag = {0};
   if (! (arguments = list_new_ptr(object, NULL)))
     return;
   eval_callable_call(callback, arguments, &tag);

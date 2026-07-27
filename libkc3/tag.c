@@ -250,9 +250,36 @@ s_tag * tag_cast_integer_to_u64 (s_tag *tag)
   return tag_u64(tag, i);
 }
 
-void tag_clean (s_tag *tag)
+s_tag * tag_clean (s_tag *tag)
 {
-  assert(tag);
+  if (tag->ref_count) {
+#if HAVE_PTHREAD
+    if (tag->ref_count_mutex.ready)
+      mutex_lock(&tag->ref_count_mutex);
+#endif
+    if (tag->ref_count < 0) {
+      err_puts("tag_clean: invalid reference count");
+      assert(! "tag_clean: invalid reference count");
+#if HAVE_PTHREAD
+      if (tag->ref_count_mutex.ready)
+        mutex_unlock(&tag->ref_count_mutex);
+#endif
+      return tag;
+    }
+    if (--tag->ref_count) {
+#if HAVE_PTHREAD
+      if (tag->ref_count_mutex.ready)
+        mutex_unlock(&tag->ref_count_mutex);
+#endif
+      return tag;
+    }
+#if HAVE_PTHREAD
+    if (tag->ref_count_mutex.ready) {
+      mutex_unlock(&tag->ref_count_mutex);
+      mutex_clean(&tag->ref_count_mutex);
+    }
+#endif
+  }
   switch (tag->type) {
   case TAG_ARRAY:       array_clean(&tag->data.td_array);         break;
   case TAG_DO_BLOCK:    do_block_clean(&tag->data.td_do_block);   break;
@@ -303,6 +330,7 @@ void tag_clean (s_tag *tag)
   case TAG_VOID:
     break;
   }
+  return NULL;
 }
 
 s_tag * tag_copy (s_tag *tag, s_tag *src)
@@ -314,29 +342,8 @@ s_tag * tag_copy (s_tag *tag, s_tag *src)
 void tag_delete (s_tag *tag)
 {
   assert(tag);
-#if HAVE_PTHREAD
-  mutex_lock(&tag->ref_count_mutex);
-#endif
-  if (tag->ref_count <= 0) {
-    err_puts("tag_delete: invalid reference count");
-    assert(! "tag_delete: invalid reference count");
-#if HAVE_PTHREAD
-    mutex_unlock(&tag->ref_count_mutex);
-#endif
-    return;
-  }
-  if (--tag->ref_count) {
-#if HAVE_PTHREAD
-    mutex_unlock(&tag->ref_count_mutex);
-#endif
-    return;
-  }
-#if HAVE_PTHREAD
-  mutex_unlock(&tag->ref_count_mutex);
-  mutex_clean(&tag->ref_count_mutex);
-#endif
-  tag_clean(tag);
-  alloc_free(tag);
+  if (! tag_clean(tag))
+    alloc_free(tag);
 }
 
 bool * tag_eq (s_tag *a, s_tag *b, bool *dest)
@@ -1905,7 +1912,7 @@ s_tag * tag_void (s_tag *tag)
 
 bool tag_xor (const s_tag *a, const s_tag *b)
 {
-  s_tag f;
+  s_tag f = {0};
   tag_init_bool(&f, false);
   return (compare_tag(a, &f) != 0) != (compare_tag(b, &f) != 0);
 }

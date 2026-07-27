@@ -30,7 +30,7 @@ extern s_tag g_tag_first;
 extern s_tag g_tag_last;
 
 /* Stack-allocation compatible functions, call tag_clean after use. */
-void    tag_clean (s_tag *tag);
+s_tag * tag_clean (s_tag *tag);
 s_tag * tag_init (s_tag *tag);
 s_tag * tag_init_1 (s_tag *tag, const char *p);
 #if HAVE_F80

@@ -157,8 +157,8 @@ TEST_CASE_END(compare_list)
 
 TEST_CASE(compare_map)
 {
-  s_map a;
-  s_map b;
+  s_map a = {0};
+  s_map b = {0};
   COMPARE_TEST_MAP(map_init_1(&a, "%{a: A, b: B}"),
                    map_init_1(&b, "%{a: A, b: B}"), 0);
   COMPARE_TEST_MAP(&a, &a, 0);
@@ -214,8 +214,8 @@ TEST_CASE_END(compare_str)
 
 TEST_CASE(compare_tag)
 {
-  s_tag a;
-  s_tag b;
+  s_tag a = {0};
+  s_tag b = {0};
   /* tuple */
   COMPARE_TEST_TAG(tag_init_1(&a, "{a, b}"), &a, 0);
   COMPARE_TEST_TAG(tag_1(&a, "{a, b}"), tag_init_1(&b, "{a, b}"), 0);
@@ -406,8 +406,8 @@ TEST_CASE_END(compare_tag)
 
 TEST_CASE(compare_tuple)
 {
-  s_tuple a;
-  s_tuple b;
+  s_tuple a = {0};
+  s_tuple b = {0};
   COMPARE_TEST_TUPLE(tuple_init_1(&a, "{A, B}"),
                      tuple_init_1(&b, "{A, B}"), 0);
   COMPARE_TEST_TUPLE(&a, &a, 0);

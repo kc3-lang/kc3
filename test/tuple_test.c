@@ -19,7 +19,7 @@
 
 #define TUPLE_TEST_INIT_CLEAN(test)                                    \
   do {                                                                 \
-    s_tuple tuple_test;                                                \
+    s_tuple tuple_test = {0};                                                \
     test_context("tuple_init(" # test ")");                            \
     TEST_EQ(tuple_init(&tuple_test, (test)), &tuple_test);             \
     tuple_clean(&tuple_test);                                          \
@@ -28,7 +28,7 @@
 
 #define TUPLE_TEST_INIT_1(test)                                        \
   do {                                                                 \
-    s_tuple tuple_test;                                                \
+    s_tuple tuple_test = {0};                                                \
     test_context("tuple_init_1(" # test ")");                          \
     TEST_EQ(tuple_init_1(&tuple_test, (test)), &tuple_test);           \
     tuple_clean(&tuple_test);                                          \

@@ -80,7 +80,7 @@ TEST_CASE(env_eval_call)
 {
   s_env env = {0};
   s_call call;
-  s_tag result;
+  s_tag result = {0};
   env_init(&env, 0, NULL);
   test_context("env_eval_call(1 + 2) -> 3");
   call_init(&call);
@@ -101,9 +101,9 @@ TEST_CASE(env_eval_equal_tag)
 {
   s_env env;
   s_frame frame;
-  s_tag x;
-  s_tag y;
-  s_tag z;
+  s_tag x = {0};
+  s_tag y = {0};
+  s_tag z = {0};
   env_init(&env, 0, NULL);
   env.frame = frame_init(&frame, env.frame);
   test_context("x = 1");
@@ -174,9 +174,9 @@ TEST_CASE_END(env_eval_equal_tag)
 TEST_CASE(env_eval_tag)
 {
   s_env env;
-  s_tag x;
-  s_tag y;
-  s_tag expected;
+  s_tag x = {0};
+  s_tag y = {0};
+  s_tag expected = {0};
   env_init(&env, 0, NULL);
   test_context("env_eval_tag(1 + 2) -> 3");
   TEST_EQ(tag_init_1(&x, "1 + 2"), &x);

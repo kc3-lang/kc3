@@ -40,8 +40,8 @@ void tag_test (void)
 
 TEST_CASE(tag_hash_u64)
 {
-  s_tag a;
-  s_tag b;
+  s_tag a = {0};
+  s_tag b = {0};
   tag_init_1(&a, "{a, b}");
   TAG_TEST_HASH_U64_COMPARE(&a, &a, 0);
   TAG_TEST_HASH_U64_COMPARE(tag_1(&a, "{a, b}"), tag_init_1(&b, "{a, b}"), 0);
@@ -55,7 +55,7 @@ TEST_CASE_END(tag_hash_u64)
 
 TEST_CASE(tag_init_1)
 {
-  s_tag a;
+  s_tag a = {0};
   TEST_ASSERT(tag_init_1(&a, "fn () { [] }"));
   tag_clean(&a);
   TEST_ASSERT(tag_init_1(&a, "fn (x) { x }"));

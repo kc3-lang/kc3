@@ -97,74 +97,66 @@ s_call * call_init (s_call *call)
 s_call * call_init_call_cast (s_call *call, const s_sym *type)
 {
   s_list *next;
-  s_call tmp;
-  call_init(&tmp);
-  tmp.ident.module = type;
-  tmp.ident.sym = &g_sym_cast;
+  call_init(call);
+  call->ident.module = type;
+  call->ident.sym = &g_sym_cast;
   next = list_new(NULL);
   if (! next) {
-    call_clean(&tmp);
+    call_clean(call);
     return NULL;
   }
-  tmp.arguments = list_new(next);
-  if (! tmp.arguments) {
-    call_clean(&tmp);
+  call->arguments = list_new(next);
+  if (! call->arguments) {
+    call_clean(call);
     list_delete_all(next);
     return NULL;
   }
-  tag_init_psym(&tmp.arguments->tag, type);
-  *call = tmp;
+  tag_init_psym(&call->arguments->tag, type);
   return call;
 }
 
 s_call * call_init_copy (s_call *call, s_call *src)
 {
-  s_call tmp = {0};
   assert(src);
   assert(call);
-  call_init(&tmp);
-  if (! ident_init_copy(&tmp.ident, &src->ident) ||
-      ! plist_init_copy(&tmp.arguments, &src->arguments)) {
-    call_clean(&tmp);
+  call_init(call);
+  if (! ident_init_copy(&call->ident, &src->ident) ||
+      ! plist_init_copy(&call->arguments, &src->arguments)) {
+    call_clean(call);
     return NULL;
   }
   if (src->pcallable &&
-      ! pcallable_init_copy(&tmp.pcallable, &src->pcallable)) {
-    call_clean(&tmp);
+      ! pcallable_init_copy(&call->pcallable, &src->pcallable)) {
+    call_clean(call);
     return NULL;
   }
-  *call = tmp;
   return call;
 }
 
 s_call * call_init_op (s_call *call)
 {
   s_list *arg;
-  s_call tmp = {0};
   assert(call);
-  call_init(&tmp);
+  call_init(call);
   arg = list_new(NULL);
   if (! arg) {
-    call_clean(&tmp);
+    call_clean(call);
     return NULL;
   }
-  tmp.arguments = list_new(arg);
-  if (! tmp.arguments) {
+  call->arguments = list_new(arg);
+  if (! call->arguments) {
     list_delete(arg);
-    call_clean(&tmp);
+    call_clean(call);
     return NULL;
   }
-  *call = tmp;
   return call;
 }
 
 s_call * call_init_op_unary (s_call *call)
 {
-  s_call tmp = {0};
   assert(call);
-  call_init(&tmp);
-  tmp.arguments = list_new(NULL);
-  *call = tmp;
+  call_init(call);
+  call->arguments = list_new(NULL);
   return call;
 }
 

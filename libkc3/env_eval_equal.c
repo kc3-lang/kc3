@@ -179,8 +179,8 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   bool is_var_b = false;
   s_tag * volatile tag_a = a;
   s_tag * volatile tag_b = b;
-  s_tag tmp_a;
-  s_tag tmp_b;
+  s_tag tmp_a = {0};
+  s_tag tmp_b = {0};
   s_tag *var_a = NULL;
   s_tag *var_b = NULL;
   assert(env);

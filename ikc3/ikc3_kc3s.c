@@ -151,9 +151,9 @@ static int arg_load (s_env *env, int *argc, char ***argv)
   sw     e = 0;
   FILE *fp = 0;
   s_tag *file_dir;
-  s_tag  file_dir_save;
+  s_tag  file_dir_save = {0};
   s_tag *file_path;
-  s_tag  file_path_save;
+  s_tag  file_path_save = {0};
   s_str path = {0};
   sw r;
   if (*argc < 2) {
@@ -310,7 +310,7 @@ static int client_init_tls (void)
 {
   p_tls        tls;
   p_tls_config tls_config;
-  s_tag        tls_tag;
+  s_tag        tls_tag = {0};
   s_str        ca_cert_path;
   if (! g_tls) {
     ERROR("TLS not enabled");
@@ -368,7 +368,7 @@ static sw run (void)
   s_env *env;
   s_buf *env_err;
   s_buf err_buf;
-  s_tag input;
+  s_tag input = {0};
   sw r;
   s_tag *response;
   s_tag result = {0};

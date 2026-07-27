@@ -111,9 +111,9 @@ static int fs_getattr (const char *path, struct stat *dest)
 {
   s_facts_with_cursor cursor = {0};
   s_fact *fact = NULL;
-  s_tag tag_path;
-  s_tag tag_sym_kc3fs_file_stat;
-  s_tag tag_file_stat;
+  s_tag tag_path = {0};
+  s_tag tag_sym_kc3fs_file_stat = {0};
+  s_tag tag_file_stat = {0};
   tag_init_str_1(&tag_path, NULL, path);
   tag_init_sym(&tag_sym_kc3fs_file_stat, g_sym_kc3fs_file_stat);
   tag_init_var(&tag_file_stat, g_sym_FileStat);
@@ -142,10 +142,10 @@ static int fs_init (void)
 {
   uw *blocks = NULL;
   uw *size = NULL;
-  s_tag tag_file_stat;
-  s_tag tag_file_stat2;
-  s_tag tag_path;
-  s_tag tag_sym_kc3fs_file_stat;
+  s_tag tag_file_stat = {0};
+  s_tag tag_file_stat2 = {0};
+  s_tag tag_path = {0};
+  s_tag tag_sym_kc3fs_file_stat = {0};
   g_facts = g_kc3_env->facts;
   g_sym_FileStat = sym_1("FileStat");
   g_sym_kc3fs_file_stat = sym_1("kc3fs_file_stat");

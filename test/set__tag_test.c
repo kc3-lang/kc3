@@ -146,7 +146,7 @@ TEST_CASE(set__tag_add)
     "-0x10000000000000000",
     NULL
   };
-  s_tag tag;
+  s_tag tag = {0};
   s_set__tag set;
   set_init__tag(&set, 64);
   tag_init(&tag);
@@ -163,7 +163,7 @@ TEST_CASE_END(set__tag_add)
 TEST_CASE(set__tag_cursor)
 {
   sw i = 0;
-  s_tag tag;
+  s_tag tag = {0};
   s_set__tag set;
   set_init__tag(&set, 16);
   SET__TAG_TEST_CURSOR(i);
@@ -304,7 +304,7 @@ TEST_CASE_END(set__tag_init_clean)
 TEST_CASE(set__tag_remove)
 {
   sw i;
-  s_tag tag;
+  s_tag tag = {0};
   s_set__tag set;
   set_init__tag(&set, 16);
   set_add__tag(&set, tag_init_1(&tag, "\"a\""));
@@ -384,7 +384,7 @@ TEST_CASE_END(set__tag_remove)
 
 TEST_CASE(set__tag_resize)
 {
-  s_tag tag;
+  s_tag tag = {0};
   s_set__tag set;
   set_init__tag(&set, 64);
   set_add__tag(&set, tag_init_1(&tag, "\"a\""));

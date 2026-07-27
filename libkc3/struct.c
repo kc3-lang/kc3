@@ -36,7 +36,7 @@ s_tag * struct_access (s_struct *s, s_list *key, s_tag *dest)
   s_tag *first;
   s_list *next;
   s_tag *r;
-  s_tag tag;
+  s_tag tag = {0};
   assert(s);
   assert(key);
   assert(dest);
@@ -276,7 +276,7 @@ s_tag * struct_get_tag (s_struct *s, const s_sym *key)
 const s_sym ** struct_get_type (const s_struct *s, const s_sym *key,
                                 const s_sym **dest)
 {
-  s_tag tag_key;
+  s_tag tag_key = {0};
   const s_sym *tmp = NULL;
   tag_init_psym(&tag_key, key);
   if (! map_get_type(&s->pstruct_type->map, &tag_key, &tmp))
@@ -298,7 +298,7 @@ uw struct_get_uw (const s_struct *s, const s_sym *key)
 const s_sym ** struct_get_var_type (const s_struct *s, const s_sym *key,
                                     const s_sym **dest)
 {
-  s_tag tag_key;
+  s_tag tag_key = {0};
   tag_init_psym(&tag_key, key);
   return map_get_var_type(&s->pstruct_type->map, &tag_key, dest);
 }

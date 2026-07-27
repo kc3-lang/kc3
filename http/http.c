@@ -19,7 +19,7 @@ s_tag * http_header_split (s_str *header, s_tag *dest)
   assert(dest);
   s_tag *key;
   sw sep;
-  s_tag tmp;
+  s_tag tmp = {0};
   s_tag *value;
   if ((sep = str_position_1(header, ": ")) < 0) {
     err_puts("http_header_split: missing separator");

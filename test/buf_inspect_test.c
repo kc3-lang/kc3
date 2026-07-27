@@ -459,7 +459,7 @@ TEST_CASE_END(buf_inspect_str_character)
 
 TEST_CASE(buf_inspect_tag)
 {
-  s_tag tag;
+  s_tag tag = {0};
   tag_init(&tag);
   BUF_INSPECT_TEST_TAG(tag_bool(&tag, false), "false");
   BUF_INSPECT_TEST_TAG(tag_bool(&tag, true), "true");

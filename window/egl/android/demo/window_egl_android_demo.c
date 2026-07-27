@@ -352,7 +352,7 @@ static void write_asset (AAsset *asset, const char *dst_file)
   const void *data;
   s_str dst_str;
   off_t len;
-  s_tag mode;
+  s_tag mode = {0};
   FILE *out;
   LOGI("write_asset: %s", dst_file);
   str_init_1(&dst_str, NULL, dst_file);

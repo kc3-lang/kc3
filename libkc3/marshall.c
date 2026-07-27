@@ -951,9 +951,9 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
   s_facts_cursor cursor;
   s_fact *fact;
   uw i;
-  s_tag object;
-  s_tag predicate;
-  s_tag subject;
+  s_tag object = {0};
+  s_tag predicate = {0};
+  s_tag subject = {0};
   assert(m);
   assert(facts);
 #if HAVE_PTHREAD

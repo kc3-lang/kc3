@@ -19,8 +19,8 @@ const s_sym ** http_mime_type (const s_str *ext, const s_sym **dest)
   const s_sym *default_mime_type;
   s_fact *fact = NULL;
   s_tag tag_ext = {0};
-  s_tag tag_mime_type_sym;
-  s_tag tag_mime_type_value;
+  s_tag tag_mime_type_sym = {0};
+  s_tag tag_mime_type_value = {0};
   if ((tag_ext.data.td_psym = sym_find(ext)))
     tag_ext.type = TAG_PSYM;
   tag_init_psym(&tag_mime_type_sym, sym_1("mime_type"));
@@ -72,7 +72,7 @@ bool http_mime_type_buf_parse_type (s_buf *buf)
 {
   bool b;
   character c;
-  s_tag ext;
+  s_tag ext = {0};
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -131,8 +131,8 @@ bool http_mime_type_buf_parse_type (s_buf *buf)
 bool * http_mime_type_def (s_tag *ext, const s_sym * const *mime_type,
                            bool *dest)
 {
-  s_tag tag_mime_type_sym;
-  s_tag tag_mime_type_value;
+  s_tag tag_mime_type_sym = {0};
+  s_tag tag_mime_type_value = {0};
   assert(ext);
   assert(mime_type);
   tag_init_psym(&tag_mime_type_sym, sym_1("mime_type"));

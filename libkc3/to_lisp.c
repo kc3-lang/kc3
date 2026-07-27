@@ -39,7 +39,7 @@ s_tag * to_lisp (s_tag *tag, s_tag *dest)
 
 s_tag * to_lisp_call (s_call *call, s_tag *dest)
 {
-  s_tag arguments;
+  s_tag arguments = {0};
   p_list list;
   if (! to_lisp_list(call->arguments, &arguments))
     return NULL;

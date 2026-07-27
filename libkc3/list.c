@@ -35,7 +35,7 @@ s_tag * list_access (s_list *list, s_list *key, s_tag *dest)
   s_list *key_next;
   s_tag *r;
   const s_sym *sym_Uw = &g_sym_Uw;
-  s_tag tag;
+  s_tag tag = {0};
   uw i;
   assert(key);
   assert(dest);

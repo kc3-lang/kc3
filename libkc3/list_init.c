@@ -49,301 +49,259 @@ s_list * list_init_array (s_list *list, const s_sym *type,
                           uw dimension, const uw *dimensions,
                           s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_array(&tmp.tag, type, dimension, dimensions)) {
+  list_init(list, next);
+  if (! tag_init_array(&list->tag, type, dimension, dimensions)) {
     err_puts("list_init_array: tag_init_array");
     assert(! "list_init_array: tag_init_array");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_array_copy (s_list *list, const s_array *a,
                                s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_array_copy(&tmp.tag, a)) {
+  list_init(list, next);
+  if (! tag_init_array_copy(&list->tag, a)) {
     err_puts("list_init_array_copy: tag_init_array_copy");
     assert(! "list_init_array_copy: tag_init_array_copy");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_character (s_list *list, character c, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_character(&tmp.tag, c)) {
+  list_init(list, next);
+  if (! tag_init_character(&list->tag, c)) {
     err_puts("list_init_character: tag_init_character");
     assert(! "list_init_character: tag_init_character");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_f32 (s_list *list, f32 f, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_f32(&tmp.tag, f)) {
+  list_init(list, next);
+  if (! tag_init_f32(&list->tag, f)) {
     err_puts("list_init_f32: tag_init_f32");
     assert(! "list_init_f32: tag_init_f32");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_f64 (s_list *list, f64 f, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_f64(&tmp.tag, f)) {
+  list_init(list, next);
+  if (! tag_init_f64(&list->tag, f)) {
     err_puts("list_init_f64: tag_init_f64");
     assert(! "list_init_f64: tag_init_f64");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_ident (s_list *list, const s_ident *ident,
                           s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_ident(&tmp.tag, ident)) {
+  list_init(list, next);
+  if (! tag_init_ident(&list->tag, ident)) {
     err_puts("list_init_ident: tag_init_ident");
     assert(! "list_init_ident: tag_init_ident");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_ident_1 (s_list *list, const char *p, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_ident_1(&tmp.tag, p)) {
+  list_init(list, next);
+  if (! tag_init_ident_1(&list->tag, p)) {
     err_puts("list_init_ident_1: tag_init_ident_1");
     assert(! "list_init_ident_1: tag_init_ident_1");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_integer_1 (s_list *list, const char *p, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_integer_1(&tmp.tag, p)) {
+  list_init(list, next);
+  if (! tag_init_integer_1(&list->tag, p)) {
     err_puts("list_init_integer_1: tag_init_integer_1");
     assert(! "list_init_integer_1: tag_init_integer_1");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_integer_copy (s_list *list, const s_integer *i,
                                  s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_integer_copy(&tmp.tag, i)) {
+  list_init(list, next);
+  if (! tag_init_integer_copy(&list->tag, i)) {
     err_puts("list_init_integer_copy: tag_init_integer_copy");
     assert(! "list_init_integer_copy: tag_init_integer_copy");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_integer_zero (s_list *list, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_integer_zero(&tmp.tag)) {
+  list_init(list, next);
+  if (! tag_init_integer_zero(&list->tag)) {
     err_puts("list_init_integer_zero: tag_init_integer_zero");
     assert(! "list_init_integer_zero: tag_init_integer_zero");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_map (s_list *list, uw count, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_map(&tmp.tag, count)) {
+  list_init(list, next);
+  if (! tag_init_map(&list->tag, count)) {
     err_puts("list_init_map: tag_init_map");
     assert(! "list_init_map: tag_init_map");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_map_1 (s_list *list, const char *p, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_map_1(&tmp.tag, p)) {
+  list_init(list, next);
+  if (! tag_init_map_1(&list->tag, p)) {
     err_puts("list_init_map_1: tag_init_map_1");
     assert(! "list_init_map_1: tag_init_map_1");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_map_from_lists (s_list *list, s_list *keys,
                                    s_list *values, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_map_from_lists(&tmp.tag, keys, values)) {
+  list_init(list, next);
+  if (! tag_init_map_from_lists(&list->tag, keys, values)) {
     err_puts("list_init_map_from_lists: tag_init_map_from_lists");
     assert(! "list_init_map_from_lists: tag_init_map_from_lists");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_pcall (s_list *list, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pcall(&tmp.tag)) {
+  list_init(list, next);
+  if (! tag_init_pcall(&list->tag)) {
     err_puts("list_init_pcall: tag_init_pcall");
     assert(! "list_init_pcall: tag_init_pcall");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_pcall_call_cast (s_list *list, const s_sym *type,
                                     s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pcall_call_cast(&tmp.tag, type)) {
+  list_init(list, next);
+  if (! tag_init_pcall_call_cast(&list->tag, type)) {
     err_puts("list_init_pcall_call_cast: tag_init_pcall_call_cast");
     assert(! "list_init_pcall_call_cast: tag_init_pcall_call_cast");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_pcall_copy (s_list *list, p_call *src, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pcall_copy(&tmp.tag, src)) {
+  list_init(list, next);
+  if (! tag_init_pcall_copy(&list->tag, src)) {
     err_puts("list_init_pcall_copy: tag_init_pcall_copy");
     assert(! "list_init_pcall_copy: tag_init_pcall_copy");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_pcallable (s_list *list, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pcallable(&tmp.tag)) {
+  list_init(list, next);
+  if (! tag_init_pcallable(&list->tag)) {
     err_puts("list_init_pcallable: tag_init_pcallable");
     assert(! "list_init_pcallable: tag_init_pcallable");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_pcallable_copy (s_list *list, p_callable *src,
                                    s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pcallable_copy(&tmp.tag, src)) {
+  list_init(list, next);
+  if (! tag_init_pcallable_copy(&list->tag, src)) {
     err_puts("list_init_pcallable_copy: tag_init_pcallable_copy");
     assert(! "list_init_pcallable_copy: tag_init_pcallable_copy");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_pcomplex (s_list *list, p_complex c, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pcomplex(&tmp.tag, c)) {
+  list_init(list, next);
+  if (! tag_init_pcomplex(&list->tag, c)) {
     err_puts("list_init_pcomplex: tag_init_pcomplex");
     assert(! "list_init_pcomplex: tag_init_pcomplex");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_plist (s_list *list, p_list plist, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_plist(&tmp.tag, plist)) {
+  list_init(list, next);
+  if (! tag_init_plist(&list->tag, plist)) {
     err_puts("list_init_plist: tag_init_plist");
     assert(! "list_init_plist: tag_init_plist");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_plist_1 (s_list *list, const char *p, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_plist_1(&tmp.tag, p)) {
+  list_init(list, next);
+  if (! tag_init_plist_1(&list->tag, p)) {
     err_puts("list_init_plist_1: tag_init_plist_1");
     assert(! "list_init_plist_1: tag_init_plist_1");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
@@ -351,45 +309,39 @@ s_list * list_init_pointer (s_list *list, const s_sym *pointer_type,
                             const s_sym *target_type, void *p,
                             s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pointer(&tmp.tag, pointer_type, target_type, p)) {
+  list_init(list, next);
+  if (! tag_init_pointer(&list->tag, pointer_type, target_type, p)) {
     err_puts("list_init_pointer: tag_init_pointer");
     assert(! "list_init_pointer: tag_init_pointer");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_pstruct (s_list *list, const s_sym *module,
                             s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pstruct(&tmp.tag, module)) {
+  list_init(list, next);
+  if (! tag_init_pstruct(&list->tag, module)) {
     err_puts("list_init_pstruct: tag_init_pstruct");
     assert(! "list_init_pstruct: tag_init_pstruct");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_pstruct_copy (s_list *list, p_struct *src,
                                  s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pstruct_copy(&tmp.tag, src)) {
+  list_init(list, next);
+  if (! tag_init_pstruct_copy(&list->tag, src)) {
     err_puts("list_init_pstruct_copy: tag_init_pstruct_copy");
     assert(! "list_init_pstruct_copy: tag_init_pstruct_copy");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
@@ -397,15 +349,13 @@ s_list * list_init_pstruct_copy_data (s_list *list,
                                       const s_sym *module, void *data,
                                       s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pstruct_copy_data(&tmp.tag, module, data)) {
+  list_init(list, next);
+  if (! tag_init_pstruct_copy_data(&list->tag, module, data)) {
     err_puts("list_init_pstruct_copy_data: tag_init_pstruct_copy_data");
     assert(! "list_init_pstruct_copy_data: tag_init_pstruct_copy_data");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
@@ -413,390 +363,336 @@ s_list * list_init_pstruct_with_data (s_list *list,
                                       const s_sym *module, void *data,
                                       bool free_data, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pstruct_with_data(&tmp.tag, module, data, free_data)) {
+  list_init(list, next);
+  if (! tag_init_pstruct_with_data(&list->tag, module, data, free_data)) {
     err_puts("list_init_pstruct_with_data: tag_init_pstruct_with_data");
     assert(! "list_init_pstruct_with_data: tag_init_pstruct_with_data");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_pstruct_with_type (s_list *list, s_struct_type *st,
                                       s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pstruct_with_type(&tmp.tag, st)) {
+  list_init(list, next);
+  if (! tag_init_pstruct_with_type(&list->tag, st)) {
     err_puts("list_init_pstruct_with_type: tag_init_pstruct_with_type");
     assert(! "list_init_pstruct_with_type: tag_init_pstruct_with_type");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_pstruct_type (s_list *list, const s_sym *module,
                                  s_list *spec, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pstruct_type(&tmp.tag, module, spec)) {
+  list_init(list, next);
+  if (! tag_init_pstruct_type(&list->tag, module, spec)) {
     err_puts("list_init_pstruct_type: tag_init_pstruct_type");
     assert(! "list_init_pstruct_type: tag_init_pstruct_type");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_pstruct_type_clean (s_list *list, s_struct_type *st,
                                        p_callable clean, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pstruct_type_clean(&tmp.tag, st, clean)) {
+  list_init(list, next);
+  if (! tag_init_pstruct_type_clean(&list->tag, st, clean)) {
     err_puts("list_init_pstruct_type_clean: tag_init_pstruct_type_clean");
     assert(! "list_init_pstruct_type_clean: tag_init_pstruct_type_clean");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_psym (s_list *list, const s_sym *sym, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_psym(&tmp.tag, sym)) {
+  list_init(list, next);
+  if (! tag_init_psym(&list->tag, sym)) {
     err_puts("list_init_psym: tag_init_psym");
     assert(! "list_init_psym: tag_init_psym");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_psym_anon (s_list *list, const s_str *src,
                               s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_psym_anon(&tmp.tag, src)) {
+  list_init(list, next);
+  if (! tag_init_psym_anon(&list->tag, src)) {
     err_puts("list_init_psym_anon: tag_init_psym_anon");
     assert(! "list_init_psym_anon: tag_init_psym_anon");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_ptr (s_list *list, void *p, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_ptr(&tmp.tag, p)) {
+  list_init(list, next);
+  if (! tag_init_ptr(&list->tag, p)) {
     err_puts("list_init_ptr: tag_init_ptr");
     assert(! "list_init_ptr: tag_init_ptr");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_ptr_free (s_list *list, void *p, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_ptr_free(&tmp.tag, p)) {
+  list_init(list, next);
+  if (! tag_init_ptr_free(&list->tag, p)) {
     err_puts("list_init_ptr_free: tag_init_ptr_free");
     assert(! "list_init_ptr_free: tag_init_ptr_free");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_pvar (s_list *list, const s_sym *type, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pvar(&tmp.tag, type)) {
+  list_init(list, next);
+  if (! tag_init_pvar(&list->tag, type)) {
     err_puts("list_init_pvar: tag_init_pvar");
     assert(! "list_init_pvar: tag_init_pvar");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_pvar_copy (s_list *list, p_var *src, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pvar_copy(&tmp.tag, src)) {
+  list_init(list, next);
+  if (! tag_init_pvar_copy(&list->tag, src)) {
     err_puts("list_init_pvar_copy: tag_init_pvar_copy");
     assert(! "list_init_pvar_copy: tag_init_pvar_copy");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_quote (s_list *list, s_tag *src, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_quote(&tmp.tag, src)) {
+  list_init(list, next);
+  if (! tag_init_quote(&list->tag, src)) {
     err_puts("list_init_quote: tag_init_quote");
     assert(! "list_init_quote: tag_init_quote");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_quote_copy (s_list *list, s_quote *quote,
                                s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_quote_copy(&tmp.tag, quote)) {
+  list_init(list, next);
+  if (! tag_init_quote_copy(&list->tag, quote)) {
     err_puts("list_init_quote_copy: tag_init_quote_copy");
     assert(! "list_init_quote_copy: tag_init_quote_copy");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_ratio_1 (s_list *list, const char *p, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_ratio_1(&tmp.tag, p)) {
+  list_init(list, next);
+  if (! tag_init_ratio_1(&list->tag, p)) {
     err_puts("list_init_ratio_1: tag_init_ratio_1");
     assert(! "list_init_ratio_1: tag_init_ratio_1");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_ratio (s_list *list, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_ratio(&tmp.tag)) {
+  list_init(list, next);
+  if (! tag_init_ratio(&list->tag)) {
     err_puts("list_init_ratio: tag_init_ratio");
     assert(! "list_init_ratio: tag_init_ratio");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_ratio_copy (s_list *list, s_ratio *r, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_ratio_copy(&tmp.tag, r)) {
+  list_init(list, next);
+  if (! tag_init_ratio_copy(&list->tag, r)) {
     err_puts("list_init_ratio_copy: tag_init_ratio_copy");
     assert(! "list_init_ratio_copy: tag_init_ratio_copy");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_ratio_zero (s_list *list, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_ratio_zero(&tmp.tag)) {
+  list_init(list, next);
+  if (! tag_init_ratio_zero(&list->tag)) {
     err_puts("list_init_ratio_zero: tag_init_ratio_zero");
     assert(! "list_init_ratio_zero: tag_init_ratio_zero");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_s8 (s_list *list, s8 i, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_s8(&tmp.tag, i)) {
+  list_init(list, next);
+  if (! tag_init_s8(&list->tag, i)) {
     err_puts("list_init_s8: tag_init_s8");
     assert(! "list_init_s8: tag_init_s8");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_s16 (s_list *list, s16 i, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_s16(&tmp.tag, i)) {
+  list_init(list, next);
+  if (! tag_init_s16(&list->tag, i)) {
     err_puts("list_init_s16: tag_init_s16");
     assert(! "list_init_s16: tag_init_s16");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_s32 (s_list *list, s32 i, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_s32(&tmp.tag, i)) {
+  list_init(list, next);
+  if (! tag_init_s32(&list->tag, i)) {
     err_puts("list_init_s32: tag_init_s32");
     assert(! "list_init_s32: tag_init_s32");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_s64 (s_list *list, s64 i, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_s64(&tmp.tag, i)) {
+  list_init(list, next);
+  if (! tag_init_s64(&list->tag, i)) {
     err_puts("list_init_s64: tag_init_s64");
     assert(! "list_init_s64: tag_init_s64");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_str (s_list *list, char *p_free, uw size,
                         const char *p, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_str(&tmp.tag, p_free, size, p)) {
+  list_init(list, next);
+  if (! tag_init_str(&list->tag, p_free, size, p)) {
     err_puts("list_init_str: tag_init_str");
     assert(! "list_init_str: tag_init_str");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_str_1 (s_list *list, char *p_free, const char *p,
                           s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_str_1(&tmp.tag, p_free, p)) {
+  list_init(list, next);
+  if (! tag_init_str_1(&list->tag, p_free, p)) {
     err_puts("list_init_str_1: tag_init_str_1");
     assert(! "list_init_str_1: tag_init_str_1");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_str_1_alloc (s_list *list, const char *p,
                                 s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_str_1_alloc(&tmp.tag, p)) {
+  list_init(list, next);
+  if (! tag_init_str_1_alloc(&list->tag, p)) {
     err_puts("list_init_str_1_alloc: tag_init_str_1_alloc");
     assert(! "list_init_str_1_alloc: tag_init_str_1_alloc");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_str_alloc (s_list *list, uw size, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_str_alloc(&tmp.tag, size)) {
+  list_init(list, next);
+  if (! tag_init_str_alloc(&list->tag, size)) {
     err_puts("list_init_str_alloc: tag_init_str_alloc");
     assert(! "list_init_str_alloc: tag_init_str_alloc");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_str_alloc_copy (s_list *list, uw size,
                                    const char *p, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_str_alloc_copy(&tmp.tag, size, p)) {
+  list_init(list, next);
+  if (! tag_init_str_alloc_copy(&list->tag, size, p)) {
     err_puts("list_init_str_alloc_copy: tag_init_str_alloc_copy");
     assert(! "list_init_str_alloc_copy: tag_init_str_alloc_copy");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_str_cast (s_list *list, p_sym *type,
                              const s_tag *src, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_str_cast(&tmp.tag, type, src)) {
+  list_init(list, next);
+  if (! tag_init_str_cast(&list->tag, type, src)) {
     err_puts("list_init_str_cast: tag_init_str_cast");
     assert(! "list_init_str_cast: tag_init_str_cast");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_str_concatenate (s_list *list, const s_str *a,
                                     const s_str *b, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_str_concatenate(&tmp.tag, a, b)) {
+  list_init(list, next);
+  if (! tag_init_str_concatenate(&list->tag, a, b)) {
     err_puts("list_init_str_concatenate: tag_init_str_concatenate");
     assert(! "list_init_str_concatenate: tag_init_str_concatenate");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
@@ -804,261 +700,225 @@ s_list * list_init_str_concatenate_list (s_list *list,
                                          const s_list *src,
                                          s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_str_concatenate_list(&tmp.tag, src)) {
+  list_init(list, next);
+  if (! tag_init_str_concatenate_list(&list->tag, src)) {
     err_puts("list_init_str_concatenate_list: tag_init_str_concatenate_list");
     assert(! "list_init_str_concatenate_list: tag_init_str_concatenate_list");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_str_concatenate_plist (s_list *list, p_list *src,
                                           s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_str_concatenate_plist(&tmp.tag, src)) {
+  list_init(list, next);
+  if (! tag_init_str_concatenate_plist(&list->tag, src)) {
     err_puts("list_init_str_concatenate_plist: tag_init_str_concatenate_plist");
     assert(! "list_init_str_concatenate_plist: tag_init_str_concatenate_plist");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_str_copy (s_list *list, const s_str *src,
                              s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_str_copy(&tmp.tag, src)) {
+  list_init(list, next);
+  if (! tag_init_str_copy(&list->tag, src)) {
     err_puts("list_init_str_copy: tag_init_str_copy");
     assert(! "list_init_str_copy: tag_init_str_copy");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_str_empty (s_list *list, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_str_empty(&tmp.tag)) {
+  list_init(list, next);
+  if (! tag_init_str_empty(&list->tag)) {
     err_puts("list_init_str_empty: tag_init_str_empty");
     assert(! "list_init_str_empty: tag_init_str_empty");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_str_inspect_buf (s_list *list, const s_buf *src,
                                     s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_str_inspect_buf(&tmp.tag, src)) {
+  list_init(list, next);
+  if (! tag_init_str_inspect_buf(&list->tag, src)) {
     err_puts("list_init_str_inspect_buf: tag_init_str_inspect_buf");
     assert(! "list_init_str_inspect_buf: tag_init_str_inspect_buf");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_str_inspect_str (s_list *list, const s_str *src,
                                     s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_str_inspect_str(&tmp.tag, src)) {
+  list_init(list, next);
+  if (! tag_init_str_inspect_str(&list->tag, src)) {
     err_puts("list_init_str_inspect_str: tag_init_str_inspect_str");
     assert(! "list_init_str_inspect_str: tag_init_str_inspect_str");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_sw (s_list *list, sw i, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_sw(&tmp.tag, i)) {
+  list_init(list, next);
+  if (! tag_init_sw(&list->tag, i)) {
     err_puts("list_init_sw: tag_init_sw");
     assert(! "list_init_sw: tag_init_sw");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_time_add (s_list *list, const s_time *a,
                              const s_time *b, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_time_add(&tmp.tag, a, b)) {
+  list_init(list, next);
+  if (! tag_init_time_add(&list->tag, a, b)) {
     err_puts("list_init_time_add: tag_init_time_add");
     assert(! "list_init_time_add: tag_init_time_add");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_time_copy (s_list *list, const s_time *src,
                               s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_time_copy(&tmp.tag, src)) {
+  list_init(list, next);
+  if (! tag_init_time_copy(&list->tag, src)) {
     err_puts("list_init_time_copy: tag_init_time_copy");
     assert(! "list_init_time_copy: tag_init_time_copy");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_time_now (s_list *list, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_time_now(&tmp.tag)) {
+  list_init(list, next);
+  if (! tag_init_time_now(&list->tag)) {
     err_puts("list_init_time_now: tag_init_time_now");
     assert(! "list_init_time_now: tag_init_time_now");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_ptuple (s_list *list, uw count, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_ptuple(&tmp.tag, count)) {
+  list_init(list, next);
+  if (! tag_init_ptuple(&list->tag, count)) {
     err_puts("list_init_ptuple: tag_init_ptuple");
     assert(! "list_init_ptuple: tag_init_ptuple");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_ptuple_2 (s_list *list, s_tag *a, s_tag *b,
                              s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_ptuple_2(&tmp.tag, a, b)) {
+  list_init(list, next);
+  if (! tag_init_ptuple_2(&list->tag, a, b)) {
     err_puts("list_init_ptuple_2: tag_init_ptuple_2");
     assert(! "list_init_ptuple_2: tag_init_ptuple_2");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_u8 (s_list *list, u8 i, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_u8(&tmp.tag, i)) {
+  list_init(list, next);
+  if (! tag_init_u8(&list->tag, i)) {
     err_puts("list_init_u8: tag_init_u8");
     assert(! "list_init_u8: tag_init_u8");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_u16 (s_list *list, u16 i, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_u16(&tmp.tag, i)) {
+  list_init(list, next);
+  if (! tag_init_u16(&list->tag, i)) {
     err_puts("list_init_u16: tag_init_u16");
     assert(! "list_init_u16: tag_init_u16");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_u32 (s_list *list, u32 i, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_u32(&tmp.tag, i)) {
+  list_init(list, next);
+  if (! tag_init_u32(&list->tag, i)) {
     err_puts("list_init_u32: tag_init_u32");
     assert(! "list_init_u32: tag_init_u32");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_u64 (s_list *list, u64 i, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_u64(&tmp.tag, i)) {
+  list_init(list, next);
+  if (! tag_init_u64(&list->tag, i)) {
     err_puts("list_init_u64: tag_init_u64");
     assert(! "list_init_u64: tag_init_u64");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_unquote_copy (s_list *list, s_unquote *unquote,
                                  s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_unquote_copy(&tmp.tag, unquote)) {
+  list_init(list, next);
+  if (! tag_init_unquote_copy(&list->tag, unquote)) {
     err_puts("list_init_unquote_copy: tag_init_unquote_copy");
     assert(! "list_init_unquote_copy: tag_init_unquote_copy");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 
 s_list * list_init_uw (s_list *list, uw i, s_list *next)
 {
-  s_list tmp = {0};
   assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_uw(&tmp.tag, i)) {
+  list_init(list, next);
+  if (! tag_init_uw(&list->tag, i)) {
     err_puts("list_init_uw: tag_init_uw");
     assert(! "list_init_uw: tag_init_uw");
     return NULL;
   }
-  *list = tmp;
   return list;
 }
 

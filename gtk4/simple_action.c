@@ -20,7 +20,7 @@ void kc3_gtk4_simple_action_callback (GSimpleAction *action)
   s_list *args;
   s_callable *callable;
   s_action_callback *cb;
-  s_tag tag;
+  s_tag tag = {0};
   s_list *tmp;
   cb = g_action_callbacks;
   while (cb && cb->action != action)

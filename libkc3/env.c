@@ -215,9 +215,9 @@ s_pointer * env_address_of_call (s_env *env, s_call *call,
 // TODO: unwind_protect
 s_tag * env_and (s_env *env, s_tag *a, s_tag *b, s_tag *dest)
 {
-  s_tag eval;
+  s_tag eval = {0};
   bool p;
-  s_tag tmp;
+  s_tag tmp = {0};
   const s_sym *sym_Bool = &g_sym_Bool;
   assert(env);
   assert(a);
@@ -335,15 +335,15 @@ bool env_call_get (s_env *env, s_call *call)
   s_facts_cursor cursor;
   s_fact *fact;
   s_fact *found;
-  s_tag tag_ident;
-  s_tag tag_is_a;
-  s_tag tag_macro;
-  s_tag tag_module_name;
-  s_tag tag_op;
-  s_tag tag_special_operator;
-  s_tag tag_symbol;
-  s_tag tag_symbol_value;
-  s_tag tag_pvar;
+  s_tag tag_ident = {0};
+  s_tag tag_is_a = {0};
+  s_tag tag_macro = {0};
+  s_tag tag_module_name = {0};
+  s_tag tag_op = {0};
+  s_tag tag_special_operator = {0};
+  s_tag tag_symbol = {0};
+  s_tag tag_symbol_value = {0};
+  s_tag tag_pvar = {0};
   tag_init_ident(&tag_ident, &call->ident);
   tag_init_psym( &tag_is_a, &g_sym_is_a);
   tag_init_psym( &tag_macro, &g_sym_macro);
@@ -575,10 +575,10 @@ void env_freelist_clean (s_env *env)
 
 bool env_def (s_env *env, const s_ident *ident, s_tag *value)
 {
-  s_tag tag_ident;
-  s_tag tag_module;
-  s_tag tag_symbol;
-  s_tag tag_symbol_value;
+  s_tag tag_ident = {0};
+  s_tag tag_module = {0};
+  s_tag tag_symbol = {0};
+  s_tag tag_symbol_value = {0};
   (void) env;
   assert(env);
   assert(ident);
@@ -676,9 +676,9 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
   const s_sym *prev_defmodule;
   s_tag *result = NULL;
   s_list *search_modules;
-  s_tag tag_is_a;
-  s_tag tag_module;
-  s_tag tag_module_name;
+  s_tag tag_is_a = {0};
+  s_tag tag_module = {0};
+  s_tag tag_module_name = {0};
   s_tag tmp = {0};
   assert(env);
   assert(name);
@@ -853,9 +853,9 @@ s_tag * env_defspecial_operator (s_env *env, s_tag *tag, s_tag *dest)
 
 const s_sym * env_defstruct (s_env *env, s_list *spec)
 {
-  s_tag tag_module_name;
-  s_tag tag_st;
-  s_tag tag_struct_type;
+  s_tag tag_module_name = {0};
+  s_tag tag_st = {0};
+  s_tag tag_struct_type = {0};
   if (securelevel(0) > 1) {
     err_puts("env_defstruct: cannot use defstruct with"
              " securelevel > 1");
@@ -1004,7 +1004,7 @@ bool env_dump_restore_path_resolve (s_env *env)
 void env_error_f (s_env *env, const char *fmt, ...)
 {
   va_list ap;
-  s_tag tag;
+  s_tag tag = {0};
   assert(env);
   assert(fmt);
   va_start(ap, fmt);
@@ -1487,7 +1487,7 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag,
   s_tag * volatile dest_v = dest;
   s_fact *fact = NULL;
   s_facts *facts;
-  s_tag    facts_eval;
+  s_tag    facts_eval = {0};
   s_list *spec = NULL;
   s_tag   spec_eval = {0};
   const s_sym *sym_Facts_star = &g_sym_Facts_star;
@@ -1807,15 +1807,15 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
   s_facts_with_cursor cursor;
   s_fact *fact;
   const s_sym *module;
-  s_tag tag_ident;
-  s_tag tag_is_a;
-  s_tag tag_macro;
-  s_tag tag_module;
-  s_tag tag_pvar;
-  s_tag tag_special_operator;
-  s_tag tag_sym;
-  s_tag tag_symbol;
-  s_tag tag_symbol_value;
+  s_tag tag_ident = {0};
+  s_tag tag_is_a = {0};
+  s_tag tag_macro = {0};
+  s_tag tag_module = {0};
+  s_tag tag_pvar = {0};
+  s_tag tag_special_operator = {0};
+  s_tag tag_sym = {0};
+  s_tag tag_symbol = {0};
+  s_tag tag_symbol_value = {0};
   s_tag tmp = {0};
   module = ident->module;
   if (! module) {
@@ -1903,15 +1903,15 @@ s_tag * env_ident_get_address (s_env *env, const s_ident *ident)
   s_facts_cursor cursor;
   s_fact *fact;
   const s_sym *module;
-  s_tag tag_ident;
-  s_tag tag_is_a;
-  s_tag tag_macro;
-  s_tag tag_module;
-  s_tag tag_pvar;
-  s_tag tag_special_operator;
-  s_tag tag_sym;
-  s_tag tag_symbol;
-  s_tag tag_symbol_value;
+  s_tag tag_ident = {0};
+  s_tag tag_is_a = {0};
+  s_tag tag_macro = {0};
+  s_tag tag_module = {0};
+  s_tag tag_pvar = {0};
+  s_tag tag_special_operator = {0};
+  s_tag tag_sym = {0};
+  s_tag tag_symbol = {0};
+  s_tag tag_symbol_value = {0};
   s_tag *tmp;
   module = ident->module;
   if (! module) {
@@ -1964,9 +1964,9 @@ bool * env_ident_is_special_operator (s_env *env,
                                       bool *dest)
 {
   s_fact *fact;
-  s_tag tag_ident;
-  s_tag tag_is_a;
-  s_tag tag_special_operator;
+  s_tag tag_ident = {0};
+  s_tag tag_is_a = {0};
+  s_tag tag_special_operator = {0};
   assert(env);
   assert(ident);
   tag_ident.type = TAG_IDENT;
@@ -2187,8 +2187,8 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
 s_tag * env_kc3_def (s_env *env, const s_call *call, s_tag *dest)
 {
   s_ident *ident;
-  s_tag tag_ident;
-  s_tag tag_value;
+  s_tag tag_ident = {0};
+  s_tag tag_value = {0};
   (void) env;
   assert(env);
   assert(call);
@@ -2298,9 +2298,9 @@ bool env_load (s_env *env, const s_str *path)
   const s_str cache_suffix = STR("c");
   p_list dlopen_list_save = NULL;
   s_tag *file_dir;
-  s_tag  file_dir_save;
+  s_tag  file_dir_save = {0};
   s_tag *file_path;
-  s_tag  file_path_save;
+  s_tag  file_path_save = {0};
   s_list **last;
   s_list **last_dlopen;
   p_list list = NULL;
@@ -2631,9 +2631,9 @@ bool env_module_ensure_loaded (s_env *env, const s_sym *module)
 {
   bool b;
   s_fact *fact;
-  s_tag tag_module_name;
-  s_tag tag_is_a;
-  s_tag tag_module;
+  s_tag tag_module_name = {0};
+  s_tag tag_is_a = {0};
+  s_tag tag_module = {0};
   if (! env_module_is_loading(env, module, &b))
     return false;
   if (b)
@@ -2668,13 +2668,13 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
 {
   s_facts_with_cursor cursor;
   s_fact *fact = NULL;
-  s_tag tag_ident;
-  s_tag tag_module_name;
-  s_tag tag_op;
-  s_tag tag_pvar;
-  s_tag tag_sym_value;
-  s_tag tag_sym_sym;
-  s_tag tag_symbol;
+  s_tag tag_ident = {0};
+  s_tag tag_module_name = {0};
+  s_tag tag_op = {0};
+  s_tag tag_pvar = {0};
+  s_tag tag_sym_value = {0};
+  s_tag tag_sym_sym = {0};
+  s_tag tag_symbol = {0};
   tag_init_ident(&tag_ident, ident);
   tag_init_psym( &tag_module_name, module);
   tag_init_psym( &tag_op, &g_sym_op);
@@ -2736,9 +2736,9 @@ bool * env_module_is_loading (s_env *env, const s_sym *module,
                               bool *dest)
 {
   s_fact *fact;
-  s_tag tag_module;
-  s_tag tag_is_loading;
-  s_tag tag_true;
+  s_tag tag_module = {0};
+  s_tag tag_is_loading = {0};
+  s_tag tag_true = {0};
   assert(env);
   assert(module);
   tag_init_psym(&tag_module, module);
@@ -2756,9 +2756,9 @@ bool env_module_is_loading_set (s_env *env, const s_sym *module,
                                 bool is_loading)
 {
   bool b;
-  s_tag tag_module;
-  s_tag tag_is_loading;
-  s_tag tag_true;
+  s_tag tag_module = {0};
+  s_tag tag_is_loading = {0};
+  s_tag tag_true = {0};
   assert(env);
   assert(module);
   tag_init_psym(&tag_module, module);
@@ -2782,9 +2782,9 @@ bool env_module_load (s_env *env, const s_sym *module)
 {
   bool b;
   s_str path = {0};
-  s_tag tag_module_name;
-  s_tag tag_load_time;
-  s_tag tag_time;
+  s_tag tag_module_name = {0};
+  s_tag tag_load_time = {0};
+  s_tag tag_time = {0};
   s_facts_transaction transaction;
   assert(env);
   assert(module);
@@ -2868,9 +2868,9 @@ const s_time ** env_module_load_time (s_env *env, const s_sym *module,
 {
   s_facts_with_cursor cursor;
   s_fact *fact;
-  s_tag tag_module_name;
-  s_tag tag_load_time;
-  s_tag tag_time_pvar;
+  s_tag tag_module_name = {0};
+  s_tag tag_load_time = {0};
+  s_tag tag_time_pvar = {0};
   tag_init_psym(&tag_module_name, module);
   tag_init_psym(&tag_load_time, &g_sym_load_time);
   tag_init_pvar(&tag_time_pvar, &g_sym_Time);
@@ -3091,9 +3091,9 @@ s8 env_special_operator_arity (s_env *env, const s_ident *ident)
   s8 arity;
   s_facts_cursor cursor;
   s_fact *fact;
-  s_tag tag_arity;
-  s_tag tag_ident;
-  s_tag tag_pvar;
+  s_tag tag_arity = {0};
+  s_tag tag_ident = {0};
+  s_tag tag_pvar = {0};
   assert(env);
   assert(ident);
   tag_ident.type = TAG_IDENT;
@@ -3140,9 +3140,9 @@ bool * env_struct_type_exists (s_env *env, const s_sym *module,
 {
   s_facts_cursor cursor;
   s_fact *fact;
-  s_tag tag_struct_type;
-  s_tag tag_module;
-  s_tag tag_pvar;
+  s_tag tag_struct_type = {0};
+  s_tag tag_module = {0};
+  s_tag tag_pvar = {0};
   assert(env);
   assert(module);
   assert(dest);
@@ -3175,9 +3175,9 @@ p_struct_type * env_pstruct_type_find (s_env *env,
 {
   s_facts_cursor cursor;
   s_fact *found;
-  s_tag tag_struct_type;
-  s_tag tag_module;
-  s_tag tag_pvar;
+  s_tag tag_struct_type = {0};
+  s_tag tag_module = {0};
+  s_tag tag_pvar = {0};
   const s_sym *type;
   assert(env);
   assert(module);
@@ -3249,9 +3249,9 @@ p_callable env_struct_type_get_clean (s_env *env, const s_sym *module)
 {
   s_facts_with_cursor cursor;
   s_fact *found;
-  s_tag clean;
-  s_tag tag_module;
-  s_tag tag_pvar;
+  s_tag clean = {0};
+  s_tag tag_module = {0};
+  s_tag tag_pvar = {0};
   p_callable tmp = NULL;
   const s_sym *type;
   tag_init_psym(&tag_module, module);
@@ -3311,9 +3311,9 @@ s_list ** env_struct_type_get_spec (s_env *env,
                                     s_list **dest)
 {
   s_fact *found;
-  s_tag tag_defstruct;
-  s_tag tag_module;
-  s_tag tag_pvar;
+  s_tag tag_defstruct = {0};
+  s_tag tag_module = {0};
+  s_tag tag_pvar = {0};
   s_tag tmp = {0};
   assert(env);
   assert(module);
@@ -3357,9 +3357,9 @@ bool * env_struct_type_has_spec (s_env *env, const s_sym *module,
 {
   s_facts_cursor cursor;
   s_fact *fact;
-  s_tag tag_defstruct;
-  s_tag tag_module;
-  s_tag tag_pvar;
+  s_tag tag_defstruct = {0};
+  s_tag tag_module = {0};
+  s_tag tag_pvar = {0};
   assert(env);
   assert(module);
   tag_init_psym(&tag_defstruct, &g_sym_defstruct);

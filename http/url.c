@@ -18,7 +18,7 @@ s_str * url_escape (const s_str *src, s_str *dest)
   s_buf buf;
   character c;
   s_str *escapes;
-  s_tag escapes_tag;
+  s_tag escapes_tag = {0};
   s_ident ident;
   s_str s;
   sw size;
@@ -79,7 +79,7 @@ sw url_escape_size (const s_str *src)
 {
   character c;
   s_str *escapes;
-  s_tag escapes_tag;
+  s_tag escapes_tag = {0};
   s_ident ident;
   sw r;
   sw result = 0;

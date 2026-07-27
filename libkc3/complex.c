@@ -82,15 +82,15 @@ void complex_delete (s_complex *c)
 s_complex * complex_div (s_complex *a, s_complex *b,
                          s_complex *dest)
 {
-  s_tag axbx;
-  s_tag axby;
-  s_tag aybx;
-  s_tag ayby;
-  s_tag axbx_ayby;
-  s_tag aybx_axby;
-  s_tag bx2;
-  s_tag by2;
-  s_tag bx2_by2;
+  s_tag axbx = {0};
+  s_tag axby = {0};
+  s_tag aybx = {0};
+  s_tag ayby = {0};
+  s_tag axbx_ayby = {0};
+  s_tag aybx_axby = {0};
+  s_tag bx2 = {0};
+  s_tag by2 = {0};
+  s_tag bx2_by2 = {0};
   s_complex tmp = {0};
   assert(a);
   assert(b);
@@ -213,10 +213,10 @@ s_complex * complex_init_ratio (s_complex *c, s_ratio *src)
 s_complex * complex_mul (s_complex *a, s_complex *b,
                          s_complex *dest)
 {
-  s_tag axbx;
-  s_tag axby;
-  s_tag aybx;
-  s_tag ayby;
+  s_tag axbx = {0};
+  s_tag axby = {0};
+  s_tag aybx = {0};
+  s_tag ayby = {0};
   assert(a);
   assert(b);
   assert(dest);
@@ -398,7 +398,7 @@ s_complex * complex_sub (s_complex *a, s_complex *b,
 s_tag * complex_norm (s_complex *c, s_tag *dest)
 {
   s_complex d;
-  s_tag sum;
+  s_tag sum = {0};
   s_tag tmp = {0};
   assert(c);
   tag_mul(&c->x, &c->x, &d.x);
@@ -419,7 +419,7 @@ bool complex_is_zero(const s_complex *c)
 
 f32 complex_to_f32 (s_complex *c)
 {
-  s_tag norm;
+  s_tag norm = {0};
   const s_sym *type;
   f32 x;
   assert(c);
@@ -431,7 +431,7 @@ f32 complex_to_f32 (s_complex *c)
 
 f64 complex_to_f64 (s_complex *c)
 {
-  s_tag norm;
+  s_tag norm = {0};
   const s_sym *type;
   f64 x;
   assert(c);
@@ -445,7 +445,7 @@ f64 complex_to_f64 (s_complex *c)
 
 f80 complex_to_f80 (s_complex *c)
 {
-  s_tag norm;
+  s_tag norm = {0};
   const s_sym *type;
   f80 x;
   assert(c);
@@ -461,7 +461,7 @@ f80 complex_to_f80 (s_complex *c)
 
 f128 complex_to_f128 (s_complex *c)
 {
-  s_tag norm;
+  s_tag norm = {0};
   const s_sym *type;
   f128 x;
   assert(c);

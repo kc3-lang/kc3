@@ -65,7 +65,7 @@ void markdown_to_html_str_callback (const MD_CHAR *p, MD_SIZE size,
 s_list ** markdown_titles (const s_str *markdown, s_list **dest)
 {
   MD_PARSER parser = {0};
-  s_tuple tuple;
+  s_tuple tuple = {0};
   s_tag  *tuple_count;
   s_tag  *tuple_last;
   s_tag  *tuple_list;

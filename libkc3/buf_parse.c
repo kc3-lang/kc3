@@ -39,6 +39,7 @@
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "mutex.h"
 #include "op.h"
 #include "ops.h"
 #include "pcall.h"
@@ -335,7 +336,7 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_tag tag;
+  s_tag tag = {0};
   s_array tmp;
   assert(buf);
   assert(dest);
@@ -435,7 +436,7 @@ sw buf_parse_do_block_inner (s_buf *buf, bool short_form,
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_tag tag;
+  s_tag tag = {0};
   s_do_block tmp;
   i = &list;
   *i = NULL;
@@ -616,7 +617,7 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_tag tag;
+  s_tag tag = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -704,6 +705,35 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
   return r;
 }
 
+static void buf_parse_call_move (s_call *dest, s_call *src)
+{
+#if HAVE_PTHREAD
+  mutex_clean(&src->mutex);
+#endif
+  dest->ident = src->ident;
+  dest->arguments = src->arguments;
+  dest->pcallable = src->pcallable;
+  dest->ref_count = src->ref_count;
+#if HAVE_PTHREAD
+  mutex_init(&dest->mutex);
+#endif
+  *src = (s_call) {0};
+}
+
+static void buf_parse_tag_move (s_tag *dest, s_tag *src)
+{
+#if HAVE_PTHREAD
+  mutex_clean(&src->ref_count_mutex);
+#endif
+  dest->type = src->type;
+  dest->data = src->data;
+  dest->ref_count = src->ref_count;
+#if HAVE_PTHREAD
+  mutex_init(&dest->ref_count_mutex);
+#endif
+  *src = (s_tag) {0};
+}
+
 sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
 {
   character c;
@@ -758,15 +788,17 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       call_init_op(&tmp3);
       tmp3.ident.module = NULL;
       tmp3.ident.sym = op->sym;
-      tmp3.arguments->tag = *left;
-      list_next(tmp3.arguments)->tag = *right;
+      tag_clean(&tmp3.arguments->tag);
+      buf_parse_tag_move(&tmp3.arguments->tag, left);
+      tag_clean(&list_next(tmp3.arguments)->tag);
+      buf_parse_tag_move(&list_next(tmp3.arguments)->tag, right);
+      tag_init(left);
       if (! (left->data.td_pcall = alloc(sizeof(s_call)))) {
         r = -1;
         goto restore;
       }
-      *left->data.td_pcall = tmp3;
+      buf_parse_call_move(left->data.td_pcall, &tmp3);
       left->type = TAG_PCALL;
-      *right = (s_tag) {0};
     }
     else
       merge_left = true;
@@ -807,21 +839,22 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
            (next_op->associativity == OP_ASSOCIATIVITY_RIGHT &&
             next_op->precedence == op->precedence)) {
       call_init_op(&tmp2);
-      tmp2.arguments->tag = *right;
+      tag_clean(&tmp2.arguments->tag);
+      buf_parse_tag_move(&tmp2.arguments->tag, right);
       if ((r = buf_parse_call_op_rec
            (buf, &tmp2, (next_op->precedence > op->precedence) ?
             op->precedence + 1 : op->precedence)) <= 0) {
-        tmp2.arguments->tag = (s_tag) {0};
+        buf_parse_tag_move(right, &tmp2.arguments->tag);
         call_clean(&tmp2);
         goto ok;
       }
       result += r;
-      *right = (s_tag) {0};
+      tag_init(right);
       if (! (right->data.td_pcall = alloc(sizeof(s_call)))) {
         r = -1;
         goto restore;
       }
-      *right->data.td_pcall = tmp2;
+      buf_parse_call_move(right->data.td_pcall, &tmp2);
       right->type = TAG_PCALL;
       buf_save_update(buf, &save);
       if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
@@ -845,7 +878,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   tag_clean(&next_op_tag);
   tag_clean(&op_tag);
   call_clean(dest);
-  *dest = tmp;
+  buf_parse_call_move(dest, &tmp);
   buf_save_clean(buf, &save);
   return result;
  restore:
@@ -1297,7 +1330,7 @@ sw buf_parse_do_block_inner (s_buf *buf, f_buf_parse_end f_end,
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_tag tag;
+  s_tag tag = {0};
   s_do_block tmp;
   i = &list;
   *i = NULL;
@@ -2036,7 +2069,7 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
 {
   sw r;
   sw result = 0;
-  s_tag tag;
+  s_tag tag = {0};
   s_list *tmp = NULL;
   s_list **tail = &tmp;
   assert(buf);
@@ -2822,13 +2855,13 @@ sw buf_parse_plist_paren (s_buf *buf, p_list *dest)
 
 sw buf_parse_list_tag (s_buf *buf, s_tag *dest)
 {
-  s_tag key;
+  s_tag key = {0};
   sw r;
   sw result = 0;
   s_buf_save save;
   s_str str;
-  s_tag tmp;
-  s_tag value;
+  s_tag tmp = {0};
+  s_tag value = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -3068,7 +3101,7 @@ sw buf_parse_map_key_tag (s_buf *buf, s_tag *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_tag tag;
+  s_tag tag = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -4267,7 +4300,7 @@ sw buf_parse_static_tag (s_buf *buf, s_tag *tag)
   sw r;
   s_buf_save save;
   s_str str;
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(buf);
   assert(tag);
   buf_save_init(buf, &save);

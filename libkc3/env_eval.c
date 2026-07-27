@@ -292,7 +292,7 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
 {
   s_list *args = NULL;
   s_list * volatile args_volatile = NULL;
-  s_tag tag;
+  s_tag tag = {0};
   s_unwind_protect unwind_protect;
   assert(env);
   assert(cfn);
@@ -357,7 +357,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   const s_sym *module;
   s_list *search_modules;
   bool silence_errors;
-  s_tag tag;
+  s_tag tag = {0};
   s_list *tmp = NULL;
   s_list *trace;
   struct { /* XXX needed to sort unwind protect jumps

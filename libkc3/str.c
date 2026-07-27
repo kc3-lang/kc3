@@ -1312,7 +1312,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
 
 s_str * str_init_random_base64_uw (s_str *str, uw len)
 {
-  s_tag tag;
+  s_tag tag = {0};
   tag_init_uw(&tag, len);
   return str_init_random_base64(str, &tag);
 }
@@ -1620,7 +1620,7 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
   s_list  *list = NULL;
   s_buf out_buf = {0};
   sw r;
-  s_tag tag;
+  s_tag tag = {0};
   s_tag tmp = {0};
   buf_init_str_const(&in_buf, str);
   if (! buf_init_alloc(&out_buf, str->size))
@@ -1914,7 +1914,7 @@ s_list ** str_split_words (const s_str *str, s_list **dest)
 
 s_tag * str_size (const s_str *str, s_tag *dest)
 {
-  s_tag u;
+  s_tag u = {0};
   tag_init_uw(&u, str->size);
   return tag_integer_reduce(&u, dest);
 }

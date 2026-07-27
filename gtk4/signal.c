@@ -23,7 +23,7 @@ void kc3_gtk4_signal_callback (GObject *object, s_tuple *tuple)
 {
   s_list *args = NULL;
   s_callable *callable;
-  s_tag tag;
+  s_tag tag = {0};
   s_list *tmp;
   if (tuple->count != 2 ||
       tuple->tag[0].type != TAG_PCALLABLE) {

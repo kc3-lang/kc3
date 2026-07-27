@@ -89,7 +89,7 @@ s_str * crypt_hash_password (const s_str *pass, s_str *dest)
   s_str hash;
   s_str prefix = {{NULL}, 17, {"$6$rounds=123456$"}};
   s_str salt;
-  s_tag tag;
+  s_tag tag = {0};
   tag_init_uw(&tag, 16);
   if (! str_init_random_base64(&salt, &tag))
     return NULL;

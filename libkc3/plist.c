@@ -38,7 +38,7 @@ bool * plist_all (p_list *plist, p_callable *function, bool *dest)
   bool b;
   s_list *l;
   const s_sym *sym_Bool = &g_sym_Bool;
-  s_tag tmp;
+  s_tag tmp = {0};
   if (! (arg = list_new(NULL)))
     return NULL;
   l = *plist;
@@ -76,7 +76,7 @@ bool * plist_each (p_list *plist, p_callable *function, bool *dest)
 {
   s_list *arg;
   s_list *l;
-  s_tag tmp;
+  s_tag tmp = {0};
   if (! (arg = list_new(NULL)))
     return NULL;
   l = *plist;
@@ -505,7 +505,7 @@ p_list * plist_sort_by (p_list *plist, p_callable *compare,
   const s_sym *sym_S8 = &g_sym_S8;
   s_list *tmp;
   p_list *t;
-  s_tag tag;
+  s_tag tag = {0};
   s8 x;
   assert(plist);
   assert(dest);
