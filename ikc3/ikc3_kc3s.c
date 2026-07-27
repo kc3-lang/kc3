@@ -43,6 +43,22 @@
 #define BUFSZ 0x10000
 
 static bool         g_client = false;
+
+static void tag_move (s_tag *dest, s_tag *src)
+{
+  tag_clean(dest);
+#if HAVE_PTHREAD
+  mutex_clean(&src->ref_count_mutex);
+#endif
+  dest->type = src->type;
+  dest->data = src->data;
+  dest->ref_count = src->ref_count;
+#if HAVE_PTHREAD
+  if (dest->ref_count)
+    mutex_init(&dest->ref_count_mutex);
+#endif
+  *src = (s_tag) {0};
+}
 static s_str        g_host = {0};
 static s_str        g_port = {0};
 static bool         g_server = false;
@@ -184,9 +200,11 @@ static int arg_load (s_env *env, int *argc, char ***argv)
     return -1;
   }
   file_dir = frame_get_w(env->global_frame, &g_sym___DIR__);
-  file_dir_save = *file_dir;
+  tag_move(&file_dir_save, file_dir);
+  tag_init(file_dir);
   file_path = frame_get_w(env->global_frame, &g_sym___FILE__);
-  file_path_save = *file_path;
+  tag_move(&file_path_save, file_path);
+  tag_init(file_path);
   tag_init_str_1(file_path, NULL, (*argv)[1]);
   file_dir->type = TAG_STR;
   if (! file_dirname(&file_path->data.td_str, &file_dir->data.td_str)) {
@@ -195,8 +213,8 @@ static int arg_load (s_env *env, int *argc, char ***argv)
     return -1;
   }
   r = run();
-  *file_dir = file_dir_save;
-  *file_path = file_path_save;
+  tag_move(file_dir, &file_dir_save);
+  tag_move(file_path, &file_path_save);
   buf_file_close(env->in);
   fclose(fp);
   if (r < 0)

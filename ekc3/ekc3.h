@@ -19,6 +19,9 @@
 s_tag * ekc3_parse_template (s_buf *input, s_tag *dest);
 s_tag * ekc3_parse_template_1 (const char *input, s_tag *dest);
 
+/* Operators. */
+void ekc3_tag_move (s_tag *dest, s_tag *src);
+
 /* Stack-allocation compatible functions, call ekc3_clean after use. */
 /*
 void     ekc3_clean (p_ekc3 *ekc3);

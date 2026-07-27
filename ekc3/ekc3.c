@@ -16,6 +16,22 @@
 #include "ekc3.h"
 #include "html.h"
 
+void ekc3_tag_move (s_tag *dest, s_tag *src)
+{
+  tag_clean(dest);
+#if HAVE_PTHREAD
+  mutex_clean(&src->ref_count_mutex);
+#endif
+  dest->type = src->type;
+  dest->data = src->data;
+  dest->ref_count = src->ref_count;
+#if HAVE_PTHREAD
+  if (dest->ref_count)
+    mutex_init(&dest->ref_count_mutex);
+#endif
+  *src = (s_tag) {0};
+}
+
 s_tag * ekc3_parse_template (s_buf *input, s_tag *dest)
 {
   s_buf buf = {0};
@@ -701,15 +717,19 @@ s_str * ekc3_render_file_to_str (const s_str *path, s_str *dest)
     return NULL;
   }
   file_dir = frame_get_w(env->global_frame, &g_sym___DIR__);
-  file_dir_save = *file_dir;
+  ekc3_tag_move(&file_dir_save, file_dir);
+  tag_init(file_dir);
+  file_dir->type = TAG_STR;
   file_dirname(path, &file_dir->data.str);
   file_path = frame_get_w(env->global_frame, &g_sym___FILE__);
-  file_path_save = *file_path;
+  ekc3_tag_move(&file_path_save, file_path);
+  tag_init(file_path);
+  file_path->type = TAG_STR;
   file_path->data.str = *path;
   result = ekc3_render_buf_to_str(&in, dest);
-  tag_clean(file_dir);
-  *file_dir = file_dir_save;
-  *file_path = file_path_save;
+  file_path->data.str.free.p_pvoid = NULL;
+  ekc3_tag_move(file_dir, &file_dir_save);
+  ekc3_tag_move(file_path, &file_path_save);
   buf_file_close(&in);
   fclose(fp);
   return result;
