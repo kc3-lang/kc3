@@ -203,17 +203,17 @@ defmodule HTTPd do
       end
     end, do
       Counter.decrease(HTTPd.concurrent_requests, 1)
-      if bot? do
+      bots_count = if bot? do
         Counter.decrease(HTTPd.bots, 1)
+      else
+        Counter.get(HTTPd.bots)
       end
       if (error || close) && Socket.Buf.can_close?(client) do
         EventPoll.delete(HTTPd.ep_fd, socket, :timer)
         EventPoll.delete(HTTPd.ep_fd, socket, :read)
         Tag.delete(client.ptag)
         Socket.Buf.close(client)
-        Counter.decrease(HTTPd.connections, 1)
-        count = Counter.get(HTTPd.connections)
-        bots_count = Counter.get(HTTPd.bots)
+        count = Counter.decrease(HTTPd.connections, 1)
         puts("HTTPd.http_client: connections=#{count} bots=#{bots_count}")
       end
     end)
@@ -280,8 +280,7 @@ defmodule HTTPd do
               EventPoll.delete(HTTPd.ep_fd, sockfd, :read)
               Tag.delete(client.ptag)
               Socket.Buf.close(client)
-              Counter.decrease(HTTPd.connections, 1)
-              count = Counter.get(HTTPd.connections)
+              count = Counter.decrease(HTTPd.connections, 1)
               bots_count = Counter.get(HTTPd.bots)
               puts("HTTPd.server_thread: eof: connections=#{count} bots=#{bots_count}")
             end
@@ -292,8 +291,7 @@ defmodule HTTPd do
               EventPoll.delete(HTTPd.ep_fd, sockfd, :read)
               Tag.delete(client.ptag)
               Socket.Buf.close(client)
-              Counter.decrease(HTTPd.connections, 1)
-              count = Counter.get(HTTPd.connections)
+              count = Counter.decrease(HTTPd.connections, 1)
               bots_count = Counter.get(HTTPd.bots)
               puts("HTTPd.server_thread: timeout: connections=#{count} bots=#{bots_count}")
             end

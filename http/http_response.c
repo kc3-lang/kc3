@@ -33,6 +33,15 @@ static void http_response_mmap_clean (s_http_response *response)
       tuple->tag[2].type != TAG_UW ||
       tuple->tag[3].type != TAG_PTR)
     return;
+#if HAVE_PTHREAD
+  mutex_lock(&tuple->mutex);
+#endif
+  if (tuple->ref_count != 1) {
+#if HAVE_PTHREAD
+    mutex_unlock(&tuple->mutex);
+#endif
+    return;
+  }
   fd = tuple->tag[1].data.td_s64;
   size = tuple->tag[2].data.td_uw;
   ptr = tuple->tag[3].data.td_ptr.p_pvoid;
@@ -42,6 +51,9 @@ static void http_response_mmap_clean (s_http_response *response)
     close(fd);
   tuple->tag[3].data.td_ptr.p_pvoid = NULL;
   tuple->tag[1].data.td_s64 = -1;
+#if HAVE_PTHREAD
+  mutex_unlock(&tuple->mutex);
+#endif
 }
 
 s_http_response * http_response_buf_parse (s_http_response *response,
