@@ -305,7 +305,7 @@ void str_clean (s_str *str)
   assert(str);
   if (str->free.p_pvoid) {
     alloc_free(str->free.p_pvoid);
-    str->free.p_pvoid = NULL;
+    *str = (s_str) {0};
   }
 }
 
