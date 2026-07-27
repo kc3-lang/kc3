@@ -3517,10 +3517,10 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
   env_loop_context_push(env, &loop_context);
   env_unwind_protect_push(env, &loop_context.up);
   if (setjmp(loop_context.up.buf)) {
-    tag_clean(&tmp);
     env_unwind_protect_pop(env, &loop_context.up);
     env_loop_context_pop(env, &loop_context);
     call_clean(&cond_cast);
+    tag_clean(&tmp);
     longjmp(*loop_context.up.jmp, 1);
   }
   if (! env_eval_call_resolve(env, &cond_cast))
