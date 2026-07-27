@@ -43,6 +43,11 @@ s_facts_with_cursor * facts_with (s_facts *facts,
     if (! cursor->levels)
       return NULL;
     cursor->spec = facts_spec_new_expand(spec);
+    if (! cursor->spec) {
+      alloc_free(cursor->levels);
+      cursor->levels = NULL;
+      return NULL;
+    }
     if (false) {
       err_write_1("facts_with: spec = ");
       err_inspect_facts_spec(spec);
@@ -245,4 +250,3 @@ s_facts_cursor * facts_with_tuple (s_facts *facts,
   return facts_with_tags(facts, cursor, fact->tag, fact->tag + 1,
                          fact->tag + 2);
 }
-

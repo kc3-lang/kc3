@@ -499,12 +499,14 @@ s_buf * buf_init_popen (s_buf *buf, const s_str *cmd,
   }
   if (mode->ptr.p_pchar[0] == 'w') {
     if (! buf_file_open_w(&tmp, fp)) {
+      pclose(fp);
       buf_clean(&tmp);
       return NULL;
     }
   }
   else if (mode->ptr.p_pchar[0] == 'r') {
     if (! buf_file_open_r(&tmp, fp)) {
+      pclose(fp);
       buf_clean(&tmp);
       return NULL;
     }
@@ -512,6 +514,7 @@ s_buf * buf_init_popen (s_buf *buf, const s_str *cmd,
   else {
     err_puts("buf_init_popen: invalid mode");
     assert(! "buf_init_popen: invalid mode");
+    pclose(fp);
     buf_clean(&tmp);
     return NULL;
   }
@@ -546,7 +549,8 @@ s_buf * buf_init_str_copy (s_buf *buf, const s_str *str)
   s_buf tmp = {0};
   assert(buf);
   assert(str);
-  buf_init_alloc(&tmp, str->size);
+  if (! buf_init_alloc(&tmp, str->size))
+    return NULL;
   memcpy(tmp.ptr.p_pvoid, str->ptr.p_pvoid, str->size);
   tmp.wpos = str->size;
   *buf = tmp;
@@ -861,8 +865,10 @@ s_str * buf_read (s_buf *buf, uw size, s_str *dest)
   s_str *result = NULL;
   s_str tmp = {0};
   assert(buf);
-  if (! size)
-    return str_init_empty(dest);
+  if (! size) {
+    result = str_init_empty(dest);
+    goto clean;
+  }
 #if HAVE_PTHREAD
   rwlock_w(buf->rwlock);
 #endif
