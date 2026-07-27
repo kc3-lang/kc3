@@ -22,6 +22,7 @@ p_list * kc3_git_branch_list (git_repository **repo, p_list *dest)
   const char *pchar;
   git_reference *ref;
   git_branch_t   ref_type;
+  int r;
   s_list *tmp = NULL;
   if (git_branch_iterator_new(&iter, *repo, GIT_BRANCH_LOCAL)) {
     e = git_error_last();
@@ -29,7 +30,7 @@ p_list * kc3_git_branch_list (git_repository **repo, p_list *dest)
     err_puts(e->message);
     return NULL;
   }
-  while (! git_branch_next(&ref, &ref_type, iter)) {
+  while (! (r = git_branch_next(&ref, &ref_type, iter))) {
     if (git_branch_name(&pchar, ref)) {
       e = git_error_last();
       err_write_1("kc3_git_branch_list: git_branch_name: ");
@@ -49,6 +50,13 @@ p_list * kc3_git_branch_list (git_repository **repo, p_list *dest)
     git_reference_free(ref);
   }
   git_branch_iterator_free(iter);
+  if (r != GIT_ITEROVER) {
+    e = git_error_last();
+    err_write_1("kc3_git_branch_list: git_branch_next: ");
+    err_puts(e ? e->message : "unknown error");
+    list_delete_all(tmp);
+    return NULL;
+  }
   *dest = tmp;
   return dest;
 }
@@ -58,12 +66,13 @@ git_reference ** kc3_git_branch_lookup (git_reference **ref,
                                         s_str *name)
 {
   const git_error *e;
-  git_reference *tmp;
+  git_reference *tmp = NULL;
   if (git_branch_lookup(&tmp, *repo, name->ptr.p_pchar,
                         GIT_BRANCH_LOCAL)) {
     e = git_error_last();
     err_write_1("kc3_git_branch_lookup: ");
     err_puts(e->message);
+    return NULL;
   }
   *ref = tmp;
   return ref;
@@ -73,7 +82,7 @@ s_str * kc3_git_branch_name (s_str *dest, git_reference **ref)
 {
   const char *a;
   const git_error *e;
-  s_str tmp;
+  s_str tmp = {0};
   assert(dest);
   assert(ref);
   assert(*ref);
@@ -81,6 +90,7 @@ s_str * kc3_git_branch_name (s_str *dest, git_reference **ref)
     e = git_error_last();
     err_write_1("kc3_git_branch_name: ");
     err_puts(e->message);
+    return NULL;
   }
   if (! str_init_1_alloc(&tmp, a))
     return NULL;

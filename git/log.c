@@ -324,25 +324,32 @@ static p_list * log_push_commit (p_list *log_tail,
   tag_init_psym(map->key + 5, sym_1("date"));
   p_list parents = NULL;
   git_oid_tostr(buf, sizeof(buf), git_commit_id(commit));
-  tag_init_str_1_alloc(map->value + 1, git_commit_message(commit));
-  tag_init_str_1_alloc(map->value + 4, buf);
+  if (! tag_init_str_1_alloc(map->value + 1,
+                             git_commit_message(commit) ?
+                             git_commit_message(commit) : "") ||
+      ! tag_init_str_1_alloc(map->value + 4, buf))
+    goto ko;
+  tag_init_plist(map->value + 3, NULL);
   if ((count = git_commit_parentcount(commit)) > 1) {
     for (i = 0; i < count; ++i) {
       git_oid_tostr(buf, sizeof(buf),
                     git_commit_parent_id(commit, i));
       parents = list_new(parents);
-      if (! tag_init_str_1_alloc(&parents->tag, buf)) {
-        list_delete_all(parents);
+      if (! parents)
         goto ko;
-      }
+      map->value[3].data.td_plist = parents;
+      if (! tag_init_str_1_alloc(&parents->tag, buf))
+        goto ko;
     }
   }
-  tag_init_plist(map->value + 3, parents);
   if ((sig = git_commit_author(commit)) != NULL) {
     tag_init_s32(map->value + 5, sig->when.time +
                  sig->when.offset * 60);
-    tag_init_str_1_alloc(map->value + 2, sig->name);
-    tag_init_str_1_alloc(map->value + 0, sig->email);
+    if (! tag_init_str_1_alloc(map->value + 2,
+                               sig->name ? sig->name : "") ||
+        ! tag_init_str_1_alloc(map->value + 0,
+                               sig->email ? sig->email : ""))
+      goto ko;
   }
   else {
     tag_init(map->value + 0);

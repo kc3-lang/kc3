@@ -53,17 +53,20 @@ static s_map * files_set_entry (const git_tree_entry *entry,
   mode = git_tree_entry_filemode(entry);
   if (! name)
     name = git_tree_entry_name(entry);
-  tag_init_str_1_alloc(map->key + index, name);
-  tag_init_map(map->value + index, 4);
+  if (! tag_init_str_1_alloc(map->key + index, name) ||
+      ! tag_init_map(map->value + index, 4))
+    return NULL;
   sub_map = &map->value[index].data.td_map;
   tag_init_psym(sub_map->key + 0, sym_1("name"));
   tag_init_psym(sub_map->key + 1, sym_1("type"));
   tag_init_psym(sub_map->key + 2, sym_1("mode"));
   tag_init_psym(sub_map->key + 3, sym_1("hash"));
-  tag_init_str_1_alloc(sub_map->value + 0, name);
+  if (! tag_init_str_1_alloc(sub_map->value + 0, name))
+    return NULL;
   tag_init_psym(       sub_map->value + 1, type_sym);
   tag_init_s32(        sub_map->value + 2, mode);
-  tag_init_str_1_alloc(sub_map->value + 3, hash);
+  if (! tag_init_str_1_alloc(sub_map->value + 3, hash))
+    return NULL;
   return map;
 }
 
@@ -116,6 +119,7 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
         return NULL;
       }
       if (! files_set_entry(entry, path->ptr.p_pchar, &tmp, 0)) {
+        map_clean(&tmp);
         git_tree_entry_free(entry);
         git_object_free(obj);
         alloc_free(rev);

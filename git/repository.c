@@ -16,7 +16,10 @@
 
 void kc3_git_repository_free (git_repository **repo)
 {
-  git_repository_free(*repo);
+  if (repo && *repo) {
+    git_repository_free(*repo);
+    *repo = NULL;
+  }
 }
 
 git_reference ** kc3_git_repository_head (git_repository **repo,
@@ -30,10 +33,10 @@ git_reference ** kc3_git_repository_head (git_repository **repo,
       err_write_1("kc3_git_repository_head: ");
       err_puts(e->message);
     }
-    *dest = tmp;
+    *dest = NULL;
   }
   else
-    *dest = NULL;
+    *dest = tmp;
   return dest;
 }
 

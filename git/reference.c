@@ -14,9 +14,12 @@
 #include <git2.h>
 #include "reference.h"
 
-void kc3_git_reference_free (git_reference **repo)
+void kc3_git_reference_free (git_reference **ref)
 {
-  git_reference_free(*repo);
+  if (ref && *ref) {
+    git_reference_free(*ref);
+    *ref = NULL;
+  }
 }
 
 git_reference ** kc3_git_reference_lookup (git_reference **ref,
@@ -24,11 +27,12 @@ git_reference ** kc3_git_reference_lookup (git_reference **ref,
                                            s_str *name)
 {
   const git_error *e;
-  git_reference *tmp;
+  git_reference *tmp = NULL;
   if (git_reference_lookup(&tmp, *repo, name->ptr.p_pchar)) {
     e = git_error_last();
     err_write_1("kc3_git_reference_lookup: ");
     err_puts(e->message);
+    return NULL;
   }
   *ref = tmp;
   return ref;

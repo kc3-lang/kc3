@@ -25,6 +25,8 @@ p_list * kc3_git_tag_list (git_repository **repo, p_list *dest)
     e = git_error_last();
     err_write_1("kc3_git_repository_tag_list: ");
     err_puts(e->message);
+    git_strarray_free(&sa);
+    return NULL;
   }
   while (i < sa.count) {
     if (! (l = list_new_str_1_alloc(sa.strings[i], tmp))) {
