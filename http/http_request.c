@@ -92,6 +92,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_tag path = {0};
   s_buf path_buf = {0};
   s_str path_random;
+  s_list *tmp_uploads = NULL;
   s_list *           query_split = NULL;
   static const s_str query_separator = STR("?");
   sw r;
@@ -397,6 +398,14 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           }
           tag_clean(&upload);
           upload = (s_tag) {0};
+          {
+            s_list *f;
+            if (! (f = list_new(tmp_uploads)))
+              goto restore;
+            tmp_uploads = f;
+            if (! tag_init_copy(&f->tag, &path))
+              goto restore;
+          }
           tag_clean(&path);
           path = (s_tag) {0};
         }
@@ -477,6 +486,14 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   *((s_http_request *) tmp.data.td_pstruct->data) = tmp_req;
   goto clean;
  restore:
+  if (path.type == TAG_STR && path.data.td_str.size)
+    file_unlink(&path.data.td_str);
+  while (tmp_uploads) {
+    if (tmp_uploads->tag.type == TAG_STR &&
+        tmp_uploads->tag.data.td_str.size)
+      file_unlink(&tmp_uploads->tag.data.td_str);
+    tmp_uploads = list_delete(tmp_uploads);
+  }
   http_request_clean(&tmp_req);
   list_delete_all(multipart_headers);
   list_delete_all(query_split);
@@ -492,6 +509,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   //buf_save_restore_rpos(buf, &save);
  clean:
   //buf_save_clean(buf, &save);
+  list_delete_all(tmp_uploads);
   str_clean(&boundary_newline);
   str_clean(&boundary);
   tag_clean(&filename);
