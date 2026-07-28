@@ -98,13 +98,11 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
     tmp.end.id        = (uw) -1;
   }
   tmp.facts = facts;
-#if HAVE_PTHREAD
-  if (! facts_cursor_lock_init(&tmp)) {
-    facts_cursor_clean(&tmp);
-    return NULL;
-  }
-#endif
   *cursor = tmp;
+#if HAVE_PTHREAD
+  if (! facts_cursor_lock_init(cursor))
+    return NULL;
+#endif
   return cursor;
 }
 

@@ -71,11 +71,16 @@ s_facts_cursor * facts_with_0 (s_facts *facts,
 {
   assert(facts);
   assert(cursor);
-  facts_cursor_init(facts, cursor, facts->index_spo, NULL, NULL);
-  pvar_init_copy(&cursor->pvar_subject, &pvar_subject);
-  pvar_init_copy(&cursor->pvar_predicate, &pvar_predicate);
-  pvar_init_copy(&cursor->pvar_object, &pvar_object);
+  if (! facts_cursor_init(facts, cursor, facts->index_spo, NULL, NULL))
+    return NULL;
+  if (! pvar_init_copy(&cursor->pvar_subject, &pvar_subject) ||
+      ! pvar_init_copy(&cursor->pvar_predicate, &pvar_predicate) ||
+      ! pvar_init_copy(&cursor->pvar_object, &pvar_object))
+    goto clean;
   return cursor;
+ clean:
+  facts_cursor_clean(cursor);
+  return NULL;
 }
 
 s_facts_cursor * facts_with_0_id (s_facts *facts,
@@ -86,11 +91,16 @@ s_facts_cursor * facts_with_0_id (s_facts *facts,
 {
   assert(facts);
   assert(cursor);
-  facts_cursor_init(facts, cursor, facts->index, NULL, NULL);
-  pvar_init_copy(&cursor->pvar_subject, &pvar_subject);
-  pvar_init_copy(&cursor->pvar_predicate, &pvar_predicate);
-  pvar_init_copy(&cursor->pvar_object, &pvar_object);
+  if (! facts_cursor_init(facts, cursor, facts->index, NULL, NULL))
+    return NULL;
+  if (! pvar_init_copy(&cursor->pvar_subject, &pvar_subject) ||
+      ! pvar_init_copy(&cursor->pvar_predicate, &pvar_predicate) ||
+      ! pvar_init_copy(&cursor->pvar_object, &pvar_object))
+    goto clean;
   return cursor;
+ clean:
+  facts_cursor_clean(cursor);
+  return NULL;
 }
 
 s_facts_cursor * facts_with_1_2 (s_facts *facts,
@@ -141,14 +151,19 @@ s_facts_cursor * facts_with_1_2 (s_facts *facts,
     tree = facts->index_pos;
   else
     tree = facts->index_osp;
-  facts_cursor_init(facts, cursor, tree, &start, &end);
-  if (pvar_subject)
-    pvar_init_copy(&cursor->pvar_subject, &pvar_subject);
-  if (pvar_predicate)
-    pvar_init_copy(&cursor->pvar_predicate, &pvar_predicate);
-  if (pvar_object)
-    pvar_init_copy(&cursor->pvar_object, &pvar_object);
+  if (! facts_cursor_init(facts, cursor, tree, &start, &end))
+    return NULL;
+  if ((pvar_subject &&
+       ! pvar_init_copy(&cursor->pvar_subject, &pvar_subject)) ||
+      (pvar_predicate &&
+       ! pvar_init_copy(&cursor->pvar_predicate, &pvar_predicate)) ||
+      (pvar_object &&
+       ! pvar_init_copy(&cursor->pvar_object, &pvar_object)))
+    goto clean;
   return cursor;
+ clean:
+  facts_cursor_clean(cursor);
+  return NULL;
 }
 
 s_facts_cursor * facts_with_3 (s_facts *facts,
