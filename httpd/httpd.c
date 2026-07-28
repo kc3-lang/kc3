@@ -120,6 +120,7 @@ int main (int argc, char **argv)
     }
     buf_file_close(env->out);
     dup2(log_fd, 1);
+    close(log_fd);
     buf_fd_open_w(env->out, 1);
     strftime(err_buf, sizeof(err_buf) - 1,
              "log/kc3_httpd_%Y-%m-%d_%H:%M:%S.error.log",
@@ -132,6 +133,7 @@ int main (int argc, char **argv)
     }
     buf_file_close(env->err);
     dup2(err_fd, 2);
+    close(err_fd);
     buf_fd_open_w(env->err, 2);
     buf_file_close(env->in);
     close(0);

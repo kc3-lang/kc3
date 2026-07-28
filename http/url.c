@@ -44,8 +44,10 @@ s_str * url_escape (const s_str *src, s_str *dest)
     tag_clean(&escapes_tag);
     return str_init_empty(dest);
   }
-  if (! buf_init_alloc(&buf, size))
+  if (! buf_init_alloc(&buf, size)) {
+    tag_clean(&escapes_tag);
     return NULL;
+  }
   s = *src;
   while (str_read_character_utf8(&s, &c) > 0) {
     /* if (c == ' ') { 
