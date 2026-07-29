@@ -35,8 +35,7 @@ s_tag * var_assign (s_var *var, s_tag *value, s_tag *dest)
 void var_clean (s_var *var)
 {
   assert(var);
-  if (var->bound)
-    tag_clean(&var->tag);
+  tag_clean(&var->tag);
 #if HAVE_PTHREAD
   mutex_clean(&var->mutex);
 #endif
