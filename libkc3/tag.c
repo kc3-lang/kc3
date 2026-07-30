@@ -781,6 +781,7 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     return tag;
   case TAG_VOID:
     tag->type = src->type;
+    tag->data = (u_tag_data) {0};
     return tag;
   }
   err_write_1("tag_init_copy: invalid tag type: ");
