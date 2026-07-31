@@ -56,6 +56,7 @@
 #include "pvar.h"
 #include "ratio.h"
 #include "rwlock.h"
+#include "set__tag.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -2360,6 +2361,87 @@ DEF_MARSHALL_READ(s8, "_KC3S8_", s8)
 DEF_MARSHALL_READ_LETOH(s16, "_KC3S16_", s16, 16)
 DEF_MARSHALL_READ_LETOH(s32, "_KC3S32_", s32, 32)
 DEF_MARSHALL_READ_LETOH(s64, "_KC3S64_", s64, 64)
+
+s_marshall_read * marshall_read_set_tag (s_marshall_read *mr,
+                                         bool heap,
+                                         s_set__tag *dest)
+{
+  uw collisions = 0;
+  uw count = 0;
+  uw h;
+  uw i;
+  s_set_item__tag *item;
+  s_set_item__tag *last = NULL;
+  uw last_h = 0;
+  uw max = 0;
+  s_set__tag tmp = {0};
+  if (! mr || ! dest) {
+    err_puts("marshall_read_set_tag: invalid argument");
+    assert(! "marshall_read_set_tag: invalid argument");
+    return NULL;
+  }
+  if (! marshall_read_1(mr, heap, "_KC3SETTAG_")) {
+    err_puts("marshall_read_set_tag: marshall_read_1 magic");
+    assert(! "marshall_read_set_tag: marshall_read_1 magic");
+    return NULL;
+  }
+  if (! marshall_read_uw(mr, heap, &max) ||
+      ! marshall_read_uw(mr, heap, &count) ||
+      ! marshall_read_uw(mr, heap, &collisions)) {
+    err_puts("marshall_read_set_tag: marshall_read_uw");
+    assert(! "marshall_read_set_tag: marshall_read_uw");
+    return NULL;
+  }
+  if (! max) {
+    err_puts("marshall_read_set_tag: invalid max");
+    assert(! "marshall_read_set_tag: invalid max");
+    return NULL;
+  }
+  if (! set_init__tag(&tmp, max)) {
+    err_puts("marshall_read_set_tag: set_init__tag");
+    assert(! "marshall_read_set_tag: set_init__tag");
+    return NULL;
+  }
+  i = 0;
+  while (i < count) {
+    if (! (item = alloc(sizeof(s_set_item__tag)))) {
+      set_clean__tag(&tmp);
+      return NULL;
+    }
+    if (! marshall_read_uw(mr, heap, &item->hash) ||
+        ! marshall_read_uw(mr, heap, &item->usage)) {
+      err_puts("marshall_read_set_tag: marshall_read_uw item");
+      assert(! "marshall_read_set_tag: marshall_read_uw item");
+      alloc_free(item);
+      set_clean__tag(&tmp);
+      return NULL;
+    }
+    if (! marshall_read_tag(mr, heap, &item->data)) {
+      err_puts("marshall_read_set_tag: marshall_read_tag");
+      assert(! "marshall_read_set_tag: marshall_read_tag");
+      alloc_free(item);
+      set_clean__tag(&tmp);
+      return NULL;
+    }
+    h = item->hash % tmp.max;
+    if (! last || last_h != h) {
+      last = tmp.items[h];
+      while (last && last->next)
+        last = last->next;
+    }
+    if (last)
+      last->next = item;
+    else
+      tmp.items[h] = item;
+    last = item;
+    last_h = h;
+    i++;
+  }
+  tmp.collisions = collisions;
+  tmp.count = count;
+  *dest = tmp;
+  return mr;
+}
 
 sw marshall_read_size (const s_marshall_read *mr)
 {

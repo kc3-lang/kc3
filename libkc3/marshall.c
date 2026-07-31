@@ -1572,6 +1572,62 @@ DEF_MARSHALL(s16, "_KC3S16_")
 DEF_MARSHALL(s32, "_KC3S32_")
 DEF_MARSHALL(s64, "_KC3S64_")
 
+s_marshall * marshall_set_tag (s_marshall *m, bool heap,
+                               const s_set__tag *set)
+{
+  uw count;
+  uw i;
+  const s_set_item__tag *item;
+  if (! m || ! set || ! set->items) {
+    err_puts("marshall_set_tag: invalid argument");
+    assert(! "marshall_set_tag: invalid argument");
+    return NULL;
+  }
+  if (! marshall_1(m, heap, "_KC3SETTAG_")) {
+    err_puts("marshall_set_tag: marshall_1 magic");
+    assert(! "marshall_set_tag: marshall_1 magic");
+    return NULL;
+  }
+  if (! marshall_uw(m, heap, set->max) ||
+      ! marshall_uw(m, heap, set->count) ||
+      ! marshall_uw(m, heap, set->collisions)) {
+    err_puts("marshall_set_tag: marshall_uw");
+    assert(! "marshall_set_tag: marshall_uw");
+    return NULL;
+  }
+  count = 0;
+  i = 0;
+  while (i < set->max) {
+    item = set->items[i];
+    while (item) {
+      if (! marshall_uw(m, heap, item->hash) ||
+          ! marshall_uw(m, heap, item->usage)) {
+        err_puts("marshall_set_tag: marshall_uw item");
+        assert(! "marshall_set_tag: marshall_uw item");
+        return NULL;
+      }
+      if (! marshall_tag(m, heap, &item->data)) {
+        err_puts("marshall_set_tag: marshall_tag");
+        assert(! "marshall_set_tag: marshall_tag");
+        return NULL;
+      }
+      count++;
+      item = item->next;
+    }
+    i++;
+  }
+  if (count != set->count) {
+    err_write_1("marshall_set_tag: invalid set count (");
+    err_inspect_uw_decimal(count);
+    err_write_1(" != ");
+    err_inspect_uw_decimal(set->count);
+    err_puts(")");
+    assert(! "marshall_set_tag: invalid set count");
+    return NULL;
+  }
+  return m;
+}
+
 sw marshall_size (const s_marshall *m)
 {
   if (! m)

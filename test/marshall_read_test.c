@@ -10,11 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "../libkc3/buf.h"
 #include "../libkc3/endian.h"
 #include "../libkc3/file.h"
 #include "../libkc3/inspect.h"
 #include "../libkc3/marshall.h"
 #include "../libkc3/marshall_read.h"
+#include "../libkc3/set__tag.h"
 #include "../libkc3/str.h"
 #include "../libkc3/list.h"
 #include "../libkc3/tag.h"
@@ -79,6 +81,7 @@ TEST_CASE_PROTOTYPE(marshall_read_s8);
 TEST_CASE_PROTOTYPE(marshall_read_s16);
 TEST_CASE_PROTOTYPE(marshall_read_s32);
 TEST_CASE_PROTOTYPE(marshall_read_s64);
+TEST_CASE_PROTOTYPE(marshall_read_set_tag);
 TEST_CASE_PROTOTYPE(marshall_read_sw);
 TEST_CASE_PROTOTYPE(marshall_read_tag);
 TEST_CASE_PROTOTYPE(marshall_read_unquote);
@@ -93,6 +96,7 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_bool);
   TEST_CASE_RUN(marshall_read_tag);
   TEST_CASE_RUN(marshall_read_unquote);
+  TEST_CASE_RUN(marshall_read_set_tag);
 }
 
 TEST_CASE(marshall_read_bool)
@@ -140,6 +144,74 @@ TEST_CASE_END(marshall_read_bool)
   tag_clean(&expected);
 }
 TEST_CASE_END(marshall_read_plist)
+
+TEST_CASE(marshall_read_set_tag)
+{
+  uw h;
+  uw i;
+  const s_set_item__tag *item;
+  const s_set_item__tag *item2;
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  const char *p[] = {
+    "false",
+    "true",
+    "'a'",
+    "\"abc\"",
+    ":a",
+    "A.b(c, d)",
+    "[1, 2, 3]",
+    "{:a, :b}",
+    "0x10000000000000000",
+    "-1",
+    NULL
+  };
+  s_set__tag set = {0};
+  s_set__tag set2 = {0};
+  s_set_item__tag *set_item;
+  s_str str = {0};
+  s_tag tag = {0};
+  TEST_EQ(set_init__tag(&set, 8), &set);
+  tag_init(&tag);
+  i = 0;
+  while (p[i]) {
+    TEST_ASSERT(tag_1(&tag, p[i]));
+    TEST_ASSERT((set_item = set_add__tag(&set, &tag)));
+    set_item->usage = i + 1;
+    i++;
+  }
+  tag_clean(&tag);
+  TEST_EQ(set.count, i);
+  TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+  TEST_EQ(marshall_set_tag(&m, false, &set), &m);
+  TEST_EQ(marshall_to_str(&m, &str), &str);
+  TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+  TEST_EQ(marshall_read_set_tag(&mr, false, &set2), &mr);
+  TEST_EQ(set2.max, set.max);
+  TEST_EQ(set2.count, set.count);
+  TEST_EQ(set2.collisions, set.collisions);
+  h = 0;
+  while (h < set.max) {
+    item = set.items[h];
+    item2 = set2.items[h];
+    while (item && item2) {
+      TEST_EQ(item2->hash, item->hash);
+      TEST_EQ(item2->usage, item->usage);
+      TAG_TEST_EQ(&item2->data, &item->data);
+      item = item->next;
+      item2 = item2->next;
+    }
+    TEST_ASSERT(! item);
+    TEST_ASSERT(! item2);
+    h++;
+  }
+  marshall_read_clean(&mr);
+  marshall_clean(&m);
+  set_clean__tag(&set2);
+  set_clean__tag(&set);
+  str_clean(&str);
+}
+TEST_CASE_END(marshall_read_set_tag)
 
   TEST_CASE(marshall_read_tag)
 {

@@ -114,6 +114,7 @@ PROTO_MARSHALL_READ(s8,           s8               );
 PROTO_MARSHALL_READ(s16,          s16              );
 PROTO_MARSHALL_READ(s32,          s32              );
 PROTO_MARSHALL_READ(s64,          s64              );
+PROTO_MARSHALL_READ(set_tag,      s_set__tag       );
 PROTO_MARSHALL_READ(struct,       s_struct         );
 PROTO_MARSHALL_READ(struct_type,  s_struct_type    );
 PROTO_MARSHALL_READ(sym,          p_sym            );

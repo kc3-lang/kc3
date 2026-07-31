@@ -95,6 +95,7 @@ PROTO_MARSHALL(s8, s8);
 PROTO_MARSHALL(s16, s16);
 PROTO_MARSHALL(s32, s32);
 PROTO_MARSHALL(s64, s64);
+PROTO_MARSHALL(set_tag, const s_set__tag *);
 PROTO_MARSHALL(struct, const s_struct *);
 PROTO_MARSHALL(struct_type, const s_struct_type *);
 PROTO_MARSHALL(sym, const s_sym *);
