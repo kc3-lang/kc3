@@ -775,6 +775,8 @@ KC3_C_SOURCES = \
 	"libkc3/ratio.h" \
 	"libkc3/rpc.c" \
 	"libkc3/rpc.h" \
+	"libkc3/rusage.c" \
+	"libkc3/rusage.h" \
 	"libkc3/rwlock.c" \
 	"libkc3/rwlock.h" \
 	"libkc3/s.c.in" \
@@ -1758,6 +1760,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/ratio.facts" \
 	"lib/kc3/0.1/rpc.kc3" \
 	"lib/kc3/0.1/rpc/response.kc3" \
+	"lib/kc3/0.1/rusage.kc3" \
 	"lib/kc3/0.1/rwlock.kc3" \
 	"lib/kc3/0.1/s16.facts" \
 	"lib/kc3/0.1/s32.facts" \
@@ -2100,6 +2103,15 @@ KC3_TEST_EKC3_SOURCES = \
 	"test/ekc3/render_file.out.expected" \
 	"test/ekc3/render_file.ret.expected" \
 	"test/ekc3_test" \
+
+KC3_TEST_EVENT_POLL_SOURCES = \
+	"test/event_poll/event_poll.kc3" \
+	"test/event_poll/event_poll.out.expected" \
+	"test/event_poll/event_poll.ret.expected" \
+	"test/event_poll/event_poll_add.kc3" \
+	"test/event_poll/event_poll_add.out.expected" \
+	"test/event_poll/event_poll_add.ret.expected" \
+	"test/event_poll_test" \
 
 KC3_TEST_HTTP_SOURCES = \
 	"test/http/01_socket_buf.kc3" \

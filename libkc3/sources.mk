@@ -168,6 +168,7 @@ HEADERS = \
 	"quote.h" \
 	"ratio.h" \
 	"rpc.h" \
+	"rusage.h" \
 	"rwlock.h" \
 	"s16.h" \
 	"s32.h" \
@@ -392,6 +393,7 @@ SOURCES = \
 	"quote.c" \
 	"ratio.c" \
 	"rpc.c" \
+	"rusage.c" \
 	"rwlock.c" \
 	"s16.c" \
 	"s32.c" \
@@ -730,6 +732,7 @@ LO_SOURCES = \
 	"quote.c" \
 	"ratio.c" \
 	"rpc.c" \
+	"rusage.c" \
 	"rwlock.c" \
 	"s16.c" \
 	"s32.c" \

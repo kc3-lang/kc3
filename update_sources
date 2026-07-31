@@ -98,6 +98,10 @@ KC3_TEST_EKC3_SOURCES="$(ls test/ekc3/*.ekc3 test/ekc3/*.expected test/ekc3/*.kc
 test/ekc3_test"
 sources KC3_TEST_EKC3_SOURCES "$KC3_TEST_EKC3_SOURCES"
 
+KC3_TEST_EVENT_POLL_SOURCES="$(ls test/event_poll/*.expected test/event_poll/*.kc3)
+test/event_poll_test"
+sources KC3_TEST_EVENT_POLL_SOURCES "$KC3_TEST_EVENT_POLL_SOURCES"
+
 KC3_TEST_HTTP_SOURCES="$(ls test/http/*.expected test/http/*.kc3)
 test/http/mime.types
 test/http_test"

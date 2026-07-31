@@ -1,0 +1,24 @@
+defmodule RUsage do
+
+  def current_rss_bytes = cfn U64 "rusage_current_rss_bytes" (Result)
+
+  def max_rss_bytes = cfn U64 "rusage_max_rss_bytes" (Result)
+
+  def open_files = cfn U64 "rusage_open_files" (Result)
+
+  def stats = fn () {
+    %{current_rss_bytes: RUsage.current_rss_bytes(),
+      max_rss_bytes: RUsage.max_rss_bytes(),
+      open_files: RUsage.open_files(),
+      system_cpu_seconds: RUsage.system_cpu_seconds(),
+      user_cpu_seconds: RUsage.user_cpu_seconds(),
+      virtual_bytes: RUsage.virtual_bytes()}
+  }
+
+  def system_cpu_seconds = cfn F64 "rusage_system_cpu_seconds" (Result)
+
+  def user_cpu_seconds = cfn F64 "rusage_user_cpu_seconds" (Result)
+
+  def virtual_bytes = cfn U64 "rusage_virtual_bytes" (Result)
+
+end

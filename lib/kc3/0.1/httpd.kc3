@@ -329,10 +329,10 @@ defmodule HTTPd do
       Config.unveil()
     end
     unveil("", "")
-    pledge("stdio rpath wpath cpath fattr inet dns proc", "")
+    pledge("stdio rpath wpath cpath fattr inet dns proc ps", "")
     if HTTPd.socket <- Socket.listen(host, port) do
       daemonize()
-      pledge("stdio rpath wpath cpath fattr inet dns", "")
+      pledge("stdio rpath wpath cpath fattr inet dns ps", "")
       IO.puts("KC3 HTTPd: listening on #{host}:#{port}")
       clean_all_uploads()
       if HTTPd.ep_fd <- EventPoll.new() do

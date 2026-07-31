@@ -102,6 +102,7 @@
 #include "pvar.h"
 #include "quote.h"
 #include "ratio.h"
+#include "rusage.h"
 #include "s16.h"
 #include "s32.h"
 #include "s64.h"

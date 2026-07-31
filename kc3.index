@@ -651,6 +651,12 @@ kc3s/kc3s.c
 kc3s/sources.mk
 kc3s/sources.sh
 kc3s/update_sources
+kc3txt/Makefile
+kc3txt/configure
+kc3txt/kc3txt.c
+kc3txt/sources.mk
+kc3txt/sources.sh
+kc3txt/update_sources
 kmsg/Makefile
 kmsg/kmsg.kc3
 kpkg/Makefile
@@ -820,6 +826,7 @@ lib/kc3/0.1/qrencode.kc3
 lib/kc3/0.1/ratio.facts
 lib/kc3/0.1/rpc.kc3
 lib/kc3/0.1/rpc/response.kc3
+lib/kc3/0.1/rusage.kc3
 lib/kc3/0.1/rwlock.kc3
 lib/kc3/0.1/s16.facts
 lib/kc3/0.1/s32.facts
@@ -1194,6 +1201,8 @@ libkc3/pstruct_type.c
 libkc3/pstruct_type.h
 libkc3/psym.c
 libkc3/psym.h
+libkc3/ptag.c
+libkc3/ptag.h
 libkc3/ptr.c
 libkc3/ptr.h
 libkc3/ptr_free.c
@@ -1210,6 +1219,8 @@ libkc3/ratio.c
 libkc3/ratio.h
 libkc3/rpc.c
 libkc3/rpc.h
+libkc3/rusage.c
+libkc3/rusage.h
 libkc3/rwlock.c
 libkc3/rwlock.h
 libkc3/s.c.in
@@ -1658,16 +1669,12 @@ test/facts_test.c
 test/facts_test_dump_file.expected.facts
 test/facts_test_load_file.facts
 test/facts_test_log_add.expected.facts
-test/facts_test_log_add.facts
 test/facts_test_log_remove.expected.facts
-test/facts_test_log_remove.facts
 test/facts_test_open_file.1.expected.facts
-test/facts_test_open_file.1.facts
 test/facts_test_open_file.1.in.facts
 test/facts_test_open_file.2.expected.facts
 test/facts_test_open_file.2.in.facts
 test/facts_test_open_file.3.expected.facts
-test/facts_test_open_file.3.facts
 test/facts_test_open_file.3.in.facts
 test/facts_test_save.expected.facts
 test/facts_test_save_binary.expected.facts
