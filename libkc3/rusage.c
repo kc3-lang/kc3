@@ -114,14 +114,16 @@ u64 * rusage_open_files (u64 *dest)
 #endif
 }
 
-f64 * rusage_system_cpu_seconds (f64 *dest)
+s_time * rusage_system_cpu_time (s_time *dest)
 {
 #if ! (defined(WIN32) || defined(WIN64))
   struct rusage usage;
   if (! rusage_get(&usage))
     return NULL;
-  *dest = (f64) usage.ru_stime.tv_sec +
-    (f64) usage.ru_stime.tv_usec / 1000000.0;
+  *dest = (s_time) {
+    .tv_sec = usage.ru_stime.tv_sec,
+    .tv_nsec = usage.ru_stime.tv_usec * 1000
+  };
   return dest;
 #else
   (void) dest;
@@ -129,14 +131,16 @@ f64 * rusage_system_cpu_seconds (f64 *dest)
 #endif
 }
 
-f64 * rusage_user_cpu_seconds (f64 *dest)
+s_time * rusage_user_cpu_time (s_time *dest)
 {
 #if ! (defined(WIN32) || defined(WIN64))
   struct rusage usage;
   if (! rusage_get(&usage))
     return NULL;
-  *dest = (f64) usage.ru_utime.tv_sec +
-    (f64) usage.ru_utime.tv_usec / 1000000.0;
+  *dest = (s_time) {
+    .tv_sec = usage.ru_utime.tv_sec,
+    .tv_nsec = usage.ru_utime.tv_usec * 1000
+  };
   return dest;
 #else
   (void) dest;

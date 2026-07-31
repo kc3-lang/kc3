@@ -1,3 +1,5 @@
+require Time
+
 defmodule RUsage do
 
   def current_rss_bytes = cfn U64 "rusage_current_rss_bytes" (Result)
@@ -10,14 +12,14 @@ defmodule RUsage do
     %{current_rss_bytes: RUsage.current_rss_bytes(),
       max_rss_bytes: RUsage.max_rss_bytes(),
       open_files: RUsage.open_files(),
-      system_cpu_seconds: RUsage.system_cpu_seconds(),
-      user_cpu_seconds: RUsage.user_cpu_seconds(),
+      system_cpu_time: RUsage.system_cpu_time(),
+      user_cpu_time: RUsage.user_cpu_time(),
       virtual_bytes: RUsage.virtual_bytes()}
   }
 
-  def system_cpu_seconds = cfn F64 "rusage_system_cpu_seconds" (Result)
+  def system_cpu_time = cfn Time "rusage_system_cpu_time" (Result)
 
-  def user_cpu_seconds = cfn F64 "rusage_user_cpu_seconds" (Result)
+  def user_cpu_time = cfn Time "rusage_user_cpu_time" (Result)
 
   def virtual_bytes = cfn U64 "rusage_virtual_bytes" (Result)
 
