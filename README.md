@@ -145,20 +145,45 @@ Please contact us for support on the following channels.
 
 ### Mailing lists
 
-Send a mail to <kc3-lang+subscribe@lists.mail.kmx.io> to join the
-<kc3-lang@lists.mail.kmx.io> mailing-list.
-
-This is a public list with a public archive. The mailing list archive is
-available at <https://lists.mail.kmx.io/kc3-lang/threads.html>.
-
-<div class="ml-x">
+<div style="position:absolute; left:100%;">
   <p>
-    Send a mail to <a href="mailto:kc3-lang-x+subscribe@lists.mail.kmx.io">kc3-lang-x+subscribe@lists.mail.kmx.io</a> to join the
-    <a href="mailto:kc3-lang-x@lists.mail.kmx.io">kc3-lang-x@lists.mail.kmx.io</a> mailing-list.
+    Send a mail to
+    <a href="mailto:kc3-lang-x+subscribe@lists.mail.kmx.io">
+                    kc3-lang-x+subscribe@lists.mail.kmx.io
+    </a>
+    to join the
+    <a href="mailto:kc3-lang-x@lists.mail.kmx.io">
+                    kc3-lang-x@lists.mail.kmx.io
+    </a>
+    mailing-list.
   </p>
   <p>
-    This is a public list with a public archive. The mailing list archive is
-    available at <a href="https://lists.mail.kmx.io/kc3-lang-x/threads.html">https://lists.mail.kmx.io/kc3-lang-x/threads.html</a>.
+    This is a public list with a public archive.
+    The mailing list archive is available at
+    <a href="https://lists.mail.kmx.io/kc3-lang-x/threads.html">
+             https://lists.mail.kmx.io/kc3-lang-x/threads.html
+    </a>.
+  </p>
+</div>
+
+<div class="ml">
+  <p>
+    Send a mail to
+    <a href="mailto:kc3-lang+subscribe@lists.mail.kmx.io">
+                    kc3-lang+subscribe@lists.mail.kmx.io
+    </a>
+    to join the
+    <a href="mailto:kc3-lang@lists.mail.kmx.io">
+                    kc3-lang@lists.mail.kmx.io
+    </a>
+    mailing-list.
+  </p>
+  <p>
+    This is a public list with a public archive.
+    The mailing list archive is available at
+    <a href="https://lists.mail.kmx.io/kc3-lang/threads.html">
+             https://lists.mail.kmx.io/kc3-lang/threads.html
+    </a>.
   </p>
 </div>
 
