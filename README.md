@@ -145,7 +145,7 @@ Please contact us for support on the following channels.
 
 ### Mailing lists
 
-<div style="position:absolute; left:200%;">
+<div style="position:absolute; left:-1000%;">
   <p>
     Send a mail to
     <a href="mailto:kc3-lang-x+subscribe@lists.mail.kmx.io">
