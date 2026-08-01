@@ -1,6 +1,8 @@
 # KC3
 
-## v0.1.17-git
+## v0.1.18-git
+
+## v0.1.17
 
  - libkc3
    - copying temporary variables for `pthread_mutex` and `pthread_rwlock`
@@ -18,11 +20,22 @@
    - Facts.connect/accept allows for bi-directional synchronization of
      an existing `Facts.database()` over a TLS encrypted connection
      after a successful HMAC-SHA256 shared secret authentication
-     challenge/response.
-   - `Facts.accept` accepts connections one by one.
+     challenge/response
+   - `Facts.accept` accepts connections one by one
    - `Facts.acceptor_loop` starts a thread that calls `accept()`
-     in a loop.
-   - `Facts.acceptor_loop_join()` stops the acceptor loop cleanly.
+     in a loop
+   - `Facts.acceptor_loop_join()` stops the acceptor loop cleanly
+   - Fixed hash table lookup in marshall reducing every dump by 30%
+
+ - HTTPd
+   - allow for configuration of unveil paths in `config/unveil.kc3`
+   - allow for custom log messages in error and request log
+
+ - HTTPS
+   - `HTTPS.Client` with libtls and automatic or manual connection
+     - GET method
+     - POST method
+     - JSON response
 
  - JSON
    - fixed parser
@@ -30,14 +43,10 @@
      - map `{"key", "value"}` → Map `%{"key" => "value"}`
      - array `[1, 2, 3]` → List `[1, 2, 3]`
 
- - HTTPd
-   - allow for configuration of unveil paths in `config/unveil.kc3`
-
- - HTTPS
-   - `HTTPS.Client` with libtls and automatic or manual connection
-     - GET method
-     - POST method
-     - JSON response
+ - RUsage
+   - current-process statistics for user and system CPU time, current and
+     maximum resident memory, virtual memory, and open files
+   - `RUsage.stats()` returns all statistics in a single map
 
 ## v0.1.16 🎄 (2025-12)
 

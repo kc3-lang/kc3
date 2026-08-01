@@ -1,4 +1,4 @@
-# KC3 v0.1.17-git
+# KC3 v0.1.17
 
 A programming language providing and relying on facts-db.
 
@@ -100,17 +100,12 @@ There are now five full applications written in KC3 that we know of :
      after a successful HMAC-SHA256 shared secret authentication
      challenge/response. Master/replica negociation is based on a
      priority negociation : each node sends its priority and the
-     lower priority is the master while the others are replicas.
-   - `Facts.accept` accepts connections one by one.
+     lower priority is the master while the others are replicas
+   - `Facts.accept` accepts connections one by one
    - `Facts.acceptor_loop` starts a thread that calls `accept()`
-     in a loop.
-   - `Facts.acceptor_loop_join()` stops the acceptor loop cleanly.
-
- - JSON
-   - fixed parser
-     - boolean `true` or `false` → Bool
-     - map `{"key", "value"}` → Map `%{"key" => "value"}`
-     - array `[1, 2, 3]` → List `[1, 2, 3]`
+     in a loop
+   - `Facts.acceptor_loop_join()` stops the acceptor loop cleanly
+   - Fixed hash table lookup in marshall reducing every dump by 30%
 
  - HTTPd
    - allow for configuration of OpenBSD's `unveil(2)` in
@@ -124,12 +119,25 @@ There are now five full applications written in KC3 that we know of :
    - fixed double socket close leading to corruption
    - fixed race conditions in error handling
    - added rate limiting for bots
+   - allow custom log messages in error and request log for use in
+     plugs and controllers
 
  - HTTPS
    - `HTTPS.Client` with libtls and automatic or manual connection
      - GET method
      - POST method
      - JSON response
+
+ - JSON
+   - fixed parser
+     - boolean `true` or `false` → Bool
+     - map `{"key", "value"}` → Map `%{"key" => "value"}`
+     - array `[1, 2, 3]` → List `[1, 2, 3]`
+
+ - RUsage
+   - current-process statistics for user and system CPU time, current and
+     maximum resident memory, virtual memory, and open files
+   - `RUsage.stats()` returns all statistics in a single map
 
 ## Contact
 
@@ -142,6 +150,17 @@ Send a mail to <kc3-lang+subscribe@lists.mail.kmx.io> to join the
 
 This is a public list with a public archive. The mailing list archive is
 available at <https://lists.mail.kmx.io/kc3-lang/threads.html>.
+
+<div class="ml-x">
+  <p>
+    Send a mail to <a href="mailto:kc3-lang-x+subscribe@lists.mail.kmx.io">kc3-lang-x+subscribe@lists.mail.kmx.io</a> to join the
+    <a href="mailto:kc3-lang-x@lists.mail.kmx.io">kc3-lang-x@lists.mail.kmx.io</a> mailing-list.
+  </p>
+  <p>
+    This is a public list with a public archive. The mailing list archive is
+    available at <a href="https://lists.mail.kmx.io/kc3-lang-x/threads.html">https://lists.mail.kmx.io/kc3-lang-x/threads.html</a>.
+  </p>
+</div>
 
 ### Discord invite
 
