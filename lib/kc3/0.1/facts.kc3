@@ -84,6 +84,8 @@ defmodule Facts do
     cfn Tag "kc3_facts_first_with_tags" (Facts, Tag, Tag, Tag, Callable,
       Result)
 
+  def load_file = cfn Sw "facts_load_file" (Facts, Str)
+
   def open =
     cfn Sw "facts_open_file" (Facts, Str)
 
