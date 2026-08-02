@@ -861,12 +861,12 @@ s_str * str_init_f64 (s_str *str, f64 x)
 {
   char a[32];
   s_buf buf;
-  s64 exp;
-  u8 i;
+  f64 exp;
+  u64 i;
   u8 j;
   sw r;
   buf_init(&buf, false, sizeof(a), a);
-  exp = 0.0;
+  exp = 1.0;
   if (x == 0.0) {
     if ((r = buf_write_1(&buf, "0.0")) < 0)
       goto clean;
@@ -878,42 +878,42 @@ s_str * str_init_f64 (s_str *str, f64 x)
     x = -x;
   }
   if (x >= 1.0)
-    while (x >= 10.0) {
-      x /= 10.0;
-      exp++;
-    }
+    while (x / exp >= 10.0)
+      exp *= 10.0;
   else
-    while (x < 1.0) {
-      x *= 10.0;
-      exp--;
-    }
-  i = (u8) x;
-  x -= i;
-  i += '0';
-  if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-    goto clean;
-  if ((r = buf_write_1(&buf, ".")) <= 0)
-    goto clean;
+    while (x / exp < 1.0)
+      exp /= 10.0;
   j = 14;
-  do {
-    x *= 10;
-    i = (u8) x;
-    x -= i;
-    i += '0';
-    if ((r = buf_write_character_utf8(&buf, i)) <= 0)
+  if (exp < 1.0) {
+    if ((r = buf_write_1(&buf, "0.")) <= 0)
       goto clean;
-    j--;
-  } while (x > pow(0.1, j) && j);
-  if (exp) {
-    if ((r = buf_write_1(&buf, "e")) <= 0)
-      goto clean;
-    if (exp > 0) {
-      if ((r = buf_write_1(&buf, "+")) <= 0)
+    exp *= 10.0;
+    while (exp < 1.0) {
+      if ((r = buf_write_1(&buf, "0")) <= 0)
         goto clean;
+      exp *= 10.0;
     }
-    if ((r = buf_inspect_s64_decimal(&buf, exp)) <= 0)
-      goto clean;
+    while (j--) {
+      i = (u8) (x / exp);
+      x -= i * exp;
+      i += '0';
+      if ((r = buf_write_character_utf8(&buf, i)) <= 0)
+        goto clean;
+      exp *= 10.0;
+    }
   }
+  else
+    do {
+      i = (u8) (x / exp);
+      x -= i * exp;
+      i += '0';
+      if (exp == 0.1)
+        if ((r = buf_write_1(&buf, ".")) <= 0)
+          goto clean;
+      if ((r = buf_write_character_utf8(&buf, i)) <= 0)
+        goto clean;
+      exp /= 10;
+    } while (j-- || exp > 0.1);
  ok:
   if (buf_read_to_str(&buf, str) <= 0)
     goto clean;

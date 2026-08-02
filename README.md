@@ -53,7 +53,7 @@ Supported operating systems (additional dependencies) :
  - Windows (MSys2) (no network)
 
 Supported architectures :
- - aarch64 (arm64, Apple M1, Apple M2)
+ - aarch64 (Apple M1, Apple M2)
  - amd64
  - i386
  - macppc
