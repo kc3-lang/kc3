@@ -37,12 +37,12 @@ all:
 	if ${HAVE_GL}; then ${MAKE} -C window all; fi
 	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 all; fi
 
-.configure.stamp: sources.mk configure
-	./configure
-	touch .configure.stamp
-
 include config.mk
 include sources.mk
+
+.configure.stamp: sources.mk ${SRC_DIR}/configure
+	${SRC_DIR}/configure
+	touch .configure.stamp
 
 DIST = kc3-${VER}
 
