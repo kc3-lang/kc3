@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "assert.h"
 #include "alloc.h"
 #include "buf.h"
@@ -776,6 +777,7 @@ sw marshall_kc3c_file (p_list dlopen_list, p_list tags, const s_str *path)
   p_list list;
   s_marshall m = {0};
   sw result = -1;
+  s_str tmp_path = {0};
   if (! marshall_init(&m, 128 * 1024 * 1024))
     return -1;
   if (! marshall_uw(&m, false, list_length(dlopen_list)))
@@ -799,11 +801,19 @@ sw marshall_kc3c_file (p_list dlopen_list, p_list tags, const s_str *path)
       goto ko;
     list = list_next(list);
   }
-  if ((result = marshall_to_file(&m, path)) <= 0)
+  if (! str_init_f(&tmp_path, "%s.tmp.%ld", path->ptr.p_pchar,
+                   (long) getpid()) ||
+      (result = marshall_to_file(&m, &tmp_path)) <= 0 ||
+      ! file_rename(&tmp_path, path))
     goto ko;
+  str_clean(&tmp_path);
   marshall_clean(&m);
   return result;
  ko:
+  if (tmp_path.size) {
+    unlink(tmp_path.ptr.p_pchar);
+    str_clean(&tmp_path);
+  }
   marshall_clean(&m);
   return -1;
 }
