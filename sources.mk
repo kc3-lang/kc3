@@ -2348,6 +2348,12 @@ KC3_TEST_PDF_SOURCES = \
 	"test/pdf/write.ret.expected" \
 	"test/pdf_test" \
 
+KC3_TEST_SOCKET_SOURCES = \
+	"test/socket/socket.kc3" \
+	"test/socket/socket.out.expected" \
+	"test/socket/socket.ret.expected" \
+	"test/socket_test" \
+
 KC3_TEST_TLS_SOURCES = \
 	"test/tls/ca_cert_path.kc3" \
 	"test/tls/ca_cert_path.out.expected" \

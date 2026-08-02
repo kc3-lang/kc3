@@ -2151,6 +2151,10 @@ test/replace_lines.rb
 test/set__fact_test.c
 test/set__tag_test.c
 test/skiplist__fact_test.c
+test/socket/socket.kc3
+test/socket/socket.out.expected
+test/socket/socket.ret.expected
+test/socket_test
 test/sources.mk
 test/sources.sh
 test/str_test.c

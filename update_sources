@@ -134,6 +134,10 @@ KC3_TEST_PDF_SOURCES="$(ls test/pdf/*.expected test/pdf/*.kc3 \
 test/pdf_test"
 sources KC3_TEST_PDF_SOURCES "$KC3_TEST_PDF_SOURCES"
 
+KC3_TEST_SOCKET_SOURCES="$(ls test/socket/*.expected test/socket/*.kc3)
+test/socket_test"
+sources KC3_TEST_SOCKET_SOURCES "$KC3_TEST_SOCKET_SOURCES"
+
 KC3_TEST_TLS_SOURCES="$(ls test/tls/*.expected test/tls/*.kc3)
 test/tls_test"
 sources KC3_TEST_TLS_SOURCES "$KC3_TEST_TLS_SOURCES"

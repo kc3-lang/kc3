@@ -973,6 +973,7 @@ kc3.index: sources.mk Makefile
 	for F in ${KC3_TEST_KC3S_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_MARKDOWN_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_PDF_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_TEST_SOCKET_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_TLS_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_OTHER_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_DOC_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
