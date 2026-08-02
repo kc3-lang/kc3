@@ -15,6 +15,10 @@
      for all `.kc3` files. `env_load` automatically handles this.
    - fixed a bug in `ht_iterator_next` where the iterator would not
      go through the first collision list
+   - database logging now supports and defaults to binary format
+     (marshall + marshall_read)
+   - fixed marshall + marshall_read hash table usage
+   - str: fixed display of floating point numbers
 
  - Facts
    - Facts.connect/accept allows for bi-directional synchronization of

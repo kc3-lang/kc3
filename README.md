@@ -93,6 +93,7 @@ There are now five full applications written in KC3 that we know of :
    - database logging now supports and defaults to binary format
      (marshall + marshall_read)
    - fixed marshall + marshall_read hash table usage
+   - str: fixed display of floating point numbers
 
  - Facts
    - Facts.connect/accept allows for bi-directional synchronization of
