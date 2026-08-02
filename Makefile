@@ -965,6 +965,7 @@ kc3.index: sources.mk Makefile
 	for F in ${KC3_TEST_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_IKC3_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_EKC3_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_TEST_EVENT_POLL_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_HTTP_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_HTTPD_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_IMAGE_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
