@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <float.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -32,6 +33,32 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define STR_TEST_INIT_FLOAT(name, type, test, expected)                \
+  do {                                                                 \
+    s_str str = {0};                                                   \
+    test_context("str_init_" # name "(" # test ") -> " # expected);   \
+    TEST_EQ(str_init_ ## name(&str, (type) (test)), &str);             \
+    TEST_EQ(str.size, strlen(expected));                               \
+    TEST_STRNCMP(str.ptr.p_pchar, (expected), str.size);               \
+    str_clean(&str);                                                   \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define STR_TEST_INIT_FLOAT_ROUND_TRIP(name, type, parse, test)        \
+  do {                                                                 \
+    char *end;                                                         \
+    type expected = (test);                                            \
+    s_str str = {0};                                                   \
+    test_context("str_init_" # name "(" # test ") round trip");       \
+    TEST_EQ(str_init_ ## name(&str, expected), &str);                  \
+    TEST_EQ(strchr(str.ptr.p_pchar, 'e'), NULL);                       \
+    TEST_EQ(strchr(str.ptr.p_pchar, 'E'), NULL);                       \
+    TEST_EQ(parse(str.ptr.p_pchar, &end), expected);                   \
+    TEST_EQ(*end, 0);                                                  \
+    str_clean(&str);                                                   \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define STR_TEST_TO_SYM(test)                                          \
   do {                                                                 \
     s_str str;                                                         \
@@ -47,6 +74,11 @@ TEST_CASE_PROTOTYPE(str_character_is_reserved);
 TEST_CASE_PROTOTYPE(str_init_clean);
 TEST_CASE_PROTOTYPE(str_init_copy);
 TEST_CASE_PROTOTYPE(str_init_copy_1);
+TEST_CASE_PROTOTYPE(str_init_f32);
+TEST_CASE_PROTOTYPE(str_init_f64);
+#if HAVE_F80
+TEST_CASE_PROTOTYPE(str_init_f80);
+#endif
 TEST_CASE_PROTOTYPE(str_new_1);
 TEST_CASE_PROTOTYPE(str_new_cpy);
 TEST_CASE_PROTOTYPE(str_new_delete);
@@ -61,6 +93,11 @@ void str_test (void)
   TEST_CASE_RUN(str_init_clean);
   TEST_CASE_RUN(str_init_copy);
   TEST_CASE_RUN(str_init_copy_1);
+  TEST_CASE_RUN(str_init_f32);
+  TEST_CASE_RUN(str_init_f64);
+#if HAVE_F80
+  TEST_CASE_RUN(str_init_f80);
+#endif
   TEST_CASE_RUN(str_new_delete);
   TEST_CASE_RUN(str_new_1);
   TEST_CASE_RUN(str_new_copy);
@@ -180,6 +217,66 @@ TEST_CASE(str_init_copy_1)
   str_clean(&str);
 }
 TEST_CASE_END(str_init_copy_1)
+
+TEST_CASE(str_init_f32)
+{
+  STR_TEST_INIT_FLOAT(f32, f32, 0.0f, "0.0");
+  STR_TEST_INIT_FLOAT(f32, f32, -0.0f, "0.0");
+  STR_TEST_INIT_FLOAT(f32, f32, 0.1f, "0.1");
+  STR_TEST_INIT_FLOAT(f32, f32, -0.1f, "-0.1");
+  STR_TEST_INIT_FLOAT(f32, f32, 1.234567f, "1.234567");
+  STR_TEST_INIT_FLOAT(f32, f32, 123456.0f, "123456.0");
+  STR_TEST_INIT_FLOAT(f32, f32, 1.0e-31f,
+                      "0.0000000000000000000000000000001");
+  STR_TEST_INIT_FLOAT(f32, f32, 1.0e+33f,
+                      "1000000000000000000000000000000000.0");
+  STR_TEST_INIT_FLOAT_ROUND_TRIP(f32, f32, strtof,
+                                 0.000123456789f);
+  STR_TEST_INIT_FLOAT_ROUND_TRIP(f32, f32, strtof, FLT_MIN);
+  STR_TEST_INIT_FLOAT_ROUND_TRIP(f32, f32, strtof, FLT_MAX);
+}
+TEST_CASE_END(str_init_f32)
+
+TEST_CASE(str_init_f64)
+{
+  STR_TEST_INIT_FLOAT(f64, f64, 0.0, "0.0");
+  STR_TEST_INIT_FLOAT(f64, f64, -0.0, "0.0");
+  STR_TEST_INIT_FLOAT(f64, f64, 0.1, "0.1");
+  STR_TEST_INIT_FLOAT(f64, f64, -0.1, "-0.1");
+  STR_TEST_INIT_FLOAT(f64, f64, 1.23456789, "1.23456789");
+  STR_TEST_INIT_FLOAT(f64, f64, 123456789.0, "123456789.0");
+  STR_TEST_INIT_FLOAT(f64, f64, 1.0e-31,
+                      "0.0000000000000000000000000000001");
+  STR_TEST_INIT_FLOAT(f64, f64, 1.0e+33,
+                      "1000000000000000000000000000000000.0");
+  STR_TEST_INIT_FLOAT_ROUND_TRIP(f64, f64, strtod,
+                                 0.00012345678901234567);
+  STR_TEST_INIT_FLOAT_ROUND_TRIP(f64, f64, strtod, DBL_MIN);
+  STR_TEST_INIT_FLOAT_ROUND_TRIP(f64, f64, strtod, DBL_MAX);
+}
+TEST_CASE_END(str_init_f64)
+
+#if HAVE_F80
+TEST_CASE(str_init_f80)
+{
+  STR_TEST_INIT_FLOAT(f80, f80, 0.0L, "0.0");
+  STR_TEST_INIT_FLOAT(f80, f80, -0.0L, "0.0");
+  STR_TEST_INIT_FLOAT(f80, f80, 0.1L, "0.1");
+  STR_TEST_INIT_FLOAT(f80, f80, -0.1L, "-0.1");
+  STR_TEST_INIT_FLOAT(f80, f80, 1.234567890123456789L,
+                      "1.234567890123456789");
+  STR_TEST_INIT_FLOAT(f80, f80, 123456789.0L, "123456789.0");
+  STR_TEST_INIT_FLOAT(f80, f80, 1.0e-31L,
+                      "0.0000000000000000000000000000001");
+  STR_TEST_INIT_FLOAT(f80, f80, 1.0e+33L,
+                      "1000000000000000000000000000000000.0");
+  STR_TEST_INIT_FLOAT_ROUND_TRIP(f80, f80, strtold,
+                                 0.0001234567890123456789L);
+  STR_TEST_INIT_FLOAT_ROUND_TRIP(f80, f80, strtold, LDBL_MIN);
+  STR_TEST_INIT_FLOAT_ROUND_TRIP(f80, f80, strtold, LDBL_MAX);
+}
+TEST_CASE_END(str_init_f80)
+#endif
 
 TEST_CASE(str_new_1)
 {

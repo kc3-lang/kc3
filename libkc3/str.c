@@ -10,8 +10,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <float.h>
 #include <math.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include "alloc.h"
@@ -45,6 +48,9 @@
 #include "tag_type.h"
 #include "u32.h"
 #include "uw.h"
+
+#define STR_FLOAT_DECIMAL_DIG(mant_dig) \
+  (2 + (mant_dig) * 30103L / 100000L)
 
 #define DEF_STR_INIT(name, type)                                       \
   s_str * str_init_ ## name (s_str *str, type x)                       \
@@ -790,137 +796,142 @@ s_str * str_init_f (s_str *str, const char *fmt, ...)
   return str;
 }
 
+static s_str * str_init_float_decimal (s_str *str,
+                                       const char *compact)
+{
+  char digits[64];
+  sw decimal;
+  sw digit_count;
+  sw digits_before_decimal;
+  sw exponent;
+  sw i;
+  sw j;
+  sw mantissa_end;
+  sw sign;
+  sw size;
+  s_str tmp = {0};
+  sign = compact[0] == '-';
+  mantissa_end = 0;
+  while (compact[mantissa_end] && compact[mantissa_end] != 'e' &&
+         compact[mantissa_end] != 'E')
+    mantissa_end++;
+  exponent = 0;
+  if (compact[mantissa_end]) {
+    i = mantissa_end + 1;
+    j = 1;
+    if (compact[i] == '-' || compact[i] == '+') {
+      if (compact[i] == '-')
+        j = -1;
+      i++;
+    }
+    while (compact[i]) {
+      exponent = exponent * 10 + compact[i] - '0';
+      i++;
+    }
+    exponent *= j;
+  }
+  digit_count = 0;
+  digits_before_decimal = 0;
+  decimal = false;
+  i = sign;
+  while (i < mantissa_end) {
+    if (compact[i] >= '0' && compact[i] <= '9') {
+      digits[digit_count++] = compact[i];
+      if (! decimal)
+        digits_before_decimal++;
+    }
+    else
+      decimal = true;
+    i++;
+  }
+  decimal = digits_before_decimal + exponent;
+  if (decimal <= 0)
+    size = sign + 2 - decimal + digit_count;
+  else if (decimal >= digit_count)
+    size = sign + decimal + 2;
+  else
+    size = sign + digit_count + 1;
+  if (! str_init_alloc(&tmp, size))
+    return NULL;
+  i = 0;
+  if (sign)
+    tmp.free.p_pchar[i++] = '-';
+  if (decimal <= 0) {
+    tmp.free.p_pchar[i++] = '0';
+    tmp.free.p_pchar[i++] = '.';
+    j = decimal;
+    while (j++ < 0)
+      tmp.free.p_pchar[i++] = '0';
+    memcpy(tmp.free.p_pchar + i, digits, digit_count);
+    i += digit_count;
+  }
+  else {
+    j = 0;
+    while (j < digit_count) {
+      if (j == decimal)
+        tmp.free.p_pchar[i++] = '.';
+      tmp.free.p_pchar[i++] = digits[j++];
+    }
+    while (j++ < decimal)
+      tmp.free.p_pchar[i++] = '0';
+    if (decimal >= digit_count) {
+      tmp.free.p_pchar[i++] = '.';
+      tmp.free.p_pchar[i++] = '0';
+    }
+  }
+  assert(i == size);
+  tmp.free.p_pchar[i] = 0;
+  *str = tmp;
+  return str;
+}
+
 s_str * str_init_f32 (s_str *str, f32 x)
 {
-  char a[64];
-  s_buf buf;
-  f64 exp;
-  u64 i;
-  u8 j;
+  char compact[32];
+  char *end;
+  sw precision;
   sw r;
-  buf_init(&buf, false, sizeof(a), a);
-  exp = 1.0;
-  if (x == 0.0) {
-    if ((r = buf_write_1(&buf, "0.0")) < 0)
-      goto clean;
-    goto ok;
+  if (isnan(x))
+    return str_init_1(str, NULL, "nan");
+  if (isinf(x))
+    return str_init_1(str, NULL, x < 0.0f ? "-inf" : "inf");
+  if (x == 0.0f)
+    return str_init_1(str, NULL, "0.0");
+  precision = 1;
+  while (precision <= STR_FLOAT_DECIMAL_DIG(FLT_MANT_DIG)) {
+    r = snprintf(compact, sizeof(compact), "%.*g", (int) precision,
+                 (f64) x);
+    if (r <= 0 || r >= (sw) sizeof(compact))
+      return NULL;
+    if (strtof(compact, &end) == x && ! *end)
+      return str_init_float_decimal(str, compact);
+    precision++;
   }
-  if (x < 0) {
-    if ((r = buf_write_1(&buf, "-")) <= 0)
-      goto clean;
-    x = -x;
-  }
-  if (x >= 1.0)
-    while (x / exp >= 10.0)
-      exp *= 10.0;
-  else
-    while (x / exp < 1.0)
-      exp /= 10.0;
-  j = 6;
-  if (exp < 1.0) {
-    if ((r = buf_write_1(&buf, "0.")) <= 0)
-      goto clean;
-    exp *= 10.0;
-    while (exp < 1.0) {
-      if ((r = buf_write_1(&buf, "0")) <= 0)
-        goto clean;
-      exp *= 10.0;
-    }
-    while (j--) {
-      i = (u8) (x / exp);
-      x -= i * exp;
-      i += '0';
-      if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-        goto clean;
-      exp *= 10.0;
-    }
-  }
-  else
-    do {
-      i = (u8) (x / exp);
-      x -= i * exp;
-      i += '0';
-      if (exp == 0.1)
-        if ((r = buf_write_1(&buf, ".")) <= 0)
-          goto clean;
-      if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-        goto clean;
-      exp /= 10;
-    } while (j-- || exp > 0.1);
- ok:
-  if (buf_read_to_str(&buf, str) <= 0)
-    goto clean;
-  buf_clean(&buf);
-  return str;
- clean:
-  buf_clean(&buf);
   return NULL;
 }
 
 s_str * str_init_f64 (s_str *str, f64 x)
 {
-  char a[64];
-  s_buf buf;
-  f64 exp;
-  u64 i;
-  u8 j;
+  char compact[32];
+  char *end;
+  sw precision;
   sw r;
-  buf_init(&buf, false, sizeof(a), a);
-  exp = 1.0;
-  if (x == 0.0) {
-    if ((r = buf_write_1(&buf, "0.0")) < 0)
-      goto clean;
-    goto ok;
+  if (isnan(x))
+    return str_init_1(str, NULL, "nan");
+  if (isinf(x))
+    return str_init_1(str, NULL, x < 0.0 ? "-inf" : "inf");
+  if (x == 0.0)
+    return str_init_1(str, NULL, "0.0");
+  precision = 1;
+  while (precision <= STR_FLOAT_DECIMAL_DIG(DBL_MANT_DIG)) {
+    r = snprintf(compact, sizeof(compact), "%.*g", (int) precision,
+                 x);
+    if (r <= 0 || r >= (sw) sizeof(compact))
+      return NULL;
+    if (strtod(compact, &end) == x && ! *end)
+      return str_init_float_decimal(str, compact);
+    precision++;
   }
-  if (x < 0) {
-    if ((r = buf_write_1(&buf, "-")) <= 0)
-      goto clean;
-    x = -x;
-  }
-  if (x >= 1.0)
-    while (x / exp >= 10.0)
-      exp *= 10.0;
-  else
-    while (x / exp < 1.0)
-      exp /= 10.0;
-  j = 14;
-  if (exp < 1.0) {
-    if ((r = buf_write_1(&buf, "0.")) <= 0)
-      goto clean;
-    exp *= 10.0;
-    while (exp < 1.0) {
-      if ((r = buf_write_1(&buf, "0")) <= 0)
-        goto clean;
-      exp *= 10.0;
-    }
-    while (j--) {
-      i = (u8) (x / exp);
-      x -= i * exp;
-      i += '0';
-      if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-        goto clean;
-      exp *= 10.0;
-    }
-  }
-  else
-    do {
-      i = (u8) (x / exp);
-      x -= i * exp;
-      i += '0';
-      if (exp == 0.1)
-        if ((r = buf_write_1(&buf, ".")) <= 0)
-          goto clean;
-      if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-        goto clean;
-      exp /= 10;
-    } while (j-- || exp > 0.1);
- ok:
-  if (buf_read_to_str(&buf, str) <= 0)
-    goto clean;
-  buf_clean(&buf);
-  return str;
- clean:
-  buf_clean(&buf);
   return NULL;
 }
 
@@ -928,68 +939,26 @@ s_str * str_init_f64 (s_str *str, f64 x)
 
 s_str * str_init_f80 (s_str *str, f80 x)
 {
-  char a[80];
-  s_buf buf;
-  f64 exp;
-  u64 i;
-  u8 j;
+  char compact[64];
+  char *end;
+  sw precision;
   sw r;
-  buf_init(&buf, false, sizeof(a), a);
-  exp = 1.0;
-  if (x == 0.0) {
-    if ((r = buf_write_1(&buf, "0.0")) < 0)
-      goto clean;
-    goto ok;
+  if (isnan(x))
+    return str_init_1(str, NULL, "nan");
+  if (isinf(x))
+    return str_init_1(str, NULL, x < 0.0L ? "-inf" : "inf");
+  if (x == 0.0L)
+    return str_init_1(str, NULL, "0.0");
+  precision = 1;
+  while (precision <= STR_FLOAT_DECIMAL_DIG(LDBL_MANT_DIG)) {
+    r = snprintf(compact, sizeof(compact), "%.*Lg", (int) precision,
+                 x);
+    if (r <= 0 || r >= (sw) sizeof(compact))
+      return NULL;
+    if (strtold(compact, &end) == x && ! *end)
+      return str_init_float_decimal(str, compact);
+    precision++;
   }
-  if (x < 0) {
-    if ((r = buf_write_1(&buf, "-")) <= 0)
-      goto clean;
-    x = -x;
-  }
-  if (x >= 1.0)
-    while (x / exp >= 10.0)
-      exp *= 10.0;
-  else
-    while (x / exp < 1.0)
-      exp /= 10.0;
-  j = 33;
-  if (exp < 1.0) {
-    if ((r = buf_write_1(&buf, "0.")) <= 0)
-      goto clean;
-    exp *= 10.0;
-    while (exp < 1.0) {
-      if ((r = buf_write_1(&buf, "0")) <= 0)
-        goto clean;
-      exp *= 10.0;
-    }
-    while (j--) {
-      i = (u8) (x / exp);
-      x -= i * exp;
-      i += '0';
-      if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-        goto clean;
-      exp *= 10.0;
-    }
-  }
-  else
-    do {
-      i = (u8) (x / exp);
-      x -= i * exp;
-      i += '0';
-      if (exp == 0.1)
-        if ((r = buf_write_1(&buf, ".")) <= 0)
-          goto clean;
-      if ((r = buf_write_character_utf8(&buf, i)) <= 0)
-        goto clean;
-      exp /= 10;
-    } while (j-- || exp > 0.1);
- ok:
-  if (buf_read_to_str(&buf, str) <= 0)
-    goto clean;
-  buf_clean(&buf);
-  return str;
- clean:
-  buf_clean(&buf);
   return NULL;
 }
 
