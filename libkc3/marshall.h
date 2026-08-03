@@ -62,6 +62,8 @@ PROTO_MARSHALL(f128, f128);
 #endif
 PROTO_MARSHALL(fact, const s_fact *);
 PROTO_MARSHALL(facts, s_facts *);
+s_marshall * marshall_facts_structures (s_marshall *m, bool heap,
+                                        s_facts *facts);
 PROTO_MARSHALL(fn, const s_fn *);
 s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
                                     const void *p, bool *present);
@@ -95,7 +97,13 @@ PROTO_MARSHALL(s8, s8);
 PROTO_MARSHALL(s16, s16);
 PROTO_MARSHALL(s32, s32);
 PROTO_MARSHALL(s64, s64);
+s_marshall * marshall_set_fact (s_marshall *m, bool heap,
+                                const s_set__fact *set,
+                                const s_set__tag *tags);
 PROTO_MARSHALL(set_tag, const s_set__tag *);
+s_marshall * marshall_skiplist_fact (s_marshall *m, bool heap,
+                                     const s_skiplist__fact *skiplist,
+                                     const s_set__fact *facts);
 PROTO_MARSHALL(struct, const s_struct *);
 PROTO_MARSHALL(struct_type, const s_struct_type *);
 PROTO_MARSHALL(sym, const s_sym *);

@@ -38,6 +38,8 @@
 #include "list.h"
 #include "psym.h"
 #include "rwlock.h"
+#include "skiplist__fact.h"
+#include "skiplist_node__fact.h"
 #include "str.h"
 #include "tag.h"
 #include "tag_init.h"
@@ -108,6 +110,15 @@
     }                                                                 \
     return m;                                                         \
   }
+
+static bool marshall_set_fact_index (const s_set__fact *set,
+                                     const uw *offsets,
+                                     const s_fact *fact, uw *dest);
+static uw * marshall_set_fact_offsets (const s_set__fact *set);
+static bool marshall_set_tag_index (const s_set__tag *set,
+                                    const uw *offsets,
+                                    const p_tag *ptag, uw *dest);
+static uw * marshall_set_tag_offsets (const s_set__tag *set);
 
 s_marshall * marshall_1 (s_marshall *m, bool heap,
                          const char *p)
@@ -1067,6 +1078,76 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
   return NULL;
 }
 
+s_marshall * marshall_facts_structures (s_marshall *m, bool heap,
+                                        s_facts *facts)
+{
+  if (! m || ! facts) {
+    err_puts("marshall_facts_structures: invalid argument");
+    assert(! "marshall_facts_structures: invalid argument");
+    return NULL;
+  }
+#if HAVE_PTHREAD
+  rwlock_r(&facts->rwlock);
+#endif
+  if (! marshall_1(m, heap, "_KC3FACTSSTRUCT_")) {
+    err_puts("marshall_facts_structures: marshall_1 magic");
+    assert(! "marshall_facts_structures: marshall_1 magic");
+    goto ko;
+  }
+  if (! marshall_uw(m, heap, facts->next_id)) {
+    err_puts("marshall_facts_structures: marshall_uw next_id");
+    assert(! "marshall_facts_structures: marshall_uw next_id");
+    goto ko;
+  }
+  if (! marshall_set_tag(m, heap, &facts->tags)) {
+    err_puts("marshall_facts_structures: marshall_set_tag");
+    assert(! "marshall_facts_structures: marshall_set_tag");
+    goto ko;
+  }
+  if (! marshall_set_fact(m, heap, &facts->facts, &facts->tags)) {
+    err_puts("marshall_facts_structures: marshall_set_fact");
+    assert(! "marshall_facts_structures: marshall_set_fact");
+    goto ko;
+  }
+  if (! marshall_skiplist_fact(m, heap, facts->index, &facts->facts) ||
+      ! marshall_skiplist_fact(m, heap, facts->index_spo,
+                               &facts->facts) ||
+      ! marshall_skiplist_fact(m, heap, facts->index_pos,
+                               &facts->facts) ||
+      ! marshall_skiplist_fact(m, heap, facts->index_osp,
+                               &facts->facts)) {
+    err_puts("marshall_facts_structures: marshall_skiplist_fact");
+    assert(! "marshall_facts_structures: marshall_skiplist_fact");
+    goto ko;
+  }
+  if (! marshall_bool(m, heap, facts->log ? true : false)) {
+    err_puts("marshall_facts_structures: marshall_bool log");
+    assert(! "marshall_facts_structures: marshall_bool log");
+    goto ko;
+  }
+  if (facts->log) {
+    if (! marshall_str(m, heap, &facts->log->path)) {
+      err_puts("marshall_facts_structures: marshall_str log path");
+      assert(! "marshall_facts_structures: marshall_str log path");
+      goto ko;
+    }
+    if (! marshall_str(m, heap, &facts->log->after_dump_path)) {
+      err_puts("marshall_facts_structures: marshall_str binary path");
+      assert(! "marshall_facts_structures: marshall_str binary path");
+      goto ko;
+    }
+  }
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
+  return m;
+ ko:
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
+  return NULL;
+}
+
 s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)
 {
   s_fn_clause *clause;
@@ -1582,12 +1663,92 @@ DEF_MARSHALL(s16, "_KC3S16_")
 DEF_MARSHALL(s32, "_KC3S32_")
 DEF_MARSHALL(s64, "_KC3S64_")
 
+s_marshall * marshall_set_fact (s_marshall *m, bool heap,
+                                const s_set__fact *set,
+                                const s_set__tag *tags)
+{
+  uw count;
+  uw i;
+  const s_set_item__fact *item;
+  uw object;
+  uw *offsets;
+  uw predicate;
+  uw subject;
+  if (! m || ! set || ! set->items || ! tags || ! tags->items) {
+    err_puts("marshall_set_fact: invalid argument");
+    assert(! "marshall_set_fact: invalid argument");
+    return NULL;
+  }
+  if (! marshall_1(m, heap, "_KC3SETFACT_")) {
+    err_puts("marshall_set_fact: marshall_1 magic");
+    assert(! "marshall_set_fact: marshall_1 magic");
+    return NULL;
+  }
+  if (! marshall_uw(m, heap, set->max) ||
+      ! marshall_uw(m, heap, set->count) ||
+      ! marshall_uw(m, heap, set->collisions)) {
+    err_puts("marshall_set_fact: marshall_uw");
+    assert(! "marshall_set_fact: marshall_uw");
+    return NULL;
+  }
+  if (! (offsets = marshall_set_tag_offsets(tags))) {
+    err_puts("marshall_set_fact: marshall_set_tag_offsets");
+    assert(! "marshall_set_fact: marshall_set_tag_offsets");
+    return NULL;
+  }
+  count = 0;
+  i = 0;
+  while (i < set->max) {
+    item = set->items[i];
+    while (item) {
+      if (! marshall_set_tag_index(tags, offsets, &item->data.subject,
+                                   &subject) ||
+          ! marshall_set_tag_index(tags, offsets, &item->data.predicate,
+                                   &predicate) ||
+          ! marshall_set_tag_index(tags, offsets, &item->data.object,
+                                   &object)) {
+        err_puts("marshall_set_fact: marshall_set_tag_index");
+        assert(! "marshall_set_fact: marshall_set_tag_index");
+        goto ko;
+      }
+      if (! marshall_uw(m, heap, item->hash) ||
+          ! marshall_uw(m, heap, item->usage) ||
+          ! marshall_uw(m, heap, subject) ||
+          ! marshall_uw(m, heap, predicate) ||
+          ! marshall_uw(m, heap, object) ||
+          ! marshall_uw(m, heap, item->data.id)) {
+        err_puts("marshall_set_fact: marshall_uw item");
+        assert(! "marshall_set_fact: marshall_uw item");
+        goto ko;
+      }
+      count++;
+      item = item->next;
+    }
+    i++;
+  }
+  alloc_free(offsets);
+  if (count != set->count) {
+    err_write_1("marshall_set_fact: invalid set count (");
+    err_inspect_uw_decimal(count);
+    err_write_1(" != ");
+    err_inspect_uw_decimal(set->count);
+    err_puts(")");
+    assert(! "marshall_set_fact: invalid set count");
+    return NULL;
+  }
+  return m;
+ ko:
+  alloc_free(offsets);
+  return NULL;
+}
+
 s_marshall * marshall_set_tag (s_marshall *m, bool heap,
                                const s_set__tag *set)
 {
   uw count;
   uw i;
   const s_set_item__tag *item;
+  bool unbound;
   if (! m || ! set || ! set->items) {
     err_puts("marshall_set_tag: invalid argument");
     assert(! "marshall_set_tag: invalid argument");
@@ -1610,6 +1771,19 @@ s_marshall * marshall_set_tag (s_marshall *m, bool heap,
   while (i < set->max) {
     item = set->items[i];
     while (item) {
+      if (! tag_is_unbound_var(&item->data, &unbound)) {
+        err_puts("marshall_set_tag: tag_is_unbound_var");
+        assert(! "marshall_set_tag: tag_is_unbound_var");
+        return NULL;
+      }
+      if (unbound) {
+        err_write_1("marshall_set_tag: unbound variable in facts: ");
+        err_inspect_tag(&item->data);
+        err_puts(": a fact term identified by its address cannot be"
+                 " restored");
+        assert(! "marshall_set_tag: unbound variable in facts");
+        return NULL;
+      }
       if (! marshall_uw(m, heap, item->hash) ||
           ! marshall_uw(m, heap, item->usage)) {
         err_puts("marshall_set_tag: marshall_uw item");
@@ -1636,6 +1810,177 @@ s_marshall * marshall_set_tag (s_marshall *m, bool heap,
     return NULL;
   }
   return m;
+}
+
+static bool marshall_set_fact_index (const s_set__fact *set,
+                                     const uw *offsets,
+                                     const s_fact *fact, uw *dest)
+{
+  uw h;
+  uw i;
+  const s_set_item__fact *item;
+  const s_set_item__fact *target;
+  if (! fact)
+    return false;
+  target = (const s_set_item__fact *)
+    ((const char *) fact - offsetof(s_set_item__fact, data));
+  h = target->hash % set->max;
+  item = set->items[h];
+  i = 0;
+  while (item) {
+    if (item == target) {
+      *dest = offsets[h] + i;
+      return true;
+    }
+    i++;
+    item = item->next;
+  }
+  return false;
+}
+
+static uw * marshall_set_fact_offsets (const s_set__fact *set)
+{
+  uw i;
+  const s_set_item__fact *item;
+  uw n;
+  uw *offsets;
+  if (! (offsets = alloc(set->max * sizeof(uw))))
+    return NULL;
+  i = 0;
+  n = 0;
+  while (i < set->max) {
+    offsets[i] = n;
+    item = set->items[i];
+    while (item) {
+      n++;
+      item = item->next;
+    }
+    i++;
+  }
+  return offsets;
+}
+
+static bool marshall_set_tag_index (const s_set__tag *set,
+                                    const uw *offsets,
+                                    const p_tag *ptag, uw *dest)
+{
+  uw h;
+  uw i;
+  const s_set_item__tag *item;
+  const s_set_item__tag *target;
+  if (! *ptag)
+    return false;
+  target = (const s_set_item__tag *)
+    ((const char *) *ptag - offsetof(s_set_item__tag, data));
+  h = target->hash % set->max;
+  item = set->items[h];
+  i = 0;
+  while (item) {
+    if (item == target) {
+      *dest = offsets[h] + i;
+      return true;
+    }
+    i++;
+    item = item->next;
+  }
+  return false;
+}
+
+static uw * marshall_set_tag_offsets (const s_set__tag *set)
+{
+  uw i;
+  const s_set_item__tag *item;
+  uw n;
+  uw *offsets;
+  if (! (offsets = alloc(set->max * sizeof(uw))))
+    return NULL;
+  i = 0;
+  n = 0;
+  while (i < set->max) {
+    offsets[i] = n;
+    item = set->items[i];
+    while (item) {
+      n++;
+      item = item->next;
+    }
+    i++;
+  }
+  return offsets;
+}
+
+s_marshall * marshall_skiplist_fact (s_marshall *m, bool heap,
+                                     const s_skiplist__fact *skiplist,
+                                     const s_set__fact *facts)
+{
+  uw count;
+  const t_skiplist_height *height_table;
+  uw i;
+  uw index;
+  const s_skiplist_node__fact *node;
+  uw *offsets;
+  if (! m || ! skiplist || ! skiplist->head || ! skiplist->max_height ||
+      ! facts || ! facts->items) {
+    err_puts("marshall_skiplist_fact: invalid argument");
+    assert(! "marshall_skiplist_fact: invalid argument");
+    return NULL;
+  }
+  if (! marshall_1(m, heap, "_KC3SKIPLISTFACT_")) {
+    err_puts("marshall_skiplist_fact: marshall_1 magic");
+    assert(! "marshall_skiplist_fact: marshall_1 magic");
+    return NULL;
+  }
+  if (! marshall_u8(m, heap, skiplist->max_height) ||
+      ! marshall_uw(m, heap, skiplist->length)) {
+    err_puts("marshall_skiplist_fact: marshall_uw");
+    assert(! "marshall_skiplist_fact: marshall_uw");
+    return NULL;
+  }
+  height_table = SKIPLIST_HEIGHT_TABLE__fact(skiplist);
+  i = 0;
+  while (i < skiplist->max_height) {
+    if (! marshall_u64(m, heap, height_table[i])) {
+      err_puts("marshall_skiplist_fact: marshall_u64 height table");
+      assert(! "marshall_skiplist_fact: marshall_u64 height table");
+      return NULL;
+    }
+    i++;
+  }
+  if (! (offsets = marshall_set_fact_offsets(facts))) {
+    err_puts("marshall_skiplist_fact: marshall_set_fact_offsets");
+    assert(! "marshall_skiplist_fact: marshall_set_fact_offsets");
+    return NULL;
+  }
+  count = 0;
+  node = SKIPLIST_NODE_NEXT__fact(skiplist->head, 0);
+  while (node) {
+    if (! marshall_set_fact_index(facts, offsets, node->fact, &index)) {
+      err_puts("marshall_skiplist_fact: marshall_set_fact_index");
+      assert(! "marshall_skiplist_fact: marshall_set_fact_index");
+      goto ko;
+    }
+    if (! marshall_uw(m, heap, index) ||
+        ! marshall_u8(m, heap, node->height)) {
+      err_puts("marshall_skiplist_fact: marshall_uw node");
+      assert(! "marshall_skiplist_fact: marshall_uw node");
+      goto ko;
+    }
+    count++;
+    node = SKIPLIST_NODE_NEXT__fact(node, 0);
+  }
+  alloc_free(offsets);
+  if (count != skiplist->length) {
+    err_write_1("marshall_skiplist_fact: invalid length (");
+    err_inspect_uw_decimal(count);
+    err_write_1(" != ");
+    err_inspect_uw_decimal(skiplist->length);
+    err_puts(")");
+    assert(! "marshall_skiplist_fact: invalid length");
+    return NULL;
+  }
+  return m;
+ ko:
+  alloc_free(offsets);
+  return NULL;
 }
 
 sw marshall_size (const s_marshall *m)

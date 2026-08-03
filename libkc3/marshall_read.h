@@ -76,6 +76,9 @@ PROTO_MARSHALL_READ(f128,         f128             );
 #endif
 PROTO_MARSHALL_READ(fact,         s_fact           );
 PROTO_MARSHALL_READ(facts,        s_facts          );
+s_marshall_read * marshall_read_facts_structures (s_marshall_read *mr,
+                                                  bool heap,
+                                                  s_facts *facts);
 PROTO_MARSHALL_READ(fn,           s_fn             );
 PROTO_MARSHALL_READ(frame,        s_frame          );
 s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
@@ -114,7 +117,16 @@ PROTO_MARSHALL_READ(s8,           s8               );
 PROTO_MARSHALL_READ(s16,          s16              );
 PROTO_MARSHALL_READ(s32,          s32              );
 PROTO_MARSHALL_READ(s64,          s64              );
+s_marshall_read * marshall_read_set_fact (s_marshall_read *mr, bool heap,
+                                          s_set__fact *dest,
+                                          const s_set__tag *tags);
 PROTO_MARSHALL_READ(set_tag,      s_set__tag       );
+s_marshall_read *
+marshall_read_skiplist_fact (s_marshall_read *mr, bool heap,
+                             s_skiplist__fact **dest,
+                             const s_set__fact *facts,
+                             s8 (*compare) (const s_fact *a,
+                                            const s_fact *b));
 PROTO_MARSHALL_READ(struct,       s_struct         );
 PROTO_MARSHALL_READ(struct_type,  s_struct_type    );
 PROTO_MARSHALL_READ(sym,          p_sym            );
