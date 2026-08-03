@@ -17,7 +17,7 @@ dlopen("ekc3.so")
 
 defmodule EKC3 do
 
-  def load = cfn Tag "embed_parse_template_file" (Str, Result)
+  def load = cfn Tag "embed_load_template_file" (Str, Result)
 
   def parse_str =
     cfn Tag "embed_parse_template_str" (Str, Result)

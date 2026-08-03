@@ -166,7 +166,7 @@ clean_dump:
 	rm -f httpd/fx/kc3.dump
 
 clean_kc3c:
-	find . -name '*.kc3c' -print0 | xargs -0 rm -f
+	find . \( -name '*.kc3c' -o -name '*.ekc3c' \) -print0 | xargs -0 rm -f
 
 cov:
 	${MAKE} .configure.stamp

@@ -2080,6 +2080,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3_test" \
 
 KC3_TEST_EKC3_SOURCES = \
+	"test/ekc3/load_file.kc3" \
+	"test/ekc3/load_file.out.expected" \
+	"test/ekc3/load_file.ret.expected" \
 	"test/ekc3/parse_empty.kc3" \
 	"test/ekc3/parse_empty.out.expected" \
 	"test/ekc3/parse_empty.ret.expected" \

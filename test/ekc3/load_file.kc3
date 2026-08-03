@@ -1,0 +1,16 @@
+require EKC3
+require File
+path = __DIR__ + "parse_file.html.ekc3"
+cache_path = path + "c"
+if File.exists?(cache_path) do
+  File.unlink(cache_path)
+end
+title = "EKC3 test title"
+title_h1 = "<title>\"Title escaped &amp; in title'</title>"
+title_h2 = "<h2>Title H2 (raw)</h2>"
+template = EKC3.load(path)
+puts(File.exists?(cache_path))
+puts(EKC3.render(template))
+template = EKC3.load(path)
+puts(EKC3.render(template))
+File.unlink(cache_path)
