@@ -1,4 +1,4 @@
-# KC3 v0.1.17
+# KC3 v0.1.18-git
 
 A programming language providing and relying on facts-db.
 
@@ -17,7 +17,7 @@ You can easily convert each KC3 function to a C function. KC3 is both
 a language and a runtime with powerful, scaling data structures.
 
 This is a development branch, for the latest release see
-[KC3 v0.1.16](https://git.kmx.io/kc3-lang/kc3/_tree/v0.1.16).
+[KC3 v0.1.16](https://git.kmx.io/kc3-lang/kc3/_tree/v0.1.17).
 
 KC3 is currently a programming language project, inspired by C, Elixir
 and Common Lisp. It could be described as C with Elixir modules,
@@ -64,7 +64,7 @@ To install and test KC3 for yourself, you can follow the
 
 ## Users
 
-There are now five full applications written in KC3 that we know of :
+There are now seven full applications written in KC3 that we know of :
  - The KC3 Cairo demo which you can run with `make demo`
  - The KC3 SDL2 OpenGL demo which you can run with `make demo_gl`
  - The [KC3 website](https://kc3-lang.org/) which you can launch
@@ -74,71 +74,22 @@ There are now five full applications written in KC3 that we know of :
    source and is hosted on kmx.io servers in France using OpenBSD
    everywhere. We donate to OpenBSD every month because a healthy
    software ecosystem is a funded ecosystem.
+ - The [www.iabsd.fr website](https://www.iabsd.fr) same as www.kmx.io.
  - The [kmx.io git forge](https://git.kmx.io/) is also self-hosted
    in KC3 on OpenBSD.
+ - [site.kmx.io](https://site.kmx.io) a multi domain fork of www.kmx.io.
 
 ## New in this release
 
  - libkc3
-   - copying temporary variables for `pthread_mutex` and `pthread_rwlock`
-     would cause undefined behaviour as per POSIX, this fixes pthread on
-     macOS
-   - allow for log hooks (a C function callback with a user pointer)
-     in the facts database
-   - incremental compilation with cached parser results in
-     `.kc3c` files, like Python does. Gives **5x faster loading times**
-     for all `.kc3` files. `env_load` automatically handles this.
-   - fixed a bug in `ht_iterator_next` where the iterator would not
-     go through the first collision list
-   - database logging now supports and defaults to binary format
-     (marshall + marshall_read)
-   - fixed marshall + marshall_read hash table usage
-   - str: fixed display of floating point numbers
+   - [TODO] marshall facts db as full data structures and not as
+     logical triples
 
- - Facts
-   - Facts.connect/accept allows for bi-directional synchronization of
-     an existing `Facts.database()` over a TLS encrypted connection
-     after a successful HMAC-SHA256 shared secret authentication
-     challenge/response. Master/replica negociation is based on a
-     priority negociation : each node sends its priority and the
-     lower priority is the master while the others are replicas
-   - `Facts.accept` accepts connections one by one
-   - `Facts.acceptor_loop` starts a thread that calls `accept()`
-     in a loop
-   - `Facts.acceptor_loop_join()` stops the acceptor loop cleanly
-   - Fixed hash table lookup in marshall reducing every dump by 30%
+ - EKC3
+   - [TODO] compile and load .ekc3 files from/to .ekc3c
 
  - HTTPd
-   - allow for configuration of OpenBSD's `unveil(2)` in
-     `config/unveil.kc3`
-   - dropped `libevent2` support in favor of `kqueue(2)`
-   - add support for Linux and BSD with `event_poll`
-   - allow for graceful shutdown using either SIGTERM or SIGINT
-   - fixed memory leaks using otto malloc
-   - added support for `epoll(7)` on Linux
-   - fixed memory leaks using ASAn
-   - fixed double socket close leading to corruption
-   - fixed race conditions in error handling
-   - added rate limiting for bots
-   - allow custom log messages in error and request log for use in
-     plugs and controllers
-
- - HTTPS
-   - `HTTPS.Client` with libtls and automatic or manual connection
-     - GET method
-     - POST method
-     - JSON response
-
- - JSON
-   - fixed parser
-     - boolean `true` or `false` → Bool
-     - map `{"key", "value"}` → Map `%{"key" => "value"}`
-     - array `[1, 2, 3]` → List `[1, 2, 3]`
-
- - RUsage
-   - current-process statistics for user and system CPU time, current and
-     maximum resident memory, virtual memory, and open files
-   - `RUsage.stats()` returns all statistics in a single map
+   - [TODO] test partial requests support (fx)
 
 ## Contact
 
