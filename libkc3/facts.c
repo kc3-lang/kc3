@@ -2056,10 +2056,16 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   s_list *list = NULL;
   s_facts_transaction transaction;
   s_tag pvar = {0};
+  bool unbound = false;
   assert(facts);
   assert(subject);
   assert(predicate);
   assert(object);
+  if (! tag_is_unbound_var(object, &unbound)) {
+    err_puts("facts_replace_tags: tag_is_unbound_var");
+    assert(! "facts_replace_tags: tag_is_unbound_var");
+    return NULL;
+  }
   tag_init_pvar(&pvar, &g_sym_Tag);
 #if HAVE_PTHREAD
   if (! rwlock_w(&facts->rwlock)) {
@@ -2118,7 +2124,8 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
     list = list_delete(list);
   }
   tag_clean(&pvar);
-  fact = facts_add_tags(facts, subject, predicate, object);
+  fact = unbound ? NULL :
+    facts_add_tags(facts, subject, predicate, object);
   facts_transaction_end(facts, &transaction);
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);

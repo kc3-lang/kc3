@@ -16,7 +16,11 @@
 #include "../libkc3/compare.h"
 #include "../libkc3/facts.h"
 #include "../libkc3/file.h"
+#include "../libkc3/kc3_main.h"
 #include "../libkc3/log.h"
+#include "../libkc3/sym.h"
+#include "../libkc3/tag.h"
+#include "../libkc3/tag_init.h"
 #include "fact_test.h"
 #include "test.h"
 
@@ -32,6 +36,7 @@ TEST_CASE_PROTOTYPE(facts_new_delete);
 TEST_CASE_PROTOTYPE(facts_open_file);
 TEST_CASE_PROTOTYPE(facts_open_file_binary_round_trip);
 TEST_CASE_PROTOTYPE(facts_remove);
+TEST_CASE_PROTOTYPE(facts_replace_tags_unbound);
 TEST_CASE_PROTOTYPE(facts_save);
 TEST_CASE_PROTOTYPE(facts_save_binary);
 
@@ -41,6 +46,7 @@ void facts_test (void)
   TEST_CASE_RUN(facts_new_delete);
   TEST_CASE_RUN(facts_add);
   TEST_CASE_RUN(facts_remove);
+  TEST_CASE_RUN(facts_replace_tags_unbound);
   TEST_CASE_RUN(facts_find);
   TEST_CASE_RUN(facts_log_add);
   TEST_CASE_RUN(facts_log_remove);
@@ -653,6 +659,40 @@ TEST_CASE(facts_remove)
   facts_clean(&facts);
 }
 TEST_CASE_END(facts_remove)
+
+TEST_CASE(facts_replace_tags_unbound)
+{
+  bool b = false;
+  s_facts facts;
+  s_tag object = {0};
+  s_tag predicate = {0};
+  s_tag subject = {0};
+  s_tag value = {0};
+  TEST_EQ(facts_init(&facts), &facts);
+  TEST_ASSERT(tag_init_1(&subject, ":a"));
+  TEST_ASSERT(tag_init_1(&predicate, ":b"));
+  TEST_ASSERT(tag_init_1(&value, ":c"));
+  TEST_ASSERT(facts_replace_tags(&facts, &subject, &predicate, &value));
+  TEST_EQ(facts.facts.count, 1);
+  TEST_ASSERT(tag_init_pvar(&object, &g_sym_Tag));
+  TEST_ASSERT(! facts_replace_tags(&facts, &subject, &predicate,
+                                   &object));
+  TEST_EQ(facts.facts.count, 0);
+  TEST_EQ(facts.tags.count, 0);
+  TEST_ASSERT(facts_replace_tags(&facts, &subject, &predicate, &value));
+  TEST_EQ(facts.facts.count, 1);
+  TEST_ASSERT(kc3_facts_replace_tags(&facts, &subject, &predicate,
+                                     &object, &b));
+  TEST_ASSERT(b);
+  TEST_EQ(facts.facts.count, 0);
+  TEST_EQ(facts.tags.count, 0);
+  tag_clean(&object);
+  tag_clean(&value);
+  tag_clean(&predicate);
+  tag_clean(&subject);
+  facts_clean(&facts);
+}
+TEST_CASE_END(facts_replace_tags_unbound)
 
 TEST_CASE(facts_save)
 {

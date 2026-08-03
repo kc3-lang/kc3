@@ -675,7 +675,11 @@ bool * kc3_facts_replace_tags (s_facts *facts,
                                bool *dest)
 {
   const s_fact *fact;
-  if (! (fact = facts_replace_tags(facts, subject, predicate, object)))
+  bool unbound = false;
+  if (! tag_is_unbound_var(object, &unbound))
+    return NULL;
+  if (! (fact = facts_replace_tags(facts, subject, predicate, object)) &&
+      ! unbound)
     return NULL;
   *dest = true;
   return dest;
