@@ -84,6 +84,8 @@ There are now seven full applications written in KC3 that we know of :
  - libkc3
    - [TODO] marshall facts db as full data structures and not as
      logical triples
+   - [TODO] kc3 to C
+   - [TODO] kc3 to Common Lisp
 
  - EKC3
    - [TODO] compile and load .ekc3 files from/to .ekc3c
