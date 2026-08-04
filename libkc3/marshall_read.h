@@ -113,6 +113,9 @@ s_marshall_read * marshall_read_ptuple (s_marshall_read *mr,
 PROTO_MARSHALL_READ(pvar,         p_var            );
 PROTO_MARSHALL_READ(quote,        s_quote          );
 PROTO_MARSHALL_READ(ratio,        s_ratio          );
+PROTO_MARSHALL_READ(raw_u8,       u8               );
+PROTO_MARSHALL_READ(raw_u64,      u64              );
+PROTO_MARSHALL_READ(raw_uw,       uw               );
 PROTO_MARSHALL_READ(s8,           s8               );
 PROTO_MARSHALL_READ(s16,          s16              );
 PROTO_MARSHALL_READ(s32,          s32              );

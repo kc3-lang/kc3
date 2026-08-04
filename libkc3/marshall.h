@@ -93,6 +93,9 @@ s_marshall * marshall_ptuple (s_marshall *m, bool heap,
 PROTO_MARSHALL(pvar, const p_var *);
 PROTO_MARSHALL(quote, const s_quote *);
 PROTO_MARSHALL(ratio, const s_ratio *);
+s_marshall * marshall_raw_u8 (s_marshall *m, bool heap, u8 src);
+s_marshall * marshall_raw_u64 (s_marshall *m, bool heap, u64 src);
+s_marshall * marshall_raw_uw (s_marshall *m, bool heap, uw src);
 PROTO_MARSHALL(s8, s8);
 PROTO_MARSHALL(s16, s16);
 PROTO_MARSHALL(s32, s32);

@@ -115,14 +115,51 @@
     return mr;                                                         \
   }
 
+#define DEF_MARSHALL_READ_RAW(name, type)                              \
+  s_marshall_read * marshall_read_raw_ ## name (s_marshall_read *mr,   \
+                                                bool heap,             \
+                                                type *dest)            \
+  {                                                                    \
+    s_buf *buf = NULL;                                                 \
+    if (! mr || ! dest) {                                              \
+      err_puts("marshall_read_raw_" # name ": invalid argument");      \
+      assert(! "marshall_read_raw_" # name ": invalid argument");      \
+      return NULL;                                                     \
+    }                                                                  \
+    buf = heap ? mr->heap : mr->buf;                                   \
+    if (buf_read_ ## name (buf, dest) <= 0) {                          \
+      err_puts("marshall_read_raw_" # name ": buf_read_" # name);      \
+      assert(! "marshall_read_raw_" # name ": buf_read_" # name);      \
+      return NULL;                                                     \
+    }                                                                  \
+    return mr;                                                         \
+  }
+
+#define DEF_MARSHALL_READ_RAW_LETOH(name, type, bits)                  \
+  s_marshall_read * marshall_read_raw_ ## name (s_marshall_read *mr,   \
+                                                bool heap,             \
+                                                type *dest)            \
+  {                                                                    \
+    s_buf *buf = NULL;                                                 \
+    if (! mr || ! dest) {                                              \
+      err_puts("marshall_read_raw_" # name ": invalid argument");      \
+      assert(! "marshall_read_raw_" # name ": invalid argument");      \
+      return NULL;                                                     \
+    }                                                                  \
+    buf = heap ? mr->heap : mr->buf;                                   \
+    if (buf_read_ ## name (buf, dest) <= 0) {                          \
+      err_puts("marshall_read_raw_" # name ": buf_read_" # name);      \
+      assert(! "marshall_read_raw_" # name ": buf_read_" # name);      \
+      return NULL;                                                     \
+    }                                                                  \
+    *dest = le ## bits ## toh(*dest);                                  \
+    return mr;                                                         \
+  }
+
 static s_marshall_read * marshall_read_facts_log (s_marshall_read *mr,
                                                   bool heap,
                                                   s_facts *facts);
 static void marshall_read_ht_clean (s_marshall_read *mr);
-static s_marshall_read * marshall_read_raw_u8 (s_marshall_read *mr,
-                                               bool heap, u8 *dest);
-static s_marshall_read * marshall_read_raw_u64 (s_marshall_read *mr,
-                                                bool heap, u64 *dest);
 static s_fact ** marshall_read_set_fact_array (const s_set__fact *set);
 static p_tag * marshall_read_set_tag_array (const s_set__tag *set);
 static void marshall_read_skiplist_fact_clean (s_skiplist__fact *skiplist);
@@ -1721,18 +1758,7 @@ s_marshall_read * marshall_read_new_str (const s_str *input)
 s_marshall_read * marshall_read_offset (s_marshall_read *mr,
                                         bool heap, u64 *dest)
 {
-  s_buf *buf = NULL;
-  u64 tmp = 0;
-  assert(mr);
-  assert(dest);
-  buf = heap ? mr->heap : mr->buf;
-  if (buf_read_u64(buf, &tmp) <= 0) {
-    err_puts("marshall_read_offset: buf_read_u64");
-    assert(! "marshall_read_offset: buf_read_u64");
-    return NULL;
-  }
-  *dest = le64toh(tmp);
-  return mr;
+  return marshall_read_raw_u64(mr, heap, dest);
 }
 
 s_marshall_read * marshall_read_op (s_marshall_read *mr,
@@ -2496,6 +2522,24 @@ s_marshall_read * marshall_read_ratio (s_marshall_read *mr,
   return mr;
 }
 
+DEF_MARSHALL_READ_RAW(u8, u8)
+DEF_MARSHALL_READ_RAW_LETOH(u64, u64, 64)
+
+s_marshall_read * marshall_read_raw_uw (s_marshall_read *mr, bool heap,
+                                        uw *dest)
+{
+  u64 u;
+  if (! marshall_read_raw_u64(mr, heap, &u))
+    return NULL;
+  if (u > UW_MAX) {
+    err_puts("marshall_read_raw_uw: value out of range");
+    assert(! "marshall_read_raw_uw: value out of range");
+    return NULL;
+  }
+  *dest = u;
+  return mr;
+}
+
 DEF_MARSHALL_READ(s8, "_KC3S8_", s8)
 DEF_MARSHALL_READ_LETOH(s16, "_KC3S16_", s16, 16)
 DEF_MARSHALL_READ_LETOH(s32, "_KC3S32_", s32, 32)
@@ -2508,17 +2552,15 @@ s_marshall_read * marshall_read_set_fact (s_marshall_read *mr, bool heap,
   uw collisions = 0;
   uw count = 0;
   uw h;
-  u64 hash = 0;
   uw i;
-  u64 id = 0;
+  uw id = 0;
   s_set_item__fact *item;
   s_set_item__fact *last = NULL;
   uw last_h = 0;
   uw max = 0;
-  u64 object = 0;
-  u64 predicate = 0;
-  u64 subject = 0;
-  u64 usage = 0;
+  uw object = 0;
+  uw predicate = 0;
+  uw subject = 0;
   p_tag *tag_array = NULL;
   s_set__fact tmp = {0};
   if (! mr || ! dest || ! tags || ! tags->items) {
@@ -2559,14 +2601,14 @@ s_marshall_read * marshall_read_set_fact (s_marshall_read *mr, bool heap,
   while (i < count) {
     if (! (item = alloc(sizeof(s_set_item__fact))))
       goto ko;
-    if (! marshall_read_raw_u64(mr, heap, &hash) ||
-        ! marshall_read_raw_u64(mr, heap, &usage) ||
-        ! marshall_read_raw_u64(mr, heap, &subject) ||
-        ! marshall_read_raw_u64(mr, heap, &predicate) ||
-        ! marshall_read_raw_u64(mr, heap, &object) ||
-        ! marshall_read_raw_u64(mr, heap, &id)) {
-      err_puts("marshall_read_set_fact: marshall_read_raw_u64 item");
-      assert(! "marshall_read_set_fact: marshall_read_raw_u64 item");
+    if (! marshall_read_raw_uw(mr, heap, &item->hash) ||
+        ! marshall_read_raw_uw(mr, heap, &item->usage) ||
+        ! marshall_read_raw_uw(mr, heap, &subject) ||
+        ! marshall_read_raw_uw(mr, heap, &predicate) ||
+        ! marshall_read_raw_uw(mr, heap, &object) ||
+        ! marshall_read_raw_uw(mr, heap, &id)) {
+      err_puts("marshall_read_set_fact: marshall_read_raw_uw item");
+      assert(! "marshall_read_set_fact: marshall_read_raw_uw item");
       alloc_free(item);
       goto ko;
     }
@@ -2578,8 +2620,6 @@ s_marshall_read * marshall_read_set_fact (s_marshall_read *mr, bool heap,
       alloc_free(item);
       goto ko;
     }
-    item->hash = hash;
-    item->usage = usage;
     item->data.subject = tag_array[subject];
     item->data.predicate = tag_array[predicate];
     item->data.object = tag_array[object];
@@ -2618,11 +2658,9 @@ s_marshall_read * marshall_read_set_tag (s_marshall_read *mr,
   uw collisions = 0;
   uw count = 0;
   uw h;
-  u64 hash = 0;
   uw i;
   s_set_item__tag *item;
   s_set_item__tag *last = NULL;
-  u64 usage = 0;
   uw last_h = 0;
   uw max = 0;
   s_set__tag tmp = {0};
@@ -2659,16 +2697,14 @@ s_marshall_read * marshall_read_set_tag (s_marshall_read *mr,
       set_clean__tag(&tmp);
       return NULL;
     }
-    if (! marshall_read_raw_u64(mr, heap, &hash) ||
-        ! marshall_read_raw_u64(mr, heap, &usage)) {
-      err_puts("marshall_read_set_tag: marshall_read_raw_u64 item");
-      assert(! "marshall_read_set_tag: marshall_read_raw_u64 item");
+    if (! marshall_read_raw_uw(mr, heap, &item->hash) ||
+        ! marshall_read_raw_uw(mr, heap, &item->usage)) {
+      err_puts("marshall_read_set_tag: marshall_read_raw_uw item");
+      assert(! "marshall_read_set_tag: marshall_read_raw_uw item");
       alloc_free(item);
       set_clean__tag(&tmp);
       return NULL;
     }
-    item->hash = hash;
-    item->usage = usage;
     if (! marshall_read_tag(mr, heap, &item->data)) {
       err_puts("marshall_read_set_tag: marshall_read_tag");
       assert(! "marshall_read_set_tag: marshall_read_tag");
@@ -2693,27 +2729,6 @@ s_marshall_read * marshall_read_set_tag (s_marshall_read *mr,
   tmp.collisions = collisions;
   tmp.count = count;
   *dest = tmp;
-  return mr;
-}
-
-static s_marshall_read * marshall_read_raw_u8 (s_marshall_read *mr,
-                                               bool heap, u8 *dest)
-{
-  s_buf *buf;
-  buf = heap ? mr->heap : mr->buf;
-  if (buf_read_u8(buf, dest) <= 0)
-    return NULL;
-  return mr;
-}
-
-static s_marshall_read * marshall_read_raw_u64 (s_marshall_read *mr,
-                                                bool heap, u64 *dest)
-{
-  s_buf *buf;
-  buf = heap ? mr->heap : mr->buf;
-  if (buf_read_u64(buf, dest) <= 0)
-    return NULL;
-  *dest = le64toh(*dest);
   return mr;
 }
 
@@ -2806,7 +2821,7 @@ marshall_read_skiplist_fact (s_marshall_read *mr, bool heap,
   u8 height;
   t_skiplist_height *height_table;
   uw i;
-  u64 index = 0;
+  uw index = 0;
   s_skiplist_node__fact **last = NULL;
   uw length = 0;
   u8 level;
@@ -2869,10 +2884,10 @@ marshall_read_skiplist_fact (s_marshall_read *mr, bool heap,
   }
   i = 0;
   while (i < length) {
-    if (! marshall_read_raw_u64(mr, heap, &index) ||
+    if (! marshall_read_raw_uw(mr, heap, &index) ||
         ! marshall_read_raw_u8(mr, heap, &height)) {
-      err_puts("marshall_read_skiplist_fact: marshall_read_raw_u64 node");
-      assert(! "marshall_read_skiplist_fact: marshall_read_raw_u64 node");
+      err_puts("marshall_read_skiplist_fact: marshall_read_raw_uw node");
+      assert(! "marshall_read_skiplist_fact: marshall_read_raw_uw node");
       goto ko;
     }
     if (index >= facts->count) {
