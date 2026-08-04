@@ -11,10 +11,12 @@
  * THIS SOFTWARE.
  */
 #include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "../libkc3/buf.h"
 #include "../libkc3/endian.h"
+#include "../libkc3/env.h"
 #include "../libkc3/facts.h"
 #include "../libkc3/file.h"
 #include "../libkc3/inspect.h"
@@ -91,6 +93,8 @@ TEST_CASE_PROTOTYPE(marshall_read_s32);
 TEST_CASE_PROTOTYPE(marshall_read_s64);
 TEST_CASE_PROTOTYPE(marshall_read_set_fact);
 TEST_CASE_PROTOTYPE(marshall_read_set_tag);
+TEST_CASE_PROTOTYPE(marshall_facts_structures_bench);
+TEST_CASE_PROTOTYPE(marshall_facts_structures_env);
 TEST_CASE_PROTOTYPE(marshall_facts_structures_real);
 TEST_CASE_PROTOTYPE(marshall_read_facts_structures);
 TEST_CASE_PROTOTYPE(marshall_read_skiplist_fact);
@@ -113,6 +117,8 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_skiplist_fact);
   TEST_CASE_RUN(marshall_read_facts_structures);
   TEST_CASE_RUN(marshall_facts_structures_real);
+  TEST_CASE_RUN(marshall_facts_structures_bench);
+  TEST_CASE_RUN(marshall_facts_structures_env);
 }
 
 TEST_CASE(marshall_read_bool)
@@ -333,6 +339,122 @@ static s_str * marshall_facts_test_to_str (s_marshall *m, s_str *dest)
   buf_clean(&out);
   return dest;
 }
+
+static u64 marshall_facts_test_ns (void)
+{
+  struct timespec t;
+  clock_gettime(CLOCK_MONOTONIC, &t);
+  return (u64) t.tv_sec * 1000000000 + (u64) t.tv_nsec;
+}
+
+static void marshall_facts_test_report (const char *label, u64 ns,
+                                        uw runs, uw size)
+{
+  err_write_1("\n  ");
+  err_write_1(label);
+  err_write_1(": ");
+  err_inspect_uw_decimal(ns / runs / 1000);
+  err_write_1(" us/chargement, dump ");
+  err_inspect_uw_decimal(size);
+  err_write_1(" octets");
+}
+
+TEST_CASE(marshall_facts_structures_bench)
+{
+  const char *base_path;
+  s_facts facts;
+  s_facts loaded;
+  uw i;
+  s_marshall m = {0};
+  s_marshall m2 = {0};
+  s_marshall_read mr = {0};
+  u64 ns_new = 0;
+  u64 ns_old = 0;
+  s_str path = {0};
+  const uw runs = 10;
+  s_str str = {0};
+  s_str str2 = {0};
+  u64 t0;
+  if (! (base_path = getenv("KC3_TEST_FACTS_BENCH")))
+    return 0;
+  TEST_ASSERT(marshall_facts_test_copy(base_path,
+                                       MARSHALL_FACTS_TEST_COPY));
+  str_init_1(&path, NULL, MARSHALL_FACTS_TEST_COPY);
+  TEST_EQ(facts_init(&facts), &facts);
+  TEST_ASSERT(facts_open_file(&facts, &path) >= 0);
+  facts_close(&facts);
+  marshall_facts_test_remove_unbound(&facts);
+  TEST_EQ(marshall_init(&m, MARSHALL_FACTS_TEST_BUF_SIZE), &m);
+  TEST_EQ(marshall_facts(&m, false, &facts), &m);
+  TEST_ASSERT(marshall_facts_test_to_str(&m, &str));
+  TEST_EQ(marshall_init(&m2, MARSHALL_FACTS_TEST_BUF_SIZE), &m2);
+  TEST_EQ(marshall_facts_structures(&m2, false, &facts), &m2);
+  TEST_ASSERT(marshall_facts_test_to_str(&m2, &str2));
+  err_write_1("\n  base: ");
+  err_inspect_uw_decimal(facts.facts.count);
+  err_write_1(" faits, ");
+  err_inspect_uw_decimal(facts.tags.count);
+  err_write_1(" tags");
+  i = 0;
+  while (i < runs) {
+    TEST_EQ(facts_init(&loaded), &loaded);
+    TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+    t0 = marshall_facts_test_ns();
+    TEST_EQ(marshall_read_facts(&mr, false, &loaded), &mr);
+    ns_old += marshall_facts_test_ns() - t0;
+    marshall_read_clean(&mr);
+    facts_clean(&loaded);
+    i++;
+  }
+  i = 0;
+  while (i < runs) {
+    TEST_EQ(facts_init(&loaded), &loaded);
+    TEST_EQ(marshall_read_init_str(&mr, &str2), &mr);
+    t0 = marshall_facts_test_ns();
+    TEST_EQ(marshall_read_facts_structures(&mr, false, &loaded), &mr);
+    ns_new += marshall_facts_test_ns() - t0;
+    marshall_read_clean(&mr);
+    facts_clean(&loaded);
+    i++;
+  }
+  marshall_facts_test_report("ancien", ns_old, runs, str.size);
+  marshall_facts_test_report("neuf  ", ns_new, runs, str2.size);
+  err_write_1("\n");
+  marshall_clean(&m2);
+  marshall_clean(&m);
+  str_clean(&str2);
+  str_clean(&str);
+  facts_clean(&facts);
+  unlink(MARSHALL_FACTS_TEST_COPY);
+}
+TEST_CASE_END(marshall_facts_structures_bench)
+
+TEST_CASE(marshall_facts_structures_env)
+{
+  s_env *env;
+  s_marshall m = {0};
+  s_facts restored;
+  s_marshall_read mr = {0};
+  s_str str = {0};
+  env = env_global();
+  TEST_ASSERT(env);
+  TEST_ASSERT(env->facts);
+  TEST_ASSERT(env->facts->facts.count);
+  TEST_EQ(marshall_init(&m, MARSHALL_FACTS_TEST_BUF_SIZE), &m);
+  TEST_EQ(marshall_facts_structures(&m, false, env->facts), &m);
+  TEST_ASSERT(marshall_facts_test_to_str(&m, &str));
+  TEST_EQ(facts_init(&restored), &restored);
+  TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+  TEST_EQ(marshall_read_facts_structures(&mr, false, &restored), &mr);
+  TEST_EQ(restored.facts.count, env->facts->facts.count);
+  TEST_EQ(restored.tags.count, env->facts->tags.count);
+  TEST_EQ(restored.next_id, env->facts->next_id);
+  marshall_read_clean(&mr);
+  marshall_clean(&m);
+  str_clean(&str);
+  facts_clean(&restored);
+}
+TEST_CASE_END(marshall_facts_structures_env)
 
 TEST_CASE(marshall_facts_structures_real)
 {

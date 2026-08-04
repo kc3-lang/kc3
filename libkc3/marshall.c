@@ -111,6 +111,8 @@
     return m;                                                         \
   }
 
+static s_marshall * marshall_raw_u8 (s_marshall *m, bool heap, u8 src);
+static s_marshall * marshall_raw_u64 (s_marshall *m, bool heap, u64 src);
 static bool marshall_set_fact_index (const s_set__fact *set,
                                      const uw *offsets,
                                      const s_fact *fact, uw *dest);
@@ -1646,6 +1648,36 @@ s_marshall * marshall_quote (s_marshall *m, bool heap,
   return m;
 }
 
+static s_marshall * marshall_raw_u8 (s_marshall *m, bool heap, u8 src)
+{
+  s_buf *buf;
+  sw r;
+  buf = heap ? &m->heap : &m->buf;
+  if ((r = buf_write_u8(buf, src)) <= 0)
+    return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
+  return m;
+}
+
+static s_marshall * marshall_raw_u64 (s_marshall *m, bool heap, u64 src)
+{
+  s_buf *buf;
+  u64 le;
+  sw r;
+  le = htole64(src);
+  buf = heap ? &m->heap : &m->buf;
+  if ((r = buf_write_u64(buf, le)) <= 0)
+    return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
+  return m;
+}
+
 s_marshall * marshall_ratio (s_marshall *m, bool heap,
                              const s_ratio *ratio)
 {
@@ -1711,14 +1743,14 @@ s_marshall * marshall_set_fact (s_marshall *m, bool heap,
         assert(! "marshall_set_fact: marshall_set_tag_index");
         goto ko;
       }
-      if (! marshall_uw(m, heap, item->hash) ||
-          ! marshall_uw(m, heap, item->usage) ||
-          ! marshall_uw(m, heap, subject) ||
-          ! marshall_uw(m, heap, predicate) ||
-          ! marshall_uw(m, heap, object) ||
-          ! marshall_uw(m, heap, item->data.id)) {
-        err_puts("marshall_set_fact: marshall_uw item");
-        assert(! "marshall_set_fact: marshall_uw item");
+      if (! marshall_raw_u64(m, heap, item->hash) ||
+          ! marshall_raw_u64(m, heap, item->usage) ||
+          ! marshall_raw_u64(m, heap, subject) ||
+          ! marshall_raw_u64(m, heap, predicate) ||
+          ! marshall_raw_u64(m, heap, object) ||
+          ! marshall_raw_u64(m, heap, item->data.id)) {
+        err_puts("marshall_set_fact: marshall_raw_u64 item");
+        assert(! "marshall_set_fact: marshall_raw_u64 item");
         goto ko;
       }
       count++;
@@ -1784,10 +1816,10 @@ s_marshall * marshall_set_tag (s_marshall *m, bool heap,
         assert(! "marshall_set_tag: unbound variable in facts");
         return NULL;
       }
-      if (! marshall_uw(m, heap, item->hash) ||
-          ! marshall_uw(m, heap, item->usage)) {
-        err_puts("marshall_set_tag: marshall_uw item");
-        assert(! "marshall_set_tag: marshall_uw item");
+      if (! marshall_raw_u64(m, heap, item->hash) ||
+          ! marshall_raw_u64(m, heap, item->usage)) {
+        err_puts("marshall_set_tag: marshall_raw_u64 item");
+        assert(! "marshall_set_tag: marshall_raw_u64 item");
         return NULL;
       }
       if (! marshall_tag(m, heap, &item->data)) {
@@ -1938,9 +1970,9 @@ s_marshall * marshall_skiplist_fact (s_marshall *m, bool heap,
   height_table = SKIPLIST_HEIGHT_TABLE__fact(skiplist);
   i = 0;
   while (i < skiplist->max_height) {
-    if (! marshall_u64(m, heap, height_table[i])) {
-      err_puts("marshall_skiplist_fact: marshall_u64 height table");
-      assert(! "marshall_skiplist_fact: marshall_u64 height table");
+    if (! marshall_raw_u64(m, heap, height_table[i])) {
+      err_puts("marshall_skiplist_fact: marshall_raw_u64 height table");
+      assert(! "marshall_skiplist_fact: marshall_raw_u64 height table");
       return NULL;
     }
     i++;
@@ -1958,10 +1990,10 @@ s_marshall * marshall_skiplist_fact (s_marshall *m, bool heap,
       assert(! "marshall_skiplist_fact: marshall_set_fact_index");
       goto ko;
     }
-    if (! marshall_uw(m, heap, index) ||
-        ! marshall_u8(m, heap, node->height)) {
-      err_puts("marshall_skiplist_fact: marshall_uw node");
-      assert(! "marshall_skiplist_fact: marshall_uw node");
+    if (! marshall_raw_u64(m, heap, index) ||
+        ! marshall_raw_u8(m, heap, node->height)) {
+      err_puts("marshall_skiplist_fact: marshall_raw_u64 node");
+      assert(! "marshall_skiplist_fact: marshall_raw_u64 node");
       goto ko;
     }
     count++;

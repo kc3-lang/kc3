@@ -119,6 +119,10 @@ static s_marshall_read * marshall_read_facts_log (s_marshall_read *mr,
                                                   bool heap,
                                                   s_facts *facts);
 static void marshall_read_ht_clean (s_marshall_read *mr);
+static s_marshall_read * marshall_read_raw_u8 (s_marshall_read *mr,
+                                               bool heap, u8 *dest);
+static s_marshall_read * marshall_read_raw_u64 (s_marshall_read *mr,
+                                                bool heap, u64 *dest);
 static s_fact ** marshall_read_set_fact_array (const s_set__fact *set);
 static p_tag * marshall_read_set_tag_array (const s_set__tag *set);
 static void marshall_read_skiplist_fact_clean (s_skiplist__fact *skiplist);
@@ -2504,15 +2508,17 @@ s_marshall_read * marshall_read_set_fact (s_marshall_read *mr, bool heap,
   uw collisions = 0;
   uw count = 0;
   uw h;
+  u64 hash = 0;
   uw i;
-  uw id = 0;
+  u64 id = 0;
   s_set_item__fact *item;
   s_set_item__fact *last = NULL;
   uw last_h = 0;
   uw max = 0;
-  uw object = 0;
-  uw predicate = 0;
-  uw subject = 0;
+  u64 object = 0;
+  u64 predicate = 0;
+  u64 subject = 0;
+  u64 usage = 0;
   p_tag *tag_array = NULL;
   s_set__fact tmp = {0};
   if (! mr || ! dest || ! tags || ! tags->items) {
@@ -2553,14 +2559,14 @@ s_marshall_read * marshall_read_set_fact (s_marshall_read *mr, bool heap,
   while (i < count) {
     if (! (item = alloc(sizeof(s_set_item__fact))))
       goto ko;
-    if (! marshall_read_uw(mr, heap, &item->hash) ||
-        ! marshall_read_uw(mr, heap, &item->usage) ||
-        ! marshall_read_uw(mr, heap, &subject) ||
-        ! marshall_read_uw(mr, heap, &predicate) ||
-        ! marshall_read_uw(mr, heap, &object) ||
-        ! marshall_read_uw(mr, heap, &id)) {
-      err_puts("marshall_read_set_fact: marshall_read_uw item");
-      assert(! "marshall_read_set_fact: marshall_read_uw item");
+    if (! marshall_read_raw_u64(mr, heap, &hash) ||
+        ! marshall_read_raw_u64(mr, heap, &usage) ||
+        ! marshall_read_raw_u64(mr, heap, &subject) ||
+        ! marshall_read_raw_u64(mr, heap, &predicate) ||
+        ! marshall_read_raw_u64(mr, heap, &object) ||
+        ! marshall_read_raw_u64(mr, heap, &id)) {
+      err_puts("marshall_read_set_fact: marshall_read_raw_u64 item");
+      assert(! "marshall_read_set_fact: marshall_read_raw_u64 item");
       alloc_free(item);
       goto ko;
     }
@@ -2572,6 +2578,8 @@ s_marshall_read * marshall_read_set_fact (s_marshall_read *mr, bool heap,
       alloc_free(item);
       goto ko;
     }
+    item->hash = hash;
+    item->usage = usage;
     item->data.subject = tag_array[subject];
     item->data.predicate = tag_array[predicate];
     item->data.object = tag_array[object];
@@ -2610,9 +2618,11 @@ s_marshall_read * marshall_read_set_tag (s_marshall_read *mr,
   uw collisions = 0;
   uw count = 0;
   uw h;
+  u64 hash = 0;
   uw i;
   s_set_item__tag *item;
   s_set_item__tag *last = NULL;
+  u64 usage = 0;
   uw last_h = 0;
   uw max = 0;
   s_set__tag tmp = {0};
@@ -2649,14 +2659,16 @@ s_marshall_read * marshall_read_set_tag (s_marshall_read *mr,
       set_clean__tag(&tmp);
       return NULL;
     }
-    if (! marshall_read_uw(mr, heap, &item->hash) ||
-        ! marshall_read_uw(mr, heap, &item->usage)) {
-      err_puts("marshall_read_set_tag: marshall_read_uw item");
-      assert(! "marshall_read_set_tag: marshall_read_uw item");
+    if (! marshall_read_raw_u64(mr, heap, &hash) ||
+        ! marshall_read_raw_u64(mr, heap, &usage)) {
+      err_puts("marshall_read_set_tag: marshall_read_raw_u64 item");
+      assert(! "marshall_read_set_tag: marshall_read_raw_u64 item");
       alloc_free(item);
       set_clean__tag(&tmp);
       return NULL;
     }
+    item->hash = hash;
+    item->usage = usage;
     if (! marshall_read_tag(mr, heap, &item->data)) {
       err_puts("marshall_read_set_tag: marshall_read_tag");
       assert(! "marshall_read_set_tag: marshall_read_tag");
@@ -2681,6 +2693,27 @@ s_marshall_read * marshall_read_set_tag (s_marshall_read *mr,
   tmp.collisions = collisions;
   tmp.count = count;
   *dest = tmp;
+  return mr;
+}
+
+static s_marshall_read * marshall_read_raw_u8 (s_marshall_read *mr,
+                                               bool heap, u8 *dest)
+{
+  s_buf *buf;
+  buf = heap ? mr->heap : mr->buf;
+  if (buf_read_u8(buf, dest) <= 0)
+    return NULL;
+  return mr;
+}
+
+static s_marshall_read * marshall_read_raw_u64 (s_marshall_read *mr,
+                                                bool heap, u64 *dest)
+{
+  s_buf *buf;
+  buf = heap ? mr->heap : mr->buf;
+  if (buf_read_u64(buf, dest) <= 0)
+    return NULL;
+  *dest = le64toh(*dest);
   return mr;
 }
 
@@ -2773,7 +2806,7 @@ marshall_read_skiplist_fact (s_marshall_read *mr, bool heap,
   u8 height;
   t_skiplist_height *height_table;
   uw i;
-  uw index = 0;
+  u64 index = 0;
   s_skiplist_node__fact **last = NULL;
   uw length = 0;
   u8 level;
@@ -2809,9 +2842,9 @@ marshall_read_skiplist_fact (s_marshall_read *mr, bool heap,
   height_table = SKIPLIST_HEIGHT_TABLE__fact(tmp);
   i = 0;
   while (i < max_height) {
-    if (! marshall_read_u64(mr, heap, height_table + i)) {
-      err_puts("marshall_read_skiplist_fact: marshall_read_u64");
-      assert(! "marshall_read_skiplist_fact: marshall_read_u64");
+    if (! marshall_read_raw_u64(mr, heap, height_table + i)) {
+      err_puts("marshall_read_skiplist_fact: marshall_read_raw_u64");
+      assert(! "marshall_read_skiplist_fact: marshall_read_raw_u64");
       goto ko;
     }
     i++;
@@ -2836,10 +2869,10 @@ marshall_read_skiplist_fact (s_marshall_read *mr, bool heap,
   }
   i = 0;
   while (i < length) {
-    if (! marshall_read_uw(mr, heap, &index) ||
-        ! marshall_read_u8(mr, heap, &height)) {
-      err_puts("marshall_read_skiplist_fact: marshall_read_uw node");
-      assert(! "marshall_read_skiplist_fact: marshall_read_uw node");
+    if (! marshall_read_raw_u64(mr, heap, &index) ||
+        ! marshall_read_raw_u8(mr, heap, &height)) {
+      err_puts("marshall_read_skiplist_fact: marshall_read_raw_u64 node");
+      assert(! "marshall_read_skiplist_fact: marshall_read_raw_u64 node");
       goto ko;
     }
     if (index >= facts->count) {
