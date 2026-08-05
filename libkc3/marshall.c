@@ -1198,7 +1198,7 @@ s8 marshall_ht_compare (const s_tag *a, const s_tag *b)
   return compare_tag(a->data.td_ptuple->tag, b->data.td_ptuple->tag);
 }
 
-uw marshall_ht_hash (const s_tag *tag)
+uw marshall_ht_hash (s_tag *tag)
 {
   t_hash h;
   assert(tag);

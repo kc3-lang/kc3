@@ -637,7 +637,7 @@ struct file_stat {
 struct ht {
   s8        (* compare) (const s_tag *a, const s_tag *b);
   uw           count;
-  uw        (* hash) (const s_tag *tag);
+  uw        (* hash) (s_tag *tag);
   s_list     **items;
   s_rwlock     rwlock;
   uw           size;
@@ -867,6 +867,7 @@ struct tag {
   sw         ref_count;
   s_mutex    ref_count_mutex;
   u_tag_data data;
+  uw         hash_uw;
 };
 
 /* 7 */

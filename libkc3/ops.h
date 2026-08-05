@@ -29,7 +29,7 @@ s_ops * ops_new_copy (s_ops *src);
 s8      ops_compare_tag (const s_tag *a, const s_tag *b);
 s_op  * ops_get (s_ops *ops, const s_sym *sym, u8 arity, s_op *dest);
 s_tag * ops_get_tag (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest);
-uw      ops_hash_tag (const s_tag *op);
+uw      ops_hash_tag (s_tag *op);
 
 /* Operators. */
 bool ops_add (s_ops *ops, s_op *op);

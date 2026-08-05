@@ -42,15 +42,18 @@ void hash_init (t_hash *hash)
   SHA1Init(hash);
 }
 
-uw hash_tag (const s_tag *tag)
+uw hash_tag (s_tag *tag)
 {
   t_hash hash;
   uw h;
+  if (tag->hash_uw)
+    return tag->hash_uw;
   hash_init(&hash);
   if (! hash_update_tag(&hash, tag))
     abort();
   h = hash_to_uw(&hash);
   hash_clean(&hash);
+  tag->hash_uw = h;
   return h;
 }
 

@@ -29,7 +29,7 @@ void   ht_delete (s_ht *ht);
 /* Observers. */
 s_tag ** ht_get (s_ht *ht, s_tag *key, s_tag **dest);
 s_tag ** ht_get_hash (s_ht *ht, s_tag *tag, uw hash, s_tag **dest);
-bool     ht_has (s_ht *ht, const s_tag *key);
+bool     ht_has (s_ht *ht, s_tag *key);
 
 /* Operators. */
 bool ht_add (s_ht *ht, s_tag *tag);
