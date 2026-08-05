@@ -96,7 +96,7 @@ u8 mandelbrot_f80_load (s_sequence *seq)
   tag_init_psym(   map->key + 8, sym_1("z"));
   tag_init_f80( map->value + 8, 0.0);
   if (! gl_font_init(&g_mandelbrot_f80_font,
-                     "fonts/Courier New/Courier New.ttf",
+                     "fonts/CourierPrime/fonts/ttf/CourierPrime-Regular.ttf",
                      point_per_pixel))
     return false;
   gl_font_set_size(&g_mandelbrot_f80_font, 20.0);

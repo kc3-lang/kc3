@@ -1317,35 +1317,10 @@ KC3_FONT_SOURCES = \
 	"fonts/Computer Modern/ttf/cmunui.ttf" \
 	"fonts/Computer Modern/ttf/cmunvi.ttf" \
 	"fonts/Computer Modern/ttf/cmunvt.ttf" \
-	"fonts/Courier New/Courier New.ttf" \
-	"fonts/Courier/fonts/OGCourier-Bold.otf" \
-	"fonts/Courier/fonts/OGCourier-Bold.ttf" \
-	"fonts/Courier/fonts/OGCourier-BoldItalic.otf" \
-	"fonts/Courier/fonts/OGCourier-BoldItalic.ttf" \
-	"fonts/Courier/fonts/OGCourier-Italic.otf" \
-	"fonts/Courier/fonts/OGCourier-Italic.ttf" \
-	"fonts/Courier/fonts/OGCourier.otf" \
-	"fonts/Courier/fonts/OGCourier.ttf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Bold.otf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Bold.ttf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-BoldItalic.otf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-BoldItalic.ttf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Italic.otf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Italic.ttf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot.otf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot.ttf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Bold.otf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Bold.ttf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-BoldItalic.otf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-BoldItalic.ttf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Italic.otf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Italic.ttf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash.otf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash.ttf" \
-	"fonts/Courier/sfd/OGCourier-Bold.sfd.ttf" \
-	"fonts/Courier/sfd/OGCourier-BoldItalic.sfd.ttf" \
-	"fonts/Courier/sfd/OGCourier-Italic.sfd.ttf" \
-	"fonts/Courier/sfd/OGCourier.sfd.ttf" \
+	"fonts/CourierPrime/fonts/ttf/CourierPrime-Bold.ttf" \
+	"fonts/CourierPrime/fonts/ttf/CourierPrime-BoldItalic.ttf" \
+	"fonts/CourierPrime/fonts/ttf/CourierPrime-Italic.ttf" \
+	"fonts/CourierPrime/fonts/ttf/CourierPrime-Regular.ttf" \
 	"fonts/Inter/InterVariable-Italic.ttf" \
 	"fonts/Inter/InterVariable.ttf" \
 	"fonts/Inter/extras/otf/Inter-Black.otf" \
@@ -2165,7 +2140,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/app/views/system_view.kc3" \
 	"test/httpd/assets/css/app.scss" \
 	"test/httpd/assets/css/computer_modern.scss" \
-	"test/httpd/assets/css/courier_new.scss" \
+	"test/httpd/assets/css/courier_prime.scss" \
 	"test/httpd/assets/css/flash.scss" \
 	"test/httpd/assets/css/fontawesome-5.15.4-free-v4-font-face.scss" \
 	"test/httpd/assets/css/fontawesome-5.15.4-free-v4-shims.scss" \
@@ -2245,8 +2220,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/static/_fonts/cmunui-webfont.woff" \
 	"test/httpd/static/_fonts/cmunvi-webfont.woff" \
 	"test/httpd/static/_fonts/cmunvt-webfont.woff" \
-	"test/httpd/static/_fonts/courier_new.woff" \
-	"test/httpd/static/_fonts/courier_new.woff2" \
+	"test/httpd/static/_fonts/courier_prime.woff2" \
 	"test/httpd/static/_fonts/fontawesome-webfont.woff" \
 	"test/httpd/static/_fonts/fontawesome-webfont.woff2" \
 	"test/httpd/static/_fonts/free-fa-brands-400.eot" \

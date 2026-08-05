@@ -18,7 +18,7 @@
 #define WINDOW_CAIRO_DEMO_SEQUENCE_COUNT 5
 
 extern s_cairo_font g_font_computer_modern;
-extern s_cairo_font g_font_courier_new;
+extern s_cairo_font g_font_courier_prime;
 
 bool window_cairo_demo_button (s_window_cairo *window, u8 button,
                                s64 x, s64 y);

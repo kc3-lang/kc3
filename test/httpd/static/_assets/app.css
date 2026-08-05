@@ -71,8 +71,8 @@
   --bs-dark-border-subtle: #adb5bd;
   --bs-white-rgb: 255, 255, 255;
   --bs-black-rgb: 0, 0, 0;
-  --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --bs-font-sans-serif: "computer_modern", sans-serif;
+  --bs-font-monospace: "CourierPrime", monospace;
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --bs-body-font-family: var(--bs-font-sans-serif);
   --bs-body-font-size: 1rem;
@@ -11875,8 +11875,8 @@ textarea.form-control-lg {
   font-style: italic;
 }
 @font-face {
-  font-family: "courier_new";
-  src: url("/_fonts/courier_new.woff2") format("woff2"), url("/_fonts/courier_new.woff") format("woff");
+  font-family: "CourierPrime";
+  src: url("/_fonts/courier_prime.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
 }
@@ -11953,7 +11953,7 @@ textarea.form-control-lg {
   --bs-white-rgb: 255, 255, 255;
   --bs-black-rgb: 0, 0, 0;
   --bs-font-sans-serif: "computer_modern", sans-serif;
-  --bs-font-monospace: "courier_new", "Courier New", monospace;
+  --bs-font-monospace: "CourierPrime", monospace;
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --bs-body-font-family: var(--bs-font-sans-serif);
   --bs-body-font-size: 1rem;

@@ -36,7 +36,7 @@
 
 #define WINDOW_EGL_ANDROID_DEMO_SEQUENCE_COUNT 7
 
-s_gl_font   g_font_courier_new = {0};
+s_gl_font   g_font_courier_prime = {0};
 s_gl_font   g_font_flies = {0};
 s_gl_lines  g_lines_stars = {0};
 s_gl_ortho  g_ortho = {0};
@@ -194,22 +194,22 @@ static bool window_egl_android_demo_load (s_window_egl_android *window)
   }
   gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, 0, 1);
   LOGI("window_egl_android_demo_load: gl_font_init");
-  if (! gl_font_init(&g_font_courier_new,
-                     "fonts/Courier New/Courier New.ttf",
+  if (! gl_font_init(&g_font_courier_prime,
+                     "fonts/CourierPrime/fonts/ttf/CourierPrime-Regular.ttf",
                      point_per_pixel)) {
     err_puts("window_egl_android_demo_load: gl_font_init");
     LOGE("window_egl_android_demo_load: gl_font_init failed");
     return false;
   }
-  gl_font_set_size(&g_font_courier_new, 20);
+  gl_font_set_size(&g_font_courier_prime, 20);
   LOGI("window_egl_android_demo_load: gl_text_init fps");
-  if (! gl_text_init_1(&g_text_fps, &g_font_courier_new, "0.00")) {
+  if (! gl_text_init_1(&g_text_fps, &g_font_courier_prime, "0.00")) {
     err_puts("window_egl_android_demo_load: gl_text_init g_text_fps");
     LOGE("window_egl_android_demo_load: gl_text_init g_text_fps failed");
     return false;
   }
   LOGI("window_egl_android_demo_load: gl_text_init seq_title");
-  if (! gl_text_init_1(&g_text_seq_title, &g_font_courier_new, "")) {
+  if (! gl_text_init_1(&g_text_seq_title, &g_font_courier_prime, "")) {
     err_puts("window_egl_android_demo_load: gl_text_init"
              " g_text_seq_title");
     LOGE("window_egl_android_demo_load: gl_text_init g_text_seq_title failed");
@@ -235,7 +235,7 @@ static bool window_egl_android_demo_load (s_window_egl_android *window)
                 toasters_load, toasters_render, toasters_unload,
                 (s_window *) window);
   if (! gl_font_init(&g_font_flies,
-                     "fonts/Courier New/Courier New.ttf",
+                     "fonts/CourierPrime/fonts/ttf/CourierPrime-Regular.ttf",
                      point_per_pixel))
     return false;
   if (! gl_sprite_init(&g_sprite_fly, "img/fly-noto.png",
@@ -294,7 +294,7 @@ window_egl_android_demo_render (s_window_egl_android *window)
   glEnable(GL_BLEND);
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
                       GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  gl_font_set_size(&g_font_courier_new, 20);
+  gl_font_set_size(&g_font_courier_prime, 20);
   gl_text_update_1(&g_text_seq_title, seq->title);
   mat4_init_identity(&g_ortho.model_matrix);
   gl_ortho_text_render_outline(&g_ortho, &g_text_seq_title,
@@ -342,7 +342,7 @@ window_egl_android_demo_unload (s_window_egl_android *window)
   (void) window;
   gl_text_clean(&g_text_fps);
   gl_text_clean(&g_text_seq_title);
-  gl_font_clean(&g_font_courier_new);
+  gl_font_clean(&g_font_courier_prime);
   gl_ortho_clean(&g_ortho);
   LOGI("window_egl_android_demo_unload");
 }
