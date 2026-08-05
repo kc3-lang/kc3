@@ -55,7 +55,7 @@ s_tag * tag_new_ref (s_tag *src);
 u8 *           tag_alignment (const s_tag *tag, u8 *dest);
 s8             tag_arity (const s_tag *tag);
 u64 *          tag_hash_u64 (const s_tag *tag, u64 *dest);
-uw *           tag_hash_uw (const s_tag *tag, uw *dest);
+uw *           tag_hash_uw (s_tag *tag, uw *dest);
 bool           tag_ident_is_bound (const s_tag *tag);
 bool           tag_is_alist (const s_tag *tag);
 bool           tag_is_bound_var (const s_tag *tag);

@@ -61,6 +61,7 @@ s_tag * tag_init_array (s_tag *tag, const s_sym *type, uw dimension,
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -73,6 +74,7 @@ s_tag * tag_init_array_copy (s_tag *tag, const s_array *a)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -84,6 +86,7 @@ s_tag * tag_init_character (s_tag *tag, character c)
   tmp.data.td_character = c;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -95,6 +98,7 @@ s_tag * tag_init_f32 (s_tag *tag, f32 f)
   tmp.data.td_f32 = f;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -106,6 +110,7 @@ s_tag * tag_init_f64 (s_tag *tag, f64 f)
   tmp.data.td_f64 = f;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -117,6 +122,7 @@ s_tag * tag_init_ident (s_tag *tag, const s_ident *ident)
   tmp.data.td_ident = *ident;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -129,6 +135,7 @@ s_tag * tag_init_ident_1 (s_tag *tag, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -141,6 +148,7 @@ s_tag * tag_init_integer_1 (s_tag *tag, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -153,6 +161,7 @@ s_tag * tag_init_integer_copy (s_tag *tag, const s_integer *i)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -165,6 +174,7 @@ s_tag * tag_init_integer_zero (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -177,6 +187,7 @@ s_tag * tag_init_map (s_tag *tag, uw count)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -189,6 +200,7 @@ s_tag * tag_init_map_1 (s_tag *tag, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -202,6 +214,7 @@ s_tag * tag_init_map_from_lists (s_tag *tag, s_list *keys,
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -214,6 +227,7 @@ s_tag * tag_init_pcall (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -226,6 +240,7 @@ s_tag * tag_init_pcall_call_cast (s_tag *tag, const s_sym *type)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -238,6 +253,7 @@ s_tag * tag_init_pcall_copy (s_tag *tag, p_call *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -250,6 +266,7 @@ s_tag * tag_init_pcallable (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -262,6 +279,7 @@ s_tag * tag_init_pcallable_copy (s_tag *tag, p_callable *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -273,6 +291,7 @@ s_tag * tag_init_pcomplex (s_tag *tag, p_complex c)
   tmp.data.td_pcomplex = c;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -284,6 +303,7 @@ s_tag * tag_init_plist (s_tag *tag, p_list plist)
   tmp.data.td_plist = plist;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -296,6 +316,7 @@ s_tag * tag_init_plist_1 (s_tag *tag, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -310,6 +331,7 @@ s_tag * tag_init_pointer (s_tag *tag, const s_sym *pointer_type,
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -322,6 +344,7 @@ s_tag * tag_init_pstruct (s_tag *tag, const s_sym *module)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -334,6 +357,7 @@ s_tag * tag_init_pstruct_copy (s_tag *tag, p_struct *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -347,6 +371,7 @@ s_tag * tag_init_pstruct_copy_data (s_tag *tag, const s_sym *module,
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -361,6 +386,7 @@ s_tag * tag_init_pstruct_with_data (s_tag *tag, const s_sym *module,
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -373,6 +399,7 @@ s_tag * tag_init_pstruct_with_type (s_tag *tag, s_struct_type *st)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -386,6 +413,7 @@ s_tag * tag_init_pstruct_type (s_tag *tag, const s_sym *module,
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -399,6 +427,7 @@ s_tag * tag_init_pstruct_type_clean (s_tag *tag, s_struct_type *st,
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -410,6 +439,7 @@ s_tag * tag_init_psym (s_tag *tag, const s_sym *sym)
   tmp.data.td_psym = sym;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -422,6 +452,7 @@ s_tag * tag_init_psym_anon (s_tag *tag, const s_str *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -434,6 +465,7 @@ s_tag * tag_init_ptr (s_tag *tag, void *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -446,6 +478,7 @@ s_tag * tag_init_ptr_free (s_tag *tag, void *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -458,6 +491,7 @@ s_tag * tag_init_pvar (s_tag *tag, const s_sym *type)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -470,6 +504,7 @@ s_tag * tag_init_pvar_copy (s_tag *tag, p_var *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -482,6 +517,7 @@ s_tag * tag_init_quote (s_tag *tag, s_tag *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -494,6 +530,7 @@ s_tag * tag_init_quote_copy (s_tag *tag, s_quote *quote)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -506,6 +543,7 @@ s_tag * tag_init_ratio_1 (s_tag *tag, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -518,6 +556,7 @@ s_tag * tag_init_ratio (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -530,6 +569,7 @@ s_tag * tag_init_ratio_copy (s_tag *tag, s_ratio *r)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -542,6 +582,7 @@ s_tag * tag_init_ratio_zero (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -553,6 +594,7 @@ s_tag * tag_init_s8 (s_tag *tag, s8 i)
   tmp.data.td_s8 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -564,6 +606,7 @@ s_tag * tag_init_s16 (s_tag *tag, s16 i)
   tmp.data.td_s16 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -575,6 +618,7 @@ s_tag * tag_init_s32 (s_tag *tag, s32 i)
   tmp.data.td_s32 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -586,6 +630,7 @@ s_tag * tag_init_s64 (s_tag *tag, s64 i)
   tmp.data.td_s64 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -598,6 +643,7 @@ s_tag * tag_init_str (s_tag *tag, char *p_free, uw size, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -610,6 +656,7 @@ s_tag * tag_init_str_1 (s_tag *tag, char *p_free, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -622,6 +669,7 @@ s_tag * tag_init_str_1_alloc (s_tag *tag, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -634,6 +682,7 @@ s_tag * tag_init_str_alloc (s_tag *tag, uw size)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -646,6 +695,7 @@ s_tag * tag_init_str_alloc_copy (s_tag *tag, uw size, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -658,6 +708,7 @@ s_tag * tag_init_str_cast (s_tag *tag, p_sym *type, const s_tag *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -671,6 +722,7 @@ s_tag * tag_init_str_concatenate (s_tag *tag, const s_str *a,
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -683,6 +735,7 @@ s_tag * tag_init_str_concatenate_list (s_tag *tag, const s_list *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -695,6 +748,7 @@ s_tag * tag_init_str_concatenate_plist (s_tag *tag, p_list *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -707,6 +761,7 @@ s_tag * tag_init_str_copy (s_tag *tag, const s_str *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -719,6 +774,7 @@ s_tag * tag_init_str_empty (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -731,6 +787,7 @@ s_tag * tag_init_str_inspect_buf (s_tag *tag, const s_buf *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -743,6 +800,7 @@ s_tag * tag_init_str_inspect_str (s_tag *tag, const s_str *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -754,6 +812,7 @@ s_tag * tag_init_sw (s_tag *tag, sw i)
   tmp.data.td_sw = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -766,6 +825,7 @@ s_tag * tag_init_time_add (s_tag *tag, const s_time *a, const s_time *b)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -778,6 +838,7 @@ s_tag * tag_init_time_copy (s_tag *tag, const s_time *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -790,6 +851,7 @@ s_tag * tag_init_time_now (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -802,6 +864,7 @@ s_tag * tag_init_ptuple (s_tag *tag, uw count)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -814,6 +877,7 @@ s_tag * tag_init_ptuple_2 (s_tag *tag, s_tag *a, s_tag *b)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -825,6 +889,7 @@ s_tag * tag_init_u8 (s_tag *tag, u8 i)
   tmp.data.td_u8 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -836,6 +901,7 @@ s_tag * tag_init_u16 (s_tag *tag, u16 i)
   tmp.data.td_u16 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -847,6 +913,7 @@ s_tag * tag_init_u32 (s_tag *tag, u32 i)
   tmp.data.td_u32 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -858,6 +925,7 @@ s_tag * tag_init_u64 (s_tag *tag, u64 i)
   tmp.data.td_u64 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -870,6 +938,7 @@ s_tag * tag_init_unquote_copy (s_tag *tag, s_unquote *unquote)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -881,6 +950,7 @@ s_tag * tag_init_uw (s_tag *tag, uw i)
   tmp.data.td_uw = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -898,6 +968,7 @@ s_tag * tag_new_array (const s_sym *type, uw dimension,
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -914,6 +985,7 @@ s_tag * tag_new_array_copy (const s_array *a)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -927,6 +999,7 @@ s_tag * tag_new_character (character c)
   tag->data.td_character = c;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -940,6 +1013,7 @@ s_tag * tag_new_f32 (f32 f)
   tag->data.td_f32 = f;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -953,6 +1027,7 @@ s_tag * tag_new_f64 (f64 f)
   tag->data.td_f64 = f;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -966,6 +1041,7 @@ s_tag * tag_new_ident (const s_ident *ident)
   tag->data.td_ident = *ident;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -982,6 +1058,7 @@ s_tag * tag_new_ident_1 (const char *p)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -998,6 +1075,7 @@ s_tag * tag_new_integer_1 (const char *p)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1014,6 +1092,7 @@ s_tag * tag_new_integer_copy (const s_integer *i)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1030,6 +1109,7 @@ s_tag * tag_new_integer_zero (void)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1046,6 +1126,7 @@ s_tag * tag_new_map (uw count)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1062,6 +1143,7 @@ s_tag * tag_new_map_1 (const char *p)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1078,6 +1160,7 @@ s_tag * tag_new_map_from_lists (s_list *keys, s_list *values)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1094,6 +1177,7 @@ s_tag * tag_new_pcall (void)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1110,6 +1194,7 @@ s_tag * tag_new_pcall_call_cast (const s_sym *type)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1126,6 +1211,7 @@ s_tag * tag_new_pcall_copy (p_call *src)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1142,6 +1228,7 @@ s_tag * tag_new_pcallable (void)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1158,6 +1245,7 @@ s_tag * tag_new_pcallable_copy (p_callable *src)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1171,6 +1259,7 @@ s_tag * tag_new_pcomplex (p_complex c)
   tag->data.td_pcomplex = c;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1184,6 +1273,7 @@ s_tag * tag_new_plist (p_list plist)
   tag->data.td_plist = plist;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1200,6 +1290,7 @@ s_tag * tag_new_plist_1 (const char *p)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1218,6 +1309,7 @@ s_tag * tag_new_pointer (const s_sym *pointer_type,
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1234,6 +1326,7 @@ s_tag * tag_new_pstruct (const s_sym *module)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1250,6 +1343,7 @@ s_tag * tag_new_pstruct_copy (p_struct *src)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1266,6 +1360,7 @@ s_tag * tag_new_pstruct_copy_data (const s_sym *module, void *data)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1284,6 +1379,7 @@ s_tag * tag_new_pstruct_with_data (const s_sym *module, void *data,
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1300,6 +1396,7 @@ s_tag * tag_new_pstruct_with_type (s_struct_type *st)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1316,6 +1413,7 @@ s_tag * tag_new_pstruct_type (const s_sym *module, s_list *spec)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1333,6 +1431,7 @@ s_tag * tag_new_pstruct_type_clean (s_struct_type *st, p_callable clean)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1346,6 +1445,7 @@ s_tag * tag_new_psym (const s_sym *sym)
   tag->data.td_psym = sym;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1362,6 +1462,7 @@ s_tag * tag_new_psym_anon (const s_str *src)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1378,6 +1479,7 @@ s_tag * tag_new_ptr (void *p)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1394,6 +1496,7 @@ s_tag * tag_new_ptr_free (void *p)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1410,6 +1513,7 @@ s_tag * tag_new_pvar (const s_sym *type)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1426,6 +1530,7 @@ s_tag * tag_new_pvar_copy (p_var *src)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1442,6 +1547,7 @@ s_tag * tag_new_quote (s_tag *src)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1458,6 +1564,7 @@ s_tag * tag_new_quote_copy (s_quote *quote)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1474,6 +1581,7 @@ s_tag * tag_new_ratio_1 (const char *p)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1490,6 +1598,7 @@ s_tag * tag_new_ratio (void)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1506,6 +1615,7 @@ s_tag * tag_new_ratio_copy (s_ratio *r)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1522,6 +1632,7 @@ s_tag * tag_new_ratio_zero (void)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1535,6 +1646,7 @@ s_tag * tag_new_s8 (s8 i)
   tag->data.td_s8 = i;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1548,6 +1660,7 @@ s_tag * tag_new_s16 (s16 i)
   tag->data.td_s16 = i;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1561,6 +1674,7 @@ s_tag * tag_new_s32 (s32 i)
   tag->data.td_s32 = i;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1574,6 +1688,7 @@ s_tag * tag_new_s64 (s64 i)
   tag->data.td_s64 = i;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1590,6 +1705,7 @@ s_tag * tag_new_str (char *p_free, uw size, const char *p)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1606,6 +1722,7 @@ s_tag * tag_new_str_1 (char *p_free, const char *p)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1622,6 +1739,7 @@ s_tag * tag_new_str_1_alloc (const char *p)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1638,6 +1756,7 @@ s_tag * tag_new_str_alloc (uw size)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1654,6 +1773,7 @@ s_tag * tag_new_str_alloc_copy (uw size, const char *p)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1670,6 +1790,7 @@ s_tag * tag_new_str_cast (p_sym *type, const s_tag *src)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1686,6 +1807,7 @@ s_tag * tag_new_str_concatenate (const s_str *a, const s_str *b)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1702,6 +1824,7 @@ s_tag * tag_new_str_concatenate_list (const s_list *src)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1718,6 +1841,7 @@ s_tag * tag_new_str_concatenate_plist (p_list *src)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1734,6 +1858,7 @@ s_tag * tag_new_str_copy (const s_str *src)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1750,6 +1875,7 @@ s_tag * tag_new_str_empty (void)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1766,6 +1892,7 @@ s_tag * tag_new_str_inspect_buf (const s_buf *src)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1782,6 +1909,7 @@ s_tag * tag_new_str_inspect_str (const s_str *src)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1795,6 +1923,7 @@ s_tag * tag_new_sw (sw i)
   tag->data.td_sw = i;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1811,6 +1940,7 @@ s_tag * tag_new_time_add (const s_time *a, const s_time *b)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1827,6 +1957,7 @@ s_tag * tag_new_time_copy (const s_time *src)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1843,6 +1974,7 @@ s_tag * tag_new_time_now (void)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1859,6 +1991,7 @@ s_tag * tag_new_ptuple (uw count)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1875,6 +2008,7 @@ s_tag * tag_new_ptuple_2 (s_tag *a, s_tag *b)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1888,6 +2022,7 @@ s_tag * tag_new_u8 (u8 i)
   tag->data.td_u8 = i;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1901,6 +2036,7 @@ s_tag * tag_new_u16 (u16 i)
   tag->data.td_u16 = i;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1914,6 +2050,7 @@ s_tag * tag_new_u32 (u32 i)
   tag->data.td_u32 = i;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1927,6 +2064,7 @@ s_tag * tag_new_u64 (u64 i)
   tag->data.td_u64 = i;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1943,6 +2081,7 @@ s_tag * tag_new_unquote_copy (s_unquote *unquote)
   }
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1956,6 +2095,7 @@ s_tag * tag_new_uw (uw i)
   tag->data.td_uw = i;
   tag->ref_count = 1;
   mutex_init(&tag->ref_count_mutex);
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1970,6 +2110,7 @@ s_tag * tag_array (s_tag *tag, const s_sym *type, uw dimension,
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1983,6 +2124,7 @@ s_tag * tag_array_copy (s_tag *tag, const s_array *a)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -1995,6 +2137,7 @@ s_tag * tag_character (s_tag *tag, character c)
   tmp.data.td_character = c;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2007,6 +2150,7 @@ s_tag * tag_f32 (s_tag *tag, f32 f)
   tmp.data.td_f32 = f;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2019,6 +2163,7 @@ s_tag * tag_f64 (s_tag *tag, f64 f)
   tmp.data.td_f64 = f;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2031,6 +2176,7 @@ s_tag * tag_ident (s_tag *tag, const s_ident *ident)
   tmp.data.td_ident = *ident;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2044,6 +2190,7 @@ s_tag * tag_ident_1 (s_tag *tag, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2057,6 +2204,7 @@ s_tag * tag_integer_1 (s_tag *tag, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2070,6 +2218,7 @@ s_tag * tag_integer_copy (s_tag *tag, const s_integer *i)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2083,6 +2232,7 @@ s_tag * tag_integer_zero (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2096,6 +2246,7 @@ s_tag * tag_map (s_tag *tag, uw count)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2109,6 +2260,7 @@ s_tag * tag_map_1 (s_tag *tag, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2122,6 +2274,7 @@ s_tag * tag_map_from_lists (s_tag *tag, s_list *keys, s_list *values)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2135,6 +2288,7 @@ s_tag * tag_pcall (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2148,6 +2302,7 @@ s_tag * tag_pcall_call_cast (s_tag *tag, const s_sym *type)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2161,6 +2316,7 @@ s_tag * tag_pcall_copy (s_tag *tag, p_call *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2174,6 +2330,7 @@ s_tag * tag_pcallable (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2187,6 +2344,7 @@ s_tag * tag_pcallable_copy (s_tag *tag, p_callable *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2199,6 +2357,7 @@ s_tag * tag_pcomplex (s_tag *tag, p_complex c)
   tmp.data.td_pcomplex = c;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2211,6 +2370,7 @@ s_tag * tag_plist (s_tag *tag, p_list plist)
   tmp.data.td_plist = plist;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2224,6 +2384,7 @@ s_tag * tag_plist_1 (s_tag *tag, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2239,6 +2400,7 @@ s_tag * tag_pointer (s_tag *tag, const s_sym *pointer_type,
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2252,6 +2414,7 @@ s_tag * tag_pstruct (s_tag *tag, const s_sym *module)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2265,6 +2428,7 @@ s_tag * tag_pstruct_copy (s_tag *tag, p_struct *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2279,6 +2443,7 @@ s_tag * tag_pstruct_copy_data (s_tag *tag, const s_sym *module,
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2294,6 +2459,7 @@ s_tag * tag_pstruct_with_data (s_tag *tag, const s_sym *module,
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2307,6 +2473,7 @@ s_tag * tag_pstruct_with_type (s_tag *tag, s_struct_type *st)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2320,6 +2487,7 @@ s_tag * tag_pstruct_type (s_tag *tag, const s_sym *module, s_list *spec)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2334,6 +2502,7 @@ s_tag * tag_pstruct_type_clean (s_tag *tag, s_struct_type *st,
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2346,6 +2515,7 @@ s_tag * tag_psym (s_tag *tag, const s_sym *sym)
   tmp.data.td_psym = sym;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2359,6 +2529,7 @@ s_tag * tag_psym_anon (s_tag *tag, const s_str *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2372,6 +2543,7 @@ s_tag * tag_ptr (s_tag *tag, void *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2385,6 +2557,7 @@ s_tag * tag_ptr_free (s_tag *tag, void *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2398,6 +2571,7 @@ s_tag * tag_pvar (s_tag *tag, const s_sym *type)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2411,6 +2585,7 @@ s_tag * tag_pvar_copy (s_tag *tag, p_var *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2424,6 +2599,7 @@ s_tag * tag_quote (s_tag *tag, s_tag *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2437,6 +2613,7 @@ s_tag * tag_quote_copy (s_tag *tag, s_quote *quote)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2450,6 +2627,7 @@ s_tag * tag_ratio_1 (s_tag *tag, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2463,6 +2641,7 @@ s_tag * tag_ratio (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2476,6 +2655,7 @@ s_tag * tag_ratio_copy (s_tag *tag, s_ratio *r)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2489,6 +2669,7 @@ s_tag * tag_ratio_zero (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2501,6 +2682,7 @@ s_tag * tag_s8 (s_tag *tag, s8 i)
   tmp.data.td_s8 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2513,6 +2695,7 @@ s_tag * tag_s16 (s_tag *tag, s16 i)
   tmp.data.td_s16 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2525,6 +2708,7 @@ s_tag * tag_s32 (s_tag *tag, s32 i)
   tmp.data.td_s32 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2537,6 +2721,7 @@ s_tag * tag_s64 (s_tag *tag, s64 i)
   tmp.data.td_s64 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2550,6 +2735,7 @@ s_tag * tag_str (s_tag *tag, char *p_free, uw size, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2563,6 +2749,7 @@ s_tag * tag_str_1 (s_tag *tag, char *p_free, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2576,6 +2763,7 @@ s_tag * tag_str_1_alloc (s_tag *tag, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2589,6 +2777,7 @@ s_tag * tag_str_alloc (s_tag *tag, uw size)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2602,6 +2791,7 @@ s_tag * tag_str_alloc_copy (s_tag *tag, uw size, const char *p)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2615,6 +2805,7 @@ s_tag * tag_str_cast (s_tag *tag, p_sym *type, const s_tag *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2628,6 +2819,7 @@ s_tag * tag_str_concatenate (s_tag *tag, const s_str *a, const s_str *b)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2641,6 +2833,7 @@ s_tag * tag_str_concatenate_list (s_tag *tag, const s_list *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2654,6 +2847,7 @@ s_tag * tag_str_concatenate_plist (s_tag *tag, p_list *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2667,6 +2861,7 @@ s_tag * tag_str_copy (s_tag *tag, const s_str *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2680,6 +2875,7 @@ s_tag * tag_str_empty (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2693,6 +2889,7 @@ s_tag * tag_str_inspect_buf (s_tag *tag, const s_buf *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2706,6 +2903,7 @@ s_tag * tag_str_inspect_str (s_tag *tag, const s_str *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2718,6 +2916,7 @@ s_tag * tag_sw (s_tag *tag, sw i)
   tmp.data.td_sw = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2731,6 +2930,7 @@ s_tag * tag_time_add (s_tag *tag, const s_time *a, const s_time *b)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2744,6 +2944,7 @@ s_tag * tag_time_copy (s_tag *tag, const s_time *src)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2757,6 +2958,7 @@ s_tag * tag_time_now (s_tag *tag)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2770,6 +2972,7 @@ s_tag * tag_ptuple (s_tag *tag, uw count)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2783,6 +2986,7 @@ s_tag * tag_ptuple_2 (s_tag *tag, s_tag *a, s_tag *b)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2795,6 +2999,7 @@ s_tag * tag_u8 (s_tag *tag, u8 i)
   tmp.data.td_u8 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2807,6 +3012,7 @@ s_tag * tag_u16 (s_tag *tag, u16 i)
   tmp.data.td_u16 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2819,6 +3025,7 @@ s_tag * tag_u32 (s_tag *tag, u32 i)
   tmp.data.td_u32 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2831,6 +3038,7 @@ s_tag * tag_u64 (s_tag *tag, u64 i)
   tmp.data.td_u64 = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2844,6 +3052,7 @@ s_tag * tag_unquote_copy (s_tag *tag, s_unquote *unquote)
     return NULL;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }
 
@@ -2856,5 +3065,6 @@ s_tag * tag_uw (s_tag *tag, uw i)
   tmp.data.td_uw = i;
   tag->type = tmp.type;
   tag->data = tmp.data;
+  tag->hash_uw = 0;
   return tag;
 }

@@ -844,7 +844,7 @@ s_fact ** facts_find_fact_by_tags (s_facts *facts, s_tag *subject,
   return facts_find_fact(facts, &f, dest);
 }
 
-s_tag ** facts_find_tag (s_facts *facts, const s_tag *tag, s_tag **dest)
+s_tag ** facts_find_tag (s_facts *facts, s_tag *tag, s_tag **dest)
 {
   s_set_item__tag *item;
   assert(facts);
@@ -2252,7 +2252,7 @@ bool facts_send_to_master_remove (s_facts *facts, const s_fact *fact)
   return true;
 }
 
-bool facts_unref_tag (s_facts *facts, const s_tag *tag)
+bool facts_unref_tag (s_facts *facts, s_tag *tag)
 {
   s_set_item__tag *item;
   assert(facts);

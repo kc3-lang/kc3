@@ -89,7 +89,7 @@ s_facts *            facts_set_secret (s_facts *facts,
                                        const s_str *secret);
 s_facts *            facts_set_server_count (s_facts *facts,
                                              uw server_count);
-bool                 facts_unref_tag (s_facts *facts, const s_tag *tag);
+bool                 facts_unref_tag (s_facts *facts, s_tag *tag);
 
 /* Observers */
 sw        facts_dump (s_facts *facts, s_buf *buf);
@@ -104,7 +104,7 @@ s_fact ** facts_find_fact_by_tags (s_facts *facts,
                                    s_tag *predicate,
                                    s_tag *object,
                                    s_fact **dest);
-s_tag **  facts_find_tag (s_facts *facts, const s_tag *tag,
+s_tag **  facts_find_tag (s_facts *facts, s_tag *tag,
                           s_tag **dest);
 sw        facts_log_add (s_log *log, uw id, const s_fact *fact);
 sw        facts_log_remove (s_log *log, uw id, const s_fact *fact);

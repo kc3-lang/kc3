@@ -81,7 +81,7 @@ set_clean__tag (s_set__tag *set)
 }
 
 s_set_item__tag *
-set_get__tag (const s_set__tag *set, const s_tag * data)
+set_get__tag (const s_set__tag *set, s_tag * data)
 {
   uw hash;
   assert(set);
@@ -94,7 +94,7 @@ set_get__tag (const s_set__tag *set, const s_tag * data)
 s_set_item__tag *
 set_get_h__tag
 (const s_set__tag *set,
- const s_tag * data,
+ s_tag * data,
  uw hash)
 {
   s_set_item__tag *item;
@@ -162,7 +162,7 @@ set_get_hash_next__tag (const s_set_item__tag *item)
 bool *
 set_has__tag
 (const s_set__tag *set,
- const s_tag * data,
+ s_tag * data,
  bool *dest)
 {
   uw hash;
@@ -197,7 +197,7 @@ set_init__tag
 }
 
 bool
-set_remove__tag (s_set__tag *set, const s_tag * data)
+set_remove__tag (s_set__tag *set, s_tag * data)
 {
   s_set_item__tag *item;
   if ((item = set_get__tag(set, data)))
