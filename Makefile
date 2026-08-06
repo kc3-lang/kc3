@@ -27,7 +27,7 @@ all:
 	${MAKE} -C json all
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue; fi
 	${MAKE} -C markdown all
-	${MAKE} -C pdf all
+#	${MAKE} -C pdf all
 	${MAKE} -C qrencode all
 	${MAKE} -C smtp all
 	${MAKE} -C http all
@@ -35,7 +35,7 @@ all:
 	${MAKE} -C test all
 	if ${HAVE_GL}; then ${MAKE} -C gl all; fi
 	if ${HAVE_GL}; then ${MAKE} -C window all; fi
-	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 all; fi
+#	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 all; fi
 
 include config.mk
 include sources.mk
