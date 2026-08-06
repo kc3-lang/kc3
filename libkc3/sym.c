@@ -314,7 +314,7 @@ void sym_init_g_sym (void)
 {
   if (g_sym_ht)
     return;
-  if (! (g_sym_ht = sym_ht_new(1024))) {
+  if (! (g_sym_ht = sym_ht_new(0))) {
     abort();
   }
   sym_register(&g_sym___DIR__, NULL);

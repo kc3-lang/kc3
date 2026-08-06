@@ -17,7 +17,7 @@
 #include "sym.h"
 #include "sym_ht.h"
 
-#define SYM_HT_SIZE_DEFAULT 1024
+#define SYM_HT_SIZE_DEFAULT (1024 * 1024)
 
 const s_sym * sym_ht_add (s_sym_ht *ht, const s_sym *sym,
                           s_sym *sym_free)
