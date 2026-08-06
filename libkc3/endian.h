@@ -13,6 +13,10 @@
 #ifndef LIBKC3_ENDIAN_H
 #define LIBKC3_ENDIAN_H
 
+#include <string.h>
+#include "inline.h"
+#include "u64.h"
+
 #ifdef htobe16
 # undef htobe16
 # undef htole16
@@ -42,6 +46,12 @@
 #if ! defined(__APPLE__)
 # define BSWAP(b, x) __builtin_bswap ## b (x)
 # if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#  ifndef LITTLE_ENDIAN
+#   define LITTLE_ENDIAN 1
+#  endif
+#  ifdef BIG_ENDIAN
+#   undef BIG_ENDIAN
+#  endif
 #  define htobe16(x) BSWAP(16, x)
 #  define htole16(x) (x)
 #  define be16toh(x) BSWAP(16, x)
@@ -64,7 +74,28 @@
 #   define htonl(x)   BSWAP(32, x)
 #   define ntohl(x)   BSWAP(32, x)
 #  endif
+
+INLINE u64 le64 (const void *p)
+{
+  u64 v;
+  memcpy(&v, p, sizeof(u64));
+  return v;
+}
+
+INLINE u64 le32 (const u8 *p)
+{
+  u32 v;
+  memcpy(&v, p, sizeof(u32));
+  return v;
+}
+
 # else
+#  ifdef LITTLE_ENDIAN
+#   undef LITTLE_ENDIAN
+#  endif
+#  ifndef BIG_ENDIAN
+#   define BIG_ENDIAN 1
+#  endif
 #  define htobe16(x) (x)
 #  define htole16(x) BSWAP(16, x)
 #  define be16toh(x) (x)
@@ -87,6 +118,21 @@
 #   define htonl(x)   (x)
 #   define ntohl(x)   (x)
 #  endif
+
+INLINE u64 le64 (const void *p)
+{
+  u64 v;
+  memcpy(&v, p, sizeof(u64));
+  return le64toh(v);
+}
+
+INLINE u64 le32 (const void *p)
+{
+  u32 v;
+  memcpy(&v, p, sizeof(u32));
+  return le32toh(v);
+}
+
 # endif
 #else
 # include <libkern/OSByteOrder.h>
@@ -109,5 +155,22 @@
 # define be128toh(x) OSSwapBigToHostInt128(x)
 # define le128toh(x) OSSwapLittleToHostInt128(x)
 #endif
+
+
+#else
+
+# if defined(_MSC_VER)
+INLINE u64 rapid_read64(const u8 *p) { u64 v; memcpy(&v, p, sizeof(u64)); return _byteswap_uint64(v);}
+INLINE u64 rapid_read32(const u8 *p) { u32 v; memcpy(&v, p, sizeof(u32)); return _byteswap_ulong(v);}
+# else
+INLINE u64 rapid_read64(const u8 *p) {
+  u64 v; memcpy(&v, p, 8);
+  return (((v >> 56) & 0xff)| ((v >> 40) & 0xff00)| ((v >> 24) & 0xff0000)| ((v >>  8) & 0xff000000)| ((v <<  8) & 0xff00000000)| ((v << 24) & 0xff0000000000)| ((v << 40) & 0xff000000000000)| ((v << 56) & 0xff00000000000000));
+}
+INLINE u64 rapid_read32(const u8 *p) {
+  u32 v; memcpy(&v, p, 4);
+  return (((v >> 24) & 0xff)| ((v >>  8) & 0xff00)| ((v <<  8) & 0xff0000)| ((v << 24) & 0xff000000));
+}
+# endif
 
 #endif /* LIBKC3_ENDIAN_H */

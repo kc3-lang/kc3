@@ -4,6 +4,7 @@ HEADERS = \
 	"address_of.h" \
 	"alist.h" \
 	"alloc.h" \
+	"always_inline.h" \
 	"arg.h" \
 	"array.h" \
 	"assert.h" \
@@ -89,6 +90,7 @@ HEADERS = \
 	"character.h" \
 	"compare.h" \
 	"complex.h" \
+	"constexpr.h" \
 	"counter.h" \
 	"cow.h" \
 	"crypt.h" \
@@ -129,11 +131,13 @@ HEADERS = \
 	"hotp.h" \
 	"ht.h" \
 	"ident.h" \
+	"inline.h" \
 	"inspect.h" \
 	"integer.h" \
 	"io.h" \
 	"kc3.h" \
 	"kc3_main.h" \
+	"likely.h" \
 	"list.h" \
 	"list_init.h" \
 	"log.h" \
@@ -166,6 +170,7 @@ HEADERS = \
 	"pvar.h" \
 	"queue.h" \
 	"quote.h" \
+	"rapidhash.h" \
 	"ratio.h" \
 	"rpc.h" \
 	"rusage.h" \

@@ -16,6 +16,7 @@
 #include "data.h"
 #include "hash.h"
 #include "list.h"
+#include "rapidhash.h"
 #include "sha1.h"
 #include "str.h"
 #include "sym.h"
@@ -33,13 +34,14 @@
 
 void hash_clean (t_hash *hash)
 {
-  *hash = (t_hash) {0};
+  assert(hash);
+  *hash = 0;
 }
 
 void hash_init (t_hash *hash)
 {
   assert(hash);
-  SHA1Init(hash);
+  *hash = 0;
 }
 
 uw hash_tag (s_tag *tag)
@@ -59,23 +61,19 @@ uw hash_tag (s_tag *tag)
 
 uw hash_to_uw (t_hash *hash)
 {
-  u8 digest[SHA1_DIGEST_LENGTH];
-  SHA1Final(digest, hash);
-  return *((uw *) digest);
+  return *((uw *) (hash));
 }
 
 u64 hash_to_u64 (t_hash *hash)
 {
-  u8 digest[SHA1_DIGEST_LENGTH];
-  SHA1Final(digest, hash);
-  return *((u64 *) digest);
+  return *hash;
 }
 
 bool hash_update (t_hash *hash, const void *data, uw size)
 {
   assert(hash);
   assert(data);
-  SHA1Update(hash, data, size);
+  rapidhash_update(data, size, hash);
   return true;
 }
 

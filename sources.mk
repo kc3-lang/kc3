@@ -437,6 +437,7 @@ KC3_C_SOURCES = \
 	"libkc3/alist.h" \
 	"libkc3/alloc.c" \
 	"libkc3/alloc.h" \
+	"libkc3/always_inline.h" \
 	"libkc3/arg.c" \
 	"libkc3/arg.h" \
 	"libkc3/array.c" \
@@ -618,6 +619,7 @@ KC3_C_SOURCES = \
 	"libkc3/compare.h" \
 	"libkc3/complex.c" \
 	"libkc3/complex.h" \
+	"libkc3/constexpr.h" \
 	"libkc3/counter.c" \
 	"libkc3/counter.h" \
 	"libkc3/cow.c" \
@@ -697,6 +699,7 @@ KC3_C_SOURCES = \
 	"libkc3/ht.h" \
 	"libkc3/ident.c" \
 	"libkc3/ident.h" \
+	"libkc3/inline.h" \
 	"libkc3/inspect.c" \
 	"libkc3/inspect.h" \
 	"libkc3/integer.c" \
@@ -707,6 +710,7 @@ KC3_C_SOURCES = \
 	"libkc3/kc3.h" \
 	"libkc3/kc3_main.h" \
 	"libkc3/license.c" \
+	"libkc3/likely.h" \
 	"libkc3/list.c" \
 	"libkc3/list.h" \
 	"libkc3/list_init.c" \
@@ -771,6 +775,7 @@ KC3_C_SOURCES = \
 	"libkc3/queue.h" \
 	"libkc3/quote.c" \
 	"libkc3/quote.h" \
+	"libkc3/rapidhash.h" \
 	"libkc3/ratio.c" \
 	"libkc3/ratio.h" \
 	"libkc3/rpc.c" \
