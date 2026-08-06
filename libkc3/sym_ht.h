@@ -19,6 +19,9 @@
 void       sym_ht_delete (s_sym_ht *ht);
 s_sym_ht * sym_ht_new (uw size);
 
+/* Observers. */
+const s_sym * sym_ht_find (s_sym_ht *ht, const s_str *str);
+
 /* Operators. */
 const s_sym * sym_ht_add (s_sym_ht *ht, const s_sym *sym,
                           s_sym *sym_free);

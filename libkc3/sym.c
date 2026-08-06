@@ -21,6 +21,7 @@
 #include "ident.h"
 #include "list.h"
 #include "pstruct_type.h"
+#include "rwlock.h"
 #include "str.h"
 #include "struct_type.h"
 #include "sym.h"
@@ -237,16 +238,15 @@ void sym_delete_all (void)
 
 const s_sym * sym_find (const s_str *str)
 {
-  s_sym_ht *ht = g_sym_ht;
-  s_sym_ht_item *item = NULL;
-  uw h = str_hash_uw(str);
-  uw pos = h % ht->size;
-  item = ht->item[pos];
-  while (item && item->hash_uw != h)
-    item = item->next;
-  if (item)
-    return item->sym;
-  return NULL;
+  const s_sym *sym;
+#if HAVE_PTHREAD
+  rwlock_r(&g_sym_ht->rwlock);
+#endif
+  sym = sym_ht_find(g_sym_ht, str);
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&g_sym_ht->rwlock);
+#endif
+  return sym;
 }
 
 s_tag * sym_find_to_tag (const s_str *src, s_tag *dest)
@@ -441,17 +441,6 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_write, NULL);
   sym_register(&g_sym_wx, NULL);
   sym_register(&g_sym_x, NULL);
-}
-
-bool sym_register (const s_sym *sym, s_sym *sym_free)
-{
-  assert(sym);
-  assert(! sym_find(&sym->str));
-  if (sym_find(&sym->str))
-    return false;
-  if (sym_ht_add(g_sym_ht, sym, sym_free))
-    return true;
-  return false;
 }
 
 bool sym_is_array_type (const s_sym *sym)
@@ -734,6 +723,28 @@ p_sym sym_pointer_to_target_type (p_sym pointer_type)
   str_init(&str, NULL, pointer_type->str.size - 1,
            pointer_type->str.ptr.p_pchar);
   return str_to_sym(&str);
+}
+
+bool sym_register (const s_sym *sym, s_sym *sym_free)
+{
+  bool r = false;
+  assert(sym);
+  assert(g_sym_ht);
+  if (! g_sym_ht)
+    abort();
+#if HAVE_PTHREAD
+  rwlock_w(&g_sym_ht->rwlock);
+#endif
+  assert(! sym_find(&sym->str));
+  if (sym_ht_find(g_sym_ht, &sym->str))
+    goto clean;
+  if (sym_ht_add(g_sym_ht, sym, sym_free))
+    r = true;
+ clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&g_sym_ht->rwlock);
+#endif
+  return r;
 }
 
 bool sym_search_modules (const s_sym *sym, p_sym *dest)

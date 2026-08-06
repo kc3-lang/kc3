@@ -12,6 +12,7 @@
  */
 #include "alloc.h"
 #include "assert.h"
+#include "rwlock.h"
 #include "str.h"
 #include "sym.h"
 #include "sym_ht.h"
@@ -55,6 +56,21 @@ void sym_ht_delete (s_sym_ht *ht)
   alloc_free(ht);
 }
 
+const s_sym * sym_ht_find (s_sym_ht *ht, const s_str *str)
+{
+  uw h;
+  s_sym_ht_item *item;
+  uw pos;
+  h = str_hash_uw(str);
+  pos = h % ht->size;
+  item = ht->item[pos];
+  while (item && item->hash_uw != h)
+    item = item->next;
+  if (item)
+    return item->sym;
+  return NULL;
+}
+
 s_sym_ht * sym_ht_new (uw size)
 {
   s_sym_ht *ht;
@@ -64,6 +80,9 @@ s_sym_ht * sym_ht_new (uw size)
     return NULL;
   ht->size = size;
   ht->item = alloc(size * sizeof(s_sym_ht_item *));
+#if HAVE_PTHREAD
+  rwlock_init(&ht->rwlock);
+#endif
   return ht;
 }
 

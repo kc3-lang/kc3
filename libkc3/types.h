@@ -550,7 +550,7 @@ struct sym_ht {
   uw              count;
   uw              size;
   s_sym_ht_item **item;
-  s_mutex         mutex;
+  s_rwlock        rwlock;
 };
 
 struct sym_ht_item {
