@@ -24,6 +24,7 @@
 #include "str.h"
 #include "struct_type.h"
 #include "sym.h"
+#include "sym_ht.h"
 #include "tag_type.h"
 
 const s_sym g_sym___DIR__          = SYM_1("__DIR__");
@@ -152,10 +153,7 @@ const s_sym g_sym_write            = SYM_1("write");
 const s_sym g_sym_wx               = SYM_1("wx");
 const s_sym g_sym_x                = SYM_1("x");
 
-static s_sym_list * g_sym_list = NULL;
-
-s_sym_list * sym_list_new (const s_sym *sym, s_sym *free_sym,
-                           s_sym_list *next);
+static s_sym_ht * g_sym_ht = NULL;
 
 const s_sym * sym_1 (const char *p)
 {
@@ -229,34 +227,25 @@ void sym_delete (s_sym *sym)
   str_clean(&sym->str);
   alloc_free(sym);
 }
-  
+
 void sym_delete_all (void)
 {
-  s_sym_list *sym_list;
-  if (false)
-    err_puts("sym_delete_all");
-  sym_list = g_sym_list;
-  g_sym_list = NULL;
-  while (sym_list) {
-    s_sym_list *tmp = NULL;
-    tmp = sym_list;
-    sym_list = sym_list->next;
-    if (tmp->free_sym)
-      sym_delete(tmp->free_sym);
-    alloc_free(tmp);
-  }
+  s_sym_ht *ht = g_sym_ht;
+  g_sym_ht = NULL;
+  sym_ht_delete(ht);
 }
 
 const s_sym * sym_find (const s_str *str)
 {
-  s_sym_list *sym_list;
-  sym_list = g_sym_list;
-  while (sym_list) {
-    const s_sym *sym = sym_list->sym;
-    if (compare_str(str, &sym->str) == 0)
-      return sym;
-    sym_list = sym_list->next;
-  }
+  s_sym_ht *ht = g_sym_ht;
+  s_sym_ht_item *item = NULL;
+  uw h = str_hash_uw(str);
+  uw pos = h % ht->size;
+  item = ht->item[pos];
+  while (item && item->hash_uw != h)
+    item = item->next;
+  if (item)
+    return item->sym;
   return NULL;
 }
 
@@ -323,8 +312,11 @@ bool sym_has_reserved_characters (const s_sym *sym)
 
 void sym_init_g_sym (void)
 {
-  if (g_sym_list)
+  if (g_sym_ht)
     return;
+  if (! (g_sym_ht = sym_ht_new(1024))) {
+    abort();
+  }
   sym_register(&g_sym___DIR__, NULL);
   sym_register(&g_sym___FILE__, NULL);
   sym_register(&g_sym__brackets, NULL);
@@ -451,30 +443,15 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_x, NULL);
 }
 
-uw * sym_list_size (uw *dest)
+bool sym_register (const s_sym *sym, s_sym *sym_free)
 {
-  uw size = 0;
-  const s_sym_list *l;
-  l = g_sym_list;
-  while (l) {
-    size += sizeof(s_sym) + l->sym->str.size + 1;
-    l = l->next;
-  }
-  *dest = size;
-  return dest;
-}
-
-bool sym_register (const s_sym *sym, s_sym *free_sym)
-{
-  s_sym_list *tmp = NULL;
   assert(sym);
+  assert(! sym_find(&sym->str));
   if (sym_find(&sym->str))
     return false;
-  tmp = sym_list_new(sym, free_sym, g_sym_list);
-  if (! tmp)
-    return false;
-  g_sym_list = tmp;
-  return true;
+  if (sym_ht_add(g_sym_ht, sym, sym_free))
+    return true;
+  return false;
 }
 
 bool sym_is_array_type (const s_sym *sym)
@@ -552,19 +529,6 @@ bool sym_is_pointer_type (p_sym sym, p_sym target_type)
     return true;
   }
   return sym->str.ptr.p_pchar[sym->str.size - 1] == '*';
-}
-
-s_sym_list * sym_list_new (const s_sym *sym, s_sym *free_sym,
-                           s_sym_list *next)
-{
-  s_sym_list *sym_list;
-  sym_list = alloc(sizeof(s_sym_list));
-  if (! sym_list)
-    return NULL;
-  sym_list->sym = sym;
-  sym_list->free_sym = free_sym;
-  sym_list->next = next;
-  return sym_list;
 }
 
 bool * sym_must_clean (const s_sym *sym, bool *must_clean)
@@ -749,7 +713,6 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
 const s_sym * sym_new (const s_str *src)
 {
   s_sym *sym = NULL;
-  s_sym_list *tmp = NULL;
   sym = alloc(sizeof(s_sym));
   if (! sym)
     return NULL;
@@ -757,13 +720,10 @@ const s_sym * sym_new (const s_str *src)
     alloc_free(sym);
     return NULL;
   }
-  tmp = sym_list_new(sym, sym, g_sym_list);
-  if (! tmp) {
-    str_clean(&sym->str);
+  if (! sym_register(sym, sym)) {
     alloc_free(sym);
     return NULL;
   }
-  g_sym_list = tmp;
   return sym;
 }
 

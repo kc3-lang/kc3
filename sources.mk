@@ -853,6 +853,8 @@ KC3_C_SOURCES = \
 	"libkc3/sw.h" \
 	"libkc3/sym.c" \
 	"libkc3/sym.h" \
+	"libkc3/sym_ht.c" \
+	"libkc3/sym_ht.h" \
 	"libkc3/tag.c" \
 	"libkc3/tag.h" \
 	"libkc3/tag_add.c" \

@@ -407,6 +407,17 @@ bool * str_has_str (const s_str *src, const s_str *search, bool *dest)
   return NULL;
 }
 
+uw str_hash_uw (const s_str *str)
+{
+  uw h;
+  t_hash hash;
+  hash_init(&hash);
+  hash_update_str(&hash, str);
+  h = hash_to_uw(&hash);
+  hash_clean(&hash);
+  return h;
+}
+
 s_str * str_init (s_str *str, char *free, uw size, const char *p)
 {
   s_str tmp = {0};

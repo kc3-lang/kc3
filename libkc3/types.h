@@ -283,7 +283,8 @@ typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
 typedef struct struct_type             s_struct_type;
 typedef struct sym                     s_sym;
-typedef struct sym_list                s_sym_list;
+typedef struct sym_ht                  s_sym_ht;
+typedef struct sym_ht_item             s_sym_ht_item;
 typedef struct tag                     s_tag;
 typedef struct tag_type_list           s_tag_type_list;
 typedef struct time                    s_time;
@@ -326,7 +327,6 @@ typedef s_marshall_read * p_marshall_read;
 typedef s_struct *        p_struct;
 typedef s_struct_type *    p_struct_type;
 typedef const s_sym *      p_sym;
-typedef s_sym_list *       p_sym_list;
 typedef t_socket *         p_socket;
 typedef s_tag *            p_tag;
 typedef struct tls *       p_tls;
@@ -546,10 +546,18 @@ struct struct_ {
   sw ref_count;
 };
 
-struct sym_list {
-  const s_sym *sym;
-  s_sym *free_sym;
-  s_sym_list *next;
+struct sym_ht {
+  uw              count;
+  uw              size;
+  s_sym_ht_item **item;
+  s_mutex         mutex;
+};
+
+struct sym_ht_item {
+  uw             hash_uw;
+  const s_sym   *sym;
+  s_sym         *sym_free;
+  s_sym_ht_item *next;
 };
 
 struct tag_type_list {

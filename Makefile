@@ -96,7 +96,7 @@ build:
 	${MAKE} -C json build
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue build; fi
 	${MAKE} -C markdown build
-	${MAKE} -C pdf build
+#	${MAKE} -C pdf build
 	${MAKE} -C qrencode build
 	${MAKE} -C smtp build
 	${MAKE} -C http build
@@ -104,7 +104,7 @@ build:
 	${MAKE} -C test build
 	if ${HAVE_GL}; then ${MAKE} -C gl build; fi
 	if ${HAVE_GL}; then ${MAKE} -C window build; fi
-	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 build; fi
+#	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 build; fi
 
 check: test
 	if ${HAVE_ASAN}; then ${MAKE} test_asan; fi
@@ -216,7 +216,7 @@ debug:
 	${MAKE} -C json debug
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue debug; fi
 	${MAKE} -C markdown debug
-	${MAKE} -C pdf debug
+#	${MAKE} -C pdf debug
 	${MAKE} -C qrencode debug
 	${MAKE} -C smtp debug
 	${MAKE} -C http debug
@@ -224,7 +224,7 @@ debug:
 	${MAKE} -C test debug
 	if ${HAVE_GL}; then ${MAKE} -C gl debug; fi
 	if ${HAVE_GL}; then ${MAKE} -C window debug; fi
-	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 debug; fi
+#	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 debug; fi
 
 demo: build
 	${MAKE} -C window demo

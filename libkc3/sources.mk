@@ -201,6 +201,7 @@ HEADERS = \
 	"struct_type.h" \
 	"sw.h" \
 	"sym.h" \
+	"sym_ht.h" \
 	"tag.h" \
 	"tag_init.h" \
 	"tag_type.h" \
@@ -426,6 +427,7 @@ SOURCES = \
 	"struct_type.c" \
 	"sw.c" \
 	"sym.c" \
+	"sym_ht.c" \
 	"tag.c" \
 	"tag_add.c" \
 	"tag_addi.c" \
@@ -765,6 +767,7 @@ LO_SOURCES = \
 	"struct_type.c" \
 	"sw.c" \
 	"sym.c" \
+	"sym_ht.c" \
 	"tag.c" \
 	"tag_add.c" \
 	"tag_addi.c" \
