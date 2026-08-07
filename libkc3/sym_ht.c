@@ -12,6 +12,7 @@
  */
 #include "alloc.h"
 #include "assert.h"
+#include "primehash.h"
 #include "rwlock.h"
 #include "str.h"
 #include "sym.h"
@@ -26,7 +27,7 @@ const s_sym * sym_ht_add (s_sym_ht *ht, const s_sym *sym,
   s_sym_ht_item *i;
   s_sym_ht_item **item;
   uw pos;
-  h = str_hash_uw(&sym->str);
+  h = primehash_uw(&sym->str, 0);
   pos = h % ht->size;
   item = ht->item + pos;
   if ((i = *item)) {
@@ -53,6 +54,9 @@ void sym_ht_delete (s_sym_ht *ht)
     }
     i++;
   }
+#if HAVE_PTHREAD
+  rwlock_clean(&ht->rwlock);
+#endif
   alloc_free(ht);
 }
 
@@ -61,7 +65,7 @@ const s_sym * sym_ht_find (s_sym_ht *ht, const s_str *str)
   uw h;
   s_sym_ht_item *item;
   uw pos;
-  h = str_hash_uw(str);
+  h = primehash_uw(str, 0);
   pos = h % ht->size;
   item = ht->item[pos];
   while (item && item->hash_uw != h)
