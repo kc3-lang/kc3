@@ -14,7 +14,7 @@
 #include "../libkc3/sym_ht.h"
 #include "pdf_name.h"
 
-#define PDF_NAME_LIST_SIZE 1021
+#define PDF_NAME_LIST_SIZE 1024
 
 s_pdf_name_list g_pdf_name_list = {0};
 
