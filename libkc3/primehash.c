@@ -21,8 +21,10 @@ uw primehash_uw (const s_str *key, uw hash)
   i = 0;
   while (i < key->size) {
     j = 0;
+    h[j] ^= k[i];
+    j++;
     while (j < sizeof(hash)) {
-      h[j] ^= ((k[i] >> j) | (k[i] << (8 - j))) ^ 0xf0;
+      h[j] ^= ((k[i] >> j) | (k[i] << (8 - j)));
       j++;
     }
     i++;
