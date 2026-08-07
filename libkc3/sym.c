@@ -735,12 +735,8 @@ bool sym_register (const s_sym *sym, s_sym *sym_free)
 #if HAVE_PTHREAD
   rwlock_w(&g_sym_ht->rwlock);
 #endif
-  assert(! sym_find(&sym->str));
-  if (sym_ht_find(g_sym_ht, &sym->str))
-    goto clean;
-  if (sym_ht_add(g_sym_ht, sym, sym_free))
+  if (sym_ht_register(g_sym_ht, sym, sym_free))
     r = true;
- clean:
 #if HAVE_PTHREAD
   rwlock_unlock_w(&g_sym_ht->rwlock);
 #endif

@@ -12,6 +12,7 @@
  */
 #include "alloc.h"
 #include "assert.h"
+#include "compare.h"
 #include "primehash.h"
 #include "rwlock.h"
 #include "str.h"
@@ -20,8 +21,8 @@
 
 #define SYM_HT_SIZE_DEFAULT (1024 * 1024)
 
-const s_sym * sym_ht_add (s_sym_ht *ht, const s_sym *sym,
-                          s_sym *sym_free)
+const s_sym * sym_ht_register (s_sym_ht *ht, const s_sym *sym,
+                               s_sym *sym_free)
 {
   uw h;
   s_sym_ht_item *i;
@@ -32,8 +33,12 @@ const s_sym * sym_ht_add (s_sym_ht *ht, const s_sym *sym,
   item = ht->item + pos;
   if ((i = *item)) {
     while (i) {
-      if (i->hash_uw == h)
-        return i->sym;
+      if (i->hash_uw == h && compare_str(&i->sym->str, &sym->str) == 0) {
+        fprintf(stderr, "sym_ht_register: %s == %s\n",
+                sym->str.ptr.p_pchar,
+                i->sym->str.ptr.p_pchar);
+        abort();
+      }
       i = i->next;
     }
   }
@@ -68,7 +73,8 @@ const s_sym * sym_ht_find (s_sym_ht *ht, const s_str *str)
   h = primehash_uw(str, 0);
   pos = h % ht->size;
   item = ht->item[pos];
-  while (item && item->hash_uw != h)
+  while (item && ((item->hash_uw != h) ||
+                  compare_str(str, &item->sym->str) != 0))
     item = item->next;
   if (item)
     return item->sym;

@@ -23,8 +23,8 @@ s_sym_ht * sym_ht_new (uw size);
 const s_sym * sym_ht_find (s_sym_ht *ht, const s_str *str);
 
 /* Operators. */
-const s_sym * sym_ht_add (s_sym_ht *ht, const s_sym *sym,
-                          s_sym *sym_free);
+const s_sym * sym_ht_register (s_sym_ht *ht, const s_sym *sym,
+                               s_sym *sym_free);
 
 /* Item constructors. Call sym_ht_item_delete after use. */
 s_sym_ht_item * sym_ht_item_delete (s_sym_ht_item *item);
