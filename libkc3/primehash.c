@@ -21,7 +21,7 @@ uw primehash_uw (const s_str *key, uw hash)
   i = 0;
   while (i < key->size) {
     hash *= 3;
-    hash ^= 0x9313384288248331;
+    hash ^= 0x3333333333333333;
     h[0] ^= k[i];
     j = 1;
     while (j < sizeof(hash)) {
