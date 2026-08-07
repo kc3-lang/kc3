@@ -751,6 +751,8 @@ KC3_C_SOURCES = \
 	"libkc3/pointer.h" \
 	"libkc3/pretty.c" \
 	"libkc3/pretty.h" \
+	"libkc3/primehash.c" \
+	"libkc3/primehash.h" \
 	"libkc3/pstruct.c" \
 	"libkc3/pstruct.h" \
 	"libkc3/pstruct_type.c" \

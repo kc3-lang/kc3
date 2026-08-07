@@ -156,6 +156,7 @@ HEADERS = \
 	"plist.h" \
 	"pointer.h" \
 	"pretty.h" \
+	"primehash.h" \
 	"pstruct.h" \
 	"pstruct_type.h" \
 	"psym.h" \
@@ -382,6 +383,7 @@ SOURCES = \
 	"plist.c" \
 	"pointer.c" \
 	"pretty.c" \
+	"primehash.c" \
 	"pstruct.c" \
 	"pstruct_type.c" \
 	"psym.c" \
@@ -722,6 +724,7 @@ LO_SOURCES = \
 	"plist.c" \
 	"pointer.c" \
 	"pretty.c" \
+	"primehash.c" \
 	"pstruct.c" \
 	"pstruct_type.c" \
 	"psym.c" \
