@@ -27,7 +27,7 @@ static const u64 rapidhash_secret[8] = {
   0x90ed1765281c388cull,
   0xaaaaaaaaaaaaaaaaull};
 
-INLINE u64 rapidhash_internal (const void *key, size_t len, u64 seed, const u64 *secret)
+INLINE u64 rapidhash_internal (const void *key, uw len, u64 seed, const u64 *secret)
 {
   const u8 *p = (const u8 *) key;
   seed ^= u64_mix(seed ^ secret[2], secret[1]);
@@ -118,12 +118,17 @@ INLINE u64 rapidhash_internal (const void *key, size_t len, u64 seed, const u64 
   return u64_mix(a ^ secret[7], b ^ secret[1] ^ i);
 }
 
-INLINE u64 rapidhash_seeded (const void *p, size_t len, u64 seed)
+INLINE u64 rapidhash_seeded (const void *p, uw len, u64 seed)
 {
   return rapidhash_internal(p, len, seed, rapidhash_secret);
 }
 
 INLINE u64 rapidhash (const void *p, uw len)
+{
+  return rapidhash_seeded(p, len, 0);
+}
+
+INLINE uw rapidhash_uw (const void *p, uw len)
 {
   return rapidhash_seeded(p, len, 0);
 }
@@ -200,9 +205,8 @@ INLINE void hash_rapid_tail_update (s_hash_rapid *hash, const u8 *p,
 INLINE bool hash_rapid_update (s_hash_rapid *hash, const void *data,
                                uw size)
 {
-  const u8 *p = data;
+  const u8 *p = (u8 *) data;
   uw n;
-
   if (! size)
     return true;
   hash_rapid_tail_update(hash, p, size);
@@ -294,6 +298,83 @@ INLINE u64 hash_rapid_final (const s_hash_rapid *hash)
   u64_mul(&a, &b);
   return u64_mix(a ^ rapidhash_secret[7],
                  b ^ rapidhash_secret[1] ^ i);
+}
+
+INLINE u64 rapidhash_micro_internal (const void *key, uw len,
+                                     u64 seed, const u64 *secret) {
+  const u8 *p = (const u8 *) key;
+  seed ^= u64_mix(seed ^ secret[2], secret[1]);
+  u64 a = 0;
+  u64 b = 0;
+  uw i = len;
+  if (likely(len <= 16)) {
+    if (len >= 4) {
+      seed ^= len;
+      if (len >= 8) {
+        const u8* plast = p + len - 8;
+        a = le64(p);
+        b = le64(plast);
+      } else {
+        const u8* plast = p + len - 4;
+        a = le32(p);
+        b = le32(plast);
+      }
+    } else if (len > 0) {
+      a = (((u64)p[0])<<45)|p[len-1];
+      b = p[len>>1];
+    } else
+      a = b = 0;
+  } else {
+    if (i > 80) {
+      u64 see1 = seed, see2 = seed;
+      u64 see3 = seed, see4 = seed;
+      do {
+        seed = u64_mix(le64(p) ^ secret[0], le64(p + 8) ^ seed);
+        see1 = u64_mix(le64(p + 16) ^ secret[1], le64(p + 24) ^ see1);
+        see2 = u64_mix(le64(p + 32) ^ secret[2], le64(p + 40) ^ see2);
+        see3 = u64_mix(le64(p + 48) ^ secret[3], le64(p + 56) ^ see3);
+        see4 = u64_mix(le64(p + 64) ^ secret[4], le64(p + 72) ^ see4);
+        p += 80;
+        i -= 80;
+      } while(i > 80);
+      seed ^= see1;
+      see2 ^= see3;
+      seed ^= see4;
+      seed ^= see2;
+    }
+    if (i > 16) {
+      seed = u64_mix(le64(p) ^ secret[2], le64(p + 8) ^ seed);
+      if (i > 32) {
+        seed = u64_mix(le64(p + 16) ^ secret[2], le64(p + 24) ^ seed);
+        if (i > 48) {
+          seed = u64_mix(le64(p + 32) ^ secret[1], le64(p + 40) ^ seed);
+          if (i > 64) {
+            seed = u64_mix(le64(p + 48) ^ secret[1], le64(p + 56) ^ seed);
+          }
+        }
+      }
+    }
+    a=le64(p+i-16) ^ i;  b=le64(p+i-8);
+  }
+  a ^= secret[1];
+  b ^= seed;
+  u64_mul(&a, &b);
+  return u64_mix(a ^ secret[7], b ^ secret[1] ^ i);
+}
+
+INLINE u64 rapidhash_micro_seeded (const void *key, uw len, u64 seed)
+{
+  return rapidhash_micro_internal(key, len, seed, rapidhash_secret);
+}
+
+INLINE u64 rapidhash_micro (const void *key, uw len)
+{
+  return rapidhash_micro_seeded(key, len, 0);
+}
+
+INLINE uw rapidhash_micro_uw (const void *key, uw len)
+{
+  return rapidhash_micro_seeded(key, len, 0);
 }
 
 #endif /* LIBKC3_RAPIDHASH_H */

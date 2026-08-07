@@ -156,21 +156,4 @@ INLINE u64 le32 (const void *p)
 # define le128toh(x) OSSwapLittleToHostInt128(x)
 #endif
 
-
-#else
-
-# if defined(_MSC_VER)
-INLINE u64 rapid_read64(const u8 *p) { u64 v; memcpy(&v, p, sizeof(u64)); return _byteswap_uint64(v);}
-INLINE u64 rapid_read32(const u8 *p) { u32 v; memcpy(&v, p, sizeof(u32)); return _byteswap_ulong(v);}
-# else
-INLINE u64 rapid_read64(const u8 *p) {
-  u64 v; memcpy(&v, p, 8);
-  return (((v >> 56) & 0xff)| ((v >> 40) & 0xff00)| ((v >> 24) & 0xff0000)| ((v >>  8) & 0xff000000)| ((v <<  8) & 0xff00000000)| ((v << 24) & 0xff0000000000)| ((v << 40) & 0xff000000000000)| ((v << 56) & 0xff00000000000000));
-}
-INLINE u64 rapid_read32(const u8 *p) {
-  u32 v; memcpy(&v, p, 4);
-  return (((v >> 24) & 0xff)| ((v >>  8) & 0xff00)| ((v <<  8) & 0xff0000)| ((v << 24) & 0xff000000));
-}
-# endif
-
 #endif /* LIBKC3_ENDIAN_H */
