@@ -11,11 +11,14 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/kc3.h"
+#include "../libkc3/sym_ht.h"
 #include "pdf_name.h"
 
-p_pdf_name_list g_pdf_name_list = NULL;
+#define PDF_NAME_LIST_SIZE 1021
 
-p_pdf_name pdf_name_1 (p_pdf_name_list *name_list, const char *pchar)
+s_pdf_name_list g_pdf_name_list = {0};
+
+p_pdf_name pdf_name_1 (s_pdf_name_list *name_list, const char *pchar)
 {
   s_str str;
   str_init_1(&str, NULL, pchar);
@@ -27,23 +30,17 @@ void kc3_pdf_name_list_delete_all (void)
   pdf_name_list_delete_all(&g_pdf_name_list);
 }
 
-p_pdf_name pdf_name_find (p_pdf_name_list *name_list,
+p_pdf_name pdf_name_find (s_pdf_name_list *name_list,
                           const s_str *str)
 {
-  p_pdf_name_list list;
   assert(name_list);
   assert(str);
-  list = *name_list;
-  while (list) {
-    p_pdf_name name = list->sym;
-    if (compare_str(str, &name->str) == 0)
-      return name;
-    list = list->next;
-  }
-  return NULL;
+  if (! name_list->ht)
+    return NULL;
+  return sym_ht_find(name_list->ht, str);
 }
 
-p_pdf_name pdf_name_from_str (p_pdf_name_list *name_list,
+p_pdf_name pdf_name_from_str (s_pdf_name_list *name_list,
                               const s_str *str)
 {
   p_pdf_name name;
@@ -55,37 +52,42 @@ p_pdf_name pdf_name_from_str (p_pdf_name_list *name_list,
   return name;
 }
 
-void pdf_name_list_delete_all (p_pdf_name_list *name_list)
+void pdf_name_list_delete_all (s_pdf_name_list *name_list)
 {
-  p_pdf_name_list list;
-  p_pdf_name_list next;
   assert(name_list);
-  list = *name_list;
-  while (list) {
-    next = list->next;
-    sym_delete(list->free_sym);
-    alloc_free(list);
-    list = next;
-  }
-  *name_list = NULL;
+  if (name_list->ht)
+    sym_ht_delete(name_list->ht);
+  name_list->ht = NULL;
 }
 
-p_pdf_name pdf_name_new (p_pdf_name_list *name_list,
+s_pdf_name_list * pdf_name_list_init (s_pdf_name_list *name_list)
+{
+  s_pdf_name_list tmp = {0};
+  assert(name_list);
+  if (! (tmp.ht = sym_ht_new(PDF_NAME_LIST_SIZE)))
+    return NULL;
+  *name_list = tmp;
+  return name_list;
+}
+
+p_pdf_name pdf_name_new (s_pdf_name_list *name_list,
                          const s_str *str)
 {
   s_sym *sym;
-  s_sym_list *tmp;
+  p_pdf_name tmp;
+  assert(name_list);
+  assert(str);
+  if (! name_list->ht && ! pdf_name_list_init(name_list))
+    return NULL;
   if (! (sym = alloc(sizeof(s_sym))))
     return NULL;
-  if (! (tmp = alloc(sizeof(s_sym_list)))) {
+  if (! str_init_copy(&sym->str, str)) {
     alloc_free(sym);
     return NULL;
   }
-  str_init_copy(&sym->str, str);
-  tmp->sym = sym;
-  tmp->free_sym = sym;
-  tmp->next = *name_list;
-  *name_list = tmp;
-  return sym;
-
+  if (! (tmp = sym_ht_register(name_list->ht, sym, sym))) {
+    sym_delete(sym);
+    return NULL;
+  }
+  return tmp;
 }

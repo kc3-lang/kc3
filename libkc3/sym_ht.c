@@ -45,6 +45,7 @@ const s_sym * sym_ht_register (s_sym_ht *ht, const s_sym *sym,
   if (! (i = sym_ht_item_new(h, sym, sym_free, *item)))
     return NULL;
   *item = i;
+  ht->count++;
   return sym;
 }
 
@@ -62,6 +63,7 @@ void sym_ht_delete (s_sym_ht *ht)
 #if HAVE_PTHREAD
   rwlock_clean(&ht->rwlock);
 #endif
+  alloc_free(ht->item);
   alloc_free(ht);
 }
 

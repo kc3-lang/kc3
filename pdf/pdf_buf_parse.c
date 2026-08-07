@@ -649,7 +649,7 @@ sw pdf_buf_parse_name (s_buf *buf, s_pdf_file *pdf_file,
   u8 d;
   u8 d1;
   bool end;
-  p_pdf_name_list *name_list = NULL;
+  s_pdf_name_list *name_list = NULL;
   sw r;
   sw result = 0;
   s_buf_save save = {0};
@@ -813,7 +813,7 @@ sw pdf_buf_parse_rewind_to_trailer (s_buf *buf)
 sw pdf_buf_parse_stream (s_buf *buf, s_pdf_file *pdf_file, s_tag *dest)
 {
   s_map map = {0};
-  p_pdf_name_list *name_list = NULL;
+  s_pdf_name_list *name_list = NULL;
   s_tag name_tag = {0};
   s64 offset;
   s_pdf_stream *pdf_stream;

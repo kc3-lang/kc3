@@ -27,7 +27,7 @@ all:
 	${MAKE} -C json all
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue; fi
 	${MAKE} -C markdown all
-#	${MAKE} -C pdf all
+	${MAKE} -C pdf all
 	${MAKE} -C qrencode all
 	${MAKE} -C smtp all
 	${MAKE} -C http all

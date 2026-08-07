@@ -15,18 +15,19 @@
 
 #include "types.h"
 
-extern p_pdf_name_list g_pdf_name_list;
+extern s_pdf_name_list g_pdf_name_list;
 
-/* Heap-allocation functions. */
-void pdf_name_list_delete_all (p_pdf_name_list *name_list);
+/* Stack-allocation compatible functions. */
+void              pdf_name_list_delete_all (s_pdf_name_list *name_list);
+s_pdf_name_list * pdf_name_list_init (s_pdf_name_list *name_list);
 
 /* Operators. */
-p_pdf_name pdf_name_1 (p_pdf_name_list *name_list, const char *pchar);
-p_pdf_name pdf_name_find (p_pdf_name_list *name_list,
+p_pdf_name pdf_name_1 (s_pdf_name_list *name_list, const char *pchar);
+p_pdf_name pdf_name_find (s_pdf_name_list *name_list,
                           const s_str *str);
-p_pdf_name pdf_name_from_str (p_pdf_name_list *name_list,
+p_pdf_name pdf_name_from_str (s_pdf_name_list *name_list,
                               const s_str *str);
-p_pdf_name pdf_name_new (p_pdf_name_list *name_list,
+p_pdf_name pdf_name_new (s_pdf_name_list *name_list,
                          const s_str *str);
 
 #endif /* KC3_PDF_NAME_H */
