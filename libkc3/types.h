@@ -272,6 +272,7 @@ typedef struct profile_item            s_profile_item;
 typedef struct queue                   s_queue;
 typedef struct quote                   s_quote;
 typedef struct ratio                   s_ratio;
+typedef struct hash_rapid              s_hash_rapid;
 typedef struct rpc_response            s_rpc_response;
 typedef struct rwlock                  s_rwlock;
 typedef struct sequence                s_sequence;
@@ -308,7 +309,7 @@ typedef union tag_data      u_tag_data;
 typedef u32             character;
 typedef s_tag *         t_facts_spec[];
 typedef s64             t_fd;
-typedef u64             t_hash;
+typedef s_hash_rapid    t_hash;
 typedef u64             t_skiplist_height;
 typedef s64             t_socket;
 
@@ -505,6 +506,16 @@ struct queue {
 
 struct quote {
   s_tag *tag;
+};
+
+struct hash_rapid {
+  u64  seed;
+  u64  see[6];
+  u8   pending[112];
+  u8   tail[16];
+  uw   pending_size;
+  uw   tail_size;
+  bool wide;
 };
 
 struct rwlock {

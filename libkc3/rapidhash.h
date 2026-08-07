@@ -118,14 +118,182 @@ INLINE u64 rapidhash_internal (const void *key, size_t len, u64 seed, const u64 
   return u64_mix(a ^ secret[7], b ^ secret[1] ^ i);
 }
 
-INLINE u64 rapidhash_update (const void *p, size_t len, u64 *seed)
+INLINE u64 rapidhash_seeded (const void *p, size_t len, u64 seed)
 {
-  return *seed = rapidhash_internal(p, len, *seed, rapidhash_secret);
+  return rapidhash_internal(p, len, seed, rapidhash_secret);
 }
 
 INLINE u64 rapidhash (const void *p, uw len)
 {
-  return rapidhash_update(p, len, 0);
+  return rapidhash_seeded(p, len, 0);
+}
+
+INLINE s_hash_rapid * hash_rapid_init_seeded (s_hash_rapid *hash,
+                                               u64 seed)
+{
+  uw i;
+
+  seed ^= u64_mix(seed ^ rapidhash_secret[2], rapidhash_secret[1]);
+  hash->seed = seed;
+  i = 0;
+  while (i < 6) {
+    hash->see[i] = seed;
+    i++;
+  }
+  hash->pending_size = 0;
+  hash->tail_size = 0;
+  hash->wide = false;
+  return hash;
+}
+
+INLINE s_hash_rapid * hash_rapid_init (s_hash_rapid *hash)
+{
+  return hash_rapid_init_seeded(hash, 0);
+}
+
+INLINE void hash_rapid_clean (s_hash_rapid *hash)
+{
+  memset(hash, 0, sizeof(*hash));
+}
+
+INLINE void hash_rapid_block (s_hash_rapid *hash, const u8 *p)
+{
+  hash->seed = u64_mix(le64(p) ^ rapidhash_secret[0],
+                       le64(p + 8) ^ hash->seed);
+  hash->see[0] = u64_mix(le64(p + 16) ^ rapidhash_secret[1],
+                         le64(p + 24) ^ hash->see[0]);
+  hash->see[1] = u64_mix(le64(p + 32) ^ rapidhash_secret[2],
+                         le64(p + 40) ^ hash->see[1]);
+  hash->see[2] = u64_mix(le64(p + 48) ^ rapidhash_secret[3],
+                         le64(p + 56) ^ hash->see[2]);
+  hash->see[3] = u64_mix(le64(p + 64) ^ rapidhash_secret[4],
+                         le64(p + 72) ^ hash->see[3]);
+  hash->see[4] = u64_mix(le64(p + 80) ^ rapidhash_secret[5],
+                         le64(p + 88) ^ hash->see[4]);
+  hash->see[5] = u64_mix(le64(p + 96) ^ rapidhash_secret[6],
+                         le64(p + 104) ^ hash->see[5]);
+  hash->wide = true;
+}
+
+INLINE void hash_rapid_tail_update (s_hash_rapid *hash, const u8 *p,
+                                    uw size)
+{
+  uw keep;
+
+  if (! size)
+    return;
+  if (size >= sizeof(hash->tail)) {
+    memcpy(hash->tail, p + size - sizeof(hash->tail),
+           sizeof(hash->tail));
+    hash->tail_size = sizeof(hash->tail);
+    return;
+  }
+  keep = hash->tail_size;
+  if (keep > sizeof(hash->tail) - size)
+    keep = sizeof(hash->tail) - size;
+  if (keep)
+    memmove(hash->tail, hash->tail + hash->tail_size - keep, keep);
+  memcpy(hash->tail + keep, p, size);
+  hash->tail_size = keep + size;
+}
+
+INLINE bool hash_rapid_update (s_hash_rapid *hash, const void *data,
+                               uw size)
+{
+  const u8 *p = data;
+  uw n;
+
+  if (! size)
+    return true;
+  hash_rapid_tail_update(hash, p, size);
+  if (hash->pending_size) {
+    n = sizeof(hash->pending) - hash->pending_size;
+    if (n > size)
+      n = size;
+    memcpy(hash->pending + hash->pending_size, p, n);
+    hash->pending_size += n;
+    p += n;
+    size -= n;
+    if (! size)
+      return true;
+    hash_rapid_block(hash, hash->pending);
+    hash->pending_size = 0;
+  }
+  while (size > sizeof(hash->pending)) {
+    hash_rapid_block(hash, p);
+    p += sizeof(hash->pending);
+    size -= sizeof(hash->pending);
+  }
+  if (size) {
+    memcpy(hash->pending, p, size);
+    hash->pending_size = size;
+  }
+  return true;
+}
+
+INLINE u64 hash_rapid_final (const s_hash_rapid *hash)
+{
+  u64 a = 0;
+  u64 b = 0;
+  uw i = hash->pending_size;
+  const u8 *p = hash->pending;
+  u64 seed = hash->seed;
+
+  if (likely(! hash->wide && i <= 16)) {
+    if (i >= 4) {
+      seed ^= i;
+      if (i >= 8) {
+        a = le64(p);
+        b = le64(p + i - 8);
+      }
+      else {
+        a = le32(p);
+        b = le32(p + i - 4);
+      }
+    }
+    else if (i > 0) {
+      a = ((u64) p[0] << 45) | p[i - 1];
+      b = p[i >> 1];
+    }
+  }
+  else {
+    if (hash->wide) {
+      seed ^= hash->see[0];
+      seed ^= hash->see[5];
+      seed ^= hash->see[1] ^ hash->see[2] ^
+        hash->see[3] ^ hash->see[4];
+    }
+    if (i > 16) {
+      seed = u64_mix(le64(p) ^ rapidhash_secret[2],
+                     le64(p + 8) ^ seed);
+      if (i > 32) {
+        seed = u64_mix(le64(p + 16) ^ rapidhash_secret[2],
+                       le64(p + 24) ^ seed);
+        if (i > 48) {
+          seed = u64_mix(le64(p + 32) ^ rapidhash_secret[1],
+                         le64(p + 40) ^ seed);
+          if (i > 64) {
+            seed = u64_mix(le64(p + 48) ^ rapidhash_secret[1],
+                           le64(p + 56) ^ seed);
+            if (i > 80) {
+              seed = u64_mix(le64(p + 64) ^ rapidhash_secret[2],
+                             le64(p + 72) ^ seed);
+              if (i > 96)
+                seed = u64_mix(le64(p + 80) ^ rapidhash_secret[1],
+                               le64(p + 88) ^ seed);
+            }
+          }
+        }
+      }
+    }
+    a = le64(hash->tail) ^ i;
+    b = le64(hash->tail + 8);
+  }
+  a ^= rapidhash_secret[1];
+  b ^= seed;
+  u64_mul(&a, &b);
+  return u64_mix(a ^ rapidhash_secret[7],
+                 b ^ rapidhash_secret[1] ^ i);
 }
 
 #endif /* LIBKC3_RAPIDHASH_H */

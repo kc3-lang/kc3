@@ -35,6 +35,7 @@ void facts_test (void);
 void facts_cursor_test (void);
 void facts_with_test (void);
 void fn_test (void);
+void hash_test (void);
 void ident_test (void);
 void inspect_test (void);
 void list_test (void);
@@ -77,6 +78,7 @@ int main (int argc, char **argv)
   TEST_TARGET(fn);
   TEST_TARGET(pcall);
   TEST_TARGET(tag);
+  TEST_TARGET(hash);
   TEST_TARGET(inspect);
   TEST_TARGET(fact);
   TEST_TARGET(compare);

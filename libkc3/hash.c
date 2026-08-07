@@ -35,13 +35,13 @@
 void hash_clean (t_hash *hash)
 {
   assert(hash);
-  *hash = 0;
+  hash_rapid_clean(hash);
 }
 
 void hash_init (t_hash *hash)
 {
   assert(hash);
-  *hash = 0;
+  hash_rapid_init(hash);
 }
 
 uw hash_tag (s_tag *tag)
@@ -61,20 +61,19 @@ uw hash_tag (s_tag *tag)
 
 uw hash_to_uw (t_hash *hash)
 {
-  return *((uw *) (hash));
+  return (uw) hash_rapid_final(hash);
 }
 
 u64 hash_to_u64 (t_hash *hash)
 {
-  return *hash;
+  return hash_rapid_final(hash);
 }
 
 bool hash_update (t_hash *hash, const void *data, uw size)
 {
   assert(hash);
   assert(data);
-  rapidhash_update(data, size, hash);
-  return true;
+  return hash_rapid_update(hash, data, size);
 }
 
 bool hash_update_1 (t_hash *hash, const char *p)
