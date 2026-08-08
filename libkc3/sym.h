@@ -167,6 +167,8 @@ p_sym   sym_new (const s_str *src);
 /* Observers */
 p_sym   sym_array_type (p_sym sym);
 bool    sym_character_is_reserved (character c);
+uw      sym_collisions (void);
+uw      sym_count (void);
 p_sym   sym_find (const s_str *src);
 s_tag * sym_find_to_tag (const s_str *src, s_tag *dest);
 bool    sym_has_ident_reserved_characters (p_sym sym);

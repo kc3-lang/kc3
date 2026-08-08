@@ -223,6 +223,16 @@ bool sym_character_is_reserved (character c)
           c == '}');
 }
 
+uw sym_collisions (void)
+{
+  return g_sym_ht->collisions;
+}
+
+uw sym_count (void)
+{
+  return g_sym_ht->count;
+}
+
 void sym_delete (s_sym *sym)
 {
   str_clean(&sym->str);
