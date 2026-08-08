@@ -11,7 +11,10 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/buf.h"
+#include "../libkc3/call.h"
 #include "../libkc3/endian.h"
+#include "../libkc3/env.h"
+#include "../libkc3/env_eval.h"
 #include "../libkc3/file.h"
 #include "../libkc3/inspect.h"
 #include "../libkc3/marshall.h"
@@ -72,6 +75,7 @@
 void marshal_test (void);
 
 TEST_CASE_PROTOTYPE(marshall_read_bool);
+TEST_CASE_PROTOTYPE(marshall_read_call_cache);
 TEST_CASE_PROTOTYPE(marshall_read_character);
 TEST_CASE_PROTOTYPE(marshall_read_init_buf);
 TEST_CASE_PROTOTYPE(marshall_read_init_file);
@@ -94,6 +98,7 @@ TEST_CASE_PROTOTYPE(marshall_read_uw);
 void marshall_read_test (void)
 {
   TEST_CASE_RUN(marshall_read_bool);
+  TEST_CASE_RUN(marshall_read_call_cache);
   TEST_CASE_RUN(marshall_read_tag);
   TEST_CASE_RUN(marshall_read_unquote);
   TEST_CASE_RUN(marshall_read_set_tag);
@@ -121,6 +126,40 @@ TEST_CASE(marshall_read_bool)
                      "true");
 }
 TEST_CASE_END(marshall_read_bool)
+
+TEST_CASE(marshall_read_call_cache)
+{
+  s_call call = {0};
+  s_call call_read = {0};
+  s_env env = {0};
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  s_tag result = {0};
+  s_str str = {0};
+  test_context("marshall_read_call cache is transient");
+  TEST_ASSERT(env_init(&env, 0, NULL));
+  TEST_ASSERT(call_init(&call));
+  call.ident.sym = sym_1("+");
+  call.arguments = list_new_1("[1, 2]");
+  TEST_ASSERT(call.arguments);
+  TEST_ASSERT(env_eval_call(&env, &call, &result));
+  TEST_ASSERT(call.pcallable);
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+  TEST_ASSERT(marshall_call(&m, false, &call));
+  TEST_ASSERT(marshall_to_str(&m, &str));
+  TEST_ASSERT(marshall_read_init_str(&mr, &str));
+  TEST_ASSERT(marshall_read_call(&mr, false, &call_read));
+  TEST_ASSERT(! call_read.pcallable);
+  call_clean(&call);
+  call_clean(&call_read);
+  env_clean(&env);
+  marshall_clean(&m);
+  marshall_read_clean(&mr);
+  str_clean(&str);
+  tag_clean(&result);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_call_cache)
 
   TEST_CASE(marshall_read_plist)
 {

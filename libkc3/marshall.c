@@ -189,6 +189,7 @@ s_marshall * marshall_call (s_marshall *m, bool heap,
                             const s_call *call)
 {
   s_list *list;
+  p_callable pcallable = NULL;
   assert(m);
   assert(call);
   if (! m || ! call ||
@@ -202,7 +203,8 @@ s_marshall * marshall_call (s_marshall *m, bool heap,
       return NULL;
     list = list_next(list);
   }
-  if (! marshall_pcallable(m, heap, &call->pcallable))
+  /* call->pcallable is a process-local, lazily populated cache. */
+  if (! marshall_pcallable(m, heap, &pcallable))
     return NULL;
   return m;
 }
