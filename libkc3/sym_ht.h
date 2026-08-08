@@ -17,7 +17,7 @@
 
 /* Constructors. Call sym_ht_delete after use. */
 void       sym_ht_delete (s_sym_ht *ht);
-s_sym_ht * sym_ht_new (uw size);
+s_sym_ht * sym_ht_new (u8 size_exp);
 
 /* Observers. */
 const s_sym * sym_ht_find (s_sym_ht *ht, const s_str *str);

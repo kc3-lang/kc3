@@ -238,15 +238,7 @@ void sym_delete_all (void)
 
 const s_sym * sym_find (const s_str *str)
 {
-  const s_sym *sym;
-#if HAVE_PTHREAD
-  rwlock_r(&g_sym_ht->rwlock);
-#endif
-  sym = sym_ht_find(g_sym_ht, str);
-#if HAVE_PTHREAD
-  rwlock_unlock_r(&g_sym_ht->rwlock);
-#endif
-  return sym;
+  return sym_ht_find(g_sym_ht, str);
 }
 
 s_tag * sym_find_to_tag (const s_str *src, s_tag *dest)
@@ -727,20 +719,11 @@ p_sym sym_pointer_to_target_type (p_sym pointer_type)
 
 bool sym_register (const s_sym *sym, s_sym *sym_free)
 {
-  bool r = false;
   assert(sym);
   assert(g_sym_ht);
-  if (! g_sym_ht)
-    abort();
-#if HAVE_PTHREAD
-  rwlock_w(&g_sym_ht->rwlock);
-#endif
   if (sym_ht_register(g_sym_ht, sym, sym_free))
-    r = true;
-#if HAVE_PTHREAD
-  rwlock_unlock_w(&g_sym_ht->rwlock);
-#endif
-  return r;
+    return true;
+  return false;
 }
 
 bool sym_search_modules (const s_sym *sym, p_sym *dest)

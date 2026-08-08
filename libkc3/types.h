@@ -549,7 +549,7 @@ struct struct_ {
 struct sym_ht {
   uw              count;
   uw              collisions;
-  uw              size;
+  uw              size_exp;
   s_sym_ht_item **item;
   s_rwlock        rwlock;
 };

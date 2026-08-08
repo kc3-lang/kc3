@@ -14,7 +14,7 @@
 #include "../libkc3/sym_ht.h"
 #include "pdf_name.h"
 
-#define PDF_NAME_LIST_SIZE 1024
+#define PDF_NAME_LIST_SIZE_EXP 10
 
 s_pdf_name_list g_pdf_name_list = {0};
 
@@ -64,7 +64,7 @@ s_pdf_name_list * pdf_name_list_init (s_pdf_name_list *name_list)
 {
   s_pdf_name_list tmp = {0};
   assert(name_list);
-  if (! (tmp.ht = sym_ht_new(PDF_NAME_LIST_SIZE)))
+  if (! (tmp.ht = sym_ht_new(PDF_NAME_LIST_SIZE_EXP)))
     return NULL;
   *name_list = tmp;
   return name_list;

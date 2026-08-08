@@ -697,6 +697,7 @@ KC3_C_SOURCES = \
 	"libkc3/ht.h" \
 	"libkc3/ident.c" \
 	"libkc3/ident.h" \
+	"libkc3/inline.h" \
 	"libkc3/inspect.c" \
 	"libkc3/inspect.h" \
 	"libkc3/integer.c" \
@@ -1733,6 +1734,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/pretty.kc3" \
 	"lib/kc3/0.1/pretty_save.kc3" \
 	"lib/kc3/0.1/prime.kc3" \
+	"lib/kc3/0.1/prime_hash.kc3" \
 	"lib/kc3/0.1/ptr.facts" \
 	"lib/kc3/0.1/ptr_free.facts" \
 	"lib/kc3/0.1/qrencode.kc3" \

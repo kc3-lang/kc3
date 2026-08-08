@@ -129,6 +129,7 @@ HEADERS = \
 	"hotp.h" \
 	"ht.h" \
 	"ident.h" \
+	"inline.h" \
 	"inspect.h" \
 	"integer.h" \
 	"io.h" \
