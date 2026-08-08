@@ -167,23 +167,20 @@ defmodule HTTPd do
         connection = HTTP.Request.header_get(request, "Connection") || ""
         if Compare.str_case_insensitive(connection, "close") == 0 do
           close = true
-          response = HTTP.Response.header_set(response,
-            "Connection", "close")
+          response_headers = [{"Connection", "close"}]
         else
-          response = HTTP.Response.header_set(response,
-            "Connection", "keep-alive")
-          response = HTTP.Response.header_set(response,
-            "Keep-Alive", "timeout=20, max=10")
+          response_headers = [{"Connection", "keep-alive"},
+                              {"Keep-Alive", "timeout=20, max=10"}]
         end
         params = request.params
         if params[:cache_control] do
-          response = HTTP.Response.header_set(response,
-            "Cache-Control", params.cache_control)
+          response_headers = [{"Cache-Control", params.cache_control} |
+                              response_headers]
         end
-        response = HTTP.Response.header_set(response,
-          "Server", "kc3_httpd")
-        response = HTTP.Response.header_set(response,
-          "Accept-Ranges", "bytes")
+        response_headers = [{"Server", "kc3_httpd"},
+                            {"Accept-Ranges", "bytes"} |
+                            response_headers]
+        response = HTTP.Response.headers_set(response, response_headers)
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
         dt = Time.now() - request.time

@@ -35,5 +35,8 @@ s_http_response * http_response_header_set (s_http_response *res,
                                             const s_str *key,
                                             const s_str *value,
                                             s_http_response *dest);
+s_http_response * http_response_headers_set (s_http_response *res,
+                                             p_list *headers,
+                                             s_http_response *dest);
 
 #endif /* HTTP_RESPONSE_H */

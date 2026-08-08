@@ -451,24 +451,86 @@ s_tag * http_response_header_get (const s_http_response *res,
   return tag_init_copy(dest, found);
 }
 
+static bool http_response_header_set_in_place (s_http_response *res,
+                                               const s_str *key,
+                                               const s_str *value)
+{
+  s_tag *header_key;
+  s_list *l;
+  s_tag tmp = {0};
+  l = res->headers;
+  while (l) {
+    if (l->tag.type != TAG_PTUPLE ||
+        l->tag.data.td_ptuple->count != 2 ||
+        (header_key = l->tag.data.td_ptuple->tag)->type != TAG_STR ||
+        (header_key + 1)->type != TAG_STR) {
+      err_puts("http_response_header_set_in_place: invalid header");
+      return false;
+    }
+    if (! compare_str_case_insensitive(&header_key->data.td_str, key)) {
+      if (! tag_init_ptuple(&tmp, 2) ||
+          ! tag_init_str_copy(tmp.data.td_ptuple->tag,
+                              &header_key->data.td_str) ||
+          ! tag_init_str_copy(tmp.data.td_ptuple->tag + 1, value)) {
+        tag_clean(&tmp);
+        return false;
+      }
+      tag_clean(&l->tag);
+      l->tag = tmp;
+      return true;
+    }
+    l = list_next(l);
+  }
+  if (! (res->headers = list_new_ptuple(2, res->headers)))
+    return false;
+  if (! tag_init_str_copy(res->headers->tag.data.td_ptuple->tag, key) ||
+      ! tag_init_str_copy(res->headers->tag.data.td_ptuple->tag + 1,
+                          value))
+    return false;
+  return true;
+}
+
 s_http_response * http_response_header_set (s_http_response *res,
                                             const s_str *key,
                                             const s_str *value,
                                             s_http_response *dest)
 {
-  s_tag *header;
   s_http_response tmp = {0};
+  if (! http_response_init_copy(&tmp, res) ||
+      ! http_response_header_set_in_place(&tmp, key, value))
+    goto clean;
+  *dest = tmp;
+  return dest;
+ clean:
+  http_response_clean(&tmp);
+  return NULL;
+}
+
+s_http_response * http_response_headers_set (s_http_response *res,
+                                             p_list *headers,
+                                             s_http_response *dest)
+{
+  s_tag *key;
+  s_list *l;
+  s_http_response tmp = {0};
+  s_tag *value;
   if (! http_response_init_copy(&tmp, res))
     return NULL;
-  if ((header = http_response_header_find(&tmp, key))) {
-    tag_clean(header);
-    tag_init_str_copy(header, value);
-  }
-  else {
-    if (! (tmp.headers = list_new_ptuple(2, tmp.headers)))
+  if (! headers)
+    goto clean;
+  l = *headers;
+  while (l) {
+    if (l->tag.type != TAG_PTUPLE ||
+        l->tag.data.td_ptuple->count != 2 ||
+        (key = l->tag.data.td_ptuple->tag)->type != TAG_STR ||
+        (value = key + 1)->type != TAG_STR) {
+      err_puts("http_response_headers_set: invalid header");
       goto clean;
-    tag_init_str_copy(tmp.headers->tag.data.td_ptuple->tag, key);
-    tag_init_str_copy(tmp.headers->tag.data.td_ptuple->tag + 1, value);
+    }
+    if (! http_response_header_set_in_place(&tmp, &key->data.td_str,
+                                            &value->data.td_str))
+      goto clean;
+    l = list_next(l);
   }
   *dest = tmp;
   return dest;
