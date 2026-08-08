@@ -1,0 +1,16 @@
+def call_cache_target = fn (x) {
+  x + 1
+}
+
+def call_cache_caller = fn (x) {
+  call_cache_target(x)
+}
+
+puts("#{call_cache_caller(1)}")
+
+def call_cache_target = fn (x) {
+  x + 10
+}
+
+puts("#{call_cache_caller(2)}")
+puts("#{call_cache_target(2)}")

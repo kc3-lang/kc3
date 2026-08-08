@@ -33,6 +33,7 @@
 #include "ident.h"
 #include "list.h"
 #include "map.h"
+#include "mutex.h"
 #include "ops.h"
 #include "pcallable.h"
 #include "pstruct.h"
@@ -115,6 +116,9 @@ bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
 
 bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
 {
+  bool borrowed = false;
+  bool cache = false;
+  p_callable cached = NULL;
   s_call c = {0};
   bool result;
   s_unwind_protect up = {0};
@@ -127,7 +131,47 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   }
   c.ident = call->ident;
   c.arguments = call->arguments;
-  if (! env_eval_call_resolve(env, &c)) {
+  if (call->ident.module ||
+      ! env_frames_get(env, call->ident.sym)) {
+#if HAVE_PTHREAD
+    if (call->mutex.ready) {
+      cache = true;
+      cached = __atomic_load_n(&call->pcallable, __ATOMIC_ACQUIRE);
+    }
+#else
+    cache = true;
+    cached = call->pcallable;
+#endif
+    if (cache) {
+      if (! cached) {
+#if HAVE_PTHREAD
+        mutex_lock(&call->mutex);
+        cached = __atomic_load_n(&call->pcallable, __ATOMIC_RELAXED);
+#endif
+        if (! cached) {
+          if (! env_eval_call_resolve(env, &c)) {
+#if HAVE_PTHREAD
+            mutex_unlock(&call->mutex);
+#endif
+            goto resolve_ko;
+          }
+          cached = c.pcallable;
+#if HAVE_PTHREAD
+          __atomic_store_n(&call->pcallable, cached, __ATOMIC_RELEASE);
+#else
+          call->pcallable = cached;
+#endif
+        }
+#if HAVE_PTHREAD
+        mutex_unlock(&call->mutex);
+#endif
+      }
+      c.pcallable = cached;
+      borrowed = true;
+    }
+  }
+  if (! borrowed && ! env_eval_call_resolve(env, &c)) {
+  resolve_ko:
     err_stacktrace();
     err_write_1("env_eval_call: env_eval_call_resolve: ");
     err_inspect_ident(&c.ident);
@@ -146,6 +190,8 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   if (setjmp(up.buf)) {
     env_unwind_protect_pop(env, &up);
     c.arguments = NULL;
+    if (borrowed)
+      c.pcallable = NULL;
     call_clean(&c);
     env->stacktrace_depth--;
     longjmp(*up.jmp, 1);
@@ -164,6 +210,8 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   env_unwind_protect_pop(env, &up);
  clean:
   c.arguments = NULL;
+  if (borrowed)
+    c.pcallable = NULL;
   call_clean(&c);
   return result;
 }
