@@ -24,13 +24,18 @@
 const s_sym * sym_ht_register (s_sym_ht *ht, const s_sym *sym,
                                s_sym *sym_free)
 {
+  bool collision;
   uw h;
   s_sym_ht_item *i;
   s_sym_ht_item **item;
   uw pos;
   h = primehash_uw(&sym->str, 0);
+#if HAVE_PTHREAD
+  rwlock_w(&g_sym_ht->rwlock);
+#endif
   pos = h % ht->size;
   item = ht->item + pos;
+  collision = item ? true : false;
   if ((i = *item)) {
     while (i) {
       if (i->hash_uw == h && compare_str(&i->sym->str, &sym->str) == 0) {
@@ -42,10 +47,19 @@ const s_sym * sym_ht_register (s_sym_ht *ht, const s_sym *sym,
       i = i->next;
     }
   }
-  if (! (i = sym_ht_item_new(h, sym, sym_free, *item)))
+  if (! (i = sym_ht_item_new(h, sym, sym_free, *item))) {
+#if HAVE_PTHREAD
+    rwlock_unlock_w(&g_sym_ht->rwlock);
+#endif
     return NULL;
+  }
   *item = i;
   ht->count++;
+  if (collision)
+    ht->collisions++;
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&g_sym_ht->rwlock);
+#endif
   return sym;
 }
 
@@ -73,13 +87,23 @@ const s_sym * sym_ht_find (s_sym_ht *ht, const s_str *str)
   s_sym_ht_item *item;
   uw pos;
   h = primehash_uw(str, 0);
+#if HAVE_PTHREAD
+  rwlock_r(&g_sym_ht->rwlock);
+#endif
   pos = h % ht->size;
   item = ht->item[pos];
   while (item && ((item->hash_uw != h) ||
                   compare_str(str, &item->sym->str) != 0))
     item = item->next;
-  if (item)
+  if (item) {
+#if HAVE_PTHREAD
+    rwlock_unlock_r(&g_sym_ht->rwlock);
+#endif
     return item->sym;
+  }
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&g_sym_ht->rwlock);
+#endif
   return NULL;
 }
 
