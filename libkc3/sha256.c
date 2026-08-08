@@ -425,6 +425,19 @@ sha256_final(u8 digest[SHA256_DIGEST_LENGTH], s_sha2 *context)
   explicit_bzero(context, sizeof(*context));
 }
 
+s_str * sha256_str (const s_str *in, s_str *out)
+{
+  s_sha2 context;
+  s_str tmp = {0};
+  if (! str_init_alloc(&tmp, SHA256_DIGEST_LENGTH))
+    return NULL;
+  sha256_init(&context);
+  sha256_update(&context, in->ptr.p_pu8, in->size);
+  sha256_final(tmp.free.p_pu8, &context);
+  *out = tmp;
+  return out;
+}
+
 s_str * sha256_str_to_hex (const s_str *in, s_str *out)
 {
   s_sha2 context;
