@@ -14,6 +14,10 @@
 #define LIBKC3_HASH_H
 
 #include "types.h"
+#include "inline.h"
+#include "assert.h"
+#include "primehash.h"
+#include "str.h"
 
 #define HASH_UPDATE_PROTOTYPE(type)                           \
   bool hash_update_##type (t_hash *hash, type x)
@@ -23,7 +27,6 @@ void hash_init (t_hash *hash);
 uw   hash_tag (s_tag *tag);
 uw   hash_to_uw (t_hash *hash);
 u64  hash_to_u64 (t_hash *hash);
-bool hash_update (t_hash *hash, const void *data, uw size);
 bool hash_update_1 (t_hash *hash, const char *p);
 bool hash_update_array (t_hash *hash, const s_array *a);
 bool hash_update_do_block (t_hash *hash, const s_do_block *do_block);
@@ -81,5 +84,17 @@ bool hash_update_unquote (t_hash *hash, const s_unquote *unquote);
 HASH_UPDATE_PROTOTYPE(uw);
 bool hash_update_var (t_hash *hash, const s_var *var);
 bool hash_update_void (t_hash *hash);
+
+/* Inline functions. */
+
+INLINE bool hash_update (t_hash *hash, const void *data, uw size)
+{
+  s_str str;
+  assert(hash);
+  assert(data);
+  str_init(&str, NULL, size, (const char *) data);
+  *hash = primehash_u64_inline(&str, *hash);
+  return true;
+}
 
 #endif /* LIBKC3_HASH_H */

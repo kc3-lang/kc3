@@ -44,7 +44,7 @@
     }                                                                  \
   } while(0)
 #else
-# define assert(test)
+# define assert(test) ((void) (test))
 #endif
 
 #endif /* LIBKC3_ASSERT_H */

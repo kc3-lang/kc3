@@ -13,7 +13,7 @@
 #include <float.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
+#include "../libkc3/assert.h"
 #include "compare_test.h"
 #include "../libkc3/alloc.h"
 #include "../libkc3/str.h"

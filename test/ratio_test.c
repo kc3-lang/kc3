@@ -12,7 +12,7 @@
  */
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
+#include "../libkc3/assert.h"
 #include "compare_test.h"
 #include "../libkc3/str.h"
 #include "../libkc3/buf.h"

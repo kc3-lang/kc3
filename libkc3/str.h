@@ -21,7 +21,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include "hash.h"
 #include "types.h"
 
 #define STR_MAX (16 * 1024 * 1024)

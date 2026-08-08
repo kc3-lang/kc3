@@ -308,7 +308,7 @@ typedef union tag_data      u_tag_data;
 typedef u32             character;
 typedef s_tag *         t_facts_spec[];
 typedef s64             t_fd;
-typedef s_sha1          t_hash;
+typedef u64             t_hash;
 typedef u64             t_skiplist_height;
 typedef s64             t_socket;
 

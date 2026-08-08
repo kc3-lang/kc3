@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from set_cursor.c.in NAME=fact TYPE=s_fact * */
-#include <assert.h>
+#include "assert.h"
 #include <stdlib.h>
 #include "types.h"
 
