@@ -96,7 +96,7 @@ build:
 	${MAKE} -C json build
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue build; fi
 	${MAKE} -C markdown build
-#	${MAKE} -C pdf build
+	${MAKE} -C pdf build
 	${MAKE} -C qrencode build
 	${MAKE} -C smtp build
 	${MAKE} -C http build
@@ -216,7 +216,7 @@ debug:
 	${MAKE} -C json debug
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue debug; fi
 	${MAKE} -C markdown debug
-#	${MAKE} -C pdf debug
+	${MAKE} -C pdf debug
 	${MAKE} -C qrencode debug
 	${MAKE} -C smtp debug
 	${MAKE} -C http debug
