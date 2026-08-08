@@ -50,7 +50,7 @@ defmodule HTTPd do
 
   def socket = ?
 
-  def thread_count = Counter.new(1)
+  def thread_count = Counter.new(0)
 
   def thread_max = fn () { ncpu() }
 
@@ -263,8 +263,10 @@ defmodule HTTPd do
     end
   }
 
+  def thread_db = Facts.database()
+
   def thread_status = fn (thread_id, status) {
-    Facts.replace_tags(Facts.env_db(), thread_id, :thread_status, status)
+    Facts.replace_tags(HTTPd.thread_db, :thread_status, thread_id, status)
   }
 
   def server_thread = fn () {
