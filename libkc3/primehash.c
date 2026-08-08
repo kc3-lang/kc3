@@ -20,7 +20,7 @@ uw primehash_uw (const s_str *key, uw hash)
   const u8 *k = key->ptr.p_pu8;
   i = 0;
   while (i < key->size) {
-    hash *= 3;
+    hash *= 17;
     hash ^= 0x3333333333333333;
     h[0] ^= k[i];
     j = 1;
