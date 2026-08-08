@@ -363,11 +363,6 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
   assert(env);
   assert(cfn);
   assert(dest);
-  i = 0;
-  while (i < (args_max ? args_max : 1)) {
-    args_storage[i] = (s_list) {0};
-    i++;
-  }
   if (securelevel(0) > 2) {
     err_puts("env_eval_call_cfn_args: cannot eval with"
              " securelevel > 2");
@@ -385,7 +380,9 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
   if (arguments && ! (cfn->macro || cfn->special_operator)) {
     argument = arguments;
     while (argument) {
-      assert(args_count < args_max);
+      if (args_count >= args_max)
+        goto ko;
+      args_storage[args_count] = (s_list) {0};
       if (args_count)
         tag_init_plist((s_tag *) &args_storage[args_count - 1].next,
                        (s_list *) &args_storage[args_count]);
@@ -398,8 +395,11 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
     if (args_count)
       args = (s_list *) args_storage;
   }
-  if (! cfn_apply(cfn, (cfn->macro || cfn->special_operator) ?
-                  arguments : args, &tag))
+  if (cfn->macro || cfn->special_operator) {
+    if (! cfn_apply(cfn, arguments, &tag))
+      goto ko;
+  }
+  else if (! cfn_apply_count(cfn, args, args_count, &tag))
     goto ko;
   env_unwind_protect_pop(env, &unwind_protect);
   *dest = tag;

@@ -28,6 +28,12 @@
 
 s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
 {
+  return cfn_apply_count(cfn, args, list_length(args), dest);
+}
+
+s_tag * cfn_apply_count (s_cfn *cfn, s_list *args, sw num_args,
+                         s_tag *dest)
+{
   s_list *a;
   void ** volatile arg_pointer_result = NULL;
   void ** volatile arg_pointers = NULL;
@@ -40,7 +46,6 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   s_list *cfn_arg_types;
   s_env *env;
   sw i = 0;
-  sw num_args;
   void *p;
   void *result = NULL;
   s_list * volatile stacktrace;
@@ -52,7 +57,6 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   assert(cfn);
   assert(cfn->arity == cfn->cif.nargs);
   env = env_global();
-  num_args = list_length(args);
   arity = cfn->arity - (cfn->arg_result ? 1 : 0);
   if (arity != num_args) {
     err_write_1("cfn_apply: ");
