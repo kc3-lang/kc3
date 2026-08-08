@@ -123,6 +123,38 @@ bool env_eval_equal_list (s_env *env, bool macro, s_list *a,
   return false;
 }
 
+bool env_eval_equal_list_match (s_env *env, bool macro, s_list *a,
+                                s_list *b)
+{
+  s_list *a_next;
+  s_list *b_next;
+  s_tag tmp = {0};
+  assert(env);
+  while (1) {
+    if (! a && ! b)
+      return true;
+    if (! a || ! b)
+      return false;
+    if (! env_eval_equal_tag(env, macro, &a->tag, &b->tag, &tmp)) {
+      tag_clean(&tmp);
+      return false;
+    }
+    tag_clean(&tmp);
+    a_next = list_next(a);
+    b_next = list_next(b);
+    if (! a_next || ! b_next) {
+      if (! env_eval_equal_tag(env, macro, &a->next, &b->next, &tmp)) {
+        tag_clean(&tmp);
+        return false;
+      }
+      tag_clean(&tmp);
+      return true;
+    }
+    a = a_next;
+    b = b_next;
+  }
+}
+
 // TODO: unwind protect
 bool env_eval_equal_map (s_env *env, bool macro, s_map *a,
                          s_map *b, s_map *dest)
