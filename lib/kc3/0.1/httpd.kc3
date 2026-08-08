@@ -117,15 +117,17 @@ defmodule HTTPd do
     end
   }
 
-  def http_client = fn (socket, client) do
+  def http_client = fn (thread_id, socket, client) do
     bot? = false
     close = false
     error = true
     request = void
     Counter.increase(HTTPd.concurrent_requests, 1)
     unwind_protect(do
+      HTTPd.thread_status(thread_id, "parse request")
       request = HTTP.Request.buf_parse_with_timeout(client.buf_rw.r, (S64) 5, (Sw) 3)
       if request do
+        HTTPd.thread_status(thread_id, "request")
         Counter.increase(HTTPd.requests, 1)
         client_addr = if client.addr_str != "127.0.0.1" do
           client.addr_str
@@ -145,6 +147,7 @@ defmodule HTTPd do
                Str.has_str?(user_agent_lower, "spider")
         if bot? do
           if Counter.increase(HTTPd.bots, 1) >= HTTPd.bots_max() do
+            HTTPd.thread_status(thread_id, "bot 429")
             msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}"
             IO.puts(msg)
             Err.puts(msg)
@@ -153,19 +156,24 @@ defmodule HTTPd do
         end
         if ! response do
           if (type(request.method) == Str) do
+            HTTPd.thread_status(thread_id, "405")
             msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}"
             IO.puts(msg)
             Err.puts(msg)
             response = error_405_page(request)
           else
+            HTTPd.thread_status(thread_id, "plug")
             request = plug_request(request)
             msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}#{request.log_msg}"
             IO.puts(msg)
             Err.puts(msg)
+            HTTPd.thread_status(thread_id, "route_and_render_request")
             response = route_and_render_request(request)
           end
         end
+        HTTPd.thread_status(thread_id, "clean_requests_uploads")
         clean_request_uploads(request.body)
+        HTTPd.thread_status(thread_id, "headers")
         connection = HTTP.Request.header_get(request, "Connection") || ""
         if Compare.str_case_insensitive(connection, "close") == 0 do
           close = true
@@ -183,6 +191,7 @@ defmodule HTTPd do
                             {"Accept-Ranges", "bytes"} |
                             response_headers]
         response = HTTP.Response.headers_set(response, response_headers)
+        HTTPd.thread_status(thread_id, "buf_write")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
         dt = Time.now() - request.time
@@ -190,6 +199,7 @@ defmodule HTTPd do
         msg = "#{response.code} #{client_addr} #{request.method}" +
               " #{request.url} #{inspect(user_agent)}" +
               " #{dt_str}#{request.log_msg}"
+        HTTPd.thread_status(thread_id, "logging")
         IO.puts(msg)
         if (! close) do
           kq_ok = EventPoll.add(HTTPd.ep_fd, client.sockfd,
@@ -201,6 +211,7 @@ defmodule HTTPd do
         end
       end
     end, do
+      HTTPd.thread_status(thread_id, "cleanup")
       Counter.decrease(HTTPd.concurrent_requests, 1)
       bots_count = if bot? do
         Counter.decrease(HTTPd.bots, 1)
@@ -266,7 +277,10 @@ defmodule HTTPd do
   def thread_db = Facts.database()
 
   def thread_status = fn (thread_id, status) {
-    Facts.replace_tags(HTTPd.thread_db, :thread_status, thread_id, status)
+    Facts.replace_tags(HTTPd.thread_db, :thread_status, thread_id,
+      %{id: thread_id,
+        status: status,
+        time: Time.now()})
   }
 
   def server_thread = fn () {
@@ -297,7 +311,7 @@ defmodule HTTPd do
             end
           {sockfd, :read, {:client, client}} ->
             HTTPd.thread_status(thread_id, "http_client")
-            HTTPd.http_client(sockfd, client)
+            HTTPd.http_client(thread_id, sockfd, client)
           {sockfd, :timer, {:client, client}} ->
             HTTPd.thread_status(thread_id, "timeout")
             if Socket.Buf.can_close?(client) do
