@@ -43,13 +43,10 @@ p_pdf_name pdf_name_find (s_pdf_name_list *name_list,
 p_pdf_name pdf_name_from_str (s_pdf_name_list *name_list,
                               const s_str *str)
 {
-  p_pdf_name name;
   assert(str);
   if (! name_list)
     name_list = &g_pdf_name_list;
-  if (! (name = pdf_name_find(name_list, str)))
-    name = pdf_name_new(name_list, str);
-  return name;
+  return pdf_name_new(name_list, str);
 }
 
 void pdf_name_list_delete_all (s_pdf_name_list *name_list)
@@ -73,21 +70,9 @@ s_pdf_name_list * pdf_name_list_init (s_pdf_name_list *name_list)
 p_pdf_name pdf_name_new (s_pdf_name_list *name_list,
                          const s_str *str)
 {
-  s_sym *sym;
-  p_pdf_name tmp;
   assert(name_list);
   assert(str);
   if (! name_list->ht && ! pdf_name_list_init(name_list))
     return NULL;
-  if (! (sym = alloc(sizeof(s_sym))))
-    return NULL;
-  if (! str_init_copy(&sym->str, str)) {
-    alloc_free(sym);
-    return NULL;
-  }
-  if (! (tmp = sym_ht_register(name_list->ht, sym, sym))) {
-    sym_delete(sym);
-    return NULL;
-  }
-  return tmp;
+  return sym_ht_intern(name_list->ht, str);
 }

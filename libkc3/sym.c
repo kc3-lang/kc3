@@ -693,19 +693,8 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
 
 const s_sym * sym_new (const s_str *src)
 {
-  s_sym *sym = NULL;
-  sym = alloc(sizeof(s_sym));
-  if (! sym)
-    return NULL;
-  if (! str_init_copy(&sym->str, src)) {
-    alloc_free(sym);
-    return NULL;
-  }
-  if (! sym_register(sym, sym)) {
-    alloc_free(sym);
-    return NULL;
-  }
-  return sym;
+  assert(g_sym_ht);
+  return sym_ht_intern(g_sym_ht, src);
 }
 
 p_sym sym_pointer_to_target_type (p_sym pointer_type)

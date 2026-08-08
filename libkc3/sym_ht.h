@@ -23,6 +23,7 @@ s_sym_ht * sym_ht_new (u8 size_exp);
 const s_sym * sym_ht_find (s_sym_ht *ht, const s_str *str);
 
 /* Operators. */
+const s_sym * sym_ht_intern (s_sym_ht *ht, const s_str *str);
 const s_sym * sym_ht_register (s_sym_ht *ht, const s_sym *sym,
                                s_sym *sym_free);
 

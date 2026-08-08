@@ -2090,11 +2090,7 @@ s_ident * str_to_ident (const s_str *src, s_ident *ident)
 
 const s_sym * str_to_sym (const s_str *src)
 {
-  const s_sym *sym;
-  sym = sym_find(src);
-  if (! sym)
-    sym = sym_new(src);
-  return sym;
+  return sym_new(src);
 }
 
 s_str * str_trim (const s_str *str, s_str *dest)
