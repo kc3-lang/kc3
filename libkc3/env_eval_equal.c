@@ -135,11 +135,18 @@ bool env_eval_equal_list_match (s_env *env, bool macro, s_list *a,
       return true;
     if (! a || ! b)
       return false;
-    if (! env_eval_equal_tag(env, macro, &a->tag, &b->tag, &tmp)) {
-      tag_clean(&tmp);
-      return false;
+    if (a->tag.type == TAG_IDENT) {
+      if (! frame_replace(env->frame, a->tag.data.td_ident.sym,
+                          &b->tag))
+        return false;
     }
-    tag_clean(&tmp);
+    else {
+      if (! env_eval_equal_tag(env, macro, &a->tag, &b->tag, &tmp)) {
+        tag_clean(&tmp);
+        return false;
+      }
+      tag_clean(&tmp);
+    }
     a_next = list_next(a);
     b_next = list_next(b);
     if (! a_next || ! b_next) {

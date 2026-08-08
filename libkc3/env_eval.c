@@ -131,41 +131,45 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   }
   c.ident = call->ident;
   c.arguments = call->arguments;
-  if (call->ident.module ||
-      ! env_frames_get(env, call->ident.sym)) {
 #if HAVE_PTHREAD
-    if (call->mutex.ready) {
-      cache = true;
-      cached = __atomic_load_n(&call->pcallable, __ATOMIC_ACQUIRE);
-    }
+  if (call->mutex.ready)
+    cached = __atomic_load_n(&call->pcallable, __ATOMIC_ACQUIRE);
+#else
+  cached = call->pcallable;
+#endif
+  if (cached) {
+    c.pcallable = cached;
+    borrowed = true;
+  }
+  else if (call->ident.module ||
+           ! env_frames_get(env, call->ident.sym)) {
+#if HAVE_PTHREAD
+    cache = call->mutex.ready;
 #else
     cache = true;
-    cached = call->pcallable;
 #endif
     if (cache) {
+#if HAVE_PTHREAD
+      mutex_lock(&call->mutex);
+      cached = __atomic_load_n(&call->pcallable, __ATOMIC_RELAXED);
+#endif
       if (! cached) {
+        if (! env_eval_call_resolve(env, &c)) {
 #if HAVE_PTHREAD
-        mutex_lock(&call->mutex);
-        cached = __atomic_load_n(&call->pcallable, __ATOMIC_RELAXED);
+          mutex_unlock(&call->mutex);
 #endif
-        if (! cached) {
-          if (! env_eval_call_resolve(env, &c)) {
-#if HAVE_PTHREAD
-            mutex_unlock(&call->mutex);
-#endif
-            goto resolve_ko;
-          }
-          cached = c.pcallable;
-#if HAVE_PTHREAD
-          __atomic_store_n(&call->pcallable, cached, __ATOMIC_RELEASE);
-#else
-          call->pcallable = cached;
-#endif
+          goto resolve_ko;
         }
+        cached = c.pcallable;
 #if HAVE_PTHREAD
-        mutex_unlock(&call->mutex);
+        __atomic_store_n(&call->pcallable, cached, __ATOMIC_RELEASE);
+#else
+        call->pcallable = cached;
 #endif
       }
+#if HAVE_PTHREAD
+      mutex_unlock(&call->mutex);
+#endif
       c.pcallable = cached;
       borrowed = true;
     }
