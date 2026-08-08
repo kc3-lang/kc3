@@ -1,0 +1,26 @@
+quote defmodule StructUpdateTest do
+  defstruct [a: 1, b: 2, c: 3]
+end
+defmodule StructUpdateTest do
+  defstruct [a: 1, b: 2, c: 3]
+end
+
+quote old = %StructUpdateTest{a: 4, b: 5, c: 6}
+old = %StructUpdateTest{a: 4, b: 5, c: 6}
+quote updated = %StructUpdateTest{old | a: 10, c: 20 + 10}
+updated = %StructUpdateTest{old | a: 10, c: 20 + 10}
+old
+updated
+old.a
+old.b
+old.c
+updated.a
+updated.b
+updated.c
+
+# Changes are applied in source order to the one copied struct.
+%StructUpdateTest{old | a: 7, a: 8}
+
+# Invalid source types and unknown fields fail cleanly.
+%StructUpdateTest{%Time{} | a: 1}
+%StructUpdateTest{old | unknown: 1}

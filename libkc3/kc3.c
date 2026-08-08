@@ -1428,6 +1428,42 @@ s_tag * kc3_struct_put (s_tag *s, p_sym *key,
   return dest;
 }
 
+s_tag * kc3_struct_put_multiple (p_sym *module, s_tag *s,
+                                 p_list *changes, s_tag *dest)
+{
+  s_tag *key;
+  s_list *l;
+  p_struct tmp = NULL;
+  uw key_index;
+  assert(module);
+  assert(s);
+  assert(changes);
+  assert(dest);
+  if (s->type != TAG_PSTRUCT || ! s->data.td_pstruct ||
+      s->data.td_pstruct->pstruct_type->module != *module) {
+    err_puts("kc3_struct_put_multiple: struct type mismatch");
+    return NULL;
+  }
+  if (! (tmp = struct_new_copy(s->data.td_pstruct)))
+    return NULL;
+  l = *changes;
+  while (l) {
+    if (l->tag.type != TAG_PTUPLE ||
+        l->tag.data.td_ptuple->count != 2 ||
+        (key = l->tag.data.td_ptuple->tag)->type != TAG_PSYM ||
+        ! struct_find_key_index(tmp, key->data.td_psym, &key_index) ||
+        ! struct_set(tmp, key->data.td_psym, key + 1)) {
+      err_puts("kc3_struct_put_multiple: invalid change");
+      struct_delete(tmp);
+      return NULL;
+    }
+    l = list_next(l);
+  }
+  dest->type = TAG_PSTRUCT;
+  dest->data.td_pstruct = tmp;
+  return dest;
+}
+
 s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
 {
 #if (defined(__OpenBSD__))

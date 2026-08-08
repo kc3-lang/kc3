@@ -82,6 +82,7 @@ There are now seven full applications written in KC3 that we know of :
 ## New in this release
 
  - libkc3
+   - Struct update `%Module{old | field1: value, field2: value}`
    - [TODO] marshall facts db as full data structures and not as
      logical triples
    - [TODO] kc3 to C

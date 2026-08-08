@@ -89,6 +89,9 @@ sw buf_inspect_buf_size (s_pretty *pretty, const s_buf *src);
 sw buf_inspect_c_pointer (s_buf *buf, const void *ptr);
 sw buf_inspect_c_pointer_size (s_pretty *pretty, const void *ptr);
 sw buf_inspect_call (s_buf *buf, const s_call *call);
+sw buf_inspect_call_struct_update (s_buf *buf, const s_call *call);
+sw buf_inspect_call_struct_update_size (s_pretty *pretty,
+                                        const s_call *call);
 sw buf_inspect_call_access (s_buf *buf, const s_call *call);
 sw buf_inspect_call_access_size (s_pretty *pretty, const s_call *call);
 sw buf_inspect_call_args (s_buf *buf, const s_list *args);
@@ -243,6 +246,8 @@ sw buf_inspect_struct_type_size (s_pretty *pretty,
                                  const s_struct_type *st);
 BUF_INSPECT_S_PROTOTYPES(w);
 sw buf_inspect_sym (s_buf *buf, const s_sym *sym);
+sw buf_inspect_sym_key (s_buf *buf, const s_sym *sym);
+sw buf_inspect_sym_key_size (s_pretty *pretty, const s_sym *sym);
 sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *sym);
 sw buf_inspect_sym_reserved_size (s_pretty *pretty, const s_sym *sym);
 sw buf_inspect_sym_size (s_pretty *pretty, const s_sym *sym);

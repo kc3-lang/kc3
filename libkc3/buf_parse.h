@@ -147,6 +147,7 @@ sw buf_parse_tag_primary_2 (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_primary_3 (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_pstruct (s_buf *buf, s_tag *dest);
+sw buf_parse_tag_struct_update (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_ptr (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_ptr_free (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_pvar (s_buf *buf, s_tag *dest);

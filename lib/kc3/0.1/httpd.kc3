@@ -132,7 +132,7 @@ defmodule HTTPd do
           real_ip = headers["X-Real-IP"]
           if (real_ip) do real_ip else client.addr_str end
         end
-        request = Struct.put(request, :client_addr, client_addr)
+        request = %HTTP.Request{request | client_addr: client_addr}
         user_agent = HTTP.Request.header_get(request, "User-Agent")
         response = false
         user_agent_lower = Str.to_lower(user_agent || "")

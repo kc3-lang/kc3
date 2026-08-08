@@ -196,6 +196,9 @@ s_tag *              kc3_require (p_sym *module, s_tag *dest);
 s_str *              kc3_strerror (sw err_no, s_str *dest);
 s_tag *              kc3_struct_put (s_tag *s, p_sym *key,
                                      s_tag *value, s_tag *dest);
+s_tag *              kc3_struct_put_multiple (p_sym *module, s_tag *s,
+                                              p_list *changes,
+                                              s_tag *dest);
 p_tuple *            kc3_system (p_list *list, p_tuple *dest);
 void                 kc3_tag_delete (s_tag **tag);
 s_marshall **        kc3_tag_marshall (s_marshall **m, bool heap,
