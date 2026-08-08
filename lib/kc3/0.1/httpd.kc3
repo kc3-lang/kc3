@@ -39,7 +39,7 @@ defmodule HTTPd do
   def connections = Counter.new(0)
 
   def connections_max = fn () {
-    HTTPd.thread_count() * 1024
+    HTTPd.thread_max() * 1024
   }
 
   def ep_fd = ?
@@ -50,7 +50,9 @@ defmodule HTTPd do
 
   def socket = ?
 
-  def thread_count = fn () { ncpu() }
+  def thread_count = Counter.new(1)
+
+  def thread_max = fn () { ncpu() }
 
   def timeout = %Time{tv_sec: 20}
 
@@ -261,17 +263,27 @@ defmodule HTTPd do
     end
   }
 
+  def thread_status = fn (thread_id, status) {
+    Facts.replace_tags(Facts.env_db(), thread_id, :thread_status, status)
+  }
+
   def server_thread = fn () {
+    thread_id = Counter.increase(HTTPd.thread_count, 1)
+    HTTPd.thread_status(thread_id, "start")
     while ! Counter.get(HTTPd.server_thread_stop) do
       ignore_errors(do
+        HTTPd.thread_status(thread_id, "poll")
         r = EventPoll.poll(HTTPd.ep_fd, %Time{tv_sec: 1})
         match r do
           {sockfd, :eof, :acceptor} ->
+            HTTPd.thread_status(thread_id, "EOF on acceptor")
             File.close(sockfd)
             Counter.increase(HTTPd.server_thread_stop, 1)
           {sockfd, :read, :acceptor} ->
+            HTTPd.thread_status(thread_id, "acceptor")
             HTTPd.acceptor(sockfd)
           {sockfd, :eof, {:client, client}} ->
+            HTTPd.thread_status(thread_id, "eof")
             if Socket.Buf.can_close?(client) do
               EventPoll.delete(HTTPd.ep_fd, sockfd, :timer)
               EventPoll.delete(HTTPd.ep_fd, sockfd, :read)
@@ -282,8 +294,10 @@ defmodule HTTPd do
               puts("HTTPd.server_thread: eof: connections=#{count} bots=#{bots_count}")
             end
           {sockfd, :read, {:client, client}} ->
+            HTTPd.thread_status(thread_id, "http_client")
             HTTPd.http_client(sockfd, client)
           {sockfd, :timer, {:client, client}} ->
+            HTTPd.thread_status(thread_id, "timeout")
             if Socket.Buf.can_close?(client) do
               EventPoll.delete(HTTPd.ep_fd, sockfd, :timer)
               EventPoll.delete(HTTPd.ep_fd, sockfd, :read)
@@ -294,12 +308,15 @@ defmodule HTTPd do
               puts("HTTPd.server_thread: timeout: connections=#{count} bots=#{bots_count}")
             end
           void ->
+            HTTPd.thread_status(thread_id, "void")
             void
           x ->
+            HTTPd.thread_status(thread_id, "unknown poll value")
             Err.puts("HTTPd.server_thread: unknown poll value:" +
               " #{inspect(x)}")
             void
         end
+        HTTPd.thread_status(thread_id, "while")
       end)
     end
   }
@@ -334,8 +351,8 @@ defmodule HTTPd do
       clean_all_uploads()
       if HTTPd.ep_fd <- EventPoll.new() do
         EventPoll.add(HTTPd.ep_fd, socket.fd, void, HTTPd.acceptor_tag)
-        if HTTPd.thread_count() > 1 do
-          threads = List.map(List.count(HTTPd.thread_count() - 1),
+        if HTTPd.thread_max() > 1 do
+          threads = List.map(List.count(HTTPd.thread_max() - 1),
             HTTPd.server_thread_new)
           HTTPd.server_thread()
           List.map(threads, Thread.delete)
@@ -347,9 +364,7 @@ defmodule HTTPd do
         Counter.delete(HTTPd.connections)
         Counter.delete(HTTPd.requests)
         Counter.delete(HTTPd.server_thread_stop)
-        # TODO: le cast (S64) 0 est un workaround -- kc3 type le litteral 0
-        # en U8 et tag_to_ffi_pointer refuse U8 -> S64. Cleaner fix dans
-        # le parser kc3 pour inferer le type depuis la signature du binding.
+        Counter.delete(HTTPd.thread_count)
         EventPoll.delete(HTTPd.ep_fd, (S64) 0, void)
         Socket.close(HTTPd.socket)
         Tag.delete(HTTPd.acceptor_tag)
