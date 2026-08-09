@@ -74,7 +74,7 @@ s_env * env_fork_init (s_env *env, s_env *src)
   }
   tmp.search_modules = src->search_modules_default;
   tmp.search_modules_default = src->search_modules_default;
-  // tmp.stacktrace = NULL;
+  tmp.stacktrace = alloc(sizeof(void *));
   // tmp.toplevel_frame = {0};
   tmp.trace = src->trace;
   // tmp.unquote_level = 0;
