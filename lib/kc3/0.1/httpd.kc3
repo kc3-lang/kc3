@@ -41,7 +41,7 @@ defmodule HTTPd do
   def connections = Counter.new(0)
 
   def connections_max = fn () {
-    HTTPd.thread_max() * 1024
+    HTTPd.thread_max() * 2
   }
 
   def ep_fd = ?
@@ -54,7 +54,7 @@ defmodule HTTPd do
 
   def thread_count = Counter.new(0)
 
-  def thread_max = fn () { ncpu() * 10 }
+  def thread_max = fn () { ncpu() * 2 }
 
   def timeout = %Time{tv_sec: 30}
 
