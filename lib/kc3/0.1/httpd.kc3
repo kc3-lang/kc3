@@ -85,6 +85,23 @@ defmodule HTTPd do
     IO.puts("HTTPd.load_app: done")
   }
 
+  def thread_db = Facts.database()
+
+  def thread_status = fn (thread_id, status) {
+    Facts.replace_tags(HTTPd.thread_db, :thread_status, thread_id,
+      %{id: thread_id,
+        status: status,
+        time: Time.now()})
+  }
+
+  def thread_request = fn (thread_id, msg) {
+    IO.puts(msg)
+    Err.puts(msg)
+    Facts.replace_tags(HTTPd.thread_db, :thread_request, thread_id,
+      %{id: thread_id,
+        request: msg})
+  }
+
   def clean_upload = fn (file) {
     if (file != "." && file != "..") do
       path = HTTP.Upload.tmp_filename_prefix + file
@@ -148,25 +165,19 @@ defmodule HTTPd do
         if bot? do
           if Counter.increase(HTTPd.bots, 1) >= HTTPd.bots_max() do
             HTTPd.thread_status(thread_id, "bot 429")
-            msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}"
-            IO.puts(msg)
-            Err.puts(msg)
+            HTTPd.thread_request(thread_id, "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
             response = error_429_page(request)
           end
         end
         if ! response do
           if (type(request.method) == Str) do
             HTTPd.thread_status(thread_id, "405")
-            msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}"
-            IO.puts(msg)
-            Err.puts(msg)
+            HTTPd.thread_request(thread_id, "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
             response = error_405_page(request)
           else
             HTTPd.thread_status(thread_id, "plug")
             request = plug_request(request)
-            msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}#{request.log_msg}"
-            IO.puts(msg)
-            Err.puts(msg)
+            HTTPd.thread_request(thread_id, "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}#{request.log_msg}")
             HTTPd.thread_status(thread_id, "route_and_render_request")
             response = route_and_render_request(request)
           end
@@ -196,19 +207,15 @@ defmodule HTTPd do
           request.method != HEAD)
         dt = Time.now() - request.time
         dt_str = Time.diff_to_str(dt)
-        msg = "#{response.code} #{client_addr} #{request.method}" +
-              " #{request.url} #{inspect(user_agent)}" +
-              " #{dt_str}#{request.log_msg}"
-        HTTPd.thread_status(thread_id, "logging")
-        IO.puts(msg)
+        HTTPd.thread_request(thread_id,
+          "#{response.code} #{client_addr} #{request.method}" +
+          " #{request.url} #{inspect(user_agent)}" +
+          " #{dt_str}#{request.log_msg}")
         if (! close) do
           kq_ok = EventPoll.add(HTTPd.ep_fd, client.sockfd,
                              HTTPd.timeout, client.ptag) == 0
         end
         error = ((r <= 0) || ((! close) && (! kq_ok)))
-        if (response.code >= 400) do
-          Err.puts(msg)
-        end
       end
     end, do
       HTTPd.thread_status(thread_id, "cleanup")
@@ -272,15 +279,6 @@ defmodule HTTPd do
         exit_subprocess(0)
       end
     end
-  }
-
-  def thread_db = Facts.database()
-
-  def thread_status = fn (thread_id, status) {
-    Facts.replace_tags(HTTPd.thread_db, :thread_status, thread_id,
-      %{id: thread_id,
-        status: status,
-        time: Time.now()})
   }
 
   def server_thread = fn () {
