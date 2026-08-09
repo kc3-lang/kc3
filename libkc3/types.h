@@ -1154,6 +1154,7 @@ struct env {
   s_env            *parent_env;
   bool              pass_by_copy;
   s_list           *path;
+  bool              print_readably;
   uw                quote_level;
   s_frame          *read_time_frame;
   s_str             restore_path;

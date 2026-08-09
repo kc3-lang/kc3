@@ -2586,6 +2586,7 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
 
 sw buf_inspect_fn_clause (s_buf *buf, const s_fn_clause *clause)
 {
+  s_env *env;
   sw r;
   sw result = 0;
   assert(buf);
@@ -2593,12 +2594,20 @@ sw buf_inspect_fn_clause (s_buf *buf, const s_fn_clause *clause)
   if ((r = buf_inspect_fn_pattern(buf, clause->pattern)) < 0)
     return r;
   result += r;
+  env = env_global();
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_do_block(buf, &clause->algo)) < 0)
-    return r;
-  result += r;
+  if (env && env->print_readably) {
+    if ((r = buf_inspect_do_block(buf, &clause->algo)) < 0)
+      return r;
+    result += r;
+  }
+  else {
+    if ((r = buf_write_1(buf, "{ ... }")) < 0)
+      return r;
+    result += r;
+  }
   return result;
 }
 
@@ -3940,6 +3949,8 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
   p_list arg;
   sw count = 10;
   sw depth;
+  s_env *env;
+  bool   env_print_readably;
   sw i;
   s_pretty_save pretty_save;
   sw r;
@@ -3961,6 +3972,11 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
     alloc_free(trace);
     pretty_save_clean(&pretty_save, &buf->pretty);
     return r;
+  }
+  env = env_global();
+  if (env) {
+    env_print_readably = env->print_readably;
+    env->print_readably = false;
   }
   i = 0;
   s = stacktrace;
@@ -4010,6 +4026,8 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
   alloc_free(trace);
   list_delete_all(reverse);
   pretty_save_clean(&pretty_save, &buf->pretty);
+  if (env)
+    env->print_readably = env_print_readably;
   return r;
 }
 

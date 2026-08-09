@@ -2126,6 +2126,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   if (! env)
     return NULL;
   *env = (s_env) {0};
+  env->print_readably = true;
   if (! (env->stacktrace = stacktrace_new()))
     return NULL;
   env_global_set(env);
