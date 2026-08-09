@@ -42,8 +42,9 @@ struct git_log_state {
 static int      log_add_revision(s_git_log_state *s,
                                  const char *revstr);
 static int      log_match_with_parent (git_commit *commit,
+                                       git_tree *commit_tree,
                                        int i,
-                                       git_diff_options *opts);
+                                       const char *path);
 static p_list * log_push_commit (p_list *log_tail,
                                  git_commit *commit);
 static int      log_push_rev (s_git_log_state *s,
@@ -57,21 +58,19 @@ p_list * kc3_git_log (git_repository **repo,
 {
   git_commit *commit = NULL;
   s32 count = 0;
-  git_diff_options diffopts =
-    {GIT_DIFF_OPTIONS_VERSION, 0, GIT_SUBMODULE_IGNORE_UNSPECIFIED,
-     {NULL, 0}, NULL, NULL, NULL, 3, 0, 0, 0, 0, 0, 0};
+  git_tree_entry *entry = NULL;
   s32 i;
   git_oid oid = {0};
   s_git_log_options opt = {0};
   int parents = 0;
   char path_pchar[PATH_MAX + 1] = {0};
-  char *path_pchar_p = path_pchar;
   int printed = 0;
-  git_pathspec *ps = NULL;
+  int r;
   s_git_log_state s = {0};
   const s_sym *sym_S32 = &g_sym_S32;
   p_list *tail;
   p_list tmp = NULL;
+  git_tree *tree = NULL;
   if (! repo || ! *repo || ! branch_name || ! branch_name->size ||
       ! path || ! skip || ! limit || ! dest) {
     err_puts("kc3_git_log: invalid argument");
@@ -95,6 +94,11 @@ p_list * kc3_git_log (git_repository **repo,
     git_revwalk_free(s.walker);
     return NULL;
   }
+  if (! opt.limit) {
+    git_revwalk_free(s.walker);
+    *dest = NULL;
+    return dest;
+  }
   if (path->size) {
     if (path->size > PATH_MAX) {
       err_puts("kc3_git_log: path->size > PATH_MAX");
@@ -102,22 +106,18 @@ p_list * kc3_git_log (git_repository **repo,
       return NULL;
     }
     memcpy(path_pchar, path->ptr.p_pchar, path->size);
-    diffopts.pathspec.strings = &path_pchar_p;
-    diffopts.pathspec.count = 1;
-    if (git_pathspec_new(&ps, &diffopts.pathspec)) {
-      err_puts("kc3_git_log: git_pathspec_new");
-      git_revwalk_free(s.walker);
-      return NULL;
-    }
   }
   tail = &tmp;
   while (! git_revwalk_next(&oid, s.walker)) {
+    if (! path->size) {
+      if (count++ < opt.skip)
+        continue;
+      if (printed >= opt.limit)
+        break;
+    }
     if (git_commit_lookup(&commit, s.repo, &oid)) {
       err_puts("kc3_git_log: git_commit_lookup");
-      git_pathspec_free(ps);
-      git_revwalk_free(s.walker);
-      list_delete_all(tmp);
-      return NULL;
+      goto ko;
     }
     parents = git_commit_parentcount(commit);
     if (parents < opt.min_parents ||
@@ -125,58 +125,78 @@ p_list * kc3_git_log (git_repository **repo,
       git_commit_free(commit);
       continue;
     }
-    if (diffopts.pathspec.count > 0) {
+    if (path->size) {
       int unmatched = parents;
+      if (git_commit_tree(&tree, commit)) {
+        err_puts("kc3_git_log: git_commit_tree");
+        goto ko;
+      }
       if (parents == 0) {
-        git_tree *tree = NULL;
-        if (git_commit_tree(&tree, commit)) {
-          err_puts("kc3_git_log: git_commit_tree");
-          git_commit_free(commit);
-          git_pathspec_free(ps);
-          git_revwalk_free(s.walker);
-          list_delete_all(tmp);
-          return NULL;
-        }
-        if (git_pathspec_match_tree(NULL, tree,
-                                    GIT_PATHSPEC_NO_MATCH_ERROR,
-                                    ps) != 0)
+        r = git_tree_entry_bypath(&entry, tree, path_pchar);
+        if (r == GIT_ENOTFOUND)
           unmatched = 1;
-        git_tree_free(tree);
+        else if (r) {
+          err_puts("kc3_git_log: git_tree_entry_bypath");
+          goto ko;
+        }
+        else
+          unmatched = 0;
+        git_tree_entry_free(entry);
+        entry = NULL;
       } else if (parents == 1) {
-        unmatched = log_match_with_parent(commit, 0, &diffopts) ? 0 : 1;
+        r = log_match_with_parent(commit, tree, 0, path_pchar);
+        if (r < 0) {
+          err_puts("kc3_git_log: log_match_with_parent");
+          goto ko;
+        }
+        unmatched = r ? 0 : 1;
       } else {
         for (i = 0; i < parents; ++i) {
-          if (log_match_with_parent(commit, i, &diffopts))
+          r = log_match_with_parent(commit, tree, i, path_pchar);
+          if (r < 0) {
+            err_puts("kc3_git_log: log_match_with_parent");
+            goto ko;
+          }
+          if (r)
             unmatched--;
         }
       }
+      git_tree_free(tree);
+      tree = NULL;
       if (unmatched > 0) {
         git_commit_free(commit);
+        commit = NULL;
         continue;
       }
+      if (count++ < opt.skip) {
+        git_commit_free(commit);
+        commit = NULL;
+        continue;
+      }
+      if (printed >= opt.limit) {
+        git_commit_free(commit);
+        commit = NULL;
+        break;
+      }
     }
-    if (count++ < opt.skip) {
-      git_commit_free(commit);
-      continue;
-    }
-    if (opt.limit != -1 && printed++ >= opt.limit) {
-      git_commit_free(commit);
-      break;
-    }
+    printed++;
     if (! (tail = log_push_commit(tail, commit))) {
       err_puts("kc3_git_log: log_push_commit");
-      git_commit_free(commit);
-      git_pathspec_free(ps);
-      git_revwalk_free(s.walker);
-      list_delete_all(tmp);
-      return NULL;
+      goto ko;
     }
     git_commit_free(commit);
+    commit = NULL;
   }
-  git_pathspec_free(ps);
   git_revwalk_free(s.walker);
   *dest = tmp;
   return dest;
+ ko:
+  git_tree_entry_free(entry);
+  git_tree_free(tree);
+  git_commit_free(commit);
+  git_revwalk_free(s.walker);
+  list_delete_all(tmp);
+  return NULL;
 }
 
 static int log_push_rev (s_git_log_state *s,
@@ -269,37 +289,44 @@ static int log_add_revision (s_git_log_state *s,
 }
 
 static int log_match_with_parent (git_commit *commit,
+                                  git_tree *commit_tree,
                                   int i,
-                                  git_diff_options *opts)
+                                  const char *path)
 {
+  git_tree_entry *entry[2] = {NULL, NULL};
   git_commit *parent = NULL;
-  git_tree *tree[2] = {NULL, NULL};
-  git_diff *diff = NULL;
-  int ndeltas = 0;
+  int r;
   int res = 0;
+  git_tree *parent_tree = NULL;
   if (git_commit_parent(&parent, commit, (size_t) i)) {
     res = -1;
     goto error;
   }
-  if (git_commit_tree(&tree[0], parent)) {
+  if (git_commit_tree(&parent_tree, parent)) {
     res = -2;
     goto error;
   }
-  if (git_commit_tree(&tree[1], commit)) {
+  r = git_tree_entry_bypath(entry, parent_tree, path);
+  if (r && r != GIT_ENOTFOUND) {
     res = -3;
     goto error;
   }
-  if (git_diff_tree_to_tree(&diff, git_commit_owner(commit),
-                            tree[0], tree[1], opts)) {
+  r = git_tree_entry_bypath(entry + 1, commit_tree, path);
+  if (r && r != GIT_ENOTFOUND) {
     res = -4;
     goto error;
   }
-  ndeltas = (int) git_diff_num_deltas(diff);
-  res = ndeltas > 0;
+  if (! entry[0] || ! entry[1])
+    res = entry[0] != entry[1];
+  else
+    res = ! git_oid_equal(git_tree_entry_id(entry[0]),
+                          git_tree_entry_id(entry[1])) ||
+      git_tree_entry_filemode(entry[0]) !=
+      git_tree_entry_filemode(entry[1]);
  error:
-  git_diff_free(diff);
-  git_tree_free(tree[0]);
-  git_tree_free(tree[1]);
+  git_tree_entry_free(entry[0]);
+  git_tree_entry_free(entry[1]);
+  git_tree_free(parent_tree);
   git_commit_free(parent);
   return res;
 }
