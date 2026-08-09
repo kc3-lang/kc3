@@ -3079,7 +3079,7 @@ s_list ** env_stacktrace (s_env *env, s_list **dest)
 {
   assert(env);
   assert(dest);
-  *dest = list_new_copy_all(env->stacktrace);
+  *dest = env->stacktrace;
   return dest;
 }
 

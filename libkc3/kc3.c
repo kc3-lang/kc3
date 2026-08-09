@@ -43,6 +43,7 @@
 #include "bool.h"
 #include "buf.h"
 #include "buf_fd.h"
+#include "buf_inspect.h"
 #include "buf_parse.h"
 #include "call.h"
 #include "counter.h"
@@ -1381,6 +1382,24 @@ void kc3_sleep (s_tag *timeout)
 s_list ** kc3_stacktrace (s_list **dest)
 {
   return env_stacktrace(env_global(), dest);
+}
+
+
+s_list ** kc3_stacktrace_thread (s_list **dest)
+{
+  *dest = env_global()->stacktrace;
+  return dest;
+}
+
+s_str * kc3_stacktrace_to_str (s_list **stacktrace, s_str *dest)
+{
+  char a[4096];
+  s_buf buf;
+  buf_init(&buf, false, sizeof(a), a);
+  buf_inspect_stacktrace(&buf, *stacktrace);
+  if (buf_read_to_str(&buf, dest) < 0)
+    return NULL;
+  return dest;
 }
 
 s_str * kc3_str (const s_tag *tag, s_str *dest)
