@@ -74,6 +74,16 @@ test_http_header() {
     fi
 }
 
+test_httpd_sigint_shutdown() {
+    kill -INT "$HTTPD_PID"
+    if wait "$HTTPD_PID"; then
+        test_ok "SIGINT: clean shutdown"
+    else
+        test_ko "SIGINT: clean shutdown"
+    fi
+    HTTPD_PID=
+}
+
 cd "$HTTPD_DIR"
 
 rm -f .test .test_ok .test_ko
@@ -97,6 +107,7 @@ test_http_header "Connection: keep-alive" GET "/" "Connection" "keep-alive"
 test_http_body_contains "GET / contains html" GET "/" "<html"
 test_http_body_contains "404 page contains Not Found" GET "/nonexistent" "Not Found"
 sleep 10
+test_httpd_sigint_shutdown
 
 echo
 echo

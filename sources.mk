@@ -625,6 +625,8 @@ KC3_C_SOURCES = \
 	"libkc3/crypt.c" \
 	"libkc3/crypt.h" \
 	"libkc3/crypt_sha512.c" \
+	"libkc3/daemon.c" \
+	"libkc3/daemon.h" \
 	"libkc3/data.c" \
 	"libkc3/data.h" \
 	"libkc3/do_block.c" \
@@ -1604,6 +1606,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/counter.kc3" \
 	"lib/kc3/0.1/cow.kc3" \
 	"lib/kc3/0.1/crypt.kc3" \
+	"lib/kc3/0.1/daemon.kc3" \
 	"lib/kc3/0.1/deserialize.kc3" \
 	"lib/kc3/0.1/ekc3.kc3" \
 	"lib/kc3/0.1/env.kc3" \

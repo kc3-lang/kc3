@@ -46,6 +46,7 @@
 #include "character.h"
 #include "compare.h"
 #include "counter.h"
+#include "daemon.h"
 #include "data.h"
 #include "do_block.h"
 #include "endian.h"

@@ -12,6 +12,7 @@
 
 require Buf
 require Counter
+require Daemon
 require Facts
 require File
 require HTML
@@ -47,9 +48,9 @@ defmodule HTTPd do
 
   def requests = Counter.new(0)
 
-  def server_thread_stop = Counter.new(0)
-
   def socket = ?
+
+  def stop_tag = Tag.new_copy(:stop)
 
   def thread_count = Counter.new(0)
 
@@ -288,7 +289,7 @@ defmodule HTTPd do
     thread_id = Counter.increase(HTTPd.thread_count, 1)
     HTTPd.thread_stacktrace(thread_id, Stacktrace.ptr())
     HTTPd.thread_status(thread_id, "start")
-    while ! Counter.get(HTTPd.server_thread_stop) do
+    while ! Daemon.stopping?() do
       ignore_errors(do
         HTTPd.thread_status(thread_id, "poll")
         r = EventPoll.poll(HTTPd.ep_fd, %Time{tv_sec: 1})
@@ -296,7 +297,10 @@ defmodule HTTPd do
           {sockfd, :eof, :acceptor} ->
             HTTPd.thread_status(thread_id, "EOF on acceptor")
             File.close(sockfd)
-            Counter.increase(HTTPd.server_thread_stop, 1)
+            Daemon.stop()
+          {sockfd, :read, :stop} ->
+            HTTPd.thread_status(thread_id, "stop")
+            Daemon.stop()
           {sockfd, :read, :acceptor} ->
             HTTPd.thread_status(thread_id, "acceptor")
             HTTPd.acceptor(sockfd)
@@ -369,6 +373,8 @@ defmodule HTTPd do
       clean_all_uploads()
       if HTTPd.ep_fd <- EventPoll.new() do
         EventPoll.add(HTTPd.ep_fd, socket.fd, void, HTTPd.acceptor_tag)
+        EventPoll.add(HTTPd.ep_fd, Daemon.stop_fd(), void,
+          HTTPd.stop_tag)
         if HTTPd.thread_max() > 1 do
           threads = List.map(List.count(HTTPd.thread_max() - 1),
             HTTPd.server_thread_new)
@@ -381,11 +387,11 @@ defmodule HTTPd do
         Counter.delete(HTTPd.concurrent_requests)
         Counter.delete(HTTPd.connections)
         Counter.delete(HTTPd.requests)
-        Counter.delete(HTTPd.server_thread_stop)
         Counter.delete(HTTPd.thread_count)
         EventPoll.delete(HTTPd.ep_fd, (S64) 0, void)
         Socket.close(HTTPd.socket)
         Tag.delete(HTTPd.acceptor_tag)
+        Tag.delete(HTTPd.stop_tag)
         if Module.has_symbol?(Config, :at_exit) do
           Config.at_exit()
         end

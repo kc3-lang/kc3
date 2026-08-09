@@ -17,19 +17,53 @@
 #include <time.h>
 #include <unistd.h>
 #include "../libkc3/kc3.h"
+#include "httpd.h"
 
-static s_counter *g_httpd_server_thread_stop = NULL;
-
+#if ! (defined(WIN32) || defined(WIN64))
 static void httpd_signal (int s);
+#endif
+static void httpd_stop_clean (void);
+static bool httpd_stop_init (void);
 
+#if ! (defined(WIN32) || defined(WIN64))
 static void httpd_signal (int s)
 {
-  if (g_httpd_server_thread_stop) {
-    g_httpd_server_thread_stop->count.type = TAG_U8;
-    g_httpd_server_thread_stop->count.data.td_u8 = 1;
-  }
-  else
-    _exit(s);
+  daemon_stop_notify(s);
+}
+#endif
+
+static void httpd_stop_clean (void)
+{
+#if ! (defined(WIN32) || defined(WIN64))
+  signal(SIGINT, SIG_DFL);
+  signal(SIGTERM, SIG_DFL);
+#endif
+  daemon_stop_clean();
+}
+
+static bool httpd_stop_init (void)
+{
+#if ! (defined(WIN32) || defined(WIN64))
+  struct sigaction sa = {0};
+#endif
+  if (! daemon_stop_init())
+    goto ko;
+#if ! (defined(WIN32) || defined(WIN64))
+  sa.sa_handler = httpd_signal;
+  sigemptyset(&sa.sa_mask);
+  sigaddset(&sa.sa_mask, SIGINT);
+  sigaddset(&sa.sa_mask, SIGTERM);
+  sa.sa_flags = SA_RESETHAND;
+  if (sigaction(SIGINT, &sa, NULL) ||
+      sigaction(SIGTERM, &sa, NULL))
+    goto ko;
+#endif
+  return true;
+ ko:
+  err_write_1("httpd_stop_init: ");
+  err_puts(strerror(errno));
+  httpd_stop_clean();
+  return false;
 }
 
 int main (int argc, char **argv)
@@ -51,7 +85,6 @@ int main (int argc, char **argv)
   const s_sym *module = NULL;
   char *p;
   s32 r = 1;
-  s_ident server_thread_stop = {0};
   s32 skip = 0;
   time_t t;
   s_tag tmp = {0};
@@ -149,18 +182,6 @@ int main (int argc, char **argv)
     kc3_clean(NULL);
     return 1;
   }
-  if (signal(SIGINT, httpd_signal) == SIG_ERR) {
-    err_puts("http_event_base_new: signal: SIGINT");
-    assert(! "http_event_base_new: signal: SIGINT");
-    kc3_clean(NULL);
-    return 1;
-  }
-  if (signal(SIGTERM, httpd_signal) == SIG_ERR) {
-    err_puts("http_event_base_new: signal: SIGTERM");
-    assert(! "http_event_base_new: signal: SIGTERM");
-    kc3_clean(NULL);
-    return 1;
-  }
 #endif
   module = sym_1("HTTPd");
   // TODO: env_module_is_loaded
@@ -197,16 +218,9 @@ int main (int argc, char **argv)
     }
   }
   securelevel(2);
-  server_thread_stop.module = sym_1("HTTPd");
-  server_thread_stop.sym = sym_1("server_thread_stop");
-  if (! ident_get(&server_thread_stop, &tmp) ||
-      tmp.type != TAG_POINTER ||
-      tmp.data.td_pointer.target_type != &g_sym_Counter ||
-      ! (g_httpd_server_thread_stop =
-         tmp.data.td_pointer.ptr.p_pvoid)) {
-    err_puts("httpd_sigint: ident_get: HTTPd.server_thread_stop");
-    assert(! "httpd_sigint: ident_get: HTTPd.server_thread_stop");
-    abort();
+  if (! httpd_stop_init()) {
+    kc3_clean(NULL);
+    return 1;
   }
   call_init(&call);
   call.ident.module = module;
@@ -236,6 +250,7 @@ int main (int argc, char **argv)
  clean:
   tag_clean(&tmp);
   call_clean(&call);
+  httpd_stop_clean();
   kc3_clean(NULL);
   return r;
 }

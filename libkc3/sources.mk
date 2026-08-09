@@ -92,6 +92,7 @@ HEADERS = \
 	"counter.h" \
 	"cow.h" \
 	"crypt.h" \
+	"daemon.h" \
 	"data.h" \
 	"do_block.h" \
 	"endian.h" \
@@ -323,6 +324,7 @@ SOURCES = \
 	"cow.c" \
 	"crypt.c" \
 	"crypt_sha512.c" \
+	"daemon.c" \
 	"data.c" \
 	"do_block.c" \
 	"env.c" \
@@ -665,6 +667,7 @@ LO_SOURCES = \
 	"cow.c" \
 	"crypt.c" \
 	"crypt_sha512.c" \
+	"daemon.c" \
 	"data.c" \
 	"do_block.c" \
 	"env.c" \
