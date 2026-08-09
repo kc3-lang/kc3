@@ -1051,7 +1051,7 @@ void env_error_tag (s_env *env, s_tag *tag)
   error_handler = env->error_handler;
   if (error_handler) {
     tag_init_copy(&error_handler->tag, tag);
-    error_handler->stacktrace = list_new_copy_all(env->stacktrace);
+    error_handler->stacktrace = list_new_copy_all(*env->stacktrace);
     env_longjmp(env, &error_handler->jmp);
     /* never reached */
     return;
@@ -2124,6 +2124,8 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   if (! env)
     return NULL;
   *env = (s_env) {0};
+  if (! (env->stacktrace = alloc(sizeof(s_list *))))
+    return NULL;
   env_global_set(env);
   if (! env_args_init(env, argc, argv))
     return NULL;
@@ -3079,7 +3081,7 @@ s_list ** env_stacktrace (s_env *env, s_list **dest)
 {
   assert(env);
   assert(dest);
-  *dest = env->stacktrace;
+  *dest = list_new_copy_all(*env->stacktrace);
   return dest;
 }
 

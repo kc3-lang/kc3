@@ -22,6 +22,7 @@ require HTTPd.Route
 require EventPoll
 require Socket
 require Socket.Buf
+require Stacktrace
 require Str
 require Thread
 require URL
@@ -87,10 +88,9 @@ defmodule HTTPd do
 
   def thread_db = Facts.database()
 
-  def thread_status = fn (thread_id, status, stacktrace) {
+  def thread_status = fn (thread_id, status) {
     Facts.replace_tags(HTTPd.thread_db, :thread_status, thread_id,
       %{id: thread_id,
-        stacktrace: stacktrace,
         status: status,
         time: Time.now()})
   }

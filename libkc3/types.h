@@ -1154,7 +1154,7 @@ struct env {
   s_list           *search_modules;
   s_list           *search_modules_default;
   bool              silence_errors;
-  s_list           *stacktrace;
+  p_list           *stacktrace;
   sw                stacktrace_depth;
   s_frame           toplevel_frame;
   bool              trace;

@@ -120,7 +120,7 @@ sw err_stacktrace (void)
 {
   s_env *env;
   env = env_global();
-  return err_inspect_stacktrace(env->stacktrace);
+  return err_inspect_stacktrace(*env->stacktrace);
 }
 
 sw err_puts (const char *x)
@@ -231,7 +231,7 @@ sw io_stacktrace (void)
 {
   s_env *env;
   env = env_global();
-  return io_inspect_stacktrace(env->stacktrace);
+  return io_inspect_stacktrace(*env->stacktrace);
 }
 
 sw io_puts (const char *x)

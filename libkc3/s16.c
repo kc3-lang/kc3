@@ -105,8 +105,7 @@ s16 * s16_init_cast
   }
   if (true) {
     err_puts("s16_cast: stacktrace:");
-    err_inspect_list(env_global()->stacktrace);
-    err_write_1("\n");
+    err_stacktrace();
   }
   assert(! "s16_cast: cannot cast to S16");
   return NULL;

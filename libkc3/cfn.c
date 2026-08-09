@@ -143,17 +143,17 @@ s_tag * cfn_apply_count (s_cfn *cfn, s_list *args, sw num_args,
     }
   }
   if (cfn->ptr.p_f) {
-    stacktrace = env->stacktrace;
+    stacktrace = *env->stacktrace;
     tag_init_plist(&trace.tag, &trace_plist);
     tag_init_plist(&trace.next, stacktrace);
     tag_init_psym(&trace_plist.tag, cfn->c_name);
     tag_init_plist(&trace_plist.next, args);
-    env->stacktrace = &trace;
+    *env->stacktrace = &trace;
     env_unwind_protect_push(env, &unwind_protect);
     if (setjmp(unwind_protect.buf)) {
       env_unwind_protect_pop(env, &unwind_protect);
-      assert(env->stacktrace == &trace);
-      env->stacktrace = stacktrace;
+      assert(*env->stacktrace == &trace);
+      *env->stacktrace = stacktrace;
       longjmp(*unwind_protect.jmp, 1);
       abort();
     }
@@ -171,15 +171,15 @@ s_tag * cfn_apply_count (s_cfn *cfn, s_list *args, sw num_args,
           err_write_1(" != ");
           err_inspect_c_pointer(arg_pointer_result);
           err_write_1("\n");
-          assert(env->stacktrace == &trace);
-          env->stacktrace = stacktrace;
+          assert(*env->stacktrace == &trace);
+          *env->stacktrace = stacktrace;
           goto ko;
         }
         tag_init(dest_v);
         tag_clean(&tmp2);
         tag_clean(&tmp);
-        assert(env->stacktrace == &trace);
-        env->stacktrace = stacktrace;
+        assert(*env->stacktrace == &trace);
+        *env->stacktrace = stacktrace;
         return dest_v;
       }
       tag_clean(&tmp);
@@ -187,8 +187,8 @@ s_tag * cfn_apply_count (s_cfn *cfn, s_list *args, sw num_args,
     }
     else
       *dest_v = tmp;
-    assert(env->stacktrace == &trace);
-    env->stacktrace = stacktrace;
+    assert(*env->stacktrace == &trace);
+    *env->stacktrace = stacktrace;
   }
   else {
     err_puts("cfn_apply: NULL function pointer");
