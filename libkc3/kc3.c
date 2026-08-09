@@ -1905,6 +1905,61 @@ p_tuple * kc3_wait (p_tuple *dest)
 #endif
 }
 
+#if ! (defined(WIN32) || defined(WIN64))
+typedef struct s_kc3_thread_registry s_kc3_thread_registry;
+
+struct s_kc3_thread_registry {
+  pthread_t thread;
+  s_kc3_thread_registry *next;
+};
+
+static pthread_once_t g_kc3_thread_interrupt_once = PTHREAD_ONCE_INIT;
+static pthread_mutex_t g_kc3_thread_registry_mutex =
+  PTHREAD_MUTEX_INITIALIZER;
+static s_kc3_thread_registry *g_kc3_thread_registry;
+static bool g_kc3_thread_interrupt_ready;
+
+static void kc3_thread_interrupt_handler (int signal)
+{
+  (void) signal;
+}
+
+static void kc3_thread_interrupt_init (void)
+{
+  struct sigaction sa = {0};
+  sa.sa_handler = kc3_thread_interrupt_handler;
+  sigemptyset(&sa.sa_mask);
+  g_kc3_thread_interrupt_ready = ! sigaction(SIGUSR2, &sa, NULL);
+}
+
+static void kc3_thread_registry_add (s_kc3_thread_registry *item,
+                                     pthread_t thread)
+{
+  item->thread = thread;
+  pthread_mutex_lock(&g_kc3_thread_registry_mutex);
+  item->next = g_kc3_thread_registry;
+  g_kc3_thread_registry = item;
+  pthread_mutex_unlock(&g_kc3_thread_registry_mutex);
+}
+
+static void kc3_thread_registry_remove (pthread_t thread)
+{
+  s_kc3_thread_registry **i;
+  s_kc3_thread_registry *item;
+  pthread_mutex_lock(&g_kc3_thread_registry_mutex);
+  i = &g_kc3_thread_registry;
+  while ((item = *i)) {
+    if (pthread_equal(item->thread, thread)) {
+      *i = item->next;
+      alloc_free(item);
+      break;
+    }
+    i = &item->next;
+  }
+  pthread_mutex_unlock(&g_kc3_thread_registry_mutex);
+}
+#endif
+
 s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
 {
   pthread_t t;
@@ -1915,6 +1970,9 @@ s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
     assert(! "kc3_thread_delete: pthread_join");
     return NULL;
   }
+#if ! (defined(WIN32) || defined(WIN64))
+  kc3_thread_registry_remove(t);
+#endif
   if (! tag) {
     err_puts("kc3_thread_delete: thread body errored");
     return NULL;
@@ -1934,8 +1992,52 @@ s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
   return dest;
 }
 
+bool kc3_thread_interrupt (u_ptr_w *thread)
+{
+#if defined(WIN32) || defined(WIN64)
+  (void) thread;
+  return false;
+#else
+  pthread_t t;
+  if (! thread)
+    return false;
+  pthread_once(&g_kc3_thread_interrupt_once,
+               kc3_thread_interrupt_init);
+  if (! g_kc3_thread_interrupt_ready)
+    return false;
+  t = (pthread_t) thread->p_pvoid;
+  return pthread_kill(t, SIGUSR2) == 0;
+#endif
+}
+
+bool kc3_thread_interrupt_all (void)
+{
+#if defined(WIN32) || defined(WIN64)
+  return false;
+#else
+  bool result = true;
+  s_kc3_thread_registry *item;
+  pthread_once(&g_kc3_thread_interrupt_once,
+               kc3_thread_interrupt_init);
+  if (! g_kc3_thread_interrupt_ready)
+    return false;
+  pthread_mutex_lock(&g_kc3_thread_registry_mutex);
+  item = g_kc3_thread_registry;
+  while (item) {
+    if (pthread_kill(item->thread, SIGUSR2))
+      result = false;
+    item = item->next;
+  }
+  pthread_mutex_unlock(&g_kc3_thread_registry_mutex);
+  return result;
+#endif
+}
+
 u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
 {
+#if ! (defined(WIN32) || defined(WIN64))
+  s_kc3_thread_registry *item;
+#endif
   s_tag *tag;
   if (! (tag = tag_new_ptuple(3)))
     return NULL;
@@ -1949,14 +2051,27 @@ u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
     tag_delete(tag);
     return NULL;
   }
-  if (pthread_create((pthread_t *) &dest->p_pvoid, NULL, kc3_thread_start,
-                     tag)) {
-    err_puts("kc3_thread_new: pthread_create");
-    assert(! "kc3_thread_new: pthread_create");
+#if ! (defined(WIN32) || defined(WIN64))
+  if (! (item = alloc(sizeof(s_kc3_thread_registry)))) {
     env_fork_delete(tag->data.td_ptuple->tag[2].data.td_ptr.p_pvoid);
     tag_delete(tag);
     return NULL;
   }
+#endif
+  if (pthread_create((pthread_t *) &dest->p_pvoid, NULL, kc3_thread_start,
+                     tag)) {
+    err_puts("kc3_thread_new: pthread_create");
+    assert(! "kc3_thread_new: pthread_create");
+#if ! (defined(WIN32) || defined(WIN64))
+    alloc_free(item);
+#endif
+    env_fork_delete(tag->data.td_ptuple->tag[2].data.td_ptr.p_pvoid);
+    tag_delete(tag);
+    return NULL;
+  }
+#if ! (defined(WIN32) || defined(WIN64))
+  kc3_thread_registry_add(item, (pthread_t) dest->p_pvoid);
+#endif
   return dest;
 }
 

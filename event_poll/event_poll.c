@@ -166,6 +166,7 @@ s64 kc3_event_poll_add (void **handle, s64 fd, s_tag *timeout,
       events[1].ident = fd;
       events[1].filter = EVFILT_TIMER;
       events[1].flags = EV_ADD | EV_ONESHOT;
+      events[1].fflags = NOTE_MSECONDS;
       events[1].data = timeout_ms;
       events[1].udata = stored_udata;
       nevents = 2;

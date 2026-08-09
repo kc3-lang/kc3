@@ -212,6 +212,8 @@ s_tag **             kc3_tag_marshall_read (s_marshall_read **mr, bool heap,
                                             s_tag **dest);
 s_tag **             kc3_tag_new_copy (s_tag **tag, s_tag *src);
 s_tag *              kc3_thread_delete (u_ptr_w *thread, s_tag *dest);
+bool                 kc3_thread_interrupt (u_ptr_w *thread);
+bool                 kc3_thread_interrupt_all (void);
 u_ptr_w *            kc3_thread_new (u_ptr_w *dest, p_callable *start);
 void *               kc3_thread_start (void *arg);
 void                 kc3_unveil (const s_str *path,

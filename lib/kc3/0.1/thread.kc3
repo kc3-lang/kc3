@@ -16,6 +16,10 @@ defmodule Thread do
 
   def id = cfn Thread* "pthread_self" ()
 
+  def interrupt = cfn Bool "kc3_thread_interrupt" (Ptr)
+
+  def interrupt_all = cfn Bool "kc3_thread_interrupt_all" ()
+
   def new = cfn Ptr "kc3_thread_new" (Result, Callable)
 
 end

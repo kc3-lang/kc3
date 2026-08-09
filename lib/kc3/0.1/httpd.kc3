@@ -217,7 +217,7 @@ defmodule HTTPd do
           " #{dt_str}#{request.log_msg}")
         if (! close) do
           kq_ok = EventPoll.add(HTTPd.ep_fd, client.sockfd,
-                             HTTPd.timeout, client.ptag) == 0
+            HTTPd.timeout, client.ptag) == 0
         end
         error = ((r <= 0) || ((! close) && (! kq_ok)))
       end
@@ -294,15 +294,17 @@ defmodule HTTPd do
     while ! Daemon.stopping?() do
       ignore_errors(do
         HTTPd.thread_status(thread_id, "poll")
-        r = EventPoll.poll(HTTPd.ep_fd, %Time{tv_sec: 1})
+        r = EventPoll.poll(HTTPd.ep_fd, %Time{tv_sec: 60})
         match r do
           {sockfd, :eof, :acceptor} ->
             HTTPd.thread_status(thread_id, "EOF on acceptor")
             File.close(sockfd)
             Daemon.stop()
+            Thread.interrupt_all()
           {sockfd, :read, :stop} ->
             HTTPd.thread_status(thread_id, "stop")
             Daemon.stop()
+            Thread.interrupt_all()
           {sockfd, :read, :acceptor} ->
             HTTPd.thread_status(thread_id, "acceptor")
             HTTPd.acceptor(sockfd)
@@ -377,14 +379,9 @@ defmodule HTTPd do
         EventPoll.add(HTTPd.ep_fd, socket.fd, void, HTTPd.acceptor_tag)
         EventPoll.add(HTTPd.ep_fd, Daemon.stop_fd(), void,
           HTTPd.stop_tag)
-        if HTTPd.thread_max() > 1 do
-          threads = List.map(List.count(HTTPd.thread_max() - 1),
-            HTTPd.server_thread_new)
-          HTTPd.server_thread()
-          List.map(threads, Thread.delete)
-        else
-          HTTPd.server_thread()
-        end
+        threads = List.map(List.count(HTTPd.thread_max()),
+          HTTPd.server_thread_new)
+        List.map(threads, Thread.delete)
         Counter.delete(HTTPd.bots)
         Counter.delete(HTTPd.concurrent_requests)
         Counter.delete(HTTPd.connections)
