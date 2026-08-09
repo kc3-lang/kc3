@@ -29,5 +29,6 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
 
 /* Operators. */
 void socket_close (p_socket s);
+bool socket_timeout_set (p_socket s, const s_time *timeout);
 
 #endif /* LIBKC3_SOCKET_H */

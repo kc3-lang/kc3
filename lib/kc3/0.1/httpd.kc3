@@ -54,9 +54,9 @@ defmodule HTTPd do
 
   def thread_count = Counter.new(0)
 
-  def thread_max = fn () { ncpu() }
+  def thread_max = fn () { ncpu() * 10 }
 
-  def timeout = %Time{tv_sec: 20}
+  def timeout = %Time{tv_sec: 30}
 
   def load_app = fn () {
     HTTP.mime_type_load("config/mime.types")
@@ -146,7 +146,7 @@ defmodule HTTPd do
     Counter.increase(HTTPd.concurrent_requests, 1)
     unwind_protect(do
       HTTPd.thread_status(thread_id, "parse request")
-      request = HTTP.Request.buf_parse_with_timeout(client.buf_rw.r, (S64) 5, (Sw) 3)
+      request = HTTP.Request.buf_parse(client.buf_rw.r)
       if request do
         HTTPd.thread_status(thread_id, "request")
         Counter.increase(HTTPd.requests, 1)
@@ -195,7 +195,7 @@ defmodule HTTPd do
           response_headers = [{"Connection", "close"}]
         else
           response_headers = [{"Connection", "keep-alive"},
-                              {"Keep-Alive", "timeout=20, max=10"}]
+                              {"Keep-Alive", "timeout=30, max=10"}]
         end
         params = request.params
         if params[:cache_control] do
@@ -249,7 +249,9 @@ defmodule HTTPd do
       if (Counter.get(HTTPd.connections) < HTTPd.connections_max()) &&
          (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
          (client_tag = Tag.new_copy({:client, client})) &&
-         Socket.Buf.set_tag(client, client_tag) do
+         Socket.Buf.set_tag(client, client_tag) &&
+         Socket.timeout_set(%Socket{fd: client.sockfd},
+           %Time{tv_sec: 30}) do
         Counter.increase(HTTPd.connections, 1)
         incremented = true
         count = Counter.get(HTTPd.connections)
