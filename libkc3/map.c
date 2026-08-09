@@ -383,6 +383,72 @@ s_map * map_new_from_lists (s_list *keys, s_list *values)
   
 }
 
+s_map * map_merge (const s_map *a, const s_map *b, s_map *dest)
+{
+  s8 compare;
+  uw count;
+  uw i;
+  uw j;
+  uw k;
+  s_map tmp = {0};
+  assert(a);
+  assert(b);
+  assert(dest);
+  if (a->count > UW_MAX - b->count) {
+    err_puts("map_merge: count overflow");
+    assert(! "map_merge: count overflow");
+    return NULL;
+  }
+  count = a->count + b->count;
+  i = 0;
+  j = 0;
+  while (i < a->count && j < b->count) {
+    compare = compare_tag(a->key + i, b->key + j);
+    if (compare < 0)
+      i++;
+    else if (compare > 0)
+      j++;
+    else {
+      count--;
+      i++;
+      j++;
+    }
+  }
+  if (! map_init(&tmp, count))
+    return NULL;
+  i = 0;
+  j = 0;
+  k = 0;
+  while (i < a->count || j < b->count) {
+    if (i >= a->count)
+      compare = 1;
+    else if (j >= b->count)
+      compare = -1;
+    else
+      compare = compare_tag(a->key + i, b->key + j);
+    if (compare < 0) {
+      if (! tag_init_copy(tmp.key + k, a->key + i) ||
+          ! tag_init_copy(tmp.value + k, a->value + i))
+        goto ko;
+      i++;
+    }
+    else {
+      if (! tag_init_copy(tmp.key + k, b->key + j) ||
+          ! tag_init_copy(tmp.value + k, b->value + j))
+        goto ko;
+      if (! compare)
+        i++;
+      j++;
+    }
+    k++;
+  }
+  *dest = tmp;
+  return dest;
+ ko:
+  map_clean(&tmp);
+  return NULL;
+}
+
 s_map * map_put (s_map *map, s_tag *key,
                  s_tag *value, s_map *dest)
 {

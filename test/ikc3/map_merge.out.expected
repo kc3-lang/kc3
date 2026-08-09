@@ -1,0 +1,29 @@
+%{}
+%{a: 1}
+%{a: 1}
+%{a: 1,
+  b: 2,
+  c: 3,
+  d: 4}
+%{a: 1,
+  b: 20,
+  c: 30,
+  d: 40}
+%{1 => "left one",
+  2 => "right two",
+  3 => "right three"}
+%{a: 1,
+  shared: "left"}
+%{b: 2,
+  shared: "right"}
+%{a: 1,
+  b: 2,
+  shared: "right"}
+%{a: 1,
+  shared: "left"}
+%{b: 2,
+  shared: "right"}
+%{a: 1,
+  b: 2,
+  shared: "right"}
+3
