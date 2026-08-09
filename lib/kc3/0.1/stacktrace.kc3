@@ -16,4 +16,6 @@ defmodule Stacktrace do
 
   def to_str = cfn Str "kc3_stacktrace_to_str" (Ptr, Result)
 
+  def to_str_short = cfn Str "kc3_stacktrace_to_str_short" (Ptr, Result)
+
 end

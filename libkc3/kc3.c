@@ -1412,6 +1412,27 @@ s_str * kc3_stacktrace_to_str (s_stacktrace **stacktrace, s_str *dest)
   return dest;
 }
 
+s_str * kc3_stacktrace_to_str_short (s_stacktrace **stacktrace,
+                                     s_str *dest)
+{
+  char a[4096];
+  s_buf buf;
+  p_list list;
+  sw r;
+  assert(stacktrace);
+  assert(*stacktrace);
+  assert(dest);
+  list = stacktrace_read_begin(*stacktrace);
+  buf_init(&buf, false, sizeof(a), a);
+  r = buf_inspect_stacktrace_short(&buf, list);
+  stacktrace_read_end(*stacktrace);
+  if (r < 0)
+    return NULL;
+  if (buf_read_to_str(&buf, dest) < 0)
+    return NULL;
+  return dest;
+}
+
 s_str * kc3_str (const s_tag *tag, s_str *dest)
 {
   const s_sym *sym = &g_sym_Str;

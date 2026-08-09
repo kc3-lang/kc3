@@ -15,6 +15,8 @@
 #include "../libkc3/buf_inspect.h"
 #include "../libkc3/list.h"
 #include "../libkc3/stacktrace.h"
+#include "../libkc3/str.h"
+#include "../libkc3/sym.h"
 #include "../libkc3/tag.h"
 #include "test.h"
 
@@ -38,11 +40,13 @@ static void * stacktrace_test_stress_reader (void *arg);
 static void * stacktrace_test_stress_writer (void *arg);
 void stacktrace_test (void);
 TEST_CASE_PROTOTYPE(pin);
+TEST_CASE_PROTOTYPE(short_format);
 TEST_CASE_PROTOTYPE(stress);
 
 void stacktrace_test (void)
 {
   TEST_CASE_RUN(pin);
+  TEST_CASE_RUN(short_format);
   TEST_CASE_RUN(stress);
 }
 
@@ -70,7 +74,7 @@ static void * stacktrace_test_stress_reader (void *arg)
     buf_init(&buf, false, sizeof(a), a);
     if ((list && list != &data->base &&
          list_next(list) != &data->base) ||
-        buf_inspect_stacktrace(&buf, list) < 0)
+        buf_inspect_stacktrace_short(&buf, list) < 0)
       __atomic_store_n(&data->error, true, __ATOMIC_SEQ_CST);
     stacktrace_read_end(data->stacktrace);
   }
@@ -122,6 +126,30 @@ TEST_CASE(pin)
   stacktrace_clean(&stacktrace);
 }
 TEST_CASE_END(pin)
+
+TEST_CASE(short_format)
+{
+  char a[128];
+  s_buf buf;
+  const s_str expected = STR("inner\nouter\n");
+  s_list inner = {0};
+  s_list inner_call = {0};
+  s_list outer = {0};
+  s_list outer_call = {0};
+  s_str result = {0};
+  tag_init_psym(&outer_call.tag, sym_1("outer"));
+  tag_init_plist(&outer.tag, &outer_call);
+  tag_init_plist(&outer.next, NULL);
+  tag_init_psym(&inner_call.tag, sym_1("inner"));
+  tag_init_plist(&inner.tag, &inner_call);
+  tag_init_plist(&inner.next, &outer);
+  buf_init(&buf, false, sizeof(a), a);
+  TEST_EQ(buf_inspect_stacktrace_short(&buf, &inner), 12);
+  TEST_EQ(buf_read_to_str(&buf, &result), 12);
+  TEST_STR_EQ(result, expected);
+  str_clean(&result);
+}
+TEST_CASE_END(short_format)
 
 TEST_CASE(stress)
 {

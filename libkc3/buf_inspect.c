@@ -4013,6 +4013,40 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
   return r;
 }
 
+sw buf_inspect_stacktrace_short (s_buf *buf, p_list stacktrace)
+{
+  sw count = 0;
+  p_list frame;
+  const s_tag *name;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  frame = stacktrace;
+  while (frame && count < 10) {
+    if (frame->tag.type == TAG_PLIST &&
+        frame->tag.data.td_plist) {
+      name = &frame->tag.data.td_plist->tag;
+      if (name->type == TAG_IDENT)
+        r = buf_inspect_ident(buf, &name->data.td_ident);
+      else if (name->type == TAG_PSYM)
+        r = buf_write_str(buf, &name->data.td_psym->str);
+      else
+        r = buf_inspect_tag(buf, name);
+      if (r < 0)
+        return r;
+    }
+    else if ((r = buf_write_1(buf, "???")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, "\n")) < 0)
+      return r;
+    result += r;
+    frame = list_next(frame);
+    count++;
+  }
+  return result;
+}
+
 sw buf_inspect_stacktrace_size (s_pretty *pretty,
                                 const s_list *stacktrace);
 
