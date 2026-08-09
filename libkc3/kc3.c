@@ -1391,12 +1391,12 @@ void ** kc3_stacktrace_ptr (void **dest)
   return dest;
 }
 
-s_str * kc3_stacktrace_to_str (s_list **stacktrace, s_str *dest)
+s_str * kc3_stacktrace_to_str (s_list ***stacktrace, s_str *dest)
 {
   char a[4096];
   s_buf buf;
   buf_init(&buf, false, sizeof(a), a);
-  buf_inspect_stacktrace(&buf, *stacktrace);
+  buf_inspect_stacktrace(&buf, **stacktrace);
   if (buf_read_to_str(&buf, dest) < 0)
     return NULL;
   return dest;
