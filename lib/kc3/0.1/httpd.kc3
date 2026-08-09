@@ -87,9 +87,10 @@ defmodule HTTPd do
 
   def thread_db = Facts.database()
 
-  def thread_status = fn (thread_id, status) {
+  def thread_status = fn (thread_id, status, stacktrace) {
     Facts.replace_tags(HTTPd.thread_db, :thread_status, thread_id,
       %{id: thread_id,
+        stacktrace: stacktrace,
         status: status,
         time: Time.now()})
   }
@@ -98,6 +99,10 @@ defmodule HTTPd do
     IO.puts(msg)
     Err.puts(msg)
     Facts.replace_tags(HTTPd.thread_db, :thread_request, thread_id, msg)
+  }
+
+  def thread_stacktrace = fn (thread_id, ptr) {
+    Facts.replace_tags(HTTPd.thread_db, :thread_stacktrace, thread_id, ptr)
   }
 
   def clean_upload = fn (file) {
@@ -281,6 +286,7 @@ defmodule HTTPd do
 
   def server_thread = fn () {
     thread_id = Counter.increase(HTTPd.thread_count, 1)
+    HTTPd.thread_stacktrace(thread_id, Stacktrace.ptr())
     HTTPd.thread_status(thread_id, "start")
     while ! Counter.get(HTTPd.server_thread_stop) do
       ignore_errors(do

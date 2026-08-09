@@ -12,7 +12,7 @@
 
 defmodule Stacktrace do
 
-  def ptr = cfn Ptr "kc3_stacktrace_thread" (Result)
+  def ptr = cfn Ptr "kc3_stacktrace_ptr" (Result)
 
   def to_str = cfn Str "kc3_stacktrace_to_str" (Ptr, Result)
 

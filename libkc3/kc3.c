@@ -1385,7 +1385,7 @@ s_list ** kc3_stacktrace (s_list **dest)
 }
 
 
-s_list ** kc3_stacktrace_thread (s_list **dest)
+s_list ** kc3_stacktrace_ptr (s_list **dest)
 {
   *dest = env_global()->stacktrace;
   return dest;
