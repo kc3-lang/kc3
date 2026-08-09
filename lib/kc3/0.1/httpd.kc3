@@ -293,7 +293,7 @@ defmodule HTTPd do
     HTTPd.thread_status(thread_id, "start")
     while ! Daemon.stopping?() do
       ignore_errors(do
-        HTTPd.thread_status(thread_id, "poll")
+        HTTPd.thread_status(thread_id, "zpoll")
         r = EventPoll.poll(HTTPd.ep_fd, %Time{tv_sec: 3600})
         match r do
           {sockfd, :eof, :acceptor} ->
