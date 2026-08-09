@@ -846,6 +846,8 @@ KC3_C_SOURCES = \
 	"libkc3/socket_buf.h" \
 	"libkc3/special_operator.c" \
 	"libkc3/special_operator.h" \
+	"libkc3/stacktrace.c" \
+	"libkc3/stacktrace.h" \
 	"libkc3/str.c" \
 	"libkc3/str.h" \
 	"libkc3/struct.c" \
@@ -1175,6 +1177,7 @@ KC3_C_SOURCES = \
 	"test/set__fact_test.c" \
 	"test/set__tag_test.c" \
 	"test/skiplist__fact_test.c" \
+	"test/stacktrace_test.c" \
 	"test/str_test.c" \
 	"test/struct_test.c" \
 	"test/sym_test.c" \
@@ -1762,6 +1765,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/socket/buf.kc3" \
 	"lib/kc3/0.1/socket/facts.kc3" \
 	"lib/kc3/0.1/spam/bayes.kc3" \
+	"lib/kc3/0.1/stacktrace.kc3" \
 	"lib/kc3/0.1/str.facts" \
 	"lib/kc3/0.1/struct.kc3" \
 	"lib/kc3/0.1/sw.facts" \
@@ -1993,6 +1997,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/map.kc3" \
 	"test/ikc3/map.out.expected" \
 	"test/ikc3/map.ret.expected" \
+	"test/ikc3/map_merge.kc3" \
+	"test/ikc3/map_merge.out.expected" \
+	"test/ikc3/map_merge.ret.expected" \
 	"test/ikc3/marshall.kc3" \
 	"test/ikc3/marshall.out.expected" \
 	"test/ikc3/marshall.ret.expected" \
@@ -2029,6 +2036,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/struct.kc3" \
 	"test/ikc3/struct.out.expected" \
 	"test/ikc3/struct.ret.expected" \
+	"test/ikc3/struct_update.kc3" \
+	"test/ikc3/struct_update.out.expected" \
+	"test/ikc3/struct_update.ret.expected" \
 	"test/ikc3/sym.err.expected" \
 	"test/ikc3/sym.kc3" \
 	"test/ikc3/sym.out.expected" \
@@ -2119,6 +2129,9 @@ KC3_TEST_HTTP_SOURCES = \
 	"test/http/07_client_server.kc3" \
 	"test/http/07_client_server.out.expected" \
 	"test/http/07_client_server.ret.expected" \
+	"test/http/08_response_headers.kc3" \
+	"test/http/08_response_headers.out.expected" \
+	"test/http/08_response_headers.ret.expected" \
 	"test/http/mime.types" \
 	"test/http_test" \
 
@@ -2289,6 +2302,9 @@ KC3_TEST_JSON_SOURCES = \
 	"test/json_test" \
 
 KC3_TEST_KC3S_SOURCES = \
+	"test/kc3s/call_cache.kc3" \
+	"test/kc3s/call_cache.out.expected" \
+	"test/kc3s/call_cache.ret.expected" \
 	"test/kc3s/comments.kc3" \
 	"test/kc3s/comments.out.expected" \
 	"test/kc3s/comments.ret.expected" \
