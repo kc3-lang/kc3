@@ -108,6 +108,7 @@
 #include "s64.h"
 #include "s8.h"
 #include "securelevel.h"
+#include "stacktrace.h"
 #include "sequence.h"
 #include "sh.h"
 #include "str.h"

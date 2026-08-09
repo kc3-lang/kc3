@@ -62,6 +62,9 @@ uw *     kc3_offsetof (p_sym *module,
 s_buf ** kc3_out_buf (s_buf **dest);
 sw       kc3_puts (const s_tag *tag);
 p_list * kc3_stacktrace (s_list **dest);
+void **  kc3_stacktrace_ptr (void **dest);
+s_str *  kc3_stacktrace_to_str (s_stacktrace **stacktrace,
+                                s_str *dest);
 s_str *  kc3_str (const s_tag *tag, s_str *dest);
 s32      kc3_tag_type (const s_tag *tag);
 s_time * kc3_uptime (s_time *dest);

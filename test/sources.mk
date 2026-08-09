@@ -44,6 +44,7 @@ SOURCES = \
 	"set__fact_test.c" \
 	"set__tag_test.c" \
 	"skiplist__fact_test.c" \
+	"stacktrace_test.c" \
 	"str_test.c" \
 	"struct_test.c" \
 	"sym_test.c" \

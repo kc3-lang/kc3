@@ -17,6 +17,7 @@
 #include "frame.h"
 #include "list.h"
 #include "ops.h"
+#include "stacktrace.h"
 #include "sym.h"
 
 void env_fork_clean (s_env *env)
@@ -74,7 +75,12 @@ s_env * env_fork_init (s_env *env, s_env *src)
   }
   tmp.search_modules = src->search_modules_default;
   tmp.search_modules_default = src->search_modules_default;
-  tmp.stacktrace = alloc(sizeof(void *));
+  if (! (tmp.stacktrace = stacktrace_new())) {
+    frame_delete_all(tmp.read_time_frame);
+    ops_delete(tmp.ops);
+    frame_delete_all(tmp.frame);
+    return NULL;
+  }
   // tmp.toplevel_frame = {0};
   tmp.trace = src->trace;
   // tmp.unquote_level = 0;

@@ -39,6 +39,7 @@
 #include "pstruct.h"
 #include "pvar.h"
 #include "securelevel.h"
+#include "stacktrace.h"
 #include "struct.h"
 #include "sw.h"
 #include "tag.h"
@@ -590,7 +591,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       err_inspect_fn_pattern(args);
       err_write_1("\n");
       err_puts("stacktrace:");
-      err_inspect_stacktrace(*env->stacktrace);
+      err_inspect_stacktrace(stacktrace_get(env->stacktrace));
       err_write_1("\n");
       env_eval_call_arguments_storage_clean(args_storage, args_count);
       env->search_modules = search_modules;
@@ -614,14 +615,14 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     }
     env->frame = &frame;
   }
-  stacktrace = *env->stacktrace;
+  stacktrace = stacktrace_get(env->stacktrace);
   tag_init_plist(&trace.tag, &trace_plist);
   tag_init_plist(&trace.next, stacktrace);
   tag_init_ident(&trace_plist.tag, &fn->name);
   tag_init_plist(&trace_plist.next, args);
-  *env->stacktrace = &trace;
+  stacktrace_push(env->stacktrace, &trace);
   if (! block_init(&jump.block, fn->name.sym)) {
-    *env->stacktrace = stacktrace;
+    stacktrace_pop(env->stacktrace, stacktrace);
     env_eval_call_arguments_storage_clean(args_storage, args_count);
     env->search_modules = search_modules;
     assert(env->frame == &frame);
@@ -633,8 +634,8 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   if (setjmp(jump.unwind_do.buf)) {
     env_unwind_protect_pop(env, &jump.unwind_do);
     block_clean(&jump.block);
-    assert(*env->stacktrace == &trace);
-    *env->stacktrace = stacktrace;
+    assert(stacktrace_get(env->stacktrace) == &trace);
+    stacktrace_pop(env->stacktrace, stacktrace);
     env_eval_call_arguments_storage_clean(args_storage, args_count);
     env->search_modules = search_modules;
     assert(env->frame == &frame);
@@ -645,8 +646,8 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   if (setjmp(jump.block.buf)) {
     tag = jump.block.tag;
     env_unwind_protect_pop(env, &jump.unwind_do);
-    assert(*env->stacktrace == &trace);
-    *env->stacktrace = stacktrace;
+    assert(stacktrace_get(env->stacktrace) == &trace);
+    stacktrace_pop(env->stacktrace, stacktrace);
     env_eval_call_arguments_storage_clean(args_storage, args_count);
     env->search_modules = search_modules;
     assert(env->frame == &frame);
@@ -657,8 +658,8 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   if (! env_eval_do_block(env, &clause->algo, &tag)) {
     env_unwind_protect_pop(env, &jump.unwind_do);
     block_clean(&jump.block);
-    assert(*env->stacktrace == &trace);
-    *env->stacktrace = stacktrace;
+    assert(stacktrace_get(env->stacktrace) == &trace);
+    stacktrace_pop(env->stacktrace, stacktrace);
     env_eval_call_arguments_storage_clean(args_storage, args_count);
     env->search_modules = search_modules;
     assert(env->frame == &frame);
@@ -667,8 +668,8 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     return false;
   }
   env_unwind_protect_pop(env, &jump.unwind_do);
-  assert(*env->stacktrace == &trace);
-  *env->stacktrace = stacktrace;
+  assert(stacktrace_get(env->stacktrace) == &trace);
+  stacktrace_pop(env->stacktrace, stacktrace);
   env_eval_call_arguments_storage_clean(args_storage, args_count);
   env->search_modules = search_modules;
   assert(env->frame == &frame);
@@ -932,7 +933,7 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
       ! (tag = env_ident_get(env, &tmp_ident, &tmp))) {
     if (true) {
       err_puts("env_eval_ident: stacktrace:");
-      err_inspect_stacktrace(*env->stacktrace);
+      err_inspect_stacktrace(stacktrace_get(env->stacktrace));
       err_write_1("\n");
     }
     err_write_1("env_eval_ident: unbound ident: ");

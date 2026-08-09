@@ -279,6 +279,7 @@ typedef struct sha1                    s_sha1;
 typedef struct sha2                    s_sha2;
 typedef struct sha512                  s_sha512;
 typedef struct socket_buf              s_socket_buf;
+typedef struct stacktrace              s_stacktrace;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
 typedef struct struct_type             s_struct_type;
@@ -535,6 +536,11 @@ struct sha512 {
   u64 len;
   u64 h[8];
   u8  buf[128];
+};
+
+struct stacktrace {
+  p_list list;
+  uw     readers;
 };
 
 struct struct_ {
@@ -1154,7 +1160,7 @@ struct env {
   s_list           *search_modules;
   s_list           *search_modules_default;
   bool              silence_errors;
-  p_list           *stacktrace;
+  s_stacktrace     *stacktrace;
   sw                stacktrace_depth;
   s_frame           toplevel_frame;
   bool              trace;

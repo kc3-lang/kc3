@@ -15,6 +15,7 @@
 #include "env.h"
 #include "list.h"
 #include "memleak.h"
+#include "stacktrace.h"
 #include <stdlib.h>
 
 static thread_local bool g_alloc_memleak_lock = false;
@@ -38,7 +39,7 @@ void * alloc (uw size)
   if (g_memleak_enabled && ! g_alloc_memleak_lock) {
     g_alloc_memleak_lock = true;
     env = env_global();
-    stacktrace = env ? *env->stacktrace : NULL;
+    stacktrace = env ? stacktrace_get(env->stacktrace) : NULL;
     memleak_add(a, size, stacktrace);
     g_alloc_memleak_lock = false;
   }

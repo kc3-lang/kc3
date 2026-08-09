@@ -25,6 +25,7 @@
 #include "env.h"
 #include "io.h"
 #include "rwlock.h"
+#include "stacktrace.h"
 #include "tag_type.h"
 
 #if HAVE_PTHREAD
@@ -120,7 +121,7 @@ sw err_stacktrace (void)
 {
   s_env *env;
   env = env_global();
-  return err_inspect_stacktrace(*env->stacktrace);
+  return err_inspect_stacktrace(stacktrace_get(env->stacktrace));
 }
 
 sw err_puts (const char *x)
@@ -231,7 +232,7 @@ sw io_stacktrace (void)
 {
   s_env *env;
   env = env_global();
-  return io_inspect_stacktrace(*env->stacktrace);
+  return io_inspect_stacktrace(stacktrace_get(env->stacktrace));
 }
 
 sw io_puts (const char *x)

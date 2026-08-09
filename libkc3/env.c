@@ -90,6 +90,7 @@ const char *g_env_argv0_dir_default = "";
 #include "pstruct_type.h"
 #include "rwlock.h"
 #include "securelevel.h"
+#include "stacktrace.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -1051,7 +1052,8 @@ void env_error_tag (s_env *env, s_tag *tag)
   error_handler = env->error_handler;
   if (error_handler) {
     tag_init_copy(&error_handler->tag, tag);
-    error_handler->stacktrace = list_new_copy_all(*env->stacktrace);
+    error_handler->stacktrace =
+      list_new_copy_all(stacktrace_get(env->stacktrace));
     env_longjmp(env, &error_handler->jmp);
     /* never reached */
     return;
@@ -2124,7 +2126,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   if (! env)
     return NULL;
   *env = (s_env) {0};
-  if (! (env->stacktrace = alloc(sizeof(s_list *))))
+  if (! (env->stacktrace = stacktrace_new()))
     return NULL;
   env_global_set(env);
   if (! env_args_init(env, argc, argv))
@@ -3081,7 +3083,7 @@ s_list ** env_stacktrace (s_env *env, s_list **dest)
 {
   assert(env);
   assert(dest);
-  *dest = list_new_copy_all(*env->stacktrace);
+  *dest = list_new_copy_all(stacktrace_get(env->stacktrace));
   return dest;
 }
 

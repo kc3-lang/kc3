@@ -198,6 +198,7 @@ HEADERS = \
 	"socket_addr.h" \
 	"socket_buf.h" \
 	"special_operator.h" \
+	"stacktrace.h" \
 	"str.h" \
 	"struct.h" \
 	"struct_type.h" \
@@ -425,6 +426,7 @@ SOURCES = \
 	"socket_addr.c" \
 	"socket_buf.c" \
 	"special_operator.c" \
+	"stacktrace.c" \
 	"str.c" \
 	"struct.c" \
 	"struct_type.c" \
@@ -766,6 +768,7 @@ LO_SOURCES = \
 	"socket_addr.c" \
 	"socket_buf.c" \
 	"special_operator.c" \
+	"stacktrace.c" \
 	"str.c" \
 	"struct.c" \
 	"struct_type.c" \

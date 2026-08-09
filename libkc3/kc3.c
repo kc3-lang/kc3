@@ -70,6 +70,7 @@
 #include "rwlock.h"
 #include "s32.h"
 #include "securelevel.h"
+#include "stacktrace.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -1391,12 +1392,21 @@ void ** kc3_stacktrace_ptr (void **dest)
   return dest;
 }
 
-s_str * kc3_stacktrace_to_str (s_list ***stacktrace, s_str *dest)
+s_str * kc3_stacktrace_to_str (s_stacktrace **stacktrace, s_str *dest)
 {
   char a[4096];
   s_buf buf;
+  p_list list;
+  sw r;
+  assert(stacktrace);
+  assert(*stacktrace);
+  assert(dest);
+  list = stacktrace_read_begin(*stacktrace);
   buf_init(&buf, false, sizeof(a), a);
-  buf_inspect_stacktrace(&buf, **stacktrace);
+  r = buf_inspect_stacktrace(&buf, list);
+  stacktrace_read_end(*stacktrace);
+  if (r < 0)
+    return NULL;
   if (buf_read_to_str(&buf, dest) < 0)
     return NULL;
   return dest;
