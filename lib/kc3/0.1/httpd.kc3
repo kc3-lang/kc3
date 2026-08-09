@@ -97,9 +97,7 @@ defmodule HTTPd do
   def thread_request = fn (thread_id, msg) {
     IO.puts(msg)
     Err.puts(msg)
-    Facts.replace_tags(HTTPd.thread_db, :thread_request, thread_id,
-      %{id: thread_id,
-        request: msg})
+    Facts.replace_tags(HTTPd.thread_db, :thread_request, thread_id, msg)
   }
 
   def clean_upload = fn (file) {
