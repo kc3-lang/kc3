@@ -132,12 +132,14 @@ s_tag * plist_do (s_tag *list, s_tag *pattern, s_tag *do_block,
     }
     env->silence_errors = silence_errors;
     tag_clean(&match);
+    tag_init(&match);
     tag_clean(&tmp);
     if (! env_eval_do_block(env, &do_block->data.td_do_block, &tmp))
       goto ko;
     l = list_next(l);
   }
   env_unwind_protect_pop(env, &unwind_protect);
+  tag_clean(&match);
   tag_clean(&list_eval);
   *dest = tmp;
   return dest;
@@ -546,6 +548,7 @@ p_list * plist_map_filter (s_tag *list, s_tag *pattern, s_tag *do_block,
     }
     env->silence_errors = silence_errors;
     tag_clean(&match);
+    tag_init(&match);
     if (! env_eval_do_block(env, &do_block->data.td_do_block, &tmp))
       goto ko;
     if (tmp.type != TAG_VOID) {
@@ -665,6 +668,7 @@ s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
     }
     env->silence_errors = silence_errors;
     tag_clean(&match);
+    tag_init(&match);
     if (! env_eval_do_block(env, &do_block->data.td_do_block, &tmp))
       goto ko;
     if (tmp.type != TAG_STR) {
@@ -721,6 +725,7 @@ s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
   i = 0;
   while (i < string_count)
     str_clean(string + i++);
+  tag_clean(&match);
   tag_clean(&separator_eval);
   tag_clean(&list_eval);
   return dest;
@@ -728,6 +733,7 @@ s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
   i = 0;
   while (i < string_count)
     str_clean(string + i++);
+  tag_clean(&match);
   tag_clean(&separator_eval);
   tag_clean(&list_eval);
   return NULL;

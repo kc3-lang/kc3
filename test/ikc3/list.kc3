@@ -111,3 +111,11 @@ end)
 List.map_filter([1, 2, 3], item, do
   if item == 2 do void else item end
 end)
+
+quote defmodule ListMapFilterStructTest do
+  defstruct [value: 0]
+end
+defmodule ListMapFilterStructTest do
+  defstruct [value: 0]
+end
+List.map_filter([%ListMapFilterStructTest{value: 1}], item, do item end)
