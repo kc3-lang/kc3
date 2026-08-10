@@ -481,6 +481,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   *((s_http_request *) tmp.data.td_pstruct->data) = tmp_req;
   goto clean;
  restore:
+  err_puts("http_request_buf_parse: error");
   if (path.type == TAG_STR && path.data.td_str.size)
     file_unlink(&path.data.td_str);
   while (tmp_uploads) {

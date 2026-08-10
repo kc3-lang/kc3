@@ -224,11 +224,11 @@ s_tag * url_www_form_decode (const s_str *src, s_tag *dest)
     if (buf_read_until_1_into_str(&buf, "=", &key) <= 0)
       break;
     if (buf_read_until_1_into_str(&buf, "&", &value) <= 0 &&
-        buf_read_to_str(&buf, &value) <= 0) {
+        buf_read_to_str(&buf, &value) < 0) {
       str_clean(&key);
       goto clean;
     }
-    if (! key.size || ! value.size) {
+    if (! key.size) {
       str_clean(&key);
       str_clean(&value);
       continue;

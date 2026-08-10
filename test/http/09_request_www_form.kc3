@@ -1,0 +1,49 @@
+quote require HTTP
+require HTTP
+quote require HTTP.Request
+require HTTP.Request
+quote require Socket
+require Socket
+quote require Socket.Buf
+require Socket.Buf
+
+quote (server = Socket.listen("127.0.0.1", "57003")) ; void
+(server = Socket.listen("127.0.0.1", "57003")) ; void
+quote (client = Socket.Buf.connect("127.0.0.1", "57003")) ; void
+(client = Socket.Buf.connect("127.0.0.1", "57003")) ; void
+quote (server_client = Socket.Buf.accept(server)) ; void
+(server_client = Socket.Buf.accept(server)) ; void
+
+# Preserve an empty value at the end of the form.
+quote Buf.write_str(client.buf_rw.w,
+  "POST / HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 9\r\n\r\nssh_keys=")
+Buf.write_str(client.buf_rw.w,
+  "POST / HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 9\r\n\r\nssh_keys=")
+quote (request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+request.body
+
+# Preserve an empty value before another field.
+quote Buf.write_str(client.buf_rw.w,
+  "POST / HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 19\r\n\r\nfirst=&second=value")
+Buf.write_str(client.buf_rw.w,
+  "POST / HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 19\r\n\r\nfirst=&second=value")
+quote (request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+request.body
+
+# Decode escaped characters while retaining an empty value.
+quote Buf.write_str(client.buf_rw.w,
+  "POST / HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 29\r\n\r\nencoded=hello+world%21&empty=")
+Buf.write_str(client.buf_rw.w,
+  "POST / HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 29\r\n\r\nencoded=hello+world%21&empty=")
+quote (request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+request.body
+
+quote Socket.Buf.close(client)
+Socket.Buf.close(client)
+quote Socket.Buf.close(server_client)
+Socket.Buf.close(server_client)
+quote Socket.close(server)
+Socket.close(server)
