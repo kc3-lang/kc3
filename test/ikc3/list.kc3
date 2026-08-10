@@ -103,3 +103,11 @@ end)
 {n, symbol}
 quote List.map_join([], item, ",", do "#{item}" end)
 List.map_join([], item, ",", do "#{item}" end)
+quote List.map_filter([void, 0, false, ""], item, do item end)
+List.map_filter([void, 0, false, ""], item, do item end)
+quote List.map_filter([1, 2, 3], item, do
+  if item == 2 do void else item end
+end)
+List.map_filter([1, 2, 3], item, do
+  if item == 2 do void else item end
+end)

@@ -39,6 +39,8 @@ s_tag *  plist_find_if (p_list *plist, p_callable *function,
 bool *   plist_has (p_list *plist, const s_tag *tag, bool *dest);
 s_str  * plist_join (p_list *plist, s_str *sep, s_str *dest);
 p_list * plist_map (p_list *plist, p_callable *function, p_list *dest);
+p_list * plist_map_filter (s_tag *list, s_tag *pattern, s_tag *do_block,
+                           p_list *dest);
 s_str  * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
                          s_tag *do_block, s_str *dest);
 p_list * plist_remove_void (p_list *plist);

@@ -481,6 +481,97 @@ p_list * plist_map (p_list *plist, p_callable *function,
   return NULL;
 }
 
+p_list * plist_map_filter (s_tag *list, s_tag *pattern, s_tag *do_block,
+                           p_list *dest)
+{
+  s_env *env;
+  s_list *l;
+  s_tag list_eval = {0};
+  s_tag match = {0};
+  bool silence_errors;
+  s_tag tmp = {0};
+  p_list *tail;
+  p_list volatile result = NULL;
+  s_unwind_protect unwind_protect;
+  assert(list);
+  assert(pattern);
+  assert(do_block);
+  assert(dest);
+  env = env_global();
+  assert(env);
+  if (! env_eval_tag(env, list, &list_eval))
+    return NULL;
+  if (list_eval.type != TAG_PLIST) {
+    err_write_1("plist_map_filter: expected a List, got: ");
+    err_inspect_tag(&list_eval);
+    err_write_1("\n");
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  if (do_block->type != TAG_DO_BLOCK) {
+    err_write_1("plist_map_filter: expected a do block, got: ");
+    err_inspect_tag(do_block);
+    err_write_1("\n");
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  tail = (p_list *) &result;
+  silence_errors = env->silence_errors;
+  env_unwind_protect_push(env, &unwind_protect);
+  if (setjmp(unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    env->silence_errors = silence_errors;
+    tag_clean(&tmp);
+    tag_clean(&match);
+    tag_clean(&list_eval);
+    list_delete_all((p_list) result);
+    longjmp(*unwind_protect.jmp, 1);
+    return NULL;
+  }
+  l = list_eval.data.td_plist;
+  while (l) {
+    if (l->tag.type == TAG_VOID) {
+      l = list_next(l);
+      continue;
+    }
+    env->silence_errors = true;
+    if (! env_eval_equal_tag(env, false, &l->tag, pattern, &match)) {
+      env->silence_errors = silence_errors;
+      err_write_1("plist_map_filter: pattern does not match: ");
+      err_inspect_tag(pattern);
+      err_write_1(" = ");
+      err_inspect_tag(&l->tag);
+      err_write_1("\n");
+      goto ko;
+    }
+    env->silence_errors = silence_errors;
+    tag_clean(&match);
+    if (! env_eval_do_block(env, &do_block->data.td_do_block, &tmp))
+      goto ko;
+    if (tmp.type != TAG_VOID) {
+      *tail = list_new_tag_copy(&tmp, NULL);
+      if (! *tail)
+        goto ko;
+      tail = &(*tail)->next.data.td_plist;
+    }
+    tag_clean(&tmp);
+    l = list_next(l);
+  }
+  env_unwind_protect_pop(env, &unwind_protect);
+  tag_clean(&match);
+  tag_clean(&list_eval);
+  *dest = (p_list) result;
+  return dest;
+ ko:
+  env_unwind_protect_pop(env, &unwind_protect);
+  env->silence_errors = silence_errors;
+  tag_clean(&tmp);
+  tag_clean(&match);
+  tag_clean(&list_eval);
+  list_delete_all((p_list) result);
+  return NULL;
+}
+
 s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
                         s_tag *do_block, s_str *dest)
 {
