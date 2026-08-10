@@ -52,6 +52,9 @@ defmodule List do
 
   def map = cfn List "plist_map" (List, Callable, Result)
 
+  def map_join = cfn_macro Str "plist_map_join" (Tag, Tag, Tag, Tag,
+    Result)
+
   def next = fn ([a | b]) { b }
 
   def reverse = cfn List "plist_reverse" (List, Result)

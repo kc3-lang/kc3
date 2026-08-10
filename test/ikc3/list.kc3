@@ -90,3 +90,16 @@ end)
 {n, symbol}
 quote List.do([], item, do item end)
 List.do([], item, do item end)
+quote List.map_join([1, 2, 3], x, ", ", do "#{x * 2}" end)
+List.map_join([1, 2, 3], x, ", ", do "#{x * 2}" end)
+x
+list_map_join_source = [{1, :a}, {2, :b}]
+quote List.map_join(list_map_join_source, {n, symbol}, "|", do
+  "#{n}:#{symbol}"
+end)
+List.map_join(list_map_join_source, {n, symbol}, "|", do
+  "#{n}:#{symbol}"
+end)
+{n, symbol}
+quote List.map_join([], item, ",", do "#{item}" end)
+List.map_join([], item, ",", do "#{item}" end)

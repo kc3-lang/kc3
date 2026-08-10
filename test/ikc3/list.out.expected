@@ -148,3 +148,21 @@ List.do([], item, do
   item
 end)
 void
+List.map_join([1,
+               2,
+               3], x, ", ", do
+  "#{x * 2}"
+end)
+"2, 4, 6"
+3
+[{1, :a},
+ {2, :b}]
+List.map_join(list_map_join_source, {n, symbol}, "|", do
+  "#{n}:#{symbol}"
+end)
+"1:a|2:b"
+{2, :b}
+List.map_join([], item, ",", do
+  "#{item}"
+end)
+""
