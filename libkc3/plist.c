@@ -578,8 +578,6 @@ p_list * plist_map_filter (s_tag *list, s_tag *pattern, s_tag *do_block,
 s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
                         s_tag *do_block, s_str *dest)
 {
-  s_buf buf = {0};
-  char *data;
   s_env *env;
   sw length;
   s_list *l;
@@ -589,6 +587,7 @@ s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
   bool silence_errors;
   uw i;
   uw volatile string_count = 0;
+  s_str *string = NULL;
   s_tag tmp = {0};
   uw total_size = 0;
   s_unwind_protect unwind_protect;
@@ -635,7 +634,18 @@ s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
     tag_clean(&list_eval);
     return NULL;
   }
-  s_str string[length ? (uw) length : 1];
+  if ((uw) length > UW_MAX / sizeof(*string)) {
+    err_puts("plist_map_join: list size overflow");
+    tag_clean(&separator_eval);
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  string = alloc((length ? (uw) length : 1) * sizeof(*string));
+  if (! string) {
+    tag_clean(&separator_eval);
+    tag_clean(&list_eval);
+    return NULL;
+  }
   i = 0;
   while (i < (uw) (length ? length : 1))
     string[i++] = (s_str) {0};
@@ -649,6 +659,7 @@ s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
     i = 0;
     while (i < string_count)
       str_clean(string + i++);
+    alloc_free(string);
     tag_clean(&separator_eval);
     tag_clean(&list_eval);
     longjmp(*unwind_protect.jmp, 1);
@@ -698,33 +709,31 @@ s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
     l = list_next(l);
   }
   env_unwind_protect_pop(env, &unwind_protect);
+  if (total_size == UW_MAX || ! str_init_alloc(dest, total_size))
+    goto ko_no_unwind;
   {
-    char data_storage[total_size ? total_size : 1];
-    data = data_storage;
-    if (! buf_init(&buf, false, total_size, data))
-      goto ko_no_unwind;
+    char *data = dest->free.p_pchar;
+    uw position = 0;
     i = 0;
     while (i < string_count) {
-      if (i && buf_write(&buf, separator_eval.data.td_str.ptr.p_pvoid,
-                         separator_eval.data.td_str.size) < 0) {
-        buf_clean(&buf);
-        goto ko_no_unwind;
+      if (i) {
+        if (separator_eval.data.td_str.size)
+          memcpy(data + position,
+                 separator_eval.data.td_str.ptr.p_pvoid,
+                 separator_eval.data.td_str.size);
+        position += separator_eval.data.td_str.size;
       }
-      if (buf_write(&buf, string[i].ptr.p_pvoid, string[i].size) < 0) {
-        buf_clean(&buf);
-        goto ko_no_unwind;
-      }
+      if (string[i].size)
+        memcpy(data + position, string[i].ptr.p_pvoid, string[i].size);
+      position += string[i].size;
       i++;
     }
-    if (buf_read_to_str(&buf, dest) < 0) {
-      buf_clean(&buf);
-      goto ko_no_unwind;
-    }
-    buf_clean(&buf);
+    data[position] = 0;
   }
   i = 0;
   while (i < string_count)
     str_clean(string + i++);
+  alloc_free(string);
   tag_clean(&match);
   tag_clean(&separator_eval);
   tag_clean(&list_eval);
@@ -733,6 +742,7 @@ s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
   i = 0;
   while (i < string_count)
     str_clean(string + i++);
+  alloc_free(string);
   tag_clean(&match);
   tag_clean(&separator_eval);
   tag_clean(&list_eval);
@@ -745,6 +755,7 @@ s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
   i = 0;
   while (i < string_count)
     str_clean(string + i++);
+  alloc_free(string);
   tag_clean(&separator_eval);
   tag_clean(&list_eval);
   return NULL;
