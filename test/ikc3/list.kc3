@@ -72,3 +72,21 @@ quote List.append([], [])
 List.append([], [])
 quote List.append_one([], :x)
 List.append_one([], :x)
+quote List.do([1, 2, 3], x, do puts(x); x * 2 end)
+List.do([1, 2, 3], x, do puts(x); x * 2 end)
+x
+list_do_source = [4, 5]
+quote List.do(list_do_source, x, do x + 10 end)
+List.do(list_do_source, x, do x + 10 end)
+x
+quote List.do([{1, :a}, {2, :b}], {n, symbol}, do
+  puts("#{n} #{symbol}")
+  symbol
+end)
+List.do([{1, :a}, {2, :b}], {n, symbol}, do
+  puts("#{n} #{symbol}")
+  symbol
+end)
+{n, symbol}
+quote List.do([], item, do item end)
+List.do([], item, do item end)

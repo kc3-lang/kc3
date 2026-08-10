@@ -32,6 +32,8 @@ defmodule List do
     }
   }
 
+  def _"do" = cfn_macro Tag "plist_do" (Tag, Tag, Tag, Result)
+
   def each = cfn Bool "plist_each" (List, Callable, Result)
 
   def filter = cfn List "plist_filter" (List, Callable, Result)

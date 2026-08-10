@@ -118,3 +118,33 @@ List.append([], [])
 []
 List.append_one([], :x)
 [:x]
+List.do([1,
+         2,
+         3], x, do
+  puts(x) ; x * 2
+end)
+1
+2
+3
+6
+3
+[4,
+ 5]
+List.do(list_do_source, x, do
+  x + 10
+end)
+15
+5
+List.do([{1, :a},
+         {2, :b}], {n, symbol}, do
+  puts("#{n} #{symbol}")
+  symbol
+end)
+1 a
+2 b
+:b
+{2, :b}
+List.do([], item, do
+  item
+end)
+void

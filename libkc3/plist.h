@@ -29,6 +29,8 @@ bool *   plist_all (p_list *plist, p_callable *function, bool *dest);
 /* Operators. */
 p_list * plist_cast (p_list *plist, const s_sym * const *type,
                      const s_tag *tag);
+s_tag *  plist_do (s_tag *list, s_tag *pattern, s_tag *do_block,
+                   s_tag *dest);
 bool *   plist_each (p_list *plist, p_callable *function, bool *dest);
 p_list * plist_filter (p_list *plist, p_callable *function,
                        p_list *dest);

@@ -20,6 +20,9 @@
 #include "buf_parse.h"
 #include "compare.h"
 #include "data.h"
+#include "env.h"
+#include "env_eval.h"
+#include "env_eval_equal.h"
 #include "eval.h"
 #include "kc3_main.h"
 #include "list.h"
@@ -70,6 +73,81 @@ bool * plist_all (p_list *plist, p_callable *function, bool *dest)
 void plist_clean (p_list *plist)
 {
   list_delete_all(*plist);
+}
+
+s_tag * plist_do (s_tag *list, s_tag *pattern, s_tag *do_block,
+                  s_tag *dest)
+{
+  s_env *env;
+  s_list *l;
+  s_tag list_eval = {0};
+  s_tag match = {0};
+  bool silence_errors;
+  s_tag tmp = {0};
+  s_unwind_protect unwind_protect;
+  assert(list);
+  assert(pattern);
+  assert(do_block);
+  assert(dest);
+  env = env_global();
+  assert(env);
+  if (! env_eval_tag(env, list, &list_eval))
+    return NULL;
+  if (list_eval.type != TAG_PLIST) {
+    err_write_1("plist_do: expected a List, got: ");
+    err_inspect_tag(&list_eval);
+    err_write_1("\n");
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  if (do_block->type != TAG_DO_BLOCK) {
+    err_write_1("plist_do: expected a do block, got: ");
+    err_inspect_tag(do_block);
+    err_write_1("\n");
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  silence_errors = env->silence_errors;
+  env_unwind_protect_push(env, &unwind_protect);
+  if (setjmp(unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    env->silence_errors = silence_errors;
+    tag_clean(&tmp);
+    tag_clean(&match);
+    tag_clean(&list_eval);
+    longjmp(*unwind_protect.jmp, 1);
+    return NULL;
+  }
+  l = list_eval.data.td_plist;
+  while (l) {
+    env->silence_errors = true;
+    if (! env_eval_equal_tag(env, false, &l->tag, pattern, &match)) {
+      env->silence_errors = silence_errors;
+      err_write_1("plist_do: pattern does not match: ");
+      err_inspect_tag(pattern);
+      err_write_1(" = ");
+      err_inspect_tag(&l->tag);
+      err_write_1("\n");
+      goto ko;
+    }
+    env->silence_errors = silence_errors;
+    tag_clean(&match);
+    tag_clean(&tmp);
+    if (! env_eval_do_block(env, &do_block->data.td_do_block, &tmp))
+      goto ko;
+    l = list_next(l);
+  }
+  env_unwind_protect_pop(env, &unwind_protect);
+  tag_clean(&list_eval);
+  *dest = tmp;
+  return dest;
+ ko:
+  env_unwind_protect_pop(env, &unwind_protect);
+  env->silence_errors = silence_errors;
+  tag_clean(&tmp);
+  tag_clean(&match);
+  tag_clean(&list_eval);
+  return NULL;
 }
 
 bool * plist_each (p_list *plist, p_callable *function, bool *dest)
