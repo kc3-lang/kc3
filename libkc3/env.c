@@ -1104,7 +1104,8 @@ s_fact_w * env_fact_w_eval (s_env *env, s_fact_w *fact,
 
 s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
                                 s_list **spec,
-                                s_callable *callback, s_tag *dest)
+                                s_callable *callback,
+                                s_tag * volatile dest)
 {
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
@@ -1201,7 +1202,7 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
                                      s_tag *predicate,
                                      s_tag *object,
                                      s_callable *callback,
-                                     s_tag *dest)
+                                     s_tag * volatile dest)
 {
   s_list *arguments;
   s_facts_cursor cursor = {0};

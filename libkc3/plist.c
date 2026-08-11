@@ -76,7 +76,7 @@ void plist_clean (p_list *plist)
 }
 
 s_tag * plist_do (s_tag *list, s_tag *pattern, s_tag *do_block,
-                  s_tag *dest)
+                  s_tag * volatile dest)
 {
   s_env *env;
   s_list *l;
@@ -484,7 +484,7 @@ p_list * plist_map (p_list *plist, p_callable *function,
 }
 
 p_list * plist_map_filter (s_tag *list, s_tag *pattern, s_tag *do_block,
-                           p_list *dest)
+                           p_list * volatile dest)
 {
   s_env *env;
   s_list *l;
@@ -576,7 +576,7 @@ p_list * plist_map_filter (s_tag *list, s_tag *pattern, s_tag *do_block,
 }
 
 s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
-                        s_tag *do_block, s_str *dest)
+                        s_tag *do_block, s_str * volatile dest)
 {
   s_env *env;
   sw length;
@@ -589,7 +589,7 @@ s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
   uw volatile string_count = 0;
   s_str *string = NULL;
   s_tag tmp = {0};
-  uw total_size = 0;
+  uw volatile total_size = 0;
   s_unwind_protect unwind_protect;
   assert(list);
   assert(pattern);

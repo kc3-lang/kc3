@@ -353,7 +353,7 @@ bool env_eval_call_callable_args (s_env *env,
 bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
                              s_tag *dest)
 {
-  s_list *args = NULL;
+  s_list * volatile args = NULL;
   uw volatile args_count = 0;
   uw args_max = cfn->arity - (cfn->arg_result ? 1 : 0);
   volatile s_list args_storage[args_max ? args_max : 1];
@@ -438,7 +438,7 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
 bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
                             s_list *arguments, s_tag *dest)
 {
-  s_list *args = NULL;
+  s_list * volatile args = NULL;
   uw volatile args_count = 0;
   s_list * volatile args_final = NULL;
   sw args_max;
