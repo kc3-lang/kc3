@@ -67,8 +67,13 @@ s_facts_connection * facts_accept (s_facts *facts, s64 server_fd,
   assert(facts);
   assert(server_tls);
   client_fd = accept(server_fd, NULL, NULL);
-  if (client_fd < 0)
+  if (client_fd < 0) {
+    if (! facts->shutting_down && errno != EINTR) {
+      err_write_1("facts_accept: accept: ");
+      err_puts(strerror(errno));
+    }
     return NULL;
+  }
   if (tls_accept_socket(server_tls, &client_tls, client_fd) < 0) {
     err_write_1("facts_accept: tls_accept_socket: ");
     err_puts(tls_error(server_tls));

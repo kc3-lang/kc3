@@ -28,6 +28,7 @@
  *
  */
 #include <string.h>
+#include "alloc.h"
 #include "assert.h"
 #include "explicit_bzero.h"
 #include "sha256.h"
