@@ -1,4 +1,4 @@
-/*/home/lyzer/.local/bin/lvim kc3
+/*
  * Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
