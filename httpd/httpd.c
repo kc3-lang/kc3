@@ -152,9 +152,26 @@ int main (int argc, char **argv)
       return 1;
     }
     buf_file_close(env->out);
-    dup2(log_fd, 1);
-    close(log_fd);
-    buf_fd_open_w(env->out, 1);
+    if (dup2(log_fd, 1) < 0) {
+      e = errno;
+      err_write_1("kc3_httpd: dup2(log, stdout): ");
+      err_puts(strerror(e));
+      close(log_fd);
+      str_clean(&log_str);
+      kc3_clean(NULL);
+      return 1;
+    }
+    if (close(log_fd) < 0) {
+      e = errno;
+      err_write_1("kc3_httpd: close(log): ");
+      err_puts(strerror(e));
+    }
+    if (! buf_fd_open_w(env->out, 1)) {
+      err_puts("kc3_httpd: buf_fd_open_w(stdout)");
+      str_clean(&log_str);
+      kc3_clean(NULL);
+      return 1;
+    }
     strftime(err_buf, sizeof(err_buf) - 1,
              "log/kc3_httpd_%Y-%m-%d_%H:%M:%S.error.log",
              utc);
@@ -165,11 +182,32 @@ int main (int argc, char **argv)
       return 1;
     }
     buf_file_close(env->err);
-    dup2(err_fd, 2);
-    close(err_fd);
-    buf_fd_open_w(env->err, 2);
+    if (dup2(err_fd, 2) < 0) {
+      e = errno;
+      err_write_1("kc3_httpd: dup2(log, stderr): ");
+      err_puts(strerror(e));
+      close(err_fd);
+      str_clean(&err_str);
+      kc3_clean(NULL);
+      return 1;
+    }
+    if (close(err_fd) < 0) {
+      e = errno;
+      err_write_1("kc3_httpd: close(error log): ");
+      err_puts(strerror(e));
+    }
+    if (! buf_fd_open_w(env->err, 2)) {
+      err_puts("kc3_httpd: buf_fd_open_w(stderr)");
+      str_clean(&err_str);
+      kc3_clean(NULL);
+      return 1;
+    }
     buf_file_close(env->in);
-    close(0);
+    if (close(0) < 0) {
+      e = errno;
+      err_write_1("kc3_httpd: close(stdin): ");
+      err_puts(strerror(e));
+    }
   }
   ident_init(&daemonize_ident, &g_sym_KC3, sym_1("daemonize"));
   tag_init_bool(&daemonize_value, daemonize);

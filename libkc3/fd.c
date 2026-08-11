@@ -99,14 +99,20 @@ bool fd_set_blocking (s64 fd, bool blocking)
 #else
   s32 flags;
   flags = fcntl(fd, F_GETFL);
-  if (flags == -1)
+  if (flags == -1) {
+    err_write_1("fd_set_blocking: fcntl(F_GETFL): ");
+    err_puts(strerror(errno));
     return false;
+  }
   if (! blocking)
     flags |= O_NONBLOCK;
   else
     flags &= ~ (s32) O_NONBLOCK;
-  if (fcntl(fd, F_SETFL, flags) == -1)
+  if (fcntl(fd, F_SETFL, flags) == -1) {
+    err_write_1("fd_set_blocking: fcntl(F_SETFL): ");
+    err_puts(strerror(errno));
     return false;
+  }
 #endif
   return true;
 }

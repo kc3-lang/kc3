@@ -38,8 +38,13 @@ u64 * buf_fd_open_w_tell (s_buf *buf, u64 *dest);
 
 void buf_fd_close (s_buf *buf)
 {
+  sw r;
   assert(buf);
-  buf_flush(buf);
+  if ((r = buf_flush(buf)) < 0) {
+    err_write_1("buf_fd_close: buf_flush: ");
+    err_inspect_sw(r);
+    err_write_1("\n");
+  }
   buf->flush = NULL;
   buf->refill = NULL;
   buf->tell = NULL;
@@ -89,7 +94,9 @@ sw buf_fd_open_r_refill (s_buf *buf)
            NULL);
 #else
   if (ioctl(fd, FIONREAD, &avail) == -1) {
-    err_puts("buf_fd_open_r_refill: ioctl FIONREAD: -1");
+    s32 e = errno;
+    err_write_1("buf_fd_open_r_refill: ioctl FIONREAD: ");
+    err_puts(strerror(e));
     return -1;
   }
 #endif
@@ -104,8 +111,12 @@ sw buf_fd_open_r_refill (s_buf *buf)
   if ((uw) avail > size)
     avail = size;
   r = read(fd, buf->ptr.p_pchar + buf->wpos, avail);
-  if (r < 0)
+  if (r < 0) {
+    s32 e = errno;
+    err_write_1("buf_fd_open_r_refill: read: ");
+    err_puts(strerror(e));
     return r;
+  }
   if (buf->wpos + r > buf->size) {
     err_puts("buf_fd_open_r_refill: buffer overflow");
     assert(! "buf_fd_open_r_refill: buffer overflow");
@@ -205,8 +216,15 @@ sw buf_fd_open_w_flush (s_buf *buf)
         struct pollfd pfd;
         pfd.fd = buf_fd->fd;
         pfd.events = POLLOUT;
-        if (poll(&pfd, 1, 10000) <= 0) {
-          err_puts("buf_fd_open_w_flush: poll timeout");
+        s32 poll_r = poll(&pfd, 1, 10000);
+        if (poll_r < 0) {
+          e = errno;
+          err_write_1("buf_fd_open_w_flush: poll: ");
+          err_puts(strerror(e));
+          return -1;
+        }
+        if (! poll_r) {
+          err_puts("buf_fd_open_w_flush: poll: timeout");
           return -1;
         }
         continue;

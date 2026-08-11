@@ -12,11 +12,13 @@
  */
 #include <errno.h>
 #include <stdatomic.h>
+#include <string.h>
 #if ! (defined(WIN32) || defined(WIN64))
 # include <fcntl.h>
 # include <unistd.h>
 #endif
 #include "daemon.h"
+#include "io.h"
 
 static atomic_bool g_daemon_stopping;
 static s32         g_daemon_stop_pipe[2] = {-1, -1};
@@ -54,8 +56,12 @@ bool daemon_stop_init (void)
                         memory_order_relaxed);
   daemon_stop_clean();
 #if ! (defined(WIN32) || defined(WIN64))
-  if (pipe(g_daemon_stop_pipe))
+  if (pipe(g_daemon_stop_pipe)) {
+    e = errno;
+    err_write_1("daemon_stop_init: pipe: ");
+    err_puts(strerror(e));
     return false;
+  }
   if ((flags = fcntl(g_daemon_stop_pipe[0], F_GETFL)) < 0 ||
       fcntl(g_daemon_stop_pipe[0], F_SETFL,
             flags | O_NONBLOCK) < 0 ||
@@ -71,6 +77,8 @@ bool daemon_stop_init (void)
     e = errno;
     daemon_stop_clean();
     errno = e;
+    err_write_1("daemon_stop_init: fcntl: ");
+    err_puts(strerror(e));
     return false;
   }
 #endif
