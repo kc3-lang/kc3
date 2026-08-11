@@ -84,9 +84,12 @@ void daemon_stop_notify (s32 signal)
   u8 notification;
   e = errno;
   notification = (u8) signal;
-  if (g_daemon_stop_pipe[1] >= 0)
-    (void) write(g_daemon_stop_pipe[1], &notification,
-                 sizeof(notification));
+  if (g_daemon_stop_pipe[1] >= 0) {
+    ssize_t written;
+    written = write(g_daemon_stop_pipe[1], &notification,
+                    sizeof(notification));
+    (void) written;
+  }
   errno = e;
 #else
   (void) signal;
