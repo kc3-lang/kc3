@@ -78,13 +78,6 @@ else
 fi
 echo "HAVE_GL = $HAVE_GL" >> ${CONFIG_MK}
 
-if pkg-config gtk4; then
-    HAVE_GTK4=true
-else
-    HAVE_GTK4=false
-fi
-echo "HAVE_GTK4 = $HAVE_GTK4" >> ${CONFIG_MK}
-
 update_config_sh
 update_config_mk
 update_makefile
@@ -121,11 +114,6 @@ if $HAVE_GL; then
     SUBDIRS="$SUBDIRS
 gl
 window"
-fi
-
-if $HAVE_GTK4; then
-    SUBDIRS="$SUBDIRS
-gtk4"
 fi
 
 config_subdirs $SUBDIRS
