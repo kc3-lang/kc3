@@ -191,7 +191,7 @@ s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
 s_gl_box * gl_box_new (u32 seg_u, u32 seg_v, u32 seg_w)
 {
   s_gl_box *box;
-  box = calloc(1, sizeof(s_gl_box));
+  box = alloc(sizeof(s_gl_box));
   if (! box) {
     err_puts("gl_box_new: failed to allocate memory");
     return NULL;

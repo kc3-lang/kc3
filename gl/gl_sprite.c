@@ -228,7 +228,7 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
     str_clean(&tmp.real_path);
     return NULL;
   }
-  jpeg_data = malloc(jpeg_h * jpeg_w * jpeg_pixel_size);
+  jpeg_data = alloc(jpeg_h * jpeg_w * jpeg_pixel_size);
   if (! jpeg_data) {
     err_write_1("gl_sprite_init_jpeg: malloc failed: ");
     err_puts(tmp.real_path.ptr.p_pchar);
@@ -254,7 +254,7 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   tmp.dim_y = dim_y;
   tmp.pix_w = tmp.total_w / dim_x;
   tmp.pix_h = tmp.total_h / dim_y;
-  tmp.texture = calloc(tmp.frame_count, sizeof(u8) * 4);
+  tmp.texture = alloc(tmp.frame_count * sizeof(u8) * 4);
   if (! tmp.texture) {
     err_puts("gl_sprite_init_jpeg: tmp.texture:"
              " failed to allocate memory");
@@ -278,7 +278,7 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
     return NULL;
   }
   sprite_stride = tmp.pix_w * 4;
-  data = malloc(tmp.pix_h * sprite_stride);
+  data = alloc(tmp.pix_h * sprite_stride);
   if (! data) {
     err_write_1("gl_sprite_init_jpeg: failed to allocate"
                 " memory: ");
@@ -520,7 +520,7 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
   tmp.dim_y = dim_y;
   tmp.pix_w = tmp.total_w / dim_x;
   tmp.pix_h = tmp.total_h / dim_y;
-  tmp.texture = calloc(tmp.frame_count, sizeof(GLuint));
+  tmp.texture = alloc(tmp.frame_count * sizeof(GLuint));
   if (! tmp.texture) {
     err_puts("gl_sprite_init: tmp.texture:"
              " failed to allocate memory");
@@ -542,7 +542,7 @@ s_gl_sprite * gl_sprite_init_png (s_gl_sprite *sprite, const char *path,
     return NULL;
   }
   sprite_stride = tmp.pix_w * png_pixel_size;
-  data = malloc(tmp.pix_h * sprite_stride);
+  data = alloc(tmp.pix_h * sprite_stride);
   if (! data) {
     err_write_1("gl_sprite_init: failed to allocate memory: ");
     err_puts(tmp.real_path.ptr.p_pchar);

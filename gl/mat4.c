@@ -199,7 +199,7 @@ s_vec3 * mat4_mult_vec3 (const s_mat4 *a, const s_vec3 *b, s_vec3 *dest)
 s_mat4 * mat4_new_copy (const s_mat4 *src)
 {
   s_mat4 *m;
-  m = calloc(1, sizeof(s_mat4));
+  m = alloc(sizeof(s_mat4));
   if (! m) {
     err_puts("mat4_new: failed to allocate memory");
     return NULL;
@@ -213,7 +213,7 @@ s_mat4 * mat4_new_product (const s_mat4 *a, const s_mat4 *b)
   s_mat4 *m;
   assert(a);
   assert(b);
-  m = calloc(1, sizeof(s_mat4));
+  m = alloc(sizeof(s_mat4));
   if (! m) {
     err_puts("mat4_new: failed to allocate memory");
     return NULL;
@@ -225,7 +225,7 @@ s_mat4 * mat4_new_product (const s_mat4 *a, const s_mat4 *b)
 s_mat4 * mat4_new_zero (void)
 {
   s_mat4 *m;
-  m = calloc(1, sizeof(s_mat4));
+  m = alloc(sizeof(s_mat4));
   if (! m) {
     err_puts("mat4_new: failed to allocate memory");
     return NULL;

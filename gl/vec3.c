@@ -73,7 +73,7 @@ void vec3_delete (s_vec3 *p)
 s_vec3 * vec3_new (f32 x, f32 y, f32 z)
 {
   s_vec3 *p;
-  p = calloc(1, sizeof(s_vec3));
+  p = alloc(sizeof(s_vec3));
   if (! p) {
     err_puts("vec3_new: failed to allocate memory");
     return NULL;
@@ -85,7 +85,7 @@ s_vec3 * vec3_new (f32 x, f32 y, f32 z)
 s_vec3 * vec3_new_copy (const s_vec3 *src)
 {
   s_vec3 *p;
-  p = calloc(1, sizeof(s_vec3));
+  p = alloc(sizeof(s_vec3));
   if (! p) {
     err_puts("vec3_new: failed to allocate memory");
     return NULL;
@@ -97,7 +97,7 @@ s_vec3 * vec3_new_copy (const s_vec3 *src)
 s_vec3 * vec3_new_zero (void)
 {
   s_vec3 *p;
-  p = calloc(1, sizeof(s_vec3));
+  p = alloc(sizeof(s_vec3));
   if (! p) {
     err_puts("vec3_new: failed to allocate memory");
     return NULL;

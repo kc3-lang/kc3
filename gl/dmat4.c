@@ -131,7 +131,7 @@ void dmat4_delete (s_dmat4 *m)
 s_dmat4 * dmat4_new_copy (const s_dmat4 *src)
 {
   s_dmat4 *m;
-  m = calloc(1, sizeof(s_dmat4));
+  m = alloc(sizeof(s_dmat4));
   if (! m) {
     err_puts("dmat4_new: failed to allocate memory");
     return NULL;
@@ -145,7 +145,7 @@ s_dmat4 * dmat4_new_product (const s_dmat4 *a, const s_dmat4 *b)
   s_dmat4 *m;
   assert(a);
   assert(b);
-  m = calloc(1, sizeof(s_dmat4));
+  m = alloc(sizeof(s_dmat4));
   if (! m) {
     err_puts("dmat4_new: failed to allocate memory");
     return NULL;
@@ -157,7 +157,7 @@ s_dmat4 * dmat4_new_product (const s_dmat4 *a, const s_dmat4 *b)
 s_dmat4 * dmat4_new_zero (void)
 {
   s_dmat4 *m;
-  m = calloc(1, sizeof(s_dmat4));
+  m = alloc(sizeof(s_dmat4));
   if (! m) {
     err_puts("dmat4_new: failed to allocate memory");
     return NULL;

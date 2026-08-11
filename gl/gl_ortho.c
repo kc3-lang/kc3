@@ -216,7 +216,7 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
 s_gl_ortho * gl_ortho_new (void)
 {
   s_gl_ortho *ortho;
-  ortho = calloc(1, sizeof(s_gl_ortho));
+  ortho = alloc(sizeof(s_gl_ortho));
   if (! ortho) {
     err_puts("gl_ortho_new: failed to allocate memory");
     return NULL;

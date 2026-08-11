@@ -80,7 +80,7 @@ s_window * window_init (s_window *window,
   tmp.y = y;
   tmp.w = w;
   tmp.h = h;
-  tmp.sequence = calloc(sequence_count, sizeof(s_sequence));
+  tmp.sequence = alloc(sequence_count * sizeof(s_sequence));
   tmp.sequence_count = sequence_count;
   tmp.sequence_pos = 0;
   tag_init(&tmp.tag);

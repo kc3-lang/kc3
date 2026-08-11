@@ -395,7 +395,7 @@ sha256_end(s_sha2 *ctx, char *buf)
   u_int8_t digest[SHA256_DIGEST_LENGTH];
   static const char hex[] = "0123456789abcdef";
 
-  if (buf == NULL && (buf = malloc(SHA256_DIGEST_STRING_LENGTH)) == NULL)
+  if (buf == NULL && (buf = alloc(SHA256_DIGEST_STRING_LENGTH)) == NULL)
     return (NULL);
 
   sha256_final(digest, ctx);

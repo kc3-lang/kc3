@@ -58,7 +58,7 @@ void vec2_delete (s_vec2 *p)
 s_vec2 * vec2_new (f32 x, f32 y)
 {
   s_vec2 *p;
-  p = calloc(1, sizeof(s_vec2));
+  p = alloc(sizeof(s_vec2));
   if (! p) {
     err_puts("vec2_new: failed to allocate memory");
     return NULL;
@@ -70,7 +70,7 @@ s_vec2 * vec2_new (f32 x, f32 y)
 s_vec2 * vec2_new_copy (const s_vec2 *src)
 {
   s_vec2 *p;
-  p = calloc(1, sizeof(s_vec2));
+  p = alloc(sizeof(s_vec2));
   if (! p) {
     err_puts("vec2_new: failed to allocate memory");
     return NULL;
@@ -82,7 +82,7 @@ s_vec2 * vec2_new_copy (const s_vec2 *src)
 s_vec2 * vec2_new_zero (void)
 {
   s_vec2 *p;
-  p = calloc(1, sizeof(s_vec2));
+  p = alloc(sizeof(s_vec2));
   if (! p) {
     err_puts("vec2_new: failed to allocate memory");
     return NULL;

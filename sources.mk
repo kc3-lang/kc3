@@ -2135,6 +2135,12 @@ KC3_TEST_HTTP_SOURCES = \
 	"test/http/08_response_headers.kc3" \
 	"test/http/08_response_headers.out.expected" \
 	"test/http/08_response_headers.ret.expected" \
+	"test/http/09_request_www_form.kc3" \
+	"test/http/09_request_www_form.out.expected" \
+	"test/http/09_request_www_form.ret.expected" \
+	"test/http/10_request_framing.kc3" \
+	"test/http/10_request_framing.out.expected" \
+	"test/http/10_request_framing.ret.expected" \
 	"test/http/mime.types" \
 	"test/http_test" \
 
