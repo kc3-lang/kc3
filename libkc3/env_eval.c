@@ -117,7 +117,7 @@ bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
 
 bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
 {
-  bool borrowed = false;
+  bool volatile borrowed = false;
   bool cache = false;
   p_callable cached = NULL;
   s_call c = {0};
