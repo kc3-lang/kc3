@@ -3950,7 +3950,7 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
   sw count = 10;
   sw depth;
   s_env *env;
-  bool   env_print_readably;
+  bool   env_print_readably = false;
   sw i;
   s_pretty_save pretty_save;
   sw r;

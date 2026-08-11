@@ -449,7 +449,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   s_frame frame = {0};
   const s_sym *module;
   s_list *search_modules;
-  s_list search_modules_storage[2] = {{0}};
+  s_list search_modules_storage[2] = {0};
   bool silence_errors;
   s_list * volatile stacktrace;
   s_tag tag = {0};
