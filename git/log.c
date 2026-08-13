@@ -66,7 +66,7 @@ struct git_log_state {
 static int      log_add_revision(s_git_log_state *s,
                                  const char *revstr);
 static int      log_match_with_parent (git_commit *commit,
-                                       git_tree *commit_tree,
+                                       git_tree_entry *commit_entry,
                                        int i,
                                        const char *path);
 static p_list * log_push_commit (p_list *log_tail,
@@ -156,28 +156,19 @@ p_list * kc3_git_log (git_repository **repo,
         err_puts("kc3_git_log: git_commit_tree");
         goto ko;
       }
-      if (parents == 0) {
-        r = git_tree_entry_bypath(&entry, tree, path_pchar);
-        if (r == GIT_ENOTFOUND)
-          unmatched = 1;
-        else if (r) {
-          err_puts("kc3_git_log: git_tree_entry_bypath");
-          goto ko;
-        }
-        else
-          unmatched = 0;
-        git_tree_entry_free(entry);
+      r = git_tree_entry_bypath(&entry, tree, path_pchar);
+      if (r == GIT_ENOTFOUND)
         entry = NULL;
-      } else if (parents == 1) {
-        r = log_match_with_parent(commit, tree, 0, path_pchar);
-        if (r < 0) {
-          err_puts("kc3_git_log: log_match_with_parent");
-          goto ko;
-        }
-        unmatched = r ? 0 : 1;
-      } else {
+      else if (r) {
+        err_puts("kc3_git_log: git_tree_entry_bypath");
+        goto ko;
+      }
+      if (parents == 0) {
+        unmatched = ! entry;
+      }
+      else {
         for (i = 0; i < parents; ++i) {
-          r = log_match_with_parent(commit, tree, i, path_pchar);
+          r = log_match_with_parent(commit, entry, i, path_pchar);
           if (r < 0) {
             err_puts("kc3_git_log: log_match_with_parent");
             goto ko;
@@ -185,6 +176,10 @@ p_list * kc3_git_log (git_repository **repo,
           if (r)
             unmatched--;
         }
+      }
+      if (entry) {
+        git_tree_entry_free(entry);
+        entry = NULL;
       }
       git_tree_free(tree);
       tree = NULL;
@@ -314,11 +309,11 @@ static int log_add_revision (s_git_log_state *s,
 }
 
 static int log_match_with_parent (git_commit *commit,
-                                  git_tree *commit_tree,
+                                  git_tree_entry *commit_entry,
                                   int i,
                                   const char *path)
 {
-  git_tree_entry *entry[2] = {NULL, NULL};
+  git_tree_entry *parent_entry = NULL;
   git_commit *parent = NULL;
   int r;
   int res = 0;
@@ -331,26 +326,20 @@ static int log_match_with_parent (git_commit *commit,
     res = -2;
     goto error;
   }
-  r = git_tree_entry_bypath(entry, parent_tree, path);
+  r = git_tree_entry_bypath(&parent_entry, parent_tree, path);
   if (r && r != GIT_ENOTFOUND) {
     res = -3;
     goto error;
   }
-  r = git_tree_entry_bypath(entry + 1, commit_tree, path);
-  if (r && r != GIT_ENOTFOUND) {
-    res = -4;
-    goto error;
-  }
-  if (! entry[0] || ! entry[1])
-    res = entry[0] != entry[1];
+  if (! parent_entry || ! commit_entry)
+    res = parent_entry != commit_entry;
   else
-    res = ! git_oid_equal(git_tree_entry_id(entry[0]),
-                          git_tree_entry_id(entry[1])) ||
-      git_tree_entry_filemode(entry[0]) !=
-      git_tree_entry_filemode(entry[1]);
+    res = ! git_oid_equal(git_tree_entry_id(parent_entry),
+                          git_tree_entry_id(commit_entry)) ||
+      git_tree_entry_filemode(parent_entry) !=
+      git_tree_entry_filemode(commit_entry);
  error:
-  git_tree_entry_free(entry[0]);
-  git_tree_entry_free(entry[1]);
+  git_tree_entry_free(parent_entry);
   git_tree_free(parent_tree);
   git_commit_free(parent);
   return res;
