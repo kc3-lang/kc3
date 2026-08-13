@@ -22,7 +22,11 @@ s_str * html_escape (s_tag *src, s_str *dest)
   s_ident       escape_ident;
   s_tag         escape_tag = {0};
   s_tag *replace;
+  s_tag *replace_ascii[256] = {NULL};
   s_tag *reserved;
+  s_str reserved_str;
+  character reserved_c;
+  sw reserved_size;
   s_str s;
   s_str str = {0};
   p_sym sym_Str = &g_sym_Str;
@@ -59,10 +63,52 @@ s_str * html_escape (s_tag *src, s_str *dest)
     str_clean(&str);
     return NULL;
   }
+  e = escape;
+  while (e) {
+    reserved = e->tag.data.td_ptuple->tag;
+    if (reserved->type != TAG_STR) {
+      err_puts("html_escape: HTML.escapes: reserved that is"
+               " not a Str");
+      assert(!("html_escape: HTML.escapes: reserved that is"
+               " not a Str"));
+      goto ko;
+    }
+    replace = e->tag.data.td_ptuple->tag + 1;
+    if (replace->type != TAG_STR) {
+      err_puts("html_escape: HTML.escapes: replacement that is"
+               " not a Str");
+      assert(!("html_escape: HTML.escapes: replacement that is"
+               " not a Str"));
+      goto ko;
+    }
+    reserved_str = reserved->data.td_str;
+    reserved_size = str_read_character_utf8(&reserved_str, &reserved_c);
+    if (reserved_size > 0 && ! reserved_str.size && reserved_c < 256 &&
+        ! replace_ascii[reserved_c])
+      replace_ascii[reserved_c] = replace;
+    e = list_next(e);
+  }
   tag.type = TAG_STR;
   tag.data.td_str = (s_str) {0};
   s = str;
   while (str_read_character_utf8(&s, &c) > 0) {
+    if (c < 256 && replace_ascii[c]) {
+      if (buf_write_str(&buf,
+                        &replace_ascii[c]->data.td_str) <= 0) {
+        err_puts("html_escape: buf_write_str");
+        assert(! "html_escape: buf_write_str");
+        goto ko;
+      }
+      continue;
+    }
+    if (c < 256) {
+      if (buf_write_character_utf8(&buf, c) <= 0) {
+        err_puts("html_escape: buf_write_character_utf8");
+        assert(! "html_escape: buf_write_character_utf8");
+        goto ko;
+      }
+      continue;
+    }
     if (! str_init_character(&tag.data.td_str, c)) {
       err_puts("html_escape: invalid character");
       assert(! "html_escape: invalid character");
