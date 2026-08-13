@@ -17,7 +17,7 @@ You can easily convert each KC3 function to a C function. KC3 is both
 a language and a runtime with powerful, scaling data structures.
 
 This is a development branch, for the latest release see
-[KC3 v0.1.16](https://git.kmx.io/kc3-lang/kc3/_tree/v0.1.17).
+[KC3 v0.1.17](https://git.kmx.io/kc3-lang/kc3/_tree/v0.1.17).
 
 KC3 is currently a programming language project, inspired by C, Elixir
 and Common Lisp. It could be described as C with Elixir modules,
@@ -83,15 +83,19 @@ There are now seven full applications written in KC3 that we know of :
 
  - libkc3
    - Struct update `%Module{old | field1: value, field2: value}`
+   - `List.map_join()` useful for intermediate template rendering
+   - removed alloc calls from `Callable` call eval execution path
    - [TODO] marshall facts db as full data structures and not as
      logical triples
    - [TODO] kc3 to C
    - [TODO] kc3 to Common Lisp
 
  - EKC3
-   - [TODO] compile and load .ekc3 files from/to .ekc3c
+   - compile and load .ekc3 files from/to .ekc3c
+   - 
 
  - HTTPd
+   - fixed bugs in the HTTP request parser
    - [TODO] test partial requests support (fx)
 
 ## Contact
