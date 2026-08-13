@@ -95,6 +95,8 @@ p_list * kc3_git_log (git_repository **repo,
   p_list *tail;
   p_list tmp = NULL;
   pthread_once(&g_git_log_symbols_once, log_symbols_init);
+  git_tree *cached_tree = NULL;
+  git_oid cached_tree_oid = {0};
   git_tree *tree = NULL;
   if (! repo || ! *repo || ! branch_name || ! branch_name->size ||
       ! path || ! skip || ! limit || ! dest) {
@@ -152,9 +154,19 @@ p_list * kc3_git_log (git_repository **repo,
     }
     if (path->size) {
       int unmatched = parents;
-      if (git_commit_tree(&tree, commit)) {
-        err_puts("kc3_git_log: git_commit_tree");
-        goto ko;
+      const git_oid *tree_oid = git_commit_tree_id(commit);
+      if (cached_tree &&
+          ! git_oid_equal(tree_oid, &cached_tree_oid)) {
+        git_tree_free(cached_tree);
+        cached_tree = NULL;
+      }
+      if (cached_tree) {
+        tree = cached_tree;
+        cached_tree = NULL;
+      }
+      else if (git_commit_tree(&tree, commit)) {
+          err_puts("kc3_git_log: git_commit_tree");
+          goto ko;
       }
       r = git_tree_entry_bypath(&entry, tree, path_pchar);
       if (r == GIT_ENOTFOUND)
@@ -181,7 +193,8 @@ p_list * kc3_git_log (git_repository **repo,
         git_tree_entry_free(entry);
         entry = NULL;
       }
-      git_tree_free(tree);
+      cached_tree = tree;
+      git_oid_cpy(&cached_tree_oid, tree_oid);
       tree = NULL;
       if (unmatched > 0) {
         git_commit_free(commit);
@@ -208,11 +221,13 @@ p_list * kc3_git_log (git_repository **repo,
     commit = NULL;
   }
   git_revwalk_free(s.walker);
+  git_tree_free(cached_tree);
   *dest = tmp;
   return dest;
  ko:
   git_tree_entry_free(entry);
   git_tree_free(tree);
+  git_tree_free(cached_tree);
   git_commit_free(commit);
   git_revwalk_free(s.walker);
   list_delete_all(tmp);
