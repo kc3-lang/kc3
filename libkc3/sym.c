@@ -165,6 +165,23 @@ const s_sym g_sym_w                = SYM_1("w");
 const s_sym g_sym_write            = SYM_1("write");
 const s_sym g_sym_wx               = SYM_1("wx");
 const s_sym g_sym_x                = SYM_1("x");
+const s_sym g_sym_HTTP_Request     = SYM_1("HTTP.Request");
+const s_sym g_sym_HTTP_Response     = SYM_1("HTTP.Response");
+const s_sym g_sym_HTTP_Upload       = SYM_1("HTTP.Upload");
+const s_sym g_sym_URL               = SYM_1("URL");
+const s_sym g_sym_allowed_methods   = SYM_1("allowed_methods");
+const s_sym g_sym_application_octet_stream =
+  SYM_1("application/octet-stream");
+const s_sym g_sym_default_messages  = SYM_1("default_messages");
+const s_sym g_sym_escapes           = SYM_1("escapes");
+const s_sym g_sym_filename          = SYM_1("filename");
+const s_sym g_sym_mime_type         = SYM_1("mime_type");
+const s_sym g_sym_size              = SYM_1("size");
+const s_sym g_sym_tmp_filename_prefix =
+  SYM_1("tmp_filename_prefix");
+const s_sym g_sym_tmp_filename_random_length =
+  SYM_1("tmp_filename_random_length");
+const s_sym g_sym_tmp_path           = SYM_1("tmp_path");
 
 static s_sym_ht * g_sym_ht = NULL;
 
@@ -467,6 +484,20 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_write, NULL);
   sym_register(&g_sym_wx, NULL);
   sym_register(&g_sym_x, NULL);
+  sym_register(&g_sym_HTTP_Request, NULL);
+  sym_register(&g_sym_HTTP_Response, NULL);
+  sym_register(&g_sym_HTTP_Upload, NULL);
+  sym_register(&g_sym_URL, NULL);
+  sym_register(&g_sym_allowed_methods, NULL);
+  sym_register(&g_sym_application_octet_stream, NULL);
+  sym_register(&g_sym_default_messages, NULL);
+  sym_register(&g_sym_escapes, NULL);
+  sym_register(&g_sym_filename, NULL);
+  sym_register(&g_sym_mime_type, NULL);
+  sym_register(&g_sym_size, NULL);
+  sym_register(&g_sym_tmp_filename_prefix, NULL);
+  sym_register(&g_sym_tmp_filename_random_length, NULL);
+  sym_register(&g_sym_tmp_path, NULL);
 }
 
 bool sym_is_array_type (const s_sym *sym)

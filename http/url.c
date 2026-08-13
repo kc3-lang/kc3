@@ -44,7 +44,7 @@ s_str * url_escape (const s_str *src, s_str *dest)
   s_str s;
   sw size;
   u8 u;
-  ident_init(&ident, sym_1("URL"), sym_1("escapes"));
+  ident_init(&ident, &g_sym_URL, &g_sym_escapes);
   if (! ident_get(&ident, &escapes_tag)) {
     err_puts("url_escape: missing URL.escapes");
     assert(! "url_escape: missing URL.escapes");
@@ -113,7 +113,7 @@ sw url_escape_size (const s_str *src)
   sw r;
   sw result = 0;
   s_str s;
-  ident_init(&ident, sym_1("URL"), sym_1("escapes"));
+  ident_init(&ident, &g_sym_URL, &g_sym_escapes);
   if (! ident_get(&ident, &escapes_tag)) {
     err_puts("url_escape_size: missing URL.escapes");
     assert(! "url_escape_size: missing URL.escapes");

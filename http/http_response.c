@@ -228,7 +228,7 @@ sw http_response_buf_write (const s_http_response *response,
     return r;
   result += r;
   if (! response->message.size) {
-    ident_init(&ident, sym_1("HTTP.Response"), sym_1("default_messages"));
+    ident_init(&ident, &g_sym_HTTP_Response, &g_sym_default_messages);
     ident_get(&ident, &default_messages);
     if (! tag_is_alist(&default_messages)) {
       err_puts("http_response_buf_write: invalid default_messages:"

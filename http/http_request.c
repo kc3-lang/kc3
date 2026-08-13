@@ -23,7 +23,6 @@ static s_tag          g_method_key = {0};
 static s_tag          g_mode = {0};
 static const s_tag   *g_prefix = NULL;
 static const s_tag   *g_random_len = NULL;
-static const s_sym   *g_sym_Upload = NULL;
 static bool           g_statics_ok = false;
 static pthread_once_t g_statics_once = PTHREAD_ONCE_INIT;
 
@@ -173,8 +172,8 @@ static void http_request_statics_init (void)
   const s_tag *value;
   env = env_global();
   tag_init_str_1(&g_method_key, NULL, "_method");
-  ident.module = sym_1("HTTP.Upload");
-  ident.sym = sym_1("tmp_filename_prefix");
+  ident.module = &g_sym_HTTP_Upload;
+  ident.sym = &g_sym_tmp_filename_prefix;
   if (! (value = env_ident_get_address(env, &ident)) ||
       value->type != TAG_STR) {
     err_puts("http_request_buf_parse: invalid"
@@ -182,8 +181,8 @@ static void http_request_statics_init (void)
     return;
   }
   g_prefix = value;
-  ident.module = sym_1("HTTP.Upload");
-  ident.sym = sym_1("tmp_filename_random_length");
+  ident.module = &g_sym_HTTP_Upload;
+  ident.sym = &g_sym_tmp_filename_random_length;
   if (! (value = env_ident_get_address(env, &ident)) ||
       value->type != TAG_U8) {
     err_puts("http_request_buf_parse: invalid"
@@ -192,7 +191,6 @@ static void http_request_statics_init (void)
   }
   g_random_len = value;
   tag_init_u32(&g_mode, 0700);
-  g_sym_Upload = sym_1("HTTP.Upload");
   g_statics_ok = true;
 }
 
@@ -527,17 +525,17 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             err_write_1(")\n");
           }
 	  upload.type = TAG_PSTRUCT;
-	  if (! pstruct_init(&upload.data.td_pstruct, g_sym_Upload))
+	  if (! pstruct_init(&upload.data.td_pstruct, &g_sym_HTTP_Upload))
 	    goto restore;
 	  if (! struct_allocate(upload.data.td_pstruct))
 	    goto restore;
-	  if (! struct_set(upload.data.td_pstruct, sym_1("filename"),
+	  if (! struct_set(upload.data.td_pstruct, &g_sym_filename,
 			   &filename))
 	    goto restore;
-	  if (! struct_set(upload.data.td_pstruct, sym_1("size"),
+	  if (! struct_set(upload.data.td_pstruct, &g_sym_size,
 			   &size))
 	    goto restore;
-	  if (! struct_set(upload.data.td_pstruct, sym_1("tmp_path"),
+	  if (! struct_set(upload.data.td_pstruct, &g_sym_tmp_path,
 			   &path))
 	    goto restore;
           {
@@ -630,7 +628,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       }
     }
   }
-  if (! tag_init_pstruct(&tmp, sym_1("HTTP.Request")))
+  if (! tag_init_pstruct(&tmp, &g_sym_HTTP_Request))
     goto restore;
   if (! struct_allocate(tmp.data.td_pstruct)) {
     tag_clean(&tmp);
@@ -970,7 +968,7 @@ s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
   s_tag tmp = {0};
   assert(str);
   assert(dest);
-  ident_init(&ident, sym_1("HTTP.Request"), sym_1("allowed_methods"));
+  ident_init(&ident, &g_sym_HTTP_Request, &g_sym_allowed_methods);
   if (! ident_get(&ident, &allowed_methods_tag)) {
     err_puts("http_request_method_from_str: missing"
              " HTTP.Request.allowed_methods");

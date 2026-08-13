@@ -23,9 +23,9 @@ const s_sym ** http_mime_type (const s_str *ext, const s_sym **dest)
   s_tag tag_mime_type_value = {0};
   if ((tag_ext.data.td_psym = sym_find(ext)))
     tag_ext.type = TAG_PSYM;
-  tag_init_psym(&tag_mime_type_sym, sym_1("mime_type"));
+  tag_init_psym(&tag_mime_type_sym, &g_sym_mime_type);
   tag_init_pvar(&tag_mime_type_value, &g_sym_Sym);
-  default_mime_type = sym_1("application/octet-stream");
+  default_mime_type = &g_sym_application_octet_stream;
   if (! facts_with_tags(env_global()->facts, &cursor, &tag_ext,
 			&tag_mime_type_sym, &tag_mime_type_value))
     goto default_mime_type;
@@ -135,7 +135,7 @@ bool * http_mime_type_def (s_tag *ext, const s_sym * const *mime_type,
   s_tag tag_mime_type_value = {0};
   assert(ext);
   assert(mime_type);
-  tag_init_psym(&tag_mime_type_sym, sym_1("mime_type"));
+  tag_init_psym(&tag_mime_type_sym, &g_sym_mime_type);
   tag_init_psym(&tag_mime_type_value, *mime_type);
   if (! facts_replace_tags(env_global()->facts, ext,
                            &tag_mime_type_sym,
