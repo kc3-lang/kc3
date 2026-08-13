@@ -17,6 +17,15 @@
 
 typedef struct git_log_options s_git_log_options;
 typedef struct git_log_state   s_git_log_state;
+typedef struct git_log_tree_cache s_git_log_tree_cache;
+
+struct git_log_tree_cache {
+  bool valid;
+  git_oid tree_oid;
+  bool entry_exists;
+  git_oid entry_oid;
+  git_filemode_t entry_filemode;
+};
 
 struct git_log_options {
   int show_diff;
@@ -42,9 +51,20 @@ struct git_log_state {
 static int      log_add_revision(s_git_log_state *s,
                                  const char *revstr);
 static int      log_match_with_parent (git_commit *commit,
-                                       git_tree_entry *commit_entry,
                                        int i,
-                                       const char *path);
+                                       const char *path,
+                                       git_repository *repo,
+                                       s_git_log_tree_cache cache[2],
+                                       bool commit_entry_exists,
+                                       const git_oid *commit_entry_oid,
+                                       git_filemode_t commit_entry_filemode);
+static int      log_tree_entry (git_repository *repo,
+                                const git_oid *tree_oid,
+                                const char *path,
+                                s_git_log_tree_cache cache[2],
+                                bool *entry_exists,
+                                git_oid *entry_oid,
+                                git_filemode_t *entry_filemode);
 static p_list * log_push_commit (p_list *log_tail,
                                  git_commit *commit);
 static int      log_push_rev (s_git_log_state *s,
@@ -58,7 +78,6 @@ p_list * kc3_git_log (git_repository **repo,
 {
   git_commit *commit = NULL;
   s32 count = 0;
-  git_tree_entry *entry = NULL;
   s32 i;
   git_oid oid = {0};
   s_git_log_options opt = {0};
@@ -70,9 +89,7 @@ p_list * kc3_git_log (git_repository **repo,
   const s_sym *sym_S32 = &g_sym_S32;
   p_list *tail;
   p_list tmp = NULL;
-  git_tree *cached_tree = NULL;
-  git_oid cached_tree_oid = {0};
-  git_tree *tree = NULL;
+  s_git_log_tree_cache tree_cache[2] = {0};
   if (! repo || ! *repo || ! branch_name || ! branch_name->size ||
       ! path || ! skip || ! limit || ! dest) {
     err_puts("kc3_git_log: invalid argument");
@@ -130,32 +147,22 @@ p_list * kc3_git_log (git_repository **repo,
     if (path->size) {
       int unmatched = parents;
       const git_oid *tree_oid = git_commit_tree_id(commit);
-      if (cached_tree &&
-          ! git_oid_equal(tree_oid, &cached_tree_oid)) {
-        git_tree_free(cached_tree);
-        cached_tree = NULL;
-      }
-      if (cached_tree) {
-        tree = cached_tree;
-        cached_tree = NULL;
-      }
-      else if (git_commit_tree(&tree, commit)) {
-          err_puts("kc3_git_log: git_commit_tree");
-          goto ko;
-      }
-      r = git_tree_entry_bypath(&entry, tree, path_pchar);
-      if (r == GIT_ENOTFOUND)
-        entry = NULL;
-      else if (r) {
-        err_puts("kc3_git_log: git_tree_entry_bypath");
+      bool entry_exists;
+      git_oid entry_oid = {0};
+      git_filemode_t entry_filemode = 0;
+      if (log_tree_entry(s.repo, tree_oid, path_pchar, tree_cache,
+                         &entry_exists, &entry_oid, &entry_filemode)) {
+        err_puts("kc3_git_log: log_tree_entry");
         goto ko;
       }
       if (parents == 0) {
-        unmatched = ! entry;
+        unmatched = ! entry_exists;
       }
       else {
         for (i = 0; i < parents; ++i) {
-          r = log_match_with_parent(commit, entry, i, path_pchar);
+          r = log_match_with_parent(commit, i, path_pchar, s.repo,
+                                    tree_cache, entry_exists, &entry_oid,
+                                    entry_filemode);
           if (r < 0) {
             err_puts("kc3_git_log: log_match_with_parent");
             goto ko;
@@ -164,13 +171,6 @@ p_list * kc3_git_log (git_repository **repo,
             unmatched--;
         }
       }
-      if (entry) {
-        git_tree_entry_free(entry);
-        entry = NULL;
-      }
-      cached_tree = tree;
-      git_oid_cpy(&cached_tree_oid, tree_oid);
-      tree = NULL;
       if (unmatched > 0) {
         git_commit_free(commit);
         commit = NULL;
@@ -196,13 +196,9 @@ p_list * kc3_git_log (git_repository **repo,
     commit = NULL;
   }
   git_revwalk_free(s.walker);
-  git_tree_free(cached_tree);
   *dest = tmp;
   return dest;
  ko:
-  git_tree_entry_free(entry);
-  git_tree_free(tree);
-  git_tree_free(cached_tree);
   git_commit_free(commit);
   git_revwalk_free(s.walker);
   list_delete_all(tmp);
@@ -299,40 +295,89 @@ static int log_add_revision (s_git_log_state *s,
 }
 
 static int log_match_with_parent (git_commit *commit,
-                                  git_tree_entry *commit_entry,
                                   int i,
-                                  const char *path)
+                                  const char *path,
+                                  git_repository *repo,
+                                  s_git_log_tree_cache cache[2],
+                                  bool commit_entry_exists,
+                                  const git_oid *commit_entry_oid,
+                                  git_filemode_t commit_entry_filemode)
 {
-  git_tree_entry *parent_entry = NULL;
   git_commit *parent = NULL;
-  int r;
   int res = 0;
-  git_tree *parent_tree = NULL;
+  bool parent_entry_exists;
+  git_oid parent_entry_oid = {0};
+  git_filemode_t parent_entry_filemode = 0;
   if (git_commit_parent(&parent, commit, (size_t) i)) {
     res = -1;
     goto error;
   }
-  if (git_commit_tree(&parent_tree, parent)) {
+  if (log_tree_entry(repo, git_commit_tree_id(parent), path, cache,
+                     &parent_entry_exists, &parent_entry_oid,
+                     &parent_entry_filemode)) {
     res = -2;
     goto error;
   }
-  r = git_tree_entry_bypath(&parent_entry, parent_tree, path);
-  if (r && r != GIT_ENOTFOUND) {
-    res = -3;
-    goto error;
-  }
-  if (! parent_entry || ! commit_entry)
-    res = parent_entry != commit_entry;
+  if (! parent_entry_exists || ! commit_entry_exists)
+    res = parent_entry_exists != commit_entry_exists;
   else
-    res = ! git_oid_equal(git_tree_entry_id(parent_entry),
-                          git_tree_entry_id(commit_entry)) ||
-      git_tree_entry_filemode(parent_entry) !=
-      git_tree_entry_filemode(commit_entry);
+    res = ! git_oid_equal(&parent_entry_oid, commit_entry_oid) ||
+      parent_entry_filemode != commit_entry_filemode;
  error:
-  git_tree_entry_free(parent_entry);
-  git_tree_free(parent_tree);
   git_commit_free(parent);
   return res;
+}
+
+static int log_tree_entry (git_repository *repo,
+                           const git_oid *tree_oid,
+                           const char *path,
+                           s_git_log_tree_cache cache[2],
+                           bool *entry_exists,
+                           git_oid *entry_oid,
+                           git_filemode_t *entry_filemode)
+{
+  git_tree_entry *entry = NULL;
+  git_tree *tree = NULL;
+  int i;
+  int slot = -1;
+  int r;
+  for (i = 0; i < 2; i++) {
+    if (cache[i].valid && git_oid_equal(tree_oid, &cache[i].tree_oid)) {
+      *entry_exists = cache[i].entry_exists;
+      if (*entry_exists) {
+        git_oid_cpy(entry_oid, &cache[i].entry_oid);
+        *entry_filemode = cache[i].entry_filemode;
+      }
+      return 0;
+    }
+    if (! cache[i].valid && slot < 0)
+      slot = i;
+  }
+  if (slot < 0)
+    slot = 0;
+  if (git_tree_lookup(&tree, repo, tree_oid))
+    return -1;
+  r = git_tree_entry_bypath(&entry, tree, path);
+  if (r && r != GIT_ENOTFOUND) {
+    git_tree_free(tree);
+    return -1;
+  }
+  cache[slot].valid = false;
+  git_oid_cpy(&cache[slot].tree_oid, tree_oid);
+  cache[slot].entry_exists = entry != NULL;
+  if (entry) {
+    git_oid_cpy(&cache[slot].entry_oid, git_tree_entry_id(entry));
+    cache[slot].entry_filemode = git_tree_entry_filemode(entry);
+    git_tree_entry_free(entry);
+  }
+  git_tree_free(tree);
+  cache[slot].valid = true;
+  *entry_exists = cache[slot].entry_exists;
+  if (*entry_exists) {
+    git_oid_cpy(entry_oid, &cache[slot].entry_oid);
+    *entry_filemode = cache[slot].entry_filemode;
+  }
+  return 0;
 }
 
 static p_list * log_push_commit (p_list *log_tail,
