@@ -23,7 +23,7 @@
 #include "../libkc3/tag.h"
 #include "test.h"
 
-#define ENV_TEST_DUMP_SIZE 209340
+#define ENV_TEST_DUMP_SIZE 209868
 
 void env_test (void);
 TEST_CASE_PROTOTYPE(env_eval_call);

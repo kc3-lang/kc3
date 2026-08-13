@@ -34,13 +34,13 @@ static s_map * files_set_entry (const git_tree_entry *entry,
   type = git_tree_entry_type(entry);
   switch (type) {
   case GIT_OBJECT_COMMIT:
-    type_sym = sym_1("commit");
+    type_sym = &g_sym_commit;
     break;
   case GIT_OBJECT_TREE:
-    type_sym = sym_1("tree");
+    type_sym = &g_sym_tree;
     break;
   case GIT_OBJECT_BLOB:
-    type_sym = sym_1("blob");
+    type_sym = &g_sym_blob;
     break;
   default:
     err_write_1("kc3_git: files_set_entry: skipping entry type ");
@@ -57,10 +57,10 @@ static s_map * files_set_entry (const git_tree_entry *entry,
       ! tag_init_map(map->value + index, 4))
     return NULL;
   sub_map = &map->value[index].data.td_map;
-  tag_init_psym(sub_map->key + 0, sym_1("name"));
-  tag_init_psym(sub_map->key + 1, sym_1("type"));
-  tag_init_psym(sub_map->key + 2, sym_1("mode"));
-  tag_init_psym(sub_map->key + 3, sym_1("hash"));
+  tag_init_psym(sub_map->key + 0, &g_sym_name);
+  tag_init_psym(sub_map->key + 1, &g_sym_type);
+  tag_init_psym(sub_map->key + 2, &g_sym_mode);
+  tag_init_psym(sub_map->key + 3, &g_sym_hash);
   if (! tag_init_str_1_alloc(sub_map->value + 0, name))
     return NULL;
   tag_init_psym(       sub_map->value + 1, type_sym);
