@@ -12,11 +12,35 @@
  */
 #include "../libkc3/kc3.h"
 #include <string.h>
+#include <pthread.h>
 #include <git2.h>
 #include "log.h"
 
 typedef struct git_log_options s_git_log_options;
 typedef struct git_log_state   s_git_log_state;
+typedef struct git_log_symbols s_git_log_symbols;
+
+struct git_log_symbols {
+  const s_sym *author_email;
+  const s_sym *message;
+  const s_sym *author_name;
+  const s_sym *parents;
+  const s_sym *hash;
+  const s_sym *date;
+};
+
+static s_git_log_symbols g_git_log_symbols;
+static pthread_once_t g_git_log_symbols_once = PTHREAD_ONCE_INIT;
+
+static void log_symbols_init (void)
+{
+  g_git_log_symbols.author_email = sym_1("author_email");
+  g_git_log_symbols.message = sym_1("message");
+  g_git_log_symbols.author_name = sym_1("author_name");
+  g_git_log_symbols.parents = sym_1("parents");
+  g_git_log_symbols.hash = sym_1("hash");
+  g_git_log_symbols.date = sym_1("date");
+}
 
 struct git_log_options {
   int show_diff;
@@ -70,6 +94,7 @@ p_list * kc3_git_log (git_repository **repo,
   const s_sym *sym_S32 = &g_sym_S32;
   p_list *tail;
   p_list tmp = NULL;
+  pthread_once(&g_git_log_symbols_once, log_symbols_init);
   git_tree *tree = NULL;
   if (! repo || ! *repo || ! branch_name || ! branch_name->size ||
       ! path || ! skip || ! limit || ! dest) {
@@ -343,12 +368,12 @@ static p_list * log_push_commit (p_list *log_tail,
   if (! (tmp = list_new_map(6, NULL)))
     return NULL;
   map = &tmp->tag.data.td_map;
-  tag_init_psym(map->key + 0, sym_1("author_email"));
-  tag_init_psym(map->key + 1, sym_1("message"));
-  tag_init_psym(map->key + 2, sym_1("author_name"));
-  tag_init_psym(map->key + 3, sym_1("parents"));
-  tag_init_psym(map->key + 4, sym_1("hash"));
-  tag_init_psym(map->key + 5, sym_1("date"));
+  tag_init_psym(map->key + 0, g_git_log_symbols.author_email);
+  tag_init_psym(map->key + 1, g_git_log_symbols.message);
+  tag_init_psym(map->key + 2, g_git_log_symbols.author_name);
+  tag_init_psym(map->key + 3, g_git_log_symbols.parents);
+  tag_init_psym(map->key + 4, g_git_log_symbols.hash);
+  tag_init_psym(map->key + 5, g_git_log_symbols.date);
   p_list parents = NULL;
   git_oid_tostr(buf, sizeof(buf), git_commit_id(commit));
   if (! tag_init_str_1_alloc(map->value + 1,
