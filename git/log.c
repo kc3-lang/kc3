@@ -97,26 +97,52 @@ p_list * kc3_git_log (git_repository **repo,
   }
   s.repo = *repo;
   s.sorting = GIT_SORT_TIME;
+  opt.max_parents = -1;
+  if (! s32_init_cast(&opt.skip, &sym_S32, skip) || opt.skip < 0) {
+    return NULL;
+  }
+  if (! s32_init_cast(&opt.limit, &sym_S32, limit) || opt.limit < 0) {
+    return NULL;
+  }
+  if (! opt.limit) {
+    *dest = NULL;
+    return dest;
+  }
+  if (! path->size &&
+      branch_name->size == GIT_OID_HEXSZ &&
+      ! git_oid_fromstrn(&oid, branch_name->ptr.p_pchar,
+                         branch_name->size)) {
+    if (opt.skip > 0) {
+      *dest = NULL;
+      return dest;
+    }
+    if (git_commit_lookup(&commit, s.repo, &oid)) {
+      err_puts("kc3_git_log: git_commit_lookup");
+      return NULL;
+    }
+    parents = git_commit_parentcount(commit);
+    if (parents < opt.min_parents ||
+        (opt.max_parents > 0 && parents > opt.max_parents)) {
+      git_commit_free(commit);
+      *dest = NULL;
+      return dest;
+    }
+    tail = &tmp;
+    if (! log_push_commit(tail, commit)) {
+      err_puts("kc3_git_log: log_push_commit");
+      git_commit_free(commit);
+      return NULL;
+    }
+    git_commit_free(commit);
+    *dest = tmp;
+    return dest;
+  }
   if (log_add_revision(&s, branch_name->ptr.p_pchar)) {
     err_write_1("kc3_git_log: branch not found: ");
     err_inspect_str(branch_name);
     err_write_1("\n");
     git_revwalk_free(s.walker);
     return NULL;
-  }
-  opt.max_parents = -1;
-  if (! s32_init_cast(&opt.skip, &sym_S32, skip) || opt.skip < 0) {
-    git_revwalk_free(s.walker);
-    return NULL;
-  }
-  if (! s32_init_cast(&opt.limit, &sym_S32, limit) || opt.limit < 0) {
-    git_revwalk_free(s.walker);
-    return NULL;
-  }
-  if (! opt.limit) {
-    git_revwalk_free(s.walker);
-    *dest = NULL;
-    return dest;
   }
   if (path->size) {
     if (path->size > PATH_MAX) {
