@@ -78,22 +78,40 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
   uw i;
   git_object *obj = NULL;
   uw rev_size;
-  char *rev;
+  char *rev = NULL;
   const git_tree_entry *sub_entry;
   git_tree *sub_tree;
   s_map tmp = {0};
   git_tree *tree;
   git_object_t type;
+  git_commit *commit = NULL;
+  git_tree *commit_tree = NULL;
+  git_oid branch_oid = {0};
   rev_size = branch->size + 8;
-  if (! (rev = alloc(rev_size)))
-    return NULL;
-  memcpy(rev, branch->ptr.p_pvoid, branch->size);
-  memcpy(rev + branch->size, "^{tree}", 7);
-  if (git_revparse_single(&obj, *repo, rev)) {
-    alloc_free(rev);
-    map_init(&tmp, 0);
-    *dest = tmp;
-    return dest;
+  if (branch->size == GIT_OID_HEXSZ &&
+      ! git_oid_fromstrn(&branch_oid, branch->ptr.p_pchar,
+                         branch->size) &&
+      ! git_commit_lookup(&commit, *repo, &branch_oid)) {
+    if (git_commit_tree(&commit_tree, commit)) {
+      git_commit_free(commit);
+      map_init(&tmp, 0);
+      *dest = tmp;
+      return dest;
+    }
+    obj = (git_object *) commit_tree;
+    git_commit_free(commit);
+  }
+  else {
+    if (! (rev = alloc(rev_size)))
+      return NULL;
+    memcpy(rev, branch->ptr.p_pvoid, branch->size);
+    memcpy(rev + branch->size, "^{tree}", 7);
+    if (git_revparse_single(&obj, *repo, rev)) {
+      alloc_free(rev);
+      map_init(&tmp, 0);
+      *dest = tmp;
+      return dest;
+    }
   }
   tree = (git_tree *) obj;
   if (! path->size ||
