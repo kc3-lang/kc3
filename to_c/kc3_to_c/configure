@@ -30,6 +30,7 @@ CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC -pthread"
 CFLAGS="$CFLAGS -fPIC"
 LDFLAGS="$LDFLAGS ${EXPORT_DYNAMIC}"
 LDFLAGS="$LDFLAGS -L${BUILD_TOP}/libkc3"
+LDFLAGS="$LDFLAGS -L${BUILD_TOP}/to_c"
 config_asan
 config_gnu
 config_i386
@@ -51,6 +52,8 @@ case "$(uname -s)" in
         ;;
     *)
         LIBS="$LIBS -rpath ${LIBDIR}"
+        LIBS="$LIBS -rpath ${TOPDIR}/libkc3"
+        LIBS="$LIBS -rpath ${TOPDIR}/to_c"
 esac
 
 # Sources
@@ -76,19 +79,24 @@ LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
 LIBS_ASAN="$(${CC} -print-file-name=libasan.so)"
 LIBS_ASAN="$LIBS_ASAN $LIBS"
+LIBS_ASAN="$LIBS_ASAN -lkc3_to_c_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS"
-LIBS_COV="$LIBS -lkc3_cov"
+LIBS_COV="$LIBS"
+LIBS_COV="$LIBS_COV -lkc3_to_c_cov"
+LIBS_COV="$LIBS_COV -lkc3_cov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_DEBUG="$LIBS -lkc3_debug"
+LIBS_DEBUG="$LIBS"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_to_c_debug"
+LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -fPIC"
@@ -96,7 +104,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS="$LIBS -lkc3"
+LIBS="$LIBS -lkc3_to_c -lkc3"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}

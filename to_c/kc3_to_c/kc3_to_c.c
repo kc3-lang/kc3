@@ -21,17 +21,16 @@ int main (int argc, char **argv)
   s_str in_str = {0};
   s_str out_str = {0};
   sw r;
-  if (argc < 1)
-    return usage(1, "kc3_to_c");
-  if (argc < 2)
+  if (argc < 3)
     return usage(1, argv[0]);
-  str_init_1(&in_str, NULL, argv[1]);
-  str_init_1(&out_str, NULL, argv[2]);
+  if (! str_init_1(&in_str, NULL, argv[1]) ||
+      ! str_init_1(&out_str, NULL, argv[2]))
+    goto ko;
   if (! to_c_init(&context))
     goto ko;
-  if (! to_c_open(&context, &in_str))
+  if (! to_c_open(&context, &out_str))
     goto ko;
-  if ((r = to_c_file(&context, &in_str)) <= 0)
+  if ((r = to_c_file(&context, &in_str)) < 0)
     goto ko;
   to_c_clean(&context);
   return 0;
@@ -45,4 +44,3 @@ static int usage (int ret, char *argv0)
   fprintf(stderr, "Usage: %s IN OUT\n", argv0);
   return ret;
 }
-

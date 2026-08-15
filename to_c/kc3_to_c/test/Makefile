@@ -10,41 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-all:
-	${MAKE} build
-	${MAKE} debug
-	if ${HAVE_ASAN}; then ${MAKE} asan; fi
-	if ${HAVE_GCOV}; then ${MAKE} cov; fi
-	${MAKE} -C kc3_to_c all
+all: test
 
-include config.mk
-include sources.mk
+test:
+	../kc3_to_c ../../../lib/kc3/0.1/http.kc3 http
 
-asan:
-	${MAKE} ${LIB_ASAN}
-
-build:
-	${MAKE} ${LIB}
-
-cov:
-	${MAKE} ${LIB_COV}
-
-debug:
-	${MAKE} ${LIB_DEBUG}
-
-test: build
-	${MAKE} -C kc3_to_c test
-
-update_sources:
-	./update_sources
-
-.PHONY: \
-	all \
-	asan \
-	build \
-	cov \
-	debug \
-	gen \
-	install \
-	test \
-	update_sources
+.PHONY: test

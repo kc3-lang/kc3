@@ -27,15 +27,6 @@ cov: ${PROG_COV}
 
 debug: ${PROG_DEBUG}
 
-gcovr:
-	gcovr --gcov-executable ${GCOV} --html-details ikc3.html
-
-gdb_ikc3: debug
-	if [ -f ${PROG_DEBUG}.core ]; then gdb ${PROG_DEBUG} ${PROG_DEBUG}.core; else gdb ${PROG_DEBUG}; fi
-
-gdb_ikc3_asan: asan
-	if [ -f ${PROG_DEBUG}.core ]; then gdb ${PROG_ASAN} ${PROG_ASAN}.core; else gdb ${PROG_ASAN}; fi
-
 install:
 	install -m 755 -d ${DESTDIR}${prefix}/bin
 	${INSTALL} -m 755 ${PROG} ${DESTDIR}${prefix}/bin/${PROG}
@@ -45,11 +36,14 @@ install:
 	    ${INSTALL} -m 755 ${PROG_COV} ${DESTDIR}${prefix}/bin/; fi
 	${INSTALL} -m 755 ${PROG_DEBUG} ${DESTDIR}${prefix}/bin/
 
-lldb_ikc3: debug
-	if [ -f ${PROG_DEBUG}.core ]; then lldb ${PROG_DEBUG} ${PROG_DEBUG}.core; else lldb ${PROG_DEBUG}; fi
+test: build
+	${MAKE} -C test test
 
 uninstall:
-	rm -f ${prefix}/bin/ikc3
+	rm -f	${prefix}/bin/${PROG} \
+		${prefix}/bin/${PROG_ASAN} \
+		${prefix}/bin/${PROG_COV} \
+		${prefix}/bin/${PROG_DEBUG}
 
 .PHONY: \
 	all \

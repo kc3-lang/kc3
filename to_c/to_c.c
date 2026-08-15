@@ -34,10 +34,14 @@ sw to_c_buf (s_to_c *context, s_buf *in)
       break;
     if ((r = buf_parse_comments(in)) < 0)
       break;
-    if ((r = buf_parse_tag(in, &tag)) <= 0)
+    if ((r = buf_parse_tag(in, &tag)) < 0)
       break;
-    if ((r = to_c_tag(context, &tag)) < 0)
+    if (! r)
+      continue;
+    if ((r = to_c_tag(context, &tag)) < 0) {
+      tag_clean(&tag);
       return r;
+    }
     result += r;
     tag_clean(&tag);
   }
@@ -46,13 +50,22 @@ sw to_c_buf (s_to_c *context, s_buf *in)
 
 void to_c_clean (s_to_c *context)
 {
-  buf_file_close(&context->c_buf);
+  assert(context);
+  if (context->c_buf.user_ptr)
+    buf_file_close(&context->c_buf);
   buf_clean(&context->c_buf);
-  fclose(context->c_fp);
+  if (context->c_fp)
+    fclose(context->c_fp);
+  context->c_buf = (s_buf) {0};
+  context->c_fp = NULL;
   str_clean(&context->c_path);
-  buf_file_close(&context->h_buf);
+  if (context->h_buf.user_ptr)
+    buf_file_close(&context->h_buf);
   buf_clean(&context->h_buf);
-  fclose(context->h_fp);
+  if (context->h_fp)
+    fclose(context->h_fp);
+  context->h_buf = (s_buf) {0};
+  context->h_fp = NULL;
   str_clean(&context->h_ifndef);
   str_clean(&context->h_path);
   str_clean(&context->name);
@@ -100,19 +113,34 @@ s_str * to_c_defmodule_sym_to_str (const s_sym *sym, s_str *dest)
 
 sw to_c_defmodule_tag (s_to_c *context, s_tag *tag)
 {
-  
+  assert(context);
+  assert(tag);
+  err_puts("to_c_defmodule_tag: not implemented");
+  return -1;
 }
 
 sw to_c_file (s_to_c *context, s_str *in)
 {
-  s_buf buf;
+  s_buf buf = {0};
   FILE *fp = NULL;
   sw r;
-  if (! (fp = file_open(in, "rb")) ||
-      ! buf_file_open_r(&buf, fp))
+  assert(context);
+  assert(in);
+  if (! (fp = file_open(in, "rb")))
     return -1;
+  if (! buf_init_alloc(&buf, BUF_SIZE)) {
+    fclose(fp);
+    return -1;
+  }
+  if (! buf_file_open_r(&buf, fp)) {
+    buf_clean(&buf);
+    fclose(fp);
+    return -1;
+  }
   r = to_c_buf(context, &buf);
   buf_file_close(&buf);
+  buf_clean(&buf);
+  fclose(fp);
   return r;
 }
 
@@ -125,29 +153,38 @@ s_to_c * to_c_init (s_to_c *context)
 s_to_c * to_c_open (s_to_c *context, const s_str *path)
 {
   u32 i;
-  if (! str_init_alloc(&context->c_path, path->size + 2))
+  assert(context);
+  assert(path);
+  if (! path->size)
     return NULL;
+  if (! str_init_alloc(&context->c_path, path->size + 2))
+    goto ko;
   memcpy(context->c_path.free.p_pchar, path->ptr.p_pchar, path->size);
   memcpy(context->c_path.free.p_pchar + path->size, ".c", 3);
   if (! (context->c_fp = file_open(&context->c_path, "wb")))
-    return NULL;
-  if (! buf_file_open_r(&context->c_buf, context->c_fp))
-    return NULL;
+    goto ko;
+  if (! buf_init_alloc(&context->c_buf, BUF_SIZE) ||
+      ! buf_file_open_w(&context->c_buf, context->c_fp))
+    goto ko;
   if (! str_init_alloc(&context->h_path, path->size + 2))
-    return NULL;
+    goto ko;
   memcpy(context->h_path.free.p_pchar, path->ptr.p_pchar, path->size);
   memcpy(context->h_path.free.p_pchar + path->size, ".h", 3);
   if (! (context->h_fp = file_open(&context->h_path, "wb")))
-    return NULL;
-  if (! buf_file_open_r(&context->h_buf, context->h_fp))
-    return NULL;
-  i = path->size - 1;
-  while (i > 0 && path->ptr.p_pchar[i] != '/')
+    goto ko;
+  if (! buf_init_alloc(&context->h_buf, BUF_SIZE) ||
+      ! buf_file_open_w(&context->h_buf, context->h_fp))
+    goto ko;
+  i = path->size;
+  while (i > 0 && path->ptr.p_pchar[i - 1] != '/')
     i--;
   if (! str_init_alloc_copy(&context->name, path->size - i,
                             path->ptr.p_pchar + i))
-    return NULL;
+    goto ko;
   return context;
+ ko:
+  to_c_clean(context);
+  return NULL;
 }
 
 sw to_c_tag (s_to_c *context, s_tag *tag)
@@ -174,9 +211,11 @@ sw to_c_tag_call (s_to_c *context, s_call *call)
   if ((call->ident.module == NULL ||
        call->ident.module == &g_sym_KC3) &&
       call->ident.sym == &g_sym_defmodule &&
+      call->arguments &&
       (tag_sym = &call->arguments->tag) &&
       tag_sym->type == TAG_PSYM &&
       call->arguments->next.type == TAG_PLIST &&
+      call->arguments->next.data.td_plist &&
       (tag_do_block = &call->arguments->next.data.td_plist->tag) &&
       tag_do_block->type == TAG_DO_BLOCK)
     return to_c_tag_call_defmodule(context, tag_sym->data.td_psym,
