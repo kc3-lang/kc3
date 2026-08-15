@@ -115,8 +115,8 @@ sw to_c_defmodule_tag (s_to_c *context, s_tag *tag)
 {
   assert(context);
   assert(tag);
-  err_puts("to_c_defmodule_tag: not implemented");
-  return -1;
+  err_puts("to_c_defmodule_tag: warning: not implemented");
+  return 0;
 }
 
 sw to_c_file (s_to_c *context, s_str *in)
@@ -256,7 +256,7 @@ sw to_c_tag_call_defmodule (s_to_c *context,
   if ((r = buf_write_1(&context->c_buf, ".h\"\n\n")) <= 0)
     return r;
   result += r;
-  if ((r = to_c_defmodule_do_block(context, do_block)) <= 0)
+  if ((r = to_c_defmodule_do_block(context, do_block)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(&context->h_buf, "#endif /* KC3_TO_C_DEFMODULE_")) <= 0)
@@ -264,7 +264,7 @@ sw to_c_tag_call_defmodule (s_to_c *context,
   result += r;
   if ((r = buf_write_str(&context->h_buf, &context->h_ifndef)) <= 0)
     return r;
-  if ((r = buf_write_1(&context->h_buf, "*/\n")) <= 0)
+  if ((r = buf_write_1(&context->h_buf, "_H */\n")) <= 0)
     return r;
   result += r;
   return result;
