@@ -104,6 +104,7 @@ const s_sym g_sym_blob             = SYM_1("blob");
 const s_sym g_sym_cast             = SYM_1("cast");
 const s_sym g_sym_clean            = SYM_1("clean");
 const s_sym g_sym_commit           = SYM_1("commit");
+const s_sym g_sym_defmodule        = SYM_1("defmodule");
 const s_sym g_sym_defstruct        = SYM_1("defstruct");
 const s_sym g_sym_directory        = SYM_1("directory");
 const s_sym g_sym_date             = SYM_1("date");
@@ -424,6 +425,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_cast, NULL);
   sym_register(&g_sym_clean, NULL);
   sym_register(&g_sym_commit, NULL);
+  sym_register(&g_sym_defmodule, NULL);
   sym_register(&g_sym_defstruct, NULL);
   sym_register(&g_sym_directory, NULL);
   sym_register(&g_sym_date, NULL);

@@ -456,7 +456,7 @@ s_str * str_init_1_alloc (s_str *str, const char *p)
   return str;
 }
 
-s_str * str_init_alloc (s_str *str, uw size)
+s_str * str_init_alloc (s_str *str, u32 size)
 {
   s_str tmp = {0};
   assert(str);
@@ -469,7 +469,7 @@ s_str * str_init_alloc (s_str *str, uw size)
   return str;
 }
 
-s_str * str_init_alloc_copy (s_str *str, uw size, const char *p)
+s_str * str_init_alloc_copy (s_str *str, u32 size, const char *p)
 {
   s_str tmp = {0};
   assert(str);

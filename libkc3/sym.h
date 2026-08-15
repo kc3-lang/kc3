@@ -105,6 +105,7 @@ extern const s_sym g_sym_blob;
 extern const s_sym g_sym_cast;
 extern const s_sym g_sym_clean;
 extern const s_sym g_sym_commit;
+extern const s_sym g_sym_defmodule;
 extern const s_sym g_sym_defstruct;
 extern const s_sym g_sym_directory;
 extern const s_sym g_sym_date;
