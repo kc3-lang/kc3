@@ -8,3 +8,9 @@ do
   b = & a
   * b
 end
+quote a = & []
+a = & []
+quote type(a)
+type(a)
+quote Pointer.set(a, [1, 2])
+Pointer.set(a, [1, 2])
