@@ -140,9 +140,8 @@ s_pointer * env_address_of (s_env *env, s_tag *tag, s_pointer *dest)
   case TAG_PCALL:
     return env_address_of_call(env, tag->data.td_pcall, dest);
   default:
-    err_puts("env_address_of: invalid tag type for address_of");
-    assert(! "env_address_of: invalid tag type for address_of");
-    return NULL;
+    resolved = tag;
+    break;
   }
   if (! tag_type(resolved, &tmp.target_type)) {
     err_puts("env_address_of: invalid tag type");

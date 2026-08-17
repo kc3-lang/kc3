@@ -8,9 +8,13 @@ do
   b = & a
   * b
 end
-quote a = & []
-a = & []
-quote type(a)
-type(a)
-quote Pointer.set(a, [1, 2])
-Pointer.set(a, [1, 2])
+quote a = [1]
+a = [1]
+quote b = [1, 2]
+b = [1, 2]
+quote c = & a
+c = & a
+quote type(c)
+type(c)
+quote Pointer.set(c, & b)
+Pointer.set(c, & b)

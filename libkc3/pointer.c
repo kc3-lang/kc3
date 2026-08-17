@@ -65,6 +65,35 @@ s_tag * pointer_deref (const s_pointer *pointer, s_tag *dest)
   return dest;
 }
 
+s_pointer * pointer_set (s_pointer *pointer, const s_pointer *value)
+{
+  assert(pointer);
+  assert(value);
+  if (! pointer || ! value) {
+    err_puts("pointer_set: invalid arguments");
+    return NULL;
+  }
+  if (pointer->pointer_type != value->pointer_type ||
+      pointer->target_type != value->target_type) {
+    err_write_1("pointer_set: cannot cast ");
+    err_inspect_sym(value->pointer_type);
+    err_write_1(" to ");
+    err_inspect_sym(pointer->pointer_type);
+    err_write_1("\n");
+    return NULL;
+  }
+  pointer->ptr = value->ptr;
+  return pointer;
+}
+
+s_pointer * pointer_set_kc3 (s_pointer *pointer, const s_pointer *value,
+                             s_pointer *dest)
+{
+  if (! pointer_set(pointer, value))
+    return NULL;
+  return pointer_init_copy(dest, pointer);
+}
+
 s_pointer * pointer_init (s_pointer *pointer,
                           const s_sym *pointer_type,
                           const s_sym *target_type,

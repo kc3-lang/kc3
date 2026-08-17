@@ -35,4 +35,7 @@ s_tag * pointer_access (const s_pointer *pointer, s_list *key,
                         s_tag *dest);
 s_tag * pointer_deref (const s_pointer *pointer, s_tag *dest);
 
+/* Operators. */
+s_pointer * pointer_set (s_pointer *pointer, const s_pointer *value);
+
 #endif /* LIBKC3_POINTER_H */
