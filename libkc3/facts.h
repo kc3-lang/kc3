@@ -48,6 +48,8 @@ s_facts *            facts_broadcast_add (s_facts *facts,
 s_facts *            facts_broadcast_remove (s_facts *facts,
                                              const s_fact *fact);
 void                 facts_close (s_facts *facts);
+/* Update the on-disk path after the backing file was moved. */
+bool                 facts_rename (s_facts *facts, const s_str *path);
 s_facts_connection * facts_connect (s_facts *facts,
                                     const s_str *host,
                                     const s_str *service,
@@ -59,6 +61,9 @@ sw                   facts_load_file (s_facts *facts,
 uw *                 facts_next_id (s_facts *facts, uw *dest);
 sw                   facts_open_file (s_facts *facts,
                                       const s_str *path);
+/* Open a database by full pathname, reusing an already opened database. */
+p_facts *             facts_open_memoized (const s_str *path,
+                                           p_facts *dest);
 sw                   facts_open_file_after_dump (s_facts *facts,
                                              const s_str *path);
 sw                   facts_open_file_after_dump_create

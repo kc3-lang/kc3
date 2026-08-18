@@ -12,8 +12,6 @@
 
 defmodule Config do
 
-  def db = Facts.database()
-
-  Facts.open(db, "db/app.facts")
+  def db = Facts.open("db/app.facts")
 
 end

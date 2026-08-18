@@ -12,6 +12,7 @@
  */
 #include <arpa/inet.h>
 #include <errno.h>
+#include <limits.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <signal.h>
@@ -42,6 +43,7 @@
 #include "marshall.h"
 #include "marshall_read.h"
 #include "mutex.h"
+#include "primehash.h"
 #include "rwlock.h"
 #include "securelevel.h"
 #include "set__fact.h"
@@ -58,6 +60,132 @@ static int    facts_compare_pfact_id_reverse (const void *a,
 static sw     facts_open_file_create (s_facts *facts,
                                       const s_str *path);
 static sw     facts_open_log (s_facts *facts, s_buf *buf);
+
+#define FACTS_OPEN_MEMOIZED_SIZE (1 << 20)
+#define FACTS_OPEN_MEMOIZED_MASK (FACTS_OPEN_MEMOIZED_SIZE - 1)
+
+typedef struct s_facts_opened {
+  uw                     hash;
+  s_str                  path;
+  s_facts *              facts;
+  struct s_facts_opened *next;
+} s_facts_opened;
+
+static s_facts_opened *g_facts_opened[FACTS_OPEN_MEMOIZED_SIZE];
+static uw              g_facts_opened_count;
+#if HAVE_PTHREAD
+static pthread_mutex_t g_facts_opened_mutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
+
+static void facts_opened_lock (void)
+{
+#if HAVE_PTHREAD
+  pthread_mutex_lock(&g_facts_opened_mutex);
+#endif
+}
+
+static void facts_opened_unlock (void)
+{
+#if HAVE_PTHREAD
+  pthread_mutex_unlock(&g_facts_opened_mutex);
+#endif
+}
+
+static s_facts_opened * facts_opened_find (const s_str *path, uw hash)
+{
+  s_facts_opened *entry;
+  entry = g_facts_opened[hash & FACTS_OPEN_MEMOIZED_MASK];
+  while (entry) {
+    if (entry->hash == hash &&
+        entry->path.size == path->size &&
+        memcmp(entry->path.ptr.p_pvoid, path->ptr.p_pvoid,
+               path->size) == 0)
+      return entry;
+    entry = entry->next;
+  }
+  return NULL;
+}
+
+static s_str * facts_full_path (const s_str *path, s_str *dest)
+{
+  char cwd[PATH_MAX];
+  assert(path);
+  assert(dest);
+  if (path->size && path->ptr.p_pchar[0] == '/')
+    return str_init_copy(dest, path);
+  if (! getcwd(cwd, sizeof(cwd)))
+    return NULL;
+  return str_init_f(dest, "%s/%s", cwd, path->ptr.p_pchar);
+}
+
+static void facts_opened_remove (s_facts *facts)
+{
+  s_facts_opened **entry;
+  s_facts *cached;
+  uw i;
+  assert(facts);
+  if (! g_facts_opened_count)
+    return;
+  cached = NULL;
+  facts_opened_lock();
+  i = 0;
+  while (i < FACTS_OPEN_MEMOIZED_SIZE && ! cached) {
+    entry = &g_facts_opened[i];
+    while (*entry) {
+      if ((*entry)->facts == facts) {
+        s_facts_opened *tmp = *entry;
+        *entry = tmp->next;
+        cached = tmp->facts;
+        str_clean(&tmp->path);
+        alloc_free(tmp);
+        g_facts_opened_count--;
+        break;
+      }
+      entry = &(*entry)->next;
+    }
+    i++;
+  }
+  facts_opened_unlock();
+  if (cached)
+    facts_delete(cached);
+}
+
+static void facts_opened_rename (s_facts *facts, const s_str *path)
+{
+  s_facts_opened **entry;
+  s_str full_path = {0};
+  uw hash;
+  uw i;
+  assert(facts);
+  assert(path);
+  if (! facts_full_path(path, &full_path))
+    return;
+  hash = primehash_uw_inline(&full_path, 0);
+  facts_opened_lock();
+  i = 0;
+  while (i < FACTS_OPEN_MEMOIZED_SIZE) {
+    entry = &g_facts_opened[i];
+    while (*entry) {
+      if ((*entry)->facts == facts) {
+        s_facts_opened *tmp = *entry;
+        *entry = tmp->next;
+        tmp->hash = hash;
+        str_clean(&tmp->path);
+        tmp->path = full_path;
+        full_path = (s_str) {0};
+        tmp->next = g_facts_opened[hash & FACTS_OPEN_MEMOIZED_MASK];
+        g_facts_opened[hash & FACTS_OPEN_MEMOIZED_MASK] = tmp;
+        facts_opened_unlock();
+        str_clean(&full_path);
+        return;
+      }
+      entry = &(*entry)->next;
+    }
+    i++;
+  }
+  facts_opened_unlock();
+  str_clean(&full_path);
+}
 
 s_facts_connection * facts_accept (s_facts *facts, s64 server_fd,
                                    p_tls server_tls)
@@ -488,9 +616,35 @@ void facts_clean (s_facts *facts)
 void facts_close (s_facts *facts)
 {
   assert(facts->log);
+  facts_opened_remove(facts);
   log_close(facts->log);
   log_delete(facts->log);
   facts->log = NULL;
+}
+
+bool facts_rename (s_facts *facts, const s_str *path)
+{
+  s_str after_dump_path = {0};
+  s_str log_path = {0};
+  assert(facts);
+  assert(path);
+  if (! facts->log)
+    return false;
+  if (! str_init_copy(&log_path, path))
+    return false;
+  if (facts->log->after_dump_path.size &&
+      ! str_init_copy(&after_dump_path, path)) {
+    str_clean(&log_path);
+    return false;
+  }
+  str_clean(&facts->log->path);
+  facts->log->path = log_path;
+  if (after_dump_path.size) {
+    str_clean(&facts->log->after_dump_path);
+    facts->log->after_dump_path = after_dump_path;
+  }
+  facts_opened_rename(facts, path);
+  return true;
 }
 
 s_facts_connection * facts_connect (s_facts *facts,
@@ -601,6 +755,7 @@ void facts_delete (s_facts *facts)
     assert(! "facts_delete: invalid argument");
     return;
   }
+  facts_opened_remove(facts);
 #if HAVE_PTHREAD
   mutex_lock(&facts->ref_count_mutex);
 #endif
@@ -1443,6 +1598,76 @@ sw facts_open_file (s_facts *facts, const s_str *path)
     return -1;
   }
   return result;
+}
+
+p_facts * facts_open_memoized (const s_str *path, p_facts *dest)
+{
+  s_facts_opened *entry;
+  s_facts *facts;
+  s_str full_path = {0};
+  uw hash;
+  assert(path);
+  assert(dest);
+  if (! facts_full_path(path, &full_path))
+    return NULL;
+  hash = primehash_uw_inline(&full_path, 0);
+  facts_opened_lock();
+  entry = facts_opened_find(&full_path, hash);
+  if (entry)
+    facts = facts_new_ref(entry->facts);
+  else
+    facts = NULL;
+  facts_opened_unlock();
+  if (facts) {
+    str_clean(&full_path);
+    *dest = facts;
+    return dest;
+  }
+  if (! (facts = facts_new()))
+    goto error;
+  if (facts_open_file(facts, &full_path) < 0) {
+    facts_delete(facts);
+    goto error;
+  }
+  facts_opened_lock();
+  entry = facts_opened_find(&full_path, hash);
+  if (entry) {
+    s_facts *found = facts_new_ref(entry->facts);
+    facts_opened_unlock();
+    facts_delete(facts);
+    str_clean(&full_path);
+    if (! found)
+      return NULL;
+    *dest = found;
+    return dest;
+  }
+  entry = alloc(sizeof(*entry));
+  if (! entry || ! str_init_copy(&entry->path, &full_path)) {
+    if (entry)
+      alloc_free(entry);
+    facts_opened_unlock();
+    facts_delete(facts);
+    goto error;
+  }
+  entry->hash = hash;
+  entry->facts = facts_new_ref(facts);
+  if (! entry->facts) {
+    str_clean(&entry->path);
+    alloc_free(entry);
+    facts_opened_unlock();
+    facts_delete(facts);
+    goto error;
+  }
+  entry->next = g_facts_opened[hash & FACTS_OPEN_MEMOIZED_MASK];
+  g_facts_opened[hash & FACTS_OPEN_MEMOIZED_MASK] = entry;
+  g_facts_opened_count++;
+  facts_opened_unlock();
+  str_clean(&full_path);
+  *dest = facts;
+  return dest;
+ error:
+  str_clean(&full_path);
+  return NULL;
 }
 
 sw facts_open_file_after_dump (s_facts *facts, const s_str *path)
