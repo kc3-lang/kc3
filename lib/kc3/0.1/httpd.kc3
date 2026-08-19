@@ -60,7 +60,9 @@ defmodule HTTPd do
   def timeout = %Time{tv_sec: 30}
 
   def load_app = fn () {
-    HTTP.mime_type_load("config/mime.types")
+    if File.exists?("config/mime.types") do
+      HTTP.mime_type_load("config/mime.types")
+    end
     load_directory!("app/lib/")
     load_directory!("app/models/")
     if (File.exists?("config/app.kc3")) do
@@ -354,7 +356,9 @@ defmodule HTTPd do
 
   def server = fn (host, port) {
     unveil("./", "r")
-    unveil("./db/", "crw")
+    if File.exists?("./db/") do
+      unveil("./db/", "crw")
+    end
     if File.exists?("./upload/") do
       unveil("./upload/", "crw")
       List.each(File.list("./upload/"), fn (name) {
@@ -408,8 +412,8 @@ defmodule HTTPd do
 
   def main = fn {
     () {
-      host = getenv("KC3_HTTPD_HOST")
-      port = getenv("KC3_HTTPD_PORT")
+      host = getenv("KC3_HTTPD_HOST") || "localhost"
+      port = getenv("KC3_HTTPD_PORT") || "15080"
       server(host, port)
     }
     (host, port) {
@@ -575,6 +579,6 @@ defmodule HTTPd do
     }
   }
 
-  HTTPd.Route.def_static_route("", "./static/", 0)
+  HTTPd.Static.def_route("", "./", 0)
 
 end

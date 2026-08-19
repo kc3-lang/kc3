@@ -395,17 +395,20 @@ distclean::
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue distclean; fi
 
 dump:
+	time ${MAKE} dump_timed
+
+dump_timed:
 	${MAKE} clean_dump
 	@echo "KC3 dump"
-	kc3s/kc3s --trace --dump lib/kc3/0.1/kc3.dump --quit
+	time kc3s/kc3s --trace --dump lib/kc3/0.1/kc3.dump --quit
 	@echo "KC3 restore"
-	kc3s/kc3s --trace --quit
+	time kc3s/kc3s --trace --quit
 	@echo "KC3 Kpkg"
-	${MAKE} -C kpkg dump
+	time ${MAKE} -C kpkg dump
 	@echo "KC3 HTTPd"
-	${MAKE} -C test/httpd dump
+	time ${MAKE} -C test/httpd dump
 	@echo "KC3 fx"
-	${MAKE} -C httpd/fx dump
+	time ${MAKE} -C httpd/fx dump
 
 dump_debug:
 	${MAKE} clean_dump
@@ -1873,6 +1876,7 @@ uninstall:
 	distcheck_root \
 	distcheck_subdir \
 	dump \
+	dump_timed \
 	ekc3 \
 	ekc3_asan \
 	ekc3_cov \
