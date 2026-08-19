@@ -755,7 +755,9 @@ void facts_delete (s_facts *facts)
     assert(! "facts_delete: invalid argument");
     return;
   }
-  facts_opened_remove(facts);
+  /* The memoization table owns its own reference. Keep its entry while
+     releasing a caller reference; facts_opened_remove() releases the
+     memoized reference when the entry is explicitly removed. */
 #if HAVE_PTHREAD
   mutex_lock(&facts->ref_count_mutex);
 #endif
@@ -1668,6 +1670,49 @@ p_facts * facts_open_memoized (const s_str *path, p_facts *dest)
  error:
   str_clean(&full_path);
   return NULL;
+}
+
+bool facts_open_memoized_register (s_facts *facts, const s_str *path)
+{
+  s_facts_opened *entry;
+  s_str full_path = {0};
+  uw hash;
+  assert(facts);
+  assert(path);
+  if (! facts_full_path(path, &full_path))
+    return false;
+  hash = primehash_uw_inline(&full_path, 0);
+  facts_opened_lock();
+  entry = facts_opened_find(&full_path, hash);
+  if (entry) {
+    bool result = (entry->facts == facts);
+    facts_opened_unlock();
+    str_clean(&full_path);
+    return result;
+  }
+  entry = alloc(sizeof(*entry));
+  if (! entry || ! str_init_copy(&entry->path, &full_path)) {
+    if (entry)
+      alloc_free(entry);
+    facts_opened_unlock();
+    str_clean(&full_path);
+    return false;
+  }
+  entry->hash = hash;
+  entry->facts = facts_new_ref(facts);
+  if (! entry->facts) {
+    str_clean(&entry->path);
+    alloc_free(entry);
+    facts_opened_unlock();
+    str_clean(&full_path);
+    return false;
+  }
+  entry->next = g_facts_opened[hash & FACTS_OPEN_MEMOIZED_MASK];
+  g_facts_opened[hash & FACTS_OPEN_MEMOIZED_MASK] = entry;
+  g_facts_opened_count++;
+  facts_opened_unlock();
+  str_clean(&full_path);
+  return true;
 }
 
 sw facts_open_file_after_dump (s_facts *facts, const s_str *path)

@@ -64,6 +64,9 @@ sw                   facts_open_file (s_facts *facts,
 /* Open a database by full pathname, reusing an already opened database. */
 p_facts *             facts_open_memoized (const s_str *path,
                                            p_facts *dest);
+/* Register an already opened database in the pathname memoization table. */
+bool                  facts_open_memoized_register (s_facts *facts,
+                                                    const s_str *path);
 sw                   facts_open_file_after_dump (s_facts *facts,
                                              const s_str *path);
 sw                   facts_open_file_after_dump_create

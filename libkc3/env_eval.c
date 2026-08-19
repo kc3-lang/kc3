@@ -31,6 +31,7 @@
 #include "facts.h"
 #include "frame.h"
 #include "ident.h"
+#include "io.h"
 #include "list.h"
 #include "map.h"
 #include "mutex.h"
@@ -177,7 +178,7 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   }
   if (! borrowed && ! env_eval_call_resolve(env, &c)) {
   resolve_ko:
-    err_stacktrace();
+    err_inspect_stacktrace_short(stacktrace_get(env->stacktrace));
     err_write_1("env_eval_call: env_eval_call_resolve: ");
     err_inspect_ident(&c.ident);
     err_write_1("\n");
@@ -204,7 +205,7 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   }
   if (env->stacktrace_depth > 256) {
     err_puts("env_eval_call: stacktrace depth > 256");
-    err_stacktrace();
+    err_inspect_stacktrace_short(stacktrace_get(env->stacktrace));
     env_unwind_protect_pop(env, &up);
     result = false;
     goto clean;
@@ -591,7 +592,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       err_inspect_fn_pattern(args);
       err_write_1("\n");
       err_puts("stacktrace:");
-      err_inspect_stacktrace(stacktrace_get(env->stacktrace));
+      err_inspect_stacktrace_short(stacktrace_get(env->stacktrace));
       err_write_1("\n");
       env_eval_call_arguments_storage_clean(args_storage, args_count);
       env->search_modules = search_modules;
@@ -727,7 +728,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
       return true;
     }
     err_puts("env_eval_call_resolve: not a Callable (Cfn or Fn)");
-    err_stacktrace();
+    err_inspect_stacktrace_short(stacktrace_get(env->stacktrace));
     assert(! "env_eval_call_resolve: not a Callable (Cfn or Fn)");
     return false;
   }
@@ -933,7 +934,7 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
       ! (tag = env_ident_get(env, &tmp_ident, &tmp))) {
     if (true) {
       err_puts("env_eval_ident: stacktrace:");
-      err_inspect_stacktrace(stacktrace_get(env->stacktrace));
+      err_inspect_stacktrace_short(stacktrace_get(env->stacktrace));
       err_write_1("\n");
     }
     err_write_1("env_eval_ident: unbound ident: ");

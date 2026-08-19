@@ -4,6 +4,6 @@ HTTPd.def_route("/fx/", FXController.fx_route)
 HTTPd.def_route("/tags/", FXController.tags_route)
 HTTPd.def_route("/properties/", FXController.properties_route)
 
-HTTPd.Route.def_static_route("/file", "./fx/", 1)
+HTTPd.Static.def_route("/file", "./fx/", 1)
 
-HTTPd.Route.def_static_route("", "./static/", 0)
+HTTPd.Static.def_route("", "./static/", 0)

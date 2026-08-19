@@ -1,0 +1,120 @@
+## kc3
+## Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+defmodule HTTPd.Static do
+
+  def directory = fn (prefix, root_dir, url) {
+    files = List.sort(File.list(root_dir + url))
+    file_li = fn (file) {
+      if Str.starts_with?(file, ".") do
+        ""
+      else
+        slash = if Str.ends_with?(url, "/") do "" else "/" end
+        real_path = "#{root_dir}#{url}#{slash}#{file}"
+        dir? = File.is_directory?(real_path)
+        dir_slash = if dir? do "/" else "" end
+        href = "#{prefix}#{url}#{slash}#{file}#{dir_slash}"
+        mode = if dir? do "dr-xr-xr-x" else "-r--r--r--" end
+        """<li>#{mode} <a href="#{URL.escape(href)}">#{HTML.escape(file)}</a>#{dir_slash}</li>\n"""
+      end
+    }
+    body = """<html>
+  <head>
+    <title>Index of #{HTML.escape(prefix)}#{HTML.escape(url)}</title>
+    <style type="text/css">
+      ul { font-family: monospace; }
+    </style>
+  </head>
+  <body>
+    <h1>Index of #{HTML.escape(prefix)}#{HTML.escape(url)}</h1>
+    <ul>
+      #{str(List.map(files, file_li))}
+    </ul>
+  </body>
+</html>
+"""
+    %HTTP.Response{body: body}
+  }
+
+  def show = fn (range, root_dir, url) {
+    ext = File.ext(url)
+    path = root_dir + url
+    if (! File.exists?(path)) do
+      slash = if Str.ends_with?(path, "/") do "" else "/" end
+      path = "#{path}#{slash}index.html"
+    end
+    if File.exists?(path) do
+      mime = HTTP.mime_type(ext)
+      stat = File.stat(path)
+      last_modified = Str.ftime(stat.st_mtim, "%a, %d %b %G %T %Z")
+      match HTTPd.parse_range(range, stat.st_size) do
+        {:error, e} ->
+          headers = [{"Content-Type", "text/html"}]
+          %HTTP.Response{code: 416,
+                         body: """<html>
+  <head>
+    <title>Error 416</title>
+  </head>
+  <body>
+    <h1>Error 416 Range Not Satisfiable</h1>
+  </body>
+</html>""",
+                         headers: headers}
+        {range_start, range_last} ->
+          if (range_start != 0) || (range_last + 1 != stat.st_size) do
+            headers = [{"Content-Disposition", "inline"},
+                       {"Content-Type", (Str) mime},
+                       {"Content-Length",
+                       (Str) (range_last - range_start + 1)},
+                       {"Content-Range",
+                        "bytes #{range_start}-#{range_last}/#{stat.st_size}"},
+                       {"Last-Modified", last_modified}]
+            %HTTP.Response{code: (U16) 206,
+                           body: File.mmap(File.open_r(path),
+                                           (Uw) range_start,
+                                           (Uw) (range_last + 1)),
+                           headers: headers}
+          else
+            headers = [{"Content-Disposition", "inline"},
+                       {"Content-Type", (Str) mime},
+                       {"Content-Length", (Str) stat.st_size},
+                       {"Last-Modified", last_modified}]
+            %HTTP.Response{code: (U16) 200,
+                           body: File.mmap(File.open_r(path), (Uw) 0,
+                                           (Uw) stat.st_size),
+                           headers: headers}
+          end
+      end
+    end
+  }
+
+  def def_route = fn (prefix, root_dir, url_skip) {
+    static_route = fn (request) {
+      url = URL.eat(request.url, url_skip)
+      if (Str.starts_with?(url, "/") &&
+         ! Str.has_str?(url, "/../") &&
+         ! Str.ends_with?(url, "/..")) do
+        path = root_dir + url
+        if File.exists?(path) do
+          if File.is_directory?(path) do
+            HTTPd.Static.directory(prefix, root_dir, url)
+          else
+            range = HTTP.Request.header(request, "Range")
+            HTTPd.Static.show(range, root_dir, url)
+          end
+        end
+      end
+    }
+    HTTPd.def_route(prefix, static_route)
+  }
+
+end

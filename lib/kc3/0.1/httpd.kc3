@@ -20,6 +20,7 @@ require HTTP
 require HTTP.Request
 require HTTP.Response
 require HTTPd.Route
+require HTTPd.Static
 require EventPoll
 require Socket
 require Socket.Buf

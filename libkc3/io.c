@@ -121,7 +121,7 @@ sw err_stacktrace (void)
 {
   s_env *env;
   env = env_global();
-  return err_inspect_stacktrace(stacktrace_get(env->stacktrace));
+  return err_inspect_stacktrace_short(stacktrace_get(env->stacktrace));
 }
 
 sw err_puts (const char *x)
@@ -348,6 +348,7 @@ DEF_ERR_IO_INSPECT(s64,                 s64)
 DEF_ERR_IO_INSPECT(s64_decimal,         s64)
 DEF_ERR_IO_INSPECT(s64_hexadecimal,     s64)
 DEF_ERR_IO_INSPECT(stacktrace,          p_list)
+DEF_ERR_IO_INSPECT(stacktrace_short,    p_list)
 DEF_ERR_IO_INSPECT(str,                 const s_str *)
 DEF_ERR_IO_INSPECT(str_hex,             const s_str *)
 DEF_ERR_IO_INSPECT(struct,              const s_struct *)

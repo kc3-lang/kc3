@@ -116,7 +116,7 @@ s_tag * cfn_apply_count (s_cfn *cfn, s_list *args, sw num_args,
                                    cfn_arg_types->tag.data.td_psym,
                                    &p)) {
             err_puts("cfn_apply: tag_to_ffi_pointer 4");
-            err_stacktrace();
+            err_inspect_stacktrace_short(stacktrace_get(env->stacktrace));
             assert(! "cfn_apply: tag_to_ffi_pointer 4");
             goto ko;
           }

@@ -1017,6 +1017,15 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
       str_clean(&path);
       return NULL;
     }
+    if (! facts_open_memoized_register(facts, &path)) {
+      err_write_1("marshall_read_facts: facts_open_memoized_register: ");
+      err_inspect_str(&path);
+      err_write_1("\n");
+      assert(! "marshall_read_facts: facts_open_memoized_register");
+      str_clean(&binary_path);
+      str_clean(&path);
+      return NULL;
+    }
     str_clean(&binary_path);
     str_clean(&path);
   }
