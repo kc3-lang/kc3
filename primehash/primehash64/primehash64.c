@@ -11,7 +11,7 @@
 
 int usage (int r, char *argv0)
 {
-  fprintf(stderr, "Usage: ls $PWD | %s -h .primehash64\n", argv0);
+  fprintf(stderr, "Usage: find . -type f | %s\n", argv0);
   return r;
 }
 
