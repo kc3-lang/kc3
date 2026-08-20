@@ -942,13 +942,13 @@ json_debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C json debug
 
-kc3-${KC3_VERSION}.tar.gz: kc3.index
+kc3-${KC3_VERSION}.tar.gz: kc3.index kc3.primehash64
 	rm -rf kc3-${KC3_VERSION}.old
 	if [ -d kc3-${KC3_VERSION} ]; then \
 		mv kc3-${KC3_VERSION} kc3-${KC3_VERSION}.old; \
 	fi
 	mkdir kc3-${KC3_VERSION}
-	pax -rw < kc3.index kc3-${KC3_VERSION}
+	{ cat kc3.index; echo kc3.primehash64; } | pax -rw kc3-${KC3_VERSION}
 	pax -w kc3-${KC3_VERSION} | gzip -9 > kc3-${KC3_VERSION}.tar.gz
 
 kc3.index: sources.mk Makefile
@@ -985,7 +985,7 @@ kc3.index: sources.mk Makefile
 
 kc3.primehash64: kc3.index
 	${MAKE} -C primehash
-	time ./bin/primehash < kc3.index -h kc3.primehash64.tmp
+	time ./bin/primehash64 < kc3.index -h kc3.primehash64.tmp
 	if ! [ -f kc3.primehash64 ] || \
 	   ! cmp kc3.primehash64 kc3.primehash64.tmp >/dev/null 2>&1; \
 	then \

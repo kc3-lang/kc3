@@ -4,8 +4,8 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../libkc3/types.h"
-#include "../libkc3/primehash.h"
+#include "../../libkc3/types.h"
+#include "../../libkc3/primehash.h"
 
 #define BUF_SIZE (sizeof(uw) << 16)
 

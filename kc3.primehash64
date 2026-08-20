@@ -4,12 +4,12 @@ f9d3e7e71487759d AUTHORS.md
 8bd4aabdb4493bfe CLAUDE.md
 02d9fbbd937b5995 CONTRIBUTING.md
 e41ba7905c558b00 LICENSE.md
-b2d4ca6b7dbcd6fa Makefile
+a76b90af72116285 Makefile
 bccf1e6288992042 README.md
 e8931e379ed360b7 TODO.md
 cb71989116f53406 config.subr
 fd9009c8ed69ff30 config_common
-2c3aa0d6210fda78 configure
+87b6f87165f1c86b configure
 ce50309b29a01885 doc/1_KC3/1.01_Introduction.en.md
 7a1f92cf727840cc doc/1_KC3/1.01_Introduction.fr.md
 71cba55e0b85016f doc/1_KC3/1.02_Array.en.md
@@ -609,7 +609,7 @@ bfdac5e1e2475460 json/json.h
 3418601111b5e7da json/sources.mk
 59bf7133bbe61228 json/sources.sh
 89bc8986763956ec json/update_sources
-545c24df52039705 kc3.index
+48aae85e01ea85d6 kc3.index
 3f9ebc86530a9851 kc3.version
 8c7bf4c05a662812 kc3c/Makefile
 c725ad9b70e4cf15 kc3c/c3c.c
@@ -733,6 +733,7 @@ d6ccaa3ea7343e94 lib/kc3/0.1/http.kc3
 f920639aabf56901 lib/kc3/0.1/http/upload.kc3
 5c84b0deb1a97c41 lib/kc3/0.1/httpd.kc3
 33f1fb56072a7e5e lib/kc3/0.1/httpd/route.kc3
+88ddfe103a730139 lib/kc3/0.1/httpd/static.kc3
 0000000000000000 lib/kc3/0.1/https.kc3
 03644fd76ae4196f lib/kc3/0.1/https/client.kc3
 fdf13555a0a7e6fd lib/kc3/0.1/ident.kc3
@@ -838,6 +839,7 @@ efff9fd9afb52477 lib/kc3/0.1/sw.facts
 afce97e4e2149c44 lib/kc3/0.1/tls/config.kc3
 91d5b238c753decc lib/kc3/0.1/tls/facts.kc3
 c12c0db1025df57d lib/kc3/0.1/tls/server.kc3
+fc841f576a1a371b lib/kc3/0.1/to_c.kc3
 dd09dad32b3fa641 lib/kc3/0.1/totp.kc3
 3feaa1a94613ba21 lib/kc3/0.1/u16.facts
 3fb4fd84d86c9961 lib/kc3/0.1/u32.facts
@@ -1600,8 +1602,8 @@ d0eb1c53cbfa9794 smtp/smtp.h
 4fa162e28ddb2803 smtp/sources.sh
 c9aee74cdf9fece6 smtp/types.h
 89bc8986763956ec smtp/update_sources
-5234f74d754e6fde sources.mk
-80e42267bb54f8f1 sources.sh
+aee84b21e5dd75f9 sources.mk
+3c888faa5841807f sources.sh
 fd8b213963d684d7 test/Makefile
 115034515e40a46d test/array_test.c
 7e5928106ea6c2bb test/bool_test.c
