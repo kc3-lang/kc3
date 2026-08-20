@@ -105,6 +105,10 @@ macos/kc3-v*
 node_modules/
 *.o
 out/
+primehash/primehash
+primehash/primehash_asan
+primehash/primehash_cov
+primehash/primehash_debug
 release/
 /site/
 *.so
