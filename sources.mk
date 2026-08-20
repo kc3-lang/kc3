@@ -1677,6 +1677,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/http/upload.kc3" \
 	"lib/kc3/0.1/httpd.kc3" \
 	"lib/kc3/0.1/httpd/route.kc3" \
+	"lib/kc3/0.1/httpd/static.kc3" \
 	"lib/kc3/0.1/https.kc3" \
 	"lib/kc3/0.1/https/client.kc3" \
 	"lib/kc3/0.1/ident.kc3" \
@@ -1782,6 +1783,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/tls/config.kc3" \
 	"lib/kc3/0.1/tls/facts.kc3" \
 	"lib/kc3/0.1/tls/server.kc3" \
+	"lib/kc3/0.1/to_c.kc3" \
 	"lib/kc3/0.1/totp.kc3" \
 	"lib/kc3/0.1/u16.facts" \
 	"lib/kc3/0.1/u32.facts" \

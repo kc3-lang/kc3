@@ -3,5 +3,5 @@ HEADERS = \
 	"" \
 
 SOURCES = \
-	"primehash.c" \
+	"primehash64.c" \
 

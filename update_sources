@@ -191,6 +191,7 @@ runj -1 /bin/sh <<EOF
 ( cd libtommath && ./update_sources; )
 ( cd markdown   && ./update_sources; )
 ( cd pdf        && ./update_sources; )
+( cd primehash  && ./update_sources; )
 ( cd qrencode   && ./update_sources; )
 ( cd smtp       && ./update_sources; )
 ( cd test       && ./update_sources; )
