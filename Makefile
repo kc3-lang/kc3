@@ -1937,10 +1937,6 @@ uninstall:
 	gdb_test_pdf \
 	gdb_test_pdf_asan \
 	gdb_test_pdf_debug \
-#	gtk4 \
-#	gtk4_asan \
-#	gtk4_cov \
-#	gtk4_debug
 	http \
 	http_asan \
 	http_cov \
@@ -1964,7 +1960,6 @@ uninstall:
 	json_debug \
 	kc3.index \
 	kc3.primehash64 \
-	kc3.SHA512 \
 	kc3s \
 	kc3s_asan \
 	kc3s_cov \
