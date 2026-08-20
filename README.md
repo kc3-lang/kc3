@@ -1,4 +1,4 @@
-# KC3 v0.1.18-git
+# KC3 v0.2.0-git
 
 A programming language providing and relying on facts-db.
 
