@@ -984,20 +984,14 @@ kc3.index: sources.mk Makefile
 	rm kc3.index.tmp
 
 kc3.primehash64: kc3.index
-	primehash < kc3.index -h kc3.primehash64.tmp
-	if [ -f kc3.primehash64 ] && \
+	${MAKE} -C primehash
+	time ./bin/primehash < kc3.index -h kc3.primehash64.tmp
+	if ! [ -f kc3.primehash64 ] || \
 	   ! cmp kc3.primehash64 kc3.primehash64.tmp >/dev/null 2>&1; \
 	then \
-		rm kc3.primehash64.tmp; \
+		mv kc3.primehash64.tmp kc3.primehash64; \
 	else \
-		mv kc3.primehash64.tmp kc3.primehash64; \
-	fi
-
-kc3.SHA512: kc3.index
-	xargs < kc3.index sha256 -h kc3.primehash64.tmp
-	if cmp kc3.primehash64 kc3.primehash64.tmp 2>/dev/null; then \
-		rm kc3.primehash64.tmp; else \
-		mv kc3.primehash64.tmp kc3.primehash64; \
+		rm kc3.primehash64.tmp; \
 	fi
 
 kc3s:

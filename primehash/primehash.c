@@ -84,6 +84,7 @@ int main (int argc, char **argv)
     }
     fputs(in_path, out_fp);
     fputc('\n', out_fp);
+    free(in_path);
   }
   r = 0;
  clean:
