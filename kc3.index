@@ -662,6 +662,7 @@ lib/kc3/0.1/complex.facts
 lib/kc3/0.1/counter.kc3
 lib/kc3/0.1/cow.kc3
 lib/kc3/0.1/crypt.kc3
+lib/kc3/0.1/daemon.kc3
 lib/kc3/0.1/deserialize.kc3
 lib/kc3/0.1/ekc3.kc3
 lib/kc3/0.1/env.kc3
@@ -795,6 +796,7 @@ lib/kc3/0.1/pointer.kc3
 lib/kc3/0.1/pretty.kc3
 lib/kc3/0.1/pretty_save.kc3
 lib/kc3/0.1/prime.kc3
+lib/kc3/0.1/prime_hash.kc3
 lib/kc3/0.1/ptr.facts
 lib/kc3/0.1/ptr_free.facts
 lib/kc3/0.1/qrencode.kc3
@@ -822,6 +824,7 @@ lib/kc3/0.1/socket/addr.kc3
 lib/kc3/0.1/socket/buf.kc3
 lib/kc3/0.1/socket/facts.kc3
 lib/kc3/0.1/spam/bayes.kc3
+lib/kc3/0.1/stacktrace.kc3
 lib/kc3/0.1/str.facts
 lib/kc3/0.1/struct.kc3
 lib/kc3/0.1/sw.facts
@@ -1043,6 +1046,8 @@ libkc3/cow.h
 libkc3/crypt.c
 libkc3/crypt.h
 libkc3/crypt_sha512.c
+libkc3/daemon.c
+libkc3/daemon.h
 libkc3/data.c
 libkc3/data.h
 libkc3/do_block.c
@@ -1116,6 +1121,7 @@ libkc3/ht.c
 libkc3/ht.h
 libkc3/ident.c
 libkc3/ident.h
+libkc3/inline.h
 libkc3/inspect.c
 libkc3/inspect.h
 libkc3/integer.c
@@ -1170,6 +1176,8 @@ libkc3/pointer.c
 libkc3/pointer.h
 libkc3/pretty.c
 libkc3/pretty.h
+libkc3/primehash.c
+libkc3/primehash.h
 libkc3/pstruct.c
 libkc3/pstruct.h
 libkc3/pstruct_type.c
@@ -1264,6 +1272,8 @@ libkc3/sources.mk
 libkc3/sources.sh
 libkc3/special_operator.c
 libkc3/special_operator.h
+libkc3/stacktrace.c
+libkc3/stacktrace.h
 libkc3/str.c
 libkc3/str.h
 libkc3/struct.c
@@ -1274,6 +1284,8 @@ libkc3/sw.c
 libkc3/sw.h
 libkc3/sym.c
 libkc3/sym.h
+libkc3/sym_ht.c
+libkc3/sym_ht.h
 libkc3/tag.c
 libkc3/tag.h
 libkc3/tag_add.c
@@ -1687,6 +1699,15 @@ test/http/06_mime_types.ret.expected
 test/http/07_client_server.kc3
 test/http/07_client_server.out.expected
 test/http/07_client_server.ret.expected
+test/http/08_response_headers.kc3
+test/http/08_response_headers.out.expected
+test/http/08_response_headers.ret.expected
+test/http/09_request_www_form.kc3
+test/http/09_request_www_form.out.expected
+test/http/09_request_www_form.ret.expected
+test/http/10_request_framing.kc3
+test/http/10_request_framing.out.expected
+test/http/10_request_framing.ret.expected
 test/http/mime.types
 test/http_test
 test/httpd/Makefile
@@ -1999,6 +2020,9 @@ test/ikc3/macro.ret.expected
 test/ikc3/map.kc3
 test/ikc3/map.out.expected
 test/ikc3/map.ret.expected
+test/ikc3/map_merge.kc3
+test/ikc3/map_merge.out.expected
+test/ikc3/map_merge.ret.expected
 test/ikc3/marshall.kc3
 test/ikc3/marshall.out.expected
 test/ikc3/marshall.ret.expected
@@ -2035,6 +2059,9 @@ test/ikc3/str.ret.expected
 test/ikc3/struct.kc3
 test/ikc3/struct.out.expected
 test/ikc3/struct.ret.expected
+test/ikc3/struct_update.kc3
+test/ikc3/struct_update.out.expected
+test/ikc3/struct_update.ret.expected
 test/ikc3/sym.err.expected
 test/ikc3/sym.kc3
 test/ikc3/sym.out.expected
@@ -2079,6 +2106,9 @@ test/json/to_str.kc3
 test/json/to_str.out.expected
 test/json/to_str.ret.expected
 test/json_test
+test/kc3s/call_cache.kc3
+test/kc3s/call_cache.out.expected
+test/kc3s/call_cache.ret.expected
 test/kc3s/comments.kc3
 test/kc3s/comments.out.expected
 test/kc3s/comments.ret.expected
@@ -2134,6 +2164,7 @@ test/socket/socket.ret.expected
 test/socket_test
 test/sources.mk
 test/sources.sh
+test/stacktrace_test.c
 test/str_test.c
 test/struct_test.c
 test/struct_test.kc3

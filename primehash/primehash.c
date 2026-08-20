@@ -7,7 +7,7 @@
 #include "../libkc3/types.h"
 #include "../libkc3/primehash.h"
 
-#define BUF_SIZE (sizeof(uw) << 10)
+#define BUF_SIZE (sizeof(uw) << 16)
 
 int usage (int r, char *argv0)
 {
@@ -28,7 +28,7 @@ int main (int argc, char **argv)
   const char *out_path;
   int r = 1;
   if (argc <= 0)
-    return usage(1, "primehash64");
+    return usage(1, "primehash");
   if (argc == 1) {
     out_path = "<stdout>";
     out_fp = stdout;
