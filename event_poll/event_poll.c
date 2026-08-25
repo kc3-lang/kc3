@@ -306,6 +306,7 @@ s64 kc3_event_poll_delete (void **handle, s64 fd, s_tag *filter)
     s_event_poll *ep = *(s_event_poll **) handle;
     s_event_poll_entry *entry;
     s_event_poll_entry *next;
+    s32 e;
     if (! filter || filter->type == TAG_VOID) {
       entry = ep->entries;
       while (entry) {
