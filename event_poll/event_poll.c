@@ -262,8 +262,8 @@ s64 kc3_event_poll_delete (void **handle, s64 fd, s_tag *filter)
     return -1;
 #if HAVE_KQUEUE
   {
-    s64 kqfd = (s64)(intptr_t)(*handle);
     s32 e;
+    s64 kqfd = (s64)(intptr_t)(*handle);
     if (! filter || filter->type == TAG_VOID) {
       if (close(kqfd) < 0) {
         e = errno;
@@ -303,10 +303,10 @@ s64 kc3_event_poll_delete (void **handle, s64 fd, s_tag *filter)
   }
 #elif HAVE_EPOLL
   {
+    s32 e;
     s_event_poll *ep = *(s_event_poll **) handle;
     s_event_poll_entry *entry;
     s_event_poll_entry *next;
-    s32 e;
     if (! filter || filter->type == TAG_VOID) {
       entry = ep->entries;
       while (entry) {
@@ -366,10 +366,10 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
     return NULL;
 #if HAVE_KQUEUE
   {
-    s64 kqfd;
     s32 e;
     struct kevent event = {0};
     const s_sym *event_type;
+    s64 kqfd;
     s_timespec *p = NULL;
     s32 r;
     s_timespec timespec = {0};
@@ -438,8 +438,8 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
   }
 #elif HAVE_EPOLL
   {
-    s_event_poll *ep = *(s_event_poll **) handle;
     s32 e;
+    s_event_poll *ep = *(s_event_poll **) handle;
     struct epoll_event event = {0};
     const s_sym *event_type;
     s_event_poll_entry *entry;
