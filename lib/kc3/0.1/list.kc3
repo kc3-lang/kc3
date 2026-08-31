@@ -38,6 +38,8 @@ defmodule List do
 
   def filter = cfn List "plist_filter" (List, Callable, Result)
 
+  def find = cfn Tag "plist_find" (List, Tag, Result)
+
   def find_if = cfn Tag "plist_find_if" (List, Callable, Result)
 
   def first = fn ([a | _]) { a }

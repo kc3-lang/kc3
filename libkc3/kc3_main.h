@@ -194,6 +194,7 @@ void                 kc3_mutex_lock (s_mutex **mutex);
 s_mutex **           kc3_mutex_new (s_mutex **dest);
 void                 kc3_mutex_unlock (s_mutex **mutex);
 s_tag *              kc3_or (s_tag *a, s_tag *b, s_tag *dest);
+s_tag *              kc3_parse_map (s_tag *tag, const s_str *src);
 s_tag *              kc3_parse_tag (s_tag *tag, const s_str *src);
 void                 kc3_pledge (const s_str *promises,
                                  const s_str *execpromises);

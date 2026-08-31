@@ -14,4 +14,6 @@ defmodule Inspect do
 
   def str_hex = cfn Str "inspect_str_hex" (Str, Result)
 
+  def map = cfn Str "inspect_map" (Map, Result)
+
 end

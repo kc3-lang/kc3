@@ -1259,6 +1259,22 @@ s_tag * kc3_or (s_tag *a, s_tag *b, s_tag *dest)
   return env_or(env_global(), a, b, dest);
 }
 
+s_tag * kc3_parse_map (s_tag *tag, const s_str *src)
+{
+  s_buf buf;
+  sw r;
+  tag_init(tag);
+  buf_init_str_const(&buf, src);
+  r = buf_parse_map(&buf, &tag->data.td_map);
+  if (r <= 0 || (uw) r != src->size) {
+    buf_clean(&buf);
+    return tag;
+  }
+  tag->type = TAG_MAP;
+  buf_clean(&buf);
+  return tag;
+}
+
 s_tag * kc3_parse_tag (s_tag *tag, const s_str *src)
 {
   s_buf buf;

@@ -10,10 +10,20 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Parse do
+defmodule SHA512 do
 
-  def tag = cfn Tag "kc3_parse_tag" (Result, Str)
+  def hmac = cfn Str "sha512_hmac_str" (Str, Str, Result)
 
-  def map = cfn Tag "kc3_parse_map" (Result, Str)
+  def hmac_str = fn (msg) {
+    "#{Base64.encode(SHA512.hmac(msg, Config.secret))} #{msg}"
+  }
+
+  def hmac_str_verify = fn (str) {
+    hmac = Str.slice(str, 0, 88)
+    msg = Str.slice(str, 89, -1)
+    if Base64.encode(SHA512.hmac(msg, Config.secret)) == hmac do
+      msg
+    end
+  }
 
 end

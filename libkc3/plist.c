@@ -214,6 +214,18 @@ p_list * plist_filter (p_list *plist, p_callable *function,
   return NULL;
 }
 
+s_tag * plist_find (p_list *plist, s_tag *value, s_tag *dest)
+{
+  s_list *list;
+  list = *plist;
+  while (list) {
+    if (compare_tag(value, &list->tag) == 0)
+      return tag_init_copy(dest, &list->tag);
+    list = list_next(list);
+  }
+  return tag_init(dest);
+}
+
 s_tag * plist_find_if (p_list *plist, p_callable *function,
                        s_tag *dest)
 {
