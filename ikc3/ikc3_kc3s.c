@@ -402,8 +402,17 @@ static sw run (void)
   }
   while (1) {
     if ((r = buf_ignore_spaces(env->in)) < 0 ||
-        (r = buf_parse_comments(env->in)) < 0 ||
-        (r = buf_parse_tag(env->in, &input)) <= 0) {
+        (r = buf_parse_comments(env->in)) < 0) {
+      r = 0;
+      goto clean;
+    }
+    // a comment eats its ending newline but leaves following blank
+    // lines : go back to buf_ignore_spaces before parsing, else
+    // buf_parse_tag returns 0 on the blank line and the rest of the
+    // file would be silently dropped
+    if (r > 0)
+      continue;
+    if ((r = buf_parse_tag(env->in, &input)) <= 0) {
       r = 0;
       goto clean;
     }
