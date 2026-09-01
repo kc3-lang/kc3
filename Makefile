@@ -1861,6 +1861,9 @@ uninstall:
 	${MAKE} -C smtp uninstall
 	${MAKE} -C window uninstall
 
+whitespace:
+	rg ' +$'
+
 .PHONY: all \
 	android \
 	asan \
