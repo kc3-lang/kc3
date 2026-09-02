@@ -31,6 +31,8 @@ require URL
 
 defmodule HTTPd do
 
+  def version = "0.2.0-git"
+
   def acceptor_tag = Tag.new_copy(:acceptor)
 
   def bots = Counter.new(0)

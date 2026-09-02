@@ -236,6 +236,25 @@ s_str * inspect_list (const s_list *x, s_str *dest)
   return NULL;
 }
 
+s_str * inspect_map (const s_map *x, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw r;
+  sw size;
+  size = buf_inspect_map_size(&pretty, x);
+  buf_init_alloc(&buf, size);
+  if ((r = buf_inspect_map(&buf, x)) < 0)
+    goto error;
+  assert(r == size);
+  if (r != size)
+    goto error;
+  return buf_to_str(&buf, dest);
+ error:
+  buf_clean(&buf);
+  return NULL;
+}
+
 s_str * inspect_ratio (const s_ratio *src, s_str *dest)
 {
   s_buf buf;
