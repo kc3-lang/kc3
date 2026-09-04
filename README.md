@@ -85,14 +85,15 @@ There are now seven full applications written in KC3 that we know of :
    - Struct update `%Module{old | field1: value, field2: value}`
    - `List.map_join()` useful for intermediate template rendering
    - removed alloc calls from `Callable` call eval execution path
+   - fixed EOF conditions in the parser
    - [TODO] marshall facts db as full data structures and not as
      logical triples
    - [TODO] kc3 to C
    - [TODO] kc3 to Common Lisp
 
- - EKC3
+ - IKC3/EKC3
+   - report errors with more context
    - compile and load .ekc3 files from/to .ekc3c
-   - 
 
  - HTTPd
    - fixed bugs in the HTTP request parser
