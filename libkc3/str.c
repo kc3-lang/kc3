@@ -1931,7 +1931,7 @@ s_list ** str_split (const s_str *str, const s_str *separator,
     *t = list_new(NULL);
     (*t)->tag.type = TAG_STR;
     t_str = &(*t)->tag.data.td_str;
-    if (buf_read_until_str_into_str(&buf, sep, t_str) < 0) {
+    if (buf_read_until_str_into_str(&buf, sep, t_str) <= 0) {
       if (buf_read_to_str(&buf, t_str) < 0) {
         err_puts("str_split: buf_read_to_str");
         assert(! "str_split: buf_read_to_str");

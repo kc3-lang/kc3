@@ -77,5 +77,16 @@ bool eval_tag (s_tag *tag, s_tag *dest)
 {
   s_env *env;
   env = env_global();
-  return env_eval_tag(env, tag, dest);
+  if (! env_eval_tag(env, tag, dest)) {
+    err_puts("eval_tag: evaluation failed");
+    err_write_1("eval_tag: input: ");
+    err_inspect_tag(tag);
+    err_write_1("\n");
+    err_puts("eval_tag: stacktrace:");
+    err_stacktrace();
+    err_write_1("\n");
+    err_flush();
+    return false;
+  }
+  return true;
 }

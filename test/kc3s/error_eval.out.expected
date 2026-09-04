@@ -1,0 +1,10 @@
+env_eval_ident: stacktrace:
+
+env_eval_ident: unbound ident: not_bound
+eval_tag: evaluation failed
+eval_tag: input: not_bound
+eval_tag: stacktrace:
+
+kc3s: error_eval.kc3:1: evaluation failed
+kc3s: input: not_bound
+kc3s: failed to load error_eval.kc3
