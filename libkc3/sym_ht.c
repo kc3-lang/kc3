@@ -25,6 +25,8 @@
 
 #define SYM_HT_MASK(ht) (SYM_HT_SIZE(ht) - 1)
 
+#define SYM_HT_PRIMEHASH_SEED 10
+
 static s_sym_ht_item * sym_ht_find_item (s_sym_ht *ht,
                                          const s_str *str, uw hash)
 {
@@ -58,7 +60,7 @@ const s_sym * sym_ht_find (s_sym_ht *ht, const s_str *str)
 {
   uw h;
   s_sym_ht_item *item;
-  h = primehash_uw_inline(str, 0);
+  h = primehash_uw_inline(str, SYM_HT_PRIMEHASH_SEED);
 #if HAVE_PTHREAD
   rwlock_r(&ht->rwlock);
 #endif
@@ -133,7 +135,7 @@ const s_sym * sym_ht_register (s_sym_ht *ht, const s_sym *sym,
   s_sym_ht_item *i;
   s_sym_ht_item **item;
   uw pos;
-  h = primehash_uw_inline(&sym->str, 0);
+  h = primehash_uw_inline(&sym->str, SYM_HT_PRIMEHASH_SEED);
 #if HAVE_PTHREAD
   rwlock_w(&ht->rwlock);
 #endif
@@ -176,7 +178,7 @@ const s_sym * sym_ht_intern (s_sym_ht *ht, const s_str *str)
   uw h;
   s_sym_ht_item **item;
   uw pos;
-  h = primehash_uw_inline(str, 0);
+  h = primehash_uw_inline(str, SYM_HT_PRIMEHASH_SEED);
 #if HAVE_PTHREAD
   rwlock_r(&ht->rwlock);
 #endif
