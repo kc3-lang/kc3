@@ -37,7 +37,9 @@ defmodule HTTPd do
 
   def bots = Counter.new(0)
 
-  def bots_max = fn () { (ncpu() / 4) || 1 }
+  def bots_max = fn () {
+    (HTTPd.thread_max() / 4) || 1
+  }
 
   def concurrent_requests = Counter.new(0)
 
@@ -57,7 +59,9 @@ defmodule HTTPd do
 
   def thread_count = Counter.new(0)
 
-  def thread_max = fn () { ncpu() }
+  def thread_max = fn () {
+    ncpu()
+  }
 
   def timeout = %Time{tv_sec: 30}
 
