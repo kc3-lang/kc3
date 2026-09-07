@@ -28,7 +28,7 @@ void kc3_window_cairo_font_clean (void)
 void * cairo_font_ft (void)
 {
   if (! g_cairo_font_ft) {
-    g_cairo_font_ft = malloc(sizeof(FT_Library));
+    g_cairo_font_ft = alloc(sizeof(FT_Library));
     if (! g_cairo_font_ft) {
       err_puts("cairo_font_ft: failed to allocate memory");
       return NULL;

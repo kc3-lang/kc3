@@ -29,7 +29,6 @@ if ! diff -abu ${TARGET}.ret.expected ${TARGET}.ret \
 then
     RESULT=test_ko
 fi
-printf " %s" "${TARGET}"
 if [ "x$RESULT" = "xtest_ok" ]; then
     rm ${TARGET}.diff
     test_ok ${TARGET}

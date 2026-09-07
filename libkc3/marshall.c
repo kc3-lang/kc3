@@ -1,4 +1,4 @@
-/*/home/lyzer/.local/bin/lvim kc3
+/*
  * Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
@@ -230,6 +230,7 @@ s_marshall * marshall_call (s_marshall *m, bool heap,
                             const s_call *call)
 {
   s_list *list;
+  p_callable pcallable = NULL;
   assert(m);
   assert(call);
   if (! m || ! call ||
@@ -243,7 +244,8 @@ s_marshall * marshall_call (s_marshall *m, bool heap,
       return NULL;
     list = list_next(list);
   }
-  if (! marshall_pcallable(m, heap, &call->pcallable))
+  /* call->pcallable is a process-local, lazily populated cache. */
+  if (! marshall_pcallable(m, heap, &pcallable))
     return NULL;
   return m;
 }
@@ -1309,7 +1311,7 @@ s8 marshall_ht_compare (const s_tag *a, const s_tag *b)
   return compare_tag(a->data.td_ptuple->tag, b->data.td_ptuple->tag);
 }
 
-uw marshall_ht_hash (const s_tag *tag)
+uw marshall_ht_hash (s_tag *tag)
 {
   t_hash h;
   assert(tag);

@@ -140,7 +140,8 @@ s_image * image_init_jpeg (s_image *image, const s_str *path, FILE *fp)
   return image;
 }
 
-s_image * image_init_png (s_image *image, const s_str *path, FILE *fp)
+s_image * image_init_png (s_image * volatile image, const s_str *path,
+                          FILE *fp)
 {
   uw i;
   s32 png_bit_depth;
@@ -327,7 +328,7 @@ s_image * image_resize_to_fill (s_image *src, s_image *dest)
   return dest;
 }
 
-s_image * image_to_png_file (s_image *image, s_str *path)
+s_image * image_to_png_file (s_image * volatile image, s_str *path)
 {
   FILE *fp;
   png_structp png_ptr;
@@ -414,7 +415,7 @@ static void image_png_write_callback (png_structp png_ptr, png_bytep data,
   buf_write(out, data, length);
 }
 
-s_str * image_to_png_str (s_image *image, s_str *dest)
+s_str * image_to_png_str (s_image *image, s_str * volatile dest)
 {
   png_structp png_ptr;
   png_infop info_ptr;

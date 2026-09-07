@@ -227,7 +227,7 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
 s_gl_camera * gl_camera_new (uw w, uw h)
 {
   s_gl_camera *camera;
-  camera = calloc(1, sizeof(s_gl_camera));
+  camera = alloc(sizeof(s_gl_camera));
   if (! camera) {
     err_puts("gl_camera_new: failed to allocate memory");
     return NULL;

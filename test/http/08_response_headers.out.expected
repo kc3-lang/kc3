@@ -1,0 +1,87 @@
+require HTTP.Response
+HTTP.Response
+original = %HTTP.Response{headers: [{"Content-Type", "text/plain"}],
+                          body: "body"}
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "",
+               headers: [{"Content-Type", "text/plain"}],
+               body: "body"}
+empty = HTTP.Response.headers_set(original, [])
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "",
+               headers: [{"Content-Type", "text/plain"}],
+               body: "body"}
+true
+batch = HTTP.Response.headers_set(original, [{"Connection", "keep-alive"},
+                                             {"content-type", "application/json"},
+                                             {"X-Test", "one"},
+                                             {"x-test", "two"}])
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "",
+               headers: [{"X-Test", "two"},
+                         {"Connection", "keep-alive"},
+                         {"Content-Type", "application/json"}],
+               body: "body"}
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "",
+               headers: [{"X-Test", "two"},
+                         {"Connection", "keep-alive"},
+                         {"Content-Type", "application/json"}],
+               body: "body"}
+"application/json"
+"keep-alive"
+"two"
+void
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "",
+               headers: [{"Content-Type", "text/plain"}],
+               body: "body"}
+"body"
+single = HTTP.Response.header_set(original, "Server", "kc3_httpd")
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "",
+               headers: [{"Server", "kc3_httpd"},
+                         {"Content-Type", "text/plain"}],
+               body: "body"}
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "",
+               headers: [{"Server", "kc3_httpd"},
+                         {"Content-Type", "text/plain"}],
+               body: "body"}
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "",
+               headers: [{"Content-Type", "text/plain"}],
+               body: "body"}
+single_replaced = HTTP.Response.header_set(original, "CONTENT-TYPE", "text/html")
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "",
+               headers: [{"Content-Type", "text/html"}],
+               body: "body"}
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "",
+               headers: [{"Content-Type", "text/html"}],
+               body: "body"}
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "",
+               headers: [{"Content-Type", "text/plain"}],
+               body: "body"}
+http_response_headers_set: invalid header
+void
+http_response_headers_set: invalid header
+void
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "",
+               headers: [{"Content-Type", "text/plain"}],
+               body: "body"}

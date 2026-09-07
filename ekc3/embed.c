@@ -11,8 +11,55 @@
  * THIS SOFTWARE.
  */
 #include <string.h>
+#include <unistd.h>
 #include "../libkc3/kc3.h"
 #include "embed.h"
+
+static const char g_ekc3c_magic[] = "_KC3EKC3_";
+
+static bool embed_compile_template_file (const s_str *path,
+                                         const s_tag *template)
+{
+  s_marshall m = {0};
+  bool result = false;
+  s_str tmp_path = {0};
+  if (! marshall_init(&m, 128 * 1024 * 1024))
+    return false;
+  if (! marshall_1(&m, false, g_ekc3c_magic) ||
+      ! marshall_tag(&m, false, template) ||
+      ! str_init_f(&tmp_path, "%s.tmp.%ld", path->ptr.p_pchar,
+                   (long) getpid()) ||
+      marshall_to_file(&m, &tmp_path) <= 0 ||
+      ! file_rename(&tmp_path, path))
+    goto clean;
+  result = true;
+ clean:
+  if (! result && tmp_path.size)
+    unlink(tmp_path.ptr.p_pchar);
+  str_clean(&tmp_path);
+  marshall_clean(&m);
+  return result;
+}
+
+static s_tag * embed_load_template_ekc3c (const s_str *path,
+                                          s_tag *dest)
+{
+  s_marshall_read mr = {0};
+  s_tag tmp = {0};
+  if (! marshall_read_init_file(&mr, path))
+    return NULL;
+  if (marshall_read_size(&mr) <= 0 ||
+      ! marshall_read_1(&mr, false, g_ekc3c_magic) ||
+      ! marshall_read_tag(&mr, false, &tmp))
+    goto clean;
+  marshall_read_clean(&mr);
+  *dest = tmp;
+  return dest;
+ clean:
+  tag_clean(&tmp);
+  marshall_read_clean(&mr);
+  return NULL;
+}
 
 s_tag * embed_parse_template (s_buf *input, s_tag *dest)
 {
@@ -274,6 +321,58 @@ s_tag * embed_parse_template_1 (const char *input, s_tag *dest)
     return NULL;
   }
   return embed_parse_template(&input_buf, dest);
+}
+
+s_tag * embed_load_template_file (const s_str *path, s_tag *dest)
+{
+  s_str cache_path = {0};
+  s_time cache_mtime = {0};
+  static const s_str cache_suffix = STR("c");
+  s_env *env;
+  s_time src_mtime = {0};
+  s_tag tmp = {0};
+  bool use_cache = false;
+  if (! path || ! dest) {
+    err_puts("embed_load_template_file: invalid argument");
+    assert(! "embed_load_template_file: invalid argument");
+    return NULL;
+  }
+  env = env_global();
+  if (! str_init_concatenate(&cache_path, path, &cache_suffix))
+    return NULL;
+  if (file_mtime(path, &src_mtime) &&
+      file_mtime(&cache_path, &cache_mtime) &&
+      compare_time(&cache_mtime, &src_mtime) > 0)
+    use_cache = true;
+  if (use_cache) {
+    if (env && env->trace) {
+      err_write_1("embed_load_template_file: ");
+      err_inspect_str(&cache_path);
+      err_write_1("\n");
+    }
+    if (embed_load_template_ekc3c(&cache_path, &tmp)) {
+      str_clean(&cache_path);
+      *dest = tmp;
+      return dest;
+    }
+    if (env && env->trace)
+      err_puts("embed_load_template_file: cache load failed, falling back to parse");
+  }
+  if (! embed_parse_template_file(path, &tmp)) {
+    str_clean(&cache_path);
+    return NULL;
+  }
+  if (env && env->trace) {
+    err_write_1("embed_load_template_file: writing ");
+    err_inspect_str(&cache_path);
+    err_write_1("\n");
+  }
+  if (! embed_compile_template_file(&cache_path, &tmp) &&
+      env && env->trace)
+    err_puts("embed_load_template_file: cache write failed");
+  str_clean(&cache_path);
+  *dest = tmp;
+  return dest;
 }
 
 s_tag * embed_parse_template_file (const s_str *path, s_tag *dest)

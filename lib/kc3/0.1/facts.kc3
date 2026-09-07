@@ -62,6 +62,9 @@ defmodule Facts do
 
   def close = cfn Void "facts_close" (Facts)
 
+  # Update the path after the backing file was moved without reopening it.
+  def rename = cfn Bool "facts_rename" (Facts, Str)
+
   def close_all = cfn Void "facts_connections_close_all" (Facts)
 
   def connect = cfn Facts "kc3_facts_connect" (Facts, Str, Str,
@@ -87,7 +90,7 @@ defmodule Facts do
   def load_file = cfn Sw "facts_load_file" (Facts, Str)
 
   def open =
-    cfn Sw "facts_open_file" (Facts, Str)
+    cfn Facts* "facts_open_memoized" (Str, Result)
 
   def set_priority =
     cfn Facts "kc3_facts_set_priority" (Facts, U8)

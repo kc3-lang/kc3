@@ -35,7 +35,7 @@ all:
 	${MAKE} -C test all
 	if ${HAVE_GL}; then ${MAKE} -C gl all; fi
 	if ${HAVE_GL}; then ${MAKE} -C window all; fi
-	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 all; fi
+#	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 all; fi
 
 include config.mk
 include sources.mk
@@ -73,7 +73,7 @@ asan:
 	${MAKE} -C test asan
 	if ${HAVE_GL}; then ${MAKE} -C gl asan; fi
 	if ${HAVE_GL}; then ${MAKE} -C window asan; fi
-	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 asan; fi
+#	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 asan; fi
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue asan; fi
 
 assets:
@@ -104,7 +104,7 @@ build:
 	${MAKE} -C test build
 	if ${HAVE_GL}; then ${MAKE} -C gl build; fi
 	if ${HAVE_GL}; then ${MAKE} -C window build; fi
-	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 build; fi
+#	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 build; fi
 
 check: test
 	if ${HAVE_ASAN}; then ${MAKE} test_asan; fi
@@ -132,7 +132,7 @@ clean::
 	${MAKE} -C test clean
 	${MAKE} -C gl clean
 	${MAKE} -C window clean
-	${MAKE} -C gtk4 clean
+#	${MAKE} -C gtk4 clean
 
 clean_cov::
 	${MAKE} -C libtommath clean_cov
@@ -157,7 +157,7 @@ clean_cov::
 	${MAKE} -C test clean_cov
 	${MAKE} -C gl clean_cov
 	${MAKE} -C window clean_cov
-	${MAKE} -C gtk4 clean_cov
+#	${MAKE} -C gtk4 clean_cov
 
 clean_dump:
 	rm -f lib/kc3/0.1/kc3.dump
@@ -166,7 +166,7 @@ clean_dump:
 	rm -f httpd/fx/kc3.dump
 
 clean_kc3c:
-	find . -name '*.kc3c' -print0 | xargs -0 rm -f
+	find . \( -name '*.kc3c' -o -name '*.ekc3c' \) -print0 | xargs -0 rm -f
 
 cov:
 	${MAKE} .configure.stamp
@@ -192,7 +192,7 @@ cov:
 	${MAKE} -C test cov
 	if ${HAVE_GL}; then ${MAKE} -C gl cov; fi
 	if ${HAVE_GL}; then ${MAKE} -C window cov; fi
-	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 cov; fi
+#	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 cov; fi
 
 deb:
 	${MAKE} -C release/v${VER} deb
@@ -224,7 +224,7 @@ debug:
 	${MAKE} -C test debug
 	if ${HAVE_GL}; then ${MAKE} -C gl debug; fi
 	if ${HAVE_GL}; then ${MAKE} -C window debug; fi
-	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 debug; fi
+#	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 debug; fi
 
 demo: build
 	${MAKE} -C window demo
@@ -391,21 +391,24 @@ distclean::
 	${MAKE} -C test distclean
 	${MAKE} -C gl distclean
 	${MAKE} -C window distclean
-	${MAKE} -C gtk4 distclean
+#	${MAKE} -C gtk4 distclean
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue distclean; fi
 
 dump:
+	time ${MAKE} dump_timed
+
+dump_timed:
 	${MAKE} clean_dump
 	@echo "KC3 dump"
-	kc3s/kc3s --trace --dump lib/kc3/0.1/kc3.dump --quit
+	time kc3s/kc3s --trace --dump lib/kc3/0.1/kc3.dump --quit
 	@echo "KC3 restore"
-	kc3s/kc3s --trace --quit
+	time kc3s/kc3s --trace --quit
 	@echo "KC3 Kpkg"
-	${MAKE} -C kpkg dump
+	time ${MAKE} -C kpkg dump
 	@echo "KC3 HTTPd"
-	${MAKE} -C test/httpd dump
+	time ${MAKE} -C test/httpd dump
 	@echo "KC3 fx"
-	${MAKE} -C httpd/fx dump
+	time ${MAKE} -C httpd/fx dump
 
 dump_debug:
 	${MAKE} clean_dump
@@ -503,7 +506,7 @@ gcovr:
 	${MAKE} -C httpd gcovr
 	${MAKE} -C test gcovr
 	${MAKE} -C window gcovr
-	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 gcovr; fi
+#	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 gcovr; fi
 	if [ -d "$$HOME/Downloads/kc3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
 gdb_demo: debug lib_links_debug
@@ -544,7 +547,7 @@ gdb_kmsg: lib_links_debug
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
-	${MAKE} -C gtk4 debug
+#	${MAKE} -C gtk4 debug
 	${MAKE} -C kmsg gdb
 
 gdb_kubz: debug lib_links_debug
@@ -837,7 +840,7 @@ install:
 	${MAKE} -C httpd install
 	if ${HAVE_GL}; then ${MAKE} -C gl install; fi
 	if ${HAVE_GL}; then ${MAKE} -C window install; fi
-	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 install; fi
+#	if ${HAVE_GTK4}; then ${MAKE} -C gtk4 install; fi
 	${MAKE} install_lib_links
 	${MAKE} -C lib install
 
@@ -849,7 +852,7 @@ install_lib_links_bsd:
 	ln -sf ../../libkc3_event.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/event.so
 	ln -sf ../../libkc3_git.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/git.so
 	ln -sf ../../libkc3_gl.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/gl.so
-	ln -sf ../../libkc3_gtk4.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
+#	ln -sf ../../libkc3_gtk4.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../libkc3_http.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/http.so
 	ln -sf ../../libkc3_image.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/image.so
 	ln -sf ../../libkc3_json.so.0.0.0 ${DESTDIR}${libdir}/kc3/0.1/json.so
@@ -863,7 +866,7 @@ install_lib_links_darwin:
 	ln -sf ../../libkc3_event.0.dylib ${DESTDIR}${libdir}/kc3/0.1/event.so
 	ln -sf ../../libkc3_git.0.dylib ${DESTDIR}${libdir}/kc3/0.1/git.so
 	ln -sf ../../libkc3_gl.0.dylib ${DESTDIR}${libdir}/kc3/0.1/gl.so
-	ln -sf ../../libkc3_gtk4.0.dylib ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
+#	ln -sf ../../libkc3_gtk4.0.dylib ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../libkc3_http.0.dylib ${DESTDIR}${libdir}/kc3/0.1/http.so
 	ln -sf ../../libkc3_image.0.dylib ${DESTDIR}${libdir}/kc3/0.1/image.so
 	ln -sf ../../libkc3_json.0.dylib ${DESTDIR}${libdir}/kc3/0.1/json.so
@@ -877,7 +880,7 @@ install_lib_links_linux:
 	ln -sf ../../libkc3_event.so ${DESTDIR}${libdir}/kc3/0.1/event.so
 	ln -sf ../../libkc3_git.so ${DESTDIR}${libdir}/kc3/0.1/git.so
 	ln -sf ../../libkc3_gl.so ${DESTDIR}${libdir}/kc3/0.1/gl.so
-	ln -sf ../../libkc3_gtk4.so ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
+#	ln -sf ../../libkc3_gtk4.so ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../libkc3_http.so ${DESTDIR}${libdir}/kc3/0.1/http.so
 	ln -sf ../../libkc3_image.so ${DESTDIR}${libdir}/kc3/0.1/image.so
 	ln -sf ../../libkc3_json.so ${DESTDIR}${libdir}/kc3/0.1/json.so
@@ -891,7 +894,7 @@ install_lib_links_openbsd:
 	ln -sf ../../libkc3_event.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/event.so
 	ln -sf ../../libkc3_git.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/git.so
 	ln -sf ../../libkc3_gl.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/gl.so
-	ln -sf ../../libkc3_gtk4.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
+#	ln -sf ../../libkc3_gtk4.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../libkc3_http.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/http.so
 	ln -sf ../../libkc3_image.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/image.so
 	ln -sf ../../libkc3_json.so.0.0 ${DESTDIR}${libdir}/kc3/0.1/json.so
@@ -906,7 +909,7 @@ install_lib_links_windows:
 	ln -sf ../../../bin/libkc3_event-0.dll ${DESTDIR}${libdir}/kc3/0.1/event.so
 	ln -sf ../../../bin/libkc3_git-0.dll ${DESTDIR}${libdir}/kc3/0.1/git.so
 	ln -sf ../../../bin/libkc3_gl-0.dll ${DESTDIR}${libdir}/kc3/0.1/gl.so
-	ln -sf ../../../bin/libkc3_gtk4-0.dll ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
+#	ln -sf ../../../bin/libkc3_gtk4-0.dll ${DESTDIR}${libdir}/kc3/0.1/gtk4.so
 	ln -sf ../../../bin/libkc3_http-0.dll ${DESTDIR}${libdir}/kc3/0.1/http.so
 	ln -sf ../../../bin/libkc3_image-0.dll ${DESTDIR}${libdir}/kc3/0.1/image.so
 	ln -sf ../../../bin/libkc3_json-0.dll ${DESTDIR}${libdir}/kc3/0.1/json.so
@@ -939,13 +942,13 @@ json_debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C json debug
 
-kc3-${KC3_VERSION}.tar.gz: kc3.index
+kc3-${KC3_VERSION}.tar.gz: kc3.index kc3.primehash64
 	rm -rf kc3-${KC3_VERSION}.old
 	if [ -d kc3-${KC3_VERSION} ]; then \
 		mv kc3-${KC3_VERSION} kc3-${KC3_VERSION}.old; \
 	fi
 	mkdir kc3-${KC3_VERSION}
-	pax -rw < kc3.index kc3-${KC3_VERSION}
+	{ cat kc3.index; echo kc3.primehash64; } | pax -rw kc3-${KC3_VERSION}
 	pax -w kc3-${KC3_VERSION} | gzip -9 > kc3-${KC3_VERSION}.tar.gz
 
 kc3.index: sources.mk Makefile
@@ -980,6 +983,17 @@ kc3.index: sources.mk Makefile
 	kmx_sort -u < kc3.index.tmp > kc3.index
 	rm kc3.index.tmp
 
+kc3.primehash64: kc3.index
+	${MAKE} -C primehash
+	time ./bin/primehash64 < kc3.index -h kc3.primehash64.tmp
+	if ! [ -f kc3.primehash64 ] || \
+	   ! cmp kc3.primehash64 kc3.primehash64.tmp >/dev/null 2>&1; \
+	then \
+		mv kc3.primehash64.tmp kc3.primehash64; \
+	else \
+		rm kc3.primehash64.tmp; \
+	fi
+
 kc3s:
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
@@ -1006,7 +1020,7 @@ kmsg:
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
-	${MAKE} -C gtk4 build
+#	${MAKE} -C gtk4 build
 	${MAKE} -C kmsg
 
 kmsg_asan:
@@ -1015,7 +1029,7 @@ kmsg_asan:
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
-	${MAKE} -C gtk4 asan
+#	${MAKE} -C gtk4 asan
 	${MAKE} -C kmsg run_asan
 
 kmsg_debug:
@@ -1024,7 +1038,7 @@ kmsg_debug:
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
-	${MAKE} -C gtk4 debug
+#	${MAKE} -C gtk4 debug
 	${MAKE} -C kmsg run_debug
 
 kpkg:
@@ -1831,7 +1845,7 @@ uninstall:
 	${MAKE} -C ekc3 uninstall
 	${MAKE} -C event uninstall
 	${MAKE} -C gl uninstall
-	${MAKE} -C gtk4 uninstall
+#	${MAKE} -C gtk4 uninstall
 	${MAKE} -C http uninstall
 	${MAKE} -C httpd uninstall
 	${MAKE} -C ikc3 uninstall
@@ -1846,6 +1860,9 @@ uninstall:
 	${MAKE} -C qrencode uninstall
 	${MAKE} -C smtp uninstall
 	${MAKE} -C window uninstall
+
+whitespace:
+	rg ' +$'
 
 .PHONY: all \
 	android \
@@ -1873,6 +1890,7 @@ uninstall:
 	distcheck_root \
 	distcheck_subdir \
 	dump \
+	dump_timed \
 	ekc3 \
 	ekc3_asan \
 	ekc3_cov \
@@ -1922,10 +1940,6 @@ uninstall:
 	gdb_test_pdf \
 	gdb_test_pdf_asan \
 	gdb_test_pdf_debug \
-	gtk4 \
-	gtk4_asan \
-	gtk4_cov \
-	gtk4_debug \
 	http \
 	http_asan \
 	http_cov \
@@ -1948,6 +1962,7 @@ uninstall:
 	json_cov \
 	json_debug \
 	kc3.index \
+	kc3.primehash64 \
 	kc3s \
 	kc3s_asan \
 	kc3s_cov \

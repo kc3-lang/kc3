@@ -149,7 +149,7 @@ s_dvec3 * dvec3_mul_dvec3 (const s_dvec3 *a, const s_dvec3 *b,
 s_dvec3 * dvec3_new (f64 x, f64 y, f64 z)
 {
   s_dvec3 *p;
-  p = calloc(1, sizeof(s_dvec3));
+  p = alloc(sizeof(s_dvec3));
   if (! p) {
     err_puts("dvec3_new: failed to allocate memory");
     return NULL;
@@ -161,7 +161,7 @@ s_dvec3 * dvec3_new (f64 x, f64 y, f64 z)
 s_dvec3 * dvec3_new_copy (const s_dvec3 *src)
 {
   s_dvec3 *p;
-  p = calloc(1, sizeof(s_dvec3));
+  p = alloc(sizeof(s_dvec3));
   if (! p) {
     err_puts("dvec3_new: failed to allocate memory");
     return NULL;
@@ -175,7 +175,7 @@ s_dvec3 * dvec3_new_product (const s_dmat4 *m, const s_dvec3 *s)
   s_dvec3 *p;
   assert(m);
   assert(s);
-  p = calloc(1, sizeof(s_dvec3));
+  p = alloc(sizeof(s_dvec3));
   if (! p) {
     err_puts("dvec3_new: failed to allocate memory");
     return NULL;
@@ -187,7 +187,7 @@ s_dvec3 * dvec3_new_product (const s_dmat4 *m, const s_dvec3 *s)
 s_dvec3 * dvec3_new_zero (void)
 {
   s_dvec3 *p;
-  p = calloc(1, sizeof(s_dvec3));
+  p = alloc(sizeof(s_dvec3));
   if (! p) {
     err_puts("dvec3_new: failed to allocate memory");
     return NULL;

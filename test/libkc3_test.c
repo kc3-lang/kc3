@@ -46,6 +46,7 @@ void ratio_test (void);
 void set__fact_test (void);
 void set__tag_test (void);
 void skiplist__fact_test (void);
+void stacktrace_test (void);
 void str_test (void);
 void struct_test (void);
 void sym_test (void);
@@ -83,6 +84,7 @@ int main (int argc, char **argv)
   TEST_TARGET(set__tag);
   TEST_TARGET(set__fact);
   TEST_TARGET(skiplist__fact);
+  TEST_TARGET(stacktrace);
   TEST_TARGET(facts);
   TEST_TARGET(facts_cursor);
   TEST_TARGET(facts_with);

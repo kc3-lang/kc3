@@ -13,8 +13,18 @@
 #ifndef KC3_GTK4_TYPES_H
 #define KC3_GTK4_TYPES_H
 
+#if defined(__clang__)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wc2y-extensions"
+# pragma clang diagnostic ignored "-Wextra-semi"
+#endif
+
 #include <gtk/gtk.h>
 #include <gsk/gsk.h>
+
+#if defined(__clang__)
+# pragma clang diagnostic pop
+#endif
 #include "../libkc3/types.h"
 
 typedef struct action_callback s_action_callback;

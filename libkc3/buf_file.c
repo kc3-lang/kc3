@@ -188,7 +188,10 @@ sw buf_file_open_w_flush (s_buf *buf)
     err_puts("buf_file_open_w_flush: fwrite");
     return -1;
   }
-  fflush(buf_file->fp);
+  if (fflush(buf_file->fp) != 0) {
+    err_puts("buf_file_open_w_flush: fflush");
+    return -1;
+  }
   buf->wpos -= size;
   save = buf->save;
   while (save) {

@@ -68,6 +68,10 @@ case "$(uname -s)" in
         LIBS="$LIBS -rpath ${LIBDIR}"
         LIBS="$LIBS -rpath ${BUILD_TOP}/libkc3"
         ;;
+    OpenBSD)
+        LIBS="$LIBS -rpath ${LIBDIR}"
+        LIBS="$LIBS -rpath ${BUILD_TOP}/libkc3"
+        ;;
     MINGW64*)
         ;;
     *)

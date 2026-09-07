@@ -166,6 +166,7 @@ s64 kc3_event_poll_add (void **handle, s64 fd, s_tag *timeout,
       events[1].ident = fd;
       events[1].filter = EVFILT_TIMER;
       events[1].flags = EV_ADD | EV_ONESHOT;
+      events[1].fflags = NOTE_MSECONDS;
       events[1].data = timeout_ms;
       events[1].udata = stored_udata;
       nevents = 2;
@@ -261,9 +262,15 @@ s64 kc3_event_poll_delete (void **handle, s64 fd, s_tag *filter)
     return -1;
 #if HAVE_KQUEUE
   {
+    s32 e;
     s64 kqfd = (s64)(intptr_t)(*handle);
     if (! filter || filter->type == TAG_VOID) {
-      close(kqfd);
+      if (close(kqfd) < 0) {
+        e = errno;
+        err_write_1("kc3_event_poll_delete: close: ");
+        err_puts(strerror(e));
+        return -1;
+      }
       *handle = NULL;
       return 0;
     }
@@ -281,13 +288,22 @@ s64 kc3_event_poll_delete (void **handle, s64 fd, s_tag *filter)
         err_write_1("\n");
         return -1;
       }
-      return kevent(kqfd, &event, 1, NULL, 0, NULL);
+      {
+        s32 r = kevent(kqfd, &event, 1, NULL, 0, NULL);
+        if (r < 0 && errno != ENOENT) {
+          e = errno;
+          err_write_1("kc3_event_poll_delete: kevent: ");
+          err_puts(strerror(e));
+        }
+        return r;
+      }
     }
     err_puts("kc3_event_poll_delete: filter must be a symbol");
     return -1;
   }
 #elif HAVE_EPOLL
   {
+    s32 e;
     s_event_poll *ep = *(s_event_poll **) handle;
     s_event_poll_entry *entry;
     s_event_poll_entry *next;
@@ -298,7 +314,11 @@ s64 kc3_event_poll_delete (void **handle, s64 fd, s_tag *filter)
         alloc_free(entry);
         entry = next;
       }
-      close(ep->epfd);
+      if (close(ep->epfd) < 0) {
+        e = errno;
+        err_write_1("kc3_event_poll_delete: close: ");
+        err_puts(strerror(e));
+      }
       mutex_clean(&ep->entries_mutex);
       alloc_free(ep);
       *handle = NULL;
@@ -316,7 +336,12 @@ s64 kc3_event_poll_delete (void **handle, s64 fd, s_tag *filter)
         return 0;
       }
       else if (filter->data.td_psym == &g_sym_read) {
-        epoll_ctl(ep->epfd, EPOLL_CTL_DEL, fd, NULL);
+        if (epoll_ctl(ep->epfd, EPOLL_CTL_DEL, fd, NULL) < 0 &&
+            errno != ENOENT) {
+          e = errno;
+          err_write_1("kc3_event_poll_delete: epoll_ctl DEL: ");
+          err_puts(strerror(e));
+        }
         mutex_lock(&ep->entries_mutex);
         entry = entry_find(ep, fd);
         if (entry)
@@ -341,10 +366,10 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
     return NULL;
 #if HAVE_KQUEUE
   {
-    s64 kqfd;
     s32 e;
     struct kevent event = {0};
     const s_sym *event_type;
+    s64 kqfd;
     s_timespec *p = NULL;
     s32 r;
     s_timespec timespec = {0};
@@ -385,7 +410,12 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
         timer_event.ident = event.ident;
         timer_event.filter = EVFILT_TIMER;
         timer_event.flags = EV_DELETE;
-        kevent(kqfd, &timer_event, 1, NULL, 0, NULL);
+        if (kevent(kqfd, &timer_event, 1, NULL, 0, NULL) < 0 &&
+            errno != ENOENT) {
+          e = errno;
+          err_write_1("kc3_event_poll_poll: kevent timer delete: ");
+          err_puts(strerror(e));
+        }
       }
       if (! tag_init_ptuple(dest, 3))
         return NULL;
@@ -408,8 +438,8 @@ s_tag * kc3_event_poll_poll (void **handle, s_tag *timeout, s_tag *dest)
   }
 #elif HAVE_EPOLL
   {
-    s_event_poll *ep = *(s_event_poll **) handle;
     s32 e;
+    s_event_poll *ep = *(s_event_poll **) handle;
     struct epoll_event event = {0};
     const s_sym *event_type;
     s_event_poll_entry *entry;

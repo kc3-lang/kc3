@@ -122,7 +122,7 @@ u_bits$ * u_bits$_init_cast
     err_inspect_psym(type);
     err_puts(" aka U_bits$");
   }
-  err_inspect_stacktrace(env_global()->stacktrace);
+  err_stacktrace();
   assert(! "u_bits$_init_cast: cannot cast to U_bits$");
   return NULL;
 }
@@ -145,7 +145,7 @@ u_bits$ * u_bits$_init_str (u_bits$ *u, const s_str *str)
   if (r <= 0) {
     if (false) {
       err_puts("u_bits$_init_str: buf_parse_u_bits$");
-      err_inspect_stacktrace(env_global()->stacktrace);
+      err_stacktrace();
       err_write_1("\n");
       assert(! "u_bits$_init_str: buf_parse_u_bits$");
     }
@@ -166,7 +166,7 @@ u_bits$ * u_bits$_init_str_hexadecimal (u_bits$ *u, const s_str *str)
   if (r <= 0) {
     if (false) {
       err_puts("u_bits$_init_str: buf_parse_u_bits$");
-      err_inspect_stacktrace(env_global()->stacktrace);
+      err_stacktrace();
       err_write_1("\n");
       assert(! "u_bits$_init_str: buf_parse_u_bits$");
     }

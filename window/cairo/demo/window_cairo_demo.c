@@ -31,7 +31,7 @@
 #endif
 
 s_cairo_font g_font_computer_modern = {0};
-s_cairo_font g_font_courier_new = {0};
+s_cairo_font g_font_courier_prime = {0};
 
 bool window_cairo_demo_button (s_window_cairo *window, u8 button,
                                s64 x, s64 y)
@@ -94,8 +94,8 @@ bool window_cairo_demo_load (s_window_cairo *window)
     assert(window->sequence_count == WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
     return false;
   }
-  if (! cairo_font_init(&g_font_courier_new,
-                        "fonts/Courier New/Courier New.ttf"))
+  if (! cairo_font_init(&g_font_courier_prime,
+                        "fonts/CourierPrime/fonts/ttf/CourierPrime-Regular.ttf"))
     return false;
   sequence_init(window->sequence, 8.0, "01. Background rectangles",
                 bg_rect_load, bg_rect_render, bg_rect_unload, window);
@@ -149,7 +149,7 @@ bool window_cairo_demo_render (s_window_cairo *window)
     return false;
   /* text */
   cairo_identity_matrix(cr);
-  cairo_font_set(cr, &g_font_courier_new);
+  cairo_font_set(cr, &g_font_courier_prime);
   cairo_set_font_size(cr, 20);
   cairo_text_extents(cr, seq->title, &te);
   cairo_text_outline(cr, 20.0,
@@ -187,7 +187,7 @@ void window_cairo_demo_unload (s_window_cairo *window)
 {
   assert(window);
   (void) window;
-  cairo_font_clean(&g_font_courier_new);
+  cairo_font_clean(&g_font_courier_prime);
   cairo_sprite_clean(&g_sprite_toaster);
   cairo_sprite_clean(&g_sprite_toast);
   cairo_sprite_clean(&g_sprite_fly);

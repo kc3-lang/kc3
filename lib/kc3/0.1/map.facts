@@ -9,6 +9,9 @@ add {Map, :symbol, Map.to_list}
 replace {Map.to_list, :symbol_value, fn (%{} = map) {
   Map.map_to_list(map, fn (k, v) { {k, v} })
 }}
+add {Map, :symbol, Map.merge}
+replace {Map.merge, :symbol_value,
+         cfn Map "map_merge" (Map, Map, Result)}
 add {Map, :symbol, Map.put}
 replace {Map.put, :symbol_value, cfn Map "map_put" (Map, Tag, Tag, Result)}
 add {Map, :symbol, Map.keys}

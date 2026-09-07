@@ -163,7 +163,7 @@ bool mandelbrot_f64_render (s_sequence *seq)
   buf_write_1(&buf, "x: ");
   buf_inspect_f64(&buf, next_x);
   buf_write_u8(&buf, 0);
-  cairo_font_set(cr, &g_font_courier_new);
+  cairo_font_set(cr, &g_font_courier_prime);
   cairo_set_font_size(cr, 20);
   cairo_text_outline(cr, 20, win->h - 100, a);
   buf_init(&buf, false, sizeof(a), a);

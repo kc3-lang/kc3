@@ -28,10 +28,10 @@ set_init__tag (s_set__tag *set, uw max);
 /* Observers. */
 
 s_set_item__tag *
-set_get__tag (const s_set__tag *set, const s_tag * data);
+set_get__tag (const s_set__tag *set, s_tag * data);
 
 s_set_item__tag *
-set_get_h__tag (const s_set__tag *set, const s_tag * data, uw hash);
+set_get_h__tag (const s_set__tag *set, s_tag * data, uw hash);
 
 s_set_item__tag *
 set_get_hash__tag (const s_set__tag *set, uw hash);
@@ -41,7 +41,7 @@ set_get_hash_next__tag (const s_set_item__tag *item);
 
 bool *
 set_has__tag (const s_set__tag *set,
-                 const s_tag * data,
+                 s_tag * data,
                  bool *dest);
 
 /* Operators. */
@@ -56,7 +56,7 @@ s_set_item__tag *
 set_add_h__tag (s_set__tag *set, s_tag * data, uw hash);
 
 bool
-set_remove__tag (s_set__tag *set, const s_tag * data);
+set_remove__tag (s_set__tag *set, s_tag * data);
 
 void
 set_remove_all__tag (s_set__tag *set);

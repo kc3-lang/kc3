@@ -62,7 +62,7 @@ s_gl_text * gl_vtext_init_str (s_gl_text *text, const s_gl_font *font,
 s_gl_text * gl_vtext_new (const s_gl_font *font)
 {
   s_gl_text *text;
-  text = calloc(1, sizeof(s_gl_text));
+  text = alloc(sizeof(s_gl_text));
   if (! text) {
     err_puts("gl_vtext_new: failed to allocate memory");
     assert(! "gl_vtext_new: failed to allocate memory");
@@ -78,7 +78,7 @@ s_gl_text * gl_vtext_new (const s_gl_font *font)
 s_gl_text * gl_vtext_new_1 (const s_gl_font *font, const char *p)
 {
   s_gl_text *text;
-  text = calloc(1, sizeof(s_gl_text));
+  text = alloc(sizeof(s_gl_text));
   if (! text) {
     err_puts("gl_vtext_new_1: failed to allocate memory");
     assert(! "gl_vtext_new_1: failed to allocate memory");
@@ -94,7 +94,7 @@ s_gl_text * gl_vtext_new_1 (const s_gl_font *font, const char *p)
 s_gl_text * gl_vtext_new_str (const s_gl_font *font, const s_str *str)
 {
   s_gl_text *text;
-  text = calloc(1, sizeof(s_gl_text));
+  text = alloc(sizeof(s_gl_text));
   if (! text) {
     err_puts("gl_vtext_new_1: failed to allocate memory");
     assert(! "gl_vtext_new_1: failed to allocate memory");
@@ -163,7 +163,7 @@ bool gl_vtext_render_to_texture (s_gl_text *text)
     data_h += line_height;
   }
   data_size = data_w * data_h * 4;
-  data = calloc(1, data_size);
+  data = alloc(data_size);
   x = 0;
   y = 0;
   s = text->str;
@@ -240,7 +240,7 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, u32 len)
   assert(glGetError() == GL_NO_ERROR);
   font = text->font;
   face = font->ft_face;
-  glyphs = calloc(len, sizeof(FT_UInt));
+  glyphs = alloc(len * sizeof(FT_UInt));
   if (! glyphs) {
     err_puts("gl_vtext_render_to_texture_random:"
              " failed to allocate memory (glyphs)");
@@ -284,7 +284,7 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, u32 len)
   data_w++;
   data_h += line_height * 2;
   data_size = data_w * data_h * 4;
-  data = calloc(1, data_size);
+  data = alloc(data_size);
   if (! data) {
     err_puts("gl_vtext_render_to_texture_random:"
              " failed to allocate memory (data)");

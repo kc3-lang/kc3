@@ -12,5 +12,5 @@
  */
 #include "demo.h"
 
-s_gl_font  g_font_courier_new = {0};
+s_gl_font  g_font_courier_prime = {0};
 s_gl_ortho g_ortho = {0};

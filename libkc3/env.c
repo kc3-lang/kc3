@@ -90,6 +90,7 @@ const char *g_env_argv0_dir_default = "";
 #include "pstruct_type.h"
 #include "rwlock.h"
 #include "securelevel.h"
+#include "stacktrace.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -139,9 +140,8 @@ s_pointer * env_address_of (s_env *env, s_tag *tag, s_pointer *dest)
   case TAG_PCALL:
     return env_address_of_call(env, tag->data.td_pcall, dest);
   default:
-    err_puts("env_address_of: invalid tag type for address_of");
-    assert(! "env_address_of: invalid tag type for address_of");
-    return NULL;
+    resolved = tag;
+    break;
   }
   if (! tag_type(resolved, &tmp.target_type)) {
     err_puts("env_address_of: invalid tag type");
@@ -1051,7 +1051,8 @@ void env_error_tag (s_env *env, s_tag *tag)
   error_handler = env->error_handler;
   if (error_handler) {
     tag_init_copy(&error_handler->tag, tag);
-    error_handler->stacktrace = list_new_copy_all(env->stacktrace);
+    error_handler->stacktrace =
+      list_new_copy_all(stacktrace_get(env->stacktrace));
     env_longjmp(env, &error_handler->jmp);
     /* never reached */
     return;
@@ -1102,7 +1103,8 @@ s_fact_w * env_fact_w_eval (s_env *env, s_fact_w *fact,
 
 s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
                                 s_list **spec,
-                                s_callable *callback, s_tag *dest)
+                                s_callable *callback,
+                                s_tag * volatile dest)
 {
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
@@ -1199,7 +1201,7 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
                                      s_tag *predicate,
                                      s_tag *object,
                                      s_callable *callback,
-                                     s_tag *dest)
+                                     s_tag * volatile dest)
 {
   s_list *arguments;
   s_facts_cursor cursor = {0};
@@ -2124,6 +2126,9 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   if (! env)
     return NULL;
   *env = (s_env) {0};
+  env->print_readably = true;
+  if (! (env->stacktrace = stacktrace_new()))
+    return NULL;
   env_global_set(env);
   if (! env_args_init(env, argc, argv))
     return NULL;
@@ -3079,7 +3084,7 @@ s_list ** env_stacktrace (s_env *env, s_list **dest)
 {
   assert(env);
   assert(dest);
-  *dest = list_new_copy_all(env->stacktrace);
+  *dest = list_new_copy_all(stacktrace_get(env->stacktrace));
   return dest;
 }
 

@@ -17,6 +17,7 @@
 
 /* Struct types. */
 typedef struct pdf_file                 s_pdf_file;
+typedef struct pdf_name_list            s_pdf_name_list;
 typedef struct pdf_rect                 s_pdf_rect;
 typedef struct pdf_stream               s_pdf_stream;
 typedef struct pdf_trailer              s_pdf_trailer;
@@ -27,7 +28,6 @@ typedef struct pdf_write_stream         s_pdf_write_stream;
 
 /* Pointer types. */
 typedef p_sym              p_pdf_name;
-typedef p_sym_list         p_pdf_name_list;
 typedef struct pdf_stream *p_pdf_stream;
 
 /* Enums. */
@@ -58,6 +58,10 @@ typedef enum pdf_object_number {
 
 
 /* 1 */
+
+struct pdf_name_list {
+  s_sym_ht *ht;
+};
 
 struct pdf_rect {
   f32 x;
@@ -100,7 +104,7 @@ struct pdf_write_stream {
 struct pdf_file {
   s_map           body;
   s_str           header;
-  p_pdf_name_list name_list;
+  s_pdf_name_list name_list;
   s_pdf_trailer   trailer;
   s_map           xref;
 };

@@ -72,3 +72,50 @@ quote List.append([], [])
 List.append([], [])
 quote List.append_one([], :x)
 List.append_one([], :x)
+quote List.do([1, 2, 3], x, do puts(x); x * 2 end)
+List.do([1, 2, 3], x, do puts(x); x * 2 end)
+x
+list_do_source = [4, 5]
+quote List.do(list_do_source, x, do x + 10 end)
+List.do(list_do_source, x, do x + 10 end)
+x
+quote List.do([{1, :a}, {2, :b}], {n, symbol}, do
+  puts("#{n} #{symbol}")
+  symbol
+end)
+List.do([{1, :a}, {2, :b}], {n, symbol}, do
+  puts("#{n} #{symbol}")
+  symbol
+end)
+{n, symbol}
+quote List.do([], item, do item end)
+List.do([], item, do item end)
+quote List.map_join([1, 2, 3], x, ", ", do "#{x * 2}" end)
+List.map_join([1, 2, 3], x, ", ", do "#{x * 2}" end)
+x
+list_map_join_source = [{1, :a}, {2, :b}]
+quote List.map_join(list_map_join_source, {n, symbol}, "|", do
+  "#{n}:#{symbol}"
+end)
+List.map_join(list_map_join_source, {n, symbol}, "|", do
+  "#{n}:#{symbol}"
+end)
+{n, symbol}
+quote List.map_join([], item, ",", do "#{item}" end)
+List.map_join([], item, ",", do "#{item}" end)
+quote List.map_filter([void, 0, false, ""], item, do item end)
+List.map_filter([void, 0, false, ""], item, do item end)
+quote List.map_filter([1, 2, 3], item, do
+  if item == 2 do void else item end
+end)
+List.map_filter([1, 2, 3], item, do
+  if item == 2 do void else item end
+end)
+
+quote defmodule ListMapFilterStructTest do
+  defstruct [value: 0]
+end
+defmodule ListMapFilterStructTest do
+  defstruct [value: 0]
+end
+List.map_filter([%ListMapFilterStructTest{value: 1}], item, do item end)

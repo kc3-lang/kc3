@@ -1438,7 +1438,7 @@ sw buf_read_word_into_str(s_buf *buf, s_str *dest)
     result += r;
   }
   while (1) {
-    if ((r = buf_read_character_utf8(buf, &c)) < 0) {
+    if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
       if (false)
         err_puts("buf_read_word_into_str: buf_read_character_utf8");
       goto restore;
@@ -1502,7 +1502,7 @@ sw buf_refill (s_buf *buf, sw size)
         if ((r = buf->refill(buf)) < 0)
           goto clean;
         if (! r) {
-          r = -1;
+          r = buf->wpos - buf->rpos;
           goto clean;
         }
         if (buf->wpos - buf->rpos >= (uw) size)

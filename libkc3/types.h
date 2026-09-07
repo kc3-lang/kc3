@@ -279,11 +279,13 @@ typedef struct sha1                    s_sha1;
 typedef struct sha2                    s_sha2;
 typedef struct sha512                  s_sha512;
 typedef struct socket_buf              s_socket_buf;
+typedef struct stacktrace              s_stacktrace;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
 typedef struct struct_type             s_struct_type;
 typedef struct sym                     s_sym;
-typedef struct sym_list                s_sym_list;
+typedef struct sym_ht                  s_sym_ht;
+typedef struct sym_ht_item             s_sym_ht_item;
 typedef struct tag                     s_tag;
 typedef struct tag_type_list           s_tag_type_list;
 typedef struct time                    s_time;
@@ -307,7 +309,7 @@ typedef union tag_data      u_tag_data;
 typedef u32             character;
 typedef s_tag *         t_facts_spec[];
 typedef s64             t_fd;
-typedef s_sha1          t_hash;
+typedef u64             t_hash;
 typedef u64             t_skiplist_height;
 typedef s64             t_socket;
 
@@ -326,7 +328,6 @@ typedef s_marshall_read * p_marshall_read;
 typedef s_struct *        p_struct;
 typedef s_struct_type *    p_struct_type;
 typedef const s_sym *      p_sym;
-typedef s_sym_list *       p_sym_list;
 typedef t_socket *         p_socket;
 typedef s_tag *            p_tag;
 typedef struct tls *       p_tls;
@@ -537,6 +538,11 @@ struct sha512 {
   u8  buf[128];
 };
 
+struct stacktrace {
+  p_list list;
+  uw     readers;
+};
+
 struct struct_ {
   p_struct_type pstruct_type;
   bool free_data;
@@ -546,10 +552,19 @@ struct struct_ {
   sw ref_count;
 };
 
-struct sym_list {
-  const s_sym *sym;
-  s_sym *free_sym;
-  s_sym_list *next;
+struct sym_ht {
+  uw              count;
+  uw              collisions;
+  uw              size_exp;
+  s_sym_ht_item **item;
+  s_rwlock        rwlock;
+};
+
+struct sym_ht_item {
+  uw             hash_uw;
+  const s_sym   *sym;
+  s_sym         *sym_free;
+  s_sym_ht_item *next;
 };
 
 struct tag_type_list {
@@ -637,7 +652,7 @@ struct file_stat {
 struct ht {
   s8        (* compare) (const s_tag *a, const s_tag *b);
   uw           count;
-  uw        (* hash) (const s_tag *tag);
+  uw        (* hash) (s_tag *tag);
   s_list     **items;
   s_rwlock     rwlock;
   uw           size;
@@ -867,6 +882,7 @@ struct tag {
   sw         ref_count;
   s_mutex    ref_count_mutex;
   u_tag_data data;
+  uw         hash_uw;
 };
 
 /* 7 */
@@ -1138,13 +1154,14 @@ struct env {
   s_env            *parent_env;
   bool              pass_by_copy;
   s_list           *path;
+  bool              print_readably;
   uw                quote_level;
   s_frame          *read_time_frame;
   s_str             restore_path;
   s_list           *search_modules;
   s_list           *search_modules_default;
   bool              silence_errors;
-  s_list           *stacktrace;
+  s_stacktrace     *stacktrace;
   sw                stacktrace_depth;
   s_frame           toplevel_frame;
   bool              trace;

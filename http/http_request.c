@@ -12,11 +12,6 @@
  */
 #include <pthread.h>
 #include <string.h>
-#if !defined(WIN32) && !defined(WIN64)
-# include <sys/time.h>
-#endif
-#include "../libkc3/buf_fd.h"
-#include "../libkc3/buf_save.h"
 #include "../libkc3/kc3.h"
 #include "http.h"
 #include "http_request.h"
@@ -28,9 +23,147 @@ static s_tag          g_method_key = {0};
 static s_tag          g_mode = {0};
 static const s_tag   *g_prefix = NULL;
 static const s_tag   *g_random_len = NULL;
-static const s_sym   *g_sym_Upload = NULL;
 static bool           g_statics_ok = false;
 static pthread_once_t g_statics_once = PTHREAD_ONCE_INIT;
+
+typedef struct http_request_body_buf {
+  s_buf *src;
+  uw     remaining;
+} s_http_request_body_buf;
+
+static sw http_request_body_buf_refill (s_buf *buf)
+{
+  uw avail;
+  s_http_request_body_buf *body;
+  sw r;
+  uw size;
+  assert(buf);
+  assert(buf->user_ptr);
+  body = buf->user_ptr;
+  if (! body->remaining)
+    return 0;
+  avail = buf->size - buf->wpos;
+  if (! avail)
+    return 0;
+  size = body->remaining < avail ? body->remaining : avail;
+  if (size > body->src->size)
+    size = body->src->size;
+#if HAVE_PTHREAD
+  rwlock_w(body->src->rwlock);
+#endif
+  if ((r = buf_refill(body->src, size)) < (sw) size) {
+    r = -1;
+    goto clean;
+  }
+  memcpy(buf->ptr.p_pchar + buf->wpos,
+         body->src->ptr.p_pchar + body->src->rpos, size);
+  body->src->rpos += size;
+  buf->wpos += size;
+  body->remaining -= size;
+  r = size;
+ clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(body->src->rwlock);
+#endif
+  return r;
+}
+
+static s_buf * http_request_body_buf_init (s_buf *buf,
+                                            s_http_request_body_buf *body,
+                                            s_buf *src, uw size)
+{
+  uw buf_size;
+  assert(buf);
+  assert(body);
+  assert(src);
+  buf_size = size < BUF_SIZE ? size : BUF_SIZE;
+  if (! buf_size)
+    buf_size = 1;
+  if (! buf_init_alloc(buf, buf_size))
+    return NULL;
+  body->src = src;
+  body->remaining = size;
+  buf->refill = http_request_body_buf_refill;
+  buf->user_ptr = body;
+  return buf;
+}
+
+static s_str * http_request_body_read (s_buf *buf, uw size, s_str *dest)
+{
+  uw chunk;
+  uw offset = 0;
+  char *p;
+  s_str *result = NULL;
+  assert(buf);
+  assert(dest);
+  if (! size)
+    return str_init_empty(dest);
+  if (! (p = alloc(size + 1)))
+    return NULL;
+#if HAVE_PTHREAD
+  rwlock_w(buf->rwlock);
+#endif
+  while (offset < size) {
+    if (buf->rpos == buf->wpos && buf_refill(buf, 1) <= 0)
+      goto ko;
+    chunk = buf->wpos - buf->rpos;
+    if (chunk > size - offset)
+      chunk = size - offset;
+    memcpy(p + offset, buf->ptr.p_pchar + buf->rpos, chunk);
+    buf->rpos += chunk;
+    offset += chunk;
+  }
+  p[size] = 0;
+  result = str_init(dest, p, size, p);
+  goto clean;
+ ko:
+  alloc_free(p);
+ clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(buf->rwlock);
+#endif
+  return result;
+}
+
+static bool http_request_body_ignore (s_buf *buf, uw size)
+{
+  uw chunk;
+  uw ignored = 0;
+  bool result = false;
+  assert(buf);
+#if HAVE_PTHREAD
+  rwlock_w(buf->rwlock);
+#endif
+  while (ignored < size) {
+    if (buf->rpos == buf->wpos && buf_refill(buf, 1) <= 0)
+      goto clean;
+    chunk = buf->wpos - buf->rpos;
+    if (chunk > size - ignored)
+      chunk = size - ignored;
+    buf->rpos += chunk;
+    ignored += chunk;
+  }
+  result = true;
+ clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(buf->rwlock);
+#endif
+  return result;
+}
+
+static bool http_request_content_type_is (const s_str *content_type,
+                                          const s_str *type)
+{
+  bool starts_with = false;
+  assert(content_type);
+  assert(type);
+  if (! str_starts_with_case_insensitive(content_type, type,
+                                         &starts_with) ||
+      ! starts_with)
+    return false;
+  return content_type->size == type->size ||
+    content_type->ptr.p_pchar[type->size] == ';';
+}
 
 static void http_request_statics_init (void)
 {
@@ -39,8 +172,8 @@ static void http_request_statics_init (void)
   const s_tag *value;
   env = env_global();
   tag_init_str_1(&g_method_key, NULL, "_method");
-  ident.module = sym_1("HTTP.Upload");
-  ident.sym = sym_1("tmp_filename_prefix");
+  ident.module = &g_sym_HTTP_Upload;
+  ident.sym = &g_sym_tmp_filename_prefix;
   if (! (value = env_ident_get_address(env, &ident)) ||
       value->type != TAG_STR) {
     err_puts("http_request_buf_parse: invalid"
@@ -48,8 +181,8 @@ static void http_request_statics_init (void)
     return;
   }
   g_prefix = value;
-  ident.module = sym_1("HTTP.Upload");
-  ident.sym = sym_1("tmp_filename_random_length");
+  ident.module = &g_sym_HTTP_Upload;
+  ident.sym = &g_sym_tmp_filename_random_length;
   if (! (value = env_ident_get_address(env, &ident)) ||
       value->type != TAG_U8) {
     err_puts("http_request_buf_parse: invalid"
@@ -58,7 +191,6 @@ static void http_request_statics_init (void)
   }
   g_random_len = value;
   tag_init_u32(&g_mode, 0700);
-  g_sym_Upload = sym_1("HTTP.Upload");
   g_statics_ok = true;
 }
 
@@ -66,12 +198,15 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 {
   bool b;
   s_tag  body = {0};
+  s_http_request_body_buf body_buf_data = {0};
   s_str *body_str;
+  s_buf body_buf = {0};
   s_str boundary = {0};
   s_str boundary_newline = {0};
   s_str boundary_tmp = {0};
   const s_str content_disposition_str = STR("Content-Disposition");
   const s_str content_length_str = STR("Content-Length");
+  bool        content_length_set = false;
   uw          content_length_uw = 0;
   s_str      *content_type = NULL;
   const s_str content_type_str = STR("Content-Type");
@@ -105,6 +240,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_str       url = {0};
   static const s_str urlencoded =
     STR("application/x-www-form-urlencoded");
+  const s_str transfer_encoding_str = STR("Transfer-Encoding");
   s_str *value;
   if (! req || ! buf)
     return NULL;
@@ -184,8 +320,16 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     key   = &(*tail)->tag.data.td_ptuple->tag[0].data.td_str;
     value = &(*tail)->tag.data.td_ptuple->tag[1].data.td_str;
     if (! compare_str_case_insensitive(&content_length_str, key)) {
-      if (! uw_init_str(&content_length_uw, value))
+      uw parsed_content_length;
+      if (! uw_init_str(&parsed_content_length, value))
         goto restore;
+      if (content_length_set &&
+          content_length_uw != parsed_content_length) {
+        err_puts("http_request_buf_parse: conflicting Content-Length");
+        goto restore;
+      }
+      content_length_set = true;
+      content_length_uw = parsed_content_length;
       if (content_length_uw > HTTP_REQUEST_CONTENT_LENGTH_MAX)
         goto restore;
       tag_clean((*tail)->tag.data.td_ptuple->tag + 1);
@@ -195,9 +339,13 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       content_type = value;
     else if (! compare_str_case_insensitive(&cookie_str, key))
       http_request_cookie_add(&tmp_req, value);
+    else if (! compare_str_case_insensitive(&transfer_encoding_str, key)) {
+      err_puts("http_request_buf_parse: unsupported Transfer-Encoding");
+      goto restore;
+    }
     tail = &(*tail)->next.data.td_plist;
   }
-  if (content_type && content_length_uw) {
+  if (content_length_uw) {
     if (false) {
       err_write_1("http_request_buf_parse: content_type ");
       err_inspect_str(content_type);
@@ -206,9 +354,13 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       err_inspect_uw_decimal(content_length_uw);
       err_write_1("\n");
     }
-    if (str_starts_with_case_insensitive(content_type,
+    if (content_type &&
+        str_starts_with_case_insensitive(content_type,
                                          &multipart_form_data,
                                          &b) && b) {
+      if (! http_request_body_buf_init(&body_buf, &body_buf_data, buf,
+                                       content_length_uw))
+        goto restore;
       tag_init_plist(&tmp_req.body, NULL);
       if (! str_init_slice(&boundary_tmp, content_type,
                            multipart_form_data.size, -1))
@@ -224,20 +376,20 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         err_inspect_str(&boundary);
         err_write_1("\n");
       }
-      if (buf_read_str(buf, &boundary) <= 0) {
+      if (buf_read_str(&body_buf, &boundary) <= 0) {
         err_puts("http_request_buf_parse: invalid first multipart"
                  " boundary");
         goto restore;
       }
       while (1) {
-        if ((r = buf_read_str(buf, &newline)) <= 0) {
+        if ((r = buf_read_str(&body_buf, &newline)) <= 0) {
           err_puts("http_request_buf_parse: missing newline");
           goto restore;
         }
         multipart_headers = NULL;
         tail = &multipart_headers;
         while (1) {
-          if (buf_read_until_str_into_str(buf, &newline, &line) <= 0) {
+          if (buf_read_until_str_into_str(&body_buf, &newline, &line) <= 0) {
             err_puts("http_request_buf_parse: invalid multipart"
                      " header");
             goto restore;
@@ -360,7 +512,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 	  }
 	  size.type = TAG_SW;
           if ((size.data.td_sw = buf_read_until_str_into_file
-	       (buf, &boundary_newline, &path.data.td_str)) < 0) {
+	       (&body_buf, &boundary_newline, &path.data.td_str)) < 0) {
             err_puts("http_request_buf_parse:"
                      " buf_read_until_str_into_file");
             goto restore;
@@ -373,17 +525,17 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             err_write_1(")\n");
           }
 	  upload.type = TAG_PSTRUCT;
-	  if (! pstruct_init(&upload.data.td_pstruct, g_sym_Upload))
+	  if (! pstruct_init(&upload.data.td_pstruct, &g_sym_HTTP_Upload))
 	    goto restore;
 	  if (! struct_allocate(upload.data.td_pstruct))
 	    goto restore;
-	  if (! struct_set(upload.data.td_pstruct, sym_1("filename"),
+	  if (! struct_set(upload.data.td_pstruct, &g_sym_filename,
 			   &filename))
 	    goto restore;
-	  if (! struct_set(upload.data.td_pstruct, sym_1("size"),
+	  if (! struct_set(upload.data.td_pstruct, &g_sym_size,
 			   &size))
 	    goto restore;
-	  if (! struct_set(upload.data.td_pstruct, sym_1("tmp_path"),
+	  if (! struct_set(upload.data.td_pstruct, &g_sym_tmp_path,
 			   &path))
 	    goto restore;
           {
@@ -410,7 +562,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           path = (s_tag) {0};
         }
         else { // if (filename.data.td_str.size)
-          if (buf_read_until_str_into_str(buf, &boundary_newline,
+          if (buf_read_until_str_into_str(&body_buf, &boundary_newline,
                                           &multipart_value) <= 0) {
             err_puts("http_request_buf_parse: failed to parse"
                      " multipart value");
@@ -436,47 +588,47 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         multipart_name = (s_tag) {0};
         list_delete_all(multipart_headers);
         multipart_headers = NULL;
-        if ((r = buf_read_str(buf, &dash)) < 0) {
+        if ((r = buf_read_str(&body_buf, &dash)) < 0) {
           err_puts("http_request_buf_parse: buf_read_str(buf, dash)");
           goto restore;
         }
         if (r)
           break;
       } // while(1)
-      if (buf_read_str(buf, &newline) <= 0) {
+      if (buf_read_str(&body_buf, &newline) <= 0) {
         err_puts("http_request_buf_parse: missing final newline");
         goto restore;
       }
+      if (body_buf_data.remaining || body_buf.rpos != body_buf.wpos) {
+        uw remaining = body_buf_data.remaining +
+          body_buf.wpos - body_buf.rpos;
+        if (! http_request_body_ignore(&body_buf, remaining))
+          goto restore;
+      }
     }
-    else if (! compare_str_case_insensitive(content_type,
-                                            &urlencoded)) {
+    else {
       tmp_req.body.type = TAG_STR;
       body_str = &tmp_req.body.data.td_str;
-      if (! buf_read(buf, content_length_uw, body_str))
+      if (! http_request_body_read(buf, content_length_uw,
+                                   body_str))
         goto restore;
-      if (false) {
-        err_inspect_str(body_str);
-        err_write_1("\n");
+      if (content_type &&
+          http_request_content_type_is(content_type, &urlencoded)) {
+        if (! url_www_form_decode(body_str, &body))
+          goto restore;
+        if (alist_get(body.data.td_plist,
+                      &g_method_key, &method_value)) {
+          tag_clean(&tmp_req.method);
+          http_request_method_from_str(&method_value.data.td_str,
+                                       &tmp_req.method);
+          tag_clean(&method_value);
+        }
+        str_clean(body_str);
+        tmp_req.body = body;
       }
-      if (! url_www_form_decode(body_str, &body))
-        goto restore;
-      if (false) {
-        err_write_1("http_request_buf_parse: body: ");
-        err_inspect_tag(&body);
-        err_write_1("\n");
-      }
-      if (alist_get(body.data.td_plist,
-                    &g_method_key, &method_value)) {
-        tag_clean(&tmp_req.method);
-        http_request_method_from_str(&method_value.data.td_str,
-                                     &tmp_req.method);
-        tag_clean(&method_value);
-      }
-      str_clean(body_str);
-      tmp_req.body = body;
     }
   }
-  if (! tag_init_pstruct(&tmp, sym_1("HTTP.Request")))
+  if (! tag_init_pstruct(&tmp, &g_sym_HTTP_Request))
     goto restore;
   if (! struct_allocate(tmp.data.td_pstruct)) {
     tag_clean(&tmp);
@@ -486,6 +638,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   *((s_http_request *) tmp.data.td_pstruct->data) = tmp_req;
   goto clean;
  restore:
+  err_puts("http_request_buf_parse: error");
   if (path.type == TAG_STR && path.data.td_str.size)
     file_unlink(&path.data.td_str);
   while (tmp_uploads) {
@@ -512,47 +665,10 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   list_delete_all(tmp_uploads);
   str_clean(&boundary_newline);
   str_clean(&boundary);
+  buf_clean(&body_buf);
   tag_clean(&filename);
   *req = tmp;
   return req;
-}
-
-s_tag * http_request_buf_parse_with_timeout (s_tag *req, s_buf *buf,
-                                             s64 timeout_sec,
-                                             sw max_retries)
-{
-#if !defined(WIN32) && !defined(WIN64)
-  s_buf_fd *buf_fd = NULL;
-  s_tag *result;
-  sw retries;
-  s_buf_save save;
-  struct timeval tv;
-  retries = max_retries > 0 ? max_retries : 1;
-  if (timeout_sec <= 0)
-    timeout_sec = 1;
-  if (buf->refill && buf->user_ptr) {
-    buf_fd = (s_buf_fd *) buf->user_ptr;
-    tv.tv_sec = timeout_sec;
-    tv.tv_usec = 0;
-    setsockopt(buf_fd->fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
-  }
-  buf_save_init(buf, &save);
-  while (retries--) {
-    result = http_request_buf_parse(req, buf);
-    if (result && result->type != TAG_VOID)
-      break;
-    buf_save_restore_rpos(buf, &save);
-  }
-  buf_save_clean(buf, &save);
-  if (buf_fd && buf->refill && buf->user_ptr) {
-    tv.tv_sec = 0;
-    tv.tv_usec = 0;
-    setsockopt(buf_fd->fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
-  }
-  return result;
-#else
-  return http_request_buf_parse(req, buf);
-#endif
 }
 
 s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
@@ -852,7 +968,7 @@ s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
   s_tag tmp = {0};
   assert(str);
   assert(dest);
-  ident_init(&ident, sym_1("HTTP.Request"), sym_1("allowed_methods"));
+  ident_init(&ident, &g_sym_HTTP_Request, &g_sym_allowed_methods);
   if (! ident_get(&ident, &allowed_methods_tag)) {
     err_puts("http_request_method_from_str: missing"
              " HTTP.Request.allowed_methods");

@@ -20,6 +20,7 @@
 #include "pointer.h"
 #include "pstruct.h"
 #include "securelevel.h"
+#include "stacktrace.h"
 #include "str.h"
 #include "struct.h"
 #include "sym.h"
@@ -27,6 +28,12 @@
 #include "tag_type.h"
 
 s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
+{
+  return cfn_apply_count(cfn, args, list_length(args), dest);
+}
+
+s_tag * cfn_apply_count (s_cfn *cfn, s_list *args, sw num_args,
+                         s_tag *dest)
 {
   s_list *a;
   void ** volatile arg_pointer_result = NULL;
@@ -40,7 +47,6 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   s_list *cfn_arg_types;
   s_env *env;
   sw i = 0;
-  sw num_args;
   void *p;
   void *result = NULL;
   s_list * volatile stacktrace;
@@ -52,7 +58,6 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   assert(cfn);
   assert(cfn->arity == cfn->cif.nargs);
   env = env_global();
-  num_args = list_length(args);
   arity = cfn->arity - (cfn->arg_result ? 1 : 0);
   if (arity != num_args) {
     err_write_1("cfn_apply: ");
@@ -111,7 +116,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
                                    cfn_arg_types->tag.data.td_psym,
                                    &p)) {
             err_puts("cfn_apply: tag_to_ffi_pointer 4");
-            err_stacktrace();
+            err_inspect_stacktrace_short(stacktrace_get(env->stacktrace));
             assert(! "cfn_apply: tag_to_ffi_pointer 4");
             goto ko;
           }
@@ -139,17 +144,17 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     }
   }
   if (cfn->ptr.p_f) {
-    stacktrace = env->stacktrace;
+    stacktrace = stacktrace_get(env->stacktrace);
     tag_init_plist(&trace.tag, &trace_plist);
     tag_init_plist(&trace.next, stacktrace);
     tag_init_psym(&trace_plist.tag, cfn->c_name);
     tag_init_plist(&trace_plist.next, args);
-    env->stacktrace = &trace;
+    stacktrace_push(env->stacktrace, &trace);
     env_unwind_protect_push(env, &unwind_protect);
     if (setjmp(unwind_protect.buf)) {
       env_unwind_protect_pop(env, &unwind_protect);
-      assert(env->stacktrace == &trace);
-      env->stacktrace = stacktrace;
+      assert(stacktrace_get(env->stacktrace) == &trace);
+      stacktrace_pop(env->stacktrace, stacktrace);
       longjmp(*unwind_protect.jmp, 1);
       abort();
     }
@@ -167,15 +172,15 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
           err_write_1(" != ");
           err_inspect_c_pointer(arg_pointer_result);
           err_write_1("\n");
-          assert(env->stacktrace == &trace);
-          env->stacktrace = stacktrace;
+          assert(stacktrace_get(env->stacktrace) == &trace);
+          stacktrace_pop(env->stacktrace, stacktrace);
           goto ko;
         }
         tag_init(dest_v);
         tag_clean(&tmp2);
         tag_clean(&tmp);
-        assert(env->stacktrace == &trace);
-        env->stacktrace = stacktrace;
+        assert(stacktrace_get(env->stacktrace) == &trace);
+        stacktrace_pop(env->stacktrace, stacktrace);
         return dest_v;
       }
       tag_clean(&tmp);
@@ -183,8 +188,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     }
     else
       *dest_v = tmp;
-    assert(env->stacktrace == &trace);
-    env->stacktrace = stacktrace;
+    assert(stacktrace_get(env->stacktrace) == &trace);
+    stacktrace_pop(env->stacktrace, stacktrace);
   }
   else {
     err_puts("cfn_apply: NULL function pointer");

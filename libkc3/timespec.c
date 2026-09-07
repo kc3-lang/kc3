@@ -10,6 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <errno.h>
+#include <string.h>
 #include "assert.h"
 #include "timespec.h"
 
@@ -75,7 +77,11 @@ DEF_TIMESPEC_INIT_F(f128)
 
 s_timespec * timespec_init_monotonic (s_timespec *timespec)
 {
-  clock_gettime(CLOCK_MONOTONIC, timespec);
+  if (clock_gettime(CLOCK_MONOTONIC, timespec) < 0) {
+    err_write_1("timespec_init_monotonic: clock_gettime: ");
+    err_puts(strerror(errno));
+    return NULL;
+  }
   return timespec;
 }
 
@@ -109,7 +115,8 @@ s_timespec * timespec_sub (const s_timespec *a, const s_timespec *b,
 bool timespec_timeout_expired (const s_timespec *deadline)
 {
   s_timespec now;
-  timespec_init_monotonic(&now);
+  if (! timespec_init_monotonic(&now))
+    return true;
   return (now.tv_sec > deadline->tv_sec ||
           (now.tv_sec == deadline->tv_sec &&
            now.tv_nsec >= deadline->tv_nsec));

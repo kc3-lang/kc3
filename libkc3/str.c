@@ -407,6 +407,17 @@ bool * str_has_str (const s_str *src, const s_str *search, bool *dest)
   return NULL;
 }
 
+uw str_hash_uw (const s_str *str)
+{
+  uw h;
+  t_hash hash;
+  hash_init(&hash);
+  hash_update_str(&hash, str);
+  h = hash_to_uw(&hash);
+  hash_clean(&hash);
+  return h;
+}
+
 s_str * str_init (s_str *str, char *free, uw size, const char *p)
 {
   s_str tmp = {0};
@@ -445,7 +456,7 @@ s_str * str_init_1_alloc (s_str *str, const char *p)
   return str;
 }
 
-s_str * str_init_alloc (s_str *str, uw size)
+s_str * str_init_alloc (s_str *str, u32 size)
 {
   s_str tmp = {0};
   assert(str);
@@ -458,7 +469,7 @@ s_str * str_init_alloc (s_str *str, uw size)
   return str;
 }
 
-s_str * str_init_alloc_copy (s_str *str, uw size, const char *p)
+s_str * str_init_alloc_copy (s_str *str, u32 size, const char *p)
 {
   s_str tmp = {0};
   assert(str);
@@ -1152,6 +1163,23 @@ DEF_STR_INIT_STRUCT(map)
 DEF_STR_INIT_PTR(ptr, const u_ptr_w *)
 DEF_STR_INIT_PTR(ptr_free, const u_ptr_w *)
 DEF_STR_INIT_STRUCT(quote)
+
+s_str * str_init_random (s_str *str, const s_tag *len)
+{
+  char *b;
+  sw  len_uw;
+  const s_sym *type = &g_sym_Uw;
+  if (! sw_init_cast(&len_uw, &type, len)) {
+    err_write_1("str_init_random: cannot cast to Uw: ");
+    err_inspect_tag(len);
+    err_write_1("\n");
+    return NULL;
+  }
+  if (! (b = alloc(len_uw)))
+    return NULL;
+  arc4random_buf(b, len_uw);
+  return str_init(str, b, len_uw, b);
+}
 
 s_str * str_init_random_base32 (s_str *str, const s_tag *len)
 {
@@ -1903,7 +1931,7 @@ s_list ** str_split (const s_str *str, const s_str *separator,
     *t = list_new(NULL);
     (*t)->tag.type = TAG_STR;
     t_str = &(*t)->tag.data.td_str;
-    if (buf_read_until_str_into_str(&buf, sep, t_str) < 0) {
+    if (buf_read_until_str_into_str(&buf, sep, t_str) <= 0) {
       if (buf_read_to_str(&buf, t_str) < 0) {
         err_puts("str_split: buf_read_to_str");
         assert(! "str_split: buf_read_to_str");
@@ -2062,11 +2090,7 @@ s_ident * str_to_ident (const s_str *src, s_ident *ident)
 
 const s_sym * str_to_sym (const s_str *src)
 {
-  const s_sym *sym;
-  sym = sym_find(src);
-  if (! sym)
-    sym = sym_new(src);
-  return sym;
+  return sym_new(src);
 }
 
 s_str * str_trim (const s_str *str, s_str *dest)

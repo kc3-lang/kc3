@@ -58,7 +58,7 @@ void dvec2_delete (s_dvec2 *p)
 s_dvec2 * dvec2_new (f64 x, f64 y)
 {
   s_dvec2 *p;
-  p = calloc(1, sizeof(s_dvec2));
+  p = alloc(sizeof(s_dvec2));
   if (! p) {
     err_puts("dvec2_new: failed to allocate memory");
     return NULL;
@@ -70,7 +70,7 @@ s_dvec2 * dvec2_new (f64 x, f64 y)
 s_dvec2 * dvec2_new_copy (const s_dvec2 *src)
 {
   s_dvec2 *p;
-  p = calloc(1, sizeof(s_dvec2));
+  p = alloc(sizeof(s_dvec2));
   if (! p) {
     err_puts("dvec2_new: failed to allocate memory");
     return NULL;
@@ -82,7 +82,7 @@ s_dvec2 * dvec2_new_copy (const s_dvec2 *src)
 s_dvec2 * dvec2_new_zero (void)
 {
   s_dvec2 *p;
-  p = calloc(1, sizeof(s_dvec2));
+  p = alloc(sizeof(s_dvec2));
   if (! p) {
     err_puts("dvec2_new: failed to allocate memory");
     return NULL;

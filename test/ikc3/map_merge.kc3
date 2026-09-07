@@ -1,0 +1,14 @@
+Map.merge(%{}, %{})
+Map.merge(%{a: 1}, %{})
+Map.merge(%{}, %{a: 1})
+Map.merge(%{a: 1, c: 3}, %{b: 2, d: 4})
+Map.merge(%{a: 1, b: 2, c: 3}, %{b: 20, c: 30, d: 40})
+Map.merge(%{3 => "left three", 1 => "left one"},
+          %{2 => "right two", 3 => "right three"})
+left = %{a: 1, shared: "left"}
+right = %{b: 2, shared: "right"}
+merged = Map.merge(left, right)
+left
+right
+merged
+Map.count(merged)

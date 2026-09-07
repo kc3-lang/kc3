@@ -1,0 +1,29 @@
+## kc3
+## Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+defmodule SHA512 do
+
+  def hmac = cfn Str "sha512_hmac_str" (Str, Str, Result)
+
+  def hmac_str = fn (msg) {
+    "#{Base64.encode(SHA512.hmac(msg, Config.secret))} #{msg}"
+  }
+
+  def hmac_str_verify = fn (str) {
+    hmac = Str.slice(str, 0, 88)
+    msg = Str.slice(str, 89, -1)
+    if Base64.encode(SHA512.hmac(msg, Config.secret)) == hmac do
+      msg
+    end
+  }
+
+end

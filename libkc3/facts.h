@@ -48,6 +48,8 @@ s_facts *            facts_broadcast_add (s_facts *facts,
 s_facts *            facts_broadcast_remove (s_facts *facts,
                                              const s_fact *fact);
 void                 facts_close (s_facts *facts);
+/* Update the on-disk path after the backing file was moved. */
+bool                 facts_rename (s_facts *facts, const s_str *path);
 s_facts_connection * facts_connect (s_facts *facts,
                                     const s_str *host,
                                     const s_str *service,
@@ -59,6 +61,12 @@ sw                   facts_load_file (s_facts *facts,
 uw *                 facts_next_id (s_facts *facts, uw *dest);
 sw                   facts_open_file (s_facts *facts,
                                       const s_str *path);
+/* Open a database by full pathname, reusing an already opened database. */
+p_facts *             facts_open_memoized (const s_str *path,
+                                           p_facts *dest);
+/* Register an already opened database in the pathname memoization table. */
+bool                  facts_open_memoized_register (s_facts *facts,
+                                                    const s_str *path);
 sw                   facts_open_file_after_dump (s_facts *facts,
                                              const s_str *path);
 sw                   facts_open_file_after_dump_create
@@ -89,7 +97,7 @@ s_facts *            facts_set_secret (s_facts *facts,
                                        const s_str *secret);
 s_facts *            facts_set_server_count (s_facts *facts,
                                              uw server_count);
-bool                 facts_unref_tag (s_facts *facts, const s_tag *tag);
+bool                 facts_unref_tag (s_facts *facts, s_tag *tag);
 
 /* Observers */
 sw        facts_dump (s_facts *facts, s_buf *buf);
@@ -104,7 +112,7 @@ s_fact ** facts_find_fact_by_tags (s_facts *facts,
                                    s_tag *predicate,
                                    s_tag *object,
                                    s_fact **dest);
-s_tag **  facts_find_tag (s_facts *facts, const s_tag *tag,
+s_tag **  facts_find_tag (s_facts *facts, s_tag *tag,
                           s_tag **dest);
 sw        facts_log_add (s_log *log, uw id, const s_fact *fact);
 sw        facts_log_remove (s_log *log, uw id, const s_fact *fact);

@@ -4,3 +4,15 @@ do
   * b
 end
 1
+a = [1]
+[1]
+b = [1,
+     2]
+[1,
+ 2]
+c = & a
+(List*) 1
+type(c)
+List*
+Pointer.set(c, & b)
+(List*) 1

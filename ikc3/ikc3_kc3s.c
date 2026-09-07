@@ -90,6 +90,7 @@ static void   client_clean (void);
 static int    client_init (void);
 static int    client_init_tls (void);
 static sw     run (void);
+static void   run_error_location (sw line, const char *message);
 static void   server_clean (s_env *env);
 static int    server_init (s_env *env);
 static int    server_init_tls (s_env *env);
@@ -217,8 +218,13 @@ static int arg_load (s_env *env, int *argc, char ***argv)
   tag_move(file_path, &file_path_save);
   buf_file_close(env->in);
   fclose(fp);
-  if (r < 0)
+  if (r < 0) {
+    err_write_1(PROG ": failed to load ");
+    err_write_1((*argv)[1]);
+    err_write_1("\n");
+    err_flush();
     return -1;
+  }
   *argc -= 2;
   *argv += 2;
   return 0;
@@ -381,12 +387,30 @@ static int client_init_tls (void)
   return 0;
 }
 
+static void run_error_location (sw line, const char *message)
+{
+  s_env *env;
+  s_tag *file;
+  env = env_global();
+  err_write_1(PROG ": ");
+  file = frame_get_w(env->global_frame, &g_sym___FILE__);
+  if (file && file->type == TAG_STR && file->data.td_str.size) {
+    err_write_str(&file->data.td_str);
+    err_write_1(":");
+  }
+  err_inspect_sw_decimal(line + 1);
+  err_write_1(": ");
+  err_puts(message);
+}
+
 static sw run (void)
 {
+  character c = 0;
   s_env *env;
   s_buf *env_err;
   s_buf err_buf;
   s_tag input = {0};
+  sw line;
   sw r;
   s_tag *response;
   s_tag result = {0};
@@ -401,10 +425,52 @@ static sw run (void)
     env->err = &err_buf;
   }
   while (1) {
-    if ((r = buf_ignore_spaces(env->in)) < 0 ||
-        (r = buf_parse_comments(env->in)) < 0 ||
-        (r = buf_parse_tag(env->in, &input)) <= 0) {
-      r = 0;
+    if ((r = buf_refill(env->in, 1)) <= 0) {
+      if (r < 0) {
+        run_error_location(env->in->line, "failed to read input");
+        err_flush();
+        r = -1;
+      }
+      goto clean;
+    }
+    if ((r = buf_ignore_spaces(env->in)) < 0) {
+      run_error_location(env->in->line, "failed to read input");
+      err_flush();
+      r = -1;
+      goto clean;
+    }
+    if (r > 0)
+      continue;
+    if ((r = buf_parse_comments(env->in)) < 0) {
+      run_error_location(env->in->line, "failed to read input");
+      err_flush();
+      r = -1;
+      goto clean;
+    }
+    if (r > 0)
+      continue;
+    line = env->in->line;
+    if ((r = buf_refill(env->in, 1)) <= 0) {
+      if (r < 0) {
+        run_error_location(line, "failed to read input");
+        err_flush();
+        r = -1;
+      }
+      goto clean;
+    }
+    if ((r = buf_peek_character_utf8(env->in, &c)) <= 0) {
+      run_error_location(line, "failed to inspect input");
+      err_flush();
+      r = -1;
+      goto clean;
+    }
+    if ((r = buf_parse_tag(env->in, &input)) <= 0) {
+      run_error_location(line, r < 0 ? "parse failed" : "parse error");
+      err_write_1(PROG ": next character: ");
+      err_inspect_character(c);
+      err_write_1("\n");
+      err_flush();
+      r = -1;
       goto clean;
     }
     if (r > 0) {
@@ -474,11 +540,16 @@ static sw run (void)
 #endif
       }
       else if (! eval_tag(&input, &result)) {
+        run_error_location(line, "evaluation failed");
+        err_write_1(PROG ": input: ");
+        err_inspect_tag(&input);
+        err_write_1("\n");
+        err_flush();
         tag_clean(&input);
         if (g_server) {
           s_rpc_response response = {0};
           if (buf_read_to_str(&err_buf, &response.err) < 0) {
-            r = 1;
+            r = -1;
             goto clean;
           }
           str_init_empty(&response.out);
@@ -486,18 +557,19 @@ static sw run (void)
           if (! tag_init_pstruct_copy_data(&result, &g_sym_RPC_Response,
                                            &response)) {
             str_clean(&response.err);
-            r = 1;
+            r = -1;
             goto clean;
           }
-          if (buf_inspect_tag(env->out, &result) < 0) {
+          if (buf_inspect_tag(env->out, &result) < 0 ||
+              buf_flush(env->out) < 0) {
             tag_clean(&result);
-            r = 1;
+            r = -1;
             goto clean;
           }
           tag_clean(&result);
         }
-        // XXX not secure (--pedantic)
-        goto next;
+        r = -1;
+        goto clean;
       }
       tag_clean(&input);
 #if IKC3
@@ -526,7 +598,6 @@ static sw run (void)
       r = 0;
       goto clean;
     }
-  next:
 #if IKC3
     if ((r = buf_write_1(env->out, "\n")) < 0) {
       r = 1;
@@ -768,7 +839,7 @@ int main (int argc, char **argv)
  clean:
   *env->in = in_original;
   kc3_clean(NULL);
-  return r;
+  return r < 0 ? 1 : r;
 }
 
 static int usage (char *argv0)

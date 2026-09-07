@@ -29,6 +29,8 @@ s_cfn * cfn_new_copy (const s_cfn *src);
 
 /* Observers. */
 s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest);
+s_tag * cfn_apply_count (s_cfn *cfn, s_list *args, sw count,
+                         s_tag *dest);
 s8      cfn_arity (const s_cfn *cfn);
 
 /* Operators. */

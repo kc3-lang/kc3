@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from set_cursor.c.in NAME=tag TYPE=s_tag * */
-#include <assert.h>
+#include "assert.h"
 #include <stdlib.h>
 #include "types.h"
 

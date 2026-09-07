@@ -58,6 +58,10 @@ case "$(uname -s)" in
             LIBS="$LIBS -rpath /lib64"
 	fi
 	;;
+    OpenBSD)
+        LIBS="$LIBS -rpath ${LIBDIR}"
+        LIBS="$LIBS -rpath ${BUILD_TOP}/libkc3"
+        ;;
     *)
         LIBS="$LIBS -rpath ${LIBDIR}"
 esac
@@ -87,7 +91,7 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Asan config
 CPPFLAGS_ASAN="$CPPFLAGS"
-CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
+CFLAGS_ASAN="$CFLAGS -DDEBUG -Os -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LIBASAN=$(${CC} -print-file-name=libasan.so)
 LIBASAN_DIR=$(dirname "$LIBASAN")
@@ -109,7 +113,7 @@ LDFLAGS_DEBUG="$LDFLAGS"
 LIBS_DEBUG="$LIBS -lkc3_debug"
 
 # Main config
-DEFAULT_CFLAGS="-O2 -fPIC"
+DEFAULT_CFLAGS="-Os -fPIC"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi

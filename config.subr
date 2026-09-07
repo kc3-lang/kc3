@@ -1244,7 +1244,7 @@ update_build_lib() {
     echo "export LDFLAGS=\"${LDFLAGS_COV}\"" >> ${BUILD_LIB_COV}
     echo "export OBJECTS=\"${OBJECTS_COV}\"" >> ${BUILD_LIB_COV}
     echo "export LIBS=\"${LIBS_COV}\"" >> ${BUILD_LIB_COV}
-    echo "export LIB_LDADD=\"${LIB_LDADD}\"" >> ${BUILD_LIB_COV}
+    echo "export LIB_LDADD=\"${LIB_LDADD} ${COV_PROFILE_LIB}\"" >> ${BUILD_LIB_COV}
     echo "export AR=\"${AR}\"" >> ${BUILD_LIB_COV}
     echo "export RANLIB=\"${RANLIB}\"" >> ${BUILD_LIB_COV}
     echo >> ${BUILD_LIB_COV}
@@ -1372,7 +1372,7 @@ update_build_prog() {
     echo "LDFLAGS=\"${LDFLAGS_COV}\"" >> ${BUILD_PROG_COV}
     echo "OBJECTS=\"${OBJECTS_COV}\"" >> ${BUILD_PROG_COV}
     echo "LIBS=\"${LIBS_COV}\"" >> ${BUILD_PROG_COV}
-    echo "PROG_LDADD=\"${PROG_LDADD}\"" >> ${BUILD_PROG_COV}
+    echo "PROG_LDADD=\"${PROG_LDADD} ${COV_PROFILE_LIB}\"" >> ${BUILD_PROG_COV}
     echo >> ${BUILD_PROG_COV}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_PROG_COV}
     update_and_chmod 755 ${BUILD_PROG_COV} build_prog_cov
@@ -1779,7 +1779,14 @@ case "$(uname -s)" in
                 fi
                 LIB_LDADD="$CRTI $CRTBEGINS $LDADD $CRTENDS $CRTN"
                 PROG_LDADD="$CRT1 $CRTI $CRTBEGIN -e _start --dynamic-linker=$LDSO $LDADD $CRTEND $CRTN"
-                COV_PROFILE_LIB="$(${CC} -print-file-name=libgcov.a)"
+                if ${CC} --version | grep -qi clang; then
+                    COV_PROFILE_LIB="$(${CC} -print-file-name=libclang_rt.profile-$(uname -m).a)"
+                else
+                    COV_PROFILE_LIB="$(${CC} -print-file-name=libgcov.a)"
+                fi
+                if [ ! -f "$COV_PROFILE_LIB" ]; then
+                    COV_PROFILE_LIB=""
+                fi
                 ;;
         esac
         ;;

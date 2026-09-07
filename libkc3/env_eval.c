@@ -31,13 +31,16 @@
 #include "facts.h"
 #include "frame.h"
 #include "ident.h"
+#include "io.h"
 #include "list.h"
 #include "map.h"
+#include "mutex.h"
 #include "ops.h"
 #include "pcallable.h"
 #include "pstruct.h"
 #include "pvar.h"
 #include "securelevel.h"
+#include "stacktrace.h"
 #include "struct.h"
 #include "sw.h"
 #include "tag.h"
@@ -115,6 +118,9 @@ bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
 
 bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
 {
+  bool volatile borrowed = false;
+  bool cache = false;
+  p_callable cached = NULL;
   s_call c = {0};
   bool result;
   s_unwind_protect up = {0};
@@ -127,8 +133,52 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   }
   c.ident = call->ident;
   c.arguments = call->arguments;
-  if (! env_eval_call_resolve(env, &c)) {
-    err_stacktrace();
+#if HAVE_PTHREAD
+  if (call->mutex.ready)
+    cached = __atomic_load_n(&call->pcallable, __ATOMIC_ACQUIRE);
+#else
+  cached = call->pcallable;
+#endif
+  if (cached) {
+    c.pcallable = cached;
+    borrowed = true;
+  }
+  else if (call->ident.module ||
+           ! env_frames_get(env, call->ident.sym)) {
+#if HAVE_PTHREAD
+    cache = call->mutex.ready;
+#else
+    cache = true;
+#endif
+    if (cache) {
+#if HAVE_PTHREAD
+      mutex_lock(&call->mutex);
+      cached = __atomic_load_n(&call->pcallable, __ATOMIC_RELAXED);
+#endif
+      if (! cached) {
+        if (! env_eval_call_resolve(env, &c)) {
+#if HAVE_PTHREAD
+          mutex_unlock(&call->mutex);
+#endif
+          goto resolve_ko;
+        }
+        cached = c.pcallable;
+#if HAVE_PTHREAD
+        __atomic_store_n(&call->pcallable, cached, __ATOMIC_RELEASE);
+#else
+        call->pcallable = cached;
+#endif
+      }
+#if HAVE_PTHREAD
+      mutex_unlock(&call->mutex);
+#endif
+      c.pcallable = cached;
+      borrowed = true;
+    }
+  }
+  if (! borrowed && ! env_eval_call_resolve(env, &c)) {
+  resolve_ko:
+    err_inspect_stacktrace_short(stacktrace_get(env->stacktrace));
     err_write_1("env_eval_call: env_eval_call_resolve: ");
     err_inspect_ident(&c.ident);
     err_write_1("\n");
@@ -146,6 +196,8 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   if (setjmp(up.buf)) {
     env_unwind_protect_pop(env, &up);
     c.arguments = NULL;
+    if (borrowed)
+      c.pcallable = NULL;
     call_clean(&c);
     env->stacktrace_depth--;
     longjmp(*up.jmp, 1);
@@ -153,7 +205,7 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   }
   if (env->stacktrace_depth > 256) {
     err_puts("env_eval_call: stacktrace depth > 256");
-    err_stacktrace();
+    err_inspect_stacktrace_short(stacktrace_get(env->stacktrace));
     env_unwind_protect_pop(env, &up);
     result = false;
     goto clean;
@@ -164,6 +216,8 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   env_unwind_protect_pop(env, &up);
  clean:
   c.arguments = NULL;
+  if (borrowed)
+    c.pcallable = NULL;
   call_clean(&c);
   return result;
 }
@@ -205,6 +259,14 @@ bool env_eval_call_arguments (s_env *env, s_list *args,
   }
   *dest = tmp;
   return true;
+}
+
+static void env_eval_call_arguments_storage_clean
+(volatile s_list *args, uw count)
+{
+  uw i = 0;
+  while (i < count)
+    tag_clean((s_tag *) &args[i++].tag);
 }
 
 bool env_eval_call_callable (s_env *env, s_call *call,
@@ -292,7 +354,7 @@ bool env_eval_call_callable_args (s_env *env,
 bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
                              s_tag *dest)
 {
-  s_list *args = NULL;
+  s_list * volatile args = NULL;
   uw volatile args_count = 0;
   uw args_max = cfn->arity - (cfn->arg_result ? 1 : 0);
   volatile s_list args_storage[args_max ? args_max : 1];
@@ -303,11 +365,6 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
   assert(env);
   assert(cfn);
   assert(dest);
-  i = 0;
-  while (i < (args_max ? args_max : 1)) {
-    args_storage[i] = (s_list) {0};
-    i++;
-  }
   if (securelevel(0) > 2) {
     err_puts("env_eval_call_cfn_args: cannot eval with"
              " securelevel > 2");
@@ -325,7 +382,9 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
   if (arguments && ! (cfn->macro || cfn->special_operator)) {
     argument = arguments;
     while (argument) {
-      assert(args_count < args_max);
+      if (args_count >= args_max)
+        goto ko;
+      args_storage[args_count] = (s_list) {0};
       if (args_count)
         tag_init_plist((s_tag *) &args_storage[args_count - 1].next,
                        (s_list *) &args_storage[args_count]);
@@ -338,8 +397,11 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
     if (args_count)
       args = (s_list *) args_storage;
   }
-  if (! cfn_apply(cfn, (cfn->macro || cfn->special_operator) ?
-                  arguments : args, &tag))
+  if (cfn->macro || cfn->special_operator) {
+    if (! cfn_apply(cfn, arguments, &tag))
+      goto ko;
+  }
+  else if (! cfn_apply_count(cfn, args, args_count, &tag))
     goto ko;
   env_unwind_protect_pop(env, &unwind_protect);
   *dest = tag;
@@ -377,18 +439,24 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
 bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
                             s_list *arguments, s_tag *dest)
 {
-  s_list *args = NULL;
+  s_list * volatile args = NULL;
+  uw volatile args_count = 0;
   s_list * volatile args_final = NULL;
+  sw args_max;
+  s_list *argument;
   s_fn_clause *clause;
   s_tag * volatile dest_v = dest;
   s_frame *env_frame;
   s_frame frame = {0};
   const s_sym *module;
   s_list *search_modules;
+  s_list search_modules_storage[2] = {0};
   bool silence_errors;
+  s_list * volatile stacktrace;
   s_tag tag = {0};
-  s_list *tmp = NULL;
-  s_list *trace;
+  s_list trace = {0};
+  s_list trace_plist = {0};
+  uw i;
   struct { /* XXX needed to sort unwind protect jumps
               XXX only works if stack grows down */
     s_unwind_protect unwind_macro;
@@ -405,14 +473,33 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
              " securelevel > 2");
     abort();
   }
+  args_max = list_length(arguments);
+  if (args_max < 0 || args_max > S8_MAX) {
+    err_puts("env_eval_call_fn_args: invalid argument list");
+    return false;
+  }
+  volatile s_list args_storage[args_max ? (uw) args_max : 1];
+  i = 0;
+  while (i < (uw) (args_max ? args_max : 1)) {
+    args_storage[i] = (s_list) {0};
+    list_init((s_list *) &args_storage[i++], NULL);
+  }
   search_modules = env->search_modules;
   module = fn->module;
   if (! module)
     module = env->current_defmodule;
   if (! module)
     module = &g_sym_KC3;
-  if (! env_module_search_modules(env, &module, &env->search_modules))
-    return false;
+  if (module == &g_sym_KC3) {
+    list_init_psym(search_modules_storage, &g_sym_KC3, NULL);
+    env->search_modules = search_modules_storage;
+  }
+  else {
+    list_init_psym(search_modules_storage + 1, &g_sym_KC3, NULL);
+    list_init_psym(search_modules_storage, module,
+                   search_modules_storage + 1);
+    env->search_modules = search_modules_storage;
+  }
   env_frame = env->frame;
   clause = fn->clauses;
   silence_errors = env->silence_errors;
@@ -423,35 +510,44 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       env_unwind_protect_push(env, &jump.unwind_args);
       if (setjmp(jump.unwind_args.buf)) {
         env_unwind_protect_pop(env, &jump.unwind_args);
-        list_delete_all(env->search_modules);
+        env_eval_call_arguments_storage_clean(args_storage, args_count);
         env->search_modules = search_modules;
         longjmp(*jump.unwind_args.jmp, 1);
       }
-      if (! env_eval_call_arguments(env, arguments, &args)) {
-        env_unwind_protect_pop(env, &jump.unwind_args);
-        list_delete_all(env->search_modules);
-        env->search_modules = search_modules;
-        return false;
+      argument = arguments;
+      while (argument) {
+        assert(args_count < (uw) args_max);
+        if (args_count)
+          tag_init_plist((s_tag *) &args_storage[args_count - 1].next,
+                         (s_list *) &args_storage[args_count]);
+        args_count++;
+        if (! env_eval_tag(env, &argument->tag,
+                           (s_tag *) &args_storage[args_count - 1].tag)) {
+          env_unwind_protect_pop(env, &jump.unwind_args);
+          env_eval_call_arguments_storage_clean(args_storage, args_count);
+          env->search_modules = search_modules;
+          return false;
+        }
+        argument = list_next(argument);
       }
       env_unwind_protect_pop(env, &jump.unwind_args);
+      args = args_count ? (s_list *) args_storage : NULL;
       args_final = args;
     }
     while (clause) {
       if (fn->frame) {
         assert(! fn->frame->next);
         if (! frame_init_copy(&frame, fn->frame)) {
-          list_delete_all(args);
+          env_eval_call_arguments_storage_clean(args_storage, args_count);
           env->silence_errors = silence_errors;
-          list_delete_all(env->search_modules);
           env->search_modules = search_modules;
           return false;
         }
         frame.next = env_frame;
       }
       else if (! frame_init(&frame, env_frame)) {
-        list_delete_all(args);
+        env_eval_call_arguments_storage_clean(args_storage, args_count);
         env->silence_errors = silence_errors;
-        list_delete_all(env->search_modules);
         env->search_modules = search_modules;
         return false;
       }
@@ -464,13 +560,13 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
         assert(env->frame == &frame);
         env->frame = env_frame;
         frame_clean(&frame);
-        list_delete_all(args);
-        list_delete_all(env->search_modules);
+        env_eval_call_arguments_storage_clean(args_storage, args_count);
         env->search_modules = search_modules;
         longjmp(*jump.unwind_pattern.jmp, 1);
       }
-      if (env_eval_equal_list(env, fn->macro || fn->special_operator,
-                              clause->pattern, args_final, &tmp)) {
+      if (env_eval_equal_list_match(env,
+                                    fn->macro || fn->special_operator,
+                                    clause->pattern, args_final)) {
         env_unwind_protect_pop(env, &jump.unwind_pattern);
         env->silence_errors = silence_errors;
         break;
@@ -496,10 +592,9 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       err_inspect_fn_pattern(args);
       err_write_1("\n");
       err_puts("stacktrace:");
-      err_inspect_stacktrace(env->stacktrace);
+      err_inspect_stacktrace_short(stacktrace_get(env->stacktrace));
       err_write_1("\n");
-      list_delete_all(args);
-      list_delete_all(env->search_modules);
+      env_eval_call_arguments_storage_clean(args_storage, args_count);
       env->search_modules = search_modules;
       return false;
     }
@@ -507,58 +602,29 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   else {
     if (fn->frame) {
       if (! frame_init_copy(&frame, fn->frame)) {
-        list_delete_all(args);
-        list_delete_all(tmp);
-        list_delete_all(env->search_modules);
+        env_eval_call_arguments_storage_clean(args_storage, args_count);
         env->search_modules = search_modules;
         return false;
       }
       frame.next = env->frame;
     }
     else if (! frame_init(&frame, env_frame)) {
-      list_delete_all(args);
+      env_eval_call_arguments_storage_clean(args_storage, args_count);
       env->silence_errors = silence_errors;
-      list_delete_all(env->search_modules);
       env->search_modules = search_modules;
       return false;
     }
     env->frame = &frame;
   }
-  if (! (trace = list_new(env->stacktrace))) {
-    list_delete_all(args);
-    list_delete_all(tmp);
-    list_delete_all(env->search_modules);
-    env->search_modules = search_modules;
-    assert(env->frame == &frame);
-    env->frame = env_frame;
-    frame_clean(&frame);
-    return false;
-  }
-  {
-    s_list *args_copy;
-    s_list *trace_plist;
-    args_copy = list_new_copy_all(args);
-    trace_plist = list_new_ident(&fn->name, args_copy);
-    if (! trace_plist) {
-      list_delete_all(args_copy);
-      list_delete(trace);
-      list_delete_all(args);
-      list_delete_all(tmp);
-      list_delete_all(env->search_modules);
-      env->search_modules = search_modules;
-      assert(env->frame == &frame);
-      env->frame = env_frame;
-      frame_clean(&frame);
-      return false;
-    }
-    tag_init_plist(&trace->tag, trace_plist);
-  }
-  env->stacktrace = trace;
+  stacktrace = stacktrace_get(env->stacktrace);
+  tag_init_plist(&trace.tag, &trace_plist);
+  tag_init_plist(&trace.next, stacktrace);
+  tag_init_ident(&trace_plist.tag, &fn->name);
+  tag_init_plist(&trace_plist.next, args);
+  stacktrace_push(env->stacktrace, &trace);
   if (! block_init(&jump.block, fn->name.sym)) {
-    env->stacktrace = list_delete(env->stacktrace);
-    list_delete_all(args);
-    list_delete_all(tmp);
-    list_delete_all(env->search_modules);
+    stacktrace_pop(env->stacktrace, stacktrace);
+    env_eval_call_arguments_storage_clean(args_storage, args_count);
     env->search_modules = search_modules;
     assert(env->frame == &frame);
     env->frame = env_frame;
@@ -569,11 +635,9 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   if (setjmp(jump.unwind_do.buf)) {
     env_unwind_protect_pop(env, &jump.unwind_do);
     block_clean(&jump.block);
-    assert(env->stacktrace == trace);
-    env->stacktrace = list_delete(env->stacktrace);
-    list_delete_all(args);
-    list_delete_all(tmp);
-    list_delete_all(env->search_modules);
+    assert(stacktrace_get(env->stacktrace) == &trace);
+    stacktrace_pop(env->stacktrace, stacktrace);
+    env_eval_call_arguments_storage_clean(args_storage, args_count);
     env->search_modules = search_modules;
     assert(env->frame == &frame);
     env->frame = env_frame;
@@ -583,11 +647,9 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   if (setjmp(jump.block.buf)) {
     tag = jump.block.tag;
     env_unwind_protect_pop(env, &jump.unwind_do);
-    assert(env->stacktrace == trace);
-    env->stacktrace = list_delete(env->stacktrace);
-    list_delete_all(args);
-    list_delete_all(tmp);
-    list_delete_all(env->search_modules);
+    assert(stacktrace_get(env->stacktrace) == &trace);
+    stacktrace_pop(env->stacktrace, stacktrace);
+    env_eval_call_arguments_storage_clean(args_storage, args_count);
     env->search_modules = search_modules;
     assert(env->frame == &frame);
     env->frame = env_frame;
@@ -597,11 +659,9 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   if (! env_eval_do_block(env, &clause->algo, &tag)) {
     env_unwind_protect_pop(env, &jump.unwind_do);
     block_clean(&jump.block);
-    assert(env->stacktrace == trace);
-    env->stacktrace = list_delete(env->stacktrace);
-    list_delete_all(args);
-    list_delete_all(tmp);
-    list_delete_all(env->search_modules);
+    assert(stacktrace_get(env->stacktrace) == &trace);
+    stacktrace_pop(env->stacktrace, stacktrace);
+    env_eval_call_arguments_storage_clean(args_storage, args_count);
     env->search_modules = search_modules;
     assert(env->frame == &frame);
     env->frame = env_frame;
@@ -609,11 +669,9 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     return false;
   }
   env_unwind_protect_pop(env, &jump.unwind_do);
-  assert(env->stacktrace == trace);
-  env->stacktrace = list_delete(env->stacktrace);
-  list_delete_all(args);
-  list_delete_all(tmp);
-  list_delete_all(env->search_modules);
+  assert(stacktrace_get(env->stacktrace) == &trace);
+  stacktrace_pop(env->stacktrace, stacktrace);
+  env_eval_call_arguments_storage_clean(args_storage, args_count);
   env->search_modules = search_modules;
   assert(env->frame == &frame);
   env->frame = env_frame;
@@ -670,7 +728,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
       return true;
     }
     err_puts("env_eval_call_resolve: not a Callable (Cfn or Fn)");
-    err_stacktrace();
+    err_inspect_stacktrace_short(stacktrace_get(env->stacktrace));
     assert(! "env_eval_call_resolve: not a Callable (Cfn or Fn)");
     return false;
   }
@@ -876,7 +934,7 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
       ! (tag = env_ident_get(env, &tmp_ident, &tmp))) {
     if (true) {
       err_puts("env_eval_ident: stacktrace:");
-      err_inspect_stacktrace(env->stacktrace);
+      err_inspect_stacktrace_short(stacktrace_get(env->stacktrace));
       err_write_1("\n");
     }
     err_write_1("env_eval_ident: unbound ident: ");

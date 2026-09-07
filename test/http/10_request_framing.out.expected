@@ -1,0 +1,139 @@
+require HTTP
+HTTP
+require HTTP.Request
+HTTP.Request
+require Socket
+Socket
+require Socket.Buf
+Socket.Buf
+require Thread
+Thread
+(server = Socket.listen("127.0.0.1", "57004")) ; void
+void
+(client = Socket.Buf.connect("127.0.0.1", "57004")) ; void
+void
+(server_client = Socket.Buf.accept(server)) ; void
+void
+Buf.write_str(client.buf_rw.w, "POST /json HTTP/1.1\r\nContent-Type: application/json\r\nContent-Length: 7\r\n\r\n{\"x\":1}GET /next HTTP/1.1\r\n\r\n")
+(Sw) 103
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+void
+"{\"x\":1}"
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+void
+{GET, "/next"}
+Buf.write_str(client.buf_rw.w, "POST /multipart HTTP/1.1\r\nContent-Type: multipart/form-data; boundary=X\r\nContent-Length: 67\r\n\r\n--X\r\nContent-Disposition: form-data; name=\"field\"\r\n\r\nvalue\r\n--X--\r\nGET /after-multipart HTTP/1.1\r\n\r\n")
+(Sw) 195
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+void
+[{"field", "value"}]
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+void
+{GET, "/after-multipart"}
+Buf.write_str(client.buf_rw.w, "POST /raw HTTP/1.1\r\nContent-Length: 3\r\n\r\nabcGET /after-raw HTTP/1.1\r\n\r\n")
+(Sw) 71
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+void
+"abc"
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+void
+{GET, "/after-raw"}
+(chunk = "a") ; void
+void
+(chunk = chunk + chunk) ; void
+void
+(chunk = chunk + chunk) ; void
+void
+(chunk = chunk + chunk) ; void
+void
+(chunk = chunk + chunk) ; void
+void
+(chunk = chunk + chunk) ; void
+void
+(chunk = chunk + chunk) ; void
+void
+(chunk = chunk + chunk) ; void
+void
+(chunk = chunk + chunk) ; void
+void
+(chunk = chunk + chunk) ; void
+void
+(chunk = chunk + chunk) ; void
+void
+(parser_thread = Thread.new(fn () { request = HTTP.Request.buf_parse(server_client.buf_rw.r); Str.size(request.body) })) ; void
+void
+Buf.write_str(client.buf_rw.w, "POST /large HTTP/1.1\r\nContent-Length: 66560\r\n\r\n")
+(Sw) 47
+do
+  i = 0
+  while i < 65 do
+    Buf.write_str(client.buf_rw.w, chunk)
+    i = i + 1
+  end
+end
+65
+Thread.delete(parser_thread)
+66560
+Buf.write_str(client.buf_rw.w, "GET /after-large HTTP/1.1\r\n\r\n")
+(Sw) 29
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+void
+{GET, "/after-large"}
+Buf.write_str(client.buf_rw.w, "POST /form HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded; charset=UTF-8\r\nContent-Length: 6\r\n\r\nempty=")
+(Sw) 112
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+void
+[{"empty", ""}]
+Buf.write_str(client.buf_rw.w, "POST /duplicate HTTP/1.1\r\nContent-Length: 3\r\nContent-Length: 3\r\n\r\nabc")
+(Sw) 69
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+void
+"abc"
+Socket.Buf.close(client)
+void
+Socket.Buf.close(server_client)
+void
+(client = Socket.Buf.connect("127.0.0.1", "57004")) ; void
+void
+(server_client = Socket.Buf.accept(server)) ; void
+void
+Buf.write_str(client.buf_rw.w, "POST / HTTP/1.1\r\nContent-Type: multipart/form-data; boundary=X\r\nContent-Length: 10\r\n\r\n--X\r\nabcdeGET /not-consumed HTTP/1.1\r\n\r\n")
+(Sw) 126
+http_request_buf_parse: invalid multipart header
+http_request_buf_parse: error
+void
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+void
+{GET, "/not-consumed"}
+Socket.Buf.close(client)
+void
+Socket.Buf.close(server_client)
+void
+(client = Socket.Buf.connect("127.0.0.1", "57004")) ; void
+void
+(server_client = Socket.Buf.accept(server)) ; void
+void
+Buf.write_str(client.buf_rw.w, "POST / HTTP/1.1\r\nContent-Length: 3\r\nContent-Length: 4\r\n\r\n")
+(Sw) 57
+http_request_buf_parse: conflicting Content-Length
+http_request_buf_parse: error
+void
+Socket.Buf.close(client)
+void
+Socket.Buf.close(server_client)
+void
+(client = Socket.Buf.connect("127.0.0.1", "57004")) ; void
+void
+(server_client = Socket.Buf.accept(server)) ; void
+void
+Buf.write_str(client.buf_rw.w, "POST / HTTP/1.1\r\nTransfer-Encoding: chunked\r\n\r\n")
+(Sw) 47
+http_request_buf_parse: unsupported Transfer-Encoding
+http_request_buf_parse: error
+void
+Socket.Buf.close(client)
+void
+Socket.Buf.close(server_client)
+void
+Socket.close(server)
+void

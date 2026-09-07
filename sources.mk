@@ -625,6 +625,8 @@ KC3_C_SOURCES = \
 	"libkc3/crypt.c" \
 	"libkc3/crypt.h" \
 	"libkc3/crypt_sha512.c" \
+	"libkc3/daemon.c" \
+	"libkc3/daemon.h" \
 	"libkc3/data.c" \
 	"libkc3/data.h" \
 	"libkc3/do_block.c" \
@@ -697,6 +699,7 @@ KC3_C_SOURCES = \
 	"libkc3/ht.h" \
 	"libkc3/ident.c" \
 	"libkc3/ident.h" \
+	"libkc3/inline.h" \
 	"libkc3/inspect.c" \
 	"libkc3/inspect.h" \
 	"libkc3/integer.c" \
@@ -751,6 +754,8 @@ KC3_C_SOURCES = \
 	"libkc3/pointer.h" \
 	"libkc3/pretty.c" \
 	"libkc3/pretty.h" \
+	"libkc3/primehash.c" \
+	"libkc3/primehash.h" \
 	"libkc3/pstruct.c" \
 	"libkc3/pstruct.h" \
 	"libkc3/pstruct_type.c" \
@@ -843,6 +848,8 @@ KC3_C_SOURCES = \
 	"libkc3/socket_buf.h" \
 	"libkc3/special_operator.c" \
 	"libkc3/special_operator.h" \
+	"libkc3/stacktrace.c" \
+	"libkc3/stacktrace.h" \
 	"libkc3/str.c" \
 	"libkc3/str.h" \
 	"libkc3/struct.c" \
@@ -853,6 +860,8 @@ KC3_C_SOURCES = \
 	"libkc3/sw.h" \
 	"libkc3/sym.c" \
 	"libkc3/sym.h" \
+	"libkc3/sym_ht.c" \
+	"libkc3/sym_ht.h" \
 	"libkc3/tag.c" \
 	"libkc3/tag.h" \
 	"libkc3/tag_add.c" \
@@ -1170,6 +1179,7 @@ KC3_C_SOURCES = \
 	"test/set__fact_test.c" \
 	"test/set__tag_test.c" \
 	"test/skiplist__fact_test.c" \
+	"test/stacktrace_test.c" \
 	"test/str_test.c" \
 	"test/struct_test.c" \
 	"test/sym_test.c" \
@@ -1317,35 +1327,10 @@ KC3_FONT_SOURCES = \
 	"fonts/Computer Modern/ttf/cmunui.ttf" \
 	"fonts/Computer Modern/ttf/cmunvi.ttf" \
 	"fonts/Computer Modern/ttf/cmunvt.ttf" \
-	"fonts/Courier New/Courier New.ttf" \
-	"fonts/Courier/fonts/OGCourier-Bold.otf" \
-	"fonts/Courier/fonts/OGCourier-Bold.ttf" \
-	"fonts/Courier/fonts/OGCourier-BoldItalic.otf" \
-	"fonts/Courier/fonts/OGCourier-BoldItalic.ttf" \
-	"fonts/Courier/fonts/OGCourier-Italic.otf" \
-	"fonts/Courier/fonts/OGCourier-Italic.ttf" \
-	"fonts/Courier/fonts/OGCourier.otf" \
-	"fonts/Courier/fonts/OGCourier.ttf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Bold.otf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Bold.ttf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-BoldItalic.otf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-BoldItalic.ttf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Italic.otf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Italic.ttf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot.otf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot.ttf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Bold.otf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Bold.ttf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-BoldItalic.otf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-BoldItalic.ttf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Italic.otf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Italic.ttf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash.otf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash.ttf" \
-	"fonts/Courier/sfd/OGCourier-Bold.sfd.ttf" \
-	"fonts/Courier/sfd/OGCourier-BoldItalic.sfd.ttf" \
-	"fonts/Courier/sfd/OGCourier-Italic.sfd.ttf" \
-	"fonts/Courier/sfd/OGCourier.sfd.ttf" \
+	"fonts/CourierPrime/fonts/ttf/CourierPrime-Bold.ttf" \
+	"fonts/CourierPrime/fonts/ttf/CourierPrime-BoldItalic.ttf" \
+	"fonts/CourierPrime/fonts/ttf/CourierPrime-Italic.ttf" \
+	"fonts/CourierPrime/fonts/ttf/CourierPrime-Regular.ttf" \
 	"fonts/Inter/InterVariable-Italic.ttf" \
 	"fonts/Inter/InterVariable.ttf" \
 	"fonts/Inter/extras/otf/Inter-Black.otf" \
@@ -1621,6 +1606,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/counter.kc3" \
 	"lib/kc3/0.1/cow.kc3" \
 	"lib/kc3/0.1/crypt.kc3" \
+	"lib/kc3/0.1/daemon.kc3" \
 	"lib/kc3/0.1/deserialize.kc3" \
 	"lib/kc3/0.1/ekc3.kc3" \
 	"lib/kc3/0.1/env.kc3" \
@@ -1691,6 +1677,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/http/upload.kc3" \
 	"lib/kc3/0.1/httpd.kc3" \
 	"lib/kc3/0.1/httpd/route.kc3" \
+	"lib/kc3/0.1/httpd/static.kc3" \
 	"lib/kc3/0.1/https.kc3" \
 	"lib/kc3/0.1/https/client.kc3" \
 	"lib/kc3/0.1/ident.kc3" \
@@ -1754,6 +1741,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/pretty.kc3" \
 	"lib/kc3/0.1/pretty_save.kc3" \
 	"lib/kc3/0.1/prime.kc3" \
+	"lib/kc3/0.1/prime_hash.kc3" \
 	"lib/kc3/0.1/ptr.facts" \
 	"lib/kc3/0.1/ptr_free.facts" \
 	"lib/kc3/0.1/qrencode.kc3" \
@@ -1781,6 +1769,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/socket/buf.kc3" \
 	"lib/kc3/0.1/socket/facts.kc3" \
 	"lib/kc3/0.1/spam/bayes.kc3" \
+	"lib/kc3/0.1/stacktrace.kc3" \
 	"lib/kc3/0.1/str.facts" \
 	"lib/kc3/0.1/struct.kc3" \
 	"lib/kc3/0.1/sw.facts" \
@@ -1794,6 +1783,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/tls/config.kc3" \
 	"lib/kc3/0.1/tls/facts.kc3" \
 	"lib/kc3/0.1/tls/server.kc3" \
+	"lib/kc3/0.1/to_c.kc3" \
 	"lib/kc3/0.1/totp.kc3" \
 	"lib/kc3/0.1/u16.facts" \
 	"lib/kc3/0.1/u32.facts" \
@@ -2012,6 +2002,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/map.kc3" \
 	"test/ikc3/map.out.expected" \
 	"test/ikc3/map.ret.expected" \
+	"test/ikc3/map_merge.kc3" \
+	"test/ikc3/map_merge.out.expected" \
+	"test/ikc3/map_merge.ret.expected" \
 	"test/ikc3/marshall.kc3" \
 	"test/ikc3/marshall.out.expected" \
 	"test/ikc3/marshall.ret.expected" \
@@ -2048,6 +2041,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/struct.kc3" \
 	"test/ikc3/struct.out.expected" \
 	"test/ikc3/struct.ret.expected" \
+	"test/ikc3/struct_update.kc3" \
+	"test/ikc3/struct_update.out.expected" \
+	"test/ikc3/struct_update.ret.expected" \
 	"test/ikc3/sym.err.expected" \
 	"test/ikc3/sym.kc3" \
 	"test/ikc3/sym.out.expected" \
@@ -2080,6 +2076,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3_test" \
 
 KC3_TEST_EKC3_SOURCES = \
+	"test/ekc3/load_file.kc3" \
+	"test/ekc3/load_file.out.expected" \
+	"test/ekc3/load_file.ret.expected" \
 	"test/ekc3/parse_empty.kc3" \
 	"test/ekc3/parse_empty.out.expected" \
 	"test/ekc3/parse_empty.ret.expected" \
@@ -2135,6 +2134,15 @@ KC3_TEST_HTTP_SOURCES = \
 	"test/http/07_client_server.kc3" \
 	"test/http/07_client_server.out.expected" \
 	"test/http/07_client_server.ret.expected" \
+	"test/http/08_response_headers.kc3" \
+	"test/http/08_response_headers.out.expected" \
+	"test/http/08_response_headers.ret.expected" \
+	"test/http/09_request_www_form.kc3" \
+	"test/http/09_request_www_form.out.expected" \
+	"test/http/09_request_www_form.ret.expected" \
+	"test/http/10_request_framing.kc3" \
+	"test/http/10_request_framing.out.expected" \
+	"test/http/10_request_framing.ret.expected" \
 	"test/http/mime.types" \
 	"test/http_test" \
 
@@ -2162,7 +2170,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/app/views/system_view.kc3" \
 	"test/httpd/assets/css/app.scss" \
 	"test/httpd/assets/css/computer_modern.scss" \
-	"test/httpd/assets/css/courier_new.scss" \
+	"test/httpd/assets/css/courier_prime.scss" \
 	"test/httpd/assets/css/flash.scss" \
 	"test/httpd/assets/css/fontawesome-5.15.4-free-v4-font-face.scss" \
 	"test/httpd/assets/css/fontawesome-5.15.4-free-v4-shims.scss" \
@@ -2242,8 +2250,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/static/_fonts/cmunui-webfont.woff" \
 	"test/httpd/static/_fonts/cmunvi-webfont.woff" \
 	"test/httpd/static/_fonts/cmunvt-webfont.woff" \
-	"test/httpd/static/_fonts/courier_new.woff" \
-	"test/httpd/static/_fonts/courier_new.woff2" \
+	"test/httpd/static/_fonts/courier_prime.woff2" \
 	"test/httpd/static/_fonts/fontawesome-webfont.woff" \
 	"test/httpd/static/_fonts/fontawesome-webfont.woff2" \
 	"test/httpd/static/_fonts/free-fa-brands-400.eot" \
@@ -2306,6 +2313,9 @@ KC3_TEST_JSON_SOURCES = \
 	"test/json_test" \
 
 KC3_TEST_KC3S_SOURCES = \
+	"test/kc3s/call_cache.kc3" \
+	"test/kc3s/call_cache.out.expected" \
+	"test/kc3s/call_cache.ret.expected" \
 	"test/kc3s/comments.kc3" \
 	"test/kc3s/comments.out.expected" \
 	"test/kc3s/comments.ret.expected" \

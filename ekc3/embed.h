@@ -25,6 +25,7 @@ typedef enum {
 
 s_tag * embed_parse_template (s_buf *input, s_tag *dest);
 s_tag * embed_parse_template_1 (const char *input, s_tag *dest);
+s_tag * embed_load_template_file (const s_str *path, s_tag *dest);
 s_tag * embed_parse_template_file (const s_str *path, s_tag *dest);
 s_tag * embed_parse_template_file_or_abort (const s_str *path,
                                             s_tag *dest);

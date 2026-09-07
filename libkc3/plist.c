@@ -20,6 +20,9 @@
 #include "buf_parse.h"
 #include "compare.h"
 #include "data.h"
+#include "env.h"
+#include "env_eval.h"
+#include "env_eval_equal.h"
 #include "eval.h"
 #include "kc3_main.h"
 #include "list.h"
@@ -70,6 +73,83 @@ bool * plist_all (p_list *plist, p_callable *function, bool *dest)
 void plist_clean (p_list *plist)
 {
   list_delete_all(*plist);
+}
+
+s_tag * plist_do (s_tag *list, s_tag *pattern, s_tag *do_block,
+                  s_tag * volatile dest)
+{
+  s_env *env;
+  s_list *l;
+  s_tag list_eval = {0};
+  s_tag match = {0};
+  bool silence_errors;
+  s_tag tmp = {0};
+  s_unwind_protect unwind_protect;
+  assert(list);
+  assert(pattern);
+  assert(do_block);
+  assert(dest);
+  env = env_global();
+  assert(env);
+  if (! env_eval_tag(env, list, &list_eval))
+    return NULL;
+  if (list_eval.type != TAG_PLIST) {
+    err_write_1("plist_do: expected a List, got: ");
+    err_inspect_tag(&list_eval);
+    err_write_1("\n");
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  if (do_block->type != TAG_DO_BLOCK) {
+    err_write_1("plist_do: expected a do block, got: ");
+    err_inspect_tag(do_block);
+    err_write_1("\n");
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  silence_errors = env->silence_errors;
+  env_unwind_protect_push(env, &unwind_protect);
+  if (setjmp(unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    env->silence_errors = silence_errors;
+    tag_clean(&tmp);
+    tag_clean(&match);
+    tag_clean(&list_eval);
+    longjmp(*unwind_protect.jmp, 1);
+    return NULL;
+  }
+  l = list_eval.data.td_plist;
+  while (l) {
+    env->silence_errors = true;
+    if (! env_eval_equal_tag(env, false, &l->tag, pattern, &match)) {
+      env->silence_errors = silence_errors;
+      err_write_1("plist_do: pattern does not match: ");
+      err_inspect_tag(pattern);
+      err_write_1(" = ");
+      err_inspect_tag(&l->tag);
+      err_write_1("\n");
+      goto ko;
+    }
+    env->silence_errors = silence_errors;
+    tag_clean(&match);
+    tag_init(&match);
+    tag_clean(&tmp);
+    if (! env_eval_do_block(env, &do_block->data.td_do_block, &tmp))
+      goto ko;
+    l = list_next(l);
+  }
+  env_unwind_protect_pop(env, &unwind_protect);
+  tag_clean(&match);
+  tag_clean(&list_eval);
+  *dest = tmp;
+  return dest;
+ ko:
+  env_unwind_protect_pop(env, &unwind_protect);
+  env->silence_errors = silence_errors;
+  tag_clean(&tmp);
+  tag_clean(&match);
+  tag_clean(&list_eval);
+  return NULL;
 }
 
 bool * plist_each (p_list *plist, p_callable *function, bool *dest)
@@ -132,6 +212,18 @@ p_list * plist_filter (p_list *plist, p_callable *function,
   list_delete_all(tmp);
   list_delete_all(arg);
   return NULL;
+}
+
+s_tag * plist_find (p_list *plist, s_tag *value, s_tag *dest)
+{
+  s_list *list;
+  list = *plist;
+  while (list) {
+    if (compare_tag(value, &list->tag) == 0)
+      return tag_init_copy(dest, &list->tag);
+    list = list_next(list);
+  }
+  return tag_init(dest);
 }
 
 s_tag * plist_find_if (p_list *plist, p_callable *function,
@@ -400,6 +492,284 @@ p_list * plist_map (p_list *plist, p_callable *function,
  ko:
   list_delete_all(tmp);
   list_delete_all(arg);
+  return NULL;
+}
+
+p_list * plist_map_filter (s_tag *list, s_tag *pattern, s_tag *do_block,
+                           p_list * volatile dest)
+{
+  s_env *env;
+  s_list *l;
+  s_tag list_eval = {0};
+  s_tag match = {0};
+  bool silence_errors;
+  s_tag tmp = {0};
+  p_list *tail;
+  p_list volatile result = NULL;
+  s_unwind_protect unwind_protect;
+  assert(list);
+  assert(pattern);
+  assert(do_block);
+  assert(dest);
+  env = env_global();
+  assert(env);
+  if (! env_eval_tag(env, list, &list_eval))
+    return NULL;
+  if (list_eval.type != TAG_PLIST) {
+    err_write_1("plist_map_filter: expected a List, got: ");
+    err_inspect_tag(&list_eval);
+    err_write_1("\n");
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  if (do_block->type != TAG_DO_BLOCK) {
+    err_write_1("plist_map_filter: expected a do block, got: ");
+    err_inspect_tag(do_block);
+    err_write_1("\n");
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  tail = (p_list *) &result;
+  silence_errors = env->silence_errors;
+  env_unwind_protect_push(env, &unwind_protect);
+  if (setjmp(unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    env->silence_errors = silence_errors;
+    tag_clean(&tmp);
+    tag_clean(&match);
+    tag_clean(&list_eval);
+    list_delete_all((p_list) result);
+    longjmp(*unwind_protect.jmp, 1);
+    return NULL;
+  }
+  l = list_eval.data.td_plist;
+  while (l) {
+    if (l->tag.type == TAG_VOID) {
+      l = list_next(l);
+      continue;
+    }
+    env->silence_errors = true;
+    if (! env_eval_equal_tag(env, false, &l->tag, pattern, &match)) {
+      env->silence_errors = silence_errors;
+      err_write_1("plist_map_filter: pattern does not match: ");
+      err_inspect_tag(pattern);
+      err_write_1(" = ");
+      err_inspect_tag(&l->tag);
+      err_write_1("\n");
+      goto ko;
+    }
+    env->silence_errors = silence_errors;
+    tag_clean(&match);
+    tag_init(&match);
+    if (! env_eval_do_block(env, &do_block->data.td_do_block, &tmp))
+      goto ko;
+    if (tmp.type != TAG_VOID) {
+      *tail = list_new_tag_copy(&tmp, NULL);
+      if (! *tail)
+        goto ko;
+      tail = &(*tail)->next.data.td_plist;
+    }
+    tag_clean(&tmp);
+    l = list_next(l);
+  }
+  env_unwind_protect_pop(env, &unwind_protect);
+  tag_clean(&match);
+  tag_clean(&list_eval);
+  *dest = (p_list) result;
+  return dest;
+ ko:
+  env_unwind_protect_pop(env, &unwind_protect);
+  env->silence_errors = silence_errors;
+  tag_clean(&tmp);
+  tag_clean(&match);
+  tag_clean(&list_eval);
+  list_delete_all((p_list) result);
+  return NULL;
+}
+
+s_str * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
+                        s_tag *do_block, s_str * volatile dest)
+{
+  s_env *env;
+  sw length;
+  s_list *l;
+  s_tag list_eval = {0};
+  s_tag match = {0};
+  s_tag separator_eval = {0};
+  bool silence_errors;
+  uw i;
+  uw volatile string_count = 0;
+  s_str *string = NULL;
+  s_tag tmp = {0};
+  uw volatile total_size = 0;
+  s_unwind_protect unwind_protect;
+  assert(list);
+  assert(pattern);
+  assert(separator);
+  assert(do_block);
+  assert(dest);
+  env = env_global();
+  assert(env);
+  if (! env_eval_tag(env, list, &list_eval))
+    return NULL;
+  if (list_eval.type != TAG_PLIST) {
+    err_write_1("plist_map_join: expected a List, got: ");
+    err_inspect_tag(&list_eval);
+    err_write_1("\n");
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  if (! env_eval_tag(env, separator, &separator_eval)) {
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  if (separator_eval.type != TAG_STR) {
+    err_write_1("plist_map_join: expected a Str separator, got: ");
+    err_inspect_tag(&separator_eval);
+    err_write_1("\n");
+    tag_clean(&separator_eval);
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  if (do_block->type != TAG_DO_BLOCK) {
+    err_write_1("plist_map_join: expected a do block, got: ");
+    err_inspect_tag(do_block);
+    err_write_1("\n");
+    tag_clean(&separator_eval);
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  length = list_length(list_eval.data.td_plist);
+  if (length < 0) {
+    err_puts("plist_map_join: invalid list");
+    tag_clean(&separator_eval);
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  if ((uw) length > UW_MAX / sizeof(*string)) {
+    err_puts("plist_map_join: list size overflow");
+    tag_clean(&separator_eval);
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  string = alloc((length ? (uw) length : 1) * sizeof(*string));
+  if (! string) {
+    tag_clean(&separator_eval);
+    tag_clean(&list_eval);
+    return NULL;
+  }
+  i = 0;
+  while (i < (uw) (length ? length : 1))
+    string[i++] = (s_str) {0};
+  silence_errors = env->silence_errors;
+  env_unwind_protect_push(env, &unwind_protect);
+  if (setjmp(unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    env->silence_errors = silence_errors;
+    tag_clean(&tmp);
+    tag_clean(&match);
+    i = 0;
+    while (i < string_count)
+      str_clean(string + i++);
+    alloc_free(string);
+    tag_clean(&separator_eval);
+    tag_clean(&list_eval);
+    longjmp(*unwind_protect.jmp, 1);
+    return NULL;
+  }
+  l = list_eval.data.td_plist;
+  while (l) {
+    env->silence_errors = true;
+    if (! env_eval_equal_tag(env, false, &l->tag, pattern, &match)) {
+      env->silence_errors = silence_errors;
+      err_write_1("plist_map_join: pattern does not match: ");
+      err_inspect_tag(pattern);
+      err_write_1(" = ");
+      err_inspect_tag(&l->tag);
+      err_write_1("\n");
+      goto ko;
+    }
+    env->silence_errors = silence_errors;
+    tag_clean(&match);
+    tag_init(&match);
+    if (! env_eval_do_block(env, &do_block->data.td_do_block, &tmp))
+      goto ko;
+    if (tmp.type != TAG_STR) {
+      err_write_1("plist_map_join: expected block to return Str, got: ");
+      err_inspect_tag(&tmp);
+      err_write_1("\n");
+      goto ko;
+    }
+    if ((string_count &&
+         separator_eval.data.td_str.size > UW_MAX - total_size) ||
+        tmp.data.td_str.size >
+        UW_MAX - total_size -
+        (string_count ? separator_eval.data.td_str.size : 0)) {
+      err_puts("plist_map_join: result size overflow");
+      goto ko;
+    }
+    if (string_count)
+      total_size += separator_eval.data.td_str.size;
+    total_size += tmp.data.td_str.size;
+    if (total_size > SW_MAX) {
+      err_puts("plist_map_join: result exceeds Sw size");
+      goto ko;
+    }
+    string[string_count++] = tmp.data.td_str;
+    tmp.data.td_str = (s_str) {0};
+    tag_clean(&tmp);
+    l = list_next(l);
+  }
+  env_unwind_protect_pop(env, &unwind_protect);
+  if (total_size == UW_MAX || ! str_init_alloc(dest, total_size))
+    goto ko_no_unwind;
+  {
+    char *data = dest->free.p_pchar;
+    uw position = 0;
+    i = 0;
+    while (i < string_count) {
+      if (i) {
+        if (separator_eval.data.td_str.size)
+          memcpy(data + position,
+                 separator_eval.data.td_str.ptr.p_pvoid,
+                 separator_eval.data.td_str.size);
+        position += separator_eval.data.td_str.size;
+      }
+      if (string[i].size)
+        memcpy(data + position, string[i].ptr.p_pvoid, string[i].size);
+      position += string[i].size;
+      i++;
+    }
+    data[position] = 0;
+  }
+  i = 0;
+  while (i < string_count)
+    str_clean(string + i++);
+  alloc_free(string);
+  tag_clean(&match);
+  tag_clean(&separator_eval);
+  tag_clean(&list_eval);
+  return dest;
+ ko_no_unwind:
+  i = 0;
+  while (i < string_count)
+    str_clean(string + i++);
+  alloc_free(string);
+  tag_clean(&match);
+  tag_clean(&separator_eval);
+  tag_clean(&list_eval);
+  return NULL;
+ ko:
+  env_unwind_protect_pop(env, &unwind_protect);
+  env->silence_errors = silence_errors;
+  tag_clean(&tmp);
+  tag_clean(&match);
+  i = 0;
+  while (i < string_count)
+    str_clean(string + i++);
+  alloc_free(string);
+  tag_clean(&separator_eval);
+  tag_clean(&list_eval);
   return NULL;
 }
 

@@ -13,17 +13,38 @@
 #include "../libkc3/kc3.h"
 #include "url.h"
 
+static void url_escape_ascii_table (const s_str *escapes,
+                                    bool table[128])
+{
+  uw i;
+  const u8 *p = (const u8 *) escapes->ptr.p_pu8;
+  for (i = 0; i < escapes->size; i++)
+    if (p[i] < 128)
+      table[p[i]] = true;
+}
+
+static bool url_escape_character_is_escaped (const s_str *escapes,
+                                              const bool table[128],
+                                              character c)
+{
+  if (c < 128)
+    return table[c];
+  return str_character_position(escapes, c) >= 0;
+}
+
 s_str * url_escape (const s_str *src, s_str *dest)
 {
+  bool escaped_ascii[128] = {0};
   s_buf buf;
   character c;
   s_str *escapes;
   s_tag escapes_tag = {0};
   s_ident ident;
+  sw r;
   s_str s;
   sw size;
   u8 u;
-  ident_init(&ident, sym_1("URL"), sym_1("escapes"));
+  ident_init(&ident, &g_sym_URL, &g_sym_escapes);
   if (! ident_get(&ident, &escapes_tag)) {
     err_puts("url_escape: missing URL.escapes");
     assert(! "url_escape: missing URL.escapes");
@@ -36,9 +57,14 @@ s_str * url_escape (const s_str *src, s_str *dest)
     return NULL;
   }
   escapes = &escapes_tag.data.td_str;
-  if ((size = url_escape_size(src)) < 0) {
-    tag_clean(&escapes_tag);
-    return NULL;
+  url_escape_ascii_table(escapes, escaped_ascii);
+  s = *src;
+  size = 0;
+  while ((r = str_read_character_utf8(&s, &c)) > 0) {
+    if (url_escape_character_is_escaped(escapes, escaped_ascii, c))
+      size += 3;
+    else
+      size += r;
   }
   if (! size) {
     tag_clean(&escapes_tag);
@@ -55,7 +81,7 @@ s_str * url_escape (const s_str *src, s_str *dest)
            goto clean;
        }
        else */
-    if (str_character_position(escapes, c) >= 0) {
+    if (url_escape_character_is_escaped(escapes, escaped_ascii, c)) {
       if (buf_write_u8(&buf, '%') < 0)
         goto clean;
       u = c;
@@ -79,6 +105,7 @@ s_str * url_escape (const s_str *src, s_str *dest)
 
 sw url_escape_size (const s_str *src)
 {
+  bool escaped_ascii[128] = {0};
   character c;
   s_str *escapes;
   s_tag escapes_tag = {0};
@@ -86,7 +113,7 @@ sw url_escape_size (const s_str *src)
   sw r;
   sw result = 0;
   s_str s;
-  ident_init(&ident, sym_1("URL"), sym_1("escapes"));
+  ident_init(&ident, &g_sym_URL, &g_sym_escapes);
   if (! ident_get(&ident, &escapes_tag)) {
     err_puts("url_escape_size: missing URL.escapes");
     assert(! "url_escape_size: missing URL.escapes");
@@ -100,12 +127,13 @@ sw url_escape_size (const s_str *src)
     return -1;
   }
   escapes = &escapes_tag.data.td_str;
+  url_escape_ascii_table(escapes, escaped_ascii);
   s = *src;
   while ((r = str_read_character_utf8(&s, &c)) > 0) {
     /* if (c == ' ')
          result += 1;
        else */
-    if (str_character_position(escapes, c) >= 0)
+    if (url_escape_character_is_escaped(escapes, escaped_ascii, c))
       result += 3;
     else
       result += r;
@@ -224,11 +252,11 @@ s_tag * url_www_form_decode (const s_str *src, s_tag *dest)
     if (buf_read_until_1_into_str(&buf, "=", &key) <= 0)
       break;
     if (buf_read_until_1_into_str(&buf, "&", &value) <= 0 &&
-        buf_read_to_str(&buf, &value) <= 0) {
+        buf_read_to_str(&buf, &value) < 0) {
       str_clean(&key);
       goto clean;
     }
-    if (! key.size || ! value.size) {
+    if (! key.size) {
       str_clean(&key);
       str_clean(&value);
       continue;

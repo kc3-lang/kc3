@@ -19,6 +19,7 @@
 #else
 # include <netdb.h>
 # include <netinet/in.h>
+# include <sys/time.h>
 #endif
 
 #include <unistd.h>
@@ -216,4 +217,53 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
   err_puts(strerror(e));
   assert(! "socket_init_listen");
   return NULL;
+}
+
+bool socket_timeout_set (p_socket s, const s_time *timeout)
+{
+  s32 e;
+#if defined(WIN32) || defined(WIN64)
+  u64 milliseconds;
+  DWORD timeout_ms;
+#else
+  struct timeval tv = {0};
+#endif
+  assert(s);
+  assert(timeout);
+  if (*s < 0 || timeout->tv_sec < 0 || timeout->tv_nsec < 0 ||
+      timeout->tv_nsec >= 1000000000) {
+    err_puts("socket_timeout_set: invalid argument");
+    return false;
+  }
+#if defined(WIN32) || defined(WIN64)
+  milliseconds = ((u64) timeout->tv_nsec + 999999) / 1000000;
+  if ((u64) timeout->tv_sec >
+      (ULONG_MAX - milliseconds) / 1000) {
+    err_puts("socket_timeout_set: timeout overflow");
+    return false;
+  }
+  milliseconds += (u64) timeout->tv_sec * 1000;
+  timeout_ms = (DWORD) milliseconds;
+  if (setsockopt(*s, SOL_SOCKET, SO_RCVTIMEO,
+                 (const char *) &timeout_ms, sizeof(timeout_ms)) ||
+      setsockopt(*s, SOL_SOCKET, SO_SNDTIMEO,
+                 (const char *) &timeout_ms, sizeof(timeout_ms))) {
+    e = WSAGetLastError();
+    err_write_1("socket_timeout_set: setsockopt: ");
+    err_inspect_s32_decimal(e);
+    err_write_1("\n");
+    return false;
+  }
+#else
+  tv.tv_sec = timeout->tv_sec;
+  tv.tv_usec = (timeout->tv_nsec + 999) / 1000;
+  if (setsockopt(*s, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) ||
+      setsockopt(*s, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv))) {
+    e = errno;
+    err_write_1("socket_timeout_set: setsockopt: ");
+    err_puts(strerror(e));
+    return false;
+  }
+#endif
+  return true;
 }

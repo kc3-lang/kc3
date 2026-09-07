@@ -2,11 +2,11 @@
 $primary: $kmx_blue;
 $danger: $kmx_orange;
 $dark: #242124;
-@import "../node_modules/bootstrap/scss/bootstrap.scss";
 $font-family-sans-serif: "computer_modern", sans-serif;
-$font-family-monospace: "courier_new", "Courier New", monospace;
+$font-family-monospace: "CourierPrime", monospace;
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
 @import "./computer_modern.scss";
-@import "./courier_new.scss";
+@import "./courier_prime.scss";
 $code-font-size: $font-size-base * 1.1;
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
 $fa-font-path: "../_fonts";

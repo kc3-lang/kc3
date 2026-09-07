@@ -122,7 +122,7 @@ u64 * u64_init_cast
     err_inspect_psym(type);
     err_puts(" aka U64");
   }
-  err_inspect_stacktrace(env_global()->stacktrace);
+  err_stacktrace();
   assert(! "u64_init_cast: cannot cast to U64");
   return NULL;
 }
@@ -145,7 +145,7 @@ u64 * u64_init_str (u64 *u, const s_str *str)
   if (r <= 0) {
     if (false) {
       err_puts("u64_init_str: buf_parse_u64");
-      err_inspect_stacktrace(env_global()->stacktrace);
+      err_stacktrace();
       err_write_1("\n");
       assert(! "u64_init_str: buf_parse_u64");
     }
@@ -166,7 +166,7 @@ u64 * u64_init_str_hexadecimal (u64 *u, const s_str *str)
   if (r <= 0) {
     if (false) {
       err_puts("u64_init_str: buf_parse_u64");
-      err_inspect_stacktrace(env_global()->stacktrace);
+      err_stacktrace();
       err_write_1("\n");
       assert(! "u64_init_str: buf_parse_u64");
     }

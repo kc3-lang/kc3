@@ -15,7 +15,7 @@
 
 #include "types.h"
 
-extern s_gl_font  g_font_courier_new;
+extern s_gl_font  g_font_courier_prime;
 extern s_gl_ortho g_ortho;
 
 #endif /* LIBKC3_WINDOW_DEMO_DEMO_H */

@@ -16,4 +16,7 @@ defmodule Struct do
 
   def put = cfn Tag "kc3_struct_put" (Tag, Sym, Tag, Result)
 
+  def put_multiple = cfn Tag "kc3_struct_put_multiple"
+    (Sym, Tag, List, Result)
+
 end

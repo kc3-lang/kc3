@@ -21,7 +21,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include "hash.h"
 #include "types.h"
 
 #define STR_MAX (16 * 1024 * 1024)
@@ -43,8 +42,8 @@ void    str_clean (s_str *str);
 s_str * str_init (s_str *str, char *free, uw size, const char *p);
 s_str * str_init_1 (s_str *str, char *free, const char *p);
 s_str * str_init_1_alloc (s_str *str, const char *p);
-s_str * str_init_alloc (s_str *str, uw size);
-s_str * str_init_alloc_copy (s_str *str, uw size, const char *p);
+s_str * str_init_alloc (s_str *str, u32 size);
+s_str * str_init_alloc_copy (s_str *str, u32 size, const char *p);
 PROTOTYPE_STR_INIT_STRUCT(array);
 s_str * str_init_base64url (s_str *str, const void *data, uw size);
 s_str * str_init_cast (s_str *str, const s_sym * const *type,
@@ -85,6 +84,7 @@ PROTOTYPE_STR_INIT_STRUCT(map);
 PROTOTYPE_STR_INIT(ptr, const u_ptr_w *);
 PROTOTYPE_STR_INIT(ptr_free, const u_ptr_w *);
 PROTOTYPE_STR_INIT_STRUCT(quote);
+s_str * str_init_random (s_str *str, const s_tag *len);
 s_str * str_init_random_base32 (s_str *str, const s_tag *len);
 s_str * str_init_random_base64 (s_str *str, const s_tag *len);
 s_str * str_init_random_base64_uw (s_str *str, uw len);
@@ -148,6 +148,7 @@ bool *        str_has_reserved_characters (const s_str *src,
                                            bool *dest);
 bool *        str_has_str (const s_str *src, const s_str *search,
                            bool *dest);
+uw            str_hash_uw (const s_str *str);
 sw            str_length_utf8 (const s_str *str);
 bool          str_parse_eval (const s_str *str, s_tag *dest);
 sw            str_peek_bool (const s_str *str, bool *dest);

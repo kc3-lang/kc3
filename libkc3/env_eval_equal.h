@@ -24,6 +24,8 @@ bool env_eval_equal_do_block (s_env *env, bool macro,
 bool env_eval_equal_list (s_env *env, bool macro,
                           s_list *a, s_list *b,
                           s_list **dest);
+bool env_eval_equal_list_match (s_env *env, bool macro,
+                                s_list *a, s_list *b);
 bool env_eval_equal_struct (s_env *env, bool macro,
                             s_struct *a,
                             s_struct *b,

@@ -96,7 +96,7 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, u32 seg_u, u32 seg_v)
 s_gl_sphere * gl_sphere_new (u32 segments_u, u32 segments_v)
 {
   s_gl_sphere *sphere;
-  sphere = calloc(1, sizeof(s_gl_sphere));
+  sphere = alloc(sizeof(s_gl_sphere));
   if (! sphere) {
     err_puts("gl_sphere_new: failed to allocate memory");
     return NULL;

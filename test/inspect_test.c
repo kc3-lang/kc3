@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "../libkc3/assert.h"
 #include <string.h>
 #include "../libkc3/array.h"
 #include "../libkc3/buf_inspect.h"

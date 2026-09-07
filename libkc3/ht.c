@@ -151,7 +151,7 @@ s_tag ** ht_get_hash (s_ht *ht, s_tag *key, uw hash, s_tag **dest)
   return NULL;
 }
 
-bool ht_has (s_ht *ht, const s_tag *key)
+bool ht_has (s_ht *ht, s_tag *key)
 {
   uw hash;
   sw c = -1;

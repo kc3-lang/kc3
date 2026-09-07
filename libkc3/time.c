@@ -10,7 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include "alloc.h"
 #include "assert.h"
@@ -202,7 +204,11 @@ s_time * time_init_now (s_time *time)
 {
   s_timespec timespec;
   s_time tmp = {0};
-  clock_gettime(CLOCK_REALTIME, &timespec);
+  if (clock_gettime(CLOCK_REALTIME, &timespec) < 0) {
+    err_write_1("time_init_now: clock_gettime: ");
+    err_puts(strerror(errno));
+    return NULL;
+  }
   tmp.tv_sec = timespec.tv_sec;
   tmp.tv_nsec = timespec.tv_nsec;
   *time = tmp;
@@ -213,9 +219,12 @@ s_time * time_init_str (s_time *time, const s_str *src)
 {
   struct tm t = {0};
   s_time tmp = {0};
-  sscanf(src->ptr.p_pchar, "%d-%d-%d %d:%d:%d",
-         &t.tm_year, &t.tm_mon, &t.tm_mday,
-         &t.tm_hour, &t.tm_min, &t.tm_sec);
+  if (sscanf(src->ptr.p_pchar, "%d-%d-%d %d:%d:%d",
+             &t.tm_year, &t.tm_mon, &t.tm_mday,
+             &t.tm_hour, &t.tm_min, &t.tm_sec) != 6) {
+    err_puts("time_init_str: invalid date and time");
+    return NULL;
+  }
   t.tm_year -= 1900;
   t.tm_mon -= 1;
   tmp.tv_sec = timegm(&t);

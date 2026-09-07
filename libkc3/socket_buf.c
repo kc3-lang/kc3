@@ -83,11 +83,20 @@ bool socket_buf_can_close (s_socket_buf *sb)
 
 void socket_buf_close (s_socket_buf *sb)
 {
+  s32 e;
   assert(sb);
   buf_rw_fd_close(&sb->buf_rw);
   if (sb->sockfd >= 0) {
-    shutdown(sb->sockfd, SHUT_RDWR);
-    close(sb->sockfd);
+    if (shutdown(sb->sockfd, SHUT_RDWR) < 0 && errno != ENOTCONN) {
+      e = errno;
+      err_write_1("socket_buf_close: shutdown: ");
+      err_puts(strerror(e));
+    }
+    if (close(sb->sockfd) < 0) {
+      e = errno;
+      err_write_1("socket_buf_close: close: ");
+      err_puts(strerror(e));
+    }
     sb->sockfd = -1;
   }
   if (sb->buf_rw.r || sb->buf_rw.w) {
@@ -175,14 +184,19 @@ s_socket_buf * socket_buf_init_accept (s_socket_buf *sb, p_socket listening)
   struct sockaddr        *addr;
   struct sockaddr_storage addr_storage = {0};
   socklen_t               addr_len;
+  s32 e;
   s64 sockfd;
   assert(sb);
   assert(listening);
   addr = (struct sockaddr *) &addr_storage;
   addr_len = sizeof(addr_storage);
   sockfd = accept(*listening, addr, &addr_len);
-  if (sockfd < 0)
+  if (sockfd < 0) {
+    e = errno;
+    err_write_1("socket_buf_init_accept: accept: ");
+    err_puts(strerror(e));
     return NULL;
+  }
   if (! socket_buf_init(sb, sockfd, addr, addr_len)) {
     err_puts("socket_buf_init_accept: socket_buf_init");
     assert(! "socket_buf_init_accept: socket_buf_init");

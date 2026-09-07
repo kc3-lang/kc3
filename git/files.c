@@ -34,13 +34,13 @@ static s_map * files_set_entry (const git_tree_entry *entry,
   type = git_tree_entry_type(entry);
   switch (type) {
   case GIT_OBJECT_COMMIT:
-    type_sym = sym_1("commit");
+    type_sym = &g_sym_commit;
     break;
   case GIT_OBJECT_TREE:
-    type_sym = sym_1("tree");
+    type_sym = &g_sym_tree;
     break;
   case GIT_OBJECT_BLOB:
-    type_sym = sym_1("blob");
+    type_sym = &g_sym_blob;
     break;
   default:
     err_write_1("kc3_git: files_set_entry: skipping entry type ");
@@ -57,10 +57,10 @@ static s_map * files_set_entry (const git_tree_entry *entry,
       ! tag_init_map(map->value + index, 4))
     return NULL;
   sub_map = &map->value[index].data.td_map;
-  tag_init_psym(sub_map->key + 0, sym_1("name"));
-  tag_init_psym(sub_map->key + 1, sym_1("type"));
-  tag_init_psym(sub_map->key + 2, sym_1("mode"));
-  tag_init_psym(sub_map->key + 3, sym_1("hash"));
+  tag_init_psym(sub_map->key + 0, &g_sym_name);
+  tag_init_psym(sub_map->key + 1, &g_sym_type);
+  tag_init_psym(sub_map->key + 2, &g_sym_mode);
+  tag_init_psym(sub_map->key + 3, &g_sym_hash);
   if (! tag_init_str_1_alloc(sub_map->value + 0, name))
     return NULL;
   tag_init_psym(       sub_map->value + 1, type_sym);
@@ -78,22 +78,40 @@ s_map * kc3_git_files (git_repository **repo, const s_str *branch,
   uw i;
   git_object *obj = NULL;
   uw rev_size;
-  char *rev;
+  char *rev = NULL;
   const git_tree_entry *sub_entry;
   git_tree *sub_tree;
   s_map tmp = {0};
   git_tree *tree;
   git_object_t type;
+  git_commit *commit = NULL;
+  git_tree *commit_tree = NULL;
+  git_oid branch_oid = {0};
   rev_size = branch->size + 8;
-  if (! (rev = alloc(rev_size)))
-    return NULL;
-  memcpy(rev, branch->ptr.p_pvoid, branch->size);
-  memcpy(rev + branch->size, "^{tree}", 7);
-  if (git_revparse_single(&obj, *repo, rev)) {
-    alloc_free(rev);
-    map_init(&tmp, 0);
-    *dest = tmp;
-    return dest;
+  if (branch->size == GIT_OID_HEXSZ &&
+      ! git_oid_fromstrn(&branch_oid, branch->ptr.p_pchar,
+                         branch->size) &&
+      ! git_commit_lookup(&commit, *repo, &branch_oid)) {
+    if (git_commit_tree(&commit_tree, commit)) {
+      git_commit_free(commit);
+      map_init(&tmp, 0);
+      *dest = tmp;
+      return dest;
+    }
+    obj = (git_object *) commit_tree;
+    git_commit_free(commit);
+  }
+  else {
+    if (! (rev = alloc(rev_size)))
+      return NULL;
+    memcpy(rev, branch->ptr.p_pvoid, branch->size);
+    memcpy(rev + branch->size, "^{tree}", 7);
+    if (git_revparse_single(&obj, *repo, rev)) {
+      alloc_free(rev);
+      map_init(&tmp, 0);
+      *dest = tmp;
+      return dest;
+    }
   }
   tree = (git_tree *) obj;
   if (! path->size ||

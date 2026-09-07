@@ -35,13 +35,13 @@ if [ "x$KC3S" = "x" ]; then
 fi
 
 test_ko() {
-    printf "%s" "${TEST_COLOR_KO}F${TEST_COLOR_RESET}"
+    printf "%sF" "$TEST_COLOR_KO$1"
     echo $@ >> .test_ko
     echo $@ >> .test
 }
 
 test_ok() {
-    printf "%s" "${TEST_COLOR_OK}.${TEST_COLOR_RESET}"
+    printf "%s." "$TEST_COLOR_OK$1"
     echo $@ >> .test_ok
     echo $@ >> .test
 }

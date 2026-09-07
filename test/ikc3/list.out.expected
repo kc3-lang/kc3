@@ -118,3 +118,76 @@ List.append([], [])
 []
 List.append_one([], :x)
 [:x]
+List.do([1,
+         2,
+         3], x, do
+  puts(x) ; x * 2
+end)
+1
+2
+3
+6
+3
+[4,
+ 5]
+List.do(list_do_source, x, do
+  x + 10
+end)
+15
+5
+List.do([{1, :a},
+         {2, :b}], {n, symbol}, do
+  puts("#{n} #{symbol}")
+  symbol
+end)
+1 a
+2 b
+:b
+{2, :b}
+List.do([], item, do
+  item
+end)
+void
+List.map_join([1,
+               2,
+               3], x, ", ", do
+  "#{x * 2}"
+end)
+"2, 4, 6"
+3
+[{1, :a},
+ {2, :b}]
+List.map_join(list_map_join_source, {n, symbol}, "|", do
+  "#{n}:#{symbol}"
+end)
+"1:a|2:b"
+{2, :b}
+List.map_join([], item, ",", do
+  "#{item}"
+end)
+""
+List.map_filter([void,
+                 0,
+                 false,
+                 ""], item, do
+  item
+end)
+[0,
+ false,
+ ""]
+List.map_filter([1,
+                 2,
+                 3], item, do
+  if item == 2 do
+    void
+  else
+    item
+  end
+end)
+[1,
+ 3]
+defmodule ListMapFilterStructTest do
+  defstruct [value: 0]
+end
+ListMapFilterStructTest
+[%ListMapFilterStructTest{value: 1}]

@@ -585,6 +585,9 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   s_ops *ops = NULL;
   sw r;
   sw result = 0;
+  if (call->ident.module == sym_1("Struct") &&
+      call->ident.sym == sym_1("put_multiple"))
+    return buf_inspect_call_struct_update(buf, call);
   if (call->ident.module == &g_sym_KC3) {
     if (call->ident.sym == &g_sym_access)
       return buf_inspect_call_access(buf, call);
@@ -646,6 +649,62 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
     return r;
    result += r;
   return result;
+}
+
+sw buf_inspect_call_struct_update (s_buf *buf, const s_call *call)
+{
+  const s_list *args;
+  const s_list *changes;
+  const s_tag *key;
+  sw r;
+  sw result = 0;
+  args = call->arguments;
+  if (! args || args->tag.type != TAG_PSYM ||
+      ! (args = list_next(args)) ||
+      ! (args = list_next(args)) || args->tag.type != TAG_PLIST ||
+      list_next(args))
+    return -1;
+  if ((r = buf_write_1(buf, "%")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_sym(buf,
+                           call->arguments->tag.data.td_psym)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "{")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_tag(buf, &list_next(call->arguments)->tag)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " | ")) < 0)
+    return r;
+  result += r;
+  changes = args->tag.data.td_plist;
+  while (changes) {
+    if (changes->tag.type != TAG_PTUPLE ||
+        changes->tag.data.td_ptuple->count != 2 ||
+        (key = changes->tag.data.td_ptuple->tag)->type != TAG_PSYM)
+      return -1;
+    if (changes != args->tag.data.td_plist) {
+      if ((r = buf_write_1(buf, ", ")) < 0)
+        return r;
+      result += r;
+    }
+    if ((r = buf_inspect_sym_key(buf, key->data.td_psym)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, ": ")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_tag(buf, key + 1)) < 0)
+      return r;
+    result += r;
+    changes = list_next(changes);
+  }
+  if ((r = buf_write_1(buf, "}")) < 0)
+    return r;
+  return result + r;
 }
 
 sw buf_inspect_call_access (s_buf *buf, const s_call *call)
@@ -1274,6 +1333,9 @@ sw buf_inspect_call_size (s_pretty *pretty, const s_call *call)
   s_ops *ops = NULL;
   sw r;
   sw result = 0;
+  if (call->ident.module == sym_1("Struct") &&
+      call->ident.sym == sym_1("put_multiple"))
+    return buf_inspect_call_struct_update_size(pretty, call);
   if (call->ident.module == &g_sym_KC3 &&
       call->ident.sym == &g_sym_access)
     return buf_inspect_call_access_size(pretty, call);
@@ -1328,6 +1390,66 @@ sw buf_inspect_call_size (s_pretty *pretty, const s_call *call)
   if ((r = buf_inspect_call_args_size(pretty, call->arguments)) < 0)
     return r;
    result += r;
+  return result;
+}
+
+sw buf_inspect_call_struct_update_size (s_pretty *pretty,
+                                        const s_call *call)
+{
+  const s_list *args;
+  const s_list *changes;
+  const s_tag *key;
+  sw r;
+  sw result = 0;
+  args = call->arguments;
+  if (! args || args->tag.type != TAG_PSYM ||
+      ! (args = list_next(args)) ||
+      ! (args = list_next(args)) || args->tag.type != TAG_PLIST ||
+      list_next(args))
+    return -1;
+  if ((r = buf_write_1_size(pretty, "%")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_sym_size(pretty,
+                                call->arguments->tag.data.td_psym)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1_size(pretty, "{")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_tag_size(pretty,
+                                &list_next(call->arguments)->tag)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1_size(pretty, " | ")) < 0)
+    return r;
+  result += r;
+  changes = args->tag.data.td_plist;
+  while (changes) {
+    if (changes->tag.type != TAG_PTUPLE ||
+        changes->tag.data.td_ptuple->count != 2 ||
+        (key = changes->tag.data.td_ptuple->tag)->type != TAG_PSYM)
+      return -1;
+    if (changes != args->tag.data.td_plist) {
+      if ((r = buf_write_1_size(pretty, ", ")) < 0)
+        return r;
+      result += r;
+    }
+    if ((r = buf_inspect_sym_key_size(pretty,
+                                      key->data.td_psym)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1_size(pretty, ": ")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_tag_size(pretty, key + 1)) < 0)
+      return r;
+    result += r;
+    changes = list_next(changes);
+  }
+  if ((r = buf_write_1_size(pretty, "}")) < 0)
+    return r;
+  result += r;
   return result;
 }
 
@@ -2464,6 +2586,7 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
 
 sw buf_inspect_fn_clause (s_buf *buf, const s_fn_clause *clause)
 {
+  s_env *env;
   sw r;
   sw result = 0;
   assert(buf);
@@ -2471,12 +2594,20 @@ sw buf_inspect_fn_clause (s_buf *buf, const s_fn_clause *clause)
   if ((r = buf_inspect_fn_pattern(buf, clause->pattern)) < 0)
     return r;
   result += r;
+  env = env_global();
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_do_block(buf, &clause->algo)) < 0)
-    return r;
-  result += r;
+  if (env && env->print_readably) {
+    if ((r = buf_inspect_do_block(buf, &clause->algo)) < 0)
+      return r;
+    result += r;
+  }
+  else {
+    if ((r = buf_write_1(buf, "{ ... }")) < 0)
+      return r;
+    result += r;
+  }
   return result;
 }
 
@@ -3096,13 +3227,8 @@ sw buf_inspect_list_tag (s_buf *buf, const s_tag *tag)
       tag->data.td_ptuple->count == 2 &&
       tag->data.td_ptuple->tag[0].type == TAG_PSYM) {
     sym = tag->data.td_ptuple->tag[0].data.td_psym;
-    if (sym_has_reserved_characters(sym)) {
-      if ((r = buf_inspect_str(buf, &sym->str)) < 0)
-        return r;
-    }
-    else
-      if ((r = buf_write_str(buf, &sym->str)) < 0)
-        return r;
+    if ((r = buf_inspect_sym_key(buf, sym)) < 0)
+      return r;
     result += r;
     if ((r = buf_write_1(buf, ": ")) < 0)
       return r;
@@ -3125,12 +3251,8 @@ sw buf_inspect_list_tag_size (s_pretty *pretty, const s_tag *tag)
       tag->data.td_ptuple->count == 2 &&
       tag->data.td_ptuple->tag[0].type == TAG_PSYM) {
     sym = tag->data.td_ptuple->tag[0].data.td_psym;
-    if (sym_has_reserved_characters(sym)) {
-      if ((r = buf_inspect_str_size(pretty, &sym->str)) < 0)
-        return r;
-    }
-    else
-      r = sym->str.size;
+    if ((r = buf_inspect_sym_key_size(pretty, sym)) < 0)
+      return r;
     result += r;
     if ((r = buf_write_1_size(pretty, ": ")) < 0)
       return r;
@@ -3160,13 +3282,8 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
   while (i < map->count) {
     k = map->key + i;
     if (k->type == TAG_PSYM) {
-      if (sym_has_reserved_characters(k->data.td_psym)) {
-        if ((r = buf_inspect_str(buf, &k->data.td_psym->str)) < 0)
-          return r;
-      }
-      else
-        if ((r = buf_write_str(buf, &k->data.td_psym->str)) < 0)
-          return r;
+      if ((r = buf_inspect_sym_key(buf, k->data.td_psym)) < 0)
+        return r;
       result += r;
       if ((r = buf_write_1(buf, ": ")) < 0)
         return r;
@@ -3213,13 +3330,9 @@ sw buf_inspect_map_size (s_pretty *pretty, const s_map *map)
   while (i < map->count) {
     k = map->key + i;
     if (k->type == TAG_PSYM) {
-      if (sym_has_reserved_characters(k->data.td_psym)) {
-        if ((r = buf_inspect_str_size(pretty, &k->data.td_psym->str)) < 0)
-          return r;
-      }
-      else
-        if ((r = buf_write_str_size(pretty, &k->data.td_psym->str)) < 0)
-          return r;
+      if ((r = buf_inspect_sym_key_size(pretty,
+                                        k->data.td_psym)) < 0)
+        return r;
       result += r;
       if ((r = buf_write_1_size(pretty, ": ")) < 0)
         return r;
@@ -3836,6 +3949,8 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
   p_list arg;
   sw count = 10;
   sw depth;
+  s_env *env;
+  bool   env_print_readably = false;
   sw i;
   s_pretty_save pretty_save;
   sw r;
@@ -3857,6 +3972,11 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
     alloc_free(trace);
     pretty_save_clean(&pretty_save, &buf->pretty);
     return r;
+  }
+  env = env_global();
+  if (env) {
+    env_print_readably = env->print_readably;
+    env->print_readably = false;
   }
   i = 0;
   s = stacktrace;
@@ -3906,7 +4026,43 @@ sw buf_inspect_stacktrace (s_buf *buf, p_list stacktrace)
   alloc_free(trace);
   list_delete_all(reverse);
   pretty_save_clean(&pretty_save, &buf->pretty);
+  if (env)
+    env->print_readably = env_print_readably;
   return r;
+}
+
+sw buf_inspect_stacktrace_short (s_buf *buf, p_list stacktrace)
+{
+  sw count = 0;
+  p_list frame;
+  const s_tag *name;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  frame = stacktrace;
+  while (frame && count < 10) {
+    if (frame->tag.type == TAG_PLIST &&
+        frame->tag.data.td_plist) {
+      name = &frame->tag.data.td_plist->tag;
+      if (name->type == TAG_IDENT)
+        r = buf_inspect_ident(buf, &name->data.td_ident);
+      else if (name->type == TAG_PSYM)
+        r = buf_write_str(buf, &name->data.td_psym->str);
+      else
+        r = buf_inspect_tag(buf, name);
+      if (r < 0)
+        return r;
+    }
+    else if ((r = buf_write_1(buf, "???")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, "\n")) < 0)
+      return r;
+    result += r;
+    frame = list_next(frame);
+    count++;
+  }
+  return result;
 }
 
 sw buf_inspect_stacktrace_size (s_pretty *pretty,
@@ -4513,20 +4669,8 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
           r = -1;
           goto clean;
         }
-        if (sym_has_reserved_characters(k->data.td_psym)) {
-          if ((r = buf_inspect_str(buf, &k->data.td_psym->str)) < 0) {
-            assert(! "buf_inspect_struct: buf_inspect_str: k");
-            goto clean;
-          }
-        }
-        else {
-          r = buf_write_str_without_indent(buf, &k->data.td_psym->str);
-          if (r < 0) {
-            assert(! "buf_inspect_struct: "
-                     "buf_write_str_without_ident: k");
-            goto clean;
-          }
-        }
+        if ((r = buf_inspect_sym_key(buf, k->data.td_psym)) < 0)
+          goto clean;
         result += r;
         if ((r = buf_write_1(buf, ": ")) < 0) {
           assert(! "buf_inspect_struct: buf_write_1(\": \")");
@@ -4640,20 +4784,9 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
           r = -1;
           goto clean;
         }
-        if (sym_has_reserved_characters(k->data.td_psym)) {
-          if ((r = buf_inspect_str_size(pretty,
-                                        &k->data.td_psym->str)) < 0) {
-            assert(! "buf_inspect_struct_size: buf_inspect_str: k");
-            goto clean;
-          }
-        }
-        else
-          if ((r = buf_write_str_without_indent_size
-               (pretty, &k->data.td_psym->str)) < 0) {
-            assert(! "buf_inspect_struct_size: "
-                     "buf_write_str_without_ident: k");
-            goto clean;
-          }
+        if ((r = buf_inspect_sym_key_size(pretty,
+                                          k->data.td_psym)) < 0)
+          goto clean;
         result += r;
         if ((r = buf_write_1_size(pretty, ": ")) < 0)
           goto clean;
@@ -4831,6 +4964,24 @@ sw buf_inspect_sym (s_buf *buf, const s_sym *sym)
       (r = buf_write_str(buf, &sym->str)) < 0)
     return r;
   return size;
+}
+
+sw buf_inspect_sym_key (s_buf *buf, const s_sym *sym)
+{
+  assert(buf);
+  assert(sym);
+  if (sym_has_reserved_characters(sym))
+    return buf_inspect_str(buf, &sym->str);
+  return buf_write_str(buf, &sym->str);
+}
+
+sw buf_inspect_sym_key_size (s_pretty *pretty, const s_sym *sym)
+{
+  assert(pretty);
+  assert(sym);
+  if (sym_has_reserved_characters(sym))
+    return buf_inspect_str_size(pretty, &sym->str);
+  return buf_write_str_size(pretty, &sym->str);
 }
 
 sw buf_inspect_sym_size (s_pretty *pretty, const s_sym *sym)

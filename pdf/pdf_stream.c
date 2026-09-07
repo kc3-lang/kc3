@@ -13,7 +13,7 @@
 #include "../libkc3/kc3.h"
 #include "../libkc3/kc3_main.h"
 #include "types.h"
-#include <assert.h>
+#include "../libkc3/assert.h"
 #include "pdf_buf_write.h"
 #include "pdf_stream.h"
 

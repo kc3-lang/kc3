@@ -21,9 +21,11 @@
 #include "ident.h"
 #include "list.h"
 #include "pstruct_type.h"
+#include "rwlock.h"
 #include "str.h"
 #include "struct_type.h"
 #include "sym.h"
+#include "sym_ht.h"
 #include "tag_type.h"
 
 const s_sym g_sym___DIR__          = SYM_1("__DIR__");
@@ -96,10 +98,16 @@ const s_sym g_sym_Var              = SYM_1("Var");
 const s_sym g_sym_Void             = SYM_1("Void");
 const s_sym g_sym_access           = SYM_1("access");
 const s_sym g_sym_arity            = SYM_1("arity");
+const s_sym g_sym_author_email     = SYM_1("author_email");
+const s_sym g_sym_author_name      = SYM_1("author_name");
+const s_sym g_sym_blob             = SYM_1("blob");
 const s_sym g_sym_cast             = SYM_1("cast");
 const s_sym g_sym_clean            = SYM_1("clean");
+const s_sym g_sym_commit           = SYM_1("commit");
+const s_sym g_sym_defmodule        = SYM_1("defmodule");
 const s_sym g_sym_defstruct        = SYM_1("defstruct");
 const s_sym g_sym_directory        = SYM_1("directory");
+const s_sym g_sym_date             = SYM_1("date");
 const s_sym g_sym_do               = SYM_1("do");
 const s_sym g_sym_else             = SYM_1("else");
 const s_sym g_sym_end              = SYM_1("end");
@@ -107,6 +115,7 @@ const s_sym g_sym_eof              = SYM_1("eof");
 const s_sym g_sym_error            = SYM_1("error");
 const s_sym g_sym_file             = SYM_1("file");
 const s_sym g_sym_fn               = SYM_1("fn");
+const s_sym g_sym_hash             = SYM_1("hash");
 const s_sym g_sym_if               = SYM_1("if");
 const s_sym g_sym_if_then_else     = SYM_1("if_then_else");
 const s_sym g_sym_is_a             = SYM_1("is_a");
@@ -116,8 +125,11 @@ const s_sym g_sym_macro            = SYM_1("macro");
 const s_sym g_sym_marshall         = SYM_1("marshall");
 const s_sym g_sym_marshall_read    = SYM_1("marshall_read");
 const s_sym g_sym_match            = SYM_1("match");
+const s_sym g_sym_message          = SYM_1("message");
 const s_sym g_sym_mmap             = SYM_1("mmap");
 const s_sym g_sym_module           = SYM_1("module");
+const s_sym g_sym_mode             = SYM_1("mode");
+const s_sym g_sym_name             = SYM_1("name");
 const s_sym g_sym_ncpu             = SYM_1("ncpu");
 const s_sym g_sym_op               = SYM_1("op");
 const s_sym g_sym_op_associativity = SYM_1("op_associativity");
@@ -126,6 +138,7 @@ const s_sym g_sym_op_equal         = SYM_1("op_equal");
 const s_sym g_sym_op_pin           = SYM_1("op_pin");
 const s_sym g_sym_op_precedence    = SYM_1("op_precedence");
 const s_sym g_sym_op_sym           = SYM_1("op_sym");
+const s_sym g_sym_parents          = SYM_1("parents");
 const s_sym g_sym_persist          = SYM_1("persist");
 const s_sym g_sym_profile          = SYM_1("profile");
 const s_sym g_sym_r                = SYM_1("r");
@@ -145,17 +158,33 @@ const s_sym g_sym_symbol_value     = SYM_1("symbol_value");
 const s_sym g_sym_then             = SYM_1("then");
 const s_sym g_sym_timeout          = SYM_1("timeout");
 const s_sym g_sym_timer            = SYM_1("timer");
+const s_sym g_sym_tree             = SYM_1("tree");
+const s_sym g_sym_type             = SYM_1("type");
 const s_sym g_sym_tv_nsec          = SYM_1("tv_nsec");
 const s_sym g_sym_tv_sec           = SYM_1("tv_sec");
 const s_sym g_sym_w                = SYM_1("w");
 const s_sym g_sym_write            = SYM_1("write");
 const s_sym g_sym_wx               = SYM_1("wx");
 const s_sym g_sym_x                = SYM_1("x");
+const s_sym g_sym_HTTP_Request     = SYM_1("HTTP.Request");
+const s_sym g_sym_HTTP_Response     = SYM_1("HTTP.Response");
+const s_sym g_sym_HTTP_Upload       = SYM_1("HTTP.Upload");
+const s_sym g_sym_URL               = SYM_1("URL");
+const s_sym g_sym_allowed_methods   = SYM_1("allowed_methods");
+const s_sym g_sym_application_octet_stream =
+  SYM_1("application/octet-stream");
+const s_sym g_sym_default_messages  = SYM_1("default_messages");
+const s_sym g_sym_escapes           = SYM_1("escapes");
+const s_sym g_sym_filename          = SYM_1("filename");
+const s_sym g_sym_mime_type         = SYM_1("mime_type");
+const s_sym g_sym_size              = SYM_1("size");
+const s_sym g_sym_tmp_filename_prefix =
+  SYM_1("tmp_filename_prefix");
+const s_sym g_sym_tmp_filename_random_length =
+  SYM_1("tmp_filename_random_length");
+const s_sym g_sym_tmp_path           = SYM_1("tmp_path");
 
-static s_sym_list * g_sym_list = NULL;
-
-s_sym_list * sym_list_new (const s_sym *sym, s_sym *free_sym,
-                           s_sym_list *next);
+static s_sym_ht * g_sym_ht = NULL;
 
 const s_sym * sym_1 (const char *p)
 {
@@ -224,40 +253,32 @@ bool sym_character_is_reserved (character c)
           c == '}');
 }
 
+uw sym_collisions (void)
+{
+  return g_sym_ht->collisions;
+}
+
+uw sym_count (void)
+{
+  return g_sym_ht->count;
+}
+
 void sym_delete (s_sym *sym)
 {
   str_clean(&sym->str);
   alloc_free(sym);
 }
-  
+
 void sym_delete_all (void)
 {
-  s_sym_list *sym_list;
-  if (false)
-    err_puts("sym_delete_all");
-  sym_list = g_sym_list;
-  g_sym_list = NULL;
-  while (sym_list) {
-    s_sym_list *tmp = NULL;
-    tmp = sym_list;
-    sym_list = sym_list->next;
-    if (tmp->free_sym)
-      sym_delete(tmp->free_sym);
-    alloc_free(tmp);
-  }
+  s_sym_ht *ht = g_sym_ht;
+  g_sym_ht = NULL;
+  sym_ht_delete(ht);
 }
 
 const s_sym * sym_find (const s_str *str)
 {
-  s_sym_list *sym_list;
-  sym_list = g_sym_list;
-  while (sym_list) {
-    const s_sym *sym = sym_list->sym;
-    if (compare_str(str, &sym->str) == 0)
-      return sym;
-    sym_list = sym_list->next;
-  }
-  return NULL;
+  return sym_ht_find(g_sym_ht, str);
 }
 
 s_tag * sym_find_to_tag (const s_str *src, s_tag *dest)
@@ -323,8 +344,11 @@ bool sym_has_reserved_characters (const s_sym *sym)
 
 void sym_init_g_sym (void)
 {
-  if (g_sym_list)
+  if (g_sym_ht)
     return;
+  if (! (g_sym_ht = sym_ht_new(0))) {
+    abort();
+  }
   sym_register(&g_sym___DIR__, NULL);
   sym_register(&g_sym___FILE__, NULL);
   sym_register(&g_sym__brackets, NULL);
@@ -395,10 +419,16 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_Void, NULL);
   sym_register(&g_sym_access, NULL);
   sym_register(&g_sym_arity, NULL);
+  sym_register(&g_sym_author_email, NULL);
+  sym_register(&g_sym_author_name, NULL);
+  sym_register(&g_sym_blob, NULL);
   sym_register(&g_sym_cast, NULL);
   sym_register(&g_sym_clean, NULL);
+  sym_register(&g_sym_commit, NULL);
+  sym_register(&g_sym_defmodule, NULL);
   sym_register(&g_sym_defstruct, NULL);
   sym_register(&g_sym_directory, NULL);
+  sym_register(&g_sym_date, NULL);
   sym_register(&g_sym_do, NULL);
   sym_register(&g_sym_else, NULL);
   sym_register(&g_sym_end, NULL);
@@ -406,6 +436,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_error, NULL);
   sym_register(&g_sym_file, NULL);
   sym_register(&g_sym_fn, NULL);
+  sym_register(&g_sym_hash, NULL);
   sym_register(&g_sym_if, NULL);
   sym_register(&g_sym_if_then_else, NULL);
   sym_register(&g_sym_is_a, NULL);
@@ -415,7 +446,10 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_marshall, NULL);
   sym_register(&g_sym_marshall_read, NULL);
   sym_register(&g_sym_match, NULL);
+  sym_register(&g_sym_message, NULL);
   sym_register(&g_sym_module, NULL);
+  sym_register(&g_sym_mode, NULL);
+  sym_register(&g_sym_name, NULL);
   sym_register(&g_sym_ncpu, NULL);
   sym_register(&g_sym_op, NULL);
   sym_register(&g_sym_op_associativity, NULL);
@@ -424,6 +458,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_op_pin, NULL);
   sym_register(&g_sym_op_precedence, NULL);
   sym_register(&g_sym_op_sym, NULL);
+  sym_register(&g_sym_parents, NULL);
   sym_register(&g_sym_persist, NULL);
   sym_register(&g_sym_profile, NULL);
   sym_register(&g_sym_r, NULL);
@@ -443,38 +478,28 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_then, NULL);
   sym_register(&g_sym_timeout, NULL);
   sym_register(&g_sym_timer, NULL);
+  sym_register(&g_sym_tree, NULL);
+  sym_register(&g_sym_type, NULL);
   sym_register(&g_sym_tv_nsec, NULL);
   sym_register(&g_sym_tv_sec, NULL);
   sym_register(&g_sym_w, NULL);
   sym_register(&g_sym_write, NULL);
   sym_register(&g_sym_wx, NULL);
   sym_register(&g_sym_x, NULL);
-}
-
-uw * sym_list_size (uw *dest)
-{
-  uw size = 0;
-  const s_sym_list *l;
-  l = g_sym_list;
-  while (l) {
-    size += sizeof(s_sym) + l->sym->str.size + 1;
-    l = l->next;
-  }
-  *dest = size;
-  return dest;
-}
-
-bool sym_register (const s_sym *sym, s_sym *free_sym)
-{
-  s_sym_list *tmp = NULL;
-  assert(sym);
-  if (sym_find(&sym->str))
-    return false;
-  tmp = sym_list_new(sym, free_sym, g_sym_list);
-  if (! tmp)
-    return false;
-  g_sym_list = tmp;
-  return true;
+  sym_register(&g_sym_HTTP_Request, NULL);
+  sym_register(&g_sym_HTTP_Response, NULL);
+  sym_register(&g_sym_HTTP_Upload, NULL);
+  sym_register(&g_sym_URL, NULL);
+  sym_register(&g_sym_allowed_methods, NULL);
+  sym_register(&g_sym_application_octet_stream, NULL);
+  sym_register(&g_sym_default_messages, NULL);
+  sym_register(&g_sym_escapes, NULL);
+  sym_register(&g_sym_filename, NULL);
+  sym_register(&g_sym_mime_type, NULL);
+  sym_register(&g_sym_size, NULL);
+  sym_register(&g_sym_tmp_filename_prefix, NULL);
+  sym_register(&g_sym_tmp_filename_random_length, NULL);
+  sym_register(&g_sym_tmp_path, NULL);
 }
 
 bool sym_is_array_type (const s_sym *sym)
@@ -552,19 +577,6 @@ bool sym_is_pointer_type (p_sym sym, p_sym target_type)
     return true;
   }
   return sym->str.ptr.p_pchar[sym->str.size - 1] == '*';
-}
-
-s_sym_list * sym_list_new (const s_sym *sym, s_sym *free_sym,
-                           s_sym_list *next)
-{
-  s_sym_list *sym_list;
-  sym_list = alloc(sizeof(s_sym_list));
-  if (! sym_list)
-    return NULL;
-  sym_list->sym = sym;
-  sym_list->free_sym = free_sym;
-  sym_list->next = next;
-  return sym_list;
 }
 
 bool * sym_must_clean (const s_sym *sym, bool *must_clean)
@@ -748,23 +760,8 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
 
 const s_sym * sym_new (const s_str *src)
 {
-  s_sym *sym = NULL;
-  s_sym_list *tmp = NULL;
-  sym = alloc(sizeof(s_sym));
-  if (! sym)
-    return NULL;
-  if (! str_init_copy(&sym->str, src)) {
-    alloc_free(sym);
-    return NULL;
-  }
-  tmp = sym_list_new(sym, sym, g_sym_list);
-  if (! tmp) {
-    str_clean(&sym->str);
-    alloc_free(sym);
-    return NULL;
-  }
-  g_sym_list = tmp;
-  return sym;
+  assert(g_sym_ht);
+  return sym_ht_intern(g_sym_ht, src);
 }
 
 p_sym sym_pointer_to_target_type (p_sym pointer_type)
@@ -774,6 +771,15 @@ p_sym sym_pointer_to_target_type (p_sym pointer_type)
   str_init(&str, NULL, pointer_type->str.size - 1,
            pointer_type->str.ptr.p_pchar);
   return str_to_sym(&str);
+}
+
+bool sym_register (const s_sym *sym, s_sym *sym_free)
+{
+  assert(sym);
+  assert(g_sym_ht);
+  if (sym_ht_register(g_sym_ht, sym, sym_free))
+    return true;
+  return false;
 }
 
 bool sym_search_modules (const s_sym *sym, p_sym *dest)

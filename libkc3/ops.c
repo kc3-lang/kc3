@@ -159,7 +159,7 @@ s_tag * ops_get_tag (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
   return tag_init_copy(dest, ptag);
 }
 
-uw ops_hash_tag (const s_tag *op_tag)
+uw ops_hash_tag (s_tag *op_tag)
 {
   t_hash hash;
   uw h;

@@ -86,7 +86,7 @@ s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
   sprite->w = sprite->total_w / dim_x;
   sprite->h = sprite->total_h / dim_y;
   sprite->frame_count = frame_count ? frame_count : (dim_x * dim_y);
-  sprite->surface = calloc(frame_count, sizeof(cairo_surface_t *));
+  sprite->surface = alloc(sprite->frame_count * sizeof(cairo_surface_t *));
   if (! sprite->surface) {
     err_puts("cairo_sprite_init: sprite->surface:"
              " failed to allocate memory");
@@ -105,7 +105,7 @@ s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
                                                  sprite->total_w);
       dest_stride =
         cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, sprite->w);
-      dest_data = malloc(sprite->h * dest_stride);
+      dest_data = alloc(sprite->h * dest_stride);
       sprite->surface[i] =
         cairo_image_surface_create_for_data(dest_data,
                                             CAIRO_FORMAT_ARGB32,

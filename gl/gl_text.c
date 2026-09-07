@@ -125,7 +125,7 @@ bool gl_text_render_to_texture (s_gl_text *text)
   if (x > data_w)
     data_w = x;
   data_size = data_w * data_h * 4;
-  data = calloc(1, data_size);
+  data = alloc(data_size);
   x = 0;
   y = 0;
   prev_glyph_index = 0;

@@ -21,6 +21,7 @@ p_list * kc3_git_tag_list (git_repository **repo, p_list *dest)
   s_list *l;
   git_strarray sa = {0};
   s_list *tmp = NULL;
+  p_list *tail = &tmp;
   if (git_tag_list(&sa, *repo)) {
     e = git_error_last();
     err_write_1("kc3_git_repository_tag_list: ");
@@ -29,12 +30,13 @@ p_list * kc3_git_tag_list (git_repository **repo, p_list *dest)
     return NULL;
   }
   while (i < sa.count) {
-    if (! (l = list_new_str_1_alloc(sa.strings[i], tmp))) {
+    if (! (l = list_new_str_1_alloc(sa.strings[i], NULL))) {
       list_delete_all(tmp);
       git_strarray_free(&sa);
       return NULL;
     }
-    tmp = l;
+    *tail = l;
+    tail = &l->next.data.td_plist;
     i++;
   }
   git_strarray_free(&sa);

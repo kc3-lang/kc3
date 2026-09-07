@@ -105,8 +105,7 @@ s64 * s64_init_cast
   }
   if (true) {
     err_puts("s64_cast: stacktrace:");
-    err_inspect_list(env_global()->stacktrace);
-    err_write_1("\n");
+    err_stacktrace();
   }
   assert(! "s64_cast: cannot cast to S64");
   return NULL;

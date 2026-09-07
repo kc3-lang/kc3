@@ -595,6 +595,7 @@ uw.h: u.h.in gen.mk
 
 SED_FACT = sed \
 	-e 's/_NAME[$$]/fact/g' \
+	-e 's/_LOOKUP_TYPE[$$]/const s_fact */g' \
 	-e 's/_TYPE[$$]/s_fact */g'
 
 set_cursor__fact.h: set_cursor.h.in gen.mk
@@ -649,6 +650,7 @@ skiplist_node__fact.c: skiplist_node.c.in gen.mk
 
 SED_UW = sed \
 	-e 's/_NAME[$$]/uw/g' \
+	-e 's/_LOOKUP_TYPE[$$]/const uw/g' \
 	-e 's/_TYPE[$$]/uw/g'
 
 set_cursor__uw.h: set_cursor.h.in gen.mk
@@ -671,6 +673,7 @@ set__uw.c: set.c.in gen.mk
 
 SED_TAG = sed \
 	-e 's/_NAME[$$]/tag/g' \
+	-e 's/_LOOKUP_TYPE[$$]/s_tag */g' \
 	-e 's/_TYPE[$$]/s_tag */g'
 
 set_cursor__tag.h: set_cursor.h.in gen.mk

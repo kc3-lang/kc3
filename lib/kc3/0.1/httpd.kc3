@@ -12,6 +12,7 @@
 
 require Buf
 require Counter
+require Daemon
 require Facts
 require File
 require HTML
@@ -19,43 +20,55 @@ require HTTP
 require HTTP.Request
 require HTTP.Response
 require HTTPd.Route
+require HTTPd.Static
 require EventPoll
 require Socket
 require Socket.Buf
+require Stacktrace
 require Str
 require Thread
 require URL
 
 defmodule HTTPd do
 
+  def version = "0.2.0-git"
+
   def acceptor_tag = Tag.new_copy(:acceptor)
 
   def bots = Counter.new(0)
 
-  def bots_max = fn () { (ncpu() / 4) || 1 }
+  def bots_max = fn () {
+    (HTTPd.thread_max() / 4) || 1
+  }
 
   def concurrent_requests = Counter.new(0)
 
   def connections = Counter.new(0)
 
   def connections_max = fn () {
-    HTTPd.thread_count() * 1024
+    HTTPd.thread_max() * 2
   }
 
   def ep_fd = ?
 
   def requests = Counter.new(0)
 
-  def server_thread_stop = Counter.new(0)
-
   def socket = ?
 
-  def thread_count = fn () { ncpu() }
+  def stop_tag = Tag.new_copy(:stop)
 
-  def timeout = %Time{tv_sec: 20}
+  def thread_count = Counter.new(0)
+
+  def thread_max = fn () {
+    ncpu()
+  }
+
+  def timeout = %Time{tv_sec: 30}
 
   def load_app = fn () {
-    HTTP.mime_type_load("config/mime.types")
+    if File.exists?("config/mime.types") do
+      HTTP.mime_type_load("config/mime.types")
+    end
     load_directory!("app/lib/")
     load_directory!("app/models/")
     if (File.exists?("config/app.kc3")) do
@@ -81,6 +94,25 @@ defmodule HTTPd do
     end
     securelevel(2)
     IO.puts("HTTPd.load_app: done")
+  }
+
+  def thread_db = Facts.database()
+
+  def thread_status = fn (thread_id, status) {
+    Facts.replace_tags(HTTPd.thread_db, :thread_status, thread_id,
+      %{id: thread_id,
+        status: status,
+        time: Time.now()})
+  }
+
+  def thread_request = fn (thread_id, msg) {
+    IO.puts(msg)
+    Err.puts(msg)
+    Facts.replace_tags(HTTPd.thread_db, :thread_request, thread_id, msg)
+  }
+
+  def thread_stacktrace = fn (thread_id, ptr) {
+    Facts.replace_tags(HTTPd.thread_db, :thread_stacktrace, thread_id, ptr)
   }
 
   def clean_upload = fn (file) {
@@ -115,15 +147,17 @@ defmodule HTTPd do
     end
   }
 
-  def http_client = fn (socket, client) do
+  def http_client = fn (thread_id, socket, client) do
     bot? = false
     close = false
     error = true
     request = void
     Counter.increase(HTTPd.concurrent_requests, 1)
     unwind_protect(do
-      request = HTTP.Request.buf_parse_with_timeout(client.buf_rw.r, (S64) 5, (Sw) 3)
+      HTTPd.thread_status(thread_id, "parse request")
+      request = HTTP.Request.buf_parse(client.buf_rw.r)
       if request do
+        HTTPd.thread_status(thread_id, "request")
         Counter.increase(HTTPd.requests, 1)
         client_addr = if client.addr_str != "127.0.0.1" do
           client.addr_str
@@ -132,7 +166,7 @@ defmodule HTTPd do
           real_ip = headers["X-Real-IP"]
           if (real_ip) do real_ip else client.addr_str end
         end
-        request = Struct.put(request, :client_addr, client_addr)
+        request = %HTTP.Request{request | client_addr: client_addr}
         user_agent = HTTP.Request.header_get(request, "User-Agent")
         response = false
         user_agent_lower = Str.to_lower(user_agent || "")
@@ -143,65 +177,61 @@ defmodule HTTPd do
                Str.has_str?(user_agent_lower, "spider")
         if bot? do
           if Counter.increase(HTTPd.bots, 1) >= HTTPd.bots_max() do
-            msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}"
-            IO.puts(msg)
-            Err.puts(msg)
+            HTTPd.thread_status(thread_id, "bot 429")
+            HTTPd.thread_request(thread_id, "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
             response = error_429_page(request)
           end
         end
         if ! response do
           if (type(request.method) == Str) do
-            msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}"
-            IO.puts(msg)
-            Err.puts(msg)
+            HTTPd.thread_status(thread_id, "405")
+            HTTPd.thread_request(thread_id, "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
             response = error_405_page(request)
           else
+            HTTPd.thread_status(thread_id, "plug")
             request = plug_request(request)
-            msg = "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}#{request.log_msg}"
-            IO.puts(msg)
-            Err.puts(msg)
+            HTTPd.thread_request(thread_id, "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}#{request.log_msg}")
+            HTTPd.thread_status(thread_id, "route_and_render_request")
             response = route_and_render_request(request)
           end
         end
+        HTTPd.thread_status(thread_id, "clean_requests_uploads")
         clean_request_uploads(request.body)
+        HTTPd.thread_status(thread_id, "headers")
         connection = HTTP.Request.header_get(request, "Connection") || ""
         if Compare.str_case_insensitive(connection, "close") == 0 do
           close = true
-          response = HTTP.Response.header_set(response,
-            "Connection", "close")
+          response_headers = [{"Connection", "close"}]
         else
-          response = HTTP.Response.header_set(response,
-            "Connection", "keep-alive")
-          response = HTTP.Response.header_set(response,
-            "Keep-Alive", "timeout=20, max=10")
+          response_headers = [{"Connection", "keep-alive"},
+                              {"Keep-Alive", "timeout=30, max=10"}]
         end
         params = request.params
         if params[:cache_control] do
-          response = HTTP.Response.header_set(response,
-            "Cache-Control", params.cache_control)
+          response_headers = [{"Cache-Control", params.cache_control} |
+                              response_headers]
         end
-        response = HTTP.Response.header_set(response,
-          "Server", "kc3_httpd")
-        response = HTTP.Response.header_set(response,
-          "Accept-Ranges", "bytes")
+        response_headers = [{"Server", "kc3_httpd"},
+                            {"Accept-Ranges", "bytes"} |
+                            response_headers]
+        response = HTTP.Response.headers_set(response, response_headers)
+        HTTPd.thread_status(thread_id, "buf_write")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
         dt = Time.now() - request.time
         dt_str = Time.diff_to_str(dt)
-        msg = "#{response.code} #{client_addr} #{request.method}" +
-              " #{request.url} #{inspect(user_agent)}" +
-              " #{dt_str}#{request.log_msg}"
-        IO.puts(msg)
+        HTTPd.thread_request(thread_id,
+          "#{response.code} #{client_addr} #{request.method}" +
+          " #{request.url} #{inspect(user_agent)}" +
+          " #{dt_str}#{request.log_msg}")
         if (! close) do
           kq_ok = EventPoll.add(HTTPd.ep_fd, client.sockfd,
-                             HTTPd.timeout, client.ptag) == 0
+            HTTPd.timeout, client.ptag) == 0
         end
         error = ((r <= 0) || ((! close) && (! kq_ok)))
-        if (response.code >= 400) do
-          Err.puts(msg)
-        end
       end
     end, do
+      HTTPd.thread_status(thread_id, "cleanup")
       Counter.decrease(HTTPd.concurrent_requests, 1)
       bots_count = if bot? do
         Counter.decrease(HTTPd.bots, 1)
@@ -228,7 +258,9 @@ defmodule HTTPd do
       if (Counter.get(HTTPd.connections) < HTTPd.connections_max()) &&
          (client = Socket.Buf.accept(%Socket{fd: server_socket})) &&
          (client_tag = Tag.new_copy({:client, client})) &&
-         Socket.Buf.set_tag(client, client_tag) do
+         Socket.Buf.set_tag(client, client_tag) &&
+         Socket.timeout_set(%Socket{fd: client.sockfd},
+           %Time{tv_sec: 30}) do
         Counter.increase(HTTPd.connections, 1)
         incremented = true
         count = Counter.get(HTTPd.connections)
@@ -265,16 +297,28 @@ defmodule HTTPd do
   }
 
   def server_thread = fn () {
-    while ! Counter.get(HTTPd.server_thread_stop) do
+    thread_id = Counter.increase(HTTPd.thread_count, 1)
+    HTTPd.thread_stacktrace(thread_id, Stacktrace.ptr())
+    HTTPd.thread_status(thread_id, "start")
+    while ! Daemon.stopping?() do
       ignore_errors(do
-        r = EventPoll.poll(HTTPd.ep_fd, %Time{tv_sec: 1})
+        HTTPd.thread_status(thread_id, "zpoll")
+        r = EventPoll.poll(HTTPd.ep_fd, %Time{tv_sec: 3600})
         match r do
           {sockfd, :eof, :acceptor} ->
+            HTTPd.thread_status(thread_id, "EOF on acceptor")
             File.close(sockfd)
-            Counter.increase(HTTPd.server_thread_stop, 1)
+            Daemon.stop()
+            Thread.interrupt_all()
+          {sockfd, :read, :stop} ->
+            HTTPd.thread_status(thread_id, "stop")
+            Daemon.stop()
+            Thread.interrupt_all()
           {sockfd, :read, :acceptor} ->
+            HTTPd.thread_status(thread_id, "acceptor")
             HTTPd.acceptor(sockfd)
           {sockfd, :eof, {:client, client}} ->
+            HTTPd.thread_status(thread_id, "eof")
             if Socket.Buf.can_close?(client) do
               EventPoll.delete(HTTPd.ep_fd, sockfd, :timer)
               EventPoll.delete(HTTPd.ep_fd, sockfd, :read)
@@ -285,8 +329,10 @@ defmodule HTTPd do
               puts("HTTPd.server_thread: eof: connections=#{count} bots=#{bots_count}")
             end
           {sockfd, :read, {:client, client}} ->
-            HTTPd.http_client(sockfd, client)
+            HTTPd.thread_status(thread_id, "http_client")
+            HTTPd.http_client(thread_id, sockfd, client)
           {sockfd, :timer, {:client, client}} ->
+            HTTPd.thread_status(thread_id, "timeout")
             if Socket.Buf.can_close?(client) do
               EventPoll.delete(HTTPd.ep_fd, sockfd, :timer)
               EventPoll.delete(HTTPd.ep_fd, sockfd, :read)
@@ -297,12 +343,15 @@ defmodule HTTPd do
               puts("HTTPd.server_thread: timeout: connections=#{count} bots=#{bots_count}")
             end
           void ->
+            HTTPd.thread_status(thread_id, "void")
             void
           x ->
+            HTTPd.thread_status(thread_id, "unknown poll value")
             Err.puts("HTTPd.server_thread: unknown poll value:" +
               " #{inspect(x)}")
             void
         end
+        HTTPd.thread_status(thread_id, "while")
       end)
     end
   }
@@ -313,7 +362,9 @@ defmodule HTTPd do
 
   def server = fn (host, port) {
     unveil("./", "r")
-    unveil("./db/", "crw")
+    if File.exists?("./db/") do
+      unveil("./db/", "crw")
+    end
     if File.exists?("./upload/") do
       unveil("./upload/", "crw")
       List.each(File.list("./upload/"), fn (name) {
@@ -337,25 +388,20 @@ defmodule HTTPd do
       clean_all_uploads()
       if HTTPd.ep_fd <- EventPoll.new() do
         EventPoll.add(HTTPd.ep_fd, socket.fd, void, HTTPd.acceptor_tag)
-        if HTTPd.thread_count() > 1 do
-          threads = List.map(List.count(HTTPd.thread_count() - 1),
-            HTTPd.server_thread_new)
-          HTTPd.server_thread()
-          List.map(threads, Thread.delete)
-        else
-          HTTPd.server_thread()
-        end
+        EventPoll.add(HTTPd.ep_fd, Daemon.stop_fd(), void,
+          HTTPd.stop_tag)
+        threads = List.map(List.count(HTTPd.thread_max()),
+          HTTPd.server_thread_new)
+        List.map(threads, Thread.delete)
         Counter.delete(HTTPd.bots)
         Counter.delete(HTTPd.concurrent_requests)
         Counter.delete(HTTPd.connections)
         Counter.delete(HTTPd.requests)
-        Counter.delete(HTTPd.server_thread_stop)
-        # TODO: le cast (S64) 0 est un workaround -- kc3 type le litteral 0
-        # en U8 et tag_to_ffi_pointer refuse U8 -> S64. Cleaner fix dans
-        # le parser kc3 pour inferer le type depuis la signature du binding.
+        Counter.delete(HTTPd.thread_count)
         EventPoll.delete(HTTPd.ep_fd, (S64) 0, void)
         Socket.close(HTTPd.socket)
         Tag.delete(HTTPd.acceptor_tag)
+        Tag.delete(HTTPd.stop_tag)
         if Module.has_symbol?(Config, :at_exit) do
           Config.at_exit()
         end
@@ -372,8 +418,8 @@ defmodule HTTPd do
 
   def main = fn {
     () {
-      host = getenv("KC3_HTTPD_HOST")
-      port = getenv("KC3_HTTPD_PORT")
+      host = getenv("KC3_HTTPD_HOST") || "localhost"
+      port = getenv("KC3_HTTPD_PORT") || "15080"
       server(host, port)
     }
     (host, port) {
@@ -539,6 +585,6 @@ defmodule HTTPd do
     }
   }
 
-  HTTPd.Route.def_static_route("", "./static/", 0)
+  HTTPd.Static.def_route("", "./", 0)
 
 end

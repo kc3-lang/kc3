@@ -1,0 +1,37 @@
+require HTTP
+HTTP
+require HTTP.Request
+HTTP.Request
+require Socket
+Socket
+require Socket.Buf
+Socket.Buf
+(server = Socket.listen("127.0.0.1", "57003")) ; void
+void
+(client = Socket.Buf.connect("127.0.0.1", "57003")) ; void
+void
+(server_client = Socket.Buf.accept(server)) ; void
+void
+Buf.write_str(client.buf_rw.w, "POST / HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 9\r\n\r\nssh_keys=")
+(Sw) 96
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+void
+[{"ssh_keys", ""}]
+Buf.write_str(client.buf_rw.w, "POST / HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 19\r\n\r\nfirst=&second=value")
+(Sw) 107
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+void
+[{"first", ""},
+ {"second", "value"}]
+Buf.write_str(client.buf_rw.w, "POST / HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 29\r\n\r\nencoded=hello+world%21&empty=")
+(Sw) 117
+(request = HTTP.Request.buf_parse(server_client.buf_rw.r)) ; void
+void
+[{"encoded", "hello world!"},
+ {"empty", ""}]
+Socket.Buf.close(client)
+void
+Socket.Buf.close(server_client)
+void
+Socket.close(server)
+void

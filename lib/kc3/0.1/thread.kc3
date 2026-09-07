@@ -14,6 +14,12 @@ defmodule Thread do
 
   def delete = cfn Tag "kc3_thread_delete" (Ptr, Result)
 
+  def id = cfn Thread* "pthread_self" ()
+
+  def interrupt = cfn Bool "kc3_thread_interrupt" (Ptr)
+
+  def interrupt_all = cfn Bool "kc3_thread_interrupt_all" ()
+
   def new = cfn Ptr "kc3_thread_new" (Result, Callable)
 
 end

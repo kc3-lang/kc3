@@ -29,6 +29,8 @@ bool *   plist_all (p_list *plist, p_callable *function, bool *dest);
 /* Operators. */
 p_list * plist_cast (p_list *plist, const s_sym * const *type,
                      const s_tag *tag);
+s_tag *  plist_do (s_tag *list, s_tag *pattern, s_tag *do_block,
+                   s_tag *dest);
 bool *   plist_each (p_list *plist, p_callable *function, bool *dest);
 p_list * plist_filter (p_list *plist, p_callable *function,
                        p_list *dest);
@@ -37,6 +39,10 @@ s_tag *  plist_find_if (p_list *plist, p_callable *function,
 bool *   plist_has (p_list *plist, const s_tag *tag, bool *dest);
 s_str  * plist_join (p_list *plist, s_str *sep, s_str *dest);
 p_list * plist_map (p_list *plist, p_callable *function, p_list *dest);
+p_list * plist_map_filter (s_tag *list, s_tag *pattern, s_tag *do_block,
+                           p_list *dest);
+s_str  * plist_map_join (s_tag *list, s_tag *pattern, s_tag *separator,
+                         s_tag *do_block, s_str *dest);
 p_list * plist_remove_void (p_list *plist);
 p_list * plist_reverse (p_list *plist, p_list *dest);
 p_list * plist_slice (p_list *list, s_tag *start, s_tag *end,

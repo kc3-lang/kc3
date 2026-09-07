@@ -414,10 +414,14 @@ u64 * tag_hash_u64 (const s_tag *tag, u64 *dest)
   return dest;
 }
 
-uw * tag_hash_uw (const s_tag *tag, uw *dest)
+uw * tag_hash_uw (s_tag *tag, uw *dest)
 {
   t_hash hash;
   assert(tag);
+  if (tag->hash_uw) {
+    *dest = tag->hash_uw;
+    return dest;
+  }
   hash_init(&hash);
   if (! hash_update_tag(&hash, tag)) {
     err_write_1("tag_hash_uw: hash_update_tag: ");
@@ -427,6 +431,7 @@ uw * tag_hash_uw (const s_tag *tag, uw *dest)
     return NULL;
   }
   *dest = hash_to_uw(&hash);
+  tag->hash_uw = *dest;
   return dest;
 }
 

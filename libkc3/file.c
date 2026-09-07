@@ -166,10 +166,19 @@ sw file_copy (const char *from, const char *to)
     assert(! "file_copy: failed to open file for writing");
     goto error;
   }
-  while ((r = read(fd_from, buf, sizeof buf)) > 0) {
+  while (1) {
+    do {
+      r = read(fd_from, buf, sizeof buf);
+    } while (r < 0 && errno == EINTR);
+    if (r <= 0)
+      break;
     out = buf;
     do {
       if ((w = write(fd_to, out, r)) >= 0) {
+        if (! w) {
+          errno = EIO;
+          goto error;
+        }
         r -= w;
         out += w;
       }
@@ -187,6 +196,8 @@ sw file_copy (const char *from, const char *to)
   }
  error:
   saved_errno = errno;
+  err_write_1("file_copy: ");
+  err_puts(strerror(saved_errno));
   close(fd_from);
   if (fd_to >= 0)
     close(fd_to);
@@ -1052,19 +1063,28 @@ u8 * file_sha1 (const s_str *path, u8 *dest)
     return NULL;
   SHA1Init(&sha1);
   while (1) {
-    if ((r = read(fd, buf, sizeof(buf))) < 0) {
+    do {
+      r = read(fd, buf, sizeof(buf));
+    } while (r < 0 && errno == EINTR);
+    if (r < 0) {
       e = errno;
       err_write_1("file_sha1: read: ");
       err_write_1(strerror(e));
       err_write_1("\n");
       assert(! "file_sha1: read");
+      close(fd);
       return NULL;
     }
     if (! r)
       break;
     SHA1Update(&sha1, buf, r);
   }
-  close(fd);
+  if (close(fd) < 0) {
+    e = errno;
+    err_write_1("file_sha1: close: ");
+    err_puts(strerror(e));
+    return NULL;
+  }
   SHA1Final(dest, &sha1);
   return dest;
 }
@@ -1089,19 +1109,28 @@ u8 * file_sha512 (const s_str *path, u8 *dest)
     return NULL;
   sha512_init(&sha512);
   while (1) {
-    if ((r = read(fd, buf, sizeof(buf))) < 0) {
+    do {
+      r = read(fd, buf, sizeof(buf));
+    } while (r < 0 && errno == EINTR);
+    if (r < 0) {
       e = errno;
       err_write_1("file_sha512: read: ");
       err_write_1(strerror(e));
       err_write_1("\n");
       assert(! "file_sha512: read");
+      close(fd);
       return NULL;
     }
     if (! r)
       break;
     sha512_update(&sha512, buf, r);
   }
-  close(fd);
+  if (close(fd) < 0) {
+    e = errno;
+    err_write_1("file_sha512: close: ");
+    err_puts(strerror(e));
+    return NULL;
+  }
   sha512_sum(&sha512, dest);
   return dest;
 }
@@ -1267,7 +1296,11 @@ bool file_write (const s_str *path, const s_str *data)
     return false;
   }
   while (pos < data->size) {
-    if ((w = write(fd, data->ptr.p_pchar, data->size - pos)) <= 0) {
+    do {
+      w = write(fd, data->ptr.p_pchar + pos,
+                data->size - pos);
+    } while (w < 0 && errno == EINTR);
+    if (w <= 0) {
       if (w < 0)
         e = errno;
       err_write_1("file_write: write: ");
@@ -1282,21 +1315,38 @@ bool file_write (const s_str *path, const s_str *data)
     }
     pos += w;
   }
-  close(fd);
+  if (close(fd) < 0) {
+    e = errno;
+    err_write_1("file_write: close: ");
+    err_puts(strerror(e));
+    return false;
+  }
   return true;
 }
 
 sw file_write_str (const s_str *path, const s_str *str)
 {
+  s32 e;
   t_fd fd;
   sw r;
   u32 result = 0;
   if (! file_open_w(path, &fd))
     return -1;
   while (result < str->size) {
-    if ((r = write(fd, str->ptr.p_pchar + result,
-                   str->size - result)) <= 0)
+    do {
+      r = write(fd, str->ptr.p_pchar + result,
+                str->size - result);
+    } while (r < 0 && errno == EINTR);
+    if (r < 0) {
+      e = errno;
+      err_write_1("file_write_str: write: ");
+      err_puts(strerror(e));
       goto clean;
+    }
+    if (! r) {
+      err_puts("file_write_str: write returned zero");
+      goto clean;
+    }
     result += r;
   }
   if (result != str->size) {
@@ -1305,6 +1355,11 @@ sw file_write_str (const s_str *path, const s_str *str)
   }
   r = result;
  clean:
-  close(fd);
+  if (close(fd) < 0) {
+    e = errno;
+    err_write_1("file_write_str: close: ");
+    err_puts(strerror(e));
+    return -1;
+  }
   return r;
 }

@@ -92,6 +92,7 @@ HEADERS = \
 	"counter.h" \
 	"cow.h" \
 	"crypt.h" \
+	"daemon.h" \
 	"data.h" \
 	"do_block.h" \
 	"endian.h" \
@@ -129,6 +130,7 @@ HEADERS = \
 	"hotp.h" \
 	"ht.h" \
 	"ident.h" \
+	"inline.h" \
 	"inspect.h" \
 	"integer.h" \
 	"io.h" \
@@ -156,6 +158,7 @@ HEADERS = \
 	"plist.h" \
 	"pointer.h" \
 	"pretty.h" \
+	"primehash.h" \
 	"pstruct.h" \
 	"pstruct_type.h" \
 	"psym.h" \
@@ -196,11 +199,13 @@ HEADERS = \
 	"socket_addr.h" \
 	"socket_buf.h" \
 	"special_operator.h" \
+	"stacktrace.h" \
 	"str.h" \
 	"struct.h" \
 	"struct_type.h" \
 	"sw.h" \
 	"sym.h" \
+	"sym_ht.h" \
 	"tag.h" \
 	"tag_init.h" \
 	"tag_type.h" \
@@ -319,6 +324,7 @@ SOURCES = \
 	"cow.c" \
 	"crypt.c" \
 	"crypt_sha512.c" \
+	"daemon.c" \
 	"data.c" \
 	"do_block.c" \
 	"env.c" \
@@ -381,6 +387,7 @@ SOURCES = \
 	"plist.c" \
 	"pointer.c" \
 	"pretty.c" \
+	"primehash.c" \
 	"pstruct.c" \
 	"pstruct_type.c" \
 	"psym.c" \
@@ -421,11 +428,13 @@ SOURCES = \
 	"socket_addr.c" \
 	"socket_buf.c" \
 	"special_operator.c" \
+	"stacktrace.c" \
 	"str.c" \
 	"struct.c" \
 	"struct_type.c" \
 	"sw.c" \
 	"sym.c" \
+	"sym_ht.c" \
 	"tag.c" \
 	"tag_add.c" \
 	"tag_addi.c" \
@@ -658,6 +667,7 @@ LO_SOURCES = \
 	"cow.c" \
 	"crypt.c" \
 	"crypt_sha512.c" \
+	"daemon.c" \
 	"data.c" \
 	"do_block.c" \
 	"env.c" \
@@ -720,6 +730,7 @@ LO_SOURCES = \
 	"plist.c" \
 	"pointer.c" \
 	"pretty.c" \
+	"primehash.c" \
 	"pstruct.c" \
 	"pstruct_type.c" \
 	"psym.c" \
@@ -760,11 +771,13 @@ LO_SOURCES = \
 	"socket_addr.c" \
 	"socket_buf.c" \
 	"special_operator.c" \
+	"stacktrace.c" \
 	"str.c" \
 	"struct.c" \
 	"struct_type.c" \
 	"sw.c" \
 	"sym.c" \
+	"sym_ht.c" \
 	"tag.c" \
 	"tag_add.c" \
 	"tag_addi.c" \

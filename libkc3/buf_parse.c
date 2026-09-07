@@ -5429,6 +5429,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
   case '%':
     if ((r = buf_parse_tag_map(buf, dest)) ||
         (r = buf_parse_tag_time(buf, dest)) ||
+        (r = buf_parse_tag_struct_update(buf, dest)) ||
         (r = buf_parse_tag_pstruct(buf, dest)))
       goto end;
     goto restore;
@@ -5481,6 +5482,135 @@ sw buf_parse_tag_pstruct (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = buf_parse_pstruct(buf, &dest->data.td_pstruct)) > 0)
     dest->type = TAG_PSTRUCT;
+  return r;
+}
+
+sw buf_parse_tag_struct_update (s_buf *buf, s_tag *dest)
+{
+  p_call call = NULL;
+  p_list changes = NULL;
+  p_list *changes_tail = &changes;
+  s_list *module_arg = NULL;
+  const s_sym *module;
+  bool recognized = false;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_tag source = {0};
+  s_list *source_arg = NULL;
+  s_list *changes_arg = NULL;
+  s_tuple *tuple;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "%")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_parse_module_name(buf, &module)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "{")) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_tag(buf, &source)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "|")) <= 0)
+    goto restore;
+  result += r;
+  recognized = true;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  while (1) {
+    if (! (*changes_tail = list_new_ptuple(2, NULL)))
+      goto ko;
+    tuple = (*changes_tail)->tag.data.td_ptuple;
+    if ((r = buf_parse_map_key(buf, tuple->tag)) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_parse_tag(buf, tuple->tag + 1)) <= 0)
+      goto restore;
+    result += r;
+    changes_tail = &(*changes_tail)->next.data.td_plist;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "}")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      break;
+    }
+    if ((r = buf_read_1(buf, ",")) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+  }
+  if (! pcall_init(&call) ||
+      ! (call->arguments = list_new_psym(module, NULL)))
+    goto ko;
+  module_arg = call->arguments;
+  if (! (source_arg = list_new(NULL)))
+    goto ko;
+  module_arg->next.type = TAG_PLIST;
+  module_arg->next.data.td_plist = source_arg;
+  source_arg->tag = source;
+  source = (s_tag) {0};
+  if (! (changes_arg = list_new_plist(changes, NULL)))
+    goto ko;
+  changes = NULL;
+  source_arg->next.type = TAG_PLIST;
+  source_arg->next.data.td_plist = changes_arg;
+  call->ident.module = sym_1("Struct");
+  call->ident.sym = sym_1("put_multiple");
+  dest->type = TAG_PCALL;
+  dest->data.td_pcall = call;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+  r = recognized ? -1 : 0;
+  goto clean;
+ ko:
+  r = -1;
+ clean:
+  if (r <= 0 && call)
+    pcall_clean(&call);
+  if (r <= 0) {
+    tag_clean(&source);
+    list_delete_all(changes);
+  }
+  buf_save_clean(buf, &save);
   return r;
 }
 

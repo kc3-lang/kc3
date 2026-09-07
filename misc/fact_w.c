@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stddef.h>
-#include <assert.h>
 #include "../http/types.h"
 
 int main (void) {

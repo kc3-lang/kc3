@@ -90,7 +90,7 @@ s_gl_square * gl_square_init (s_gl_square *square, u32 seg_u, u32 seg_v)
 s_gl_square * gl_square_new (u32 segments_u, u32 segments_v)
 {
   s_gl_square *square;
-  square = calloc(1, sizeof(s_gl_square));
+  square = alloc(sizeof(s_gl_square));
   if (! square) {
     err_puts("gl_square_new: failed to allocate memory");
     return NULL;

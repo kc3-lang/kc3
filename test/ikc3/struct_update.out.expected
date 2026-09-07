@@ -1,0 +1,35 @@
+defmodule StructUpdateTest do
+  defstruct [a: 1,
+             b: 2,
+             c: 3]
+end
+StructUpdateTest
+old = %StructUpdateTest{a: 4,
+                        b: 5,
+                        c: 6}
+%StructUpdateTest{a: 4,
+                  b: 5,
+                  c: 6}
+updated = %StructUpdateTest{old | a: 10, c: 20 + 10}
+%StructUpdateTest{a: 10,
+                  b: 5,
+                  c: 30}
+%StructUpdateTest{a: 4,
+                  b: 5,
+                  c: 6}
+%StructUpdateTest{a: 10,
+                  b: 5,
+                  c: 30}
+4
+5
+6
+10
+5
+30
+%StructUpdateTest{a: 8,
+                  b: 5,
+                  c: 6}
+kc3_struct_put_multiple: struct type mismatch
+void
+kc3_struct_put_multiple: invalid change
+void

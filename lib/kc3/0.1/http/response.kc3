@@ -45,6 +45,9 @@ defmodule HTTP.Response do
   def header_set = cfn HTTP.Response "http_response_header_set"
     (HTTP.Response, Str, Str, Result)
 
+  def headers_set = cfn HTTP.Response "http_response_headers_set"
+    (HTTP.Response, List, Result)
+
   def set_cookie = fn (response, cookie) {
     headers = [{"Set-Cookie", cookie} | response.headers]
     Struct.put(response, :headers, headers)

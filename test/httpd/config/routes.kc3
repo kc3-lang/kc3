@@ -14,18 +14,13 @@ def HTTPd.routes = []
 
 HTTPd.def_route("/", DocController.route)
 
-# def_route("/fx/", FXController.fx_route)
-# def_route("/tags/", FXController.tags_route)
-# def_route("/properties/", FXController.properties_route)
-# def_static_route("/file", "./fx/", 1)
-
 HTTPd.def_route("/sitemap.xml", SitemapController.route)
 
 HTTPd.def_route("/system", SystemController.route)
 
 HTTPd.def_route("/", PageController.route)
 
-HTTPd.Route.def_static_route("", "./static/", 0)
+HTTPd.Static.def_route("", "./static/", 0)
 
 defmodule Route do
 

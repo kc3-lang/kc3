@@ -62,6 +62,11 @@ uw *     kc3_offsetof (p_sym *module,
 s_buf ** kc3_out_buf (s_buf **dest);
 sw       kc3_puts (const s_tag *tag);
 p_list * kc3_stacktrace (s_list **dest);
+void **  kc3_stacktrace_ptr (void **dest);
+s_str *  kc3_stacktrace_to_str (s_stacktrace **stacktrace,
+                                s_str *dest);
+s_str *  kc3_stacktrace_to_str_short (s_stacktrace **stacktrace,
+                                      s_str *dest);
 s_str *  kc3_str (const s_tag *tag, s_str *dest);
 s32      kc3_tag_type (const s_tag *tag);
 s_time * kc3_uptime (s_time *dest);
@@ -189,6 +194,7 @@ void                 kc3_mutex_lock (s_mutex **mutex);
 s_mutex **           kc3_mutex_new (s_mutex **dest);
 void                 kc3_mutex_unlock (s_mutex **mutex);
 s_tag *              kc3_or (s_tag *a, s_tag *b, s_tag *dest);
+s_tag *              kc3_parse_map (s_tag *tag, const s_str *src);
 s_tag *              kc3_parse_tag (s_tag *tag, const s_str *src);
 void                 kc3_pledge (const s_str *promises,
                                  const s_str *execpromises);
@@ -196,6 +202,9 @@ s_tag *              kc3_require (p_sym *module, s_tag *dest);
 s_str *              kc3_strerror (sw err_no, s_str *dest);
 s_tag *              kc3_struct_put (s_tag *s, p_sym *key,
                                      s_tag *value, s_tag *dest);
+s_tag *              kc3_struct_put_multiple (p_sym *module, s_tag *s,
+                                              p_list *changes,
+                                              s_tag *dest);
 p_tuple *            kc3_system (p_list *list, p_tuple *dest);
 void                 kc3_tag_delete (s_tag **tag);
 s_marshall **        kc3_tag_marshall (s_marshall **m, bool heap,
@@ -204,6 +213,8 @@ s_tag **             kc3_tag_marshall_read (s_marshall_read **mr, bool heap,
                                             s_tag **dest);
 s_tag **             kc3_tag_new_copy (s_tag **tag, s_tag *src);
 s_tag *              kc3_thread_delete (u_ptr_w *thread, s_tag *dest);
+bool                 kc3_thread_interrupt (u_ptr_w *thread);
+bool                 kc3_thread_interrupt_all (void);
 u_ptr_w *            kc3_thread_new (u_ptr_w *dest, p_callable *start);
 void *               kc3_thread_start (void *arg);
 void                 kc3_unveil (const s_str *path,

@@ -115,9 +115,7 @@ p_sym * psym_init_copy (p_sym *sym, p_sym const *src)
 p_sym * psym_init_str (p_sym *sym, const s_str *src)
 {
   const s_sym *tmp = NULL;
-  tmp = sym_find(src);
-  if (! tmp)
-    tmp = sym_new(src);
+  tmp = str_to_sym(src);
   if (! tmp)
     return NULL;
   *sym = tmp;

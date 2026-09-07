@@ -1,0 +1,51 @@
+quote require HTTP.Response
+require HTTP.Response
+
+quote original = %HTTP.Response{headers: [{"Content-Type", "text/plain"}],
+                                body: "body"}
+original = %HTTP.Response{headers: [{"Content-Type", "text/plain"}],
+                          body: "body"}
+
+# An empty batch returns an equivalent response.
+quote empty = HTTP.Response.headers_set(original, [])
+empty = HTTP.Response.headers_set(original, [])
+empty == original
+
+# Add several headers, replace an existing header case-insensitively and
+# replace a header added earlier in the same batch.
+quote batch = HTTP.Response.headers_set(original,
+  [{"Connection", "keep-alive"},
+   {"content-type", "application/json"},
+   {"X-Test", "one"},
+   {"x-test", "two"}])
+batch = HTTP.Response.headers_set(original,
+  [{"Connection", "keep-alive"},
+   {"content-type", "application/json"},
+   {"X-Test", "one"},
+   {"x-test", "two"}])
+batch
+HTTP.Response.header_get(batch, "CONTENT-TYPE")
+HTTP.Response.header_get(batch, "connection")
+HTTP.Response.header_get(batch, "X-Test")
+HTTP.Response.header_get(batch, "missing")
+
+# The source response and its body remain unchanged.
+original
+batch.body
+
+# The original one-header API retains the same behavior.
+quote single = HTTP.Response.header_set(original, "Server", "kc3_httpd")
+single = HTTP.Response.header_set(original, "Server", "kc3_httpd")
+single
+original
+quote single_replaced = HTTP.Response.header_set(original,
+  "CONTENT-TYPE", "text/html")
+single_replaced = HTTP.Response.header_set(original,
+  "CONTENT-TYPE", "text/html")
+single_replaced
+original
+
+# Invalid batch entries fail without modifying the source.
+HTTP.Response.headers_set(original, [{"X-Invalid", (U8) 1}])
+HTTP.Response.headers_set(original, [{"X-Invalid"}])
+original

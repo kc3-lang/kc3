@@ -25,9 +25,14 @@ sw tls_buf_open_w_flush (s_buf *buf);
 
 void tls_buf_close (s_buf *buf)
 {
+  sw r;
   assert(buf);
   assert(buf->user_ptr);
-  buf_flush(buf);
+  if ((r = buf_flush(buf)) < 0) {
+    err_write_1("tls_buf_close: buf_flush: ");
+    err_inspect_sw(r);
+    err_write_1("\n");
+  }
   buf->flush = NULL;
   buf->refill = NULL;
   alloc_free(buf->user_ptr);
@@ -75,8 +80,11 @@ sw tls_buf_open_r_refill (s_buf *buf)
     r = tls_read(tls_buf->ctx, buf->ptr.p_pchar + buf->wpos, size);
     if (r == TLS_WANT_POLLIN || r == TLS_WANT_POLLOUT)
       continue;
-    if (r < 0)
+    if (r < 0) {
+      err_write_1("tls_buf_open_r_refill: tls_read: ");
+      err_puts(tls_error(tls_buf->ctx));
       return -1;
+    }
     break;
   }
   if (buf->wpos + r > buf->size) {

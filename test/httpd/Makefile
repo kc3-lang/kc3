@@ -65,7 +65,7 @@ release:
 	fi
 
 run:
-	${SRC_TOP}/httpd/kc3_httpd -C ${SRC_TOP}/test/httpd 127.0.0.1 15004
+	${SRC_TOP}/httpd/kc3_httpd -C ${SRC_TOP}/test/httpd -d 127.0.0.1 15004
 
 test:
 	KC3_HTTPD=${SRC_TOP}/httpd/kc3_httpd ./test/run

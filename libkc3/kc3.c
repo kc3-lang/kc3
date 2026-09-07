@@ -43,6 +43,7 @@
 #include "bool.h"
 #include "buf.h"
 #include "buf_fd.h"
+#include "buf_inspect.h"
 #include "buf_parse.h"
 #include "call.h"
 #include "counter.h"
@@ -69,6 +70,7 @@
 #include "rwlock.h"
 #include "s32.h"
 #include "securelevel.h"
+#include "stacktrace.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -1261,6 +1263,22 @@ s_tag * kc3_or (s_tag *a, s_tag *b, s_tag *dest)
   return env_or(env_global(), a, b, dest);
 }
 
+s_tag * kc3_parse_map (s_tag *tag, const s_str *src)
+{
+  s_buf buf;
+  sw r;
+  tag_init(tag);
+  buf_init_str_const(&buf, src);
+  r = buf_parse_map(&buf, &tag->data.td_map);
+  if (r <= 0 || (uw) r != src->size) {
+    buf_clean(&buf);
+    return tag;
+  }
+  tag->type = TAG_MAP;
+  buf_clean(&buf);
+  return tag;
+}
+
 s_tag * kc3_parse_tag (s_tag *tag, const s_str *src)
 {
   s_buf buf;
@@ -1387,6 +1405,54 @@ s_list ** kc3_stacktrace (s_list **dest)
   return env_stacktrace(env_global(), dest);
 }
 
+
+void ** kc3_stacktrace_ptr (void **dest)
+{
+  *dest = env_global()->stacktrace;
+  return dest;
+}
+
+s_str * kc3_stacktrace_to_str (s_stacktrace **stacktrace, s_str *dest)
+{
+  char a[4096];
+  s_buf buf;
+  p_list list;
+  sw r;
+  assert(stacktrace);
+  assert(*stacktrace);
+  assert(dest);
+  list = stacktrace_read_begin(*stacktrace);
+  buf_init(&buf, false, sizeof(a), a);
+  r = buf_inspect_stacktrace(&buf, list);
+  stacktrace_read_end(*stacktrace);
+  if (r < 0)
+    return NULL;
+  if (buf_read_to_str(&buf, dest) < 0)
+    return NULL;
+  return dest;
+}
+
+s_str * kc3_stacktrace_to_str_short (s_stacktrace **stacktrace,
+                                     s_str *dest)
+{
+  char a[4096];
+  s_buf buf;
+  p_list list;
+  sw r;
+  assert(stacktrace);
+  assert(*stacktrace);
+  assert(dest);
+  list = stacktrace_read_begin(*stacktrace);
+  buf_init(&buf, false, sizeof(a), a);
+  r = buf_inspect_stacktrace_short(&buf, list);
+  stacktrace_read_end(*stacktrace);
+  if (r < 0)
+    return NULL;
+  if (buf_read_to_str(&buf, dest) < 0)
+    return NULL;
+  return dest;
+}
+
 s_str * kc3_str (const s_tag *tag, s_str *dest)
 {
   const s_sym *sym = &g_sym_Str;
@@ -1427,6 +1493,42 @@ s_tag * kc3_struct_put (s_tag *s, p_sym *key,
   }
   if (! pstruct_init_put(&tmp, s->data.td_pstruct, *key, value))
     return NULL;
+  dest->type = TAG_PSTRUCT;
+  dest->data.td_pstruct = tmp;
+  return dest;
+}
+
+s_tag * kc3_struct_put_multiple (p_sym *module, s_tag *s,
+                                 p_list *changes, s_tag *dest)
+{
+  s_tag *key;
+  s_list *l;
+  p_struct tmp = NULL;
+  uw key_index;
+  assert(module);
+  assert(s);
+  assert(changes);
+  assert(dest);
+  if (s->type != TAG_PSTRUCT || ! s->data.td_pstruct ||
+      s->data.td_pstruct->pstruct_type->module != *module) {
+    err_puts("kc3_struct_put_multiple: struct type mismatch");
+    return NULL;
+  }
+  if (! (tmp = struct_new_copy(s->data.td_pstruct)))
+    return NULL;
+  l = *changes;
+  while (l) {
+    if (l->tag.type != TAG_PTUPLE ||
+        l->tag.data.td_ptuple->count != 2 ||
+        (key = l->tag.data.td_ptuple->tag)->type != TAG_PSYM ||
+        ! struct_find_key_index(tmp, key->data.td_psym, &key_index) ||
+        ! struct_set(tmp, key->data.td_psym, key + 1)) {
+      err_puts("kc3_struct_put_multiple: invalid change");
+      struct_delete(tmp);
+      return NULL;
+    }
+    l = list_next(l);
+  }
   dest->type = TAG_PSTRUCT;
   dest->data.td_pstruct = tmp;
   return dest;
@@ -1823,6 +1925,61 @@ p_tuple * kc3_wait (p_tuple *dest)
 #endif
 }
 
+#if ! (defined(WIN32) || defined(WIN64))
+typedef struct s_kc3_thread_registry s_kc3_thread_registry;
+
+struct s_kc3_thread_registry {
+  pthread_t thread;
+  s_kc3_thread_registry *next;
+};
+
+static pthread_once_t g_kc3_thread_interrupt_once = PTHREAD_ONCE_INIT;
+static pthread_mutex_t g_kc3_thread_registry_mutex =
+  PTHREAD_MUTEX_INITIALIZER;
+static s_kc3_thread_registry *g_kc3_thread_registry;
+static bool g_kc3_thread_interrupt_ready;
+
+static void kc3_thread_interrupt_handler (int signal)
+{
+  (void) signal;
+}
+
+static void kc3_thread_interrupt_init (void)
+{
+  struct sigaction sa = {0};
+  sa.sa_handler = kc3_thread_interrupt_handler;
+  sigemptyset(&sa.sa_mask);
+  g_kc3_thread_interrupt_ready = ! sigaction(SIGUSR2, &sa, NULL);
+}
+
+static void kc3_thread_registry_add (s_kc3_thread_registry *item,
+                                     pthread_t thread)
+{
+  item->thread = thread;
+  pthread_mutex_lock(&g_kc3_thread_registry_mutex);
+  item->next = g_kc3_thread_registry;
+  g_kc3_thread_registry = item;
+  pthread_mutex_unlock(&g_kc3_thread_registry_mutex);
+}
+
+static void kc3_thread_registry_remove (pthread_t thread)
+{
+  s_kc3_thread_registry **i;
+  s_kc3_thread_registry *item;
+  pthread_mutex_lock(&g_kc3_thread_registry_mutex);
+  i = &g_kc3_thread_registry;
+  while ((item = *i)) {
+    if (pthread_equal(item->thread, thread)) {
+      *i = item->next;
+      alloc_free(item);
+      break;
+    }
+    i = &item->next;
+  }
+  pthread_mutex_unlock(&g_kc3_thread_registry_mutex);
+}
+#endif
+
 s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
 {
   pthread_t t;
@@ -1833,6 +1990,9 @@ s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
     assert(! "kc3_thread_delete: pthread_join");
     return NULL;
   }
+#if ! (defined(WIN32) || defined(WIN64))
+  kc3_thread_registry_remove(t);
+#endif
   if (! tag) {
     err_puts("kc3_thread_delete: thread body errored");
     return NULL;
@@ -1852,8 +2012,52 @@ s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
   return dest;
 }
 
+bool kc3_thread_interrupt (u_ptr_w *thread)
+{
+#if defined(WIN32) || defined(WIN64)
+  (void) thread;
+  return false;
+#else
+  pthread_t t;
+  if (! thread)
+    return false;
+  pthread_once(&g_kc3_thread_interrupt_once,
+               kc3_thread_interrupt_init);
+  if (! g_kc3_thread_interrupt_ready)
+    return false;
+  t = (pthread_t) thread->p_pvoid;
+  return pthread_kill(t, SIGUSR2) == 0;
+#endif
+}
+
+bool kc3_thread_interrupt_all (void)
+{
+#if defined(WIN32) || defined(WIN64)
+  return false;
+#else
+  bool result = true;
+  s_kc3_thread_registry *item;
+  pthread_once(&g_kc3_thread_interrupt_once,
+               kc3_thread_interrupt_init);
+  if (! g_kc3_thread_interrupt_ready)
+    return false;
+  pthread_mutex_lock(&g_kc3_thread_registry_mutex);
+  item = g_kc3_thread_registry;
+  while (item) {
+    if (pthread_kill(item->thread, SIGUSR2))
+      result = false;
+    item = item->next;
+  }
+  pthread_mutex_unlock(&g_kc3_thread_registry_mutex);
+  return result;
+#endif
+}
+
 u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
 {
+#if ! (defined(WIN32) || defined(WIN64))
+  s_kc3_thread_registry *item;
+#endif
   s_tag *tag;
   if (! (tag = tag_new_ptuple(3)))
     return NULL;
@@ -1867,14 +2071,27 @@ u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
     tag_delete(tag);
     return NULL;
   }
-  if (pthread_create((pthread_t *) &dest->p_pvoid, NULL, kc3_thread_start,
-                     tag)) {
-    err_puts("kc3_thread_new: pthread_create");
-    assert(! "kc3_thread_new: pthread_create");
+#if ! (defined(WIN32) || defined(WIN64))
+  if (! (item = alloc(sizeof(s_kc3_thread_registry)))) {
     env_fork_delete(tag->data.td_ptuple->tag[2].data.td_ptr.p_pvoid);
     tag_delete(tag);
     return NULL;
   }
+#endif
+  if (pthread_create((pthread_t *) &dest->p_pvoid, NULL, kc3_thread_start,
+                     tag)) {
+    err_puts("kc3_thread_new: pthread_create");
+    assert(! "kc3_thread_new: pthread_create");
+#if ! (defined(WIN32) || defined(WIN64))
+    alloc_free(item);
+#endif
+    env_fork_delete(tag->data.td_ptuple->tag[2].data.td_ptr.p_pvoid);
+    tag_delete(tag);
+    return NULL;
+  }
+#if ! (defined(WIN32) || defined(WIN64))
+  kc3_thread_registry_add(item, (pthread_t) dest->p_pvoid);
+#endif
   return dest;
 }
 

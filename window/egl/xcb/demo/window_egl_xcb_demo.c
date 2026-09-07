@@ -33,7 +33,7 @@
 
 const char *g_env_argv0_default = PROG;
 const char *g_env_argv0_dir_default = PREFIX;
-s_gl_font   g_font_courier_new = {0};
+s_gl_font   g_font_courier_prime = {0};
 s_gl_ortho  g_ortho = {0};
 s_gl_text   g_text_fps = {0};
 s_gl_text   g_text_seq_title = {0};
@@ -152,18 +152,18 @@ bool window_egl_demo_load (s_window_egl *window)
   if (! gl_ortho_init(&g_ortho))
     return false;
   gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, 0, 1);
-  if (! gl_font_init(&g_font_courier_new,
-                     "fonts/Courier New/Courier New.ttf",
+  if (! gl_font_init(&g_font_courier_prime,
+                     "fonts/CourierPrime/fonts/ttf/CourierPrime-Regular.ttf",
                      point_per_pixel)) {
     err_puts("window_egl_demo_load: gl_font_init");
     return false;
   }
-  gl_font_set_size(&g_font_courier_new, 20);
-  if (! gl_text_init_1(&g_text_fps, &g_font_courier_new, "0.00")) {
+  gl_font_set_size(&g_font_courier_prime, 20);
+  if (! gl_text_init_1(&g_text_fps, &g_font_courier_prime, "0.00")) {
     err_puts("window_egl_demo_load: gl_text_init g_text_fps");
     return false;
   }
-  if (! gl_text_init_1(&g_text_seq_title, &g_font_courier_new, "")) {
+  if (! gl_text_init_1(&g_text_seq_title, &g_font_courier_prime, "")) {
     err_puts("window_egl_demo_load: gl_text_init g_text_seq_title");
     return false;
   }
@@ -195,7 +195,7 @@ bool window_egl_demo_load (s_window_egl *window)
                 toasters_unload,
                 window);
   if (! gl_font_init(&g_font_flies,
-                     "fonts/Courier New/Courier New.ttf",
+                     "fonts/CourierPrime/fonts/ttf/CourierPrime-Regular.ttf",
                      point_per_pixel))
     return false;
   if (! gl_sprite_init(&g_sprite_fly, "img/fly-noto.png",
@@ -275,7 +275,7 @@ bool window_egl_demo_render (s_window_egl *window)
   glEnable(GL_BLEND);
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
                       GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  gl_font_set_size(&g_font_courier_new, 20);
+  gl_font_set_size(&g_font_courier_prime, 20);
   gl_text_update_1(&g_text_seq_title, seq->title);
   mat4_init_identity(&g_ortho.model_matrix);
   gl_ortho_text_render_outline(&g_ortho, &g_text_seq_title,
@@ -323,7 +323,7 @@ void window_egl_demo_unload (s_window_egl *window)
   (void) window;
   gl_text_clean(&g_text_fps);
   gl_text_clean(&g_text_seq_title);
-  gl_font_clean(&g_font_courier_new);
+  gl_font_clean(&g_font_courier_prime);
   gl_lines_clean(&g_lines_stars);
   gl_sprite_clean(&g_sprite_toaster);
   gl_sprite_clean(&g_sprite_toast);

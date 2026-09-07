@@ -5,7 +5,7 @@
     <mapping directory="$PROJECT_DIR$/../../../../fonts" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../../../fonts/Computer Modern" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../../../fonts/Courier" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../../../../fonts/Courier New" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../fonts/CourierPrime" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../../../fonts/Inter" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../../../fonts/Noto Sans" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../../../fonts/opensans" vcs="Git" />
