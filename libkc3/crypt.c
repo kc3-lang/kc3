@@ -69,17 +69,26 @@ s_str * crypt_hash_password (const s_str *pass, s_str *dest)
 bool * crypt_check_password (const s_str *pass, const s_str *hash,
                              bool *dest)
 {
+  volatile u8 diff = 0;
+  uw i = 0;
   s_str str;
   assert(pass);
   assert(hash);
   assert(dest);
+  *dest = false;
   if (! crypt_sha512(pass, hash, &str)) {
     err_puts("crypt_check_password: crypt_sha512");
     assert(! "crypt_check_password: crypt_sha512");
-    *dest = false;
+    return dest;
   }
-  else
-    *dest = true;
+  if (str.size == hash->size) {
+    while (i < str.size) {
+      diff |= (u8) str.ptr.p_pchar[i] ^ (u8) hash->ptr.p_pchar[i];
+      i++;
+    }
+    *dest = ! diff;
+  }
+  str_clean(&str);
   return dest;
 }
 

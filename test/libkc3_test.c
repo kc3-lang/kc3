@@ -29,6 +29,7 @@ void buf_parse_test (void);
 void buf_test (void);
 void character_test (void);
 void compare_test (void);
+void crypt_test (void);
 void env_test (void);
 void fact_test (void);
 void facts_test (void);
@@ -81,6 +82,7 @@ int main (int argc, char **argv)
   TEST_TARGET(inspect);
   TEST_TARGET(fact);
   TEST_TARGET(compare);
+  TEST_TARGET(crypt);
   TEST_TARGET(set__tag);
   TEST_TARGET(set__fact);
   TEST_TARGET(skiplist__fact);
