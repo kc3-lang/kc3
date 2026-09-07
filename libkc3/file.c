@@ -878,14 +878,111 @@ s_str * file_read_slice (s_str *path, u64 start, u64 end, s_str *dest)
   return dest;
 }
 
+#if ! (defined(WIN32) || defined(WIN64))
+static bool file_rm_rf_at (s32 parent_fd, const char *name, u16 depth)
+{
+  DIR *dir;
+  struct dirent *dirent;
+  s32 e;
+  s32 fd;
+  struct stat sb;
+  if (fstatat(parent_fd, name, &sb, AT_SYMLINK_NOFOLLOW) < 0) {
+    e = errno;
+    err_write_1("file_rm_rf: fstatat: ");
+    err_write_1(name);
+    err_write_1(": ");
+    err_puts(strerror(e));
+    return false;
+  }
+  if (! S_ISDIR(sb.st_mode)) {
+    if (unlinkat(parent_fd, name, 0) < 0) {
+      e = errno;
+      err_write_1("file_rm_rf: unlinkat: ");
+      err_write_1(name);
+      err_write_1(": ");
+      err_puts(strerror(e));
+      return false;
+    }
+    return true;
+  }
+  if (depth > 254) {
+    err_puts("file_rm_rf: max subdirs reached (254)");
+    return false;
+  }
+  fd = openat(parent_fd, name,
+              O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+  if (fd < 0) {
+    e = errno;
+    err_write_1("file_rm_rf: openat: ");
+    err_write_1(name);
+    err_write_1(": ");
+    err_puts(strerror(e));
+    return false;
+  }
+  dir = fdopendir(fd);
+  if (! dir) {
+    e = errno;
+    close(fd);
+    err_write_1("file_rm_rf: fdopendir: ");
+    err_write_1(name);
+    err_write_1(": ");
+    err_puts(strerror(e));
+    return false;
+  }
+  while (1) {
+    errno = 0;
+    dirent = readdir(dir);
+    if (! dirent) {
+      if (errno) {
+        e = errno;
+        err_write_1("file_rm_rf: readdir: ");
+        err_write_1(name);
+        err_write_1(": ");
+        err_puts(strerror(e));
+        closedir(dir);
+        return false;
+      }
+      break;
+    }
+    if (dirent->d_name[0] == '.' &&
+        (dirent->d_name[1] == 0 ||
+         (dirent->d_name[1] == '.' && dirent->d_name[2] == 0)))
+      continue;
+    if (! file_rm_rf_at(dirfd(dir), dirent->d_name, depth + 1)) {
+      closedir(dir);
+      return false;
+    }
+  }
+  if (closedir(dir) < 0) {
+    e = errno;
+    err_write_1("file_rm_rf: closedir: ");
+    err_write_1(name);
+    err_write_1(": ");
+    err_puts(strerror(e));
+    return false;
+  }
+  if (unlinkat(parent_fd, name, AT_REMOVEDIR) < 0) {
+    e = errno;
+    err_write_1("file_rm_rf: unlinkat directory: ");
+    err_write_1(name);
+    err_write_1(": ");
+    err_puts(strerror(e));
+    return false;
+  }
+  return true;
+}
+#endif
+
 bool file_rm_rf (const s_str *path)
 {
+#if defined(WIN32) || defined(WIN64)
   s16 i = 0;
   DIR           *dir[256] = {0};
   struct dirent *dirent[256] = {0};
   s32 e;
   s_str filename;
   s_str p[256] = {0};
+  struct stat sb;
   p[0] = *path;
   p[0].free.p_pvoid = NULL;
   while (1) {
@@ -894,7 +991,15 @@ bool file_rm_rf (const s_str *path)
       err_inspect_str(p + i);
       err_write_1("\n");
     }
-    if (file_is_directory_1(p[i].ptr.p_pchar)) {
+    if (lstat(p[i].ptr.p_pchar, &sb) < 0) {
+      e = errno;
+      err_write_1("file_rm_rf: lstat: ");
+      err_write_1(strerror(e));
+      err_write_1(": ");
+      err_write_str(p + i);
+      goto clean;
+    }
+    if (S_ISDIR(sb.st_mode)) {
       if (i > 254) {
         err_puts("file_rm_rf: max subdirs reached (254)");
         goto clean;
@@ -963,6 +1068,10 @@ bool file_rm_rf (const s_str *path)
     i--;
   }
   return false;
+#else
+  assert(path);
+  return file_rm_rf_at(AT_FDCWD, path->ptr.p_pchar, 0);
+#endif
 }
 
 bool file_rename (const s_str *from, const s_str *to)
