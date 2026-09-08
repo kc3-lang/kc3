@@ -1,3 +1,4 @@
+#!/bin/sh
 ## kc3
 ## Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
 ##
@@ -10,13 +11,22 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule SHA256 do
+TEST_NAME=crypto
 
-  def hmac = cfn Str "sha256_hmac_str" (Str, Str, Result)
+SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
 
-  def str = cfn Str "sha256_str" (Str, Result)
+cd "${SRC_TOP}/test/${TEST_NAME}" || exit
 
-  def str_to_hex = cfn Str "sha256_str_to_hex" (Str, Result)
+. ../test.subr
 
-  def hmac_hex = cfn Str "sha256_hmac_hex" (Str, Str, Result)
-end
+if [ $# = 0 ]; then
+    if [ "x${CRYPTO_TEST}" = "x" ]; then
+        TARGETS="$(ls -1 *.kc3 | sed -e 's/[.]kc3$//')"
+    else
+        TARGETS="$(echo "${CRYPTO_TEST}" | tr ' ' '\n')"
+    fi
+else
+    TARGETS="$(echo "$@" | tr ' ' '\n')"
+fi
+
+test_run "$KC3S" $TARGETS

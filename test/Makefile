@@ -20,6 +20,10 @@ include config.mk
 include sources.mk
 
 CLEANFILES += \
+	crypto/*.diff \
+	crypto/*.err \
+	crypto/*.out \
+	crypto/*.ret \
 	ekc3/*.diff \
 	ekc3/*.err \
 	ekc3/*.out \
@@ -130,6 +134,7 @@ test: ${PROG}
 	IKC3=${BUILD_TOP}/ikc3/ikc3 time ./json_test
 	IKC3=${BUILD_TOP}/ikc3/ikc3 time ./markdown_test
 	IKC3=${BUILD_TOP}/ikc3/ikc3 time ./http_test
+	KC3S=${BUILD_TOP}/kc3s/kc3s time ./crypto_test
 
 test_asan: ${PROG_ASAN}
 	rm -f kc3.dump
@@ -172,6 +177,9 @@ test_debug: libkc3_test_debug
 	IKC3=${BUILD_TOP}/ikc3/ikc3_debug time ./markdown_test
 	IKC3=${BUILD_TOP}/ikc3/ikc3_debug time ./pdf_test
 	IKC3=${BUILD_TOP}/ikc3/ikc3_debug time ./http_test
+
+test_crypto:
+	KC3S=${BUILD_TOP}/kc3s/kc3s time ./crypto_test
 
 test_ekc3:
 	KC3S=${BUILD_TOP}/kc3s/kc3s time ./ekc3_test
@@ -336,6 +344,7 @@ test_valgrind: ${PROG}
 	test \
 	test_asan \
 	test_cov \
+	test_crypto \
 	test_debug \
 	test_ekc3 \
 	test_httpd \

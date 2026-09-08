@@ -37,6 +37,7 @@ void   sha256_final (u8 digest[SHA256_DIGEST_LENGTH], s_sha2 *ctx)
 s_str * sha256_str_to_hex (const s_str *in, s_str *out);
 
 /* HMAC functions. */
+s_str * sha256_hmac_hex (const s_str *k, const s_str *m, s_str * dest);
 void    sha256_hmac (const s_str *k, const s_str *m, u8 *dest);
 s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest);
 

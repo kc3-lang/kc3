@@ -452,6 +452,32 @@ s_str * sha256_str_to_hex (const s_str *in, s_str *out)
   return out;
 }
 
+static void sha256_hmac_to_hex (const u8 *digest, char *dest)
+{
+  static const char hex[] = "0123456789abcdef";
+  uw i = 0;
+  while (i < SHA256_DIGEST_LENGTH) {
+    dest [i * 2] = hex[(digest[i] >> 4) & 0xf];
+    dest[ i * 2 + 1] = hex[digest[i] & 0xf];
+    i++;
+  }
+}
+
+s_str * sha256_hmac_hex (const s_str *k, const s_str *m, s_str * dest)
+{
+  u8 digest[SHA256_DIGEST_LENGTH] = {0};
+  s_str tmp = {0};
+  assert(k);
+  assert(m);
+  assert(dest);
+  if (! str_init_alloc(&tmp, SHA256_DIGEST_LENGTH * 2))
+      return NULL;
+  sha256_hmac(k, m, digest);
+  sha256_hmac_to_hex(digest, tmp.free.p_pchar);
+  *dest = tmp;
+  return dest;
+}
+
 void sha256_hmac (const s_str *k, const s_str *m, u8 *dest)
 {
   s_sha2 h_ctx;

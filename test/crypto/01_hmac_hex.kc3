@@ -1,0 +1,5 @@
+require SHA256
+
+IO.puts(SHA256.hmac_hex("Jefe", "what do ya want for nothing?"))
+IO.puts(SHA256.hmac_hex("", ""))
+IO.puts((Str) Str.size(SHA256.hmac_hex("Jefe", "x")))
