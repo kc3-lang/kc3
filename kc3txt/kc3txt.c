@@ -43,24 +43,24 @@ static sw kc3txt_buf_inspect_log (s_buf *out, uw id, u8 action, s_fact *fact)
   return result;
 }
 
-static sw kc3txt_from_facts (const char *file_path)
+static sw kc3txt_from_facts (s_buf *in, FILE *fp)
 {
   u8 action;
   char b[BUF_SIZE];
   s_fact fact;
   uw id;
   s_buf out;
-  s_str path;
-  str_init_1(&path, NULL, file_path);
   s_marshall_read mr = {0};
   sw r;
-  if (! marshall_read_init_file(&mr, &path))
+  if (! marshall_read_init_buf(&mr, in))
     return 0;
   buf_init(&out, false, sizeof(b), b);
   buf_file_open_w(&out, stdout);
-  while (1) {
-    while ((r = buf_peek_1(mr.buf, "KC3MARSH")) == 0) {
-      if (buf_peek_1(mr.buf, "_KC3UW_") <= 0) goto done;
+  while ((r = buf_peek_1(mr.buf, "KC3MARSH")) > 0) {
+    if (! marshall_read_header(&mr) ||
+        ! marshall_read_chunk(&mr))
+      goto done;
+    while ((r = buf_peek_1(mr.buf, "_KC3UW_")) > 0) {
       if (! marshall_read_uw(&mr, false, &id) ||
           ! marshall_read_u8(&mr, false, &action) ||
           ! marshall_read_fact(&mr, false, &fact))
@@ -68,111 +68,165 @@ static sw kc3txt_from_facts (const char *file_path)
       kc3txt_buf_inspect_log(&out, id, action, &fact);
       fact_clean_all(&fact);
     }
-    if (r > 0) {
-      marshall_read_chunk_file(&mr);
-      continue;
-    }
-    break;
+    if (! marshall_read_chunk_reset(&mr))
+      goto done;
   }
  done:
   buf_flush(&out);
   buf_file_close(&out);
   marshall_read_clean(&mr);
-  str_clean(&path);
+  fclose(fp);
   return 0;
 }
 
-static sw kc3txt_from_text (const char *file_path)
+static sw kc3txt_from_text (s_buf *in, FILE *fp)
 {
   e_fact_action action = -1;
-  bool b;
-  s_facts *db = NULL;
-  s_fact fact;
-  FILE *fp = NULL;
+  bool fact_initialized = false;
+  s_fact fact = {0};
   uw id;
-  s_buf in;
-  char  in_buf[BUF_SIZE];
-  s_str in_path;
-  s_buf out;
+  s_marshall m = {0};
+  bool marshall_initialized = false;
+  s_buf out = {0};
   char  out_buf[BUF_SIZE];
-  s_str path;
+  bool out_initialized = false;
+  bool out_open = false;
   sw r;
-  str_init_1(&path, NULL, file_path);
-  buf_init(&in, false, sizeof(in_buf), in_buf);
-  str_init_1(&in_path, NULL, file_path);
-  if (! (fp = file_open(&in_path, "rb")))
-    return 1;
-  if (! pfacts_init(&db))
+  sw result = 1;
+  if (! buf_init(&out, false, sizeof(out_buf), out_buf))
     goto ko;
-  buf_init(&out, false, sizeof(out_buf), out_buf);
-  buf_file_open_w(&out, stdout);
+  out_initialized = true;
+  if (! buf_file_open_w(&out, stdout))
+    goto ko;
+  out_open = true;
+  if (! marshall_init(&m, BUF_SIZE)) {
+    err_puts("kc3txt_from_text: marshall_init");
+    goto ko;
+  }
+  marshall_initialized = true;
   while (1) {
-    if ((r = buf_parse_uw(&in, &id)) <= 0)
-      return r;
-    if ((r = buf_read_1(&in, g_action_str[FACT_ACTION_ADD])) < 0)
-      return r;
+    if ((r = buf_ignore_spaces(in)) < 0) {
+      if (feof(fp) && in->rpos == in->wpos)
+        break;
+      err_puts("kc3txt_from_text: failed to read input");
+      goto ko;
+    }
+    if ((r = buf_refill(in, 1)) < 0 || ferror(fp)) {
+      err_puts("kc3txt_from_text: failed to read input");
+      goto ko;
+    }
+    if (! r)
+      break;
+    if ((r = buf_parse_uw(in, &id)) <= 0) {
+      err_puts("kc3txt_from_text: invalid id");
+      goto ko;
+    }
+    if ((r = buf_read_1(in, g_action_str[FACT_ACTION_ADD])) < 0)
+      goto ko;
     if (r) {
       action = FACT_ACTION_ADD;
-      goto ok;
+      goto action_ok;
     }
-    if ((r = buf_read_1(&in, g_action_str[FACT_ACTION_REMOVE])) < 0)
-      return r;
+    if ((r = buf_read_1(in, g_action_str[FACT_ACTION_REMOVE])) < 0)
+      goto ko;
     if (r) {
       action = FACT_ACTION_REMOVE;
-      goto ok;
+      goto action_ok;
     }
-    if ((r = buf_read_1(&in, g_action_str[FACT_ACTION_REPLACE])) < 0)
-      return r;
+    if ((r = buf_read_1(in, g_action_str[FACT_ACTION_REPLACE])) < 0)
+      goto ko;
     if (r) {
       action = FACT_ACTION_REPLACE;
-      goto ok;
+      goto action_ok;
     }
     err_puts("kc3txt_from_text: invalid action");
-    return 1;
-  }
- ok:
-  if ((r = buf_parse_fact(&in, &fact)) <= 0) {
-    err_puts("kc3txt_from_text: invalid fact");
     goto ko;
+  action_ok:
+    if ((r = buf_parse_fact(in, &fact)) <= 0) {
+      err_puts("kc3txt_from_text: invalid fact");
+      goto ko;
+    }
+    fact_initialized = true;
+    if (! marshall_uw(&m, false, id)) {
+      err_puts("kc3txt_from_text: marshall_uw");
+      goto ko;
+    }
+    if (! marshall_u8(&m, false, action)) {
+      err_puts("kc3txt_from_text: marshall_u8");
+      goto ko;
+    }
+    if (! marshall_fact(&m, false, &fact)) {
+      err_puts("kc3txt_from_text: marshall_fact");
+      goto ko;
+    }
+    if ((r = marshall_to_buf(&m, &out)) <= 0) {
+      err_puts("kc3txt_from_text: marshall_to_buf");
+      goto ko;
+    }
+    if (! marshall_reset_ht(&m)) {
+      err_puts("kc3txt_from_text: marshall_reset_ht");
+      goto ko;
+    }
+    fact_clean_all(&fact);
+    fact_initialized = false;
   }
-  switch (action) {
-  case FACT_ACTION_ADD:
-    facts_add_fact(db, &fact);
-    break;
-  case FACT_ACTION_REMOVE:
-    facts_remove_fact(db, &fact, &b);
-    break;
-  case FACT_ACTION_REPLACE:
-    facts_replace_fact(db, &fact);
-    break;
-  }
-  return 0;
+  result = 0;
+  goto clean;
  ko:
+  result = 1;
+ clean:
+  if (fact_initialized)
+    fact_clean_all(&fact);
+  if (marshall_initialized)
+    marshall_clean(&m);
+  if (out_open) {
+    if (buf_flush(&out) < 0)
+      result = 1;
+    buf_file_close(&out);
+  }
+  if (out_initialized)
+    buf_clean(&out);
   fclose(fp);
-  return 1;
+  return result;
 }
 
 int main (int argc, char **argv)
 {
   const char *file_path;
+  FILE *fp = NULL;
   bool from_text = false;
+  s_buf in;
+  char  in_buf[BUF_SIZE];
+  s_str in_path;
   g_env_argv0_default = PROG;
   g_env_argv0_dir_default = PREFIX;
   if (argc < 2)
     return usage(PROG);
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
-  if (argc > 0 && argv[0][0] == '-') {
-    if (argv[0][1] == 't')
-      from_text = true;
+  if (argc > 0 && ! strcmp(argv[0], "-t")) {
+    from_text = true;
     argc--;
     argv++;
   }
+  if (argc <= 0) {
+    kc3_clean(NULL);
+    return usage(PROG);
+  }
   if (argc > 0) {
     file_path = argv[0];
+    buf_init(&in, false, sizeof(in_buf), in_buf);
+    if (file_path[0] == '-' && file_path[1] == 0)
+      fp = stdin;
+    else {
+      str_init_1(&in_path, NULL, file_path);
+      if (! (fp = file_open(&in_path, "rb")))
+        return 1;
+    }
+    buf_file_open_r(&in, fp);
     if (from_text)
-      return kc3txt_from_text(file_path);
-    return kc3txt_from_facts(file_path);
+      return kc3txt_from_text(&in, fp);
+    return kc3txt_from_facts(&in, fp);
   }
   kc3_clean(NULL);
   return 0;
@@ -180,6 +234,6 @@ int main (int argc, char **argv)
 
 static sw usage (const char *argv0)
 {
-  fprintf(stderr, "Usage: %s FILE\n", argv0);
+  fprintf(stderr, "Usage: %s [-t] FILE\n", argv0);
   return 1;
 }
