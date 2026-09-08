@@ -91,6 +91,7 @@
 #include "pcallable.h"
 #include "pcomplex.h"
 #include "pcow.h"
+#include "pfacts.h"
 #include "plist.h"
 #include "pointer.h"
 #include "pretty.h"

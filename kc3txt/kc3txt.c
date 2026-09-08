@@ -15,11 +15,12 @@
 #include <unistd.h>
 #include "../libkc3/kc3.h"
 
+static const char *g_action_str[] = {" ADD ", " REMOVE ", " REPLACE "};
+
 static sw usage (const char *argv0);
 
 static sw kc3txt_buf_inspect_log (s_buf *out, uw id, u8 action, s_fact *fact)
 {
-  static const char *action_str[] = {" ADD ", " REMOVE ", " REPLACE "};
   sw r;
   sw result = 0;
   assert(out);
@@ -30,7 +31,7 @@ static sw kc3txt_buf_inspect_log (s_buf *out, uw id, u8 action, s_fact *fact)
     err_puts("kc3txt_buf_inspect_log: unknown action");
     return -1;
   }
-  if ((r = buf_write_1(out, action_str[action])) <= 0)
+  if ((r = buf_write_1(out, g_action_str[action])) <= 0)
     return r;
   result += r;
   if ((r = buf_inspect_fact(out, fact)) <= 0)
@@ -42,95 +43,136 @@ static sw kc3txt_buf_inspect_log (s_buf *out, uw id, u8 action, s_fact *fact)
   return result;
 }
 
-static sw kc3txt_from_dump (s_env *env,
-                            const char *file_path)
+static sw kc3txt_from_facts (const char *file_path)
 {
+  u8 action;
   char b[BUF_SIZE];
+  s_fact fact;
+  uw id;
   s_buf out;
-  char dump_dir[1024] = ".";
-  const char *slash;
-  slash = strrchr(file_path, '/');
-  if (slash) {
-    size_t len = slash - file_path;
-    if (len >= sizeof(dump_dir))
-      len = sizeof(dump_dir) - 1;
-    memcpy(dump_dir, file_path, len);
-    dump_dir[len] = 0;
-  }
-  char db_path[1100];
-  snprintf(db_path, sizeof(db_path), "%s/db", dump_dir);
-  if (access(db_path, F_OK) == 0) {
-    char log_path[2200];
-    snprintf(log_path, sizeof(log_path), "%s/app.facts.bin.facts", db_path);
-    if (slash && chdir(dump_dir) != 0) {
-      fprintf(stderr, "%s: cannot chdir to %s\n", PROG, dump_dir);
-      return 1;
-    }
-  }
+  s_str path;
+  str_init_1(&path, NULL, file_path);
+  s_marshall_read mr = {0};
+  sw r;
+  if (! marshall_read_init_file(&mr, &path))
+    return 0;
   buf_init(&out, false, sizeof(b), b);
   buf_file_open_w(&out, stdout);
-  facts_dump(env->facts, &out);
+  while (1) {
+    while ((r = buf_peek_1(mr.buf, "KC3MARSH")) == 0) {
+      if (buf_peek_1(mr.buf, "_KC3UW_") <= 0) goto done;
+      if (! marshall_read_uw(&mr, false, &id) ||
+          ! marshall_read_u8(&mr, false, &action) ||
+          ! marshall_read_fact(&mr, false, &fact))
+        goto done;
+      kc3txt_buf_inspect_log(&out, id, action, &fact);
+      fact_clean_all(&fact);
+    }
+    if (r > 0) {
+      marshall_read_chunk_file(&mr);
+      continue;
+    }
+    break;
+  }
+ done:
   buf_flush(&out);
   buf_file_close(&out);
-  buf_clean(&out);
-  kc3_clean(NULL);
+  marshall_read_clean(&mr);
+  str_clean(&path);
   return 0;
+}
+
+static sw kc3txt_from_text (const char *file_path)
+{
+  e_fact_action action = -1;
+  bool b;
+  s_facts *db = NULL;
+  s_fact fact;
+  FILE *fp = NULL;
+  uw id;
+  s_buf in;
+  char  in_buf[BUF_SIZE];
+  s_str in_path;
+  s_buf out;
+  char  out_buf[BUF_SIZE];
+  s_str path;
+  sw r;
+  str_init_1(&path, NULL, file_path);
+  buf_init(&in, false, sizeof(in_buf), in_buf);
+  str_init_1(&in_path, NULL, file_path);
+  if (! (fp = file_open(&in_path, "rb")))
+    return 1;
+  if (! pfacts_init(&db))
+    goto ko;
+  buf_init(&out, false, sizeof(out_buf), out_buf);
+  buf_file_open_w(&out, stdout);
+  while (1) {
+    if ((r = buf_parse_uw(&in, &id)) <= 0)
+      return r;
+    if ((r = buf_read_1(&in, g_action_str[FACT_ACTION_ADD])) < 0)
+      return r;
+    if (r) {
+      action = FACT_ACTION_ADD;
+      goto ok;
+    }
+    if ((r = buf_read_1(&in, g_action_str[FACT_ACTION_REMOVE])) < 0)
+      return r;
+    if (r) {
+      action = FACT_ACTION_REMOVE;
+      goto ok;
+    }
+    if ((r = buf_read_1(&in, g_action_str[FACT_ACTION_REPLACE])) < 0)
+      return r;
+    if (r) {
+      action = FACT_ACTION_REPLACE;
+      goto ok;
+    }
+    err_puts("kc3txt_from_text: invalid action");
+    return 1;
+  }
+ ok:
+  if ((r = buf_parse_fact(&in, &fact)) <= 0) {
+    err_puts("kc3txt_from_text: invalid fact");
+    goto ko;
+  }
+  switch (action) {
+  case FACT_ACTION_ADD:
+    facts_add_fact(db, &fact);
+    break;
+  case FACT_ACTION_REMOVE:
+    facts_remove_fact(db, &fact, &b);
+    break;
+  case FACT_ACTION_REPLACE:
+    facts_replace_fact(db, &fact);
+    break;
+  }
+  return 0;
+ ko:
+  fclose(fp);
+  return 1;
 }
 
 int main (int argc, char **argv)
 {
-  u8 action;
-  char b[BUF_SIZE];
-  s_env *env = NULL;
-  s_fact fact;
   const char *file_path;
-  uw file_path_len;
-  uw id;
-  s_buf out;
-  s_str path;
+  bool from_text = false;
   g_env_argv0_default = PROG;
   g_env_argv0_dir_default = PREFIX;
   if (argc < 2)
     return usage(PROG);
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
-  env = env_global();
-  file_path = argv[0];
-  file_path_len = strlen(file_path);
-  if (file_path_len >= 5 && ! strncmp(file_path + file_path_len - 5, ".dump", 5))
-    return kc3txt_from_dump(env, file_path);
-  else {
-    str_init_1(&path, NULL, argv[0]);
-    s_marshall_read mr = {0};
-    sw r;
-    if ( ! marshall_read_init_file(&mr, &path)) {
-      fprintf(stderr, "Failed to open file: %s\n", argv[0]);
-      str_clean(&path);
-      return 1;
-    };
-    buf_init(&out, false, sizeof(b), b);
-    buf_file_open_w(&out, stdout);
-    while (1) {
-      while ((r = buf_peek_1(mr.buf, "KC3MARSH")) == 0) {
-        if (buf_peek_1(mr.buf, "_KC3UW_") <= 0) goto done;
-        if (! marshall_read_uw(&mr, false, &id) ||
-            ! marshall_read_u8(&mr, false, &action) ||
-            ! marshall_read_fact(&mr, false, &fact))
-          goto done;
-        kc3txt_buf_inspect_log(&out, id, action, &fact);
-        fact_clean_all(&fact);
-      }
-      if (r > 0) {
-        marshall_read_chunk_file(&mr);
-        continue;
-      }
-      break;
-    }
-  done:
-    buf_flush(&out);
-    buf_file_close(&out);
-    marshall_read_clean(&mr);
-    str_clean(&path);
+  if (argc > 0 && argv[0][0] == '-') {
+    if (argv[0][1] == 't')
+      from_text = true;
+    argc--;
+    argv++;
+  }
+  if (argc > 0) {
+    file_path = argv[0];
+    if (from_text)
+      return kc3txt_from_text(file_path);
+    return kc3txt_from_facts(file_path);
   }
   kc3_clean(NULL);
   return 0;
