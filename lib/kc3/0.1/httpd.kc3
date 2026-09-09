@@ -131,7 +131,7 @@ defmodule HTTPd do
   }
 
   def clean_request_uploads = fn (params) {
-    if params do
+    if type(params) == List do
       List.each(params, fn {
         ({key, value}) {
           if ((type(value) == HTTP.Upload) &&
