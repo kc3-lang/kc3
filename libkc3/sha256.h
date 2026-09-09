@@ -40,5 +40,7 @@ s_str * sha256_str_to_hex (const s_str *in, s_str *out);
 s_str * sha256_hmac_hex (const s_str *k, const s_str *m, s_str * dest);
 void    sha256_hmac (const s_str *k, const s_str *m, u8 *dest);
 s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest);
+bool * sha256_hmac_verify_hex (const s_str *k, const s_str *m,
+                                const s_str *expected_hex, bool *dest);
 
 #endif /* LIBKC3_SHA256_H */
