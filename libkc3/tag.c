@@ -280,6 +280,7 @@ s_tag * tag_clean (s_tag *tag)
     }
 #endif
   }
+  tag->hash_uw = 0;
   switch (tag->type) {
   case TAG_ARRAY:       array_clean(&tag->data.td_array);         break;
   case TAG_DO_BLOCK:    do_block_clean(&tag->data.td_do_block);   break;
