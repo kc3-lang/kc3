@@ -1159,6 +1159,7 @@ KC3_C_SOURCES = \
 	"test/character_test.c" \
 	"test/compare_test.c" \
 	"test/compare_test.h" \
+	"test/crypt_test.c" \
 	"test/env_test.c" \
 	"test/fact_test.c" \
 	"test/fact_test.h" \
@@ -1763,6 +1764,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/sh.kc3" \
 	"lib/kc3/0.1/sha1.kc3" \
 	"lib/kc3/0.1/sha256.kc3" \
+	"lib/kc3/0.1/sha512.kc3" \
 	"lib/kc3/0.1/smtp.kc3" \
 	"lib/kc3/0.1/socket.kc3" \
 	"lib/kc3/0.1/socket/addr.kc3" \
@@ -2319,6 +2321,12 @@ KC3_TEST_KC3S_SOURCES = \
 	"test/kc3s/comments.kc3" \
 	"test/kc3s/comments.out.expected" \
 	"test/kc3s/comments.ret.expected" \
+	"test/kc3s/error_eval.kc3" \
+	"test/kc3s/error_eval.out.expected" \
+	"test/kc3s/error_eval.ret.expected" \
+	"test/kc3s/error_parse.kc3" \
+	"test/kc3s/error_parse.out.expected" \
+	"test/kc3s/error_parse.ret.expected" \
 	"test/kc3s/facts_acceptor_loop.kc3" \
 	"test/kc3s/facts_acceptor_loop.out.expected" \
 	"test/kc3s/facts_acceptor_loop.ret.expected" \
