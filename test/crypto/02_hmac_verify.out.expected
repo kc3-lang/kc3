@@ -1,0 +1,8 @@
+ok   identique
+ok   insensible a la casse
+ok   mauvaise cle refusee
+ok   message modifie refuse
+ok   hex vide refuse
+ok   hex trop court refuse
+ok   hex trop long refuse
+ok   un caractere change refuse

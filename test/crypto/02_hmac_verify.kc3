@@ -1,0 +1,33 @@
+require SHA256
+require Str
+
+hex = SHA256.hmac_hex("Jefe", "what do ya want for nothing?")
+
+verifie = fn (nom, attendu, obtenu) {
+  if attendu == obtenu do
+    IO.puts("ok   #{nom}")
+  else
+    IO.puts("KO   #{nom}")
+  end
+  void
+}
+
+verifie("identique", true,
+        SHA256.hmac_verify_hex("Jefe", "what do ya want for nothing?", hex))
+verifie("insensible a la casse", true,
+        SHA256.hmac_verify_hex("Jefe", "what do ya want for nothing?",
+                               Str.to_upper(hex)))
+verifie("mauvaise cle refusee", false,
+        SHA256.hmac_verify_hex("jefe", "what do ya want for nothing?", hex))
+verifie("message modifie refuse", false,
+        SHA256.hmac_verify_hex("Jefe", "what do ya want for nothing", hex))
+verifie("hex vide refuse", false,
+        SHA256.hmac_verify_hex("Jefe", "what do ya want for nothing?", ""))
+verifie("hex trop court refuse", false,
+        SHA256.hmac_verify_hex("Jefe", "what do ya want for nothing?", "zz"))
+verifie("hex trop long refuse", false,
+        SHA256.hmac_verify_hex("Jefe", "what do ya want for nothing?",
+                               "#{hex}0"))
+verifie("un caractere change refuse", false,
+        SHA256.hmac_verify_hex("Jefe", "what do ya want for nothing?",
+                               "6#{Str.slice(hex, 1, -1)}"))

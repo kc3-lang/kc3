@@ -529,3 +529,32 @@ s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest)
   *dest = tmp;
   return dest;
 }
+
+bool * sha256_hmac_verify_hex(const s_str *k, const s_str *m, const s_str *expected_hex, bool *dest)
+{
+  u8 diff = 0;
+  u8 digest[SHA256_DIGEST_LENGTH] = {0};
+  char hex[SHA256_DIGEST_LENGTH * 2] = {0};
+  uw i = 0;
+  assert(k);
+  assert(m);
+  assert(expected_hex);
+  assert(dest);
+  if (expected_hex->size != SHA256_DIGEST_LENGTH * 2) {
+    *dest = false;
+    return dest;
+  }
+  sha256_hmac(k, m, digest);
+  sha256_hmac_to_hex(digest, hex);
+  while (i < SHA256_DIGEST_LENGTH * 2) {
+    u8 a = (u8) hex[i];
+    u8 b = (u8) expected_hex->ptr.p_pchar[i];
+    if (b >= 'A' && b <= 'F')
+      b = b + ('a' - 'A');
+    diff |= a ^ b;
+    i++;
+
+  }
+  *dest = (diff == 0);
+  return dest;
+}
