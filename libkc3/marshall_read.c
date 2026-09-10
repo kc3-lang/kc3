@@ -56,7 +56,10 @@
 #include "pvar.h"
 #include "ratio.h"
 #include "rwlock.h"
+#include "set__fact.h"
 #include "set__tag.h"
+#include "set_item__fact.h"
+#include "set_item__tag.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -109,6 +112,136 @@
       return NULL;                                                     \
     }                                                                  \
     *dest = le ## bits ## toh(*dest);                                  \
+    return mr;                                                         \
+  }
+
+#define DEF_MARSHALL_READ_PSET_ITEM(name, type, magic)                 \
+  s_marshall_read * marshall_read_pset_item__ ## name                  \
+  (s_marshall_read *mr, bool heap, p_set_item__ ## name *dest)         \
+  {                                                                    \
+    p_set_item__ ## name tmp;                                          \
+    p_set_item__ ## name present = NULL;                               \
+    u64 offset = 0;                                                    \
+    assert(mr);                                                        \
+    assert(dest);                                                      \
+    if (! marshall_read_1(mr, heap, magic)) {                          \
+      err_puts("marshall_read_pset_item: marshall_read_1 magic");      \
+      err_inspect_buf(heap ? mr->heap : mr->buf);                      \
+      assert(! "marshall_read_pset_item: marshall_read_1 magic");      \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! marshall_read_heap_pointer(mr, heap, &offset,                \
+                                     (void **) &present)) {            \
+      err_puts("marshall_read_pset_item: marshall_read_heap_pointer"); \
+      assert(! "marshall_read_pset_item: marshall_read_heap_pointer"); \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! offset) {                                                    \
+      *dest = NULL;                                                    \
+      return mr;                                                       \
+    }                                                                  \
+    if (present) {                                                     \
+      *dest = present;                                                 \
+      return mr;                                                       \
+    }                                                                  \
+    if (buf_seek(mr->heap, mr->heap_start + (s64) offset,              \
+                 SEEK_SET) < 0) {                                      \
+      err_puts("marshall_read_pset_item: buf_seek");                   \
+      assert(! "marshall_read_pset_item: buf_seek");                   \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! (tmp = alloc(sizeof(s_set_item__ ## name))))                 \
+      return NULL;                                                     \
+    if (! marshall_read_set_item__ ## name (mr, true, tmp)) {          \
+      err_puts("marshall_read_pset_item: marshall_read");              \
+      assert(! "marshall_read_pset_item: marshall_read");              \
+      free(tmp);                                                       \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! marshall_read_ht_add(mr, offset, tmp)) {                     \
+      err_puts("marshall_read_pset_item: marshall_read_ht_add");       \
+      assert(! "marshall_read_pset_item: marshall_read_ht_add");       \
+      free(tmp);                                                       \
+      return NULL;                                                     \
+    }                                                                  \
+    *dest = tmp;                                                       \
+    return mr;                                                         \
+  }
+
+#define DEF_MARSHALL_READ_SET_ITEM(name, type, magic)                 \
+  s_marshall_read * marshall_read_set_item__ ## name                  \
+  (s_marshall_read *mr, bool heap, s_set_item__ ## name *dest)        \
+  {                                                                   \
+    if (! marshall_read_uw(mr, heap, &dest->hash) ||                  \
+        ! marshall_read_uw(mr, heap, &dest->usage)) {                 \
+      err_puts("marshall_read_set_item: marshall_read_uw");           \
+      assert(! "marshall_read_set_item: marshall_read_uw");           \
+    }                                                                 \
+    if (! marshall_read_ ## name(mr, heap, &dest->data)) {            \
+      err_puts("marshall_read_set_item: marshall_read_" # name);      \
+      assert(! "marshall_read_set_item: marshall_read_" # name);      \
+    }                                                                 \
+    if (! marshall_read_pset_item__ ## name(mr, heap, &dest->next)) { \
+      err_puts("marshall_read_set_item:"                              \
+               " marshall_read_pset_item");                           \
+      assert(!("marshall_read_set_item:"                              \
+               " marshall_read_pset_item"));                          \
+    }                                                                 \
+    return mr;                                                        \
+  }
+
+#define DEF_MARSHALL_READ_SET(name, type, magic)                       \
+  s_marshall_read * marshall_read_set__ ## name                        \
+  (s_marshall_read *mr, bool heap, s_set__ ## name *dest)              \
+  {                                                                    \
+    uw collisions = 0;                                                 \
+    uw count = 0;                                                      \
+    uw max = 0;                                                        \
+    uw i;                                                              \
+    s_set__ ## name tmp = {0};                                         \
+    if (! mr || ! dest) {                                              \
+      err_puts("marshall_read_set: invalid argument");                 \
+      assert(! "marshall_read_set: invalid argument");                 \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! marshall_read_1(mr, heap, magic)) {                          \
+      err_puts("marshall_read_set: marshall_read_1 magic");            \
+      assert(! "marshall_read_set: marshall_read_1 magic");            \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! marshall_read_uw(mr, heap, &collisions) ||                   \
+        ! marshall_read_uw(mr, heap, &count) ||                        \
+        ! marshall_read_uw(mr, heap, &max)) {                          \
+      err_puts("marshall_read_set: marshall_read_uw");                 \
+      assert(! "marshall_read_set: marshall_read_uw");                 \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! max) {                                                       \
+      err_puts("marshall_read_set: invalid max");                      \
+      assert(! "marshall_read_set: invalid max");                      \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! set_init__ ## name (&tmp, max)) {                            \
+      err_puts("marshall_read_set: set_init");                         \
+      assert(! "marshall_read_set: set_init");                         \
+      return NULL;                                                     \
+    }                                                                  \
+    i = 0;                                                             \
+    while (i < max) {                                                  \
+      if (! marshall_read_pset_item__ ## name(mr, heap,                \
+                                              tmp.items + i)) {        \
+        err_puts("marshall_read_set: marshall_read_pset_item_"         \
+                 # name);                                              \
+        assert(! "marshall_read_set: marshall_read_pset_item_"         \
+               # name);                                                \
+        return NULL;                                                   \
+      }                                                                \
+      i++;                                                             \
+    }                                                                  \
+    *dest = tmp;                                                       \
+    dest->collisions = collisions;                                     \
+    dest->count = count;                                               \
+    dest->max = max;                                                   \
     return mr;                                                         \
   }
 
@@ -2064,6 +2197,9 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
   return mr;
 }
 
+DEF_MARSHALL_READ_PSET_ITEM(fact, s_fact, "_KC3PSETITEMFACTS_")
+DEF_MARSHALL_READ_PSET_ITEM(tag,  s_tag,  "_KC3PSETITEMTAG_")
+
 s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,
                                          bool heap,
                                          p_struct *dest)
@@ -2370,87 +2506,10 @@ DEF_MARSHALL_READ(s8, "_KC3S8_", s8)
 DEF_MARSHALL_READ_LETOH(s16, "_KC3S16_", s16, 16)
 DEF_MARSHALL_READ_LETOH(s32, "_KC3S32_", s32, 32)
 DEF_MARSHALL_READ_LETOH(s64, "_KC3S64_", s64, 64)
-
-s_marshall_read * marshall_read_set_tag (s_marshall_read *mr,
-                                         bool heap,
-                                         s_set__tag *dest)
-{
-  uw collisions = 0;
-  uw count = 0;
-  uw h;
-  uw i;
-  s_set_item__tag *item;
-  s_set_item__tag *last = NULL;
-  uw last_h = 0;
-  uw max = 0;
-  s_set__tag tmp = {0};
-  if (! mr || ! dest) {
-    err_puts("marshall_read_set_tag: invalid argument");
-    assert(! "marshall_read_set_tag: invalid argument");
-    return NULL;
-  }
-  if (! marshall_read_1(mr, heap, "_KC3SETTAG_")) {
-    err_puts("marshall_read_set_tag: marshall_read_1 magic");
-    assert(! "marshall_read_set_tag: marshall_read_1 magic");
-    return NULL;
-  }
-  if (! marshall_read_uw(mr, heap, &max) ||
-      ! marshall_read_uw(mr, heap, &count) ||
-      ! marshall_read_uw(mr, heap, &collisions)) {
-    err_puts("marshall_read_set_tag: marshall_read_uw");
-    assert(! "marshall_read_set_tag: marshall_read_uw");
-    return NULL;
-  }
-  if (! max) {
-    err_puts("marshall_read_set_tag: invalid max");
-    assert(! "marshall_read_set_tag: invalid max");
-    return NULL;
-  }
-  if (! set_init__tag(&tmp, max)) {
-    err_puts("marshall_read_set_tag: set_init__tag");
-    assert(! "marshall_read_set_tag: set_init__tag");
-    return NULL;
-  }
-  i = 0;
-  while (i < count) {
-    if (! (item = alloc(sizeof(s_set_item__tag)))) {
-      set_clean__tag(&tmp);
-      return NULL;
-    }
-    if (! marshall_read_uw(mr, heap, &item->hash) ||
-        ! marshall_read_uw(mr, heap, &item->usage)) {
-      err_puts("marshall_read_set_tag: marshall_read_uw item");
-      assert(! "marshall_read_set_tag: marshall_read_uw item");
-      alloc_free(item);
-      set_clean__tag(&tmp);
-      return NULL;
-    }
-    if (! marshall_read_tag(mr, heap, &item->data)) {
-      err_puts("marshall_read_set_tag: marshall_read_tag");
-      assert(! "marshall_read_set_tag: marshall_read_tag");
-      alloc_free(item);
-      set_clean__tag(&tmp);
-      return NULL;
-    }
-    h = item->hash % tmp.max;
-    if (! last || last_h != h) {
-      last = tmp.items[h];
-      while (last && last->next)
-        last = last->next;
-    }
-    if (last)
-      last->next = item;
-    else
-      tmp.items[h] = item;
-    last = item;
-    last_h = h;
-    i++;
-  }
-  tmp.collisions = collisions;
-  tmp.count = count;
-  *dest = tmp;
-  return mr;
-}
+DEF_MARSHALL_READ_SET(fact, s_fact, "_KC3SETFACT_")
+DEF_MARSHALL_READ_SET(tag,  s_tag,  "_KC3SETTAG_")
+DEF_MARSHALL_READ_SET_ITEM(fact, s_fact, "_KC3SETITEMFACT_")
+DEF_MARSHALL_READ_SET_ITEM(tag,  s_tag, "_KC3SETITEMTAG_")
 
 sw marshall_read_size (const s_marshall_read *mr)
 {

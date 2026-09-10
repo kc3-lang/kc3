@@ -44,69 +44,167 @@
 #include "types.h"
 #include "marshall.h"
 
-#define DEF_MARSHALL(type, magic)                                     \
-  s_marshall * marshall_ ## type (s_marshall *m, bool heap, type src) \
-  {                                                                   \
-    s_buf *buf;                                                       \
-    type le;                                                          \
-    sw r;                                                             \
-    if (! m) {                                                        \
-      err_puts("marshall_" # type ": invalid argument");              \
-      assert(! "marshall_" # type ": invalid argument");              \
-      return NULL;                                                    \
-    }                                                                 \
-    le = _Generic(src,                                                \
-                  s16:     htole16(src),                              \
-                  u16:     htole16(src),                              \
-                  s32:     htole32(src),                              \
-                  u32:     htole32(src),                              \
-                  s64:     htole64(src),                              \
-                  u64:     htole64(src),                              \
-                  default: src);                                      \
-    buf = heap ? &m->heap : &m->buf;                                  \
-    if ((r = buf_write_1(buf, magic)) <= 0)                           \
-      return NULL;                                                    \
-    if (heap)                                                         \
-      m->heap_pos += r;                                               \
-    else                                                              \
-      m->buf_pos += r;                                                \
-    if ((r = buf_write_ ## type(buf, le)) <= 0)                       \
-      return NULL;                                                    \
-    if (heap)                                                         \
-      m->heap_pos += r;                                               \
-    else                                                              \
-      m->buf_pos += r;                                                \
-    return m;                                                         \
+#define DEF_MARSHALL(type, magic)                                      \
+  s_marshall * marshall_ ## type (s_marshall *m, bool heap, type src)  \
+  {                                                                    \
+    s_buf *buf;                                                        \
+    type le;                                                           \
+    sw r;                                                              \
+    if (! m) {                                                         \
+      err_puts("marshall_" # type ": invalid argument");               \
+      assert(! "marshall_" # type ": invalid argument");               \
+      return NULL;                                                     \
+    }                                                                  \
+    le = _Generic(src,                                                 \
+                  s16:     htole16(src),                               \
+                  u16:     htole16(src),                               \
+                  s32:     htole32(src),                               \
+                  u32:     htole32(src),                               \
+                  s64:     htole64(src),                               \
+                  u64:     htole64(src),                               \
+                  default: src);                                       \
+    buf = heap ? &m->heap : &m->buf;                                   \
+    if ((r = buf_write_1(buf, magic)) <= 0)                            \
+      return NULL;                                                     \
+    if (heap)                                                          \
+      m->heap_pos += r;                                                \
+    else                                                               \
+      m->buf_pos += r;                                                 \
+    if ((r = buf_write_ ## type(buf, le)) <= 0)                        \
+      return NULL;                                                     \
+    if (heap)                                                          \
+      m->heap_pos += r;                                                \
+    else                                                               \
+      m->buf_pos += r;                                                 \
+    return m;                                                          \
   }
 
-#define DEF_MARSHALL_P(name, magic, type)                             \
-  s_marshall * marshall_p ## name (s_marshall *m, bool heap,          \
-                                   const type *data)                  \
-  {                                                                   \
-    assert(m);                                                        \
-    bool present = false;                                             \
-    if (! m || ! data) {                                              \
-      err_puts("marshall_p" # name ": invalid argument");             \
-      assert(! "marshall_p" # name ": invalid argument");             \
-      return NULL;                                                    \
-    }                                                                 \
-    if (! marshall_1(m, heap, magic)) {                               \
-      err_puts("marshall_p" # name ": marshall_1 magic");             \
-      assert(! "marshall_p" # name ": marshall_1 magic");             \
-      return NULL;                                                    \
-    }                                                                 \
-    if (! marshall_heap_pointer(m, heap, *data, &present)) {          \
-      err_puts("marshall_p" # name ": marshall_heap_pointer");        \
-      assert(! "marshall_p" # name ": marshall_heap_pointer");        \
-      return NULL;                                                    \
-    }                                                                 \
-    if (! present && *data &&                                         \
-        ! marshall_ ## name(m, true, *data)) {                        \
-      err_puts("marshall_p" # name ": marshall_" # name);             \
-      assert(! "marshall_p" # name ": marshall_" # name);             \
-      return NULL;                                                    \
-    }                                                                 \
-    return m;                                                         \
+#define DEF_MARSHALL_P(name, magic, type)                              \
+  s_marshall * marshall_p ## name (s_marshall *m, bool heap,           \
+                                   const type *data)                   \
+  {                                                                    \
+    assert(m);                                                         \
+    bool present = false;                                              \
+    if (! m || ! data) {                                               \
+      err_puts("marshall_p" # name ": invalid argument");              \
+      assert(! "marshall_p" # name ": invalid argument");              \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! marshall_1(m, heap, magic)) {                                \
+      err_puts("marshall_p" # name ": marshall_1 magic");              \
+      assert(! "marshall_p" # name ": marshall_1 magic");              \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! marshall_heap_pointer(m, heap, *data, &present)) {           \
+      err_puts("marshall_p" # name ": marshall_heap_pointer");         \
+      assert(! "marshall_p" # name ": marshall_heap_pointer");         \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! present && *data &&                                          \
+        ! marshall_ ## name(m, true, *data)) {                         \
+      err_puts("marshall_p" # name ": marshall_" # name);              \
+      assert(! "marshall_p" # name ": marshall_" # name);              \
+      return NULL;                                                     \
+    }                                                                  \
+    return m;                                                          \
+  }
+
+#define DEF_MARSHALL_SET(type, magic)                                  \
+  s_marshall * marshall_set__ ## type (s_marshall *m, bool heap,       \
+                                       const s_set__ ## type *set)     \
+  {                                                                    \
+    uw i;                                                              \
+    if (! m || ! set || ! set->items) {                                \
+      err_puts("marshall_set: invalid argument");                      \
+      assert(! "marshall_set: invalid argument");                      \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! marshall_1(m, heap, magic)) {                                \
+      err_puts("marshall_set: marshall_1 magic");                      \
+      assert(! "marshall_set: marshall_1 magic");                      \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! marshall_uw(m, heap, set->collisions) ||                     \
+        ! marshall_uw(m, heap, set->count) ||                          \
+        ! marshall_uw(m, heap, set->max)) {                            \
+      err_puts("marshall_set: marshall_uw");                           \
+      assert(! "marshall_set: marshall_uw");                           \
+      return NULL;                                                     \
+    }                                                                  \
+    i = 0;                                                             \
+    while (i < set->max) {                                             \
+      if (! marshall_pset_item__ ## type (m, heap, set->items + i)) {  \
+        err_puts("marshall_set: marshall_pset_item");                  \
+        assert(! "marshall_set: marshall_pset_item");                  \
+        return NULL;                                                   \
+      }                                                                \
+      i++;                                                             \
+    }                                                                  \
+    return m;                                                          \
+  }
+
+#define DEF_MARSHALL_SET_ITEM(type)                                    \
+  s_marshall * marshall_set_item__ ## type                             \
+  (s_marshall *m, bool heap, const s_set_item__ ## type *item)         \
+  {                                                                    \
+    if (! marshall_uw(m, heap, item->hash) ||                          \
+        ! marshall_uw(m, heap, item->usage)) {                         \
+      err_puts("marshall_set_item: marshall_uw");                      \
+      assert(! "marshall_set_item: marshall_uw");                      \
+    }                                                                  \
+    if (! marshall_ ## type(m, heap, &item->data)) {                   \
+      err_puts("marshall_set_item: marshall_" # type);                 \
+      assert(! "marshall_set_item: marshall_" # type);                 \
+    }                                                                  \
+    if (! marshall_pset_item__ ## type(m, heap, &item->next)) {        \
+      err_puts("marshall_set_item: marshall_pset_item__tag");          \
+      assert(! "marshall_set_item: marshall_pset_item__tag");          \
+    }                                                                  \
+    return m;                                                          \
+  }
+
+#define DEF_MARSHALL_SKIPLIST(type, magic)                             \
+  s_marshall * marshall_skiplist__ ## type                             \
+  (s_marshall *m, bool heap, const s_skiplist__ ## type *s)            \
+  {                                                                    \
+    if (! marshall_1(m, heap, magic)) {                                \
+      err_puts("marshall_skiplist: marshall_1 magic");                 \
+      assert(! "marshall_skiplist: marshall_1 magic");                 \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! marshall_uw(m, heap, s->length)) {                           \
+      err_puts("marshall_skiplist: marshall_uw");                      \
+      assert(! "marshall_skiplist: marshall_uw");                      \
+    }                                                                  \
+    if (! marshall_u8(m, heap, s->max_height)) {                       \
+    }                                                                  \
+    if (! marshall_pskiplist_node__ ## type(m, heap, &s->head)) {      \
+      err_puts("marshall_skiplist: marshall_pskiplist_node__" # type); \
+      assert(! "marshall_skiplist: marshall_pskiplist_node__" # type); \
+    }                                                                  \
+    return m;                                                          \
+  }
+
+#define DEF_MARSHALL_SKIPLIST_NODE(name, type, magic)                  \
+  s_marshall * marshall_skiplist_node__ ## name                        \
+  (s_marshall *m, bool heap, const s_skiplist_node__ ## name *node)    \
+  {                                                                    \
+    if (! marshall_1(m, heap, magic)) {                                \
+      err_puts("marshall_skiplist_node: marshall_1 magic");            \
+      assert(! "marshall_skiplist_node: marshall_1 magic");            \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! marshall_u8(m, heap, node->height)) {                        \
+      err_puts("marshall_skiplist_node: marshall_u8");                 \
+      assert(! "marshall_skiplist_node: marshall_u8");                 \
+    }                                                                  \
+    if (! marshall_ ## name(m, heap, (const type *) &node->name)) {    \
+      err_puts("marshall_skiplist_node: marshall_pskiplist_node__"     \
+               # name);                                                \
+      assert(! "marshall_skiplist_node: marshall_pskiplist_node__"     \
+             # name);                                                  \
+    }                                                                  \
+    return m;                                                          \
   }
 
 s_marshall * marshall_1 (s_marshall *m, bool heap,
@@ -960,6 +1058,60 @@ s_marshall * marshall_fact (s_marshall *m, bool heap,
 
 s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
 {
+  assert(m);
+  assert(facts);
+#if HAVE_PTHREAD
+  rwlock_r(&facts->rwlock);
+#endif
+  if (! marshall_1(m, heap, "_KC3FACTS1_")) {
+    err_puts("marshall_facts: marshall_1");
+    assert(! "marshall_facts: marshall_1");
+    return NULL;
+  }
+  if (! marshall_set__tag(m, heap, &facts->tags)) {
+    err_puts("marshall_facts: marshall_set__tag");
+    assert(! "marshall_facts: marshall_set__tag");
+    return NULL;
+  }
+  if (! marshall_set__fact(m, heap, &facts->facts)) {
+    err_puts("marshall_facts: marshall_set__fact");
+    assert(! "marshall_facts: marshall_set__fact");
+    return NULL;
+  }
+  if (! marshall_skiplist__fact(m, heap, facts->index)) {
+    err_puts("marshall_facts: marshall_skiplist__fact: index");
+    assert(! "marshall_facts: marshall_skiplist__fact: index");
+    return NULL;
+  }
+  if (! marshall_skiplist__fact(m, heap, facts->index_spo)) {
+    err_puts("marshall_facts: marshall_skiplist__fact: SPO");
+    assert(! "marshall_facts: marshall_skiplist__fact: SPO");
+    return NULL;
+  }
+  if (! marshall_skiplist__fact(m, heap, facts->index_pos)) {
+    err_puts("marshall_facts: marshall_skiplist__fact: POS");
+    assert(! "marshall_facts: marshall_skiplist__fact: POS");
+    return NULL;
+  }
+  if (! marshall_skiplist__fact(m, heap, facts->index_osp)) {
+    err_puts("marshall_facts: marshall_skiplist__fact: OSP");
+    assert(! "marshall_facts: marshall_skiplist__fact: OSP");
+    return NULL;
+  }
+  if (! marshall_uw(m, heap, facts->next_id)) {
+    err_puts("marshall_facts: marshall_uw: next_id");
+    assert(! "marshall_facts: marshall_uw: next_id");
+    return NULL;
+  }
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
+  return m;
+}
+
+/*
+s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
+{
   s_facts_cursor cursor;
   s_fact *fact;
   uw i;
@@ -1068,6 +1220,7 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
 #endif
   return NULL;
 }
+*/
 
 s_marshall * marshall_fn (s_marshall *m, bool heap, const s_fn *fn)
 {
@@ -1455,13 +1608,15 @@ s_marshall * marshall_ops (s_marshall *m, bool heap, s_ops *ops)
   return NULL;
 }
 
-DEF_MARSHALL_P(call,        "_KC3PCALL_",       p_call)
-DEF_MARSHALL_P(callable,    "_KC3PCALLABLE_",   p_callable)
-DEF_MARSHALL_P(complex,     "_KC3PCOMPLEX_",    p_complex)
-DEF_MARSHALL_P(cow,         "_KC3PCOW_",        p_cow)
-DEF_MARSHALL_P(facts,       "_KC3PFACTS_",      p_facts)
-DEF_MARSHALL_P(frame,       "_KC3PFRAME_",      p_frame)
-DEF_MARSHALL_P(list,        "_KC3PLIST_",       p_list)
+DEF_MARSHALL_P(call,           "_KC3PCALL_",        p_call)
+DEF_MARSHALL_P(callable,       "_KC3PCALLABLE_",    p_callable)
+DEF_MARSHALL_P(complex,        "_KC3PCOMPLEX_",     p_complex)
+DEF_MARSHALL_P(cow,            "_KC3PCOW_",         p_cow)
+DEF_MARSHALL_P(facts,          "_KC3PFACTS_",       p_facts)
+DEF_MARSHALL_P(frame,          "_KC3PFRAME_",       p_frame)
+DEF_MARSHALL_P(list,           "_KC3PLIST_",        p_list)
+DEF_MARSHALL_P(set_item__fact, "_KC3PSETITEMFACT_", p_set_item__fact)
+DEF_MARSHALL_P(set_item__tag,  "_KC3PSETITEMTAG_",  p_set_item__tag)
 
 s_marshall * marshall_pointer (s_marshall *m, bool heap,
                                const s_pointer *pointer)
@@ -1518,10 +1673,16 @@ s_marshall * marshall_pointer (s_marshall *m, bool heap,
   return m;
 }
 
-DEF_MARSHALL_P(struct,      "_KC3PSTRUCT_",     p_struct)
-DEF_MARSHALL_P(struct_type, "_KC3PSTRUCTTYPE_", p_struct_type)
-DEF_MARSHALL_P(sym,         "_KC3PSYM_",        p_sym)
-DEF_MARSHALL_P(tag,         "_KC3PTAG_",        p_tag)
+DEF_MARSHALL_P(skiplist__fact,
+               "_KC3PSKIPLISTFACT_",
+               p_skiplist__fact)
+DEF_MARSHALL_P(skiplist_node__fact,
+               "_KC3PSKIPLISTNODEFACT_",
+               p_skiplist_node__fact)
+DEF_MARSHALL_P(struct,         "_KC3PSTRUCT_",       p_struct)
+DEF_MARSHALL_P(struct_type,    "_KC3PSTRUCTTYPE_",   p_struct_type)
+DEF_MARSHALL_P(sym,            "_KC3PSYM_",          p_sym)
+DEF_MARSHALL_P(tag,            "_KC3PTAG_",          p_tag)
 
 s_marshall * marshall_ptr (s_marshall *m, bool heap, void *p)
 {
@@ -1583,62 +1744,10 @@ DEF_MARSHALL(s8, "_KC3S8_")
 DEF_MARSHALL(s16, "_KC3S16_")
 DEF_MARSHALL(s32, "_KC3S32_")
 DEF_MARSHALL(s64, "_KC3S64_")
-
-s_marshall * marshall_set_tag (s_marshall *m, bool heap,
-                               const s_set__tag *set)
-{
-  uw count;
-  uw i;
-  const s_set_item__tag *item;
-  if (! m || ! set || ! set->items) {
-    err_puts("marshall_set_tag: invalid argument");
-    assert(! "marshall_set_tag: invalid argument");
-    return NULL;
-  }
-  if (! marshall_1(m, heap, "_KC3SETTAG_")) {
-    err_puts("marshall_set_tag: marshall_1 magic");
-    assert(! "marshall_set_tag: marshall_1 magic");
-    return NULL;
-  }
-  if (! marshall_uw(m, heap, set->max) ||
-      ! marshall_uw(m, heap, set->count) ||
-      ! marshall_uw(m, heap, set->collisions)) {
-    err_puts("marshall_set_tag: marshall_uw");
-    assert(! "marshall_set_tag: marshall_uw");
-    return NULL;
-  }
-  count = 0;
-  i = 0;
-  while (i < set->max) {
-    item = set->items[i];
-    while (item) {
-      if (! marshall_uw(m, heap, item->hash) ||
-          ! marshall_uw(m, heap, item->usage)) {
-        err_puts("marshall_set_tag: marshall_uw item");
-        assert(! "marshall_set_tag: marshall_uw item");
-        return NULL;
-      }
-      if (! marshall_tag(m, heap, &item->data)) {
-        err_puts("marshall_set_tag: marshall_tag");
-        assert(! "marshall_set_tag: marshall_tag");
-        return NULL;
-      }
-      count++;
-      item = item->next;
-    }
-    i++;
-  }
-  if (count != set->count) {
-    err_write_1("marshall_set_tag: invalid set count (");
-    err_inspect_uw_decimal(count);
-    err_write_1(" != ");
-    err_inspect_uw_decimal(set->count);
-    err_puts(")");
-    assert(! "marshall_set_tag: invalid set count");
-    return NULL;
-  }
-  return m;
-}
+DEF_MARSHALL_SET(fact, "_KC3SETFACT_")
+DEF_MARSHALL_SET(tag,  "_KC3SETTAG_")
+DEF_MARSHALL_SET_ITEM(fact)
+DEF_MARSHALL_SET_ITEM(tag)
 
 sw marshall_size (const s_marshall *m)
 {
@@ -1646,6 +1755,9 @@ sw marshall_size (const s_marshall *m)
     return -1;
   return sizeof(s_marshall_header) + m->heap_pos + m->buf_pos;
 }
+
+DEF_MARSHALL_SKIPLIST(fact, "_KC3SKIPLISTFACT_")
+DEF_MARSHALL_SKIPLIST_NODE(fact, s_fact, "_KC3SKIPLISTNODEFACT_")
 
 s_marshall * marshall_str (s_marshall *m, bool heap, const s_str *src)
 {

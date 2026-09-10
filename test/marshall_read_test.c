@@ -85,7 +85,7 @@ TEST_CASE_PROTOTYPE(marshall_read_s8);
 TEST_CASE_PROTOTYPE(marshall_read_s16);
 TEST_CASE_PROTOTYPE(marshall_read_s32);
 TEST_CASE_PROTOTYPE(marshall_read_s64);
-TEST_CASE_PROTOTYPE(marshall_read_set_tag);
+TEST_CASE_PROTOTYPE(marshall_read_set__tag);
 TEST_CASE_PROTOTYPE(marshall_read_sw);
 TEST_CASE_PROTOTYPE(marshall_read_tag);
 TEST_CASE_PROTOTYPE(marshall_read_unquote);
@@ -101,7 +101,7 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_call_cache);
   TEST_CASE_RUN(marshall_read_tag);
   TEST_CASE_RUN(marshall_read_unquote);
-  TEST_CASE_RUN(marshall_read_set_tag);
+  TEST_CASE_RUN(marshall_read_set__tag);
 }
 
 TEST_CASE(marshall_read_bool)
@@ -184,7 +184,7 @@ TEST_CASE_END(marshall_read_call_cache)
 }
 TEST_CASE_END(marshall_read_plist)
 
-TEST_CASE(marshall_read_set_tag)
+TEST_CASE(marshall_read_set__tag)
 {
   uw h;
   uw i;
@@ -222,10 +222,10 @@ TEST_CASE(marshall_read_set_tag)
   tag_clean(&tag);
   TEST_EQ(set.count, i);
   TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
-  TEST_EQ(marshall_set_tag(&m, false, &set), &m);
+  TEST_EQ(marshall_set__tag(&m, false, &set), &m);
   TEST_EQ(marshall_to_str(&m, &str), &str);
   TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
-  TEST_EQ(marshall_read_set_tag(&mr, false, &set2), &mr);
+  TEST_EQ(marshall_read_set__tag(&mr, false, &set2), &mr);
   TEST_EQ(set2.max, set.max);
   TEST_EQ(set2.count, set.count);
   TEST_EQ(set2.collisions, set.collisions);
@@ -250,7 +250,7 @@ TEST_CASE(marshall_read_set_tag)
   set_clean__tag(&set);
   str_clean(&str);
 }
-TEST_CASE_END(marshall_read_set_tag)
+TEST_CASE_END(marshall_read_set__tag)
 
   TEST_CASE(marshall_read_tag)
 {

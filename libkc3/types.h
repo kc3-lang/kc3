@@ -314,18 +314,18 @@ typedef u64             t_skiplist_height;
 typedef s64             t_socket;
 
 /* pointer types */
-typedef s_buf *           p_buf;
-typedef s_call *          p_call;
-typedef s_callable *      p_callable;
-typedef s_complex *       p_complex;
-typedef s_cow *           p_cow;
-typedef s_facts *         p_facts;
-typedef s_tag **          p_facts_spec;
-typedef s_frame *         p_frame;
-typedef s_list *          p_list;
-typedef s_marshall *      p_marshall;
-typedef s_marshall_read * p_marshall_read;
-typedef s_struct *        p_struct;
+typedef s_buf *            p_buf;
+typedef s_call *           p_call;
+typedef s_callable *       p_callable;
+typedef s_complex *        p_complex;
+typedef s_cow *            p_cow;
+typedef s_facts *          p_facts;
+typedef s_tag **           p_facts_spec;
+typedef s_frame *          p_frame;
+typedef s_list *           p_list;
+typedef s_marshall *       p_marshall;
+typedef s_marshall_read *  p_marshall_read;
+typedef s_struct *         p_struct;
 typedef s_struct_type *    p_struct_type;
 typedef const s_sym *      p_sym;
 typedef t_socket *         p_socket;
@@ -1004,13 +1004,14 @@ struct sequence {
 };
 
 #define TYPEDEF_SET_ITEM(name, type)                                   \
-  typedef struct set_item__##name s_set_item__##name;                  \
+  typedef struct set_item__ ## name  s_set_item__ ## name;             \
+  typedef struct set_item__ ## name *p_set_item__ ## name;             \
                                                                        \
-  struct set_item__##name {                                            \
-    type data;                                                         \
+  struct set_item__ ## name {                                          \
     uw hash;                                                           \
-    s_set_item__##name *next;                                          \
     uw usage;                                                          \
+    type data;                                                         \
+    p_set_item__ ## name next;                                         \
   }
 
 TYPEDEF_SET_ITEM(fact, s_fact);
@@ -1021,8 +1022,8 @@ TYPEDEF_SET_ITEM(uw, uw);
   typedef struct set__##name {                                         \
     uw collisions;                                                     \
     uw count;                                                          \
-    s_set_item__##name **items;                                        \
     uw max;                                                            \
+    s_set_item__##name **items;                                        \
   } s_set__##name
 
 TYPEDEF_SET(fact);
@@ -1032,9 +1033,9 @@ TYPEDEF_SET(uw);
 #define TYPEDEF_SET_CURSOR(name)                                       \
   typedef struct set_cursor__##name {                                  \
     s_set__##name *set;                                                \
-    uw i;                                                          \
+    uw i;                                                              \
     s_set_item__##name *item;                                          \
-    uw count;                                                      \
+    uw count;                                                          \
   } s_set_cursor__##name
 
 TYPEDEF_SET_CURSOR(fact);
@@ -1042,20 +1043,26 @@ TYPEDEF_SET_CURSOR(tag);
 TYPEDEF_SET_CURSOR(uw);
 
 #define TYPEDEF_SKIPLIST_NODE(name, type)                              \
-  typedef struct skiplist_node__##name {                               \
-    type name;                                                         \
+  typedef struct skiplist_node__ ## name  s_skiplist_node__ ## name;   \
+  typedef struct skiplist_node__ ## name *p_skiplist_node__ ## name;   \
+                                                                       \
+  struct skiplist_node__ ## name {                                     \
     u8 height;                                                         \
-  } s_skiplist_node__##name
+    type name;                                                         \
+  }
 
 TYPEDEF_SKIPLIST_NODE(fact, s_fact *);
 
 #define TYPEDEF_SKIPLIST(name, type)                                   \
-  typedef struct skiplist__##name {                                    \
-    s_skiplist_node__##name *head;                                     \
-    s8 (*compare) (const type a, const type b);                        \
+  typedef struct skiplist__ ## name   s_skiplist__ ## name;            \
+  typedef struct skiplist__ ## name  *p_skiplist__ ## name;            \
+                                                                       \
+  struct skiplist__ ## name {                                          \
     uw length;                                                         \
     u8 max_height;                                                     \
-  } s_skiplist__##name
+    s_skiplist_node__##name *head;                                     \
+    s8 (*compare) (const type a, const type b);                        \
+  }
 
 TYPEDEF_SKIPLIST(fact, s_fact *);
 
