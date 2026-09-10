@@ -32,6 +32,62 @@ static bool url_escape_character_is_escaped (const s_str *escapes,
   return str_character_position(escapes, c) >= 0;
 }
 
+static bool url_encode_component_unreserved (u8 c)
+{
+  return (c >= 'A' && c <= 'Z') ||
+         (c >= 'a' && c <= 'z') ||
+         (c >= '0' && c <= '9') ||
+         c == '-' || c == '.' || c == '_' || c == '~';
+}
+
+s_str * url_encode_component (const s_str *src, s_str *dest)
+{
+  s_buf buf;
+  uw i;
+  const u8 *p;
+  uw size;
+  u8 u;
+  assert(src);
+  assert(dest);
+  p = src->ptr.p_pu8;
+  size = 0;
+  i = 0;
+  while (i < src->size) {
+    if (url_encode_component_unreserved(p[i]))
+      size += 1;
+    else
+      size += 3;
+    i++;
+  }
+  if (! size)
+    return str_init_empty(dest);
+  if (! buf_init_alloc(&buf, size))
+    return NULL;
+  i = 0;
+  while (i < src->size) {
+    if (url_encode_component_unreserved(p[i])) {
+      if (buf_write_u8(&buf, p[i]) < 0)
+        goto clean;
+    }
+    else {
+      if (buf_write_u8(&buf, '%') < 0)
+        goto clean;
+      u = p[i];
+      if (buf_u8_to_hex(&buf, &u) != 2)
+        goto clean;
+    }
+    i++;
+  }
+  if (! buf_to_str(&buf, dest)) {
+    buf_clean(&buf);
+    return NULL;
+  }
+  return dest;
+ clean:
+  buf_clean(&buf);
+  return NULL;
+}
+
 s_str * url_escape (const s_str *src, s_str *dest)
 {
   bool escaped_ascii[128] = {0};

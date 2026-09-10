@@ -16,6 +16,7 @@
 #include "../libkc3/types.h"
 
 s_str * url_escape (const s_str *src, s_str *dest);
+s_str * url_encode_component (const s_str *src, s_str *dest);
 sw      url_escape_size (const s_str *src);
 s_str * url_unescape (const s_str *url, s_str *dest);
 sw      url_unescape_size (const s_str *url);

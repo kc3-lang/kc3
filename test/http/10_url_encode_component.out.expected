@@ -1,0 +1,24 @@
+require URL
+URL
+URL.encode_component("abcXYZ019-._~")
+"abcXYZ019-._~"
+URL.encode_component("a&b")
+"a%26b"
+URL.encode_component("a=b")
+"a%3Db"
+URL.encode_component("a b")
+"a%20b"
+URL.encode_component("a+b")
+"a%2Bb"
+URL.encode_component("%")
+"%25"
+URL.encode_component("[0]")
+"%5B0%5D"
+URL.encode_component("/")
+"%2F"
+URL.encode_component("")
+""
+URL.encode_component("é")
+"%C3%A9"
+URL.encode_component("a&b=c")
+"a%26b%3Dc"
