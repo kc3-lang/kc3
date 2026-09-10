@@ -1,0 +1,14 @@
+require HTTPS.Client
+HTTPS.Client
+%{a: "b"}
+%{a: "b"}
+HTTPS.Client.encode_form(%{a: "b"})
+"a=b"
+HTTPS.Client.encode_form(%{a: "x&y"})
+"a=x%26y"
+HTTPS.Client.encode_form(%{a: "x=y"})
+"a=x%3Dy"
+HTTPS.Client.encode_form(%{"line_items[0][price]": "price_1"})
+"line_items%5B0%5D%5Bprice%5D=price_1"
+HTTPS.Client.encode_form(%{})
+""

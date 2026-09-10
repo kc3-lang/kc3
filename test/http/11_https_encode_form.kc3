@@ -1,0 +1,14 @@
+quote require HTTPS.Client
+require HTTPS.Client
+quote %{"a": "b"}
+%{"a": "b"}
+quote HTTPS.Client.encode_form(%{"a": "b"})
+HTTPS.Client.encode_form(%{"a": "b"})
+quote HTTPS.Client.encode_form(%{"a": "x&y"})
+HTTPS.Client.encode_form(%{"a": "x&y"})
+quote HTTPS.Client.encode_form(%{"a": "x=y"})
+HTTPS.Client.encode_form(%{"a": "x=y"})
+quote HTTPS.Client.encode_form(%{"line_items[0][price]": "price_1"})
+HTTPS.Client.encode_form(%{"line_items[0][price]": "price_1"})
+quote HTTPS.Client.encode_form(%{})
+HTTPS.Client.encode_form(%{})

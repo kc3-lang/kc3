@@ -13,6 +13,7 @@
 require HTTP.Request
 require HTTP.Response
 require JSON
+require URL
 require Time
 require TLS
 require TLS.Client
@@ -56,6 +57,23 @@ defmodule HTTPS.Client do
       void
     end
   }
+  }
+
+  def encode_form = fn (map) {
+    List.join(Map.map_to_list(map, fn (key, value) {
+      k = URL.encode_component((Str) key)
+      v = URL.encode_component((Str) value)
+      "#{k}=#{v}" }), "&")
+  }
+
+  def exchange = fn (client, req) {
+    if type(client) == HTTPS.Client &&
+       client.state == :connected do
+      if HTTP.Request.buf_write(req,
+           client.tls_client.socket_buf.buf_rw.w) > 0 do
+        HTTP.Response.buf_parse(client.tls_client.socket_buf.buf_rw.r, true)
+      end
+    end
   }
 
   def get = fn {
@@ -119,7 +137,7 @@ defmodule HTTPS.Client do
   (client, url, body) {
     if type(client) == HTTPS.Client &&
         client.state == :connected do
-      body = URL.encode_form(body)
+      body = HTTPS.Client.encode_form(body)
       req = %HTTP.Request{
         time: Time.now(),
         method: POST,
@@ -135,6 +153,19 @@ defmodule HTTPS.Client do
         HTTPS.Client.response(response)
       end
     end
+  }
+  (client, url, body, headers) {
+    encoded = HTTPS.Client.encode_form(body)
+    req = %HTTP.Request{
+      time: Time.now(),
+      method: POST,
+      url: url,
+      headers: [{"Content-Length", (Str) Str.size(encoded)},
+                {"Content-Type", "application/x-www-form-urlencoded"} |
+                headers],
+      body: encoded
+    }
+    HTTPS.Client.exchange(client, req)
   }
   }
 
