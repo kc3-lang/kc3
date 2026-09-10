@@ -45,10 +45,16 @@ defmodule HTTPS.Client do
     tls_context = TLS.client()
     TLS.configure(tls_context, tls_config)
     tls_client = TLS.Client.connect(tls_context, host, port)
-    %HTTPS.Client{tls_config: tls_config,
-                  tls_context: tls_context,
-                  tls_client: tls_client,
-                  state: :connected}
+    if tls_client do
+      %HTTPS.Client{tls_config: tls_config,
+                    tls_context: tls_context,
+                    tls_client: tls_client,
+                    state: :connected}
+    else
+      if tls_context do TLS.free(tls_context) end
+      if tls_config do TLS.Config.free(tls_config) end
+      void
+    end
   }
   }
 
