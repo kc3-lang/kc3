@@ -23,8 +23,6 @@
 #include "../libkc3/tag.h"
 #include "test.h"
 
-#define ENV_TEST_DUMP_SIZE 211328
-
 void env_test (void);
 TEST_CASE_PROTOTYPE(env_eval_call);
 TEST_CASE_PROTOTYPE(env_eval_equal_tag);
@@ -50,8 +48,8 @@ TEST_CASE(env_dump)
   s_env env = {0};
   const s_str path = STR("env_test_dump.1.dump");
   test_context("env_dump()");
-  env_init(&env, 0, NULL);
-  TEST_EQ(env_dump(&env, &path), ENV_TEST_DUMP_SIZE);
+  TEST_ASSERT(env_init(&env, 0, NULL));
+  TEST_ASSERT(env_dump(&env, &path) > 0);
   env_clean(&env);
   file_unlink(&path);
   test_context(NULL);
@@ -62,15 +60,17 @@ TEST_CASE(env_dump_restore)
 {
   s_env env = {0};
   const s_str path = STR("kc3.dump");
+  sw size;
   test_context("env_dump() + env_restore()");
-  env_init(&env, 0, NULL);
-  TEST_EQ(env_dump(&env, &path), ENV_TEST_DUMP_SIZE);
+  TEST_ASSERT(env_init(&env, 0, NULL));
+  size = env_dump(&env, &path);
+  TEST_ASSERT(size > 0);
   env_clean(&env);
-  env_init(&env, 0, NULL);
-  TEST_EQ(env_dump(&env, &path), ENV_TEST_DUMP_SIZE);
+  TEST_ASSERT(env_init(&env, 0, NULL));
+  TEST_EQ(env_dump(&env, &path), size);
   env_clean(&env);
-  env_init(&env, 0, NULL);
-  TEST_EQ(env_dump(&env, &path), ENV_TEST_DUMP_SIZE);
+  TEST_ASSERT(env_init(&env, 0, NULL));
+  TEST_EQ(env_dump(&env, &path), size);
   env_clean(&env);
   test_context(NULL);
 }

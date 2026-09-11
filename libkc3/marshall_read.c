@@ -60,6 +60,8 @@
 #include "set__tag.h"
 #include "set_item__fact.h"
 #include "set_item__tag.h"
+#include "skiplist__fact.h"
+#include "skiplist_node__fact.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -1051,6 +1053,55 @@ s_marshall_read * marshall_read_fact (s_marshall_read *mr,
   return mr;
 }
 
+s_marshall_read * marshall_read_fact_1 (s_marshall_read *mr,
+                                        bool heap,
+                                        s_fact *dest)
+{
+  p_set_item__tag object = NULL;
+  p_set_item__tag predicate = NULL;
+  p_set_item__tag subject = NULL;
+  s_fact tmp = {0};
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3FACT1_") ||
+      ! marshall_read_pset_item__tag(mr, heap, &subject) ||
+      ! marshall_read_pset_item__tag(mr, heap, &predicate) ||
+      ! marshall_read_pset_item__tag(mr, heap, &object) ||
+      ! marshall_read_uw(mr, heap, &tmp.id))
+    return NULL;
+  tmp.subject = subject ? &subject->data : NULL;
+  tmp.predicate = predicate ? &predicate->data : NULL;
+  tmp.object = object ? &object->data : NULL;
+  *dest = tmp;
+  return mr;
+}
+
+s_marshall_read * marshall_read_facts_1 (s_marshall_read *mr,
+                                         bool heap, s_facts *facts)
+{
+  assert(mr);
+  assert(facts);
+  if (! marshall_read_1(mr, heap, "_KC3FACTS1_") ||
+      ! marshall_read_set__tag(mr, heap, &facts->tags) ||
+      ! marshall_read_set__fact(mr, heap, &facts->facts) ||
+      ! marshall_read_skiplist__fact(mr, heap, facts->index) ||
+      ! marshall_read_skiplist__fact(mr, heap, facts->index_spo) ||
+      ! marshall_read_skiplist__fact(mr, heap, facts->index_pos) ||
+      ! marshall_read_skiplist__fact(mr, heap, facts->index_osp) ||
+      ! marshall_read_uw(mr, heap, &facts->next_id))
+    return NULL;
+  facts->index->compare = compare_fact_id;
+  facts->index_spo->compare = compare_fact_spo;
+  facts->index_pos->compare = compare_fact_pos;
+  facts->index_osp->compare = compare_fact_osp;
+  facts->ref_count = 1;
+#if HAVE_PTHREAD
+  rwlock_init(&facts->rwlock);
+  mutex_init(&facts->ref_count_mutex);
+#endif
+  return mr;
+}
+
 s_marshall_read * marshall_read_facts (s_marshall_read *mr,
                                        bool heap, s_facts *facts)
 {
@@ -1064,6 +1115,8 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
   env = env_global();
   if (! mr || ! facts || ! env)
     return NULL;
+  if (buf_peek_1(heap ? mr->heap : mr->buf, "_KC3FACTS1_") > 0)
+    return marshall_read_facts_1(mr, heap, facts);
   if (! marshall_read_1(mr, heap, "_KC3FACTS_")) {
     err_puts("marshall_read_facts: marshall_read_1 magic");
     assert(! "marshall_read_facts: marshall_read_1 magic");
@@ -2118,6 +2171,79 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
   return mr;
 }
 
+s_marshall_read * marshall_read_pointer_1 (s_marshall_read *mr,
+                                           bool heap,
+                                           s_pointer *dest)
+{
+  s_call call = {0};
+  s_env *env = NULL;
+  s_ident ident = {0};
+  p_list list = NULL;
+  p_callable pcallable = NULL;
+  p_tag ptag = NULL;
+  s_tag tag_1 = {0};
+  p_sym target_type;
+  uw id;
+  u64 offset = 0;
+  void *present = NULL;
+  s_pointer tmp = {0};
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3POINTER1_") ||
+      ! marshall_read_psym(mr, heap, &target_type) ||
+      ! marshall_read_uw(mr, heap, &id) ||
+      ! marshall_read_heap_pointer(mr, heap, &offset, &present))
+    return NULL;
+  if (offset && ! present) {
+    if (! marshall_read_pcallable(mr, heap, &pcallable))
+      return NULL;
+    if (! (ptag = tag_new_pcallable_copy(&pcallable)) ||
+        ! (list = list_new_ptr(ptag, mr->ht_ptag_list))) {
+      if (ptag)
+        tag_delete(ptag);
+      pcallable_clean(&pcallable);
+      return NULL;
+    }
+    mr->ht_ptag_list = list;
+    env = env_global();
+    ident.module = target_type;
+    ident.sym = &g_sym_marshall_read;
+    call_init(&call);
+    call.ident = ident;
+    call.pcallable = pcallable;
+    call.arguments = list_new_pointer
+      (NULL, &g_sym_MarshallRead, mr, list_new_bool
+       (heap, NULL));
+    if (! env_eval_call(env, &call, &tag_1)) {
+      call_clean(&call);
+      return NULL;
+    }
+    if (tag_1.type != TAG_POINTER ||
+        tag_1.data.td_pointer.target_type != target_type) {
+      tag_clean(&tag_1);
+      call_clean(&call);
+      return NULL;
+    }
+    present = tag_1.data.td_pointer.ptr.p_pvoid;
+    tag_clean(&tag_1);
+    call_clean(&call);
+  }
+  if (! pointer_init(&tmp, NULL, target_type, present))
+    return NULL;
+  tmp.id = id;
+  env = env_global();
+#if HAVE_PTHREAD
+  mutex_lock(&env->next_pointer_id_mutex);
+#endif
+  if (id >= env->next_pointer_id)
+    env->next_pointer_id = id + 1;
+#if HAVE_PTHREAD
+  mutex_unlock(&env->next_pointer_id_mutex);
+#endif
+  *dest = tmp;
+  return mr;
+}
+
 s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
                                          bool heap,
                                          s_pointer *dest)
@@ -2133,6 +2259,9 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
   s_pointer tmp = {0};
   assert(mr);
   assert(dest);
+  if (buf_peek_1(heap ? mr->heap : mr->buf,
+                 "_KC3POINTER1_") > 0)
+    return marshall_read_pointer_1(mr, heap, dest);
   if (! marshall_read_1(mr, heap, "_KC3POINTER_")) {
     err_puts("marshall_read_pointer: marshall_read_1 magic");
     err_inspect_buf(heap ? mr->heap : mr->buf);
@@ -2197,8 +2326,145 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
   return mr;
 }
 
-DEF_MARSHALL_READ_PSET_ITEM(fact, s_fact, "_KC3PSETITEMFACTS_")
+DEF_MARSHALL_READ_PSET_ITEM(fact, s_fact, "_KC3PSETITEMFACT_")
 DEF_MARSHALL_READ_PSET_ITEM(tag,  s_tag,  "_KC3PSETITEMTAG_")
+
+s_marshall_read *
+marshall_read_pskiplist_node__fact (s_marshall_read *mr, bool heap,
+                                    p_skiplist_node__fact *dest)
+{
+  u8 height;
+  u64 offset = 0;
+  p_skiplist_node__fact present = NULL;
+  u64 pos;
+  p_skiplist_node__fact tmp;
+  if (! mr || ! dest ||
+      ! marshall_read_1(mr, heap, "_KC3PSKIPLISTNODEFACT_") ||
+      ! marshall_read_heap_pointer(mr, heap, &offset,
+                                   (void **) &present))
+    return NULL;
+  if (! offset) {
+    *dest = NULL;
+    return mr;
+  }
+  if (present) {
+    *dest = present;
+    return mr;
+  }
+  if (buf_seek(mr->heap, mr->heap_start + (s64) offset,
+               SEEK_SET) < 0 ||
+      ! buf_tell_r(mr->heap, &pos) ||
+      ! marshall_read_1(mr, true, "_KC3SKIPLISTNODEFACT_") ||
+      ! marshall_read_u8(mr, true, &height) ||
+      ! height ||
+      buf_seek(mr->heap, pos, SEEK_SET) < 0 ||
+      ! (tmp = alloc(SKIPLIST_NODE_SIZE__fact(height))))
+    return NULL;
+  if (! marshall_read_ht_add(mr, offset, tmp) ||
+      ! marshall_read_skiplist_node__fact(mr, true, tmp)) {
+    alloc_free(tmp);
+    return NULL;
+  }
+  *dest = tmp;
+  return mr;
+}
+
+s_marshall_read *
+marshall_read_skiplist_node__fact (s_marshall_read *mr, bool heap,
+                                   s_skiplist_node__fact *dest)
+{
+  u8 height;
+  uw i;
+  p_skiplist_node__fact *links;
+  p_set_item__fact item = NULL;
+  if (! mr || ! dest ||
+      ! marshall_read_1(mr, heap, "_KC3SKIPLISTNODEFACT_") ||
+      ! marshall_read_u8(mr, heap, &height) ||
+      ! height ||
+      ! marshall_read_pset_item__fact(mr, heap, &item))
+    return NULL;
+  skiplist_node_init(dest, item ? &item->data : NULL, height);
+  links = SKIPLIST_NODE_LINKS__fact(dest);
+  i = 0;
+  while (i < height) {
+    if (! marshall_read_pskiplist_node__fact(mr, heap, links + i))
+      return NULL;
+    i++;
+  }
+  return mr;
+}
+
+s_marshall_read *
+marshall_read_pskiplist__fact (s_marshall_read *mr, bool heap,
+                               p_skiplist__fact *dest)
+{
+  u8 max_height;
+  u64 offset = 0;
+  p_skiplist__fact present = NULL;
+  u64 pos;
+  p_skiplist__fact tmp;
+  uw length;
+  if (! mr || ! dest ||
+      ! marshall_read_1(mr, heap, "_KC3PSKIPLISTFACT_") ||
+      ! marshall_read_heap_pointer(mr, heap, &offset,
+                                   (void **) &present))
+    return NULL;
+  if (! offset) {
+    *dest = NULL;
+    return mr;
+  }
+  if (present) {
+    *dest = present;
+    return mr;
+  }
+  if (buf_seek(mr->heap, mr->heap_start + (s64) offset,
+               SEEK_SET) < 0 ||
+      ! buf_tell_r(mr->heap, &pos) ||
+      ! marshall_read_1(mr, true, "_KC3SKIPLISTFACT_") ||
+      ! marshall_read_uw(mr, true, &length) ||
+      ! marshall_read_u8(mr, true, &max_height) ||
+      ! max_height ||
+      buf_seek(mr->heap, pos, SEEK_SET) < 0 ||
+      ! (tmp = alloc(SKIPLIST_SIZE__fact(max_height))))
+    return NULL;
+  if (! marshall_read_ht_add(mr, offset, tmp) ||
+      ! marshall_read_skiplist__fact(mr, true, tmp)) {
+    alloc_free(tmp);
+    return NULL;
+  }
+  *dest = tmp;
+  return mr;
+}
+
+s_marshall_read *
+marshall_read_skiplist__fact (s_marshall_read *mr, bool heap,
+                              s_skiplist__fact *dest)
+{
+  t_skiplist_height *height_table;
+  uw i;
+  uw length;
+  u8 max_height;
+  p_skiplist_node__fact head = NULL;
+  if (! mr || ! dest ||
+      ! marshall_read_1(mr, heap, "_KC3SKIPLISTFACT_") ||
+      ! marshall_read_uw(mr, heap, &length) ||
+      ! marshall_read_u8(mr, heap, &max_height) ||
+      ! max_height)
+    return NULL;
+  dest->length = length;
+  dest->max_height = max_height;
+  height_table = SKIPLIST_HEIGHT_TABLE__fact(dest);
+  i = 0;
+  while (i < max_height) {
+    if (! marshall_read_u64(mr, heap, height_table + i))
+      return NULL;
+    i++;
+  }
+  if (! marshall_read_pskiplist_node__fact(mr, heap, &head))
+    return NULL;
+  dest->head = head;
+  return mr;
+}
 
 s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,
                                          bool heap,
@@ -2508,8 +2774,18 @@ DEF_MARSHALL_READ_LETOH(s32, "_KC3S32_", s32, 32)
 DEF_MARSHALL_READ_LETOH(s64, "_KC3S64_", s64, 64)
 DEF_MARSHALL_READ_SET(fact, s_fact, "_KC3SETFACT_")
 DEF_MARSHALL_READ_SET(tag,  s_tag,  "_KC3SETTAG_")
-DEF_MARSHALL_READ_SET_ITEM(fact, s_fact, "_KC3SETITEMFACT_")
 DEF_MARSHALL_READ_SET_ITEM(tag,  s_tag, "_KC3SETITEMTAG_")
+
+s_marshall_read * marshall_read_set_item__fact
+(s_marshall_read *mr, bool heap, s_set_item__fact *dest)
+{
+  if (! marshall_read_uw(mr, heap, &dest->hash) ||
+      ! marshall_read_uw(mr, heap, &dest->usage) ||
+      ! marshall_read_fact_1(mr, heap, &dest->data) ||
+      ! marshall_read_pset_item__fact(mr, heap, &dest->next))
+    return NULL;
+  return mr;
+}
 
 sw marshall_read_size (const s_marshall_read *mr)
 {
@@ -2612,6 +2888,47 @@ ko:
   return NULL;
 }
 
+s_marshall_read * marshall_read_struct_type_1 (s_marshall_read *mr,
+                                               bool heap,
+                                               s_struct_type *dest)
+{
+  uw i;
+  s_struct_type tmp = {0};
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_1(mr, heap, "_KC3STRUCTTYPE1_") ||
+      ! marshall_read_psym(mr, heap, &tmp.module) ||
+      ! marshall_read_map(mr, heap, &tmp.map))
+    return NULL;
+  if (tmp.map.count &&
+      ! (tmp.offset = alloc(tmp.map.count * sizeof(uw))))
+    goto ko;
+  i = 0;
+  while (i < tmp.map.count) {
+    if (! marshall_read_uw(mr, heap, tmp.offset + i))
+      goto ko;
+    i++;
+  }
+  if (! marshall_read_u8(mr, heap, &tmp.align_max) ||
+      ! marshall_read_uw(mr, heap, &tmp.size) ||
+      ! marshall_read_pcallable(mr, heap, &tmp.clean) ||
+      ! marshall_read_bool(mr, heap, &tmp.must_clean))
+    goto ko;
+  tmp.ref_count = 1;
+  *dest = tmp;
+#if HAVE_PTHREAD
+  if (! mutex_init(&dest->mutex))
+    goto ko_dest;
+#endif
+  return mr;
+ ko_dest:
+  struct_type_clean(dest);
+  return NULL;
+ ko:
+  struct_type_clean(&tmp);
+  return NULL;
+}
+
 s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
                                              bool heap,
                                              s_struct_type *dest)
@@ -2619,6 +2936,9 @@ s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
   s_struct_type tmp = {0};
   assert(mr);
   assert(mr);
+  if (buf_peek_1(heap ? mr->heap : mr->buf,
+                 "_KC3STRUCTTYPE1_") > 0)
+    return marshall_read_struct_type_1(mr, heap, dest);
   if (! marshall_read_1(mr, heap, "_KC3STRUCTTYPE_")) {
     err_puts("marshall_read_str: marshall_read_1 magic");
     assert(! "marshall_read_str: marshall_read_1 magic");

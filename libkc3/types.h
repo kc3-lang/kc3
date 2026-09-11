@@ -681,6 +681,7 @@ struct pointer {
   u_ptr_w ptr;
   const s_sym *pointer_type;
   const s_sym *target_type;
+  uw id;
 };
 
 struct str {
@@ -1156,6 +1157,8 @@ struct env {
   bool              loaded;
   s_loop_context   *loop_context;
   s_str            *module_path;
+  uw                next_pointer_id;
+  s_mutex           next_pointer_id_mutex;
   s_ops            *ops;
   s_buf            *out;
   s_env            *parent_env;

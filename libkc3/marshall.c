@@ -38,6 +38,8 @@
 #include "list.h"
 #include "psym.h"
 #include "rwlock.h"
+#include "skiplist__fact.h"
+#include "skiplist_node__fact.h"
 #include "str.h"
 #include "tag.h"
 #include "tag_init.h"
@@ -167,6 +169,8 @@
   s_marshall * marshall_skiplist__ ## type                             \
   (s_marshall *m, bool heap, const s_skiplist__ ## type *s)            \
   {                                                                    \
+    const t_skiplist_height *height_table;                             \
+    uw i;                                                              \
     if (! marshall_1(m, heap, magic)) {                                \
       err_puts("marshall_skiplist: marshall_1 magic");                 \
       assert(! "marshall_skiplist: marshall_1 magic");                 \
@@ -175,12 +179,24 @@
     if (! marshall_uw(m, heap, s->length)) {                           \
       err_puts("marshall_skiplist: marshall_uw");                      \
       assert(! "marshall_skiplist: marshall_uw");                      \
+      return NULL;                                                     \
     }                                                                  \
     if (! marshall_u8(m, heap, s->max_height)) {                       \
+      err_puts("marshall_skiplist: marshall_u8");                      \
+      assert(! "marshall_skiplist: marshall_u8");                      \
+      return NULL;                                                     \
+    }                                                                  \
+    height_table = SKIPLIST_HEIGHT_TABLE__ ## type(s);                 \
+    i = 0;                                                             \
+    while (i < s->max_height) {                                       \
+      if (! marshall_u64(m, heap, height_table[i]))                   \
+        return NULL;                                                   \
+      i++;                                                             \
     }                                                                  \
     if (! marshall_pskiplist_node__ ## type(m, heap, &s->head)) {      \
       err_puts("marshall_skiplist: marshall_pskiplist_node__" # type); \
       assert(! "marshall_skiplist: marshall_pskiplist_node__" # type); \
+      return NULL;                                                     \
     }                                                                  \
     return m;                                                          \
   }
@@ -189,6 +205,9 @@
   s_marshall * marshall_skiplist_node__ ## name                        \
   (s_marshall *m, bool heap, const s_skiplist_node__ ## name *node)    \
   {                                                                    \
+    uw i;                                                              \
+    p_set_item__ ## name item;                                         \
+    const p_skiplist_node__ ## name *links;                            \
     if (! marshall_1(m, heap, magic)) {                                \
       err_puts("marshall_skiplist_node: marshall_1 magic");            \
       assert(! "marshall_skiplist_node: marshall_1 magic");            \
@@ -197,12 +216,20 @@
     if (! marshall_u8(m, heap, node->height)) {                        \
       err_puts("marshall_skiplist_node: marshall_u8");                 \
       assert(! "marshall_skiplist_node: marshall_u8");                 \
+      return NULL;                                                     \
     }                                                                  \
-    if (! marshall_ ## name(m, heap, (const type *) &node->name)) {    \
-      err_puts("marshall_skiplist_node: marshall_pskiplist_node__"     \
-               # name);                                                \
-      assert(! "marshall_skiplist_node: marshall_pskiplist_node__"     \
-             # name);                                                  \
+    item = node->name ?                                                \
+      (p_set_item__ ## name) ((u8 *) node->name -                      \
+                              offsetof(s_set_item__ ## name, data)) :  \
+      NULL;                                                            \
+    if (! marshall_pset_item__ ## name(m, heap, &item))               \
+      return NULL;                                                     \
+    links = (const p_skiplist_node__ ## name *) (node + 1);            \
+    i = 0;                                                             \
+    while (i < node->height) {                                        \
+      if (! marshall_pskiplist_node__ ## name(m, heap, links + i))    \
+        return NULL;                                                   \
+      i++;                                                             \
     }                                                                  \
     return m;                                                          \
   }
@@ -1056,6 +1083,32 @@ s_marshall * marshall_fact (s_marshall *m, bool heap,
   return m;
 }
 
+s_marshall * marshall_fact_1 (s_marshall *m, bool heap,
+                              const s_fact *fact)
+{
+  p_set_item__tag object;
+  p_set_item__tag predicate;
+  p_set_item__tag subject;
+  assert(m);
+  assert(fact);
+  subject = fact->subject ?
+    (p_set_item__tag) ((u8 *) fact->subject -
+                       offsetof(s_set_item__tag, data)) : NULL;
+  predicate = fact->predicate ?
+    (p_set_item__tag) ((u8 *) fact->predicate -
+                       offsetof(s_set_item__tag, data)) : NULL;
+  object = fact->object ?
+    (p_set_item__tag) ((u8 *) fact->object -
+                       offsetof(s_set_item__tag, data)) : NULL;
+  if (! marshall_1(m, heap, "_KC3FACT1_") ||
+      ! marshall_pset_item__tag(m, heap, &subject) ||
+      ! marshall_pset_item__tag(m, heap, &predicate) ||
+      ! marshall_pset_item__tag(m, heap, &object) ||
+      ! marshall_uw(m, heap, fact->id))
+    return NULL;
+  return m;
+}
+
 s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
 {
   assert(m);
@@ -1627,17 +1680,19 @@ s_marshall * marshall_pointer (s_marshall *m, bool heap,
   void *p;
   bool present;
   s_tag tag = {0};
+  s_tag tag_read = {0};
   s_tag tmp = {0};
   assert(m);
   assert(pointer);
   if (! m || ! pointer)
     return NULL;
-  if (! marshall_1(m, heap, "_KC3POINTER_")) {
+  if (! marshall_1(m, heap, "_KC3POINTER1_")) {
     err_puts("marshall_pointer : marshall_1 magic");
     assert(! "marshall_pointer : marshall_1 magic");
     return NULL;
   }
-  if (! marshall_psym(m, heap, &pointer->target_type))
+  if (! marshall_psym(m, heap, &pointer->target_type) ||
+      ! marshall_uw(m, heap, pointer->id))
     return NULL;
   p = pointer->ptr.p_pvoid;
   if (! marshall_heap_pointer(m, heap, p, &present))
@@ -1653,6 +1708,19 @@ s_marshall * marshall_pointer (s_marshall *m, bool heap,
       err_write_1("\n");
       return NULL;
     }
+    ident.sym = &g_sym_marshall_read;
+    if (! env_ident_get(env, &ident, &tag_read) ||
+        tag_read.type != TAG_PCALLABLE ||
+        ! marshall_pcallable(m, heap,
+                             &tag_read.data.td_pcallable)) {
+      err_write_1("marshall_pointer: Callable not found: ");
+      err_inspect_ident(&ident);
+      err_write_1("\n");
+      tag_clean(&tag_read);
+      tag_clean(&tag);
+      return NULL;
+    }
+    ident.sym = &g_sym_marshall;
     call_init(&call);
     call.ident = ident;
     call.arguments = list_new_pointer
@@ -1662,11 +1730,13 @@ s_marshall * marshall_pointer (s_marshall *m, bool heap,
          NULL)));
     if (! env_eval_call(env, &call, &tmp)) {
       err_puts("marshall_pointer: env_eval_call");
+      tag_clean(&tag_read);
       tag_clean(&tag);
       call_clean(&call);
       return NULL;
     }
     tag_clean(&tmp);
+    tag_clean(&tag_read);
     tag_clean(&tag);
     call_clean(&call);
   }
@@ -1746,8 +1816,18 @@ DEF_MARSHALL(s32, "_KC3S32_")
 DEF_MARSHALL(s64, "_KC3S64_")
 DEF_MARSHALL_SET(fact, "_KC3SETFACT_")
 DEF_MARSHALL_SET(tag,  "_KC3SETTAG_")
-DEF_MARSHALL_SET_ITEM(fact)
 DEF_MARSHALL_SET_ITEM(tag)
+
+s_marshall * marshall_set_item__fact
+(s_marshall *m, bool heap, const s_set_item__fact *item)
+{
+  if (! marshall_uw(m, heap, item->hash) ||
+      ! marshall_uw(m, heap, item->usage) ||
+      ! marshall_fact_1(m, heap, &item->data) ||
+      ! marshall_pset_item__fact(m, heap, &item->next))
+    return NULL;
+  return m;
+}
 
 sw marshall_size (const s_marshall *m)
 {
@@ -1859,25 +1939,39 @@ s_marshall * marshall_struct (s_marshall *m, bool heap,
 s_marshall * marshall_struct_type (s_marshall *m, bool heap,
                                    const s_struct_type *st)
 {
+  uw i;
   assert(m);
   assert(st);
   assert(st->module);
   if (! m || ! st || ! st->module)
     return NULL;
-  if (! marshall_1(m, heap, "_KC3STRUCTTYPE_")) {
+  if (st->map.count && ! st->offset &&
+      ! struct_type_update_map((s_struct_type *) st))
+    return NULL;
+  if (! marshall_1(m, heap, "_KC3STRUCTTYPE1_")) {
     err_puts("marshall_struct_type: marshall_1 magic");
     assert(! "marshall_struct_type: marshall_1 magic");
     return NULL;
   }
   if (! marshall_psym(m, heap, &st->module) ||
-      ! marshall_map(m, heap, &st->map) ||
-      ! marshall_pcallable(m, heap, &st->clean)) {
+      ! marshall_map(m, heap, &st->map)) {
     err_write_1("marshall_struct_type: inner fields: ");
     err_inspect_sym(st->module);
     err_write_1("\n");
     assert(! "marshall_struct_type: inner fields");
     return NULL;
   }
+  i = 0;
+  while (i < st->map.count) {
+    if (! marshall_uw(m, heap, st->offset[i]))
+      return NULL;
+    i++;
+  }
+  if (! marshall_u8(m, heap, st->align_max) ||
+      ! marshall_uw(m, heap, st->size) ||
+      ! marshall_pcallable(m, heap, &st->clean) ||
+      ! marshall_bool(m, heap, st->must_clean))
+    return NULL;
   return m;
 }
 

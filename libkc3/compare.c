@@ -523,11 +523,7 @@ s8 compare_pointer (const s_pointer *a, const s_pointer *b)
   s8 r = compare_sym(a->target_type, b->target_type);
   if (r)
     return r;
-  if (a->ptr.p_pvoid < b->ptr.p_pvoid)
-    return -1;
-  if (a->ptr.p_pvoid == b->ptr.p_pvoid)
-    return 0;
-  return 1;
+  return compare_uw(a->id, b->id);
 }
 
 s8 compare_ptr (const void *a, const void *b)

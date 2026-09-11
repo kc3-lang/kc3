@@ -219,7 +219,7 @@ end)
 loopback(cfn Tag "tag_add" (Tag, Tag, Result))
 {:ok, 405}
 loopback(%KC3.Op{sym: :-})
-{:ok, 1227}
+{:ok, 1407}
 loopback((U8[]) {})
 {:ok, 175}
 loopback((U8[]) {0, 1, 2, 254, 255})

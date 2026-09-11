@@ -2191,6 +2191,10 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     }
   }
   env->current_defmodule = &g_sym_KC3;
+  env->next_pointer_id = 1;
+#if HAVE_PTHREAD
+  mutex_init(&env->next_pointer_id_mutex);
+#endif
   env->search_modules_default = list_new_psym(&g_sym_KC3, NULL);
   env->search_modules = env->search_modules_default;
   if (! (env->ops = ops_new())) {

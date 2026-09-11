@@ -12,6 +12,7 @@
  */
 #include "assert.h"
 #include "data.h"
+#include "mutex.h"
 #include "pointer.h"
 #include "pstruct_type.h"
 #include "struct.h"
@@ -99,6 +100,7 @@ s_pointer * pointer_init (s_pointer *pointer,
                           const s_sym *target_type,
                           void *p)
 {
+  s_env *env;
   s_pointer tmp = {0};
   if (! pointer_type && ! target_type)
     target_type = &g_sym_Tag;
@@ -106,6 +108,14 @@ s_pointer * pointer_init (s_pointer *pointer,
     pointer_type = sym_target_to_pointer_type(target_type);
   else if (! target_type)
     target_type = sym_pointer_to_target_type(pointer_type);
+  env = env_global();
+#if HAVE_PTHREAD
+  mutex_lock(&env->next_pointer_id_mutex);
+#endif
+  tmp.id = env->next_pointer_id++;
+#if HAVE_PTHREAD
+  mutex_unlock(&env->next_pointer_id_mutex);
+#endif
   tmp.pointer_type = pointer_type;
   tmp.target_type = target_type;
   tmp.ptr.p_pvoid = p;
