@@ -1080,6 +1080,7 @@ struct socket_buf {
 
 struct var {
   bool    bound;
+  uw      id;
   s_mutex mutex;
   s_ident name;
   sw      ref_count;
@@ -1099,6 +1100,7 @@ struct facts {
   s_log               *log;
   s_facts_connection  *connections;
   s_facts_remove_log  *remove_log;
+  uw                   id;
   uw                   next_id;
   u8                   priority;
   s_str                secret;
@@ -1157,8 +1159,12 @@ struct env {
   bool              loaded;
   s_loop_context   *loop_context;
   s_str            *module_path;
+  uw                next_facts_id;
+  s_mutex           next_facts_id_mutex;
   uw                next_pointer_id;
   s_mutex           next_pointer_id_mutex;
+  uw                next_var_id;
+  s_mutex           next_var_id_mutex;
   s_ops            *ops;
   s_buf            *out;
   s_env            *parent_env;

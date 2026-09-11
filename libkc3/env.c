@@ -2147,6 +2147,10 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   if (! (env->err = buf_new_alloc(BUF_SIZE)))
     return NULL;
   buf_file_open_w(env->err, stderr);
+  env->next_facts_id = 1;
+#if HAVE_PTHREAD
+  mutex_init(&env->next_facts_id_mutex);
+#endif
   env->facts = facts_new();
 #if LIBKC3_PROFILE
   profile_init();
@@ -2194,6 +2198,10 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   env->next_pointer_id = 1;
 #if HAVE_PTHREAD
   mutex_init(&env->next_pointer_id_mutex);
+#endif
+  env->next_var_id = 1;
+#if HAVE_PTHREAD
+  mutex_init(&env->next_var_id_mutex);
 #endif
   env->search_modules_default = list_new_psym(&g_sym_KC3, NULL);
   env->search_modules = env->search_modules_default;

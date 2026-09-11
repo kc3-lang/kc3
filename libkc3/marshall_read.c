@@ -1079,10 +1079,19 @@ s_marshall_read * marshall_read_fact_1 (s_marshall_read *mr,
 s_marshall_read * marshall_read_facts_1 (s_marshall_read *mr,
                                          bool heap, s_facts *facts)
 {
+  s_env *env;
+  bool new_format = false;
   assert(mr);
   assert(facts);
-  if (! marshall_read_1(mr, heap, "_KC3FACTS1_") ||
-      ! marshall_read_set__tag(mr, heap, &facts->tags) ||
+  if (buf_peek_1(heap ? mr->heap : mr->buf, "_KC3FACTS2_") > 0) {
+    new_format = true;
+    if (! marshall_read_1(mr, heap, "_KC3FACTS2_") ||
+        ! marshall_read_uw(mr, heap, &facts->id))
+      return NULL;
+  }
+  else if (! marshall_read_1(mr, heap, "_KC3FACTS1_"))
+    return NULL;
+  if (! marshall_read_set__tag(mr, heap, &facts->tags) ||
       ! marshall_read_set__fact(mr, heap, &facts->facts) ||
       ! marshall_read_skiplist__fact(mr, heap, facts->index) ||
       ! marshall_read_skiplist__fact(mr, heap, facts->index_spo) ||
@@ -1090,6 +1099,17 @@ s_marshall_read * marshall_read_facts_1 (s_marshall_read *mr,
       ! marshall_read_skiplist__fact(mr, heap, facts->index_osp) ||
       ! marshall_read_uw(mr, heap, &facts->next_id))
     return NULL;
+  if (new_format) {
+    env = env_global();
+#if HAVE_PTHREAD
+    mutex_lock(&env->next_facts_id_mutex);
+#endif
+    if (facts->id >= env->next_facts_id)
+      env->next_facts_id = facts->id + 1;
+#if HAVE_PTHREAD
+    mutex_unlock(&env->next_facts_id_mutex);
+#endif
+  }
   facts->index->compare = compare_fact_id;
   facts->index_spo->compare = compare_fact_spo;
   facts->index_pos->compare = compare_fact_pos;
@@ -1115,7 +1135,8 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
   env = env_global();
   if (! mr || ! facts || ! env)
     return NULL;
-  if (buf_peek_1(heap ? mr->heap : mr->buf, "_KC3FACTS1_") > 0)
+  if (buf_peek_1(heap ? mr->heap : mr->buf, "_KC3FACTS2_") > 0 ||
+      buf_peek_1(heap ? mr->heap : mr->buf, "_KC3FACTS1_") > 0)
     return marshall_read_facts_1(mr, heap, facts);
   if (! marshall_read_1(mr, heap, "_KC3FACTS_")) {
     err_puts("marshall_read_facts: marshall_read_1 magic");
@@ -3294,16 +3315,38 @@ s_marshall_read * marshall_read_var (s_marshall_read *mr,
                                      bool heap,
                                      s_var *dest)
 {
+  s_env *env;
+  bool new_format = false;
   s_var tmp = {0};
   assert(mr);
   assert(dest);
-  if (! marshall_read_1(mr, heap, "_KC3VAR_") ||
-      ! marshall_read_ident(mr, heap, &tmp.name) ||
+  if (buf_peek_1(heap ? mr->heap : mr->buf, "_KC3VAR1_") > 0) {
+    new_format = true;
+    if (! marshall_read_1(mr, heap, "_KC3VAR1_") ||
+        ! marshall_read_uw(mr, heap, &tmp.id))
+      return NULL;
+  }
+  else if (! marshall_read_1(mr, heap, "_KC3VAR_"))
+    return NULL;
+  if (! marshall_read_ident(mr, heap, &tmp.name) ||
       ! marshall_read_psym(mr, heap, &tmp.type) ||
       ! marshall_read_bool(mr, heap, &tmp.bound) ||
       (tmp.bound &&
        ! marshall_read_tag(mr, heap, &tmp.tag)))
     return NULL;
+  env = env_global();
+#if HAVE_PTHREAD
+  mutex_lock(&env->next_var_id_mutex);
+#endif
+  if (new_format) {
+    if (tmp.id >= env->next_var_id)
+      env->next_var_id = tmp.id + 1;
+  }
+  else
+    tmp.id = env->next_var_id++;
+#if HAVE_PTHREAD
+  mutex_unlock(&env->next_var_id_mutex);
+#endif
   tmp.ref_count = 1;
   *dest = tmp;
 #if HAVE_PTHREAD

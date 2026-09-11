@@ -373,7 +373,7 @@ bool hash_update_pfacts (t_hash *hash, const s_facts *pfacts)
   const char type[] = "facts*";
   if (! hash_update(hash, type, strlen(type)))
     return false;
-  return hash_update(hash, &pfacts, sizeof(void *));
+  return hash_update_uw(hash, pfacts ? pfacts->id : 0);
 }
 
 bool hash_update_plist (t_hash *hash, const p_list *plist)
@@ -673,7 +673,7 @@ bool hash_update_var (t_hash *hash, const s_var *var)
   assert(hash);
   assert(var);
   if (! hash_update(hash, type, strlen(type)) ||
-      ! hash_update_u64(hash, (u64) var))
+      ! hash_update_uw(hash, var->id))
     return false;
   return true;
 }

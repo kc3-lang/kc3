@@ -488,9 +488,11 @@ s8 compare_pfacts (const s_facts *a, const s_facts *b)
 {
   if (a == b)
     return 0;
-  if (a < b)
+  if (! a)
     return -1;
-  return 1;
+  if (! b)
+    return 1;
+  return compare_uw(a->id, b->id);
 }
 
 s8 compare_plist (const p_list *a, const p_list *b)
@@ -1906,5 +1908,5 @@ COMPARE_DEF(uw)
 
 s8 compare_var (const s_var *a, const s_var *b)
 {
-  return compare_uw((uw) a, (uw) b);
+  return compare_uw(a->id, b->id);
 }

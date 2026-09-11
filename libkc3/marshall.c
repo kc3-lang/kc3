@@ -1116,7 +1116,8 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
 #if HAVE_PTHREAD
   rwlock_r(&facts->rwlock);
 #endif
-  if (! marshall_1(m, heap, "_KC3FACTS1_")) {
+  if (! marshall_1(m, heap, "_KC3FACTS2_") ||
+      ! marshall_uw(m, heap, facts->id)) {
     err_puts("marshall_facts: marshall_1");
     assert(! "marshall_facts: marshall_1");
     return NULL;
@@ -2258,7 +2259,8 @@ s_marshall * marshall_var (s_marshall *m, bool heap, const s_var *var)
   assert(m);
   assert(var);
   if (! m || ! var ||
-      ! marshall_1(m, heap, "_KC3VAR_") ||
+      ! marshall_1(m, heap, "_KC3VAR1_") ||
+      ! marshall_uw(m, heap, var->id) ||
       ! marshall_ident(m, heap, &var->name) ||
       ! marshall_psym(m, heap, &var->type) ||
       ! marshall_bool(m, heap, var->bound) ||
