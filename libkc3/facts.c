@@ -1026,10 +1026,19 @@ s_tag ** facts_find_tag (s_facts *facts, s_tag *tag, s_tag **dest)
 
 s_facts * facts_init (s_facts *facts)
 {
+  s_env *env;
   const u8 max_height = 20;
   const double spacing = 2.7;
   assert(facts);
   *facts = (s_facts) {0};
+  env = env_global();
+#if HAVE_PTHREAD
+  mutex_lock(&env->next_facts_id_mutex);
+#endif
+  facts->id = env->next_facts_id++;
+#if HAVE_PTHREAD
+  mutex_unlock(&env->next_facts_id_mutex);
+#endif
   set_init__tag(&facts->tags, 1024);
   set_init__fact(&facts->facts, 1024);
   // id index

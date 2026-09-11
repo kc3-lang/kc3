@@ -24,6 +24,7 @@
 #include "../libkc3/list.h"
 #include "../libkc3/tag.h"
 #include "../libkc3/tag_init.h"
+#include "../libkc3/var.h"
 #include "test.h"
 #include "tag_test.h"
 
@@ -89,6 +90,7 @@ TEST_CASE_PROTOTYPE(marshall_read_set__tag);
 TEST_CASE_PROTOTYPE(marshall_read_sw);
 TEST_CASE_PROTOTYPE(marshall_read_tag);
 TEST_CASE_PROTOTYPE(marshall_read_unquote);
+TEST_CASE_PROTOTYPE(marshall_read_var);
 TEST_CASE_PROTOTYPE(marshall_read_u8);
 TEST_CASE_PROTOTYPE(marshall_read_u16);
 TEST_CASE_PROTOTYPE(marshall_read_u32);
@@ -102,6 +104,7 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_tag);
   TEST_CASE_RUN(marshall_read_unquote);
   TEST_CASE_RUN(marshall_read_set__tag);
+  TEST_CASE_RUN(marshall_read_var);
 }
 
 TEST_CASE(marshall_read_bool)
@@ -251,6 +254,34 @@ TEST_CASE(marshall_read_set__tag)
   str_clean(&str);
 }
 TEST_CASE_END(marshall_read_set__tag)
+
+TEST_CASE(marshall_read_var)
+{
+  s_env *env;
+  uw id;
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  s_str str = {0};
+  s_var var = {0};
+  s_var var_read = {0};
+  env = env_global();
+  TEST_EQ(var_init(&var, &g_sym_U8), &var);
+  id = env->next_var_id + 10;
+  var.id = id;
+  TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+  TEST_EQ(marshall_var(&m, false, &var), &m);
+  TEST_EQ(marshall_to_str(&m, &str), &str);
+  TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+  TEST_EQ(marshall_read_var(&mr, false, &var_read), &mr);
+  TEST_EQ(var_read.id, id);
+  TEST_EQ(env->next_var_id, id + 1);
+  var_clean(&var_read);
+  var_clean(&var);
+  str_clean(&str);
+  marshall_read_clean(&mr);
+  marshall_clean(&m);
+}
+TEST_CASE_END(marshall_read_var)
 
   TEST_CASE(marshall_read_tag)
 {

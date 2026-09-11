@@ -66,6 +66,7 @@ void var_delete (s_var *var)
 
 s_var * var_init (s_var *var, const s_sym *type)
 {
+  s_env *env;
   assert(var);
   assert(type);
   if (! sym_is_module(type)) {
@@ -76,6 +77,14 @@ s_var * var_init (s_var *var, const s_sym *type)
     return NULL;
   }
   *var = (s_var) {0};
+  env = env_global();
+#if HAVE_PTHREAD
+  mutex_lock(&env->next_var_id_mutex);
+#endif
+  var->id = env->next_var_id++;
+#if HAVE_PTHREAD
+  mutex_unlock(&env->next_var_id_mutex);
+#endif
   var->type = type;
   var->ref_count = 1;
 #if HAVE_PTHREAD
