@@ -388,9 +388,9 @@ bool hash_update_pointer (t_hash *hash, const s_pointer *pointer)
   assert(pointer);
   if (! hash_update(hash, type, strlen(type)) ||
       ! hash_update_sym(hash, pointer->target_type) ||
-      ! hash_update(hash, &pointer->ptr.p_pvoid, sizeof(void *)))
-      return false;
-    return true;
+      ! hash_update_uw(hash, pointer->id))
+    return false;
+  return true;
 }
 
 bool hash_update_psym (t_hash *hash, p_sym const *psym)

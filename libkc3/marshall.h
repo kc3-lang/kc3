@@ -61,6 +61,7 @@ PROTO_MARSHALL(f80, f80);
 PROTO_MARSHALL(f128, f128);
 #endif
 PROTO_MARSHALL(fact, const s_fact *);
+PROTO_MARSHALL(fact_1, const s_fact *);
 PROTO_MARSHALL(facts, s_facts *);
 PROTO_MARSHALL(fn, const s_fn *);
 s_marshall * marshall_heap_pointer (s_marshall *m, bool heap,
