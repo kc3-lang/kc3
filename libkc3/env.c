@@ -513,6 +513,11 @@ void env_clean (s_env *env)
     sym_delete_all();
     kc3_integer_clean();
   }
+#if HAVE_PTHREAD
+  mutex_clean(&env->next_facts_id_mutex);
+  mutex_clean(&env->next_pointer_id_mutex);
+  mutex_clean(&env->next_var_id_mutex);
+#endif
   buf_file_close(env->in);
   buf_delete(env->in);
   env->in = NULL;
@@ -2151,6 +2156,14 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
 #if HAVE_PTHREAD
   mutex_init(&env->next_facts_id_mutex);
 #endif
+  env->next_pointer_id = 1;
+#if HAVE_PTHREAD
+  mutex_init(&env->next_pointer_id_mutex);
+#endif
+  env->next_var_id = 1;
+#if HAVE_PTHREAD
+  mutex_init(&env->next_var_id_mutex);
+#endif
   env->facts = facts_new();
 #if LIBKC3_PROFILE
   profile_init();
@@ -2195,14 +2208,6 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     }
   }
   env->current_defmodule = &g_sym_KC3;
-  env->next_pointer_id = 1;
-#if HAVE_PTHREAD
-  mutex_init(&env->next_pointer_id_mutex);
-#endif
-  env->next_var_id = 1;
-#if HAVE_PTHREAD
-  mutex_init(&env->next_var_id_mutex);
-#endif
   env->search_modules_default = list_new_psym(&g_sym_KC3, NULL);
   env->search_modules = env->search_modules_default;
   if (! (env->ops = ops_new())) {
