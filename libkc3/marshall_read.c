@@ -1371,6 +1371,8 @@ s_marshall_read * marshall_read_header (s_marshall_read *mr)
     return NULL;
   }
   *mr = tmp;
+  marshall_read_ht_clean(mr);
+  mr->ht = (s_ht) {0};
   if (mr->heap_count && ! mr->ht.items) {
     if (! ht_init(&mr->ht, &g_sym_Tuple, mr->heap_count)) {
       err_puts("marshall_read_header: ht_init");
