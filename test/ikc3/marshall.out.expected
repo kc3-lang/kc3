@@ -197,9 +197,9 @@ loopback((Ptr) 0)
 loopback((PtrFree) 0)
 {:ok, 91}
 loopback((U8) ?)
-{:ok, 244}
+{:ok, 268}
 loopback(?)
-{:ok, 245}
+{:ok, 269}
 loopback(fn (x) { x * 2 })
 {:ok, 749}
 loopback(fn (a, b) { a + b })
