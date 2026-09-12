@@ -78,6 +78,7 @@ void marshal_test (void);
 TEST_CASE_PROTOTYPE(marshall_read_bool);
 TEST_CASE_PROTOTYPE(marshall_read_call_cache);
 TEST_CASE_PROTOTYPE(marshall_read_character);
+TEST_CASE_PROTOTYPE(marshall_read_chunks);
 TEST_CASE_PROTOTYPE(marshall_read_init_buf);
 TEST_CASE_PROTOTYPE(marshall_read_init_file);
 TEST_CASE_PROTOTYPE(marshall_read_init_str);
@@ -101,6 +102,7 @@ void marshall_read_test (void)
 {
   TEST_CASE_RUN(marshall_read_bool);
   TEST_CASE_RUN(marshall_read_call_cache);
+  TEST_CASE_RUN(marshall_read_chunks);
   TEST_CASE_RUN(marshall_read_tag);
   TEST_CASE_RUN(marshall_read_unquote);
   TEST_CASE_RUN(marshall_read_set__tag);
@@ -163,6 +165,41 @@ TEST_CASE(marshall_read_call_cache)
   test_context(NULL);
 }
 TEST_CASE_END(marshall_read_call_cache)
+
+TEST_CASE(marshall_read_chunks)
+{
+  char data[BUF_SIZE];
+  s_buf buf = {0};
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  p_sym sym;
+  p_sym sym_read = NULL;
+  TEST_EQ(buf_init(&buf, false, sizeof(data), data), &buf);
+  TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+  sym = sym_1("first");
+  TEST_EQ(marshall_psym(&m, false, &sym), &m);
+  TEST_ASSERT(marshall_to_buf(&m, &buf) > 0);
+  sym = sym_1("second");
+  TEST_EQ(marshall_psym(&m, false, &sym), &m);
+  TEST_ASSERT(marshall_to_buf(&m, &buf) > 0);
+  TEST_EQ(marshall_read_init_buf(&mr, &buf), &mr);
+  TEST_EQ(marshall_read_header(&mr), &mr);
+  TEST_EQ(marshall_read_chunk(&mr), &mr);
+  TEST_EQ(marshall_read_psym(&mr, false, &sym_read), &mr);
+  TEST_EQ(sym_read, sym_1("first"));
+  TEST_EQ(mr.ht.count, 1);
+  TEST_EQ(marshall_read_chunk_reset(&mr), &mr);
+  TEST_EQ(marshall_read_header(&mr), &mr);
+  TEST_EQ(marshall_read_chunk(&mr), &mr);
+  TEST_EQ(marshall_read_psym(&mr, false, &sym_read), &mr);
+  TEST_EQ(sym_read, sym_1("second"));
+  TEST_EQ(mr.ht.count, 1);
+  TEST_EQ(marshall_read_chunk_reset(&mr), &mr);
+  marshall_read_clean(&mr);
+  marshall_clean(&m);
+  buf_clean(&buf);
+}
+TEST_CASE_END(marshall_read_chunks)
 
   TEST_CASE(marshall_read_plist)
 {
