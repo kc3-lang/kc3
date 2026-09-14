@@ -1080,11 +1080,13 @@ s_marshall_read * marshall_read_facts_1 (s_marshall_read *mr,
                                          bool heap, s_facts *facts)
 {
   s_env *env;
+  s_set__fact facts_set = {0};
   p_skiplist__fact index = NULL;
   p_skiplist__fact index_osp = NULL;
   p_skiplist__fact index_pos = NULL;
   p_skiplist__fact index_spo = NULL;
   bool new_format = false;
+  s_set__tag tags = {0};
   assert(mr);
   assert(facts);
   if (buf_peek_1(heap ? mr->heap : mr->buf, "_KC3FACTS2_") > 0) {
@@ -1095,8 +1097,8 @@ s_marshall_read * marshall_read_facts_1 (s_marshall_read *mr,
   }
   else if (! marshall_read_1(mr, heap, "_KC3FACTS1_"))
     return NULL;
-  if (! marshall_read_set__tag(mr, heap, &facts->tags) ||
-      ! marshall_read_set__fact(mr, heap, &facts->facts) ||
+  if (! marshall_read_set__tag(mr, heap, &tags) ||
+      ! marshall_read_set__fact(mr, heap, &facts_set) ||
       ! marshall_read_pskiplist__fact(mr, heap, &index) ||
       ! marshall_read_pskiplist__fact(mr, heap, &index_spo) ||
       ! marshall_read_pskiplist__fact(mr, heap, &index_pos) ||
@@ -1116,6 +1118,12 @@ s_marshall_read * marshall_read_facts_1 (s_marshall_read *mr,
     skiplist_delete__fact(facts->index_pos);
   if (facts->index_osp)
     skiplist_delete__fact(facts->index_osp);
+  if (facts->facts.items)
+    set_clean__fact(&facts->facts);
+  if (facts->tags.items)
+    set_clean__tag(&facts->tags);
+  facts->tags = tags;
+  facts->facts = facts_set;
   facts->index = index;
   facts->index_spo = index_spo;
   facts->index_pos = index_pos;
