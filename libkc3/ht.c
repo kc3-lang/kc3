@@ -52,7 +52,7 @@ bool ht_add_hash (s_ht *ht, s_tag *tag, uw hash)
     return false;
   }
   if (*item && ! c) {
-    *item = list_delete(*item);
+    item_new->next.data.td_plist = list_delete(*item);
     ht->count--;
   }
   *item = item_new;
