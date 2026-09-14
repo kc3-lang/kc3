@@ -1080,6 +1080,10 @@ s_marshall_read * marshall_read_facts_1 (s_marshall_read *mr,
                                          bool heap, s_facts *facts)
 {
   s_env *env;
+  p_skiplist__fact index = NULL;
+  p_skiplist__fact index_osp = NULL;
+  p_skiplist__fact index_pos = NULL;
+  p_skiplist__fact index_spo = NULL;
   bool new_format = false;
   assert(mr);
   assert(facts);
@@ -1093,12 +1097,29 @@ s_marshall_read * marshall_read_facts_1 (s_marshall_read *mr,
     return NULL;
   if (! marshall_read_set__tag(mr, heap, &facts->tags) ||
       ! marshall_read_set__fact(mr, heap, &facts->facts) ||
-      ! marshall_read_skiplist__fact(mr, heap, facts->index) ||
-      ! marshall_read_skiplist__fact(mr, heap, facts->index_spo) ||
-      ! marshall_read_skiplist__fact(mr, heap, facts->index_pos) ||
-      ! marshall_read_skiplist__fact(mr, heap, facts->index_osp) ||
+      ! marshall_read_pskiplist__fact(mr, heap, &index) ||
+      ! marshall_read_pskiplist__fact(mr, heap, &index_spo) ||
+      ! marshall_read_pskiplist__fact(mr, heap, &index_pos) ||
+      ! marshall_read_pskiplist__fact(mr, heap, &index_osp) ||
       ! marshall_read_uw(mr, heap, &facts->next_id))
     return NULL;
+  if (! index || ! index_spo || ! index_pos || ! index_osp) {
+    err_puts("marshall_read_facts_1: null fact index");
+    assert(! "marshall_read_facts_1: null fact index");
+    return NULL;
+  }
+  if (facts->index)
+    skiplist_delete__fact(facts->index);
+  if (facts->index_spo)
+    skiplist_delete__fact(facts->index_spo);
+  if (facts->index_pos)
+    skiplist_delete__fact(facts->index_pos);
+  if (facts->index_osp)
+    skiplist_delete__fact(facts->index_osp);
+  facts->index = index;
+  facts->index_spo = index_spo;
+  facts->index_pos = index_pos;
+  facts->index_osp = index_osp;
   if (new_format) {
     env = env_global();
 #if HAVE_PTHREAD

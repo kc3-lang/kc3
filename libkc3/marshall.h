@@ -80,6 +80,7 @@ PROTO_MARSHALL(pcow, const p_cow *);
 PROTO_MARSHALL(pfacts, const p_facts *);
 PROTO_MARSHALL(pframe, const p_frame *);
 PROTO_MARSHALL(plist, const p_list *);
+PROTO_MARSHALL(pskiplist__fact, const p_skiplist__fact *);
 PROTO_MARSHALL(pskiplist_node__fact, const p_skiplist_node__fact *);
 PROTO_MARSHALL(pointer, const s_pointer *);
 PROTO_MARSHALL(pset_item__fact, const p_set_item__fact *);

@@ -1132,22 +1132,22 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
     assert(! "marshall_facts: marshall_set__fact");
     return NULL;
   }
-  if (! marshall_skiplist__fact(m, heap, facts->index)) {
+  if (! marshall_pskiplist__fact(m, heap, &facts->index)) {
     err_puts("marshall_facts: marshall_skiplist__fact: index");
     assert(! "marshall_facts: marshall_skiplist__fact: index");
     return NULL;
   }
-  if (! marshall_skiplist__fact(m, heap, facts->index_spo)) {
+  if (! marshall_pskiplist__fact(m, heap, &facts->index_spo)) {
     err_puts("marshall_facts: marshall_skiplist__fact: SPO");
     assert(! "marshall_facts: marshall_skiplist__fact: SPO");
     return NULL;
   }
-  if (! marshall_skiplist__fact(m, heap, facts->index_pos)) {
+  if (! marshall_pskiplist__fact(m, heap, &facts->index_pos)) {
     err_puts("marshall_facts: marshall_skiplist__fact: POS");
     assert(! "marshall_facts: marshall_skiplist__fact: POS");
     return NULL;
   }
-  if (! marshall_skiplist__fact(m, heap, facts->index_osp)) {
+  if (! marshall_pskiplist__fact(m, heap, &facts->index_osp)) {
     err_puts("marshall_facts: marshall_skiplist__fact: OSP");
     assert(! "marshall_facts: marshall_skiplist__fact: OSP");
     return NULL;

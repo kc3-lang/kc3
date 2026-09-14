@@ -19,12 +19,17 @@
 #include "../libkc3/inspect.h"
 #include "../libkc3/marshall.h"
 #include "../libkc3/marshall_read.h"
+#include "../libkc3/facts.h"
 #include "../libkc3/set__tag.h"
 #include "../libkc3/str.h"
 #include "../libkc3/list.h"
 #include "../libkc3/tag.h"
 #include "../libkc3/tag_init.h"
 #include "../libkc3/var.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 #include "test.h"
 #include "tag_test.h"
 
@@ -88,6 +93,7 @@ TEST_CASE_PROTOTYPE(marshall_read_s16);
 TEST_CASE_PROTOTYPE(marshall_read_s32);
 TEST_CASE_PROTOTYPE(marshall_read_s64);
 TEST_CASE_PROTOTYPE(marshall_read_set__tag);
+TEST_CASE_PROTOTYPE(marshall_read_skiplist_max_height);
 TEST_CASE_PROTOTYPE(marshall_read_sw);
 TEST_CASE_PROTOTYPE(marshall_read_tag);
 TEST_CASE_PROTOTYPE(marshall_read_unquote);
@@ -107,6 +113,7 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_unquote);
   TEST_CASE_RUN(marshall_read_set__tag);
   TEST_CASE_RUN(marshall_read_var);
+  TEST_CASE_RUN(marshall_read_skiplist_max_height);
 }
 
 TEST_CASE(marshall_read_bool)
@@ -848,3 +855,53 @@ TEST_CASE(marshall_read_unquote)
   test_context(NULL);
 }
 TEST_CASE_END(marshall_read_unquote)
+
+static uw m1_patch_max_height (char *data, uw size)
+{
+  uw i;
+  static const char magic[] = "_KC3SKIPLISTFACT_";
+  uw patched = 0;
+  if (size < 384)
+    return 0;
+  for (i = 0; i + 384 <= size; i++) {
+    if (! memcmp(data + i, magic, sizeof(magic) - 1) &&
+        ! memcmp(data + i + 40, "_KC3U8_", 7) &&
+        (u8) data[i + 47] == 20) {
+      data[i + 47] = 21;
+      memcpy(data + i + 368, "_KC3U64_", 8);
+      memset(data + i + 376, 0x41, 8);
+      patched++;
+    }
+  }
+  return patched;
+}
+
+TEST_CASE(marshall_read_skiplist_max_height)
+{
+  s_facts facts = {0};
+  s_facts facts_read = {0};
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  uw patched;
+  s_str str = {0};
+  test_context("M1: forged max_height in _KC3SKIPLISTFACT_");
+  TEST_EQ(facts_init(&facts), &facts);
+  TEST_EQ(marshall_init(&m, 1024 * 1024), &m);
+  TEST_EQ(marshall_facts(&m, false, &facts), &m);
+  TEST_EQ(marshall_to_str(&m, &str), &str);
+  patched = m1_patch_max_height((char *) str.ptr.p_pchar, str.size);
+  fprintf(stderr, "M1 repro: patched %lu _KC3SKIPLISTFACT_ sections\n",
+          (unsigned long) patched);
+  TEST_ASSERT(patched);
+  TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+  TEST_EQ(facts_init(&facts_read), &facts_read);
+  TEST_ASSERT(! marshall_read_facts(&mr, false, &facts_read));
+  TEST_EQ(facts_read.facts.count, 0);
+  facts_clean(&facts_read);
+  marshall_read_clean(&mr);
+  marshall_clean(&m);
+  str_clean(&str);
+  facts_clean(&facts);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_skiplist_max_height)
