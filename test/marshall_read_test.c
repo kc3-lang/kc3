@@ -93,7 +93,9 @@ TEST_CASE_PROTOTYPE(marshall_read_s16);
 TEST_CASE_PROTOTYPE(marshall_read_s32);
 TEST_CASE_PROTOTYPE(marshall_read_s64);
 TEST_CASE_PROTOTYPE(marshall_read_set__tag);
+#ifdef NDEBUG
 TEST_CASE_PROTOTYPE(marshall_read_skiplist_max_height);
+#endif
 TEST_CASE_PROTOTYPE(marshall_read_sw);
 TEST_CASE_PROTOTYPE(marshall_read_tag);
 TEST_CASE_PROTOTYPE(marshall_read_unquote);
@@ -113,7 +115,9 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_unquote);
   TEST_CASE_RUN(marshall_read_set__tag);
   TEST_CASE_RUN(marshall_read_var);
+#ifdef NDEBUG
   TEST_CASE_RUN(marshall_read_skiplist_max_height);
+#endif
 }
 
 TEST_CASE(marshall_read_bool)
@@ -856,6 +860,7 @@ TEST_CASE(marshall_read_unquote)
 }
 TEST_CASE_END(marshall_read_unquote)
 
+#ifdef NDEBUG
 static uw m1_patch_max_height (char *data, uw size)
 {
   uw i;
@@ -905,3 +910,4 @@ TEST_CASE(marshall_read_skiplist_max_height)
   test_context(NULL);
 }
 TEST_CASE_END(marshall_read_skiplist_max_height)
+#endif

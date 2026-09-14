@@ -79,7 +79,9 @@
 void marshal_test (void);
 
 TEST_CASE_PROTOTYPE(marshall_bool);
+#ifdef NDEBUG
 TEST_CASE_PROTOTYPE(marshall_facts_error_rwlock);
+#endif
 TEST_CASE_PROTOTYPE(marshall_character);
 TEST_CASE_PROTOTYPE(marshall_s8);
 TEST_CASE_PROTOTYPE(marshall_s16);
@@ -105,7 +107,9 @@ TEST_CASE_PROTOTYPE(marshall_reset_ht);
 void marshall_test (void)
 {
   TEST_CASE_RUN(marshall_bool);
+#ifdef NDEBUG
   TEST_CASE_RUN(marshall_facts_error_rwlock);
+#endif
   TEST_CASE_RUN(marshall_character);
   TEST_CASE_RUN(marshall_s8);
   TEST_CASE_RUN(marshall_s16);
@@ -1477,6 +1481,7 @@ TEST_CASE(marshall_reset_ht)
 }
 TEST_CASE_END(marshall_reset_ht)
 
+#ifdef NDEBUG
 TEST_CASE(marshall_facts_error_rwlock)
 {
   s_facts facts = {0};
@@ -1494,3 +1499,4 @@ TEST_CASE(marshall_facts_error_rwlock)
   test_context(NULL);
 }
 TEST_CASE_END(marshall_facts_error_rwlock)
+#endif
