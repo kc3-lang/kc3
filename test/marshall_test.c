@@ -10,7 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <pthread.h>
 #include "../libkc3/endian.h"
+#include "../libkc3/facts.h"
 #include "../libkc3/fact.h"
 #include "../libkc3/file.h"
 #include "../libkc3/marshall.h"
@@ -77,6 +79,7 @@
 void marshal_test (void);
 
 TEST_CASE_PROTOTYPE(marshall_bool);
+TEST_CASE_PROTOTYPE(marshall_facts_error_rwlock);
 TEST_CASE_PROTOTYPE(marshall_character);
 TEST_CASE_PROTOTYPE(marshall_s8);
 TEST_CASE_PROTOTYPE(marshall_s16);
@@ -102,6 +105,7 @@ TEST_CASE_PROTOTYPE(marshall_reset_ht);
 void marshall_test (void)
 {
   TEST_CASE_RUN(marshall_bool);
+  TEST_CASE_RUN(marshall_facts_error_rwlock);
   TEST_CASE_RUN(marshall_character);
   TEST_CASE_RUN(marshall_s8);
   TEST_CASE_RUN(marshall_s16);
@@ -1472,3 +1476,21 @@ TEST_CASE(marshall_reset_ht)
   buf_clean(&out);
 }
 TEST_CASE_END(marshall_reset_ht)
+
+TEST_CASE(marshall_facts_error_rwlock)
+{
+  s_facts facts = {0};
+  s_marshall m = {0};
+  int r;
+  test_context("marshall_facts() error path releases the facts rwlock");
+  TEST_EQ(facts_init(&facts), &facts);
+  TEST_EQ(marshall_init(&m, 64), &m);
+  TEST_ASSERT(! marshall_facts(&m, false, &facts));
+  r = pthread_rwlock_trywrlock(&facts.rwlock.rwlock);
+  pthread_rwlock_unlock(&facts.rwlock.rwlock);
+  TEST_EQ(r, 0);
+  marshall_clean(&m);
+  facts_clean(&facts);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_facts_error_rwlock)

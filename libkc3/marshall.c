@@ -1120,47 +1120,52 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
       ! marshall_uw(m, heap, facts->id)) {
     err_puts("marshall_facts: marshall_1");
     assert(! "marshall_facts: marshall_1");
-    return NULL;
+    goto ko;
   }
   if (! marshall_set__tag(m, heap, &facts->tags)) {
     err_puts("marshall_facts: marshall_set__tag");
     assert(! "marshall_facts: marshall_set__tag");
-    return NULL;
+    goto ko;
   }
   if (! marshall_set__fact(m, heap, &facts->facts)) {
     err_puts("marshall_facts: marshall_set__fact");
     assert(! "marshall_facts: marshall_set__fact");
-    return NULL;
+    goto ko;
   }
   if (! marshall_pskiplist__fact(m, heap, &facts->index)) {
     err_puts("marshall_facts: marshall_skiplist__fact: index");
     assert(! "marshall_facts: marshall_skiplist__fact: index");
-    return NULL;
+    goto ko;
   }
   if (! marshall_pskiplist__fact(m, heap, &facts->index_spo)) {
     err_puts("marshall_facts: marshall_skiplist__fact: SPO");
     assert(! "marshall_facts: marshall_skiplist__fact: SPO");
-    return NULL;
+    goto ko;
   }
   if (! marshall_pskiplist__fact(m, heap, &facts->index_pos)) {
     err_puts("marshall_facts: marshall_skiplist__fact: POS");
     assert(! "marshall_facts: marshall_skiplist__fact: POS");
-    return NULL;
+    goto ko;
   }
   if (! marshall_pskiplist__fact(m, heap, &facts->index_osp)) {
     err_puts("marshall_facts: marshall_skiplist__fact: OSP");
     assert(! "marshall_facts: marshall_skiplist__fact: OSP");
-    return NULL;
+    goto ko;
   }
   if (! marshall_uw(m, heap, facts->next_id)) {
     err_puts("marshall_facts: marshall_uw: next_id");
     assert(! "marshall_facts: marshall_uw: next_id");
-    return NULL;
+    goto ko;
   }
 #if HAVE_PTHREAD
   rwlock_unlock_r(&facts->rwlock);
 #endif
   return m;
+ ko:
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
+  return NULL;
 }
 
 /*
