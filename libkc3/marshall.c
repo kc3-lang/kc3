@@ -153,14 +153,17 @@
         ! marshall_uw(m, heap, item->usage)) {                         \
       err_puts("marshall_set_item: marshall_uw");                      \
       assert(! "marshall_set_item: marshall_uw");                      \
+      return NULL;                                                     \
     }                                                                  \
     if (! marshall_ ## type(m, heap, &item->data)) {                   \
       err_puts("marshall_set_item: marshall_" # type);                 \
       assert(! "marshall_set_item: marshall_" # type);                 \
+      return NULL;                                                     \
     }                                                                  \
     if (! marshall_pset_item__ ## type(m, heap, &item->next)) {        \
       err_puts("marshall_set_item: marshall_pset_item__tag");          \
       assert(! "marshall_set_item: marshall_pset_item__tag");          \
+      return NULL;                                                     \
     }                                                                  \
     return m;                                                          \
   }

@@ -81,6 +81,7 @@ void marshal_test (void);
 TEST_CASE_PROTOTYPE(marshall_bool);
 #ifdef NDEBUG
 TEST_CASE_PROTOTYPE(marshall_facts_error_rwlock);
+TEST_CASE_PROTOTYPE(marshall_set_item_error);
 #endif
 TEST_CASE_PROTOTYPE(marshall_character);
 TEST_CASE_PROTOTYPE(marshall_s8);
@@ -109,6 +110,7 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_bool);
 #ifdef NDEBUG
   TEST_CASE_RUN(marshall_facts_error_rwlock);
+  TEST_CASE_RUN(marshall_set_item_error);
 #endif
   TEST_CASE_RUN(marshall_character);
   TEST_CASE_RUN(marshall_s8);
@@ -1499,4 +1501,18 @@ TEST_CASE(marshall_facts_error_rwlock)
   test_context(NULL);
 }
 TEST_CASE_END(marshall_facts_error_rwlock)
+
+TEST_CASE(marshall_set_item_error)
+{
+  s_set_item__tag item = {0};
+  s_marshall m = {0};
+  test_context("marshall_set_item__tag() reports write failure");
+  TEST_ASSERT(tag_init_1(&item.data, "\"marshall set item error\""));
+  TEST_EQ(marshall_init(&m, 16), &m);
+  TEST_ASSERT(! marshall_set_item__tag(&m, false, &item));
+  marshall_clean(&m);
+  tag_clean(&item.data);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_set_item_error)
 #endif

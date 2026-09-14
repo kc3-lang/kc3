@@ -157,13 +157,13 @@
     if (! marshall_read_set_item__ ## name (mr, true, tmp)) {          \
       err_puts("marshall_read_pset_item: marshall_read");              \
       assert(! "marshall_read_pset_item: marshall_read");              \
-      free(tmp);                                                       \
+      set_item_delete__ ## name(tmp);                                   \
       return NULL;                                                     \
     }                                                                  \
     if (! marshall_read_ht_add(mr, offset, tmp)) {                     \
       err_puts("marshall_read_pset_item: marshall_read_ht_add");       \
       assert(! "marshall_read_pset_item: marshall_read_ht_add");       \
-      free(tmp);                                                       \
+      set_item_delete__ ## name(tmp);                                   \
       return NULL;                                                     \
     }                                                                  \
     *dest = tmp;                                                       \
@@ -178,16 +178,19 @@
         ! marshall_read_uw(mr, heap, &dest->usage)) {                 \
       err_puts("marshall_read_set_item: marshall_read_uw");           \
       assert(! "marshall_read_set_item: marshall_read_uw");           \
+      return NULL;                                                    \
     }                                                                 \
     if (! marshall_read_ ## name(mr, heap, &dest->data)) {            \
       err_puts("marshall_read_set_item: marshall_read_" # name);      \
       assert(! "marshall_read_set_item: marshall_read_" # name);      \
+      return NULL;                                                    \
     }                                                                 \
     if (! marshall_read_pset_item__ ## name(mr, heap, &dest->next)) { \
       err_puts("marshall_read_set_item:"                              \
                " marshall_read_pset_item");                           \
       assert(!("marshall_read_set_item:"                              \
                " marshall_read_pset_item"));                          \
+      return NULL;                                                    \
     }                                                                 \
     return mr;                                                        \
   }

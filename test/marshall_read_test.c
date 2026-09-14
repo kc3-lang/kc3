@@ -94,6 +94,7 @@ TEST_CASE_PROTOTYPE(marshall_read_s32);
 TEST_CASE_PROTOTYPE(marshall_read_s64);
 TEST_CASE_PROTOTYPE(marshall_read_set__tag);
 #ifdef NDEBUG
+TEST_CASE_PROTOTYPE(marshall_read_set_item_error);
 TEST_CASE_PROTOTYPE(marshall_read_skiplist_max_height);
 #endif
 TEST_CASE_PROTOTYPE(marshall_read_sw);
@@ -116,6 +117,7 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_set__tag);
   TEST_CASE_RUN(marshall_read_var);
 #ifdef NDEBUG
+  TEST_CASE_RUN(marshall_read_set_item_error);
   TEST_CASE_RUN(marshall_read_skiplist_max_height);
 #endif
 }
@@ -910,4 +912,40 @@ TEST_CASE(marshall_read_skiplist_max_height)
   test_context(NULL);
 }
 TEST_CASE_END(marshall_read_skiplist_max_height)
+
+TEST_CASE(marshall_read_set_item_error)
+{
+  char *data;
+  s_set_item__tag dest = {0};
+  uw i;
+  s_set_item__tag item = {0};
+  s_marshall m = {0};
+  static const char magic[] = "_KC3PSETITEMTAG_";
+  s_marshall_read mr = {0};
+  bool patched = false;
+  s_str str = {0};
+  test_context("marshall_read_set_item__tag() reports read failure");
+  TEST_ASSERT(tag_init_1(&item.data, "\"m6\""));
+  TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+  TEST_EQ(marshall_set_item__tag(&m, false, &item), &m);
+  TEST_EQ(marshall_to_str(&m, &str), &str);
+  data = (char *) str.ptr.p_pchar;
+  i = 0;
+  while (! patched && i + sizeof(magic) - 1 <= str.size) {
+    if (! memcmp(data + i, magic, sizeof(magic) - 1)) {
+      data[i + 4] = 'X';
+      patched = true;
+    }
+    i++;
+  }
+  TEST_ASSERT(patched);
+  TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+  TEST_ASSERT(! marshall_read_set_item__tag(&mr, false, &dest));
+  marshall_read_clean(&mr);
+  marshall_clean(&m);
+  str_clean(&str);
+  tag_clean(&item.data);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_set_item_error)
 #endif
