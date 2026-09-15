@@ -97,6 +97,7 @@ TEST_CASE_PROTOTYPE(marshall_read_s32);
 TEST_CASE_PROTOTYPE(marshall_read_s64);
 TEST_CASE_PROTOTYPE(marshall_read_set__tag);
 #ifdef NDEBUG
+TEST_CASE_PROTOTYPE(marshall_read_array_size);
 TEST_CASE_PROTOTYPE(marshall_read_set_max_overflow);
 TEST_CASE_PROTOTYPE(marshall_read_set_item_error);
 TEST_CASE_PROTOTYPE(marshall_read_skiplist_max_height);
@@ -123,6 +124,7 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_set__tag);
   TEST_CASE_RUN(marshall_read_var);
 #ifdef NDEBUG
+  TEST_CASE_RUN(marshall_read_array_size);
   TEST_CASE_RUN(marshall_read_set_max_overflow);
   TEST_CASE_RUN(marshall_read_set_item_error);
   TEST_CASE_RUN(marshall_read_skiplist_max_height);
@@ -1071,4 +1073,66 @@ TEST_CASE(marshall_read_set_max_overflow)
   test_context(NULL);
 }
 TEST_CASE_END(marshall_read_set_max_overflow)
+#endif
+
+#ifdef NDEBUG
+static bool f15_uw_at (const char *d, uw size, uw off, uw *dest)
+{
+  if (off + 23 > size)
+    return false;
+  if (memcmp(d + off, "_KC3UW_", 7))
+    return false;
+  if (memcmp(d + off + 7, "_KC3U64_", 8))
+    return false;
+  memcpy(dest, d + off + 15, 8);
+  return true;
+}
+
+TEST_CASE(marshall_read_array_size)
+{
+  char *data;
+  s_tag dest = {0};
+  uw i;
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  bool patched = false;
+  s_str str = {0};
+  s_tag src = {0};
+  s_tag tag = {0};
+  uw v[5];
+  test_context("F15: forged array size overflows the data buffer");
+  TEST_ASSERT(tag_init_1(&src, "(U8[]) {0, 1, 2, 3}"));
+  TEST_ASSERT(env_eval_tag(env_global(), &src, &tag));
+  TEST_EQ(tag.type, TAG_ARRAY);
+  TEST_ASSERT(tag.data.td_array.data);
+  TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+  TEST_EQ(marshall_tag(&m, false, &tag), &m);
+  TEST_EQ(marshall_to_str(&m, &str), &str);
+  data = (char *) str.ptr.p_pchar;
+  i = 0;
+  while (! patched && i + 115 <= str.size) {
+    if (f15_uw_at(data, str.size, i +  0, v + 0) && v[0] == 1 &&
+        f15_uw_at(data, str.size, i + 23, v + 1) && v[1] == 4 &&
+        f15_uw_at(data, str.size, i + 46, v + 2) && v[2] == 1 &&
+        f15_uw_at(data, str.size, i + 69, v + 3) && v[3] == 4 &&
+        f15_uw_at(data, str.size, i + 92, v + 4) && v[4] == 4) {
+      v[4] = 1;
+      memcpy(data + i + 92 + 15, v + 4, 8);
+      patched = true;
+    }
+    i++;
+  }
+  fprintf(stderr, "F15 repro: patched=%d\n", (int) patched);
+  TEST_ASSERT(patched);
+  TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+  TEST_ASSERT(! marshall_read_tag(&mr, false, &dest));
+  tag_clean(&dest);
+  marshall_read_clean(&mr);
+  marshall_clean(&m);
+  str_clean(&str);
+  tag_clean(&tag);
+  tag_clean(&src);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_array_size)
 #endif

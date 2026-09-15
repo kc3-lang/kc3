@@ -296,6 +296,11 @@ s_marshall_read * marshall_read_array (s_marshall_read *mr,
     *dest = tmp;
     return mr;
   }
+  if (tmp.dimension_count > UW_MAX / sizeof(s_array_dimension)) {
+    err_puts("marshall_read_array: invalid dimension count");
+    assert(! "marshall_read_array: invalid dimension count");
+    return NULL;
+  }
   tmp.dimensions = alloc(sizeof(s_array_dimension) *
                          tmp.dimension_count);
   if (! tmp.dimensions)
@@ -312,10 +317,15 @@ s_marshall_read * marshall_read_array (s_marshall_read *mr,
       ! marshall_read_bool(mr, heap, &has_data))
     goto ko;
   if (has_data) {
+    item_size = tmp.dimensions[tmp.dimension_count - 1].item_size;
+    if (! item_size || tmp.count > tmp.size / item_size) {
+      err_puts("marshall_read_array: invalid count");
+      assert(! "marshall_read_array: invalid count");
+      goto ko;
+    }
     if (! array_allocate(&tmp))
       goto ko;
     data = tmp.data;
-    item_size = tmp.dimensions[tmp.dimension_count - 1].item_size;
     i = 0;
     while (i < tmp.count) {
       if (! marshall_read_data(mr, heap, tmp.element_type, data)) {
@@ -330,6 +340,11 @@ s_marshall_read * marshall_read_array (s_marshall_read *mr,
     if (! marshall_read_bool(mr, heap, &has_tags))
       goto ko;
     if (has_tags) {
+      if (tmp.count > UW_MAX / sizeof(s_tag)) {
+        err_puts("marshall_read_array: invalid tag count");
+        assert(! "marshall_read_array: invalid tag count");
+        goto ko;
+      }
       tmp.tags = alloc(sizeof(s_tag) * tmp.count);
       if (! tmp.tags)
         goto ko;
