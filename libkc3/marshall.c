@@ -37,7 +37,6 @@
 #include "sym.h"
 #include "list.h"
 #include "psym.h"
-#include "rwlock.h"
 #include "skiplist__fact.h"
 #include "skiplist_node__fact.h"
 #include "str.h"
