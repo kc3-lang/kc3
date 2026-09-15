@@ -221,7 +221,8 @@
       assert(! "marshall_read_set: marshall_read_uw");                 \
       return NULL;                                                     \
     }                                                                  \
-    if (! max) {                                                       \
+    if (! max ||                                                       \
+        max > UW_MAX / sizeof(s_set_item__ ## name *)) {               \
       err_puts("marshall_read_set: invalid max");                      \
       assert(! "marshall_read_set: invalid max");                      \
       return NULL;                                                     \
@@ -239,6 +240,7 @@
                  # name);                                              \
         assert(! "marshall_read_set: marshall_read_pset_item_"         \
                # name);                                                \
+        set_clean__ ## name(&tmp);                                     \
         return NULL;                                                   \
       }                                                                \
       i++;                                                             \
