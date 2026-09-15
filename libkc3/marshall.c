@@ -1041,6 +1041,7 @@ s_marshall * marshall_f128 (s_marshall *m, bool heap, f128 src)
   union { f128 f; u64 i[2]; } u;
   sw r;
   sw r1;
+  u64 tmp;
   if (! m) {
     err_puts("marshall_f128: invalid argument");
     assert(! "marshall_f128: invalid argument");
