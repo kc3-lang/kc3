@@ -20,7 +20,7 @@ int main (int argc, char **argv)
   int e;
   int i;
   FILE *in_fp = NULL;
-  uw    in_len;
+  ssize_t in_len;
   char *in_path = NULL;
   uw    in_size = 0;
   const char *opt;
@@ -49,15 +49,16 @@ int main (int argc, char **argv)
     in_path = NULL;
     in_size = 0;
     if ((in_len = getline(&in_path, &in_size, stdin)) <= 0 ||
-        ! in_path)
-      return 0;
+        ! in_path) {
+      r = 0;
+      goto clean;
+    }
     if (in_path[in_len - 1] == '\n')
       in_path[--in_len] = 0;
     if (! (in_fp = fopen(in_path, "rb"))) {
       e = errno;
       fprintf(stderr, "%s: %s: %s\n",
               argv[0], in_path, strerror(e));
-      free(in_path);
       goto error;
     }
     char a[BUF_SIZE];
@@ -85,12 +86,13 @@ int main (int argc, char **argv)
     fputs(in_path, out_fp);
     fputc('\n', out_fp);
     free(in_path);
+    in_path = NULL;
   }
   r = 0;
  clean:
   if (in_path)
     free(in_path);
-  if (out_fp != stdout)
+  if (out_fp && out_fp != stdout)
     fclose(out_fp);
   return r;
  error:
