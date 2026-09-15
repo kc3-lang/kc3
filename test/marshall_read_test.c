@@ -15,6 +15,7 @@
 #include "../libkc3/endian.h"
 #include "../libkc3/env.h"
 #include "../libkc3/env_eval.h"
+#include "../libkc3/fact.h"
 #include "../libkc3/file.h"
 #include "../libkc3/inspect.h"
 #include "../libkc3/marshall.h"
@@ -84,6 +85,8 @@ TEST_CASE_PROTOTYPE(marshall_read_bool);
 TEST_CASE_PROTOTYPE(marshall_read_call_cache);
 TEST_CASE_PROTOTYPE(marshall_read_character);
 TEST_CASE_PROTOTYPE(marshall_read_chunks);
+TEST_CASE_PROTOTYPE(marshall_read_facts);
+TEST_CASE_PROTOTYPE(marshall_read_facts_log);
 TEST_CASE_PROTOTYPE(marshall_read_init_buf);
 TEST_CASE_PROTOTYPE(marshall_read_init_file);
 TEST_CASE_PROTOTYPE(marshall_read_init_str);
@@ -113,6 +116,8 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_bool);
   TEST_CASE_RUN(marshall_read_call_cache);
   TEST_CASE_RUN(marshall_read_chunks);
+  TEST_CASE_RUN(marshall_read_facts);
+  TEST_CASE_RUN(marshall_read_facts_log);
   TEST_CASE_RUN(marshall_read_tag);
   TEST_CASE_RUN(marshall_read_unquote);
   TEST_CASE_RUN(marshall_read_set__tag);
@@ -216,7 +221,84 @@ TEST_CASE(marshall_read_chunks)
 }
 TEST_CASE_END(marshall_read_chunks)
 
-  TEST_CASE(marshall_read_plist)
+TEST_CASE(marshall_read_facts)
+{
+  s_facts facts = {0};
+  s_facts facts_read = {0};
+  uw id;
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  s_str str = {0};
+  test_context("marshall_read_facts() V3 round trip without log");
+  TEST_EQ(facts_init(&facts), &facts);
+  facts.next_id = 42;
+  id = facts.id;
+  TEST_EQ(marshall_init(&m, 1024 * 1024), &m);
+  TEST_EQ(marshall_facts(&m, false, &facts), &m);
+  TEST_EQ(marshall_to_str(&m, &str), &str);
+  TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+  TEST_EQ(marshall_read_facts(&mr, false, &facts_read), &mr);
+  TEST_EQ(facts_read.id, id);
+  TEST_EQ(facts_read.next_id, 42);
+  TEST_EQ(facts_read.log, NULL);
+  facts_clean(&facts_read);
+  marshall_read_clean(&mr);
+  str_clean(&str);
+  marshall_clean(&m);
+  facts_clean(&facts);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_facts)
+
+TEST_CASE(marshall_read_facts_log)
+{
+  const s_str after_dump_path =
+    STR("marshall_read_facts_log.after-dump.facts");
+  s_fact fact = {0};
+  s_facts facts = {0};
+  s_facts facts_read = {0};
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  s_tag object = {0};
+  const s_str path = STR("marshall_read_facts_log.facts");
+  s_tag predicate = {0};
+  s_str str = {0};
+  s_tag subject = {0};
+  test_context("marshall_read_facts() V3 round trip with log");
+  unlink(path.ptr.p_pchar);
+  unlink(after_dump_path.ptr.p_pchar);
+  TEST_EQ(facts_init(&facts), &facts);
+  TEST_ASSERT(facts_save_binary_file(&facts, &path) >= 0);
+  TEST_ASSERT(facts_open_file_after_dump(&facts, &after_dump_path) >= 0);
+  TEST_EQ(marshall_init(&m, 1024 * 1024), &m);
+  TEST_EQ(marshall_facts(&m, false, &facts), &m);
+  TEST_EQ(marshall_to_str(&m, &str), &str);
+  TEST_EQ(tag_init_1(&subject, ":after_dump_subject"), &subject);
+  TEST_EQ(tag_init_1(&predicate, ":after_dump_predicate"), &predicate);
+  TEST_EQ(tag_init_1(&object, ":after_dump_object"), &object);
+  TEST_EQ(fact_init(&fact, &subject, &predicate, &object), &fact);
+  TEST_ASSERT(facts_add_fact(&facts, &fact));
+  tag_clean(&object);
+  tag_clean(&predicate);
+  tag_clean(&subject);
+  facts_clean(&facts);
+  TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+  TEST_EQ(marshall_read_facts(&mr, false, &facts_read), &mr);
+  TEST_ASSERT(facts_read.log);
+  TEST_EQ(facts_read.facts.count, 1);
+  TEST_STR_EQ(facts_read.log->path, path);
+  TEST_STR_EQ(facts_read.log->after_dump_path, after_dump_path);
+  facts_clean(&facts_read);
+  marshall_read_clean(&mr);
+  str_clean(&str);
+  marshall_clean(&m);
+  unlink(path.ptr.p_pchar);
+  unlink(after_dump_path.ptr.p_pchar);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_facts_log)
+
+TEST_CASE(marshall_read_plist)
 {
   s_marshall_read mr = {0};
   s_tag expected = {0};

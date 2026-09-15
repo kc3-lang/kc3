@@ -1082,20 +1082,96 @@ s_marshall_read * marshall_read_fact_1 (s_marshall_read *mr,
   return mr;
 }
 
+static s_marshall_read * marshall_read_facts_log
+(s_marshall_read *mr, bool heap, s_facts *facts)
+{
+  s_str after_dump_path = {0};
+  s_env *env;
+  s_str path = {0};
+  env = env_global();
+  if (! mr || ! facts || ! env)
+    return NULL;
+  if (! marshall_read_str(mr, heap, &path)) {
+    err_puts("marshall_read_facts_log: marshall_read_str: path");
+    assert(! "marshall_read_facts_log: marshall_read_str: path");
+    goto ko;
+  }
+  if (! marshall_read_str(mr, heap, &after_dump_path)) {
+    err_puts("marshall_read_facts_log: marshall_read_str: after dump path");
+    assert(! "marshall_read_facts_log: marshall_read_str: after dump path");
+    goto ko;
+  }
+  if (! after_dump_path.size &&
+      ! log_path_to_binary_path(&path, &after_dump_path)) {
+    err_puts("marshall_read_facts_log: log_path_to_binary_path");
+    assert(! "marshall_read_facts_log: log_path_to_binary_path");
+    goto ko;
+  }
+  if (env->trace) {
+    err_write_1("marshall_read_facts_log: facts_open_file_after_dump: ");
+    err_inspect_str(&after_dump_path);
+    err_write_1("\n");
+  }
+  if (facts_open_file_after_dump(facts, &after_dump_path) < 0) {
+    err_write_1("marshall_read_facts_log: facts_open_file_after_dump: ");
+    err_inspect_str(&after_dump_path);
+    err_write_1(": ERROR\n");
+    assert(! "marshall_read_facts_log: facts_open_file_after_dump");
+    goto ko;
+  }
+  if (env->trace) {
+    err_write_1("marshall_read_facts_log: after dump log: ");
+    err_inspect_str(&after_dump_path);
+    err_write_1(": OK\n");
+  }
+  if (facts_save_binary_file(facts, &path) < 0) {
+    err_write_1("marshall_read_facts_log: facts_save_binary_file: ");
+    err_inspect_str(&path);
+    err_write_1("\n");
+    assert(! "marshall_read_facts_log: facts_save_binary_file");
+    goto ko;
+  }
+  if (! facts_open_memoized_register(facts, &path)) {
+    err_write_1("marshall_read_facts_log: facts_open_memoized_register: ");
+    err_inspect_str(&path);
+    err_write_1("\n");
+    assert(! "marshall_read_facts_log: facts_open_memoized_register");
+    goto ko;
+  }
+  str_clean(&after_dump_path);
+  str_clean(&path);
+  return mr;
+ ko:
+  str_clean(&after_dump_path);
+  str_clean(&path);
+  return NULL;
+}
+
 s_marshall_read * marshall_read_facts_1 (s_marshall_read *mr,
                                          bool heap, s_facts *facts)
 {
   s_env *env;
   s_set__fact facts_set = {0};
+  bool has_log = false;
   p_skiplist__fact index = NULL;
   p_skiplist__fact index_osp = NULL;
   p_skiplist__fact index_pos = NULL;
   p_skiplist__fact index_spo = NULL;
+  bool log_format = false;
   bool new_format = false;
+  bool pointer_indexes;
   s_set__tag tags = {0};
   assert(mr);
   assert(facts);
-  if (buf_peek_1(heap ? mr->heap : mr->buf, "_KC3FACTS2_") > 0) {
+  if (buf_peek_1(heap ? mr->heap : mr->buf, "_KC3FACTS3_") > 0) {
+    log_format = true;
+    new_format = true;
+    if (! marshall_read_1(mr, heap, "_KC3FACTS3_") ||
+        ! marshall_read_uw(mr, heap, &facts->id))
+      return NULL;
+  }
+  else if (buf_peek_1(heap ? mr->heap : mr->buf,
+                      "_KC3FACTS2_") > 0) {
     new_format = true;
     if (! marshall_read_1(mr, heap, "_KC3FACTS2_") ||
         ! marshall_read_uw(mr, heap, &facts->id))
@@ -1104,36 +1180,58 @@ s_marshall_read * marshall_read_facts_1 (s_marshall_read *mr,
   else if (! marshall_read_1(mr, heap, "_KC3FACTS1_"))
     return NULL;
   if (! marshall_read_set__tag(mr, heap, &tags) ||
-      ! marshall_read_set__fact(mr, heap, &facts_set) ||
-      ! marshall_read_pskiplist__fact(mr, heap, &index) ||
-      ! marshall_read_pskiplist__fact(mr, heap, &index_spo) ||
-      ! marshall_read_pskiplist__fact(mr, heap, &index_pos) ||
-      ! marshall_read_pskiplist__fact(mr, heap, &index_osp) ||
-      ! marshall_read_uw(mr, heap, &facts->next_id))
+      ! marshall_read_set__fact(mr, heap, &facts_set))
     return NULL;
-  if (! index || ! index_spo || ! index_pos || ! index_osp) {
-    err_puts("marshall_read_facts_1: null fact index");
-    assert(! "marshall_read_facts_1: null fact index");
+  pointer_indexes =
+    buf_peek_1(heap ? mr->heap : mr->buf, "_KC3PSKIPLISTFACT_") > 0;
+  if (log_format && ! pointer_indexes) {
+    err_puts("marshall_read_facts_1: invalid V3 fact index");
+    assert(! "marshall_read_facts_1: invalid V3 fact index");
     return NULL;
   }
-  if (facts->index)
-    skiplist_delete__fact(facts->index);
-  if (facts->index_spo)
-    skiplist_delete__fact(facts->index_spo);
-  if (facts->index_pos)
-    skiplist_delete__fact(facts->index_pos);
-  if (facts->index_osp)
-    skiplist_delete__fact(facts->index_osp);
+  if (pointer_indexes) {
+    if (! marshall_read_pskiplist__fact(mr, heap, &index) ||
+        ! marshall_read_pskiplist__fact(mr, heap, &index_spo) ||
+        ! marshall_read_pskiplist__fact(mr, heap, &index_pos) ||
+        ! marshall_read_pskiplist__fact(mr, heap, &index_osp))
+      return NULL;
+    if (! index || ! index_spo || ! index_pos || ! index_osp) {
+      err_puts("marshall_read_facts_1: null fact index");
+      assert(! "marshall_read_facts_1: null fact index");
+      return NULL;
+    }
+  }
+  else {
+    if (! facts->index || ! facts->index_spo || ! facts->index_pos ||
+        ! facts->index_osp ||
+        ! marshall_read_skiplist__fact(mr, heap, facts->index) ||
+        ! marshall_read_skiplist__fact(mr, heap, facts->index_spo) ||
+        ! marshall_read_skiplist__fact(mr, heap, facts->index_pos) ||
+        ! marshall_read_skiplist__fact(mr, heap, facts->index_osp))
+      return NULL;
+  }
+  if (! marshall_read_uw(mr, heap, &facts->next_id))
+    return NULL;
+  if (pointer_indexes) {
+    if (facts->index)
+      skiplist_delete__fact(facts->index);
+    if (facts->index_spo)
+      skiplist_delete__fact(facts->index_spo);
+    if (facts->index_pos)
+      skiplist_delete__fact(facts->index_pos);
+    if (facts->index_osp)
+      skiplist_delete__fact(facts->index_osp);
+    facts->index = index;
+    facts->index_spo = index_spo;
+    facts->index_pos = index_pos;
+    facts->index_osp = index_osp;
+  }
   if (facts->facts.items)
     set_clean__fact(&facts->facts);
   if (facts->tags.items)
     set_clean__tag(&facts->tags);
   facts->tags = tags;
   facts->facts = facts_set;
-  facts->index = index;
-  facts->index_spo = index_spo;
-  facts->index_pos = index_pos;
-  facts->index_osp = index_osp;
   if (new_format) {
     env = env_global();
 #if HAVE_PTHREAD
@@ -1154,23 +1252,24 @@ s_marshall_read * marshall_read_facts_1 (s_marshall_read *mr,
   rwlock_init(&facts->rwlock);
   mutex_init(&facts->ref_count_mutex);
 #endif
+  if (log_format &&
+      (! marshall_read_bool(mr, heap, &has_log) ||
+       (has_log && ! marshall_read_facts_log(mr, heap, facts))))
+    return NULL;
   return mr;
 }
 
 s_marshall_read * marshall_read_facts (s_marshall_read *mr,
                                        bool heap, s_facts *facts)
 {
-  s_str binary_path = {0};
   uw count;
-  s_env *env;
   s_fact fact = {0};
   bool has_log = false;
   uw i;
-  s_str path = {0};
-  env = env_global();
-  if (! mr || ! facts || ! env)
+  if (! mr || ! facts || ! env_global())
     return NULL;
-  if (buf_peek_1(heap ? mr->heap : mr->buf, "_KC3FACTS2_") > 0 ||
+  if (buf_peek_1(heap ? mr->heap : mr->buf, "_KC3FACTS3_") > 0 ||
+      buf_peek_1(heap ? mr->heap : mr->buf, "_KC3FACTS2_") > 0 ||
       buf_peek_1(heap ? mr->heap : mr->buf, "_KC3FACTS1_") > 0)
     return marshall_read_facts_1(mr, heap, facts);
   if (! marshall_read_1(mr, heap, "_KC3FACTS_")) {
@@ -1211,66 +1310,8 @@ s_marshall_read * marshall_read_facts (s_marshall_read *mr,
     assert(! "marshall_read_facts: marshall_bool log");
     return NULL;
   }
-  if (has_log) {
-    if (! marshall_read_str(mr, heap, &path)) {
-      err_puts("marshall_read_facts: marshall_str path");
-      assert(! "marshall_read_facts: marshall_str path");
-      return NULL;
-    }
-    if (! marshall_read_str(mr, heap, &binary_path)) {
-      err_puts("marshall_read_facts: marshall_str binary path");
-      assert(! "marshall_read_facts: marshall_str binary path");
-      str_clean(&path);
-      return NULL;
-    }
-    if (! binary_path.size) {
-      if (! log_path_to_binary_path(&path, &binary_path)) {
-        err_puts("marshall_read_facts: log_path_to_binary_path");
-        assert(! "marshall_read_facts: log_path_to_binary_path");
-        str_clean(&path);
-        return NULL;
-      }
-    }
-    if (env->trace) {
-      err_write_1("marshall_read_facts: facts_open_file_after_dump: ");
-      err_inspect_str(&binary_path);
-      err_write_1("\n");
-    }
-    if (facts_open_file_after_dump(facts, &binary_path) < 0) {
-      err_write_1("marshall_read_facts: facts_open_file_after_dump: ");
-      err_inspect_str(&binary_path);
-      err_write_1(": ERROR\n");
-      assert(! "marshall_read_facts: facts_open_file_after_dump");
-      str_clean(&binary_path);
-      str_clean(&path);
-      return NULL;
-    }
-    if (env->trace) {
-      err_write_1("marshall_read_facts: binary log: ");
-      err_inspect_str(&binary_path);
-      err_write_1(": OK\n");
-    }
-    if (facts_save_binary_file(facts, &path) < 0) {
-      err_write_1("marshall_read_facts: facts_save_binary_file: ");
-      err_inspect_str(&path);
-      err_write_1("\n");
-      assert(! "marshall_read_facts: facts_save_binary_file");
-      str_clean(&binary_path);
-      str_clean(&path);
-      return NULL;
-    }
-    if (! facts_open_memoized_register(facts, &path)) {
-      err_write_1("marshall_read_facts: facts_open_memoized_register: ");
-      err_inspect_str(&path);
-      err_write_1("\n");
-      assert(! "marshall_read_facts: facts_open_memoized_register");
-      str_clean(&binary_path);
-      str_clean(&path);
-      return NULL;
-    }
-    str_clean(&binary_path);
-    str_clean(&path);
-  }
+  if (has_log && ! marshall_read_facts_log(mr, heap, facts))
+    return NULL;
   return mr;
 }
 
@@ -2485,6 +2526,7 @@ marshall_read_pskiplist__fact (s_marshall_read *mr, bool heap,
       buf_seek(mr->heap, pos, SEEK_SET) < 0 ||
       ! (tmp = alloc(SKIPLIST_SIZE__fact(max_height))))
     return NULL;
+  tmp->max_height = max_height;
   if (! marshall_read_ht_add(mr, offset, tmp) ||
       ! marshall_read_skiplist__fact(mr, true, tmp)) {
     alloc_free(tmp);
@@ -2501,13 +2543,16 @@ marshall_read_skiplist__fact (s_marshall_read *mr, bool heap,
   t_skiplist_height *height_table;
   uw i;
   uw length;
+  u8 max_height_alloc;
   u8 max_height;
   p_skiplist_node__fact head = NULL;
-  if (! mr || ! dest ||
-      ! marshall_read_1(mr, heap, "_KC3SKIPLISTFACT_") ||
+  if (! mr || ! dest)
+    return NULL;
+  max_height_alloc = dest->max_height;
+  if (! marshall_read_1(mr, heap, "_KC3SKIPLISTFACT_") ||
       ! marshall_read_uw(mr, heap, &length) ||
       ! marshall_read_u8(mr, heap, &max_height) ||
-      ! max_height)
+      ! max_height || max_height > max_height_alloc)
     return NULL;
   dest->length = length;
   dest->max_height = max_height;

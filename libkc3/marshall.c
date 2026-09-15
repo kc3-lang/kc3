@@ -1156,20 +1156,27 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
     assert(! "marshall_facts: marshall_skiplist__fact: OSP");
     goto ko;
   }
-  if (! marshall_bool(m, heap, facts->log)) {
-    err_puts("marshall_facts: marshall_bool");
-    assert(! "marshall_facts: marshall_bool");
-    return NULL;
-  }
-  if (! marshall_str(m, heap, facts->log->path)) {
-    err_puts("marshall_facts: marshall_str");
-    assert(! "marshall_facts: marshall_str");
-    return NULL;
-  }
   if (! marshall_uw(m, heap, facts->next_id)) {
     err_puts("marshall_facts: marshall_uw: next_id");
     assert(! "marshall_facts: marshall_uw: next_id");
     goto ko;
+  }
+  if (! marshall_bool(m, heap, facts->log != NULL)) {
+    err_puts("marshall_facts: marshall_bool: log");
+    assert(! "marshall_facts: marshall_bool: log");
+    goto ko;
+  }
+  if (facts->log) {
+    if (! marshall_str(m, heap, &facts->log->path)) {
+      err_puts("marshall_facts: marshall_str: log path");
+      assert(! "marshall_facts: marshall_str: log path");
+      goto ko;
+    }
+    if (! marshall_str(m, heap, &facts->log->after_dump_path)) {
+      err_puts("marshall_facts: marshall_str: log after dump path");
+      assert(! "marshall_facts: marshall_str: log after dump path");
+      goto ko;
+    }
   }
 #if HAVE_PTHREAD
   rwlock_unlock_r(&facts->rwlock);
