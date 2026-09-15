@@ -618,7 +618,7 @@ s_marshall_read * marshall_read_complex (s_marshall_read *mr,
 {
   s_complex tmp = {0};
   assert(mr);
-  assert(mr);
+  assert(dest);
   if (! marshall_read_tag(mr, heap, &tmp.x))
     return NULL;
   if (! marshall_read_tag(mr, heap, &tmp.y)) {
