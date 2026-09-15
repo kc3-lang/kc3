@@ -989,6 +989,7 @@ s_marshall_read * marshall_read_f128 (s_marshall_read *mr,
 {
   s_buf *buf = NULL;
   union { f128 f; u64 i[2]; } u;
+  u64 tmp;
   assert(mr);
   assert(dest);
   buf = heap ? mr->heap : mr->buf;
