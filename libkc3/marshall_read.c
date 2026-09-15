@@ -2636,7 +2636,11 @@ s_marshall_read * marshall_read_pstruct_type (s_marshall_read *mr,
     return mr;
   }
   if (present) {
-    pstruct_type_init_copy(dest, &present);
+    if (! pstruct_type_init_copy(dest, &present)) {
+      err_puts("marshall_read_pstruct_type: pstruct_type_init_copy");
+      assert(! "marshall_read_pstruct_type: pstruct_type_init_copy");
+      return NULL;
+    }
     return mr;
   }
   if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
