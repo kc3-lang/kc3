@@ -1120,7 +1120,7 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
 #if HAVE_PTHREAD
   rwlock_r(&facts->rwlock);
 #endif
-  if (! marshall_1(m, heap, "_KC3FACTS2_") ||
+  if (! marshall_1(m, heap, "_KC3FACTS3_") ||
       ! marshall_uw(m, heap, facts->id)) {
     err_puts("marshall_facts: marshall_1");
     assert(! "marshall_facts: marshall_1");
@@ -1155,6 +1155,16 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
     err_puts("marshall_facts: marshall_skiplist__fact: OSP");
     assert(! "marshall_facts: marshall_skiplist__fact: OSP");
     goto ko;
+  }
+  if (! marshall_bool(m, heap, facts->log)) {
+    err_puts("marshall_facts: marshall_bool");
+    assert(! "marshall_facts: marshall_bool");
+    return NULL;
+  }
+  if (! marshall_str(m, heap, facts->log->path)) {
+    err_puts("marshall_facts: marshall_str");
+    assert(! "marshall_facts: marshall_str");
+    return NULL;
   }
   if (! marshall_uw(m, heap, facts->next_id)) {
     err_puts("marshall_facts: marshall_uw: next_id");
