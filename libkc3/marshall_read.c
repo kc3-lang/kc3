@@ -1369,7 +1369,7 @@ s_marshall_read * marshall_read_frame (s_marshall_read *mr, bool heap,
   return mr;
  ko:
   frame_clean(&tmp);
-  assert("marshall_read_frame: error");
+  assert(! "marshall_read_frame: error");
   return NULL;
 }
 
