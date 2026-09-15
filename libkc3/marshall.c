@@ -630,7 +630,7 @@ s_marshall * marshall_data (s_marshall *m, bool heap, p_sym type,
   if (type == &g_sym_Facts_star) {
     if (! marshall_pfacts(m, heap, data)) {
       err_puts("marshall_data: marshall_pfacts");
-      assert("marshall_data: marshall_pfacts");
+      assert(! "marshall_data: marshall_pfacts");
       return NULL;
     }
     return m;
