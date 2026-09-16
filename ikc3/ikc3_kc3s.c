@@ -165,14 +165,17 @@ static int arg_dump (s_env *env, int *argc, char ***argv)
 
 static int arg_load (s_env *env, int *argc, char ***argv)
 {
+  bool   buf_open = false;
   sw     e = 0;
   FILE *fp = 0;
-  s_tag *file_dir;
+  s_tag *file_dir = NULL;
   s_tag  file_dir_save = {0};
-  s_tag *file_path;
+  bool   file_dir_saved = false;
+  s_tag *file_path = NULL;
   s_tag  file_path_save = {0};
+  bool   file_path_saved = false;
   s_str path = {0};
-  sw r;
+  sw    r = -1;
   if (*argc < 2) {
     err_puts("arg_load: --load without an argument");
     assert(! "arg_load: --load without an argument");
@@ -193,41 +196,49 @@ static int arg_load (s_env *env, int *argc, char ***argv)
     err_write_1(strerror(e));
     err_write_1("\n");
     assert(! "ikc3: fopen");
-    return -1;
+    goto clean;
   }
-  str_clean(&path);
   if (! buf_file_open_r(env->in, fp)) {
     err_puts(PROG ": buf_file_open_r");
-    return -1;
+    goto clean;
   }
+  buf_open = true;
   file_dir = frame_get_w(env->global_frame, &g_sym___DIR__);
   tag_move(&file_dir_save, file_dir);
+  file_dir_saved = true;
   tag_init(file_dir);
   file_path = frame_get_w(env->global_frame, &g_sym___FILE__);
   tag_move(&file_path_save, file_path);
+  file_path_saved = true;
   tag_init(file_path);
   tag_init_str_1(file_path, NULL, (*argv)[1]);
   file_dir->type = TAG_STR;
   if (! file_dirname(&file_path->data.td_str, &file_dir->data.td_str)) {
     err_puts(PROG ": file_dirname");
-    buf_file_close(env->in);
-    return -1;
+    goto clean;
   }
   r = run();
-  tag_move(file_dir, &file_dir_save);
-  tag_move(file_path, &file_path_save);
-  buf_file_close(env->in);
-  fclose(fp);
-  if (r < 0) {
+  if (r != 0) {
     err_write_1(PROG ": failed to load ");
     err_write_1((*argv)[1]);
     err_write_1("\n");
     err_flush();
-    return -1;
+    r = -1;
+    goto clean;
   }
   *argc -= 2;
   *argv += 2;
-  return 0;
+ clean:
+  if (file_path_saved)
+    tag_move(file_path, &file_path_save);
+  if (file_dir_saved)
+    tag_move(file_dir, &file_dir_save);
+  if (buf_open)
+    buf_file_close(env->in);
+  if (fp)
+    fclose(fp);
+  str_clean(&path);
+  return r;
 }
 
 static int arg_server (s_env *env, int *argc, char ***argv)
@@ -580,7 +591,7 @@ static sw run (void)
       {
         if (buf_inspect_tag(env->out, &result) < 0) {
           tag_clean(&result);
-          r = 0;
+          r = 1;
           goto clean;
         }
 #if KC3S
@@ -804,11 +815,15 @@ int main (int argc, char **argv)
   *env->in = in_original;
   if (g_server) {
     if (g_tls) {
-      if (server_init_tls(env))
+      if (server_init_tls(env)) {
+        r = 1;
         goto clean;
+      }
     }
-    else if (server_init(env))
+    else if (server_init(env)) {
+      r = 1;
       goto clean;
+    }
     r = run();
     goto clean;
   }
@@ -819,11 +834,15 @@ int main (int argc, char **argv)
 #endif
   if (g_client) {
     if (g_tls) {
-      if (client_init_tls())
+      if (client_init_tls()) {
+        r = 1;
         goto close;
+      }
     }
-    else if (client_init())
+    else if (client_init()) {
+      r = 1;
       goto close;
+    }
   }
   r = run();
   if (g_client)
