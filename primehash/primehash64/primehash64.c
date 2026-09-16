@@ -7,7 +7,7 @@
 #include "../../libkc3/types.h"
 #include "../../libkc3/primehash.h"
 
-#define BUF_SIZE (sizeof(uw) << 16)
+#define PRIMEHASH64_BUF_SIZE (sizeof(uw) << 16)
 
 int usage (int r, char *argv0)
 {
@@ -35,7 +35,10 @@ int main (int argc, char **argv)
   }
   else {
     opt = argv[1];
-    if (argc != 3 || opt[0] != '-' || opt[1] != 'h' || opt[2])
+    if (argc != 3)
+      return usage(argc == 2 && ! strncmp(opt, "-h", 3) ? 0 : 1,
+                   argv[0]);
+    if (strncmp(opt, "-h", 3))
       return usage(1, argv[0]);
     out_path = argv[2];
     if (! (out_fp = fopen(out_path, "wb"))) {
@@ -64,7 +67,7 @@ int main (int argc, char **argv)
       free(in_path);
       goto error;
     }
-    char a[BUF_SIZE];
+    char a[PRIMEHASH64_BUF_SIZE];
     u64 h_u64 = 0;
     s_str str = {0};
     str.ptr.p_pchar = a;

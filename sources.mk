@@ -420,7 +420,6 @@ KC3_C_SOURCES = \
 	"image/types.h" \
 	"json/json.c" \
 	"json/json.h" \
-	"kc3c/c3c.c" \
 	"kc3c/kc3c.c" \
 	"kc3s/buf_readline.c" \
 	"kc3s/buf_readline.h" \
@@ -1592,6 +1591,29 @@ KC3_KMSG_SOURCES = \
 	"kmsg/kmsg.kc3" \
 
 KC3_LIB_SOURCES = \
+	"lib/disabled/bayes.kc3" \
+	"lib/disabled/gtk4.kc3" \
+	"lib/disabled/gtk4/action_map.kc3" \
+	"lib/disabled/gtk4/application.kc3" \
+	"lib/disabled/gtk4/application_window.kc3" \
+	"lib/disabled/gtk4/box.kc3" \
+	"lib/disabled/gtk4/button.kc3" \
+	"lib/disabled/gtk4/entry.kc3" \
+	"lib/disabled/gtk4/entry_buffer.kc3" \
+	"lib/disabled/gtk4/file.kc3" \
+	"lib/disabled/gtk4/frame.kc3" \
+	"lib/disabled/gtk4/label.kc3" \
+	"lib/disabled/gtk4/list_box.kc3" \
+	"lib/disabled/gtk4/menu.kc3" \
+	"lib/disabled/gtk4/menu_item.kc3" \
+	"lib/disabled/gtk4/object.kc3" \
+	"lib/disabled/gtk4/paned.kc3" \
+	"lib/disabled/gtk4/scrolled_window.kc3" \
+	"lib/disabled/gtk4/simple_action.kc3" \
+	"lib/disabled/gtk4/text.kc3" \
+	"lib/disabled/gtk4/text_view.kc3" \
+	"lib/disabled/gtk4/widget.kc3" \
+	"lib/disabled/gtk4/window.kc3" \
 	"lib/kc3/0.1/alist.kc3" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/base32.kc3" \
@@ -1608,7 +1630,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/cow.kc3" \
 	"lib/kc3/0.1/crypt.kc3" \
 	"lib/kc3/0.1/daemon.kc3" \
-	"lib/kc3/0.1/deserialize.kc3" \
 	"lib/kc3/0.1/ekc3.kc3" \
 	"lib/kc3/0.1/env.kc3" \
 	"lib/kc3/0.1/err.kc3" \
@@ -1621,7 +1642,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/fact_w.kc3" \
 	"lib/kc3/0.1/facts.kc3" \
 	"lib/kc3/0.1/facts/acceptor.kc3" \
-	"lib/kc3/0.1/facts/cursor.kc3" \
 	"lib/kc3/0.1/fd.kc3" \
 	"lib/kc3/0.1/file.kc3" \
 	"lib/kc3/0.1/file/stat.kc3" \
@@ -1647,28 +1667,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gl/vec2.kc3" \
 	"lib/kc3/0.1/gl/vec3.kc3" \
 	"lib/kc3/0.1/gl/vertex.kc3" \
-	"lib/kc3/0.1/gtk4.kc3" \
-	"lib/kc3/0.1/gtk4/action_map.kc3" \
-	"lib/kc3/0.1/gtk4/application.kc3" \
-	"lib/kc3/0.1/gtk4/application_window.kc3" \
-	"lib/kc3/0.1/gtk4/box.kc3" \
-	"lib/kc3/0.1/gtk4/button.kc3" \
-	"lib/kc3/0.1/gtk4/entry.kc3" \
-	"lib/kc3/0.1/gtk4/entry_buffer.kc3" \
-	"lib/kc3/0.1/gtk4/file.kc3" \
-	"lib/kc3/0.1/gtk4/frame.kc3" \
-	"lib/kc3/0.1/gtk4/label.kc3" \
-	"lib/kc3/0.1/gtk4/list_box.kc3" \
-	"lib/kc3/0.1/gtk4/menu.kc3" \
-	"lib/kc3/0.1/gtk4/menu_item.kc3" \
-	"lib/kc3/0.1/gtk4/object.kc3" \
-	"lib/kc3/0.1/gtk4/paned.kc3" \
-	"lib/kc3/0.1/gtk4/scrolled_window.kc3" \
-	"lib/kc3/0.1/gtk4/simple_action.kc3" \
-	"lib/kc3/0.1/gtk4/text.kc3" \
-	"lib/kc3/0.1/gtk4/text_view.kc3" \
-	"lib/kc3/0.1/gtk4/widget.kc3" \
-	"lib/kc3/0.1/gtk4/window.kc3" \
 	"lib/kc3/0.1/hotp.kc3" \
 	"lib/kc3/0.1/html.kc3" \
 	"lib/kc3/0.1/http.kc3" \
@@ -1693,8 +1691,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/kc3.dump" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/op.kc3" \
-	"lib/kc3/0.1/kc3/operator.kc3" \
-	"lib/kc3/0.1/kc3/ops.kc3" \
 	"lib/kc3/0.1/kpkg.dump" \
 	"lib/kc3/0.1/kpkg.kc3" \
 	"lib/kc3/0.1/kpkg/package.kc3" \
@@ -1755,7 +1751,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/s32.facts" \
 	"lib/kc3/0.1/s64.facts" \
 	"lib/kc3/0.1/s8.facts" \
-	"lib/kc3/0.1/serialize.kc3" \
 	"lib/kc3/0.1/set.kc3" \
 	"lib/kc3/0.1/set/fact.kc3" \
 	"lib/kc3/0.1/set/item/fact.kc3" \
@@ -1769,8 +1764,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/socket.kc3" \
 	"lib/kc3/0.1/socket/addr.kc3" \
 	"lib/kc3/0.1/socket/buf.kc3" \
-	"lib/kc3/0.1/socket/facts.kc3" \
-	"lib/kc3/0.1/spam/bayes.kc3" \
 	"lib/kc3/0.1/stacktrace.kc3" \
 	"lib/kc3/0.1/str.facts" \
 	"lib/kc3/0.1/struct.kc3" \
@@ -1783,9 +1776,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/tls.kc3" \
 	"lib/kc3/0.1/tls/client.kc3" \
 	"lib/kc3/0.1/tls/config.kc3" \
-	"lib/kc3/0.1/tls/facts.kc3" \
 	"lib/kc3/0.1/tls/server.kc3" \
-	"lib/kc3/0.1/to_c.kc3" \
 	"lib/kc3/0.1/totp.kc3" \
 	"lib/kc3/0.1/u16.facts" \
 	"lib/kc3/0.1/u32.facts" \
@@ -2145,6 +2136,12 @@ KC3_TEST_HTTP_SOURCES = \
 	"test/http/10_request_framing.kc3" \
 	"test/http/10_request_framing.out.expected" \
 	"test/http/10_request_framing.ret.expected" \
+	"test/http/10_url_encode_component.kc3" \
+	"test/http/10_url_encode_component.out.expected" \
+	"test/http/10_url_encode_component.ret.expected" \
+	"test/http/11_https_encode_form.kc3" \
+	"test/http/11_https_encode_form.out.expected" \
+	"test/http/11_https_encode_form.ret.expected" \
 	"test/http/mime.types" \
 	"test/http_test" \
 

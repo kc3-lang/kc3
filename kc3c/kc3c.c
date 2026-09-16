@@ -1,42 +1,100 @@
-/* kc3
- * Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
- *
- * Permission is hereby granted to use this software granted the above
- * copyright notice and this permission paragraph are included in all
- * copies and substantial portions of this software.
- *
- * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
- * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
- * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
- * THIS SOFTWARE.
+/* Copyright from 2020 to 2026 kmx.io <contact@kmx.io>
+ * All rights reserved.
  */
-#include <unistd.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 #include "../libkc3/kc3.h"
+
+#define KC3C_BUF_SIZE (sizeof(uw) << 16)
+
+int usage (int r, char *argv0)
+{
+  fprintf(stderr, "Usage: find . -name '*.kc3' | %s\n", argv0);
+  return r;
+}
 
 int main (int argc, char **argv)
 {
-  s_env *env = NULL;
-  s32 i;
-  s_str path = {0};
-  if (! kc3_init(NULL, &argc, &argv))
-    return 1;
-  if (! (env = env_global()))
-    goto clean;
-  i = 0;
-  while (i < argc) {
-    str_init_1(&path, NULL, argv[i]);
-    err_write_1(PROG ": ");
-    err_inspect_str(&path);
-    err_write_1("\n");
-    if (! env_load(env, &path)) {
-      err_write_1(PROG ": ");
-      err_inspect_str(&path);
-      err_write_1("\n");
-      i++;
+  int e;
+  int i;
+  FILE *in_fp = NULL;
+  ssize_t in_len;
+  char *in_path = NULL;
+  uw    in_size = 0;
+  const char *opt;
+  FILE       *out_fp = NULL;
+  const char *out_path;
+  int r = 1;
+  if (argc <= 0)
+    return usage(1, "primehash");
+  if (argc == 1) {
+    out_path = "<stdout>";
+    out_fp = stdout;
+  }
+  else {
+    opt = argv[1];
+    if (argc != 3 || opt[0] != '-' || opt[1] != 'h' || opt[2])
+      return usage(1, argv[0]);
+    out_path = argv[2];
+    if (! (out_fp = fopen(out_path, "wb"))) {
+      e = errno;
+      fprintf(stderr, "%s: %s: %s\n",
+              argv[0], out_path, strerror(e));
+      goto error;
     }
-  kc3_clean(env);
-  return 0;
+  }
+  while (1) {
+    in_path = NULL;
+    in_size = 0;
+    if ((in_len = getline(&in_path, &in_size, stdin)) <= 0 ||
+        ! in_path) {
+      r = 0;
+      goto clean;
+    }
+    if (in_path[in_len - 1] == '\n')
+      in_path[--in_len] = 0;
+    if (! (in_fp = fopen(in_path, "rb"))) {
+      e = errno;
+      fprintf(stderr, "%s: %s: %s\n",
+              argv[0], in_path, strerror(e));
+      goto error;
+    }
+    char a[KC3C_BUF_SIZE];
+    u64 h_u64 = 0;
+    s_str str = {0};
+    str.ptr.p_pchar = a;
+    while ((str.size = fread(a, 1, sizeof(a), in_fp)))
+      h_u64 = primehash_u64_inline(&str, h_u64);
+    fclose(in_fp);
+    static const char hex[] = "0123456789abcdef";
+    i = 0;
+    while (i < 16) {
+      a[i] = hex[((u8 *) &h_u64)[i / 2] >> 4];
+      a[i + 1] = hex[((u8 *) &h_u64)[i / 2] & 0x0f];
+      i += 2;
+    }
+    a[i] = ' ';
+    a[i + 1] = 0;
+    if (fwrite(a, 17, 1, out_fp) != 1) {
+      e = errno;
+      fprintf(stderr, "%s: %s: %s\n",
+              argv[0], out_path, strerror(e));
+      goto error;
+    }
+    fputs(in_path, out_fp);
+    fputc('\n', out_fp);
+    free(in_path);
+    in_path = NULL;
+  }
+  r = 0;
  clean:
-  kc3_clean(env);
-  return 1;
+  if (in_path)
+    free(in_path);
+  if (out_fp && out_fp != stdout)
+    fclose(out_fp);
+  return r;
+ error:
+  r = 1;
+  goto clean;
 }

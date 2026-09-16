@@ -58,6 +58,10 @@ case "$(uname -s)" in
             LIBS="$LIBS -rpath /lib64"
 	fi
 	;;
+    OpenBSD)
+        LIBS="$LIBS -rpath ${LIBDIR}"
+        LIBS="$LIBS -rpath ${BUILD_TOP}/libkc3"
+        ;;
     *)
         LIBS="$LIBS -rpath ${LIBDIR}"
 esac
@@ -85,25 +89,19 @@ LIBASAN_DIR=$(dirname "$LIBASAN")
 LDFLAGS_ASAN="$LDFLAGS -L$LIBASAN_DIR"
 LIBS_ASAN="$(${CC} -print-file-name=libasan.so)"
 LIBS_ASAN="$LIBS_ASAN $LIBS"
-LIBS_ASAN="$LIBS_ASAN -lkc3_tls_asan"
-LIBS_ASAN="$LIBS_ASAN -lkc3_socket_asan"
 LIBS_ASAN="$LIBS_ASAN -lkc3_asan"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS"
-LIBS_COV="$LIBS -lkc3_tls_cov"
-LIBS_COV="$LIBS_COV -lkc3_socket_cov"
-LIBS_COV="$LIBS_COV -lkc3_cov"
+LIBS_COV="$LIBS -lkc3_cov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_DEBUG="$LIBS -lkc3_tls_debug"
-LIBS_DEBUG="$LIBS_DEBUG -lkc3_socket_debug"
-LIBS_DEBUG="$LIBS_DEBUG -lkc3_debug"
+LIBS_DEBUG="$LIBS -lkc3_debug"
 
 # Main config
 DEFAULT_CFLAGS="-O2 -fPIC"
@@ -111,8 +109,6 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS="$LIBS -lkc3_tls"
-LIBS="$LIBS -lkc3_socket"
 LIBS="$LIBS -lkc3"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

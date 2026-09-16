@@ -12,7 +12,9 @@
 
 all:
 	${MAKE} build
+	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
+	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 include config.mk
 include sources.mk
@@ -25,4 +27,14 @@ cov: ${PROG_COV}
 
 debug: ${PROG_DEBUG}
 
-.PHONY: all asan build cov debug
+gcovr:
+	gcovr --gcov-executable ${GCOV} --html-details kc3c.html
+
+install:
+	install -m 755 -d ${DESTDIR}${prefix}/bin
+	${INSTALL} -m 755 ${PROG} ${DESTDIR}${prefix}/bin/
+
+uninstall:
+	rm -f ${prefix}/bin/kc3c
+
+.PHONY: all asan build cov debug gcovr install uninstall

@@ -463,21 +463,6 @@ static void sha256_hmac_to_hex (const u8 *digest, char *dest)
   }
 }
 
-s_str * sha256_hmac_hex (const s_str *k, const s_str *m, s_str * dest)
-{
-  u8 digest[SHA256_DIGEST_LENGTH] = {0};
-  s_str tmp = {0};
-  assert(k);
-  assert(m);
-  assert(dest);
-  if (! str_init_alloc(&tmp, SHA256_DIGEST_LENGTH * 2))
-      return NULL;
-  sha256_hmac(k, m, digest);
-  sha256_hmac_to_hex(digest, tmp.free.p_pchar);
-  *dest = tmp;
-  return dest;
-}
-
 void sha256_hmac (const s_str *k, const s_str *m, u8 *dest)
 {
   s_sha2 h_ctx;
@@ -515,6 +500,21 @@ void sha256_hmac (const s_str *k, const s_str *m, u8 *dest)
   sha256_update(&h_ctx, pad[0], SHA256_BLOCK_LENGTH);
   sha256_update(&h_ctx, h[1], SHA256_DIGEST_LENGTH);
   sha256_final(dest, &h_ctx);
+}
+
+s_str * sha256_hmac_hex (const s_str *k, const s_str *m, s_str *dest)
+{
+  u8 digest[SHA256_DIGEST_LENGTH] = {0};
+  s_str tmp = {0};
+  assert(k);
+  assert(m);
+  assert(dest);
+  if (! str_init_alloc(&tmp, SHA256_DIGEST_LENGTH * 2))
+      return NULL;
+  sha256_hmac(k, m, digest);
+  sha256_hmac_to_hex(digest, tmp.free.p_pchar);
+  *dest = tmp;
+  return dest;
 }
 
 s_str * sha256_hmac_str (const s_str *k, const s_str *m, s_str *dest)

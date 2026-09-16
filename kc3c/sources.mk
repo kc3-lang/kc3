@@ -3,6 +3,5 @@ HEADERS = \
 	"" \
 
 SOURCES = \
-	"c3c.c" \
 	"kc3c.c" \
 

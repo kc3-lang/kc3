@@ -16,6 +16,8 @@ all:
 	${MAKE} -C libtommath all
 	${MAKE} -C libkc3 all
 	${MAKE} -C ikc3 all
+	${MAKE} -C kc3c all
+	${MAKE} -C primehash all
 	${MAKE} -C kc3s all
 	${MAKE} -C kc3txt all
 	${MAKE} -C kpkg all
@@ -56,6 +58,8 @@ asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
+	${MAKE} -C kc3c asan
+	${MAKE} -C primehash asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C kc3txt asan
 	${MAKE} -C kpkg asan
@@ -87,6 +91,8 @@ build:
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
+	${MAKE} -C kc3c build
+	${MAKE} -C primehash build
 	${MAKE} -C kc3s build
 	${MAKE} -C kc3txt build
 	${MAKE} -C kpkg build
@@ -116,6 +122,8 @@ clean::
 	${MAKE} -C libtommath clean
 	${MAKE} -C libkc3 clean
 	${MAKE} -C ikc3 clean
+	${MAKE} -C kc3c clean
+	${MAKE} -C primehash clean
 	${MAKE} -C kc3s clean
 	${MAKE} -C kc3txt clean
 	${MAKE} -C kpkg clean
@@ -142,6 +150,8 @@ clean_cov::
 	${MAKE} -C libtommath clean_cov
 	${MAKE} -C libkc3 clean_cov
 	${MAKE} -C ikc3 clean_cov
+	${MAKE} -C kc3c clean_cov
+	${MAKE} -C primehash clean_cov
 	${MAKE} -C kc3s clean_cov
 	${MAKE} -C kc3txt clean_cov
 	${MAKE} -C kpkg clean_cov
@@ -179,6 +189,8 @@ cov:
 	${MAKE} -C libtommath cov
 	${MAKE} -C libkc3 cov
 	${MAKE} -C ikc3 cov
+	${MAKE} -C kc3c cov
+	${MAKE} -C primehash cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C kpkg cov
 	${MAKE} -C ekc3 cov
@@ -212,6 +224,8 @@ debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3c debug
+	${MAKE} -C primehash debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C kpkg debug
 	${MAKE} -C ekc3 debug
@@ -381,6 +395,8 @@ distclean::
 	${MAKE} -C libtommath distclean
 	${MAKE} -C libkc3 distclean
 	${MAKE} -C ikc3 distclean
+	${MAKE} -C kc3c distclean
+	${MAKE} -C primehash distclean
 	${MAKE} -C kc3s distclean
 	${MAKE} -C kpkg distclean
 	${MAKE} -C ekc3 distclean
@@ -499,6 +515,8 @@ fx_debug:
 gcovr:
 	${MAKE} -C libkc3 gcovr
 	${MAKE} -C ikc3 gcovr
+	${MAKE} -C kc3c gcovr
+	${MAKE} -C primehash gcovr
 	${MAKE} -C kc3s gcovr
 	${MAKE} -C kc3s gcovr
 	${MAKE} -C ekc3 gcovr
@@ -834,6 +852,8 @@ install:
 	${MAKE} -C libtommath install
 	${MAKE} -C libkc3 install
 	${MAKE} -C ikc3 install
+	${MAKE} -C kc3c install
+	${MAKE} -C primehash install
 	${MAKE} -C kc3s install
 	${MAKE} -C kpkg install
 	${MAKE} -C ekc3 install
@@ -1002,6 +1022,46 @@ kc3.primehash64: kc3.index
 	else \
 		rm kc3.primehash64.tmp; \
 	fi
+
+kc3c:
+	${MAKE} -C libtommath build
+	${MAKE} -C libkc3 build
+	${MAKE} -C kc3c build
+
+kc3c_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C libkc3 asan
+	${MAKE} -C kc3c asan
+
+kc3c_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C libkc3 cov
+	${MAKE} -C kc3c cov
+
+kc3c_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C libkc3 debug
+	${MAKE} -C kc3c debug
+
+primehash:
+	${MAKE} -C libtommath build
+	${MAKE} -C libkc3 build
+	${MAKE} -C primehash build
+
+primehash_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C libkc3 asan
+	${MAKE} -C primehash asan
+
+primehash_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C libkc3 cov
+	${MAKE} -C primehash cov
+
+primehash_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C libkc3 debug
+	${MAKE} -C primehash debug
 
 kc3s:
 	${MAKE} -C libtommath build
@@ -1865,6 +1925,8 @@ uninstall:
 	${MAKE} -C ikc3 uninstall
 	${MAKE} -C image uninstall
 	${MAKE} -C json uninstall
+	${MAKE} -C kc3c uninstall
+	${MAKE} -C primehash uninstall
 	${MAKE} -C kc3s uninstall
 	${MAKE} -C kpkg uninstall
 	${MAKE} -C libkc3 uninstall
@@ -1977,6 +2039,10 @@ whitespace:
 	json_debug \
 	kc3.index \
 	kc3.primehash64 \
+	kc3c \
+	kc3c_asan \
+	kc3c_cov \
+	kc3c_debug \
 	kc3s \
 	kc3s_asan \
 	kc3s_cov \
@@ -2011,6 +2077,10 @@ whitespace:
 	pdf_asan \
 	pdf_cov \
 	pdf_debug \
+	primehash \
+	primehash_asan \
+	primehash_cov \
+	primehash_debug \
 	release \
 	test \
 	test_asan \

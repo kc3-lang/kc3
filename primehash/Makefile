@@ -19,10 +19,10 @@ asan:
 build:
 	${MAKE} -C primehash64 build
 
-clean::
+clean:
 	${MAKE} -C primehash64 clean
 
-clean_cov::
+clean_cov:
 	${MAKE} -C primehash64 clean_cov
 
 cov:
@@ -31,27 +31,16 @@ cov:
 debug:
 	${MAKE} -C primehash64 debug
 
-distclean::
+distclean:
 	${MAKE} -C primehash64 distclean
 
 gcovr:
 	${MAKE} -C primehash64 gcovr
 
-install::
+install:
 	${MAKE} -C primehash64 install
 
-uninstall::
+uninstall:
 	${MAKE} -C primehash64 uninstall
 
-.PHONY: \
-	all \
-	asan \
-	build \
-	clean \
-	clean_cov \
-	cov \
-	debug \
-	distclean \
-	gcovr \
-	install \
-	uninstall
+.PHONY: all asan build clean clean_cov cov debug distclean gcovr install uninstall
