@@ -10,6 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+dlopen("git.so")
+
 defmodule Git.Repository do
 
   defstruct []

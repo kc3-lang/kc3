@@ -12,6 +12,7 @@
  */
 #include "address_of.h"
 #include "assert.h"
+#include "pointer.h"
 #include "struct.h"
 #include "sym.h"
 
@@ -40,7 +41,6 @@ s_pointer * address_of_struct (s_struct *s, const s_sym *key,
     assert(! "address_of_struct: sym_target_to_pointer_type");
     return NULL;
   }
-  tmp.ptr.p_pvoid = (u8 *) s->data + s->pstruct_type->offset[i];
-  *dest = tmp;
-  return dest;
+  return pointer_init(dest, tmp.pointer_type, tmp.target_type,
+                      (u8 *) s->data + s->pstruct_type->offset[i]);
 }

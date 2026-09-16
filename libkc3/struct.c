@@ -23,6 +23,7 @@
 #include "map.h"
 #include "mutex.h"
 #include "pfacts.h"
+#include "pointer.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "struct.h"
@@ -92,9 +93,10 @@ s_tag * struct_access_sym (s_struct *s, const s_sym *key, s_tag *dest)
       return dest;
     }
     if (sym_is_pointer_type(type, NULL)) {
-      tmp.data.td_pointer.ptr.p_pvoid = *(void **) data;
-      tmp.data.td_pointer.target_type = sym_pointer_to_target_type(type);
-      tmp.data.td_pointer.pointer_type = type;
+      if (! pointer_init(&tmp.data.td_pointer, type,
+                         sym_pointer_to_target_type(type),
+                         *(void **) data))
+        return NULL;
       *dest = tmp;
       return dest;
     }

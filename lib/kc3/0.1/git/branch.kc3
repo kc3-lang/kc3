@@ -10,6 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+dlopen("git.so")
+
 defmodule Git.Branch do
 
   def list = cfn List "kc3_git_branch_list" (Git.Repository*, Result)

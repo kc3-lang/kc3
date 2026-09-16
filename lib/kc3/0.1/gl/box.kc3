@@ -12,6 +12,8 @@
 
 require GL.Object
 
+dlopen("gl.so")
+
 defmodule GL.Box do
 
   defstruct [object: %GL.Object{},
@@ -19,6 +21,6 @@ defmodule GL.Box do
              segments_v: (U32) 1,
              segments_w: (U32) 1]
 
-  def clean = cfn Void "gl_box_clean" (GL.Box)
+  def clean = cfn Void "gl_box_clean" (GL.Box*)
 
 end

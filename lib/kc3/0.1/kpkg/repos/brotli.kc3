@@ -10,6 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require Kpkg.Package
+
 defmodule Kpkg.Repos.Brotli do
 
   Kpkg.defpackage(

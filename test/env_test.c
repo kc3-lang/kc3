@@ -18,6 +18,7 @@
 #include "../libkc3/file.h"
 #include "../libkc3/frame.h"
 #include "../libkc3/list.h"
+#include "../libkc3/pointer.h"
 #include "../libkc3/str.h"
 #include "../libkc3/sym.h"
 #include "../libkc3/tag.h"
@@ -29,6 +30,7 @@ TEST_CASE_PROTOTYPE(env_eval_equal_tag);
 TEST_CASE_PROTOTYPE(env_eval_tag);
 TEST_CASE_PROTOTYPE(env_init_clean);
 TEST_CASE_PROTOTYPE(env_module_load);
+TEST_CASE_PROTOTYPE(env_pointer_id);
 TEST_CASE_PROTOTYPE(env_dump);
 TEST_CASE_PROTOTYPE(env_dump_restore);
 
@@ -39,6 +41,7 @@ void env_test (void)
   TEST_CASE_RUN(env_eval_call);
   TEST_CASE_RUN(env_eval_tag);
   TEST_CASE_RUN(env_module_load);
+  TEST_CASE_RUN(env_pointer_id);
   TEST_CASE_RUN(env_dump);
   TEST_CASE_RUN(env_dump_restore);
 }
@@ -55,6 +58,27 @@ TEST_CASE(env_dump)
   test_context(NULL);
 }
 TEST_CASE_END(env_dump)
+
+TEST_CASE(env_pointer_id)
+{
+  s_pointer address = {0};
+  s_pointer cast = {0};
+  s_pointer tag_pointer = {0};
+  p_sym type = &g_sym_Pointer;
+  s_tag value = {0};
+  tag_init_uw(&value, 1);
+  TEST_EQ(pointer_init_tag(&tag_pointer, &value), &tag_pointer);
+  TEST_EQ(pointer_init_cast(&cast, &type, &value), &cast);
+  TEST_EQ(env_address_of(env_global(), &value, &address), &address);
+  TEST_ASSERT(tag_pointer.id);
+  TEST_ASSERT(cast.id);
+  TEST_ASSERT(address.id);
+  TEST_ASSERT(tag_pointer.id != cast.id);
+  TEST_ASSERT(tag_pointer.id != address.id);
+  TEST_ASSERT(cast.id != address.id);
+  tag_clean(&value);
+}
+TEST_CASE_END(env_pointer_id)
 
 TEST_CASE(env_dump_restore)
 {

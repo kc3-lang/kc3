@@ -13,6 +13,8 @@
 require GL.Vertex
 require GL.Triangle
 
+dlopen("gl.so")
+
 defmodule GL.Object do
 
   defstruct [vertex: (GL.Vertex[]) {},

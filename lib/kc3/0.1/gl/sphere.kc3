@@ -10,6 +10,10 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require GL.Object
+
+dlopen("gl.so")
+
 defmodule GL.Sphere do
 
   defstruct [object: %GL.Object{},

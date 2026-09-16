@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include "kc3.h"
 #include "mutex.h"
+#include "pointer.h"
 #include "socket.h"
 #include "socket_addr.h"
 #include "socket_buf.h"
@@ -126,10 +127,7 @@ s_pointer * socket_buf_tag (s_socket_buf *sb, s_pointer *dest)
 {
   assert(sb);
   assert(dest);
-  dest->target_type = &g_sym_Tag;
-  dest->pointer_type = sym_target_to_pointer_type(&g_sym_Tag);
-  dest->ptr.p_pvoid = sb->ptag;
-  return dest;
+  return pointer_init(dest, &g_sym_Tag__star, &g_sym_Tag, sb->ptag);
 }
 
 s_socket_buf * socket_buf_init (s_socket_buf *sb, s64 sockfd,

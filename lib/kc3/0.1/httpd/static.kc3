@@ -10,6 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require HTTP.Response
+
 defmodule HTTPd.Static do
 
   def directory = fn (prefix, root_dir, url) {

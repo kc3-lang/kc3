@@ -10,6 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require GL.DVec3
+
 defmodule GL.DRay do
 
   defstruct [origin: %GL.DVec3{},

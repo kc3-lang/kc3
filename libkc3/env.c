@@ -159,6 +159,13 @@ s_pointer * env_address_of (s_env *env, s_tag *tag, s_pointer *dest)
     assert(! "env_address_of: tag_to_pointer");
     return NULL;
   }
+#if HAVE_PTHREAD
+  mutex_lock(&env->next_pointer_id_mutex);
+#endif
+  tmp.id = env->next_pointer_id++;
+#if HAVE_PTHREAD
+  mutex_unlock(&env->next_pointer_id_mutex);
+#endif
   *dest = tmp;
   return dest;
 }

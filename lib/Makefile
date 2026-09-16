@@ -14,12 +14,12 @@ PREFIX = /usr/local
 prefix ?= ${PREFIX}
 
 all:
-	find . -name '[^.]*.kc3' | while read SRC; do \
+	find kc3 -name '[^.]*.kc3' | while read SRC; do \
 		echo "echo '$$SRC' && kc3s --load '$$SRC' --quit"; \
 	done | runj 1 /bin/sh
 
 clean:
-	find . -name '*.kc3c' -print0 | xargs -0 rm
+	find kc3 -name '*.kc3c' -print0 | xargs -0 rm
 
 install::
 	find kc3 -name '*.kc3c' | cpio -pad ${DESTDIR}${prefix}/lib

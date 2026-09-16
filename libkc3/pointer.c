@@ -157,8 +157,8 @@ s_pointer * pointer_init_cast (s_pointer *pointer,
     assert(! "pointer_init_cast: tag_to_pointer");
     return NULL;
   }
-  *pointer = tmp;
-  return pointer;
+  return pointer_init(pointer, tmp.pointer_type, tmp.target_type,
+                      tmp.ptr.p_pvoid);
 }
 
 s_pointer * pointer_init_copy (s_pointer *pointer,
@@ -172,12 +172,8 @@ s_pointer * pointer_init_copy (s_pointer *pointer,
 
 s_pointer * pointer_init_tag (s_pointer *pointer, const s_tag *tag)
 {
-  s_pointer tmp = {0};
   assert(pointer);
   assert(tag);
-  tmp.target_type = &g_sym_Tag;
-  tmp.pointer_type = &g_sym_Tag__star;
-  tmp.ptr.p_pvoid = (void *) tag;
-  *pointer = tmp;
-  return pointer;
+  return pointer_init(pointer, &g_sym_Tag__star, &g_sym_Tag,
+                      (void *) tag);
 }
