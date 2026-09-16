@@ -617,6 +617,8 @@ void facts_close (s_facts *facts)
 {
   assert(facts->log);
   facts_opened_remove(facts);
+  if (! facts->log)
+    return;
   log_close(facts->log);
   log_delete(facts->log);
   facts->log = NULL;

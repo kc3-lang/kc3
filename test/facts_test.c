@@ -22,6 +22,9 @@
 
 void facts_test (void);
 TEST_CASE_PROTOTYPE(facts_add);
+#ifdef NDEBUG
+TEST_CASE_PROTOTYPE(facts_close_no_log);
+#endif
 TEST_CASE_PROTOTYPE(facts_dump_file);
 TEST_CASE_PROTOTYPE(facts_find);
 TEST_CASE_PROTOTYPE(facts_init_clean);
@@ -38,6 +41,9 @@ TEST_CASE_PROTOTYPE(facts_save_binary);
 void facts_test (void)
 {
   TEST_CASE_RUN(facts_init_clean);
+#ifdef NDEBUG
+  TEST_CASE_RUN(facts_close_no_log);
+#endif
   TEST_CASE_RUN(facts_new_delete);
   TEST_CASE_RUN(facts_add);
   TEST_CASE_RUN(facts_remove);
@@ -755,3 +761,18 @@ TEST_CASE(facts_save_binary)
   facts_clean(&facts);
 }
 TEST_CASE_END(facts_save_binary)
+
+#ifdef NDEBUG
+TEST_CASE(facts_close_no_log)
+{
+  s_facts facts = {0};
+  test_context("facts_close() on a facts without a log");
+  TEST_EQ(facts_init(&facts), &facts);
+  TEST_EQ(facts.log, NULL);
+  facts_close(&facts);
+  TEST_EQ(facts.log, NULL);
+  facts_clean(&facts);
+  test_context(NULL);
+}
+TEST_CASE_END(facts_close_no_log)
+#endif
