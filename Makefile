@@ -405,7 +405,7 @@ distclean::
 dump:
 	time ${MAKE} dump_timed
 
-dump_timed:
+dump_timed: build
 	${MAKE} clean_dump
 	@echo "KC3 dump"
 	time kc3s/kc3s --trace --dump lib/kc3/0.1/kc3.dump --quit
@@ -418,7 +418,7 @@ dump_timed:
 	@echo "KC3 fx"
 	time ${MAKE} -C httpd/fx dump
 
-dump_debug:
+dump_debug: debug
 	${MAKE} clean_dump
 	kc3s/kc3s_debug --trace --dump lib/kc3/0.1/kc3.dump --quit
 	${MAKE} -C kpkg dump_debug
