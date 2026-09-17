@@ -91,13 +91,24 @@ There are now seven full applications written in KC3 that we know of :
    - [TODO] kc3 to C
    - [TODO] kc3 to Common Lisp
 
- - IKC3/EKC3
+ - IKC3/KC3S
    - report errors with more context
+
+ - EKC3
    - compile and load .ekc3 files from/to .ekc3c
 
  - HTTPd
    - fixed bugs in the HTTP request parser
    - [TODO] test partial requests support (fx)
+
+ - primehash64
+   - added new bit rotation and incrementation hashing called PrimeHash.
+     This is not a cryptographic hash, but only a hash table bucket
+     selector. It competes with the hases commonly used in Node.JS and
+     Google Chrome. Once disassembled in godbolt this implementation is
+     even shorter. See our blog post about how we achieved perfect
+     hashing with PrimeHash in git.kmx.io.
+     https://www.kmx.io/blog/introducing-primehash-kc3-symbols-hash-table-perfect-hashing
 
 ## Contact
 
