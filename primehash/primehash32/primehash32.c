@@ -65,17 +65,17 @@ int main (int argc, char **argv)
       goto error;
     }
     char a[BUF_SIZE];
-    u64 h_u64 = 0;
+    u32 h_u32 = 0;
     s_str str = {0};
     str.ptr.p_pchar = a;
     while ((str.size = fread(a, 1, sizeof(a), in_fp)))
-      h_u64 = primehash_u32_inline(&str, h_u64);
+      h_u32 = primehash_u32_inline(&str, h_u32);
     fclose(in_fp);
     static const char hex[] = "0123456789abcdef";
     i = 0;
-    while (i < 16) {
-      a[i] = hex[((u8 *) &h_u64)[i / 2] >> 4];
-      a[i + 1] = hex[((u8 *) &h_u64)[i / 2] & 0x0f];
+    while (i < 8) {
+      a[i] = hex[((u8 *) &h_u32)[i / 2] >> 4];
+      a[i + 1] = hex[((u8 *) &h_u32)[i / 2] & 0x0f];
       i += 2;
     }
     a[i] = ' ';
