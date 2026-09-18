@@ -13,4 +13,45 @@
 all:
 	${MAKE} -C primehash64 all
 
-.PHONY: all
+asan:
+	${MAKE} -C primehash64 asan
+
+build:
+	${MAKE} -C primehash64 build
+
+clean::
+	${MAKE} -C primehash64 clean
+
+clean_cov::
+	${MAKE} -C primehash64 clean_cov
+
+cov:
+	${MAKE} -C primehash64 cov
+
+debug:
+	${MAKE} -C primehash64 debug
+
+distclean::
+	${MAKE} -C primehash64 distclean
+
+gcovr:
+	${MAKE} -C primehash64 gcovr
+
+install::
+	${MAKE} -C primehash64 install
+
+uninstall::
+	${MAKE} -C primehash64 uninstall
+
+.PHONY: \
+	all \
+	asan \
+	build \
+	clean \
+	clean_cov \
+	cov \
+	debug \
+	distclean \
+	gcovr \
+	install \
+	uninstall

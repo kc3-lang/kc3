@@ -28,6 +28,7 @@ all:
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue; fi
 	${MAKE} -C markdown all
 	${MAKE} -C pdf all
+	${MAKE} -C primehash
 	${MAKE} -C qrencode all
 	${MAKE} -C smtp all
 	${MAKE} -C http all
@@ -66,6 +67,7 @@ asan:
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
 	${MAKE} -C pdf asan
+	${MAKE} -C primehash asan
 	${MAKE} -C qrencode asan
 	${MAKE} -C smtp asan
 	${MAKE} -C http asan
@@ -97,6 +99,7 @@ build:
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue build; fi
 	${MAKE} -C markdown build
 	${MAKE} -C pdf build
+	${MAKE} -C primehash build
 	${MAKE} -C qrencode build
 	${MAKE} -C smtp build
 	${MAKE} -C http build
@@ -125,6 +128,7 @@ clean::
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue clean; fi
 	${MAKE} -C markdown clean
 	${MAKE} -C pdf clean
+	${MAKE} -C primehash clean
 	${MAKE} -C qrencode clean
 	${MAKE} -C smtp clean
 	${MAKE} -C http clean
@@ -150,6 +154,7 @@ clean_cov::
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue clean_cov; fi
 	${MAKE} -C markdown clean_cov
 	${MAKE} -C pdf clean_cov
+	${MAKE} -C primehash clean_cov
 	${MAKE} -C qrencode clean_cov
 	${MAKE} -C smtp clean_cov
 	${MAKE} -C http clean_cov
@@ -185,6 +190,7 @@ cov:
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue cov; fi
 	${MAKE} -C markdown cov
 	${MAKE} -C pdf cov
+	${MAKE} -C primehash cov
 	${MAKE} -C qrencode cov
 	${MAKE} -C smtp cov
 	${MAKE} -C http cov
@@ -217,6 +223,7 @@ debug:
 	if [ "x${ARCH}" = "xopenbsd" ]; then ${MAKE} -C kqueue debug; fi
 	${MAKE} -C markdown debug
 	${MAKE} -C pdf debug
+	${MAKE} -C primehash debug
 	${MAKE} -C qrencode debug
 	${MAKE} -C smtp debug
 	${MAKE} -C http debug
@@ -384,6 +391,7 @@ distclean::
 	${MAKE} -C json distclean
 	${MAKE} -C markdown distclean
 	${MAKE} -C pdf distclean
+	${MAKE} -C primehash distclean
 	${MAKE} -C qrencode distclean
 	${MAKE} -C smtp distclean
 	${MAKE} -C http distclean
@@ -500,6 +508,7 @@ gcovr:
 	${MAKE} -C json gcovr
 	${MAKE} -C markdown gcovr
 	${MAKE} -C pdf gcovr
+	${MAKE} -C primehash gcovr
 	${MAKE} -C qrencode gcovr
 	${MAKE} -C smtp gcovr
 	${MAKE} -C http gcovr
@@ -584,6 +593,7 @@ gdb_test_httpd_asan: lib_links_asan
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
 	${MAKE} -C pdf asan
+	${MAKE} -C primehash asan
 	${MAKE} -C qrencode asan
 	${MAKE} -C smtp asan
 	${MAKE} -C http asan
@@ -984,7 +994,6 @@ kc3.index: sources.mk Makefile
 	rm kc3.index.tmp
 
 kc3.primehash64: kc3.index
-	${MAKE} -C primehash
 	time ./bin/primehash64 < kc3.index -h kc3.primehash64.tmp
 	if ! [ -f kc3.primehash64 ] || \
 	   ! cmp kc3.primehash64 kc3.primehash64.tmp >/dev/null 2>&1; \
@@ -1424,6 +1433,11 @@ pdf_debug:
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C pdf debug
+
+primehash:
+	${MAKE} -C libtommath build
+	${MAKE} -C libkc3 build
+	${MAKE} -C primehash
 
 release:
 	mkdir -p release/v${VER}
