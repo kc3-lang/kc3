@@ -2378,12 +2378,24 @@ static void env_tag_move (s_tag *dest, s_tag *src)
   *src = (s_tag) {0};
 }
 
+static void env_load_error_location (const s_str *path, sw line,
+                                     const char *message)
+{
+  err_write_1("env_load: ");
+  err_inspect_str(path);
+  err_write_1(":");
+  err_inspect_sw_decimal(line);
+  err_write_1(": ");
+  err_puts(message);
+}
+
 bool env_load (s_env *env, const s_str *path)
 {
   s_buf buf;
   bool buf_opened = false;
   s_str cache_path = {0};
   s_time cache_mtime = {0};
+  character c = 0;
   const s_str cache_suffix = STR("c");
   p_list dlopen_list_save = NULL;
   s_tag *file_dir;
@@ -2392,6 +2404,7 @@ bool env_load (s_env *env, const s_str *path)
   s_tag  file_path_save = {0};
   s_list **last;
   s_list **last_dlopen;
+  sw line;
   p_list list = NULL;
   p_list new_dlopens = NULL;
   s_tag load_time = {0};
@@ -2449,14 +2462,51 @@ bool env_load (s_env *env, const s_str *path)
     dlopen_list_save = env->dlopen_list;
     last = &list;
     while (1) {
-      if ((r = buf_parse_comments(&buf)) < 0)
+      if ((r = buf_refill(&buf, 1)) <= 0) {
+        if (r < 0) {
+          env_load_error_location(path, buf.line,
+                                  "failed to read input");
+          goto ko;
+        }
         break;
-      if ((r = buf_ignore_spaces(&buf)) < 0)
-        break;
-      if ((r = buf_parse_tag(&buf, &tag)) < 0)
-        break;
-      if (! r)
+      }
+      if ((r = buf_ignore_spaces(&buf)) < 0) {
+        env_load_error_location(path, buf.line,
+                                "failed to read input");
+        goto ko;
+      }
+      if (r > 0)
         continue;
+      if ((r = buf_parse_comments(&buf)) < 0) {
+        env_load_error_location(path, buf.line,
+                                "failed to read input");
+        goto ko;
+      }
+      if (r > 0)
+        continue;
+      line = buf.line;
+      if ((r = buf_refill(&buf, 1)) <= 0) {
+        if (r < 0) {
+          env_load_error_location(path, line,
+                                  "failed to read input");
+          goto ko;
+        }
+        break;
+      }
+      if ((r = buf_peek_character_utf8(&buf, &c)) <= 0) {
+        env_load_error_location(path, line,
+                                "failed to inspect input");
+        goto ko;
+      }
+      if ((r = buf_parse_tag(&buf, &tag)) <= 0) {
+        env_load_error_location(path, line,
+                                r < 0 ? "parse failed" :
+                                "parse error");
+        err_write_1("env_load: next character: ");
+        err_inspect_character(c);
+        err_write_1("\n");
+        goto ko;
+      }
       if (! env_eval_tag(env, &tag, &tmp)) {
         err_write_1("env_load: env_eval_tag: ");
         err_inspect_tag(&tag);
@@ -2490,7 +2540,12 @@ bool env_load (s_env *env, const s_str *path)
       err_inspect_str(&cache_path);
       err_write_1("\n");
     }
-    marshall_kc3c_file(new_dlopens, list, &cache_path);
+    if (marshall_kc3c_file(new_dlopens, list, &cache_path) <= 0) {
+      err_write_1("env_load: failed to write ");
+      err_inspect_str(&cache_path);
+      err_write_1("\n");
+      goto ko;
+    }
     list_delete_all(new_dlopens);
     new_dlopens = NULL;
     list_delete_all(list);

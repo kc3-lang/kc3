@@ -28,7 +28,7 @@ int main (int argc, char **argv)
   const char *out_path;
   int r = 1;
   if (argc <= 0)
-    return usage(1, "primehash");
+    return usage(1, "primehash64");
   if (argc == 1) {
     out_path = "<stdout>";
     out_fp = stdout;

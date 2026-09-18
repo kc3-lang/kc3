@@ -6,9 +6,7 @@
 #include <string.h>
 #include "../libkc3/kc3.h"
 
-#define KC3C_BUF_SIZE (sizeof(uw) << 16)
-
-int usage (int r, char *argv0)
+static int usage (int r, const char *argv0)
 {
   fprintf(stderr, "Usage: find . -name '*.kc3' | %s\n", argv0);
   return r;
@@ -16,85 +14,66 @@ int usage (int r, char *argv0)
 
 int main (int argc, char **argv)
 {
-  int e;
-  int i;
-  FILE *in_fp = NULL;
+  s_env *env = NULL;
+  int e = 0;
   ssize_t in_len;
   char *in_path = NULL;
-  uw    in_size = 0;
-  const char *opt;
-  FILE       *out_fp = NULL;
-  const char *out_path;
+  size_t in_size = 0;
+  s_str path = {0};
+  const char *prog;
   int r = 1;
   if (argc <= 0)
-    return usage(1, "primehash");
-  if (argc == 1) {
-    out_path = "<stdout>";
-    out_fp = stdout;
-  }
-  else {
-    opt = argv[1];
-    if (argc != 3 || opt[0] != '-' || opt[1] != 'h' || opt[2])
-      return usage(1, argv[0]);
-    out_path = argv[2];
-    if (! (out_fp = fopen(out_path, "wb"))) {
-      e = errno;
-      fprintf(stderr, "%s: %s: %s\n",
-              argv[0], out_path, strerror(e));
-      goto error;
-    }
+    return usage(1, "kc3c");
+  prog = argv[0];
+  if (! kc3_init(NULL, &argc, &argv))
+    return 1;
+  if (! (env = env_global()))
+    goto clean;
+  if (argc) {
+    usage(1, prog);
+    goto clean;
   }
   while (1) {
-    in_path = NULL;
-    in_size = 0;
-    if ((in_len = getline(&in_path, &in_size, stdin)) <= 0 ||
-        ! in_path) {
+    errno = 0;
+    in_len = getline(&in_path, &in_size, stdin);
+    if (in_len < 0) {
+      if (ferror(stdin)) {
+        e = errno;
+        fprintf(stderr, "%s: stdin: %s\n", prog,
+                e ? strerror(e) : "read error");
+        goto clean;
+      }
       r = 0;
       goto clean;
     }
-    if (in_path[in_len - 1] == '\n')
+    if (in_len && in_path[in_len - 1] == '\n')
       in_path[--in_len] = 0;
-    if (! (in_fp = fopen(in_path, "rb"))) {
-      e = errno;
-      fprintf(stderr, "%s: %s: %s\n",
-              argv[0], in_path, strerror(e));
-      goto error;
+    if (in_len && in_path[in_len - 1] == '\r')
+      in_path[--in_len] = 0;
+    if (! in_len) {
+      fprintf(stderr, "%s: stdin: empty path\n", prog);
+      goto clean;
     }
-    char a[KC3C_BUF_SIZE];
-    u64 h_u64 = 0;
-    s_str str = {0};
-    str.ptr.p_pchar = a;
-    while ((str.size = fread(a, 1, sizeof(a), in_fp)))
-      h_u64 = primehash_u64_inline(&str, h_u64);
-    fclose(in_fp);
-    static const char hex[] = "0123456789abcdef";
-    i = 0;
-    while (i < 16) {
-      a[i] = hex[((u8 *) &h_u64)[i / 2] >> 4];
-      a[i + 1] = hex[((u8 *) &h_u64)[i / 2] & 0x0f];
-      i += 2;
+    if (memchr(in_path, 0, (size_t) in_len)) {
+      fprintf(stderr, "%s: stdin: path contains a NUL byte\n", prog);
+      goto clean;
     }
-    a[i] = ' ';
-    a[i + 1] = 0;
-    if (fwrite(a, 17, 1, out_fp) != 1) {
-      e = errno;
-      fprintf(stderr, "%s: %s: %s\n",
-              argv[0], out_path, strerror(e));
-      goto error;
+    str_init(&path, NULL, (uw) in_len, in_path);
+    if (! env_load(env, &path)) {
+      err_write_1("kc3c: failed to compile ");
+      err_inspect_str(&path);
+      err_write_1("\n");
+      err_flush();
+      goto clean;
     }
-    fputs(in_path, out_fp);
-    fputc('\n', out_fp);
     free(in_path);
     in_path = NULL;
+    in_size = 0;
   }
-  r = 0;
  clean:
   if (in_path)
     free(in_path);
-  if (out_fp && out_fp != stdout)
-    fclose(out_fp);
+  if (env)
+    kc3_clean(env);
   return r;
- error:
-  r = 1;
-  goto clean;
 }
