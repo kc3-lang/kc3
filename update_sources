@@ -33,6 +33,7 @@ KC3_DIRS="
  libtommath
  markdown
  pdf
+ primehash
  qrencode
  smtp
  test

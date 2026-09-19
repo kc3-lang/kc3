@@ -71,6 +71,14 @@ KC3_CONFIGURES = \
 	"pdf/configure" \
 	"pdf/sources.sh" \
 	"pdf/update_sources" \
+	"primehash/configure" \
+	"primehash/primehash32/configure" \
+	"primehash/primehash32/sources.sh" \
+	"primehash/primehash32/update_sources" \
+	"primehash/primehash64/configure" \
+	"primehash/primehash64/sources.sh" \
+	"primehash/primehash64/update_sources" \
+	"primehash/update_sources" \
 	"qrencode/configure" \
 	"qrencode/sources.sh" \
 	"qrencode/update_sources" \
@@ -199,6 +207,11 @@ KC3_MAKEFILES = \
 	"markdown/sources.mk" \
 	"pdf/Makefile" \
 	"pdf/sources.mk" \
+	"primehash/Makefile" \
+	"primehash/primehash32/Makefile" \
+	"primehash/primehash32/sources.mk" \
+	"primehash/primehash64/Makefile" \
+	"primehash/primehash64/sources.mk" \
 	"qrencode/Makefile" \
 	"qrencode/sources.mk" \
 	"smtp/Makefile" \
@@ -1131,6 +1144,8 @@ KC3_C_SOURCES = \
 	"pdf/pdf_write_page.c" \
 	"pdf/pdf_write_page.h" \
 	"pdf/types.h" \
+	"primehash/primehash32/primehash32.c" \
+	"primehash/primehash64/primehash64.c" \
 	"qrencode/qrencode.c" \
 	"qrencode/qrencode.h" \
 	"smtp/kc3_smtp.c" \

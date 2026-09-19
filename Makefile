@@ -972,13 +972,13 @@ json_debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C json debug
 
-kc3-${KC3_VERSION}.tar.gz: kc3.index kc3.primehash64
+kc3-${KC3_VERSION}.tar.gz: kc3.index kc3.primehash32 kc3.primehash64
 	rm -rf kc3-${KC3_VERSION}.old
 	if [ -d kc3-${KC3_VERSION} ]; then \
 		mv kc3-${KC3_VERSION} kc3-${KC3_VERSION}.old; \
 	fi
 	mkdir kc3-${KC3_VERSION}
-	{ cat kc3.index; echo kc3.primehash64; } | pax -rw kc3-${KC3_VERSION}
+	{ cat kc3.index; echo kc3.primehash64; echo kc3.primehash32; } | pax -rw kc3-${KC3_VERSION}
 	pax -w kc3-${KC3_VERSION} | gzip -9 > kc3-${KC3_VERSION}.tar.gz
 
 kc3.index: sources.mk Makefile
@@ -1012,6 +1012,17 @@ kc3.index: sources.mk Makefile
 	for F in ${KC3_DOC_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	kmx_sort -u < kc3.index.tmp > kc3.index
 	rm kc3.index.tmp
+
+kc3.primehash32: kc3.index
+	${MAKE} -C primehash
+	time ./bin/primehash32 < kc3.index -h kc3.primehash32.tmp
+	if ! [ -f kc3.primehash32 ] || \
+	   ! cmp kc3.primehash32 kc3.primehash32.tmp >/dev/null 2>&1; \
+	then \
+		mv kc3.primehash32.tmp kc3.primehash32; \
+	else \
+		rm kc3.primehash32.tmp; \
+	fi
 
 kc3.primehash64: kc3.index
 	time ./bin/primehash64 < kc3.index -h kc3.primehash64.tmp

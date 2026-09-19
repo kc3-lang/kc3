@@ -28,12 +28,12 @@ cov: ${PROG_COV}
 debug: ${PROG_DEBUG}
 
 gcovr:
-	gcovr --gcov-executable ${GCOV} --html-details ikc3.html
+	gcovr --gcov-executable ${GCOV} --html-details primehash32.html
 
-gdb_ikc3: debug
+gdb_primehash32: debug
 	if [ -f ${PROG_DEBUG}.core ]; then gdb ${PROG_DEBUG} ${PROG_DEBUG}.core; else gdb ${PROG_DEBUG}; fi
 
-gdb_ikc3_asan: asan
+gdb_primehash32_asan: asan
 	if [ -f ${PROG_DEBUG}.core ]; then gdb ${PROG_ASAN} ${PROG_ASAN}.core; else gdb ${PROG_ASAN}; fi
 
 install:
@@ -45,11 +45,11 @@ install:
 	    ${INSTALL} -m 755 ${PROG_COV} ${DESTDIR}${prefix}/bin/; fi
 	${INSTALL} -m 755 ${PROG_DEBUG} ${DESTDIR}${prefix}/bin/
 
-lldb_ikc3: debug
+lldb_primehash32: debug
 	if [ -f ${PROG_DEBUG}.core ]; then lldb ${PROG_DEBUG} ${PROG_DEBUG}.core; else lldb ${PROG_DEBUG}; fi
 
 uninstall:
-	rm -f ${prefix}/bin/ikc3
+	rm -f ${prefix}/bin/primehash32
 
 .PHONY: \
 	all \
@@ -57,8 +57,10 @@ uninstall:
 	build \
 	cov \
 	debug \
-	gdb_ikc3 \
+	gcovr \
+	gdb_primehash32 \
+	gdb_primehash32_asan \
 	install \
-	lldb_ikc3 \
+	lldb_primehash32 \
 	update_sources \
 	uninstall

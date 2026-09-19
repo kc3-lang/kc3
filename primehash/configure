@@ -15,4 +15,5 @@ set -e
 
 echo "$0"
 
+(cd primehash32 && ./configure; )
 (cd primehash64 && ./configure; )

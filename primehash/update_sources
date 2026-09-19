@@ -13,4 +13,5 @@
 
 echo "$PWD/update_sources"
 
+(cd primehash32 && ./update_sources; )
 (cd primehash64 && ./update_sources; )

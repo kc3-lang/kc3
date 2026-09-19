@@ -11,36 +11,47 @@
 ## THIS SOFTWARE.
 
 all:
+	${MAKE} -C primehash32 all
 	${MAKE} -C primehash64 all
 
 asan:
+	${MAKE} -C primehash32 asan
 	${MAKE} -C primehash64 asan
 
 build:
+	${MAKE} -C primehash32 build
 	${MAKE} -C primehash64 build
 
 clean:
+	${MAKE} -C primehash32 clean
 	${MAKE} -C primehash64 clean
 
 clean_cov:
+	${MAKE} -C primehash32 clean_cov
 	${MAKE} -C primehash64 clean_cov
 
 cov:
+	${MAKE} -C primehash32 cov
 	${MAKE} -C primehash64 cov
 
 debug:
+	${MAKE} -C primehash32 debug
 	${MAKE} -C primehash64 debug
 
 distclean:
+	${MAKE} -C primehash32 distclean
 	${MAKE} -C primehash64 distclean
 
 gcovr:
+	${MAKE} -C primehash32 gcovr
 	${MAKE} -C primehash64 gcovr
 
 install:
+	${MAKE} -C primehash32 install
 	${MAKE} -C primehash64 install
 
 uninstall:
+	${MAKE} -C primehash32 uninstall
 	${MAKE} -C primehash64 uninstall
 
 .PHONY: all asan build clean clean_cov cov debug distclean gcovr install uninstall

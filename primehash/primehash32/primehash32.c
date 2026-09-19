@@ -7,7 +7,7 @@
 #include "../../libkc3/types.h"
 #include "../../libkc3/primehash.h"
 
-#define BUF_SIZE (sizeof(uw) << 16)
+#define PRIMEHASH32_BUF_SIZE (sizeof(uw) << 16)
 
 int usage (int r, char *argv0)
 {
@@ -20,7 +20,7 @@ int main (int argc, char **argv)
   int e;
   int i;
   FILE *in_fp = NULL;
-  uw    in_len;
+  ssize_t in_len;
   char *in_path = NULL;
   uw    in_size = 0;
   const char *opt;
@@ -28,14 +28,17 @@ int main (int argc, char **argv)
   const char *out_path;
   int r = 1;
   if (argc <= 0)
-    return usage(1, "primehash");
+    return usage(1, "primehash32");
   if (argc == 1) {
     out_path = "<stdout>";
     out_fp = stdout;
   }
   else {
     opt = argv[1];
-    if (argc != 3 || opt[0] != '-' || opt[1] != 'h' || opt[2])
+    if (argc != 3)
+      return usage(argc == 2 && ! strncmp(opt, "-h", 3) ? 0 : 1,
+                   argv[0]);
+    if (strncmp(opt, "-h", 3))
       return usage(1, argv[0]);
     out_path = argv[2];
     if (! (out_fp = fopen(out_path, "wb"))) {
@@ -49,9 +52,7 @@ int main (int argc, char **argv)
     in_path = NULL;
     in_size = 0;
     if ((in_len = getline(&in_path, &in_size, stdin)) <= 0 ||
-        ! in_path)
-      return 0;
-    if (! in_size) {
+        ! in_path) {
       r = 0;
       goto clean;
     }
@@ -61,10 +62,9 @@ int main (int argc, char **argv)
       e = errno;
       fprintf(stderr, "%s: %s: %s\n",
               argv[0], in_path, strerror(e));
-      free(in_path);
       goto error;
     }
-    char a[BUF_SIZE];
+    char a[PRIMEHASH32_BUF_SIZE];
     u32 h_u32 = 0;
     s_str str = {0};
     str.ptr.p_pchar = a;
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
     }
     a[i] = ' ';
     a[i + 1] = 0;
-    if (fwrite(a, 17, 1, out_fp) != 1) {
+    if (fwrite(a, 9, 1, out_fp) != 1) {
       e = errno;
       fprintf(stderr, "%s: %s: %s\n",
               argv[0], out_path, strerror(e));
@@ -89,12 +89,13 @@ int main (int argc, char **argv)
     fputs(in_path, out_fp);
     fputc('\n', out_fp);
     free(in_path);
+    in_path = NULL;
   }
   r = 0;
  clean:
   if (in_path)
     free(in_path);
-  if (out_fp != stdout)
+  if (out_fp && out_fp != stdout)
     fclose(out_fp);
   return r;
  error:
