@@ -1049,7 +1049,7 @@ a53771308f274427 libkc3/data.c
 20b853d1b01860f0 libkc3/endian.h
 19e12c8e246d3f5f libkc3/env.c
 fcc378264932cf32 libkc3/env.h
-a891aac00207a772 libkc3/env_eval.c
+ed2fc1a8b733ead3 libkc3/env_eval.c
 75230f939604a3a7 libkc3/env_eval.h
 b031bb15e80595c5 libkc3/env_eval_equal.c
 169d1b96e0a36012 libkc3/env_eval_equal.h
@@ -1578,7 +1578,7 @@ c4cf27597587289f pdf/pdf_write_page.h
 72f076437c7aab4e pdf/types.h
 89bc8986763956ec pdf/update_sources
 597665f69c3c7f38 primehash/Makefile
-8207ec874861b7f7 primehash/configure
+ef75073421513c25 primehash/configure
 fb1e1d26ce95e2d7 primehash/primehash32/Makefile
 52170a632fcc645d primehash/primehash32/configure
 f55c6d441958cb60 primehash/primehash32/primehash32.c
@@ -2271,7 +2271,7 @@ a3b4308161f3c055 test/tag_test.h
 aed633c2c09130ac test/test.rb
 9b4ecafb1b232b6f test/test.subr
 5ec50fde8f680b2e test/test_case_end.rb
-e6941375c2af5aa8 test/test_runner
+5f8605392e42e9df test/test_runner
 b843556aafdf3a9f test/tls/ca_cert_path.kc3
 2a974ca19161801a test/tls/ca_cert_path.out.expected
 da00f6407d6b5b03 test/tls/ca_cert_path.ret.expected

@@ -1049,7 +1049,7 @@ a578bb31 libkc3/data.c
 201482f9 libkc3/endian.h
 19b01db9 libkc3/env.c
 fc8be1de libkc3/env.h
-a86a5037 libkc3/env_eval.c
+ed4a7fb6 libkc3/env_eval.c
 75826096 libkc3/env_eval.h
 b09ae33b libkc3/env_eval_equal.c
 16414676 libkc3/env_eval_equal.h
@@ -1578,7 +1578,7 @@ c498546c pdf/pdf_write_page.h
 72547f32 pdf/types.h
 8970e9d3 pdf/update_sources
 590f52e4 primehash/Makefile
-824e7464 primehash/configure
+ef9bb2d4 primehash/configure
 fb7e1275 primehash/primehash32/Makefile
 52793187 primehash/primehash32/configure
 f5f15be2 primehash/primehash32/primehash32.c
@@ -2271,7 +2271,7 @@ a35d22dc test/tag_test.h
 ae9f851a test/test.rb
 9b19b65b test/test.subr
 5e742c3f test/test_case_end.rb
-e6fa7e99 test/test_runner
+5f257188 test/test_runner
 b8499d4a test/tls/ca_cert_path.kc3
 2a8f632a test/tls/ca_cert_path.out.expected
 dac79638 test/tls/ca_cert_path.ret.expected

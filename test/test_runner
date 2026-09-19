@@ -15,11 +15,24 @@
 
 TEST_RUNNER="$1"
 TARGET="$2"
+TEST_RUNNER_NAME="${TEST_RUNNER##*/}"
+TEST_PROG="$TEST_RUNNER_NAME"
+case "$TEST_PROG" in
+    *_asan)  TEST_PROG="${TEST_PROG%_asan}" ;;
+    *_cov)   TEST_PROG="${TEST_PROG%_cov}" ;;
+    *_debug) TEST_PROG="${TEST_PROG%_debug}" ;;
+esac
 
 RESULT=test_ok
 timeout 30 ${TEST_RUNNER} --bool-ptr --load ${TARGET}.kc3 --quit > ${TARGET}.out 2>&1
 echo $? > ${TARGET}.ret
-if ! diff -abu ${TARGET}.out.expected ${TARGET}.out \
+EXPECTED_OUT=${TARGET}.out.expected
+if [ "x$TEST_PROG" != "x$TEST_RUNNER_NAME" ]; then
+    EXPECTED_OUT=${TARGET}.out.variant.expected
+    sed -e "s/^${TEST_PROG}:/${TEST_RUNNER_NAME}:/" \
+        ${TARGET}.out.expected > ${EXPECTED_OUT}
+fi
+if ! diff -abu ${EXPECTED_OUT} ${TARGET}.out \
      > ${TARGET}.diff
 then
     RESULT=test_ko
@@ -28,6 +41,9 @@ if ! diff -abu ${TARGET}.ret.expected ${TARGET}.ret \
      >> ${TARGET}.diff
 then
     RESULT=test_ko
+fi
+if [ "x$EXPECTED_OUT" != "x${TARGET}.out.expected" ]; then
+    rm ${EXPECTED_OUT}
 fi
 if [ "x$RESULT" = "xtest_ok" ]; then
     rm ${TARGET}.diff

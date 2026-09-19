@@ -945,7 +945,6 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
       err_inspect_frame(env->frame);
       err_write_1("\n");
     }
-    assert(! "env_eval_ident: unbound ident");
     return false;
   }
   *dest = *tag;
