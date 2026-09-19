@@ -95,6 +95,10 @@ KC3_TEST_IKC3_SOURCES="$(ls test/ikc3/*.expected test/ikc3/*.kc3 test/ikc3/*.lis
 test/ikc3_test"
 sources KC3_TEST_IKC3_SOURCES "$KC3_TEST_IKC3_SOURCES"
 
+KC3_TEST_CRYPTO_SOURCES="$(ls test/crypto/*.kc3 test/crypto/*.expected)
+test/crypto_test"
+sources KC3_TEST_CRYPTO_SOURCES "$KC3_TEST_CRYPTO_SOURCES"
+
 KC3_TEST_EKC3_SOURCES="$(ls test/ekc3/*.ekc3 test/ekc3/*.expected test/ekc3/*.kc3)
 test/ekc3_test"
 sources KC3_TEST_EKC3_SOURCES "$KC3_TEST_EKC3_SOURCES"

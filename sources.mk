@@ -2083,6 +2083,15 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/while.ret.expected" \
 	"test/ikc3_test" \
 
+KC3_TEST_CRYPTO_SOURCES = \
+	"test/crypto/01_hmac_hex.kc3" \
+	"test/crypto/01_hmac_hex.out.expected" \
+	"test/crypto/01_hmac_hex.ret.expected" \
+	"test/crypto/02_hmac_verify.kc3" \
+	"test/crypto/02_hmac_verify.out.expected" \
+	"test/crypto/02_hmac_verify.ret.expected" \
+	"test/crypto_test" \
+
 KC3_TEST_EKC3_SOURCES = \
 	"test/ekc3/load_file.kc3" \
 	"test/ekc3/load_file.out.expected" \

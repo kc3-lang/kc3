@@ -4,7 +4,7 @@ f9d3e7e71487759d AUTHORS.md
 8bd4aabdb4493bfe CLAUDE.md
 02d9fbbd937b5995 CONTRIBUTING.md
 e41ba7905c558b00 LICENSE.md
-78b42bd7f1e5934e Makefile
+5921ab17eb64a6b8 Makefile
 22c69a8840d3f3bf README.md
 e8931e379ed360b7 TODO.md
 cb71989116f53406 config.subr
@@ -504,7 +504,7 @@ c706b1efeb8c6573 httpd/fx/config/mime.types
 e2600bae26206f58 httpd/fx/config/routes.kc3
 84d1a48e33bce44a httpd/fx/db/app.facts
 e38a5a7bdf6f9d30 httpd/httpd.c
-38ef19cfc96a0770 httpd/httpd.h
+cd4436945f4aa63d httpd/httpd.h
 c4dbb3d7414ae4cc httpd/page/app/controllers/page_controller.kc3
 c72113201515870e httpd/page/app/templates/page/menu.html.ekc3
 01b01b9569526b09 httpd/page/app/templates/page/show.html.ekc3
@@ -609,7 +609,7 @@ bfdac5e1e2475460 json/json.h
 3418601111b5e7da json/sources.mk
 59bf7133bbe61228 json/sources.sh
 89bc8986763956ec json/update_sources
-f655f6171a010b70 kc3.index
+7e74f4198723afe1 kc3.index
 3f9ebc86530a9851 kc3.version
 afcf6301de686a43 kc3c/Makefile
 b595c534f1b26ac2 kc3c/configure
@@ -1609,8 +1609,8 @@ d0eb1c53cbfa9794 smtp/smtp.h
 4fa162e28ddb2803 smtp/sources.sh
 c9aee74cdf9fece6 smtp/types.h
 89bc8986763956ec smtp/update_sources
-609b06a777dd7781 sources.mk
-c2e0583f314aea5a sources.sh
+83714fec80d35374 sources.mk
+ee4abebbb7b68eff sources.sh
 edbaf17a1861caac test/Makefile
 115034515e40a46d test/array_test.c
 7e5928106ea6c2bb test/bool_test.c
@@ -1635,6 +1635,13 @@ dfa59e240625df24 test/compare_test.c
 82ae9d92336ad68b test/compare_test.h
 008360c0f285e5d8 test/configure
 9006fac65cfe28fc test/crypt_test.c
+fd220309efeb6122 test/crypto/01_hmac_hex.kc3
+0fe986df8b58e82e test/crypto/01_hmac_hex.out.expected
+da00f6407d6b5b03 test/crypto/01_hmac_hex.ret.expected
+3f2adb29986f05fb test/crypto/02_hmac_verify.kc3
+f8dbc1c39738ac25 test/crypto/02_hmac_verify.out.expected
+da00f6407d6b5b03 test/crypto/02_hmac_verify.ret.expected
+08b4cea01ce3c78a test/crypto_test
 b85869a371a73aa0 test/ekc3/load_file.kc3
 7a8e6fb04d6bab8e test/ekc3/load_file.out.expected
 da00f6407d6b5b03 test/ekc3/load_file.ret.expected

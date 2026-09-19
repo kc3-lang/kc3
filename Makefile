@@ -972,13 +972,14 @@ json_debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C json debug
 
-kc3-${KC3_VERSION}.tar.gz: kc3.index kc3.primehash32 kc3.primehash64
+kc3-${KC3_VERSION}.tar.gz: kc3.index kc3.primehash32 kc3.primehash64 kc3.sha512
 	rm -rf kc3-${KC3_VERSION}.old
 	if [ -d kc3-${KC3_VERSION} ]; then \
 		mv kc3-${KC3_VERSION} kc3-${KC3_VERSION}.old; \
 	fi
 	mkdir kc3-${KC3_VERSION}
-	{ cat kc3.index; echo kc3.primehash64; echo kc3.primehash32; } | pax -rw kc3-${KC3_VERSION}
+	{ cat kc3.index; echo kc3.primehash64; echo kc3.primehash32; \
+	  echo kc3.sha512; } | pax -rw kc3-${KC3_VERSION}
 	pax -w kc3-${KC3_VERSION} | gzip -9 > kc3-${KC3_VERSION}.tar.gz
 
 kc3.index: sources.mk Makefile
@@ -997,6 +998,7 @@ kc3.index: sources.mk Makefile
 	for F in ${KC3_SH_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_IKC3_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_TEST_CRYPTO_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_EKC3_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_EVENT_POLL_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
 	for F in ${KC3_TEST_HTTP_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
