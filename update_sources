@@ -113,8 +113,8 @@ $(ls test/httpd/assets/package*.json)
 $(find test/httpd/assets/js -name '*.js')
 $(find test/httpd/assets/css -name '*.scss')
 $(find test/httpd/static \( -name release -prune \) -or ! -type d -print)
-$(find test/httpd/pages)
-test/httpd/doc"
+$(find test/httpd/pages -name '*.html' -or -name '*.md')
+$(find test/httpd/doc -name '*.md')"
 sources KC3_TEST_HTTPD_SOURCES "$KC3_TEST_HTTPD_SOURCES"
 
 KC3_TEST_JSON_SOURCES="$(ls test/json/*.expected test/json/*.kc3)

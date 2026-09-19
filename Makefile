@@ -1034,6 +1034,16 @@ kc3.primehash64: kc3.index
 		rm kc3.primehash64.tmp; \
 	fi
 
+kc3.sha512: kc3.index
+	tr '\n' '\0' < kc3.index | time xargs -0 sha512 -h kc3.sha512.tmp
+	if ! [ -f kc3.sha512 ] || \
+	   ! cmp kc3.sha512 kc3.sha512.tmp >/dev/null 2>&1; \
+	then \
+		mv kc3.sha512.tmp kc3.sha512; \
+	else \
+		rm kc3.sha512.tmp; \
+	fi
+
 kc3c:
 	${MAKE} -C libtommath build
 	${MAKE} -C libkc3 build
