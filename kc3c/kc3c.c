@@ -8,7 +8,7 @@
 
 static int usage (int r, const char *argv0)
 {
-  fprintf(stderr, "Usage: find . -name '*.kc3' | %s\n", argv0);
+  fprintf(stderr, "Usage: find . -name '*.kc3' | %s [-v]\n", argv0);
   return r;
 }
 
@@ -22,6 +22,7 @@ int main (int argc, char **argv)
   s_str path = {0};
   const char *prog;
   int r = 1;
+  bool verbose = false;
   if (argc <= 0)
     return usage(1, "kc3c");
   prog = argv[0];
@@ -29,7 +30,9 @@ int main (int argc, char **argv)
     return 1;
   if (! (env = env_global()))
     goto clean;
-  if (argc) {
+  if (argc == 1 && ! strcmp(argv[0], "-v"))
+    verbose = true;
+  else if (argc) {
     usage(1, prog);
     goto clean;
   }
@@ -58,8 +61,12 @@ int main (int argc, char **argv)
       fprintf(stderr, "%s: stdin: path contains a NUL byte\n", prog);
       goto clean;
     }
+    if (verbose) {
+      fprintf(stderr, "%s\n", in_path);
+      fflush(stderr);
+    }
     str_init(&path, NULL, (uw) in_len, in_path);
-    if (! env_load(env, &path)) {
+    if (! env_load(env, &path, false)) {
       err_write_1("kc3c: failed to compile ");
       err_inspect_str(&path);
       err_write_1("\n");

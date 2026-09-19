@@ -1035,7 +1035,7 @@ s_array * kc3_plist_to_array (p_list *plist,
 
 bool kc3_load (const s_str *path)
 {
-  return env_load(env_global(), path);
+  return env_load(env_global(), path, true);
 }
 
 p_list * kc3_map_map_to_list (s_map *map, p_callable *callable,

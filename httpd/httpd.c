@@ -250,7 +250,7 @@ int main (int argc, char **argv)
     return 0;
   }
   if (file_access(&init, &g_sym_r)) {
-    if (! env_load(env, &init)) {
+    if (! env_load(env, &init, true)) {
       kc3_clean(NULL);
       return 1;
     }

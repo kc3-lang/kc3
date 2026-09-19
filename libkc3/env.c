@@ -2361,7 +2361,6 @@ s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
   return dest;
 }
 
-// TODO: unwind_protect
 static void env_tag_move (s_tag *dest, s_tag *src)
 {
   tag_clean(dest);
@@ -2389,7 +2388,7 @@ static void env_load_error_location (const s_str *path, sw line,
   err_puts(message);
 }
 
-bool env_load (s_env *env, const s_str *path)
+bool env_load (s_env *env, const s_str *path, bool allow_cache)
 {
   s_buf buf;
   bool buf_opened = false;
@@ -2403,10 +2402,10 @@ bool env_load (s_env *env, const s_str *path)
   s_tag *file_path;
   s_tag  file_path_save = {0};
   s_list **last;
-  s_list **last_dlopen;
   sw line;
   p_list list = NULL;
   p_list new_dlopens = NULL;
+  p_list new_dlopens_tmp = NULL;
   s_tag load_time = {0};
   s_tag now = {0};
   sw r;
@@ -2419,7 +2418,8 @@ bool env_load (s_env *env, const s_str *path)
   assert(path);
   if (! str_init_concatenate(&cache_path, path, &cache_suffix))
     return false;
-  if (file_mtime(path, &src_mtime) &&
+  if (allow_cache &&
+      file_mtime(path, &src_mtime) &&
       file_mtime(&cache_path, &cache_mtime) &&
       compare_time(&cache_mtime, &src_mtime) > 0) {
     use_cache = true;
@@ -2526,13 +2526,13 @@ bool env_load (s_env *env, const s_str *path)
     buf_getc_close(&buf);
     buf_clean(&buf);
     buf_opened = false;
-    last_dlopen = &new_dlopens;
     tmp_list = env->dlopen_list;
     while (tmp_list != dlopen_list_save) {
-      *last_dlopen = list_new_str_copy(&tmp_list->tag.data.td_str, NULL);
-      if (! *last_dlopen)
+      new_dlopens_tmp =
+        list_new_str_copy(&tmp_list->tag.data.td_str, new_dlopens);
+      if (! new_dlopens_tmp)
         goto ko;
-      last_dlopen = &(*last_dlopen)->next.data.td_plist;
+      new_dlopens = new_dlopens_tmp;
       tmp_list = list_next(tmp_list);
     }
     if (env->trace) {
@@ -2737,7 +2737,7 @@ bool env_maybe_reload (s_env *env, const s_str *path)
   }
   r = true;
   if (compare_tag(&load_time.data.td_pvar->tag, &mtime) == COMPARE_LT)
-    r = env_load(env, path);
+    r = env_load(env, path, true);
   facts_cursor_clean(&cursor);
   tag_clean(&load_time);
   str_clean(&relative_path);
@@ -2948,7 +2948,7 @@ bool env_module_load (s_env *env, const s_sym *module)
   if (module_path(module, env->module_path, KC3_EXT, &path) &&
       file_access(&path, &g_sym_r)) {
     tag_init_time_now(&tag_time);
-    if (! env_load(env, &path)) {
+    if (! env_load(env, &path, true)) {
       err_write_1("env_module_load: ");
       err_inspect_sym(module);
       err_puts(": env_load");

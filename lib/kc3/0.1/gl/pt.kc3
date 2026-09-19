@@ -20,8 +20,3 @@ defmodule GL.PT do
     List)
 
 end
-
-require GL.DVec3
-require GL.PT.Material
-require GL.PT.Reflection
-require GL.PT.Sphere

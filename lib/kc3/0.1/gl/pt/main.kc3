@@ -48,7 +48,8 @@ end
 
 match a = args() do
   [prog | rest] ->
-    if (Str.starts_with?(File.basename(prog), "kc3s")) do
+    if (Str.starts_with?(File.basename(prog), "kc3s") ||
+        Str.starts_with?(File.basename(prog), "kc3c")) do
       void
     else
       GL.PT.Main.main(a)

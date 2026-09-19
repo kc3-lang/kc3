@@ -10,9 +10,9 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-require GL.PT.Material
-require GL.DRay
 require GL.DVec3
+require GL.DRay
+require GL.PT.Material
 
 dlopen("gl.so")
 

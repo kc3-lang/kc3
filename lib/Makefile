@@ -14,9 +14,7 @@ PREFIX = /usr/local
 prefix ?= ${PREFIX}
 
 all:
-	find kc3 -name '[^.]*.kc3' | while read SRC; do \
-		echo "echo '$$SRC' && kc3s --load '$$SRC' --quit"; \
-	done | runj 1 /bin/sh
+	find kc3 -name '[^.]*.kc3' | sort | runj 1 kc3c -v
 
 clean:
 	find kc3 -name '*.kc3c' -print0 | xargs -0 rm
