@@ -14,7 +14,7 @@ PREFIX = /usr/local
 prefix ?= ${PREFIX}
 
 all:
-	find kc3 -name '[^.]*.kc3' | sort | runj 1 kc3c -v
+	find kc3 -name '[^.]*.kc3' | sort | runj -1 kc3c -v
 
 clean:
 	find kc3 -name '*.kc3c' -print0 | xargs -0 rm
