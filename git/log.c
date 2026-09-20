@@ -137,6 +137,7 @@ p_list * kc3_git_log (git_repository **repo,
                       p_list *dest)
 {
   git_commit *commit = NULL;
+  git_object *commit_object = NULL;
   s_log_commit_graph graph = {0};
   s_log_commit_graph_entry graph_entry = {0};
   bool graph_entry_valid;
@@ -193,6 +194,39 @@ p_list * kc3_git_log (git_repository **repo,
       err_puts("kc3_git_log: git_commit_lookup");
       return NULL;
     }
+    parents = git_commit_parentcount(commit);
+    if (parents < opt.min_parents ||
+        (opt.max_parents > 0 && parents > opt.max_parents)) {
+      git_commit_free(commit);
+      *dest = NULL;
+      return dest;
+    }
+    tail = &tmp;
+    if (! log_push_commit(tail, commit)) {
+      err_puts("kc3_git_log: log_push_commit");
+      git_commit_free(commit);
+      return NULL;
+    }
+    git_commit_free(commit);
+    *dest = tmp;
+    return dest;
+  }
+  if (! path->size && ! opt.skip && opt.limit == 1) {
+    git_object *object = NULL;
+    if (git_revparse_single(&object, s.repo,
+                            branch_name->ptr.p_pchar)) {
+      err_write_1("kc3_git_log: branch not found: ");
+      err_inspect_str(branch_name);
+      err_write_1("\n");
+      return NULL;
+    }
+    if (git_object_peel(&commit_object, object, GIT_OBJECT_COMMIT)) {
+      err_puts("kc3_git_log: git_object_peel");
+      git_object_free(object);
+      return NULL;
+    }
+    git_object_free(object);
+    commit = (git_commit *) commit_object;
     parents = git_commit_parentcount(commit);
     if (parents < opt.min_parents ||
         (opt.max_parents > 0 && parents > opt.max_parents)) {
