@@ -387,6 +387,8 @@ p_list * kc3_git_log (git_repository **repo,
     }
     git_commit_free(commit);
     commit = NULL;
+    if (printed >= opt.limit)
+      break;
   }
   git_odb_object_free(tree_object_next);
   log_graph_clean(&graph);
