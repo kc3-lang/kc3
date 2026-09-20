@@ -19,7 +19,7 @@
 #include "git.h"
 #include "repository.h"
 
-#define REPOSITORY_ODB_CACHE_MAX 8
+#define REPOSITORY_ODB_CACHE_MAX 1024
 
 typedef struct repository_graph_state s_repository_graph_state;
 typedef struct repository_odb_cache_entry s_repository_odb_cache_entry;
