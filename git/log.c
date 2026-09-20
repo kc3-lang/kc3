@@ -15,10 +15,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <git2.h>
-#if LIBGIT2_VERSION_CHECK(1, 2, 0)
-# include <git2/sys/commit_graph.h>
-# include <git2/sys/errors.h>
-#endif
 #include "log.h"
 
 typedef struct git_log_options s_git_log_options;
@@ -77,7 +73,6 @@ struct git_log_state {
 
 static int      log_add_revision(s_git_log_state *s,
                                  const char *revstr);
-static void     log_commit_graph_init (git_repository *repo);
 static void     log_graph_clean (s_log_commit_graph *graph);
 static int      log_graph_entry_find (const s_log_commit_graph *graph,
                                       const git_oid *oid,
@@ -167,8 +162,6 @@ p_list * kc3_git_log (git_repository **repo,
     err_puts("kc3_git_log: invalid argument");
     return NULL;
   }
-  git_libgit2_opts(GIT_OPT_SET_CACHE_OBJECT_LIMIT, GIT_OBJECT_TREE,
-                   1024 * 1024);
   s.repo = *repo;
   s.sorting = GIT_SORT_TIME;
   opt.max_parents = -1;
@@ -251,7 +244,6 @@ p_list * kc3_git_log (git_repository **repo,
     }
     memcpy(path_pchar, path->ptr.p_pchar, path->size);
   }
-  log_commit_graph_init(s.repo);
   if (path->size && git_repository_odb(&odb, s.repo)) {
     err_puts("kc3_git_log: git_repository_odb");
     return NULL;
@@ -411,37 +403,6 @@ p_list * kc3_git_log (git_repository **repo,
   git_revwalk_free(s.walker);
   list_delete_all(tmp);
   return NULL;
-}
-
-static void log_commit_graph_init (git_repository *repo)
-{
-#if LIBGIT2_VERSION_CHECK(1, 2, 0)
-  git_commit_graph *graph = NULL;
-  git_odb *odb = NULL;
-  git_buf objects = GIT_BUF_INIT;
-# if LIBGIT2_VERSION_CHECK(2, 0, 0) || defined(GIT_EXPERIMENTAL_SHA256)
-  git_commit_graph_open_options options =
-    GIT_COMMIT_GRAPH_OPEN_OPTIONS_INIT;
-# endif
-  if (git_repository_item_path(&objects, repo,
-                               GIT_REPOSITORY_ITEM_OBJECTS) ||
-# if LIBGIT2_VERSION_CHECK(2, 0, 0) || defined(GIT_EXPERIMENTAL_SHA256)
-      git_commit_graph_open(&graph, objects.ptr, &options) ||
-# else
-      git_commit_graph_open(&graph, objects.ptr) ||
-# endif
-      git_repository_odb(&odb, repo) ||
-      git_odb_set_commit_graph(odb, graph))
-    goto clean;
-  graph = NULL;
- clean:
-  git_error_clear();
-  git_commit_graph_free(graph);
-  git_odb_free(odb);
-  git_buf_dispose(&objects);
-#else
-  (void) repo;
-#endif
 }
 
 static u32 log_graph_be32 (const u8 *p)

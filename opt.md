@@ -87,7 +87,8 @@ One million calls in a tight loop took:
 - 5.652 ms
 
 One call is effectively unmeasurable relative to the Git log operation. No
-production change was made.
+production change was made for speed. It was later moved to `Git.init` as a
+thread-safety prerequisite for the shared ODB cache.
 
 ## Easy task 5: cache author lookups
 
@@ -115,3 +116,12 @@ Only the direct one-commit branch lookup produced a material, repeatable
 improvement. The other proposed easy changes were rejected after measurement.
 Further work should begin by profiling ODB and commit-graph lifecycle rather
 than modifying the scan loop speculatively.
+
+## Production task 6: cache initialized Git ODBs
+
+Status: implemented, awaiting production measurement
+
+The cache retains up to eight initialized ODBs keyed by objects-directory
+path. Repository handles and reference databases remain request-local. Cache
+entries are invalidated when the commit-graph or graph-chain file identity
+changes. Eviction is synchronous and adds no worker threads or processes.

@@ -13,4 +13,7 @@
 #ifndef LIBKC3_GIT_H
 #define LIBKC3_GIT_H
 
+s32 kc3_git_init (void);
+s32 kc3_git_shutdown (void);
+
 #endif /* LIBKC3_GIT_H */
