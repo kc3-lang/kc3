@@ -12,19 +12,16 @@
 
 require Kpkg.Package
 
-defmodule Kpkg.Repos.LibBSD do
+defmodule Kpkg.Repos.LibGit2 do
 
   Kpkg.defpackage(
-    %Kpkg.Package{name: :libbsd,
-                  build_depends_on: [],
+    %Kpkg.Package{name: :libgit2,
+                  build_depends_on: [:libiconv],
                   default_branch: "main",
-                  depends_on: [:libmd],
-                  dir: "freedesktop.org/libbsd",
-                  git: "https://git.kmx.io/kc3-lang/libbsd.git",
-                  git_push: "git@git.kmx.io:kc3-lang/libbsd.git",
-                  is_needed?: fn () {
-                    ! Str.ends_with?(Kpkg.uname(), "BSD")
-                  },
+                  depends_on: [],
+                  dir: "libgit2/libgit2",
+                  git: "https://git.kmx.io/kc3-lang/libgit2.git",
+                  git_push: "git@git.kmx.io:kc3-lang/libgit2.git",
                   module: module()}
   )
 
