@@ -36,6 +36,7 @@ struct repository_odb_cache_entry {
   git_odb *odb;
   char objects_path[PATH_MAX];
   s_repository_graph_state graph_state;
+  bool in_use;
   u64 used;
 };
 
@@ -55,6 +56,7 @@ static bool repository_graph_state_equal
 static void repository_odb_cache_attach (git_repository *repo);
 static void repository_odb_cache_clean (void);
 static void repository_odb_cache_lock (void);
+static void repository_odb_cache_release (git_odb *odb);
 static void repository_odb_cache_unlock (void);
 
 static void repository_commit_graph_init (git_odb *odb,
@@ -123,9 +125,10 @@ static void repository_odb_cache_attach (git_repository *repo)
   git_odb *candidate = NULL;
   s_repository_odb_cache_entry *entry;
   uw i;
-  uw oldest = 0;
+  uw oldest = UW_MAX;
   git_odb *old_odb = NULL;
   git_buf objects = GIT_BUF_INIT;
+  uw replacement = UW_MAX;
   s_repository_graph_state state;
   if (git_repository_item_path(&objects, repo,
                                GIT_REPOSITORY_ITEM_OBJECTS) ||
@@ -136,11 +139,15 @@ static void repository_odb_cache_attach (git_repository *repo)
   i = 0;
   while (i < REPOSITORY_ODB_CACHE_MAX) {
     entry = g_repository_odb_cache + i;
-    if (entry->odb && ! strcmp(entry->objects_path, objects.ptr) &&
+    if (entry->odb && ! entry->in_use &&
+        ! strcmp(entry->objects_path, objects.ptr) &&
         repository_graph_state_equal(&entry->graph_state, &state)) {
+      entry->in_use = true;
       entry->used = ++g_repository_odb_cache_clock;
-      if (git_repository_set_odb(repo, entry->odb))
+      if (git_repository_set_odb(repo, entry->odb)) {
+        entry->in_use = false;
         git_error_clear();
+      }
       repository_odb_cache_unlock();
       goto clean;
     }
@@ -154,29 +161,44 @@ static void repository_odb_cache_attach (git_repository *repo)
   i = 0;
   while (i < REPOSITORY_ODB_CACHE_MAX) {
     entry = g_repository_odb_cache + i;
-    if (entry->odb && ! strcmp(entry->objects_path, objects.ptr) &&
+    if (entry->odb && ! entry->in_use &&
+        ! strcmp(entry->objects_path, objects.ptr) &&
         repository_graph_state_equal(&entry->graph_state, &state)) {
+      entry->in_use = true;
       entry->used = ++g_repository_odb_cache_clock;
-      if (git_repository_set_odb(repo, entry->odb))
+      if (git_repository_set_odb(repo, entry->odb)) {
+        entry->in_use = false;
         git_error_clear();
+      }
       repository_odb_cache_unlock();
       goto clean;
     }
-    if (! entry->odb) {
-      oldest = i;
-      break;
-    }
-    if (entry->used < g_repository_odb_cache[oldest].used)
+    if (! entry->odb && replacement == UW_MAX)
+      replacement = i;
+    else if (! entry->in_use &&
+             ! strcmp(entry->objects_path, objects.ptr) &&
+             replacement == UW_MAX)
+      replacement = i;
+    if (entry->odb && ! entry->in_use &&
+        (oldest == UW_MAX ||
+         entry->used < g_repository_odb_cache[oldest].used))
       oldest = i;
     i++;
   }
-  entry = g_repository_odb_cache + oldest;
+  if (replacement == UW_MAX)
+    replacement = oldest;
+  if (replacement == UW_MAX) {
+    repository_odb_cache_unlock();
+    goto clean;
+  }
+  entry = g_repository_odb_cache + replacement;
   old_odb = entry->odb;
   *entry = (s_repository_odb_cache_entry) {0};
   entry->odb = candidate;
   candidate = NULL;
   memcpy(entry->objects_path, objects.ptr, strlen(objects.ptr) + 1);
   entry->graph_state = state;
+  entry->in_use = true;
   entry->used = ++g_repository_odb_cache_clock;
   repository_odb_cache_unlock();
   git_odb_free(old_odb);
@@ -213,6 +235,24 @@ static void repository_odb_cache_lock (void)
   }
 }
 
+static void repository_odb_cache_release (git_odb *odb)
+{
+  uw i = 0;
+  if (! odb)
+    return;
+  repository_odb_cache_lock();
+  while (i < REPOSITORY_ODB_CACHE_MAX) {
+    if (g_repository_odb_cache[i].odb == odb) {
+      g_repository_odb_cache[i].in_use = false;
+      g_repository_odb_cache[i].used =
+        ++g_repository_odb_cache_clock;
+      break;
+    }
+    i++;
+  }
+  repository_odb_cache_unlock();
+}
+
 static void repository_odb_cache_unlock (void)
 {
   if (pthread_mutex_unlock(&g_repository_odb_cache_mutex)) {
@@ -239,8 +279,13 @@ s32 kc3_git_shutdown (void)
 void kc3_git_repository_free (git_repository **repo)
 {
   if (repo && *repo) {
+    git_odb *odb = NULL;
+    if (git_repository_odb(&odb, *repo))
+      git_error_clear();
     git_repository_free(*repo);
     *repo = NULL;
+    repository_odb_cache_release(odb);
+    git_odb_free(odb);
   }
 }
 

@@ -122,6 +122,9 @@ than modifying the scan loop speculatively.
 Status: implemented, awaiting production measurement
 
 The cache retains up to 1024 initialized ODBs keyed by objects-directory
-path. Repository handles and reference databases remain request-local. Cache
-entries are invalidated when the commit-graph or graph-chain file identity
-changes. Eviction is synchronous and adds no worker threads or processes.
+path. Each ODB is exclusively checked out to one request-local repository at
+a time because libgit2 associates its object cache with the repository that
+currently owns it. Concurrent requests for the same path use separate pool
+entries. Cache entries are invalidated when the commit-graph or graph-chain
+file identity changes. Eviction is synchronous and adds no worker threads or
+processes.
