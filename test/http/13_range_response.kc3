@@ -1,10 +1,12 @@
 require HTTPd.Static
 
 do
-  root = "../httpd/static"
+  root = "."
+  File.write_str("13_range_response_fixture.txt", "Test\n\nOK !\n")
   request = %HTTP.Request{method: GET,
                           headers: [{"Range", "bytes=7-9"}]}
-  response = HTTPd.Static.show(request, root, "/test.txt")
+  response = HTTPd.Static.show(request, root,
+                               "/13_range_response_fixture.txt")
   buf = Buf.new_alloc((Uw) 1024)
   HTTP.Response.buf_write(response, buf, true)
   raw = Buf.read_to_str(buf)
@@ -20,7 +22,8 @@ end
 do
   request = %HTTP.Request{method: GET,
                           headers: [{"Range", "bytes=99-"}]}
-  response = HTTPd.Static.show(request, "../httpd/static", "/test.txt")
+  response = HTTPd.Static.show(request, ".",
+    "/13_range_response_fixture.txt")
   {response.code,
    HTTP.Response.header_get(response, "Accept-Ranges"),
    HTTP.Response.header_get(response, "Content-Range")}
@@ -29,7 +32,8 @@ end
 do
   request = %HTTP.Request{method: GET,
                           headers: [{"Range", "bytes=0-10"}]}
-  response = HTTPd.Static.show(request, "../httpd/static", "/test.txt")
+  response = HTTPd.Static.show(request, ".",
+    "/13_range_response_fixture.txt")
   buf = Buf.new_alloc((Uw) 1024)
   HTTP.Response.buf_write(response, buf, true)
   Buf.delete(buf)
@@ -41,7 +45,8 @@ end
 do
   request = %HTTP.Request{method: GET,
                           headers: [{"Range", "bytes=broken"}]}
-  response = HTTPd.Static.show(request, "../httpd/static", "/test.txt")
+  response = HTTPd.Static.show(request, ".",
+    "/13_range_response_fixture.txt")
   buf = Buf.new_alloc((Uw) 1024)
   HTTP.Response.buf_write(response, buf, true)
   Buf.delete(buf)
@@ -53,7 +58,8 @@ end
 do
   request = %HTTP.Request{method: HEAD,
                           headers: [{"Range", "bytes=7-9"}]}
-  response = HTTPd.Static.show(request, "../httpd/static", "/test.txt")
+  response = HTTPd.Static.show(request, ".",
+    "/13_range_response_fixture.txt")
   buf = Buf.new_alloc((Uw) 1024)
   HTTP.Response.buf_write(response, buf, false)
   Buf.delete(buf)
@@ -64,7 +70,9 @@ end
 
 do
   response = HTTPd.Static.response_full("", :text, (Uw) 0, "")
-  {response.code,
-   response.body,
-   HTTP.Response.header_get(response, "Content-Length")}
+  result = {response.code,
+            response.body,
+            HTTP.Response.header_get(response, "Content-Length")}
+  File.unlink("13_range_response_fixture.txt")
+  result
 end

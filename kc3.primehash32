@@ -1737,7 +1737,7 @@ dac79638 test/http/11_https_encode_form.ret.expected
 b7a5c671 test/http/12_range.kc3
 2b7652e0 test/http/12_range.out.expected
 dac79638 test/http/12_range.ret.expected
-dcadedfb test/http/13_range_response.kc3
+1a555b2f test/http/13_range_response.kc3
 8eec7422 test/http/13_range_response.out.expected
 dac79638 test/http/13_range_response.ret.expected
 6c139527 test/http/mime.types
