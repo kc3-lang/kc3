@@ -1581,7 +1581,7 @@ c498546c pdf/pdf_write_page.h
 72547f32 pdf/types.h
 8970e9d3 pdf/update_sources
 590f52e4 primehash/Makefile
-ae9ecb30 primehash/configure
+c862695f primehash/configure
 fb7e1275 primehash/primehash32/Makefile
 52793187 primehash/primehash32/configure
 f5f15be2 primehash/primehash32/primehash32.c

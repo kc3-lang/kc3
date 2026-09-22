@@ -13,10 +13,15 @@
 
 set -e
 
-CONFIGURE_DIR="$(cd "$(dirname "$0")" && pwd)"
+PRIMEHASH_SRC="$(cd "$(dirname "$0")" && pwd)"
 
-echo "${CONFIGURE_DIR}/configure"
+echo "${PRIMEHASH_SRC}/configure"
+
+if [ "$PWD" != "$PRIMEHASH_SRC" ] && ! [ -h Makefile ]; then
+    echo "-> $PWD/Makefile"
+    ln -sf "${PRIMEHASH_SRC}/Makefile" Makefile
+fi
 
 mkdir -p primehash32 primehash64
-(cd primehash32 && "${CONFIGURE_DIR}/primehash32/configure"; )
-(cd primehash64 && "${CONFIGURE_DIR}/primehash64/configure"; )
+(cd primehash32 && "${PRIMEHASH_SRC}/primehash32/configure"; )
+(cd primehash64 && "${PRIMEHASH_SRC}/primehash64/configure"; )
