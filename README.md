@@ -112,7 +112,7 @@ There are now seven full applications written in KC3 that we know of :
    - fixed bugs in the HTTP request parser
    - [TODO] test partial requests support (fx)
 
- - primehash64
+ - primehash32 and primehash64
    - added new byte rotation and incrementation hashing called PrimeHash.
      This is not a cryptographic hash, but only a hash table bucket
      selector. It competes with hashes commonly found in Node.JS and
