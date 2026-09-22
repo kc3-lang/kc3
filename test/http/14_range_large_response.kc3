@@ -1,0 +1,69 @@
+require HTTPd.Static
+require Socket
+require Socket.Buf
+require Thread
+
+do
+  path = "14_range_large_response_fixture.bin"
+  a = "A"
+  b = "B"
+  c = "C"
+  d = "D"
+  i = 0
+  while i < 16 do
+    a = a + a
+    b = b + b
+    c = c + c
+    d = d + d
+    i = i + 1
+  end
+  content = a + b + c + d
+  File.write_str(path, content)
+
+  first = 4093
+  last = 200123
+  request = %HTTP.Request{method: GET,
+                          headers: [{"Range",
+                                     "bytes=#{first}-#{last}"}]}
+  response = HTTPd.Static.show(request, ".", "/#{path}")
+
+  server = Socket.listen("127.0.0.1", "57005")
+  client = Socket.Buf.connect("127.0.0.1", "57005")
+  server_client = Socket.Buf.accept(server)
+  writer = Thread.new(fn () {
+    HTTP.Response.buf_write(response, server_client.buf_rw.w, true)
+  })
+  received = HTTP.Response.buf_parse(client.buf_rw.r, false)
+
+  body_size = last - first + 1
+  body_buf = Buf.new_alloc((Uw) body_size)
+  remaining = ^ body_size
+  chunks = 0
+  while remaining > 0 do
+    chunk_size = if remaining < 65536 do remaining else 65536 end
+    Buf.xfer(body_buf, client.buf_rw.r, (Uw) chunk_size)
+    remaining = remaining - chunk_size
+    chunks = chunks + 1
+  end
+  body = Buf.read_to_str(body_buf)
+  Buf.delete(body_buf)
+  Thread.delete(writer)
+
+  expected = Str.slice(content, first, last + 1)
+  result = {received.code,
+            HTTP.Response.header_get(received, "Accept-Ranges"),
+            HTTP.Response.header_get(received, "Content-Length"),
+            HTTP.Response.header_get(received, "Content-Range"),
+            chunks,
+            Str.size(body),
+            body == expected,
+            Str.slice(body, 61435, 61451),
+            Str.slice(body, 126971, 126987),
+            Str.slice(body, 192507, 192523)}
+
+  Socket.Buf.close(server_client)
+  Socket.Buf.close(client)
+  Socket.close(server)
+  File.unlink(path)
+  result
+end

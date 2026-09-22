@@ -1,0 +1,5 @@
+HTTPd.Static
+Socket
+Socket.Buf
+Thread
+{(U16) 206, "bytes", "196031", "bytes 4093-200123/262144", 3, 196031, true, "AAAAAAAABBBBBBBB", "BBBBBBBBCCCCCCCC", "CCCCCCCCDDDDDDDD"}

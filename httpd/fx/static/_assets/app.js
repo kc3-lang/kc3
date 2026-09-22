@@ -23,7 +23,11 @@
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   var __commonJS = (cb, mod) => function __require() {
-    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    try {
+      return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    } catch (e) {
+      throw mod = 0, e;
+    }
   };
   var __export = (target, all) => {
     for (var name in all)
@@ -6042,11 +6046,11 @@
             return "script";
           }
         });
-        support.createHTMLDocument = function() {
+        support.createHTMLDocument = (function() {
           var body = document2.implementation.createHTMLDocument("").body;
           body.innerHTML = "<form></form><form></form>";
           return body.childNodes.length === 2;
-        }();
+        })();
         jQuery.parseHTML = function(data, context, keepScripts) {
           if (typeof data !== "string") {
             return [];
@@ -7294,7 +7298,7 @@
       };
       var escape = escapeHTML;
       var inherit = inherit$1;
-      var NO_MATCH = Symbol("nomatch");
+      var NO_MATCH = /* @__PURE__ */ Symbol("nomatch");
       var MAX_KEYWORD_HITS = 7;
       var HLJS = function(hljs) {
         const languages = /* @__PURE__ */ Object.create(null);

@@ -11,6 +11,7 @@
 ## THIS SOFTWARE.
 
 require Buf
+require Compare
 require Counter
 require Daemon
 require Facts
