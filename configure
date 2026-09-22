@@ -13,10 +13,11 @@
 
 set -e
 
-echo "$0"
 export BUILD_TOP="$PWD"
 export DIR="."
 export SRC_TOP="$(cd "$(dirname "$0")" && pwd)"
+
+echo "${SRC_TOP}/configure"
 
 : ${PREFIX:=/usr/local}
 if [ "x$1" = "x--prefix" ]; then

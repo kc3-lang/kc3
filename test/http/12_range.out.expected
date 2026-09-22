@@ -1,0 +1,29 @@
+HTTP.Range
+:ignore
+:ignore
+%HTTP.Range{first: (Uw) 1,
+            last: (Uw) 2}
+:ignore
+:ignore
+%HTTP.Range{first: (Uw) 0,
+            last: (Uw) 9}
+%HTTP.Range{first: (Uw) 2,
+            last: (Uw) 5}
+%HTTP.Range{first: (Uw) 7,
+            last: (Uw) 9}
+%HTTP.Range{first: (Uw) 7,
+            last: (Uw) 9}
+%HTTP.Range{first: (Uw) 7,
+            last: (Uw) 9}
+%HTTP.Range{first: (Uw) 0,
+            last: (Uw) 9}
+:unsatisfiable
+:unsatisfiable
+:ignore
+:unsatisfiable
+:unsatisfiable
+:unsatisfiable
+%HTTP.Range{first: (Uw) 2,
+            last: (Uw) 9}
+{%HTTP.Range{first: (Uw) 1,
+             last: (Uw) 2}, :ignore, :ignore}

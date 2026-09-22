@@ -1,0 +1,130 @@
+## kc3
+## Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+require HTTP.Request
+
+defmodule HTTP.Range do
+
+  defstruct [first: (Uw) 0,
+             last:  (Uw) 0]
+
+end
+
+defmodule HTTP.Range do
+
+  def decimal = fn (value) {
+    position = (Uw) 0
+    size = Str.size(value)
+    valid = size > 0
+    result = (Integer) 0
+    while valid && position < size do
+      byte = Str.byte(value, position)
+      if byte >= 48 && byte <= 57 do
+        result = result * 10 + byte - 48
+        position = position + 1
+      else
+        valid = false
+      end
+    end
+    if valid do
+      {:ok, result}
+    else
+      :error
+    end
+  }
+
+  def from_first = fn (first, last, size) {
+    if last != "" && last < first do
+      :ignore
+    else
+      if first >= size do
+        :unsatisfiable
+      else
+        last = if last == "" || last >= size do
+          (Uw) (size - 1)
+        else
+          (Uw) last
+        end
+        %HTTP.Range{first: (Uw) first,
+                    last: last}
+      end
+    end
+  }
+
+  def from_suffix = fn (suffix, size) {
+    if suffix == 0 || size == 0 do
+      :unsatisfiable
+    else
+      first = if suffix >= size do
+        (Uw) 0
+      else
+        (Uw) (size - (Uw) suffix)
+      end
+      %HTTP.Range{first: first,
+                  last: (Uw) (size - 1)}
+    end
+  }
+
+  def parse_byte_range = fn (first, last, size) {
+    if first == "" do
+      match HTTP.Range.decimal(last) do
+        {:ok, suffix} -> HTTP.Range.from_suffix(suffix, size)
+        :error -> :ignore
+      end
+    else
+      match HTTP.Range.decimal(first) do
+        {:ok, first_position} ->
+          if last == "" do
+            HTTP.Range.from_first(first_position, last, size)
+          else
+            match HTTP.Range.decimal(last) do
+              {:ok, last_position} ->
+                HTTP.Range.from_first(first_position, last_position,
+                                      size)
+              :error -> :ignore
+            end
+          end
+        :error -> :ignore
+      end
+    end
+  }
+
+  # Returns :ignore for an absent, invalid, or unsupported Range field,
+  # :unsatisfiable for a valid range outside the representation, and an
+  # HTTP.Range for a satisfiable byte range.
+  def parse = fn (header, size) {
+    if ! header do
+      :ignore
+    else
+      if ! Str.starts_with_case_insensitive?(header, "bytes=") ||
+         Str.has_str?(header, ",") do
+        :ignore
+      else
+        range = Str.slice(header, 6, -1)
+        match Str.split(range, "-") do
+          [first, last] -> HTTP.Range.parse_byte_range(first, last, size)
+          _ -> :ignore
+        end
+      end
+    end
+  }
+
+  def from_request = fn (request, size) {
+    if request.method == GET &&
+       ! HTTP.Request.header_get(request, "If-Range") do
+      HTTP.Range.parse(HTTP.Request.header_get(request, "Range"), size)
+    else
+      :ignore
+    end
+  }
+
+end

@@ -1,0 +1,70 @@
+require HTTPd.Static
+
+do
+  root = "../httpd/static"
+  request = %HTTP.Request{method: GET,
+                          headers: [{"Range", "bytes=7-9"}]}
+  response = HTTPd.Static.show(request, root, "/test.txt")
+  buf = Buf.new_alloc((Uw) 1024)
+  HTTP.Response.buf_write(response, buf, true)
+  raw = Buf.read_to_str(buf)
+  Buf.delete(buf)
+  body_start = Str.position_str(raw, "\r\n\r\n") + 4
+  {response.code,
+   HTTP.Response.header_get(response, "Accept-Ranges"),
+   HTTP.Response.header_get(response, "Content-Length"),
+   HTTP.Response.header_get(response, "Content-Range"),
+   Str.slice(raw, body_start, -1)}
+end
+
+do
+  request = %HTTP.Request{method: GET,
+                          headers: [{"Range", "bytes=99-"}]}
+  response = HTTPd.Static.show(request, "../httpd/static", "/test.txt")
+  {response.code,
+   HTTP.Response.header_get(response, "Accept-Ranges"),
+   HTTP.Response.header_get(response, "Content-Range")}
+end
+
+do
+  request = %HTTP.Request{method: GET,
+                          headers: [{"Range", "bytes=0-10"}]}
+  response = HTTPd.Static.show(request, "../httpd/static", "/test.txt")
+  buf = Buf.new_alloc((Uw) 1024)
+  HTTP.Response.buf_write(response, buf, true)
+  Buf.delete(buf)
+  {response.code,
+   HTTP.Response.header_get(response, "Content-Length"),
+   HTTP.Response.header_get(response, "Content-Range")}
+end
+
+do
+  request = %HTTP.Request{method: GET,
+                          headers: [{"Range", "bytes=broken"}]}
+  response = HTTPd.Static.show(request, "../httpd/static", "/test.txt")
+  buf = Buf.new_alloc((Uw) 1024)
+  HTTP.Response.buf_write(response, buf, true)
+  Buf.delete(buf)
+  {response.code,
+   HTTP.Response.header_get(response, "Content-Length"),
+   HTTP.Response.header_get(response, "Content-Range")}
+end
+
+do
+  request = %HTTP.Request{method: HEAD,
+                          headers: [{"Range", "bytes=7-9"}]}
+  response = HTTPd.Static.show(request, "../httpd/static", "/test.txt")
+  buf = Buf.new_alloc((Uw) 1024)
+  HTTP.Response.buf_write(response, buf, false)
+  Buf.delete(buf)
+  {response.code,
+   HTTP.Response.header_get(response, "Content-Length"),
+   HTTP.Response.header_get(response, "Content-Range")}
+end
+
+do
+  response = HTTPd.Static.response_full("", :text, (Uw) 0, "")
+  {response.code,
+   response.body,
+   HTTP.Response.header_get(response, "Content-Length")}
+end

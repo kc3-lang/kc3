@@ -18,20 +18,60 @@
 #include "../libkc3/kc3.h"
 #include "http_response.h"
 
-static void http_response_mmap_clean (s_http_response *response)
+static bool http_response_mmap_get (const s_tuple *tuple, t_fd *fd,
+                                    uw *size, void **ptr,
+                                    uw *map_size, void **map_ptr)
 {
-  t_fd fd;
-  void *ptr;
-  uw size;
-  s_tuple *tuple;
-  if (response->body.type != TAG_PTUPLE ||
-      ! (tuple = response->body.data.td_ptuple) ||
-      tuple->count != 4 ||
+  if (! tuple ||
+      (tuple->count != 4 && tuple->count != 6) ||
       tuple->tag[0].type != TAG_PSYM ||
       tuple->tag[0].data.td_psym != &g_sym_mmap ||
       tuple->tag[1].type != TAG_S64 ||
       tuple->tag[2].type != TAG_UW ||
-      tuple->tag[3].type != TAG_PTR)
+      tuple->tag[3].type != TAG_PTR ||
+      (tuple->count == 6 &&
+       (tuple->tag[4].type != TAG_UW ||
+        tuple->tag[5].type != TAG_PTR)))
+    return false;
+  *fd = tuple->tag[1].data.td_s64;
+  *size = tuple->tag[2].data.td_uw;
+  *ptr = tuple->tag[3].data.td_ptr.p_pvoid;
+  if (tuple->count == 6) {
+    *map_size = tuple->tag[4].data.td_uw;
+    *map_ptr = tuple->tag[5].data.td_ptr.p_pvoid;
+  }
+  else {
+    *map_size = *size;
+    *map_ptr = *ptr;
+  }
+  return true;
+}
+
+static void http_response_mmap_release (s_tuple *tuple)
+{
+  t_fd fd;
+  void *map_ptr;
+  uw map_size;
+  void *ptr;
+  uw size;
+  if (! http_response_mmap_get(tuple, &fd, &size, &ptr,
+                               &map_size, &map_ptr))
+    return;
+  if (map_ptr)
+    munmap(map_ptr, map_size);
+  if (fd >= 0)
+    close(fd);
+  tuple->tag[3].data.td_ptr.p_pvoid = NULL;
+  tuple->tag[1].data.td_s64 = -1;
+  if (tuple->count == 6)
+    tuple->tag[5].data.td_ptr.p_pvoid = NULL;
+}
+
+static void http_response_mmap_clean (s_http_response *response)
+{
+  s_tuple *tuple;
+  if (response->body.type != TAG_PTUPLE ||
+      ! (tuple = response->body.data.td_ptuple))
     return;
 #if HAVE_PTHREAD
   mutex_lock(&tuple->mutex);
@@ -42,15 +82,7 @@ static void http_response_mmap_clean (s_http_response *response)
 #endif
     return;
   }
-  fd = tuple->tag[1].data.td_s64;
-  size = tuple->tag[2].data.td_uw;
-  ptr = tuple->tag[3].data.td_ptr.p_pvoid;
-  if (ptr)
-    munmap(ptr, size);
-  if (fd >= 0)
-    close(fd);
-  tuple->tag[3].data.td_ptr.p_pvoid = NULL;
-  tuple->tag[1].data.td_s64 = -1;
+  http_response_mmap_release(tuple);
 #if HAVE_PTHREAD
   mutex_unlock(&tuple->mutex);
 #endif
@@ -189,6 +221,8 @@ sw http_response_buf_write (const s_http_response *response,
   s_buf *in;
   s_tag *key = NULL;
   const s_list *l = NULL;
+  void *map_ptr;
+  uw map_size;
   s_str protocol = {0};
   void *ptr;
   sw r = 0;
@@ -301,13 +335,9 @@ sw http_response_buf_write (const s_http_response *response,
       body_size_known = true;
     }
     else if (response->body.type == TAG_PTUPLE &&
-             response->body.data.td_ptuple &&
-             response->body.data.td_ptuple->count == 4 &&
-             response->body.data.td_ptuple->tag[0].type == TAG_PSYM &&
-             response->body.data.td_ptuple->tag[0].data.td_psym ==
-               &g_sym_mmap &&
-             response->body.data.td_ptuple->tag[2].type == TAG_UW) {
-      body_size = response->body.data.td_ptuple->tag[2].data.td_uw;
+             http_response_mmap_get(response->body.data.td_ptuple,
+                                    &fd, &body_size, &ptr,
+                                    &map_size, &map_ptr)) {
       body_size_known = true;
     }
     if (body_size_known) {
@@ -341,28 +371,14 @@ sw http_response_buf_write (const s_http_response *response,
     }
     else if (type == &g_sym_Tuple &&
              (tuple = response->body.data.td_ptuple) &&
-             tuple->count == 4 &&
-             tuple->tag[0].type == TAG_PSYM &&
-             tuple->tag[0].data.td_psym == &g_sym_mmap &&
-             tuple->tag[1].type == TAG_S64 &&
-             (fd = tuple->tag[1].data.td_s64) >= 0 &&
-             tuple->tag[2].type == TAG_UW) {
-      size = tuple->tag[2].data.td_uw;
-      if (tuple->tag[3].type == TAG_PTR) {
-        ptr = tuple->tag[3].data.td_ptr.p_pvoid;
-        if (size && ptr && (r = buf_write(buf, ptr, size)) < 0) {
-          munmap(ptr, size);
-          close(fd);
-          tuple->tag[3].data.td_ptr.p_pvoid = NULL;
-          tuple->tag[1].data.td_s64 = -1;
-          return r;
-        }
-        result += r;
-        munmap(ptr, size);
-        close(fd);
-        tuple->tag[3].data.td_ptr.p_pvoid = NULL;
-        tuple->tag[1].data.td_s64 = -1;
+             http_response_mmap_get(tuple, &fd, &size, &ptr,
+                                    &map_size, &map_ptr) && fd >= 0) {
+      if (size && ptr && (r = buf_write(buf, ptr, size)) < 0) {
+        http_response_mmap_release(tuple);
+        return r;
       }
+      result += r;
+      http_response_mmap_release(tuple);
     }
     else if (type == &g_sym_Buf) {
       in = response->body.data.td_pstruct->data;
@@ -386,23 +402,8 @@ sw http_response_buf_write (const s_http_response *response,
   }
   if (! send_body &&
       response->body.type == TAG_PTUPLE &&
-      (tuple = response->body.data.td_ptuple) &&
-      tuple->count == 4 &&
-      tuple->tag[0].type == TAG_PSYM &&
-      tuple->tag[0].data.td_psym == &g_sym_mmap &&
-      tuple->tag[1].type == TAG_S64 &&
-      tuple->tag[2].type == TAG_UW &&
-      tuple->tag[3].type == TAG_PTR) {
-    fd = tuple->tag[1].data.td_s64;
-    size = tuple->tag[2].data.td_uw;
-    ptr = tuple->tag[3].data.td_ptr.p_pvoid;
-    if (ptr)
-      munmap(ptr, size);
-    if (fd >= 0)
-      close(fd);
-    tuple->tag[3].data.td_ptr.p_pvoid = NULL;
-    tuple->tag[1].data.td_s64 = -1;
-  }
+      (tuple = response->body.data.td_ptuple))
+    http_response_mmap_release(tuple);
   if ((r = buf_flush(buf)) < 0)
     return r;
   return result;

@@ -10,7 +10,12 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require File
+require HTML
+require HTTP
+require HTTP.Range
 require HTTP.Response
+require URL
 
 defmodule HTTPd.Static do
 
@@ -47,22 +52,43 @@ defmodule HTTPd.Static do
     %HTTP.Response{body: body}
   }
 
-  def show = fn (range, root_dir, url) {
-    ext = File.ext(url)
-    path = root_dir + url
-    if (! File.exists?(path)) do
-      slash = if Str.ends_with?(path, "/") do "" else "/" end
-      path = "#{path}#{slash}index.html"
+  def response_full = fn (path, mime, size, last_modified) {
+    headers = [{"Accept-Ranges", "bytes"},
+               {"Content-Disposition", "inline"},
+               {"Content-Type", (Str) mime},
+               {"Content-Length", (Str) size},
+               {"Last-Modified", last_modified}]
+    body = if size > 0 do
+      File.mmap(File.open_r(path), (Uw) 0, size)
+    else
+      ""
     end
-    if File.exists?(path) do
-      mime = HTTP.mime_type(ext)
-      stat = File.stat(path)
-      last_modified = Str.ftime(stat.st_mtim, "%a, %d %b %G %T %Z")
-      match HTTPd.parse_range(range, stat.st_size) do
-        {:error, e} ->
-          headers = [{"Content-Type", "text/html"}]
-          %HTTP.Response{code: 416,
-                         body: """<html>
+    %HTTP.Response{code: (U16) 200,
+                   body: body,
+                   headers: headers}
+  }
+
+  def response_partial = fn (path, mime, size, last_modified, range) {
+    content_length = (Uw) (range.last - range.first + 1)
+    headers = [{"Accept-Ranges", "bytes"},
+               {"Content-Disposition", "inline"},
+               {"Content-Type", (Str) mime},
+               {"Content-Length", (Str) content_length},
+               {"Content-Range",
+                "bytes #{range.first}-#{range.last}/#{size}"},
+               {"Last-Modified", last_modified}]
+    %HTTP.Response{code: (U16) 206,
+                   body: File.mmap(File.open_r(path), range.first,
+                                   (Uw) (range.last + 1)),
+                   headers: headers}
+  }
+
+  def response_range_not_satisfiable = fn (size) {
+    headers = [{"Accept-Ranges", "bytes"},
+               {"Content-Range", "bytes */#{size}"},
+               {"Content-Type", "text/html"}]
+    %HTTP.Response{code: (U16) 416,
+                   body: """<html>
   <head>
     <title>Error 416</title>
   </head>
@@ -70,31 +96,28 @@ defmodule HTTPd.Static do
     <h1>Error 416 Range Not Satisfiable</h1>
   </body>
 </html>""",
-                         headers: headers}
-        {range_start, range_last} ->
-          if (range_start != 0) || (range_last + 1 != stat.st_size) do
-            headers = [{"Content-Disposition", "inline"},
-                       {"Content-Type", (Str) mime},
-                       {"Content-Length",
-                       (Str) (range_last - range_start + 1)},
-                       {"Content-Range",
-                        "bytes #{range_start}-#{range_last}/#{stat.st_size}"},
-                       {"Last-Modified", last_modified}]
-            %HTTP.Response{code: (U16) 206,
-                           body: File.mmap(File.open_r(path),
-                                           (Uw) range_start,
-                                           (Uw) (range_last + 1)),
-                           headers: headers}
-          else
-            headers = [{"Content-Disposition", "inline"},
-                       {"Content-Type", (Str) mime},
-                       {"Content-Length", (Str) stat.st_size},
-                       {"Last-Modified", last_modified}]
-            %HTTP.Response{code: (U16) 200,
-                           body: File.mmap(File.open_r(path), (Uw) 0,
-                                           (Uw) stat.st_size),
-                           headers: headers}
-          end
+                   headers: headers}
+  }
+
+  def show = fn (request, root_dir, url) {
+    path = root_dir + url
+    if (! File.exists?(path)) do
+      slash = if Str.ends_with?(path, "/") do "" else "/" end
+      path = "#{path}#{slash}index.html"
+    end
+    if File.exists?(path) do
+      mime = HTTP.mime_type(File.ext(path))
+      stat = File.stat(path)
+      last_modified = Str.ftime(stat.st_mtim, "%a, %d %b %G %T %Z")
+      match HTTP.Range.from_request(request, stat.st_size) do
+        :ignore ->
+          HTTPd.Static.response_full(path, mime, stat.st_size,
+                                     last_modified)
+        :unsatisfiable ->
+          HTTPd.Static.response_range_not_satisfiable(stat.st_size)
+        range ->
+          HTTPd.Static.response_partial(path, mime, stat.st_size,
+                                        last_modified, range)
       end
     end
   }
@@ -110,8 +133,7 @@ defmodule HTTPd.Static do
           if File.is_directory?(path) do
             HTTPd.Static.directory(prefix, root_dir, url)
           else
-            range = HTTP.Request.header(request, "Range")
-            HTTPd.Static.show(range, root_dir, url)
+            HTTPd.Static.show(request, root_dir, url)
           end
         end
       end

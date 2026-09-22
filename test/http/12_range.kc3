@@ -1,0 +1,33 @@
+require HTTP.Range
+
+HTTP.Range.parse(false, (Uw) 10)
+HTTP.Range.parse("items=0-1", (Uw) 10)
+HTTP.Range.parse("BYTES=1-2", (Uw) 10)
+HTTP.Range.parse("bytes=", (Uw) 10)
+HTTP.Range.parse("bytes=0-1,4-5", (Uw) 10)
+HTTP.Range.parse("bytes=0-9", (Uw) 10)
+HTTP.Range.parse("bytes=2-5", (Uw) 10)
+HTTP.Range.parse("bytes=7-99", (Uw) 10)
+HTTP.Range.parse("bytes=7-", (Uw) 10)
+HTTP.Range.parse("bytes=-3", (Uw) 10)
+HTTP.Range.parse("bytes=-99", (Uw) 10)
+HTTP.Range.parse("bytes=-0", (Uw) 10)
+HTTP.Range.parse("bytes=10-", (Uw) 10)
+HTTP.Range.parse("bytes=8-3", (Uw) 10)
+HTTP.Range.parse("bytes=0-0", (Uw) 0)
+HTTP.Range.parse("bytes=-3", (Uw) 0)
+HTTP.Range.parse("bytes=184467440737095516160-", (Uw) 10)
+HTTP.Range.parse("bytes=2-184467440737095516160", (Uw) 10)
+
+do
+  request = %HTTP.Request{method: GET,
+                          headers: [{"rAnGe", "bytes=1-2"}]}
+  {HTTP.Range.from_request(request, (Uw) 10),
+   HTTP.Range.from_request(%HTTP.Request{request | method: HEAD},
+                           (Uw) 10),
+   HTTP.Range.from_request(%HTTP.Request{
+     request |
+     headers: [{"Range", "bytes=1-2"},
+               {"If-Range", "\"validator\""}]},
+     (Uw) 10)}
+end

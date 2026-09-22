@@ -211,8 +211,7 @@ defmodule HTTPd do
           response_headers = [{"Cache-Control", params.cache_control} |
                               response_headers]
         end
-        response_headers = [{"Server", "kc3_httpd"},
-                            {"Accept-Ranges", "bytes"} |
+        response_headers = [{"Server", "kc3_httpd"} |
                             response_headers]
         response = HTTP.Response.headers_set(response, response_headers)
         HTTPd.thread_status(thread_id, "buf_write")
@@ -537,51 +536,6 @@ defmodule HTTPd do
         end
       })
       response || error_404_page(request)
-    }
-  }
-
-  def parse_range = fn {
-    (false, max) {
-      if max > 0 do
-        {(Sw) 0, (Sw) max - 1}
-      else
-        {:error, "parse_range: max is too low"}
-      end
-    }
-    (range, max) {
-      if Str.starts_with?(range, "bytes=") do
-        range = Str.slice(range, 6, -1)
-        [start, end_] = Str.split(range, "-")
-        if start do
-          start = (Sw) start
-          end_ = if end_ != "" do
-            (Sw) end_
-          else
-            (Sw) max - 1
-          end
-          if start > end_ do
-            {:error, "parse_range: start > end"}
-          else
-            if end_ >= max do
-              {:error, "parse_range: end >= max"}
-            else
-              {start, end_}
-            end
-          end
-        else
-          if max >= 1 do
-            {(Sw) 0, (Sw) max - 1}
-          else
-            {:error, "parse_range: max < 1"}
-          end
-        end
-      else
-        if max >= 1 do
-          { (Sw) 0, (Sw) max - 1 }
-        else
-          {:error, "parse_range: max < 1"}
-        end
-      end
     }
   }
 

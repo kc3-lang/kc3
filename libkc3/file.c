@@ -494,6 +494,10 @@ s_list ** file_list_recursive (const s_str *path, s_list **dest)
 p_tuple * file_mmap (s64 fd, uw start, uw end, p_tuple *dest)
 {
   void *m;
+  uw map_size;
+  uw map_start;
+  long page_size;
+  uw start_offset;
   uw size;
   s_tuple *tuple;
   assert(fd >= 0);
@@ -506,20 +510,30 @@ p_tuple * file_mmap (s64 fd, uw start, uw end, p_tuple *dest)
     return NULL;
   }
   size = end - start;
-  m = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, start);
+  if ((page_size = sysconf(_SC_PAGESIZE)) <= 0) {
+    err_puts("file_mmap: sysconf _SC_PAGESIZE");
+    close(fd);
+    return NULL;
+  }
+  map_start = start - start % (uw) page_size;
+  start_offset = start - map_start;
+  map_size = end - map_start;
+  m = mmap(NULL, map_size, PROT_READ, MAP_PRIVATE, fd, map_start);
   if (m == MAP_FAILED) {
     close(fd);
     return NULL;
   }
-  if (! ptuple_init(&tuple, 4)) {
-    munmap(m, size);
+  if (! ptuple_init(&tuple, 6)) {
+    munmap(m, map_size);
     close(fd);
     return NULL;
   }
   tag_init_psym(tuple->tag, &g_sym_mmap);
   tag_init_s64( tuple->tag + 1, fd);
   tag_init_uw(  tuple->tag + 2, size);
-  tag_init_ptr( tuple->tag + 3, m);
+  tag_init_ptr( tuple->tag + 3, (u8 *) m + start_offset);
+  tag_init_uw(  tuple->tag + 4, map_size);
+  tag_init_ptr( tuple->tag + 5, m);
   *dest = tuple;
   return dest;
 }

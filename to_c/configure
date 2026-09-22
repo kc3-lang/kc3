@@ -13,7 +13,9 @@
 
 set -e
 
-echo "$0"
+CONFIGURE_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+echo "${CONFIGURE_DIR}/configure"
 export BUILD_TOP="$(dirname "$PWD")"
 export DIR="$(basename $PWD)"
 export SRC_TOP="$(dirname "$(cd "$(dirname "$0")" && pwd)")"
@@ -158,4 +160,5 @@ build_lib
 update_config_mk
 update_makefile
 
-(cd kc3_to_c && ./configure)
+mkdir -p kc3_to_c
+(cd kc3_to_c && "${CONFIGURE_DIR}/kc3_to_c/configure")

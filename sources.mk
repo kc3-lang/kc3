@@ -1686,6 +1686,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/html.kc3" \
 	"lib/kc3/0.1/http.kc3" \
 	"lib/kc3/0.1/http/api.kc3" \
+	"lib/kc3/0.1/http/range.kc3" \
 	"lib/kc3/0.1/http/request.kc3" \
 	"lib/kc3/0.1/http/response.kc3" \
 	"lib/kc3/0.1/http/upload.kc3" \
@@ -1719,6 +1720,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/kpkg/repos/libbsd.kc3" \
 	"lib/kc3/0.1/kpkg/repos/libevent.kc3" \
 	"lib/kc3/0.1/kpkg/repos/libffi.kc3" \
+	"lib/kc3/0.1/kpkg/repos/libgit2.kc3" \
 	"lib/kc3/0.1/kpkg/repos/libiconv.kc3" \
 	"lib/kc3/0.1/kpkg/repos/libmd.kc3" \
 	"lib/kc3/0.1/kpkg/repos/libpng.kc3" \
@@ -2166,6 +2168,12 @@ KC3_TEST_HTTP_SOURCES = \
 	"test/http/11_https_encode_form.kc3" \
 	"test/http/11_https_encode_form.out.expected" \
 	"test/http/11_https_encode_form.ret.expected" \
+	"test/http/12_range.kc3" \
+	"test/http/12_range.out.expected" \
+	"test/http/12_range.ret.expected" \
+	"test/http/13_range_response.kc3" \
+	"test/http/13_range_response.out.expected" \
+	"test/http/13_range_response.ret.expected" \
 	"test/http/mime.types" \
 	"test/http_test" \
 
@@ -2487,6 +2495,7 @@ KC3_OTHER_SOURCES = \
 	"kc3.version" \
 	"libkc3/tag_init.rb" \
 	"license.h" \
+	"opt.md" \
 	"sources.mk" \
 	"sources.sh" \
 

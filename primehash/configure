@@ -13,7 +13,10 @@
 
 set -e
 
-echo "$0"
+CONFIGURE_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-(cd primehash32 && ./configure; )
-(cd primehash64 && ./configure; )
+echo "${CONFIGURE_DIR}/configure"
+
+mkdir -p primehash32 primehash64
+(cd primehash32 && "${CONFIGURE_DIR}/primehash32/configure"; )
+(cd primehash64 && "${CONFIGURE_DIR}/primehash64/configure"; )

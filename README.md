@@ -83,13 +83,18 @@ There are now seven full applications written in KC3 that we know of :
 
  - libkc3
    - Struct update `%Module{old | field1: value, field2: value}`
-   - `List.map_join()` useful for intermediate template rendering
+   - Added `List.map_join()` for intermediate template rendering
+   - Added `List.map_filter()` for macro-style mapping and filtering
+     without adding a function frame per iteration
    - removed alloc calls from `Callable` call eval execution path
    - fixed EOF conditions in the parser
-   - [TODO] marshall facts db as full data structures and not as
-     logical triples
+   - marshall facts db as full data structures and not as triples
    - [TODO] kc3 to C
    - [TODO] kc3 to Common Lisp
+
+ - kc3c
+   - kc3c compiles (caches) loading of kc3 files to kc3c files
+   - fixed lib files so that Makfile now builds the whole of lib/kc3/0.1
 
  - IKC3/KC3S
    - report errors with more context
@@ -97,14 +102,20 @@ There are now seven full applications written in KC3 that we know of :
  - EKC3
    - compile and load .ekc3 files from/to .ekc3c
 
+ - Git
+   - Use bloom filters when available (look for git commit graph if it exists)
+   - Optimize kc3_git_log long requests (from more than a minute for some paths
+     to a few milliseconds)
+   - Support ODB cache for git.kmx.io (1024 repos in memory)
+
  - HTTPd
    - fixed bugs in the HTTP request parser
    - [TODO] test partial requests support (fx)
 
  - primehash64
-   - added new bit rotation and incrementation hashing called PrimeHash.
+   - added new byte rotation and incrementation hashing called PrimeHash.
      This is not a cryptographic hash, but only a hash table bucket
-     selector. It competes with the hases commonly used in Node.JS and
+     selector. It competes with hashes commonly found in Node.JS and
      Google Chrome. Once disassembled in godbolt this implementation is
      even shorter. See our blog post about how we achieved perfect
      hashing with PrimeHash in git.kmx.io.
@@ -173,7 +184,6 @@ to discover how to use KC3 for your own projects.
    - OAuth2 / jwt
    - dynamic router
      - def_route(:get, "/user/:id/articles/*slug/edit", UserArticlesController.edit)
- - tls
  - fx
    - chaining of audio and video previews (folder as a playlist)
    - tags
@@ -209,17 +219,8 @@ to discover how to use KC3 for your own projects.
      - with ignore variables
    - math
      - arbitrary precision floating point numbers (decimals)
-   - enums
-   - unions
    - errors (setjmp, longjmp)
        - ffi ?
          - libdwarf
-   - control structures
-     - when
-     - unless
-     - switch/case/cond
    - livebook
      - gaussian
-   - buf_sha256
-   - buf_popen
-   - tests

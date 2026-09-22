@@ -11,8 +11,6 @@
 ## THIS SOFTWARE.
 
 require Buf
-require Compare
-require List
 
 dlopen("http.so")
 
@@ -41,16 +39,10 @@ defmodule HTTP.Request do
 
   def clean = cfn Void "http_request_clean" (HTTP.Request)
 
-  def header_find_if = fn ({h_name, h_value}) do
-    if ! Compare.str_case_insensitive(header_name, h_name) do
-      h_value
-    end
-  end
-
   def header_get = cfn Tag "http_request_header_get" (HTTP.Request, Str, Result)
 
   def header = fn (request, header_name) {
-    List.find_if(request.headers, HTTP.Request.header_find_if)
+    HTTP.Request.header_get(request, header_name)
   }
 
 end
