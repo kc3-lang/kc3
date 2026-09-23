@@ -29,6 +29,7 @@ Components :
  - The pure C11 `libkc3` library is a full KC3 parser and interpreter.
  - `ikc3` is the interactive interpreter (verbose).
  - `kc3s` is the script interpreter (same as ikc3 but terse).
+ - `kc3c` compiles a cache of source files from stdin with .kc3c suffix.
  - There are several C libraries which are installed in `lib/kc3/0.1`
    using the `make lib_links` command.
  - There is a web server in httpd : `kc3_httpd`.
