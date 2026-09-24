@@ -244,6 +244,7 @@ typedef struct float_s                 s_float;
 typedef struct fn                      s_fn;
 typedef struct fn_clause               s_fn_clause;
 typedef struct frame                   s_frame;
+typedef struct hash                    t_hash;
 typedef struct ht                      s_ht;
 typedef struct ht_iterator             s_ht_iterator;
 typedef struct ident                   s_ident;
@@ -309,7 +310,6 @@ typedef union tag_data      u_tag_data;
 typedef u32             character;
 typedef s_tag *         t_facts_spec[];
 typedef s64             t_fd;
-typedef u64             t_hash;
 typedef u64             t_skiplist_height;
 typedef s64             t_socket;
 
@@ -433,6 +433,11 @@ struct facts_log_item {
   s_tag *subject;
   s_tag *predicate;
   s_tag *object;
+};
+
+struct hash {
+  u64 state[4];
+  uw size;
 };
 
 struct ht_iterator {

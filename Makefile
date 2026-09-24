@@ -962,13 +962,13 @@ json_debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C json debug
 
-kc3-${KC3_VERSION}.tar.gz: kc3.index kc3.primehash32 kc3.primehash64
+kc3-${KC3_VERSION}.tar.gz: kc3.index kc3.primehash32 kc3.primehash64 kc3.sha1 kc3.sha256 kc3.sha512
 	rm -rf kc3-${KC3_VERSION}.old
 	if [ -d kc3-${KC3_VERSION} ]; then \
 		mv kc3-${KC3_VERSION} kc3-${KC3_VERSION}.old; \
 	fi
 	mkdir kc3-${KC3_VERSION}
-	{ cat kc3.index; echo kc3.primehash64; echo kc3.primehash32; } | pax -rw kc3-${KC3_VERSION}
+	{ cat kc3.index; echo kc3.primehash32; echo kc3.primehash64; echo kc3.sha1; echo kc3.sha256; echo kc3.sha512; } | pax -rw kc3-${KC3_VERSION}
 	pax -w kc3-${KC3_VERSION} | gzip -9 > kc3-${KC3_VERSION}.tar.gz
 
 kc3.index: sources.mk Makefile
@@ -1005,7 +1005,6 @@ kc3.index: sources.mk Makefile
 	rm kc3.index.tmp
 
 kc3.primehash32: kc3.index
-	${MAKE} -C primehash
 	time ./bin/primehash32 < kc3.index -h kc3.primehash32.tmp
 	if ! [ -f kc3.primehash32 ] || \
 	   ! cmp kc3.primehash32 kc3.primehash32.tmp >/dev/null 2>&1; \
@@ -1016,7 +1015,6 @@ kc3.primehash32: kc3.index
 	fi
 
 kc3.primehash64: kc3.index
-	${MAKE} -C primehash
 	time ./bin/primehash64 < kc3.index -h kc3.primehash64.tmp
 	if ! [ -f kc3.primehash64 ] || \
 	   ! cmp kc3.primehash64 kc3.primehash64.tmp >/dev/null 2>&1; \
@@ -1024,6 +1022,39 @@ kc3.primehash64: kc3.index
 		mv kc3.primehash64.tmp kc3.primehash64; \
 	else \
 		rm kc3.primehash64.tmp; \
+	fi
+
+kc3.sha1: kc3.index
+	rm -f kc3.sha1.tmp
+	time sh -c 'while read F; do sha1 "$$F" >> kc3.sha1.tmp; done < kc3.index'
+	if ! [ -f kc3.sha1 ] || \
+	   ! cmp kc3.sha1 kc3.sha1.tmp >/dev/null 2>&1; \
+	then \
+		mv kc3.sha1.tmp kc3.sha1; \
+	else \
+		rm kc3.sha1.tmp; \
+	fi
+
+kc3.sha256: kc3.index
+	rm -f kc3.sha256.tmp
+	time sh -c 'while read F; do sha256 "$$F" >> kc3.sha256.tmp; done < kc3.index'
+	if ! [ -f kc3.sha256 ] || \
+	   ! cmp kc3.sha256 kc3.sha256.tmp >/dev/null 2>&1; \
+	then \
+		mv kc3.sha256.tmp kc3.sha256; \
+	else \
+		rm kc3.sha256.tmp; \
+	fi
+
+kc3.sha512: kc3.index
+	rm -f kc3.sha512.tmp
+	time sh -c 'while read F; do sha512 "$$F" >> kc3.sha512.tmp; done < kc3.index'
+	if ! [ -f kc3.sha512 ] || \
+	   ! cmp kc3.sha512 kc3.sha512.tmp >/dev/null 2>&1; \
+	then \
+		mv kc3.sha512.tmp kc3.sha512; \
+	else \
+		rm kc3.sha512.tmp; \
 	fi
 
 kc3c:
@@ -2036,7 +2067,11 @@ whitespace:
 	json_cov \
 	json_debug \
 	kc3.index \
+	kc3.primehash32 \
 	kc3.primehash64 \
+	kc3.sha1 \
+	kc3.sha256 \
+	kc3.sha512 \
 	kc3c \
 	kc3c_asan \
 	kc3c_cov \

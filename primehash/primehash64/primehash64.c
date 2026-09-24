@@ -68,11 +68,14 @@ int main (int argc, char **argv)
       goto error;
     }
     char a[PRIMEHASH64_BUF_SIZE];
-    u64 h_u64 = 0;
+    t_hash hash;
+    u64 h_u64;
     s_str str = {0};
+    primehash_u64_init_inline(&hash, 0);
     str.ptr.p_pchar = a;
     while ((str.size = fread(a, 1, sizeof(a), in_fp)))
-      h_u64 = primehash_u64_inline(&str, h_u64);
+      primehash_u64_update_inline(&hash, str.ptr.p_pu8, str.size);
+    h_u64 = primehash_u64_finalize_inline(&hash, 0);
     fclose(in_fp);
     static const char hex[] = "0123456789abcdef";
     i = 0;

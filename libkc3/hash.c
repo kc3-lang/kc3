@@ -39,7 +39,7 @@ void hash_clean (t_hash *hash)
 void hash_init (t_hash *hash)
 {
   assert(hash);
-  *hash = 0;
+  primehash_u64_init_inline(hash, 0);
 }
 
 uw hash_tag (s_tag *tag)
@@ -60,13 +60,13 @@ uw hash_tag (s_tag *tag)
 uw hash_to_uw (t_hash *hash)
 {
   assert(hash);
-  return *hash;
+  return (uw) primehash_u64_finalize_inline(hash, 0);
 }
 
 u64 hash_to_u64 (t_hash *hash)
 {
   assert(hash);
-  return *hash;
+  return primehash_u64_finalize_inline(hash, 0);
 }
 
 bool hash_update_1 (t_hash *hash, const char *p)

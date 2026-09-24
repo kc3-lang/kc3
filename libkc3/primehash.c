@@ -12,6 +12,10 @@
  */
 #include "primehash.h"
 
+#if defined(PRIMEHASH_HAVE_AVX2_DISPATCH)
+# include <immintrin.h>
+#endif
+
 #define PRIMEHASH_MIX_U32(byte) {                         \
     (u8) (byte),                                          \
     (u8) (PRIMEHASH_ROTATE_U8(byte, 1) ^                  \
@@ -69,6 +73,56 @@ const u8 g_primehash_mix_u64[256][8] = {
   PRIMEHASH_MIX_TABLE(PRIMEHASH_MIX_U64)
 };
 
+#if defined(PRIMEHASH_HAVE_AVX2_DISPATCH)
+
+__attribute__((target("avx2")))
+t_hash *
+primehash_u64_update_avx2 (t_hash *hash, const u8 *data, uw size)
+{
+  uw block_size;
+  __m256i constant;
+  __m256i hash_4;
+
+  if (! size)
+    return hash;
+  while (size && (hash->size & 3)) {
+    primehash_u64_update_byte_inline(hash, *data);
+    data++;
+    size--;
+  }
+  constant = _mm256_set_epi64x(PRIMEHASH_U64_C3,
+                               PRIMEHASH_U64_C2,
+                               PRIMEHASH_U64_C1,
+                               PRIMEHASH_U64_C0);
+  hash_4 = _mm256_loadu_si256((const __m256i *) hash->state);
+  block_size = size & ~((uw) 3);
+  hash->size += block_size;
+  size -= block_size;
+  while (block_size) {
+    __m256i mix;
+
+    mix = _mm256_set_epi64x(primehash_mix_u64_inline(data[3]),
+                            primehash_mix_u64_inline(data[2]),
+                            primehash_mix_u64_inline(data[1]),
+                            primehash_mix_u64_inline(data[0]));
+    hash_4 = _mm256_add_epi64(hash_4,
+                             _mm256_slli_epi64(hash_4, 4));
+    hash_4 = _mm256_xor_si256(hash_4, constant);
+    hash_4 = _mm256_xor_si256(hash_4, mix);
+    data += 4;
+    block_size -= 4;
+  }
+  _mm256_storeu_si256((__m256i *) hash->state, hash_4);
+  while (size) {
+    primehash_u64_update_byte_inline(hash, *data);
+    data++;
+    size--;
+  }
+  return hash;
+}
+
+#endif
+
 #define DEF_PRIMEHASH(type)                              \
   type primehash_ ## type (const s_str *key, type hash)  \
   {                                                      \
@@ -102,5 +156,10 @@ const u8 g_primehash_mix_u64[256][8] = {
 DEF_PRIMEHASH(u8)
 DEF_PRIMEHASH(u16)
 DEF_PRIMEHASH(u32)
-DEF_PRIMEHASH(u64)
 DEF_PRIMEHASH(uw)
+
+u64
+primehash_u64 (const s_str *key, u64 hash)
+{
+  return primehash_u64_inline(key, hash);
+}

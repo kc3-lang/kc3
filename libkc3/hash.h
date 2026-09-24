@@ -89,11 +89,9 @@ bool hash_update_void (t_hash *hash);
 
 INLINE bool hash_update (t_hash *hash, const void *data, uw size)
 {
-  s_str str;
   assert(hash);
   assert(data);
-  str_init(&str, NULL, size, (const char *) data);
-  *hash = primehash_u64_inline(&str, *hash);
+  primehash_u64_update_inline(hash, (const u8 *) data, size);
   return true;
 }
 

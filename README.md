@@ -90,8 +90,9 @@ There are now seven full applications written in KC3 that we know of :
    - removed alloc calls from `Callable` call eval execution path
    - fixed EOF conditions in the parser
    - marshall facts db as full data structures and not as triples
-   - [TODO] kc3 to C
-   - [TODO] kc3 to Common Lisp
+   - created and used primehash hash function for every hash in libkc3
+   - optimized primehash implementations using static xor tables
+   - added AVX2 implementation for primehash_u64
 
  - kc3c
    - kc3c compiles (caches) loading of kc3 files to kc3c files
@@ -111,7 +112,8 @@ There are now seven full applications written in KC3 that we know of :
 
  - HTTPd
    - fixed bugs in the HTTP request parser
-   - [TODO] test partial requests support (fx)
+   - fix mmap of static files
+   - range requests support
 
  - primehash32 and primehash64
    - added new byte rotation and incrementation hashing called PrimeHash.
@@ -181,6 +183,9 @@ to discover how to use KC3 for your own projects.
 
 ## TODO
 
+ - libkc3
+   - kc3 to C
+   - kc3 to Common Lisp
  - HTTPd
    - OAuth2 / jwt
    - dynamic router

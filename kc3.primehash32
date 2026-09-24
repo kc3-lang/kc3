@@ -4,8 +4,8 @@ f90cc618 AUTHORS.md
 8b5158e7 CLAUDE.md
 02dcf8c9 CONTRIBUTING.md
 e4f8442d LICENSE.md
-ad387250 Makefile
-204eaa58 README.md
+658a9671 Makefile
+cd5b15f5 README.md
 e80187b1 TODO.md
 cbd95249 config.subr
 fdd04eef config_common
@@ -730,7 +730,7 @@ a8960981 lib/kc3/0.1/http/range.kc3
 ac7ca405 lib/kc3/0.1/http/request.kc3
 93e901c3 lib/kc3/0.1/http/response.kc3
 f9aa8e13 lib/kc3/0.1/http/upload.kc3
-67ac1d2b lib/kc3/0.1/httpd.kc3
+f711720d lib/kc3/0.1/httpd.kc3
 33099b8d lib/kc3/0.1/httpd/route.kc3
 722e3ca2 lib/kc3/0.1/httpd/static.kc3
 00000000 lib/kc3/0.1/https.kc3
@@ -744,10 +744,10 @@ a2f26444 lib/kc3/0.1/inspect.kc3
 956ef823 lib/kc3/0.1/io.kc3
 d550740d lib/kc3/0.1/json.kc3
 19658622 lib/kc3/0.1/kc3.1.kc3
-6def3dc2 lib/kc3/0.1/kc3.dump
+2dcb414b lib/kc3/0.1/kc3.dump
 2c436ff7 lib/kc3/0.1/kc3.facts
 dedcc1b0 lib/kc3/0.1/kc3/op.kc3
-ca18f6a4 lib/kc3/0.1/kpkg.dump
+67e69845 lib/kc3/0.1/kpkg.dump
 62a316c4 lib/kc3/0.1/kpkg.kc3
 4ff83f58 lib/kc3/0.1/kpkg/package.kc3
 8744d6bf lib/kc3/0.1/kpkg/repos/automake.kc3
@@ -1109,8 +1109,8 @@ d0617e52 libkc3/fn_clause.h
 f60c60f2 libkc3/frame.c
 30af0088 libkc3/frame.h
 926cabcf libkc3/gen.mk
-a0fc45e2 libkc3/hash.c
-ca21b509 libkc3/hash.h
+13a46e04 libkc3/hash.c
+4e69f170 libkc3/hash.h
 f480531c libkc3/hotp.c
 70f58c8c libkc3/hotp.h
 3aea0024 libkc3/ht.c
@@ -1172,8 +1172,8 @@ fa858249 libkc3/plist.h
 9c2e535c libkc3/pointer.h
 8b6a5deb libkc3/pretty.c
 a39e6d40 libkc3/pretty.h
-62db119e libkc3/primehash.c
-db53134a libkc3/primehash.h
+4eaa9762 libkc3/primehash.c
+2e261156 libkc3/primehash.h
 efdf2a92 libkc3/pstruct.c
 abaff676 libkc3/pstruct.h
 ff4fa4ce libkc3/pstruct_type.c
@@ -1323,7 +1323,7 @@ bdb1a18a libkc3/to_lisp.c
 12487e92 libkc3/tommath.h
 930cb583 libkc3/tuple.c
 8c932b36 libkc3/tuple.h
-2c9c3dc3 libkc3/types.h
+c9116877 libkc3/types.h
 002b17a9 libkc3/u.c.in
 040f3942 libkc3/u.h.in
 803ab1b3 libkc3/u16.c
@@ -1590,7 +1590,7 @@ f5f15be2 primehash/primehash32/primehash32.c
 6a38ab9a primehash/primehash32/update_sources
 4ba394a4 primehash/primehash64/Makefile
 4155171f primehash/primehash64/configure
-8d61ab02 primehash/primehash64/primehash64.c
+7659ae08 primehash/primehash64/primehash64.c
 e787d93b primehash/primehash64/sources.mk
 2a8bfca0 primehash/primehash64/sources.sh
 6a38ab9a primehash/primehash64/update_sources
