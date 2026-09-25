@@ -4,7 +4,7 @@ require Socket.Buf
 require Thread
 
 do
-  path = "14_range_large_response_fixture.bin"
+  path = "15_range_large_response_fixture.bin"
   a = "A"
   b = "B"
   c = "C"

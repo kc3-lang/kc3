@@ -244,6 +244,11 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_str *value;
   if (! req || ! buf)
     return NULL;
+  if (buf_peek_1(buf, "\x16\x03") > 0) {
+    err_puts("http_request_buf_parse: TLS handshake received on plain "
+             "HTTP listener");
+    return NULL;
+  }
   pthread_once(&g_statics_once, http_request_statics_init);
   if (! g_statics_ok)
     goto restore;

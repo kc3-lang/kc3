@@ -2,5 +2,3 @@ export LD_LIBRARY_PATH="$PWD/libkc3:$PWD/lib/kc3/0.1:$PWD/epoll:$PWD/event_poll:
 export DYLD_LIBRARY_PATH="$PWD/libkc3:$PWD/ekc3:$PWD/gl:$PWD/image:$PWD/http:$PWD/markdown:$PWD/socket:$PWD/tls:$PWD/to_c:$PWD/lib/kc3/0.1:$DYLD_LIBRARY_PATH"
 #export MALLOC_OPTIONS=CDFGJU
 export SITE_KMX_IO_SECRET="RPRTl5bPXVXwxBBHPLS5JZeAiLKoPr1c"
-export SITE_KMX_IO_SITE_KEY="6LeRj84tAAAAAAS4wrXrnYXkgcsXtceDXfsft49u"
-export SITE_KMX_IO_SECRET_KEY="6LeRj84tAAAAALqcFIJiWd3caC-xy-6trk0BOLW2"

@@ -2,11 +2,11 @@ require HTTPd.Static
 
 do
   root = "."
-  File.write_str("13_range_response_fixture.txt", "Test\n\nOK !\n")
+  File.write_str("14_range_response_fixture.txt", "Test\n\nOK !\n")
   request = %HTTP.Request{method: GET,
                           headers: [{"Range", "bytes=7-9"}]}
   response = HTTPd.Static.show(request, root,
-                               "/13_range_response_fixture.txt")
+                               "/14_range_response_fixture.txt")
   buf = Buf.new_alloc((Uw) 1024)
   HTTP.Response.buf_write(response, buf, true)
   raw = Buf.read_to_str(buf)
@@ -23,7 +23,7 @@ do
   request = %HTTP.Request{method: GET,
                           headers: [{"Range", "bytes=99-"}]}
   response = HTTPd.Static.show(request, ".",
-    "/13_range_response_fixture.txt")
+    "/14_range_response_fixture.txt")
   {response.code,
    HTTP.Response.header_get(response, "Accept-Ranges"),
    HTTP.Response.header_get(response, "Content-Range")}
@@ -33,7 +33,7 @@ do
   request = %HTTP.Request{method: GET,
                           headers: [{"Range", "bytes=0-10"}]}
   response = HTTPd.Static.show(request, ".",
-    "/13_range_response_fixture.txt")
+    "/14_range_response_fixture.txt")
   buf = Buf.new_alloc((Uw) 1024)
   HTTP.Response.buf_write(response, buf, true)
   Buf.delete(buf)
@@ -46,7 +46,7 @@ do
   request = %HTTP.Request{method: GET,
                           headers: [{"Range", "bytes=broken"}]}
   response = HTTPd.Static.show(request, ".",
-    "/13_range_response_fixture.txt")
+    "/14_range_response_fixture.txt")
   buf = Buf.new_alloc((Uw) 1024)
   HTTP.Response.buf_write(response, buf, true)
   Buf.delete(buf)
@@ -59,7 +59,7 @@ do
   request = %HTTP.Request{method: HEAD,
                           headers: [{"Range", "bytes=7-9"}]}
   response = HTTPd.Static.show(request, ".",
-    "/13_range_response_fixture.txt")
+    "/14_range_response_fixture.txt")
   buf = Buf.new_alloc((Uw) 1024)
   HTTP.Response.buf_write(response, buf, false)
   Buf.delete(buf)
@@ -73,6 +73,6 @@ do
   result = {response.code,
             response.body,
             HTTP.Response.header_get(response, "Content-Length")}
-  File.unlink("13_range_response_fixture.txt")
+  File.unlink("14_range_response_fixture.txt")
   result
 end

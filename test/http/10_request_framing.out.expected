@@ -126,6 +126,18 @@ void
 void
 (server_client = Socket.Buf.accept(server)) ; void
 void
+Buf.write_str(client.buf_rw.w, "\x16\x03\x01 ")
+(Sw) 4
+http_request_buf_parse: TLS handshake received on plain HTTP listener
+void
+Socket.Buf.close(client)
+void
+Socket.Buf.close(server_client)
+void
+(client = Socket.Buf.connect("127.0.0.1", "57004")) ; void
+void
+(server_client = Socket.Buf.accept(server)) ; void
+void
 Buf.write_str(client.buf_rw.w, "POST / HTTP/1.1\r\nTransfer-Encoding: chunked\r\n\r\n")
 (Sw) 47
 http_request_buf_parse: unsupported Transfer-Encoding

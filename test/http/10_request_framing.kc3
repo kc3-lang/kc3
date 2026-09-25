@@ -168,6 +168,19 @@ Socket.Buf.close(client)
 quote Socket.Buf.close(server_client)
 Socket.Buf.close(server_client)
 
+# A TLS ClientHello on a plain HTTP listener gets a useful diagnostic.
+quote (client = Socket.Buf.connect("127.0.0.1", "57004")) ; void
+(client = Socket.Buf.connect("127.0.0.1", "57004")) ; void
+quote (server_client = Socket.Buf.accept(server)) ; void
+(server_client = Socket.Buf.accept(server)) ; void
+quote Buf.write_str(client.buf_rw.w, "\x16\x03\x01 ")
+Buf.write_str(client.buf_rw.w, "\x16\x03\x01 ")
+HTTP.Request.buf_parse(server_client.buf_rw.r)
+quote Socket.Buf.close(client)
+Socket.Buf.close(client)
+quote Socket.Buf.close(server_client)
+Socket.Buf.close(server_client)
+
 # Unsupported transfer coding is rejected instead of desynchronizing.
 quote (client = Socket.Buf.connect("127.0.0.1", "57004")) ; void
 (client = Socket.Buf.connect("127.0.0.1", "57004")) ; void
