@@ -65,11 +65,14 @@ int main (int argc, char **argv)
       goto error;
     }
     char a[PRIMEHASH32_BUF_SIZE];
+    t_hash hash;
     u32 h_u32 = 0;
     s_str str = {0};
+    primehash_u32_init_inline(&hash, 0);
     str.ptr.p_pchar = a;
     while ((str.size = fread(a, 1, sizeof(a), in_fp)))
-      h_u32 = primehash_u32_inline(&str, h_u32);
+      primehash_u32_update_inline(&hash, str.ptr.p_pu8, str.size);
+    h_u32 = primehash_u32_finalize_inline(&hash, 0);
     fclose(in_fp);
     static const char hex[] = "0123456789abcdef";
     i = 0;

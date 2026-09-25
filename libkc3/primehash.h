@@ -15,6 +15,7 @@
 
 #if (defined(__i386__) || defined(__x86_64__)) && \
     (defined(__GNUC__) || defined(__clang__))
+# define PRIMEHASH_HAVE_SSE2_DISPATCH 1
 # define PRIMEHASH_HAVE_AVX2_DISPATCH 1
 #endif
 #include <string.h>
@@ -27,8 +28,16 @@
 #define PRIMEHASH_ROTATE_U8(byte, bits) \
   ((u8) (((byte) >> (bits)) | ((byte) << (8 - (bits)))))
 
+#define PRIMEHASH_ROTATE_U32(word, bits) \
+  (((word) << (bits)) | ((word) >> (32 - (bits))))
+
 #define PRIMEHASH_ROTATE_U64(word, bits) \
   (((word) << (bits)) | ((word) >> (64 - (bits))))
+
+#define PRIMEHASH_U32_C0 0x85a308d3U
+#define PRIMEHASH_U32_C1 0x03707344U
+#define PRIMEHASH_U32_C2 0x299f31d0U
+#define PRIMEHASH_U32_C3 0xec4e6c89U
 
 #define PRIMEHASH_U64_C0 0x243f6a8885a308d3ULL
 #define PRIMEHASH_U64_C1 0x13198a2e03707344ULL
@@ -38,10 +47,137 @@
 extern const u8 g_primehash_mix_u32[256][4];
 extern const u8 g_primehash_mix_u64[256][8];
 
+#if defined(PRIMEHASH_HAVE_SSE2_DISPATCH)
+t_hash * primehash_u32_update_sse2 (t_hash *hash, const u8 *data,
+                                    uw size);
+#endif
+
 #if defined(PRIMEHASH_HAVE_AVX2_DISPATCH)
 t_hash * primehash_u64_update_avx2 (t_hash *hash, const u8 *data,
                                     uw size);
 #endif
+
+INLINE u32
+primehash_mix_u32_inline (u8 byte)
+{
+  u32 mix;
+
+  memcpy(&mix, g_primehash_mix_u32[byte], sizeof(mix));
+  return mix;
+}
+
+INLINE u32
+primehash_u32_finalize_inline (const t_hash *state, u32 hash)
+{
+  u32 state_4[4];
+
+  if (! state->size)
+    return hash;
+  memcpy(state_4, state->state, sizeof(state_4));
+  hash ^= state_4[0];
+  hash ^= PRIMEHASH_ROTATE_U32(state_4[1], 7);
+  hash ^= PRIMEHASH_ROTATE_U32(state_4[2], 13);
+  hash ^= PRIMEHASH_ROTATE_U32(state_4[3], 21);
+  hash ^= (u32) state->size * 0x9e3779b9U;
+  hash ^= hash >> 16;
+  hash *= 0x85ebca6bU;
+  hash ^= hash >> 13;
+  hash *= 0xc2b2ae35U;
+  hash ^= hash >> 16;
+  return hash;
+}
+
+INLINE t_hash *
+primehash_u32_init_inline (t_hash *state, u32 hash)
+{
+  u32 state_4[4];
+
+  state_4[0] = hash ^ PRIMEHASH_U32_C0;
+  state_4[1] = hash ^ PRIMEHASH_U32_C1;
+  state_4[2] = hash ^ PRIMEHASH_U32_C2;
+  state_4[3] = hash ^ PRIMEHASH_U32_C3;
+  memcpy(state->state, state_4, sizeof(state_4));
+  state->state[2] = 0;
+  state->state[3] = 0;
+  state->size = 0;
+  return state;
+}
+
+INLINE void
+primehash_u32_update_byte_inline (t_hash *hash, u8 byte)
+{
+  u8 lane;
+  u32 state_4[4];
+
+  memcpy(state_4, hash->state, sizeof(state_4));
+  lane = (u8) (hash->size & 3);
+  state_4[lane] *= 17;
+  switch (lane) {
+  case 0: state_4[0] ^= PRIMEHASH_U32_C0; break;
+  case 1: state_4[1] ^= PRIMEHASH_U32_C1; break;
+  case 2: state_4[2] ^= PRIMEHASH_U32_C2; break;
+  default: state_4[3] ^= PRIMEHASH_U32_C3; break;
+  }
+  state_4[lane] ^= primehash_mix_u32_inline(byte);
+  memcpy(hash->state, state_4, sizeof(state_4));
+  hash->size++;
+}
+
+INLINE t_hash *
+primehash_u32_update_scalar_inline (t_hash *hash, const u8 *data,
+                                    uw size)
+{
+  uw i;
+  u8 lane;
+  u32 state_4[4];
+
+  memcpy(state_4, hash->state, sizeof(state_4));
+  i = 0;
+  while (i < size && (hash->size & 3)) {
+    lane = (u8) (hash->size & 3);
+    state_4[lane] = state_4[lane] * 17 ^
+      (lane == 0 ? PRIMEHASH_U32_C0 :
+       lane == 1 ? PRIMEHASH_U32_C1 :
+       lane == 2 ? PRIMEHASH_U32_C2 : PRIMEHASH_U32_C3) ^
+      primehash_mix_u32_inline(data[i]);
+    hash->size++;
+    i++;
+  }
+  while (i + 4 <= size) {
+    state_4[0] = state_4[0] * 17 ^ PRIMEHASH_U32_C0 ^
+      primehash_mix_u32_inline(data[i]);
+    state_4[1] = state_4[1] * 17 ^ PRIMEHASH_U32_C1 ^
+      primehash_mix_u32_inline(data[i + 1]);
+    state_4[2] = state_4[2] * 17 ^ PRIMEHASH_U32_C2 ^
+      primehash_mix_u32_inline(data[i + 2]);
+    state_4[3] = state_4[3] * 17 ^ PRIMEHASH_U32_C3 ^
+      primehash_mix_u32_inline(data[i + 3]);
+    hash->size += 4;
+    i += 4;
+  }
+  while (i < size) {
+    lane = (u8) (hash->size & 3);
+    state_4[lane] = state_4[lane] * 17 ^
+      (lane == 0 ? PRIMEHASH_U32_C0 :
+       lane == 1 ? PRIMEHASH_U32_C1 :
+       lane == 2 ? PRIMEHASH_U32_C2 : PRIMEHASH_U32_C3) ^
+      primehash_mix_u32_inline(data[i]);
+    hash->size++;
+    i++;
+  }
+  memcpy(hash->state, state_4, sizeof(state_4));
+  return hash;
+}
+
+INLINE t_hash *
+primehash_u32_update_inline (t_hash *hash, const u8 *data, uw size)
+{
+#if defined(PRIMEHASH_HAVE_SSE2_DISPATCH)
+  if (size >= 16 && __builtin_cpu_supports("sse2"))
+    return primehash_u32_update_sse2(hash, data, size);
+#endif
+  return primehash_u32_update_scalar_inline(hash, data, size);
+}
 
 INLINE u64
 primehash_mix_u64_inline (u8 byte)
@@ -200,6 +336,31 @@ primehash_u64_inline (const s_str *key, u64 hash)
   return primehash_u64_finalize_inline(&state, hash);
 }
 
+INLINE u32
+primehash_u32_scalar_inline (const s_str *key, u32 hash)
+{
+  t_hash state;
+
+  if (! key->size)
+    return hash;
+  primehash_u32_init_inline(&state, hash);
+  primehash_u32_update_scalar_inline(&state, key->ptr.p_pu8,
+                                     key->size);
+  return primehash_u32_finalize_inline(&state, hash);
+}
+
+INLINE u32
+primehash_u32_inline (const s_str *key, u32 hash)
+{
+  t_hash state;
+
+  if (! key->size)
+    return hash;
+  primehash_u32_init_inline(&state, hash);
+  primehash_u32_update_inline(&state, key->ptr.p_pu8, key->size);
+  return primehash_u32_finalize_inline(&state, hash);
+}
+
 PROTO_PRIMEHASH(u8);
 PROTO_PRIMEHASH(u16);
 PROTO_PRIMEHASH(u32);
@@ -208,7 +369,6 @@ PROTO_PRIMEHASH(uw);
 
 DEF_PRIMEHASH_INLINE(u8)
 DEF_PRIMEHASH_INLINE(u16)
-DEF_PRIMEHASH_INLINE(u32)
 DEF_PRIMEHASH_INLINE(uw)
 
 #endif /* LIBKC3_PRIMEHASH_H */

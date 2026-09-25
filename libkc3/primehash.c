@@ -12,7 +12,8 @@
  */
 #include "primehash.h"
 
-#if defined(PRIMEHASH_HAVE_AVX2_DISPATCH)
+#if defined(PRIMEHASH_HAVE_SSE2_DISPATCH) || \
+    defined(PRIMEHASH_HAVE_AVX2_DISPATCH)
 # include <immintrin.h>
 #endif
 
@@ -72,6 +73,53 @@ const u8 g_primehash_mix_u32[256][4] = {
 const u8 g_primehash_mix_u64[256][8] = {
   PRIMEHASH_MIX_TABLE(PRIMEHASH_MIX_U64)
 };
+
+#if defined(PRIMEHASH_HAVE_SSE2_DISPATCH)
+
+__attribute__((target("sse2")))
+t_hash *
+primehash_u32_update_sse2 (t_hash *hash, const u8 *data, uw size)
+{
+  uw block_size;
+  __m128i constant;
+  __m128i hash_4;
+
+  if (! size)
+    return hash;
+  while (size && (hash->size & 3)) {
+    primehash_u32_update_byte_inline(hash, *data);
+    data++;
+    size--;
+  }
+  constant = _mm_set_epi32(PRIMEHASH_U32_C3, PRIMEHASH_U32_C2,
+                           PRIMEHASH_U32_C1, PRIMEHASH_U32_C0);
+  hash_4 = _mm_loadu_si128((const __m128i *) hash->state);
+  block_size = size & ~((uw) 3);
+  hash->size += block_size;
+  size -= block_size;
+  while (block_size) {
+    __m128i mix;
+
+    mix = _mm_set_epi32(primehash_mix_u32_inline(data[3]),
+                        primehash_mix_u32_inline(data[2]),
+                        primehash_mix_u32_inline(data[1]),
+                        primehash_mix_u32_inline(data[0]));
+    hash_4 = _mm_add_epi32(hash_4, _mm_slli_epi32(hash_4, 4));
+    hash_4 = _mm_xor_si128(hash_4, constant);
+    hash_4 = _mm_xor_si128(hash_4, mix);
+    data += 4;
+    block_size -= 4;
+  }
+  _mm_storeu_si128((__m128i *) hash->state, hash_4);
+  while (size) {
+    primehash_u32_update_byte_inline(hash, *data);
+    data++;
+    size--;
+  }
+  return hash;
+}
+
+#endif
 
 #if defined(PRIMEHASH_HAVE_AVX2_DISPATCH)
 
@@ -155,8 +203,13 @@ primehash_u64_update_avx2 (t_hash *hash, const u8 *data, uw size)
 
 DEF_PRIMEHASH(u8)
 DEF_PRIMEHASH(u16)
-DEF_PRIMEHASH(u32)
 DEF_PRIMEHASH(uw)
+
+u32
+primehash_u32 (const s_str *key, u32 hash)
+{
+  return primehash_u32_inline(key, hash);
+}
 
 u64
 primehash_u64 (const s_str *key, u64 hash)

@@ -36,6 +36,7 @@ void facts_test (void);
 void facts_cursor_test (void);
 void facts_with_test (void);
 void fn_test (void);
+void hash_test (void);
 void ident_test (void);
 void inspect_test (void);
 void list_test (void);
@@ -66,6 +67,7 @@ int main (int argc, char **argv)
   TEST_TARGET(ops);
   TEST_TARGET(bool);
   TEST_TARGET(character);
+  TEST_TARGET(hash);
   TEST_TARGET(buf);
   TEST_TARGET(buf_parse);
   TEST_TARGET(buf_inspect);
