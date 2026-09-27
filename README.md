@@ -93,6 +93,7 @@ There are now seven full applications written in KC3 that we know of :
    - created and used primehash hash function for every hash in libkc3
    - optimized primehash implementations using static xor tables
    - added AVX2 implementation for primehash_u64
+   - added SSE implementation for primehash_u32
 
  - kc3c
    - kc3c compiles (caches) loading of kc3 files to kc3c files
