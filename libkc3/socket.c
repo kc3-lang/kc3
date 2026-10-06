@@ -114,7 +114,6 @@ p_socket socket_init_connect (p_socket s, const s_str *host,
     err_inspect_s32_decimal(e);
     err_write_1(" ");
     err_puts((char *) gai_strerror(e));
-    assert(! "socket_init_connect: getaddrinfo");
     return NULL;
   }
   e = 0;
@@ -145,7 +144,6 @@ p_socket socket_init_connect (p_socket s, const s_str *host,
   freeaddrinfo(res0);
   err_write_1(error_reason);
   err_puts(strerror(e));
-  assert(! "socket_init_connect");
   return NULL;
 }
 

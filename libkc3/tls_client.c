@@ -51,14 +51,12 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
                             port)) {
     alloc_free(tls_client->socket_buf);
     err_puts("kc3_tls_client_init_connect: socket_init_connect");
-    assert(! "kc3_tls_client_init_connect: socket_init_connect");
     return NULL;
   }
   if (tls_connect_socket(*ctx, tls_client->socket_buf->sockfd,
                          host->ptr.p_pchar)) {
     err_write_1("kc3_tls_client_init_connect: tls_connect_socket: ");
     err_puts(tls_error(*ctx));
-    assert(! "kc3_tls_client_init_connect: tls_connect_socket");
     goto clean;
   }
   if (! (tls_client->socket_buf->buf_rw.r = buf_new_alloc(BUF_SIZE))) {
@@ -77,7 +75,6 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
   if (r) {
     err_write_1("kc3_tls_client_init_connect: tls_handshake: ");
     err_puts(tls_error(*ctx));
-    assert(! "kc3_tls_client_init_connect: tls_handshake");
     goto clean;
   }
   if (! tls_buf_open_r(tls_client->socket_buf->buf_rw.r, *ctx)) {
