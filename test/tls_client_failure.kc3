@@ -1,0 +1,15 @@
+require TLS
+require TLS.Client
+require TLS.Config
+
+TLS.init()
+config = TLS.Config.new()
+TLS.Config.set_ca_file(config, TLS.ca_cert_path())
+context = TLS.client()
+TLS.configure(context, config)
+client = TLS.Client.connect(context, "127.0.0.1", "0")
+puts(inspect(client))
+if client do TLS.Client.close(client) end
+TLS.free(context)
+TLS.Config.free(config)
+0

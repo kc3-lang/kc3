@@ -1,0 +1,30 @@
+#!/bin/sh
+## kc3
+## Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+TEST_TOP="$(cd "$(dirname "$0")" && pwd)"
+: "${KC3S:=${TEST_TOP}/../kc3s/kc3s}"
+TMP="$(mktemp -d /tmp/kc3-tls-client-failure.XXXXXXXXXX)" || exit 1
+trap 'rm -rf "${TMP}"' EXIT HUP INT TERM
+
+if ! timeout 10 "${KC3S}" --bool-ptr \
+    --load "${TEST_TOP}/tls_client_failure.kc3" --quit \
+    > "${TMP}/out" 2> "${TMP}/err"; then
+    cat "${TMP}/err" >&2
+    exit 1
+fi
+if [ "$(cat "${TMP}/out")" != "void" ]; then
+    cat "${TMP}/out" >&2
+    cat "${TMP}/err" >&2
+    exit 1
+fi
+echo "ok   TLS connection failure returns void"
