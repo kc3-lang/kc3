@@ -17,6 +17,8 @@
 # include <winsock2.h>
 # include <ws2tcpip.h>
 #else
+# include <fcntl.h>
+# include <poll.h>
 # include <netdb.h>
 # include <netinet/in.h>
 # include <sys/time.h>
@@ -26,6 +28,7 @@
 #include "kc3.h"
 #include "socket.h"
 #include "socket_buf.h"
+#include "timespec.h"
 
 #define KC3_SOCKET_LISTEN_BACKLOG 10
 
@@ -144,6 +147,94 @@ p_socket socket_init_connect (p_socket s, const s_str *host,
   freeaddrinfo(res0);
   err_write_1(error_reason);
   err_puts(strerror(e));
+  return NULL;
+}
+
+/* All stages of a bounded exchange share this monotonic deadline. */
+bool socket_wait (t_socket s, bool write, const s_timespec *deadline)
+{
+  s_timespec now;
+  s_timespec left;
+  int r;
+  int ms;
+#if defined(WIN32) || defined(WIN64)
+  WSAPOLLFD fd = {s, write ? POLLOUT : POLLIN, 0};
+#else
+  struct pollfd fd = {s, write ? POLLOUT : POLLIN, 0};
+#endif
+  while (1) {
+    if (! timespec_init_monotonic(&now))
+      return false;
+    timespec_sub(deadline, &now, &left);
+    if (left.tv_sec < 0 || (! left.tv_sec && ! left.tv_nsec))
+      return false;
+    ms = left.tv_sec > 2147482 ? 2147483647 :
+      left.tv_sec * 1000 + (left.tv_nsec + 999999) / 1000000;
+#if defined(WIN32) || defined(WIN64)
+    r = WSAPoll(&fd, 1, ms);
+    if (r < 0 && WSAGetLastError() == WSAEINTR)
+#else
+    r = poll(&fd, 1, ms);
+    if (r < 0 && errno == EINTR)
+#endif
+      continue;
+    return r > 0 && ! (fd.revents & POLLNVAL);
+  }
+}
+
+/* Numeric addresses avoid an unbounded resolver call before connecting. */
+p_socket socket_init_connect_deadline (p_socket s, const s_str *address,
+                                       const s_str *service,
+                                       const s_timespec *deadline)
+{
+  struct addrinfo hints = {0};
+  struct addrinfo *addresses;
+  struct addrinfo *a;
+  t_socket fd;
+  int error;
+  socklen_t size;
+#if defined(WIN32) || defined(WIN64)
+  u_long nonblocking = 1;
+#endif
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = AI_NUMERICHOST | AI_NUMERICSERV;
+  if (! libsocket_init() ||
+      getaddrinfo(address->ptr.p_pchar, service->ptr.p_pchar, &hints,
+                  &addresses))
+    return NULL;
+  for (a = addresses; a; a = a->ai_next) {
+    if (timespec_timeout_expired(deadline))
+      break;
+    fd = socket(a->ai_family, a->ai_socktype, a->ai_protocol);
+    if (fd < 0)
+      continue;
+#if defined(WIN32) || defined(WIN64)
+    if (ioctlsocket(fd, FIONBIO, &nonblocking))
+#else
+    if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
+#endif
+      goto next;
+    if (connect(fd, a->ai_addr, a->ai_addrlen) < 0) {
+#if defined(WIN32) || defined(WIN64)
+      if (WSAGetLastError() != WSAEWOULDBLOCK)
+#else
+      if (errno != EINPROGRESS)
+#endif
+        goto next;
+      if (! socket_wait(fd, true, deadline))
+        goto next;
+      size = sizeof(error);
+      if (getsockopt(fd, SOL_SOCKET, SO_ERROR, (void *) &error, &size) ||
+          error)
+        goto next;
+    }
+    freeaddrinfo(addresses);
+    *s = fd;
+    return s;
+  next:
+    socket_close(&fd);
+  }
+  freeaddrinfo(addresses);
   return NULL;
 }
 

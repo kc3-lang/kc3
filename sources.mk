@@ -1851,6 +1851,9 @@ KC3_TEST_SOURCES = \
 	"test/test.subr" \
 	"test/test_case_end.rb" \
 	"test/test_runner" \
+	"test/tls_client_failure.kc3" \
+	"test/tls_client_failure_test" \
+	"test/tls_client_timeout_test" \
 	"test/zero" \
 
 KC3_TEST_IKC3_SOURCES = \

@@ -311,18 +311,22 @@ test_socket_debug:
 
 test_tls:
 	KC3S=${BUILD_TOP}/kc3s/kc3s time ./tls_client_failure_test
+	KC3S=${BUILD_TOP}/kc3s/kc3s time ./tls_client_timeout_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s time ./tls_test
 
 test_tls_asan:
 	KC3S=${BUILD_TOP}/kc3s/kc3s_asan time ./tls_client_failure_test
+	KC3S=${BUILD_TOP}/kc3s/kc3s_asan time ./tls_client_timeout_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_asan time ./tls_test
 
 test_tls_cov:
 	KC3S=${BUILD_TOP}/kc3s/kc3s_cov time ./tls_client_failure_test
+	KC3S=${BUILD_TOP}/kc3s/kc3s_cov time ./tls_client_timeout_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_cov time ./tls_test
 
 test_tls_debug:
 	KC3S=${BUILD_TOP}/kc3s/kc3s_debug time ./tls_client_failure_test
+	KC3S=${BUILD_TOP}/kc3s/kc3s_debug time ./tls_client_timeout_test
 	KC3S=${BUILD_TOP}/kc3s/kc3s_debug time ./tls_test
 
 test_valgrind: ${PROG}

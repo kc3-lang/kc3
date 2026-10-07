@@ -585,6 +585,8 @@ struct time {
 
 struct tls_buf {
   p_tls ctx;
+  t_socket sockfd;
+  s_timespec deadline;
 };
 
 struct tuple {

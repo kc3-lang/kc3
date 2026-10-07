@@ -88,6 +88,8 @@ KC3_TEST_SOURCES="$(ls test/*.expected test/*.facts test/*.kc3 \
                        test/*.rb)
 test/test_runner
 test/test.subr
+test/tls_client_failure_test
+test/tls_client_timeout_test
 test/zero"
 sources KC3_TEST_SOURCES "$KC3_TEST_SOURCES"
 

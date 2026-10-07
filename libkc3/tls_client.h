@@ -31,4 +31,8 @@ s_tls_client ** kc3_tls_client_new_connect (s_tls_client **tls_client,
                                             const s_str *host,
                                             const s_str *port);
 
+s_tls_client ** kc3_tls_client_new_connect_timeout
+(s_tls_client **client, p_tls *ctx, const s_str *host,
+ const s_str *port, const s_str *address, u32 seconds);
+
 #endif /* LIBKC3_TLS_CLIENT_H */

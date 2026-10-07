@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+# kc3 -- bounded TLS exchanges against local servers, without live DNS.
+# Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
+#
+# Permission is hereby granted to use this software granted the above
+# copyright notice and this permission paragraph are included in all
+# copies and substantial portions of this software.
+#
+# THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+# PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+# AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+# THIS SOFTWARE.
+import os
+from pathlib import Path
+import socket
+import ssl
+import subprocess
+import tempfile
+import threading
+
+ROOT = Path(__file__).resolve().parent.parent
+KC3S = os.environ.get("KC3S", str(ROOT / "kc3s/kc3s"))
+os.environ.setdefault("LD_LIBRARY_PATH", f"{ROOT}/http:{ROOT}/libkc3")
+
+
+def check(directory, mode, context):
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", 0))
+        listener.listen()
+        listener.settimeout(30)
+        port = listener.getsockname()[1]
+        stopped = threading.Event()
+        errors = []
+
+        def serve():
+            try:
+                connection, _ = listener.accept()
+                with connection:
+                    if mode == "handshake":
+                        stopped.wait(5)
+                        return
+                    with context.wrap_socket(connection, server_side=True) as tls:
+                        request = b""
+                        while b"\r\n\r\n" not in request:
+                            data = tls.recv(4096)
+                            if not data:
+                                return
+                            request += data
+                        if mode == "slow":
+                            for byte in b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nOK":
+                                tls.send(bytes([byte]))
+                                if stopped.wait(0.1):
+                                    break
+                        elif mode == "success":
+                            tls.sendall(b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nOK")
+                        else:
+                            stopped.wait(5)
+            except (BrokenPipeError, ConnectionResetError, ssl.SSLEOFError):
+                pass
+            except Exception as error:
+                errors.append(error)
+
+        worker = threading.Thread(target=serve, daemon=True)
+        worker.start()
+        script = directory / "client.kc3"
+        hostname = "wrong.example" if mode == "hostname" else "localhost"
+        script.write_text(f'''require HTTPS.Client
+require TLS
+TLS.init()
+defmodule TLS do
+  def ca_cert_path = fn () {{ "{directory}/cert.pem" }}
+end
+started = Time.uptime()
+client = HTTPS.Client.connect("{hostname}", "{port}", "127.0.0.1", 1)
+if client do
+  response = HTTPS.Client.exchange(client, %HTTP.Request{{method: GET, url: "/",
+    headers: [{{"Host", "localhost"}}, {{"Connection", "close"}}]}})
+  if response && response.code == 200 && response.body == "OK" do
+    puts("success")
+  else
+    puts("timeout")
+  end
+  HTTPS.Client.close(client)
+else
+  puts("timeout")
+end
+elapsed = Time.uptime() - started
+puts(inspect(elapsed.tv_sec))
+puts(inspect(elapsed.tv_nsec))
+0
+''')
+        try:
+            result = subprocess.run([KC3S, "--bool-ptr", "--load", str(script),
+                                     "--quit"], cwd=ROOT, capture_output=True,
+                                    text=True, timeout=30,
+                                    # HTTPd also ignores SIGPIPE on peer close.
+                                    restore_signals=False)
+        finally:
+            stopped.set()
+            worker.join(6)
+        expected = "success" if mode == "success" else "timeout"
+        assert not errors, errors
+        assert result.returncode == 0, (result.returncode, result.stdout, result.stderr)
+        lines = result.stdout.splitlines()
+        assert len(lines) == 3 and lines[0] == expected, (result.stdout, result.stderr)
+        elapsed = int(lines[1].split()[-1]) + int(lines[2].split()[-1]) / 1e9
+        assert not worker.is_alive(), "server did not stop"
+        assert elapsed < 3, (mode, elapsed)
+        if mode in ("handshake", "read", "slow"):
+            assert elapsed >= 0.9, (mode, elapsed)
+        print(f"ok   TLS {mode}: {elapsed:.2f}s")
+
+
+with tempfile.TemporaryDirectory(prefix="kc3-tls-timeout-") as tmp:
+    directory = Path(tmp)
+    subprocess.run(["openssl", "req", "-x509", "-newkey", "rsa:2048",
+                    "-nodes", "-days", "1", "-subj", "/CN=localhost",
+                    "-keyout", str(directory / "key.pem"),
+                    "-out", str(directory / "cert.pem")], check=True,
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.load_cert_chain(directory / "cert.pem", directory / "key.pem")
+    for mode in ("success", "hostname", "handshake", "read", "slow"):
+        check(directory, mode, context)

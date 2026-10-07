@@ -24,6 +24,10 @@ bool libsocket_init (void);
 p_socket socket_init_accept (p_socket s, p_socket listening);
 p_socket socket_init_connect (p_socket s, const s_str *host,
                               const s_str *service);
+p_socket socket_init_connect_deadline (p_socket s, const s_str *address,
+                                       const s_str *service,
+                                       const s_timespec *deadline);
+bool socket_wait (t_socket s, bool write, const s_timespec *deadline);
 p_socket socket_init_listen (p_socket s, const s_str *host,
                              const s_str *service);
 

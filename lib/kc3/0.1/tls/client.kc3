@@ -26,4 +26,8 @@ defmodule TLS.Client do
   def connect = cfn TLS.Client* "kc3_tls_client_new_connect" (Result,
     TLS*, Str, Str)
 
+  ## Numeric address; one deadline for TCP, TLS and all subsequent I/O.
+  def connect_timeout = cfn TLS.Client* "kc3_tls_client_new_connect_timeout"
+    (Result, TLS*, Str, Str, Str, U32)
+
 end

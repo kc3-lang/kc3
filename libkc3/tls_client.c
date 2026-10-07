@@ -16,6 +16,7 @@
 #include "socket.h"
 #include "tls_buf.h"
 #include "tls_client.h"
+#include "timespec.h"
 
 void kc3_tls_client_clean (s_tls_client *tls_client)
 {
@@ -30,10 +31,12 @@ void kc3_tls_client_clean (s_tls_client *tls_client)
   alloc_free(tls_client->socket_buf);
 }
 
-s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
+static s_tls_client * tls_client_init_connect (s_tls_client *tls_client,
                                             p_tls *ctx,
                                             const s_str *host,
-                                            const s_str *port)
+                                            const s_str *port,
+                                            const s_str *address,
+                                            const s_timespec *deadline)
 {
   bool r_open = false;
   sw r;
@@ -47,9 +50,13 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
   tls_client->socket_buf = alloc(sizeof(s_socket_buf));
   if (! tls_client->socket_buf)
     return NULL;
-  if (! socket_init_connect(&tls_client->socket_buf->sockfd, host,
-                            port)) {
+  if (! (deadline ?
+         socket_init_connect_deadline(&tls_client->socket_buf->sockfd,
+                                       address, port, deadline) :
+         socket_init_connect(&tls_client->socket_buf->sockfd, host,
+                              port))) {
     alloc_free(tls_client->socket_buf);
+    tls_client->socket_buf = NULL;
     err_puts("kc3_tls_client_init_connect: socket_init_connect");
     return NULL;
   }
@@ -70,8 +77,11 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
     goto clean;
   }
   while ((r = tls_handshake(*ctx)) == TLS_WANT_POLLIN ||
-         r == TLS_WANT_POLLOUT)
-    ;
+         r == TLS_WANT_POLLOUT) {
+    if (deadline && ! socket_wait(tls_client->socket_buf->sockfd,
+                                  r == TLS_WANT_POLLOUT, deadline))
+      goto clean;
+  }
   if (r) {
     err_write_1("kc3_tls_client_init_connect: tls_handshake: ");
     err_puts(tls_error(*ctx));
@@ -89,6 +99,12 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
     goto clean;
   }
   w_open = true;
+  if (deadline) {
+    s_tls_buf *read = tls_client->socket_buf->buf_rw.r->user_ptr;
+    s_tls_buf *write = tls_client->socket_buf->buf_rw.w->user_ptr;
+    read->deadline = write->deadline = *deadline;
+    read->sockfd = write->sockfd = tls_client->socket_buf->sockfd;
+  }
   return tls_client;
  clean:
   if (w_open)
@@ -104,6 +120,33 @@ s_tls_client * kc3_tls_client_init_connect (s_tls_client *tls_client,
   alloc_free(tls_client->socket_buf);
   tls_client->socket_buf = NULL;
   return NULL;
+}
+
+s_tls_client * kc3_tls_client_init_connect (s_tls_client *client,
+                                            p_tls *ctx,
+                                            const s_str *host,
+                                            const s_str *port)
+{
+  return tls_client_init_connect(client, ctx, host, port, NULL, NULL);
+}
+
+s_tls_client ** kc3_tls_client_new_connect_timeout
+(s_tls_client **client, p_tls *ctx, const s_str *host,
+ const s_str *port, const s_str *address, u32 seconds)
+{
+  s_timespec deadline;
+  s_tls_client *tmp;
+  if (! seconds || ! timespec_init_monotonic(&deadline))
+    return NULL;
+  deadline.tv_sec += seconds;
+  if (! (tmp = alloc(sizeof(s_tls_client))))
+    return NULL;
+  if (! tls_client_init_connect(tmp, ctx, host, port, address, &deadline)) {
+    alloc_free(tmp);
+    return NULL;
+  }
+  *client = tmp;
+  return client;
 }
 
 void kc3_tls_client_delete (s_tls_client **tls_client)

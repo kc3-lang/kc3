@@ -19,6 +19,8 @@
 #include "io.h"
 #include "assert.h"
 #include "tls_buf.h"
+#include "socket.h"
+#include "timespec.h"
 
 sw tls_buf_open_r_refill (s_buf *buf);
 sw tls_buf_open_w_flush (s_buf *buf);
@@ -77,9 +79,17 @@ sw tls_buf_open_r_refill (s_buf *buf)
   size = buf->size - buf->wpos;
   tls_buf = buf->user_ptr;
   while (1) {
+    if (tls_buf->deadline.tv_sec &&
+        timespec_timeout_expired(&tls_buf->deadline))
+      return -1;
     r = tls_read(tls_buf->ctx, buf->ptr.p_pchar + buf->wpos, size);
-    if (r == TLS_WANT_POLLIN || r == TLS_WANT_POLLOUT)
+    if (r == TLS_WANT_POLLIN || r == TLS_WANT_POLLOUT) {
+      if (tls_buf->deadline.tv_sec &&
+          ! socket_wait(tls_buf->sockfd, r == TLS_WANT_POLLOUT,
+                         &tls_buf->deadline))
+        return -1;
       continue;
+    }
     if (r < 0) {
       err_write_1("tls_buf_open_r_refill: tls_read: ");
       err_puts(tls_error(tls_buf->ctx));
@@ -137,11 +147,19 @@ sw tls_buf_open_w_flush (s_buf *buf)
   tls_buf = buf->user_ptr;
   bytes = 0;
   while (bytes < size) {
+    if (tls_buf->deadline.tv_sec &&
+        timespec_timeout_expired(&tls_buf->deadline))
+      return -1;
     w = tls_write(tls_buf->ctx, buf->ptr.p_pchar + bytes,
                   size - bytes);
-    if (w == TLS_WANT_POLLIN || w == TLS_WANT_POLLOUT)
+    if (w == TLS_WANT_POLLIN || w == TLS_WANT_POLLOUT) {
+      if (tls_buf->deadline.tv_sec &&
+          ! socket_wait(tls_buf->sockfd, w == TLS_WANT_POLLOUT,
+                         &tls_buf->deadline))
+        return -1;
       continue;
-    if (w < 0) {
+    }
+    if (w <= 0) {
       err_write_1("tls_buf_open_w_flush: tls_write: ");
       err_puts(tls_error(tls_buf->ctx));
       return -1;
