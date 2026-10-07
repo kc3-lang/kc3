@@ -94,6 +94,7 @@ HEADERS = \
 	"crypt.h" \
 	"daemon.h" \
 	"data.h" \
+	"dns.h" \
 	"do_block.h" \
 	"endian.h" \
 	"env.h" \
@@ -326,6 +327,7 @@ SOURCES = \
 	"crypt_sha512.c" \
 	"daemon.c" \
 	"data.c" \
+	"dns.c" \
 	"do_block.c" \
 	"env.c" \
 	"env_eval.c" \
@@ -669,6 +671,7 @@ LO_SOURCES = \
 	"crypt_sha512.c" \
 	"daemon.c" \
 	"data.c" \
+	"dns.c" \
 	"do_block.c" \
 	"env.c" \
 	"env_eval.c" \
