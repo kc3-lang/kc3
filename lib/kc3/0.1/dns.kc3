@@ -1,0 +1,24 @@
+## kc3
+## Copyright from 2022 to 2026 kmx.io <contact@kmx.io>
+## All rights reserved.
+
+defmodule DNS do
+
+  def comp = cfn Tag "dns_comp" (Str, Result)
+
+  def expand = cfn Tag "dns_expand" (Str, Uw, Result)
+
+  def init = cfn S32 "dns_init" ()
+
+  def mkquery = cfn Tag "dns_mkquery" (S32, Str, S32, S32, Tag, Tag,
+    Result)
+
+  def query = cfn Tag "dns_query" (Str, S32, S32, Result)
+
+  def search = cfn Tag "dns_search" (Str, S32, S32, Result)
+
+  def send = cfn Tag "dns_send" (Str, Result)
+
+  def txt = cfn Tag "dns_txt" (Str, Result)
+
+end
