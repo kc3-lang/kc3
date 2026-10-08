@@ -6,6 +6,10 @@ defmodule DNS do
 
   def comp = cfn Tag "dns_comp" (Str, Result)
 
+  def dn_comp = cfn S32 "dns_dn_comp" (Char*, U8*, S32, U8**, U8**)
+
+  def dn_expand = cfn S32 "dn_expand" (U8*, U8*, U8*, Char*, S32)
+
   def expand = cfn Tag "dns_expand" (Str, Uw, Result)
 
   def init = cfn S32 "dns_init" ()
@@ -14,6 +18,15 @@ defmodule DNS do
     Result)
 
   def query = cfn Tag "dns_query" (Str, S32, S32, Result)
+
+  def res_mkquery = cfn S32 "res_mkquery" (S32, Char*, S32, S32,
+    U8*, S32, U8*, U8*, S32)
+
+  def res_query = cfn S32 "res_query" (Char*, S32, S32, U8*, S32)
+
+  def res_search = cfn S32 "res_search" (Char*, S32, S32, U8*, S32)
+
+  def res_send = cfn S32 "dns_res_send" (U8*, S32, U8*, S32)
 
   def search = cfn Tag "dns_search" (Str, S32, S32, Result)
 

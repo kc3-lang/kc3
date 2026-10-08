@@ -15,6 +15,17 @@ s_tag * dns_comp (const s_str *name, s_tag *dest)
   return tag_void(dest);
 }
 
+s32 dns_dn_comp (const char *name, unsigned char *dest, s32 size,
+                  unsigned char **pointers, unsigned char **last)
+{
+  (void) name;
+  (void) dest;
+  (void) size;
+  (void) pointers;
+  (void) last;
+  return -1;
+}
+
 s_tag * dns_expand (const s_str *message, uw offset, s_tag *dest)
 {
   (void) message;
@@ -45,6 +56,16 @@ s_tag * dns_query (const s_str *name, s32 class, s32 type, s_tag *dest)
   (void) class;
   (void) type;
   return tag_void(dest);
+}
+
+s32 dns_res_send (const unsigned char *message, s32 size,
+                   unsigned char *answer, s32 capacity)
+{
+  (void) message;
+  (void) size;
+  (void) answer;
+  (void) capacity;
+  return -1;
 }
 
 s_tag * dns_search (const s_str *name, s32 class, s32 type, s_tag *dest)
@@ -78,6 +99,8 @@ s_tag * dns_txt_packet (const unsigned char *packet, uw size,
 
 #else
 
+#include <sys/types.h>
+#include <netinet/in.h>
 #include <arpa/nameser.h>
 #include <limits.h>
 #include <netdb.h>
@@ -96,20 +119,21 @@ static bool dns_name (const s_str *name, char *dest)
   return true;
 }
 
-static s_tag * dns_resolve (const s_str *name, s32 class, s32 type,
-                            bool search, s_tag *dest)
+static int dns_resolve (const s_str *name, s32 class, s32 type,
+                        bool search, unsigned char *answer, int capacity)
 {
-  unsigned char answer[DNS_MESSAGE_MAX];
   char hostname[MAXDNAME];
   int size;
   if (! dns_name(name, hostname))
-    return tag_void(dest);
+    return -1;
   size = search ?
-    res_search(hostname, class, type, answer, sizeof(answer)) :
-    res_query(hostname, class, type, answer, sizeof(answer));
-  if (size < 0 || (size_t) size > sizeof(answer))
-    return tag_void(dest);
-  return tag_init_str_alloc_copy(dest, size, (const char *) answer);
+    res_search(hostname, class, type, answer, capacity) :
+    res_query(hostname, class, type, answer, capacity);
+  if (size < 0)
+    return h_errno == HOST_NOT_FOUND || h_errno == NO_DATA ? 0 : -1;
+  if (size < HFIXEDSZ || size > capacity)
+    return -1;
+  return size;
 }
 
 static unsigned int dns_u16 (const unsigned char *p)
@@ -128,6 +152,12 @@ s_tag * dns_comp (const s_str *name, s_tag *dest)
   if (size < 0)
     return tag_void(dest);
   return tag_init_str_alloc_copy(dest, size, (const char *) compressed);
+}
+
+s32 dns_dn_comp (const char *name, unsigned char *dest, s32 size,
+                  unsigned char **pointers, unsigned char **last)
+{
+  return dn_comp(name, dest, size, pointers, last);
 }
 
 s_tag * dns_expand (const s_str *message, uw offset, s_tag *dest)
@@ -180,19 +210,34 @@ s_tag * dns_mkquery (s32 op, const s_str *name, s32 class, s32 type,
 
 s_tag * dns_query (const s_str *name, s32 class, s32 type, s_tag *dest)
 {
-  return dns_resolve(name, class, type, false, dest);
+  unsigned char answer[DNS_MESSAGE_MAX];
+  int size = dns_resolve(name, class, type, false, answer, sizeof(answer));
+  if (size <= 0)
+    return tag_void(dest);
+  return tag_init_str_alloc_copy(dest, size, (const char *) answer);
+}
+
+s32 dns_res_send (const unsigned char *message, s32 size,
+                   unsigned char *answer, s32 capacity)
+{
+  return res_send(message, size, answer, capacity);
 }
 
 s_tag * dns_search (const s_str *name, s32 class, s32 type, s_tag *dest)
 {
-  return dns_resolve(name, class, type, true, dest);
+  unsigned char answer[DNS_MESSAGE_MAX];
+  int size = dns_resolve(name, class, type, true, answer, sizeof(answer));
+  if (size <= 0)
+    return tag_void(dest);
+  return tag_init_str_alloc_copy(dest, size, (const char *) answer);
 }
 
 s_tag * dns_send (const s_str *message, s_tag *dest)
 {
   unsigned char answer[DNS_MESSAGE_MAX];
   int size;
-  if (! message || ! message->size || message->size > INT_MAX)
+  if (! message || message->size < HFIXEDSZ ||
+      message->size > DNS_MESSAGE_MAX)
     return tag_void(dest);
   size = res_send(message->ptr.p_pu8, message->size,
                   answer, sizeof(answer));
@@ -203,19 +248,12 @@ s_tag * dns_send (const s_str *message, s_tag *dest)
 
 s_tag * dns_txt (const s_str *name, s_tag *dest)
 {
-  unsigned char answer[4096];
-  char hostname[MAXDNAME];
-  int error;
-  int size;
-  if (! dns_name(name, hostname))
-    return tag_void(dest);
-  size = res_query(hostname, C_IN, T_TXT, answer, sizeof(answer));
-  error = h_errno;
+  unsigned char answer[DNS_MESSAGE_MAX];
+  int size = dns_resolve(name, C_IN, T_TXT, false, answer, sizeof(answer));
   if (size < 0)
-    return error == HOST_NOT_FOUND || error == NO_DATA ?
-      tag_init_plist(dest, NULL) : tag_void(dest);
-  if ((size_t) size > sizeof(answer))
     return tag_void(dest);
+  if (! size)
+    return tag_init_plist(dest, NULL);
   return dns_txt_packet(answer, size, name, dest);
 }
 
@@ -228,10 +266,14 @@ s_tag * dns_txt_packet (const unsigned char *packet, uw size,
   unsigned int answers;
   unsigned int i;
   int consumed;
+  uw name_size;
   s_list *list = NULL;
   s_list **tail = &list;
   if (! packet || ! name || size < HFIXEDSZ)
     return tag_void(dest);
+  name_size = name->size;
+  if (name_size && name->ptr.p_pchar[name_size - 1] == '.')
+    name_size--;
   end = packet + size;
   p = packet + HFIXEDSZ;
   /* QR must be set; opcode and TC must be zero. */
@@ -242,8 +284,8 @@ s_tag * dns_txt_packet (const unsigned char *packet, uw size,
     goto error;
   consumed = dn_expand(packet, end, p, owner, sizeof(owner));
   if (consumed < 0 || (uw) (end - p) < (uw) consumed + QFIXEDSZ ||
-      strlen(owner) != name->size ||
-      strncasecmp(owner, name->ptr.p_pchar, name->size) ||
+      strlen(owner) != name_size ||
+      strncasecmp(owner, name->ptr.p_pchar, name_size) ||
       dns_u16(p + consumed) != T_TXT ||
       dns_u16(p + consumed + 2) != C_IN)
     goto error;
@@ -268,11 +310,13 @@ s_tag * dns_txt_packet (const unsigned char *packet, uw size,
       goto error;
     record_end = p + length;
     if (type == T_TXT && klass == C_IN &&
-        strlen(owner) == name->size &&
-        ! strncasecmp(owner, name->ptr.p_pchar, name->size)) {
+        strlen(owner) == name_size &&
+        ! strncasecmp(owner, name->ptr.p_pchar, name_size)) {
       const unsigned char *q = p;
       uw value_size = 0;
       uw offset = 0;
+      if (! length)
+        goto error;
       while (q < record_end) {
         unsigned int chunk = *q++;
         if ((uw) (record_end - q) < chunk)
