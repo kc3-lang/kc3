@@ -183,11 +183,6 @@ void sha512_hmac (const s_str *k, const s_str *m, u8 *dest)
     pad[1][i] ^= k_p.ptr.p_pu8[i];
     i++;
   }
-  while (i < SHA512_BLOCK_LENGTH) {
-    pad[0][i] ^= 0;
-    pad[1][i] ^= 0;
-    i++;
-  }
   sha512_init(&h_ctx);
   sha512_update(&h_ctx, pad[1], SHA512_BLOCK_LENGTH);
   sha512_update(&h_ctx, m->ptr.p_pvoid, m->size);
