@@ -1,0 +1,85 @@
+require HTTP
+require HTTP.Request
+
+# Accepted lengths must consume exactly the body, preserving the next request.
+(content_length_valid = fn (headers, body) do
+  buf = Buf.new_alloc((Uw) 1024)
+  Buf.write_str(buf, "POST / HTTP/1.1\r\n" + headers + "\r\n" + body +
+    "GET /next HTTP/1.1\r\n\r\n")
+  request = HTTP.Request.buf_parse(buf)
+  result = if request == void do
+    void
+  else
+    following = HTTP.Request.buf_parse(buf)
+    {HTTP.Request.header_get(request, "Content-Length"), request.body,
+     following.method, following.url, Buf.read_to_str(buf)}
+  end
+  Buf.delete(buf)
+  result
+end) ; void
+
+# Rejection must happen before reading the body or a following request.
+(content_length_invalid_headers = fn (headers) do
+  buf = Buf.new_alloc((Uw) 1024)
+  unread = "\r\nabcdGET /next HTTP/1.1\r\n\r\n"
+  Buf.write_str(buf, "POST / HTTP/1.1\r\n" + headers + unread)
+  request = HTTP.Request.buf_parse(buf)
+  result = {request == void, Buf.read_to_str(buf) == unread}
+  Buf.delete(buf)
+  result
+end) ; void
+
+(content_length_invalid = fn (value) do
+  content_length_invalid_headers("Content-Length: " + value + "\r\n")
+end) ; void
+
+# Decimal values, leading zeroes, surrounding SP/HTAB and matching duplicates.
+content_length_valid("Content-Length: 0\r\n", "")
+content_length_valid("Content-Length: 0000\r\n", "")
+content_length_valid("Content-Length: 4\r\n", "abcd")
+content_length_valid("Content-Length: 0004\r\n", "abcd")
+content_length_valid("Content-Length: 12\r\n", "abcdefghijkl")
+content_length_valid("Content-Length:  \t004\t \r\n", "abcd")
+content_length_valid("cOnTeNt-LeNgTh: 4\r\n", "abcd")
+content_length_valid(
+  "Content-Length: 4\r\ncontent-length:  \t004 \r\n", "abcd")
+
+# No numeric prefixes, suffixes, lists (even matching ones), signs or fractions.
+content_length_invalid("4junk")
+content_length_invalid("0x4")
+content_length_invalid("0b100")
+content_length_invalid("0o4")
+content_length_invalid("4, 5")
+content_length_invalid("4, 4")
+content_length_invalid("4.0")
+content_length_invalid("4e0")
+content_length_invalid("+4")
+content_length_invalid("-4")
+
+# Only SP/HTAB may surround a nonempty sequence of ASCII decimal digits.
+content_length_invalid("")
+content_length_invalid(" \t ")
+content_length_invalid("4 0")
+content_length_invalid("4\t0")
+content_length_invalid("4\x0b")
+content_length_invalid("\x0c4")
+content_length_invalid("4\x004")
+content_length_invalid("４")
+
+# The body limit and Uw range checks precede allocation and body reads.
+content_length_invalid("67108865")
+content_length_invalid("4294967296")
+content_length_invalid("18446744073709551615")
+content_length_invalid("18446744073709551616")
+content_length_invalid("18446744073709551620")
+content_length_invalid("9999999999999999999999999999999999999999")
+
+# Duplicates must agree numerically, and every value must be well formed.
+content_length_invalid_headers(
+  "Content-Length: 4\r\nContent-Length: 5\r\n")
+content_length_invalid_headers(
+  "Content-Length: 0\r\nContent-Length: 4\r\n")
+content_length_invalid_headers(
+  "Content-Length: 4\r\nContent-Length: 4junk\r\n")
+content_length_invalid_headers(
+  "Content-Length: 4\r\nContent-Length: 0x4\r\n")

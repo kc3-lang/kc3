@@ -151,6 +151,37 @@ static bool http_request_body_ignore (s_buf *buf, uw size)
   return result;
 }
 
+static bool http_request_content_length_parse (const s_str *value,
+                                                uw *dest)
+{
+  uw digit;
+  uw end;
+  uw i = 0;
+  uw length = 0;
+  const char *p;
+  assert(value);
+  assert(dest);
+  end = value->size;
+  p = value->ptr.p_pchar;
+  /* HTTP optional whitespace is SP / HTAB, not general whitespace. */
+  while (i < end && (p[i] == ' ' || p[i] == '\t'))
+    i++;
+  while (end > i && (p[end - 1] == ' ' || p[end - 1] == '\t'))
+    end--;
+  if (i == end)
+    return false;
+  for (; i < end; i++) {
+    if (p[i] < '0' || p[i] > '9')
+      return false;
+    digit = p[i] - '0';
+    if (length > (UW_MAX - digit) / 10)
+      return false;
+    length = length * 10 + digit;
+  }
+  *dest = length;
+  return true;
+}
+
 static bool http_request_content_type_is (const s_str *content_type,
                                           const s_str *type)
 {
@@ -326,8 +357,11 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     value = &(*tail)->tag.data.td_ptuple->tag[1].data.td_str;
     if (! compare_str_case_insensitive(&content_length_str, key)) {
       uw parsed_content_length;
-      if (! uw_init_str(&parsed_content_length, value))
+      if (! http_request_content_length_parse(value,
+                                               &parsed_content_length)) {
+        err_puts("http_request_buf_parse: invalid Content-Length");
         goto restore;
+      }
       if (content_length_set &&
           content_length_uw != parsed_content_length) {
         err_puts("http_request_buf_parse: conflicting Content-Length");
@@ -335,8 +369,10 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       }
       content_length_set = true;
       content_length_uw = parsed_content_length;
-      if (content_length_uw > HTTP_REQUEST_CONTENT_LENGTH_MAX)
+      if (content_length_uw > HTTP_REQUEST_CONTENT_LENGTH_MAX) {
+        err_puts("http_request_buf_parse: invalid Content-Length");
         goto restore;
+      }
       tag_clean((*tail)->tag.data.td_ptuple->tag + 1);
       tag_init_uw((*tail)->tag.data.td_ptuple->tag + 1, content_length_uw);
     }
