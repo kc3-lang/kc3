@@ -16,7 +16,6 @@
 #include "buf_parse.h"
 #include "buf_save.h"
 #include "kc3_main.h"
-#include "ceiling.h"
 #include "io.h"
 #include "str.h"
 
@@ -103,7 +102,6 @@ sw buf_parse_u32_base (s_buf *buf, const s_str *base,
   sw result = 0;
   s_buf_save save;
   u32 u = 0;
-  u32 u2 = 0;
   assert(buf);
   assert(base);
   assert(dest);
@@ -127,22 +125,18 @@ sw buf_parse_u32_base (s_buf *buf, const s_str *base,
              " radix");
       return -1;
     }
-    if (u > ceiling_u32(U32_MAX, radix)) {
+    if (u > (U32_MAX - digit) / radix) {
       err_write_1("buf_parse_u32_base: ");
       err_inspect_u32(u);
       err_write_1(" * ");
       err_inspect_sw(radix);
+      err_write_1(" + ");
+      err_inspect_u8(digit);
       err_write_1(": integer overflow");
       r = -1;
       goto restore;
     }
     u *= radix;
-    u2 = U32_MAX - digit;
-    if (u > u2) {
-      err_write_1("buf_parse_u32_base: +: integer overflow");
-      r = -1;
-      goto restore;
-    }
     u += digit;
   }
   *dest = u;
