@@ -1,0 +1,54 @@
+require Base64
+require SHA512
+require Str
+
+defmodule Config do
+  def secret = "Jefe"
+end
+
+verdict = fn (name, ok) {
+  if ok do IO.puts("ok   #{name}") else IO.puts("KO   #{name}") end
+  void
+}
+message = "what do ya want for nothing?"
+expected = "Fkt6e/z4GeLjlfvnO1bgo4e9ZCIugx/WECcM1+olBVSXWL91wFqZSm0DT2X48Ob9yuqxo01Ka0tjbgcKOLznNw== #{message}"
+verdict("HMAC SHA512 matches an independent vector",
+  SHA512.hmac_str(message) == expected)
+verdict("signed message verifies",
+  SHA512.hmac_str_verify(expected) == message)
+verdict("modified message is rejected",
+  SHA512.hmac_str_verify(expected + "x") == void)
+verdict("invalid separator is rejected",
+  SHA512.hmac_str_verify("Fkt6e/z4GeLjlfvnO1bgo4e9ZCIugx/WECcM1+olBVSXWL91wFqZSm0DT2X48Ob9yuqxo01Ka0tjbgcKOLznNw==!#{message}") == void)
+verdict("empty message verifies",
+  SHA512.hmac_str_verify(SHA512.hmac_str("")) == "")
+verdict("non-string and short tokens are rejected",
+  SHA512.hmac_str_verify(42) == void &&
+  SHA512.hmac_str_verify("") == void)
+valid = true
+i = 0
+while i < 88 do
+  replacement = if Str.byte(expected, i) == 65 do "B" else "A" end
+  changed = Str.slice(expected, 0, i) + replacement +
+    Str.slice(expected, i + 1, -1)
+  if SHA512.hmac_str_verify(changed) != void do valid = false end
+  i = i + 1
+end
+verdict("every signature character is checked", valid)
+verdict("invalid signature lengths are rejected",
+  ! SHA512.hmac_verify_base64(Config.secret, message, "") &&
+  ! SHA512.hmac_verify_base64(Config.secret, message,
+    Str.slice(expected, 0, 87)) &&
+  ! SHA512.hmac_verify_base64(Config.secret, message,
+    Str.slice(expected, 0, 89)))
+binary = "a\0b\n"
+verdict("binary message verifies unchanged",
+  SHA512.hmac_str_verify(SHA512.hmac_str(binary)) == binary)
+old = "#{Base64.encode(SHA512.hmac(message, Config.secret))} #{message}"
+verdict("reversed key and message token is rejected",
+  SHA512.hmac_str_verify(old) == void)
+defmodule Config do
+  def secret = "another secret"
+end
+verdict("wrong secret is rejected",
+  SHA512.hmac_str_verify(expected) == void)

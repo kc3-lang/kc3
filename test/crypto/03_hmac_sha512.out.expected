@@ -1,0 +1,11 @@
+ok   HMAC SHA512 matches an independent vector
+ok   signed message verifies
+ok   modified message is rejected
+ok   invalid separator is rejected
+ok   empty message verifies
+ok   non-string and short tokens are rejected
+ok   every signature character is checked
+ok   invalid signature lengths are rejected
+ok   binary message verifies unchanged
+ok   reversed key and message token is rejected
+ok   wrong secret is rejected
