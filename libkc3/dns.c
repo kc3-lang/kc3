@@ -16,7 +16,7 @@ s_tag * dns_comp (const s_str *name, s_tag *dest)
 }
 
 s32 dns_dn_comp (const char *name, unsigned char *dest, s32 size,
-                  unsigned char **pointers, unsigned char **last)
+                 unsigned char **pointers, unsigned char **last)
 {
   (void) name;
   (void) dest;
@@ -59,7 +59,7 @@ s_tag * dns_query (const s_str *name, s32 class, s32 type, s_tag *dest)
 }
 
 s32 dns_res_send (const unsigned char *message, s32 size,
-                   unsigned char *answer, s32 capacity)
+                  unsigned char *answer, s32 capacity)
 {
   (void) message;
   (void) size;
@@ -120,7 +120,8 @@ static bool dns_name (const s_str *name, char *dest)
 }
 
 static int dns_resolve (const s_str *name, s32 class, s32 type,
-                        bool search, unsigned char *answer, int capacity)
+                        bool search, unsigned char *answer,
+                        int capacity)
 {
   char hostname[MAXDNAME];
   int size;
@@ -155,7 +156,7 @@ s_tag * dns_comp (const s_str *name, s_tag *dest)
 }
 
 s32 dns_dn_comp (const char *name, unsigned char *dest, s32 size,
-                  unsigned char **pointers, unsigned char **last)
+                 unsigned char **pointers, unsigned char **last)
 {
   return dn_comp(name, dest, size, pointers, last);
 }
@@ -211,14 +212,15 @@ s_tag * dns_mkquery (s32 op, const s_str *name, s32 class, s32 type,
 s_tag * dns_query (const s_str *name, s32 class, s32 type, s_tag *dest)
 {
   unsigned char answer[DNS_MESSAGE_MAX];
-  int size = dns_resolve(name, class, type, false, answer, sizeof(answer));
+  int size = dns_resolve(name, class, type, false,
+                         answer, sizeof(answer));
   if (size <= 0)
     return tag_void(dest);
   return tag_init_str_alloc_copy(dest, size, (const char *) answer);
 }
 
 s32 dns_res_send (const unsigned char *message, s32 size,
-                   unsigned char *answer, s32 capacity)
+                  unsigned char *answer, s32 capacity)
 {
   return res_send(message, size, answer, capacity);
 }
@@ -226,7 +228,8 @@ s32 dns_res_send (const unsigned char *message, s32 size,
 s_tag * dns_search (const s_str *name, s32 class, s32 type, s_tag *dest)
 {
   unsigned char answer[DNS_MESSAGE_MAX];
-  int size = dns_resolve(name, class, type, true, answer, sizeof(answer));
+  int size = dns_resolve(name, class, type, true,
+                         answer, sizeof(answer));
   if (size <= 0)
     return tag_void(dest);
   return tag_init_str_alloc_copy(dest, size, (const char *) answer);
@@ -249,7 +252,8 @@ s_tag * dns_send (const s_str *message, s_tag *dest)
 s_tag * dns_txt (const s_str *name, s_tag *dest)
 {
   unsigned char answer[DNS_MESSAGE_MAX];
-  int size = dns_resolve(name, C_IN, T_TXT, false, answer, sizeof(answer));
+  int size = dns_resolve(name, C_IN, T_TXT, false,
+                         answer, sizeof(answer));
   if (size < 0)
     return tag_void(dest);
   if (! size)
@@ -329,7 +333,8 @@ s_tag * dns_txt_packet (const unsigned char *packet, uw size,
       q = p;
       while (q < record_end) {
         unsigned int chunk = *q++;
-        memcpy((*tail)->tag.data.td_str.free.p_pchar + offset, q, chunk);
+        memcpy((*tail)->tag.data.td_str.free.p_pchar + offset,
+               q, chunk);
         offset += chunk;
         q += chunk;
       }
