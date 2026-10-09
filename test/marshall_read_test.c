@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "../libkc3/array.h"
 #include "../libkc3/buf.h"
 #include "../libkc3/call.h"
 #include "../libkc3/endian.h"
@@ -23,6 +24,7 @@
 #include "../libkc3/facts.h"
 #include "../libkc3/set__tag.h"
 #include "../libkc3/str.h"
+#include "../libkc3/sym.h"
 #include "../libkc3/list.h"
 #include "../libkc3/tag.h"
 #include "../libkc3/tag_init.h"
@@ -81,6 +83,8 @@
 
 void marshal_test (void);
 
+TEST_CASE_PROTOTYPE(marshall_read_array);
+TEST_CASE_PROTOTYPE(marshall_read_array_empty);
 TEST_CASE_PROTOTYPE(marshall_read_bool);
 TEST_CASE_PROTOTYPE(marshall_read_call_cache);
 TEST_CASE_PROTOTYPE(marshall_read_character);
@@ -97,6 +101,7 @@ TEST_CASE_PROTOTYPE(marshall_read_s32);
 TEST_CASE_PROTOTYPE(marshall_read_s64);
 TEST_CASE_PROTOTYPE(marshall_read_set__tag);
 #ifdef NDEBUG
+TEST_CASE_PROTOTYPE(marshall_read_array_layout);
 TEST_CASE_PROTOTYPE(marshall_read_array_size);
 TEST_CASE_PROTOTYPE(marshall_read_set_max_overflow);
 TEST_CASE_PROTOTYPE(marshall_read_set_item_error);
@@ -114,6 +119,8 @@ TEST_CASE_PROTOTYPE(marshall_read_uw);
 
 void marshall_read_test (void)
 {
+  TEST_CASE_RUN(marshall_read_array);
+  TEST_CASE_RUN(marshall_read_array_empty);
   TEST_CASE_RUN(marshall_read_bool);
   TEST_CASE_RUN(marshall_read_call_cache);
   TEST_CASE_RUN(marshall_read_chunks);
@@ -124,12 +131,202 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_set__tag);
   TEST_CASE_RUN(marshall_read_var);
 #ifdef NDEBUG
+  TEST_CASE_RUN(marshall_read_array_layout);
   TEST_CASE_RUN(marshall_read_array_size);
   TEST_CASE_RUN(marshall_read_set_max_overflow);
   TEST_CASE_RUN(marshall_read_set_item_error);
   TEST_CASE_RUN(marshall_read_skiplist_max_height);
 #endif
 }
+
+TEST_CASE(marshall_read_array)
+{
+  s_str actual = {0};
+  s_tag dest = {0};
+  s_tag evaluated = {0};
+  s_str expected = {0};
+  uw i;
+  const char *inputs[] = {
+    "(U8[]) {0, 1, 2}",
+    "(U64[]) {42}",
+    "(U64[]) {{1, 2}, {3, 4}}",
+    "(U64[]) {{{1, 2}}, {{3, 4}}}",
+    "(Str[]) {\"one\", \"two\"}",
+    "(U64[]) {}"
+  };
+  uw j;
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  s_tag parsed = {0};
+  const s_tag *src;
+  s_str str = {0};
+  for (i = 0; i < sizeof(inputs) / sizeof(inputs[0]); i++) {
+    test_context(inputs[i]);
+    TEST_ASSERT(tag_init_1(&parsed, inputs[i]));
+    TEST_ASSERT(env_eval_tag(env_global(), &parsed, &evaluated));
+    for (j = 0; j < 2; j++) {
+      src = j ? &evaluated : &parsed;
+      TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+      TEST_EQ(marshall_tag(&m, false, src), &m);
+      TEST_EQ(marshall_to_str(&m, &str), &str);
+      TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+      TEST_EQ(marshall_read_tag(&mr, false, &dest), &mr);
+      TEST_EQ(dest.type, TAG_ARRAY);
+      TEST_EQ(dest.data.td_array.array_type,
+              src->data.td_array.array_type);
+      TEST_EQ(dest.data.td_array.element_type,
+              src->data.td_array.element_type);
+      TEST_EQ(dest.data.td_array.dimension_count,
+              src->data.td_array.dimension_count);
+      TEST_EQ(dest.data.td_array.count, src->data.td_array.count);
+      TEST_EQ(dest.data.td_array.size, src->data.td_array.size);
+      TEST_EQ(! dest.data.td_array.data, ! src->data.td_array.data);
+      TEST_EQ(inspect_tag(&dest, &actual), &actual);
+      TEST_EQ(inspect_tag(src, &expected), &expected);
+      TEST_STR_EQ(actual, expected);
+      str_clean(&actual);
+      str_clean(&expected);
+      TEST_EQ(mr.buf->rpos, mr.buf->wpos);
+      tag_clean(&dest);
+      marshall_read_clean(&mr);
+      marshall_clean(&m);
+      str_clean(&str);
+    }
+    tag_clean(&evaluated);
+    tag_clean(&parsed);
+  }
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_array)
+
+TEST_CASE(marshall_read_array_empty)
+{
+  s_array dest = {0};
+  uw i;
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  s_array src = {0};
+  s_str str = {0};
+  for (i = 0; i < 2; i++) {
+    if (i)
+      TEST_ASSERT(array_init(&src, sym_1("U64[]"), 2,
+                             (uw []) {2, 0}));
+    else
+      TEST_ASSERT(array_init_void(&src));
+    TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+    TEST_EQ(marshall_array(&m, false, &src), &m);
+    TEST_EQ(marshall_to_str(&m, &str), &str);
+    TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+    TEST_EQ(marshall_read_array(&mr, false, &dest), &mr);
+    TEST_EQ(dest.array_type, src.array_type);
+    TEST_EQ(dest.element_type, src.element_type);
+    TEST_EQ(dest.dimension_count, src.dimension_count);
+    TEST_EQ(dest.count, 0);
+    TEST_EQ(dest.size, 0);
+    TEST_ASSERT(! dest.data && ! dest.tags);
+    TEST_EQ(mr.buf->rpos, mr.buf->wpos);
+    array_clean(&dest);
+    array_clean(&src);
+    marshall_read_clean(&mr);
+    marshall_clean(&m);
+    str_clean(&str);
+  }
+}
+TEST_CASE_END(marshall_read_array_empty)
+
+#ifdef NDEBUG
+static char marshall_read_array_invalid_layout (const s_array *src)
+{
+  s_array dest = {0};
+  uw i;
+  s_marshall m = {0};
+  uw mode;
+  s_marshall_read mr = {0};
+  uw payload_pos;
+  s_str str = {0};
+  /* Check data-backed, tag-backed and unallocated arrays. */
+  for (mode = 0; mode < 3; mode++) {
+    TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+    TEST_ASSERT(marshall_psym(&m, false, &src->array_type));
+    TEST_ASSERT(marshall_psym(&m, false, &src->element_type));
+    TEST_ASSERT(marshall_uw(&m, false, src->dimension_count));
+    for (i = 0; i < src->dimension_count; i++) {
+      TEST_ASSERT(marshall_uw(&m, false, src->dimensions[i].count));
+      TEST_ASSERT(marshall_uw(&m, false, src->dimensions[i].item_size));
+    }
+    TEST_ASSERT(marshall_uw(&m, false, src->count));
+    TEST_ASSERT(marshall_uw(&m, false, src->size));
+    TEST_ASSERT(marshall_bool(&m, false, mode == 0));
+    payload_pos = m.buf.wpos;
+    if (mode != 0)
+      TEST_ASSERT(marshall_bool(&m, false, mode == 1));
+    else
+      TEST_ASSERT(marshall_u64(&m, false, 42));
+    TEST_EQ(marshall_to_str(&m, &str), &str);
+    TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+    payload_pos += mr.buf->rpos;
+    TEST_ASSERT(! marshall_read_array(&mr, false, &dest));
+    TEST_EQ(mr.buf->rpos, payload_pos);
+    TEST_ASSERT(! dest.dimensions && ! dest.data && ! dest.tags);
+    TEST_EQ(dest.dimension_count, 0);
+    TEST_EQ(dest.count, 0);
+    marshall_read_clean(&mr);
+    marshall_clean(&m);
+    str_clean(&str);
+  }
+  return 0;
+}
+
+TEST_CASE(marshall_read_array_layout)
+{
+  struct {
+    const char *context;
+    uw dimension_count;
+    s_array_dimension dimensions[2];
+    uw count;
+    uw size;
+  } cases[] = {
+    {"undersized element stride", 1, {{1, 1}}, 1, 1},
+    {"oversized element stride", 1, {{1, 16}}, 1, 16},
+    {"zero element stride", 1, {{1, 0}}, 1, 8},
+    {"inconsistent outer stride", 2, {{2, 8}, {2, 8}}, 4, 32},
+    {"element count below dimension product", 1, {{2, 8}}, 1, 16},
+    {"element count above dimension product", 1, {{2, 8}}, 3, 16},
+    {"size below dimension product", 1, {{2, 8}}, 2, 8},
+    {"size above dimension product", 1, {{2, 8}}, 2, 24},
+    {"dimension size overflow", 1, {{UW_MAX / 8 + 1, 8}},
+     UW_MAX / 8 + 1, 0},
+    {"outer dimension size overflow", 2,
+     {{2, UW_MAX / 8 * 8}, {UW_MAX / 8, 8}}, 2 * (UW_MAX / 8),
+     2 * (UW_MAX / 8 * 8)}
+  };
+  uw i;
+  s_array src = {0};
+  src.array_type = sym_1("U64[]");
+  src.element_type = &g_sym_U64;
+  for (i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
+    test_context(cases[i].context);
+    src.dimension_count = cases[i].dimension_count;
+    src.dimensions = cases[i].dimensions;
+    src.count = cases[i].count;
+    src.size = cases[i].size;
+    TEST_EQ(marshall_read_array_invalid_layout(&src), 0);
+  }
+  src.dimension_count = 1;
+  src.dimensions = (s_array_dimension []) {{1, 8}};
+  src.count = 1;
+  src.size = 8;
+  test_context("array and element types disagree");
+  src.element_type = &g_sym_U8;
+  TEST_EQ(marshall_read_array_invalid_layout(&src), 0);
+  test_context("zero-sized element type");
+  src.array_type = sym_1("Void[]");
+  src.element_type = &g_sym_Void;
+  TEST_EQ(marshall_read_array_invalid_layout(&src), 0);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_array_layout)
+#endif
 
 TEST_CASE(marshall_read_bool)
 {
