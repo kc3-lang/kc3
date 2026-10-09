@@ -285,6 +285,7 @@ s_marshall_read * marshall_read_array (s_marshall_read *mr,
   bool has_tags;
   uw i = 0;
   uw item_size = 0;
+  uw size;
   s_array tmp = {0};
   if (! mr || ! dest)
     return NULL;
@@ -316,13 +317,26 @@ s_marshall_read * marshall_read_array (s_marshall_read *mr,
       ! marshall_read_uw(mr, heap, &tmp.size) ||
       ! marshall_read_bool(mr, heap, &has_data))
     goto ko;
+  if (! tmp.array_type || ! tmp.element_type ||
+      ! sym_is_array_type(tmp.array_type) ||
+      sym_array_type(tmp.array_type) != tmp.element_type ||
+      ! sym_type_size(tmp.element_type, &item_size) || ! item_size)
+    goto invalid_layout;
+  /* Check the packed layout before allocating or decoding any elements. */
+  size = item_size;
+  i = tmp.dimension_count;
+  while (i) {
+    i--;
+    if (tmp.dimensions[i].item_size != size ||
+        (tmp.dimensions[i].count &&
+         size > UW_MAX / tmp.dimensions[i].count))
+      goto invalid_layout;
+    size *= tmp.dimensions[i].count;
+  }
+  if (tmp.size != size || tmp.count != size / item_size ||
+      (has_data && ! size))
+    goto invalid_layout;
   if (has_data) {
-    item_size = tmp.dimensions[tmp.dimension_count - 1].item_size;
-    if (! item_size || tmp.count > tmp.size / item_size) {
-      err_puts("marshall_read_array: invalid count");
-      assert(! "marshall_read_array: invalid count");
-      goto ko;
-    }
     if (! array_allocate(&tmp))
       goto ko;
     data = tmp.data;
@@ -360,6 +374,9 @@ s_marshall_read * marshall_read_array (s_marshall_read *mr,
   }
   *dest = tmp;
   return mr;
+ invalid_layout:
+  err_puts("marshall_read_array: invalid layout");
+  assert(! "marshall_read_array: invalid layout");
  ko:
   array_clean(&tmp);
   return NULL;
