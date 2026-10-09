@@ -244,7 +244,7 @@ s_tag * dns_send (const s_str *message, s_tag *dest)
     return tag_void(dest);
   size = res_send(message->ptr.p_pu8, message->size,
                   answer, sizeof(answer));
-  if (size < 0 || (size_t) size > sizeof(answer))
+  if (size < HFIXEDSZ || (size_t) size > sizeof(answer))
     return tag_void(dest);
   return tag_init_str_alloc_copy(dest, size, (const char *) answer);
 }
@@ -269,19 +269,21 @@ s_tag * dns_txt_packet (const unsigned char *packet, uw size,
   const unsigned char *p;
   unsigned int answers;
   unsigned int i;
+  unsigned int records;
   int consumed;
   uw name_size;
   s_list *list = NULL;
   s_list **tail = &list;
-  if (! packet || ! name || size < HFIXEDSZ)
+  if (! packet || size < HFIXEDSZ || size > DNS_MESSAGE_MAX ||
+      ! dns_name(name, owner))
     return tag_void(dest);
   name_size = name->size;
   if (name_size && name->ptr.p_pchar[name_size - 1] == '.')
     name_size--;
   end = packet + size;
   p = packet + HFIXEDSZ;
-  /* QR must be set; opcode and TC must be zero. */
   if (! (packet[2] & 0x80) || (packet[2] & 0x7a) ||
+      (packet[3] & 0x40) ||
       ((packet[3] & 0x0f) != NOERROR &&
        (packet[3] & 0x0f) != NXDOMAIN) ||
       dns_u16(packet + 4) != 1)
@@ -293,11 +295,10 @@ s_tag * dns_txt_packet (const unsigned char *packet, uw size,
       dns_u16(p + consumed) != T_TXT ||
       dns_u16(p + consumed + 2) != C_IN)
     goto error;
-  if ((packet[3] & 0x0f) == NXDOMAIN)
-    return tag_init_plist(dest, NULL);
   p += consumed + QFIXEDSZ;
   answers = dns_u16(packet + 6);
-  for (i = 0; i < answers; i++) {
+  records = answers + dns_u16(packet + 8) + dns_u16(packet + 10);
+  for (i = 0; i < records; i++) {
     unsigned int type;
     unsigned int klass;
     unsigned int length;
@@ -309,11 +310,14 @@ s_tag * dns_txt_packet (const unsigned char *packet, uw size,
     type = dns_u16(p);
     klass = dns_u16(p + 2);
     length = dns_u16(p + 8);
+    if (type == T_OPT && (p[4] || p[5]))
+      goto error;
     p += RRFIXEDSZ;
     if ((uw) (end - p) < length)
       goto error;
     record_end = p + length;
-    if (type == T_TXT && klass == C_IN &&
+    if (i < answers && (packet[3] & 0x0f) == NOERROR &&
+        type == T_TXT && klass == C_IN &&
         strlen(owner) == name_size &&
         ! strncasecmp(owner, name->ptr.p_pchar, name_size)) {
       const unsigned char *q = p;
@@ -342,6 +346,8 @@ s_tag * dns_txt_packet (const unsigned char *packet, uw size,
     }
     p = record_end;
   }
+  if (p != end)
+    goto error;
   return tag_init_plist(dest, list);
  error:
   list_delete_all(list);

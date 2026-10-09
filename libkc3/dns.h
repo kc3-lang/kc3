@@ -23,7 +23,6 @@ s_tag * dns_search (const s_str *name, s32 class, s32 type,
                     s_tag *dest);
 s_tag * dns_send (const s_str *message, s_tag *dest);
 
-/* A List of decoded TXT values, or Void on resolver/packet error. */
 s_tag * dns_txt (const s_str *name, s_tag *dest);
 s_tag * dns_txt_packet (const unsigned char *packet, uw size,
                         const s_str *name, s_tag *dest);
