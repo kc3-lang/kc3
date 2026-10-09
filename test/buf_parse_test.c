@@ -688,6 +688,28 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_PARSE_TEST_UNSIGNED(bits, input, result, expected)          \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    u ## bits dest = 42;                                               \
+    sw expected_result = (result);                                     \
+    test_context("buf_parse_u" # bits "(" input ")");                 \
+    buf_init_1_const(&buf, "!" input ";");                            \
+    buf.rpos = 1;                                                      \
+    TEST_EQ(buf_parse_u ## bits(&buf, &dest), expected_result);         \
+    TEST_EQ(dest, (expected));                                         \
+    TEST_EQ(buf.rpos, expected_result < 0 ? 1 : 1 + expected_result);  \
+    TEST_ASSERT(! buf.save);                                           \
+    buf_clean(&buf);                                                   \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define BUF_PARSE_TEST_UNSIGNED_OK(bits, input, expected)               \
+  BUF_PARSE_TEST_UNSIGNED(bits, input, sizeof(input) - 1, expected)
+
+#define BUF_PARSE_TEST_UNSIGNED_KO(bits, input)                         \
+  BUF_PARSE_TEST_UNSIGNED(bits, input, -1, 42)
+
 TEST_CASE_PROTOTYPE(buf_parse_array);
 TEST_CASE_PROTOTYPE(buf_parse_bool);
 TEST_CASE_PROTOTYPE(buf_parse_pcall);
@@ -718,6 +740,9 @@ TEST_CASE_PROTOTYPE(buf_parse_sym);
 TEST_CASE_PROTOTYPE(buf_parse_tag);
 TEST_CASE_PROTOTYPE(buf_parse_tuple);
 TEST_CASE_PROTOTYPE(buf_parse_unquote);
+TEST_CASE_PROTOTYPE(buf_parse_unsigned_limits);
+TEST_CASE_PROTOTYPE(buf_parse_unsigned_overflow);
+TEST_CASE_PROTOTYPE(buf_parse_unsigned_base);
 
 void buf_parse_test (void)
 {
@@ -751,6 +776,9 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_tuple);
   TEST_CASE_RUN(buf_parse_unquote);
   TEST_CASE_RUN(buf_parse_pvar);
+  TEST_CASE_RUN(buf_parse_unsigned_limits);
+  TEST_CASE_RUN(buf_parse_unsigned_overflow);
+  TEST_CASE_RUN(buf_parse_unsigned_base);
 #ifdef KC3_TEST_BUF_PARSE_SU
   TEST_CASE_RUN(buf_parse_u8_binary);
   TEST_CASE_RUN(buf_parse_u8_octal);
@@ -804,6 +832,105 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_sw);
 #endif /* KC3_TEST_BUF_PARSE_SU */
 }
+
+TEST_CASE(buf_parse_unsigned_limits)
+{
+  BUF_PARSE_TEST_UNSIGNED_OK(8, "0", 0);
+  BUF_PARSE_TEST_UNSIGNED_OK(8, "254", U8_MAX - 1);
+  BUF_PARSE_TEST_UNSIGNED_OK(8, "255", U8_MAX);
+  BUF_PARSE_TEST_UNSIGNED_OK(8, "000255", U8_MAX);
+  BUF_PARSE_TEST_UNSIGNED_OK(8, "0b11111111", U8_MAX);
+  BUF_PARSE_TEST_UNSIGNED_OK(8, "0o377", U8_MAX);
+  BUF_PARSE_TEST_UNSIGNED_OK(8, "0xFF", U8_MAX);
+  BUF_PARSE_TEST_UNSIGNED_OK(16, "65534", U16_MAX - 1);
+  BUF_PARSE_TEST_UNSIGNED_OK(16, "65535", U16_MAX);
+  BUF_PARSE_TEST_UNSIGNED_OK(16, "0o177777", U16_MAX);
+  BUF_PARSE_TEST_UNSIGNED_OK(16, "0xFFFF", U16_MAX);
+  BUF_PARSE_TEST_UNSIGNED_OK(32, "4294967294", U32_MAX - 1);
+  BUF_PARSE_TEST_UNSIGNED_OK(32, "4294967295", U32_MAX);
+  BUF_PARSE_TEST_UNSIGNED_OK(32, "0o37777777777", U32_MAX);
+  BUF_PARSE_TEST_UNSIGNED_OK(32, "0xFFFFFFFF", U32_MAX);
+  BUF_PARSE_TEST_UNSIGNED_OK(64, "18446744073709551614", U64_MAX - 1);
+  BUF_PARSE_TEST_UNSIGNED_OK(64, "18446744073709551615", U64_MAX);
+  BUF_PARSE_TEST_UNSIGNED_OK(64, "0o1777777777777777777777", U64_MAX);
+  BUF_PARSE_TEST_UNSIGNED_OK(64, "0xFFFFFFFFFFFFFFFF", U64_MAX);
+  if (sizeof(uw) == 8) {
+    BUF_PARSE_TEST_UNSIGNED_OK(w, "18446744073709551614", UW_MAX - 1);
+    BUF_PARSE_TEST_UNSIGNED_OK(w, "18446744073709551615", UW_MAX);
+    BUF_PARSE_TEST_UNSIGNED_OK(w, "0o1777777777777777777777", UW_MAX);
+    BUF_PARSE_TEST_UNSIGNED_OK(w, "0xFFFFFFFFFFFFFFFF", UW_MAX);
+  }
+  else {
+    BUF_PARSE_TEST_UNSIGNED_OK(w, "4294967294", UW_MAX - 1);
+    BUF_PARSE_TEST_UNSIGNED_OK(w, "4294967295", UW_MAX);
+    BUF_PARSE_TEST_UNSIGNED_OK(w, "0o37777777777", UW_MAX);
+    BUF_PARSE_TEST_UNSIGNED_OK(w, "0xFFFFFFFF", UW_MAX);
+  }
+}
+TEST_CASE_END(buf_parse_unsigned_limits)
+
+TEST_CASE(buf_parse_unsigned_overflow)
+{
+  BUF_PARSE_TEST_UNSIGNED_KO(8, "260");
+  BUF_PARSE_TEST_UNSIGNED_KO(8, "256");
+  BUF_PARSE_TEST_UNSIGNED_KO(8, "000260");
+  BUF_PARSE_TEST_UNSIGNED_KO(8, "999999999999999999999999");
+  BUF_PARSE_TEST_UNSIGNED_KO(8, "0b100000000");
+  BUF_PARSE_TEST_UNSIGNED_KO(8, "0o400");
+  BUF_PARSE_TEST_UNSIGNED_KO(8, "0x100");
+  BUF_PARSE_TEST_UNSIGNED_KO(16, "65540");
+  BUF_PARSE_TEST_UNSIGNED_KO(16, "65536");
+  BUF_PARSE_TEST_UNSIGNED_KO(16, "0b10000000000000000");
+  BUF_PARSE_TEST_UNSIGNED_KO(16, "0o200000");
+  BUF_PARSE_TEST_UNSIGNED_KO(16, "0x10000");
+  BUF_PARSE_TEST_UNSIGNED_KO(32, "4294967300");
+  BUF_PARSE_TEST_UNSIGNED_KO(32, "4294967296");
+  BUF_PARSE_TEST_UNSIGNED_KO(32, "0o40000000000");
+  BUF_PARSE_TEST_UNSIGNED_KO(32, "0x100000000");
+  BUF_PARSE_TEST_UNSIGNED_KO(64, "18446744073709551620");
+  BUF_PARSE_TEST_UNSIGNED_KO(64, "18446744073709551616");
+  BUF_PARSE_TEST_UNSIGNED_KO(64, "0o2000000000000000000000");
+  BUF_PARSE_TEST_UNSIGNED_KO(64, "0x10000000000000000");
+  if (sizeof(uw) == 8) {
+    BUF_PARSE_TEST_UNSIGNED_KO(w, "18446744073709551620");
+    BUF_PARSE_TEST_UNSIGNED_KO(w, "18446744073709551616");
+    BUF_PARSE_TEST_UNSIGNED_KO(w, "0o2000000000000000000000");
+    BUF_PARSE_TEST_UNSIGNED_KO(w, "0x10000000000000000");
+  }
+  else {
+    BUF_PARSE_TEST_UNSIGNED_KO(w, "4294967300");
+    BUF_PARSE_TEST_UNSIGNED_KO(w, "4294967296");
+    BUF_PARSE_TEST_UNSIGNED_KO(w, "0o40000000000");
+    BUF_PARSE_TEST_UNSIGNED_KO(w, "0x100000000");
+  }
+}
+TEST_CASE_END(buf_parse_unsigned_overflow)
+
+TEST_CASE(buf_parse_unsigned_base)
+{
+  const s_str base = STR("0123456789abcdefghijklmnopqrstuvwxyz");
+  s_buf buf;
+  u8 dest = 42;
+  test_context("buf_parse_u8_base: base-36 maximum");
+  buf_init_1_const(&buf, "!73;");
+  buf.rpos = 1;
+  TEST_EQ(buf_parse_u8_base(&buf, &base, &dest), 2);
+  TEST_EQ(dest, U8_MAX);
+  TEST_EQ(buf.rpos, 3);
+  TEST_ASSERT(! buf.save);
+  buf_clean(&buf);
+  test_context("buf_parse_u8_base: base-36 multiplication overflow");
+  dest = 42;
+  buf_init_1_const(&buf, "!80;");
+  buf.rpos = 1;
+  TEST_EQ(buf_parse_u8_base(&buf, &base, &dest), -1);
+  TEST_EQ(dest, 42);
+  TEST_EQ(buf.rpos, 1);
+  TEST_ASSERT(! buf.save);
+  buf_clean(&buf);
+  test_context(NULL);
+}
+TEST_CASE_END(buf_parse_unsigned_base)
 
 TEST_CASE(buf_parse_array)
 {
