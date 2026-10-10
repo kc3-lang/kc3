@@ -1,0 +1,52 @@
+require JSON
+
+# Complete documents accept only JSON whitespace around one value.
+JSON.from_str(" \t\r\ntrue \t\r\n") == true
+JSON.from_str("\nfalse\r") == false
+JSON.from_str(" \tnull\n ") == void
+JSON.from_str("\t\"text\" \r\n") == "text"
+JSON.from_str("\n42\t") == 42
+JSON.from_str("\r-42 ") == -42
+JSON.from_str(" 1.25\n") == 1.25
+JSON.from_str(" [ \t\r\n ] ") == []
+JSON.from_str(" { \t\r\n } ") == %{}
+JSON.from_str("[true, false, null]") == [true, false, void]
+JSON.from_str("{\"a\":true,\"b\":false}") == %{"a" => true, "b" => false}
+JSON.from_str(" \n{\"a\" \t:\r\n [1, true, null, {\"b\": []}], \"z\": {}}\r ") == %{"a" => [1, true, void, %{"b" => []}], "z" => %{}}
+
+# Streaming parsing leaves subsequent bytes untouched.
+(json_stream_equal = fn (source, expected, remaining) do
+  buf = Buf.new_alloc((Uw) 1024)
+  Buf.write_str(buf, "prefix\n" + source)
+  Buf.read_line(buf)
+  value = JSON.buf_parse(buf)
+  result = {value == expected, Buf.read_to_str(buf) == remaining}
+  Buf.delete(buf)
+  result
+end) ; void
+
+json_stream_equal("trueXYZ", true, "XYZ")
+json_stream_equal(" \ntrue false", true, " false")
+json_stream_equal(" \tnull\ntrue", void, "\ntrue")
+json_stream_equal("[true] [false]", [true], " [false]")
+json_stream_equal("{\"a\":false}tail", %{"a" => false}, "tail")
+json_stream_equal("\"a\"\"b\"", "a", "\"b\"")
+
+# Failure restores whitespace too, from a nonzero starting position.
+json_stream_equal(" \n[true,]", void, " \n[true,]")
+json_stream_equal("\t?", void, "\t?")
+json_stream_equal(" \t\r\n", void, " \t\r\n")
+
+# Consecutive values can be read separately through the streaming API.
+do
+  buf = Buf.new_alloc((Uw) 1024)
+  Buf.write_str(buf, "prefix\n \n{\"a\":1}\t[false]\rnull ")
+  Buf.read_line(buf)
+  first = JSON.buf_parse(buf)
+  second = JSON.buf_parse(buf)
+  third = JSON.buf_parse(buf)
+  result = {first == %{"a" => 1}, second == [false],
+            third == void, Buf.read_to_str(buf) == " "}
+  Buf.delete(buf)
+  result
+end

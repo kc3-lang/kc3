@@ -1,0 +1,25 @@
+JSON
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+void
+{true, true}
+{true, true}
+{true, true}
+{true, true}
+{true, true}
+{true, true}
+json_buf_parse_list: invalid list
+{true, true}
+{true, true}
+{true, true}
+{true, true, true, true}
