@@ -1,0 +1,76 @@
+require JSON
+
+# The ordinary Buf.write_str re-encodes UTF-8; preserve malformed bytes here.
+(json_write_bytes = cfn Sw "buf_write" (Buf, Char*, Uw)) ; void
+
+# Failed parsing must restore a nonzero input position and return void.
+(json_string_invalid = fn (source) do
+  buf = Buf.new_alloc((Uw) 1024)
+  raw = "prefix\n" + source
+  json_write_bytes(buf, raw, (Uw) Str.size(raw))
+  Buf.read_line(buf)
+  value = JSON.buf_parse(buf)
+  result = {value == void, Buf.read_to_str(buf) == source}
+  Buf.delete(buf)
+  result
+end) ; void
+
+# Truncation, unknown/KC3 escapes, malformed UTF-16, raw controls and bad UTF-8.
+json_string_invalid("\"")
+json_string_invalid("\"unterminated")
+json_string_invalid("\"abc\\")
+json_string_invalid("\"\\q\"")
+json_string_invalid("\"\\x41\"")
+json_string_invalid("\"\\101\"")
+json_string_invalid("\"\\0\"")
+json_string_invalid("\"\\v\"")
+json_string_invalid("\"\\s\"")
+json_string_invalid("\"\\'\"")
+json_string_invalid("\"\\U0041\"")
+json_string_invalid("\"\\u+0041\"")
+json_string_invalid("\"\\u\"")
+json_string_invalid("\"\\u0\"")
+json_string_invalid("\"\\u00\"")
+json_string_invalid("\"\\u000\"")
+json_string_invalid("\"\\u12G4\"")
+json_string_invalid("\"\\ud800\"")
+json_string_invalid("\"\\udbff\"")
+json_string_invalid("\"\\udc00\"")
+json_string_invalid("\"\\udfff\"")
+json_string_invalid("\"\\ud800x\"")
+json_string_invalid("\"\\ud800\\u0041\"")
+json_string_invalid("\"\\ud800\\ud800\"")
+json_string_invalid("\"\\udc00\\ud800\"")
+json_string_invalid("\"\\ud800\\u\"")
+json_string_invalid("\"\\ud800\\udc0\"")
+json_string_invalid("\"\x00\"")
+json_string_invalid("\"\x01\"")
+json_string_invalid("\"\x08\"")
+json_string_invalid("\"\x0c\"")
+json_string_invalid("\"\n\"")
+json_string_invalid("\"\r\"")
+json_string_invalid("\"\t\"")
+json_string_invalid("\"\x1f\"")
+json_string_invalid("\"\\\n\"")
+json_string_invalid("\"\x80\"")
+json_string_invalid("\"\xbf\"")
+json_string_invalid("\"\xc0\x80\"")
+json_string_invalid("\"\xc1\xbf\"")
+json_string_invalid("\"\xc2\"")
+json_string_invalid("\"\xc2A\"")
+json_string_invalid("\"\xe0\x80\x80\"")
+json_string_invalid("\"\xed\xa0\x80\"")
+json_string_invalid("\"\xed\xbf\xbf\"")
+json_string_invalid("\"\xe2\x82\"")
+json_string_invalid("\"\xe2A\xac\"")
+json_string_invalid("\"\xf0\x80\x80\x80\"")
+json_string_invalid("\"\xf4\x90\x80\x80\"")
+json_string_invalid("\"\xf5\x80\x80\x80\"")
+json_string_invalid("\"\xf8\x80\x80\x80\x80\"")
+json_string_invalid("\"\xff\"")
+json_string_invalid("\"\xf0\x9f\x98\"")
+
+# Reject bad strings after partial container allocation, without debug aborts.
+json_string_invalid("[\"ok\", \"\\q\"]")
+json_string_invalid("{\"ok\": \"kept\", \"\\q\": 0}")
+json_string_invalid("{\"ok\": \"kept\", \"a\": \"\\q\"}")
