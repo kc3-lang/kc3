@@ -18,7 +18,9 @@
 #include "../libkc3/env_eval.h"
 #include "../libkc3/fact.h"
 #include "../libkc3/file.h"
+#include "../libkc3/ht.h"
 #include "../libkc3/inspect.h"
+#include "../libkc3/map.h"
 #include "../libkc3/marshall.h"
 #include "../libkc3/marshall_read.h"
 #include "../libkc3/facts.h"
@@ -28,6 +30,7 @@
 #include "../libkc3/list.h"
 #include "../libkc3/tag.h"
 #include "../libkc3/tag_init.h"
+#include "../libkc3/tuple.h"
 #include "../libkc3/var.h"
 #include <stdio.h>
 #include <unistd.h>
@@ -89,6 +92,9 @@ TEST_CASE_PROTOTYPE(marshall_read_bool);
 TEST_CASE_PROTOTYPE(marshall_read_call_cache);
 TEST_CASE_PROTOTYPE(marshall_read_character);
 TEST_CASE_PROTOTYPE(marshall_read_chunks);
+TEST_CASE_PROTOTYPE(marshall_read_container_limits);
+TEST_CASE_PROTOTYPE(marshall_read_container_counts);
+TEST_CASE_PROTOTYPE(marshall_read_header_limits);
 TEST_CASE_PROTOTYPE(marshall_read_facts);
 TEST_CASE_PROTOTYPE(marshall_read_facts_log);
 TEST_CASE_PROTOTYPE(marshall_read_init_buf);
@@ -124,6 +130,9 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_bool);
   TEST_CASE_RUN(marshall_read_call_cache);
   TEST_CASE_RUN(marshall_read_chunks);
+  TEST_CASE_RUN(marshall_read_container_limits);
+  TEST_CASE_RUN(marshall_read_container_counts);
+  TEST_CASE_RUN(marshall_read_header_limits);
   TEST_CASE_RUN(marshall_read_facts);
   TEST_CASE_RUN(marshall_read_facts_log);
   TEST_CASE_RUN(marshall_read_tag);
@@ -138,6 +147,208 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_skiplist_max_height);
 #endif
 }
+
+TEST_CASE(marshall_read_container_limits)
+{
+  s_ht ht = {0};
+  s_list **items;
+  uw i;
+  s_tag *key;
+  s_map map = {0};
+  s_tuple tuple = {0};
+  s_tag *tag;
+  s_tag *value;
+  const uw ht_counts[] = {0, UW_MAX / sizeof(s_list *) + 1,
+                         UW_MAX / sizeof(s_list *) + 2, UW_MAX};
+  const uw tag_counts[] = {UW_MAX / sizeof(s_tag) + 1,
+                          UW_MAX / sizeof(s_tag) + 2, UW_MAX};
+  TEST_EQ(ht_init(&ht, &g_sym_Tag, 4), &ht);
+  items = ht.items;
+  for (i = 0; i < sizeof(ht_counts) / sizeof(ht_counts[0]); i++) {
+    TEST_EQ(ht_init(&ht, &g_sym_Tag, ht_counts[i]), NULL);
+    TEST_EQ(ht.items, items);
+    TEST_EQ(ht.size, 4);
+    TEST_EQ(ht.ref_count, 1);
+  }
+  ht_clean(&ht);
+  ht = (s_ht) {0};
+  TEST_EQ(ht_init(&ht, &g_sym_Tag, ht_counts[2]), NULL);
+  ht_clean(&ht);
+  TEST_EQ(map_init(&map, 2), &map);
+  key = map.key;
+  value = map.value;
+  for (i = 0; i < sizeof(tag_counts) / sizeof(tag_counts[0]); i++) {
+    TEST_EQ(map_init(&map, tag_counts[i]), NULL);
+    TEST_EQ(map.count, 2);
+    TEST_EQ(map.key, key);
+    TEST_EQ(map.value, value);
+  }
+  map_clean(&map);
+  map = (s_map) {0};
+  TEST_EQ(map_init(&map, tag_counts[1]), NULL);
+  map_clean(&map);
+  TEST_EQ(map_init(&map, 0), &map);
+  TEST_EQ(map.count, 0);
+  map_clean(&map);
+  TEST_EQ(tuple_init(&tuple, 2), &tuple);
+  tag = tuple.tag;
+  tag_init_bool(tag, true);
+  for (i = 0; i < sizeof(tag_counts) / sizeof(tag_counts[0]); i++) {
+    TEST_EQ(tuple_init(&tuple, tag_counts[i]), NULL);
+    TEST_EQ(tuple.count, 2);
+    TEST_EQ(tuple.tag, tag);
+    TEST_EQ(tuple.tag->type, TAG_BOOL);
+    TEST_EQ(tuple.tag->data.td_bool_, true);
+    TEST_EQ(tuple.ref_count, 1);
+  }
+  TEST_EQ(tuple_init(&tuple, 0), NULL);
+  TEST_EQ(tuple_init(&tuple, 1), NULL);
+  TEST_EQ(tuple.count, 2);
+  TEST_EQ(tuple.tag, tag);
+  tuple_clean(&tuple);
+  tuple = (s_tuple) {0};
+  TEST_EQ(tuple_init(&tuple, tag_counts[1]), NULL);
+  tuple_clean(&tuple);
+}
+TEST_CASE_END(marshall_read_container_limits)
+
+TEST_CASE(marshall_read_container_counts)
+{
+  s_buf *buf;
+  bool heap;
+  uw i;
+  uw j;
+  s_marshall m = {0};
+  s_map map = {0};
+  s_marshall_read mr = {0};
+  uw pos;
+  s_tuple tuple = {0};
+  s_tag value = {0};
+  const uw counts[] = {UW_MAX / sizeof(s_tag) + 1,
+                       UW_MAX / sizeof(s_tag) + 2, UW_MAX, 0, 1};
+  tag_init_bool(&value, true);
+  for (j = 0; j < 2; j++) {
+    heap = j;
+    for (i = 0; i < sizeof(counts) / sizeof(counts[0]); i++) {
+      TEST_EQ(marshall_init(&m, 256), &m);
+      mr.buf = &m.buf;
+      mr.heap = &m.heap;
+      buf = heap ? mr.heap : mr.buf;
+      if (i < 3) {
+        TEST_EQ(marshall_1(&m, heap, "_KC3MAP_"), &m);
+        TEST_EQ(marshall_uw(&m, heap, counts[i]), &m);
+        pos = buf->wpos;
+        TEST_EQ(marshall_tag(&m, heap, &value), &m);
+        TEST_EQ(marshall_read_map(&mr, heap, &map), NULL);
+        TEST_EQ(map.count, 0);
+        TEST_EQ(map.key, NULL);
+        TEST_EQ(map.value, NULL);
+        TEST_EQ(buf->rpos, pos);
+        map_clean(&map);
+      }
+      buf_empty(buf);
+      TEST_EQ(marshall_uw(&m, heap, counts[i]), &m);
+      pos = buf->wpos;
+      TEST_EQ(marshall_tag(&m, heap, &value), &m);
+      TEST_EQ(marshall_read_tuple(&mr, heap, &tuple), NULL);
+      TEST_EQ(tuple.count, 0);
+      TEST_EQ(tuple.tag, NULL);
+      TEST_EQ(buf->rpos, pos);
+      tuple_clean(&tuple);
+      marshall_clean(&m);
+    }
+  }
+}
+TEST_CASE_END(marshall_read_container_counts)
+
+TEST_CASE(marshall_read_header_limits)
+{
+  s_buf buf;
+  uw i;
+  s_list **items;
+  s_marshall_header mh;
+  s_marshall_read mr = {0};
+  struct {
+    u64 offset;
+    u64 count;
+    u64 heap;
+    u64 body;
+    bool valid;
+    bool limited;
+  } cases[] = {
+    {0, 0, 0, 0, true, false},
+    {0, 0, 0, SW_MAX - sizeof(mh), true, false},
+    {0, 1, 1, 0, true, false},
+    {0, 0, 0, 32, true, true},
+    {0, 4, 16, 32, true, true},
+    {0, UW_MAX / sizeof(s_list *) + 1, 0, 0, false, false},
+    {0, UW_MAX / sizeof(s_list *) + 2, 0, 0, false, false},
+    {0, U64_MAX, 0, 0, false, false},
+    {U64_MAX, 0, 0, 0, false, false},
+    {0, 1, U64_MAX, 0, false, false},
+    {0, 0, 0, U64_MAX, false, false},
+    {0, 1, SW_MAX, 0, false, false},
+    {0, 1, SW_MAX - sizeof(mh), 1, false, false},
+    {SW_MAX, 1, 1, 0, false, false},
+    {0, 0, 1, 0, false, false},
+    {0, 1, 0, 0, false, false},
+    {0, 2, 1, 0, false, false},
+    {0, 5, 8, 0, false, true},
+    {0, 1, 17, 0, false, true},
+    {0, 0, 0, 33, false, true}
+  };
+  for (i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
+    mh = (s_marshall_header) {htole64(MARSHALL_MAGIC),
+                            htole64(cases[i].offset),
+                            htole64(cases[i].count),
+                            htole64(cases[i].heap),
+                            htole64(cases[i].body)};
+    TEST_EQ(buf_init_const(&buf, sizeof(mh), (const char *) &mh), &buf);
+    buf.wpos = sizeof(mh);
+    TEST_EQ(marshall_read_init_buf(&mr, &buf), &mr);
+    TEST_EQ(ht_init(&mr.ht, &g_sym_Tuple, 4), &mr.ht);
+    items = mr.ht.items;
+    mr.heap_count = 4;
+    mr.heap_size = 16;
+    mr.buf_size = 32;
+    if (cases[i].limited) {
+      TEST_EQ(marshall_read_header_limit(&mr, 4, 16, 32),
+              cases[i].valid ? &mr : NULL);
+    }
+    else {
+      TEST_EQ(marshall_read_header(&mr), cases[i].valid ? &mr : NULL);
+    }
+    TEST_EQ(buf.rpos, sizeof(mh));
+    if (cases[i].valid) {
+      TEST_EQ(mr.heap_count, cases[i].count);
+      TEST_EQ(mr.heap_size, cases[i].heap);
+      TEST_EQ(mr.buf_size, cases[i].body);
+      TEST_EQ(mr.ht.size, cases[i].count);
+    }
+    else {
+      TEST_EQ(mr.heap_count, 4);
+      TEST_EQ(mr.heap_size, 16);
+      TEST_EQ(mr.buf_size, 32);
+      TEST_EQ(mr.ht.items, items);
+      TEST_EQ(mr.ht.size, 4);
+    }
+    marshall_read_clean(&mr);
+    buf_clean(&buf);
+  }
+  mh = (s_marshall_header) {0};
+  TEST_EQ(buf_init_const(&buf, sizeof(mh), (const char *) &mh), &buf);
+  buf.wpos = sizeof(mh);
+  TEST_EQ(marshall_read_init_buf(&mr, &buf), &mr);
+  TEST_EQ(marshall_read_header(&mr), NULL);
+  TEST_EQ(mr.ht.items, NULL);
+  buf.rpos = 0;
+  buf.wpos--;
+  TEST_EQ(marshall_read_header(&mr), NULL);
+  TEST_EQ(buf.rpos, 0);
+  marshall_read_clean(&mr);
+  buf_clean(&buf);
+}
+TEST_CASE_END(marshall_read_header_limits)
 
 TEST_CASE(marshall_read_array)
 {
