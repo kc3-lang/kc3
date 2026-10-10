@@ -268,6 +268,7 @@ s_struct_type * struct_type_init_copy (s_struct_type *st,
   if (! map_init_copy(&st->map, &src->map))
     goto ko;
   st->module = src->module;
+  st->align_max = src->align_max;
   st->must_clean = src->must_clean;
   if (st->map.count) {
     st->offset = alloc(st->map.count * sizeof(uw));

@@ -23,6 +23,7 @@
 #include "cfn.h"
 #include "compare.h"
 #include "complex.h"
+#include "data.h"
 #include "do_block.h"
 #include "endian.h"
 #include "env_eval.h"
@@ -787,12 +788,11 @@ s_marshall_read * marshall_read_data (s_marshall_read *mr, bool heap,
     return mr;
   if (! pstruct_type_find(type, &st))
     return NULL;
-  if (st) {
-    s.pstruct_type = st;
-    s.data = data;
-    marshall_read_struct(mr, heap, &s);
-  }
-  return mr;
+  if (! st)
+    return NULL;
+  s.pstruct_type = st;
+  s.data = data;
+  return marshall_read_struct(mr, heap, &s);
 }
 
 void marshall_read_delete (s_marshall_read *mr)
@@ -2674,6 +2674,8 @@ s_marshall_read * marshall_read_pstruct_type (s_marshall_read *mr,
                                               bool heap,
                                               p_struct_type *dest)
 {
+  p_tag keep = NULL;
+  p_list list = NULL;
   u64 offset = 0;
   p_struct_type present = NULL;
   p_struct_type tmp = NULL;
@@ -2703,14 +2705,23 @@ s_marshall_read * marshall_read_pstruct_type (s_marshall_read *mr,
       ! (tmp = alloc(sizeof(s_struct_type))))
     return NULL;
   if (! marshall_read_struct_type(mr, true, tmp)) {
+    alloc_free(tmp);
+    return NULL;
+  }
+  if (! (keep = tag_new())) {
     pstruct_type_clean(&tmp);
     return NULL;
   }
-  if (! marshall_read_ht_add(mr, offset, tmp)) {
-    pstruct_type_clean(&tmp);
+  keep->type = TAG_PSTRUCT_TYPE;
+  keep->data.td_pstruct_type = tmp;
+  if (! (list = list_new_ptr(keep, mr->ht_ptag_list))) {
+    tag_delete(keep);
     return NULL;
   }
-  *dest = tmp;
+  mr->ht_ptag_list = list;
+  if (! marshall_read_ht_add(mr, offset, tmp) ||
+      ! pstruct_type_init_copy(dest, &tmp))
+    return NULL;
   return mr;
 }
 
@@ -2976,14 +2987,186 @@ s_marshall_read * marshall_read_str (s_marshall_read *mr,
   return mr;
 }
 
+static bool marshall_read_struct_field_layout (p_sym type, uw *size,
+                                               u8 *align,
+                                               bool *must_clean)
+{
+  static const p_sym builtin[] = {
+    &g_sym_Array, &g_sym_Block, &g_sym_Bool, &g_sym_Call,
+    &g_sym_Callable, &g_sym_Character, &g_sym_Complex, &g_sym_Cow,
+    &g_sym_F32, &g_sym_F64,
+#if HAVE_F80
+    &g_sym_F80,
+#endif
+#if HAVE_F128
+    &g_sym_F128,
+#endif
+    &g_sym_Fact, &g_sym_Facts, &g_sym_Ident, &g_sym_Integer,
+    &g_sym_List, &g_sym_Map, &g_sym_Pointer, &g_sym_Ptr,
+    &g_sym_PtrFree, &g_sym_Quote, &g_sym_Ratio, &g_sym_S8,
+    &g_sym_S16, &g_sym_S32, &g_sym_S64, &g_sym_Str,
+    &g_sym_Struct, &g_sym_StructType, &g_sym_Sw, &g_sym_Sym,
+    &g_sym_Tag, &g_sym_Time, &g_sym_Tuple, &g_sym_U8,
+    &g_sym_U16, &g_sym_U32, &g_sym_U64, &g_sym_Uw,
+    &g_sym_Var, &g_sym_Void
+  };
+  uw i;
+  p_struct_type st = NULL;
+  if (! type || ! type->str.size)
+    return false;
+  if (sym_is_array_type(type))
+    type = &g_sym_Array;
+  if (type == &g_sym_Cfn || type == &g_sym_Fn)
+    type = &g_sym_Callable;
+  if (sym_is_pointer_type(type, NULL)) {
+    *size = sizeof(void *);
+    *align = _Alignof(void *);
+    *must_clean = type == &g_sym_Facts_star;
+    return true;
+  }
+  for (i = 0; i < sizeof(builtin) / sizeof(*builtin); i++) {
+    if (type != builtin[i])
+      continue;
+    if (! sym_type_size(type, size) ||
+        ! sym_type_alignment(type, align))
+      return false;
+    if (type == &g_sym_Array || type == &g_sym_Fact ||
+        type == &g_sym_Facts)
+      *must_clean = true;
+    else if (! sym_must_clean(type, must_clean))
+      return false;
+    return true;
+  }
+  if (! pstruct_type_find(type, &st) || ! st)
+    return false;
+  *size = st->size;
+  *align = st->align_max;
+  *must_clean = st->must_clean || st->clean;
+  return true;
+}
+
+static bool marshall_read_struct_type_layout (s_struct_type *st,
+                                              bool serialized)
+{
+  u8 align;
+  u8 align_max = 1;
+  uw end = 0;
+  uw i;
+  bool must_clean;
+  bool needs_clean = false;
+  uw offset;
+  uw padding;
+  uw size;
+  p_sym type;
+  bool valid = true;
+  s_tag *value;
+  if (st->map.count > UW_MAX / sizeof(uw) ||
+      st->map.count > UW_MAX / sizeof(s_tag) ||
+      (st->map.count && (! st->map.key || ! st->map.value)))
+    return false;
+  for (i = 0; i < st->map.count; i++) {
+    value = st->map.value + i;
+    if ((value->type == TAG_PVAR && ! value->data.td_pvar) ||
+        (value->type == TAG_PSTRUCT && ! value->data.td_pstruct)) {
+      value->type = TAG_VOID;
+      valid = false;
+    }
+  }
+  if (! valid || ! st->module)
+    return false;
+  if (serialized) {
+    if (! st->align_max ||
+        (st->align_max & (st->align_max - 1)) ||
+        st->size > SW_MAX || st->size % st->align_max ||
+        (st->map.count && ! st->offset))
+      return false;
+  }
+  else if (st->map.count &&
+           ! (st->offset = alloc(st->map.count * sizeof(uw))))
+    return false;
+  for (i = 0; i < st->map.count; i++) {
+    value = st->map.value + i;
+    if (st->map.key[i].type != TAG_PSYM ||
+        ! st->map.key[i].data.td_psym ||
+        (value->type == TAG_PSTRUCT &&
+         ! value->data.td_pstruct->pstruct_type) ||
+        ! tag_type_var(value, &type) || ! type)
+      return false;
+    if (! marshall_read_struct_field_layout(type, &size, &align,
+                                            &must_clean)) {
+      if (value->type != TAG_PSTRUCT)
+        return false;
+      size = value->data.td_pstruct->pstruct_type->size;
+      align = value->data.td_pstruct->pstruct_type->align_max;
+      must_clean = value->data.td_pstruct->pstruct_type->must_clean ||
+        value->data.td_pstruct->pstruct_type->clean;
+    }
+    if (! align || (align & (align - 1)))
+      return false;
+    if (align > align_max)
+      align_max = align;
+    needs_clean |= must_clean;
+    if (serialized) {
+      offset = st->offset[i];
+      if (offset < end || offset % align || offset > st->size ||
+          size > st->size - offset)
+        return false;
+    }
+    else {
+      padding = (align - end % align) % align;
+      if (padding > SW_MAX - end || size > SW_MAX - end - padding)
+        return false;
+      offset = end + padding;
+      st->offset[i] = offset;
+    }
+    end = offset + size;
+  }
+  if (serialized) {
+    if (st->align_max < align_max)
+      return false;
+  }
+  else {
+    padding = (align_max - end % align_max) % align_max;
+    if (padding > SW_MAX - end)
+      return false;
+    st->size = end + padding;
+    st->align_max = align_max;
+  }
+  st->must_clean = needs_clean;
+  return true;
+}
+
+static bool marshall_read_struct_type_match (const s_struct_type *a,
+                                             const s_struct_type *b)
+{
+  uw i;
+  p_sym a_type;
+  p_sym b_type;
+  if (! a || a->module != b->module || a->size != b->size ||
+      a->align_max != b->align_max || a->map.count != b->map.count ||
+      (a->map.count && (! a->offset || ! a->map.key || ! a->map.value)))
+    return false;
+  for (i = 0; i < a->map.count; i++) {
+    if (a->offset[i] != b->offset[i] ||
+        compare_tag(a->map.key + i, b->map.key + i) ||
+        ! tag_type_var(a->map.value + i, &a_type) ||
+        ! tag_type_var(b->map.value + i, &b_type) ||
+        a_type != b_type)
+      return false;
+  }
+  return true;
+}
+
 s_marshall_read * marshall_read_struct (s_marshall_read *mr,
                                         bool heap,
                                         s_struct *dest)
 {
   bool has_tags;
   bool has_data;
+  uw data_count = 0;
   uw i;
   uw offset;
+  uw tag_count = 0;
   s_struct tmp = {0};
   p_sym type = NULL;
   assert(mr);
@@ -2995,19 +3178,28 @@ s_marshall_read * marshall_read_struct (s_marshall_read *mr,
   }
   if (! marshall_read_pstruct_type(mr, heap, &tmp.pstruct_type))
     return NULL;
+  if (! tmp.pstruct_type ||
+      ! marshall_read_struct_type_layout(tmp.pstruct_type, true) ||
+      (dest->data &&
+       ! marshall_read_struct_type_match(dest->pstruct_type,
+                                        tmp.pstruct_type)))
+    goto ko;
   if (! marshall_read_bool(mr, heap, &has_tags)) {
     err_puts("marshall_read_struct: marshall_read_bool has tags");
     assert(! "marshall_read_struct: marshall_read_bool has tags");    
-    return NULL;
+    goto ko;
   }
-  if (has_tags) {
+  if (dest->data && has_tags)
+    goto ko;
+  if (has_tags && tmp.pstruct_type->map.count) {
     if (! (tmp.tag = alloc(tmp.pstruct_type->map.count *
                            sizeof(s_tag))))
-      return NULL;
+      goto ko;
     i = 0;
     while (i < tmp.pstruct_type->map.count) {
       if (! marshall_read_tag(mr, heap, tmp.tag + i))
         goto ko;
+      tag_count++;
       i++;
     }
   }
@@ -3016,16 +3208,13 @@ s_marshall_read * marshall_read_struct (s_marshall_read *mr,
     assert(! "marshall_read_struct: marshall_read_bool has data");    
     goto ko;
   }
+  if (dest->data && ! has_data)
+    goto ko;
   if (has_data) {
-    if (dest->data) {
-      tmp.data = dest->data;
-      tmp.free_data = false;
-    }
-    else {
-      if (! (tmp.data = alloc(tmp.pstruct_type->size)))
-        goto ko;
-      tmp.free_data = true;
-    }
+    if (! (tmp.data = alloc(tmp.pstruct_type->size ?
+                            tmp.pstruct_type->size : 1)))
+      goto ko;
+    tmp.free_data = true;
     i = 0;
     while (i < tmp.pstruct_type->map.count) {
       offset = tmp.pstruct_type->offset[i];
@@ -3034,20 +3223,34 @@ s_marshall_read * marshall_read_struct (s_marshall_read *mr,
         goto ko;
       if (! marshall_read_data(mr, heap, type, (u8 *) tmp.data + offset))
         goto ko;
+      data_count++;
       i++;
     }
+  }
+  if (dest->data) {
+    memcpy(dest->data, tmp.data, tmp.pstruct_type->size);
+    alloc_free(tmp.data);
+    tmp.data = NULL;
+    struct_clean(&tmp);
+    return mr;
   }
   tmp.ref_count = 1;
   *dest = tmp;
 #if HAVE_PTHREAD
-  if (! mutex_init(&dest->mutex)) {
-    struct_clean(dest);
-    return NULL;
-  }
+  mutex_init(&dest->mutex);
 #endif
   return mr;
 ko:
-  struct_clean(&tmp);
+  for (i = 0; i < data_count; i++) {
+    tag_type_var(tmp.pstruct_type->map.value + i, &type);
+    data_clean(type, (u8 *) tmp.data + tmp.pstruct_type->offset[i]);
+  }
+  alloc_free(tmp.data);
+  for (i = 0; i < tag_count; i++)
+    tag_clean(tmp.tag + i);
+  alloc_free(tmp.tag);
+  if (tmp.pstruct_type)
+    struct_type_delete(tmp.pstruct_type);
   return NULL;
 }
 
@@ -3077,16 +3280,16 @@ s_marshall_read * marshall_read_struct_type_1 (s_marshall_read *mr,
       ! marshall_read_pcallable(mr, heap, &tmp.clean) ||
       ! marshall_read_bool(mr, heap, &tmp.must_clean))
     goto ko;
+  if (! marshall_read_struct_type_layout(&tmp, true)) {
+    err_puts("marshall_read_struct_type: invalid layout");
+    goto ko;
+  }
   tmp.ref_count = 1;
   *dest = tmp;
 #if HAVE_PTHREAD
-  if (! mutex_init(&dest->mutex))
-    goto ko_dest;
+  mutex_init(&dest->mutex);
 #endif
   return mr;
- ko_dest:
-  struct_type_clean(dest);
-  return NULL;
  ko:
   struct_type_clean(&tmp);
   return NULL;
@@ -3110,20 +3313,15 @@ s_marshall_read * marshall_read_struct_type (s_marshall_read *mr,
   if (! marshall_read_psym(mr, heap, &tmp.module) ||
       ! marshall_read_map(mr, heap, &tmp.map))
     return NULL;
-  if (! marshall_read_pcallable(mr, heap, &tmp.clean))
+  if (! marshall_read_pcallable(mr, heap, &tmp.clean) ||
+      ! marshall_read_struct_type_layout(&tmp, false))
     goto ko;
   tmp.ref_count = 1;
-  if (tmp.map.count)
-    struct_type_update_map(&tmp);
   *dest = tmp;
 #if HAVE_PTHREAD
-  if (! mutex_init(&dest->mutex))
-    goto ko_dest;
+  mutex_init(&dest->mutex);
 #endif
   return mr;
- ko_dest:
-  struct_type_clean(dest);
-  return NULL;
  ko:
   struct_type_clean(&tmp);
   return NULL;

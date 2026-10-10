@@ -26,6 +26,8 @@
 #include "../libkc3/facts.h"
 #include "../libkc3/set__tag.h"
 #include "../libkc3/str.h"
+#include "../libkc3/struct.h"
+#include "../libkc3/struct_type.h"
 #include "../libkc3/sym.h"
 #include "../libkc3/list.h"
 #include "../libkc3/tag.h"
@@ -95,6 +97,11 @@ TEST_CASE_PROTOTYPE(marshall_read_chunks);
 TEST_CASE_PROTOTYPE(marshall_read_container_limits);
 TEST_CASE_PROTOTYPE(marshall_read_container_counts);
 TEST_CASE_PROTOTYPE(marshall_read_header_limits);
+TEST_CASE_PROTOTYPE(marshall_read_struct_layout);
+TEST_CASE_PROTOTYPE(marshall_read_struct_roundtrip);
+TEST_CASE_PROTOTYPE(marshall_read_struct_destination);
+TEST_CASE_PROTOTYPE(marshall_read_struct_nested);
+TEST_CASE_PROTOTYPE(marshall_read_struct_legacy_limits);
 TEST_CASE_PROTOTYPE(marshall_read_facts);
 TEST_CASE_PROTOTYPE(marshall_read_facts_log);
 TEST_CASE_PROTOTYPE(marshall_read_init_buf);
@@ -133,6 +140,11 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_container_limits);
   TEST_CASE_RUN(marshall_read_container_counts);
   TEST_CASE_RUN(marshall_read_header_limits);
+  TEST_CASE_RUN(marshall_read_struct_layout);
+  TEST_CASE_RUN(marshall_read_struct_roundtrip);
+  TEST_CASE_RUN(marshall_read_struct_destination);
+  TEST_CASE_RUN(marshall_read_struct_nested);
+  TEST_CASE_RUN(marshall_read_struct_legacy_limits);
   TEST_CASE_RUN(marshall_read_facts);
   TEST_CASE_RUN(marshall_read_facts_log);
   TEST_CASE_RUN(marshall_read_tag);
@@ -147,6 +159,441 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_skiplist_max_height);
 #endif
 }
+
+static s_marshall * marshall_test_struct_type (s_marshall *m,
+                                               s_struct_type *st,
+                                               bool legacy)
+{
+  uw i;
+  if (! marshall_1(m, false, legacy ? "_KC3STRUCTTYPE_" :
+                    "_KC3STRUCTTYPE1_") ||
+      ! marshall_psym(m, false, &st->module) ||
+      ! marshall_map(m, false, &st->map))
+    return NULL;
+  if (! legacy) {
+    for (i = 0; i < st->map.count; i++)
+      if (! marshall_uw(m, false, st->offset[i]))
+        return NULL;
+    if (! marshall_u8(m, false, st->align_max) ||
+        ! marshall_uw(m, false, st->size))
+      return NULL;
+  }
+  if (! marshall_pcallable(m, false, &st->clean) ||
+      (! legacy && ! marshall_bool(m, false, st->must_clean)))
+    return NULL;
+  return m;
+}
+
+TEST_CASE(marshall_read_struct_layout)
+{
+  uw i;
+  s_marshall m;
+  s_marshall_read mr;
+  uw offsets[2];
+  s_struct_type src;
+  s_struct_type dest;
+  s_struct_type saved;
+  s_str str;
+  for (i = 0; i < 17; i++) {
+    m = (s_marshall) {0};
+    mr = (s_marshall_read) {0};
+    src = (s_struct_type) {0};
+    dest = (s_struct_type) {0};
+    dest.size = 123;
+    saved = dest;
+    str = (s_str) {0};
+    src.module = sym_1("MarshallLayoutTest");
+    TEST_ASSERT(map_init(&src.map, 2));
+    tag_init_psym(src.map.key, sym_1("a"));
+    tag_init_psym(src.map.key + 1, sym_1("b"));
+    tag_init_u64(src.map.value, 0);
+    tag_init_u64(src.map.value + 1, 0);
+    offsets[0] = 0;
+    offsets[1] = sizeof(u64);
+    src.offset = offsets;
+    src.align_max = _Alignof(u64);
+    src.size = 2 * sizeof(u64);
+    switch (i) {
+    case 0: offsets[0] = 16; src.size = 8; break;
+    case 1: offsets[1] = UW_MAX; break;
+    case 2: offsets[1] = UW_MAX - 7; break;
+    case 3: src.size--; break;
+    case 4: src.size = 0; break;
+    case 5: offsets[1] = 0; break;
+    case 6: offsets[1] = 1; break;
+    case 7: src.align_max = 0; break;
+    case 8: src.align_max = 3; break;
+    case 9: src.align_max = 1; break;
+    case 10: src.module = NULL; break;
+    case 11:
+      tag_clean(src.map.key);
+      tag_init_u8(src.map.key, 1);
+      break;
+    case 12:
+      tag_clean(src.map.value);
+      TEST_ASSERT(tag_init_pvar(src.map.value,
+                                sym_1("MarshallUnknownFieldType")));
+      break;
+    case 13: src.size = (uw) SW_MAX + 1; break;
+    case 14: src.map.key[0].data.td_psym = NULL; break;
+    case 15: src.map.value[0].type = TAG_PVAR; break;
+    case 16: src.map.value[0].type = TAG_PSTRUCT; break;
+    }
+    test_context("reject invalid serialized struct layout");
+    TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+    TEST_EQ(marshall_test_struct_type(&m, &src, false), &m);
+    TEST_ASSERT(marshall_to_str(&m, &str));
+    TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+    TEST_EQ(marshall_read_struct_type(&mr, false, &dest), NULL);
+    TEST_MEM_EQ(&dest, sizeof(dest), &saved, sizeof(saved));
+    marshall_read_clean(&mr);
+    marshall_clean(&m);
+    str_clean(&str);
+    if (i == 15 || i == 16)
+      src.map.value[0].type = TAG_VOID;
+    map_clean(&src.map);
+  }
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_struct_layout)
+
+TEST_CASE(marshall_read_struct_roundtrip)
+{
+  struct { u8 a; u64 b; s_str c; } data = {0}, inline_data = {0};
+  bool copy;
+  bool copy_saved = env_global()->pass_by_copy;
+  s_struct dest = {0};
+  s_struct inline_dest = {0};
+  s_struct inline_saved;
+  uw j;
+  bool legacy;
+  s_marshall m;
+  s_marshall_read mr;
+  uw mode;
+  s_list *spec;
+  s_struct src = {0};
+  s_struct_type *st;
+  s_str str;
+  s_struct_type type_read;
+  s_struct_type empty = {0};
+  TEST_ASSERT((spec = list_new_1("[{:a, (U8) 0}, {:b, (U64) 0},"
+                                 " {:c, \"\"}]")));
+  TEST_ASSERT((st = struct_type_new(sym_1("MarshallRoundtripTest"),
+                                    spec)));
+  list_delete_all(spec);
+  TEST_EQ(st->size, sizeof(data));
+  TEST_EQ(st->offset[1], offsetof(__typeof__(data), b));
+  TEST_EQ(st->offset[2], offsetof(__typeof__(data), c));
+  data.a = 42;
+  data.b = 123456;
+  TEST_ASSERT(str_init_1(&data.c, NULL, "owned field"));
+  src.pstruct_type = st;
+  for (mode = 0; mode < 4; mode++) {
+    m = (s_marshall) {0};
+    mr = (s_marshall_read) {0};
+    str = (s_str) {0};
+    src.data = mode & 2 ? &data : NULL;
+    src.tag = mode & 1 ? st->map.value : NULL;
+    TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+    TEST_EQ(marshall_struct(&m, false, &src), &m);
+    TEST_ASSERT(marshall_to_str(&m, &str));
+    TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+    TEST_EQ(marshall_read_struct(&mr, false, &dest), &mr);
+    TEST_EQ(!! dest.data, !! (mode & 2));
+    TEST_EQ(!! dest.tag, !! (mode & 1));
+    if (dest.data) {
+      TEST_EQ(((u8 *) dest.data)[0], data.a);
+      TEST_EQ(*(u64 *) ((u8 *) dest.data + st->offset[1]), data.b);
+      TEST_STR_EQ(*(s_str *) ((u8 *) dest.data + st->offset[2]), data.c);
+    }
+    struct_clean(&dest);
+    dest = (s_struct) {0};
+    marshall_read_clean(&mr);
+    marshall_clean(&m);
+    str_clean(&str);
+  }
+  src.data = &data;
+  src.tag = NULL;
+  for (copy = false; ; copy = true) {
+    env_global()->pass_by_copy = copy;
+    m = (s_marshall) {0};
+    mr = (s_marshall_read) {0};
+    str = (s_str) {0};
+    inline_dest.pstruct_type = st;
+    inline_dest.data = &inline_data;
+    inline_saved = inline_dest;
+    TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+    for (j = 0; j < 2; j++)
+      TEST_EQ(marshall_struct(&m, false, &src), &m);
+    TEST_ASSERT(marshall_to_str(&m, &str));
+    TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+    for (j = 0; j < 2; j++) {
+      TEST_EQ(marshall_read_struct(&mr, false, &inline_dest), &mr);
+      TEST_MEM_EQ(&inline_dest, sizeof(inline_dest), &inline_saved,
+                  sizeof(inline_saved));
+      TEST_EQ(inline_data.a, data.a);
+      TEST_EQ(inline_data.b, data.b);
+      TEST_STR_EQ(inline_data.c, data.c);
+      str_clean(&inline_data.c);
+      inline_data = (__typeof__(inline_data)) {0};
+    }
+    marshall_read_clean(&mr);
+    marshall_clean(&m);
+    str_clean(&str);
+    if (copy)
+      break;
+  }
+  env_global()->pass_by_copy = copy_saved;
+  empty.module = sym_1("MarshallEmptyTest");
+  empty.align_max = 1;
+  for (legacy = false; ; legacy = true) {
+    for (j = 0; j < 2; j++) {
+      m = (s_marshall) {0};
+      mr = (s_marshall_read) {0};
+      str = (s_str) {0};
+      type_read = (s_struct_type) {0};
+      TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+      TEST_EQ(marshall_test_struct_type(&m, j ? &empty : st, legacy),
+               &m);
+      TEST_ASSERT(marshall_to_str(&m, &str));
+      TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+      TEST_EQ(marshall_read_struct_type(&mr, false, &type_read), &mr);
+      TEST_EQ(type_read.size, j ? 0 : st->size);
+      TEST_EQ(type_read.align_max, j ? 1 : st->align_max);
+      TEST_EQ(type_read.must_clean, ! j);
+      if (! j)
+        TEST_MEM_EQ(type_read.offset, 3 * sizeof(uw), st->offset,
+                    3 * sizeof(uw));
+      struct_type_clean(&type_read);
+      marshall_read_clean(&mr);
+      marshall_clean(&m);
+      str_clean(&str);
+    }
+    if (legacy)
+      break;
+  }
+  struct_type_delete(st);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_struct_roundtrip)
+
+TEST_CASE(marshall_read_struct_destination)
+{
+  u64 data[3];
+  u64 saved_data[3];
+  s_struct dest;
+  s_struct saved;
+  uw i;
+  s_marshall m;
+  s_marshall_read mr;
+  uw offset;
+  s_struct_type *pwire;
+  s_list *spec;
+  s_struct_type *st;
+  s_str str;
+  s_struct_type wire;
+  TEST_ASSERT((spec = list_new_1("[{:a, (U64) 0}]")));
+  TEST_ASSERT((st = struct_type_new(sym_1("MarshallDestinationTest"),
+                                    spec)));
+  list_delete_all(spec);
+  for (i = 0; i < 9; i++) {
+    m = (s_marshall) {0};
+    mr = (s_marshall_read) {0};
+    str = (s_str) {0};
+    TEST_ASSERT(struct_type_init_copy(&wire, st));
+    pwire = &wire;
+    offset = wire.offset[0];
+    switch (i) {
+    case 0: wire.module = sym_1("MarshallWrongModule"); break;
+    case 1: wire.size *= 2; break;
+    case 2: tag_init_u8(wire.map.value, 0); break;
+    case 3: wire.offset[0] = 8; wire.size = 16; break;
+    case 4: tag_init_psym(wire.map.key, sym_1("wrong")); break;
+    case 5: break;
+    case 6: break;
+    case 7: pwire = NULL; break;
+    case 8: wire.offset[0] = 16; break;
+    }
+    memset(data, 0xA5, sizeof(data));
+    memcpy(saved_data, data, sizeof(data));
+    dest = (s_struct) {0};
+    dest.pstruct_type = st;
+    dest.data = data + 1;
+    saved = dest;
+    TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+    TEST_EQ(marshall_1(&m, false, "_KC3STRUCT_"), &m);
+    TEST_EQ(marshall_pstruct_type(&m, false, &pwire), &m);
+    TEST_EQ(marshall_bool(&m, false, i == 5), &m);
+    TEST_EQ(marshall_bool(&m, false, i != 6), &m);
+    TEST_EQ(marshall_u64(&m, false, 42), &m);
+    TEST_ASSERT(marshall_to_str(&m, &str));
+    TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+    TEST_EQ(marshall_read_struct(&mr, false, &dest), NULL);
+    TEST_MEM_EQ(&dest, sizeof(dest), &saved, sizeof(saved));
+    TEST_MEM_EQ(data, sizeof(data), saved_data, sizeof(saved_data));
+    marshall_read_clean(&mr);
+    marshall_clean(&m);
+    str_clean(&str);
+    wire.offset[0] = offset;
+    struct_type_clean(&wire);
+  }
+  struct_type_delete(st);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_struct_destination)
+
+TEST_CASE(marshall_read_struct_nested)
+{
+  struct { s_str first; u64 second; u64 canary; } data;
+  __typeof__(data) saved_data;
+  s_struct dest;
+  s_struct saved;
+  s_fact *fact;
+  uw i;
+  s_struct inner = {0};
+  u64 inner_data = 42;
+  s_struct_type *inner_type;
+  s_marshall m;
+  s_marshall_read mr;
+  s_tag module = {0};
+  s_struct_type *outer_type;
+  s_tag predicate = {0};
+  bool removed;
+  s_list *spec;
+  s_str str;
+  s_tag type = {0};
+  const s_str value = STR("decoded before the nested field");
+  tag_init_psym(&module, sym_1("MarshallNestedTest"));
+  tag_init_psym(&predicate, &g_sym_struct_type);
+  TEST_ASSERT((spec = list_new_1("[{:value, (U64) 0}]")));
+  TEST_ASSERT(tag_init_pstruct_type(&type, module.data.td_psym, spec));
+  list_delete_all(spec);
+  TEST_ASSERT((fact = facts_add_tags(env_global()->facts, &module,
+                                     &predicate, &type)));
+  TEST_ASSERT((spec = list_new_1("[{:first, \"\"},"
+                                 " {:second, (MarshallNestedTest) ?}]")));
+  TEST_ASSERT((outer_type = struct_type_new(sym_1("MarshallOuterTest"),
+                                            spec)));
+  list_delete_all(spec);
+  TEST_EQ(outer_type->size, offsetof(__typeof__(data), canary));
+  TEST_ASSERT((inner_type =
+               struct_type_new_copy(type.data.td_pstruct_type)));
+  inner.pstruct_type = inner_type;
+  inner.data = &inner_data;
+  for (i = 0; i < 4; i++) {
+    inner_type->module = i & 1 ? sym_1("MarshallWrongNestedType") :
+      module.data.td_psym;
+    m = (s_marshall) {0};
+    mr = (s_marshall_read) {0};
+    str = (s_str) {0};
+    dest = (s_struct) {0};
+    memset(&data, 0xA5, sizeof(data));
+    saved_data = data;
+    if (i & 2) {
+      dest.pstruct_type = outer_type;
+      dest.data = &data;
+    }
+    saved = dest;
+    TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+    TEST_EQ(marshall_1(&m, false, "_KC3STRUCT_"), &m);
+    TEST_EQ(marshall_pstruct_type(&m, false, &outer_type), &m);
+    TEST_EQ(marshall_bool(&m, false, false), &m);
+    TEST_EQ(marshall_bool(&m, false, true), &m);
+    TEST_EQ(marshall_str(&m, false, &value), &m);
+    TEST_EQ(marshall_struct(&m, false, &inner), &m);
+    TEST_ASSERT(marshall_to_str(&m, &str));
+    TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+    if (i & 1) {
+      TEST_EQ(marshall_read_struct(&mr, false, &dest), NULL);
+      TEST_MEM_EQ(&dest, sizeof(dest), &saved, sizeof(saved));
+      TEST_MEM_EQ(&data, sizeof(data), &saved_data, sizeof(saved_data));
+    }
+    else {
+      TEST_EQ(marshall_read_struct(&mr, false, &dest), &mr);
+      TEST_STR_EQ(*((s_str *) dest.data), value);
+      TEST_EQ(*(u64 *) ((u8 *) dest.data + outer_type->offset[1]), 42);
+      if (i & 2) {
+        TEST_EQ(data.canary, saved_data.canary);
+        TEST_MEM_EQ(&dest, sizeof(dest), &saved, sizeof(saved));
+        str_clean(&data.first);
+      }
+      else
+        struct_clean(&dest);
+    }
+    marshall_read_clean(&mr);
+    marshall_clean(&m);
+    str_clean(&str);
+  }
+  struct_type_delete(inner_type);
+  struct_type_delete(outer_type);
+  TEST_ASSERT(facts_remove_fact(env_global()->facts, fact, &removed));
+  TEST_ASSERT(removed);
+  tag_clean(&type);
+  tag_clean(&predicate);
+  tag_clean(&module);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_struct_nested)
+
+TEST_CASE(marshall_read_struct_legacy_limits)
+{
+  s_struct_type dest;
+  s_fact *fact;
+  s_tag huge = {0};
+  uw i;
+  s_marshall m;
+  s_marshall_read mr;
+  s_tag module = {0};
+  s_tag predicate = {0};
+  bool removed;
+  s_struct_type saved;
+  s_struct_type src;
+  s_str str;
+  tag_init_psym(&module, sym_1("MarshallHugeFieldTest"));
+  tag_init_psym(&predicate, &g_sym_struct_type);
+  TEST_ASSERT(tag_init_pstruct_type(&huge, module.data.td_psym, NULL));
+  huge.data.td_pstruct_type->size = SW_MAX;
+  huge.data.td_pstruct_type->align_max = _Alignof(u64);
+  TEST_ASSERT((fact = facts_add_tags(env_global()->facts, &module,
+                                     &predicate, &huge)));
+  for (i = 0; i < 3; i++) {
+    m = (s_marshall) {0};
+    mr = (s_marshall_read) {0};
+    str = (s_str) {0};
+    src = (s_struct_type) {0};
+    dest = (s_struct_type) {0};
+    dest.size = 123;
+    saved = dest;
+    src.module = sym_1("MarshallLegacyLimitsTest");
+    TEST_ASSERT(map_init(&src.map, i ? 2 : 1));
+    tag_init_psym(src.map.key, sym_1("a"));
+    TEST_ASSERT(tag_init_pvar(src.map.value, module.data.td_psym));
+    if (i) {
+      tag_init_psym(src.map.key + 1, sym_1("b"));
+      if (i == 1)
+        tag_init_u8(src.map.value + 1, 0);
+      else
+        tag_init_u64(src.map.value + 1, 0);
+    }
+    TEST_EQ(marshall_init(&m, BUF_SIZE), &m);
+    TEST_EQ(marshall_test_struct_type(&m, &src, true), &m);
+    TEST_ASSERT(marshall_to_str(&m, &str));
+    TEST_EQ(marshall_read_init_str(&mr, &str), &mr);
+    TEST_EQ(marshall_read_struct_type(&mr, false, &dest), NULL);
+    TEST_MEM_EQ(&dest, sizeof(dest), &saved, sizeof(saved));
+    marshall_read_clean(&mr);
+    marshall_clean(&m);
+    str_clean(&str);
+    map_clean(&src.map);
+  }
+  TEST_ASSERT(facts_remove_fact(env_global()->facts, fact, &removed));
+  TEST_ASSERT(removed);
+  tag_clean(&huge);
+  tag_clean(&predicate);
+  tag_clean(&module);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_struct_legacy_limits)
 
 TEST_CASE(marshall_read_container_limits)
 {
