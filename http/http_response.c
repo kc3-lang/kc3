@@ -178,7 +178,7 @@ s_http_response * http_response_buf_parse (s_http_response *response,
         list_delete_all(chunks);
         goto ok;
       }
-      if (! (*chunks_tail = list_new_str_alloc(chunk_size, NULL)))
+      if (! (*chunks_tail = list_new_str_empty(NULL)))
         goto ko;
       if (! buf_read(buf, chunk_size, &(*chunks_tail)->tag.data.td_str)) {
         err_puts("http_response_buf_parse: buf_read");
