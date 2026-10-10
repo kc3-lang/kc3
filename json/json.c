@@ -351,7 +351,6 @@ s_tag * json_buf_parse_list (s_buf *buf, s_tag *dest)
   return tag_init_plist(dest, tmp);
  restore:
   err_puts("json_buf_parse_list: invalid list");
-  assert(! "json_buf_parse_list: invalid list");
   buf_save_restore_rpos(buf, &save);
  clean:
   list_delete_all(tmp);
@@ -386,7 +385,7 @@ s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest)
     *k = list_new(NULL);
     if (! *k)
       goto restore;
-    if ((r = buf_parse_tag_str(buf, &(*k)->tag)) <= 0)
+    if (! json_buf_parse_str(buf, &(*k)->tag))
       goto restore;
     k = &(*k)->next.data.td_plist;
     if ((r = buf_ignore_spaces(buf)) < 0)
@@ -423,7 +422,6 @@ s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest)
  restore:
   err_puts("json_buf_parse_map: invalid map");
   err_inspect_buf(buf);
-  assert(! "json_buf_parse_map: invalid map");
   buf_save_restore_rpos(buf, &save);
  clean:
   list_delete_all(keys);
@@ -466,11 +464,152 @@ s_tag * json_buf_parse_number (s_buf *buf, s_tag *dest)
   return dest;
 }
 
+static bool json_buf_parse_str_hex4 (s_buf *buf, character *dest)
+{
+  u8 b;
+  character c = 0;
+  uw i;
+  for (i = 0; i < 4; i++) {
+    if (buf_read_u8(buf, &b) <= 0)
+      return false;
+    if (b >= '0' && b <= '9')
+      c = c * 16 + b - '0';
+    else if (b >= 'A' && b <= 'F')
+      c = c * 16 + b - 'A' + 10;
+    else if (b >= 'a' && b <= 'f')
+      c = c * 16 + b - 'a' + 10;
+    else
+      return false;
+  }
+  *dest = c;
+  return true;
+}
+
+static bool json_buf_parse_str_character (s_buf *buf, character *dest)
+{
+  u8 b;
+  character c;
+  uw count;
+  uw i;
+  character low;
+  character min;
+  if (buf_read_u8(buf, &b) <= 0 || b < 0x20)
+    return false;
+  if (b == '\\') {
+    if (buf_read_u8(buf, &b) <= 0)
+      return false;
+    switch (b) {
+    case '"': case '\\': case '/': c = b; break;
+    case 'b': c = '\b'; break;
+    case 'f': c = '\f'; break;
+    case 'n': c = '\n'; break;
+    case 'r': c = '\r'; break;
+    case 't': c = '\t'; break;
+    case 'u':
+      if (! json_buf_parse_str_hex4(buf, &c))
+        return false;
+      if (c >= 0xD800 && c <= 0xDBFF) {
+        if (buf_read_u8(buf, &b) <= 0 || b != '\\' ||
+            buf_read_u8(buf, &b) <= 0 || b != 'u' ||
+            ! json_buf_parse_str_hex4(buf, &low) ||
+            low < 0xDC00 || low > 0xDFFF)
+          return false;
+        c = 0x10000 + ((c - 0xD800) << 10) + low - 0xDC00;
+      }
+      else if (c >= 0xDC00 && c <= 0xDFFF)
+        return false;
+      break;
+    default:
+      return false;
+    }
+  }
+  else if (b < 0x80)
+    c = b;
+  else {
+    /* Decode only shortest-form UTF-8 Unicode scalar values. */
+    if (b >= 0xC2 && b <= 0xDF) {
+      c = b & 0x1F;
+      count = 1;
+      min = 0x80;
+    }
+    else if (b >= 0xE0 && b <= 0xEF) {
+      c = b & 0x0F;
+      count = 2;
+      min = 0x800;
+    }
+    else if (b >= 0xF0 && b <= 0xF4) {
+      c = b & 0x07;
+      count = 3;
+      min = 0x10000;
+    }
+    else
+      return false;
+    for (i = 0; i < count; i++) {
+      if (buf_read_u8(buf, &b) <= 0 || (b & 0xC0) != 0x80)
+        return false;
+      c = (c << 6) | (b & 0x3F);
+    }
+    if (c < min || c > 0x10FFFF || (c >= 0xD800 && c <= 0xDFFF))
+      return false;
+  }
+  *dest = c;
+  return true;
+}
+
 s_tag * json_buf_parse_str (s_buf *buf, s_tag *dest)
 {
-  if (buf_parse_tag_str(buf, dest) <= 0)
-    return NULL;
-  return dest;
+  u8 b;
+  character c;
+  uw capacity = 0;
+  char *p = NULL;
+  uw pass;
+  sw r;
+  s_buf_save save;
+  uw size = 0;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  /* Validate and measure before allocating, then decode the saved input. */
+  for (pass = 0; pass < 2; pass++) {
+    buf_save_restore_rpos(buf, &save);
+    if (buf_read_u8(buf, &b) <= 0 || b != '"')
+      goto restore;
+    size = 0;
+    while (1) {
+      if (buf_peek_u8(buf, &b) <= 0)
+        goto restore;
+      if (b == '"') {
+        if (buf_read_u8(buf, &b) <= 0)
+          goto restore;
+        break;
+      }
+      if (! json_buf_parse_str_character(buf, &c) ||
+          (r = character_utf8_size(c)) <= 0 ||
+          size > STR_MAX - (uw) r)
+        goto restore;
+      if (p) {
+        if ((uw) r > capacity - size)
+          goto restore;
+        character_utf8(c, p + size);
+      }
+      size += r;
+    }
+    if (! pass) {
+      capacity = size;
+      if (! (p = alloc(capacity + 1)))
+        goto restore;
+    }
+  }
+  if (size != capacity)
+    goto restore;
+  p[size] = 0;
+  buf_save_clean(buf, &save);
+  return tag_init_str(dest, p, size, p);
+ restore:
+  alloc_free(p);
+  buf_save_restore_rpos(buf, &save);
+  buf_save_clean(buf, &save);
+  return NULL;
 }
 
 s_tag * json_from_str (const s_str *src, s_tag *dest)

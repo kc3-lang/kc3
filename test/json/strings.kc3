@@ -1,0 +1,58 @@
+require JSON
+
+(json_string_equal = fn (source, expected) do
+  value = JSON.from_str(source)
+  {type(value) == Str, value == expected}
+end) ; void
+
+# Every JSON escape, including embedded NUL and UTF-16 surrogate pairs.
+json_string_equal("\"\"", "")
+json_string_equal("\"plain ASCII\"", "plain ASCII")
+json_string_equal("\"\\\"\\\\\\/\\b\\f\\n\\r\\t\"", "\"\\/\x08\x0c\n\r\t")
+json_string_equal("\"\\u0041\\u00e9\\u00E9\"", "Aéé")
+json_string_equal("\"\\u0000\\u001f\\u007f\"", "\x00\x1f\x7f")
+json_string_equal("\"\\u0080\\u07ff\\u0800\"", "\xc2\x80\xdf\xbf\xe0\xa0\x80")
+json_string_equal("\"\\ud7ff\\ue000\\uffff\"", "\xed\x9f\xbf\xee\x80\x80\xef\xbf\xbf")
+json_string_equal("\"\\uD834\\uDD1E\"", "𝄞")
+json_string_equal("\"\\ud83d\\ude00\"", "😀")
+json_string_equal("\"\\ud800\\udc00\"", "\xf0\x90\x80\x80")
+json_string_equal("\"\\udbff\\udfff\"", "\xf4\x8f\xbf\xbf")
+json_string_equal("\"é€😀\"", "é€😀")
+json_string_equal("\"\x7f\xc2\x85\xe2\x80\xa8\xe2\x80\xa9\"", "\x7f\xc2\x85\xe2\x80\xa8\xe2\x80\xa9")
+
+# Decode exactly once; returned text is never parsed as KC3.
+json_string_equal("\"\\u005cu0041\"", "\\u0041")
+json_string_equal("\"\\u0022quoted\\u0022\"", "\"quoted\"")
+(literal = "#" + "{1 + 1}") ; void
+json_string_equal("\"" + literal + "\"", literal)
+json_string_equal("\"\\u0023{1 + 1}\"", literal)
+
+# Object keys, nested values and arrays use the same string rules.
+JSON.from_str("{\"\\u0061\": \"\\u0062\"}") == %{"a" => "b"}
+JSON.from_str("{\"\\uD834\\uDD1E\": \"\\b\\f\"}") == %{"𝄞" => "\x08\x0c"}
+JSON.from_str("{\"" + literal + "\": \"" + literal + "\"}") == %{literal => literal}
+JSON.from_str("{\"a\": [\"\\u0041\", {\"b\": \"\\ud83d\\ude00\"}]}") == %{"a" => ["A", %{"b" => "😀"}]}
+
+# Streaming entry point consumes just the string from a nonzero position.
+do
+  buf = Buf.new_alloc((Uw) 1024)
+  Buf.write_str(buf, "prefix\n\"\\uD834\\uDD1E\" tail")
+  Buf.read_line(buf)
+  value = JSON.buf_parse(buf)
+  result = {value == "𝄞", Buf.read_to_str(buf) == " tail"}
+  Buf.delete(buf)
+  result
+end
+
+# A decoded string larger than the default buffer size.
+do
+  expected = "é"
+  encoded = "\\u00e9"
+  i = 0
+  while i < 16 do
+    expected = expected + expected
+    encoded = encoded + encoded
+    i = i + 1
+  end
+  json_string_equal("\"" + encoded + "\"", expected)
+end
