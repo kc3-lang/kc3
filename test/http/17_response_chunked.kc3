@@ -1,0 +1,69 @@
+require HTTP.Response
+
+(chunked_header = "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n") ; void
+
+# Parse at a nonzero position, checking the body and exact unread suffix.
+(chunked_valid = fn (encoded, expected, suffix) do
+  buf = Buf.new_alloc((Uw) 4096)
+  Buf.write_str(buf, "prefix\n" + chunked_header + encoded + suffix)
+  Buf.read_line(buf)
+  response = HTTP.Response.buf_parse(buf, true)
+  result = {response.protocol == "HTTP/1.1", response.code == (U16) 200,
+            response.message == "OK", response.body == expected,
+            Buf.read_to_str(buf) == suffix}
+  Buf.delete(buf)
+  result
+end) ; void
+
+chunked_valid("0\r\n\r\n", "", "")
+chunked_valid("4\r\nWiki\r\n0\r\n\r\n", "Wiki", "next")
+chunked_valid("4\r\nWiki\r\n5\r\npedia\r\n0\r\n\r\n", "Wikipedia", "")
+chunked_valid("3\r\na\x00b\r\n0\r\n\r\n", "a\x00b", "next")
+chunked_valid("a\r\n0123456789\r\n0\r\n\r\n", "0123456789", "next")
+chunked_valid("4\r\nA\r\nB\r\n0\r\n\r\n", "A\r\nB", "next")
+chunked_valid("1\r\na\r\n1\r\nb\r\n1\r\nc\r\n1\r\nd\r\n0\r\n\r\n", "abcd", "next")
+
+# Header-only parsing must not read or allocate the chunk body.
+do
+  buf = Buf.new_alloc((Uw) 4096)
+  encoded = "4\r\nWiki\r\n0\r\n\r\n"
+  Buf.write_str(buf, chunked_header + encoded)
+  response = HTTP.Response.buf_parse(buf, false)
+  result = {response.code == (U16) 200, response.body == void,
+            Buf.read_to_str(buf) == encoded}
+  Buf.delete(buf)
+  result
+end
+
+# A second complete response remains available after the terminating chunk.
+do
+  buf = Buf.new_alloc((Uw) 4096)
+  Buf.write_str(buf, chunked_header + "4\r\nWiki\r\n0\r\n\r\n" +
+    "HTTP/1.1 201 Created\r\nContent-Length: 5\r\n\r\npedia")
+  first = HTTP.Response.buf_parse(buf, true)
+  second = HTTP.Response.buf_parse(buf, true)
+  result = {first.body == "Wiki", second.code == (U16) 201,
+            second.body == "pedia", Buf.read_to_str(buf) == ""}
+  Buf.delete(buf)
+  result
+end
+
+# Incomplete chunks and framing errors clean partial results and rewind.
+(chunked_invalid = fn (encoded) do
+  buf = Buf.new_alloc((Uw) 4096)
+  source = chunked_header + encoded
+  Buf.write_str(buf, "prefix\n" + source)
+  Buf.read_line(buf)
+  response = HTTP.Response.buf_parse(buf, true)
+  result = {response == void, Buf.read_to_str(buf) == source}
+  Buf.delete(buf)
+  result
+end) ; void
+
+chunked_invalid("4\r\nab")
+chunked_invalid("4\r\nWiki")
+chunked_invalid("4\r\nWikiXX0\r\n\r\n")
+chunked_invalid("4\r\nWiki\r\n5\r\npe")
+chunked_invalid("4\r\nWiki\r\n5\r\npedia\r\n")
+chunked_invalid("4\r\nWiki\r\n0\r\n")
+chunked_invalid("4\r\nWiki\r\n0\r\nX")
