@@ -171,14 +171,19 @@ bool ht_has (s_ht *ht, s_tag *key)
 
 s_ht * ht_init (s_ht *ht, const s_sym *type, uw size)
 {
+  s_list **items;
   assert(ht);
   assert(type);
-  assert(size);
+  if (! size || size > UW_MAX / sizeof(s_list *)) {
+    err_puts("ht_init: invalid size");
+    return NULL;
+  }
+  if (! (items = alloc(size * sizeof(s_list *))))
+    return NULL;
   *ht = (s_ht) {0};
   ht->type = type;
   ht->size = size;
-  if (! (ht->items = alloc(size * sizeof(s_list *))))
-    return NULL;
+  ht->items = items;
   ht->compare = compare_tag;
   ht->hash = hash_tag;
   ht->ref_count = 1;

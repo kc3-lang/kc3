@@ -45,6 +45,8 @@
 
 static bool    facts_connection_auth (s_facts_connection *conn,
                                       bool is_server);
+static bool    facts_connection_auth_read (s_marshall_read *mr,
+                                           u8 *dest, uw size);
 static s_facts_connection *
                facts_connection_find_by_addr (s_facts *facts,
                                               const s_str *addr);
@@ -77,17 +79,9 @@ static bool facts_connection_auth (s_facts_connection *conn, bool is_server)
     }
     if (! marshall_to_buf(m, conn->buf_rw.w))
       return false;
-    if (! marshall_read_header(mr))
+    if (! facts_connection_auth_read(mr, received_hmac,
+                                     SHA512_DIGEST_LENGTH))
       return false;
-    if (! marshall_read_chunk(mr))
-      return false;
-    i = 0;
-    while (i < SHA512_DIGEST_LENGTH) {
-      if (! marshall_read_u8(mr, false, &received_hmac[i]))
-        return false;
-      i++;
-    }
-    marshall_read_chunk_reset(mr);
     str_init(&challenge_str, NULL, FACTS_CONNECTION_AUTH_CHALLENGE_SIZE,
              (const char *) challenge);
     sha512_hmac(&facts->secret, &challenge_str, expected_hmac);
@@ -103,17 +97,9 @@ static bool facts_connection_auth (s_facts_connection *conn, bool is_server)
     }
   }
   else {
-    if (! marshall_read_header(mr))
+    if (! facts_connection_auth_read(mr, challenge,
+                                     FACTS_CONNECTION_AUTH_CHALLENGE_SIZE))
       return false;
-    if (! marshall_read_chunk(mr))
-      return false;
-    i = 0;
-    while (i < FACTS_CONNECTION_AUTH_CHALLENGE_SIZE) {
-      if (! marshall_read_u8(mr, false, &challenge[i]))
-        return false;
-      i++;
-    }
-    marshall_read_chunk_reset(mr);
     str_init(&challenge_str, NULL, FACTS_CONNECTION_AUTH_CHALLENGE_SIZE,
              (const char *) challenge);
     sha512_hmac(&facts->secret, &challenge_str, expected_hmac);
@@ -126,6 +112,33 @@ static bool facts_connection_auth (s_facts_connection *conn, bool is_server)
     if (! marshall_to_buf(m, conn->buf_rw.w))
       return false;
   }
+  return true;
+}
+
+static bool facts_connection_auth_read (s_marshall_read *mr,
+                                        u8 *dest, uw size)
+{
+  uw i;
+  uw wire_size;
+  if (size != FACTS_CONNECTION_AUTH_CHALLENGE_SIZE &&
+      size != SHA512_DIGEST_LENGTH)
+    return false;
+  wire_size = size * (sizeof("_KC3U8_") - 1 + sizeof(u8));
+  if (! marshall_read_header_limit(mr, 0, 0, wire_size) ||
+      mr->heap_offset || mr->buf_size != wire_size) {
+    err_puts("facts_connection_auth: invalid message header");
+    return false;
+  }
+  i = 0;
+  while (i < size) {
+    if (buf_read_1(mr->buf, "_KC3U8_") <= 0 ||
+        buf_read_u8(mr->buf, dest + i) <= 0) {
+      err_puts("facts_connection_auth: invalid message body");
+      return false;
+    }
+    i++;
+  }
+  marshall_read_chunk_reset(mr);
   return true;
 }
 

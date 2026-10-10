@@ -28,6 +28,10 @@ s_marshall_read * marshall_read_init (s_marshall_read *mr);
 s_marshall_read * marshall_read_init_1 (s_marshall_read *mr,
                                         const char *p, uw size);
 s_marshall_read * marshall_read_header (s_marshall_read *mr);
+s_marshall_read * marshall_read_header_limit (s_marshall_read *mr,
+                                             uw heap_count_max,
+                                             uw heap_size_max,
+                                             uw buf_size_max);
 s_marshall_read * marshall_read_chunk (s_marshall_read *mr);
 s_marshall_read * marshall_read_chunk_file (s_marshall_read *mr);
 s_marshall_read * marshall_read_chunk_reset (s_marshall_read *mr);

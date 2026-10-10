@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <dlfcn.h>
+#include <string.h>
 
 #include "alloc.h"
 #include "array.h"
@@ -1449,48 +1450,71 @@ s_marshall_read * marshall_read_frame (s_marshall_read *mr, bool heap,
 
 s_marshall_read * marshall_read_header (s_marshall_read *mr)
 {
+  return marshall_read_header_limit(mr, UW_MAX / sizeof(s_list *),
+                                    SW_MAX, SW_MAX);
+}
+
+s_marshall_read * marshall_read_header_limit (s_marshall_read *mr,
+                                             uw heap_count_max,
+                                             uw heap_size_max,
+                                             uw buf_size_max)
+{
+  u64 buf_size;
+  u64 heap_count;
+  u64 heap_offset;
+  u64 heap_size;
   s_marshall_header mh = {0};
   s_str str = {0};
-  s_marshall_read tmp;
   assert(mr);
-  tmp = *mr;
-  if (! buf_read(tmp.buf, sizeof(s_marshall_header), &str))
+  if (! buf_read(mr->buf, sizeof(s_marshall_header), &str))
     return NULL;
   if (str.size != sizeof(s_marshall_header)) {
     err_puts("marshall_read_header: buf_read !="
              " sizeof(s_marshall_header)");
-    assert(!("marshall_read_header: buf_read !="
-             " sizeof(s_marshall_header)"));
+    str_clean(&str);
     return NULL;
   }
-  mh = *(s_marshall_header *) str.ptr.p_pvoid;
+  memcpy(&mh, str.ptr.p_pvoid, sizeof(mh));
+  str_clean(&str);
   if (le64toh(mh.le_magic) != MARSHALL_MAGIC) {
     err_puts("marshall_read_header: invalid magic");
-    assert(! "marshall_read_header: invalid magic");
     return NULL;
   }
-  tmp.heap_offset = le64toh(mh.le_heap_offset);
-  tmp.heap_count = le64toh(mh.le_heap_count);
-  tmp.heap_size = le64toh(mh.le_heap_size);
-  tmp.buf_size = le64toh(mh.le_buf_size);
-  if (tmp.heap_size && ! tmp.heap_count) {
+  heap_offset = le64toh(mh.le_heap_offset);
+  heap_count = le64toh(mh.le_heap_count);
+  heap_size = le64toh(mh.le_heap_size);
+  buf_size = le64toh(mh.le_buf_size);
+  if (heap_count > UW_MAX / sizeof(s_list *) ||
+      heap_offset > SW_MAX ||
+      heap_size > SW_MAX - sizeof(s_marshall_header) ||
+      buf_size > SW_MAX - sizeof(s_marshall_header) - heap_size ||
+      heap_offset > SW_MAX - heap_size) {
+    err_puts("marshall_read_header: size out of range");
+    return NULL;
+  }
+  if ((heap_size && ! heap_count) || heap_count > heap_size) {
     err_puts("marshall_read_header: invalid heap count");
-    assert(! "marshall_read_header: invalid heap count");
     return NULL;
   }
-  *mr = tmp;
+  if (heap_count > heap_count_max || heap_size > heap_size_max ||
+      buf_size > buf_size_max) {
+    err_puts("marshall_read_header: message limit exceeded");
+    return NULL;
+  }
   marshall_read_ht_clean(mr);
   mr->ht = (s_ht) {0};
-  if (mr->heap_count && ! mr->ht.items) {
-    if (! ht_init(&mr->ht, &g_sym_Tuple, mr->heap_count)) {
+  if (heap_count) {
+    if (! ht_init(&mr->ht, &g_sym_Tuple, heap_count)) {
       err_puts("marshall_read_header: ht_init");
-      assert(! "marshall_read_header: ht_init");
       return NULL;
     }
     mr->ht.compare = marshall_ht_compare;
     mr->ht.hash = marshall_ht_hash;
   }
-  str_clean(&str);
+  mr->heap_offset = heap_offset;
+  mr->heap_count = heap_count;
+  mr->heap_size = heap_size;
+  mr->buf_size = buf_size;
   return mr;
 }
 

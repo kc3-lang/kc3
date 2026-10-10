@@ -73,12 +73,16 @@ void tuple_delete (s_tuple *tuple)
 s_tuple * tuple_init (s_tuple *tuple, uw count)
 {
   uw i;
+  s_tag *tag;
   assert(tuple);
-  assert(2 <= count);
-  tuple->count = count;
-  tuple->tag = alloc(count * sizeof(s_tag));
-  if (! tuple->tag)
+  if (count < 2 || count > UW_MAX / sizeof(s_tag)) {
+    err_puts("tuple_init: invalid count");
     return NULL;
+  }
+  if (! (tag = alloc(count * sizeof(s_tag))))
+    return NULL;
+  tuple->count = count;
+  tuple->tag = tag;
   i = count;
   while (i--)
     tag_init(tuple->tag + i);
