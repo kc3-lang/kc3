@@ -1,0 +1,65 @@
+require JSON
+
+# The expected error diagnostic distinguishes rejection from a valid null.
+(json_document_rejected = fn (source) do
+  JSON.from_str(source) == void
+end) ; void
+
+# Missing documents, suffixes, multiple values and non-JSON whitespace.
+json_document_rejected("")
+json_document_rejected(" \t\r\n")
+json_document_rejected("trueXYZ")
+json_document_rejected("false0")
+json_document_rejected("nullXYZ")
+json_document_rejected("\"ok\"junk")
+json_document_rejected("[true]junk")
+json_document_rejected("{}junk")
+json_document_rejected("true false")
+json_document_rejected("\"a\" \"b\"")
+json_document_rejected("[]{}")
+json_document_rejected("false ,")
+json_document_rejected("null]")
+json_document_rejected("42 junk")
+json_document_rejected("true\x00")
+json_document_rejected("false \x0b")
+json_document_rejected("true \x0c")
+json_document_rejected("\x0btrue")
+json_document_rejected("\x0cfalse")
+json_document_rejected("\xc2\xa0true")
+json_document_rejected("true\xc2\xa0")
+json_document_rejected("\xe2\x80\x83true")
+json_document_rejected("\xef\xbb\xbftrue")
+json_document_rejected("false\n#comment")
+json_document_rejected("true/*comment*/")
+json_document_rejected("\"\"\"text\"\"\"")
+json_document_rejected("'text'")
+json_document_rejected("[\"allocated\", {\"a\": \"b\"}] trailing")
+
+# Arrays require values separated by commas; no leading/trailing commas.
+json_document_rejected("[true false]")
+json_document_rejected("[true,]")
+json_document_rejected("[,true]")
+json_document_rejected("[true,,false]")
+json_document_rejected("[true,")
+json_document_rejected("[")
+json_document_rejected("[true")
+json_document_rejected("[true:false]")
+json_document_rejected("[true,\xc2\xa0false]")
+json_document_rejected("[true\x0b,false]")
+json_document_rejected("[\x0ctrue]")
+json_document_rejected("[\xc0\xa0true]")
+
+# Objects require a colon and a comma between complete members.
+json_document_rejected("{\"a\": true \"b\": false}")
+json_document_rejected("{\"a\": true,}")
+json_document_rejected("{,\"a\":true}")
+json_document_rejected("{\"a\":}")
+json_document_rejected("{\"a\" true}")
+json_document_rejected("{\"a\":true,, \"b\":false}")
+json_document_rejected("{\"a\":true")
+json_document_rejected("{")
+json_document_rejected("{\"a\":true; \"b\":false}")
+
+# Separator failures propagate out of nested containers.
+json_document_rejected("[[true,]]")
+json_document_rejected("[{\"a\": true \"b\": false}]")

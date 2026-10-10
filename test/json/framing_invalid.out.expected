@@ -1,0 +1,159 @@
+JSON
+void
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_from_str: json_buf_parse
+true
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
+json_buf_parse_map: invalid map
+"{\"a\": true "
+---HERE---
+"\"b\": false}"
+json_from_str: json_buf_parse
+true
+json_buf_parse_map: invalid map
+"{\"a\": true,"
+---HERE---
+"}"
+json_from_str: json_buf_parse
+true
+json_buf_parse_map: invalid map
+"{"
+---HERE---
+",\"a\":true}"
+json_from_str: json_buf_parse
+true
+json_buf_parse_map: invalid map
+"{\"a\":"
+---HERE---
+"}"
+json_from_str: json_buf_parse
+true
+json_buf_parse_map: invalid map
+"{\"a\" "
+---HERE---
+"true}"
+json_from_str: json_buf_parse
+true
+json_buf_parse_map: invalid map
+"{\"a\":true,"
+---HERE---
+", \"b\":false}"
+json_from_str: json_buf_parse
+true
+json_buf_parse_map: invalid map
+"{\"a\":true"
+---HERE---
+""
+json_from_str: json_buf_parse
+true
+json_buf_parse_map: invalid map
+"{"
+---HERE---
+""
+json_from_str: json_buf_parse
+true
+json_buf_parse_map: invalid map
+"{\"a\":true"
+---HERE---
+"; \"b\":false}"
+json_from_str: json_buf_parse
+true
+json_buf_parse_list: invalid list
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
+json_buf_parse_map: invalid map
+"[{\"a\": true "
+---HERE---
+"\"b\": false}]"
+json_buf_parse_list: invalid list
+json_from_str: json_buf_parse
+true
