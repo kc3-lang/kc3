@@ -141,6 +141,10 @@ s_map * map_init (s_map *map, uw count)
 {
   s_map tmp = {0};
   assert(map);
+  if (count > UW_MAX / sizeof(s_tag)) {
+    err_puts("map_init: invalid count");
+    return NULL;
+  }
   if (count) {
     tmp.count = count;
     tmp.key = alloc(count * sizeof(s_tag));
