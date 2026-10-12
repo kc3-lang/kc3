@@ -23,6 +23,8 @@
 #include "../libkc3/map.h"
 #include "../libkc3/marshall.h"
 #include "../libkc3/marshall_read.h"
+#include "../libkc3/mutex.h"
+#include "../libkc3/pointer.h"
 #include "../libkc3/facts.h"
 #include "../libkc3/set__tag.h"
 #include "../libkc3/str.h"
@@ -92,6 +94,14 @@ TEST_CASE_PROTOTYPE(marshall_read_array);
 TEST_CASE_PROTOTYPE(marshall_read_array_empty);
 TEST_CASE_PROTOTYPE(marshall_read_bool);
 TEST_CASE_PROTOTYPE(marshall_read_call_cache);
+TEST_CASE_PROTOTYPE(marshall_read_cache_types);
+TEST_CASE_PROTOTYPE(marshall_read_cache_state);
+TEST_CASE_PROTOTYPE(marshall_read_cache_offsets);
+TEST_CASE_PROTOTYPE(marshall_read_cache_cycle);
+TEST_CASE_PROTOTYPE(marshall_read_cache_skiplist_cycle);
+TEST_CASE_PROTOTYPE(marshall_read_cache_shared);
+TEST_CASE_PROTOTYPE(marshall_read_cache_pointer);
+TEST_CASE_PROTOTYPE(marshall_read_cache_pointer_legacy);
 TEST_CASE_PROTOTYPE(marshall_read_character);
 TEST_CASE_PROTOTYPE(marshall_read_chunks);
 TEST_CASE_PROTOTYPE(marshall_read_container_limits);
@@ -136,6 +146,14 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_array_empty);
   TEST_CASE_RUN(marshall_read_bool);
   TEST_CASE_RUN(marshall_read_call_cache);
+  TEST_CASE_RUN(marshall_read_cache_types);
+  TEST_CASE_RUN(marshall_read_cache_state);
+  TEST_CASE_RUN(marshall_read_cache_offsets);
+  TEST_CASE_RUN(marshall_read_cache_cycle);
+  TEST_CASE_RUN(marshall_read_cache_skiplist_cycle);
+  TEST_CASE_RUN(marshall_read_cache_shared);
+  TEST_CASE_RUN(marshall_read_cache_pointer);
+  TEST_CASE_RUN(marshall_read_cache_pointer_legacy);
   TEST_CASE_RUN(marshall_read_chunks);
   TEST_CASE_RUN(marshall_read_container_limits);
   TEST_CASE_RUN(marshall_read_container_counts);
@@ -1008,6 +1026,386 @@ TEST_CASE(marshall_read_bool)
                      "true");
 }
 TEST_CASE_END(marshall_read_bool)
+
+
+#define MARSHALL_READ_CACHE_TYPE_TEST(name, type, magic)                \
+  do {                                                                 \
+    s_marshall m = {0};                                                \
+    s_marshall_read mr = {0};                                          \
+    s_str str = {0};                                                   \
+    p_sym sym = sym_1("cache_type_test");                               \
+    p_sym sym_read = NULL;                                             \
+    type dest = (type) &str;                                           \
+    test_context(magic);                                              \
+    TEST_ASSERT(marshall_init(&m, BUF_SIZE));                           \
+    TEST_ASSERT(marshall_psym(&m, false, &sym));                        \
+    TEST_ASSERT(marshall_1(&m, false, magic));                          \
+    TEST_ASSERT(marshall_offset(&m, false,                            \
+                                 sizeof(s_marshall_header)));         \
+    TEST_ASSERT(marshall_to_str(&m, &str));                            \
+    TEST_ASSERT(marshall_read_init_str(&mr, &str));                    \
+    TEST_ASSERT(marshall_read_psym(&mr, false, &sym_read));             \
+    TEST_EQ(sym_read, sym);                                           \
+    TEST_EQ(marshall_read_ ## name(&mr, false, &dest), NULL);          \
+    TEST_EQ(dest, (type) &str);                                       \
+    TEST_ASSERT(mr.ht_failed);                                        \
+    marshall_read_clean(&mr);                                         \
+    str_clean(&str);                                                  \
+    marshall_clean(&m);                                               \
+    test_context(NULL);                                              \
+  } while (0)
+
+TEST_CASE(marshall_read_cache_types)
+{
+  MARSHALL_READ_CACHE_TYPE_TEST(pcall, p_call,
+                                "_KC3PCALL_");
+  MARSHALL_READ_CACHE_TYPE_TEST(pcallable, p_callable,
+                                "_KC3PCALLABLE_");
+  MARSHALL_READ_CACHE_TYPE_TEST(pcomplex, p_complex,
+                                "_KC3PCOMPLEX_");
+  MARSHALL_READ_CACHE_TYPE_TEST(pfacts, p_facts,
+                                "_KC3PFACTS_");
+  MARSHALL_READ_CACHE_TYPE_TEST(pframe, p_frame,
+                                "_KC3PFRAME_");
+  MARSHALL_READ_CACHE_TYPE_TEST(plist, p_list,
+                                "_KC3PLIST_");
+  MARSHALL_READ_CACHE_TYPE_TEST(pset_item__fact, p_set_item__fact,
+                                "_KC3PSETITEMFACT_");
+  MARSHALL_READ_CACHE_TYPE_TEST(pset_item__tag, p_set_item__tag,
+                                "_KC3PSETITEMTAG_");
+  MARSHALL_READ_CACHE_TYPE_TEST(pskiplist_node__fact, p_skiplist_node__fact,
+                                "_KC3PSKIPLISTNODEFACT_");
+  MARSHALL_READ_CACHE_TYPE_TEST(pskiplist__fact, p_skiplist__fact,
+                                "_KC3PSKIPLISTFACT_");
+  MARSHALL_READ_CACHE_TYPE_TEST(pstruct, p_struct,
+                                "_KC3PSTRUCT_");
+  MARSHALL_READ_CACHE_TYPE_TEST(pstruct_type, p_struct_type,
+                                "_KC3PSTRUCTTYPE_");
+  MARSHALL_READ_CACHE_TYPE_TEST(ptag, p_tag,
+                                "_KC3PTAG_");
+  MARSHALL_READ_CACHE_TYPE_TEST(pvar, p_var,
+                                "_KC3PVAR_");
+  MARSHALL_READ_CACHE_TYPE_TEST(ptuple, p_tuple,
+                                "_KC3PTUPLE_");
+}
+TEST_CASE_END(marshall_read_cache_types)
+
+TEST_CASE(marshall_read_cache_state)
+{
+  const char *types[] = {
+    "Call", "Callable", "Complex", "Facts", "Frame", "List",
+    "_KC3PSETITEMFACT_", "_KC3PSETITEMTAG_", "Skiplist.Node.Fact",
+    "Skiplist.Fact", "Struct", "StructType", "Sym", "Tag", "Var",
+    "Tuple", "U8*", "U64*"
+  };
+  uw i;
+  uw j;
+  uw state;
+  u8 token;
+  s_marshall m = {0};
+  s_marshall_read mr;
+  s_str str = {0};
+  u64 offset;
+  void *present;
+  p_sym type;
+  p_sym other;
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+  TEST_ASSERT(marshall_1(&m, true, "x"));
+  m.heap_count = 1;
+  for (i = 0; i < 3; i++)
+    TEST_ASSERT(marshall_offset(&m, false,
+                                sizeof(s_marshall_header)));
+  TEST_ASSERT(marshall_to_str(&m, &str));
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+    type = sym_1(types[i]);
+    for (j = 0; j < sizeof(types) / sizeof(*types); j++) {
+      other = sym_1(types[j]);
+      mr = (s_marshall_read) {0};
+      TEST_ASSERT(marshall_read_init_str(&mr, &str));
+      TEST_ASSERT(marshall_read_heap_pointer(&mr, false, &offset,
+                                             &present, type));
+      TEST_EQ(present, NULL);
+      TEST_ASSERT(marshall_read_ht_add(&mr, offset, &token, type));
+      present = &str;
+      if (i == j) {
+        TEST_ASSERT(marshall_read_heap_pointer(&mr, false, &offset,
+                                               &present, other));
+        TEST_EQ(present, &token);
+      }
+      else if (sym_is_pointer_type(type, NULL) !=
+               sym_is_pointer_type(other, NULL)) {
+        TEST_ASSERT(marshall_read_heap_pointer(&mr, false, &offset,
+                                               &present, other));
+        TEST_EQ(present, NULL);
+        TEST_ASSERT(marshall_read_ht_add(&mr, offset, &str, other));
+        TEST_ASSERT(marshall_read_heap_pointer(&mr, false, &offset,
+                                               &present, type));
+        TEST_EQ(present, &token);
+      }
+      else {
+        TEST_EQ(marshall_read_heap_pointer(&mr, false, &offset,
+                                           &present, other), NULL);
+        TEST_EQ(present, &str);
+        TEST_ASSERT(mr.ht_failed);
+        TEST_EQ(marshall_read_heap_pointer(&mr, false, &offset,
+                                           &present, type), NULL);
+      }
+      marshall_read_clean(&mr);
+    }
+  }
+  for (state = 0; state < 4; state++) {
+    mr = (s_marshall_read) {0};
+    TEST_ASSERT(marshall_read_init_str(&mr, &str));
+    TEST_ASSERT(marshall_read_heap_pointer(&mr, false, &offset,
+                                           &present, &g_sym_Sym));
+    switch (state) {
+    case 0:
+      TEST_EQ(marshall_read_heap_pointer(&mr, false, &offset,
+                                         &present, &g_sym_Sym), NULL);
+      break;
+    case 1:
+      TEST_EQ(marshall_read_ht_add(&mr, offset, &token,
+                                   &g_sym_Tuple), NULL);
+      break;
+    case 2:
+      TEST_ASSERT(marshall_read_ht_add(&mr, offset, &token, &g_sym_Sym));
+      TEST_EQ(marshall_read_ht_add(&mr, offset, &token,
+                                   &g_sym_Sym), NULL);
+      break;
+    case 3:
+      TEST_EQ(marshall_read_ht_add(&mr, offset, NULL, &g_sym_Sym), NULL);
+      break;
+    }
+    TEST_ASSERT(mr.ht_failed);
+    marshall_read_clean(&mr);
+  }
+  str_clean(&str);
+  marshall_clean(&m);
+}
+TEST_CASE_END(marshall_read_cache_state)
+
+TEST_CASE(marshall_read_cache_offsets)
+{
+  uw i;
+  const u64 offsets[] = {
+    0, 1, sizeof(s_marshall_header) - 1,
+    sizeof(s_marshall_header), sizeof(s_marshall_header) + 1,
+    sizeof(s_marshall_header) + 2, (u64) SW_MAX, U64_MAX
+  };
+  s_marshall m;
+  s_marshall_read mr;
+  s_str str;
+  void *present;
+  u64 offset;
+  for (i = 0; i < sizeof(offsets) / sizeof(*offsets) + 3; i++) {
+    m = (s_marshall) {0};
+    mr = (s_marshall_read) {0};
+    str = (s_str) {0};
+    TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+    TEST_ASSERT(marshall_1(&m, true, "x"));
+    m.heap_count = 1;
+    TEST_ASSERT(marshall_offset(&m, false, i < 8 ? offsets[i] :
+                                sizeof(s_marshall_header)));
+    TEST_ASSERT(marshall_to_str(&m, &str));
+    TEST_ASSERT(marshall_read_init_str(&mr, &str));
+    switch (i) {
+    case 8: mr.heap_start = SW_MAX; break;
+    case 9: mr.heap_offset = SW_MAX; break;
+    case 10: mr.heap_start = -(s64) sizeof(s_marshall_header) - 1; break;
+    }
+    present = &str;
+    if (i == 0 || i == 3) {
+      TEST_ASSERT(marshall_read_heap_pointer(&mr, false, &offset,
+                                             &present, &g_sym_Sym));
+      TEST_EQ(present, NULL);
+      TEST_EQ(mr.ht.count, i == 0 ? 0 : 1);
+    }
+    else {
+      TEST_EQ(marshall_read_heap_pointer(&mr, false, &offset,
+                                         &present, &g_sym_Sym), NULL);
+      TEST_EQ(present, &str);
+      TEST_EQ(mr.ht.count, 0);
+      TEST_ASSERT(mr.ht_failed);
+    }
+    marshall_read_clean(&mr);
+    str_clean(&str);
+    marshall_clean(&m);
+  }
+}
+TEST_CASE_END(marshall_read_cache_offsets)
+
+TEST_CASE(marshall_read_cache_cycle)
+{
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  s_str str = {0};
+  p_frame dest = (p_frame) &str;
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+  TEST_ASSERT(marshall_1(&m, false, "_KC3PFRAME_"));
+  TEST_ASSERT(marshall_offset(&m, false, sizeof(s_marshall_header)));
+  TEST_ASSERT(marshall_1(&m, true, "_KC3FRAME_"));
+  TEST_ASSERT(marshall_uw(&m, true, 0));
+  TEST_ASSERT(marshall_1(&m, true, "_KC3PFRAME_"));
+  TEST_ASSERT(marshall_offset(&m, true, sizeof(s_marshall_header)));
+  m.heap_count = 1;
+  TEST_ASSERT(marshall_to_str(&m, &str));
+  TEST_ASSERT(marshall_read_init_str(&mr, &str));
+  TEST_EQ(marshall_read_pframe(&mr, false, &dest), NULL);
+  TEST_EQ(dest, (p_frame) &str);
+  TEST_ASSERT(mr.ht_failed);
+  marshall_read_clean(&mr);
+  str_clean(&str);
+  marshall_clean(&m);
+}
+TEST_CASE_END(marshall_read_cache_cycle)
+
+TEST_CASE(marshall_read_cache_skiplist_cycle)
+{
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  s_str str = {0};
+  p_skiplist_node__fact dest = (p_skiplist_node__fact) &str;
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+  TEST_ASSERT(marshall_1(&m, false, "_KC3PSKIPLISTNODEFACT_"));
+  TEST_ASSERT(marshall_offset(&m, false, sizeof(s_marshall_header)));
+  TEST_ASSERT(marshall_1(&m, true, "_KC3SKIPLISTNODEFACT_"));
+  TEST_ASSERT(marshall_u8(&m, true, 1));
+  TEST_ASSERT(marshall_1(&m, true, "_KC3PSETITEMFACT_"));
+  TEST_ASSERT(marshall_offset(&m, true, 0));
+  TEST_ASSERT(marshall_1(&m, true, "_KC3PSKIPLISTNODEFACT_"));
+  TEST_ASSERT(marshall_offset(&m, true, sizeof(s_marshall_header)));
+  m.heap_count = 1;
+  TEST_ASSERT(marshall_to_str(&m, &str));
+  TEST_ASSERT(marshall_read_init_str(&mr, &str));
+  TEST_EQ(marshall_read_pskiplist_node__fact(&mr, false, &dest), NULL);
+  TEST_EQ(dest, (p_skiplist_node__fact) &str);
+  TEST_ASSERT(mr.ht_failed);
+  marshall_read_clean(&mr);
+  str_clean(&str);
+  marshall_clean(&m);
+}
+TEST_CASE_END(marshall_read_cache_skiplist_cycle)
+
+TEST_CASE(marshall_read_cache_shared)
+{
+  const char *values[] = {"{1, 2}", "[1, 2]", ":cache_shared"};
+  uw copy;
+  uw i;
+  bool copy_saved = env_global()->pass_by_copy;
+  s_marshall m;
+  s_marshall_read mr;
+  s_str str;
+  s_tag src;
+  s_tag a;
+  s_tag b;
+  for (copy = 0; copy < 2; copy++) {
+    env_global()->pass_by_copy = copy;
+    for (i = 0; i < sizeof(values) / sizeof(*values); i++) {
+      m = (s_marshall) {0};
+      mr = (s_marshall_read) {0};
+      str = (s_str) {0};
+      src = (s_tag) {0};
+      a = (s_tag) {0};
+      b = (s_tag) {0};
+      TEST_ASSERT(tag_init_1(&src, values[i]));
+      TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+      TEST_ASSERT(marshall_tag(&m, false, &src));
+      TEST_ASSERT(marshall_tag(&m, false, &src));
+      TEST_ASSERT(marshall_to_str(&m, &str));
+      TEST_ASSERT(marshall_read_init_str(&mr, &str));
+      TEST_ASSERT(marshall_read_tag(&mr, false, &a));
+      TEST_ASSERT(marshall_read_tag(&mr, false, &b));
+      TAG_TEST_EQ(&a, &src);
+      TAG_TEST_EQ(&b, &src);
+      TEST_ASSERT(! mr.ht_failed);
+      marshall_read_clean(&mr);
+      tag_clean(&b);
+      tag_clean(&a);
+      tag_clean(&src);
+      str_clean(&str);
+      marshall_clean(&m);
+    }
+  }
+  env_global()->pass_by_copy = copy_saved;
+}
+TEST_CASE_END(marshall_read_cache_shared)
+
+TEST_CASE(marshall_read_cache_pointer)
+{
+#if HAVE_PTHREAD
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  s_mutex *mutex;
+  s_pointer src = {0};
+  s_pointer a = {0};
+  s_pointer b = {0};
+  s_str str = {0};
+  TEST_ASSERT((mutex = mutex_new()));
+  TEST_ASSERT(pointer_init(&src, NULL, &g_sym_Mutex, mutex));
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+  TEST_ASSERT(marshall_pointer(&m, false, &src));
+  TEST_ASSERT(marshall_pointer(&m, false, &src));
+  TEST_ASSERT(marshall_to_str(&m, &str));
+  TEST_ASSERT(marshall_read_init_str(&mr, &str));
+  TEST_ASSERT(marshall_read_pointer(&mr, false, &a));
+  TEST_ASSERT(marshall_read_pointer(&mr, false, &b));
+  TEST_EQ(a.target_type, &g_sym_Mutex);
+  TEST_EQ(b.target_type, &g_sym_Mutex);
+  TEST_ASSERT(a.ptr.p_pvoid);
+  TEST_EQ(a.ptr.p_pvoid, b.ptr.p_pvoid);
+  TEST_EQ(a.id, b.id);
+  marshall_read_clean(&mr);
+  mutex_delete(a.ptr.p_pvoid);
+  mutex_delete(mutex);
+  str_clean(&str);
+  marshall_clean(&m);
+#endif
+}
+TEST_CASE_END(marshall_read_cache_pointer)
+
+TEST_CASE(marshall_read_cache_pointer_legacy)
+{
+#if HAVE_PTHREAD
+  s_marshall m = {0};
+  s_marshall_read mr = {0};
+  s_pointer a = {0};
+  s_pointer b = {0};
+  s_pointer saved;
+  s_str str = {0};
+  p_sym type = &g_sym_Mutex;
+  u64 offset;
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+  TEST_ASSERT(marshall_1(&m, false, "_KC3POINTER_"));
+  TEST_ASSERT(marshall_psym(&m, false, &type));
+  offset = sizeof(s_marshall_header) + m.heap_pos;
+  TEST_ASSERT(marshall_offset(&m, false, offset));
+  TEST_ASSERT(marshall_1(&m, false, "_KC3POINTER_"));
+  TEST_ASSERT(marshall_psym(&m, false, &type));
+  TEST_ASSERT(marshall_offset(&m, false, offset));
+  TEST_ASSERT(marshall_1(&m, false, "_KC3POINTER_"));
+  type = &g_sym_U8;
+  TEST_ASSERT(marshall_psym(&m, false, &type));
+  TEST_ASSERT(marshall_offset(&m, false, offset));
+  m.heap_count++;
+  TEST_ASSERT(marshall_to_str(&m, &str));
+  TEST_ASSERT(marshall_read_init_str(&mr, &str));
+  TEST_ASSERT(marshall_read_pointer(&mr, false, &a));
+  TEST_ASSERT(marshall_read_pointer(&mr, false, &b));
+  TEST_ASSERT(a.ptr.p_pvoid);
+  TEST_EQ(a.target_type, &g_sym_Mutex);
+  TEST_EQ(b.target_type, &g_sym_Mutex);
+  TEST_EQ(a.ptr.p_pvoid, b.ptr.p_pvoid);
+  saved = b;
+  TEST_EQ(marshall_read_pointer(&mr, false, &b), NULL);
+  TEST_MEM_EQ(&b, sizeof(b), &saved, sizeof(saved));
+  TEST_ASSERT(mr.ht_failed);
+  marshall_read_clean(&mr);
+  mutex_delete(a.ptr.p_pvoid);
+  str_clean(&str);
+  marshall_clean(&m);
+#endif
+}
+TEST_CASE_END(marshall_read_cache_pointer_legacy)
 
 TEST_CASE(marshall_read_call_cache)
 {

@@ -55,6 +55,7 @@
 #include "pstruct_type.h"
 #include "psym.h"
 #include "ptag.h"
+#include "ptuple.h"
 #include "pvar.h"
 #include "ratio.h"
 #include "rwlock.h"
@@ -131,14 +132,13 @@
     if (! marshall_read_1(mr, heap, magic)) {                          \
       err_puts("marshall_read_pset_item: marshall_read_1 magic");      \
       err_inspect_buf(heap ? mr->heap : mr->buf);                      \
-      assert(! "marshall_read_pset_item: marshall_read_1 magic");      \
-      return NULL;                                                     \
+      return marshall_read_ht_abort(mr);                              \
     }                                                                  \
     if (! marshall_read_heap_pointer(mr, heap, &offset,                \
-                                     (void **) &present)) {            \
+                                     (void **) &present,              \
+                                     sym_1(magic))) {                \
       err_puts("marshall_read_pset_item: marshall_read_heap_pointer"); \
-      assert(! "marshall_read_pset_item: marshall_read_heap_pointer"); \
-      return NULL;                                                     \
+      return marshall_read_ht_abort(mr);                              \
     }                                                                  \
     if (! offset) {                                                    \
       *dest = NULL;                                                    \
@@ -151,22 +151,19 @@
     if (buf_seek(mr->heap, mr->heap_start + (s64) offset,              \
                  SEEK_SET) < 0) {                                      \
       err_puts("marshall_read_pset_item: buf_seek");                   \
-      assert(! "marshall_read_pset_item: buf_seek");                   \
-      return NULL;                                                     \
+      return marshall_read_ht_abort(mr);                              \
     }                                                                  \
     if (! (tmp = alloc(sizeof(s_set_item__ ## name))))                 \
-      return NULL;                                                     \
+      return marshall_read_ht_abort(mr);                              \
     if (! marshall_read_set_item__ ## name (mr, true, tmp)) {          \
       err_puts("marshall_read_pset_item: marshall_read");              \
-      assert(! "marshall_read_pset_item: marshall_read");              \
       set_item_delete__ ## name(tmp);                                   \
-      return NULL;                                                     \
+      return marshall_read_ht_abort(mr);                              \
     }                                                                  \
-    if (! marshall_read_ht_add(mr, offset, tmp)) {                     \
+    if (! marshall_read_ht_add(mr, offset, tmp, sym_1(magic))) {       \
       err_puts("marshall_read_pset_item: marshall_read_ht_add");       \
-      assert(! "marshall_read_pset_item: marshall_read_ht_add");       \
       set_item_delete__ ## name(tmp);                                   \
-      return NULL;                                                     \
+      return marshall_read_ht_abort(mr);                              \
     }                                                                  \
     *dest = tmp;                                                       \
     return mr;                                                         \
@@ -1444,7 +1441,6 @@ s_marshall_read * marshall_read_frame (s_marshall_read *mr, bool heap,
   return mr;
  ko:
   frame_clean(&tmp);
-  assert(! "marshall_read_frame: error");
   return NULL;
 }
 
@@ -1515,66 +1511,110 @@ s_marshall_read * marshall_read_header_limit (s_marshall_read *mr,
   mr->heap_count = heap_count;
   mr->heap_size = heap_size;
   mr->buf_size = buf_size;
+  mr->ht_failed = false;
   return mr;
+}
+
+static s_marshall_read * marshall_read_ht_abort (s_marshall_read *mr)
+{
+  /* Decoding failure may free objects already referenced by the cache. */
+  if (mr)
+    mr->ht_failed = true;
+  return NULL;
+}
+
+static bool marshall_read_ht_key (s_marshall_read *mr, u64 offset,
+                                  p_sym type, s64 *dest)
+{
+  u64 base;
+  bool pointer;
+  if (! mr || mr->ht_failed || ! type || ! type->str.size ||
+      ! mr->ht.items || offset < sizeof(s_marshall_header))
+    return false;
+  pointer = sym_is_pointer_type(type, NULL);
+  if (offset - sizeof(s_marshall_header) > mr->heap_size ||
+      (! pointer && offset - sizeof(s_marshall_header) == mr->heap_size))
+    return false;
+  base = mr->heap_start > 0 ? (u64) mr->heap_start : mr->heap_offset;
+  if (offset > SW_MAX || base > SW_MAX - offset ||
+      mr->heap_start < -(s64) sizeof(s_marshall_header))
+    return false;
+  *dest = base + offset;
+  /* Custom marshallers may emit a native object at the same wire offset.
+     Keep opaque pointees in a separate cache domain. */
+  if (pointer)
+    *dest = -*dest;
+  return true;
 }
 
 s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
                                               bool heap,
                                               u64 *offset,
-                                              void **present)
+                                              void **present,
+                                              p_sym type)
 {
-  assert(mr);
-  assert(offset);
-  assert(present);
   s64 global_offset;
   s_tag key = {0};
   s_tag *ptag = NULL;
-  if (! marshall_read_offset(mr, heap, offset))
-    return NULL;
+  s_tuple *entry;
+  assert(mr);
+  assert(offset);
+  assert(present);
+  if (mr->ht_failed || ! marshall_read_offset(mr, heap, offset))
+    return marshall_read_ht_abort(mr);
   if (! *offset) {
     *present = NULL;
     return mr;
   }
-  if (mr->heap_start <= 0)
-    global_offset = (s64) mr->heap_offset + (s64) *offset;
-  else
-    global_offset = mr->heap_start + (s64) *offset;
-  if (! tag_init_ptuple(&key, 2))
-    return NULL;
+  if (! marshall_read_ht_key(mr, *offset, type, &global_offset) ||
+      ! tag_init_ptuple(&key, 3))
+    return marshall_read_ht_abort(mr);
   tag_init_s64(key.data.td_ptuple->tag, global_offset);
+  /* A zero pointer reserves the offset until decoding completes. */
+  tag_init_uw(key.data.td_ptuple->tag + 1, 0);
+  tag_init_psym(key.data.td_ptuple->tag + 2, type);
   if (! ht_get(&mr->ht, &key, &ptag)) {
-    *present = NULL;
+    if (! ht_add(&mr->ht, &key)) {
+      tag_clean(&key);
+      return marshall_read_ht_abort(mr);
+    }
     tag_clean(&key);
+    *present = NULL;
     return mr;
   }
   tag_clean(&key);
-  if (ptag->type != TAG_PTUPLE ||
-      ptag->data.td_ptuple->tag[1].type != TAG_UW) {
-    err_puts("marshall_read_heap_pointer: invalid tag in ht");
-    assert(! "marshall_read_heap_pointer: invalid tag in ht");
-  }
-  *present = (void *) ptag->data.td_ptuple->tag[1].data.td_uw;
+  if (ptag->type != TAG_PTUPLE || ! (entry = ptag->data.td_ptuple) ||
+      entry->count != 3 || entry->tag[1].type != TAG_UW ||
+      entry->tag[2].type != TAG_PSYM ||
+      entry->tag[2].data.td_psym != type || ! entry->tag[1].data.td_uw)
+    return marshall_read_ht_abort(mr);
+  *present = (void *) entry->tag[1].data.td_uw;
   return mr;
 }
 
 s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
-                                        u64 offset, const void *p)
+                                        u64 offset, const void *p,
+                                        p_sym type)
 {
   s64 global_offset;
-  s_tag tag = {0};
-  if (mr->heap_start <= 0)
-    global_offset = (s64) mr->heap_offset + (s64) offset;
-  else
-    global_offset = mr->heap_start + (s64) offset;
-  if (! tag_init_ptuple(&tag, 2))
-    return NULL;
-  tag_init_s64(tag.data.td_ptuple->tag, global_offset);
-  tag_init_uw(tag.data.td_ptuple->tag + 1, (uw) p);
-  if (! ht_add(&mr->ht, &tag)) {
-    tag_clean(&tag);
-    return NULL;
+  s_tag key = {0};
+  s_tag *ptag = NULL;
+  s_tuple *entry;
+  if (! p || ! marshall_read_ht_key(mr, offset, type, &global_offset) ||
+      ! tag_init_ptuple(&key, 2))
+    return marshall_read_ht_abort(mr);
+  tag_init_s64(key.data.td_ptuple->tag, global_offset);
+  if (! ht_get(&mr->ht, &key, &ptag)) {
+    tag_clean(&key);
+    return marshall_read_ht_abort(mr);
   }
-  tag_clean(&tag);
+  tag_clean(&key);
+  if (ptag->type != TAG_PTUPLE || ! (entry = ptag->data.td_ptuple) ||
+      entry->count != 3 || entry->tag[1].type != TAG_UW ||
+      entry->tag[2].type != TAG_PSYM ||
+      entry->tag[2].data.td_psym != type || entry->tag[1].data.td_uw)
+    return marshall_read_ht_abort(mr);
+  entry->tag[1].data.td_uw = (uw) p;
   return mr;
 }
 
@@ -2020,14 +2060,12 @@ s_marshall_read * marshall_read_pcall (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_1(mr, heap, "_KC3PCALL_")) {
     err_puts("marshall_read_pcall: marshall_read_1 magic");
-    assert(! "marshall_read_pcall: marshall_read_1 magic");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present)) {
+                                   (void **) &present, &g_sym_Call)) {
     err_puts("marshall_read_pcall: marshall_read_heap_pointer");
-    assert(! "marshall_read_pcall: marshall_read_heap_pointer");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! offset) {
     *dest = NULL;
@@ -2037,31 +2075,27 @@ s_marshall_read * marshall_read_pcall (s_marshall_read *mr,
     if (! pcall_init_copy(dest, &present)) {
       err_puts("marshall_read_pcall: pcall_init_copy");
       assert(! "marshall_read_pcall: pcall_init_copy");
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     return mr;
   }
   if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0) {
     err_puts("marshall_read_pcall: buf_seek");
-    assert(! "marshall_read_pcall: buf_seek");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! (tmp = alloc(sizeof(s_call)))) {
     err_puts("marshall_read_pcall: alloc");
-    assert(! "marshall_read_pcall: alloc");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_call(mr, true, tmp)) {
     err_puts("marshall_read_pcall: marshall_read_call");
-    assert(! "marshall_read_pcall: marshall_read_call");
     alloc_free(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_ht_add(mr, offset, tmp)) {
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Call)) {
     err_puts("marshall_read_pcall: marshall_read_ht_add");
-    assert(! "marshall_read_pcall: marshall_read_ht_add");
     call_delete(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tmp;
   return mr;
@@ -2078,14 +2112,12 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_1(mr, heap, "_KC3PCALLABLE_")) {
     err_puts("marshall_read_pcallable: marshall_read_1 magic");
-    assert(! "marshall_read_pcallable: marshall_read_1 magic");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present)) {
+                                   (void **) &present, &g_sym_Callable)) {
     err_puts("marshall_read_pcallable: marshall_read_heap_pointer");
-    assert(! "marshall_read_pcallable: marshall_read_heap_pointer");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! offset) {
     *dest = NULL;
@@ -2095,31 +2127,27 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
     if (! pcallable_init_copy(dest, &present)) {
       err_puts("marshall_read_pcallable: pcallable_init_copy");
       assert(! "marshall_read_pcallable: pcallable_init_copy");
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     return mr;
   }
   if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0) {
     err_puts("marshall_read_pcallable: buf_seek");
-    assert(! "marshall_read_pcallable: buf_seek");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! (tmp = alloc(sizeof(s_callable)))) {
     err_puts("marshall_read_pcallable: alloc");
-    assert(! "marshall_read_pcallable: alloc");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_callable(mr, true, tmp)) {
     err_puts("marshall_read_pcallable: marshall_read_callable");
-    assert(! "marshall_read_pcallable: marshall_read_callable");
     alloc_free(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_ht_add(mr, offset, tmp)) {
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Callable)) {
     err_puts("marshall_read_pcallable: marshall_read_ht_add");
-    assert(! "marshall_read_pcallable: marshall_read_ht_add");
     callable_delete(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tmp;
   return mr;
@@ -2136,12 +2164,11 @@ s_marshall_read * marshall_read_pcomplex (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_1(mr, heap, "_KC3PCOMPLEX_")) {
     err_puts("marshall_read_pcomplex: marshall_read_1 magic");
-    assert(! "marshall_read_pcomplex: marshall_read_1 magic");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present))
-    return NULL;
+                                   (void **) &present, &g_sym_Complex))
+    return marshall_read_ht_abort(mr);
   if (! offset) {
     *dest = NULL;
     return mr;
@@ -2150,17 +2177,20 @@ s_marshall_read * marshall_read_pcomplex (s_marshall_read *mr,
     if (! pcomplex_init_copy(dest, &present)) {
       err_puts("marshall_read_pcomplex: pcomplex_init_copy");
       assert(! "marshall_read_pcomplex: pcomplex_init_copy");
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     return mr;
   }
   if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
       ! (tmp = alloc(sizeof(s_complex))))
-    return NULL;
-  if (! marshall_read_complex(mr, true, tmp) ||
-      ! marshall_read_ht_add(mr, offset, tmp)) {
+    return marshall_read_ht_abort(mr);
+  if (! marshall_read_complex(mr, true, tmp)) {
+    alloc_free(tmp);
+    return marshall_read_ht_abort(mr);
+  }
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Complex)) {
     complex_delete(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tmp;
   return mr;
@@ -2189,14 +2219,12 @@ s_marshall_read * marshall_read_pfacts (s_marshall_read *mr,
   if (! marshall_read_1(mr, heap, "_KC3PFACTS_")) {
     err_puts("marshall_read_pfacts: marshall_read_1 magic");
     err_inspect_buf(heap ? mr->heap : mr->buf);
-    assert(! "marshall_read_pfacts: marshall_read_1 magic");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present)) {
+                                   (void **) &present, &g_sym_Facts)) {
     err_puts("marshall_read_pfacts: marshall_read_heap_pointer");
-    assert(! "marshall_read_pfacts: marshall_read_heap_pointer");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! offset) {
     *dest = NULL;
@@ -2206,31 +2234,27 @@ s_marshall_read * marshall_read_pfacts (s_marshall_read *mr,
     if (! pfacts_init_copy(dest, &present)) {
       err_puts("marshall_read_pfacts: pfacts_init_copy");
       assert(! "marshall_read_pfacts: pfacts_init_copy");
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     return mr;
   }
   if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0) {
     err_puts("marshall_read_pfacts: buf_seek");
-    assert(! "marshall_read_pfacts: buf_seek");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! (tmp = facts_new())) {
     err_puts("marshall_read_pfacts: facts_new");
-    assert(! "marshall_read_pfacts: facts_new");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_facts(mr, true, tmp)) {
     err_puts("marshall_read_pfacts: marshall_read_facts");
-    assert(! "marshall_read_pfacts: marshall_read_facts");
     facts_delete(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_ht_add(mr, offset, tmp)) {
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Facts)) {
     err_puts("marshall_read_pfacts: marshall_read_ht_add");
-    assert(! "marshall_read_pfacts: marshall_read_ht_add");
     facts_delete(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tmp;
   return mr;
@@ -2248,12 +2272,11 @@ s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
   if (! marshall_read_1(mr, heap, "_KC3PFRAME_")) {
     err_puts("marshall_read_pframe: marshall_read_1 magic");
     err_inspect_buf(heap ? mr->heap : mr->buf);
-    assert(! "marshall_read_pframe: marshall_read_1 magic");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present))
-    return NULL;
+                                   (void **) &present, sym_1("Frame")))
+    return marshall_read_ht_abort(mr);
   if (! offset) {
     *dest = NULL;
     return mr;
@@ -2262,20 +2285,20 @@ s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
     if (! pframe_init_copy(dest, &present)) {
       err_puts("marshall_read_pframe: pframe_init_copy");
       assert(! "marshall_read_pframe: pframe_init_copy");
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     return mr;
   }
   if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
       ! (tmp = alloc(sizeof(s_frame))))
-    return NULL;
+    return marshall_read_ht_abort(mr);
   if (! marshall_read_frame(mr, true, tmp)) {
     alloc_free(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_ht_add(mr, offset, tmp)) {
+  if (! marshall_read_ht_add(mr, offset, tmp, sym_1("Frame"))) {
     frame_delete(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tmp;
   return mr;
@@ -2293,12 +2316,11 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
   if (! marshall_read_1(mr, heap, "_KC3PLIST_")) {
     err_puts("marshall_read_plist: marshall_read_1 magic");
     err_inspect_buf(heap ? mr->heap : mr->buf);
-    assert(! "marshall_read_plist: marshall_read_1 magic");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present))
-    return NULL;
+                                   (void **) &present, &g_sym_List))
+    return marshall_read_ht_abort(mr);
   if (! offset) {
     *dest = NULL;
     return mr;
@@ -2307,20 +2329,20 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
     if (! plist_init_copy(dest, &present)) {
       err_puts("marshall_read_plist: plist_init_copy");
       assert(! "marshall_read_plist: plist_init_copy");
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     return mr;
   }
   if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
       ! (tmp = alloc(sizeof(s_list))))
-    return NULL;
+    return marshall_read_ht_abort(mr);
   if (! marshall_read_list(mr, true, tmp)) {
     alloc_free(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_ht_add(mr, offset, tmp)) {
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_List)) {
     list_delete(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tmp;
   return mr;
@@ -2337,6 +2359,7 @@ s_marshall_read * marshall_read_pointer_1 (s_marshall_read *mr,
   p_callable pcallable = NULL;
   p_tag ptag = NULL;
   s_tag tag_1 = {0};
+  p_sym pointer_type;
   p_sym target_type;
   uw id;
   u64 offset = 0;
@@ -2347,17 +2370,20 @@ s_marshall_read * marshall_read_pointer_1 (s_marshall_read *mr,
   if (! marshall_read_1(mr, heap, "_KC3POINTER1_") ||
       ! marshall_read_psym(mr, heap, &target_type) ||
       ! marshall_read_uw(mr, heap, &id) ||
-      ! marshall_read_heap_pointer(mr, heap, &offset, &present))
-    return NULL;
+      ! target_type || ! target_type->str.size ||
+      ! (pointer_type = sym_target_to_pointer_type(target_type)) ||
+      ! marshall_read_heap_pointer(mr, heap, &offset,
+                                   &present, pointer_type))
+    return marshall_read_ht_abort(mr);
   if (offset && ! present) {
     if (! marshall_read_pcallable(mr, heap, &pcallable))
-      return NULL;
+      return marshall_read_ht_abort(mr);
     if (! (ptag = tag_new_pcallable_copy(&pcallable)) ||
         ! (list = list_new_ptr(ptag, mr->ht_ptag_list))) {
       if (ptag)
         tag_delete(ptag);
       pcallable_clean(&pcallable);
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     mr->ht_ptag_list = list;
     env = env_global();
@@ -2371,20 +2397,25 @@ s_marshall_read * marshall_read_pointer_1 (s_marshall_read *mr,
        (heap, NULL));
     if (! env_eval_call(env, &call, &tag_1)) {
       call_clean(&call);
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     if (tag_1.type != TAG_POINTER ||
         tag_1.data.td_pointer.target_type != target_type) {
       tag_clean(&tag_1);
       call_clean(&call);
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     present = tag_1.data.td_pointer.ptr.p_pvoid;
+    if (! marshall_read_ht_add(mr, offset, present, pointer_type)) {
+      tag_clean(&tag_1);
+      call_clean(&call);
+      return marshall_read_ht_abort(mr);
+    }
     tag_clean(&tag_1);
     call_clean(&call);
   }
   if (! pointer_init(&tmp, NULL, target_type, present))
-    return NULL;
+    return marshall_read_ht_abort(mr);
   tmp.id = id;
   env = env_global();
 #if HAVE_PTHREAD
@@ -2408,6 +2439,7 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
   s_ident ident = {0};
   s_tag tag = {0};
   s_tag tag_1 = {0};
+  p_sym pointer_type;
   p_sym target_type;
   u64 offset = 0;
   void *present = NULL;
@@ -2420,18 +2452,19 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
   if (! marshall_read_1(mr, heap, "_KC3POINTER_")) {
     err_puts("marshall_read_pointer: marshall_read_1 magic");
     err_inspect_buf(heap ? mr->heap : mr->buf);
-    assert(! "marshall_read_pointer: marshall_read_1 magic");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_psym(mr, heap, &target_type)) {
     err_puts("marshall_read_pointer: marshall_read_psym");
-    assert(! "marshall_read_pointer: marshall_read_psym");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_heap_pointer(mr, heap, &offset, &present)) {
+  if (! target_type || ! target_type->str.size ||
+      ! (pointer_type = sym_target_to_pointer_type(target_type)))
+    return marshall_read_ht_abort(mr);
+  if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                   &present, pointer_type)) {
     err_puts("marshall_read_pointer: marshall_read_heap_pointer");
-    assert(! "marshall_read_pointer: marshall_read_heap_pointer");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (offset && ! present) {
     env = env_global();
@@ -2442,7 +2475,7 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
       err_write_1("marshall_read_pointer: Callable not found: ");
       err_inspect_ident(&ident);
       err_write_1("\n");
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     call_init(&call);
     call.ident = ident;
@@ -2455,7 +2488,7 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
       err_write_1("\n");
       tag_clean(&tag);
       call_clean(&call);
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     if (tag_1.type != TAG_POINTER ||
         tag_1.data.td_pointer.target_type != target_type) {
@@ -2465,17 +2498,22 @@ s_marshall_read * marshall_read_pointer (s_marshall_read *mr,
       tag_clean(&tag_1);
       tag_clean(&tag);
       call_clean(&call);
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     present = tag_1.data.td_pointer.ptr.p_pvoid;
+    if (! marshall_read_ht_add(mr, offset, present, pointer_type)) {
+      tag_clean(&tag_1);
+      tag_clean(&tag);
+      call_clean(&call);
+      return marshall_read_ht_abort(mr);
+    }
     tag_clean(&tag_1);
     tag_clean(&tag);
     call_clean(&call);
   }
   if (! pointer_init(&tmp, NULL, target_type, present)) {
     err_puts("marshall_read_pointer: pointer_init");
-    assert(! "marshall_read_pointer: pointer_init");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tmp;
   return mr;
@@ -2496,8 +2534,9 @@ marshall_read_pskiplist_node__fact (s_marshall_read *mr, bool heap,
   if (! mr || ! dest ||
       ! marshall_read_1(mr, heap, "_KC3PSKIPLISTNODEFACT_") ||
       ! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present))
-    return NULL;
+                                   (void **) &present,
+                                   sym_1("Skiplist.Node.Fact")))
+    return marshall_read_ht_abort(mr);
   if (! offset) {
     *dest = NULL;
     return mr;
@@ -2514,11 +2553,11 @@ marshall_read_pskiplist_node__fact (s_marshall_read *mr, bool heap,
       ! height ||
       buf_seek(mr->heap, pos, SEEK_SET) < 0 ||
       ! (tmp = alloc(SKIPLIST_NODE_SIZE__fact(height))))
-    return NULL;
-  if (! marshall_read_ht_add(mr, offset, tmp) ||
-      ! marshall_read_skiplist_node__fact(mr, true, tmp)) {
+    return marshall_read_ht_abort(mr);
+  if (! marshall_read_skiplist_node__fact(mr, true, tmp) ||
+      ! marshall_read_ht_add(mr, offset, tmp, sym_1("Skiplist.Node.Fact"))) {
     alloc_free(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tmp;
   return mr;
@@ -2562,8 +2601,9 @@ marshall_read_pskiplist__fact (s_marshall_read *mr, bool heap,
   if (! mr || ! dest ||
       ! marshall_read_1(mr, heap, "_KC3PSKIPLISTFACT_") ||
       ! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present))
-    return NULL;
+                                   (void **) &present,
+                                   sym_1("Skiplist.Fact")))
+    return marshall_read_ht_abort(mr);
   if (! offset) {
     *dest = NULL;
     return mr;
@@ -2581,12 +2621,12 @@ marshall_read_pskiplist__fact (s_marshall_read *mr, bool heap,
       ! max_height ||
       buf_seek(mr->heap, pos, SEEK_SET) < 0 ||
       ! (tmp = alloc(SKIPLIST_SIZE__fact(max_height))))
-    return NULL;
+    return marshall_read_ht_abort(mr);
   tmp->max_height = max_height;
-  if (! marshall_read_ht_add(mr, offset, tmp) ||
-      ! marshall_read_skiplist__fact(mr, true, tmp)) {
+  if (! marshall_read_skiplist__fact(mr, true, tmp) ||
+      ! marshall_read_ht_add(mr, offset, tmp, sym_1("Skiplist.Fact"))) {
     alloc_free(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tmp;
   return mr;
@@ -2636,12 +2676,11 @@ s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_1(mr, heap, "_KC3PSTRUCT_")) {
     err_puts("marshall_read_pstruct: marshall_read_1 magic");
-    assert(! "marshall_read_pstruct: marshall_read_1 magic");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present))
-    return NULL;
+                                   (void **) &present, &g_sym_Struct))
+    return marshall_read_ht_abort(mr);
   if (! offset) {
     *dest = NULL;
     return mr;
@@ -2650,20 +2689,20 @@ s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,
     if (! pstruct_init_copy(dest, &present)) {
       err_puts("marshall_read_pstruct: pstruct_init_copy");
       assert(! "marshall_read_pstruct: pstruct_init_copy");
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     return mr;
   }
   if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
       ! (tmp = alloc(sizeof(s_struct))))
-    return NULL;
+    return marshall_read_ht_abort(mr);
   if (! marshall_read_struct(mr, true, tmp)) {
     alloc_free(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_ht_add(mr, offset, tmp)) {
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Struct)) {
     struct_delete(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tmp;
   return mr;
@@ -2683,12 +2722,11 @@ s_marshall_read * marshall_read_pstruct_type (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_1(mr, heap, "_KC3PSTRUCTTYPE_")) {
     err_puts("marshall_read_pstruct_type: marshall_read_1 magic");
-    assert(! "marshall_read_pstruct_type: marshall_read_1 magic");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present))
-    return NULL;
+                                   (void **) &present, &g_sym_StructType))
+    return marshall_read_ht_abort(mr);
   if (! offset) {
     *dest = NULL;
     return mr;
@@ -2697,31 +2735,31 @@ s_marshall_read * marshall_read_pstruct_type (s_marshall_read *mr,
     if (! pstruct_type_init_copy(dest, &present)) {
       err_puts("marshall_read_pstruct_type: pstruct_type_init_copy");
       assert(! "marshall_read_pstruct_type: pstruct_type_init_copy");
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     return mr;
   }
   if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
       ! (tmp = alloc(sizeof(s_struct_type))))
-    return NULL;
+    return marshall_read_ht_abort(mr);
   if (! marshall_read_struct_type(mr, true, tmp)) {
     alloc_free(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! (keep = tag_new())) {
     pstruct_type_clean(&tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   keep->type = TAG_PSTRUCT_TYPE;
   keep->data.td_pstruct_type = tmp;
   if (! (list = list_new_ptr(keep, mr->ht_ptag_list))) {
     tag_delete(keep);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   mr->ht_ptag_list = list;
-  if (! marshall_read_ht_add(mr, offset, tmp) ||
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_StructType) ||
       ! pstruct_type_init_copy(dest, &tmp))
-    return NULL;
+    return marshall_read_ht_abort(mr);
   return mr;
 }
 
@@ -2736,26 +2774,26 @@ s_marshall_read * marshall_read_psym (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_1(mr, heap, "_KC3PSYM_")) {
     err_puts("marshall_read_psym: marshall_read_1 magic");
-    assert(! "marshall_read_psym: marshall_read_1 magic");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_heap_pointer(mr, heap, &offset, &present))
-    return NULL;
+  if (! marshall_read_heap_pointer(mr, heap, &offset,
+                                   &present, &g_sym_Sym))
+    return marshall_read_ht_abort(mr);
   if (present || ! offset) {
     *dest = present;
     return mr;
   }
   if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0) {
     err_puts("marshall_read_psym: buf_seek failed");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_sym(mr, true, &tmp)) {
     err_puts("marshall_read_psym: marshall_read_sym failed");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_ht_add(mr, offset, tmp)) {
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Sym)) {
     err_puts("marshall_read_psym: marshall_read_ht_add failed");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tmp;
   return mr;
@@ -2773,42 +2811,39 @@ s_marshall_read * marshall_read_ptag (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_1(mr, heap, "_KC3PTAG_")) {
     err_puts("marshall_read_ptag: marshall_read_1 magic");
-    assert(! "marshall_read_ptag: marshall_read_1 magic");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present))
-    return NULL;
+                                   (void **) &present, &g_sym_Tag))
+    return marshall_read_ht_abort(mr);
   if (! offset) {
     *dest = NULL;
     return mr;
   }
   if (present) {
     if (! ptag_init_copy(dest, &present))
-      return NULL;
+      return marshall_read_ht_abort(mr);
     return mr;
   }
   if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0) {
     err_puts("marshall_read_ptag: buf_seek");
-    assert(! "marshall_read_ptag: buf_seek");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! (tmp = alloc(sizeof(s_tag))))
-    return NULL;
+    return marshall_read_ht_abort(mr);
   if (! marshall_read_tag(mr, true, tmp)) {
     err_puts("marshall_read_ptag: marshall_read_tag");
-    assert(! "marshall_read_ptag: marshall_read_tag");
     alloc_free(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! (list = list_new_ptr(tag_new_ref(tmp), mr->ht_ptag_list))) {
     tag_delete(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   mr->ht_ptag_list = list;
-  if (! marshall_read_ht_add(mr, offset, tmp)) {
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Tag)) {
     tag_delete(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tmp;
   return mr;
@@ -2865,12 +2900,11 @@ s_marshall_read * marshall_read_pvar (s_marshall_read *mr,
   assert(dest);
   if (! marshall_read_1(mr, heap, "_KC3PVAR_")) {
     err_puts("marshall_read_pvar: marshall_read_1 magic");
-    assert(! "marshall_read_pvar: marshall_read_1 magic");
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present))
-    return NULL;
+                                   (void **) &present, &g_sym_Var))
+    return marshall_read_ht_abort(mr);
   if (! offset) {
     *dest = NULL;
     return mr;
@@ -2879,17 +2913,20 @@ s_marshall_read * marshall_read_pvar (s_marshall_read *mr,
     if (! pvar_init_copy(dest, &present)) {
       err_puts("marshall_read_pvar: pvar_init_copy");
       assert(! "marshall_read_pvar: pvar_init_copy");
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     return mr;
   }
   if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
       ! (tmp = alloc(sizeof(s_var))))
-    return NULL;
-  if (! marshall_read_var(mr, true, tmp) ||
-      ! marshall_read_ht_add(mr, offset, tmp)) {
+    return marshall_read_ht_abort(mr);
+  if (! marshall_read_var(mr, true, tmp)) {
+    alloc_free(tmp);
+    return marshall_read_ht_abort(mr);
+  }
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Var)) {
     var_delete(tmp);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tmp;
   return mr;
@@ -3570,36 +3607,37 @@ s_marshall_read * marshall_read_ptuple (s_marshall_read *mr,
   buf = heap ? mr->heap : mr->buf;
   if (buf_read_1(buf, "_KC3PTUPLE_") > 0) {
     if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                     (void **) &present))
-      return NULL;
+                                     (void **) &present, &g_sym_Tuple))
+      return marshall_read_ht_abort(mr);
     if (! offset) {
       *dest = NULL;
       return mr;
     }
     if (present) {
-      *dest = tuple_new_ref(present);
+      if (! ptuple_init_copy(dest, &present))
+        return marshall_read_ht_abort(mr);
       return mr;
     }
     if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
         ! (tuple = alloc(sizeof(s_tuple))))
-      return NULL;
+      return marshall_read_ht_abort(mr);
     if (! marshall_read_tuple(mr, true, tuple)) {
       alloc_free(tuple);
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
-    if (! marshall_read_ht_add(mr, offset, tuple)) {
+    if (! marshall_read_ht_add(mr, offset, tuple, &g_sym_Tuple)) {
       tuple_delete(tuple);
-      return NULL;
+      return marshall_read_ht_abort(mr);
     }
     *dest = tuple;
     return mr;
   }
   tuple = alloc(sizeof(s_tuple));
   if (! tuple)
-    return NULL;
+    return marshall_read_ht_abort(mr);
   if (! marshall_read_tuple(mr, heap, tuple)) {
     alloc_free(tuple);
-    return NULL;
+    return marshall_read_ht_abort(mr);
   }
   *dest = tuple;
   return mr;

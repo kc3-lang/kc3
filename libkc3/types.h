@@ -784,6 +784,7 @@ struct marshall_read {
   s64    heap_start;
   s_ht   ht;
   p_list ht_ptag_list;
+  bool   ht_failed;
   s_buf *source;
 };
 

@@ -87,9 +87,11 @@ PROTO_MARSHALL_READ(frame,                s_frame              );
 s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
                                               bool heap,
                                               u64 *heap_offset,
-                                              void **present);
+                                              void **present,
+                                              p_sym type);
 s_marshall_read * marshall_read_ht_add (s_marshall_read *mr,
-                                        u64 offset, const void *p);
+                                        u64 offset, const void *p,
+                                        p_sym type);
 PROTO_MARSHALL_READ(list,                 s_list               );
 PROTO_MARSHALL_READ(ident,                s_ident              );
 PROTO_MARSHALL_READ(integer,              s_integer            );
