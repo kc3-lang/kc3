@@ -1286,18 +1286,26 @@ sw buf_read_until_list_into_str (s_buf *buf,
 }
 
 sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
-				s_buf *dest)
+                                s_buf *dest)
 {
   u8 c;
+  uw end_size;
   sw r;
   sw result = 0;
+  assert(buf);
+  assert(end);
+  assert(dest);
+  end_size = end->size;
+  if (! end_size || end_size > SW_MAX || end_size > buf->size)
+    return -1;
 #if HAVE_PTHREAD
   rwlock_w(buf->rwlock);
   rwlock_w(dest->rwlock);
 #endif
   while (1) {
-    if (buf_refill(buf, end->size) < end->size) {
-      r = -1;
+    if ((r = buf_refill(buf, end->size)) < (sw) end->size) {
+      if (r >= 0)
+        r = -1;
       goto clean;
     }
     if ((r = buf_read_str(buf, end)) < 0) {
@@ -1310,6 +1318,17 @@ sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
       r = result;
       goto clean;
     }
+    if (dest->wpos == dest->size) {
+      if ((r = buf_flush(dest)) <= 0) {
+        if (! r)
+          r = -1;
+        goto clean;
+      }
+      if (dest->wpos >= dest->size) {
+        r = -1;
+        goto clean;
+      }
+    }
     if ((r = buf_read_u8(buf, &c)) <= 0) {
       if (true) {
         err_puts("buf_read_until_str_into_buf: buf_read_u8");
@@ -1317,8 +1336,6 @@ sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
       }
       goto clean;
     }
-    if ((r = buf_flush(dest) <= 0))
-      goto clean;
     if ((r = buf_write_u8(dest, c)) <= 0) {
       if (true)
         err_puts("buf_read_until_str_into_buf: buf_write_u8");
@@ -1339,12 +1356,20 @@ sw buf_read_until_str_into_file (s_buf *buf, const s_str *end,
 {
   t_fd fd;
   s_buf dest = {0};
+  uw end_size;
+  sw flush_r;
   sw r;
+  assert(buf);
+  assert(end);
+  assert(path);
+  end_size = end->size;
+  if (! end_size || end_size > SW_MAX || end_size > buf->size)
+    return -1;
   if (! file_open_w(path, &fd)) {
     err_puts("buf_read_until_str_into_file: file_open_w");
     return -1;
   }
-  if (! buf_init_alloc(&dest, end->size + 1)) {
+  if (! buf_init_alloc(&dest, BUF_SIZE)) {
     err_puts("buf_read_until_str_into_file: buf_init_alloc");
     close(fd);
     return -1;
@@ -1358,14 +1383,14 @@ sw buf_read_until_str_into_file (s_buf *buf, const s_str *end,
   if ((r = buf_read_until_str_into_buf(buf, end, &dest)) < 0) {
     err_puts("buf_read_until_str_into_file: "
              "buf_read_until_str_into_buf");
-    buf_fd_close(&dest);
-    buf_clean(&dest);
-    close(fd);
-    return -1;
   }
+  else if ((flush_r = buf_flush(&dest)) < 0)
+    r = flush_r;
+  dest.flush = NULL;
   buf_fd_close(&dest);
   buf_clean(&dest);
-  close(fd);
+  if (close(fd) < 0 && r >= 0)
+    r = -1;
   return r;
 }
 

@@ -158,6 +158,10 @@ TEST_CASE_PROTOTYPE(buf_read_s16);
 TEST_CASE_PROTOTYPE(buf_read_s32);
 TEST_CASE_PROTOTYPE(buf_read_s64);
 TEST_CASE_PROTOTYPE(buf_read_to_str);
+TEST_CASE_PROTOTYPE(buf_read_until_buf);
+TEST_CASE_PROTOTYPE(buf_read_until_buf_flush);
+TEST_CASE_PROTOTYPE(buf_read_until_buf_error);
+TEST_CASE_PROTOTYPE(buf_read_until_buf_refill);
 TEST_CASE_PROTOTYPE(buf_read_u8);
 TEST_CASE_PROTOTYPE(buf_read_u16);
 TEST_CASE_PROTOTYPE(buf_read_u32);
@@ -207,10 +211,220 @@ void buf_test (void)
   TEST_CASE_RUN(buf_read_u64);
   TEST_CASE_RUN(buf_read_character_utf8);
   TEST_CASE_RUN(buf_read_to_str);
+  TEST_CASE_RUN(buf_read_until_buf);
+  TEST_CASE_RUN(buf_read_until_buf_flush);
+  TEST_CASE_RUN(buf_read_until_buf_error);
+  TEST_CASE_RUN(buf_read_until_buf_refill);
   TEST_CASE_RUN(buf_xfer);
   TEST_CASE_RUN(buf_f);
   TEST_CASE_RUN(buf_ignore);
 }
+
+typedef struct test_buf_sink {
+  char data[512];
+  uw size;
+  uw calls;
+  uw fail_at;
+  sw failure;
+} s_test_buf_sink;
+
+typedef struct test_buf_source {
+  const char *data;
+  uw size;
+  uw pos;
+  uw chunk;
+} s_test_buf_source;
+
+static sw test_buf_flush (s_buf *buf)
+{
+  s_test_buf_sink *sink = buf->user_ptr;
+  uw size = buf->wpos;
+  sink->calls++;
+  if (sink->fail_at == sink->calls)
+    return sink->failure;
+  if (size > sizeof(sink->data) - sink->size)
+    return -1;
+  memcpy(sink->data + sink->size, buf->ptr.p_pchar, size);
+  sink->size += size;
+  buf->wpos = 0;
+  return size ? (sw) size : (sw) buf->size;
+}
+
+static sw test_buf_refill (s_buf *buf)
+{
+  s_test_buf_source *source = buf->user_ptr;
+  uw size = source->size - source->pos;
+  if (size > source->chunk)
+    size = source->chunk;
+  if (size > buf->size - buf->wpos)
+    size = buf->size - buf->wpos;
+  memcpy(buf->ptr.p_pchar + buf->wpos, source->data + source->pos,
+          size);
+  source->pos += size;
+  buf->wpos += size;
+  return size;
+}
+
+static sw test_buf_refill_error (s_buf *buf)
+{
+  (void) buf;
+  return -9;
+}
+
+TEST_CASE(buf_read_until_buf)
+{
+  const struct {
+    const char *data;
+    uw size;
+    const char *end;
+    uw capacity;
+    sw result;
+    uw consumed;
+    uw written;
+  } cases[] = {
+    {"ENDtail", 7, "END", 0, 3, 3, 0},
+    {"abcdENDtail", 11, "END", 4, 7, 7, 4},
+    {"ENxENDtail", 10, "END", 4, 6, 6, 3},
+    {"\0\xff" "abaXababtail", 14, "abab", 6, 10, 10, 6},
+    {"abcEND", 6, "END", 2, -1, 2, 2},
+    {"abcEND", 6, "END", 0, -1, 0, 0},
+    {"abcEN", 5, "END", 8, -1, 3, 3},
+    {"abc", 3, "", 8, -1, 0, 0},
+    {"ab", 2, "END", 8, -1, 0, 0},
+    {"ENDtail", 7, "END", 8, 3, 3, 0}
+  };
+  char data[8];
+  s_buf buf;
+  s_buf dest;
+  s_str end;
+  s_str input;
+  uw i;
+  for (i = 0; i < sizeof(cases) / sizeof(*cases); i++) {
+    TEST_ASSERT(str_init(&input, NULL, cases[i].size, cases[i].data));
+    TEST_ASSERT(str_init_1(&end, NULL, cases[i].end));
+    TEST_ASSERT(buf_init_str_const(&buf, &input));
+    TEST_ASSERT(buf_init(&dest, false, cases[i].capacity, data));
+    TEST_EQ(buf_read_until_str_into_buf(&buf, &end, &dest),
+             cases[i].result);
+    TEST_EQ(buf.rpos, cases[i].consumed);
+    TEST_EQ(dest.wpos, cases[i].written);
+    TEST_EQ(memcmp(dest.ptr.p_pchar, input.ptr.p_pchar,
+                    cases[i].written), 0);
+    buf_clean(&dest);
+    buf_clean(&buf);
+  }
+  TEST_ASSERT(buf_init_1_const(&buf, "bodyENDtail"));
+  TEST_ASSERT(buf_init(&dest, false, 7, data));
+  TEST_EQ(buf_write_1(&dest, "pre"), 3);
+  TEST_ASSERT(str_init_1(&end, NULL, "END"));
+  TEST_EQ(buf_read_until_str_into_buf(&buf, &end, &dest), 7);
+  TEST_EQ(dest.wpos, 7);
+  TEST_MEM_EQ(data, 7, "prebody", 7);
+  TEST_EQ(buf_read_1(&buf, "tail"), 4);
+  buf_clean(&dest);
+  buf_clean(&buf);
+}
+TEST_CASE_END(buf_read_until_buf)
+
+TEST_CASE(buf_read_until_buf_flush)
+{
+  s_buf buf;
+  s_buf dest;
+  char data[16];
+  const s_str end = STR("END");
+  char input[264];
+  s_test_buf_sink sink = {0};
+  s_str str;
+  memset(input, 'x', 257);
+  memcpy(input + 257, "ENDtail", 7);
+  TEST_ASSERT(str_init(&str, NULL, sizeof(input), input));
+  TEST_ASSERT(buf_init_str_const(&buf, &str));
+  TEST_ASSERT(buf_init(&dest, false, sizeof(data), data));
+  dest.flush = test_buf_flush;
+  dest.user_ptr = &sink;
+  TEST_EQ(buf_read_until_str_into_buf(&buf, &end, &dest), 260);
+  TEST_EQ(sink.calls, 16);
+  TEST_EQ(sink.size, 256);
+  TEST_EQ(dest.wpos, 1);
+  TEST_EQ(buf_flush(&dest), 1);
+  TEST_EQ(sink.calls, 17);
+  TEST_MEM_EQ(sink.data, sink.size, input, 257);
+  TEST_EQ(buf_read_1(&buf, "tail"), 4);
+  buf_clean(&dest);
+  buf_clean(&buf);
+}
+TEST_CASE_END(buf_read_until_buf_flush)
+
+TEST_CASE(buf_read_until_buf_error)
+{
+  s_buf buf;
+  s_buf dest;
+  char data[2];
+  const s_str end = STR("END");
+  const sw failures[] = {-7, 0, 17, -1};
+  uw i;
+  s_test_buf_sink sink;
+  for (i = 0; i < sizeof(failures) / sizeof(*failures); i++) {
+    sink = (s_test_buf_sink) {0};
+    sink.fail_at = i == 3 ? 2 : 1;
+    sink.failure = failures[i];
+    TEST_ASSERT(buf_init_1_const(&buf, "abcdeENDtail"));
+    TEST_ASSERT(buf_init(&dest, false, sizeof(data), data));
+    dest.flush = test_buf_flush;
+    dest.user_ptr = &sink;
+    TEST_EQ(buf_read_until_str_into_buf(&buf, &end, &dest),
+             sink.failure < 0 ? sink.failure : -1);
+    TEST_EQ(sink.calls, sink.fail_at);
+    TEST_EQ(buf.rpos, i == 3 ? 4 : 2);
+    TEST_EQ(dest.wpos, 2);
+    TEST_EQ(sink.size, i == 3 ? 2 : 0);
+    buf_clean(&dest);
+    buf_clean(&buf);
+  }
+}
+TEST_CASE_END(buf_read_until_buf_error)
+
+TEST_CASE(buf_read_until_buf_refill)
+{
+  s_buf buf;
+  uw capacity;
+  uw chunk;
+  char data[8];
+  s_buf dest;
+  const s_str end = STR("abab");
+  const char input[] = "abaxababtail";
+  char output[8];
+  s_test_buf_source source;
+  u8 c;
+  uw i;
+  for (capacity = end.size; capacity <= sizeof(data); capacity++) {
+    for (chunk = 1; chunk <= end.size; chunk++) {
+      source = (s_test_buf_source) {input, sizeof(input) - 1, 0, chunk};
+      TEST_ASSERT(buf_init(&buf, false, capacity, data));
+      buf.refill = test_buf_refill;
+      buf.user_ptr = &source;
+      TEST_ASSERT(buf_init(&dest, false, sizeof(output), output));
+      TEST_EQ(buf_read_until_str_into_buf(&buf, &end, &dest), 8);
+      TEST_EQ(source.pos - (buf.wpos - buf.rpos), 8);
+      TEST_MEM_EQ(output, dest.wpos, "abax", 4);
+      for (i = 0; i < 4; i++) {
+        TEST_EQ(buf_read_u8(&buf, &c), 1);
+        TEST_EQ(c, (u8) input[8 + i]);
+      }
+      buf_clean(&dest);
+      buf_clean(&buf);
+    }
+  }
+  TEST_ASSERT(buf_init(&buf, false, sizeof(data), data));
+  buf.refill = test_buf_refill_error;
+  TEST_ASSERT(buf_init(&dest, false, sizeof(output), output));
+  TEST_EQ(buf_read_until_str_into_buf(&buf, &end, &dest), -9);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(dest.wpos, 0);
+  buf_clean(&dest);
+  buf_clean(&buf);
+}
+TEST_CASE_END(buf_read_until_buf_refill)
 
 TEST_CASE(buf_f)
 {

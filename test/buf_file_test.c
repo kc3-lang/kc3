@@ -17,8 +17,12 @@
 #include "../libkc3/str.h"
 #include <fcntl.h>
 #include <limits.h>
+#include <signal.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/resource.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include "test.h"
 
@@ -27,6 +31,8 @@ TEST_CASE_PROTOTYPE(buf_file_open_r_close);
 TEST_CASE_PROTOTYPE(buf_file_open_r_refill);
 TEST_CASE_PROTOTYPE(buf_file_open_w_close);
 TEST_CASE_PROTOTYPE(buf_file_open_w_flush);
+TEST_CASE_PROTOTYPE(buf_read_until_file);
+TEST_CASE_PROTOTYPE(buf_read_until_file_error);
 TEST_CASE_PROTOTYPE(file_rm_rf_symlink);
 
 void buf_file_test (void)
@@ -34,6 +40,8 @@ void buf_file_test (void)
   TEST_CASE_RUN(buf_file_open_r_close);
   TEST_CASE_RUN(buf_file_open_r_refill);
   TEST_CASE_RUN(buf_file_open_w_close);
+  TEST_CASE_RUN(buf_read_until_file);
+  TEST_CASE_RUN(buf_read_until_file_error);
   TEST_CASE_RUN(file_rm_rf_symlink);
 }
 
@@ -80,6 +88,88 @@ TEST_CASE(buf_file_open_w_close)
 {
 }
 TEST_CASE_END(buf_file_open_w_close)
+
+TEST_CASE(buf_read_until_file)
+{
+  s_buf buf;
+  char filename[] = "/tmp/kc3_buf_until.XXXXXXXXXX";
+  s32 fd;
+  const s_str end = STR("BOUNDARY");
+  uw i;
+  uw j;
+  s_str path;
+  s_str result;
+  struct stat st;
+  const uw sizes[] = {0, 1, BUF_SIZE, BUF_SIZE + 1, 2 * BUF_SIZE + 7};
+  TEST_ASSERT((fd = mkstemp(filename)) >= 0);
+  TEST_EQ(close(fd), 0);
+  TEST_ASSERT(str_init_1(&path, NULL, filename));
+  for (i = 0; i < sizeof(sizes) / sizeof(*sizes); i++) {
+    TEST_ASSERT(buf_init_alloc(&buf, sizes[i] + end.size + 4));
+    for (j = 0; j < sizes[i]; j++)
+      buf.ptr.p_pu8[j] = j % 251;
+    memcpy(buf.ptr.p_pchar + sizes[i], "BOUNDARYtail", 12);
+    buf.wpos = sizes[i] + end.size + 4;
+    TEST_EQ(buf_read_until_str_into_file(&buf, &end, &path),
+             sizes[i] + end.size);
+    TEST_EQ(stat(filename, &st), 0);
+    TEST_EQ(st.st_size, sizes[i]);
+    if (sizes[i]) {
+      TEST_ASSERT(file_read_all(&path, &result));
+      TEST_EQ(result.size, sizes[i]);
+      TEST_EQ(memcmp(result.ptr.p_pchar, buf.ptr.p_pchar, sizes[i]), 0);
+      str_clean(&result);
+    }
+    TEST_EQ(buf_read_1(&buf, "tail"), 4);
+    buf_clean(&buf);
+  }
+  TEST_EQ(unlink(filename), 0);
+}
+TEST_CASE_END(buf_read_until_file)
+
+TEST_CASE(buf_read_until_file_error)
+{
+  s_buf buf;
+  char filename[] = "/tmp/kc3_buf_until_error.XXXXXXXXXX";
+  s32 fd;
+  const s_str end = STR("END");
+  uw i;
+  struct rlimit limit = {0, 0};
+  s_str path;
+  pid_t pid;
+  sw r;
+  const uw sizes[] = {1, BUF_SIZE + 1};
+  int status;
+  TEST_ASSERT((fd = mkstemp(filename)) >= 0);
+  TEST_EQ(close(fd), 0);
+  TEST_ASSERT(str_init_1(&path, NULL, filename));
+  for (i = 0; i < sizeof(sizes) / sizeof(*sizes); i++) {
+    TEST_ASSERT(buf_init_alloc(&buf, sizes[i] + end.size));
+    memset(buf.ptr.p_pchar, 'x', sizes[i]);
+    memcpy(buf.ptr.p_pchar + sizes[i], "END", 3);
+    buf.wpos = sizes[i] + end.size;
+    TEST_ASSERT((pid = fork()) >= 0);
+    if (! pid) {
+      fd = open("/dev/null", O_WRONLY);
+      if (fd < 0 || dup2(fd, STDERR_FILENO) < 0)
+        _exit(2);
+      close(fd);
+      if (signal(SIGXFSZ, SIG_IGN) == SIG_ERR ||
+          setrlimit(RLIMIT_FSIZE, &limit))
+        _exit(2);
+      r = buf_read_until_str_into_file(&buf, &end, &path);
+      buf_clean(&buf);
+      _exit(r < 0 ? 0 : 1);
+    }
+    TEST_EQ(waitpid(pid, &status, 0), pid);
+    buf_clean(&buf);
+    TEST_EQ(unlink(filename), 0);
+    TEST_EQ(WIFSIGNALED(status) ? WTERMSIG(status) : 0, 0);
+    TEST_ASSERT(WIFEXITED(status));
+    TEST_EQ(WEXITSTATUS(status), 0);
+  }
+}
+TEST_CASE_END(buf_read_until_file_error)
 
 TEST_CASE(file_rm_rf_symlink)
 {
