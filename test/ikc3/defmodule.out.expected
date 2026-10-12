@@ -30,3 +30,8 @@ defmodule S32 do
   def cast = cfn S32 "s32_init_cast" (Result, Sym, Tag)
 end
 S32
+{2, 1}
+42
+{63, 42, 42}
+2
+{2, 1}

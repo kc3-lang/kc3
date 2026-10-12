@@ -27,6 +27,9 @@
 void env_test (void);
 TEST_CASE_PROTOTYPE(env_eval_call);
 TEST_CASE_PROTOTYPE(env_eval_equal_tag);
+TEST_CASE_PROTOTYPE(env_eval_ident_qualified);
+TEST_CASE_PROTOTYPE(env_eval_ident_callable);
+TEST_CASE_PROTOTYPE(env_eval_ident_is_bound);
 TEST_CASE_PROTOTYPE(env_eval_tag);
 TEST_CASE_PROTOTYPE(env_init_clean);
 TEST_CASE_PROTOTYPE(env_module_load);
@@ -39,6 +42,9 @@ void env_test (void)
   TEST_CASE_RUN(env_init_clean);
   TEST_CASE_RUN(env_eval_equal_tag);
   TEST_CASE_RUN(env_eval_call);
+  TEST_CASE_RUN(env_eval_ident_qualified);
+  TEST_CASE_RUN(env_eval_ident_callable);
+  TEST_CASE_RUN(env_eval_ident_is_bound);
   TEST_CASE_RUN(env_eval_tag);
   TEST_CASE_RUN(env_module_load);
   TEST_CASE_RUN(env_pointer_id);
@@ -194,6 +200,153 @@ TEST_CASE(env_eval_equal_tag)
   test_context(NULL);
 }
 TEST_CASE_END(env_eval_equal_tag)
+
+TEST_CASE(env_eval_ident_qualified)
+{
+  uw copy;
+  uw scope;
+  bool copy_saved;
+  s_env env;
+  s_frame outer;
+  s_frame inner;
+  s_frame *frames[3];
+  s_ident qualified = {0};
+  s_ident unqualified = {0};
+  s_tag value = {0};
+  s_tag shadow = {0};
+  s_tag result = {0};
+  qualified.module = sym_1("EnvIdentTest");
+  qualified.sym = sym_1("qualified_value_test");
+  unqualified.sym = qualified.sym;
+  for (copy = 0; copy < 2; copy++) {
+    TEST_ASSERT(env_init(&env, 0, NULL));
+    copy_saved = env.pass_by_copy;
+    env.pass_by_copy = copy;
+    TEST_ASSERT(tag_init_u8(&value, 1));
+    TEST_ASSERT(env_def(&env, &qualified, &value));
+    TEST_ASSERT(frame_init(&outer, env.frame));
+    TEST_ASSERT(frame_init(&inner, &outer));
+    env.frame = &inner;
+    frames[0] = env.global_frame;
+    frames[1] = &outer;
+    frames[2] = &inner;
+    for (scope = 0; scope < 3; scope++) {
+      TEST_ASSERT(tag_init_u8(&shadow, scope + 2));
+      TEST_ASSERT(frame_binding_new(frames[scope], qualified.sym,
+                                     &shadow));
+      TEST_ASSERT(env_eval_ident(&env, &qualified, &result));
+      TEST_EQ(compare_tag(&result, &value), 0);
+      tag_clean(&result);
+      TEST_ASSERT(env_eval_ident(&env, &unqualified, &result));
+      TEST_EQ(compare_tag(&result, &shadow), 0);
+      tag_clean(&result);
+      TEST_ASSERT(env_eval_ident_is_bound(&env, &qualified));
+      TEST_ASSERT(env_eval_ident_is_bound(&env, &unqualified));
+      tag_clean(&shadow);
+    }
+    env.frame = frame_clean(&inner);
+    env.frame = frame_clean(&outer);
+    TEST_ASSERT(frame_binding_delete(env.global_frame, qualified.sym));
+    env.current_defmodule = qualified.module;
+    TEST_ASSERT(env_eval_ident(&env, &unqualified, &result));
+    TEST_EQ(compare_tag(&result, &value), 0);
+    TEST_ASSERT(env_eval_ident_is_bound(&env, &unqualified));
+    tag_clean(&result);
+    tag_clean(&value);
+    env.pass_by_copy = copy_saved;
+    env_clean(&env);
+  }
+}
+TEST_CASE_END(env_eval_ident_qualified)
+
+TEST_CASE(env_eval_ident_callable)
+{
+  uw scope;
+  s_env env;
+  s_ident ident = {0};
+  s_tag value = {0};
+  s_tag shadow = {0};
+  s_tag expr = {0};
+  s_tag function = {0};
+  s_tag result = {0};
+  s_call call = {0};
+  for (scope = 0; scope < 2; scope++) {
+    TEST_ASSERT(env_init(&env, 0, NULL));
+    TEST_ASSERT(tag_init_1(&expr, "EnvIdentTest.qualified_fn_test"));
+    TEST_EQ(expr.type, TAG_IDENT);
+    ident = expr.data.td_ident;
+    TEST_ASSERT(tag_init_1(&value, "fn () { 42 }"));
+    TEST_ASSERT(env_def(&env, &ident, &value));
+    TEST_ASSERT(tag_init_1(&shadow, "fn () { 99 }"));
+    TEST_ASSERT(frame_binding_new(scope ? env.frame : env.global_frame,
+                                   ident.sym, &shadow));
+    TEST_ASSERT(env_eval_tag(&env, &expr, &function));
+    TEST_EQ(function.type, TAG_PCALLABLE);
+    TEST_ASSERT(env_eval_call_callable_args
+                (&env, function.data.td_pcallable, NULL, &result));
+    TEST_EQ(result.type, TAG_U8);
+    TEST_EQ(result.data.td_u8, 42);
+    tag_clean(&result);
+    tag_clean(&function);
+    TEST_ASSERT(call_init(&call));
+    call.ident = ident;
+    TEST_ASSERT(env_eval_call(&env, &call, &result));
+    TEST_EQ(result.type, TAG_U8);
+    TEST_EQ(result.data.td_u8, 42);
+    tag_clean(&result);
+    call_clean(&call);
+    ident.module = NULL;
+    TEST_ASSERT(env_eval_ident(&env, &ident, &function));
+    TEST_EQ(function.type, TAG_PCALLABLE);
+    TEST_ASSERT(env_eval_call_callable_args
+                (&env, function.data.td_pcallable, NULL, &result));
+    TEST_EQ(result.type, TAG_U8);
+    TEST_EQ(result.data.td_u8, 99);
+    tag_clean(&result);
+    tag_clean(&function);
+    tag_clean(&expr);
+    tag_clean(&shadow);
+    tag_clean(&value);
+    env_clean(&env);
+  }
+}
+TEST_CASE_END(env_eval_ident_callable)
+
+TEST_CASE(env_eval_ident_is_bound)
+{
+  uw scope;
+  s_env env;
+  s_ident ident = {0};
+  s_tag value = {0};
+  s_tag result = {0};
+  for (scope = 0; scope < 2; scope++) {
+    TEST_ASSERT(env_init(&env, 0, NULL));
+    ident.module = NULL;
+    ident.sym = sym_1("qualified_missing_test");
+    TEST_ASSERT(tag_init_u8(&value, 2));
+    TEST_ASSERT(frame_binding_new(scope ? env.frame : env.global_frame,
+                                   ident.sym, &value));
+    TEST_ASSERT(env_eval_ident_is_bound(&env, &ident));
+    ident.module = &g_sym_KC3;
+    TEST_ASSERT(! env_eval_ident_is_bound(&env, &ident));
+    TEST_ASSERT(tag_init_u8(&result, 123));
+    TEST_ASSERT(! env_eval_ident(&env, &ident, &result));
+    TEST_EQ(result.type, TAG_U8);
+    TEST_EQ(result.data.td_u8, 123);
+    ident.module = sym_1("EnvIdentMissingModule");
+    TEST_ASSERT(! env_eval_ident_is_bound(&env, &ident));
+    TEST_ASSERT(! env_eval_ident(&env, &ident, &result));
+    TEST_EQ(result.type, TAG_U8);
+    TEST_EQ(result.data.td_u8, 123);
+    ident.module = NULL;
+    ident.sym = sym_1("qualified_absent_test");
+    TEST_ASSERT(! env_eval_ident_is_bound(&env, &ident));
+    tag_clean(&result);
+    tag_clean(&value);
+    env_clean(&env);
+  }
+}
+TEST_CASE_END(env_eval_ident_is_bound)
 
 TEST_CASE(env_eval_tag)
 {

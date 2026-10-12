@@ -926,7 +926,8 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
              " securelevel > 2");
     abort();
   }
-  if ((tag = env_frames_get(env, ident->sym))) {
+  if (ident->module == NULL &&
+      (tag = env_frames_get(env, ident->sym))) {
     tag_init_copy(dest, tag);
     return true;
   }
@@ -962,7 +963,7 @@ bool env_eval_ident_is_bound (s_env *env, const s_ident *ident)
              " securelevel > 2");
     abort();
   }
-  if (env_frames_get(env, ident->sym))
+  if (ident->module == NULL && env_frames_get(env, ident->sym))
     return true;
   if (env_ident_resolve_module(env, ident, &tmp_ident) &&
       env_ident_get(env, &tmp_ident, &tmp)) {
