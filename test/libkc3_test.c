@@ -45,6 +45,7 @@ void marshall_read_test (void);
 void ops_test (void);
 void pcall_test (void);
 void ratio_test (void);
+void rwlock_test (void);
 void set__fact_test (void);
 void set__tag_test (void);
 void skiplist__fact_test (void);
@@ -64,6 +65,7 @@ int main (int argc, char **argv)
     return 1;
   test_init(env_global()->argv[0], &argc, &argv);
   TEST_TARGET(types);
+  TEST_TARGET(rwlock);
   TEST_TARGET(ops);
   TEST_TARGET(bool);
   TEST_TARGET(character);

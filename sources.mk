@@ -641,6 +641,8 @@ KC3_C_SOURCES = \
 	"libkc3/daemon.h" \
 	"libkc3/data.c" \
 	"libkc3/data.h" \
+	"libkc3/dns.c" \
+	"libkc3/dns.h" \
 	"libkc3/do_block.c" \
 	"libkc3/do_block.h" \
 	"libkc3/endian.h" \
@@ -1191,6 +1193,7 @@ KC3_C_SOURCES = \
 	"test/ops_test.c" \
 	"test/pcall_test.c" \
 	"test/ratio_test.c" \
+	"test/rwlock_test.c" \
 	"test/set__fact_test.c" \
 	"test/set__tag_test.c" \
 	"test/skiplist__fact_test.c" \
@@ -1645,6 +1648,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/cow.kc3" \
 	"lib/kc3/0.1/crypt.kc3" \
 	"lib/kc3/0.1/daemon.kc3" \
+	"lib/kc3/0.1/dns.kc3" \
 	"lib/kc3/0.1/ekc3.kc3" \
 	"lib/kc3/0.1/env.kc3" \
 	"lib/kc3/0.1/err.kc3" \
@@ -2095,6 +2099,9 @@ KC3_TEST_CRYPTO_SOURCES = \
 	"test/crypto/02_hmac_verify.kc3" \
 	"test/crypto/02_hmac_verify.out.expected" \
 	"test/crypto/02_hmac_verify.ret.expected" \
+	"test/crypto/03_hmac_sha512.kc3" \
+	"test/crypto/03_hmac_sha512.out.expected" \
+	"test/crypto/03_hmac_sha512.ret.expected" \
 	"test/crypto_test" \
 
 KC3_TEST_EKC3_SOURCES = \
@@ -2180,6 +2187,12 @@ KC3_TEST_HTTP_SOURCES = \
 	"test/http/15_range_large_response.kc3" \
 	"test/http/15_range_large_response.out.expected" \
 	"test/http/15_range_large_response.ret.expected" \
+	"test/http/16_content_length.kc3" \
+	"test/http/16_content_length.out.expected" \
+	"test/http/16_content_length.ret.expected" \
+	"test/http/17_response_chunked.kc3" \
+	"test/http/17_response_chunked.out.expected" \
+	"test/http/17_response_chunked.ret.expected" \
 	"test/http/mime.types" \
 	"test/http_test" \
 
@@ -2404,12 +2417,24 @@ KC3_TEST_JSON_SOURCES = \
 	"test/json/basics.kc3" \
 	"test/json/basics.out.expected" \
 	"test/json/basics.ret.expected" \
+	"test/json/framing.kc3" \
+	"test/json/framing.out.expected" \
+	"test/json/framing.ret.expected" \
+	"test/json/framing_invalid.kc3" \
+	"test/json/framing_invalid.out.expected" \
+	"test/json/framing_invalid.ret.expected" \
 	"test/json/inspect.kc3" \
 	"test/json/inspect.out.expected" \
 	"test/json/inspect.ret.expected" \
 	"test/json/recursive.kc3" \
 	"test/json/recursive.out.expected" \
 	"test/json/recursive.ret.expected" \
+	"test/json/strings.kc3" \
+	"test/json/strings.out.expected" \
+	"test/json/strings.ret.expected" \
+	"test/json/strings_invalid.kc3" \
+	"test/json/strings_invalid.out.expected" \
+	"test/json/strings_invalid.ret.expected" \
 	"test/json/to_str.kc3" \
 	"test/json/to_str.out.expected" \
 	"test/json/to_str.ret.expected" \
@@ -2492,6 +2517,7 @@ KC3_OTHER_SOURCES = \
 	"Makefile" \
 	"README.md" \
 	"TODO.md" \
+	"audit.md" \
 	"config.subr" \
 	"config_common" \
 	"configure" \

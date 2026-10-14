@@ -59,6 +59,7 @@ config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
 config_have_generic_sw_uw
 config_lib pthread -lpthread 2>/dev/null
+config_have_pthread
 config_lib m -lm 2>/dev/null
 case "$(uname -s)" in
     Darwin)

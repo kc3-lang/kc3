@@ -12,12 +12,42 @@
  */
 #include <errno.h>
 #include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "alloc.h"
 #include "assert.h"
 #include "io.h"
 #include "rwlock.h"
 
 #if HAVE_PTHREAD
+
+static pthread_mutex_t g_rwlock_owner_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static void rwlock_owner_lock (void)
+{
+  if (pthread_mutex_lock(&g_rwlock_owner_mutex)) {
+    fputs("rwlock_owner_lock: pthread_mutex_lock\n", stderr);
+    abort();
+  }
+}
+
+static void rwlock_owner_unlock (void)
+{
+  if (pthread_mutex_unlock(&g_rwlock_owner_mutex)) {
+    fputs("rwlock_owner_unlock: pthread_mutex_unlock\n", stderr);
+    abort();
+  }
+}
+
+static bool rwlock_owner_is_self (s_rwlock *rwlock)
+{
+  bool result;
+  rwlock_owner_lock();
+  result = rwlock->count > 0 &&
+    pthread_equal(rwlock->thread, pthread_self());
+  rwlock_owner_unlock();
+  return result;
+}
 
 void rwlock_clean (s_rwlock *rwlock)
 {
@@ -76,11 +106,9 @@ s_rwlock * rwlock_r (s_rwlock *rwlock)
 {
   sw e;
   uw i;
-  pthread_t thread;
   assert(rwlock);
   assert(rwlock->ready);
-  thread = pthread_self();
-  if (! pthread_equal(rwlock->thread, thread)) {
+  if (! rwlock_owner_is_self(rwlock)) {
     if (false) {
       i = (uw) rwlock;
       err_write_1("rwlock_r: ");
@@ -118,11 +146,9 @@ s_rwlock * rwlock_r (s_rwlock *rwlock)
 
 s_rwlock * rwlock_unlock_r (s_rwlock *rwlock)
 {
-  pthread_t thread;
   assert(rwlock);
   assert(rwlock->ready);
-  thread = pthread_self();
-  if (rwlock->thread != thread &&
+  if (! rwlock_owner_is_self(rwlock) &&
       pthread_rwlock_unlock(&rwlock->rwlock)) {
     err_puts("rwlock_unlock_r: pthread_rwlock_unlock");
     assert(! "rwlock_unlock_r: pthread_rwlock_unlock");
@@ -134,12 +160,21 @@ s_rwlock * rwlock_unlock_r (s_rwlock *rwlock)
 
 s_rwlock * rwlock_unlock_w (s_rwlock *rwlock)
 {
+  bool last;
   assert(rwlock);
   assert(rwlock->ready);
-  assert(rwlock->count);
+  rwlock_owner_lock();
+  if (rwlock->count <= 0 ||
+      ! pthread_equal(rwlock->thread, pthread_self())) {
+    rwlock_owner_unlock();
+    err_puts("rwlock_unlock_w: not the writer");
+    assert(! "rwlock_unlock_w: not the writer");
+    return NULL;
+  }
   rwlock->count--;
-  if (! rwlock->count) {
-    rwlock->thread = 0;
+  last = rwlock->count == 0;
+  rwlock_owner_unlock();
+  if (last) {
     if (rwlock != rwlock->self) {
       printf("rwlock_unlock_w: self check\n");
       assert(! "rwlock_w: self check\n");
@@ -162,20 +197,31 @@ s_rwlock * rwlock_w (s_rwlock *rwlock)
     assert(! "rwlock_w: not initialized\n");
   }
   thread = pthread_self();
-  if (! pthread_equal(rwlock->thread, thread)) {
-    if (rwlock != rwlock->self) {
-      printf("rwlock_w: self check\n");
-      assert(! "rwlock_w: self check\n");
-    }
-    if (pthread_rwlock_wrlock(&rwlock->rwlock)) {
-      printf("rwlock_w: pthread_rwlock_wrlock\n");
-      assert(! "rwlock_w: pthread_rwlock_wrlock");
+  rwlock_owner_lock();
+  if (rwlock->count > 0 && pthread_equal(rwlock->thread, thread)) {
+    if (rwlock->count == SW_MAX) {
+      rwlock_owner_unlock();
+      err_puts("rwlock_w: recursion count exhausted");
       return NULL;
     }
-    rwlock->thread = thread;
-    rwlock->count = 0;
+    rwlock->count++;
+    rwlock_owner_unlock();
+    return rwlock;
   }
-  rwlock->count++;
+  rwlock_owner_unlock();
+  if (rwlock != rwlock->self) {
+    printf("rwlock_w: self check\n");
+    assert(! "rwlock_w: self check\n");
+  }
+  if (pthread_rwlock_wrlock(&rwlock->rwlock)) {
+    printf("rwlock_w: pthread_rwlock_wrlock\n");
+    assert(! "rwlock_w: pthread_rwlock_wrlock");
+    return NULL;
+  }
+  rwlock_owner_lock();
+  rwlock->thread = thread;
+  rwlock->count = 1;
+  rwlock_owner_unlock();
   return rwlock;
 }
 
