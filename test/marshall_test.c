@@ -92,6 +92,7 @@ TEST_CASE_PROTOTYPE(marshall_s64);
 TEST_CASE_PROTOTYPE(marshall_sw);
 #endif
 TEST_CASE_PROTOTYPE(marshall_to_buf);
+TEST_CASE_PROTOTYPE(marshall_to_buf_flush_error);
 TEST_CASE_PROTOTYPE(marshall_to_file);
 TEST_CASE_PROTOTYPE(marshall_to_str);
 TEST_CASE_PROTOTYPE(marshall_u8);
@@ -121,6 +122,7 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_sw);
 #endif
   TEST_CASE_RUN(marshall_to_buf);
+  TEST_CASE_RUN(marshall_to_buf_flush_error);
   TEST_CASE_RUN(marshall_to_str);
   TEST_CASE_RUN(marshall_to_file);
   TEST_CASE_RUN(marshall_u8);
@@ -1312,6 +1314,42 @@ TEST_CASE(marshall_to_buf)
   buf_clean(&buf);
 }
 TEST_CASE_END(marshall_to_buf)
+
+static sw marshall_test_flush_error (s_buf *buf)
+{
+  uw *calls = buf->user_ptr;
+  (*calls)++;
+  return -1;
+}
+
+TEST_CASE(marshall_to_buf_flush_error)
+{
+  s_buf buf;
+  uw calls;
+  s_marshall m;
+  uw mode;
+  uw n;
+  sw size;
+  for (mode = 0; mode < 4; mode++) {
+    calls = 0;
+    TEST_ASSERT(buf_init_alloc(&buf, mode == 0 ? 512 :
+                                    mode == 1 ? 16 : 64));
+    buf.flush = marshall_test_flush_error;
+    buf.user_ptr = &calls;
+    TEST_ASSERT(marshall_init(&m, 512));
+    for (n = 0; n < 10; n++)
+      TEST_ASSERT(marshall_u8(&m, mode == 2, n));
+    size = mode == 2 ? m.heap_pos : m.buf_pos;
+    TEST_ASSERT(size > 64);
+    TEST_ASSERT(marshall_to_buf(&m, &buf) < 0);
+    TEST_EQ(calls, 1);
+    TEST_EQ(mode == 2 ? m.heap_pos : m.buf_pos, size);
+    TEST_EQ(m.heap_offset, 0);
+    marshall_clean(&m);
+    buf_clean(&buf);
+  }
+}
+TEST_CASE_END(marshall_to_buf_flush_error)
 
 TEST_CASE(marshall_to_file)
 {

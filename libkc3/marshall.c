@@ -2145,23 +2145,23 @@ sw marshall_to_buf (s_marshall *m, s_buf *out)
   mh.le_buf_size = htole64(m->buf_pos);
   if ((r = buf_write(out, &mh, sizeof(mh))) != sizeof(mh)) {
     err_puts("marshall_to_buf: buf_write marshall header");
-    assert(! "marshall_to_buf: buf_write marshall header");
     return -1;
   }
   result += r;
   if ((r = buf_xfer(out, &m->heap, m->heap_pos)) != m->heap_pos) {
     err_puts("marshall_to_buf: buf_xfer heap");
-    assert(! "marshall_to_buf: buf_xfer heap");
     return -1;
   }
   result += r;
   if ((r = buf_xfer(out, &m->buf, m->buf_pos)) != m->buf_pos) {
     err_puts("marshall_to_buf: buf_xfer buf");
-    assert(! "marshall_to_buf: buf_xfer buf");
     return -1;
   }
   result += r;
-  buf_flush(out);
+  if (buf_flush(out) < 0) {
+    err_puts("marshall_to_buf: buf_flush");
+    return -1;
+  }
   marshall_reset_chunk(m);
   return result;
 }

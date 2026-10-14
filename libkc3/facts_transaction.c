@@ -65,19 +65,23 @@ s_facts * facts_transaction_end (s_facts *facts,
     }
     transaction->log = ordered;
     facts->transaction = NULL;
-    for (log = ordered; log; log = log->next) {
+    for (log = ordered; ok && log; log = log->next) {
       switch (log->action) {
       case FACT_ACTION_ADD:
         if (facts->log &&
-            facts_log_add(facts->log, log->id, &log->fact) < 0)
+            facts_log_add(facts->log, log->id, &log->fact) < 0) {
           ok = false;
+          break;
+        }
         if (log->broadcast)
           facts_broadcast_add(facts, &log->fact);
         break;
       case FACT_ACTION_REMOVE:
         if (facts->log &&
-            facts_log_remove(facts->log, log->id, &log->fact) < 0)
+            facts_log_remove(facts->log, log->id, &log->fact) < 0) {
           ok = false;
+          break;
+        }
         if (log->broadcast)
           facts_broadcast_remove(facts, &log->fact);
         if (log->remove_log) {
@@ -176,6 +180,13 @@ s_facts * facts_transaction_start (s_facts *facts,
   if (! rwlock_w(&facts->rwlock))
     return NULL;
 #endif
+  if (facts->log && facts->log->failed) {
+    err_puts("facts_transaction_start: log failed");
+#if HAVE_PTHREAD
+    rwlock_unlock_w(&facts->rwlock);
+#endif
+    return NULL;
+  }
   if (facts_connection_get_master(facts)) {
     err_puts("facts_transaction_start: remote master is not supported");
 #if HAVE_PTHREAD

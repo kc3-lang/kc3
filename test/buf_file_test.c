@@ -31,6 +31,7 @@ TEST_CASE_PROTOTYPE(buf_file_open_r_close);
 TEST_CASE_PROTOTYPE(buf_file_open_r_refill);
 TEST_CASE_PROTOTYPE(buf_file_open_w_close);
 TEST_CASE_PROTOTYPE(buf_file_open_w_flush);
+TEST_CASE_PROTOTYPE(buf_file_flush_error);
 TEST_CASE_PROTOTYPE(buf_read_until_file);
 TEST_CASE_PROTOTYPE(buf_read_until_file_error);
 TEST_CASE_PROTOTYPE(file_rm_rf_symlink);
@@ -40,6 +41,7 @@ void buf_file_test (void)
   TEST_CASE_RUN(buf_file_open_r_close);
   TEST_CASE_RUN(buf_file_open_r_refill);
   TEST_CASE_RUN(buf_file_open_w_close);
+  TEST_CASE_RUN(buf_file_flush_error);
   TEST_CASE_RUN(buf_read_until_file);
   TEST_CASE_RUN(buf_read_until_file_error);
   TEST_CASE_RUN(file_rm_rf_symlink);
@@ -170,6 +172,47 @@ TEST_CASE(buf_read_until_file_error)
   }
 }
 TEST_CASE_END(buf_read_until_file_error)
+
+TEST_CASE(buf_file_flush_error)
+{
+  s_buf buf;
+  FILE *fp;
+  struct rlimit limit;
+  struct rlimit saved;
+  pid_t pid;
+  int status;
+  TEST_ASSERT((fp = tmpfile()));
+  TEST_ASSERT((pid = fork()) >= 0);
+  if (! pid) {
+    if (getrlimit(RLIMIT_FSIZE, &saved) ||
+        signal(SIGXFSZ, SIG_IGN) == SIG_ERR)
+      _exit(2);
+    limit = saved;
+    limit.rlim_cur = 0;
+    if (setrlimit(RLIMIT_FSIZE, &limit) ||
+        ! buf_init_alloc(&buf, 64) ||
+        ! buf_file_open_w(&buf, fp) ||
+        buf_write_1(&buf, "failed record") != 13)
+      _exit(2);
+    if (buf_flush(&buf) >= 0)
+      _exit(3);
+    if (setrlimit(RLIMIT_FSIZE, &saved))
+      _exit(2);
+    clearerr(fp);
+    if (buf_file_is_open(&buf))
+      _exit(5);
+    if (buf_flush(&buf) >= 0)
+      _exit(4);
+    buf_file_close(&buf);
+    buf_clean(&buf);
+    _exit(0);
+  }
+  TEST_EQ(waitpid(pid, &status, 0), pid);
+  fclose(fp);
+  TEST_ASSERT(WIFEXITED(status));
+  TEST_EQ(WEXITSTATUS(status), 0);
+}
+TEST_CASE_END(buf_file_flush_error)
 
 TEST_CASE(file_rm_rf_symlink)
 {

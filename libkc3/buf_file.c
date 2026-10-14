@@ -21,6 +21,7 @@
 
 typedef struct buf_file {
   FILE *fp;
+  bool failed;
 } s_buf_file;
 
 sw    buf_file_open_r_refill (s_buf *buf);
@@ -47,7 +48,8 @@ bool buf_file_is_open (const s_buf *buf)
   assert(buf);
   if (buf->user_ptr) {
     buf_file = (s_buf_file *) buf->user_ptr;
-    if (! ferror(buf_file->fp) && ! feof(buf_file->fp))
+    if (! buf_file->failed &&
+        ! ferror(buf_file->fp) && ! feof(buf_file->fp))
       return true;
   }
   return false;
@@ -173,6 +175,9 @@ sw buf_file_open_w_flush (s_buf *buf)
   sw size;
   assert(buf);
   assert(buf->user_ptr);
+  buf_file = buf->user_ptr;
+  if (buf_file->failed)
+    return -1;
   if (buf->rpos)
     return -1;
   if (buf->rpos > buf->wpos)
@@ -183,12 +188,13 @@ sw buf_file_open_w_flush (s_buf *buf)
   size = min_wpos;
   if (size == 0)
     return buf->size - buf->wpos;
-  buf_file = buf->user_ptr;
   if (fwrite(buf->ptr.p_pvoid, size, 1, buf_file->fp) != 1) {
+    buf_file->failed = true;
     err_puts("buf_file_open_w_flush: fwrite");
     return -1;
   }
   if (fflush(buf_file->fp) != 0) {
+    buf_file->failed = true;
     err_puts("buf_file_open_w_flush: fflush");
     return -1;
   }

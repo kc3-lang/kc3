@@ -44,6 +44,10 @@ void log_clean (s_log *log)
 
 void log_close (s_log *log)
 {
+  if (log->failed) {
+    log->buf.flush = NULL;
+    log->after_dump_buf.flush = NULL;
+  }
   buf_file_close(&log->buf);
   if (log->after_dump_marshall)
     buf_file_close(&log->after_dump_buf);
@@ -83,6 +87,8 @@ s_log * log_open (s_log *log, FILE *fp, const s_str *path)
   assert(log);
   assert(fp);
   assert(path);
+  if (log->failed)
+    return NULL;
   if (! buf_file_open_w(&log->buf, fp))
     return NULL;
   if (! str_init_copy(&log->path, path)) {
@@ -97,6 +103,8 @@ s_log * log_open_binary (s_log *log, FILE *fp, const s_str *path)
   assert(log);
   assert(fp);
   assert(path);
+  if (log->failed)
+    return NULL;
   if (! buf_file_open_w(&log->buf, fp))
     return NULL;
   if (! str_init_copy(&log->path, path)) {
@@ -116,6 +124,8 @@ s_log * log_open_after_dump (s_log *log, FILE *fp, const s_str *path)
   assert(log);
   assert(fp);
   assert(path);
+  if (log->failed)
+    return NULL;
   if (! buf_init_alloc(&log->after_dump_buf, BUF_SIZE))
     return NULL;
   if (! buf_file_open_w(&log->after_dump_buf, fp)) {

@@ -312,6 +312,13 @@ s_fact * facts_add_fact_id (s_facts *facts, s_fact *fact)
   if (! rwlock_w(&facts->rwlock))
     return NULL;
 #endif
+  if (facts->log && facts->log->failed &&
+      (! facts->transaction || ! facts->transaction->rolling_back)) {
+#if HAVE_PTHREAD
+    rwlock_unlock_w(&facts->rwlock);
+#endif
+    return NULL;
+  }
   tmp.subject = facts_ref_tag(facts, fact->subject);
   if (! tmp.subject) {
     err_puts("facts_add_fact_id: facts_ref_tag subject");
@@ -397,9 +404,8 @@ s_fact * facts_add_fact_id (s_facts *facts, s_fact *fact)
     goto ko;
   }
   if (! facts->transaction && facts->log &&
-      ! facts_log_add(facts->log, tmp.id, &tmp)) {
+      facts_log_add(facts->log, tmp.id, &tmp) < 0) {
     err_puts("facts_add_fact_id: facts_log_add");
-    assert(! "facts_add_fact_id: facts_log_add");
     skiplist_remove__fact(facts->index, f);
     skiplist_remove__fact(facts->index_spo, f);
     skiplist_remove__fact(facts->index_pos, f);
@@ -438,6 +444,13 @@ s_fact * facts_add_fact_local (s_facts *facts, s_fact *fact)
   if (! rwlock_w(&facts->rwlock))
     return NULL;
 #endif
+  if (facts->log && facts->log->failed &&
+      (! facts->transaction || ! facts->transaction->rolling_back)) {
+#if HAVE_PTHREAD
+    rwlock_unlock_w(&facts->rwlock);
+#endif
+    return NULL;
+  }
   tmp.subject = facts_ref_tag(facts, fact->subject);
   if (! tmp.subject) {
     err_puts("facts_add_fact_local: facts_ref_tag subject");
@@ -522,9 +535,8 @@ s_fact * facts_add_fact_local (s_facts *facts, s_fact *fact)
     goto ko;
   }
   if (! facts->transaction && facts->log &&
-      ! facts_log_add(facts->log, tmp.id, &tmp)) {
+      facts_log_add(facts->log, tmp.id, &tmp) < 0) {
     err_puts("facts_add_fact_local: facts_log_add");
-    assert(! "facts_add_fact_local: facts_log_add");
     skiplist_remove__fact(facts->index, f);
     skiplist_remove__fact(facts->index_spo, f);
     skiplist_remove__fact(facts->index_pos, f);
@@ -1341,21 +1353,26 @@ sw facts_load_file (s_facts *facts, const s_str *path)
 sw facts_log_add (s_log *log, uw id, const s_fact *fact)
 {
   s_log_hook *hook;
-  sw r;
+  sw r = -1;
   sw result = 0;
   assert(log);
   assert(log->marshall);
   assert(fact);
+  if (log->failed)
+    return -1;
   if (log->after_dump_marshall) {
-    marshall_uw(log->after_dump_marshall, false, id);
-    marshall_u8(log->after_dump_marshall, false, FACT_ACTION_ADD);
-    marshall_fact(log->after_dump_marshall, false, fact);
+    if (! marshall_uw(log->after_dump_marshall, false, id) ||
+        ! marshall_u8(log->after_dump_marshall, false, FACT_ACTION_ADD) ||
+        ! marshall_fact(log->after_dump_marshall, false, fact))
+      goto ko;
     if ((r = marshall_to_buf(log->after_dump_marshall, &log->after_dump_buf)) < 0)
       goto ko;
   }
-  marshall_uw(log->marshall, false, id);
-  marshall_u8(log->marshall, false, FACT_ACTION_ADD);
-  marshall_fact(log->marshall, false, fact);
+  r = -1;
+  if (! marshall_uw(log->marshall, false, id) ||
+      ! marshall_u8(log->marshall, false, FACT_ACTION_ADD) ||
+      ! marshall_fact(log->marshall, false, fact))
+    goto ko;
   if ((r = marshall_to_buf(log->marshall, &log->buf)) < 0)
     goto ko;
   result += r;
@@ -1375,29 +1392,34 @@ sw facts_log_add (s_log *log, uw id, const s_fact *fact)
   }
   return result;
  ko:
+  log->failed = true;
   err_puts("facts_log_add: error");
-  assert(! "facts_log_add: error");
   return r;
 }
 
 sw facts_log_remove (s_log *log, uw id, const s_fact *fact)
 {
   s_log_hook *hook;
-  sw r;
+  sw r = -1;
   sw result = 0;
   assert(log);
   assert(fact);
   assert(log->marshall);
+  if (log->failed)
+    return -1;
   if (log->after_dump_marshall) {
-    marshall_uw(log->after_dump_marshall, false, id);
-    marshall_u8(log->after_dump_marshall, false, FACT_ACTION_REMOVE);
-    marshall_fact(log->after_dump_marshall, false, fact);
+    if (! marshall_uw(log->after_dump_marshall, false, id) ||
+        ! marshall_u8(log->after_dump_marshall, false, FACT_ACTION_REMOVE) ||
+        ! marshall_fact(log->after_dump_marshall, false, fact))
+      goto ko;
     if ((r = marshall_to_buf(log->after_dump_marshall, &log->after_dump_buf)) < 0)
       goto ko;
   }
-  marshall_uw(log->marshall, false, id);
-  marshall_u8(log->marshall, false, FACT_ACTION_REMOVE);
-  marshall_fact(log->marshall, false, fact);
+  r = -1;
+  if (! marshall_uw(log->marshall, false, id) ||
+      ! marshall_u8(log->marshall, false, FACT_ACTION_REMOVE) ||
+      ! marshall_fact(log->marshall, false, fact))
+    goto ko;
   if ((r = marshall_to_buf(log->marshall, &log->buf)) < 0)
     goto ko;
   result += r;
@@ -1417,8 +1439,8 @@ sw facts_log_remove (s_log *log, uw id, const s_fact *fact)
   }
   return result;
  ko:
+  log->failed = true;
   err_puts("facts_log_remove: error");
-  assert(! "facts_log_remove: error");
   return r;
 }
 
@@ -2163,6 +2185,9 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
 #if HAVE_PTHREAD
   rwlock_w(&facts->rwlock);
 #endif
+  if (facts->log && facts->log->failed &&
+      (! facts->transaction || ! facts->transaction->rolling_back))
+    goto ko;
   if (! facts_find_fact(facts, fact, &found)) {
     err_puts("facts_remove_fact_local: facts_find_fact");
     assert(! "facts_remove_fact_local: facts_find_fact");
@@ -2189,7 +2214,8 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
 #endif
         return NULL;
       }
-      facts_log_remove(facts->log, id, found);
+      if (facts_log_remove(facts->log, id, found) < 0)
+        goto ko;
     }
     if (! facts->transaction && facts->server_count) {
       facts_broadcast_remove(facts, found);

@@ -767,6 +767,7 @@ struct log {
   s_log_hook *hooks;
   s_marshall *marshall;
   s_str       path;
+  bool        failed;
 };
 
 struct ratio {

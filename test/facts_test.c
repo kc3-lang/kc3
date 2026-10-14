@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "../libkc3/buf.h"
+#include "../libkc3/buf_file.h"
 #include "../libkc3/compare.h"
 #include "../libkc3/facts.h"
 #include "../libkc3/facts_transaction.h"
@@ -34,6 +35,11 @@ TEST_CASE_PROTOTYPE(facts_init_clean);
 TEST_CASE_PROTOTYPE(facts_load);
 TEST_CASE_PROTOTYPE(facts_log_add);
 TEST_CASE_PROTOTYPE(facts_log_remove);
+TEST_CASE_PROTOTYPE(facts_log_write_error);
+TEST_CASE_PROTOTYPE(facts_log_partial_write);
+TEST_CASE_PROTOTYPE(facts_log_after_dump_error);
+TEST_CASE_PROTOTYPE(facts_transaction_log_error);
+TEST_CASE_PROTOTYPE(facts_log_reopen_error);
 TEST_CASE_PROTOTYPE(facts_new_delete);
 TEST_CASE_PROTOTYPE(facts_open_file);
 TEST_CASE_PROTOTYPE(facts_open_file_binary_round_trip);
@@ -75,6 +81,42 @@ void facts_test (void)
   TEST_CASE_RUN(facts_transaction_remote);
   TEST_CASE_RUN(facts_transaction_reopen);
   TEST_CASE_RUN(facts_transaction_remove_wildcard);
+  TEST_CASE_RUN(facts_log_write_error);
+  TEST_CASE_RUN(facts_log_partial_write);
+  TEST_CASE_RUN(facts_log_after_dump_error);
+  TEST_CASE_RUN(facts_transaction_log_error);
+  TEST_CASE_RUN(facts_log_reopen_error);
+}
+
+static uw g_facts_test_flush_calls;
+static uw g_facts_test_flush_fail;
+static uw g_facts_test_flush_prefix;
+static sw (*g_facts_test_flush_original) (s_buf *buf);
+
+static sw facts_test_flush_error (s_buf *buf)
+{
+  FILE *fp;
+  uw size;
+  if (++g_facts_test_flush_calls != g_facts_test_flush_fail)
+    return g_facts_test_flush_original(buf);
+  size = g_facts_test_flush_prefix;
+  if (size > buf->wpos)
+    size = buf->wpos;
+  if (size) {
+    fp = buf_file_fp(buf);
+    if (fwrite(buf->ptr.p_pvoid, 1, size, fp) != size || fflush(fp))
+      return -1;
+  }
+  return -1;
+}
+
+static void facts_test_fail_flush (s_buf *buf, uw call, uw prefix)
+{
+  g_facts_test_flush_calls = 0;
+  g_facts_test_flush_fail = call;
+  g_facts_test_flush_prefix = prefix;
+  g_facts_test_flush_original = buf->flush;
+  buf->flush = facts_test_flush_error;
 }
 
 TEST_CASE(facts_transaction_add)
@@ -438,6 +480,262 @@ TEST_CASE(facts_transaction_remove_wildcard)
   facts_clean(&facts);
 }
 TEST_CASE_END(facts_transaction_remove_wildcard)
+
+TEST_CASE(facts_log_write_error)
+{
+  s_fact old = {0};
+  s_fact added = {0};
+  uw events[5];
+  s_fact *found;
+  s_facts facts;
+  FILE *fp;
+  uw mode;
+  const s_str path = STR("facts_log_write_error");
+  bool removed;
+  s_facts_transaction transaction;
+  for (mode = 0; mode < 3; mode++) {
+    memset(events, 0, sizeof(events));
+    TEST_ASSERT(facts_init(&facts));
+    TEST_ASSERT(fact_test_init_1(&old, "\"kept\""));
+    TEST_ASSERT(fact_test_init_1(&added, "\"rejected\""));
+    TEST_ASSERT((fp = tmpfile()));
+    TEST_ASSERT((facts.log = log_new()));
+    TEST_ASSERT(log_open_binary(facts.log, fp, &path));
+    TEST_ASSERT(facts_add_fact(&facts, &old));
+    TEST_ASSERT(log_hook_add(facts.log, facts_test_transaction_hook,
+                             events));
+    facts_test_fail_flush(&facts.log->buf, 1, 0);
+    if (mode == 0)
+      TEST_EQ(facts_add_fact(&facts, &added), NULL);
+    else if (mode == 1) {
+      added.id = 123;
+      TEST_EQ(facts_add_fact_id(&facts, &added), NULL);
+    }
+    else {
+      removed = false;
+      TEST_EQ(facts_remove_fact(&facts, &old, &removed), NULL);
+      TEST_EQ(removed, false);
+    }
+    TEST_EQ(facts_count(&facts), 1);
+    TEST_EQ(facts.tags.count, 1);
+    TEST_EQ(events[0], 0);
+    TEST_EQ(facts_find_fact(&facts, &old, &found), &found);
+    TEST_ASSERT(found);
+    TEST_ASSERT(skiplist_find__fact(facts.index, found));
+    TEST_ASSERT(skiplist_find__fact(facts.index_spo, found));
+    TEST_ASSERT(skiplist_find__fact(facts.index_pos, found));
+    TEST_ASSERT(skiplist_find__fact(facts.index_osp, found));
+    TEST_EQ(facts_find_fact(&facts, &added, &found), &found);
+    TEST_EQ(found, NULL);
+    TEST_EQ(skiplist_find__fact(facts.index_spo, &added), NULL);
+    TEST_EQ(skiplist_find__fact(facts.index_pos, &added), NULL);
+    TEST_EQ(skiplist_find__fact(facts.index_osp, &added), NULL);
+    TEST_EQ(g_facts_test_flush_calls, 1);
+    g_facts_test_flush_fail = 0;
+    TEST_EQ(facts_add_fact(&facts, &added), NULL);
+    TEST_EQ(facts_add_fact_id(&facts, &added), NULL);
+    TEST_EQ(facts_remove_fact(&facts, &old, &removed), NULL);
+    TEST_EQ(facts_transaction_start(&facts, &transaction), NULL);
+    TEST_EQ(g_facts_test_flush_calls, 1);
+#if HAVE_PTHREAD
+    TEST_EQ(facts.rwlock.count, 0);
+#endif
+    facts_clean(&facts);
+    TEST_EQ(g_facts_test_flush_calls, 1);
+    fact_test_clean_1(&old);
+    fact_test_clean_1(&added);
+    fclose(fp);
+  }
+}
+TEST_CASE_END(facts_log_write_error)
+
+TEST_CASE(facts_log_partial_write)
+{
+  s_fact fact = {0};
+  s_facts facts;
+  FILE *fp;
+  uw mode;
+  const s_str path = STR("facts_log_partial_write");
+  for (mode = 0; mode < 2; mode++) {
+    TEST_ASSERT(facts_init(&facts));
+    TEST_ASSERT(fact_test_init_1(&fact, "\"partial\""));
+    TEST_ASSERT((fp = tmpfile()));
+    TEST_ASSERT((facts.log = log_new()));
+    TEST_ASSERT(log_open_binary(facts.log, fp, &path));
+    if (mode)
+      facts.log->buf.size = 64;
+    facts_test_fail_flush(&facts.log->buf, 1, 20);
+    TEST_EQ(facts_add_fact(&facts, &fact), NULL);
+    TEST_EQ(facts_count(&facts), 0);
+    TEST_EQ(facts.tags.count, 0);
+    TEST_EQ(ftell(fp), 20);
+    TEST_EQ(g_facts_test_flush_calls, 1);
+    g_facts_test_flush_fail = 0;
+    TEST_EQ(facts_add_fact(&facts, &fact), NULL);
+    TEST_EQ(g_facts_test_flush_calls, 1);
+    facts_clean(&facts);
+    TEST_EQ(g_facts_test_flush_calls, 1);
+    TEST_EQ(ftell(fp), 20);
+    fact_test_clean_1(&fact);
+    fclose(fp);
+  }
+}
+TEST_CASE_END(facts_log_partial_write)
+
+TEST_CASE(facts_log_after_dump_error)
+{
+  s_fact fact = {0};
+  uw events[5];
+  FILE *fp;
+  FILE *after;
+  s_log log;
+  uw mode;
+  uw operation;
+  const s_str path = STR("facts_log_after_dump_error");
+  long offset;
+  for (operation = 0; operation < 2; operation++) {
+    for (mode = 1; mode <= 2; mode++) {
+      memset(events, 0, sizeof(events));
+      TEST_ASSERT((fp = tmpfile()));
+      TEST_ASSERT((after = tmpfile()));
+      TEST_ASSERT(log_init(&log));
+      TEST_ASSERT(log_open_binary(&log, fp, &path));
+      TEST_ASSERT(log_open_after_dump(&log, after, &path));
+      TEST_ASSERT(fact_test_init_1(&fact, "\"secondary\""));
+      TEST_ASSERT(log_hook_add(&log, facts_test_transaction_hook, events));
+      facts_test_fail_flush(&log.buf, mode, 0);
+      log.after_dump_buf.flush = facts_test_flush_error;
+      if (operation)
+        TEST_ASSERT(facts_log_remove(&log, 1, &fact) < 0);
+      else
+        TEST_ASSERT(facts_log_add(&log, 1, &fact) < 0);
+      TEST_EQ(events[0], 0);
+      TEST_EQ(g_facts_test_flush_calls, mode);
+      TEST_EQ(ftell(fp), 0);
+      offset = ftell(after);
+      TEST_EQ(offset > 0, mode == 2);
+      g_facts_test_flush_fail = 0;
+      TEST_ASSERT(facts_log_add(&log, 2, &fact) < 0);
+      TEST_ASSERT(facts_log_remove(&log, 2, &fact) < 0);
+      log_close(&log);
+      TEST_EQ(g_facts_test_flush_calls, mode);
+      TEST_EQ(ftell(fp), 0);
+      TEST_EQ(ftell(after), offset);
+      log_clean(&log);
+      fact_test_clean_1(&fact);
+      fclose(fp);
+      fclose(after);
+    }
+  }
+}
+TEST_CASE_END(facts_log_after_dump_error)
+
+TEST_CASE(facts_transaction_log_error)
+{
+  s_facts_connection connection = {0};
+  uw events[5];
+  s_fact fact[3] = {0};
+  s_facts facts;
+  FILE *fp;
+  uw mode;
+  uw n;
+  const s_str path = STR("facts_transaction_log_error");
+  bool removed;
+  s_facts_transaction transaction;
+  s_buf wire;
+  for (mode = 1; mode <= 2; mode++) {
+    memset(events, 0, sizeof(events));
+    TEST_ASSERT(facts_init(&facts));
+    TEST_ASSERT(fact_test_init_1(fact, "\"old\""));
+    TEST_ASSERT(fact_test_init_1(fact + 1, "\"first\""));
+    TEST_ASSERT(fact_test_init_1(fact + 2, "\"last\""));
+    TEST_ASSERT((fp = tmpfile()));
+    TEST_ASSERT((facts.log = log_new()));
+    TEST_ASSERT(log_open_binary(facts.log, fp, &path));
+    TEST_ASSERT(facts_add_fact(&facts, fact));
+    TEST_ASSERT(log_hook_add(facts.log, facts_test_transaction_hook,
+                             events));
+    TEST_ASSERT(buf_init_alloc(&wire, 4096));
+    TEST_ASSERT(marshall_init(&connection.marshall, 4096));
+    connection.buf_rw.w = &wire;
+    connection.running = true;
+    connection.is_master = true;
+    facts.connections = &connection;
+    facts.server_count = 1;
+    facts_test_fail_flush(&facts.log->buf, mode, 0);
+    TEST_EQ(facts_transaction_start(&facts, &transaction), &facts);
+    TEST_ASSERT(facts_add_fact(&facts, fact + 1));
+    TEST_EQ(facts_remove_fact(&facts, fact, &removed), &removed);
+    TEST_ASSERT(facts_add_fact(&facts, fact + 2));
+    TEST_EQ(facts_transaction_end(&facts, &transaction), NULL);
+    TEST_EQ(facts.transaction, NULL);
+    TEST_EQ(facts_count(&facts), 2);
+    TEST_EQ(events[0], mode - 1);
+    TEST_EQ(wire.wpos > 0, mode == 2);
+    TEST_EQ(facts.remove_log, NULL);
+    TEST_EQ(g_facts_test_flush_calls, mode);
+    g_facts_test_flush_fail = 0;
+    TEST_EQ(facts_transaction_start(&facts, &transaction), NULL);
+    facts.connections = NULL;
+    facts.server_count = 0;
+    facts_clean(&facts);
+    TEST_EQ(g_facts_test_flush_calls, mode);
+    marshall_clean(&connection.marshall);
+    buf_clean(&wire);
+    for (n = 0; n < 3; n++)
+      fact_test_clean_1(fact + n);
+    fclose(fp);
+  }
+}
+TEST_CASE_END(facts_transaction_log_error)
+
+TEST_CASE(facts_log_reopen_error)
+{
+  char directory[] = "/tmp/kc3-facts-log-error.XXXXXXXX";
+  s_fact old = {0};
+  s_fact added = {0};
+  s_fact *found;
+  s_facts facts;
+  FILE *fp;
+  s_str path = {0};
+  TEST_ASSERT(mkdtemp(directory));
+  TEST_ASSERT(str_init_f(&path, "%s/store.facts", directory));
+  TEST_ASSERT(fact_test_init_1(&old, "\"acknowledged\""));
+  TEST_ASSERT(fact_test_init_1(&added, "\"failed\""));
+  TEST_ASSERT(facts_init(&facts));
+  TEST_ASSERT(facts_open_file(&facts, &path) >= 0);
+  fp = buf_file_fp(&facts.log->buf);
+  TEST_ASSERT(facts_add_fact(&facts, &old));
+  facts_test_fail_flush(&facts.log->buf, 1, 0);
+  TEST_EQ(facts_add_fact(&facts, &added), NULL);
+  g_facts_test_flush_fail = 0;
+  facts_clean(&facts);
+  TEST_EQ(g_facts_test_flush_calls, 1);
+  fclose(fp);
+  TEST_ASSERT(facts_init(&facts));
+  TEST_ASSERT(facts_open_file(&facts, &path) >= 0);
+  fp = buf_file_fp(&facts.log->buf);
+  TEST_EQ(facts_count(&facts), 1);
+  TEST_EQ(facts_find_fact(&facts, &old, &found), &found);
+  TEST_ASSERT(found);
+  TEST_EQ(facts_find_fact(&facts, &added, &found), &found);
+  TEST_EQ(found, NULL);
+  TEST_ASSERT(facts_add_fact(&facts, &added));
+  facts_clean(&facts);
+  fclose(fp);
+  TEST_ASSERT(facts_init(&facts));
+  TEST_ASSERT(facts_open_file(&facts, &path) >= 0);
+  fp = buf_file_fp(&facts.log->buf);
+  TEST_EQ(facts_count(&facts), 2);
+  facts_clean(&facts);
+  fclose(fp);
+  fact_test_clean_1(&old);
+  fact_test_clean_1(&added);
+  TEST_EQ(unlink(path.ptr.p_pchar), 0);
+  str_clean(&path);
+  TEST_EQ(rmdir(directory), 0);
+}
+TEST_CASE_END(facts_log_reopen_error)
 
 TEST_CASE(facts_add)
 {
