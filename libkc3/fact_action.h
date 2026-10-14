@@ -16,5 +16,8 @@
 #include "types.h"
 
 void fact_action_delete_all (s_fact_action *action);
+s_fact_action * fact_action_new (s_facts *facts, e_fact_action action,
+                                 const s_fact *fact, uw id,
+                                 bool broadcast);
 
 #endif /* LIBKC3_FACT_ACTION_H */

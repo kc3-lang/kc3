@@ -399,6 +399,7 @@ struct facts_transaction {
   uw id;
   s_fact_action *log;
   s_facts_transaction *next;
+  bool rolling_back;
 };
 
 struct fn_clause {
@@ -937,7 +938,10 @@ struct error_handler
 struct fact_action {
   e_fact_action action;
   s_fact fact;
-  s_tag object;
+  s_facts *facts;
+  uw id;
+  bool broadcast;
+  s_facts_remove_log *remove_log;
   s_fact_action *next;
 };
 

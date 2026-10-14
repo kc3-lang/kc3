@@ -15,6 +15,7 @@
 #include "../libkc3/env.h"
 #include "../libkc3/env_eval.h"
 #include "../libkc3/env_eval_equal.h"
+#include "../libkc3/facts.h"
 #include "../libkc3/file.h"
 #include "../libkc3/frame.h"
 #include "../libkc3/list.h"
@@ -33,6 +34,9 @@ TEST_CASE_PROTOTYPE(env_eval_ident_is_bound);
 TEST_CASE_PROTOTYPE(env_eval_tag);
 TEST_CASE_PROTOTYPE(env_init_clean);
 TEST_CASE_PROTOTYPE(env_module_load);
+TEST_CASE_PROTOTYPE(env_facts_transaction_error);
+TEST_CASE_PROTOTYPE(env_facts_transaction_unwind);
+TEST_CASE_PROTOTYPE(env_module_load_rollback);
 TEST_CASE_PROTOTYPE(env_pointer_id);
 TEST_CASE_PROTOTYPE(env_dump);
 TEST_CASE_PROTOTYPE(env_dump_restore);
@@ -47,6 +51,9 @@ void env_test (void)
   TEST_CASE_RUN(env_eval_ident_is_bound);
   TEST_CASE_RUN(env_eval_tag);
   TEST_CASE_RUN(env_module_load);
+  TEST_CASE_RUN(env_facts_transaction_error);
+  TEST_CASE_RUN(env_facts_transaction_unwind);
+  TEST_CASE_RUN(env_module_load_rollback);
   TEST_CASE_RUN(env_pointer_id);
   TEST_CASE_RUN(env_dump);
   TEST_CASE_RUN(env_dump_restore);
@@ -384,3 +391,136 @@ TEST_CASE(env_module_load)
   env_clean(&env);
 }
 TEST_CASE_END(env_module_load)
+
+TEST_CASE(env_facts_transaction_error)
+{
+  s_tag body = {0};
+  s_env env;
+  s_tag facts_arg = {0};
+  s_fact *found;
+  s_tag object = {0};
+  s_tag predicate = {0};
+  s_tag result = {0};
+  s_tag subject = {0};
+  TEST_ASSERT(env_init(&env, 0, NULL));
+  TEST_ASSERT(env_module_load(&env, sym_1("Facts")));
+  TEST_ASSERT(tag_init_1(&facts_arg, "Facts.env_db()"));
+  TEST_ASSERT(tag_init_1(&subject, ":f12_transaction"));
+  TEST_ASSERT(tag_init_1(&predicate, ":value"));
+  TEST_ASSERT(tag_init_1(&object, "1"));
+  TEST_ASSERT(tag_init_1(&body,
+    "do Facts.with_transaction(Facts.env_db(), do "
+    "Facts.add_tags(Facts.env_db(), :f12_transaction, :value, 1) "
+    "end); KC3.f12_unbound_transaction_test end"));
+  TEST_ASSERT(tag_init_u8(&result, 123));
+  TEST_EQ(env_facts_with_transaction(&env, &facts_arg, &body, &result),
+          NULL);
+  TEST_EQ(result.type, TAG_U8);
+  TEST_EQ(result.data.td_u8, 123);
+  TEST_EQ(env.facts->transaction, NULL);
+  TEST_ASSERT(facts_find_fact_by_tags(env.facts, &subject, &predicate,
+                                     &object, &found));
+  TEST_EQ(found, NULL);
+  tag_clean(&body);
+  TEST_ASSERT(tag_init_1(&body,
+    "do Facts.add_tags(Facts.env_db(), :f12_transaction, :value, 1); "
+    "false end"));
+  TEST_EQ(env_facts_with_transaction(&env, &facts_arg, &body, &result),
+          &result);
+  TEST_EQ(result.type, TAG_BOOL);
+  TEST_EQ(result.data.td_bool_, false);
+  TEST_ASSERT(facts_find_fact_by_tags(env.facts, &subject, &predicate,
+                                     &object, &found));
+  TEST_ASSERT(found);
+  tag_clean(&body);
+  tag_clean(&facts_arg);
+  tag_clean(&subject);
+  tag_clean(&predicate);
+  tag_clean(&object);
+  tag_clean(&result);
+  env_clean(&env);
+}
+TEST_CASE_END(env_facts_transaction_error)
+
+TEST_CASE(env_facts_transaction_unwind)
+{
+  s_tag body = {0};
+  s_env env;
+  s_fact *found;
+  s_tag object = {0};
+  s_tag predicate = {0};
+  s_tag result = {0};
+  s_tag subject = {0};
+  TEST_ASSERT(env_init(&env, 0, NULL));
+  TEST_ASSERT(env_module_load(&env, sym_1("Facts")));
+  TEST_ASSERT(tag_init_1(&subject, ":f12_unwind"));
+  TEST_ASSERT(tag_init_1(&predicate, ":value"));
+  TEST_ASSERT(tag_init_1(&object, "1"));
+  TEST_ASSERT(tag_init_1(&body,
+    "block :f12_exit do "
+    "Facts.with_transaction(Facts.env_db(), do "
+    "Facts.add_tags(Facts.env_db(), :f12_unwind, :value, 1); "
+    "return_from :f12_exit 42 end) end"));
+  TEST_ASSERT(env_eval_tag(&env, &body, &result));
+  TEST_EQ(result.type, TAG_U8);
+  TEST_EQ(result.data.td_u8, 42);
+  TEST_EQ(env.facts->transaction, NULL);
+  TEST_EQ(env.unwind_protect, NULL);
+  TEST_ASSERT(facts_find_fact_by_tags(env.facts, &subject, &predicate,
+                                     &object, &found));
+  TEST_EQ(found, NULL);
+  tag_clean(&body);
+  tag_clean(&subject);
+  tag_clean(&predicate);
+  tag_clean(&object);
+  tag_clean(&result);
+  env_clean(&env);
+}
+TEST_CASE_END(env_facts_transaction_unwind)
+
+TEST_CASE(env_module_load_rollback)
+{
+  s_str failed = STR("facts_transaction/fail/");
+  s_str success = STR("facts_transaction/success/");
+  const s_str cache =
+    STR("facts_transaction/success/f12rollback.kc3c");
+  s_env env;
+  s_fact *found;
+  bool loading;
+  uw n;
+  s_tag object = {0};
+  s_tag predicate = {0};
+  s_tag subject = {0};
+  TEST_ASSERT(env_init(&env, 0, NULL));
+  TEST_ASSERT(env_module_load(&env, sym_1("Facts")));
+  TEST_ASSERT(tag_init_1(&subject, ":f12_module"));
+  TEST_ASSERT(tag_init_1(&predicate, ":partial"));
+  TEST_ASSERT(tag_init_1(&object, "1"));
+  str_clean(env.module_path);
+  TEST_ASSERT(str_init_copy(env.module_path, &failed));
+  for (n = 0; n < 2; n++) {
+    TEST_EQ(env_module_load(&env, sym_1("F12Rollback")), false);
+    TEST_EQ(env.facts->transaction, NULL);
+    TEST_ASSERT(env_module_is_loading(&env, sym_1("F12Rollback"),
+                                      &loading));
+    TEST_EQ(loading, false);
+    TEST_ASSERT(facts_find_fact_by_tags(env.facts, &subject, &predicate,
+                                       &object, &found));
+    TEST_EQ(found, NULL);
+  }
+  str_clean(env.module_path);
+  TEST_ASSERT(str_init_copy(env.module_path, &success));
+  TEST_ASSERT(env_module_load(&env, sym_1("F12Rollback")));
+  TEST_ASSERT(env_module_is_loading(&env, sym_1("F12Rollback"),
+                                    &loading));
+  TEST_EQ(loading, false);
+  TEST_ASSERT(facts_find_fact_by_tags(env.facts, &subject, &predicate,
+                                     &object, &found));
+  TEST_ASSERT(found);
+  tag_clean(&subject);
+  tag_clean(&predicate);
+  tag_clean(&object);
+  env_clean(&env);
+  file_unlink(&cache);
+}
+TEST_CASE_END(env_module_load_rollback)

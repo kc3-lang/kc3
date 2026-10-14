@@ -31,6 +31,7 @@
 #include "env.h"
 #include "env_fork.h"
 #include "fact.h"
+#include "fact_action.h"
 #include "facts.h"
 #include "facts_connection.h"
 #include "facts_cursor.h"
@@ -301,6 +302,7 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
 
 s_fact * facts_add_fact_id (s_facts *facts, s_fact *fact)
 {
+  s_fact_action *action = NULL;
   s_fact tmp = {0};
   s_fact *f = NULL;
   s_set_item__fact *item;
@@ -351,6 +353,10 @@ s_fact * facts_add_fact_id (s_facts *facts, s_fact *fact)
     return &item->data;
   }
   tmp.id = fact->id;
+  if (facts->transaction && ! facts->transaction->rolling_back &&
+      ! (action = fact_action_new(facts, FACT_ACTION_ADD, &tmp,
+                                  tmp.id, false)))
+    goto ko;
   if (tmp.id >= facts->next_id)
     facts->next_id = tmp.id + 1;
   item = set_add__fact(&facts->facts, &tmp);
@@ -390,7 +396,7 @@ s_fact * facts_add_fact_id (s_facts *facts, s_fact *fact)
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
-  if (facts->log &&
+  if (! facts->transaction && facts->log &&
       ! facts_log_add(facts->log, tmp.id, &tmp)) {
     err_puts("facts_add_fact_id: facts_log_add");
     assert(! "facts_add_fact_id: facts_log_add");
@@ -401,11 +407,16 @@ s_fact * facts_add_fact_id (s_facts *facts, s_fact *fact)
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
+  if (action) {
+    action->next = facts->transaction->log;
+    facts->transaction->log = action;
+  }
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
 #endif
   return f;
  ko:
+  fact_action_delete_all(action);
   facts_unref_tag(facts, tmp.subject);
   facts_unref_tag(facts, tmp.predicate);
   facts_unref_tag(facts, tmp.object);
@@ -417,6 +428,7 @@ s_fact * facts_add_fact_id (s_facts *facts, s_fact *fact)
 
 s_fact * facts_add_fact_local (s_facts *facts, s_fact *fact)
 {
+  s_fact_action *action = NULL;
   s_fact tmp = {0};
   s_fact *f = NULL;
   s_set_item__fact *item;
@@ -468,6 +480,10 @@ s_fact * facts_add_fact_local (s_facts *facts, s_fact *fact)
   }
   if (! facts_next_id(facts, &tmp.id))
     goto ko;
+  if (facts->transaction && ! facts->transaction->rolling_back &&
+      ! (action = fact_action_new(facts, FACT_ACTION_ADD, &tmp,
+                                  tmp.id, true)))
+    goto ko;
   item = set_add__fact(&facts->facts, &tmp);
   if (! item) {
     err_puts("facts_add_fact_local: set_add__fact");
@@ -505,7 +521,7 @@ s_fact * facts_add_fact_local (s_facts *facts, s_fact *fact)
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
-  if (facts->log &&
+  if (! facts->transaction && facts->log &&
       ! facts_log_add(facts->log, tmp.id, &tmp)) {
     err_puts("facts_add_fact_local: facts_log_add");
     assert(! "facts_add_fact_local: facts_log_add");
@@ -516,13 +532,18 @@ s_fact * facts_add_fact_local (s_facts *facts, s_fact *fact)
     set_remove__fact(&facts->facts, f);
     goto ko;
   }
-  if (facts->connections)
+  if (action) {
+    action->next = facts->transaction->log;
+    facts->transaction->log = action;
+  }
+  if (! facts->transaction && facts->connections)
     facts_broadcast_add(facts, &tmp);
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
 #endif
   return f;
  ko:
+  fact_action_delete_all(action);
   facts_unref_tag(facts, tmp.subject);
   facts_unref_tag(facts, tmp.predicate);
   facts_unref_tag(facts, tmp.object);
@@ -2132,6 +2153,7 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
 bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
                                 bool *dest)
 {
+  s_fact_action *action = NULL;
   s_fact f;
   s_fact *found;
   uw id;
@@ -2155,7 +2177,12 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
       err_inspect_fact(found);
       err_write_1("\n");
     }
-    if (facts->log) {
+    if (facts->transaction && ! facts->transaction->rolling_back &&
+        ! (action = fact_action_new(facts, FACT_ACTION_REMOVE, found,
+                                    facts->transaction->id,
+                                    facts->server_count != 0)))
+      goto ko;
+    if (! facts->transaction && facts->log) {
       if (! facts_next_id(facts, &id)) {
 #if HAVE_PTHREAD
         rwlock_unlock_w(&facts->rwlock);
@@ -2164,7 +2191,7 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
       }
       facts_log_remove(facts->log, id, found);
     }
-    if (facts->server_count) {
+    if (! facts->transaction && facts->server_count) {
       facts_broadcast_remove(facts, found);
       log_entry = alloc(sizeof(s_facts_remove_log));
       if (! log_entry) {
@@ -2184,10 +2211,7 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
     if (! skiplist_remove__fact(facts->index, found)) {
       err_puts("facts_remove_fact_local: skiplist_remove index");
       assert(! "facts_remove_fact_local: skiplist_remove index");
-#if HAVE_PTHREAD
-      rwlock_unlock_w(&facts->rwlock);
-#endif
-      return NULL;
+      goto ko;
     }
     if (false) {
       if (found->object->type == TAG_PVAR) {
@@ -2199,10 +2223,7 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
     if (! skiplist_remove__fact(facts->index_spo, found)) {
       err_puts("facts_remove_fact_local: skiplist_remove index_spo");
       assert(! "facts_remove_fact_local: skiplist_remove index_spo");
-#if HAVE_PTHREAD
-      rwlock_unlock_w(&facts->rwlock);
-#endif
-      return NULL;
+      goto ko;
     }
     if (! skiplist_remove__fact(facts->index_pos, found)) {
       err_puts("facts_remove_fact_local: skiplist_remove index_pos");
@@ -2210,24 +2231,22 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
       err_inspect_fact(found);
       err_write_1("\n");
       assert(! "facts_remove_fact_local: skiplist_remove index_pos");
-#if HAVE_PTHREAD
-      rwlock_unlock_w(&facts->rwlock);
-#endif
-      return NULL;
+      goto ko;
     }
     if (! skiplist_remove__fact(facts->index_osp, found)) {
       err_puts("facts_remove_fact_local: skiplist_remove index_osp");
       assert(! "facts_remove_fact_local: skiplist_remove index_osp");
-#if HAVE_PTHREAD
-      rwlock_unlock_w(&facts->rwlock);
-#endif
-      return NULL;
+      goto ko;
     }
     f = *found;
     set_remove__fact(&facts->facts, found);
     facts_unref_tag(facts, f.subject);
     facts_unref_tag(facts, f.predicate);
     facts_unref_tag(facts, f.object);
+    if (action) {
+      action->next = facts->transaction->log;
+      facts->transaction->log = action;
+    }
     *dest = true;
   }
   else
@@ -2236,6 +2255,12 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
   rwlock_unlock_w(&facts->rwlock);
 #endif
   return dest;
+ ko:
+  fact_action_delete_all(action);
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&facts->rwlock);
+#endif
+  return NULL;
 }
 
 bool * facts_remove_fact_tags (s_facts *facts, s_tag *subject,
@@ -2301,7 +2326,10 @@ bool * facts_remove_fact_tags (s_facts *facts, s_tag *subject,
     }
   }
   facts_cursor_clean(&cursor);
-  facts_transaction_start(facts, &transaction);
+  if (! facts_transaction_start(facts, &transaction)) {
+    list_delete_all(list);
+    goto error_unlock;
+  }
   while (list) {
     if (! facts_remove_fact(facts, &list->tag.data.td_fact, &b)) {
       list_delete_all(list);
@@ -2310,7 +2338,8 @@ bool * facts_remove_fact_tags (s_facts *facts, s_tag *subject,
     }
     list = list_delete(list);
   }
-  facts_transaction_end(facts, &transaction);
+  if (! facts_transaction_end(facts, &transaction))
+    goto error_unlock;
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
 #endif
@@ -2387,7 +2416,13 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
     }
   }
   facts_cursor_clean(&cursor);
-  facts_transaction_start(facts, &transaction);  
+  if (! facts_transaction_start(facts, &transaction)) {
+    list_delete_all(list);
+#if HAVE_PTHREAD
+    rwlock_unlock_w(&facts->rwlock);
+#endif
+    goto clean;
+  }
   while (list) {
     if (! facts_remove_fact(facts, &list->tag.data.td_fact, &b)) {
       err_puts("facts_replace_tags: facts_remove_fact");
@@ -2403,9 +2438,12 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
     }
     list = list_delete(list);
   }
-  tag_clean(&pvar);
   fact = facts_add_tags(facts, subject, predicate, object);
-  facts_transaction_end(facts, &transaction);
+  if (! fact)
+    goto rollback;
+  tag_clean(&pvar);
+  if (! facts_transaction_end(facts, &transaction))
+    fact = NULL;
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
 #endif

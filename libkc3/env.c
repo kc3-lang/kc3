@@ -1728,45 +1728,49 @@ s_tag * env_facts_with_transaction (s_env *env, s_tag *facts_arg,
   s_facts *facts;
   const s_sym *sym_Facts_star = &g_sym_Facts_star;
   s_tag tmp = {0};
-  s_facts_transaction transaction = {0};
+  s_facts_transaction *transaction;
   s_unwind_protect unwind_protect;
-  if (! facts_transaction_init(&transaction))
+  if (! env_eval_tag(env, facts_arg, &facts_tag))
     return NULL;
-  if (! env_eval_tag(env, facts_arg, &facts_tag)) {
-    facts_transaction_clean(&transaction);
-    return NULL;
-  }
   if (! pfacts_init_cast(&facts, &sym_Facts_star, &facts_tag)) {
     err_puts("env_facts_with_transaction: expected Facts*");
     assert(!("env_facts_with_transaction: expected Facts*"));
     tag_clean(&facts_tag);
-    facts_transaction_clean(&transaction);
     return NULL;
   }
   tag_clean(&facts_tag);
-  if (! facts_transaction_start(facts, &transaction)) {
-    facts_transaction_clean(&transaction);
+  if (! (transaction = alloc(sizeof(s_facts_transaction)))) {
+    pfacts_clean(&facts);
+    return NULL;
+  }
+  if (! facts_transaction_start(facts, transaction)) {
+    alloc_free(transaction);
     pfacts_clean(&facts);
     return NULL;
   }
   env_unwind_protect_push(env, &unwind_protect);
   if (setjmp(unwind_protect.buf)) {
     env_unwind_protect_pop(env, &unwind_protect);
-    facts_transaction_end(facts, &transaction);
-    facts_transaction_clean(&transaction);
+    facts_transaction_rollback(facts, transaction);
+    alloc_free(transaction);
     pfacts_clean(&facts);
     longjmp(*unwind_protect.jmp, 1);
   }
   if (! env_eval_tag(env, tag_arg, &tmp)) {
     env_unwind_protect_pop(env, &unwind_protect);
-    facts_transaction_end(facts, &transaction);
-    facts_transaction_clean(&transaction);
+    facts_transaction_rollback(facts, transaction);
+    alloc_free(transaction);
     pfacts_clean(&facts);
     return NULL;
   }
   env_unwind_protect_pop(env, &unwind_protect);
-  facts_transaction_end(facts, &transaction);
-  facts_transaction_clean(&transaction);
+  if (! facts_transaction_end(facts, transaction)) {
+    alloc_free(transaction);
+    pfacts_clean(&facts);
+    tag_clean(&tmp);
+    return NULL;
+  }
+  alloc_free(transaction);
   pfacts_clean(&facts);
   *dest_v = tmp;
   return dest_v;
@@ -2987,7 +2991,8 @@ bool env_module_load (s_env *env, const s_sym *module)
   }
   tag_clean(&tag_time);
   env_module_is_loading_set(env, module, false);
-  facts_transaction_end(env->facts, &transaction);
+  if (! facts_transaction_end(env->facts, &transaction))
+    return false;
   if (env->trace) {
     err_write_1("env_module_load: ");
     err_inspect_sym(module);

@@ -1,0 +1,1 @@
+Facts.add_tags(Facts.env_db(), :f12_module, :partial, 1)
