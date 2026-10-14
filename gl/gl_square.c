@@ -35,19 +35,29 @@ s_gl_square * gl_square_init (s_gl_square *square, u32 seg_u, u32 seg_v)
   u32 j;
   s_gl_square tmp = {0};
   s_gl_triangle *triangle;
+  u64 triangle_count;
   s_gl_vertex *vertex;
+  u64 vertex_count;
   f32 y;
   assert(square);
   if (seg_u < 2)
     seg_u = 2;
   if (seg_v < 2)
     seg_v = 2;
+  vertex_count = (u64) seg_u * seg_v;
+  if (vertex_count > U32_MAX)
+    return NULL;
+  triangle_count = 2 * (u64) (seg_u - 1) * (seg_v - 1);
+  if (! gl_object_size_valid(vertex_count, triangle_count))
+    return NULL;
   tmp.segments_u = seg_u;
   tmp.segments_v = seg_v;
-  if (! gl_object_init(&tmp.object) ||
-      ! gl_object_allocate(&tmp.object, seg_u * seg_v,
-                           2 * (seg_u - 1) * (seg_v - 1)))
+  if (! gl_object_init(&tmp.object))
     return NULL;
+  if (! gl_object_allocate(&tmp.object, vertex_count, triangle_count)) {
+    gl_object_clean(&tmp.object);
+    return NULL;
+  }
   vertex = tmp.object.vertex.data;
   i = 0;
   while (i < seg_v) {

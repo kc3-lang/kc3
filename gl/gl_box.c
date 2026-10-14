@@ -37,6 +37,11 @@ s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
   s_gl_vertex *vertex;
   s_gl_box tmp = {0};
   s_gl_triangle *triangle;
+  u64 triangle_count;
+  u64 uv;
+  u64 vertex_count;
+  u64 vw;
+  u64 wu;
   assert(box);
   if (seg_u < 1)
     seg_u = 1;
@@ -44,18 +49,27 @@ s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
     seg_v = 1;
   if (seg_w < 1)
     seg_w = 1;
+  if (seg_u == U32_MAX || seg_v == U32_MAX || seg_w == U32_MAX)
+    return NULL;
+  uv = ((u64) seg_u + 1) * (seg_v + 1);
+  vw = ((u64) seg_v + 1) * (seg_w + 1);
+  wu = ((u64) seg_w + 1) * (seg_u + 1);
+  if (uv > U32_MAX / 2 || vw > U32_MAX / 2 || wu > U32_MAX / 2)
+    return NULL;
+  vertex_count = 2 * (uv + vw + wu);
+  triangle_count = 4 * ((u64) seg_u * seg_v +
+                        (u64) seg_v * seg_w + (u64) seg_w * seg_u);
+  if (! gl_object_size_valid(vertex_count, triangle_count))
+    return NULL;
   tmp.segments_u = seg_u;
   tmp.segments_v = seg_v;
   tmp.segments_w = seg_w;
-  if (! gl_object_init(&tmp.object) ||
-      ! gl_object_allocate(&tmp.object,
-                           2 * (seg_u + 1) * (seg_v + 1) +
-                           2 * (seg_v + 1) * (seg_w + 1) +
-                           2 * (seg_w + 1) * (seg_u + 1),
-                           4 * seg_u * seg_v +
-                           4 * seg_v * seg_w +
-                           4 * seg_w * seg_u))
+  if (! gl_object_init(&tmp.object))
     return NULL;
+  if (! gl_object_allocate(&tmp.object, vertex_count, triangle_count)) {
+    gl_object_clean(&tmp.object);
+    return NULL;
+  }
   vertex = tmp.object.vertex.data;
   k = 0;
   while (k < 2) {
@@ -177,6 +191,7 @@ s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
         triangle->a = plane + (j + 1) * (seg_w + 1) + i + 1;
         triangle->b = plane + (j + 1) * (seg_w + 1) + i;
         triangle->c = plane +  j      * (seg_w + 1) + i + 1;
+        triangle++;
         i++;
       }
       j++;

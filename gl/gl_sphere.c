@@ -38,18 +38,30 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, u32 seg_u, u32 seg_v)
   f64 r;
   s_gl_sphere tmp = {0};
   s_gl_triangle *triangle;
+  u64 triangle_count;
+  u64 vertex_count;
   f64 z;
   assert(sphere);
   if (seg_u < 3)
     seg_u = 3;
   if (seg_v < 1)
     seg_v = 1;
+  if (seg_u == U32_MAX || seg_v > U32_MAX - 2)
+    return NULL;
+  vertex_count = ((u64) seg_u + 1) * ((u64) seg_v + 2);
+  if (vertex_count > U32_MAX)
+    return NULL;
+  triangle_count = 2 * (u64) seg_u * (seg_v + 1);
+  if (! gl_object_size_valid(vertex_count, triangle_count))
+    return NULL;
   tmp.segments_u = seg_u;
   tmp.segments_v = seg_v;
-  if (! gl_object_init(&tmp.object) ||
-      ! gl_object_allocate(&tmp.object, (seg_u + 1) * (seg_v + 2),
-                           2 * seg_u * (seg_v + 1)))
+  if (! gl_object_init(&tmp.object))
     return NULL;
+  if (! gl_object_allocate(&tmp.object, vertex_count, triangle_count)) {
+    gl_object_clean(&tmp.object);
+    return NULL;
+  }
   vertex = tmp.object.vertex.data;
   i = 0;
   while (i <= seg_v + 1) {

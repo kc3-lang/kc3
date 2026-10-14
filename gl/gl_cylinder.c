@@ -28,18 +28,29 @@ s_gl_cylinder * gl_cylinder_init (s_gl_cylinder *cylinder,
   u32 i;
   u32 j;
   s_vec3 *p;
+  s_gl_cylinder tmp = {0};
+  u64 triangle_count;
+  u64 vertex_count;
   f64 z;
   assert(cylinder);
-  assert(segments_u);
-  assert(segments_v);
-  cylinder->segments_u = segments_u;
-  cylinder->segments_v = segments_v;
-  if (! gl_object_init(&cylinder->object) ||
-      ! gl_object_allocate(&cylinder->object,
-                           segments_u * segments_v + 2,
-                           6 * (segments_u + 1) * (segments_v + 2)))
+  if (! segments_u || ! segments_v || segments_u == U32_MAX ||
+      segments_v > U32_MAX - 2)
     return NULL;
-  p = cylinder->object.vertex.data;
+  vertex_count = (u64) segments_u * segments_v + 2;
+  if (vertex_count > U32_MAX)
+    return NULL;
+  triangle_count = 6 * ((u64) segments_u + 1) * (segments_v + 2);
+  if (! gl_object_size_valid(vertex_count, triangle_count))
+    return NULL;
+  tmp.segments_u = segments_u;
+  tmp.segments_v = segments_v;
+  if (! gl_object_init(&tmp.object))
+    return NULL;
+  if (! gl_object_allocate(&tmp.object, vertex_count, triangle_count)) {
+    gl_object_clean(&tmp.object);
+    return NULL;
+  }
+  p = tmp.object.vertex.data;
   i = 0;
   while (i < segments_v) {
     z = (f64) i / segments_v;
@@ -54,6 +65,7 @@ s_gl_cylinder * gl_cylinder_init (s_gl_cylinder *cylinder,
     }
     i++;
   }
+  *cylinder = tmp;
   return cylinder;
 }
 

@@ -19,16 +19,29 @@
 s_gl_object * gl_object_allocate (s_gl_object *object, uw vertex_count,
                                   uw triangle_count)
 {
+  s_array triangle = {0};
+  s_array vertex = {0};
   assert(object);
-  assert(vertex_count);
-  if (! array_init(&object->vertex, sym_1("GL.Vertex[]"), 1,
-                   &vertex_count) ||
-      ! array_allocate(&object->vertex) ||
-      ! array_init(&object->triangle, sym_1("GL.Triangle[]"), 1,
-                   &triangle_count) ||
-      ! array_allocate(&object->triangle))
+  if (! gl_object_size_valid(vertex_count, triangle_count))
     return NULL;
+  if (! array_init(&vertex, sym_1("GL.Vertex[]"), 1,
+                   &vertex_count) ||
+      vertex.dimensions[0].item_size != sizeof(s_gl_vertex) ||
+      ! array_allocate(&vertex) ||
+      ! array_init(&triangle, sym_1("GL.Triangle[]"), 1,
+                   &triangle_count) ||
+      triangle.dimensions[0].item_size != sizeof(s_gl_triangle) ||
+      ! array_allocate(&triangle))
+    goto ko;
+  array_clean(&object->vertex);
+  array_clean(&object->triangle);
+  object->vertex = vertex;
+  object->triangle = triangle;
   return object;
+ ko:
+  array_clean(&triangle);
+  array_clean(&vertex);
+  return NULL;
 }
 
 void gl_object_clean (s_gl_object *object)
@@ -54,8 +67,10 @@ s_gl_object * gl_object_init (s_gl_object *object)
     return NULL;
   assert(glGetError() == GL_NO_ERROR);
   glGenBuffers(1, &tmp.gl_ebo);
-  if (! tmp.gl_ebo)
+  if (! tmp.gl_ebo) {
+    glDeleteBuffers(1, &tmp.gl_vbo);
     return NULL;
+  }
   assert(glGetError() == GL_NO_ERROR);
   *object = tmp;
   return object;
@@ -151,6 +166,14 @@ void gl_object_render_wireframe (const s_gl_object *object)
                  GL_UNSIGNED_INT,
                  NULL);
   assert(glGetError() == GL_NO_ERROR);
+}
+
+bool gl_object_size_valid (u64 vertex_count, u64 triangle_count)
+{
+  return vertex_count && triangle_count &&
+    vertex_count <= S32_MAX && triangle_count <= S32_MAX / 3 &&
+    vertex_count <= (u64) SW_MAX / sizeof(s_gl_vertex) &&
+    triangle_count <= (u64) SW_MAX / sizeof(s_gl_triangle);
 }
 
 void gl_object_transform (s_gl_object *object, const s_mat4 *matrix)
