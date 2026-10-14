@@ -57,7 +57,7 @@ s_fact_action * fact_action_new (s_facts *facts, e_fact_action action,
       alloc_free(tmp->remove_log);
       goto clean_object;
     }
-    tmp->remove_log->target_count = facts->server_count;
+    tmp->remove_log->id = id;
   }
   return tmp;
  clean_object:

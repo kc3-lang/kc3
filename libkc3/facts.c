@@ -61,6 +61,10 @@ static int    facts_compare_pfact_id_reverse (const void *a,
 static sw     facts_open_file_create (s_facts *facts,
                                       const s_str *path);
 static sw     facts_open_log (s_facts *facts, s_buf *buf);
+static bool * facts_remove_fact_internal (s_facts *facts,
+                                          const s_fact *fact,
+                                          const uw *event_id,
+                                          bool *dest);
 
 #define FACTS_OPEN_MEMOIZED_SIZE (1 << 20)
 #define FACTS_OPEN_MEMOIZED_MASK (FACTS_OPEN_MEMOIZED_SIZE - 1)
@@ -308,6 +312,8 @@ s_fact * facts_add_fact_id (s_facts *facts, s_fact *fact)
   s_set_item__fact *item;
   assert(facts);
   assert(fact);
+  if (fact->id == UW_MAX)
+    return NULL;
 #if HAVE_PTHREAD
   if (! rwlock_w(&facts->rwlock))
     return NULL;
@@ -586,12 +592,8 @@ s_facts * facts_broadcast_add (s_facts *facts, const s_fact *fact)
   assert(fact);
   conn = facts->connections;
   while (conn) {
-    if (conn->running && conn->is_master) {
-      marshall_u8(&conn->marshall, false, FACT_ACTION_ADD);
-      marshall_fact(&conn->marshall, false, fact);
-      marshall_to_buf(&conn->marshall, conn->buf_rw.w);
-      marshall_reset_ht(&conn->marshall);
-    }
+    if (conn->running && conn->is_master)
+      facts_connection_send(conn, FACT_ACTION_ADD, fact);
     conn = conn->next;
   }
   return facts;
@@ -604,12 +606,8 @@ s_facts * facts_broadcast_remove (s_facts *facts, const s_fact *fact)
   assert(fact);
   conn = facts->connections;
   while (conn) {
-    if (conn->running && conn->is_master) {
-      marshall_u8(&conn->marshall, false, FACT_ACTION_REMOVE);
-      marshall_fact(&conn->marshall, false, fact);
-      marshall_to_buf(&conn->marshall, conn->buf_rw.w);
-      marshall_reset_ht(&conn->marshall);
-    }
+    if (conn->running && conn->is_master)
+      facts_connection_send(conn, FACT_ACTION_REMOVE, fact);
     conn = conn->next;
   }
   return facts;
@@ -1488,10 +1486,6 @@ uw * facts_next_id (s_facts *facts, uw *dest)
 {
   assert(facts);
   assert(dest);
-  if (facts->transaction) {
-    *dest = facts->transaction->id;
-    return dest;
-  }
   if (facts->next_id == UW_MAX) {
     err_puts("facts_next_id: id exhausted");
     assert(! "facts_next_id: id exhausted");
@@ -1593,7 +1587,7 @@ sw facts_open_file (s_facts *facts, const s_str *path)
         }
         switch (action) {
         case FACT_ACTION_ADD:
-          if (! facts_add_fact(facts, &fact)) {
+          if (! facts_add_fact_id(facts, &fact)) {
             err_write_1("facts_open_file: facts_add_fact #");
             err_inspect_uw_decimal(i);
             err_write_1(": ");
@@ -1606,7 +1600,8 @@ sw facts_open_file (s_facts *facts, const s_str *path)
           fact_clean_all(&fact);
           break;
         case FACT_ACTION_REMOVE:
-          if (! facts_remove_fact(facts, &fact, &removed)) {
+          fact.id = id;
+          if (! facts_remove_fact_id(facts, &fact, &removed)) {
             err_write_1("facts_open_file: facts_remove_fact #");
             err_inspect_uw_decimal(i);
             err_write_1(": ");
@@ -1877,7 +1872,7 @@ sw facts_open_file_after_dump (s_facts *facts, const s_str *path)
         }
         switch (action) {
         case FACT_ACTION_ADD:
-          if (! facts_add_fact(facts, &fact)) {
+          if (! facts_add_fact_id(facts, &fact)) {
             err_write_1("facts_open_file_after_dump: facts_add_fact #");
             err_inspect_uw_decimal(i);
             err_write_1(": ");
@@ -1892,7 +1887,8 @@ sw facts_open_file_after_dump (s_facts *facts, const s_str *path)
           fact_clean_all(&fact);
           break;
         case FACT_ACTION_REMOVE:
-          if (! facts_remove_fact(facts, &fact, &removed) || ! removed) {
+          fact.id = id;
+          if (! facts_remove_fact_id(facts, &fact, &removed)) {
             err_write_1("facts_open_file_after_dump: facts_remove_fact #");
             err_inspect_uw_decimal(i);
             err_write_1(": ");
@@ -2172,19 +2168,36 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
   return facts_remove_fact_local(facts, fact, dest);
 }
 
+bool * facts_remove_fact_id (s_facts *facts, const s_fact *fact,
+                             bool *dest)
+{
+  return facts_remove_fact_internal(facts, fact, &fact->id, dest);
+}
+
 bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
                                 bool *dest)
+{
+  return facts_remove_fact_internal(facts, fact, NULL, dest);
+}
+
+static bool * facts_remove_fact_internal (s_facts *facts,
+                                         const s_fact *fact,
+                                         const uw *event_id,
+                                         bool *dest)
 {
   s_fact_action *action = NULL;
   s_fact f;
   s_fact *found;
-  uw id;
-  s_facts_remove_log *log_entry;
+  uw id = 0;
+  s_facts_remove_log *log_entry = NULL;
   assert(facts);
   assert(fact);
 #if HAVE_PTHREAD
-  rwlock_w(&facts->rwlock);
+  if (! rwlock_w(&facts->rwlock))
+    return NULL;
 #endif
+  if (event_id && (*event_id == UW_MAX || facts->transaction))
+    goto ko;
   if (facts->log && facts->log->failed &&
       (! facts->transaction || ! facts->transaction->rolling_back))
     goto ko;
@@ -2196,43 +2209,50 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
 #endif
     return NULL;
   }
+  if ((found || event_id) &&
+      (! facts->transaction || ! facts->transaction->rolling_back)) {
+    if (event_id)
+      id = *event_id;
+    else if ((facts->transaction || facts->log || facts->server_count) &&
+             ! facts_next_id(facts, &id))
+      goto ko;
+    if (facts->transaction) {
+      if (! (action = fact_action_new(facts, FACT_ACTION_REMOVE, found,
+                                      id, facts->server_count != 0)))
+        goto ko;
+    }
+    else {
+      if (facts->server_count) {
+        if (! (log_entry = alloc(sizeof(s_facts_remove_log))))
+          goto ko;
+        f = found ? *found : *fact;
+        if (! fact_w_init_fact(&log_entry->fact, &f)) {
+          alloc_free(log_entry);
+          log_entry = NULL;
+          goto ko;
+        }
+        log_entry->id = id;
+      }
+      if (facts->log &&
+          facts_log_remove(facts->log, id, found ? found : fact) < 0)
+        goto ko;
+      if (log_entry) {
+        log_entry->next = facts->remove_log;
+        facts->remove_log = log_entry;
+        log_entry = NULL;
+      }
+      if (facts->server_count) {
+        f = found ? *found : *fact;
+        f.id = id;
+        facts_broadcast_remove(facts, &f);
+      }
+    }
+  }
   if (found) {
     if (false) {
       err_write_1("facts_remove_fact_local: ");
       err_inspect_fact(found);
       err_write_1("\n");
-    }
-    if (facts->transaction && ! facts->transaction->rolling_back &&
-        ! (action = fact_action_new(facts, FACT_ACTION_REMOVE, found,
-                                    facts->transaction->id,
-                                    facts->server_count != 0)))
-      goto ko;
-    if (! facts->transaction && facts->log) {
-      if (! facts_next_id(facts, &id)) {
-#if HAVE_PTHREAD
-        rwlock_unlock_w(&facts->rwlock);
-#endif
-        return NULL;
-      }
-      if (facts_log_remove(facts->log, id, found) < 0)
-        goto ko;
-    }
-    if (! facts->transaction && facts->server_count) {
-      facts_broadcast_remove(facts, found);
-      log_entry = alloc(sizeof(s_facts_remove_log));
-      if (! log_entry) {
-        err_puts("facts_remove_fact_local: alloc log_entry");
-        assert(! "facts_remove_fact_local: alloc log_entry");
-#if HAVE_PTHREAD
-        rwlock_unlock_w(&facts->rwlock);
-#endif
-        return NULL;
-      }
-      fact_w_init_fact(&log_entry->fact, found);
-      log_entry->sync_count = 0;
-      log_entry->target_count = facts->server_count;
-      log_entry->next = facts->remove_log;
-      facts->remove_log = log_entry;
     }
     if (! skiplist_remove__fact(facts->index, found)) {
       err_puts("facts_remove_fact_local: skiplist_remove index");
@@ -2277,11 +2297,17 @@ bool * facts_remove_fact_local (s_facts *facts, const s_fact *fact,
   }
   else
     *dest = false;
+  if (event_id && id >= facts->next_id)
+    facts->next_id = id + 1;
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
 #endif
   return dest;
  ko:
+  if (log_entry) {
+    fact_w_clean(&log_entry->fact);
+    alloc_free(log_entry);
+  }
   fact_action_delete_all(action);
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);

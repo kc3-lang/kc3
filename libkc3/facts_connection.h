@@ -33,6 +33,13 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
                                             p_tls tls, bool is_server);
 bool                 facts_connection_remove (s_facts *facts,
                                               s_facts_connection *conn);
+bool                 facts_connection_apply (s_facts_connection *conn,
+                                             u8 action, s_fact *fact);
+bool                 facts_connection_send (s_facts_connection *conn,
+                                            u8 action,
+                                            const s_fact *fact);
+bool                 facts_connection_sync (s_facts_connection *conn,
+                                            uw remote_next_id);
 void                 facts_connections_close_all (s_facts *facts);
 
 /* Send to master. */

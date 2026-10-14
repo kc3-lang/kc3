@@ -75,6 +75,9 @@ s_tag *              facts_ref_tag (s_facts *facts, s_tag *tag);
 bool *               facts_remove_fact (s_facts *facts,
                                         const s_fact *fact,
                                         bool *dest);
+bool *               facts_remove_fact_id (s_facts *facts,
+                                           const s_fact *fact,
+                                           bool *dest);
 bool *               facts_remove_fact_local (s_facts *facts,
                                               const s_fact *fact,
                                               bool *dest);

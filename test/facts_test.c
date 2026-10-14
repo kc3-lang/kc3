@@ -16,10 +16,13 @@
 #include "../libkc3/buf_file.h"
 #include "../libkc3/compare.h"
 #include "../libkc3/facts.h"
+#include "../libkc3/facts_connection.h"
 #include "../libkc3/facts_transaction.h"
 #include "../libkc3/file.h"
+#include "../libkc3/ht.h"
 #include "../libkc3/log.h"
 #include "../libkc3/marshall.h"
+#include "../libkc3/marshall_read.h"
 #include "../libkc3/skiplist__fact.h"
 #include "fact_test.h"
 #include "test.h"
@@ -40,6 +43,14 @@ TEST_CASE_PROTOTYPE(facts_log_partial_write);
 TEST_CASE_PROTOTYPE(facts_log_after_dump_error);
 TEST_CASE_PROTOTYPE(facts_transaction_log_error);
 TEST_CASE_PROTOTYPE(facts_log_reopen_error);
+TEST_CASE_PROTOTYPE(facts_sync_remove);
+TEST_CASE_PROTOTYPE(facts_sync_order);
+TEST_CASE_PROTOTYPE(facts_sync_retention);
+TEST_CASE_PROTOTYPE(facts_sync_transaction);
+TEST_CASE_PROTOTYPE(facts_sync_write_error);
+TEST_CASE_PROTOTYPE(facts_sync_apply);
+TEST_CASE_PROTOTYPE(facts_sync_live);
+TEST_CASE_PROTOTYPE(facts_sync_apply_error);
 TEST_CASE_PROTOTYPE(facts_new_delete);
 TEST_CASE_PROTOTYPE(facts_open_file);
 TEST_CASE_PROTOTYPE(facts_open_file_binary_round_trip);
@@ -86,7 +97,386 @@ void facts_test (void)
   TEST_CASE_RUN(facts_log_after_dump_error);
   TEST_CASE_RUN(facts_transaction_log_error);
   TEST_CASE_RUN(facts_log_reopen_error);
+  TEST_CASE_RUN(facts_sync_remove);
+  TEST_CASE_RUN(facts_sync_order);
+  TEST_CASE_RUN(facts_sync_retention);
+  TEST_CASE_RUN(facts_sync_transaction);
+  TEST_CASE_RUN(facts_sync_write_error);
+  TEST_CASE_RUN(facts_sync_apply);
+  TEST_CASE_RUN(facts_sync_live);
+  TEST_CASE_RUN(facts_sync_apply_error);
 }
+
+static sw facts_test_receive (s_facts *replica, s_buf *wire, uw limit)
+{
+  u8 action;
+  sw count = 0;
+  s_fact fact = {0};
+  s_facts_connection receiver = {0};
+  receiver.facts = replica;
+  if (! marshall_read_init_buf(&receiver.marshall_read, wire))
+    return -1;
+  while (wire->rpos < wire->wpos && (uw) count < limit) {
+    if (! marshall_read_header(&receiver.marshall_read) ||
+        ! marshall_read_chunk(&receiver.marshall_read) ||
+        ! marshall_read_u8(&receiver.marshall_read, false, &action) ||
+        ! marshall_read_fact(&receiver.marshall_read, false, &fact)) {
+      count = -1;
+      goto clean;
+    }
+    if (! facts_connection_apply(&receiver, action, &fact)) {
+      fact_clean_all(&fact);
+      count = -1;
+      goto clean;
+    }
+    fact_clean_all(&fact);
+    marshall_read_chunk_reset(&receiver.marshall_read);
+    if (receiver.marshall_read.ht.items)
+      ht_empty(&receiver.marshall_read.ht);
+    count++;
+  }
+ clean:
+  marshall_read_clean(&receiver.marshall_read);
+  return count;
+}
+
+static sw facts_test_sync (s_facts *master, s_facts *replica,
+                           uw next_id, uw limit)
+{
+  sw count = -1;
+  s_facts_connection sender = {0};
+  s_buf wire;
+  sender.facts = master;
+  sender.sockfd = -1;
+  if (! buf_init_alloc(&wire, 65536))
+    return -1;
+  sender.buf_rw.w = &wire;
+  if (! marshall_init(&sender.marshall, 65536)) {
+    buf_clean(&wire);
+    return -1;
+  }
+  if (facts_connection_sync(&sender, next_id))
+    count = facts_test_receive(replica, &wire, limit);
+  marshall_clean(&sender.marshall);
+  buf_clean(&wire);
+  return count;
+}
+
+TEST_CASE(facts_sync_remove)
+{
+  s_fact fact = {0};
+  s_fact *found;
+  s_facts master;
+  s_facts replica;
+  FILE *fp;
+  uw logged;
+  uw next_id;
+  const s_str path = STR("facts_sync_remove");
+  bool removed;
+  TEST_ASSERT(fact_test_init_1(&fact, "\"old replicated fact\""));
+  for (logged = 0; logged < 2; logged++) {
+    fp = NULL;
+    TEST_ASSERT(facts_init(&master));
+    TEST_ASSERT(facts_init(&replica));
+    master.server_count = 1;
+    if (logged) {
+      TEST_ASSERT((fp = tmpfile()));
+      TEST_ASSERT((master.log = log_new()));
+      TEST_ASSERT(log_open_binary(master.log, fp, &path));
+    }
+    TEST_ASSERT((found = facts_add_fact(&master, &fact)));
+    TEST_ASSERT(facts_add_fact_id(&replica, found));
+    next_id = replica.next_id;
+    TEST_EQ(facts_remove_fact(&master, &fact, &removed), &removed);
+    TEST_ASSERT(removed);
+    TEST_EQ(facts_test_sync(&master, &replica, next_id, UW_MAX), 1);
+    TEST_EQ(facts_count(&replica), 0);
+    TEST_EQ(replica.next_id, master.next_id);
+    TEST_ASSERT(replica.next_id > next_id);
+    TEST_EQ(facts_test_sync(&master, &replica, replica.next_id,
+                           UW_MAX), 0);
+    TEST_EQ(facts_test_sync(&master, &replica, master.next_id + 1,
+                           UW_MAX), -1);
+    facts_clean(&replica);
+    facts_clean(&master);
+    if (fp)
+      fclose(fp);
+  }
+  fact_test_clean_1(&fact);
+}
+TEST_CASE_END(facts_sync_remove)
+
+TEST_CASE(facts_sync_order)
+{
+  s_fact old = {0};
+  s_fact later = {0};
+  s_fact *found;
+  s_facts master;
+  s_facts replica;
+  uw later_id;
+  bool removed;
+  TEST_ASSERT(facts_init(&master));
+  TEST_ASSERT(facts_init(&replica));
+  TEST_ASSERT(fact_test_init_1(&old, "\"removed then re-added\""));
+  TEST_ASSERT(fact_test_init_1(&later, "\"later addition\""));
+  master.server_count = 1;
+  TEST_ASSERT((found = facts_add_fact(&master, &old)));
+  TEST_ASSERT(facts_add_fact_id(&replica, found));
+  TEST_EQ(facts_remove_fact(&master, &old, &removed), &removed);
+  TEST_ASSERT(removed);
+  TEST_ASSERT((found = facts_add_fact(&master, &later)));
+  later_id = found->id;
+  TEST_ASSERT(facts_add_fact(&master, &old));
+  TEST_EQ(facts_test_sync(&master, &replica, replica.next_id, 1), 1);
+  TEST_EQ(facts_count(&replica), 0);
+  TEST_EQ(replica.next_id, later_id);
+  TEST_EQ(facts_test_sync(&master, &replica, replica.next_id,
+                         UW_MAX), 2);
+  TEST_EQ(facts_count(&replica), 2);
+  TEST_EQ(facts_find_fact(&replica, &old, &found), &found);
+  TEST_ASSERT(found);
+  TEST_EQ(found->id, master.next_id - 1);
+  TEST_EQ(replica.next_id, master.next_id);
+  facts_clean(&replica);
+  facts_clean(&master);
+  fact_test_clean_1(&old);
+  fact_test_clean_1(&later);
+}
+TEST_CASE_END(facts_sync_order)
+
+TEST_CASE(facts_sync_retention)
+{
+  s_fact fact = {0};
+  s_fact *found;
+  s_facts master;
+  s_facts first;
+  s_facts second;
+  uw next_id;
+  uw n;
+  bool removed;
+  TEST_ASSERT(facts_init(&master));
+  TEST_ASSERT(facts_init(&first));
+  TEST_ASSERT(facts_init(&second));
+  TEST_ASSERT(fact_test_init_1(&fact, "\"two disconnected peers\""));
+  master.server_count = 2;
+  TEST_ASSERT((found = facts_add_fact(&master, &fact)));
+  TEST_ASSERT(facts_add_fact_id(&first, found));
+  TEST_ASSERT(facts_add_fact_id(&second, found));
+  next_id = first.next_id;
+  TEST_EQ(facts_remove_fact(&master, &fact, &removed), &removed);
+  for (n = 0; n < 3; n++) {
+    TEST_EQ(facts_test_sync(&master, &first, next_id, 0), 0);
+    TEST_ASSERT(master.remove_log);
+  }
+  TEST_EQ(facts_test_sync(&master, &first, next_id, UW_MAX), 1);
+  TEST_ASSERT(master.remove_log);
+  TEST_EQ(facts_test_sync(&master, &second, next_id, UW_MAX), 1);
+  TEST_EQ(facts_count(&first), 0);
+  TEST_EQ(facts_count(&second), 0);
+  TEST_EQ(first.next_id, master.next_id);
+  TEST_EQ(second.next_id, master.next_id);
+  facts_clean(&first);
+  facts_clean(&second);
+  facts_clean(&master);
+  fact_test_clean_1(&fact);
+}
+TEST_CASE_END(facts_sync_retention)
+
+TEST_CASE(facts_sync_transaction)
+{
+  s_fact old = {0};
+  s_fact later = {0};
+  s_fact *found;
+  s_facts master;
+  s_facts replica;
+  s_facts_transaction outer;
+  s_facts_transaction inner;
+  uw first_id;
+  uw next_id;
+  bool removed;
+  TEST_ASSERT(facts_init(&master));
+  TEST_ASSERT(facts_init(&replica));
+  TEST_ASSERT(fact_test_init_1(&old, "\"nested reconnect\""));
+  TEST_ASSERT(fact_test_init_1(&later, "\"nested addition\""));
+  master.server_count = 1;
+  TEST_ASSERT((found = facts_add_fact(&master, &old)));
+  TEST_ASSERT(facts_add_fact_id(&replica, found));
+  next_id = replica.next_id;
+  TEST_ASSERT(facts_transaction_start(&master, &outer));
+  TEST_EQ(facts_remove_fact(&master, &old, &removed), &removed);
+  TEST_ASSERT(facts_transaction_start(&master, &inner));
+  TEST_ASSERT((found = facts_add_fact(&master, &later)));
+  first_id = found->id;
+  TEST_ASSERT(facts_transaction_end(&master, &inner));
+  TEST_ASSERT((found = facts_add_fact(&master, &old)));
+  TEST_ASSERT(found->id > first_id);
+  TEST_ASSERT(facts_transaction_end(&master, &outer));
+  TEST_EQ(facts_test_sync(&master, &replica, next_id, 2), 2);
+  TEST_EQ(replica.next_id, first_id + 1);
+  TEST_EQ(facts_count(&replica), 1);
+  TEST_EQ(facts_test_sync(&master, &replica, replica.next_id,
+                         UW_MAX), 1);
+  TEST_EQ(facts_count(&replica), 2);
+  TEST_EQ(replica.next_id, master.next_id);
+  TEST_ASSERT(facts_transaction_start(&master, &outer));
+  TEST_EQ(facts_remove_fact(&master, &later, &removed), &removed);
+  TEST_ASSERT(facts_transaction_rollback(&master, &outer));
+  TEST_EQ(facts_test_sync(&master, &replica, replica.next_id,
+                         UW_MAX), 0);
+  facts_clean(&replica);
+  facts_clean(&master);
+  fact_test_clean_1(&old);
+  fact_test_clean_1(&later);
+}
+TEST_CASE_END(facts_sync_transaction)
+
+static sw facts_test_sync_flush_error (s_buf *buf)
+{
+  (void) buf;
+  return -1;
+}
+
+TEST_CASE(facts_sync_write_error)
+{
+  s_fact fact = {0};
+  s_facts master;
+  s_facts replica;
+  s_facts_connection sender = {0};
+  s_buf wire;
+  bool removed;
+  TEST_ASSERT(facts_init(&master));
+  TEST_ASSERT(facts_init(&replica));
+  TEST_ASSERT(fact_test_init_1(&fact, "\"failed synchronization\""));
+  master.server_count = 1;
+  TEST_ASSERT(facts_add_fact(&master, &fact));
+  TEST_EQ(facts_remove_fact(&master, &fact, &removed), &removed);
+  TEST_ASSERT(buf_init_alloc(&wire, 4096));
+  wire.flush = facts_test_sync_flush_error;
+  sender.facts = &master;
+  sender.sockfd = -1;
+  sender.buf_rw.w = &wire;
+  TEST_ASSERT(marshall_init(&sender.marshall, 4096));
+  TEST_EQ(facts_connection_sync(&sender, 1), false);
+  TEST_ASSERT(master.remove_log);
+  marshall_clean(&sender.marshall);
+  wire.flush = NULL;
+  buf_clean(&wire);
+  TEST_EQ(facts_test_sync(&master, &replica, 1, UW_MAX), 1);
+  TEST_EQ(facts_count(&replica), 0);
+  TEST_EQ(replica.next_id, master.next_id);
+  facts_clean(&replica);
+  facts_clean(&master);
+  fact_test_clean_1(&fact);
+}
+TEST_CASE_END(facts_sync_write_error)
+
+TEST_CASE(facts_sync_apply)
+{
+  s_fact fact = {0};
+  s_fact *found;
+  s_facts replica;
+  s_facts_connection receiver = {0};
+  uw next_id;
+  TEST_ASSERT(facts_init(&replica));
+  TEST_ASSERT(fact_test_init_1(&fact, "\"received removal\""));
+  receiver.facts = &replica;
+  fact.id = 7;
+  TEST_ASSERT(facts_connection_apply(&receiver, FACT_ACTION_ADD, &fact));
+  TEST_EQ(replica.next_id, 8);
+  fact.id = 20;
+  TEST_ASSERT(facts_connection_apply(&receiver, FACT_ACTION_REMOVE,
+                                     &fact));
+  TEST_EQ(facts_count(&replica), 0);
+  TEST_EQ(replica.next_id, 21);
+  fact.id = 30;
+  TEST_ASSERT(facts_connection_apply(&receiver, FACT_ACTION_REMOVE,
+                                     &fact));
+  TEST_EQ(replica.next_id, 31);
+  fact.id = 40;
+  TEST_ASSERT(facts_connection_apply(&receiver, FACT_ACTION_ADD, &fact));
+  next_id = replica.next_id;
+  fact.id = 20;
+  TEST_ASSERT(facts_connection_apply(&receiver, FACT_ACTION_REMOVE,
+                                     &fact));
+  TEST_EQ(facts_count(&replica), 1);
+  TEST_EQ(replica.next_id, next_id);
+  fact.id = UW_MAX;
+  TEST_EQ(facts_connection_apply(&receiver, FACT_ACTION_REMOVE, &fact),
+          false);
+  TEST_EQ(facts_connection_apply(&receiver, FACT_ACTION_ADD, &fact),
+          false);
+  TEST_EQ(replica.next_id, next_id);
+  TEST_EQ(facts_find_fact(&replica, &fact, &found), &found);
+  TEST_ASSERT(found);
+  TEST_EQ(found->id, 40);
+  facts_clean(&replica);
+  fact_test_clean_1(&fact);
+}
+TEST_CASE_END(facts_sync_apply)
+
+TEST_CASE(facts_sync_live)
+{
+  s_fact old = {0};
+  s_fact later = {0};
+  s_fact *found;
+  s_facts master;
+  s_facts replica;
+  s_facts_connection sender = {0};
+  s_facts_transaction transaction;
+  s_buf wire;
+  uw bytes;
+  bool removed;
+  TEST_ASSERT(facts_init(&master));
+  TEST_ASSERT(facts_init(&replica));
+  TEST_ASSERT(fact_test_init_1(&old, "\"live deletion\""));
+  TEST_ASSERT(fact_test_init_1(&later, "\"live transaction\""));
+  TEST_ASSERT(buf_init_alloc(&wire, 65536));
+  TEST_ASSERT(marshall_init(&sender.marshall, 65536));
+  sender.facts = &master;
+  sender.sockfd = -1;
+  sender.running = true;
+  sender.is_master = true;
+  sender.buf_rw.w = &wire;
+  master.connections = &sender;
+  master.server_count = 1;
+  TEST_ASSERT(facts_add_fact(&master, &old));
+  TEST_EQ(facts_remove_fact(&master, &old, &removed), &removed);
+  TEST_ASSERT(facts_add_fact(&master, &old));
+  TEST_ASSERT(facts_transaction_start(&master, &transaction));
+  TEST_EQ(facts_remove_fact(&master, &old, &removed), &removed);
+  TEST_ASSERT(facts_add_fact(&master, &later));
+  TEST_ASSERT(facts_transaction_end(&master, &transaction));
+  TEST_EQ(facts_test_receive(&replica, &wire, UW_MAX), 5);
+  TEST_EQ(facts_count(&replica), 1);
+  TEST_EQ(facts_find_fact(&replica, &old, &found), &found);
+  TEST_EQ(found, NULL);
+  TEST_EQ(facts_find_fact(&replica, &later, &found), &found);
+  TEST_ASSERT(found);
+  TEST_EQ(replica.next_id, master.next_id);
+  buf_empty(&wire);
+  wire.flush = facts_test_sync_flush_error;
+  TEST_EQ(facts_remove_fact(&master, &later, &removed), &removed);
+  TEST_ASSERT(removed);
+  TEST_EQ(sender.running, false);
+  bytes = wire.wpos;
+  TEST_ASSERT(facts_add_fact(&master, &old));
+  TEST_EQ(wire.wpos, bytes);
+  master.connections = NULL;
+  marshall_clean(&sender.marshall);
+  wire.flush = NULL;
+  buf_clean(&wire);
+  TEST_EQ(facts_test_sync(&master, &replica, replica.next_id,
+                         UW_MAX), 2);
+  TEST_EQ(facts_count(&replica), 1);
+  TEST_EQ(facts_find_fact(&replica, &old, &found), &found);
+  TEST_ASSERT(found);
+  TEST_EQ(replica.next_id, master.next_id);
+  facts_clean(&replica);
+  facts_clean(&master);
+  fact_test_clean_1(&old);
+  fact_test_clean_1(&later);
+}
+TEST_CASE_END(facts_sync_live)
 
 static uw g_facts_test_flush_calls;
 static uw g_facts_test_flush_fail;
@@ -118,6 +508,41 @@ static void facts_test_fail_flush (s_buf *buf, uw call, uw prefix)
   g_facts_test_flush_original = buf->flush;
   buf->flush = facts_test_flush_error;
 }
+
+TEST_CASE(facts_sync_apply_error)
+{
+  s_fact fact = {0};
+  s_facts replica;
+  s_facts_connection receiver = {0};
+  FILE *fp;
+  uw n;
+  uw next_id;
+  const s_str path = STR("facts_sync_apply_error");
+  TEST_ASSERT(fact_test_init_1(&fact, "\"replica persistence failure\""));
+  for (n = 0; n < 2; n++) {
+    TEST_ASSERT(facts_init(&replica));
+    TEST_ASSERT((fp = tmpfile()));
+    TEST_ASSERT((replica.log = log_new()));
+    TEST_ASSERT(log_open_binary(replica.log, fp, &path));
+    receiver.facts = &replica;
+    if (n)
+      TEST_ASSERT(facts_add_fact(&replica, &fact));
+    next_id = replica.next_id;
+    fact.id = 100;
+    facts_test_fail_flush(&replica.log->buf, 1, 0);
+    TEST_EQ(facts_connection_apply(&receiver,
+                                   n ? FACT_ACTION_REMOVE : FACT_ACTION_ADD,
+                                   &fact), false);
+    TEST_EQ(replica.next_id, next_id);
+    TEST_EQ(facts_count(&replica), n);
+    TEST_ASSERT(replica.log->failed);
+    TEST_EQ(facts_test_sync(&replica, &replica, next_id, UW_MAX), -1);
+    facts_clean(&replica);
+    fclose(fp);
+  }
+  fact_test_clean_1(&fact);
+}
+TEST_CASE_END(facts_sync_apply_error)
 
 TEST_CASE(facts_transaction_add)
 {
@@ -233,12 +658,13 @@ TEST_CASE(facts_transaction_nested)
   s_fact fact = {0};
   s_fact *found;
   s_facts facts;
+  uw id;
   s_facts_transaction inner;
   s_facts_transaction outer;
   TEST_ASSERT(facts_init(&facts));
   TEST_ASSERT(fact_test_init_1(&fact, "\"nested\""));
   TEST_EQ(facts_transaction_start(&facts, &outer), &facts);
-  TEST_ASSERT(facts_add_fact(&facts, &fact));
+  TEST_ASSERT((found = facts_add_fact(&facts, &fact)));
   TEST_EQ(facts_transaction_start(&facts, &inner), &facts);
   TEST_EQ(facts_remove_fact(&facts, &fact, &removed), &removed);
   TEST_ASSERT(removed);
@@ -249,7 +675,8 @@ TEST_CASE(facts_transaction_nested)
   TEST_EQ(facts_count(&facts), 0);
   TEST_EQ(facts.tags.count, 0);
   TEST_EQ(facts_transaction_start(&facts, &outer), &facts);
-  TEST_ASSERT(facts_add_fact(&facts, &fact));
+  TEST_ASSERT((found = facts_add_fact(&facts, &fact)));
+  id = found->id;
   TEST_EQ(facts_transaction_start(&facts, &inner), &facts);
   TEST_EQ(facts_remove_fact(&facts, &fact, &removed), &removed);
   TEST_EQ(facts_transaction_rollback(&facts, &inner), &facts);
@@ -257,7 +684,7 @@ TEST_CASE(facts_transaction_nested)
   TEST_EQ(facts_transaction_end(&facts, &outer), &facts);
   TEST_EQ(facts_find_fact(&facts, &fact, &found), &found);
   TEST_ASSERT(found);
-  TEST_EQ(found->id, outer.id);
+  TEST_EQ(found->id, id);
   TEST_EQ(facts_transaction_start(&facts, &outer), &facts);
   TEST_EQ(facts_remove_fact(&facts, &fact, &removed), &removed);
   TEST_EQ(facts_transaction_start(&facts, &inner), &facts);
@@ -402,6 +829,7 @@ TEST_CASE(facts_transaction_reopen)
   s_fact added = {0};
   s_fact *found;
   s_facts facts;
+  uw added_id;
   uw id;
   uw n;
   s_str path = {0};
@@ -418,7 +846,8 @@ TEST_CASE(facts_transaction_reopen)
     TEST_EQ(facts_transaction_start(&facts, &transaction), &facts);
     TEST_EQ(facts_remove_fact(&facts, &old, &removed), &removed);
     TEST_ASSERT(removed);
-    TEST_ASSERT(facts_add_fact(&facts, &added));
+    TEST_ASSERT((found = facts_add_fact(&facts, &added)));
+    added_id = found->id;
     if (n)
       TEST_EQ(facts_transaction_end(&facts, &transaction), &facts);
     else
@@ -429,7 +858,7 @@ TEST_CASE(facts_transaction_reopen)
     TEST_EQ(facts_count(&facts), 1);
     TEST_EQ(facts_find_fact(&facts, n ? &added : &old, &found), &found);
     TEST_ASSERT(found);
-    TEST_EQ(found->id, n ? transaction.id : id);
+    TEST_EQ(found->id, n ? added_id : id);
     TEST_EQ(facts_find_fact(&facts, n ? &old : &added, &found), &found);
     TEST_EQ(found, NULL);
   }

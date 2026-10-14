@@ -970,8 +970,7 @@ struct facts_connection {
 
 struct facts_remove_log {
   s_fact_w               fact;
-  uw                     sync_count;
-  uw                     target_count;
+  uw                     id;
   s_facts_remove_log    *next;
 };
 

@@ -35,6 +35,7 @@ s_facts_transaction * facts_transaction_clean
 s_facts * facts_transaction_end (s_facts *facts,
                                  s_facts_transaction *transaction)
 {
+  s_fact event;
   s_fact_action *log;
   s_fact_action *next;
   s_fact_action *ordered = NULL;
@@ -82,8 +83,11 @@ s_facts * facts_transaction_end (s_facts *facts,
           ok = false;
           break;
         }
-        if (log->broadcast)
-          facts_broadcast_remove(facts, &log->fact);
+        if (log->broadcast) {
+          event = log->fact;
+          event.id = log->id;
+          facts_broadcast_remove(facts, &event);
+        }
         if (log->remove_log) {
           log->remove_log->next = facts->remove_log;
           facts->remove_log = log->remove_log;

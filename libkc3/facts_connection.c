@@ -42,6 +42,7 @@
 #include "tls_buf.h"
 
 #define FACTS_CONNECTION_AUTH_CHALLENGE_SIZE 32
+#define FACTS_CONNECTION_PROTOCOL_VERSION 2
 
 static bool    facts_connection_auth (s_facts_connection *conn,
                                       bool is_server);
@@ -51,8 +52,8 @@ static s_facts_connection *
                facts_connection_find_by_addr (s_facts *facts,
                                               const s_str *addr);
 static s_str * facts_connection_get_addr (s64 sockfd, s_str *dest);
-static bool    facts_connection_sync (s_facts_connection *conn,
-                                      uw remote_next_id);
+static int     facts_connection_compare_remove (const void *a,
+                                                const void *b);
 static void *  facts_connection_thread (void *arg);
 
 static bool facts_connection_auth (s_facts_connection *conn, bool is_server)
@@ -149,6 +150,8 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
   s_facts_connection *conn;
   uw remote_next_id;
   u8 remote_priority;
+  u8 remote_version;
+  bool sent;
   assert(facts);
   assert(tls);
   if (! facts_connection_get_addr(sockfd, &addr)) {
@@ -181,9 +184,24 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
     facts_connection_delete(conn);
     return NULL;
   }
-  marshall_u8(&conn->marshall, false, facts->priority);
-  marshall_uw(&conn->marshall, false, facts->next_id);
-  marshall_to_buf(&conn->marshall, conn->buf_rw.w);
+#if HAVE_PTHREAD
+  if (! rwlock_r(&facts->rwlock)) {
+    facts_connection_delete(conn);
+    return NULL;
+  }
+#endif
+  sent = marshall_u8(&conn->marshall, false,
+                     FACTS_CONNECTION_PROTOCOL_VERSION) &&
+    marshall_u8(&conn->marshall, false, facts->priority) &&
+    marshall_uw(&conn->marshall, false, facts->next_id) &&
+    marshall_to_buf(&conn->marshall, conn->buf_rw.w) >= 0;
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&facts->rwlock);
+#endif
+  if (! sent) {
+    facts_connection_delete(conn);
+    return NULL;
+  }
   marshall_reset_ht(&conn->marshall);
   if (! marshall_read_header(&conn->marshall_read)) {
     err_puts("facts_connection_add: marshall_read_header");
@@ -192,6 +210,13 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
   }
   if (! marshall_read_chunk(&conn->marshall_read)) {
     err_puts("facts_connection_add: marshall_read_chunk");
+    facts_connection_delete(conn);
+    return NULL;
+  }
+  if (! marshall_read_u8(&conn->marshall_read, false, &remote_version) ||
+      remote_version != FACTS_CONNECTION_PROTOCOL_VERSION ||
+      buf_peek_1(conn->marshall_read.buf, "_KC3U8_") <= 0) {
+    err_puts("facts_connection_add: incompatible protocol version");
     facts_connection_delete(conn);
     return NULL;
   }
@@ -212,14 +237,23 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
     return NULL;
   }
   conn->is_master = (facts->priority < remote_priority);
-  if (conn->is_master && ! facts_connection_sync(conn, remote_next_id)) {
-    err_puts("facts_connection_add: facts_connection_sync");
-    facts_connection_delete(conn);
-    return NULL;
-  }
   conn->env = env_fork_new(env_global());
   if (! conn->env) {
     err_puts("facts_connection_add: env_fork_new");
+    facts_connection_delete(conn);
+    return NULL;
+  }
+#if HAVE_PTHREAD
+  if (! rwlock_w(&facts->rwlock)) {
+    facts_connection_delete(conn);
+    return NULL;
+  }
+#endif
+  if (conn->is_master && ! facts_connection_sync(conn, remote_next_id)) {
+    err_puts("facts_connection_add: facts_connection_sync");
+#if HAVE_PTHREAD
+    rwlock_unlock_w(&facts->rwlock);
+#endif
     facts_connection_delete(conn);
     return NULL;
   }
@@ -229,11 +263,17 @@ s_facts_connection * facts_connection_add (s_facts *facts, s64 sockfd,
   if (pthread_create(&conn->thread, NULL, facts_connection_thread, conn)) {
     err_puts("facts_connection_add: pthread_create");
     facts->connections = conn->next;
+#if HAVE_PTHREAD
+    rwlock_unlock_w(&facts->rwlock);
+#endif
     env_fork_delete(conn->env);
     conn->env = NULL;
     facts_connection_delete(conn);
     return NULL;
   }
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&facts->rwlock);
+#endif
   return conn;
 }
 
@@ -384,14 +424,37 @@ bool facts_connection_remove (s_facts *facts, s_facts_connection *conn)
   return false;
 }
 
-static bool facts_connection_sync (s_facts_connection *conn,
-                                   uw remote_next_id)
+static int facts_connection_compare_remove (const void *a, const void *b)
 {
+  const s_facts_remove_log * const *x = a;
+  const s_facts_remove_log * const *y = b;
+  return ((*x)->id > (*y)->id) - ((*x)->id < (*y)->id);
+}
+
+bool facts_connection_send (s_facts_connection *conn, u8 action,
+                            const s_fact *fact)
+{
+  if (! marshall_u8(&conn->marshall, false, action) ||
+      ! marshall_fact(&conn->marshall, false, fact) ||
+      marshall_to_buf(&conn->marshall, conn->buf_rw.w) < 0) {
+    conn->running = false;
+    if (conn->sockfd >= 0)
+      shutdown(conn->sockfd, SHUT_RDWR);
+    return false;
+  }
+  marshall_reset_ht(&conn->marshall);
+  return true;
+}
+
+bool facts_connection_sync (s_facts_connection *conn, uw remote_next_id)
+{
+  uw count = 0;
   s_facts_cursor cursor;
   s_fact *fact;
   s_facts *facts;
-  s_facts_remove_log **log;
-  s_facts_remove_log *tmp;
+  uw i;
+  s_facts_remove_log *log;
+  s_facts_remove_log **removals = NULL;
   s_fact remove_fact;
   bool result = false;
   s_fact start = {0};
@@ -401,55 +464,112 @@ static bool facts_connection_sync (s_facts_connection *conn,
   if (! rwlock_r(&facts->rwlock))
     return false;
 #endif
+  if (facts->log && facts->log->failed)
+    goto unlock;
   if (facts->next_id <= remote_next_id) {
-#if HAVE_PTHREAD
-    rwlock_unlock_r(&facts->rwlock);
-#endif
-    return true;
+    result = facts->next_id == remote_next_id;
+    goto unlock;
   }
   start.subject = TAG_FIRST;
   start.predicate = TAG_FIRST;
   start.object = TAG_FIRST;
   start.id = remote_next_id;
-  facts_cursor_init(facts, &cursor, facts->index, &start, NULL);
-  while (facts_cursor_next(&cursor, &fact) && fact) {
-    if (! marshall_u8(&conn->marshall, false, FACT_ACTION_ADD))
-      goto clean;
-    if (! marshall_fact(&conn->marshall, false, fact))
-      goto clean;
-    if (! marshall_to_buf(&conn->marshall, conn->buf_rw.w))
-      goto clean;
-    marshall_reset_ht(&conn->marshall);
-  }
-  log = &facts->remove_log;
-  while (*log) {
-    if ((*log)->fact.id >= remote_next_id) {
-      remove_fact.subject = &(*log)->fact.subject;
-      remove_fact.predicate = &(*log)->fact.predicate;
-      remove_fact.object = &(*log)->fact.object;
-      remove_fact.id = (*log)->fact.id;
-      if (! marshall_u8(&conn->marshall, false, FACT_ACTION_REMOVE))
-        goto clean;
-      if (! marshall_fact(&conn->marshall, false, &remove_fact))
-        goto clean;
-      if (! marshall_to_buf(&conn->marshall, conn->buf_rw.w))
-        goto clean;
-      marshall_reset_ht(&conn->marshall);
-      if (++(*log)->sync_count >= (*log)->target_count) {
-        tmp = *log;
-        *log = tmp->next;
-        fact_w_clean(&tmp->fact);
-        alloc_free(tmp);
-        continue;
-      }
+  for (log = facts->remove_log; log; log = log->next) {
+    if (log->id >= remote_next_id) {
+      if (count == UW_MAX / sizeof(*removals))
+        goto unlock;
+      count++;
     }
-    log = &(*log)->next;
+  }
+  if (count) {
+    if (! (removals = alloc(count * sizeof(*removals))))
+      goto unlock;
+    i = 0;
+    for (log = facts->remove_log; log; log = log->next)
+      if (log->id >= remote_next_id)
+        removals[i++] = log;
+    qsort(removals, count, sizeof(*removals),
+          facts_connection_compare_remove);
+  }
+  if (! facts_cursor_init(facts, &cursor, facts->index, &start, NULL))
+    goto unlock;
+  if (! facts_cursor_next(&cursor, &fact))
+    goto clean;
+  i = 0;
+  while (fact || i < count) {
+    if (i < count && (! fact || removals[i]->id <= fact->id)) {
+      log = removals[i++];
+      remove_fact.subject = &log->fact.subject;
+      remove_fact.predicate = &log->fact.predicate;
+      remove_fact.object = &log->fact.object;
+      remove_fact.id = log->id;
+      if (! facts_connection_send(conn, FACT_ACTION_REMOVE, &remove_fact))
+        goto clean;
+    }
+    else {
+      if (! facts_connection_send(conn, FACT_ACTION_ADD, fact) ||
+          ! facts_cursor_next(&cursor, &fact))
+        goto clean;
+    }
   }
   result = true;
  clean:
   facts_cursor_clean(&cursor);
+ unlock:
+  alloc_free(removals);
 #if HAVE_PTHREAD
   rwlock_unlock_r(&facts->rwlock);
+#endif
+  return result;
+}
+
+bool facts_connection_apply (s_facts_connection *conn, u8 action,
+                              s_fact *fact)
+{
+  s_facts *facts = conn->facts;
+  uw next_id;
+  bool removed;
+  bool result = false;
+  if (action != FACT_ACTION_ADD && action != FACT_ACTION_REMOVE)
+    return false;
+#if HAVE_PTHREAD
+  if (! rwlock_w(&facts->rwlock))
+    return false;
+#endif
+  next_id = facts->next_id;
+  if (! conn->is_master) {
+    if (fact->id == UW_MAX || facts->transaction)
+      goto clean;
+    if (fact->id < next_id) {
+      result = true;
+      goto clean;
+    }
+  }
+  switch (action) {
+  case FACT_ACTION_ADD:
+    if (conn->is_master)
+      result = facts_add_fact_local(facts, fact) != NULL;
+    else
+      result = facts_add_fact_id(facts, fact) != NULL;
+    break;
+  case FACT_ACTION_REMOVE:
+    if (conn->is_master)
+      result = facts_remove_fact_local(facts, fact, &removed) != NULL;
+    else
+      result = facts_remove_fact_id(facts, fact, &removed) != NULL;
+    break;
+  default:
+    break;
+  }
+  if (! conn->is_master) {
+    if (result)
+      facts->next_id = fact->id + 1;
+    else
+      facts->next_id = next_id;
+  }
+ clean:
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&facts->rwlock);
 #endif
   return result;
 }
@@ -457,7 +577,7 @@ static bool facts_connection_sync (s_facts_connection *conn,
 static void * facts_connection_thread (void *arg)
 {
   u8 action;
-  bool b;
+  bool ok;
   s_facts_connection *conn;
   s_fact fact = {0};
   s_marshall_read *mr;
@@ -479,28 +599,16 @@ static void * facts_connection_thread (void *arg)
       err_puts("facts_connection_thread: marshall_read_fact");
       break;
     }
-    switch (action) {
-    case FACT_ACTION_ADD:
-      if (conn->is_master)
-        facts_add_fact_local(conn->facts, &fact);
-      else
-        facts_add_fact_id(conn->facts, &fact);
-      break;
-    case FACT_ACTION_REMOVE:
-      facts_remove_fact_local(conn->facts, &fact, &b);
-      break;
-    default:
-      err_write_1("facts_connection_thread: invalid action: ");
-      err_inspect_u8_decimal(action);
-      err_write_1("\n");
-      break;
-    }
+    ok = facts_connection_apply(conn, action, &fact);
     fact_clean_all(&fact);
     marshall_read_chunk_reset(mr);
     if (mr->ht.items)
       ht_empty(&mr->ht);
+    if (! ok)
+      break;
   }
   conn->running = false;
+  shutdown(conn->sockfd, SHUT_RDWR);
   return NULL;
 }
 
