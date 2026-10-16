@@ -410,9 +410,30 @@ s_image * image_to_png_file (s_image * volatile image, s_str *path)
 static void image_png_write_callback (png_structp png_ptr, png_bytep data,
                                       png_size_t length)
 {
+  char *buffer;
   s_buf *out;
+  uw size;
   out = (s_buf *) png_get_io_ptr(png_ptr);
-  buf_write(out, data, length);
+  if (length > (uw) SW_MAX || out->wpos > (uw) SW_MAX - length)
+    png_error(png_ptr, "PNG output is too large");
+  if (length > out->size - out->wpos) {
+    size = out->size;
+    while (size < out->wpos + length) {
+      if (size > (uw) SW_MAX / 2) {
+        size = out->wpos + length;
+        break;
+      }
+      size *= 2;
+    }
+    if (! (buffer = alloc(size + 1)))
+      png_error(png_ptr, "PNG output allocation failed");
+    memcpy(buffer, out->ptr.p_pvoid, out->wpos);
+    alloc_free(out->ptr.p_pvoid);
+    out->ptr.p_pchar = buffer;
+    out->size = size;
+  }
+  if (buf_write(out, data, length) != (sw) length)
+    png_error(png_ptr, "PNG output write failed");
 }
 
 s_str * image_to_png_str (s_image *image, s_str * volatile dest)
@@ -420,43 +441,51 @@ s_str * image_to_png_str (s_image *image, s_str * volatile dest)
   png_structp png_ptr;
   png_infop info_ptr;
   png_byte color_type;
-  png_byte **row_pointers;
-  s_buf out;
+  s_buf *out;
   s_str tmp;
+  uw row_size;
   uw y;
   if (! image ||
       ! image->w ||
       ! image->h ||
-      ! image->components ||
-      ! image->pixel_size ||
+      image->w > PNG_UINT_31_MAX ||
+      image->h > PNG_UINT_31_MAX ||
+      image->components < 1 || image->components > 4 ||
+      image->pixel_size != image->components ||
       ! image->data ||
       ! dest) {
-    ERROR("invalid argument");
+    err_puts("image_to_png_str: invalid argument");
     return NULL;
   }
-  if (! buf_init_alloc(&out, image->w * image->h * image->pixel_size))
+  if (image->w > (uw) SW_MAX / image->pixel_size ||
+      image->h > (uw) SW_MAX / (image->w * image->pixel_size)) {
+    err_puts("image_to_png_str: image is too large");
+    return NULL;
+  }
+  row_size = image->w * image->pixel_size;
+  if (! (out = buf_new_alloc(256)))
     return NULL;
   png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
                                     NULL, NULL, NULL);
   if (! png_ptr) {
     err_puts("image_to_png_str: png_create_write_struct");
-    buf_clean(&out);
+    buf_delete(out);
     return NULL;
   }
   info_ptr = png_create_info_struct(png_ptr);
   if (! info_ptr) {
     err_puts("image_to_png_str: png_create_info_struct");
     png_destroy_write_struct(&png_ptr, NULL);
-    buf_clean(&out);
+    buf_delete(out);
     return NULL;
   }
   if (setjmp(png_jmpbuf(png_ptr))) {
     err_puts("image_to_png_str: png error");
     png_destroy_write_struct(&png_ptr, &info_ptr);
-    buf_clean(&out);
+    buf_delete(out);
     return NULL;
   }
-  png_set_write_fn(png_ptr, &out, image_png_write_callback, NULL);
+  png_set_write_fn(png_ptr, out, image_png_write_callback, NULL);
   switch (image->components) {
   case 1: color_type = PNG_COLOR_TYPE_GRAY;       break;
   case 2: color_type = PNG_COLOR_TYPE_GRAY_ALPHA; break;
@@ -465,7 +494,7 @@ s_str * image_to_png_str (s_image *image, s_str * volatile dest)
   default:
     err_puts("image_to_png_str: invalid components");
     png_destroy_write_struct(&png_ptr, &info_ptr);
-    buf_clean(&out);
+    buf_delete(out);
     return NULL;
   }
   png_set_IHDR(png_ptr, info_ptr, image->w, image->h, 8,
@@ -473,25 +502,13 @@ s_str * image_to_png_str (s_image *image, s_str * volatile dest)
                PNG_COMPRESSION_TYPE_DEFAULT,
                PNG_FILTER_TYPE_DEFAULT);
   png_write_info(png_ptr, info_ptr);
-  row_pointers = alloc(image->h * sizeof(png_byte *));
-  if (! row_pointers) {
-    err_puts("image_to_png_str: alloc");
-    png_destroy_write_struct(&png_ptr, &info_ptr);
-    buf_clean(&out);
-    return NULL;
-  }
   for (y = 0; y < image->h; y++)
-    row_pointers[y] = (png_byte *) image->data +
-      y * image->w * image->pixel_size;
-  png_write_image(png_ptr, row_pointers);
+    png_write_row(png_ptr, image->data + y * row_size);
   png_write_end(png_ptr, NULL);
-  alloc_free(row_pointers);
   png_destroy_write_struct(&png_ptr, &info_ptr);
-  if (buf_read_to_str(&out, &tmp) < 0) {
-    buf_clean(&out);
-    return NULL;
-  }
-  buf_clean(&out);
+  str_init(&tmp, out->ptr.p_pchar, out->wpos, out->ptr.p_pchar);
+  out->free = false;
+  buf_delete(out);
   *dest = tmp;
   return dest;
 }

@@ -1801,56 +1801,47 @@ sw buf_write (s_buf *buf, const void *data, uw len)
 {
   sw r;
   uw s;
-  sw w;
+  uw w = 0;
   assert(buf);
   if (! len)
     return 0;
 #if HAVE_PTHREAD
   rwlock_w(buf->rwlock);
 #endif
-  if (buf->wpos > buf->size) {
-    err_puts("buf_write: buf error: wpos > size");
-    assert(! "buf_write: buf error: wpos > size");
+  if (len > (uw) SW_MAX || buf->rpos > buf->wpos ||
+      buf->wpos > buf->size) {
     r = -1;
     goto clean;
   }
-  if (len > buf->size) {
+  if (len > buf->size - buf->wpos) {
     if ((r = buf_flush(buf)) < 0)
       goto clean;
-    if (buf->wpos > 0) {
+    if (buf->rpos > buf->wpos || buf->wpos > buf->size) {
       r = -1;
       goto clean;
     }
-    w = 0;
-    while ((s = len - w) > 0) {
-      if (s > buf->size)
-        s = buf->size;
-      memcpy(buf->ptr.p_ps8, (s8 *) data + w, s);
+  }
+  if (len > buf->size - buf->wpos) {
+    while (w < len) {
+      s = buf->size - buf->wpos;
+      if (! s) {
+        r = -1;
+        goto clean;
+      }
+      if (s > len - w)
+        s = len - w;
+      memcpy(buf->ptr.p_pu8 + buf->wpos, (const u8 *) data + w, s);
       buf->wpos += s;
+      w += s;
       if ((r = buf_flush(buf)) < 0)
         goto clean;
-      w += s;
+      if (buf->rpos > buf->wpos || buf->wpos > buf->size) {
+        r = -1;
+        goto clean;
+      }
     }
     r = len;
     goto clean;
-  }
-  if (buf->wpos + len > buf->size) {
-    if ((r = buf_flush(buf)) < 0)
-      goto clean;
-    if (buf->wpos + len > buf->size) {
-      w = 0;
-      while ((s = len - w) > 0) {
-        if (s > buf->size - buf->wpos)
-          s = buf->size - buf->wpos;
-        memcpy(buf->ptr.p_ps8 + buf->wpos, (s8 *) data + w, s);
-        buf->wpos += s;
-        if ((r = buf_flush(buf)) < 0)
-          goto clean;
-        w += s;
-      }
-      r = len;
-      goto clean;
-    }
   }
   memcpy(buf->ptr.p_ps8 + buf->wpos, data, len);
   buf->wpos += len;

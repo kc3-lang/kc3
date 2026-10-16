@@ -1171,6 +1171,7 @@ KC3_C_SOURCES = \
 	"test/buf_parse_test_u64.c" \
 	"test/buf_parse_test_u8.c" \
 	"test/buf_test.c" \
+	"test/buf_write_test.c" \
 	"test/cfn_test.c" \
 	"test/character_test.c" \
 	"test/compare_test.c" \
@@ -1187,6 +1188,7 @@ KC3_C_SOURCES = \
 	"test/gl_text_test.c" \
 	"test/hash_test.c" \
 	"test/ident_test.c" \
+	"test/image_test.c" \
 	"test/inspect_test.c" \
 	"test/libkc3_test.c" \
 	"test/list_test.c" \

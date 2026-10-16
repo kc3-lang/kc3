@@ -22,6 +22,7 @@ SOURCES = \
 	"buf_parse_test_u64.c" \
 	"buf_parse_test_u8.c" \
 	"buf_test.c" \
+	"buf_write_test.c" \
 	"cfn_test.c" \
 	"character_test.c" \
 	"compare_test.c" \
@@ -36,6 +37,7 @@ SOURCES = \
 	"gl_text_test.c" \
 	"hash_test.c" \
 	"ident_test.c" \
+	"image_test.c" \
 	"inspect_test.c" \
 	"libkc3_test.c" \
 	"list_test.c" \
