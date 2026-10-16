@@ -1,4 +1,5 @@
 #include <errno.h>
+#include <fcntl.h>
 #include <signal.h>
 #include <string.h>
 #include <sys/wait.h>
@@ -9,8 +10,15 @@
 #if HAVE_LIBJPEG && HAVE_LIBPNG
 
 #include <jpeglib.h>
+#include <jerror.h>
 #include <png.h>
 #include "../image/types.h"
+
+#if HAVE_GLESV2
+#define IMAGE_JPEG_ROUTES 4
+#else
+#define IMAGE_JPEG_ROUTES 2
+#endif
 
 static void *g_image_allocs[32];
 static uw g_image_live;
@@ -27,6 +35,90 @@ static bool g_image_fail_png;
 static bool g_image_fail_info;
 static u8 g_image_fail_stage;
 static bool g_image_bad_free;
+static FILE *g_image_jpeg_file;
+static uw g_image_files;
+static uw g_image_jpegs;
+static uw g_image_jpeg_rows;
+static u8 g_image_jpeg_fail_stage;
+static u8 g_image_jpeg_suspend;
+static u8 g_image_jpeg_layout;
+
+static void image_jpeg_raise (j_decompress_ptr info)
+{
+  info->err->msg_code = JERR_BAD_LENGTH;
+  info->err->error_exit((j_common_ptr) info);
+}
+
+static void image_jpeg_create (j_decompress_ptr info, int version,
+                               size_t size)
+{
+  if (g_image_jpeg_fail_stage == 1)
+    image_jpeg_raise(info);
+  jpeg_CreateDecompress(info, version, size);
+  g_image_jpegs++;
+  if (g_image_jpeg_fail_stage == 2)
+    image_jpeg_raise(info);
+}
+
+static void image_jpeg_destroy (j_decompress_ptr info)
+{
+  if (info->mem)
+    g_image_jpegs--;
+  jpeg_destroy_decompress(info);
+}
+
+static int image_jpeg_header (j_decompress_ptr info, boolean required)
+{
+  if (g_image_jpeg_fail_stage == 3)
+    image_jpeg_raise(info);
+  if (g_image_jpeg_suspend == 1)
+    return JPEG_SUSPENDED;
+  return jpeg_read_header(info, required);
+}
+
+static boolean image_jpeg_start (j_decompress_ptr info)
+{
+  boolean result;
+  if (g_image_jpeg_fail_stage == 4)
+    image_jpeg_raise(info);
+  if (g_image_jpeg_suspend == 2)
+    return FALSE;
+  result = jpeg_start_decompress(info);
+  switch (g_image_jpeg_layout) {
+  case 1: info->output_width = 0; break;
+  case 2: info->output_height = 0; break;
+  case 3: info->output_components = 0; break;
+  case 4: info->output_components = 5; break;
+  case 5:
+    info->output_width = info->output_height = (JDIMENSION) -1;
+    info->output_components = 4;
+  }
+  return result;
+}
+
+static JDIMENSION image_jpeg_scanlines (j_decompress_ptr info,
+                                       JSAMPARRAY rows,
+                                       JDIMENSION count)
+{
+  JDIMENSION result;
+  if (g_image_jpeg_fail_stage == 5 ||
+      (g_image_jpeg_fail_stage == 6 && info->output_scanline > 0))
+    image_jpeg_raise(info);
+  if (g_image_jpeg_suspend == 3)
+    return 0;
+  result = jpeg_read_scanlines(info, rows, count);
+  g_image_jpeg_rows += result;
+  return result;
+}
+
+static boolean image_jpeg_finish (j_decompress_ptr info)
+{
+  if (g_image_jpeg_fail_stage == 7)
+    image_jpeg_raise(info);
+  if (g_image_jpeg_suspend == 4)
+    return FALSE;
+  return jpeg_finish_decompress(info);
+}
 
 static void * image_alloc (uw size)
 {
@@ -165,6 +257,33 @@ static void image_reset (void)
   g_image_fail_png = false;
   g_image_fail_info = false;
   g_image_fail_stage = 0;
+  g_image_jpeg_rows = 0;
+  g_image_jpeg_fail_stage = 0;
+  g_image_jpeg_suspend = 0;
+  g_image_jpeg_layout = 0;
+}
+
+static FILE * image_open (const char *path, const char *mode)
+{
+  int fd;
+  FILE *fp;
+  (void) path;
+  if (! g_image_jpeg_file ||
+      (fd = dup(fileno(g_image_jpeg_file))) < 0)
+    return NULL;
+  if (! (fp = fdopen(fd, mode))) {
+    close(fd);
+    return NULL;
+  }
+  rewind(fp);
+  g_image_files++;
+  return fp;
+}
+
+static int image_close (FILE *fp)
+{
+  g_image_files--;
+  return fclose(fp);
 }
 
 static s_image * image_test_resize (s_image *src, s_image *dest)
@@ -175,6 +294,8 @@ static s_image * image_test_resize (s_image *src, s_image *dest)
 }
 
 #define image_avir_resize_8 image_test_resize
+#define fopen image_open
+#define fclose image_close
 #define alloc image_alloc
 #define alloc_free image_free
 #define buf_new_alloc image_buffer_new
@@ -186,6 +307,12 @@ static s_image * image_test_resize (s_image *src, s_image *dest)
 #define png_write_info image_png_write_info
 #define png_write_row image_png_write_row
 #define png_write_end image_png_write_end
+#define jpeg_CreateDecompress image_jpeg_create
+#define jpeg_destroy_decompress image_jpeg_destroy
+#define jpeg_read_header image_jpeg_header
+#define jpeg_start_decompress image_jpeg_start
+#define jpeg_read_scanlines image_jpeg_scanlines
+#define jpeg_finish_decompress image_jpeg_finish
 #define image_clean image_test_clean
 #define image_delete image_test_delete
 #define image_init image_test_init
@@ -218,6 +345,140 @@ static s_image * image_test_resize (s_image *src, s_image *dest)
 #undef png_write_info
 #undef png_write_row
 #undef png_write_end
+#undef fopen
+#undef fclose
+#undef jpeg_CreateDecompress
+#undef jpeg_destroy_decompress
+#undef jpeg_read_header
+#undef jpeg_start_decompress
+#undef jpeg_read_scanlines
+#undef jpeg_finish_decompress
+
+#if HAVE_GLESV2
+
+#include "../gl/gles2.h"
+
+static uw g_image_textures;
+static uw g_image_uploads;
+static uw g_image_strings;
+static u8 g_image_texture[16 * 16 * 4];
+static GLsizei g_image_texture_w;
+static GLsizei g_image_texture_h;
+
+static GLenum image_gl_error (void)
+{
+  return GL_NO_ERROR;
+}
+
+static const char * image_gl_error_string (s32 error)
+{
+  (void) error;
+  return "test GL error";
+}
+
+static void image_gl_gen (GLsizei count, GLuint *textures)
+{
+  while (count-- > 0)
+    *textures++ = ++g_image_textures;
+}
+
+static void image_gl_delete (GLsizei count, const GLuint *textures)
+{
+  while (count-- > 0)
+    if (*textures++)
+      g_image_textures--;
+}
+
+static void image_gl_bind (GLenum target, GLuint texture)
+{
+  (void) target;
+  (void) texture;
+}
+
+static void image_gl_target (GLenum target)
+{
+  (void) target;
+}
+
+static void image_gl_parameter (GLenum target, GLenum name, GLint value)
+{
+  (void) target;
+  (void) name;
+  (void) value;
+}
+
+static void image_gl_upload (GLenum target, GLint level, GLint internal,
+                             GLsizei w, GLsizei h, GLint border,
+                             GLenum format, GLenum type, const void *data)
+{
+  (void) target;
+  (void) level;
+  (void) internal;
+  (void) border;
+  (void) format;
+  (void) type;
+  g_image_uploads++;
+  g_image_texture_w = w;
+  g_image_texture_h = h;
+  if (w > 0 && h > 0 && (uw) w * h * 4 <= sizeof(g_image_texture))
+    memcpy(g_image_texture, data, (uw) w * h * 4);
+}
+
+static s_str * image_path_copy (s_str *dest, const char *path)
+{
+  if (! str_init_copy_1(dest, path))
+    return NULL;
+  g_image_strings++;
+  return dest;
+}
+
+static void image_path_clean (s_str *path)
+{
+  if (path->free.p_pvoid)
+    g_image_strings--;
+  str_clean(path);
+}
+
+static s_str * image_path_search (const s_str *path, const s_sym *mode,
+                                  s_str *dest)
+{
+  (void) mode;
+  return image_path_copy(dest, path->ptr.p_pchar);
+}
+
+#define alloc image_alloc
+#define alloc_free image_free
+#define fopen image_open
+#define fclose image_close
+#define str_init_copy_1 image_path_copy
+#define str_clean image_path_clean
+#define file_search image_path_search
+#define glGetError image_gl_error
+#define glGenTextures image_gl_gen
+#define glDeleteTextures image_gl_delete
+#define glBindTexture image_gl_bind
+#define glActiveTexture image_gl_target
+#define glGenerateMipmap image_gl_target
+#define glTexParameteri image_gl_parameter
+#define glTexImage2D image_gl_upload
+#define gl_error_string image_gl_error_string
+#define gl_sprite_clean image_sprite_clean
+#define gl_sprite_init image_sprite_init
+#define gl_sprite_init_jpeg image_sprite_init_jpeg
+#define gl_sprite_init_png image_sprite_init_png
+#define gl_sprite_texture image_sprite_texture
+
+#include "../gl/gl_sprite.c"
+
+#undef alloc
+#undef alloc_free
+#undef fopen
+#undef fclose
+#undef str_init_copy_1
+#undef str_clean
+#undef file_search
+
+#endif
 
 static int image_child (char (*test)(void))
 {
@@ -257,8 +518,354 @@ static char image_no_leaks (void)
   TEST_EQ(g_image_pngs, 0);
   TEST_EQ(g_image_infos, 0);
   TEST_EQ(g_image_bad_free, false);
+  TEST_EQ(g_image_files, 0);
+  TEST_EQ(g_image_jpegs, 0);
+#if HAVE_GLESV2
+  TEST_EQ(g_image_strings, 0);
+  TEST_EQ(g_image_textures, 0);
+#endif
   return 0;
 }
+
+static char image_jpeg_bad_file (void)
+{
+  const u8 data[] = {0xFF, 0xD8, 0xFF, 0xD9, 0, 0, 0, 0};
+  TEST_ASSERT((g_image_jpeg_file = tmpfile()));
+  TEST_EQ(fwrite(data, 1, sizeof(data), g_image_jpeg_file), sizeof(data));
+  TEST_EQ(fflush(g_image_jpeg_file), 0);
+  rewind(g_image_jpeg_file);
+  return 0;
+}
+
+static char image_jpeg_fatal (void)
+{
+  u8 pixel = 0xA5;
+  s_image image = {.w = 91, .h = 37, .components = 1,
+                   .pixel_size = 1, .data = &pixel};
+  const s_str path = STR("f19.jpeg");
+  int fd;
+  TEST_EQ(image_jpeg_bad_file(), 0);
+  fd = fileno(g_image_jpeg_file);
+  TEST_EQ(image_init_jpeg(&image, &path, g_image_jpeg_file), NULL);
+  TEST_EQ(image.w, 91);
+  TEST_EQ(image.h, 37);
+  TEST_EQ(image.data, &pixel);
+  TEST_EQ(pixel, 0xA5);
+  TEST_ASSERT(fcntl(fd, F_GETFD) >= 0);
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  TEST_EQ(image_no_leaks(), 0);
+  return 0;
+}
+
+static char image_jpeg_dispatch (void)
+{
+  s_image image = {0};
+  const s_str path = STR("f19.jpeg");
+  TEST_EQ(image_jpeg_bad_file(), 0);
+  TEST_EQ(image_init_file(&image, &path), NULL);
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  TEST_EQ(image_no_leaks(), 0);
+  return 0;
+}
+
+#if HAVE_GLESV2
+
+static char image_jpeg_sprite (void)
+{
+  s_gl_sprite sprite = {0};
+  TEST_EQ(image_jpeg_bad_file(), 0);
+  TEST_EQ(gl_sprite_init_jpeg(&sprite, "f19.jpeg", 1, 1, 1, 1), NULL);
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  TEST_EQ(g_image_uploads, 0);
+  TEST_EQ(image_no_leaks(), 0);
+  return 0;
+}
+
+static char image_jpeg_sprite_dispatch (void)
+{
+  s_gl_sprite sprite = {0};
+  TEST_EQ(image_jpeg_bad_file(), 0);
+  TEST_EQ(gl_sprite_init(&sprite, "f19.jpeg", 1, 1, 1, 1), NULL);
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  TEST_EQ(g_image_uploads, 0);
+  TEST_EQ(image_no_leaks(), 0);
+  return 0;
+}
+
+#endif
+
+static void image_jpeg_pixels (u8 *data, u8 components)
+{
+  uw x;
+  uw y;
+  for (y = 0; y < 8; y++)
+    for (x = 0; x < 8; x++) {
+      *data++ = 30 + y * 8;
+      if (components >= 3) {
+        *data++ = 70;
+        *data++ = 190 - y * 6;
+      }
+      if (components == 4)
+        *data++ = 0;
+    }
+}
+
+static char image_jpeg_valid_file (u8 components, bool progressive)
+{
+  struct jpeg_compress_struct info = {0};
+  struct jpeg_error_mgr error;
+  u8 data[8 * 8 * 4];
+  JSAMPROW row;
+  int i;
+  TEST_ASSERT((g_image_jpeg_file = tmpfile()));
+  image_jpeg_pixels(data, components);
+  info.err = jpeg_std_error(&error);
+  jpeg_create_compress(&info);
+  jpeg_stdio_dest(&info, g_image_jpeg_file);
+  info.image_width = info.image_height = 8;
+  info.input_components = components;
+  info.in_color_space = components == 1 ? JCS_GRAYSCALE :
+    components == 3 ? JCS_RGB : JCS_CMYK;
+  jpeg_set_defaults(&info);
+  jpeg_set_quality(&info, 100, TRUE);
+  for (i = 0; i < info.num_components; i++)
+    info.comp_info[i].h_samp_factor = info.comp_info[i].v_samp_factor = 1;
+  if (progressive)
+    jpeg_simple_progression(&info);
+  jpeg_start_compress(&info, TRUE);
+  while (info.next_scanline < info.image_height) {
+    row = data + info.next_scanline * 8 * components;
+    TEST_EQ(jpeg_write_scanlines(&info, &row, 1), 1);
+  }
+  jpeg_finish_compress(&info);
+  jpeg_destroy_compress(&info);
+  TEST_EQ(fflush(g_image_jpeg_file), 0);
+  rewind(g_image_jpeg_file);
+  return 0;
+}
+
+static char image_jpeg_failure (uw route)
+{
+  u8 pixel = 0xA5;
+  s_image image = {.w = 91, .h = 37, .components = 1,
+                   .pixel_size = 1, .data = &pixel};
+  const s_str path = STR("f19.jpeg");
+  int fd = fileno(g_image_jpeg_file);
+  rewind(g_image_jpeg_file);
+  if (route == 0)
+    TEST_EQ(image_init_jpeg(&image, &path, g_image_jpeg_file), NULL);
+  else if (route == 1)
+    TEST_EQ(image_init_file(&image, &path), NULL);
+#if HAVE_GLESV2
+  else {
+    s_gl_sprite sprite = {.pix_w = 91, .pix_h = 37};
+    uw uploads = g_image_uploads;
+    if (route == 2)
+      TEST_EQ(gl_sprite_init_jpeg(&sprite, "f19.jpeg", 1, 1, 1, 1),
+               NULL);
+    else
+      TEST_EQ(gl_sprite_init(&sprite, "f19.jpeg", 1, 1, 1, 1), NULL);
+    TEST_EQ(sprite.pix_w, 91);
+    TEST_EQ(sprite.pix_h, 37);
+    TEST_EQ(sprite.texture, NULL);
+    TEST_EQ(g_image_uploads, uploads);
+  }
+#endif
+  TEST_EQ(image.w, 91);
+  TEST_EQ(image.h, 37);
+  TEST_EQ(image.components, 1);
+  TEST_EQ(image.pixel_size, 1);
+  TEST_EQ(image.data, &pixel);
+  TEST_EQ(pixel, 0xA5);
+  TEST_ASSERT(fcntl(fd, F_GETFD) >= 0);
+  TEST_EQ(image_no_leaks(), 0);
+  return 0;
+}
+
+static char image_jpeg_valid (void)
+{
+  s_image image;
+  const s_str path = STR("f19.jpeg");
+  const u8 components[] = {1, 3, 4};
+  u8 pixels[8 * 8 * 4];
+  uw i;
+  uw j;
+  uw progressive;
+  for (i = 0; i < sizeof(components); i++)
+    for (progressive = 0; progressive < 2; progressive++) {
+      image_reset();
+      TEST_EQ(image_jpeg_valid_file(components[i], progressive), 0);
+      image_jpeg_pixels(pixels, components[i]);
+      TEST_EQ(image_init_file(&image, &path), &image);
+      TEST_EQ(image.w, 8);
+      TEST_EQ(image.h, 8);
+      TEST_EQ(image.components, components[i]);
+      TEST_EQ(image.pixel_size, components[i]);
+      for (j = 0; j < 8 * 8 * components[i]; j++)
+        TEST_ASSERT(abs((int) image.data[j] - pixels[j]) <= 3);
+      image_clean(&image);
+      TEST_EQ(fclose(g_image_jpeg_file), 0);
+      g_image_jpeg_file = NULL;
+      TEST_EQ(image_no_leaks(), 0);
+    }
+  return 0;
+}
+
+static char image_jpeg_errors (void)
+{
+  uw route;
+  u8 stage;
+  TEST_EQ(image_jpeg_valid_file(3, false), 0);
+  for (route = 0; route < IMAGE_JPEG_ROUTES; route++)
+    for (stage = 1; stage <= 7; stage++) {
+      image_reset();
+      g_image_jpeg_fail_stage = stage;
+      TEST_EQ(image_jpeg_failure(route), 0);
+      if (stage == 6 || stage == 7)
+        TEST_ASSERT(g_image_jpeg_rows > 0);
+    }
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  TEST_EQ(image_jpeg_valid(), 0);
+  return 0;
+}
+
+static char image_jpeg_alloc_failure (void)
+{
+  uw route;
+  uw failure;
+  TEST_EQ(image_jpeg_valid_file(3, false), 0);
+  for (route = 0; route < IMAGE_JPEG_ROUTES; route++)
+    for (failure = 1; failure <= 2; failure++) {
+      image_reset();
+      g_image_fail_alloc = failure;
+      TEST_EQ(image_jpeg_failure(route), 0);
+      TEST_EQ(g_image_alloc_calls, failure);
+    }
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  TEST_EQ(image_jpeg_valid(), 0);
+  return 0;
+}
+
+static char image_jpeg_no_progress (void)
+{
+  uw route;
+  u8 stage;
+  TEST_EQ(image_jpeg_valid_file(3, false), 0);
+  for (route = 0; route < IMAGE_JPEG_ROUTES; route++)
+    for (stage = 1; stage <= 4; stage++) {
+      image_reset();
+      g_image_jpeg_suspend = stage;
+      TEST_EQ(image_jpeg_failure(route), 0);
+    }
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  return 0;
+}
+
+static char image_jpeg_limits (void)
+{
+  uw route;
+  u8 layout;
+  TEST_EQ(image_jpeg_valid_file(3, false), 0);
+  for (route = 0; route < IMAGE_JPEG_ROUTES; route++)
+    for (layout = 1; layout <= 5; layout++) {
+      image_reset();
+      g_image_jpeg_layout = layout;
+      TEST_EQ(image_jpeg_failure(route), 0);
+      TEST_EQ(g_image_alloc_calls, 1);
+    }
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  return 0;
+}
+
+static char image_jpeg_late_error (void)
+{
+  uw route;
+  const u8 soi[] = {0xFF, 0xD8};
+  TEST_EQ(image_jpeg_valid_file(3, false), 0);
+  TEST_EQ(fseek(g_image_jpeg_file, -2, SEEK_END), 0);
+  TEST_EQ(fwrite(soi, 1, sizeof(soi), g_image_jpeg_file), sizeof(soi));
+  TEST_EQ(fflush(g_image_jpeg_file), 0);
+  for (route = 0; route < IMAGE_JPEG_ROUTES; route++) {
+    image_reset();
+    TEST_EQ(image_jpeg_failure(route), 0);
+    TEST_EQ(g_image_alloc_calls, 2);
+    TEST_EQ(g_image_jpeg_rows, 8);
+  }
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  return 0;
+}
+
+static char image_jpeg_warning (void)
+{
+  s_image image;
+  const s_str path = STR("f19.jpeg");
+  long length;
+  image_reset();
+  TEST_EQ(image_jpeg_valid_file(3, false), 0);
+  TEST_EQ(fseek(g_image_jpeg_file, 0, SEEK_END), 0);
+  TEST_ASSERT((length = ftell(g_image_jpeg_file)) > 2);
+  TEST_EQ(ftruncate(fileno(g_image_jpeg_file), length - 2), 0);
+  rewind(g_image_jpeg_file);
+  TEST_EQ(image_init_jpeg(&image, &path, g_image_jpeg_file), &image);
+  TEST_EQ(image.w, 8);
+  TEST_EQ(image.h, 8);
+  image_clean(&image);
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  TEST_EQ(image_no_leaks(), 0);
+  return 0;
+}
+
+#if HAVE_GLESV2
+
+static char image_jpeg_sprite_valid (void)
+{
+  s_gl_sprite sprite;
+  s_image image;
+  const s_str path = STR("f19.jpeg");
+  u8 pixels[8 * 8 * 3];
+  uw x;
+  uw y;
+  image_reset();
+  TEST_EQ(image_jpeg_valid_file(3, true), 0);
+  TEST_EQ(image_init_file(&image, &path), &image);
+  TEST_EQ(image.components, 3);
+  memcpy(pixels, image.data, sizeof(pixels));
+  image_clean(&image);
+  TEST_EQ(gl_sprite_init(&sprite, "f19.jpeg", 1, 1, 1, 2), &sprite);
+  TEST_EQ(sprite.total_w, 8);
+  TEST_EQ(sprite.total_h, 8);
+  TEST_EQ(sprite.pix_w, 8);
+  TEST_EQ(sprite.pix_h, 8);
+  TEST_EQ(sprite.pt_w, 16);
+  TEST_EQ(sprite.pt_h, 16);
+  TEST_EQ(sprite.frame_count, 1);
+  TEST_EQ(g_image_uploads, 1);
+  TEST_EQ(g_image_texture_w, 8);
+  TEST_EQ(g_image_texture_h, 8);
+  for (y = 0; y < 8; y++)
+    for (x = 0; x < 8; x++) {
+      TEST_MEM_EQ(g_image_texture + (y * 8 + x) * 4, 3,
+                   pixels + ((7 - y) * 8 + x) * 3, 3);
+      TEST_EQ(g_image_texture[(y * 8 + x) * 4 + 3], 255);
+    }
+  gl_sprite_clean(&sprite);
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  TEST_EQ(image_no_leaks(), 0);
+  return 0;
+}
+
+#endif
 
 static char image_png_roundtrip (uw w, uw h, u8 components)
 {
@@ -458,6 +1065,20 @@ IMAGE_CASE(png_write_failure)
 IMAGE_CASE(png_library_failure)
 IMAGE_CASE(png_invalid)
 IMAGE_CASE(png_output_limit)
+IMAGE_CASE(jpeg_fatal)
+IMAGE_CASE(jpeg_dispatch)
+IMAGE_CASE(jpeg_valid)
+IMAGE_CASE(jpeg_errors)
+IMAGE_CASE(jpeg_alloc_failure)
+IMAGE_CASE(jpeg_no_progress)
+IMAGE_CASE(jpeg_limits)
+IMAGE_CASE(jpeg_late_error)
+IMAGE_CASE(jpeg_warning)
+#if HAVE_GLESV2
+IMAGE_CASE(jpeg_sprite)
+IMAGE_CASE(jpeg_sprite_dispatch)
+IMAGE_CASE(jpeg_sprite_valid)
+#endif
 
 #endif
 
@@ -471,5 +1092,19 @@ void image_test (void)
   TEST_CASE_RUN(image_png_library_failure);
   TEST_CASE_RUN(image_png_invalid);
   TEST_CASE_RUN(image_png_output_limit);
+  TEST_CASE_RUN(image_jpeg_fatal);
+  TEST_CASE_RUN(image_jpeg_dispatch);
+  TEST_CASE_RUN(image_jpeg_valid);
+  TEST_CASE_RUN(image_jpeg_errors);
+  TEST_CASE_RUN(image_jpeg_alloc_failure);
+  TEST_CASE_RUN(image_jpeg_no_progress);
+  TEST_CASE_RUN(image_jpeg_limits);
+  TEST_CASE_RUN(image_jpeg_late_error);
+  TEST_CASE_RUN(image_jpeg_warning);
+#if HAVE_GLESV2
+  TEST_CASE_RUN(image_jpeg_sprite);
+  TEST_CASE_RUN(image_jpeg_sprite_dispatch);
+  TEST_CASE_RUN(image_jpeg_sprite_valid);
+#endif
 #endif
 }

@@ -18,6 +18,20 @@
 #include "image.h"
 #include "image_avir.h"
 
+typedef struct image_jpeg {
+  struct jpeg_error_mgr error;
+  jmp_buf jmp;
+  struct jpeg_decompress_struct info;
+  s_image image;
+} s_image_jpeg;
+
+static void image_jpeg_error_exit (j_common_ptr info)
+{
+  s_image_jpeg *jpeg = (s_image_jpeg *) info->err;
+  info->err->output_message(info);
+  longjmp(jpeg->jmp, 1);
+}
+
 void image_clean (s_image *image)
 {
   if (image && image->data)
@@ -96,48 +110,62 @@ s_image * image_init_file (s_image *image, const s_str *path)
 
 s_image * image_init_jpeg (s_image *image, const s_str *path, FILE *fp)
 {
-  u8                           *jpeg_buffer;
-  u8                            jpeg_components;
-  struct jpeg_error_mgr         jpeg_err;
-  uw                            jpeg_h;
-  struct jpeg_decompress_struct jpeg_info;
-  uw                            jpeg_pixel_size;
-  uw                            jpeg_w;
+  u8 *buffer;
+  s_image_jpeg *jpeg;
+  s_image *result = NULL;
+  uw row_size;
   assert(image);
   assert(path);
   assert(fp);
-  jpeg_info.err = jpeg_std_error(&jpeg_err);
-  jpeg_create_decompress(&jpeg_info);
-  jpeg_stdio_src(&jpeg_info, fp);
-  jpeg_read_header(&jpeg_info, TRUE);
-  jpeg_start_decompress(&jpeg_info);
-  jpeg_w = jpeg_info.output_width;
-  jpeg_h = jpeg_info.output_height;
-  jpeg_components = jpeg_info.output_components;
-  jpeg_pixel_size = jpeg_components;
-  if (jpeg_h > SIZE_MAX / (jpeg_w * jpeg_pixel_size)) {
+  if (! (jpeg = alloc(sizeof(*jpeg))))
+    return NULL;
+  jpeg->info.err = jpeg_std_error(&jpeg->error);
+  jpeg->error.error_exit = image_jpeg_error_exit;
+  if (setjmp(jpeg->jmp))
+    goto clean;
+  jpeg_create_decompress(&jpeg->info);
+  jpeg_stdio_src(&jpeg->info, fp);
+  if (jpeg_read_header(&jpeg->info, TRUE) != JPEG_HEADER_OK ||
+      ! jpeg_start_decompress(&jpeg->info))
+    goto clean;
+  if (! jpeg->info.output_width || ! jpeg->info.output_height ||
+      jpeg->info.output_components < 1 ||
+      jpeg->info.output_components > 4 ||
+      jpeg->info.output_width >
+      (uw) SW_MAX / jpeg->info.output_components ||
+      jpeg->info.output_height >
+      (uw) SW_MAX / ((uw) jpeg->info.output_width *
+                    jpeg->info.output_components)) {
     err_write_1("image_init_jpeg: image too large: ");
     err_inspect_str(path);
     err_write_1("\n");
-    jpeg_destroy_decompress(&jpeg_info);
-    return NULL;
+    goto clean;
   }
-  if (! image_init_alloc(image, jpeg_w, jpeg_h, jpeg_components,
-                         jpeg_pixel_size)) {
+  row_size = (uw) jpeg->info.output_width * jpeg->info.output_components;
+  if (! image_init_alloc(&jpeg->image, jpeg->info.output_width,
+                         jpeg->info.output_height,
+                         jpeg->info.output_components,
+                         jpeg->info.output_components)) {
     err_write_1("image_init_jpeg: image_init_alloc failed: ");
     err_inspect_str(path);
     err_write_1("\n");
-    jpeg_destroy_decompress(&jpeg_info);
-    return NULL;
+    goto clean;
   }
-  while (jpeg_info.output_scanline < jpeg_info.output_height) {
-    jpeg_buffer = image->data +
-      jpeg_info.output_scanline * jpeg_w * jpeg_pixel_size;
-    jpeg_read_scanlines(&jpeg_info, &jpeg_buffer, 1);
+  while (jpeg->info.output_scanline < jpeg->info.output_height) {
+    buffer = jpeg->image.data + jpeg->info.output_scanline * row_size;
+    if (jpeg_read_scanlines(&jpeg->info, &buffer, 1) != 1)
+      goto clean;
   }
-  jpeg_finish_decompress(&jpeg_info);
-  jpeg_destroy_decompress(&jpeg_info);
-  return image;
+  if (! jpeg_finish_decompress(&jpeg->info))
+    goto clean;
+  *image = jpeg->image;
+  jpeg->image.data = NULL;
+  result = image;
+ clean:
+  jpeg_destroy_decompress(&jpeg->info);
+  image_clean(&jpeg->image);
+  alloc_free(jpeg);
+  return result;
 }
 
 s_image * image_init_png (s_image * volatile image, const s_str *path,

@@ -12,7 +12,7 @@
  */
 #include <string.h>
 #include "../libkc3/kc3.h"
-#include <jpeglib.h>
+#include "../image/image.h"
 #include <png.h>
 #include "gles2.h"
 #include "gl_deprecated.h"
@@ -154,14 +154,11 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
   u8 *data;
   FILE *fp;
   uw i;
-  struct jpeg_decompress_struct jpeg_info;
-  struct jpeg_error_mgr jpeg_err;
-  u8 jpeg_components;
+  s_image jpeg = {0};
   u8 *jpeg_data;
   uw jpeg_h;
   uw jpeg_pixel_size;
   uw jpeg_w;
-  u8 *jpeg_buffer;
   u8 *sprite_data;
   uw sprite_stride;
   uw x;
@@ -210,44 +207,19 @@ s_gl_sprite * gl_sprite_init_jpeg (s_gl_sprite *sprite,
     return NULL;
   }
   rewind(fp);
-  jpeg_info.err = jpeg_std_error(&jpeg_err);
-  jpeg_create_decompress(&jpeg_info);
-  jpeg_stdio_src(&jpeg_info, fp);
-  jpeg_read_header(&jpeg_info, TRUE);
-  jpeg_start_decompress(&jpeg_info);
-  jpeg_w = jpeg_info.output_width;
-  jpeg_h = jpeg_info.output_height;
-  jpeg_components = jpeg_info.output_components;
-  jpeg_pixel_size = jpeg_components;
-  if (jpeg_h > SIZE_MAX / (jpeg_w * jpeg_pixel_size)) {
-    err_write_1("gl_sprite_init_jpeg: image too large: ");
+  if (! image_init_jpeg(&jpeg, &tmp.real_path, fp)) {
+    err_write_1("gl_sprite_init_jpeg: image_init_jpeg: ");
     err_puts(tmp.real_path.ptr.p_pchar);
-    jpeg_destroy_decompress(&jpeg_info);
     fclose(fp);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
     return NULL;
   }
-  jpeg_data = alloc(jpeg_h * jpeg_w * jpeg_pixel_size);
-  if (! jpeg_data) {
-    err_write_1("gl_sprite_init_jpeg: malloc failed: ");
-    err_puts(tmp.real_path.ptr.p_pchar);
-    jpeg_destroy_decompress(&jpeg_info);
-    fclose(fp);
-    str_clean(&tmp.path);
-    str_clean(&tmp.real_path);
-    return NULL;
-  }
-  i = 0;
-  while (jpeg_info.output_scanline < jpeg_info.output_height) {
-    jpeg_buffer = jpeg_data +
-      jpeg_info.output_scanline * jpeg_w * jpeg_pixel_size;
-    jpeg_read_scanlines(&jpeg_info, &jpeg_buffer, 1);
-    i++;
-  }
-  jpeg_finish_decompress(&jpeg_info);
-  jpeg_destroy_decompress(&jpeg_info);
   fclose(fp);
+  jpeg_w = jpeg.w;
+  jpeg_h = jpeg.h;
+  jpeg_pixel_size = jpeg.pixel_size;
+  jpeg_data = jpeg.data;
   tmp.total_w = jpeg_w;
   tmp.total_h = jpeg_h;
   tmp.dim_x = dim_x;
