@@ -33,6 +33,7 @@ SOURCES = \
 	"facts_with_test.c" \
 	"fn_test.c" \
 	"gl_mesh_test.c" \
+	"gl_text_test.c" \
 	"hash_test.c" \
 	"ident_test.c" \
 	"inspect_test.c" \

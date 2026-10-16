@@ -27,9 +27,12 @@ s_gl_text * gl_text_init (s_gl_text *text, const s_gl_font *font)
   assert(glGetError() == GL_NO_ERROR);
   tmp.font = font;
   glGenTextures(1, &tmp.texture);
-  assert(glGetError() == GL_NO_ERROR);
-  assert(tmp.texture);
-  *text = tmp;  
+  if (glGetError() != GL_NO_ERROR || ! tmp.texture) {
+    if (tmp.texture)
+      glDeleteTextures(1, &tmp.texture);
+    return NULL;
+  }
+  *text = tmp;
   return text;
 }
 
@@ -47,140 +50,249 @@ s_gl_text * gl_text_init_str (s_gl_text *text, const s_gl_font *font,
   s_gl_text tmp = {0};
   if (! gl_text_init(&tmp, font))
     return NULL;
-  if (! str_init_copy(&tmp.str, str))
+  if (! str_init_copy(&tmp.str, str)) {
+    gl_text_clean(&tmp);
     return NULL;
+  }
   *text = tmp;
   return text;
 }
 
-bool gl_text_render_to_texture (s_gl_text *text)
+typedef struct gl_text_bounds {
+  s64 x_min;
+  s64 y_min;
+  s64 x_max;
+  s64 y_max;
+} s_gl_text_bounds;
+
+static s64 gl_text_floor (FT_Pos value)
 {
-  character c;
-  u8 *data;
-  uw  data_w;
-  uw  data_h;
-  u8 *data_pixel;
-  uw  data_size;
-  uw  data_x;
-  uw  data_y;
-  FT_Vector delta;
-  FT_Face face;
-  const s_gl_font *font;
-  FT_GlyphSlot glyph;
-  FT_UInt glyph_index;
+  return value / 64 - (value % 64 < 0);
+}
+
+static s64 gl_text_ceil (FT_Pos value)
+{
+  return value / 64 + (value % 64 > 0);
+}
+
+static bool gl_text_bounds_add (s_gl_text_bounds *bounds, s64 left,
+                                s64 top, s64 right, s64 bottom)
+{
+  if (left < -S32_MAX || top < -S32_MAX ||
+      right > S32_MAX || bottom > S32_MAX ||
+      left > right || top > bottom)
+    return false;
+  if (left < bounds->x_min)
+    bounds->x_min = left;
+  if (top < bounds->y_min)
+    bounds->y_min = top;
+  if (right > bounds->x_max)
+    bounds->x_max = right;
+  if (bottom > bounds->y_max)
+    bounds->y_max = bottom;
+  return true;
+}
+
+static bool gl_text_bitmap_valid (const FT_Bitmap *bitmap)
+{
+  u64 pitch;
+  u64 row_size;
+  if (! bitmap->width || ! bitmap->rows)
+    return true;
+  if (! bitmap->buffer)
+    return false;
+  pitch = bitmap->pitch < 0 ? - (s64) bitmap->pitch : bitmap->pitch;
+  switch (bitmap->pixel_mode) {
+  case FT_PIXEL_MODE_GRAY:
+    if (bitmap->num_grays < 2 || bitmap->num_grays > 256)
+      return false;
+    row_size = bitmap->width;
+    break;
+  case FT_PIXEL_MODE_MONO:
+    row_size = ((u64) bitmap->width + 7) / 8;
+    break;
+  default:
+    return false;
+  }
+  return pitch >= row_size && pitch <= (u64) SW_MAX / bitmap->rows;
+}
+
+static bool gl_text_bitmap_copy (const FT_Bitmap *bitmap, s64 x, s64 y,
+                                 uw width, uw height, u8 *data)
+{
   uw i;
   uw j;
-  uw line_height;
-  uw max_ascent;
-  uw max_descent;
-  FT_UInt prev_glyph_index;
-  s_str s;
-  f32 scale_y;
-  uw x;
-  uw y;
+  uw pitch;
+  u8 *pixel;
+  const u8 *row;
+  uw row_index;
+  u32 value;
+  if (! bitmap->width || ! bitmap->rows)
+    return true;
+  if (x < 0 || y < 0 || (u64) x > width || (u64) y > height ||
+      bitmap->width > width - (uw) x ||
+      bitmap->rows > height - (uw) y)
+    return false;
+  pitch = bitmap->pitch < 0 ? - (s64) bitmap->pitch : bitmap->pitch;
+  for (i = 0; i < bitmap->rows; i++) {
+    row_index = bitmap->pitch < 0 ? bitmap->rows - 1 - i : i;
+    row = bitmap->buffer + row_index * pitch;
+    pixel = data + ((height - 1 - ((uw) y + i)) * width + (uw) x) * 4;
+    for (j = 0; j < bitmap->width; j++) {
+      if (bitmap->pixel_mode == FT_PIXEL_MODE_MONO)
+        value = row[j / 8] & (0x80 >> (j % 8)) ? 255 : 0;
+      else {
+        value = row[j];
+        if (value >= bitmap->num_grays)
+          value = bitmap->num_grays - 1;
+        value = value * 255 / (bitmap->num_grays - 1);
+      }
+      pixel[0] = 255;
+      pixel[1] = 255;
+      pixel[2] = 255;
+      pixel[3] = value + (pixel[3] * (255 - value) + 127) / 255;
+      pixel += 4;
+    }
+  }
+  return true;
+}
+
+static bool gl_text_layout (const s_gl_text *text,
+                            s_gl_text_bounds *bounds, u8 *data,
+                            uw width, uw height)
+{
+  s64 ascent;
+  character c;
+  s_gl_text_bounds current = {0};
+  FT_Vector delta;
+  FT_Face face = text->font->ft_face;
+  FT_GlyphSlot glyph;
+  FT_UInt index;
+  s64 left;
+  s64 line_height;
+  FT_UInt previous = 0;
+  s_str str = text->str;
+  s64 top;
+  s64 x = 0;
+  s64 y = 0;
+  ascent = gl_text_ceil(face->size->metrics.ascender);
+  line_height = ascent - gl_text_floor(face->size->metrics.descender);
+  if (ascent < -S32_MAX || ascent > S32_MAX ||
+      line_height <= 0 || line_height > S32_MAX)
+    return false;
+  if (str.size &&
+      ! gl_text_bounds_add(&current, 0, 0, 0, line_height))
+    return false;
+  while (str.size) {
+    if (str_read_character_utf8(&str, &c) <= 0)
+      return false;
+    if (c == '\n') {
+      x = 0;
+      y += line_height;
+      if (! gl_text_bounds_add(&current, 0, y, 0, y + line_height))
+        return false;
+      previous = 0;
+      continue;
+    }
+    index = FT_Get_Char_Index(face, c);
+    if (previous && index) {
+      if (FT_Get_Kerning(face, previous, index, FT_KERNING_DEFAULT,
+                         &delta))
+        return false;
+      x += gl_text_floor(delta.x);
+      if (! gl_text_bounds_add(&current, x, y, x, y))
+        return false;
+    }
+    if (FT_Load_Glyph(face, index, FT_LOAD_RENDER))
+      return false;
+    glyph = face->glyph;
+    if (! glyph || ! gl_text_bitmap_valid(&glyph->bitmap))
+      return false;
+    if (glyph->bitmap.width && glyph->bitmap.rows) {
+      left = x + glyph->bitmap_left;
+      top = y + ascent - glyph->bitmap_top;
+      if (! gl_text_bounds_add(&current, left, top,
+                               left + glyph->bitmap.width,
+                               top + glyph->bitmap.rows))
+        return false;
+      if (data &&
+          ! gl_text_bitmap_copy(&glyph->bitmap, left - bounds->x_min,
+                                top - bounds->y_min, width, height,
+                                data))
+        return false;
+    }
+    x += gl_text_floor(glyph->advance.x);
+    if (! gl_text_bounds_add(&current, x, y, x, y))
+      return false;
+    previous = index;
+  }
+  if (data)
+    return current.x_min == bounds->x_min &&
+      current.y_min == bounds->y_min &&
+      current.x_max == bounds->x_max &&
+      current.y_max == bounds->y_max;
+  *bounds = current;
+  return true;
+}
+
+bool gl_text_render_to_texture (s_gl_text *text)
+{
+  s_gl_text_bounds bounds = {0};
+  u8 *data;
+  uw data_h;
+  uw data_w;
+  FT_Face face;
+  GLint max_size = 0;
+  uw pix_h;
+  uw pix_w;
   assert(text);
   assert(text->font);
   assert(text->texture);
   assert(glGetError() == GL_NO_ERROR);
-  if (! text->str.size)
-    return true;
+  face = text->font->ft_face;
+  if (! face || ! face->size ||
+      ! gl_text_layout(text, &bounds, NULL, 0, 0))
+    return false;
+  if (bounds.x_max - bounds.x_min > S32_MAX ||
+      bounds.y_max - bounds.y_min > S32_MAX)
+    return false;
+  pix_w = bounds.x_max - bounds.x_min;
+  pix_h = bounds.y_max - bounds.y_min;
+  data_w = pix_w ? pix_w : 1;
+  data_h = pix_h ? pix_h : 1;
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_size);
+  if (glGetError() != GL_NO_ERROR || max_size <= 0 ||
+      data_w > (uw) max_size || data_h > (uw) max_size ||
+      data_w > (uw) SW_MAX / 4 / data_h)
+    return false;
+  if (! (data = alloc(data_w * data_h * 4)))
+    return false;
+  if (! gl_text_layout(text, &bounds, data, data_w, data_h))
+    goto ko;
   glBindTexture(GL_TEXTURE_2D, text->texture);
-  assert(glGetError() == GL_NO_ERROR);
-  font = text->font;
-  face = font->ft_face;
-  s = text->str;
-  scale_y = face->size->metrics.y_scale / 65536.0;
-  max_ascent = (u32) (face->ascender * scale_y) >> 6;
-  max_descent = (u32) abs((int) (face->descender * scale_y)) >> 6;
-  line_height = max_ascent + max_descent;
-  data_w = 0;
-  data_h = line_height;
-  x = 0;
-  prev_glyph_index = 0;
-  while (str_read_character_utf8(&s, &c) > 0) {
-    if (c == '\n') {
-      if (x > data_w)
-        data_w = x;
-      x = 0;
-      data_h += line_height;
-      prev_glyph_index = 0;
-      continue;
-    }
-    glyph_index = FT_Get_Char_Index(face, c);
-    if (prev_glyph_index && glyph_index) {
-      FT_Get_Kerning(face, prev_glyph_index, glyph_index,
-                     FT_KERNING_DEFAULT, &delta);
-      x += delta.x >> 6;
-    }
-    if (FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER)) {
-      err_write_1("gl_font_render_to_texture: failed to load glyph: ");
-      err_inspect_character(c);
-      err_write_1("\n");
-      continue;
-    }
-    glyph = face->glyph;
-    x += glyph->metrics.horiAdvance >> 6;
-    prev_glyph_index = glyph_index;
-  }
-  if (x > data_w)
-    data_w = x;
-  data_size = data_w * data_h * 4;
-  data = alloc(data_size);
-  x = 0;
-  y = 0;
-  prev_glyph_index = 0;
-  s = text->str;
-  while (str_read_character_utf8(&s, &c) > 0) {
-    if (c == '\n') {
-      x = 0;
-      y += line_height;
-      prev_glyph_index = 0;
-      continue;
-    }
-    glyph_index = FT_Get_Char_Index(face, c);
-    if (prev_glyph_index && glyph_index) {
-      FT_Vector delta;
-      FT_Get_Kerning(face, prev_glyph_index, glyph_index,
-                     FT_KERNING_DEFAULT, &delta);
-      x += delta.x >> 6;
-    }
-    if (FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER))
-      continue;
-    glyph = face->glyph;
-    i = 0;
-    while (i < glyph->bitmap.rows) {
-      data_y = data_h - 1 - (y + i + max_ascent - glyph->bitmap_top);
-      //printf("\n");
-      j = 0;
-      while (j < glyph->bitmap.width) {
-        data_x = x + j;
-        data_pixel = data + (data_y * data_w + data_x) * 4;
-        u8 value = glyph->bitmap.buffer[i * glyph->bitmap.width + j];
-        data_pixel[0] = 255;
-        data_pixel[1] = 255;
-        data_pixel[2] = 255;
-        data_pixel[3] = value;
-        //printf("%s", g_gray_3_bits_utf8[value / 32]);
-        j++;
-      }
-      i++;
-    }
-    x += glyph->metrics.horiAdvance >> 6;
-    prev_glyph_index = glyph_index;
-  }
+  if (glGetError() != GL_NO_ERROR)
+    goto ko_gl;
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data_w, data_h, 0, GL_RGBA,
                GL_UNSIGNED_BYTE, data);
-  assert(glGetError() == GL_NO_ERROR);
+  if (glGetError() != GL_NO_ERROR)
+    goto ko_gl;
   glGenerateMipmap(GL_TEXTURE_2D);
-  assert(glGetError() == GL_NO_ERROR);
-  alloc_free(data);
+  if (glGetError() != GL_NO_ERROR)
+    goto ko_gl;
   glBindTexture(GL_TEXTURE_2D, 0);
-  text->pix_w = data_w;
-  text->pix_h = data_h;
-  text->pt_w = text->pix_w * text->font->point_per_pixel;
-  text->pt_h = text->pix_h * text->font->point_per_pixel;
-  //printf("\n");
+  if (glGetError() != GL_NO_ERROR)
+    goto ko;
+  alloc_free(data);
+  text->pix_w = pix_w;
+  text->pix_h = pix_h;
+  text->pt_w = pix_w * text->font->point_per_pixel;
+  text->pt_h = pix_h * text->font->point_per_pixel;
   return true;
+ ko_gl:
+  glBindTexture(GL_TEXTURE_2D, 0);
+ ko:
+  alloc_free(data);
+  return false;
 }
 
 bool gl_text_set_font (s_gl_text *text, const s_gl_font *font)
@@ -196,11 +308,14 @@ bool gl_text_set_font (s_gl_text *text, const s_gl_font *font)
 
 bool gl_text_set_text (s_gl_text *text, const s_str *str)
 {
+  s_str tmp;
   assert(text);
   assert(str);
   if (compare_str(&text->str, str)) {
+    if (! str_init_copy(&tmp, str))
+      return false;
     str_clean(&text->str);
-    str_init_copy(&text->str, str);
+    text->str = tmp;
     return true;
   }
   return false;
@@ -234,18 +349,14 @@ bool gl_text_update (s_gl_text *text)
 
 bool gl_text_update_1 (s_gl_text *text, const char *p)
 {
-  if (gl_text_set_text_1(text, p)) {
-    gl_text_update(text);
-    return true;
-  }
+  if (gl_text_set_text_1(text, p))
+    return gl_text_update(text);
   return false;
 }
 
 bool gl_text_update_buf (s_gl_text *text, s_buf *buf)
 {
-  if (gl_text_set_text_buf(text, buf)) {
-    gl_text_update(text);
-    return true;
-  }
+  if (gl_text_set_text_buf(text, buf))
+    return gl_text_update(text);
   return false;
 }
