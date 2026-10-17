@@ -32,6 +32,7 @@ void character_test (void);
 void compare_test (void);
 void crypt_test (void);
 void env_test (void);
+void env_fork_test (void);
 void fact_test (void);
 void facts_test (void);
 void facts_cursor_test (void);
@@ -103,6 +104,7 @@ int main (int argc, char **argv)
   TEST_TARGET(set__fact);
   TEST_TARGET(skiplist__fact);
   TEST_TARGET(stacktrace);
+  TEST_TARGET(env_fork);
   TEST_TARGET(facts);
   TEST_TARGET(facts_cursor);
   TEST_TARGET(facts_with);

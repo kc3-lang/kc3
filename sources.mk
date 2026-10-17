@@ -1177,6 +1177,7 @@ KC3_C_SOURCES = \
 	"test/compare_test.c" \
 	"test/compare_test.h" \
 	"test/crypt_test.c" \
+	"test/env_fork_test.c" \
 	"test/env_test.c" \
 	"test/fact_test.c" \
 	"test/fact_test.h" \

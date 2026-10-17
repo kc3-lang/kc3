@@ -264,8 +264,13 @@ s_list ** env_args (s_env *env, s_list **dest)
 void env_args_clean (s_env *env)
 {
   list_delete_all(env->args);
-  str_delete(env->argv0);
-  str_delete(env->argv0_dir);
+  env->args = NULL;
+  if (env->argv0)
+    str_delete(env->argv0);
+  env->argv0 = NULL;
+  if (env->argv0_dir)
+    str_delete(env->argv0_dir);
+  env->argv0_dir = NULL;
 }
 
 s_env * env_args_init (s_env *env, int *argc, char ***argv)
@@ -489,22 +494,26 @@ void env_clean (s_env *env)
   str_clean(&env->restore_path);
   str_clean(&env->dump_path);
   list_delete_all(env->dlopen_list);
-  assert(env->facts->ref_count == 1);
+  assert(! env->facts || env->facts->ref_count == 1);
   if (env == env_global())
     env_cleaning(true);
 #if LIBKC3_PROFILE
-  profile_clean();
+  if (env->facts)
+    profile_clean();
 #endif
-  facts_delete(env->facts);
+  if (env->facts)
+    facts_delete(env->facts);
   env->facts = NULL;
   env_globals_clean(env);
   env_toplevel_clean(env);
   error_handler_delete_all(env->error_handler);
   env->error_handler = NULL;
-  ops_delete(env->ops);
+  if (env->ops)
+    ops_delete(env->ops);
   env->ops = NULL;
   env_args_clean(env);
-  str_delete(env->module_path);
+  if (env->module_path)
+    str_delete(env->module_path);
   env->module_path = NULL;
   list_delete_all(env->path);
   env->path = NULL;
@@ -513,8 +522,10 @@ void env_clean (s_env *env)
   if (g_kc3_env_global == env) {
     if (env->parent_env)
       g_kc3_env_global = env->parent_env;
-    else
+    else if (g_kc3_env_default != env)
       g_kc3_env_global = g_kc3_env_default;
+    else
+      g_kc3_env_global = NULL;
   }
   if (g_kc3_env_default == env) {
     sym_delete_all();
@@ -525,15 +536,25 @@ void env_clean (s_env *env)
   mutex_clean(&env->next_pointer_id_mutex);
   mutex_clean(&env->next_var_id_mutex);
 #endif
-  buf_file_close(env->in);
-  buf_delete(env->in);
+  if (env->in) {
+    buf_file_close(env->in);
+    buf_delete(env->in);
+  }
   env->in = NULL;
-  buf_file_close(env->out);
-  buf_delete(env->out);
+  if (env->out) {
+    buf_file_close(env->out);
+    buf_delete(env->out);
+  }
   env->out = NULL;
-  buf_file_close(env->err);
-  buf_delete(env->err);
+  if (env->err) {
+    buf_file_close(env->err);
+    buf_delete(env->err);
+  }
   env->err = NULL;
+  if (env->stacktrace) {
+    stacktrace_delete(env->stacktrace);
+    env->stacktrace = NULL;
+  }
   //env_freelist_clean(env);
   if (g_kc3_env_default == env) {
     alloc_free(g_kc3_env_default);
@@ -2144,25 +2165,32 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   *env = (s_env) {0};
   env->print_readably = true;
   if (! (env->stacktrace = stacktrace_new()))
-    return NULL;
+    goto ko_early;
   env_global_set(env);
-  if (! env_args_init(env, argc, argv))
-    return NULL;
+  if (! env_args_init(env, argc, argv)) {
+    env_args_clean(env);
+    stacktrace_delete(env->stacktrace);
+    env->stacktrace = NULL;
+    goto ko_early;
+  }
   sym_init_g_sym();
   kc3_integer_init();
   if (! env_toplevel_init(env))
-    return NULL;
+    goto ko;
   if (! env_globals_init(env))
-    return NULL;
+    goto ko;
   if (! (env->in = buf_new_alloc(BUF_SIZE)))
-    return NULL;
-  buf_file_open_r(env->in, stdin);
+    goto ko;
+  if (! buf_file_open_r(env->in, stdin))
+    goto ko;
   if (! (env->out = buf_new_alloc(BUF_SIZE)))
-    return NULL;
-  buf_file_open_w(env->out, stdout);
+    goto ko;
+  if (! buf_file_open_w(env->out, stdout))
+    goto ko;
   if (! (env->err = buf_new_alloc(BUF_SIZE)))
-    return NULL;
-  buf_file_open_w(env->err, stderr);
+    goto ko;
+  if (! buf_file_open_w(env->err, stderr))
+    goto ko;
   env->next_facts_id = 1;
 #if HAVE_PTHREAD
   mutex_init(&env->next_facts_id_mutex);
@@ -2175,7 +2203,8 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
 #if HAVE_PTHREAD
   mutex_init(&env->next_var_id_mutex);
 #endif
-  env->facts = facts_new();
+  if (! (env->facts = facts_new()))
+    goto ko;
 #if LIBKC3_PROFILE
   profile_init();
 #endif
@@ -2198,7 +2227,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   if (kc3_dir)
     env->path = list_new_str_1(NULL, kc3_dir, env->path);
   if (! (env->module_path = alloc(sizeof(s_str))))
-    return NULL;
+    goto ko;
   str_init_1(&path, NULL, "lib/kc3/0.1/");
   if (! file_search(&path, &g_sym_x, env->module_path)) {
     if (! strncmp(LIBDIR, "lib", 3) &&
@@ -2207,7 +2236,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
           ! LIBDIR[4]))) {
       err_puts("env_init: lib/kc3/0.1 not found in module path");
       assert(! "env_init: lib/kc3/0.1 not found in module path");
-      return NULL;
+      goto ko;
     }
     str_init_1(&path, NULL, LIBDIR "/kc3/0.1/");
     if (! file_search(&path, &g_sym_x, env->module_path)) {
@@ -2215,7 +2244,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
                "found in module path");
       assert(! "env_init: " LIBDIR "/kc3/0.1 and lib/kc3/0.1 not "
              "found in module path");
-      return NULL;
+      goto ko;
     }
   }
   env->current_defmodule = &g_sym_KC3;
@@ -2258,6 +2287,17 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     return NULL;
   }
   return env;
+ ko:
+  env_clean(env);
+  return NULL;
+ ko_early:
+  if (g_kc3_env_global == env)
+    g_kc3_env_global = env->parent_env;
+  if (g_kc3_env_default == env) {
+    g_kc3_env_default = NULL;
+    alloc_free(env);
+  }
+  return NULL;
 }
 
 // TODO: unwind_protect

@@ -27,6 +27,7 @@ SOURCES = \
 	"character_test.c" \
 	"compare_test.c" \
 	"crypt_test.c" \
+	"env_fork_test.c" \
 	"env_test.c" \
 	"fact_test.c" \
 	"facts_cursor_test.c" \

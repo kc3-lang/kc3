@@ -24,7 +24,6 @@
 void env_fork_clean (s_env *env)
 {
   assert(env);
-  //env->stacktrace
   //env->error_handler
 #if HAVE_PTHREAD
   mutex_clean(&env->next_facts_id_mutex);
@@ -33,7 +32,12 @@ void env_fork_clean (s_env *env)
 #endif
   frame_delete_all(env->frame);
   frame_delete_all(env->read_time_frame);
-  ops_delete(env->ops);
+  if (env->ops)
+    ops_delete(env->ops);
+  if (env->stacktrace) {
+    stacktrace_delete(env->stacktrace);
+    env->stacktrace = NULL;
+  }
   //tmp.unwind_protect = NULL;
 }
 
@@ -72,39 +76,33 @@ s_env * env_fork_init (s_env *env, s_env *src)
   tmp.facts = src->facts;
   tmp.frame = frame_new_copy(src->frame);
   if (src->frame && ! tmp.frame)
-    return NULL;
+    goto ko;
   tmp.global_frame = src->global_frame;
   tmp.in = src->in;
   tmp.loaded = true;
   // tmp.loop_context = NULL;
   tmp.module_path = src->module_path;
-  if (! (tmp.ops = ops_new_copy(src->ops))) {
-    frame_delete_all(tmp.frame);
-    return NULL;
-  }
+  if (! (tmp.ops = ops_new_copy(src->ops)))
+    goto ko;
   tmp.out = src->out;
   tmp.pass_by_copy = src->pass_by_copy;
   tmp.path = src->path;
   tmp.quote_level = src->quote_level;
-  if (! (tmp.read_time_frame = frame_new(NULL))) {
-    ops_delete(tmp.ops);
-    frame_delete_all(tmp.frame);
-    return NULL;
-  }
+  if (! (tmp.read_time_frame = frame_new(NULL)))
+    goto ko;
   tmp.search_modules = src->search_modules_default;
   tmp.search_modules_default = src->search_modules_default;
-  if (! (tmp.stacktrace = stacktrace_new())) {
-    frame_delete_all(tmp.read_time_frame);
-    ops_delete(tmp.ops);
-    frame_delete_all(tmp.frame);
-    return NULL;
-  }
+  if (! (tmp.stacktrace = stacktrace_new()))
+    goto ko;
   // tmp.toplevel_frame = {0};
   tmp.trace = src->trace;
   // tmp.unquote_level = 0;
   // tmp.unwind_protect = NULL;
   *env = tmp;
   return env;
+ ko:
+  env_fork_clean(&tmp);
+  return NULL;
 }
 
 s_env * env_fork_new (s_env *src)
