@@ -42,6 +42,8 @@ static uw g_image_jpeg_rows;
 static u8 g_image_jpeg_fail_stage;
 static u8 g_image_jpeg_suspend;
 static u8 g_image_jpeg_layout;
+static bool g_image_resize_ok;
+static uw g_image_resize_calls;
 
 static void image_jpeg_raise (j_decompress_ptr info)
 {
@@ -288,9 +290,11 @@ static int image_close (FILE *fp)
 
 static s_image * image_test_resize (s_image *src, s_image *dest)
 {
-  (void) src;
-  (void) dest;
-  return NULL;
+  g_image_resize_calls++;
+  if (! g_image_resize_ok)
+    return NULL;
+  memset(dest->data, 0x5A, dest->w * dest->h * dest->pixel_size);
+  return src;
 }
 
 #define image_avir_resize_8 image_test_resize
@@ -353,6 +357,81 @@ static s_image * image_test_resize (s_image *src, s_image *dest)
 #undef jpeg_start_decompress
 #undef jpeg_read_scanlines
 #undef jpeg_finish_decompress
+
+static bool g_image_cli_init_failure;
+static bool g_image_cli_access_failure;
+static bool g_image_cli_output_failure;
+static uw g_image_cli_access_calls;
+static uw g_image_cli_clean_calls;
+static uw g_image_cli_env_clean_calls;
+static uw g_image_cli_output_calls;
+static s_str g_image_cli_output;
+
+static s_env * image_cli_init (s_env *env, int *argc, char ***argv)
+{
+  (void) env;
+  if (g_image_cli_init_failure)
+    return NULL;
+  (*argc)--;
+  (*argv)++;
+  return env_global();
+}
+
+static void image_cli_env_clean (s_env *env)
+{
+  (void) env;
+  g_image_cli_env_clean_calls++;
+}
+
+static bool image_cli_access (const s_str *path, const s_sym *mode)
+{
+  (void) path;
+  (void) mode;
+  g_image_cli_access_calls++;
+  return ! g_image_cli_access_failure;
+}
+
+static void image_cli_clean (s_image *image)
+{
+  g_image_cli_clean_calls++;
+  image_test_clean(image);
+}
+
+static s_image * image_cli_write (s_image *image, s_str *path)
+{
+  uw i;
+  (void) path;
+  g_image_cli_output_calls++;
+  if (g_image_cli_output_failure)
+    return NULL;
+  for (i = 0; i < sizeof(g_image_allocs) / sizeof(*g_image_allocs); i++)
+    if (image->data && image->data == g_image_allocs[i])
+      return image_test_to_png_str(image, &g_image_cli_output) ?
+        image : NULL;
+  return NULL;
+}
+
+#undef image_clean
+#undef image_to_png_file
+#define image_clean image_cli_clean
+#define image_to_png_file image_cli_write
+#define kc3_init image_cli_init
+#define kc3_clean image_cli_env_clean
+#define file_access image_cli_access
+#define main image_cli_main
+#define usage image_cli_usage_text
+
+#include "../image/resize/image_resize.c"
+
+#undef image_clean
+#undef image_to_png_file
+#define image_clean image_test_clean
+#define image_to_png_file image_test_to_png_file
+#undef kc3_init
+#undef kc3_clean
+#undef file_access
+#undef main
+#undef usage
 
 #if HAVE_GLESV2
 
@@ -1051,6 +1130,195 @@ static char image_png_output_limit (void)
   return 0;
 }
 
+static int image_cli_run (const char *w, const char *h)
+{
+  char *argv[] = {"kc3_image_resize", (char *) w, (char *) h,
+                  "input.jpeg", "output.png", NULL};
+  return image_cli_main(5, argv);
+}
+
+static char image_cli_done (void)
+{
+  if (g_image_jpeg_file) {
+    TEST_EQ(fclose(g_image_jpeg_file), 0);
+    g_image_jpeg_file = NULL;
+  }
+  TEST_EQ(g_image_cli_clean_calls, 2);
+  TEST_EQ(g_image_cli_env_clean_calls, 1);
+  TEST_EQ(image_no_leaks(), 0);
+  return 0;
+}
+
+static char image_cli_init_failure (void)
+{
+  g_image_cli_init_failure = true;
+  TEST_ASSERT(image_cli_run("2", "1") != 0);
+  TEST_EQ(g_image_cli_clean_calls, 0);
+  TEST_EQ(g_image_cli_env_clean_calls, 0);
+  TEST_EQ(g_image_cli_access_calls, 0);
+  TEST_EQ(g_image_cli_output_calls, 0);
+  TEST_EQ(image_no_leaks(), 0);
+  return 0;
+}
+
+static char image_cli_usage (void)
+{
+  char *argv[] = {"kc3_image_resize", NULL};
+  TEST_ASSERT(image_cli_main(1, argv) != 0);
+  TEST_EQ(g_image_cli_access_calls, 0);
+  TEST_EQ(g_image_cli_output_calls, 0);
+  TEST_EQ(image_cli_done(), 0);
+  return 0;
+}
+
+static char image_cli_missing (void)
+{
+  g_image_cli_access_failure = true;
+  TEST_ASSERT(image_cli_run("2", "1") != 0);
+  TEST_EQ(g_image_cli_access_calls, 1);
+  TEST_EQ(g_image_cli_output_calls, 0);
+  TEST_EQ(g_image_alloc_calls, 0);
+  TEST_EQ(image_cli_done(), 0);
+  return 0;
+}
+
+static char image_cli_short (void)
+{
+  TEST_ASSERT((g_image_jpeg_file = tmpfile()));
+  TEST_EQ(fwrite("short", 1, 5, g_image_jpeg_file), 5);
+  TEST_EQ(fflush(g_image_jpeg_file), 0);
+  TEST_ASSERT(image_cli_run("2", "1") != 0);
+  TEST_EQ(g_image_cli_output_calls, 0);
+  TEST_EQ(g_image_alloc_calls, 0);
+  TEST_EQ(image_cli_done(), 0);
+  return 0;
+}
+
+static char image_cli_alloc_failure (void)
+{
+  uw i;
+  TEST_EQ(image_jpeg_valid_file(3, false), 0);
+  for (i = 1; i <= 4; i++) {
+    image_reset();
+    g_image_cli_clean_calls = 0;
+    g_image_cli_env_clean_calls = 0;
+    g_image_fail_alloc = i;
+    TEST_ASSERT(image_cli_run("2", "1") != 0);
+    TEST_EQ(g_image_alloc_calls, i);
+    TEST_EQ(g_image_cli_output_calls, 0);
+    TEST_EQ(g_image_cli_clean_calls, 2);
+    TEST_EQ(g_image_cli_env_clean_calls, 1);
+    TEST_EQ(image_no_leaks(), 0);
+  }
+  TEST_EQ(g_image_resize_calls, 0);
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  return 0;
+}
+
+static char image_cli_resize_failure (void)
+{
+  uw i;
+  const char *height[] = {"2", "1"};
+  TEST_EQ(image_jpeg_valid_file(3, false), 0);
+  for (i = 0; i < 2; i++) {
+    g_image_cli_clean_calls = 0;
+    g_image_cli_env_clean_calls = 0;
+    TEST_ASSERT(image_cli_run("2", height[i]) != 0);
+    TEST_EQ(g_image_resize_calls, i + 1);
+    TEST_EQ(g_image_cli_output_calls, 0);
+    TEST_EQ(g_image_cli_clean_calls, 2);
+    TEST_EQ(g_image_cli_env_clean_calls, 1);
+    TEST_EQ(image_no_leaks(), 0);
+  }
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  return 0;
+}
+
+static char image_cli_output_failure (void)
+{
+  TEST_EQ(image_jpeg_valid_file(3, false), 0);
+  g_image_resize_ok = true;
+  g_image_cli_output_failure = true;
+  TEST_ASSERT(image_cli_run("2", "1") != 0);
+  TEST_EQ(g_image_resize_calls, 1);
+  TEST_EQ(g_image_cli_output_calls, 1);
+  TEST_EQ(image_cli_done(), 0);
+  return 0;
+}
+
+static char image_cli_invalid (void)
+{
+  const char *invalid[] = {"", "0", "-1", "+1", "no", "1junk",
+                          "1 ", " 1", "0x", "0b2", "2147483648",
+                          "18446744073709551616"};
+  uw i;
+  uw j;
+  for (i = 0; i < sizeof(invalid) / sizeof(*invalid); i++)
+    for (j = 0; j < 2; j++) {
+      g_image_cli_clean_calls = 0;
+      g_image_cli_env_clean_calls = 0;
+      TEST_ASSERT(image_cli_run(j ? "2" : invalid[i],
+                                 j ? invalid[i] : "1") != 0);
+      TEST_EQ(g_image_cli_access_calls, 0);
+      TEST_EQ(g_image_cli_output_calls, 0);
+      TEST_EQ(g_image_alloc_calls, 0);
+      TEST_EQ(image_cli_done(), 0);
+    }
+  return 0;
+}
+
+static char image_cli_size_limit (void)
+{
+  TEST_EQ(image_jpeg_valid_file(3, false), 0);
+  g_image_fail_alloc = 3;
+  TEST_ASSERT(image_cli_run("2147483647", "2147483647") != 0);
+  TEST_EQ(g_image_alloc_calls, 2);
+  TEST_EQ(g_image_resize_calls, 0);
+  TEST_EQ(g_image_cli_output_calls, 0);
+  TEST_EQ(image_cli_done(), 0);
+  return 0;
+}
+
+static char image_cli_success (void)
+{
+  const char *width[] = {"2", "0x2", "0b10", "0o2"};
+  const char *height[] = {"2", "0x1", "0b1", "0o1"};
+  png_image png;
+  u8 pixels[12];
+  uw i;
+  uw j;
+  TEST_EQ(image_jpeg_valid_file(3, false), 0);
+  g_image_resize_ok = true;
+  for (i = 0; i < sizeof(width) / sizeof(*width); i++) {
+    g_image_cli_clean_calls = 0;
+    g_image_cli_env_clean_calls = 0;
+    TEST_EQ(image_cli_run(width[i], height[i]), 0);
+    TEST_EQ(g_image_resize_calls, i + 1);
+    TEST_EQ(g_image_cli_output_calls, i + 1);
+    TEST_EQ(g_image_cli_clean_calls, 2);
+    TEST_EQ(g_image_cli_env_clean_calls, 1);
+    png = (png_image) {.version = PNG_IMAGE_VERSION};
+    TEST_ASSERT(png_image_begin_read_from_memory
+                (&png, g_image_cli_output.ptr.p_pvoid,
+                 g_image_cli_output.size));
+    TEST_EQ(png.width, 2);
+    TEST_EQ(png.height, i ? 1 : 2);
+    png.format = PNG_FORMAT_RGB;
+    TEST_ASSERT(png_image_finish_read(&png, NULL, pixels, 0, NULL));
+    for (j = 0; j < (i ? 6 : 12); j++)
+      TEST_EQ(pixels[j], 0x5A);
+    png_image_free(&png);
+    image_free(g_image_cli_output.free.p_pvoid);
+    g_image_cli_output = (s_str) {0};
+    TEST_EQ(image_no_leaks(), 0);
+  }
+  TEST_EQ(fclose(g_image_jpeg_file), 0);
+  g_image_jpeg_file = NULL;
+  return 0;
+}
+
 #define IMAGE_CASE(name)                       \
   TEST_CASE(image_ ## name)                    \
   {                                           \
@@ -1074,6 +1342,16 @@ IMAGE_CASE(jpeg_no_progress)
 IMAGE_CASE(jpeg_limits)
 IMAGE_CASE(jpeg_late_error)
 IMAGE_CASE(jpeg_warning)
+IMAGE_CASE(cli_init_failure)
+IMAGE_CASE(cli_usage)
+IMAGE_CASE(cli_missing)
+IMAGE_CASE(cli_short)
+IMAGE_CASE(cli_alloc_failure)
+IMAGE_CASE(cli_resize_failure)
+IMAGE_CASE(cli_output_failure)
+IMAGE_CASE(cli_invalid)
+IMAGE_CASE(cli_size_limit)
+IMAGE_CASE(cli_success)
 #if HAVE_GLESV2
 IMAGE_CASE(jpeg_sprite)
 IMAGE_CASE(jpeg_sprite_dispatch)
@@ -1101,6 +1379,16 @@ void image_test (void)
   TEST_CASE_RUN(image_jpeg_limits);
   TEST_CASE_RUN(image_jpeg_late_error);
   TEST_CASE_RUN(image_jpeg_warning);
+  TEST_CASE_RUN(image_cli_init_failure);
+  TEST_CASE_RUN(image_cli_usage);
+  TEST_CASE_RUN(image_cli_missing);
+  TEST_CASE_RUN(image_cli_short);
+  TEST_CASE_RUN(image_cli_alloc_failure);
+  TEST_CASE_RUN(image_cli_resize_failure);
+  TEST_CASE_RUN(image_cli_output_failure);
+  TEST_CASE_RUN(image_cli_invalid);
+  TEST_CASE_RUN(image_cli_size_limit);
+  TEST_CASE_RUN(image_cli_success);
 #if HAVE_GLESV2
   TEST_CASE_RUN(image_jpeg_sprite);
   TEST_CASE_RUN(image_jpeg_sprite_dispatch);
