@@ -1186,6 +1186,7 @@ KC3_C_SOURCES = \
 	"test/fn_test.c" \
 	"test/gl_mesh_test.c" \
 	"test/gl_text_test.c" \
+	"test/gtk4_signal_test.c" \
 	"test/hash_test.c" \
 	"test/ident_test.c" \
 	"test/image_test.c" \

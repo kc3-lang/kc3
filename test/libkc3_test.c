@@ -39,6 +39,7 @@ void facts_with_test (void);
 void fn_test (void);
 void gl_mesh_test (void);
 void gl_text_test (void);
+void gtk4_signal_test (void);
 void hash_test (void);
 void ident_test (void);
 void image_test (void);
@@ -82,6 +83,7 @@ int main (int argc, char **argv)
   TEST_TARGET(array);
   TEST_TARGET(gl_mesh);
   TEST_TARGET(gl_text);
+  TEST_TARGET(gtk4_signal);
   TEST_TARGET(image);
   TEST_TARGET(str);
   TEST_TARGET(sym);

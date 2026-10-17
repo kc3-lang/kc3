@@ -35,6 +35,7 @@ SOURCES = \
 	"fn_test.c" \
 	"gl_mesh_test.c" \
 	"gl_text_test.c" \
+	"gtk4_signal_test.c" \
 	"hash_test.c" \
 	"ident_test.c" \
 	"image_test.c" \

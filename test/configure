@@ -59,6 +59,7 @@ pkg_config glesv2
 pkg_config freetype2
 pkg_config libjpeg
 pkg_config libpng
+pkg_config gtk4
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
 config_have_generic_sw_uw
