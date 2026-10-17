@@ -13,6 +13,6 @@
 all: test
 
 test:
-	../kc3_to_c ../../../lib/kc3/0.1/http.kc3 http
+	KC3_TEST=to_c ${MAKE} -C ../../../test test_libkc3
 
 .PHONY: test

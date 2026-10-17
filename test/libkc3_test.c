@@ -59,6 +59,7 @@ void str_test (void);
 void struct_test (void);
 void sym_test (void);
 void tag_test (void);
+void to_c_test (void);
 void tuple_test (void);
 void types_test (void);
 
@@ -93,6 +94,7 @@ int main (int argc, char **argv)
   TEST_TARGET(fn);
   TEST_TARGET(pcall);
   TEST_TARGET(tag);
+  TEST_TARGET(to_c);
   TEST_TARGET(inspect);
   TEST_TARGET(fact);
   TEST_TARGET(compare);

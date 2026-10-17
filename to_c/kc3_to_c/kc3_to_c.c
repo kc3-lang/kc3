@@ -40,7 +40,8 @@ int main (int argc, char **argv)
     goto ko;
   if ((r = to_c_file(&context, &in_str)) < 0)
     goto ko;
-  to_c_clean(&context);
+  if (! to_c_close(&context))
+    goto ko;
   kc3_clean(NULL);
   return 0;
  ko:

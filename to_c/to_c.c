@@ -15,6 +15,7 @@
 #include "../libkc3/buf.h"
 #include "../libkc3/buf_file.h"
 #include "../libkc3/buf_parse.h"
+#include "../libkc3/buf_save.h"
 #include "../libkc3/character.h"
 #include "../libkc3/file.h"
 #include "../libkc3/str.h"
@@ -22,30 +23,63 @@
 #include "../libkc3/tag.h"
 #include "to_c.h"
 
+static sw to_c_skip (s_buf *in)
+{
+  character c;
+  bool comment = false;
+  sw r;
+  while (1) {
+    if ((r = buf_refill(in, 1)) <= 0)
+      return r;
+    if ((r = buf_peek_character_utf8(in, &c)) <= 0)
+      return r < 0 ? r : -1;
+    if (c == '#')
+      comment = true;
+    if (! comment && ! character_is_space(c))
+      return 1;
+    if ((r = buf_read_character_utf8(in, &c)) <= 0)
+      return r < 0 ? r : -1;
+    if (c == '\n')
+      comment = false;
+  }
+}
+
 sw to_c_buf (s_to_c *context, s_buf *in)
 {
+  bool progress;
   sw r;
   sw result = 0;
+  s_buf_save save;
   s_tag tag = {0};
   assert(context);
   assert(in);
   while (1) {
-    if ((r = buf_ignore_spaces(in)) < 0)
-      break;
-    if ((r = buf_parse_comments(in)) < 0)
-      break;
-    if ((r = buf_parse_tag(in, &tag)) < 0)
-      break;
-    if (! r)
-      continue;
-    if ((r = to_c_tag(context, &tag)) < 0) {
-      tag_clean(&tag);
+    if ((r = to_c_skip(in)) < 0)
       return r;
+    if (! r)
+      return result;
+    buf_save_init(in, &save);
+    r = buf_parse_tag(in, &tag);
+    progress = in->rpos > save.rpos;
+    buf_save_clean(in, &save);
+    if (r <= 0) {
+      err_puts("to_c_buf: invalid or incomplete input");
+      return r < 0 ? r : -1;
     }
-    result += r;
+    if (! progress) {
+      tag_clean(&tag);
+      err_puts("to_c_buf: parser made no progress");
+      return -1;
+    }
+    r = to_c_tag(context, &tag);
     tag_clean(&tag);
+    tag_init(&tag);
+    if (r < 0)
+      return r;
+    if (r > SW_MAX - result)
+      return -1;
+    result += r;
   }
-  return result;
 }
 
 void to_c_clean (s_to_c *context)
@@ -69,6 +103,43 @@ void to_c_clean (s_to_c *context)
   str_clean(&context->h_ifndef);
   str_clean(&context->h_path);
   str_clean(&context->name);
+  *context = (s_to_c) {0};
+}
+
+s_to_c * to_c_close (s_to_c *context)
+{
+  bool ok = true;
+  assert(context);
+  if (context->c_buf.user_ptr) {
+    if (buf_flush(&context->c_buf) < 0)
+      ok = false;
+    buf_file_close(&context->c_buf);
+  }
+  if (context->h_buf.user_ptr) {
+    if (buf_flush(&context->h_buf) < 0)
+      ok = false;
+    buf_file_close(&context->h_buf);
+  }
+  if (context->c_fp) {
+    if (ferror(context->c_fp))
+      ok = false;
+    if (fclose(context->c_fp))
+      ok = false;
+    context->c_fp = NULL;
+  }
+  if (context->h_fp) {
+    if (ferror(context->h_fp))
+      ok = false;
+    if (fclose(context->h_fp))
+      ok = false;
+    context->h_fp = NULL;
+  }
+  to_c_clean(context);
+  if (! ok) {
+    err_puts("to_c_close: output error");
+    return NULL;
+  }
+  return context;
 }
 
 sw to_c_defmodule_do_block (s_to_c *context, const s_do_block *do_block)
@@ -115,8 +186,8 @@ sw to_c_defmodule_tag (s_to_c *context, s_tag *tag)
 {
   assert(context);
   assert(tag);
-  err_puts("to_c_defmodule_tag: warning: not implemented");
-  return 0;
+  err_puts("to_c_defmodule_tag: not implemented");
+  return -1;
 }
 
 sw to_c_file (s_to_c *context, s_str *in)
@@ -138,9 +209,14 @@ sw to_c_file (s_to_c *context, s_str *in)
     return -1;
   }
   r = to_c_buf(context, &buf);
+  if (ferror(fp)) {
+    err_puts("to_c_file: read error");
+    r = -1;
+  }
   buf_file_close(&buf);
   buf_clean(&buf);
-  fclose(fp);
+  if (fclose(fp))
+    r = -1;
   return r;
 }
 
@@ -195,10 +271,10 @@ sw to_c_tag (s_to_c *context, s_tag *tag)
   case TAG_PCALL:
     return to_c_tag_call(context, tag->data.td_pcall);
   default:
-    err_write_1("to_c_tag: ignored tag: ");
+    err_write_1("to_c_tag: unsupported tag: ");
     err_inspect_tag(tag);
     err_write_1("\n");
-    return 0;
+    return -1;
   }
 }
 
@@ -217,55 +293,62 @@ sw to_c_tag_call (s_to_c *context, s_call *call)
       call->arguments->next.type == TAG_PLIST &&
       call->arguments->next.data.td_plist &&
       (tag_do_block = &call->arguments->next.data.td_plist->tag) &&
-      tag_do_block->type == TAG_DO_BLOCK)
+      tag_do_block->type == TAG_DO_BLOCK &&
+      call->arguments->next.data.td_plist->next.type == TAG_PLIST &&
+      ! call->arguments->next.data.td_plist->next.data.td_plist)
     return to_c_tag_call_defmodule(context, tag_sym->data.td_psym,
                                    &tag_do_block->data.td_do_block);
-  return 0;
+  err_puts("to_c_tag_call: unsupported call");
+  return -1;
 }
 
 sw to_c_tag_call_defmodule (s_to_c *context,
                             const s_sym *sym,
                             const s_do_block *do_block)
 {
+  s_str h_ifndef = {0};
   sw r;
   sw result = 0;
   assert(context);
   assert(sym);
   assert(do_block);
-  if (! to_c_defmodule_sym_to_str(sym, &context->h_ifndef))
+  if (! to_c_defmodule_sym_to_str(sym, &h_ifndef))
     return -1;
+  str_clean(&context->h_ifndef);
+  context->h_ifndef = h_ifndef;
   if ((r = buf_write_1(&context->h_buf,
                        "/* This file was generated from KC3. */\n"
                        "#ifndef KC3_TO_C_DEFMODULE_")) <= 0)
-    return r;
+    return r < 0 ? r : -1;
   result += r;
   if ((r = buf_write_str(&context->h_buf, &context->h_ifndef)) <= 0)
-    return r;
-  
+    return r < 0 ? r : -1;
+  result += r;
   if ((r = buf_write_1(&context->h_buf, "_H\n\n")) <= 0)
-    return r;
+    return r < 0 ? r : -1;
   result += r;
   if ((r = buf_write_1(&context->c_buf,
                        "/* This file was generated from KC3. */\n"
                        "#include \"")) <= 0)
-    return r;
+    return r < 0 ? r : -1;
   result += r;
   if ((r = buf_write_str(&context->c_buf, &context->name)) <= 0)
-    return r;
+    return r < 0 ? r : -1;
   result += r;
   if ((r = buf_write_1(&context->c_buf, ".h\"\n\n")) <= 0)
-    return r;
+    return r < 0 ? r : -1;
   result += r;
   if ((r = to_c_defmodule_do_block(context, do_block)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(&context->h_buf, "#endif /* KC3_TO_C_DEFMODULE_")) <= 0)
-    return r;
+    return r < 0 ? r : -1;
   result += r;
   if ((r = buf_write_str(&context->h_buf, &context->h_ifndef)) <= 0)
-    return r;
+    return r < 0 ? r : -1;
+  result += r;
   if ((r = buf_write_1(&context->h_buf, "_H */\n")) <= 0)
-    return r;
+    return r < 0 ? r : -1;
   result += r;
   return result;
 }
