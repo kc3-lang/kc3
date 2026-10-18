@@ -17,6 +17,7 @@
 #include <string.h>
 #include "../libkc3/alloc.h"
 #include "../libkc3/buf.h"
+#include "../libkc3/buf_save.h"
 #include "../libkc3/str.h"
 #include "test.h"
 
@@ -139,6 +140,8 @@ TEST_CASE_PROTOTYPE(buf_new_delete);
 TEST_CASE_PROTOTYPE(buf_new_alloc_delete);
 TEST_CASE_PROTOTYPE(buf_peek_1);
 TEST_CASE_PROTOTYPE(buf_peek_character_utf8);
+TEST_CASE_PROTOTYPE(buf_character_utf8_refill);
+TEST_CASE_PROTOTYPE(buf_character_utf8_refill_error);
 TEST_CASE_PROTOTYPE(buf_peek_f32);
 TEST_CASE_PROTOTYPE(buf_peek_f64);
 TEST_CASE_PROTOTYPE(buf_peek_s8);
@@ -195,6 +198,8 @@ void buf_test (void)
   TEST_CASE_RUN(buf_write_str);
   TEST_CASE_RUN(buf_peek_1);
   TEST_CASE_RUN(buf_peek_character_utf8);
+  TEST_CASE_RUN(buf_character_utf8_refill);
+  TEST_CASE_RUN(buf_character_utf8_refill_error);
   TEST_CASE_RUN(buf_peek_s8);
   TEST_CASE_RUN(buf_peek_s16);
   TEST_CASE_RUN(buf_peek_u8);
@@ -563,6 +568,147 @@ TEST_CASE(buf_peek_character_utf8)
   BUF_TEST_PEEK_CHARACTER_UTF8("0", 1, '0');
 }
 TEST_CASE_END(buf_peek_character_utf8)
+
+TEST_CASE(buf_character_utf8_refill)
+{
+  const struct {
+    const char *data;
+    uw size;
+    character c;
+  } cases[] = {
+    {"\xC2\xA2", 2, 0xA2},
+    {"\xE2\x82\xAC", 3, 0x20AC},
+    {"\xF0\x9F\x98\x80", 4, 0x1F600}
+  };
+  s_buf buf;
+  character c;
+  uw chunk;
+  char data[16];
+  uw i;
+  uw j;
+  uw mode;
+  uw pos;
+  uw prefix;
+  s_buf_save save;
+  uw saved;
+  s_test_buf_source source;
+  uw start;
+  for (i = 0; i < sizeof(cases) / sizeof(*cases); i++) {
+    for (prefix = 1; prefix < cases[i].size; prefix++) {
+      start = 8 - prefix;
+      for (chunk = 1; chunk <= cases[i].size; chunk++) {
+        for (saved = 0; saved < 4; saved++) {
+          for (mode = 0; mode < 2; mode++) {
+            memset(data, 0x55, sizeof(data));
+            memcpy(data + start, cases[i].data, prefix);
+            TEST_ASSERT(buf_init(&buf, false, saved == 3 ? 12 : 8,
+                                  data));
+            buf.wpos = 8;
+            buf.rpos = start;
+            if (saved) {
+              if (saved == 2)
+                buf.rpos = 3;
+              else if (saved == 3)
+                buf.rpos = 0;
+              buf_save_init(&buf, &save);
+              buf.rpos = start;
+            }
+            pos = saved == 3 ? start : saved == 2 ? start - 3 : 0;
+            source = (s_test_buf_source) {
+              cases[i].data + prefix, cases[i].size - prefix, 0,
+              chunk};
+            buf.refill = test_buf_refill;
+            buf.user_ptr = &source;
+            c = 0;
+            if (mode)
+              TEST_EQ(buf_read_character_utf8(&buf, &c), cases[i].size);
+            else
+              TEST_EQ(buf_peek_character_utf8(&buf, &c), cases[i].size);
+            TEST_EQ(c, cases[i].c);
+            TEST_EQ(buf.rpos, pos + (mode ? cases[i].size : 0));
+            TEST_EQ(buf.wpos, pos + cases[i].size);
+            TEST_EQ(source.pos, source.size);
+            TEST_MEMCMP(data + pos, cases[i].data, cases[i].size);
+            if (! mode) {
+              TEST_EQ(buf_read_character_utf8(&buf, &c), cases[i].size);
+              TEST_EQ(c, cases[i].c);
+              TEST_EQ(buf.rpos, pos + cases[i].size);
+            }
+            if (saved) {
+              TEST_EQ(save.rpos, 0);
+              TEST_EQ(save.wpos, 8 - (start - pos));
+              TEST_ASSERT(buf_save_restore_rpos(&buf, &save));
+              TEST_EQ(buf.rpos, 0);
+              TEST_ASSERT(buf_save_clean(&buf, &save));
+              TEST_ASSERT(! buf.save);
+            }
+            for (j = buf.size; j < sizeof(data); j++)
+              TEST_EQ(data[j], 0x55);
+            buf_clean(&buf);
+          }
+        }
+      }
+    }
+  }
+}
+TEST_CASE_END(buf_character_utf8_refill)
+
+TEST_CASE(buf_character_utf8_refill_error)
+{
+  const struct {
+    const char *data;
+    uw size;
+    sw result;
+  } cases[] = {
+    {"\xC2", 1, -1},
+    {"\xE2", 1, -1},
+    {"\xE2\x82", 2, -1},
+    {"\xF0", 1, -1},
+    {"\xF0\x9F", 2, -1},
+    {"\xF0\x9F\x98", 3, -1},
+    {"\xC2x", 2, 0},
+    {"\xE2x\xAC", 3, 0},
+    {"\xE2\x82x", 3, 0},
+    {"\xF0x\x98\x80", 4, 0},
+    {"\xF0\x9Fx\x80", 4, 0},
+    {"\xF0\x9F\x98x", 4, 0}
+  };
+  s_buf buf;
+  character c;
+  char data[12];
+  uw failure;
+  uw i;
+  uw mode;
+  s_test_buf_source source;
+  for (i = 0; i < sizeof(cases) / sizeof(*cases); i++) {
+    for (failure = 0; failure < 2; failure++) {
+      for (mode = 0; mode < 2; mode++) {
+        memset(data, 0x80, sizeof(data));
+        data[7] = cases[i].data[0];
+        TEST_ASSERT(buf_init(&buf, false, 8, data));
+        buf.rpos = 7;
+        buf.wpos = 8;
+        source = (s_test_buf_source) {
+          cases[i].data + 1, cases[i].size - 1, 0, 1};
+        buf.refill = failure ? test_buf_refill_error : test_buf_refill;
+        buf.user_ptr = &source;
+        c = 0x12345;
+        if (mode)
+          TEST_EQ(buf_read_character_utf8(&buf, &c),
+                   failure ? -9 : cases[i].result);
+        else
+          TEST_EQ(buf_peek_character_utf8(&buf, &c),
+                   failure ? -9 : cases[i].result);
+        TEST_EQ(c, 0x12345);
+        TEST_EQ(buf.rpos, 0);
+        TEST_EQ(buf.wpos, failure ? 1 : cases[i].size);
+        TEST_EQ(source.pos, failure ? 0 : source.size);
+        buf_clean(&buf);
+      }
+    }
+  }
+}
+TEST_CASE_END(buf_character_utf8_refill_error)
 
 TEST_CASE(buf_peek_s8)
 {

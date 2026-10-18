@@ -668,6 +668,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
       r = -1;
       goto clean;
     }
+    b = buf->ptr.p_pu8 + buf->rpos;
     if ((b[1] & _11000000) != _10000000) {
       r = 0;
       goto clean;
@@ -685,6 +686,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
       r = -1;
       goto clean;
     }
+    b = buf->ptr.p_pu8 + buf->rpos;
     if ((b[1] & _11000000) != _10000000) {
       r = 0;
       goto clean;
@@ -707,6 +709,7 @@ sw buf_peek_character_utf8 (s_buf *buf, character *c)
       r = -1;
       goto clean;
     }
+    b = buf->ptr.p_pu8 + buf->rpos;
     if ((b[1] & _11000000) != _10000000) {
       r = 0;
       goto clean;
