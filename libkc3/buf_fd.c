@@ -188,6 +188,7 @@ sw buf_fd_open_w_flush (s_buf *buf)
   s_buf_fd *buf_fd;
   sw e;
   uw min_wpos;
+  sw r;
   s_buf_save *save;
   sw size;
   sw w;
@@ -205,6 +206,7 @@ sw buf_fd_open_w_flush (s_buf *buf)
     return buf->size - buf->wpos;
   buf_fd = buf->user_ptr;
   bytes = 0;
+  r = -1;
   while (bytes < size) {
     w = send(buf_fd->fd, buf->ptr.p_pchar + bytes,
              size - bytes, MSG_NOSIGNAL);
@@ -225,31 +227,33 @@ sw buf_fd_open_w_flush (s_buf *buf)
           e = errno;
           err_write_1("buf_fd_open_w_flush: poll: ");
           err_puts(strerror(e));
-          return -1;
+          goto clean;
         }
         if (! poll_r) {
           err_puts("buf_fd_open_w_flush: poll: timeout");
-          return -1;
+          goto clean;
         }
         continue;
       }
       e = errno;
       err_write_1("buf_fd_open_w_flush: write: ");
       err_puts(strerror(e));
-      return -1;
+      goto clean;
     }
     bytes += w;
   }
-  if (buf->wpos > (uw) size)
-    memmove(buf->ptr.p_pvoid, buf->ptr.p_pchar + size,
-            buf->wpos - size);
-  buf->wpos -= size;
+  r = bytes;
+ clean:
+  if (bytes && buf->wpos > (uw) bytes)
+    memmove(buf->ptr.p_pvoid, buf->ptr.p_pchar + bytes,
+            buf->wpos - bytes);
+  buf->wpos -= bytes;
   save = buf->save;
   while (save) {
-    save->wpos -= size;
+    save->wpos -= bytes;
     save = save->next;
   }
-  return size;
+  return r;
 }
 
 s64 buf_fd_open_w_seek (s_buf *buf, s64 offset, s8 from)

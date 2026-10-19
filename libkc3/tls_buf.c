@@ -128,6 +128,7 @@ sw tls_buf_open_w_flush (s_buf *buf)
 {
   sw bytes;
   uw min_wpos;
+  sw r;
   s_buf_save *save;
   sw size;
   s_tls_buf *tls_buf;
@@ -146,34 +147,37 @@ sw tls_buf_open_w_flush (s_buf *buf)
     return buf->size - buf->wpos;
   tls_buf = buf->user_ptr;
   bytes = 0;
+  r = -1;
   while (bytes < size) {
     if (tls_buf->deadline.tv_sec &&
         timespec_timeout_expired(&tls_buf->deadline))
-      return -1;
+      goto clean;
     w = tls_write(tls_buf->ctx, buf->ptr.p_pchar + bytes,
                   size - bytes);
     if (w == TLS_WANT_POLLIN || w == TLS_WANT_POLLOUT) {
       if (tls_buf->deadline.tv_sec &&
           ! socket_wait(tls_buf->sockfd, w == TLS_WANT_POLLOUT,
                          &tls_buf->deadline))
-        return -1;
+        goto clean;
       continue;
     }
     if (w <= 0) {
       err_write_1("tls_buf_open_w_flush: tls_write: ");
       err_puts(tls_error(tls_buf->ctx));
-      return -1;
+      goto clean;
     }
     bytes += w;
   }
-  if (buf->wpos > (uw) size)
-    memmove(buf->ptr.p_pvoid, buf->ptr.p_pchar + size,
-            buf->wpos - size);
-  buf->wpos -= size;
+  r = bytes;
+ clean:
+  if (bytes && buf->wpos > (uw) bytes)
+    memmove(buf->ptr.p_pvoid, buf->ptr.p_pchar + bytes,
+            buf->wpos - bytes);
+  buf->wpos -= bytes;
   save = buf->save;
   while (save) {
-    save->wpos -= size;
+    save->wpos -= bytes;
     save = save->next;
   }
-  return size;
+  return r;
 }

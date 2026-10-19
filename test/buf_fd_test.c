@@ -1,4 +1,5 @@
 #include <errno.h>
+#include <poll.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
@@ -7,7 +8,173 @@
 #include <unistd.h>
 #include "../libkc3/buf.h"
 #include "../libkc3/buf_fd.h"
+#include "../libkc3/buf_save.h"
 #include "test.h"
+
+typedef struct buf_fd_sink {
+  char data[64];
+  uw size;
+  uw calls;
+  uw fail_at;
+  uw sends;
+  uw writes;
+  uw polls;
+  bool file;
+  int error;
+  int poll_result;
+} s_buf_fd_sink;
+
+static s_buf_fd_sink *g_buf_fd_sink;
+
+static ssize_t buf_fd_sink_write (const void *data, size_t size)
+{
+  s_buf_fd_sink *sink = g_buf_fd_sink;
+  if (++sink->calls == sink->fail_at) {
+    errno = sink->error;
+    return -1;
+  }
+  if (! size || sink->size == sizeof(sink->data)) {
+    errno = EIO;
+    return -1;
+  }
+  memcpy(sink->data + sink->size, data, 1);
+  sink->size++;
+  return 1;
+}
+
+static ssize_t buf_fd_send_test (int fd, const void *data, size_t size,
+                                int flags)
+{
+  (void) fd;
+  (void) flags;
+  g_buf_fd_sink->sends++;
+  if (g_buf_fd_sink->file) {
+    errno = ENOTSOCK;
+    return -1;
+  }
+  return buf_fd_sink_write(data, size);
+}
+
+static ssize_t buf_fd_write_test (int fd, const void *data, size_t size)
+{
+  (void) fd;
+  g_buf_fd_sink->writes++;
+  return buf_fd_sink_write(data, size);
+}
+
+static int buf_fd_poll_test (struct pollfd *fds, nfds_t count,
+                            int timeout)
+{
+  (void) fds;
+  (void) count;
+  (void) timeout;
+  g_buf_fd_sink->polls++;
+  errno = EINTR;
+  return g_buf_fd_sink->poll_result;
+}
+
+void buf_fd_test_close (s_buf *buf);
+s_buf * buf_fd_test_open_r (s_buf *buf, t_fd fd);
+s_buf * buf_fd_test_open_w (s_buf *buf, t_fd fd);
+
+#define send buf_fd_send_test
+#define write buf_fd_write_test
+#define poll buf_fd_poll_test
+#define buf_fd_close buf_fd_test_close
+#define buf_fd_open_r buf_fd_test_open_r
+#define buf_fd_open_r_refill buf_fd_test_open_r_refill
+#define buf_fd_open_r_seek buf_fd_test_open_r_seek
+#define buf_fd_open_r_tell buf_fd_test_open_r_tell
+#define buf_fd_open_w buf_fd_test_open_w
+#define buf_fd_open_w_flush buf_fd_test_open_w_flush
+#define buf_fd_open_w_seek buf_fd_test_open_w_seek
+#define buf_fd_open_w_tell buf_fd_test_open_w_tell
+#include "../libkc3/buf_fd.c"
+#undef send
+#undef write
+#undef poll
+#undef buf_fd_close
+#undef buf_fd_open_r
+#undef buf_fd_open_r_refill
+#undef buf_fd_open_r_seek
+#undef buf_fd_open_r_tell
+#undef buf_fd_open_w
+#undef buf_fd_open_w_flush
+#undef buf_fd_open_w_seek
+#undef buf_fd_open_w_tell
+
+static char buf_fd_partial_error_test (uw progress, uw mode,
+                                      bool saved, bool close_retry)
+{
+  s_buf buf;
+  const char data[] = {'A', 0, 'B', 'C', 'D', (char) 0xFF, 'E', 'F'};
+  uw done = saved ? 4 : sizeof(data);
+  s_buf_save inner;
+  s_buf_save outer;
+  s_buf_fd_sink sink = {0};
+  sink.fail_at = progress + 1;
+  sink.file = mode == 1;
+  sink.error = mode < 2 ? EIO : EAGAIN;
+  sink.poll_result = mode == 3 ? -1 : 0;
+  g_buf_fd_sink = &sink;
+  TEST_ASSERT(buf_init_alloc(&buf, 16));
+  TEST_EQ(buf_write(&buf, data, 4), 4);
+  if (saved)
+    TEST_EQ(buf_save_init(&buf, &outer), &buf);
+  TEST_EQ(buf_write(&buf, data + 4, 2), 2);
+  if (saved)
+    TEST_EQ(buf_save_init(&buf, &inner), &buf);
+  TEST_EQ(buf_write(&buf, data + 6, 2), 2);
+  TEST_EQ(buf_fd_test_open_w(&buf, 123), &buf);
+  TEST_EQ(buf_flush(&buf), -1);
+  TEST_EQ(sink.size, progress);
+  TEST_MEMCMP(sink.data, data, progress);
+  TEST_EQ(sink.calls, progress + 1);
+  TEST_EQ(sink.sends, sink.calls);
+  TEST_EQ(sink.writes, sink.file ? sink.calls : 0);
+  TEST_EQ(sink.polls, mode >= 2 ? 1 : 0);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, sizeof(data) - progress);
+  TEST_MEMCMP(buf.ptr.p_pchar, data + progress, buf.wpos);
+  if (saved) {
+    TEST_EQ(outer.wpos, 4 - progress);
+    TEST_EQ(inner.wpos, 6 - progress);
+    TEST_EQ(outer.rpos, 0);
+    TEST_EQ(inner.rpos, 0);
+    TEST_EQ(buf.save, &inner);
+    TEST_EQ(inner.next, &outer);
+  }
+  sink.fail_at = 0;
+  if (close_retry)
+    buf_fd_test_close(&buf);
+  else
+    TEST_EQ(buf_flush(&buf), done - progress);
+  TEST_EQ(sink.size, done);
+  TEST_MEMCMP(sink.data, data, done);
+  TEST_EQ(buf.wpos, sizeof(data) - done);
+  TEST_MEMCMP(buf.ptr.p_pchar, data + done, buf.wpos);
+  if (saved) {
+    TEST_EQ(outer.wpos, 0);
+    TEST_EQ(inner.wpos, 2);
+    TEST_EQ(buf_save_restore_wpos(&buf, &inner), &buf);
+    TEST_EQ(buf.wpos, 2);
+    TEST_EQ(buf_save_clean(&buf, &inner), &buf);
+    TEST_EQ(buf_save_clean(&buf, &outer), &buf);
+    if (! close_retry) {
+      TEST_EQ(buf_flush(&buf), 2);
+      TEST_EQ(sink.size, 6);
+      TEST_MEMCMP(sink.data, data, 6);
+      TEST_EQ(buf.wpos, 0);
+    }
+  }
+  if (! close_retry)
+    buf_fd_test_close(&buf);
+  TEST_EQ(buf.user_ptr, NULL);
+  TEST_EQ(buf.flush, NULL);
+  buf_clean(&buf);
+  g_buf_fd_sink = NULL;
+  return 0;
+}
 
 static int buf_fd_child_test (char (*test)(bool), bool arg)
 {
@@ -101,6 +268,9 @@ TEST_CASE_PROTOTYPE(buf_fd_shutdown_write);
 TEST_CASE_PROTOTYPE(buf_fd_socket_flush);
 TEST_CASE_PROTOTYPE(buf_fd_pipe_flush);
 TEST_CASE_PROTOTYPE(buf_fd_file_flush);
+TEST_CASE_PROTOTYPE(buf_fd_partial_retry);
+TEST_CASE_PROTOTYPE(buf_fd_partial_close);
+TEST_CASE_PROTOTYPE(buf_fd_partial_saves);
 
 void buf_fd_test (void)
 {
@@ -109,7 +279,42 @@ void buf_fd_test (void)
   TEST_CASE_RUN(buf_fd_socket_flush);
   TEST_CASE_RUN(buf_fd_pipe_flush);
   TEST_CASE_RUN(buf_fd_file_flush);
+  TEST_CASE_RUN(buf_fd_partial_retry);
+  TEST_CASE_RUN(buf_fd_partial_close);
+  TEST_CASE_RUN(buf_fd_partial_saves);
 }
+
+TEST_CASE(buf_fd_partial_retry)
+{
+  uw mode;
+  uw progress;
+  for (mode = 0; mode < 4; mode++)
+    for (progress = 0; progress < 4; progress++)
+      TEST_EQ(buf_fd_partial_error_test(progress, mode, false, false), 0);
+}
+TEST_CASE_END(buf_fd_partial_retry)
+
+TEST_CASE(buf_fd_partial_close)
+{
+  uw mode;
+  uw progress;
+  for (mode = 0; mode < 4; mode++)
+    for (progress = 0; progress < 4; progress++)
+      TEST_EQ(buf_fd_partial_error_test(progress, mode, false, true), 0);
+}
+TEST_CASE_END(buf_fd_partial_close)
+
+TEST_CASE(buf_fd_partial_saves)
+{
+  uw mode;
+  uw progress;
+  for (mode = 0; mode < 4; mode++)
+    for (progress = 0; progress < 4; progress++) {
+      TEST_EQ(buf_fd_partial_error_test(progress, mode, true, false), 0);
+      TEST_EQ(buf_fd_partial_error_test(progress, mode, true, true), 0);
+    }
+}
+TEST_CASE_END(buf_fd_partial_saves)
 
 TEST_CASE(buf_fd_closed_peer)
 {
