@@ -1387,6 +1387,8 @@ s_str * str_init_subst (s_str *str, const s_str *src,
     else {
       if ((r = buf_read_character_utf8(&in, &c)) < 0)
         break;
+      if (! r)
+        goto clean;
       if ((r = buf_write_character_utf8(&out, c)) < 0)
         goto clean;
     }
@@ -1412,18 +1414,23 @@ sw str_init_subst_size (const s_str *src, const s_str *search,
   assert(src);
   assert(search);
   assert(replace);
+  if (! search->size)
+    return -1;
   buf_init_str_const(&in, src);
   while (in.wpos - in.rpos >= search->size) {
     if (buf_read_str(&in, search) > 0)
       result += replace->size;
     else {
-      if ((r = buf_read_character_utf8(&in, &c)) < 0) {
+      if ((r = buf_read_character_utf8(&in, &c)) < 0)
+        break;
+      if (! r) {
         buf_clean(&in);
         return -1;
       }
       result += r;
     }
   }
+  result += in.wpos - in.rpos;
   buf_clean(&in);
   return result;
 }
