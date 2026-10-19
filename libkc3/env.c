@@ -102,6 +102,7 @@ const char *g_env_argv0_dir_default = "";
 #include "tuple.h"
 #include "var.h"
 
+static thread_local s_env *g_kc3_env_cleaning = NULL;
 static thread_local s_env *g_kc3_env_default = NULL;
 static thread_local s_env *g_kc3_env_global = NULL;
 
@@ -477,6 +478,7 @@ bool env_call_get (s_env *env, s_call *call)
 
 void env_clean (s_env *env)
 {
+  s_env *cleaning;
   if (! env)
     env = g_kc3_env_global;
   if (! env)
@@ -495,6 +497,7 @@ void env_clean (s_env *env)
   str_clean(&env->dump_path);
   list_delete_all(env->dlopen_list);
   assert(! env->facts || env->facts->ref_count == 1);
+  cleaning = g_kc3_env_cleaning;
   if (env == env_global())
     env_cleaning(true);
 #if LIBKC3_PROFILE
@@ -519,6 +522,7 @@ void env_clean (s_env *env)
   env->path = NULL;
   list_delete_all(env->search_modules_default);
   env->search_modules_default = NULL;
+  g_kc3_env_cleaning = cleaning;
   if (g_kc3_env_global == env) {
     if (env->parent_env)
       g_kc3_env_global = env->parent_env;
@@ -568,10 +572,9 @@ void env_clean (s_env *env)
 
 bool env_cleaning (bool enable)
 {
-  static bool cleaning = false;
   if (enable)
-    cleaning = true;
-  return cleaning;
+    g_kc3_env_cleaning = env_global();
+  return g_kc3_env_cleaning && g_kc3_env_cleaning == env_global();
 }
 
 /*

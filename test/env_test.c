@@ -10,8 +10,16 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <errno.h>
+#include <signal.h>
+#include <sys/resource.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include "../libkc3/call.h"
+#include "../libkc3/callable.h"
+#include "../libkc3/cfn.h"
 #include "../libkc3/compare.h"
+#include "../libkc3/data.h"
 #include "../libkc3/env.h"
 #include "../libkc3/env_eval.h"
 #include "../libkc3/env_eval_equal.h"
@@ -20,12 +28,214 @@
 #include "../libkc3/frame.h"
 #include "../libkc3/list.h"
 #include "../libkc3/pointer.h"
+#include "../libkc3/securelevel.h"
 #include "../libkc3/str.h"
 #include "../libkc3/sym.h"
 #include "../libkc3/tag.h"
 #include "test.h"
 
+#if HAVE_PTHREAD
+#include <pthread.h>
+#endif
+
+static bool g_env_clean_nested;
+static bool g_env_clean_scope_ok;
+
+#if HAVE_PTHREAD
+static void * env_clean_thread_test (void *arg)
+{
+  s_env env = {0};
+  bool *ok = arg;
+  env_global_set(&env);
+  *ok = ! env_cleaning(false);
+  return NULL;
+}
+#endif
+
+static void env_clean_data_test (uw *count)
+{
+  s_env child;
+  s_env *parent = env_global();
+#if HAVE_PTHREAD
+  bool thread_ok = false;
+  pthread_t thread;
+#endif
+  (*count)++;
+  if (! g_env_clean_nested)
+    return;
+  g_env_clean_scope_ok = env_cleaning(false);
+#if HAVE_PTHREAD
+  if (pthread_create(&thread, NULL, env_clean_thread_test, &thread_ok) ||
+      pthread_join(thread, NULL)) {
+    g_env_clean_scope_ok = false;
+    return;
+  }
+  g_env_clean_scope_ok &= thread_ok;
+#endif
+  if (! env_init(&child, NULL, NULL)) {
+    g_env_clean_scope_ok = false;
+    return;
+  }
+  g_env_clean_scope_ok &= ! env_cleaning(false);
+  env_clean(&child);
+  g_env_clean_scope_ok &= env_global() == parent && env_cleaning(false);
+}
+
+static bool env_clean_type_test (s_env *env, const s_sym *module)
+{
+  s_callable *clean;
+  s_list *spec;
+  s_tag subject = {0};
+  s_tag predicate = {0};
+  s_tag type = {0};
+  bool ok;
+  if (! (spec = list_new_ptuple(2, NULL)))
+    return false;
+  tag_init_psym(spec->tag.data.td_ptuple->tag, sym_1("count"));
+  tag_init_uw(spec->tag.data.td_ptuple->tag + 1, 0);
+  if (! tag_init_pstruct_type(&type, module, spec)) {
+    list_delete_all(spec);
+    return false;
+  }
+  list_delete_all(spec);
+  if (! (clean = callable_new())) {
+    tag_clean(&type);
+    return false;
+  }
+  clean->type = CALLABLE_CFN;
+  cfn_init(&clean->data.cfn, sym_1("env_clean_data_test"),
+            list_new_psym(sym_1("Uw*"), NULL), &g_sym_Void);
+  clean->data.cfn.ptr.p_f = (void (*)(void)) env_clean_data_test;
+  if (! cfn_prep_cif(&clean->data.cfn)) {
+    callable_delete(clean);
+    tag_clean(&type);
+    return false;
+  }
+  type.data.td_pstruct_type->clean = clean;
+  tag_init_psym(&subject, module);
+  tag_init_psym(&predicate, &g_sym_struct_type);
+  ok = facts_replace_tags(env->facts, &subject, &predicate, &type) != NULL;
+  tag_clean(&type);
+  return ok;
+}
+
+static char env_clean_nested_test (void)
+{
+  s_env child;
+  s_env grandchild;
+  s_env *parent = env_global();
+  uw i;
+  for (i = 0; i < 3; i++) {
+    TEST_EQ(env_init(&child, NULL, NULL), &child);
+    TEST_EQ(env_init(&grandchild, NULL, NULL), &grandchild);
+    env_clean(&grandchild);
+    TEST_EQ(env_global(), &child);
+    TEST_EQ(env_cleaning(false), false);
+    env_clean(&child);
+    TEST_EQ(env_global(), parent);
+    TEST_EQ(env_cleaning(false), false);
+  }
+  return 0;
+}
+
+static char env_clean_destructor_test (void)
+{
+  s_env child;
+  s_env parent;
+  const s_sym *module = sym_1("EnvCleanTest");
+  uw count = 0;
+  TEST_EQ(env_init(&parent, NULL, NULL), &parent);
+  TEST_ASSERT(env_clean_type_test(&parent, module));
+  TEST_EQ(env_init(&child, NULL, NULL), &child);
+  env_clean(&child);
+  TEST_EQ(env_cleaning(false), false);
+  TEST_ASSERT(data_clean(module, &count));
+  TEST_EQ(count, 1);
+  env_clean(&parent);
+  return 0;
+}
+
+static char env_clean_scope_test (void)
+{
+  uw count = 0;
+  s_env env;
+  s_env *parent = env_global();
+  const s_sym *module = sym_1("EnvCleanTest");
+  s_tag value = {0};
+  TEST_EQ(env_init(&env, NULL, NULL), &env);
+  TEST_ASSERT(env_clean_type_test(&env, module));
+  TEST_ASSERT(tag_init_pstruct_with_data(&value, module, &count, false));
+  TEST_ASSERT(value.data.td_pstruct->pstruct_type->clean);
+  TEST_ASSERT(frame_binding_new(&env.toplevel_frame,
+                                sym_1("clean_test"), &value));
+  tag_clean(&value);
+  g_env_clean_nested = true;
+  env_clean(&env);
+  TEST_EQ(count, 1);
+  TEST_ASSERT(g_env_clean_scope_ok);
+  TEST_EQ(env_global(), parent);
+  TEST_EQ(env_cleaning(false), false);
+  return 0;
+}
+
+static char env_clean_securelevel_test (uw action)
+{
+  s_env child;
+  s_env parent;
+  s_fact *fact;
+  bool removed = false;
+  s_tag subject = {0};
+  s_tag predicate = {0};
+  s_tag object = {0};
+  TEST_EQ(env_init(&parent, NULL, NULL), &parent);
+  tag_init_psym(&subject, sym_1("env_clean_test"));
+  tag_init_psym(&predicate, sym_1("value"));
+  tag_init_uw(&object, 1);
+  TEST_ASSERT((fact = facts_add_tags(parent.facts, &subject,
+                                     &predicate, &object)));
+  TEST_EQ(env_init(&child, NULL, NULL), &child);
+  env_clean(&child);
+  securelevel(2);
+  switch (action) {
+  case 0: env_clean(&parent); break;
+  case 1: facts_remove_all(parent.facts); break;
+  case 2: facts_remove_fact(parent.facts, fact, &removed); break;
+  case 3: facts_remove_fact_tags(parent.facts, &subject, &predicate,
+                                 &object, &removed); break;
+  }
+  return 0;
+}
+
+static int env_clean_child_test (char (*test)(void), uw action)
+{
+  struct rlimit limit = {0, 0};
+  pid_t child;
+  pid_t waited;
+  int status;
+  child = fork();
+  if (child < 0)
+    return -1;
+  if (! child) {
+    alarm(30);
+    if (setrlimit(RLIMIT_CORE, &limit))
+      _exit(1);
+    _exit(test ? test() : env_clean_securelevel_test(action));
+  }
+  do {
+    waited = waitpid(child, &status, 0);
+  } while (waited < 0 && errno == EINTR);
+  if (waited != child)
+    return -1;
+  if (! test && action)
+    return WIFSIGNALED(status) && WTERMSIG(status) == SIGABRT ? 0 : -1;
+  return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
+}
+
 void env_test (void);
+TEST_CASE_PROTOTYPE(env_clean_nested);
+TEST_CASE_PROTOTYPE(env_clean_destructor);
+TEST_CASE_PROTOTYPE(env_clean_scope);
+TEST_CASE_PROTOTYPE(env_clean_securelevel);
 TEST_CASE_PROTOTYPE(env_eval_call);
 TEST_CASE_PROTOTYPE(env_eval_equal_tag);
 TEST_CASE_PROTOTYPE(env_eval_ident_qualified);
@@ -43,6 +253,10 @@ TEST_CASE_PROTOTYPE(env_dump_restore);
 
 void env_test (void)
 {
+  TEST_CASE_RUN(env_clean_nested);
+  TEST_CASE_RUN(env_clean_destructor);
+  TEST_CASE_RUN(env_clean_scope);
+  TEST_CASE_RUN(env_clean_securelevel);
   TEST_CASE_RUN(env_init_clean);
   TEST_CASE_RUN(env_eval_equal_tag);
   TEST_CASE_RUN(env_eval_call);
@@ -58,6 +272,32 @@ void env_test (void)
   TEST_CASE_RUN(env_dump);
   TEST_CASE_RUN(env_dump_restore);
 }
+
+TEST_CASE(env_clean_nested)
+{
+  TEST_EQ(env_clean_child_test(env_clean_nested_test, 0), 0);
+}
+TEST_CASE_END(env_clean_nested)
+
+TEST_CASE(env_clean_destructor)
+{
+  TEST_EQ(env_clean_child_test(env_clean_destructor_test, 0), 0);
+}
+TEST_CASE_END(env_clean_destructor)
+
+TEST_CASE(env_clean_scope)
+{
+  TEST_EQ(env_clean_child_test(env_clean_scope_test, 0), 0);
+}
+TEST_CASE_END(env_clean_scope)
+
+TEST_CASE(env_clean_securelevel)
+{
+  uw action;
+  for (action = 0; action < 4; action++)
+    TEST_EQ(env_clean_child_test(NULL, action), 0);
+}
+TEST_CASE_END(env_clean_securelevel)
 
 TEST_CASE(env_dump)
 {
