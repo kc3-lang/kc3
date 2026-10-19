@@ -11,6 +11,7 @@ SOURCES = \
 	"array_test.c" \
 	"base64_test.c" \
 	"bool_test.c" \
+	"buf_fd_test.c" \
 	"buf_file_test.c" \
 	"buf_inspect_test.c" \
 	"buf_parse_test.c" \

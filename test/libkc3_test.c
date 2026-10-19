@@ -24,6 +24,7 @@
 void array_test (void);
 void base64_test (void);
 void bool_test (void);
+void buf_fd_test (void);
 void buf_file_test (void);
 void buf_inspect_test (void);
 void buf_parse_test (void);
@@ -83,6 +84,7 @@ int main (int argc, char **argv)
   TEST_TARGET(buf_write);
   TEST_TARGET(buf_parse);
   TEST_TARGET(buf_inspect);
+  TEST_TARGET(buf_fd);
   TEST_TARGET(buf_file);
   TEST_TARGET(array);
   TEST_TARGET(base64);

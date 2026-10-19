@@ -208,7 +208,11 @@ sw buf_fd_open_w_flush (s_buf *buf)
   while (bytes < size) {
     w = send(buf_fd->fd, buf->ptr.p_pchar + bytes,
              size - bytes, MSG_NOSIGNAL);
+#if defined(WIN32) || defined(WIN64)
     if (w < 0)
+#else
+    if (w < 0 && errno == ENOTSOCK)
+#endif
       w = write(buf_fd->fd, buf->ptr.p_pchar + bytes,
                 size - bytes);
     if (w < 0) {

@@ -1158,6 +1158,7 @@ KC3_C_SOURCES = \
 	"test/array_test.c" \
 	"test/base64_test.c" \
 	"test/bool_test.c" \
+	"test/buf_fd_test.c" \
 	"test/buf_file_test.c" \
 	"test/buf_inspect_test.c" \
 	"test/buf_parse_test.c" \
