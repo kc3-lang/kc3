@@ -166,6 +166,9 @@ sw tls_buf_open_w_flush (s_buf *buf)
     }
     bytes += w;
   }
+  if (buf->wpos > (uw) size)
+    memmove(buf->ptr.p_pvoid, buf->ptr.p_pchar + size,
+            buf->wpos - size);
   buf->wpos -= size;
   save = buf->save;
   while (save) {

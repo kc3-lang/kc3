@@ -61,6 +61,7 @@ SOURCES = \
 	"sym_test.c" \
 	"tag_test.c" \
 	"test.c" \
+	"tls_buf_test.c" \
 	"to_c_test.c" \
 	"tuple_test.c" \
 	"types_test.c" \

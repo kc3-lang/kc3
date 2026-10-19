@@ -63,6 +63,7 @@ void str_test (void);
 void struct_test (void);
 void sym_test (void);
 void tag_test (void);
+void tls_buf_test (void);
 void to_c_test (void);
 void tuple_test (void);
 void types_test (void);
@@ -86,6 +87,7 @@ int main (int argc, char **argv)
   TEST_TARGET(buf_inspect);
   TEST_TARGET(buf_fd);
   TEST_TARGET(buf_file);
+  TEST_TARGET(tls_buf);
   TEST_TARGET(array);
   TEST_TARGET(base64);
   TEST_TARGET(gl_mesh);

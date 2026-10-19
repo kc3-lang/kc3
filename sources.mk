@@ -1214,6 +1214,7 @@ KC3_C_SOURCES = \
 	"test/tag_test.h" \
 	"test/test.c" \
 	"test/test.h" \
+	"test/tls_buf_test.c" \
 	"test/to_c_test.c" \
 	"test/tuple_test.c" \
 	"test/types_test.c" \
