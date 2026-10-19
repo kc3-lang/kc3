@@ -1202,6 +1202,7 @@ KC3_C_SOURCES = \
 	"test/rwlock_test.c" \
 	"test/set__fact_test.c" \
 	"test/set__tag_test.c" \
+	"test/sh_test.c" \
 	"test/skiplist__fact_test.c" \
 	"test/stacktrace_test.c" \
 	"test/str_test.c" \

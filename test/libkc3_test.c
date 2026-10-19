@@ -54,6 +54,7 @@ void ratio_test (void);
 void rwlock_test (void);
 void set__fact_test (void);
 void set__tag_test (void);
+void sh_test (void);
 void skiplist__fact_test (void);
 void stacktrace_test (void);
 void str_test (void);
@@ -88,6 +89,7 @@ int main (int argc, char **argv)
   TEST_TARGET(gtk4_signal);
   TEST_TARGET(image);
   TEST_TARGET(str);
+  TEST_TARGET(sh);
   TEST_TARGET(sym);
   TEST_TARGET(ident);
   TEST_TARGET(list);

@@ -12,6 +12,7 @@
  */
 #include "assert.h"
 #include "buf.h"
+#include "character.h"
 #include "ident.h"
 #include "io.h"
 #include "sh.h"
@@ -24,6 +25,7 @@ s_str * sh_escape (const s_str *src, s_str *dest)
   s_buf buf = {0};
   bool escape;
   s_ident ident;
+  sw r;
   s_str     s;
   character s_c;
   s_str     t;
@@ -47,7 +49,17 @@ s_str * sh_escape (const s_str *src, s_str *dest)
   }
   escape = false;
   s = *src;
-  while (str_read_character_utf8(&s, &s_c) > 0) {
+  while (s.size) {
+    if ((r = str_read_character_utf8(&s, &s_c)) <= 0 ||
+        r != character_utf8_size(s_c) ||
+        (s_c >= 0xD800 && s_c <= 0xDFFF)) {
+      err_puts("sh_escape: invalid UTF-8");
+      goto ko;
+    }
+    if (! s_c) {
+      err_puts("sh_escape: NUL byte in input");
+      goto ko;
+    }
     allowed = false;
     t = tag.data.td_str;
     while (str_read_character_utf8(&t, &t_c) > 0) {
@@ -78,7 +90,9 @@ s_str * sh_escape (const s_str *src, s_str *dest)
   if (buf_write_1(&buf, "\"") <= 0)
     goto ko;
   s = *src;
-  while (str_read_character_utf8(&s, &s_c) > 0) {
+  while (s.size) {
+    if (str_read_character_utf8(&s, &s_c) <= 0)
+      goto ko;
     t = tag.data.td_str;
     while (str_read_character_utf8(&t, &t_c) > 0) {
       if (s_c == t_c) {

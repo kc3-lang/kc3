@@ -51,6 +51,7 @@ SOURCES = \
 	"rwlock_test.c" \
 	"set__fact_test.c" \
 	"set__tag_test.c" \
+	"sh_test.c" \
 	"skiplist__fact_test.c" \
 	"stacktrace_test.c" \
 	"str_test.c" \
