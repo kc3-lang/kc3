@@ -1170,19 +1170,24 @@ DEF_STR_INIT_STRUCT(quote)
 
 s_str * str_init_random (s_str *str, const s_tag *len)
 {
-  char *b;
-  sw  len_uw;
-  const s_sym *type = &g_sym_Uw;
-  if (! sw_init_cast(&len_uw, &type, len)) {
-    err_write_1("str_init_random: cannot cast to Uw: ");
+  sw len_sw;
+  s_str tmp = {0};
+  const s_sym *type = &g_sym_Sw;
+  if (! sw_init_cast(&len_sw, &type, len)) {
+    err_write_1("str_init_random: cannot cast to Sw: ");
     err_inspect_tag(len);
     err_write_1("\n");
     return NULL;
   }
-  if (! (b = alloc(len_uw)))
+  if (len_sw < 0 || (uw) len_sw >= U32_MAX) {
+    err_puts("str_init_random: invalid length");
     return NULL;
-  arc4random_buf(b, len_uw);
-  return str_init(str, b, len_uw, b);
+  }
+  if (! str_init_alloc(&tmp, (u32) len_sw))
+    return NULL;
+  arc4random_buf(tmp.free.p_pvoid, tmp.size);
+  *str = tmp;
+  return str;
 }
 
 s_str * str_init_random_base32 (s_str *str, const s_tag *len)
