@@ -91,6 +91,10 @@ s_str * base64_encode (s_str *str, s_str *dest)
   s_str tmp;
   if (! str->size)
     return str_init_empty(dest);
+  if (str->size > (U32_MAX - 1) / 4 * 3) {
+    err_puts("base64_encode: input too large");
+    return NULL;
+  }
   dest_size = ((str->size + 2) / 3) * 4;
   if (! str_init_alloc(&tmp, dest_size))
     return NULL;

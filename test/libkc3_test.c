@@ -22,6 +22,7 @@
   } while (0)
 
 void array_test (void);
+void base64_test (void);
 void bool_test (void);
 void buf_file_test (void);
 void buf_inspect_test (void);
@@ -84,6 +85,7 @@ int main (int argc, char **argv)
   TEST_TARGET(buf_inspect);
   TEST_TARGET(buf_file);
   TEST_TARGET(array);
+  TEST_TARGET(base64);
   TEST_TARGET(gl_mesh);
   TEST_TARGET(gl_text);
   TEST_TARGET(gtk4_signal);

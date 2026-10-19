@@ -1156,6 +1156,7 @@ KC3_C_SOURCES = \
 	"smtp/smtp.h" \
 	"smtp/types.h" \
 	"test/array_test.c" \
+	"test/base64_test.c" \
 	"test/bool_test.c" \
 	"test/buf_file_test.c" \
 	"test/buf_inspect_test.c" \
