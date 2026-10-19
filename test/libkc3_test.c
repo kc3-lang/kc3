@@ -53,6 +53,7 @@ void marshall_read_test (void);
 void ops_test (void);
 void pcall_test (void);
 void ratio_test (void);
+void rpc_test (void);
 void rwlock_test (void);
 void set__fact_test (void);
 void set__tag_test (void);
@@ -90,6 +91,7 @@ int main (int argc, char **argv)
   TEST_TARGET(tls_buf);
   TEST_TARGET(array);
   TEST_TARGET(base64);
+  TEST_TARGET(rpc);
   TEST_TARGET(gl_mesh);
   TEST_TARGET(gl_text);
   TEST_TARGET(gtk4_signal);

@@ -70,6 +70,7 @@ s_str * base64_decode (s_str *str, s_str *dest)
     if (len > 3)
       buf_write_u8(&out, (buf[2] << 6) | buf[3]);
   }
+  buf_clean(&in);
   if (buf_read_to_str(&out, &tmp) < 0) {
     buf_clean(&out);
     return NULL;
@@ -127,6 +128,7 @@ s_str * base64_encode (s_str *str, s_str *dest)
       d[i++] = '=';
   }
   d[i] = 0;
+  buf_clean(&in);
   *dest = tmp;
   return dest;
 }

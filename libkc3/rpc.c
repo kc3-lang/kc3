@@ -37,14 +37,20 @@ s_tag * rpc_request (const s_str *input, s_tag *dest)
   env = env_global();
   assert(env);
   env_err = env->err;
-  buf_init(&err_buf, false, sizeof(err_buf_data), err_buf_data);
-  env->err = &err_buf;
   env_out = env->out;
-  buf_init(&out_buf, false, sizeof(out_buf_data), out_buf_data);
+  if (! buf_init(&err_buf, false, sizeof(err_buf_data), err_buf_data))
+    return NULL;
+  if (! buf_init(&out_buf, false, sizeof(out_buf_data), out_buf_data)) {
+    buf_clean(&err_buf);
+    return NULL;
+  }
+  env->err = &err_buf;
   env->out = &out_buf;
   if (! tag_init_from_str(&input_tag, input)) {
     env->err = env_err;
     env->out = env_out;
+    buf_clean(&out_buf);
+    buf_clean(&err_buf);
     err_puts("rpc_request: invalid input");
     assert(! "rpc_request: invalid input");
     return NULL;
@@ -52,6 +58,8 @@ s_tag * rpc_request (const s_str *input, s_tag *dest)
   if (! tag_init_pstruct(&tmp, &g_sym_RPC_Response)) {
     env->err = env_err;
     env->out = env_out;
+    buf_clean(&out_buf);
+    buf_clean(&err_buf);
     err_puts("rpc_request: tag_init_pstruct %RPC.Response{}");
     assert(! "rpc_request: tag_init_pstruct %RPC.Response{}");
     tag_clean(&input_tag);
@@ -60,6 +68,8 @@ s_tag * rpc_request (const s_str *input, s_tag *dest)
   if (! struct_allocate(tmp.data.td_pstruct)) {
     env->err = env_err;
     env->out = env_out;
+    buf_clean(&out_buf);
+    buf_clean(&err_buf);
     err_puts("rpc_request: struct_allocate");
     assert(! "rpc_request: struct_allocate");
     tag_clean(&tmp);
@@ -72,6 +82,8 @@ s_tag * rpc_request (const s_str *input, s_tag *dest)
       buf_read_to_str(&out_buf, &response->out) < 0) {
     env->err = env_err;
     env->out = env_out;
+    buf_clean(&out_buf);
+    buf_clean(&err_buf);
     err_puts("rpc_request: buf_read_to_str");
     assert(! "rpc_request: buf_read_to_str");
     tag_clean(&tmp);
@@ -81,6 +93,8 @@ s_tag * rpc_request (const s_str *input, s_tag *dest)
   tag_clean(&input_tag);
   env->err = env_err;
   env->out = env_out;
+  buf_clean(&out_buf);
+  buf_clean(&err_buf);
   *dest = tmp;
   return dest;
 }

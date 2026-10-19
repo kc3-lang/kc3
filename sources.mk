@@ -1201,6 +1201,7 @@ KC3_C_SOURCES = \
 	"test/ops_test.c" \
 	"test/pcall_test.c" \
 	"test/ratio_test.c" \
+	"test/rpc_test.c" \
 	"test/rwlock_test.c" \
 	"test/set__fact_test.c" \
 	"test/set__tag_test.c" \

@@ -50,6 +50,7 @@ SOURCES = \
 	"ops_test.c" \
 	"pcall_test.c" \
 	"ratio_test.c" \
+	"rpc_test.c" \
 	"rwlock_test.c" \
 	"set__fact_test.c" \
 	"set__tag_test.c" \
