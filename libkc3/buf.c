@@ -402,7 +402,7 @@ sw buf_ignore_spaces_but_newline (s_buf *buf)
 s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
 {
   s_buf tmp = {0};
- assert(buf);
+  assert(buf);
   tmp.free = p_free;
   tmp.line = 1;
   tmp.ptr.p_pchar = p;
@@ -427,6 +427,8 @@ s_buf * buf_init_const (s_buf *buf, uw size, const char *p)
   tmp.wpos = size;
 #if HAVE_PTHREAD
   tmp.rwlock = rwlock_new();
+  if (! tmp.rwlock)
+    return NULL;
 #endif
   *buf = tmp;
   return buf;
@@ -439,7 +441,8 @@ s_buf * buf_init_1 (s_buf *buf, bool p_free, char *p)
   assert(buf);
   assert(p);
   len = strlen(p);
-  buf_init(&tmp, p_free, len, p);
+  if (! buf_init(&tmp, p_free, len, p))
+    return NULL;
   tmp.wpos = len;
   *buf = tmp;
   return buf;
@@ -452,7 +455,8 @@ s_buf * buf_init_1_const (s_buf *buf, const char *p)
   assert(buf);
   assert(p);
   len = strlen(p);
-  buf_init(&tmp, false, len, (char *) p);
+  if (! buf_init(&tmp, false, len, (char *) p))
+    return NULL;
   tmp.read_only = true;
   tmp.wpos = len;
   *buf = tmp;
@@ -480,10 +484,18 @@ s_buf * buf_init_alloc (s_buf *buf, uw size)
   assert(buf);
   if (! size)
     return buf_init(buf, false, 0, "");
+  if (size == UW_MAX) {
+    err_puts("buf_init_alloc: size overflow");
+    return NULL;
+  }
   p = alloc(size + 1);
   if (! p)
     return NULL;
-  return buf_init(buf, true, size, p);
+  if (! buf_init(buf, true, size, p)) {
+    alloc_free(p);
+    return NULL;
+  }
+  return buf;
 }
 
 s_buf * buf_init_popen (s_buf *buf, const s_str *cmd,
@@ -527,7 +539,8 @@ s_buf * buf_init_str (s_buf *buf, bool p_free, s_str *p)
   s_buf tmp = {0};
   assert(buf);
   assert(p);
-  buf_init(&tmp, p_free, p->size, (char *) p->ptr.p_pchar);
+  if (! buf_init(&tmp, p_free, p->size, (char *) p->ptr.p_pchar))
+    return NULL;
   tmp.wpos = p->size;
   *buf = tmp;
   return buf;
@@ -538,7 +551,8 @@ s_buf * buf_init_str_const (s_buf *buf, const s_str *p)
   s_buf tmp = {0};
   assert(buf);
   assert(p);
-  buf_init_const(&tmp, p->size, p->ptr.p_pchar);
+  if (! buf_init_const(&tmp, p->size, p->ptr.p_pchar))
+    return NULL;
   tmp.wpos = p->size;
   *buf = tmp;
   return buf;
@@ -563,7 +577,10 @@ s_buf * buf_new (bool p_free, uw size, char *p)
   buf = alloc(sizeof(s_buf));
   if (! buf)
     return NULL;
-  buf_init(buf, p_free, size, p);
+  if (! buf_init(buf, p_free, size, p)) {
+    alloc_free(buf);
+    return NULL;
+  }
   return buf;
 }
 

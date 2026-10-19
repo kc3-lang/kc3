@@ -103,7 +103,10 @@ void * array_data (const s_array *a, const uw *address)
     offset += address[i] * a->dimensions[i].item_size;
     i++;
   }
-  assert(offset < a->size);
+  if (offset >= a->size) {
+    err_puts("array_data: offset exceeds array size");
+    return NULL;
+  }
   return (s8 *) a->data + offset;
 }
 
@@ -178,17 +181,12 @@ s_array * array_init (s_array *a, const s_sym *array_type,
   tmp.array_type = array_type;
   tmp.element_type = sym_array_type(array_type);
   if (dimension_count) {
+    if (dimension_count > UW_MAX / sizeof(s_array_dimension))
+      goto overflow;
     tmp.dimension_count = dimension_count;
     tmp.dimensions = alloc(dimension_count * sizeof(s_array_dimension));
     if (! tmp.dimensions)
       return NULL;
-    i = 0;
-    while (i < dimension_count) {
-      tmp.dimensions[i].count = dimensions[i];
-      count *= dimensions[i];
-      i++;
-    }
-    i--;
     if (! sym_type_size(tmp.element_type, &item_size)) {
       alloc_free(tmp.dimensions);
       return NULL;
@@ -199,17 +197,27 @@ s_array * array_init (s_array *a, const s_sym *array_type,
       alloc_free(tmp.dimensions);
       return NULL;
     }
-    tmp.dimensions[i].item_size = item_size;
+    i = dimension_count;
     while (i > 0) {
       i--;
-      tmp.dimensions[i].item_size = tmp.dimensions[i + 1].count *
-        tmp.dimensions[i + 1].item_size;
+      if (dimensions[i] &&
+          (count > UW_MAX / dimensions[i] ||
+           item_size > UW_MAX / dimensions[i]))
+        goto overflow;
+      tmp.dimensions[i].count = dimensions[i];
+      tmp.dimensions[i].item_size = item_size;
+      count *= dimensions[i];
+      item_size *= dimensions[i];
     }
-    tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
+    tmp.size = item_size;
     tmp.count = count;
   }
   *a = tmp;
   return a;
+ overflow:
+  err_puts("array_init: size overflow");
+  alloc_free(tmp.dimensions);
+  return NULL;
 }
 
 s_array * array_init_1 (s_array *array, const char *p)

@@ -219,9 +219,10 @@ s_time * time_init_str (s_time *time, const s_str *src)
 {
   struct tm t = {0};
   s_time tmp = {0};
-  if (sscanf(src->ptr.p_pchar, "%d-%d-%d %d:%d:%d",
-             &t.tm_year, &t.tm_mon, &t.tm_mday,
-             &t.tm_hour, &t.tm_min, &t.tm_sec) != 6) {
+  if (! src->size || ! src->ptr.p_pchar ||
+      sscanf(src->ptr.p_pchar, "%d-%d-%d %d:%d:%d",
+              &t.tm_year, &t.tm_mon, &t.tm_mday,
+              &t.tm_hour, &t.tm_min, &t.tm_sec) != 6) {
     err_puts("time_init_str: invalid date and time");
     return NULL;
   }

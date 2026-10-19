@@ -650,6 +650,10 @@ s_str * str_init_concatenate (s_str *str, const s_str *a,
   assert(str);
   assert(a);
   assert(b);
+  if (a->size >= U32_MAX - b->size) {
+    err_puts("str_init_concatenate: size overflow");
+    return NULL;
+  }
   tmp.size = a->size + b->size;
   tmp.free.p_pvoid = alloc(tmp.size + 1);
   if (! tmp.free.p_pvoid)
@@ -1437,38 +1441,46 @@ sw str_init_subst_size (const s_str *src, const s_str *search,
 
 DEF_STR_INIT_STRUCT(time)
 
-s_str * str_init_to_lower (s_str *str, const s_str *src)
+static s_str * str_init_to_case (s_str *str, const s_str *src,
+                                character (*to_case)(character))
 {
   s_buf buf;
   character c;
+  sw csize;
   s_str i_src;
+  uw size = 0;
   assert(str);
   assert(src);
-  if (! buf_init_alloc(&buf, src->size))
+  i_src = *src;
+  while (str_read_character_utf8(&i_src, &c) > 0) {
+    csize = character_utf8_size(to_case(c));
+    if (csize <= 0 || size > U32_MAX - 1 - (uw) csize) {
+      err_puts("str_init_to_case: invalid output size");
+      return NULL;
+    }
+    size += csize;
+  }
+  if (! buf_init_alloc(&buf, size))
     return NULL;
   i_src = *src;
   while (str_read_character_utf8(&i_src, &c) > 0) {
-    c = character_to_lower(c);
-    buf_write_character_utf8(&buf, c);
+    if (buf_write_character_utf8(&buf, to_case(c)) <= 0) {
+      buf_clean(&buf);
+      return NULL;
+    }
   }
+  buf.size = buf.wpos;
   return buf_to_str(&buf, str);
+}
+
+s_str * str_init_to_lower (s_str *str, const s_str *src)
+{
+  return str_init_to_case(str, src, character_to_lower);
 }
 
 s_str * str_init_to_upper (s_str *str, const s_str *src)
 {
-  s_buf buf;
-  character c;
-  s_str i_src;
-  assert(str);
-  assert(src);
-  if (! buf_init_alloc(&buf, src->size))
-    return NULL;
-  i_src = *src;
-  while (str_read_character_utf8(&i_src, &c) > 0) {
-    c = character_to_upper(c);
-    buf_write_character_utf8(&buf, c);
-  }
-  return buf_to_str(&buf, str);
+  return str_init_to_case(str, src, character_to_upper);
 }
 
 DEF_STR_INIT_STRUCT(tuple)

@@ -58,18 +58,17 @@ s_tag * list_at (s_list *list, uw position, s_tag *dest)
 {
   s_list *l;
   uw p;
-  assert(list);
   assert(dest);
   l = list;
   p = position;
-  while (p) {
+  while (l && p) {
     p--;
     l = list_next(l);
-    if (! l) {
-      err_puts("list_at: position exceeds list length");
-      assert(! "list_at: position exceeds list length");
-      return NULL;
-    }
+  }
+  if (! l) {
+    err_puts("list_at: position exceeds list length");
+    assert(! "list_at: position exceeds list length");
+    return NULL;
   }
   return tag_init_copy(dest, &l->tag);
 }
