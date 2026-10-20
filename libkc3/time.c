@@ -155,7 +155,7 @@ s_time * time_init_add (s_time *time, const s_time *a, const s_time *b)
     tmp.tv_sec--;
     tmp.tv_nsec += 1000000000;
   }
-  while (tmp.tv_nsec > 1000000000) {
+  while (tmp.tv_nsec >= 1000000000) {
     tmp.tv_sec++;
     tmp.tv_nsec -= 1000000000;
   }
