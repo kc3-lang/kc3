@@ -1246,14 +1246,14 @@ s_str * str_init_random_base32 (s_str *str, const s_tag *len)
 s_str * str_init_random_base64 (s_str *str, const s_tag *len)
 {
   const s_sym *type;
-  char *random_bytes;
+  u8   *random_bytes;
   sw    random_bytes_len;
   char *result;
   sw    result_len;
   uw i;
   uw j;
   uw k;
-  uw u;
+  u32 u;
   type = &g_sym_Uw;
   if (! sw_init_cast(&result_len, &type, len)) {
     err_write_1("str_init_random_base64: cannot cast to Uw: ");
@@ -1278,8 +1278,8 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
   j = 0;
   while (i + 3 <= (uw) random_bytes_len &&
          j < (uw) result_len) {
-    u = ((random_bytes[i] << 16) +
-         (random_bytes[i + 1] << 8) +
+    u = (((u32) random_bytes[i] << 16) +
+         ((u32) random_bytes[i + 1] << 8) +
          (random_bytes[i + 2]));
     k = 0;
     while (k < 4 &&
@@ -1292,7 +1292,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
     i += 3;
   }
   if (random_bytes_len - i == 2) {
-    u = ((random_bytes[i] << 8) +
+    u = (((u32) random_bytes[i] << 8) +
          random_bytes[i + 1]);
     k = 0;
     while (j < (uw) result_len) {
