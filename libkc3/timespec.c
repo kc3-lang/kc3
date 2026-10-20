@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <errno.h>
+#include <math.h>
 #include <string.h>
 #include "assert.h"
 #include "timespec.h"
@@ -18,12 +19,27 @@
 #define DEF_TIMESPEC_INIT_F(type)                                     \
   s_timespec * timespec_init_ ## type (s_timespec *time, type src)    \
   {                                                                   \
+    const type limit = ldexp(1.0, sizeof(time_t) * CHAR_BIT -           \
+                             ((time_t) -1 < (time_t) 0));             \
+    type nsec;                                                       \
     s_timespec tmp = {0};                                             \
-    tmp.tv_sec = src;                                                 \
-    tmp.tv_nsec = src * 1000000000;                                   \
-    tmp.tv_nsec %= 1000000000;                                        \
+    assert(time);                                                    \
+    if (! (src >= 0 && src < limit))                                  \
+      goto invalid;                                                  \
+    tmp.tv_sec = (time_t) src;                                        \
+    nsec = (src - (type) tmp.tv_sec) * (type) 1000000000;               \
+    if (nsec >= 1000000000) {                                         \
+      if ((type) tmp.tv_sec + 1 >= limit)                             \
+        goto invalid;                                                \
+      tmp.tv_sec++;                                                  \
+      nsec = 0;                                                      \
+    }                                                                \
+    tmp.tv_nsec = (long) nsec;                                        \
     *time = tmp;                                                      \
     return time;                                                      \
+  invalid:                                                           \
+    err_puts("timespec_init_" #type ": invalid duration");             \
+    return NULL;                                                     \
   }
 
 #define DEF_TIMESPEC_INIT_U(type)                                     \
