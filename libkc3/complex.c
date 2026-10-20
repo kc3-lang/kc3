@@ -91,6 +91,7 @@ s_complex * complex_div (s_complex *a, s_complex *b,
   s_tag bx2 = {0};
   s_tag by2 = {0};
   s_tag bx2_by2 = {0};
+  bool ok;
   s_complex tmp = {0};
   assert(a);
   assert(b);
@@ -102,17 +103,30 @@ s_complex * complex_div (s_complex *a, s_complex *b,
   //  a.x * b.x + a.y * b.y      a.y * b.x - a.x * b.y
   //  ---------------------  +i  ---------------------
   //  b.x * b.x + b.y * b.y      b.x * b.x + b.y * b.y
-  tag_mul(&a->x, &b->x, &axbx);
-  tag_mul(&a->y, &b->y, &ayby);
-  tag_add(&axbx, &ayby, &axbx_ayby);
-  tag_mul(&b->x, &b->x, &bx2);
-  tag_mul(&b->y, &b->y, &by2);
-  tag_add(&bx2, &by2, &bx2_by2);
-  tag_div(&axbx_ayby, &bx2_by2, &tmp.x);
-  tag_mul(&a->y, &b->x, &aybx);
-  tag_mul(&a->x, &b->y, &axby);
-  tag_sub(&aybx, &axby, &aybx_axby);
-  tag_div(&aybx_axby, &bx2_by2, &tmp.y);
+  ok = tag_mul(&a->x, &b->x, &axbx) &&
+    tag_mul(&a->y, &b->y, &ayby) &&
+    tag_add(&axbx, &ayby, &axbx_ayby) &&
+    tag_mul(&b->x, &b->x, &bx2) &&
+    tag_mul(&b->y, &b->y, &by2) &&
+    tag_add(&bx2, &by2, &bx2_by2) &&
+    tag_div(&axbx_ayby, &bx2_by2, &tmp.x) &&
+    tag_mul(&a->y, &b->x, &aybx) &&
+    tag_mul(&a->x, &b->y, &axby) &&
+    tag_sub(&aybx, &axby, &aybx_axby) &&
+    tag_div(&aybx_axby, &bx2_by2, &tmp.y);
+  tag_clean(&axbx);
+  tag_clean(&axby);
+  tag_clean(&aybx);
+  tag_clean(&ayby);
+  tag_clean(&axbx_ayby);
+  tag_clean(&aybx_axby);
+  tag_clean(&bx2);
+  tag_clean(&by2);
+  tag_clean(&bx2_by2);
+  if (! ok) {
+    complex_clean(&tmp);
+    return NULL;
+  }
   *dest = tmp;
   return dest;
 }
