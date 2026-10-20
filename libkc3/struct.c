@@ -607,6 +607,8 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
   void *data;
   void *data_src;
   uw i;
+  uw size;
+  void *tmp;
   const s_sym *type_sym;
   assert(s);
   assert(s->pstruct_type->map.count);
@@ -641,12 +643,22 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
         assert(! "struct_set: tag_to_const_pointer");
         return NULL;
       }
-      data_clean(type_sym, data);
-      if (! data_init_copy(type_sym, data, data_src)) {
+      if (! sym_type_size(type_sym, &size))
+        return NULL;
+      if (! size)
+        return s;
+      tmp = alloc(size);
+      if (! tmp)
+        return NULL;
+      if (! data_init_copy(type_sym, tmp, data_src)) {
+        alloc_free(tmp);
         err_puts("struct_set: data_init_copy");
         assert(! "struct_set: data_init_copy");
         return NULL;
       }
+      data_clean(type_sym, data);
+      memcpy(data, tmp, size);
+      alloc_free(tmp);
       return s;
     }
     i++;
