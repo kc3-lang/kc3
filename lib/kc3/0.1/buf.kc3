@@ -48,6 +48,8 @@ defmodule Buf do
 
   def parse_tag = cfn Tag "kc3_buf_parse_tag" (Buf, Result)
 
+  def pclose = cfn S32 "pbuf_pclose" (Buf*)
+
   def read_to_str = cfn Str "kc3_buf_read_to_str" (Buf, Result)
 
   def read_line = cfn Str "kc3_buf_read_line" (Buf, Result)

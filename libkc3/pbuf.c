@@ -19,14 +19,15 @@
 
 void pbuf_clean (p_buf *pbuf)
 {
-  FILE *fp;
   assert(pbuf);
-  if ((*pbuf)->user_ptr) {
-    fp = buf_file_fp(*pbuf);
-    buf_file_close(*pbuf);
-    pclose(fp);
+  if (! *pbuf)
+    return;
+  if ((*pbuf)->user_ptr)
+    pbuf_pclose(pbuf);
+  else {
+    buf_delete(*pbuf);
+    *pbuf = NULL;
   }
-  buf_delete(*pbuf);
 }
 
 p_buf * pbuf_init_alloc (p_buf *pbuf, s_tag *size_tag)
@@ -50,4 +51,21 @@ p_buf * pbuf_init_popen (p_buf *buf, const s_str *cmd,
     return NULL;
   *buf = tmp;
   return buf;
+}
+
+s32 pbuf_pclose (p_buf *pbuf)
+{
+  FILE *fp;
+  sw flushed;
+  s32 result;
+  assert(pbuf);
+  if (! *pbuf || ! (*pbuf)->user_ptr)
+    return -1;
+  fp = buf_file_fp(*pbuf);
+  flushed = buf_flush(*pbuf);
+  buf_file_close(*pbuf);
+  result = pclose(fp);
+  buf_delete(*pbuf);
+  *pbuf = NULL;
+  return flushed < 0 ? -1 : result;
 }

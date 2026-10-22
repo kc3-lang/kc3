@@ -32,4 +32,6 @@ p_buf * pbuf_init_str (p_buf *buf, bool free, s_str *p);
 p_buf * pbuf_init_str_const (p_buf *buf, const s_str *p);
 p_buf * pbuf_init_str_copy (p_buf *buf, const s_str *str);
 
+s32     pbuf_pclose (p_buf *buf);
+
 #endif /* LIBKC3_PBUF_H */
