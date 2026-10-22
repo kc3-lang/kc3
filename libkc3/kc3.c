@@ -989,12 +989,19 @@ s_buf ** kc3_out_buf (s_buf **dest)
 
 #ifdef __OpenBSD__
 
-void kc3_pledge (const s_str *promises, const s_str *execpromises)
+void kc3_pledge (const s_str *promises, const s_tag *execpromises)
 {
   s32 e;
+  const char *exec = NULL;
   assert(promises);
   assert(execpromises);
-  if (pledge(promises->ptr.p_pchar, execpromises->ptr.p_pchar)) {
+  if (execpromises->type == TAG_STR)
+    exec = execpromises->data.td_str.ptr.p_pchar;
+  else if (execpromises->type != TAG_VOID) {
+    err_puts("kc3_pledge: execpromises must be Str or Void");
+    abort();
+  }
+  if (pledge(promises->ptr.p_pchar, exec)) {
     e = errno;
     err_write_1("kc3_pledge: ");
     err_inspect_str(promises);
@@ -1008,7 +1015,7 @@ void kc3_pledge (const s_str *promises, const s_str *execpromises)
 
 #else
 
-void kc3_pledge (const s_str *promises, const s_str *execpromises)
+void kc3_pledge (const s_str *promises, const s_tag *execpromises)
 {
   assert(promises);
   assert(execpromises);
