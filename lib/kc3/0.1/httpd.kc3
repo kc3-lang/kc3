@@ -168,6 +168,9 @@ defmodule HTTPd do
           if (real_ip) do real_ip else client.addr_str end
         end
         request = %HTTP.Request{request | client_addr: client_addr}
+        log_url = if Module.has_symbol?(Config, :log_url) do
+          Config.log_url(request.url)
+        else request.url end
         user_agent = HTTP.Request.header_get(request, "User-Agent")
         response = false
         user_agent_lower = Str.to_lower(user_agent || "")
@@ -179,19 +182,19 @@ defmodule HTTPd do
         if bot? do
           if Counter.increase(HTTPd.bots, 1) >= HTTPd.bots_max() do
             HTTPd.thread_status(thread_id, "bot 429")
-            HTTPd.thread_request(thread_id, "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
+            HTTPd.thread_request(thread_id, "--- #{client_addr} #{request.method} #{log_url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
             response = error_429_page(request)
           end
         end
         if ! response do
           if (type(request.method) == Str) do
             HTTPd.thread_status(thread_id, "405")
-            HTTPd.thread_request(thread_id, "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
+            HTTPd.thread_request(thread_id, "--- #{client_addr} #{request.method} #{log_url} #{inspect(user_agent)} #{Time.to_str(request.time)}")
             response = error_405_page(request)
           else
             HTTPd.thread_status(thread_id, "plug")
             request = plug_request(request)
-            HTTPd.thread_request(thread_id, "--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)} #{Time.to_str(request.time)}#{request.log_msg}")
+            HTTPd.thread_request(thread_id, "--- #{client_addr} #{request.method} #{log_url} #{inspect(user_agent)} #{Time.to_str(request.time)}#{request.log_msg}")
             HTTPd.thread_status(thread_id, "route_and_render_request")
             response = route_and_render_request(request)
           end
@@ -222,7 +225,7 @@ defmodule HTTPd do
         dt_str = Time.diff_to_str(dt)
         HTTPd.thread_request(thread_id,
           "#{response.code} #{client_addr} #{request.method}" +
-          " #{request.url} #{inspect(user_agent)}" +
+          " #{log_url} #{inspect(user_agent)}" +
           " #{dt_str}#{request.log_msg}")
         if (! close) do
           kq_ok = EventPoll.add(HTTPd.ep_fd, client.sockfd,
