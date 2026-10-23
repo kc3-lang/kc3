@@ -52,3 +52,15 @@ defmodule Config do
 end
 verdict("wrong secret is rejected",
   SHA512.hmac_str_verify(expected) == void)
+key = Base64.decode("CwsLCwsLCwsLCwsLCwsLCwsLCws=")
+verdict("RFC 4231 binary-key vector",
+  Base64.encode(SHA512.hmac(key, "Hi There")) ==
+  "h6p83qXvYZ1P8LQkGh1ssCN59OLOTsJ4etCzBUXhfN7aqDO31rinAgOLJ06uo/Tkvp2RTuth8XAuaWwgOhJoVA==" &&
+  SHA512.hmac_verify_base64(key, "Hi There",
+    "h6p83qXvYZ1P8LQkGh1ssCN59OLOTsJ4etCzBUXhfN7aqDO31rinAgOLJ06uo/Tkvp2RTuth8XAuaWwgOhJoVA=="))
+key = Base64.decode("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=")
+verdict("RFC 4231 long-key vector",
+  Base64.encode(SHA512.hmac(key, "Test Using Larger Than Block-Size Key - Hash Key First")) ==
+  "gLJCY8fBo+u3FJPB3XvotJtG0fQbSu7BEhsBN4P481JrVtA34F8lmL0P0iFdah5SleZPc/Y/CuyLkVqYXXhlmA==" &&
+  SHA512.hmac_verify_base64(key, "Test Using Larger Than Block-Size Key - Hash Key First",
+    "gLJCY8fBo+u3FJPB3XvotJtG0fQbSu7BEhsBN4P481JrVtA34F8lmL0P0iFdah5SleZPc/Y/CuyLkVqYXXhlmA=="))

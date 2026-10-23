@@ -9,3 +9,5 @@ ok   invalid signature lengths are rejected
 ok   binary message verifies unchanged
 ok   reversed key and message token is rejected
 ok   wrong secret is rejected
+ok   RFC 4231 binary-key vector
+ok   RFC 4231 long-key vector
