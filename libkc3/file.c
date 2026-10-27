@@ -743,6 +743,11 @@ s_str * file_read_all (const s_str *path, s_str *dest)
     err_write_1("\n");
     return NULL;
   }
+  if (sb.st_size < 0 || (u64) sb.st_size > U32_MAX ||
+      (u64) sb.st_size > (uw) SW_MAX) {
+    err_puts("file_read_all: invalid file size");
+    return NULL;
+  }
   fd = open(path->ptr.p_pchar, O_RDONLY | O_BINARY);
   if (fd < 0) {
     e = errno;
@@ -753,7 +758,7 @@ s_str * file_read_all (const s_str *path, s_str *dest)
     err_write_1("\n");
     return NULL;
   }
-  buf = alloc(sb.st_size);
+  buf = alloc((uw) sb.st_size + 1);
   if (! buf) {
     err_puts("file_read_all: failed to allocate buf");
     close(fd);
@@ -776,6 +781,7 @@ s_str * file_read_all (const s_str *path, s_str *dest)
     }
     pos += r;
   }
+  buf[pos] = 0;
   close(fd);
   str_init(dest, buf, sb.st_size, buf);
   return dest;
@@ -861,14 +867,21 @@ s_str * file_read_slice (s_str *path, u64 start, u64 end, s_str *dest)
     close(fd);
     return NULL;
   }
+  if (end < start || end - start > U32_MAX ||
+      end - start > (uw) SW_MAX) {
+    err_puts("file_read_slice: invalid slice size");
+    close(fd);
+    return NULL;
+  }
   if (! (size = end - start)) {
     close(fd);
     return str_init_empty(dest);
   }
-  if (! (p = alloc(size))) {
+  if (! (p = alloc((uw) size + 1))) {
     close(fd);
     return NULL;
   }
+  p[size] = 0;
   str_init(&tmp, p, size, p);
   remaining = size;
   while (remaining > 0) {
