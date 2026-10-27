@@ -1979,18 +1979,26 @@ s_list ** str_split_list (const s_str *str,
                           s_list **dest)
 {
   s_buf buf;
+  sw r;
   s_str   *t_str;
   s_list **t;
   s_list  *tmp;
-  buf_init_str_const(&buf, str);
+  assert(str);
+  assert(sep);
+  assert(dest);
+  if (! buf_init_str_const(&buf, str))
+    return NULL;
   tmp = NULL;
   t = &tmp;
   while (1) {
-    *t = list_new(NULL);
+    if (! (*t = list_new(NULL)))
+      goto clean;
     (*t)->tag.type = TAG_STR;
     t_str = &(*t)->tag.data.td_str;
-    if (buf_read_until_list_into_str(&buf, sep, t_str) <= 0) {
-      if (buf_read_to_str(&buf, t_str) <= 0)
+    if ((r = buf_read_until_list_into_str(&buf, sep, t_str)) < 0)
+      goto clean;
+    if (! r) {
+      if (buf_read_to_str(&buf, t_str) < 0)
         goto clean;
       break;
     }
