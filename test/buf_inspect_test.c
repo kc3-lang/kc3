@@ -53,15 +53,28 @@
     char b[32];                                                        \
     s_buf buf;                                                         \
     s_pretty pretty = {0};                                             \
+    s_buf_save save;                                                   \
+    uw size;                                                          \
     character tmp;                                                     \
     test_context("buf_inspect_character(" # test ") -> " # expected);  \
     buf_init(&buf, false, sizeof(b), b);                               \
     tmp = (test);                                                      \
     TEST_EQ(buf_inspect_character_size(&pretty, tmp),                  \
             strlen(expected));                                         \
+    buf_save_init(&buf, &save);                                        \
+    for (size = 0; size < strlen(expected); size++) {                   \
+      buf.size = size;                                                \
+      TEST_ASSERT(buf_inspect_character(&buf, tmp) < 0);                \
+      TEST_EQ(buf.wpos, 0);                                            \
+      TEST_EQ(buf.save, &save);                                        \
+    }                                                                  \
+    buf.size = strlen(expected);                                      \
     TEST_EQ(buf_inspect_character(&buf, tmp), strlen(expected));       \
     TEST_EQ(buf.wpos, strlen(expected));                               \
     TEST_STRNCMP(buf.ptr.p_pchar, (expected), buf.wpos);                 \
+    TEST_EQ(buf.save, &save);                                          \
+    buf_save_clean(&buf, &save);                                       \
+    TEST_EQ(buf.save, NULL);                                           \
     buf_clean(&buf);						       \
     test_context(NULL);                                                \
   } while (0)

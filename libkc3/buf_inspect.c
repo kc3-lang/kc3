@@ -1732,7 +1732,7 @@ sw buf_inspect_character (s_buf *buf, character c)
   s_buf_save save;
   buf_save_init(buf, &save);
   if ((r = buf_write_1(buf, "'")) < 0)
-    return r;
+    goto restore;
   result += r;
   if ((r = buf_inspect_str_character(buf, c)) <= 0)
     goto restore;
@@ -1746,7 +1746,7 @@ sw buf_inspect_character (s_buf *buf, character c)
   buf_save_restore_wpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
-  return result;
+  return r;
 }
 
 sw buf_inspect_character_size (s_pretty *pretty, character c)
