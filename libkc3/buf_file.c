@@ -198,6 +198,9 @@ sw buf_file_open_w_flush (s_buf *buf)
     err_puts("buf_file_open_w_flush: fflush");
     return -1;
   }
+  if (buf->wpos > (uw) size)
+    memmove(buf->ptr.p_pvoid, buf->ptr.p_pchar + size,
+            buf->wpos - size);
   buf->wpos -= size;
   save = buf->save;
   while (save) {

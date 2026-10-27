@@ -210,9 +210,10 @@ static char buf_write_stream (void)
 static char buf_write_saved (void)
 {
   s_buf buf;
+  s_buf_save inner;
   s_buf_save save;
   char data[4];
-  char readback[4];
+  char readback[8];
   FILE *fp;
   TEST_ASSERT((fp = tmpfile()));
   TEST_ASSERT(buf_init(&buf, false, sizeof(data), data));
@@ -227,9 +228,34 @@ static char buf_write_saved (void)
   buf_save_clean(&buf, &save);
   TEST_ASSERT(buf_flush(&buf) >= 0);
   TEST_EQ(buf.wpos, 0);
+  TEST_EQ(buf_write(&buf, "A", 1), 1);
+  TEST_ASSERT(buf_save_init(&buf, &save));
+  TEST_EQ(buf_write(&buf, "bc", 2), 2);
+  TEST_ASSERT(buf_save_init(&buf, &inner));
+  TEST_EQ(buf_write(&buf, "d", 1), 1);
+  TEST_EQ(buf_flush(&buf), 1);
+  TEST_EQ(buf.wpos, 3);
+  TEST_EQ(save.wpos, 0);
+  TEST_EQ(inner.wpos, 2);
+  TEST_EQ(buf.save, &inner);
+  TEST_EQ(inner.next, &save);
+  TEST_EQ(ftell(fp), 5);
+  TEST_MEM_EQ(data, 3, "bcd", 3);
+  TEST_ASSERT(buf_flush(&buf) >= 0);
+  TEST_EQ(buf.wpos, 3);
+  TEST_EQ(ftell(fp), 5);
+  TEST_MEM_EQ(data, 3, "bcd", 3);
+  TEST_ASSERT(buf_save_restore_wpos(&buf, &inner));
+  TEST_EQ(buf.wpos, 2);
+  buf_save_clean(&buf, &inner);
+  TEST_EQ(buf_write(&buf, "E", 1), 1);
+  buf_save_clean(&buf, &save);
+  TEST_EQ(buf_flush(&buf), 3);
+  TEST_EQ(buf.wpos, 0);
+  TEST_EQ(buf.save, NULL);
   rewind(fp);
   TEST_EQ(fread(readback, 1, sizeof(readback), fp), sizeof(readback));
-  TEST_MEM_EQ(readback, 4, "abcd", 4);
+  TEST_MEM_EQ(readback, 8, "abcdAbcE", 8);
   buf_file_close(&buf);
   TEST_EQ(fclose(fp), 0);
   buf_clean(&buf);
