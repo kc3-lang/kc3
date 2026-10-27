@@ -22,6 +22,31 @@
 #include "../libkc3/str.h"
 #include "test.h"
 
+#define RATIO_TEST_CAST_TYPE(type)                                     \
+  TEST_EQ(ratio_to_ ## type(&ratio), integer_to_ ## type(&quotient))
+
+#define RATIO_TEST_CAST(test, expected)                                \
+  do {                                                                 \
+    s_ratio ratio;                                                     \
+    s_integer quotient;                                                \
+    test_context("ratio casts: " test " -> " expected);                \
+    TEST_EQ(ratio_init_1(&ratio, test), &ratio);                         \
+    TEST_EQ(integer_init_1(&quotient, expected), &quotient);               \
+    RATIO_TEST_CAST_TYPE(s8);                                          \
+    RATIO_TEST_CAST_TYPE(s16);                                         \
+    RATIO_TEST_CAST_TYPE(s32);                                         \
+    RATIO_TEST_CAST_TYPE(s64);                                         \
+    RATIO_TEST_CAST_TYPE(sw);                                          \
+    RATIO_TEST_CAST_TYPE(u8);                                          \
+    RATIO_TEST_CAST_TYPE(u16);                                         \
+    RATIO_TEST_CAST_TYPE(u32);                                         \
+    RATIO_TEST_CAST_TYPE(u64);                                         \
+    RATIO_TEST_CAST_TYPE(uw);                                          \
+    integer_clean(&quotient);                                          \
+    ratio_clean(&ratio);                                               \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define RATIO_TEST_INIT_1(test, expected)                              \
   do {                                                                 \
     s_ratio ratio;                                                     \
@@ -73,16 +98,36 @@
     test_context(NULL);                                                \
   } while (0)
 
+TEST_CASE_PROTOTYPE(ratio_cast);
 TEST_CASE_PROTOTYPE(ratio_init_1);
 TEST_CASE_PROTOTYPE(ratio_parse);
 TEST_CASE_PROTOTYPE(ratio_pow);
 
 void ratio_test (void)
 {
+  TEST_CASE_RUN(ratio_cast);
   TEST_CASE_RUN(ratio_init_1);
   TEST_CASE_RUN(ratio_parse);
   TEST_CASE_RUN(ratio_pow);
 }
+
+TEST_CASE(ratio_cast)
+{
+  RATIO_TEST_CAST("257/2", "128");
+  RATIO_TEST_CAST("-257/2", "-128");
+  RATIO_TEST_CAST("1/256", "0");
+  RATIO_TEST_CAST("-1/256", "0");
+  RATIO_TEST_CAST("0/1", "0");
+  RATIO_TEST_CAST("1/1", "1");
+  RATIO_TEST_CAST("1/18446744073709551616", "0");
+  RATIO_TEST_CAST("18446744073709551617/18446744073709551616", "1");
+  RATIO_TEST_CAST("-18446744073709551617/18446744073709551616", "-1");
+  RATIO_TEST_CAST("18446744073709551617/1", "18446744073709551617");
+  RATIO_TEST_CAST("-18446744073709551617/1", "-18446744073709551617");
+  RATIO_TEST_CAST("36893488147419103231/2", "18446744073709551615");
+  RATIO_TEST_CAST("-36893488147419103231/2", "-18446744073709551615");
+}
+TEST_CASE_END(ratio_cast)
 
 TEST_CASE(ratio_init_1)
 {

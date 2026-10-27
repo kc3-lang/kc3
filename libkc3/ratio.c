@@ -599,112 +599,120 @@ f128 ratio_to_f128 (const s_ratio *r)
 
 #endif
 
+static void ratio_truncate (const s_ratio *r, s_integer *dest)
+{
+  mp_err e;
+  assert(r);
+  assert(dest);
+  assert(integer_is_positive(&r->denominator));
+  if (! integer_init(dest))
+    abort();
+  e = mp_div(&r->numerator.in_int, &r->denominator.in_int,
+             &dest->in_int, NULL);
+  if (e != MP_OKAY) {
+    integer_clean(dest);
+    err_write_1("ratio_truncate: ");
+    err_puts(mp_error_to_string(e));
+    abort();
+  }
+}
+
 s8 ratio_to_s8 (const s_ratio *r)
 {
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-
-  s8 numerator = integer_to_s8(&r->numerator);
-  s8 denominator = integer_to_s8(&r->denominator);
-
-  return numerator / denominator;
+  s_integer quotient;
+  s8 result;
+  ratio_truncate(r, &quotient);
+  result = integer_to_s8(&quotient);
+  integer_clean(&quotient);
+  return result;
 }
 
 s16 ratio_to_s16 (const s_ratio *r)
 {
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-
-  s16 numerator = integer_to_s16(&r->numerator);
-  s16 denominator = integer_to_s16(&r->denominator);
-
-  return numerator / denominator;
+  s_integer quotient;
+  s16 result;
+  ratio_truncate(r, &quotient);
+  result = integer_to_s16(&quotient);
+  integer_clean(&quotient);
+  return result;
 }
 
 s32 ratio_to_s32 (const s_ratio *r)
 {
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-
-  s32 numerator = integer_to_s32(&r->numerator);
-  s32 denominator = integer_to_s32(&r->denominator);
-
-  return numerator / denominator;
+  s_integer quotient;
+  s32 result;
+  ratio_truncate(r, &quotient);
+  result = integer_to_s32(&quotient);
+  integer_clean(&quotient);
+  return result;
 }
 
 s64 ratio_to_s64 (const s_ratio *r)
 {
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-
-  s64 numerator = integer_to_s64(&r->numerator);
-  s64 denominator = integer_to_s64(&r->denominator);
-
-  return numerator / denominator;
+  s_integer quotient;
+  s64 result;
+  ratio_truncate(r, &quotient);
+  result = integer_to_s64(&quotient);
+  integer_clean(&quotient);
+  return result;
 }
 
 sw ratio_to_sw (const s_ratio *r)
 {
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-
-  sw numerator = integer_to_sw(&r->numerator);
-  sw denominator = integer_to_sw(&r->denominator);
-
-  return numerator / denominator;
+  s_integer quotient;
+  sw result;
+  ratio_truncate(r, &quotient);
+  result = integer_to_sw(&quotient);
+  integer_clean(&quotient);
+  return result;
 }
 
 u8 ratio_to_u8 (const s_ratio *r)
 {
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-
-  u8 numerator = integer_to_u8(&r->numerator);
-  u8 denominator = integer_to_u8(&r->denominator);
-
-  return numerator / denominator;
+  s_integer quotient;
+  u8 result;
+  ratio_truncate(r, &quotient);
+  result = integer_to_u8(&quotient);
+  integer_clean(&quotient);
+  return result;
 }
 
 u16 ratio_to_u16 (const s_ratio *r)
 {
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-
-  u16 numerator = integer_to_u16(&r->numerator);
-  u16 denominator = integer_to_u16(&r->denominator);
-
-  return numerator / denominator;
+  s_integer quotient;
+  u16 result;
+  ratio_truncate(r, &quotient);
+  result = integer_to_u16(&quotient);
+  integer_clean(&quotient);
+  return result;
 }
 
 u32 ratio_to_u32 (const s_ratio *r)
 {
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-
-  u32 numerator = integer_to_u32(&r->numerator);
-  u32 denominator = integer_to_u32(&r->denominator);
-
-  return numerator / denominator;
+  s_integer quotient;
+  u32 result;
+  ratio_truncate(r, &quotient);
+  result = integer_to_u32(&quotient);
+  integer_clean(&quotient);
+  return result;
 }
 
 u64 ratio_to_u64 (const s_ratio *r)
 {
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-
-  u64 numerator = integer_to_u64(&r->numerator);
-  u64 denominator = integer_to_u64(&r->denominator);
-
-  return numerator / denominator;
+  s_integer quotient;
+  u64 result;
+  ratio_truncate(r, &quotient);
+  result = integer_to_u64(&quotient);
+  integer_clean(&quotient);
+  return result;
 }
 
 uw ratio_to_uw (const s_ratio *r)
 {
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-
-  uw numerator = integer_to_uw(&r->numerator);
-  uw denominator = integer_to_uw(&r->denominator);
-
-  return numerator / denominator;
+  s_integer quotient;
+  uw result;
+  ratio_truncate(r, &quotient);
+  result = integer_to_uw(&quotient);
+  integer_clean(&quotient);
+  return result;
 }
