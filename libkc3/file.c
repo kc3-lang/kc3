@@ -888,7 +888,7 @@ s_str * file_read_slice (s_str *path, u64 start, u64 end, s_str *dest)
     if ((r = read(fd, p, remaining)) <= 0) {
       err_puts("file_read_slice: read");
       assert(! "file_read_slice: read");
-      alloc_free(p);
+      str_clean(&tmp);
       close(fd);
       return NULL;
     }
