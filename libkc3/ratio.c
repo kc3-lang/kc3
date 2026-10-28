@@ -426,40 +426,6 @@ s_ratio * ratio_neg (const s_ratio *r, s_ratio *dest)
   return dest;
 }
 
-s_ratio * ratio_pow (const s_ratio *a, const s_ratio *b,
-                           s_ratio *dest)
-{
-  static bool      static_init;
-  static s_integer static_one = {0};
-  static s_integer static_u32_max;
-  s_ratio tmp = {0};
-  u32 n;
-  assert(a);
-  assert(b);
-  assert(dest);
-  assert(integer_is_positive(&a->denominator));
-  assert(integer_is_positive(&b->denominator));
-  if (! static_init) {
-    integer_init_u8(&static_one, 1);
-    integer_init_u32(&static_u32_max, U32_MAX);
-    static_init = true;
-  }
-  if (compare_integer(&static_u32_max, &b->numerator) < 0) {
-    err_puts("ratio_pow: b > U32_MAX");
-    assert(! "ratio_pow: b > U32_MAX");
-    return NULL;
-  }
-  n = integer_to_u32(&b->numerator);
-  integer_expt_u32(&a->numerator, n, &tmp.numerator);
-  integer_expt_u32(&a->denominator, n, &tmp.denominator); 
-  if (! ratio_simplify(&tmp, dest)) {
-    ratio_clean(&tmp);
-    return NULL;
-  }
-  ratio_clean(&tmp);
-  return dest;
-}
-
 s_ratio * ratio_simplify (s_ratio *r, s_ratio *dest)
 {
   s_ratio tmp;

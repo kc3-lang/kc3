@@ -20,7 +20,6 @@
 s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
 {
   s_complex c = {0};
-  s_ratio r = {0};
   s_tag tag = {0};
   s_integer tmp = {0};
   s_integer tmp2 = {0};
@@ -130,11 +129,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, pow(a->data.td_f32,
                                     integer_to_f32(&b->data.td_integer)));
     case TAG_RATIO:
-      ratio_init_f32(&r, a->data.td_f32);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       return tag_init_f32(dest, powf(a->data.td_f32, (f32) b->data.td_s8));
     case TAG_S16:
@@ -176,11 +171,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f64(dest, pow(a->data.td_f64,
                           integer_to_f64(&b->data.td_integer)));
     case TAG_RATIO:
-      ratio_init_f64(&r, a->data.td_f64);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       return tag_init_f64(dest, pow(a->data.td_f64, (f64) b->data.td_s8));
     case TAG_S16:
@@ -222,11 +213,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f80(dest, powl(a->data.td_f80,
                            integer_to_f80(&b->data.td_integer)));
     case TAG_RATIO:
-      ratio_init_f80(&r, a->data.td_f80);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       return tag_init_f80(dest, powl(a->data.td_f80, (f80) b->data.td_s8));
     case TAG_S16:
@@ -284,11 +271,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
                   &tag.data.td_integer);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_integer(&r, &a->data.td_integer);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       integer_init_s8(&tmp, b->data.td_s8);
       tag.type = TAG_INTEGER;
@@ -353,112 +336,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       goto ko;
     }
   case TAG_RATIO:
-    switch (b->type) {
-    case TAG_PCOMPLEX:
-      if (! complex_init_ratio(&c, &a->data.td_ratio))
-        return NULL;
-      if (! tag_init_pcomplex(dest,
-                              complex_new_pow(&c, b->data.td_pcomplex))) {
-        complex_clean(&c);
-        return NULL;
-      }
-      complex_clean(&c);
-      return dest;
-    case TAG_F32:
-      ratio_init_f32(&r, b->data.td_f32);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-    case TAG_F64:
-      ratio_init_f64(&r, b->data.td_f64);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-#if HAVE_F80
-    case TAG_F80:
-      ratio_init_f80(&r, b->data.td_f80);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-#endif
-    case TAG_INTEGER:
-      ratio_init_integer(&r, &b->data.td_integer);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-    case TAG_RATIO:
-      if (! ratio_pow(&a->data.td_ratio, &b->data.td_ratio,
-                      &dest->data.td_ratio))
-        return NULL;
-      dest->type = TAG_RATIO;
-      return dest;
-    case TAG_S8:
-      ratio_init_s8(&r, b->data.td_s8);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-    case TAG_S16:
-      ratio_init_s16(&r, b->data.td_s16);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-    case TAG_S32:
-      ratio_init_s32(&r, b->data.td_s32);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-    case TAG_S64:
-      ratio_init_s64(&r, b->data.td_s64);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-    case TAG_SW:
-      ratio_init_sw(&r, b->data.td_sw);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-    case TAG_U8:
-      ratio_init_u8(&r, b->data.td_u8);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-    case TAG_U16:
-      ratio_init_u16(&r, b->data.td_u16);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-    case TAG_U32:
-      ratio_init_u32(&r, b->data.td_u32);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-    case TAG_U64:
-      ratio_init_u64(&r, b->data.td_u64);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-    case TAG_UW:
-      ratio_init_uw(&r, b->data.td_uw);
-      dest->type = TAG_RATIO;
-      ratio_pow(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
-    default:
-      goto ko;
-    }
+    goto ratio_precision_required;
   case TAG_S8:
     switch (b->type) {
     case TAG_PCOMPLEX:
@@ -480,11 +358,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_s8(&r, a->data.td_s8);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       integer_init_s8(&tmp, a->data.td_s8);
       integer_init_s8(&tmp2, b->data.td_s8);
@@ -589,11 +463,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_s16(&r, a->data.td_s16);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       integer_init_s16(&tmp, a->data.td_s16);
       integer_init_s8(&tmp2, b->data.td_s8);
@@ -698,11 +568,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_s32(&r, a->data.td_s32);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       integer_init_s32(&tmp, a->data.td_s32);
       integer_init_s8(&tmp2, b->data.td_s8);
@@ -807,11 +673,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_s64(&r, a->data.td_s64);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       integer_init_s64(&tmp, a->data.td_s64);
       integer_init_s8(&tmp2, b->data.td_s8);
@@ -916,11 +778,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_sw(&r, a->data.td_sw);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       integer_init_sw(&tmp, a->data.td_sw);
       integer_init_s8(&tmp2, b->data.td_s8);
@@ -1025,11 +883,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_u8(&r, a->data.td_u8);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       integer_init_u8(&tmp, a->data.td_u8);
       integer_init_s8(&tmp2, b->data.td_s8);
@@ -1134,11 +988,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_u16(&r, a->data.td_u16);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       integer_init_u16(&tmp, a->data.td_u16);
       integer_init_s8(&tmp2, b->data.td_s8);
@@ -1243,11 +1093,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_u32(&r, a->data.td_u32);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       integer_init_u32(&tmp, a->data.td_u32);
       integer_init_s8(&tmp2, b->data.td_s8);
@@ -1352,11 +1198,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_u64(&r, a->data.td_u64);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       integer_init_u64(&tmp, a->data.td_u64);
       integer_init_s8(&tmp2, b->data.td_s8);
@@ -1461,11 +1303,7 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_uw(&r, a->data.td_uw);
-      dest->type = TAG_RATIO;
-      ratio_pow(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      goto ratio_precision_required;
     case TAG_S8:
       integer_init_uw(&tmp, a->data.td_uw);
       integer_init_s8(&tmp2, b->data.td_s8);
@@ -1552,6 +1390,10 @@ s_tag * tag_pow (s_tag *a, s_tag *b, s_tag *dest)
   default:
     goto ko;
   }
+ ratio_precision_required:
+  err_puts("tag_pow: Ratio powers require Ratio.pow(base, exponent, "
+           "precision_bits)");
+  return NULL;
  ko:
   err_write_1("tag_pow: invalid tag type: ");
   err_write_1(tag_type_to_string(a->type));

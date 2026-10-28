@@ -81,7 +81,7 @@ s_ratio * ratio_mul (const s_ratio *a, const s_ratio *b,
                      s_ratio *dest);
 s_ratio * ratio_neg (const s_ratio *r, s_ratio *dest);
 s_ratio * ratio_pow (const s_ratio *a, const s_ratio *b,
-                     s_ratio *dest);
+                     uw precision_bits, s_ratio *dest);
 s_tag *   ratio_sqrt (const s_ratio *r, s_tag *dest);
 s_ratio * ratio_sub (const s_ratio *a, const s_ratio *b,
                      s_ratio *dest);

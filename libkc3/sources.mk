@@ -401,6 +401,7 @@ SOURCES = \
 	"queue.c" \
 	"quote.c" \
 	"ratio.c" \
+	"ratio_pow.c" \
 	"rpc.c" \
 	"rusage.c" \
 	"rwlock.c" \
@@ -542,6 +543,7 @@ LO_SOURCES = \
 	"../libtommath/bn_mp_reduce_is_2k.c" \
 	"../libtommath/bn_mp_reduce_is_2k_l.c" \
 	"../libtommath/bn_mp_reduce_setup.c" \
+	"../libtommath/bn_mp_root_u32.c" \
 	"../libtommath/bn_mp_rshd.c" \
 	"../libtommath/bn_mp_set.c" \
 	"../libtommath/bn_mp_set_double.c" \
@@ -745,6 +747,7 @@ LO_SOURCES = \
 	"queue.c" \
 	"quote.c" \
 	"ratio.c" \
+	"ratio_pow.c" \
 	"rpc.c" \
 	"rusage.c" \
 	"rwlock.c" \

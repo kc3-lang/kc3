@@ -792,6 +792,7 @@ KC3_C_SOURCES = \
 	"libkc3/quote.h" \
 	"libkc3/ratio.c" \
 	"libkc3/ratio.h" \
+	"libkc3/ratio_pow.c" \
 	"libkc3/rpc.c" \
 	"libkc3/rpc.h" \
 	"libkc3/rusage.c" \
@@ -2529,6 +2530,7 @@ KC3_OTHER_SOURCES = \
 	"Makefile" \
 	"README.md" \
 	"TODO.md" \
+	"audit.md" \
 	"config.subr" \
 	"config_common" \
 	"configure" \
