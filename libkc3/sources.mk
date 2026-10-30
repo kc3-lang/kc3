@@ -209,6 +209,7 @@ HEADERS = \
 	"sym_ht.h" \
 	"tag.h" \
 	"tag_init.h" \
+	"tag_shift.h" \
 	"tag_type.h" \
 	"time.h" \
 	"timespec.h" \

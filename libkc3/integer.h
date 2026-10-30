@@ -101,7 +101,10 @@ s_integer * integer_gcd (const s_integer *a, const s_integer *b,
                          s_integer *dest);
 s_integer * integer_lcm (const s_integer *a, const s_integer *b,
                          s_integer *dest);
+/* Non-negative counts only. Results are published only on success.
+   Right shifts round toward negative infinity. */
 s_integer * integer_lshift (const s_integer *a, sw b, s_integer *dest);
+s_integer * integer_rshift (const s_integer *a, sw b, s_integer *dest);
 s_integer * integer_mod (const s_integer *a, const s_integer *b,
                          s_integer *dest);
 s_integer * integer_mul (const s_integer *a, const s_integer *b,

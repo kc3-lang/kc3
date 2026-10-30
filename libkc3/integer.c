@@ -463,17 +463,74 @@ s_integer * integer_lcm (const s_integer *a, const s_integer *b,
 
 s_integer * integer_lshift (const s_integer *a, sw b, s_integer *dest)
 {
-  sw r;
+  int bits;
+  mp_err r;
+  s_integer tmp;
   assert(a);
   assert(dest);
-  integer_init(dest);
-  if ((r = mp_mul_2d(&a->in_int, b, &dest->in_int)) != MP_OKAY) {
-    err_write_1("integer_lshift: ");
-    err_puts(mp_error_to_string(r));
-    assert(! "integer_lshift: mp_mul_2d");
+  if (b < 0) {
+    err_puts("integer_lshift: negative shift count");
     return NULL;
   }
+  if (a->in_int.used > INT_MAX / MP_DIGIT_BIT) {
+    err_puts("integer_lshift: operand exceeds backend bit capacity");
+    return NULL;
+  }
+  bits = mp_count_bits(&a->in_int);
+  /* Leave a digit of headroom for the backend's signed-int arithmetic. */
+  if (bits && (bits > INT_MAX - MP_DIGIT_BIT ||
+               b > INT_MAX - MP_DIGIT_BIT - bits)) {
+    err_puts("integer_lshift: result exceeds backend bit capacity");
+    return NULL;
+  }
+  if (! integer_init(&tmp))
+    return NULL;
+  if (bits &&
+      (r = mp_mul_2d(&a->in_int, (int) b, &tmp.in_int)) != MP_OKAY) {
+    err_write_1("integer_lshift: ");
+    err_puts(mp_error_to_string(r));
+    integer_clean(&tmp);
+    return NULL;
+  }
+  *dest = tmp;
   return dest;
+}
+
+s_integer * integer_rshift (const s_integer *a, sw b, s_integer *dest)
+{
+  int bits;
+  mp_err r;
+  s_integer tmp;
+  assert(a);
+  assert(dest);
+  if (b < 0) {
+    err_puts("integer_rshift: negative shift count");
+    return NULL;
+  }
+  if (a->in_int.used > INT_MAX / MP_DIGIT_BIT) {
+    err_puts("integer_rshift: operand exceeds backend bit capacity");
+    return NULL;
+  }
+  bits = mp_count_bits(&a->in_int);
+  if (! integer_init(&tmp))
+    return NULL;
+  if (b >= bits)
+    mp_set_i32(&tmp.in_int, integer_is_negative(a) ? -1 : 0);
+  else {
+    if ((r = mp_div_2d(&a->in_int, (int) b, &tmp.in_int, NULL)) != MP_OKAY)
+      goto error;
+    /* Division truncates toward zero; arithmetic right shift floors. */
+    if (integer_is_negative(a) && mp_cnt_lsb(&a->in_int) < b &&
+        (r = mp_sub_d(&tmp.in_int, 1, &tmp.in_int)) != MP_OKAY)
+      goto error;
+  }
+  *dest = tmp;
+  return dest;
+ error:
+  err_write_1("integer_rshift: ");
+  err_puts(mp_error_to_string(r));
+  integer_clean(&tmp);
+  return NULL;
 }
 
 s_integer * integer_mod (const s_integer *a, const s_integer *b,
