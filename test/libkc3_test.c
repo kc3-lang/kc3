@@ -59,6 +59,7 @@ void set__fact_test (void);
 void set__tag_test (void);
 void sh_test (void);
 void skiplist__fact_test (void);
+void socket_buf_test (void);
 void stacktrace_test (void);
 void str_test (void);
 void struct_test (void);
@@ -89,6 +90,7 @@ int main (int argc, char **argv)
   TEST_TARGET(buf_fd);
   TEST_TARGET(buf_file);
   TEST_TARGET(tls_buf);
+  TEST_TARGET(socket_buf);
   TEST_TARGET(array);
   TEST_TARGET(base64);
   TEST_TARGET(rpc);

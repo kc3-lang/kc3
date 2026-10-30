@@ -134,47 +134,41 @@ s_socket_buf * socket_buf_init (s_socket_buf *sb, s64 sockfd,
                                 struct sockaddr *addr,
                                 u32 addr_len)
 {
+  s_socket_buf tmp = {0};
   assert(sb);
   assert(sockfd >= 0);
   assert(addr);
   assert(addr_len);
-  *sb = (s_socket_buf) {0};
-  if (! buf_rw_init_alloc(&sb->buf_rw, BUF_SIZE)) {
+  tmp.sockfd = -1;
+  if (! buf_rw_init_alloc(&tmp.buf_rw, BUF_SIZE)) {
     err_puts("socket_buf_init: buf_rw_init_alloc");
-    assert(! "socket_buf_init: buf_rw_init_alloc");
-    return NULL;
+    goto clean;
   }
-  sb->buf_rw.r->user_ptr = sb;
-  sb->buf_rw.w->user_ptr = sb;
-  sb->closed_mutex = mutex_new();
-  if (! sb->closed_mutex) {
+  tmp.closed_mutex = mutex_new();
+  if (! tmp.closed_mutex) {
     err_puts("socket_buf_init: mutex_new");
-    buf_rw_clean(&sb->buf_rw);
-    return NULL;
+    goto clean;
   }
-  sb->closed = false;
-  if (! buf_rw_fd_open(&sb->buf_rw, sockfd)) {
+  if (! buf_rw_fd_open(&tmp.buf_rw, sockfd)) {
     err_puts("socket_buf_init: buf_rw_fd_open");
-    assert(! "socket_buf_init: buf_rw_fd_open");
-    close(sockfd);
-    buf_rw_clean(&sb->buf_rw);
-    mutex_delete(sb->closed_mutex);
-    return NULL;
+    goto clean;
   }
-  sb->sockfd = sockfd;
-  sb->addr = socket_addr_new_copy(addr, addr_len);
-  if (! sb->addr) {
+  tmp.addr = socket_addr_new_copy(addr, addr_len);
+  if (! tmp.addr) {
     err_puts("socket_buf_init: socket_addr_new_copy");
-    assert(! "socket_buf_init: socket_addr_new_copy");
-    buf_rw_fd_close(&sb->buf_rw);
-    buf_rw_clean(&sb->buf_rw);
-    mutex_delete(sb->closed_mutex);
-    return NULL;
+    goto clean;
   }
-  socket_addr_to_str(&sb->addr_str, addr, addr_len);
-  sb->addr_len = addr_len;
-  sb->ptag = NULL;
+  if (! socket_addr_to_str(&tmp.addr_str, addr, addr_len)) {
+    err_puts("socket_buf_init: socket_addr_to_str");
+    goto clean;
+  }
+  tmp.addr_len = addr_len;
+  tmp.sockfd = sockfd;
+  *sb = tmp;
   return sb;
+ clean:
+  socket_buf_clean(&tmp);
+  return NULL;
 }
 
 s_socket_buf * socket_buf_init_accept (s_socket_buf *sb, p_socket listening)
@@ -197,7 +191,6 @@ s_socket_buf * socket_buf_init_accept (s_socket_buf *sb, p_socket listening)
   }
   if (! socket_buf_init(sb, sockfd, addr, addr_len)) {
     err_puts("socket_buf_init_accept: socket_buf_init");
-    assert(! "socket_buf_init_accept: socket_buf_init");
     close(sockfd);
     return NULL;
   }
@@ -304,7 +297,7 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
   }
   if (! socket_buf_init(&tmp, sockfd, res->ai_addr, res->ai_addrlen)) {
     err_puts("socket_buf_init_connect: socket_buf_init");
-    assert(! "socket_buf_init_connect: socket_buf_init");
+    close(sockfd);
     freeaddrinfo(res0);
     return NULL;
   }

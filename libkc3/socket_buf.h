@@ -21,6 +21,9 @@ void           socket_buf_clean (s_socket_buf *sb);
 void           socket_buf_close (s_socket_buf *sb);
 void           socket_buf_delete (s_socket_buf **sb);
 bool           socket_buf_can_close (s_socket_buf *sb);
+/* Failure leaves sb unchanged and sockfd open for the caller.
+   On success, socket_buf_close closes sockfd; socket_buf_clean only
+   releases the buffers and metadata. */
 s_socket_buf * socket_buf_init (s_socket_buf *sb, t_socket sockfd,
                                 struct sockaddr *addr, u32 addr_len);
 s_socket_buf * socket_buf_init_accept (s_socket_buf *sb,

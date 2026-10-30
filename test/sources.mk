@@ -56,6 +56,7 @@ SOURCES = \
 	"set__tag_test.c" \
 	"sh_test.c" \
 	"skiplist__fact_test.c" \
+	"socket_buf_test.c" \
 	"stacktrace_test.c" \
 	"str_test.c" \
 	"struct_test.c" \

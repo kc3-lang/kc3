@@ -1209,6 +1209,7 @@ KC3_C_SOURCES = \
 	"test/set__tag_test.c" \
 	"test/sh_test.c" \
 	"test/skiplist__fact_test.c" \
+	"test/socket_buf_test.c" \
 	"test/stacktrace_test.c" \
 	"test/str_test.c" \
 	"test/struct_test.c" \
