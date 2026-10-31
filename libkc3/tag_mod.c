@@ -233,75 +233,96 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
 #endif
     case TAG_INTEGER:
       tag.type = TAG_INTEGER;
-      integer_mod(&a->data.td_integer, &b->data.td_integer,
-                  &tag.data.td_integer);
+      if (! integer_mod(&a->data.td_integer, &b->data.td_integer,
+                        &tag.data.td_integer))
+        goto integer_error;
       goto integer_reduce;
     case TAG_S8:
-      integer_init_s8(&tmp, b->data.td_s8);
-      integer_mod(&a->data.td_integer, &tmp, &tmp2);
+      if (! integer_init_s8(&tmp, b->data.td_s8))
+        goto integer_error;
+      if (! integer_mod(&a->data.td_integer, &tmp, &tmp2))
+        goto integer_error;
       tag_init_s8(&tag, integer_to_s8(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S16:
-      integer_init_s16(&tmp, b->data.td_s16);
-      integer_mod(&a->data.td_integer, &tmp, &tmp2);
+      if (! integer_init_s16(&tmp, b->data.td_s16))
+        goto integer_error;
+      if (! integer_mod(&a->data.td_integer, &tmp, &tmp2))
+        goto integer_error;
       tag_init_s16(&tag, integer_to_s16(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S32:
-      integer_init_s32(&tmp, b->data.td_s32);
-      integer_mod(&a->data.td_integer, &tmp, &tmp2);
+      if (! integer_init_s32(&tmp, b->data.td_s32))
+        goto integer_error;
+      if (! integer_mod(&a->data.td_integer, &tmp, &tmp2))
+        goto integer_error;
       tag_init_s32(&tag, integer_to_s32(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S64:
-      integer_init_s64(&tmp, b->data.td_s64);
-      integer_mod(&a->data.td_integer, &tmp, &tmp2);
+      if (! integer_init_s64(&tmp, b->data.td_s64))
+        goto integer_error;
+      if (! integer_mod(&a->data.td_integer, &tmp, &tmp2))
+        goto integer_error;
       tag_init_s64(&tag, integer_to_s64(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_SW:
-      integer_init_sw(&tmp, b->data.td_sw);
-      integer_mod(&a->data.td_integer, &tmp, &tmp2);
+      if (! integer_init_sw(&tmp, b->data.td_sw))
+        goto integer_error;
+      if (! integer_mod(&a->data.td_integer, &tmp, &tmp2))
+        goto integer_error;
       tag_init_sw(&tag, integer_to_sw(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
      case TAG_U8:
-      integer_init_u8(&tmp, b->data.td_u8);
-      integer_mod(&a->data.td_integer, &tmp, &tmp2);
+      if (! integer_init_u8(&tmp, b->data.td_u8))
+        goto integer_error;
+      if (! integer_mod(&a->data.td_integer, &tmp, &tmp2))
+        goto integer_error;
       tag_init_u8(&tag, integer_to_u8(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_U16:
-      integer_init_u16(&tmp, b->data.td_u16);
-      integer_mod(&a->data.td_integer, &tmp, &tmp2);
+      if (! integer_init_u16(&tmp, b->data.td_u16))
+        goto integer_error;
+      if (! integer_mod(&a->data.td_integer, &tmp, &tmp2))
+        goto integer_error;
       tag_init_u16(&tag, integer_to_u16(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_U32:
-      integer_init_u32(&tmp, b->data.td_u32);
-      integer_mod(&a->data.td_integer, &tmp, &tmp2);
+      if (! integer_init_u32(&tmp, b->data.td_u32))
+        goto integer_error;
+      if (! integer_mod(&a->data.td_integer, &tmp, &tmp2))
+        goto integer_error;
       tag_init_u32(&tag, integer_to_u32(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_U64:
-      integer_init_u64(&tmp, b->data.td_u64);
-      integer_mod(&a->data.td_integer, &tmp, &tmp2);
+      if (! integer_init_u64(&tmp, b->data.td_u64))
+        goto integer_error;
+      if (! integer_mod(&a->data.td_integer, &tmp, &tmp2))
+        goto integer_error;
       tag_init_u64(&tag, integer_to_u64(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_UW:
-      integer_init_uw(&tmp, b->data.td_uw);
-      integer_mod(&a->data.td_integer, &tmp, &tmp2);
+      if (! integer_init_uw(&tmp, b->data.td_uw))
+        goto integer_error;
+      if (! integer_mod(&a->data.td_integer, &tmp, &tmp2))
+        goto integer_error;
       tag_init_uw(&tag, integer_to_uw(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
@@ -321,9 +342,11 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
                                        b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_s8(&tmp, a->data.td_s8);
+      if (! integer_init_s8(&tmp, a->data.td_s8))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8:
@@ -363,18 +386,24 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
       goto integer_reduce;
     }
     case TAG_U64:
-      integer_init_s8(&tmp, a->data.td_s8);
-      integer_init_u64(&tmp2, b->data.td_u64);
+      if (! integer_init_s8(&tmp, a->data.td_s8))
+        goto integer_error;
+      if (! integer_init_u64(&tmp2, b->data.td_u64))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_UW:
-      integer_init_s8(&tmp, a->data.td_s8);
-      integer_init_uw(&tmp2, b->data.td_uw);
+      if (! integer_init_s8(&tmp, a->data.td_s8))
+        goto integer_error;
+      if (! integer_init_uw(&tmp2, b->data.td_uw))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -393,9 +422,11 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
                                        b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_s16(&tmp, a->data.td_s16);
+      if (! integer_init_s16(&tmp, a->data.td_s16))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8:
@@ -435,18 +466,24 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
       goto integer_reduce;
     }
     case TAG_U64:
-      integer_init_s16(&tmp, a->data.td_s16);
-      integer_init_u64(&tmp2, b->data.td_u64);
+      if (! integer_init_s16(&tmp, a->data.td_s16))
+        goto integer_error;
+      if (! integer_init_u64(&tmp2, b->data.td_u64))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_UW:
-      integer_init_s16(&tmp, a->data.td_s16);
-      integer_init_uw(&tmp2, b->data.td_uw);
+      if (! integer_init_s16(&tmp, a->data.td_s16))
+        goto integer_error;
+      if (! integer_init_uw(&tmp2, b->data.td_uw))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -465,9 +502,11 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
                                        b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_s32(&tmp, a->data.td_s32);
+      if (! integer_init_s32(&tmp, a->data.td_s32))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8:
@@ -507,18 +546,24 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
       goto integer_reduce;
     }
     case TAG_U64:
-      integer_init_s32(&tmp, a->data.td_s32);
-      integer_init_u64(&tmp2, b->data.td_u64);
+      if (! integer_init_s32(&tmp, a->data.td_s32))
+        goto integer_error;
+      if (! integer_init_u64(&tmp2, b->data.td_u64))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_UW:
-      integer_init_s32(&tmp, a->data.td_s32);
-      integer_init_uw(&tmp2, b->data.td_uw);
+      if (! integer_init_s32(&tmp, a->data.td_s32))
+        goto integer_error;
+      if (! integer_init_uw(&tmp2, b->data.td_uw))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -537,9 +582,11 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
                                        b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_s64(&tmp, a->data.td_s64);
+      if (! integer_init_s64(&tmp, a->data.td_s64))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8:
@@ -579,18 +626,24 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
       goto integer_reduce;
     }
     case TAG_U64:
-      integer_init_s64(&tmp, a->data.td_s64);
-      integer_init_u64(&tmp2, b->data.td_u64);
+      if (! integer_init_s64(&tmp, a->data.td_s64))
+        goto integer_error;
+      if (! integer_init_u64(&tmp2, b->data.td_u64))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_UW:
-      integer_init_s64(&tmp, a->data.td_s64);
-      integer_init_uw(&tmp2, b->data.td_uw);
+      if (! integer_init_s64(&tmp, a->data.td_s64))
+        goto integer_error;
+      if (! integer_init_uw(&tmp2, b->data.td_uw))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -609,8 +662,10 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
                                        b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_sw(&tmp, a->data.td_sw);
-      integer_mod(&tmp, &b->data.td_integer, &tmp2);
+      if (! integer_init_sw(&tmp, a->data.td_sw))
+        goto integer_error;
+      if (! integer_mod(&tmp, &b->data.td_integer, &tmp2))
+        goto integer_error;
       tag_init_sw(&tag, integer_to_sw(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
@@ -652,18 +707,24 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
       goto integer_reduce;
     }
     case TAG_U64:
-      integer_init_sw(&tmp, a->data.td_sw);
-      integer_init_u64(&tmp2, b->data.td_u64);
+      if (! integer_init_sw(&tmp, a->data.td_sw))
+        goto integer_error;
+      if (! integer_init_u64(&tmp2, b->data.td_u64))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_UW:
-      integer_init_sw(&tmp, a->data.td_sw);
-      integer_init_uw(&tmp2, b->data.td_uw);
+      if (! integer_init_sw(&tmp, a->data.td_sw))
+        goto integer_error;
+      if (! integer_init_uw(&tmp2, b->data.td_uw))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -682,9 +743,11 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
                                        b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_u8(&tmp, a->data.td_u8);
+      if (! integer_init_u8(&tmp, a->data.td_u8))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8: {
@@ -709,18 +772,24 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
       goto integer_reduce;
     }
     case TAG_S64:
-      integer_init_u8(&tmp, a->data.td_u8);
-      integer_init_s64(&tmp2, b->data.td_s64);
+      if (! integer_init_u8(&tmp, a->data.td_u8))
+        goto integer_error;
+      if (! integer_init_s64(&tmp2, b->data.td_s64))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_SW:
-      integer_init_u8(&tmp, a->data.td_u8);
-      integer_init_sw(&tmp2, b->data.td_sw);
+      if (! integer_init_u8(&tmp, a->data.td_u8))
+        goto integer_error;
+      if (! integer_init_sw(&tmp2, b->data.td_sw))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -754,9 +823,11 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
                                        b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_u16(&tmp, a->data.td_u16);
+      if (! integer_init_u16(&tmp, a->data.td_u16))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8: {
@@ -781,18 +852,24 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
       goto integer_reduce;
     }
     case TAG_S64:
-      integer_init_u16(&tmp, a->data.td_u16);
-      integer_init_s64(&tmp2, b->data.td_s64);
+      if (! integer_init_u16(&tmp, a->data.td_u16))
+        goto integer_error;
+      if (! integer_init_s64(&tmp2, b->data.td_s64))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_SW:
-      integer_init_u16(&tmp, a->data.td_u16);
-      integer_init_sw(&tmp2, b->data.td_sw);
+      if (! integer_init_u16(&tmp, a->data.td_u16))
+        goto integer_error;
+      if (! integer_init_sw(&tmp2, b->data.td_sw))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -826,9 +903,11 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
                                        b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_u32(&tmp, a->data.td_u32);
+      if (! integer_init_u32(&tmp, a->data.td_u32))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8: {
@@ -853,18 +932,24 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
       goto integer_reduce;
     }
     case TAG_S64:
-      integer_init_u32(&tmp, a->data.td_u32);
-      integer_init_s64(&tmp2, b->data.td_s64);
+      if (! integer_init_u32(&tmp, a->data.td_u32))
+        goto integer_error;
+      if (! integer_init_s64(&tmp2, b->data.td_s64))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_SW:
-      integer_init_u32(&tmp, a->data.td_u32);
-      integer_init_sw(&tmp2, b->data.td_sw);
+      if (! integer_init_u32(&tmp, a->data.td_u32))
+        goto integer_error;
+      if (! integer_init_sw(&tmp2, b->data.td_sw))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -898,48 +983,65 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
                                        b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_u64(&tmp, a->data.td_u64);
+      if (! integer_init_u64(&tmp, a->data.td_u64))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8:
-      integer_init_u64(&tmp, a->data.td_u64);
-      integer_init_s8(&tmp2, b->data.td_s8);
+      if (! integer_init_u64(&tmp, a->data.td_u64))
+        goto integer_error;
+      if (! integer_init_s8(&tmp2, b->data.td_s8))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S16:
-      integer_init_u64(&tmp, a->data.td_u64);
-      integer_init_s16(&tmp2, b->data.td_s16);
+      if (! integer_init_u64(&tmp, a->data.td_u64))
+        goto integer_error;
+      if (! integer_init_s16(&tmp2, b->data.td_s16))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S32:
-      integer_init_u64(&tmp, a->data.td_u64);
-      integer_init_s32(&tmp2, b->data.td_s32);
+      if (! integer_init_u64(&tmp, a->data.td_u64))
+        goto integer_error;
+      if (! integer_init_s32(&tmp2, b->data.td_s32))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S64:
-      integer_init_u64(&tmp, a->data.td_u64);
-      integer_init_s64(&tmp2, b->data.td_s64);
+      if (! integer_init_u64(&tmp, a->data.td_u64))
+        goto integer_error;
+      if (! integer_init_s64(&tmp2, b->data.td_s64))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_SW:
-      integer_init_u64(&tmp, a->data.td_u64);
-      integer_init_sw(&tmp2, b->data.td_sw);
+      if (! integer_init_u64(&tmp, a->data.td_u64))
+        goto integer_error;
+      if (! integer_init_sw(&tmp2, b->data.td_sw))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -972,48 +1074,65 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f80(dest, fmodl((f80) a->data.td_uw, b->data.td_f80));
 #endif
     case TAG_INTEGER:
-      integer_init_uw(&tmp, a->data.td_uw);
+      if (! integer_init_uw(&tmp, a->data.td_uw))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_S8:
-      integer_init_uw(&tmp, a->data.td_uw);
-      integer_init_s8(&tmp2, b->data.td_s8);
+      if (! integer_init_uw(&tmp, a->data.td_uw))
+        goto integer_error;
+      if (! integer_init_s8(&tmp2, b->data.td_s8))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S16:
-      integer_init_uw(&tmp, a->data.td_uw);
-      integer_init_s16(&tmp2, b->data.td_s16);
+      if (! integer_init_uw(&tmp, a->data.td_uw))
+        goto integer_error;
+      if (! integer_init_s16(&tmp2, b->data.td_s16))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S32:
-      integer_init_uw(&tmp, a->data.td_uw);
-      integer_init_s32(&tmp2, b->data.td_s32);
+      if (! integer_init_uw(&tmp, a->data.td_uw))
+        goto integer_error;
+      if (! integer_init_s32(&tmp2, b->data.td_s32))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S64:
-      integer_init_uw(&tmp, a->data.td_uw);
-      integer_init_s64(&tmp2, b->data.td_s64);
+      if (! integer_init_uw(&tmp, a->data.td_uw))
+        goto integer_error;
+      if (! integer_init_s64(&tmp2, b->data.td_s64))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_SW:
-      integer_init_uw(&tmp, a->data.td_uw);
-      integer_init_sw(&tmp2, b->data.td_sw);
+      if (! integer_init_uw(&tmp, a->data.td_uw))
+        goto integer_error;
+      if (! integer_init_sw(&tmp2, b->data.td_sw))
+        goto integer_error;
       tag.type = TAG_INTEGER;
-      integer_mod(&tmp, &tmp2, &tag.data.td_integer);
+      if (! integer_mod(&tmp, &tmp2, &tag.data.td_integer))
+        goto integer_error;
       integer_clean(&tmp);
       integer_clean(&tmp2);
       goto integer_reduce;
@@ -1044,6 +1163,11 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
   err_write_1(" mod ");
   err_puts(tag_type_to_string(b->type));
   assert(! "tag_mod: invalid tag type");
+  return NULL;
+ integer_error:
+  integer_clean(&tmp);
+  integer_clean(&tmp2);
+  tag_clean(&tag);
   return NULL;
  integer_reduce:
   if (! tag_integer_reduce(&tag, dest)) {

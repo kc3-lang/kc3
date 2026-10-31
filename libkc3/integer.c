@@ -219,18 +219,20 @@ void integer_clean (s_integer *a)
 s_integer * integer_div (const s_integer *a, const s_integer *b,
                          s_integer *dest)
 {
-  sw r;
+  mp_err r;
+  s_integer tmp;
   assert(a);
   assert(b);
   assert(dest);
-  integer_init(dest);
-  r = mp_div(&a->in_int, &b->in_int, &dest->in_int, NULL);
-  if (r != MP_OKAY) {
+  if (! integer_init(&tmp))
+    return NULL;
+  if ((r = mp_div(&a->in_int, &b->in_int, &tmp.in_int, NULL)) != MP_OKAY) {
     err_write_1("integer_div: ");
     err_puts(mp_error_to_string(r));
-    assert(! "integer_div: mp_div");
+    integer_clean(&tmp);
     return NULL;
   }
+  *dest = tmp;
   return dest;
 }
 
@@ -253,12 +255,11 @@ s_integer * integer_gcd (const s_integer *a, const s_integer *b,
 
 s_integer * integer_init (s_integer *dest)
 {
-  sw r;
+  mp_err r;
   assert(dest);
   if ((r = mp_init(&dest->in_int)) != MP_OKAY) {
     err_write_1("integer_init: ");
     err_puts(mp_error_to_string(r));
-    assert(! "integer_init: mp_init");
     return NULL;
   }
   return dest;
@@ -278,13 +279,12 @@ s_integer * integer_init_1 (s_integer *i, const char *p)
 
 s_integer * integer_init_copy (s_integer *a, const s_integer *src)
 {
-  sw r;
+  mp_err r;
   assert(src);
   assert(a);
   if ((r = mp_init_copy(&a->in_int, &src->in_int)) != MP_OKAY) {
     err_write_1("integer_init_copy: ");
     err_puts(mp_error_to_string(r));
-    assert(! "integer_init_copy: mp_init_copy");
     return NULL;
   }
   return a;
@@ -336,28 +336,32 @@ s_integer * integer_init_ratio (s_integer *a, const s_ratio *r)
 s_integer * integer_init_s8 (s_integer *a, s8 x)
 {
   assert(a);
-  integer_init(a);
+  if (! integer_init(a))
+    return NULL;
   return integer_set_s32(a, x);
 }
 
 s_integer * integer_init_s16 (s_integer *a, s16 x)
 {
   assert(a);
-  integer_init(a);
+  if (! integer_init(a))
+    return NULL;
   return integer_set_s32(a, x);
 }
 
 s_integer * integer_init_s32 (s_integer *a, s32 x)
 {
   assert(a);
-  integer_init(a);
+  if (! integer_init(a))
+    return NULL;
   return integer_set_s32(a, x);
 }
 
 s_integer * integer_init_s64 (s_integer *a, s64 x)
 {
   assert(a);
-  integer_init(a);
+  if (! integer_init(a))
+    return NULL;
   return integer_set_s64(a, x);
 }
 
@@ -379,49 +383,56 @@ s_integer * integer_init_str (s_integer *i, const s_str *src)
 s_integer * integer_init_sw (s_integer *a, sw x)
 {
   assert(a);
-  integer_init(a);
+  if (! integer_init(a))
+    return NULL;
   return integer_set_sw(a, x);
 }
 
 s_integer * integer_init_u8 (s_integer *a, u8 x)
 {
   assert(a);
-  integer_init(a);
+  if (! integer_init(a))
+    return NULL;
   return integer_set_u32(a, x);
 }
 
 s_integer * integer_init_u16 (s_integer *a, u16 x)
 {
   assert(a);
-  integer_init(a);
+  if (! integer_init(a))
+    return NULL;
   return integer_set_u32(a, x);
 }
 
 s_integer * integer_init_u32 (s_integer *a, u32 x)
 {
   assert(a);
-  integer_init(a);
+  if (! integer_init(a))
+    return NULL;
   return integer_set_u32(a, x);
 }
 
 s_integer * integer_init_u64 (s_integer *a, u64 x)
 {
   assert(a);
-  integer_init(a);
+  if (! integer_init(a))
+    return NULL;
   return integer_set_u64(a, x);
 }
 
 s_integer * integer_init_uw (s_integer *a, uw x)
 {
   assert(a);
-  integer_init(a);
+  if (! integer_init(a))
+    return NULL;
   return integer_set_uw(a, x);
 }
 
 s_integer * integer_init_zero (s_integer *dest)
 {
   assert(dest);
-  integer_init(dest);
+  if (! integer_init(dest))
+    return NULL;
   mp_zero(&dest->in_int);
   return dest;
 }
@@ -536,17 +547,20 @@ s_integer * integer_rshift (const s_integer *a, sw b, s_integer *dest)
 s_integer * integer_mod (const s_integer *a, const s_integer *b,
                          s_integer *dest)
 {
-  sw r;
+  mp_err r;
+  s_integer tmp;
   assert(a);
   assert(b);
   assert(dest);
-  integer_init(dest);
-  if ((r = mp_mod(&a->in_int, &b->in_int, &dest->in_int)) != MP_OKAY) {
+  if (! integer_init(&tmp))
+    return NULL;
+  if ((r = mp_mod(&a->in_int, &b->in_int, &tmp.in_int)) != MP_OKAY) {
     err_write_1("integer_mod: ");
     err_puts(mp_error_to_string(r));
-    assert(! "integer_mod: mp_mod");
+    integer_clean(&tmp);
     return NULL;
   }
+  *dest = tmp;
   return dest;
 }
 

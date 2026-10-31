@@ -96,3 +96,11 @@ type((S8) 1 << (Integer) 1) == S8
 ((S64) -9223372036854775808 % (S8) -1) == 0
 ((S8) -7 / (S64) 2) == -3
 ((S8) -7 mod (S64) 2) == -1
+type((Integer) 1 / (Integer) 0) == Void
+type((Integer) 1 mod (Integer) 0) == Void
+type((Integer) 1 % (Integer) 0) == Void
+type((Integer) 1 / (U8) 0) == Void
+type((U8) 1 / (Integer) 0) == Void
+type((Integer) 1 mod (S64) 0) == Void
+type((S64) 1 mod (Integer) 0) == Void
+((Integer) 340282366920938463463374607431768211457 / (Integer) 2) == 170141183460469231731687303715884105728

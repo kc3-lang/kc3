@@ -33,6 +33,7 @@ TEST_CASE_PROTOTYPE(tag_hash_u64);
 TEST_CASE_PROTOTYPE(tag_init_1);
 TEST_CASE_PROTOTYPE(tag_shift);
 TEST_CASE_PROTOTYPE(tag_divmod);
+TEST_CASE_PROTOTYPE(tag_integer_divmod);
 // TEST_CASE_PROTOTYPE(tag_type__macro);
 
 void tag_test (void)
@@ -41,6 +42,7 @@ void tag_test (void)
   TEST_CASE_RUN(tag_hash_u64);
   TEST_CASE_RUN(tag_shift);
   TEST_CASE_RUN(tag_divmod);
+  TEST_CASE_RUN(tag_integer_divmod);
   //  TEST_CASE_RUN(tag_type__macro);
 }
 
@@ -408,3 +410,251 @@ TEST_CASE(tag_divmod)
   test_context(NULL);
 }
 TEST_CASE_END(tag_divmod)
+
+static struct {
+  uw fail;
+  uw step;
+  uw live;
+} g_tag_integer_test;
+
+/* Execute the dispatchers with failures at their real helper boundaries. */
+#define TAG_INTEGER_TEST_INIT(name, type)                              \
+  static s_integer * tag_integer_test_init_ ## name (s_integer *i,     \
+                                                       type value)    \
+  {                                                                   \
+    if (++g_tag_integer_test.step == g_tag_integer_test.fail)          \
+      return NULL;                                                    \
+    if (! integer_init_ ## name(i, value))                            \
+      return NULL;                                                    \
+    g_tag_integer_test.live++;                                         \
+    return i;                                                         \
+  }
+
+TAG_INTEGER_TEST_INIT(s8, s8)
+TAG_INTEGER_TEST_INIT(s16, s16)
+TAG_INTEGER_TEST_INIT(s32, s32)
+TAG_INTEGER_TEST_INIT(s64, s64)
+TAG_INTEGER_TEST_INIT(sw, sw)
+TAG_INTEGER_TEST_INIT(u8, u8)
+TAG_INTEGER_TEST_INIT(u16, u16)
+TAG_INTEGER_TEST_INIT(u32, u32)
+TAG_INTEGER_TEST_INIT(u64, u64)
+TAG_INTEGER_TEST_INIT(uw, uw)
+
+#undef TAG_INTEGER_TEST_INIT
+
+static s_integer * tag_integer_test_div_integer
+(const s_integer *a, const s_integer *b, s_integer *dest)
+{
+  if (++g_tag_integer_test.step == g_tag_integer_test.fail)
+    return NULL;
+  if (! integer_div(a, b, dest))
+    return NULL;
+  g_tag_integer_test.live++;
+  return dest;
+}
+
+static s_integer * tag_integer_test_mod_integer
+(const s_integer *a, const s_integer *b, s_integer *dest)
+{
+  if (++g_tag_integer_test.step == g_tag_integer_test.fail)
+    return NULL;
+  if (! integer_mod(a, b, dest))
+    return NULL;
+  g_tag_integer_test.live++;
+  return dest;
+}
+
+static void tag_integer_test_clean (s_integer *i)
+{
+  if (i->in_int.dp)
+    g_tag_integer_test.live--;
+  integer_clean(i);
+}
+
+static void tag_integer_test_tag_clean (s_tag *tag)
+{
+  if (tag->type == TAG_INTEGER && tag->data.td_integer.in_int.dp)
+    g_tag_integer_test.live--;
+  tag_clean(tag);
+}
+
+static s_tag * tag_integer_test_reduce (s_tag *tag, s_tag *dest)
+{
+  if (++g_tag_integer_test.step == g_tag_integer_test.fail)
+    return NULL;
+  return tag_integer_reduce(tag, dest);
+}
+
+#define tag_div tag_integer_test_div
+#define tag_mod tag_integer_test_mod
+#define integer_div tag_integer_test_div_integer
+#define integer_mod tag_integer_test_mod_integer
+#define integer_clean tag_integer_test_clean
+#define tag_clean tag_integer_test_tag_clean
+#define tag_integer_reduce tag_integer_test_reduce
+#define integer_init_s8 tag_integer_test_init_s8
+#define integer_init_s16 tag_integer_test_init_s16
+#define integer_init_s32 tag_integer_test_init_s32
+#define integer_init_s64 tag_integer_test_init_s64
+#define integer_init_sw tag_integer_test_init_sw
+#define integer_init_u8 tag_integer_test_init_u8
+#define integer_init_u16 tag_integer_test_init_u16
+#define integer_init_u32 tag_integer_test_init_u32
+#define integer_init_u64 tag_integer_test_init_u64
+#define integer_init_uw tag_integer_test_init_uw
+#include "../libkc3/tag_div.c"
+#include "../libkc3/tag_mod.c"
+#undef tag_div
+#undef tag_mod
+#undef integer_div
+#undef integer_mod
+#undef integer_clean
+#undef tag_clean
+#undef tag_integer_reduce
+#undef integer_init_s8
+#undef integer_init_s16
+#undef integer_init_s32
+#undef integer_init_s64
+#undef integer_init_sw
+#undef integer_init_u8
+#undef integer_init_u16
+#undef integer_init_u32
+#undef integer_init_u64
+#undef integer_init_uw
+
+TEST_CASE(tag_integer_divmod)
+{
+  const e_tag_type types[] = {
+    TAG_INTEGER, TAG_S8, TAG_S16, TAG_S32, TAG_S64, TAG_SW,
+    TAG_U8, TAG_U16, TAG_U32, TAG_U64, TAG_UW
+  };
+  const struct {
+    e_tag_type a_type;
+    e_tag_type b_type;
+    s64 a_value;
+  } paths[] = {
+    {TAG_INTEGER, TAG_INTEGER, 97}, {TAG_INTEGER, TAG_SW, 97},
+    {TAG_S8, TAG_INTEGER, 97}, {TAG_SW, TAG_INTEGER, 97},
+    {TAG_S8, TAG_U64, 97}, {TAG_U64, TAG_S8, 97},
+    {TAG_UW, TAG_SW, -1}
+  };
+  uw fail;
+  uw steps;
+  s_tag a = {0};
+  s_tag b = {0};
+  uw i;
+  uw j;
+  uw mod;
+  s_tag result = {0};
+  s_tag saved;
+  s_integer x = {0};
+  s_integer y = {0};
+  s_integer integer_result = {0};
+  s_integer integer_saved;
+  test_context("F59: zero divisors fail for every Integer/fixed-width pair");
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+    TEST_ASSERT(tag_test_init_integer(&a, types[i], 1));
+    for (j = 0; j < sizeof(types) / sizeof(*types); j++) {
+      if (i && j)
+        continue;
+      TEST_ASSERT(tag_test_init_integer(&b, types[j], 0));
+      for (mod = 0; mod < 2; mod++) {
+        TEST_ASSERT(tag_init_u8(&result, 77));
+        result.ref_count = 17;
+        saved = result;
+        TEST_EQ(mod ? tag_mod(&a, &b, &result) :
+                 tag_div(&a, &b, &result), NULL);
+        TEST_MEMCMP((const char *) &result, (const char *) &saved,
+                     sizeof(result));
+        tag_clean(&result);
+      }
+      tag_clean(&b);
+    }
+    tag_clean(&a);
+  }
+  test_context("direct Integer helpers preserve the destination on failure");
+  TEST_ASSERT(integer_init_u8(&x, 1));
+  TEST_ASSERT(integer_init_u8(&y, 0));
+  for (mod = 0; mod < 2; mod++) {
+    TEST_ASSERT(integer_init_u8(&integer_result, 77));
+    integer_saved = integer_result;
+    TEST_EQ(mod ? integer_mod(&x, &y, &integer_result) :
+             integer_div(&x, &y, &integer_result), NULL);
+    TEST_MEMCMP((const char *) &integer_result,
+                 (const char *) &integer_saved, sizeof(integer_result));
+    TEST_EQ(integer_to_u8(&integer_result), 77);
+    integer_clean(&integer_result);
+  }
+  integer_clean(&x);
+  integer_clean(&y);
+  test_context("valid Integer conversions and arithmetic still succeed");
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+    TEST_ASSERT(tag_test_init_integer(&a, types[i], 97));
+    for (j = 0; j < sizeof(types) / sizeof(*types); j++) {
+      if (i && j)
+        continue;
+      TEST_ASSERT(tag_test_init_integer(&b, types[j], 5));
+      TEST_EQ(tag_divmod_test_result(&a, &b, "19", false), 0);
+      TEST_EQ(tag_divmod_test_result(&a, &b, "2", true), 0);
+      tag_clean(&b);
+    }
+    tag_clean(&a);
+  }
+  TEST_ASSERT(tag_init_integer_1(&a, "-7"));
+  TEST_ASSERT(tag_init_integer_1(&b, "3"));
+  TEST_EQ(tag_divmod_test_result(&a, &b, "-2", false), 0);
+  TEST_EQ(tag_divmod_test_result(&a, &b, "2", true), 0);
+  tag_clean(&b);
+  TEST_ASSERT(tag_init_integer_1(&b, "-3"));
+  TEST_EQ(tag_divmod_test_result(&a, &b, "2", false), 0);
+  TEST_EQ(tag_divmod_test_result(&a, &b, "-1", true), 0);
+  tag_clean(&a);
+  tag_clean(&b);
+  test_context("large Integer results remain exact after reduction");
+  TEST_ASSERT(tag_init_integer_1(&a,
+                   "340282366920938463463374607431768211457"));
+  TEST_ASSERT(tag_init_integer_1(&b, "2"));
+  TEST_EQ(tag_divmod_test_result(&a, &b,
+                   "170141183460469231731687303715884105728", false), 0);
+  TEST_EQ(tag_divmod_test_result(&a, &b, "1", true), 0);
+  tag_clean(&a);
+  tag_clean(&b);
+  test_context("F59: helper failures clean every initialized temporary");
+  for (i = 0; i < sizeof(paths) / sizeof(*paths); i++) {
+    TEST_ASSERT(tag_test_init_integer(&a, paths[i].a_type,
+                                     paths[i].a_value));
+    TEST_ASSERT(tag_test_init_integer(&b, paths[i].b_type, 5));
+    for (mod = 0; mod < 2; mod++) {
+      g_tag_integer_test.fail = 0;
+      g_tag_integer_test.step = 0;
+      g_tag_integer_test.live = 0;
+      result = (s_tag) {0};
+      TEST_EQ(mod ? tag_integer_test_mod(&a, &b, &result) :
+               tag_integer_test_div(&a, &b, &result), &result);
+      steps = g_tag_integer_test.step;
+      TEST_ASSERT(steps >= 2);
+      TEST_EQ(g_tag_integer_test.live, 0);
+      tag_clean(&result);
+      for (fail = 1; fail <= steps; fail++) {
+        g_tag_integer_test.fail = fail;
+        g_tag_integer_test.step = 0;
+        g_tag_integer_test.live = 0;
+        TEST_ASSERT(tag_init_u8(&result, 77));
+        result.ref_count = 17;
+        saved = result;
+        TEST_EQ(mod ? tag_integer_test_mod(&a, &b, &result) :
+                 tag_integer_test_div(&a, &b, &result), NULL);
+        TEST_EQ(g_tag_integer_test.step, fail);
+        TEST_EQ(g_tag_integer_test.live, 0);
+        TEST_MEMCMP((const char *) &result, (const char *) &saved,
+                     sizeof(result));
+        tag_clean(&result);
+      }
+    }
+    tag_clean(&a);
+    tag_clean(&b);
+  }
+  test_context(NULL);
+}
+TEST_CASE_END(tag_integer_divmod)

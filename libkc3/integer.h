@@ -95,6 +95,8 @@ s_integer * integer_bor (const s_integer *a, const s_integer *b,
                          s_integer *dest);
 s_integer * integer_bxor (const s_integer *a, const s_integer *b,
                           s_integer *dest);
+/* Division and modulo leave dest unchanged on failure.
+   On success, dest owns a newly initialized Integer. */
 s_integer * integer_div (const s_integer *a, const s_integer *b,
                          s_integer *dest);
 s_integer * integer_gcd (const s_integer *a, const s_integer *b,
