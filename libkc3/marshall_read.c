@@ -1872,22 +1872,30 @@ s_marshall_read * marshall_read_integer (s_marshall_read *mr, bool heap,
     return NULL;
   }
   count = le32toh(count);
+  if ((u64) count > (u64) SW_MAX / digit_size) {
+    err_puts("marshall_read_integer: size out of range");
+    return NULL;
+  }
+  if (buf->rpos > buf->wpos) {
+    err_puts("marshall_read_integer: invalid buffer position");
+    return NULL;
+  }
   integer_init(&tmp);
   if (count == 0) {
     mp_set_u32(&tmp.in_int, 0);
     *dest = tmp;
     return mr;
   }
-  size = count * digit_size;
-  if (buf->rpos + size > buf->wpos) {
+  size = (sw) count * digit_size;
+  if ((uw) size > buf->wpos - buf->rpos) {
     sw r;
     if ((r = buf_refill(buf, size)) < 0) {
       integer_clean(&tmp);
       return NULL;
     }
-    if (buf->rpos + size > buf->wpos) {
+    if (buf->rpos > buf->wpos ||
+        (uw) size > buf->wpos - buf->rpos) {
       err_puts("marshall_read_integer: short read");
-      assert(! "marshall_read_integer: short read");
       integer_clean(&tmp);
       return NULL;
     }

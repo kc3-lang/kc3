@@ -20,6 +20,7 @@
 #include "../libkc3/file.h"
 #include "../libkc3/ht.h"
 #include "../libkc3/inspect.h"
+#include "../libkc3/integer.h"
 #include "../libkc3/map.h"
 #include "../libkc3/marshall.h"
 #include "../libkc3/marshall_read.h"
@@ -107,6 +108,7 @@ TEST_CASE_PROTOTYPE(marshall_read_chunks);
 TEST_CASE_PROTOTYPE(marshall_read_container_limits);
 TEST_CASE_PROTOTYPE(marshall_read_container_counts);
 TEST_CASE_PROTOTYPE(marshall_read_header_limits);
+TEST_CASE_PROTOTYPE(marshall_read_integer);
 TEST_CASE_PROTOTYPE(marshall_read_struct_layout);
 TEST_CASE_PROTOTYPE(marshall_read_struct_roundtrip);
 TEST_CASE_PROTOTYPE(marshall_read_struct_destination);
@@ -158,6 +160,7 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_container_limits);
   TEST_CASE_RUN(marshall_read_container_counts);
   TEST_CASE_RUN(marshall_read_header_limits);
+  TEST_CASE_RUN(marshall_read_integer);
   TEST_CASE_RUN(marshall_read_struct_layout);
   TEST_CASE_RUN(marshall_read_struct_roundtrip);
   TEST_CASE_RUN(marshall_read_struct_destination);
@@ -725,6 +728,142 @@ TEST_CASE(marshall_read_container_counts)
   }
 }
 TEST_CASE_END(marshall_read_container_counts)
+
+struct marshall_read_integer_source {
+  sw result;
+  uw calls;
+};
+
+static sw marshall_read_integer_refill (s_buf *buf)
+{
+  struct marshall_read_integer_source *source = buf->user_ptr;
+  sw result = source->result;
+  source->calls++;
+  if (result > 0) {
+    memcpy(buf->ptr.p_pchar + buf->wpos, "\x01\x00\x00\x00", result);
+    buf->wpos += result;
+    source->result = 0;
+  }
+  return result;
+}
+
+TEST_CASE(marshall_read_integer)
+{
+  enum {
+    magic_size = sizeof("_KC3INTEGER_") - 1,
+    count_pos = magic_size + 1,
+    payload_pos = count_pos + sizeof(u32)
+  };
+  const char *values[] = {
+    "0", "1", "-1", "268435455", "268435456", "-268435456",
+    "18446744073709551616", "-18446744073709551616"
+  };
+  const struct {
+    u32 count;
+    uw payload_size;
+  } invalid[] = {
+    {1, 0}, {1, 3}, {2, 4}, {2, 7},
+    {0x1fffffff, 4}, {0x20000000, 4}, {0x3fffffff, 4},
+    {0x40000000, 4}, {0x40000001, 4}, {0x80000000, 4}, {U32_MAX, 4}
+  };
+  const sw refills[] = {-1, 0, 3, 4};
+  s_buf buf;
+  u32 count_le;
+  s_integer dest;
+  bool heap;
+  uw i;
+  uw j;
+  s_marshall m;
+  s_marshall_read mr;
+  char record[payload_pos + 8] = "_KC3INTEGER_";
+  s_integer saved;
+  struct marshall_read_integer_source source;
+  s_integer src;
+  record[payload_pos] = 1;
+  for (j = 0; j < 2; j++) {
+    heap = j;
+    for (i = 0; i < sizeof(values) / sizeof(*values); i++) {
+      test_context(values[i]);
+      m = (s_marshall) {0};
+      mr = (s_marshall_read) {0};
+      src = (s_integer) {0};
+      dest = (s_integer) {0};
+      TEST_ASSERT(integer_init_1(&src, values[i]));
+      TEST_ASSERT(marshall_init(&m, 256));
+      TEST_ASSERT(marshall_integer(&m, heap, &src));
+      mr.buf = &m.buf;
+      mr.heap = &m.heap;
+      TEST_EQ(marshall_read_integer(&mr, heap, &dest), &mr);
+      TEST_EQ(mp_cmp(&dest.in_int, &src.in_int), MP_EQ);
+      TEST_EQ((heap ? mr.heap : mr.buf)->rpos,
+              (heap ? mr.heap : mr.buf)->wpos);
+      integer_clean(&dest);
+      integer_clean(&src);
+      marshall_clean(&m);
+    }
+    test_context("F57: reject truncated and overflowing integer counts");
+    for (i = 0; i < sizeof(invalid) / sizeof(*invalid); i++) {
+      mr = (s_marshall_read) {0};
+      dest = (s_integer) {0};
+      count_le = htole32(invalid[i].count);
+      memcpy(record + count_pos, &count_le, sizeof(count_le));
+      TEST_ASSERT(buf_init_const(&buf, payload_pos + invalid[i].payload_size,
+                                 record));
+      if (heap)
+        mr.heap = &buf;
+      else
+        mr.buf = &buf;
+      TEST_ASSERT(integer_init_u8(&dest, 73));
+      saved = dest;
+      TEST_EQ(marshall_read_integer(&mr, heap, &dest), NULL);
+      TEST_EQ(memcmp(&dest, &saved, sizeof(dest)), 0);
+      TEST_EQ(integer_to_u8(&dest), 73);
+      TEST_EQ(buf.rpos, payload_pos);
+      integer_clean(&dest);
+      buf_clean(&buf);
+    }
+    test_context("integer payload refill after compaction or read failure");
+    count_le = htole32(2);
+    memcpy(record + count_pos, &count_le, sizeof(count_le));
+    for (i = 0; i < sizeof(refills) / sizeof(*refills); i++) {
+      mr = (s_marshall_read) {0};
+      dest = (s_integer) {0};
+      source = (struct marshall_read_integer_source) {refills[i], 0};
+      TEST_ASSERT(buf_init(&buf, false, sizeof(record), record));
+      buf.wpos = payload_pos + 4;
+      buf.refill = marshall_read_integer_refill;
+      buf.user_ptr = &source;
+      if (heap)
+        mr.heap = &buf;
+      else
+        mr.buf = &buf;
+      if (refills[i] == 4) {
+        TEST_EQ(marshall_read_integer(&mr, heap, &dest), &mr);
+        TEST_EQ(integer_to_u32(&dest), 268435457);
+        TEST_EQ(buf.rpos, 8);
+      }
+      else {
+        TEST_ASSERT(integer_init_u8(&dest, 73));
+        saved = dest;
+        TEST_EQ(marshall_read_integer(&mr, heap, &dest), NULL);
+        TEST_EQ(memcmp(&dest, &saved, sizeof(dest)), 0);
+        TEST_EQ(integer_to_u8(&dest), 73);
+        TEST_EQ(buf.rpos, 0);
+      }
+      TEST_EQ(source.calls, refills[i] == 3 ? 2 : 1);
+      integer_clean(&dest);
+      buf_clean(&buf);
+      /* Compaction overwrites the wire header in the mutable buffer. */
+      memcpy(record, "_KC3INTEGER_", magic_size);
+      record[magic_size] = 0;
+      memcpy(record + count_pos, &count_le, sizeof(count_le));
+      record[payload_pos] = 1;
+      memset(record + payload_pos + 1, 0, 7);
+    }
+  }
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_integer)
 
 TEST_CASE(marshall_read_header_limits)
 {
