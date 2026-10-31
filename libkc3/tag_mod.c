@@ -14,15 +14,29 @@
 #include <math.h>
 #include "integer.h"
 #include "tag.h"
+#include "tag_divmod.h"
 
 s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
 {
+  u64 a_magnitude;
+  bool a_negative;
+  u64 b_magnitude;
+  bool b_negative;
   s_tag tag = {0};
   s_integer tmp = {0};
   s_integer tmp2 = {0};
   assert(a);
   assert(b);
   assert(dest);
+  if (tag_divmod_fixed_value(a, &a_magnitude, &a_negative) &&
+      tag_divmod_fixed_value(b, &b_magnitude, &b_negative)) {
+    if (! b_magnitude) {
+      err_puts("tag_mod: division by zero");
+      return NULL;
+    }
+    if (b_negative && b_magnitude == 1)
+      return tag_init_u8(dest, 0);
+  }
   switch (a->type) {
   case TAG_F32:
     switch (b->type) {

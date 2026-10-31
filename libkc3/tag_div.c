@@ -16,10 +16,15 @@
 #include "integer.h"
 #include "ratio.h"
 #include "tag.h"
+#include "tag_divmod.h"
 
 s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
 {
   s_complex c = {0};
+  u64 a_magnitude;
+  bool a_negative;
+  u64 b_magnitude;
+  bool b_negative;
   s_tag tag = {0};
   s_integer tmp = {0};
   s_integer tmp2 = {0};
@@ -27,6 +32,17 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
   assert(a);
   assert(b);
   assert(dest);
+  if (tag_divmod_fixed_value(a, &a_magnitude, &a_negative) &&
+      tag_divmod_fixed_value(b, &b_magnitude, &b_negative)) {
+    if (! b_magnitude) {
+      err_puts("tag_div: division by zero");
+      return NULL;
+    }
+    if (a_negative && b_negative && b_magnitude == 1) {
+      tag_init_u64(&tag, a_magnitude);
+      goto integer_reduce;
+    }
+  }
   switch (a->type) {
   case TAG_PCOMPLEX:
     switch (b->type) {
@@ -777,7 +793,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       tag_init_sw(&tag, a->data.td_sw / (sw) b->data.td_u16);
       goto integer_reduce;
     case TAG_U32:
-      tag_init_sw(&tag, a->data.td_sw / (sw) b->data.td_u32);
+      tag_init_sw(&tag, (s64) a->data.td_sw / (s64) b->data.td_u32);
       goto integer_reduce;
     case TAG_U64:
       integer_init_sw(&tmp, a->data.td_sw);
@@ -955,7 +971,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       tag_init_s64(&tag, (s64) a->data.td_u32 / b->data.td_s64);
       goto integer_reduce;
     case TAG_SW:
-      tag_init_sw(&tag, (sw) a->data.td_u32 / b->data.td_sw);
+      tag_init_s64(&tag, (s64) a->data.td_u32 / (s64) b->data.td_sw);
       goto integer_reduce;
     case TAG_U8:
       tag_init_u32(&tag, a->data.td_u32 / b->data.td_u8);
@@ -1054,7 +1070,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       tag_init_u64(&tag, a->data.td_u64 / b->data.td_u64);
       goto integer_reduce;
     case TAG_UW:
-      tag_init_uw(&tag, a->data.td_u64 / (u64) b->data.td_uw);
+      tag_init_u64(&tag, a->data.td_u64 / (u64) b->data.td_uw);
       goto integer_reduce;
     default:
       goto ko;
@@ -1163,7 +1179,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       tag_init_uw(&tag, a->data.td_uw / (uw) b->data.td_u32);
       goto integer_reduce;
     case TAG_U64:
-      tag_init_uw(&tag, a->data.td_uw / (uw) b->data.td_u64);
+      tag_init_uw(&tag, (u64) a->data.td_uw / b->data.td_u64);
       goto integer_reduce;
     case TAG_UW:
       tag_init_uw(&tag, a->data.td_uw / b->data.td_uw);

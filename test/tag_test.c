@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/assert.h"
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../libkc3/tag.h"
@@ -31,6 +32,7 @@ void tag_test (void);
 TEST_CASE_PROTOTYPE(tag_hash_u64);
 TEST_CASE_PROTOTYPE(tag_init_1);
 TEST_CASE_PROTOTYPE(tag_shift);
+TEST_CASE_PROTOTYPE(tag_divmod);
 // TEST_CASE_PROTOTYPE(tag_type__macro);
 
 void tag_test (void)
@@ -38,6 +40,7 @@ void tag_test (void)
   TEST_CASE_RUN(tag_init_1);
   TEST_CASE_RUN(tag_hash_u64);
   TEST_CASE_RUN(tag_shift);
+  TEST_CASE_RUN(tag_divmod);
   //  TEST_CASE_RUN(tag_type__macro);
 }
 
@@ -84,7 +87,7 @@ TEST_CASE(tag_type__macro)
 TEST_CASE_END(tag_type__macro)
 */
 
-static s_tag * tag_shift_test_init (s_tag *tag, e_tag_type type, s64 value)
+static s_tag * tag_test_init_integer (s_tag *tag, e_tag_type type, s64 value)
 {
   switch (type) {
   case TAG_BOOL: return tag_init_bool(tag, (bool) value);
@@ -162,20 +165,20 @@ TEST_CASE(tag_shift)
   uw n;
   /* Every supported left/count type pair must agree for counts 0 and 1. */
   for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
-    TEST_ASSERT(tag_shift_test_init(&a, types[i], 1));
+    TEST_ASSERT(tag_test_init_integer(&a, types[i], 1));
     for (j = 0; j < sizeof(types) / sizeof(*types); j++)
       for (n = 0; n <= 1; n++) {
-        TEST_ASSERT(tag_shift_test_init(&b, types[j], n));
-        TEST_ASSERT(tag_shift_test_init(&expected, types[i], n ? 2 : 1));
+        TEST_ASSERT(tag_test_init_integer(&b, types[j], n));
+        TEST_ASSERT(tag_test_init_integer(&expected, types[i], n ? 2 : 1));
         TEST_EQ(tag_shift_test_result(&a, &b, &expected, false), 0);
         tag_clean(&expected);
-        TEST_ASSERT(tag_shift_test_init(&expected, types[i], n ? 0 : 1));
+        TEST_ASSERT(tag_test_init_integer(&expected, types[i], n ? 0 : 1));
         TEST_EQ(tag_shift_test_result(&a, &b, &expected, true), 0);
         tag_clean(&expected);
         tag_clean(&b);
       }
     if (widths[i]) {
-      TEST_ASSERT(tag_shift_test_init(&expected, types[i], 0));
+      TEST_ASSERT(tag_test_init_integer(&expected, types[i], 0));
       for (n = widths[i]; n <= widths[i] + 1; n++) {
         TEST_ASSERT(tag_init_u64(&b, n));
         TEST_EQ(tag_shift_test_result(&a, &b, &expected, false), 0);
@@ -185,7 +188,7 @@ TEST_CASE(tag_shift)
     }
     /* Negative counts must leave an existing destination untouched. */
     for (j = 2; j <= 6; j++) {
-      TEST_ASSERT(tag_shift_test_init(&b, types[j], -1));
+      TEST_ASSERT(tag_test_init_integer(&b, types[j], -1));
       TEST_EQ(tag_shift_test_error(&a, &b, false), 0);
       TEST_EQ(tag_shift_test_error(&a, &b, true), 0);
     }
@@ -200,7 +203,7 @@ TEST_CASE(tag_shift)
       else
         TEST_ASSERT(tag_init_integer_1(&b, j == 1 ?
                      "18446744073709551616" : "18446744073709551617"));
-      TEST_ASSERT(tag_shift_test_init(&expected, types[i], 0));
+      TEST_ASSERT(tag_test_init_integer(&expected, types[i], 0));
       TEST_EQ(tag_shift_test_result(&a, &b, &expected, true), 0);
       if (types[i] == TAG_INTEGER)
         TEST_EQ(tag_shift_test_error(&a, &b, false), 0);
@@ -213,26 +216,26 @@ TEST_CASE(tag_shift)
   }
   /* Signed minima, sign extension, wrapping, and the top nominal bit. */
   for (i = 2; i <= 6; i++) {
-    TEST_ASSERT(tag_shift_test_init(&a, types[i], minima[i - 2]));
+    TEST_ASSERT(tag_test_init_integer(&a, types[i], minima[i - 2]));
     TEST_ASSERT(tag_init_u8(&b, 1));
-    TEST_ASSERT(tag_shift_test_init(&expected, types[i], 0));
+    TEST_ASSERT(tag_test_init_integer(&expected, types[i], 0));
     TEST_EQ(tag_shift_test_result(&a, &b, &expected, false), 0);
-    TEST_ASSERT(tag_shift_test_init(&expected, types[i], minima[i - 2] / 2));
+    TEST_ASSERT(tag_test_init_integer(&expected, types[i], minima[i - 2] / 2));
     TEST_EQ(tag_shift_test_result(&a, &b, &expected, true), 0);
-    TEST_ASSERT(tag_shift_test_init(&expected, types[i], -1));
+    TEST_ASSERT(tag_test_init_integer(&expected, types[i], -1));
     for (n = widths[i] - 1; n <= widths[i] + 1; n++) {
       TEST_ASSERT(tag_init_u64(&b, n));
       TEST_EQ(tag_shift_test_result(&a, &b, &expected, true), 0);
     }
-    TEST_ASSERT(tag_shift_test_init(&a, types[i], 1));
+    TEST_ASSERT(tag_test_init_integer(&a, types[i], 1));
     TEST_ASSERT(tag_init_u8(&b, widths[i] - 1));
-    TEST_ASSERT(tag_shift_test_init(&expected, types[i], minima[i - 2]));
+    TEST_ASSERT(tag_test_init_integer(&expected, types[i], minima[i - 2]));
     TEST_EQ(tag_shift_test_result(&a, &b, &expected, false), 0);
-    TEST_ASSERT(tag_shift_test_init(&a, types[i], -3));
+    TEST_ASSERT(tag_test_init_integer(&a, types[i], -3));
     TEST_ASSERT(tag_init_u8(&b, 1));
-    TEST_ASSERT(tag_shift_test_init(&expected, types[i], -6));
+    TEST_ASSERT(tag_test_init_integer(&expected, types[i], -6));
     TEST_EQ(tag_shift_test_result(&a, &b, &expected, false), 0);
-    TEST_ASSERT(tag_shift_test_init(&expected, types[i], -2));
+    TEST_ASSERT(tag_test_init_integer(&expected, types[i], -2));
     TEST_EQ(tag_shift_test_result(&a, &b, &expected, true), 0);
   }
   TEST_ASSERT(tag_init_u64(&a, U64_MAX));
@@ -253,14 +256,14 @@ TEST_CASE(tag_shift)
   tag_clean(&expected);
   tag_clean(&a);
   for (i = 0; i < 4; i++) {
-    TEST_ASSERT(tag_shift_test_init(&a, TAG_INTEGER, -(s64) i));
+    TEST_ASSERT(tag_test_init_integer(&a, TAG_INTEGER, -(s64) i));
     TEST_ASSERT(tag_init_u8(&b, 1));
-    TEST_ASSERT(tag_shift_test_init(&expected, TAG_INTEGER,
+    TEST_ASSERT(tag_test_init_integer(&expected, TAG_INTEGER,
                                     integer_floors[i]));
     TEST_EQ(tag_shift_test_result(&a, &b, &expected, true), 0);
     tag_clean(&expected);
     TEST_ASSERT(tag_init_u64(&b, U64_MAX));
-    TEST_ASSERT(tag_shift_test_init(&expected, TAG_INTEGER, i ? -1 : 0));
+    TEST_ASSERT(tag_test_init_integer(&expected, TAG_INTEGER, i ? -1 : 0));
     TEST_EQ(tag_shift_test_result(&a, &b, &expected, true), 0);
     tag_clean(&expected);
     if (! i) {
@@ -291,3 +294,117 @@ TEST_CASE(tag_shift)
   integer_clean(&integer);
 }
 TEST_CASE_END(tag_shift)
+
+static char tag_divmod_test_result (s_tag *a, s_tag *b,
+                                   const char *value, bool mod)
+{
+  s_tag expected = {0};
+  s_tag result = {0};
+  TEST_ASSERT(tag_init_1(&expected, value));
+  result.ref_count = 17;
+  TEST_EQ(mod ? tag_mod(a, b, &result) : tag_div(a, b, &result), &result);
+  TEST_EQ(result.type, expected.type);
+  TEST_EQ(compare_tag(&result, &expected), 0);
+  TEST_EQ(result.ref_count, 17);
+  tag_clean(&result);
+  tag_clean(&expected);
+  return 0;
+}
+
+TEST_CASE(tag_divmod)
+{
+  const e_tag_type types[] = {
+    TAG_S8, TAG_S16, TAG_S32, TAG_S64, TAG_SW,
+    TAG_U8, TAG_U16, TAG_U32, TAG_U64, TAG_UW
+  };
+  const s64 minima[] = {S8_MIN, S16_MIN, S32_MIN, S64_MIN, SW_MIN};
+  const char *quotients[] = {
+    "128", "32768", "2147483648", "9223372036854775808",
+    sizeof(sw) == 8 ? "9223372036854775808" : "2147483648"
+  };
+  s_tag a = {0};
+  s_tag b = {0};
+  uw i;
+  uw j;
+  uw mod;
+  s_tag result = {0};
+  s_tag saved;
+  test_context("F58: signed minima / -1 widen; minima mod -1 is zero");
+  for (i = 0; i < sizeof(minima) / sizeof(*minima); i++) {
+    TEST_ASSERT(tag_test_init_integer(&a, types[i], minima[i]));
+    for (j = 0; j < sizeof(minima) / sizeof(*minima); j++) {
+      TEST_ASSERT(tag_test_init_integer(&b, types[j], -1));
+      TEST_EQ(tag_divmod_test_result(&a, &b, quotients[i], false), 0);
+      TEST_EQ(tag_divmod_test_result(&a, &b, "0", true), 0);
+    }
+  }
+  test_context("F58: every fixed-width type pair rejects zero");
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+    TEST_ASSERT(tag_test_init_integer(&a, types[i], 1));
+    for (j = 0; j < sizeof(types) / sizeof(*types); j++) {
+      TEST_ASSERT(tag_test_init_integer(&b, types[j], 0));
+      for (mod = 0; mod < 2; mod++) {
+        TEST_ASSERT(tag_init_u8(&result, 77));
+        result.ref_count = 17;
+        saved = result;
+        TEST_EQ(mod ? tag_mod(&a, &b, &result) :
+                 tag_div(&a, &b, &result), NULL);
+        TEST_MEMCMP((const char *) &result, (const char *) &saved,
+                     sizeof(result));
+        tag_clean(&result);
+      }
+    }
+  }
+  test_context("ordinary signed division still truncates toward zero");
+  for (i = 0; i < sizeof(minima) / sizeof(*minima); i++) {
+    TEST_ASSERT(tag_test_init_integer(&a, types[i], -7));
+    for (j = 0; j < sizeof(minima) / sizeof(*minima); j++) {
+      TEST_ASSERT(tag_test_init_integer(&b, types[j], 2));
+      TEST_EQ(tag_divmod_test_result(&a, &b, "-3", false), 0);
+      TEST_EQ(tag_divmod_test_result(&a, &b, "-1", true), 0);
+      TEST_ASSERT(tag_test_init_integer(&b, types[j], -1));
+      TEST_EQ(tag_divmod_test_result(&a, &b, "7", false), 0);
+      TEST_EQ(tag_divmod_test_result(&a, &b, "0", true), 0);
+    }
+  }
+  test_context("word-size conversions preserve nonzero divisors and values");
+  TEST_ASSERT(tag_init_sw(&a, SW_MIN));
+  TEST_ASSERT(tag_init_u32(&b, U32_MAX));
+  TEST_EQ(tag_divmod_test_result(&a, &b,
+                                sizeof(sw) == 8 ? "-2147483648" : "0",
+                                false), 0);
+  TEST_ASSERT(tag_init_u32(&a, 0x80000000));
+  TEST_ASSERT(tag_init_sw(&b, -1));
+  TEST_EQ(tag_divmod_test_result(&a, &b, "-2147483648", false), 0);
+  TEST_ASSERT(tag_init_uw(&a, 1));
+  TEST_ASSERT(tag_init_u64(&b, (u64) 1 << 32));
+  TEST_EQ(tag_divmod_test_result(&a, &b, "0", false), 0);
+  TEST_ASSERT(tag_init_u64(&a, U64_MAX));
+  TEST_ASSERT(tag_init_uw(&b, 1));
+  TEST_EQ(tag_divmod_test_result(&a, &b, "18446744073709551615", false), 0);
+  test_context("floating-point zero divisors keep IEEE behavior");
+  TEST_ASSERT(tag_init_f64(&a, 1.0));
+  TEST_ASSERT(tag_init_u8(&b, 0));
+  TEST_EQ(tag_div(&a, &b, &result), &result);
+  TEST_EQ(result.type, TAG_F64);
+  TEST_ASSERT(isinf(result.data.td_f64));
+  tag_clean(&result);
+  TEST_EQ(tag_mod(&a, &b, &result), &result);
+  TEST_EQ(result.type, TAG_F64);
+  TEST_ASSERT(isnan(result.data.td_f64));
+  tag_clean(&result);
+  TEST_ASSERT(tag_init_u8(&a, 1));
+  TEST_ASSERT(tag_init_f64(&b, 0.0));
+  TEST_EQ(tag_div(&a, &b, &result), &result);
+  TEST_EQ(result.type, TAG_F64);
+  TEST_ASSERT(isinf(result.data.td_f64));
+  tag_clean(&result);
+  TEST_EQ(tag_mod(&a, &b, &result), &result);
+  TEST_EQ(result.type, TAG_F64);
+  TEST_ASSERT(isnan(result.data.td_f64));
+  tag_clean(&result);
+  tag_clean(&a);
+  tag_clean(&b);
+  test_context(NULL);
+}
+TEST_CASE_END(tag_divmod)

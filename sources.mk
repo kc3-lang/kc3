@@ -886,6 +886,7 @@ KC3_C_SOURCES = \
 	"libkc3/tag_bor.c" \
 	"libkc3/tag_bxor.c" \
 	"libkc3/tag_div.c" \
+	"libkc3/tag_divmod.h" \
 	"libkc3/tag_init.c" \
 	"libkc3/tag_init.h" \
 	"libkc3/tag_mod.c" \
