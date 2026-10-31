@@ -104,6 +104,7 @@ PROTO_MARSHALL_READ(pcomplex,             p_complex            );
 PROTO_MARSHALL_READ(pcow,                 p_cow                );
 PROTO_MARSHALL_READ(pfacts,               p_facts              );
 PROTO_MARSHALL_READ(pframe,               p_frame              );
+/* Returned list nodes are owned by the caller independently of the cache. */
 PROTO_MARSHALL_READ(plist,                p_list               );
 PROTO_MARSHALL_READ(pset_item__fact,      p_set_item__fact     );
 PROTO_MARSHALL_READ(pset_item__tag,       p_set_item__tag      );

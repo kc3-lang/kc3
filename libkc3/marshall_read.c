@@ -252,6 +252,16 @@
   }
 
 static void marshall_read_ht_clean (s_marshall_read *mr);
+static s_marshall_read * marshall_read_list_1 (s_marshall_read *mr,
+                                              bool heap, s_list *dest,
+                                              bool borrow_tail);
+static void marshall_read_list_node_delete (p_list list);
+static s_marshall_read * marshall_read_plist_1 (s_marshall_read *mr,
+                                               bool heap, p_list *dest,
+                                               bool borrow);
+static s_marshall_read * marshall_read_tag_1 (s_marshall_read *mr,
+                                             bool heap, s_tag *dest,
+                                             bool borrow_list);
 
 s_marshall_read * marshall_read_1 (s_marshall_read *mr, bool heap,
                                    const char *p)
@@ -1624,7 +1634,15 @@ void marshall_read_ht_clean (s_marshall_read *mr)
   if (mr->ht.items)
     ht_clean(&mr->ht);
   while (mr->ht_ptag_list) {
-    ptag_clean((p_tag *) &mr->ht_ptag_list->tag.data.td_ptr.p_pvoid);
+    if (mr->ht_ptag_list->tag.type == TAG_PLIST) {
+      /* Each retained list entry owns one canonical node. Tail links
+         borrow other cached nodes, so do not recursively delete them. */
+      marshall_read_list_node_delete
+        (mr->ht_ptag_list->tag.data.td_plist);
+      mr->ht_ptag_list->tag.data.td_plist = NULL;
+    }
+    else
+      ptag_clean((p_tag *) &mr->ht_ptag_list->tag.data.td_ptr.p_pvoid);
     mr->ht_ptag_list = list_delete(mr->ht_ptag_list);
   }
 }
@@ -1898,6 +1916,13 @@ s_marshall_read * marshall_read_integer (s_marshall_read *mr, bool heap,
 s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
                                       s_list *dest)
 {
+  return marshall_read_list_1(mr, heap, dest, false);
+}
+
+static s_marshall_read * marshall_read_list_1 (s_marshall_read *mr,
+                                              bool heap, s_list *dest,
+                                              bool borrow_tail)
+{
   assert(mr);
   assert(dest);
   *dest = (s_list) {0};
@@ -1908,11 +1933,20 @@ s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
   }
   if (! marshall_read_tag(mr, heap, &dest->tag))
     return NULL;
-  if (! marshall_read_tag(mr, heap, &dest->next)) {
+  if (! marshall_read_tag_1(mr, heap, &dest->next, borrow_tail)) {
     tag_clean(&dest->tag);
     return NULL;
   }
   return mr;
+}
+
+static void marshall_read_list_node_delete (p_list list)
+{
+  if (list->next.type == TAG_PLIST) {
+    list->next.data.td_plist = NULL;
+    tag_clean(&list->next);
+  }
+  list_delete(list);
 }
 
 s_marshall_read * marshall_read_map (s_marshall_read *mr,
@@ -2308,8 +2342,15 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
                                        bool heap,
                                        p_list *dest)
 {
+  return marshall_read_plist_1(mr, heap, dest, false);
+}
+
+static s_marshall_read * marshall_read_plist_1 (s_marshall_read *mr,
+                                               bool heap, p_list *dest,
+                                               bool borrow)
+{
+  p_list keep;
   u64 offset = 0;
-  p_list present = NULL;
   p_list tmp = NULL;
   assert(mr);
   assert(dest);
@@ -2319,32 +2360,36 @@ s_marshall_read * marshall_read_plist (s_marshall_read *mr,
     return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present, &g_sym_List))
+                                   (void **) &tmp, &g_sym_List))
     return marshall_read_ht_abort(mr);
   if (! offset) {
     *dest = NULL;
     return mr;
   }
-  if (present) {
-    if (! plist_init_copy(dest, &present)) {
-      err_puts("marshall_read_plist: plist_init_copy");
-      assert(! "marshall_read_plist: plist_init_copy");
+  if (! tmp) {
+    if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
+        ! (tmp = alloc(sizeof(s_list))))
+      return marshall_read_ht_abort(mr);
+    if (! marshall_read_list_1(mr, true, tmp, true)) {
+      alloc_free(tmp);
       return marshall_read_ht_abort(mr);
     }
-    return mr;
+    if (! (keep = list_new_plist(tmp, mr->ht_ptag_list))) {
+      marshall_read_list_node_delete(tmp);
+      return marshall_read_ht_abort(mr);
+    }
+    mr->ht_ptag_list = keep;
+    if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_List))
+      return marshall_read_ht_abort(mr);
   }
-  if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
-      ! (tmp = alloc(sizeof(s_list))))
-    return marshall_read_ht_abort(mr);
-  if (! marshall_read_list(mr, true, tmp)) {
-    alloc_free(tmp);
-    return marshall_read_ht_abort(mr);
-  }
-  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_List)) {
-    list_delete(tmp);
+  /* Only canonical next links may borrow cache nodes. Every public
+     result owns an independent list, including on the first decode. */
+  if (borrow)
+    *dest = tmp;
+  else if (! plist_init_copy(dest, &tmp)) {
+    err_puts("marshall_read_plist: plist_init_copy");
     return marshall_read_ht_abort(mr);
   }
-  *dest = tmp;
   return mr;
 }
 
@@ -3412,6 +3457,14 @@ s_marshall_read * marshall_read_sym (s_marshall_read *mr,
 s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
                                      s_tag *dest)
 {
+  return marshall_read_tag_1(mr, heap, dest, false);
+}
+
+static s_marshall_read * marshall_read_tag_1 (s_marshall_read *mr,
+                                             bool heap, s_tag *dest,
+                                             bool borrow_list)
+{
+  s_marshall_read *result;
   u8 type = 0;
   assert(mr);
   assert(dest);
@@ -3430,7 +3483,11 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
   mutex_init(&dest->ref_count_mutex);
 #endif
   dest->type = type;
-  if (! marshall_read_tag_data(mr, heap, dest)) {
+  if (borrow_list && type == TAG_PLIST)
+    result = marshall_read_plist_1(mr, heap, &dest->data.td_plist, true);
+  else
+    result = marshall_read_tag_data(mr, heap, dest);
+  if (! result) {
 #if HAVE_PTHREAD
     mutex_clean(&dest->ref_count_mutex);
 #endif
@@ -3599,6 +3656,8 @@ s_marshall_read * marshall_read_ptuple (s_marshall_read *mr,
                                         p_tuple *dest)
 {
   s_buf *buf;
+  p_tag keep;
+  p_list list;
   u64 offset = 0;
   p_tuple present = NULL;
   p_tuple tuple = NULL;
@@ -3625,11 +3684,20 @@ s_marshall_read * marshall_read_ptuple (s_marshall_read *mr,
       alloc_free(tuple);
       return marshall_read_ht_abort(mr);
     }
-    if (! marshall_read_ht_add(mr, offset, tuple, &g_sym_Tuple)) {
+    if (! (keep = tag_new())) {
       tuple_delete(tuple);
       return marshall_read_ht_abort(mr);
     }
-    *dest = tuple;
+    keep->type = TAG_PTUPLE;
+    keep->data.td_ptuple = tuple;
+    if (! (list = list_new_ptr(keep, mr->ht_ptag_list))) {
+      tag_delete(keep);
+      return marshall_read_ht_abort(mr);
+    }
+    mr->ht_ptag_list = list;
+    if (! marshall_read_ht_add(mr, offset, tuple, &g_sym_Tuple) ||
+        ! ptuple_init_copy(dest, &tuple))
+      return marshall_read_ht_abort(mr);
     return mr;
   }
   tuple = alloc(sizeof(s_tuple));

@@ -268,6 +268,7 @@ TEST_CASE_PROTOTYPE(buf_fd_shutdown_write);
 TEST_CASE_PROTOTYPE(buf_fd_socket_flush);
 TEST_CASE_PROTOTYPE(buf_fd_pipe_flush);
 TEST_CASE_PROTOTYPE(buf_fd_file_flush);
+TEST_CASE_PROTOTYPE(buf_fd_read_tell);
 TEST_CASE_PROTOTYPE(buf_fd_partial_retry);
 TEST_CASE_PROTOTYPE(buf_fd_partial_close);
 TEST_CASE_PROTOTYPE(buf_fd_partial_saves);
@@ -279,6 +280,7 @@ void buf_fd_test (void)
   TEST_CASE_RUN(buf_fd_socket_flush);
   TEST_CASE_RUN(buf_fd_pipe_flush);
   TEST_CASE_RUN(buf_fd_file_flush);
+  TEST_CASE_RUN(buf_fd_read_tell);
   TEST_CASE_RUN(buf_fd_partial_retry);
   TEST_CASE_RUN(buf_fd_partial_close);
   TEST_CASE_RUN(buf_fd_partial_saves);
@@ -363,3 +365,58 @@ TEST_CASE(buf_fd_file_flush)
   TEST_EQ(fclose(fp), 0);
 }
 TEST_CASE_END(buf_fd_file_flush)
+
+TEST_CASE(buf_fd_read_tell)
+{
+  s_buf buf;
+  const char data[] = "0123456789abcdefghijklmn";
+  int fd;
+  FILE *fp;
+  uw i;
+  u64 position;
+  s_buf_save save;
+  uw start;
+  u8 value;
+  TEST_ASSERT((fp = tmpfile()));
+  TEST_ASSERT((fd = fileno(fp)) >= 0);
+  TEST_EQ(write(fd, data, sizeof(data) - 1), sizeof(data) - 1);
+  for (start = 0; start <= 3; start += 3) {
+    TEST_EQ(lseek(fd, start, SEEK_SET), start);
+    TEST_ASSERT(buf_init_alloc(&buf, 8));
+    TEST_EQ(buf_fd_open_r(&buf, fd), &buf);
+    for (i = start; i < sizeof(data) - 1; i++) {
+      TEST_EQ(buf_tell_r(&buf, &position), &position);
+      TEST_EQ(position, i);
+      TEST_EQ(buf_read_u8(&buf, &value), 1);
+      TEST_EQ(value, data[i]);
+      TEST_EQ(buf_tell_r(&buf, &position), &position);
+      TEST_EQ(position, i + 1);
+    }
+    TEST_ASSERT(buf_read_u8(&buf, &value) <= 0);
+    TEST_EQ(buf_tell_r(&buf, &position), &position);
+    TEST_EQ(position, sizeof(data) - 1);
+    buf_fd_close(&buf);
+    buf_clean(&buf);
+  }
+  TEST_EQ(lseek(fd, 0, SEEK_SET), 0);
+  TEST_ASSERT(buf_init_alloc(&buf, 8));
+  TEST_EQ(buf_fd_open_r(&buf, fd), &buf);
+  TEST_EQ(buf_ignore(&buf, 6), 6);
+  TEST_EQ(buf_save_init(&buf, &save), &buf);
+  TEST_EQ(buf_ignore(&buf, 4), 4);
+  TEST_EQ(save.rpos, 0);
+  TEST_EQ(buf_tell_r(&buf, &position), &position);
+  TEST_EQ(position, 10);
+  TEST_EQ(buf_save_restore_rpos(&buf, &save), &buf);
+  TEST_EQ(buf_tell_r(&buf, &position), &position);
+  TEST_EQ(position, 6);
+  TEST_EQ(buf_read_u8(&buf, &value), 1);
+  TEST_EQ(value, data[6]);
+  TEST_EQ(buf_tell_r(&buf, &position), &position);
+  TEST_EQ(position, 7);
+  TEST_EQ(buf_save_clean(&buf, &save), &buf);
+  buf_fd_close(&buf);
+  buf_clean(&buf);
+  TEST_EQ(fclose(fp), 0);
+}
+TEST_CASE_END(buf_fd_read_tell)

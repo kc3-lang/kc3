@@ -292,8 +292,8 @@ s_list * list_new_copy_all (s_list *src)
   i = &list;
   s = src;
   while (s) {
-    *i = list_new(NULL);
-    if (! tag_init_copy(&(*i)->tag, &s->tag))
+    if (! (*i = list_new(NULL)) ||
+        ! tag_init_copy(&(*i)->tag, &s->tag))
       goto ko;
     if ((next = list_next(s))) {
       s = next;

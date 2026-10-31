@@ -162,7 +162,7 @@ u64 * buf_fd_open_r_tell (s_buf *buf, u64 *dest)
     assert(! "buf_fd_tell: lseek");
     return NULL;
   }
-  *dest = tmp + buf->rpos;
+  *dest = tmp - buf->wpos + buf->rpos;
   return dest;
 }
 

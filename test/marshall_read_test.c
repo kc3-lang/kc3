@@ -1240,6 +1240,8 @@ TEST_CASE(marshall_read_cache_cycle)
   s_marshall_read mr = {0};
   s_str str = {0};
   p_frame dest = (p_frame) &str;
+  p_list cycle;
+  p_list list_dest = (p_list) &str;
   TEST_ASSERT(marshall_init(&m, BUF_SIZE));
   TEST_ASSERT(marshall_1(&m, false, "_KC3PFRAME_"));
   TEST_ASSERT(marshall_offset(&m, false, sizeof(s_marshall_header)));
@@ -1254,6 +1256,24 @@ TEST_CASE(marshall_read_cache_cycle)
   TEST_EQ(dest, (p_frame) &str);
   TEST_ASSERT(mr.ht_failed);
   marshall_read_clean(&mr);
+  str_clean(&str);
+  marshall_clean(&m);
+  /* Fail after nested lists have already entered the retention pool. */
+  m = (s_marshall) {0};
+  mr = (s_marshall_read) {0};
+  str = (s_str) {0};
+  TEST_ASSERT((cycle = list_new_plist_1("[1, 2]", NULL)));
+  cycle->next.data.td_plist = cycle;
+  TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+  TEST_ASSERT(marshall_plist(&m, false, &cycle));
+  TEST_ASSERT(marshall_to_str(&m, &str));
+  TEST_ASSERT(marshall_read_init_str(&mr, &str));
+  TEST_EQ(marshall_read_plist(&mr, false, &list_dest), NULL);
+  TEST_EQ(list_dest, (p_list) &str);
+  TEST_ASSERT(mr.ht_failed);
+  marshall_read_clean(&mr);
+  cycle->next.data.td_plist = NULL;
+  list_delete_all(cycle);
   str_clean(&str);
   marshall_clean(&m);
 }
@@ -1288,16 +1308,25 @@ TEST_CASE_END(marshall_read_cache_skiplist_cycle)
 
 TEST_CASE(marshall_read_cache_shared)
 {
-  const char *values[] = {"{1, 2}", "[1, 2]", ":cache_shared"};
+  const char *values[] = {
+    "{1, 2}", "[1, 2]", ":cache_shared", "[]", "[1 | :tail]",
+    "[[1, 2], {3, 4}, \"cached string\"]"
+  };
   uw copy;
   uw i;
   bool copy_saved = env_global()->pass_by_copy;
+  bool list;
   s_marshall m;
   s_marshall_read mr;
   s_str str;
   s_tag src;
   s_tag a;
   s_tag b;
+  s_tag tail;
+  s_tag again;
+  s_tag other;
+  s_tag other_result;
+  s_list other_node;
   for (copy = 0; copy < 2; copy++) {
     env_global()->pass_by_copy = copy;
     for (i = 0; i < sizeof(values) / sizeof(*values); i++) {
@@ -1307,18 +1336,71 @@ TEST_CASE(marshall_read_cache_shared)
       src = (s_tag) {0};
       a = (s_tag) {0};
       b = (s_tag) {0};
+      tail = (s_tag) {0};
+      again = (s_tag) {0};
+      other = (s_tag) {0};
+      other_result = (s_tag) {0};
       TEST_ASSERT(tag_init_1(&src, values[i]));
+      list = src.type == TAG_PLIST && src.data.td_plist;
       TEST_ASSERT(marshall_init(&m, BUF_SIZE));
       TEST_ASSERT(marshall_tag(&m, false, &src));
       TEST_ASSERT(marshall_tag(&m, false, &src));
+      TEST_ASSERT(marshall_tag(&m, false, &src));
+      TEST_ASSERT(marshall_tag(&m, false, &src));
+      if (list) {
+        TEST_ASSERT(marshall_tag(&m, false, &src.data.td_plist->next));
+        /* A distinct parent shares an already-serialized list suffix. */
+        TEST_ASSERT(list_init_u8(&other_node, 77,
+                                 list_next(src.data.td_plist)));
+        TEST_ASSERT(tag_init_plist(&other, &other_node));
+        TEST_ASSERT(marshall_tag(&m, false, &other));
+      }
       TEST_ASSERT(marshall_to_str(&m, &str));
       TEST_ASSERT(marshall_read_init_str(&mr, &str));
       TEST_ASSERT(marshall_read_tag(&mr, false, &a));
+      TEST_EQ(compare_tag(&a, &src), 0);
+      /* List nodes belong to the caller: mutation must not alter the cache. */
+      if (list) {
+        tag_clean(&a.data.td_plist->tag);
+        TEST_ASSERT(tag_init_u8(&a.data.td_plist->tag, 99));
+      }
       TEST_ASSERT(marshall_read_tag(&mr, false, &b));
-      TAG_TEST_EQ(&a, &src);
-      TAG_TEST_EQ(&b, &src);
+      TEST_EQ(compare_tag(&b, &src), 0);
+      /* Release the first result before following later shared offsets. */
+      tag_clean(&a);
+      a = (s_tag) {0};
+      TEST_ASSERT(marshall_read_tag(&mr, false, &a));
+      TEST_EQ(compare_tag(&a, &src), 0);
+      tag_clean(&b);
+      b = (s_tag) {0};
+      TEST_ASSERT(marshall_read_tag(&mr, false, &b));
+      TEST_EQ(compare_tag(&b, &src), 0);
+      if (list) {
+        TEST_ASSERT(marshall_read_tag(&mr, false, &tail));
+        TEST_EQ(compare_tag(&tail, &src.data.td_plist->next), 0);
+        TEST_ASSERT(marshall_read_tag(&mr, false, &other_result));
+        TEST_EQ(compare_tag(&other_result, &other), 0);
+      }
       TEST_ASSERT(! mr.ht_failed);
+      /* A new header discards the old cache while results remain live. */
+      mr.buf->rpos = 0;
+      TEST_ASSERT(marshall_read_header(&mr));
+      mr.buf->rpos += mr.heap_size;
+      TEST_ASSERT(marshall_read_tag(&mr, false, &again));
+      TEST_EQ(compare_tag(&again, &src), 0);
       marshall_read_clean(&mr);
+      /* Returned values must also outlive the decoding context. */
+      TEST_EQ(compare_tag(&a, &src), 0);
+      TEST_EQ(compare_tag(&b, &src), 0);
+      TEST_EQ(compare_tag(&again, &src), 0);
+      if (list) {
+        TEST_EQ(compare_tag(&tail, &src.data.td_plist->next), 0);
+        TEST_EQ(compare_tag(&other_result, &other), 0);
+        list_clean(&other_node);
+      }
+      tag_clean(&other_result);
+      tag_clean(&again);
+      tag_clean(&tail);
       tag_clean(&b);
       tag_clean(&a);
       tag_clean(&src);
