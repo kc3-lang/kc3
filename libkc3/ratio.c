@@ -268,12 +268,17 @@ s_ratio * ratio_init_integer (s_ratio *r, const s_integer *src)
   return r;
 }
 
-s_ratio * ratio_init_s8(s_ratio *r, s8 x)
+s_ratio * ratio_init_s8 (s_ratio *r, s8 x)
 {
+  s_ratio tmp = {0};
   assert(r);
-  ratio_init(r);
-  integer_init_s8(&r->numerator, x);
-  integer_init_u8(&r->denominator, 1);
+  if (! integer_init_s8(&tmp.numerator, x))
+    return NULL;
+  if (! integer_init_u8(&tmp.denominator, 1)) {
+    integer_clean(&tmp.numerator);
+    return NULL;
+  }
+  *r = tmp;
   return r;
 }
 

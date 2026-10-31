@@ -16,6 +16,7 @@
 #include <string.h>
 #include "../libkc3/tag.h"
 #include "../libkc3/integer.h"
+#include "../libkc3/ratio.h"
 #include "../libkc3/compare.h"
 #include "test.h"
 
@@ -34,6 +35,7 @@ TEST_CASE_PROTOTYPE(tag_init_1);
 TEST_CASE_PROTOTYPE(tag_shift);
 TEST_CASE_PROTOTYPE(tag_divmod);
 TEST_CASE_PROTOTYPE(tag_integer_divmod);
+TEST_CASE_PROTOTYPE(tag_div_mixed);
 // TEST_CASE_PROTOTYPE(tag_type__macro);
 
 void tag_test (void)
@@ -43,6 +45,7 @@ void tag_test (void)
   TEST_CASE_RUN(tag_shift);
   TEST_CASE_RUN(tag_divmod);
   TEST_CASE_RUN(tag_integer_divmod);
+  TEST_CASE_RUN(tag_div_mixed);
   //  TEST_CASE_RUN(tag_type__macro);
 }
 
@@ -472,10 +475,47 @@ static void tag_integer_test_clean (s_integer *i)
   integer_clean(i);
 }
 
+static s_ratio * tag_integer_test_ratio_init_s8 (s_ratio *r, s8 value)
+{
+  if (++g_tag_integer_test.step == g_tag_integer_test.fail)
+    return NULL;
+  if (! ratio_init_s8(r, value))
+    return NULL;
+  g_tag_integer_test.live += 2;
+  return r;
+}
+
+static s_ratio * tag_integer_test_ratio_div (const s_ratio *a,
+                                            const s_ratio *b,
+                                            s_ratio *dest)
+{
+  if (++g_tag_integer_test.step == g_tag_integer_test.fail)
+    return NULL;
+  if (! ratio_div(a, b, dest))
+    return NULL;
+  g_tag_integer_test.live += 2;
+  return dest;
+}
+
+static void tag_integer_test_ratio_clean (s_ratio *r)
+{
+  if (r->numerator.in_int.dp)
+    g_tag_integer_test.live--;
+  if (r->denominator.in_int.dp)
+    g_tag_integer_test.live--;
+  ratio_clean(r);
+}
+
 static void tag_integer_test_tag_clean (s_tag *tag)
 {
   if (tag->type == TAG_INTEGER && tag->data.td_integer.in_int.dp)
     g_tag_integer_test.live--;
+  if (tag->type == TAG_RATIO) {
+    if (tag->data.td_ratio.numerator.in_int.dp)
+      g_tag_integer_test.live--;
+    if (tag->data.td_ratio.denominator.in_int.dp)
+      g_tag_integer_test.live--;
+  }
   tag_clean(tag);
 }
 
@@ -503,6 +543,9 @@ static s_tag * tag_integer_test_reduce (s_tag *tag, s_tag *dest)
 #define integer_init_u32 tag_integer_test_init_u32
 #define integer_init_u64 tag_integer_test_init_u64
 #define integer_init_uw tag_integer_test_init_uw
+#define ratio_init_s8 tag_integer_test_ratio_init_s8
+#define ratio_div tag_integer_test_ratio_div
+#define ratio_clean tag_integer_test_ratio_clean
 #include "../libkc3/tag_div.c"
 #include "../libkc3/tag_mod.c"
 #undef tag_div
@@ -522,6 +565,9 @@ static s_tag * tag_integer_test_reduce (s_tag *tag, s_tag *dest)
 #undef integer_init_u32
 #undef integer_init_u64
 #undef integer_init_uw
+#undef ratio_init_s8
+#undef ratio_div
+#undef ratio_clean
 
 TEST_CASE(tag_integer_divmod)
 {
@@ -658,3 +704,139 @@ TEST_CASE(tag_integer_divmod)
   test_context(NULL);
 }
 TEST_CASE_END(tag_integer_divmod)
+
+TEST_CASE(tag_div_mixed)
+{
+  const e_tag_type types[] = {TAG_S16, TAG_S32, TAG_S64};
+  const struct {
+    uw a;
+    s64 b;
+    const char *expected;
+  } word[] = {
+    {6, 2, "3"}, {0, 2, "0"}, {1, 2, "0"}, {6, -2, "-3"},
+    {7, 2, "3"}, {7, -2, "-3"},
+    {UW_MAX >> 1, 1,
+     sizeof(uw) == 8 ? "9223372036854775807" : "2147483647"},
+    {UW_MAX, 1,
+     sizeof(uw) == 8 ? "18446744073709551615" : "4294967295"},
+    {UW_MAX, -1,
+     sizeof(uw) == 8 ? "-18446744073709551615" : "-4294967295"},
+    {UW_MAX, 2,
+     sizeof(uw) == 8 ? "9223372036854775807" : "2147483647"},
+    {UW_MAX, -2,
+     sizeof(uw) == 8 ? "-9223372036854775807" : "-2147483647"}
+  };
+  const struct {
+    s8 a;
+    const char *b;
+    const char *expected;
+  } rational[] = {
+    {1, "1/2", "2/1"}, {0, "1/2", "0/1"}, {-1, "1/2", "-2/1"},
+    {1, "-1/2", "-2/1"}, {1, "2/3", "3/2"},
+    {-128, "3/2", "-256/3"}, {127, "-2/3", "-381/2"}
+  };
+  s_tag a = {0};
+  s_tag b = {0};
+  s_tag expected = {0};
+  uw fail;
+  uw i;
+  uw j;
+  s_tag result = {0};
+  s_tag saved;
+  test_context("F60: Uw/signed division reduces the computed result");
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++)
+    for (j = 0; j < sizeof(word) / sizeof(*word); j++) {
+      TEST_ASSERT(tag_init_uw(&a, word[j].a));
+      TEST_ASSERT(tag_test_init_integer(&b, types[i], word[j].b));
+      TEST_EQ(tag_divmod_test_result(&a, &b, word[j].expected, false), 0);
+      tag_clean(&a);
+      tag_clean(&b);
+    }
+  test_context("F60: S8/Ratio returns an exact Ratio");
+  for (i = 0; i < sizeof(rational) / sizeof(*rational); i++) {
+    TEST_ASSERT(tag_init_s8(&a, rational[i].a));
+    TEST_ASSERT(tag_init_ratio_1(&b, rational[i].b));
+    TEST_EQ(tag_divmod_test_result(&a, &b, rational[i].expected, false), 0);
+    tag_clean(&a);
+    tag_clean(&b);
+  }
+  test_context("Ratio result owns its data after input cleanup");
+  TEST_ASSERT(tag_init_s8(&a, 1));
+  TEST_ASSERT(tag_init_ratio_1(&b, "1/2"));
+  TEST_EQ(tag_div(&a, &b, &result), &result);
+  tag_clean(&a);
+  tag_clean(&b);
+  TEST_ASSERT(tag_init_ratio_1(&expected, "2/1"));
+  TEST_EQ(result.type, TAG_RATIO);
+  TEST_EQ(compare_tag(&result, &expected), 0);
+  tag_clean(&result);
+  tag_clean(&expected);
+  test_context("S8/Ratio rejects a zero numerator in the divisor");
+  TEST_ASSERT(tag_init_s8(&a, 1));
+  TEST_ASSERT(tag_init_ratio_zero(&b));
+  TEST_ASSERT(tag_init_u8(&result, 77));
+  result.ref_count = 17;
+  saved = result;
+  TEST_EQ(tag_div(&a, &b, &result), NULL);
+  TEST_MEMCMP((const char *) &result, (const char *) &saved,
+               sizeof(result));
+  tag_clean(&result);
+  tag_clean(&a);
+  tag_clean(&b);
+  test_context("F60: Uw reducer failures leave the destination unchanged");
+  TEST_ASSERT(tag_init_uw(&a, 6));
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+    TEST_ASSERT(tag_test_init_integer(&b, types[i], 2));
+    g_tag_integer_test.fail = 0;
+    g_tag_integer_test.step = 0;
+    g_tag_integer_test.live = 0;
+    result = (s_tag) {0};
+    TEST_EQ(tag_integer_test_div(&a, &b, &result), &result);
+    TEST_EQ(g_tag_integer_test.step, 1);
+    TEST_EQ(g_tag_integer_test.live, 0);
+    tag_clean(&result);
+    g_tag_integer_test.fail = 1;
+    g_tag_integer_test.step = 0;
+    TEST_ASSERT(tag_init_u8(&result, 77));
+    result.ref_count = 17;
+    saved = result;
+    TEST_EQ(tag_integer_test_div(&a, &b, &result), NULL);
+    TEST_EQ(g_tag_integer_test.step, 1);
+    TEST_EQ(g_tag_integer_test.live, 0);
+    TEST_MEMCMP((const char *) &result, (const char *) &saved,
+                 sizeof(result));
+    tag_clean(&result);
+    tag_clean(&b);
+  }
+  tag_clean(&a);
+  test_context("F60: Ratio conversion and division failures clean up");
+  TEST_ASSERT(tag_init_s8(&a, 1));
+  TEST_ASSERT(tag_init_ratio_1(&b, "1/2"));
+  g_tag_integer_test.fail = 0;
+  g_tag_integer_test.step = 0;
+  g_tag_integer_test.live = 0;
+  result = (s_tag) {0};
+  TEST_EQ(tag_integer_test_div(&a, &b, &result), &result);
+  TEST_EQ(g_tag_integer_test.step, 2);
+  TEST_EQ(g_tag_integer_test.live, 2);
+  TEST_EQ(result.type, TAG_RATIO);
+  tag_integer_test_tag_clean(&result);
+  TEST_EQ(g_tag_integer_test.live, 0);
+  for (fail = 1; fail <= 2; fail++) {
+    g_tag_integer_test.fail = fail;
+    g_tag_integer_test.step = 0;
+    TEST_ASSERT(tag_init_u8(&result, 77));
+    result.ref_count = 17;
+    saved = result;
+    TEST_EQ(tag_integer_test_div(&a, &b, &result), NULL);
+    TEST_EQ(g_tag_integer_test.step, fail);
+    TEST_EQ(g_tag_integer_test.live, 0);
+    TEST_MEMCMP((const char *) &result, (const char *) &saved,
+                 sizeof(result));
+    tag_clean(&result);
+  }
+  tag_clean(&a);
+  tag_clean(&b);
+  test_context(NULL);
+}
+TEST_CASE_END(tag_div_mixed)
