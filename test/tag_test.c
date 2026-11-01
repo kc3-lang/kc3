@@ -38,6 +38,7 @@ TEST_CASE_PROTOTYPE(tag_integer_divmod);
 TEST_CASE_PROTOTYPE(tag_div_mixed);
 TEST_CASE_PROTOTYPE(tag_mod_sw_integer);
 TEST_CASE_PROTOTYPE(tag_div_ratio);
+TEST_CASE_PROTOTYPE(tag_float_ratio);
 // TEST_CASE_PROTOTYPE(tag_type__macro);
 
 void tag_test (void)
@@ -50,6 +51,7 @@ void tag_test (void)
   TEST_CASE_RUN(tag_div_mixed);
   TEST_CASE_RUN(tag_mod_sw_integer);
   TEST_CASE_RUN(tag_div_ratio);
+  TEST_CASE_RUN(tag_float_ratio);
   //  TEST_CASE_RUN(tag_type__macro);
 }
 
@@ -510,17 +512,24 @@ TAG_INTEGER_TEST_RATIO_INIT(f80, f80)
 
 #undef TAG_INTEGER_TEST_RATIO_INIT
 
-static s_ratio * tag_integer_test_ratio_div (const s_ratio *a,
-                                            const s_ratio *b,
-                                            s_ratio *dest)
-{
-  if (++g_tag_integer_test.step == g_tag_integer_test.fail)
-    return NULL;
-  if (! ratio_div(a, b, dest))
-    return NULL;
-  g_tag_integer_test.live += 2;
-  return dest;
-}
+#define TAG_INTEGER_TEST_RATIO_OP(name)                               \
+  static s_ratio * tag_integer_test_ratio_ ## name                    \
+  (const s_ratio *a, const s_ratio *b, s_ratio *dest)                  \
+  {                                                                   \
+    if (++g_tag_integer_test.step == g_tag_integer_test.fail)          \
+      return NULL;                                                    \
+    if (! ratio_ ## name(a, b, dest))                                 \
+      return NULL;                                                    \
+    g_tag_integer_test.live += 2;                                     \
+    return dest;                                                      \
+  }
+
+TAG_INTEGER_TEST_RATIO_OP(add)
+TAG_INTEGER_TEST_RATIO_OP(sub)
+TAG_INTEGER_TEST_RATIO_OP(mul)
+TAG_INTEGER_TEST_RATIO_OP(div)
+
+#undef TAG_INTEGER_TEST_RATIO_OP
 
 static void tag_integer_test_ratio_clean (s_ratio *r)
 {
@@ -551,6 +560,9 @@ static s_tag * tag_integer_test_reduce (s_tag *tag, s_tag *dest)
   return tag_integer_reduce(tag, dest);
 }
 
+#define tag_add tag_integer_test_add
+#define tag_sub tag_integer_test_sub
+#define tag_mul tag_integer_test_mul
 #define tag_div tag_integer_test_div
 #define tag_mod tag_integer_test_mod
 #define integer_div tag_integer_test_div_integer
@@ -584,10 +596,19 @@ static s_tag * tag_integer_test_reduce (s_tag *tag, s_tag *dest)
 #if HAVE_F80
 #define ratio_init_f80 tag_integer_test_ratio_init_f80
 #endif
+#define ratio_add tag_integer_test_ratio_add
+#define ratio_sub tag_integer_test_ratio_sub
+#define ratio_mul tag_integer_test_ratio_mul
 #define ratio_div tag_integer_test_ratio_div
 #define ratio_clean tag_integer_test_ratio_clean
 #include "../libkc3/tag_div.c"
 #include "../libkc3/tag_mod.c"
+#include "../libkc3/tag_add.c"
+#include "../libkc3/tag_sub.c"
+#include "../libkc3/tag_mul.c"
+#undef tag_add
+#undef tag_sub
+#undef tag_mul
 #undef tag_div
 #undef tag_mod
 #undef integer_div
@@ -621,6 +642,9 @@ static s_tag * tag_integer_test_reduce (s_tag *tag, s_tag *dest)
 #if HAVE_F80
 #undef ratio_init_f80
 #endif
+#undef ratio_add
+#undef ratio_sub
+#undef ratio_mul
 #undef ratio_div
 #undef ratio_clean
 
@@ -1078,3 +1102,139 @@ TEST_CASE(tag_div_ratio)
   test_context(NULL);
 }
 TEST_CASE_END(tag_div_ratio)
+
+static s_tag * tag_float_ratio_test_init (s_tag *tag, e_tag_type type,
+                                         f64 value)
+{
+  switch (type) {
+  case TAG_F32: return tag_init_f32(tag, (f32) value);
+  case TAG_F64: return tag_init_f64(tag, value);
+#if HAVE_F80
+  case TAG_F80: return tag_init_f80(tag, value);
+#endif
+  default: return NULL;
+  }
+}
+
+TEST_CASE(tag_float_ratio)
+{
+  const e_tag_type types[] = {
+    TAG_F32, TAG_F64,
+#if HAVE_F80
+    TAG_F80,
+#endif
+  };
+  s_tag * (*operations[])(s_tag *, s_tag *, s_tag *) = {
+    tag_add, tag_sub, tag_mul, tag_div
+  };
+  s_tag * (*injected[])(s_tag *, s_tag *, s_tag *) = {
+    tag_integer_test_add, tag_integer_test_sub,
+    tag_integer_test_mul, tag_integer_test_div
+  };
+  const struct {
+    f64 value;
+    const char *expected[2][4];
+  } values[] = {
+    {0.5, {{"1/1", "0/1", "1/4", "1/1"},
+           {"1/1", "0/1", "1/4", "1/1"}}},
+    {-0.5, {{"0/1", "-1/1", "-1/4", "-1/1"},
+            {"0/1", "1/1", "-1/4", "-1/1"}}},
+    {1.25, {{"7/4", "3/4", "5/8", "5/2"},
+            {"7/4", "-3/4", "5/8", "2/5"}}},
+    {-1.25, {{"-3/4", "-7/4", "-5/8", "-5/2"},
+             {"-3/4", "7/4", "-5/8", "-2/5"}}},
+    {0.0, {{"1/2", "-1/2", "0/1", "0/1"},
+           {"1/2", "1/2", "0/1", NULL}}}
+  };
+  const f64 invalid[] = {NAN, INFINITY, -INFINITY};
+  s_tag a = {0};
+  s_tag b = {0};
+  uw direction;
+  s_tag expected = {0};
+  uw fail;
+  uw i;
+  uw j;
+  uw operation;
+  s_tag result = {0};
+  s_tag saved;
+  test_context("F64: mixed float/Ratio arithmetic preserves fractions");
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++)
+    for (j = 0; j < sizeof(values) / sizeof(*values); j++)
+      for (direction = 0; direction < 2; direction++)
+        for (operation = 0; operation < 4; operation++) {
+          if (! values[j].expected[direction][operation])
+            continue;
+          TEST_ASSERT(tag_float_ratio_test_init(&a, types[i],
+                                                  values[j].value));
+          TEST_ASSERT(tag_init_ratio_1(&b, "1/2"));
+          result = (s_tag) {0};
+          result.ref_count = 17;
+          TEST_EQ(direction ? operations[operation](&b, &a, &result) :
+                   operations[operation](&a, &b, &result), &result);
+          tag_clean(&b);
+          tag_clean(&a);
+          TEST_ASSERT(tag_init_ratio_1
+                       (&expected, values[j].expected[direction][operation]));
+          TEST_EQ(result.type, TAG_RATIO);
+          TEST_EQ(result.ref_count, 17);
+          TEST_EQ(compare_tag(&result, &expected), 0);
+          tag_clean(&expected);
+          tag_clean(&result);
+        }
+  test_context("non-finite operands preserve owned failure destinations");
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++)
+    for (j = 0; j < sizeof(invalid) / sizeof(*invalid); j++) {
+      TEST_ASSERT(tag_float_ratio_test_init(&a, types[i], invalid[j]));
+      TEST_ASSERT(tag_init_ratio_1(&b, "1/2"));
+      for (direction = 0; direction < 2; direction++)
+        for (operation = 0; operation < 4; operation++) {
+          TEST_ASSERT(tag_init_ratio_1(&result, "7/11"));
+          result.ref_count = 17;
+          saved = result;
+          TEST_EQ(direction ? operations[operation](&b, &a, &result) :
+                   operations[operation](&a, &b, &result), NULL);
+          TEST_MEMCMP((const char *) &result, (const char *) &saved,
+                       sizeof(result));
+          tag_clean(&result);
+        }
+      tag_clean(&b);
+      tag_clean(&a);
+    }
+  test_context("float conversion/arithmetic helper failures clean up");
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+    TEST_ASSERT(tag_float_ratio_test_init(&a, types[i], 0.5));
+    TEST_ASSERT(tag_init_ratio_1(&b, "1/2"));
+    for (direction = 0; direction < 2; direction++)
+      for (operation = 0; operation < 4; operation++) {
+        g_tag_integer_test.fail = 0;
+        g_tag_integer_test.step = 0;
+        g_tag_integer_test.live = 0;
+        result = (s_tag) {0};
+        TEST_EQ(direction ? injected[operation](&b, &a, &result) :
+                 injected[operation](&a, &b, &result), &result);
+        TEST_EQ(g_tag_integer_test.step, 2);
+        TEST_EQ(g_tag_integer_test.live, 2);
+        tag_integer_test_tag_clean(&result);
+        TEST_EQ(g_tag_integer_test.live, 0);
+        for (fail = 1; fail <= 2; fail++) {
+          g_tag_integer_test.fail = fail;
+          g_tag_integer_test.step = 0;
+          TEST_ASSERT(tag_init_ratio_1(&result, "7/11"));
+          result.ref_count = 17;
+          saved = result;
+          TEST_EQ(direction ? injected[operation](&b, &a, &result) :
+                   injected[operation](&a, &b, &result), NULL);
+          TEST_EQ(g_tag_integer_test.step, fail);
+          TEST_EQ(g_tag_integer_test.live, 0);
+          TEST_MEMCMP((const char *) &result, (const char *) &saved,
+                       sizeof(result));
+          tag_clean(&result);
+        }
+      }
+    tag_clean(&b);
+    tag_clean(&a);
+  }
+  g_tag_integer_test.fail = 0;
+  test_context(NULL);
+}
+TEST_CASE_END(tag_float_ratio)

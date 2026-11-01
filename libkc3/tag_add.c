@@ -49,11 +49,9 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.td_f32 +
                           integer_to_f32(&b->data.td_integer));
     case TAG_RATIO:
-      ratio_init_f32(&r, a->data.td_f32);
-      dest->type = TAG_RATIO;
-      ratio_add(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_f32(&r, a->data.td_f32))
+        goto ratio_error;
+      goto ratio_float;
     case TAG_S8:
       return tag_init_f32(dest, a->data.td_f32 + (f32) b->data.td_s8);
     case TAG_S16:
@@ -95,11 +93,9 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f64(dest, a->data.td_f64 +
                           integer_to_f64(&b->data.td_integer));
     case TAG_RATIO:
-      ratio_init_f64(&r, a->data.td_f64);
-      dest->type = TAG_RATIO;
-      ratio_add(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_f64(&r, a->data.td_f64))
+        goto ratio_error;
+      goto ratio_float;
     case TAG_S8:
       return tag_init_f64(dest, a->data.td_f64 + (f64) b->data.td_s8);
     case TAG_S16:
@@ -140,11 +136,9 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f80(dest, a->data.td_f80 +
                           integer_to_f80(&b->data.td_integer));
     case TAG_RATIO:
-      ratio_init_f80(&r, a->data.td_f80);
-      dest->type = TAG_RATIO;
-      ratio_add(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_f80(&r, a->data.td_f80))
+        goto ratio_error;
+      goto ratio_float;
     case TAG_S8:
       return tag_init_f80(dest, a->data.td_f80 + (f80) b->data.td_s8);
     case TAG_S16:
@@ -348,24 +342,18 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
       complex_clean(&c);
       return dest;
     case TAG_F32:
-      ratio_init_f32(&r, b->data.td_f32);
-      dest->type = TAG_RATIO;
-      ratio_add(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_f32(&r, b->data.td_f32))
+        goto ratio_error;
+      goto ratio_float;
     case TAG_F64:
-      ratio_init_f64(&r, b->data.td_f64);
-      dest->type = TAG_RATIO;
-      ratio_add(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_f64(&r, b->data.td_f64))
+        goto ratio_error;
+      goto ratio_float;
 #if HAVE_F80
     case TAG_F80:
-      ratio_init_f80(&r, b->data.td_f80);
-      dest->type = TAG_RATIO;
-      ratio_add(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_f80(&r, b->data.td_f80))
+        goto ratio_error;
+      goto ratio_float;
 #endif
     case TAG_INTEGER:
       ratio_init_integer(&r, &b->data.td_integer);
@@ -1147,4 +1135,18 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
   }
   integer_clean(&tag.data.td_integer);
   return dest;
+ ratio_float:
+  tag.type = TAG_RATIO;
+  if (! ratio_add(a->type == TAG_RATIO ? &a->data.td_ratio : &r,
+                   b->type == TAG_RATIO ? &b->data.td_ratio : &r,
+                   &tag.data.td_ratio))
+    goto ratio_error;
+  ratio_clean(&r);
+  dest->type = tag.type;
+  dest->data = tag.data;
+  return dest;
+ ratio_error:
+  ratio_clean(&r);
+  tag_clean(&tag);
+  return NULL;
 }

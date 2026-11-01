@@ -10,6 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <float.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../libkc3/assert.h"
@@ -193,6 +195,7 @@ TEST_CASE_PROTOTYPE(ratio_init_1);
 TEST_CASE_PROTOTYPE(ratio_parse);
 TEST_CASE_PROTOTYPE(ratio_pow);
 TEST_CASE_PROTOTYPE(ratio_div);
+TEST_CASE_PROTOTYPE(ratio_float);
 
 void ratio_test (void)
 {
@@ -201,6 +204,7 @@ void ratio_test (void)
   TEST_CASE_RUN(ratio_parse);
   TEST_CASE_RUN(ratio_pow);
   TEST_CASE_RUN(ratio_div);
+  TEST_CASE_RUN(ratio_float);
 }
 
 TEST_CASE(ratio_cast)
@@ -420,3 +424,118 @@ TEST_CASE(ratio_div)
   test_context(NULL);
 }
 TEST_CASE_END(ratio_div)
+
+static char ratio_float_test_value (const s_ratio *r, const char *value)
+{
+  s_ratio expected = {0};
+  TEST_ASSERT(ratio_init_1(&expected, value));
+  TEST_EQ(compare_integer(&r->numerator, &expected.numerator), 0);
+  TEST_EQ(compare_integer(&r->denominator, &expected.denominator), 0);
+  TEST_ASSERT(integer_is_positive(&r->denominator));
+  ratio_clean(&expected);
+  return 0;
+}
+
+static char ratio_float_test_bits (const s_ratio *r, int mantissa,
+                                   int exponent)
+{
+  s_ratio expected = {0};
+  TEST_ASSERT(integer_init_u8(&expected.numerator, 0));
+  TEST_ASSERT(integer_init_u8(&expected.denominator, 1));
+  TEST_EQ(mp_2expt(&expected.numerator.in_int, mantissa), MP_OKAY);
+  TEST_EQ(mp_sub_d(&expected.numerator.in_int, 1,
+                    &expected.numerator.in_int), MP_OKAY);
+  if (exponent > 0)
+    TEST_EQ(mp_mul_2d(&expected.numerator.in_int, exponent,
+                       &expected.numerator.in_int), MP_OKAY);
+  else if (exponent < 0)
+    TEST_EQ(mp_2expt(&expected.denominator.in_int, -exponent), MP_OKAY);
+  TEST_EQ(compare_integer(&r->numerator, &expected.numerator), 0);
+  TEST_EQ(compare_integer(&r->denominator, &expected.denominator), 0);
+  ratio_clean(&expected);
+  return 0;
+}
+
+#define RATIO_TEST_FLOAT(type, value, expected)                       \
+  do {                                                                 \
+    TEST_EQ(ratio_init_ ## type(&r, (type) (value)), &r);              \
+    TEST_EQ(ratio_float_test_value(&r, expected), 0);                  \
+    ratio_clean(&r);                                                   \
+  } while (0)
+
+#define RATIO_TEST_FLOAT_ERROR(type, value)                           \
+  do {                                                                 \
+    TEST_ASSERT(ratio_init_1(&r, "7/11"));                             \
+    saved = r;                                                        \
+    TEST_EQ(ratio_init_ ## type(&r, (type) (value)), NULL);            \
+    TEST_MEMCMP((const char *) &r, (const char *) &saved, sizeof(r)); \
+    TEST_EQ(integer_to_s8(&r.numerator), 7);                           \
+    TEST_EQ(integer_to_s8(&r.denominator), 11);                        \
+    ratio_clean(&r);                                                   \
+  } while (0)
+
+#define RATIO_TEST_FLOAT_COMMON(type)                                \
+  do {                                                                 \
+    RATIO_TEST_FLOAT(type, 0.5, "1/2");                                \
+    RATIO_TEST_FLOAT(type, -0.5, "-1/2");                              \
+    RATIO_TEST_FLOAT(type, 0.0, "0/1");                                \
+    RATIO_TEST_FLOAT(type, -0.0, "0/1");                               \
+    RATIO_TEST_FLOAT(type, 1.25, "5/4");                               \
+    RATIO_TEST_FLOAT(type, -1.25, "-5/4");                             \
+    RATIO_TEST_FLOAT(type, 16.0, "16/1");                              \
+    RATIO_TEST_FLOAT_ERROR(type, NAN);                                 \
+    RATIO_TEST_FLOAT_ERROR(type, INFINITY);                            \
+    RATIO_TEST_FLOAT_ERROR(type, -INFINITY);                           \
+  } while (0)
+
+#define RATIO_TEST_FLOAT_EXTREMES(type, scale, mantissa, min, max, big) \
+  do {                                                                 \
+    TEST_EQ(ratio_init_ ## type(&r, scale((type) 1, min - mantissa)),  \
+             &r);                                                      \
+    TEST_EQ(ratio_float_test_bits(&r, 1, min - mantissa), 0);          \
+    ratio_clean(&r);                                                   \
+    TEST_EQ(ratio_init_ ## type(&r, scale((type) 1, min - 1)), &r);    \
+    TEST_EQ(ratio_float_test_bits(&r, 1, min - 1), 0);                 \
+    ratio_clean(&r);                                                   \
+    TEST_EQ(ratio_init_ ## type(&r, big), &r);                         \
+    TEST_EQ(ratio_float_test_bits(&r, mantissa, max - mantissa), 0);   \
+    ratio_clean(&r);                                                   \
+  } while (0)
+
+TEST_CASE(ratio_float)
+{
+  s_ratio r = {0};
+  s_ratio saved;
+  test_context("F64: float constructors preserve exact binary values");
+  RATIO_TEST_FLOAT_COMMON(f32);
+  RATIO_TEST_FLOAT(f32, 0.1f, "13421773/134217728");
+  RATIO_TEST_FLOAT(f32, 0x1.000002p0f, "8388609/8388608");
+  RATIO_TEST_FLOAT_EXTREMES(f32, ldexpf, FLT_MANT_DIG,
+                            FLT_MIN_EXP, FLT_MAX_EXP, FLT_MAX);
+  RATIO_TEST_FLOAT_COMMON(f64);
+  RATIO_TEST_FLOAT(f64, 0.1, "3602879701896397/36028797018963968");
+  RATIO_TEST_FLOAT(f64, 0x1.0000000000001p0,
+                    "4503599627370497/4503599627370496");
+  RATIO_TEST_FLOAT_EXTREMES(f64, ldexp, DBL_MANT_DIG,
+                            DBL_MIN_EXP, DBL_MAX_EXP, DBL_MAX);
+#if HAVE_F80
+  RATIO_TEST_FLOAT_COMMON(f80);
+  RATIO_TEST_FLOAT(f80, 1.0L + ldexpl(1.0L, -63),
+                    "9223372036854775809/9223372036854775808");
+  RATIO_TEST_FLOAT_EXTREMES(f80, ldexpl, LDBL_MANT_DIG,
+                            LDBL_MIN_EXP, LDBL_MAX_EXP, LDBL_MAX);
+  TEST_EQ(ratio_init_f80(&r, ldexpl(1.0L, DBL_MAX_EXP + 1)), &r);
+  TEST_EQ(ratio_float_test_bits(&r, 1, DBL_MAX_EXP + 1), 0);
+  ratio_clean(&r);
+#endif
+#if HAVE_F128
+  RATIO_TEST_FLOAT_COMMON(f128);
+#endif
+  test_context(NULL);
+}
+TEST_CASE_END(ratio_float)
+
+#undef RATIO_TEST_FLOAT
+#undef RATIO_TEST_FLOAT_ERROR
+#undef RATIO_TEST_FLOAT_COMMON
+#undef RATIO_TEST_FLOAT_EXTREMES

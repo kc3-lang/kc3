@@ -11,6 +11,8 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
+#include <float.h>
+#include <math.h>
 #include <string.h>
 #include <stdlib.h>
 #include "buf.h"
@@ -212,49 +214,80 @@ s_ratio * ratio_init_copy (s_ratio *dest, const s_ratio *src)
   return dest;
 }
 
-s_ratio * ratio_init_f32 (s_ratio *r, f32 x)
-{
-  assert(r);
-  ratio_init(r);
-  integer_init_f32(&r->numerator, x);
-  integer_init_s32(&r->denominator, 1);
-  return r;
-}
+_Static_assert(FLT_RADIX == 2, "Ratio float conversion requires binary floats");
 
-s_ratio * ratio_init_f64 (s_ratio *r, f64 x)
-{
-  assert(r);
-  ratio_init(r);
-  integer_init_f64(&r->numerator, x);
-  integer_init_s32(&r->denominator, 1);
-  return r;
-}
+/* Extract the significand without narrowing extended floats to double.
+   Stopping at its last set bit leaves an odd numerator, so a power-of-two
+   denominator is already reduced. All floating operations are exact. */
+#define DEF_RATIO_INIT_FLOAT(type)                                    \
+  s_ratio * ratio_init_ ## type (s_ratio *r, type x)                   \
+  {                                                                   \
+    int exponent = 0;                                                 \
+    bool negative;                                                    \
+    s_ratio tmp = {0};                                                \
+    assert(r);                                                        \
+    if (! isfinite(x)) {                                              \
+      err_puts("ratio_init_" # type ": non-finite value");             \
+      return NULL;                                                    \
+    }                                                                 \
+    if (! integer_init_zero(&tmp.numerator) ||                        \
+        ! integer_init_u8(&tmp.denominator, 1))                       \
+      goto clean;                                                     \
+    negative = x < 0;                                                 \
+    if (negative)                                                     \
+      x = -x;                                                         \
+    if (x) {                                                          \
+      while (x >= (type) 1) {                                        \
+        x *= (type) 0.5;                                              \
+        exponent++;                                                   \
+      }                                                               \
+      while (x < (type) 0.5) {                                       \
+        x *= (type) 2;                                                \
+        exponent--;                                                   \
+      }                                                               \
+      while (x) {                                                     \
+        x *= (type) 2;                                                \
+        if (mp_mul_2d(&tmp.numerator.in_int, 1,                       \
+                       &tmp.numerator.in_int) != MP_OKAY)            \
+          goto clean;                                                 \
+        if (x >= (type) 1) {                                        \
+          x -= (type) 1;                                              \
+          if (mp_add_d(&tmp.numerator.in_int, 1,                      \
+                         &tmp.numerator.in_int) != MP_OKAY)          \
+            goto clean;                                               \
+        }                                                             \
+        exponent--;                                                   \
+      }                                                               \
+      if (exponent > 0 &&                                             \
+          mp_mul_2d(&tmp.numerator.in_int, exponent,                  \
+                     &tmp.numerator.in_int) != MP_OKAY)              \
+        goto clean;                                                   \
+      if (exponent < 0 &&                                             \
+          mp_2expt(&tmp.denominator.in_int, -exponent) != MP_OKAY)     \
+        goto clean;                                                   \
+      if (negative &&                                                \
+          mp_neg(&tmp.numerator.in_int, &tmp.numerator.in_int) !=     \
+          MP_OKAY)                                                    \
+        goto clean;                                                   \
+    }                                                                 \
+    *r = tmp;                                                         \
+    return r;                                                         \
+   clean:                                                             \
+    err_puts("ratio_init_" # type ": conversion failed");              \
+    ratio_clean(&tmp);                                                \
+    return NULL;                                                      \
+  }
 
+DEF_RATIO_INIT_FLOAT(f32)
+DEF_RATIO_INIT_FLOAT(f64)
 #if HAVE_F80
-
-s_ratio * ratio_init_f80 (s_ratio *r, f80 x)
-{
-  assert(r);
-  ratio_init(r);
-  integer_init_f80(&r->numerator, x);
-  integer_init_s32(&r->denominator, 1);
-  return r;
-}
-
+DEF_RATIO_INIT_FLOAT(f80)
 #endif
-
 #if HAVE_F128
-
-s_ratio * ratio_init_f128 (s_ratio *r, f128 x)
-{
-  assert(r);
-  ratio_init(r);
-  integer_init_f128(&r->numerator, x);
-  integer_init_s32(&r->denominator, 1);
-  return r;
-}
-
+DEF_RATIO_INIT_FLOAT(f128)
 #endif
+
+#undef DEF_RATIO_INIT_FLOAT
 
 s_ratio * ratio_init_integer (s_ratio *r, const s_integer *src)
 {
