@@ -664,11 +664,10 @@ s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest)
     case TAG_INTEGER:
       if (! integer_init_sw(&tmp, a->data.td_sw))
         goto integer_error;
-      if (! integer_mod(&tmp, &b->data.td_integer, &tmp2))
+      tag.type = TAG_INTEGER;
+      if (! integer_mod(&tmp, &b->data.td_integer, &tag.data.td_integer))
         goto integer_error;
-      tag_init_sw(&tag, integer_to_sw(&tmp2));
       integer_clean(&tmp);
-      integer_clean(&tmp2);
       goto integer_reduce;
     case TAG_S8:
       tag_init_s8(&tag, a->data.td_sw % b->data.td_s8);

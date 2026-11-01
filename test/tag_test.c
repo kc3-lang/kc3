@@ -36,6 +36,7 @@ TEST_CASE_PROTOTYPE(tag_shift);
 TEST_CASE_PROTOTYPE(tag_divmod);
 TEST_CASE_PROTOTYPE(tag_integer_divmod);
 TEST_CASE_PROTOTYPE(tag_div_mixed);
+TEST_CASE_PROTOTYPE(tag_mod_sw_integer);
 // TEST_CASE_PROTOTYPE(tag_type__macro);
 
 void tag_test (void)
@@ -46,6 +47,7 @@ void tag_test (void)
   TEST_CASE_RUN(tag_divmod);
   TEST_CASE_RUN(tag_integer_divmod);
   TEST_CASE_RUN(tag_div_mixed);
+  TEST_CASE_RUN(tag_mod_sw_integer);
   //  TEST_CASE_RUN(tag_type__macro);
 }
 
@@ -840,3 +842,45 @@ TEST_CASE(tag_div_mixed)
   test_context(NULL);
 }
 TEST_CASE_END(tag_div_mixed)
+
+TEST_CASE(tag_mod_sw_integer)
+{
+  const struct {
+    sw a;
+    const char *b;
+    const char *expected;
+  } cases[] = {
+    {-1, "4294967296", "4294967295"},
+    {-1, "9223372036854775809", "9223372036854775808"},
+    {-1, "18446744073709551616", "18446744073709551615"},
+    {-1, "340282366920938463463374607431768211456",
+         "340282366920938463463374607431768211455"},
+    {1, "-18446744073709551616", "-18446744073709551615"},
+    {1, "-340282366920938463463374607431768211456",
+        "-340282366920938463463374607431768211455"},
+    {-7, "3", "2"},
+    {7, "-3", "-2"},
+    {0, "340282366920938463463374607431768211456", "0"},
+    {97, "5", "2"},
+    {7, "340282366920938463463374607431768211456", "7"},
+    {-7, "-340282366920938463463374607431768211456", "-7"},
+    {SW_MIN, "18446744073709551616",
+     sizeof(sw) == 8 ? "9223372036854775808" : "18446744071562067968"},
+    {SW_MAX, "-18446744073709551616",
+     sizeof(sw) == 8 ? "-9223372036854775809" : "-18446744071562067969"},
+    {SW_MIN, "-1", "0"}
+  };
+  s_tag a = {0};
+  s_tag b = {0};
+  uw i;
+  test_context("F62: Sw/Integer remainders stay exact until reduction");
+  for (i = 0; i < sizeof(cases) / sizeof(*cases); i++) {
+    TEST_ASSERT(tag_init_sw(&a, cases[i].a));
+    TEST_ASSERT(tag_init_integer_1(&b, cases[i].b));
+    TEST_EQ(tag_divmod_test_result(&a, &b, cases[i].expected, true), 0);
+    tag_clean(&b);
+    tag_clean(&a);
+  }
+  test_context(NULL);
+}
+TEST_CASE_END(tag_mod_sw_integer)
