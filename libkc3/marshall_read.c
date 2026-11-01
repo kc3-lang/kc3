@@ -2095,6 +2095,8 @@ s_marshall_read * marshall_read_pcall (s_marshall_read *mr,
                                        bool heap,
                                        p_call *dest)
 {
+  p_tag keep = NULL;
+  p_list list = NULL;
   u64 offset = 0;
   p_call present = NULL;
   p_call tmp = NULL;
@@ -2134,12 +2136,21 @@ s_marshall_read * marshall_read_pcall (s_marshall_read *mr,
     alloc_free(tmp);
     return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Call)) {
-    err_puts("marshall_read_pcall: marshall_read_ht_add");
+  if (! (keep = tag_new())) {
     call_delete(tmp);
     return marshall_read_ht_abort(mr);
   }
-  *dest = tmp;
+  /* The cache owns the decoded object; callers receive a copy or ref. */
+  keep->type = TAG_PCALL;
+  keep->data.td_pcall = tmp;
+  if (! (list = list_new_ptr(keep, mr->ht_ptag_list))) {
+    tag_delete(keep);
+    return marshall_read_ht_abort(mr);
+  }
+  mr->ht_ptag_list = list;
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Call) ||
+      ! pcall_init_copy(dest, &tmp))
+    return marshall_read_ht_abort(mr);
   return mr;
 }
 
@@ -2199,6 +2210,8 @@ s_marshall_read * marshall_read_pcomplex (s_marshall_read *mr,
                                           bool heap,
                                           p_complex *dest)
 {
+  p_tag keep = NULL;
+  p_list list = NULL;
   u64 offset = 0;
   p_complex present = NULL;
   p_complex tmp = NULL;
@@ -2230,11 +2243,21 @@ s_marshall_read * marshall_read_pcomplex (s_marshall_read *mr,
     alloc_free(tmp);
     return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Complex)) {
+  if (! (keep = tag_new())) {
     complex_delete(tmp);
     return marshall_read_ht_abort(mr);
   }
-  *dest = tmp;
+  /* Complex copies are independent of the cache in both copy modes. */
+  keep->type = TAG_PCOMPLEX;
+  keep->data.td_pcomplex = tmp;
+  if (! (list = list_new_ptr(keep, mr->ht_ptag_list))) {
+    tag_delete(keep);
+    return marshall_read_ht_abort(mr);
+  }
+  mr->ht_ptag_list = list;
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Complex) ||
+      ! pcomplex_init_copy(dest, &tmp))
+    return marshall_read_ht_abort(mr);
   return mr;
 }
 

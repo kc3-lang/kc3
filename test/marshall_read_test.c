@@ -13,6 +13,7 @@
 #include "../libkc3/array.h"
 #include "../libkc3/buf.h"
 #include "../libkc3/call.h"
+#include "../libkc3/complex.h"
 #include "../libkc3/endian.h"
 #include "../libkc3/env.h"
 #include "../libkc3/env_eval.h"
@@ -101,6 +102,7 @@ TEST_CASE_PROTOTYPE(marshall_read_cache_offsets);
 TEST_CASE_PROTOTYPE(marshall_read_cache_cycle);
 TEST_CASE_PROTOTYPE(marshall_read_cache_skiplist_cycle);
 TEST_CASE_PROTOTYPE(marshall_read_cache_shared);
+TEST_CASE_PROTOTYPE(marshall_read_cache_call_complex);
 TEST_CASE_PROTOTYPE(marshall_read_cache_pointer);
 TEST_CASE_PROTOTYPE(marshall_read_cache_pointer_legacy);
 TEST_CASE_PROTOTYPE(marshall_read_character);
@@ -154,6 +156,7 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_cache_cycle);
   TEST_CASE_RUN(marshall_read_cache_skiplist_cycle);
   TEST_CASE_RUN(marshall_read_cache_shared);
+  TEST_CASE_RUN(marshall_read_cache_call_complex);
   TEST_CASE_RUN(marshall_read_cache_pointer);
   TEST_CASE_RUN(marshall_read_cache_pointer_legacy);
   TEST_CASE_RUN(marshall_read_chunks);
@@ -1550,6 +1553,119 @@ TEST_CASE(marshall_read_cache_shared)
   env_global()->pass_by_copy = copy_saved;
 }
 TEST_CASE_END(marshall_read_cache_shared)
+
+TEST_CASE(marshall_read_cache_call_complex)
+{
+  bool copy_saved = env_global()->pass_by_copy;
+  uw copy;
+  uw i;
+  uw j;
+  s_marshall m;
+  s_marshall_read mr;
+  s_str str;
+  s_tag src[2] = {0};
+  s_tag a;
+  s_tag b;
+  s_tag again;
+  p_call call_dest;
+  p_complex complex_dest;
+  p_complex complex;
+  TEST_ASSERT(tag_init_1(src,
+                         "cache_lifetime(cache_nested([1, 2]),"
+                         " {3, 4}, \"owned\")"));
+  TEST_EQ(src[0].type, TAG_PCALL);
+  TEST_ASSERT((complex = complex_new()));
+  TEST_ASSERT(tag_init_pcomplex(src + 1, complex));
+  TEST_ASSERT(tag_init_1(&src[1].data.td_pcomplex->x,
+                         "18446744073709551616"));
+  TEST_ASSERT(tag_init_1(&src[1].data.td_pcomplex->y,
+                         "-340282366920938463463374607431768211456"));
+  for (copy = 0; copy < 2; copy++) {
+    env_global()->pass_by_copy = copy;
+    for (i = 0; i < 2; i++) {
+      test_context(i ? "Complex cache lifetime" : "Call cache lifetime");
+      m = (s_marshall) {0};
+      mr = (s_marshall_read) {0};
+      str = (s_str) {0};
+      a = (s_tag) {0};
+      b = (s_tag) {0};
+      again = (s_tag) {0};
+      TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+      for (j = 0; j < 4; j++)
+        TEST_ASSERT(marshall_tag(&m, false, src + i));
+      /* A conflicting type will abort after the object is retained. */
+      TEST_ASSERT(marshall_1(&m, false, i ? "_KC3PCALL_" :
+                                            "_KC3PCOMPLEX_"));
+      TEST_ASSERT(marshall_offset(&m, false,
+                                   sizeof(s_marshall_header)));
+      TEST_ASSERT(marshall_to_str(&m, &str));
+      TEST_ASSERT(marshall_read_init_str(&mr, &str));
+      for (j = 0; j < 2; j++) {
+        TEST_ASSERT(marshall_read_tag(&mr, false, &a));
+        TEST_EQ(compare_tag(&a, src + i), 0);
+        if (! i && ! copy)
+          TEST_EQ(a.data.td_pcall->ref_count, 2);
+        /* The cache must survive with no caller-owned results. */
+        tag_clean(&a);
+        a = (s_tag) {0};
+      }
+      TEST_ASSERT(marshall_read_tag(&mr, false, &a));
+      TEST_EQ(compare_tag(&a, src + i), 0);
+      TEST_ASSERT(marshall_read_tag(&mr, false, &b));
+      TEST_EQ(compare_tag(&b, src + i), 0);
+      /* Copies may be changed without altering other returned values. */
+      if (i) {
+        TEST_ASSERT(a.data.td_pcomplex != b.data.td_pcomplex);
+        tag_clean(&a.data.td_pcomplex->x);
+        tag_init_u8(&a.data.td_pcomplex->x, 99);
+        TEST_EQ(compare_tag(&b, src + i), 0);
+      }
+      else if (copy) {
+        TEST_ASSERT(a.data.td_pcall != b.data.td_pcall);
+        a.data.td_pcall->ident.sym = sym_1("changed");
+        TEST_EQ(compare_tag(&b, src + i), 0);
+      }
+      TEST_ASSERT(! mr.ht_failed);
+      if (i) {
+        call_dest = (p_call) &str;
+        TEST_EQ(marshall_read_pcall(&mr, false, &call_dest), NULL);
+        TEST_EQ(call_dest, (p_call) &str);
+      }
+      else {
+        complex_dest = (p_complex) &str;
+        TEST_EQ(marshall_read_pcomplex(&mr, false, &complex_dest), NULL);
+        TEST_EQ(complex_dest, (p_complex) &str);
+      }
+      TEST_ASSERT(mr.ht_failed);
+      /* Reset releases the cache while earlier results remain live. */
+      mr.buf->rpos = 0;
+      TEST_ASSERT(marshall_read_header(&mr));
+      mr.buf->rpos += mr.heap_size;
+      TEST_ASSERT(marshall_read_tag(&mr, false, &again));
+      TEST_EQ(compare_tag(&again, src + i), 0);
+      TEST_ASSERT(! mr.ht_failed);
+      marshall_read_clean(&mr);
+      TEST_EQ(compare_tag(&b, src + i), 0);
+      TEST_EQ(compare_tag(&again, src + i), 0);
+      if (i)
+        TEST_EQ(a.data.td_pcomplex->x.data.td_u8, 99);
+      else if (copy)
+        TEST_EQ(a.data.td_pcall->ident.sym, sym_1("changed"));
+      else
+        TEST_EQ(compare_tag(&a, src + i), 0);
+      tag_clean(&again);
+      tag_clean(&b);
+      tag_clean(&a);
+      str_clean(&str);
+      marshall_clean(&m);
+    }
+  }
+  env_global()->pass_by_copy = copy_saved;
+  tag_clean(src + 1);
+  tag_clean(src);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_cache_call_complex)
 
 TEST_CASE(marshall_read_cache_pointer)
 {
