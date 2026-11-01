@@ -142,11 +142,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.td_f32 /
                           integer_to_f32(&b->data.td_integer));
     case TAG_RATIO:
-      ratio_init_f32(&r, a->data.td_f32);
-      dest->type = TAG_RATIO;
-      ratio_div(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_f32(&r, a->data.td_f32))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       return tag_init_f32(dest, a->data.td_f32 / (f32) b->data.td_s8);
     case TAG_S16:
@@ -188,11 +186,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f64(dest, a->data.td_f64 /
                           integer_to_f64(&b->data.td_integer));
     case TAG_RATIO:
-      ratio_init_f64(&r, a->data.td_f64);
-      dest->type = TAG_RATIO;
-      ratio_div(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_f64(&r, a->data.td_f64))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       return tag_init_f64(dest, a->data.td_f64 / (f64) b->data.td_s8);
     case TAG_S16:
@@ -234,11 +230,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       return tag_init_f80(dest, a->data.td_f80 /
                            integer_to_f80(&b->data.td_integer));
     case TAG_RATIO:
-      ratio_init_f80(&r, a->data.td_f80);
-      dest->type = TAG_RATIO;
-      ratio_div(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_f80(&r, a->data.td_f80))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       return tag_init_f80(dest, a->data.td_f80 / (f80) b->data.td_s8);
     case TAG_S16:
@@ -294,11 +288,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
         goto integer_error;
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_integer(&r, &a->data.td_integer);
-      dest->type = TAG_RATIO;
-      ratio_div(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_integer(&r, &a->data.td_integer))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       if (! integer_init_s32(&tmp, b->data.td_s8))
         goto integer_error;
@@ -395,97 +387,65 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       complex_clean(&c);
       return dest;
     case TAG_F32:
-      ratio_init_f32(&r, b->data.td_f32);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_f32(&r, b->data.td_f32))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_F64:
-      ratio_init_f64(&r, b->data.td_f64);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_f64(&r, b->data.td_f64))
+        goto ratio_error;
+      goto ratio_divide;
 #if HAVE_F80
     case TAG_F80:
-      ratio_init_f80(&r, b->data.td_f80);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_f80(&r, b->data.td_f80))
+        goto ratio_error;
+      goto ratio_divide;
 #endif
     case TAG_INTEGER:
-      ratio_init_integer(&r, &b->data.td_integer);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_integer(&r, &b->data.td_integer))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_RATIO:
-      if (! ratio_div(&a->data.td_ratio, &b->data.td_ratio,
-                      &dest->data.td_ratio))
-        return NULL;
-      dest->type = TAG_RATIO;
-      return dest;
+      goto ratio_divide;
     case TAG_S8:
-      ratio_init_s8(&r, b->data.td_s8);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_s8(&r, b->data.td_s8))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S16:
-      ratio_init_s16(&r, b->data.td_s16);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_s16(&r, b->data.td_s16))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S32:
-      ratio_init_s32(&r, b->data.td_s32);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_s32(&r, b->data.td_s32))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S64:
-      ratio_init_s64(&r, b->data.td_s64);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_s64(&r, b->data.td_s64))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_SW:
-      ratio_init_sw(&r, b->data.td_sw);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_sw(&r, b->data.td_sw))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_U8:
-      ratio_init_u8(&r, b->data.td_u8);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_u8(&r, b->data.td_u8))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_U16:
-      ratio_init_u16(&r, b->data.td_u16);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_u16(&r, b->data.td_u16))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_U32:
-      ratio_init_u32(&r, b->data.td_u32);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_u32(&r, b->data.td_u32))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_U64:
-      ratio_init_u64(&r, b->data.td_u64);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_u64(&r, b->data.td_u64))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_UW:
-      ratio_init_uw(&r, b->data.td_uw);
-      dest->type = TAG_RATIO;
-      ratio_div(&a->data.td_ratio, &r, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_uw(&r, b->data.td_uw))
+        goto ratio_error;
+      goto ratio_divide;
     default:
       goto ko;
     }
@@ -512,22 +472,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      if (integer_is_zero(&b->data.td_ratio.numerator)) {
-        err_puts("tag_div: division by zero");
-        return NULL;
-      }
       if (! ratio_init_s8(&r, a->data.td_s8))
-        return NULL;
-      tag.type = TAG_RATIO;
-      if (! ratio_div(&r, &b->data.td_ratio, &tag.data.td_ratio)) {
-        ratio_clean(&r);
-        tag_clean(&tag);
-        return NULL;
-      }
-      ratio_clean(&r);
-      dest->type = tag.type;
-      dest->data = tag.data;
-      return dest;
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       tag_init_s8(&tag, a->data.td_s8 / b->data.td_s8);
       goto integer_reduce;
@@ -600,11 +547,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_s16(&r, a->data.td_s16);
-      dest->type = TAG_RATIO;
-      ratio_div(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_s16(&r, a->data.td_s16))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       tag_init_s16(&tag, a->data.td_s16 / (s16) b->data.td_s8);
       goto integer_reduce;
@@ -677,11 +622,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_s32(&r, a->data.td_s32);
-      dest->type = TAG_RATIO;
-      ratio_div(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_s32(&r, a->data.td_s32))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       tag_init_s32(&tag, a->data.td_s32 / (s32) b->data.td_s8);
       goto integer_reduce;
@@ -754,11 +697,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_s64(&r, a->data.td_s64);
-      dest->type = TAG_RATIO;
-      ratio_div(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_s64(&r, a->data.td_s64))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       tag_init_s64(&tag, a->data.td_s64 / (s64) b->data.td_s8);
       goto integer_reduce;
@@ -832,11 +773,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_sw(&r, a->data.td_sw);
-      dest->type = TAG_RATIO;
-      ratio_div(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_sw(&r, a->data.td_sw))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       tag_init_sw(&tag, a->data.td_sw / (sw) b->data.td_s8);
       goto integer_reduce;
@@ -909,11 +848,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_u8(&r, a->data.td_u8);
-      dest->type = TAG_RATIO;
-      ratio_div(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_u8(&r, a->data.td_u8))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       tag_init_s16(&tag, (s16) a->data.td_u8 / (s16) b->data.td_s8);
       goto integer_reduce;
@@ -970,11 +907,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_u16(&r, a->data.td_u16);
-      dest->type = TAG_RATIO;
-      ratio_div(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_u16(&r, a->data.td_u16))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       tag_init_s32(&tag, (s32) a->data.td_u16 / (s32) b->data.td_s8);
       goto integer_reduce;
@@ -1031,11 +966,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_u32(&r, a->data.td_u32);
-      dest->type = TAG_RATIO;
-      ratio_div(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_u32(&r, a->data.td_u32))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       tag_init_s64(&tag, (s64) a->data.td_u32 / (s64) b->data.td_s8);
       goto integer_reduce;
@@ -1092,11 +1025,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_u64(&r, a->data.td_u64);
-      dest->type = TAG_RATIO;
-      ratio_div(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_u64(&r, a->data.td_u64))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       if (! integer_init_u64(&tmp, a->data.td_u64))
         goto integer_error;
@@ -1193,11 +1124,9 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       goto integer_reduce;
     case TAG_RATIO:
-      ratio_init_uw(&r, a->data.td_uw);
-      dest->type = TAG_RATIO;
-      ratio_div(&r, &b->data.td_ratio, &dest->data.td_ratio);
-      ratio_clean(&r);
-      return dest;
+      if (! ratio_init_uw(&r, a->data.td_uw))
+        goto ratio_error;
+      goto ratio_divide;
     case TAG_S8:
       if (UW_MAX > S64_MAX && a->data.td_uw > S64_MAX) {
         if (! integer_init_uw(&tmp, a->data.td_uw))
@@ -1308,6 +1237,25 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
   err_write_1(" / ");
   err_puts(tag_type_to_string(b->type));
   assert(! "tag_div: invalid tag type");
+  return NULL;
+ ratio_divide: {
+    const s_ratio *ratio_a = a->type == TAG_RATIO ? &a->data.td_ratio : &r;
+    const s_ratio *ratio_b = b->type == TAG_RATIO ? &b->data.td_ratio : &r;
+    if (integer_is_zero(&ratio_b->numerator)) {
+      err_puts("tag_div: division by zero");
+      goto ratio_error;
+    }
+    tag.type = TAG_RATIO;
+    if (! ratio_div(ratio_a, ratio_b, &tag.data.td_ratio))
+      goto ratio_error;
+    ratio_clean(&r);
+    dest->type = tag.type;
+    dest->data = tag.data;
+    return dest;
+  }
+ ratio_error:
+  ratio_clean(&r);
+  tag_clean(&tag);
   return NULL;
  integer_error:
   integer_clean(&tmp);

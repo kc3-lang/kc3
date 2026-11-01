@@ -75,7 +75,10 @@ s_ratio * ratio_div (const s_ratio *a, const s_ratio *b,
   assert(a);
   assert(b);
   assert(dest);
-  assert(! integer_is_zero(&b->numerator));
+  if (integer_is_zero(&b->numerator)) {
+    err_puts("ratio_div: division by zero");
+    return NULL;
+  }
   assert(integer_is_positive(&a->denominator));
   assert(integer_is_positive(&b->denominator));
   if (! integer_mul(&a->numerator, &b->denominator, &tmp.numerator))

@@ -75,6 +75,7 @@ uw      ratio_to_uw (const s_ratio *r);
 /* Operators. */
 s_ratio * ratio_add (const s_ratio *a, const s_ratio *b,
                      s_ratio *dest);
+/* Division by zero or another failure returns NULL, leaving dest unchanged. */
 s_ratio * ratio_div (const s_ratio *a, const s_ratio *b,
                      s_ratio *dest);
 s_ratio * ratio_mul (const s_ratio *a, const s_ratio *b,

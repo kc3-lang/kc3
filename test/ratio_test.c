@@ -192,6 +192,7 @@ TEST_CASE_PROTOTYPE(ratio_cast);
 TEST_CASE_PROTOTYPE(ratio_init_1);
 TEST_CASE_PROTOTYPE(ratio_parse);
 TEST_CASE_PROTOTYPE(ratio_pow);
+TEST_CASE_PROTOTYPE(ratio_div);
 
 void ratio_test (void)
 {
@@ -199,6 +200,7 @@ void ratio_test (void)
   TEST_CASE_RUN(ratio_init_1);
   TEST_CASE_RUN(ratio_parse);
   TEST_CASE_RUN(ratio_pow);
+  TEST_CASE_RUN(ratio_div);
 }
 
 TEST_CASE(ratio_cast)
@@ -356,3 +358,65 @@ TEST_CASE(ratio_pow)
   test_context(NULL);
 }
 TEST_CASE_END(ratio_pow)
+
+TEST_CASE(ratio_div)
+{
+  const char *numerators[] = {"1/2", "0/1", "-1/2"};
+  const char *zeros[] = {"0/1", "0/7"};
+  const struct {
+    const char *a;
+    const char *b;
+    const char *expected;
+  } valid[] = {
+    {"1/2", "2/3", "3/4"}, {"-1/2", "2/3", "-3/4"},
+    {"1/2", "-2/3", "-3/4"}, {"-1/2", "-2/3", "3/4"},
+    {"0/1", "-2/3", "0/1"},
+    {"18446744073709551616/3", "2/3", "9223372036854775808/1"}
+  };
+  s_ratio a = {0};
+  s_ratio b = {0};
+  s_ratio expected = {0};
+  uw i;
+  uw j;
+  s_ratio result = {0};
+  s_ratio saved;
+  test_context("F63: direct Ratio division rejects zero divisors");
+  for (i = 0; i < sizeof(numerators) / sizeof(*numerators); i++) {
+    TEST_ASSERT(ratio_init_1(&a, numerators[i]));
+    for (j = 0; j < sizeof(zeros) / sizeof(*zeros); j++) {
+      TEST_ASSERT(ratio_init_1(&b, zeros[j]));
+      TEST_ASSERT(ratio_init_1(&result, "7/11"));
+      saved = result;
+      TEST_EQ(ratio_div(&a, &b, &result), NULL);
+      TEST_MEMCMP((const char *) &result, (const char *) &saved,
+                   sizeof(result));
+      TEST_EQ(integer_to_s8(&result.numerator), 7);
+      TEST_EQ(integer_to_s8(&result.denominator), 11);
+      saved = a;
+      TEST_EQ(ratio_div(&a, &b, &a), NULL);
+      TEST_MEMCMP((const char *) &a, (const char *) &saved, sizeof(a));
+      saved = b;
+      TEST_EQ(ratio_div(&a, &b, &b), NULL);
+      TEST_MEMCMP((const char *) &b, (const char *) &saved, sizeof(b));
+      ratio_clean(&result);
+      ratio_clean(&b);
+    }
+    ratio_clean(&a);
+  }
+  test_context("valid Ratio quotients stay exact and own their data");
+  for (i = 0; i < sizeof(valid) / sizeof(*valid); i++) {
+    TEST_ASSERT(ratio_init_1(&a, valid[i].a));
+    TEST_ASSERT(ratio_init_1(&b, valid[i].b));
+    TEST_EQ(ratio_div(&a, &b, &result), &result);
+    ratio_clean(&b);
+    ratio_clean(&a);
+    TEST_ASSERT(ratio_init_1(&expected, valid[i].expected));
+    TEST_EQ(compare_integer(&result.numerator, &expected.numerator), 0);
+    TEST_EQ(compare_integer(&result.denominator, &expected.denominator), 0);
+    TEST_ASSERT(integer_is_positive(&result.denominator));
+    ratio_clean(&expected);
+    ratio_clean(&result);
+  }
+  test_context(NULL);
+}
+TEST_CASE_END(ratio_div)

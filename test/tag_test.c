@@ -37,6 +37,7 @@ TEST_CASE_PROTOTYPE(tag_divmod);
 TEST_CASE_PROTOTYPE(tag_integer_divmod);
 TEST_CASE_PROTOTYPE(tag_div_mixed);
 TEST_CASE_PROTOTYPE(tag_mod_sw_integer);
+TEST_CASE_PROTOTYPE(tag_div_ratio);
 // TEST_CASE_PROTOTYPE(tag_type__macro);
 
 void tag_test (void)
@@ -48,6 +49,7 @@ void tag_test (void)
   TEST_CASE_RUN(tag_integer_divmod);
   TEST_CASE_RUN(tag_div_mixed);
   TEST_CASE_RUN(tag_mod_sw_integer);
+  TEST_CASE_RUN(tag_div_ratio);
   //  TEST_CASE_RUN(tag_type__macro);
 }
 
@@ -477,15 +479,36 @@ static void tag_integer_test_clean (s_integer *i)
   integer_clean(i);
 }
 
-static s_ratio * tag_integer_test_ratio_init_s8 (s_ratio *r, s8 value)
-{
-  if (++g_tag_integer_test.step == g_tag_integer_test.fail)
-    return NULL;
-  if (! ratio_init_s8(r, value))
-    return NULL;
-  g_tag_integer_test.live += 2;
-  return r;
-}
+#define TAG_INTEGER_TEST_RATIO_INIT(name, type)                        \
+  static s_ratio * tag_integer_test_ratio_init_ ## name               \
+  (s_ratio *r, type value)                                            \
+  {                                                                   \
+    if (++g_tag_integer_test.step == g_tag_integer_test.fail)          \
+      return NULL;                                                    \
+    if (! ratio_init_ ## name(r, value))                              \
+      return NULL;                                                    \
+    g_tag_integer_test.live += 2;                                     \
+    return r;                                                         \
+  }
+
+TAG_INTEGER_TEST_RATIO_INIT(s8, s8)
+TAG_INTEGER_TEST_RATIO_INIT(s16, s16)
+TAG_INTEGER_TEST_RATIO_INIT(s32, s32)
+TAG_INTEGER_TEST_RATIO_INIT(s64, s64)
+TAG_INTEGER_TEST_RATIO_INIT(sw, sw)
+TAG_INTEGER_TEST_RATIO_INIT(u8, u8)
+TAG_INTEGER_TEST_RATIO_INIT(u16, u16)
+TAG_INTEGER_TEST_RATIO_INIT(u32, u32)
+TAG_INTEGER_TEST_RATIO_INIT(u64, u64)
+TAG_INTEGER_TEST_RATIO_INIT(uw, uw)
+TAG_INTEGER_TEST_RATIO_INIT(integer, const s_integer *)
+TAG_INTEGER_TEST_RATIO_INIT(f32, f32)
+TAG_INTEGER_TEST_RATIO_INIT(f64, f64)
+#if HAVE_F80
+TAG_INTEGER_TEST_RATIO_INIT(f80, f80)
+#endif
+
+#undef TAG_INTEGER_TEST_RATIO_INIT
 
 static s_ratio * tag_integer_test_ratio_div (const s_ratio *a,
                                             const s_ratio *b,
@@ -546,6 +569,21 @@ static s_tag * tag_integer_test_reduce (s_tag *tag, s_tag *dest)
 #define integer_init_u64 tag_integer_test_init_u64
 #define integer_init_uw tag_integer_test_init_uw
 #define ratio_init_s8 tag_integer_test_ratio_init_s8
+#define ratio_init_s16 tag_integer_test_ratio_init_s16
+#define ratio_init_s32 tag_integer_test_ratio_init_s32
+#define ratio_init_s64 tag_integer_test_ratio_init_s64
+#define ratio_init_sw tag_integer_test_ratio_init_sw
+#define ratio_init_u8 tag_integer_test_ratio_init_u8
+#define ratio_init_u16 tag_integer_test_ratio_init_u16
+#define ratio_init_u32 tag_integer_test_ratio_init_u32
+#define ratio_init_u64 tag_integer_test_ratio_init_u64
+#define ratio_init_uw tag_integer_test_ratio_init_uw
+#define ratio_init_integer tag_integer_test_ratio_init_integer
+#define ratio_init_f32 tag_integer_test_ratio_init_f32
+#define ratio_init_f64 tag_integer_test_ratio_init_f64
+#if HAVE_F80
+#define ratio_init_f80 tag_integer_test_ratio_init_f80
+#endif
 #define ratio_div tag_integer_test_ratio_div
 #define ratio_clean tag_integer_test_ratio_clean
 #include "../libkc3/tag_div.c"
@@ -568,6 +606,21 @@ static s_tag * tag_integer_test_reduce (s_tag *tag, s_tag *dest)
 #undef integer_init_u64
 #undef integer_init_uw
 #undef ratio_init_s8
+#undef ratio_init_s16
+#undef ratio_init_s32
+#undef ratio_init_s64
+#undef ratio_init_sw
+#undef ratio_init_u8
+#undef ratio_init_u16
+#undef ratio_init_u32
+#undef ratio_init_u64
+#undef ratio_init_uw
+#undef ratio_init_integer
+#undef ratio_init_f32
+#undef ratio_init_f64
+#if HAVE_F80
+#undef ratio_init_f80
+#endif
 #undef ratio_div
 #undef ratio_clean
 
@@ -884,3 +937,144 @@ TEST_CASE(tag_mod_sw_integer)
   test_context(NULL);
 }
 TEST_CASE_END(tag_mod_sw_integer)
+
+static s_tag * tag_div_ratio_test_init (s_tag *tag, e_tag_type type,
+                                       s8 value)
+{
+  switch (type) {
+  case TAG_F32: return tag_init_f32(tag, value);
+  case TAG_F64: return tag_init_f64(tag, value);
+#if HAVE_F80
+  case TAG_F80: return tag_init_f80(tag, value);
+#endif
+  case TAG_RATIO:
+    if (! tag_init_ratio_zero(tag))
+      return NULL;
+    if (! integer_set_s64(&tag->data.td_ratio.numerator, value)) {
+      tag_clean(tag);
+      return NULL;
+    }
+    return tag;
+  default:
+    return tag_test_init_integer(tag, type, value);
+  }
+}
+
+static char tag_div_ratio_test_error (s_tag *a, s_tag *b)
+{
+  s_tag result = {0};
+  s_tag saved;
+  TEST_ASSERT(tag_init_ratio_1(&result, "7/11"));
+  result.ref_count = 17;
+  saved = result;
+  TEST_EQ(tag_div(a, b, &result), NULL);
+  TEST_MEMCMP((const char *) &result, (const char *) &saved,
+               sizeof(result));
+  TEST_EQ(integer_to_s8(&result.data.td_ratio.numerator), 7);
+  TEST_EQ(integer_to_s8(&result.data.td_ratio.denominator), 11);
+  tag_clean(&result);
+  return 0;
+}
+
+TEST_CASE(tag_div_ratio)
+{
+  const e_tag_type types[] = {
+    TAG_S8, TAG_S16, TAG_S32, TAG_S64, TAG_SW,
+    TAG_U8, TAG_U16, TAG_U32, TAG_U64, TAG_UW, TAG_INTEGER,
+    TAG_F32, TAG_F64,
+#if HAVE_F80
+    TAG_F80,
+#endif
+    TAG_RATIO
+  };
+  const char *numerators[] = {"1/2", "0/1", "-1/2"};
+  s_tag a = {0};
+  s_tag b = {0};
+  uw direction;
+  s_tag expected = {0};
+  uw fail;
+  uw i;
+  uw j;
+  s_tag result = {0};
+  s_tag saved;
+  uw steps;
+  test_context("F63: Ratio/scalar zero divisors preserve the destination");
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+    TEST_ASSERT(tag_div_ratio_test_init(&b, types[i], 0));
+    for (j = 0; j < sizeof(numerators) / sizeof(*numerators); j++) {
+      TEST_ASSERT(tag_init_ratio_1(&a, numerators[j]));
+      TEST_EQ(tag_div_ratio_test_error(&a, &b), 0);
+      tag_clean(&a);
+    }
+    tag_clean(&b);
+    TEST_ASSERT(tag_init_ratio_zero(&b));
+    for (j = 0; j < 2; j++) {
+      TEST_ASSERT(tag_div_ratio_test_init(&a, types[i], j ? 2 : 0));
+      TEST_EQ(tag_div_ratio_test_error(&a, &b), 0);
+      tag_clean(&a);
+    }
+    tag_clean(&b);
+  }
+  test_context("nonzero mixed Ratio divisions retain values and ownership");
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+    for (direction = 0; direction < 2; direction++) {
+      for (j = 0; j < 3; j++) {
+        if (j == 1 && direction)
+          continue;
+        TEST_ASSERT(tag_init_ratio_1(&a, numerators[j]));
+        TEST_ASSERT(tag_div_ratio_test_init(&b, types[i], 2));
+        result = (s_tag) {0};
+        result.ref_count = 17;
+        TEST_EQ(direction ? tag_div(&b, &a, &result) :
+                 tag_div(&a, &b, &result), &result);
+        tag_clean(&b);
+        tag_clean(&a);
+        TEST_ASSERT(tag_init_ratio_1
+                    (&expected, direction ? (j ? "-4/1" : "4/1") :
+                     (j == 0 ? "1/4" : j == 1 ? "0/1" : "-1/4")));
+        TEST_EQ(result.type, TAG_RATIO);
+        TEST_EQ(result.ref_count, 17);
+        TEST_EQ(compare_tag(&result, &expected), 0);
+        tag_clean(&expected);
+        tag_clean(&result);
+      }
+    }
+  }
+  test_context("Ratio conversion/division helper failures clean temporaries");
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+    TEST_ASSERT(tag_init_ratio_1(&a, "1/2"));
+    TEST_ASSERT(tag_div_ratio_test_init(&b, types[i], 2));
+    for (direction = 0; direction < 2; direction++) {
+      g_tag_integer_test.fail = 0;
+      g_tag_integer_test.step = 0;
+      g_tag_integer_test.live = 0;
+      result = (s_tag) {0};
+      TEST_EQ(direction ? tag_integer_test_div(&b, &a, &result) :
+               tag_integer_test_div(&a, &b, &result), &result);
+      steps = g_tag_integer_test.step;
+      TEST_EQ(steps, types[i] == TAG_RATIO ? 1 : 2);
+      TEST_EQ(g_tag_integer_test.live, 2);
+      tag_integer_test_tag_clean(&result);
+      TEST_EQ(g_tag_integer_test.live, 0);
+      for (fail = 1; fail <= steps; fail++) {
+        g_tag_integer_test.fail = fail;
+        g_tag_integer_test.step = 0;
+        TEST_ASSERT(tag_init_ratio_1(&result, "7/11"));
+        result.ref_count = 17;
+        saved = result;
+        TEST_EQ(direction ? tag_integer_test_div(&b, &a, &result) :
+                 tag_integer_test_div(&a, &b, &result), NULL);
+        TEST_EQ(g_tag_integer_test.step, fail);
+        TEST_EQ(g_tag_integer_test.live, 0);
+        TEST_MEMCMP((const char *) &result, (const char *) &saved,
+                     sizeof(result));
+        tag_clean(&result);
+      }
+    }
+    tag_clean(&b);
+    tag_clean(&a);
+  }
+  g_tag_integer_test.fail = 0;
+  test_context(NULL);
+}
+TEST_CASE_END(tag_div_ratio)
