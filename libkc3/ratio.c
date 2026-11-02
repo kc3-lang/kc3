@@ -554,57 +554,144 @@ s_ratio * ratio_sub (const s_ratio *a, const s_ratio *b,
   return dest;
 }
 
-f32 ratio_to_f32 (const s_ratio *r)
+/* Round |numerator / denominator| to an integer significand times a
+   power of two. Exact quotient/remainder arithmetic gives nearest-even
+   rounding, including subnormals, without first rounding either operand. */
+static mp_err ratio_float_significand (const s_ratio *r, int precision,
+                                       int min_exponent,
+                                       int max_exponent,
+                                       mp_int *significand,
+                                       int *exponent, bool *overflow)
 {
-  f32 numerator;
-  f32 denominator;
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-  numerator = integer_to_f32(&r->numerator);
-  denominator = integer_to_f32(&r->denominator);
-  return numerator / denominator;
+  mp_ord comparison;
+  mp_int denominator = {0};
+  mp_err error;
+  int estimate;
+  int minimum = min_exponent - precision;
+  mp_int numerator = {0};
+  mp_int remainder = {0};
+  mp_int tmp = {0};
+  *exponent = 0;
+  *overflow = false;
+  if (mp_iszero(&r->numerator.in_int))
+    return MP_OKAY;
+  estimate = mp_count_bits(&r->numerator.in_int) -
+    mp_count_bits(&r->denominator.in_int);
+  /* The bit-count estimate is either floor(log2(|r|)) or one larger.
+     Classify distant extremes before allocating or shifting big inputs. */
+  if (estimate > max_exponent) {
+    *overflow = true;
+    return MP_OKAY;
+  }
+  if (estimate < minimum - 1)
+    return MP_OKAY;
+  error = mp_init_multi(significand, &numerator, &denominator,
+                        &remainder, &tmp, NULL);
+  if (error != MP_OKAY)
+    return error;
+  if ((error = mp_abs(&r->numerator.in_int, &numerator)) != MP_OKAY ||
+      (error = mp_copy(&r->denominator.in_int, &denominator)) != MP_OKAY)
+    goto clean;
+  if (estimate >= 0) {
+    if ((error = mp_mul_2d(&denominator, estimate, &tmp)) != MP_OKAY)
+      goto clean;
+    comparison = mp_cmp(&numerator, &tmp);
+  }
+  else {
+    if ((error = mp_mul_2d(&numerator, -estimate, &tmp)) != MP_OKAY)
+      goto clean;
+    comparison = mp_cmp(&tmp, &denominator);
+  }
+  if (comparison == MP_LT)
+    estimate--;
+  if (estimate >= max_exponent) {
+    *overflow = true;
+    goto clean;
+  }
+  *exponent = estimate - precision + 1;
+  if (*exponent < minimum)
+    *exponent = minimum;
+  if (*exponent >= 0)
+    error = mp_mul_2d(&denominator, *exponent, &denominator);
+  else
+    error = mp_mul_2d(&numerator, -*exponent, &numerator);
+  if (error != MP_OKAY ||
+      (error = mp_div(&numerator, &denominator, significand,
+                      &remainder)) != MP_OKAY ||
+      (error = mp_mul_2d(&remainder, 1, &tmp)) != MP_OKAY)
+    goto clean;
+  comparison = mp_cmp(&tmp, &denominator);
+  if (comparison == MP_GT ||
+      (comparison == MP_EQ && significand->used &&
+       (significand->dp[0] & 1))) {
+    if ((error = mp_add_d(significand, 1, significand)) != MP_OKAY)
+      goto clean;
+  }
+  *overflow = mp_count_bits(significand) + *exponent > max_exponent;
+ clean:
+  mp_clear_multi(&numerator, &denominator, &remainder, &tmp, NULL);
+  return error;
 }
 
-f64 ratio_to_f64 (const s_ratio *r)
-{
-  f64 numerator;
-  f64 denominator;
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-  numerator = integer_to_f64(&r->numerator);
-  denominator = integer_to_f64(&r->denominator);
-  return numerator / denominator;
-}
+#define DEF_RATIO_TO_FLOAT(type, scale, precision, min_exp, max_exp) \
+  type ratio_to_ ## type (const s_ratio *r)                              \
+  {                                                                      \
+    mp_err error;                                                        \
+    int exponent;                                                        \
+    int i;                                                               \
+    bool negative;                                                       \
+    bool overflow;                                                       \
+    mp_int significand = {0};                                            \
+    type value = 0;                                                      \
+    assert(r);                                                           \
+    assert(integer_is_positive(&r->denominator));                        \
+    negative = integer_is_negative(&r->numerator);                       \
+    error = ratio_float_significand(r, precision, min_exp, max_exp,      \
+                                    &significand, &exponent, &overflow); \
+    if (error != MP_OKAY) {                                              \
+      mp_clear(&significand);                                            \
+      err_write_1("ratio_to_" #type ": ");                               \
+      err_puts(mp_error_to_string(error));                               \
+      abort();                                                           \
+    }                                                                    \
+    if (overflow)                                                        \
+      value = (type) INFINITY;                                           \
+    else {                                                               \
+      /* The rounded significand has at most precision bits, or is a     \
+         power of two after a carry. These native operations are exact. */ \
+      i = significand.used;                                              \
+      while (i-- > 0)                                                    \
+        value = scale(value, MP_DIGIT_BIT) + (type) significand.dp[i];   \
+      value = scale(value, exponent);                                    \
+    }                                                                    \
+    mp_clear(&significand);                                              \
+    return negative ? -value : value;                                    \
+  }                                                                      \
 
+DEF_RATIO_TO_FLOAT(f32, ldexpf, FLT_MANT_DIG, FLT_MIN_EXP, FLT_MAX_EXP)
+DEF_RATIO_TO_FLOAT(f64, ldexp, DBL_MANT_DIG, DBL_MIN_EXP, DBL_MAX_EXP)
 #if HAVE_F80
-
-f80 ratio_to_f80 (const s_ratio *r)
-{
-  f80 numerator;
-  f80 denominator;
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-  numerator = integer_to_f80(&r->numerator);
-  denominator = integer_to_f80(&r->denominator);
-  return numerator / denominator;
-}
-
+DEF_RATIO_TO_FLOAT(f80, ldexpl, LDBL_MANT_DIG, LDBL_MIN_EXP, LDBL_MAX_EXP)
 #endif
-
 #if HAVE_F128
-
-f128 ratio_to_f128 (const s_ratio *r)
+/* Keep binary128 arithmetic native without requiring libquadmath. */
+static f128 ratio_scale_f128 (f128 value, int exponent)
 {
-  f128 numerator;
-  f128 denominator;
-  assert(r);
-  assert(integer_is_positive(&r->denominator));
-  numerator = integer_to_f128(&r->numerator);
-  denominator = integer_to_f128(&r->denominator);
-  return numerator / denominator;
+  while (exponent > 0) {
+    value *= (f128) 2;
+    exponent--;
+  }
+  while (exponent < 0) {
+    value *= (f128) 0.5;
+    exponent++;
+  }
+  return value;
 }
 
+DEF_RATIO_TO_FLOAT(f128, ratio_scale_f128, 113, -16381, 16384)
 #endif
+
+#undef DEF_RATIO_TO_FLOAT
 
 static void ratio_truncate (const s_ratio *r, s_integer *dest)
 {

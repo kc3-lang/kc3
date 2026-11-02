@@ -196,6 +196,7 @@ TEST_CASE_PROTOTYPE(ratio_parse);
 TEST_CASE_PROTOTYPE(ratio_pow);
 TEST_CASE_PROTOTYPE(ratio_div);
 TEST_CASE_PROTOTYPE(ratio_float);
+TEST_CASE_PROTOTYPE(ratio_to_float);
 
 void ratio_test (void)
 {
@@ -205,6 +206,7 @@ void ratio_test (void)
   TEST_CASE_RUN(ratio_pow);
   TEST_CASE_RUN(ratio_div);
   TEST_CASE_RUN(ratio_float);
+  TEST_CASE_RUN(ratio_to_float);
 }
 
 TEST_CASE(ratio_cast)
@@ -539,3 +541,207 @@ TEST_CASE_END(ratio_float)
 #undef RATIO_TEST_FLOAT_ERROR
 #undef RATIO_TEST_FLOAT_COMMON
 #undef RATIO_TEST_FLOAT_EXTREMES
+
+static char ratio_to_float_test_scale (s_ratio *r, int exponent)
+{
+  if (exponent >= 0)
+    TEST_EQ(mp_mul_2d(&r->numerator.in_int, exponent,
+                       &r->numerator.in_int), MP_OKAY);
+  else
+    TEST_EQ(mp_mul_2d(&r->denominator.in_int, -exponent,
+                       &r->denominator.in_int), MP_OKAY);
+  return 0;
+}
+
+static char ratio_to_float_test_offset (s_ratio *r, int offset)
+{
+  if (offset < 0)
+    TEST_EQ(mp_sub_d(&r->numerator.in_int, 1,
+                      &r->numerator.in_int), MP_OKAY);
+  else if (offset > 0)
+    TEST_EQ(mp_add_d(&r->numerator.in_int, 1,
+                      &r->numerator.in_int), MP_OKAY);
+  return 0;
+}
+
+#define RATIO_TO_FLOAT_CHECK(type, expected) \
+  do {                                                                   \
+    type reference = (expected);                                         \
+    int negative;                                                        \
+    s_ratio before = {0};                                                \
+    for (negative = 0; negative < 2; negative++) {                       \
+      type actual;                                                       \
+      TEST_ASSERT(ratio_init_copy(&before, &r));                         \
+      actual = ratio_to_ ## type(&r);                                    \
+      TEST_ASSERT(actual == (negative ? -reference : reference));        \
+      TEST_EQ(signbit(actual) != 0, negative);                           \
+      TEST_EQ(compare_integer(&r.numerator, &before.numerator), 0);      \
+      TEST_EQ(compare_integer(&r.denominator, &before.denominator), 0);  \
+      ratio_clean(&before);                                              \
+      TEST_EQ(mp_neg(&r.numerator.in_int, &r.numerator.in_int), MP_OKAY); \
+    }                                                                    \
+  } while (0)                                                            \
+
+#define DEF_RATIO_TO_FLOAT_TEST(type, scale, precision, min_exp, max_exp, max_value) \
+  static char ratio_to_float_test_ ## type (void)                        \
+  {                                                                      \
+    const u8 normal_units[2][3] = {{0, 0, 1}, {1, 2, 2}};                \
+    const u8 subnormal_units[3][3] = {{0, 0, 1}, {1, 2, 2}, {2, 2, 3}};  \
+    const int sticky = 64;                                               \
+    const int unit = min_exp - precision;                                \
+    const int huge = max_exp + 64;                                       \
+    type smallest = scale((type) 1, unit);                               \
+    type normal = scale((type) 1, min_exp - 1);                          \
+    type ulp = scale((type) 1, 1 - precision);                           \
+    type values[] = {(type) 0.1, (type) 1 + ulp, smallest,               \
+                     normal - smallest, normal, max_value,               \
+                     scale((type) 1, max_exp / 2)};                      \
+    s_ratio r = {0};                                                     \
+    s_integer delta = {0};                                               \
+    s_integer tail = {0};                                                \
+    int i;                                                               \
+    int j;                                                               \
+    int mid;                                                             \
+    int offset;                                                          \
+    TEST_ASSERT(integer_init_zero(&delta));                              \
+    TEST_ASSERT(integer_init_zero(&tail));                               \
+    TEST_EQ(mp_2expt(&delta.in_int, sticky), MP_OKAY);                   \
+    test_context("F68: " #type " large coprime components");             \
+    TEST_ASSERT(ratio_init_zero(&r));                                    \
+    TEST_EQ(mp_2expt(&r.numerator.in_int, huge), MP_OKAY);               \
+    TEST_EQ(mp_copy(&r.numerator.in_int, &r.denominator.in_int), MP_OKAY); \
+    TEST_EQ(mp_add_d(&r.numerator.in_int, 1, &r.numerator.in_int), MP_OKAY); \
+    RATIO_TO_FLOAT_CHECK(type, (type) 1);                                \
+    TEST_EQ(mp_add_d(&r.denominator.in_int, 3,                           \
+                      &r.denominator.in_int), MP_OKAY);                  \
+    RATIO_TO_FLOAT_CHECK(type, (type) 1);                                \
+    TEST_EQ(mp_2expt(&r.numerator.in_int, huge), MP_OKAY);               \
+    TEST_EQ(mp_mul_d(&r.numerator.in_int, 3, &r.numerator.in_int), MP_OKAY); \
+    TEST_EQ(mp_add_d(&r.numerator.in_int, 1, &r.numerator.in_int), MP_OKAY); \
+    TEST_EQ(mp_2expt(&r.denominator.in_int, huge + 1), MP_OKAY);         \
+    RATIO_TO_FLOAT_CHECK(type, (type) 1.5);                              \
+    ratio_clean(&r);                                                     \
+    test_context("F68: " #type " midpoint ties and distant sticky bits"); \
+    for (mid = 1; mid <= 3; mid += 2) {                                  \
+      for (offset = -1; offset <= 1; offset++) {                         \
+        TEST_ASSERT(ratio_init_zero(&r));                                \
+        TEST_EQ(mp_2expt(&r.denominator.in_int, precision + sticky), MP_OKAY); \
+        TEST_EQ(mp_copy(&r.denominator.in_int, &r.numerator.in_int), MP_OKAY); \
+        TEST_EQ(mp_mul_d(&delta.in_int, mid, &tail.in_int), MP_OKAY);    \
+        TEST_EQ(mp_add(&r.numerator.in_int, &tail.in_int,                \
+                        &r.numerator.in_int), MP_OKAY);                  \
+        TEST_EQ(ratio_to_float_test_offset(&r, offset), 0);              \
+        RATIO_TO_FLOAT_CHECK(type, (type) 1 +                            \
+          (type) normal_units[(mid - 1) / 2][offset + 1] * ulp);         \
+        ratio_clean(&r);                                                 \
+      }                                                                  \
+    }                                                                    \
+    test_context("F68: " #type " subnormal rounding and signed zero");   \
+    for (mid = 1; mid <= 5; mid += 2) {                                  \
+      for (offset = -1; offset <= 1; offset++) {                         \
+        TEST_ASSERT(ratio_init_zero(&r));                                \
+        TEST_EQ(mp_2expt(&r.denominator.in_int, 1 - unit + sticky), MP_OKAY); \
+        TEST_EQ(mp_mul_d(&delta.in_int, mid, &r.numerator.in_int), MP_OKAY); \
+        TEST_EQ(ratio_to_float_test_offset(&r, offset), 0);              \
+        RATIO_TO_FLOAT_CHECK(type,                                       \
+          (type) subnormal_units[(mid - 1) / 2][offset + 1] * smallest); \
+        ratio_clean(&r);                                                 \
+      }                                                                  \
+    }                                                                    \
+    test_context("F68: " #type " normal/subnormal and overflow boundaries"); \
+    for (offset = -1; offset <= 1; offset++) {                           \
+      TEST_ASSERT(ratio_init_zero(&r));                                  \
+      TEST_EQ(mp_2expt(&r.numerator.in_int, precision + sticky), MP_OKAY); \
+      TEST_EQ(mp_sub(&r.numerator.in_int, &delta.in_int,                 \
+                      &r.numerator.in_int), MP_OKAY);                    \
+      TEST_EQ(mp_2expt(&r.denominator.in_int, 1 - unit + sticky), MP_OKAY); \
+      TEST_EQ(ratio_to_float_test_offset(&r, offset), 0);                \
+      RATIO_TO_FLOAT_CHECK(type, offset < 0 ? normal - smallest : normal); \
+      ratio_clean(&r);                                                   \
+      TEST_ASSERT(ratio_init_zero(&r));                                  \
+      TEST_EQ(mp_2expt(&r.numerator.in_int, precision + 1 + sticky), MP_OKAY); \
+      TEST_EQ(mp_sub(&r.numerator.in_int, &delta.in_int,                 \
+                      &r.numerator.in_int), MP_OKAY);                    \
+      TEST_EQ(ratio_to_float_test_offset(&r, offset), 0);                \
+      TEST_EQ(ratio_to_float_test_scale                                  \
+                (&r, max_exp - precision - 1 - sticky), 0);              \
+      RATIO_TO_FLOAT_CHECK(type, offset < 0 ? (type) max_value :         \
+                                             (type) INFINITY);           \
+      ratio_clean(&r);                                                   \
+    }                                                                    \
+    TEST_ASSERT(ratio_init_u8(&r, 1));                                   \
+    TEST_EQ(ratio_to_float_test_scale(&r, max_exp + 64), 0);             \
+    RATIO_TO_FLOAT_CHECK(type, (type) INFINITY);                         \
+    ratio_clean(&r);                                                     \
+    TEST_ASSERT(ratio_init_u8(&r, 1));                                   \
+    TEST_EQ(ratio_to_float_test_scale(&r, unit - 64), 0);                \
+    RATIO_TO_FLOAT_CHECK(type, (type) 0);                                \
+    ratio_clean(&r);                                                     \
+    TEST_ASSERT(ratio_init_zero(&r));                                    \
+    TEST_EQ(mp_2expt(&r.denominator.in_int, huge), MP_OKAY);             \
+    TEST_ASSERT(ratio_to_ ## type(&r) == (type) 0);                      \
+    TEST_ASSERT(! signbit(ratio_to_ ## type(&r)));                       \
+    ratio_clean(&r);                                                     \
+    test_context("F68: " #type " exact round trips and small quotients"); \
+    for (i = 0; i < (int) (sizeof(values) / sizeof(*values)); i++) {     \
+      TEST_ASSERT(ratio_init_ ## type(&r, values[i]));                   \
+      RATIO_TO_FLOAT_CHECK(type, values[i]);                             \
+      ratio_clean(&r);                                                   \
+    }                                                                    \
+    for (i = 1; i <= 17; i++) {                                          \
+      for (j = 1; j <= 19; j++) {                                        \
+        TEST_ASSERT(ratio_init_u8(&r, i));                               \
+        mp_set_u32(&r.denominator.in_int, j);                            \
+        RATIO_TO_FLOAT_CHECK(type, (type) i / (type) j);                 \
+        ratio_clean(&r);                                                 \
+      }                                                                  \
+    }                                                                    \
+    integer_clean(&tail);                                                \
+    integer_clean(&delta);                                               \
+    test_context(NULL);                                                  \
+    return 0;                                                            \
+  }                                                                      \
+
+DEF_RATIO_TO_FLOAT_TEST(f32, ldexpf, FLT_MANT_DIG,
+                        FLT_MIN_EXP, FLT_MAX_EXP, FLT_MAX)
+DEF_RATIO_TO_FLOAT_TEST(f64, ldexp, DBL_MANT_DIG,
+                        DBL_MIN_EXP, DBL_MAX_EXP, DBL_MAX)
+#if HAVE_F80
+DEF_RATIO_TO_FLOAT_TEST(f80, ldexpl, LDBL_MANT_DIG,
+                        LDBL_MIN_EXP, LDBL_MAX_EXP, LDBL_MAX)
+#endif
+#if HAVE_F128
+static f128 ratio_to_float_test_scale_f128 (f128 value, int exponent)
+{
+  while (exponent > 0) {
+    value *= (f128) 2;
+    exponent--;
+  }
+  while (exponent < 0) {
+    value *= (f128) 0.5;
+    exponent++;
+  }
+  return value;
+}
+DEF_RATIO_TO_FLOAT_TEST(f128, ratio_to_float_test_scale_f128,
+                        113, -16381, 16384,
+                        ratio_to_float_test_scale_f128
+                          ((f128) 1 - ratio_to_float_test_scale_f128
+                            ((f128) 1, -113), 16384))
+#endif
+
+TEST_CASE(ratio_to_float)
+{
+  TEST_EQ(ratio_to_float_test_f32(), 0);
+  TEST_EQ(ratio_to_float_test_f64(), 0);
+#if HAVE_F80
+  TEST_EQ(ratio_to_float_test_f80(), 0);
+#endif
+#if HAVE_F128
+  TEST_EQ(ratio_to_float_test_f128(), 0);
+#endif
+}
+TEST_CASE_END(ratio_to_float)
+
+#undef RATIO_TO_FLOAT_CHECK
+#undef DEF_RATIO_TO_FLOAT_TEST

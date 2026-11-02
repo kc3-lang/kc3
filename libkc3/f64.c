@@ -51,6 +51,9 @@ f64 * f64_init_cast (f64 *x, p_sym *type, const s_tag *tag)
   case TAG_INTEGER:
     *x = integer_to_f64(&tag->data.td_integer);
     return x;
+  case TAG_RATIO:
+    *x = ratio_to_f64(&tag->data.td_ratio);
+    return x;
   case TAG_SW:
     *x = (f64) tag->data.td_sw;
     return x;
