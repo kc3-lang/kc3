@@ -2532,7 +2532,6 @@ KC3_OTHER_SOURCES = \
 	"Makefile" \
 	"README.md" \
 	"TODO.md" \
-	"audit.md" \
 	"config.subr" \
 	"config_common" \
 	"configure" \
