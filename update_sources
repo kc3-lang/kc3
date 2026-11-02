@@ -149,7 +149,7 @@ KC3_TEST_TLS_SOURCES="$(ls test/tls/*.expected test/tls/*.kc3)
 test/tls_test"
 sources KC3_TEST_TLS_SOURCES "$KC3_TEST_TLS_SOURCES"
 
-KC3_OTHER_SOURCES="$(ls *.md)
+KC3_OTHER_SOURCES="$(ls *.md | grep -v audit.md)
 Makefile
 config_common
 config.subr
