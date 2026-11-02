@@ -18,6 +18,15 @@
 #include "tag.h"
 #include "tag_divmod.h"
 
+static s_tag * tag_div_complex (s_complex *a, s_complex *b,
+                                s_tag *dest)
+{
+  p_complex quotient;
+  if (! (quotient = complex_new_div(a, b)))
+    return NULL;
+  return tag_init_pcomplex(dest, quotient);
+}
+
 s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
 {
   s_complex c = {0};
@@ -47,28 +56,23 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
   case TAG_PCOMPLEX:
     switch (b->type) {
     case TAG_PCOMPLEX:
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     b->data.td_pcomplex));
+      return tag_div_complex(a->data.td_pcomplex,
+                              b->data.td_pcomplex, dest);
     case TAG_F32:
       complex_init_f32(&c, b->data.td_f32);
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     &c));
+      return tag_div_complex(a->data.td_pcomplex, &c, dest);
     case TAG_F64:
       complex_init_f64(&c, b->data.td_f64);
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     &c));
+      return tag_div_complex(a->data.td_pcomplex, &c, dest);
 #if HAVE_F80
     case TAG_F80:
       complex_init_f80(&c, b->data.td_f80);
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     &c));
+      return tag_div_complex(a->data.td_pcomplex, &c, dest);
 #endif
     case TAG_INTEGER:
       if (! complex_init_integer(&c, &b->data.td_integer))
         return NULL;
-      if (! tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                    &c))) {
-                                                   
+      if (! tag_div_complex(a->data.td_pcomplex, &c, dest)) {
         complex_clean(&c);
         return NULL;
       }
@@ -77,8 +81,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     case TAG_RATIO:
       if (! complex_init_ratio(&c, &b->data.td_ratio))
         return NULL;
-      if (! tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                    &c))) {
+      if (! tag_div_complex(a->data.td_pcomplex, &c, dest)) {
         complex_clean(&c);
         return NULL;
       }
@@ -86,44 +89,34 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
       return dest;
     case TAG_S8:
       complex_init_s8(&c, b->data.td_s8);
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     &c));
+      return tag_div_complex(a->data.td_pcomplex, &c, dest);
     case TAG_S16:
       complex_init_s16(&c, b->data.td_s16);
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     &c));
+      return tag_div_complex(a->data.td_pcomplex, &c, dest);
     case TAG_S32:
       complex_init_s32(&c, b->data.td_s32);
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     &c));
+      return tag_div_complex(a->data.td_pcomplex, &c, dest);
     case TAG_S64:
       complex_init_s64(&c, b->data.td_s64);
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     &c));
+      return tag_div_complex(a->data.td_pcomplex, &c, dest);
     case TAG_SW:
       complex_init_sw(&c, b->data.td_sw);
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     &c));
+      return tag_div_complex(a->data.td_pcomplex, &c, dest);
     case TAG_U8:
       complex_init_u8(&c, b->data.td_u8);
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     &c));
+      return tag_div_complex(a->data.td_pcomplex, &c, dest);
     case TAG_U16:
       complex_init_u16(&c, b->data.td_u16);
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     &c));
+      return tag_div_complex(a->data.td_pcomplex, &c, dest);
     case TAG_U32:
       complex_init_u32(&c, b->data.td_u32);
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     &c));
+      return tag_div_complex(a->data.td_pcomplex, &c, dest);
     case TAG_U64:
       complex_init_u64(&c, b->data.td_u64);
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     &c));
+      return tag_div_complex(a->data.td_pcomplex, &c, dest);
     case TAG_UW:
       complex_init_uw(&c, b->data.td_uw);
-      return tag_init_pcomplex(dest, complex_new_div(a->data.td_pcomplex,
-                                                     &c));
+      return tag_div_complex(a->data.td_pcomplex, &c, dest);
     default:
       break;
     }
@@ -172,8 +165,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     switch (b->type) {
     case TAG_PCOMPLEX:
       complex_init_f64(&c, a->data.td_f64);
-      return tag_init_pcomplex(dest, complex_new_div(&c,
-                                                     b->data.td_pcomplex));
+      return tag_div_complex(&c, b->data.td_pcomplex, dest);
     case TAG_F32:
       return tag_init_f64(dest, a->data.td_f64 / (f64) b->data.td_f32);
     case TAG_F64:
@@ -218,8 +210,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     switch (b->type) {
     case TAG_PCOMPLEX:
       complex_init_f80(&c, a->data.td_f80);
-      return tag_init_pcomplex(dest, complex_new_div(&c,
-                                                     b->data.td_pcomplex));
+      return tag_div_complex(&c, b->data.td_pcomplex, dest);
     case TAG_F32:
       return tag_init_f80(dest, a->data.td_f80 / (f80) b->data.td_f32);
     case TAG_F64:
@@ -263,8 +254,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     case TAG_PCOMPLEX:
       if (! complex_init_integer(&c, &a->data.td_integer))
         return NULL;
-      if (! tag_init_pcomplex(dest,
-                              complex_new_div(&c, b->data.td_pcomplex))) {
+      if (! tag_div_complex(&c, b->data.td_pcomplex, dest)) {
         complex_clean(&c);
         return NULL;
       }
@@ -379,8 +369,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     case TAG_PCOMPLEX:
       if (! complex_init_ratio(&c, &a->data.td_ratio))
         return NULL;
-      if (! tag_init_pcomplex(dest,
-                              complex_new_div(&c, b->data.td_pcomplex))) {
+      if (! tag_div_complex(&c, b->data.td_pcomplex, dest)) {
         complex_clean(&c);
         return NULL;
       }
@@ -453,8 +442,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     switch (b->type) {
     case TAG_PCOMPLEX:
       complex_init_s8(&c, a->data.td_s8);
-      return tag_init_pcomplex(dest, complex_new_div(&c,
-                                                     b->data.td_pcomplex));
+      return tag_div_complex(&c, b->data.td_pcomplex, dest);
     case TAG_F32:
       return tag_init_f32(dest, (f32) a->data.td_s8 / b->data.td_f32);
     case TAG_F64:
@@ -528,8 +516,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     switch (b->type) {
     case TAG_PCOMPLEX:
       complex_init_s16(&c, a->data.td_s16);
-      return tag_init_pcomplex(dest, complex_new_div(&c,
-                                                     b->data.td_pcomplex));
+      return tag_div_complex(&c, b->data.td_pcomplex, dest);
     case TAG_F32:
       return tag_init_f32(dest, (f32) a->data.td_s16 / b->data.td_f32);
     case TAG_F64:
@@ -603,8 +590,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     switch (b->type) {
     case TAG_PCOMPLEX:
       complex_init_s32(&c, a->data.td_s32);
-      return tag_init_pcomplex(dest, complex_new_div(&c,
-                                                     b->data.td_pcomplex));
+      return tag_div_complex(&c, b->data.td_pcomplex, dest);
     case TAG_F32:
       return tag_init_f32(dest, (f32) a->data.td_s32 / b->data.td_f32);
     case TAG_F64:
@@ -678,8 +664,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     switch (b->type) {
     case TAG_PCOMPLEX:
       complex_init_s64(&c, a->data.td_s64);
-      return tag_init_pcomplex(dest, complex_new_div(&c,
-                                                     b->data.td_pcomplex));
+      return tag_div_complex(&c, b->data.td_pcomplex, dest);
     case TAG_F32:
       return tag_init_f32(dest, (f32) a->data.td_s64 / b->data.td_f32);
     case TAG_F64:
@@ -754,8 +739,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     switch (b->type) {
     case TAG_PCOMPLEX:
       complex_init_sw(&c, a->data.td_sw);
-      return tag_init_pcomplex(dest, complex_new_div(&c,
-                                                     b->data.td_pcomplex));
+      return tag_div_complex(&c, b->data.td_pcomplex, dest);
     case TAG_F32:
       return tag_init_f32(dest, (f32) a->data.td_sw / b->data.td_f32);
     case TAG_F64:
@@ -829,8 +813,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     switch (b->type) {
     case TAG_PCOMPLEX:
       complex_init_u8(&c, a->data.td_u8);
-      return tag_init_pcomplex(dest, complex_new_div(&c,
-                                                     b->data.td_pcomplex));
+      return tag_div_complex(&c, b->data.td_pcomplex, dest);
     case TAG_F32:
       return tag_init_f32(dest, (f32) a->data.td_u8 / b->data.td_f32);
     case TAG_F64:
@@ -888,8 +871,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     switch (b->type) {
     case TAG_PCOMPLEX:
       complex_init_u16(&c, a->data.td_u16);
-      return tag_init_pcomplex(dest, complex_new_div(&c,
-                                                     b->data.td_pcomplex));
+      return tag_div_complex(&c, b->data.td_pcomplex, dest);
     case TAG_F32:
       return tag_init_f32(dest, (f32) a->data.td_u16 / b->data.td_f32);
     case TAG_F64:
@@ -947,8 +929,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     switch (b->type) {
     case TAG_PCOMPLEX:
       complex_init_u32(&c, a->data.td_u32);
-      return tag_init_pcomplex(dest, complex_new_div(&c,
-                                                     b->data.td_pcomplex));
+      return tag_div_complex(&c, b->data.td_pcomplex, dest);
     case TAG_F32:
       return tag_init_f32(dest, (f32) a->data.td_u32 / b->data.td_f32);
     case TAG_F64:
@@ -1006,8 +987,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     switch (b->type) {
     case TAG_PCOMPLEX:
       complex_init_u64(&c, a->data.td_u64);
-      return tag_init_pcomplex(dest, complex_new_div(&c,
-                                                     b->data.td_pcomplex));
+      return tag_div_complex(&c, b->data.td_pcomplex, dest);
     case TAG_F32:
       return tag_init_f32(dest, (f32) a->data.td_u64 / b->data.td_f32);
     case TAG_F64:
@@ -1105,8 +1085,7 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     switch (b->type) {
     case TAG_PCOMPLEX:
       complex_init_uw(&c, a->data.td_uw);
-      return tag_init_pcomplex(dest, complex_new_div(&c,
-                                                     b->data.td_pcomplex));
+      return tag_div_complex(&c, b->data.td_pcomplex, dest);
     case TAG_F32:
       return tag_init_f32(dest, (f32) a->data.td_uw / b->data.td_f32);
     case TAG_F64:

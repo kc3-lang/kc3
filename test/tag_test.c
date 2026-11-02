@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../libkc3/tag.h"
+#include "../libkc3/complex.h"
 #include "../libkc3/integer.h"
 #include "../libkc3/ratio.h"
 #include "../libkc3/compare.h"
@@ -39,6 +40,7 @@ TEST_CASE_PROTOTYPE(tag_div_mixed);
 TEST_CASE_PROTOTYPE(tag_mod_sw_integer);
 TEST_CASE_PROTOTYPE(tag_div_ratio);
 TEST_CASE_PROTOTYPE(tag_float_ratio);
+TEST_CASE_PROTOTYPE(tag_div_complex);
 // TEST_CASE_PROTOTYPE(tag_type__macro);
 
 void tag_test (void)
@@ -52,6 +54,7 @@ void tag_test (void)
   TEST_CASE_RUN(tag_mod_sw_integer);
   TEST_CASE_RUN(tag_div_ratio);
   TEST_CASE_RUN(tag_float_ratio);
+  TEST_CASE_RUN(tag_div_complex);
   //  TEST_CASE_RUN(tag_type__macro);
 }
 
@@ -560,6 +563,48 @@ static s_tag * tag_integer_test_reduce (s_tag *tag, s_tag *dest)
   return tag_integer_reduce(tag, dest);
 }
 
+static struct {
+  uw step;
+  uw fail;
+  uw live;
+} g_tag_complex_test;
+
+static s_complex * tag_complex_test_init_integer
+(s_complex *c, const s_integer *src)
+{
+  if (++g_tag_complex_test.step == g_tag_complex_test.fail)
+    return NULL;
+  if (! complex_init_integer(c, src))
+    return NULL;
+  g_tag_complex_test.live++;
+  return c;
+}
+
+static s_complex * tag_complex_test_init_ratio
+(s_complex *c, s_ratio *src)
+{
+  if (++g_tag_complex_test.step == g_tag_complex_test.fail)
+    return NULL;
+  if (! complex_init_ratio(c, src))
+    return NULL;
+  g_tag_complex_test.live++;
+  return c;
+}
+
+static void tag_complex_test_clean (s_complex *c)
+{
+  if (c->x.type == TAG_INTEGER || c->x.type == TAG_RATIO)
+    g_tag_complex_test.live--;
+  complex_clean(c);
+}
+
+static s_complex * tag_complex_test_new_div (s_complex *a, s_complex *b)
+{
+  if (++g_tag_complex_test.step == g_tag_complex_test.fail)
+    return NULL;
+  return complex_new_div(a, b);
+}
+
 #define tag_add tag_integer_test_add
 #define tag_sub tag_integer_test_sub
 #define tag_mul tag_integer_test_mul
@@ -601,7 +646,15 @@ static s_tag * tag_integer_test_reduce (s_tag *tag, s_tag *dest)
 #define ratio_mul tag_integer_test_ratio_mul
 #define ratio_div tag_integer_test_ratio_div
 #define ratio_clean tag_integer_test_ratio_clean
+#define complex_init_integer tag_complex_test_init_integer
+#define complex_init_ratio tag_complex_test_init_ratio
+#define complex_clean tag_complex_test_clean
+#define complex_new_div tag_complex_test_new_div
 #include "../libkc3/tag_div.c"
+#undef complex_init_integer
+#undef complex_init_ratio
+#undef complex_clean
+#undef complex_new_div
 #include "../libkc3/tag_mod.c"
 #include "../libkc3/tag_add.c"
 #include "../libkc3/tag_sub.c"
@@ -1238,3 +1291,159 @@ TEST_CASE(tag_float_ratio)
   test_context(NULL);
 }
 TEST_CASE_END(tag_float_ratio)
+
+static s_tag * tag_div_complex_test_init (s_tag *tag, e_tag_type type,
+                                         s8 value)
+{
+  p_complex c;
+  if (type != TAG_PCOMPLEX)
+    return tag_div_ratio_test_init(tag, type, value);
+  if (! (c = complex_new()))
+    return NULL;
+  complex_init_s8(c, value);
+  return tag_init_pcomplex(tag, c);
+}
+
+static char tag_div_complex_test_error (s_tag *a, s_tag *b,
+                                        bool injected)
+{
+  s_tag result = {0};
+  s_tag saved;
+  TEST_ASSERT(tag_init_ratio_1(&result, "7/11"));
+  result.ref_count = 17;
+  saved = result;
+  TEST_EQ(injected ? tag_integer_test_div(a, b, &result) :
+           tag_div(a, b, &result), NULL);
+  TEST_MEMCMP((const char *) &result, (const char *) &saved,
+               sizeof(result));
+  TEST_EQ(g_tag_complex_test.live, 0);
+  result.ref_count = 0;
+  tag_clean(&result);
+  return 0;
+}
+
+TEST_CASE(tag_div_complex)
+{
+  const e_tag_type types[] = {
+    TAG_PCOMPLEX, TAG_S8, TAG_S16, TAG_S32, TAG_S64, TAG_SW,
+    TAG_U8, TAG_U16, TAG_U32, TAG_U64, TAG_UW,
+    TAG_INTEGER, TAG_RATIO, TAG_F32, TAG_F64,
+#if HAVE_F80
+    TAG_F80,
+#endif
+  };
+  s_tag a = {0};
+  s_tag b = {0};
+  s_tag expected = {0};
+  s_tag result;
+  s_tag saved;
+  bool floating;
+  uw direction;
+  uw fail;
+  uw i;
+  uw steps;
+  test_context("F67: Complex zero division preserves an owned destination");
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+    floating = types[i] == TAG_F32 || types[i] == TAG_F64;
+#if HAVE_F80
+    floating = floating || types[i] == TAG_F80;
+#endif
+    /* Floating zero division retains the existing IEEE arithmetic. */
+    if (floating)
+      continue;
+    TEST_ASSERT(tag_div_complex_test_init(&a, TAG_PCOMPLEX, 1));
+    TEST_ASSERT(tag_div_complex_test_init(&b, types[i], 0));
+    TEST_EQ(tag_div_complex_test_error(&a, &b, false), 0);
+    if (types[i] == TAG_PCOMPLEX) {
+      saved = a;
+      TEST_EQ(tag_div(&a, &b, &a), NULL);
+      TEST_MEMCMP((const char *) &a, (const char *) &saved, sizeof(a));
+    }
+    tag_clean(&b);
+    tag_clean(&a);
+    TEST_ASSERT(tag_div_complex_test_init(&a, types[i], 2));
+    TEST_ASSERT(tag_div_complex_test_init(&b, TAG_PCOMPLEX, 0));
+    TEST_EQ(tag_div_complex_test_error(&a, &b, false), 0);
+    tag_clean(&b);
+    tag_clean(&a);
+  }
+  test_context("all supported Complex division branches check construction");
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+    for (direction = 0; direction < 2; direction++) {
+      /* The existing dispatcher has no F32/Complex branch. */
+      if (direction && (types[i] == TAG_F32 || types[i] == TAG_PCOMPLEX))
+        continue;
+      test_context(tag_type_to_string(types[i]));
+      TEST_ASSERT(tag_div_complex_test_init
+                    (&a, TAG_PCOMPLEX, direction ? 1 : 8));
+      tag_init_s8(&a.data.td_pcomplex->y, direction ? 0 : 4);
+      TEST_ASSERT(tag_div_complex_test_init(&b, types[i], 2));
+      TEST_ASSERT(tag_div_complex_test_init
+                    (&expected, TAG_PCOMPLEX, direction ? 2 : 4));
+      tag_init_s8(&expected.data.td_pcomplex->y, direction ? 0 : 2);
+      if (types[i] == TAG_RATIO) {
+        TEST_ASSERT(tag_init_ratio_1(&expected.data.td_pcomplex->x,
+                                      direction ? "2/1" : "4/1"));
+        TEST_ASSERT(tag_init_ratio_1(&expected.data.td_pcomplex->y,
+                                      direction ? "0/1" : "2/1"));
+      }
+      result = (s_tag) {0};
+      result.ref_count = 17;
+      TEST_EQ(direction ? tag_div(&b, &a, &result) :
+               tag_div(&a, &b, &result), &result);
+      TEST_EQ(result.type, TAG_PCOMPLEX);
+      TEST_ASSERT(result.data.td_pcomplex);
+      TEST_EQ(compare_tag(&result.data.td_pcomplex->x,
+                           &expected.data.td_pcomplex->x), 0);
+      TEST_EQ(compare_tag(&result.data.td_pcomplex->y,
+                           &expected.data.td_pcomplex->y), 0);
+      TEST_EQ(result.ref_count, 17);
+      result.ref_count = 0;
+      tag_clean(&result);
+      g_tag_complex_test.step = 0;
+      g_tag_complex_test.fail = 0;
+      result = (s_tag) {0};
+      TEST_EQ(direction ? tag_integer_test_div(&b, &a, &result) :
+               tag_integer_test_div(&a, &b, &result), &result);
+      TEST_EQ(compare_tag(&result.data.td_pcomplex->x,
+                           &expected.data.td_pcomplex->x), 0);
+      TEST_EQ(compare_tag(&result.data.td_pcomplex->y,
+                           &expected.data.td_pcomplex->y), 0);
+      steps = g_tag_complex_test.step;
+      TEST_EQ(steps, types[i] == TAG_INTEGER || types[i] == TAG_RATIO ?
+               2 : 1);
+      TEST_EQ(g_tag_complex_test.live, 0);
+      tag_clean(&result);
+      for (fail = 1; fail <= steps; fail++) {
+        g_tag_complex_test.step = 0;
+        g_tag_complex_test.fail = fail;
+        TEST_EQ(direction ? tag_div_complex_test_error(&b, &a, true) :
+                 tag_div_complex_test_error(&a, &b, true), 0);
+        TEST_EQ(g_tag_complex_test.step, fail);
+      }
+      g_tag_complex_test.fail = 0;
+      tag_clean(&expected);
+      tag_clean(&b);
+      tag_clean(&a);
+    }
+  }
+  test_context("non-finite mixed Ratio/float components propagate failure");
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+    if (types[i] != TAG_F32 && types[i] != TAG_F64
+#if HAVE_F80
+        && types[i] != TAG_F80
+#endif
+        )
+      continue;
+    TEST_ASSERT(tag_div_complex_test_init(&a, TAG_PCOMPLEX, 0));
+    TEST_ASSERT(tag_init_ratio_1(&a.data.td_pcomplex->x, "1/2"));
+    TEST_ASSERT(tag_float_ratio_test_init(&b, types[i], NAN));
+    TEST_EQ(tag_div_complex_test_error(&a, &b, false), 0);
+    if (types[i] != TAG_F32)
+      TEST_EQ(tag_div_complex_test_error(&b, &a, false), 0);
+    tag_clean(&b);
+    tag_clean(&a);
+  }
+  test_context(NULL);
+}
+TEST_CASE_END(tag_div_complex)

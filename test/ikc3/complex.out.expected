@@ -38,3 +38,23 @@
 0 +i 1
 (1 +i 2) * (3 +i 4)
 -5 +i 10
+tag_div: division by zero
+true
+tag_div: division by zero
+true
+tag_div: division by zero
+true
+tag_div: division by zero
+true
+tag_div: division by zero
+true
+tag_div: division by zero
+true
+true
+true
+true
+true
+true
+true
+true
+true
