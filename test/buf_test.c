@@ -181,6 +181,10 @@ TEST_CASE_PROTOTYPE(buf_write_u16);
 TEST_CASE_PROTOTYPE(buf_write_u32);
 TEST_CASE_PROTOTYPE(buf_write_u64);
 TEST_CASE_PROTOTYPE(buf_xfer);
+TEST_CASE_PROTOTYPE(buf_xfer_limits);
+TEST_CASE_PROTOTYPE(buf_xfer_positions);
+TEST_CASE_PROTOTYPE(buf_xfer_refill_flush);
+TEST_CASE_PROTOTYPE(buf_xfer_callback_error);
 
 void buf_test (void)
 {
@@ -221,6 +225,10 @@ void buf_test (void)
   TEST_CASE_RUN(buf_read_until_buf_error);
   TEST_CASE_RUN(buf_read_until_buf_refill);
   TEST_CASE_RUN(buf_xfer);
+  TEST_CASE_RUN(buf_xfer_limits);
+  TEST_CASE_RUN(buf_xfer_positions);
+  TEST_CASE_RUN(buf_xfer_refill_flush);
+  TEST_CASE_RUN(buf_xfer_callback_error);
   TEST_CASE_RUN(buf_f);
   TEST_CASE_RUN(buf_ignore);
 }
@@ -1375,3 +1383,209 @@ TEST_CASE(buf_xfer)
   buf_clean(&src);
 }
 TEST_CASE_END(buf_xfer)
+
+/* Model callback errors and inconsistent post-callback positions without
+   writing outside the backing arrays. */
+typedef struct test_buf_xfer_callback {
+  uw calls;
+  sw result;
+  bool move;
+  uw rpos;
+  uw wpos;
+} s_test_buf_xfer_callback;
+
+static sw test_buf_xfer_callback (s_buf *buf)
+{
+  s_test_buf_xfer_callback *callback = buf->user_ptr;
+  callback->calls++;
+  if (callback->move) {
+    buf->rpos = callback->rpos;
+    buf->wpos = callback->wpos;
+  }
+  return callback->result;
+}
+
+TEST_CASE(buf_xfer_limits)
+{
+  const uw sizes[] = {(uw) SW_MAX + 1, UW_MAX - 1, UW_MAX};
+  char from[8] = "abcdefg";
+  char to[8] = "1234567";
+  s_buf src;
+  s_buf dest;
+  s_test_buf_xfer_callback refill = {0, -9, false, 0, 0};
+  s_test_buf_xfer_callback flush = {0, -7, false, 0, 0};
+  uw i;
+  TEST_ASSERT(buf_init(&src, false, sizeof(from), from));
+  TEST_ASSERT(buf_init(&dest, false, sizeof(to), to));
+  src.rpos = 1;
+  src.wpos = 2;
+  src.refill = test_buf_xfer_callback;
+  src.user_ptr = &refill;
+  dest.wpos = 1;
+  dest.flush = test_buf_xfer_callback;
+  dest.user_ptr = &flush;
+  for (i = 0; i < sizeof(sizes) / sizeof(*sizes); i++) {
+    TEST_EQ(buf_xfer(&dest, &src, sizes[i]), -1);
+    TEST_EQ(src.rpos, 1);
+    TEST_EQ(src.wpos, 2);
+    TEST_EQ(dest.rpos, 0);
+    TEST_EQ(dest.wpos, 1);
+    TEST_MEM_EQ(from, sizeof(from), "abcdefg", 8);
+    TEST_MEM_EQ(to, sizeof(to), "1234567", 8);
+    TEST_EQ(refill.calls, 0);
+    TEST_EQ(flush.calls, 0);
+  }
+  /* Zero is a no-op; the largest supported length is a source shortage. */
+  TEST_EQ(buf_xfer(&dest, &src, 0), 0);
+  TEST_EQ(refill.calls, 0);
+  TEST_EQ(flush.calls, 0);
+  src.refill = NULL;
+  TEST_EQ(buf_xfer(&dest, &src, SW_MAX), 0);
+  TEST_EQ(dest.wpos, 1);
+  TEST_MEM_EQ(to, sizeof(to), "1234567", 8);
+  /* Exact source and destination bounds are accepted. */
+  src.rpos = 6;
+  src.wpos = 8;
+  dest.wpos = 6;
+  TEST_EQ(buf_xfer(&dest, &src, 2), 2);
+  TEST_EQ(src.rpos, 8);
+  TEST_EQ(dest.wpos, 8);
+  TEST_MEM_EQ(to + 6, 2, "g\0", 2);
+  buf_clean(&dest);
+  buf_clean(&src);
+}
+TEST_CASE_END(buf_xfer_limits)
+
+TEST_CASE(buf_xfer_positions)
+{
+  const uw positions[][4] = {
+    {2, 1, 0, 1}, {0, 9, 0, 1},
+    {0, 2, 2, 1}, {0, 2, 0, 9},
+    {UW_MAX, 2, 0, 1}, {0, UW_MAX, 0, 1},
+    {0, 2, UW_MAX, 1}, {0, 2, 0, UW_MAX}
+  };
+  char from[8] = "abcdefg";
+  char to[8] = "1234567";
+  s_buf src;
+  s_buf dest;
+  s_test_buf_xfer_callback refill = {0, -9, false, 0, 0};
+  s_test_buf_xfer_callback flush = {0, -7, false, 0, 0};
+  uw i;
+  TEST_ASSERT(buf_init(&src, false, sizeof(from), from));
+  TEST_ASSERT(buf_init(&dest, false, sizeof(to), to));
+  src.refill = test_buf_xfer_callback;
+  src.user_ptr = &refill;
+  dest.flush = test_buf_xfer_callback;
+  dest.user_ptr = &flush;
+  for (i = 0; i < sizeof(positions) / sizeof(*positions); i++) {
+    src.rpos = positions[i][0];
+    src.wpos = positions[i][1];
+    dest.rpos = positions[i][2];
+    dest.wpos = positions[i][3];
+    TEST_EQ(buf_xfer(&dest, &src, 1), -1);
+    TEST_EQ(src.rpos, positions[i][0]);
+    TEST_EQ(src.wpos, positions[i][1]);
+    TEST_EQ(dest.rpos, positions[i][2]);
+    TEST_EQ(dest.wpos, positions[i][3]);
+    TEST_MEM_EQ(from, sizeof(from), "abcdefg", 8);
+    TEST_MEM_EQ(to, sizeof(to), "1234567", 8);
+    TEST_EQ(refill.calls, 0);
+    TEST_EQ(flush.calls, 0);
+  }
+  buf_clean(&dest);
+  buf_clean(&src);
+}
+TEST_CASE_END(buf_xfer_positions)
+
+TEST_CASE(buf_xfer_refill_flush)
+{
+  char from[4] = {'x', 'x', 'A', 'B'};
+  char to[4] = {'p', 0, 0, 0};
+  s_buf src;
+  s_buf dest;
+  s_test_buf_source source = {"CDE", 3, 0, 1};
+  s_test_buf_sink sink = {0};
+  TEST_ASSERT(buf_init(&src, false, sizeof(from), from));
+  src.rpos = 2;
+  src.wpos = 4;
+  src.refill = test_buf_refill;
+  src.user_ptr = &source;
+  TEST_ASSERT(buf_init(&dest, false, sizeof(to), to));
+  dest.wpos = 1;
+  dest.flush = test_buf_flush;
+  dest.user_ptr = &sink;
+  /* Refilling compacts the source. Flushing one byte frees four bytes. */
+  TEST_EQ(buf_xfer(&dest, &src, 4), 4);
+  TEST_EQ(src.rpos, 4);
+  TEST_EQ(src.wpos, 4);
+  TEST_EQ(source.pos, 2);
+  TEST_EQ(dest.wpos, 4);
+  TEST_MEM_EQ(to, sizeof(to), "ABCD", 4);
+  TEST_EQ(sink.calls, 1);
+  TEST_MEM_EQ(sink.data, sink.size, "p", 1);
+  TEST_EQ(buf_xfer(&dest, &src, 1), 1);
+  TEST_EQ(dest.wpos, 1);
+  TEST_EQ(to[0], 'E');
+  TEST_EQ(source.pos, 3);
+  TEST_EQ(sink.calls, 2);
+  TEST_MEM_EQ(sink.data, sink.size, "pABCD", 5);
+  TEST_EQ(buf_xfer(&dest, &src, 1), 0);
+  TEST_EQ(dest.wpos, 1);
+  TEST_EQ(sink.calls, 2);
+  buf_clean(&dest);
+  buf_clean(&src);
+}
+TEST_CASE_END(buf_xfer_refill_flush)
+
+TEST_CASE(buf_xfer_callback_error)
+{
+  const s_test_buf_xfer_callback callbacks[] = {
+    {0, -7, false, 0, 0}, /* I/O error */
+    {0, 0, false, 0, 0},  /* no progress */
+    {0, 17, false, 0, 0}, /* overstates progress */
+    {0, 17, true, 0, 9},  /* wpos outside the buffer */
+    {0, 17, true, 3, 2}   /* rpos beyond wpos */
+  };
+  char from[8];
+  char to[8];
+  s_buf src;
+  s_buf dest;
+  s_test_buf_xfer_callback callback;
+  bool refill;
+  uw mode;
+  uw i;
+  for (mode = 0; mode < 2; mode++) {
+    refill = mode == 0;
+    for (i = 0; i < sizeof(callbacks) / sizeof(*callbacks); i++) {
+      /* A positive refill result without moving a position would make
+         buf_refill retry indefinitely. */
+      if (refill && i == 2)
+        continue;
+      memcpy(from, "abcdefg", sizeof(from));
+      memcpy(to, "1234567", sizeof(to));
+      callback = callbacks[i];
+      TEST_ASSERT(buf_init(&src, false, sizeof(from), from));
+      TEST_ASSERT(buf_init(&dest, false, sizeof(to), to));
+      src.wpos = refill ? 1 : 2;
+      dest.wpos = refill ? 0 : 7;
+      if (refill) {
+        src.refill = test_buf_xfer_callback;
+        src.user_ptr = &callback;
+      }
+      else {
+        dest.flush = test_buf_xfer_callback;
+        dest.user_ptr = &callback;
+      }
+      TEST_EQ(buf_xfer(&dest, &src, 2),
+               i == 0 ? -7 : refill && i == 1 ? 0 : -1);
+      TEST_EQ(callback.calls, 1);
+      TEST_MEM_EQ(from, sizeof(from), "abcdefg", 8);
+      TEST_MEM_EQ(to, sizeof(to), "1234567", 8);
+      /* The transfer itself has neither consumed nor appended bytes. */
+      TEST_EQ(refill ? dest.wpos : src.rpos, 0);
+      buf_clean(&dest);
+      buf_clean(&src);
+    }
+  }
+}
+TEST_CASE_END(buf_xfer_callback_error)

@@ -2182,20 +2182,37 @@ sw buf_xfer (s_buf *dest, s_buf *src, uw size)
   rwlock_w(dest->rwlock);
   rwlock_w(src->rwlock);
 #endif
-  assert(src->rpos <= src->wpos);
-  assert(dest->rpos <= dest->wpos);
-  if (src->rpos + size > src->wpos &&
-      (r = buf_refill(src, size)) < (sw) size) {
-    if (r < 0)
-      goto clean;
-    r = 0;
+  if (size > (uw) SW_MAX || src->rpos > src->wpos ||
+      src->wpos > src->size || dest->rpos > dest->wpos ||
+      dest->wpos > dest->size) {
+    r = -1;
     goto clean;
   }
-  if (dest->wpos + size > dest->size &&
-      (r = buf_flush(dest)) < (sw) size) {
-    if (r < 0)
+  if (size > src->wpos - src->rpos) {
+    if ((r = buf_refill(src, (sw) size)) < 0)
       goto clean;
+    if (src->rpos > src->wpos || src->wpos > src->size) {
+      r = -1;
+      goto clean;
+    }
+    if (size > src->wpos - src->rpos) {
+      r = 0;
+      goto clean;
+    }
+  }
+  if (size > dest->size - dest->wpos &&
+      (r = buf_flush(dest)) < 0)
+    goto clean;
+  /* Callbacks can move positions. Check actual capacity, rather than
+     treating bytes flushed as the amount of space now available. */
+  if (src->rpos > src->wpos || src->wpos > src->size ||
+      dest->rpos > dest->wpos || dest->wpos > dest->size ||
+      size > dest->size - dest->wpos) {
     r = -1;
+    goto clean;
+  }
+  if (size > src->wpos - src->rpos) {
+    r = 0;
     goto clean;
   }
   memcpy(dest->ptr.p_ps8 + dest->wpos, src->ptr.p_ps8 + src->rpos, size);

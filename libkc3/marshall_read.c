@@ -251,11 +251,19 @@
     return mr;                                                         \
   }
 
+static s_marshall_read * marshall_read_frame_1 (s_marshall_read *mr,
+                                               bool heap,
+                                               s_frame *dest,
+                                               bool borrow_next);
 static void marshall_read_ht_clean (s_marshall_read *mr);
 static s_marshall_read * marshall_read_list_1 (s_marshall_read *mr,
                                               bool heap, s_list *dest,
                                               bool borrow_tail);
 static void marshall_read_list_node_delete (p_list list);
+static s_marshall_read * marshall_read_pframe_1 (s_marshall_read *mr,
+                                                bool heap,
+                                                p_frame *dest,
+                                                bool borrow);
 static s_marshall_read * marshall_read_plist_1 (s_marshall_read *mr,
                                                bool heap, p_list *dest,
                                                bool borrow);
@@ -1413,6 +1421,14 @@ s_marshall_read * marshall_read_fn (s_marshall_read *mr, bool heap,
 s_marshall_read * marshall_read_frame (s_marshall_read *mr, bool heap,
                                        s_frame *dest)
 {
+  return marshall_read_frame_1(mr, heap, dest, false);
+}
+
+static s_marshall_read * marshall_read_frame_1 (s_marshall_read *mr,
+                                               bool heap,
+                                               s_frame *dest,
+                                               bool borrow_next)
+{
   uw          binding_count;
   s_binding **binding;
   uw i;
@@ -1443,10 +1459,10 @@ s_marshall_read * marshall_read_frame (s_marshall_read *mr, bool heap,
     binding = &(*binding)->next;
     i++;
   }
-  if (! marshall_read_pframe(mr, heap, &tmp.next)) {
-      err_puts("marshall_read_frame: marshall_read_pframe next");
-      goto ko;
-    }
+  if (! marshall_read_pframe_1(mr, heap, &tmp.next, borrow_next)) {
+    err_puts("marshall_read_frame: marshall_read_pframe next");
+    goto ko;
+  }
   *dest = tmp;
   return mr;
  ko:
@@ -1640,6 +1656,12 @@ void marshall_read_ht_clean (s_marshall_read *mr)
       marshall_read_list_node_delete
         (mr->ht_ptag_list->tag.data.td_plist);
       mr->ht_ptag_list->tag.data.td_plist = NULL;
+    }
+    else if (mr->ht_ptag_list->tag.type == TAG_PTR_FREE) {
+      /* Frame entries also own one node; next links borrow cached nodes.
+         There is no Frame tag type or reference-counted Frame owner. */
+      frame_delete(mr->ht_ptag_list->tag.data.td_ptr_free.p_pvoid);
+      mr->ht_ptag_list->tag.data.td_ptr_free.p_pvoid = NULL;
     }
     else
       ptag_clean((p_tag *) &mr->ht_ptag_list->tag.data.td_ptr.p_pvoid);
@@ -2158,6 +2180,8 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
                                            bool heap,
                                            p_callable *dest)
 {
+  p_tag keep = NULL;
+  p_list list = NULL;
   u64 offset = 0;
   p_callable present = NULL;
   p_callable tmp = NULL;
@@ -2197,12 +2221,20 @@ s_marshall_read * marshall_read_pcallable (s_marshall_read *mr,
     alloc_free(tmp);
     return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Callable)) {
-    err_puts("marshall_read_pcallable: marshall_read_ht_add");
+  if (! (keep = tag_new())) {
     callable_delete(tmp);
     return marshall_read_ht_abort(mr);
   }
-  *dest = tmp;
+  keep->type = TAG_PCALLABLE;
+  keep->data.td_pcallable = tmp;
+  if (! (list = list_new_ptr(keep, mr->ht_ptag_list))) {
+    tag_delete(keep);
+    return marshall_read_ht_abort(mr);
+  }
+  mr->ht_ptag_list = list;
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Callable) ||
+      ! pcallable_init_copy(dest, &tmp))
+    return marshall_read_ht_abort(mr);
   return mr;
 }
 
@@ -2276,6 +2308,8 @@ s_marshall_read * marshall_read_pfacts (s_marshall_read *mr,
                                         bool heap,
                                         p_facts *dest)
 {
+  p_tag keep = NULL;
+  p_list list = NULL;
   p_facts tmp;
   p_facts present = NULL;
   u64 offset = 0;
@@ -2316,12 +2350,20 @@ s_marshall_read * marshall_read_pfacts (s_marshall_read *mr,
     facts_delete(tmp);
     return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Facts)) {
-    err_puts("marshall_read_pfacts: marshall_read_ht_add");
+  if (! (keep = tag_new())) {
     facts_delete(tmp);
     return marshall_read_ht_abort(mr);
   }
-  *dest = tmp;
+  keep->type = TAG_PFACTS;
+  keep->data.td_pfacts = tmp;
+  if (! (list = list_new_ptr(keep, mr->ht_ptag_list))) {
+    tag_delete(keep);
+    return marshall_read_ht_abort(mr);
+  }
+  mr->ht_ptag_list = list;
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Facts) ||
+      ! pfacts_init_copy(dest, &tmp))
+    return marshall_read_ht_abort(mr);
   return mr;
 }
 
@@ -2329,8 +2371,16 @@ s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
                                         bool heap,
                                         p_frame *dest)
 {
+  return marshall_read_pframe_1(mr, heap, dest, false);
+}
+
+static s_marshall_read * marshall_read_pframe_1 (s_marshall_read *mr,
+                                                bool heap,
+                                                p_frame *dest,
+                                                bool borrow)
+{
+  p_list keep;
   u64 offset = 0;
-  p_frame present = NULL;
   p_frame tmp = NULL;
   assert(mr);
   assert(dest);
@@ -2340,32 +2390,38 @@ s_marshall_read * marshall_read_pframe (s_marshall_read *mr,
     return marshall_read_ht_abort(mr);
   }
   if (! marshall_read_heap_pointer(mr, heap, &offset,
-                                   (void **) &present, sym_1("Frame")))
+                                   (void **) &tmp, sym_1("Frame")))
     return marshall_read_ht_abort(mr);
   if (! offset) {
     *dest = NULL;
     return mr;
   }
-  if (present) {
-    if (! pframe_init_copy(dest, &present)) {
-      err_puts("marshall_read_pframe: pframe_init_copy");
-      assert(! "marshall_read_pframe: pframe_init_copy");
+  if (! tmp) {
+    if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
+        ! (tmp = alloc(sizeof(s_frame))))
+      return marshall_read_ht_abort(mr);
+    if (! marshall_read_frame_1(mr, true, tmp, true)) {
+      alloc_free(tmp);
       return marshall_read_ht_abort(mr);
     }
-    return mr;
+    if (! (keep = list_new_ptr_free(tmp, mr->ht_ptag_list))) {
+      frame_delete(tmp);
+      return marshall_read_ht_abort(mr);
+    }
+    mr->ht_ptag_list = keep;
+    if (! marshall_read_ht_add(mr, offset, tmp, sym_1("Frame")))
+      return marshall_read_ht_abort(mr);
   }
-  if (buf_seek(mr->heap, mr->heap_start + (s64) offset, SEEK_SET) < 0 ||
-      ! (tmp = alloc(sizeof(s_frame))))
-    return marshall_read_ht_abort(mr);
-  if (! marshall_read_frame(mr, true, tmp)) {
-    alloc_free(tmp);
-    return marshall_read_ht_abort(mr);
+  /* Only canonical next links borrow. Public results own a full copy in
+     both modes because frame_new_ref does not increment a reference count. */
+  if (borrow)
+    *dest = tmp;
+  else {
+    p_frame copy;
+    if (! (copy = frame_new_copy(tmp)))
+      return marshall_read_ht_abort(mr);
+    *dest = copy;
   }
-  if (! marshall_read_ht_add(mr, offset, tmp, sym_1("Frame"))) {
-    frame_delete(tmp);
-    return marshall_read_ht_abort(mr);
-  }
-  *dest = tmp;
   return mr;
 }
 
@@ -2745,6 +2801,8 @@ s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,
                                          bool heap,
                                          p_struct *dest)
 {
+  p_tag keep = NULL;
+  p_list list = NULL;
   u64 offset = 0;
   p_struct present = NULL;
   p_struct tmp = NULL;
@@ -2776,11 +2834,20 @@ s_marshall_read * marshall_read_pstruct (s_marshall_read *mr,
     alloc_free(tmp);
     return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Struct)) {
+  if (! (keep = tag_new())) {
     struct_delete(tmp);
     return marshall_read_ht_abort(mr);
   }
-  *dest = tmp;
+  keep->type = TAG_PSTRUCT;
+  keep->data.td_pstruct = tmp;
+  if (! (list = list_new_ptr(keep, mr->ht_ptag_list))) {
+    tag_delete(keep);
+    return marshall_read_ht_abort(mr);
+  }
+  mr->ht_ptag_list = list;
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Struct) ||
+      ! pstruct_init_copy(dest, &tmp))
+    return marshall_read_ht_abort(mr);
   return mr;
 }
 
@@ -2969,6 +3036,8 @@ s_marshall_read * marshall_read_pvar (s_marshall_read *mr,
                                       bool heap,
                                       p_var *dest)
 {
+  p_tag keep = NULL;
+  p_list list = NULL;
   u64 offset = 0;
   p_var present = NULL;
   p_var tmp = NULL;
@@ -3000,11 +3069,20 @@ s_marshall_read * marshall_read_pvar (s_marshall_read *mr,
     alloc_free(tmp);
     return marshall_read_ht_abort(mr);
   }
-  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Var)) {
+  if (! (keep = tag_new())) {
     var_delete(tmp);
     return marshall_read_ht_abort(mr);
   }
-  *dest = tmp;
+  keep->type = TAG_PVAR;
+  keep->data.td_pvar = tmp;
+  if (! (list = list_new_ptr(keep, mr->ht_ptag_list))) {
+    tag_delete(keep);
+    return marshall_read_ht_abort(mr);
+  }
+  mr->ht_ptag_list = list;
+  if (! marshall_read_ht_add(mr, offset, tmp, &g_sym_Var) ||
+      ! pvar_init_copy(dest, &tmp))
+    return marshall_read_ht_abort(mr);
   return mr;
 }
 

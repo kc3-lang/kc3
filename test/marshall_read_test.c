@@ -13,12 +13,14 @@
 #include "../libkc3/array.h"
 #include "../libkc3/buf.h"
 #include "../libkc3/call.h"
+#include "../libkc3/callable.h"
 #include "../libkc3/complex.h"
 #include "../libkc3/endian.h"
 #include "../libkc3/env.h"
 #include "../libkc3/env_eval.h"
 #include "../libkc3/fact.h"
 #include "../libkc3/file.h"
+#include "../libkc3/frame.h"
 #include "../libkc3/ht.h"
 #include "../libkc3/inspect.h"
 #include "../libkc3/integer.h"
@@ -103,6 +105,8 @@ TEST_CASE_PROTOTYPE(marshall_read_cache_cycle);
 TEST_CASE_PROTOTYPE(marshall_read_cache_skiplist_cycle);
 TEST_CASE_PROTOTYPE(marshall_read_cache_shared);
 TEST_CASE_PROTOTYPE(marshall_read_cache_call_complex);
+TEST_CASE_PROTOTYPE(marshall_read_cache_owned);
+TEST_CASE_PROTOTYPE(marshall_read_cache_frame);
 TEST_CASE_PROTOTYPE(marshall_read_cache_pointer);
 TEST_CASE_PROTOTYPE(marshall_read_cache_pointer_legacy);
 TEST_CASE_PROTOTYPE(marshall_read_character);
@@ -157,6 +161,8 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_cache_skiplist_cycle);
   TEST_CASE_RUN(marshall_read_cache_shared);
   TEST_CASE_RUN(marshall_read_cache_call_complex);
+  TEST_CASE_RUN(marshall_read_cache_owned);
+  TEST_CASE_RUN(marshall_read_cache_frame);
   TEST_CASE_RUN(marshall_read_cache_pointer);
   TEST_CASE_RUN(marshall_read_cache_pointer_legacy);
   TEST_CASE_RUN(marshall_read_chunks);
@@ -1666,6 +1672,267 @@ TEST_CASE(marshall_read_cache_call_complex)
   test_context(NULL);
 }
 TEST_CASE_END(marshall_read_cache_call_complex)
+
+static char marshall_read_cache_owned_value (s_tag *value,
+                                             s_tag *source,
+                                             s_tag *payload)
+{
+  s_fact *fact = NULL;
+  s_tag *binding;
+  TEST_EQ(compare_tag(value, source), 0);
+  switch (value->type) {
+  case TAG_PCALLABLE:
+    TEST_ASSERT(value->data.td_pcallable->data.fn.frame);
+    TEST_ASSERT((binding = frame_get
+                  (value->data.td_pcallable->data.fn.frame,
+                   sym_1("captured"))));
+    TEST_EQ(compare_tag(binding, payload), 0);
+    break;
+  case TAG_PVAR:
+    TEST_ASSERT(value->data.td_pvar->bound);
+    TEST_EQ(compare_tag(&value->data.td_pvar->tag, payload), 0);
+    break;
+  case TAG_PFACTS:
+    TEST_ASSERT(facts_find_fact_by_tags
+                 (value->data.td_pfacts, payload, payload, payload,
+                  &fact));
+    TEST_ASSERT(fact);
+    TEST_EQ(compare_tag(fact->object, payload), 0);
+    break;
+  case TAG_PSTRUCT:
+    TEST_EQ(compare_tag(value, source), 0);
+    break;
+  default:
+    TEST_ASSERT(false);
+  }
+  return 0;
+}
+
+TEST_CASE(marshall_read_cache_owned)
+{
+  bool copy_saved = env_global()->pass_by_copy;
+  uw copy;
+  uw i;
+  uw j;
+  s_marshall m;
+  s_marshall_read mr;
+  s_str str;
+  s_tag src[4] = {0};
+  s_tag payload = {0};
+  s_tag text = {0};
+  s_tag a;
+  s_tag b;
+  s_tag again;
+  p_frame frame_dest;
+  p_list spec;
+  p_struct_type st;
+  TEST_ASSERT(tag_init_1(&payload, "[{1, 2}, \"retained binding\"]"));
+  TEST_ASSERT(tag_init_1(src, "fn (x) { x }"));
+  TEST_ASSERT((src[0].data.td_pcallable->data.fn.frame = frame_new(NULL)));
+  TEST_ASSERT(frame_binding_new(src[0].data.td_pcallable->data.fn.frame,
+                                 sym_1("captured"), &payload));
+  TEST_ASSERT(tag_init_pvar(src + 1, &g_sym_List));
+  TEST_ASSERT(var_set(src[1].data.td_pvar, &payload));
+  src[2].type = TAG_PFACTS;
+  TEST_ASSERT((src[2].data.td_pfacts = facts_new()));
+  TEST_ASSERT(facts_add_tags(src[2].data.td_pfacts,
+                             &payload, &payload, &payload));
+  TEST_ASSERT((spec = list_new_1("[{:text, \"\"}]")));
+  TEST_ASSERT((st = struct_type_new(sym_1("MarshallCacheOwned"), spec)));
+  list_delete_all(spec);
+  TEST_ASSERT(tag_init_pstruct_with_type(src + 3, st));
+  struct_type_delete(st);
+  TEST_ASSERT(struct_allocate(src[3].data.td_pstruct));
+  TEST_ASSERT(tag_init_1(&text, "\"retained field\""));
+  TEST_ASSERT(struct_set(src[3].data.td_pstruct, sym_1("text"), &text));
+  for (copy = 0; copy < 2; copy++) {
+    env_global()->pass_by_copy = copy;
+    for (i = 0; i < 4; i++) {
+      test_context(tag_type_to_string(src[i].type));
+      m = (s_marshall) {0};
+      mr = (s_marshall_read) {0};
+      str = (s_str) {0};
+      a = (s_tag) {0};
+      b = (s_tag) {0};
+      again = (s_tag) {0};
+      TEST_ASSERT(marshall_init(&m, 1024 * 1024));
+      for (j = 0; j < 4; j++)
+        TEST_ASSERT(marshall_tag(&m, false, src + i));
+      /* Reject a conflicting type after populating the owning pool. */
+      TEST_ASSERT(marshall_1(&m, false, "_KC3PFRAME_"));
+      TEST_ASSERT(marshall_offset(&m, false,
+                                   sizeof(s_marshall_header)));
+      TEST_ASSERT(marshall_to_str(&m, &str));
+      TEST_ASSERT(marshall_read_init_str(&mr, &str));
+      for (j = 0; j < 2; j++) {
+        TEST_ASSERT(marshall_read_tag(&mr, false, &a));
+        TEST_EQ(marshall_read_cache_owned_value(&a, src + i,
+                                                &payload), 0);
+        switch (a.type) {
+        case TAG_PCALLABLE:
+          TEST_EQ(a.data.td_pcallable->ref_count, copy ? 1 : 2);
+          break;
+        case TAG_PVAR: TEST_EQ(a.data.td_pvar->ref_count, 2); break;
+        case TAG_PFACTS: TEST_EQ(a.data.td_pfacts->ref_count, 2); break;
+        case TAG_PSTRUCT:
+          TEST_EQ(a.data.td_pstruct->ref_count, copy ? 1 : 2);
+          break;
+        default: TEST_ASSERT(false);
+        }
+        /* No caller-owned results remain before the next cache hit. */
+        tag_clean(&a);
+        a = (s_tag) {0};
+      }
+      TEST_ASSERT(marshall_read_tag(&mr, false, &a));
+      TEST_ASSERT(marshall_read_tag(&mr, false, &b));
+      TEST_EQ(marshall_read_cache_owned_value(&b, src + i,
+                                              &payload), 0);
+      if (copy && i == 0) {
+        TEST_ASSERT(a.data.td_pcallable != b.data.td_pcallable);
+        TEST_ASSERT(a.data.td_pcallable->data.fn.frame !=
+                    b.data.td_pcallable->data.fn.frame);
+        TEST_ASSERT(frame_binding_delete
+                      (a.data.td_pcallable->data.fn.frame,
+                       sym_1("captured")));
+      }
+      if (copy && i == 3) {
+        TEST_ASSERT(a.data.td_pstruct != b.data.td_pstruct);
+        TEST_ASSERT(struct_set
+                      (a.data.td_pstruct, sym_1("text"),
+                       &list_next(payload.data.td_plist)->tag));
+      }
+      frame_dest = (p_frame) &str;
+      TEST_EQ(marshall_read_pframe(&mr, false, &frame_dest), NULL);
+      TEST_EQ(frame_dest, (p_frame) &str);
+      TEST_ASSERT(mr.ht_failed);
+      mr.buf->rpos = 0;
+      TEST_ASSERT(marshall_read_header(&mr));
+      mr.buf->rpos += mr.heap_size;
+      TEST_ASSERT(marshall_read_tag(&mr, false, &again));
+      TEST_ASSERT(! mr.ht_failed);
+      marshall_read_clean(&mr);
+      TEST_EQ(marshall_read_cache_owned_value(&b, src + i,
+                                              &payload), 0);
+      TEST_EQ(marshall_read_cache_owned_value(&again, src + i,
+                                              &payload), 0);
+      tag_clean(&again);
+      tag_clean(&b);
+      tag_clean(&a);
+      str_clean(&str);
+      marshall_clean(&m);
+    }
+  }
+  env_global()->pass_by_copy = copy_saved;
+  for (i = 0; i < 4; i++)
+    tag_clean(src + i);
+  tag_clean(&text);
+  tag_clean(&payload);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_cache_owned)
+
+TEST_CASE(marshall_read_cache_frame)
+{
+  bool copy_saved = env_global()->pass_by_copy;
+  uw copy;
+  uw j;
+  uw rpos;
+  u64 offset;
+  void *canonical;
+  s_marshall m;
+  s_marshall_read mr;
+  s_str str;
+  s_tag payload = {0};
+  p_frame src;
+  p_frame other;
+  p_frame a;
+  p_frame b;
+  p_frame tail;
+  p_frame parent;
+  p_frame again;
+  p_var var_dest;
+  s_frame inline_dest;
+  TEST_ASSERT(tag_init_1(&payload, "[{1, 2}, \"frame binding\"]"));
+  TEST_ASSERT((src = frame_new(NULL)));
+  TEST_ASSERT((src->next = frame_new(NULL)));
+  TEST_ASSERT(frame_binding_new(src, sym_1("first"), &payload));
+  TEST_ASSERT(frame_binding_new(src->next, sym_1("tail"), &payload));
+  TEST_ASSERT((other = frame_new(src->next)));
+  TEST_ASSERT(frame_binding_new(other, sym_1("other"), &payload));
+  for (copy = 0; copy < 2; copy++) {
+    env_global()->pass_by_copy = copy;
+    m = (s_marshall) {0};
+    mr = (s_marshall_read) {0};
+    str = (s_str) {0};
+    inline_dest = (s_frame) {0};
+    TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+    for (j = 0; j < 4; j++)
+      TEST_ASSERT(marshall_pframe(&m, false, &src));
+    TEST_ASSERT(marshall_pframe(&m, false, &src->next));
+    TEST_ASSERT(marshall_pframe(&m, false, &other));
+    TEST_ASSERT(marshall_frame(&m, false, src));
+    TEST_ASSERT(marshall_1(&m, false, "_KC3PVAR_"));
+    TEST_ASSERT(marshall_offset(&m, false,
+                                 sizeof(s_marshall_header)));
+    TEST_ASSERT(marshall_to_str(&m, &str));
+    TEST_ASSERT(marshall_read_init_str(&mr, &str));
+    TEST_ASSERT(marshall_read_pframe(&mr, false, &a));
+    /* Check ownership before freeing anything: the old decoder aliases. */
+    rpos = mr.buf->rpos;
+    TEST_ASSERT(marshall_read_1(&mr, false, "_KC3PFRAME_"));
+    TEST_ASSERT(marshall_read_heap_pointer(&mr, false, &offset,
+                                           &canonical, sym_1("Frame")));
+    TEST_ASSERT(a != canonical);
+    mr.buf->rpos = rpos;
+    TEST_EQ(compare_tag(frame_get(a, sym_1("tail")), &payload), 0);
+    frame_delete_all(a);
+    TEST_ASSERT(marshall_read_pframe(&mr, false, &a));
+    TEST_EQ(compare_tag(frame_get(a, sym_1("first")), &payload), 0);
+    frame_delete_all(a);
+    TEST_ASSERT(marshall_read_pframe(&mr, false, &a));
+    TEST_ASSERT(marshall_read_pframe(&mr, false, &b));
+    TEST_ASSERT(a != b);
+    TEST_ASSERT(a->next != b->next);
+    TEST_ASSERT(frame_binding_delete(a->next, sym_1("tail")));
+    TEST_EQ(compare_tag(frame_get(b, sym_1("tail")), &payload), 0);
+    TEST_ASSERT(marshall_read_pframe(&mr, false, &tail));
+    TEST_ASSERT(marshall_read_pframe(&mr, false, &parent));
+    TEST_ASSERT(tail != parent->next);
+    TEST_ASSERT(marshall_read_frame(&mr, false, &inline_dest));
+    TEST_ASSERT(inline_dest.next != tail);
+    var_dest = (p_var) &str;
+    TEST_EQ(marshall_read_pvar(&mr, false, &var_dest), NULL);
+    TEST_EQ(var_dest, (p_var) &str);
+    TEST_ASSERT(mr.ht_failed);
+    mr.buf->rpos = 0;
+    TEST_ASSERT(marshall_read_header(&mr));
+    mr.buf->rpos += mr.heap_size;
+    TEST_ASSERT(marshall_read_pframe(&mr, false, &again));
+    TEST_ASSERT(! mr.ht_failed);
+    marshall_read_clean(&mr);
+    TEST_EQ(compare_tag(frame_get(b, sym_1("tail")), &payload), 0);
+    TEST_EQ(compare_tag(frame_get(tail, sym_1("tail")), &payload), 0);
+    TEST_EQ(compare_tag(frame_get(parent, sym_1("other")), &payload), 0);
+    TEST_EQ(compare_tag(frame_get(parent, sym_1("tail")), &payload), 0);
+    TEST_EQ(compare_tag(frame_get(&inline_dest, sym_1("tail")),
+                        &payload), 0);
+    TEST_EQ(compare_tag(frame_get(again, sym_1("first")), &payload), 0);
+    TEST_EQ(compare_tag(frame_get(again, sym_1("tail")), &payload), 0);
+    frame_delete_all(frame_clean(&inline_dest));
+    frame_delete_all(again);
+    frame_delete_all(parent);
+    frame_delete_all(tail);
+    frame_delete_all(b);
+    frame_delete_all(a);
+    str_clean(&str);
+    marshall_clean(&m);
+  }
+  env_global()->pass_by_copy = copy_saved;
+  frame_delete(other);
+  frame_delete_all(src);
+  tag_clean(&payload);
+}
+TEST_CASE_END(marshall_read_cache_frame)
 
 TEST_CASE(marshall_read_cache_pointer)
 {
