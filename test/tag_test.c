@@ -18,6 +18,7 @@
 #include "../libkc3/tag.h"
 #include "../libkc3/complex.h"
 #include "../libkc3/integer.h"
+#include "../libkc3/f64.h"
 #include "../libkc3/f80.h"
 #include "../libkc3/f128.h"
 #include "../libkc3/sym.h"
@@ -45,6 +46,8 @@ TEST_CASE_PROTOTYPE(tag_mod_sw_integer);
 TEST_CASE_PROTOTYPE(tag_div_ratio);
 TEST_CASE_PROTOTYPE(tag_float_ratio);
 TEST_CASE_PROTOTYPE(tag_div_complex);
+TEST_CASE_PROTOTYPE(complex_arithmetic_failure);
+TEST_CASE_PROTOTYPE(tag_complex_arithmetic);
 TEST_CASE_PROTOTYPE(tag_integer_extended);
 // TEST_CASE_PROTOTYPE(tag_type__macro);
 
@@ -60,6 +63,8 @@ void tag_test (void)
   TEST_CASE_RUN(tag_div_ratio);
   TEST_CASE_RUN(tag_float_ratio);
   TEST_CASE_RUN(tag_div_complex);
+  TEST_CASE_RUN(complex_arithmetic_failure);
+  TEST_CASE_RUN(tag_complex_arithmetic);
   TEST_CASE_RUN(tag_integer_extended);
   //  TEST_CASE_RUN(tag_type__macro);
 }
@@ -611,6 +616,28 @@ static s_complex * tag_complex_test_new_div (s_complex *a, s_complex *b)
   return complex_new_div(a, b);
 }
 
+
+static s_complex * tag_complex_test_new_add (s_complex *a, s_complex *b)
+{
+  if (++g_tag_complex_test.step == g_tag_complex_test.fail)
+    return NULL;
+  return complex_new_add(a, b);
+}
+
+static s_complex * tag_complex_test_new_sub (s_complex *a, s_complex *b)
+{
+  if (++g_tag_complex_test.step == g_tag_complex_test.fail)
+    return NULL;
+  return complex_new_sub(a, b);
+}
+
+static s_complex * tag_complex_test_new_mul (s_complex *a, s_complex *b)
+{
+  if (++g_tag_complex_test.step == g_tag_complex_test.fail)
+    return NULL;
+  return complex_new_mul(a, b);
+}
+
 #define tag_add tag_integer_test_add
 #define tag_sub tag_integer_test_sub
 #define tag_mul tag_integer_test_mul
@@ -662,9 +689,21 @@ static s_complex * tag_complex_test_new_div (s_complex *a, s_complex *b)
 #undef complex_clean
 #undef complex_new_div
 #include "../libkc3/tag_mod.c"
+#define complex_init_integer tag_complex_test_init_integer
+#define complex_init_ratio tag_complex_test_init_ratio
+#define complex_clean tag_complex_test_clean
+#define complex_new_add tag_complex_test_new_add
 #include "../libkc3/tag_add.c"
+#undef complex_new_add
+#define complex_new_sub tag_complex_test_new_sub
 #include "../libkc3/tag_sub.c"
+#undef complex_new_sub
+#define complex_new_mul tag_complex_test_new_mul
 #include "../libkc3/tag_mul.c"
+#undef complex_new_mul
+#undef complex_init_integer
+#undef complex_init_ratio
+#undef complex_clean
 #undef tag_add
 #undef tag_sub
 #undef tag_mul
@@ -1647,3 +1686,207 @@ TEST_CASE(tag_integer_extended)
 #endif
 }
 TEST_CASE_END(tag_integer_extended)
+
+
+static void tag_complex_test_f64 (s_tag *tag, f64 value)
+{
+  tag_clean(tag);
+  tag_init_f64(tag, value);
+}
+
+static char complex_arithmetic_failure_test_init
+(s_complex *a, s_complex *b, uw operation, uw stage)
+{
+  TEST_ASSERT(tag_init_ratio_1(&a->x, "1/2"));
+  TEST_ASSERT(tag_init_ratio_1(&a->y, "1/2"));
+  TEST_ASSERT(tag_init_ratio_1(&b->x, "1/2"));
+  TEST_ASSERT(tag_init_ratio_1(&b->y, "1/2"));
+  if (operation < 2)
+    tag_complex_test_f64(stage ? &a->y : &a->x, NAN);
+  else {
+    switch (stage) {
+    case 0:
+      tag_complex_test_f64(&a->x, NAN);
+      break;
+    case 1:
+      tag_complex_test_f64(&a->y, NAN);
+      break;
+    case 2:
+      tag_complex_test_f64(&a->x, NAN);
+      tag_complex_test_f64(&b->x, 1);
+      break;
+    case 3:
+      tag_complex_test_f64(&a->y, NAN);
+      tag_complex_test_f64(&b->y, 1);
+      break;
+    case 4:
+      tag_complex_test_f64(&a->y, DBL_MAX);
+      tag_complex_test_f64(&b->y, DBL_MAX);
+      break;
+    case 5:
+      tag_complex_test_f64(&a->x, DBL_MAX);
+      tag_complex_test_f64(&b->y, DBL_MAX);
+      break;
+    }
+  }
+  return 0;
+}
+
+TEST_CASE(complex_arithmetic_failure)
+{
+  s_complex * (*operations[])(s_complex *, s_complex *, s_complex *) = {
+    complex_add, complex_sub, complex_mul
+  };
+  s_complex * (*constructors[])(s_complex *, s_complex *) = {
+    complex_new_add, complex_new_sub, complex_new_mul
+  };
+  s_tag * (*tag_operations[])(s_tag *, s_tag *, s_tag *) = {
+    tag_add, tag_sub, tag_mul
+  };
+  uw operation;
+  uw stage;
+  for (operation = 0; operation < 3; operation++) {
+    for (stage = 0; stage < (operation == 2 ? 6 : 2); stage++) {
+      s_complex a = {0};
+      s_complex b = {0};
+      s_complex dest = {0};
+      s_complex saved;
+      s_complex saved_a;
+      s_complex saved_b;
+      s_tag tag_a = {0};
+      s_tag tag_b = {0};
+      s_tag tag_dest = {0};
+      s_tag tag_saved;
+      TEST_EQ(complex_arithmetic_failure_test_init
+                (&a, &b, operation, stage), 0);
+      saved_a = a;
+      saved_b = b;
+      TEST_ASSERT(tag_init_ratio_1(&dest.x, "7/11"));
+      TEST_ASSERT(tag_init_ratio_1(&dest.y, "13/17"));
+      saved = dest;
+      TEST_EQ(operations[operation](&a, &b, &dest), NULL);
+      TEST_MEM_EQ(&dest, sizeof(dest), &saved, sizeof(saved));
+      TEST_EQ(constructors[operation](&a, &b), NULL);
+      TEST_EQ(operations[operation](&a, &b, &a), NULL);
+      TEST_EQ(operations[operation](&a, &b, &b), NULL);
+      TEST_MEM_EQ(&a, sizeof(a), &saved_a, sizeof(saved_a));
+      TEST_MEM_EQ(&b, sizeof(b), &saved_b, sizeof(saved_b));
+      tag_a.type = TAG_PCOMPLEX;
+      tag_a.data.td_pcomplex = &a;
+      tag_b.type = TAG_PCOMPLEX;
+      tag_b.data.td_pcomplex = &b;
+      TEST_ASSERT(tag_init_ratio_1(&tag_dest, "19/23"));
+      tag_dest.ref_count = 17;
+      tag_saved = tag_dest;
+      TEST_EQ(tag_operations[operation](&tag_a, &tag_b, &tag_dest), NULL);
+      TEST_MEM_EQ(&tag_dest, sizeof(tag_dest), &tag_saved,
+                    sizeof(tag_saved));
+      tag_dest.ref_count = 0;
+      tag_clean(&tag_dest);
+      complex_clean(&dest);
+      complex_clean(&b);
+      complex_clean(&a);
+    }
+  }
+}
+TEST_CASE_END(complex_arithmetic_failure)
+
+TEST_CASE(tag_complex_arithmetic)
+{
+  const e_tag_type types[] = {
+    TAG_PCOMPLEX, TAG_S8, TAG_S16, TAG_S32, TAG_S64, TAG_SW,
+    TAG_U8, TAG_U16, TAG_U32, TAG_U64, TAG_UW,
+    TAG_INTEGER, TAG_RATIO, TAG_F32, TAG_F64,
+#if HAVE_F80
+    TAG_F80,
+#endif
+  };
+  s_tag * (*operations[])(s_tag *, s_tag *, s_tag *) = {
+    tag_add, tag_sub, tag_mul
+  };
+  s_tag * (*injected[])(s_tag *, s_tag *, s_tag *) = {
+    tag_integer_test_add, tag_integer_test_sub, tag_integer_test_mul
+  };
+  const s_sym *f64_type = &g_sym_F64;
+  uw operation;
+  uw i;
+  uw direction;
+  uw fail;
+  uw steps;
+  for (operation = 0; operation < 3; operation++) {
+    for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+      for (direction = 0; direction < 2; direction++) {
+        s_tag a = {0};
+        s_tag b = {0};
+        s_tag dest = {0};
+        s_tag saved;
+        s_tag *left = direction ? &b : &a;
+        s_tag *right = direction ? &a : &b;
+        f64 real;
+        f64 imaginary;
+        TEST_ASSERT(tag_div_complex_test_init(&a, TAG_PCOMPLEX, 8));
+        tag_init_s8(&a.data.td_pcomplex->y, 4);
+        TEST_ASSERT(tag_div_complex_test_init(&b, types[i], 2));
+        test_context(tag_type_to_string(types[i]));
+        TEST_EQ(operations[operation](left, right, &dest), &dest);
+        TEST_EQ(dest.type, TAG_PCOMPLEX);
+        TEST_ASSERT(dest.data.td_pcomplex);
+        TEST_ASSERT(f64_init_cast(&real, &f64_type,
+                                   &dest.data.td_pcomplex->x));
+        TEST_ASSERT(f64_init_cast(&imaginary, &f64_type,
+                                   &dest.data.td_pcomplex->y));
+        TEST_EQ(real, operation == 0 ? 10 : operation == 1 ?
+                  (direction ? -6 : 6) : 16);
+        TEST_EQ(imaginary, operation == 1 && direction ? -4 :
+                  operation == 2 ? 8 : 4);
+        tag_clean(&dest);
+        dest = (s_tag) {0};
+        g_tag_complex_test.step = 0;
+        g_tag_complex_test.fail = 0;
+        TEST_EQ(injected[operation](left, right, &dest), &dest);
+        TEST_EQ(dest.type, TAG_PCOMPLEX);
+        TEST_ASSERT(dest.data.td_pcomplex);
+        steps = g_tag_complex_test.step;
+        TEST_EQ(steps, types[i] == TAG_INTEGER || types[i] == TAG_RATIO ?
+                  2 : 1);
+        TEST_EQ(g_tag_complex_test.live, 0);
+        tag_clean(&dest);
+        for (fail = 1; fail <= steps; fail++) {
+          dest = (s_tag) {0};
+          TEST_ASSERT(tag_init_ratio_1(&dest, "7/11"));
+          dest.ref_count = 17;
+          saved = dest;
+          g_tag_complex_test.step = 0;
+          g_tag_complex_test.fail = fail;
+          TEST_EQ(injected[operation](left, right, &dest), NULL);
+          TEST_MEM_EQ(&dest, sizeof(dest), &saved, sizeof(saved));
+          TEST_EQ(g_tag_complex_test.step, fail);
+          TEST_EQ(g_tag_complex_test.live, 0);
+          dest.ref_count = 0;
+          tag_clean(&dest);
+        }
+        g_tag_complex_test.fail = 0;
+        if (types[i] == TAG_F32 || types[i] == TAG_F64
+#if HAVE_F80
+            || types[i] == TAG_F80
+#endif
+            ) {
+          tag_clean(&a.data.td_pcomplex->x);
+          TEST_ASSERT(tag_init_ratio_1(&a.data.td_pcomplex->x, "1/2"));
+          tag_clean(&b);
+          TEST_ASSERT(tag_float_ratio_test_init(&b, types[i], NAN));
+          dest = (s_tag) {0};
+          TEST_ASSERT(tag_init_ratio_1(&dest, "7/11"));
+          saved = dest;
+          TEST_EQ(operations[operation](left, right, &dest), NULL);
+          TEST_MEM_EQ(&dest, sizeof(dest), &saved, sizeof(saved));
+          tag_clean(&dest);
+        }
+        tag_clean(&b);
+        tag_clean(&a);
+      }
+    }
+  }
+  test_context(NULL);
+}
+TEST_CASE_END(tag_complex_arithmetic)

@@ -57,11 +57,16 @@ DEF_COMPLEX_INIT(uw)
 s_complex * complex_add (s_complex *a, s_complex *b,
                          s_complex *dest)
 {
+  s_complex tmp = {0};
   assert(a);
   assert(b);
   assert(dest);
-  tag_add(&a->x, &b->x, &dest->x);
-  tag_add(&a->y, &b->y, &dest->y);
+  if (! tag_add(&a->x, &b->x, &tmp.x) ||
+      ! tag_add(&a->y, &b->y, &tmp.y)) {
+    complex_clean(&tmp);
+    return NULL;
+  }
+  *dest = tmp;
   return dest;
 }
 
@@ -231,19 +236,26 @@ s_complex * complex_mul (s_complex *a, s_complex *b,
   s_tag axby = {0};
   s_tag aybx = {0};
   s_tag ayby = {0};
+  bool ok;
+  s_complex tmp = {0};
   assert(a);
   assert(b);
   assert(dest);
-  tag_mul(&a->x, &b->x, &axbx);
-  tag_mul(&a->y, &b->y, &ayby);
-  tag_mul(&a->x, &b->y, &axby);
-  tag_mul(&a->y, &b->x, &aybx);
-  tag_sub(&axbx, &ayby, &dest->x);
-  tag_add(&axby, &aybx, &dest->y);
+  ok = tag_mul(&a->x, &b->x, &axbx) &&
+    tag_mul(&a->y, &b->y, &ayby) &&
+    tag_mul(&a->x, &b->y, &axby) &&
+    tag_mul(&a->y, &b->x, &aybx) &&
+    tag_sub(&axbx, &ayby, &tmp.x) &&
+    tag_add(&axby, &aybx, &tmp.y);
   tag_clean(&axbx);
   tag_clean(&axby);
   tag_clean(&aybx);
   tag_clean(&ayby);
+  if (! ok) {
+    complex_clean(&tmp);
+    return NULL;
+  }
+  *dest = tmp;
   return dest;
 }
 
@@ -401,11 +413,16 @@ s_complex * complex_new_sub (s_complex *a, s_complex *b)
 s_complex * complex_sub (s_complex *a, s_complex *b,
                          s_complex *dest)
 {
+  s_complex tmp = {0};
   assert(a);
   assert(b);
   assert(dest);
-  tag_sub(&a->x, &b->x, &dest->x);
-  tag_sub(&a->y, &b->y, &dest->y);
+  if (! tag_sub(&a->x, &b->x, &tmp.x) ||
+      ! tag_sub(&a->y, &b->y, &tmp.y)) {
+    complex_clean(&tmp);
+    return NULL;
+  }
+  *dest = tmp;
   return dest;
 }
 
