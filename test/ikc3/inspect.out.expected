@@ -2,3 +2,21 @@ require HTTP.Upload
 HTTP.Upload
 inspect({123, %HTTP.Upload{}})
 "{123, %HTTP.Upload{filename: \"\",\n                   replace: false,\n                   size: ?,\n                   tmp_path: \"\"}}"
+(F32) inf
+"(F32) inf"
+(F32) -inf
+"(F32) -inf"
+(F32) nan
+"(F32) nan"
+(F32) nan
+"(F32) nan"
+"{(F32) inf, (F32) -inf, (F32) nan}"
+(F64) inf
+"(F64) inf"
+(F64) -inf
+"(F64) -inf"
+(F64) nan
+"(F64) nan"
+(F64) nan
+"(F64) nan"
+"{(F64) inf, (F64) -inf, (F64) nan}"

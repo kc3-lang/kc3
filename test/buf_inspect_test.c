@@ -10,6 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <float.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../libkc3/kc3.h"
@@ -237,6 +239,7 @@ TEST_CASE_PROTOTYPE(buf_inspect_bool);
 TEST_CASE_PROTOTYPE(buf_inspect_character);
 TEST_CASE_PROTOTYPE(buf_inspect_f32);
 TEST_CASE_PROTOTYPE(buf_inspect_f64);
+TEST_CASE_PROTOTYPE(buf_inspect_float_special);
 #if HAVE_F80
 TEST_CASE_PROTOTYPE(buf_inspect_f80);
 #endif
@@ -257,6 +260,7 @@ void buf_inspect_test (void)
   TEST_CASE_RUN(buf_inspect_character);
   TEST_CASE_RUN(buf_inspect_f32);
   TEST_CASE_RUN(buf_inspect_f64);
+  TEST_CASE_RUN(buf_inspect_float_special);
 #if HAVE_F80
   TEST_CASE_RUN(buf_inspect_f80);
 #endif
@@ -345,6 +349,8 @@ TEST_CASE_END(buf_inspect_f64)
 
 TEST_CASE(buf_inspect_f80)
 {
+  s_tag tag = {0};
+  s_str str = {0};
   BUF_INSPECT_TEST_F80(0.0L, "(F80) 0.0");
   BUF_INSPECT_TEST_F80(0.1L, "(F80) 1.0e-1");
   BUF_INSPECT_TEST_F80(0.12345678L, "(F80) 1.23456780000000000002e-1");
@@ -354,6 +360,12 @@ TEST_CASE(buf_inspect_f80)
   BUF_INSPECT_TEST_F80(-0.12345678L, "(F80) -1.23456780000000000002e-1");
   BUF_INSPECT_TEST_F80(-1.2345678L, "(F80) -1.23456780000000000002");
   BUF_INSPECT_TEST_F80(-12345678.0L, "(F80) -1.2345677999999999998e+7");
+  tag_init_f80(&tag, LDBL_MAX);
+  TEST_ASSERT(inspect_tag(&tag, &str));
+  TEST_ASSERT(str.size > 6);
+  TEST_ASSERT(str.ptr.p_pchar[6] >= '0' && str.ptr.p_pchar[6] <= '9');
+  str_clean(&str);
+  tag_clean(&tag);
 }
 TEST_CASE_END(buf_inspect_f80)
 
@@ -507,3 +519,82 @@ TEST_CASE(buf_inspect_tag)
   tag_clean(&tag);
 }
 TEST_CASE_END(buf_inspect_tag)
+
+
+TEST_CASE(buf_inspect_float_special)
+{
+  const e_tag_type types[] = {
+    TAG_F32, TAG_F64,
+#if HAVE_F80
+    TAG_F80,
+#endif
+#if HAVE_F128
+    TAG_F128,
+#endif
+  };
+  const f64 values[] = {INFINITY, -INFINITY, NAN, -NAN};
+  const char *suffixes[] = {"inf", "-inf", "nan", "nan"};
+  uw i;
+  uw j;
+  uw capacity;
+  for (i = 0; i < sizeof(types) / sizeof(*types); i++) {
+    for (j = 0; j < sizeof(values) / sizeof(*values); j++) {
+      char storage[64];
+      s_buf buf;
+      s_pretty pretty = {0};
+      s_tag tag = {0};
+      s_tuple tuple = {0};
+      s_str expected = {0};
+      s_str actual = {0};
+      s_str tuple_expected = {0};
+      switch (types[i]) {
+      case TAG_F32: tag_init_f32(&tag, values[j]); break;
+      case TAG_F64: tag_init_f64(&tag, values[j]); break;
+#if HAVE_F80
+      case TAG_F80: tag_init_f80(&tag, values[j]); break;
+#endif
+#if HAVE_F128
+      case TAG_F128: tag_init_f128(&tag, values[j]); break;
+#endif
+      default: TEST_ASSERT(false);
+      }
+      TEST_ASSERT(str_init_f(&expected, "(%s) %s",
+                              tag_type_to_string(types[i]), suffixes[j]));
+      test_context(expected.ptr.p_pchar);
+      TEST_ASSERT(buf_init(&buf, false, expected.size, storage));
+      buf.pretty.column = 5;
+      pretty.column = 5;
+      TEST_EQ(buf_inspect_tag_size(&pretty, &tag), expected.size);
+      TEST_EQ(buf_inspect_tag(&buf, &tag), expected.size);
+      TEST_EQ(buf.wpos, expected.size);
+      TEST_STRNCMP(storage, expected.ptr.p_pchar, expected.size);
+      TEST_MEM_EQ(&buf.pretty, sizeof(buf.pretty), &pretty, sizeof(pretty));
+      TEST_EQ(pretty.column, 5 + expected.size);
+      buf_clean(&buf);
+      for (capacity = 0; capacity < expected.size; capacity++) {
+        TEST_ASSERT(buf_init(&buf, false, capacity, storage));
+        TEST_ASSERT(buf_inspect_tag(&buf, &tag) < 0);
+        TEST_ASSERT(buf.wpos <= capacity);
+        TEST_STRNCMP(storage, expected.ptr.p_pchar, buf.wpos);
+        buf_clean(&buf);
+      }
+      TEST_ASSERT(inspect_tag(&tag, &actual));
+      TEST_STR_EQ(actual, expected);
+      str_clean(&actual);
+      TEST_ASSERT(tuple_init(&tuple, 2));
+      TEST_ASSERT(tag_init_copy(tuple.tag, &tag));
+      TEST_ASSERT(tag_init_copy(tuple.tag + 1, &tag));
+      TEST_ASSERT(str_init_f(&tuple_expected, "{%s, %s}",
+                              expected.ptr.p_pchar, expected.ptr.p_pchar));
+      TEST_ASSERT(inspect_tuple(&tuple, &actual));
+      TEST_STR_EQ(actual, tuple_expected);
+      str_clean(&actual);
+      str_clean(&tuple_expected);
+      tuple_clean(&tuple);
+      tag_clean(&tag);
+      str_clean(&expected);
+    }
+  }
+  test_context(NULL);
+}
+TEST_CASE_END(buf_inspect_float_special)

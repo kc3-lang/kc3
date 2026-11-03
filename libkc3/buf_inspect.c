@@ -1846,6 +1846,10 @@ sw buf_inspect_f32 (s_buf *buf, f32 x)
   sw r;
   sw result = 0;
   assert(buf);
+  if (isnan(x))
+    return buf_write_1(buf, "(F32) nan");
+  if (isinf(x))
+    return buf_write_1(buf, x < 0 ? "(F32) -inf" : "(F32) inf");
   exp = 0;
   if ((r = buf_write_1(buf, "(F32) ")) < 0)
     return r;
@@ -1916,6 +1920,10 @@ sw buf_inspect_f32_size (s_pretty *pretty, f32 x)
   sw r;
   sw result = 0;
   assert(pretty);
+  if (isnan(x))
+    return buf_write_1_size(pretty, "(F32) nan");
+  if (isinf(x))
+    return buf_write_1_size(pretty, x < 0 ? "(F32) -inf" : "(F32) inf");
   exp = 0;
   if ((r = buf_write_1_size(pretty, "(F32) ")) < 0)
     return r;
@@ -1982,6 +1990,10 @@ sw buf_inspect_f64 (s_buf *buf, f64 x)
   sw r;
   sw result = 0;
   assert(buf);
+  if (isnan(x))
+    return buf_write_1(buf, "(F64) nan");
+  if (isinf(x))
+    return buf_write_1(buf, x < 0 ? "(F64) -inf" : "(F64) inf");
   exp = 0;
   if ((r = buf_write_1(buf, "(F64) ")) < 0)
     return r;
@@ -2052,6 +2064,10 @@ sw buf_inspect_f64_size (s_pretty *pretty, f64 x)
   sw r;
   sw result = 0;
   assert(pretty);
+  if (isnan(x))
+    return buf_write_1_size(pretty, "(F64) nan");
+  if (isinf(x))
+    return buf_write_1_size(pretty, x < 0 ? "(F64) -inf" : "(F64) inf");
   exp = 0;
   if ((r = buf_write_1_size(pretty, "(F64) ")) < 0)
     return r;
@@ -2124,6 +2140,10 @@ sw buf_inspect_f80 (s_buf *buf, f80 x)
   sw r;
   sw result = 0;
   assert(buf);
+  if (isnan(x))
+    return buf_write_1(buf, "(F80) nan");
+  if (isinf(x))
+    return buf_write_1(buf, x < 0 ? "(F80) -inf" : "(F80) inf");
   exp = 0.0;
   if ((r = buf_write_1(buf, "(F80) ")) < 0)
     return r;
@@ -2194,6 +2214,10 @@ sw buf_inspect_f80_size (s_pretty *pretty, f80 x)
   sw r;
   sw result = 0;
   assert(pretty);
+  if (isnan(x))
+    return buf_write_1_size(pretty, "(F80) nan");
+  if (isinf(x))
+    return buf_write_1_size(pretty, x < 0 ? "(F80) -inf" : "(F80) inf");
   exp = 0;
   if ((r = buf_write_1_size(pretty, "(F80) ")) < 0)
     return r;
@@ -2264,6 +2288,10 @@ sw buf_inspect_f128 (s_buf *buf, f128 x)
   sw r;
   sw result = 0;
   assert(buf);
+  if (isnan(x))
+    return buf_write_1(buf, "(F128) nan");
+  if (isinf(x))
+    return buf_write_1(buf, x < 0 ? "(F128) -inf" : "(F128) inf");
   exp = 0.0;
   if ((r = buf_write_1(buf, "(F128) ")) < 0)
     return r;
@@ -2334,6 +2362,10 @@ sw buf_inspect_f128_size (s_pretty *pretty, f128 x)
   sw r;
   sw result = 0;
   assert(pretty);
+  if (isnan(x))
+    return buf_write_1_size(pretty, "(F128) nan");
+  if (isinf(x))
+    return buf_write_1_size(pretty, x < 0 ? "(F128) -inf" : "(F128) inf");
   exp = 0.0;
   if ((r = buf_write_1_size(pretty, "(F128) ")) < 0)
     return r;
