@@ -12,6 +12,7 @@
  */
 #include "../libkc3/array.h"
 #include "../libkc3/buf.h"
+#include "../libkc3/buf_file.h"
 #include "../libkc3/call.h"
 #include "../libkc3/callable.h"
 #include "../libkc3/complex.h"
@@ -41,6 +42,7 @@
 #include "../libkc3/tuple.h"
 #include "../libkc3/var.h"
 #include <stdio.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -124,6 +126,7 @@ TEST_CASE_PROTOTYPE(marshall_read_struct_nested);
 TEST_CASE_PROTOTYPE(marshall_read_struct_legacy_limits);
 TEST_CASE_PROTOTYPE(marshall_read_facts);
 TEST_CASE_PROTOTYPE(marshall_read_facts_log);
+TEST_CASE_PROTOTYPE(marshall_read_facts_log_relocated);
 TEST_CASE_PROTOTYPE(marshall_read_init_buf);
 TEST_CASE_PROTOTYPE(marshall_read_init_file);
 TEST_CASE_PROTOTYPE(marshall_read_init_str);
@@ -181,6 +184,7 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_struct_legacy_limits);
   TEST_CASE_RUN(marshall_read_facts);
   TEST_CASE_RUN(marshall_read_facts_log);
+  TEST_CASE_RUN(marshall_read_facts_log_relocated);
   TEST_CASE_RUN(marshall_read_tag);
   TEST_CASE_RUN(marshall_read_unquote);
   TEST_CASE_RUN(marshall_read_set__tag);
@@ -3138,3 +3142,101 @@ TEST_CASE(marshall_read_tag_failure)
   test_context(NULL);
 }
 TEST_CASE_END(marshall_read_tag_failure)
+
+
+TEST_CASE(marshall_read_facts_log_relocated)
+{
+  s_str cwd = {0};
+  uw mode;
+  TEST_ASSERT(file_pwd(&cwd));
+  for (mode = 0; mode < 2; mode++) {
+    char directory[] = "/tmp/kc3-facts-dump.XXXXXXXX";
+    s_str source = {0};
+    s_str moved = {0};
+    s_str path = {0};
+    s_str after_path = {0};
+    const s_str relative_path = STR("app.facts");
+    s_str relative_after = mode ? (s_str) STR("custom.facts") :
+      (s_str) STR("app.facts.bin.facts");
+    s_facts facts = {0};
+    s_facts restored = {0};
+    p_facts memoized = NULL;
+    FILE *fp;
+    FILE *after_fp;
+    s_marshall m = {0};
+    s_marshall_read mr = {0};
+    s_marshall_read *result;
+    s_str str = {0};
+    s_tag subject = {0};
+    s_tag predicate = {0};
+    s_tag object = {0};
+    TEST_ASSERT(mkdtemp(directory));
+    TEST_ASSERT(str_init_f(&source, "%s/source", directory));
+    TEST_ASSERT(str_init_f(&moved, "%s/moved", directory));
+    TEST_EQ(mkdir(source.ptr.p_pchar, 0700), 0);
+    TEST_EQ(chdir(source.ptr.p_pchar), 0);
+    TEST_ASSERT(str_init_f(&path, "%s/app.facts", source.ptr.p_pchar));
+    TEST_ASSERT(str_init_f(&after_path, "%s/%s", source.ptr.p_pchar,
+                            relative_after.ptr.p_pchar));
+    TEST_ASSERT(facts_init(&facts));
+    TEST_ASSERT(facts_save_binary_file(&facts, &path) >= 0);
+    fp = buf_file_fp(&facts.log->buf);
+    if (mode)
+      TEST_ASSERT(facts_open_file_after_dump(&facts, &after_path) >= 0);
+    TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+    TEST_ASSERT(marshall_facts(&m, false, &facts));
+    TEST_ASSERT(marshall_to_str(&m, &str));
+    TEST_STR_EQ(facts.log->path, path);
+    if (mode)
+      TEST_STR_EQ(facts.log->after_dump_path, after_path);
+    else {
+      TEST_EQ(facts.log->after_dump_path.size, 0);
+      TEST_ASSERT(facts_open_file_after_dump(&facts, &after_path) >= 0);
+    }
+    after_fp = buf_file_fp(&facts.log->after_dump_buf);
+    tag_init_psym(&subject, sym_1("relocated_subject"));
+    tag_init_psym(&predicate, sym_1("relocated_predicate"));
+    tag_init_u8(&object, 42);
+    TEST_ASSERT(facts_add_tags(&facts, &subject, &predicate, &object));
+    facts_clean(&facts);
+    TEST_EQ(fclose(fp), 0);
+    TEST_EQ(fclose(after_fp), 0);
+    TEST_EQ(chdir(cwd.ptr.p_pchar), 0);
+    TEST_EQ(rename(source.ptr.p_pchar, moved.ptr.p_pchar), 0);
+    TEST_EQ(chdir(moved.ptr.p_pchar), 0);
+    TEST_ASSERT(marshall_read_init_str(&mr, &str));
+    result = marshall_read_facts(&mr, false, &restored);
+    TEST_EQ(chdir(cwd.ptr.p_pchar), 0);
+    TEST_EQ(result, &mr);
+    TEST_EQ(chdir(moved.ptr.p_pchar), 0);
+    TEST_EQ(restored.facts.count, 1);
+    TEST_ASSERT(restored.log);
+    TEST_STR_EQ(restored.log->path, relative_path);
+    TEST_STR_EQ(restored.log->after_dump_path, relative_after);
+    TEST_ASSERT(facts_open_memoized(&relative_path, &memoized));
+    TEST_EQ(memoized, &restored);
+    facts_delete(memoized);
+    fp = buf_file_fp(&restored.log->buf);
+    after_fp = buf_file_fp(&restored.log->after_dump_buf);
+    facts_clean(&restored);
+    TEST_EQ(fclose(fp), 0);
+    TEST_EQ(fclose(after_fp), 0);
+    marshall_read_clean(&mr);
+    marshall_clean(&m);
+    str_clean(&str);
+    tag_clean(&subject);
+    tag_clean(&predicate);
+    tag_clean(&object);
+    TEST_EQ(unlink(relative_path.ptr.p_pchar), 0);
+    TEST_EQ(unlink(relative_after.ptr.p_pchar), 0);
+    TEST_EQ(chdir(cwd.ptr.p_pchar), 0);
+    TEST_EQ(rmdir(moved.ptr.p_pchar), 0);
+    TEST_EQ(rmdir(directory), 0);
+    str_clean(&after_path);
+    str_clean(&path);
+    str_clean(&moved);
+    str_clean(&source);
+  }
+  str_clean(&cwd);
+}
+TEST_CASE_END(marshall_read_facts_log_relocated)

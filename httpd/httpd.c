@@ -91,7 +91,8 @@ int main (int argc, char **argv)
   const struct tm *utc = NULL;
   g_env_argv0_default = PROG;
   g_env_argv0_dir_default = PREFIX;
-  kc3_init(NULL, &argc, &argv);
+  if (! kc3_init(NULL, &argc, &argv))
+    return 1;
   env = env_global();
   while (argc > 0 && argv[0] && argv[0][0] == '-') {
     skip = 1;

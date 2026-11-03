@@ -1114,6 +1114,8 @@ s_marshall * marshall_fact_1 (s_marshall *m, bool heap,
 
 s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
 {
+  s_str after_dump_path = {0};
+  s_str path = {0};
   assert(m);
   assert(facts);
 #if HAVE_PTHREAD
@@ -1166,22 +1168,29 @@ s_marshall * marshall_facts (s_marshall *m, bool heap, s_facts *facts)
     goto ko;
   }
   if (facts->log) {
-    if (! marshall_str(m, heap, &facts->log->path)) {
+    if (! file_relative(&facts->log->path, &path) ||
+        ! file_relative(&facts->log->after_dump_path, &after_dump_path))
+      goto ko;
+    if (! marshall_str(m, heap, &path)) {
       err_puts("marshall_facts: marshall_str: log path");
       assert(! "marshall_facts: marshall_str: log path");
       goto ko;
     }
-    if (! marshall_str(m, heap, &facts->log->after_dump_path)) {
+    if (! marshall_str(m, heap, &after_dump_path)) {
       err_puts("marshall_facts: marshall_str: log after dump path");
       assert(! "marshall_facts: marshall_str: log after dump path");
       goto ko;
     }
   }
+  str_clean(&after_dump_path);
+  str_clean(&path);
 #if HAVE_PTHREAD
   rwlock_unlock_r(&facts->rwlock);
 #endif
   return m;
  ko:
+  str_clean(&after_dump_path);
+  str_clean(&path);
 #if HAVE_PTHREAD
   rwlock_unlock_r(&facts->rwlock);
 #endif
