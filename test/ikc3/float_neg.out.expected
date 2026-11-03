@@ -1,0 +1,24 @@
+(F32) -2.0
+(F32) 2.0
+true
+true
+true
+(F32) -inf
+(F32) inf
+(F32) -inf
+(F32) inf
+(F32) nan
+true
+"(F32) nan"
+(F64) -2.0
+(F64) 2.0
+true
+true
+true
+(F64) -inf
+(F64) inf
+(F64) -inf
+(F64) inf
+(F64) nan
+true
+"(F64) nan"

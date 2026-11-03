@@ -49,6 +49,7 @@ TEST_CASE_PROTOTYPE(tag_div_complex);
 TEST_CASE_PROTOTYPE(complex_arithmetic_failure);
 TEST_CASE_PROTOTYPE(tag_complex_arithmetic);
 TEST_CASE_PROTOTYPE(tag_integer_extended);
+TEST_CASE_PROTOTYPE(tag_neg_float);
 // TEST_CASE_PROTOTYPE(tag_type__macro);
 
 void tag_test (void)
@@ -66,6 +67,7 @@ void tag_test (void)
   TEST_CASE_RUN(complex_arithmetic_failure);
   TEST_CASE_RUN(tag_complex_arithmetic);
   TEST_CASE_RUN(tag_integer_extended);
+  TEST_CASE_RUN(tag_neg_float);
   //  TEST_CASE_RUN(tag_type__macro);
 }
 
@@ -1890,3 +1892,91 @@ TEST_CASE(tag_complex_arithmetic)
   test_context(NULL);
 }
 TEST_CASE_END(tag_complex_arithmetic)
+
+
+#define TAG_NEG_FLOAT_TEST(float_t, min_value, tiny, max_value, precise) \
+  do {                                                                  \
+    const float_t values[] = {                                          \
+      (float_t) 0.0, (float_t) -0.0,                                    \
+      (float_t) 1.25, (float_t) -1.25,                                  \
+      min_value, -(min_value), tiny, -(tiny),                           \
+      max_value, -(max_value), precise, -(precise),                     \
+      (float_t) INFINITY, (float_t) -INFINITY,                           \
+      (float_t) NAN, (float_t) -NAN                                     \
+    };                                                                   \
+    uw i;                                                                \
+    test_context("F72: " #float_t " negation and IEEE sign behavior");   \
+    for (i = 0; i < sizeof(values) / sizeof(*values); i++) {             \
+      s_tag src = {0};                                                   \
+      s_tag dest = {0};                                                  \
+      s_tag source_saved;                                                \
+      s_tag metadata;                                                    \
+      float_t actual;                                                    \
+      TEST_ASSERT(tag_init(&src));                                      \
+      TEST_ASSERT(tag_init(&dest));                                     \
+      TEST_ASSERT(tag_init_ ## float_t(&src, values[i]));               \
+      src.ref_count = 13;                                                \
+      dest.ref_count = 17;                                               \
+      source_saved = src;                                                \
+      metadata = dest;                                                   \
+      TEST_EQ(tag_neg(&src, &dest), &dest);                             \
+      TEST_EQ(dest.type, src.type);                                      \
+      actual = dest.data.td_ ## float_t;                                 \
+      TEST_ASSERT(isnan(values[i]) ? isnan(actual) :                     \
+                    actual == -values[i]);                              \
+      TEST_EQ(signbit(actual) != 0, ! (signbit(values[i]) != 0));         \
+      metadata.type = dest.type;                                         \
+      metadata.data = dest.data;                                         \
+      TEST_MEM_EQ(&dest, sizeof(dest), &metadata, sizeof(metadata));    \
+      TEST_MEM_EQ(&src, sizeof(src), &source_saved,                      \
+                    sizeof(source_saved));                              \
+      TEST_EQ(tag_neg(&src, &src), &src);                               \
+      TEST_EQ(src.type, dest.type);                                      \
+      actual = src.data.td_ ## float_t;                                  \
+      TEST_ASSERT(isnan(values[i]) ? isnan(actual) :                     \
+                    actual == -values[i]);                              \
+      TEST_EQ(signbit(actual) != 0, ! (signbit(values[i]) != 0));         \
+      metadata = source_saved;                                          \
+      metadata.type = src.type;                                         \
+      metadata.data = src.data;                                         \
+      TEST_MEM_EQ(&src, sizeof(src), &metadata, sizeof(metadata));       \
+      TEST_EQ(tag_neg(&src, &src), &src);                               \
+      actual = src.data.td_ ## float_t;                                  \
+      TEST_ASSERT(isnan(values[i]) ? isnan(actual) :                     \
+                    actual == values[i]);                               \
+      TEST_EQ(signbit(actual) != 0, signbit(values[i]) != 0);             \
+      src.ref_count = 1;                                                 \
+      dest.ref_count = 1;                                                \
+      tag_clean(&dest);                                                  \
+      tag_clean(&src);                                                   \
+    }                                                                    \
+  } while (0)
+
+TEST_CASE(tag_neg_float)
+{
+  TAG_NEG_FLOAT_TEST(f32, FLT_MIN,
+                      ldexpf(1.0f, FLT_MIN_EXP - FLT_MANT_DIG), FLT_MAX,
+                      1.0f + ldexpf(1.0f, 1 - FLT_MANT_DIG));
+  TAG_NEG_FLOAT_TEST(f64, DBL_MIN,
+                      ldexp(1.0, DBL_MIN_EXP - DBL_MANT_DIG), DBL_MAX,
+                      1.0 + ldexp(1.0, 1 - DBL_MANT_DIG));
+#if HAVE_F80
+  TAG_NEG_FLOAT_TEST(f80, LDBL_MIN,
+                      ldexpl(1.0L, LDBL_MIN_EXP - LDBL_MANT_DIG), LDBL_MAX,
+                      1.0L + ldexpl(1.0L, 1 - LDBL_MANT_DIG));
+#endif
+#if HAVE_F128
+  TAG_NEG_FLOAT_TEST(f128,
+                      tag_integer_extended_scale_f128((f128) 1, -16382),
+                      tag_integer_extended_scale_f128((f128) 1, -16494),
+                      tag_integer_extended_scale_f128
+                        ((f128) 1 - tag_integer_extended_scale_f128
+                          ((f128) 1, -113), 16384),
+                      (f128) 1 + tag_integer_extended_scale_f128
+                        ((f128) 1, -112));
+#endif
+  test_context(NULL);
+}
+TEST_CASE_END(tag_neg_float)
+
+#undef TAG_NEG_FLOAT_TEST

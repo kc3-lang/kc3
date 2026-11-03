@@ -20,6 +20,18 @@ s_tag * tag_neg (s_tag *src, s_tag *dest)
   s_tag tag = {0};
   s_integer tmp = {0};
   switch (src->type) {
+  case TAG_F32:
+    return tag_init_f32(dest, -src->data.td_f32);
+  case TAG_F64:
+    return tag_init_f64(dest, -src->data.td_f64);
+#if HAVE_F80
+  case TAG_F80:
+    return tag_init_f80(dest, -src->data.td_f80);
+#endif
+#if HAVE_F128
+  case TAG_F128:
+    return tag_init_f128(dest, -src->data.td_f128);
+#endif
   case TAG_INTEGER:
     tag.type = TAG_INTEGER;
     integer_neg(&src->data.td_integer, &tag.data.td_integer);
