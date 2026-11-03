@@ -11,12 +11,16 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/assert.h"
+#include <float.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../libkc3/tag.h"
 #include "../libkc3/complex.h"
 #include "../libkc3/integer.h"
+#include "../libkc3/f80.h"
+#include "../libkc3/f128.h"
+#include "../libkc3/sym.h"
 #include "../libkc3/ratio.h"
 #include "../libkc3/compare.h"
 #include "test.h"
@@ -41,6 +45,7 @@ TEST_CASE_PROTOTYPE(tag_mod_sw_integer);
 TEST_CASE_PROTOTYPE(tag_div_ratio);
 TEST_CASE_PROTOTYPE(tag_float_ratio);
 TEST_CASE_PROTOTYPE(tag_div_complex);
+TEST_CASE_PROTOTYPE(tag_integer_extended);
 // TEST_CASE_PROTOTYPE(tag_type__macro);
 
 void tag_test (void)
@@ -55,6 +60,7 @@ void tag_test (void)
   TEST_CASE_RUN(tag_div_ratio);
   TEST_CASE_RUN(tag_float_ratio);
   TEST_CASE_RUN(tag_div_complex);
+  TEST_CASE_RUN(tag_integer_extended);
   //  TEST_CASE_RUN(tag_type__macro);
 }
 
@@ -1447,3 +1453,197 @@ TEST_CASE(tag_div_complex)
   test_context(NULL);
 }
 TEST_CASE_END(tag_div_complex)
+
+#if HAVE_F80 || HAVE_F128
+#define DEF_INTEGER_EXTENDED_TEST(float_t, scale, precision, min_exp,    \
+                                  max_exp, max_value, float_tag,         \
+                                  float_sym, cast_float)                 \
+  static char tag_integer_extended_ ## float_t (void)                    \
+  {                                                                      \
+    float_t wide = scale((float_t) 1, DBL_MAX_EXP + 17) +                \
+      scale((float_t) 1, DBL_MAX_EXP + 18 - precision);                  \
+    const struct { float_t value; float_t integral; } values[] = {       \
+      {(float_t) 0, (float_t) 0},                                        \
+      {(float_t) 0.75, (float_t) 0},                                     \
+      {(float_t) 17.75, (float_t) 17},                                   \
+      {scale((float_t) 1, precision - 2) + (float_t) 1.5,                \
+       scale((float_t) 1, precision - 2) + (float_t) 1},                 \
+      {scale((float_t) 1, precision - 1) + (float_t) 1,                  \
+       scale((float_t) 1, precision - 1) + (float_t) 1},                 \
+      {wide, wide},                                                      \
+      {scale((float_t) 1, min_exp - precision), (float_t) 0},            \
+      {scale((float_t) 1, min_exp - 1), (float_t) 0},                    \
+      {max_value, max_value}                                             \
+    };                                                                   \
+    const float_t invalid[] = {                                          \
+      (float_t) NAN, (float_t) INFINITY, (float_t) -INFINITY             \
+    };                                                                   \
+    const u8 rounded_units[2][3] = {{0, 0, 1}, {1, 2, 2}};               \
+    s_integer a = {0};                                                   \
+    s_integer b = {0};                                                   \
+    s_integer before = {0};                                              \
+    s_integer expected = {0};                                            \
+    s_integer delta = {0};                                               \
+    s_integer tail = {0};                                                \
+    s_integer saved;                                                     \
+    s_ratio exact = {0};                                                 \
+    s_tag source = {0};                                                  \
+    p_sym integer_type = &g_sym_Integer;                                 \
+    p_sym float_type = float_sym;                                        \
+    float_t actual;                                                      \
+    float_t x;                                                           \
+    int negative;                                                        \
+    int mid;                                                             \
+    int offset;                                                          \
+    uw j;                                                                \
+    test_context("F69: " #float_t " retains bits beyond F64 precision"); \
+    TEST_ASSERT(integer_init_1(&a, "9007199254740993"));                 \
+    TEST_ASSERT(integer_to_ ## float_t(&a) ==                            \
+                  scale((float_t) 1, 53) + (float_t) 1);                 \
+    integer_clean(&a);                                                   \
+    TEST_ASSERT(integer_init_s8(&a, 7));                                 \
+    for (j = 0; j < sizeof(values) / sizeof(*values); j++) {             \
+      for (negative = 0; negative < 2; negative++) {                     \
+        x = negative ? -values[j].value : values[j].value;               \
+        TEST_ASSERT(ratio_init_ ## float_t(&exact, x));                  \
+        TEST_ASSERT(integer_init_zero(&expected));                       \
+        TEST_EQ(mp_div(&exact.numerator.in_int, &exact.denominator.in_int, \
+                        &expected.in_int, NULL), MP_OKAY);               \
+        TEST_EQ(integer_init_ ## float_t(&b, x), &b);                    \
+        TEST_EQ(compare_integer(&b, &expected), 0);                      \
+        integer_clean(&b);                                               \
+        TEST_EQ(integer_set_ ## float_t(&a, x), &a);                     \
+        TEST_EQ(compare_integer(&a, &expected), 0);                      \
+        TEST_ASSERT(integer_init_copy(&before, &a));                     \
+        actual = integer_to_ ## float_t(&a);                             \
+        TEST_ASSERT(actual == (negative ? -values[j].integral :          \
+                                           values[j].integral));         \
+        TEST_EQ(signbit(actual) != 0,                                    \
+                 negative && values[j].integral != (float_t) 0);         \
+        TEST_EQ(compare_integer(&a, &before), 0);                        \
+        integer_clean(&before);                                          \
+        source.type = float_tag;                                         \
+        source.data.td_ ## float_t = x;                                  \
+        TEST_EQ(integer_init_cast(&b, &integer_type, &source), &b);      \
+        TEST_EQ(compare_integer(&b, &expected), 0);                      \
+        integer_clean(&b);                                               \
+        source.type = TAG_INTEGER;                                       \
+        source.data.td_integer = a;                                      \
+        TEST_EQ(cast_float(&actual, &float_type, &source), &actual);     \
+        TEST_ASSERT(actual == (negative ? -values[j].integral :          \
+                                           values[j].integral));         \
+        integer_clean(&expected);                                        \
+        ratio_clean(&exact);                                             \
+      }                                                                  \
+    }                                                                    \
+    test_context("F69: " #float_t                                        \
+                   " rejects non-finite input without mutation");        \
+    TEST_ASSERT(integer_init_copy(&before, &a));                         \
+    saved = a;                                                           \
+    for (j = 0; j < sizeof(invalid) / sizeof(*invalid); j++) {           \
+      TEST_EQ(integer_set_ ## float_t(&a, invalid[j]), NULL);            \
+      TEST_MEMCMP((const char *) &a, (const char *) &saved, sizeof(a));  \
+      TEST_EQ(compare_integer(&a, &before), 0);                          \
+      TEST_EQ(integer_init_ ## float_t(&a, invalid[j]), NULL);           \
+      TEST_MEMCMP((const char *) &a, (const char *) &saved, sizeof(a));  \
+      TEST_EQ(compare_integer(&a, &before), 0);                          \
+      source.type = float_tag;                                           \
+      source.data.td_ ## float_t = invalid[j];                           \
+      TEST_EQ(integer_init_cast(&a, &integer_type, &source), NULL);      \
+      TEST_MEMCMP((const char *) &a, (const char *) &saved, sizeof(a));  \
+      TEST_EQ(compare_integer(&a, &before), 0);                          \
+    }                                                                    \
+    integer_clean(&before);                                              \
+    integer_clean(&a);                                                   \
+    TEST_ASSERT(integer_init_zero(&delta));                              \
+    TEST_ASSERT(integer_init_zero(&tail));                               \
+    TEST_EQ(mp_2expt(&delta.in_int, 64), MP_OKAY);                       \
+    test_context("F69: " #float_t                                        \
+                   " rounds ties and distant sticky bits once");         \
+    for (mid = 1; mid <= 3; mid += 2) {                                  \
+      for (offset = -1; offset <= 1; offset++) {                         \
+        TEST_ASSERT(integer_init_zero(&a));                              \
+        TEST_EQ(mp_2expt(&a.in_int, precision + 64), MP_OKAY);           \
+        TEST_EQ(mp_mul_d(&delta.in_int, mid, &tail.in_int), MP_OKAY);    \
+        TEST_EQ(mp_add(&a.in_int, &tail.in_int, &a.in_int), MP_OKAY);    \
+        if (offset < 0)                                                  \
+          TEST_EQ(mp_sub_d(&a.in_int, 1, &a.in_int), MP_OKAY);           \
+        if (offset > 0)                                                  \
+          TEST_EQ(mp_add_d(&a.in_int, 1, &a.in_int), MP_OKAY);           \
+        x = scale((float_t) 1, precision + 64) +                         \
+          (float_t) rounded_units[(mid - 1) / 2][offset + 1] *           \
+          scale((float_t) 1, 65);                                        \
+        for (negative = 0; negative < 2; negative++) {                   \
+          TEST_ASSERT(integer_init_copy(&before, &a));                   \
+          actual = integer_to_ ## float_t(&a);                           \
+          TEST_ASSERT(actual == (negative ? -x : x));                    \
+          TEST_EQ(compare_integer(&a, &before), 0);                      \
+          integer_clean(&before);                                        \
+          TEST_EQ(mp_neg(&a.in_int, &a.in_int), MP_OKAY);                \
+        }                                                                \
+        integer_clean(&a);                                               \
+      }                                                                  \
+    }                                                                    \
+    test_context("F69: " #float_t " overflow rounds to signed infinity"); \
+    for (offset = -1; offset <= 1; offset++) {                           \
+      TEST_ASSERT(integer_init_zero(&a));                                \
+      TEST_EQ(mp_2expt(&a.in_int, precision + 1), MP_OKAY);              \
+      TEST_EQ(mp_sub_d(&a.in_int, 1, &a.in_int), MP_OKAY);               \
+      TEST_EQ(mp_mul_2d(&a.in_int, max_exp - precision - 1,              \
+                         &a.in_int), MP_OKAY);                           \
+      if (offset < 0)                                                    \
+        TEST_EQ(mp_sub_d(&a.in_int, 1, &a.in_int), MP_OKAY);             \
+      if (offset > 0)                                                    \
+        TEST_EQ(mp_add_d(&a.in_int, 1, &a.in_int), MP_OKAY);             \
+      x = offset < 0 ? (float_t) max_value : (float_t) INFINITY;         \
+      for (negative = 0; negative < 2; negative++) {                     \
+        actual = integer_to_ ## float_t(&a);                             \
+        TEST_ASSERT(actual == (negative ? -x : x));                      \
+        TEST_EQ(signbit(actual) != 0, negative);                         \
+        TEST_EQ(mp_neg(&a.in_int, &a.in_int), MP_OKAY);                  \
+      }                                                                  \
+      integer_clean(&a);                                                 \
+    }                                                                    \
+    integer_clean(&tail);                                                \
+    integer_clean(&delta);                                               \
+    test_context(NULL);                                                  \
+    return 0;                                                            \
+  }
+#if HAVE_F80
+DEF_INTEGER_EXTENDED_TEST(f80, ldexpl, LDBL_MANT_DIG, LDBL_MIN_EXP,
+                          LDBL_MAX_EXP, LDBL_MAX, TAG_F80, &g_sym_F80,
+                          f80_init_cast)
+#endif
+#if HAVE_F128
+static f128 tag_integer_extended_scale_f128 (f128 value, int exponent)
+{
+  while (exponent > 0) {
+    value *= (f128) 2;
+    exponent--;
+  }
+  while (exponent < 0) {
+    value *= (f128) 0.5;
+    exponent++;
+  }
+  return value;
+}
+DEF_INTEGER_EXTENDED_TEST(f128, tag_integer_extended_scale_f128,
+                          113, -16381, 16384,
+                          tag_integer_extended_scale_f128
+                            ((f128) 1 - tag_integer_extended_scale_f128
+                              ((f128) 1, -113), 16384),
+                          TAG_F128, &g_sym_F128, f128_init_cast)
+#endif
+#undef DEF_INTEGER_EXTENDED_TEST
+#endif
+
+TEST_CASE(tag_integer_extended)
+{
+#if HAVE_F80
+  TEST_EQ(tag_integer_extended_f80(), 0);
+#endif
+#if HAVE_F128
+  TEST_EQ(tag_integer_extended_f128(), 0);
+#endif
+}
+TEST_CASE_END(tag_integer_extended)

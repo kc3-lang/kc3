@@ -6,6 +6,21 @@
 #include <string.h>
 #include "../libkc3/kc3.h"
 
+static bool compile_file (s_env *parent, const s_str *path)
+{
+  int argc = parent->argc;
+  char **argv = parent->argv;
+  s_env env = {0};
+  bool result;
+  if (! env_init(&env, &argc, &argv))
+    return false;
+  env.trace = parent->trace;
+  env.pass_by_copy = parent->pass_by_copy;
+  result = env_load(&env, path, false);
+  env_clean(&env);
+  return result;
+}
+
 static int usage (int r, const char *argv0)
 {
   fprintf(stderr, "Usage: find . -name '*.kc3' | %s [-v]\n", argv0);
@@ -66,7 +81,7 @@ int main (int argc, char **argv)
       fflush(stderr);
     }
     str_init(&path, NULL, (uw) in_len, in_path);
-    if (! env_load(env, &path, false)) {
+    if (! compile_file(env, &path)) {
       err_write_1("kc3c: failed to compile ");
       err_inspect_str(&path);
       err_write_1("\n");

@@ -116,6 +116,8 @@ TEST_CASE_PROTOTYPE(marshall_read_container_counts);
 TEST_CASE_PROTOTYPE(marshall_read_header_limits);
 TEST_CASE_PROTOTYPE(marshall_read_integer);
 TEST_CASE_PROTOTYPE(marshall_read_struct_layout);
+TEST_CASE_PROTOTYPE(marshall_read_struct_array_alignment);
+TEST_CASE_PROTOTYPE(marshall_read_tag_failure);
 TEST_CASE_PROTOTYPE(marshall_read_struct_roundtrip);
 TEST_CASE_PROTOTYPE(marshall_read_struct_destination);
 TEST_CASE_PROTOTYPE(marshall_read_struct_nested);
@@ -171,6 +173,8 @@ void marshall_read_test (void)
   TEST_CASE_RUN(marshall_read_header_limits);
   TEST_CASE_RUN(marshall_read_integer);
   TEST_CASE_RUN(marshall_read_struct_layout);
+  TEST_CASE_RUN(marshall_read_struct_array_alignment);
+  TEST_CASE_RUN(marshall_read_tag_failure);
   TEST_CASE_RUN(marshall_read_struct_roundtrip);
   TEST_CASE_RUN(marshall_read_struct_destination);
   TEST_CASE_RUN(marshall_read_struct_nested);
@@ -2993,3 +2997,144 @@ TEST_CASE(marshall_read_array_size)
 }
 TEST_CASE_END(marshall_read_array_size)
 #endif
+
+
+TEST_CASE(marshall_read_struct_array_alignment)
+{
+  struct { u8 first; s_array items; u8 last; } data;
+  const char *specs[] = {
+    "[{:first, (U8) 0}, {:items, (U8[]) {}}, {:last, (U8) 0}]",
+    "[{:first, (U8) 0}, {:items, (F32[]) {}}, {:last, (U8) 0}]",
+    "[{:first, (U8) 0}, {:items, (F32[]) {1.0}}, {:last, (U8) 0}]",
+    ("[{:first, (U8) 0}, {:items, (F32[]) {1.0, 2.0, 3.0, 4.0}},"
+     " {:last, (U8) 0}]")
+  };
+  u8 alignment;
+  uw i;
+  s_marshall m;
+  s_marshall_read mr;
+  p_list spec;
+  p_struct_type st;
+  s_struct_type dest;
+  s_str str;
+  for (i = 0; i < sizeof(specs) / sizeof(*specs); i++) {
+    test_context(specs[i]);
+    TEST_ASSERT((spec = list_new_1(specs[i])));
+    TEST_ASSERT((st = struct_type_new(sym_1("MarshallArrayFields"), spec)));
+    list_delete_all(spec);
+    TEST_EQ(tag_alignment(st->map.value + 1, &alignment), &alignment);
+    TEST_EQ(alignment, _Alignof(s_array));
+    TEST_EQ(st->align_max, _Alignof(__typeof__(data)));
+    TEST_EQ(st->size, sizeof(data));
+    TEST_EQ(st->offset[1], offsetof(__typeof__(data), items));
+    TEST_EQ(st->offset[2], offsetof(__typeof__(data), last));
+    TEST_EQ(struct_type_update_map(st), st);
+    TEST_EQ(st->align_max, _Alignof(__typeof__(data)));
+    TEST_EQ(st->size, sizeof(data));
+    TEST_EQ(st->offset[1], offsetof(__typeof__(data), items));
+    TEST_EQ(st->offset[2], offsetof(__typeof__(data), last));
+    m = (s_marshall) {0};
+    mr = (s_marshall_read) {0};
+    dest = (s_struct_type) {0};
+    str = (s_str) {0};
+    TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+    TEST_ASSERT(marshall_struct_type(&m, false, st));
+    TEST_ASSERT(marshall_to_str(&m, &str));
+    TEST_ASSERT(marshall_read_init_str(&mr, &str));
+    TEST_EQ(marshall_read_struct_type(&mr, false, &dest), &mr);
+    TEST_EQ(dest.align_max, st->align_max);
+    TEST_EQ(dest.size, st->size);
+    TEST_MEM_EQ(dest.offset, 3 * sizeof(uw), st->offset, 3 * sizeof(uw));
+    struct_type_clean(&dest);
+    marshall_read_clean(&mr);
+    marshall_clean(&m);
+    str_clean(&str);
+    struct_type_delete(st);
+  }
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_struct_array_alignment)
+
+TEST_CASE(marshall_read_tag_failure)
+{
+  bool copy_saved = env_global()->pass_by_copy;
+  uw copy;
+  uw mode;
+  s_marshall m;
+  s_marshall_read mr;
+  s_tag payload = {0};
+  s_tag src;
+  s_tag dest;
+  s_tag saved;
+  s_tuple saved_tuple;
+  p_list spec;
+  p_struct_type st;
+  s_str str;
+  TEST_ASSERT((spec = list_new_1("[{:value, (U64) 0}]")));
+  TEST_ASSERT((st = struct_type_new(sym_1("MarshallFailedTag"), spec)));
+  list_delete_all(spec);
+  TEST_ASSERT(tag_init_pstruct_with_type(&payload, st));
+  st->align_max = 1;
+  for (copy = 0; copy < 2; copy++) {
+    env_global()->pass_by_copy = copy;
+    for (mode = 0; mode < 5; mode++) {
+      src = (s_tag) {0};
+      dest = (s_tag) {0};
+      m = (s_marshall) {0};
+      mr = (s_marshall_read) {0};
+      str = (s_str) {0};
+      if (mode == 0)
+        TEST_ASSERT(tag_init_copy(&src, &payload));
+      else if (mode == 1 || mode == 4) {
+        TEST_ASSERT(tag_init_ptuple(&src, 2));
+        TEST_ASSERT(tag_init_str_1(src.data.td_ptuple->tag, NULL,
+                                    "decoded before the failed field"));
+        TEST_ASSERT(tag_init_copy(src.data.td_ptuple->tag + 1, &payload));
+      }
+      else if (mode == 2) {
+        src.type = TAG_MAP;
+        TEST_ASSERT(map_init(&src.data.td_map, 2));
+        tag_init_psym(src.data.td_map.key, sym_1("first"));
+        tag_init_psym(src.data.td_map.key + 1, sym_1("second"));
+        TEST_ASSERT(tag_init_str_1(src.data.td_map.value, NULL,
+                                    "decoded before the failed field"));
+        TEST_ASSERT(tag_init_copy(src.data.td_map.value + 1, &payload));
+      }
+      else
+        TEST_ASSERT(tag_init_quote(&src, &payload));
+      TEST_ASSERT(tag_init_ptuple(&dest, 2));
+      TEST_ASSERT(tag_init_str_1(dest.data.td_ptuple->tag, NULL,
+                                  "owned destination"));
+      tag_init_u8(dest.data.td_ptuple->tag + 1, 77);
+      saved = dest;
+      saved_tuple = *dest.data.td_ptuple;
+      TEST_ASSERT(marshall_init(&m, BUF_SIZE));
+      if (mode == 4)
+        TEST_ASSERT(marshall_tuple(&m, false, src.data.td_ptuple));
+      else
+        TEST_ASSERT(marshall_tag(&m, false, &src));
+      TEST_ASSERT(marshall_to_str(&m, &str));
+      TEST_ASSERT(marshall_read_init_str(&mr, &str));
+      if (mode == 4)
+        TEST_EQ(marshall_read_tuple(&mr, false, dest.data.td_ptuple), NULL);
+      else
+        TEST_EQ(marshall_read_tag(&mr, false, &dest), NULL);
+      TEST_MEM_EQ(&dest, sizeof(dest), &saved, sizeof(saved));
+      TEST_MEM_EQ(dest.data.td_ptuple, sizeof(saved_tuple),
+                    &saved_tuple, sizeof(saved_tuple));
+      TEST_STR_EQ(dest.data.td_ptuple->tag[0].data.td_str,
+                    ((s_str) STR("owned destination")));
+      TEST_EQ(dest.data.td_ptuple->tag[1].data.td_u8, 77);
+      tag_clean(&dest);
+      marshall_read_clean(&mr);
+      marshall_clean(&m);
+      str_clean(&str);
+      tag_clean(&src);
+    }
+  }
+  env_global()->pass_by_copy = copy_saved;
+  tag_clean(&payload);
+  struct_type_delete(st);
+  test_context(NULL);
+}
+TEST_CASE_END(marshall_read_tag_failure)

@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <math.h>
 #include "alloc.h"
 #include "assert.h"
 #include "buf.h"
@@ -304,26 +305,60 @@ s_integer * integer_init_f64 (s_integer *a, f64 x)
   return integer_set_f64(a, x);
 }
 
+#if HAVE_F80 || HAVE_F128
+#define DEF_INTEGER_INIT_EXTENDED(type)                                  \
+  s_integer * integer_init_ ## type (s_integer *a, type x)               \
+  {                                                                      \
+    mp_err error;                                                        \
+    int exponent = 0;                                                    \
+    bool negative;                                                       \
+    s_integer tmp = {0};                                                 \
+    assert(a);                                                           \
+    if (! isfinite(x)) {                                                 \
+      err_puts("integer_init_" #type ": non-finite value");              \
+      return NULL;                                                       \
+    }                                                                    \
+    if (! integer_init_zero(&tmp))                                       \
+      return NULL;                                                       \
+    negative = x < (type) 0;                                             \
+    if (negative)                                                        \
+      x = -x;                                                            \
+    while (x >= (type) 1) {                                              \
+      x *= (type) 0.5;                                                   \
+      exponent++;                                                        \
+    }                                                                    \
+    while (exponent > 0 && x) {                                          \
+      x *= (type) 2;                                                     \
+      if ((error = mp_mul_2d(&tmp.in_int, 1, &tmp.in_int)) != MP_OKAY)   \
+        goto clean;                                                      \
+      if (x >= (type) 1) {                                               \
+        x -= (type) 1;                                                   \
+        if ((error = mp_add_d(&tmp.in_int, 1, &tmp.in_int)) != MP_OKAY)  \
+          goto clean;                                                    \
+      }                                                                  \
+      exponent--;                                                        \
+    }                                                                    \
+    if (exponent > 0 &&                                                  \
+        (error = mp_mul_2d(&tmp.in_int, exponent, &tmp.in_int)) != MP_OKAY) \
+      goto clean;                                                        \
+    if (negative &&                                                      \
+        (error = mp_neg(&tmp.in_int, &tmp.in_int)) != MP_OKAY)           \
+      goto clean;                                                        \
+    *a = tmp;                                                            \
+    return a;                                                            \
+   clean:                                                                \
+    err_write_1("integer_init_" #type ": ");                             \
+    err_puts(mp_error_to_string(error));                                 \
+    integer_clean(&tmp);                                                 \
+    return NULL;                                                         \
+  }
 #if HAVE_F80
-
-s_integer * integer_init_f80 (s_integer *a, f80 x)
-{
-  assert(a);
-  integer_init(a);
-  return integer_set_f80(a, x);
-}
-
+DEF_INTEGER_INIT_EXTENDED(f80)
 #endif
-
 #if HAVE_F128
-
-s_integer * integer_init_f128 (s_integer *a, f128 x)
-{
-  assert(a);
-  integer_init(a);
-  return integer_set_f128(a, x);
-}
-
+DEF_INTEGER_INIT_EXTENDED(f128)
+#endif
+#undef DEF_INTEGER_INIT_EXTENDED
 #endif
 
 s_integer * integer_init_ratio (s_integer *a, const s_ratio *r)
@@ -751,40 +786,25 @@ s_integer * integer_set_f64 (s_integer *a, f64 x)
   return a;
 }
 
+#if HAVE_F80 || HAVE_F128
+#define DEF_INTEGER_SET_EXTENDED(type)                                   \
+  s_integer * integer_set_ ## type (s_integer *a, type x)                \
+  {                                                                      \
+    s_integer tmp = {0};                                                 \
+    assert(a);                                                           \
+    if (! integer_init_ ## type(&tmp, x))                                \
+      return NULL;                                                       \
+    mp_exch(&a->in_int, &tmp.in_int);                                    \
+    integer_clean(&tmp);                                                 \
+    return a;                                                            \
+  }
 #if HAVE_F80
-
-s_integer * integer_set_f80 (s_integer *a, f80 x)
-{
-  sw r;
-  assert(a);
-  // TODO: FIXME
-  if ((r = mp_set_double(&a->in_int, (double) x)) != MP_OKAY) {
-    err_write_1("integer_set_f80: ");
-    err_puts(mp_error_to_string(r));
-    assert(! "integer_set_f80: mp_set_long_double");
-    return NULL;
-  }
-  return a;
-}
-
+DEF_INTEGER_SET_EXTENDED(f80)
 #endif
-
 #if HAVE_F128
-
-s_integer * integer_set_f128 (s_integer *a, f128 x)
-{
-  sw r;
-  assert(a);
-  // TODO: FIXME cast
-  if ((r = mp_set_double(&a->in_int, (double) x)) != MP_OKAY) {
-    err_write_1("integer_set_f128: ");
-    err_puts(mp_error_to_string(r));
-    assert(! "integer_set_f128: mp_set_quad");
-    return NULL;
-  }
-  return a;
-}
-
+DEF_INTEGER_SET_EXTENDED(f128)
+#endif
+#undef DEF_INTEGER_SET_EXTENDED
 #endif
 
 s_integer * integer_set_s32 (s_integer *a, s32 x)
@@ -908,26 +928,26 @@ f64 integer_to_f64 (const s_integer *i)
   return mp_get_double(&i->in_int);
 }
 
+#if HAVE_F80 || HAVE_F128
+#define DEF_INTEGER_TO_EXTENDED(type)                                    \
+  type integer_to_ ## type (const s_integer *i)                          \
+  {                                                                      \
+    mp_digit one = 1;                                                    \
+    s_ratio r = {0};                                                     \
+    assert(i);                                                           \
+    r.numerator = *i;                                                    \
+    r.denominator.in_int = (mp_int) {                                    \
+      .used = 1, .alloc = 1, .sign = MP_ZPOS, .dp = &one                 \
+    };                                                                   \
+    return ratio_to_ ## type(&r);                                        \
+  }
 #if HAVE_F80
-
-f80 integer_to_f80 (const s_integer *i)
-{
-  assert(i);
-  // TODO: FIXME
-  return mp_get_double(&i->in_int);
-}
-
+DEF_INTEGER_TO_EXTENDED(f80)
 #endif
-
 #if HAVE_F128
-
-f128 integer_to_f128 (const s_integer *i)
-{
-  assert(i);
-  // FIXME
-  return mp_get_double(&i->in_int);
-}
-
+DEF_INTEGER_TO_EXTENDED(f128)
+#endif
+#undef DEF_INTEGER_TO_EXTENDED
 #endif
 
 s8 integer_to_s8 (const s_integer *i)

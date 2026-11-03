@@ -3574,6 +3574,7 @@ static s_marshall_read * marshall_read_tag_1 (s_marshall_read *mr,
                                              bool borrow_list)
 {
   s_marshall_read *result;
+  s_tag tmp = {0};
   u8 type = 0;
   assert(mr);
   assert(dest);
@@ -3587,21 +3588,18 @@ static s_marshall_read * marshall_read_tag_1 (s_marshall_read *mr,
     assert(! "marshall_read_tag: marshall_read_u8 type");
     return NULL;
   }
-  dest->ref_count = 1;
+  tmp.type = type;
+  if (borrow_list && type == TAG_PLIST)
+    result = marshall_read_plist_1(mr, heap, &tmp.data.td_plist, true);
+  else
+    result = marshall_read_tag_data(mr, heap, &tmp);
+  if (! result)
+    return NULL;
+  tmp.ref_count = 1;
+  *dest = tmp;
 #if HAVE_PTHREAD
   mutex_init(&dest->ref_count_mutex);
 #endif
-  dest->type = type;
-  if (borrow_list && type == TAG_PLIST)
-    result = marshall_read_plist_1(mr, heap, &dest->data.td_plist, true);
-  else
-    result = marshall_read_tag_data(mr, heap, dest);
-  if (! result) {
-#if HAVE_PTHREAD
-    mutex_clean(&dest->ref_count_mutex);
-#endif
-    return NULL;
-  }
   return mr;
 }
 
@@ -3740,24 +3738,29 @@ s_marshall_read * marshall_read_tuple (s_marshall_read *mr,
                                       bool heap,
                                       s_tuple *dest)
 {
-    uw count;
-    uw i = 0;
-    assert(mr);
-    assert(dest);
-    if (! marshall_read_uw(mr, heap, &count))
+  uw count;
+  uw i = 0;
+  s_tuple tmp = {0};
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_uw(mr, heap, &count) || ! tuple_init(&tmp, count))
+    return NULL;
+  while (i < count) {
+    if (! marshall_read_tag(mr, heap, tmp.tag + i)) {
+      err_puts("marshall_read_tuple: read_tag error");
+      tuple_clean(&tmp);
       return NULL;
-    if (! tuple_init(dest, count))
-      return NULL;
-    while (i < count) {
-      if (! marshall_read_tag(mr, heap, dest->tag + i)) {
-        err_puts("marshall_read_tuple: read_tag error");
-        assert(! "marshall_read_tuple: read_tag error");
-        tuple_clean(dest);
-        return NULL;
-      }
-      i++;
     }
-    return mr;
+    i++;
+  }
+#if HAVE_PTHREAD
+  mutex_clean(&tmp.mutex);
+#endif
+  *dest = tmp;
+#if HAVE_PTHREAD
+  mutex_init(&dest->mutex);
+#endif
+  return mr;
 }
 
 s_marshall_read * marshall_read_ptuple (s_marshall_read *mr,

@@ -1318,6 +1318,8 @@ sw buf_parse_do_block (s_buf *buf, s_do_block *do_block)
   r = result;
   goto clean;
  restore:
+  if (! tmp.short_form)
+    r = -1;
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -3682,11 +3684,15 @@ sw buf_parse_pcall_if (s_buf *buf, p_call *dest)
   return r;
 }
 
-sw buf_parse_pcall_op (s_buf *buf, p_call *dest)
+static sw buf_parse_pcall_op_or_primary (s_buf *buf, p_call *dest,
+                                         s_tag *primary)
 {
   s_ident ident;
   s_tag  op_tag = {0};
   s_ops *ops;
+  sw primary_size = 0;
+  bool primary_saved = false;
+  s_buf_save primary_save;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -3703,6 +3709,9 @@ sw buf_parse_pcall_op (s_buf *buf, p_call *dest)
     goto clean;
   }
   result += r;
+  primary_size = result;
+  buf_save_init(buf, &primary_save);
+  primary_saved = true;
   if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
     goto restore;
   result += r;
@@ -3721,11 +3730,45 @@ sw buf_parse_pcall_op (s_buf *buf, p_call *dest)
   r = result;
   goto clean;
  restore:
+  if (primary && primary_saved) {
+    buf_save_restore_rpos(buf, &primary_save);
+    buf_parse_tag_move(primary, &tmp.arguments->tag);
+    r = primary_size;
+  }
+  else {
+    if (primary_saved) {
+      buf_save_clean(buf, &primary_save);
+      primary_saved = false;
+    }
+    r = 0;
+    buf_save_restore_rpos(buf, &save);
+  }
   call_clean(&tmp);
-  r = 0;
-  buf_save_restore_rpos(buf, &save);
  clean:
+  if (primary_saved)
+    buf_save_clean(buf, &primary_save);
   buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_pcall_op (s_buf *buf, p_call *dest)
+{
+  return buf_parse_pcall_op_or_primary(buf, dest, NULL);
+}
+
+static sw buf_parse_tag_expression (s_buf *buf, s_tag *dest)
+{
+  p_call call = NULL;
+  sw r;
+  s_tag tmp = {0};
+  if ((r = buf_parse_pcall_op_or_primary(buf, &call, &tmp)) <= 0)
+    return r;
+  if (call) {
+    tmp.type = TAG_PCALL;
+    tmp.data.td_pcall = call;
+  }
+  dest->type = tmp.type;
+  dest->data = tmp.data;
   return r;
 }
 
@@ -4805,14 +4848,13 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
     goto restore;
   switch (c) {
   case '{':
-    if ((r = buf_parse_tag_pcall_op(buf, dest)) ||
+    if ((r = buf_parse_tag_expression(buf, dest)) ||
         (r = buf_parse_tag_tuple(buf, dest)) ||
         (r = buf_parse_tag_do_block(buf, dest)))
       goto end;
     goto restore;
   default:
-    if ((r = buf_parse_tag_pcall_op(buf, dest)) ||
-        (r = buf_parse_tag_primary(buf, dest)))
+    if ((r = buf_parse_tag_expression(buf, dest)))
       goto end;
   }
   goto restore;

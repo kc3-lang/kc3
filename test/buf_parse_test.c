@@ -724,6 +724,7 @@ TEST_CASE_PROTOTYPE(buf_parse_digit_dec);
 TEST_CASE_PROTOTYPE(buf_parse_f32);
 TEST_CASE_PROTOTYPE(buf_parse_f64);
 TEST_CASE_PROTOTYPE(buf_parse_fn);
+TEST_CASE_PROTOTYPE(buf_parse_nested_fn);
 TEST_CASE_PROTOTYPE(buf_parse_integer);
 TEST_CASE_PROTOTYPE(buf_parse_integer_dec);
 TEST_CASE_PROTOTYPE(buf_parse_integer_hex);
@@ -738,6 +739,9 @@ TEST_CASE_PROTOTYPE(buf_parse_str_character);
 TEST_CASE_PROTOTYPE(buf_parse_str_u8);
 TEST_CASE_PROTOTYPE(buf_parse_sym);
 TEST_CASE_PROTOTYPE(buf_parse_tag);
+#ifdef NDEBUG
+TEST_CASE_PROTOTYPE(buf_parse_do_block_error);
+#endif
 TEST_CASE_PROTOTYPE(buf_parse_tuple);
 TEST_CASE_PROTOTYPE(buf_parse_unquote);
 TEST_CASE_PROTOTYPE(buf_parse_unsigned_limits);
@@ -762,6 +766,7 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_f32);
   TEST_CASE_RUN(buf_parse_f64);
   TEST_CASE_RUN(buf_parse_fn);
+  TEST_CASE_RUN(buf_parse_nested_fn);
   TEST_CASE_RUN(buf_parse_integer_bin);
   TEST_CASE_RUN(buf_parse_integer_dec);
   TEST_CASE_RUN(buf_parse_integer_hex);
@@ -773,6 +778,9 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_ident);
   TEST_CASE_RUN(buf_parse_plist);
   TEST_CASE_RUN(buf_parse_tag);
+#ifdef NDEBUG
+  TEST_CASE_RUN(buf_parse_do_block_error);
+#endif
   TEST_CASE_RUN(buf_parse_tuple);
   TEST_CASE_RUN(buf_parse_unquote);
   TEST_CASE_RUN(buf_parse_pvar);
@@ -1598,3 +1606,66 @@ TEST_CASE(buf_parse_module_name)
   BUF_PARSE_TEST_MODULE_NAME("Abc0.D1ef.Gh2IJK3");
 }
 TEST_CASE_END(buf_parse_integer_bin)
+
+
+#ifdef NDEBUG
+TEST_CASE(buf_parse_do_block_error)
+{
+  const char *inputs[] = {
+    "do\n1 2\nend",
+    "defmodule ParseBroken do\n1 2\nend",
+    "do\nfn () { %ParseUndefinedStruct{} }\nend"
+  };
+  uw i;
+  s_buf buf;
+  s_tag dest;
+  for (i = 0; i < sizeof(inputs) / sizeof(*inputs); i++) {
+    test_context(inputs[i]);
+    dest = (s_tag) {0};
+    TEST_ASSERT(buf_init_1_const(&buf, inputs[i]));
+    TEST_ASSERT(buf_parse_tag(&buf, &dest) < 0);
+    TEST_EQ(buf.rpos, 0);
+    tag_clean(&dest);
+    buf_clean(&buf);
+  }
+  test_context(NULL);
+}
+TEST_CASE_END(buf_parse_do_block_error)
+#endif
+
+
+TEST_CASE(buf_parse_nested_fn)
+{
+  char input[1024] = "";
+  uw depth;
+  p_call call = NULL;
+  s_buf buf;
+  s_tag dest = {0};
+  s_tag zero = {0};
+  const s_tag *node;
+  for (depth = 0; depth < 20; depth++)
+    strcat(input, "fn () { ");
+  strcat(input, "0");
+  for (depth = 0; depth < 20; depth++)
+    strcat(input, " }");
+  TEST_ASSERT(buf_init_1_const(&buf, input));
+  TEST_ASSERT(buf_parse_tag(&buf, &dest) > 0);
+  TEST_EQ(buf.rpos, strlen(input));
+  node = &dest;
+  for (depth = 0; depth < 20; depth++) {
+    TEST_EQ(node->type, TAG_PCALLABLE);
+    TEST_EQ(node->data.td_pcallable->type, CALLABLE_FN);
+    TEST_EQ(node->data.td_pcallable->data.fn.clauses->algo.count, 1);
+    node = node->data.td_pcallable->data.fn.clauses->algo.tag;
+  }
+  tag_init_u8(&zero, 0);
+  TEST_EQ(compare_tag(node, &zero), 0);
+  tag_clean(&dest);
+  buf_clean(&buf);
+  TEST_ASSERT(buf_init_1_const(&buf, "fn () { 0 }"));
+  TEST_EQ(buf_parse_pcall_op(&buf, &call), 0);
+  TEST_EQ(call, NULL);
+  TEST_EQ(buf.rpos, 0);
+  buf_clean(&buf);
+}
+TEST_CASE_END(buf_parse_nested_fn)

@@ -176,6 +176,11 @@ s_tag * cfn_apply_count (s_cfn *cfn, s_list *args, sw num_args,
           stacktrace_pop(env->stacktrace, stacktrace);
           goto ko;
         }
+        if (cfn->special_operator) {
+          assert(stacktrace_get(env->stacktrace) == &trace);
+          stacktrace_pop(env->stacktrace, stacktrace);
+          goto ko;
+        }
         tag_init(dest_v);
         tag_clean(&tmp2);
         tag_clean(&tmp);

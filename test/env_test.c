@@ -243,6 +243,7 @@ TEST_CASE_PROTOTYPE(env_eval_ident_callable);
 TEST_CASE_PROTOTYPE(env_eval_ident_is_bound);
 TEST_CASE_PROTOTYPE(env_eval_tag);
 TEST_CASE_PROTOTYPE(env_init_clean);
+TEST_CASE_PROTOTYPE(env_special_failure);
 TEST_CASE_PROTOTYPE(env_module_load);
 TEST_CASE_PROTOTYPE(env_facts_transaction_error);
 TEST_CASE_PROTOTYPE(env_facts_transaction_unwind);
@@ -258,6 +259,7 @@ void env_test (void)
   TEST_CASE_RUN(env_clean_scope);
   TEST_CASE_RUN(env_clean_securelevel);
   TEST_CASE_RUN(env_init_clean);
+  TEST_CASE_RUN(env_special_failure);
   TEST_CASE_RUN(env_eval_equal_tag);
   TEST_CASE_RUN(env_eval_call);
   TEST_CASE_RUN(env_eval_ident_qualified);
@@ -764,3 +766,34 @@ TEST_CASE(env_module_load_rollback)
   file_unlink(&cache);
 }
 TEST_CASE_END(env_module_load_rollback)
+
+
+static s_tag * env_special_failure_test_null (s_tag *dest)
+{
+  (void) dest;
+  return NULL;
+}
+
+TEST_CASE(env_special_failure)
+{
+  s_cfn cfn = {0};
+  s_tag dest = {0};
+  s_tag saved;
+  TEST_ASSERT(cfn_init(&cfn, sym_1("env_special_failure_test_null"),
+                       list_new_psym(&g_sym_Result, NULL), &g_sym_Tag));
+  cfn.ptr.p_f = (void (*)(void)) env_special_failure_test_null;
+  TEST_ASSERT(cfn_prep_cif(&cfn));
+  TEST_ASSERT(tag_init_str_1(&dest, NULL, "owned destination"));
+  saved = dest;
+  cfn.special_operator = true;
+  TEST_EQ(cfn_apply(&cfn, NULL, &dest), NULL);
+  TEST_MEM_EQ(&dest, sizeof(dest), &saved, sizeof(saved));
+  tag_clean(&dest);
+  dest = (s_tag) {0};
+  cfn.special_operator = false;
+  TEST_EQ(cfn_apply(&cfn, NULL, &dest), &dest);
+  TEST_EQ(dest.type, TAG_VOID);
+  tag_clean(&dest);
+  cfn_clean(&cfn);
+}
+TEST_CASE_END(env_special_failure)

@@ -75,14 +75,8 @@ u8 * tag_alignment (const s_tag *tag, u8 *dest)
   const s_sym *type;
   if (! tag_type_var(tag, &type))
     return NULL;
-  if (sym_is_array_type(type)) {
-    // TODO: 32 bit
-    if (tag->data.td_array.size >= 16) {
-      *dest = 16;
-      return dest;
-    }
-    type = tag->data.td_array.element_type;
-  }
+  if (sym_is_array_type(type))
+    type = &g_sym_Array;
   return sym_type_alignment(type, dest);
 }
 
