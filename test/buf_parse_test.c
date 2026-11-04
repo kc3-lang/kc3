@@ -11,9 +11,13 @@
  * THIS SOFTWARE.
  */
 #include <float.h>
+#include <errno.h>
 #include <math.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include "../libkc3/kc3.h"
 #include "test.h"
 #include "buf_parse_test_su.h"
@@ -723,6 +727,7 @@ TEST_CASE_PROTOTYPE(buf_parse_digit_oct);
 TEST_CASE_PROTOTYPE(buf_parse_digit_dec);
 TEST_CASE_PROTOTYPE(buf_parse_f32);
 TEST_CASE_PROTOTYPE(buf_parse_f64);
+TEST_CASE_PROTOTYPE(buf_parse_long_fraction);
 TEST_CASE_PROTOTYPE(buf_parse_fn);
 TEST_CASE_PROTOTYPE(buf_parse_nested_fn);
 TEST_CASE_PROTOTYPE(buf_parse_integer);
@@ -738,7 +743,9 @@ TEST_CASE_PROTOTYPE(buf_parse_str);
 TEST_CASE_PROTOTYPE(buf_parse_str_character);
 TEST_CASE_PROTOTYPE(buf_parse_str_u8);
 TEST_CASE_PROTOTYPE(buf_parse_sym);
+TEST_CASE_PROTOTYPE(buf_parse_sym_short_module);
 TEST_CASE_PROTOTYPE(buf_parse_tag);
+TEST_CASE_PROTOTYPE(buf_parse_comment_eof);
 #ifdef NDEBUG
 TEST_CASE_PROTOTYPE(buf_parse_do_block_error);
 #endif
@@ -765,6 +772,7 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_character);
   TEST_CASE_RUN(buf_parse_f32);
   TEST_CASE_RUN(buf_parse_f64);
+  TEST_CASE_RUN(buf_parse_long_fraction);
   TEST_CASE_RUN(buf_parse_fn);
   TEST_CASE_RUN(buf_parse_nested_fn);
   TEST_CASE_RUN(buf_parse_integer_bin);
@@ -775,9 +783,11 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_str);
   TEST_CASE_RUN(buf_parse_module_name);
   TEST_CASE_RUN(buf_parse_sym);
+  TEST_CASE_RUN(buf_parse_sym_short_module);
   TEST_CASE_RUN(buf_parse_ident);
   TEST_CASE_RUN(buf_parse_plist);
   TEST_CASE_RUN(buf_parse_tag);
+  TEST_CASE_RUN(buf_parse_comment_eof);
 #ifdef NDEBUG
   TEST_CASE_RUN(buf_parse_do_block_error);
 #endif
@@ -840,6 +850,87 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_sw);
 #endif /* KC3_TEST_BUF_PARSE_SU */
 }
+
+static int buf_parse_child (char (*check)(void))
+{
+  pid_t pid;
+  pid_t result;
+  int status;
+  if ((pid = fork()) < 0)
+    return -1;
+  if (! pid) {
+    alarm(2);
+    _exit(check());
+  }
+  do {
+    result = waitpid(pid, &status, 0);
+  } while (result < 0 && errno == EINTR);
+  if (result != pid || ! WIFEXITED(status))
+    return -1;
+  return WEXITSTATUS(status);
+}
+
+TEST_CASE(buf_parse_long_fraction)
+{
+  char input[403];
+  s_buf buf;
+  f32 value32 = 0.0f;
+  f64 value64 = 0.0;
+  input[0] = '1';
+  input[1] = '.';
+  memset(input + 2, '0', 400);
+  input[402] = 0;
+  TEST_ASSERT(buf_init_1_const(&buf, input));
+  TEST_EQ(buf_parse_f32(&buf, &value32), 402);
+  buf_clean(&buf);
+  TEST_ASSERT(buf_init_1_const(&buf, input));
+  TEST_EQ(buf_parse_f64(&buf, &value64), 402);
+  buf_clean(&buf);
+  TEST_ASSERT(isfinite(value32));
+  TEST_ASSERT(isfinite(value64));
+  TEST_EQ(value32, 1.0f);
+  TEST_EQ(value64, 1.0);
+}
+TEST_CASE_END(buf_parse_long_fraction)
+
+static char buf_parse_comment_eof_check (void)
+{
+  s_buf buf;
+  s_tag tag = {0};
+  sw result;
+  if (! buf_init_1_const(&buf, "#"))
+    return 1;
+  result = buf_parse_tag(&buf, &tag);
+  if (result > 0)
+    tag_clean(&tag);
+  buf_clean(&buf);
+  return 0;
+}
+
+TEST_CASE(buf_parse_comment_eof)
+{
+  TEST_EQ(buf_parse_child(buf_parse_comment_eof_check), 0);
+}
+TEST_CASE_END(buf_parse_comment_eof)
+
+static char buf_parse_sym_short_module_check (void)
+{
+  s_buf buf;
+  const s_sym *sym = NULL;
+  sw result;
+  if (! buf_init_1_const(&buf, "A.B"))
+    return 1;
+  result = buf_parse_sym(&buf, &sym);
+  buf_clean(&buf);
+  return result != 3 || ! sym || sym->str.size != 3 ||
+    memcmp(sym->str.ptr.p_pchar, "A.B", 3);
+}
+
+TEST_CASE(buf_parse_sym_short_module)
+{
+  TEST_EQ(buf_parse_child(buf_parse_sym_short_module_check), 0);
+}
+TEST_CASE_END(buf_parse_sym_short_module)
 
 TEST_CASE(buf_parse_unsigned_limits)
 {

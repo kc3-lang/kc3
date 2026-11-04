@@ -13,9 +13,12 @@
 #include "../libkc3/assert.h"
 #include <stdlib.h>
 #include <string.h>
+#include "../libkc3/alloc.h"
+#include "../libkc3/set__fact.h"
 #include "../libkc3/tag.h"
 #include "../libkc3/set_cursor__tag.h"
 #include "../libkc3/set__tag.h"
+#include "../libkc3/set__uw.h"
 #include "test.h"
 
 #define SET__TAG_TEST_ADD(test, expected_count)                        \
@@ -100,6 +103,7 @@ TEST_CASE_PROTOTYPE(set__tag_cursor);
 TEST_CASE_PROTOTYPE(set__tag_init_clean);
 TEST_CASE_PROTOTYPE(set__tag_remove);
 TEST_CASE_PROTOTYPE(set__tag_resize);
+TEST_CASE_PROTOTYPE(set_init_size_overflow);
 
 void set__tag_test (void)
 {
@@ -108,7 +112,31 @@ void set__tag_test (void)
   TEST_CASE_RUN(set__tag_remove);
   TEST_CASE_RUN(set__tag_resize);
   TEST_CASE_RUN(set__tag_cursor);
+  TEST_CASE_RUN(set_init_size_overflow);
 }
+
+TEST_CASE(set_init_size_overflow)
+{
+  s_set__fact facts = {0};
+  s_set__tag tags = {0};
+  s_set__uw words = {0};
+  uw count = UW_MAX / sizeof(void *) + 2;
+  char failed = 0;
+  if (set_init__tag(&tags, count)) {
+    alloc_free(tags.items);
+    failed = 1;
+  }
+  if (set_init__fact(&facts, count)) {
+    alloc_free(facts.items);
+    failed = 1;
+  }
+  if (set_init__uw(&words, count)) {
+    alloc_free(words.items);
+    failed = 1;
+  }
+  TEST_EQ(failed, 0);
+}
+TEST_CASE_END(set_init_size_overflow)
 
 TEST_CASE(set__tag_add)
 {

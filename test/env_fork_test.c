@@ -346,6 +346,66 @@ static char env_fork_reader_test (void)
   return 0;
 }
 
+typedef struct env_fork_identity_result {
+  s_env *env;
+  s_pointer pointer;
+  char target;
+  uw facts_id;
+  uw var_id;
+  bool failed;
+} s_env_fork_identity_result;
+
+static void * env_fork_identity_thread (void *arg)
+{
+  s_env_fork_identity_result *result = arg;
+  s_facts facts;
+  s_var var;
+  if (! env_global_set(result->env) ||
+      ! pointer_init(&result->pointer, NULL, &g_sym_U8,
+                     &result->target) ||
+      ! facts_init(&facts) || ! var_init(&var, &g_sym_U8)) {
+    result->failed = true;
+    return NULL;
+  }
+  result->facts_id = facts.id;
+  result->var_id = var.id;
+  var_clean(&var);
+  facts_clean(&facts);
+  return NULL;
+}
+
+static char env_fork_identity_test (void)
+{
+  s_env a = {0};
+  s_env b = {0};
+  s_env *parent = env_global();
+  s_env_fork_identity_result result[2] = {{0}};
+  pthread_t thread;
+  uw i;
+  char failed = 0;
+  if (! env_fork_init(&a, parent) || ! env_fork_init(&b, parent))
+    return 1;
+  result[0].env = &a;
+  result[1].env = &b;
+  for (i = 0; i < 2; i++) {
+    if (pthread_create(&thread, NULL, env_fork_identity_thread,
+                       result + i) ||
+        pthread_join(thread, NULL)) {
+      failed = 1;
+      break;
+    }
+  }
+  if (result[0].failed || result[1].failed ||
+      result[0].pointer.id == result[1].pointer.id ||
+      result[0].facts_id == result[1].facts_id ||
+      result[0].var_id == result[1].var_id ||
+      compare_pointer(&result[0].pointer, &result[1].pointer) == 0)
+    failed = 1;
+  env_fork_clean(&b);
+  env_fork_clean(&a);
+  return failed;
+}
+
 static int env_fork_child_test (char (*test)(void))
 {
   pid_t pid;
@@ -382,6 +442,7 @@ ENV_FORK_CASE(default)
 ENV_FORK_CASE(default_failure)
 ENV_FORK_CASE(failure)
 ENV_FORK_CASE(reader)
+ENV_FORK_CASE(identity)
 
 void env_fork_test (void)
 {
@@ -395,4 +456,5 @@ void env_fork_test (void)
   TEST_CASE_RUN(env_fork_default_failure);
   TEST_CASE_RUN(env_fork_failure);
   TEST_CASE_RUN(env_fork_reader);
+  TEST_CASE_RUN(env_fork_identity);
 }

@@ -19,7 +19,7 @@
 #define TARGET_NAME_MAX 32
 #define TARGETS_MAX     1000
 
-#define TEST_KO_MAX     10
+#define TEST_KO_MAX     100
 
 long         g_test_assert_count = 0;
 long         g_test_assert_ko = 0;

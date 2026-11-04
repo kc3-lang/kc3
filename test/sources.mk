@@ -23,26 +23,32 @@ SOURCES = \
 	"buf_parse_test_u32.c" \
 	"buf_parse_test_u64.c" \
 	"buf_parse_test_u8.c" \
+	"buf_peek_to_str_test.c" \
 	"buf_test.c" \
 	"buf_write_test.c" \
 	"cfn_test.c" \
 	"character_test.c" \
 	"compare_test.c" \
+	"complex_test.c" \
 	"crypt_test.c" \
+	"do_block_test.c" \
 	"env_fork_test.c" \
 	"env_test.c" \
 	"fact_test.c" \
 	"facts_cursor_test.c" \
 	"facts_test.c" \
 	"facts_with_test.c" \
+	"file_pwd_test.c" \
 	"fn_test.c" \
 	"gl_mesh_test.c" \
 	"gl_text_test.c" \
 	"gtk4_signal_test.c" \
 	"hash_test.c" \
+	"ht_test.c" \
 	"ident_test.c" \
 	"image_test.c" \
 	"inspect_test.c" \
+	"integer_cast_test.c" \
 	"libkc3_test.c" \
 	"list_test.c" \
 	"marshall_read_test.c" \
@@ -56,6 +62,7 @@ SOURCES = \
 	"set__tag_test.c" \
 	"sh_test.c" \
 	"skiplist__fact_test.c" \
+	"socket_addr_test.c" \
 	"socket_buf_test.c" \
 	"stacktrace_test.c" \
 	"str_test.c" \

@@ -185,6 +185,7 @@ TEST_CASE_PROTOTYPE(buf_xfer_limits);
 TEST_CASE_PROTOTYPE(buf_xfer_positions);
 TEST_CASE_PROTOTYPE(buf_xfer_refill_flush);
 TEST_CASE_PROTOTYPE(buf_xfer_callback_error);
+TEST_CASE_PROTOTYPE(buf_xfer_reverse_capacity);
 
 void buf_test (void)
 {
@@ -229,6 +230,7 @@ void buf_test (void)
   TEST_CASE_RUN(buf_xfer_positions);
   TEST_CASE_RUN(buf_xfer_refill_flush);
   TEST_CASE_RUN(buf_xfer_callback_error);
+  TEST_CASE_RUN(buf_xfer_reverse_capacity);
   TEST_CASE_RUN(buf_f);
   TEST_CASE_RUN(buf_ignore);
 }
@@ -1589,3 +1591,28 @@ TEST_CASE(buf_xfer_callback_error)
   }
 }
 TEST_CASE_END(buf_xfer_callback_error)
+
+static sw buf_xfer_reverse_flush_claim (s_buf *buf)
+{
+  (void) buf;
+  return 4;
+}
+
+TEST_CASE(buf_xfer_reverse_capacity)
+{
+  char from[4] = {'a', 'b', 'c', 'd'};
+  char to[8] = {'1', '2', '3', '4', '5', '6', '7', '8'};
+  s_buf src;
+  s_buf dest;
+  TEST_ASSERT(buf_init(&src, false, sizeof(from), from));
+  TEST_ASSERT(buf_init(&dest, false, 2, to));
+  src.wpos = sizeof(from);
+  dest.flush = buf_xfer_reverse_flush_claim;
+  TEST_EQ(buf_xfer_reverse(&src, &dest), -1);
+  TEST_EQ(src.rpos, 0);
+  TEST_EQ(dest.wpos, 0);
+  TEST_MEM_EQ(to, sizeof(to), "12345678", 8);
+  buf_clean(&dest);
+  buf_clean(&src);
+}
+TEST_CASE_END(buf_xfer_reverse_capacity)

@@ -75,6 +75,7 @@
   } while (0)
 
 TEST_CASE_PROTOTYPE(str_character_is_reserved);
+TEST_CASE_PROTOTYPE(str_character_out_of_bounds);
 TEST_CASE_PROTOTYPE(str_init_clean);
 TEST_CASE_PROTOTYPE(str_init_copy);
 TEST_CASE_PROTOTYPE(str_init_copy_1);
@@ -98,6 +99,7 @@ TEST_CASE_PROTOTYPE(str_new_f);
 TEST_CASE_PROTOTYPE(str_to_hex);
 TEST_CASE_PROTOTYPE(str_to_ident);
 TEST_CASE_PROTOTYPE(str_to_sym);
+TEST_CASE_PROTOTYPE(str_trim_boundary_space);
 
 void str_test (void)
 {
@@ -122,9 +124,43 @@ void str_test (void)
   TEST_CASE_RUN(str_new_cpy);
   TEST_CASE_RUN(str_new_f);
   TEST_CASE_RUN(str_character_is_reserved);
+  TEST_CASE_RUN(str_character_out_of_bounds);
   TEST_CASE_RUN(str_to_hex);
   TEST_CASE_RUN(str_to_sym);
+  TEST_CASE_RUN(str_trim_boundary_space);
 }
+
+TEST_CASE(str_character_out_of_bounds)
+{
+  s_str empty = STR("");
+  s_str str = STR("ab");
+  character c = 1234;
+  TEST_ASSERT(str_character(&str, 99, &c) <= 0);
+  TEST_EQ(c, 1234);
+  TEST_ASSERT(str_character(&empty, 0, &c) <= 0);
+  TEST_EQ(c, 1234);
+}
+TEST_CASE_END(str_character_out_of_bounds)
+
+TEST_CASE(str_trim_boundary_space)
+{
+  const s_str inputs[] = {
+    STR("  hello world  "), STR("   "), STR("")
+  };
+  const s_str expected[] = {
+    STR("hello world"), STR(""), STR("")
+  };
+  s_str dest = {0};
+  uw i;
+  for (i = 0; i < sizeof(inputs) / sizeof(*inputs); i++) {
+    TEST_ASSERT(str_trim(inputs + i, &dest));
+    TEST_EQ(dest.size, expected[i].size);
+    TEST_MEM_EQ(dest.ptr.p_pchar, dest.size,
+                expected[i].ptr.p_pchar, expected[i].size);
+    str_clean(&dest);
+  }
+}
+TEST_CASE_END(str_trim_boundary_space)
 
 TEST_CASE(str_character_is_reserved)
 {

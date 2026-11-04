@@ -11,10 +11,14 @@
  * THIS SOFTWARE.
  */
 #include "../libkc3/assert.h"
+#include <errno.h>
 #include <float.h>
 #include <math.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include "../libkc3/tag.h"
 #include "../libkc3/complex.h"
 #include "../libkc3/integer.h"
@@ -50,6 +54,7 @@ TEST_CASE_PROTOTYPE(complex_arithmetic_failure);
 TEST_CASE_PROTOTYPE(tag_complex_arithmetic);
 TEST_CASE_PROTOTYPE(tag_integer_extended);
 TEST_CASE_PROTOTYPE(tag_neg_float);
+TEST_CASE_PROTOTYPE(tag_sqrt_float);
 // TEST_CASE_PROTOTYPE(tag_type__macro);
 
 void tag_test (void)
@@ -68,8 +73,61 @@ void tag_test (void)
   TEST_CASE_RUN(tag_complex_arithmetic);
   TEST_CASE_RUN(tag_integer_extended);
   TEST_CASE_RUN(tag_neg_float);
+  TEST_CASE_RUN(tag_sqrt_float);
   //  TEST_CASE_RUN(tag_type__macro);
 }
+
+static int tag_sqrt_child (char (*check)(void))
+{
+  pid_t pid;
+  pid_t result;
+  int status;
+  if ((pid = fork()) < 0)
+    return -1;
+  if (! pid) {
+    alarm(2);
+    _exit(check());
+  }
+  do {
+    result = waitpid(pid, &status, 0);
+  } while (result < 0 && errno == EINTR);
+  if (result != pid || ! WIFEXITED(status))
+    return -1;
+  return WEXITSTATUS(status);
+}
+
+static char tag_sqrt_float_check (void)
+{
+  s_tag dest = {0};
+  s_tag src = {0};
+  if (! tag_init_f32(&src, 4.0f) || ! tag_sqrt(&src, &dest) ||
+      dest.type != TAG_F32 || dest.data.td_f32 != 2.0f)
+    return 1;
+  tag_clean(&dest);
+  if (! tag_init_f64(&src, 9.0) || ! tag_sqrt(&src, &dest) ||
+      dest.type != TAG_F64 || dest.data.td_f64 != 3.0)
+    return 1;
+  tag_clean(&dest);
+#if HAVE_F80
+  if (! tag_init_f80(&src, 16.0L) || ! tag_sqrt(&src, &dest) ||
+      dest.type != TAG_F80 || dest.data.td_f80 != 4.0L)
+    return 1;
+  tag_clean(&dest);
+#endif
+#if HAVE_F128
+  if (! tag_init_f128(&src, 25.0Q) || ! tag_sqrt(&src, &dest) ||
+      dest.type != TAG_F128 || dest.data.td_f128 != 5.0Q)
+    return 1;
+  tag_clean(&dest);
+#endif
+  return 0;
+}
+
+TEST_CASE(tag_sqrt_float)
+{
+  TEST_EQ(tag_sqrt_child(tag_sqrt_float_check), 0);
+}
+TEST_CASE_END(tag_sqrt_float)
 
 TEST_CASE(tag_hash_u64)
 {
