@@ -2230,24 +2230,39 @@ sw buf_xfer (s_buf *dest, s_buf *src, uw size)
 sw buf_xfer_reverse (s_buf *src, s_buf *dest)
 {
   sw r;
-  sw size;
+  uw size;
   assert(src);
   assert(dest);
 #if HAVE_PTHREAD
   rwlock_w(src->rwlock);
   rwlock_w(dest->rwlock);
 #endif
-  size = src->wpos - src->rpos;
-  if (dest->wpos + size > dest->size &&
-      buf_flush(dest) < size) {
+  if (src->rpos > src->wpos || src->wpos > src->size ||
+      dest->rpos > dest->wpos || dest->wpos > dest->size) {
     r = -1;
     goto clean;
   }
-  for (sw i = 0; i < size; i++)
+  size = src->wpos - src->rpos;
+  if (size > (uw) SW_MAX) {
+    r = -1;
+    goto clean;
+  }
+  if (size > dest->size - dest->wpos && buf_flush(dest) < 0) {
+    r = -1;
+    goto clean;
+  }
+  if (src->rpos > src->wpos || src->wpos > src->size ||
+      dest->rpos > dest->wpos || dest->wpos > dest->size ||
+      size > src->wpos - src->rpos ||
+      size > dest->size - dest->wpos) {
+    r = -1;
+    goto clean;
+  }
+  for (uw i = 0; i < size; i++)
     dest->ptr.p_ps8[dest->wpos + i] = src->ptr.p_ps8[src->wpos - 1 - i];
   src->rpos += size;
   dest->wpos += size;
-  r = size;
+  r = (sw) size;
  clean:
 #if HAVE_PTHREAD
   rwlock_unlock_w(dest->rwlock);
