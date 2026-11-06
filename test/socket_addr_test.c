@@ -50,7 +50,22 @@ TEST_CASE(socket_addr_to_str_ipv6)
 }
 TEST_CASE_END(socket_addr_to_str_ipv6)
 
+TEST_CASE(socket_addr_to_str_invalid_family)
+{
+  struct sockaddr addr;
+  const s_str old = STR("sentinel");
+  s_str dest = old;
+  memset(&addr, 0, sizeof(addr));
+  addr.sa_family = AF_UNSPEC;
+  TEST_EQ(socket_addr_to_str(&dest, &addr, sizeof(addr)), NULL);
+  TEST_EQ(dest.free.p_pvoid, old.free.p_pvoid);
+  TEST_EQ(dest.ptr.p_pvoid, old.ptr.p_pvoid);
+  TEST_EQ(dest.size, old.size);
+}
+TEST_CASE_END(socket_addr_to_str_invalid_family)
+
 void socket_addr_test (void)
 {
   TEST_CASE_RUN(socket_addr_to_str_ipv6);
+  TEST_CASE_RUN(socket_addr_to_str_invalid_family);
 }

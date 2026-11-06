@@ -30,12 +30,31 @@
 s_str * socket_addr_to_str(s_str *str, const struct sockaddr *addr,
                            s32 addr_len)
 {
+  const void *src;
   char ip[INET6_ADDRSTRLEN];
+  assert(str);
   assert(addr);
-  assert(addr_len);
-  if (!inet_ntop(addr->sa_family, &addr->sa_data[2], ip, addr_len)) {
+  if (addr_len <= 0)
+    return NULL;
+  if (addr->sa_family == AF_INET) {
+    const struct sockaddr_in *ipv4;
+    if (addr_len < (s32) sizeof(struct sockaddr_in))
+      return NULL;
+    ipv4 = (const struct sockaddr_in *) addr;
+    src = &ipv4->sin_addr;
+  }
+  else if (addr->sa_family == AF_INET6) {
+    const struct sockaddr_in6 *ipv6;
+    if (addr_len < (s32) sizeof(struct sockaddr_in6))
+      return NULL;
+    ipv6 = (const struct sockaddr_in6 *) addr;
+    src = &ipv6->sin6_addr;
+  }
+  else
+    return NULL;
+  if (! inet_ntop(addr->sa_family, src, ip, sizeof(ip))) {
     err_puts("socket_addr_to_str: inet_ntop");
-    return str;
+    return NULL;
   }
   return str_init_1_alloc(str, ip);
 }
