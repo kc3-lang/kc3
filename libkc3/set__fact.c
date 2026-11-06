@@ -186,6 +186,8 @@ set_init__fact
   s_set__fact tmp = {0};
   assert(set);
   assert(max > 0);
+  if (max > UW_MAX / sizeof(s_set_item__fact *))
+    return NULL;
   tmp.max = max;
   tmp.items = alloc(max * sizeof(s_set_item__fact *));
   if (! tmp.items)

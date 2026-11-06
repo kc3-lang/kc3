@@ -41,6 +41,8 @@ s_do_block * do_block_init (s_do_block *do_block, uw count)
 {
   s_do_block tmp = {0};
   assert(do_block);
+  if (count > UW_MAX / sizeof(s_tag))
+    return NULL;
   tmp.count = count;
   if (count) {
     tmp.tag = alloc(count * sizeof(s_tag));

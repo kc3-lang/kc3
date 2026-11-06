@@ -186,6 +186,8 @@ set_init__tag
   s_set__tag tmp = {0};
   assert(set);
   assert(max > 0);
+  if (max > UW_MAX / sizeof(s_set_item__tag *))
+    return NULL;
   tmp.max = max;
   tmp.items = alloc(max * sizeof(s_set_item__tag *));
   if (! tmp.items)
