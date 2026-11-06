@@ -214,35 +214,21 @@ s_tag ** ht_iterator_next (s_ht_iterator *i, s_tag **dest)
     assert(! "ht_iterator_next: invalid argument");
     return NULL;
   }
-  if (i->position >= i->ht->size) {
-    err_puts("ht_iterator_next: called after end");
-    assert(! "ht_iterator_next: called after end");
+  *dest = NULL;
+  if (i->position >= i->ht->size)
     return NULL;
-  }
   if (! i->next) {
     i->next = true;
-    if ((i->items = i->ht->items[i->position]))
-      goto ok;
-  }
-  else
-    if (i->items)
-      i->items = list_next(i->items);
-  while (i->position < i->ht->size - 1 && ! i->items) {
-    i->position++;
     i->items = i->ht->items[i->position];
   }
-  if (! i->items && i->position >= i->ht->size) {
-    err_write_1("ht_iterator_next: reached end (position=");
-    err_inspect_uw_decimal(i->position);
-    err_write_1(", size=");
-    err_inspect_uw_decimal(i->ht->size);
-    err_write_1(", count=");
-    err_inspect_uw_decimal(i->ht->count);
-    err_puts(")");
-    assert(! "ht_iterator_next: reached end");
-    return NULL;
+  else if (i->items)
+    i->items = list_next(i->items);
+  while (! i->items) {
+    i->position++;
+    if (i->position >= i->ht->size)
+      return NULL;
+    i->items = i->ht->items[i->position];
   }
- ok:
   *dest = &i->items->tag;
   return dest;
 }
