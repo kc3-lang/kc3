@@ -151,12 +151,12 @@ TEST_CASE(str_trim_boundary_space)
     STR("hello world"), STR(""), STR("")
   };
   s_str dest = {0};
-  uw i;
-  for (i = 0; i < sizeof(inputs) / sizeof(*inputs); i++) {
-    TEST_ASSERT(str_trim(inputs + i, &dest));
-    TEST_EQ(dest.size, expected[i].size);
+  uw input;
+  for (input = 0; input < sizeof(inputs) / sizeof(*inputs); input++) {
+    TEST_ASSERT(str_trim(inputs + input, &dest));
+    TEST_EQ(dest.size, expected[input].size);
     TEST_MEM_EQ(dest.ptr.p_pchar, dest.size,
-                expected[i].ptr.p_pchar, expected[i].size);
+                expected[input].ptr.p_pchar, expected[input].size);
     str_clean(&dest);
   }
 }

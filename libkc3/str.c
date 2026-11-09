@@ -2130,6 +2130,7 @@ const s_sym * str_to_sym (const s_str *src)
 s_str * str_trim (const s_str *str, s_str *dest)
 {
   character c;
+  uw end;
   sw r;
   uw size;
   uw start = 0;
@@ -2143,9 +2144,13 @@ s_str * str_trim (const s_str *str, s_str *dest)
   if (r <= 0)
     return str_init_empty(dest);
   size = r;
-  while ((r = str_read_character_utf8(&tmp, &c)) > 0 &&
-         ! character_is_space(c))
+  end = size;
+  while ((r = str_read_character_utf8(&tmp, &c)) > 0) {
     size += r;
+    if (! character_is_space(c))
+      end = size;
+  }
+  size = end;
   if (! str_init_alloc(&tmp, size))
     return NULL;
   memcpy(tmp.free.p_pvoid, str->ptr.p_pu8 + start, size);
