@@ -1484,9 +1484,9 @@ sw buf_parse_f32 (s_buf *buf, f32 *dest)
 {
   character c;
   u8 digit;
+  f64 divisor;
   s32 exp = 0;
   s8 exp_sign = 1;
-  uw i;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -1519,10 +1519,10 @@ sw buf_parse_f32 (s_buf *buf, f32 *dest)
       (r = buf_read_1(buf, ".")) <= 0)
     goto restore;
   result += r;
-  i = 10;
+  divisor = 10.0;
   while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
-    tmp += (f32) digit / i;
-    i *= 10;
+    tmp += (f32) digit / divisor;
+    divisor *= 10.0;
     result += r;
   }
   if ((r = buf_read_1(buf, "e")) > 0) {

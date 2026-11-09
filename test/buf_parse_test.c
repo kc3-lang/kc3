@@ -726,8 +726,9 @@ TEST_CASE_PROTOTYPE(buf_parse_digit_hex);
 TEST_CASE_PROTOTYPE(buf_parse_digit_oct);
 TEST_CASE_PROTOTYPE(buf_parse_digit_dec);
 TEST_CASE_PROTOTYPE(buf_parse_f32);
+TEST_CASE_PROTOTYPE(buf_parse_f32_fractional_divisor);
 TEST_CASE_PROTOTYPE(buf_parse_f64);
-TEST_CASE_PROTOTYPE(buf_parse_long_fraction);
+TEST_CASE_PROTOTYPE(buf_parse_f64_mantissa_overflow);
 TEST_CASE_PROTOTYPE(buf_parse_fn);
 TEST_CASE_PROTOTYPE(buf_parse_nested_fn);
 TEST_CASE_PROTOTYPE(buf_parse_integer);
@@ -771,8 +772,9 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_cfn);
   TEST_CASE_RUN(buf_parse_character);
   TEST_CASE_RUN(buf_parse_f32);
+  TEST_CASE_RUN(buf_parse_f32_fractional_divisor);
   TEST_CASE_RUN(buf_parse_f64);
-  TEST_CASE_RUN(buf_parse_long_fraction);
+  TEST_CASE_RUN(buf_parse_f64_mantissa_overflow);
   TEST_CASE_RUN(buf_parse_fn);
   TEST_CASE_RUN(buf_parse_nested_fn);
   TEST_CASE_RUN(buf_parse_integer_bin);
@@ -870,28 +872,39 @@ static int buf_parse_child (char (*check)(void))
   return WEXITSTATUS(status);
 }
 
-TEST_CASE(buf_parse_long_fraction)
+TEST_CASE(buf_parse_f32_fractional_divisor)
 {
   char input[403];
   s_buf buf;
-  f32 value32 = 0.0f;
-  f64 value64 = 0.0;
+  f32 value = 0.0f;
   input[0] = '1';
   input[1] = '.';
   memset(input + 2, '0', 400);
   input[402] = 0;
   TEST_ASSERT(buf_init_1_const(&buf, input));
-  TEST_EQ(buf_parse_f32(&buf, &value32), 402);
+  TEST_EQ(buf_parse_f32(&buf, &value), 402);
   buf_clean(&buf);
-  TEST_ASSERT(buf_init_1_const(&buf, input));
-  TEST_EQ(buf_parse_f64(&buf, &value64), 402);
-  buf_clean(&buf);
-  TEST_ASSERT(isfinite(value32));
-  TEST_ASSERT(isfinite(value64));
-  TEST_EQ(value32, 1.0f);
-  TEST_EQ(value64, 1.0);
+  TEST_ASSERT(isfinite(value));
+  TEST_EQ(value, 1.0f);
 }
-TEST_CASE_END(buf_parse_long_fraction)
+TEST_CASE_END(buf_parse_f32_fractional_divisor)
+
+TEST_CASE(buf_parse_f64_mantissa_overflow)
+{
+  char input[403];
+  s_buf buf;
+  f64 value = 0.0;
+  input[0] = '1';
+  input[1] = '.';
+  memset(input + 2, '0', 400);
+  input[402] = 0;
+  TEST_ASSERT(buf_init_1_const(&buf, input));
+  TEST_EQ(buf_parse_f64(&buf, &value), 402);
+  buf_clean(&buf);
+  TEST_ASSERT(isfinite(value));
+  TEST_EQ(value, 1.0);
+}
+TEST_CASE_END(buf_parse_f64_mantissa_overflow)
 
 static char buf_parse_comment_eof_check (void)
 {
