@@ -652,6 +652,8 @@ s_str * file_pwd (s_str *dest)
     return NULL;
   size = strlen(buf);
   pchar = alloc(size + 1);
+  if (! pchar)
+    return NULL;
   memcpy(pchar, buf, size);
   str_init(dest, pchar, size, pchar);
   return dest;
