@@ -253,6 +253,8 @@ sw str_character (const s_str *str, uw position, character *dest)
       return -1;
     i++;
   }
+  if (i <= position)
+    return -1;
   *dest = c;
   return r;
 }
