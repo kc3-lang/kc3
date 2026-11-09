@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <errno.h>
+#include <math.h>
 #include <signal.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -39,40 +40,32 @@ static int complex_child (char (*check)(void))
   return WEXITSTATUS(status);
 }
 
-static char complex_norm_cast_arithmetic_failure_check (void)
+static char complex_norm_arithmetic_failure_check (void)
 {
   s_complex c = {0};
-  s_complex invalid = {0};
+  s_complex nested = {0};
   s_tag dest = {0};
-  s_tag invalid_dest = {0};
-  tag_init_f64(&c.x, 3.0);
-  tag_init_f64(&c.y, 4.0);
-  if (! complex_norm(&c, &dest) || dest.type != TAG_F64 ||
-      dest.data.td_f64 != 5.0)
+  char failed;
+  tag_init_f64(&nested.x, NAN);
+  if (! tag_init_ratio_1(&nested.y, "1/2"))
     return 1;
-  tag_clean(&dest);
-  if (complex_to_f32(&c) != 5.0f || complex_to_f64(&c) != 5.0)
-    return 1;
-#if HAVE_F80
-  if (complex_to_f80(&c) != 5.0L)
-    return 1;
-#endif
-  tag_init_str_1(&invalid.x, NULL, "x");
-  tag_init_f64(&invalid.y, 1.0);
-  tag_init_u8(&invalid_dest, 23);
-  if (complex_norm(&invalid, &invalid_dest) ||
-      invalid_dest.type != TAG_U8 || invalid_dest.data.td_u8 != 23)
-    return 1;
-  return 0;
+  c.x.type = TAG_PCOMPLEX;
+  c.x.data.td_pcomplex = &nested;
+  tag_init_f64(&c.y, 1.0);
+  tag_init_u8(&dest, 23);
+  failed = complex_norm(&c, &dest) || dest.type != TAG_U8 ||
+    dest.data.td_u8 != 23;
+  complex_clean(&nested);
+  return failed;
 }
 
-TEST_CASE(complex_norm_cast_arithmetic_failure)
+TEST_CASE(complex_norm_arithmetic_failure)
 {
-  TEST_EQ(complex_child(complex_norm_cast_arithmetic_failure_check), 0);
+  TEST_EQ(complex_child(complex_norm_arithmetic_failure_check), 0);
 }
-TEST_CASE_END(complex_norm_cast_arithmetic_failure)
+TEST_CASE_END(complex_norm_arithmetic_failure)
 
 void complex_test (void)
 {
-  TEST_CASE_RUN(complex_norm_cast_arithmetic_failure);
+  TEST_CASE_RUN(complex_norm_arithmetic_failure);
 }

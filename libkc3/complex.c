@@ -428,16 +428,22 @@ s_complex * complex_sub (s_complex *a, s_complex *b,
 
 s_tag * complex_norm (s_complex *c, s_tag *dest)
 {
-  s_complex d;
+  s_complex d = {0};
+  bool ok;
   s_tag sum = {0};
   s_tag tmp = {0};
   assert(c);
-  tag_mul(&c->x, &c->x, &d.x);
-  tag_mul(&c->y, &c->y, &d.y);
-  tag_add(&d.x, &d.y, &sum);
-  tag_sqrt(&sum, &tmp);
+  assert(dest);
+  ok = tag_mul(&c->x, &c->x, &d.x) &&
+    tag_mul(&c->y, &c->y, &d.y) &&
+    tag_add(&d.x, &d.y, &sum) &&
+    tag_sqrt(&sum, &tmp);
   tag_clean(&sum);
   complex_clean(&d);
+  if (! ok) {
+    tag_clean(&tmp);
+    return NULL;
+  }
   *dest = tmp;
   return dest;
 }
