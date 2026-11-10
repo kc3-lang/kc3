@@ -4425,7 +4425,7 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
       break;
     }
     if ((r = buf_parse_str_character(buf, &c)) <= 0) {
-      if ((r = buf_parse_str_u8(buf, &b)) <= 0)
+      if (r < -1 || (r = buf_parse_str_u8(buf, &b)) <= 0)
         goto restore;
       result += r;
       if ((r = buf_write_u8(&tmp, b)) < 0)
@@ -4433,6 +4433,10 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
       continue;
     }
     result += r;
+    if (c > 0x10ffff || (c >= 0xd800 && c <= 0xdfff)) {
+      r = -2;
+      goto restore;
+    }
     if ((r = buf_write_character_utf8(&tmp, c)) < 0)
       goto restore;
   }
@@ -4517,13 +4521,18 @@ sw buf_parse_str_character_unicode (s_buf *buf, character *dest)
   if ((r = buf_read_1(buf, "+")) <= 0)
     goto clean;
   result += r;
-  if ((r = buf_parse_u64_hex(buf, &tmp)) <= 0) {
-    buf_save_restore_rpos(buf, &save);
-    goto clean;
+  if ((r = buf_parse_u64_hex(buf, &tmp)) <= 0)
+    goto restore;
+  if (tmp > 0x10ffff || (tmp >= 0xd800 && tmp <= 0xdfff)) {
+    r = -2;
+    goto restore;
   }
   *dest = (character) tmp;
   result += r;
   r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
   return r;
@@ -6126,13 +6135,18 @@ sw buf_parse_u64_dec (s_buf *buf, u64 *dest)
 
 sw buf_parse_u64_hex (s_buf *buf, u64 *dest)
 {
- sw r;
+  sw r;
   sw result = 0;
   u8 digit;
   s_buf_save save;
   u64 tmp = 0;
   buf_save_init(buf, &save);
   while ((r = buf_parse_digit_hex(buf, &digit)) > 0) {
+    if (tmp > (U64_MAX - digit) / 16) {
+      r = -2;
+      buf_save_restore_rpos(buf, &save);
+      goto clean;
+    }
     tmp = tmp * 16 + digit;
     result += r;
   }
@@ -6140,6 +6154,7 @@ sw buf_parse_u64_hex (s_buf *buf, u64 *dest)
     *dest = tmp;
     r = result;
   }
+ clean:
   buf_save_clean(buf, &save);
   return r;
 }

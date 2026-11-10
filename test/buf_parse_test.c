@@ -743,6 +743,7 @@ TEST_CASE_PROTOTYPE(buf_parse_pvar);
 TEST_CASE_PROTOTYPE(buf_parse_str);
 TEST_CASE_PROTOTYPE(buf_parse_str_character);
 TEST_CASE_PROTOTYPE(buf_parse_str_u8);
+TEST_CASE_PROTOTYPE(buf_parse_str_unicode_invalid);
 TEST_CASE_PROTOTYPE(buf_parse_sym);
 TEST_CASE_PROTOTYPE(buf_parse_sym_short_module);
 TEST_CASE_PROTOTYPE(buf_parse_tag);
@@ -783,6 +784,7 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_integer_oct);
   TEST_CASE_RUN(buf_parse_integer);
   TEST_CASE_RUN(buf_parse_str);
+  TEST_CASE_RUN(buf_parse_str_unicode_invalid);
   TEST_CASE_RUN(buf_parse_module_name);
   TEST_CASE_RUN(buf_parse_sym);
   TEST_CASE_RUN(buf_parse_sym_short_module);
@@ -1525,6 +1527,7 @@ TEST_CASE(buf_parse_str)
   BUF_PARSE_TEST_STR_N("\"\\0\"", 1, "\0");
   BUF_PARSE_TEST_STR_N("\"\\0\\0\"", 2, "\0\0");
   BUF_PARSE_TEST_STR_N("\"\\0\\0\\0\"", 3, "\0\0\0");
+  BUF_PARSE_TEST_STR_N("\"\\u+0000\"", 1, "\0");
   BUF_PARSE_TEST_STR("\"\"", "");
   BUF_PARSE_TEST_STR("\"\\n\"", "\n");
   BUF_PARSE_TEST_STR("\"\\r\"", "\r");
@@ -1535,6 +1538,13 @@ TEST_CASE(buf_parse_str)
   BUF_PARSE_TEST_STR("\"\\x02\"", "\x02");
   BUF_PARSE_TEST_STR("\"\\xff\"", "\xFF");
   BUF_PARSE_TEST_STR("\"\\xFF\"", "\xFF");
+  BUF_PARSE_TEST_STR("\"\xFF\"", "\xFF");
+  BUF_PARSE_TEST_STR("\"\\u+000000000000000000041\"", "A");
+  BUF_PARSE_TEST_STR("\"\\u+d7fF\"", "\xED\x9F\xBF");
+  BUF_PARSE_TEST_STR("\"\\U+E000\"", "\xEE\x80\x80");
+  BUF_PARSE_TEST_STR("\"\\u+10ffff\"", "\xF4\x8F\xBF\xBF");
+  BUF_PARSE_TEST_STR("\"before \\u+1F604 after\"", "before 😄 after");
+  BUF_PARSE_TEST_STR("\"\"\"\\u+10FFFF\"\"\"", "\xF4\x8F\xBF\xBF");
   BUF_PARSE_TEST_STR("\"0\"", "0");
   BUF_PARSE_TEST_STR("\"9\"", "9");
   BUF_PARSE_TEST_STR("\"A\"", "A");
@@ -1621,6 +1631,55 @@ TEST_CASE(buf_parse_str_u8)
   BUF_PARSE_TEST_STR_U8("\\xFF8", 4, 0xFF);
 }
 TEST_CASE_END(buf_parse_str_u8)
+
+TEST_CASE(buf_parse_str_unicode_invalid)
+{
+  const char *invalid[] = {
+    "\"\\u+110000\"",
+    "\"\\U+D800\"",
+    "\"\\u+DBFF\"",
+    "\"\\U+DC00\"",
+    "\"\\u+DFFF\"",
+    "\"\\u+FFFFFFFF\"",
+    "\"\\u+100000041\"",
+    "\"\\u+FFFFFFFFFFFFFFFF\"",
+    "\"\\u+10000000000000041\"",
+    "\"\\u+100000000000000000000000000000041\"",
+    "\"before \\u+110000 after\"",
+    "\"\"\"\\u+D800\"\"\"",
+    "\"\xED\xA0\x80\"",
+    "\"\xED\xBF\xBF\"",
+    "\"\xF4\x90\x80\x80\"",
+    "\"\xF7\xBF\xBF\xBF\""
+  };
+  s_buf buf;
+  character c;
+  s_str dest;
+  uw i;
+  const char *unchanged = "unchanged";
+  for (i = 0; i < sizeof(invalid) / sizeof(*invalid); i++) {
+    test_context(invalid[i]);
+    buf_init_1_const(&buf, invalid[i]);
+    str_init_1(&dest, NULL, unchanged);
+    TEST_EQ(buf_parse_str(&buf, &dest), -2);
+    TEST_EQ(buf.rpos, 0);
+    TEST_EQ(dest.ptr.p_pchar, unchanged);
+    TEST_EQ(dest.size, strlen(unchanged));
+    TEST_EQ(buf.save, NULL);
+    if (invalid[i][1] == '\\') {
+      buf.rpos = 1;
+      c = 'A';
+      TEST_EQ(buf_parse_str_character(&buf, &c), -2);
+      TEST_EQ(buf.rpos, 1);
+      TEST_EQ(c, 'A');
+      TEST_EQ(buf.save, NULL);
+    }
+    str_clean(&dest);
+    buf_clean(&buf);
+  }
+  test_context(NULL);
+}
+TEST_CASE_END(buf_parse_str_unicode_invalid)
 
 TEST_CASE(buf_parse_struct)
 {
