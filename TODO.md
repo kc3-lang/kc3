@@ -33,7 +33,7 @@
  - [ ] partial requests
    - HTTP 206 partial content
  - [ ] SSL
-   - [ ] ajouter le support de tls dans lib/kc3/0.1/httpd.kc3
+   - [ ] ajouter le support de tls dans lib/kc3/0.2/httpd.kc3
  - [ ] XXX pledge(2) support via `KC3.pledge()`
 
 ## Windows release

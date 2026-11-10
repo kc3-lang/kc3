@@ -24,15 +24,15 @@ asan: ${PROG_ASAN}
 build: ${PROG}
 
 clean_dump:
-	rm -f ${SRC_TOP}/lib/kc3/0.1/kpkg.dump
+	rm -f ${SRC_TOP}/lib/kc3/0.2/kpkg.dump
 
 cov:   ${PROG_COV}
 
 debug: ${PROG_DEBUG}
 
 dump: clean_dump
-	${SRC_TOP}/kc3s/kc3s --trace --load kpkg.kc3 --dump ${SRC_TOP}/lib/kc3/0.1/kpkg.dump --quit
-	time ${SRC_TOP}/kc3s/kc3s --trace --restore ${SRC_TOP}/lib/kc3/0.1/kpkg.dump --quit
+	${SRC_TOP}/kc3s/kc3s --trace --load kpkg.kc3 --dump ${SRC_TOP}/lib/kc3/0.2/kpkg.dump --quit
+	time ${SRC_TOP}/kc3s/kc3s --trace --restore ${SRC_TOP}/lib/kc3/0.2/kpkg.dump --quit
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details ${PROG}.html
@@ -41,9 +41,9 @@ gdb: debug
 	if [ -f ${PROG_DEBUG}.core ]; then gdb ${PROG_DEBUG} ${PROG_DEBUG}.core; else gdb ${PROG_DEBUG}; fi
 
 install:
-	mkdir -p ${DESTDIR}${libdir}/kc3/0.1
-	${INSTALL} -m 644 ${SRC_TOP}/lib/kc3/0.1/kpkg.dump \
-	    ${DESTDIR}${libdir}/kc3/0.1
+	mkdir -p ${DESTDIR}${libdir}/kc3/0.2
+	${INSTALL} -m 644 ${SRC_TOP}/lib/kc3/0.2/kpkg.dump \
+	    ${DESTDIR}${libdir}/kc3/0.2
 	mkdir -p ${DESTDIR}${prefix}/bin
 	${INSTALL} -m 755 ${PROG} ${DESTDIR}${prefix}/bin/${PROG}
 

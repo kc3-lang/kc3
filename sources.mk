@@ -1175,13 +1175,16 @@ KC3_C_SOURCES = \
 	"test/buf_parse_test_u32.c" \
 	"test/buf_parse_test_u64.c" \
 	"test/buf_parse_test_u8.c" \
+	"test/buf_peek_to_str_test.c" \
 	"test/buf_test.c" \
 	"test/buf_write_test.c" \
 	"test/cfn_test.c" \
 	"test/character_test.c" \
 	"test/compare_test.c" \
 	"test/compare_test.h" \
+	"test/complex_test.c" \
 	"test/crypt_test.c" \
+	"test/do_block_test.c" \
 	"test/env_fork_test.c" \
 	"test/env_test.c" \
 	"test/fact_test.c" \
@@ -1189,14 +1192,17 @@ KC3_C_SOURCES = \
 	"test/facts_cursor_test.c" \
 	"test/facts_test.c" \
 	"test/facts_with_test.c" \
+	"test/file_pwd_test.c" \
 	"test/fn_test.c" \
 	"test/gl_mesh_test.c" \
 	"test/gl_text_test.c" \
 	"test/gtk4_signal_test.c" \
 	"test/hash_test.c" \
+	"test/ht_test.c" \
 	"test/ident_test.c" \
 	"test/image_test.c" \
 	"test/inspect_test.c" \
+	"test/integer_cast_test.c" \
 	"test/libkc3_test.c" \
 	"test/list_test.c" \
 	"test/marshall_read_test.c" \
@@ -1210,6 +1216,7 @@ KC3_C_SOURCES = \
 	"test/set__tag_test.c" \
 	"test/sh_test.c" \
 	"test/skiplist__fact_test.c" \
+	"test/socket_addr_test.c" \
 	"test/socket_buf_test.c" \
 	"test/stacktrace_test.c" \
 	"test/str_test.c" \
@@ -1648,182 +1655,182 @@ KC3_LIB_SOURCES = \
 	"lib/disabled/gtk4/text_view.kc3" \
 	"lib/disabled/gtk4/widget.kc3" \
 	"lib/disabled/gtk4/window.kc3" \
-	"lib/kc3/0.1/alist.kc3" \
-	"lib/kc3/0.1/array.kc3" \
-	"lib/kc3/0.1/base32.kc3" \
-	"lib/kc3/0.1/base64.kc3" \
-	"lib/kc3/0.1/bin/primes.kc3" \
-	"lib/kc3/0.1/bool.facts" \
-	"lib/kc3/0.1/buf.kc3" \
-	"lib/kc3/0.1/buf_rw.kc3" \
-	"lib/kc3/0.1/call.kc3" \
-	"lib/kc3/0.1/character.kc3" \
-	"lib/kc3/0.1/compare.kc3" \
-	"lib/kc3/0.1/complex.facts" \
-	"lib/kc3/0.1/counter.kc3" \
-	"lib/kc3/0.1/cow.kc3" \
-	"lib/kc3/0.1/crypt.kc3" \
-	"lib/kc3/0.1/daemon.kc3" \
-	"lib/kc3/0.1/dns.kc3" \
-	"lib/kc3/0.1/ekc3.kc3" \
-	"lib/kc3/0.1/env.kc3" \
-	"lib/kc3/0.1/err.kc3" \
-	"lib/kc3/0.1/event.kc3" \
-	"lib/kc3/0.1/event_poll.kc3" \
-	"lib/kc3/0.1/f32.facts" \
-	"lib/kc3/0.1/f64.facts" \
-	"lib/kc3/0.1/f80.facts" \
-	"lib/kc3/0.1/fact.kc3" \
-	"lib/kc3/0.1/fact_w.kc3" \
-	"lib/kc3/0.1/facts.kc3" \
-	"lib/kc3/0.1/facts/acceptor.kc3" \
-	"lib/kc3/0.1/fd.kc3" \
-	"lib/kc3/0.1/file.kc3" \
-	"lib/kc3/0.1/file/stat.kc3" \
-	"lib/kc3/0.1/file_stat.kc3" \
-	"lib/kc3/0.1/git.kc3" \
-	"lib/kc3/0.1/git/branch.kc3" \
-	"lib/kc3/0.1/git/reference.kc3" \
-	"lib/kc3/0.1/git/repository.kc3" \
-	"lib/kc3/0.1/git/tag.kc3" \
-	"lib/kc3/0.1/gl/box.kc3" \
-	"lib/kc3/0.1/gl/dray.kc3" \
-	"lib/kc3/0.1/gl/dvec2.kc3" \
-	"lib/kc3/0.1/gl/dvec3.kc3" \
-	"lib/kc3/0.1/gl/marching_cubes.kc3" \
-	"lib/kc3/0.1/gl/object.kc3" \
-	"lib/kc3/0.1/gl/pt.kc3" \
-	"lib/kc3/0.1/gl/pt/main.kc3" \
-	"lib/kc3/0.1/gl/pt/material.kc3" \
-	"lib/kc3/0.1/gl/pt/reflection.kc3" \
-	"lib/kc3/0.1/gl/pt/sphere.kc3" \
-	"lib/kc3/0.1/gl/sphere.kc3" \
-	"lib/kc3/0.1/gl/triangle.kc3" \
-	"lib/kc3/0.1/gl/vec2.kc3" \
-	"lib/kc3/0.1/gl/vec3.kc3" \
-	"lib/kc3/0.1/gl/vertex.kc3" \
-	"lib/kc3/0.1/hotp.kc3" \
-	"lib/kc3/0.1/html.kc3" \
-	"lib/kc3/0.1/http.kc3" \
-	"lib/kc3/0.1/http/api.kc3" \
-	"lib/kc3/0.1/http/range.kc3" \
-	"lib/kc3/0.1/http/request.kc3" \
-	"lib/kc3/0.1/http/response.kc3" \
-	"lib/kc3/0.1/http/upload.kc3" \
-	"lib/kc3/0.1/httpd.kc3" \
-	"lib/kc3/0.1/httpd/route.kc3" \
-	"lib/kc3/0.1/httpd/static.kc3" \
-	"lib/kc3/0.1/https.kc3" \
-	"lib/kc3/0.1/https/client.kc3" \
-	"lib/kc3/0.1/ident.kc3" \
-	"lib/kc3/0.1/image.kc3" \
-	"lib/kc3/0.1/image/egl.kc3" \
-	"lib/kc3/0.1/init.kc3" \
-	"lib/kc3/0.1/inspect.kc3" \
-	"lib/kc3/0.1/integer.facts" \
-	"lib/kc3/0.1/io.kc3" \
-	"lib/kc3/0.1/json.kc3" \
-	"lib/kc3/0.1/kc3.1.kc3" \
-	"lib/kc3/0.1/kc3.dump" \
-	"lib/kc3/0.1/kc3.facts" \
-	"lib/kc3/0.1/kc3/op.kc3" \
-	"lib/kc3/0.1/kpkg.dump" \
-	"lib/kc3/0.1/kpkg.kc3" \
-	"lib/kc3/0.1/kpkg/package.kc3" \
-	"lib/kc3/0.1/kpkg/repos/automake.kc3" \
-	"lib/kc3/0.1/kpkg/repos/brotli.kc3" \
-	"lib/kc3/0.1/kpkg/repos/bzip2.kc3" \
-	"lib/kc3/0.1/kpkg/repos/freetype.kc3" \
-	"lib/kc3/0.1/kpkg/repos/harfbuzz.kc3" \
-	"lib/kc3/0.1/kpkg/repos/kc3.kc3" \
-	"lib/kc3/0.1/kpkg/repos/kmx_sort.kc3" \
-	"lib/kc3/0.1/kpkg/repos/libbsd.kc3" \
-	"lib/kc3/0.1/kpkg/repos/libevent.kc3" \
-	"lib/kc3/0.1/kpkg/repos/libffi.kc3" \
-	"lib/kc3/0.1/kpkg/repos/libgit2.kc3" \
-	"lib/kc3/0.1/kpkg/repos/libiconv.kc3" \
-	"lib/kc3/0.1/kpkg/repos/libmd.kc3" \
-	"lib/kc3/0.1/kpkg/repos/libpng.kc3" \
-	"lib/kc3/0.1/kpkg/repos/libressl.kc3" \
-	"lib/kc3/0.1/kpkg/repos/libxkbcommon.kc3" \
-	"lib/kc3/0.1/kpkg/repos/libxml2.kc3" \
-	"lib/kc3/0.1/kpkg/repos/runj.kc3" \
-	"lib/kc3/0.1/kpkg/repos/zlib.kc3" \
-	"lib/kc3/0.1/kpkg_debug.dump" \
-	"lib/kc3/0.1/kqueue.kc3" \
-	"lib/kc3/0.1/kubz.kc3" \
-	"lib/kc3/0.1/list.kc3" \
-	"lib/kc3/0.1/map.facts" \
-	"lib/kc3/0.1/markdown.kc3" \
-	"lib/kc3/0.1/marshall.kc3" \
-	"lib/kc3/0.1/marshall_read.kc3" \
-	"lib/kc3/0.1/math.kc3" \
-	"lib/kc3/0.1/metric.kc3" \
-	"lib/kc3/0.1/module.kc3" \
-	"lib/kc3/0.1/mutex.kc3" \
-	"lib/kc3/0.1/parse.kc3" \
-	"lib/kc3/0.1/pdf.kc3" \
-	"lib/kc3/0.1/pdf/file.kc3" \
-	"lib/kc3/0.1/pdf/rect.kc3" \
-	"lib/kc3/0.1/pdf/stream.kc3" \
-	"lib/kc3/0.1/pdf/trailer.kc3" \
-	"lib/kc3/0.1/pdf/vec2.kc3" \
-	"lib/kc3/0.1/pdf/write.kc3" \
-	"lib/kc3/0.1/pdf/write/document.kc3" \
-	"lib/kc3/0.1/pdf/write/page.kc3" \
-	"lib/kc3/0.1/pointer.kc3" \
-	"lib/kc3/0.1/pretty.kc3" \
-	"lib/kc3/0.1/pretty_save.kc3" \
-	"lib/kc3/0.1/prime.kc3" \
-	"lib/kc3/0.1/prime_hash.kc3" \
-	"lib/kc3/0.1/ptr.facts" \
-	"lib/kc3/0.1/ptr_free.facts" \
-	"lib/kc3/0.1/qrencode.kc3" \
-	"lib/kc3/0.1/ratio.facts" \
-	"lib/kc3/0.1/rpc.kc3" \
-	"lib/kc3/0.1/rpc/response.kc3" \
-	"lib/kc3/0.1/rusage.kc3" \
-	"lib/kc3/0.1/rwlock.kc3" \
-	"lib/kc3/0.1/s16.facts" \
-	"lib/kc3/0.1/s32.facts" \
-	"lib/kc3/0.1/s64.facts" \
-	"lib/kc3/0.1/s8.facts" \
-	"lib/kc3/0.1/set.kc3" \
-	"lib/kc3/0.1/set/fact.kc3" \
-	"lib/kc3/0.1/set/item/fact.kc3" \
-	"lib/kc3/0.1/set/item/tag.kc3" \
-	"lib/kc3/0.1/set/tag.kc3" \
-	"lib/kc3/0.1/sh.kc3" \
-	"lib/kc3/0.1/sha1.kc3" \
-	"lib/kc3/0.1/sha256.kc3" \
-	"lib/kc3/0.1/sha512.kc3" \
-	"lib/kc3/0.1/smtp.kc3" \
-	"lib/kc3/0.1/socket.kc3" \
-	"lib/kc3/0.1/socket/addr.kc3" \
-	"lib/kc3/0.1/socket/buf.kc3" \
-	"lib/kc3/0.1/stacktrace.kc3" \
-	"lib/kc3/0.1/str.facts" \
-	"lib/kc3/0.1/struct.kc3" \
-	"lib/kc3/0.1/sw.facts" \
-	"lib/kc3/0.1/sym.facts" \
-	"lib/kc3/0.1/tag.kc3" \
-	"lib/kc3/0.1/terminal.kc3" \
-	"lib/kc3/0.1/thread.kc3" \
-	"lib/kc3/0.1/time.kc3" \
-	"lib/kc3/0.1/tls.kc3" \
-	"lib/kc3/0.1/tls/client.kc3" \
-	"lib/kc3/0.1/tls/config.kc3" \
-	"lib/kc3/0.1/tls/server.kc3" \
-	"lib/kc3/0.1/totp.kc3" \
-	"lib/kc3/0.1/u16.facts" \
-	"lib/kc3/0.1/u32.facts" \
-	"lib/kc3/0.1/u64.facts" \
-	"lib/kc3/0.1/u8.facts" \
-	"lib/kc3/0.1/unit.kc3" \
-	"lib/kc3/0.1/url.kc3" \
-	"lib/kc3/0.1/uw.facts" \
-	"lib/kc3/0.1/var.facts" \
-	"lib/kc3/0.1/void.facts" \
+	"lib/kc3/0.2/alist.kc3" \
+	"lib/kc3/0.2/array.kc3" \
+	"lib/kc3/0.2/base32.kc3" \
+	"lib/kc3/0.2/base64.kc3" \
+	"lib/kc3/0.2/bin/primes.kc3" \
+	"lib/kc3/0.2/bool.facts" \
+	"lib/kc3/0.2/buf.kc3" \
+	"lib/kc3/0.2/buf_rw.kc3" \
+	"lib/kc3/0.2/call.kc3" \
+	"lib/kc3/0.2/character.kc3" \
+	"lib/kc3/0.2/compare.kc3" \
+	"lib/kc3/0.2/complex.facts" \
+	"lib/kc3/0.2/counter.kc3" \
+	"lib/kc3/0.2/cow.kc3" \
+	"lib/kc3/0.2/crypt.kc3" \
+	"lib/kc3/0.2/daemon.kc3" \
+	"lib/kc3/0.2/dns.kc3" \
+	"lib/kc3/0.2/ekc3.kc3" \
+	"lib/kc3/0.2/env.kc3" \
+	"lib/kc3/0.2/err.kc3" \
+	"lib/kc3/0.2/event.kc3" \
+	"lib/kc3/0.2/event_poll.kc3" \
+	"lib/kc3/0.2/f32.facts" \
+	"lib/kc3/0.2/f64.facts" \
+	"lib/kc3/0.2/f80.facts" \
+	"lib/kc3/0.2/fact.kc3" \
+	"lib/kc3/0.2/fact_w.kc3" \
+	"lib/kc3/0.2/facts.kc3" \
+	"lib/kc3/0.2/facts/acceptor.kc3" \
+	"lib/kc3/0.2/fd.kc3" \
+	"lib/kc3/0.2/file.kc3" \
+	"lib/kc3/0.2/file/stat.kc3" \
+	"lib/kc3/0.2/file_stat.kc3" \
+	"lib/kc3/0.2/git.kc3" \
+	"lib/kc3/0.2/git/branch.kc3" \
+	"lib/kc3/0.2/git/reference.kc3" \
+	"lib/kc3/0.2/git/repository.kc3" \
+	"lib/kc3/0.2/git/tag.kc3" \
+	"lib/kc3/0.2/gl/box.kc3" \
+	"lib/kc3/0.2/gl/dray.kc3" \
+	"lib/kc3/0.2/gl/dvec2.kc3" \
+	"lib/kc3/0.2/gl/dvec3.kc3" \
+	"lib/kc3/0.2/gl/marching_cubes.kc3" \
+	"lib/kc3/0.2/gl/object.kc3" \
+	"lib/kc3/0.2/gl/pt.kc3" \
+	"lib/kc3/0.2/gl/pt/main.kc3" \
+	"lib/kc3/0.2/gl/pt/material.kc3" \
+	"lib/kc3/0.2/gl/pt/reflection.kc3" \
+	"lib/kc3/0.2/gl/pt/sphere.kc3" \
+	"lib/kc3/0.2/gl/sphere.kc3" \
+	"lib/kc3/0.2/gl/triangle.kc3" \
+	"lib/kc3/0.2/gl/vec2.kc3" \
+	"lib/kc3/0.2/gl/vec3.kc3" \
+	"lib/kc3/0.2/gl/vertex.kc3" \
+	"lib/kc3/0.2/hotp.kc3" \
+	"lib/kc3/0.2/html.kc3" \
+	"lib/kc3/0.2/http.kc3" \
+	"lib/kc3/0.2/http/api.kc3" \
+	"lib/kc3/0.2/http/range.kc3" \
+	"lib/kc3/0.2/http/request.kc3" \
+	"lib/kc3/0.2/http/response.kc3" \
+	"lib/kc3/0.2/http/upload.kc3" \
+	"lib/kc3/0.2/httpd.kc3" \
+	"lib/kc3/0.2/httpd/route.kc3" \
+	"lib/kc3/0.2/httpd/static.kc3" \
+	"lib/kc3/0.2/https.kc3" \
+	"lib/kc3/0.2/https/client.kc3" \
+	"lib/kc3/0.2/ident.kc3" \
+	"lib/kc3/0.2/image.kc3" \
+	"lib/kc3/0.2/image/egl.kc3" \
+	"lib/kc3/0.2/init.kc3" \
+	"lib/kc3/0.2/inspect.kc3" \
+	"lib/kc3/0.2/integer.facts" \
+	"lib/kc3/0.2/io.kc3" \
+	"lib/kc3/0.2/json.kc3" \
+	"lib/kc3/0.2/kc3.1.kc3" \
+	"lib/kc3/0.2/kc3.dump" \
+	"lib/kc3/0.2/kc3.facts" \
+	"lib/kc3/0.2/kc3/op.kc3" \
+	"lib/kc3/0.2/kpkg.dump" \
+	"lib/kc3/0.2/kpkg.kc3" \
+	"lib/kc3/0.2/kpkg/package.kc3" \
+	"lib/kc3/0.2/kpkg/repos/automake.kc3" \
+	"lib/kc3/0.2/kpkg/repos/brotli.kc3" \
+	"lib/kc3/0.2/kpkg/repos/bzip2.kc3" \
+	"lib/kc3/0.2/kpkg/repos/freetype.kc3" \
+	"lib/kc3/0.2/kpkg/repos/harfbuzz.kc3" \
+	"lib/kc3/0.2/kpkg/repos/kc3.kc3" \
+	"lib/kc3/0.2/kpkg/repos/kmx_sort.kc3" \
+	"lib/kc3/0.2/kpkg/repos/libbsd.kc3" \
+	"lib/kc3/0.2/kpkg/repos/libevent.kc3" \
+	"lib/kc3/0.2/kpkg/repos/libffi.kc3" \
+	"lib/kc3/0.2/kpkg/repos/libgit2.kc3" \
+	"lib/kc3/0.2/kpkg/repos/libiconv.kc3" \
+	"lib/kc3/0.2/kpkg/repos/libmd.kc3" \
+	"lib/kc3/0.2/kpkg/repos/libpng.kc3" \
+	"lib/kc3/0.2/kpkg/repos/libressl.kc3" \
+	"lib/kc3/0.2/kpkg/repos/libxkbcommon.kc3" \
+	"lib/kc3/0.2/kpkg/repos/libxml2.kc3" \
+	"lib/kc3/0.2/kpkg/repos/runj.kc3" \
+	"lib/kc3/0.2/kpkg/repos/zlib.kc3" \
+	"lib/kc3/0.2/kpkg_debug.dump" \
+	"lib/kc3/0.2/kqueue.kc3" \
+	"lib/kc3/0.2/kubz.kc3" \
+	"lib/kc3/0.2/list.kc3" \
+	"lib/kc3/0.2/map.facts" \
+	"lib/kc3/0.2/markdown.kc3" \
+	"lib/kc3/0.2/marshall.kc3" \
+	"lib/kc3/0.2/marshall_read.kc3" \
+	"lib/kc3/0.2/math.kc3" \
+	"lib/kc3/0.2/metric.kc3" \
+	"lib/kc3/0.2/module.kc3" \
+	"lib/kc3/0.2/mutex.kc3" \
+	"lib/kc3/0.2/parse.kc3" \
+	"lib/kc3/0.2/pdf.kc3" \
+	"lib/kc3/0.2/pdf/file.kc3" \
+	"lib/kc3/0.2/pdf/rect.kc3" \
+	"lib/kc3/0.2/pdf/stream.kc3" \
+	"lib/kc3/0.2/pdf/trailer.kc3" \
+	"lib/kc3/0.2/pdf/vec2.kc3" \
+	"lib/kc3/0.2/pdf/write.kc3" \
+	"lib/kc3/0.2/pdf/write/document.kc3" \
+	"lib/kc3/0.2/pdf/write/page.kc3" \
+	"lib/kc3/0.2/pointer.kc3" \
+	"lib/kc3/0.2/pretty.kc3" \
+	"lib/kc3/0.2/pretty_save.kc3" \
+	"lib/kc3/0.2/prime.kc3" \
+	"lib/kc3/0.2/prime_hash.kc3" \
+	"lib/kc3/0.2/ptr.facts" \
+	"lib/kc3/0.2/ptr_free.facts" \
+	"lib/kc3/0.2/qrencode.kc3" \
+	"lib/kc3/0.2/ratio.facts" \
+	"lib/kc3/0.2/rpc.kc3" \
+	"lib/kc3/0.2/rpc/response.kc3" \
+	"lib/kc3/0.2/rusage.kc3" \
+	"lib/kc3/0.2/rwlock.kc3" \
+	"lib/kc3/0.2/s16.facts" \
+	"lib/kc3/0.2/s32.facts" \
+	"lib/kc3/0.2/s64.facts" \
+	"lib/kc3/0.2/s8.facts" \
+	"lib/kc3/0.2/set.kc3" \
+	"lib/kc3/0.2/set/fact.kc3" \
+	"lib/kc3/0.2/set/item/fact.kc3" \
+	"lib/kc3/0.2/set/item/tag.kc3" \
+	"lib/kc3/0.2/set/tag.kc3" \
+	"lib/kc3/0.2/sh.kc3" \
+	"lib/kc3/0.2/sha1.kc3" \
+	"lib/kc3/0.2/sha256.kc3" \
+	"lib/kc3/0.2/sha512.kc3" \
+	"lib/kc3/0.2/smtp.kc3" \
+	"lib/kc3/0.2/socket.kc3" \
+	"lib/kc3/0.2/socket/addr.kc3" \
+	"lib/kc3/0.2/socket/buf.kc3" \
+	"lib/kc3/0.2/stacktrace.kc3" \
+	"lib/kc3/0.2/str.facts" \
+	"lib/kc3/0.2/struct.kc3" \
+	"lib/kc3/0.2/sw.facts" \
+	"lib/kc3/0.2/sym.facts" \
+	"lib/kc3/0.2/tag.kc3" \
+	"lib/kc3/0.2/terminal.kc3" \
+	"lib/kc3/0.2/thread.kc3" \
+	"lib/kc3/0.2/time.kc3" \
+	"lib/kc3/0.2/tls.kc3" \
+	"lib/kc3/0.2/tls/client.kc3" \
+	"lib/kc3/0.2/tls/config.kc3" \
+	"lib/kc3/0.2/tls/server.kc3" \
+	"lib/kc3/0.2/totp.kc3" \
+	"lib/kc3/0.2/u16.facts" \
+	"lib/kc3/0.2/u32.facts" \
+	"lib/kc3/0.2/u64.facts" \
+	"lib/kc3/0.2/u8.facts" \
+	"lib/kc3/0.2/unit.kc3" \
+	"lib/kc3/0.2/url.kc3" \
+	"lib/kc3/0.2/uw.facts" \
+	"lib/kc3/0.2/var.facts" \
+	"lib/kc3/0.2/void.facts" \
 
 KC3_OBJC_SOURCES = \
 	"window/cairo/cairo_font_quartz.m" \
@@ -1952,6 +1959,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/facts_with_tuple.kc3" \
 	"test/ikc3/facts_with_tuple.out.expected" \
 	"test/ikc3/facts_with_tuple.ret.expected" \
+	"test/ikc3/float_neg.kc3" \
+	"test/ikc3/float_neg.out.expected" \
+	"test/ikc3/float_neg.ret.expected" \
 	"test/ikc3/fn.err.expected" \
 	"test/ikc3/fn.kc3" \
 	"test/ikc3/fn.out.expected" \

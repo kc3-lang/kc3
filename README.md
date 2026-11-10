@@ -30,7 +30,7 @@ Components :
  - `ikc3` is the interactive interpreter (verbose).
  - `kc3s` is the script interpreter (same as ikc3 but terse).
  - `kc3c` compiles a cache of source files from stdin with .kc3c suffix.
- - There are several C libraries which are installed in `lib/kc3/0.1`
+ - There are several C libraries which are installed in `lib/kc3/0.2`
    using the `make lib_links` command.
  - There is a web server in httpd : `kc3_httpd`.
  - DRM, X11 and Wayland backends are implemented in `window/`
@@ -97,7 +97,7 @@ There are now seven full applications written in KC3 that we know of :
 
  - kc3c
    - kc3c compiles (caches) loading of kc3 files to kc3c files
-   - fixed lib files so that Makfile now builds the whole of lib/kc3/0.1
+   - fixed lib files so that Makfile now builds the whole of lib/kc3/0.2
 
  - IKC3/KC3S
    - report errors with more context

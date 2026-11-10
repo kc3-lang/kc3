@@ -73,7 +73,7 @@ LIBS=$(ls ${DESTDIR}${prefix}/lib/libkc3_*.0.dylib |
 	   grep -v 'libkc3_debug.0.dylib' |
 	   sed -e 's,.*\/libkc3_\(.*\).0.dylib,\1,')
 (
-    cd ${DESTDIR}${prefix}/lib/kc3/0.1/
+    cd ${DESTDIR}${prefix}/lib/kc3/0.2/
     for NAME in $LIBS; do
 	ls -la ../../libkc3_$NAME.0.dylib
 	rm -f $NAME.so
