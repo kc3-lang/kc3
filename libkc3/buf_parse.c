@@ -1003,6 +1003,10 @@ sw buf_parse_comment (s_buf *buf)
     goto clean;
   result += r;
   while (1) {
+    if ((r = buf_refill(buf, 1)) < 0)
+      goto restore;
+    if (! r)
+      goto clean;
     if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
       goto restore;
     csize = r;

@@ -917,6 +917,16 @@ static char buf_parse_comment_eof_check (void)
   if (result > 0)
     tag_clean(&tag);
   buf_clean(&buf);
+  if (result > 0)
+    return 1;
+  if (! buf_init_1_const(&buf, "#text"))
+    return 1;
+  result = buf_parse_comments(&buf);
+  if (result != 5 || buf.rpos != 5) {
+    buf_clean(&buf);
+    return 1;
+  }
+  buf_clean(&buf);
   return 0;
 }
 
