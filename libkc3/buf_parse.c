@@ -1565,7 +1565,7 @@ sw buf_parse_f32 (s_buf *buf, f32 *dest)
 
 sw buf_parse_f64 (s_buf *buf, f64 *dest)
 {
-  f64 b;
+  f64 b = 0;
   u8 digit;
   f64 exp = 0;
   f64 exp_sign = 1;
@@ -1595,15 +1595,22 @@ sw buf_parse_f64 (s_buf *buf, f64 *dest)
   result += r;
   while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
     result += r;
+    if (tmp >= 1.0e100) {
+      tmp *= 1.0e-100;
+      b += 100;
+    }
     tmp = tmp * 10 + digit;
   }
   if (r < 0 ||
       (r = buf_read_1(buf, ".")) <= 0)
     goto restore;
   result += r;
-  b = 0;
   while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
     result += r;
+    if (tmp >= 1.0e100) {
+      tmp *= 1.0e-100;
+      b += 100;
+    }
     tmp = tmp * 10 + digit;
     b--;
   }

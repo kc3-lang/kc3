@@ -891,7 +891,7 @@ TEST_CASE_END(buf_parse_f32_fractional_divisor)
 
 TEST_CASE(buf_parse_f64_mantissa_overflow)
 {
-  char input[403];
+  char input[409];
   s_buf buf;
   f64 value = 0.0;
   input[0] = '1';
@@ -900,6 +900,14 @@ TEST_CASE(buf_parse_f64_mantissa_overflow)
   input[402] = 0;
   TEST_ASSERT(buf_init_1_const(&buf, input));
   TEST_EQ(buf_parse_f64(&buf, &value), 402);
+  buf_clean(&buf);
+  TEST_ASSERT(isfinite(value));
+  TEST_EQ(value, 1.0);
+  input[0] = '1';
+  memset(input + 1, '0', 400);
+  memcpy(input + 401, ".0e-400", 8);
+  TEST_ASSERT(buf_init_1_const(&buf, input));
+  TEST_EQ(buf_parse_f64(&buf, &value), 408);
   buf_clean(&buf);
   TEST_ASSERT(isfinite(value));
   TEST_EQ(value, 1.0);
