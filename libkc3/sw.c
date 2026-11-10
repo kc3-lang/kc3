@@ -44,12 +44,26 @@ sw * sw_init_cast
   case TAG_CHARACTER:
     *s = (sw) tag->data.td_character;
     return s;
-  case TAG_F32:
-    *s = (sw) tag->data.td_f32;
+  case TAG_F32: {
+    f32 x = tag->data.td_f32;
+    if (! isfinite(x))
+      return NULL;
+    x = truncf(x);
+    if (x < (f32) SW_MIN || x >= -(f32) SW_MIN)
+      return NULL;
+    *s = (sw) x;
     return s;
-  case TAG_F64:
-    *s = (sw) tag->data.td_f64;
+  }
+  case TAG_F64: {
+    f64 x = tag->data.td_f64;
+    if (! isfinite(x))
+      return NULL;
+    x = trunc(x);
+    if (x < (f64) SW_MIN || x >= -(f64) SW_MIN)
+      return NULL;
+    *s = (sw) x;
     return s;
+  }
   case TAG_INTEGER:
     *s = integer_to_sw(&tag->data.td_integer);
     return s;

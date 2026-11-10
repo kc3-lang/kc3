@@ -44,12 +44,26 @@ s32 * s32_init_cast
   case TAG_CHARACTER:
     *s = (s32) tag->data.td_character;
     return s;
-  case TAG_F32:
-    *s = (s32) tag->data.td_f32;
+  case TAG_F32: {
+    f32 x = tag->data.td_f32;
+    if (! isfinite(x))
+      return NULL;
+    x = truncf(x);
+    if (x < (f32) S32_MIN || x >= -(f32) S32_MIN)
+      return NULL;
+    *s = (s32) x;
     return s;
-  case TAG_F64:
-    *s = (s32) tag->data.td_f64;
+  }
+  case TAG_F64: {
+    f64 x = tag->data.td_f64;
+    if (! isfinite(x))
+      return NULL;
+    x = trunc(x);
+    if (x < (f64) S32_MIN || x >= -(f64) S32_MIN)
+      return NULL;
+    *s = (s32) x;
     return s;
+  }
   case TAG_INTEGER:
     *s = integer_to_s32(&tag->data.td_integer);
     return s;

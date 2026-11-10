@@ -72,6 +72,8 @@ static char integer_cast_float_out_of_range_check (void)
   failed |= integer_casts_reject(&tag);
   tag_init_f64(&tag, 1.0e300);
   failed |= integer_casts_reject(&tag);
+  tag_init_f64(&tag, -1.0e300);
+  failed |= integer_casts_reject(&tag);
 #if HAVE_F80
   tag_init_f80(&tag, INFINITY);
   {
@@ -109,7 +111,31 @@ TEST_CASE(integer_cast_float_out_of_range)
 }
 TEST_CASE_END(integer_cast_float_out_of_range)
 
+TEST_CASE(integer_cast_float_truncation_boundaries)
+{
+  s_tag tag = {0};
+  const s_sym *type;
+  s8 s8_value;
+  u8 u8_value;
+  tag_init_f64(&tag, -128.75);
+  type = &g_sym_S8;
+  TEST_ASSERT(s8_init_cast(&s8_value, &type, &tag));
+  TEST_EQ(s8_value, S8_MIN);
+  tag_init_f64(&tag, 127.75);
+  TEST_ASSERT(s8_init_cast(&s8_value, &type, &tag));
+  TEST_EQ(s8_value, S8_MAX);
+  tag_init_f64(&tag, -0.75);
+  type = &g_sym_U8;
+  TEST_ASSERT(u8_init_cast(&u8_value, &type, &tag));
+  TEST_EQ(u8_value, 0);
+  tag_init_f64(&tag, 255.75);
+  TEST_ASSERT(u8_init_cast(&u8_value, &type, &tag));
+  TEST_EQ(u8_value, U8_MAX);
+}
+TEST_CASE_END(integer_cast_float_truncation_boundaries)
+
 void integer_cast_test (void)
 {
   TEST_CASE_RUN(integer_cast_float_out_of_range);
+  TEST_CASE_RUN(integer_cast_float_truncation_boundaries);
 }
