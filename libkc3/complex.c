@@ -460,9 +460,11 @@ f32 complex_to_f32 (s_complex *c)
   const s_sym *type;
   f32 x;
   assert(c);
-  complex_norm(c, &norm);
+  if (! complex_norm(c, &norm))
+    return (f32) NAN;
   type = &g_sym_F32;
-  f32_init_cast(&x, &type, &norm);
+  if (! f32_init_cast(&x, &type, &norm))
+    return (f32) NAN;
   return x;
 }
 
@@ -472,9 +474,11 @@ f64 complex_to_f64 (s_complex *c)
   const s_sym *type;
   f64 x;
   assert(c);
-  complex_norm(c, &norm);
+  if (! complex_norm(c, &norm))
+    return (f64) NAN;
   type = &g_sym_F64;
-  f64_init_cast(&x, &type, &norm);
+  if (! f64_init_cast(&x, &type, &norm))
+    return (f64) NAN;
   return x;
 }
 
@@ -486,9 +490,11 @@ f80 complex_to_f80 (s_complex *c)
   const s_sym *type;
   f80 x;
   assert(c);
-  complex_norm(c, &norm);
+  if (! complex_norm(c, &norm))
+    return (f80) NAN;
   type = &g_sym_F80;
-  f80_init_cast(&x, &type, &norm);
+  if (! f80_init_cast(&x, &type, &norm))
+    return (f80) NAN;
   return x;
 }
 
@@ -502,9 +508,11 @@ f128 complex_to_f128 (s_complex *c)
   const s_sym *type;
   f128 x;
   assert(c);
-  complex_norm(c, &norm);
+  if (! complex_norm(c, &norm))
+    return (f128) NAN;
   type = &g_sym_F128;
-  f128_init_cast(&x, &type, &norm);
+  if (! f128_init_cast(&x, &type, &norm))
+    return (f128) NAN;
   return x;
 }
 
