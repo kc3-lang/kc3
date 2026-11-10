@@ -108,7 +108,7 @@ s_pointer * pointer_init (s_pointer *pointer,
     pointer_type = sym_target_to_pointer_type(target_type);
   else if (! target_type)
     target_type = sym_pointer_to_target_type(pointer_type);
-  env = env_global();
+  env = env_global()->identity_env;
 #if HAVE_PTHREAD
   mutex_lock(&env->next_pointer_id_mutex);
 #endif

@@ -160,6 +160,7 @@ s_pointer * env_address_of (s_env *env, s_tag *tag, s_pointer *dest)
     assert(! "env_address_of: tag_to_pointer");
     return NULL;
   }
+  env = env->identity_env;
 #if HAVE_PTHREAD
   mutex_lock(&env->next_pointer_id_mutex);
 #endif
@@ -2166,6 +2167,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   if (! env)
     return NULL;
   *env = (s_env) {0};
+  env->identity_env = env;
   env->print_readably = true;
   if (! (env->stacktrace = stacktrace_new()))
     goto ko_early;

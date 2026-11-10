@@ -7,12 +7,10 @@
 #include "../libkc3/kc3.h"
 #include "../libkc3/env_fork.h"
 #include "../libkc3/memleak.h"
-#include "../libkc3/mutex.h"
 #include "../libkc3/ops.h"
 #include "test.h"
 
 static u8 g_env_fork_fail;
-static sw g_env_fork_mutexes;
 static bool g_env_fork_pin;
 static bool g_env_fork_waiting;
 static bool g_env_fork_done;
@@ -69,31 +67,12 @@ static s_stacktrace * env_fork_stacktrace_test (void)
   return g_env_fork_fail == 5 ? NULL : env_fork_trace_new();
 }
 
-#if HAVE_PTHREAD
-static s_mutex * env_fork_mutex_init_test (s_mutex *mutex)
-{
-  s_mutex *result = mutex_init(mutex);
-  if (result)
-    g_env_fork_mutexes++;
-  return result;
-}
-
-static void env_fork_mutex_clean_test (s_mutex *mutex)
-{
-  if (mutex->ready)
-    g_env_fork_mutexes--;
-  mutex_clean(mutex);
-}
-#endif
-
 #define alloc env_fork_alloc_test
 #define frame_new_copy env_fork_frame_copy_test
 #define ops_new_copy env_fork_ops_copy_test
 #define frame_new env_fork_frame_test
 #define stacktrace_new env_fork_stacktrace_test
 #define stacktrace_delete env_fork_trace_delete
-#define mutex_init env_fork_mutex_init_test
-#define mutex_clean env_fork_mutex_clean_test
 #define env_fork_clean env_fork_fault_clean
 #define env_fork_delete env_fork_fault_delete
 #define env_fork_init env_fork_fault_init
@@ -107,8 +86,6 @@ static void env_fork_mutex_clean_test (s_mutex *mutex)
 #undef frame_new
 #undef stacktrace_new
 #undef stacktrace_delete
-#undef mutex_init
-#undef mutex_clean
 #undef env_fork_clean
 #undef env_fork_delete
 #undef env_fork_init
@@ -292,17 +269,14 @@ static char env_fork_failure_test (void)
   s_env *parent = env_global();
   TEST_ASSERT((env = env_fork_fault_new(parent)));
   env_fork_fault_delete(env);
-  TEST_EQ(g_env_fork_mutexes, 0);
   memleak_init();
   for (g_env_fork_fail = 1; g_env_fork_fail <= 5; g_env_fork_fail++) {
     TEST_EQ(env_fork_fault_new(parent), NULL);
-    TEST_EQ(g_env_fork_mutexes, 0);
     TEST_EQ(env_fork_live_test(), 0);
     if (g_env_fork_fail > 1) {
       local.stacktrace = parent->stacktrace;
       TEST_EQ(env_fork_fault_init(&local, parent), NULL);
       TEST_EQ(local.stacktrace, parent->stacktrace);
-      TEST_EQ(g_env_fork_mutexes, 0);
       TEST_EQ(env_fork_live_test(), 0);
     }
   }
@@ -340,7 +314,6 @@ static char env_fork_reader_test (void)
   stacktrace_read_end(trace);
   TEST_EQ(pthread_join(thread, NULL), 0);
   TEST_ASSERT(__atomic_load_n(&g_env_fork_done, __ATOMIC_SEQ_CST));
-  TEST_EQ(g_env_fork_mutexes, 0);
   TEST_EQ(env_fork_live_test(), 0);
   env_fork_tracking_end_test();
   return 0;

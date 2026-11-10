@@ -1167,6 +1167,7 @@ struct env {
   s_frame          *frame;
   p_list            freelist;
   s_frame          *global_frame;
+  s_env            *identity_env;
   s_buf            *in;
   bool              loaded;
   s_loop_context   *loop_context;

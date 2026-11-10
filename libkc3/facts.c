@@ -1064,7 +1064,7 @@ s_facts * facts_init (s_facts *facts)
   const double spacing = 2.7;
   assert(facts);
   *facts = (s_facts) {0};
-  env = env_global();
+  env = env_global()->identity_env;
 #if HAVE_PTHREAD
   mutex_lock(&env->next_facts_id_mutex);
 #endif

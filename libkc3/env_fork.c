@@ -16,7 +16,6 @@
 #include "env_fork.h"
 #include "frame.h"
 #include "list.h"
-#include "mutex.h"
 #include "ops.h"
 #include "stacktrace.h"
 #include "sym.h"
@@ -25,11 +24,6 @@ void env_fork_clean (s_env *env)
 {
   assert(env);
   //env->error_handler
-#if HAVE_PTHREAD
-  mutex_clean(&env->next_facts_id_mutex);
-  mutex_clean(&env->next_pointer_id_mutex);
-  mutex_clean(&env->next_var_id_mutex);
-#endif
   frame_delete_all(env->frame);
   frame_delete_all(env->read_time_frame);
   if (env->ops)
@@ -61,23 +55,12 @@ s_env * env_fork_init (s_env *env, s_env *src)
   tmp.current_defmodule = &g_sym_KC3;
   tmp.err = src->err;
   // tmp.error_handler = NULL;
-  tmp.next_facts_id = src->next_facts_id;
-#if HAVE_PTHREAD
-  mutex_init(&tmp.next_facts_id_mutex);
-#endif
-  tmp.next_pointer_id = src->next_pointer_id;
-#if HAVE_PTHREAD
-  mutex_init(&tmp.next_pointer_id_mutex);
-#endif
-  tmp.next_var_id = src->next_var_id;
-#if HAVE_PTHREAD
-  mutex_init(&tmp.next_var_id_mutex);
-#endif
   tmp.facts = src->facts;
   tmp.frame = frame_new_copy(src->frame);
   if (src->frame && ! tmp.frame)
     goto ko;
   tmp.global_frame = src->global_frame;
+  tmp.identity_env = src->identity_env;
   tmp.in = src->in;
   tmp.loaded = true;
   // tmp.loop_context = NULL;

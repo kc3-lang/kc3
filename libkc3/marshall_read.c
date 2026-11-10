@@ -1281,7 +1281,7 @@ s_marshall_read * marshall_read_facts_1 (s_marshall_read *mr,
   facts->tags = tags;
   facts->facts = facts_set;
   if (new_format) {
-    env = env_global();
+    env = env_global()->identity_env;
 #if HAVE_PTHREAD
     mutex_lock(&env->next_facts_id_mutex);
 #endif
@@ -2549,7 +2549,7 @@ s_marshall_read * marshall_read_pointer_1 (s_marshall_read *mr,
   if (! pointer_init(&tmp, NULL, target_type, present))
     return marshall_read_ht_abort(mr);
   tmp.id = id;
-  env = env_global();
+  env = env_global()->identity_env;
 #if HAVE_PTHREAD
   mutex_lock(&env->next_pointer_id_mutex);
 #endif
@@ -3892,7 +3892,7 @@ s_marshall_read * marshall_read_var (s_marshall_read *mr,
       (tmp.bound &&
        ! marshall_read_tag(mr, heap, &tmp.tag)))
     return NULL;
-  env = env_global();
+  env = env_global()->identity_env;
 #if HAVE_PTHREAD
   mutex_lock(&env->next_var_id_mutex);
 #endif

@@ -77,7 +77,7 @@ s_var * var_init (s_var *var, const s_sym *type)
     return NULL;
   }
   *var = (s_var) {0};
-  env = env_global();
+  env = env_global()->identity_env;
 #if HAVE_PTHREAD
   mutex_lock(&env->next_var_id_mutex);
 #endif
