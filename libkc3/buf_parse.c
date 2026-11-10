@@ -4776,7 +4776,6 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
           break;
         if (! character_is_uppercase(c))
           break;
-        r += csize;
       }
       else if (sym_character_is_reserved(c))
         break;
