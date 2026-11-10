@@ -863,7 +863,11 @@ sw buf_peek_to_str (s_buf *buf, s_str *dest)
     r = 0;
     goto clean;
   }
-  str_init_alloc_copy(dest, size, buf->ptr.p_pchar + buf->rpos);
+  if (! str_init_alloc_copy(dest, size,
+                            buf->ptr.p_pchar + buf->rpos)) {
+    r = -1;
+    goto clean;
+  }
   r = size;
  clean:
 #if HAVE_PTHREAD

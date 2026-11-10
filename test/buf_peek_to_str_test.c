@@ -10,19 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "../libkc3/alloc.h"
-
-static bool g_audit_buf_alloc_fail;
-
-static void * audit_buf_alloc (uw size)
-{
-  if (g_audit_buf_alloc_fail) {
-    g_audit_buf_alloc_fail = false;
-    return NULL;
-  }
-  return alloc(size);
-}
-
 #define buf_clean audit_buf_clean
 #define buf_delete audit_buf_delete
 #define buf_empty audit_buf_empty
@@ -141,9 +128,22 @@ static void * audit_buf_alloc (uw size)
 #define buf_xfer audit_buf_xfer
 #define buf_xfer_reverse audit_buf_xfer_reverse
 #include "../libkc3/kc3.h"
-#define alloc audit_buf_alloc
+static bool g_buf_peek_to_str_alloc_fail;
+
+static s_str * buf_peek_to_str_str_init_alloc_copy (s_str *str,
+                                                     u32 size,
+                                                     const char *p)
+{
+  if (g_buf_peek_to_str_alloc_fail) {
+    g_buf_peek_to_str_alloc_fail = false;
+    return NULL;
+  }
+  return str_init_alloc_copy(str, size, p);
+}
+
+#define str_init_alloc_copy buf_peek_to_str_str_init_alloc_copy
 #include "../libkc3/buf.c"
-#undef alloc
+#undef str_init_alloc_copy
 #include "test.h"
 
 char buf_peek_to_str_alloc_failure_check (void)
@@ -154,9 +154,9 @@ char buf_peek_to_str_alloc_failure_check (void)
   sw result;
   if (! buf_init_1_const(&buf, "abc"))
     return 1;
-  g_audit_buf_alloc_fail = true;
+  g_buf_peek_to_str_alloc_fail = true;
   result = buf_peek_to_str(&buf, &dest);
-  g_audit_buf_alloc_fail = false;
+  g_buf_peek_to_str_alloc_fail = false;
   buf_clean(&buf);
   if (dest.free.p_pvoid)
     str_clean(&dest);
