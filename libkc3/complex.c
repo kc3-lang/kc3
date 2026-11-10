@@ -463,8 +463,11 @@ f32 complex_to_f32 (s_complex *c)
   if (! complex_norm(c, &norm))
     return (f32) NAN;
   type = &g_sym_F32;
-  if (! f32_init_cast(&x, &type, &norm))
+  if (! f32_init_cast(&x, &type, &norm)) {
+    tag_clean(&norm);
     return (f32) NAN;
+  }
+  tag_clean(&norm);
   return x;
 }
 
@@ -477,8 +480,11 @@ f64 complex_to_f64 (s_complex *c)
   if (! complex_norm(c, &norm))
     return (f64) NAN;
   type = &g_sym_F64;
-  if (! f64_init_cast(&x, &type, &norm))
+  if (! f64_init_cast(&x, &type, &norm)) {
+    tag_clean(&norm);
     return (f64) NAN;
+  }
+  tag_clean(&norm);
   return x;
 }
 
@@ -493,8 +499,11 @@ f80 complex_to_f80 (s_complex *c)
   if (! complex_norm(c, &norm))
     return (f80) NAN;
   type = &g_sym_F80;
-  if (! f80_init_cast(&x, &type, &norm))
+  if (! f80_init_cast(&x, &type, &norm)) {
+    tag_clean(&norm);
     return (f80) NAN;
+  }
+  tag_clean(&norm);
   return x;
 }
 
@@ -511,8 +520,11 @@ f128 complex_to_f128 (s_complex *c)
   if (! complex_norm(c, &norm))
     return (f128) NAN;
   type = &g_sym_F128;
-  if (! f128_init_cast(&x, &type, &norm))
+  if (! f128_init_cast(&x, &type, &norm)) {
+    tag_clean(&norm);
     return (f128) NAN;
+  }
+  tag_clean(&norm);
   return x;
 }
 
