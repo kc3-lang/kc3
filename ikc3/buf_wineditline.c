@@ -72,14 +72,16 @@ sw buf_wineditline_refill_fgets (s_buf *buf)
       buf->wpos > buf->size)
     return -1;
   if (feof(stdin))
-    return -1;
+    return 0;
   while (buf->wpos < buf->size &&
          c != '\n' &&
          (c = getchar()) != EOF &&
          c <= 255) {
     buf_write_u8(buf, c);
     result++;
-  }      
+  }
+  if (! result && ferror(stdin))
+    return -1;
   return result;
 }
 
@@ -106,7 +108,7 @@ sw buf_wineditline_refill_wineditline (s_buf *buf)
     return 0;
   buf_wineditline = buf->user_ptr;
   if (buf_wineditline->eof)
-    return -1;
+    return 0;
   buf_wineditline_len =
     buf_wineditline->buf.wpos - buf_wineditline->buf.rpos;
   if (buf_wineditline_len == 0) {
@@ -118,7 +120,7 @@ sw buf_wineditline_refill_wineditline (s_buf *buf)
       buf_wineditline->buf.rpos =
         buf_wineditline->buf.wpos =
         buf_wineditline->buf.size = 0;
-      return -1;
+      return 0;
     }
     add_history(buf_wineditline->buf.ptr.p);
     buf_wineditline_len = strlen(buf_wineditline->buf.ptr.p);

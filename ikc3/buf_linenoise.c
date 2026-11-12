@@ -75,14 +75,16 @@ sw buf_linenoise_refill_fgets (s_buf *buf)
       buf->wpos > buf->size)
     return -1;
   if (feof(stdin))
-    return -1;
+    return 0;
   while (buf->wpos < buf->size &&
          c != '\n' &&
          (c = getchar()) != EOF &&
          c <= 255) {
     buf_write_u8(buf, c);
     result++;
-  }      
+  }
+  if (! result && ferror(stdin))
+    return -1;
   return result;
 }
 
@@ -102,7 +104,7 @@ sw buf_linenoise_refill_linenoise (s_buf *buf)
     return 0;
   buf_linenoise = buf->user_ptr;
   if (buf_linenoise->eof)
-    return -1;
+    return 0;
   buf_linenoise_len = buf_linenoise->buf.wpos - buf_linenoise->buf.rpos;
   if (buf_linenoise_len == 0) {
     if (buf_linenoise->buf.free)
@@ -112,7 +114,7 @@ sw buf_linenoise_refill_linenoise (s_buf *buf)
       buf_linenoise->buf.rpos =
         buf_linenoise->buf.wpos =
         buf_linenoise->buf.size = 0;
-      return -1;
+      return 0;
     }
     linenoiseHistoryAdd(buf_linenoise->buf.ptr.p_pvoid);
     buf_linenoise_len = strlen(buf_linenoise->buf.ptr.p_pvoid);
