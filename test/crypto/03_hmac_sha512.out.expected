@@ -9,5 +9,9 @@ ok   invalid signature lengths are rejected
 ok   binary message verifies unchanged
 ok   reversed key and message token is rejected
 ok   wrong secret is rejected
+ok   an explicit key preserves the signed message format
+ok   an explicit key verifies independently of the default key
+ok   explicit key verification rejects malformed values
+ok   an explicit key supports empty and binary messages
 ok   RFC 4231 binary-key vector
 ok   RFC 4231 long-key vector

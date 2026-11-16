@@ -17,17 +17,21 @@ defmodule SHA512 do
 
   def hmac = cfn Str "sha512_hmac_str" (Str, Str, Result)
 
-  def hmac_str = fn (msg) {
-    "#{Base64.encode(SHA512.hmac(Config.secret, msg))} #{msg}"
+  def hmac_str = fn {
+    (msg) { SHA512.hmac_str(Config.secret, msg) }
+    (key, msg) { "#{Base64.encode(SHA512.hmac(key, msg))} #{msg}" }
   }
 
-  def hmac_str_verify = fn (str) {
-    if type(str) == Str && Str.size(str) >= 89 &&
-       Str.byte(str, 88) == 32 do
-      msg = Str.slice(str, 89, -1)
-      if SHA512.hmac_verify_base64(Config.secret, msg,
-                                   Str.slice(str, 0, 88)) do msg end
-    end
+  def hmac_str_verify = fn {
+    (str) { SHA512.hmac_str_verify(Config.secret, str) }
+    (key, str) {
+      if type(str) == Str && Str.size(str) >= 89 &&
+         Str.byte(str, 88) == 32 do
+        msg = Str.slice(str, 89, -1)
+        if SHA512.hmac_verify_base64(key, msg,
+                                     Str.slice(str, 0, 88)) do msg end
+      end
+    }
   }
 
   def hmac_verify_base64 = cfn Bool "sha512_hmac_verify_base64"

@@ -52,6 +52,17 @@ defmodule Config do
 end
 verdict("wrong secret is rejected",
   SHA512.hmac_str_verify(expected) == void)
+verdict("an explicit key preserves the signed message format",
+  SHA512.hmac_str("Jefe", message) == expected)
+verdict("an explicit key verifies independently of the default key",
+  SHA512.hmac_str_verify("Jefe", expected) == message &&
+  SHA512.hmac_str_verify("wrong key", expected) == void)
+verdict("explicit key verification rejects malformed values",
+  SHA512.hmac_str_verify("Jefe", 42) == void &&
+  SHA512.hmac_str_verify("Jefe", expected + "x") == void)
+verdict("an explicit key supports empty and binary messages",
+  SHA512.hmac_str_verify("Jefe", SHA512.hmac_str("Jefe", "")) == "" &&
+  SHA512.hmac_str_verify("Jefe", SHA512.hmac_str("Jefe", binary)) == binary)
 key = Base64.decode("CwsLCwsLCwsLCwsLCwsLCwsLCws=")
 verdict("RFC 4231 binary-key vector",
   Base64.encode(SHA512.hmac(key, "Hi There")) ==
