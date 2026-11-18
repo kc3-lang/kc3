@@ -63,3 +63,7 @@ json_document_rejected("{\"a\":true; \"b\":false}")
 # Separator failures propagate out of nested containers.
 json_document_rejected("[[true,]]")
 json_document_rejected("[{\"a\": true \"b\": false}]")
+
+json_document_rejected("{\"access_token\":\"fixture-private-token\",}")
+json_document_rejected("{\"client_secret\":\"fixture-private-secret\"")
+json_document_rejected("[{\"password\":\"fixture-private-password\",}]")

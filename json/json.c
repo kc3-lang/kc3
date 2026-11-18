@@ -457,7 +457,6 @@ s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest)
   return dest;
  restore:
   err_puts("json_buf_parse_map: invalid map");
-  err_inspect_buf(buf);
   buf_save_restore_rpos(buf, &save);
  clean:
   list_delete_all(keys);

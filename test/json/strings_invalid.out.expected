@@ -57,12 +57,6 @@ void
 json_buf_parse_list: invalid list
 {true, true}
 json_buf_parse_map: invalid map
-"prefix\n{\"ok\": \"kept\", "
----HERE---
-"\"\\q\": 0}"
 {true, true}
 json_buf_parse_map: invalid map
-"prefix\n{\"ok\": \"kept\", \"a\": "
----HERE---
-"\"\\q\"}"
 {true, true}
