@@ -187,6 +187,7 @@ to discover how to use KC3 for your own projects.
  - libkc3
    - kc3 to C
    - kc3 to Common Lisp
+   - xss injection in inspect str_eval
  - HTTPd
    - OAuth2 / jwt
    - dynamic router
