@@ -564,6 +564,39 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_PARSE_TEST_STR_EVAL_STR(test, expected)                    \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_tag dest = {0};                                                  \
+    test_context("buf_parse_str_eval(" # test ") -> " # expected);    \
+    buf_init_1_const(&buf, (test));                                    \
+    TEST_EQ(buf_parse_str_eval(&buf, &dest), strlen(test));            \
+    TEST_EQ(dest.type, TAG_STR);                                       \
+    if (g_test_last_ok)                                                \
+      TEST_EQ(dest.data.td_str.size, strlen(expected));                \
+    if (g_test_last_ok)                                                \
+      TEST_STRNCMP(dest.data.td_str.ptr.p_pvoid, (expected),           \
+                   dest.data.td_str.size);                             \
+    tag_clean(&dest);                                                  \
+    buf_clean(&buf);                                                   \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define BUF_PARSE_TEST_STR_EVAL_PCALL(test)                            \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_tag dest = {0};                                                  \
+    test_context("buf_parse_str_eval(" # test ") -> PCall");          \
+    buf_init_1_const(&buf, (test));                                    \
+    TEST_EQ(buf_parse_str_eval(&buf, &dest), strlen(test));            \
+    TEST_EQ(dest.type, TAG_PCALL);                                     \
+    if (g_test_last_ok)                                                \
+      TEST_EQ(dest.data.td_pcall->ident.sym, &g_sym_str);              \
+    tag_clean(&dest);                                                  \
+    buf_clean(&buf);                                                   \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define BUF_PARSE_TEST_STR_CHARACTER(test, expected)                   \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -741,6 +774,7 @@ TEST_CASE_PROTOTYPE(buf_parse_module_name);
 TEST_CASE_PROTOTYPE(buf_parse_plist);
 TEST_CASE_PROTOTYPE(buf_parse_pvar);
 TEST_CASE_PROTOTYPE(buf_parse_str);
+TEST_CASE_PROTOTYPE(buf_parse_str_eval);
 TEST_CASE_PROTOTYPE(buf_parse_str_character);
 TEST_CASE_PROTOTYPE(buf_parse_str_u8);
 TEST_CASE_PROTOTYPE(buf_parse_str_unicode_invalid);
@@ -784,6 +818,7 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_integer_oct);
   TEST_CASE_RUN(buf_parse_integer);
   TEST_CASE_RUN(buf_parse_str);
+  TEST_CASE_RUN(buf_parse_str_eval);
   TEST_CASE_RUN(buf_parse_str_unicode_invalid);
   TEST_CASE_RUN(buf_parse_module_name);
   TEST_CASE_RUN(buf_parse_sym);
@@ -1561,8 +1596,25 @@ TEST_CASE(buf_parse_str)
   BUF_PARSE_TEST_STR("\"🟣\"", "🟣");
   BUF_PARSE_TEST_STR("\"🤩\"", "🤩");
   BUF_PARSE_TEST_STR("\"ꇤ\"", "ꇤ");
+  BUF_PARSE_TEST_STR("\"\\#{\"", "#{");
 }
 TEST_CASE_END(buf_parse_str)
+
+TEST_CASE(buf_parse_str_eval)
+{
+  BUF_PARSE_TEST_STR_EVAL_STR("\"\"", "");
+  BUF_PARSE_TEST_STR_EVAL_STR("\"\\#{\"", "#{");
+  BUF_PARSE_TEST_STR_EVAL_STR("\"\\#{1 + 1}\"", "#{1 + 1}");
+  BUF_PARSE_TEST_STR_EVAL_STR("\"a\\#{b}c\"", "a#{b}c");
+  BUF_PARSE_TEST_STR_EVAL_STR("\"\\x23{1 + 1}\"", "#{1 + 1}");
+  BUF_PARSE_TEST_STR_EVAL_STR("\"\\u+23{1 + 1}\"", "#{1 + 1}");
+  BUF_PARSE_TEST_STR_EVAL_STR("\"\134\134\134#{x}\"", "\\#{x}");
+  BUF_PARSE_TEST_STR_EVAL_STR("\"\"\"\\#{1 + 1}\"\"\"",
+                              "#{1 + 1}");
+  BUF_PARSE_TEST_STR_EVAL_PCALL("\"#{1 + 1}\"");
+  BUF_PARSE_TEST_STR_EVAL_PCALL("\"a#{1 + 1}b\"");
+}
+TEST_CASE_END(buf_parse_str_eval)
 
 TEST_CASE(buf_parse_str_character)
 {

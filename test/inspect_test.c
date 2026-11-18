@@ -429,6 +429,7 @@ TEST_CASE(inspect_str)
   INSPECT_TEST_STR_1("Test123", "\"Test123\"");
   INSPECT_TEST_STR_1("test 123", "\"test 123\"");
   INSPECT_TEST_STR_1("Test 123", "\"Test 123\"");
+  INSPECT_TEST_STR_1("#{1 + 1}", "\"\\#{1 + 1}\"");
   INSPECT_TEST_STR_1("test123.test456", "\"test123.test456\"");
   INSPECT_TEST_STR_1("Test123.Test456", "\"Test123.Test456\"");
   INSPECT_TEST_STR_1("É", "\"É\"");

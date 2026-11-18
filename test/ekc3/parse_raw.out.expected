@@ -1,3 +1,4 @@
 fn () do
   "Hello, world !"
 end
+Literal #{1 + 1}

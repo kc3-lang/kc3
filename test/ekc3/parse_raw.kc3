@@ -1,2 +1,4 @@
 require EKC3
 puts(EKC3.parse_str("Hello, world !"))
+template = EKC3.parse_str("Literal " + "#" + "{1 + 1}")
+puts(EKC3.render(template))

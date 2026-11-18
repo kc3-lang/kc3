@@ -384,6 +384,10 @@ bool * str_has_reserved_characters (const s_str *src, bool *dest)
         *dest = true;
         return dest;
       }
+      if (c == '#' && str.size && str.ptr.p_pu8[0] == '{') {
+        *dest = true;
+        return dest;
+      }
     }
   }
   *dest = false;

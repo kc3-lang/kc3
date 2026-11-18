@@ -42,6 +42,15 @@
 
 const s_sym *g_buf_inspect_type = NULL;
 
+static sw buf_inspect_str_reserved_internal (s_buf *buf,
+                                             const s_str *str,
+                                             bool quotes,
+                                             bool escape_interpolation);
+static sw buf_inspect_str_reserved_size_internal (s_pretty *pretty,
+                                                  const s_str *str,
+                                                  bool quotes,
+                                                  bool escape_interpolation);
+
 sw buf_inspect_array_data (s_buf *buf, const s_array *array);
 sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
                                const u8 **data, const s_tag **tag,
@@ -4111,7 +4120,7 @@ sw buf_inspect_str (s_buf *buf, const s_str *str)
   if (! str_has_reserved_characters(str, &b))
     return -1;
   if (b)
-    return buf_inspect_str_reserved(buf, str, true);
+    return buf_inspect_str_reserved_internal(buf, str, true, true);
   buf_save_init(buf, &save);
   if ((r = buf_write_1(buf, "\"")) <= 0)
     goto clean;
@@ -4364,8 +4373,8 @@ sw buf_inspect_str_eval (s_buf *buf, const s_list *list)
   l = list;
   while (l) {
     if (l->tag.type == TAG_STR) {
-      if ((r = buf_inspect_str_reserved(buf, &l->tag.data.td_str,
-                                        false)) <= 0)
+      if ((r = buf_inspect_str_reserved_internal
+           (buf, &l->tag.data.td_str, false, true)) <= 0)
         return r;
       result += r;
     }
@@ -4403,8 +4412,8 @@ sw buf_inspect_str_eval_size (s_pretty *pretty, const s_list *list)
   l = list;
   while (l) {
     if (l->tag.type == TAG_STR) {
-      if ((r = buf_inspect_str_reserved_size(pretty, &l->tag.data.td_str,
-                                             false)) <= 0)
+      if ((r = buf_inspect_str_reserved_size_internal
+           (pretty, &l->tag.data.td_str, false, true)) <= 0)
         return r;
       result += r;
     }
@@ -4500,8 +4509,11 @@ sw buf_inspect_str_hex_size (s_pretty *pretty, const s_str *str)
   return r;
 }
 
-/* keep in sync with buf_inspect_str_reserved_size */
-sw buf_inspect_str_reserved (s_buf *buf, const s_str *str, bool quotes)
+/* keep in sync with buf_inspect_str_reserved_size_internal */
+static sw buf_inspect_str_reserved_internal (s_buf *buf,
+                                             const s_str *str,
+                                             bool quotes,
+                                             bool escape_interpolation)
 {
   u8 byte;
   character c;
@@ -4518,6 +4530,12 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *str, bool quotes)
   s = *str;
   while (r) {
     if ((r = str_read_character_utf8(&s, &c)) > 0) {
+      if (escape_interpolation && c == '#' && s.size &&
+          s.ptr.p_pu8[0] == '{') {
+        if ((r = buf_write_1(buf, "\\")) != 1)
+          goto restore;
+        result += r;
+      }
       if ((r = buf_inspect_str_character(buf, c)) <= 0)
         goto restore;
       result += r;
@@ -4546,9 +4564,15 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *str, bool quotes)
   return r;
 }
 
-/* keep in sync with buf_inspect_str_reserved */
-sw buf_inspect_str_reserved_size (s_pretty *pretty, const s_str *str,
-                                  bool quotes)
+sw buf_inspect_str_reserved (s_buf *buf, const s_str *str, bool quotes)
+{
+  return buf_inspect_str_reserved_internal(buf, str, quotes, false);
+}
+
+/* keep in sync with buf_inspect_str_reserved_internal */
+static sw buf_inspect_str_reserved_size_internal
+(s_pretty *pretty, const s_str *str, bool quotes,
+ bool escape_interpolation)
 {
   u8 byte;
   character c;
@@ -4566,6 +4590,17 @@ sw buf_inspect_str_reserved_size (s_pretty *pretty, const s_str *str,
   s = *str;
   while (r) {
     if ((r = str_read_character_utf8(&s, &c)) > 0) {
+      if (escape_interpolation && c == '#' && s.size &&
+          s.ptr.p_pu8[0] == '{') {
+        if ((r = buf_write_1_size(pretty, "\\")) != 1) {
+          err_puts("buf_inspect_str_reserved_size:"
+                   " buf_write_1_size interpolation");
+          assert(!("buf_inspect_str_reserved_size:"
+                   " buf_write_1_size interpolation"));
+          goto restore;
+        }
+        result += r;
+      }
       if ((r = buf_inspect_str_character_size(pretty, c)) <= 0) {
         err_puts("buf_inspect_str_reserved_size:"
                  " buf_inspect_str_character_size");
@@ -4604,6 +4639,13 @@ sw buf_inspect_str_reserved_size (s_pretty *pretty, const s_str *str,
   return -1;
 }
 
+sw buf_inspect_str_reserved_size (s_pretty *pretty, const s_str *str,
+                                  bool quotes)
+{
+  return buf_inspect_str_reserved_size_internal(pretty, str, quotes,
+                                                false);
+}
+
 sw buf_inspect_str_size (s_pretty *pretty, const s_str *str)
 {
   bool b;
@@ -4615,7 +4657,8 @@ sw buf_inspect_str_size (s_pretty *pretty, const s_str *str)
     return -1;
   }
   if (b)
-    return buf_inspect_str_reserved_size(pretty, str, true);
+    return buf_inspect_str_reserved_size_internal(pretty, str, true,
+                                                  true);
   if ((r = buf_write_1_size(pretty, "\"")) < 0) {
     err_puts("buf_inspect_str_size: buf_write_1_size 1");
     assert(! "buf_inspect_str_size: buf_write_1_size 1");

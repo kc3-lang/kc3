@@ -191,9 +191,10 @@
     test_context("buf_inspect_str(" # test ") -> " # expected);        \
     str_init(&str, NULL, sizeof(test) - 1, (test));                    \
     buf_init(&buf, false, sizeof(b), b);                               \
-    TEST_MEMCMP(buf.ptr.p_pvoid, (expected), buf.wpos);                      \
     TEST_EQ(buf_inspect_str_size(&pretty, &str), sizeof(expected) - 1);\
     TEST_EQ(buf_inspect_str(&buf, &str), sizeof(expected) - 1);        \
+    TEST_EQ(buf.wpos, sizeof(expected) - 1);                           \
+    TEST_MEMCMP(buf.ptr.p_pvoid, (expected), buf.wpos);                \
     buf_clean(&buf);						       \
     test_context(NULL);                                                \
   } while (0)
@@ -448,6 +449,13 @@ TEST_CASE(buf_inspect_str)
   BUF_INSPECT_TEST_STR("Test123(Test456)", "\"Test123(Test456)\"");
   BUF_INSPECT_TEST_STR("test123{test456}", "\"test123{test456}\"");
   BUF_INSPECT_TEST_STR("Test123{Test456}", "\"Test123{Test456}\"");
+  BUF_INSPECT_TEST_STR("#", "\"#\"");
+  BUF_INSPECT_TEST_STR("#x", "\"#x\"");
+  BUF_INSPECT_TEST_STR("#{", "\"\\#{\"");
+  BUF_INSPECT_TEST_STR("#{1 + 1}", "\"\\#{1 + 1}\"");
+  BUF_INSPECT_TEST_STR("a#{b}c", "\"a\\#{b}c\"");
+  BUF_INSPECT_TEST_STR("#{a}#{b}", "\"\\#{a}\\#{b}\"");
+  BUF_INSPECT_TEST_STR("\\#{x}", "\"\134\134\134#{x}\"");
   BUF_INSPECT_TEST_STR("É", "\"É\"");
   BUF_INSPECT_TEST_STR("Éo", "\"Éo\"");
   BUF_INSPECT_TEST_STR("Éoà \n\r\t\v\"",

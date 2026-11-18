@@ -14,3 +14,5 @@ quote JSON.to_str(%{"a" => 1})
 JSON.to_str(%{"a" => 1})
 quote JSON.to_str(%{"a" => %{"b" => %{"c" => 1}}})
 JSON.to_str(%{"a" => %{"b" => %{"c" => 1}}})
+(literal = "#" + "{1 + 1}") ; void
+JSON.to_str(literal) == "\"" + literal + "\""

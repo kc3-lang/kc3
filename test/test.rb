@@ -29,6 +29,7 @@
 ['buf_parse_test.c', 'TEST_CASE(test__buf_parse_list)', 'TEST_CASE(buf_parse_list)'],
 ['buf_parse_test.c', 'TEST_CASE(test__buf_parse_sw)', 'TEST_CASE(buf_parse_sw)'],
 ['buf_parse_test.c', 'TEST_CASE(test__buf_parse_str)', 'TEST_CASE(buf_parse_str)'],
+['buf_parse_test.c', 'TEST_CASE(test__buf_parse_str_eval)', 'TEST_CASE(buf_parse_str_eval)'],
 ['buf_parse_test.c', 'TEST_CASE(test__buf_parse_str_character)', 'TEST_CASE(buf_parse_str_character)'],
 ['buf_parse_test.c', 'TEST_CASE(test__buf_parse_str_u8)', 'TEST_CASE(buf_parse_str_u8)'],
 ['buf_parse_test.c', 'TEST_CASE(test__buf_parse_sym)', 'TEST_CASE(buf_parse_sym)'],

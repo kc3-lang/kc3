@@ -4540,26 +4540,172 @@ sw buf_parse_str_character_unicode (s_buf *buf, character *dest)
 
 sw buf_parse_str_eval (s_buf *buf, s_tag *dest)
 {
-  s_str in;
+  s_tag *arg;
+  u8 b;
+  character c;
+  char *end = "\"";
+  char *end1 = NULL;
+  s_list *l;
+  s_list *list = NULL;
+  s_buf out = {0};
   sw r;
-  sw result;
+  sw result = 0;
   s_buf_save save;
+  s_tag tag = {0};
+  s_list **tail = &list;
+  s_tag tmp = {0};
+  assert(buf);
+  assert(dest);
   buf_save_init(buf, &save);
-  r = buf_parse_str(buf, &in);
-  if (r <= 0)
+  if ((r = buf_read_1(buf, "\"")) <= 0)
     goto clean;
-  result = r;
-  if (! str_parse_eval(&in, dest)) {
-    r = -2;
+  result += r;
+  if (! buf_init_alloc(&out, STR_MAX)) {
+    r = -1;
     goto restore;
   }
+  if ((r = buf_read_1(buf, "\"\"\n")) < 0 ||
+      (! r && (r = buf_read_1(buf, "\"\"")) < 0))
+    goto restore;
+  if (r > 0) {
+    result += r;
+    end = "\"\"\"";
+    if (r == 3)
+      end1 = "\n\"\"\"";
+  }
+  while (1) {
+    if ((r = buf_read_1(buf, end)) < 0 ||
+        (! r && end1 && (r = buf_read_1(buf, end1)) < 0))
+      goto restore;
+    if (r > 0) {
+      result += r;
+      break;
+    }
+    if ((r = buf_read_1(buf, "#{")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      if (out.wpos > 0) {
+        if (! (*tail = list_new(NULL))) {
+          r = -1;
+          goto restore;
+        }
+        (*tail)->tag.type = TAG_STR;
+        if (! buf_read_to_str(&out, &(*tail)->tag.data.td_str)) {
+          r = -1;
+          goto restore;
+        }
+        tail = &(*tail)->next.data.td_plist;
+        out.rpos = out.wpos = 0;
+      }
+      if (! (*tail = list_new(NULL))) {
+        r = -1;
+        goto restore;
+      }
+      if ((r = buf_parse_tag(buf, &(*tail)->tag)) <= 0) {
+        if (! r)
+          r = -2;
+        goto restore;
+      }
+      result += r;
+      tail = &(*tail)->next.data.td_plist;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_parse_comments(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_read_1(buf, "}")) <= 0) {
+        if (! r)
+          r = -2;
+        goto restore;
+      }
+      result += r;
+      continue;
+    }
+    if ((r = buf_parse_str_character(buf, &c)) <= 0) {
+      if (r < -1 || (r = buf_parse_str_u8(buf, &b)) <= 0)
+        goto restore;
+      result += r;
+      if ((r = buf_write_u8(&out, b)) < 0)
+        goto restore;
+      continue;
+    }
+    result += r;
+    if (c > 0x10ffff || (c >= 0xd800 && c <= 0xdfff)) {
+      r = -2;
+      goto restore;
+    }
+    if ((r = buf_write_character_utf8(&out, c)) < 0)
+      goto restore;
+  }
+  if (out.wpos > 0) {
+    if (! (*tail = list_new(NULL))) {
+      r = -1;
+      goto restore;
+    }
+    (*tail)->tag.type = TAG_STR;
+    if (! buf_read_to_str(&out, &(*tail)->tag.data.td_str)) {
+      r = -1;
+      goto restore;
+    }
+  }
+  if (! list) {
+    tag_init_str_empty(&tmp);
+    goto ok;
+  }
+  if (list->tag.type == TAG_STR && ! list_next(list)) {
+    tmp = list->tag;
+    tag_init(&list->tag);
+    list_delete_all(list);
+    list = NULL;
+    goto ok;
+  }
+  if (! tag_init_pcall(&tmp)) {
+    r = -1;
+    goto restore;
+  }
+  ident_init(&tmp.data.td_pcall->ident, &g_sym_KC3, &g_sym_str);
+  tmp.data.td_pcall->arguments = list_new(NULL);
+  if (! tmp.data.td_pcall->arguments) {
+    r = -1;
+    goto restore_tmp;
+  }
+  l = list;
+  while (l) {
+    if (l->tag.type == TAG_STR ||
+        (l->tag.type == TAG_PCALL &&
+         l->tag.data.td_pcall->ident.module == &g_sym_Str &&
+         l->tag.data.td_pcall->ident.sym == &g_sym_cast))
+      goto next;
+    if (! tag_init_pcall_call_cast(&tag, &g_sym_Str)) {
+      r = -1;
+      goto restore_tmp;
+    }
+    arg = &list_next(tag.data.td_pcall->arguments)->tag;
+    *arg = l->tag;
+    l->tag = tag;
+  next:
+    l = list_next(l);
+  }
+  arg = &tmp.data.td_pcall->arguments->tag;
+  arg->type = TAG_PLIST;
+  arg->data.td_plist = list;
+  list = NULL;
+ ok:
+  dest->type = tmp.type;
+  dest->data = tmp.data;
   r = result;
-  goto clean_in;
+  goto clean;
+ restore_tmp:
+  tag_clean(&tmp);
  restore:
+  if (r >= 0)
+    r = -1;
+  list_delete_all(list);
   buf_save_restore_rpos(buf, &save);
- clean_in:
-  str_clean(&in);
  clean:
+  buf_clean(&out);
   buf_save_clean(buf, &save);
   return r;
 }

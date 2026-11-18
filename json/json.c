@@ -22,7 +22,7 @@ sw json_buf_inspect (s_buf *buf, const s_tag *tag)
   case TAG_MAP:
     return json_buf_inspect_map(buf, &tag->data.td_map);
   case TAG_STR:
-    return buf_inspect_str(buf, &tag->data.td_str);
+    return buf_inspect_str_reserved(buf, &tag->data.td_str, true);
   case TAG_F32:
   case TAG_F64:
 #if HAVE_F80
@@ -75,12 +75,14 @@ sw json_buf_inspect_map (s_buf *buf, const s_map *map)
   while (i < map->count) {
     switch (map->key[i].type) {
     case TAG_STR:
-      if ((r = buf_inspect_str(buf, &map->key[i].data.td_str)) < 0)
+      if ((r = buf_inspect_str_reserved
+           (buf, &map->key[i].data.td_str, true)) < 0)
         return r;
       result += r;
       break;
     case TAG_PSYM:
-      if ((r = buf_inspect_str(buf, &map->key[i].data.td_psym->str)) < 0)
+      if ((r = buf_inspect_str_reserved
+           (buf, &map->key[i].data.td_psym->str, true)) < 0)
         return r;
       result += r;
       break;
@@ -90,7 +92,7 @@ sw json_buf_inspect_map (s_buf *buf, const s_map *map)
         assert(! "json_buf_inspect_map: cannot cast key to Str");
         return -1;
       }
-      if ((r = buf_inspect_str(buf, &str)) < 0)
+      if ((r = buf_inspect_str_reserved(buf, &str, true)) < 0)
         return r;
       result += r;
       str_clean(&str);
@@ -134,13 +136,14 @@ sw json_buf_inspect_map_size (s_pretty *pretty, const s_map *map)
   while (i < map->count) {
     switch (map->key[i].type) {
     case TAG_STR:
-      if ((r = buf_inspect_str_size(pretty, &map->key[i].data.td_str)) < 0)
+      if ((r = buf_inspect_str_reserved_size
+           (pretty, &map->key[i].data.td_str, true)) < 0)
         return r;
       result += r;
       break;
     case TAG_PSYM:
-      if ((r = buf_inspect_str_size(pretty,
-                                    &map->key[i].data.td_psym->str)) < 0)
+      if ((r = buf_inspect_str_reserved_size
+           (pretty, &map->key[i].data.td_psym->str, true)) < 0)
         return r;
       result += r;
       break;
@@ -150,7 +153,7 @@ sw json_buf_inspect_map_size (s_pretty *pretty, const s_map *map)
         assert(! "json_buf_inspect_map: cannot cast key to Str");
         return -1;
       }
-      if ((r = buf_inspect_str_size(pretty, &str)) < 0)
+      if ((r = buf_inspect_str_reserved_size(pretty, &str, true)) < 0)
         return r;
       result += r;
       str_clean(&str);
@@ -184,7 +187,8 @@ sw json_buf_inspect_size (s_pretty *pretty, const s_tag *tag)
   case TAG_MAP:
     return json_buf_inspect_map_size(pretty, &tag->data.td_map);
   case TAG_STR:
-    return buf_inspect_str_size(pretty, &tag->data.td_str);
+    return buf_inspect_str_reserved_size(pretty, &tag->data.td_str,
+                                         true);
   case TAG_F32:
   case TAG_F64:
 #if HAVE_F80
