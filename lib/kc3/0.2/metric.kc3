@@ -47,4 +47,16 @@ defmodule Metric do
     end)
   }
 
+  def set = fn (key, count) {
+    key = normalize(key)
+    Facts.replace_tags(Config.db, key, :metric_hits, count)
+    count
+  }
+
+  def export = fn () {
+    Facts.with_tags(Config.db, key = ?, :metric_hits, count = ?, fn (fact) {
+      puts("Metric.set(#{inspect(key)}, #{inspect(count)})")
+    })
+  }
+                
 end
